@@ -1,0 +1,398 @@
+
+.hide_thread_button span > span,
+.hide_reply_button span > span {
+  background-color: #{theme["Links"]};
+}
+#mascot_hide label {
+  border-bottom: 1px solid #{theme["Reply Border"]};
+}
+#content .thumb {
+  box-shadow: 0 0 5px #{theme["Reply Border"]};
+}
+.mascotname,
+.mascotoptions {
+  background: #{theme["Dialog Background"]};
+  border: 1px solid #{theme["Buttons Border"]};
+}
+.opContainer.filter_highlight {
+  box-shadow: inset 5px 0 #{theme["Backlinked Reply Outline"]};
+}
+.filter_highlight > .reply {
+  box-shadow: -5px 0 #{theme["Backlinked Reply Outline"]};
+}
+hr {
+  border-bottom: 1px solid #{theme["Reply Border"]};
+}
+a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] > table > tbody > tr > td {
+  background: #{backgroundC} !important;
+  border: 1px solid #{theme["Reply Border"]} !important;
+}
+#fs_status {
+  background: #{theme["Dialog Background"]} !important;
+}
+#fs_data tr[style="background-color: #EA8;"] {
+  background: #{theme["Reply Background"]} !important;
+}
+#fs_data,
+#fs_data *,
+.threadContainer {
+  border-color: #{theme["Reply Border"]} !important;
+}
+html {
+  background: #{backgroundC or ''};
+  background-image: #{theme["Background Image"] or ''};
+  background-repeat: #{theme["Background Repeat"] or ''};
+  background-attachment: #{theme["Background Attachment"] or ''};
+  background-position: #{theme["Background Position"] or ''};
+}
+.section-container,
+#exlinks-options-content,
+#mascotcontent,
+#themecontent {
+  background: #{backgroundC};
+  border: 1px solid #{theme["Reply Border"]};
+  padding: 5px;
+}
+.sections-list > a.tab-selected {
+  background: #{backgroundC};
+  border-color: #{theme["Reply Border"]};
+  border-style: solid;
+}
+.captcha-img img {
+  #{Style.filter theme["Text"], theme["Input Background"]}
+}
+#boardTitle,
+#prefetch,
+#showQR,
+#{unless _conf["Post Form Decorations"] then '#spoilerLabel,' else ''}
+#thread-stats {
+  text-shadow:
+     1px  1px 0 #{backgroundC},
+    -1px -1px 0 #{backgroundC},
+     1px -1px 0 #{backgroundC},
+    -1px  1px 0 #{backgroundC},
+     0    1px 0 #{backgroundC},
+     0   -1px 0 #{backgroundC},
+     1px  0   0 #{backgroundC},
+    -1px  0   0 #{backgroundC}
+    #{if _conf["Sidebar Glow"] then ", 0 2px 5px #{theme['Text']};" else ";"}
+}
+/* Fixes text spoilers */
+#{if _conf['Remove Spoilers'] and _conf['Indicate Spoilers'] then "
+.spoiler::before,
+s::before {
+  content: '[spoiler]';
+}
+.spoiler::after,
+s::after {
+  content: '[/spoiler]';
+}
+" else unless _conf['Remove Spoilers'] then "
+.spoiler:not(:hover) *,
+s:not(:hover) * {
+  color: rgb(0,0,0) !important;
+  text-shadow: none !important;
+}
+.spoiler:not(:hover),
+s:not(:hover) {
+  background-color: rgb(0,0,0);
+  color: rgb(0,0,0) !important;
+  text-shadow: none !important;
+}" else ""}
+#exlinks-options,
+#appchanx-settings,
+#qrtab,
+#{if _conf["Post Form Decorations"] then "#qr," else ""}
+input[type="submit"],
+input[value="Report"],
+span[style="left: 5px; position: absolute;"] a {
+  background: #{theme["Buttons Background"]};
+  border: 1px solid #{theme["Buttons Border"]};
+}
+.enabled .mascotcontainer {
+  background: #{theme["Buttons Background"]};
+  border-color: #{theme["Buttons Border"]};
+}
+#dump,
+#qr-filename-container,
+#appchanx-settings input,
+.captcha-img,
+.dump #dump:not(:hover):not(:focus),
+.qr-preview,
+.selectrice,
+button,
+input,
+textarea {
+  background: #{theme["Input Background"]};
+  border: 1px solid #{theme["Input Border"]};
+  color: #{theme["Inputs"]};
+}
+#dump:hover,
+#qr-filename-container:hover,
+#qr-filename-container:hover,
+.selectrice:hover,
+#selectrice li:hover,
+#selectrice li:nth-of-type(2n+1):hover,
+input:hover,
+textarea:hover {
+  background: #{theme["Hovered Input Background"]};
+  border-color: #{theme["Hovered Input Border"]};
+  color: #{theme["Inputs"]};
+}
+#dump:active,
+#dump:focus,
+#selectrice li:focus,
+.selectrice:focus,
+#qr-filename-container:active,
+#qr-filename-container:focus,
+input:focus,
+textarea:focus,
+textarea.field:focus {
+  background: #{theme["Focused Input Background"]};
+  border-color: #{theme["Focused Input Border"]};
+  color: #{theme["Inputs"]};
+  outline: none;
+}
+#mouseover,
+#post-preview,
+#qp .post,
+#xupdater,
+.reply.post {
+  border-width: 1px;
+  border-style: solid;
+  border-color: #{theme["Reply Border"]};
+  background: #{theme["Reply Background"]};
+}
+.thread > .replyContainer > .reply.post {
+  border-width: #{if _conf['Post Spacing'] is "0" then "1px 1px 0 1px" else '1px'};
+}
+.exblock.reply,
+.reply.post.highlight,
+.reply.post:target {
+  background: #{theme["Highlighted Reply Background"]};
+  border: 1px solid #{theme["Highlighted Reply Border"]};
+}
+#header-bar,
+.pagelist {
+  background: #{theme["Navigation Background"]};
+  border-style: solid;
+  border-color: #{theme["Navigation Border"]};
+}
+.thread {
+  background: #{theme["Thread Wrapper Background"]};
+  border: 1px solid #{theme["Thread Wrapper Border"]};
+}
+#boardNavDesktopFoot,
+#mascotConf,
+#mascot_hide,
+#menu,
+#selectrice,
+#themeConf,
+#watcher,
+#watcher:hover,
+.notification,
+.submenu,
+a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
+  background: #{theme["Dialog Background"]};
+  border: 1px solid #{theme["Dialog Border"]};
+}
+.deleteform::before,
+.deleteform,
+#qr .warning {
+  background: #{theme["Input Background"]};
+  border-color: #{theme["Input Border"]};
+}
+.disabledwarning,
+.warning {
+  color: #{theme["Warnings"]};
+}
+#navlinks a:first-of-type {
+  border-bottom: 11px solid rgb(130,130,130);
+}
+#navlinks a:last-of-type {
+  border-top: 11px solid rgb(130,130,130);
+}
+#charCount {
+  color: #{(if Style.lightTheme then "rgba(0,0,0,0.7)" else "rgba(255,255,255,0.7)")};
+}
+.postNum a {
+  color: #{theme["Post Numbers"]};
+}
+.subject {
+  color: #{theme["Subjects"]} !important;
+}
+.dateTime,
+.post-ago {
+  color: #{theme["Timestamps"]} !important;
+}
+#fs_status a,
+#updater #update-status:not(.new)::after,
+#showQR,
+.abbr,
+.boxbar,
+.boxcontent,
+.deleteform::before,
+.pages strong,
+.pln,
+.reply,
+.reply.highlight,
+.summary,
+body,
+button,
+span[style="left: 5px; position: absolute;"] a,
+input,
+textarea {
+  color: #{theme["Text"]};
+}
+#exlinks-options-content > table,
+#appchanx-settings fieldset,
+#selectrice {
+  border-bottom: 1px solid #{theme["Reply Border"]};
+  box-shadow: inset #{theme["Shadow Color"]} 0 0 5px;
+}
+.quote + .spoiler:hover,
+.quote {
+  color: #{theme["Greentext"]};
+}
+.forwardlink {
+  text-decoration: #{if _conf["Underline Links"] then "underline" else "none"};
+  border-bottom: 1px dashed #{theme["Backlinks"]};
+}
+.container::before {
+  color: #{theme["Timestamps"]};
+}
+#menu,
+#post-preview,
+#qp .opContainer,
+#qp .replyContainer,
+.submenu {
+  box-shadow: #{if _conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else ""};
+}
+.rice {
+  background: #{theme["Checkbox Background"]};
+  border: 1px solid #{theme["Checkbox Border"]};
+}
+.selectrice::before {
+  border-left: 1px solid #{theme["Input Border"]};
+}
+.selectrice::after {
+  border-top: .45em solid #{theme["Inputs"]};
+}
+.bd {
+  background: #{theme["Buttons Background"]};
+  border: 1px solid #{theme["Buttons Border"]};
+}
+.pages a,
+#header-bar a {
+  color: #{theme["Navigation Links"]};
+}
+input[type=checkbox]:checked + .rice {
+  position: relative;
+}
+input[type=checkbox]:checked + .rice::after {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 10px;
+  border: solid #{theme["Inputs"]};
+  border-width: 0 3px 3px 0;
+  #{agent}transform: rotate(45deg);
+  position: absolute;
+  left: 2px;
+  bottom: -1px;
+}
+#addReply,
+#dump,
+.button,
+.entry,
+.replylink,
+a {
+  color: #{theme["Links"]};
+}
+.backlink {
+  color: #{theme["Backlinks"]};
+}
+.qiQuote,
+.quotelink {
+  color: #{theme["Quotelinks"]};
+}
+#addReply:hover,
+#dump:hover,
+.entry:hover,
+.sideArrows a:hover,
+.replylink:hover,
+.qiQuote:hover,
+.quotelink:hover,
+a .name:hover,
+a .postertrip:hover,
+a:hover {
+  color: #{theme["Hovered Links"]};
+}
+#header-bar a:hover,
+#boardTitle a:hover {
+  color: #{theme["Hovered Navigation Links"]};
+}
+#boardTitle {
+  color: #{theme["Board Title"]};
+}
+.name,
+.post-author {
+  color: #{theme["Names"]} !important;
+}
+.post-tripcode,
+.postertrip,
+.trip {
+  color: #{theme["Tripcodes"]} !important;
+}
+a .postertrip,
+a .name {
+  color: #{theme["Emails"]};
+}
+.post.reply.qphl,
+.post.op.qphl {
+  border-color: #{theme["Backlinked Reply Outline"]};
+  background: #{theme["Highlighted Reply Background"]};
+}
+.inline .post {
+  box-shadow: #{if _conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
+}
+.placeholder,
+#qr input::#{agent}placeholder,
+#qr textarea::#{agent}placeholder {
+  color: #{if Style.lightTheme then "rgba(0,0,0,0.3)" else "rgba(255,255,255,0.2)"} !important;
+}
+#qr input:#{agent}placeholder,
+#qr textarea:#{agent}placeholder,
+.placeholder {
+  color: #{if Style.lightTheme then "rgba(0,0,0,0.3)" else "rgba(255,255,255,0.2)"} !important;
+}
+#appchanx-settings fieldset,
+.boxcontent dd,
+.selectrice ul {
+  border-color: #{if Style.lightTheme then "rgba(0,0,0,0.1)" else "rgba(255,255,255,0.1)"};
+}
+#appchanx-settings li,
+#selectrice li:not(:first-of-type) {
+  border-top: 1px solid #{if Style.lightTheme then "rgba(0,0,0,0.05)" else "rgba(255,255,255,0.025)"};
+}
+#navtopright .exlinksOptionsLink::after,
+#appchanOptions,
+.navLinks > a:first-of-type::after,
+#watcher::after,
+#globalMessage::after,
+#boardNavDesktopFoot::after,
+a[style="cursor: pointer; float: right;"]::after,
+#img-controls,
+#catalog::after,
+#fappeTyme {
+  background-image: url('#{icons}');
+#{unless Style.lightTheme then "
+filter: url(\"
+data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='
+-1 0 0 0 1
+ 0 -1 0 0 1
+ 0 0 -1 0 1
+ 0 0 0 1 0' /></filter></svg>#filters
+\");" else ""}
+}
+#{theme["Custom CSS"]}

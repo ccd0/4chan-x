@@ -17,29 +17,47 @@ module.exports = (grunt) ->
       coffee:
         options: concatOptions
         src: [
-          'src/config.coffee'
-          'src/globals.coffee'
-          'src/lib/*.coffee'
-          'src/features/*/*.coffee'
-          'src/settings.coffee'
-          'src/main.coffee'
+          'src/General/Config.coffee'
+          'src/General/Globals.coffee'
+          'src/General/lib/*.coffee'
+          'src/General/Header.coffee'
+          'src/General/Build.coffee'
+          'src/General/Get.coffee'
+          'src/General/UI.coffee'
+          'src/Filtering/*'
+          'src/Quotelinks/*'
+          'src/Linkification/*'
+          'src/Posting/*'
+          'src/Images/*'
+          'src/Menu/*'
+          'src/Monitoring/*'
+          'src/Archive/*'
+          'src/Theming/*'
+          'src/Miscellaneous/*'
+          'src/General/Settings.coffee'
+          'src/General/Main.coffee'
         ]
         dest: 'tmp-<%= pkg.type %>/script.coffee'
+
+      license:
+        options: concatOptions
+        files:
+          'LICENSE': 'src/General/meta/banner.js'
 
       crx:
         options: concatOptions
         files:
-          'builds/crx/manifest.json': 'src/meta/manifest.json'
+          'builds/crx/manifest.json': 'src/General/meta/manifest.json'
           'builds/crx/script.js': [
-            'src/banner.js'
+            'src/General/meta/banner.js'
             'tmp-<%= pkg.type %>/script.js'
           ]
 
       userjs:
         options: concatOptions
         src: [
-          'src/meta/metadata.js'
-          'src/meta/banner.js'
+          'src/General/meta/metadata.js'
+          'src/General/meta/banner.js'
           'tmp-<%= pkg.type %>/script.js'
         ]
         dest: 'builds/<%= pkg.name %>.js'
@@ -47,16 +65,16 @@ module.exports = (grunt) ->
       userscript:
         options: concatOptions
         files:
-          'builds/<%= pkg.name %>.meta.js': 'src/metadata.js'
+          'builds/<%= pkg.name %>.meta.js': 'src/General/meta/metadata.js'
           'builds/<%= pkg.name %>.user.js': [
-            'src/meta/metadata.js'
-            'src/meta/banner.js'
+            'src/General/meta/metadata.js'
+            'src/General/meta/banner.js'
             'tmp-<%= pkg.type %>/script.js'
           ]
 
     copy:
       crx:
-        src:    'src/img/*.png'
+        src:    'src/General/img/*.png'
         dest:   'builds/crx/'
         expand:  true
         flatten: true
@@ -80,7 +98,7 @@ module.exports = (grunt) ->
           'git checkout <%= pkg.meta.mainBranch %>',
           'git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."',
           'git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."',
-          'git tag -af stable-v3 -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
+          'git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
         ].join(' && ')
         stdout: true
 
@@ -135,6 +153,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'build', [
     'concurrent:build'
+    'concat:license'
   ]
 
   grunt.registerTask 'build-crx', [
@@ -164,38 +183,39 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'release', [
     'default'
+    'compress:crx'
     'shell:commit'
     'shell:push'
   ]
 
   grunt.registerTask 'patch',   [
     'bump'
-    'reloadPkh'
+    'reloadPkg'
     'updcl:3'
   ]
 
   grunt.registerTask 'minor',   [
     'bump:minor'
-    'reloadPkh'
+    'reloadPkg'
     'updcl:2'
   ]
 
   grunt.registerTask 'major',   [
     'bump:major'
-    'reloadPkh'
+    'reloadPkg'
     'updcl:1'
   ]
 
   grunt.registerTask 'reloadPkg', 'Reload the package', ->
     # Update the `pkg` object with the new version.
     pkg = grunt.file.readJSON('package.json')
-    concatOptions.process.data = pkg
+    grunt.config.data.pkg = concatOptions.process.data = pkg
     grunt.log.ok('pkg reloaded.')
 
   grunt.registerTask 'updcl',   'Update the changelog', (i) ->
     # i is the number of #s for markdown.
     version = []
     version.length = +i + 1
-    version = version.join('#') + ' ' + pkg.version + ' *(' + grunt.template.today('yyyy-mm-dd') + ')*'
+    version = version.join('#') + ' ' + pkg.version + ' - ' + grunt.template.today('yyyy-mm-dd')
     grunt.file.write 'CHANGELOG.md', version + '\n' + grunt.file.read('CHANGELOG.md')
     grunt.log.ok     'Changelog updated for v' + pkg.version + '.'

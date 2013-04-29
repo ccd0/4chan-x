@@ -3,8 +3,7 @@
 // @version      2.0.0
 // @namespace    zixaphir
 // @description  The most comprehensive 4chan userscript.
-// @copyright    2012-2013 Zixaphir <zixaphirmoxphar@gmail.com>
-// @license      MIT; http://en.wikipedia.org/wiki/Mit_license
+// @license      MIT; https://github.com/zixaphir/appchan-x/blob/Av2/LICENSE 
 // @match        *://api.4chan.org/*
 // @match        *://boards.4chan.org/*
 // @match        *://images.4chan.org/*
@@ -14,35 +13,102 @@
 // @grant        GM_deleteValue
 // @grant        GM_openInTab
 // @run-at       document-start
-// @updateURL    http://zixaphir.github.com/appchan-x/builds/appchan-x.meta.js
-// @downloadURL  http://zixaphir.github.com/appchan-x/builds/appchan-x.user.js
+// @updateURL 	 https://github.com/zixaphir/appchan-x/raw/stable/builds/4chan_X.meta.js
+// @downloadURL  https://github.com/zixaphir/appchan-x/raw/stable/builds/4chan_X.user.js
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAElBMVEX///8EZgR8ulSk0oT///8EAgQ1A88mAAAAAXRSTlMAQObYZgAAAIpJREFUeF6t0sENwjAMhWF84N4H6gAYMUBkdQMYwfuvwmstEeD4kl892P0OaaWcpga2/K0SGII1HNBXARgu7veoY3ANd+esgMHZIz85u0EABrbms3pl/bkC1Tn5ihGOfQwqHeZ/FdYdirEMgCG2ZAQWDTL0m9FvjAhcvoGNAK2gZhGYYX9+ZgFm9gaiNmNkMENY4QAAAABJRU5ErkJggg==
 // ==/UserScript==
 
-/* appchan x - Version 2.0.0 - 2013-04-23
- * http://zixaphir.github.com/appchan-x/
- *
- * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
- * Copyright (c) 2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
- * Licensed under the MIT license.
- * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
- *
- * Contributors:
- * https://github.com/zixaphir/appchan-x/graphs/contributors
- * Non-GitHub contributors:
- * ferongr, xat-, Ongpot, thisisanon and Anonymous - favicon contributions
- * e000 - cooldown sanity check
- * Seiba - chrome quick reply focusing
- * herpaderpderp - recaptcha fixes
- * WakiMiko - recaptcha tab order http://userscripts.org/scripts/show/82657
- *
- * All the people who've taken the time to write bug reports.
- *
- * Thank you.
- */
+/*
+* appchan x - Version 2.0.0 - 2013-04-28
+*
+* Licensed under the MIT license.
+* https://github.com/zixaphir/appchan-x/blob/master/LICENSE
+*
+* Appchan X Copyright © 2013-2013 Zixaphir <zixaphirmoxphar@gmail.com>
+* http://zixaphir.github.io/appchan-x/ 
+* 4chan x Copyright © 2009-2011 James Campos <james.r.campos@gmail.com>
+* https://github.com/aeosynth/4chan-x
+* 4chan x Copyright © 2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
+* https://4chan-x.just-believe.in/
+* 4chan x Copyright © 2013-2013 Jordan Bates <saudrapsmann@gmail.com>
+* http://seaweedchan.github.io/4chan-x/
+* 4chan x Copyright © 2012-2013 ihavenoface
+* http://ihavenoface.github.io/4chan-x/
+* 4chan SS Copyright © 2011-2013 Ahodesuka
+* https://github.com/ahodesuka/4chan-Style-Script/ 
+*
+* Permission is hereby granted, free of charge, to any person
+* obtaining a copy of this software and associated documentation
+* files (the "Software"), to deal in the Software without
+* restriction, including without limitation the rights to use,
+* copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the
+* Software is furnished to do so, subject to the following
+* conditions:
+*
+* The above copyright notice and this permission notice shall be
+* included in all copies or substantial portions of the Software.
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+* OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+* NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+* OTHER DEALINGS IN THE SOFTWARE.
+*
+* Contributors:
+* aeosynth
+* mayhemydg
+* noface
+* !K.WeEabo0o
+* blaise
+* that4chanwolf
+* desuwa
+* seaweed
+* e000
+* ahodesuka
+* Shou
+* ferongr
+* xat
+* Ongpot
+* thisisanon
+* Anonymous
+* Seiba
+* herpaderpderp
+* WakiMiko
+* btmcsweeney
+* AppleBloom
+*
+* All the people who've taken the time to write bug reports.
+*
+* Thank you.
+*/
 
+/*
+* Contains data from external sources:
+*
+* audio/beep.wav from http://freesound.org/people/pierrecartoons1979/sounds/90112/
+*   cc-by-nc-3.0
+*
+* 4chan/4chan-JS (https://github.com/4chan/4chan-JS)
+*   Copyright (c) 2012-2013, 4chan LLC
+*   All rights reserved.
+*
+*   license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
+*
+* Linkify: (http://userscripts.org/scripts/show/1352)
+*   Copyright (c) 2011, Anthony Lieuallen
+*   All rights reserved.
+*   Originally written by Anthony Lieuallen of http://arantius.com/
+*   Licensed for unlimited modification and redistribution as long as
+*   this notice is kept intact.
+*
+*   license: http://userscripts.org/scripts/review/1352
+*
+*/
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, GlobalMessage, Header, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, MutationObserver, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, GlobalMessage, Header, IDColor, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, MutationObserver, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -52,7 +118,6 @@
       'Miscellaneous': {
         'Catalog Links': [true, 'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'],
         'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
-        'Custom Board Navigation': [false, 'Show custom links instead of the full board list.'],
         'QR Shortcut': [false, 'Adds a small [QR] link in the header.'],
         'Announcement Hiding': [true, 'Add button to hide 4chan announcements.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],
@@ -64,7 +129,11 @@
         'Thread Expansion': [true, 'Add buttons to expand threads.'],
         'Index Navigation': [false, 'Add buttons to navigate between threads.'],
         'Reply Navigation': [false, 'Add buttons to navigate to top / bottom of thread.'],
-        'Check for Updates': [true, 'Check for updated versions of appchan x.']
+        'Check for Updates': [true, 'Check for updated versions of appchan x.'],
+        'Emoji': [false, 'Adds icons next to names for different emails'],
+        'Color User IDs': [false, 'Assign unique colors to user IDs on boards that use them'],
+        'Remove Spoilers': [false, 'Remove all spoilers in text.'],
+        'Indicate Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled.']
       },
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
@@ -101,7 +170,7 @@
       'Monitoring': {
         'Thread Updater': [true, 'Fetch and insert new replies. Has more options in its own dialog.'],
         'Unread Count': [true, 'Show the unread posts count in the tab title.'],
-        'Hide Unread Count at (0)': [false, 'Hide the unread posts count when it reaches 0.'],
+        'Hide Unread Count at (0)': [false, 'Hide the unread posts count in the tab title when it reaches 0.'],
         'Unread Favicon': [true, 'Show a different favicon when there are unread posts.'],
         'Unread Line': [true, 'Show a line to distinguish read posts from unread ones.'],
         'Scroll to Last Read Post': [true, 'Scroll back to the last read post when reopening a thread.'],
@@ -120,7 +189,8 @@
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
         'Remember QR Size': [false, 'Remember the size of the quick reply\'s comment field.'],
         'Hide Original Post Form': [true, 'Hide the normal post form.'],
-        'Cooldown': [true, 'Prevent "flood detected" errors.']
+        'Cooldown': [true, 'Indicate the remaining time before posting again.'],
+        'Cooldown Prediction': [true, 'Decrease the cooldown time by taking into account upload speed. Disable it if it\'s inaccurate for you.']
       },
       'Quote Links': {
         'Quote Backlinks': [true, 'Add quote backlinks.'],
@@ -131,6 +201,7 @@
         'Quote Highlighting': [true, 'Highlight the previewed post.'],
         'Resurrect Quotes': [true, 'Link dead quotes to the archives.'],
         'Mark Quotes of You': [true, 'Add \'(You)\' to quotes linking to your posts.'],
+        'Highlight Own Posts': [false, 'Highlights own posts if Mark Quotes of You is enabled.'],
         'Mark OP Quotes': [true, 'Add \'(OP)\' to OP quotes.'],
         'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.'],
         'Quote Threading': [false, 'Thread conversations']
@@ -160,8 +231,7 @@
         '4chan Banner Reflection': [false, 'Adds reflection effects to 4chan\'s image banner.'],
         'Faded 4chan Banner': [true, 'Make 4chan\'s image banner translucent.'],
         'Icon Orientation': ['horizontal', 'Change the orientation of the appchan x icons.', ['horizontal', 'vertical']],
-        'Slideout Watcher': [true, 'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.'],
-        'Updater Position': ['top', 'The position of 4chan thread updater and stats', ['top', 'bottom', 'moveable']]
+        'Slideout Watcher': [true, 'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.']
       },
       Posts: {
         'Alternate Post Colors': [false, 'Make post background colors alternate every other post.'],
@@ -245,10 +315,18 @@
       MD5: ''
     },
     sauces: "https://www.google.com/searchbyimage?image_url=%TURL\nhttp://iqdb.org/?url=%TURL\n#//tineye.com/search?url=%TURL\n#http://saucenao.com/search.php?url=%TURL\n#http://3d.iqdb.org/?url=%TURL\n#http://regex.info/exif.cgi?imgurl=%URL\n# uploaders:\n#http://imgur.com/upload?url=%URL;text:Upload to imgur\n#http://ompldr.org/upload?url1=%URL;text:Upload to ompldr\n# \"View Same\" in archives:\n#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz\n#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/\n#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/",
+    'sageEmoji': 'appchan',
+    'emojiPos': 'before',
     'Custom CSS': false,
-    'Boards Navigation': 'Sticky top',
-    'Header auto-hide': false,
-    'Header catalog links': false,
+    Header: {
+      'Fixed Header': true,
+      'Header auto-hide': false,
+      'Bottom Header': false,
+      'Hide Header': false,
+      'Header catalog links': false,
+      'Bottom Board List': true,
+      'Custom Board Navigation': true
+    },
     boardnav: '[ toggle-all ] [current-title]',
     time: '%m/%d/%y(%a)%H:%M:%S',
     backlink: '>>%id',
@@ -257,15 +335,17 @@
     usercss: "/* Tripcode Italics: */\n/*\nspan.postertrip {\nfont-style: italic;\n}\n*/\n\n/* Add a rounded border to thumbnails (but not expanded images): */\n/*\n.fileThumb > img:first-child {\nborder: solid 2px rgba(0,0,100,0.5);\nborder-radius: 10px;\n}\n*/\n\n/* Make highlighted posts look inset on the page: */\n/*\ndiv.post:target,\ndiv.post.highlight {\nbox-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);\n}\n*/",
     hotkeys: {
       'Toggle board list': ['Ctrl+b', 'Toggle the full board list.'],
-      'Open empty QR': ['l', 'Open QR without post number inserted.'],
-      'Open QR': ['Shift+l', 'Open QR with post number inserted.'],
+      'Toggle header': ['Shift+h', 'Toggle the auto-hide option of the header.'],
+      'Open empty QR': ['i', 'Open QR without post number inserted.'],
+      'Open QR': ['Shift+i', 'Open QR with post number inserted.'],
       'Open settings': ['Alt+o', 'Open Settings.'],
       'Close': ['Esc', 'Close Settings, Notifications or QR.'],
       'Spoiler tags': ['Ctrl+s', 'Insert spoiler tags.'],
       'Code tags': ['Alt+c', 'Insert code tags.'],
       'Eqn tags': ['Alt+e', 'Insert eqn tags.'],
       'Math tags': ['Alt+m', 'Insert math tags.'],
-      'Submit QR': ['Alt+s', 'Submit post.'],
+      'Toggle sage': ['Alt+s', 'Toggle sage in email field'],
+      'Submit QR': ['Ctrl+Enter', 'Submit post.'],
       'Watch': ['w', 'Watch thread.'],
       'Update': ['r', 'Update the thread now.'],
       'Expand image': ['Shift+e', 'Expand selected image.'],
@@ -275,6 +355,7 @@
       'Open front page': ['Shift+0', 'Open page 0 in a new tab.'],
       'Next page': ['Right', 'Jump to the next page.'],
       'Previous page': ['Left', 'Jump to the previous page.'],
+      'Open catalog': ['Shift+c', 'Open the catalog of the current board'],
       'Next thread': ['Down', 'See next thread.'],
       'Previous thread': ['Up', 'See previous thread.'],
       'Expand thread': ['Ctrl+e', 'Expand thread.'],
@@ -2440,20 +2521,64 @@
     "4chan SS": 'iVBORw0KGgoAAAANSUhEUgAAAA8AAACWCAMAAAA2YSLzAAAAPFBMVEVkZGRlZWVjY2NmZmZnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dZxmG7AAAAE3RSTlMFFQ0AJD8eQFRqf5CgssDM4+73gHqZRAAAA0pJREFUSMetVlmy5CgMZDMGxK7737Ulgcu8ejMREzHtD7sShJRaKWV/Psq3iz7QGwTF2BZ01hp3N6yasctZJANiN5ZlItDLtNkQDGNeMLU7EqmCbUwhkhZbwsIuNbyWPX7dIyHOrDYOc8SOiEUJjojN0EsWlCXRrq2qvJCsIjic2OcFrwrOpdmTimqVyWG7ZkrWy97p7z/hACd2FUetBcQDpTN+nuKsGng881L5xOz/VQ88xL/eQkyZT3axp+4dUMwvH0Pnhn6wSyR+8IdR4f43/v8XX1BHjXpjwy5RdEcQ7DiuzlBUsFD+GeIFEy6W0pKXoSZOiUz5tf99nvTDD/1sP9VRPvb/un86lT57SVqwSk8KR+L6kgTOlcZslRQe5WmJRKovETW7Anb+HzxUW4Xgnv11fuuj82aKXHz1Tzztx9v4VA9+/6le26B+3VhTC9RMPIr0qx4zaWNsnFRO0s8FWgEIFIRiVUAIlJGciqMmCwpQWyI/OplXA1RrXG1YI2svTQ3ufhWjNlKFqtXFI7Yg+zAXRcBZ+HygJuVHd0ys35bVn6QojLL5cZeVvPht/mVu/r/8s7GMXsLjv2s71GZhgjnEwsEVXogiSl/pl7LWra0IQgO3poTsieoYd4dhWfJlGWqyQf6sLxWt3/MRa4Im04ixeSdAWnxvqCX6tObVmzpZOPOZvrBNJF8gmGciBChsV+YdRYwnAvNpS4AnYFBm0KA2a35Unh+efxjercaLfV7wW0rtUTNl2j715al/9VtfutF+NZ/+aZSa+py/GCpRyvr17EsVLbRhmN++BBY/ik5/+YPK6bKnf2T8fh7P+uEYn0D3E4L3i6QHmvc3+k+8PN6Mb1w52tje6LbAi+M0FT4YneqVbpVDPnL2Xqx7m3tf9ENXHba9H/a/+X3z/+XfCnOo+Zy/o4SgY5Z6iq0nb+9Mc4JxL5f1qYs+xhTP/uiX/cMe4+hDHAfGnmGe+Ev+G88vnG7Ie20wHiUt/S1Kv+6BCM/9fkEfz73/9HNufQ4ZKdzvnwtS/LXltRcJB/yJ23H/mo89nPFa85Li3XOYu435LwTXKVWwO+cnlWFTB47L/AdfR//KI2bvF8sAb0c/M+1+YE3/oS77B8N+UUVHraV6AAAAAElFTkSuQmCC'
   };
 
+  String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+  };
+
+  String.prototype.contains = function(string) {
+    return this.indexOf(string) > -1;
+  };
+
+  Array.prototype.add = function(object, position) {
+    var keep;
+
+    keep = this.slice(position);
+    this.length = position;
+    this.push(object);
+    return this.pushArrays(keep);
+  };
+
+  Array.prototype.contains = function(object) {
+    return this.indexOf(object) > -1;
+  };
+
+  Array.prototype.indexOf = function(object) {
+    var i;
+
+    i = this.length;
+    while (i--) {
+      if (this[i] === object) {
+        break;
+      }
+    }
+    return i;
+  };
+
+  Array.prototype.pushArrays = function() {
+    var arg, args, _i, _len;
+
+    args = arguments;
+    for (_i = 0, _len = args.length; _i < _len; _i++) {
+      arg = args[_i];
+      this.push.apply(this, arg);
+    }
+  };
+
+  Array.prototype.remove = function(object) {
+    var index;
+
+    if ((index = this.indexOf(object)) > -1) {
+      return this.splice(index, 1);
+    } else {
+      return false;
+    }
+  };
+
   $ = function(selector, root) {
     if (root == null) {
       root = d.body;
     }
     return root.querySelector(selector);
-  };
-
-  $.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)));
-
-  $$ = function(selector, root) {
-    if (root == null) {
-      root = d.body;
-    }
-    return __slice.call(root.querySelectorAll(selector));
   };
 
   $.extend = function(object, properties) {
@@ -2468,400 +2593,371 @@
     }
   };
 
-  $.extend(Array.prototype, {
-    add: function(object, position) {
-      var keep;
+  $.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)));
 
-      keep = this.slice(position);
-      this.length = position;
-      this.push(object);
-      return this.pushArrays(keep);
-    },
-    contains: function(object) {
-      return this.indexOf(object) > -1;
-    },
-    indexOf: function(object) {
-      var i;
+  $.id = function(id) {
+    return d.getElementById(id);
+  };
 
-      i = this.length;
-      while (i--) {
-        if (this[i] === object) {
-          break;
-        }
+  $.ready = function(fc) {
+    var cb, _ref;
+
+    if ((_ref = d.readyState) === 'interactive' || _ref === 'complete') {
+      $.queueTask(fc);
+      return;
+    }
+    cb = function() {
+      $.off(d, 'DOMContentLoaded', cb);
+      return fc();
+    };
+    return $.on(d, 'DOMContentLoaded', cb);
+  };
+
+  $.formData = function(form) {
+    var fd, key, val;
+
+    if (form instanceof HTMLFormElement) {
+      return new FormData(form);
+    }
+    fd = new FormData();
+    for (key in form) {
+      val = form[key];
+      if (!val) {
+        continue;
       }
-      return i;
-    },
-    pushArrays: function() {
-      var arg, args, _i, _len;
-
-      args = arguments;
-      for (_i = 0, _len = args.length; _i < _len; _i++) {
-        arg = args[_i];
-        this.push.apply(this, arg);
-      }
-    },
-    remove: function(object) {
-      var index;
-
-      if ((index = this.indexOf(object)) > -1) {
-        return this.splice(index, 1);
+      if (val.size && val.name) {
+        fd.append(key, val, val.name);
       } else {
-        return false;
+        fd.append(key, val);
       }
     }
-  });
+    return fd;
+  };
 
-  $.extend(String.prototype, {
-    capitalize: function() {
-      return this.charAt(0).toUpperCase() + this.slice(1);
-    },
-    contains: function(string) {
-      return this.indexOf(string) > -1;
+  $.ajax = function(url, callbacks, opts) {
+    var cred, form, headers, key, r, sync, type, upCallbacks, val;
+
+    if (opts == null) {
+      opts = {};
     }
-  });
+    type = opts.type, cred = opts.cred, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form, sync = opts.sync;
+    r = new XMLHttpRequest();
+    r.overrideMimeType('text/html');
+    type || (type = form && 'post' || 'get');
+    r.open(type, url, !sync);
+    for (key in headers) {
+      val = headers[key];
+      r.setRequestHeader(key, val);
+    }
+    $.extend(r, callbacks);
+    $.extend(r.upload, upCallbacks);
+    r.withCredentials = cred;
+    r.send(form);
+    return r;
+  };
 
-  $.extend($, {
-    id: function(id) {
-      return d.getElementById(id);
-    },
-    ready: function(fc) {
-      var cb, _ref;
+  $.cache = (function() {
+    var reqs;
 
-      if ((_ref = d.readyState) === 'interactive' || _ref === 'complete') {
-        $.queueTask(fc);
+    reqs = {};
+    return function(url, cb) {
+      var req, rm;
+
+      if (req = reqs[url]) {
+        if (req.readyState === 4) {
+          cb.call(req);
+        } else {
+          req.callbacks.push(cb);
+        }
         return;
       }
-      cb = function() {
-        $.off(d, 'DOMContentLoaded', cb);
-        return fc();
+      rm = function() {
+        return delete reqs[url];
       };
-      return $.on(d, 'DOMContentLoaded', cb);
-    },
-    formData: function(form) {
-      var fd, key, val;
+      req = $.ajax(url, {
+        onload: function(e) {
+          var _i, _len, _ref;
 
-      if (form instanceof HTMLFormElement) {
-        return new FormData(form);
-      }
-      fd = new FormData();
-      for (key in form) {
-        val = form[key];
-        if (!val) {
-          continue;
-        }
-        if (val.size && val.name) {
-          fd.append(key, val, val.name);
-        } else {
-          fd.append(key, val);
-        }
-      }
-      return fd;
-    },
-    ajax: function(url, callbacks, opts) {
-      var cred, form, headers, key, r, sync, type, upCallbacks, val;
-
-      if (opts == null) {
-        opts = {};
-      }
-      type = opts.type, cred = opts.cred, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form, sync = opts.sync;
-      r = new XMLHttpRequest();
-      r.overrideMimeType('text/html');
-      type || (type = form && 'post' || 'get');
-      r.open(type, url, !sync);
-      for (key in headers) {
-        val = headers[key];
-        r.setRequestHeader(key, val);
-      }
-      $.extend(r, callbacks);
-      $.extend(r.upload, upCallbacks);
-      r.withCredentials = cred;
-      r.send(form);
-      return r;
-    },
-    cache: (function() {
-      var reqs;
-
-      reqs = {};
-      return function(url, cb) {
-        var req, rm;
-
-        if (req = reqs[url]) {
-          if (req.readyState === 4) {
-            cb.call(req);
-          } else {
-            req.callbacks.push(cb);
+          _ref = this.callbacks;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            cb = _ref[_i];
+            cb.call(this, e);
           }
-          return;
-        }
-        rm = function() {
-          return delete reqs[url];
-        };
-        req = $.ajax(url, {
-          onload: function(e) {
-            var _i, _len, _ref;
-
-            _ref = this.callbacks;
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              cb = _ref[_i];
-              cb.call(this, e);
-            }
-            return delete this.callbacks;
-          },
-          onabort: rm,
-          onerror: rm
-        });
-        req.callbacks = [cb];
-        return reqs[url] = req;
-      };
-    })(),
-    cb: {
-      checked: function() {
-        $.set(this.name, this.checked);
-        return Conf[this.name] = this.checked;
-      },
-      value: function() {
-        $.set(this.name, this.value.trim());
-        return Conf[this.name] = this.value;
-      }
-    },
-    asap: function(test, cb) {
-      if (test()) {
-        return cb();
-      } else {
-        return setTimeout($.asap, 25, test, cb);
-      }
-    },
-    addStyle: function(css, id) {
-      var style;
-
-      style = $.el('style', {
-        id: id,
-        textContent: css
+          return delete this.callbacks;
+        },
+        onabort: rm,
+        onerror: rm
       });
-      $.asap((function() {
-        return d.head;
-      }), function() {
-        return $.add(d.head, style);
-      });
-      return style;
-    },
-    x: function(path, root) {
-      root || (root = d.body);
-      return d.evaluate(path, root, null, 8, null).singleNodeValue;
-    },
-    X: function(path, root) {
-      root || (root = d.body);
-      return d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
-    },
-    addClass: function(el, className) {
-      return el.classList.add(className);
-    },
-    rmClass: function(el, className) {
-      return el.classList.remove(className);
-    },
-    toggleClass: function(el, className) {
-      return el.classList.toggle(className);
-    },
-    hasClass: function(el, className) {
-      return el.classList.contains(className);
-    },
-    rm: (function() {
-      if ('remove' in Element.prototype) {
-        return function(el) {
-          return el.remove();
-        };
-      } else {
-        return function(el) {
-          var _ref;
+      req.callbacks = [cb];
+      return reqs[url] = req;
+    };
+  })();
 
-          return (_ref = el.parentNode) != null ? _ref.removeChild(el) : void 0;
-        };
-      }
-    })(),
-    rmAll: function(root) {
-      var node;
-
-      while (node = root.firstChild) {
-        root.removeChild(node);
-      }
+  $.cb = {
+    checked: function() {
+      $.set(this.name, this.checked);
+      return Conf[this.name] = this.checked;
     },
-    tn: function(s) {
-      return d.createTextNode(s);
-    },
-    frag: function() {
-      return d.createDocumentFragment();
-    },
-    nodes: function(nodes) {
-      var frag, node, _i, _len;
-
-      if (!(nodes instanceof Array)) {
-        return nodes;
-      }
-      frag = $.frag();
-      for (_i = 0, _len = nodes.length; _i < _len; _i++) {
-        node = nodes[_i];
-        frag.appendChild(node);
-      }
-      return frag;
-    },
-    add: function(parent, el) {
-      return parent.appendChild($.nodes(el));
-    },
-    prepend: function(parent, el) {
-      return parent.insertBefore($.nodes(el), parent.firstChild);
-    },
-    after: function(root, el) {
-      return root.parentNode.insertBefore($.nodes(el), root.nextSibling);
-    },
-    before: function(root, el) {
-      return root.parentNode.insertBefore($.nodes(el), root);
-    },
-    replace: function(root, el) {
-      return root.parentNode.replaceChild($.nodes(el), root);
-    },
-    el: function(tag, properties) {
-      var el;
-
-      el = d.createElement(tag);
-      if (properties) {
-        $.extend(el, properties);
-      }
-      return el;
-    },
-    on: function(el, events, handler) {
-      var event, _i, _len, _ref;
-
-      _ref = events.split(' ');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        event = _ref[_i];
-        el.addEventListener(event, handler, false);
-      }
-    },
-    off: function(el, events, handler) {
-      var event, _i, _len, _ref;
-
-      _ref = events.split(' ');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        event = _ref[_i];
-        el.removeEventListener(event, handler, false);
-      }
-    },
-    event: function(event, detail, root) {
-      if (root == null) {
-        root = d;
-      }
-      return root.dispatchEvent(new CustomEvent(event, {
-        bubbles: true,
-        detail: detail
-      }));
-    },
-    open: (function() {
-      if (typeof GM_openInTab !== "undefined" && GM_openInTab !== null) {
-        return function(URL) {
-          var a;
-
-          a = $.el('a', {
-            href: URL
-          });
-          return GM_openInTab(a.href);
-        };
-      } else {
-        return function(URL) {
-          return window.open(URL, '_blank');
-        };
-      }
-    })(),
-    debounce: function(wait, fn) {
-      var args, exec, that, timeout;
-
-      timeout = null;
-      that = null;
-      args = null;
-      exec = function() {
-        fn.apply(that, args);
-        return timeout = null;
-      };
-      return function() {
-        args = arguments;
-        that = this;
-        if (timeout) {
-          clearTimeout(timeout);
-        } else {
-          exec();
-        }
-        return timeout = setTimeout(exec, wait);
-      };
-    },
-    queueTask: (function() {
-      var execTask, taskChannel, taskQueue;
-
-      taskQueue = [];
-      execTask = function() {
-        var args, func, task;
-
-        task = taskQueue.shift();
-        func = task[0];
-        args = Array.prototype.slice.call(task, 1);
-        return func.apply(func, args);
-      };
-      if (window.MessageChannel) {
-        taskChannel = new MessageChannel();
-        taskChannel.port1.onmessage = execTask;
-        return function() {
-          taskQueue.push(arguments);
-          return taskChannel.port2.postMessage(null);
-        };
-      } else {
-        return function() {
-          taskQueue.push(arguments);
-          return setTimeout(execTask, 0);
-        };
-      }
-    })(),
-    globalEval: function(code) {
-      var script;
-
-      script = $.el('script', {
-        textContent: code
-      });
-      $.add(d.head || doc, script);
-      return $.rm(script);
-    },
-    bytesToString: function(size) {
-      var unit;
-
-      unit = 0;
-      while (size >= 1024) {
-        size /= 1024;
-        unit++;
-      }
-      size = unit > 1 ? Math.round(size * 100) / 100 : Math.round(size);
-      return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
-    },
-    minmax: function(value, min, max) {
-      return (value < min ? min : value > max ? max : value);
-    },
-    syncing: {},
-    sync: (function() {
-      window.addEventListener('storage', function(e) {
-        var cb;
-
-        if (cb = $.syncing[e.key]) {
-          return cb(JSON.parse(e.newValue));
-        }
-      }, false);
-      return function(key, cb) {
-        return $.syncing[g.NAMESPACE + key] = cb;
-      };
-    })(),
-    item: function(key, val) {
-      var item;
-
-      item = {};
-      item[key] = val;
-      return item;
+    value: function() {
+      $.set(this.name, this.value.trim());
+      return Conf[this.name] = this.value;
     }
-  });
+  };
+
+  $.asap = function(test, cb) {
+    if (test()) {
+      return cb();
+    } else {
+      return setTimeout($.asap, 25, test, cb);
+    }
+  };
+
+  $.addStyle = function(css, id) {
+    var style;
+
+    style = $.el('style', {
+      id: id,
+      textContent: css
+    });
+    $.asap((function() {
+      return d.head;
+    }), function() {
+      return $.add(d.head, style);
+    });
+    return style;
+  };
+
+  $.x = function(path, root) {
+    root || (root = d.body);
+    return d.evaluate(path, root, null, 8, null).singleNodeValue;
+  };
+
+  $.X = function(path, root) {
+    root || (root = d.body);
+    return d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+  };
+
+  $.addClass = function(el, className) {
+    return el.classList.add(className);
+  };
+
+  $.rmClass = function(el, className) {
+    return el.classList.remove(className);
+  };
+
+  $.toggleClass = function(el, className) {
+    return el.classList.toggle(className);
+  };
+
+  $.hasClass = function(el, className) {
+    return el.classList.contains(className);
+  };
+
+  $.rm = (function() {
+    if ('remove' in Element.prototype) {
+      return function(el) {
+        return el.remove();
+      };
+    } else {
+      return function(el) {
+        var _ref;
+
+        return (_ref = el.parentNode) != null ? _ref.removeChild(el) : void 0;
+      };
+    }
+  })();
+
+  $.rmAll = function(root) {
+    var node;
+
+    while (node = root.firstChild) {
+      root.removeChild(node);
+    }
+  };
+
+  $.tn = function(s) {
+    return d.createTextNode(s);
+  };
+
+  $.frag = function() {
+    return d.createDocumentFragment();
+  };
+
+  $.nodes = function(nodes) {
+    var frag, node, _i, _len;
+
+    if (!(nodes instanceof Array)) {
+      return nodes;
+    }
+    frag = $.frag();
+    for (_i = 0, _len = nodes.length; _i < _len; _i++) {
+      node = nodes[_i];
+      frag.appendChild(node);
+    }
+    return frag;
+  };
+
+  $.add = function(parent, el) {
+    return parent.appendChild($.nodes(el));
+  };
+
+  $.prepend = function(parent, el) {
+    return parent.insertBefore($.nodes(el), parent.firstChild);
+  };
+
+  $.after = function(root, el) {
+    return root.parentNode.insertBefore($.nodes(el), root.nextSibling);
+  };
+
+  $.before = function(root, el) {
+    return root.parentNode.insertBefore($.nodes(el), root);
+  };
+
+  $.replace = function(root, el) {
+    return root.parentNode.replaceChild($.nodes(el), root);
+  };
+
+  $.el = function(tag, properties) {
+    var el;
+
+    el = d.createElement(tag);
+    if (properties) {
+      $.extend(el, properties);
+    }
+    return el;
+  };
+
+  $.on = function(el, events, handler) {
+    var event, _i, _len, _ref;
+
+    _ref = events.split(' ');
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      event = _ref[_i];
+      el.addEventListener(event, handler, false);
+    }
+  };
+
+  $.off = function(el, events, handler) {
+    var event, _i, _len, _ref;
+
+    _ref = events.split(' ');
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      event = _ref[_i];
+      el.removeEventListener(event, handler, false);
+    }
+  };
+
+  $.event = function(event, detail, root) {
+    if (root == null) {
+      root = d;
+    }
+    return root.dispatchEvent(new CustomEvent(event, {
+      bubbles: true,
+      detail: detail
+    }));
+  };
+
+  $.open = function(URL) {
+    return window.open(URL, '_blank');
+  };
+
+  $.debounce = function(wait, fn) {
+    var args, exec, lastCall, that, timeout;
+
+    lastCall = 0;
+    timeout = null;
+    that = null;
+    args = null;
+    exec = function() {
+      lastCall = Date.now();
+      return fn.apply(that, args);
+    };
+    return function() {
+      args = arguments;
+      that = this;
+      if (lastCall < Date.now() - wait) {
+        return exec();
+      }
+      clearTimeout(timeout);
+      return timeout = setTimeout(exec, wait);
+    };
+  };
+
+  $.queueTask = (function() {
+    var execTask, taskChannel, taskQueue;
+
+    taskQueue = [];
+    execTask = function() {
+      var args, func, task;
+
+      task = taskQueue.shift();
+      func = task[0];
+      args = Array.prototype.slice.call(task, 1);
+      return func.apply(func, args);
+    };
+    if (window.MessageChannel) {
+      taskChannel = new MessageChannel();
+      taskChannel.port1.onmessage = execTask;
+      return function() {
+        taskQueue.push(arguments);
+        return taskChannel.port2.postMessage(null);
+      };
+    } else {
+      return function() {
+        taskQueue.push(arguments);
+        return setTimeout(execTask, 0);
+      };
+    }
+  })();
+
+  $.globalEval = function(code) {
+    var script;
+
+    script = $.el('script', {
+      textContent: code
+    });
+    $.add(d.head || doc, script);
+    return $.rm(script);
+  };
+
+  $.bytesToString = function(size) {
+    var unit;
+
+    unit = 0;
+    while (size >= 1024) {
+      size /= 1024;
+      unit++;
+    }
+    size = unit > 1 ? Math.round(size * 100) / 100 : Math.round(size);
+    return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
+  };
+
+  $.minmax = function(value, min, max) {
+    return (value < min ? min : value > max ? max : value);
+  };
+
+  $.syncing = {};
+
+  $.sync = (function() {
+    window.addEventListener('storage', function(e) {
+      var cb;
+
+      if (cb = $.syncing[e.key]) {
+        return cb(JSON.parse(e.newValue));
+      }
+    }, false);
+    return function(key, cb) {
+      return $.syncing[g.NAMESPACE + key] = cb;
+    };
+  })();
+
+  $.item = function(key, val) {
+    var item;
+
+    item = {};
+    item[key] = val;
+    return item;
+  };
 
   (function() {
     var scriptStorage;
@@ -2898,7 +2994,7 @@
         return cb(items);
       });
     };
-    return $.set = (function() {
+    $.set = (function() {
       var set;
 
       set = function(key, val) {
@@ -2924,157 +3020,11 @@
     })();
   })();
 
-  Build = {
-    spoilerRange: {},
-    shortFilename: function(filename, isReply) {
-      var threshold;
-
-      threshold = isReply ? 30 : 40;
-      if (filename.length - 4 > threshold) {
-        return "" + filename.slice(0, threshold - 5) + "(...)." + filename.slice(-3);
-      } else {
-        return filename;
-      }
-    },
-    postFromObject: function(data, boardID) {
-      var o;
-
-      o = {
-        postID: data.no,
-        threadID: data.resto || data.no,
-        boardID: boardID,
-        name: data.name,
-        capcode: data.capcode,
-        tripcode: data.trip,
-        uniqueID: data.id,
-        email: data.email ? encodeURI(data.email.replace(/&quot;/g, '"')) : '',
-        subject: data.sub,
-        flagCode: data.country,
-        flagName: data.country_name,
-        date: data.now,
-        dateUTC: data.time,
-        comment: data.com,
-        isSticky: !!data.sticky,
-        isClosed: !!data.closed
-      };
-      if (data.ext || data.filedeleted) {
-        o.file = {
-          name: data.filename + data.ext,
-          timestamp: "" + data.tim + data.ext,
-          url: "//images.4chan.org/" + boardID + "/src/" + data.tim + data.ext,
-          height: data.h,
-          width: data.w,
-          MD5: data.md5,
-          size: data.fsize,
-          turl: "//thumbs.4chan.org/" + boardID + "/thumb/" + data.tim + "s.jpg",
-          theight: data.tn_h,
-          twidth: data.tn_w,
-          isSpoiler: !!data.spoiler,
-          isDeleted: !!data.filedeleted
-        };
-      }
-      return Build.post(o);
-    },
-    post: function(o, isArchived) {
-      /*
-      This function contains code from 4chan-JS (https://github.com/4chan/4chan-JS).
-      @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
-      */
-
-      var a, boardID, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
-
-      postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
-      isOP = postID === threadID;
-      staticPath = '//static.4chan.org';
-      if (email) {
-        emailStart = '<a href="mailto:' + email + '" class="useremail">';
-        emailEnd = '</a>';
-      } else {
-        emailStart = '';
-        emailEnd = '';
-      }
-      subject = "<span class=subject>" + (subject || '') + "</span>";
-      userID = !capcode && uniqueID ? (" <span class='posteruid id_" + uniqueID + "'>(ID: ") + ("<span class=hand title='Highlight posts by this ID'>" + uniqueID + "</span>)</span> ") : '';
-      switch (capcode) {
-        case 'admin':
-        case 'admin_highlight':
-          capcodeClass = " capcodeAdmin";
-          capcodeStart = " <strong class='capcode hand id_admin'" + "title='Highlight posts by the Administrator'>## Admin</strong>";
-          capcode = (" <img src='" + staticPath + "/image/adminicon.gif' ") + "alt='This user is the 4chan Administrator.' " + "title='This user is the 4chan Administrator.' class=identityIcon>";
-          break;
-        case 'mod':
-          capcodeClass = " capcodeMod";
-          capcodeStart = " <strong class='capcode hand id_mod' " + "title='Highlight posts by Moderators'>## Mod</strong>";
-          capcode = (" <img src='" + staticPath + "/image/modicon.gif' ") + "alt='This user is a 4chan Moderator.' " + "title='This user is a 4chan Moderator.' class=identityIcon>";
-          break;
-        case 'developer':
-          capcodeClass = " capcodeDeveloper";
-          capcodeStart = " <strong class='capcode hand id_developer' " + "title='Highlight posts by Developers'>## Developer</strong>";
-          capcode = (" <img src='" + staticPath + "/image/developericon.gif' ") + "alt='This user is a 4chan Developer.' " + "title='This user is a 4chan Developer.' class=identityIcon>";
-          break;
-        default:
-          capcodeClass = '';
-          capcodeStart = '';
-          capcode = '';
-      }
-      flag = flagCode ? (" <img src='" + staticPath + "/image/country/" + (boardID === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
-      if (file != null ? file.isDeleted : void 0) {
-        fileHTML = isOP ? ("<div id=f" + postID + " class=file><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted.gif' alt='File deleted.' class='fileDeleted retina'>") + "</span></div>" : ("<div id=f" + postID + " class=file><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted-res.gif' alt='File deleted.' class='fileDeletedRes retina'>") + "</span></div>";
-      } else if (file) {
-        ext = file.name.slice(-3);
-        if (!file.twidth && !file.theight && ext === 'gif') {
-          file.twidth = file.width;
-          file.theight = file.height;
-        }
-        fileSize = $.bytesToString(file.size);
-        fileThumb = file.turl;
-        if (file.isSpoiler) {
-          fileSize = "Spoiler Image, " + fileSize;
-          if (!isArchived) {
-            fileThumb = '//static.4chan.org/image/spoiler';
-            if (spoilerRange = Build.spoilerRange[boardID]) {
-              fileThumb += ("-" + boardID) + Math.floor(1 + spoilerRange * Math.random());
-            }
-            fileThumb += '.png';
-            file.twidth = file.theight = 100;
-          }
-        }
-        if (boardID.ID !== 'f') {
-          imgSrc = ("<a class='fileThumb" + (file.isSpoiler ? ' imgspoiler' : '') + "' href='" + file.url + "' target=_blank>") + ("<img src='" + fileThumb + "' alt='" + fileSize + "' data-md5=" + file.MD5 + " style='height: " + file.theight + "px; width: " + file.twidth + "px;'></a>");
-        }
-        a = $.el('a', {
-          innerHTML: file.name
-        });
-        filename = a.textContent.replace(/%22/g, '"');
-        a.textContent = Build.shortFilename(filename);
-        shortFilename = a.innerHTML;
-        a.textContent = filename;
-        filename = a.innerHTML.replace(/'/g, '&apos;');
-        fileDims = ext === 'pdf' ? 'PDF' : "" + file.width + "x" + file.height;
-        fileInfo = ("<span class=fileText id=fT" + postID + (file.isSpoiler ? " title='" + filename + "'" : '') + ">File: <a href='" + file.url + "' target=_blank>" + file.timestamp + "</a>") + ("-(" + fileSize + ", " + fileDims + (file.isSpoiler ? '' : ", <span title='" + filename + "'>" + shortFilename + "</span>")) + ")</span>";
-        fileHTML = "<div id=f" + postID + " class=file><div class=fileInfo>" + fileInfo + "</div>" + imgSrc + "</div>";
-      } else {
-        fileHTML = '';
-      }
-      tripcode = tripcode ? " <span class=postertrip>" + tripcode + "</span>" : '';
-      sticky = isSticky ? ' <img src=//static.4chan.org/image/sticky.gif alt=Sticky title=Sticky class=stickyIcon>' : '';
-      closed = isClosed ? ' <img src=//static.4chan.org/image/closed.gif alt=Closed title=Closed class=closedIcon>' : '';
-      container = $.el('div', {
-        id: "pc" + postID,
-        className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote> ") + '</div>'
-      });
-      _ref = $$('.quotelink', container);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quote = _ref[_i];
-        href = quote.getAttribute('href');
-        if (href[0] === '/') {
-          continue;
-        }
-        quote.href = "/" + boardID + "/res/" + href;
-      }
-      return container;
+  $$ = function(selector, root) {
+    if (root == null) {
+      root = d.body;
     }
+    return __slice.call(root.querySelectorAll(selector));
   };
 
   Board = (function() {
@@ -3292,7 +3242,7 @@
       if (!(strong = $('strong.warning', this.nodes.info))) {
         strong = $.el('strong', {
           className: 'warning',
-          textContent: '[Deleted]'
+          textContent: this.isReply ? '[Deleted]' : '[Dead]'
         });
         $.after($('input', this.nodes.info), strong);
       }
@@ -3561,7 +3511,7 @@
         });
       }
       now = Date.now();
-      if ((this.data.lastChecked || 0) < now - 12 * $.HOUR) {
+      if ((this.data.lastChecked || 0) < now - 2 * $.HOUR) {
         this.data.lastChecked = now;
         for (boardID in this.data.boards) {
           this.ajaxClean(boardID);
@@ -3657,6 +3607,500 @@
     return Notification;
 
   })();
+
+  Polyfill = {
+    init: function() {
+      return Polyfill.visibility();
+    },
+    visibility: function() {
+      var event, prefix, property;
+
+      if ('visibilityState' in document || !(prefix = ('webkitVisibilityState' in document ? 'webkit' : 'mozVisibilityState' in document ? 'moz' : void 0))) {
+        return;
+      }
+      property = prefix + 'VisibilityState';
+      event = prefix + 'visibilitychange';
+      d.visibilityState = d[property];
+      d.hidden = d.visibilityState === 'hidden';
+      return $.on(d, event, function() {
+        d.visibilityState = d[property];
+        d.hidden = d.visibilityState === 'hidden';
+        return $.event('visibilitychange');
+      });
+    }
+  };
+
+  Header = {
+    init: function() {
+      var barFixedToggler, barPositionToggler, customNavToggler, editCustomNav, footerToggler, headerToggler,
+        _this = this;
+
+      this.menu = new UI.Menu('header');
+      this.menuButton = $.el('span', {
+        className: 'menu-button',
+        id: 'main-menu'
+      });
+      barFixedToggler = $.el('label', {
+        innerHTML: '<input type=checkbox name="Fixed Header"> Fixed Header'
+      });
+      headerToggler = $.el('label', {
+        innerHTML: '<input type=checkbox name="Header auto-hide"> Auto-hide header'
+      });
+      barPositionToggler = $.el('label', {
+        innerHTML: '<input type=checkbox name="Bottom header"> Bottom header'
+      });
+      customNavToggler = $.el('label', {
+        innerHTML: '<input type=checkbox name="Custom Board Navigation"> Custom board navigation'
+      });
+      footerToggler = $.el('label', {
+        innerHTML: "<input type=checkbox " + (!Conf['Bottom Board List'] ? 'checked' : '') + "> Hide bottom board list"
+      });
+      editCustomNav = $.el('a', {
+        textContent: 'Edit custom board navigation',
+        href: 'javascript:;'
+      });
+      this.barFixedToggler = barFixedToggler.firstElementChild;
+      this.barPositionToggler = barPositionToggler.firstElementChild;
+      this.headerToggler = headerToggler.firstElementChild;
+      this.footerToggler = footerToggler.firstElementChild;
+      this.customNavToggler = customNavToggler.firstElementChild;
+      $.on(this.menuButton, 'click', this.menuToggle);
+      $.on(this.barFixedToggler, 'change', this.toggleBarFixed);
+      $.on(this.barPositionToggler, 'change', this.toggleBarPosition);
+      $.on(this.headerToggler, 'change', this.toggleBarVisibility);
+      $.on(this.footerToggler, 'change', this.toggleFooterVisibility);
+      $.on(this.customNavToggler, 'change', this.toggleCustomNav);
+      $.on(editCustomNav, 'click', this.editCustomNav);
+      this.setBarFixed(Conf['Fixed Header']);
+      this.setBarVisibility(Conf['Header auto-hide']);
+      $.sync('Fixed Header', Header.setBarFixed);
+      $.sync('Bottom Header', Header.setBarPosition);
+      $.sync('Header auto-hide', Header.setBarVisibility);
+      $.event('AddMenuEntry', {
+        type: 'header',
+        el: $.el('span', {
+          textContent: 'Header'
+        }),
+        order: 107,
+        subEntries: [
+          {
+            el: barFixedToggler
+          }, {
+            el: headerToggler
+          }, {
+            el: barPositionToggler
+          }, {
+            el: footerToggler
+          }, {
+            el: customNavToggler
+          }, {
+            el: editCustomNav
+          }
+        ]
+      });
+      $.on(window, 'load hashchange', Header.hashScroll);
+      $.on(d, 'CreateNotification', this.createNotification);
+      $.asap((function() {
+        return d.body;
+      }), function() {
+        if (!Main.isThisPageLegit()) {
+          return;
+        }
+        $.asap((function() {
+          return $.id('boardNavMobile') || d.readyState === 'complete';
+        }), Header.setBoardList);
+        $.prepend(d.body, _this.bar);
+        $.add(d.body, Header.hover);
+        return _this.setBarPosition(Conf['Bottom Header']);
+      });
+      return $.ready(function() {
+        var cs;
+
+        cs = $.id('settingsWindowLink');
+        cs.textContent = 'Catalog Settings';
+        if (g.VIEW === 'catalog') {
+          return _this.addShortcut(cs);
+        }
+      });
+    },
+    bar: $.el('div', {
+      id: 'header-bar'
+    }),
+    notify: $.el('div', {
+      id: 'notifications'
+    }),
+    shortcuts: $.el('span', {
+      id: 'shortcuts'
+    }),
+    hover: $.el('div', {
+      id: 'hoverUI'
+    }),
+    toggle: $.el('div', {
+      id: 'scroll-marker'
+    }),
+    setBoardList: function() {
+      var a, boardList, btn, fourchannav, fullBoardList, settings;
+
+      fourchannav = $.id('boardNavDesktop');
+      if (a = $("a[href*='/" + g.BOARD + "/']", fourchannav)) {
+        a.className = 'current';
+      }
+      boardList = $.el('span', {
+        id: 'board-list',
+        innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden>[<a href=javascript:; class='hide-board-list-button'> - </a>] " + fourchannav.innerHTML + "</span>"
+      });
+      fullBoardList = $('#full-board-list', boardList);
+      btn = $('.hide-board-list-button', fullBoardList);
+      $.on(btn, 'click', Header.toggleBoardList);
+      $.rm($('#navtopright', fullBoardList));
+      settings = $.id('navtopright');
+      $.prepend(d.body, settings);
+      $.add(settings, Header.menuButton);
+      $.add(boardList, fullBoardList);
+      $.add(Header.bar, [boardList, Header.shortcuts, Header.notify, Header.toggle]);
+      Header.setCustomNav(Conf['Custom Board Navigation']);
+      Header.generateBoardList(Conf['boardnav']);
+      $.sync('Custom Board Navigation', Header.setCustomNav);
+      return $.sync('boardnav', Header.generateBoardList);
+    },
+    generateBoardList: function(text) {
+      var as, list, nodes;
+
+      list = $('#custom-board-list', Header.bar);
+      $.rmAll(list);
+      if (!text) {
+        return;
+      }
+      as = $$('#full-board-list a', Header.bar);
+      nodes = text.match(/[\w@]+(-(all|title|replace|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map(function(t) {
+        var a, board, m, _i, _len;
+
+        if (/^[^\w@]/.test(t)) {
+          return $.tn(t);
+        }
+        if (/^toggle-all/.test(t)) {
+          a = $.el('a', {
+            className: 'show-board-list-button',
+            textContent: (t.match(/-text:"(.+)"/) || [null, '+'])[1],
+            href: 'javascript:;'
+          });
+          $.on(a, 'click', Header.toggleBoardList);
+          return a;
+        }
+        board = /^current/.test(t) ? g.BOARD.ID : t.match(/^[^-]+/)[0];
+        for (_i = 0, _len = as.length; _i < _len; _i++) {
+          a = as[_i];
+          if (a.textContent === board) {
+            a = a.cloneNode(true);
+            if (/-title/.test(t)) {
+              a.textContent = a.title;
+            } else if (/-replace/.test(t)) {
+              if ($.hasClass(a, 'current')) {
+                a.textContent = a.title;
+              }
+            } else if (/-full/.test(t)) {
+              a.textContent = "/" + board + "/ - " + a.title;
+            } else if (/-(index|catalog|text)/.test(t)) {
+              if (m = t.match(/-(index|catalog)/)) {
+                a.setAttribute('data-only', m[1]);
+                a.href = "//boards.4chan.org/" + board + "/";
+                if (m[1] === 'catalog') {
+                  a.href += 'catalog';
+                }
+              }
+              if (m = t.match(/-text:"(.+)"/)) {
+                a.textContent = m[1];
+              }
+            } else if (board === '@') {
+              $.addClass(a, 'navSmall');
+            }
+            return a;
+          }
+        }
+        return $.tn(t);
+      });
+      return $.add(list, nodes);
+    },
+    toggleBoardList: function() {
+      var bar, custom, full, showBoardList;
+
+      bar = Header.bar;
+      custom = $('#custom-board-list', bar);
+      full = $('#full-board-list', bar);
+      showBoardList = !full.hidden;
+      custom.hidden = !showBoardList;
+      return full.hidden = showBoardList;
+    },
+    setBarPosition: function(bottom) {
+      Header.barPositionToggler.checked = bottom;
+      if (bottom) {
+        $.rmClass(doc, 'top');
+        $.addClass(doc, 'bottom');
+        $.after(Header.bar, Header.notify);
+      } else {
+        $.rmClass(doc, 'bottom');
+        $.addClass(doc, 'top');
+        $.add(Header.bar, Header.notify);
+      }
+      return Style.padding();
+    },
+    toggleBarPosition: function() {
+      $.event('CloseMenu');
+      Header.setBarPosition(this.checked);
+      Conf['Bottom Header'] = this.checked;
+      return $.set('Bottom Header', this.checked);
+    },
+    setBarFixed: function(fixed) {
+      Header.barFixedToggler.checked = fixed;
+      if (fixed) {
+        $.addClass(doc, 'fixed');
+        return $.addClass(Header.bar, 'dialog');
+      } else {
+        $.rmClass(doc, 'fixed');
+        return $.rmClass(Header.bar, 'dialog');
+      }
+    },
+    toggleBarFixed: function() {
+      $.event('CloseMenu');
+      Header.setBarFixed(this.checked);
+      Conf['Fixed Header'] = this.checked;
+      return $.set('Fixed Header', this.checked);
+    },
+    setBarVisibility: function(hide) {
+      Header.headerToggler.checked = hide;
+      $.event('CloseMenu');
+      (hide ? $.addClass : $.rmClass)(Header.bar, 'autohide');
+      return (hide ? $.addClass : $.rmClass)(doc, 'autohide');
+    },
+    toggleBarVisibility: function(e) {
+      var hide, message;
+
+      if (e.type === 'mousedown' && e.button !== 0) {
+        return;
+      }
+      hide = this.nodeName === 'INPUT' ? this.checked : !$.hasClass(Header.bar, 'autohide');
+      Conf['Header auto-hide'] = hide;
+      $.set('Header auto-hide', hide);
+      Header.setBarVisibility(hide);
+      message = hide ? 'The header bar will automatically hide itself.' : 'The header bar will remain visible.';
+      return new Notification('info', message, 2);
+    },
+    setCustomNav: function(show) {
+      var btn, cust, full, _ref;
+
+      Header.customNavToggler.checked = show;
+      cust = $('#custom-board-list', Header.bar);
+      full = $('#full-board-list', Header.bar);
+      btn = $('.hide-board-list-button', full);
+      return _ref = show ? [false, true] : [true, false], cust.hidden = _ref[0], full.hidden = _ref[1], _ref;
+    },
+    toggleCustomNav: function() {
+      $.cb.checked.call(this);
+      return Header.setCustomNav(this.checked);
+    },
+    editCustomNav: function() {
+      var settings;
+
+      Settings.open('Advanced');
+      settings = $.id('fourchanx-settings');
+      return $('input[name=boardnav]', settings).focus();
+    },
+    hashScroll: function() {
+      var hash, post;
+
+      if (!((hash = this.location.hash) && (post = $.id(hash.slice(1))))) {
+        return;
+      }
+      if ((Get.postFromRoot(post)).isHidden) {
+        return;
+      }
+      return Header.scrollToPost(post);
+    },
+    scrollToPost: function(post) {
+      var headRect, top;
+
+      top = post.getBoundingClientRect().top;
+      if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
+        headRect = Header.bar.getBoundingClientRect();
+        top += -headRect.top - headRect.height;
+      }
+      return ($.engine === 'webkit' ? d.body : doc).scrollTop += top;
+    },
+    addShortcut: function(el) {
+      var shortcut;
+
+      shortcut = $.el('span', {
+        className: 'shortcut'
+      });
+      $.add(shortcut, [$.tn(' ['), el, $.tn(']')]);
+      return $.prepend(Header.shortcuts, shortcut);
+    },
+    menuToggle: function(e) {
+      return Header.menu.toggle(e, this, g);
+    },
+    createNotification: function(e) {
+      var cb, content, lifetime, notif, type, _ref;
+
+      _ref = e.detail, type = _ref.type, content = _ref.content, lifetime = _ref.lifetime, cb = _ref.cb;
+      notif = new Notification(type, content, lifetime);
+      if (cb) {
+        return cb(notif);
+      }
+    }
+  };
+
+  Build = {
+    spoilerRange: {},
+    shortFilename: function(filename, isReply) {
+      var threshold;
+
+      threshold = isReply ? 30 : 40;
+      if (filename.length - 4 > threshold) {
+        return "" + filename.slice(0, threshold - 5) + "(...)." + filename.slice(-3);
+      } else {
+        return filename;
+      }
+    },
+    postFromObject: function(data, boardID) {
+      var o;
+
+      o = {
+        postID: data.no,
+        threadID: data.resto || data.no,
+        boardID: boardID,
+        name: data.name,
+        capcode: data.capcode,
+        tripcode: data.trip,
+        uniqueID: data.id,
+        email: data.email ? encodeURI(data.email.replace(/&quot;/g, '"')) : '',
+        subject: data.sub,
+        flagCode: data.country,
+        flagName: data.country_name,
+        date: data.now,
+        dateUTC: data.time,
+        comment: data.com,
+        isSticky: !!data.sticky,
+        isClosed: !!data.closed
+      };
+      if (data.ext || data.filedeleted) {
+        o.file = {
+          name: data.filename + data.ext,
+          timestamp: "" + data.tim + data.ext,
+          url: "//images.4chan.org/" + boardID + "/src/" + data.tim + data.ext,
+          height: data.h,
+          width: data.w,
+          MD5: data.md5,
+          size: data.fsize,
+          turl: "//thumbs.4chan.org/" + boardID + "/thumb/" + data.tim + "s.jpg",
+          theight: data.tn_h,
+          twidth: data.tn_w,
+          isSpoiler: !!data.spoiler,
+          isDeleted: !!data.filedeleted
+        };
+      }
+      return Build.post(o);
+    },
+    post: function(o, isArchived) {
+      /*
+      This function contains code from 4chan-JS (https://github.com/4chan/4chan-JS).
+      @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
+      */
+
+      var a, boardID, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
+
+      postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
+      isOP = postID === threadID;
+      staticPath = '//static.4chan.org';
+      if (email) {
+        emailStart = '<a href="mailto:' + email + '" class="useremail">';
+        emailEnd = '</a>';
+      } else {
+        emailStart = '';
+        emailEnd = '';
+      }
+      subject = "<span class=subject>" + (subject || '') + "</span>";
+      userID = !capcode && uniqueID ? (" <span class='posteruid id_" + uniqueID + "'>(ID: ") + ("<span class=hand title='Highlight posts by this ID'>" + uniqueID + "</span>)</span> ") : '';
+      switch (capcode) {
+        case 'admin':
+        case 'admin_highlight':
+          capcodeClass = " capcodeAdmin";
+          capcodeStart = " <strong class='capcode hand id_admin'" + "title='Highlight posts by the Administrator'>## Admin</strong>";
+          capcode = (" <img src='" + staticPath + "/image/adminicon.gif' ") + "alt='This user is the 4chan Administrator.' " + "title='This user is the 4chan Administrator.' class=identityIcon>";
+          break;
+        case 'mod':
+          capcodeClass = " capcodeMod";
+          capcodeStart = " <strong class='capcode hand id_mod' " + "title='Highlight posts by Moderators'>## Mod</strong>";
+          capcode = (" <img src='" + staticPath + "/image/modicon.gif' ") + "alt='This user is a 4chan Moderator.' " + "title='This user is a 4chan Moderator.' class=identityIcon>";
+          break;
+        case 'developer':
+          capcodeClass = " capcodeDeveloper";
+          capcodeStart = " <strong class='capcode hand id_developer' " + "title='Highlight posts by Developers'>## Developer</strong>";
+          capcode = (" <img src='" + staticPath + "/image/developericon.gif' ") + "alt='This user is a 4chan Developer.' " + "title='This user is a 4chan Developer.' class=identityIcon>";
+          break;
+        default:
+          capcodeClass = '';
+          capcodeStart = '';
+          capcode = '';
+      }
+      flag = flagCode ? (" <img src='" + staticPath + "/image/country/" + (boardID === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
+      if (file != null ? file.isDeleted : void 0) {
+        fileHTML = isOP ? ("<div id=f" + postID + " class=file><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted.gif' alt='File deleted.' class='fileDeleted retina'>") + "</span></div>" : ("<div id=f" + postID + " class=file><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted-res.gif' alt='File deleted.' class='fileDeletedRes retina'>") + "</span></div>";
+      } else if (file) {
+        ext = file.name.slice(-3);
+        if (!file.twidth && !file.theight && ext === 'gif') {
+          file.twidth = file.width;
+          file.theight = file.height;
+        }
+        fileSize = $.bytesToString(file.size);
+        fileThumb = file.turl;
+        if (file.isSpoiler) {
+          fileSize = "Spoiler Image, " + fileSize;
+          if (!isArchived) {
+            fileThumb = '//static.4chan.org/image/spoiler';
+            if (spoilerRange = Build.spoilerRange[boardID]) {
+              fileThumb += ("-" + boardID) + Math.floor(1 + spoilerRange * Math.random());
+            }
+            fileThumb += '.png';
+            file.twidth = file.theight = 100;
+          }
+        }
+        if (boardID.ID !== 'f') {
+          imgSrc = ("<a class='fileThumb" + (file.isSpoiler ? ' imgspoiler' : '') + "' href='" + file.url + "' target=_blank>") + ("<img src='" + fileThumb + "' alt='" + fileSize + "' data-md5=" + file.MD5 + " style='height: " + file.theight + "px; width: " + file.twidth + "px;'></a>");
+        }
+        a = $.el('a', {
+          innerHTML: file.name
+        });
+        filename = a.textContent.replace(/%22/g, '"');
+        a.textContent = Build.shortFilename(filename);
+        shortFilename = a.innerHTML;
+        a.textContent = filename;
+        filename = a.innerHTML.replace(/'/g, '&apos;');
+        fileDims = ext === 'pdf' ? 'PDF' : "" + file.width + "x" + file.height;
+        fileInfo = ("<span class=fileText id=fT" + postID + (file.isSpoiler ? " title='" + filename + "'" : '') + ">File: <a href='" + file.url + "' target=_blank>" + file.timestamp + "</a>") + ("-(" + fileSize + ", " + fileDims + (file.isSpoiler ? '' : ", <span title='" + filename + "'>" + shortFilename + "</span>")) + ")</span>";
+        fileHTML = "<div id=f" + postID + " class=file><div class=fileInfo>" + fileInfo + "</div>" + imgSrc + "</div>";
+      } else {
+        fileHTML = '';
+      }
+      tripcode = tripcode ? " <span class=postertrip>" + tripcode + "</span>" : '';
+      sticky = isSticky ? ' <img src=//static.4chan.org/image/sticky.gif alt=Sticky title=Sticky class=stickyIcon>' : '';
+      closed = isClosed ? ' <img src=//static.4chan.org/image/closed.gif alt=Closed title=Closed class=closedIcon>' : '';
+      container = $.el('div', {
+        id: "pc" + postID,
+        className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
+        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote> ") + '</div>'
+      });
+      _ref = $$('.quotelink', container);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        href = quote.getAttribute('href');
+        if (href[0] === '/') {
+          continue;
+        }
+        quote.href = "/" + boardID + "/res/" + href;
+      }
+      return container;
+    }
+  };
 
   Get = {
     threadExcerpt: function(thread) {
@@ -3911,28 +4355,6 @@
       });
       Main.callbackNodes(Post, [post]);
       return Get.insert(post, root, context);
-    }
-  };
-
-  Polyfill = {
-    init: function() {
-      return Polyfill.visibility();
-    },
-    visibility: function() {
-      var event, prefix, property;
-
-      if ('visibilityState' in document || !(prefix = ('webkitVisibilityState' in document ? 'webkit' : 'mozVisibilityState' in document ? 'moz' : void 0))) {
-        return;
-      }
-      property = prefix + 'VisibilityState';
-      event = prefix + 'visibilitychange';
-      d.visibilityState = d[property];
-      d.hidden = d.visibilityState === 'hidden';
-      return $.on(d, event, function() {
-        d.visibilityState = d[property];
-        d.hidden = d.visibilityState === 'hidden';
-        return $.event('visibilitychange');
-      });
     }
   };
 
@@ -4204,7 +4626,7 @@
 
     })();
     dragstart = function(e) {
-      var el, isTouching, o, rect, screenHeight, screenWidth;
+      var el, isTouching, o, rect, screenHeight, screenWidth, _ref;
 
       if (e.type === 'mousedown' && e.button !== 0) {
         return;
@@ -4228,6 +4650,7 @@
         screenWidth: screenWidth,
         isTouching: isTouching
       };
+      _ref = Conf['Header auto-hide'] ? [0, 0] : Conf['Bottom Header'] ? [0, Header.bar.getBoundingClientRect().height] : [Header.bar.getBoundingClientRect().height, 0], o.topBorder = _ref[0], o.bottomBorder = _ref[1];
       if (isTouching) {
         o.identifier = e.identifier;
         o.move = touchmove.bind(o);
@@ -4260,9 +4683,9 @@
       left = clientX - this.dx;
       left = left < 10 ? 0 : this.width - left < 10 ? null : left / this.screenWidth * 100 + '%';
       top = clientY - this.dy;
-      top = top < 10 ? 0 : this.height - top < 10 ? null : top / this.screenHeight * 100 + '%';
+      top = top < (10 + this.topBorder) ? this.topBorder + 'px' : this.height - top < (10 + this.bottomBorder) ? null : top / this.screenHeight * 100 + '%';
       right = left === null ? 0 : null;
-      bottom = top === null ? 0 : null;
+      bottom = top === null ? this.bottomBorder + 'px' : null;
       style = this.style;
       style.left = left;
       style.right = right;
@@ -4665,76 +5088,6 @@
     }
   };
 
-  Recursive = {
-    recursives: {},
-    init: function() {
-      if (g.VIEW === 'catalog') {
-        return;
-      }
-      return Post.prototype.callbacks.push({
-        name: 'Recursive',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var i, obj, quote, recursive, _i, _j, _len, _len1, _ref, _ref1;
-
-      if (this.isClone) {
-        return;
-      }
-      _ref = this.quotes;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quote = _ref[_i];
-        if (obj = Recursive.recursives[quote]) {
-          _ref1 = obj.recursives;
-          for (i = _j = 0, _len1 = _ref1.length; _j < _len1; i = ++_j) {
-            recursive = _ref1[i];
-            recursive.apply(null, [this].concat(__slice.call(obj.args[i])));
-          }
-        }
-      }
-    },
-    add: function() {
-      var args, obj, post, recursive, _base, _name;
-
-      recursive = arguments[0], post = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
-      obj = (_base = Recursive.recursives)[_name = post.fullID] || (_base[_name] = {
-        recursives: [],
-        args: []
-      });
-      obj.recursives.push(recursive);
-      return obj.args.push(args);
-    },
-    rm: function(recursive, post) {
-      var i, obj, rec, _i, _len, _ref;
-
-      if (!(obj = Recursive.recursives[post.fullID])) {
-        return;
-      }
-      _ref = obj.recursives;
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        rec = _ref[i];
-        if (rec === recursive) {
-          obj.recursives.splice(i, 1);
-          obj.args.splice(i, 1);
-        }
-      }
-    },
-    apply: function() {
-      var ID, args, fullID, post, recursive, _ref;
-
-      recursive = arguments[0], post = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
-      fullID = post.fullID;
-      _ref = g.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
-        if (post.quotes.contains(fullID)) {
-          recursive.apply(null, [post].concat(__slice.call(args)));
-        }
-      }
-    }
-  };
-
   PostHiding = {
     init: function() {
       if (g.VIEW === 'catalog' || !Conf['Reply Hiding Buttons'] && !Conf['Reply Hiding Link']) {
@@ -5013,28 +5366,71 @@
     }
   };
 
-  QuoteStrikeThrough = {
+  Recursive = {
+    recursives: {},
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Reply Hiding Buttons'] && !Conf['Reply Hiding Link'] && !Conf['Filter']) {
+      if (g.VIEW === 'catalog') {
         return;
       }
       return Post.prototype.callbacks.push({
-        name: 'Strike-through Quotes',
+        name: 'Recursive',
         cb: this.node
       });
     },
     node: function() {
-      var boardID, postID, quotelink, _i, _len, _ref, _ref1, _ref2;
+      var i, obj, quote, recursive, _i, _j, _len, _len1, _ref, _ref1;
 
       if (this.isClone) {
         return;
       }
-      _ref = this.nodes.quotelinks;
+      _ref = this.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quotelink = _ref[_i];
-        _ref1 = Get.postDataFromLink(quotelink), boardID = _ref1.boardID, postID = _ref1.postID;
-        if ((_ref2 = g.posts["" + boardID + "." + postID]) != null ? _ref2.isHidden : void 0) {
-          $.addClass(quotelink, 'filtered');
+        quote = _ref[_i];
+        if (obj = Recursive.recursives[quote]) {
+          _ref1 = obj.recursives;
+          for (i = _j = 0, _len1 = _ref1.length; _j < _len1; i = ++_j) {
+            recursive = _ref1[i];
+            recursive.apply(null, [this].concat(__slice.call(obj.args[i])));
+          }
+        }
+      }
+    },
+    add: function() {
+      var args, obj, post, recursive, _base, _name;
+
+      recursive = arguments[0], post = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
+      obj = (_base = Recursive.recursives)[_name = post.fullID] || (_base[_name] = {
+        recursives: [],
+        args: []
+      });
+      obj.recursives.push(recursive);
+      return obj.args.push(args);
+    },
+    rm: function(recursive, post) {
+      var i, obj, rec, _i, _len, _ref;
+
+      if (!(obj = Recursive.recursives[post.fullID])) {
+        return;
+      }
+      _ref = obj.recursives;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        rec = _ref[i];
+        if (rec === recursive) {
+          obj.recursives.splice(i, 1);
+          obj.args.splice(i, 1);
+        }
+      }
+    },
+    apply: function() {
+      var ID, args, fullID, post, recursive, _ref;
+
+      recursive = arguments[0], post = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
+      fullID = post.fullID;
+      _ref = g.posts;
+      for (ID in _ref) {
+        post = _ref[ID];
+        if (post.quotes.contains(fullID)) {
+          recursive.apply(null, [post].concat(__slice.call(args)));
         }
       }
     }
@@ -5267,455 +5663,646 @@
     }
   };
 
-  FappeTyme = {
+  QuoteBacklink = {
     init: function() {
-      var el;
+      var format;
 
-      if (!Conf['Fappe Tyme'] && (g.VIEW === 'catalog' || g.BOARD === 'f')) {
+      if (g.VIEW === 'catalog' || !Conf['Quote Backlinks']) {
         return;
       }
-      el = $.el('a', {
-        href: 'javascript:;',
-        id: 'fappeTyme',
-        title: 'Fappe Tyme'
-      });
-      $.on(el, 'click', FappeTyme.toggle);
-      $.asap((function() {
-        return $.id('boardNavMobile');
-      }), function() {
-        return $.add($.id('navtopright'), el);
-      });
-      return Post.prototype.callbacks.push({
-        name: 'Fappe Tyme',
-        cb: this.node
-      });
-    },
-    node: function() {
-      if (this.file) {
-        return;
-      }
-      return $.addClass(this.nodes.root, "noFile");
-    },
-    toggle: function() {
-      return $.toggleClass(doc, 'fappeTyme');
-    }
-  };
-
-  ImageExpand = {
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
-        return;
-      }
-      this.EAI = $.el('a', {
-        id: 'img-controls',
-        className: 'expand-all-shortcut',
-        title: 'Expand All Images',
-        href: 'javascript:;'
-      });
-      $.on(this.EAI, 'click', ImageExpand.cb.toggleAll);
+      format = Conf['backlink'].replace(/%id/g, "' + id + '");
+      this.funk = Function('id', "return '" + format + "'");
+      this.containers = {};
       Post.prototype.callbacks.push({
-        name: 'Image Expansion',
-        cb: this.node
+        name: 'Quote Backlinking Part 1',
+        cb: this.firstNode
       });
-      return $.asap((function() {
-        return $.id('delform');
-      }), function() {
-        return $.prepend($.id('delform'), ImageExpand.EAI);
+      return Post.prototype.callbacks.push({
+        name: 'Quote Backlinking Part 2',
+        cb: this.secondNode
       });
     },
-    node: function() {
-      var thumb, _ref;
+    firstNode: function() {
+      var a, clone, container, containers, link, post, quote, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
 
-      if (!((_ref = this.file) != null ? _ref.isImage : void 0)) {
+      if (this.isClone || !this.quotes.length) {
         return;
       }
-      thumb = this.file.thumb;
-      $.on(thumb.parentNode, 'click', ImageExpand.cb.toggle);
-      if (this.isClone && $.hasClass(thumb, 'expanding')) {
-        ImageExpand.contract(this);
-        ImageExpand.expand(this);
-        return;
-      }
-      if (ImageExpand.on && !this.isHidden) {
-        return ImageExpand.expand(this);
-      }
-    },
-    cb: {
-      toggle: function(e) {
-        if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
-          return;
-        }
-        e.preventDefault();
-        return ImageExpand.toggle(Get.postFromNode(this));
-      },
-      toggleAll: function() {
-        var ID, file, func, post, _i, _len, _ref, _ref1;
-
-        $.event('CloseMenu');
-        if (ImageExpand.on = $.hasClass(ImageExpand.EAI, 'expand-all-shortcut')) {
-          ImageExpand.EAI.className = 'contract-all-shortcut';
-          ImageExpand.EAI.title = 'Contract All Images';
-          func = ImageExpand.expand;
-        } else {
-          ImageExpand.EAI.className = 'expand-all-shortcut';
-          ImageExpand.EAI.title = 'Expand All Images';
-          func = ImageExpand.contract;
-        }
-        _ref = g.posts;
-        for (ID in _ref) {
-          post = _ref[ID];
-          _ref1 = [post].concat(post.clones);
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            post = _ref1[_i];
-            file = post.file;
-            if (!(file && file.isImage && doc.contains(post.nodes.root))) {
-              continue;
-            }
-            if (ImageExpand.on && (!Conf['Expand spoilers'] && file.isSpoiler || Conf['Expand from here'] && file.thumb.getBoundingClientRect().top < 0)) {
-              continue;
-            }
-            $.queueTask(func, post);
+      a = $.el('a', {
+        href: "/" + this.board + "/res/" + this.thread + "#p" + this,
+        className: this.isHidden ? 'filtered backlink' : 'backlink',
+        textContent: (QuoteBacklink.funk(this.ID)) + (Conf['Mark Quotes of You'] && this.info.yours ? QuoteYou.text : '')
+      });
+      _ref = this.quotes;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        containers = [QuoteBacklink.getContainer(quote)];
+        if ((post = g.posts[quote]) && post.nodes.backlinkContainer) {
+          _ref1 = post.clones;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            clone = _ref1[_j];
+            containers.push(clone.nodes.backlinkContainer);
           }
         }
-      },
-      setFitness: function() {
-        var checked;
-
-        checked = this.checked;
-        (checked ? $.addClass : $.rmClass)(doc, this.name.toLowerCase().replace(/\s+/g, '-'));
-        if (this.name !== 'Fit height') {
-          return;
-        }
-        if (checked) {
-          $.on(window, 'resize', ImageExpand.resize);
-          if (!ImageExpand.style) {
-            ImageExpand.style = $.addStyle(null);
+        for (_k = 0, _len2 = containers.length; _k < _len2; _k++) {
+          container = containers[_k];
+          link = a.cloneNode(true);
+          if (Conf['Quote Previewing']) {
+            $.on(link, 'mouseover', QuotePreview.mouseover);
           }
-          return ImageExpand.resize();
-        } else {
-          return $.off(window, 'resize', ImageExpand.resize);
-        }
-      }
-    },
-    toggle: function(post) {
-      var headRect, rect, root, thumb, top;
-
-      thumb = post.file.thumb;
-      if (!(post.file.isExpanded || $.hasClass(thumb, 'expanding'))) {
-        ImageExpand.expand(post);
-        return;
-      }
-      ImageExpand.contract(post);
-      rect = post.nodes.root.getBoundingClientRect();
-      if (!(rect.top <= 0 || rect.left <= 0)) {
-        return;
-      }
-      headRect = Header.bar.getBoundingClientRect();
-      top = rect.top - headRect.top - headRect.height;
-      root = doc;
-      if (rect.top < 0) {
-        root.scrollTop += top;
-      }
-      if (rect.left < 0) {
-        return root.scrollLeft = 0;
-      }
-    },
-    contract: function(post) {
-      $.rmClass(post.nodes.root, 'expanded-image');
-      $.rmClass(post.file.thumb, 'expanding');
-      return post.file.isExpanded = false;
-    },
-    expand: function(post, src) {
-      var img, thumb;
-
-      thumb = post.file.thumb;
-      if (post.isHidden || post.file.isExpanded || $.hasClass(thumb, 'expanding')) {
-        return;
-      }
-      $.addClass(thumb, 'expanding');
-      if (post.file.fullImage) {
-        $.asap((function() {
-          return post.file.fullImage.naturalHeight;
-        }), function() {
-          return ImageExpand.completeExpand(post);
-        });
-        return;
-      }
-      post.file.fullImage = img = $.el('img', {
-        className: 'full-image',
-        src: src || post.file.URL
-      });
-      $.on(img, 'error', ImageExpand.error);
-      $.asap((function() {
-        return post.file.fullImage.naturalHeight;
-      }), function() {
-        return ImageExpand.completeExpand(post);
-      });
-      return $.after(thumb, img);
-    },
-    completeExpand: function(post) {
-      var prev, thumb;
-
-      thumb = post.file.thumb;
-      if (!$.hasClass(thumb, 'expanding')) {
-        return;
-      }
-      post.file.isExpanded = true;
-      if (!post.nodes.root.parentNode) {
-        $.addClass(post.nodes.root, 'expanded-image');
-        $.rmClass(post.file.thumb, 'expanding');
-        return;
-      }
-      prev = post.nodes.root.getBoundingClientRect();
-      return $.queueTask(function() {
-        var curr, root;
-
-        $.addClass(post.nodes.root, 'expanded-image');
-        $.rmClass(post.file.thumb, 'expanding');
-        if (!(prev.top + prev.height <= 0)) {
-          return;
-        }
-        root = doc;
-        curr = post.nodes.root.getBoundingClientRect();
-        return root.scrollTop += curr.height - prev.height + curr.top - prev.top;
-      });
-    },
-    error: function() {
-      var URL, post, src, timeoutID;
-
-      post = Get.postFromNode(this);
-      $.rm(this);
-      delete post.file.fullImage;
-      if (!($.hasClass(post.file.thumb, 'expanding') || $.hasClass(post.nodes.root, 'expanded-image'))) {
-        return;
-      }
-      ImageExpand.contract(post);
-      src = this.src.split('/');
-      if (src[2] === 'images.4chan.org') {
-        if (URL = Redirect.image(src[3], src[5])) {
-          setTimeout(ImageExpand.expand, 10000, post, URL);
-          return;
-        }
-        if (g.DEAD || post.isDead || post.file.isDead) {
-          return;
-        }
-      }
-      timeoutID = setTimeout(ImageExpand.expand, 10000, post);
-      return $.ajax("//api.4chan.org/" + post.board + "/res/" + post.thread + ".json", {
-        onload: function() {
-          var postObj, _i, _len, _ref;
-
-          if (this.status !== 200) {
-            return;
+          if (Conf['Quote Inlining']) {
+            $.on(link, 'click', QuoteInline.toggle);
           }
-          _ref = JSON.parse(this.response).posts;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            postObj = _ref[_i];
-            if (postObj.no === post.ID) {
-              break;
-            }
-          }
-          if (postObj.no !== post.ID) {
-            clearTimeout(timeoutID);
-            return post.kill();
-          } else if (postObj.filedeleted) {
-            clearTimeout(timeoutID);
-            return post.kill(true);
-          }
+          $.add(container, [$.tn(' '), link]);
         }
-      });
-    },
-    menu: {
-      init: function() {
-        var conf, createSubEntry, el, key, subEntries, _ref;
-
-        if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
-          return;
-        }
-        el = $.el('span', {
-          textContent: 'Image Expansion',
-          className: 'image-expansion-link'
-        });
-        createSubEntry = ImageExpand.menu.createSubEntry;
-        subEntries = [];
-        _ref = Config.imageExpansion;
-        for (key in _ref) {
-          conf = _ref[key];
-          subEntries.push(createSubEntry(key, conf));
-        }
-        return $.event('AddMenuEntry', {
-          type: 'header',
-          el: el,
-          order: 105,
-          subEntries: subEntries
-        });
-      },
-      createSubEntry: function(type, config) {
-        var input, label;
-
-        label = $.el('label', {
-          innerHTML: "<input type=checkbox name='" + type + "'> " + type
-        });
-        input = label.firstElementChild;
-        if (type === 'Fit width' || type === 'Fit height') {
-          $.on(input, 'change', ImageExpand.cb.setFitness);
-        }
-        if (config) {
-          label.title = config[1];
-          input.checked = Conf[type];
-          $.event('change', null, input);
-          $.on(input, 'change', $.cb.checked);
-        }
-        return {
-          el: label
-        };
       }
     },
-    resize: function() {
-      return ImageExpand.style.textContent = ":root.fit-height .full-image {max-height:" + doc.clientHeight + "px}";
+    secondNode: function() {
+      var container;
+
+      if (this.isClone && (this.origin.isReply || Conf['OP Backlinks'])) {
+        this.nodes.backlinkContainer = $('.container', this.nodes.info);
+        return;
+      }
+      if (!(this.isReply || Conf['OP Backlinks'])) {
+        return;
+      }
+      container = QuoteBacklink.getContainer(this.fullID);
+      this.nodes.backlinkContainer = container;
+      return $.add(this.nodes.info, container);
     },
-    menuToggle: function(e) {
-      return ImageExpand.opmenu.toggle(e, this, g);
+    getContainer: function(id) {
+      var _base;
+
+      return (_base = this.containers)[id] || (_base[id] = $.el('span', {
+        className: 'container'
+      }));
     }
   };
 
-  ImageHover = {
+  QuoteCT = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Image Hover']) {
+      if (g.VIEW === 'catalog' || !Conf['Mark Cross-thread Quotes']) {
         return;
       }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
+      }
+      this.text = '\u00A0(Cross-thread)';
       return Post.prototype.callbacks.push({
-        name: 'Image Hover',
+        name: 'Mark Cross-thread Quotes',
         cb: this.node
       });
     },
     node: function() {
-      var _ref;
+      var board, boardID, quotelink, quotelinks, quotes, thread, threadID, _i, _len, _ref, _ref1;
 
-      if (!((_ref = this.file) != null ? _ref.isImage : void 0)) {
+      if (this.isClone && this.thread === this.context.thread) {
         return;
       }
-      return $.on(this.file.thumb, 'mouseover', ImageHover.mouseover);
+      if (!(quotes = this.quotes).length) {
+        return;
+      }
+      quotelinks = this.nodes.quotelinks;
+      _ref = this.isClone ? this.context : this, board = _ref.board, thread = _ref.thread;
+      for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
+        quotelink = quotelinks[_i];
+        _ref1 = Get.postDataFromLink(quotelink), boardID = _ref1.boardID, threadID = _ref1.threadID;
+        if (!threadID) {
+          continue;
+        }
+        if (this.isClone) {
+          quotelink.textContent = quotelink.textContent.replace(QuoteCT.text, '');
+        }
+        if (boardID === this.board.ID && threadID !== thread.ID) {
+          $.add(quotelink, $.tn(QuoteCT.text));
+        }
+      }
+    }
+  };
+
+  QuoteInline = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Quote Inlining']) {
+        return;
+      }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Quote Inlining',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var link, _i, _len, _ref;
+
+      _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        $.on(link, 'click', QuoteInline.toggle);
+      }
+    },
+    toggle: function(e) {
+      var boardID, context, postID, threadID, _ref;
+
+      if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
+        return;
+      }
+      e.preventDefault();
+      _ref = Get.postDataFromLink(this), boardID = _ref.boardID, threadID = _ref.threadID, postID = _ref.postID;
+      context = Get.contextFromLink(this);
+      if ($.hasClass(this, 'inlined')) {
+        QuoteInline.rm(this, boardID, threadID, postID, context);
+      } else {
+        if ($.x("ancestor::div[@id='p" + postID + "']", this)) {
+          return;
+        }
+        QuoteInline.add(this, boardID, threadID, postID, context);
+      }
+      return this.classList.toggle('inlined');
+    },
+    findRoot: function(quotelink, isBacklink) {
+      if (isBacklink) {
+        return quotelink.parentNode.parentNode;
+      } else {
+        return $.x('ancestor-or-self::*[parent::blockquote][1]', quotelink);
+      }
+    },
+    add: function(quotelink, boardID, threadID, postID, context) {
+      var inline, isBacklink, post;
+
+      isBacklink = $.hasClass(quotelink, 'backlink');
+      inline = $.el('div', {
+        id: "i" + postID,
+        className: 'inline'
+      });
+      $.after(QuoteInline.findRoot(quotelink, isBacklink), inline);
+      Get.postClone(boardID, threadID, postID, inline, context);
+      if (!((post = g.posts["" + boardID + "." + postID]) && context.thread === post.thread)) {
+        return;
+      }
+      if (isBacklink && Conf['Forward Hiding']) {
+        $.addClass(post.nodes.root, 'forwarded');
+        post.forwarded++ || (post.forwarded = 1);
+      }
+      if (!Unread.posts) {
+        return;
+      }
+      return Unread.readSinglePost(post);
+    },
+    rm: function(quotelink, boardID, threadID, postID, context) {
+      var el, inlined, isBacklink, post, root, _ref;
+
+      isBacklink = $.hasClass(quotelink, 'backlink');
+      root = QuoteInline.findRoot(quotelink, isBacklink);
+      root = $.x("following-sibling::div[@id='i" + postID + "'][1]", root);
+      $.rm(root);
+      if (!(el = root.firstElementChild)) {
+        return;
+      }
+      post = g.posts["" + boardID + "." + postID];
+      post.rmClone(el.dataset.clone);
+      if (Conf['Forward Hiding'] && isBacklink && context.thread === g.threads["" + boardID + "." + threadID] && !--post.forwarded) {
+        delete post.forwarded;
+        $.rmClass(post.nodes.root, 'forwarded');
+      }
+      while (inlined = $('.inlined', el)) {
+        _ref = Get.postDataFromLink(inlined), boardID = _ref.boardID, threadID = _ref.threadID, postID = _ref.postID;
+        QuoteInline.rm(inlined, boardID, threadID, postID, context);
+        $.rmClass(inlined, 'inlined');
+      }
+    }
+  };
+
+  QuoteOP = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Mark OP Quotes']) {
+        return;
+      }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
+      }
+      this.text = '\u00A0(OP)';
+      return Post.prototype.callbacks.push({
+        name: 'Mark OP Quotes',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var boardID, op, postID, quotelink, quotelinks, quotes, _i, _j, _len, _len1, _ref;
+
+      if (this.isClone && this.thread === this.context.thread) {
+        return;
+      }
+      if (!(quotes = this.quotes).length) {
+        return;
+      }
+      quotelinks = this.nodes.quotelinks;
+      if (this.isClone && quotes.contains(this.thread.fullID)) {
+        for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
+          quotelink = quotelinks[_i];
+          quotelink.textContent = quotelink.textContent.replace(QuoteOP.text, '');
+        }
+      }
+      op = (this.isClone ? this.context : this).thread.fullID;
+      if (!quotes.contains(op)) {
+        return;
+      }
+      for (_j = 0, _len1 = quotelinks.length; _j < _len1; _j++) {
+        quotelink = quotelinks[_j];
+        _ref = Get.postDataFromLink(quotelink), boardID = _ref.boardID, postID = _ref.postID;
+        if (("" + boardID + "." + postID) === op) {
+          $.add(quotelink, $.tn(QuoteOP.text));
+        }
+      }
+    }
+  };
+
+  QuotePreview = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Quote Previewing']) {
+        return;
+      }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Quote Previewing',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var link, _i, _len, _ref;
+
+      _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        $.on(link, 'mouseover', QuotePreview.mouseover);
+      }
     },
     mouseover: function(e) {
-      var el, post;
+      var boardID, clone, origin, post, postID, posts, qp, quote, quoterID, threadID, _i, _j, _len, _len1, _ref, _ref1;
 
-      post = Get.postFromNode(this);
-      el = $.el('img', {
-        id: 'ihover',
-        src: post.file.URL
+      if ($.hasClass(this, 'inlined')) {
+        return;
+      }
+      _ref = Get.postDataFromLink(this), boardID = _ref.boardID, threadID = _ref.threadID, postID = _ref.postID;
+      qp = $.el('div', {
+        id: 'qp',
+        className: 'dialog'
       });
-      el.setAttribute('data-fullid', post.fullID);
-      $.add(Header.hover, el);
+      $.add(Header.hover, qp);
+      Get.postClone(boardID, threadID, postID, qp, Get.contextFromLink(this));
       UI.hover({
         root: this,
-        el: el,
+        el: qp,
         latestEvent: e,
         endEvents: 'mouseout click',
+        cb: QuotePreview.mouseout,
         asapTest: function() {
-          return el.naturalHeight;
+          return qp.firstElementChild;
         }
       });
-      return $.on(el, 'error', ImageHover.error);
-    },
-    error: function() {
-      var URL, post, src, timeoutID,
-        _this = this;
-
-      if (!doc.contains(this)) {
+      if (!(origin = g.posts["" + boardID + "." + postID])) {
         return;
       }
-      post = g.posts[this.dataset.fullid];
-      src = this.src.split('/');
-      if (src[2] === 'images.4chan.org') {
-        if (URL = Redirect.image(src[3], src[5].replace(/\?.+$/, ''))) {
-          this.src = URL;
-          return;
-        }
-        if (g.DEAD || post.isDead || post.file.isDead) {
-          return;
+      if (Conf['Quote Highlighting']) {
+        posts = [origin].concat(origin.clones);
+        posts.pop();
+        for (_i = 0, _len = posts.length; _i < _len; _i++) {
+          post = posts[_i];
+          $.addClass(post.nodes.post, 'qphl');
         }
       }
-      timeoutID = setTimeout((function() {
-        return _this.src = post.file.URL + '?' + Date.now();
-      }), 3000);
-      return $.ajax("//api.4chan.org/" + post.board + "/res/" + post.thread + ".json", {
-        onload: function() {
-          var postObj, _i, _len, _ref;
-
-          if (this.status !== 200) {
-            return;
-          }
-          _ref = JSON.parse(this.response).posts;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            postObj = _ref[_i];
-            if (postObj.no === post.ID) {
-              break;
-            }
-          }
-          if (postObj.no !== post.ID) {
-            clearTimeout(timeoutID);
-            return post.kill();
-          } else if (postObj.filedeleted) {
-            clearTimeout(timeoutID);
-            return post.kill(true);
-          }
+      quoterID = $.x('ancestor::*[@id][1]', this).id.match(/\d+$/)[0];
+      clone = Get.postFromRoot(qp.firstChild);
+      _ref1 = clone.nodes.quotelinks.concat(__slice.call(clone.nodes.backlinks));
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        quote = _ref1[_j];
+        if (quote.hash.slice(2) === quoterID) {
+          $.addClass(quote, 'forwardlink');
         }
-      });
+      }
+    },
+    mouseout: function() {
+      var clone, post, root, _i, _len, _ref;
+
+      if (!(root = this.el.firstElementChild)) {
+        return;
+      }
+      clone = Get.postFromRoot(root);
+      post = clone.origin;
+      post.rmClone(root.dataset.clone);
+      if (!Conf['Quote Highlighting']) {
+        return;
+      }
+      _ref = [post].concat(post.clones);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        post = _ref[_i];
+        $.rmClass(post.nodes.post, 'qphl');
+      }
     }
   };
 
-  ImageReplace = {
+  QuoteStrikeThrough = {
     init: function() {
-      if (g.VIEW === 'catalog') {
+      if (g.VIEW === 'catalog' || !Conf['Reply Hiding Buttons'] && !Conf['Reply Hiding Link'] && !Conf['Filter']) {
         return;
       }
       return Post.prototype.callbacks.push({
-        name: 'Image Replace',
+        name: 'Strike-through Quotes',
         cb: this.node
       });
     },
     node: function() {
-      var URL, img, style, thumb, type, _ref, _ref1;
+      var boardID, postID, quotelink, _i, _len, _ref, _ref1, _ref2;
 
-      if (this.isClone || this.isHidden || this.thread.isHidden || !((_ref = this.file) != null ? _ref.isImage : void 0)) {
+      if (this.isClone) {
         return;
       }
-      _ref1 = this.file, thumb = _ref1.thumb, URL = _ref1.URL;
-      if (!(Conf["Replace " + ((type = (URL.match(/\w{3}$/))[0].toUpperCase()) === 'PEG' ? 'JPG' : type)] && !/spoiler/.test(thumb.src))) {
-        return;
+      _ref = this.nodes.quotelinks;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quotelink = _ref[_i];
+        _ref1 = Get.postDataFromLink(quotelink), boardID = _ref1.boardID, postID = _ref1.postID;
+        if ((_ref2 = g.posts["" + boardID + "." + postID]) != null ? _ref2.isHidden : void 0) {
+          $.addClass(quotelink, 'filtered');
+        }
       }
-      if (this.file.isSpoiler) {
-        style = thumb.style;
-        style.maxHeight = style.maxWidth = this.isReply ? '125px' : '250px';
-      }
-      img = $.el('img');
-      $.on(img, 'load', function() {
-        return thumb.src = URL;
-      });
-      return img.src = URL;
     }
   };
 
-  RevealSpoilers = {
+  /*
+    <3 aeosynth
+  */
+
+
+  QuoteThreading = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Reveal Spoilers']) {
+      var input;
+
+      if (!(Conf['Quote Threading'] && g.VIEW === 'thread')) {
         return;
       }
+      this.enabled = true;
+      this.controls = $.el('span', {
+        innerHTML: '<label><input id=threadingControl type=checkbox checked> Threading</label>'
+      });
+      input = $('input', this.controls);
+      $.on(input, 'change', QuoteThreading.toggle);
+      $.event('AddMenuEntry', {
+        type: 'header',
+        el: this.controls,
+        order: 98
+      });
+      $.on(d, '4chanXInitFinished', this.setup);
       return Post.prototype.callbacks.push({
-        name: 'Reveal Spoilers',
+        name: 'Quote Threading',
+        cb: this.node
+      });
+    },
+    setup: function() {
+      var ID, post, posts;
+
+      $.off(d, '4chanXInitFinished', QuoteThreading.setup);
+      posts = g.posts;
+      for (ID in posts) {
+        post = posts[ID];
+        if (post.cb) {
+          post.cb.call(post);
+        }
+      }
+      return QuoteThreading.hasRun = true;
+    },
+    node: function() {
+      var ID, fullID, keys, len, post, posts, qid, quote, quotes, uniq, _i, _len;
+
+      if (this.isClone || !QuoteThreading.enabled || this.thread.OP === this) {
+        return;
+      }
+      quotes = this.quotes, ID = this.ID, fullID = this.fullID;
+      posts = g.posts;
+      if (!(post = posts[fullID]) || post.isHidden) {
+        return;
+      }
+      uniq = {};
+      len = ("" + g.BOARD).length + 1;
+      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
+        quote = quotes[_i];
+        qid = quote;
+        if (!(qid.slice(len) < ID)) {
+          continue;
+        }
+        if (qid in posts) {
+          uniq[qid.slice(len)] = true;
+        }
+      }
+      keys = Object.keys(uniq);
+      if (keys.length !== 1) {
+        return;
+      }
+      this.threaded = "" + g.BOARD + "." + keys[0];
+      return this.cb = QuoteThreading.nodeinsert;
+    },
+    nodeinsert: function() {
+      var bottom, height, posts, qpost, qroot, threadContainer, top, _ref;
+
+      posts = g.posts;
+      qpost = posts[this.threaded];
+      delete this.threaded;
+      delete this.cb;
+      if (this.thread.OP === qpost) {
+        return false;
+      }
+      if (QuoteThreading.hasRun) {
+        height = doc.clientHeight;
+        _ref = qpost.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
+        if (!(Unread.posts.contains(qpost) || ((bottom < height) && (top > 0)))) {
+          return false;
+        }
+      }
+      qroot = qpost.nodes.root;
+      if (!$.hasClass(qroot, 'threadOP')) {
+        $.addClass(qroot, 'threadOP');
+        threadContainer = $.el('div', {
+          className: 'threadContainer'
+        });
+        $.after(qroot, threadContainer);
+      } else {
+        threadContainer = qroot.nextSibling;
+      }
+      $.add(threadContainer, this.nodes.root);
+      return true;
+    },
+    toggle: function() {
+      var container, containers, node, nodes, replies, reply, thread, _i, _j, _len, _len1;
+
+      thread = $('.thread');
+      replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
+      QuoteThreading.enabled = this.checked;
+      if (this.checked) {
+        nodes = (function() {
+          var _i, _len, _results;
+
+          _results = [];
+          for (_i = 0, _len = replies.length; _i < _len; _i++) {
+            reply = replies[_i];
+            _results.push(Get.postFromNode(reply));
+          }
+          return _results;
+        })();
+        for (_i = 0, _len = nodes.length; _i < _len; _i++) {
+          node = nodes[_i];
+          QuoteThreading.node(node);
+        }
+      } else {
+        replies.sort(function(a, b) {
+          var aID, bID;
+
+          aID = Number(a.id.slice(2));
+          bID = Number(b.id.slice(2));
+          return aID - bID;
+        });
+        $.add(thread, replies);
+        containers = $$('.threadContainer', thread);
+        for (_j = 0, _len1 = containers.length; _j < _len1; _j++) {
+          container = containers[_j];
+          $.rm(container);
+        }
+        Unread.update(true);
+      }
+    },
+    kb: function() {
+      var control;
+
+      control = $.id('threadingControl');
+      return control.click();
+    }
+  };
+
+  QuoteYou = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Mark Quotes of You'] || !Conf['Quick Reply']) {
+        return;
+      }
+      this.text = '\u00A0(You)';
+      return Post.prototype.callbacks.push({
+        name: 'Mark Quotes of You',
         cb: this.node
       });
     },
     node: function() {
-      var thumb, _ref;
+      var quotelink, quotelinks, quotes, _i, _len;
 
-      if (this.isClone || !((_ref = this.file) != null ? _ref.isSpoiler : void 0)) {
+      if (this.isClone) {
         return;
       }
-      thumb = this.file.thumb;
-      thumb.removeAttribute('style');
-      return thumb.src = this.file.thumbURL;
+      if (this.info.yours) {
+        $.addClass(this.nodes.root, 'yourPost');
+      }
+      if (Conf['Highlight Own Posts']) {
+        $.addClass(doc, 'highlight-own');
+      }
+      if (!(quotes = this.quotes).length) {
+        return;
+      }
+      quotelinks = this.nodes.quotelinks;
+      for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
+        quotelink = quotelinks[_i];
+        if (QR.db.get(Get.postDataFromLink(quotelink))) {
+          $.add(quotelink, $.tn(QuoteYou.text));
+        }
+      }
+    }
+  };
+
+  Quotify = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Resurrect Quotes']) {
+        return;
+      }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Resurrect Quotes',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var deadlink, _i, _len, _ref;
+
+      _ref = $$('.deadlink', this.nodes.comment);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        deadlink = _ref[_i];
+        if (this.isClone) {
+          if ($.hasClass(deadlink, 'quotelink')) {
+            this.nodes.quotelinks.push(deadlink);
+          }
+        } else {
+          Quotify.parseDeadlink.call(this, deadlink);
+        }
+      }
+    },
+    parseDeadlink: function(deadlink) {
+      var a, boardID, m, post, postID, quote, quoteID, redirect, _ref;
+
+      if (deadlink.parentNode.className === 'prettyprint') {
+        $.replace(deadlink, __slice.call(deadlink.childNodes));
+        return;
+      }
+      quote = deadlink.textContent;
+      if (!(postID = (_ref = quote.match(/\d+$/)) != null ? _ref[0] : void 0)) {
+        return;
+      }
+      boardID = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : this.board.ID;
+      quoteID = "" + boardID + "." + postID;
+      if (post = g.posts[quoteID]) {
+        if (!post.isDead) {
+          a = $.el('a', {
+            href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
+            className: 'quotelink',
+            textContent: quote
+          });
+        } else {
+          a = $.el('a', {
+            href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
+            className: 'quotelink deadlink',
+            target: '_blank',
+            textContent: "" + quote + "\u00A0(Dead)"
+          });
+          a.setAttribute('data-boardid', boardID);
+          a.setAttribute('data-threadid', post.thread.ID);
+          a.setAttribute('data-postid', postID);
+        }
+      } else if (redirect = Redirect.to({
+        boardID: boardID,
+        threadID: 0,
+        postID: postID
+      })) {
+        a = $.el('a', {
+          href: redirect,
+          className: 'deadlink',
+          target: '_blank',
+          textContent: "" + quote + "\u00A0(Dead)"
+        });
+        if (Redirect.post(boardID, postID)) {
+          $.addClass(a, 'quotelink');
+          a.setAttribute('data-boardid', boardID);
+          a.setAttribute('data-postid', postID);
+        }
+      }
+      if (!this.quotes.contains(quoteID)) {
+        this.quotes.push(quoteID);
+      }
+      if (!a) {
+        deadlink.textContent = "" + quote + "\u00A0(Dead)";
+        return;
+      }
+      $.replace(deadlink, a);
+      if ($.hasClass(a, 'quotelink')) {
+        return this.nodes.quotelinks.push(a);
+      }
     }
   };
 
@@ -6005,2848 +6592,6 @@
     }
   };
 
-  ArchiveLink = {
-    init: function() {
-      var div, entry, type, _i, _len, _ref;
-
-      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Archive Link']) {
-        return;
-      }
-      div = $.el('div', {
-        textContent: 'Archive'
-      });
-      entry = {
-        type: 'post',
-        el: div,
-        order: 90,
-        open: function(_arg) {
-          var ID, board, redirect, thread;
-
-          ID = _arg.ID, thread = _arg.thread, board = _arg.board;
-          redirect = Redirect.to({
-            postID: ID,
-            threadID: thread.ID,
-            boardID: board.ID
-          });
-          return redirect !== ("//boards.4chan.org/" + board + "/");
-        },
-        subEntries: []
-      };
-      _ref = [['Post', 'post'], ['Name', 'name'], ['Tripcode', 'tripcode'], ['E-mail', 'email'], ['Subject', 'subject'], ['Filename', 'filename'], ['Image MD5', 'MD5']];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        type = _ref[_i];
-        entry.subEntries.push(this.createSubEntry(type[0], type[1]));
-      }
-      return $.event('AddMenuEntry', entry);
-    },
-    createSubEntry: function(text, type) {
-      var el, open;
-
-      el = $.el('a', {
-        textContent: text,
-        target: '_blank'
-      });
-      open = type === 'post' ? function(_arg) {
-        var ID, board, thread;
-
-        ID = _arg.ID, thread = _arg.thread, board = _arg.board;
-        el.href = Redirect.to({
-          postID: ID,
-          threadID: thread.ID,
-          boardID: board.ID
-        });
-        return true;
-      } : function(post) {
-        var value;
-
-        value = Filter[type](post);
-        if (!value) {
-          return false;
-        }
-        el.href = Redirect.to({
-          boardID: post.board.ID,
-          type: type,
-          value: value,
-          isSearch: true
-        });
-        return true;
-      };
-      return {
-        el: el,
-        open: open
-      };
-    }
-  };
-
-  DeleteLink = {
-    init: function() {
-      var div, fileEl, fileEntry, postEl, postEntry;
-
-      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Delete Link']) {
-        return;
-      }
-      div = $.el('div', {
-        className: 'delete-link',
-        textContent: 'Delete'
-      });
-      postEl = $.el('a', {
-        className: 'delete-post',
-        href: 'javascript:;'
-      });
-      fileEl = $.el('a', {
-        className: 'delete-file',
-        href: 'javascript:;'
-      });
-      postEntry = {
-        el: postEl,
-        open: function() {
-          postEl.textContent = 'Post';
-          $.on(postEl, 'click', DeleteLink["delete"]);
-          return true;
-        }
-      };
-      fileEntry = {
-        el: fileEl,
-        open: function(_arg) {
-          var file;
-
-          file = _arg.file;
-          if (!file || file.isDead) {
-            return false;
-          }
-          fileEl.textContent = 'File';
-          $.on(fileEl, 'click', DeleteLink["delete"]);
-          return true;
-        }
-      };
-      return $.event('AddMenuEntry', {
-        type: 'post',
-        el: div,
-        order: 40,
-        open: function(post) {
-          var node;
-
-          if (post.isDead) {
-            return false;
-          }
-          DeleteLink.post = post;
-          node = div.firstChild;
-          node.textContent = 'Delete';
-          DeleteLink.cooldown.start(post, node);
-          return true;
-        },
-        subEntries: [postEntry, fileEntry]
-      });
-    },
-    "delete": function() {
-      var fileOnly, form, link, m, post, pwd;
-
-      post = DeleteLink.post;
-      if (DeleteLink.cooldown.counting === post) {
-        return;
-      }
-      $.off(this, 'click', DeleteLink["delete"]);
-      this.textContent = "Deleting " + this.textContent + "...";
-      pwd = (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $.id('delPassword').value;
-      fileOnly = $.hasClass(this, 'delete-file');
-      form = {
-        mode: 'usrdel',
-        onlyimgdel: fileOnly,
-        pwd: pwd
-      };
-      form[post.ID] = 'delete';
-      link = this;
-      return $.ajax($.id('delform').action.replace("/" + g.BOARD + "/", "/" + post.board + "/"), {
-        onload: function() {
-          return DeleteLink.load(link, post, fileOnly, this.response);
-        },
-        onerror: function() {
-          return DeleteLink.error(link);
-        }
-      }, {
-        cred: true,
-        form: $.formData(form)
-      });
-    },
-    load: function(link, post, fileOnly, html) {
-      var msg, s, tmpDoc;
-
-      tmpDoc = d.implementation.createHTMLDocument('');
-      tmpDoc.documentElement.innerHTML = html;
-      if (tmpDoc.title === '4chan - Banned') {
-        s = 'Banned!';
-      } else if (msg = tmpDoc.getElementById('errmsg')) {
-        s = msg.textContent;
-        $.on(link, 'click', DeleteLink["delete"]);
-      } else {
-        if (tmpDoc.title === 'Updating index...') {
-          (post.origin || post).kill(fileOnly);
-        }
-        s = 'Deleted';
-      }
-      return link.textContent = s;
-    },
-    error: function(link) {
-      link.textContent = 'Connection error, please retry.';
-      return $.on(link, 'click', DeleteLink["delete"]);
-    },
-    cooldown: {
-      start: function(post, node) {
-        var length, seconds, _ref;
-
-        if (!((_ref = QR.db) != null ? _ref.get({
-          boardID: post.board.ID,
-          threadID: post.thread.ID,
-          postID: post.ID
-        }) : void 0)) {
-          delete DeleteLink.cooldown.counting;
-          return;
-        }
-        DeleteLink.cooldown.counting = post;
-        length = post.board.ID === 'q' ? 600 : 30;
-        seconds = Math.ceil((length * $.SECOND - (Date.now() - post.info.date)) / $.SECOND);
-        return DeleteLink.cooldown.count(post, seconds, length, node);
-      },
-      count: function(post, seconds, length, node) {
-        if (DeleteLink.cooldown.counting !== post) {
-          return;
-        }
-        if (!((0 <= seconds && seconds <= length))) {
-          if (DeleteLink.cooldown.counting === post) {
-            node.textContent = 'Delete';
-            delete DeleteLink.cooldown.counting;
-          }
-          return;
-        }
-        setTimeout(DeleteLink.cooldown.count, 1000, post, seconds - 1, length, node);
-        return node.textContent = "Delete (" + seconds + ")";
-      }
-    }
-  };
-
-  DownloadLink = {
-    init: function() {
-      var a;
-
-      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Download Link']) {
-        return;
-      }
-      a = $.el('a', {
-        className: 'download-link',
-        textContent: 'Download file'
-      });
-      return $.event('AddMenuEntry', {
-        type: 'post',
-        el: a,
-        order: 70,
-        open: function(_arg) {
-          var file;
-
-          file = _arg.file;
-          if (!file) {
-            return false;
-          }
-          a.href = file.URL;
-          a.download = file.name;
-          return true;
-        }
-      });
-    }
-  };
-
-  Menu = {
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Menu']) {
-        return;
-      }
-      this.menu = new UI.Menu('post');
-      return Post.prototype.callbacks.push({
-        name: 'Menu',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var button;
-
-      button = Menu.makeButton(this);
-      if (this.isClone) {
-        $.replace($('.menu-button', this.nodes.info), button);
-        return;
-      }
-      return $.add(this.nodes.info, [$.tn('\u00A0'), button]);
-    },
-    makeButton: (function() {
-      var a;
-
-      a = null;
-      return function(post) {
-        var clone;
-
-        a || (a = $.el('a', {
-          className: 'menu-button',
-          innerHTML: '[<span class=drop-marker></span>]',
-          href: 'javascript:;'
-        }));
-        clone = a.cloneNode(true);
-        clone.setAttribute('data-postid', post.fullID);
-        if (post.isClone) {
-          clone.setAttribute('data-clone', true);
-        }
-        $.on(clone, 'click', Menu.toggle);
-        return clone;
-      };
-    })(),
-    toggle: function(e) {
-      var post;
-
-      post = this.dataset.clone ? Get.postFromNode(this) : g.posts[this.dataset.postid];
-      return Menu.menu.toggle(e, this, post);
-    }
-  };
-
-  ReportLink = {
-    init: function() {
-      var a;
-
-      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Report Link']) {
-        return;
-      }
-      a = $.el('a', {
-        className: 'report-link',
-        href: 'javascript:;',
-        textContent: 'Report this post'
-      });
-      $.on(a, 'click', ReportLink.report);
-      return $.event('AddMenuEntry', {
-        type: 'post',
-        el: a,
-        order: 10,
-        open: function(post) {
-          ReportLink.post = post;
-          return !post.isDead;
-        }
-      });
-    },
-    report: function() {
-      var id, post, set, url;
-
-      post = ReportLink.post;
-      url = "//sys.4chan.org/" + post.board + "/imgboard.php?mode=report&no=" + post;
-      id = Date.now();
-      set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200";
-      return window.open(url, id, set);
-    }
-  };
-
-  PSAHiding = {
-    init: function() {
-      if (!Conf['Announcement Hiding']) {
-        return;
-      }
-      return $.on(d, '4chanXInitFinished', this.setup);
-    },
-    setup: function() {
-      var btn, psa, text;
-
-      $.off(d, '4chanXInitFinished', PSAHiding.setup);
-      if (!(psa = $.id('globalMessage'))) {
-        return;
-      }
-      PSAHiding.btn = btn = $.el('a', {
-        title: 'Toggle announcement.',
-        innerHTML: '<span></span>',
-        href: 'javascript:;',
-        textContent: '[ - ]'
-      });
-      $.on(btn, 'click', PSAHiding.toggle);
-      $.prepend(psa, btn);
-      text = PSAHiding.trim(psa);
-      return $.get('hiddenPSAs', [], function(item) {
-        return PSAHiding.sync(item['hiddenPSAs']);
-      });
-    },
-    toggle: function(e) {
-      var text;
-
-      text = PSAHiding.trim($.id('globalMessage'));
-      return $.get('hiddenPSAs', [], function(item) {
-        var hiddenPSAs;
-
-        hiddenPSAs = item.hiddenPSAs;
-        hiddenPSAs.push(text);
-        hiddenPSAs = hiddenPSAs.slice(-5);
-        PSAHiding.sync(hiddenPSAs);
-        return $.set('hiddenPSAs', hiddenPSAs);
-      });
-    },
-    sync: function(hiddenPSAs) {
-      var btn, psa;
-
-      btn = PSAHiding.btn;
-      psa = $.id('globalMessage');
-      if (hiddenPSAs.contains(PSAHiding.trim(psa))) {
-        $.rm(psa);
-        return Style.iconPositions();
-      }
-    },
-    trim: function(psa) {
-      return psa.textContent.replace(/\W+/g, '').toLowerCase();
-    }
-  };
-
-  CatalogLinks = {
-    init: function() {
-      var el, input;
-
-      $.ready(this.ready);
-      if (!Conf['Catalog Links']) {
-        return;
-      }
-      el = $.el('label', {
-        id: 'toggleCatalog',
-        href: 'javascript:;',
-        innerHTML: "<input type=checkbox " + (Conf['Header catalog links'] ? 'checked' : '') + ">Catalog Links",
-        title: "Turn catalog links " + (Conf['Header catalog links'] ? 'off' : 'on') + "."
-      });
-      input = $('input', el);
-      $.on(input, 'change', this.toggle);
-      $.sync('Header catalog links', CatalogLinks.set);
-      $.event('AddMenuEntry', {
-        type: 'header',
-        el: el,
-        order: 95
-      });
-      return $.on(d, '4chanXInitFinished', function() {
-        return CatalogLinks.set(Conf['Header catalog links']);
-      });
-    },
-    toggle: function() {
-      var useCatalog;
-
-      $.event('CloseMenu');
-      $.set('Header catalog links', useCatalog = this.checked);
-      return CatalogLinks.set(useCatalog);
-    },
-    set: function(useCatalog) {
-      var a, board, path, _i, _len, _ref;
-
-      path = useCatalog ? 'catalog' : '';
-      _ref = $$('a', $.id('board-list'));
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        a = _ref[_i];
-        board = a.pathname.split('/')[1];
-        if (['f', 'status', '4chan'].contains(board) || !board) {
-          continue;
-        }
-        if (Conf['External Catalog']) {
-          a.href = useCatalog ? CatalogLinks.external(board) : "//boards.4chan.org/" + board + "/";
-        } else {
-          a.pathname = "/" + board + "/" + path;
-        }
-        a.title = useCatalog ? "" + a.title + " - Catalog" : a.title.replace(/\ -\ Catalog$/, '');
-      }
-      return this.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
-    },
-    external: function(board) {
-      return (['a', 'c', 'g', 'co', 'k', 'm', 'o', 'p', 'v', 'vg', 'w', 'cm', '3', 'adv', 'an', 'cgl', 'ck', 'diy', 'fa', 'fit', 'int', 'jp', 'mlp', 'lit', 'mu', 'n', 'po', 'sci', 'toy', 'trv', 'tv', 'vp', 'x', 'q'].contains(board) ? "http://catalog.neet.tv/" + board : ['d', 'e', 'gif', 'h', 'hr', 'hc', 'r9k', 's', 'pol', 'soc', 'u', 'i', 'ic', 'hm', 'r', 'w', 'wg', 'wsg', 't', 'y'].contains(board) ? "http://4index.gropes.us/" + board : "//boards.4chan.org/" + board + "/catalog");
-    },
-    ready: function() {
-      var catalogLink;
-
-      if (catalogLink = $('.pages.cataloglink a', d.body) || $('[href=".././catalog"]', d.body)) {
-        if (g.VIEW !== 'thread') {
-          $.add(d.body, catalogLink);
-        }
-        return catalogLink.id = 'catalog';
-      }
-    }
-  };
-
-  ExpandComment = {
-    init: function() {
-      if (g.VIEW !== 'index' || !Conf['Comment Expansion']) {
-        return;
-      }
-      if (g.BOARD.ID === 'g') {
-        this.callbacks.push(Fourchan.code);
-      }
-      if (g.BOARD.ID === 'sci') {
-        this.callbacks.push(Fourchan.math);
-      }
-      return Post.prototype.callbacks.push({
-        name: 'Comment Expansion',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var a;
-
-      if (a = $('.abbr > a', this.nodes.comment)) {
-        return $.on(a, 'click', ExpandComment.cb);
-      }
-    },
-    callbacks: [],
-    cb: function(e) {
-      var post;
-
-      e.preventDefault();
-      post = Get.postFromNode(this);
-      return ExpandComment.expand(post);
-    },
-    expand: function(post) {
-      var a;
-
-      if (post.nodes.longComment && !post.nodes.longComment.parentNode) {
-        $.replace(post.nodes.shortComment, post.nodes.longComment);
-        post.nodes.comment = post.nodes.longComment;
-        return;
-      }
-      if (!(a = $('.abbr > a', post.nodes.comment))) {
-        return;
-      }
-      a.textContent = "Post No." + post + " Loading...";
-      return $.cache("//api.4chan.org" + a.pathname + ".json", function() {
-        return ExpandComment.parse(this, a, post);
-      });
-    },
-    contract: function(post) {
-      var a;
-
-      if (!post.nodes.shortComment) {
-        return;
-      }
-      a = $('.abbr > a', post.nodes.shortComment);
-      a.textContent = 'here';
-      $.replace(post.nodes.longComment, post.nodes.shortComment);
-      return post.nodes.comment = post.nodes.shortComment;
-    },
-    parse: function(req, a, post) {
-      var callback, clone, comment, href, postObj, posts, quote, spoilerRange, status, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
-
-      status = req.status;
-      if (![200, 304].contains(status)) {
-        a.textContent = "Error " + req.statusText + " (" + status + ")";
-        return;
-      }
-      posts = JSON.parse(req.response).posts;
-      if (spoilerRange = posts[0].custom_spoiler) {
-        Build.spoilerRange[g.BOARD] = spoilerRange;
-      }
-      for (_i = 0, _len = posts.length; _i < _len; _i++) {
-        postObj = posts[_i];
-        if (postObj.no === post.ID) {
-          break;
-        }
-      }
-      if (postObj.no !== post.ID) {
-        a.textContent = "Post No." + post + " not found.";
-        return;
-      }
-      comment = post.nodes.comment;
-      clone = comment.cloneNode(false);
-      clone.innerHTML = postObj.com;
-      _ref = $$('.quotelink', clone);
-      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-        quote = _ref[_j];
-        href = quote.getAttribute('href');
-        if (href[0] === '/') {
-          continue;
-        }
-        quote.href = "/" + post.board + "/res/" + href;
-      }
-      post.nodes.shortComment = comment;
-      $.replace(comment, clone);
-      post.nodes.comment = post.nodes.longComment = clone;
-      post.parseComment();
-      post.parseQuotes();
-      _ref1 = ExpandComment.callbacks;
-      for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-        callback = _ref1[_k];
-        callback.call(post);
-      }
-    }
-  };
-
-  ExpandThread = {
-    init: function() {
-      if (g.VIEW !== 'index' || !Conf['Thread Expansion']) {
-        return;
-      }
-      return Thread.prototype.callbacks.push({
-        name: 'Thread Expansion',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var a, span;
-
-      if (!(span = $('.summary', this.OP.nodes.root.parentNode))) {
-        return;
-      }
-      a = $.el('a', {
-        textContent: "+ " + span.textContent,
-        className: 'summary',
-        href: 'javascript:;'
-      });
-      $.on(a, 'click', ExpandThread.cbToggle);
-      return $.replace(span, a);
-    },
-    cbToggle: function() {
-      var op;
-
-      op = Get.postFromRoot(this.previousElementSibling);
-      return ExpandThread.toggle(op.thread);
-    },
-    toggle: function(thread) {
-      var a, inlined, num, post, replies, reply, threadRoot, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
-
-      threadRoot = thread.OP.nodes.root.parentNode;
-      a = $('.summary', threadRoot);
-      switch (thread.isExpanded) {
-        case false:
-        case void 0:
-          thread.isExpanded = 'loading';
-          _ref = $$('.thread > .postContainer', threadRoot);
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            post = _ref[_i];
-            ExpandComment.expand(Get.postFromRoot(post));
-          }
-          if (!a) {
-            thread.isExpanded = true;
-            return;
-          }
-          thread.isExpanded = 'loading';
-          a.textContent = a.textContent.replace('+', '× Loading...');
-          $.cache("//api.4chan.org/" + thread.board + "/res/" + thread + ".json", function() {
-            return ExpandThread.parse(this, thread, a);
-          });
-          break;
-        case 'loading':
-          thread.isExpanded = false;
-          if (!a) {
-            return;
-          }
-          a.textContent = a.textContent.replace('× Loading...', '+');
-          break;
-        case true:
-          thread.isExpanded = false;
-          if (a) {
-            a.textContent = a.textContent.replace('-', '+');
-            num = (function() {
-              if (thread.isSticky) {
-                return 1;
-              } else {
-                switch (g.BOARD.ID) {
-                  case 'b':
-                  case 'vg':
-                  case 'q':
-                    return 3;
-                  case 't':
-                    return 1;
-                  default:
-                    return 5;
-                }
-              }
-            })();
-            replies = $$('.thread > .replyContainer', threadRoot).slice(0, -num);
-            for (_j = 0, _len1 = replies.length; _j < _len1; _j++) {
-              reply = replies[_j];
-              if (Conf['Quote Inlining']) {
-                while (inlined = $('.inlined', reply)) {
-                  inlined.click();
-                }
-              }
-              $.rm(reply);
-            }
-          }
-          _ref1 = $$('.thread > .postContainer', threadRoot);
-          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-            post = _ref1[_k];
-            ExpandComment.contract(Get.postFromRoot(post));
-          }
-      }
-    },
-    parse: function(req, thread, a) {
-      var link, node, nodes, post, posts, replies, reply, spoilerRange, status, _i, _len;
-
-      if (a.textContent[0] === '+') {
-        return;
-      }
-      status = req.status;
-      if (![200, 304].contains(status)) {
-        a.textContent = "Error " + req.statusText + " (" + status + ")";
-        $.off(a, 'click', ExpandThread.cb.toggle);
-        return;
-      }
-      thread.isExpanded = true;
-      a.textContent = a.textContent.replace('× Loading...', '-');
-      posts = JSON.parse(req.response).posts;
-      if (spoilerRange = posts[0].custom_spoiler) {
-        Build.spoilerRange[g.BOARD] = spoilerRange;
-      }
-      replies = posts.slice(1);
-      posts = [];
-      nodes = [];
-      for (_i = 0, _len = replies.length; _i < _len; _i++) {
-        reply = replies[_i];
-        if (post = thread.posts[reply.no]) {
-          nodes.push(post.nodes.root);
-          continue;
-        }
-        node = Build.postFromObject(reply, thread.board);
-        post = new Post(node, thread, thread.board);
-        link = $('a[title="Highlight this post"]', node);
-        link.href = "res/" + thread + "#p" + post;
-        link.nextSibling.href = "res/" + thread + "#q" + post;
-        posts.push(post);
-        nodes.push(node);
-      }
-      Main.callbackNodes(Post, posts);
-      $.after(a, nodes);
-      return Fourchan.parseThread(thread.ID, 1, nodes.length);
-    }
-  };
-
-  FileInfo = {
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['File Info Formatting']) {
-        return;
-      }
-      this.funk = this.createFunc(Conf['fileInfo']);
-      return Post.prototype.callbacks.push({
-        name: 'File Info Formatting',
-        cb: this.node
-      });
-    },
-    node: function() {
-      if (!this.file || this.isClone) {
-        return;
-      }
-      return this.file.text.innerHTML = FileInfo.funk(FileInfo, this);
-    },
-    createFunc: function(format) {
-      var code;
-
-      code = format.replace(/%(.)/g, function(s, c) {
-        if (c in FileInfo.formatters) {
-          return "' + FileInfo.formatters." + c + ".call(post) + '";
-        } else {
-          return s;
-        }
-      });
-      return Function('FileInfo', 'post', "return '" + code + "'");
-    },
-    convertUnit: function(size, unit) {
-      var i;
-
-      if (unit === 'B') {
-        return "" + (size.toFixed()) + " Bytes";
-      }
-      i = 1 + ['KB', 'MB'].indexOf(unit);
-      while (i--) {
-        size /= 1024;
-      }
-      size = unit === 'MB' ? Math.round(size * 100) / 100 : size.toFixed();
-      return "" + size + " " + unit;
-    },
-    escape: function(name) {
-      return name.replace(/<|>/g, function(c) {
-        return c === '<' && '&lt;' || '&gt;';
-      });
-    },
-    formatters: {
-      t: function() {
-        return this.file.URL.match(/\d+\..+$/)[0];
-      },
-      T: function() {
-        return "<a href=" + this.file.URL + " target=_blank>" + (FileInfo.formatters.t.call(this)) + "</a>";
-      },
-      l: function() {
-        return "<a href=" + this.file.URL + " target=_blank>" + (FileInfo.formatters.n.call(this)) + "</a>";
-      },
-      L: function() {
-        return "<a href=" + this.file.URL + " target=_blank>" + (FileInfo.formatters.N.call(this)) + "</a>";
-      },
-      n: function() {
-        var fullname, shortname;
-
-        fullname = this.file.name;
-        shortname = Build.shortFilename(this.file.name, this.isReply);
-        if (fullname === shortname) {
-          return FileInfo.escape(fullname);
-        } else {
-          return "<span class=fntrunc>" + (FileInfo.escape(shortname)) + "</span><span class=fnfull>" + (FileInfo.escape(fullname)) + "</span>";
-        }
-      },
-      N: function() {
-        return FileInfo.escape(this.file.name);
-      },
-      p: function() {
-        if (this.file.isSpoiler) {
-          return 'Spoiler, ';
-        } else {
-          return '';
-        }
-      },
-      s: function() {
-        return this.file.size;
-      },
-      B: function() {
-        return FileInfo.convertUnit(this.file.sizeInBytes, 'B');
-      },
-      K: function() {
-        return FileInfo.convertUnit(this.file.sizeInBytes, 'KB');
-      },
-      M: function() {
-        return FileInfo.convertUnit(this.file.sizeInBytes, 'MB');
-      },
-      r: function() {
-        if (this.file.isImage) {
-          return this.file.dimensions;
-        } else {
-          return 'PDF';
-        }
-      }
-    }
-  };
-
-  Fourchan = {
-    init: function() {
-      var board;
-
-      if (g.VIEW === 'catalog') {
-        return;
-      }
-      board = g.BOARD.ID;
-      if (board === 'g') {
-        $.globalEval("window.addEventListener('prettyprint', function(e) {\n  var pre = e.detail;\n  pre.innerHTML = prettyPrintOne(pre.innerHTML);\n}, false);");
-        Post.prototype.callbacks.push({
-          name: 'Parse /g/ code',
-          cb: this.code
-        });
-      }
-      if (board === 'sci') {
-        $.globalEval("window.addEventListener('jsmath', function(e) {\n  if (jsMath.loaded) {\n    // process one post\n    jsMath.ProcessBeforeShowing(e.detail);\n  } else {\n    // load jsMath and process whole document\n    jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);\n    jsMath.Autoload.LoadJsMath();\n  }\n}, false);");
-        return Post.prototype.callbacks.push({
-          name: 'Parse /sci/ math',
-          cb: this.math
-        });
-      }
-    },
-    code: function() {
-      var pre, _i, _len, _ref;
-
-      if (this.isClone) {
-        return;
-      }
-      _ref = $$('.prettyprint', this.nodes.comment);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        pre = _ref[_i];
-        $.event('prettyprint', pre, window);
-      }
-    },
-    math: function() {
-      if (this.isClone || !$('.math', this.nodes.comment)) {
-        return;
-      }
-      return $.event('jsmath', this.nodes.post, window);
-    },
-    parseThread: function(threadID, offset, limit) {
-      return $.event('4chanParsingDone', {
-        threadId: threadID,
-        offset: offset,
-        limit: limit
-      });
-    }
-  };
-
-  Header = {
-    init: function() {
-      var createSubEntry, headerToggler, setting, subEntries, _i, _len, _ref;
-
-      this.menuButton = $.el('span', {
-        className: 'menu-button',
-        id: 'main-menu'
-      });
-      this.menu = new UI.Menu('header');
-      headerToggler = $.el('label', {
-        innerHTML: '<input type=checkbox name="Header auto-hide"> Auto-hide header'
-      });
-      this.headerToggler = headerToggler.firstElementChild;
-      $.on(this.menuButton, 'click', this.menuToggle);
-      $.on(window, 'load hashchange', Header.hashScroll);
-      $.on(this.headerToggler, 'change', this.toggleBarVisibility);
-      createSubEntry = Header.createSubEntry;
-      subEntries = [];
-      _ref = ['Sticky top', 'Sticky bottom', 'Top', 'Hide'];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        setting = _ref[_i];
-        subEntries.push(createSubEntry(setting));
-      }
-      subEntries.push({
-        el: headerToggler
-      });
-      $.event('AddMenuEntry', {
-        type: 'header',
-        el: $.el('span', {
-          textContent: 'Header'
-        }),
-        order: 105,
-        subEntries: subEntries
-      });
-      $.on(d, 'CreateNotification', this.createNotification);
-      $.asap((function() {
-        return d.body;
-      }), function() {
-        if (!Main.isThisPageLegit()) {
-          return;
-        }
-        return $.asap((function() {
-          return $.id('boardNavMobile');
-        }), Header.setBoardList);
-      });
-      return $.ready(function() {
-        return $.add(d.body, Header.hover);
-      });
-    },
-    bar: $.el('div', {
-      id: 'notifications'
-    }),
-    shortcuts: $.el('span', {
-      id: 'shortcuts'
-    }),
-    hover: $.el('div', {
-      id: 'hoverUI'
-    }),
-    toggle: $.el('div', {
-      id: 'scroll-marker'
-    }),
-    createSubEntry: function(setting) {
-      var label;
-
-      label = $.el('label', {
-        textContent: "" + setting
-      });
-      $.on(label, 'click', Header.setBarPosition);
-      return {
-        el: label
-      };
-    },
-    setBoardList: function() {
-      var a, boardList, btn, customBoardList, fullBoardList, nav, settings;
-
-      Header.nav = nav = $.id('boardNavDesktop');
-      nav.id = 'header-bar';
-      if (a = $("a[href*='/" + g.BOARD + "/']", nav)) {
-        a.className = 'current';
-      }
-      boardList = $.el('span', {
-        id: 'board-list'
-      });
-      $.add(boardList, fullBoardList = $.el('span', {
-        id: 'full-board-list'
-      }));
-      Header.setBarPosition.call({
-        textContent: "" + Conf['Boards Navigation']
-      });
-      $.sync('Boards Navigation', Header.changeBarPosition);
-      Header.setBarVisibility(Conf['Header auto-hide']);
-      $.sync('Header auto-hide', Header.setBarVisibility);
-      $.prepend(d.body, settings = $.id('navtopright'));
-      $.add(settings, Header.menuButton);
-      $.add(fullBoardList, __slice.call(nav.childNodes));
-      $.add(nav, [boardList, Header.shortcuts, Header.bar, Header.toggle]);
-      if (Conf['Custom Board Navigation']) {
-        fullBoardList.hidden = true;
-        customBoardList = $.el('span', {
-          id: 'custom-board-list'
-        });
-        $.add(boardList, customBoardList);
-        Header.generateBoardList(Conf['boardnav']);
-        $.sync('boardnav', Header.generateBoardList);
-        btn = $.el('span', {
-          className: 'hide-board-list-button',
-          innerHTML: '[<a href=javascript:;> - </a>]\u00A0'
-        });
-        $.on(btn, 'click', Header.toggleBoardList);
-        return $.prepend(fullBoardList, btn);
-      } else {
-        return fullBoardList.hidden = false;
-      }
-    },
-    generateBoardList: function(text) {
-      var as, list, nodes;
-
-      list = $('#custom-board-list', Header.nav);
-      $.rmAll(list);
-      if (!text) {
-        return;
-      }
-      as = $$('#full-board-list a', Header.nav).slice(0, -2);
-      nodes = text.match(/[\w@]+(-(all|title|replace|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map(function(t) {
-        var a, board, m, _i, _len;
-
-        if (/^[^\w@]/.test(t)) {
-          return $.tn(t);
-        }
-        if (/^toggle-all/.test(t)) {
-          a = $.el('a', {
-            className: 'show-board-list-button',
-            textContent: (t.match(/-text:"(.+)"/) || [null, '+'])[1],
-            href: 'javascript:;'
-          });
-          $.on(a, 'click', Header.toggleBoardList);
-          return a;
-        }
-        board = /^current/.test(t) ? g.BOARD.ID : t.match(/^[^-]+/)[0];
-        for (_i = 0, _len = as.length; _i < _len; _i++) {
-          a = as[_i];
-          if (a.textContent === board) {
-            a = a.cloneNode(true);
-            if (/-title/.test(t)) {
-              a.textContent = a.title;
-            } else if (/-replace/.test(t)) {
-              if ($.hasClass(a, 'current')) {
-                a.textContent = a.title;
-              }
-            } else if (/-full/.test(t)) {
-              a.textContent = "/" + board + "/ - " + a.title;
-            } else if (/-(index|catalog|text)/.test(t)) {
-              if (m = t.match(/-(index|catalog)/)) {
-                a.setAttribute('data-only', m[1]);
-                a.href = "//boards.4chan.org/" + board + "/";
-                if (m[1] === 'catalog') {
-                  a.href += 'catalog';
-                }
-              }
-              if (m = t.match(/-text:"(.+)"/)) {
-                a.textContent = m[1];
-              }
-            } else if (board === '@') {
-              $.addClass(a, 'navSmall');
-            }
-            return a;
-          }
-        }
-        return $.tn(t);
-      });
-      return $.add(list, nodes);
-    },
-    toggleBoardList: function() {
-      var custom, full, nav, showBoardList;
-
-      nav = Header.nav;
-      custom = $('#custom-board-list', nav);
-      full = $('#full-board-list', nav);
-      showBoardList = !full.hidden;
-      custom.hidden = !showBoardList;
-      return full.hidden = showBoardList;
-    },
-    setBarPosition: function() {
-      $.event('CloseMenu');
-      Header.changeBarPosition(this.textContent);
-      Conf['Boards Navigation'] = this.textContent;
-      return $.set('Boards Navigation', this.textContent);
-    },
-    changeBarPosition: function(setting) {
-      $.rmClass(doc, 'top');
-      $.rmClass(doc, 'fixed');
-      $.rmClass(doc, 'bottom');
-      $.rmClass(doc, 'hide');
-      switch (setting) {
-        case 'Sticky top':
-          $.addClass(doc, 'top');
-          return $.addClass(doc, 'fixed');
-        case 'Sticky bottom':
-          $.addClass(doc, 'fixed');
-          return $.addClass(doc, 'bottom');
-        case 'Top':
-          return $.addClass(doc, 'top');
-        case 'Hide':
-          return $.addClass(doc, 'hide');
-      }
-    },
-    setBarVisibility: function(hide) {
-      Header.headerToggler.checked = hide;
-      $.event('CloseMenu');
-      return (hide ? $.addClass : $.rmClass)(Header.nav, 'autohide');
-    },
-    hashScroll: function() {
-      var post;
-
-      if (!(post = this.location.hash.slice(1))) {
-        return;
-      }
-      if ((Get.postFromRoot(post)).isHidden) {
-        return;
-      }
-      return Header.scrollToPost(post);
-    },
-    scrollToPost: function(post) {
-      var headRect, top;
-
-      top = post.getBoundingClientRect().top;
-      if (Conf['Boards Navigation'] === 'sticky top') {
-        headRect = Header.bar.getBoundingClientRect();
-        top += -headRect.top - headRect.height;
-      }
-      return doc.scrollTop += top;
-    },
-    toggleBarVisibility: function(e) {
-      var hide, message;
-
-      if (e.type === 'mousedown' && e.button !== 0) {
-        return;
-      }
-      hide = this.nodeName === 'INPUT' ? this.checked : !$.hasClass(Header.bar, 'autohide');
-      Conf['Header auto-hide'] = hide;
-      $.set('Header auto-hide', hide);
-      Header.setBarVisibility(hide);
-      message = hide ? 'The header bar will automatically hide itself.' : 'The header bar will remain visible.';
-      return new Notification('info', message, 2);
-    },
-    hashScroll: function() {
-      var hash, post;
-
-      if (!((hash = this.location.hash) && (post = $.id(hash.slice(1))))) {
-        return;
-      }
-      if ((Get.postFromRoot(post)).isHidden) {
-        return;
-      }
-      return Header.scrollToPost(post);
-    },
-    scrollToPost: function(post) {
-      var headRect, top;
-
-      top = post.getBoundingClientRect().top;
-      if (Conf['Boards Navigation'] === 'Sticky top') {
-        headRect = Header.bar.getBoundingClientRect();
-        top += -headRect.top - headRect.height;
-      }
-      return doc.scrollTop += top;
-    },
-    addShortcut: function(el) {
-      var shortcut;
-
-      shortcut = $.el('span', {
-        className: 'shortcut'
-      });
-      $.add(shortcut, [$.tn(' ['), el, $.tn(']')]);
-      return $.prepend(Header.shortcuts, shortcut);
-    },
-    menuToggle: function(e) {
-      return Header.menu.toggle(e, this, g);
-    },
-    createNotification: function(e) {
-      var cb, content, lifetime, notif, type, _ref;
-
-      _ref = e.detail, type = _ref.type, content = _ref.content, lifetime = _ref.lifetime, cb = _ref.cb;
-      notif = new Notification(type, content, lifetime);
-      if (cb) {
-        return cb(notif);
-      }
-    }
-  };
-
-  Keybinds = {
-    init: function() {
-      var init;
-
-      if (g.VIEW === 'catalog' || !Conf['Keybinds']) {
-        return;
-      }
-      init = function() {
-        var node, _i, _len, _ref;
-
-        $.off(d, '4chanXInitFinished', init);
-        $.on(d, 'keydown', Keybinds.keydown);
-        _ref = $$('[accesskey]');
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          node = _ref[_i];
-          node.removeAttribute('accesskey');
-        }
-      };
-      return $.on(d, '4chanXInitFinished', init);
-    },
-    keydown: function(e) {
-      var form, key, notification, notifications, op, target, thread, threadRoot, _i, _len;
-
-      if (!(key = Keybinds.keyCode(e))) {
-        return;
-      }
-      target = e.target;
-      if (['INPUT', 'TEXTAREA'].contains(target.nodeName)) {
-        if (!/(Esc|Alt|Ctrl|Meta)/.test(key)) {
-          return;
-        }
-      }
-      threadRoot = Nav.getThread();
-      if (op = $('.op', threadRoot)) {
-        thread = Get.postFromNode(op).thread;
-      }
-      switch (key) {
-        case Conf['Toggle board list']:
-          if (Conf['Custom Board Navigation']) {
-            Header.toggleBoardList();
-          }
-          break;
-        case Conf['Open empty QR']:
-          Keybinds.qr(threadRoot);
-          break;
-        case Conf['Open QR']:
-          Keybinds.qr(threadRoot, true);
-          break;
-        case Conf['Open settings']:
-          Settings.open();
-          break;
-        case Conf['Close']:
-          if ($.id('fourchanx-settings')) {
-            Settings.close();
-          } else if ((notifications = $$('.notification')).length) {
-            for (_i = 0, _len = notifications.length; _i < _len; _i++) {
-              notification = notifications[_i];
-              $('.close', notification).click();
-            }
-          } else if (QR.nodes) {
-            QR.close();
-          }
-          break;
-        case Conf['Spoiler tags']:
-          if (target.nodeName !== 'TEXTAREA') {
-            return;
-          }
-          Keybinds.tags('spoiler', target);
-          break;
-        case Conf['Code tags']:
-          if (target.nodeName !== 'TEXTAREA') {
-            return;
-          }
-          Keybinds.tags('code', target);
-          break;
-        case Conf['Eqn tags']:
-          if (target.nodeName !== 'TEXTAREA') {
-            return;
-          }
-          Keybinds.tags('eqn', target);
-          break;
-        case Conf['Math tags']:
-          if (target.nodeName !== 'TEXTAREA') {
-            return;
-          }
-          Keybinds.tags('math', target);
-          break;
-        case Conf['Submit QR']:
-          if (QR.nodes && !QR.status()) {
-            QR.submit();
-          }
-          break;
-        case Conf['Watch']:
-          ThreadWatcher.toggle(thread);
-          break;
-        case Conf['Update']:
-          ThreadUpdater.update();
-          break;
-        case Conf['Expand image']:
-          Keybinds.img(threadRoot);
-          break;
-        case Conf['Expand images']:
-          Keybinds.img(threadRoot, true);
-          break;
-        case Conf['fappeTyme']:
-          FappeTyme.toggle();
-          break;
-        case Conf['Front page']:
-          window.location = "/" + g.BOARD + "/0#delform";
-          break;
-        case Conf['Open front page']:
-          $.open("/" + g.BOARD + "/#delform");
-          break;
-        case Conf['Next page']:
-          if (form = $('.next form')) {
-            window.location = form.action;
-          }
-          break;
-        case Conf['Previous page']:
-          if (form = $('.prev form')) {
-            window.location = form.action;
-          }
-          break;
-        case Conf['Next thread']:
-          if (g.VIEW === 'thread') {
-            return;
-          }
-          Nav.scroll(+1);
-          break;
-        case Conf['Previous thread']:
-          if (g.VIEW === 'thread') {
-            return;
-          }
-          Nav.scroll(-1);
-          break;
-        case Conf['Expand thread']:
-          ExpandThread.toggle(thread);
-          break;
-        case Conf['Open thread']:
-          Keybinds.open(thread);
-          break;
-        case Conf['Open thread tab']:
-          Keybinds.open(thread, true);
-          break;
-        case Conf['Next reply']:
-          Keybinds.hl(+1, threadRoot);
-          break;
-        case Conf['Previous reply']:
-          Keybinds.hl(-1, threadRoot);
-          break;
-        case Conf['Hide']:
-          if (g.VIEW === 'index') {
-            ThreadHiding.toggle(thread);
-          }
-          break;
-        default:
-          return;
-      }
-      e.preventDefault();
-      return e.stopPropagation();
-    },
-    keyCode: function(e) {
-      var kc, key;
-
-      key = (function() {
-        switch (kc = e.keyCode) {
-          case 8:
-            return '';
-          case 13:
-            return 'Enter';
-          case 27:
-            return 'Esc';
-          case 37:
-            return 'Left';
-          case 38:
-            return 'Up';
-          case 39:
-            return 'Right';
-          case 40:
-            return 'Down';
-          default:
-            if ((48 <= kc && kc <= 57) || (65 <= kc && kc <= 90)) {
-              return String.fromCharCode(kc).toLowerCase();
-            } else {
-              return null;
-            }
-        }
-      })();
-      if (key) {
-        if (e.altKey) {
-          key = 'Alt+' + key;
-        }
-        if (e.ctrlKey) {
-          key = 'Ctrl+' + key;
-        }
-        if (e.metaKey) {
-          key = 'Meta+' + key;
-        }
-        if (e.shiftKey) {
-          key = 'Shift+' + key;
-        }
-      }
-      return key;
-    },
-    qr: function(thread, quote) {
-      if (!(Conf['Quick Reply'] && QR.postingIsEnabled)) {
-        return;
-      }
-      QR.open();
-      if (quote) {
-        QR.quote.call($('input', $('.post.highlight', thread) || thread));
-      }
-      QR.nodes.com.focus();
-      if (Conf['QR Shortcut']) {
-        return $.rmClass($('.qr-shortcut'), 'disabled');
-      }
-    },
-    tags: function(tag, ta) {
-      var range, selEnd, selStart, value;
-
-      value = ta.value;
-      selStart = ta.selectionStart;
-      selEnd = ta.selectionEnd;
-      ta.value = value.slice(0, selStart) + ("[" + tag + "]") + value.slice(selStart, selEnd) + ("[/" + tag + "]") + value.slice(selEnd);
-      range = ("[" + tag + "]").length + selEnd;
-      ta.setSelectionRange(range, range);
-      return $.event('input', null, ta);
-    },
-    img: function(thread, all) {
-      var post;
-
-      if (all) {
-        return ImageExpand.cb.toggleAll();
-      } else {
-        post = Get.postFromNode($('.post.highlight', thread) || $('.op', thread));
-        return ImageExpand.toggle(post);
-      }
-    },
-    open: function(thread, tab) {
-      var url;
-
-      if (g.VIEW !== 'index') {
-        return;
-      }
-      url = "/" + thread.board + "/res/" + thread;
-      if (tab) {
-        return $.open(url);
-      } else {
-        return location.href = url;
-      }
-    },
-    hl: function(delta, thread) {
-      var headRect, next, postEl, rect, replies, reply, root, topMargin, _i, _len;
-
-      if (Conf['Fixed Header'] && Conf['Bottom header']) {
-        topMargin = 0;
-      } else {
-        headRect = Header.bar.getBoundingClientRect();
-        topMargin = headRect.top + headRect.height;
-      }
-      if (postEl = $('.reply.highlight', thread)) {
-        $.rmClass(postEl, 'highlight');
-        rect = postEl.getBoundingClientRect();
-        if (rect.bottom >= topMargin && rect.top <= doc.clientHeight) {
-          root = postEl.parentNode;
-          next = $.x('child::div[contains(@class,"post reply")]', delta === +1 ? root.nextElementSibling : root.previousElementSibling);
-          if (!next) {
-            this.focus(postEl);
-            return;
-          }
-          if (!(g.VIEW === 'thread' || $.x('ancestor::div[parent::div[@class="board"]]', next) === thread)) {
-            return;
-          }
-          rect = next.getBoundingClientRect();
-          if (rect.top < 0 || rect.bottom > doc.clientHeight) {
-            if (delta === -1) {
-              window.scrollBy(0, rect.top - topMargin);
-            } else {
-              next.scrollIntoView(false);
-            }
-          }
-          this.focus(next);
-          return;
-        }
-      }
-      replies = $$('.reply', thread);
-      if (delta === -1) {
-        replies.reverse();
-      }
-      for (_i = 0, _len = replies.length; _i < _len; _i++) {
-        reply = replies[_i];
-        rect = reply.getBoundingClientRect();
-        if (delta === +1 && rect.top >= topMargin || delta === -1 && rect.bottom <= doc.clientHeight) {
-          this.focus(reply);
-          return;
-        }
-      }
-    },
-    focus: function(post) {
-      return $.addClass(post, 'highlight');
-    }
-  };
-
-  Redirect = {
-    init: function() {
-      return $.sync('archs', this.updateArchives);
-    },
-    updateArchives: function() {
-      return $.get('archivers', {}, function(_arg) {
-        var archivers;
-
-        archivers = _arg.archivers;
-        return Conf['archivers'] = archivers;
-      });
-    },
-    image: function(boardID, filename) {
-      switch (boardID) {
-        case 'a':
-        case 'gd':
-        case 'jp':
-        case 'm':
-        case 'q':
-        case 'tg':
-        case 'vg':
-        case 'vp':
-        case 'vr':
-        case 'wsg':
-          return "//archive.foolz.us/" + boardID + "/full_image/" + filename;
-        case 'u':
-          return "//nsfw.foolz.us/" + boardID + "/full_image/" + filename;
-        case 'po':
-          return "//archive.thedarkcave.org/" + boardID + "/full_image/" + filename;
-        case 'hr':
-        case 'tv':
-          return "http://archive.4plebs.org/" + boardID + "/full_image/" + filename;
-        case 'ck':
-        case 'fa':
-        case 'lit':
-        case 's4s':
-          return "//fuuka.warosu.org/" + boardID + "/full_image/" + filename;
-        case 'cgl':
-        case 'g':
-        case 'mu':
-        case 'w':
-          return "//rbt.asia/" + boardID + "/full_image/" + filename;
-        case 'an':
-        case 'k':
-        case 'toy':
-        case 'x':
-          return "http://archive.heinessen.com/" + boardID + "/full_image/" + filename;
-        case 'c':
-          return "//archive.nyafuu.org/" + boardID + "/full_image/" + filename;
-      }
-    },
-    post: function(boardID, postID) {
-      var archive, name, _base, _ref;
-
-      if (Redirect.post[boardID] == null) {
-        _ref = this.archiver;
-        for (name in _ref) {
-          archive = _ref[name];
-          if (archive.type === 'foolfuuka' && archive.boards.contains(boardID)) {
-            Redirect.post[boardID] = archive.base;
-            break;
-          }
-        }
-        (_base = Redirect.post)[boardID] || (_base[boardID] = false);
-      }
-      if (Redirect.post[boardID]) {
-        return "" + Redirect.post[boardID] + "/_/api/chan/post/?board=" + boardID + "&num=" + postID;
-      } else {
-        return null;
-      }
-    },
-    select: function(board) {
-      var archive, name, _ref, _results;
-
-      _ref = this.archiver;
-      _results = [];
-      for (name in _ref) {
-        archive = _ref[name];
-        if (!archive.boards.contains(board)) {
-          continue;
-        }
-        _results.push(name);
-      }
-      return _results;
-    },
-    to: function(data) {
-      var arch, archive, boardID;
-
-      boardID = data.boardID;
-      if ((arch = Conf.archivers[boardID]) == null) {
-        Conf.archivers[boardID] = arch = this.select(boardID)[0];
-        $.set('archivers', Conf.archivers);
-      }
-      return (arch && (archive = this.archiver[arch]) ? Redirect.path(archive.base, archive.type, data) : data.threadID ? "//boards.4chan.org/" + boardID + "/" : null);
-    },
-    archiver: {
-      'Foolz': {
-        base: 'https://archive.foolz.us',
-        boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'],
-        type: 'foolfuuka'
-      },
-      'NSFWFoolz': {
-        base: 'https://nsfw.foolz.us',
-        boards: ['u'],
-        type: 'foolfuuka'
-      },
-      'TheDarkCave': {
-        base: 'http://archive.thedarkcave.org',
-        boards: ['c', 'int', 'out', 'po'],
-        type: 'foolfuuka'
-      },
-      '4plebs': {
-        base: 'http://archive.4plebs.org',
-        boards: ['hr', 'tg', 'tv', 'x'],
-        base: 'foolfuuka'
-      },
-      'Warosu': {
-        base: '//fuuka.warosu.org',
-        boards: ['cgl', 'ck', 'fa', 'jp', 'lit', 's4s', 'q', 'tg'],
-        type: 'fuuka'
-      },
-      'InstallGentoo': {
-        base: '//archive.installgentoo.net',
-        boards: ['diy', 'g', 'sci'],
-        type: 'fuuka'
-      },
-      'RebeccaBlackTech': {
-        base: '//rbt.asia',
-        boards: ['an', 'cgl', 'g', 'mu', 'w'],
-        type: 'fuuka_mail'
-      },
-      'Heinessen': {
-        base: 'http://archive.heinessen.com',
-        boards: ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'],
-        type: 'fuuka'
-      },
-      'Cliche': {
-        base: '//www.cliché.net/4chan/cgi-board.pl',
-        boards: ['e'],
-        type: 'fuuka'
-      },
-      'NyaFuu': {
-        base: '//archive.nyafuu.org',
-        boards: ['c', 'w'],
-        type: 'fuuka'
-      }
-    },
-    path: function(base, archiver, data) {
-      var boardID, path, postID, threadID, type, value;
-
-      if (data.isSearch) {
-        boardID = data.boardID, type = data.type, value = data.value;
-        type = type === 'name' ? 'username' : type === 'MD5' ? 'image' : type;
-        value = encodeURIComponent(value);
-        if (archiver === 'foolfuuka') {
-          return "" + base + "/" + boardID + "/search/" + type + "/" + value;
-        } else if (type === 'image') {
-          return "" + base + "/" + boardID + "/?task=search2&search_media_hash=" + value;
-        } else {
-          return "" + base + "/" + boardID + "/?task=search2&search_" + type + "=" + value;
-        }
-      }
-      boardID = data.boardID, threadID = data.threadID, postID = data.postID;
-      path = threadID ? "" + boardID + "/thread/" + threadID : "" + boardID + "/post/" + postID;
-      if (archiver === 'foolfuuka') {
-        path += '/';
-      }
-      if (threadID && postID) {
-        path += archiver === 'foolfuuka' ? "#" + postID : "#p" + postID;
-      }
-      return "" + base + "/" + path;
-    }
-  };
-
-  RelativeDates = {
-    INTERVAL: $.MINUTE / 2,
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Relative Post Dates']) {
-        return;
-      }
-      $.on(d, 'visibilitychange ThreadUpdate', this.flush);
-      this.flush();
-      return Post.prototype.callbacks.push({
-        name: 'Relative Post Dates',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var dateEl;
-
-      if (this.isClone) {
-        return;
-      }
-      dateEl = this.nodes.date;
-      dateEl.title = dateEl.textContent;
-      return RelativeDates.setUpdate(this);
-    },
-    relative: function(diff, now, date) {
-      var days, months, number, rounded, unit, years;
-
-      unit = (number = diff / $.DAY) >= 1 ? (years = now.getYear() - date.getYear(), months = now.getMonth() - date.getMonth(), days = now.getDate() - date.getDate(), years > 1 ? (number = years - (months < 0 || months === 0 && days < 0), 'year') : years === 1 && (months > 0 || months === 0 && days >= 0) ? (number = years, 'year') : (months = (months + 12) % 12) > 1 ? (number = months - (days < 0), 'month') : months === 1 && days >= 0 ? (number = months, 'month') : 'day') : (number = diff / $.HOUR) >= 1 ? 'hour' : (number = diff / $.MINUTE) >= 1 ? 'minute' : (number = Math.max(0, diff) / $.SECOND, 'second');
-      rounded = Math.round(number);
-      if (rounded !== 1) {
-        unit += 's';
-      }
-      return "" + rounded + " " + unit + " ago";
-    },
-    stale: [],
-    flush: function() {
-      var now, update, _i, _len, _ref;
-
-      if (d.hidden) {
-        return;
-      }
-      now = new Date();
-      _ref = RelativeDates.stale;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        update = _ref[_i];
-        update(now);
-      }
-      RelativeDates.stale = [];
-      clearTimeout(RelativeDates.timeout);
-      return RelativeDates.timeout = setTimeout(RelativeDates.flush, RelativeDates.INTERVAL);
-    },
-    setUpdate: function(post) {
-      var markStale, setOwnTimeout, update;
-
-      setOwnTimeout = function(diff) {
-        var delay;
-
-        delay = diff < $.MINUTE ? $.SECOND - (diff + $.SECOND / 2) % $.SECOND : diff < $.HOUR ? $.MINUTE - (diff + $.MINUTE / 2) % $.MINUTE : diff < $.DAY ? $.HOUR - (diff + $.HOUR / 2) % $.HOUR : $.DAY - (diff + $.DAY / 2) % $.DAY;
-        return setTimeout(markStale, delay);
-      };
-      update = function(now) {
-        var date, diff, relative, singlePost, _i, _len, _ref;
-
-        date = post.info.date;
-        diff = now - date;
-        relative = RelativeDates.relative(diff, now, date);
-        _ref = [post].concat(post.clones);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          singlePost = _ref[_i];
-          singlePost.nodes.date.firstChild.textContent = relative;
-        }
-        return setOwnTimeout(diff);
-      };
-      markStale = function() {
-        return RelativeDates.stale.push(update);
-      };
-      return update(new Date());
-    }
-  };
-
-  Report = {
-    init: function() {
-      if (!/report/.test(location.search)) {
-        return;
-      }
-      return $.ready(this.ready);
-    },
-    ready: function() {
-      var field, form;
-
-      form = $('form');
-      field = $.id('recaptcha_response_field');
-      $.on(field, 'keydown', function(e) {
-        if (e.keyCode === 8 && !field.value) {
-          return $.globalEval('Recaptcha.reload("t")');
-        }
-      });
-      return $.on(form, 'submit', function(e) {
-        var response;
-
-        e.preventDefault();
-        response = field.value.trim();
-        if (!/\s/.test(response)) {
-          field.value = "" + response + " " + response;
-        }
-        return form.submit();
-      });
-    }
-  };
-
-  Nav = {
-    init: function() {
-      var append, next, prev, span;
-
-      switch (g.VIEW) {
-        case 'index':
-          if (!Conf['Index Navigation']) {
-            return;
-          }
-          break;
-        case 'thread':
-          if (!Conf['Reply Navigation']) {
-            return;
-          }
-          break;
-        default:
-          return;
-      }
-      span = $.el('span', {
-        id: 'navlinks'
-      });
-      prev = $.el('a', {
-        href: 'javascript:;'
-      });
-      next = $.el('a', {
-        href: 'javascript:;'
-      });
-      $.on(prev, 'click', this.prev);
-      $.on(next, 'click', this.next);
-      $.add(span, [prev, $.tn(' '), next]);
-      append = function() {
-        $.off(d, '4chanXInitFinished', append);
-        return $.add(d.body, span);
-      };
-      return $.on(d, '4chanXInitFinished', append);
-    },
-    prev: function() {
-      if (g.VIEW === 'thread') {
-        return window.scrollTo(0, 0);
-      } else {
-        return Nav.scroll(-1);
-      }
-    },
-    next: function() {
-      if (g.VIEW === 'thread') {
-        return window.scrollTo(0, d.body.scrollHeight);
-      } else {
-        return Nav.scroll(+1);
-      }
-    },
-    getThread: function(full) {
-      var headRect, i, rect, thread, threads, topMargin, _i, _len;
-
-      if (Conf['Bottom header']) {
-        topMargin = 0;
-      } else {
-        headRect = Header.bar.getBoundingClientRect();
-        topMargin = headRect.top + headRect.height;
-      }
-      threads = $$('.thread:not([hidden])');
-      for (i = _i = 0, _len = threads.length; _i < _len; i = ++_i) {
-        thread = threads[i];
-        rect = thread.getBoundingClientRect();
-        if (rect.bottom > topMargin) {
-          if (full) {
-            return [threads, thread, i, rect, topMargin];
-          } else {
-            return thread;
-          }
-        }
-      }
-      return $('.board');
-    },
-    scroll: function(delta) {
-      var i, rect, thread, threads, top, topMargin, _ref, _ref1;
-
-      _ref = Nav.getThread(true), threads = _ref[0], thread = _ref[1], i = _ref[2], rect = _ref[3], topMargin = _ref[4];
-      top = rect.top - topMargin;
-      if (!((delta === -1 && Math.ceil(top) < 0) || (delta === +1 && top > 1))) {
-        i += delta;
-      }
-      top = ((_ref1 = threads[i]) != null ? _ref1.getBoundingClientRect().top : void 0) - topMargin;
-      return window.scrollBy(0, top);
-    }
-  };
-
-  Sauce = {
-    init: function() {
-      var link, links, _i, _len, _ref;
-
-      if (g.VIEW === 'catalog' || !Conf['Sauce']) {
-        return;
-      }
-      links = [];
-      _ref = Conf['sauces'].split('\n');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        link = _ref[_i];
-        if (link[0] === '#') {
-          continue;
-        }
-        links.push(this.createSauceLink(link.trim()));
-      }
-      if (!links.length) {
-        return;
-      }
-      this.links = links;
-      this.link = $.el('a', {
-        target: '_blank'
-      });
-      return Post.prototype.callbacks.push({
-        name: 'Sauce',
-        cb: this.node
-      });
-    },
-    createSauceLink: function(link) {
-      var m, text;
-
-      link = link.replace(/%(T?URL|MD5|board)/ig, function(parameter) {
-        switch (parameter) {
-          case '%TURL':
-            return "' + encodeURIComponent(post.file.thumbURL) + '";
-          case '%URL':
-            return "' + encodeURIComponent(post.file.URL) + '";
-          case '%MD5':
-            return "' + encodeURIComponent(post.file.MD5) + '";
-          case '%board':
-            return "' + encodeURIComponent(post.board) + '";
-          default:
-            return parameter;
-        }
-      });
-      text = (m = link.match(/;text:(.+)$/)) ? m[1] : link.match(/(\w+)\.\w+\//)[1];
-      link = link.replace(/;text:.+$/, '');
-      return Function('post', 'a', "a.href = '" + link + "';\na.textContent = '" + text + "';\nreturn a;");
-    },
-    node: function() {
-      var link, nodes, _i, _len, _ref;
-
-      if (this.isClone || !this.file) {
-        return;
-      }
-      nodes = [];
-      _ref = Sauce.links;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        link = _ref[_i];
-        nodes.push($.tn('\u00A0'), link(this, Sauce.link.cloneNode(true)));
-      }
-      return $.add(this.file.info, nodes);
-    }
-  };
-
-  Time = {
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Time Formatting']) {
-        return;
-      }
-      this.funk = this.createFunc(Conf['time']);
-      return Post.prototype.callbacks.push({
-        name: 'Time Formatting',
-        cb: this.node
-      });
-    },
-    node: function() {
-      if (this.isClone) {
-        return;
-      }
-      return this.nodes.date.textContent = Time.funk(Time, this.info.date);
-    },
-    createFunc: function(format) {
-      var code;
-
-      code = format.replace(/%([A-Za-z])/g, function(s, c) {
-        if (c in Time.formatters) {
-          return "' + Time.formatters." + c + ".call(date) + '";
-        } else {
-          return s;
-        }
-      });
-      return Function('Time', 'date', "return '" + code + "'");
-    },
-    day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-    month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-    zeroPad: function(n) {
-      if (n < 10) {
-        return "0" + n;
-      } else {
-        return n;
-      }
-    },
-    formatters: {
-      a: function() {
-        return Time.day[this.getDay()].slice(0, 3);
-      },
-      A: function() {
-        return Time.day[this.getDay()];
-      },
-      b: function() {
-        return Time.month[this.getMonth()].slice(0, 3);
-      },
-      B: function() {
-        return Time.month[this.getMonth()];
-      },
-      d: function() {
-        return Time.zeroPad(this.getDate());
-      },
-      e: function() {
-        return this.getDate();
-      },
-      H: function() {
-        return Time.zeroPad(this.getHours());
-      },
-      I: function() {
-        return Time.zeroPad(this.getHours() % 12 || 12);
-      },
-      k: function() {
-        return this.getHours();
-      },
-      l: function() {
-        return this.getHours() % 12 || 12;
-      },
-      m: function() {
-        return Time.zeroPad(this.getMonth() + 1);
-      },
-      M: function() {
-        return Time.zeroPad(this.getMinutes());
-      },
-      p: function() {
-        if (this.getHours() < 12) {
-          return 'AM';
-        } else {
-          return 'PM';
-        }
-      },
-      P: function() {
-        if (this.getHours() < 12) {
-          return 'am';
-        } else {
-          return 'pm';
-        }
-      },
-      S: function() {
-        return Time.zeroPad(this.getSeconds());
-      },
-      y: function() {
-        return this.getFullYear() - 2000;
-      }
-    }
-  };
-
-  Favicon = {
-    init: function() {
-      return $.ready(function() {
-        var href;
-
-        Favicon.el = $('link[rel="shortcut icon"]', d.head);
-        Favicon.el.type = 'image/x-icon';
-        href = Favicon.el.href;
-        Favicon.SFW = /ws\.ico$/.test(href);
-        Favicon["default"] = href;
-        return Favicon["switch"]();
-      });
-    },
-    "switch": function() {
-      var unreadDead;
-
-      unreadDead = Favicon.unreadDeadY = Favicon.unreadSFW = Favicon.unreadSFWY = Favicon.unreadNSFW = Favicon.unreadNSFWY = 'data:image/png;base64,';
-      switch (Conf['favicon']) {
-        case 'ferongr':
-          Favicon.unreadDead += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAFVBMVEX///9zBQC/AADpDAP/gID/q6voCwJJTwpOAAAAAXRSTlMAQObYZgAAAGJJREFUeF5Fi7ENg0AQBCfa/AFdDh2gdwPIogMK2E2+/xLslwOvdqRJhv+GQQPUCtJM7svankLrq/I+TY5e6Ueh1jyBMX7AFJi9vwfyVO4CbbO6jNYpp9GyVPbdkFhVgAQ2H0NOE5jk9DT8AAAAAElFTkSuQmCC';
-          Favicon.unreadDeadY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAS1BMVEUAAAAAAAAAAAAJAAASAAAZAQAaAQAiAQAkAQAoFBQyAgAzAgA1AgA4AABBAgBXAwBzBQCEBgGvCAG/AADoCwLpDAP/gID/q6v///9zILr8AAAAA3RSTlMAx9dmesIgAAAAc0lEQVQY02WPgQ6DIBBDmTqnbE70Cvb/v3TAnW5OSKB9ybXg3HUBOAmEEH4FQtrSn4gxi+xjVC9SVOEiSvbZI8zSV+/Xo7icnryZ15GObMxvtWUkB/VJW57kHU7fUcHStm8FkncGE/mwP6CGzq/eauHwvT7sWQt3gZLW+AAAAABJRU5ErkJggg==';
-          Favicon.unreadSFW += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAFVBMVEX///8AcH4AtswA2PJ55fKi6fIA1/FtpPADAAAAAXRSTlMAQObYZgAAAGJJREFUeF5Fi7ENg0AQBCfa/AFdDh2gdwPIogMK2E2+/xLslwOvdqRJhv+GQQPUCtJM7svankLrq/I+TY5e6Ueh1jyBMX7AFJi9vwfyVO4CbbO6jNYpp9GyVPbdkFhVgAQ2H0NOE5jk9DT8AAAAAElFTkSuQmCC';
-          Favicon.unreadSFWY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAASFBMVEUAAAAAAAAAAAAACAkAERMAGBsAGR0AISUALzQALzUAMTcANjwAP0cAVF8AcH4AeokAorYAtswA1/EA2PISIyV55fKi6fL////l+pZqAAAAA3RSTlMAx9dmesIgAAAAcklEQVQY02VPARLCIAxjsjnUWdcg6/9/ukIr00nvIMldEhrC/wHwA0BE3wBUtnICOStQnrNx5oqqzmzKx9vDPH1Nae3F9U4ig3OzjCIX51treYvMxou13EQmBPtHE14xLiawjgoPtfgOaKHP+9VrEXA8O1v7CmSPE3u0AAAAAElFTkSuQmCC';
-          Favicon.unreadNSFW += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAFVBMVEX///8oeQBJ3ABV/wHM/7Lu/+ZU/gAqUP3dAAAAAXRSTlMAQObYZgAAAGJJREFUeF5Fi7ENg0AQBCfa/AFdDh2gdwPIogMK2E2+/xLslwOvdqRJhv+GQQPUCtJM7svankLrq/I+TY5e6Ueh1jyBMX7AFJi9vwfyVO4CbbO6jNYpp9GyVPbdkFhVgAQ2H0NOE5jk9DT8AAAAAElFTkSuQmCC';
-          Favicon.unreadNSFWY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAS1BMVEUAAAAAAAAAAAADCgAGEgAIGgAJGwALJAANJwASNwASOAATOgAVQQAWRAAeWwAgKBsoeQAwkQA/wABJ3ABU/gBV/wHM/7Lu/+b////r+K2AAAAAA3RSTlMAx9dmesIgAAAAc0lEQVQY02WPgQ6DIBBDmTonbk70Cvb/v3TAnW5OSKB9ybXg3HUBOAmEEH4FQtrSn4gxi+xjVC9SVOEiSvbZI8zSV+/Xo7icnryZ15GObMxvtWUmB/VJW0byDqfvqGBp20mB5J3Bi3zYH1BD38/eauHwvT7sEAt1Fb320QAAAABJRU5ErkJggg==';
-          break;
-        case 'xat-':
-          Favicon.unreadDead += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAPFBMVEX9AAD8AAD/AAD+AADAExKKXl2CfHqLkZFub2yfaF3bZ2PzZGL/zs//iYr/AAASAAAGAAAAAAAAAAAAAADpOCseAAAADHRSTlP9MAcAATVYeprJ5O/MbzqoAAAAXklEQVQY03VPQQ7AIAgz8QAG4dL//3VVcVk2Vw4tDVQp9YVyMACIEkIxDEQEGjHFnBjCbPU5EXBfnBns6WRG1Wbuvbtb0z9jr6Qh2KGQenp2/+xpsFQnrePAuulz7QUTuwm5NnwmIAAAAABJRU5ErkJggg==';
-          Favicon.unreadDeadY += 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAMAAACuAq9NAAAAY1BMVEUBAAACAQELCQkPDQwgFBMzKilOSEdva2iEgoCReHOadXClamDIaWbxcG7+hIX+mpv+m5z+oqP+tLX+zc7//f3+9PT97Oz23t750NDbra3zwL87LCwAAAAGAABHAADPAAD/AABkWeLDAAAAHHRSTlO5/fTv8Na2n42lsMvi8v3+/v749OaITDsDAQABSG2w8gAAAGdJREFUCNdNjtEKgDAIRYVGCmsyqCe7q/3/V2azQfpwPehVyQCIMIt4YYTeO7LHKMiGlDIkuh2qofR6obUqhtc4F637XreU1h+m41gcJX/DHyJWXYHzkCMm+hd3a4GezLNr8PQA4bQHEXEQFRJP5NAAAAAASUVORK5CYII=';
-          Favicon.unreadSFW += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAPFBMVEUAAAAAAAAAAAAAAABFRUdsa2yRjop4dXVpZ2tdcI9dfKdBirUzlMBHpdxSquRisfOs2/99xv8umMMAAABljCUFAAAAEHRSTlN7FwUAQVt6kZ2/zej59vTv0aAplgAAAGNJREFUGNNtj1EOwCAIQ5eYIPCD0vvfdYi6LJvy0fICNVzl864DAECVuVKYAeDuEFVJkxPDmM1+TTh6n7oy0FvrWBmF1aIPYspnUGWvSE1A2KGgcvp2AtU3iGJOmcch6pHftTekXQrRd6slMAAAAABJRU5ErkJggg==';
-          Favicon.unreadSFWY += 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAMAAACuAq9NAAAAY1BMVEUAAAAAAAAAAAAAAAAREBAWFRY1NDROTE1iYGFzdXp4eoCAgYVlc4mHjZiYoa6zvcqy1/Pg8v+e1f+b1P6X0f2DyP5jsu49msgymcctkLomc5QbPU0SIiwNFxwumMMAAAAAAADALpU1AAAAHnRSTlPNLgcBAAABBxhdc4WznarD8P7+/v3+8/z9/vz2+PUOYDHSAAAAZElEQVQI102OsQ6AMAhEMWGDpTbUQUvu/79ShDYRhuMFDiAGIKIqEgUT3B0akQVxyhgp1XWYldLnhfXTkF5WHdZb69cz9YdPazNQdA0vRK2ahftQDGNjfHHXZjgSV5cRGQHCwS8j7A9loVSnzwAAAABJRU5ErkJggg==';
-          Favicon.unreadNSFW += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAPFBMVEUAAAAAAAAAAAAAAAAfJSBLUU1ydHR8fn6Ri5Frbm9dn19jvEFt30tv5VB082KR/33Z/9Gq/5tmzDMAAADw+5ntAAAAEHRSTlP++ywHAAE2Wnuayez19O/+EzXeOQAAAF9JREFUGNN1TzESwCAIc3AABxDy/78WFXu91oYhIYcRSn2hHAwAxAEKMQy4O1pgijkxhMjqc8KhujgzoGaKzKjcRK13U2n8Z+wnaRB2KKievt2bPY0o5knrOETd9Ln2AuDLCz1j8HTeAAAAAElFTkSuQmCC';
-          Favicon.unreadNSFWY += 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAMAAACuAq9NAAAAY1BMVEUPGgsCBAIBAQEBAQAAAQAAAAABAQEFBQQQEw85SDdVa1GhzJm967TZ+NLP+sbM+8S6/a3k/9+s/pyr/puX/oSd15KIuoGBj39tfm1qj2RepFlu2VRkwzZlyTNatC5myzMAAAAOPREWAAAAHnRSTlP4/fz331IPBQIBAAECOly37/7+/v7XwpWktNDy+f7X56yoAAAAZElEQVQI102NwQ7AIAhDMdku3JwkIiaz//+VQ9FkcCgvpUAMoKpX9YEJYww0s7YG4iW9Lwl3QCSUZhZSHsHKslqXknPpRPpDypkmtr0cWBGntnseOeKgGd6UAr1Vj8vw9sKFmz+fERAp5vutHwAAAABJRU5ErkJggg==';
-          break;
-        case 'Mayhem':
-          Favicon.unreadDead += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABIUlEQVQ4jZ2ScWuDMBDFgw4pIkU0WsoQkWAYIkXZH4N9/+/V3dmfXSrKYIFHwt17j8vdGWNMIkgFuaDgzgQnwRs4EQs5KdolUQtagRN0givEDBTEOjgtGs0Zq8F7cKqqusVxrMQLaDUWcjBSrXkn8gs51tpJSWLk9b3HUa0aNIL5gPBR1/V4kJvR7lTwl8GmAm1Gf9+c3S+89qBHa8502AsmSrtBaEBPbIbj0ah2madlNAPEccdgJDfAtWifBjqWKShRBT6KoiH8QlEUn/qt0CCjnNdmPUwmFWzj9Oe6LpKuZXcwqq88z78Pch3aZU3dPwwc2sWlfZKCW5tWluV8kGvXClLm6dYN4/aUqfCbnEOzNDGhGZbNargvxCzvMGfRJD8UaDVvgkzo6QAAAABJRU5ErkJggg==';
-          Favicon.unreadDeadY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABj0lEQVQ4y42TQUorQRCGv+oekpj43pOhOyIiKoHBxTMkuAnEtWcwx/AY3sUbBIRcwCw8gCfIMkaTOOUiNdgGRRuKoav+v2qq/i4BakBmXweUwDoxLF5ZhVkC64rYBHYMUAIvwKuBMEwdaFiCNbAAngEC0NHkxBi73vsOsG92HGPsphigY1wOzfNhqhpC6AEd730RQuh9hQEOAY6A/jeAs3a7/f+bWB84ckCpqg+I8Osjgqo+AKUDViJS8LkGMcY+sJrNZssYY387LiIFsBLgL9AC/pgaArzZlF+sZgO4BG7sfgvcA3MxUtOStBIpX7cS3Klqd9OBTIEr4DlLOsuAmqpODXQOiHMuy/O8FkLoJth/6Uh2gQPg87Q3k+7leX6hqnpmPvM/GWfXWeWGqj5+oUS9LMs6wF7iHAwGJ9ZW5uxpup+UGwEtEVoijEYjKl66PJujmvIW3vsFwBiYqzJXZTweY5wSU6Bd7UP1KoECODUrJpOJAtPhcKjAtXGaYptWs57qWyv9Zn/it1a5knj5Dm3v4q8APeACAAAAAElFTkSuQmCC';
-          Favicon.unreadSFW += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABCElEQVQ4jZ2S4crCMAxF+0OGDJEPKYrIGKOsiJSx/fJRfSAfTJNyKqXfiuDg0C25N2RJjTGmEVrhTzhw7oStsIEtsVzT4o2Jo9ALThiEM8IdHIgNaHo8mjNWg6/ske8bohPo+63QOLzmooHp8fyAICBSQkVz0QKdsFQEV6WSW/D+7+BbgbIDHcb4Kp61XyjyI16zZ8JemGltQtDBSGxB4/GoN+7TpkkjDCsFArm0IYv3U0BbnYtf8BCy+JytsE0X6VyuKhPPK/GAJ14kvZZDZVV3pZIb8MZr6n4o4PDGKn0S5SdDmyq5PnXQsk+Xbhinp03FFzmHJw6xYRiWm9VxnohZ3vOcxdO8ARmXRvbWdtzQAAAAAElFTkSuQmCC';
-          Favicon.unreadSFWY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAkFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBQcHFx4KISoNLToaVW4oKCgul8M4ODg7OztMTEyRkZHBwcH///9dzWZ0AAAAI3RSTlMEBggKDA4QEhQWFxkbHR8hIyUmKCosLjAxN1hbYc7P0dLc3mzWzBUAAAC+SURBVBjTNY3pcsIwEIM3ePERx/bG5IIe0NIrhVbv/3Y4Ydj9Ic030ogqpY3mDdGGi1EVsYuSvGE2Pkl0TFYAdLGuY1eMWGowzzN6kX41DYVpNbvdKlO4Jx5gSbi2VO+Vcq2jrc/jNLQhtM+n05PfkrKxG/oFHIEXqwqQsVRy7n+AtwLYL3sYR3wA755Jp3Vvv8cn8Js0GXmA7/P5TwzpiLn8MOALuEZNygkm5JTy/+vl4BRVbJvQ1NbWRSxXN64PGOBlhG0qAAAAAElFTkSuQmCC';
-          Favicon.unreadNSFW += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABCklEQVQ4jZ2S0WrDMAxF/TBCCKWMYhZKCSGYmFJMSNjD/mhf239qJXNcjBdTWODgRLpXKJKNMaYROuFTOHEehFb4gJZYrunwxsSXMApOmIQzwgOciE1oRjyaM1aDj+yR7xuiHvT9VmgcXnPRwO/9+wWCgEgJFc1FCwzCVhFclUpuw/u3g3cFyg50GPOjePZ+ocjPeM2RCXthpbUFwQAzsQ2Nx6PeuE+bJo0w7BQI5NKGLN5XAW11LX7BQ8jia7bCLl2kc7mqTLzuxAOeeJH0Wk6VVf0oldyEN15T948CDm+sMiZRfjK0pZIbUwcd+3TphnF62lR8kXN44hAbhmG5WQNnT8zynucsnuYJhFpBfkMzqD4AAAAASUVORK5CYII=';
-          Favicon.unreadNSFWY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAkFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECAIQIAgWLAsePA8oKCg4ODg6dB07OztMTExmzDORkZHBwcH///92I3mvAAAAI3RSTlMEBggKDA4QEhQWFxkbHR8hIyUmKCosLjAxN1hbYc7P0dLc3mzWzBUAAAC+SURBVBjTNY3pcsIwEIM3ePERx/bG5IIe0NIT0ur93w4nDLs/pPlGGlGltNG8IdpwMaoidlGSN8zGJ4mOyQqALtZ17IoRSw3meUYv0q+moTCtZrdbZQr3xAMsCdeW6r1SrnW09XmchjaE9vl0evJbUjZ2Q7+AI/BiVQEylkrO/TfwVgD7ZQ/jiA/g3TPptO7t9/gEfpImIw/wez7/iSEdMZcfBnwB16hJOcGEnFL+f70cnKKKbROa2tq6iOXqBuMXGTe4CAUbAAAAAElFTkSuQmCC';
-          break;
-        case 'Original':
-          Favicon.unreadDead += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX/////AAD///8AAABBZmS3AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=';
-          Favicon.unreadDeadY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAALVBMVEUAAAAAAAAAAAAAAAAKAAAoAAAoKCg4AAA4ODg7OztMAACRAADBwcH/AAD///+WCcPSAAAAA3RSTlMAx9dmesIgAAAAZ0lEQVQI1z2LsQmAUAxEb4Isk0rwp3EPR3ECcRQrh7C3/nAasPwzmCgYuPBy5AH/NALSImqAK+H1oJRqyJVHNAnZqDITVhj7/PrAciJ9il0BHs/jjU+fnB9sQ0IxX6OBO6Xr0xKAxANLZzUanCWzZQAAAABJRU5ErkJggg==';
-          Favicon.unreadSFW += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX///8ul8P///8AAACaqgkzAAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=';
-          Favicon.unreadSFWY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAALVBMVEUAAAAAAAAAAAAAAAABBQcHFx4KISoNLToaVW4oKCgul8M4ODg7OzvBwcH///8uS/CdAAAAA3RSTlMAx9dmesIgAAAAZ0lEQVQI1z2LsQ2AUAhEbwKWoftRGvdwBEewchM7d9BFbE6pbP4Mgj+R5MjjwgP+qQSkRtQAV8K3lVI2Q648oknIRpWZsMI4988HjgvpU+wO8HgeHzR9cjZYhoRiPkcDd0rXpyUAiRd5YjKC7MvNRgAAAABJRU5ErkJggg==';
-          Favicon.unreadNSFW += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX///9mzDP///8AAACT0n1lAAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=';
-          Favicon.unreadNSFWY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAALVBMVEUAAAAAAAAAAAAAAAAECAIQIAgWLAsePA8oKCg4ODg6dB07OztmzDPBwcH///+rsf3XAAAAA3RSTlMAx9dmesIgAAAAZ0lEQVQI1z2LsQ2AUAhEbwKWofRL4x6O4AhuopWb2P4F7E5prP4MgiaSHHlceMA/jYC0iBrgSnjdKaUacuURTUI2qsyEFcaxvD6wnkifYleAx/N449Mn5wfbkFDM52jgTun6tAQg8QAEvjQg42KY2AAAAABJRU5ErkJggg==';
-      }
-      if (Favicon.SFW) {
-        Favicon.unread = Favicon.unreadSFW;
-        return Favicon.unreadY = Favicon.unreadSFWY;
-      } else {
-        Favicon.unread = Favicon.unreadNSFW;
-        return Favicon.unreadY = Favicon.unreadNSFWY;
-      }
-    },
-    empty: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEX////b29sAAAAJ2DVhAAAAAXRSTlMAQObYZgAAAD1JREFUeF5NyrENgEAMxVArFZcpaD4z/TKjZIwrMyoSQoJXuDKf7BhUyyyrkGVycviZhLD6Wd7sq4jzaABukdYKjYsxq7wAAAAASUVORK5CYII=',
-    dead: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEX/////AAAAAACalQKRAAAAAXRSTlMAQObYZgAAAD1JREFUeF5NyrENgEAMxVArFZcpaD4z/TKjZIwrMyoSQoJXuDKf7BhUyyyrkGVycviZhLD6Wd7sq4jzaABukdYKjYsxq7wAAAAASUVORK5CYII='
-  };
-
-  ThreadExcerpt = {
-    init: function() {
-      if (g.VIEW !== 'thread' || !Conf['Thread Excerpt']) {
-        return;
-      }
-      return Thread.prototype.callbacks.push({
-        name: 'Thread Excerpt',
-        cb: this.node
-      });
-    },
-    node: function() {
-      return d.title = Get.threadExcerpt(this);
-    }
-  };
-
-  ThreadStats = {
-    init: function() {
-      var html;
-
-      if (g.VIEW !== 'thread' || !Conf['Thread Stats']) {
-        return;
-      }
-      html = '<span id=post-count>0</span> / <span id=file-count>0</span>';
-      if (Conf['Thread Updater']) {
-        this.dialog = $.el('span', {
-          innerHTML: "[ " + html + " ]"
-        });
-      } else {
-        this.dialog = UI.dialog('thread-stats', 'bottom: 0; left: 0;', "<div class=move>" + html + "</div>");
-      }
-      this.postCountEl = $('#post-count', this.dialog);
-      this.fileCountEl = $('#file-count', this.dialog);
-      return Thread.prototype.callbacks.push({
-        name: 'Thread Stats',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var ID, fileCount, post, postCount, _ref;
-
-      postCount = 0;
-      fileCount = 0;
-      _ref = this.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
-        postCount++;
-        if (post.file) {
-          fileCount++;
-        }
-      }
-      ThreadStats.thread = this;
-      ThreadStats.update(postCount, fileCount);
-      $.on(d, 'ThreadUpdate', ThreadStats.onUpdate);
-      if (Conf['Thread Updater']) {
-        return $.asap((function() {
-          return $('.move', ThreadUpdater.dialog);
-        }), function() {
-          return $.prepend($('.move', ThreadUpdater.dialog), ThreadStats.dialog);
-        });
-      } else {
-        return $.add(d.body, ThreadStats.dialog);
-      }
-    },
-    onUpdate: function(e) {
-      var fileCount, postCount, _ref;
-
-      if (e.detail[404]) {
-        return;
-      }
-      _ref = e.detail, postCount = _ref.postCount, fileCount = _ref.fileCount;
-      return ThreadStats.update(postCount, fileCount);
-    },
-    update: function(postCount, fileCount) {
-      var fileCountEl, postCountEl, thread;
-
-      thread = ThreadStats.thread, postCountEl = ThreadStats.postCountEl, fileCountEl = ThreadStats.fileCountEl;
-      postCountEl.textContent = postCount;
-      fileCountEl.textContent = fileCount;
-      (thread.postLimit && !thread.isSticky ? $.addClass : $.rmClass)(postCountEl, 'warning');
-      return (thread.fileLimit && !thread.isSticky ? $.addClass : $.rmClass)(fileCountEl, 'warning');
-    }
-  };
-
-  ThreadUpdater = {
-    init: function() {
-      var checked, conf, html, name, _ref;
-
-      if (g.VIEW !== 'thread' || !Conf['Thread Updater']) {
-        return;
-      }
-      html = '';
-      _ref = Config.updater.checkbox;
-      for (name in _ref) {
-        conf = _ref[name];
-        checked = Conf[name] ? 'checked' : '';
-        html += "<div><label title='" + conf[1] + "'><input name='" + name + "' type=checkbox " + checked + "> " + name + "</label></div>";
-      }
-      checked = Conf['Auto Update'] ? 'checked' : '';
-      html = "<div class=move><span id=update-status></span> <span id=update-timer></span></div>\n" + html + "\n<div><label title='Controls whether *this* thread automatically updates or not'><input type=checkbox name='Auto Update This' " + checked + "> Auto Update This</label></div>\n<div><label><input type=number name=Interval class=field min=5 value=" + Conf['Interval'] + "> Refresh rate (s)</label></div>\n<div><input value='Update' type=button name='Update'></div>";
-      this.dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
-      this.timer = $('#update-timer', this.dialog);
-      this.status = $('#update-status', this.dialog);
-      this.checkPostCount = 0;
-      return Thread.prototype.callbacks.push({
-        name: 'Thread Updater',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var input, _i, _len, _ref;
-
-      ThreadUpdater.thread = this;
-      ThreadUpdater.root = this.OP.nodes.root.parentNode;
-      ThreadUpdater.lastPost = +ThreadUpdater.root.lastElementChild.id.match(/\d+/)[0];
-      ThreadUpdater.outdateCount = 0;
-      ThreadUpdater.lastModified = '0';
-      _ref = $$('input', ThreadUpdater.dialog);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        input = _ref[_i];
-        if (input.type === 'checkbox') {
-          $.on(input, 'change', $.cb.checked);
-        }
-        switch (input.name) {
-          case 'Scroll BG':
-            $.on(input, 'change', ThreadUpdater.cb.scrollBG);
-            ThreadUpdater.cb.scrollBG();
-            break;
-          case 'Auto Update This':
-            $.on(input, 'change', ThreadUpdater.cb.autoUpdate);
-            $.event('change', null, input);
-            break;
-          case 'Interval':
-            $.on(input, 'change', ThreadUpdater.cb.interval);
-            ThreadUpdater.cb.interval.call(input);
-            break;
-          case 'Update':
-            $.on(input, 'click', ThreadUpdater.update);
-        }
-      }
-      $.on(window, 'online offline', ThreadUpdater.cb.online);
-      $.on(d, 'QRPostSuccessful', ThreadUpdater.cb.post);
-      $.on(d, 'visibilitychange', ThreadUpdater.cb.visibility);
-      ThreadUpdater.cb.online();
-      Rice.nodes(ThreadUpdater.dialog);
-      return $.add(d.body, ThreadUpdater.dialog);
-    },
-    /*
-    http://freesound.org/people/pierrecartoons1979/sounds/90112/
-    cc-by-nc-3.0
-    */
-
-    beep: 'data:audio/wav;base64,UklGRjQDAABXQVZFZm10IBAAAAABAAEAgD4AAIA+AAABAAgAc21wbDwAAABBAAADAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkYXRhzAIAAGMms8em0tleMV4zIpLVo8nhfSlcPR102Ki+5JspVEkdVtKzs+K1NEhUIT7DwKrcy0g6WygsrM2k1NpiLl0zIY/WpMrjgCdbPhxw2Kq+5Z4qUkkdU9K1s+K5NkVTITzBwqnczko3WikrqM+l1NxlLF0zIIvXpsnjgydZPhxs2ay95aIrUEkdUdC3suK8N0NUIjq+xKrcz002WioppdGm091pK1w0IIjYp8jkhydXPxxq2K295aUrTkoeTs65suK+OUFUIzi7xqrb0VA0WSoootKm0t5tKlo1H4TYqMfkiydWQBxm16+85actTEseS8y7seHAPD9TIza5yKra01QyWSson9On0d5wKVk2H4DYqcfkjidUQB1j1rG75KsvSkseScu8seDCPz1TJDW2yara1FYxWSwnm9Sn0N9zKVg2H33ZqsXkkihSQR1g1bK65K0wSEsfR8i+seDEQTxUJTOzy6rY1VowWC0mmNWoz993KVc3H3rYq8TklSlRQh1d1LS647AyR0wgRMbAsN/GRDpTJTKwzKrX1l4vVy4lldWpzt97KVY4IXbUr8LZljVPRCxhw7W3z6ZISkw1VK+4sMWvXEhSPk6buay9sm5JVkZNiLWqtrJ+TldNTnquqbCwilZXU1BwpKirrpNgWFhTaZmnpquZbFlbVmWOpaOonHZcXlljhaGhpZ1+YWBdYn2cn6GdhmdhYGN3lp2enIttY2Jjco+bnJuOdGZlZXCImJqakHpoZ2Zug5WYmZJ/bGlobX6RlpeSg3BqaW16jZSVkoZ0bGtteImSk5KIeG5tbnaFkJKRinxxbm91gY2QkIt/c3BwdH6Kj4+LgnZxcXR8iI2OjIR5c3J0e4WLjYuFe3VzdHmCioyLhn52dHR5gIiKioeAeHV1eH+GiYqHgXp2dnh9hIiJh4J8eHd4fIKHiIeDfXl4eHyBhoeHhH96eHmA',
-    cb: {
-      online: function() {
-        if (ThreadUpdater.online = navigator.onLine) {
-          ThreadUpdater.outdateCount = 0;
-          ThreadUpdater.set('timer', ThreadUpdater.getInterval());
-          if (Conf['Auto Update This']) {
-            ThreadUpdater.update();
-          }
-          ThreadUpdater.set('status', null, null);
-        } else {
-          ThreadUpdater.set('timer', null);
-          ThreadUpdater.set('status', 'Offline', 'warning');
-        }
-        return ThreadUpdater.cb.autoUpdate();
-      },
-      post: function(e) {
-        if (!(Conf['Auto Update This'] && e.detail.threadID === ThreadUpdater.thread.ID)) {
-          return;
-        }
-        ThreadUpdater.outdateCount = 0;
-        if (ThreadUpdater.seconds > 2) {
-          return setTimeout(ThreadUpdater.update, 1000);
-        }
-      },
-      checkpost: function() {
-        if (!(g.DEAD || ThreadUpdater.foundPost || ThreadUpdater.checkPostCount >= 10)) {
-          return setTimeout(ThreadUpdater.update, ++ThreadUpdater.checkPostCount * 500);
-        }
-        ThreadUpdater.checkPostCount = 0;
-        delete ThreadUpdater.foundPost;
-        return delete ThreadUpdater.postID;
-      },
-      visibility: function() {
-        if (d.hidden) {
-          return;
-        }
-        ThreadUpdater.outdateCount = 0;
-        if (ThreadUpdater.seconds > ThreadUpdater.interval) {
-          return ThreadUpdater.set('timer', ThreadUpdater.getInterval());
-        }
-      },
-      scrollBG: function() {
-        return ThreadUpdater.scrollBG = Conf['Scroll BG'] ? function() {
-          return true;
-        } : function() {
-          return !d.hidden;
-        };
-      },
-      autoUpdate: function() {
-        if (Conf['Auto Update This'] && ThreadUpdater.online) {
-          return ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
-        } else {
-          return clearTimeout(ThreadUpdater.timeoutID);
-        }
-      },
-      interval: function() {
-        var val;
-
-        val = parseInt(this.value, 10);
-        ThreadUpdater.interval = this.value = val;
-        return $.cb.value.call(this);
-      },
-      load: function() {
-        var klass, req, text, _ref;
-
-        req = ThreadUpdater.req;
-        switch (req.status) {
-          case 200:
-            g.DEAD = false;
-            ThreadUpdater.parse(JSON.parse(req.response).posts);
-            ThreadUpdater.lastModified = req.getResponseHeader('Last-Modified');
-            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
-            break;
-          case 404:
-            g.DEAD = true;
-            ThreadUpdater.set('timer', null);
-            ThreadUpdater.set('status', '404', 'warning');
-            clearTimeout(ThreadUpdater.timeoutID);
-            ThreadUpdater.thread.kill();
-            $.event('ThreadUpdate', {
-              404: true,
-              thread: ThreadUpdater.thread
-            });
-            break;
-          default:
-            ThreadUpdater.outdateCount++;
-            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
-            /*
-            Status Code 304: Not modified
-            By sending the `If-Modified-Since` header we get a proper status code, and no response.
-            This saves bandwidth for both the user and the servers and avoid unnecessary computation.
-            */
-
-            _ref = [0, 304].contains(req.status) ? [null, null] : ["" + req.statusText + " (" + req.status + ")", 'warning'], text = _ref[0], klass = _ref[1];
-            ThreadUpdater.set('status', text, klass);
-        }
-        if (ThreadUpdater.postID) {
-          ThreadUpdater.cb.checkpost(this.status);
-        }
-        return delete ThreadUpdater.req;
-      }
-    },
-    getInterval: function() {
-      var i, j;
-
-      i = ThreadUpdater.interval;
-      j = Math.min(ThreadUpdater.outdateCount, 10);
-      if (!d.hidden) {
-        j = Math.min(j, 7);
-      }
-      return ThreadUpdater.seconds = Conf['Optional Increase'] ? Math.max(i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]) : i;
-    },
-    set: function(name, text, klass) {
-      var el, node;
-
-      el = ThreadUpdater[name];
-      if (node = el.firstChild) {
-        node.data = text;
-      } else {
-        el.textContent = text;
-      }
-      if (klass !== void 0) {
-        return el.className = klass;
-      }
-    },
-    timeout: function() {
-      var n;
-
-      ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
-      if (!(n = --ThreadUpdater.seconds)) {
-        return ThreadUpdater.update();
-      } else if (n <= -60) {
-        ThreadUpdater.set('status', 'Retrying', null);
-        return ThreadUpdater.update();
-      } else if (n > 0) {
-        return ThreadUpdater.set('timer', n);
-      }
-    },
-    update: function() {
-      var url;
-
-      if (!ThreadUpdater.online) {
-        return;
-      }
-      ThreadUpdater.seconds = 0;
-      ThreadUpdater.set('timer', '...');
-      if (ThreadUpdater.req) {
-        ThreadUpdater.req.onloadend = null;
-        ThreadUpdater.req.abort();
-      }
-      url = "//api.4chan.org/" + ThreadUpdater.thread.board + "/res/" + ThreadUpdater.thread + ".json";
-      return ThreadUpdater.req = $.ajax(url, {
-        onloadend: ThreadUpdater.cb.load
-      }, {
-        headers: {
-          'If-Modified-Since': ThreadUpdater.lastModified
-        }
-      });
-    },
-    updateThreadStatus: function(title, OP) {
-      var icon, message, root, titleLC;
-
-      titleLC = title.toLowerCase();
-      if (ThreadUpdater.thread["is" + title] === !!OP[titleLC]) {
-        return;
-      }
-      if (!(ThreadUpdater.thread["is" + title] = !!OP[titleLC])) {
-        message = title === 'Sticky' ? 'The thread is not a sticky anymore.' : 'The thread is not closed anymore.';
-        new Notification('info', message, 30);
-        $.rm($("." + titleLC + "Icon", ThreadUpdater.thread.OP.nodes.info));
-        return;
-      }
-      message = title === 'Sticky' ? 'The thread is now a sticky.' : 'The thread is now closed.';
-      new Notification('info', message, 30);
-      icon = $.el('img', {
-        src: "//static.4chan.org/image/" + titleLC + ".gif",
-        alt: title,
-        title: title,
-        className: "" + titleLC + "Icon"
-      });
-      root = $('[title="Quote this post"]', ThreadUpdater.thread.OP.nodes.info);
-      if (title === 'Closed') {
-        root = $('.stickyIcon', ThreadUpdater.thread.OP.nodes.info) || root;
-      }
-      return $.after(root, [$.tn(' '), icon]);
-    },
-    parse: function(postObjects) {
-      var ID, OP, count, deletedFiles, deletedPosts, files, index, key, node, num, post, postObject, posts, scroll, _i, _len, _ref;
-
-      OP = postObjects[0];
-      Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler;
-      ThreadUpdater.updateThreadStatus('Sticky', OP);
-      ThreadUpdater.updateThreadStatus('Closed', OP);
-      ThreadUpdater.thread.postLimit = !!OP.bumplimit;
-      ThreadUpdater.thread.fileLimit = !!OP.imagelimit;
-      posts = [];
-      index = [];
-      files = [];
-      count = 0;
-      for (_i = 0, _len = postObjects.length; _i < _len; _i++) {
-        postObject = postObjects[_i];
-        num = postObject.no;
-        index.push(num);
-        if (postObject.fsize) {
-          files.push(num);
-        }
-        if (num <= ThreadUpdater.lastPost) {
-          continue;
-        }
-        count++;
-        node = Build.postFromObject(postObject, ThreadUpdater.thread.board);
-        posts.push(new Post(node, ThreadUpdater.thread, ThreadUpdater.thread.board));
-      }
-      deletedPosts = [];
-      deletedFiles = [];
-      _ref = ThreadUpdater.thread.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
-        ID = +ID;
-        if (post.isDead && index.contains(ID)) {
-          post.resurrect();
-        } else if (!index.contains(ID)) {
-          post.kill();
-          deletedPosts.push(post);
-        } else if (post.file && !post.file.isDead && !files.contains(ID)) {
-          post.kill(true);
-          deletedFiles.push(post);
-        }
-        if (ThreadUpdater.postID) {
-          if (ID === ThreadUpdater.postID) {
-            ThreadUpdater.foundPost = true;
-          }
-        }
-      }
-      if (!count) {
-        ThreadUpdater.set('status', null, null);
-        ThreadUpdater.outdateCount++;
-      } else {
-        ThreadUpdater.set('status', "+" + count, 'new');
-        ThreadUpdater.outdateCount = 0;
-        if (Conf['Beep'] && d.hidden && Unread.posts && !Unread.posts.length) {
-          if (!ThreadUpdater.audio) {
-            ThreadUpdater.audio = $.el('audio', {
-              src: ThreadUpdater.beep
-            });
-          }
-          ThreadUpdater.audio.play();
-        }
-        ThreadUpdater.lastPost = posts[count - 1].ID;
-        Main.callbackNodes(Post, posts);
-        scroll = Conf['Auto Scroll'] && ThreadUpdater.scrollBG() && ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25;
-        for (key in posts) {
-          post = posts[key];
-          if (!posts.hasOwnProperty(key)) {
-            continue;
-          }
-          if (post.cb) {
-            if (!post.cb.call(post)) {
-              $.add(ThreadUpdater.root, post.nodes.root);
-            }
-          } else {
-            $.add(ThreadUpdater.root, post.nodes.root);
-          }
-        }
-        if (scroll) {
-          if (Conf['Bottom Scroll']) {
-            doc.scrollTop = d.body.clientHeight;
-          } else {
-            Header.scrollToPost(nodes[0]);
-          }
-        }
-        $.queueTask(function() {
-          var length, threadID;
-
-          threadID = ThreadUpdater.thread.ID;
-          length = $$('.thread > .postContainer', ThreadUpdater.root).length;
-          return Fourchan.parseThread(threadID, length - count, length);
-        });
-      }
-      return $.event('ThreadUpdate', {
-        404: false,
-        thread: ThreadUpdater.thread,
-        newPosts: posts,
-        deletedPosts: deletedPosts,
-        deletedFiles: deletedFiles,
-        postCount: OP.replies + 1,
-        fileCount: OP.images + (!!ThreadUpdater.thread.OP.file && !ThreadUpdater.thread.OP.file.isDead)
-      });
-    }
-  };
-
-  ThreadWatcher = {
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Thread Watcher']) {
-        return;
-      }
-      this.dialog = UI.dialog('watcher', 'top: 50px; left: 0px;', '<div class=move>Thread Watcher</div>');
-      $.on(d, 'QRPostSuccessful', this.cb.post);
-      $.on(d, '4chanXInitFinished', this.ready);
-      $.sync('WatchedThreads', this.refresh);
-      return Thread.prototype.callbacks.push({
-        name: 'Thread Watcher',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var favicon,
-        _this = this;
-
-      favicon = $.el('img', {
-        className: 'favicon'
-      });
-      $.on(favicon, 'click', ThreadWatcher.cb.toggle);
-      $.before($('input', this.OP.nodes.post), favicon);
-      if (g.VIEW !== 'thread') {
-        return;
-      }
-      return $.get('AutoWatch', 0, function(item) {
-        if (item['AutoWatch'] !== _this.ID) {
-          return;
-        }
-        ThreadWatcher.watch(_this);
-        return $["delete"]('AutoWatch');
-      });
-    },
-    ready: function() {
-      $.off(d, '4chanXInitFinished', ThreadWatcher.ready);
-      if (!Main.isThisPageLegit()) {
-        return;
-      }
-      ThreadWatcher.refresh();
-      return $.add(d.body, ThreadWatcher.dialog);
-    },
-    refresh: function(watched) {
-      var ID, board, div, favicon, id, link, nodes, props, thread, x, _ref, _ref1;
-
-      if (!watched) {
-        $.get('WatchedThreads', {}, function(item) {
-          return ThreadWatcher.refresh(item['WatchedThreads']);
-        });
-        return;
-      }
-      nodes = [$('.move', ThreadWatcher.dialog)];
-      for (board in watched) {
-        _ref = watched[board];
-        for (id in _ref) {
-          props = _ref[id];
-          x = $.el('a', {
-            textContent: '×',
-            href: 'javascript:;'
-          });
-          $.on(x, 'click', ThreadWatcher.cb.x);
-          link = $.el('a', props);
-          link.title = link.textContent;
-          div = $.el('div');
-          $.add(div, [x, $.tn(' '), link]);
-          nodes.push(div);
-        }
-      }
-      $.rmAll(ThreadWatcher.dialog);
-      $.add(ThreadWatcher.dialog, nodes);
-      watched = watched[g.BOARD] || {};
-      _ref1 = g.BOARD.threads;
-      for (ID in _ref1) {
-        thread = _ref1[ID];
-        favicon = $('.favicon', thread.OP.nodes.post);
-        favicon.src = ID in watched ? Favicon["default"] : Favicon.empty;
-      }
-    },
-    cb: {
-      toggle: function() {
-        return ThreadWatcher.toggle(Get.postFromNode(this).thread);
-      },
-      x: function() {
-        var thread;
-
-        thread = this.nextElementSibling.pathname.split('/');
-        return ThreadWatcher.unwatch(thread[1], thread[3]);
-      },
-      post: function(e) {
-        var board, postID, threadID, _ref;
-
-        _ref = e.detail, board = _ref.board, postID = _ref.postID, threadID = _ref.threadID;
-        if (postID === threadID) {
-          if (Conf['Auto Watch']) {
-            return $.set('AutoWatch', threadID);
-          }
-        } else if (Conf['Auto Watch Reply']) {
-          return ThreadWatcher.watch(board.threads[threadID]);
-        }
-      }
-    },
-    toggle: function(thread) {
-      if ($('.favicon', thread.OP.nodes.post).src === Favicon.empty) {
-        return ThreadWatcher.watch(thread);
-      } else {
-        return ThreadWatcher.unwatch(thread.board, thread.ID);
-      }
-    },
-    unwatch: function(board, threadID) {
-      return $.get('WatchedThreads', {}, function(item) {
-        var watched;
-
-        watched = item['WatchedThreads'];
-        delete watched[board][threadID];
-        if (!Object.keys(watched[board]).length) {
-          delete watched[board];
-        }
-        ThreadWatcher.refresh(watched);
-        return $.set('WatchedThreads', watched);
-      });
-    },
-    watch: function(thread) {
-      return $.get('WatchedThreads', {}, function(item) {
-        var watched, _name;
-
-        watched = item['WatchedThreads'];
-        watched[_name = thread.board] || (watched[_name] = {});
-        watched[thread.board][thread] = {
-          href: "/" + thread.board + "/res/" + thread,
-          textContent: Get.threadExcerpt(thread)
-        };
-        ThreadWatcher.refresh(watched);
-        return $.set('WatchedThreads', watched);
-      });
-    }
-  };
-
-  Unread = {
-    init: function() {
-      if (g.VIEW !== 'thread' || !Conf['Unread Count'] && !Conf['Unread Favicon']) {
-        return;
-      }
-      this.db = new DataBoard('lastReadPosts', this.sync);
-      this.hr = $.el('hr', {
-        id: 'unread-line'
-      });
-      this.posts = [];
-      this.postsQuotingYou = [];
-      return Thread.prototype.callbacks.push({
-        name: 'Unread',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var ID, post, posts, _ref;
-
-      Unread.thread = this;
-      Unread.title = d.title;
-      posts = [];
-      _ref = this.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
-        if (post.isReply) {
-          posts.push(post);
-        }
-      }
-      Unread.lastReadPost = Unread.db.get({
-        boardID: this.board.ID,
-        threadID: this.ID,
-        defaultValue: 0
-      });
-      Unread.addPosts(posts);
-      $.on(d, 'ThreadUpdate', Unread.onUpdate);
-      $.on(d, 'scroll visibilitychange', Unread.read);
-      if (Conf['Unread Line']) {
-        $.on(d, 'visibilitychange', Unread.setLine);
-      }
-      if (!Conf['Scroll to Last Read Post']) {
-        return;
-      }
-      return $.on(window, 'load', function() {
-        var hash, root;
-
-        if ((hash = location.hash.match(/\d+/)) && hash[0] in this.posts) {
-          return;
-        }
-        if (Unread.posts.length) {
-          while (root = $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root)) {
-            if (!(Get.postFromRoot(root)).isHidden) {
-              break;
-            }
-          }
-          if (!root) {
-            return;
-          }
-          return root.scrollIntoView(false);
-        } else if (posts.length) {
-          return Header.scrollToPost(posts[posts.length - 1].nodes.root);
-        }
-      });
-    },
-    sync: function() {
-      var lastReadPost;
-
-      lastReadPost = Unread.db.get({
-        boardID: Unread.thread.board.ID,
-        threadID: Unread.thread.ID,
-        defaultValue: 0
-      });
-      if (!(Unread.lastReadPost < lastReadPost)) {
-        return;
-      }
-      Unread.lastReadPost = lastReadPost;
-      Unread.readArray(Unread.posts);
-      Unread.readArray(Unread.postsQuotingYou);
-      Unread.setLine();
-      return Unread.update();
-    },
-    addPosts: function(newPosts) {
-      var ID, data, post, _i, _len;
-
-      for (_i = 0, _len = newPosts.length; _i < _len; _i++) {
-        post = newPosts[_i];
-        ID = post.ID;
-        if (ID <= Unread.lastReadPost || post.isHidden) {
-          continue;
-        }
-        if (QR.db) {
-          data = {
-            boardID: post.board.ID,
-            threadID: post.thread.ID,
-            postID: post.ID
-          };
-          if (QR.db.get(data)) {
-            continue;
-          }
-        }
-        Unread.posts.push(post);
-        Unread.addPostQuotingYou(post);
-      }
-      if (Conf['Unread Line']) {
-        Unread.setLine(newPosts.contains(Unread.posts[0]));
-      }
-      Unread.read();
-      return Unread.update();
-    },
-    addPostQuotingYou: function(post) {
-      var quotelink, _i, _len, _ref;
-
-      if (!QR.db) {
-        return;
-      }
-      _ref = post.nodes.quotelinks;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quotelink = _ref[_i];
-        if (QR.db.get(Get.postDataFromLink(quotelink))) {
-          Unread.postsQuotingYou.push(post);
-        }
-      }
-    },
-    onUpdate: function(e) {
-      if (e.detail[404]) {
-        return Unread.update();
-      } else {
-        return Unread.addPosts(e.detail.newPosts);
-      }
-    },
-    readSinglePost: function(post) {
-      var i;
-
-      if ((i = Unread.posts.indexOf(post)) === -1) {
-        return;
-      }
-      Unread.posts.splice(i, 1);
-      if (i === 0) {
-        Unread.lastReadPost = post.ID;
-        Unread.saveLastReadPost();
-      }
-      if ((i = Unread.postsQuotingYou.indexOf(post)) !== -1) {
-        Unread.postsQuotingYou.splice(i, 1);
-      }
-      return Unread.update();
-    },
-    readArray: function(arr) {
-      var i, post, _i, _len;
-
-      for (i = _i = 0, _len = arr.length; _i < _len; i = ++_i) {
-        post = arr[i];
-        if (post.ID > Unread.lastReadPost) {
-          break;
-        }
-      }
-      return arr.splice(0, i);
-    },
-    read: $.debounce(50, function(e) {
-      var ID, bottom, height, i, post, posts, read;
-
-      if (d.hidden || !Unread.posts.length) {
-        return;
-      }
-      height = doc.clientHeight;
-      posts = Unread.posts;
-      read = [];
-      i = posts.length;
-      while (post = posts[--i]) {
-        bottom = post.nodes.root.getBoundingClientRect().bottom;
-        if (bottom < height) {
-          ID = post.ID;
-          posts.remove(post);
-        }
-      }
-      if (!ID) {
-        return;
-      }
-      Unread.lastReadPost = ID;
-      Unread.saveLastReadPost();
-      Unread.readArray(Unread.postsQuotingYou);
-      if (e) {
-        return Unread.update();
-      }
-    }),
-    saveLastReadPost: $.debounce(2 * $.SECOND, function() {
-      return Unread.db.set({
-        boardID: Unread.thread.board.ID,
-        threadID: Unread.thread.ID,
-        val: Unread.lastReadPost
-      });
-    }),
-    setLine: function(force) {
-      var post, root;
-
-      if (!(d.hidden || force === true)) {
-        return;
-      }
-      if (post = Unread.posts[0]) {
-        root = post.nodes.root;
-        if (root !== $('.thread > .replyContainer', root.parentNode)) {
-          return $.before(root, Unread.hr);
-        }
-      } else {
-        return $.rm(Unread.hr);
-      }
-    },
-    update: function() {
-      var count;
-
-      count = Unread.posts.length;
-      if (Conf['Unread Count']) {
-        d.title = "" + (count || !Conf['Hide Unread Count at (0)'] ? "(" + count + ") " : '') + (g.DEAD ? "/" + g.BOARD + "/ - 404" : "" + Unread.title);
-      }
-      if (!Conf['Unread Favicon']) {
-        return;
-      }
-      Favicon.el.href = g.DEAD ? Unread.postsQuotingYou.length ? Favicon.unreadDeadY : count ? Favicon.unreadDead : Favicon.dead : count ? Unread.postsQuotingYou.length ? Favicon.unreadY : Favicon.unread : Favicon["default"];
-      return $.add(d.head, Favicon.el);
-    }
-  };
-
   QR = {
     init: function() {
       var sc;
@@ -8879,14 +6624,16 @@
           return $.addClass(doc, 'hide-original-post-form');
         });
       }
-      $.on(d, '4chanXInitFinished', this.initReady);
+      $.ready(this.initReady);
+      if (Conf['Persistent QR']) {
+        $.on(d, '4chanXInitFinished', this.persist);
+      }
       return Post.prototype.callbacks.push({
         name: 'Quick Reply',
         cb: this.node
       });
     },
     initReady: function() {
-      $.off(d, '4chanXInitFinished', QR.initReady);
       QR.postingIsEnabled = !!$.id('postForm');
       if (!QR.postingIsEnabled) {
         return;
@@ -8906,23 +6653,20 @@
       $.on(d, 'dragover', QR.dragOver);
       $.on(d, 'drop', QR.dropFile);
       $.on(d, 'dragstart dragend', QR.drag);
-      $.on(d, 'ThreadUpdate', function() {
+      return $.on(d, 'ThreadUpdate', function() {
         if (g.DEAD) {
           return QR.abort();
         } else {
           return QR.status();
         }
       });
-      if (Conf['Persistent QR']) {
-        return QR.persist();
-      }
     },
     node: function() {
       return $.on($('a[title="Quote this post"]', this.nodes.info), 'click', QR.quote);
     },
     persist: function() {
       QR.open();
-      if (Conf['Auto-Hide QR']) {
+      if (Conf['Auto Hide QR']) {
         return QR.hide();
       }
     },
@@ -9159,7 +6903,7 @@
             elapsed = Math.floor((now - start) / $.SECOND);
             if (elapsed >= 0) {
               seconds = Math.max(seconds, types[type] - elapsed);
-              if (hasFile && upSpd) {
+              if (Conf['Cooldown Prediction'] && hasFile && upSpd) {
                 seconds -= Math.floor(post.file.size / upSpd * upSpdAccuracy);
                 seconds = Math.max(seconds, 0);
               }
@@ -9841,7 +7585,7 @@
     dialog: function() {
       var dialog, mimeTypes, name, nodes, thread, _i, _len, _ref;
 
-      dialog = UI.dialog('qr', 'top:0;right:0;', "<div id=qrtab class=move>\n  <input type=checkbox id=autohide title=Auto-hide> Post Form\n  <a href=javascript:; class=close title=Close>×</a>\n</div>\n<form>\n  <div class=persona>\n    <input id=dump-button type=button title='Dump list' value=+ tabindex=0>\n    <input name=name  data-name=name  title=Name    placeholder=Name    class=field size=1 tabindex=10>\n    <input name=email data-name=email title=E-mail  placeholder=E-mail  class=field size=1 tabindex=20>\n    <input name=sub   data-name=sub   title=Subject placeholder=Subject class=field size=1 tabindex=30>\n  </div>\n  <div class=textarea>\n    <textarea data-name=com title=Comment placeholder=Comment class=field tabindex=40></textarea>\n    <span id=char-count></span>\n  </div>\n  <div id=dump-list-container>\n    <div id=dump-list></div>\n    <a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a>\n  </div>\n  <div id=file-n-submit>\n    <span id=qr-filename-container class=field tabindex=60>\n      <span id=qr-no-file>No selected file</span>\n      <span id=qr-filename></span>\n      <a id=qr-filerm href=javascript:; title='Remove file' tabindex=80>×</a>\n    </span>\n    <input type=submit tabindex=70>\n  </div>\n  <input type=file multiple>\n  <div id=qr-thread-select>\n    <select title='Create a new thread / Reply'>\n      <option value=new>New thread</option>\n    </select>\n  </div> \n  <label id=qr-spoiler-label>\n    <input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=90>Spoiler?\n  </label>\n</form>".replace(/>\s+</g, '><'));
+      dialog = UI.dialog('qr', 'top:0;right:0;', "  <div id=qrtab class=move><input type=checkbox id=autohide title=Auto-hide> Post Form\n<a href=javascript:; class=close title=Close>×</a></div><form><div class=persona><input id=dump-button type=button title='Dump list' value=+ tabindex=0><input name=name  data-name=name  title=Name    placeholder=Name    class=field size=1 tabindex=10><input name=email data-name=email title=E-mail  placeholder=E-mail  class=field size=1 tabindex=20><input name=sub   data-name=sub   title=Subject placeholder=Subject class=field size=1 tabindex=30></div><div class=textarea><textarea data-name=com title=Comment placeholder=Comment class=field tabindex=40></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=60><span id=qr-no-file>No selected file</span><span id=qr-filename></span><a id=qr-filerm href=javascript:; title='Remove file' tabindex=80>×</a></span><input type=submit tabindex=70></div><input type=file multiple><div id=qr-thread-select><select title='Create a new thread / Reply'><option value=new>New thread</option></select></div><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=90>Spoiler?\n</label></form>");
       QR.nodes = nodes = {
         el: dialog,
         move: $('.move', dialog),
@@ -10006,7 +7750,7 @@
       }
       QR.cleanNotifications();
       QR.cooldown.auto = QR.posts.length > 1;
-      if (Conf['Auto-Hide QR'] && !QR.cooldown.auto) {
+      if (Conf['Auto Hide QR'] && !QR.cooldown.auto) {
         QR.hide();
       }
       if (!QR.cooldown.auto && $.x('ancestor::div[@id="qr"]', d.activeElement)) {
@@ -10036,7 +7780,7 @@
           QR.cooldown.auto = false;
           QR.status();
           return QR.error($.el('span', {
-            innerHTML: 'Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.'
+            innerHTML: "Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.\n[<a href=\"https://github.com/MayhemYDG/4chan-x/wiki/FAQ#what-does-connection-error-you-may-have-been-banned-mean\" target=_blank>FAQ</a>]"
           }));
         }
       };
@@ -10172,613 +7916,1858 @@
     }
   };
 
-  QuoteBacklink = {
+  FappeTyme = {
     init: function() {
-      var format;
+      var el;
 
-      if (g.VIEW === 'catalog' || !Conf['Quote Backlinks']) {
+      if (!Conf['Fappe Tyme'] && (g.VIEW === 'catalog' || g.BOARD === 'f')) {
         return;
       }
-      format = Conf['backlink'].replace(/%id/g, "' + id + '");
-      this.funk = Function('id', "return '" + format + "'");
-      this.containers = {};
-      Post.prototype.callbacks.push({
-        name: 'Quote Backlinking Part 1',
-        cb: this.firstNode
+      el = $.el('a', {
+        href: 'javascript:;',
+        id: 'fappeTyme',
+        title: 'Fappe Tyme'
+      });
+      $.on(el, 'click', FappeTyme.toggle);
+      $.asap((function() {
+        return $.id('boardNavMobile');
+      }), function() {
+        return $.add($.id('navtopright'), el);
       });
       return Post.prototype.callbacks.push({
-        name: 'Quote Backlinking Part 2',
-        cb: this.secondNode
+        name: 'Fappe Tyme',
+        cb: this.node
       });
     },
-    firstNode: function() {
-      var a, clone, container, containers, link, post, quote, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+    node: function() {
+      if (this.file) {
+        return;
+      }
+      return $.addClass(this.nodes.root, "noFile");
+    },
+    toggle: function() {
+      return $.toggleClass(doc, 'fappeTyme');
+    }
+  };
 
-      if (this.isClone || !this.quotes.length) {
+  ImageExpand = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
+        return;
+      }
+      this.EAI = $.el('a', {
+        id: 'img-controls',
+        className: 'expand-all-shortcut',
+        title: 'Expand All Images',
+        href: 'javascript:;'
+      });
+      $.on(this.EAI, 'click', ImageExpand.cb.toggleAll);
+      Post.prototype.callbacks.push({
+        name: 'Image Expansion',
+        cb: this.node
+      });
+      return $.asap((function() {
+        return $.id('delform');
+      }), function() {
+        return $.prepend($.id('delform'), ImageExpand.EAI);
+      });
+    },
+    node: function() {
+      var thumb, _ref;
+
+      if (!((_ref = this.file) != null ? _ref.isImage : void 0)) {
+        return;
+      }
+      thumb = this.file.thumb;
+      $.on(thumb.parentNode, 'click', ImageExpand.cb.toggle);
+      if (this.isClone && $.hasClass(thumb, 'expanding')) {
+        ImageExpand.contract(this);
+        ImageExpand.expand(this);
+        return;
+      }
+      if (ImageExpand.on && !this.isHidden) {
+        return ImageExpand.expand(this);
+      }
+    },
+    cb: {
+      toggle: function(e) {
+        if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
+          return;
+        }
+        e.preventDefault();
+        return ImageExpand.toggle(Get.postFromNode(this));
+      },
+      toggleAll: function() {
+        var ID, file, func, post, _i, _len, _ref, _ref1;
+
+        $.event('CloseMenu');
+        if (ImageExpand.on = $.hasClass(ImageExpand.EAI, 'expand-all-shortcut')) {
+          ImageExpand.EAI.className = 'contract-all-shortcut';
+          ImageExpand.EAI.title = 'Contract All Images';
+          func = ImageExpand.expand;
+        } else {
+          ImageExpand.EAI.className = 'expand-all-shortcut';
+          ImageExpand.EAI.title = 'Expand All Images';
+          func = ImageExpand.contract;
+        }
+        _ref = g.posts;
+        for (ID in _ref) {
+          post = _ref[ID];
+          _ref1 = [post].concat(post.clones);
+          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+            post = _ref1[_i];
+            file = post.file;
+            if (!(file && file.isImage && doc.contains(post.nodes.root))) {
+              continue;
+            }
+            if (ImageExpand.on && (!Conf['Expand spoilers'] && file.isSpoiler || Conf['Expand from here'] && file.thumb.getBoundingClientRect().top < 0)) {
+              continue;
+            }
+            $.queueTask(func, post);
+          }
+        }
+      },
+      setFitness: function() {
+        var checked;
+
+        checked = this.checked;
+        (checked ? $.addClass : $.rmClass)(doc, this.name.toLowerCase().replace(/\s+/g, '-'));
+        if (this.name !== 'Fit height') {
+          return;
+        }
+        if (checked) {
+          $.on(window, 'resize', ImageExpand.resize);
+          if (!ImageExpand.style) {
+            ImageExpand.style = $.addStyle(null);
+          }
+          return ImageExpand.resize();
+        } else {
+          return $.off(window, 'resize', ImageExpand.resize);
+        }
+      }
+    },
+    toggle: function(post) {
+      var headRect, rect, root, thumb, top;
+
+      thumb = post.file.thumb;
+      if (!(post.file.isExpanded || $.hasClass(thumb, 'expanding'))) {
+        ImageExpand.expand(post);
+        return;
+      }
+      ImageExpand.contract(post);
+      rect = post.nodes.root.getBoundingClientRect();
+      if (!(rect.top <= 0 || rect.left <= 0)) {
+        return;
+      }
+      top = rect.top;
+      if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
+        headRect = Header.bar.getBoundingClientRect();
+        top += -headRect.top - headRect.height;
+      }
+      root = doc;
+      if (rect.top < 0) {
+        root.scrollTop += top;
+      }
+      if (rect.left < 0) {
+        return root.scrollLeft = 0;
+      }
+    },
+    contract: function(post) {
+      $.rmClass(post.nodes.root, 'expanded-image');
+      $.rmClass(post.file.thumb, 'expanding');
+      return post.file.isExpanded = false;
+    },
+    expand: function(post, src) {
+      var img, thumb;
+
+      thumb = post.file.thumb;
+      if (post.isHidden || post.file.isExpanded || $.hasClass(thumb, 'expanding')) {
+        return;
+      }
+      $.addClass(thumb, 'expanding');
+      if (post.file.fullImage) {
+        $.asap((function() {
+          return post.file.fullImage.naturalHeight;
+        }), function() {
+          return ImageExpand.completeExpand(post);
+        });
+        return;
+      }
+      post.file.fullImage = img = $.el('img', {
+        className: 'full-image',
+        src: src || post.file.URL
+      });
+      $.on(img, 'error', ImageExpand.error);
+      $.asap((function() {
+        return post.file.fullImage.naturalHeight;
+      }), function() {
+        return ImageExpand.completeExpand(post);
+      });
+      return $.after(thumb, img);
+    },
+    completeExpand: function(post) {
+      var prev, thumb;
+
+      thumb = post.file.thumb;
+      if (!$.hasClass(thumb, 'expanding')) {
+        return;
+      }
+      post.file.isExpanded = true;
+      if (!post.nodes.root.parentNode) {
+        $.addClass(post.nodes.root, 'expanded-image');
+        $.rmClass(post.file.thumb, 'expanding');
+        return;
+      }
+      prev = post.nodes.root.getBoundingClientRect();
+      return $.queueTask(function() {
+        var curr, root;
+
+        $.addClass(post.nodes.root, 'expanded-image');
+        $.rmClass(post.file.thumb, 'expanding');
+        if (!(prev.top + prev.height <= 0)) {
+          return;
+        }
+        root = doc;
+        curr = post.nodes.root.getBoundingClientRect();
+        return root.scrollTop += curr.height - prev.height + curr.top - prev.top;
+      });
+    },
+    error: function() {
+      var URL, post, src, timeoutID;
+
+      post = Get.postFromNode(this);
+      $.rm(this);
+      delete post.file.fullImage;
+      if (!($.hasClass(post.file.thumb, 'expanding') || $.hasClass(post.nodes.root, 'expanded-image'))) {
+        return;
+      }
+      ImageExpand.contract(post);
+      src = this.src.split('/');
+      if (src[2] === 'images.4chan.org') {
+        if (URL = Redirect.image(src[3], src[5])) {
+          setTimeout(ImageExpand.expand, 10000, post, URL);
+          return;
+        }
+        if (g.DEAD || post.isDead || post.file.isDead) {
+          return;
+        }
+      }
+      timeoutID = setTimeout(ImageExpand.expand, 10000, post);
+      return $.ajax("//api.4chan.org/" + post.board + "/res/" + post.thread + ".json", {
+        onload: function() {
+          var postObj, _i, _len, _ref;
+
+          if (this.status !== 200) {
+            return;
+          }
+          _ref = JSON.parse(this.response).posts;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            postObj = _ref[_i];
+            if (postObj.no === post.ID) {
+              break;
+            }
+          }
+          if (postObj.no !== post.ID) {
+            clearTimeout(timeoutID);
+            return post.kill();
+          } else if (postObj.filedeleted) {
+            clearTimeout(timeoutID);
+            return post.kill(true);
+          }
+        }
+      });
+    },
+    menu: {
+      init: function() {
+        var conf, createSubEntry, el, key, subEntries, _ref;
+
+        if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
+          return;
+        }
+        el = $.el('span', {
+          textContent: 'Image Expansion',
+          className: 'image-expansion-link'
+        });
+        createSubEntry = ImageExpand.menu.createSubEntry;
+        subEntries = [];
+        _ref = Config.imageExpansion;
+        for (key in _ref) {
+          conf = _ref[key];
+          subEntries.push(createSubEntry(key, conf));
+        }
+        return $.event('AddMenuEntry', {
+          type: 'header',
+          el: el,
+          order: 105,
+          subEntries: subEntries
+        });
+      },
+      createSubEntry: function(type, config) {
+        var input, label;
+
+        label = $.el('label', {
+          innerHTML: "<input type=checkbox name='" + type + "'> " + type
+        });
+        input = label.firstElementChild;
+        if (type === 'Fit width' || type === 'Fit height') {
+          $.on(input, 'change', ImageExpand.cb.setFitness);
+        }
+        if (config) {
+          label.title = config[1];
+          input.checked = Conf[type];
+          $.event('change', null, input);
+          $.on(input, 'change', $.cb.checked);
+        }
+        return {
+          el: label
+        };
+      }
+    },
+    resize: function() {
+      return ImageExpand.style.textContent = ":root.fit-height .full-image {max-height:" + doc.clientHeight + "px}";
+    },
+    menuToggle: function(e) {
+      return ImageExpand.opmenu.toggle(e, this, g);
+    }
+  };
+
+  ImageHover = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Image Hover']) {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Image Hover',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var _ref;
+
+      if (!((_ref = this.file) != null ? _ref.isImage : void 0)) {
+        return;
+      }
+      return $.on(this.file.thumb, 'mouseover', ImageHover.mouseover);
+    },
+    mouseover: function(e) {
+      var el, post;
+
+      post = Get.postFromNode(this);
+      el = $.el('img', {
+        id: 'ihover',
+        src: post.file.URL
+      });
+      el.setAttribute('data-fullid', post.fullID);
+      $.add(Header.hover, el);
+      UI.hover({
+        root: this,
+        el: el,
+        latestEvent: e,
+        endEvents: 'mouseout click',
+        asapTest: function() {
+          return el.naturalHeight;
+        }
+      });
+      return $.on(el, 'error', ImageHover.error);
+    },
+    error: function() {
+      var URL, post, src, timeoutID,
+        _this = this;
+
+      if (!doc.contains(this)) {
+        return;
+      }
+      post = g.posts[this.dataset.fullid];
+      src = this.src.split('/');
+      if (src[2] === 'images.4chan.org') {
+        if (URL = Redirect.image(src[3], src[5].replace(/\?.+$/, ''))) {
+          this.src = URL;
+          return;
+        }
+        if (g.DEAD || post.isDead || post.file.isDead) {
+          return;
+        }
+      }
+      timeoutID = setTimeout((function() {
+        return _this.src = post.file.URL + '?' + Date.now();
+      }), 3000);
+      return $.ajax("//api.4chan.org/" + post.board + "/res/" + post.thread + ".json", {
+        onload: function() {
+          var postObj, _i, _len, _ref;
+
+          if (this.status !== 200) {
+            return;
+          }
+          _ref = JSON.parse(this.response).posts;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            postObj = _ref[_i];
+            if (postObj.no === post.ID) {
+              break;
+            }
+          }
+          if (postObj.no !== post.ID) {
+            clearTimeout(timeoutID);
+            return post.kill();
+          } else if (postObj.filedeleted) {
+            clearTimeout(timeoutID);
+            return post.kill(true);
+          }
+        }
+      });
+    }
+  };
+
+  ImageReplace = {
+    init: function() {
+      if (g.VIEW === 'catalog') {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Image Replace',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var URL, img, style, thumb, type, _ref, _ref1;
+
+      if (this.isClone || this.isHidden || this.thread.isHidden || !((_ref = this.file) != null ? _ref.isImage : void 0)) {
+        return;
+      }
+      _ref1 = this.file, thumb = _ref1.thumb, URL = _ref1.URL;
+      if (!(Conf["Replace " + ((type = (URL.match(/\w{3}$/))[0].toUpperCase()) === 'PEG' ? 'JPG' : type)] && !/spoiler/.test(thumb.src))) {
+        return;
+      }
+      if (this.file.isSpoiler) {
+        style = thumb.style;
+        style.maxHeight = style.maxWidth = this.isReply ? '125px' : '250px';
+      }
+      img = $.el('img');
+      $.on(img, 'load', function() {
+        return thumb.src = URL;
+      });
+      return img.src = URL;
+    }
+  };
+
+  RevealSpoilers = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Reveal Spoilers']) {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Reveal Spoilers',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var thumb, _ref;
+
+      if (this.isClone || !((_ref = this.file) != null ? _ref.isSpoiler : void 0)) {
+        return;
+      }
+      thumb = this.file.thumb;
+      thumb.removeAttribute('style');
+      return thumb.src = this.file.thumbURL;
+    }
+  };
+
+  ArchiveLink = {
+    init: function() {
+      var div, entry, type, _i, _len, _ref;
+
+      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Archive Link']) {
+        return;
+      }
+      div = $.el('div', {
+        textContent: 'Archive'
+      });
+      entry = {
+        type: 'post',
+        el: div,
+        order: 90,
+        open: function(_arg) {
+          var ID, board, redirect, thread;
+
+          ID = _arg.ID, thread = _arg.thread, board = _arg.board;
+          redirect = Redirect.to({
+            postID: ID,
+            threadID: thread.ID,
+            boardID: board.ID
+          });
+          return redirect !== ("//boards.4chan.org/" + board + "/");
+        },
+        subEntries: []
+      };
+      _ref = [['Post', 'post'], ['Name', 'name'], ['Tripcode', 'tripcode'], ['E-mail', 'email'], ['Subject', 'subject'], ['Filename', 'filename'], ['Image MD5', 'MD5']];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        type = _ref[_i];
+        entry.subEntries.push(this.createSubEntry(type[0], type[1]));
+      }
+      return $.event('AddMenuEntry', entry);
+    },
+    createSubEntry: function(text, type) {
+      var el, open;
+
+      el = $.el('a', {
+        textContent: text,
+        target: '_blank'
+      });
+      open = type === 'post' ? function(_arg) {
+        var ID, board, thread;
+
+        ID = _arg.ID, thread = _arg.thread, board = _arg.board;
+        el.href = Redirect.to({
+          postID: ID,
+          threadID: thread.ID,
+          boardID: board.ID
+        });
+        return true;
+      } : function(post) {
+        var value;
+
+        value = Filter[type](post);
+        if (!value) {
+          return false;
+        }
+        el.href = Redirect.to({
+          boardID: post.board.ID,
+          type: type,
+          value: value,
+          isSearch: true
+        });
+        return true;
+      };
+      return {
+        el: el,
+        open: open
+      };
+    }
+  };
+
+  DeleteLink = {
+    init: function() {
+      var div, fileEl, fileEntry, postEl, postEntry;
+
+      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Delete Link']) {
+        return;
+      }
+      div = $.el('div', {
+        className: 'delete-link',
+        textContent: 'Delete'
+      });
+      postEl = $.el('a', {
+        className: 'delete-post',
+        href: 'javascript:;'
+      });
+      fileEl = $.el('a', {
+        className: 'delete-file',
+        href: 'javascript:;'
+      });
+      postEntry = {
+        el: postEl,
+        open: function() {
+          postEl.textContent = 'Post';
+          $.on(postEl, 'click', DeleteLink["delete"]);
+          return true;
+        }
+      };
+      fileEntry = {
+        el: fileEl,
+        open: function(_arg) {
+          var file;
+
+          file = _arg.file;
+          if (!file || file.isDead) {
+            return false;
+          }
+          fileEl.textContent = 'File';
+          $.on(fileEl, 'click', DeleteLink["delete"]);
+          return true;
+        }
+      };
+      return $.event('AddMenuEntry', {
+        type: 'post',
+        el: div,
+        order: 40,
+        open: function(post) {
+          var node;
+
+          if (post.isDead) {
+            return false;
+          }
+          DeleteLink.post = post;
+          node = div.firstChild;
+          node.textContent = 'Delete';
+          DeleteLink.cooldown.start(post, node);
+          return true;
+        },
+        subEntries: [postEntry, fileEntry]
+      });
+    },
+    "delete": function() {
+      var fileOnly, form, link, m, post, pwd;
+
+      post = DeleteLink.post;
+      if (DeleteLink.cooldown.counting === post) {
+        return;
+      }
+      $.off(this, 'click', DeleteLink["delete"]);
+      this.textContent = "Deleting " + this.textContent + "...";
+      pwd = (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $.id('delPassword').value;
+      fileOnly = $.hasClass(this, 'delete-file');
+      form = {
+        mode: 'usrdel',
+        onlyimgdel: fileOnly,
+        pwd: pwd
+      };
+      form[post.ID] = 'delete';
+      link = this;
+      return $.ajax($.id('delform').action.replace("/" + g.BOARD + "/", "/" + post.board + "/"), {
+        onload: function() {
+          return DeleteLink.load(link, post, fileOnly, this.response);
+        },
+        onerror: function() {
+          return DeleteLink.error(link);
+        }
+      }, {
+        cred: true,
+        form: $.formData(form)
+      });
+    },
+    load: function(link, post, fileOnly, html) {
+      var msg, s, tmpDoc;
+
+      tmpDoc = d.implementation.createHTMLDocument('');
+      tmpDoc.documentElement.innerHTML = html;
+      if (tmpDoc.title === '4chan - Banned') {
+        s = 'Banned!';
+      } else if (msg = tmpDoc.getElementById('errmsg')) {
+        s = msg.textContent;
+        $.on(link, 'click', DeleteLink["delete"]);
+      } else {
+        if (tmpDoc.title === 'Updating index...') {
+          (post.origin || post).kill(fileOnly);
+        }
+        s = 'Deleted';
+      }
+      return link.textContent = s;
+    },
+    error: function(link) {
+      link.textContent = 'Connection error, please retry.';
+      return $.on(link, 'click', DeleteLink["delete"]);
+    },
+    cooldown: {
+      start: function(post, node) {
+        var length, seconds, _ref;
+
+        if (!((_ref = QR.db) != null ? _ref.get({
+          boardID: post.board.ID,
+          threadID: post.thread.ID,
+          postID: post.ID
+        }) : void 0)) {
+          delete DeleteLink.cooldown.counting;
+          return;
+        }
+        DeleteLink.cooldown.counting = post;
+        length = post.board.ID === 'q' ? 600 : 30;
+        seconds = Math.ceil((length * $.SECOND - (Date.now() - post.info.date)) / $.SECOND);
+        return DeleteLink.cooldown.count(post, seconds, length, node);
+      },
+      count: function(post, seconds, length, node) {
+        if (DeleteLink.cooldown.counting !== post) {
+          return;
+        }
+        if (!((0 <= seconds && seconds <= length))) {
+          if (DeleteLink.cooldown.counting === post) {
+            node.textContent = 'Delete';
+            delete DeleteLink.cooldown.counting;
+          }
+          return;
+        }
+        setTimeout(DeleteLink.cooldown.count, 1000, post, seconds - 1, length, node);
+        return node.textContent = "Delete (" + seconds + ")";
+      }
+    }
+  };
+
+  DownloadLink = {
+    init: function() {
+      var a;
+
+      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Download Link']) {
         return;
       }
       a = $.el('a', {
-        href: "/" + this.board + "/res/" + this.thread + "#p" + this,
-        className: this.isHidden ? 'filtered backlink' : 'backlink',
-        textContent: (QuoteBacklink.funk(this.ID)) + (Conf['Mark Quotes of You'] && this.info.yours ? QuoteYou.text : '')
+        className: 'download-link',
+        textContent: 'Download file'
       });
-      _ref = this.quotes;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quote = _ref[_i];
-        containers = [QuoteBacklink.getContainer(quote)];
-        if ((post = g.posts[quote]) && post.nodes.backlinkContainer) {
-          _ref1 = post.clones;
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            clone = _ref1[_j];
-            containers.push(clone.nodes.backlinkContainer);
-          }
-        }
-        for (_k = 0, _len2 = containers.length; _k < _len2; _k++) {
-          container = containers[_k];
-          link = a.cloneNode(true);
-          if (Conf['Quote Previewing']) {
-            $.on(link, 'mouseover', QuotePreview.mouseover);
-          }
-          if (Conf['Quote Inlining']) {
-            $.on(link, 'click', QuoteInline.toggle);
-          }
-          $.add(container, [$.tn(' '), link]);
-        }
-      }
-    },
-    secondNode: function() {
-      var container;
+      return $.event('AddMenuEntry', {
+        type: 'post',
+        el: a,
+        order: 70,
+        open: function(_arg) {
+          var file;
 
-      if (this.isClone && (this.origin.isReply || Conf['OP Backlinks'])) {
-        this.nodes.backlinkContainer = $('.container', this.nodes.info);
-        return;
-      }
-      if (!(this.isReply || Conf['OP Backlinks'])) {
-        return;
-      }
-      container = QuoteBacklink.getContainer(this.fullID);
-      this.nodes.backlinkContainer = container;
-      return $.add(this.nodes.info, container);
-    },
-    getContainer: function(id) {
-      var _base;
-
-      return (_base = this.containers)[id] || (_base[id] = $.el('span', {
-        className: 'container'
-      }));
+          file = _arg.file;
+          if (!file) {
+            return false;
+          }
+          a.href = file.URL;
+          a.download = file.name;
+          return true;
+        }
+      });
     }
   };
 
-  QuoteCT = {
+  Menu = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Mark Cross-thread Quotes']) {
+      if (g.VIEW === 'catalog' || !Conf['Menu']) {
         return;
       }
-      if (Conf['Comment Expansion']) {
-        ExpandComment.callbacks.push(this.node);
-      }
-      this.text = '\u00A0(Cross-thread)';
+      this.menu = new UI.Menu('post');
       return Post.prototype.callbacks.push({
-        name: 'Mark Cross-thread Quotes',
+        name: 'Menu',
         cb: this.node
       });
     },
     node: function() {
-      var board, boardID, quotelink, quotelinks, quotes, thread, threadID, _i, _len, _ref, _ref1;
+      var button;
 
-      if (this.isClone && this.thread === this.context.thread) {
+      button = Menu.makeButton(this);
+      if (this.isClone) {
+        $.replace($('.menu-button', this.nodes.info), button);
         return;
       }
-      if (!(quotes = this.quotes).length) {
-        return;
-      }
-      quotelinks = this.nodes.quotelinks;
-      _ref = this.isClone ? this.context : this, board = _ref.board, thread = _ref.thread;
-      for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
-        quotelink = quotelinks[_i];
-        _ref1 = Get.postDataFromLink(quotelink), boardID = _ref1.boardID, threadID = _ref1.threadID;
-        if (!threadID) {
-          continue;
-        }
-        if (this.isClone) {
-          quotelink.textContent = quotelink.textContent.replace(QuoteCT.text, '');
-        }
-        if (boardID === this.board.ID && threadID !== thread.ID) {
-          $.add(quotelink, $.tn(QuoteCT.text));
-        }
-      }
-    }
-  };
-
-  QuoteInline = {
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Quote Inlining']) {
-        return;
-      }
-      if (Conf['Comment Expansion']) {
-        ExpandComment.callbacks.push(this.node);
-      }
-      return Post.prototype.callbacks.push({
-        name: 'Quote Inlining',
-        cb: this.node
-      });
+      return $.add(this.nodes.info, [$.tn('\u00A0'), button]);
     },
-    node: function() {
-      var link, _i, _len, _ref;
+    makeButton: (function() {
+      var a;
 
-      _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        link = _ref[_i];
-        $.on(link, 'click', QuoteInline.toggle);
-      }
-    },
+      a = null;
+      return function(post) {
+        var clone;
+
+        a || (a = $.el('a', {
+          className: 'menu-button',
+          innerHTML: '[<span class=drop-marker></span>]',
+          href: 'javascript:;'
+        }));
+        clone = a.cloneNode(true);
+        clone.setAttribute('data-postid', post.fullID);
+        if (post.isClone) {
+          clone.setAttribute('data-clone', true);
+        }
+        $.on(clone, 'click', Menu.toggle);
+        return clone;
+      };
+    })(),
     toggle: function(e) {
-      var boardID, context, postID, threadID, _ref;
+      var post;
 
-      if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
-        return;
-      }
-      e.preventDefault();
-      _ref = Get.postDataFromLink(this), boardID = _ref.boardID, threadID = _ref.threadID, postID = _ref.postID;
-      context = Get.contextFromLink(this);
-      if ($.hasClass(this, 'inlined')) {
-        QuoteInline.rm(this, boardID, threadID, postID, context);
-      } else {
-        if ($.x("ancestor::div[@id='p" + postID + "']", this)) {
-          return;
-        }
-        QuoteInline.add(this, boardID, threadID, postID, context);
-      }
-      return this.classList.toggle('inlined');
-    },
-    findRoot: function(quotelink, isBacklink) {
-      if (isBacklink) {
-        return quotelink.parentNode.parentNode;
-      } else {
-        return $.x('ancestor-or-self::*[parent::blockquote][1]', quotelink);
-      }
-    },
-    add: function(quotelink, boardID, threadID, postID, context) {
-      var inline, isBacklink, post;
-
-      isBacklink = $.hasClass(quotelink, 'backlink');
-      inline = $.el('div', {
-        id: "i" + postID,
-        className: 'inline'
-      });
-      $.after(QuoteInline.findRoot(quotelink, isBacklink), inline);
-      Get.postClone(boardID, threadID, postID, inline, context);
-      if (!((post = g.posts["" + boardID + "." + postID]) && context.thread === post.thread)) {
-        return;
-      }
-      if (isBacklink && Conf['Forward Hiding']) {
-        $.addClass(post.nodes.root, 'forwarded');
-        post.forwarded++ || (post.forwarded = 1);
-      }
-      if (!Unread.posts) {
-        return;
-      }
-      return Unread.readSinglePost(post);
-    },
-    rm: function(quotelink, boardID, threadID, postID, context) {
-      var el, inlined, isBacklink, post, root, _ref;
-
-      isBacklink = $.hasClass(quotelink, 'backlink');
-      root = QuoteInline.findRoot(quotelink, isBacklink);
-      root = $.x("following-sibling::div[@id='i" + postID + "'][1]", root);
-      $.rm(root);
-      if (!(el = root.firstElementChild)) {
-        return;
-      }
-      post = g.posts["" + boardID + "." + postID];
-      post.rmClone(el.dataset.clone);
-      if (Conf['Forward Hiding'] && isBacklink && context.thread === g.threads["" + boardID + "." + threadID] && !--post.forwarded) {
-        delete post.forwarded;
-        $.rmClass(post.nodes.root, 'forwarded');
-      }
-      while (inlined = $('.inlined', el)) {
-        _ref = Get.postDataFromLink(inlined), boardID = _ref.boardID, threadID = _ref.threadID, postID = _ref.postID;
-        QuoteInline.rm(inlined, boardID, threadID, postID, context);
-        $.rmClass(inlined, 'inlined');
-      }
+      post = this.dataset.clone ? Get.postFromNode(this) : g.posts[this.dataset.postid];
+      return Menu.menu.toggle(e, this, post);
     }
   };
 
-  QuoteOP = {
+  ReportLink = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Mark OP Quotes']) {
+      var a;
+
+      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Report Link']) {
         return;
       }
-      if (Conf['Comment Expansion']) {
-        ExpandComment.callbacks.push(this.node);
+      a = $.el('a', {
+        className: 'report-link',
+        href: 'javascript:;',
+        textContent: 'Report this post'
+      });
+      $.on(a, 'click', ReportLink.report);
+      return $.event('AddMenuEntry', {
+        type: 'post',
+        el: a,
+        order: 10,
+        open: function(post) {
+          ReportLink.post = post;
+          return !post.isDead;
+        }
+      });
+    },
+    report: function() {
+      var id, post, set, url;
+
+      post = ReportLink.post;
+      url = "//sys.4chan.org/" + post.board + "/imgboard.php?mode=report&no=" + post;
+      id = Date.now();
+      set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200";
+      return window.open(url, id, set);
+    }
+  };
+
+  Favicon = {
+    init: function() {
+      return $.ready(function() {
+        var href;
+
+        Favicon.el = $('link[rel="shortcut icon"]', d.head);
+        Favicon.el.type = 'image/x-icon';
+        href = Favicon.el.href;
+        Favicon.SFW = /ws\.ico$/.test(href);
+        Favicon["default"] = href;
+        return Favicon["switch"]();
+      });
+    },
+    "switch": function() {
+      var unreadDead;
+
+      unreadDead = Favicon.unreadDeadY = Favicon.unreadSFW = Favicon.unreadSFWY = Favicon.unreadNSFW = Favicon.unreadNSFWY = 'data:image/png;base64,';
+      switch (Conf['favicon']) {
+        case 'ferongr':
+          Favicon.unreadDead += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAFVBMVEX///9zBQC/AADpDAP/gID/q6voCwJJTwpOAAAAAXRSTlMAQObYZgAAAGJJREFUeF5Fi7ENg0AQBCfa/AFdDh2gdwPIogMK2E2+/xLslwOvdqRJhv+GQQPUCtJM7svankLrq/I+TY5e6Ueh1jyBMX7AFJi9vwfyVO4CbbO6jNYpp9GyVPbdkFhVgAQ2H0NOE5jk9DT8AAAAAElFTkSuQmCC';
+          Favicon.unreadDeadY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAS1BMVEUAAAAAAAAAAAAJAAASAAAZAQAaAQAiAQAkAQAoFBQyAgAzAgA1AgA4AABBAgBXAwBzBQCEBgGvCAG/AADoCwLpDAP/gID/q6v///9zILr8AAAAA3RSTlMAx9dmesIgAAAAc0lEQVQY02WPgQ6DIBBDmTqnbE70Cvb/v3TAnW5OSKB9ybXg3HUBOAmEEH4FQtrSn4gxi+xjVC9SVOEiSvbZI8zSV+/Xo7icnryZ15GObMxvtWUkB/VJW57kHU7fUcHStm8FkncGE/mwP6CGzq/eauHwvT7sWQt3gZLW+AAAAABJRU5ErkJggg==';
+          Favicon.unreadSFW += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAFVBMVEX///8AcH4AtswA2PJ55fKi6fIA1/FtpPADAAAAAXRSTlMAQObYZgAAAGJJREFUeF5Fi7ENg0AQBCfa/AFdDh2gdwPIogMK2E2+/xLslwOvdqRJhv+GQQPUCtJM7svankLrq/I+TY5e6Ueh1jyBMX7AFJi9vwfyVO4CbbO6jNYpp9GyVPbdkFhVgAQ2H0NOE5jk9DT8AAAAAElFTkSuQmCC';
+          Favicon.unreadSFWY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAASFBMVEUAAAAAAAAAAAAACAkAERMAGBsAGR0AISUALzQALzUAMTcANjwAP0cAVF8AcH4AeokAorYAtswA1/EA2PISIyV55fKi6fL////l+pZqAAAAA3RSTlMAx9dmesIgAAAAcklEQVQY02VPARLCIAxjsjnUWdcg6/9/ukIr00nvIMldEhrC/wHwA0BE3wBUtnICOStQnrNx5oqqzmzKx9vDPH1Nae3F9U4ig3OzjCIX51treYvMxou13EQmBPtHE14xLiawjgoPtfgOaKHP+9VrEXA8O1v7CmSPE3u0AAAAAElFTkSuQmCC';
+          Favicon.unreadNSFW += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAFVBMVEX///8oeQBJ3ABV/wHM/7Lu/+ZU/gAqUP3dAAAAAXRSTlMAQObYZgAAAGJJREFUeF5Fi7ENg0AQBCfa/AFdDh2gdwPIogMK2E2+/xLslwOvdqRJhv+GQQPUCtJM7svankLrq/I+TY5e6Ueh1jyBMX7AFJi9vwfyVO4CbbO6jNYpp9GyVPbdkFhVgAQ2H0NOE5jk9DT8AAAAAElFTkSuQmCC';
+          Favicon.unreadNSFWY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAS1BMVEUAAAAAAAAAAAADCgAGEgAIGgAJGwALJAANJwASNwASOAATOgAVQQAWRAAeWwAgKBsoeQAwkQA/wABJ3ABU/gBV/wHM/7Lu/+b////r+K2AAAAAA3RSTlMAx9dmesIgAAAAc0lEQVQY02WPgQ6DIBBDmTonbk70Cvb/v3TAnW5OSKB9ybXg3HUBOAmEEH4FQtrSn4gxi+xjVC9SVOEiSvbZI8zSV+/Xo7icnryZ15GObMxvtWUmB/VJW0byDqfvqGBp20mB5J3Bi3zYH1BD38/eauHwvT7sEAt1Fb320QAAAABJRU5ErkJggg==';
+          break;
+        case 'xat-':
+          Favicon.unreadDead += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAPFBMVEX9AAD8AAD/AAD+AADAExKKXl2CfHqLkZFub2yfaF3bZ2PzZGL/zs//iYr/AAASAAAGAAAAAAAAAAAAAADpOCseAAAADHRSTlP9MAcAATVYeprJ5O/MbzqoAAAAXklEQVQY03VPQQ7AIAgz8QAG4dL//3VVcVk2Vw4tDVQp9YVyMACIEkIxDEQEGjHFnBjCbPU5EXBfnBns6WRG1Wbuvbtb0z9jr6Qh2KGQenp2/+xpsFQnrePAuulz7QUTuwm5NnwmIAAAAABJRU5ErkJggg==';
+          Favicon.unreadDeadY += 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAMAAACuAq9NAAAAY1BMVEUBAAACAQELCQkPDQwgFBMzKilOSEdva2iEgoCReHOadXClamDIaWbxcG7+hIX+mpv+m5z+oqP+tLX+zc7//f3+9PT97Oz23t750NDbra3zwL87LCwAAAAGAABHAADPAAD/AABkWeLDAAAAHHRSTlO5/fTv8Na2n42lsMvi8v3+/v749OaITDsDAQABSG2w8gAAAGdJREFUCNdNjtEKgDAIRYVGCmsyqCe7q/3/V2azQfpwPehVyQCIMIt4YYTeO7LHKMiGlDIkuh2qofR6obUqhtc4F637XreU1h+m41gcJX/DHyJWXYHzkCMm+hd3a4GezLNr8PQA4bQHEXEQFRJP5NAAAAAASUVORK5CYII=';
+          Favicon.unreadSFW += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAPFBMVEUAAAAAAAAAAAAAAABFRUdsa2yRjop4dXVpZ2tdcI9dfKdBirUzlMBHpdxSquRisfOs2/99xv8umMMAAABljCUFAAAAEHRSTlN7FwUAQVt6kZ2/zej59vTv0aAplgAAAGNJREFUGNNtj1EOwCAIQ5eYIPCD0vvfdYi6LJvy0fICNVzl864DAECVuVKYAeDuEFVJkxPDmM1+TTh6n7oy0FvrWBmF1aIPYspnUGWvSE1A2KGgcvp2AtU3iGJOmcch6pHftTekXQrRd6slMAAAAABJRU5ErkJggg==';
+          Favicon.unreadSFWY += 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAMAAACuAq9NAAAAY1BMVEUAAAAAAAAAAAAAAAAREBAWFRY1NDROTE1iYGFzdXp4eoCAgYVlc4mHjZiYoa6zvcqy1/Pg8v+e1f+b1P6X0f2DyP5jsu49msgymcctkLomc5QbPU0SIiwNFxwumMMAAAAAAADALpU1AAAAHnRSTlPNLgcBAAABBxhdc4WznarD8P7+/v3+8/z9/vz2+PUOYDHSAAAAZElEQVQI102OsQ6AMAhEMWGDpTbUQUvu/79ShDYRhuMFDiAGIKIqEgUT3B0akQVxyhgp1XWYldLnhfXTkF5WHdZb69cz9YdPazNQdA0vRK2ahftQDGNjfHHXZjgSV5cRGQHCwS8j7A9loVSnzwAAAABJRU5ErkJggg==';
+          Favicon.unreadNSFW += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAPFBMVEUAAAAAAAAAAAAAAAAfJSBLUU1ydHR8fn6Ri5Frbm9dn19jvEFt30tv5VB082KR/33Z/9Gq/5tmzDMAAADw+5ntAAAAEHRSTlP++ywHAAE2Wnuayez19O/+EzXeOQAAAF9JREFUGNN1TzESwCAIc3AABxDy/78WFXu91oYhIYcRSn2hHAwAxAEKMQy4O1pgijkxhMjqc8KhujgzoGaKzKjcRK13U2n8Z+wnaRB2KKievt2bPY0o5knrOETd9Ln2AuDLCz1j8HTeAAAAAElFTkSuQmCC';
+          Favicon.unreadNSFWY += 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAMAAACuAq9NAAAAY1BMVEUPGgsCBAIBAQEBAQAAAQAAAAABAQEFBQQQEw85SDdVa1GhzJm967TZ+NLP+sbM+8S6/a3k/9+s/pyr/puX/oSd15KIuoGBj39tfm1qj2RepFlu2VRkwzZlyTNatC5myzMAAAAOPREWAAAAHnRSTlP4/fz331IPBQIBAAECOly37/7+/v7XwpWktNDy+f7X56yoAAAAZElEQVQI102NwQ7AIAhDMdku3JwkIiaz//+VQ9FkcCgvpUAMoKpX9YEJYww0s7YG4iW9Lwl3QCSUZhZSHsHKslqXknPpRPpDypkmtr0cWBGntnseOeKgGd6UAr1Vj8vw9sKFmz+fERAp5vutHwAAAABJRU5ErkJggg==';
+          break;
+        case 'Mayhem':
+          Favicon.unreadDead += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABIUlEQVQ4jZ2ScWuDMBDFgw4pIkU0WsoQkWAYIkXZH4N9/+/V3dmfXSrKYIFHwt17j8vdGWNMIkgFuaDgzgQnwRs4EQs5KdolUQtagRN0givEDBTEOjgtGs0Zq8F7cKqqusVxrMQLaDUWcjBSrXkn8gs51tpJSWLk9b3HUa0aNIL5gPBR1/V4kJvR7lTwl8GmAm1Gf9+c3S+89qBHa8502AsmSrtBaEBPbIbj0ah2madlNAPEccdgJDfAtWifBjqWKShRBT6KoiH8QlEUn/qt0CCjnNdmPUwmFWzj9Oe6LpKuZXcwqq88z78Pch3aZU3dPwwc2sWlfZKCW5tWluV8kGvXClLm6dYN4/aUqfCbnEOzNDGhGZbNargvxCzvMGfRJD8UaDVvgkzo6QAAAABJRU5ErkJggg==';
+          Favicon.unreadDeadY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABj0lEQVQ4y42TQUorQRCGv+oekpj43pOhOyIiKoHBxTMkuAnEtWcwx/AY3sUbBIRcwCw8gCfIMkaTOOUiNdgGRRuKoav+v2qq/i4BakBmXweUwDoxLF5ZhVkC64rYBHYMUAIvwKuBMEwdaFiCNbAAngEC0NHkxBi73vsOsG92HGPsphigY1wOzfNhqhpC6AEd730RQuh9hQEOAY6A/jeAs3a7/f+bWB84ckCpqg+I8Osjgqo+AKUDViJS8LkGMcY+sJrNZssYY387LiIFsBLgL9AC/pgaArzZlF+sZgO4BG7sfgvcA3MxUtOStBIpX7cS3Klqd9OBTIEr4DlLOsuAmqpODXQOiHMuy/O8FkLoJth/6Uh2gQPg87Q3k+7leX6hqnpmPvM/GWfXWeWGqj5+oUS9LMs6wF7iHAwGJ9ZW5uxpup+UGwEtEVoijEYjKl66PJujmvIW3vsFwBiYqzJXZTweY5wSU6Bd7UP1KoECODUrJpOJAtPhcKjAtXGaYptWs57qWyv9Zn/it1a5knj5Dm3v4q8APeACAAAAAElFTkSuQmCC';
+          Favicon.unreadSFW += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABCElEQVQ4jZ2S4crCMAxF+0OGDJEPKYrIGKOsiJSx/fJRfSAfTJNyKqXfiuDg0C25N2RJjTGmEVrhTzhw7oStsIEtsVzT4o2Jo9ALThiEM8IdHIgNaHo8mjNWg6/ske8bohPo+63QOLzmooHp8fyAICBSQkVz0QKdsFQEV6WSW/D+7+BbgbIDHcb4Kp61XyjyI16zZ8JemGltQtDBSGxB4/GoN+7TpkkjDCsFArm0IYv3U0BbnYtf8BCy+JytsE0X6VyuKhPPK/GAJ14kvZZDZVV3pZIb8MZr6n4o4PDGKn0S5SdDmyq5PnXQsk+Xbhinp03FFzmHJw6xYRiWm9VxnohZ3vOcxdO8ARmXRvbWdtzQAAAAAElFTkSuQmCC';
+          Favicon.unreadSFWY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAkFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBQcHFx4KISoNLToaVW4oKCgul8M4ODg7OztMTEyRkZHBwcH///9dzWZ0AAAAI3RSTlMEBggKDA4QEhQWFxkbHR8hIyUmKCosLjAxN1hbYc7P0dLc3mzWzBUAAAC+SURBVBjTNY3pcsIwEIM3ePERx/bG5IIe0NIrhVbv/3Y4Ydj9Ic030ogqpY3mDdGGi1EVsYuSvGE2Pkl0TFYAdLGuY1eMWGowzzN6kX41DYVpNbvdKlO4Jx5gSbi2VO+Vcq2jrc/jNLQhtM+n05PfkrKxG/oFHIEXqwqQsVRy7n+AtwLYL3sYR3wA755Jp3Vvv8cn8Js0GXmA7/P5TwzpiLn8MOALuEZNygkm5JTy/+vl4BRVbJvQ1NbWRSxXN64PGOBlhG0qAAAAAElFTkSuQmCC';
+          Favicon.unreadNSFW += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABCklEQVQ4jZ2S0WrDMAxF/TBCCKWMYhZKCSGYmFJMSNjD/mhf239qJXNcjBdTWODgRLpXKJKNMaYROuFTOHEehFb4gJZYrunwxsSXMApOmIQzwgOciE1oRjyaM1aDj+yR7xuiHvT9VmgcXnPRwO/9+wWCgEgJFc1FCwzCVhFclUpuw/u3g3cFyg50GPOjePZ+ocjPeM2RCXthpbUFwQAzsQ2Nx6PeuE+bJo0w7BQI5NKGLN5XAW11LX7BQ8jia7bCLl2kc7mqTLzuxAOeeJH0Wk6VVf0oldyEN15T948CDm+sMiZRfjK0pZIbUwcd+3TphnF62lR8kXN44hAbhmG5WQNnT8zynucsnuYJhFpBfkMzqD4AAAAASUVORK5CYII=';
+          Favicon.unreadNSFWY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAkFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECAIQIAgWLAsePA8oKCg4ODg6dB07OztMTExmzDORkZHBwcH///92I3mvAAAAI3RSTlMEBggKDA4QEhQWFxkbHR8hIyUmKCosLjAxN1hbYc7P0dLc3mzWzBUAAAC+SURBVBjTNY3pcsIwEIM3ePERx/bG5IIe0NIT0ur93w4nDLs/pPlGGlGltNG8IdpwMaoidlGSN8zGJ4mOyQqALtZ17IoRSw3meUYv0q+moTCtZrdbZQr3xAMsCdeW6r1SrnW09XmchjaE9vl0evJbUjZ2Q7+AI/BiVQEylkrO/TfwVgD7ZQ/jiA/g3TPptO7t9/gEfpImIw/wez7/iSEdMZcfBnwB16hJOcGEnFL+f70cnKKKbROa2tq6iOXqBuMXGTe4CAUbAAAAAElFTkSuQmCC';
+          break;
+        case '4chanJS':
+          Favicon.unreadDead += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAD/AABnZ2f///8nFk05AAAAAXRSTlMAQObYZgAAAEFJREFUeNqNjgEKACAMAjvX/98cAkkxgmSgO8Bt/Ai4ApJ6KKhzF3OiEMDASrGB/QWgPEHsUpN+Ng9xAETMYhDrWmeHAMcmvycWAAAAAElFTkSuQmCC';
+          Favicon.unreadDeadY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAD/AAD///9nZ2f77Y6hAAAAAXRSTlMAQObYZgAAAEBJREFUeF6NjQEKACAMAnfW/98cAxFiBIngOsTqR8B1IGkeG9p5i7XabgAGZNigXgA8aoCUxvzWAIcBItGiSEwdccYA3BuRAWkAAAAASUVORK5CYII=';
+          Favicon.unreadSFW += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAAul8NnZ2f////82iC9AAAAAXRSTlMAQObYZgAAAEFJREFUeNqNjgEKACAMAjvX/98cAkkxgmSgO8Bt/Ai4ApJ6KKhzF3OiEMDASrGB/QWgPEHsUpN+Ng9xAETMYhDrWmeHAMcmvycWAAAAAElFTkSuQmCC';
+          Favicon.unreadSFWY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAAul8P///9nZ2cgIeMlAAAAAXRSTlMAQObYZgAAAEBJREFUeF6NjQEKACAMAnfW/98cAxFiBIngOsTqR8B1IGkeG9p5i7XabgAGZNigXgA8aoCUxvzWAIcBItGiSEwdccYA3BuRAWkAAAAASUVORK5CYII=';
+          Favicon.unreadNSFW += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAElBMVEUBAAAAAABmzDNlyjJnZ2f///+6o7dfAAAAAXRSTlMAQObYZgAAAERJREFUeF6NjkEKADEIA51o///lJZfQxUsHITogWi8AvwZJuxmYa25xDooBLEwOWFTYAsYVhdorLZt9Ng9xCUTCUCQ2H3F4ANrZ2WNiAAAAAElFTkSuQmCC';
+          Favicon.unreadNSFWY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAElBMVEUBAAAAAABmzDP///9lyjJnZ2cIHys9AAAAAXRSTlMAQObYZgAAAENJREFUeF6NjUEKwEAMAjNm9/9fLkEslFwqgjoEUn8EfAqSdrkwzj6ieyyTkQEVGWRvANfO1iEX620AjgBEwqR4Y+sBeGAA6d+vQ4IAAAAASUVORK5CYII=';
+          break;
+        case 'Original':
+          Favicon.unreadDead += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX/////AAD///8AAABBZmS3AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=';
+          Favicon.unreadDeadY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAALVBMVEUAAAAAAAAAAAAAAAAKAAAoAAAoKCg4AAA4ODg7OztMAACRAADBwcH/AAD///+WCcPSAAAAA3RSTlMAx9dmesIgAAAAZ0lEQVQI1z2LsQmAUAxEb4Isk0rwp3EPR3ECcRQrh7C3/nAasPwzmCgYuPBy5AH/NALSImqAK+H1oJRqyJVHNAnZqDITVhj7/PrAciJ9il0BHs/jjU+fnB9sQ0IxX6OBO6Xr0xKAxANLZzUanCWzZQAAAABJRU5ErkJggg==';
+          Favicon.unreadSFW += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX///8ul8P///8AAACaqgkzAAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=';
+          Favicon.unreadSFWY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAALVBMVEUAAAAAAAAAAAAAAAABBQcHFx4KISoNLToaVW4oKCgul8M4ODg7OzvBwcH///8uS/CdAAAAA3RSTlMAx9dmesIgAAAAZ0lEQVQI1z2LsQ2AUAhEbwKWoftRGvdwBEewchM7d9BFbE6pbP4Mgj+R5MjjwgP+qQSkRtQAV8K3lVI2Q648oknIRpWZsMI4988HjgvpU+wO8HgeHzR9cjZYhoRiPkcDd0rXpyUAiRd5YjKC7MvNRgAAAABJRU5ErkJggg==';
+          Favicon.unreadNSFW += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX///9mzDP///8AAACT0n1lAAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=';
+          Favicon.unreadNSFWY += 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAALVBMVEUAAAAAAAAAAAAAAAAECAIQIAgWLAsePA8oKCg4ODg6dB07OztmzDPBwcH///+rsf3XAAAAA3RSTlMAx9dmesIgAAAAZ0lEQVQI1z2LsQ2AUAhEbwKWofRL4x6O4AhuopWb2P4F7E5prP4MgiaSHHlceMA/jYC0iBrgSnjdKaUacuURTUI2qsyEFcaxvD6wnkifYleAx/N449Mn5wfbkFDM52jgTun6tAQg8QAEvjQg42KY2AAAAABJRU5ErkJggg==';
       }
-      this.text = '\u00A0(OP)';
-      return Post.prototype.callbacks.push({
-        name: 'Mark OP Quotes',
+      if (Favicon.SFW) {
+        Favicon.unread = Favicon.unreadSFW;
+        return Favicon.unreadY = Favicon.unreadSFWY;
+      } else {
+        Favicon.unread = Favicon.unreadNSFW;
+        return Favicon.unreadY = Favicon.unreadNSFWY;
+      }
+    },
+    empty: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEX////b29sAAAAJ2DVhAAAAAXRSTlMAQObYZgAAAD1JREFUeF5NyrENgEAMxVArFZcpaD4z/TKjZIwrMyoSQoJXuDKf7BhUyyyrkGVycviZhLD6Wd7sq4jzaABukdYKjYsxq7wAAAAASUVORK5CYII=',
+    dead: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEX/////AAAAAACalQKRAAAAAXRSTlMAQObYZgAAAD1JREFUeF5NyrENgEAMxVArFZcpaD4z/TKjZIwrMyoSQoJXuDKf7BhUyyyrkGVycviZhLD6Wd7sq4jzaABukdYKjYsxq7wAAAAASUVORK5CYII='
+  };
+
+  ThreadExcerpt = {
+    init: function() {
+      if (g.VIEW !== 'thread' || !Conf['Thread Excerpt']) {
+        return;
+      }
+      return Thread.prototype.callbacks.push({
+        name: 'Thread Excerpt',
         cb: this.node
       });
     },
     node: function() {
-      var boardID, op, postID, quotelink, quotelinks, quotes, _i, _j, _len, _len1, _ref;
-
-      if (this.isClone && this.thread === this.context.thread) {
-        return;
-      }
-      if (!(quotes = this.quotes).length) {
-        return;
-      }
-      quotelinks = this.nodes.quotelinks;
-      if (this.isClone && quotes.contains(this.thread.fullID)) {
-        for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
-          quotelink = quotelinks[_i];
-          quotelink.textContent = quotelink.textContent.replace(QuoteOP.text, '');
-        }
-      }
-      op = (this.isClone ? this.context : this).thread.fullID;
-      if (!quotes.contains(op)) {
-        return;
-      }
-      for (_j = 0, _len1 = quotelinks.length; _j < _len1; _j++) {
-        quotelink = quotelinks[_j];
-        _ref = Get.postDataFromLink(quotelink), boardID = _ref.boardID, postID = _ref.postID;
-        if (("" + boardID + "." + postID) === op) {
-          $.add(quotelink, $.tn(QuoteOP.text));
-        }
-      }
+      return d.title = Get.threadExcerpt(this);
     }
   };
 
-  QuotePreview = {
+  ThreadStats = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Quote Previewing']) {
+      var sc;
+
+      if (g.VIEW !== 'thread' || !Conf['Thread Stats']) {
         return;
       }
-      if (Conf['Comment Expansion']) {
-        ExpandComment.callbacks.push(this.node);
-      }
-      return Post.prototype.callbacks.push({
-        name: 'Quote Previewing',
+      this.dialog = sc = $.el('span', {
+        innerHTML: "<span id=post-count>0</span> / <span id=file-count>0</span></div>",
+        id: 'thread-stats'
+      });
+      this.postCountEl = $('#post-count', sc);
+      this.fileCountEl = $('#file-count', sc);
+      Header.addShortcut(sc);
+      return Thread.prototype.callbacks.push({
+        name: 'Thread Stats',
         cb: this.node
       });
     },
     node: function() {
-      var link, _i, _len, _ref;
+      var ID, fileCount, post, postCount, _ref;
 
-      _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        link = _ref[_i];
-        $.on(link, 'mouseover', QuotePreview.mouseover);
+      postCount = 0;
+      fileCount = 0;
+      _ref = this.posts;
+      for (ID in _ref) {
+        post = _ref[ID];
+        postCount++;
+        if (post.file) {
+          fileCount++;
+        }
       }
+      ThreadStats.thread = this;
+      ThreadStats.update(postCount, fileCount);
+      return $.on(d, 'ThreadUpdate', ThreadStats.onUpdate);
     },
-    mouseover: function(e) {
-      var boardID, clone, origin, post, postID, posts, qp, quote, quoterID, threadID, _i, _j, _len, _len1, _ref, _ref1;
+    onUpdate: function(e) {
+      var fileCount, postCount, _ref;
 
-      if ($.hasClass(this, 'inlined')) {
+      if (e.detail[404]) {
         return;
       }
-      _ref = Get.postDataFromLink(this), boardID = _ref.boardID, threadID = _ref.threadID, postID = _ref.postID;
-      qp = $.el('div', {
-        id: 'qp',
-        className: 'dialog'
-      });
-      $.add(Header.hover, qp);
-      Get.postClone(boardID, threadID, postID, qp, Get.contextFromLink(this));
-      UI.hover({
-        root: this,
-        el: qp,
-        latestEvent: e,
-        endEvents: 'mouseout click',
-        cb: QuotePreview.mouseout,
-        asapTest: function() {
-          return qp.firstElementChild;
-        }
-      });
-      if (!(origin = g.posts["" + boardID + "." + postID])) {
-        return;
-      }
-      if (Conf['Quote Highlighting']) {
-        posts = [origin].concat(origin.clones);
-        posts.pop();
-        for (_i = 0, _len = posts.length; _i < _len; _i++) {
-          post = posts[_i];
-          $.addClass(post.nodes.post, 'qphl');
-        }
-      }
-      quoterID = $.x('ancestor::*[@id][1]', this).id.match(/\d+$/)[0];
-      clone = Get.postFromRoot(qp.firstChild);
-      _ref1 = clone.nodes.quotelinks.concat(__slice.call(clone.nodes.backlinks));
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        quote = _ref1[_j];
-        if (quote.hash.slice(2) === quoterID) {
-          $.addClass(quote, 'forwardlink');
-        }
-      }
+      _ref = e.detail, postCount = _ref.postCount, fileCount = _ref.fileCount;
+      return ThreadStats.update(postCount, fileCount);
     },
-    mouseout: function() {
-      var clone, post, root, _i, _len, _ref;
+    update: function(postCount, fileCount) {
+      var fileCountEl, postCountEl, thread;
 
-      if (!(root = this.el.firstElementChild)) {
-        return;
-      }
-      clone = Get.postFromRoot(root);
-      post = clone.origin;
-      post.rmClone(root.dataset.clone);
-      if (!Conf['Quote Highlighting']) {
-        return;
-      }
-      _ref = [post].concat(post.clones);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        post = _ref[_i];
-        $.rmClass(post.nodes.post, 'qphl');
-      }
+      thread = ThreadStats.thread, postCountEl = ThreadStats.postCountEl, fileCountEl = ThreadStats.fileCountEl;
+      postCountEl.textContent = postCount;
+      fileCountEl.textContent = fileCount;
+      (thread.postLimit && !thread.isSticky ? $.addClass : $.rmClass)(postCountEl, 'warning');
+      return (thread.fileLimit && !thread.isSticky ? $.addClass : $.rmClass)(fileCountEl, 'warning');
     }
   };
 
-  /*
-    <3 aeosynth
-  */
-
-
-  QuoteThreading = {
+  ThreadUpdater = {
     init: function() {
-      var input;
+      var checked, conf, el, input, name, sc, settings, subEntries, _ref;
 
-      if (!(Conf['Quote Threading'] && g.VIEW === 'thread')) {
+      if (g.VIEW !== 'thread' || !Conf['Thread Updater']) {
         return;
       }
-      this.enabled = true;
-      this.controls = $.el('span', {
-        innerHTML: '<label><input id=threadingControl type=checkbox checked> Threading</label>'
+      checked = Conf['Auto Update'] ? 'checked' : '';
+      this.dialog = sc = $.el('span', {
+        innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>",
+        id: 'updater'
       });
-      input = $('input', this.controls);
-      $.on(input, 'change', QuoteThreading.toggle);
+      this.timer = $('#update-timer', sc);
+      this.status = $('#update-status', sc);
+      $.on(this.timer, 'click', ThreadUpdater.update);
+      $.on(this.status, 'click', ThreadUpdater.update);
+      this.checkPostCount = 0;
+      Header.addShortcut(sc);
+      subEntries = [];
+      _ref = Config.updater.checkbox;
+      for (name in _ref) {
+        conf = _ref[name];
+        checked = Conf[name] ? 'checked' : '';
+        el = $.el('label', {
+          title: "" + conf[1],
+          innerHTML: "<input name='" + name + "' type=checkbox " + checked + "> " + name
+        });
+        input = el.firstElementChild;
+        $.on(input, 'change', $.cb.checked);
+        if (input.name === 'Scroll BG') {
+          $.on(input, 'change', ThreadUpdater.cb.scrollBG);
+          ThreadUpdater.cb.scrollBG();
+        } else if (input.name === 'Auto Update') {
+          $.on(input, 'change', ThreadUpdater.update);
+        }
+        subEntries.push({
+          el: el
+        });
+      }
+      settings = $.el('span', {
+        innerHTML: '<a href=javascript:;>Interval</a>'
+      });
+      $.on(settings, 'click', this.intervalShortcut);
+      subEntries.push({
+        el: settings
+      });
       $.event('AddMenuEntry', {
         type: 'header',
-        el: this.controls,
-        order: 98
+        el: $.el('span', {
+          textContent: 'Updater'
+        }),
+        order: 110,
+        subEntries: subEntries
       });
-      $.on(d, '4chanXInitFinished', this.setup);
-      return Post.prototype.callbacks.push({
-        name: 'Quote Threading',
+      return Thread.prototype.callbacks.push({
+        name: 'Thread Updater',
         cb: this.node
       });
     },
-    setup: function() {
-      var ID, post, posts;
-
-      $.off(d, '4chanXInitFinished', QuoteThreading.setup);
-      posts = g.posts;
-      for (ID in posts) {
-        post = posts[ID];
-        if (post.cb) {
-          post.cb.call(post);
-        }
-      }
-      return QuoteThreading.hasRun = true;
-    },
     node: function() {
-      var ID, fullID, keys, len, post, posts, qid, quote, quotes, uniq, _i, _len;
+      ThreadUpdater.thread = this;
+      ThreadUpdater.root = this.OP.nodes.root.parentNode;
+      ThreadUpdater.lastPost = +ThreadUpdater.root.lastElementChild.id.match(/\d+/)[0];
+      ThreadUpdater.outdateCount = 0;
+      ThreadUpdater.lastModified = '0';
+      ThreadUpdater.cb.interval.call($.el('input', {
+        value: Conf['Interval']
+      }));
+      $.on(window, 'online offline', ThreadUpdater.cb.online);
+      $.on(d, 'QRPostSuccessful', ThreadUpdater.cb.post);
+      $.on(d, 'visibilitychange', ThreadUpdater.cb.visibility);
+      ThreadUpdater.cb.online();
+      return Rice.nodes(ThreadUpdater.dialog);
+    },
+    /*
+    http://freesound.org/people/pierrecartoons1979/sounds/90112/
+    cc-by-nc-3.0
+    */
 
-      if (this.isClone || !QuoteThreading.enabled || this.thread.OP === this) {
+    beep: 'data:audio/wav;base64,UklGRjQDAABXQVZFZm10IBAAAAABAAEAgD4AAIA+AAABAAgAc21wbDwAAABBAAADAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkYXRhzAIAAGMms8em0tleMV4zIpLVo8nhfSlcPR102Ki+5JspVEkdVtKzs+K1NEhUIT7DwKrcy0g6WygsrM2k1NpiLl0zIY/WpMrjgCdbPhxw2Kq+5Z4qUkkdU9K1s+K5NkVTITzBwqnczko3WikrqM+l1NxlLF0zIIvXpsnjgydZPhxs2ay95aIrUEkdUdC3suK8N0NUIjq+xKrcz002WioppdGm091pK1w0IIjYp8jkhydXPxxq2K295aUrTkoeTs65suK+OUFUIzi7xqrb0VA0WSoootKm0t5tKlo1H4TYqMfkiydWQBxm16+85actTEseS8y7seHAPD9TIza5yKra01QyWSson9On0d5wKVk2H4DYqcfkjidUQB1j1rG75KsvSkseScu8seDCPz1TJDW2yara1FYxWSwnm9Sn0N9zKVg2H33ZqsXkkihSQR1g1bK65K0wSEsfR8i+seDEQTxUJTOzy6rY1VowWC0mmNWoz993KVc3H3rYq8TklSlRQh1d1LS647AyR0wgRMbAsN/GRDpTJTKwzKrX1l4vVy4lldWpzt97KVY4IXbUr8LZljVPRCxhw7W3z6ZISkw1VK+4sMWvXEhSPk6buay9sm5JVkZNiLWqtrJ+TldNTnquqbCwilZXU1BwpKirrpNgWFhTaZmnpquZbFlbVmWOpaOonHZcXlljhaGhpZ1+YWBdYn2cn6GdhmdhYGN3lp2enIttY2Jjco+bnJuOdGZlZXCImJqakHpoZ2Zug5WYmZJ/bGlobX6RlpeSg3BqaW16jZSVkoZ0bGtteImSk5KIeG5tbnaFkJKRinxxbm91gY2QkIt/c3BwdH6Kj4+LgnZxcXR8iI2OjIR5c3J0e4WLjYuFe3VzdHmCioyLhn52dHR5gIiKioeAeHV1eH+GiYqHgXp2dnh9hIiJh4J8eHd4fIKHiIeDfXl4eHyBhoeHhH96eHmA',
+    cb: {
+      online: function() {
+        if (ThreadUpdater.online = navigator.onLine) {
+          ThreadUpdater.outdateCount = 0;
+          ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+          ThreadUpdater.update();
+          ThreadUpdater.set('status', null, null);
+        } else {
+          ThreadUpdater.set('timer', null);
+          ThreadUpdater.set('status', 'Offline', 'warning');
+        }
+        return ThreadUpdater.cb.autoUpdate();
+      },
+      post: function(e) {
+        if (e.detail.threadID !== ThreadUpdater.thread.ID) {
+          return;
+        }
+        ThreadUpdater.outdateCount = 0;
+        if (ThreadUpdater.seconds > 2) {
+          return setTimeout(ThreadUpdater.update, 1000);
+        }
+      },
+      checkpost: function() {
+        if (!(g.DEAD || ThreadUpdater.foundPost || ThreadUpdater.checkPostCount >= 10)) {
+          return setTimeout(ThreadUpdater.update, ++ThreadUpdater.checkPostCount * 500);
+        }
+        ThreadUpdater.checkPostCount = 0;
+        delete ThreadUpdater.foundPost;
+        return delete ThreadUpdater.postID;
+      },
+      visibility: function() {
+        if (d.hidden) {
+          return;
+        }
+        ThreadUpdater.outdateCount = 0;
+        if (ThreadUpdater.seconds > ThreadUpdater.interval) {
+          return ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+        }
+      },
+      scrollBG: function() {
+        return ThreadUpdater.scrollBG = Conf['Scroll BG'] ? function() {
+          return true;
+        } : function() {
+          return !d.hidden;
+        };
+      },
+      autoUpdate: function() {
+        if (ThreadUpdater.online) {
+          return ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
+        } else {
+          return clearTimeout(ThreadUpdater.timeoutID);
+        }
+      },
+      interval: function() {
+        var val;
+
+        val = +this.value;
+        if (val < 1) {
+          val = 1;
+        }
+        ThreadUpdater.interval = this.value = val;
+        return $.cb.value.call(this);
+      },
+      load: function() {
+        var klass, req, text, _ref;
+
+        req = ThreadUpdater.req;
+        switch (req.status) {
+          case 200:
+            g.DEAD = false;
+            ThreadUpdater.parse(JSON.parse(req.response).posts);
+            ThreadUpdater.lastModified = req.getResponseHeader('Last-Modified');
+            if (Conf['Auto Update']) {
+              ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+            }
+            break;
+          case 404:
+            g.DEAD = true;
+            ThreadUpdater.set('timer', null);
+            ThreadUpdater.set('status', '404', 'warning');
+            clearTimeout(ThreadUpdater.timeoutID);
+            ThreadUpdater.thread.kill();
+            $.event('ThreadUpdate', {
+              404: true,
+              thread: ThreadUpdater.thread
+            });
+            break;
+          default:
+            if (Conf['Auto Update']) {
+              ThreadUpdater.outdateCount++;
+              ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+            }
+            /*
+            Status Code 304: Not modified
+            By sending the `If-Modified-Since` header we get a proper status code, and no response.
+            This saves bandwidth for both the user and the servers and avoid unnecessary computation.
+            */
+
+            _ref = [0, 304].contains(req.status) ? [null, null] : ["" + req.statusText + " (" + req.status + ")", 'warning'], text = _ref[0], klass = _ref[1];
+            ThreadUpdater.set('status', text, klass);
+        }
+        if (ThreadUpdater.postID) {
+          ThreadUpdater.cb.checkpost(this.status);
+        }
+        return delete ThreadUpdater.req;
+      }
+    },
+    getInterval: function() {
+      var i, j;
+
+      i = ThreadUpdater.interval;
+      j = Math.min(ThreadUpdater.outdateCount, 10);
+      if (!d.hidden) {
+        j = Math.min(j, 7);
+      }
+      return ThreadUpdater.seconds = Conf['Optional Increase'] ? Math.max(i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]) : i;
+    },
+    intervalShortcut: function() {
+      var settings;
+
+      Settings.open('Advanced');
+      settings = $.id('fourchanx-settings');
+      return $('input[name=Interval]', settings).focus();
+    },
+    set: function(name, text, klass) {
+      var el, node;
+
+      el = ThreadUpdater[name];
+      if (node = el.firstChild) {
+        node.data = text;
+      } else {
+        el.textContent = text;
+      }
+      if (klass !== void 0) {
+        return el.className = klass;
+      }
+    },
+    timeout: function() {
+      var n;
+
+      ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
+      if (!(n = --ThreadUpdater.seconds)) {
+        return ThreadUpdater.update();
+      } else if (n <= -60) {
+        ThreadUpdater.set('status', 'Retrying', null);
+        return ThreadUpdater.update();
+      } else if (n > 0) {
+        return ThreadUpdater.set('timer', n);
+      }
+    },
+    update: function() {
+      var url;
+
+      if (!ThreadUpdater.online) {
         return;
       }
-      quotes = this.quotes, ID = this.ID, fullID = this.fullID;
-      posts = g.posts;
-      if (!(post = posts[fullID]) || post.isHidden) {
+      ThreadUpdater.seconds = 0;
+      if (Conf['Auto Update']) {
+        ThreadUpdater.set('timer', '...');
+      } else {
+        ThreadUpdater.set('timer', 'Update');
+      }
+      if (ThreadUpdater.req) {
+        ThreadUpdater.req.onloadend = null;
+        ThreadUpdater.req.abort();
+      }
+      url = "//api.4chan.org/" + ThreadUpdater.thread.board + "/res/" + ThreadUpdater.thread + ".json";
+      return ThreadUpdater.req = $.ajax(url, {
+        onloadend: ThreadUpdater.cb.load
+      }, {
+        headers: {
+          'If-Modified-Since': ThreadUpdater.lastModified
+        }
+      });
+    },
+    updateThreadStatus: function(title, OP) {
+      var icon, message, root, titleLC;
+
+      titleLC = title.toLowerCase();
+      if (ThreadUpdater.thread["is" + title] === !!OP[titleLC]) {
         return;
       }
-      uniq = {};
-      len = ("" + g.BOARD).length + 1;
-      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
-        quote = quotes[_i];
-        qid = quote;
-        if (!(qid.slice(len) < ID)) {
+      if (!(ThreadUpdater.thread["is" + title] = !!OP[titleLC])) {
+        message = title === 'Sticky' ? 'The thread is not a sticky anymore.' : 'The thread is not closed anymore.';
+        new Notification('info', message, 30);
+        $.rm($("." + titleLC + "Icon", ThreadUpdater.thread.OP.nodes.info));
+        return;
+      }
+      message = title === 'Sticky' ? 'The thread is now a sticky.' : 'The thread is now closed.';
+      new Notification('info', message, 30);
+      icon = $.el('img', {
+        src: "//static.4chan.org/image/" + titleLC + ".gif",
+        alt: title,
+        title: title,
+        className: "" + titleLC + "Icon"
+      });
+      root = $('[title="Quote this post"]', ThreadUpdater.thread.OP.nodes.info);
+      if (title === 'Closed') {
+        root = $('.stickyIcon', ThreadUpdater.thread.OP.nodes.info) || root;
+      }
+      return $.after(root, [$.tn(' '), icon]);
+    },
+    parse: function(postObjects) {
+      var ID, OP, count, deletedFiles, deletedPosts, files, index, key, node, num, post, postObject, posts, scroll, _i, _len, _ref;
+
+      OP = postObjects[0];
+      Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler;
+      ThreadUpdater.updateThreadStatus('Sticky', OP);
+      ThreadUpdater.updateThreadStatus('Closed', OP);
+      ThreadUpdater.thread.postLimit = !!OP.bumplimit;
+      ThreadUpdater.thread.fileLimit = !!OP.imagelimit;
+      posts = [];
+      index = [];
+      files = [];
+      count = 0;
+      for (_i = 0, _len = postObjects.length; _i < _len; _i++) {
+        postObject = postObjects[_i];
+        num = postObject.no;
+        index.push(num);
+        if (postObject.fsize) {
+          files.push(num);
+        }
+        if (num <= ThreadUpdater.lastPost) {
           continue;
         }
-        if (qid in posts) {
-          uniq[qid.slice(len)] = true;
+        count++;
+        node = Build.postFromObject(postObject, ThreadUpdater.thread.board);
+        posts.push(new Post(node, ThreadUpdater.thread, ThreadUpdater.thread.board));
+      }
+      deletedPosts = [];
+      deletedFiles = [];
+      _ref = ThreadUpdater.thread.posts;
+      for (ID in _ref) {
+        post = _ref[ID];
+        ID = +ID;
+        if (post.isDead && index.contains(ID)) {
+          post.resurrect();
+        } else if (!index.contains(ID)) {
+          post.kill();
+          deletedPosts.push(post);
+        } else if (post.file && !post.file.isDead && !files.contains(ID)) {
+          post.kill(true);
+          deletedFiles.push(post);
         }
-      }
-      keys = Object.keys(uniq);
-      if (keys.length !== 1) {
-        return;
-      }
-      this.threaded = "" + g.BOARD + "." + keys[0];
-      return this.cb = QuoteThreading.nodeinsert;
-    },
-    nodeinsert: function() {
-      var bottom, height, posts, qpost, qroot, threadContainer, top, _ref;
-
-      posts = g.posts;
-      qpost = posts[this.threaded];
-      delete this.threaded;
-      delete this.cb;
-      if (this.thread.OP === qpost) {
-        return false;
-      }
-      if (QuoteThreading.hasRun) {
-        height = doc.clientHeight;
-        _ref = qpost.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
-        if (!(Unread.posts.contains(qpost) || ((bottom < height) && (top > 0)))) {
-          return false;
-        }
-      }
-      qroot = qpost.nodes.root;
-      if (!$.hasClass(qroot, 'threadOP')) {
-        $.addClass(qroot, 'threadOP');
-        threadContainer = $.el('div', {
-          className: 'threadContainer'
-        });
-        $.after(qroot, threadContainer);
-      } else {
-        threadContainer = qroot.nextSibling;
-      }
-      $.add(threadContainer, this.nodes.root);
-      return true;
-    },
-    toggle: function() {
-      var container, containers, node, nodes, replies, reply, thread, _i, _j, _len, _len1;
-
-      thread = $('.thread');
-      replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
-      QuoteThreading.enabled = this.checked;
-      if (this.checked) {
-        nodes = (function() {
-          var _i, _len, _results;
-
-          _results = [];
-          for (_i = 0, _len = replies.length; _i < _len; _i++) {
-            reply = replies[_i];
-            _results.push(Get.postFromNode(reply));
+        if (ThreadUpdater.postID) {
+          if (ID === ThreadUpdater.postID) {
+            ThreadUpdater.foundPost = true;
           }
-          return _results;
-        })();
-        for (_i = 0, _len = nodes.length; _i < _len; _i++) {
-          node = nodes[_i];
-          QuoteThreading.node(node);
         }
+      }
+      if (!count) {
+        ThreadUpdater.set('status', null, null);
+        ThreadUpdater.outdateCount++;
       } else {
-        replies.sort(function(a, b) {
-          var aID, bID;
+        ThreadUpdater.set('status', "+" + count, 'new');
+        ThreadUpdater.outdateCount = 0;
+        if (Conf['Beep'] && d.hidden && Unread.posts && !Unread.posts.length) {
+          if (!ThreadUpdater.audio) {
+            ThreadUpdater.audio = $.el('audio', {
+              src: ThreadUpdater.beep
+            });
+          }
+          ThreadUpdater.audio.play();
+        }
+        ThreadUpdater.lastPost = posts[count - 1].ID;
+        Main.callbackNodes(Post, posts);
+        scroll = Conf['Auto Scroll'] && ThreadUpdater.scrollBG() && ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25;
+        for (key in posts) {
+          post = posts[key];
+          if (!posts.hasOwnProperty(key)) {
+            continue;
+          }
+          if (post.cb) {
+            if (!post.cb.call(post)) {
+              $.add(ThreadUpdater.root, post.nodes.root);
+            }
+          } else {
+            $.add(ThreadUpdater.root, post.nodes.root);
+          }
+        }
+        if (scroll) {
+          if (Conf['Bottom Scroll']) {
+            doc.scrollTop = d.body.clientHeight;
+          } else {
+            Header.scrollToPost(nodes[0]);
+          }
+        }
+        $.queueTask(function() {
+          var length, threadID;
 
-          aID = Number(a.id.slice(2));
-          bID = Number(b.id.slice(2));
-          return aID - bID;
+          threadID = ThreadUpdater.thread.ID;
+          length = $$('.thread > .postContainer', ThreadUpdater.root).length;
+          return Fourchan.parseThread(threadID, length - count, length);
         });
-        $.add(thread, replies);
-        containers = $$('.threadContainer', thread);
-        for (_j = 0, _len1 = containers.length; _j < _len1; _j++) {
-          container = containers[_j];
-          $.rm(container);
-        }
-        Unread.update(true);
       }
-    },
-    kb: function() {
-      var control;
-
-      control = $.id('threadingControl');
-      return control.click();
+      return $.event('ThreadUpdate', {
+        404: false,
+        thread: ThreadUpdater.thread,
+        newPosts: posts,
+        deletedPosts: deletedPosts,
+        deletedFiles: deletedFiles,
+        postCount: OP.replies + 1,
+        fileCount: OP.images + (!!ThreadUpdater.thread.OP.file && !ThreadUpdater.thread.OP.file.isDead)
+      });
     }
   };
 
-  QuoteYou = {
+  ThreadWatcher = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Mark Quotes of You'] || !Conf['Quick Reply']) {
+      if (!Conf['Thread Watcher']) {
         return;
       }
-      this.text = '\u00A0(You)';
-      return Post.prototype.callbacks.push({
-        name: 'Mark Quotes of You',
+      this.dialog = UI.dialog('watcher', 'top: 50px; left: 0px;', '<div class=move>Thread Watcher</div>');
+      $.on(d, 'QRPostSuccessful', this.cb.post);
+      $.on(d, '4chanXInitFinished', this.ready);
+      $.sync('WatchedThreads', this.refresh);
+      return Thread.prototype.callbacks.push({
+        name: 'Thread Watcher',
         cb: this.node
       });
     },
     node: function() {
-      var quotelink, quotelinks, quotes, _i, _len;
+      var favicon,
+        _this = this;
 
-      if (this.isClone) {
+      favicon = $.el('img', {
+        className: 'favicon'
+      });
+      $.on(favicon, 'click', ThreadWatcher.cb.toggle);
+      $.before($('input', this.OP.nodes.post), favicon);
+      if (g.VIEW !== 'thread') {
         return;
       }
-      if (!(quotes = this.quotes).length) {
+      return $.get('AutoWatch', 0, function(item) {
+        if (item['AutoWatch'] !== _this.ID) {
+          return;
+        }
+        ThreadWatcher.watch(_this);
+        return $["delete"]('AutoWatch');
+      });
+    },
+    ready: function() {
+      $.off(d, '4chanXInitFinished', ThreadWatcher.ready);
+      if (!Main.isThisPageLegit()) {
         return;
       }
-      quotelinks = this.nodes.quotelinks;
-      for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
-        quotelink = quotelinks[_i];
-        if (QR.db.get(Get.postDataFromLink(quotelink))) {
-          $.add(quotelink, $.tn(QuoteYou.text));
+      ThreadWatcher.refresh();
+      return $.add(d.body, ThreadWatcher.dialog);
+    },
+    refresh: function(watched) {
+      var ID, board, div, favicon, id, link, nodes, props, thread, x, _ref, _ref1;
+
+      if (!watched) {
+        $.get('WatchedThreads', {}, function(item) {
+          return ThreadWatcher.refresh(item['WatchedThreads']);
+        });
+        return;
+      }
+      nodes = [$('.move', ThreadWatcher.dialog)];
+      for (board in watched) {
+        _ref = watched[board];
+        for (id in _ref) {
+          props = _ref[id];
+          x = $.el('a', {
+            textContent: '×',
+            href: 'javascript:;'
+          });
+          $.on(x, 'click', ThreadWatcher.cb.x);
+          link = $.el('a', props);
+          link.title = link.textContent;
+          div = $.el('div');
+          $.add(div, [x, $.tn(' '), link]);
+          nodes.push(div);
         }
       }
+      $.rmAll(ThreadWatcher.dialog);
+      $.add(ThreadWatcher.dialog, nodes);
+      watched = watched[g.BOARD] || {};
+      _ref1 = g.BOARD.threads;
+      for (ID in _ref1) {
+        thread = _ref1[ID];
+        favicon = $('.favicon', thread.OP.nodes.post);
+        favicon.src = ID in watched ? Favicon["default"] : Favicon.empty;
+      }
+    },
+    cb: {
+      toggle: function() {
+        return ThreadWatcher.toggle(Get.postFromNode(this).thread);
+      },
+      x: function() {
+        var thread;
+
+        thread = this.nextElementSibling.pathname.split('/');
+        return ThreadWatcher.unwatch(thread[1], thread[3]);
+      },
+      post: function(e) {
+        var board, postID, threadID, _ref;
+
+        _ref = e.detail, board = _ref.board, postID = _ref.postID, threadID = _ref.threadID;
+        if (postID === threadID) {
+          if (Conf['Auto Watch']) {
+            return $.set('AutoWatch', threadID);
+          }
+        } else if (Conf['Auto Watch Reply']) {
+          return ThreadWatcher.watch(board.threads[threadID]);
+        }
+      }
+    },
+    toggle: function(thread) {
+      if ($('.favicon', thread.OP.nodes.post).src === Favicon.empty) {
+        return ThreadWatcher.watch(thread);
+      } else {
+        return ThreadWatcher.unwatch(thread.board, thread.ID);
+      }
+    },
+    unwatch: function(board, threadID) {
+      return $.get('WatchedThreads', {}, function(item) {
+        var watched;
+
+        watched = item['WatchedThreads'];
+        delete watched[board][threadID];
+        if (!Object.keys(watched[board]).length) {
+          delete watched[board];
+        }
+        ThreadWatcher.refresh(watched);
+        return $.set('WatchedThreads', watched);
+      });
+    },
+    watch: function(thread) {
+      return $.get('WatchedThreads', {}, function(item) {
+        var watched, _name;
+
+        watched = item['WatchedThreads'];
+        watched[_name = thread.board] || (watched[_name] = {});
+        watched[thread.board][thread] = {
+          href: "/" + thread.board + "/res/" + thread,
+          textContent: Get.threadExcerpt(thread)
+        };
+        ThreadWatcher.refresh(watched);
+        return $.set('WatchedThreads', watched);
+      });
     }
   };
 
-  Quotify = {
+  Unread = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Resurrect Quotes']) {
+      if (g.VIEW !== 'thread' || !Conf['Unread Count'] && !Conf['Unread Favicon']) {
         return;
       }
-      if (Conf['Comment Expansion']) {
-        ExpandComment.callbacks.push(this.node);
-      }
-      return Post.prototype.callbacks.push({
-        name: 'Resurrect Quotes',
+      this.db = new DataBoard('lastReadPosts', this.sync);
+      this.hr = $.el('hr', {
+        id: 'unread-line'
+      });
+      this.posts = [];
+      this.postsQuotingYou = [];
+      return Thread.prototype.callbacks.push({
+        name: 'Unread',
         cb: this.node
       });
     },
     node: function() {
-      var deadlink, _i, _len, _ref;
+      Unread.thread = this;
+      Unread.title = d.title;
+      Unread.lastReadPost = Unread.db.get({
+        boardID: this.board.ID,
+        threadID: this.ID,
+        defaultValue: 0
+      });
+      $.on(d, '4chanXInitFinished', Unread.ready);
+      $.on(d, 'ThreadUpdate', Unread.onUpdate);
+      return $.on(d, 'scroll visibilitychange', Unread.read);
+    },
+    ready: function() {
+      var ID, post, posts, _ref;
 
-      _ref = $$('.deadlink', this.nodes.comment);
+      $.off(d, '4chanXInitFinished', Unread.ready);
+      posts = [];
+      _ref = Unread.thread.posts;
+      for (ID in _ref) {
+        post = _ref[ID];
+        if (post.isReply) {
+          posts.push(post);
+        }
+      }
+      Unread.addPosts(posts);
+      if (Conf['Unread Line']) {
+        Unread.setLine();
+      }
+      if (Conf['Scroll to Last Read Post']) {
+        return Unread.scroll();
+      }
+    },
+    scroll: function() {
+      var hash, post, posts, prevID, root;
+
+      if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
+        return;
+      }
+      if (Unread.posts.length) {
+        prevID = 0;
+        while (root = $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root)) {
+          post = Get.postFromRoot(root);
+          if (prevID === post.ID) {
+            break;
+          }
+          prevID = post.ID;
+          if (!post.isHidden) {
+            break;
+          }
+        }
+        root.scrollIntoView(false);
+        return;
+      }
+      posts = Object.keys(Unread.thread.posts);
+      return Header.scrollToPost(Unread.thread.posts[posts[posts.length - 1]].nodes.root);
+    },
+    sync: function() {
+      var lastReadPost;
+
+      lastReadPost = Unread.db.get({
+        boardID: Unread.thread.board.ID,
+        threadID: Unread.thread.ID,
+        defaultValue: 0
+      });
+      if (!(Unread.lastReadPost < lastReadPost)) {
+        return;
+      }
+      Unread.lastReadPost = lastReadPost;
+      Unread.readArray(Unread.posts);
+      Unread.readArray(Unread.postsQuotingYou);
+      Unread.setLine();
+      return Unread.update();
+    },
+    addPosts: function(newPosts) {
+      var ID, data, post, _i, _len;
+
+      for (_i = 0, _len = newPosts.length; _i < _len; _i++) {
+        post = newPosts[_i];
+        ID = post.ID;
+        if (ID <= Unread.lastReadPost || post.isHidden) {
+          continue;
+        }
+        if (QR.db) {
+          data = {
+            boardID: post.board.ID,
+            threadID: post.thread.ID,
+            postID: post.ID
+          };
+          if (QR.db.get(data)) {
+            continue;
+          }
+        }
+        Unread.posts.push(post);
+        Unread.addPostQuotingYou(post);
+      }
+      if (Conf['Unread Line']) {
+        Unread.setLine(newPosts.contains(Unread.posts[0]));
+      }
+      Unread.read();
+      return Unread.update();
+    },
+    addPostQuotingYou: function(post) {
+      var quotelink, _i, _len, _ref;
+
+      if (!QR.db) {
+        return;
+      }
+      _ref = post.nodes.quotelinks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        deadlink = _ref[_i];
-        if (this.isClone) {
-          if ($.hasClass(deadlink, 'quotelink')) {
-            this.nodes.quotelinks.push(deadlink);
-          }
-        } else {
-          Quotify.parseDeadlink.call(this, deadlink);
+        quotelink = _ref[_i];
+        if (QR.db.get(Get.postDataFromLink(quotelink))) {
+          Unread.postsQuotingYou.push(post);
         }
       }
     },
-    parseDeadlink: function(deadlink) {
-      var a, boardID, m, post, postID, quote, quoteID, redirect, _ref;
+    onUpdate: function(e) {
+      if (e.detail[404]) {
+        return Unread.update();
+      } else {
+        return Unread.addPosts(e.detail.newPosts);
+      }
+    },
+    readSinglePost: function(post) {
+      var i;
 
-      if (deadlink.parentNode.className === 'prettyprint') {
-        $.replace(deadlink, __slice.call(deadlink.childNodes));
+      if ((i = Unread.posts.indexOf(post)) === -1) {
         return;
       }
-      quote = deadlink.textContent;
-      if (!(postID = (_ref = quote.match(/\d+$/)) != null ? _ref[0] : void 0)) {
+      Unread.posts.splice(i, 1);
+      if (i === 0) {
+        Unread.lastReadPost = post.ID;
+        Unread.saveLastReadPost();
+      }
+      if ((i = Unread.postsQuotingYou.indexOf(post)) !== -1) {
+        Unread.postsQuotingYou.splice(i, 1);
+      }
+      return Unread.update();
+    },
+    readArray: function(arr) {
+      var i, post, _i, _len;
+
+      for (i = _i = 0, _len = arr.length; _i < _len; i = ++_i) {
+        post = arr[i];
+        if (post.ID > Unread.lastReadPost) {
+          break;
+        }
+      }
+      return arr.splice(0, i);
+    },
+    read: $.debounce(50, function(e) {
+      var ID, bottom, height, i, post, posts, read;
+
+      if (d.hidden || !Unread.posts.length) {
         return;
       }
-      boardID = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : this.board.ID;
-      quoteID = "" + boardID + "." + postID;
-      if (post = g.posts[quoteID]) {
-        if (!post.isDead) {
-          a = $.el('a', {
-            href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
-            className: 'quotelink',
-            textContent: quote
-          });
+      height = doc.clientHeight;
+      posts = Unread.posts;
+      read = [];
+      i = posts.length;
+      while (post = posts[--i]) {
+        bottom = post.nodes.root.getBoundingClientRect().bottom;
+        if (bottom < height) {
+          ID = post.ID;
+          posts.remove(post);
+        }
+      }
+      if (!ID) {
+        return;
+      }
+      Unread.lastReadPost = ID;
+      Unread.saveLastReadPost();
+      Unread.readArray(Unread.postsQuotingYou);
+      if (e) {
+        return Unread.update();
+      }
+    }),
+    saveLastReadPost: $.debounce(2 * $.SECOND, function() {
+      return Unread.db.set({
+        boardID: Unread.thread.board.ID,
+        threadID: Unread.thread.ID,
+        val: Unread.lastReadPost
+      });
+    }),
+    setLine: function(force) {
+      var post, root;
+
+      if (!(d.hidden || force === true)) {
+        return;
+      }
+      if (post = Unread.posts[0]) {
+        root = post.nodes.root;
+        if (root !== $('.thread > .replyContainer', root.parentNode)) {
+          return $.before(root, Unread.hr);
+        }
+      } else {
+        return $.rm(Unread.hr);
+      }
+    },
+    update: function() {
+      var count;
+
+      count = Unread.posts.length;
+      if (Conf['Unread Count']) {
+        d.title = "" + (count || !Conf['Hide Unread Count at (0)'] ? "(" + count + ") " : '') + (g.DEAD ? "/" + g.BOARD + "/ - 404" : "" + Unread.title);
+      }
+      if (!Conf['Unread Favicon']) {
+        return;
+      }
+      Favicon.el.href = g.DEAD ? Unread.postsQuotingYou.length ? Favicon.unreadDeadY : count ? Favicon.unreadDead : Favicon.dead : count ? Unread.postsQuotingYou.length ? Favicon.unreadY : Favicon.unread : Favicon["default"];
+      return $.add(d.head, Favicon.el);
+    }
+  };
+
+  Redirect = {
+    init: function() {
+      return $.sync('archs', this.updateArchives);
+    },
+    updateArchives: function() {
+      return $.get('archivers', {}, function(_arg) {
+        var archivers;
+
+        archivers = _arg.archivers;
+        return Conf['archivers'] = archivers;
+      });
+    },
+    image: function(boardID, filename) {
+      switch (boardID) {
+        case 'a':
+        case 'gd':
+        case 'jp':
+        case 'm':
+        case 'q':
+        case 'tg':
+        case 'vp':
+        case 'vr':
+        case 'wsg':
+          return "//archive.foolz.us/" + boardID + "/full_image/" + filename;
+        case 'u':
+          return "//nsfw.foolz.us/" + boardID + "/full_image/" + filename;
+        case 'po':
+          return "//archive.thedarkcave.org/" + boardID + "/full_image/" + filename;
+        case 'hr':
+        case 'tv':
+          return "http://archive.4plebs.org/" + boardID + "/full_image/" + filename;
+        case 'ck':
+        case 'fa':
+        case 'lit':
+        case 's4s':
+          return "//fuuka.warosu.org/" + boardID + "/full_image/" + filename;
+        case 'cgl':
+        case 'g':
+        case 'mu':
+        case 'w':
+          return "//rbt.asia/" + boardID + "/full_image/" + filename;
+        case 'an':
+        case 'k':
+        case 'toy':
+        case 'x':
+          return "http://archive.heinessen.com/" + boardID + "/full_image/" + filename;
+        case 'c':
+          return "//archive.nyafuu.org/" + boardID + "/full_image/" + filename;
+      }
+    },
+    post: function(boardID, postID) {
+      var archive, name, _base, _ref;
+
+      if (Redirect.post[boardID] == null) {
+        _ref = this.archiver;
+        for (name in _ref) {
+          archive = _ref[name];
+          if (archive.type === 'foolfuuka' && archive.boards.contains(boardID)) {
+            Redirect.post[boardID] = archive.base;
+            break;
+          }
+        }
+        (_base = Redirect.post)[boardID] || (_base[boardID] = false);
+      }
+      if (Redirect.post[boardID]) {
+        return "" + Redirect.post[boardID] + "/_/api/chan/post/?board=" + boardID + "&num=" + postID;
+      } else {
+        return null;
+      }
+    },
+    select: function(board) {
+      var archive, name, _ref, _results;
+
+      _ref = this.archiver;
+      _results = [];
+      for (name in _ref) {
+        archive = _ref[name];
+        if (!archive.boards.contains(board)) {
+          continue;
+        }
+        _results.push(name);
+      }
+      return _results;
+    },
+    to: function(data) {
+      var arch, archive, boardID;
+
+      boardID = data.boardID;
+      if ((arch = Conf.archivers[boardID]) == null) {
+        Conf.archivers[boardID] = arch = this.select(boardID)[0];
+        $.set('archivers', Conf.archivers);
+      }
+      return (arch && (archive = this.archiver[arch]) ? Redirect.path(archive.base, archive.type, data) : data.threadID ? "//boards.4chan.org/" + boardID + "/" : null);
+    },
+    archiver: {
+      'Foolz': {
+        base: 'https://archive.foolz.us',
+        boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg'],
+        type: 'foolfuuka'
+      },
+      'NSFWFoolz': {
+        base: 'https://nsfw.foolz.us',
+        boards: ['u'],
+        type: 'foolfuuka'
+      },
+      'TheDarkCave': {
+        base: 'http://archive.thedarkcave.org',
+        boards: ['c', 'int', 'out', 'po'],
+        type: 'foolfuuka'
+      },
+      '4plebs': {
+        base: 'http://archive.4plebs.org',
+        boards: ['hr', 'tg', 'tv', 'x'],
+        base: 'foolfuuka'
+      },
+      'Warosu': {
+        base: '//fuuka.warosu.org',
+        boards: ['cgl', 'ck', 'fa', 'jp', 'lit', 's4s', 'q', 'tg'],
+        type: 'fuuka'
+      },
+      'InstallGentoo': {
+        base: '//archive.installgentoo.net',
+        boards: ['diy', 'g', 'sci'],
+        type: 'fuuka'
+      },
+      'RebeccaBlackTech': {
+        base: '//rbt.asia',
+        boards: ['an', 'cgl', 'g', 'mu', 'w'],
+        type: 'fuuka_mail'
+      },
+      'Heinessen': {
+        base: 'http://archive.heinessen.com',
+        boards: ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'],
+        type: 'fuuka'
+      },
+      'Cliche': {
+        base: '//www.cliché.net/4chan/cgi-board.pl',
+        boards: ['e'],
+        type: 'fuuka'
+      },
+      'NyaFuu': {
+        base: '//archive.nyafuu.org',
+        boards: ['c', 'w'],
+        type: 'fuuka'
+      }
+    },
+    path: function(base, archiver, data) {
+      var boardID, path, postID, threadID, type, value;
+
+      if (data.isSearch) {
+        boardID = data.boardID, type = data.type, value = data.value;
+        type = type === 'name' ? 'username' : type === 'MD5' ? 'image' : type;
+        value = encodeURIComponent(value);
+        if (archiver === 'foolfuuka') {
+          return "" + base + "/" + boardID + "/search/" + type + "/" + value;
+        } else if (type === 'image') {
+          return "" + base + "/" + boardID + "/?task=search2&search_media_hash=" + value;
         } else {
-          a = $.el('a', {
-            href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
-            className: 'quotelink deadlink',
-            target: '_blank',
-            textContent: "" + quote + "\u00A0(Dead)"
-          });
-          a.setAttribute('data-boardid', boardID);
-          a.setAttribute('data-threadid', post.thread.ID);
-          a.setAttribute('data-postid', postID);
-        }
-      } else if (redirect = Redirect.to({
-        boardID: boardID,
-        threadID: 0,
-        postID: postID
-      })) {
-        a = $.el('a', {
-          href: redirect,
-          className: 'deadlink',
-          target: '_blank',
-          textContent: "" + quote + "\u00A0(Dead)"
-        });
-        if (Redirect.post(boardID, postID)) {
-          $.addClass(a, 'quotelink');
-          a.setAttribute('data-boardid', boardID);
-          a.setAttribute('data-postid', postID);
+          return "" + base + "/" + boardID + "/?task=search2&search_" + type + "=" + value;
         }
       }
-      if (!this.quotes.contains(quoteID)) {
-        this.quotes.push(quoteID);
+      boardID = data.boardID, threadID = data.threadID, postID = data.postID;
+      path = threadID ? "" + boardID + "/thread/" + threadID : "" + boardID + "/post/" + postID;
+      if (archiver === 'foolfuuka') {
+        path += '/';
       }
-      if (!a) {
-        deadlink.textContent = "" + quote + "\u00A0(Dead)";
-        return;
+      if (threadID && postID) {
+        path += archiver === 'foolfuuka' ? "#" + postID : "#p" + postID;
       }
-      $.replace(deadlink, a);
-      if ($.hasClass(a, 'quotelink')) {
-        return this.nodes.quotelinks.push(a);
-      }
+      return "" + base + "/" + path;
     }
   };
 
@@ -10877,56 +9866,77 @@
     }
   };
 
-  CustomCSS = {
-    init: function() {
-      if (!Conf['Custom CSS']) {
-        return;
-      }
-      return this.addStyle();
-    },
-    addStyle: function() {
-      return this.style = $.addStyle(Conf['usercss']);
-    },
-    rmStyle: function() {
-      if (this.style) {
-        $.rm(this.style);
-        return delete this.style;
-      }
-    },
-    update: function() {
-      if (!this.style) {
-        this.addStyle();
-      }
-      return this.style.textContent = Conf['usercss'];
-    }
-  };
-
   Emoji = {
     init: function() {
-      return Emoji.icons.not.push(['PlanNine', Emoji.icons.not[0][1]]);
+      Emoji.icons['PlanNine'] = Emoji.icons['Plan9'];
+      return Emoji.icons['Sage'] = Emoji.sage[Conf['sageEmoji']];
     },
     css: function(position) {
-      var category, css, icon, key, margin, name, _conf, _i, _len, _ref;
+      var category, css, icon, key, name, _conf, _ref;
 
       _conf = Conf;
-      css = [];
-      margin = "margin-" + (position === "before" ? "right" : "left") + ": " + (parseInt(_conf['Emoji Spacing'])) + "px;";
+      css = ["a.useremail[href]:last-of-type::" + position + " {\n  vertical-align: top;\n  margin-" + (position === "before" ? "right" : "left") + ": 5px;\n}\n"];
       _ref = Emoji.icons;
       for (key in _ref) {
         category = _ref[key];
+        if (!Emoji.icons.hasOwnProperty(key)) {
+          continue;
+        }
         if ((_conf['Emoji'] !== "disable ponies" && key === "pony") || (_conf['Emoji'] !== "only ponies" && key === "not")) {
-          for (_i = 0, _len = category.length; _i < _len; _i++) {
-            icon = category[_i];
+          for (name in category) {
+            icon = category[name];
+            if (!category.hasOwnProperty(name)) {
+              continue;
+            }
             name = icon[0];
-            css[css.length] = "a.useremail[href*='" + name + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toLowerCase()) + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toUpperCase()) + "']:last-of-type::" + position + " {\n  content: url('data:image/png;base64," + icon[1] + "');\n  vertical-align: top;\n  " + margin + "\n}\n";
+            css.push("a.useremail[href*='" + name + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toLowerCase()) + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toUpperCase()) + "']:last-of-type::" + position + " {\n  content: url('data:image/png;base64," + icon + "');\n}\n");
           }
         }
       }
       return css.join("");
     },
+    sage: {
+      '4chan SS': 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAYAAACZ3F9/AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAa9JREFUKFOdkt0rg2EUwM95b2zlL0CRRLngksznXrJsNtYW1tjYhM3mY6+IXZAbikhTKJp8XZAp81UmWYhIRHHhUi60e7s6ntdCa2449es8PfU7z+k5B6AbyuE/wQlc4BcO2d06unAUBCgFE0hianOd3NHIcy8NPwrUf9NBPZcOEi7ayXZiea/1V7+ljaXeYAfOgg2So2TOwQWGnwQafOgi962TnMFmatozUeNu4yetASspVvgXiUvii5K5Nm6z56ol3Hdtpy+cwSYy+HRUt1nLsoEato0kXyh6wTac+24brThWv6MNOYNW9prlG/uxmbRrFaT0VrCspZoNPSUNJNyCBcoiLZuhLH0o9U6UrAfGKCz7RlLM81Q8XUwqr4oKPLIQmnA8IupBigacVy7yrya/2JouhryJHJJNykg+UxLGOtz6+SQNpEiMcduls4Wvoli9WklVKz+ol5SU4U6ngql8Qj2eRI+GyajBhSRH4r3cUxhSeRVhsYBmWUWiyM+UMDmDUI2nsfuSC1I27nLgYZJlP8jhjJ3PY8iE+L8tWx4kQC6MQA5b1D9HNiRCFhx8AF/e2qh92VnKAAAAAElFTkSuQmCC',
+      'appchan': 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAABa1BMVEUAAACqrKiCgYIAAAAAAAAAAACHmX5pgl5NUEx/hnx4hXRSUVMiIyKwrbFzn19SbkZ1d3OvtqtpaWhcX1ooMyRsd2aWkZddkEV8vWGcpZl+kHd7jHNdYFuRmI4bHRthaV5WhUFsfGZReUBFZjdJazpGVUBnamYfHB9TeUMzSSpHgS1cY1k1NDUyOC8yWiFywVBoh1lDSEAZHBpucW0ICQgUHhBjfFhCRUA+QTtEQUUBAQFyo1praWspKigWFRZHU0F6j3E9Oz5VWFN0j2hncWONk4sAAABASDxJWkJKTUgAAAAvNC0fJR0DAwMAAAA9QzoWGhQAAAA8YytvrFOJsnlqyT9oqExqtkdrsExpsUsqQx9rpVJDbzBBbi5utk9jiFRuk11iqUR64k5Wf0JIZTpadk5om1BkyjmF1GRNY0FheFdXpjVXhz86XSp2yFJwslR3w1NbxitbtDWW5nNnilhFXTtYqDRwp1dSijiJ7H99AAAAUnRSTlMAJTgNGQml71ypu3cPEN/RDh8HBbOwQN7wVg4CAQZ28vs9EDluXjo58Ge8xwMy0P3+rV8cT73sawEdTv63NAa3rQwo4cUdAl3hWQSWvS8qqYsjEDiCzAAAAIVJREFUeNpFx7GKAQAYAOD/A7GbZVAWZTBZFGQw6LyCF/MIkiTdcOmWSzYbJVE2u1KX0J1v+8QDv/EkyS0yXF/NgeEILiHfyc74mICTQltqYXBeAWU9HGxU09YqqEvAElGjyZYjPyLqitjzHSEiGkrsfMWr0VLe+oy/djGP//YwfbeP8bN3Or0bkqEVblAAAAAASUVORK5CYII='
+    },
     icons: {
-      pony: [['Pinkie', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA3dJREFUGBlNwUtoXFUcB+Df/zzuY553pp2MmUwSk5TGpnamiokWRdNCSkCrUChKCnVZQUEUdy5sQZC6cyd2VWgoutCFXWTjIyp1UdqmEDBRsSZNmkmaZF6Zx32ccyzowu8j/M883pH5A9kBYfNkFOpu0OiulyqXmnhkDmdYHYJexzX1Ef51EQDhP9fxpjU0PDCd7IldYIxGVag3/KZ/ZX1p8/P0k/0U47qs291M2NS3f6ncuLeFeQ3A8KuYoNPoY/3e2Ej6scSnqUJ8gksmhC2y3OJHpSUHU0/3HU+WCuddyV6VSpVyYv/aUuPefWAP4iDG8AhJWyYYo972tg8DQ1wyWHGZSfcmZmQ+YeKTw1bQ70H8uJw3xtDp6NzG15VLf/DLWMBZHGPkwuWGyq7njLoZyzAiCtqRIddioifBxYBHIpeE0oaw0yoG7WA755dvi8Xih66BOSZj4rwds45bSQkuOeOCQYWG2PjjcEq94JwjQgQ+kCW+tBl3H7Ym4jnbE/nDmamwqz9mnEaYoBgiZaJIGW5zEIHEPheykMD2w12ztPIXCrZHec+GdOVAUI8ygjvifeHQESiNoKtMlIoRxSV0owMjAeY5+P3BKrbTDq3n02B/7yDTDkBANSXiewKgjFbahEwQe34IiVIfRNqCv1qDanQR9Di4+tU16N409o2WMXnyJeNWb9PO4s6WroZawOiSiozCoR7lPFUQezICCzXF+pPGYRna6/rotNqY/eJLUzh4mM5dP4Va0YXV45x0O9F9FhkN5auq4eznaq3WmP1pDkuibW5uraNaqyNh23ihPA6v7wAVS+PwXAGkbYiUnU3kYm8JzvgGpJGdG6vzm15+ce6H79/9bnnBhCxG702dwnTaw4nyM/jsiTHsHx+DEyjKWnGEUpBOyjTTgbpsNHyLojPe7PK3qci58NvNu0Gl0YA8NIxWp4MkdzCdK2Ci6iNYXIV6UEfUDBC2Q/A3WqVbUUfVucWftYhP9fLiFf7yRPGVmZmhE88dJVmpGRMqRH4E3emSbnQR3lkzaqNB3br/J39tb1ibJglGfJDZbMReb37Td/bFhcnB/iNppXNUbZEKFGBJ6FBT+9cVo5c3yd/trDV3OxdFDDHFOV8IffVJtNNOC+J3xtYqATWw0Mm6RIJ9YAy9rdtt07q1ZtjdVXCYFRBG4Bv8A+lliGhzN164AAAAAElFTkSuQmCC'], ['Applejack', 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAYAAAAmlE46AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAv9JREFUOE9dkmtIU2EYx88Roi9FfahkfQmS6kNGEBRlZWSY5tylTKepqR8MHYGl2R1POm2u5bCVlzbog2Ze591pzZPZxUskDZLMMLSWzcIca3MXt7N/55woqhf+PC8Pz+99n+fPQxAEQf6vhINb1nG5/ISdobWXo+9eSd4tyM7OJimKImmaJhsaGjjmX/DGqfDQmkvRg1x+9YrlZPd18fdupXiu6mxkOAcqlUqyuLiYB/+cayfD1rKFH0w3pYEHV4/omhTCyieVcYEB7TEYSyX21Mita/6u/91qUBMV00JrjmKwMg4zI2fgnlfD90PLx+nhMyinIrb91SFBFqaHBevPHb7G/fS06jhs0wXwO8rBOLXws2Kct/k4//HKRE+jZD0Pl2buD2FnmOlVSUFrpJg15/JFgcWKP0Bg8Q6fs1sVs+11wmAebKaEuiG1CC81Yozci+cL4KoC3JUIuCp4+R23+Ee4Dr5bisZmJi7fJzpLRJZPOin8vSlwdSXDO54Hz+vT8LzLh3uuCIuzBfDa1DzMPcrJMVfkIHpVEu94uYgH/aaTvOxdJzDZkI76smhY2mVwDmfg8zM5RukcvH8pbx96mLiPMBTG0nSpGK7mePg6k+DsSUZbSQwem02oba3DRsFKzNQfx9sHSdi1dzve5Ow4xM+ozorY1K2U2MY0IrhbEuB7lIqB6gxY7B9R3XoHAoEAivN74O5LAaXNwvNLe9PlcjlJACANRaIRztFh1iRvfRyYx5kIOCwY+GCE9GIUOjrzwZjS4H16FV80UT1WqzWIWFhYIBsLhDf7y46Ck1UvATNKgXlxHgHbJDyub2DGVPC2s+bVyGDTx74ym80kwe2fKvNASN8NySK3NeayWNagNPj7WaP62Uhn8HdPkwyWW3IoEjdv0Ol0JGE0GvmV0+dFpj9SS5kOKuahr01Wwbb2lXV6aakjkfF1p8DXlwHnaB5yTm1bbzAYfs34e/+0pyNic+N2ruIWmQWXcdE1dUEGd9UYq6kle1mXqVW6imWIn290AGVZutJTAAAAAElFTkSuQmCC'], ['Fluttershy', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA2xJREFUOE9dU91PWmcYP2uybDfrxdIlu9vN/oglverWNN3Fmu1iN7vY2q4utnE2Nu26ukyrUUGwExGpn3xY+TyACjrskFrcEYoWnCAM4YAgcJjROkFA1q789nJczNaTPHnfk+f5/d7n4/dQ1Cvf3Ut3Xp//Qnze36gYCt56kIgJpyqRFvrvcIvxMNxhSa9eV993XJK/+yqO/zdf7j7tbRz1RdstLzOKReRoLxJSOzb7HyKtdCEumgErmEbwO03U2aR8738kzq8ln8e6bXlWYMWmZA6Z8SUk5U5ytyPeY0Oy1w5O50FO+wQ5jbtG4lK19L5BGehzb9sE19+JtFt2c8ZlJPvmwAqtSA06EWs3g+2aQnacwdbwAmLknuiZxaZ4FiTD6tLFvi+pBeenb/3mvvo4Yu3D5v1ZsP1axHpUiAo0iPyg41/dGiNgiQI5PXmdXkai92dkVItYbZ6YpVZWLrrKFSOynBip9W6U/7LwViqZ8SykRWpcR8BqJNlmJCZp1LLMkIxSAw6s39WHqUCo/mDnWTdKhwRUMaNMzvLh5NFZsaBIbD+rJ34jgsxtcLQH3IQbKakDoVZDmnpk+irA/fEjCkXlv+AawX+MEJQJcaFEY8bWAJdMgYxyESn5PILNumUqJNVVA4EG7OXlx8Bf3T2QyRuh0X2P5ad9pCQTcjtqDI3UwTMuReIeaaKagb9u6B6VVi9Wg1YRUhkhH1g6NKFf3gD/2gAYz08YVd5AdltDfDS2d2QIrH6DcNcwUjLHc+aC8AMqLrW/4EwesBoligUTCgc05h52IH9gwu6+ERwBb+9pkc0IwLJNWHPXIyrUIdysW2POd52gopIZjtOSpgzOI2NToVAmwD0D9osmvvZSxcCXtr5wA08627Ah0yHZ74D3ysBNXokR8XQ8q2SQM3gQbZtAPm1AiZRyNIUawZGFl5qIRqbBdk4Sndjy1iviIymzIquXldirWRXDzzdOZr63q8J66OqOf+2yL8be+nMr3fry91A9NlRjvKT9tx88Pt6Djdaps0RZxQRZmCzpbHrMBV9b5/YM/dn7tSCT/cNTvpauFdasR5xkkCaS9n07Kj0mIKm+GbujP5OQ/vI8Ofyomhx0sOmxhU9W6wYp5uOO12qB3guik2TuI2QPXmwpXLGnjSMf3RRdO1Hz/QNneMt7Iqmg5QAAAABJRU5ErkJggg=='], ['Twilight', 'iVBORw0KGgoAAAANSUhEUgAAABIAAAAQCAYAAAAbBi9cAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA6lJREFUOE+VlF9Mk1cYxj+Kc3+yXWimFxuk2zTIn4bQFkppF0hDNmBpBtgKixhhQZAhbSkFBp1uZWg3ZLRMxFKE0qKtrMy2E2ztn2+1tLQgbuJiorvQ7c5pgplZNjfmePZ9nwtZMm52kufqvOeX5zznfQ9B/M9l/8CXPP2R/6ajy+u0amZeoI8D2PpfTLqMlZQpT9vE2fPOc9l73302q7rs6Sz5K6zM3ZuJzD2EVf1VytejC4hNXoWj2/vlF71+FgVKIsZVHrbnEzLoPkYOqqtPNm7j1l1J4R9Y4wgVkOR3Qcvrg+uNXmTnt9zfmdcUFRd1XqQhC+eWMXP8MiwKdyUDOqMLEG49qYtYlhA+vQi7zocGmQHFYi2UnM9wq/RzNEsOQyDWMBIWtjNurjivw2ucg+toyM+A6LWZU72vvsqwFjwVZwrmrEvoq7DBLDDiltQAobidgeRRUipMTA0t32AU3hNzD7zGSANBZMi2UFe5nyZohrREB9dxEnMTS+jgnUBYMghv2afrbhhHb3aAnFxkQMHhOALDid8p0EHiKU6VklvQil0UiJakqBsf77dCmTmASPEAhoqPIEN4CGmCJvAkauzKfw/5pRr4J+JUTtfo693zGSM7iBdzan10sE9gh5AragNXoEKtvB+93ZMY0TthGraB92oJVlYewDTgQJ96DKTtiStXb8jvNoafIV7i19+lndC2X+bXPyqXffj4kmV+PYexY1aQMwnkv1YGWUUljryvQ0/dqfV9+Vs9zVTYLILKZ5UGsXMbb2/llJaWCN8OnzNMrxda9JNYjt+ENL0RrQol0nekQVtlRHA8gsWpZQhEmrviws5yIpXfcG87t+52UpY8NZXN3lIjPRiOReZxfugCA7s4EsCN727ArHChQiKDYGchRrumELbFEbQmkFvQ+ofg9TYX8Xx2zfnkLDmHbgM2m00M1tortQf06FC2Y2HqGgMjvSR+WfkVplYPzCoX3EOziDmuwjMSRk6BajVP1PYT/fzb/j0nZ7tmN+n3mUlpUTmCo1EGFHJE8NvDR/g+egd0fj5LDN6xKHo6bOAL1D/niTTRDUd2rMW13VBj/zFu/5YZBaYBp69j0blMPfs8zhj9KCjspPNZ+6fjd28IGld4MgIn5x/HJr9ByJRYDz5oS2B6KIT9Nf3IEaj+pCBrXFELOTERZm0Ichy+lHy2czZlpv+y80JfmILFVwPDsTvmo26SJ1I9zBU1/UVBfqAk35ujpb+RpL8BJjxIUjyXvSgAAAAASUVORK5CYII='], ['Rainbow', 'iVBORw0KGgoAAAANSUhEUgAAAA8AAAAQCAYAAADJViUEAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA3tJREFUGBk9wV9MG3UAB/Dv7+531971aKGMlr+OwjoGBUZwRDrRBJwj0bHEmeiS6Xwyxn8x8UVNzHAPPvliFhMzsy0m8uDD5h/QZWoUNxYMBoZbZCBjZTBoKRwtLde7cv9+bg/6+ZDnzk6C44lw6f6whdOnETpzla+0803RMD3ZGSH95V62lzGQtMH9M7MhfpPUyIX5HE1uvNXDaCQgtykB70cR/4unrn3aqzYkZt7v18ZfezyTkfy0HlJ7FMWKEBJFpYMSVq7bngMlGvvc/OTiLzRYLp8K1waObaS16MDIRfupG9c6SuwCsSt2kJ+/B+3HMdC6MBofa0N1a2sVJTWj02mh4BFCCpV84jN4oHyX3KYEJAi2BWYR2CkPmMlBiOgwE0mYiymo1Qu0Mx4/8VLVnrtnF4VxfuCN9z5mDBA9FJt7mzDe3oXkjou69CqoxkA4gC9xQAggankMa7uTm3m32SLKD+Sz6XXGGCDJAv6j7di4MzqBo199Adk2EIqkQGQHDy3Ij2Q+bHr9g3UxyFHLdFyvJHAg+J/ipYgdjuMyzwELCfRsTWG/NQEwhqCVC0YLy/qKGJzmD77w9pHSoFyjbWWxtjAH5jIIHi8EKkCpq8JteCD2H0F2u4BwZhE+x8BEWbt6i6df8kr/s0+H/HKMc1yo02MYaG9APjGLxJ+T2NxYRV7fxu66GqjwYyrn2AG7YFGw4FygeYiXjva/KoipxoaKGPY1N+PJfRHEauvQaIj47vsLSN67i87ew6hOLGFeTS38FO45XhR8lQlffS0tmGViwbmCdKEb3tJSGLYLieMwMfQr1tZSqOzqheCVkDWIk7i/vvJ7WdVVxd96XWBU4kzb55qOiZvqJazmCxhLGzBFiqbnuzD71xyij8bxEN/XzXccf7PyxJ6+lkxuwknnftP4vorBd9O1mXBAnsbfaQW6VQadcWC7gmiIH0JlrBWuw+DYgFyiSGqu+O2NjZllPMBJRUevuH4Ipu1DyOefrS6RzmQN211iFGUtzSAcD8dh2Ll8cyStai8vra/8MQhgEADvjx/bX78c6rgT1ddl722/btSelEz69eaWoZqms1kwrGVt27xV1I1zgdWfRw6Ww8lmswQAo6QR2dnM6JC6HT3PEfvctjSsnx+3J1uob6qt6gAtSgEu4BbdV2KO80T3O0QQBFiWRQRBwL/txI3OlzkSKwAAAABJRU5ErkJggg=='], ['Rarity', 'iVBORw0KGgoAAAANSUhEUgAAABMAAAAQCAYAAAD0xERiAAAEEElEQVR4Xm2SW2xURRyHfzPnsmcvlO4ulN1uF2sLrIpdJNS0KUZFUq1t0AiKkpASbyQSjRKENEGrPuCTiUoTjSENKAnFYKokbZOmIBaoTRXB1AjbWmrabmVpt3SvZ899PFnTxAe+ZF7+D998mf/gbmwt30131B58YM+WTw7vbTnW/+oTHZda6490723uPP1KY0fna40dh/Y0fFz/4pq3XRFEsATB/2i71EauvDcplHN173p8of2gnI8KPHLxm/AEqwgIARUEeywyS1dVPZ+9kJ6OHdB/uzF2BmcYXRIdHxkhO/0vR/e9+c4p7+pIO+92+wlHaGE+QV1lYWpLCe90kdKVTvJo80rqDTic4nJfk7c62kM3rltfgQpSLGOM4ZfR0apQIPQTpSR04uhVqhUYSkoItLyMVFaEIjNENpTg8ZbVyGYK6PpyHIYGBhCmLiYHZ2NDzxZlpwYHaX3V2mMet3sPpZSbjc/B5y+Fw8GDgWEukcbURBLR2jB0TcPpz4cwO5aBBQJuWSnsbC09eeN50tnZSYy0s6p5V+MwIVghSQ4iFwqQHBIIIcVjGEaxXtd1XO2P4dr3N6EqCvJyFoqmgvqDlqZqp+jxD4/z8etKGxjxm6ZJxmIxnB8YwNDQEGITE5iemQHHcRAEATYIVPvB8ZQRQu05D45QGPNx2PYNNFxWV21y/h0AiCiKkGUZcwsZnDjTg7cOtuOr098hYxLYQJIklK8ps5hoaAyM2ZeAFwRQEJi5FEclT/BpxZBKFhdkQimFx+NBTbQG+1pfQFZ34tZtFd29PTAtC+N2dU9vH/t18sKCwPP4r46DQ3QySzcGKBGERzRFpYl4CkubPdd3Fj1nu5GduAxvdQNIPgNV1zBw/hy6+y+D510xUZQYzwlM5CXT5iID+5RailLNDINN/ZUCoQTLlnkQj8dx8uRJW2DA7V2F6H0RGJoGt8vFgqF7c2vD0T4wMANgd0yjP2Mqb+Ty2RkqMrhhmbh+JYnk7TSWl/pwuP0DrIvWoX73EWx/LIIV3lKIgoitT21Dy7aWPzU125/JpbOLukrA8U1ly8uGwxWVz1CXwOvE0qHIGq4NJ4qPHApVoKurC4defw6bKigCwfLiRkMBPzavL39w5/tPChk5vV+ZvzVHUknm4DhB13RKeZ5LlthlzDAQG00jkykU/5VTYKgJiTANE6LkhKIqTNW0nKqpvYauj89PzX5jcqxG0/WmeGK6bj6V+IHPy7nfV/hWbS5kM0gnC5iMLWBjXfhnAA0FRQGz0XVtzmJsZEHOH52a+uPirubtOmw2BfYmg9cSP2YsJ7uIbxlpfaitdk3l/Q/rlv7FnVzucmXdPS+1HtjyD8dzWCIvy76/Z6bY5MTs4tfjn7HBjwZxN/4Fq6rr1ZuF0oUAAAAASUVORK5CYII='], ['Spike', 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAYAAAAmlE46AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAsFJREFUOE+Fk1tM0nEUx/9QPtCD7z30nE9sbbVeXJJR6j8DkVsIhg6HTqSXnBHSMMEbEy+AgPwVQpcgNy+kKLc/lCgF09Wquaab67kHX1pulif+mHRdne3sd3Z2Pt/fOee3H4J8N/ow2lrj4H64OljRfEXBIZ/k/3lWquXIrQl2ROAVA98jOro2XKUtvV9Dpj/iFV/ppwvLVfzThEBZGRWh0S4hmFx+rId2ysmMSU6WAAUeMfDcdYe0gUrGdUOl7rZXBDRdRQtRp1PeIRlVctIzk+lHR6itJnwC1nkbgOXgZlhO3h6RY9rZKYT7W9NUKpUklUqRKjPDQADEjYTz3SLgzQjzMWua/5E5xLpQrqOX/jEzamTc4LqEX/KQRwRMBwfEDgnUOyXAdgk+1zr5e0w7J/vA15OfN28PW5SnZlRuVT3WeMia5oHW1AthawSS40mIjcWhW98HfF89Ifa6qb+hqAA6FA5xzIp/dVncYDc/hkQOiI/jBcctCegwdRJgsERWcszpZTrKU/3S7s+Ff4vn9UG4aWbGyofoaB60d05dDJuiR/8DcXMCpLY24GPsrlRWcxZxKmaqF0aCsDy8ArgtAVFL/Jc2C4LWBEwFNLCUbt9PZrpEiEk2VjbmMYIdm4TQ6Cq4RmYB02CwZAlB2ByBkHEVYhYcEmEreNZl4F+/C8F0+0vE2x1IL3qDsDgZhKg5Bt7ULAgHa+HVzlt4v7MHMQyHpM8LrlQzuNdaIfJCub+R0Z5DfNrAxsJAEHJbhXhue5nQJmS3t2D73S6suVK5XBKiYQMs4B3xSEbZ83xTc3ljq5eMmNts5/3d82/8jicQDc0Cbo8BjiVyQsez4rYkeNRzfqfadUYgEJBRFCVRKBQS0tTUSM7BxaauUelyenwunnZ+SnhXDkKG0EGgb+5g4p5dpa5TFEkk1bmfQSu8/TfTXs+Z8UbptgAAAABJRU5ErkJggg==']],
-      not: [['Plan9', 'iVBORw0KGgoAAAANSUhEUgAAAAwAAAAPCAYAAAGn5h7fAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoYAzE15J1s7QAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAACAElEQVQoz3WSz4sSARTHvzMjygpqYg3+KIhkE83DKtKlf0C9SrTRuZNEx0VowU6CuSeJNlwwpEO2kJ6SQBiIUAzFjRDF4wrjKosnGx3HmdehFDfpe/2+z/s++D5gU7IsEwRByICIiAEAIiIAYAFAXsjYVr/fLxMRNVvN+prJ5/OA3+/XERFNf02JyeVyDx0OxyvLNQsnimLKfcf9KRQKXQAAnE6nlf5qMpnQycnbP/kAoKoqsSwLAJhOp+AAwOv1otvtpqxWq73dbt/r9XqvEQ6HUalUEvF4XLd5IpvNZqlerzd5nlf6/f6tTCZjBACk0+nb+XxeW4UrikLJZPImAGA0Gq0NIqJyuSyyANDr9Q5Wu1utFvR6/SULAI1G4+vK8Pv90DTtGwsAJpPpaGUYDAZ0Op3PHAAEg8H3tVqtbrtu21sqyxuRSOQJk0ql9IvF4r7b7f7pcrlejkaj57IsH58Pzp8dvjhc/lsBk0gkbLFYrFqtVvd27+4qOk733ePxPDCbzVBVFfP5fCiK4rvhxfDN/qP9wSasGwwGMv1HiqJQsVg8ZlfTHMepkiR1t05gGJBGmM/nMBqNj9nN9kql0lNN064ARISzH2cQBAGz2ewLu2na7XYLwzBbvxYIBBCNRrFj3BmsAZ/PZ+J5/kOhUIAkSVeA8XiMZqt5efrx9OA3GfcgvyVno9cAAAAASUVORK5CYII='], ['Neko', 'iVBORw0KGgoAAAANSUhEUgAAABMAAAARCAMAAAAIRmf1AAACoFBMVEUAAABnUFZoUVddU1T6+PvFwLzn4eFXVlT/+vZpZGCgm5dKU1Cfnpz//flbWljr5uLp5OCalpNZWFb//f3r6+n28ff9+PRaVVH59Pr//vr38vj57/Dp7eyjn5zq8O5aVVJbYV9nVFhjUFRiWFlZVlFgZGOboJzm5uZhamfz9/bt8fDw6+drb26bl5j/8/lkX1z06uldWFS5r61UT0tfWlbDwr3Ew76moqNRTU7Mx8P75OpeY19pWl1XW1qzr6x5eHaLiojv7+1UT0xIU0uzqadVS0nV0MxkZGT5+PPk497///ra29Xq5eFtY2H28e2hnJignJlUUE1dXV2vrqxkY2FkYF/m3d5vZmfDuruhl5aZlJHx8O75+PZWVVP29vT/9fTj3trv6ubh5eRdXFqTkpBOTUtqZmX88/RMQ0T78vPEvr7HwcHDwsDq6ef///3Gx8H++fXEv7tZWVedmZZXXVudnJp0c3FZU1f79fnb1dlXUVVjXWFrZmy8t7359/qLj455e3q4s69vamZjX1zy4+avpaReWFz/+f1NR0vu6Ozp4+f48/lnYmi8ur3Iw7/69fHz7+xbV1SZmJZVUk1ZV1zq5ez++f/c196uqbDn4uj9+P7z7vRVVVXt6ORiXl/OycXHw8CPi4ihoJ5aWF3/+v/k3+axrLOsp67LzMZYU1m2sq9dWF5WUU1WUk/Au7eYlJGqpqObmphYVV749f7p5Or38fPu6OpiXFz38fH79vLz7urv6+hhYF5cWWKal6D//f/Z09Xg29exraqbl5RqaW6kpKTq5uPv7Of/+PDj29D//vP18Ozs5+OloJymoZ1ZVVJZWVlkYF2hnpmblIyspJmVjYKQi4enop5STUlRTUpcWUhqY1BgWT9ZUjhcV1NiXVkkhke3AAAABHRSTlMA5vjapJ+a9wAAAP9JREFUGBk9wA1EAwEAhuHv3dTQAkLiUlJFJWF0QDLFYDRXIMkomBgxNIYxhOk4wwCqQhQjxgxSGIsALFA5BiYbMZHajz1oJlx51sBJpf6Gd3zONcrqm/r1W8ByK0r+XV1LXyOLLnjW6hMGpu0u1IzPSdO17DgrGC6AadrVodGcDQYbhguP6wAvAaC0BRZQalkUQ8UQDz5tAof0XbejOFcV5xiUoCfjj3O/nf0ZbqAMPYmzU18KSDaRQ08qnfw+B2JNdAEQt2O5vctUGjhoIBU4ygPsj2Vh5zYopDK73hsirdkPTwGCbSHpiYFwYVVC/17pCFSBeUmoqwYQuZtWxx+BVEz0LeVKIQAAAABJRU5ErkJggg=='], ['Madotsuki', 'iVBORw0KGgoAAAANSUhEUgAAABQAAAAPCAMAAADTRh9nAAAALVBMVEUAAAC3iopWLTtWPkHnvqUcBxx5GCZyAAARERGbdXJrRUyGRUyYbY23coZFGDRFGEYfAAAAAXRSTlMAQObYZgAAAGhJREFUeF5Vy1kOQyEMQ1Fshzd12P9y61AixLX4yJFo1cvVUfT23GaflF0HPLln6bhnZVKCcrIWGqpCUcKYSP3JSIRySKTtULPNwMaD8/NC8tsyqsd1hR+6qeqIDHc3LD0B3KdtV1f2A+LJBBIHSgcEAAAAAElFTkSuQmCC'], ['Sega', 'iVBORw0KGgoAAAANSUhEUgAAACwAAAALBAMAAAD2A3K8AAAAMFBMVEUAAACMjpOChImytLmdnqMrKzDIyM55dnkODQ94foQ7PkXm5Olsb3VUUVVhZmw8Sl6klHLxAAAAAXRSTlMAQObYZgAAANFJREFUGJVjYIACRiUlJUUGDHBk4syTkxQwhO3/rQ/4ZYsuymi3YEFUqAhC4LCJZJGIi1uimKKjk3KysbOxsaMnAwNLyqoopaXhttf2it1anrJqke1pr1DlBAZhicLnM5YXZ4RWlIYoezx0zrjYqG6czCDsYRzxIko6Q/qFaKy0690Ij0MxN8K2MIhJXF+hsfxJxuwdpYGVaUU3Mm5bqgKFOZOFit3Vp23J3pgsqLxFUXpLtlD5bgcGBs45794dn6mkOVFQUOjNmXPPz8ysOcAAANw6SHLtrqolAAAAAElFTkSuQmCC'], ['Sakamoto', 'iVBORw0KGgoAAAANSUhEUgAAABEAAAAQCAYAAADwMZRfAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAxVJREFUOE+Nk19IU1EYwK+GQQTVQ39egh6ibKlzw91z7rn3bvfOmddNszl1bjKXc5rJJGmBUr7Yg9qTD0IalFgRBEYg6EDQQB+GovQyQgiaUZsoLcgHMcr069w7MgcGXfi453zn+37fv3MYZt/n99e76tzVj4JN/hP79fvXnV3hnNabwUBjoOHcgTYOu/JQspgTzsqKgn9BfD4vkWTzur287PqLVy+zM+yePB7KsRXLywTjnSpnZctBkPCdW8ccDuU55vBO8RXbkC/oP5ph19V5+7LIky0OY1BKbZEbLcFSt7u6pN7jLmltCVrr3DV5jY3+KovFEsccB1KJNVpefe10BqS2tqqO4/AuphBB4L/LkrRqNgtJs1lMypLls1kU38mytMLz/E8VIlutqVqX6/weZG52OttRXjbE0cP/FYLRlpVjDXuQ/r77x2XZPKkCHA4HBAIBkCQpAygIAvh8Pu2MZgO0Lz+QSa/sQfwN9RfpVN66XC6Ynp6GhYUFGBwczAC1t7fD0tISxONx6O7upgHILmsqvLcHodOggfiV/v5+SCaT4HQ6IRaLgdfr1bIRRREmJyfBZrNBNBqF+fl5sNsdgE2GiAbp6bmbdbXC7qWQbxMTE7C2tgY6nQ5SqRSEw2ENopaoZpCXlwdTU1NaoECgCbgiU6y8QH+ECYWaTymK7TWdys7MzIwGaWtrg42NDejo6AB1WjU1NZo+FArB2NgYrK6uQrAlCASxn2z6wkuMp87VIAhkE2MEAwMDkEgkYHx8HBYXF0HtkQpRy1BLiEQisLy8rPVNKSsFjEzrXH4+z1hlS4xDhKadNu7t7YPR0VHweDzAEVWfHru6HxkZgeHhYVAURYNjkylVWKArZjjMzqmdVi+QCsLUkQiEjvDvncEkvU7/qQ0Vgukeo48Go87IiCJnZNmipxiz7wXEbVDnbUxQOgM12h9n6qTq6NvapRdtkwaP0XK8RmPuYSbxYfaQ/sJJhjfknuFRURUi7AMOozcCwl94hLZp5F+EioDQVwqYI6jomZU1NFtM+rOSxZjVazcyvwHr/p/Kws1jegAAAABJRU5ErkJggg=='], ['Baka', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA0pJREFUOE91k3tI01EUx39JOpA0H4jNx0pbD3XTalISWf8YFlEgldqDsBLLyqjEKBCiLLWiggh6/KEV1WZ7OaelLZvDdDafNW1JFraWe/32+01FrUZ9uy4ylLpw4Z5z7/nc77n3HIqaMRIjZJyEcNX+uFCFeGmI/GZciEIsCFJUTvoAzDz+1y7K76MSwhX5hXl6z+WSbrzU2KB8YEGDwgrTaxZ3b7xHcaHhR3xw7Z5/UviB1ReP5XSg3+TAqYJOxMzWISFIC0GQDomhTVA9skCnsaAwp/vnMq66dBokNuBR9uFd7T9Z1zCunjci0qcRJUVdoJ3DYOhRnC/qBZ+jQbfeCc+37yjY2UEg0iwvJE0k9l8Z+8xqHmTgot0QLdQgTaQFQ2AsOzlHvOu1S5pwOLsHHo8HjHMCq2MazNvTlByKHyrJLDvdR25jMWRxYx5HjeMH2r1BDOOeguRua4OI14jx8a8YH5tA+al3EHKlW6mYOapb2oZBOOwMbEMseAE12L+jjUh3w+VipyAZ65oxn1NP/GMYGR6Ftn4Qsf7qa9S82Y/l/X122G0uL2TbxmZEz1WhXW8mUol8moXu+SCi/OoQ6VsDh3UUwyQ1k9GOaI5MTkX4yWTGHutvgI1F28sviAlRgxeoRm62HvsyW8En9pZ1TYgi6TntoyQtFm86rVgUoJZRvDnKMmXVAGxWmkAYOBwudBqGcHCvHulrGpGT2Uy+z4yT+QYsCXtCUpp8GxbKhx8gDK0ro+KjJGvzdjfDZnN6VdisLD5/JjArQ2zW66PJOj2lEZtStaBphkwah7K6kMJ/GEulp1bMWhAmMbTozOQRaWRtfoZVgjo4iRra4SYgGi26TwjxVeDKhR7Y7U606ixICq9tr7hd7+OthRWL7yUnJ1WPmXotqLhpRICPHCePtuFV6xdUPTAhcWEtRHEqfHpPyto4hPXLXnzflSEJnFaN3OCKDcsFsrEntR9RUmxARLAUgT5iBPuJsXWDBj0dZjRU9yNV+PTbpjTp9OA/pOSk24nRkXf1J462oPxcJ65f6ULlHSMulepRerYDgvj7A0cKpNz/tyTZqbzXO4t0ZZGQJ34RH11lFHIlA8LIqreCCMUZRY3cd2bwL/5/RmjNSXqtAAAAAElFTkSuQmCC'], ['Ponyo', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAuNJREFUOE+Nk3tI01EUx39BTytConQTt1am07m5abi5KT5S8z2dj1yOEMUC7aUgIoimlmUEWX9kBZGWaamEmE6U1BI1XNPNGTrnHs33IwuSXrL4NgcJ0mNdOHDh3PPhnPP9XoKwcroJYvMQiRSicHCQKCgUyZC9/T5rNet5KUFs0zCZbZMsFmZ9fTEjEEBDp4/KSSSb/4JoGIyWaTYbiykpWEhOxhSHAzWD0aqkUGhWAcVkW58xlvuPhfh4zItEmOHxYDR3MhcdDaNAsKJydAz5IySKRNjEUmy88vjOVaU8F0iPCqCNjEBHkC/UYaGYFwqxmJoKLYOhkxPElg0QsbNtTlmox9yjRD9UCbnoOR+J/lwRWtOCcdXfDc2BPpg0d7CQlIQZPh9KKlVkAQjJ2x2zmOSsQu7hpzUJfBhLjsNQmADjxcT10Bcl4rE4EHc5LjBEhEPn7f1WTqXSLQB/s1Tp7vslsoIkyPPiMJAbi86McBguiaHKjoEqR4jJy2K0nAxApzMN5iUGrclrKVaz2fUvuF4tRbxDKA90w5VjTFyLZKHpTBSq4/1QnxGB2qxoVIZx0JopRCPHFSNOThfWZzfrXDcZEowH4iA05ATg68hDtBaL0HAuCm3lJ9Bfcx2fFNUoi/DCjRgfNHHd1wCZA2TyXjNkE6F0cBDpPFiojeNi8EkJdFoN3vXch0nbBJOhDd907dANv8JITxNqziag3ZsJbUDAwLin50Q9QWwl1qSYoNOVvUcOoqOqAAa9Fu9H2/F9+B5WZLcwOyxFX18flLI+VASyMGVeoJHD+Tzq5BS1PoaKRrNT8127P74swsq4FCa9FKvqBqwaOiz3hdEuLKueYSyECT2LNW0eIfo3E/WmEbvnG1MUJnWdpWhDGDvxQXZHo+RR0uW2tnv+auPX+TvtJm7zKpaen/4y2yjBUlcxlvtvmvT16ZWDpQeoVv3/60F/NrHjTf4ugazIXtJ8ivjnz/sJ+yGQRjcqUdIAAAAASUVORK5CYII='], ['Rabite', 'iVBORw0KGgoAAAANSUhEUgAAABIAAAAQCAYAAAAbBi9cAAAD/0lEQVR4Xl2MXUxbdQDFz/9+9Lb3tkBLCxTKhzgoOOZAsokbJmZxDFHnd+LL4hKVzBgfNCY++ODbjDEaZowvErOM6HRu6hKZY2rIAOkCY4OSDTpFaAsrlJa2t5+39+NvjT7tnJzknIfzI98Nf/C6TuXdguWBd1q9rcb8/CwsZiu2Ywm4nDVo3VWLZCKDaDwJq9mCg31PgjAMKKUwmcyYvTbek9iJRDm6M/XswEDjwNz6plWW6wdZhjUAintFCEEhn0N04zYskljaDLaj8ar49oUrsYR6mrFJNj322w46H8y+mitM/ZJKZmyE4XAvjJSsazpyuSzslVZIkgWKOvvRgQ6Xrdlhqmds7o7bFZoLkctreKxf7GtuCE7IyUQjBQcQ8j/lvxCGQJZz0IoCVpamTtzfIh9nwiaIrCQyjNg8mq11oDLUhNXRJfT1Ozr3tS/PqpnQ80qRgjAmKIqBfK4ItbSLKoOZqR/6neLkENlSUAIhlktvEf+sD2rkm8nWTHtvZCGMVON1ePuaoBER31/MXGly1wSqq9Uug6FluYyWXJiPqFXmjd4Dh9oF9ZKKimYXRtYCx8lmMIDIxlIPGz591av0mtanF7FcCEN6iMXeox2wOJ0QJAmUAoRQaIqCnWAQY1/ewKNGNeQuYXkm0d2NC2e+wvmRr/Hx+6+8PHayrbDyyQBNDb9As3PHKDWG6MTM23RoeJAWsqeoWvyUUv0UHf7pBB0fe4OeeXe3/vmHbx3+8dwIGJ4IsFpMMFe0fbtAn+nwZePr1u4MBK8XIALG/Rt479wYrs2vgeNNAMNgMbiNzybuoKVvn+Gs9kbr6qpBfJfGYHFIkJUCoGwfqcoMX/b27EGhwgOjoCADDlP+CA51ugFFRzoB8FYNaQ1oqKD44+eNL+wNj7zJGQSIhe8+jgQ9thk+27v/KRY6L4FSCkVOwtlQj6P73Qgt/o1ERoKt4iUkE7+jrZMHyzIoK9cOBFfT4LbWAk+0a7ZLnvqHcTNdACgFScfAcjxEdy00VQclHGo7dqGeYxHbvIo6hwhSghCehb3G5p6eW7VxXC5/xGWToMgrKKoaCnIalI9CIARasQAqloMI/x4BWrLLYwE1AEPTwCGHaGjz7pw/leZUNV8wNm9BLy6CxsvxZ1kMbaY4TKIIXlNBsynoVjvAC4CuAoYOVi+CMfLYCUfg95tPHuzZB0YtKzsb58RMucWE/fZmhCbdOP9rNnLnxko6GVoB8lFwyVVw8b/AyeulHoJyN4Rb19dTFyeqBlu6njvfsWcvOJvLs7DMmw/7bvpeE4pU2OIcgcqmp4fGAgt2Txwvqr7lTp5V7LquZxXC6+BqEvGcY5pyjaM1tffJbk89NE3FP5VQ6y7a+paZAAAAAElFTkSuQmCC'], ['Arch', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABCFBMVEUAAAAA//8rqtVAqtUQj88tpdIYks46otwVldUbktEaldMjldM2qNcXk9IWktQZkdIYlc8mnNUXlNEZktEZlNIYktIWlNMXktE7o9klmdMXktFHqdkXk9EWk9EYk9IlmtQXlNEXktAWk9AWlNEYlNFDptkZldMYk9E4otg/p9kXktEXk9AXlNA4otclmdQXk9IYktEXlNEwn9YXk9IXk9FFp9o3otgXk9FPrdwXk9E2otdCptkXk9E/ptkcldIXk9Edl9IXk9EjmdUXk9EXk9EXk9EbldIcldIjmdMmmtQsndUvntYyn9YyoNYzoNc0odc1odc2odc6pNg7pNg9pdlDp9pJqttOrdzlYlFbAAAARXRSTlMAAQYMEBEVFhgcHR0mLS8zNTY3PT4/RU1kdXp6e3+Cg4WIiYqMjZGXl5mbnqSnrbS3zMzV3OPk7Ozv8fT29vf4+fz8/f7SyXIjAAAAmUlEQVR4XlXI1WLCUBQF0YM3SHB3a1B3l7Bx1///E6ANkDtva0jKbCW2XIH1z2hiZEZ4uUgxo7JedTQye/KN/Sb5tbJ+7V9OXd1n+O+38257TL+tah3mADAwSMM7wzQWF4Hff6ubQIZIAIb6vxEF4CZyATXhZa4HwEnEA+2QgoiyQDnIEWkjVSBBZBqXbCRlKYo8+Rwkyx54AOYfFe7HhFa7AAAAAElFTkSuQmCC'], ['CentOS', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAB5lBMVEUAAADy8tng4Ovs9tnk5O3c7bX44LLduNO1tdDh7r/eutj43q2kocX23az07N+qqsvUqcmXl7331ZXJj7r40o/Pn8T42qP63KjNw9n21p3Y387Ml7732JzR55z05MSxtMLGn8TC4Hx8eqt8e62Af6/B4HnG4oPC4HzH44fBf7LCgbOkoMTcsrmtn8PWqcfFtKrj4Jvs2ZOz2FnMqLXT3KfY5p60Z6NUU5XRuqHzwWSywqDn3JaiiLWahrWhkry5zJjRmqm1Z6P1wmb1y319fK632mK5cKi5nH+73Gu73Gy73W283W+9eK17e6y1yZS3aqRZWJdcW5ldXJplXZppaKBwb6VwcKV5eKswL306OYNPTpGkfK+m0kGpUJWq1EnEqIuXK3+Xh7ahP4qhkryMfK6BgK+CdpGMaKKMa6O9ea2+eq6+oYW/eq+NbqWVlL2Wlr7AjanA4HnA4HrBkqbBlafB33rCgbLCmKjCxIzC1mSs1UytV5mtxIWt1lCuz2evWpuvXJywxYzHjrvH4oXIjrrN2HXO5pTO5pXUlYnUlYvVl5Hb0G7e0XTg03rhr5fpzHPpzXTp0Hvtz3/wrDHytknyt0zyuE3yuVHzvVr0wGP1x3T1yHf1yXe0ZaL2zYP30o730pD31ZeRIcF5AAAAQ3RSTlMAFBkbHEhJS0xMTk5UWWBsd4SEiIiPkJCVlZaam6CjpK29wMPDxMTFxcnK193e3+Dg4uTn5+fo6e/v8/P4+fn7/P7+J4XBAAAAAOBJREFUeF5Vj1OvAwEYBb/yGlu717atLW0b17Zt2/6nze42TTpvMw8nOZCAmwUpiIY6c5IiLi9tPX64GairqszHQ4X2VB64v1Cs6PxMPJSdHM777s6/jyaMRGiRLyyrb88OpjZ3CzAXrm1sqzSNNeN7kVBPNgB7cG51abE5l9cXDces7emQ1uadHhutFUg6gpPKkSIqQGavwz7r7O/+/3t/rSdjI9XDM3qz4fr3B/3iA0aJTG9x71+9oR/PLDwUe2wm19bly+fTIxHyEETatbPewGEw6Mk/tKZCEqSQQUlIHB/QNBEjjVN1AAAAAElFTkSuQmCC'], ['Debian', 'iVBORw0KGgoAAAANSUhEUgAAAA0AAAAQCAYAAADNo/U5AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAZ5JREFUOE+Nkk0oBHEYxv8fu5GQj3JwcaDkIAc5IpR87M7MKnIVJVKclaIQ5Sy5OLkgR7n5OigcSNpmd2c2Vyfl4KT8/muWiVU79TTv+7zv837NCBF6PG1X+NpZyEYSD9mIc+tHnBPe23B9xKrCuTmbQA/JKfABrhBswa1hH4A38IwfOxPdX1qcjiCQxO5NyrjKV70TnSbeRPwJvGN3i4yyqnEucPY8ZZX9GSEgGK+RvFfyjk2VKZxzBNG8wJWWgh/xtDOeUXZ7Slr6TrSLYL9N4SMgYTTcwdc2ArvJcElhSVcM6mCNSV8n9hA59yTU5UWMG6HIbLhIWlglgWiC2L4Z79qTdo40D6ISuOWwKCWHyk9Fv8ldpUHOuGTuynwSBUynddPdlbEosVpP9Eu4FnOsRzUYNTsdmZN/d5LDiqM0w+2CMdAFFsFGWgfXxZnheqe/z+0puwEM0HHYV3Z9Sgz8TEz7GkQvpuJ/36ggj2AaHLrSlkULWV5x+h2E8xkZL16YVjGNaAUscfZ/f6c/k9ywLKI2MMcRWl0RLy007idmRbQJ7RIfDAAAAABJRU5ErkJggg=='], ['Fedora', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABPlBMVEUAAAApQXIpQXIpQXIqQ3UpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIqQ3QpQXIpQXIqRHYpQXIpQXIqQ3QqRHYpQXI8brT///8uTYMpQnM5Zqg5ZqnS1+I4ZaY4ZactSn8uRnYrQ3MrRXgsRHUsR3s8bbM8brMtSX4wUosxVI01XZw2X50vUIguToQvR3c6X5o6aKs6aq08Un8qQnM9VIFDWINJXohKcKlXapEqQ3UvUIc2X55bhcBdcJVgcpdhfapmd5tuk8dxgqJ1hKR5jbB6iah/m8Shudq3v9C4wNG/x9bFy9nFzNnFzNrIz9zK0NzK0t/O2+3P1eA2YaDU2eTb3+jb4Oje4urj6fHm6e/s7/Tz9fj3+fz7/P38/f3+/v83YaEa/NNxAAAAHnRSTlMABAoVGyY1SVlpeIuQsLfDzdHW4+3y8/b39/n6+vr4+ns8AAAAyklEQVR4XiWN5XrDMAxF75KOknYdZJS0klNmHjMzMzO9/wvMcH7I37mSJShsJ+5NjMT6umDoHyXDcI/2qJadh++P3cle1de+9yPe3/bTY92wzfzr7wGtP3JrAI72BZGVtcAdQlwHy+JS1pDbBE9qamZF3BYrjQxPEXwKc6dC8bXFm0QIpmt8kn0Rn093q82UCtK8oXZckwFJzuulV8bHkajPyXdbnJnARfDHs0trz+JQ+5AFvzp/L0+cL2qPAINUPrq5OC6p/64F/AMnrST+Dq/r7QAAAABJRU5ErkJggg=='], ['FreeBSD', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAABIAAAASABGyWs+AAAABmJLR0QA/wD/AP+gvaeTAAADXklEQVQYGQXBS2wUZQDA8f83j33M9rF9d7u4loaWklaDpkSo9KDGaIKUaGxshD2YSPRiuDVeTDyhBxosJCoa40ktpAkPDcUqAYVIpUSUPrAulEdD2bbb7e7ObGcfM/P5+4kwKDvq6yJ1FYYcvb+YAkqAHo/HQ7FYrFIoCiurq9ZXJ06YSOkA+kBzfX06bys3zHxS9EL0tXDVyZfefacqV+X/ZSJx5+qLbx98LhaL9RiGEZWlEsWC/Thd9q6Pf3vs2u6Orc83rFsvTwwfLf5obgywT1Vjh2Hh+rbNsnTssJdNLedK5aIrpSuldKVXKsnH4+Pyn6FDXn5tMef9O+3NvdkvP1V4+EYw2AoQ+KSx8dRYS6NXXnwovaItXduSrrkinWxGOmZWJi9OyOK9m1LmsjIz9IH8QUMOd3WfAQwNKCy2tJwbHB5+XasPaxIHmc4g7WWEZ1MquBiRFlJTf1E7+Tl/H/8asavPzTY1nWd2ZkMDRPeBeHPz5ojwsilEQCBvTSKunCF3M8FSNkBGVTHDYYrLj8jVNhDZ2SMa2zo3MTamaIC/u6Ojr3DtrOrvP0BpdATnyBeIhTxpR5ABUlKSUlXS1dWstbVxdz6hPL0l1quGqkLaKwNvVcjEXNRd/4mit4Z19DjefBEPyCKxgQJQcF28dBrHNDGTSZSezsjeff0hraa2Vs2vrvit81O4vj9xLJcC4ADrQA7YAGqBGsAql/EtLdFQE/L7dF1XZmdnSrbPMJfXoLDmolQK8gJyQBowgQhQDRQBD+hsraVhd4e5MH+/oExfvWLJ9q3/3S7qMpNH2hsS40kFS4EUUAMA2IANRIBXv4uzuO67c2PykqkA5YmZ6bN18YPi0Yoknxc4AsJPCMLVAk2BLKDosCWqs/PZaulkuxk9fekcUBAAQGDks5FT0W++3NuYuC0DVUL4DIEdlIQDAj0IRkigaMjArkFx0tf523sffrQHyKsAgHPhwoXLL+yP9/kePNhk5ExUTyKFkJVAUAiCFZrQup4Rv9ftuLV/6ONBYBVABQAArMvJ5MXW7duD6P62sD8UrPAFRU1TpeCpCnGvPZr7WW///v0jpw+VC9ZdAAABAAAAAMLo7drWrmQyPWG/r8tnaGIjaM05ujr16x/ZBFh5AACA/wGZnIuw4Z4A3AAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxMi0wNy0wNFQxMDowOTo0OS0wNDowMOPVpFwAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTItMDctMDRUMTA6MDk6NDktMDQ6MDCSiBzgAAAAAElFTkSuQmCC'], ['Gentoo', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAB9VBMVEUAAAD///+AgICqqv+AgIC/v9+Ojqqii9GAgKptYZKQkOmPj/ddUYBgW4eVjeCTgfiWjO5wbJaZkvPBvepkXomYkNldV4Bzbpl6dJ+Uj7ynoO6Vi+1qZI63se2mnudjXYjOy+GCfaqZjvWlm/Pc2e+Oh7NeWIOWjfeXjeW1sd+gl+diXIfp5/KHgKnn5/F2cZx6c6ZgWoXc2e6dltrAvNu0scrX1eTOyujCvup4c5qpovVpY43///+6uPPJyPXq6fvm5vrz8/z8/P7+/v/d3PixqvmxrPSyrfe0sPO0sfS3tMve2/3r6vy6ufPz8/3d3fi3tM63tPO4tsu5tsu5tvO6tfe6t/Vva5KRjKy7tvW7t/W9vPO/vM+/vvPCwfPEw/TFwvTFxOfGxfTGxvTHxvTIx/TJx/aTiOrNzPXNzfXQzfnRzuHS0fbS0vbT0uHU0e/U0uTU0/bW0+zW1ffX1vfY1/jZ2Pjb2/jc2uSTiemVkLSlnvbe3PTe3vng3fzg3f3g4Pnh4Pnh4fri4enj4/nk5Prl5Prm4/ymn/bn5vro5/rp6O/p6funoPWsqs3t7Pvt7fXv7vzv7v3w7/nx7/3y8f3y8v3z8vytqPWuqPX09P319P319P719f339v739/34+P35+f37+/+uqev9/f6vqvSwrPQAR0dcAAAAPHRSTlMAAQIDBAgJCwwVFyAsNUFHSVBneH+Bh4mVmZmanKCxsrK2tr3ExtDW19rb4ODl5u3t7u/w8/T6+/z9/f4MkNJ1AAAA8ElEQVR4XjXNw5aDURSE0YrRtm3b54+dtm3btm3bz9k3Wek9+2pSYFwT8ibzE93hwAtdJqK3nZo4J9hFXbP+vFHOthV6gnGzstZq94wdCs4UCCDymQ2v7X0LdYoSQ0MIENRYzJbRlPTTHu73ZNAL8vivmVui98PpzuqffX0mIPHJGtOQenukteJ+aS3b9htNpDnT9TeZH1bHAwBRMhGpd6e6uNrLoRgxBKmsX47nBlp678ojpEA40fejcmW4e/No0V8IIPfj6eKgbEJ3ZUnzgE1OqWp9Q3VeWRAsg51f1dZ8c31RmAsc+N5JGbG+zvj3BzDCPrzMDC9SAAAAAElFTkSuQmCC'], ['Mint', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAACVVBMVEUAAADh4eEAAAAAAAAAAAAAAAAAAAAsLCyXl5dgYGCnp6eTk5N3d3fBwcGqqqq8vLzNzc3Ozs7Ozs7Pz8/Pz9DQ0NHR0dLS0tLS0tPT09Pf3t/Pz8/i4eLb29vZ2drZ2tna2dra2trf3t/u7O/u7e/u7O/r6+vt7O/w7/Lw8PDy8fTz8fXz8fbx8fHz8/P19fb49/j49/n6+vuPxlmWyGOx437h9NDr9eD6/fj////+/v75/vTA5Jv6/fb7/fnL5bDL5q+AxjeDxUCEzTyGxUaGzjyHxkiHzz6J0D+Kxk6K0kCLyE2M00WNy06P00mSz1OUyF+W2FGX1FiY0F6Z02CZ21ac0Wiez2yfz2+f2mOh4GCi4GOi4WKi4mOk12+k3Wul32um1Hin0nun4G6n5Gin5Wmo23Op2Huq1n+q43Cr526s4Hit23+v6XSw34Cw34Gw6nWx4IKy4IOy44Cy63ez146z34az4IWz4YW03Y217nu38H2625e645G74pK83pu98Iq984W+4ZjA4px0tzDA5ZrB8ZDC5p7D55/E947F6KHF+JHH4qvH6qTI46/K5LLL5LN1tzLL5bN1uTDL57DM5bPM6qzM66/N5rTP6LbP6bTR6rfS573T67vT7LrV7r3X68XX7MHX773Y77/Y9rvZ8cHa7cjd88bi88/j8tTk8djk9tHm8trn89vo89zo9N3p9N3p9d7p9tvq9d/s+93s/dzy+erz+O73+vT4/PX5/fT5/fX5/vN1uzB3vTD6/ff6/fh5uTj8/fv9/vr9/vx8wjV/xDmrMRH0AAAAOXRSTlMAAAECAwQJDzk/RUlNU3F0kpSVlpeYmpucnaKjpKWqqqqtu8LExMTEzdTU1NXY4evy8vP+/v7+/v6LaR1mAAABD0lEQVR4XiXI03bEABAA0KltW9kaW3eSZW3btm3btm3b/q4mp/fxgqKOtpamhrqaqoqykrQYABh+PVMU9fjE5Xp8o54kgPHN0EBHU2N5YXZykiua0HHd2759VF2Sk5IYE5GGsmCEWLV1kVWwt5O+3x/qpgsy8k4ja+cJl2/v5C22tlgCAHtw9TQSa4s+AzfPSm0BRNl9SydhWJzLC567KrNhgrNwHIJ5qTz/2f9w7Jw/DNqIjVr04exW0AEOXcN3Ab7enr9eDW2VTJgehONyc2Z8XP5YdD0Tcuhcc4/r45OjGX51TEjYPbh8THRPvbz+CHusgSZlT7rP8PkCwfQKaQUi9Igr6JsRBMFiWZgb/AHKElRzKopZJQAAAABJRU5ErkJggg=='], ['Osx', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABrVBMVEUAAAD///////+qqqr///+ZmZn///+qqqqAgID///////+tra339/eAgICoqKjx8fGMjIzm5ubh4eGPj4/g4ODIyMiAgICSkpKLi4vS1tbPz8+Xl5eMjIypqanIyMjW1tZ2dnbR0dGamprFxcV3d3d+fn60tbV3d3dcXFx3d3epqal7fHxxcXF+foCnp6hYWFhyc3Ojo6SMjI5fX196enp+fn6Li4xERERqamqgoKFpaWmFhoeen6A/Pz9QUFCWlpeSk5SUlZWUlZaOjo+Tk5RHR0cuLi5YWFgwMDAeHh40NDQ3Nzc6OjpcXF1rbG0XFxdSU1NVVVVXV1dZWVlbW1tnZ2lwcHABAQEEBAQXFxchISI+P0BISUpaW1xHR0kNDg4qKyszNDU1NTY9Pj8NDQ1cXF4XFxhSU1QSEhIDAwMrKywtLS4uLi4wMDFHSElISEggISE0NDVJSktNTU1FRUVWVlhGRkYEBAVBQUE0NTZQUVJQUVMFBQUqKitWV1lXV1daWlpaWlw+Pj8bGxtcXV9dXV1fX19fYGFgYGBkZGRlZmhpaWlsbGxwcHB2dna844Y9AAAAV3RSTlMAAQIDAwUFBggMDhkeICMkKCgqMDIzPj9ERFBib4CCg4iMjZCcnp+jqamrw83W1tvb3ePl6Ojp6+vs7u7v8PHy9PT09PT3+vr7/f39/f39/v7+/v7+/v50ou7NAAAA30lEQVR4XkXIY3vDYABG4SepMdq2bRSz/capzdm2fvOuDO397Rw0Ly4tz2QAQPbcxuZ2E/STJwfxPhWgG355fRrVAIVb1zeP9UDLfiSwkAcADe8fn7tFxWuEXFRDoer/OgoMTRBCumj8yJwPBo8Zhpk14U856/HI8n0ZUtpZ1udrSzfVneA4roNKjdrwpcMRilb8d8G60+lKnrpWcn9bO+B23w2O8Tzfq4aiNSZJqzn5O4Kw16h06fPZ+VUlUHfo97+VAEb7rSh2UgDd4/U+TBlQY7FMj5gBIGvcarVVfQPVPTG94D0j9QAAAABJRU5ErkJggg=='], ['Rhel', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABj1BMVEUAAAD///////8AAAD///////8AAAD///8AAAD///////8AAAD///8AAAD+/v4AAAAAAAAAAAArKysAAAD///////8AAAAAAAAAAAAAAAD///8AAAAAAAAAAAD///8AAAD///8AAAAAAAAAAAAAAAB5eXn+/v5JSUnKysrS0tJ5eXmqqqqxsrL+/v4ZCgknJyeHh4eIiIjo6OgZCAdOTk7t7e3///8GCwwPAAArKyv19fX29vb9/f0EAAD////+/v4AAAAGBgYHAAAJAAAMAAANAQAPAQAVAQFyCQV9fX2pIRzmEQjn5+cBAAAFAAAAAADnEQjvEgn////uEQjyEgnsEQjzEgnxEgljBwPaEAj9EwnwEglHBQJHBQNNBQIBAAB3CQR5CQSHCgWLCgWRCgWTCwadDAWmDAapDAa/DgfKDwjWEAgGAADh4eHiEQjmEQjmEQkKAADoEQgLAQDtEQgMAQDuEQnvEQjvEQkPAQAfAgEuAwEvAwE8BAL1Egn3Egn4Egn6Egk+BAL+/v5CBQJrB0muAAAAT3RSTlMAAAMEBAkYGhsbMTRLUmpvcHeIjLe6vcHCxM3P0NbW3Ojp6u/w9ff5+fn6+vr6+/v7+/v8/Pz9/f39/f39/f7+/v7+/v7+/v7+/v7+/v7+Q8UoNAAAAO5JREFUeF4tiwVPA0EYRL9SXIsWl+LuxfcOd2Z3764quLu788NZNrxkksmbDP2R7vH6GioLs+iffEzNXd4+TqPErUUpVqMOvwgdzMPn1rv5vPsVeufBTaBK/bH2FPvkEUuIG5jIIc+sHYn/HJ3dC/Hxuo4y8s44dzwBbFkisHN8bVIdXs6jb+H97aCwbHEIqgcml64CD7YllNkAVQC940MLYe5YzvIeQAXNrd19Roc5MdzfdQLUUKaUYyuG9I8y1g4gj6hIak4X5cBIT2MquZJrJdOqpY11ZpAiqVwbY/C7KY1cRCrZxX4pWXVuiuq/hs49kg4OyP4AAAAASUVORK5CYII='], ['Sabayon', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABvFBMVEUAAAAcUaYdVKwAAAAAAAUABAwWRY4YSZYhZtIhaNYHDx0KCgoFDBcKCgoRMmYSNm0fXL0fXb8AAAAYS5gaTp8fXLwgXsEGBgYFBQUZSpgZTZ4JFSgODg4IEiIOJkwOKVIkW7EnXbQLGzUTExMKGC8LHjwMIkITExMiIiIPEBEPJ00QEhMXOXAaPncOJEgoXbApXbEcHBwwMDAEAgAfHRgQDgo3NC8AAAAHBwcKCgoLCwsJCQkaGhofHx8lJSUwMDA0NDQ4ODiRkZEICQocHBweHh4GBgYHCg8mJiYnJycpKSkrKystLS0uLi4ICAgODg43NzcRERF1dXUUFBSjo6O1tbUbGxsEBAMLGS8MDA0iIiIjIyMkJCQNDQ0NHTYKCQkoKCgPDw8QEBArMDkKCgkRERIREhMxMTEyMjISIz00Njk1NTU2NjYCAgIVFRU5OTo5P0c8PD0+Pj4/QURAQEBHR0dKSkpMTExSUlJiYmJlZWVnZ2cWFhZ2dnZ4eHh8fHx9fX2FhYUXFxeVlZWXl5eYmJiZmZmcnJwZGRmlpaWrq6usrKyvr68KFiq/v7/FxcXY2Nji4uLn5+ft7e0yif9uAAAAN3RSTlMAAAApKSkqKioqg4OEhISEhoa1tra3t7y9vr7S09PT09TU+Pj5+fn5+/v7+/v7+/v7/v7+/v7+70RY/wAAAPpJREFUeF4dyWNjw2AUBeC7dfYyorM6rx1exKltzLZt2/rDa/J8OgBVVlFDX39jcTZoUqCse251a2dvu6ccUtWlanLQ4Vpel+ThlWq1l3wEz58tx4dOt1dMlAJk9A5gMjG75LHwo46hzkwosGOMbejumoRvubC9EOrMviT0E0Us9fvN9dA6zxJCNv6+ECGsb6oNWsgmpZT9/UTUZo3Em6AW34guTL4jiAudiCM1kLcw8/SmHERfT1/eueBiDqR1GK1n9w+K8nglxYxd6QAML4ztXoQuj8YFgWcgqdJp8qzty26vaboCNIxBCshyQDKov0aXr29v1ufq1PwPx5Q7bCoh6eoAAAAASUVORK5CYII='], ['Slackware', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AcEDi0qZWWDgAAAAx1JREFUOMt9kktoXHUchb/ffc1M7rySSdJMOknFPMRitLgoNKKI8ZHGKkgrjU8SitidimSh2UkXoQmoO1dGQSxJjdvOtqSaqlR0USEGSjVJGxuSmWR6M3fu4/93YX0g4rc9HA6cc4Q7DI+fpzz7PA8++2mxvZAeBZ4xhHtFcJRmXWsWvb36/OLcyxf5B/KHeYHy7DmGx1+YSDjmWTdlobTGMAStQGkNoLXS4tXDq7u7tUcWz49tA8jR8QUuzB5n5NTCV13F9JEo1JJwTLKuzU61QiOMcd0UDb+BncwQK3Rl15eNja3ui/Njq8aF2eMcO/XlBz0H8oO2ZUkum6A13WB99TtyzXlaCi24SaFa+ZFCzsG2DNnfkdbFjsI1APPhk+d6ujqznycdCxFozadYWvyMpx47wa+bPkGksKwUNnsk3TaCGASRXDZh5LpHXPPg4Rcni+3uYBxrtBbQghlscOVKmYHeEm0ZIZ9xyLffw41ND6VAa43SmjiMByzHYtjzwr9arfshxf5jOKlvKZfn8es77N2uks24PPfSFD/9Uvt7AtPKWmEU9d645eHYJo5tcKi/FX/zG+zmQxQH+rANk862DOW5N/hhaY64cJSa5xNFCgDDILZACMKYWAmh73HmzFsMlBQJ06LeiMinE1S3KzRCm5rXIIoUIoKIYCVM36urZFbEoiBLNMIhAE6/NsSB7h6SKZdL8xsUOnpx9j1KbTdARACIowArYe1ergfNT2i0mIbJys0GI6PT3N1/hJvrPxOFdRJNBQIy/FapI4Bpgohgcjuw+jq8jy8tV55MNBWI4ohS802CpizKv8q+FgALZAfYgSyAZtNro1oLaU1VvxCA029Oraxs7u/tKnXiNjn8HyKwur6lI++6vPK4V7IA7u+1Dyu1tr183ddNbkHuXP8/zEIYeFqiLRl6YO/p0bHJdflT/PD9qZa1W+ry99fcvlAlcZwUpuUAglIRYVgnDEIOlna4q0M/NPnuO1/PzMwg/045O/XeibUt5/Xangx6viSVFpK2jtMpvdyWCz+5ryf10clX3/amp6eZmJjgd441URWWJY8BAAAAAElFTkSuQmCC'], ['Trisquel', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABjFBMVEX///8AAAAAAAAAAAAAADMAAGYAAAAAHFUAGWYAF10AImYAIGAAHloAHGMAKGsAGmYAJmYAJGEAKnUAJ1gAMXYAJnEAJGQAI2EAK28AK3cAGTEAMHgALXEALXgALG0AFUAAI2oAK3EAMngANoYALXMANIAAM4IANIIAL3gANIcANokANoQANYQAOY0ANIYANooAN4kAN40AOY0APZMANIUAOY0AO5AAPZUAPJAAP5MAPpQAQJUAOYsAPpYANoUAPpoAPpUAM4AAQJkAPZIAPJEAQpgAN4cAPpQAPZUAPJEAO4oAOosAOo8AQJoAOYsAO44AQpsAO48AQp0AP5UAQpoARJwAQ58ARaAAQZgAQ54AQ50AQpgARaIARqMARaMARaIAR6QARaIARaEASakARKEAR6MASqsARKEASKcAR6MARqYAR6UATbEATa8ARqUARKAAR6oARqMASKgATK8AR6QATbIATbAASq0AR6cASKgASqwAR6UASKcATa8ASqoASqwAS6wASKoAS60ATbHn4CTpAAAAhHRSTlMAAQIFBQUGCQoLDxAREhMUFBUYGhobHB0eHh8gIiIjJCQkJCYoLC0xMTE0NDo6Oz1BQUNHSUxOVFVVVldaWl5iY2RkZWZoamtsb3FycnR1ent9f4KDhIiJioyNkJGYm5+foqOkpqamqKmqrKytsLKzs7e4uLy8v8TFxcXGx8rO0NXY2eZc4XYcAAAA00lEQVR4XkWN1VoCUQAG/3NWtwh7CTsQJOyk7BaDxuxA6bbrxf32gt25m7kZqDRYxziooDV7+1AalMUavQh2AsEZoWvzigLun+T17/c8QiJZ7qu2QKiNmyZthdcR1/as353jIeU1GxMHo5XHdqPFeX8IaDMdHPYN6dRN7LR4qQewdTa35HWkyh+fbxERAMjwlAWJv3CPSKDQ+H7XvHdkV4Pua3Gtm4sPKIF/WV8dop4VKBw/NU33B3x1JbTt+XwhkJQoqRfWvHOy28uqH8JIdomR/R+s9yR3Cso77AAAAABJRU5ErkJggg=='], ['Ubuntu', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABKVBMVEX////ojFzplGf1zbnqnHLvs5P10b3yuZv1xKrytZXvtJXys5LysI32waT0n3HxiVHwg0jxhk31kFn0h0zxf0P0hUrveTv2iU3yfkD1hEfyejv5eDLybSX0aR7zZxvyayH6ZxnxZBj4YhH7XAb5WALlUQLeTwHgUAHeTgHfTwD65NzdTQDdTQHdTgD31MfcTgLcTADcTQD////xt5/31Mf54dfmfE/dUAbeVQ/jcUDcTgHeWBnnflHohFvpjGbqkGztnX342Mz53dLgXiP65d399PHdUgrtoYLyu6Xzvaf76eLfXB/rkm/fWhvupojwrpTeVhTgYSfgYynzwa30xbL1ybnngFT31snngljhZS3539XhZzDiajbibDn77OX88Ovrl3X99vTjbz1fisGCAAAAMHRSTlMABgYGBwcHJiorMDA1NXGHjY2Nl5mZmZyfn6O5u8XHzc3X193j9fj4+vr6/f39/f08OUojAAAAx0lEQVR4Xi3HZVbDYBhGwQctWqzFPXiQ+36pu+LubvtfBKcN82/UEhld2vWXxyL6F92gbTPabse8hU/uHMx1SZoyyJWPTwq1Rs7GpYE9+Cg+OJcs1MHvU9y4fnrN31yUm18vMCIPjtw3QMndw4rs8ieVzAAcBlewpe1KM3uaBuD3Dda1BhWXAsi6AFY1a2SqifxZ+rnxWYcJDRkUS3fO1R5vwe+XZgw4D4L3RAJiknoXCVX3WeiUpJ5pIxTvVmg45pl5k4Ot/AGV2iqZBWgJJAAAAABJRU5ErkJggg=='], ['Windows', 'iVBORw0KGgoAAAANSUhEUgAAABIAAAAQCAYAAAAbBi9cAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA+pJREFUOE+F0n84FHYcB3CWSsL9ojo/6ik64c6PnTjmSS0limmrpBm2G002y++xzXRz6zE0R4nbw+RnTj/WD4sbanLkkAe55ccYlyNme4SrO9u9d13PI3/saZ+/vs/3831ez+f9eb5aWsuqy2mjRYeNUa7YmtjfTico7jNJ8z0eG24NB9vvnDrvufzpq89Npnr8VjMddNmuRh9rDfp36mFg91oM7qPIc5JdbDJq3An/JfCu7Hl53W2lpS220pP2OuniN299jAYbYizSENIoAgbCTdrTKtxOJVdvGo8psUwKy7Vxe4ez1YEVudGP8YEZzyveInFJ6mZRHHqYazDspw/pJwTIuERM5JIwmUdGdyo9K7/BszGzzg6fXzZHGJ8KvzQqXKOpoIeZLjofWR++BPWyCEnPY4xFGEKWQcLjMjKmr1MwfcMYwmz/Y4KOgNki0V5k1dkjUWCK93Kp2PMFFawos8cm1gZ2GqjLXktL4mbQPHLQ4B9ZDFE5+S356fQlyuJMqzH++HnTo6ui2OO1ko9Ul+4fxfd3d4F7k4YTReqpuFS88bGZUE2QNNDobuIq8Q5CduHb7lFJaTnvnym9ergjMWD/FG8zf+aKS3G9JO5C01Asah6wUXrvALKEDoitMMHhDKrKJdg8RU2s0EB2EWWur8dd7PDPFv6dUC0Gv3kAN36VPRGP/5k5NS6lljWxG0TDiSr1VKhoPwhevRMSqkwRxDObc/DavGtpP6zoi8XOyZfhnyNEvKANBU0P8VPfI/wyNCGXSn7wlEmyA9KrgmOKGth3eDVvPfyywq2dnUEv2R9qG2rLsH7xJXziKnWcI8tlTvEC7Mu8hROlImTU9aKqcwQ1vWOihWFu+sJknmph5CvxQh87c7bNh/NXo03hrMCosyvLmMNgMF7TQL6J1dsZIUVwjKqEO+cajp5vxPN439U/gKBt8PTcYHzL/BgHCyOf4unAISj6mFC2bYC82kB5Ls460NHRUVsDeYSXpGw7UgC7sAtwShDgzdM38W7BbURXtqpqhfmB8sEQuXwoCM/6faGQuGCxyxyKWhIm+PrSD495WL3cT0hhi8Whc3NbAs9KaOyCTvrJ8qkdX19XBeTUDU00+55USFzVU2yHstcaix0mUAjJkJeuRU868Ucmk0lcguiBnMAVxjbbdHV1yeq8+u4Hgo22huSG+iQXp83ftaxW3lsPZcs6KG5T8OwaAfJiPcxlrVRVRhvF02i0F/t5VbHZ7JWDfErKTLnhE3mFPuRFepg/uxqz6TqLv6euGj3ut87t/4ylvre3t3ZehOWWO1zjSFEqMVP4GfGb/DBykJcjmaZOoLsc+hcVY/LaAgcTQAAAAABJRU5ErkJggg=='], ['OpenBSD', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoYAykIPu64pQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAADTklEQVQ4y32RXUxTdxjGn3N6eujoKT3SUkuk3VoBGfVjgFXAsZ7WkipyYXQbuu3CzUXZmGRbssnFEseFkWzgcGzGXky9MWL8TsC4IeFgtK4oAqOnG5vMVl1pCMVWQD7b/y5M6jLdflfvxfPked/nBQA0NDSChqnGVrLuGkES742NhJAdhAKAuk9yyUs5Gry7RQMZAARCWgivpQiPe71P5DUfH0xaqTL7m/iiLkJmphawa+e4SM2PvUyC4yUIBu8CnAQKAK53rCA5OUtQtStVpJ4Gw/FOBddZVKhCfq4MP4n6+at+DUsJm/e0G9JZzYEvI2tHwlEYjDxomkZ+3nG8WroRtHihZVOhVlorDQzh0okhcByDP4ZGcf+X9XAsvY5/RsBa7Kq5H/CqLctKyl/g08S2i6fq8W/MS3P34T9wNDVYSeDX1eTD9xhiLXbtB/Akwmmv6Kr+ICFkLpGhtNSM3qsSstS3oX8lSsmsxS6ZVn3j6PvVVqhUcvC8AtPxVPxwygVKvngN89WOjgVprggGA4eenjB4nsXsTASpC63I0wVTZYPR11FoKRB8Ax54PCFk6BhMTk5CPR3GSbHouGzknr/bYFq9EAvfc9Tu1sLjHcXNKxLuTOTgzOlOe7IHBc/beAXWpWmXlz8a84nhcLQ+ecVzsAEQrMWuMX+f9HZF2YPZ28FVSNfoPWqOzMUmqYMAJm7+/OOzXQFwHGpyEV+vi+yvtxBC9pDmpgJC4tvI3mo9GTitIxvW24nT7ug67HY/3eDs2bbyrVsrY2day70rV6kRfDAHk5lDLJqAmmeRiD9GJDKHvwb74R8G0mkTPjrQTTG122xkTTbwaV2b1H4u16JQKXGr7yG2b8/H1MQ09IsTSEmRwzf4CCwzD+dmE1re8CI7wwi5XNlFf9vaTXX4dWJg4LLl7h05fpNGwNAMWpp9CIVYNO/tRCzGwpDFQaVMQTS2CKY0BWr3GVGWNSXKACDDaA4Mh976pq9f5Sy09GgKlmeAMIBKzUKpU+BFoxJecRhUfAbMxDi4eADfHVmE79v7q575gvvYeVvjZ58LD5mwsKUyX0hnf0feslnQCWD4zxnc6reKisxsfH2oscqcmTmK/+Ow252cna7K52r+Bky6PqmoT5HBAAAAAElFTkSuQmCC'], ['Gnu', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoYAywUV5gQrwAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAADcElEQVQ4y43Tb0jjBRzH8c9v+7nNMebcUW21Cc78g/wcuhByIScoMRwoTBmFlZCmIJ14axqkgoYIkXIqKIVBEuJNUBEUPRlpqDC3Q2Ex0nTezun2YOaPLXNIv7Vvj7zgiOj1+PPk/eADjuNEuHN6ekqMw+H4IzMz8xChUCjV1NT0JbO7uxtfXFy8NZvNr21tbd0AAEQikY6I0m1tbQbx2NjYZiqV+vn29jY+PDw8xhYWFj45PDzcb25uhlQqfSTief6X0dFRpqKigvF4PPPipaWlY7lcXhCLxXJnZmY+ZTY2NnzX19ePGxsbHw0MDLivrq5mc3Jy2pPJZLVWq/2cdbvdDSzLholoNJ1OMy6Xq0Ymk5HNZktOTU29qMgA8HYqlaKDgwNKp9M0PT09BgAM/iGuqqoimUx2yPP8U5/P9wEAMB0dHRUKheJHiUTyeGhoqAUAnE7nR0qlsjcQCLwjlsvlz+bm5mQWi0VSWlr6bXV1tU6hUMj6+/vfN5lMN0xxcfG1zWZ7SETTSqWSGhoamPHxcajV6s+8Xu9Xou7u7t9VKtW00+mkSCTC6PV6aDQa8Dw/Wl9fP8UAQCgUosvLSyovL2eWl5dRUFBw7Ha7v9vc3By5K3g1EAg8FQSBiIguLi4IgBwA2LtEjuPuJxKJ62AwKFpdXf0eQBIvYVmW/cLlchEAWK1WAADT09NzX6PR/OTz+eKVlZUzKpVqTyqVvsnzfLCkpGSrtrb2t97eXnFeXl5ZKpWyZ2RkPPP7/UUnJyefGI3GU+zt7aU4jotOTk7mAUBfX1+b1Wq9kcvlBIAcDgctLCyQxWKhoqIi6uzs/BoAVlZW3qqpqbllZmdnf1hfX//Q4/HEzWbzX+3t7fcMBgMFg0EYjUYmEolAEAREo1Hk5+fT+fk5Mzg4GD86OpJ0dXXJGQBoaWl5Ra/XP6yrq3tQVlam2N7ehslkAsuySCaTUKvVSCQS2NnZSXAcJxYEQTEyMvKeIAhLDADY7fZ7BoPhm6ysLFpbWzuan5//WKvVvsHzPEWjUSYSiSA3N5d0Oh0TjUaf+/1+S2Nj46/4FwYAr7e2tnbF4/E/iYjC4TCFw+F0LBaj/f19mpiYeID/IAagAyABYLXb7cLZ2Rml02nyer3POY6rwv8hEr34u0IkEk1mZ2cTgGMA7768/RtL5JKsGzrLIgAAAABJRU5ErkJggg=='], ['CrunchBang', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoYAywUV5gQrwAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAADcElEQVQ4y43Tb0jjBRzH8c9v+7nNMebcUW21Cc78g/wcuhByIScoMRwoTBmFlZCmIJ14axqkgoYIkXIqKIVBEuJNUBEUPRlpqDC3Q2Ex0nTezun2YOaPLXNIv7Vvj7zgiOj1+PPk/eADjuNEuHN6ekqMw+H4IzMz8xChUCjV1NT0JbO7uxtfXFy8NZvNr21tbd0AAEQikY6I0m1tbQbx2NjYZiqV+vn29jY+PDw8xhYWFj45PDzcb25uhlQqfSTief6X0dFRpqKigvF4PPPipaWlY7lcXhCLxXJnZmY+ZTY2NnzX19ePGxsbHw0MDLivrq5mc3Jy2pPJZLVWq/2cdbvdDSzLholoNJ1OMy6Xq0Ymk5HNZktOTU29qMgA8HYqlaKDgwNKp9M0PT09BgAM/iGuqqoimUx2yPP8U5/P9wEAMB0dHRUKheJHiUTyeGhoqAUAnE7nR0qlsjcQCLwjlsvlz+bm5mQWi0VSWlr6bXV1tU6hUMj6+/vfN5lMN0xxcfG1zWZ7SETTSqWSGhoamPHxcajV6s+8Xu9Xou7u7t9VKtW00+mkSCTC6PV6aDQa8Dw/Wl9fP8UAQCgUosvLSyovL2eWl5dRUFBw7Ha7v9vc3By5K3g1EAg8FQSBiIguLi4IgBwA2LtEjuPuJxKJ62AwKFpdXf0eQBIvYVmW/cLlchEAWK1WAADT09NzX6PR/OTz+eKVlZUzKpVqTyqVvsnzfLCkpGSrtrb2t97eXnFeXl5ZKpWyZ2RkPPP7/UUnJyefGI3GU+zt7aU4jotOTk7mAUBfX1+b1Wq9kcvlBIAcDgctLCyQxWKhoqIi6uzs/BoAVlZW3qqpqbllZmdnf1hfX//Q4/HEzWbzX+3t7fcMBgMFg0EYjUYmEolAEAREo1Hk5+fT+fk5Mzg4GD86OpJ0dXXJGQBoaWl5Ra/XP6yrq3tQVlam2N7ehslkAsuySCaTUKvVSCQS2NnZSXAcJxYEQTEyMvKeIAhLDADY7fZ7BoPhm6ysLFpbWzuan5//WKvVvsHzPEWjUSYSiSA3N5d0Oh0TjUaf+/1+S2Nj46/4FwYAr7e2tnbF4/E/iYjC4TCFw+F0LBaj/f19mpiYeID/IAagAyABYLXb7cLZ2Rml02nyer3POY6rwv8hEr34u0IkEk1mZ2cTgGMA7768/RtL5JKsGzrLIgAAAABJRU5ErkJggg=='], ['Yuno', 'iVBORw0KGgoAAAANSUhEUgAAABgAAAAPCAYAAAD+pA/bAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAABDtJREFUOE+FlHtMm1UYxrtsi8aEgCb+oTFmZur+WNS5RaPERU10C2qGaBgb6hgwLwMmHTIKlIKlQIHSQrmU24BSSmnpBVooUmihtEC5yKWDjVu5uOkcEca4lG5E93j6EQmELX7Jky/fOed9fu973vMdGu0xT3Cgz57yXMZLDdXcy821PFWLKmuA6HqLMqtLX5POl4iYb2ukWW8IOOFe/qfe3/M4n0eOjwyZD8//bldODOk37N1yDJgl+LVdjEGLFKO9KkzZm8hbje7mIrTXZ7sMtTydrJh15H8hHW11XvN/jGS7VudcD5w34ZZzeQYb67fwYO03LN4exo1+LWzNxbA05O5QuzbHqRYn+++CHDx4YK9WLfaedfQzV5em54g5Zbi8OIml+VFMDLWQ7GXoaSmFWZsDZVGCO2u0EbkhHTrhFqi9PmelSsQ8tAtSVch60dpUeGe4kxgZxegzVkBzlQ2NKBG2+iJIMqMok9r8OLRIMqApToSqmAWTmk9B2+o2YW79oshU7ABcuvAFrVGWXkVKpBYoSaBSxIS2mINpiwbjZiUMZRloVfJQyaXDKObBpimBScpHFe8KmmXpaKhK3arGrBVuVBclHN2CiPNin1OVs1tVJYlQlyZBxA6DviQVo6ZaOKd7sTplw53BVugruBBzfsRslw7rZPxaczWutSpQV/gzJPxo1JexyfaxKBBpuiEx+tw+CpKdEvGWTprGlhcwqbIzL5/DYKMYndpK3L1hxf3ZfkrzwybUZjPhnOqmvlcmutFF1jis9QSShOrcWNSXJ1MA0ou/NZWc8Ddfe4VGO3bk0JON1dyMMlK+gmxNrZCFhZF2Kng7YNO0awt4b7wLNp2EqtAsF6ImP56SG0B6siovTYpIjg15gapCVhAfJRUyIBFEo6k8AyuTtkcC/qvG/XbDexulWJvqgYH0o0nKhVHFJ40XwFQnWM5OCX+XMg86c3KvVMSMapCmPpSTIygTxGKZZOcOXhrr3Mp4uzkFuG6B3ajE3TELDDU8qEmsmvRATxquKkxAnSTFjwKEfv3JU9JC5unG6rQ1bTkbQ4Yq/DVgxOqwBWt2K9Yne3ZCZvrgHO2k5paHzOhSiVCZSkdNTgzy40JRlPgDhDHBCxUZdCs91G8fLeK87zOl6XSOICZYXMGNhDqX9fDP/mbK2DXVi/szm03eLpejl5pzOfqwOt4JBT8OeYwQt/4R/BR0OzXiLCM5LOCji/4nXt46rpywgG+zor5RxgSdupBzJdglSY+5ZZbl3XNY6mbn7W0Lcx06zBg1WBjtcC6OmG+OmRTrFrnIUZESZeVeCpwh8TpiPsQ47/tloM97T+/6m8mg55mT3tStyL54mhlwwtszNvjzD8/6HH8i7PvvPPRioZdRWuDBZUR6pEWG7I8P9Xs1Jsj36MfvvO5J/+rTw58dP7afJPfBgeef3XGz/gskFVpJc4HwGwAAAABJRU5ErkJggg==']]
+      pony: {
+        'Pinkie': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA3dJREFUGBlNwUtoXFUcB+Df/zzuY553pp2MmUwSk5TGpnamiokWRdNCSkCrUChKCnVZQUEUdy5sQZC6cyd2VWgoutCFXWTjIyp1UdqmEDBRsSZNmkmaZF6Zx32ccyzowu8j/M883pH5A9kBYfNkFOpu0OiulyqXmnhkDmdYHYJexzX1Ef51EQDhP9fxpjU0PDCd7IldYIxGVag3/KZ/ZX1p8/P0k/0U47qs291M2NS3f6ncuLeFeQ3A8KuYoNPoY/3e2Ej6scSnqUJ8gksmhC2y3OJHpSUHU0/3HU+WCuddyV6VSpVyYv/aUuPefWAP4iDG8AhJWyYYo972tg8DQ1wyWHGZSfcmZmQ+YeKTw1bQ70H8uJw3xtDp6NzG15VLf/DLWMBZHGPkwuWGyq7njLoZyzAiCtqRIddioifBxYBHIpeE0oaw0yoG7WA755dvi8Xih66BOSZj4rwds45bSQkuOeOCQYWG2PjjcEq94JwjQgQ+kCW+tBl3H7Ym4jnbE/nDmamwqz9mnEaYoBgiZaJIGW5zEIHEPheykMD2w12ztPIXCrZHec+GdOVAUI8ygjvifeHQESiNoKtMlIoRxSV0owMjAeY5+P3BKrbTDq3n02B/7yDTDkBANSXiewKgjFbahEwQe34IiVIfRNqCv1qDanQR9Di4+tU16N409o2WMXnyJeNWb9PO4s6WroZawOiSiozCoR7lPFUQezICCzXF+pPGYRna6/rotNqY/eJLUzh4mM5dP4Va0YXV45x0O9F9FhkN5auq4eznaq3WmP1pDkuibW5uraNaqyNh23ihPA6v7wAVS+PwXAGkbYiUnU3kYm8JzvgGpJGdG6vzm15+ce6H79/9bnnBhCxG702dwnTaw4nyM/jsiTHsHx+DEyjKWnGEUpBOyjTTgbpsNHyLojPe7PK3qci58NvNu0Gl0YA8NIxWp4MkdzCdK2Ci6iNYXIV6UEfUDBC2Q/A3WqVbUUfVucWftYhP9fLiFf7yRPGVmZmhE88dJVmpGRMqRH4E3emSbnQR3lkzaqNB3br/J39tb1ibJglGfJDZbMReb37Td/bFhcnB/iNppXNUbZEKFGBJ6FBT+9cVo5c3yd/trDV3OxdFDDHFOV8IffVJtNNOC+J3xtYqATWw0Mm6RIJ9YAy9rdtt07q1ZtjdVXCYFRBG4Bv8A+lliGhzN164AAAAAElFTkSuQmCC',
+        'Applejack': 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAYAAAAmlE46AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAv9JREFUOE9dkmtIU2EYx88Roi9FfahkfQmS6kNGEBRlZWSY5tylTKepqR8MHYGl2R1POm2u5bCVlzbog2Ze591pzZPZxUskDZLMMLSWzcIca3MXt7N/55woqhf+PC8Pz+99n+fPQxAEQf6vhINb1nG5/ISdobWXo+9eSd4tyM7OJimKImmaJhsaGjjmX/DGqfDQmkvRg1x+9YrlZPd18fdupXiu6mxkOAcqlUqyuLiYB/+cayfD1rKFH0w3pYEHV4/omhTCyieVcYEB7TEYSyX21Mita/6u/91qUBMV00JrjmKwMg4zI2fgnlfD90PLx+nhMyinIrb91SFBFqaHBevPHb7G/fS06jhs0wXwO8rBOLXws2Kct/k4//HKRE+jZD0Pl2buD2FnmOlVSUFrpJg15/JFgcWKP0Bg8Q6fs1sVs+11wmAebKaEuiG1CC81Yozci+cL4KoC3JUIuCp4+R23+Ee4Dr5bisZmJi7fJzpLRJZPOin8vSlwdSXDO54Hz+vT8LzLh3uuCIuzBfDa1DzMPcrJMVfkIHpVEu94uYgH/aaTvOxdJzDZkI76smhY2mVwDmfg8zM5RukcvH8pbx96mLiPMBTG0nSpGK7mePg6k+DsSUZbSQwem02oba3DRsFKzNQfx9sHSdi1dzve5Ow4xM+ozorY1K2U2MY0IrhbEuB7lIqB6gxY7B9R3XoHAoEAivN74O5LAaXNwvNLe9PlcjlJACANRaIRztFh1iRvfRyYx5kIOCwY+GCE9GIUOjrzwZjS4H16FV80UT1WqzWIWFhYIBsLhDf7y46Ck1UvATNKgXlxHgHbJDyub2DGVPC2s+bVyGDTx74ym80kwe2fKvNASN8NySK3NeayWNagNPj7WaP62Uhn8HdPkwyWW3IoEjdv0Ol0JGE0GvmV0+dFpj9SS5kOKuahr01Wwbb2lXV6aakjkfF1p8DXlwHnaB5yTm1bbzAYfs34e/+0pyNic+N2ruIWmQWXcdE1dUEGd9UYq6kle1mXqVW6imWIn290AGVZutJTAAAAAElFTkSuQmCC',
+        'Fluttershy': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA2xJREFUOE9dU91PWmcYP2uybDfrxdIlu9vN/oglverWNN3Fmu1iN7vY2q4utnE2Nu26ukyrUUGwExGpn3xY+TyACjrskFrcEYoWnCAM4YAgcJjROkFA1q789nJczNaTPHnfk+f5/d7n4/dQ1Cvf3Ut3Xp//Qnze36gYCt56kIgJpyqRFvrvcIvxMNxhSa9eV993XJK/+yqO/zdf7j7tbRz1RdstLzOKReRoLxJSOzb7HyKtdCEumgErmEbwO03U2aR8738kzq8ln8e6bXlWYMWmZA6Z8SUk5U5ytyPeY0Oy1w5O50FO+wQ5jbtG4lK19L5BGehzb9sE19+JtFt2c8ZlJPvmwAqtSA06EWs3g+2aQnacwdbwAmLknuiZxaZ4FiTD6tLFvi+pBeenb/3mvvo4Yu3D5v1ZsP1axHpUiAo0iPyg41/dGiNgiQI5PXmdXkai92dkVItYbZ6YpVZWLrrKFSOynBip9W6U/7LwViqZ8SykRWpcR8BqJNlmJCZp1LLMkIxSAw6s39WHqUCo/mDnWTdKhwRUMaNMzvLh5NFZsaBIbD+rJ34jgsxtcLQH3IQbKakDoVZDmnpk+irA/fEjCkXlv+AawX+MEJQJcaFEY8bWAJdMgYxyESn5PILNumUqJNVVA4EG7OXlx8Bf3T2QyRuh0X2P5ad9pCQTcjtqDI3UwTMuReIeaaKagb9u6B6VVi9Wg1YRUhkhH1g6NKFf3gD/2gAYz08YVd5AdltDfDS2d2QIrH6DcNcwUjLHc+aC8AMqLrW/4EwesBoligUTCgc05h52IH9gwu6+ERwBb+9pkc0IwLJNWHPXIyrUIdysW2POd52gopIZjtOSpgzOI2NToVAmwD0D9osmvvZSxcCXtr5wA08627Ah0yHZ74D3ysBNXokR8XQ8q2SQM3gQbZtAPm1AiZRyNIUawZGFl5qIRqbBdk4Sndjy1iviIymzIquXldirWRXDzzdOZr63q8J66OqOf+2yL8be+nMr3fry91A9NlRjvKT9tx88Pt6Djdaps0RZxQRZmCzpbHrMBV9b5/YM/dn7tSCT/cNTvpauFdasR5xkkCaS9n07Kj0mIKm+GbujP5OQ/vI8Ofyomhx0sOmxhU9W6wYp5uOO12qB3guik2TuI2QPXmwpXLGnjSMf3RRdO1Hz/QNneMt7Iqmg5QAAAABJRU5ErkJggg==',
+        'Twilight': 'iVBORw0KGgoAAAANSUhEUgAAABIAAAAQCAYAAAAbBi9cAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA6lJREFUOE+VlF9Mk1cYxj+Kc3+yXWimFxuk2zTIn4bQFkppF0hDNmBpBtgKixhhQZAhbSkFBp1uZWg3ZLRMxFKE0qKtrMy2E2ztn2+1tLQgbuJiorvQ7c5pgplZNjfmePZ9nwtZMm52kufqvOeX5zznfQ9B/M9l/8CXPP2R/6ajy+u0amZeoI8D2PpfTLqMlZQpT9vE2fPOc9l73302q7rs6Sz5K6zM3ZuJzD2EVf1VytejC4hNXoWj2/vlF71+FgVKIsZVHrbnEzLoPkYOqqtPNm7j1l1J4R9Y4wgVkOR3Qcvrg+uNXmTnt9zfmdcUFRd1XqQhC+eWMXP8MiwKdyUDOqMLEG49qYtYlhA+vQi7zocGmQHFYi2UnM9wq/RzNEsOQyDWMBIWtjNurjivw2ucg+toyM+A6LWZU72vvsqwFjwVZwrmrEvoq7DBLDDiltQAobidgeRRUipMTA0t32AU3hNzD7zGSANBZMi2UFe5nyZohrREB9dxEnMTS+jgnUBYMghv2afrbhhHb3aAnFxkQMHhOALDid8p0EHiKU6VklvQil0UiJakqBsf77dCmTmASPEAhoqPIEN4CGmCJvAkauzKfw/5pRr4J+JUTtfo693zGSM7iBdzan10sE9gh5AragNXoEKtvB+93ZMY0TthGraB92oJVlYewDTgQJ96DKTtiStXb8jvNoafIV7i19+lndC2X+bXPyqXffj4kmV+PYexY1aQMwnkv1YGWUUljryvQ0/dqfV9+Vs9zVTYLILKZ5UGsXMbb2/llJaWCN8OnzNMrxda9JNYjt+ENL0RrQol0nekQVtlRHA8gsWpZQhEmrviws5yIpXfcG87t+52UpY8NZXN3lIjPRiOReZxfugCA7s4EsCN727ArHChQiKDYGchRrumELbFEbQmkFvQ+ofg9TYX8Xx2zfnkLDmHbgM2m00M1tortQf06FC2Y2HqGgMjvSR+WfkVplYPzCoX3EOziDmuwjMSRk6BajVP1PYT/fzb/j0nZ7tmN+n3mUlpUTmCo1EGFHJE8NvDR/g+egd0fj5LDN6xKHo6bOAL1D/niTTRDUd2rMW13VBj/zFu/5YZBaYBp69j0blMPfs8zhj9KCjspPNZ+6fjd28IGld4MgIn5x/HJr9ByJRYDz5oS2B6KIT9Nf3IEaj+pCBrXFELOTERZm0Ichy+lHy2czZlpv+y80JfmILFVwPDsTvmo26SJ1I9zBU1/UVBfqAk35ujpb+RpL8BJjxIUjyXvSgAAAAASUVORK5CYII=',
+        'Rainbow': 'iVBORw0KGgoAAAANSUhEUgAAAA8AAAAQCAYAAADJViUEAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA3tJREFUGBk9wV9MG3UAB/Dv7+531971aKGMlr+OwjoGBUZwRDrRBJwj0bHEmeiS6Xwyxn8x8UVNzHAPPvliFhMzsy0m8uDD5h/QZWoUNxYMBoZbZCBjZTBoKRwtLde7cv9+bg/6+ZDnzk6C44lw6f6whdOnETpzla+0803RMD3ZGSH95V62lzGQtMH9M7MhfpPUyIX5HE1uvNXDaCQgtykB70cR/4unrn3aqzYkZt7v18ZfezyTkfy0HlJ7FMWKEBJFpYMSVq7bngMlGvvc/OTiLzRYLp8K1waObaS16MDIRfupG9c6SuwCsSt2kJ+/B+3HMdC6MBofa0N1a2sVJTWj02mh4BFCCpV84jN4oHyX3KYEJAi2BWYR2CkPmMlBiOgwE0mYiymo1Qu0Mx4/8VLVnrtnF4VxfuCN9z5mDBA9FJt7mzDe3oXkjou69CqoxkA4gC9xQAggankMa7uTm3m32SLKD+Sz6XXGGCDJAv6j7di4MzqBo199Adk2EIqkQGQHDy3Ij2Q+bHr9g3UxyFHLdFyvJHAg+J/ipYgdjuMyzwELCfRsTWG/NQEwhqCVC0YLy/qKGJzmD77w9pHSoFyjbWWxtjAH5jIIHi8EKkCpq8JteCD2H0F2u4BwZhE+x8BEWbt6i6df8kr/s0+H/HKMc1yo02MYaG9APjGLxJ+T2NxYRV7fxu66GqjwYyrn2AG7YFGw4FygeYiXjva/KoipxoaKGPY1N+PJfRHEauvQaIj47vsLSN67i87ew6hOLGFeTS38FO45XhR8lQlffS0tmGViwbmCdKEb3tJSGLYLieMwMfQr1tZSqOzqheCVkDWIk7i/vvJ7WdVVxd96XWBU4kzb55qOiZvqJazmCxhLGzBFiqbnuzD71xyij8bxEN/XzXccf7PyxJ6+lkxuwknnftP4vorBd9O1mXBAnsbfaQW6VQadcWC7gmiIH0JlrBWuw+DYgFyiSGqu+O2NjZllPMBJRUevuH4Ipu1DyOefrS6RzmQN211iFGUtzSAcD8dh2Ll8cyStai8vra/8MQhgEADvjx/bX78c6rgT1ddl722/btSelEz69eaWoZqms1kwrGVt27xV1I1zgdWfRw6Ww8lmswQAo6QR2dnM6JC6HT3PEfvctjSsnx+3J1uob6qt6gAtSgEu4BbdV2KO80T3O0QQBFiWRQRBwL/txI3OlzkSKwAAAABJRU5ErkJggg==',
+        'Rarity': 'iVBORw0KGgoAAAANSUhEUgAAABMAAAAQCAYAAAD0xERiAAAEEElEQVR4Xm2SW2xURRyHfzPnsmcvlO4ulN1uF2sLrIpdJNS0KUZFUq1t0AiKkpASbyQSjRKENEGrPuCTiUoTjSENKAnFYKokbZOmIBaoTRXB1AjbWmrabmVpt3SvZ899PFnTxAe+ZF7+D998mf/gbmwt30131B58YM+WTw7vbTnW/+oTHZda6490723uPP1KY0fna40dh/Y0fFz/4pq3XRFEsATB/2i71EauvDcplHN173p8of2gnI8KPHLxm/AEqwgIARUEeywyS1dVPZ+9kJ6OHdB/uzF2BmcYXRIdHxkhO/0vR/e9+c4p7+pIO+92+wlHaGE+QV1lYWpLCe90kdKVTvJo80rqDTic4nJfk7c62kM3rltfgQpSLGOM4ZfR0apQIPQTpSR04uhVqhUYSkoItLyMVFaEIjNENpTg8ZbVyGYK6PpyHIYGBhCmLiYHZ2NDzxZlpwYHaX3V2mMet3sPpZSbjc/B5y+Fw8GDgWEukcbURBLR2jB0TcPpz4cwO5aBBQJuWSnsbC09eeN50tnZSYy0s6p5V+MwIVghSQ4iFwqQHBIIIcVjGEaxXtd1XO2P4dr3N6EqCvJyFoqmgvqDlqZqp+jxD4/z8etKGxjxm6ZJxmIxnB8YwNDQEGITE5iemQHHcRAEATYIVPvB8ZQRQu05D45QGPNx2PYNNFxWV21y/h0AiCiKkGUZcwsZnDjTg7cOtuOr098hYxLYQJIklK8ps5hoaAyM2ZeAFwRQEJi5FEclT/BpxZBKFhdkQimFx+NBTbQG+1pfQFZ34tZtFd29PTAtC+N2dU9vH/t18sKCwPP4r46DQ3QySzcGKBGERzRFpYl4CkubPdd3Fj1nu5GduAxvdQNIPgNV1zBw/hy6+y+D510xUZQYzwlM5CXT5iID+5RailLNDINN/ZUCoQTLlnkQj8dx8uRJW2DA7V2F6H0RGJoGt8vFgqF7c2vD0T4wMANgd0yjP2Mqb+Ty2RkqMrhhmbh+JYnk7TSWl/pwuP0DrIvWoX73EWx/LIIV3lKIgoitT21Dy7aWPzU125/JpbOLukrA8U1ly8uGwxWVz1CXwOvE0qHIGq4NJ4qPHApVoKurC4defw6bKigCwfLiRkMBPzavL39w5/tPChk5vV+ZvzVHUknm4DhB13RKeZ5LlthlzDAQG00jkykU/5VTYKgJiTANE6LkhKIqTNW0nKqpvYauj89PzX5jcqxG0/WmeGK6bj6V+IHPy7nfV/hWbS5kM0gnC5iMLWBjXfhnAA0FRQGz0XVtzmJsZEHOH52a+uPirubtOmw2BfYmg9cSP2YsJ7uIbxlpfaitdk3l/Q/rlv7FnVzucmXdPS+1HtjyD8dzWCIvy76/Z6bY5MTs4tfjn7HBjwZxN/4Fq6rr1ZuF0oUAAAAASUVORK5CYII=',
+        'Spike': 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAYAAAAmlE46AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAsFJREFUOE+Fk1tM0nEUx/9QPtCD7z30nE9sbbVeXJJR6j8DkVsIhg6HTqSXnBHSMMEbEy+AgPwVQpcgNy+kKLc/lCgF09Wquaab67kHX1pulif+mHRdne3sd3Z2Pt/fOee3H4J8N/ow2lrj4H64OljRfEXBIZ/k/3lWquXIrQl2ROAVA98jOro2XKUtvV9Dpj/iFV/ppwvLVfzThEBZGRWh0S4hmFx+rId2ysmMSU6WAAUeMfDcdYe0gUrGdUOl7rZXBDRdRQtRp1PeIRlVctIzk+lHR6itJnwC1nkbgOXgZlhO3h6RY9rZKYT7W9NUKpUklUqRKjPDQADEjYTz3SLgzQjzMWua/5E5xLpQrqOX/jEzamTc4LqEX/KQRwRMBwfEDgnUOyXAdgk+1zr5e0w7J/vA15OfN28PW5SnZlRuVT3WeMia5oHW1AthawSS40mIjcWhW98HfF89Ifa6qb+hqAA6FA5xzIp/dVncYDc/hkQOiI/jBcctCegwdRJgsERWcszpZTrKU/3S7s+Ff4vn9UG4aWbGyofoaB60d05dDJuiR/8DcXMCpLY24GPsrlRWcxZxKmaqF0aCsDy8ArgtAVFL/Jc2C4LWBEwFNLCUbt9PZrpEiEk2VjbmMYIdm4TQ6Cq4RmYB02CwZAlB2ByBkHEVYhYcEmEreNZl4F+/C8F0+0vE2x1IL3qDsDgZhKg5Bt7ULAgHa+HVzlt4v7MHMQyHpM8LrlQzuNdaIfJCub+R0Z5DfNrAxsJAEHJbhXhue5nQJmS3t2D73S6suVK5XBKiYQMs4B3xSEbZ83xTc3ljq5eMmNts5/3d82/8jicQDc0Cbo8BjiVyQsez4rYkeNRzfqfadUYgEJBRFCVRKBQS0tTUSM7BxaauUelyenwunnZ+SnhXDkKG0EGgb+5g4p5dpa5TFEkk1bmfQSu8/TfTXs+Z8UbptgAAAABJRU5ErkJggg=='
+      },
+      not: {
+        'Plan9': 'iVBORw0KGgoAAAANSUhEUgAAAAwAAAAPCAYAAAGn5h7fAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoYAzE15J1s7QAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAACAElEQVQoz3WSz4sSARTHvzMjygpqYg3+KIhkE83DKtKlf0C9SrTRuZNEx0VowU6CuSeJNlwwpEO2kJ6SQBiIUAzFjRDF4wrjKosnGx3HmdehFDfpe/2+z/s++D5gU7IsEwRByICIiAEAIiIAYAFAXsjYVr/fLxMRNVvN+prJ5/OA3+/XERFNf02JyeVyDx0OxyvLNQsnimLKfcf9KRQKXQAAnE6nlf5qMpnQycnbP/kAoKoqsSwLAJhOp+AAwOv1otvtpqxWq73dbt/r9XqvEQ6HUalUEvF4XLd5IpvNZqlerzd5nlf6/f6tTCZjBACk0+nb+XxeW4UrikLJZPImAGA0Gq0NIqJyuSyyANDr9Q5Wu1utFvR6/SULAI1G4+vK8Pv90DTtGwsAJpPpaGUYDAZ0Op3PHAAEg8H3tVqtbrtu21sqyxuRSOQJk0ql9IvF4r7b7f7pcrlejkaj57IsH58Pzp8dvjhc/lsBk0gkbLFYrFqtVvd27+4qOk733ePxPDCbzVBVFfP5fCiK4rvhxfDN/qP9wSasGwwGMv1HiqJQsVg8ZlfTHMepkiR1t05gGJBGmM/nMBqNj9nN9kql0lNN064ARISzH2cQBAGz2ewLu2na7XYLwzBbvxYIBBCNRrFj3BmsAZ/PZ+J5/kOhUIAkSVeA8XiMZqt5efrx9OA3GfcgvyVno9cAAAAASUVORK5CYII=',
+        'Neko': 'iVBORw0KGgoAAAANSUhEUgAAABMAAAARCAMAAAAIRmf1AAACoFBMVEUAAABnUFZoUVddU1T6+PvFwLzn4eFXVlT/+vZpZGCgm5dKU1Cfnpz//flbWljr5uLp5OCalpNZWFb//f3r6+n28ff9+PRaVVH59Pr//vr38vj57/Dp7eyjn5zq8O5aVVJbYV9nVFhjUFRiWFlZVlFgZGOboJzm5uZhamfz9/bt8fDw6+drb26bl5j/8/lkX1z06uldWFS5r61UT0tfWlbDwr3Ew76moqNRTU7Mx8P75OpeY19pWl1XW1qzr6x5eHaLiojv7+1UT0xIU0uzqadVS0nV0MxkZGT5+PPk497///ra29Xq5eFtY2H28e2hnJignJlUUE1dXV2vrqxkY2FkYF/m3d5vZmfDuruhl5aZlJHx8O75+PZWVVP29vT/9fTj3trv6ubh5eRdXFqTkpBOTUtqZmX88/RMQ0T78vPEvr7HwcHDwsDq6ef///3Gx8H++fXEv7tZWVedmZZXXVudnJp0c3FZU1f79fnb1dlXUVVjXWFrZmy8t7359/qLj455e3q4s69vamZjX1zy4+avpaReWFz/+f1NR0vu6Ozp4+f48/lnYmi8ur3Iw7/69fHz7+xbV1SZmJZVUk1ZV1zq5ez++f/c196uqbDn4uj9+P7z7vRVVVXt6ORiXl/OycXHw8CPi4ihoJ5aWF3/+v/k3+axrLOsp67LzMZYU1m2sq9dWF5WUU1WUk/Au7eYlJGqpqObmphYVV749f7p5Or38fPu6OpiXFz38fH79vLz7urv6+hhYF5cWWKal6D//f/Z09Xg29exraqbl5RqaW6kpKTq5uPv7Of/+PDj29D//vP18Ozs5+OloJymoZ1ZVVJZWVlkYF2hnpmblIyspJmVjYKQi4enop5STUlRTUpcWUhqY1BgWT9ZUjhcV1NiXVkkhke3AAAABHRSTlMA5vjapJ+a9wAAAP9JREFUGBk9wA1EAwEAhuHv3dTQAkLiUlJFJWF0QDLFYDRXIMkomBgxNIYxhOk4wwCqQhQjxgxSGIsALFA5BiYbMZHajz1oJlx51sBJpf6Gd3zONcrqm/r1W8ByK0r+XV1LXyOLLnjW6hMGpu0u1IzPSdO17DgrGC6AadrVodGcDQYbhguP6wAvAaC0BRZQalkUQ8UQDz5tAof0XbejOFcV5xiUoCfjj3O/nf0ZbqAMPYmzU18KSDaRQ08qnfw+B2JNdAEQt2O5vctUGjhoIBU4ygPsj2Vh5zYopDK73hsirdkPTwGCbSHpiYFwYVVC/17pCFSBeUmoqwYQuZtWxx+BVEz0LeVKIQAAAABJRU5ErkJggg==',
+        'Madotsuki': 'iVBORw0KGgoAAAANSUhEUgAAABQAAAAPCAMAAADTRh9nAAAALVBMVEUAAAC3iopWLTtWPkHnvqUcBxx5GCZyAAARERGbdXJrRUyGRUyYbY23coZFGDRFGEYfAAAAAXRSTlMAQObYZgAAAGhJREFUeF5Vy1kOQyEMQ1Fshzd12P9y61AixLX4yJFo1cvVUfT23GaflF0HPLln6bhnZVKCcrIWGqpCUcKYSP3JSIRySKTtULPNwMaD8/NC8tsyqsd1hR+6qeqIDHc3LD0B3KdtV1f2A+LJBBIHSgcEAAAAAElFTkSuQmCC',
+        'Sega': 'iVBORw0KGgoAAAANSUhEUgAAACwAAAALBAMAAAD2A3K8AAAAMFBMVEUAAACMjpOChImytLmdnqMrKzDIyM55dnkODQ94foQ7PkXm5Olsb3VUUVVhZmw8Sl6klHLxAAAAAXRSTlMAQObYZgAAANFJREFUGJVjYIACRiUlJUUGDHBk4syTkxQwhO3/rQ/4ZYsuymi3YEFUqAhC4LCJZJGIi1uimKKjk3KysbOxsaMnAwNLyqoopaXhttf2it1anrJqke1pr1DlBAZhicLnM5YXZ4RWlIYoezx0zrjYqG6czCDsYRzxIko6Q/qFaKy0690Ij0MxN8K2MIhJXF+hsfxJxuwdpYGVaUU3Mm5bqgKFOZOFit3Vp23J3pgsqLxFUXpLtlD5bgcGBs45794dn6mkOVFQUOjNmXPPz8ysOcAAANw6SHLtrqolAAAAAElFTkSuQmCC',
+        'Sakamoto': 'iVBORw0KGgoAAAANSUhEUgAAABEAAAAQCAYAAADwMZRfAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAxVJREFUOE+Nk19IU1EYwK+GQQTVQ39egh6ibKlzw91z7rn3bvfOmddNszl1bjKXc5rJJGmBUr7Yg9qTD0IalFgRBEYg6EDQQB+GovQyQgiaUZsoLcgHMcr069w7MgcGXfi453zn+37fv3MYZt/n99e76tzVj4JN/hP79fvXnV3hnNabwUBjoOHcgTYOu/JQspgTzsqKgn9BfD4vkWTzur287PqLVy+zM+yePB7KsRXLywTjnSpnZctBkPCdW8ccDuU55vBO8RXbkC/oP5ph19V5+7LIky0OY1BKbZEbLcFSt7u6pN7jLmltCVrr3DV5jY3+KovFEsccB1KJNVpefe10BqS2tqqO4/AuphBB4L/LkrRqNgtJs1lMypLls1kU38mytMLz/E8VIlutqVqX6/weZG52OttRXjbE0cP/FYLRlpVjDXuQ/r77x2XZPKkCHA4HBAIBkCQpAygIAvh8Pu2MZgO0Lz+QSa/sQfwN9RfpVN66XC6Ynp6GhYUFGBwczAC1t7fD0tISxONx6O7upgHILmsqvLcHodOggfiV/v5+SCaT4HQ6IRaLgdfr1bIRRREmJyfBZrNBNBqF+fl5sNsdgE2GiAbp6bmbdbXC7qWQbxMTE7C2tgY6nQ5SqRSEw2ENopaoZpCXlwdTU1NaoECgCbgiU6y8QH+ECYWaTymK7TWdys7MzIwGaWtrg42NDejo6AB1WjU1NZo+FArB2NgYrK6uQrAlCASxn2z6wkuMp87VIAhkE2MEAwMDkEgkYHx8HBYXF0HtkQpRy1BLiEQisLy8rPVNKSsFjEzrXH4+z1hlS4xDhKadNu7t7YPR0VHweDzAEVWfHru6HxkZgeHhYVAURYNjkylVWKArZjjMzqmdVi+QCsLUkQiEjvDvncEkvU7/qQ0Vgukeo48Go87IiCJnZNmipxiz7wXEbVDnbUxQOgM12h9n6qTq6NvapRdtkwaP0XK8RmPuYSbxYfaQ/sJJhjfknuFRURUi7AMOozcCwl94hLZp5F+EioDQVwqYI6jomZU1NFtM+rOSxZjVazcyvwHr/p/Kws1jegAAAABJRU5ErkJggg==',
+        'Baka': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA0pJREFUOE91k3tI01EUx39JOpA0H4jNx0pbD3XTalISWf8YFlEgldqDsBLLyqjEKBCiLLWiggh6/KEV1WZ7OaelLZvDdDafNW1JFraWe/32+01FrUZ9uy4ylLpw4Z5z7/nc77n3HIqaMRIjZJyEcNX+uFCFeGmI/GZciEIsCFJUTvoAzDz+1y7K76MSwhX5hXl6z+WSbrzU2KB8YEGDwgrTaxZ3b7xHcaHhR3xw7Z5/UviB1ReP5XSg3+TAqYJOxMzWISFIC0GQDomhTVA9skCnsaAwp/vnMq66dBokNuBR9uFd7T9Z1zCunjci0qcRJUVdoJ3DYOhRnC/qBZ+jQbfeCc+37yjY2UEg0iwvJE0k9l8Z+8xqHmTgot0QLdQgTaQFQ2AsOzlHvOu1S5pwOLsHHo8HjHMCq2MazNvTlByKHyrJLDvdR25jMWRxYx5HjeMH2r1BDOOeguRua4OI14jx8a8YH5tA+al3EHKlW6mYOapb2oZBOOwMbEMseAE12L+jjUh3w+VipyAZ65oxn1NP/GMYGR6Ftn4Qsf7qa9S82Y/l/X122G0uL2TbxmZEz1WhXW8mUol8moXu+SCi/OoQ6VsDh3UUwyQ1k9GOaI5MTkX4yWTGHutvgI1F28sviAlRgxeoRm62HvsyW8En9pZ1TYgi6TntoyQtFm86rVgUoJZRvDnKMmXVAGxWmkAYOBwudBqGcHCvHulrGpGT2Uy+z4yT+QYsCXtCUpp8GxbKhx8gDK0ro+KjJGvzdjfDZnN6VdisLD5/JjArQ2zW66PJOj2lEZtStaBphkwah7K6kMJ/GEulp1bMWhAmMbTozOQRaWRtfoZVgjo4iRra4SYgGi26TwjxVeDKhR7Y7U606ixICq9tr7hd7+OthRWL7yUnJ1WPmXotqLhpRICPHCePtuFV6xdUPTAhcWEtRHEqfHpPyto4hPXLXnzflSEJnFaN3OCKDcsFsrEntR9RUmxARLAUgT5iBPuJsXWDBj0dZjRU9yNV+PTbpjTp9OA/pOSk24nRkXf1J462oPxcJ65f6ULlHSMulepRerYDgvj7A0cKpNz/tyTZqbzXO4t0ZZGQJ34RH11lFHIlA8LIqreCCMUZRY3cd2bwL/5/RmjNSXqtAAAAAElFTkSuQmCC',
+        'Ponyo': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAuNJREFUOE+Nk3tI01EUx39BTytConQTt1am07m5abi5KT5S8z2dj1yOEMUC7aUgIoimlmUEWX9kBZGWaamEmE6U1BI1XNPNGTrnHs33IwuSXrL4NgcJ0mNdOHDh3PPhnPP9XoKwcroJYvMQiRSicHCQKCgUyZC9/T5rNet5KUFs0zCZbZMsFmZ9fTEjEEBDp4/KSSSb/4JoGIyWaTYbiykpWEhOxhSHAzWD0aqkUGhWAcVkW58xlvuPhfh4zItEmOHxYDR3MhcdDaNAsKJydAz5IySKRNjEUmy88vjOVaU8F0iPCqCNjEBHkC/UYaGYFwqxmJoKLYOhkxPElg0QsbNtTlmox9yjRD9UCbnoOR+J/lwRWtOCcdXfDc2BPpg0d7CQlIQZPh9KKlVkAQjJ2x2zmOSsQu7hpzUJfBhLjsNQmADjxcT10Bcl4rE4EHc5LjBEhEPn7f1WTqXSLQB/s1Tp7vslsoIkyPPiMJAbi86McBguiaHKjoEqR4jJy2K0nAxApzMN5iUGrclrKVaz2fUvuF4tRbxDKA90w5VjTFyLZKHpTBSq4/1QnxGB2qxoVIZx0JopRCPHFSNOThfWZzfrXDcZEowH4iA05ATg68hDtBaL0HAuCm3lJ9Bfcx2fFNUoi/DCjRgfNHHd1wCZA2TyXjNkE6F0cBDpPFiojeNi8EkJdFoN3vXch0nbBJOhDd907dANv8JITxNqziag3ZsJbUDAwLin50Q9QWwl1qSYoNOVvUcOoqOqAAa9Fu9H2/F9+B5WZLcwOyxFX18flLI+VASyMGVeoJHD+Tzq5BS1PoaKRrNT8127P74swsq4FCa9FKvqBqwaOiz3hdEuLKueYSyECT2LNW0eIfo3E/WmEbvnG1MUJnWdpWhDGDvxQXZHo+RR0uW2tnv+auPX+TvtJm7zKpaen/4y2yjBUlcxlvtvmvT16ZWDpQeoVv3/60F/NrHjTf4ugazIXtJ8ivjnz/sJ+yGQRjcqUdIAAAAASUVORK5CYII=',
+        'Rabite': 'iVBORw0KGgoAAAANSUhEUgAAABIAAAAQCAYAAAAbBi9cAAAD/0lEQVR4Xl2MXUxbdQDFz/9+9Lb3tkBLCxTKhzgoOOZAsokbJmZxDFHnd+LL4hKVzBgfNCY++ODbjDEaZowvErOM6HRu6hKZY2rIAOkCY4OSDTpFaAsrlJa2t5+39+NvjT7tnJzknIfzI98Nf/C6TuXdguWBd1q9rcb8/CwsZiu2Ywm4nDVo3VWLZCKDaDwJq9mCg31PgjAMKKUwmcyYvTbek9iJRDm6M/XswEDjwNz6plWW6wdZhjUAintFCEEhn0N04zYskljaDLaj8ar49oUrsYR6mrFJNj322w46H8y+mitM/ZJKZmyE4XAvjJSsazpyuSzslVZIkgWKOvvRgQ6Xrdlhqmds7o7bFZoLkctreKxf7GtuCE7IyUQjBQcQ8j/lvxCGQJZz0IoCVpamTtzfIh9nwiaIrCQyjNg8mq11oDLUhNXRJfT1Ozr3tS/PqpnQ80qRgjAmKIqBfK4ItbSLKoOZqR/6neLkENlSUAIhlktvEf+sD2rkm8nWTHtvZCGMVON1ePuaoBER31/MXGly1wSqq9Uug6FluYyWXJiPqFXmjd4Dh9oF9ZKKimYXRtYCx8lmMIDIxlIPGz591av0mtanF7FcCEN6iMXeox2wOJ0QJAmUAoRQaIqCnWAQY1/ewKNGNeQuYXkm0d2NC2e+wvmRr/Hx+6+8PHayrbDyyQBNDb9As3PHKDWG6MTM23RoeJAWsqeoWvyUUv0UHf7pBB0fe4OeeXe3/vmHbx3+8dwIGJ4IsFpMMFe0fbtAn+nwZePr1u4MBK8XIALG/Rt479wYrs2vgeNNAMNgMbiNzybuoKVvn+Gs9kbr6qpBfJfGYHFIkJUCoGwfqcoMX/b27EGhwgOjoCADDlP+CA51ugFFRzoB8FYNaQ1oqKD44+eNL+wNj7zJGQSIhe8+jgQ9thk+27v/KRY6L4FSCkVOwtlQj6P73Qgt/o1ERoKt4iUkE7+jrZMHyzIoK9cOBFfT4LbWAk+0a7ZLnvqHcTNdACgFScfAcjxEdy00VQclHGo7dqGeYxHbvIo6hwhSghCehb3G5p6eW7VxXC5/xGWToMgrKKoaCnIalI9CIARasQAqloMI/x4BWrLLYwE1AEPTwCGHaGjz7pw/leZUNV8wNm9BLy6CxsvxZ1kMbaY4TKIIXlNBsynoVjvAC4CuAoYOVi+CMfLYCUfg95tPHuzZB0YtKzsb58RMucWE/fZmhCbdOP9rNnLnxko6GVoB8lFwyVVw8b/AyeulHoJyN4Rb19dTFyeqBlu6njvfsWcvOJvLs7DMmw/7bvpeE4pU2OIcgcqmp4fGAgt2Txwvqr7lTp5V7LquZxXC6+BqEvGcY5pyjaM1tffJbk89NE3FP5VQ6y7a+paZAAAAAElFTkSuQmCC',
+        'Arch': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABCFBMVEUAAAAA//8rqtVAqtUQj88tpdIYks46otwVldUbktEaldMjldM2qNcXk9IWktQZkdIYlc8mnNUXlNEZktEZlNIYktIWlNMXktE7o9klmdMXktFHqdkXk9EWk9EYk9IlmtQXlNEXktAWk9AWlNEYlNFDptkZldMYk9E4otg/p9kXktEXk9AXlNA4otclmdQXk9IYktEXlNEwn9YXk9IXk9FFp9o3otgXk9FPrdwXk9E2otdCptkXk9E/ptkcldIXk9Edl9IXk9EjmdUXk9EXk9EXk9EbldIcldIjmdMmmtQsndUvntYyn9YyoNYzoNc0odc1odc2odc6pNg7pNg9pdlDp9pJqttOrdzlYlFbAAAARXRSTlMAAQYMEBEVFhgcHR0mLS8zNTY3PT4/RU1kdXp6e3+Cg4WIiYqMjZGXl5mbnqSnrbS3zMzV3OPk7Ozv8fT29vf4+fz8/f7SyXIjAAAAmUlEQVR4XlXI1WLCUBQF0YM3SHB3a1B3l7Bx1///E6ANkDtva0jKbCW2XIH1z2hiZEZ4uUgxo7JedTQye/KN/Sb5tbJ+7V9OXd1n+O+38257TL+tah3mADAwSMM7wzQWF4Hff6ubQIZIAIb6vxEF4CZyATXhZa4HwEnEA+2QgoiyQDnIEWkjVSBBZBqXbCRlKYo8+Rwkyx54AOYfFe7HhFa7AAAAAElFTkSuQmCC',
+        'CentOS': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAB5lBMVEUAAADy8tng4Ovs9tnk5O3c7bX44LLduNO1tdDh7r/eutj43q2kocX23az07N+qqsvUqcmXl7331ZXJj7r40o/Pn8T42qP63KjNw9n21p3Y387Ml7732JzR55z05MSxtMLGn8TC4Hx8eqt8e62Af6/B4HnG4oPC4HzH44fBf7LCgbOkoMTcsrmtn8PWqcfFtKrj4Jvs2ZOz2FnMqLXT3KfY5p60Z6NUU5XRuqHzwWSywqDn3JaiiLWahrWhkry5zJjRmqm1Z6P1wmb1y319fK632mK5cKi5nH+73Gu73Gy73W283W+9eK17e6y1yZS3aqRZWJdcW5ldXJplXZppaKBwb6VwcKV5eKswL306OYNPTpGkfK+m0kGpUJWq1EnEqIuXK3+Xh7ahP4qhkryMfK6BgK+CdpGMaKKMa6O9ea2+eq6+oYW/eq+NbqWVlL2Wlr7AjanA4HnA4HrBkqbBlafB33rCgbLCmKjCxIzC1mSs1UytV5mtxIWt1lCuz2evWpuvXJywxYzHjrvH4oXIjrrN2HXO5pTO5pXUlYnUlYvVl5Hb0G7e0XTg03rhr5fpzHPpzXTp0Hvtz3/wrDHytknyt0zyuE3yuVHzvVr0wGP1x3T1yHf1yXe0ZaL2zYP30o730pD31ZeRIcF5AAAAQ3RSTlMAFBkbHEhJS0xMTk5UWWBsd4SEiIiPkJCVlZaam6CjpK29wMPDxMTFxcnK193e3+Dg4uTn5+fo6e/v8/P4+fn7/P7+J4XBAAAAAOBJREFUeF5Vj1OvAwEYBb/yGlu717atLW0b17Zt2/6nze42TTpvMw8nOZCAmwUpiIY6c5IiLi9tPX64GairqszHQ4X2VB64v1Cs6PxMPJSdHM777s6/jyaMRGiRLyyrb88OpjZ3CzAXrm1sqzSNNeN7kVBPNgB7cG51abE5l9cXDces7emQ1uadHhutFUg6gpPKkSIqQGavwz7r7O/+/3t/rSdjI9XDM3qz4fr3B/3iA0aJTG9x71+9oR/PLDwUe2wm19bly+fTIxHyEETatbPewGEw6Mk/tKZCEqSQQUlIHB/QNBEjjVN1AAAAAElFTkSuQmCC',
+        'Debian': 'iVBORw0KGgoAAAANSUhEUgAAAA0AAAAQCAYAAADNo/U5AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAZ5JREFUOE+Nkk0oBHEYxv8fu5GQj3JwcaDkIAc5IpR87M7MKnIVJVKclaIQ5Sy5OLkgR7n5OigcSNpmd2c2Vyfl4KT8/muWiVU79TTv+7zv837NCBF6PG1X+NpZyEYSD9mIc+tHnBPe23B9xKrCuTmbQA/JKfABrhBswa1hH4A38IwfOxPdX1qcjiCQxO5NyrjKV70TnSbeRPwJvGN3i4yyqnEucPY8ZZX9GSEgGK+RvFfyjk2VKZxzBNG8wJWWgh/xtDOeUXZ7Slr6TrSLYL9N4SMgYTTcwdc2ArvJcElhSVcM6mCNSV8n9hA59yTU5UWMG6HIbLhIWlglgWiC2L4Z79qTdo40D6ISuOWwKCWHyk9Fv8ldpUHOuGTuynwSBUynddPdlbEosVpP9Eu4FnOsRzUYNTsdmZN/d5LDiqM0w+2CMdAFFsFGWgfXxZnheqe/z+0puwEM0HHYV3Z9Sgz8TEz7GkQvpuJ/36ggj2AaHLrSlkULWV5x+h2E8xkZL16YVjGNaAUscfZ/f6c/k9ywLKI2MMcRWl0RLy007idmRbQJ7RIfDAAAAABJRU5ErkJggg==',
+        'Fedora': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABPlBMVEUAAAApQXIpQXIpQXIqQ3UpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIqQ3QpQXIpQXIqRHYpQXIpQXIqQ3QqRHYpQXI8brT///8uTYMpQnM5Zqg5ZqnS1+I4ZaY4ZactSn8uRnYrQ3MrRXgsRHUsR3s8bbM8brMtSX4wUosxVI01XZw2X50vUIguToQvR3c6X5o6aKs6aq08Un8qQnM9VIFDWINJXohKcKlXapEqQ3UvUIc2X55bhcBdcJVgcpdhfapmd5tuk8dxgqJ1hKR5jbB6iah/m8Shudq3v9C4wNG/x9bFy9nFzNnFzNrIz9zK0NzK0t/O2+3P1eA2YaDU2eTb3+jb4Oje4urj6fHm6e/s7/Tz9fj3+fz7/P38/f3+/v83YaEa/NNxAAAAHnRSTlMABAoVGyY1SVlpeIuQsLfDzdHW4+3y8/b39/n6+vr4+ns8AAAAyklEQVR4XiWN5XrDMAxF75KOknYdZJS0klNmHjMzMzO9/wvMcH7I37mSJShsJ+5NjMT6umDoHyXDcI/2qJadh++P3cle1de+9yPe3/bTY92wzfzr7wGtP3JrAI72BZGVtcAdQlwHy+JS1pDbBE9qamZF3BYrjQxPEXwKc6dC8bXFm0QIpmt8kn0Rn093q82UCtK8oXZckwFJzuulV8bHkajPyXdbnJnARfDHs0trz+JQ+5AFvzp/L0+cL2qPAINUPrq5OC6p/64F/AMnrST+Dq/r7QAAAABJRU5ErkJggg==',
+        'FreeBSD': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAABIAAAASABGyWs+AAAABmJLR0QA/wD/AP+gvaeTAAADXklEQVQYGQXBS2wUZQDA8f83j33M9rF9d7u4loaWklaDpkSo9KDGaIKUaGxshD2YSPRiuDVeTDyhBxosJCoa40ktpAkPDcUqAYVIpUSUPrAulEdD2bbb7e7ObGcfM/P5+4kwKDvq6yJ1FYYcvb+YAkqAHo/HQ7FYrFIoCiurq9ZXJ06YSOkA+kBzfX06bys3zHxS9EL0tXDVyZfefacqV+X/ZSJx5+qLbx98LhaL9RiGEZWlEsWC/Thd9q6Pf3vs2u6Orc83rFsvTwwfLf5obgywT1Vjh2Hh+rbNsnTssJdNLedK5aIrpSuldKVXKsnH4+Pyn6FDXn5tMef9O+3NvdkvP1V4+EYw2AoQ+KSx8dRYS6NXXnwovaItXduSrrkinWxGOmZWJi9OyOK9m1LmsjIz9IH8QUMOd3WfAQwNKCy2tJwbHB5+XasPaxIHmc4g7WWEZ1MquBiRFlJTf1E7+Tl/H/8asavPzTY1nWd2ZkMDRPeBeHPz5ojwsilEQCBvTSKunCF3M8FSNkBGVTHDYYrLj8jVNhDZ2SMa2zo3MTamaIC/u6Ojr3DtrOrvP0BpdATnyBeIhTxpR5ABUlKSUlXS1dWstbVxdz6hPL0l1quGqkLaKwNvVcjEXNRd/4mit4Z19DjefBEPyCKxgQJQcF28dBrHNDGTSZSezsjeff0hraa2Vs2vrvit81O4vj9xLJcC4ADrQA7YAGqBGsAql/EtLdFQE/L7dF1XZmdnSrbPMJfXoLDmolQK8gJyQBowgQhQDRQBD+hsraVhd4e5MH+/oExfvWLJ9q3/3S7qMpNH2hsS40kFS4EUUAMA2IANRIBXv4uzuO67c2PykqkA5YmZ6bN18YPi0Yoknxc4AsJPCMLVAk2BLKDosCWqs/PZaulkuxk9fekcUBAAQGDks5FT0W++3NuYuC0DVUL4DIEdlIQDAj0IRkigaMjArkFx0tf523sffrQHyKsAgHPhwoXLL+yP9/kePNhk5ExUTyKFkJVAUAiCFZrQup4Rv9ftuLV/6ONBYBVABQAArMvJ5MXW7duD6P62sD8UrPAFRU1TpeCpCnGvPZr7WW///v0jpw+VC9ZdAAABAAAAAMLo7drWrmQyPWG/r8tnaGIjaM05ujr16x/ZBFh5AACA/wGZnIuw4Z4A3AAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxMi0wNy0wNFQxMDowOTo0OS0wNDowMOPVpFwAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTItMDctMDRUMTA6MDk6NDktMDQ6MDCSiBzgAAAAAElFTkSuQmCC',
+        'Gentoo': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAB9VBMVEUAAAD///+AgICqqv+AgIC/v9+Ojqqii9GAgKptYZKQkOmPj/ddUYBgW4eVjeCTgfiWjO5wbJaZkvPBvepkXomYkNldV4Bzbpl6dJ+Uj7ynoO6Vi+1qZI63se2mnudjXYjOy+GCfaqZjvWlm/Pc2e+Oh7NeWIOWjfeXjeW1sd+gl+diXIfp5/KHgKnn5/F2cZx6c6ZgWoXc2e6dltrAvNu0scrX1eTOyujCvup4c5qpovVpY43///+6uPPJyPXq6fvm5vrz8/z8/P7+/v/d3PixqvmxrPSyrfe0sPO0sfS3tMve2/3r6vy6ufPz8/3d3fi3tM63tPO4tsu5tsu5tvO6tfe6t/Vva5KRjKy7tvW7t/W9vPO/vM+/vvPCwfPEw/TFwvTFxOfGxfTGxvTHxvTIx/TJx/aTiOrNzPXNzfXQzfnRzuHS0fbS0vbT0uHU0e/U0uTU0/bW0+zW1ffX1vfY1/jZ2Pjb2/jc2uSTiemVkLSlnvbe3PTe3vng3fzg3f3g4Pnh4Pnh4fri4enj4/nk5Prl5Prm4/ymn/bn5vro5/rp6O/p6funoPWsqs3t7Pvt7fXv7vzv7v3w7/nx7/3y8f3y8v3z8vytqPWuqPX09P319P319P719f339v739/34+P35+f37+/+uqev9/f6vqvSwrPQAR0dcAAAAPHRSTlMAAQIDBAgJCwwVFyAsNUFHSVBneH+Bh4mVmZmanKCxsrK2tr3ExtDW19rb4ODl5u3t7u/w8/T6+/z9/f4MkNJ1AAAA8ElEQVR4XjXNw5aDURSE0YrRtm3b54+dtm3btm3bz9k3Wek9+2pSYFwT8ibzE93hwAtdJqK3nZo4J9hFXbP+vFHOthV6gnGzstZq94wdCs4UCCDymQ2v7X0LdYoSQ0MIENRYzJbRlPTTHu73ZNAL8vivmVui98PpzuqffX0mIPHJGtOQenukteJ+aS3b9htNpDnT9TeZH1bHAwBRMhGpd6e6uNrLoRgxBKmsX47nBlp678ojpEA40fejcmW4e/No0V8IIPfj6eKgbEJ3ZUnzgE1OqWp9Q3VeWRAsg51f1dZ8c31RmAsc+N5JGbG+zvj3BzDCPrzMDC9SAAAAAElFTkSuQmCC',
+        'Mint': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAACVVBMVEUAAADh4eEAAAAAAAAAAAAAAAAAAAAsLCyXl5dgYGCnp6eTk5N3d3fBwcGqqqq8vLzNzc3Ozs7Ozs7Pz8/Pz9DQ0NHR0dLS0tLS0tPT09Pf3t/Pz8/i4eLb29vZ2drZ2tna2dra2trf3t/u7O/u7e/u7O/r6+vt7O/w7/Lw8PDy8fTz8fXz8fbx8fHz8/P19fb49/j49/n6+vuPxlmWyGOx437h9NDr9eD6/fj////+/v75/vTA5Jv6/fb7/fnL5bDL5q+AxjeDxUCEzTyGxUaGzjyHxkiHzz6J0D+Kxk6K0kCLyE2M00WNy06P00mSz1OUyF+W2FGX1FiY0F6Z02CZ21ac0Wiez2yfz2+f2mOh4GCi4GOi4WKi4mOk12+k3Wul32um1Hin0nun4G6n5Gin5Wmo23Op2Huq1n+q43Cr526s4Hit23+v6XSw34Cw34Gw6nWx4IKy4IOy44Cy63ez146z34az4IWz4YW03Y217nu38H2625e645G74pK83pu98Iq984W+4ZjA4px0tzDA5ZrB8ZDC5p7D55/E947F6KHF+JHH4qvH6qTI46/K5LLL5LN1tzLL5bN1uTDL57DM5bPM6qzM66/N5rTP6LbP6bTR6rfS573T67vT7LrV7r3X68XX7MHX773Y77/Y9rvZ8cHa7cjd88bi88/j8tTk8djk9tHm8trn89vo89zo9N3p9N3p9d7p9tvq9d/s+93s/dzy+erz+O73+vT4/PX5/fT5/fX5/vN1uzB3vTD6/ff6/fh5uTj8/fv9/vr9/vx8wjV/xDmrMRH0AAAAOXRSTlMAAAECAwQJDzk/RUlNU3F0kpSVlpeYmpucnaKjpKWqqqqtu8LExMTEzdTU1NXY4evy8vP+/v7+/v6LaR1mAAABD0lEQVR4XiXI03bEABAA0KltW9kaW3eSZW3btm3btm3b/q4mp/fxgqKOtpamhrqaqoqykrQYABh+PVMU9fjE5Xp8o54kgPHN0EBHU2N5YXZykiua0HHd2759VF2Sk5IYE5GGsmCEWLV1kVWwt5O+3x/qpgsy8k4ja+cJl2/v5C22tlgCAHtw9TQSa4s+AzfPSm0BRNl9SydhWJzLC567KrNhgrNwHIJ5qTz/2f9w7Jw/DNqIjVr04exW0AEOXcN3Ab7enr9eDW2VTJgehONyc2Z8XP5YdD0Tcuhcc4/r45OjGX51TEjYPbh8THRPvbz+CHusgSZlT7rP8PkCwfQKaQUi9Igr6JsRBMFiWZgb/AHKElRzKopZJQAAAABJRU5ErkJggg==',
+        'Osx': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABrVBMVEUAAAD///////+qqqr///+ZmZn///+qqqqAgID///////+tra339/eAgICoqKjx8fGMjIzm5ubh4eGPj4/g4ODIyMiAgICSkpKLi4vS1tbPz8+Xl5eMjIypqanIyMjW1tZ2dnbR0dGamprFxcV3d3d+fn60tbV3d3dcXFx3d3epqal7fHxxcXF+foCnp6hYWFhyc3Ojo6SMjI5fX196enp+fn6Li4xERERqamqgoKFpaWmFhoeen6A/Pz9QUFCWlpeSk5SUlZWUlZaOjo+Tk5RHR0cuLi5YWFgwMDAeHh40NDQ3Nzc6OjpcXF1rbG0XFxdSU1NVVVVXV1dZWVlbW1tnZ2lwcHABAQEEBAQXFxchISI+P0BISUpaW1xHR0kNDg4qKyszNDU1NTY9Pj8NDQ1cXF4XFxhSU1QSEhIDAwMrKywtLS4uLi4wMDFHSElISEggISE0NDVJSktNTU1FRUVWVlhGRkYEBAVBQUE0NTZQUVJQUVMFBQUqKitWV1lXV1daWlpaWlw+Pj8bGxtcXV9dXV1fX19fYGFgYGBkZGRlZmhpaWlsbGxwcHB2dna844Y9AAAAV3RSTlMAAQIDAwUFBggMDhkeICMkKCgqMDIzPj9ERFBib4CCg4iMjZCcnp+jqamrw83W1tvb3ePl6Ojp6+vs7u7v8PHy9PT09PT3+vr7/f39/f39/v7+/v7+/v50ou7NAAAA30lEQVR4XkXIY3vDYABG4SepMdq2bRSz/capzdm2fvOuDO397Rw0Ly4tz2QAQPbcxuZ2E/STJwfxPhWgG355fRrVAIVb1zeP9UDLfiSwkAcADe8fn7tFxWuEXFRDoer/OgoMTRBCumj8yJwPBo8Zhpk14U856/HI8n0ZUtpZ1udrSzfVneA4roNKjdrwpcMRilb8d8G60+lKnrpWcn9bO+B23w2O8Tzfq4aiNSZJqzn5O4Kw16h06fPZ+VUlUHfo97+VAEb7rSh2UgDd4/U+TBlQY7FMj5gBIGvcarVVfQPVPTG94D0j9QAAAABJRU5ErkJggg==',
+        'Rhel': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABj1BMVEUAAAD///////8AAAD///////8AAAD///8AAAD///////8AAAD///8AAAD+/v4AAAAAAAAAAAArKysAAAD///////8AAAAAAAAAAAAAAAD///8AAAAAAAAAAAD///8AAAD///8AAAAAAAAAAAAAAAB5eXn+/v5JSUnKysrS0tJ5eXmqqqqxsrL+/v4ZCgknJyeHh4eIiIjo6OgZCAdOTk7t7e3///8GCwwPAAArKyv19fX29vb9/f0EAAD////+/v4AAAAGBgYHAAAJAAAMAAANAQAPAQAVAQFyCQV9fX2pIRzmEQjn5+cBAAAFAAAAAADnEQjvEgn////uEQjyEgnsEQjzEgnxEgljBwPaEAj9EwnwEglHBQJHBQNNBQIBAAB3CQR5CQSHCgWLCgWRCgWTCwadDAWmDAapDAa/DgfKDwjWEAgGAADh4eHiEQjmEQjmEQkKAADoEQgLAQDtEQgMAQDuEQnvEQjvEQkPAQAfAgEuAwEvAwE8BAL1Egn3Egn4Egn6Egk+BAL+/v5CBQJrB0muAAAAT3RSTlMAAAMEBAkYGhsbMTRLUmpvcHeIjLe6vcHCxM3P0NbW3Ojp6u/w9ff5+fn6+vr6+/v7+/v8/Pz9/f39/f39/f7+/v7+/v7+/v7+/v7+/v7+Q8UoNAAAAO5JREFUeF4tiwVPA0EYRL9SXIsWl+LuxfcOd2Z3764quLu788NZNrxkksmbDP2R7vH6GioLs+iffEzNXd4+TqPErUUpVqMOvwgdzMPn1rv5vPsVeufBTaBK/bH2FPvkEUuIG5jIIc+sHYn/HJ3dC/Hxuo4y8s44dzwBbFkisHN8bVIdXs6jb+H97aCwbHEIqgcml64CD7YllNkAVQC940MLYe5YzvIeQAXNrd19Roc5MdzfdQLUUKaUYyuG9I8y1g4gj6hIak4X5cBIT2MquZJrJdOqpY11ZpAiqVwbY/C7KY1cRCrZxX4pWXVuiuq/hs49kg4OyP4AAAAASUVORK5CYII=',
+        'Sabayon': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABvFBMVEUAAAAcUaYdVKwAAAAAAAUABAwWRY4YSZYhZtIhaNYHDx0KCgoFDBcKCgoRMmYSNm0fXL0fXb8AAAAYS5gaTp8fXLwgXsEGBgYFBQUZSpgZTZ4JFSgODg4IEiIOJkwOKVIkW7EnXbQLGzUTExMKGC8LHjwMIkITExMiIiIPEBEPJ00QEhMXOXAaPncOJEgoXbApXbEcHBwwMDAEAgAfHRgQDgo3NC8AAAAHBwcKCgoLCwsJCQkaGhofHx8lJSUwMDA0NDQ4ODiRkZEICQocHBweHh4GBgYHCg8mJiYnJycpKSkrKystLS0uLi4ICAgODg43NzcRERF1dXUUFBSjo6O1tbUbGxsEBAMLGS8MDA0iIiIjIyMkJCQNDQ0NHTYKCQkoKCgPDw8QEBArMDkKCgkRERIREhMxMTEyMjISIz00Njk1NTU2NjYCAgIVFRU5OTo5P0c8PD0+Pj4/QURAQEBHR0dKSkpMTExSUlJiYmJlZWVnZ2cWFhZ2dnZ4eHh8fHx9fX2FhYUXFxeVlZWXl5eYmJiZmZmcnJwZGRmlpaWrq6usrKyvr68KFiq/v7/FxcXY2Nji4uLn5+ft7e0yif9uAAAAN3RSTlMAAAApKSkqKioqg4OEhISEhoa1tra3t7y9vr7S09PT09TU+Pj5+fn5+/v7+/v7+/v7/v7+/v7+70RY/wAAAPpJREFUeF4dyWNjw2AUBeC7dfYyorM6rx1exKltzLZt2/rDa/J8OgBVVlFDX39jcTZoUqCse251a2dvu6ccUtWlanLQ4Vpel+ThlWq1l3wEz58tx4dOt1dMlAJk9A5gMjG75LHwo46hzkwosGOMbejumoRvubC9EOrMviT0E0Us9fvN9dA6zxJCNv6+ECGsb6oNWsgmpZT9/UTUZo3Em6AW34guTL4jiAudiCM1kLcw8/SmHERfT1/eueBiDqR1GK1n9w+K8nglxYxd6QAML4ztXoQuj8YFgWcgqdJp8qzty26vaboCNIxBCshyQDKov0aXr29v1ufq1PwPx5Q7bCoh6eoAAAAASUVORK5CYII=',
+        'Slackware': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AcEDi0qZWWDgAAAAx1JREFUOMt9kktoXHUchb/ffc1M7rySSdJMOknFPMRitLgoNKKI8ZHGKkgrjU8SitidimSh2UkXoQmoO1dGQSxJjdvOtqSaqlR0USEGSjVJGxuSmWR6M3fu4/93YX0g4rc9HA6cc4Q7DI+fpzz7PA8++2mxvZAeBZ4xhHtFcJRmXWsWvb36/OLcyxf5B/KHeYHy7DmGx1+YSDjmWTdlobTGMAStQGkNoLXS4tXDq7u7tUcWz49tA8jR8QUuzB5n5NTCV13F9JEo1JJwTLKuzU61QiOMcd0UDb+BncwQK3Rl15eNja3ui/Njq8aF2eMcO/XlBz0H8oO2ZUkum6A13WB99TtyzXlaCi24SaFa+ZFCzsG2DNnfkdbFjsI1APPhk+d6ujqznycdCxFozadYWvyMpx47wa+bPkGksKwUNnsk3TaCGASRXDZh5LpHXPPg4Rcni+3uYBxrtBbQghlscOVKmYHeEm0ZIZ9xyLffw41ND6VAa43SmjiMByzHYtjzwr9arfshxf5jOKlvKZfn8es77N2uks24PPfSFD/9Uvt7AtPKWmEU9d645eHYJo5tcKi/FX/zG+zmQxQH+rANk862DOW5N/hhaY64cJSa5xNFCgDDILZACMKYWAmh73HmzFsMlBQJ06LeiMinE1S3KzRCm5rXIIoUIoKIYCVM36urZFbEoiBLNMIhAE6/NsSB7h6SKZdL8xsUOnpx9j1KbTdARACIowArYe1ergfNT2i0mIbJys0GI6PT3N1/hJvrPxOFdRJNBQIy/FapI4Bpgohgcjuw+jq8jy8tV55MNBWI4ohS802CpizKv8q+FgALZAfYgSyAZtNro1oLaU1VvxCA029Oraxs7u/tKnXiNjn8HyKwur6lI++6vPK4V7IA7u+1Dyu1tr183ddNbkHuXP8/zEIYeFqiLRl6YO/p0bHJdflT/PD9qZa1W+ry99fcvlAlcZwUpuUAglIRYVgnDEIOlna4q0M/NPnuO1/PzMwg/045O/XeibUt5/Xangx6viSVFpK2jtMpvdyWCz+5ryf10clX3/amp6eZmJjgd441URWWJY8BAAAAAElFTkSuQmCC',
+        'Trisquel': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABjFBMVEX///8AAAAAAAAAAAAAADMAAGYAAAAAHFUAGWYAF10AImYAIGAAHloAHGMAKGsAGmYAJmYAJGEAKnUAJ1gAMXYAJnEAJGQAI2EAK28AK3cAGTEAMHgALXEALXgALG0AFUAAI2oAK3EAMngANoYALXMANIAAM4IANIIAL3gANIcANokANoQANYQAOY0ANIYANooAN4kAN40AOY0APZMANIUAOY0AO5AAPZUAPJAAP5MAPpQAQJUAOYsAPpYANoUAPpoAPpUAM4AAQJkAPZIAPJEAQpgAN4cAPpQAPZUAPJEAO4oAOosAOo8AQJoAOYsAO44AQpsAO48AQp0AP5UAQpoARJwAQ58ARaAAQZgAQ54AQ50AQpgARaIARqMARaMARaIAR6QARaIARaEASakARKEAR6MASqsARKEASKcAR6MARqYAR6UATbEATa8ARqUARKAAR6oARqMASKgATK8AR6QATbIATbAASq0AR6cASKgASqwAR6UASKcATa8ASqoASqwAS6wASKoAS60ATbHn4CTpAAAAhHRSTlMAAQIFBQUGCQoLDxAREhMUFBUYGhobHB0eHh8gIiIjJCQkJCYoLC0xMTE0NDo6Oz1BQUNHSUxOVFVVVldaWl5iY2RkZWZoamtsb3FycnR1ent9f4KDhIiJioyNkJGYm5+foqOkpqamqKmqrKytsLKzs7e4uLy8v8TFxcXGx8rO0NXY2eZc4XYcAAAA00lEQVR4XkWN1VoCUQAG/3NWtwh7CTsQJOyk7BaDxuxA6bbrxf32gt25m7kZqDRYxziooDV7+1AalMUavQh2AsEZoWvzigLun+T17/c8QiJZ7qu2QKiNmyZthdcR1/as353jIeU1GxMHo5XHdqPFeX8IaDMdHPYN6dRN7LR4qQewdTa35HWkyh+fbxERAMjwlAWJv3CPSKDQ+H7XvHdkV4Pua3Gtm4sPKIF/WV8dop4VKBw/NU33B3x1JbTt+XwhkJQoqRfWvHOy28uqH8JIdomR/R+s9yR3Cso77AAAAABJRU5ErkJggg==',
+        'Ubuntu': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABKVBMVEX////ojFzplGf1zbnqnHLvs5P10b3yuZv1xKrytZXvtJXys5LysI32waT0n3HxiVHwg0jxhk31kFn0h0zxf0P0hUrveTv2iU3yfkD1hEfyejv5eDLybSX0aR7zZxvyayH6ZxnxZBj4YhH7XAb5WALlUQLeTwHgUAHeTgHfTwD65NzdTQDdTQHdTgD31MfcTgLcTADcTQD////xt5/31Mf54dfmfE/dUAbeVQ/jcUDcTgHeWBnnflHohFvpjGbqkGztnX342Mz53dLgXiP65d399PHdUgrtoYLyu6Xzvaf76eLfXB/rkm/fWhvupojwrpTeVhTgYSfgYynzwa30xbL1ybnngFT31snngljhZS3539XhZzDiajbibDn77OX88Ovrl3X99vTjbz1fisGCAAAAMHRSTlMABgYGBwcHJiorMDA1NXGHjY2Nl5mZmZyfn6O5u8XHzc3X193j9fj4+vr6/f39/f08OUojAAAAx0lEQVR4Xi3HZVbDYBhGwQctWqzFPXiQ+36pu+LubvtfBKcN82/UEhld2vWXxyL6F92gbTPabse8hU/uHMx1SZoyyJWPTwq1Rs7GpYE9+Cg+OJcs1MHvU9y4fnrN31yUm18vMCIPjtw3QMndw4rs8ieVzAAcBlewpe1KM3uaBuD3Dda1BhWXAsi6AFY1a2SqifxZ+rnxWYcJDRkUS3fO1R5vwe+XZgw4D4L3RAJiknoXCVX3WeiUpJ5pIxTvVmg45pl5k4Ot/AGV2iqZBWgJJAAAAABJRU5ErkJggg==',
+        'Windows': 'iVBORw0KGgoAAAANSUhEUgAAABIAAAAQCAYAAAAbBi9cAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA+pJREFUOE+F0n84FHYcB3CWSsL9ojo/6ik64c6PnTjmSS0limmrpBm2G002y++xzXRz6zE0R4nbw+RnTj/WD4sbanLkkAe55ccYlyNme4SrO9u9d13PI3/saZ+/vs/3831ez+f9eb5aWsuqy2mjRYeNUa7YmtjfTico7jNJ8z0eG24NB9vvnDrvufzpq89Npnr8VjMddNmuRh9rDfp36mFg91oM7qPIc5JdbDJq3An/JfCu7Hl53W2lpS220pP2OuniN299jAYbYizSENIoAgbCTdrTKtxOJVdvGo8psUwKy7Vxe4ez1YEVudGP8YEZzyveInFJ6mZRHHqYazDspw/pJwTIuERM5JIwmUdGdyo9K7/BszGzzg6fXzZHGJ8KvzQqXKOpoIeZLjofWR++BPWyCEnPY4xFGEKWQcLjMjKmr1MwfcMYwmz/Y4KOgNki0V5k1dkjUWCK93Kp2PMFFawos8cm1gZ2GqjLXktL4mbQPHLQ4B9ZDFE5+S356fQlyuJMqzH++HnTo6ui2OO1ko9Ul+4fxfd3d4F7k4YTReqpuFS88bGZUE2QNNDobuIq8Q5CduHb7lFJaTnvnym9ergjMWD/FG8zf+aKS3G9JO5C01Asah6wUXrvALKEDoitMMHhDKrKJdg8RU2s0EB2EWWur8dd7PDPFv6dUC0Gv3kAN36VPRGP/5k5NS6lljWxG0TDiSr1VKhoPwhevRMSqkwRxDObc/DavGtpP6zoi8XOyZfhnyNEvKANBU0P8VPfI/wyNCGXSn7wlEmyA9KrgmOKGth3eDVvPfyywq2dnUEv2R9qG2rLsH7xJXziKnWcI8tlTvEC7Mu8hROlImTU9aKqcwQ1vWOihWFu+sJknmph5CvxQh87c7bNh/NXo03hrMCosyvLmMNgMF7TQL6J1dsZIUVwjKqEO+cajp5vxPN439U/gKBt8PTcYHzL/BgHCyOf4unAISj6mFC2bYC82kB5Ls460NHRUVsDeYSXpGw7UgC7sAtwShDgzdM38W7BbURXtqpqhfmB8sEQuXwoCM/6faGQuGCxyxyKWhIm+PrSD495WL3cT0hhi8Whc3NbAs9KaOyCTvrJ8qkdX19XBeTUDU00+55USFzVU2yHstcaix0mUAjJkJeuRU868Ucmk0lcguiBnMAVxjbbdHV1yeq8+u4Hgo22huSG+iQXp83ftaxW3lsPZcs6KG5T8OwaAfJiPcxlrVRVRhvF02i0F/t5VbHZ7JWDfErKTLnhE3mFPuRFepg/uxqz6TqLv6euGj3ut87t/4ylvre3t3ZehOWWO1zjSFEqMVP4GfGb/DBykJcjmaZOoLsc+hcVY/LaAgcTQAAAAABJRU5ErkJggg==',
+        'OpenBSD': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoYAykIPu64pQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAADTklEQVQ4y32RXUxTdxjGn3N6eujoKT3SUkuk3VoBGfVjgFXAsZ7WkipyYXQbuu3CzUXZmGRbssnFEseFkWzgcGzGXky9MWL8TsC4IeFgtK4oAqOnG5vMVl1pCMVWQD7b/y5M6jLdflfvxfPked/nBQA0NDSChqnGVrLuGkES742NhJAdhAKAuk9yyUs5Gry7RQMZAARCWgivpQiPe71P5DUfH0xaqTL7m/iiLkJmphawa+e4SM2PvUyC4yUIBu8CnAQKAK53rCA5OUtQtStVpJ4Gw/FOBddZVKhCfq4MP4n6+at+DUsJm/e0G9JZzYEvI2tHwlEYjDxomkZ+3nG8WroRtHihZVOhVlorDQzh0okhcByDP4ZGcf+X9XAsvY5/RsBa7Kq5H/CqLctKyl/g08S2i6fq8W/MS3P34T9wNDVYSeDX1eTD9xhiLXbtB/Akwmmv6Kr+ICFkLpGhtNSM3qsSstS3oX8lSsmsxS6ZVn3j6PvVVqhUcvC8AtPxVPxwygVKvngN89WOjgVprggGA4eenjB4nsXsTASpC63I0wVTZYPR11FoKRB8Ax54PCFk6BhMTk5CPR3GSbHouGzknr/bYFq9EAvfc9Tu1sLjHcXNKxLuTOTgzOlOe7IHBc/beAXWpWmXlz8a84nhcLQ+ecVzsAEQrMWuMX+f9HZF2YPZ28FVSNfoPWqOzMUmqYMAJm7+/OOzXQFwHGpyEV+vi+yvtxBC9pDmpgJC4tvI3mo9GTitIxvW24nT7ug67HY/3eDs2bbyrVsrY2day70rV6kRfDAHk5lDLJqAmmeRiD9GJDKHvwb74R8G0mkTPjrQTTG122xkTTbwaV2b1H4u16JQKXGr7yG2b8/H1MQ09IsTSEmRwzf4CCwzD+dmE1re8CI7wwi5XNlFf9vaTXX4dWJg4LLl7h05fpNGwNAMWpp9CIVYNO/tRCzGwpDFQaVMQTS2CKY0BWr3GVGWNSXKACDDaA4Mh976pq9f5Sy09GgKlmeAMIBKzUKpU+BFoxJecRhUfAbMxDi4eADfHVmE79v7q575gvvYeVvjZ58LD5mwsKUyX0hnf0feslnQCWD4zxnc6reKisxsfH2oscqcmTmK/+Ow252cna7K52r+Bky6PqmoT5HBAAAAAElFTkSuQmCC',
+        'Gnu': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoYAywUV5gQrwAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAADcElEQVQ4y43Tb0jjBRzH8c9v+7nNMebcUW21Cc78g/wcuhByIScoMRwoTBmFlZCmIJ14axqkgoYIkXIqKIVBEuJNUBEUPRlpqDC3Q2Ex0nTezun2YOaPLXNIv7Vvj7zgiOj1+PPk/eADjuNEuHN6ekqMw+H4IzMz8xChUCjV1NT0JbO7uxtfXFy8NZvNr21tbd0AAEQikY6I0m1tbQbx2NjYZiqV+vn29jY+PDw8xhYWFj45PDzcb25uhlQqfSTief6X0dFRpqKigvF4PPPipaWlY7lcXhCLxXJnZmY+ZTY2NnzX19ePGxsbHw0MDLivrq5mc3Jy2pPJZLVWq/2cdbvdDSzLholoNJ1OMy6Xq0Ymk5HNZktOTU29qMgA8HYqlaKDgwNKp9M0PT09BgAM/iGuqqoimUx2yPP8U5/P9wEAMB0dHRUKheJHiUTyeGhoqAUAnE7nR0qlsjcQCLwjlsvlz+bm5mQWi0VSWlr6bXV1tU6hUMj6+/vfN5lMN0xxcfG1zWZ7SETTSqWSGhoamPHxcajV6s+8Xu9Xou7u7t9VKtW00+mkSCTC6PV6aDQa8Dw/Wl9fP8UAQCgUosvLSyovL2eWl5dRUFBw7Ha7v9vc3By5K3g1EAg8FQSBiIguLi4IgBwA2LtEjuPuJxKJ62AwKFpdXf0eQBIvYVmW/cLlchEAWK1WAADT09NzX6PR/OTz+eKVlZUzKpVqTyqVvsnzfLCkpGSrtrb2t97eXnFeXl5ZKpWyZ2RkPPP7/UUnJyefGI3GU+zt7aU4jotOTk7mAUBfX1+b1Wq9kcvlBIAcDgctLCyQxWKhoqIi6uzs/BoAVlZW3qqpqbllZmdnf1hfX//Q4/HEzWbzX+3t7fcMBgMFg0EYjUYmEolAEAREo1Hk5+fT+fk5Mzg4GD86OpJ0dXXJGQBoaWl5Ra/XP6yrq3tQVlam2N7ehslkAsuySCaTUKvVSCQS2NnZSXAcJxYEQTEyMvKeIAhLDADY7fZ7BoPhm6ysLFpbWzuan5//WKvVvsHzPEWjUSYSiSA3N5d0Oh0TjUaf+/1+S2Nj46/4FwYAr7e2tnbF4/E/iYjC4TCFw+F0LBaj/f19mpiYeID/IAagAyABYLXb7cLZ2Rml02nyer3POY6rwv8hEr34u0IkEk1mZ2cTgGMA7768/RtL5JKsGzrLIgAAAABJRU5ErkJggg==',
+        'CrunchBang': 'iVBORw0KGgoAAAANSUhEUgAAABYAAAAQCAQAAAC45EetAAAA8ElEQVR4XnWOsUpCYQBGz1TIHYu2Qix6g0DEtSeQu/UIISJtUS8gJq61F1wcdMohcBDxKUR8hsz1xA/y44/cs3znbB+RJ0Skl3pSkeFQbUs79VAPzrwPFRmN1Ja0Ug/16I93+1oi4lKte+zMXv32WuoAm43lXMrqzbFncgWw21lORf4+/PREKpAhYqZuPXZ+T/3yXbZEajV1JavUQ104sRcq0myqc5mnHurWqc/7yhExVwuPncl+C4Bu13L60ueAwcByOtLhgAIRCzU38fRGTmSxUBvSSD3Ui1NvQkXWa7Uq1dRD9R17HiqyRUSy1NP6B7e1Yu2GtlUKAAAAAElFTkSuQmCC',
+        'Yuno': 'iVBORw0KGgoAAAANSUhEUgAAABgAAAAPCAYAAAD+pA/bAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAABDtJREFUOE+FlHtMm1UYxrtsi8aEgCb+oTFmZur+WNS5RaPERU10C2qGaBgb6hgwLwMmHTIKlIKlQIHSQrmU24BSSmnpBVooUmihtEC5yKWDjVu5uOkcEca4lG5E93j6EQmELX7Jky/fOed9fu973vMdGu0xT3Cgz57yXMZLDdXcy821PFWLKmuA6HqLMqtLX5POl4iYb2ukWW8IOOFe/qfe3/M4n0eOjwyZD8//bldODOk37N1yDJgl+LVdjEGLFKO9KkzZm8hbje7mIrTXZ7sMtTydrJh15H8hHW11XvN/jGS7VudcD5w34ZZzeQYb67fwYO03LN4exo1+LWzNxbA05O5QuzbHqRYn+++CHDx4YK9WLfaedfQzV5em54g5Zbi8OIml+VFMDLWQ7GXoaSmFWZsDZVGCO2u0EbkhHTrhFqi9PmelSsQ8tAtSVch60dpUeGe4kxgZxegzVkBzlQ2NKBG2+iJIMqMok9r8OLRIMqApToSqmAWTmk9B2+o2YW79oshU7ABcuvAFrVGWXkVKpBYoSaBSxIS2mINpiwbjZiUMZRloVfJQyaXDKObBpimBScpHFe8KmmXpaKhK3arGrBVuVBclHN2CiPNin1OVs1tVJYlQlyZBxA6DviQVo6ZaOKd7sTplw53BVugruBBzfsRslw7rZPxaczWutSpQV/gzJPxo1JexyfaxKBBpuiEx+tw+CpKdEvGWTprGlhcwqbIzL5/DYKMYndpK3L1hxf3ZfkrzwybUZjPhnOqmvlcmutFF1jis9QSShOrcWNSXJ1MA0ou/NZWc8Ddfe4VGO3bk0JON1dyMMlK+gmxNrZCFhZF2Kng7YNO0awt4b7wLNp2EqtAsF6ImP56SG0B6siovTYpIjg15gapCVhAfJRUyIBFEo6k8AyuTtkcC/qvG/XbDexulWJvqgYH0o0nKhVHFJ40XwFQnWM5OCX+XMg86c3KvVMSMapCmPpSTIygTxGKZZOcOXhrr3Mp4uzkFuG6B3ajE3TELDDU8qEmsmvRATxquKkxAnSTFjwKEfv3JU9JC5unG6rQ1bTkbQ4Yq/DVgxOqwBWt2K9Yne3ZCZvrgHO2k5paHzOhSiVCZSkdNTgzy40JRlPgDhDHBCxUZdCs91G8fLeK87zOl6XSOICZYXMGNhDqX9fDP/mbK2DXVi/szm03eLpejl5pzOfqwOt4JBT8OeYwQt/4R/BR0OzXiLCM5LOCji/4nXt46rpywgG+zor5RxgSdupBzJdglSY+5ZZbl3XNY6mbn7W0Lcx06zBg1WBjtcC6OmG+OmRTrFrnIUZESZeVeCpwh8TpiPsQ47/tloM97T+/6m8mg55mT3tStyL54mhlwwtszNvjzD8/6HH8i7PvvPPRioZdRWuDBZUR6pEWG7I8P9Xs1Jsj36MfvvO5J/+rTw58dP7afJPfBgeef3XGz/gskFVpJc4HwGwAAAABJRU5ErkJggg=='
+      }
     }
   };
 
@@ -11299,7 +10309,7 @@
           return null;
         }
       }
-      position = "" + (Conf['Mascot Position'] === 'bottom' || (Conf['Mascot Position'] === "default" && Conf['Post Form Style'] !== "fixed") ? 0 + ((g.VIEW !== 'thread' || Conf['Boards Navigation'] === 'Sticky bottom') && Conf['4chan SS Navigation'] ? 1.6 : 0) : 20.3 + (g.VIEW !== 'thread' || !!$('#postForm input[name=spoiler]') ? 1.4 : 0) + (Conf['Show Post Form Header'] ? 1.5 : 0) + (Conf['Post Form Decorations'] ? 0.2 : 0)) + "em";
+      position = "" + (Conf['Mascot Position'] === 'bottom' || (Conf['Mascot Position'] === "default" && Conf['Post Form Style'] !== "fixed") ? 0 + ((g.VIEW !== 'thread' || Conf['Bottom Header']) && Conf['4chan SS Navigation'] ? 1.6 : 0) : 20.3 + (g.VIEW !== 'thread' || !!$('#postForm input[name=spoiler]') ? 1.4 : 0) + (Conf['Show Post Form Header'] ? 1.5 : 0) + (Conf['Post Form Decorations'] ? 0.2 : 0)) + "em";
       if (Conf['editMode']) {
         if (!(mascot = editMascot || (mascot = Mascots[Conf["mascot"]]))) {
           return;
@@ -11737,7 +10747,7 @@
         return setTimeout((function() {
           var exLink;
 
-          Style.padding.nav = Header.nav;
+          Style.padding.nav = Header.bar;
           Style.padding.pages = $(".pagelist", d.body);
           Style.padding();
           $.on(window, "resize", Style.padding);
@@ -11898,7 +10908,7 @@
         hide: 2
       }[_conf['Sidebar']] || (252 + Style.sidebarOffset.W);
       Style.replyMargin = _conf["Post Spacing"];
-      return css = "/* Cleanup */\n#absbot,\n#delPassword,\n#delform > hr:last-of-type,\n#navbotright,\n#postForm,\n#styleSwitcher,\n.boardBanner > div,\n.mobile,\n.postingMode,\n.riced,\n.sideArrows,\n.stylechanger,\nbody > br,\nbody > div[style^=\"text-align\"],\nbody > hr {\n  display: none;\n}\n/* Empties */\n#qr .warning:empty,\n#qr-thread-select:empty {\n  display: none;\n}\n/* File Name Trunctuate */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n/* Unnecessary */\n#qp input,\n#qp .rice,\n.inline .rice {\n  display: none !important;\n}\n/* Hidden Content */\n.forwarded,\n.hidden_thread ~ div,\n.hidden_thread ~ a,\n.replyContainer .stub ~ div,\n.replyContainer .stub ~ a,\n.stub + div,\n[hidden] {\n  display: none !important;\n}\n/* Hidden UI */\n#catalog,\n#navlinks,\n#navtopright,\n.cataloglink,\n.navLinks,\na[style=\"cursor: pointer; float: right;\"] {\n  position: fixed;\n  top: 100%;\n  left: 100%;\n}\n/* Hide last horizontal rule, keep clear functionality. */\n.board > hr:last-of-type {\n  visibility: hidden;\n}\n/* Fappe Tyme */\n.fappeTyme .thread > .noFile {\n  display: none;\n}\n/* Defaults */\na {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  outline: none;\n}\nbody,\nhtml {\n  min-height: 100%;\n  " + Style.sizing + ": border-box;\n}\nbody {\n  outline: none;\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n  min-height: 100%;\n  margin-top: 0;\n  margin-bottom: 0;\n  margin-" + Style.sidebarLocation[0] + ": " + (/^boards\.4chan\.org$/.test(location.hostname) ? Style.sidebar : '2') + "px;\n  margin-" + Style.sidebarLocation[1] + ": 2px;\n  padding: 0 " + (parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px 0 " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]) + "px;\n}\nbody.unscroll {\n  overflow: hidden;\n}\n" + (_conf["4chan SS Sidebar"] && /^boards\.4chan\.org$/.test(location.hostname) ? "body::before {  content: '';  position: fixed;  top: 0;  bottom: 0;  " + Style.sidebarLocation[0] + ": 0;  width: " + (_conf['Sidebar'] === 'large' ? 305 : _conf['Sidebar'] === 'normal' ? 254 : _conf['Sidebar'] === 'minimal' ? 27 : 0) + "px;  z-index: 1;  " + Style.sizing + ": border-box;  display: block;}body {  padding-" + Style.sidebarLocation[0] + ": 2px;}" : "") + "\nbutton,\ninput,\ntextarea {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n}\nhr {\n  clear: both;\n  border: 0;\n  padding: 0;\n  margin: 0 0 1px;\n  " + (_conf['Hide Horizontal Rules'] ? 'visibility: hidden;' : '') + "\n}\n.center {\n  text-align: center;\n}\n.disabled {\n  opacity: 0.5;\n}\n/* Symbols */\n.drop-marker {\n  vertical-align: middle;\n  display: inline-block;\n  margin: 2px 2px 3px;\n  border-top: .5em solid;\n  border-right: .3em solid transparent;\n  border-left: .3em solid transparent;\n}\n.brackets-wrap::before {\n  content: \"\\00a0[\";\n}\n.brackets-wrap::after {\n  content: \"]\\00a0\";\n}\n/* Thread / Reply Nav */\n#navlinks a {\n  position: fixed;\n  z-index: 12;\n  opacity: 0.5;\n  display: inline-block;\n  border-right: 6px solid transparent;\n  border-left: 6px solid transparent;\n  margin: 1.5px;\n}\n/* Header */\n#header-bar {\n  z-index: 6;\n  border-width: 1px;\n  position: absolute;\n" + (_conf['4chan SS Navigation'] ? "  left: 0;  right: 0;  border-left: 0;  border-right: 0;  border-radius: 0 !important;" : "  " + Style.sidebarLocation[0] + ": " + (Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;  " + Style.sidebarLocation[1] + ": " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2) + "px;") + "\n" + (_conf["Hide Navigation Decorations"] ? "  font-size: 0;  color: transparent;  word-spacing: 2px;" : "") + "\n   text-align: " + _conf["Navigation Alignment"] + ";\n}\n.fixed #header-bar {\n  position: fixed;\n}\n.top #header-bar {\n  top: 0;\n  border-top-width: 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : "") + "\"\n}\n.fixed.bottom #header-bar {\n  bottom: 0;\n  border-bottom-width: 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\"\n}\n.hide #header-bar {\n  position: fixed;\n  top: 110%;\n  bottom: auto;\n}\n/* Header Autohide */\n.fixed #header-bar.autohide:not(:hover) {\n  box-shadow: none;\n  transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #header-bar.autohide:not(:hover) {\n  margin-bottom: -1em;\n  " + agent + "transform: translateY(-100%);\n}\n.fixed.bottom #header-bar.autohide:not(:hover) {\n  " + agent + "transform: translateY(100%);\n}\n#scroll-marker {\n  left: 0;\n  right: 0;\n  height: 10px;\n  position: absolute;\n}\n#header-bar #scroll-marker {\n  display: none;\n}\n.fixed #header-bar #scroll-marker {\n  display: block;\n}\n.fixed.top header-bar #scroll-marker {\n  top: 100%;\n}\n.fixed.bottom #header-bar #scroll-marker {\n  bottom: 100%;\n}\n/* Notifications */\n#notifications {\n  position: fixed;\n  top: 0;\n  left: 0;\n  right: 0;\n}\n.fixed.top #notifications {\n  position: absolute;\n  top: 100%;\n}\n.notification {\n  display: block;\n  overflow: hidden;\n  width: 300px;\n  border: 1px solid;\n  " + (_conf['Sidebar Location'] === 'left' ? 'margin-left: auto;' : '') + "\n}\n.notification:not(:first-of-type) {\n  border-top: none;\n}\n.close {\n  float: right;\n}\n/* Main Menu */\n#main-menu {\n  margin: 0;\n  border: 2px solid;\n  border-radius: 10px;\n  height: 14px;\n  width: 14px;\n  " + Style.sizing + ": border-box;\n  border-color: rgb(130,130,130);\n  color: rgb(130,130,130);\n}\n#main-menu::after {\n  content: '';\n  font-size: 10px;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  " + agent + "transform: translate(-60%, -50%);\n  display: block;\n  border-top: 5px solid rgb(130, 130, 130);\n  border-left: 3px solid transparent;\n  border-right: 3px solid transparent;\n  width: 7px;\n  " + Style.sizing + ": border-box;\n} \n/* Pagination */\n.pagelist {\n  border-width: 1px;\n  text-align: " + _conf["Pagination Alignment"] + ";\n" + (_conf['4chan SS Navigation'] ? "  left: 0;  right: 0;  border-left: 0;  border-right: 0;  border-radius: 0 !important;" : "  " + Style.sidebarLocation[0] + ": " + (Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;  " + Style.sidebarLocation[1] + ": " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2) + "px;") + "\n" + {
+      return css = "/* Cleanup */\n#absbot,\n#boardNavDesktop,\n#delPassword,\n#delform > hr:last-of-type,\n#navbotright,\n#postForm,\n#styleSwitcher,\n.boardBanner > div,\n.mobile,\n.postingMode,\n.riced,\n.sideArrows,\n.stylechanger,\nbody > br,\nbody > div[style^=\"text-align\"],\nbody > hr {\n  display: none;\n}\n/* Empties */\n#qr .warning:empty,\n#qr-thread-select:empty {\n  display: none;\n}\n/* File Name Trunctuate */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n/* Unnecessary */\n#qp input,\n#qp .rice,\n.inline .rice {\n  display: none !important;\n}\n/* Hidden Content */\n.forwarded,\n.hidden_thread ~ div,\n.hidden_thread ~ a,\n.replyContainer .stub ~ div,\n.replyContainer .stub ~ a,\n.stub + div,\n[hidden] {\n  display: none !important;\n}\n/* Hidden UI */\n#catalog,\n#navlinks,\n#navtopright,\n.cataloglink,\n.navLinks,\na[style=\"cursor: pointer; float: right;\"] {\n  position: fixed;\n  top: 100%;\n  left: 100%;\n}\n/* Hide last horizontal rule, keep clear functionality. */\n.board > hr:last-of-type {\n  visibility: hidden;\n}\n/* Fappe Tyme */\n.fappeTyme .thread > .noFile {\n  display: none;\n}\n/* Defaults */\na {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  outline: none;\n}\nbody,\nhtml {\n  min-height: 100%;\n  " + Style.sizing + ": border-box;\n}\nbody {\n  outline: none;\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n  min-height: 100%;\n  margin-top: 0;\n  margin-bottom: 0;\n  margin-" + Style.sidebarLocation[0] + ": " + (/^boards\.4chan\.org$/.test(location.hostname) ? Style.sidebar : '2') + "px;\n  margin-" + Style.sidebarLocation[1] + ": 2px;\n  padding: 0 " + (parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px 0 " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]) + "px;\n}\nbody.unscroll {\n  overflow: hidden;\n}\n" + (_conf["4chan SS Sidebar"] && /^boards\.4chan\.org$/.test(location.hostname) ? "body::before {  content: '';  position: fixed;  top: 0;  bottom: 0;  " + Style.sidebarLocation[0] + ": 0;  width: " + (_conf['Sidebar'] === 'large' ? 305 : _conf['Sidebar'] === 'normal' ? 254 : _conf['Sidebar'] === 'minimal' ? 27 : 0) + "px;  z-index: 1;  " + Style.sizing + ": border-box;  display: block;}body {  padding-" + Style.sidebarLocation[0] + ": 2px;}" : "") + "\nbutton,\ninput,\ntextarea {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n}\nhr {\n  clear: both;\n  border: 0;\n  padding: 0;\n  margin: 0 0 1px;\n  " + (_conf['Hide Horizontal Rules'] ? 'visibility: hidden;' : '') + "\n}\n.center {\n  text-align: center;\n}\n.disabled {\n  opacity: 0.5;\n}\n/* Symbols */\n.drop-marker {\n  vertical-align: middle;\n  display: inline-block;\n  margin: 2px 2px 3px;\n  border-top: .5em solid;\n  border-right: .3em solid transparent;\n  border-left: .3em solid transparent;\n}\n.brackets-wrap::before {\n  content: \"\\00a0[\";\n}\n.brackets-wrap::after {\n  content: \"]\\00a0\";\n}\n/* Thread / Reply Nav */\n#navlinks a {\n  position: fixed;\n  z-index: 12;\n  opacity: 0.5;\n  display: inline-block;\n  border-right: 6px solid transparent;\n  border-left: 6px solid transparent;\n  margin: 1.5px;\n}\n/* Header */\n#header-bar {\n  z-index: 6;\n  border-width: 1px;\n  position: absolute;\n" + (_conf['4chan SS Navigation'] ? "  left: 0;  right: 0;  border-left: 0;  border-right: 0;  border-radius: 0 !important;" : "  " + Style.sidebarLocation[0] + ": " + (Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;  " + Style.sidebarLocation[1] + ": " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2) + "px;") + "\n" + (_conf["Hide Navigation Decorations"] ? "  font-size: 0;  color: transparent;  word-spacing: 2px;" : "") + "\n   text-align: " + _conf["Navigation Alignment"] + ";\n}\n.fixed #header-bar.autohide {\n  z-index: 24;\n}\n.fixed #header-bar {\n  position: fixed;\n}\n.top #header-bar {\n  top: 0;\n  border-top-width: 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : "") + "\"\n}\n.fixed.bottom #header-bar {\n  bottom: 0;\n  border-bottom-width: 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\"\n}\n.hide #header-bar {\n  position: fixed;\n  top: 110%;\n  bottom: auto;\n}\n/* Header Autohide */\n.fixed #header-bar.autohide:not(:hover) {\n  box-shadow: none;\n  transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #header-bar.autohide:not(:hover) {\n  margin-bottom: -1em;\n  " + agent + "transform: translateY(-100%);\n}\n.fixed.bottom #header-bar.autohide:not(:hover) {\n  " + agent + "transform: translateY(100%);\n}\n#scroll-marker {\n  left: 0;\n  right: 0;\n  height: 10px;\n  position: absolute;\n}\n#header-bar #scroll-marker {\n  display: none;\n}\n.fixed #header-bar #scroll-marker {\n  display: block;\n}\n.fixed.top header-bar #scroll-marker {\n  top: 100%;\n}\n.fixed.bottom #header-bar #scroll-marker {\n  bottom: 100%;\n}\n/* Notifications */\n#notifications {\n  position: fixed;\n  top: 0;\n  left: 0;\n  right: 0;\n}\n.fixed.top #notifications {\n  position: absolute;\n  top: 100%;\n}\n.notification {\n  display: block;\n  overflow: hidden;\n  width: 300px;\n  border: 1px solid;\n  " + (_conf['Sidebar Location'] === 'left' ? 'margin-left: auto;' : '') + "\n}\n.notification:not(:first-of-type) {\n  border-top: none;\n}\n.close {\n  float: right;\n}\n/* Main Menu */\n#main-menu {\n  margin: 0;\n  border: 2px solid;\n  border-radius: 10px;\n  height: 14px;\n  width: 14px;\n  " + Style.sizing + ": border-box;\n  border-color: rgb(130,130,130);\n  color: rgb(130,130,130);\n}\n#main-menu::after {\n  content: '';\n  font-size: 10px;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  " + agent + "transform: translate(-60%, -50%);\n  display: block;\n  border-top: 5px solid rgb(130, 130, 130);\n  border-left: 3px solid transparent;\n  border-right: 3px solid transparent;\n  width: 7px;\n  " + Style.sizing + ": border-box;\n} \n/* Pagination */\n.pagelist {\n  border-width: 1px;\n  text-align: " + _conf["Pagination Alignment"] + ";\n" + (_conf['4chan SS Navigation'] ? "  left: 0;  right: 0;  border-left: 0;  border-right: 0;  border-radius: 0 !important;" : "  " + Style.sidebarLocation[0] + ": " + (Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;  " + Style.sidebarLocation[1] + ": " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2) + "px;") + "\n" + {
         "sticky top": "  position: fixed;  top: 0;  border-top-width: 0;  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : ""),
         "sticky bottom": "  position: fixed;  bottom: 0;  border-bottom-width: 0;  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : ""),
         "top": "  position: absolute;  top: 0;  border-top-width: 0;  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : ""),
@@ -11917,7 +10927,7 @@
         "under post form": "  position: fixed;  " + Style.sidebarLocation[0] + ": 2px;  bottom: 140px;  width: " + width + "px;",
         "at top": "  margin: 12px 0;",
         "hide": "  display: none;"
-      }[_conf["Board Title"]] + "\n}\n.boardTitle a {\n  font-size: " + (parseInt(_conf["Font Size"], 10) + 10) + "px;\n}\n.boardSubtitle,\n.boardSubtitle a {\n  font-size: " + (parseInt(_conf["Font Size"], 10) - 1) + "px;\n}\n/* Dialogs */\n.move {\n  cursor: pointer;\n}\n#ihover {\n  position: fixed;\n  max-height: 97%;\n  max-width: 75%;\n  padding: 10px;\n  z-index: 22;\n}\n#qp {\n  position: fixed;\n  z-index: 22;\n}\n#qp .postMessage::after {\n  clear: both;\n  display: block;\n  content: \"\";\n}\n#qp .full-image {\n  max-height: 300px;\n  max-width: 500px;\n}\n#menu {\n  position: fixed;\n  outline: none;\n  z-index: 22;\n}\n/* Updater */\n#updater {\n  position: fixed;\n  z-index: 10;\n  padding: 0 1px 1px;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#updater:hover {\n  z-index: 30;\n} \n#updater:not(:hover) > div:not(.move) {\n  display: none;\n}\n#updater input {\n  text-align: right;\n}\n#updater .field {\n  width: 50px;\n}\n/* Stats */\n#thread-stats {\n  position: fixed;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n  z-index: 10;\n}\n/* Image Expansion */\n.fit-width .full-image {\n  max-width: 100%;\n  width: 100%;\n}\n" + (_conf['Images Overlap Post Form'] ? ".full-image {  position: relative;  z-index: 22;}" : "") + "\n/* Prefetcher */\n#prefetch {\n  z-index: 9;\n  position: fixed;\n}\n/* Delete Buttons */\n" + (_conf['Hide Delete UI'] ? ".deleteform,.post:not(#exlinks-options) .rice {  display: none;}.postInfo {  padding: 0 0 0 3px;}" : ".deleteform {  position: fixed;  z-index: 18;  width: 0;  bottom: 0;  right: 0;  border-width: 1px 0 0 1px;  border-style: solid;  font-size: 0;  color: transparent;}.deleteform:hover {  width: auto;}.deleteform::before {  z-index: 18;  border-width: 1px 0 0 1px;  border-style: solid;  content: 'X';  display: block;  position: fixed;  bottom: 0;  right: 0;  font-size: " + _conf['Font Size'] + "px;  " + Style.sizing + ": border-box;  height: 1.6em;  width: 1.4em;  text-align: center;}.deleteform:hover::before {  display: none;}.deleteform input {  margin: 0 1px 0 0;}") + "\n/* Slideout Navigation */\n#boardNavDesktopFoot {\n  position: fixed;\n  width: " + width + "px;\n  " + Style.sidebarLocation[0] + ": 2px;\n  text-align: center;\n  font-size: 0;\n  color: transparent;\n  overflow: hidden;\n  " + Style.sizing + ": border-box;\n}\n#boardNavDesktopFoot a,\n#boardNavDesktopFoot a::after,\n#boardNavDesktopFoot a::before {\n  font-size: " + _conf['Font Size'] + "px;\n}\n#boardNavDesktopFoot:hover {\n  overflow-y: auto;\n  padding: 2px;\n}\n#boardNavDesktopFoot:not(:hover) {\n  border-color: transparent;\n  background-color: transparent;\n  height: 0;\n  overflow: hidden;\n  padding: 0;\n  border: 0 none;\n}\n" + {
+      }[_conf["Board Title"]] + "\n}\n.boardTitle a {\n  font-size: " + (parseInt(_conf["Font Size"], 10) + 10) + "px;\n}\n.boardSubtitle,\n.boardSubtitle a {\n  font-size: " + (parseInt(_conf["Font Size"], 10) - 1) + "px;\n}\n/* Dialogs */\n.move {\n  cursor: pointer;\n}\n#ihover {\n  position: fixed;\n  max-height: 97%;\n  max-width: 75%;\n  padding: 10px;\n  z-index: 22;\n}\n#qp {\n  position: fixed;\n  z-index: 22;\n}\n#qp .postMessage::after {\n  clear: both;\n  display: block;\n  content: \"\";\n}\n#qp .full-image {\n  max-height: 300px;\n  max-width: 500px;\n}\n#menu {\n  position: fixed;\n  outline: none;\n  z-index: 22;\n}\n/* Image Expansion */\n.fit-width .full-image {\n  max-width: 100%;\n  width: 100%;\n}\n" + (_conf['Images Overlap Post Form'] ? ".full-image {  position: relative;  z-index: 22;}" : "") + "\n/* Prefetcher */\n#prefetch {\n  z-index: 9;\n  position: fixed;\n}\n/* Delete Buttons */\n" + (_conf['Hide Delete UI'] ? ".deleteform,.post:not(#exlinks-options) .rice {  display: none;}.postInfo {  padding: 0 0 0 3px;}" : ".deleteform {  position: fixed;  z-index: 18;  width: 0;  bottom: 0;  right: 0;  border-width: 1px 0 0 1px;  border-style: solid;  font-size: 0;  color: transparent;}.deleteform:hover {  width: auto;}.deleteform::before {  z-index: 18;  border-width: 1px 0 0 1px;  border-style: solid;  content: 'X';  display: block;  position: fixed;  bottom: 0;  right: 0;  font-size: " + _conf['Font Size'] + "px;  " + Style.sizing + ": border-box;  height: 1.6em;  width: 1.4em;  text-align: center;}.deleteform:hover::before {  display: none;}.deleteform input {  margin: 0 1px 0 0;}") + "\n/* Slideout Navigation */\n#boardNavDesktopFoot {\n  position: fixed;\n  width: " + width + "px;\n  " + Style.sidebarLocation[0] + ": 2px;\n  text-align: center;\n  font-size: 0;\n  color: transparent;\n  overflow: hidden;\n  " + Style.sizing + ": border-box;\n}\n#boardNavDesktopFoot a,\n#boardNavDesktopFoot a::after,\n#boardNavDesktopFoot a::before {\n  font-size: " + _conf['Font Size'] + "px;\n}\n#boardNavDesktopFoot:hover {\n  overflow-y: auto;\n  padding: 2px;\n}\n#boardNavDesktopFoot:not(:hover) {\n  border-color: transparent;\n  background-color: transparent;\n  height: 0;\n  overflow: hidden;\n  padding: 0;\n  border: 0 none;\n}\n" + {
         compact: "#boardNavDesktopFoot {  word-spacing: 1px;}",
         list: "#boardNavDesktopFoot a {  display: block;}#boardNavDesktopFoot:hover {  max-height: 400px;}#boardNavDesktopFoot a::after {  content: ' - ' attr(title);}#boardNavDesktopFoot a[href*='//boards.4chan.org/']::after,#boardNavDesktopFoot a[href*='//rs.4chan.org/']::after {  content: '/ - ' attr(title);}#boardNavDesktopFoot a[href*='//boards.4chan.org/']::before,#boardNavDesktopFoot a[href*='//rs.4chan.org/']::before {  content: '/';}",
         hide: "#boardNavDesktopFoot {  display: none;}"
@@ -11933,7 +10943,7 @@
         "slideout": "#qrtab input,#qrtab .rice {  display: none;}#qr {  top: auto !important;  bottom: 1.7em !important;  " + Style.sidebarLocation[0] + ": 0 !important;  " + Style.sidebarLocation[1] + ": auto !important;  " + agent + "transform: translateX(" + xOffset + "93%);}#qr:hover,#qr.has-focus,#qr.dump {  " + agent + "transform: translate(0);}",
         "tabbed slideout": "#qr {  top: auto !important;  bottom: 1.7em !important;  " + Style.sidebarLocation[0] + ": 0 !important;  " + Style.sidebarLocation[1] + ": auto !important;  " + agent + "transform: translateX(" + xOffset + "100%);}#qr:hover,#qr.has-focus,#qr.dump {  " + agent + "transform: translateX(0);}#qrtab {  " + agent + "transform: rotate(" + (Style.sidebarLocation[0] === "left" ? "" : "-") + "90deg);  " + agent + "transform-origin: bottom " + Style.sidebarLocation[0] + ";  position: absolute;  top: 0;  " + Style.sidebarLocation[0] + ": 100%;  width: 110px;  text-align: center;  border-width: 1px 1px 0 1px;  cursor: default;}#qr:hover #qrtab,#qr.has-focus #qrtab,#qr.dump #qrtab {  opacity: 0;  " + Style.sidebarLocation[0] + ": " + (252 + Style.sidebarOffset.W) + "px;}#qrtab input,#qrtab .close,#qrtab .rice,#qrtab span {  display: none;}",
         "transparent fade": "#qr {  overflow: visible;  top: auto !important;  bottom: 1.7em !important;  " + Style.sidebarLocation[0] + ": 2px !important;  " + Style.sidebarLocation[1] + ": auto !important;  opacity: 0.2;  " + agent + "transition: opacity .3s ease-in-out 1s;}#qr:hover,#qr.has-focus,#qr.dump {  opacity: 1;  " + agent + "transition: opacity .3s linear;}"
-      }[_conf['Post Form Style']] || "") + "\n\n" + (_conf['Post Form Style'] !== 'tabbed slideout' ? (!(_conf['Post Form Style'] === 'float' || _conf['Show Post Form Header']) ? "#qrtab { display: none; }" : _conf['Post Form Style'] !== 'slideout' ? ".autohide:not(:hover):not(.has-focus) > form { display: none !important; }" : "") + "#qrtab { margin-bottom: 1px; }" : "") + "\n\n" + (_conf['Post Form Style'] !== 'float' && _conf["Post Form Slideout Transitions"] ? "#qr {  " + agent + "transition: " + agent + "transform .3s ease-in-out 1s;}#qr:hover,#qr.has-focus,#qr.dump {  " + agent + "transition: " + agent + "transform .3s linear;}#qrtab {  " + agent + "transition: opacity .3s ease-in-out 1s;}#qr:hover #qrtab {  " + agent + "transition: opacity .3s linear;}" : "") + "\n\n#qr .close {\n  float: right;\n  padding: 0 3px;\n}\n#qr .warning {\n  min-height: 1.6em;\n  vertical-align: middle;\n  padding: 0 1px;\n  border-width: 1px;\n  border-style: solid;\n}\n.persona {\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-button {\n  width: 10%;\n  margin: 0;\n}\n\n" + (_conf['Compact Post Form Inputs'] ? ".persona input.field {  width: 29.6%;  margin: 0 0 0 0.4%;}#qr textarea.field {  height: 14.8em;  min-height: 9em;}#qr.has-captcha textarea.field {  height: 9em;}" : ".persona input.field {  width: 100%;}.persona input.field[name='name'] {  width: 89.6%;  margin: 0 0 0 0.4%;}#qr textarea.field {  height: 11.6em;  min-height: 6em;}#qr.has-captcha textarea.field {  height: 6em;}") + "\n\n" + (_conf["Tripcode Hider"] ? ".tripped:not(:hover):not(:focus) {  opacity: 0;}" : "") + "\n\n#qr textarea {\n  resize: " + _conf['Textarea Resize'] + ";\n}\n.captcha-img {\n  margin: 1px 0 0;\n  text-align: center;\n  line-height: 0;\n}\n.captcha-img img {\n  width: 100%;\n  height: 4em;\n  width: 246px;\n}\n.captcha-input {\n  width: 100%;\n  margin: 1px 0 0;\n}\n.field,\n.selectrice,\nbutton,\ninput:not([type=radio]) {\n  " + Style.sizing + ": border-box;\n  font-size: " + (parseInt(_conf['Font Size'], 10)) + "px;\n  height: 1.6em;\n  margin: 1px 0 0;\n  vertical-align: bottom;\n  padding: 0 1px;\n}\n#qr textarea {\n  min-width: 100%;\n}\n#qr [type='submit'] {\n  width: 25%;\n}\n[type='file'] {\n  position: absolute;\n  opacity: 0;\n  z-index: -1;\n}\n#showQR {\n  display: " + (_conf["Hide Show Post Form"] ? "none" : "block") + ";\n  z-index: 4;\n  " + Style.sidebarLocation[0] + ": 2px;\n  width: " + width + "px;\n  background-color: transparent;\n  text-align: center;\n  position: fixed;\n  top: auto;\n}\n/* Fake File Input */\n#qr-filename,\n.has-file #qr-no-file {\n  display: none;\n}\n#qr-no-file,\n.has-file #qr-filename {\n  display: block;\n}\n#qr-filename-container {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  position: relative;\n  width: 100px;\n  min-width: 74.6%;\n  max-width: 74.6%;\n  margin-right: 0.4%;\n  overflow: hidden;\n  padding: 2px 1px 0;\n}\n#qr-filerm {\n  position: absolute;\n  right: 3px;\n  top: 2px;\n  z-index: 2;\n}\n/* Thread Select / Spoiler Label */\n#qr-thread-select {\n  vertical-align: bottom;\n  width: 49%;\n  display: inline-block;\n}\n#qr-spoiler-label {\n  vertical-align: bottom;\n  width: 49%;\n  display: inline-block;\n  text-align: right;\n}\n/* Dumping UI */\n.dump #dump-list-container {\n  display: block;\n}\n#dump-list-container {\n  display: none;\n  position: relative;\n  overflow-y: hidden;\n  margin-top: 1px;\n}\n#dump-list {\n  overflow-x: auto;\n  overflow-y: hidden;\n  white-space: pre;\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-list:hover {\n  overflow-x: auto;\n}\n.qr-preview {\n  " + Style.sizing + ": border-box;\n  counter-increment: thumbnails;\n  cursor: move;\n  display: inline-block;\n  height: 90px;\n  width: 90px;\n  padding: 2px;\n  opacity: .5;\n  overflow: hidden;\n  position: relative;\n  text-shadow: 0 1px 1px #000;\n  " + agent + "transition: opacity .25s ease-in-out;\n  vertical-align: top;\n}\n.qr-preview:hover,\n.qr-preview:focus {\n  opacity: .9;\n}\n.qr-preview::before {\n  content: counter(thumbnails);\n  color: #fff;\n  position: absolute;\n  top: 3px;\n  right: 3px;\n  text-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.qr-preview#selected {\n  opacity: 1;\n}\n.qr-preview.drag {\n  box-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.qr-preview.over {\n  border-color: #fff;\n}\n.qr-preview > span {\n  color: #fff;\n}\n.remove {\n  background: none;\n  color: #e00;\n  font-weight: 700;\n  padding: 3px;\n}\na:only-of-type > .remove {\n  display: none;\n}\n.remove:hover::after {\n  content: \" Remove\";\n}\n.qr-preview > label {\n  background: rgba(0,0,0,.5);\n  color: #fff;\n  right: 0; bottom: 0; left: 0;\n  position: absolute;\n  text-align: center;\n}\n.qr-preview > label > input {\n  margin: 0;\n}\n#add-post {\n  cursor: pointer;\n  font-size: 2em;\n  position: absolute;\n  top: 50%;\n  right: 10px;\n  " + agent + "transform: translateY(-50%);\n}\n/* Ads */\n.topad img,\n.middlead img,\n.bottomad img {\n  opacity: 0.3;\n  " + agent + "transition: opacity .3s linear;\n}\n.topad img:hover,\n.middlead img:hover,\n.bottomad img:hover {\n  opacity: 1;\n}\n" + (_conf["Block Ads"] ? "/* AdBlock Minus */.bottomad + hr,.topad img,.middlead img,.bottomad img {  display: none;}" : "") + "\n" + (_conf["Shrink Ads"] ? ".topad a img,.middlead a img,.bottomad a img {  width: 500px;  height: auto;}" : "") + "\n/* Options */\n#overlay {\n  position: fixed;\n  z-index: 30;\n  top: 0;\n  right: 0;\n  left: 0;\n  bottom: 0;\n  background: rgba(0,0,0,.5);\n}\n#appchanx-settings {\n  width: auto;\n  left: 15%;\n  right: 15%;\n  top: 15%;\n  bottom: 15%;\n  position: fixed;\n  z-index: 31;\n  padding: .3em;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.description {\n  display: none;\n}\n#appchanx-settings h3,\n.section-keybinds,\n.section-mascots,\n.section-script,\n.style {\n  text-align: center;\n}\n.section-keybinds table,\n.section-script fieldset,\n.section-style fieldset {\n  text-align: left;\n}\n.section-keybinds table {\n  margin: auto;\n}\n#appchanx-settings fieldset {\n  padding: 5px 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n  vertical-align: top;\n  " + (_conf["Single Column Mode"] ? "margin: 0 auto 6px;" : "margin: 0 3px 6px;\n display: inline-block;") + "\n  border: 0;\n}\n.section-container {\n  overflow: auto;\n  position: absolute;\n  top: 1.7em;\n  right: 5px;\n  bottom: 5px;\n  left: 5px;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.sections-list {\n  padding: 0 3px;\n  float: left;\n}\n.sections-list > a {\n  cursor: pointer;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\n  position: relative;\n  padding: 0 4px;\n  z-index: 1;\n  height: 1.4em;\n  display: inline-block;\n  border-width: 1px 1px 0 1px;\n  border-color: transparent;\n  border-style: solid;\n}\n.credits {\n  float: right;\n}\n#appchanx-settings h3 {\n  margin: 0;\n}\n.section-script fieldset > div,\n.section-style fieldset > div,\n.section-rice fieldset > div {\n  overflow: visible;\n  padding: 0 5px 0 7px;\n}\n#appchanx-settings tr:nth-of-type(2n+1),\n.section-script fieldset > div:nth-of-type(2n+1),\n.section-rice fieldset > div:nth-of-type(2n+1),\n.section-style fieldset > div:nth-of-type(2n+1),\n.section-keybinds tr:nth-of-type(2n+1),\n#selectrice li:nth-of-type(2n+1) {\n  background-color: rgba(0, 0, 0, 0.05);\n}\narticle li {\n  margin: 10px 0 10px 2em;\n}\n#appchanx-settings .option {\n  width: 50%;\n  display: inline-block;\n  vertical-align: bottom;\n}\n.option input {\n  width: 100%;\n}\n.optionlabel {\n  padding-left: 18px;\n}\n.rice + .optionlabel {\n  padding-left: 0;\n}\n.section-script fieldset,\n.styleoption {\n  text-align: left;\n}\n.section-style fieldset {\n  width: 370px;\n}\n.section-script fieldset {\n  width: 200px;\n}\n.suboptions,\n#mascotcontent,\n#themecontent {\n  overflow: auto;\n  position: absolute;\n  top: 0;\n  right: 0;\n  bottom: 1.7em;\n  left: 0;\n}\n.mAlign {\n  height: 250px;\n  vertical-align: middle;\n  display: table-cell;\n}\n#themecontent {\n  top: 1.7em;\n}\n#save,\n.stylesettings {\n  position: absolute;\n  right: 10px;\n  bottom: 0;\n}\n.section-style .suboptions {\n  bottom: 0;\n}\n.section-container textarea {\n  font-family: monospace;\n  min-height: 350px;\n  resize: vertical;\n  width: 100%;\n}\n/* Hover Functionality */\n#mouseover {\n  z-index: 33;\n  position: fixed;\n  max-width: 70%;\n}\n#mouseover:empty {\n  display: none;\n}\n/* Mascot Tab */\n#mascot_hide {\n  padding: 3px;\n  position: absolute;\n  top: 2px;\n  right: 18px;\n}\n#mascot_hide .rice {\n  float: left;\n}\n#mascot_hide > div {\n  height: 0;\n  text-align: right;\n  overflow: hidden;\n}\n#mascot_hide:hover > div {\n  height: auto;\n}\n#mascot_hide label {\n  width: 100%;\n  display: block;\n  clear: both;\n  text-decoration: none;\n}\n.mascots {\n  padding: 0;\n  text-align: center;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.mascot,\n.mascotcontainer {\n  overflow: hidden;\n}\n.mascot {\n  position: relative;\n  border: none;\n  margin: 5px;\n  padding: 0;\n  width: 200px;\n  display: inline-block;\n  background-color: transparent;\n}\n.mascotcontainer {\n  height: 250px;\n  border: 0;\n  margin: 0;\n  max-height: 250px;\n  cursor: pointer;\n  bottom: 0;\n  border-width: 0 1px 1px;\n  border-style: solid;\n  border-color: transparent;\n  overflow: hidden;\n}\n.mascot img {\n  max-width: 200px;\n}\n.mascotname,\n.mascotoptions {\n  padding: 0;\n  width: 100%;\n}\n.mascot .mascotoptions {\nopacity: 0;\n  " + agent + "transition: opacity .3s linear;\n}\n.mascot:hover .mascotoptions {\n  opacity: 1;\n}\n.mascotoptions {\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n}\n.mascotoptions a {\n  display: inline-block;\n  width: 33%;\n}\n#upload {\n  position: absolute;\n  width: 100px;\n  left: 50%;\n  margin-left: -50px;\n  text-align: center;\n  bottom: 0;\n}\n#mascots_batch {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Themes Tab */\n#themes h1 {\n  position: absolute;\n  right: 300px;\n  bottom: 10px;\n  margin: 0;\n  " + agent + "transition: all .2s ease-in-out;\n  opacity: 0;\n}\n#themes .selectedtheme h1 {\n  right: 11px;\n  opacity: 1;\n}\n#themeContainer {\n  margin-bottom: 3px;\n}\n#addthemes {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n.theme {\n  margin: 1em;\n}\n/* Theme Editor */\n#themeConf {\n  position: fixed;\n  " + Style.sidebarLocation[1] + ": 2px;\n  " + Style.sidebarLocation[0] + ": auto;\n  top: 0;\n  bottom: 0;\n  width: 296px;\n  z-index: 10;\n}\n#themebar input {\n  width: 30%;\n}\n.option .color {\n  width: 10%;\n  border-left: none !important;\n  color: transparent !important;\n}\n.option .colorfield {\n  width: 90%;\n}\n.themevar textarea {\n  min-width: 100%;\n  max-width: 100%;\n  height: 20em;\n  resize: vertical;\n}\n/* Mascot Editor */\n#mascotConf {\n  position: fixed;\n  height: 17em;\n  bottom: 0;\n  left: 50%;\n  width: 500px;\n  margin-left: -250px;\n  overflow: auto;\n  z-index: 10;\n}\n#mascotConf .option,\n#mascotConf .optionlabel {\n  " + Style.sizing + ": border-box;\n  width: 50%;\n  display: inline-block;\n  vertical-align: middle;\n}\n#mascotConf .option input {\n  width: 100%;\n}\n#close {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Catalog */\n#content .navLinks,\n#info .navLinks,\n.btn-wrap {\n  display: block;\n}\n.navLinks > .btn-wrap:not(:first-of-type)::before {\n  content: ' - ';\n}\n.button {\n  cursor: pointer;\n}\n#content .btn-wrap,\n#info .btn-wrap {\n  display: inline-block;\n}\n#settings .selectrice {\n  width: 100px;\n  display: inline-block;\n}\n#post-preview {\n  position: absolute;\n  z-index: 22;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#settings,\n#threads,\n#info .navLinks,\n#content .navLinks {\n  text-align: center;\n}\n#threads .thread {\n  vertical-align: top;\n  display: inline-block;\n  word-wrap: break-word;\n  overflow: hidden;\n  margin-top: 5px;\n  padding: 5px 0 3px;\n  text-align: center;\n}\n.extended-small .thread,\n.small .thread {\n  width: 165px;\n  max-height: 320px;\n}\n.small .teaser,\n.large .teaser {\n  display: none;\n}\n.extended-large .thread,\n.large .thread {\n  width: 270px;\n  max-height: 410px;\n}\n.extended-small .thumb,\n.small .thumb {\n  max-width: 150px;\n  max-height: 150px;\n}\n/* Front Page */\n#logo {\n  text-align: center;\n}\n#doc {\n  margin: 0 auto;\n  width: 1000px;\n  position: relative;\n}\n#boards .boxcontent {\n  vertical-align: top;\n  text-align: center;\n}\n#filter-container,\n#options-container {\n  float: right;\n  position: relative;\n}\n#optionssmenu {\n  top: 100% !important;\n  left: 0 !important;\n}\n#boards .column {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  width: 16em;\n  text-align: left;\n  vertical-align: top;\n}\n.bd ul,\n.boxcontent ul {\n  vertical-align: top;\n  padding: 0;\n}\n.right-box .boxcontent ul {\n  padding: 0 10px;\n}\n.yuimenuitem,\n.boxcontent li {\n  list-style-type: none;\n}\n.bd ul {\n  margin: 0;\n}\n.yuimenuitem::before {\n  content: \" [ ] \";\n  font-family: monospace;\n}\n.yuimenuitem-checked::before {\n  content: \" [x] \"\n}\n.yui-u {\n  display: inline-block;\n  vertical-align: top;\n  width: 475px;\n  margin: 10px;\n}\n#recent-images .boxcontent {\n  text-align: center;\n}\n#ft {\n  text-align: center;\n}\n#ft ul {\n  padding: 0;\n}\n#ft li {\n  list-style-type: none;\n  display: inline-block;\n  width: 100px;\n}\n#preview-tooltip-nws,\n#preview-tooltip-ws,\n#ft .fill,\n.clear-bug {\n  display: none;\n}";
+      }[_conf['Post Form Style']] || "") + "\n\n" + (_conf['Post Form Style'] !== 'tabbed slideout' ? (!(_conf['Post Form Style'] === 'float' || _conf['Show Post Form Header']) ? "#qrtab { display: none; }" : _conf['Post Form Style'] !== 'slideout' ? ".autohide:not(:hover):not(.has-focus) > form { display: none !important; }" : "") + "#qrtab { margin-bottom: 1px; }" : "") + "\n\n" + (_conf['Post Form Style'] !== 'float' && _conf["Post Form Slideout Transitions"] ? "#qr {  " + agent + "transition: " + agent + "transform .3s ease-in-out 1s;}#qr:hover,#qr.has-focus,#qr.dump {  " + agent + "transition: " + agent + "transform .3s linear;}#qrtab {  " + agent + "transition: opacity .3s ease-in-out 1s;}#qr:hover #qrtab {  " + agent + "transition: opacity .3s linear;}" : "") + "\n\n#qr .close {\n  float: right;\n  padding: 0 3px;\n}\n#qr .warning {\n  min-height: 1.6em;\n  vertical-align: middle;\n  padding: 0 1px;\n  border-width: 1px;\n  border-style: solid;\n}\n.persona {\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-button {\n  width: 10%;\n  margin: 0;\n}\n\n" + (_conf['Compact Post Form Inputs'] ? ".persona input.field {  width: 29.6%;  margin: 0 0 0 0.4%;}#qr textarea.field {  height: 14.8em;  min-height: 9em;}#qr.has-captcha textarea.field {  height: 9em;}" : ".persona input.field {  width: 100%;}.persona input.field[name='name'] {  width: 89.6%;  margin: 0 0 0 0.4%;}#qr textarea.field {  height: 11.6em;  min-height: 6em;}#qr.has-captcha textarea.field {  height: 6em;}") + "\n\n" + (_conf["Tripcode Hider"] ? ".tripped:not(:hover):not(:focus) {  opacity: 0;}" : "") + "\n\n#qr textarea {\n  resize: " + _conf['Textarea Resize'] + ";\n}\n.captcha-img {\n  margin: 1px 0 0;\n  text-align: center;\n  line-height: 0;\n}\n.captcha-img img {\n  width: 100%;\n  height: 4em;\n  width: 246px;\n}\n.captcha-input {\n  width: 100%;\n  margin: 1px 0 0;\n}\n.field,\n.selectrice,\nbutton,\ninput:not([type=radio]) {\n  " + Style.sizing + ": border-box;\n  font-size: " + (parseInt(_conf['Font Size'], 10)) + "px;\n  height: 1.6em;\n  margin: 1px 0 0;\n  vertical-align: bottom;\n  padding: 0 1px;\n}\n.selectrice {\n  padding-right: 1.6em;\n}\n#qr textarea {\n  min-width: 100%;\n}\n#qr [type='submit'] {\n  width: 25%;\n}\n[type='file'] {\n  position: absolute;\n  opacity: 0;\n  z-index: -1;\n}\n#showQR {\n  display: " + (_conf["Hide Show Post Form"] ? "none" : "block") + ";\n  z-index: 4;\n  " + Style.sidebarLocation[0] + ": 2px;\n  width: " + width + "px;\n  background-color: transparent;\n  text-align: center;\n  position: fixed;\n  top: auto;\n}\n/* Fake File Input */\n#qr-filename,\n.has-file #qr-no-file {\n  display: none;\n}\n#qr-no-file,\n.has-file #qr-filename {\n  display: block;\n}\n#qr-filename-container {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  position: relative;\n  width: 100px;\n  min-width: 74.6%;\n  max-width: 74.6%;\n  margin-right: 0.4%;\n  overflow: hidden;\n  padding: 2px 1px 0;\n}\n#qr-filerm {\n  position: absolute;\n  right: 3px;\n  top: 2px;\n  z-index: 2;\n}\n/* Thread Select / Spoiler Label */\n#qr-thread-select {\n  vertical-align: bottom;\n  width: 49%;\n  display: inline-block;\n}\n#qr-spoiler-label {\n  vertical-align: bottom;\n  width: 49%;\n  display: inline-block;\n  text-align: right;\n}\n/* Dumping UI */\n.dump #dump-list-container {\n  display: block;\n}\n#dump-list-container {\n  display: none;\n  position: relative;\n  overflow-y: hidden;\n  margin-top: 1px;\n}\n#dump-list {\n  overflow-x: auto;\n  overflow-y: hidden;\n  white-space: pre;\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-list:hover {\n  overflow-x: auto;\n}\n.qr-preview {\n  " + Style.sizing + ": border-box;\n  counter-increment: thumbnails;\n  cursor: move;\n  display: inline-block;\n  height: 90px;\n  width: 90px;\n  padding: 2px;\n  opacity: .5;\n  overflow: hidden;\n  position: relative;\n  text-shadow: 0 1px 1px #000;\n  " + agent + "transition: opacity .25s ease-in-out;\n  vertical-align: top;\n}\n.qr-preview:hover,\n.qr-preview:focus {\n  opacity: .9;\n}\n.qr-preview::before {\n  content: counter(thumbnails);\n  color: #fff;\n  position: absolute;\n  top: 3px;\n  right: 3px;\n  text-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.qr-preview#selected {\n  opacity: 1;\n}\n.qr-preview.drag {\n  box-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.qr-preview.over {\n  border-color: #fff;\n}\n.qr-preview > span {\n  color: #fff;\n}\n.remove {\n  background: none;\n  color: #e00;\n  font-weight: 700;\n  padding: 3px;\n}\na:only-of-type > .remove {\n  display: none;\n}\n.remove:hover::after {\n  content: \" Remove\";\n}\n.qr-preview > label {\n  background: rgba(0,0,0,.5);\n  color: #fff;\n  right: 0; bottom: 0; left: 0;\n  position: absolute;\n  text-align: center;\n}\n.qr-preview > label > input {\n  margin: 0;\n}\n#add-post {\n  cursor: pointer;\n  font-size: 2em;\n  position: absolute;\n  top: 50%;\n  right: 10px;\n  " + agent + "transform: translateY(-50%);\n}\n/* Ads */\n.topad img,\n.middlead img,\n.bottomad img {\n  opacity: 0.3;\n  " + agent + "transition: opacity .3s linear;\n}\n.topad img:hover,\n.middlead img:hover,\n.bottomad img:hover {\n  opacity: 1;\n}\n" + (_conf["Block Ads"] ? "/* AdBlock Minus */.bottomad + hr,.topad img,.middlead img,.bottomad img {  display: none;}" : "") + "\n" + (_conf["Shrink Ads"] ? ".topad a img,.middlead a img,.bottomad a img {  width: 500px;  height: auto;}" : "") + "\n/* Options */\n#overlay {\n  position: fixed;\n  z-index: 30;\n  top: 0;\n  right: 0;\n  left: 0;\n  bottom: 0;\n  background: rgba(0,0,0,.5);\n}\n#appchanx-settings {\n  width: auto;\n  left: 15%;\n  right: 15%;\n  top: 15%;\n  bottom: 15%;\n  position: fixed;\n  z-index: 31;\n  padding: .3em;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.description {\n  display: none;\n}\n#appchanx-settings h3,\n.section-keybinds,\n.section-mascots,\n.section-script,\n.style {\n  text-align: center;\n}\n.section-keybinds table,\n.section-script fieldset,\n.section-style fieldset {\n  text-align: left;\n}\n.section-keybinds table {\n  margin: auto;\n}\n#appchanx-settings fieldset {\n  padding: 5px 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n  vertical-align: top;\n  " + (_conf["Single Column Mode"] ? "margin: 0 auto 6px;" : "margin: 0 3px 6px;\n display: inline-block;") + "\n  border: 0;\n}\n#appchanx-settings .section-advanced fieldset {\n  display: block;\n  margin: 0 auto 6px;\n}\n.section-advanced .selectrice {\n  display: inline-block;\n  clear: both;\n}\n.section-container {\n  overflow: auto;\n  position: absolute;\n  top: 1.7em;\n  right: 5px;\n  bottom: 5px;\n  left: 5px;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.sections-list {\n  padding: 0 3px;\n  float: left;\n}\n.sections-list > a {\n  cursor: pointer;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\n  position: relative;\n  padding: 0 4px;\n  z-index: 1;\n  height: 1.4em;\n  display: inline-block;\n  border-width: 1px 1px 0 1px;\n  border-color: transparent;\n  border-style: solid;\n}\n.credits {\n  float: right;\n}\n#appchanx-settings h3 {\n  margin: 0;\n}\n.section-script fieldset > div,\n.section-style fieldset > div,\n.section-advanced fieldset > div {\n  overflow: visible;\n  padding: 0 5px 0 7px;\n}\n#appchanx-settings tr:nth-of-type(2n+1),\n.section-script fieldset > div:nth-of-type(2n+1),\n.section-advanced fieldset > div:nth-of-type(2n+1),\n.section-style fieldset > div:nth-of-type(2n+1),\n.section-keybinds tr:nth-of-type(2n+1),\n#selectrice li:nth-of-type(2n+1) {\n  background-color: rgba(0, 0, 0, 0.05);\n}\narticle li {\n  margin: 10px 0 10px 2em;\n}\n#appchanx-settings .option {\n  width: 50%;\n  display: inline-block;\n  vertical-align: bottom;\n}\n.option input {\n  width: 100%;\n}\n.optionlabel {\n  padding-left: 18px;\n}\n.rice + .optionlabel {\n  padding-left: 0;\n}\n.section-script fieldset,\n.styleoption {\n  text-align: left;\n}\n.section-style fieldset {\n  width: 370px;\n}\n.section-script fieldset {\n  width: 200px;\n}\n.suboptions,\n#mascotcontent,\n#themecontent {\n  overflow: auto;\n  position: absolute;\n  top: 0;\n  right: 0;\n  bottom: 1.7em;\n  left: 0;\n}\n.mAlign {\n  height: 250px;\n  vertical-align: middle;\n  display: table-cell;\n}\n#themecontent {\n  top: 1.7em;\n}\n#save,\n.stylesettings {\n  position: absolute;\n  right: 10px;\n  bottom: 0;\n}\n.section-style .suboptions {\n  bottom: 0;\n}\n.section-container textarea {\n  font-family: monospace;\n  min-height: 350px;\n  resize: vertical;\n  width: 100%;\n}\n/* Hover Functionality */\n#mouseover {\n  z-index: 33;\n  position: fixed;\n  max-width: 70%;\n}\n#mouseover:empty {\n  display: none;\n}\n/* Mascot Tab */\n#mascot_hide {\n  padding: 3px;\n  position: absolute;\n  top: 2px;\n  right: 18px;\n}\n#mascot_hide .rice {\n  float: left;\n}\n#mascot_hide > div {\n  height: 0;\n  text-align: right;\n  overflow: hidden;\n}\n#mascot_hide:hover > div {\n  height: auto;\n}\n#mascot_hide label {\n  width: 100%;\n  display: block;\n  clear: both;\n  text-decoration: none;\n}\n.mascots {\n  padding: 0;\n  text-align: center;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.mascot,\n.mascotcontainer {\n  overflow: hidden;\n}\n.mascot {\n  position: relative;\n  border: none;\n  margin: 5px;\n  padding: 0;\n  width: 200px;\n  display: inline-block;\n  background-color: transparent;\n}\n.mascotcontainer {\n  height: 250px;\n  border: 0;\n  margin: 0;\n  max-height: 250px;\n  cursor: pointer;\n  bottom: 0;\n  border-width: 0 1px 1px;\n  border-style: solid;\n  border-color: transparent;\n  overflow: hidden;\n}\n.mascot img {\n  max-width: 200px;\n}\n.mascotname,\n.mascotoptions {\n  padding: 0;\n  width: 100%;\n}\n.mascot .mascotoptions {\nopacity: 0;\n  " + agent + "transition: opacity .3s linear;\n}\n.mascot:hover .mascotoptions {\n  opacity: 1;\n}\n.mascotoptions {\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n}\n.mascotoptions a {\n  display: inline-block;\n  width: 33%;\n}\n#upload {\n  position: absolute;\n  width: 100px;\n  left: 50%;\n  margin-left: -50px;\n  text-align: center;\n  bottom: 0;\n}\n#mascots_batch {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Themes Tab */\n#themes h1 {\n  position: absolute;\n  right: 300px;\n  bottom: 10px;\n  margin: 0;\n  " + agent + "transition: all .2s ease-in-out;\n  opacity: 0;\n}\n#themes .selectedtheme h1 {\n  right: 11px;\n  opacity: 1;\n}\n#themeContainer {\n  margin-bottom: 3px;\n}\n#addthemes {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n.theme {\n  margin: 1em;\n}\n/* Theme Editor */\n#themeConf {\n  position: fixed;\n  " + Style.sidebarLocation[1] + ": 2px;\n  " + Style.sidebarLocation[0] + ": auto;\n  top: 0;\n  bottom: 0;\n  width: 296px;\n  z-index: 10;\n}\n#themebar input {\n  width: 30%;\n}\n.option .color {\n  width: 10%;\n  border-left: none !important;\n  color: transparent !important;\n}\n.option .colorfield {\n  width: 90%;\n}\n.themevar textarea {\n  min-width: 100%;\n  max-width: 100%;\n  height: 20em;\n  resize: vertical;\n}\n/* Mascot Editor */\n#mascotConf {\n  position: fixed;\n  height: 17em;\n  bottom: 0;\n  left: 50%;\n  width: 500px;\n  margin-left: -250px;\n  overflow: auto;\n  z-index: 10;\n}\n#mascotConf .option,\n#mascotConf .optionlabel {\n  " + Style.sizing + ": border-box;\n  width: 50%;\n  display: inline-block;\n  vertical-align: middle;\n}\n#mascotConf .option input {\n  width: 100%;\n}\n#close {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Catalog */\n#content .navLinks,\n#info .navLinks,\n.btn-wrap {\n  display: block;\n}\n.navLinks > .btn-wrap:not(:first-of-type)::before {\n  content: ' - ';\n}\n.button {\n  cursor: pointer;\n}\n#content .btn-wrap,\n#info .btn-wrap {\n  display: inline-block;\n}\n#post-preview {\n  position: absolute;\n  z-index: 22;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#settings,\n#threads,\n#info .navLinks,\n#content .navLinks {\n  text-align: center;\n}\n#threads .thread {\n  vertical-align: top;\n  display: inline-block;\n  word-wrap: break-word;\n  overflow: hidden;\n  margin-top: 5px;\n  padding: 5px 0 3px;\n  text-align: center;\n}\n.extended-small .thread,\n.small .thread {\n  width: 165px;\n  max-height: 320px;\n}\n.small .teaser,\n.large .teaser {\n  display: none;\n}\n.extended-large .thread,\n.large .thread {\n  width: 270px;\n  max-height: 410px;\n}\n.extended-small .thumb,\n.small .thumb {\n  max-width: 150px;\n  max-height: 150px;\n}\n/* Front Page */\n#logo {\n  text-align: center;\n}\n#doc {\n  margin: 0 auto;\n  width: 1000px;\n  position: relative;\n}\n#boards .boxcontent {\n  vertical-align: top;\n  text-align: center;\n}\n#filter-container,\n#options-container {\n  float: right;\n  position: relative;\n}\n#optionssmenu {\n  top: 100% !important;\n  left: 0 !important;\n}\n#boards .column {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  width: 16em;\n  text-align: left;\n  vertical-align: top;\n}\n.bd ul,\n.boxcontent ul {\n  vertical-align: top;\n  padding: 0;\n}\n.right-box .boxcontent ul {\n  padding: 0 10px;\n}\n.yuimenuitem,\n.boxcontent li {\n  list-style-type: none;\n}\n.bd ul {\n  margin: 0;\n}\n.yuimenuitem::before {\n  content: \" [ ] \";\n  font-family: monospace;\n}\n.yuimenuitem-checked::before {\n  content: \" [x] \"\n}\n.yui-u {\n  display: inline-block;\n  vertical-align: top;\n  width: 475px;\n  margin: 10px;\n}\n#recent-images .boxcontent {\n  text-align: center;\n}\n#ft {\n  text-align: center;\n}\n#ft ul {\n  padding: 0;\n}\n#ft li {\n  list-style-type: none;\n  display: inline-block;\n  width: 100px;\n}\n#preview-tooltip-nws,\n#preview-tooltip-ws,\n#ft .fill,\n.clear-bug {\n  display: none;\n}";
     },
     theme: function(theme) {
       var agent, background, backgroundC, bgColor, css, fileHeading, icons, replyHeading, _conf;
@@ -11943,7 +10953,7 @@
       bgColor = new Style.color(Style.colorToHex(backgroundC = theme["Background Color"]) || 'aaaaaa');
       Style.lightTheme = bgColor.isLight();
       icons = "data:image/png;base64," + Icons[_conf["Icons"]];
-      css = ".hide_thread_button span > span,\n.hide_reply_button span > span {\n  background-color: " + theme["Links"] + ";\n}\n#mascot_hide label {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\n#content .thumb {\n  box-shadow: 0 0 5px " + theme["Reply Border"] + ";\n}\n.mascotname,\n.mascotoptions {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.opContainer.filter_highlight {\n  box-shadow: inset 5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\n.filter_highlight > .reply {\n  box-shadow: -5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\nhr {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\na[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] > table > tbody > tr > td {\n  background: " + backgroundC + " !important;\n  border: 1px solid " + theme["Reply Border"] + " !important;\n}\n#fs_status {\n  background: " + theme["Dialog Background"] + " !important;\n}\n#fs_data tr[style=\"background-color: #EA8;\"] {\n  background: " + theme["Reply Background"] + " !important;\n}\n#fs_data,\n#fs_data *,\n.threadContainer {\n  border-color: " + theme["Reply Border"] + " !important;\n}\nhtml {\n  background: " + (backgroundC || '') + ";\n  background-image: " + (theme["Background Image"] || '') + ";\n  background-repeat: " + (theme["Background Repeat"] || '') + ";\n  background-attachment: " + (theme["Background Attachment"] || '') + ";\n  background-position: " + (theme["Background Position"] || '') + ";\n}\n.section-container,\n#exlinks-options-content,\n#mascotcontent,\n#themecontent {\n  background: " + backgroundC + ";\n  border: 1px solid " + theme["Reply Border"] + ";\n  padding: 5px;\n}\n.sections-list > a.tab-selected {\n  background: " + backgroundC + ";\n  border-color: " + theme["Reply Border"] + ";\n  border-style: solid;\n}\n.captcha-img img {\n  " + (Style.filter(theme["Text"], theme["Input Background"])) + "\n}\n#boardTitle,\n#prefetch,\n#showQR,\n" + (!_conf["Post Form Decorations"] ? '#spoilerLabel,' : '') + "\n#thread-stats {\n  text-shadow:\n     1px  1px 0 " + backgroundC + ",\n    -1px -1px 0 " + backgroundC + ",\n     1px -1px 0 " + backgroundC + ",\n    -1px  1px 0 " + backgroundC + ",\n     0    1px 0 " + backgroundC + ",\n     0   -1px 0 " + backgroundC + ",\n     1px  0   0 " + backgroundC + ",\n    -1px  0   0 " + backgroundC + "\n    " + (_conf["Sidebar Glow"] ? ", 0 2px 5px " + theme['Text'] + ";" : ";") + "\n}\n/* Fixes text spoilers */\n" + (_conf['Remove Spoilers'] && _conf['Indicate Spoilers'] ? ".spoiler::before,s::before {  content: '[spoiler]';}.spoiler::after,s::after {  content: '[/spoiler]';}" : !_conf['Remove Spoilers'] ? ".spoiler:not(:hover) *,s:not(:hover) * {  color: rgb(0,0,0) !important;  text-shadow: none !important;}.spoiler:not(:hover),s:not(:hover) {  background-color: rgb(0,0,0);  color: rgb(0,0,0) !important;  text-shadow: none !important;}" : "") + "\n#exlinks-options,\n#appchanx-settings,\n#qrtab,\n" + (_conf["Post Form Decorations"] ? "#qr," : "") + "\n#updater,\ninput[type=\"submit\"],\ninput[value=\"Report\"],\nspan[style=\"left: 5px; position: absolute;\"] a {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.enabled .mascotcontainer {\n  background: " + theme["Buttons Background"] + ";\n  border-color: " + theme["Buttons Border"] + ";\n}\n#dump,\n#qr-filename-container,\n#appchanx-settings input,\n.captcha-img,\n.dump #dump:not(:hover):not(:focus),\n.qr-preview,\n.selectrice,\nbutton,\ninput,\ntextarea {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:hover,\n#qr-filename-container:hover,\n#qr-filename-container:hover,\n.selectrice:hover,\n#selectrice li:hover,\n#selectrice li:nth-of-type(2n+1):hover,\ninput:hover,\ntextarea:hover {\n  background: " + theme["Hovered Input Background"] + ";\n  border-color: " + theme["Hovered Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:active,\n#dump:focus,\n#selectrice li:focus,\n.selectrice:focus,\n#qr-filename-container:active,\n#qr-filename-container:focus,\ninput:focus,\ntextarea:focus,\ntextarea.field:focus {\n  background: " + theme["Focused Input Background"] + ";\n  border-color: " + theme["Focused Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n  outline: none;\n}\n#mouseover,\n#post-preview,\n#qp .post,\n#xupdater,\n.reply.post {\n  border-width: 1px;\n  border-style: solid;\n  border-color: " + theme["Reply Border"] + ";\n  background: " + theme["Reply Background"] + ";\n}\n.thread > .replyContainer > .reply.post {\n  border-width: " + (_conf['Post Spacing'] === "0" ? "1px 1px 0 1px" : '1px') + ";\n}\n.exblock.reply,\n.reply.post.highlight,\n.reply.post:target {\n  background: " + theme["Highlighted Reply Background"] + ";\n  border: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n#header-bar,\n.pagelist {\n  background: " + theme["Navigation Background"] + ";\n  border-style: solid;\n  border-color: " + theme["Navigation Border"] + ";\n}\n.thread {\n  background: " + theme["Thread Wrapper Background"] + ";\n  border: 1px solid " + theme["Thread Wrapper Border"] + ";\n}\n#boardNavDesktopFoot,\n#mascotConf,\n#mascot_hide,\n#menu,\n#selectrice,\n#themeConf,\n#watcher,\n#watcher:hover,\n.notification,\n.submenu,\na[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] > table {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Dialog Border"] + ";\n}\n.deleteform::before,\n.deleteform,\n#qr .warning {\n  background: " + theme["Input Background"] + ";\n  border-color: " + theme["Input Border"] + ";\n}\n.disabledwarning,\n.warning {\n  color: " + theme["Warnings"] + ";\n}\n#navlinks a:first-of-type {\n  border-bottom: 11px solid rgb(130,130,130);\n}\n#navlinks a:last-of-type {\n  border-top: 11px solid rgb(130,130,130);\n}\n#charCount {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)") + ";\n}\n.postNum a {\n  color: " + theme["Post Numbers"] + ";\n}\n.subject {\n  color: " + theme["Subjects"] + " !important;\n}\n.dateTime,\n.post-ago {\n  color: " + theme["Timestamps"] + " !important;\n}\n#fs_status a,\n#updater #count:not(.new)::after,\n#showQR,\n#updater,\n.abbr,\n.boxbar,\n.boxcontent,\n.deleteform::before,\n.pages strong,\n.pln,\n.reply,\n.reply.highlight,\n.summary,\nbody,\nbutton,\nspan[style=\"left: 5px; position: absolute;\"] a,\ninput,\ntextarea {\n  color: " + theme["Text"] + ";\n}\n#exlinks-options-content > table,\n#appchanx-settings fieldset,\n#selectrice {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n  box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px;\n}\n.quote + .spoiler:hover,\n.quote {\n  color: " + theme["Greentext"] + ";\n}\n.forwardlink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  border-bottom: 1px dashed " + theme["Backlinks"] + ";\n}\n.container::before {\n  color: " + theme["Timestamps"] + ";\n}\n#menu,\n#post-preview,\n#qp .opContainer,\n#qp .replyContainer,\n.submenu {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.rice {\n  background: " + theme["Checkbox Background"] + ";\n  border: 1px solid " + theme["Checkbox Border"] + ";\n}\n.selectrice::before {\n  border-left: 1px solid " + theme["Input Border"] + ";\n}\n.selectrice::after {\n  border-top: .45em solid " + theme["Inputs"] + ";\n}\n#updater input,\n.bd {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.pages a,\n#header-bar a {\n  color: " + theme["Navigation Links"] + ";\n}\ninput[type=checkbox]:checked + .rice {\n  position: relative;\n}\ninput[type=checkbox]:checked + .rice::after {\n  content: \"\";\n  display: block;\n  width: 4px;\n  height: 10px;\n  border: solid " + theme["Inputs"] + ";\n  border-width: 0 3px 3px 0;\n  " + agent + "transform: rotate(45deg);\n  position: absolute;\n  left: 2px;\n  bottom: -1px;\n}\n#addReply,\n#dump,\n.button,\n.entry,\n.replylink,\na {\n  color: " + theme["Links"] + ";\n}\n.backlink {\n  color: " + theme["Backlinks"] + ";\n}\n.qiQuote,\n.quotelink {\n  color: " + theme["Quotelinks"] + ";\n}\n#addReply:hover,\n#dump:hover,\n.entry:hover,\n.sideArrows a:hover,\n.replylink:hover,\n.qiQuote:hover,\n.quotelink:hover,\na .name:hover,\na .postertrip:hover,\na:hover {\n  color: " + theme["Hovered Links"] + ";\n}\n#header-bar a:hover,\n#boardTitle a:hover {\n  color: " + theme["Hovered Navigation Links"] + ";\n}\n#boardTitle {\n  color: " + theme["Board Title"] + ";\n}\n.name,\n.post-author {\n  color: " + theme["Names"] + " !important;\n}\n.post-tripcode,\n.postertrip,\n.trip {\n  color: " + theme["Tripcodes"] + " !important;\n}\na .postertrip,\na .name {\n  color: " + theme["Emails"] + ";\n}\n.post.reply.qphl,\n.post.op.qphl {\n  border-color: " + theme["Backlinked Reply Outline"] + ";\n  background: " + theme["Highlighted Reply Background"] + ";\n}\n.inline .post {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.placeholder,\n#qr input::" + agent + "placeholder,\n#qr textarea::" + agent + "placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#qr input:" + agent + "placeholder,\n#qr textarea:" + agent + "placeholder,\n.placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#appchanx-settings fieldset,\n.boxcontent dd,\n.selectrice ul {\n  border-color: " + (Style.lightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)") + ";\n}\n#appchanx-settings li,\n#selectrice li:not(:first-of-type) {\n  border-top: 1px solid " + (Style.lightTheme ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.025)") + ";\n}\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n.navLinks > a:first-of-type::after,\n#watcher::after,\n#globalMessage::after,\n#boardNavDesktopFoot::after,\na[style=\"cursor: pointer; float: right;\"]::after,\n#img-controls,\n#catalog::after,\n#fappeTyme {\n  background-image: url('" + icons + "');\n" + (!Style.lightTheme ? "filter: url(\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>#filters\");" : "") + "\n}\n" + theme["Custom CSS"];
+      css = ".hide_thread_button span > span,\n.hide_reply_button span > span {\n  background-color: " + theme["Links"] + ";\n}\n#mascot_hide label {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\n#content .thumb {\n  box-shadow: 0 0 5px " + theme["Reply Border"] + ";\n}\n.mascotname,\n.mascotoptions {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.opContainer.filter_highlight {\n  box-shadow: inset 5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\n.filter_highlight > .reply {\n  box-shadow: -5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\nhr {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\na[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] > table > tbody > tr > td {\n  background: " + backgroundC + " !important;\n  border: 1px solid " + theme["Reply Border"] + " !important;\n}\n#fs_status {\n  background: " + theme["Dialog Background"] + " !important;\n}\n#fs_data tr[style=\"background-color: #EA8;\"] {\n  background: " + theme["Reply Background"] + " !important;\n}\n#fs_data,\n#fs_data *,\n.threadContainer {\n  border-color: " + theme["Reply Border"] + " !important;\n}\nhtml {\n  background: " + (backgroundC || '') + ";\n  background-image: " + (theme["Background Image"] || '') + ";\n  background-repeat: " + (theme["Background Repeat"] || '') + ";\n  background-attachment: " + (theme["Background Attachment"] || '') + ";\n  background-position: " + (theme["Background Position"] || '') + ";\n}\n.section-container,\n#exlinks-options-content,\n#mascotcontent,\n#themecontent {\n  background: " + backgroundC + ";\n  border: 1px solid " + theme["Reply Border"] + ";\n  padding: 5px;\n}\n.sections-list > a.tab-selected {\n  background: " + backgroundC + ";\n  border-color: " + theme["Reply Border"] + ";\n  border-style: solid;\n}\n.captcha-img img {\n  " + (Style.filter(theme["Text"], theme["Input Background"])) + "\n}\n#boardTitle,\n#prefetch,\n#showQR,\n" + (!_conf["Post Form Decorations"] ? '#spoilerLabel,' : '') + "\n#thread-stats {\n  text-shadow:\n     1px  1px 0 " + backgroundC + ",\n    -1px -1px 0 " + backgroundC + ",\n     1px -1px 0 " + backgroundC + ",\n    -1px  1px 0 " + backgroundC + ",\n     0    1px 0 " + backgroundC + ",\n     0   -1px 0 " + backgroundC + ",\n     1px  0   0 " + backgroundC + ",\n    -1px  0   0 " + backgroundC + "\n    " + (_conf["Sidebar Glow"] ? ", 0 2px 5px " + theme['Text'] + ";" : ";") + "\n}\n/* Fixes text spoilers */\n" + (_conf['Remove Spoilers'] && _conf['Indicate Spoilers'] ? ".spoiler::before,s::before {  content: '[spoiler]';}.spoiler::after,s::after {  content: '[/spoiler]';}" : !_conf['Remove Spoilers'] ? ".spoiler:not(:hover) *,s:not(:hover) * {  color: rgb(0,0,0) !important;  text-shadow: none !important;}.spoiler:not(:hover),s:not(:hover) {  background-color: rgb(0,0,0);  color: rgb(0,0,0) !important;  text-shadow: none !important;}" : "") + "\n#exlinks-options,\n#appchanx-settings,\n#qrtab,\n" + (_conf["Post Form Decorations"] ? "#qr," : "") + "\ninput[type=\"submit\"],\ninput[value=\"Report\"],\nspan[style=\"left: 5px; position: absolute;\"] a {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.enabled .mascotcontainer {\n  background: " + theme["Buttons Background"] + ";\n  border-color: " + theme["Buttons Border"] + ";\n}\n#dump,\n#qr-filename-container,\n#appchanx-settings input,\n.captcha-img,\n.dump #dump:not(:hover):not(:focus),\n.qr-preview,\n.selectrice,\nbutton,\ninput,\ntextarea {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:hover,\n#qr-filename-container:hover,\n#qr-filename-container:hover,\n.selectrice:hover,\n#selectrice li:hover,\n#selectrice li:nth-of-type(2n+1):hover,\ninput:hover,\ntextarea:hover {\n  background: " + theme["Hovered Input Background"] + ";\n  border-color: " + theme["Hovered Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:active,\n#dump:focus,\n#selectrice li:focus,\n.selectrice:focus,\n#qr-filename-container:active,\n#qr-filename-container:focus,\ninput:focus,\ntextarea:focus,\ntextarea.field:focus {\n  background: " + theme["Focused Input Background"] + ";\n  border-color: " + theme["Focused Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n  outline: none;\n}\n#mouseover,\n#post-preview,\n#qp .post,\n#xupdater,\n.reply.post {\n  border-width: 1px;\n  border-style: solid;\n  border-color: " + theme["Reply Border"] + ";\n  background: " + theme["Reply Background"] + ";\n}\n.thread > .replyContainer > .reply.post {\n  border-width: " + (_conf['Post Spacing'] === "0" ? "1px 1px 0 1px" : '1px') + ";\n}\n.exblock.reply,\n.reply.post.highlight,\n.reply.post:target {\n  background: " + theme["Highlighted Reply Background"] + ";\n  border: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n#header-bar,\n.pagelist {\n  background: " + theme["Navigation Background"] + ";\n  border-style: solid;\n  border-color: " + theme["Navigation Border"] + ";\n}\n.thread {\n  background: " + theme["Thread Wrapper Background"] + ";\n  border: 1px solid " + theme["Thread Wrapper Border"] + ";\n}\n#boardNavDesktopFoot,\n#mascotConf,\n#mascot_hide,\n#menu,\n#selectrice,\n#themeConf,\n#watcher,\n#watcher:hover,\n.notification,\n.submenu,\na[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] > table {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Dialog Border"] + ";\n}\n.deleteform::before,\n.deleteform,\n#qr .warning {\n  background: " + theme["Input Background"] + ";\n  border-color: " + theme["Input Border"] + ";\n}\n.disabledwarning,\n.warning {\n  color: " + theme["Warnings"] + ";\n}\n#navlinks a:first-of-type {\n  border-bottom: 11px solid rgb(130,130,130);\n}\n#navlinks a:last-of-type {\n  border-top: 11px solid rgb(130,130,130);\n}\n#charCount {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)") + ";\n}\n.postNum a {\n  color: " + theme["Post Numbers"] + ";\n}\n.subject {\n  color: " + theme["Subjects"] + " !important;\n}\n.dateTime,\n.post-ago {\n  color: " + theme["Timestamps"] + " !important;\n}\n#fs_status a,\n#updater #update-status:not(.new)::after,\n#showQR,\n.abbr,\n.boxbar,\n.boxcontent,\n.deleteform::before,\n.pages strong,\n.pln,\n.reply,\n.reply.highlight,\n.summary,\nbody,\nbutton,\nspan[style=\"left: 5px; position: absolute;\"] a,\ninput,\ntextarea {\n  color: " + theme["Text"] + ";\n}\n#exlinks-options-content > table,\n#appchanx-settings fieldset,\n#selectrice {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n  box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px;\n}\n.quote + .spoiler:hover,\n.quote {\n  color: " + theme["Greentext"] + ";\n}\n.forwardlink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  border-bottom: 1px dashed " + theme["Backlinks"] + ";\n}\n.container::before {\n  color: " + theme["Timestamps"] + ";\n}\n#menu,\n#post-preview,\n#qp .opContainer,\n#qp .replyContainer,\n.submenu {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.rice {\n  background: " + theme["Checkbox Background"] + ";\n  border: 1px solid " + theme["Checkbox Border"] + ";\n}\n.selectrice::before {\n  border-left: 1px solid " + theme["Input Border"] + ";\n}\n.selectrice::after {\n  border-top: .45em solid " + theme["Inputs"] + ";\n}\n.bd {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.pages a,\n#header-bar a {\n  color: " + theme["Navigation Links"] + ";\n}\ninput[type=checkbox]:checked + .rice {\n  position: relative;\n}\ninput[type=checkbox]:checked + .rice::after {\n  content: \"\";\n  display: block;\n  width: 4px;\n  height: 10px;\n  border: solid " + theme["Inputs"] + ";\n  border-width: 0 3px 3px 0;\n  " + agent + "transform: rotate(45deg);\n  position: absolute;\n  left: 2px;\n  bottom: -1px;\n}\n#addReply,\n#dump,\n.button,\n.entry,\n.replylink,\na {\n  color: " + theme["Links"] + ";\n}\n.backlink {\n  color: " + theme["Backlinks"] + ";\n}\n.qiQuote,\n.quotelink {\n  color: " + theme["Quotelinks"] + ";\n}\n#addReply:hover,\n#dump:hover,\n.entry:hover,\n.sideArrows a:hover,\n.replylink:hover,\n.qiQuote:hover,\n.quotelink:hover,\na .name:hover,\na .postertrip:hover,\na:hover {\n  color: " + theme["Hovered Links"] + ";\n}\n#header-bar a:hover,\n#boardTitle a:hover {\n  color: " + theme["Hovered Navigation Links"] + ";\n}\n#boardTitle {\n  color: " + theme["Board Title"] + ";\n}\n.name,\n.post-author {\n  color: " + theme["Names"] + " !important;\n}\n.post-tripcode,\n.postertrip,\n.trip {\n  color: " + theme["Tripcodes"] + " !important;\n}\na .postertrip,\na .name {\n  color: " + theme["Emails"] + ";\n}\n.post.reply.qphl,\n.post.op.qphl {\n  border-color: " + theme["Backlinked Reply Outline"] + ";\n  background: " + theme["Highlighted Reply Background"] + ";\n}\n.inline .post {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.placeholder,\n#qr input::" + agent + "placeholder,\n#qr textarea::" + agent + "placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#qr input:" + agent + "placeholder,\n#qr textarea:" + agent + "placeholder,\n.placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#appchanx-settings fieldset,\n.boxcontent dd,\n.selectrice ul {\n  border-color: " + (Style.lightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)") + ";\n}\n#appchanx-settings li,\n#selectrice li:not(:first-of-type) {\n  border-top: 1px solid " + (Style.lightTheme ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.025)") + ";\n}\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n.navLinks > a:first-of-type::after,\n#watcher::after,\n#globalMessage::after,\n#boardNavDesktopFoot::after,\na[style=\"cursor: pointer; float: right;\"]::after,\n#img-controls,\n#catalog::after,\n#fappeTyme {\n  background-image: url('" + icons + "');\n" + (!Style.lightTheme ? "filter: url(\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>#filters\");" : "") + "\n}\n" + theme["Custom CSS"];
       css += (Style.lightTheme ? ".prettyprint {\n  background-color: #e7e7e7;\n  border: 1px solid #dcdcdc;\n}\n.com {\n  color: #dd0000;\n}\n.str,\n.atv {\n  color: #7fa61b;\n}\n.pun {\n  color: #61663a;\n}\n.tag {\n  color: #117743;\n}\n.kwd {\n  color: #5a6F9e;\n}\n.typ,\n.atn {\n  color: #9474bd;\n}\n.lit {\n  color: #368c72;\n}\n" : ".prettyprint {\n  background-color: rgba(0,0,0,.1);\n  border: 1px solid rgba(0,0,0,0.5);\n}\n.tag {\n  color: #96562c;\n}\n.pun {\n  color: #5b6f2a;\n}\n.com {\n  color: #a34443;\n}\n.str,\n.atv {\n  color: #8ba446;\n}\n.kwd {\n  color: #987d3e;\n}\n.typ,\n.atn {\n  color: #897399;\n}\n.lit {\n  color: #558773;\n}\n");
       if (_conf["Alternate Post Colors"]) {
         css += ".replyContainer:not(.hidden):nth-of-type(2n+1) .post {\n  background-image: " + agent + "linear-gradient(" + (Style.lightTheme ? "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" : "rgba(255,255,255,0.02), rgba(255,255,255,0.02)") + ");\n}\n";
@@ -11999,45 +11009,38 @@
         if (iconOffset < 0) {
           iconOffset = 0;
         }
-        css += "/* 4chan X Options */\n#appchanOptions {\n  " + align + ": " + position[i++] + "px;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Global Message */\n#globalMessage::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Watcher */\n#watcher::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Expand Images */\n#img-controls {\n  " + align + ": " + position[i++] + "px;\n}\n/* Main Menu */\n#main-menu {\n  " + align + ": " + position[i++] + "px;\n}\n/* 4chan Catalog */\n#catalog::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Fappe Tyme */\n#fappeTyme {\n  " + align + ": " + position[i++] + "px;\n}\n/* Thread Navigation Links */\n#navlinks a {\n  margin: 2px;\n  top: 1px;\n}\n#navlinks a:last-of-type {\n  " + align + ": " + position[i++] + "px;\n}\n#navlinks a:first-of-type {\n  " + align + ": " + position[i++] + "px;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffset.W) + "px;\n  " + align + ": 2px;\n  top: 1.6em;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#boardNavDesktopFoot::after,\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n#watcher::after,\n#globalMessage::after,\n#img-controls,\n#main-menu,\n#fappeTyme,\ndiv.navLinks > a:first-of-type::after,\n#catalog::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: 1px !important;\n}\n" + (_conf["Announcements"] === "slideout" ? "#globalMessage," : "") + "\n" + (_conf["Slideout Watcher"] ? "#watcher," : "") + "\n#boardNavDesktopFoot {\n  top: 16px !important;\n}\n" + (_conf['Boards Navigation'] === 'Top' || _conf['Boards Navigation'] === 'Sticky top' ? '#header-bar' : _conf['Pagination'] === 'top' || _conf['Pagination'] === 'sticky top' ? '.pagelist' : void 0) + " {\n  " + (_conf['4chan SS Navigation'] ? "padding-" + align + ": " + iconOffset + "px;" : "margin-" + align + ": " + iconOffset + "px;") + "\n}\n";
-        if (_conf["Updater Position"] !== 'moveable') {
-          css += "/* Updater + Stats */\n#updater,\n#thread-stats {\n  " + align + ": " + (_conf["Updater Position"] === "bottom" && !_conf["Hide Delete UI"] ? 23 : 2) + "px !important;\n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: auto !important;\n  bottom: auto !important;\n  " + (_conf["Updater Position"] === 'top' ? "top: 16px !important" : "bottom: 0 !important") + ";\n}";
-        }
+        css += "/* 4chan X Options */\n#appchanOptions {\n  " + align + ": " + position[i++] + "px;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Global Message */\n#globalMessage::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Watcher */\n#watcher::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Expand Images */\n#img-controls {\n  " + align + ": " + position[i++] + "px;\n}\n/* Main Menu */\n#main-menu {\n  " + align + ": " + position[i++] + "px;\n}\n/* 4chan Catalog */\n#catalog::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Fappe Tyme */\n#fappeTyme {\n  " + align + ": " + position[i++] + "px;\n}\n/* Thread Navigation Links */\n#navlinks a {\n  margin: 2px;\n  top: 1px;\n}\n#navlinks a:last-of-type {\n  " + align + ": " + position[i++] + "px;\n}\n#navlinks a:first-of-type {\n  " + align + ": " + position[i++] + "px;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffset.W) + "px;\n  " + align + ": 2px;\n  top: 1.6em;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#boardNavDesktopFoot::after,\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n#watcher::after,\n#globalMessage::after,\n#img-controls,\n#main-menu,\n#fappeTyme,\ndiv.navLinks > a:first-of-type::after,\n#catalog::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: 1px !important;\n}\n" + (_conf["Announcements"] === "slideout" ? "#globalMessage," : "") + "\n" + (_conf["Slideout Watcher"] ? "#watcher," : "") + "\n#boardNavDesktopFoot {\n  top: 16px !important;\n}\n.fixed.top #header-bar" + (_conf['Pagination'] === 'top' || _conf['Pagination'] === 'sticky top' ? ',\n.pagelist' : '') + " {\n  " + (_conf['4chan SS Navigation'] ? "padding-" + align + ": " + iconOffset + "px;" : "margin-" + align + ": " + iconOffset + "px;") + "\n}\n";
       } else {
         position = aligner(2 + (_conf["4chan Banner"] === "at sidebar top" ? Style.logoOffset + 19 : 0), [notEither && _conf['Image Expansion'], true, true, _conf['Slideout Navigation'] !== 'hide', _conf['Announcements'] === 'slideout' && $('#globalMessage', d.body), notCatalog && _conf['Slideout Watcher'] && _conf['Thread Watcher'], notCatalog && $('body > a[style="cursor: pointer; float: right;"]', d.body), $('#navtopright .exlinksOptionsLink', d.body), notEither, g.VIEW === 'thread', notEither && _conf['Fappe Tyme'], navlinks = ((g.VIEW !== 'thread' && _conf['Index Navigation']) || (g.VIEW === 'thread' && _conf['Reply Navigation'])) && notCatalog, navlinks]);
         iconOffset = (g.VIEW === 'thread' && _conf['Prefetch'] ? 250 + Style.sidebarOffset.W : 20 + (g.VIEW === 'thread' && _conf['Updater Position'] === 'top' ? 100 : 0)) - (_conf['4chan SS Navigation'] ? 0 : Style.sidebar + parseInt(_conf[align.capitalize() + " Thread Padding"], 10));
-        css += "/* Expand Images */\n#img-controls {\n  top: " + position[i++] + "px;\n}\n/* Main Menu */\n#main-menu {\n  top: " + position[i++] + "px;\n}\n/* 4chan X Options */\n#appchanOptions {\n  top: " + position[i++] + "px;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot,\n#boardNavDesktopFoot::after {\n  top: " + position[i++] + "px;\n}\n/* Global Message */\n#globalMessage,\n#globalMessage::after {\n  top: " + position[i++] + "px;\n}\n/* Watcher */\n" + (_conf["Slideout Watcher"] ? "#watcher, #watcher::after" : "") + " {\n  top: " + position[i++] + "px !important;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: " + position[i++] + "px;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  top: " + position[i++] + "px;\n}\n/* 4chan Catalog */\n#catalog::after {\n  top: " + position[i++] + "px;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  top: " + position[i++] + "px;\n}\n/* Fappe Tyme */\n#fappeTyme {\n  top: " + position[i++] + "px;\n}\n/* Thread Navigation Links */\n#navlinks a:first-of-type {\n  top: " + position[i++] + "px !important;\n}\n#navlinks a:last-of-type {\n  top: " + position[i++] + "px !important;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffset.W) + "px;\n  " + align + ": 2px;\n  top: 0;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#navlinks a,\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n#boardNavDesktopFoot::after,\n#globalMessage::after,\n#img-controls,\n#main-menu,\n#fappeTyme,\n" + (_conf["Slideout Watcher"] ? "#watcher::after," : "") + "\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#catalog::after,\ndiv.navLinks > a:first-of-type::after {\n  " + align + ": 3px !important;\n}\n#boardNavDesktopFoot,\n#globalMessage,\n#watcher {\n  width: " + (233 + Style.sidebarOffset.W) + "px !important;\n  " + align + ": 18px !important;\n}\n" + (_conf['Boards Navigation'] === 'Top' || _conf['Boards Navigation'] === 'Sticky top' ? '#header-bar' : _conf['Pagination'] === 'top' || _conf['Pagination'] === 'sticky top' ? '.pagelist' : void 0) + " {\n  " + (_conf['4chan SS Navigation'] ? "padding-" + align + ": " + iconOffset + "px;" : "margin-" + align + ": " + iconOffset + "px;") + "\n}";
-        if (_conf["Updater Position"] !== 'moveable') {
-          css += "/* Updater + Stats */\n#updater,\n#thread-stats {\n  " + align + ": " + (_conf["Updater Position"] === "top" || !_conf["Hide Delete UI"] ? 23 : 2) + "px !important; \n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: " + (_conf["Updater Position"] === "top" ? "-1px" : "auto") + " !important;\n  bottom: " + (_conf["Updater Position"] === "bottom" ? "-2px" : "auto") + " !important;\n}";
-        }
+        css += "/* Expand Images */\n#img-controls {\n  top: " + position[i++] + "px;\n}\n/* Main Menu */\n#main-menu {\n  top: " + position[i++] + "px;\n}\n/* 4chan X Options */\n#appchanOptions {\n  top: " + position[i++] + "px;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot,\n#boardNavDesktopFoot::after {\n  top: " + position[i++] + "px;\n}\n/* Global Message */\n#globalMessage,\n#globalMessage::after {\n  top: " + position[i++] + "px;\n}\n/* Watcher */\n" + (_conf["Slideout Watcher"] ? "#watcher, #watcher::after" : "") + " {\n  top: " + position[i++] + "px !important;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: " + position[i++] + "px;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  top: " + position[i++] + "px;\n}\n/* 4chan Catalog */\n#catalog::after {\n  top: " + position[i++] + "px;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  top: " + position[i++] + "px;\n}\n/* Fappe Tyme */\n#fappeTyme {\n  top: " + position[i++] + "px;\n}\n/* Thread Navigation Links */\n#navlinks a:first-of-type {\n  top: " + position[i++] + "px !important;\n}\n#navlinks a:last-of-type {\n  top: " + position[i++] + "px !important;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffset.W) + "px;\n  " + align + ": 2px;\n  top: 0;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#navlinks a,\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n#boardNavDesktopFoot::after,\n#globalMessage::after,\n#img-controls,\n#main-menu,\n#fappeTyme,\n" + (_conf["Slideout Watcher"] ? "#watcher::after," : "") + "\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#catalog::after,\ndiv.navLinks > a:first-of-type::after {\n  " + align + ": 3px !important;\n}\n#boardNavDesktopFoot,\n#globalMessage,\n#watcher {\n  width: " + (233 + Style.sidebarOffset.W) + "px !important;\n  " + align + ": 18px !important;\n}\n.fixed.top #header-bar" + (_conf['Pagination'] === 'top' || _conf['Pagination'] === 'sticky top' ? ',\n.pagelist' : '') + " {\n  " + (_conf['4chan SS Navigation'] ? "padding-" + align + ": " + iconOffset + "px;" : "margin-" + align + ": " + iconOffset + "px;") + "\n}";
       }
       return Style.icons.textContent = css;
     },
     padding: function() {
       var css, sheet, _conf;
 
-      if (!(sheet = Style.paddingSheet)) {
+      if (!((sheet = Style.paddingSheet) && Style.padding.nav)) {
         return;
       }
       _conf = Conf;
-      Style.padding.nav.property = _conf["Boards Navigation"].split(" ");
-      Style.padding.nav.property = Style.padding.nav.property[Style.padding.nav.property.length - 1];
+      Style.padding.nav.property = _conf['Bottom Header'] ? 'bottom' : 'top';
       if (Style.padding.pages) {
         Style.padding.pages.property = _conf["Pagination"].split(" ");
         Style.padding.pages.property = Style.padding.pages.property[Style.padding.pages.property.length - 1];
       }
       css = "body::before {\n";
-      if (Style.padding.pages && (_conf["Pagination"] === "sticky top" || _conf["Pagination"] === "sticky bottom")) {
+      if (Style.padding.pages && ["sticky top", "top", "sticky bottom"].contains(_conf["Pagination"])) {
         css += "  " + Style.padding.pages.property + ": " + Style.padding.pages.offsetHeight + "px !important;\n";
       }
-      if (_conf["Boards Navigation"] === "Sticky top" || _conf["Boards Navigation"] === "Sticky bottom") {
+      if (_conf['Fixed Header']) {
         css += "  " + Style.padding.nav.property + ": " + Style.padding.nav.offsetHeight + "px !important;\n";
       }
       css += "}\nbody {\n  padding-bottom: 0;\n";
-      if ((Style.padding.pages != null) && (_conf["Pagination"] === "sticky top" || _conf["Pagination"] === "sticky bottom" || _conf["Pagination"] === "top")) {
+      if ((Style.padding.pages != null) && ["sticky top", "top", "sticky bottom"].contains(_conf["Pagination"])) {
         css += "  padding-" + Style.padding.pages.property + ": " + Style.padding.pages.offsetHeight + "px;\n";
       }
-      if (_conf["Boards Navigation"] !== "Hide") {
+      if (!(_conf['Header auto-hide'] || _conf['Hide Header'])) {
         css += "  padding-" + Style.padding.nav.property + ": " + Style.padding.nav.offsetHeight + "px;\n";
       }
       css += "}";
@@ -12440,6 +11443,1343 @@
     }
   };
 
+  PSAHiding = {
+    init: function() {
+      var entry;
+
+      if (!Conf['Announcement Hiding']) {
+        return;
+      }
+      entry = {
+        type: 'header',
+        el: $.el('a', {
+          textContent: 'Show announcement',
+          className: 'show-announcement',
+          href: 'javascript:;'
+        }),
+        order: 50,
+        open: function() {
+          var _ref;
+
+          if ((_ref = $.id('globalMessage')) != null ? _ref.hidden : void 0) {
+            return true;
+          }
+          return false;
+        }
+      };
+      $.event('AddMenuEntry', entry);
+      $.on(entry.el, 'click', PSAHiding.toggle);
+      $.addClass(doc, 'hide-announcement');
+      return $.on(d, '4chanXInitFinished', this.setup);
+    },
+    setup: function() {
+      var btn, psa;
+
+      $.off(d, '4chanXInitFinished', PSAHiding.setup);
+      if (!(psa = $.id('globalMessage'))) {
+        return;
+      }
+      PSAHiding.btn = btn = $.el('a', {
+        innerHTML: '<span>[&nbsp;-&nbsp;]</span>',
+        title: 'Hide announcement.',
+        className: 'hide-announcement',
+        href: 'javascript:;',
+        textContent: '[ - ]'
+      });
+      $.on(btn, 'click', PSAHiding.toggle);
+      return $.get('hiddenPSAs', [], function(item) {
+        return PSAHiding.sync(item['hiddenPSAs']);
+      });
+    },
+    toggle: function(e) {
+      var text;
+
+      text = PSAHiding.trim($.id('globalMessage'));
+      return $.get('hiddenPSAs', [], function(_arg) {
+        var hiddenPSAs, i;
+
+        hiddenPSAs = _arg.hiddenPSAs;
+        if (hide) {
+          hiddenPSAs.push(text);
+          hiddenPSAs = hiddenPSAs.slice(-5);
+        } else {
+          $.event('CloseMenu');
+          i = hiddenPSAs.indexOf(text);
+          hiddenPSAs.splice(i, 1);
+        }
+        PSAHiding.sync(hiddenPSAs);
+        return $.set('hiddenPSAs', hiddenPSAs);
+      });
+    },
+    sync: function(hiddenPSAs) {
+      var hr, psa;
+
+      psa = $.id('globalMessage');
+      psa.hidden = PSAHiding.btn.hidden = hiddenPSAs.contains(PSAHiding.trim(psa)) ? true : false;
+      if ((hr = psa.nextElementSibling) && hr.nodeName === 'HR') {
+        return hr.hidden = psa.hidden;
+      }
+    },
+    trim: function(psa) {
+      return psa.textContent.replace(/\W+/g, '').toLowerCase();
+    }
+  };
+
+  CatalogLinks = {
+    init: function() {
+      var el, input;
+
+      $.ready(this.ready);
+      if (!Conf['Catalog Links']) {
+        return;
+      }
+      el = $.el('label', {
+        id: 'toggleCatalog',
+        href: 'javascript:;',
+        innerHTML: "<input type=checkbox " + (Conf['Header catalog links'] ? 'checked' : '') + ">Catalog Links",
+        title: "Turn catalog links " + (Conf['Header catalog links'] ? 'off' : 'on') + "."
+      });
+      input = $('input', el);
+      $.on(input, 'change', this.toggle);
+      $.sync('Header catalog links', CatalogLinks.set);
+      $.event('AddMenuEntry', {
+        type: 'header',
+        el: el,
+        order: 95
+      });
+      return $.on(d, '4chanXInitFinished', function() {
+        return CatalogLinks.set(Conf['Header catalog links']);
+      });
+    },
+    toggle: function() {
+      var useCatalog;
+
+      $.event('CloseMenu');
+      $.set('Header catalog links', useCatalog = this.checked);
+      return CatalogLinks.set(useCatalog);
+    },
+    set: function(useCatalog) {
+      var a, board, path, _i, _len, _ref;
+
+      path = useCatalog ? 'catalog' : '';
+      _ref = $$("#board-list a[href*=\"boards.4chan.org\"],\n#boardNavDesktop a[href*=\"boards.4chan.org\"],\n#boardNavDesktopFoot a[href*=\"boards.4chan.org\"]");
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        a = _ref[_i];
+        board = a.pathname.split('/')[1];
+        if (['f', 'status', '4chan'].contains(board) || !board) {
+          continue;
+        }
+        if (Conf['External Catalog']) {
+          a.href = useCatalog ? CatalogLinks.external(board) : "//boards.4chan.org/" + board + "/";
+        } else {
+          a.pathname = "/" + board + "/" + path;
+        }
+        a.title = useCatalog ? "" + a.title + " - Catalog" : a.title.replace(/\ -\ Catalog$/, '');
+      }
+      return this.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
+    },
+    external: function(board) {
+      return (['a', 'c', 'g', 'co', 'k', 'm', 'o', 'p', 'v', 'vg', 'w', 'cm', '3', 'adv', 'an', 'cgl', 'ck', 'diy', 'fa', 'fit', 'int', 'jp', 'mlp', 'lit', 'mu', 'n', 'po', 'sci', 'toy', 'trv', 'tv', 'vp', 'x', 'q'].contains(board) ? "http://catalog.neet.tv/" + board : ['d', 'e', 'gif', 'h', 'hr', 'hc', 'r9k', 's', 'pol', 'soc', 'u', 'i', 'ic', 'hm', 'r', 'w', 'wg', 'wsg', 't', 'y'].contains(board) ? "http://4index.gropes.us/" + board : "//boards.4chan.org/" + board + "/catalog");
+    },
+    ready: function() {
+      var catalogLink;
+
+      if (catalogLink = $('.pages.cataloglink a', d.body) || $('[href=".././catalog"]', d.body)) {
+        if (g.VIEW !== 'thread') {
+          $.add(d.body, catalogLink);
+        }
+        return catalogLink.id = 'catalog';
+      }
+    }
+  };
+
+  IDColor = {
+    init: function() {
+      if (!Conf['Color User IDs']) {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Reveal Spoilers',
+        cb: this.node
+      });
+    },
+    node: function(post) {
+      var str, uid;
+
+      if (!(uid = $('.hand', this.nodes.uniqueID))) {
+        return;
+      }
+      str = this.info.uniqueID;
+      if (uid.nodeName === 'SPAN') {
+        return uid.style.cssText = IDColor.apply.call(str);
+      }
+    },
+    ids: {},
+    compute: function(str) {
+      var hash, rgb;
+
+      hash = this.hash(str);
+      rgb = [(hash >> 24) & 0xFF, (hash >> 16) & 0xFF, (hash >> 8) & 0xFF];
+      rgb[3] = ((rgb[0] * 0.299) + (rgb[1] * 0.587) + (rgb[2] * 0.114)) > 125;
+      this.ids[str] = rgb;
+      return rgb;
+    },
+    apply: function() {
+      var rgb;
+
+      rgb = IDColor.ids[this] || IDColor.compute(this);
+      return ("background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: ") + (rgb[3] ? "black;" : "white; border-radius: 3px; padding: 0px 2px;");
+    },
+    hash: function(str) {
+      var i, j, msg;
+
+      msg = 0;
+      i = 0;
+      j = str.length;
+      while (i < j) {
+        msg = ((msg << 5) - msg) + str.charCodeAt(i);
+        ++i;
+      }
+      return msg;
+    }
+  };
+
+  CustomCSS = {
+    init: function() {
+      if (!Conf['Custom CSS']) {
+        return;
+      }
+      return this.addStyle();
+    },
+    addStyle: function() {
+      return this.style = $.addStyle(Conf['usercss']);
+    },
+    rmStyle: function() {
+      if (this.style) {
+        $.rm(this.style);
+        return delete this.style;
+      }
+    },
+    update: function() {
+      if (!this.style) {
+        this.addStyle();
+      }
+      return this.style.textContent = Conf['usercss'];
+    }
+  };
+
+  ExpandComment = {
+    init: function() {
+      if (g.VIEW !== 'index' || !Conf['Comment Expansion']) {
+        return;
+      }
+      if (g.BOARD.ID === 'g') {
+        this.callbacks.push(Fourchan.code);
+      }
+      if (g.BOARD.ID === 'sci') {
+        this.callbacks.push(Fourchan.math);
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Comment Expansion',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var a;
+
+      if (a = $('.abbr > a', this.nodes.comment)) {
+        return $.on(a, 'click', ExpandComment.cb);
+      }
+    },
+    callbacks: [],
+    cb: function(e) {
+      var post;
+
+      e.preventDefault();
+      post = Get.postFromNode(this);
+      return ExpandComment.expand(post);
+    },
+    expand: function(post) {
+      var a;
+
+      if (post.nodes.longComment && !post.nodes.longComment.parentNode) {
+        $.replace(post.nodes.shortComment, post.nodes.longComment);
+        post.nodes.comment = post.nodes.longComment;
+        return;
+      }
+      if (!(a = $('.abbr > a', post.nodes.comment))) {
+        return;
+      }
+      a.textContent = "Post No." + post + " Loading...";
+      return $.cache("//api.4chan.org" + a.pathname + ".json", function() {
+        return ExpandComment.parse(this, a, post);
+      });
+    },
+    contract: function(post) {
+      var a;
+
+      if (!post.nodes.shortComment) {
+        return;
+      }
+      a = $('.abbr > a', post.nodes.shortComment);
+      a.textContent = 'here';
+      $.replace(post.nodes.longComment, post.nodes.shortComment);
+      return post.nodes.comment = post.nodes.shortComment;
+    },
+    parse: function(req, a, post) {
+      var callback, clone, comment, href, postObj, posts, quote, spoilerRange, status, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+
+      status = req.status;
+      if (![200, 304].contains(status)) {
+        a.textContent = "Error " + req.statusText + " (" + status + ")";
+        return;
+      }
+      posts = JSON.parse(req.response).posts;
+      if (spoilerRange = posts[0].custom_spoiler) {
+        Build.spoilerRange[g.BOARD] = spoilerRange;
+      }
+      for (_i = 0, _len = posts.length; _i < _len; _i++) {
+        postObj = posts[_i];
+        if (postObj.no === post.ID) {
+          break;
+        }
+      }
+      if (postObj.no !== post.ID) {
+        a.textContent = "Post No." + post + " not found.";
+        return;
+      }
+      comment = post.nodes.comment;
+      clone = comment.cloneNode(false);
+      clone.innerHTML = postObj.com;
+      _ref = $$('.quotelink', clone);
+      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+        quote = _ref[_j];
+        href = quote.getAttribute('href');
+        if (href[0] === '/') {
+          continue;
+        }
+        quote.href = "/" + post.board + "/res/" + href;
+      }
+      post.nodes.shortComment = comment;
+      $.replace(comment, clone);
+      post.nodes.comment = post.nodes.longComment = clone;
+      post.parseComment();
+      post.parseQuotes();
+      _ref1 = ExpandComment.callbacks;
+      for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+        callback = _ref1[_k];
+        callback.call(post);
+      }
+    }
+  };
+
+  ExpandThread = {
+    init: function() {
+      if (g.VIEW !== 'index' || !Conf['Thread Expansion']) {
+        return;
+      }
+      return Thread.prototype.callbacks.push({
+        name: 'Thread Expansion',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var a, span;
+
+      if (!(span = $('.summary', this.OP.nodes.root.parentNode))) {
+        return;
+      }
+      a = $.el('a', {
+        textContent: "+ " + span.textContent,
+        className: 'summary',
+        href: 'javascript:;'
+      });
+      $.on(a, 'click', ExpandThread.cbToggle);
+      return $.replace(span, a);
+    },
+    cbToggle: function() {
+      var op;
+
+      op = Get.postFromRoot(this.previousElementSibling);
+      return ExpandThread.toggle(op.thread);
+    },
+    toggle: function(thread) {
+      var a, inlined, num, post, replies, reply, threadRoot, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+
+      threadRoot = thread.OP.nodes.root.parentNode;
+      a = $('.summary', threadRoot);
+      switch (thread.isExpanded) {
+        case false:
+        case void 0:
+          thread.isExpanded = 'loading';
+          _ref = $$('.thread > .postContainer', threadRoot);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            post = _ref[_i];
+            ExpandComment.expand(Get.postFromRoot(post));
+          }
+          if (!a) {
+            thread.isExpanded = true;
+            return;
+          }
+          thread.isExpanded = 'loading';
+          a.textContent = a.textContent.replace('+', '× Loading...');
+          $.cache("//api.4chan.org/" + thread.board + "/res/" + thread + ".json", function() {
+            return ExpandThread.parse(this, thread, a);
+          });
+          break;
+        case 'loading':
+          thread.isExpanded = false;
+          if (!a) {
+            return;
+          }
+          a.textContent = a.textContent.replace('× Loading...', '+');
+          break;
+        case true:
+          thread.isExpanded = false;
+          if (a) {
+            a.textContent = a.textContent.replace('-', '+');
+            num = (function() {
+              if (thread.isSticky) {
+                return 1;
+              } else {
+                switch (g.BOARD.ID) {
+                  case 'b':
+                  case 'vg':
+                  case 'q':
+                    return 3;
+                  case 't':
+                    return 1;
+                  default:
+                    return 5;
+                }
+              }
+            })();
+            replies = $$('.thread > .replyContainer', threadRoot).slice(0, -num);
+            for (_j = 0, _len1 = replies.length; _j < _len1; _j++) {
+              reply = replies[_j];
+              if (Conf['Quote Inlining']) {
+                while (inlined = $('.inlined', reply)) {
+                  inlined.click();
+                }
+              }
+              $.rm(reply);
+            }
+          }
+          _ref1 = $$('.thread > .postContainer', threadRoot);
+          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+            post = _ref1[_k];
+            ExpandComment.contract(Get.postFromRoot(post));
+          }
+      }
+    },
+    parse: function(req, thread, a) {
+      var link, node, nodes, post, posts, replies, reply, spoilerRange, status, _i, _len;
+
+      if (a.textContent[0] === '+') {
+        return;
+      }
+      status = req.status;
+      if (![200, 304].contains(status)) {
+        a.textContent = "Error " + req.statusText + " (" + status + ")";
+        $.off(a, 'click', ExpandThread.cb.toggle);
+        return;
+      }
+      thread.isExpanded = true;
+      a.textContent = a.textContent.replace('× Loading...', '-');
+      posts = JSON.parse(req.response).posts;
+      if (spoilerRange = posts[0].custom_spoiler) {
+        Build.spoilerRange[g.BOARD] = spoilerRange;
+      }
+      replies = posts.slice(1);
+      posts = [];
+      nodes = [];
+      for (_i = 0, _len = replies.length; _i < _len; _i++) {
+        reply = replies[_i];
+        if (post = thread.posts[reply.no]) {
+          nodes.push(post.nodes.root);
+          continue;
+        }
+        node = Build.postFromObject(reply, thread.board);
+        post = new Post(node, thread, thread.board);
+        link = $('a[title="Highlight this post"]', node);
+        link.href = "res/" + thread + "#p" + post;
+        link.nextSibling.href = "res/" + thread + "#q" + post;
+        posts.push(post);
+        nodes.push(node);
+      }
+      Main.callbackNodes(Post, posts);
+      $.after(a, nodes);
+      return Fourchan.parseThread(thread.ID, 1, nodes.length);
+    }
+  };
+
+  FileInfo = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['File Info Formatting']) {
+        return;
+      }
+      this.funk = this.createFunc(Conf['fileInfo']);
+      return Post.prototype.callbacks.push({
+        name: 'File Info Formatting',
+        cb: this.node
+      });
+    },
+    node: function() {
+      if (!this.file || this.isClone) {
+        return;
+      }
+      return this.file.text.innerHTML = FileInfo.funk(FileInfo, this);
+    },
+    createFunc: function(format) {
+      var code;
+
+      code = format.replace(/%(.)/g, function(s, c) {
+        if (c in FileInfo.formatters) {
+          return "' + FileInfo.formatters." + c + ".call(post) + '";
+        } else {
+          return s;
+        }
+      });
+      return Function('FileInfo', 'post', "return '" + code + "'");
+    },
+    convertUnit: function(size, unit) {
+      var i;
+
+      if (unit === 'B') {
+        return "" + (size.toFixed()) + " Bytes";
+      }
+      i = 1 + ['KB', 'MB'].indexOf(unit);
+      while (i--) {
+        size /= 1024;
+      }
+      size = unit === 'MB' ? Math.round(size * 100) / 100 : size.toFixed();
+      return "" + size + " " + unit;
+    },
+    escape: function(name) {
+      return name.replace(/<|>/g, function(c) {
+        return c === '<' && '&lt;' || '&gt;';
+      });
+    },
+    formatters: {
+      t: function() {
+        return this.file.URL.match(/\d+\..+$/)[0];
+      },
+      T: function() {
+        return "<a href=" + this.file.URL + " target=_blank>" + (FileInfo.formatters.t.call(this)) + "</a>";
+      },
+      l: function() {
+        return "<a href=" + this.file.URL + " target=_blank>" + (FileInfo.formatters.n.call(this)) + "</a>";
+      },
+      L: function() {
+        return "<a href=" + this.file.URL + " target=_blank>" + (FileInfo.formatters.N.call(this)) + "</a>";
+      },
+      n: function() {
+        var fullname, shortname;
+
+        fullname = this.file.name;
+        shortname = Build.shortFilename(this.file.name, this.isReply);
+        if (fullname === shortname) {
+          return FileInfo.escape(fullname);
+        } else {
+          return "<span class=fntrunc>" + (FileInfo.escape(shortname)) + "</span><span class=fnfull>" + (FileInfo.escape(fullname)) + "</span>";
+        }
+      },
+      N: function() {
+        return FileInfo.escape(this.file.name);
+      },
+      p: function() {
+        if (this.file.isSpoiler) {
+          return 'Spoiler, ';
+        } else {
+          return '';
+        }
+      },
+      s: function() {
+        return this.file.size;
+      },
+      B: function() {
+        return FileInfo.convertUnit(this.file.sizeInBytes, 'B');
+      },
+      K: function() {
+        return FileInfo.convertUnit(this.file.sizeInBytes, 'KB');
+      },
+      M: function() {
+        return FileInfo.convertUnit(this.file.sizeInBytes, 'MB');
+      },
+      r: function() {
+        if (this.file.isImage) {
+          return this.file.dimensions;
+        } else {
+          return 'PDF';
+        }
+      }
+    }
+  };
+
+  Fourchan = {
+    init: function() {
+      var board;
+
+      if (g.VIEW === 'catalog') {
+        return;
+      }
+      board = g.BOARD.ID;
+      if (board === 'g') {
+        $.globalEval("window.addEventListener('prettyprint', function(e) {\n  var pre = e.detail;\n  pre.innerHTML = prettyPrintOne(pre.innerHTML);\n}, false);");
+        Post.prototype.callbacks.push({
+          name: 'Parse /g/ code',
+          cb: this.code
+        });
+      }
+      if (board === 'sci') {
+        $.globalEval("window.addEventListener('jsmath', function(e) {\n  if (jsMath.loaded) {\n    // process one post\n    jsMath.ProcessBeforeShowing(e.detail);\n  } else {\n    // load jsMath and process whole document\n    jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);\n    jsMath.Autoload.LoadJsMath();\n  }\n}, false);");
+        return Post.prototype.callbacks.push({
+          name: 'Parse /sci/ math',
+          cb: this.math
+        });
+      }
+    },
+    code: function() {
+      var pre, _i, _len, _ref;
+
+      if (this.isClone) {
+        return;
+      }
+      _ref = $$('.prettyprint', this.nodes.comment);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        pre = _ref[_i];
+        $.event('prettyprint', pre, window);
+      }
+    },
+    math: function() {
+      if (this.isClone || !$('.math', this.nodes.comment)) {
+        return;
+      }
+      return $.event('jsmath', this.nodes.post, window);
+    },
+    parseThread: function(threadID, offset, limit) {
+      return $.event('4chanParsingDone', {
+        threadId: threadID,
+        offset: offset,
+        limit: limit
+      });
+    }
+  };
+
+  Keybinds = {
+    init: function() {
+      var init;
+
+      if (g.VIEW === 'catalog' || !Conf['Keybinds']) {
+        return;
+      }
+      init = function() {
+        var node, _i, _len, _ref;
+
+        $.off(d, '4chanXInitFinished', init);
+        $.on(d, 'keydown', Keybinds.keydown);
+        _ref = $$('[accesskey]');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          node = _ref[_i];
+          node.removeAttribute('accesskey');
+        }
+      };
+      return $.on(d, '4chanXInitFinished', init);
+    },
+    keydown: function(e) {
+      var form, key, notification, notifications, op, target, thread, threadRoot, _i, _len;
+
+      if (!(key = Keybinds.keyCode(e))) {
+        return;
+      }
+      target = e.target;
+      if (['INPUT', 'TEXTAREA'].contains(target.nodeName)) {
+        if (!/(Esc|Alt|Ctrl|Meta)/.test(key)) {
+          return;
+        }
+      }
+      threadRoot = Nav.getThread();
+      if (op = $('.op', threadRoot)) {
+        thread = Get.postFromNode(op).thread;
+      }
+      switch (key) {
+        case Conf['Toggle board list']:
+          if (Conf['Custom Board Navigation']) {
+            Header.toggleBoardList();
+          }
+          break;
+        case Conf['Toggle header']:
+          if (!$('#menu.left')) {
+            Header.menuButton.click();
+          }
+          Header.headerToggler.click();
+          break;
+        case Conf['Open empty QR']:
+          Keybinds.qr(threadRoot);
+          break;
+        case Conf['Open QR']:
+          Keybinds.qr(threadRoot, true);
+          break;
+        case Conf['Open settings']:
+          Settings.open();
+          break;
+        case Conf['Close']:
+          if ($.id('fourchanx-settings')) {
+            Settings.close();
+          } else if ((notifications = $$('.notification')).length) {
+            for (_i = 0, _len = notifications.length; _i < _len; _i++) {
+              notification = notifications[_i];
+              $('.close', notification).click();
+            }
+          } else if (QR.nodes) {
+            QR.close();
+          }
+          break;
+        case Conf['Spoiler tags']:
+          if (target.nodeName !== 'TEXTAREA') {
+            return;
+          }
+          Keybinds.tags('spoiler', target);
+          break;
+        case Conf['Code tags']:
+          if (target.nodeName !== 'TEXTAREA') {
+            return;
+          }
+          Keybinds.tags('code', target);
+          break;
+        case Conf['Eqn tags']:
+          if (target.nodeName !== 'TEXTAREA') {
+            return;
+          }
+          Keybinds.tags('eqn', target);
+          break;
+        case Conf['Math tags']:
+          if (target.nodeName !== 'TEXTAREA') {
+            return;
+          }
+          Keybinds.tags('math', target);
+          break;
+        case Conf['Toggle sage']:
+          if (QR.nodes) {
+            Keybinds.sage();
+          }
+          break;
+        case Conf['Submit QR']:
+          if (QR.nodes && !QR.status()) {
+            QR.submit();
+          }
+          break;
+        case Conf['Watch']:
+          ThreadWatcher.toggle(thread);
+          break;
+        case Conf['Update']:
+          ThreadUpdater.update();
+          break;
+        case Conf['Expand image']:
+          Keybinds.img(threadRoot);
+          break;
+        case Conf['Expand images']:
+          Keybinds.img(threadRoot, true);
+          break;
+        case Conf['fappeTyme']:
+          FappeTyme.toggle();
+          break;
+        case Conf['Front page']:
+          window.location = "/" + g.BOARD + "/0#delform";
+          break;
+        case Conf['Open front page']:
+          $.open("/" + g.BOARD + "/#delform");
+          break;
+        case Conf['Next page']:
+          if (form = $('.next form')) {
+            window.location = form.action;
+          }
+          break;
+        case Conf['Previous page']:
+          if (form = $('.prev form')) {
+            window.location = form.action;
+          }
+          break;
+        case Conf['Open catalog']:
+          if (Conf['External Catalog']) {
+            window.location = CatalogLinks.external(g.BOARD.ID);
+          } else {
+            window.location = "/" + g.BOARD + "/catalog";
+          }
+          break;
+        case Conf['Next thread']:
+          if (g.VIEW === 'thread') {
+            return;
+          }
+          Nav.scroll(+1);
+          break;
+        case Conf['Previous thread']:
+          if (g.VIEW === 'thread') {
+            return;
+          }
+          Nav.scroll(-1);
+          break;
+        case Conf['Expand thread']:
+          ExpandThread.toggle(thread);
+          break;
+        case Conf['Open thread']:
+          Keybinds.open(thread);
+          break;
+        case Conf['Open thread tab']:
+          Keybinds.open(thread, true);
+          break;
+        case Conf['Next reply']:
+          Keybinds.hl(+1, threadRoot);
+          break;
+        case Conf['Previous reply']:
+          Keybinds.hl(-1, threadRoot);
+          break;
+        case Conf['Hide']:
+          if (g.VIEW === 'index') {
+            ThreadHiding.toggle(thread);
+          }
+          break;
+        default:
+          return;
+      }
+      e.preventDefault();
+      return e.stopPropagation();
+    },
+    keyCode: function(e) {
+      var kc, key;
+
+      key = (function() {
+        switch (kc = e.keyCode) {
+          case 8:
+            return '';
+          case 13:
+            return 'Enter';
+          case 27:
+            return 'Esc';
+          case 37:
+            return 'Left';
+          case 38:
+            return 'Up';
+          case 39:
+            return 'Right';
+          case 40:
+            return 'Down';
+          default:
+            if ((48 <= kc && kc <= 57) || (65 <= kc && kc <= 90)) {
+              return String.fromCharCode(kc).toLowerCase();
+            } else {
+              return null;
+            }
+        }
+      })();
+      if (key) {
+        if (e.altKey) {
+          key = 'Alt+' + key;
+        }
+        if (e.ctrlKey) {
+          key = 'Ctrl+' + key;
+        }
+        if (e.metaKey) {
+          key = 'Meta+' + key;
+        }
+        if (e.shiftKey) {
+          key = 'Shift+' + key;
+        }
+      }
+      return key;
+    },
+    qr: function(thread, quote) {
+      if (!(Conf['Quick Reply'] && QR.postingIsEnabled)) {
+        return;
+      }
+      QR.open();
+      if (quote) {
+        QR.quote.call($('input', $('.post.highlight', thread) || thread));
+      }
+      QR.nodes.com.focus();
+      if (Conf['QR Shortcut']) {
+        return $.rmClass($('.qr-shortcut'), 'disabled');
+      }
+    },
+    tags: function(tag, ta) {
+      var range, selEnd, selStart, value;
+
+      value = ta.value;
+      selStart = ta.selectionStart;
+      selEnd = ta.selectionEnd;
+      ta.value = value.slice(0, selStart) + ("[" + tag + "]") + value.slice(selStart, selEnd) + ("[/" + tag + "]") + value.slice(selEnd);
+      range = ("[" + tag + "]").length + selEnd;
+      ta.setSelectionRange(range, range);
+      return $.event('input', null, ta);
+    },
+    sage: function() {
+      var isSage;
+
+      isSage = /sage/i.test(QR.nodes.email.value);
+      return QR.nodes.email.value = isSage ? "" : "sage";
+    },
+    img: function(thread, all) {
+      var post;
+
+      if (all) {
+        return ImageExpand.cb.toggleAll();
+      } else {
+        post = Get.postFromNode($('.post.highlight', thread) || $('.op', thread));
+        return ImageExpand.toggle(post);
+      }
+    },
+    open: function(thread, tab) {
+      var url;
+
+      if (g.VIEW !== 'index') {
+        return;
+      }
+      url = "/" + thread.board + "/res/" + thread;
+      if (tab) {
+        return $.open(url);
+      } else {
+        return location.href = url;
+      }
+    },
+    hl: function(delta, thread) {
+      var headRect, next, postEl, rect, replies, reply, root, topMargin, _i, _len;
+
+      if (Conf['Fixed Header'] && Conf['Bottom header']) {
+        topMargin = 0;
+      } else {
+        headRect = Header.bar.getBoundingClientRect();
+        topMargin = headRect.top + headRect.height;
+      }
+      if (postEl = $('.reply.highlight', thread)) {
+        $.rmClass(postEl, 'highlight');
+        rect = postEl.getBoundingClientRect();
+        if (rect.bottom >= topMargin && rect.top <= doc.clientHeight) {
+          root = postEl.parentNode;
+          next = $.x('child::div[contains(@class,"post reply")]', delta === +1 ? root.nextElementSibling : root.previousElementSibling);
+          if (!next) {
+            this.focus(postEl);
+            return;
+          }
+          if (!(g.VIEW === 'thread' || $.x('ancestor::div[parent::div[@class="board"]]', next) === thread)) {
+            return;
+          }
+          rect = next.getBoundingClientRect();
+          if (rect.top < 0 || rect.bottom > doc.clientHeight) {
+            if (delta === -1) {
+              window.scrollBy(0, rect.top - topMargin);
+            } else {
+              next.scrollIntoView(false);
+            }
+          }
+          this.focus(next);
+          return;
+        }
+      }
+      replies = $$('.reply', thread);
+      if (delta === -1) {
+        replies.reverse();
+      }
+      for (_i = 0, _len = replies.length; _i < _len; _i++) {
+        reply = replies[_i];
+        rect = reply.getBoundingClientRect();
+        if (delta === +1 && rect.top >= topMargin || delta === -1 && rect.bottom <= doc.clientHeight) {
+          this.focus(reply);
+          return;
+        }
+      }
+    },
+    focus: function(post) {
+      return $.addClass(post, 'highlight');
+    }
+  };
+
+  Nav = {
+    init: function() {
+      var append, next, prev, span;
+
+      switch (g.VIEW) {
+        case 'index':
+          if (!Conf['Index Navigation']) {
+            return;
+          }
+          break;
+        case 'thread':
+          if (!Conf['Reply Navigation']) {
+            return;
+          }
+          break;
+        default:
+          return;
+      }
+      span = $.el('span', {
+        id: 'navlinks'
+      });
+      prev = $.el('a', {
+        href: 'javascript:;'
+      });
+      next = $.el('a', {
+        href: 'javascript:;'
+      });
+      $.on(prev, 'click', this.prev);
+      $.on(next, 'click', this.next);
+      $.add(span, [prev, $.tn(' '), next]);
+      append = function() {
+        $.off(d, '4chanXInitFinished', append);
+        return $.add(d.body, span);
+      };
+      return $.on(d, '4chanXInitFinished', append);
+    },
+    prev: function() {
+      if (g.VIEW === 'thread') {
+        return window.scrollTo(0, 0);
+      } else {
+        return Nav.scroll(-1);
+      }
+    },
+    next: function() {
+      if (g.VIEW === 'thread') {
+        return window.scrollTo(0, d.body.scrollHeight);
+      } else {
+        return Nav.scroll(+1);
+      }
+    },
+    getThread: function(full) {
+      var headRect, i, rect, thread, threads, topMargin, _i, _len;
+
+      if (Conf['Bottom header']) {
+        topMargin = 0;
+      } else {
+        headRect = Header.bar.getBoundingClientRect();
+        topMargin = headRect.top + headRect.height;
+      }
+      threads = $$('.thread:not([hidden])');
+      for (i = _i = 0, _len = threads.length; _i < _len; i = ++_i) {
+        thread = threads[i];
+        rect = thread.getBoundingClientRect();
+        if (rect.bottom > topMargin) {
+          if (full) {
+            return [threads, thread, i, rect, topMargin];
+          } else {
+            return thread;
+          }
+        }
+      }
+      return $('.board');
+    },
+    scroll: function(delta) {
+      var i, rect, thread, threads, top, topMargin, _ref, _ref1;
+
+      _ref = Nav.getThread(true), threads = _ref[0], thread = _ref[1], i = _ref[2], rect = _ref[3], topMargin = _ref[4];
+      top = rect.top - topMargin;
+      if (!((delta === -1 && Math.ceil(top) < 0) || (delta === +1 && top > 1))) {
+        i += delta;
+      }
+      top = ((_ref1 = threads[i]) != null ? _ref1.getBoundingClientRect().top : void 0) - topMargin;
+      return window.scrollBy(0, top);
+    }
+  };
+
+  RelativeDates = {
+    INTERVAL: $.MINUTE / 2,
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Relative Post Dates']) {
+        return;
+      }
+      $.on(d, 'visibilitychange ThreadUpdate', this.flush);
+      this.flush();
+      return Post.prototype.callbacks.push({
+        name: 'Relative Post Dates',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var dateEl;
+
+      if (this.isClone) {
+        return;
+      }
+      dateEl = this.nodes.date;
+      dateEl.title = dateEl.textContent;
+      return RelativeDates.setUpdate(this);
+    },
+    relative: function(diff, now, date) {
+      var days, months, number, rounded, unit, years;
+
+      unit = (number = diff / $.DAY) >= 1 ? (years = now.getYear() - date.getYear(), months = now.getMonth() - date.getMonth(), days = now.getDate() - date.getDate(), years > 1 ? (number = years - (months < 0 || months === 0 && days < 0), 'year') : years === 1 && (months > 0 || months === 0 && days >= 0) ? (number = years, 'year') : (months = (months + 12) % 12) > 1 ? (number = months - (days < 0), 'month') : months === 1 && days >= 0 ? (number = months, 'month') : 'day') : (number = diff / $.HOUR) >= 1 ? 'hour' : (number = diff / $.MINUTE) >= 1 ? 'minute' : (number = Math.max(0, diff) / $.SECOND, 'second');
+      rounded = Math.round(number);
+      if (rounded !== 1) {
+        unit += 's';
+      }
+      return "" + rounded + " " + unit + " ago";
+    },
+    stale: [],
+    flush: function() {
+      var now, update, _i, _len, _ref;
+
+      if (d.hidden) {
+        return;
+      }
+      now = new Date();
+      _ref = RelativeDates.stale;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        update = _ref[_i];
+        update(now);
+      }
+      RelativeDates.stale = [];
+      clearTimeout(RelativeDates.timeout);
+      return RelativeDates.timeout = setTimeout(RelativeDates.flush, RelativeDates.INTERVAL);
+    },
+    setUpdate: function(post) {
+      var markStale, setOwnTimeout, update;
+
+      setOwnTimeout = function(diff) {
+        var delay;
+
+        delay = diff < $.MINUTE ? $.SECOND - (diff + $.SECOND / 2) % $.SECOND : diff < $.HOUR ? $.MINUTE - (diff + $.MINUTE / 2) % $.MINUTE : diff < $.DAY ? $.HOUR - (diff + $.HOUR / 2) % $.HOUR : $.DAY - (diff + $.DAY / 2) % $.DAY;
+        return setTimeout(markStale, delay);
+      };
+      update = function(now) {
+        var date, diff, relative, singlePost, _i, _len, _ref;
+
+        date = post.info.date;
+        diff = now - date;
+        relative = RelativeDates.relative(diff, now, date);
+        _ref = [post].concat(post.clones);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          singlePost = _ref[_i];
+          singlePost.nodes.date.firstChild.textContent = relative;
+        }
+        return setOwnTimeout(diff);
+      };
+      markStale = function() {
+        return RelativeDates.stale.push(update);
+      };
+      return update(new Date());
+    }
+  };
+
+  RemoveSpoilers = {
+    init: function() {
+      if (!Conf['Remove Spoilers']) {
+        return;
+      }
+      if (Conf['Indicate Spoilers']) {
+        this.wrapper = function(text) {
+          return "[spoiler]" + text + "[/spoiler]";
+        };
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Reveal Spoilers',
+        cb: this.node
+      });
+    },
+    wrapper: function(text) {
+      return text;
+    },
+    node: function(post) {
+      var spoiler, spoilers, _i, _len;
+
+      spoilers = $$('s', this.nodes.comment);
+      for (_i = 0, _len = spoilers.length; _i < _len; _i++) {
+        spoiler = spoilers[_i];
+        $.replace(spoiler, $.tn(RemoveSpoilers.wrapper(spoiler.textContent)));
+      }
+    }
+  };
+
+  Report = {
+    init: function() {
+      if (!/report/.test(location.search)) {
+        return;
+      }
+      return $.ready(this.ready);
+    },
+    ready: function() {
+      var field, form;
+
+      form = $('form');
+      field = $.id('recaptcha_response_field');
+      $.on(field, 'keydown', function(e) {
+        if (e.keyCode === 8 && !field.value) {
+          return $.globalEval('Recaptcha.reload("t")');
+        }
+      });
+      return $.on(form, 'submit', function(e) {
+        var response;
+
+        e.preventDefault();
+        response = field.value.trim();
+        if (!/\s/.test(response)) {
+          field.value = "" + response + " " + response;
+        }
+        return form.submit();
+      });
+    }
+  };
+
+  Sauce = {
+    init: function() {
+      var link, links, _i, _len, _ref;
+
+      if (g.VIEW === 'catalog' || !Conf['Sauce']) {
+        return;
+      }
+      links = [];
+      _ref = Conf['sauces'].split('\n');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        if (link[0] === '#') {
+          continue;
+        }
+        links.push(this.createSauceLink(link.trim()));
+      }
+      if (!links.length) {
+        return;
+      }
+      this.links = links;
+      this.link = $.el('a', {
+        target: '_blank'
+      });
+      return Post.prototype.callbacks.push({
+        name: 'Sauce',
+        cb: this.node
+      });
+    },
+    createSauceLink: function(link) {
+      var m, text;
+
+      link = link.replace(/%(T?URL|MD5|board)/ig, function(parameter) {
+        switch (parameter) {
+          case '%TURL':
+            return "' + encodeURIComponent(post.file.thumbURL) + '";
+          case '%URL':
+            return "' + encodeURIComponent(post.file.URL) + '";
+          case '%MD5':
+            return "' + encodeURIComponent(post.file.MD5) + '";
+          case '%board':
+            return "' + encodeURIComponent(post.board) + '";
+          default:
+            return parameter;
+        }
+      });
+      text = (m = link.match(/;text:(.+)$/)) ? m[1] : link.match(/(\w+)\.\w+\//)[1];
+      link = link.replace(/;text:.+$/, '');
+      return Function('post', 'a', "a.href = '" + link + "';\na.textContent = '" + text + "';\nreturn a;");
+    },
+    node: function() {
+      var link, nodes, _i, _len, _ref;
+
+      if (this.isClone || !this.file) {
+        return;
+      }
+      nodes = [];
+      _ref = Sauce.links;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        nodes.push($.tn('\u00A0'), link(this, Sauce.link.cloneNode(true)));
+      }
+      return $.add(this.file.info, nodes);
+    }
+  };
+
+  Time = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Time Formatting']) {
+        return;
+      }
+      this.funk = this.createFunc(Conf['time']);
+      return Post.prototype.callbacks.push({
+        name: 'Time Formatting',
+        cb: this.node
+      });
+    },
+    node: function() {
+      if (this.isClone) {
+        return;
+      }
+      return this.nodes.date.textContent = Time.funk(Time, this.info.date);
+    },
+    createFunc: function(format) {
+      var code;
+
+      code = format.replace(/%([A-Za-z])/g, function(s, c) {
+        if (c in Time.formatters) {
+          return "' + Time.formatters." + c + ".call(date) + '";
+        } else {
+          return s;
+        }
+      });
+      return Function('Time', 'date', "return '" + code + "'");
+    },
+    day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    zeroPad: function(n) {
+      if (n < 10) {
+        return "0" + n;
+      } else {
+        return n;
+      }
+    },
+    formatters: {
+      a: function() {
+        return Time.day[this.getDay()].slice(0, 3);
+      },
+      A: function() {
+        return Time.day[this.getDay()];
+      },
+      b: function() {
+        return Time.month[this.getMonth()].slice(0, 3);
+      },
+      B: function() {
+        return Time.month[this.getMonth()];
+      },
+      d: function() {
+        return Time.zeroPad(this.getDate());
+      },
+      e: function() {
+        return this.getDate();
+      },
+      H: function() {
+        return Time.zeroPad(this.getHours());
+      },
+      I: function() {
+        return Time.zeroPad(this.getHours() % 12 || 12);
+      },
+      k: function() {
+        return this.getHours();
+      },
+      l: function() {
+        return this.getHours() % 12 || 12;
+      },
+      m: function() {
+        return Time.zeroPad(this.getMonth() + 1);
+      },
+      M: function() {
+        return Time.zeroPad(this.getMinutes());
+      },
+      p: function() {
+        if (this.getHours() < 12) {
+          return 'AM';
+        } else {
+          return 'PM';
+        }
+      },
+      P: function() {
+        if (this.getHours() < 12) {
+          return 'am';
+        } else {
+          return 'pm';
+        }
+      },
+      S: function() {
+        return Time.zeroPad(this.getSeconds());
+      },
+      y: function() {
+        return this.getFullYear() - 2000;
+      }
+    }
+  };
+
   Settings = {
     init: function() {
       var link, settings;
@@ -12493,7 +12833,7 @@
       Settings.addSection('Script', Settings.main);
       Settings.addSection('Filter', Settings.filter);
       Settings.addSection('Sauce', Settings.sauce);
-      Settings.addSection('Rice', Settings.rice);
+      Settings.addSection('Advanced', Settings.advanced);
       Settings.addSection('Keybinds', Settings.keybinds);
       $.on(d, 'AddSettingsSection', Settings.addSection);
       $.on(d, 'OpenSettings', function(e) {
@@ -12528,7 +12868,7 @@
       Settings.dialog = dialog = $.el('div', {
         id: 'appchanx-settings',
         "class": 'dialog',
-        innerHTML: "<nav>\n  <div class=sections-list></div>\n  <span class='imp-exp-result warning'></span>\n  <div class=credits>\n      <a class=export>Export</a> |\n      <a class=import>Import</a> |\n      <input type=file style='display: none;'>\n    <a href='http://zixaphir.github.com/appchan-x/' target=_blank>appchan x</a> |\n    <a href='https://github.com/zixaphir/appchan-x/blob/Av2/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |\n    <a href='https://github.com/zixaphir/appchan-x/blob/Av2/CONTRIBUTING.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |\n    <a href=javascript:; class=close title=Close>×</a>\n  </div>\n</nav>\n<hr>\n<div class=section-container><section></section></div>"
+        innerHTML: "<nav><div class=sections-list></div><span class='imp-exp-result warning'></span><div class=credits><a class=export>Export</a> |\n  <a class=import>Import</a> |\n  <input type=file style='display: none;'><a href='http://zixaphir.github.com/appchan-x/' target=_blank>appchan x</a> |\n<a href='https://github.com/zixaphir/appchan-x/blob/Av2/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |\n<a href='https://github.com/zixaphir/appchan-x/blob/Av2/CONTRIBUTING.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |\n<a href=javascript:; class=close title=Close>×</a></div></nav><hr><div class=section-container><section></section></div>"
       });
       Settings.overlay = overlay = $.el('div', {
         id: 'overlay'
@@ -12832,6 +13172,13 @@
           });
         }
         data.Conf.WatchedThreads = data.WatchedThreads;
+      } else if (version[0] === '3') {
+        data = Settings.convertSettings(data, {
+          'Reply Hiding': 'Reply Hiding Buttons',
+          'Thread Hiding': 'Thread Hiding Buttons',
+          'Bottom header': 'Bottom Header',
+          'Unread Tab Icon': 'Unread Favicon'
+        });
       }
       return $.set(data.Conf);
     },
@@ -12850,7 +13197,7 @@
     filter: function(section) {
       var select;
 
-      section.innerHTML = "<select name=filter>\n  <option value=guide>Guide</option>\n  <option value=name>Name</option>\n  <option value=uniqueID>Unique ID</option>\n  <option value=tripcode>Tripcode</option>\n  <option value=capcode>Capcode</option>\n  <option value=email>E-mail</option>\n  <option value=subject>Subject</option>\n  <option value=comment>Comment</option>\n  <option value=flag>Flag</option>\n  <option value=filename>Filename</option>\n  <option value=dimensions>Image dimensions</option>\n  <option value=filesize>Filesize</option>\n  <option value=MD5>Image MD5</option>\n</select>\n<div></div>";
+      section.innerHTML = "<select name=filter><option value=guide>Guide</option><option value=name>Name</option><option value=uniqueID>Unique ID</option><option value=tripcode>Tripcode</option><option value=capcode>Capcode</option><option value=email>E-mail</option><option value=subject>Subject</option><option value=comment>Comment</option><option value=flag>Flag</option><option value=filename>Filename</option><option value=dimensions>Image dimensions</option><option value=filesize>Filesize</option><option value=MD5>Image MD5</option></select><div></div>";
       select = $('select', section);
       $.on(select, 'change', Settings.selectFilter);
       return Settings.selectFilter.call(select);
@@ -12873,31 +13220,31 @@
         $.add(div, ta);
         return;
       }
-      return div.innerHTML = "<div class=warning " + (Conf['Filter'] ? 'hidden' : '') + "><code>Filter</code> is disabled.</div>\n<p>\n  Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>\n  Lines starting with a <code>#</code> will be ignored.<br>\n  For example, <code>/weeaboo/i</code> will filter posts containing the string `<code>weeaboo</code>`, case-insensitive.<br>\n  MD5 filtering uses exact string matching, not regular expressions.\n</p>\n<ul>You can use these settings with each regular expression, separate them with semicolons:\n  <li>\n    Per boards, separate them with commas. It is global if not specified.<br>\n    For example: <code>boards:a,jp;</code>.\n  </li>\n  <li>\n    Filter OPs only along with their threads (`only`), replies only (`no`), or both (`yes`, this is default).<br>\n    For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.\n  </li>\n  <li>\n    Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>\n    For example: <code>stub:yes;</code> or <code>stub:no;</code>.\n  </li>\n  <li>\n    Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>\n    For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.\n  </li>\n  <li>\n    Highlighted OPs will have their threads put on top of board pages by default.<br>\n    For example: <code>top:yes;</code> or <code>top:no;</code>.\n  </li>\n</ul>";
+      return div.innerHTML = "  <div class=warning " + (Conf['Filter'] ? 'hidden' : '') + "><code>Filter</code> is disabled.</div><p>\nUse <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>\nLines starting with a <code>#</code> will be ignored.<br>\nFor example, <code>/weeaboo/i</code> will filter posts containing the string `<code>weeaboo</code>`, case-insensitive.<br>\nMD5 filtering uses exact string matching, not regular expressions.\n</p><ul>You can use these settings with each regular expression, separate them with semicolons:\n<li>\n  Per boards, separate them with commas. It is global if not specified.<br>\n  For example: <code>boards:a,jp;</code>.\n</li><li>\n  Filter OPs only along with their threads (`only`), replies only (`no`), or both (`yes`, this is default).<br>\n  For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.\n</li><li>\n  Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>\n  For example: <code>stub:yes;</code> or <code>stub:no;</code>.\n</li><li>\n  Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>\n  For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.\n</li><li>\n  Highlighted OPs will have their threads put on top of board pages by default.<br>\n  For example: <code>top:yes;</code> or <code>top:no;</code>.\n</li></ul>";
     },
     sauce: function(section) {
       var sauce;
 
-      section.innerHTML = "<div class=warning " + (Conf['Sauce'] ? 'hidden' : '') + "><code>Sauce</code> is disabled.</div>\n<div>Lines starting with a <code>#</code> will be ignored.</div>\n<div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div>\n<ul>These parameters will be replaced by their corresponding values:\n  <li><code>%TURL</code>: Thumbnail URL.</li>\n  <li><code>%URL</code>: Full image URL.</li>\n  <li><code>%MD5</code>: MD5 hash.</li>\n  <li><code>%board</code>: Current board.</li>\n</ul>\n<textarea name=sauces class=field spellcheck=false></textarea>";
+      section.innerHTML = "  <div class=warning " + (Conf['Sauce'] ? 'hidden' : '') + "><code>Sauce</code> is disabled.</div><div>Lines starting with a <code>#</code> will be ignored.</div><div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div><ul>These parameters will be replaced by their corresponding values:\n<li><code>%TURL</code>: Thumbnail URL.</li><li><code>%URL</code>: Full image URL.</li><li><code>%MD5</code>: MD5 hash.</li><li><code>%board</code>: Current board.</li></ul><textarea name=sauces class=field spellcheck=false></textarea>";
       sauce = $('textarea', section);
       $.get('sauces', Conf['sauces'], function(item) {
         return sauce.value = item['sauces'];
       });
       return $.on(sauce, 'change', $.cb.value);
     },
-    rice: function(section) {
+    advanced: function(section) {
       var archiver, event, input, inputs, items, name, toSelect, _i, _j, _len, _len1, _ref;
 
-      section.innerHTML = "<fieldset>\n  <legend>Archiver</legend>\n  Select an Archiver for this board:\n  <select name=archiver></select>\n</fieldset>\n<fieldset>\n  <legend>Custom Board Navigation <span class=warning " + (Conf['Custom Board Navigation'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=boardnav class=field spellcheck=false></div>\n  <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>\n  <div>\n    For example:<br>\n    <code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n    will give you<br>\n    <code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n    if you are on /g/.\n  </div>\n  <div>Board link: <code>board</code></div>\n  <div>Title link: <code>board-title</code></div>\n  <div>Board link (Replace with title when on that board): <code>board-replace</code></div>\n  <div>Full text link: <code>board-full</code></div>\n  <div>Custom text link: <code>board-text:\"VIP Board\"</code></div>\n  <div>Index-only link: <code>board-index</code></div>\n  <div>Catalog-only link: <code>board-catalog</code></div>\n  <div>Combinations are possible: <code>board-index-text:\"VIP Index\"</code></div>\n  <div>Full board list toggle: <code>toggle-all</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>\n  <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>\n  <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>\n  <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>\n  <div>Year: <code>%y</code></div>\n  <div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>\n  <div>Minute: <code>%M</code></div>\n  <div>Second: <code>%S</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>\n</fieldset>\n\n<fieldset>\n  <legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>\n  <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>\n  <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>\n  <div>Spoiler indicator: <code>%p</code></div>\n  <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>\n  <div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>\n</fieldset>\n\n<fieldset>\n  <legend>Unread Favicon <span class=warning " + (Conf['Unread Favicon'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <select name=favicon>\n    <option value=ferongr>ferongr</option>\n    <option value=xat->xat-</option>\n    <option value=Mayhem>Mayhem</option>\n    <option value=Original>Original</option>\n  </select>\n  <span class=favicon-preview></span>\n</fieldset>\n\n<fieldset>\n  <legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend>\n  <button id=apply-css>Apply CSS</button>\n  <textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea>\n</fieldset>";
+      section.innerHTML = "<fieldset><legend>Archiver</legend><div>\n  Select an Archiver for this board:\n  <select name=archiver></select></div></fieldset><fieldset><legend>Custom Board Navigation <span class=warning " + (Conf['Custom Board Navigation'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=boardnav class=field spellcheck=false></div><div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div><div>\n  For example:<br><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n  will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n  if you are on /g/.\n</div><div>Board link: <code>board</code></div><div>Title link: <code>board-title</code></div><div>Board link (Replace with title when on that board): <code>board-replace</code></div><div>Full text link: <code>board-full</code></div><div>Custom text link: <code>board-text:\"VIP Board\"</code></div><div>Index-only link: <code>board-index</code></div><div>Catalog-only link: <code>board-catalog</code></div><div>Combinations are possible: <code>board-index-text:\"VIP Index\"</code></div><div>Full board list toggle: <code>toggle-all</code></div></fieldset><fieldset><legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div><div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div></fieldset><fieldset><legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div><div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div></fieldset><fieldset><legend>Unread Favicon <span class=warning " + (Conf['Unread Favicon'] ? 'hidden' : '') + ">is disabled.</span></legend><div><select name=favicon><option value=ferongr>ferongr</option><option value=xat->xat-</option><option value=Mayhem>Mayhem</option><option value=4chanJS>4chanJS</option><option value=Original>Original</option></select><span id=favicon-preview></span></div></fieldset><fieldset><legend>Emoji <span class=warning " + (Conf['Emoji'] ? 'hidden' : '') + ">is disabled.</span></legend><div>\n  Sage Icon: <select name=sageEmoji><option value=\"4chan SS\">4chan SS</option><option value=\"appchan\">appchan</option></select><span id=sageicon-preview></span></div><div>\n  Position: <select name=emojiPos><option value=\"before\">Before</option><option value=\"after\">After</option></select></div></fieldset><fieldset><legend>Thread Updater <span class=warning " + (Conf['Thread Updater'] ? 'hidden' : '') + ">is disabled.</span></legend><div>\n  Interval: <input type=number name=Interval class=field min=1 value=" + Conf['Interval'] + "></div></fieldset><fieldset><legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend><div><button id=apply-css>Apply CSS</button><textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea></div></fieldset>";
       items = {};
       inputs = {};
-      _ref = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss'];
+      _ref = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'emojiPos', 'sageEmoji', 'usercss'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         name = _ref[_i];
         input = $("[name='" + name + "']", section);
         items[name] = Conf[name];
         inputs[name] = input;
-        event = ['favicon', 'usercss'].contains(name) ? 'change' : 'input';
+        event = ['favicon', 'usercss', 'sageEmoji', 'emojiPos'].contains(name) ? 'change' : 'input';
         $.on(input, event, $.cb.value);
       }
       archiver = $('select[name=archiver]', section);
@@ -12924,15 +13271,17 @@
 
         for (key in items) {
           val = items[key];
+          if (['usercss', 'emojiPos', 'archiver'].contains(key)) {
+            continue;
+          }
           input = inputs[key];
           input.value = val;
-          if ('usercss' !== name) {
-            $.on(input, event, Settings[key]);
-            Settings[key].call(input);
-          }
+          $.on(input, event, Settings[key]);
+          Settings[key].call(input);
         }
+        return Rice.nodes(sectionreturn);
       });
-      Rice.nodes(section);
+      $.on($('input[name=Interval]', section), 'change', ThreadUpdater.cb.interval);
       $.on($('input[name="Custom CSS"]', section), 'change', Settings.togglecss);
       return $.on($.id('apply-css'), 'click', Settings.usercss);
     },
@@ -12946,7 +13295,7 @@
       return this.nextElementSibling.textContent = funk(Time, new Date());
     },
     backlink: function() {
-      return this.nextElementSibling.textContent = Conf['backlink'].replace(/%id/, '123456789');
+      return this.nextElementSibling.textContent = this.value.replace(/%id/, '123456789');
     },
     fileInfo: function() {
       var data, funk;
@@ -12971,7 +13320,10 @@
       if (g.VIEW === 'thread' && Conf['Unread Favicon']) {
         Unread.update();
       }
-      return this.nextElementSibling.innerHTML = "<img src=" + Favicon["default"] + ">\n<img src=" + Favicon.unreadSFW + ">\n<img src=" + Favicon.unreadNSFW + ">\n<img src=" + Favicon.unreadDead + ">";
+      return $.id('favicon-preview').innerHTML = "<img src=" + Favicon["default"] + ">\n<img src=" + Favicon.unreadSFW + ">\n<img src=" + Favicon.unreadNSFW + ">\n<img src=" + Favicon.unreadDead + ">";
+    },
+    sageEmoji: function() {
+      return $.id('sageicon-preview').innerHTML = "<img src=data:image/png;base64," + Emoji.sage[this.value] + ">";
     },
     togglecss: function() {
       if ($('textarea', this.parentNode.parentNode).disabled = !this.checked) {
@@ -12987,7 +13339,7 @@
     keybinds: function(section) {
       var arr, input, inputs, items, key, tbody, tr, _ref;
 
-      section.innerHTML = "<div class=warning " + (Conf['Keybinds'] ? 'hidden' : '') + "><code>Keybinds</code> are disabled.</div>\n<div>Allowed keys: <kbd>a-z</kbd>, <kbd>0-9</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>, <kbd>Meta</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>, <kbd>Up</kbd>, <kbd>Down</kbd>, <kbd>Right</kbd>, <kbd>Left</kbd>.</div>\n<div>Press <kbd>Backspace</kbd> to disable a keybind.</div>\n<table><tbody>\n  <tr><th>Actions</th><th>Keybinds</th></tr>\n</tbody></table>";
+      section.innerHTML = "<div class=warning " + (Conf['Keybinds'] ? 'hidden' : '') + "><code>Keybinds</code> are disabled.</div><div>Allowed keys: <kbd>a-z</kbd>, <kbd>0-9</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>, <kbd>Meta</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>, <kbd>Up</kbd>, <kbd>Down</kbd>, <kbd>Right</kbd>, <kbd>Left</kbd>.</div><div>Press <kbd>Backspace</kbd> to disable a keybind.</div><table><tbody><tr><th>Actions</th><th>Keybinds</th></tr></tbody></table>";
       tbody = $('tbody', section);
       items = {};
       inputs = {};
@@ -13640,6 +13992,9 @@
         'Settings': Settings,
         'Announcement Hiding': PSAHiding,
         'Fourchan thingies': Fourchan,
+        'Emoji': Emoji,
+        'Color User IDs': IDColor,
+        'Remove Spoilers': RemoveSpoilers,
         'Custom CSS': CustomCSS,
         'Linkify': Linkify,
         'Resurrect Quotes': Quotify,
@@ -13739,7 +14094,11 @@
           Main.handleErrors(errors);
         }
         Main.callbackNodes(Thread, threads);
-        Main.callbackNodes(Post, posts);
+        Main.callbackNodesDB(Post, posts, function() {
+          $.event('4chanXInitFinished');
+          return Main.checkUpdate();
+        });
+        return;
       }
       $.event('4chanXInitFinished');
       return Main.checkUpdate();
@@ -13770,6 +14129,63 @@
       if (errors) {
         return Main.handleErrors(errors);
       }
+    },
+    callbackNodesDB: function(klass, nodes, cb) {
+      var errors, func, i, len, node, queue, softTask;
+
+      queue = [];
+      softTask = function() {
+        var args, func, task;
+
+        task = queue.shift();
+        func = task[0];
+        args = Array.prototype.slice.call(task, 1);
+        func.apply(func, args);
+        if (!queue.length) {
+          return;
+        }
+        if ((queue.length % 7) === 0) {
+          return setTimeout(softTask, 0);
+        } else {
+          return softTask();
+        }
+      };
+      len = nodes.length;
+      i = 0;
+      errors = null;
+      func = function(node, i) {
+        var callback, err, _i, _len, _ref;
+
+        _ref = klass.prototype.callbacks;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          callback = _ref[_i];
+          try {
+            callback.cb.call(node);
+          } catch (_error) {
+            err = _error;
+            if (!errors) {
+              errors = [];
+            }
+            errors.push({
+              message: "\"" + callback.name + "\" crashed on " + klass.name + " No." + node + " (/" + node.board + "/).",
+              error: err
+            });
+          }
+        }
+        if (i === len) {
+          if (errors) {
+            Main.handleErrors(errors);
+          }
+          if (cb) {
+            return cb();
+          }
+        }
+      };
+      while (i < len) {
+        node = nodes[i];
+        queue.push([func, node, ++i]);
+      }
+      return softTask();
     },
     addCallback: function(e) {
       var Klass, obj;

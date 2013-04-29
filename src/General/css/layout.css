@@ -1,0 +1,1928 @@
+/* Cleanup */
+#absbot,
+#boardNavDesktop,
+#delPassword,
+#delform > hr:last-of-type,
+#navbotright,
+#postForm,
+#styleSwitcher,
+.boardBanner > div,
+.mobile,
+.postingMode,
+.riced,
+.sideArrows,
+.stylechanger,
+body > br,
+body > div[style^="text-align"],
+body > hr {
+  display: none;
+}
+/* Empties */
+#qr .warning:empty,
+#qr-thread-select:empty {
+  display: none;
+}
+/* File Name Trunctuate */
+.fileText:hover .fntrunc,
+.fileText:not(:hover) .fnfull {
+  display: none;
+}
+/* Unnecessary */
+#qp input,
+#qp .rice,
+.inline .rice {
+  display: none !important;
+}
+/* Hidden Content */
+.forwarded,
+.hidden_thread ~ div,
+.hidden_thread ~ a,
+.replyContainer .stub ~ div,
+.replyContainer .stub ~ a,
+.stub + div,
+[hidden] {
+  display: none !important;
+}
+/* Hidden UI */
+#catalog,
+#navlinks,
+#navtopright,
+.cataloglink,
+.navLinks,
+a[style="cursor: pointer; float: right;"] {
+  position: fixed;
+  top: 100%;
+  left: 100%;
+}
+/* Hide last horizontal rule, keep clear functionality. */
+.board > hr:last-of-type {
+  visibility: hidden;
+}
+/* Fappe Tyme */
+.fappeTyme .thread > .noFile {
+  display: none;
+}
+/* Defaults */
+a {
+  text-decoration: #{if _conf["Underline Links"] then "underline" else "none"};
+  outline: none;
+}
+body,
+html {
+  min-height: 100%;
+  #{Style.sizing}: border-box;
+}
+body {
+  outline: none;
+  font-size: #{parseInt(_conf["Font Size"], 10)}px;
+  font-family: #{_conf["Font"]};
+  min-height: 100%;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-#{Style.sidebarLocation[0]}: #{if /^boards\.4chan\.org$/.test(location.hostname) then Style.sidebar else '2'}px;
+  margin-#{Style.sidebarLocation[1]}: 2px;
+  padding: 0 #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px 0 #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]}px;
+}
+body.unscroll {
+  overflow: hidden;
+}
+#{if _conf["4chan SS Sidebar"] and /^boards\.4chan\.org$/.test location.hostname then "
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  #{Style.sidebarLocation[0]}: 0;
+  width: #{if _conf['Sidebar'] is 'large' then 305 else if _conf['Sidebar'] is 'normal' then 254 else if _conf['Sidebar'] is 'minimal' then 27 else 0}px;
+  z-index: 1;
+  #{Style.sizing}: border-box;
+  display: block;
+}
+body {
+  padding-#{Style.sidebarLocation[0]}: 2px;
+}
+" else ""}
+button,
+input,
+textarea {
+  font-size: #{parseInt(_conf["Font Size"], 10)}px;
+  font-family: #{_conf["Font"]};
+}
+hr {
+  clear: both;
+  border: 0;
+  padding: 0;
+  margin: 0 0 1px;
+  #{if _conf['Hide Horizontal Rules'] then 'visibility: hidden;' else ''}
+}
+.center {
+  text-align: center;
+}
+.disabled {
+  opacity: 0.5;
+}
+/* Symbols */
+.drop-marker {
+  vertical-align: middle;
+  display: inline-block;
+  margin: 2px 2px 3px;
+  border-top: .5em solid;
+  border-right: .3em solid transparent;
+  border-left: .3em solid transparent;
+}
+.brackets-wrap::before {
+  content: "\\00a0[";
+}
+.brackets-wrap::after {
+  content: "]\\00a0";
+}
+/* Thread / Reply Nav */
+#navlinks a {
+  position: fixed;
+  z-index: 12;
+  opacity: 0.5;
+  display: inline-block;
+  border-right: 6px solid transparent;
+  border-left: 6px solid transparent;
+  margin: 1.5px;
+}
+/* Header */
+#header-bar {
+  z-index: 6;
+  border-width: 1px;
+  position: absolute;
+#{
+if _conf['4chan SS Navigation'] then "
+  left: 0;
+  right: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0 !important;"
+else "
+  #{Style.sidebarLocation[0]}: #{Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
+  #{Style.sidebarLocation[1]}: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+#{if _conf["Hide Navigation Decorations"] then "
+  font-size: 0;
+  color: transparent;
+  word-spacing: 2px;
+" else ""}
+   text-align: #{_conf["Navigation Alignment"]};
+}
+.fixed #header-bar.autohide {
+  z-index: 24;
+}
+.fixed #header-bar {
+  position: fixed;
+}
+.top #header-bar {
+  top: 0;
+  border-top-width: 0;
+  #{if _conf["Rounded Edges"] then "border-radius: 0 0 3px 3px;" else ""}"
+}
+.fixed.bottom #header-bar {
+  bottom: 0;
+  border-bottom-width: 0;
+  #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}"
+}
+.hide #header-bar {
+  position: fixed;
+  top: 110%;
+  bottom: auto;
+}
+/* Header Autohide */
+.fixed #header-bar.autohide:not(:hover) {
+  box-shadow: none;
+  transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
+}
+.fixed.top #header-bar.autohide:not(:hover) {
+  margin-bottom: -1em;
+  #{agent}transform: translateY(-100%);
+}
+.fixed.bottom #header-bar.autohide:not(:hover) {
+  #{agent}transform: translateY(100%);
+}
+#scroll-marker {
+  left: 0;
+  right: 0;
+  height: 10px;
+  position: absolute;
+}
+#header-bar #scroll-marker {
+  display: none;
+}
+.fixed #header-bar #scroll-marker {
+  display: block;
+}
+.fixed.top header-bar #scroll-marker {
+  top: 100%;
+}
+.fixed.bottom #header-bar #scroll-marker {
+  bottom: 100%;
+}
+/* Notifications */
+#notifications {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+.fixed.top #notifications {
+  position: absolute;
+  top: 100%;
+}
+.notification {
+  display: block;
+  overflow: hidden;
+  width: 300px;
+  border: 1px solid;
+  #{if _conf['Sidebar Location'] is 'left' then 'margin-left: auto;' else ''}
+}
+.notification:not(:first-of-type) {
+  border-top: none;
+}
+.close {
+  float: right;
+}
+/* Main Menu */
+#main-menu {
+  margin: 0;
+  border: 2px solid;
+  border-radius: 10px;
+  height: 14px;
+  width: 14px;
+  #{Style.sizing}: border-box;
+  border-color: rgb(130,130,130);
+  color: rgb(130,130,130);
+}
+#main-menu::after {
+  content: '';
+  font-size: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  #{agent}transform: translate(-60%, -50%);
+  display: block;
+  border-top: 5px solid rgb(130, 130, 130);
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  width: 7px;
+  #{Style.sizing}: border-box;
+} 
+/* Pagination */
+.pagelist {
+  border-width: 1px;
+  text-align: #{_conf["Pagination Alignment"]};
+#{
+if _conf['4chan SS Navigation'] then "
+  left: 0;
+  right: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0 !important;"
+else "
+  #{Style.sidebarLocation[0]}: #{Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
+  #{Style.sidebarLocation[1]}: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+#{{
+"sticky top": "
+  position: fixed;
+  top: 0;
+  border-top-width: 0;
+  #{if _conf["Rounded Edges"] then "border-radius: 0 0 3px 3px;" else ""}"
+
+"sticky bottom": "
+  position: fixed;
+  bottom: 0;
+  border-bottom-width: 0;
+  #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}"
+
+"top": "
+  position: absolute;
+  top: 0;
+  border-top-width: 0;
+  #{if _conf["Rounded Edges"] then "border-radius: 0 0 3px 3px;" else ""}"
+
+"bottom": "
+  position: static;
+  #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}"
+
+"hide": "
+  display: none;"
+
+"on side": "
+  position: fixed;
+  padding: 0;
+  top: auto;
+  bottom: #{if ['fixed', 'transparent fade'].contains(_conf['Post Form Style']) then (21.6 + (if Conf['Show Post Form Header'] then 1.5 else 0) + (if Conf['Post Form Decorations'] then 0.2 else 0)) else .5}em;
+  #{Style.sidebarLocation[1]}: auto;
+  #{Style.sidebarLocation[0]}: #{250 + Style.sidebarOffset.W}px
+  position: fixed;
+#{if Style.sidebarLocation[0] is 'right' then "
+  #{agent}transform: rotate(90deg);
+  #{agent}transform-origin: bottom right;"
+else "
+  #{agent}transform: rotate(-90deg);
+  #{agent}transform-origin: bottom left;
+"}
+  z-index: 6;
+  margin: 0;
+  background: none transparent !important;
+  border: 0 none !important;
+  text-align: right;
+"
+}[_conf['Pagination']]}
+#{if _conf["Hide Navigation Decorations"] then "
+  font-size: 0;
+  color: transparent;
+  word-spacing: 0;
+" else ""}
+  z-index: 6;
+}
+.pagelist input,
+.pagelist div {
+  vertical-align: middle;
+}
+#header-bar a {
+  font-size: #{parseInt(_conf["Font Size"], 10)}px;
+}
+#{if _conf["Hide Navigation Decorations"] then "
+.pages a {
+  margin: 0 1px;
+  font-size: #{parseInt(_conf["Font Size"], 10)}px;
+}" else ""}
+.next,
+.pages,
+.prev {
+  display: inline-block;
+  margin: 0 3px;
+}
+/* Banner */
+.boardBanner {
+  line-height: 0;
+}
+#{if _conf["Faded 4chan Banner"] then "
+.boardBanner {
+  opacity: 0.5;
+  #{agent}transition: opacity 0.3s ease-in-out .5s;
+}
+.boardBanner:hover {
+  opacity: 1;
+  #{agent}transition: opacity 0.3s ease-in;
+}
+" else ""}
+#{if _conf["4chan Banner Reflection"] then "
+/* From 4chan SS / OneeChan */
+.gecko .boardBanner::after {
+  background-image: -moz-element(#Banner);
+  bottom: -100%;
+  content: '';
+  left: 0;
+  mask: url(\"data:image/svg+xml,<svg version='1.1' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient gradientUnits='objectBoundingBox' id='gradient' x2='0' y2='1'><stop stop-offset='0'/><stop stop-color='white' offset='1'/></linearGradient><mask id='mask' maskUnits='objectBoundingBox' maskContentUnits='objectBoundingBox' x='0' y='0' width='100%' height='100%'> <rect fill='url(%23gradient)' width='1' height='1' /></mask></defs></svg>#mask\");
+  opacity: 0.3;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  -moz-transform: scaleY(-1);
+  z-index: -1;
+}
+.webkit #Banner {
+  -webkit-box-reflect: below 0 -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0) 10%, rgba(255,255,255,.5));
+}
+" else ""}
+#{{
+"at sidebar top": "
+.boardBanner {
+  position: fixed;
+  top: 16px;
+  #{Style.sidebarLocation[0]}: 2px;
+}
+.boardBanner img {
+  width: #{width}px;
+}"
+"at sidebar bottom": "
+.boardBanner {
+  position: fixed;
+  bottom: 270px;
+  #{Style.sidebarLocation[0]}: 2px;
+}
+.boardBanner img {
+  width: #{width}px;
+}"
+
+"under post form": "
+  .boardBanner {
+  position: fixed;
+  bottom: 130px;
+  #{Style.sidebarLocation[0]}: 2px;
+}
+.boardBanner img {
+  width: #{width}px;
+}"
+
+"at top": "
+.boardBanner {
+  position: relative;
+  display: table;
+  margin: 12px auto;
+  text-align: center;
+}"
+
+"hide": "
+.boardBanner {
+  display: none;
+}"
+}[_conf["4chan Banner"]]}
+/* Board Title */
+#boardTitle {
+  font-size: #{parseInt(_conf["Font Size"], 10) + 10}px;
+  text-align: center;
+  z-index: 4;
+#{{
+"at sidebar top": "
+  position: fixed;
+  #{Style.sidebarLocation[0]}: 2px;
+  top: #{(if Style.logoOffset is 0 and _conf["Icon Orientation"] isnt "vertical" then 40 else 21) + Style.logoOffset}px;
+  width: #{width}px;
+"
+
+"at sidebar bottom": "
+  position: fixed;
+  #{Style.sidebarLocation[0]}: 2px;
+  bottom: 280px;
+  width: #{width}px;
+"
+
+"under post form": "
+  position: fixed;
+  #{Style.sidebarLocation[0]}: 2px;
+  bottom: 140px;
+  width: #{width}px;
+"
+
+"at top": "
+  margin: 12px 0;
+"
+
+"hide": "
+  display: none;
+"}[_conf["Board Title"]]}
+}
+.boardTitle a {
+  font-size: #{parseInt(_conf["Font Size"], 10) + 10}px;
+}
+.boardSubtitle,
+.boardSubtitle a {
+  font-size: #{parseInt(_conf["Font Size"], 10) - 1}px;
+}
+/* Dialogs */
+.move {
+  cursor: pointer;
+}
+#ihover {
+  position: fixed;
+  max-height: 97%;
+  max-width: 75%;
+  padding: 10px;
+  z-index: 22;
+}
+#qp {
+  position: fixed;
+  z-index: 22;
+}
+#qp .postMessage::after {
+  clear: both;
+  display: block;
+  content: "";
+}
+#qp .full-image {
+  max-height: 300px;
+  max-width: 500px;
+}
+#menu {
+  position: fixed;
+  outline: none;
+  z-index: 22;
+}
+/* Image Expansion */
+.fit-width .full-image {
+  max-width: 100%;
+  width: 100%;
+}
+#{if _conf['Images Overlap Post Form'] then "
+.full-image {
+  position: relative;
+  z-index: 22;
+}" else ""
+}
+/* Prefetcher */
+#prefetch {
+  z-index: 9;
+  position: fixed;
+}
+/* Delete Buttons */
+#{if _conf['Hide Delete UI'] then "
+.deleteform,
+.post:not(#exlinks-options) .rice {
+  display: none;
+}
+.postInfo {
+  padding: 0 0 0 3px;
+}
+" else "
+.deleteform {
+  position: fixed;
+  z-index: 18;
+  width: 0;
+  bottom: 0;
+  right: 0;
+  border-width: 1px 0 0 1px;
+  border-style: solid;
+  font-size: 0;
+  color: transparent;
+}
+.deleteform:hover {
+  width: auto;
+}
+.deleteform::before {
+  z-index: 18;
+  border-width: 1px 0 0 1px;
+  border-style: solid;
+  content: 'X';
+  display: block;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  font-size: #{_conf['Font Size']}px;
+  #{Style.sizing}: border-box;
+  height: 1.6em;
+  width: 1.4em;
+  text-align: center;
+}
+.deleteform:hover::before {
+  display: none;
+}
+.deleteform input {
+  margin: 0 1px 0 0;
+}"}
+/* Slideout Navigation */
+#boardNavDesktopFoot {
+  position: fixed;
+  width: #{width}px;
+  #{Style.sidebarLocation[0]}: 2px;
+  text-align: center;
+  font-size: 0;
+  color: transparent;
+  overflow: hidden;
+  #{Style.sizing}: border-box;
+}
+#boardNavDesktopFoot a,
+#boardNavDesktopFoot a::after,
+#boardNavDesktopFoot a::before {
+  font-size: #{_conf['Font Size']}px;
+}
+#boardNavDesktopFoot:hover {
+  overflow-y: auto;
+  padding: 2px;
+}
+#boardNavDesktopFoot:not(:hover) {
+  border-color: transparent;
+  background-color: transparent;
+  height: 0;
+  overflow: hidden;
+  padding: 0;
+  border: 0 none;
+}
+#{{
+compact: "
+#boardNavDesktopFoot {
+  word-spacing: 1px;
+}
+"
+list: "
+#boardNavDesktopFoot a {
+  display: block;
+}
+#boardNavDesktopFoot:hover {
+  max-height: 400px;
+}
+#boardNavDesktopFoot a::after {
+  content: ' - ' attr(title);
+}
+#boardNavDesktopFoot a[href*='//boards.4chan.org/']::after,
+#boardNavDesktopFoot a[href*='//rs.4chan.org/']::after {
+  content: '/ - ' attr(title);
+}
+#boardNavDesktopFoot a[href*='//boards.4chan.org/']::before,
+#boardNavDesktopFoot a[href*='//rs.4chan.org/']::before {
+  content: '/';
+}
+"
+hide: "
+#boardNavDesktopFoot {
+  display: none;
+}"}[_conf["Slideout Navigation"]]}
+/* Watcher */
+#watcher {
+  position: fixed;
+  z-index: 14;
+  padding: 2px;
+  #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
+}
+#watcher > div {
+  max-height: 1.3em;
+  overflow: hidden;
+} 
+#{if _conf['Slideout Watcher'] then "
+#watcher {
+  width: #{width}px;
+  #{Style.sidebarLocation[0]}: 2px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
+  #{Style.sizing}: border-box;
+}
+#watcher .move {
+  cursor: default;
+  text-decoration: #{if _conf["Underline Links"] then "underline" else "none"};
+}
+#watcher > div {
+  overflow: hidden;
+}
+#watcher:hover {
+  overflow-y: auto;
+}
+#watcher:not(:hover) {
+  height: 0;
+  overflow: hidden;
+  border: 0 none;
+  padding: 0;
+}" else "
+#watcher {
+  width: 200px;
+}
+#watcher:not(:hover) {
+  max-height: 200px;
+  overflow: hidden;
+} 
+"}
+/* Announcements */
+#globalMessage {
+  text-align: center;
+  #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
+}
+#{{
+'slideout': " 
+#globalMessage {
+  position: fixed;
+  padding: 2px;
+  width: #{width}px;
+  #{Style.sidebarLocation[0]}: 2px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
+}
+#globalMessage h3 {
+  margin: 0;
+}
+#globalMessage:hover {
+  #{Style.sizing}: border-box;
+  overflow-y: auto;
+}
+#globalMessage:not(:hover) {
+  height: 0;
+  overflow: hidden;
+  padding: 0;
+  border: 0 none;
+}"
+'hide': "
+#globalMessage {
+  display: none !important;
+}
+"}[_conf['Announcements']] or ""}
+/* Threads */
+.thread {
+  margin: #{parseInt _conf["Top Thread Padding"], 10}px 0 #{parseInt _conf["Bottom Thread Padding"], 10}px 0;
+  #{if _conf["Rounded Edges"] then "border-radius: 4px;" else ""}
+}
+/* Thread Clearfix */
+.thread > div:last-of-type::after {
+  display: block;
+  content: ' ';
+  clear: both;
+}
+/* Posts */
+.expanding {
+  opacity: .5;
+}
+.fileText:hover .fntrunc,
+.fileText:not(:hover) .fnfull,
+.expanded-image > .post > .file > .fileThumb > img[data-md5],
+.post > .file > .fileThumb > .full-image {
+  display: none;
+}
+.expanded-image > .post > .file > .fileThumb > .full-image {
+  display: block;
+}
+.summary {
+  margin-bottom: #{Style.replyMargin}px;
+}
+.post {
+  margin-bottom: #{Style.replyMargin}px;
+}
+.replyContainer:last-of-type .post {
+  margin-bottom: 0;
+}
+.menu-button {
+  position: relative;
+}
+.stub .menu-button,
+.post .menu-button,
+.hide-thread-button,
+.show-thread-button span,
+.hide-reply-button,
+.show-reply-button span {
+  float: right;
+}
+.post .menu-button,
+.hide-thread-button,
+.hide-reply-button {
+  margin: 0 3px;
+  opacity: 0;
+  #{agent}transition: opacity .3s ease-out 0s;
+}
+.post:hover .hide-reply-button,
+.post:hover .menu-button,
+.post:hover .hide-thread-button,
+.hidden_thread .hide-thread-button,
+.hidden_thread .menu-button,
+.inline .hide-reply-button,
+.inline .menu-button {
+  opacity: 1;
+}
+.hidden_thread {
+  text-align: right;
+}
+#{if _conf['Color user IDs'] then "
+.posteruid .hand {
+  padding: .1em .3em;
+  border-radius: 1em;
+  font-size: 80%;
+}" else ""}
+.postInfo > span {
+  vertical-align: bottom;
+}
+.subject,
+.name {
+  #{if _conf["Bolds"] then 'font-weight: 600;' else ''}
+}
+.postertrip {
+  #{if _conf["Italics"] then 'font-style: italic;' else ''}
+}
+.replylink {
+  text-decoration: #{if _conf["Underline Links"] then "underline" else "none"};
+}
+.fileInfo {
+  padding: 0 3px;
+}
+.fileThumb {
+  float: left;
+  margin: 3px 20px;
+  outline: none;
+}
+.reply.post {
+  #{Style.sizing}: border-box;
+}
+#{if _conf["Fit Width Replies"] then "
+.reply.post {
+  display: block;
+  overflow: hidden;
+}
+.expanded-image .reply.post {
+  width: 100%;
+}
+" else "
+.reply.post {
+  display: inline-block;
+}
+"}
+.expanded-image .reply.post {
+  display: inline-block;
+  overflow: visible;
+  clear: both;
+} 
+.post {
+  #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
+}
+.postMessage {
+  margin: #{_conf['Vertical Post Padding']}px #{_conf['Horizontal Post Padding']}px;
+}
+.spoiler,
+s {
+  text-decoration: none;
+}
+/* Reply Clearfix */
+.reply.post .postMessage {
+  clear: right;
+}
+#{if _conf['Force Reply Break'] or _conf["OP Background"] then "
+.op.post .postMessage::after {
+  display: block;
+  content: ' ';
+  clear: both;
+}
+" else ""
+}
+/* OP */
+.favicon {
+  vertical-align: bottom;
+}
+#{if _conf["OP Background"] then "
+.op.post {
+  #{Style.sizing}: border-box;
+}" else ""}
+/* Summary */
+#{
+if _conf["Force Reply Break"]
+  ".summary { clear: both;}"
+else ""
+}
+/* Inlined */
+.inline {
+  margin: 2px 8px 2px 2px;
+}
+.post .inline {
+  margin: 2px;
+}
+.inline .replyContainer {
+  display: inline-block;
+}
+/* Inlined Clearfix */
+.inline .postMessage::after {
+  clear: both;
+  display: block;
+  content: "";
+}
+/* Quotes */
+.inlined {
+  opacity: .5;
+}
+.quotelink {
+  text-decoration: #{if _conf["Underline Links"] then "underline" else "none"};
+}
+.filtered,
+.quotelink.filtered {
+  text-decoration: underline;
+  text-decoration: line-through !important;
+}
+/* Quote Threading */
+.threadContainer {
+  margin-left: 2em;
+  border-left: 1px solid;
+}
+.threadOP {
+  clear: both;
+}
+/* Backlinks */
+.backlink {
+  text-decoration: #{if _conf["Underline Links"] then "underline" else "none"};
+}
+.backlink.dead {
+  text-decoration: none;
+}
+#{
+if _conf["Filtered Backlinks"] then "
+.filtered.backlink {
+  display: none;
+}"
+}
+#{{
+"lower left": "
+.container {
+  padding: 0 5px;
+  max-width: 100%;
+}
+.reply.quoted {
+  position: relative;
+  padding-bottom: 1.7em;
+}
+.reply .container {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: 0 5px;
+}
+.reply .container::before {
+  content: 'REPLIES: ';
+}
+#qp .container {
+  position: static;
+  max-width: 100%;
+}
+#qp .container::before {
+  content: '';
+}
+.inline .container {
+  position: static;
+  max-width: 100%;
+}
+.inline .container::before {
+  content: '';
+}"
+
+'lower right': "
+.reply.quoted {
+  position: relative;
+  padding-bottom: 1.7em;
+}
+.reply .container {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+.container::before {
+  content: 'REPLIES: ';
+}
+.container {
+  max-width: 100%;
+  padding: 0 5px;
+}
+#qp .container {
+  position: static;
+  max-width: 100%;
+}
+#qp .container::before {
+  content: '';
+}
+.inline .container {
+  position: static;
+  float: none;
+}
+.inline .container::before {
+  content: '';
+}"
+
+'default': ""}[_conf["Backlinks Position"]]}
+/* Code */
+.prettyprint {
+  #{Style.sizing}: border-box;
+  font-family: monospace;
+  display: inline-block;
+  margin-right: auto;
+  white-space: pre-wrap;
+  border-radius: 2px;
+  overflow-x: auto;
+  padding: 3px;
+  max-width: 100%;
+}
+/* Menu */
+.entry {
+  border-bottom: 1px solid rgba(0,0,0,.25);
+  cursor: pointer;
+  display: block;
+  outline: none;
+  padding: 3px 7px;
+  position: relative;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.entry:last-child {
+  border-bottom: 0;
+}
+.has-submenu::after {
+  content: "";
+  border-#{position}: .5em solid;
+  border-top: .3em solid transparent;
+  border-bottom: .3em solid transparent;
+  display: inline-block;
+  margin: .3em;
+  position: absolute;
+  right: 3px;
+}
+.submenu {
+  display: none;
+  position: absolute;
+  #{position}: 100%;
+  top: -1px;
+}
+.focused .submenu {
+  display: block;
+}
+/* Stubs */
+#{if _conf['Fit Width Replies'] then "
+.stub {
+  display: block;
+  text-align: right;
+}" else ""}
+/* Emoji */
+#{unless _conf["Emoji"] is "disable" then Emoji.css _conf["Emoji Position"] else ""}
+/* Element Replacing */
+/* Checkboxes */
+.rice {
+  cursor: pointer;
+  width: 9px;
+  height: 9px;
+  margin: 2px 3px 3px;
+  display: inline-block;
+  vertical-align: bottom;
+  #{if _conf["Rounded Edges"] then "border-radius: 2px;" else ""}
+  #{if _conf["Circle Checkboxes"] then "border-radius: 6px;" else ""}
+}
+input:checked + .rice {
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  background-position: bottom right;
+}
+/* Selects */
+.selectrice {
+  position: relative;
+  cursor: default;
+  overflow: hidden;
+  text-align: left;
+}
+.selectrice::after {
+  content: "";
+  border-right: .25em solid transparent;
+  border-left: .25em solid transparent;
+  position: absolute;
+  right: .4em;
+  top: .5em;
+}
+.selectrice::before {
+  content: "";
+  height: 1.6em;
+  position: absolute;
+  right: 1.3em;
+  top: 0;
+}
+/* Select Dropdown */
+#selectrice {
+  padding: 0;
+  margin: 0;
+  position: fixed;
+  max-height: 120px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 32;
+}
+#selectrice:empty {
+  display: none;
+}
+/* Post Form */
+#qr {
+  z-index: 20;
+  position: fixed;
+  padding: 1px;
+  border: 1px solid transparent;
+  min-width: #{width}px;
+  #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}
+}
+#qrtab {
+  #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}
+}
+
+#{{
+"fixed": "
+#qr {
+  top: auto !important;
+  bottom: 1.7em !important;
+  #{Style.sidebarLocation[0]}: 0 !important;
+  #{Style.sidebarLocation[1]}: auto !important;
+}"
+
+"slideout": "
+#qrtab input,
+#qrtab .rice {
+  display: none;
+}
+#qr {
+  top: auto !important;
+  bottom: 1.7em !important;
+  #{Style.sidebarLocation[0]}: 0 !important;
+  #{Style.sidebarLocation[1]}: auto !important;
+  #{agent}transform: translateX(#{xOffset}93%);
+}
+#qr:hover,
+#qr.has-focus,
+#qr.dump {
+  #{agent}transform: translate(0);
+}"
+
+"tabbed slideout": "
+#qr {
+  top: auto !important;
+  bottom: 1.7em !important;
+  #{Style.sidebarLocation[0]}: 0 !important;
+  #{Style.sidebarLocation[1]}: auto !important;
+  #{agent}transform: translateX(#{xOffset}100%);
+}
+#qr:hover,
+#qr.has-focus,
+#qr.dump {
+  #{agent}transform: translateX(0);
+}
+#qrtab {
+  #{agent}transform: rotate(#{(if Style.sidebarLocation[0] is "left" then "" else "-")}90deg);
+  #{agent}transform-origin: bottom #{Style.sidebarLocation[0]};
+  position: absolute;
+  top: 0;
+  #{Style.sidebarLocation[0]}: 100%;
+  width: 110px;
+  text-align: center;
+  border-width: 1px 1px 0 1px;
+  cursor: default;
+}
+#qr:hover #qrtab,
+#qr.has-focus #qrtab,
+#qr.dump #qrtab {
+  opacity: 0;
+  #{Style.sidebarLocation[0]}: #{252 + Style.sidebarOffset.W}px;
+}
+#qrtab input,
+#qrtab .close,
+#qrtab .rice,
+#qrtab span {
+  display: none;
+}"
+
+"transparent fade": "
+#qr {
+  overflow: visible;
+  top: auto !important;
+  bottom: 1.7em !important;
+  #{Style.sidebarLocation[0]}: 2px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
+  opacity: 0.2;
+  #{agent}transition: opacity .3s ease-in-out 1s;
+}
+#qr:hover,
+#qr.has-focus,
+#qr.dump {
+  opacity: 1;
+  #{agent}transition: opacity .3s linear;
+}"
+}[_conf['Post Form Style']] or ""}
+
+#{
+unless _conf['Post Form Style'] is 'tabbed slideout'
+  (
+    unless _conf['Post Form Style'] is 'float' or _conf['Show Post Form Header']
+      "#qrtab { display: none; }"
+    else unless _conf['Post Form Style'] is 'slideout'
+      ".autohide:not(:hover):not(.has-focus) > form { display: none !important; }"
+    else ""
+  ) + "#qrtab { margin-bottom: 1px; }"
+else ""}
+
+#{
+if _conf['Post Form Style'] isnt 'float' and _conf["Post Form Slideout Transitions"] then "
+#qr {
+  #{agent}transition: #{agent}transform .3s ease-in-out 1s;
+}
+#qr:hover,
+#qr.has-focus,
+#qr.dump {
+  #{agent}transition: #{agent}transform .3s linear;
+}
+#qrtab {
+  #{agent}transition: opacity .3s ease-in-out 1s;
+}
+#qr:hover #qrtab {
+  #{agent}transition: opacity .3s linear;
+}" else ""
+}
+
+#qr .close {
+  float: right;
+  padding: 0 3px;
+}
+#qr .warning {
+  min-height: 1.6em;
+  vertical-align: middle;
+  padding: 0 1px;
+  border-width: 1px;
+  border-style: solid;
+}
+.persona {
+  width: 248px;
+  max-width: 100%;
+  min-width: 100%;
+}
+#dump-button {
+  width: 10%;
+  margin: 0;
+}
+
+#{
+if _conf['Compact Post Form Inputs'] then "
+.persona input.field {
+  width: 29.6%;
+  margin: 0 0 0 0.4%;
+}
+#qr textarea.field {
+  height: 14.8em;
+  min-height: 9em;
+}
+#qr.has-captcha textarea.field {
+  height: 9em;
+}
+
+" else "
+
+.persona input.field {
+  width: 100%;
+}
+.persona input.field[name='name'] {
+  width: 89.6%;
+  margin: 0 0 0 0.4%;
+}
+#qr textarea.field {
+  height: 11.6em;
+  min-height: 6em;
+}
+#qr.has-captcha textarea.field {
+  height: 6em;
+}"
+}
+
+#{
+if _conf["Tripcode Hider"] then "
+.tripped:not(:hover):not(:focus) {
+  opacity: 0;
+}" else ""
+}
+
+#qr textarea {
+  resize: #{_conf['Textarea Resize']};
+}
+.captcha-img {
+  margin: 1px 0 0;
+  text-align: center;
+  line-height: 0;
+}
+.captcha-img img {
+  width: 100%;
+  height: 4em;
+  width: 246px;
+}
+.captcha-input {
+  width: 100%;
+  margin: 1px 0 0;
+}
+.field,
+.selectrice,
+button,
+input:not([type=radio]) {
+  #{Style.sizing}: border-box;
+  font-size: #{parseInt(_conf['Font Size'], 10)}px;
+  height: 1.6em;
+  margin: 1px 0 0;
+  vertical-align: bottom;
+  padding: 0 1px;
+}
+.selectrice {
+  padding-right: 1.6em;
+}
+#qr textarea {
+  min-width: 100%;
+}
+#qr [type='submit'] {
+  width: 25%;
+}
+[type='file'] {
+  position: absolute;
+  opacity: 0;
+  z-index: -1;
+}
+#showQR {
+  display: #{if _conf["Hide Show Post Form"] then "none" else "block"};
+  z-index: 4;
+  #{Style.sidebarLocation[0]}: 2px;
+  width: #{width}px;
+  background-color: transparent;
+  text-align: center;
+  position: fixed;
+  top: auto;
+}
+/* Fake File Input */
+#qr-filename,
+.has-file #qr-no-file {
+  display: none;
+}
+#qr-no-file,
+.has-file #qr-filename {
+  display: block;
+}
+#qr-filename-container {
+  #{Style.sizing}: border-box;
+  display: inline-block;
+  position: relative;
+  width: 100px;
+  min-width: 74.6%;
+  max-width: 74.6%;
+  margin-right: 0.4%;
+  overflow: hidden;
+  padding: 2px 1px 0;
+}
+#qr-filerm {
+  position: absolute;
+  right: 3px;
+  top: 2px;
+  z-index: 2;
+}
+/* Thread Select / Spoiler Label */
+#qr-thread-select {
+  vertical-align: bottom;
+  width: 49%;
+  display: inline-block;
+}
+#qr-spoiler-label {
+  vertical-align: bottom;
+  width: 49%;
+  display: inline-block;
+  text-align: right;
+}
+/* Dumping UI */
+.dump #dump-list-container {
+  display: block;
+}
+#dump-list-container {
+  display: none;
+  position: relative;
+  overflow-y: hidden;
+  margin-top: 1px;
+}
+#dump-list {
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: pre;
+  width: 248px;
+  max-width: 100%;
+  min-width: 100%;
+}
+#dump-list:hover {
+  overflow-x: auto;
+}
+.qr-preview {
+  #{Style.sizing}: border-box;
+  counter-increment: thumbnails;
+  cursor: move;
+  display: inline-block;
+  height: 90px;
+  width: 90px;
+  padding: 2px;
+  opacity: .5;
+  overflow: hidden;
+  position: relative;
+  text-shadow: 0 1px 1px #000;
+  #{agent}transition: opacity .25s ease-in-out;
+  vertical-align: top;
+}
+.qr-preview:hover,
+.qr-preview:focus {
+  opacity: .9;
+}
+.qr-preview::before {
+  content: counter(thumbnails);
+  color: #fff;
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  text-shadow: 0 0 3px #000, 0 0 8px #000;
+}
+.qr-preview#selected {
+  opacity: 1;
+}
+.qr-preview.drag {
+  box-shadow: 0 0 10px rgba(0,0,0,.5);
+}
+.qr-preview.over {
+  border-color: #fff;
+}
+.qr-preview > span {
+  color: #fff;
+}
+.remove {
+  background: none;
+  color: #e00;
+  font-weight: 700;
+  padding: 3px;
+}
+a:only-of-type > .remove {
+  display: none;
+}
+.remove:hover::after {
+  content: " Remove";
+}
+.qr-preview > label {
+  background: rgba(0,0,0,.5);
+  color: #fff;
+  right: 0; bottom: 0; left: 0;
+  position: absolute;
+  text-align: center;
+}
+.qr-preview > label > input {
+  margin: 0;
+}
+#add-post {
+  cursor: pointer;
+  font-size: 2em;
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  #{agent}transform: translateY(-50%);
+}
+/* Ads */
+.topad img,
+.middlead img,
+.bottomad img {
+  opacity: 0.3;
+  #{agent}transition: opacity .3s linear;
+}
+.topad img:hover,
+.middlead img:hover,
+.bottomad img:hover {
+  opacity: 1;
+}
+#{if _conf["Block Ads"] then "
+/* AdBlock Minus */
+.bottomad + hr,
+.topad img,
+.middlead img,
+.bottomad img {
+  display: none;
+}
+" else ""}
+#{if _conf["Shrink Ads"] then "
+.topad a img,
+.middlead a img,
+.bottomad a img {
+  width: 500px;
+  height: auto;
+}
+" else ""}
+/* Options */
+#overlay {
+  position: fixed;
+  z-index: 30;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background: rgba(0,0,0,.5);
+}
+#appchanx-settings {
+  width: auto;
+  left: 15%;
+  right: 15%;
+  top: 15%;
+  bottom: 15%;
+  position: fixed;
+  z-index: 31;
+  padding: .3em;
+  #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
+}
+.description {
+  display: none;
+}
+#appchanx-settings h3,
+.section-keybinds,
+.section-mascots,
+.section-script,
+.style {
+  text-align: center;
+}
+.section-keybinds table,
+.section-script fieldset,
+.section-style fieldset {
+  text-align: left;
+}
+.section-keybinds table {
+  margin: auto;
+}
+#appchanx-settings fieldset {
+  padding: 5px 0;
+  #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
+  vertical-align: top;
+  #{if _conf["Single Column Mode"] then "margin: 0 auto 6px;" else "margin: 0 3px 6px;\n display: inline-block;"}
+  border: 0;
+}
+#appchanx-settings .section-advanced fieldset {
+  display: block;
+  margin: 0 auto 6px;
+}
+.section-advanced .selectrice {
+  display: inline-block;
+  clear: both;
+}
+.section-container {
+  overflow: auto;
+  position: absolute;
+  top: 1.7em;
+  right: 5px;
+  bottom: 5px;
+  left: 5px;
+  #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
+}
+.sections-list {
+  padding: 0 3px;
+  float: left;
+}
+.sections-list > a {
+  cursor: pointer;
+  #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}
+  position: relative;
+  padding: 0 4px;
+  z-index: 1;
+  height: 1.4em;
+  display: inline-block;
+  border-width: 1px 1px 0 1px;
+  border-color: transparent;
+  border-style: solid;
+}
+.credits {
+  float: right;
+}
+#appchanx-settings h3 {
+  margin: 0;
+}
+.section-script fieldset > div,
+.section-style fieldset > div,
+.section-advanced fieldset > div {
+  overflow: visible;
+  padding: 0 5px 0 7px;
+}
+#appchanx-settings tr:nth-of-type(2n+1),
+.section-script fieldset > div:nth-of-type(2n+1),
+.section-advanced fieldset > div:nth-of-type(2n+1),
+.section-style fieldset > div:nth-of-type(2n+1),
+.section-keybinds tr:nth-of-type(2n+1),
+#selectrice li:nth-of-type(2n+1) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+article li {
+  margin: 10px 0 10px 2em;
+}
+#appchanx-settings .option {
+  width: 50%;
+  display: inline-block;
+  vertical-align: bottom;
+}
+.option input {
+  width: 100%;
+}
+.optionlabel {
+  padding-left: 18px;
+}
+.rice + .optionlabel {
+  padding-left: 0;
+}
+.section-script fieldset,
+.styleoption {
+  text-align: left;
+}
+.section-style fieldset {
+  width: 370px;
+}
+.section-script fieldset {
+  width: 200px;
+}
+.suboptions,
+#mascotcontent,
+#themecontent {
+  overflow: auto;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 1.7em;
+  left: 0;
+}
+.mAlign {
+  height: 250px;
+  vertical-align: middle;
+  display: table-cell;
+}
+#themecontent {
+  top: 1.7em;
+}
+#save,
+.stylesettings {
+  position: absolute;
+  right: 10px;
+  bottom: 0;
+}
+.section-style .suboptions {
+  bottom: 0;
+}
+.section-container textarea {
+  font-family: monospace;
+  min-height: 350px;
+  resize: vertical;
+  width: 100%;
+}
+/* Hover Functionality */
+#mouseover {
+  z-index: 33;
+  position: fixed;
+  max-width: 70%;
+}
+#mouseover:empty {
+  display: none;
+}
+/* Mascot Tab */
+#mascot_hide {
+  padding: 3px;
+  position: absolute;
+  top: 2px;
+  right: 18px;
+}
+#mascot_hide .rice {
+  float: left;
+}
+#mascot_hide > div {
+  height: 0;
+  text-align: right;
+  overflow: hidden;
+}
+#mascot_hide:hover > div {
+  height: auto;
+}
+#mascot_hide label {
+  width: 100%;
+  display: block;
+  clear: both;
+  text-decoration: none;
+}
+.mascots {
+  padding: 0;
+  text-align: center;
+  #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
+}
+.mascot,
+.mascotcontainer {
+  overflow: hidden;
+}
+.mascot {
+  position: relative;
+  border: none;
+  margin: 5px;
+  padding: 0;
+  width: 200px;
+  display: inline-block;
+  background-color: transparent;
+}
+.mascotcontainer {
+  height: 250px;
+  border: 0;
+  margin: 0;
+  max-height: 250px;
+  cursor: pointer;
+  bottom: 0;
+  border-width: 0 1px 1px;
+  border-style: solid;
+  border-color: transparent;
+  overflow: hidden;
+}
+.mascot img {
+  max-width: 200px;
+}
+.mascotname,
+.mascotoptions {
+  padding: 0;
+  width: 100%;
+}
+.mascot .mascotoptions {
+opacity: 0;
+  #{agent}transition: opacity .3s linear;
+}
+.mascot:hover .mascotoptions {
+  opacity: 1;
+}
+.mascotoptions {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+.mascotoptions a {
+  display: inline-block;
+  width: 33%;
+}
+#upload {
+  position: absolute;
+  width: 100px;
+  left: 50%;
+  margin-left: -50px;
+  text-align: center;
+  bottom: 0;
+}
+#mascots_batch {
+  position: absolute;
+  left: 10px;
+  bottom: 0;
+}
+/* Themes Tab */
+#themes h1 {
+  position: absolute;
+  right: 300px;
+  bottom: 10px;
+  margin: 0;
+  #{agent}transition: all .2s ease-in-out;
+  opacity: 0;
+}
+#themes .selectedtheme h1 {
+  right: 11px;
+  opacity: 1;
+}
+#themeContainer {
+  margin-bottom: 3px;
+}
+#addthemes {
+  position: absolute;
+  left: 10px;
+  bottom: 0;
+}
+.theme {
+  margin: 1em;
+}
+/* Theme Editor */
+#themeConf {
+  position: fixed;
+  #{Style.sidebarLocation[1]}: 2px;
+  #{Style.sidebarLocation[0]}: auto;
+  top: 0;
+  bottom: 0;
+  width: 296px;
+  z-index: 10;
+}
+#themebar input {
+  width: 30%;
+}
+.option .color {
+  width: 10%;
+  border-left: none !important;
+  color: transparent !important;
+}
+.option .colorfield {
+  width: 90%;
+}
+.themevar textarea {
+  min-width: 100%;
+  max-width: 100%;
+  height: 20em;
+  resize: vertical;
+}
+/* Mascot Editor */
+#mascotConf {
+  position: fixed;
+  height: 17em;
+  bottom: 0;
+  left: 50%;
+  width: 500px;
+  margin-left: -250px;
+  overflow: auto;
+  z-index: 10;
+}
+#mascotConf .option,
+#mascotConf .optionlabel {
+  #{Style.sizing}: border-box;
+  width: 50%;
+  display: inline-block;
+  vertical-align: middle;
+}
+#mascotConf .option input {
+  width: 100%;
+}
+#close {
+  position: absolute;
+  left: 10px;
+  bottom: 0;
+}
+/* Catalog */
+#content .navLinks,
+#info .navLinks,
+.btn-wrap {
+  display: block;
+}
+.navLinks > .btn-wrap:not(:first-of-type)::before {
+  content: ' - ';
+}
+.button {
+  cursor: pointer;
+}
+#content .btn-wrap,
+#info .btn-wrap {
+  display: inline-block;
+}
+#post-preview {
+  position: absolute;
+  z-index: 22;
+  #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
+}
+#settings,
+#threads,
+#info .navLinks,
+#content .navLinks {
+  text-align: center;
+}
+#threads .thread {
+  vertical-align: top;
+  display: inline-block;
+  word-wrap: break-word;
+  overflow: hidden;
+  margin-top: 5px;
+  padding: 5px 0 3px;
+  text-align: center;
+}
+.extended-small .thread,
+.small .thread {
+  width: 165px;
+  max-height: 320px;
+}
+.small .teaser,
+.large .teaser {
+  display: none;
+}
+.extended-large .thread,
+.large .thread {
+  width: 270px;
+  max-height: 410px;
+}
+.extended-small .thumb,
+.small .thumb {
+  max-width: 150px;
+  max-height: 150px;
+}
+/* Front Page */
+#logo {
+  text-align: center;
+}
+#doc {
+  margin: 0 auto;
+  width: 1000px;
+  position: relative;
+}
+#boards .boxcontent {
+  vertical-align: top;
+  text-align: center;
+}
+#filter-container,
+#options-container {
+  float: right;
+  position: relative;
+}
+#optionssmenu {
+  top: 100% !important;
+  left: 0 !important;
+}
+#boards .column {
+  #{Style.sizing}: border-box;
+  display: inline-block;
+  width: 16em;
+  text-align: left;
+  vertical-align: top;
+}
+.bd ul,
+.boxcontent ul {
+  vertical-align: top;
+  padding: 0;
+}
+.right-box .boxcontent ul {
+  padding: 0 10px;
+}
+.yuimenuitem,
+.boxcontent li {
+  list-style-type: none;
+}
+.bd ul {
+  margin: 0;
+}
+.yuimenuitem::before {
+  content: " [ ] ";
+  font-family: monospace;
+}
+.yuimenuitem-checked::before {
+  content: " [x] "
+}
+.yui-u {
+  display: inline-block;
+  vertical-align: top;
+  width: 475px;
+  margin: 10px;
+}
+#recent-images .boxcontent {
+  text-align: center;
+}
+#ft {
+  text-align: center;
+}
+#ft ul {
+  padding: 0;
+}
+#ft li {
+  list-style-type: none;
+  display: inline-block;
+  width: 100px;
+}
+#preview-tooltip-nws,
+#preview-tooltip-ws,
+#ft .fill,
+.clear-bug {
+  display: none;
+}
