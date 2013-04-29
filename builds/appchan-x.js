@@ -9888,7 +9888,6 @@
             if (!category.hasOwnProperty(name)) {
               continue;
             }
-            name = icon[0];
             css.push("a.useremail[href*='" + name + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toLowerCase()) + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toUpperCase()) + "']:last-of-type::" + position + " {\n  content: url('data:image/png;base64," + icon + "');\n}\n");
           }
         }

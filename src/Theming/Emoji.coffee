@@ -17,7 +17,6 @@ a.useremail[href]:last-of-type::#{position} {
       if (_conf['Emoji'] isnt "disable ponies" and key is "pony") or (_conf['Emoji'] isnt "only ponies" and key is "not")
         for name, icon of category
           continue unless category.hasOwnProperty name
-          name = icon[0]
           css.push """
 a.useremail[href*='#{name}']:last-of-type::#{position},
 a.useremail[href*='#{name.toLowerCase()}']:last-of-type::#{position},
