@@ -7409,6 +7409,9 @@
           return "//archive.foolz.us/" + boardID + "/full_image/" + filename;
         case 'u':
           return "//nsfw.foolz.us/" + boardID + "/full_image/" + filename;
+        case 'v':
+        case 'vg':
+          return "//archive.nihil-ad-rem.net/" + boardID + "/full_image/" + filename;
         case 'po':
           return "//archive.thedarkcave.org/" + boardID + "/full_image/" + filename;
         case 'hr':
@@ -7479,8 +7482,16 @@
         $.set('archivers', Conf.archivers);
       }
       return (arch && (archive = this.archiver[arch]) ? Redirect.path(archive.base, archive.type, data) : data.threadID ? "//boards.4chan.org/" + boardID + "/" : null);
+      if (!archive.boards.contains(g.BOARD.ID)) {
+        return Conf['archivers'] = archive;
+      }
     },
     archiver: {
+      'NihilAdRem': {
+        base: '//archive.nihil-ad-rem.net',
+        boards: ['v', 'vg'],
+        type: 'foolfuuka'
+      },
       'Foolz': {
         base: 'https://archive.foolz.us',
         boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg'],

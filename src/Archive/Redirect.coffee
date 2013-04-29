@@ -13,6 +13,8 @@ Redirect =
         "//archive.foolz.us/#{boardID}/full_image/#{filename}"
       when 'u'
         "//nsfw.foolz.us/#{boardID}/full_image/#{filename}"
+      when 'v', 'vg'
+        "//archive.nihil-ad-rem.net/#{boardID}/full_image/#{filename}"
       when 'po'
         "//archive.thedarkcave.org/#{boardID}/full_image/#{filename}"
       when 'hr', 'tv'
@@ -60,7 +62,14 @@ Redirect =
     else
       null)
 
+    unless archive.boards.contains g.BOARD.ID
+      Conf['archivers'] = archive
+
   archiver:
+    'NihilAdRem':
+      base:   '//archive.nihil-ad-rem.net'
+      boards: ['v', 'vg']
+      type:   'foolfuuka'
     'Foolz':
       base:   'https://archive.foolz.us'
       boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg']
