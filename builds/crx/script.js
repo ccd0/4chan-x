@@ -8296,7 +8296,11 @@
               $('.close', notification).click();
             }
           } else if (QR.nodes) {
-            QR.close();
+            if (Conf['Persistent QR']) {
+              QR.hide();
+            } else {
+              QR.close();
+            }
           }
           break;
         case Conf['Spoiler tags']:

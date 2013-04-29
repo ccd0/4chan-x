@@ -1,3 +1,9 @@
+seaweedchan:
+- Change ESC functionality in QR to autohide if Persistent QR is enabled
+
+MayhemYDG: 
+- Add nyafuu archiving for /w/
+
 ### 1.1.3 - 2013-04-28
 seaweedchan:
 - Chrome doesn't get .null, so don't style it
