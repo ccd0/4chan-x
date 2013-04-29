@@ -282,7 +282,7 @@ $.set = do ->
       items = {}
       localItems = {}
     catch err
-      c.error err
+      c.error err.stack
 
   (key, val) ->
     if typeof key is 'string'
