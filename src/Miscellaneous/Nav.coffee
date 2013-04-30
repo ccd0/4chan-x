@@ -44,7 +44,9 @@ Nav =
     else
       headRect  = Header.toggle.getBoundingClientRect()
       topMargin = headRect.top + headRect.height
-    threads = $$ '.thread:not([hidden])'
+    threads = $$('.thread').filter (thread) ->
+      thread = Get.threadFromRoot thread
+      !(thread.isHidden and !thread.stub)
     for thread, i in threads
       rect = thread.getBoundingClientRect()
       if rect.bottom > topMargin # not scrolled past

@@ -128,10 +128,10 @@ ThreadHiding =
     return if thread.isHidden
     {OP} = thread
     threadRoot = OP.nodes.root.parentNode
-    threadRoot.hidden = thread.isHidden = true
+    thread.isHidden = true
 
     unless makeStub
-      threadRoot.nextElementSibling.hidden = true # <hr>
+      threadRoot.hidden = threadRoot.nextElementSibling.hidden = true # <hr>
       return
 
     numReplies = 0
@@ -152,7 +152,7 @@ ThreadHiding =
     $.add thread.stub, a
     if Conf['Menu']
       $.add thread.stub, [$.tn(' '), Menu.makeButton OP]
-    $.before threadRoot, thread.stub
+    $.prepend threadRoot, thread.stub
 
   show: (thread) ->
     if thread.stub

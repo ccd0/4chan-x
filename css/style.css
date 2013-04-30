@@ -551,9 +551,7 @@ a.hide-announcement {
   float: left;
   margin-right: 2px;
 }
-.stub ~ .sideArrows,
-.stub ~ .hide-reply-button,
-.stub ~ .post {
+.stub ~ * {
   display: none !important;
 }
 .stub input {

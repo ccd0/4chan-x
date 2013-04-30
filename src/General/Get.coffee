@@ -8,6 +8,8 @@ Get =
     if excerpt.length > 70
       excerpt = "#{excerpt[...67]}..."
     "/#{thread.board}/ - #{excerpt}"
+  threadFromRoot: (root) ->
+    g.threads["#{g.BOARD}.#{root.id[1..]}"]
   postFromRoot: (root) ->
     link    = $ 'a[title="Highlight this post"]', root
     boardID = link.pathname.split('/')[1]
