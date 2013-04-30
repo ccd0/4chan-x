@@ -5,6 +5,7 @@ seaweedchan:
 
 MayhemYDG: 
 - Add nyafuu archiving for /w/
+- Add /d/ archive
 
 ### 1.1.3 - 2013-04-28
 seaweedchan:

@@ -376,9 +376,6 @@ a[href="javascript:;"] {
 a.hide-announcement {
   float: left;
 }
-#toggleMsgBtn {
-  display: none;
-}
 
 /* Unread */
 #unread-line {

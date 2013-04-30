@@ -21,6 +21,10 @@ Redirect =
         "http://archive.4plebs.org/#{boardID}/full_image/#{filename}"
       when 'c', 'w', 'wg'
         "//archive.nyafuu.org/#{boardID}/full_image/#{filename}"
+      when 'vg'
+        "http://archive.nihil-ad-rem.net/#{boardID}/full_image/#{filename}"
+      when 'd'
+        "//loveisover.me/#{boardID}/full_image/#{filename}"
       when 'ck', 'fa', 'lit', 's4s'
         "//fuuka.warosu.org/#{boardID}/full_image/#{filename}"
       when 'cgl', 'g', 'mu'
@@ -89,6 +93,10 @@ Redirect =
     'NyaFuu':
       base:   '//archive.nyafuu.org'
       boards: ['c', 'w', 'wg']
+      type:   'foolfuuka'
+    'LoveIsOver':
+      base:   '//loveisover.me'
+      boards: ['d']
       type:   'foolfuuka'
     'Warosu':
       base:   '//fuuka.warosu.org'
