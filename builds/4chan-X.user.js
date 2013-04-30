@@ -7115,6 +7115,7 @@
           props = _ref[id];
           x = $.el('a', {
             textContent: '×',
+            className: 'close',
             href: 'javascript:;'
           });
           $.on(x, 'click', ThreadWatcher.cb.x);
