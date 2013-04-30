@@ -8,7 +8,7 @@ Reporting bugs:
   1. Precise steps to reproduce the problem, with the expected and actual results.
   2. Console errors, if any.
   3. Browser version.
-  4. Your exported settings.
+  4. Your exported settings. If your settings contains sensible information (e.g. personas), edit the text file manually.
 
 Open your console with:
 - `Ctrl + Shift + J` on Chrome.

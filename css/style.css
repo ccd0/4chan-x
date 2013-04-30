@@ -335,14 +335,19 @@ a[href="javascript:;"] {
 .section-main label {
   text-decoration: underline;
 }
-.section-filter ul {
+.section-filter ul,
+.section-qr ul {
   padding: 0;
 }
-.section-filter li {
+.section-filter li,
+.section-qr li {
   margin: 10px 40px;
 }
 .section-filter textarea {
   height: 500px;
+}
+.section-qr textarea {
+  height: 200px;
 }
 .section-sauce textarea {
   height: 350px;

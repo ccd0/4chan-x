@@ -8,10 +8,10 @@
 </div>
 <form>
   <div class="persona">
-    <input id="dump-button" type="button" title="Dump list" value="+">
-    <input name="name"  data-name="name"  title="Name"    placeholder="Name"    class="field" size="1">
-    <input name="email" data-name="email" title="E-mail"  placeholder="E-mail"  class="field" size="1">
-    <input name="sub"   data-name="sub"   title="Subject" placeholder="Subject" class="field" size="1">
+    <input type="button" id="dump-button" title="Dump list" value="+">
+    <input data-name="name"  list="list-name"  title="Name"    placeholder="Name"    class="field" size="1">
+    <input data-name="email" list="list-email" title="E-mail"  placeholder="E-mail"  class="field" size="1">
+    <input data-name="sub"   list="list-sub"   title="Subject" placeholder="Subject" class="field" size="1">
   </div>
   <div id="dump-list-container">
     <div id="dump-list"></div>
@@ -23,7 +23,7 @@
   </div>
   <div id="file-n-submit">
     <input type="submit">
-    <input id="qr-file-button" type="button" value="Choose files">
+    <input type="button" id="qr-file-button" value="Choose files">
     <span id="qr-filename-container">
       <span id="qr-no-file">No selected file</span>
       <span id="qr-filename"></span>
@@ -33,3 +33,6 @@
   </div>
   <input type="file" multiple>
 </form>
+<datalist id="list-name"></datalist>
+<datalist id="list-email"></datalist>
+<datalist id="list-sub"></datalist>

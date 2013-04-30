@@ -46,18 +46,12 @@ DeleteLink =
     $.off @, 'click', DeleteLink.delete
     @textContent = "Deleting #{@textContent}..."
 
-    pwd =
-      if m = d.cookie.match /4chan_pass=([^;]+)/
-        decodeURIComponent m[1]
-      else
-        $.id('delPassword').value
-
     fileOnly = $.hasClass @, 'delete-file'
 
     form =
       mode: 'usrdel'
       onlyimgdel: fileOnly
-      pwd: pwd
+      pwd: QR.persona.getPassword()
     form[post.ID] = 'delete'
 
     link = @
