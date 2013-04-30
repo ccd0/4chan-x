@@ -4930,7 +4930,6 @@
         case 'm':
         case 'q':
         case 'tg':
-        case 'vg':
         case 'vp':
         case 'vr':
         case 'wsg':
@@ -4939,6 +4938,17 @@
           return "//nsfw.foolz.us/" + board + "/full_image/" + filename;
         case 'po':
           return "//archive.thedarkcave.org/" + board + "/full_image/" + filename;
+        case 'hr':
+        case 'tv':
+          return "http://archive.4plebs.org/" + board + "/full_image/" + filename;
+        case 'c':
+        case 'w':
+        case 'wg':
+          return "//archive.nyafuu.org/" + board + "/full_image/" + filename;
+        case 'vg':
+          return "http://archive.nihil-ad-rem.net/" + board + "/full_image/" + filename;
+        case 'd':
+          return "//loveisover.me/" + board + "/full_image/" + filename;
         case 'ck':
         case 'fa':
         case 'lit':
@@ -4947,15 +4957,12 @@
         case 'cgl':
         case 'g':
         case 'mu':
-        case 'w':
           return "//rbt.asia/" + board + "/full_image/" + filename;
         case 'an':
         case 'k':
         case 'toy':
         case 'x':
           return "http://archive.heinessen.com/" + board + "/full_image/" + filename;
-        case 'c':
-          return "//archive.nyafuu.org/" + board + "/full_image/" + filename;
       }
     },
     post: function(board, postID) {
@@ -4969,22 +4976,28 @@
         case 'sp':
         case 'tg':
         case 'tv':
-        case 'v':
-        case 'vg':
         case 'vp':
         case 'vr':
         case 'wsg':
-        case 'dev':
-        case 'foolz':
-          return "//archive.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
+          return "https://archive.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
         case 'u':
-        case 'kuku':
-          return "//nsfw.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
-        case 'c':
+          return "https://nsfw.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
         case 'int':
         case 'out':
         case 'po':
           return "//archive.thedarkcave.org/_/api/chan/post/?board=" + board + "&num=" + postID;
+        case 'hr':
+        case 'x':
+          return "http://archive.4plebs.org/_/api/chan/post/?board=" + board + "&num=" + postID;
+        case 'c':
+        case 'w':
+        case 'wg':
+          return "//archive.nyafuu.org/_/api/chan/post/?board=" + board + "&num=" + postID;
+        case 'v':
+        case 'vg':
+          return "http://archive.nihil-ad-rem.net/_/api/chan/post/?board=" + board + "&num=" + postID;
+        case 'd':
+          return "//loveisover.me/_/api/chan/post/?board=" + board + "&num=" + postID;
       }
     },
     to: function(data) {
@@ -5003,23 +5016,33 @@
         case 'sp':
         case 'tg':
         case 'tv':
-        case 'v':
-        case 'vg':
         case 'vp':
         case 'vr':
         case 'wsg':
-        case 'dev':
-        case 'foolz':
           url = Redirect.path('//archive.foolz.us', 'foolfuuka', data);
           break;
         case 'u':
-        case 'kuku':
           url = Redirect.path('//nsfw.foolz.us', 'foolfuuka', data);
           break;
         case 'int':
         case 'out':
         case 'po':
           url = Redirect.path('//archive.thedarkcave.org', 'foolfuuka', data);
+          break;
+        case 'hr':
+          url = Redirect.path('http://archive.4plebs.org', 'foolfuuka', data);
+          break;
+        case 'c':
+        case 'w':
+        case 'wg':
+          url = Redirect.path('//archive.nyafuu.org', 'foolfuuka', data);
+          break;
+        case 'v':
+        case 'vg':
+          url = Redirect.path('http://archive.nihil-ad-rem.net', 'foolfuuka', data);
+          break;
+        case 'd':
+          url = Redirect.path('//loveisover.me', 'foolfuuka', data);
           break;
         case 'ck':
         case 'fa':
@@ -5028,13 +5051,12 @@
           url = Redirect.path('//fuuka.warosu.org', 'fuuka', data);
           break;
         case 'diy':
+        case 'g':
         case 'sci':
           url = Redirect.path('//archive.installgentoo.net', 'fuuka', data);
           break;
         case 'cgl':
-        case 'g':
         case 'mu':
-        case 'w':
           url = Redirect.path('//rbt.asia', 'fuuka', data);
           break;
         case 'an':
@@ -5045,9 +5067,6 @@
         case 'toy':
         case 'x':
           url = Redirect.path('http://archive.heinessen.com', 'fuuka', data);
-          break;
-        case 'c':
-          url = Redirect.path('//archive.nyafuu.org', 'fuuka', data);
           break;
         default:
           if (threadID) {

@@ -4086,49 +4086,71 @@ Redirect =
   image: (board, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     switch board
-      when 'a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg'
+      when 'a', 'gd', 'jp', 'm', 'q', 'tg', 'vp', 'vr', 'wsg'
         "//archive.foolz.us/#{board}/full_image/#{filename}"
       when 'u'
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
       when 'po'
         "//archive.thedarkcave.org/#{board}/full_image/#{filename}"
+      when 'hr', 'tv'
+        "http://archive.4plebs.org/#{board}/full_image/#{filename}"
+      when 'c', 'w', 'wg'
+        "//archive.nyafuu.org/#{board}/full_image/#{filename}"
+      when 'vg'
+        "http://archive.nihil-ad-rem.net/#{board}/full_image/#{filename}"
+      when 'd'
+        "//loveisover.me/#{board}/full_image/#{filename}"
       when 'ck', 'fa', 'lit', 's4s'
         "//fuuka.warosu.org/#{board}/full_image/#{filename}"
-      when 'cgl', 'g', 'mu', 'w'
+      when 'cgl', 'g', 'mu'
         "//rbt.asia/#{board}/full_image/#{filename}"
       when 'an', 'k', 'toy', 'x'
         "http://archive.heinessen.com/#{board}/full_image/#{filename}"
-      when 'c'
-        "//archive.nyafuu.org/#{board}/full_image/#{filename}"
   post: (board, postID) ->
+    # XXX foolz had HSTS set for 120 days, which broke XHR+CORS+Redirection when on HTTP.
+    # Remove necessary HTTPS procotol in September 2013.
     switch board
-      when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg', 'dev', 'foolz'
-        "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
-      when 'u', 'kuku'
-        "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
-      when 'c', 'int', 'out', 'po'
+      when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg'
+        "https://archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
+      when 'u'
+        "https://nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
+      when 'int', 'out', 'po'
         "//archive.thedarkcave.org/_/api/chan/post/?board=#{board}&num=#{postID}"
+      when 'hr', 'x'
+        "http://archive.4plebs.org/_/api/chan/post/?board=#{board}&num=#{postID}"
+      when 'c', 'w', 'wg'
+        "//archive.nyafuu.org/_/api/chan/post/?board=#{board}&num=#{postID}"
+      when 'v', 'vg'
+        "http://archive.nihil-ad-rem.net/_/api/chan/post/?board=#{board}&num=#{postID}"
+      when 'd'
+        "//loveisover.me/_/api/chan/post/?board=#{board}&num=#{postID}"
   to: (data) ->
     unless data.isSearch
       {threadID} = data
     {board} = data
     switch board
-      when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg', 'dev', 'foolz'
+      when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg'
         url = Redirect.path '//archive.foolz.us', 'foolfuuka', data
-      when 'u', 'kuku'
+      when 'u'
         url = Redirect.path '//nsfw.foolz.us', 'foolfuuka', data
       when 'int', 'out', 'po'
         url = Redirect.path '//archive.thedarkcave.org', 'foolfuuka', data
+      when 'hr'
+        url = Redirect.path 'http://archive.4plebs.org', 'foolfuuka', data
+      when 'c', 'w', 'wg'
+        url = Redirect.path '//archive.nyafuu.org', 'foolfuuka', data
+      when 'v', 'vg'
+        url = Redirect.path 'http://archive.nihil-ad-rem.net', 'foolfuuka', data
+      when 'd'
+        url = Redirect.path '//loveisover.me', 'foolfuuka', data
       when 'ck', 'fa', 'lit', 's4s'
         url = Redirect.path '//fuuka.warosu.org', 'fuuka', data
-      when 'diy', 'sci'
+      when 'diy', 'g', 'sci'
         url = Redirect.path '//archive.installgentoo.net', 'fuuka', data
-      when 'cgl', 'g', 'mu', 'w'
+      when 'cgl', 'mu'
         url = Redirect.path '//rbt.asia', 'fuuka', data
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
         url = Redirect.path 'http://archive.heinessen.com', 'fuuka', data
-      when 'c'
-        url = Redirect.path '//archive.nyafuu.org', 'fuuka', data
       else
         if threadID
           url = "//boards.4chan.org/#{board}/"
