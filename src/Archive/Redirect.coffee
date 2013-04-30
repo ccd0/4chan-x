@@ -21,8 +21,6 @@ Redirect =
         "http://archive.4plebs.org/#{boardID}/full_image/#{filename}"
       when 'c', 'w', 'wg'
         "//archive.nyafuu.org/#{boardID}/full_image/#{filename}"
-      when 'vg'
-        "http://archive.nihil-ad-rem.net/#{boardID}/full_image/#{filename}"
       when 'd'
         "//loveisover.me/#{boardID}/full_image/#{filename}"
       when 'ck', 'fa', 'lit', 's4s'

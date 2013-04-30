@@ -7456,8 +7456,6 @@
         case 'w':
         case 'wg':
           return "//archive.nyafuu.org/" + boardID + "/full_image/" + filename;
-        case 'vg':
-          return "http://archive.nihil-ad-rem.net/" + boardID + "/full_image/" + filename;
         case 'd':
           return "//loveisover.me/" + boardID + "/full_image/" + filename;
         case 'ck':
