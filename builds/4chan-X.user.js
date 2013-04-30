@@ -4304,7 +4304,7 @@
         }
       },
       pastebin: {
-        regExp: /.*(?:pastebin.com\/)([^#\&\?]*).*/,
+        regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/,
         el: function() {
           var div;
 

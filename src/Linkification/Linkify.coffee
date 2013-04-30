@@ -201,7 +201,7 @@ Linkify =
         text: -> JSON.parse(@responseText).title
 
     pastebin:
-      regExp:  /.*(?:pastebin.com\/)([^#\&\?]*).*/
+      regExp:  /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/
       el: ->
         div = $.el 'iframe',
           src: "http://pastebin.com/embed_iframe.php?i=#{@name}"
