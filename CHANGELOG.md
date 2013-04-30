@@ -1,3 +1,5 @@
+### 3.2.3 - *2013-04-30*
+
 - Update archive redirection for /c/, /d/, /v/, /vg/, /w/ and /wg/.
 - Minor fixes.
 
