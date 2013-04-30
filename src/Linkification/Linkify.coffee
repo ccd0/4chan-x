@@ -206,6 +206,13 @@ Linkify =
         div = $.el 'iframe',
           src: "http://pastebin.com/embed_iframe.php?i=#{@name}"
 
+    gist:
+      regExp: /.*(?:gist.github.com\/.*\/)([^#\&\?]*).*/
+      el: ->
+        div = $.el 'iframe',
+          # Github doesn't allow embedding straight from the site, so we use an external site to bypass that.
+          src: "http://www.purplegene.com/script?url=https://gist.github.com/#{@name}.js"
+
   embedder: (a) ->
     return [a] unless Conf['Link Title']
     titles = {}
