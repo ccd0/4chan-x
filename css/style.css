@@ -375,14 +375,12 @@ a[href="javascript:;"] {
 }
 
 /* Announcement Hiding */
-:root.hide-announcement #globalMessage {
+:root.hide-announcement #globalMessage,
+:root.hide-announcement-enabled #toggleMsgBtn {
   display: none;
 }
 a.hide-announcement {
   float: left;
-}
-#toggleMsgBtn {
-  display: none;
 }
 
 /* Unread */

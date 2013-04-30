@@ -3,6 +3,7 @@ PSAHiding =
     return if !Conf['Announcement Hiding']
 
     $.addClass doc, 'hide-announcement'
+    $.addClass doc, 'hide-announcement-enabled'
 
     entry =
       type: 'header'
