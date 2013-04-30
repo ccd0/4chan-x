@@ -199,6 +199,11 @@ Linkify =
         api: -> "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{@name}"
         text: -> JSON.parse(@responseText).title
 
+    pastebin:
+      regExp:  /.*(?:pastebin.com\/)([^#\&\?]*).*/
+      el: ->
+        div = $.el 'iframe',
+          src: "http://pastebin.com/embed_iframe.php?i=#{@name}" 
 
   embedder: (a) ->
     return [a] unless Conf['Embedding']

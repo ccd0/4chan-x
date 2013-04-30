@@ -4304,6 +4304,16 @@
             return JSON.parse(this.responseText).title;
           }
         }
+      },
+      pastebin: {
+        regExp: /.*(?:pastebin.com\/)([^#\&\?]*).*/,
+        el: function() {
+          var div;
+
+          return div = $.el('iframe', {
+            src: "http://pastebin.com/embed_iframe.php?i=" + this.name
+          });
+        }
       }
     },
     embedder: function(a) {
