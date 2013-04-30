@@ -125,6 +125,7 @@ Linkify =
         textContent: @getAttribute("data-title") or url
 
       @textContent = '(embed)'
+      $.addClass el, "#{@getAttribute 'data-service'}"
 
     else
       # We create an element to embed
@@ -203,16 +204,16 @@ Linkify =
       regExp:  /.*(?:pastebin.com\/)([^#\&\?]*).*/
       el: ->
         div = $.el 'iframe',
-          src: "http://pastebin.com/embed_iframe.php?i=#{@name}" 
+          src: "http://pastebin.com/embed_iframe.php?i=#{@name}"
 
   embedder: (a) ->
-    return [a] unless Conf['Embedding']
+    return [a] unless Conf['Link Title']
     titles = {}
 
     callbacks = ->
       a.textContent = switch @status
         when 200, 304
-          title = "[#{embed.getAttribute 'data-service'}] #{service.text.call @}"
+          title = "#{service.text.call @}"
           embed.setAttribute 'data-title', title
           titles[embed.name] = [title, Date.now()]
           $.set 'CachedTitles', titles
@@ -235,13 +236,16 @@ Linkify =
 
       embed.setAttribute 'data-service', key
       embed.setAttribute 'data-originalURL', a.href
+      $.addClass a, "#{embed.getAttribute 'data-service'}"
 
       $.on embed, 'click', Linkify.toggle
+
+      unless Conf['Embedding']
+        embed.hidden = true
 
       if Conf['Link Title'] and (service = type.title)
         $.get 'CachedTitles', {}, (item) ->
           titles = item['CachedTitles']
-
           if title = titles[match[1]]
             a.textContent = title[0]
             embed.setAttribute 'data-title', title[0]
@@ -251,5 +255,5 @@ Linkify =
             catch err
               a.innerHTML = "[#{key}] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>"
 
-      return [a, $.tn(' '), embed]
+        return [a, $.tn(' '), embed]
     return [a]

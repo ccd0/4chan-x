@@ -4211,6 +4211,7 @@
           textContent: this.getAttribute("data-title") || url
         });
         this.textContent = '(embed)';
+        $.addClass(el, "" + (this.getAttribute('data-service')));
       } else {
         el = (type = Linkify.types[this.getAttribute("data-service")]).el.call(this);
         el.style.cssText = (style = type.style) ? style : "border: 0; width: 640px; height: 390px";
@@ -4320,7 +4321,7 @@
     embedder: function(a) {
       var callbacks, embed, key, match, service, titles, type, _ref;
 
-      if (!Conf['Embedding']) {
+      if (!Conf['Link Title']) {
         return [a];
       }
       titles = {};
@@ -4331,7 +4332,7 @@
           switch (this.status) {
             case 200:
             case 304:
-              title = "[" + (embed.getAttribute('data-service')) + "] " + (service.text.call(this));
+              title = "" + (service.text.call(this));
               embed.setAttribute('data-title', title);
               titles[embed.name] = [title, Date.now()];
               $.set('CachedTitles', titles);
@@ -4359,7 +4360,11 @@
         });
         embed.setAttribute('data-service', key);
         embed.setAttribute('data-originalURL', a.href);
+        $.addClass(a, "" + (embed.getAttribute('data-service')));
         $.on(embed, 'click', Linkify.toggle);
+        if (!Conf['Embedding']) {
+          embed.hidden = true;
+        }
         if (Conf['Link Title'] && (service = type.title)) {
           $.get('CachedTitles', {}, function(item) {
             var err, title;
@@ -4377,8 +4382,8 @@
               }
             }
           });
+          return [a, $.tn(' '), embed];
         }
-        return [a, $.tn(' '), embed];
       }
       return [a];
     }

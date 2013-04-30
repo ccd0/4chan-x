@@ -1,5 +1,6 @@
 seaweedchan:
 - Fix various embedding issues
+- Fix Link Title depending on Embedding
 
 ### 1.1.4 - 2013-04-29
 seaweedchan:
