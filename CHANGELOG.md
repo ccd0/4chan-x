@@ -1,3 +1,6 @@
+seaweedchan:
+- Fix various embedding issues
+
 ### 1.1.4 - 2013-04-29
 seaweedchan:
 - Change ESC functionality in QR to autohide if Persistent QR is enabled

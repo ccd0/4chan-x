@@ -126,20 +126,15 @@ Linkify =
 
       @textContent = '(embed)'
 
-    # Embed
     else
       # We create an element to embed
       el = (type = Linkify.types[@getAttribute("data-service")]).el.call @
 
       # Set style values.
-      if style = type.style
-        el.style.cssText = style
+      el.style.cssText = if style = type.style
+        style
       else
-        items =
-          'embedWidth':  Config['embedWidth']
-          'embedHeight': Config['embedHeight']
-        $.get items, (items) ->
-          el.style.cssText = "border: 0; width: #{items['embedWidth']}px; height: #{items['embedHeight']}px"
+        "border: 0; width: 640px; height: 390px"
 
       @textContent = '(unembed)'
 
@@ -187,23 +182,23 @@ Linkify =
           src:         @name
 
     SoundCloud:
-      regExp:  /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
+      regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
+      style: 'height: auto; width: 500px; display: inline-block;'
       el: ->
         div = $.el 'div',
           className: "soundcloud"
-          name:      "soundcloud"
+          name: "soundcloud"
         $.ajax(
-          "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@getAttribute 'data-originalURL'}&color=#{Style.colorToHex Themes[Conf['theme']]['Background Color']}"
+          "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{@name}"
           div: div
           onloadend: ->
             @div.innerHTML = JSON.parse(@responseText).html
           false)
+        div
+      title:
+        api: -> "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{@name}"
+        text: -> JSON.parse(@responseText).title
 
-    pastebin:
-      regExp:  /.*(?:pastebin.com\/)([^#\&\?]*).*/
-      el: ->
-        div = $.el 'iframe',
-          src: "http://pastebin.com/embed_iframe.php?i=#{@name}"
 
   embedder: (a) ->
     return [a] unless Conf['Embedding']

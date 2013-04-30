@@ -1,5 +1,5 @@
 /*
-* 4chan X - Version 1.1.4 - 2013-04-29
+* 4chan X - Version 1.1.4 - 2013-04-30
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -4198,7 +4198,7 @@
       }
     },
     toggle: function() {
-      var el, embed, items, style, type, url;
+      var el, embed, style, type, url;
 
       embed = this.previousElementSibling;
       if (this.className.contains("embedded")) {
@@ -4212,17 +4212,7 @@
         this.textContent = '(embed)';
       } else {
         el = (type = Linkify.types[this.getAttribute("data-service")]).el.call(this);
-        if (style = type.style) {
-          el.style.cssText = style;
-        } else {
-          items = {
-            'embedWidth': Config['embedWidth'],
-            'embedHeight': Config['embedHeight']
-          };
-          $.get(items, function(items) {
-            return el.style.cssText = "border: 0; width: " + items['embedWidth'] + "px; height: " + items['embedHeight'] + "px";
-          });
-        }
+        el.style.cssText = (style = type.style) ? style : "border: 0; width: 640px; height: 390px";
         this.textContent = '(unembed)';
       }
       $.replace(embed, el);
@@ -4290,6 +4280,7 @@
       },
       SoundCloud: {
         regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
+        style: 'height: auto; width: 500px; display: inline-block;',
         el: function() {
           var div;
 
@@ -4297,22 +4288,21 @@
             className: "soundcloud",
             name: "soundcloud"
           });
-          return $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + (this.getAttribute('data-originalURL')) + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
+          $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + this.name, {
             div: div,
             onloadend: function() {
               return this.div.innerHTML = JSON.parse(this.responseText).html;
             }
           }, false);
-        }
-      },
-      pastebin: {
-        regExp: /.*(?:pastebin.com\/)([^#\&\?]*).*/,
-        el: function() {
-          var div;
-
-          return div = $.el('iframe', {
-            src: "http://pastebin.com/embed_iframe.php?i=" + this.name
-          });
+          return div;
+        },
+        title: {
+          api: function() {
+            return "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + this.name;
+          },
+          text: function() {
+            return JSON.parse(this.responseText).title;
+          }
         }
       }
     },
