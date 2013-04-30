@@ -1,3 +1,9 @@
+- **New feature**: `Quick Reply Personas`
+ - Add custom auto-completion for the name, e-mail and subject inputs.
+ - Always use a specific persona.
+ - Per-board configuration.
+ - Access it in the `QR` tab of the Settings window.
+
 ### 3.2.3 - *2013-04-30*
 
 - Update archive redirection for /c/, /d/, /v/, /vg/, /w/ and /wg/.
