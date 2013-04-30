@@ -19,12 +19,7 @@ ThreadHiding =
     hiddenThreads = ThreadHiding.db.get
       boardID: g.BOARD.ID
       defaultValue: {}
-    # XXX tmp fix
-    try
-      hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
-    catch e
-      localStorage.setItem "4chan-hide-t-#{g.BOARD}", JSON.stringify {}
-      return ThreadHiding.syncCatalog()
+    hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
 
     # Add threads that were hidden in the catalog.
     for threadID of hiddenThreadsOnCatalog
