@@ -66,6 +66,8 @@ a[href="javascript:;"] {
 #qp, #ihover,
 #navlinks, .fixed #header-bar,
 #watcher,
+:root.float #updater,
+:root.float #thread-stats,
 #qr {
   position: fixed;
 }
@@ -385,13 +387,14 @@ a.hide-announcement {
 }
 
 /* Thread Updater */
-#updater:not(:hover) {
+#updater {
   background: none;
   border: none;
   box-shadow: none;
 }
 #updater > .move {
-  padding: 0 3px;
+  padding: 5px 3px 0px;
+  margin-bottom: -3px;
 }
 #updater > div:last-child {
   text-align: center;
@@ -399,11 +402,8 @@ a.hide-announcement {
 #updater input[type=number] {
   width: 4em;
 }
-#updater:not(:hover) > div:not(.move) {
-  display: none;
-}
-#updater input[type="button"] {
-  width: 100%;
+:root.float #updater {
+  padding: 0px 3px;
 }
 .new {
   color: limegreen;
@@ -443,6 +443,12 @@ a.hide-announcement {
   background: none;
   border: none;
   box-shadow: none;
+}
+:root.float #post-count, :root.float #file-count {
+  pointer-events: none;
+}
+:root.float #thread-stats {
+  padding: 0px 3px;
 }
 
 /* Quote */

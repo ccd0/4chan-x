@@ -1,14 +1,20 @@
 ThreadStats =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Stats']
-    @dialog = sc = $.el 'span',
-      innerHTML: "<span id=post-count>0</span> / <span id=file-count>0</span></div>"
-      id:        'thread-stats'
+
+    if Conf['Updater and Stats in Header']
+      @dialog = sc = $.el 'span',
+        innerHTML: "<span id=post-count>0</span> / <span id=file-count>0</span>"
+        id:        'thread-stats'
+      Header.addShortcut sc
+    else 
+      @dialog = sc = UI.dialog 'thread-stats', 'bottom: 0px; right: 0px;',
+        "<div class=move><span id=post-count>0</span> / <span id=file-count>0</span></div>"
+      $.ready => 
+        $.add d.body, sc    
 
     @postCountEl = $ '#post-count', sc
     @fileCountEl = $ '#file-count', sc
-    
-    Header.addShortcut sc
 
     Thread::callbacks.push
       name: 'Thread Stats'

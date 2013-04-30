@@ -1,6 +1,7 @@
 seaweedchan:
 - Change ESC functionality in QR to autohide if Persistent QR is enabled
 - Add /v/ and /vg/ archiving to archive.nihil-ad-rem.net, and make sure Archiver Selection settings actually switch to it
+- Add option to toggle between updater and stats fixed in header or floating
 
 MayhemYDG: 
 - Add nyafuu archiving for /w/

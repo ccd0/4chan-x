@@ -13,6 +13,10 @@ Config =
         false,
         'Adds a small [QR] link in the header.'
       ]
+      'Updater and Stats in Header': [
+        true,
+        'Places the thread updater and thread stats in the header instead of floating them.'
+      ]
       'Announcement Hiding': [
         true
         'Add button to hide 4chan announcements.'
