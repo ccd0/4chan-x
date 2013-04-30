@@ -118,7 +118,6 @@
         'Catalog Links': [true, 'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'],
         'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
         'QR Shortcut': [false, 'Adds a small [QR] link in the header.'],
-        'Updater and Stats in Header': [true, 'Places the thread updater and thread stats in the header instead of floating them.'],
         'Announcement Hiding': [true, 'Add button to hide 4chan announcements.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
@@ -176,6 +175,7 @@
         'Scroll to Last Read Post': [true, 'Scroll back to the last read post when reopening a thread.'],
         'Thread Excerpt': [true, 'Show an excerpt of the thread in the tab title.'],
         'Thread Stats': [true, 'Display reply and image count.'],
+        'Updater and Stats in Header': [true, 'Places the thread updater and thread stats in the header instead of floating them.'],
         'Thread Watcher': [true, 'Bookmark threads.'],
         'Auto Watch': [true, 'Automatically watch threads you start.'],
         'Auto Watch Reply': [false, 'Automatically watch threads you reply to.']
