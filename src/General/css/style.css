@@ -895,3 +895,32 @@ a:only-of-type > .remove {
   cursor: pointer;
   text-decoration: none !important;
 }
+/* Link Title Favicons */
+.linkify.YouTube {
+  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/youtube.png",    {encoding: "base64"}) %>') center left no-repeat!important;
+  padding-left: 18px;
+}
+.linkify.Vimeo {
+  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/vimeo.png",    {encoding: "base64"}) %>') center left no-repeat!important;
+  padding-left: 18px;
+}
+.linkify.SoundCloud {
+  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/soundcloud.png",    {encoding: "base64"}) %>') center left no-repeat!important;
+  padding-left: 18px;
+}
+.linkify.audio {
+  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/audio.png",    {encoding: "base64"}) %>') center left no-repeat!important;
+  padding-left: 18px;
+}
+.linkify.LiveLeak {
+  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/liveleak.png",    {encoding: "base64"}) %>') center left no-repeat!important;
+  padding-left: 18px;
+}
+.linkify.Vocaroo {
+  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/vocaroo.png",    {encoding: "base64"}) %>') center left no-repeat!important;
+  padding-left: 18px;
+}
+.linkify.pastebin {
+  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/pastebin.png",    {encoding: "base64"}) %>') center left no-repeat!important;
+  padding-left: 18px;
+}
