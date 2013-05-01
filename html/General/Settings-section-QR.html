@@ -1,0 +1,16 @@
+<fieldset>
+  <legend>Quick Reply Personas <span class="warning" #{if Conf['Quick Reply'] then 'hidden' else ''}>is disabled.</span></legend>
+  <textarea name="QR.personas" class="field" spellcheck="false"></textarea>
+  <p>
+    One item per line.<br>
+    Items will be added in the relevant input's auto-completion list.<br>
+    Password items will always be used, since there is no password input.<br>
+    Lines starting with a <code>#</code> will be ignored.
+  </p>
+  <ul>You can use these settings with each item, separate them with semicolons:
+    <li>Possible items are: <code>name</code>, <code>email</code>, <code>subject</code> and <code>password</code>.</li>
+    <li>Wrap values of items with quotes, like this: <code>email:"sage"</code>.</li>
+    <li>Force values as defaults with the <code>always</code> keyword, for example: <code>email:"sage";always</code>.</li>
+    <li>Select specific boards for an item, separated with commas, for example: <code>email:"sage";boards:jp;always</code>.</li>
+  </ul>
+</fieldset>

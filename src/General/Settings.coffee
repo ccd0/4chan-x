@@ -42,6 +42,7 @@ Settings =
 
     Settings.addSection 'Main',     Settings.main
     Settings.addSection 'Filter',   Settings.filter
+    Settings.addSection 'QR',       Settings.qr
     Settings.addSection 'Sauce',    Settings.sauce
     Settings.addSection 'Rice',     Settings.rice
     Settings.addSection 'Keybinds', Settings.keybinds
@@ -320,14 +321,23 @@ Settings =
     <%= grunt.file.read('html/General/Settings-section-Filter-guide.html').replace(/>\s+</g, '><').trim() %>
     """
 
+  qr: (section) ->
+    section.innerHTML = """
+    <%= grunt.file.read('html/General/Settings-section-QR.html').replace(/>\s+</g, '><').trim() %>
+    """
+    ta = $ 'textarea', section
+    $.get 'QR.personas', Conf['QR.personas'], (item) ->
+      ta.value = item['QR.personas']
+    $.on ta, 'change', $.cb.value
+
   sauce: (section) ->
     section.innerHTML = """
     <%= grunt.file.read('html/General/Settings-section-Sauce.html').replace(/>\s+</g, '><').trim() %>
     """
-    sauce = $ 'textarea', section
+    ta = $ 'textarea', section
     $.get 'sauces', Conf['sauces'], (item) ->
-      sauce.value = item['sauces']
-    $.on sauce, 'change', $.cb.value
+      ta.value = item['sauces']
+    $.on ta, 'change', $.cb.value
 
   rice: (section) ->
     section.innerHTML = """

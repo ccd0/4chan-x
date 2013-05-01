@@ -147,6 +147,11 @@ Config =
     'Top Board List':          false
     'Bottom Board List':       false
     'Custom Board Navigation': true
+  QR:
+    'QR.personas': [
+      '#email:"sage";boards:jp;always'
+      'email:"sage"'
+      ].join '\n'
   boardnav: '[current-title / toggle-all]'
   time: '%m/%d/%y(%a)%H:%M:%S'
   backlink: '>>%id'
