@@ -212,6 +212,11 @@ Linkify =
         div = $.el 'iframe',
           # Github doesn't allow embedding straight from the site, so we use an external site to bypass that.
           src: "http://www.purplegene.com/script?url=https://gist.github.com/#{@name}.js"
+      title:
+        api: -> "https://api.github.com/gists/#{@name}"
+        text: ->
+          response = JSON.parse(@responseText).files
+          return file for file of response when response.hasOwnProperty file
 
   embedder: (a) ->
     return [a] unless Conf['Link Title']

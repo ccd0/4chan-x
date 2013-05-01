@@ -16,14 +16,14 @@ Array::contains = (object) ->
 Array::indexOf = (object) ->
   i = @length
   while i--
-    break if @[i] is object
+    return i if @[i] is object
   return i
 
 Array::pushArrays = ->
   args = arguments
   for arg in args
     @push.apply @, arg
-  return
+  return @
 
 Array::remove = (object) ->
   if (index = @indexOf object) > -1
