@@ -207,7 +207,7 @@ Linkify =
           src: "http://pastebin.com/embed_iframe.php?i=#{@name}"
 
     gist:
-      regExp: /.*(?:gist.github.com\/.*\/)([^#\&\?]*).*/
+      regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/
       el: ->
         div = $.el 'iframe',
           # Github doesn't allow embedding straight from the site, so we use an external site to bypass that.

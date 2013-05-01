@@ -4319,7 +4319,7 @@
         }
       },
       gist: {
-        regExp: /.*(?:gist.github.com\/.*\/)([^#\&\?]*).*/,
+        regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/,
         el: function() {
           var div;
 
