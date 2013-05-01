@@ -1,5 +1,6 @@
 seaweedchan:
 - Fix QR not clearing on submit with Posting Success Notifications disabled
+- New archives for /h/, /v/, and /vg/
 
 ### 1.1.7 - 2013-05-01
 seaweedchan:
@@ -16,10 +17,6 @@ seaweedchan:
 - Fix Gist links if no username is specificed
 
 MayhemYDG:
-- **New feature**: `Quick Reply Personas`
- - Add custom auto-completion for the name, e-mail and subject inputs.
- - Always use a specific persona.
- - Per-board configuration.
  - Access it in the `Advanced` tab of the Settings window.
 
 zixaphir:
@@ -50,6 +47,18 @@ seaweedchan:
 - Toggle keybind for header auto-hiding
 
 MayhemYDG:
+=======
+ - Access it in the `QR` tab of the Settings window.
+- Updated archive redirection for /h/, /v/ and /vg/.
+
+### 3.2.3 - *2013-04-30*
+
+- Update archive redirection for /c/, /d/, /v/, /vg/, /w/ and /wg/.
+- Minor fixes.
+
+### 3.2.2 - *2013-04-27*
+
+>>>>>>> b74e0c92fdf2d755d996cb574dddb3c8d964e91a
 - Fix Unread Count taking into account hidden posts.
 
 ### 1.1.2 - 2013-04-26
