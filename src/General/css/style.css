@@ -66,6 +66,8 @@ a[href="javascript:;"] {
 #qp, #ihover,
 #navlinks, .fixed #header-bar,
 #watcher,
+:root.float #updater,
+:root.float #thread-stats,
 #qr {
   position: fixed;
 }
@@ -374,9 +376,6 @@ a[href="javascript:;"] {
 a.hide-announcement {
   float: left;
 }
-#toggleMsgBtn {
-  display: none;
-}
 
 /* Unread */
 #unread-line {
@@ -385,13 +384,14 @@ a.hide-announcement {
 }
 
 /* Thread Updater */
-#updater:not(:hover) {
+#updater {
   background: none;
   border: none;
   box-shadow: none;
 }
 #updater > .move {
-  padding: 0 3px;
+  padding: 5px 3px 0px;
+  margin-bottom: -3px;
 }
 #updater > div:last-child {
   text-align: center;
@@ -399,11 +399,8 @@ a.hide-announcement {
 #updater input[type=number] {
   width: 4em;
 }
-#updater:not(:hover) > div:not(.move) {
-  display: none;
-}
-#updater input[type="button"] {
-  width: 100%;
+:root.float #updater {
+  padding: 0px 3px;
 }
 .new {
   color: limegreen;
@@ -443,6 +440,12 @@ a.hide-announcement {
   background: none;
   border: none;
   box-shadow: none;
+}
+:root.float #post-count, :root.float #file-count {
+  pointer-events: none;
+}
+:root.float #thread-stats {
+  padding: 0px 3px;
 }
 
 /* Quote */
@@ -891,4 +894,37 @@ a:only-of-type > .remove {
 .export, .import {
   cursor: pointer;
   text-decoration: none !important;
+}
+/* Link Title Favicons */
+.linkify.YouTube {
+  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/youtube.png",    {encoding: "base64"}) %>') center left no-repeat!important;
+  padding-left: 18px;
+}
+.linkify.Vimeo {
+  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/vimeo.png",    {encoding: "base64"}) %>') center left no-repeat!important;
+  padding-left: 18px;
+}
+.linkify.SoundCloud {
+  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/soundcloud.png",    {encoding: "base64"}) %>') center left no-repeat!important;
+  padding-left: 18px;
+}
+.linkify.audio {
+  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/audio.png",    {encoding: "base64"}) %>') center left no-repeat!important;
+  padding-left: 18px;
+}
+.linkify.LiveLeak {
+  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/liveleak.png",    {encoding: "base64"}) %>') center left no-repeat!important;
+  padding-left: 18px;
+}
+.linkify.Vocaroo {
+  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/vocaroo.png",    {encoding: "base64"}) %>') center left no-repeat!important;
+  padding-left: 18px;
+}
+.linkify.pastebin {
+  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/pastebin.png",    {encoding: "base64"}) %>') center left no-repeat!important;
+  padding-left: 18px;
+}
+.linkify.gist {
+  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/gist.png",    {encoding: "base64"}) %>') center left no-repeat!important;
+  padding-left: 18px;
 }

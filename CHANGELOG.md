@@ -1,8 +1,24 @@
+seaweedchan:
+- Fix various embedding issues
+- Fix Link Title depending on Embedding
+- Added favicons to links that can be embedded
+- Add gist embedding
+
+### 1.1.4 - 2013-04-29
+seaweedchan:
+- Change ESC functionality in QR to autohide if Persistent QR is enabled
+- Add /v/ and /vg/ archiving to archive.nihil-ad-rem.net, and make sure Archiver Selection settings actually switch to it
+- Add option to toggle between updater and stats fixed in header or floating
+
+MayhemYDG: 
+- Add nyafuu archiving for /w/
+- Add /d/ archive
+
 ### 1.1.3 - 2013-04-28
 seaweedchan:
 - Chrome doesn't get .null, so don't style it
 - Fix count when auto update is disabled and set updater text to "Update"
-- Remove /v/ and /vg/ redirection. See https://archive.foolz.us/foolz/thread/509388/ for news and how you can donate to bring /v/ and /vg/ archiving back.
+- Remove /v/ and /vg/ redirection from Foolz.
 - Toggle keybind for header auto-hiding
 
 MayhemYDG:

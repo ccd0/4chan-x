@@ -3,19 +3,27 @@ ThreadUpdater =
     return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
 
     checked = if Conf['Auto Update'] then 'checked' else ''
-    @dialog = sc = $.el 'span',
-      innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>"
-      id:        'updater'
 
-    @timer  = $ '#update-timer',  sc
+    if Conf['Updater and Stats in Header']
+      @dialog = sc = $.el 'span',
+        innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>"
+        id:        'updater'
+      Header.addShortcut sc
+    else 
+      @dialog = sc = UI.dialog 'updater', 'bottom: 0px; left: 0px;',
+        "<div class=move></div><span id=update-status></span><span id=update-timer title='Update now'></span>"
+      $.addClass doc, 'float'
+      $.ready => 
+        $.addClass doc, 'float'
+        $.add d.body, sc    
+
+    @checkPostCount = 0
+
+    @timer  = $ '#update-timer', sc
     @status = $ '#update-status', sc
 
     $.on @timer,  'click', ThreadUpdater.update
     $.on @status, 'click', ThreadUpdater.update
-
-    @checkPostCount = 0
-
-    Header.addShortcut sc
 
     subEntries = []
     for name, conf of Config.updater.checkbox

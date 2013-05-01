@@ -39,6 +39,7 @@ ThreadWatcher =
       for id, props of watched[board]
         x = $.el 'a',
           textContent: '×'
+          className: 'close'
           href: 'javascript:;'
         $.on x, 'click', ThreadWatcher.cb.x
         link = $.el 'a', props

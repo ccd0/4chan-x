@@ -217,6 +217,10 @@ Config =
         true
         'Display reply and image count.'
       ]
+      'Updater and Stats in Header': [
+        true,
+        'Places the thread updater and thread stats in the header instead of floating them.'
+      ]
       'Thread Watcher': [
         true
         'Bookmark threads.'

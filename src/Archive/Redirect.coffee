@@ -13,13 +13,19 @@ Redirect =
         "//archive.foolz.us/#{boardID}/full_image/#{filename}"
       when 'u'
         "//nsfw.foolz.us/#{boardID}/full_image/#{filename}"
+      when 'v', 'vg'
+        "//archive.nihil-ad-rem.net/#{boardID}/full_image/#{filename}"
       when 'po'
         "//archive.thedarkcave.org/#{boardID}/full_image/#{filename}"
       when 'hr', 'tv'
         "http://archive.4plebs.org/#{boardID}/full_image/#{filename}"
+      when 'c', 'w', 'wg'
+        "//archive.nyafuu.org/#{boardID}/full_image/#{filename}"
+      when 'd'
+        "//loveisover.me/#{boardID}/full_image/#{filename}"
       when 'ck', 'fa', 'lit', 's4s'
         "//fuuka.warosu.org/#{boardID}/full_image/#{filename}"
-      when 'cgl', 'g', 'mu', 'w'
+      when 'cgl', 'g', 'mu'
         "//rbt.asia/#{boardID}/full_image/#{filename}"
       when 'an', 'k', 'toy', 'x'
         "http://archive.heinessen.com/#{boardID}/full_image/#{filename}"
@@ -58,10 +64,17 @@ Redirect =
     else
       null)
 
+    unless archive.boards.contains g.BOARD.ID
+      Conf['archivers'] = archive
+
   archiver:
     'Foolz':
       base:   'https://archive.foolz.us'
       boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg']
+      type:   'foolfuuka'
+    'NihilAdRem':
+      base:   '//archive.nihil-ad-rem.net'
+      boards: ['v', 'vg']
       type:   'foolfuuka'
     'NSFWFoolz':
       base:   'https://nsfw.foolz.us'
@@ -75,6 +88,14 @@ Redirect =
       base:   'http://archive.4plebs.org'
       boards: ['hr', 'tg', 'tv', 'x']
       base:   'foolfuuka'
+    'NyaFuu':
+      base:   '//archive.nyafuu.org'
+      boards: ['c', 'w', 'wg']
+      type:   'foolfuuka'
+    'LoveIsOver':
+      base:   '//loveisover.me'
+      boards: ['d']
+      type:   'foolfuuka'
     'Warosu':
       base:   '//fuuka.warosu.org'
       boards: ['cgl', 'ck', 'fa', 'jp', 'lit', 's4s', 'q', 'tg']
@@ -94,10 +115,6 @@ Redirect =
     'Cliche':
       base:   '//www.cliché.net/4chan/cgi-board.pl'
       boards: ['e']
-      type:   'fuuka'
-    'NyaFuu':
-      base:   '//archive.nyafuu.org'
-      boards: ['c', 'w']
       type:   'fuuka'
 
   path: (base, archiver, data) ->

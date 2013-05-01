@@ -1,5 +1,5 @@
 /*
-* 4chan X - Version 1.1.3 - 2013-04-30
+* 4chan X - Version 1.1.4 - 2013-04-30
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -158,6 +158,7 @@
         'Scroll to Last Read Post': [true, 'Scroll back to the last read post when reopening a thread.'],
         'Thread Excerpt': [true, 'Show an excerpt of the thread in the tab title.'],
         'Thread Stats': [true, 'Display reply and image count.'],
+        'Updater and Stats in Header': [true, 'Places the thread updater and thread stats in the header instead of floating them.'],
         'Thread Watcher': [true, 'Bookmark threads.'],
         'Auto Watch': [true, 'Automatically watch threads you start.'],
         'Auto Watch Reply': [false, 'Automatically watch threads you reply to.']
@@ -280,7 +281,7 @@
   doc = d.documentElement;
 
   g = {
-    VERSION: '1.1.3',
+    VERSION: '1.1.4',
     NAMESPACE: '4chan X.',
     boards: {},
     threads: {},
@@ -794,7 +795,7 @@
         return localItems = {};
       } catch (_error) {
         err = _error;
-        return c.error(err);
+        return c.error(err.stack);
       }
     });
     return function(key, val) {
@@ -1583,26 +1584,15 @@
           a = as[_i];
           if (a.textContent === board) {
             a = a.cloneNode(true);
-            if (/-title/.test(t)) {
-              a.textContent = a.title;
-            } else if (/-replace/.test(t)) {
-              if ($.hasClass(a, 'current')) {
-                a.textContent = a.title;
+            a.textContent = /-title/.test(t) || /-replace/.test(t) && $.hasClass(a, 'current') ? a.title : /-full/.test(t) ? "/" + board + "/ - " + a.title : (m = t.match(/-text:"(.+)"/)) ? m[1] : a.textContent;
+            if (m = t.match(/-(index|catalog)/)) {
+              a.setAttribute('data-only', m[1]);
+              a.href = "//boards.4chan.org/" + board + "/";
+              if (m[1] === 'catalog') {
+                a.href += 'catalog';
               }
-            } else if (/-full/.test(t)) {
-              a.textContent = "/" + board + "/ - " + a.title;
-            } else if (/-(index|catalog|text)/.test(t)) {
-              if (m = t.match(/-(index|catalog)/)) {
-                a.setAttribute('data-only', m[1]);
-                a.href = "//boards.4chan.org/" + board + "/";
-                if (m[1] === 'catalog') {
-                  a.href += 'catalog';
-                }
-              }
-              if (m = t.match(/-text:"(.+)"/)) {
-                a.textContent = m[1];
-              }
-            } else if (board === '@') {
+            }
+            if (board === '@') {
               $.addClass(a, 'navSmall');
             }
             return a;
@@ -4209,7 +4199,7 @@
       }
     },
     toggle: function() {
-      var el, embed, items, style, type, url;
+      var el, embed, style, type, url;
 
       embed = this.previousElementSibling;
       if (this.className.contains("embedded")) {
@@ -4221,19 +4211,10 @@
           textContent: this.getAttribute("data-title") || url
         });
         this.textContent = '(embed)';
+        $.addClass(el, "" + (this.getAttribute('data-service')));
       } else {
         el = (type = Linkify.types[this.getAttribute("data-service")]).el.call(this);
-        if (style = type.style) {
-          el.style.cssText = style;
-        } else {
-          items = {
-            'embedWidth': Config['embedWidth'],
-            'embedHeight': Config['embedHeight']
-          };
-          $.get(items, function(items) {
-            return el.style.cssText = "border: 0; width: " + items['embedWidth'] + "px; height: " + items['embedHeight'] + "px";
-          });
-        }
+        el.style.cssText = (style = type.style) ? style : "border: 0; width: 640px; height: 390px";
         this.textContent = '(unembed)';
       }
       $.replace(embed, el);
@@ -4301,6 +4282,7 @@
       },
       SoundCloud: {
         regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
+        style: 'height: auto; width: 500px; display: inline-block;',
         el: function() {
           var div;
 
@@ -4308,16 +4290,25 @@
             className: "soundcloud",
             name: "soundcloud"
           });
-          return $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + (this.getAttribute('data-originalURL')) + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
+          $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + this.name, {
             div: div,
             onloadend: function() {
               return this.div.innerHTML = JSON.parse(this.responseText).html;
             }
           }, false);
+          return div;
+        },
+        title: {
+          api: function() {
+            return "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + this.name;
+          },
+          text: function() {
+            return JSON.parse(this.responseText).title;
+          }
         }
       },
       pastebin: {
-        regExp: /.*(?:pastebin.com\/)([^#\&\?]*).*/,
+        regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/,
         el: function() {
           var div;
 
@@ -4325,12 +4316,22 @@
             src: "http://pastebin.com/embed_iframe.php?i=" + this.name
           });
         }
+      },
+      gist: {
+        regExp: /.*(?:gist.github.com\/.*\/)([^#\&\?]*).*/,
+        el: function() {
+          var div;
+
+          return div = $.el('iframe', {
+            src: "http://www.purplegene.com/script?url=https://gist.github.com/" + this.name + ".js"
+          });
+        }
       }
     },
     embedder: function(a) {
       var callbacks, embed, key, match, service, titles, type, _ref;
 
-      if (!Conf['Embedding']) {
+      if (!Conf['Link Title']) {
         return [a];
       }
       titles = {};
@@ -4341,7 +4342,7 @@
           switch (this.status) {
             case 200:
             case 304:
-              title = "[" + (embed.getAttribute('data-service')) + "] " + (service.text.call(this));
+              title = "" + (service.text.call(this));
               embed.setAttribute('data-title', title);
               titles[embed.name] = [title, Date.now()];
               $.set('CachedTitles', titles);
@@ -4369,7 +4370,11 @@
         });
         embed.setAttribute('data-service', key);
         embed.setAttribute('data-originalURL', a.href);
+        $.addClass(a, "" + (embed.getAttribute('data-service')));
         $.on(embed, 'click', Linkify.toggle);
+        if (!Conf['Embedding']) {
+          embed.hidden = true;
+        }
         if (Conf['Link Title'] && (service = type.title)) {
           $.get('CachedTitles', {}, function(item) {
             var err, title;
@@ -6584,18 +6589,26 @@
 
   ThreadStats = {
     init: function() {
-      var sc;
+      var sc,
+        _this = this;
 
       if (g.VIEW !== 'thread' || !Conf['Thread Stats']) {
         return;
       }
-      this.dialog = sc = $.el('span', {
-        innerHTML: "<span id=post-count>0</span> / <span id=file-count>0</span></div>",
-        id: 'thread-stats'
-      });
+      if (Conf['Updater and Stats in Header']) {
+        this.dialog = sc = $.el('span', {
+          innerHTML: "<span id=post-count>0</span> / <span id=file-count>0</span>",
+          id: 'thread-stats'
+        });
+        Header.addShortcut(sc);
+      } else {
+        this.dialog = sc = UI.dialog('thread-stats', 'bottom: 0px; right: 0px;', "<div class=move><span id=post-count>0</span> / <span id=file-count>0</span></div>");
+        $.ready(function() {
+          return $.add(d.body, sc);
+        });
+      }
       this.postCountEl = $('#post-count', sc);
       this.fileCountEl = $('#file-count', sc);
-      Header.addShortcut(sc);
       return Thread.prototype.callbacks.push({
         name: 'Thread Stats',
         cb: this.node
@@ -6640,22 +6653,32 @@
 
   ThreadUpdater = {
     init: function() {
-      var checked, conf, el, input, name, sc, settings, subEntries, _ref;
+      var checked, conf, el, input, name, sc, settings, subEntries, _ref,
+        _this = this;
 
       if (g.VIEW !== 'thread' || !Conf['Thread Updater']) {
         return;
       }
       checked = Conf['Auto Update'] ? 'checked' : '';
-      this.dialog = sc = $.el('span', {
-        innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>",
-        id: 'updater'
-      });
+      if (Conf['Updater and Stats in Header']) {
+        this.dialog = sc = $.el('span', {
+          innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>",
+          id: 'updater'
+        });
+        Header.addShortcut(sc);
+      } else {
+        this.dialog = sc = UI.dialog('updater', 'bottom: 0px; left: 0px;', "<div class=move></div><span id=update-status></span><span id=update-timer title='Update now'></span>");
+        $.addClass(doc, 'float');
+        $.ready(function() {
+          $.addClass(doc, 'float');
+          return $.add(d.body, sc);
+        });
+      }
+      this.checkPostCount = 0;
       this.timer = $('#update-timer', sc);
       this.status = $('#update-status', sc);
       $.on(this.timer, 'click', ThreadUpdater.update);
       $.on(this.status, 'click', ThreadUpdater.update);
-      this.checkPostCount = 0;
-      Header.addShortcut(sc);
       subEntries = [];
       _ref = Config.updater.checkbox;
       for (name in _ref) {
@@ -7082,6 +7105,7 @@
           props = _ref[id];
           x = $.el('a', {
             textContent: '×',
+            className: 'close',
             href: 'javascript:;'
           });
           $.on(x, 'click', ThreadWatcher.cb.x);
@@ -7421,11 +7445,20 @@
           return "//archive.foolz.us/" + boardID + "/full_image/" + filename;
         case 'u':
           return "//nsfw.foolz.us/" + boardID + "/full_image/" + filename;
+        case 'v':
+        case 'vg':
+          return "//archive.nihil-ad-rem.net/" + boardID + "/full_image/" + filename;
         case 'po':
           return "//archive.thedarkcave.org/" + boardID + "/full_image/" + filename;
         case 'hr':
         case 'tv':
           return "http://archive.4plebs.org/" + boardID + "/full_image/" + filename;
+        case 'c':
+        case 'w':
+        case 'wg':
+          return "//archive.nyafuu.org/" + boardID + "/full_image/" + filename;
+        case 'd':
+          return "//loveisover.me/" + boardID + "/full_image/" + filename;
         case 'ck':
         case 'fa':
         case 'lit':
@@ -7434,7 +7467,6 @@
         case 'cgl':
         case 'g':
         case 'mu':
-        case 'w':
           return "//rbt.asia/" + boardID + "/full_image/" + filename;
         case 'an':
         case 'k':
@@ -7488,11 +7520,19 @@
         $.set('archivers', Conf.archivers);
       }
       return (arch && (archive = this.archiver[arch]) ? Redirect.path(archive.base, archive.type, data) : data.threadID ? "//boards.4chan.org/" + boardID + "/" : null);
+      if (!archive.boards.contains(g.BOARD.ID)) {
+        return Conf['archivers'] = archive;
+      }
     },
     archiver: {
       'Foolz': {
         base: 'https://archive.foolz.us',
         boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg'],
+        type: 'foolfuuka'
+      },
+      'NihilAdRem': {
+        base: '//archive.nihil-ad-rem.net',
+        boards: ['v', 'vg'],
         type: 'foolfuuka'
       },
       'NSFWFoolz': {
@@ -7509,6 +7549,16 @@
         base: 'http://archive.4plebs.org',
         boards: ['hr', 'tg', 'tv', 'x'],
         base: 'foolfuuka'
+      },
+      'NyaFuu': {
+        base: '//archive.nyafuu.org',
+        boards: ['c', 'w', 'wg'],
+        type: 'foolfuuka'
+      },
+      'LoveIsOver': {
+        base: '//loveisover.me',
+        boards: ['d'],
+        type: 'foolfuuka'
       },
       'Warosu': {
         base: '//fuuka.warosu.org',
@@ -7533,11 +7583,6 @@
       'Cliche': {
         base: '//www.cliché.net/4chan/cgi-board.pl',
         boards: ['e'],
-        type: 'fuuka'
-      },
-      'NyaFuu': {
-        base: '//archive.nyafuu.org',
-        boards: ['c', 'w'],
         type: 'fuuka'
       }
     },
@@ -7860,7 +7905,7 @@
     node: function() {
       var a;
 
-      if (a = $('.abbr > a', this.nodes.comment)) {
+      if (a = $('.abbr > a:not([onclick])', this.nodes.comment)) {
         return $.on(a, 'click', ExpandComment.cb);
       }
     },
@@ -8305,7 +8350,11 @@
               $('.close', notification).click();
             }
           } else if (QR.nodes) {
-            QR.close();
+            if (Conf['Persistent QR']) {
+              QR.hide();
+            } else {
+              QR.close();
+            }
           }
           break;
         case Conf['Spoiler tags']:
@@ -9996,7 +10045,7 @@
       }
       return Main.thisPageIsLegit;
     },
-    css: "/* General */\n.dialog {\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder: 1px solid;\ndisplay: block;\npadding: 0;\n}\n.captcha-img,\n.field {\nbackground-color: #FFF;\nborder: 1px solid #CCC;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncolor: #333;\nfont: 13px sans-serif;\noutline: none;\ntransition: color .25s, border-color .25s;\ntransition: color .25s, border-color .25s;\n}\n.field::-moz-placeholder,\n.field:hover::-moz-placeholder {\ncolor: #AAA !important;\nfont-size: 13px !important;\nopacity: 1.0 !important;\n}\n.captch-img:hover,\n.field:hover {\nborder-color: #999;\n}\n.field:hover, .field:focus {\ncolor: #000;\n}\n.field[disabled] {\nbackground-color: #F2F2F2;\ncolor: #888;\n}\n.move {\ncursor: move;\noverflow: hidden;\n}\nlabel, .favicon {\ncursor: pointer;\n}\na[href=\"javascript:;\"] {\ntext-decoration: none;\n}\n.warning {\ncolor: red;\n}\n#boardNavDesktop {\ndisplay: none !important;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\ndisplay: block !important;\noverflow: visible !important;\n}\n[hidden] {\ndisplay: none !important;\n}\n\n/* fixed, z-index */\n#overlay,\n#fourchanx-settings,\n#qp, #ihover,\n#navlinks, .fixed #header-bar,\n#watcher,\n#qr {\nposition: fixed;\n}\n#fourchanx-settings {\nz-index: 999;\n}\n#overlay {\nz-index: 900;\n}\n#notifications {\nz-index: 70;\n}\n#qp, #ihover {\nz-index: 60;\n}\n#menu {\nz-index: 50;\n}\n#navlinks, #updater, #thread-stats {\nz-index: 40;\n}\n.fixed #header-bar.autohide {\nz-index: 35;\n}\n#qr {\nz-index: 30;\n}\n#watcher {\nz-index: 20;\n}\n.fixed #header-bar {\nz-index: 10;\n}\n/* Header */\n.fixed.top body {\npadding-top: 2em;\n}\n.fixed.bottom body {\npadding-bottom: 2em;\n}\n.fixed #header-bar {\nright: 0;\nleft: 0;\npadding: 3px 4px 4px;\n}\n.fixed.top #header-bar {\ntop: 0;\n}\n.fixed.bottom #header-bar {\nbottom: 0;\n}\n#header-bar {\nborder-width: 0;\ntransition: all .1s .05s ease-in-out;\n}\n.fixed.top #header-bar {\nborder-bottom-width: 1px;\n}\n.fixed.bottom #header-bar {\nbox-shadow: 0 -1px 2px rgba(0, 0, 0, .15);\nborder-top-width: 1px;\n}\n.fixed.bottom #header-bar .menu-button i {\nborder-top: none;\nborder-bottom: 6px solid;\n}\n#board-list {\ntext-align: center;\n}\n.fixed #header-bar.autohide:not(:hover) {\nbox-shadow: none;\ntransition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #header-bar.autohide:not(:hover) {\nmargin-bottom: -1em;\n-webkit-transform: translateY(-100%);\ntransform: translateY(-100%);\n}\n.fixed.bottom #header-bar.autohide:not(:hover) {\n-webkit-transform: translateY(100%);\ntransform: translateY(100%);\n}\n#scroll-marker {\nleft: 0;\nright: 0;\nheight: 10px;\nposition: absolute;\n}\n#header-bar #scroll-marker {\ndisplay: none;\n}\n.fixed #header-bar #scroll-marker {\ndisplay: block;\n}\n.fixed.top #header-bar #scroll-marker {\ntop: 100%;\n}\n.fixed.bottom #header-bar #scroll-marker {\nbottom: 100%;\n}\n#header-bar a:not(.entry):not(.close) {\ntext-decoration: none;\npadding: 1px;\n}\n#header-bar input {\nmargin: 0;\nvertical-align: bottom;\n}\n#shortcuts:empty {\ndisplay: none;\n}\n.brackets-wrap::before {\ncontent: \"\\00a0[\";\n}\n.brackets-wrap::after {\ncontent: \"]\\00a0\";\n}\n.disabled,\n.expand-all-shortcut {\nopacity: .45;\n}\n#shortcuts {\nfloat: right;\n}\n#navbotright,\n#navtopright {\ndisplay: none;\n}\n#toggleMsgBtn {\ndisplay: none !important;\n}\n\n/* Notifications */\n#notifications {\nposition: fixed;\ntop: 0;\nheight: 0;\ntext-align: center;\nright: 0;\nleft: 0;\ntransition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #header-bar #notifications {\nposition: absolute;\ntop: 100%;\n}\n.notification {\ncolor: #FFF;\nfont-weight: 700;\ntext-shadow: 0 1px 2px rgba(0, 0, 0, .5);\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder-radius: 2px;\nmargin: 1px auto;\nwidth: 500px;\nmax-width: 100%;\nposition: relative;\ntransition: all .25s ease-in-out;\n}\n.notification.error {\nbackground-color: hsla(0, 100%, 38%, .9);\n}\n.notification.warning {\nbackground-color: hsla(36, 100%, 38%, .9);\n}\n.notification.info {\nbackground-color: hsla(200, 100%, 38%, .9);\n}\n.notification.success {\nbackground-color: hsla(104, 100%, 38%, .9);\n}\n.notification a {\ncolor: white;\n}\n.notification > .close {\npadding: 6px;\ntop: 0;\nright: 5px;\nposition: absolute;\n}\n.message {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 6px 20px;\nmax-height: 200px;\nwidth: 100%;\noverflow: auto;\n}\n\n/* Settings */\n:root.fourchan-x body {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\n}\n#overlay {\nbackground-color: rgba(0, 0, 0, .5);\ntop: 0;\nleft: 0;\nheight: 100%;\nwidth: 100%;\n}\n#fourchanx-settings {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nbox-shadow: 0 0 15px rgba(0, 0, 0, .15);\nheight: 600px;\nmin-height: 0;\nmax-height: 100%;\nwidth: 900px;\nmin-width: 0;\nmax-width: 100%;\nmargin: auto;\npadding: 3px;\ntop: 50%;\nleft: 50%;\n-moz-transform: translate(-50%, -50%);\n-webkit-transform: translate(-50%, -50%);\n-o-transform: translate(-50%, -50%);\ntransform: translate(-50%, -50%);\n}\n#fourchanx-settings > nav {\npadding: 2px 2px 0;\nheight: 15px;\n}\n#fourchanx-settings > nav a {\ntext-decoration: underline;\n}\n#fourchanx-settings > nav a.close {\ntext-decoration: none;\npadding: 2px;\n}\n.section-container {\noverflow: auto;\nposition: absolute;\ntop: 2.1em;\nright: 5px;\nbottom: 5px;\nleft: 5px;\npadding-right: 5px;\n}\n.sections-list {\npadding: 0 3px;\nfloat: left;\n}\n.credits {\nfloat: right;\n}\n.tab-selected {\nfont-weight: 700;\n}\n.section-sauce ul,\n.section-advanced ul {\nlist-style: none;\nmargin: 0;\npadding: 8px;\n}\n.section-sauce li,\n.section-advanced li {\npadding-left: 4px;\n}\n.section-main label {\ntext-decoration: underline;\n}\n.section-filter ul {\npadding: 0;\n}\n.section-filter li {\nmargin: 10px 40px;\n}\n.section-filter textarea {\nheight: 500px;\n}\n.section-sauce textarea {\nheight: 350px;\n}\n.section-advanced .field[name=\"boardnav\"] {\nwidth: 100%;\n}\n.section-advanced textarea {\nheight: 150px;\n}\n#fourchanx-settings fieldset {\nborder: 1px solid;\nborder-radius: 3px;\n}\n#fourchanx-settings legend {\nfont-weight: 700;\n}\n#fourchanx-settings textarea {\nfont-family: monospace;\nmin-width: 100%;\nmax-width: 100%;\n}\n#fourchanx-settings code {\ncolor: #000;\nbackground-color: #FFF;\npadding: 0 2px;\n}\n.unscroll {\noverflow: hidden;\n}\n\n/* Announcement Hiding */\n:root.hide-announcement #globalMessage {\ndisplay: none;\n}\na.hide-announcement {\nfloat: left;\n}\n#toggleMsgBtn {\ndisplay: none;\n}\n\n/* Unread */\n#unread-line {\nmargin: 0;\nborder-color: rgb(255,0,0);\n}\n\n/* Thread Updater */\n#updater:not(:hover) {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n#updater > .move {\npadding: 0 3px;\n}\n#updater > div:last-child {\ntext-align: center;\n}\n#updater input[type=number] {\nwidth: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\ndisplay: none;\n}\n#updater input[type=\"button\"] {\nwidth: 100%;\n}\n.new {\ncolor: limegreen;\n}\n#update-status.warning, #update-status.new {\nmargin-right: 5px;\n}\n#update-timer {\ncursor: pointer;\n}\n\n/* Thread Watcher */\n#watcher {\npadding-bottom: 3px;\noverflow: hidden;\nwhite-space: nowrap;\n}\n#watcher:not(:hover) {\nmax-height: 220px;\n}\n#watcher > .move {\npadding-top: 3px;\n}\n#watcher > div {\nmax-width: 200px;\noverflow: hidden;\npadding-left: 3px;\npadding-right: 3px;\ntext-overflow: ellipsis;\n}\n#watcher a {\ntext-decoration: none;\n}\n\n/* Thread Stats */\n#thread-stats {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n\n/* Quote */\n.deadlink {\ntext-decoration: none !important;\n}\n.backlink.deadlink:not(.forwardlink), .quotelink.deadlink:not(.forwardlink) {\ntext-decoration: underline !important;\n}\n.inlined {\nopacity: .5;\n}\n#qp input, .forwarded {\ndisplay: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\ntext-decoration: none;\nborder-bottom: 1px dashed;\n}\n.filtered {\ntext-decoration: underline line-through;\n}\n.inline {\nborder: 1px solid;\ndisplay: table;\nmargin: 2px 0;\n}\n.inline .post {\nborder: 0 !important;\nbackground-color: transparent !important;\ndisplay: table !important;\nmargin: 0 !important;\npadding: 1px 2px !important;\n}\n#qp > .opContainer::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n#qp .post {\nborder: none;\nmargin: 0;\npadding: 2px 2px 5px;\n}\n#qp img {\nmax-height: 300px;\nmax-width: 500px;\nmax-height: 80vh;\nmax-width: 50vw;\n}\n.qphl {\noutline: 2px solid rgba(216, 94, 49, .7);\n}\n.highlight-own .yourPost>.reply {\nborder-left: 2px solid rgba(221,0,0,.5);\n}\n/* Quote Threading */\n.threadContainer {\nmargin-left: 20px;\nborder-left: 1px solid rgba(128,128,128,.3);\n}\n.threadOP {\nclear: both;\n} \n\n/* File */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.expanded-image > .post > .file > .fileThumb > img[data-md5],\n:not(.expanded-image) > .post > .file > .fileThumb > .full-image {\ndisplay: none;\n}\n.expanding {\nopacity: .5;\n}\n.expanded-image {\nclear: both;\n}\n.expanded-image > .op > .file::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n:root.fit-width .full-image {\nmax-width: 100%;\n}\n:root.gecko.fit-width .full-image,\n:root.presto.fit-width .full-image {\nwidth: 100%;\n}\n#ihover {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmax-height: 100%;\nmax-width: 75%;\npadding-bottom: 16px;\n}\n.fappeTyme  .thread > .noFile,\n.fappeTyme .threadContainer > .noFile {\ndisplay: none;\n}\n\n/* Index/Reply Navigation */\n#navlinks {\nfont-size: 16px;\ntop: 25px;\nright: 10px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\nfloat: left;\nmargin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\ndisplay: none !important;\n}\n.stub input {\ndisplay: inline-block;\n}\n\n/* QR */\n:root.hide-original-post-form #postForm,\n:root.hide-original-post-form .postingMode,\n:root.hide-original-post-form #togglePostForm,\n#qr.autohide:not(.has-focus):not(:hover) > form,\n.postingMode ~ #qr select,\n#file-n-submit:not(.has-file) #qr-filerm {\ndisplay: none;\n}\n#qr select, #dump-button, .remove, .captcha-img {\ncursor: pointer;\n}\n#qr {\nz-index: 20;\nposition: fixed;\npadding: 1px;\nborder: 1px solid transparent;\nmin-width: 248px;\nborder-radius: 3px 3px 0 0;\n}\n#qrtab {\nborder-radius: 3px 3px 0 0;\n}\n#qrtab {\nmargin-bottom: 1px;\n}\n#qr .close {\nfloat: right;\npadding: 0 3px;\n}\n#qr .warning {\nmin-height: 1.6em;\nvertical-align: middle;\npadding: 0 1px;\nborder-width: 1px;\nborder-style: solid;\n}\n.qr-link {\ntext-align: center;\n}\n.persona {\nwidth: 248px;\nmax-width: 100%;\nmin-width: 100%;\n}\n#dump-button {\nbackground: linear-gradient(#EEE, #CCC);\nborder: 1px solid #CCC; \nwidth: 10%;\nmargin: 0;\nfont: 13px sans-serif;\npadding: 1px 0px 2px;\n}\n.persona .field:not(#dump) {\nwidth: 95px;\nmin-width: 30%;\nmax-width: 30%;\n}\n#qr textarea.field {\nheight: 14.8em;\nmin-height: 9em;\n}\n#qr.has-captcha textarea.field {\nheight: 9em;\n}\ninput.field.tripped:not(:hover):not(:focus) {\ncolor: transparent !important;  text-shadow: none !important;\n}\n#qr textarea {\nresize: both;\n}\n.captcha-img {\nmargin: 0px;\ntext-align: center;\nbackground-image: #fff;\nfont-size: 0px;\nmin-height: 59px;\nmin-width: 302px;\n}\n.captcha-input {\nwidth: 100%;\nmargin: 1px 0 0;\n}\n.field {\n-moz-box-sizing: border-box;\nmargin: 0px;\npadding: 2px 4px 3px;\n}\n#qr textarea {\nmin-width: 100%;\n}\n#qr [type='submit'] {\nwidth: 25%;\nvertical-align: top;\n}\n/* Fake File Input */\n#qr-filename,\n.has-file #qr-no-file {\ndisplay: none;\n}\n#qr-no-file,\n.has-file #qr-filename {\ndisplay: block;\npadding: 0px 4px;\nmargin-bottom: 2px;\noverflow: hidden;\ntext-overflow: ellipsis;\n}\n#qr-no-file {\ncolor: #AAA;\n}\n#qr-filename-container {\n-moz-box-sizing: border-box;\ndisplay: inline-block;\nposition: relative;\nwidth: 100px;\nmin-width: 74.6%;\nmax-width: 74.6%;\nmargin-right: 0.4%;\nmargin-top: 1px;\noverflow: hidden;\npadding: 2px 1px 0;\nheight: 22px;\n}\n#qr-filename-container:hover {\ncursor: text;\n}\n#qr-filerm {\nposition: relative;\nright: 14px;\nbottom: 6px;\nmargin-right: -8px;\nz-index: 2;\n}\n#file-n-submit {\nheight: 23px;\n}\n#qr input[type=file] {\ndisplay: none;\n}\n/* Thread Select / Spoiler Label */\n#qr select {\nfloat: right;\n}\n/* Dumping UI */\n.dump #dump-list-container {\ndisplay: block;\n}\n#dump-list-container {\ndisplay: none;\nposition: relative;\noverflow-y: hidden;\nmargin-top: 1px;\n}\n#dump-list {\noverflow-x: auto;\noverflow-y: hidden;\nwhite-space: pre;\nwidth: 248px;\nmax-width: 100%;\nmin-width: 100%;\n}\n#dump-list:hover {\noverflow-x: auto;\n}\n.qr-preview {\n-moz-box-sizing: border-box;\ncounter-increment: thumbnails;\ncursor: move;\ndisplay: inline-block;\nheight: 90px;\nwidth: 90px;\npadding: 2px;\nopacity: .5;\noverflow: hidden;\nposition: relative;\ntext-shadow: 0 1px 1px #000;\n-moz-transition: opacity .25s ease-in-out;\nvertical-align: top;\n}\n.qr-preview:hover,\n.qr-preview:focus {\nopacity: .9;\n}\n.qr-preview::before {\ncontent: counter(thumbnails);\ncolor: #fff;\nposition: absolute;\ntop: 3px;\nright: 3px;\ntext-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.qr-preview#selected {\nopacity: 1;\n}\n.qr-preview.drag {\nbox-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.qr-preview.over {\nborder-color: #fff;\n}\n.qr-preview > span {\ncolor: #fff;\n}\n.remove {\nbackground: none;\ncolor: #e00;\nfont-weight: 700;\npadding: 3px;\n}\na:only-of-type > .remove {\ndisplay: none;\n}\n.remove:hover::after {\ncontent: \" Remove\";\n}\n.qr-preview > label {\nbackground: rgba(0,0,0,.5);\ncolor: #fff;\nright: 0; bottom: 0; left: 0;\nposition: absolute;\ntext-align: center;\n}\n.qr-preview > label > input {\nmargin: 0;\n}\n#add-post {\ncursor: pointer;\nfont-size: 2em;\nposition: absolute;\ntop: 50%;\nright: 10px;\n-moz-transform: translateY(-50%);\n}\n.textarea {\nposition: relative;\n}\n#char-count {\ncolor: #000;\nbackground: hsla(0, 0%, 100%, .5);\nfont-size: 8pt;\nposition: absolute;\nbottom: 1px;\nright: 1px;\npointer-events: none;\n}\n\n/* Menu */\n.menu-button {\ndisplay: inline-block;\nposition: relative;\ncursor: pointer;\n}\n.menu-button i {\nborder-top:   6px solid;\nborder-right: 4px solid transparent;\nborder-left:  4px solid transparent;\ndisplay: inline-block;\nmargin: 2px;\nvertical-align: middle;\n}\n#menu {\nposition: fixed;\noutline: none;\n}\n.entry {\nborder-bottom: 1px solid rgba(0,0,0,.25);\ncursor: pointer;\ndisplay: block;\noutline: none;\npadding: 3px 7px;\nposition: relative;\ntext-decoration: none;\nwhite-space: nowrap;\n}\n.left>.entry.has-submenu {\npadding-right: 17px !important;\n}\n.entry:last-child {\nborder-bottom: 0;\n}\n.has-submenu::after {\ncontent: \"\";\nborder-left: .5em solid;\nborder-top: .3em solid transparent;\nborder-bottom: .3em solid transparent;\ndisplay: inline-block;\nmargin: .3em;\nposition: absolute;\nright: 3px;\n}\n.left .has-submenu::after {\nborder-left: 0;\nborder-right: .5em solid;\n}\n.submenu {\ndisplay: none;\nposition: absolute;\nleft: 100%;\ntop: -1px;\n}\n.focused .submenu {\ndisplay: block;\n}\n.imp-exp-result {\nposition: absolute;\ntext-align: center;\nmargin: auto;\nright: 0px;\nleft: 0px;\nwidth: 200px;\n}\n.export, .import {\ncursor: pointer;\ntext-decoration: none !important;\n}\n\n/* General */\n:root.yotsuba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.yotsuba #header-bar, :root.yotsuba #notifications {\nfont-size: 9pt;\ncolor: #B86;\n}\n:root.yotsuba #header-bar a, :root.yotsuba #notifications a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.yotsuba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.yotsuba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.yotsuba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba #menu {\ncolor: #800000;\n}\n:root.yotsuba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 10pt;\n}\n:root.yotsuba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.yotsuba-b .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.yotsuba-b #header-bar, :root.yotsuba-b #notifications {\nfont-size: 9pt;\ncolor: #89A;\n}\n:root.yotsuba-b #header-bar a, :root.yotsuba-b #notifications a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.yotsuba-b #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.yotsuba-b .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.yotsuba-b .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba-b #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba-b #menu {\ncolor: #000;\n}\n:root.yotsuba-b .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 10pt;\n}\n:root.yotsuba-b .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.futaba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.futaba #header-bar, :root.futaba #notifications {\nfont-size: 11pt;\ncolor: #B86;\n}\n:root.futaba #header-bar a, :root.futaba #notifications a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.futaba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.futaba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.futaba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.futaba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.futaba #menu {\ncolor: #800000;\n}\n:root.futaba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 12pt;\n}\n:root.futaba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.burichan .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.burichan #header-bar, :root.burichan #header-bar #notifications {\nfont-size: 11pt;\ncolor: #89A;\n}\n:root.burichan #header-bar a, :root.burichan #header-bar #notifications a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.burichan #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.burichan .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.burichan .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.burichan #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.burichan #menu {\ncolor: #000000;\n}\n:root.burichan .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 12pt;\n}\n:root.burichan .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.tomorrow .dialog {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow .field:focus {\nborder-color: #000;\n}\n\n/* Header */\n:root.tomorrow #header-bar, :root.tomorrow #notifications {\nfont-size: 9pt;\ncolor: #C5C8C6;\n}\n:root.tomorrow #header-bar a, :root.tomorrow #notifications a {\ncolor: #81A2BE;\n}\n\n/* Settings */\n:root.tomorrow #fourchanx-settings fieldset {\nborder-color: #111;\n}\n\n/* Quote */\n:root.tomorrow .backlink.deadlink {\ncolor: #81A2BE !important;\n}\n:root.tomorrow .inline {\nborder-color: #111;\nbackground-color: rgba(0, 0, 0, .14);\n}\n\n/* QR */\n.tomorrow #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow #qr select {\ncolor: #C5C8C6;\n}\n:root.tomorrow #qr option {\ncolor: #000;\n}\n:root.tomorrow .qr-preview {\nbackground-color: rgba(255, 255, 255, .15);\n}\n\n/* Menu */\n:root.tomorrow #menu {\ncolor: #C5C8C6;\n}\n:root.tomorrow .entry {\nborder-bottom: 1px solid #111;\nfont-size: 10pt;\n}\n:root.tomorrow .focused.entry {\nbackground: rgba(0, 0, 0, .33);\n}\n\n/* General */\n:root.photon .dialog {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.photon #header-bar, :root.photon #notifications {\nfont-size: 9pt;\ncolor: #333;\n}\n:root.photon #header-bar a, :root.photon #notifications a {\ncolor: #FF6600;\n}\n\n/* Settings */\n:root.photon #fourchanx-settings fieldset {\nborder-color: #CCC;\n}\n\n/* Quote */\n:root.photon .backlink.deadlink {\ncolor: #F60 !important;\n}\n:root.photon .inline {\nborder-color: #CCC;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.photon #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.photon #menu {\ncolor: #333;\n}\n:root.photon .entry {\nborder-bottom: 1px solid #CCC;\nfont-size: 10pt;\n}\n:root.photon .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n"
+    css: "/* General */\n.dialog {\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder: 1px solid;\ndisplay: block;\npadding: 0;\n}\n.captcha-img,\n.field {\nbackground-color: #FFF;\nborder: 1px solid #CCC;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncolor: #333;\nfont: 13px sans-serif;\noutline: none;\ntransition: color .25s, border-color .25s;\ntransition: color .25s, border-color .25s;\n}\n.field::-moz-placeholder,\n.field:hover::-moz-placeholder {\ncolor: #AAA !important;\nfont-size: 13px !important;\nopacity: 1.0 !important;\n}\n.captch-img:hover,\n.field:hover {\nborder-color: #999;\n}\n.field:hover, .field:focus {\ncolor: #000;\n}\n.field[disabled] {\nbackground-color: #F2F2F2;\ncolor: #888;\n}\n.move {\ncursor: move;\noverflow: hidden;\n}\nlabel, .favicon {\ncursor: pointer;\n}\na[href=\"javascript:;\"] {\ntext-decoration: none;\n}\n.warning {\ncolor: red;\n}\n#boardNavDesktop {\ndisplay: none !important;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\ndisplay: block !important;\noverflow: visible !important;\n}\n[hidden] {\ndisplay: none !important;\n}\n\n/* fixed, z-index */\n#overlay,\n#fourchanx-settings,\n#qp, #ihover,\n#navlinks, .fixed #header-bar,\n#watcher,\n:root.float #updater,\n:root.float #thread-stats,\n#qr {\nposition: fixed;\n}\n#fourchanx-settings {\nz-index: 999;\n}\n#overlay {\nz-index: 900;\n}\n#notifications {\nz-index: 70;\n}\n#qp, #ihover {\nz-index: 60;\n}\n#menu {\nz-index: 50;\n}\n#navlinks, #updater, #thread-stats {\nz-index: 40;\n}\n.fixed #header-bar.autohide {\nz-index: 35;\n}\n#qr {\nz-index: 30;\n}\n#watcher {\nz-index: 20;\n}\n.fixed #header-bar {\nz-index: 10;\n}\n/* Header */\n.fixed.top body {\npadding-top: 2em;\n}\n.fixed.bottom body {\npadding-bottom: 2em;\n}\n.fixed #header-bar {\nright: 0;\nleft: 0;\npadding: 3px 4px 4px;\n}\n.fixed.top #header-bar {\ntop: 0;\n}\n.fixed.bottom #header-bar {\nbottom: 0;\n}\n#header-bar {\nborder-width: 0;\ntransition: all .1s .05s ease-in-out;\n}\n.fixed.top #header-bar {\nborder-bottom-width: 1px;\n}\n.fixed.bottom #header-bar {\nbox-shadow: 0 -1px 2px rgba(0, 0, 0, .15);\nborder-top-width: 1px;\n}\n.fixed.bottom #header-bar .menu-button i {\nborder-top: none;\nborder-bottom: 6px solid;\n}\n#board-list {\ntext-align: center;\n}\n.fixed #header-bar.autohide:not(:hover) {\nbox-shadow: none;\ntransition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #header-bar.autohide:not(:hover) {\nmargin-bottom: -1em;\n-webkit-transform: translateY(-100%);\ntransform: translateY(-100%);\n}\n.fixed.bottom #header-bar.autohide:not(:hover) {\n-webkit-transform: translateY(100%);\ntransform: translateY(100%);\n}\n#scroll-marker {\nleft: 0;\nright: 0;\nheight: 10px;\nposition: absolute;\n}\n#header-bar #scroll-marker {\ndisplay: none;\n}\n.fixed #header-bar #scroll-marker {\ndisplay: block;\n}\n.fixed.top #header-bar #scroll-marker {\ntop: 100%;\n}\n.fixed.bottom #header-bar #scroll-marker {\nbottom: 100%;\n}\n#header-bar a:not(.entry):not(.close) {\ntext-decoration: none;\npadding: 1px;\n}\n#header-bar input {\nmargin: 0;\nvertical-align: bottom;\n}\n#shortcuts:empty {\ndisplay: none;\n}\n.brackets-wrap::before {\ncontent: \"\\00a0[\";\n}\n.brackets-wrap::after {\ncontent: \"]\\00a0\";\n}\n.disabled,\n.expand-all-shortcut {\nopacity: .45;\n}\n#shortcuts {\nfloat: right;\n}\n#navbotright,\n#navtopright {\ndisplay: none;\n}\n#toggleMsgBtn {\ndisplay: none !important;\n}\n\n/* Notifications */\n#notifications {\nposition: fixed;\ntop: 0;\nheight: 0;\ntext-align: center;\nright: 0;\nleft: 0;\ntransition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #header-bar #notifications {\nposition: absolute;\ntop: 100%;\n}\n.notification {\ncolor: #FFF;\nfont-weight: 700;\ntext-shadow: 0 1px 2px rgba(0, 0, 0, .5);\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder-radius: 2px;\nmargin: 1px auto;\nwidth: 500px;\nmax-width: 100%;\nposition: relative;\ntransition: all .25s ease-in-out;\n}\n.notification.error {\nbackground-color: hsla(0, 100%, 38%, .9);\n}\n.notification.warning {\nbackground-color: hsla(36, 100%, 38%, .9);\n}\n.notification.info {\nbackground-color: hsla(200, 100%, 38%, .9);\n}\n.notification.success {\nbackground-color: hsla(104, 100%, 38%, .9);\n}\n.notification a {\ncolor: white;\n}\n.notification > .close {\npadding: 6px;\ntop: 0;\nright: 5px;\nposition: absolute;\n}\n.message {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 6px 20px;\nmax-height: 200px;\nwidth: 100%;\noverflow: auto;\n}\n\n/* Settings */\n:root.fourchan-x body {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\n}\n#overlay {\nbackground-color: rgba(0, 0, 0, .5);\ntop: 0;\nleft: 0;\nheight: 100%;\nwidth: 100%;\n}\n#fourchanx-settings {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nbox-shadow: 0 0 15px rgba(0, 0, 0, .15);\nheight: 600px;\nmin-height: 0;\nmax-height: 100%;\nwidth: 900px;\nmin-width: 0;\nmax-width: 100%;\nmargin: auto;\npadding: 3px;\ntop: 50%;\nleft: 50%;\n-moz-transform: translate(-50%, -50%);\n-webkit-transform: translate(-50%, -50%);\n-o-transform: translate(-50%, -50%);\ntransform: translate(-50%, -50%);\n}\n#fourchanx-settings > nav {\npadding: 2px 2px 0;\nheight: 15px;\n}\n#fourchanx-settings > nav a {\ntext-decoration: underline;\n}\n#fourchanx-settings > nav a.close {\ntext-decoration: none;\npadding: 2px;\n}\n.section-container {\noverflow: auto;\nposition: absolute;\ntop: 2.1em;\nright: 5px;\nbottom: 5px;\nleft: 5px;\npadding-right: 5px;\n}\n.sections-list {\npadding: 0 3px;\nfloat: left;\n}\n.credits {\nfloat: right;\n}\n.tab-selected {\nfont-weight: 700;\n}\n.section-sauce ul,\n.section-advanced ul {\nlist-style: none;\nmargin: 0;\npadding: 8px;\n}\n.section-sauce li,\n.section-advanced li {\npadding-left: 4px;\n}\n.section-main label {\ntext-decoration: underline;\n}\n.section-filter ul {\npadding: 0;\n}\n.section-filter li {\nmargin: 10px 40px;\n}\n.section-filter textarea {\nheight: 500px;\n}\n.section-sauce textarea {\nheight: 350px;\n}\n.section-advanced .field[name=\"boardnav\"] {\nwidth: 100%;\n}\n.section-advanced textarea {\nheight: 150px;\n}\n#fourchanx-settings fieldset {\nborder: 1px solid;\nborder-radius: 3px;\n}\n#fourchanx-settings legend {\nfont-weight: 700;\n}\n#fourchanx-settings textarea {\nfont-family: monospace;\nmin-width: 100%;\nmax-width: 100%;\n}\n#fourchanx-settings code {\ncolor: #000;\nbackground-color: #FFF;\npadding: 0 2px;\n}\n.unscroll {\noverflow: hidden;\n}\n\n/* Announcement Hiding */\n:root.hide-announcement #globalMessage {\ndisplay: none;\n}\na.hide-announcement {\nfloat: left;\n}\n\n/* Unread */\n#unread-line {\nmargin: 0;\nborder-color: rgb(255,0,0);\n}\n\n/* Thread Updater */\n#updater {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n#updater > .move {\npadding: 5px 3px 0px;\nmargin-bottom: -3px;\n}\n#updater > div:last-child {\ntext-align: center;\n}\n#updater input[type=number] {\nwidth: 4em;\n}\n:root.float #updater {\npadding: 0px 3px;\n}\n.new {\ncolor: limegreen;\n}\n#update-status.warning, #update-status.new {\nmargin-right: 5px;\n}\n#update-timer {\ncursor: pointer;\n}\n\n/* Thread Watcher */\n#watcher {\npadding-bottom: 3px;\noverflow: hidden;\nwhite-space: nowrap;\n}\n#watcher:not(:hover) {\nmax-height: 220px;\n}\n#watcher > .move {\npadding-top: 3px;\n}\n#watcher > div {\nmax-width: 200px;\noverflow: hidden;\npadding-left: 3px;\npadding-right: 3px;\ntext-overflow: ellipsis;\n}\n#watcher a {\ntext-decoration: none;\n}\n\n/* Thread Stats */\n#thread-stats {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n:root.float #post-count, :root.float #file-count {\npointer-events: none;\n}\n:root.float #thread-stats {\npadding: 0px 3px;\n}\n\n/* Quote */\n.deadlink {\ntext-decoration: none !important;\n}\n.backlink.deadlink:not(.forwardlink), .quotelink.deadlink:not(.forwardlink) {\ntext-decoration: underline !important;\n}\n.inlined {\nopacity: .5;\n}\n#qp input, .forwarded {\ndisplay: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\ntext-decoration: none;\nborder-bottom: 1px dashed;\n}\n.filtered {\ntext-decoration: underline line-through;\n}\n.inline {\nborder: 1px solid;\ndisplay: table;\nmargin: 2px 0;\n}\n.inline .post {\nborder: 0 !important;\nbackground-color: transparent !important;\ndisplay: table !important;\nmargin: 0 !important;\npadding: 1px 2px !important;\n}\n#qp > .opContainer::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n#qp .post {\nborder: none;\nmargin: 0;\npadding: 2px 2px 5px;\n}\n#qp img {\nmax-height: 300px;\nmax-width: 500px;\nmax-height: 80vh;\nmax-width: 50vw;\n}\n.qphl {\noutline: 2px solid rgba(216, 94, 49, .7);\n}\n.highlight-own .yourPost>.reply {\nborder-left: 2px solid rgba(221,0,0,.5);\n}\n/* Quote Threading */\n.threadContainer {\nmargin-left: 20px;\nborder-left: 1px solid rgba(128,128,128,.3);\n}\n.threadOP {\nclear: both;\n} \n\n/* File */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.expanded-image > .post > .file > .fileThumb > img[data-md5],\n:not(.expanded-image) > .post > .file > .fileThumb > .full-image {\ndisplay: none;\n}\n.expanding {\nopacity: .5;\n}\n.expanded-image {\nclear: both;\n}\n.expanded-image > .op > .file::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n:root.fit-width .full-image {\nmax-width: 100%;\n}\n:root.gecko.fit-width .full-image,\n:root.presto.fit-width .full-image {\nwidth: 100%;\n}\n#ihover {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmax-height: 100%;\nmax-width: 75%;\npadding-bottom: 16px;\n}\n.fappeTyme  .thread > .noFile,\n.fappeTyme .threadContainer > .noFile {\ndisplay: none;\n}\n\n/* Index/Reply Navigation */\n#navlinks {\nfont-size: 16px;\ntop: 25px;\nright: 10px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\nfloat: left;\nmargin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\ndisplay: none !important;\n}\n.stub input {\ndisplay: inline-block;\n}\n\n/* QR */\n:root.hide-original-post-form #postForm,\n:root.hide-original-post-form .postingMode,\n:root.hide-original-post-form #togglePostForm,\n#qr.autohide:not(.has-focus):not(:hover) > form,\n.postingMode ~ #qr select,\n#file-n-submit:not(.has-file) #qr-filerm {\ndisplay: none;\n}\n#qr select, #dump-button, .remove, .captcha-img {\ncursor: pointer;\n}\n#qr {\nz-index: 20;\nposition: fixed;\npadding: 1px;\nborder: 1px solid transparent;\nmin-width: 248px;\nborder-radius: 3px 3px 0 0;\n}\n#qrtab {\nborder-radius: 3px 3px 0 0;\n}\n#qrtab {\nmargin-bottom: 1px;\n}\n#qr .close {\nfloat: right;\npadding: 0 3px;\n}\n#qr .warning {\nmin-height: 1.6em;\nvertical-align: middle;\npadding: 0 1px;\nborder-width: 1px;\nborder-style: solid;\n}\n.qr-link {\ntext-align: center;\n}\n.persona {\nwidth: 248px;\nmax-width: 100%;\nmin-width: 100%;\n}\n#dump-button {\nbackground: linear-gradient(#EEE, #CCC);\nborder: 1px solid #CCC; \nwidth: 10%;\nmargin: 0;\nfont: 13px sans-serif;\npadding: 1px 0px 2px;\n}\n.persona .field:not(#dump) {\nwidth: 95px;\nmin-width: 30%;\nmax-width: 30%;\n}\n#qr textarea.field {\nheight: 14.8em;\nmin-height: 9em;\n}\n#qr.has-captcha textarea.field {\nheight: 9em;\n}\ninput.field.tripped:not(:hover):not(:focus) {\ncolor: transparent !important;  text-shadow: none !important;\n}\n#qr textarea {\nresize: both;\n}\n.captcha-img {\nmargin: 0px;\ntext-align: center;\nbackground-image: #fff;\nfont-size: 0px;\nmin-height: 59px;\nmin-width: 302px;\n}\n.captcha-input {\nwidth: 100%;\nmargin: 1px 0 0;\n}\n.field {\n-moz-box-sizing: border-box;\nmargin: 0px;\npadding: 2px 4px 3px;\n}\n#qr textarea {\nmin-width: 100%;\n}\n#qr [type='submit'] {\nwidth: 25%;\nvertical-align: top;\n}\n/* Fake File Input */\n#qr-filename,\n.has-file #qr-no-file {\ndisplay: none;\n}\n#qr-no-file,\n.has-file #qr-filename {\ndisplay: block;\npadding: 0px 4px;\nmargin-bottom: 2px;\noverflow: hidden;\ntext-overflow: ellipsis;\n}\n#qr-no-file {\ncolor: #AAA;\n}\n#qr-filename-container {\n-moz-box-sizing: border-box;\ndisplay: inline-block;\nposition: relative;\nwidth: 100px;\nmin-width: 74.6%;\nmax-width: 74.6%;\nmargin-right: 0.4%;\nmargin-top: 1px;\noverflow: hidden;\npadding: 2px 1px 0;\nheight: 22px;\n}\n#qr-filename-container:hover {\ncursor: text;\n}\n#qr-filerm {\nposition: relative;\nright: 14px;\nbottom: 6px;\nmargin-right: -8px;\nz-index: 2;\n}\n#file-n-submit {\nheight: 23px;\n}\n#qr input[type=file] {\ndisplay: none;\n}\n/* Thread Select / Spoiler Label */\n#qr select {\nfloat: right;\n}\n/* Dumping UI */\n.dump #dump-list-container {\ndisplay: block;\n}\n#dump-list-container {\ndisplay: none;\nposition: relative;\noverflow-y: hidden;\nmargin-top: 1px;\n}\n#dump-list {\noverflow-x: auto;\noverflow-y: hidden;\nwhite-space: pre;\nwidth: 248px;\nmax-width: 100%;\nmin-width: 100%;\n}\n#dump-list:hover {\noverflow-x: auto;\n}\n.qr-preview {\n-moz-box-sizing: border-box;\ncounter-increment: thumbnails;\ncursor: move;\ndisplay: inline-block;\nheight: 90px;\nwidth: 90px;\npadding: 2px;\nopacity: .5;\noverflow: hidden;\nposition: relative;\ntext-shadow: 0 1px 1px #000;\n-moz-transition: opacity .25s ease-in-out;\nvertical-align: top;\n}\n.qr-preview:hover,\n.qr-preview:focus {\nopacity: .9;\n}\n.qr-preview::before {\ncontent: counter(thumbnails);\ncolor: #fff;\nposition: absolute;\ntop: 3px;\nright: 3px;\ntext-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.qr-preview#selected {\nopacity: 1;\n}\n.qr-preview.drag {\nbox-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.qr-preview.over {\nborder-color: #fff;\n}\n.qr-preview > span {\ncolor: #fff;\n}\n.remove {\nbackground: none;\ncolor: #e00;\nfont-weight: 700;\npadding: 3px;\n}\na:only-of-type > .remove {\ndisplay: none;\n}\n.remove:hover::after {\ncontent: \" Remove\";\n}\n.qr-preview > label {\nbackground: rgba(0,0,0,.5);\ncolor: #fff;\nright: 0; bottom: 0; left: 0;\nposition: absolute;\ntext-align: center;\n}\n.qr-preview > label > input {\nmargin: 0;\n}\n#add-post {\ncursor: pointer;\nfont-size: 2em;\nposition: absolute;\ntop: 50%;\nright: 10px;\n-moz-transform: translateY(-50%);\n}\n.textarea {\nposition: relative;\n}\n#char-count {\ncolor: #000;\nbackground: hsla(0, 0%, 100%, .5);\nfont-size: 8pt;\nposition: absolute;\nbottom: 1px;\nright: 1px;\npointer-events: none;\n}\n\n/* Menu */\n.menu-button {\ndisplay: inline-block;\nposition: relative;\ncursor: pointer;\n}\n.menu-button i {\nborder-top:   6px solid;\nborder-right: 4px solid transparent;\nborder-left:  4px solid transparent;\ndisplay: inline-block;\nmargin: 2px;\nvertical-align: middle;\n}\n#menu {\nposition: fixed;\noutline: none;\n}\n.entry {\nborder-bottom: 1px solid rgba(0,0,0,.25);\ncursor: pointer;\ndisplay: block;\noutline: none;\npadding: 3px 7px;\nposition: relative;\ntext-decoration: none;\nwhite-space: nowrap;\n}\n.left>.entry.has-submenu {\npadding-right: 17px !important;\n}\n.entry:last-child {\nborder-bottom: 0;\n}\n.has-submenu::after {\ncontent: \"\";\nborder-left: .5em solid;\nborder-top: .3em solid transparent;\nborder-bottom: .3em solid transparent;\ndisplay: inline-block;\nmargin: .3em;\nposition: absolute;\nright: 3px;\n}\n.left .has-submenu::after {\nborder-left: 0;\nborder-right: .5em solid;\n}\n.submenu {\ndisplay: none;\nposition: absolute;\nleft: 100%;\ntop: -1px;\n}\n.focused .submenu {\ndisplay: block;\n}\n.imp-exp-result {\nposition: absolute;\ntext-align: center;\nmargin: auto;\nright: 0px;\nleft: 0px;\nwidth: 200px;\n}\n.export, .import {\ncursor: pointer;\ntext-decoration: none !important;\n}\n/* Link Title Favicons */\n.linkify.YouTube {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAMCAYAAABr5z2BAAABIklEQVQoz53LvUrDUBjG8bOoOammSf1IoBSvoCB4JeIqOHgBLt6AIMRBBQelWurQ2kERnMRBsBUcIp5FJSBI5oQsJVkkUHh8W0o5nhaFHvjBgef/Mq+Q46RJBMkI/vE+aOus956tnEswIZe1LV0QyJ5sE2GzgZfVMtRNIdiDpccEssdlB1mW4bvTwdvWJtRdErM7U+8S/FJykCRJX5qm+KpVce8UMNLRLbulz4iSjTAMh6Iowsd5BeNadp3nUF0VlxAEwZBotXC0Usa4ll3meZdA1iguwvf9vpvDA2wvmKgYGtSud8suDB4TyGr2PF49D/vra9jRZ1BVdknMzgwuCGSnZEObwu6sBnVTCHZiaC7BhFx2PKdxUidiAH/4lLo9Mv0DELVs9qsOHXwAAAAASUVORK5CYII=') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.Vimeo {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAASJJREFUOE9jYAAC7ln7/pODQXrBmq333PvPu/YaSRikB6QXbACpmmHqsRoAMll7+20UQ0H8tmuv/pdffPFfZtNNuByGASBFIPDh5x+4IV6HHoDFYGDJgw+YBoBMBUkgA5BtIKduuvvy//svX+FSB+88wTTAc+/t/83bj/0HScLA5BPXwc7lKJ36f+L6XXDxhUfOYxrAPWUnWKFp9UQUm3iWQxSDXAEDSX3zcIcB96wD/x+8eA1XDNKMHAYg20GW4Y0FkCIYAAUqzEBQOIBciRzlWKMxZelOlMCEcVxq+jHSC1YDJPs3YBgA8jey0/F6ARRwsFAHORukmat9NdbUijMpg/wKcrJodDFOzSBXwA3Alh9AToZFI7a8Asu98BxJbnYGAJb5vYLDANzSAAAAAElFTkSuQmCC') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.SoundCloud {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABsklEQVQ4y5WTy2pUQRCGv2rbzDjJeAlIBmOyipGIIJqFEBDElwh4yULGeRFXPoEIBl/AvQ/gC2RnxCAoxijiwks852S6+3dxzslcHJCpTXVX11/Xv0097gLPgVNMJxnQNfX4zsqleWbnpoMf/oa9d988MM9MC/rp+E0a+A0dsVobMNMCOO8B6McRoABJI+A6gJmN3D2A8jgEBCEkSEMBrcrsDAzDWWn3AjgKFaDMmgRqniGFgsaDp1jrLOngDf1XT1D+A1dFc4MKAkkiCVKjjVu7g9+4Rzx4i1u6hjXbuMWr0O5QPNvCu7IaCZwEKQukLGDrm5x8uI0tr6MkiGlkiv7yLfzN+6S5i6QsIMABkEfcxhbWWYMkVAOjxvYAjc3HNHrbKI9VBQBFwF25XQKSBjqIf1YBuAurEMrczgDygD6/x2LCpFLXLUyQ+PoldphhBhYfIX09XU1+Flaukz7uYqs3SHs7cG4BmTsmkBUF9mmXEwa28BNLPaQPLepuNcbGSWQquQC2/Kdcox1FUGkcB0ykck1nA2+wTzMs8stGnP4rbWGw74EuS/GFQWfK7/wF6P4F7fzIAYkdmdEAAAAASUVORK5CYII=') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.audio {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAitJREFUOE9jYCAWKJWwavr0KyXWb/FIbDtUFFyzJx6nVofE2Xo5nXsj0rqPNSR0nVkR2Hjmgmfd+U9Otdf+m5Vf/6+SfeU/R9ChVVgNYDRtlfJuuPA/rPfe/4QpD/6nznj0P27Kw/9unff/69Xf+69c/+C/SO7N/0z+OAxgMmmRCe++/r9i3ev/KWvf/vdY8PK/bt/9/wrNV3/IN5y/IVt1YqNg4pGTTP4HsbuA2bhZ2qvpyn+xjIObxAp3VwqlrgngLFyryVy5nhPmZJHANS2cwYexG8BmVC/pWn3hP4NZlzWuQDJI3dIiFnUUuwEsQAOcq87jNcC7fHeLUtJxHF4AGmBWeAavAWH1+1rUUk7giAWjOknllON4DXAs2NEiG4/DBQxAF/CFHfrPYI4jDFSLuJVjNrUJhB/B7gIGo1pJRt99GAZYJK7wLJ1z7Xzl4vu/7aqv/GRBj0bjqAX2qb0nJ7mXH17C4HcUxQA+hymWtSue/C5a9up/9Ozn/7Vr7v1nRY7GqMb91T3b3v6vWvPmf/S0p/9ZQk+DDLCBRSOz06Jqk+o7/21nvfqvsebDf7kZL/5zBaxphkezd+OFn7HzXvz3Wvjmv9a8N//5Ek//ZTBpVYUrMG2X5wjcdl68+uI/wa5Lr3hSNjczGFeywOVZ/bbcVGp//F9izfv/Ql03f3P4LC/HSEQquYwMFnUCDJ7dzBhyjGZNQpye89M5gpfnMvtNUyE2h4PUAQBovvT7lyNljwAAAABJRU5ErkJggg==') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.LiveLeak {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAydJREFUOE9Nk1tIk2EYx79NyUNqTk0o6KYrnZeChodLDxfeZpCbJk4RXU5Nm7tYRYhiYXbQlaeGutyW2gxtpB1RIyKDEjKwA6Ti2dR5KNDn+fq/S6TBj/f93r3P732e53s/qfnkSdej4GB2SBLbwf+jmB+gUMgOheLg/z7EdCUnO6Ref392SpK8Hyh3I+gBwBo7lUp2xcbyQEoKD6alyQOpqd754/h4FjJXZCRJTl9ftmEzoK5/wdQJxPgkLY2WV1dpc2uLtnZ2eHNnhza3t2nd46GhjAzuValY6jx0iIfS03msoIDuQ9COQCtoUSjohU5HuwgaN5loeXycd3d3aW9vzwvW2K5SkdTi58fvzGb+3tdHFggA3QONEAzn59PvjQ1yqNX0zenkvX0B4ffWaGRraChJd/385JGqKvlzTw/fRqOaIGkEd1DjU52O/3g83BkTw5MOh7yJuUCUM2o0yi2hoSw1IIOhykr+YLNRHYKu4XQvyKA/N5c8yMCCDD7Z7bz26xcJ1rH2rKKCG0UJdRAMlJbyG6uVrkJQjWAB5tSbk0Nr2HwDgvcQiIYur6zQyvo6ucvLueHIEZKuQPBQr+dXra1kRuqXEOwFArtWSytra1QdFUVjNhvPLS3R3OIiLUDUD0F1WBhJJtwDW2Ehu5uaqBICI4IFlRB0QLCEzaboaHrd0cHzCBYsIIuesjK+LAQXkEFrXh676uupGCWcR6AeghLQptGQONUAwfOuLp6Zn6eZuTmaXVig7pISrhI90ENgQbdHhoep32JhFzLpu3WLio8epUYIfs7OUjF6UKJW88XERLqYkEBNej11oG8XhCAvMFAuOn5cNiclsTkhQTbhmpri4lgbEMANWi1DwC/xit3t7bK7rY0Fo4OD3G4wyEURESzloAdnceezlErK8vH5N4KzPj50PTOTfkxP0+THj/RlYoInJyZI8HVqim5qNFwQHk7SucBAPo2PKRMNPLM/4pnFszYkhJsNBu6uqWFHba1sr61lQSveQFZQkFx07BhJmhMnrLn4NLMPH/aSExR0QDbmWhwgyEapwDvXoDxdWBiXnjrV/Bdm2kYUxLwmEgAAAABJRU5ErkJggg==') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.Vocaroo {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAw9JREFUOE9jYMABuMwYmCyTJKUCGlSnFSy02TTzeOyCiQcDViX26qVz2TAyYtWmEMwuoZ3M7V40LcB79pHkc0svpvzY8jD//87nxf+3Pyn8v/ZO8v+VNyP/2mZJumI1QCWSI8232Hjumitlfw5+qPp/9l8TCt76JP//xkdx/wsXWCzjtWFkwTCkbWFe9plPk/+ga4Txz/xt/D/hkN//gMXif21a+NbyWjIwoRiy6GDT5rP/mlFsPfyp5n/NpOj/22+0gMUXXIz/H7hC/L/bFKFbPDZMrHAD5H35OPt2J9zacDv/f3V7xv9FhwrBGubsT/1//Pjx/1GJ/mD+/nfl/1v3Ovy3KRJNQbHdOlXCvOO03/+pm1P/v3v37n90hhtYw9HPtf8Xb2v937cmHswHeWPRxYj/LvkK3igGKARwicTO07118H3V/5kbi/4vPZMJtK3s/6YH2f+Pfq1B8VbjWrdnMu5s4nAD9CNFhKwz5DTUvLl419zKvAcLtG1P84BRl/b/5M/6/6f/NPzf/qzo84yj0Uus0xUU4Zor54bm9+4OfZG02OCuoAMTb9ZkC9ull1Nvrr2Z+XvRpaRfc65H/68F+jl9svEhzyLFWoccWVc+eyTHq/twydjlKRln7jX9bNMkMJnbhoFRL1xCqmKx6/yi2fYXa/c5/e846PV/5fW0/7OPx/yfcjzop34ulxdGGvDuU8mMXaX507lBuiN6ueadmQeT/p/93vf/1O+G//sP5fw/eL3o/5JLif8zVxs+Tlir9S26UyeFQQvJGBE7FvaFZ9LfN+1y+WjbItSb3GmXvXd15v8zroH/HxgE/D+aGPx/18vi/z07PeZNPRKxe/Kh0Ae8toxscCO4zBkYXArk9C1SxJUYjBkYPPIVtbbuTftz3cz//2O9wP/75iSAXdO72/dt2HL5F6YlfBW4MiJYXMiBiW3t7azHBx+V/t89N+H/8a+1//e9K/9attDp5LQjYX8SuvVL8RoAkmxa65299Erq1FnHo0qrl7t4BddriIs4MrM3rfWcFd+pGwVSAwBZ0bKP8yrZPAAAAABJRU5ErkJggg==') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.pastebin {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAtZJREFUOE+NU91LWmEc7sJtQew/2MUY7INg7CLY3W5GMHazyzEQo9UmfYxZTbAiVlgRqLMSZ+XnDC3z2+Y0+8JGakKZTtR0Tl2wtgtLLQh29cz3ZZ3h3Q68vOc95zzP73l+z+/U1f292O09DRxubxOH23P//1bvtQts3dPnry7LZnXJhcUl5Avf8dHtwY+fv2AyW5DOfIXFakMm+w0G4wISyRRm55TQG0y/Wzv6mikJ52Xf9TmVBoFAAD6fDwqFAqFQCJubmzCbzZiensbp6SmkUikikQi0Wi0kEgm6ewVaStDCfXPDandifn6egoaGhrCzswO1Wg2Hw4HBwUGk02kIBAL4/X4IhUJMTk6ii8dfYggy2RwymQzOz88Rj8dRLpexv7+PSqWCYDCIQqGAra0tJBIJrK2t0XdVAjNDEIl+wfj4OEqlEq2wt7dHrchkMmrBYDCAz+fTIjweD7FYrJbgIJOlgLOzM8jlcip1eXmZ2rFarVAqlRCLxcjlchCJRFRljYJYPAG32418Pg+n04lsNouVlRUcHh7C4/FQIOlHNBqlezgcJgQWxkIgGMbExASVNjY2hvX1dVo9mUzS5wREFLhcLrqTcw2B//M2RkdHodPp4PV6oVKpqH+SCom3v7+fNnF4eJiJusbCJ6+PviSyScakiaR5RIHRaKQpmEwmbAdCeD8zB6vdhebHT8SMhcUlC83bbrdTJRsbG3RwiCVCRNJJpDIoVeNNJJJQzKryV+rrmxiCtyNCCmaz2VhdXQWXy6XDpNfrodFoYLXZUTw+pk222Z3lW3ca26rgSwzBwqIZAwMDlITMAVEwNTVFR5fEJpK8Qyp1AJvDVbrTeLenCmxgfiZ22+urCtWHyu7uLp2wVCpFKx0dHaFYLOLk5KT6Y9kgk89kb95ubK0BX7A8a+1qannRLeW0daj/rU51S3tn9dypfvDw0QiLxbpX/Z7FVK7e/AEj4Wf24/2f5AAAAABJRU5ErkJggg==') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.gist {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAk1JREFUeNqUkzuIE1EUhv955MnsbB6r4kYQLUQQFncV3SnCIqJsoWGDYOGjsIiCtY2Kla1sjLBIsFFcXJC1kaSwENQmXUQSRSUSjCQSTCbkbR4z47lXEgtBNwcu3DNzvvO8R8jlcj7LshKmaWqYQERRTAmCcEru9/sJr9er0QF92BJMAVGr1TQ6CeZAc7lcGAwGkyQAxpTLZU0eDoc8crfbRTgcRjAYRCQSYSmi1WpxY7fbjU6ng1gshmaziXg8zhnGIpVKWbquW9ls1mLZsaMoiqWq6lgnBxY55He/328Vi0XOMFZmqVMD4fF4QBAajcY48khY9JE4HA4enTGMFVkaTHmy+ZzD/5NSqYSNB484w1h55ODO3TVu4FXcWDywl24Cmp0e1WBhyuWELAtIf/qKUrWOONmev3Lpt4NRCXq1gplpBS/v3cDc0nGg9h1o1ZkfwO4Atu1B8cM7HLt8k37V/y5B2b4bJxf2Y+7oEbyJrkMvUjki0YYJ03LidfQxAt4dOHdCw5RdGZcgGobBlQtnV/BDr1GfDai7ZiHZZRi9PoY/e5SCCTUwC9gk1GmMh5YWOcNYkR4Sv1y9uAJbYB82N57h4OnDmN7phjQ0qUkWRJuB+TMaPn/5iFfvv+Ha7eucYey4iWw8q6tRJJNJ3Fp7ClUawEkViBTfkCR0YUNTVHD/4Tpm/P4/U2CeKpUKfD4fJDIMhUKEhP45St50XedZyLQY6Xw+v8AUemVb2oNqtYpCocCWKi2TLLfb7ReZTGZ+kmUi7i2VvfxLgAEAZChMriPcl+IAAAAASUVORK5CYII=') center left no-repeat!important;\npadding-left: 18px;\n}\n/* General */\n:root.yotsuba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.yotsuba #header-bar, :root.yotsuba #notifications {\nfont-size: 9pt;\ncolor: #B86;\n}\n:root.yotsuba #header-bar a, :root.yotsuba #notifications a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.yotsuba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.yotsuba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.yotsuba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba #menu {\ncolor: #800000;\n}\n:root.yotsuba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 10pt;\n}\n:root.yotsuba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.yotsuba-b .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.yotsuba-b #header-bar, :root.yotsuba-b #notifications {\nfont-size: 9pt;\ncolor: #89A;\n}\n:root.yotsuba-b #header-bar a, :root.yotsuba-b #notifications a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.yotsuba-b #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.yotsuba-b .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.yotsuba-b .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba-b #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba-b #menu {\ncolor: #000;\n}\n:root.yotsuba-b .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 10pt;\n}\n:root.yotsuba-b .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.futaba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.futaba #header-bar, :root.futaba #notifications {\nfont-size: 11pt;\ncolor: #B86;\n}\n:root.futaba #header-bar a, :root.futaba #notifications a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.futaba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.futaba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.futaba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.futaba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.futaba #menu {\ncolor: #800000;\n}\n:root.futaba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 12pt;\n}\n:root.futaba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.burichan .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.burichan #header-bar, :root.burichan #header-bar #notifications {\nfont-size: 11pt;\ncolor: #89A;\n}\n:root.burichan #header-bar a, :root.burichan #header-bar #notifications a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.burichan #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.burichan .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.burichan .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.burichan #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.burichan #menu {\ncolor: #000000;\n}\n:root.burichan .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 12pt;\n}\n:root.burichan .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.tomorrow .dialog {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow .field:focus {\nborder-color: #000;\n}\n\n/* Header */\n:root.tomorrow #header-bar, :root.tomorrow #notifications {\nfont-size: 9pt;\ncolor: #C5C8C6;\n}\n:root.tomorrow #header-bar a, :root.tomorrow #notifications a {\ncolor: #81A2BE;\n}\n\n/* Settings */\n:root.tomorrow #fourchanx-settings fieldset {\nborder-color: #111;\n}\n\n/* Quote */\n:root.tomorrow .backlink.deadlink {\ncolor: #81A2BE !important;\n}\n:root.tomorrow .inline {\nborder-color: #111;\nbackground-color: rgba(0, 0, 0, .14);\n}\n\n/* QR */\n.tomorrow #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow #qr select {\ncolor: #C5C8C6;\n}\n:root.tomorrow #qr option {\ncolor: #000;\n}\n:root.tomorrow .qr-preview {\nbackground-color: rgba(255, 255, 255, .15);\n}\n\n/* Menu */\n:root.tomorrow #menu {\ncolor: #C5C8C6;\n}\n:root.tomorrow .entry {\nborder-bottom: 1px solid #111;\nfont-size: 10pt;\n}\n:root.tomorrow .focused.entry {\nbackground: rgba(0, 0, 0, .33);\n}\n\n/* General */\n:root.photon .dialog {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.photon #header-bar, :root.photon #notifications {\nfont-size: 9pt;\ncolor: #333;\n}\n:root.photon #header-bar a, :root.photon #notifications a {\ncolor: #FF6600;\n}\n\n/* Settings */\n:root.photon #fourchanx-settings fieldset {\nborder-color: #CCC;\n}\n\n/* Quote */\n:root.photon .backlink.deadlink {\ncolor: #F60 !important;\n}\n:root.photon .inline {\nborder-color: #CCC;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.photon #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.photon #menu {\ncolor: #333;\n}\n:root.photon .entry {\nborder-bottom: 1px solid #CCC;\nfont-size: 10pt;\n}\n:root.photon .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n"
   };
 
   Main.init();
