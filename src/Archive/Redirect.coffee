@@ -12,8 +12,6 @@ Redirect =
         "http://archive.4plebs.org/#{boardID}/full_image/#{filename}"
       when 'c', 'w', 'wg'
         "//archive.nyafuu.org/#{boardID}/full_image/#{filename}"
-      when 'vg'
-        "http://archive.nihil-ad-rem.net/#{boardID}/full_image/#{filename}"
       when 'd'
         "//loveisover.me/#{boardID}/full_image/#{filename}"
       when 'ck', 'fa', 'lit', 's4s'
@@ -36,8 +34,6 @@ Redirect =
         "http://archive.4plebs.org/_/api/chan/post/?board=#{boardID}&num=#{postID}"
       when 'c', 'w', 'wg'
         "//archive.nyafuu.org/_/api/chan/post/?board=#{boardID}&num=#{postID}"
-      when 'v', 'vg'
-        "http://archive.nihil-ad-rem.net/_/api/chan/post/?board=#{boardID}&num=#{postID}"
       when 'd'
         "//loveisover.me/_/api/chan/post/?board=#{boardID}&num=#{postID}"
     # for fuuka-based archives:
@@ -55,8 +51,6 @@ Redirect =
         Redirect.path 'http://archive.4plebs.org', 'foolfuuka', data
       when 'c', 'w', 'wg'
         Redirect.path '//archive.nyafuu.org', 'foolfuuka', data
-      when 'v', 'vg'
-        Redirect.path 'http://archive.nihil-ad-rem.net', 'foolfuuka', data
       when 'd'
         Redirect.path '//loveisover.me', 'foolfuuka', data
       when 'ck', 'fa', 'lit', 's4s'
