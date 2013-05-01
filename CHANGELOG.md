@@ -1,3 +1,5 @@
+## 3.3.0 - *2013-05-02*
+
 - **New feature**: `Quick Reply Personas`
  - Add custom auto-completion for the name, e-mail and subject inputs.
  - Always use a specific persona.
