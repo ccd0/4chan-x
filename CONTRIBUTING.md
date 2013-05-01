@@ -3,7 +3,7 @@
 Reporting bugs:
 
 1. Make sure both your **browser** and **4chan X** are up to date.
-2. Disable your other extensions & scripts to identify conflicts.
+2. Disable your other extensions & scripts to identify [conflicts](https://github.com/MayhemYDG/4chan-x/wiki/FAQ#known-conflicting-extensions).
 3. If your issue persists, open a [new issue](https://github.com/MayhemYDG/4chan-x/issues) with the following information:
   1. Precise steps to reproduce the problem, with the expected and actual results.
   2. Console errors, if any.
