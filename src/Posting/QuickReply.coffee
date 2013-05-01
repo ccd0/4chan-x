@@ -1102,9 +1102,10 @@ QR =
       QR.error err
       return
 
-    h1 = $ 'h1', tmpDoc
-    QR.cleanNotifications()
-    QR.notifications.push new Notification 'success', h1.textContent, 5
+    if Conf['Posting Success Notifications']
+      h1 = $ 'h1', tmpDoc
+      QR.cleanNotifications()
+      QR.notifications.push new Notification 'success', h1.textContent, 5
 
     QR.persona.set post
 

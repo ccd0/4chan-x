@@ -172,7 +172,8 @@
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
         'Hide Original Post Form': [true, 'Hide the normal post form.'],
         'Cooldown': [true, 'Indicate the remaining time before posting again.'],
-        'Cooldown Prediction': [true, 'Decrease the cooldown time by taking into account upload speed. Disable it if it\'s inaccurate for you.']
+        'Cooldown Prediction': [true, 'Decrease the cooldown time by taking into account upload speed. Disable it if it\'s inaccurate for you.'],
+        'Posting Success Notifications': [true, 'Show notifications on successful post creation or file uploading.']
       },
       'Quote Links': {
         'Quote Backlinks': [true, 'Add quote backlinks.'],
@@ -5786,9 +5787,11 @@
         QR.error(err);
         return;
       }
-      h1 = $('h1', tmpDoc);
-      QR.cleanNotifications();
-      QR.notifications.push(new Notification('success', h1.textContent, 5));
+      if (Conf['Posting Success Notifications']) {
+        h1 = $('h1', tmpDoc);
+        QR.cleanNotifications();
+        QR.notifications.push(new Notification('success', h1.textContent, 5));
+      }
       QR.persona.set(post);
       _ref1 = h1.nextSibling.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref1[0], threadID = _ref1[1], postID = _ref1[2];
       postID = +postID;

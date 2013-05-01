@@ -3,6 +3,7 @@ seaweedchan:
 - Account for time options in youtube links for embedding
 - Once again remove /v/ and /vg/ archiving... ;_;
 - Add paste.installgentoo.com embedding
+- Added `Posting Success Notifications` option to make "Post Successful!" and "_____ uploaded" notifications optional
 
 ### 1.1.6 - 2013-05-01
 seaweedchan:
