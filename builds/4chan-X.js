@@ -7576,7 +7576,11 @@
         case 'wg':
           return "//archive.nyafuu.org/" + boardID + "/full_image/" + filename;
         case 'd':
+        case 'h':
+        case 'v':
           return "//loveisover.me/" + boardID + "/full_image/" + filename;
+        case 'vg':
+          return "http://nth.pensivenonsen.se/" + boardID + "/full_image/" + filename;
         case 'ck':
         case 'fa':
         case 'lit':
@@ -7670,7 +7674,12 @@
       },
       'LoveIsOver': {
         base: '//loveisover.me',
-        boards: ['d'],
+        boards: ['d', 'h', 'v'],
+        type: 'foolfuuka'
+      },
+      'PensiveNonsen': {
+        base: 'http://nth.pensivenonsen.se',
+        boards: ['d', 'h', 'v'],
         type: 'foolfuuka'
       },
       'Warosu': {
