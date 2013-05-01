@@ -6,7 +6,7 @@ MayhemYDG:
  - Add custom auto-completion for the name, e-mail and subject inputs.
  - Always use a specific persona.
  - Per-board configuration.
- - Access it in the `QR` tab of the Settings window.
+ - Access it in the `Advanced` tab of the Settings window.
 
 zixaphir:
 - Add Gist link titles
