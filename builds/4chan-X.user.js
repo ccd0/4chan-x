@@ -4322,6 +4322,21 @@
           return div = $.el('iframe', {
             src: "http://www.purplegene.com/script?url=https://gist.github.com/" + this.name + ".js"
           });
+        },
+        title: {
+          api: function() {
+            return "https://api.github.com/gists/" + this.name;
+          },
+          text: function() {
+            var file, response;
+
+            response = JSON.parse(this.responseText).files;
+            for (file in response) {
+              if (response.hasOwnProperty(file)) {
+                return file;
+              }
+            }
+          }
         }
       }
     },
