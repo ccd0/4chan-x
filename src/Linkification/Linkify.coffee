@@ -26,6 +26,8 @@ Linkify =
     [^\s'"]+
   )///gi
 
+  regAltString: ///(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\://){1}\S+)///gi
+
   cypher: $.el 'div'
 
   node: ->
@@ -44,9 +46,15 @@ Linkify =
       data  = node.data
 
       # Test for valid links
-      continue unless node.parentNode and Linkify.regString.test data
+      if Conf['Allow False Positives']
+        continue unless node.parentNode and Linkify.regString.test data
 
-      Linkify.regString.lastIndex = 0
+        Linkify.regString.lastIndex = 0
+
+      else
+        continue unless node.parentNode and Linkify.regAltString.test data
+
+        Linkify.regAltString.lastIndex = 0
 
       cypherText = []
 
@@ -70,7 +78,10 @@ Linkify =
       if cypherText.length
         data = cypherText.join ''
 
-      links = data.match Linkify.regString
+      links = if Conf['Allow False Positives']
+        data.match Linkify.regString
+      else
+        data.match Linkify.regAltString
 
       for link in links
         index = data.indexOf link

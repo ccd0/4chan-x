@@ -79,6 +79,10 @@ Config =
         true
         'Convert text into links where applicable.'
       ]
+      'Allow False Positives': [
+        false
+        'Linkify everything, allowing more false positives but reducing missed links'
+      ]
       'Embedding': [
         true
         'Embed supported services.'

@@ -137,6 +137,7 @@
       },
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
+        'Allow False Positives': [false, 'Linkify everything, allowing more false positives but reducing missed links'],
         'Embedding': [true, 'Embed supported services.'],
         'Auto-embed': [false, 'Auto-embed Linkify Embeds.'],
         'Link Title': [true, 'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud, and Github gists']
@@ -4111,6 +4112,7 @@
       });
     },
     regString: /(\b([a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]+|[-a-z0-9]+\.[a-z]|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+|[a-z]{3,}:[a-z0-9?]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi,
+    regAltString: /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi,
     cypher: $.el('div'),
     node: function() {
       var a, child, cypher, cypherText, data, embed, embedder, embeds, i, index, len, link, links, lookahead, name, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2;
@@ -4131,10 +4133,17 @@
         nodes = $.frag();
         node = snapshot.snapshotItem(i);
         data = node.data;
-        if (!(node.parentNode && Linkify.regString.test(data))) {
-          continue;
+        if (Conf['Allow False Positives']) {
+          if (!(node.parentNode && Linkify.regString.test(data))) {
+            continue;
+          }
+          Linkify.regString.lastIndex = 0;
+        } else {
+          if (!(node.parentNode && Linkify.regAltString.test(data))) {
+            continue;
+          }
+          Linkify.regAltString.lastIndex = 0;
         }
-        Linkify.regString.lastIndex = 0;
         cypherText = [];
         if (next = node.nextSibling) {
           cypher.textContent = node.textContent;
@@ -4156,7 +4165,7 @@
         if (cypherText.length) {
           data = cypherText.join('');
         }
-        links = data.match(Linkify.regString);
+        links = Conf['Allow False Positives'] ? data.match(Linkify.regString) : data.match(Linkify.regAltString);
         for (_j = 0, _len1 = links.length; _j < _len1; _j++) {
           link = links[_j];
           index = data.indexOf(link);
