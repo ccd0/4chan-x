@@ -4649,30 +4649,31 @@
       return status.disabled = disabled || false;
     },
     persona: {
-      name: [],
-      email: [],
-      sub: [],
       pwd: '',
       always: {},
       init: function() {
         QR.persona.getPassword();
         return $.get('QR.personas', Conf['QR.personas'], function(_arg) {
-          var item, personas, type, _i, _j, _len, _len1, _ref, _ref1;
+          var arr, item, personas, type, types, _i, _len, _ref;
 
           personas = _arg['QR.personas'];
+          types = {
+            name: [],
+            email: [],
+            sub: []
+          };
           _ref = personas.split('\n');
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             item = _ref[_i];
-            QR.persona.parseItem(item.trim());
+            QR.persona.parseItem(item.trim(), types);
           }
-          _ref1 = ['name', 'email', 'sub'];
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            type = _ref1[_j];
-            QR.persona.loadPersonas(type);
+          for (type in types) {
+            arr = types[type];
+            QR.persona.loadPersonas(type, arr);
           }
         });
       },
-      parseItem: function(item) {
+      parseItem: function(item, types) {
         var boards, match, type, val, _ref, _ref1, _ref2;
 
         if (item[0] === '#') {
@@ -4697,17 +4698,16 @@
         if (/always/i.test(item)) {
           QR.persona.always[type] = val;
         }
-        if (__indexOf.call(QR.persona[type], val) < 0) {
-          return QR.persona[type].push(val);
+        if (__indexOf.call(types[type], val) < 0) {
+          return types[type].push(val);
         }
       },
-      loadPersonas: function(type) {
-        var list, val, _i, _len, _ref;
+      loadPersonas: function(type, arr) {
+        var list, val, _i, _len;
 
         list = $("#list-" + type, QR.nodes.el);
-        _ref = QR.persona[type];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          val = _ref[_i];
+        for (_i = 0, _len = arr.length; _i < _len; _i++) {
+          val = arr[_i];
           $.add(list, $.el('option', {
             textContent: val
           }));
