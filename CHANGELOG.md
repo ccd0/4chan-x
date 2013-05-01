@@ -1,5 +1,6 @@
 seaweedchan:
 - External image embedding
+- Account for time options in youtube links for embedding
 
 ### 1.1.6 - 2013-05-01
 seaweedchan:

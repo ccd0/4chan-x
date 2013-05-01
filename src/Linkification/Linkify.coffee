@@ -144,10 +144,10 @@ Linkify =
 
   types:
     YouTube:
-      regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
+      regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/
       el: ->
         $.el 'iframe',
-          src: "//www.youtube.com/embed/#{@name}"
+          src: "//www.youtube.com/embed/#{@name}#{if @option then '#' + @option else ''}"
       title:
         api:  -> "https://gdata.youtube.com/feeds/api/videos/#{@name}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
         text: -> JSON.parse(@responseText).entry.title.$t
@@ -249,6 +249,7 @@ Linkify =
 
       embed = $.el 'a',
         name:         (a.name = match[1])
+        option:       match[2]
         className:    'embedder'
         href:         'javascript:;'
         textContent:  '(embed)'

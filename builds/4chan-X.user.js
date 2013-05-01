@@ -4220,10 +4220,10 @@
     },
     types: {
       YouTube: {
-        regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
+        regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/,
         el: function() {
           return $.el('iframe', {
-            src: "//www.youtube.com/embed/" + this.name
+            src: "//www.youtube.com/embed/" + this.name + (this.option ? '#' + this.option : '')
           });
         },
         title: {
@@ -4386,6 +4386,7 @@
         }
         embed = $.el('a', {
           name: (a.name = match[1]),
+          option: match[2],
           className: 'embedder',
           href: 'javascript:;',
           textContent: '(embed)'
