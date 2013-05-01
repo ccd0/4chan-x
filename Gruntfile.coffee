@@ -38,10 +38,11 @@ module.exports = (grunt) ->
         ]
         dest: 'tmp-<%= pkg.type %>/script.coffee'
 
-      license:
+      meta:
         options: concatOptions
         files:
-          'LICENSE': 'src/General/meta/banner.js'
+          'LICENSE': 'src/General/meta/banner.js',
+          'builds/version': 'src/General/meta/version.js'
 
       crx:
         options: concatOptions
@@ -85,7 +86,7 @@ module.exports = (grunt) ->
 
     concurrent:
       build: [
-        'concat:license'
+        'concat:meta'
         'build-crx'
         'build-userjs'
         'build-userscript'

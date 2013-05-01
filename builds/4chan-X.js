@@ -10048,7 +10048,7 @@
         if (items.lastupdate > now - freq || items.lastchecked > now - $.DAY) {
           return;
         }
-        return $.ajax('http://seaweedchan.github.io/4chan-x/version', {
+        return $.ajax('https://github.com/seaweedchan/4chan-x/raw/master/builds/version', {
           onload: function() {
             var el, version;
 

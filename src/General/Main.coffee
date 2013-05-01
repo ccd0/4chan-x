@@ -289,7 +289,7 @@ Main =
     $.get items, (items) ->
       if items.lastupdate > now - freq or items.lastchecked > now - $.DAY
         return
-      $.ajax '<%= meta.page %><%= meta.buildsPath %>version', onload: ->
+      $.ajax '<%= meta.repo %>raw/<%= meta.mainBranch %>/<%= meta.buildsPath %>version', onload: ->
         return unless @status is 200
         version = @response
         return unless /^\d\.\d+\.\d+$/.test version
