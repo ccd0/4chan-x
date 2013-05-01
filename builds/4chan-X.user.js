@@ -7567,9 +7567,6 @@
           return "//archive.foolz.us/" + boardID + "/full_image/" + filename;
         case 'u':
           return "//nsfw.foolz.us/" + boardID + "/full_image/" + filename;
-        case 'v':
-        case 'vg':
-          return "//archive.nihil-ad-rem.net/" + boardID + "/full_image/" + filename;
         case 'po':
           return "//archive.thedarkcave.org/" + boardID + "/full_image/" + filename;
         case 'hr':
@@ -7650,11 +7647,6 @@
       'Foolz': {
         base: 'https://archive.foolz.us',
         boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg'],
-        type: 'foolfuuka'
-      },
-      'NihilAdRem': {
-        base: '//archive.nihil-ad-rem.net',
-        boards: ['v', 'vg'],
         type: 'foolfuuka'
       },
       'NSFWFoolz': {
