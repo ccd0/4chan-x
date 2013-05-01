@@ -135,20 +135,21 @@ QR =
     status.disabled = disabled or false
 
   persona:
-    name:  []
-    email: []
-    sub:   []
     pwd: ''
     always: {}
     init: ->
       QR.persona.getPassword()
       $.get 'QR.personas', Conf['QR.personas'], ({'QR.personas': personas}) ->
+        types =
+          name:  []
+          email: []
+          sub:   []
         for item in personas.split '\n'
-          QR.persona.parseItem item.trim()
-        for type in ['name', 'email', 'sub']
-          QR.persona.loadPersonas type
+          QR.persona.parseItem item.trim(), types
+        for type, arr of types
+          QR.persona.loadPersonas type, arr
         return
-    parseItem: (item) ->
+    parseItem: (item, types) ->
       return if item[0] is '#'
       return unless match = item.match /(name|email|subject|password):"(.*)"/i
       [match, type, val]  = match
@@ -169,11 +170,11 @@ QR =
       if /always/i.test item
         QR.persona.always[type] = val
 
-      unless val in QR.persona[type]
-        QR.persona[type].push val
-    loadPersonas: (type) ->
+      unless val in types[type]
+        types[type].push val
+    loadPersonas: (type, arr) ->
       list = $ "#list-#{type}", QR.nodes.el
-      for val in QR.persona[type]
+      for val in arr
         $.add list, $.el 'option',
           textContent: val
       return
