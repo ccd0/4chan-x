@@ -1,3 +1,6 @@
+seaweedchan:
+- Fix QR not clearing on submit with Posting Success Notifications disabled
+
 ### 1.1.7 - 2013-05-01
 seaweedchan:
 - External image embedding
