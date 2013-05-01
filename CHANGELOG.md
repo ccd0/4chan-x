@@ -1,3 +1,6 @@
+seaweedchan:
+- External image embedding
+
 ### 1.1.6 - 2013-05-01
 seaweedchan:
 - Fix Gist links if no username is specificed

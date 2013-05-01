@@ -182,6 +182,13 @@ Linkify =
           preload:     'auto'
           src:         @name
 
+    image:
+      regExp:  /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/
+      style: 'border: 0; width: auto; height: auto;'
+      el: ->
+        $.el 'div',
+          innerHTML: "<a target=_blank href='#{@getAttribute 'data-originalURL'}'><img src='#{@getAttribute 'data-originalURL'}'></a>"
+
     SoundCloud:
       regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
       style: 'height: auto; width: 500px; display: inline-block;'

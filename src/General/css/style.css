@@ -931,3 +931,7 @@ a:only-of-type > .remove {
   background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/gist.png",    {encoding: "base64"}) %>') center left no-repeat!important;
   padding-left: 18px;
 }
+.linkify.image {
+  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/image.png",    {encoding: "base64"}) %>') center left no-repeat!important;
+  padding-left: 18px;
+}
