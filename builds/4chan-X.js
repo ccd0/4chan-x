@@ -18,7 +18,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.1.3 - 2013-04-28
+* 4chan X - Version 1.1.3 - 2013-04-30
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -335,7 +335,7 @@
     i = this.length;
     while (i--) {
       if (this[i] === object) {
-        break;
+        return i;
       }
     }
     return i;
@@ -349,6 +349,7 @@
       arg = args[_i];
       this.push.apply(this, arg);
     }
+    return this;
   };
 
   Array.prototype.remove = function(object) {
