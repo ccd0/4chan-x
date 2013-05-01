@@ -225,6 +225,12 @@ Linkify =
           response = JSON.parse(@responseText).files
           return file for file of response when response.hasOwnProperty file
 
+    InstallGentoo:
+      regExp:  /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/
+      el: ->
+        $.el 'iframe',
+          src: "http://paste.installgentoo.com/view/embed/#{@name}"
+
   embedder: (a) ->
     return [a] unless Conf['Link Title']
     titles = {}

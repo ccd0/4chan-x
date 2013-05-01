@@ -89,7 +89,7 @@ Config =
       ]
       'Link Title': [
         true
-        'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud'
+        'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud, and Github gists'
       ]
 
     'Filtering':
