@@ -425,6 +425,11 @@ http://iqdb.org/?url=%TURL
 
   boardnav: '[ toggle-all ] [current-title]'
 
+  QR:
+    'QR.personas': [
+      '#email:"sage";boards:jp;always'
+      ].join '\n'
+
   time: '%m/%d/%y(%a)%H:%M:%S'
 
   backlink: '>>%id'

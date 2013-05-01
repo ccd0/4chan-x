@@ -321,7 +321,12 @@ a[href="javascript:;"] {
 .section-advanced ul {
   list-style: none;
   margin: 0;
+}
+.section-sauce ul {
   padding: 8px;
+}
+.section-advanced ul {
+  padding: 0px;
 }
 .section-sauce li,
 .section-advanced li {
@@ -570,9 +575,7 @@ a.hide-announcement {
   float: left;
   margin-right: 2px;
 }
-.stub ~ .sideArrows,
-.stub ~ .hide-reply-button,
-.stub ~ .post {
+.stub ~ * {
   display: none !important;
 }
 .stub input {

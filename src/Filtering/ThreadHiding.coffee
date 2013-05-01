@@ -19,12 +19,7 @@ ThreadHiding =
     hiddenThreads = ThreadHiding.db.get
       boardID: g.BOARD.ID
       defaultValue: {}
-    # XXX tmp fix
-    try
-      hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
-    catch e
-      localStorage.setItem "4chan-hide-t-#{g.BOARD}", JSON.stringify {}
-      return ThreadHiding.syncCatalog()
+    hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
 
     # Add threads that were hidden in the catalog.
     for threadID of hiddenThreadsOnCatalog
@@ -130,10 +125,10 @@ ThreadHiding =
     return if thread.isHidden 
     {OP} = thread
     threadRoot = OP.nodes.root.parentNode
-    threadRoot.hidden = thread.isHidden = true
+    thread.isHidden = true
 
     unless makeStub
-      threadRoot.nextElementSibling.hidden = true # <hr>
+      threadRoot.hidden = threadRoot.nextElementSibling.hidden = true # <hr>
       return
 
     numReplies = 0
@@ -154,7 +149,7 @@ ThreadHiding =
     $.add thread.stub, a
     if Conf['Menu']
       $.add thread.stub, [$.tn(' '), Menu.makeButton OP]
-    $.before threadRoot, thread.stub
+    $.prepend threadRoot, thread.stub
 
   show: (thread) ->
     if thread.stub

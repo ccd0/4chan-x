@@ -1,3 +1,16 @@
+seaweedchan:
+- Fix Gist links if no username is specificed
+
+MayhemYDG:
+- **New feature**: `Quick Reply Personas`
+ - Add custom auto-completion for the name, e-mail and subject inputs.
+ - Always use a specific persona.
+ - Per-board configuration.
+ - Access it in the `QR` tab of the Settings window.
+
+zixaphir:
+- Add Gist link titles
+
 ### 1.1.5 - 2013-04-30
 seaweedchan:
 - Fix various embedding issues
