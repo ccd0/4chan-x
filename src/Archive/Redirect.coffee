@@ -12,8 +12,10 @@ Redirect =
         "http://archive.4plebs.org/#{boardID}/full_image/#{filename}"
       when 'c', 'w', 'wg'
         "//archive.nyafuu.org/#{boardID}/full_image/#{filename}"
-      when 'd'
+      when 'd', 'h', 'v'
         "//loveisover.me/#{boardID}/full_image/#{filename}"
+      when 'vg'
+        "http://nth.pensivenonsen.se/#{boardID}/full_image/#{filename}"
       when 'ck', 'fa', 'lit', 's4s'
         "//fuuka.warosu.org/#{boardID}/full_image/#{filename}"
       when 'cgl', 'g', 'mu'
@@ -34,8 +36,10 @@ Redirect =
         "http://archive.4plebs.org/_/api/chan/post/?board=#{boardID}&num=#{postID}"
       when 'c', 'w', 'wg'
         "//archive.nyafuu.org/_/api/chan/post/?board=#{boardID}&num=#{postID}"
-      when 'd'
+      when 'd', 'h', 'v'
         "//loveisover.me/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+      when 'vg'
+        "http://nth.pensivenonsen.se/_/api/chan/post/?board=#{boardID}&num=#{postID}"
     # for fuuka-based archives:
     # https://github.com/eksopl/fuuka/issues/27
   to: (data) ->
@@ -51,8 +55,10 @@ Redirect =
         Redirect.path 'http://archive.4plebs.org', 'foolfuuka', data
       when 'c', 'w', 'wg'
         Redirect.path '//archive.nyafuu.org', 'foolfuuka', data
-      when 'd'
+      when 'd', 'h', 'v'
         Redirect.path '//loveisover.me', 'foolfuuka', data
+      when 'vg'
+        Redirect.path 'http://nth.pensivenonsen.se', 'foolfuuka', data
       when 'ck', 'fa', 'lit', 's4s'
         Redirect.path '//fuuka.warosu.org', 'fuuka', data
       when 'diy', 'g', 'sci'

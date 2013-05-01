@@ -3,6 +3,7 @@
  - Always use a specific persona.
  - Per-board configuration.
  - Access it in the `QR` tab of the Settings window.
+- Updated archive redirection for /h/, /v/ and /vg/.
 
 ### 3.2.3 - *2013-04-30*
 
