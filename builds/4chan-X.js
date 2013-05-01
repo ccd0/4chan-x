@@ -7679,7 +7679,7 @@
       },
       'PensiveNonsen': {
         base: 'http://nth.pensivenonsen.se',
-        boards: ['d', 'h', 'v'],
+        boards: ['vg'],
         type: 'foolfuuka'
       },
       'Warosu': {
