@@ -2,6 +2,8 @@ Linkify =
   init: ->
     return if g.VIEW is 'catalog' or not Conf['Linkify']
 
+    @regString = if Conf['Allow False Positives'] then @regLooseString else @regStrictString
+
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
@@ -9,7 +11,7 @@ Linkify =
       name: 'Linkify'
       cb:   @node
 
-  regString: ///(
+  regLooseString: ///(
     \b(
       [a-z]+://
       |
@@ -26,7 +28,7 @@ Linkify =
     [^\s'"]+
   )///gi
 
-  regAltString: ///(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\://){1}\S+)///gi
+  regStrictString: ///(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\://){1}\S+)///gi
 
   cypher: $.el 'div'
 
@@ -46,15 +48,10 @@ Linkify =
       data  = node.data
 
       # Test for valid links
-      if Conf['Allow False Positives']
-        continue unless node.parentNode and Linkify.regString.test data
 
-        Linkify.regString.lastIndex = 0
+      continue unless node.parentNode and Linkify.regString.test data
 
-      else
-        continue unless node.parentNode and Linkify.regAltString.test data
-
-        Linkify.regAltString.lastIndex = 0
+      Linkify.regString.lastIndex = 0
 
       cypherText = []
 
@@ -78,10 +75,7 @@ Linkify =
       if cypherText.length
         data = cypherText.join ''
 
-      links = if Conf['Allow False Positives']
-        data.match Linkify.regString
-      else
-        data.match Linkify.regAltString
+      links = data.match Linkify.regString
 
       for link in links
         index = data.indexOf link

@@ -88,7 +88,7 @@
 *
 */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, IDColor, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, BanChecker, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, IDColor, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
@@ -4105,6 +4105,7 @@
       if (g.VIEW === 'catalog' || !Conf['Linkify']) {
         return;
       }
+      this.regString = Conf['Allow False Positives'] ? this.regLooseString : this.regStrictString;
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
@@ -4113,8 +4114,8 @@
         cb: this.node
       });
     },
-    regString: /(\b([a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]+|[-a-z0-9]+\.[a-z]|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+|[a-z]{3,}:[a-z0-9?]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi,
-    regAltString: /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi,
+    regLooseString: /(\b([a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]+|[-a-z0-9]+\.[a-z]|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+|[a-z]{3,}:[a-z0-9?]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi,
+    regStrictString: /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi,
     cypher: $.el('div'),
     node: function() {
       var a, child, cypher, cypherText, data, embed, embedder, embeds, i, index, len, link, links, lookahead, name, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2;
@@ -4135,17 +4136,10 @@
         nodes = $.frag();
         node = snapshot.snapshotItem(i);
         data = node.data;
-        if (Conf['Allow False Positives']) {
-          if (!(node.parentNode && Linkify.regString.test(data))) {
-            continue;
-          }
-          Linkify.regString.lastIndex = 0;
-        } else {
-          if (!(node.parentNode && Linkify.regAltString.test(data))) {
-            continue;
-          }
-          Linkify.regAltString.lastIndex = 0;
+        if (!(node.parentNode && Linkify.regString.test(data))) {
+          continue;
         }
+        Linkify.regString.lastIndex = 0;
         cypherText = [];
         if (next = node.nextSibling) {
           cypher.textContent = node.textContent;
@@ -4167,7 +4161,7 @@
         if (cypherText.length) {
           data = cypherText.join('');
         }
-        links = Conf['Allow False Positives'] ? data.match(Linkify.regString) : data.match(Linkify.regAltString);
+        links = data.match(Linkify.regString);
         for (_j = 0, _len1 = links.length; _j < _len1; _j++) {
           link = links[_j];
           index = data.indexOf(link);
@@ -7823,6 +7817,56 @@
     trim: function(psa) {
       return psa.textContent.replace(/\W+/g, '').toLowerCase();
     }
+  };
+
+  BanChecker = {
+    init: function() {
+      var _this = this;
+
+      if (!Conf['Check for Bans']) {
+        return;
+      }
+      return $.ready(function() {
+        return _this.load();
+      });
+    },
+    load: function() {
+      this.url = 'https://www.4chan.org/banned';
+      return $.ajax(this.url, {
+        onloadend: function() {
+          var ban, board, err, tmpDoc;
+
+          if (this.status === 200 || 304) {
+            tmpDoc = d.implementation.createHTMLDocument('');
+            tmpDoc.documentElement.innerHTML = this.response;
+            if (ban = $('.banType', tmpDoc)) {
+              board = $('.board', tmpDoc).innerHTML;
+              err = $.el('span', {
+                innerHTML: ban.textContent.toLowerCase() === 'banned' ? ("You are banned on " + board + "! ;_;<br>") + "Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason." : ("You were issued a warning on " + board + " as " + ($('.nameBlock', tmpDoc).innerHTML) + ".<br>") + ("Reason: " + ($('.reason', tmpDoc).innerHTML))
+              });
+            }
+            if (err) {
+              BanChecker.error(err);
+            }
+          }
+        }
+      });
+    },
+    error: function(err) {
+      var el;
+
+      if (typeof err === 'string') {
+        el = $.tn(err);
+      } else {
+        el = err;
+        el.removeAttribute('style');
+      }
+      if (d.hidden) {
+        alert(el.textContent);
+      }
+      return BanChecker.notifications.push(new Notification('warning', el));
+    },
+    notifications: []
   };
 
   CatalogLinks = {
