@@ -199,7 +199,18 @@ Main =
         $.event '4chanXInitFinished'
         Main.checkUpdate()
 
+      if styleSelector = $.id 'styleSelector'
+        passLink = $.el 'a',
+          textContent: '4chan Pass'
+          href: 'javascript:;'
+        $.on passLink, 'click', ->
+          window.open '//sys.4chan.org/auth',
+            'This will steal your data.'
+            'left=0,top=0,width=500,height=255,toolbar=0,resizable=0'
+        $.before styleSelector.previousSibling, [$.tn '['; passLink, $.tn ']\u00A0\u00A0']
+
       return
+
 
     $.event '4chanXInitFinished'
     Main.checkUpdate()
