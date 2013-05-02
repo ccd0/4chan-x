@@ -107,7 +107,7 @@
 *
 */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, BanChecker, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, IDColor, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, IDColor, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -7834,56 +7834,6 @@
     trim: function(psa) {
       return psa.textContent.replace(/\W+/g, '').toLowerCase();
     }
-  };
-
-  BanChecker = {
-    init: function() {
-      var _this = this;
-
-      if (!Conf['Check for Bans']) {
-        return;
-      }
-      return $.ready(function() {
-        return _this.load();
-      });
-    },
-    load: function() {
-      this.url = 'https://www.4chan.org/banned';
-      return $.ajax(this.url, {
-        onloadend: function() {
-          var ban, board, err, tmpDoc;
-
-          if (this.status === 200 || 304) {
-            tmpDoc = d.implementation.createHTMLDocument('');
-            tmpDoc.documentElement.innerHTML = this.response;
-            if (ban = $('.banType', tmpDoc)) {
-              board = $('.board', tmpDoc).innerHTML;
-              err = $.el('span', {
-                innerHTML: ban.textContent.toLowerCase() === 'banned' ? ("You are banned on " + board + "! ;_;<br>") + "Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason." : ("You were issued a warning on " + board + " as " + ($('.nameBlock', tmpDoc).innerHTML) + ".<br>") + ("Reason: " + ($('.reason', tmpDoc).innerHTML))
-              });
-            }
-            if (err) {
-              BanChecker.error(err);
-            }
-          }
-        }
-      });
-    },
-    error: function(err) {
-      var el;
-
-      if (typeof err === 'string') {
-        el = $.tn(err);
-      } else {
-        el = err;
-        el.removeAttribute('style');
-      }
-      if (d.hidden) {
-        alert(el.textContent);
-      }
-      return BanChecker.notifications.push(new Notification('warning', el));
-    },
-    notifications: []
   };
 
   CatalogLinks = {
