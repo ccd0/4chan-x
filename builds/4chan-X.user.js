@@ -7563,7 +7563,7 @@
 
   Redirect = {
     init: function() {
-      return $.sync('archs', this.updateArchives);
+      return $.sync('archivers', this.updateArchives);
     },
     updateArchives: function() {
       return $.get('archivers', {}, function(_arg) {
@@ -9814,7 +9814,7 @@
       };
       init({
         'Polyfill': Polyfill,
-        'Redirection': Redirect,
+        'Redirect': Redirect,
         'Header': Header,
         'Catalog Links': CatalogLinks,
         'Settings': Settings,

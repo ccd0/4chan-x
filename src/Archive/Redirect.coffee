@@ -1,6 +1,6 @@
 Redirect =
   init: ->
-    $.sync 'archs', @updateArchives
+    $.sync 'archivers', @updateArchives
 
   updateArchives: ->
     $.get 'archivers', {}, ({archivers}) ->

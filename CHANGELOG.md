@@ -1,3 +1,6 @@
+seaweedchan
+- Fix boards with previously deleted archives not switching to new archives 
+
 ### 1.1.8 - 2013-05-01
 seaweedchan:
 - Fix QR not clearing on submit with Posting Success Notifications disabled

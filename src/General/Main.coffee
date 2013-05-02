@@ -65,7 +65,7 @@ Main =
 
     init
       'Polyfill':                 Polyfill
-      'Redirection':              Redirect
+      'Redirect':                 Redirect
       'Header':                   Header
       'Catalog Links':            CatalogLinks
       'Settings':                 Settings
