@@ -2,7 +2,25 @@ Linkify =
   init: ->
     return if g.VIEW is 'catalog' or not Conf['Linkify']
 
-    @regString = if Conf['Allow False Positives'] then @regLooseString else @regStrictString
+    @regString = if Conf['Allow False Positives'] 
+      ///(
+        \b(
+          [a-z]+://
+          |
+          [a-z]{3,}\.[-a-z0-9]+\.[a-z]+
+          |
+          [-a-z0-9]+\.[a-z]
+          |
+          [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+
+          |
+          [a-z]{3,}:[a-z0-9?]
+          |
+          [a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9]
+        )
+        [^\s'"]+
+      )///gi
+    else
+      /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi
 
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
@@ -10,25 +28,6 @@ Linkify =
     Post::callbacks.push
       name: 'Linkify'
       cb:   @node
-
-  regLooseString: ///(
-    \b(
-      [a-z]+://
-      |
-      [a-z]{3,}\.[-a-z0-9]+\.[a-z]+
-      |
-      [-a-z0-9]+\.[a-z]
-      |
-      [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+
-      |
-      [a-z]{3,}:[a-z0-9?]
-      |
-      [a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9]
-    )
-    [^\s'"]+
-  )///gi
-
-  regStrictString: ///(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\://){1}\S+)///gi
 
   cypher: $.el 'div'
 
