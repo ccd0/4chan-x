@@ -6,31 +6,34 @@ Redirect =
     $.get 'archivers', {}, ({archivers}) ->
       Conf['archivers'] = archivers
 
+  imageArchives: do ->
+    o = 
+      a:   "//archive.foolz.us/"
+      ck:  "//fuuka.warosu.org/"
+      an:  "http://archive.heinessen.com/"
+      cgl: "//rbt.asia/"
+      c:   "//archive.nyafuu.org/"
+      d:   "//loveisover.me/"
+      hr:  "http://archive.4plebs.org/"
+      u:   "//nsfw.foolz.us/"
+      po:  "//archive.thedarkcave.org/"
+      vg:  "http://nth.pensivenonsen.se/"
+      c:   "//archive.nyafuu.org/"
+
+    o.gd = o.jp = o.m = o.q = o.tg = o.vp = o.vr = o.wsg = o.a
+    o.fa = o.lit = o.s4s = o.ck
+    o.k = o.toy = o.x = o.an
+    o.g = o.mu = o.cgl
+    o.w = o.wg = o.c
+    o.h = o.v = o.d
+    o.tv = o.hr
+
+    return o
+
   image: (boardID, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
-    switch boardID
-      when 'a', 'gd', 'jp', 'm', 'q', 'tg', 'vp', 'vr', 'wsg'
-        "//archive.foolz.us/#{boardID}/full_image/#{filename}"
-      when 'u'
-        "//nsfw.foolz.us/#{boardID}/full_image/#{filename}"
-      when 'po'
-        "//archive.thedarkcave.org/#{boardID}/full_image/#{filename}"
-      when 'hr', 'tv'
-        "http://archive.4plebs.org/#{boardID}/full_image/#{filename}"
-      when 'c', 'w', 'wg'
-        "//archive.nyafuu.org/#{boardID}/full_image/#{filename}"
-      when 'd', 'h', 'v'
-        "//loveisover.me/#{boardID}/full_image/#{filename}"
-      when 'vg'
-        "http://nth.pensivenonsen.se/#{boardID}/full_image/#{filename}"
-      when 'ck', 'fa', 'lit', 's4s'
-        "//fuuka.warosu.org/#{boardID}/full_image/#{filename}"
-      when 'cgl', 'g', 'mu'
-        "//rbt.asia/#{boardID}/full_image/#{filename}"
-      when 'an', 'k', 'toy', 'x'
-        "http://archive.heinessen.com/#{boardID}/full_image/#{filename}"
-      when 'c'
-        "//archive.nyafuu.org/#{boardID}/full_image/#{filename}"
+    # Fuck. Your. Shit.
+    "#{Redirect.imageArchives[boardID]}#{boardID}/full_image/#{filename}"
 
   post: (boardID, postID) ->
     unless Redirect.post[boardID]?
@@ -98,7 +101,7 @@ Redirect =
       type:   'foolfuuka'
     'Warosu':
       base:   '//fuuka.warosu.org'
-      boards: ['cgl', 'ck', 'fa', 'jp', 'lit', 's4s', 'q', 'tg']
+      boards: ['cgl', 'ck', 'fa', 'jp', 'lit', 's4s', 'q', 'tg', 'vr']
       type:   'fuuka'
     'InstallGentoo':
       base:   '//archive.installgentoo.net'
@@ -106,7 +109,7 @@ Redirect =
       type:   'fuuka'
     'RebeccaBlackTech':
       base:   '//rbt.asia'
-      boards: ['an', 'cgl', 'g', 'mu', 'w']
+      boards: ['cgl', 'g', 'mu', 'w']
       type:   'fuuka_mail'
     'Heinessen':
       base:   'http://archive.heinessen.com'

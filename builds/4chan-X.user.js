@@ -18,7 +18,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.1.8 - 2013-05-01
+* 4chan X - Version 1.1.8 - 2013-05-02
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -7567,52 +7567,33 @@
         return Conf['archivers'] = archivers;
       });
     },
+    imageArchives: (function() {
+      var o;
+
+      o = {
+        a: "//archive.foolz.us/",
+        ck: "//fuuka.warosu.org/",
+        an: "http://archive.heinessen.com/",
+        cgl: "//rbt.asia/",
+        c: "//archive.nyafuu.org/",
+        d: "//loveisover.me/",
+        hr: "http://archive.4plebs.org/",
+        u: "//nsfw.foolz.us/",
+        po: "//archive.thedarkcave.org/",
+        vg: "http://nth.pensivenonsen.se/",
+        c: "//archive.nyafuu.org/"
+      };
+      o.gd = o.jp = o.m = o.q = o.tg = o.vp = o.vr = o.wsg = o.a;
+      o.fa = o.lit = o.s4s = o.ck;
+      o.k = o.toy = o.x = o.an;
+      o.g = o.mu = o.cgl;
+      o.w = o.wg = o.c;
+      o.h = o.v = o.d;
+      o.tv = o.hr;
+      return o;
+    })(),
     image: function(boardID, filename) {
-      switch (boardID) {
-        case 'a':
-        case 'gd':
-        case 'jp':
-        case 'm':
-        case 'q':
-        case 'tg':
-        case 'vp':
-        case 'vr':
-        case 'wsg':
-          return "//archive.foolz.us/" + boardID + "/full_image/" + filename;
-        case 'u':
-          return "//nsfw.foolz.us/" + boardID + "/full_image/" + filename;
-        case 'po':
-          return "//archive.thedarkcave.org/" + boardID + "/full_image/" + filename;
-        case 'hr':
-        case 'tv':
-          return "http://archive.4plebs.org/" + boardID + "/full_image/" + filename;
-        case 'c':
-        case 'w':
-        case 'wg':
-          return "//archive.nyafuu.org/" + boardID + "/full_image/" + filename;
-        case 'd':
-        case 'h':
-        case 'v':
-          return "//loveisover.me/" + boardID + "/full_image/" + filename;
-        case 'vg':
-          return "http://nth.pensivenonsen.se/" + boardID + "/full_image/" + filename;
-        case 'ck':
-        case 'fa':
-        case 'lit':
-        case 's4s':
-          return "//fuuka.warosu.org/" + boardID + "/full_image/" + filename;
-        case 'cgl':
-        case 'g':
-        case 'mu':
-          return "//rbt.asia/" + boardID + "/full_image/" + filename;
-        case 'an':
-        case 'k':
-        case 'toy':
-        case 'x':
-          return "http://archive.heinessen.com/" + boardID + "/full_image/" + filename;
-        case 'c':
-          return "//archive.nyafuu.org/" + boardID + "/full_image/" + filename;
-      }
+      return "" + Redirect.imageArchives[boardID] + boardID + "/full_image/" + filename;
     },
     post: function(boardID, postID) {
       var archive, name, _base, _ref;
@@ -7699,7 +7680,7 @@
       },
       'Warosu': {
         base: '//fuuka.warosu.org',
-        boards: ['cgl', 'ck', 'fa', 'jp', 'lit', 's4s', 'q', 'tg'],
+        boards: ['cgl', 'ck', 'fa', 'jp', 'lit', 's4s', 'q', 'tg', 'vr'],
         type: 'fuuka'
       },
       'InstallGentoo': {
@@ -7709,7 +7690,7 @@
       },
       'RebeccaBlackTech': {
         base: '//rbt.asia',
-        boards: ['an', 'cgl', 'g', 'mu', 'w'],
+        boards: ['cgl', 'g', 'mu', 'w'],
         type: 'fuuka_mail'
       },
       'Heinessen': {
