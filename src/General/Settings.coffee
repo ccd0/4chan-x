@@ -26,10 +26,6 @@ Settings =
     $.get 'previousversion', null, (item) ->
       if previous = item['previousversion']
         return if previous is g.VERSION
-        <% if (type === 'crx') { %>
-        # XXX tmp conversion: move some settings from sync to local
-        Settings['3.2.1-update'] previous
-        <% } %>
         changelog = '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
         el = $.el 'span',
           innerHTML: "<%= meta.name %> has been updated to <a href='#{changelog}' target=_blank>version #{g.VERSION}</a>."
@@ -284,18 +280,6 @@ Settings =
       data.Conf[newKey] = data.Conf[prevKey] if newKey
       delete data.Conf[prevKey]
     data
-  <% if (type === 'crx') { %>
-  '3.2.1-update': (previous) ->
-    return unless /^3\.[10]\.|^3\.2\.0$/.test previous
-    items = {}
-    for key in $.localKeys
-      items[key] = null
-    chrome.storage.sync.get items, (items) ->
-      chrome.storage.sync.remove $.localKeys
-      for key, val of items
-        delete items[key] if val is null
-      chrome.storage.local.set items
-  <% } %>
 
   filter: (section) ->
     section.innerHTML = """
