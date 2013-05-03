@@ -68,7 +68,7 @@ ThreadUpdater =
     ThreadUpdater.cb.interval.call $.el 'input', value: Conf['Interval']
 
     $.on window, 'online offline',   ThreadUpdater.cb.online
-    $.on d,      'QRPostSuccessful', ThreadUpdater.cb.post
+    $.on d,      'QRPostSuccessful', ThreadUpdater.cb.checkpost
     $.on d,      'visibilitychange', ThreadUpdater.cb.visibility
 
     ThreadUpdater.cb.online()
@@ -85,7 +85,7 @@ ThreadUpdater =
       if ThreadUpdater.online = navigator.onLine
         ThreadUpdater.outdateCount = 0
         ThreadUpdater.set 'timer', ThreadUpdater.getInterval()
-        
+
         ThreadUpdater.update()
 
         ThreadUpdater.set 'status', null, null
@@ -98,8 +98,8 @@ ThreadUpdater =
       ThreadUpdater.outdateCount = 0
       setTimeout ThreadUpdater.update, 1000 if ThreadUpdater.seconds > 2
     checkpost: ->
-      unless g.DEAD or ThreadUpdater.foundPost or ThreadUpdater.checkPostCount >= 10
-        return setTimeout ThreadUpdater.update, ++ThreadUpdater.checkPostCount * 500
+      unless g.DEAD or ThreadUpdater.foundPost or ThreadUpdater.checkPostCount >= 5
+        return setTimeout ThreadUpdater.update, ++ThreadUpdater.checkPostCount * $.SECOND
       ThreadUpdater.checkPostCount = 0
       delete ThreadUpdater.foundPost
       delete ThreadUpdater.postID
@@ -159,7 +159,7 @@ ThreadUpdater =
           ThreadUpdater.set 'status', text, klass
 
       if ThreadUpdater.postID
-        ThreadUpdater.cb.checkpost @status
+        ThreadUpdater.cb.checkpost()
 
       delete ThreadUpdater.req
 
@@ -281,9 +281,9 @@ ThreadUpdater =
       else if post.file and !post.file.isDead and not files.contains ID
         post.kill true
         deletedFiles.push post
-      if ThreadUpdater.postID
-        if ID is ThreadUpdater.postID
-          ThreadUpdater.foundPost = true
+
+      if ThreadUpdater.postID and ThreadUpdater.postID is ID
+        ThreadUpdater.foundPost = true
 
     unless count
       ThreadUpdater.set 'status', null, null
@@ -305,17 +305,18 @@ ThreadUpdater =
 
       for key, post of posts
         continue unless posts.hasOwnProperty key
+        root = post.nodes.root
         if post.cb
           unless post.cb.call post
-            $.add ThreadUpdater.root, post.nodes.root
+            $.add ThreadUpdater.root, root
         else
-          $.add ThreadUpdater.root, post.nodes.root
+          $.add ThreadUpdater.root, root
 
       if scroll
         if Conf['Bottom Scroll']
           <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>.scrollTop = d.body.clientHeight
         else
-          Header.scrollToPost nodes[0]
+          Header.scrollToPost root if root
 
       $.queueTask ->
         # Enable 4chan features.

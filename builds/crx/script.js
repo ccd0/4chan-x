@@ -9056,7 +9056,7 @@
         value: Conf['Interval']
       }));
       $.on(window, 'online offline', ThreadUpdater.cb.online);
-      $.on(d, 'QRPostSuccessful', ThreadUpdater.cb.post);
+      $.on(d, 'QRPostSuccessful', ThreadUpdater.cb.checkpost);
       $.on(d, 'visibilitychange', ThreadUpdater.cb.visibility);
       ThreadUpdater.cb.online();
       return Rice.nodes(ThreadUpdater.dialog);
@@ -9090,8 +9090,8 @@
         }
       },
       checkpost: function() {
-        if (!(g.DEAD || ThreadUpdater.foundPost || ThreadUpdater.checkPostCount >= 10)) {
-          return setTimeout(ThreadUpdater.update, ++ThreadUpdater.checkPostCount * 500);
+        if (!(g.DEAD || ThreadUpdater.foundPost || ThreadUpdater.checkPostCount >= 5)) {
+          return setTimeout(ThreadUpdater.update, ++ThreadUpdater.checkPostCount * $.SECOND);
         }
         ThreadUpdater.checkPostCount = 0;
         delete ThreadUpdater.foundPost;
@@ -9169,7 +9169,7 @@
             ThreadUpdater.set('status', text, klass);
         }
         if (ThreadUpdater.postID) {
-          ThreadUpdater.cb.checkpost(this.status);
+          ThreadUpdater.cb.checkpost();
         }
         return delete ThreadUpdater.req;
       }
@@ -9270,7 +9270,7 @@
       return $.after(root, [$.tn(' '), icon]);
     },
     parse: function(postObjects) {
-      var ID, OP, count, deletedFiles, deletedPosts, files, index, key, node, num, post, postObject, posts, scroll, _i, _len, _ref;
+      var ID, OP, count, deletedFiles, deletedPosts, files, index, key, node, num, post, postObject, posts, root, scroll, _i, _len, _ref;
 
       OP = postObjects[0];
       Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler;
@@ -9311,10 +9311,8 @@
           post.kill(true);
           deletedFiles.push(post);
         }
-        if (ThreadUpdater.postID) {
-          if (ID === ThreadUpdater.postID) {
-            ThreadUpdater.foundPost = true;
-          }
+        if (ThreadUpdater.postID && ThreadUpdater.postID === ID) {
+          ThreadUpdater.foundPost = true;
         }
       }
       if (!count) {
@@ -9339,19 +9337,22 @@
           if (!posts.hasOwnProperty(key)) {
             continue;
           }
+          root = post.nodes.root;
           if (post.cb) {
             if (!post.cb.call(post)) {
-              $.add(ThreadUpdater.root, post.nodes.root);
+              $.add(ThreadUpdater.root, root);
             }
           } else {
-            $.add(ThreadUpdater.root, post.nodes.root);
+            $.add(ThreadUpdater.root, root);
           }
         }
         if (scroll) {
           if (Conf['Bottom Scroll']) {
             d.body.scrollTop = d.body.clientHeight;
           } else {
-            Header.scrollToPost(nodes[0]);
+            if (root) {
+              Header.scrollToPost(root);
+            }
           }
         }
         $.queueTask(function() {
