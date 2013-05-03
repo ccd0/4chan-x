@@ -802,7 +802,8 @@ hide: "
   display: inline-block;
 }
 "}
-.expanded-image .reply.post {
+.expanded-image .reply.post,
+.hasInline .reply.post {
   display: inline-block;
   overflow: visible;
   clear: both;

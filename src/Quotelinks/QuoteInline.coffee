@@ -8,10 +8,12 @@ QuoteInline =
     Post::callbacks.push
       name: 'Quote Inlining'
       cb:   @node
+
   node: ->
     for link in @nodes.quotelinks.concat [@nodes.backlinks...]
       $.on link, 'click', QuoteInline.toggle
     return
+
   toggle: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
     e.preventDefault()
@@ -29,12 +31,18 @@ QuoteInline =
       quotelink.parentNode.parentNode
     else
       $.x 'ancestor-or-self::*[parent::blockquote][1]', quotelink
+
   add: (quotelink, boardID, threadID, postID, context) ->
     isBacklink = $.hasClass quotelink, 'backlink'
     inline = $.el 'div',
       id: "i#{postID}"
       className: 'inline'
-    $.after QuoteInline.findRoot(quotelink, isBacklink), inline
+    root = QuoteInline.findRoot(quotelink, isBacklink)
+    $.after root, inline
+
+    qroot = $.x 'ancestor::*[contains(@class,"postContainer")][1]', root
+
+    $.addClass qroot, 'hasInline'
     Get.postClone boardID, threadID, postID, inline, context
 
     return unless (post = g.posts["#{boardID}.#{postID}"]) and
@@ -56,7 +64,11 @@ QuoteInline =
     # Select the corresponding inlined quote, and remove it.
     root = QuoteInline.findRoot quotelink, isBacklink
     root = $.x "following-sibling::div[@id='i#{postID}'][1]", root
+    qroot = $.x 'ancestor::*[contains(@class,"postContainer")][1]', root
     $.rm root
+
+    unless $ '.inline', qroot
+      $.rmClass qroot, 'hasInline'
 
     # Stop if it only contains text.
     return unless el = root.firstElementChild
