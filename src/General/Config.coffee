@@ -9,10 +9,6 @@ Config =
         false
         'Link to external catalog instead of the internal one.'
       ]
-      'QR Shortcut': [
-        false,
-        'Adds a small [QR] link in the header.'
-      ]
       'Announcement Hiding': [
         true
         'Add button to hide 4chan announcements.'
@@ -272,10 +268,6 @@ Config =
       'Remember QR Size': [
         false
         'Remember the size of the quick reply\'s comment field.'
-      ]
-      'Hide Original Post Form': [
-        true
-        'Hide the normal post form.'
       ]
       'Cooldown': [
         true
@@ -666,10 +658,6 @@ Config =
       'Compact Post Form Inputs': [
         true
         'Use compact inputs on the post form.'
-      ]
-      'Hide Show Post Form': [
-        false
-        'Hides the "Show Post Form" button when Persistent QR is disabled.'
       ]
       'Show Post Form Header': [
         false

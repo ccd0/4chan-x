@@ -9,6 +9,7 @@ QR =
       textContent: 'QR'
       title: 'Quick Reply'
       href: 'javascript:;'
+
     $.on sc, 'click', ->
       if !QR.nodes or QR.nodes.el.hidden
         $.event 'CloseMenu'
@@ -19,9 +20,6 @@ QR =
       $.toggleClass @, 'disabled'
 
     Header.addShortcut sc
-
-    if Conf['Hide Original Post Form']
-      $.asap (-> doc), -> $.addClass doc, 'hide-original-post-form'
 
     $.ready @initReady
     $.on d, '4chanXInitFinished', @persist if Conf['Persistent QR']
@@ -50,7 +48,6 @@ QR =
         QR.abort()
       else
         QR.status()
-
 
   node: ->
     $.on $('a[title="Quote this post"]', @nodes.info), 'click', QR.quote

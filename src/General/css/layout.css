@@ -1095,7 +1095,7 @@ input:checked + .rice {
 "fixed": "
 #qr {
   top: auto !important;
-  bottom: 1.7em !important;
+  bottom: #{Style.pfOffset}em !important;
   #{Style.sidebarLocation[0]}: 0 !important;
   #{Style.sidebarLocation[1]}: auto !important;
 }"
@@ -1107,7 +1107,7 @@ input:checked + .rice {
 }
 #qr {
   top: auto !important;
-  bottom: 1.7em !important;
+  bottom: #{Style.pfOffset}em !important;
   #{Style.sidebarLocation[0]}: 0 !important;
   #{Style.sidebarLocation[1]}: auto !important;
   #{agent}transform: translateX(#{xOffset}93%);
@@ -1121,7 +1121,7 @@ input:checked + .rice {
 "tabbed slideout": "
 #qr {
   top: auto !important;
-  bottom: 1.7em !important;
+  bottom: #{Style.pfOffset}em !important;
   #{Style.sidebarLocation[0]}: 0 !important;
   #{Style.sidebarLocation[1]}: auto !important;
   #{agent}transform: translateX(#{xOffset}100%);
@@ -1159,7 +1159,7 @@ input:checked + .rice {
 #qr {
   overflow: visible;
   top: auto !important;
-  bottom: 1.7em !important;
+  bottom: #{Style.pfOffset}em !important;
   #{Style.sidebarLocation[0]}: 2px !important;
   #{Style.sidebarLocation[1]}: auto !important;
   opacity: 0.2;

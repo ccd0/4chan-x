@@ -13,6 +13,7 @@ Style =
         prev = $ ".pagelist > .prev"
         prevA = $.el 'a',
           textContent: '<'
+
         next = $ ".pagelist > .next"
         nextA = $.el 'a',
           textContent: '>'
@@ -21,6 +22,7 @@ Style =
           prevA.href = 'javascript:;'
           $.on prevA, 'click', ->
             prevAction.firstElementChild.click()
+
         if (nextAction = next.firstElementChild).nodeName is 'FORM'
           nextA.href = 'javascript:;'
           $.on nextA, 'click', ->
@@ -33,7 +35,7 @@ Style =
     return unless $.id 'navtopright'
 
     # Give ExLinks and 4sight a little time to append their dialog links
-    setTimeout (->
+    setTimeout ->
       Style.padding.nav = Header.bar
       Style.padding.pages = $(".pagelist", d.body)
       Style.padding()
@@ -42,7 +44,7 @@ Style =
       if exLink = $ "#navtopright .exlinksOptionsLink", d.body
         $.on exLink, "click", ->
           setTimeout Rice.nodes, 100
-      ), 500
+    , 500
 
   agent:  "<% if (type === 'crx') { %>-webkit-<% } else if (type === 'userscript') { %>-moz-<% } else { %>-o-<% } %>"
 
@@ -114,12 +116,11 @@ Style =
     nodes = d.head.children
     i = nodes.length
     while i--
-      break unless Style.headCount
+      return unless Style.headCount
       node = nodes[i]
       if (node.nodeName is 'STYLE' and !node.id) or ("#{node.rel}".contains('stylesheet') and node.href[..3] isnt 'data')
         Style.headCount--
         $.rm node
-        continue
     return
 
   filter: (text, background) ->
@@ -148,6 +149,11 @@ Style =
     _conf   = Conf
     agent   = Style.agent
     xOffset = if _conf["Sidebar Location"] is "left" then '-' else ''
+    
+    Style.pfOffset = if _conf['4chan SS Navigation'] and ((_conf['Bottom Header'] and _conf['Fixed Header']) or (g.VIEW is 'index' and _conf['Pagination'] is 'sticky bottom'))
+      1.5
+    else
+      0
 
     # Position of submenus in relation to the post menu.
     position = {
@@ -332,7 +338,7 @@ Style =
       Style.padding.pages.property = _conf["Pagination"].split(" ")
       Style.padding.pages.property = Style.padding.pages.property[Style.padding.pages.property.length - 1]
     css = "body::before {\n"
-    if Style.padding.pages and ["sticky top", "top", "sticky bottom"].contains _conf["Pagination"]
+    if _conf['4chan SS Navigation'] and Style.padding.pages and ["sticky top", "top", "sticky bottom"].contains _conf["Pagination"]
       css += "  #{Style.padding.pages.property}: #{Style.padding.pages.offsetHeight}px !important;\n"
 
     if _conf['Fixed Header']
