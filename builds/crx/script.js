@@ -1,5 +1,5 @@
 /*
-* 4chan X - Version 1.1.9 - 2013-05-02
+* 4chan X - Version 1.1.9 - 2013-05-03
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -507,7 +507,7 @@
 
   $.X = function(path, root) {
     root || (root = d.body);
-    return d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+    return d.evaluate(path, root, null, 6, null);
   };
 
   $.addClass = function(el, className) {
