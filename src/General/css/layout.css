@@ -5,7 +5,10 @@
 #delform > hr:last-of-type,
 #navbotright,
 #postForm,
+#search-label,
+#search-label-bottom,
 #styleSwitcher,
+#togglePostForm,
 .boardBanner > div,
 .mobile,
 .postingMode,
@@ -35,6 +38,7 @@ body > hr {
 }
 /* Hidden Content */
 .forwarded,
+.hidden,
 .hidden_thread ~ div,
 .hidden_thread ~ a,
 .replyContainer .stub ~ div,
@@ -120,6 +124,9 @@ hr {
 }
 .disabled {
   opacity: 0.5;
+}
+.pointer {
+  cursor: pointer;
 }
 /* Symbols */
 .drop-marker {
@@ -1037,6 +1044,9 @@ input:checked + .rice {
   overflow: hidden;
   text-align: left;
 }
+#settings .selectrice {
+  display: inline-block;
+}
 .selectrice::after {
   content: "";
   border-right: .25em solid transparent;
@@ -1849,6 +1859,24 @@ opacity: 0;
 .small .thumb {
   max-width: 150px;
   max-height: 150px;
+}
+.panel {
+  position: fixed;
+  top: 50% !important;
+  left: 50%;
+  #{agent}transform: translate(-50%, -50%);
+}
+.icon::after {
+  display: inline-block;
+  float: right;
+  width: 1em;
+  cursor: pointer;
+}
+.helpIcon::after {
+  content: '?';
+}
+.closeIcon::after {
+  content: '×';
 }
 /* Front Page */
 #logo {

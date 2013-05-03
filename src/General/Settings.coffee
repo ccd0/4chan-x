@@ -7,7 +7,6 @@ Settings =
       href:        'javascript:;'
     $.on link, 'click', Settings.open
 
-
     $.asap (-> d.body), ->
       return unless Main.isThisPageLegit()
       # Wait for #boardNavMobile instead of #boardNavDesktop,

@@ -45,6 +45,7 @@ html {
   background-attachment: #{theme["Background Attachment"] or ''};
   background-position: #{theme["Background Position"] or ''};
 }
+.panel,
 .section-container,
 #exlinks-options-content,
 #mascotcontent,
