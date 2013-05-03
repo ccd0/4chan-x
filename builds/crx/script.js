@@ -11578,12 +11578,16 @@
         } else if (origin === 'appchan') {
           Themes[name] = imported;
         }
-        userThemes = $.get("userThemes", {});
-        userThemes[name] = Themes[name];
-        $.set('userThemes', userThemes);
-        alert("Theme \"" + name + "\" imported!");
-        $.rm($("#themes", d.body));
-        return Settings.open('themes');
+        return userThemes = $.get("userThemes", {}, function(_arg) {
+          var userThemes;
+
+          userThemes = _arg.userThemes;
+          userThemes[name] = Themes[name];
+          $.set('userThemes', userThemes);
+          alert("Theme \"" + name + "\" imported!");
+          $.rm($("#themes", d.body));
+          return Settings.open('themes');
+        });
       };
       return reader.readAsText(file);
     },
@@ -11600,10 +11604,10 @@
       }
       Themes[name] = JSON.parse(JSON.stringify(theme));
       delete Themes[name]["Theme"];
-      return $.get("userThemes", {}, function(item) {
+      return $.get("userThemes", {}, function(_arg) {
         var userThemes;
 
-        userThemes = item["userThemes"];
+        userThemes = _arg.userThemes;
         userThemes[name] = Themes[name];
         $.set('userThemes', userThemes);
         $.set("theme", Conf['theme'] = name);

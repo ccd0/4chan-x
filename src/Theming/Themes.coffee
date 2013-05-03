@@ -361,12 +361,12 @@ ThemeTools =
       else if origin == 'appchan'
         Themes[name] = imported
 
-      userThemes = $.get "userThemes", {}
-      userThemes[name] = Themes[name]
-      $.set 'userThemes', userThemes
-      alert "Theme \"#{name}\" imported!"
-      $.rm $("#themes", d.body)
-      Settings.open 'themes'
+      userThemes = $.get "userThemes", {}, ({userThemes})->
+        userThemes[name] = Themes[name]
+        $.set 'userThemes', userThemes
+        alert "Theme \"#{name}\" imported!"
+        $.rm $("#themes", d.body)
+        Settings.open 'themes'
 
     reader.readAsText(file)
 
@@ -381,8 +381,7 @@ ThemeTools =
 
     Themes[name] = JSON.parse(JSON.stringify(theme))
     delete Themes[name]["Theme"]
-    $.get "userThemes", {}, (item) ->
-      userThemes = item["userThemes"]
+    $.get "userThemes", {}, ({userThemes}) ->
       userThemes[name] = Themes[name]
       $.set 'userThemes', userThemes
       $.set "theme", Conf['theme'] = name
