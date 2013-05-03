@@ -884,7 +884,7 @@ else ""
 }
 /* Quote Threading */
 .threadContainer {
-  margin-left: 2em;
+  padding-left: 2em;
   border-left: 1px solid;
 }
 .threadOP {

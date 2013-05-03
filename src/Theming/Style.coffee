@@ -150,10 +150,12 @@ Style =
     agent   = Style.agent
     xOffset = if _conf["Sidebar Location"] is "left" then '-' else ''
     
-    Style.pfOffset = if _conf['4chan SS Navigation'] and ((_conf['Bottom Header'] and _conf['Fixed Header']) or (g.VIEW is 'index' and _conf['Pagination'] is 'sticky bottom'))
-      1.5
+    Style.pfOffset = if _conf['4chan SS Navigation'] and
+      ((_conf['Bottom Header'] and _conf['Fixed Header']) or
+      (g.VIEW is 'index' and _conf['Pagination'] is 'sticky bottom'))
+        1.5
     else
-      0
+        0
 
     # Position of submenus in relation to the post menu.
     position = {
