@@ -44,8 +44,10 @@ Main =
       g.THREADID = +pathname[3]
 
     # Check if the current board we're on is SFW or not, so we can handle options that need to know that.
-    if ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'pol', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains g.BOARD
+    if ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'pol', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains g.BOARD.ID
       g.TYPE = 'nsfw'
+    else
+      g.TYPE = 'sfw'
 
     $.extend Themes,  Conf["userThemes"]
     $.extend Mascots, Conf["userMascots"]
