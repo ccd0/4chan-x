@@ -1457,9 +1457,9 @@ a:only-of-type > .remove {
 #{if _conf["Block Ads"] then "
 /* AdBlock Minus */
 .bottomad + hr,
-.topad img,
-.middlead img,
-.bottomad img {
+.topad,
+.middlead,
+.bottomad {
   display: none;
 }
 " else ""}
