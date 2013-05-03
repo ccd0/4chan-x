@@ -312,15 +312,12 @@ Style =
       )
 
       iconOffset = (
-        if g.VIEW is 'thread' and _conf['Prefetch']
-          250 + Style.sidebarOffset.W
-        else
-          20 + (
-            if g.VIEW is 'thread' and _conf['Updater Position'] is 'top'
-              100
-            else
-              0
-          )
+        20 + (
+          if g.VIEW is 'thread' and _conf['Updater Position'] is 'top'
+            100
+          else
+            0
+        )
       ) - (
         if _conf['4chan SS Navigation']
           0

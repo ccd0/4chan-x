@@ -526,11 +526,6 @@ else "
   z-index: 22;
 }" else ""
 }
-/* Prefetcher */
-#prefetch {
-  z-index: 9;
-  position: fixed;
-}
 /* Delete Buttons */
 #{if _conf['Hide Delete UI'] then "
 .deleteform,
