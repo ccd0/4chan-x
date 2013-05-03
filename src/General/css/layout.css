@@ -733,7 +733,7 @@ hide: "
 }
 .post,
 .summary,
-.thread > .threadContainer {
+.threadContainer {
   margin-bottom: #{Style.replyMargin}px;
 }
 .replyContainer:last-of-type .post {
