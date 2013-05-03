@@ -1,3 +1,4 @@
+### 1.1.10 - 2013-05-03
 seaweedchan:
 - Fix update checking
 
