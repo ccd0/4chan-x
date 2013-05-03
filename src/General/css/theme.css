@@ -65,15 +65,11 @@ html {
 #boardTitle,
 #{unless _conf["Post Form Decorations"] then '#spoilerLabel' else ''} {
   text-shadow:
-     1px  1px 0 #{backgroundC},
-    -1px -1px 0 #{backgroundC},
-     1px -1px 0 #{backgroundC},
-    -1px  1px 0 #{backgroundC},
-     0    1px 0 #{backgroundC},
-     0   -1px 0 #{backgroundC},
-     1px  0   0 #{backgroundC},
-    -1px  0   0 #{backgroundC}
-    #{if _conf["Sidebar Glow"] then ", 0 2px 5px #{theme['Text']};" else ";"}
+     1px  1px #{backgroundC},
+    -1px -1px #{backgroundC},
+     1px -1px #{backgroundC},
+    -1px  1px #{backgroundC}
+    #{if _conf["Sidebar Glow"] then ", 0 2px 4px rgba(0,0,0,.6), 0 0 10px rgba(0,0,0,.6);" else ";"}
 }
 /* Fixes text spoilers */
 #{if _conf['Remove Spoilers'] and _conf['Indicate Spoilers'] then "

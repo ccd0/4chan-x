@@ -52,12 +52,6 @@ div.navLinks > a:first-of-type::after {
 #navlinks a:last-of-type {
   top: #{position[i++]}px !important;
 }
-#prefetch {
-  width: #{248 + Style.sidebarOffset.W}px;
-  #{align}: 2px;
-  top: 0;
-  text-align: #{Style.sidebarLocation[1]};
-}
 #navlinks a,
 #navtopright .exlinksOptionsLink::after,
 #appchanOptions,
