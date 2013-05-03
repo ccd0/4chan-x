@@ -56,6 +56,8 @@ MascotTools =
   bottom: #{
     if mascot.position is 'top'
       'auto'
+    else if Conf['Mascot Position'] is 'middle'
+      '50%'
     else if (mascot.position is 'bottom' and Conf['Mascot Position'] is 'default') or !$.id 'postForm'
       '0'
     else
@@ -96,6 +98,7 @@ MascotTools =
   opacity: #{Conf['Mascot Opacity']};
   pointer-events: none;
   #{if filters.length > 0 then "filter: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filters\">" + filters.join("") + "</filter></svg>#filters');" else ""}
+  #{if Conf['Mascot Position'] is 'middle' then "#{Style.agent}transform: translateY(50%);" else ''}
 }
 """
 

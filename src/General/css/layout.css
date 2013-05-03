@@ -523,7 +523,7 @@ else "
 #{if _conf['Images Overlap Post Form'] then "
 .full-image {
   position: relative;
-  z-index: 22;
+  z-index: 21;
 }" else ""
 }
 /* Delete Buttons */

@@ -604,7 +604,7 @@ Config =
       'Mascot Position': [
         'default'
         'Change where your mascot is placed in relation to the post form.'
-        ['above post form', 'default', 'bottom']
+        ['above post form', 'default', 'bottom', 'middle']
       ]
       'Mascots Overlap Posts': [
         true
