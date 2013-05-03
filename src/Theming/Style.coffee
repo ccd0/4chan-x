@@ -1,24 +1,48 @@
 Style =
   init: ->
-
-    $.asap (-> d.body), MascotTools.init
-
-    $.ready ->
-      return unless $.id 'navtopright'
-
-      # Give ExLinks and 4sight a little time to append their dialog links
-      setTimeout (->
-        Style.padding.nav = Header.bar
-        Style.padding.pages = $(".pagelist", d.body)
-        Style.padding()
-        $.on window, "resize", Style.padding
-        Style.iconPositions()
-        if exLink = $ "#navtopright .exlinksOptionsLink", d.body
-          $.on exLink, "click", ->
-            setTimeout Rice.nodes, 100
-        ), 500
-
+    $.asap (-> d.body), @asapInit
+    $.ready @readyInit
     @setup()
+
+  asapInit: ->
+    MascotTools.init()
+
+    if g.VIEW is 'index'
+      $.asap (-> $ '.mPagelist'), ->
+
+        prev = $ ".pagelist > .prev"
+        prevA = $.el 'a',
+          textContent: '<'
+        next = $ ".pagelist > .next"
+        nextA = $.el 'a',
+          textContent: '>'
+
+        if (prevAction = prev.firstElementChild).nodeName is 'FORM'
+          prevA.href = 'javascript:;'
+          $.on prevA, 'click', ->
+            prevAction.firstElementChild.click()
+        if (nextAction = next.firstElementChild).nodeName is 'FORM'
+          nextA.href = 'javascript:;'
+          $.on nextA, 'click', ->
+            nextAction.firstElementChild.click()
+
+        $.add prev, prevA
+        $.add next, nextA
+
+  readyInit: ->
+    return unless $.id 'navtopright'
+
+    # Give ExLinks and 4sight a little time to append their dialog links
+    setTimeout (->
+      Style.padding.nav = Header.bar
+      Style.padding.pages = $(".pagelist", d.body)
+      Style.padding()
+      $.on window, "resize", Style.padding
+      Style.iconPositions()
+      if exLink = $ "#navtopright .exlinksOptionsLink", d.body
+        $.on exLink, "click", ->
+          setTimeout Rice.nodes, 100
+      ), 500
 
   agent:  "<% if (type === 'crx') { %>-webkit-<% } else if (type === 'userscript') { %>-moz-<% } else { %>-o-<% } %>"
 
@@ -236,7 +260,7 @@ Style =
           true
           _conf['Slideout Navigation'] isnt 'hide'
           _conf['Announcements'] is 'slideout' and $ '#globalMessage', d.body
-          notCatalog and _conf['Slideout Watcher'] and _conf['Thread Watcher']
+          _conf['Thread Watcher'] and _conf['Slideout Watcher']
           $ '#navtopright .exlinksOptionsLink', d.body
           notCatalog and $ 'body > a[style="cursor: pointer; float: right;"]', d.body
           notEither and _conf['Image Expansion']
@@ -268,7 +292,7 @@ Style =
           true
           _conf['Slideout Navigation'] isnt 'hide'
           _conf['Announcements'] is 'slideout' and $ '#globalMessage', d.body
-          notCatalog and _conf['Slideout Watcher'] and _conf['Thread Watcher']
+          _conf['Thread Watcher'] and _conf['Slideout Watcher']
           notCatalog and $ 'body > a[style="cursor: pointer; float: right;"]', d.body
           $ '#navtopright .exlinksOptionsLink', d.body
           notEither
