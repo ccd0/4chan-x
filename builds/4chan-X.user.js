@@ -10068,6 +10068,17 @@
       obj.callback.isAddon = true;
       return Klass.prototype.callbacks.push(obj.callback);
     },
+    message: function(e) {
+      var el, version;
+
+      version = e.data.version;
+      if (version && version !== g.VERSION) {
+        el = $.el('span', {
+          innerHTML: "Update: 4chan X v" + version + " is out, get it <a href=http://seaweedchan.github.io/4chan-x/ target=_blank>here</a>."
+        });
+        return new Notification('info', el, 120);
+      }
+    },
     checkUpdate: function() {
       var freq, items, now;
 
@@ -10084,27 +10095,12 @@
         if (items.lastupdate > now - freq || items.lastchecked > now - $.DAY) {
           return;
         }
-        return $.ajax('https://github.com/seaweedchan/4chan-x/raw/master/builds/version', {
-          onload: function() {
-            var el, version;
-
-            if (this.status !== 200) {
-              return;
-            }
-            version = this.response;
-            if (!/^\d\.\d+\.\d+$/.test(version)) {
-              return;
-            }
-            if (g.VERSION === version) {
-              $.set('lastupdate', now);
-              return;
-            }
-            $.set('lastchecked', now);
-            el = $.el('span', {
-              innerHTML: "Update: 4chan X v" + version + " is out, get it <a href=http://seaweedchan.github.io/4chan-x/ target=_blank>here</a>."
-            });
-            return new Notification('info', el, 120);
-          }
+        return $.ready(function() {
+          $.on(window, 'message', Main.message);
+          $.set('lastUpdate', now);
+          return $.add(d.head, $.el('script', {
+            src: 'https://github.com/seaweedchan/4chan-x/raw/master/latest.js'
+          }));
         });
       });
     },
