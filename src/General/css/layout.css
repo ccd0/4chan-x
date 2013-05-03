@@ -727,10 +727,9 @@ hide: "
 .expanded-image > .post > .file > .fileThumb > .full-image {
   display: block;
 }
-.summary {
-  margin-bottom: #{Style.replyMargin}px;
-}
-.post {
+.post,
+.summary,
+.thread > .threadContainer {
   margin-bottom: #{Style.replyMargin}px;
 }
 .replyContainer:last-of-type .post {
