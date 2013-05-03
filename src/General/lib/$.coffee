@@ -149,7 +149,7 @@ $.hasClass = (el, className) ->
   el.classList.contains className
 
 $.rm = do ->
-  if 'remove' of Element.prototype
+  if 'remove' of Element::
     (el) -> el.remove()
   else
     (el) -> el.parentNode?.removeChild el
