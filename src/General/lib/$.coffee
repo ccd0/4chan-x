@@ -16,14 +16,14 @@ Array::contains = (object) ->
 Array::indexOf = (object) ->
   i = @length
   while i--
-    break if @[i] is object
+    return i if @[i] is object
   return i
 
 Array::pushArrays = ->
   args = arguments
   for arg in args
     @push.apply @, arg
-  return
+  return @
 
 Array::remove = (object) ->
   if (index = @indexOf object) > -1
@@ -133,7 +133,8 @@ $.x = (path, root) ->
 
 $.X = (path, root) ->
   root or= d.body
-  d.evaluate path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null
+  # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE === 6
+  d.evaluate path, root, null, 6, null
 
 $.addClass = (el, className) ->
   el.classList.add className
@@ -148,7 +149,7 @@ $.hasClass = (el, className) ->
   el.classList.contains className
 
 $.rm = do ->
-  if 'remove' of Element.prototype
+  if 'remove' of Element::
     (el) -> el.remove()
   else
     (el) -> el.parentNode?.removeChild el
@@ -373,7 +374,7 @@ $.set = do ->
       items = {}
       localItems = {}
     catch err
-      c.error err
+      c.error err.stack
 
   (key, val) ->
     if typeof key is 'string'

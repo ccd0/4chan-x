@@ -334,10 +334,10 @@ Settings =
     section.innerHTML = """
     <%= grunt.file.read('src/General/html/Settings/Sauce.html').replace(/>\s+</g, '><').trim() %>
     """
-    sauce = $ 'textarea', section
+    ta = $ 'textarea', section
     $.get 'sauces', Conf['sauces'], (item) ->
-      sauce.value = item['sauces']
-    $.on sauce, 'change', $.cb.value
+      ta.value = item['sauces']
+    $.on ta, 'change', $.cb.value
 
   advanced: (section) ->
     section.innerHTML = """<%= grunt.file.read('src/General/html/Settings/Advanced.html').replace(/>\s+</g, '><').trim() %>"""
@@ -352,6 +352,12 @@ Settings =
       else
         'input'
       $.on input, event, $.cb.value
+
+    # Quick Reply Personas
+    ta = $ '.personafield', section
+    $.get 'QR.personas', Conf['QR.personas'], (item) ->
+      ta.value = item['QR.personas']
+    $.on ta, 'change', $.cb.value
 
     # Archiver
     archiver = $ 'select[name=archiver]', section

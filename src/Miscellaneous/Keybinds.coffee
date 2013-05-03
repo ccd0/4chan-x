@@ -41,7 +41,10 @@ Keybinds =
           for notification in notifications
             $('.close', notification).click()
         else if QR.nodes
-          QR.close()
+          if Conf['Persistent QR']
+            QR.hide()
+          else
+            QR.close()
       when Conf['Spoiler tags']
         return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'spoiler', target

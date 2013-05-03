@@ -2,29 +2,32 @@ Linkify =
   init: ->
     return if g.VIEW is 'catalog' or not Conf['Linkify']
 
+    @regString = if Conf['Allow False Positives'] 
+      ///(
+        \b(
+          [a-z]+://
+          |
+          [a-z]{3,}\.[-a-z0-9]+\.[a-z]+
+          |
+          [-a-z0-9]+\.[a-z]
+          |
+          [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+
+          |
+          [a-z]{3,}:[a-z0-9?]
+          |
+          [a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9]
+        )
+        [^\s'"]+
+      )///gi
+    else
+      /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi
+
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
     Post::callbacks.push
       name: 'Linkify'
       cb:   @node
-
-  regString: ///(
-    \b(
-      [a-z]+://
-      |
-      [a-z]{3,}\.[-a-z0-9]+\.[a-z]+
-      |
-      [-a-z0-9]+\.[a-z]
-      |
-      [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+
-      |
-      [a-z]{3,}:[a-z0-9?]
-      |
-      [a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9]
-    )
-    [^\s'"]+
-  )///gi
 
   cypher: $.el 'div'
 
@@ -44,6 +47,7 @@ Linkify =
       data  = node.data
 
       # Test for valid links
+
       continue unless node.parentNode and Linkify.regString.test data
 
       Linkify.regString.lastIndex = 0
@@ -125,21 +129,17 @@ Linkify =
         textContent: @getAttribute("data-title") or url
 
       @textContent = '(embed)'
+      $.addClass el, "#{@getAttribute 'data-service'}"
 
-    # Embed
     else
       # We create an element to embed
       el = (type = Linkify.types[@getAttribute("data-service")]).el.call @
 
       # Set style values.
-      if style = type.style
-        el.style.cssText = style
+      el.style.cssText = if style = type.style
+        style
       else
-        items =
-          'embedWidth':  Config['embedWidth']
-          'embedHeight': Config['embedHeight']
-        $.get items, (items) ->
-          el.style.cssText = "border: 0; width: #{items['embedWidth']}px; height: #{items['embedHeight']}px"
+        "border: 0; width: 640px; height: 390px"
 
       @textContent = '(unembed)'
 
@@ -148,10 +148,10 @@ Linkify =
 
   types:
     YouTube:
-      regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
+      regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/
       el: ->
         $.el 'iframe',
-          src: "//www.youtube.com/embed/#{@name}"
+          src: "//www.youtube.com/embed/#{@name}#{if @option then '#' + @option else ''}"
       title:
         api:  -> "https://gdata.youtube.com/feeds/api/videos/#{@name}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
         text: -> JSON.parse(@responseText).entry.title.$t
@@ -186,33 +186,63 @@ Linkify =
           preload:     'auto'
           src:         @name
 
+    image:
+      regExp:  /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/
+      style: 'border: 0; width: auto; height: auto;'
+      el: ->
+        $.el 'div',
+          innerHTML: "<a target=_blank href='#{@getAttribute 'data-originalURL'}'><img src='#{@getAttribute 'data-originalURL'}'></a>"
+
     SoundCloud:
-      regExp:  /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
+      regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
+      style: 'height: auto; width: 500px; display: inline-block;'
       el: ->
         div = $.el 'div',
           className: "soundcloud"
-          name:      "soundcloud"
+          name: "soundcloud"
         $.ajax(
-          "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@getAttribute 'data-originalURL'}&color=#{Style.colorToHex Themes[Conf['theme']]['Background Color']}"
+          "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{@name}"
           div: div
           onloadend: ->
             @div.innerHTML = JSON.parse(@responseText).html
           false)
+        div
+      title:
+        api: -> "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{@name}"
+        text: -> JSON.parse(@responseText).title
 
     pastebin:
-      regExp:  /.*(?:pastebin.com\/)([^#\&\?]*).*/
+      regExp:  /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/
       el: ->
         div = $.el 'iframe',
           src: "http://pastebin.com/embed_iframe.php?i=#{@name}"
 
+    gist:
+      regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/
+      el: ->
+        div = $.el 'iframe',
+          # Github doesn't allow embedding straight from the site, so we use an external site to bypass that.
+          src: "http://www.purplegene.com/script?url=https://gist.github.com/#{@name}.js"
+      title:
+        api: -> "https://api.github.com/gists/#{@name}"
+        text: ->
+          response = JSON.parse(@responseText).files
+          return file for file of response when response.hasOwnProperty file
+
+    InstallGentoo:
+      regExp:  /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/
+      el: ->
+        $.el 'iframe',
+          src: "http://paste.installgentoo.com/view/embed/#{@name}"
+
   embedder: (a) ->
-    return [a] unless Conf['Embedding']
+    return [a] unless Conf['Link Title']
     titles = {}
 
     callbacks = ->
       a.textContent = switch @status
         when 200, 304
-          title = "[#{embed.getAttribute 'data-service'}] #{service.text.call @}"
+          title = "#{service.text.call @}"
           embed.setAttribute 'data-title', title
           titles[embed.name] = [title, Date.now()]
           $.set 'CachedTitles', titles
@@ -229,19 +259,23 @@ Linkify =
 
       embed = $.el 'a',
         name:         (a.name = match[1])
+        option:       match[2]
         className:    'embedder'
         href:         'javascript:;'
         textContent:  '(embed)'
 
       embed.setAttribute 'data-service', key
       embed.setAttribute 'data-originalURL', a.href
+      $.addClass a, "#{embed.getAttribute 'data-service'}"
 
       $.on embed, 'click', Linkify.toggle
+
+      unless Conf['Embedding']
+        embed.hidden = true
 
       if Conf['Link Title'] and (service = type.title)
         $.get 'CachedTitles', {}, (item) ->
           titles = item['CachedTitles']
-
           if title = titles[match[1]]
             a.textContent = title[0]
             embed.setAttribute 'data-title', title[0]

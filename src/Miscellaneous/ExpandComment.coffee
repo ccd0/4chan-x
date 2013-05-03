@@ -12,7 +12,7 @@ ExpandComment =
       cb:   @node
 
   node: ->
-    if a = $ '.abbr > a', @nodes.comment
+    if a = $ '.abbr > a:not([onclick])', @nodes.comment
       $.on a, 'click', ExpandComment.cb
   
   callbacks: []

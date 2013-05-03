@@ -1,11 +1,75 @@
+### 1.1.9 - 2013-05-02
+seaweedchan
+- Fix boards with previously deleted archives not switching to new archives 
+
+ihavenoface:
+- 4chan Pass link by the style selector
+
+zixaphir:
+- Make Allow False Positives option more efficient
+
+### 1.1.8 - 2013-05-01
+seaweedchan:
+- Fix QR not clearing on submit with Posting Success Notifications disabled
+- New archives for /h/, /v/, and /vg/
+
+### 1.1.7 - 2013-05-01
+seaweedchan:
+- External image embedding
+- Account for time options in youtube links for embedding
+- Once again remove /v/ and /vg/ archiving... ;_;
+- Add paste.installgentoo.com embedding
+- Added `Posting Success Notifications` option to make "Post Successful!" and "_____ uploaded" notifications optional
+- Added `Allow False Positives` option under Linkification, giving the user more control over what's linkified.
+- Fix URL for update checking
+
+### 1.1.6 - 2013-05-01
+seaweedchan:
+- Fix Gist links if no username is specificed
+
+MayhemYDG:
+ - Access it in the `Advanced` tab of the Settings window.
+
+zixaphir:
+- Add Gist link titles
+
+### 1.1.5 - 2013-04-30
+seaweedchan:
+- Fix various embedding issues
+- Fix Link Title depending on Embedding
+- Added favicons to links that can be embedded
+- Add gist embedding
+
+### 1.1.4 - 2013-04-29
+seaweedchan:
+- Change ESC functionality in QR to autohide if Persistent QR is enabled
+- Add /v/ and /vg/ archiving to archive.nihil-ad-rem.net, and make sure Archiver Selection settings actually switch to it
+- Add option to toggle between updater and stats fixed in header or floating
+
+MayhemYDG: 
+- Add nyafuu archiving for /w/
+- Add /d/ archive
+
 ### 1.1.3 - 2013-04-28
 seaweedchan:
 - Chrome doesn't get .null, so don't style it
 - Fix count when auto update is disabled and set updater text to "Update"
-- Remove /v/ and /vg/ redirection. See https://archive.foolz.us/foolz/thread/509388/ for news and how you can donate to bring /v/ and /vg/ archiving back.
+- Remove /v/ and /vg/ redirection from Foolz.
 - Toggle keybind for header auto-hiding
 
 MayhemYDG:
+=======
+ - Access it in the `QR` tab of the Settings window.
+- Updated archive redirection for /h/, /v/ and /vg/.
+
+### 3.2.3 - *2013-04-30*
+
+- Update archive redirection for /c/, /d/, /v/, /vg/, /w/ and /wg/.
+- Minor fixes.
+
+### 3.2.2 - *2013-04-27*
+
+>>>>>>> b74e0c92fdf2d755d996cb574dddb3c8d964e91a
 - Fix Unread Count taking into account hidden posts.
 
 ### 1.1.2 - 2013-04-26
@@ -22,7 +86,7 @@ zixaphir:
 - Fix preview with favicons and emoji
 - Fix NaN error on Thread Updater Interval
 - Draggable UI can no longer overlap the Header.
-  -- Setting the header to Autohide also increases its z-index to overlap other UI
+  - Setting the header to Autohide also increases its z-index to overlap other UI
 
 ### 1.1.1 - 2013-04-26
 zixaphir:
@@ -35,29 +99,30 @@ MayhemYDG:
 seaweedchan:
 - Allow thread watcher to load on catalog
 
-### 1.0.10:
+### 1.0.10 - 2013-04-23
 - Add message pertaining to rewrite
 
-### 1.0.9:
+### 1.0.9 - 2013-04-17
 ihavenoface:
 - Implement Announcement Hiding
 seaweedchan:
 - Change #options back to inheriting colors from replies
 - Fix script breaking when disabling image expansion
 
-### 1.0.8:
+### 1.0.8 - 2013-04-15
 seaweedchan:
 - Redo settings menu styling
 - Move Export/Import buttons and dialog
 - Update license and use banner.js for license
 
-### 1.0.7:
+### 1.0.7 - 2013-04-14
 qqueue:
 - Relative post dates
+
 MayhemYDG:
 - Exporting/importing settings
 
-### 1.0.6
+### 1.0.6 - 2013-04-13
 seaweedchan:
 - Update supported boards for archive redirection and custom navigation
 - Point to github.io instead of github.com for pages
@@ -65,40 +130,44 @@ seaweedchan:
 - Make InstallGentoo default for /g/
 - Fix embedding issues
 
-### 1.0.5:
+### 1.0.5 - 2013-04-09
 seaweedchan:
 - Added keybind to toggle Fappe Tyme
 - Fix code tag keybind
+
 Zixaphir:
 - Add 'yourPost' class to own replies
 
-### 1.0.4:
+### 1.0.4 - 2013-04-08
 seaweedchan:
 - Fix Fappe Tyme
 - Re- add label for image expanding
 - Move restore button to left side as per RiDeag
 
-### 1.0.3
+### 1.0.3 - 2013-03-23
 seaweedchan:
 - Add ad- blocking CSS into Custom CSS examples
+
 Zixaphir:
 - Fix ctrl+s bringing up save dialog
 - Fix issues with soundcloud embedding
 
-### 1.0.2:
+### 1.0.2 - 2013-03-14
 seaweedchan:
 - New Rice option: Emoji Position
 - New layout for Rice tab
 - No more Yotsuba / Yotsuba B in options
 
-### 1.0.1:
+### 1.0.1 - 2013-03-14
 - New option: Emoji
 - New Rice option: Sage Emoji
+
 seaweedchan:
 - Prettier error messages
 
-### 1.0.0
+### 1.0.0 - 2013-03-13
 - Initial release
+
 zixaphir:
 - Fix unread post count for filtered posts
 - Fix issues when switching from ihavenoface's fork

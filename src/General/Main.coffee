@@ -93,7 +93,7 @@ Main =
       'Rice':                     Rice
       'Banner':                   Banner
       'Announcements':            GlobalMessage
-      'Redirection':              Redirect
+      'Archive Redirection':      Redirect
       'Header':                   Header
       'Catalog Links':            CatalogLinks
       'Settings':                 Settings
@@ -190,7 +190,18 @@ Main =
         $.event '4chanXInitFinished'
         Main.checkUpdate()
 
+      if styleSelector = $.id 'styleSelector'
+        passLink = $.el 'a',
+          textContent: '4chan Pass'
+          href: 'javascript:;'
+        $.on passLink, 'click', ->
+          window.open '//sys.4chan.org/auth',
+            'This will steal your data.'
+            'left=0,top=0,width=500,height=255,toolbar=0,resizable=0'
+        $.before styleSelector.previousSibling, [$.tn '['; passLink, $.tn ']\u00A0\u00A0']
+
       return
+
 
     $.event '4chanXInitFinished'
     Main.checkUpdate()
@@ -280,7 +291,7 @@ Main =
     $.get items, (items) ->
       if items.lastupdate > now - freq or items.lastchecked > now - $.DAY
         return
-      $.ajax '<%= meta.page %><%= meta.buildsPath %>version', onload: ->
+      $.ajax '<%= meta.repo %>raw/<%= meta.mainBranch %>/<%= meta.buildsPath %>version', onload: ->
         return unless @status is 200
         version = @response
         return unless /^\d\.\d+\.\d+$/.test version

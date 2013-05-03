@@ -79,6 +79,10 @@ Config =
         true
         'Convert text into links where applicable.'
       ]
+      'Allow False Positives': [
+        false
+        'Linkify everything, allowing more false positives but reducing missed links'
+      ]
       'Embedding': [
         true
         'Embed supported services.'
@@ -89,7 +93,7 @@ Config =
       ]
       'Link Title': [
         true
-        'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud'
+        'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud, and Github gists'
       ]
 
     'Filtering':
@@ -217,6 +221,10 @@ Config =
         true
         'Display reply and image count.'
       ]
+      'Updater and Stats in Header': [
+        true,
+        'Places the thread updater and thread stats in the header instead of floating them.'
+      ]
       'Thread Watcher': [
         true
         'Bookmark threads.'
@@ -276,6 +284,10 @@ Config =
       'Cooldown Prediction': [
         true
         'Decrease the cooldown time by taking into account upload speed. Disable it if it\'s inaccurate for you.'
+      ]
+      'Posting Success Notifications': [
+        true
+        'Show notifications on successful post creation or file uploading.'
       ]
 
     'Quote Links':
@@ -765,6 +777,11 @@ http://iqdb.org/?url=%TURL
     'Custom Board Navigation': true
 
   boardnav: '[ toggle-all ] [current-title]'
+
+  QR:
+    'QR.personas': [
+      '#email:"sage";boards:jp;always'
+      ].join '\n'
 
   time: '%m/%d/%y(%a)%H:%M:%S'
 

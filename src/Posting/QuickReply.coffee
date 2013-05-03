@@ -149,6 +149,73 @@ QR =
       value
     status.disabled = disabled or false
 
+  persona:
+    pwd: ''
+    always: {}
+    init: ->
+      QR.persona.getPassword()
+      $.get 'QR.personas', Conf['QR.personas'], ({'QR.personas': personas}) ->
+        types =
+          name:  []
+          email: []
+          sub:   []
+        for item in personas.split '\n'
+          QR.persona.parseItem item.trim(), types
+        for type, arr of types
+          QR.persona.loadPersonas type, arr
+        return
+    parseItem: (item, types) ->
+      return if item[0] is '#'
+      return unless match = item.match /(name|email|subject|password):"(.*)"/i
+      [match, type, val]  = match
+
+      # Don't mix up item settings with val.
+      item = item.replace match, ''
+
+      boards = item.match(/boards:([^;]+)/i)?[1].toLowerCase() or 'global'
+      if boards isnt 'global' and not (g.BOARD.ID in boards.split ',')
+        return
+
+      if type is 'password'
+        QR.persona.pwd = val
+        return
+
+      type = 'sub' if type is 'subject'
+
+      if /always/i.test item
+        QR.persona.always[type] = val
+
+      unless val in types[type]
+        types[type].push val
+    loadPersonas: (type, arr) ->
+      list = $ "#list-#{type}", QR.nodes.el
+      for val in arr
+        $.add list, $.el 'option',
+          textContent: val
+      return
+    getPassword: ->
+      unless QR.persona.pwd
+        QR.persona.pwd = if m = d.cookie.match /4chan_pass=([^;]+)/
+          decodeURIComponent m[1]
+        else if input = $.id 'postPassword'
+          input.value
+        else
+          # If we're in a closed thread, #postPassword isn't available.
+          # And since #delPassword.value is only filled on window.onload
+          # we'd rather use #postPassword when we can.
+          $.id('delPassword').value
+      return QR.persona.pwd
+    get: (cb) ->
+      $.get 'QR.persona', {}, ({'QR.persona': persona}) ->
+        cb persona
+    set: (post) ->
+      $.get 'QR.persona', {}, ({'QR.persona': persona}) ->
+        persona =
+          name:  post.name
+          email: if /^sage$/.test post.email then persona.email else post.email
+          sub:   if Conf['Remember Subject'] then post.sub      else undefined
+        $.set 'QR.persona', persona
+
   cooldown:
     init: ->
       return unless Conf['Cooldown']
@@ -428,18 +495,27 @@ QR =
         prev.spoiler
       else
         false
-      $.get 'QR.persona', {}, (item) =>
-        persona = item['QR.persona']
-        @name = if prev
+      QR.persona.get (persona) =>
+        @name = if 'name' of QR.persona.always
+          QR.persona.always.name
+        else if prev
           prev.name
         else
           persona.name
-        @email = if prev and !/^sage$/.test prev.email
+
+        @email = if 'email' of QR.persona.always
+          QR.persona.always.email
+        else if prev and !/^sage$/.test prev.email
           prev.email
         else
           persona.email
-        if Conf['Remember Subject']
-          @sub = if prev then prev.sub else persona.sub
+
+        @sub = if 'sub' of QR.persona.always
+          QR.persona.always.sub
+        else if Conf['Remember Subject']
+          if prev then prev.sub else persona.sub
+        else
+          ''
         @load() if QR.selected is @ # load persona
       @select() if select
       @unlock()
@@ -878,8 +954,9 @@ QR =
         return if e.button isnt 0
         $.set 'QR Size', @style.cssText
     <% } %>
-    new QR.post true
 
+    QR.persona.init()
+    new QR.post true
     QR.status()
     QR.cooldown.init()
     QR.captcha.init()
@@ -970,7 +1047,7 @@ QR =
       spoiler:  post.spoiler
       textonly: textOnly
       mode:     'regist'
-      pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $.id('postPassword').value
+      pwd:      QR.persona.pwd
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response
 
@@ -1068,18 +1145,15 @@ QR =
       QR.status()
       QR.error err
       return
+      
 
-    h1 = $ 'h1', tmpDoc
     QR.cleanNotifications()
-    QR.notifications.push new Notification 'success', h1.textContent, 5
+    h1 = $ 'h1', tmpDoc
+    
+    if Conf['Posting Success Notifications']
+      QR.notifications.push new Notification 'success', h1.textContent, 5
 
-    $.get 'QR.persona', {}, (item) ->
-      persona = item['QR.persona']
-      persona =
-        name:  post.name
-        email: if /^sage$/.test post.email then persona.email else post.email
-        sub:   if Conf['Remember Subject'] then post.sub      else null
-      $.set 'QR.persona', persona
+    QR.persona.set post
 
     [_, threadID, postID] = h1.nextSibling.textContent.match /thread:(\d+),no:(\d+)/
     postID   = +postID
