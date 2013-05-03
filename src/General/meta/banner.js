@@ -86,4 +86,9 @@
 *
 *   license: http://userscripts.org/scripts/review/1352
 *
+* jsColor: (http://jscolor.com/)
+*   Copyright (c) Jan Odvarko, http://odvarko.cz
+*
+*   license: http://www.gnu.org/copyleft/lesser.html
+*
 */

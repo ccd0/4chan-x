@@ -106,6 +106,11 @@
 *
 *   license: http://userscripts.org/scripts/review/1352
 *
+* jsColor: (http://jscolor.com/)
+*   Copyright (c) Jan Odvarko, http://odvarko.cz
+*
+*   license: http://www.gnu.org/copyleft/lesser.html
+*
 */
 (function() {
   var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, GlobalMessage, Header, IDColor, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, MutationObserver, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
@@ -10128,15 +10133,6 @@
       }
     }
   };
-
-  /*
-    JSColor
-    http://github.com/hotchpotch/jscolor/tree/master
-  
-    JSColor is color library for JavaScript.
-    JSColor code is porting from AS3 Color library ColorSB < http://sketchbook.libspark.org/trac/wiki/ColorSB >.
-  */
-
 
   JSColor = {
     css: function() {

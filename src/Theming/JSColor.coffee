@@ -1,11 +1,3 @@
-###
-  JSColor
-  http://github.com/hotchpotch/jscolor/tree/master
-
-  JSColor is color library for JavaScript.
-  JSColor code is porting from AS3 Color library ColorSB < http://sketchbook.libspark.org/trac/wiki/ColorSB >.
-###
-
 JSColor =
   css: ->
     agent = Style.agent
@@ -350,9 +342,9 @@ JSColor =
     $.on target, 'blur', ->
       unless abortBlur
         window.setTimeout(->
-            abortBlur or blurTarget()
-            abortBlur = false
-          )
+          abortBlur or blurTarget()
+          abortBlur = false
+        )
       else
         abortBlur = false
 
