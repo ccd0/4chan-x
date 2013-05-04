@@ -33,7 +33,12 @@ Fourchan =
   code: ->
     return if @isClone
     for pre in $$ '.prettyprint', @nodes.comment
-      $.event 'prettyprint', pre, window
+      # Don't pretty print twice:
+      # Might need a better way to detect if a .prettyprint
+      # is already pretty-printed. We can't just look for spans
+      # since 4chan inserts its quotes and whatnot inside.
+      unless $ '.pln', pre
+        $.event 'prettyprint', pre, window
     return
   math: ->
     return if @isClone or !$ '.math', @nodes.comment
