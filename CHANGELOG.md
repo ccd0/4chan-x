@@ -1,3 +1,6 @@
+MayhemYDG:
+- Fix whitespaces not being preserved in code tags in /g/.
+
 ### 1.1.11 - 2013-05-04
 seaweedchan:
 - Add `Highlight Posts Quoting You` option
@@ -67,18 +70,6 @@ seaweedchan:
 - Toggle keybind for header auto-hiding
 
 MayhemYDG:
-=======
- - Access it in the `QR` tab of the Settings window.
-- Updated archive redirection for /h/, /v/ and /vg/.
-
-### 3.2.3 - *2013-04-30*
-
-- Update archive redirection for /c/, /d/, /v/, /vg/, /w/ and /wg/.
-- Minor fixes.
-
-### 3.2.2 - *2013-04-27*
-
->>>>>>> b74e0c92fdf2d755d996cb574dddb3c8d964e91a
 - Fix Unread Count taking into account hidden posts.
 
 ### 1.1.2 - 2013-04-26

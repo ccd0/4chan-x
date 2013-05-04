@@ -7337,7 +7337,10 @@
       });
       $.on(d, '4chanXInitFinished', Unread.ready);
       $.on(d, 'ThreadUpdate', Unread.onUpdate);
-      return $.on(d, 'scroll visibilitychange', Unread.read);
+      $.on(d, 'scroll visibilitychange', Unread.read);
+      if (Conf['Unread Line']) {
+        return $.on(d, 'visibilitychange', Unread.setLine);
+      }
     },
     ready: function() {
       var ID, post, posts, _ref;
@@ -7352,12 +7355,7 @@
         }
       }
       Unread.addPosts(posts);
-      if (Conf['Unread Line']) {
-        Unread.setLine();
-      }
-      if (Conf['Scroll to Last Read Post']) {
-        return Unread.scroll();
-      }
+      return Unread.scroll();
     },
     scroll: function() {
       var hash, post, posts, prevID, root;
@@ -8351,7 +8349,7 @@
       }
       board = g.BOARD.ID;
       if (board === 'g') {
-        $.globalEval("window.addEventListener('prettyprint', function(e) {\n  var pre = e.detail;\n  pre.innerHTML = prettyPrintOne(pre.innerHTML);\n}, false);");
+        $.globalEval("window.addEventListener('prettyprint', function(e) {\n  var pre = e.detail;\n  pre.innerHTML = prettyPrintOne(pre.innerHTML.replace(/\\s/g, '&nbsp;'));\n}, false);");
         Post.prototype.callbacks.push({
           name: 'Parse /g/ code',
           cb: this.code
@@ -8374,7 +8372,9 @@
       _ref = $$('.prettyprint', this.nodes.comment);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         pre = _ref[_i];
-        $.event('prettyprint', pre, window);
+        if (!$('.pln', pre)) {
+          $.event('prettyprint', pre, window);
+        }
       }
     },
     math: function() {
