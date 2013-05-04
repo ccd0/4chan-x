@@ -132,6 +132,7 @@ Main =
     $('link[href*=mobile]', d.head)?.disabled = true
     $.addClass doc, '<% if (type === 'crx') { %>webkit<% } else if (type === 'userjs') { %>presto<% } else { %>gecko<% } %>'
     $.addClass doc, 'fourchan-x'
+    $.addClass doc, g.VIEW
     $.addStyle Main.css
 
     if g.VIEW is 'catalog'

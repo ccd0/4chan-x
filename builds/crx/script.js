@@ -9844,6 +9844,7 @@
       }
       $.addClass(doc, 'webkit');
       $.addClass(doc, 'fourchan-x');
+      $.addClass(doc, g.VIEW);
       $.addStyle(Main.css);
       if (g.VIEW === 'catalog') {
         $.addClass(doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace(/_+/g, '-'));
