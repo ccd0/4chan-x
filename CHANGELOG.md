@@ -1,3 +1,4 @@
+### 1.1.11 - 2013-05-04
 seaweedchan:
 - Add `Highlight Posts Quoting You` option
 - Add 'catalog', 'index', or 'thread' classes to document depending on what's open
