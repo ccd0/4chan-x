@@ -1,3 +1,5 @@
+### 3.3.1 - *2013-05-04*
+
 - Fix whitespaces not being preserved in code tags in /g/.
 
 ## 3.3.0 - *2013-05-02*
