@@ -474,6 +474,9 @@ a.hide-announcement {
 .filtered {
   text-decoration: underline line-through;
 }
+:root.hide-backlinks .backlink.filtered {
+  display: none;
+}
 .inline {
   border: 1px solid;
   display: table;

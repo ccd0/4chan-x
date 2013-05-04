@@ -1,6 +1,7 @@
 seaweedchan:
 - Add `Highlight Posts Quoting You` option
 - Add 'catalog', 'index', or 'thread' classes to document depending on what's open
+- Add `Filtered Backlinks` options that when disabled, hides filtered backlinks
 
 ### 1.1.10 - 2013-05-03
 seaweedchan:

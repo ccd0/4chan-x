@@ -117,6 +117,10 @@ Config =
         true
         'Add buttons to hide single replies.'
       ]
+      'Filtered Backlinks': [
+        true
+        'When enabled, shows backlinks to filtered posts with a line-through decoration. Otherwise, hides the backlinks.'
+      ]
       'Stubs': [
         true
         'Show stubs of hidden threads / replies.'
