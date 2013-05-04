@@ -7,7 +7,7 @@ Fourchan =
       $.globalEval """
         window.addEventListener('prettyprint', function(e) {
           var pre = e.detail;
-          pre.innerHTML = prettyPrintOne(pre.innerHTML);
+          pre.innerHTML = prettyPrintOne(pre.innerHTML.replace(/\\s/g, '&nbsp;'));
         }, false);
       """
       Post::callbacks.push
