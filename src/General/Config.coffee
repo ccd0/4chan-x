@@ -319,6 +319,10 @@ Config =
         true
         'Add \'(You)\' to quotes linking to your posts.'
       ]
+      'Highlight Posts Quoting You': [
+        false
+        'Highlights any posts that contain a quote to your post.'
+      ]
       'Highlight Own Posts': [
         false
         'Highlights own posts if Mark Quotes of You is enabled.'

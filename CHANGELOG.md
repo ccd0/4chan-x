@@ -1,3 +1,6 @@
+seaweedchan:
+- Add `Highlight Posts Quoting You` option
+
 ### 1.1.10 - 2013-05-03
 seaweedchan:
 - Fix update checking
