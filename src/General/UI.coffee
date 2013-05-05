@@ -323,6 +323,7 @@ UI = do ->
       o.hover o.latestEvent if el.parentNode
 
     $.on root, endEvents,   o.hoverend
+    $.on d,    'keydown',   o.hoverend
     $.on root, 'mousemove', o.hover
 
   hover = (e) ->
@@ -348,9 +349,11 @@ UI = do ->
     style.left  = left
     style.right = right
 
-  hoverend = ->
+  hoverend = (e) ->
+    return if e.type is 'keydown' and e.keyCode isnt 13
     $.rm @el
     $.off @root, @endEvents,  @hoverend
+    $.off d,     'keydown',   @hoverend
     $.off @root, 'mousemove', @hover
     @cb.call @ if @cb
 

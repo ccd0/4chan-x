@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.0.0 - 2013-05-03
+* appchan x - Version 2.0.0 - 2013-05-05
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -4737,6 +4737,7 @@
         }
       });
       $.on(root, endEvents, o.hoverend);
+      $.on(d, 'keydown', o.hoverend);
       return $.on(root, 'mousemove', o.hover);
     };
     hover = function(e) {
@@ -4753,9 +4754,13 @@
       style.left = left;
       return style.right = right;
     };
-    hoverend = function() {
+    hoverend = function(e) {
+      if (e.type === 'keydown' && e.keyCode !== 13) {
+        return;
+      }
       $.rm(this.el);
       $.off(this.root, this.endEvents, this.hoverend);
+      $.off(d, 'keydown', this.hoverend);
       $.off(this.root, 'mousemove', this.hover);
       if (this.cb) {
         return this.cb.call(this);
