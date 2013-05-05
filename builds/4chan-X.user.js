@@ -18,7 +18,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.1.9 - 2013-05-03
+* 4chan X - Version 1.1.9 - 2013-05-05
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -2537,6 +2537,7 @@
         }
       });
       $.on(root, endEvents, o.hoverend);
+      $.on(d, 'keydown', o.hoverend);
       return $.on(root, 'mousemove', o.hover);
     };
     hover = function(e) {
@@ -2553,9 +2554,13 @@
       style.left = left;
       return style.right = right;
     };
-    hoverend = function() {
+    hoverend = function(e) {
+      if (e.type === 'keydown' && e.keyCode !== 13) {
+        return;
+      }
       $.rm(this.el);
       $.off(this.root, this.endEvents, this.hoverend);
+      $.off(d, 'keydown', this.hoverend);
       $.off(this.root, 'mousemove', this.hover);
       if (this.cb) {
         return this.cb.call(this);
