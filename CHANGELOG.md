@@ -1,3 +1,5 @@
+- Fix quote previews getting 'stuck' in Opera.
+
 ### 3.3.1 - *2013-05-04*
 
 - Fix whitespaces not being preserved in code tags in /g/.
