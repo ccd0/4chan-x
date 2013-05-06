@@ -303,6 +303,10 @@ Config =
         true
         'Inline quoted post on click.'
       ]
+      'Quote Hash Navigation': [
+        false
+        'Include an extra link after quotes for autoscrolling to quoted posts.'
+      ]
       'Forward Hiding': [
         true
         'Hide original posts of inlined backlinks.'

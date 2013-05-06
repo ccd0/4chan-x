@@ -201,6 +201,7 @@
         'Quote Backlinks': [true, 'Add quote backlinks.'],
         'OP Backlinks': [true, 'Add backlinks to the OP.'],
         'Quote Inlining': [true, 'Inline quoted post on click.'],
+        'Quote Hash Navigation': [false, 'Include an extra link after quotes for autoscrolling to quoted posts.'],
         'Forward Hiding': [true, 'Hide original posts of inlined backlinks.'],
         'Quote Previewing': [true, 'Show quoted post on hover.'],
         'Quote Highlighting': [true, 'Highlight the previewed post.'],
@@ -3484,7 +3485,7 @@
       });
     },
     firstNode: function() {
-      var a, clone, container, containers, link, post, quote, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+      var a, clone, container, containers, frag, link, post, quote, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
 
       if (this.isClone || !this.quotes.length) {
         return;
@@ -3507,14 +3508,17 @@
         }
         for (_k = 0, _len2 = containers.length; _k < _len2; _k++) {
           container = containers[_k];
-          link = a.cloneNode(true);
+          frag = [$.tn(' '), link = a.cloneNode(true)];
           if (Conf['Quote Previewing']) {
             $.on(link, 'mouseover', QuotePreview.mouseover);
           }
           if (Conf['Quote Inlining']) {
             $.on(link, 'click', QuoteInline.toggle);
+            if (Conf['Quote Hash Navigation']) {
+              frag.pushArrays(QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
+            }
           }
-          $.add(container, [$.tn(' '), link]);
+          $.add(container, frag);
         }
       }
     },
@@ -3590,19 +3594,41 @@
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
+      if (Conf['Quote Hash Navigation']) {
+        this.node = function() {
+          var link, _i, _len, _ref;
+
+          _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            link = _ref[_i];
+            $.after(link, QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
+            $.on(link, 'click', QuoteInline.toggle);
+          }
+        };
+      } else {
+        this.node = function() {
+          var link, _i, _len, _ref;
+
+          _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            link = _ref[_i];
+            $.on(link, 'click', QuoteInline.toggle);
+          }
+        };
+      }
       return Post.prototype.callbacks.push({
         name: 'Quote Inlining',
         cb: this.node
       });
     },
-    node: function() {
-      var link, _i, _len, _ref;
-
-      _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        link = _ref[_i];
-        $.on(link, 'click', QuoteInline.toggle);
-      }
+    qiQuote: function(link, hidden) {
+      return [
+        $.tn(' '), $.el('a', {
+          className: hidden ? 'hashlink filtered' : 'hashlink',
+          textContent: '#',
+          href: link.href
+        })
+      ];
     },
     toggle: function(e) {
       var boardID, context, postID, threadID, _ref;
