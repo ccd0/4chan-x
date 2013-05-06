@@ -3601,7 +3601,9 @@
           _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             link = _ref[_i];
-            $.after(link, QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
+            if (!this.isClone) {
+              $.after(link, QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
+            }
             $.on(link, 'click', QuoteInline.toggle);
           }
         };

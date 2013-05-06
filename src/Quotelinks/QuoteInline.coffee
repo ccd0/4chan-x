@@ -8,7 +8,7 @@ QuoteInline =
     if Conf['Quote Hash Navigation']
       @node = ->
         for link in @nodes.quotelinks.concat [@nodes.backlinks...]
-          $.after link, QuoteInline.qiQuote link, $.hasClass link, 'filtered'
+          $.after link, QuoteInline.qiQuote link, $.hasClass link, 'filtered' unless @isClone
           $.on link, 'click', QuoteInline.toggle
         return
 
