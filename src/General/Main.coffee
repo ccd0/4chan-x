@@ -279,6 +279,13 @@ Main =
     obj.callback.isAddon = true
     Klass::callbacks.push obj.callback
 
+  message: (e) ->
+    {version} = e.data
+    if version and version isnt g.VERSION
+        el = $.el 'span',
+          innerHTML: "Update: <%= meta.name %> v#{version} is out, get it <a href=<%= meta.page %> target=_blank>here</a>."
+        new Notification 'info', el, 120
+
   checkUpdate: ->
     return unless Conf['Check for Updates'] and Main.isThisPageLegit()
     # Check for updates after:
@@ -293,18 +300,11 @@ Main =
     $.get items, (items) ->
       if items.lastupdate > now - freq or items.lastchecked > now - $.DAY
         return
-      $.ajax '<%= meta.repo %>raw/<%= meta.mainBranch %>/<%= meta.buildsPath %>version', onload: ->
-        return unless @status is 200
-        version = @response
-        return unless /^\d\.\d+\.\d+$/.test version
-        if g.VERSION is version
-          # Don't check for updates too frequently if there wasn't one in a 'long' time.
-          $.set 'lastupdate', now
-          return
-        $.set 'lastchecked', now
-        el = $.el 'span',
-          innerHTML: "Update: <%= meta.name %> v#{version} is out, get it <a href=<%= meta.page %> target=_blank>here</a>."
-        new Notification 'info', el, 120
+      $.ready ->
+        $.on window, 'message', Main.message
+        $.set 'lastUpdate', now
+        $.add d.head, $.el 'script',
+          src: '<%= meta.repo %>raw/<%= meta.mainBranch %>/latest.js'
 
   handleErrors: (errors) ->
     unless errors instanceof Array

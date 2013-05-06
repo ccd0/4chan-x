@@ -5,14 +5,31 @@ QuoteInline =
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
+    if Conf['Quote Hash Navigation']
+      @node = ->
+        for link in @nodes.quotelinks.concat [@nodes.backlinks...]
+          $.after link, QuoteInline.qiQuote link, $.hasClass link, 'filtered' unless @isClone
+          $.on link, 'click', QuoteInline.toggle
+        return
+
+    else
+      @node = ->
+        for link in @nodes.quotelinks.concat [@nodes.backlinks...]
+          $.on link, 'click', QuoteInline.toggle
+        return
+
     Post::callbacks.push
       name: 'Quote Inlining'
       cb:   @node
 
-  node: ->
-    for link in @nodes.quotelinks.concat [@nodes.backlinks...]
-      $.on link, 'click', QuoteInline.toggle
-    return
+  qiQuote: (link, hidden) ->
+    [
+      $.tn(' ')
+      $.el 'a',
+        className: if hidden then 'hashlink filtered' else 'hashlink'
+        textContent: '#'
+        href: link.href
+    ]
 
   toggle: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0

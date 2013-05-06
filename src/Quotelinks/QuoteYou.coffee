@@ -17,6 +17,9 @@ QuoteYou =
     if Conf['Highlight Own Posts']
       $.addClass doc, 'highlight-own'
 
+    if Conf['Highlight Posts Quoting You']
+      $.addClass doc, 'highlight-you'
+
     # Stop there if there's no quotes in that post.
     return unless (quotes = @quotes).length
     {quotelinks} = @nodes
@@ -24,4 +27,5 @@ QuoteYou =
     for quotelink in quotelinks
       if QR.db.get Get.postDataFromLink quotelink
         $.add quotelink, $.tn QuoteYou.text
+        $.addClass @nodes.root, 'quotesYou'
     return

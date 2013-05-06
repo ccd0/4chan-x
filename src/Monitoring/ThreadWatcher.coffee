@@ -1,12 +1,26 @@
 ThreadWatcher =
   init: ->
     return unless Conf['Thread Watcher']
+    @shortcut = sc = $.el 'a',
+      textContent: 'Watcher'
+      id:   'watcher-link'
+      href: 'javascript:;'
+      className: 'disabled'
+
     @dialog = UI.dialog 'watcher', 'top: 50px; left: 0px;',
-      '<div class=move>Thread Watcher</div>'
+      '<div class=move>Thread Watcher<a class=close href=javascript:;>×</a></div>'
 
     $.on d, 'QRPostSuccessful',   @cb.post
-    $.on d, '4chanXInitFinished', @ready
     $.sync  'WatchedThreads',     @refresh
+    $.on sc, 'click', @toggleWatcher
+    $.on $('.move>.close', ThreadWatcher.dialog), 'click', @toggleWatcher
+    
+    Header.addShortcut sc
+
+    $.ready ->
+      ThreadWatcher.refresh()
+      $.add d.body, ThreadWatcher.dialog
+      ThreadWatcher.dialog.hidden = true
 
     Thread::callbacks.push
       name: 'Thread Watcher'
@@ -22,12 +36,6 @@ ThreadWatcher =
       return if item['AutoWatch'] isnt @ID
       ThreadWatcher.watch @
       $.delete 'AutoWatch'
-
-  ready: ->
-    $.off d, '4chanXInitFinished', ThreadWatcher.ready
-    return unless Main.isThisPageLegit()
-    ThreadWatcher.refresh()
-    $.add d.body, ThreadWatcher.dialog
 
   refresh: (watched) ->
     unless watched
@@ -60,6 +68,10 @@ ThreadWatcher =
       else
         Favicon.empty
     return
+
+  toggleWatcher: ->
+    $.toggleClass ThreadWatcher.shortcut, 'disabled'
+    ThreadWatcher.dialog.hidden = !ThreadWatcher.dialog.hidden
 
   cb:
     toggle: ->

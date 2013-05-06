@@ -2,6 +2,7 @@
   "name": "appchan-x",
   "version": "2.0.0",
   "description": "The most comprehensive 4chan userscript.",
+
   "meta": {
     "name": "appchan x",
     "namespace": "zixaphir",
@@ -29,7 +30,7 @@
     "grunt-contrib-compress": "~0.5.0",
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-copy": "~0.4.1",
-    "grunt-contrib-watch": "~0.3.1",
+    "grunt-contrib-watch": "~0.4.0",
     "grunt-shell": "~0.2.2"
   },
   "repository": {

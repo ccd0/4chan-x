@@ -113,6 +113,10 @@ Config =
         true
         'Add buttons to hide single replies.'
       ]
+      'Filtered Backlinks': [
+        true
+        'When enabled, shows backlinks to filtered posts with a line-through decoration. Otherwise, hides the backlinks.'
+      ]
       'Stubs': [
         true
         'Show stubs of hidden threads / replies.'
@@ -295,6 +299,10 @@ Config =
         true
         'Inline quoted post on click.'
       ]
+      'Quote Hash Navigation': [
+        false
+        'Include an extra link after quotes for autoscrolling to quoted posts.'
+      ]
       'Forward Hiding': [
         true
         'Hide original posts of inlined backlinks.'
@@ -314,6 +322,10 @@ Config =
       'Mark Quotes of You': [
         true
         'Add \'(You)\' to quotes linking to your posts.'
+      ]
+      'Highlight Posts Quoting You': [
+        false
+        'Highlights any posts that contain a quote to your post.'
       ]
       'Highlight Own Posts': [
         false

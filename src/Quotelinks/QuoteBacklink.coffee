@@ -36,12 +36,13 @@ QuoteBacklink =
         for clone in post.clones
           containers.push clone.nodes.backlinkContainer
       for container in containers
-        link = a.cloneNode true
+        frag = [$.tn(' '), link = a.cloneNode true]
         if Conf['Quote Previewing']
           $.on link, 'mouseover', QuotePreview.mouseover
         if Conf['Quote Inlining']
           $.on link, 'click', QuoteInline.toggle
-        $.add container, [$.tn(' '), link]
+          frag.pushArrays QuoteInline.qiQuote link, $.hasClass link, 'filtered' if Conf['Quote Hash Navigation']
+        $.add container, frag
     return
   secondNode: ->
     if @isClone and (@origin.isReply or Conf['OP Backlinks'])

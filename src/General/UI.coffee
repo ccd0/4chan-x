@@ -227,7 +227,7 @@ UI = do ->
       isTouching:   isTouching
     }
 
-    [o.topBorder, o.bottomBorder] = if Conf['Header auto-hide']
+    [o.topBorder, o.bottomBorder] = if Conf['Header auto-hide'] or not Conf['Fixed Header']
       [0, 0]
     else if Conf['Bottom Header']
       [0, Header.bar.getBoundingClientRect().height]

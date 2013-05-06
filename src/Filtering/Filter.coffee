@@ -3,6 +3,9 @@ Filter =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Filter']
 
+    unless Conf['Filtered Backlinks']
+      $.addClass doc, 'hide-backlinks'
+
     for key of Config.filter
       @filters[key] = []
       for filter in Conf[key].split '\n'

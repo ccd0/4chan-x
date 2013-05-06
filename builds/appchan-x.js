@@ -118,7 +118,7 @@
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Config = {
     main: {
@@ -154,6 +154,7 @@
         'Recursive Hiding': [true, 'Hide replies of hidden posts, recursively.'],
         'Thread Hiding Buttons': [true, 'Add buttons to hide entire threads.'],
         'Reply Hiding Buttons': [true, 'Add buttons to hide single replies.'],
+        'Filtered Backlinks': [true, 'When enabled, shows backlinks to filtered posts with a line-through decoration. Otherwise, hides the backlinks.'],
         'Stubs': [true, 'Show stubs of hidden threads / replies.']
       },
       'Images': {
@@ -204,11 +205,13 @@
         'Quote Backlinks': [true, 'Add quote backlinks.'],
         'OP Backlinks': [true, 'Add backlinks to the OP.'],
         'Quote Inlining': [true, 'Inline quoted post on click.'],
+        'Quote Hash Navigation': [false, 'Include an extra link after quotes for autoscrolling to quoted posts.'],
         'Forward Hiding': [true, 'Hide original posts of inlined backlinks.'],
         'Quote Previewing': [true, 'Show quoted post on hover.'],
         'Quote Highlighting': [true, 'Highlight the previewed post.'],
         'Resurrect Quotes': [true, 'Link dead quotes to the archives.'],
         'Mark Quotes of You': [true, 'Add \'(You)\' to quotes linking to your posts.'],
+        'Highlight Posts Quoting You': [false, 'Highlights any posts that contain a quote to your post.'],
         'Highlight Own Posts': [false, 'Highlights own posts if Mark Quotes of You is enabled.'],
         'Mark OP Quotes': [true, 'Add \'(OP)\' to OP quotes.'],
         'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.'],
@@ -3574,12 +3577,10 @@
   })();
 
   Notification = (function() {
-    var add, close;
-
     function Notification(type, content, timeout) {
       this.timeout = timeout;
-      this.add = add.bind(this);
-      this.close = close.bind(this);
+      this.close = __bind(this.close, this);
+      this.add = __bind(this.add, this);
       this.el = $.el('div', {
         innerHTML: '<a href=javascript:; class=close title=Close>×</a><div class=message></div>'
       });
@@ -3597,7 +3598,7 @@
       return this.el.className = "notification " + type;
     };
 
-    add = function() {
+    Notification.prototype.add = function() {
       if (d.hidden) {
         $.on(d, 'visibilitychange', this.add);
         return;
@@ -3611,7 +3612,7 @@
       }
     };
 
-    close = function() {
+    Notification.prototype.close = function() {
       return $.rm(this.el);
     };
 
@@ -4653,7 +4654,7 @@
         screenWidth: screenWidth,
         isTouching: isTouching
       };
-      _ref = Conf['Header auto-hide'] ? [0, 0] : Conf['Bottom Header'] ? [0, Header.bar.getBoundingClientRect().height] : [Header.bar.getBoundingClientRect().height, 0], o.topBorder = _ref[0], o.bottomBorder = _ref[1];
+      _ref = Conf['Header auto-hide'] || !Conf['Fixed Header'] ? [0, 0] : Conf['Bottom Header'] ? [0, Header.bar.getBoundingClientRect().height] : [Header.bar.getBoundingClientRect().height, 0], o.topBorder = _ref[0], o.bottomBorder = _ref[1];
       if (isTouching) {
         o.identifier = e.identifier;
         o.move = touchmove.bind(o);
@@ -4820,6 +4821,9 @@
 
       if (g.VIEW === 'catalog' || !Conf['Filter']) {
         return;
+      }
+      if (!Conf['Filtered Backlinks']) {
+        $.addClass(doc, 'hide-backlinks');
       }
       for (key in Config.filter) {
         this.filters[key] = [];
@@ -5685,7 +5689,7 @@
       });
     },
     firstNode: function() {
-      var a, clone, container, containers, link, post, quote, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+      var a, clone, container, containers, frag, link, post, quote, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
 
       if (this.isClone || !this.quotes.length) {
         return;
@@ -5708,14 +5712,17 @@
         }
         for (_k = 0, _len2 = containers.length; _k < _len2; _k++) {
           container = containers[_k];
-          link = a.cloneNode(true);
+          frag = [$.tn(' '), link = a.cloneNode(true)];
           if (Conf['Quote Previewing']) {
             $.on(link, 'mouseover', QuotePreview.mouseover);
           }
           if (Conf['Quote Inlining']) {
             $.on(link, 'click', QuoteInline.toggle);
+            if (Conf['Quote Hash Navigation']) {
+              frag.pushArrays(QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
+            }
           }
-          $.add(container, [$.tn(' '), link]);
+          $.add(container, frag);
         }
       }
     },
@@ -5791,19 +5798,43 @@
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
+      if (Conf['Quote Hash Navigation']) {
+        this.node = function() {
+          var link, _i, _len, _ref;
+
+          _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            link = _ref[_i];
+            if (!this.isClone) {
+              $.after(link, QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
+            }
+            $.on(link, 'click', QuoteInline.toggle);
+          }
+        };
+      } else {
+        this.node = function() {
+          var link, _i, _len, _ref;
+
+          _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            link = _ref[_i];
+            $.on(link, 'click', QuoteInline.toggle);
+          }
+        };
+      }
       return Post.prototype.callbacks.push({
         name: 'Quote Inlining',
         cb: this.node
       });
     },
-    node: function() {
-      var link, _i, _len, _ref;
-
-      _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        link = _ref[_i];
-        $.on(link, 'click', QuoteInline.toggle);
-      }
+    qiQuote: function(link, hidden) {
+      return [
+        $.tn(' '), $.el('a', {
+          className: hidden ? 'hashlink filtered' : 'hashlink',
+          textContent: '#',
+          href: link.href
+        })
+      ];
     },
     toggle: function(e) {
       var boardID, context, postID, threadID, _ref;
@@ -6212,6 +6243,9 @@
       if (Conf['Highlight Own Posts']) {
         $.addClass(doc, 'highlight-own');
       }
+      if (Conf['Highlight Posts Quoting You']) {
+        $.addClass(doc, 'highlight-you');
+      }
       if (!(quotes = this.quotes).length) {
         return;
       }
@@ -6220,6 +6254,7 @@
         quotelink = quotelinks[_i];
         if (QR.db.get(Get.postDataFromLink(quotelink))) {
           $.add(quotelink, $.tn(QuoteYou.text));
+          $.addClass(this.nodes.root, 'quotesYou');
         }
       }
     }
@@ -6854,7 +6889,7 @@
         });
       },
       parseItem: function(item, types) {
-        var boards, match, type, val, _ref, _ref1, _ref2;
+        var boards, match, type, val, _ref, _ref1;
 
         if (item[0] === '#') {
           return;
@@ -6865,7 +6900,7 @@
         _ref = match, match = _ref[0], type = _ref[1], val = _ref[2];
         item = item.replace(match, '');
         boards = ((_ref1 = item.match(/boards:([^;]+)/i)) != null ? _ref1[1].toLowerCase() : void 0) || 'global';
-        if (boards !== 'global' && !(_ref2 = g.BOARD.ID, __indexOf.call(boards.split(','), _ref2) >= 0)) {
+        if (boards !== 'global' && !((boards.split(',')).contains(g.BOARD.ID))) {
           return;
         }
         if (type === 'password') {
@@ -6878,7 +6913,7 @@
         if (/always/i.test(item)) {
           QR.persona.always[type] = val;
         }
-        if (__indexOf.call(types[type], val) < 0) {
+        if (!types[type].contains(val)) {
           return types[type].push(val);
         }
       },
@@ -8933,7 +8968,9 @@
           innerHTML: "<span id=post-count>0</span> / <span id=file-count>0</span>",
           id: 'thread-stats'
         });
-        Header.addShortcut(sc);
+        $.ready(function() {
+          return Header.addShortcut(sc);
+        });
       } else {
         this.dialog = sc = UI.dialog('thread-stats', 'bottom: 0px; right: 0px;', "<div class=move><span id=post-count>0</span> / <span id=file-count>0</span></div>");
         $.ready(function() {
@@ -8998,7 +9035,9 @@
           innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>",
           id: 'updater'
         });
-        Header.addShortcut(sc);
+        $.ready(function() {
+          return Header.addShortcut(sc);
+        });
       } else {
         this.dialog = sc = UI.dialog('updater', 'bottom: 0px; left: 0px;', "<div class=move></div><span id=update-status></span><span id=update-timer title='Update now'></span>");
         $.addClass(doc, 'float');
@@ -9096,10 +9135,19 @@
           return setTimeout(ThreadUpdater.update, 1000);
         }
       },
-      checkpost: function() {
+      checkpost: function(e) {
+        if (!ThreadUpdater.checkPostCount) {
+          if (e.detail.threadID !== ThreadUpdater.thread.ID) {
+            return;
+          }
+          ThreadUpdater.seconds = 0;
+          ThreadUpdater.outdateCount = 0;
+          ThreadUpdater.set('timer', '...');
+        }
         if (!(g.DEAD || ThreadUpdater.foundPost || ThreadUpdater.checkPostCount >= 5)) {
           return setTimeout(ThreadUpdater.update, ++ThreadUpdater.checkPostCount * $.SECOND);
         }
+        ThreadUpdater.set('timer', ThreadUpdater.getInterval());
         ThreadUpdater.checkPostCount = 0;
         delete ThreadUpdater.foundPost;
         return delete ThreadUpdater.postID;
@@ -9384,13 +9432,28 @@
 
   ThreadWatcher = {
     init: function() {
+      var sc;
+
       if (!Conf['Thread Watcher']) {
         return;
       }
-      this.dialog = UI.dialog('watcher', 'top: 50px; left: 0px;', '<div class=move>Thread Watcher</div>');
+      this.shortcut = sc = $.el('a', {
+        textContent: 'Watcher',
+        id: 'watcher-link',
+        href: 'javascript:;',
+        className: 'disabled'
+      });
+      this.dialog = UI.dialog('watcher', 'top: 50px; left: 0px;', '<div class=move>Thread Watcher<a class=close href=javascript:;>×</a></div>');
       $.on(d, 'QRPostSuccessful', this.cb.post);
-      $.on(d, '4chanXInitFinished', this.ready);
       $.sync('WatchedThreads', this.refresh);
+      $.on(sc, 'click', this.toggleWatcher);
+      $.on($('.move>.close', ThreadWatcher.dialog), 'click', this.toggleWatcher);
+      Header.addShortcut(sc);
+      $.ready(function() {
+        ThreadWatcher.refresh();
+        $.add(d.body, ThreadWatcher.dialog);
+        return ThreadWatcher.dialog.hidden = true;
+      });
       return Thread.prototype.callbacks.push({
         name: 'Thread Watcher',
         cb: this.node
@@ -9415,14 +9478,6 @@
         ThreadWatcher.watch(_this);
         return $["delete"]('AutoWatch');
       });
-    },
-    ready: function() {
-      $.off(d, '4chanXInitFinished', ThreadWatcher.ready);
-      if (!Main.isThisPageLegit()) {
-        return;
-      }
-      ThreadWatcher.refresh();
-      return $.add(d.body, ThreadWatcher.dialog);
     },
     refresh: function(watched) {
       var ID, board, div, favicon, id, link, nodes, props, thread, x, _ref, _ref1;
@@ -9460,6 +9515,10 @@
         favicon = $('.favicon', thread.OP.nodes.post);
         favicon.src = ID in watched ? Favicon["default"] : Favicon.empty;
       }
+    },
+    toggleWatcher: function() {
+      $.toggleClass(ThreadWatcher.shortcut, 'disabled');
+      return ThreadWatcher.dialog.hidden = !ThreadWatcher.dialog.hidden;
     },
     cb: {
       toggle: function() {
@@ -9546,7 +9605,10 @@
       });
       $.on(d, '4chanXInitFinished', Unread.ready);
       $.on(d, 'ThreadUpdate', Unread.onUpdate);
-      return $.on(d, 'scroll visibilitychange', Unread.read);
+      $.on(d, 'scroll visibilitychange', Unread.read);
+      if (Conf['Unread Line']) {
+        return $.on(d, 'visibilitychange', Unread.setLine);
+      }
     },
     ready: function() {
       var ID, post, posts, _ref;
@@ -9561,9 +9623,6 @@
         }
       }
       Unread.addPosts(posts);
-      if (Conf['Unread Line']) {
-        Unread.setLine();
-      }
       if (Conf['Scroll to Last Read Post']) {
         return Unread.scroll();
       }
@@ -12207,7 +12266,7 @@
       }
       board = g.BOARD.ID;
       if (board === 'g') {
-        $.globalEval("window.addEventListener('prettyprint', function(e) {\n  var pre = e.detail;\n  pre.innerHTML = prettyPrintOne(pre.innerHTML);\n}, false);");
+        $.globalEval("window.addEventListener('prettyprint', function(e) {\n  var pre = e.detail;\n  pre.innerHTML = prettyPrintOne(pre.innerHTML.replace(/\\s/g, '&nbsp;'));\n}, false);");
         Post.prototype.callbacks.push({
           name: 'Parse /g/ code',
           cb: this.code
@@ -12230,7 +12289,9 @@
       _ref = $$('.prettyprint', this.nodes.comment);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         pre = _ref[_i];
-        $.event('prettyprint', pre, window);
+        if (!$('.pln', pre)) {
+          $.event('prettyprint', pre, window);
+        }
       }
     },
     math: function() {
@@ -13087,16 +13148,12 @@
       (sectionToOpen ? sectionToOpen : links[0]).click();
       $.on($('.close', dialog), 'click', Settings.close);
       $.on(overlay, 'click', Settings.close);
-      d.body.style.width = "" + d.body.clientWidth + "px";
-      $.addClass(d.body, 'unscroll');
       return $.add(d.body, [overlay, dialog]);
     },
     close: function() {
       if (!Settings.dialog) {
         return;
       }
-      d.body.style.removeProperty('width');
-      $.rmClass(d.body, 'unscroll');
       $.rm(Settings.overlay);
       $.rm(Settings.dialog);
       delete Settings.overlay;
@@ -13468,11 +13525,14 @@
 
         for (key in items) {
           val = items[key];
-          if (['usercss', 'emojiPos', 'archiver'].contains(key)) {
+          if (['emojiPos', 'archiver'].contains(key)) {
             continue;
           }
           input = inputs[key];
           input.value = val;
+          if (key === 'usercss') {
+            continue;
+          }
           $.on(input, event, Settings[key]);
           Settings[key].call(input);
         }
@@ -14416,6 +14476,17 @@
       obj.callback.isAddon = true;
       return Klass.prototype.callbacks.push(obj.callback);
     },
+    message: function(e) {
+      var el, version;
+
+      version = e.data.version;
+      if (version && version !== g.VERSION) {
+        el = $.el('span', {
+          innerHTML: "Update: appchan x v" + version + " is out, get it <a href=http://zixaphir.github.com/appchan-x/ target=_blank>here</a>."
+        });
+        return new Notification('info', el, 120);
+      }
+    },
     checkUpdate: function() {
       var freq, items, now;
 
@@ -14432,27 +14503,12 @@
         if (items.lastupdate > now - freq || items.lastchecked > now - $.DAY) {
           return;
         }
-        return $.ajax('https://github.com/zixaphir/appchan-x/raw/Av2/builds/version', {
-          onload: function() {
-            var el, version;
-
-            if (this.status !== 200) {
-              return;
-            }
-            version = this.response;
-            if (!/^\d\.\d+\.\d+$/.test(version)) {
-              return;
-            }
-            if (g.VERSION === version) {
-              $.set('lastupdate', now);
-              return;
-            }
-            $.set('lastchecked', now);
-            el = $.el('span', {
-              innerHTML: "Update: appchan x v" + version + " is out, get it <a href=http://zixaphir.github.com/appchan-x/ target=_blank>here</a>."
-            });
-            return new Notification('info', el, 120);
-          }
+        return $.ready(function() {
+          $.on(window, 'message', Main.message);
+          $.set('lastUpdate', now);
+          return $.add(d.head, $.el('script', {
+            src: 'https://github.com/zixaphir/appchan-x/raw/Av2/latest.js'
+          }));
         });
       });
     },

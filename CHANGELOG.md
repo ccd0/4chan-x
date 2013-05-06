@@ -1,6 +1,32 @@
+### 1.1.13 - 2013-05-06
+seaweedchan:
+- Disable settings removing scroll bar when opened, thus fixing the issue where it jumps up the page randomly
+- Hide watcher by default, add [Watcher] shortcut.
+
+### 1.1.12 - 2013-05-06
 detharonil
 - Support for %Y in time formatting
 - More future-proof %y
+
+MayhemYDG:
+- Fix whitespaces not being preserved in code tags in /g/.
+
+seaweedchan:
+- Fix QR not being able to drag to the top with fixed header disabled
+
+zixaphir:
+- Fix custom CSS
+- Fix [Deleted] showing up randomly after submitting a post
+
+### 1.1.11 - 2013-05-04
+seaweedchan:
+- Add `Highlight Posts Quoting You` option
+- Add 'catalog', 'index', or 'thread' classes to document depending on what's open
+- Add `Filtered Backlinks` options that when disabled, hides filtered backlinks
+
+### 1.1.10 - 2013-05-03
+seaweedchan:
+- Fix update checking
 
 ### 1.1.9 - 2013-05-02
 seaweedchan
@@ -25,7 +51,6 @@ seaweedchan:
 - Add paste.installgentoo.com embedding
 - Added `Posting Success Notifications` option to make "Post Successful!" and "_____ uploaded" notifications optional
 - Added `Allow False Positives` option under Linkification, giving the user more control over what's linkified.
-- Fix URL for update checking
 
 ### 1.1.6 - 2013-05-01
 seaweedchan:
@@ -62,18 +87,6 @@ seaweedchan:
 - Toggle keybind for header auto-hiding
 
 MayhemYDG:
-=======
- - Access it in the `QR` tab of the Settings window.
-- Updated archive redirection for /h/, /v/ and /vg/.
-
-### 3.2.3 - *2013-04-30*
-
-- Update archive redirection for /c/, /d/, /v/, /vg/, /w/ and /wg/.
-- Minor fixes.
-
-### 3.2.2 - *2013-04-27*
-
->>>>>>> b74e0c92fdf2d755d996cb574dddb3c8d964e91a
 - Fix Unread Count taking into account hidden posts.
 
 ### 1.1.2 - 2013-04-26

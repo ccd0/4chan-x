@@ -43,7 +43,7 @@ module.exports = (grunt) ->
         options: concatOptions
         files:
           'LICENSE': 'src/General/meta/banner.js',
-          'builds/version': 'src/General/meta/version.js'
+          'latest.js': 'src/General/meta/latest.js'
 
       crx:
         options: concatOptions
