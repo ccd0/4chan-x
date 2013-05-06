@@ -71,7 +71,7 @@ Get =
     if threadID
       $.cache "//api.4chan.org/#{boardID}/res/#{threadID}.json", ->
         Get.fetchedPost @, boardID, threadID, postID, root, context
-    else if url = Redirect.post boardID, postID
+    else if url = Redirect.to 'post', {boardID, postID}
       $.cache url, ->
         Get.archivedPost @, boardID, postID, root, context
   insert: (post, root, context) ->
@@ -97,7 +97,7 @@ Get =
     {status} = req
     if status not in [200, 304]
       # The thread can die by the time we check a quote.
-      if url = Redirect.post boardID, postID
+      if url = Redirect.to 'post', {boardID, postID}
         $.cache url, ->
           Get.archivedPost @, boardID, postID, root, context
       else
@@ -115,7 +115,7 @@ Get =
       break if post.no is postID # we found it!
       if post.no > postID
         # The post can be deleted by the time we check a quote.
-        if url = Redirect.post boardID, postID
+        if url = Redirect.to 'post', {boardID, postID}
           $.cache url, ->
             Get.archivedPost @, boardID, postID, root, context
         else

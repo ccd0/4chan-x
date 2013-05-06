@@ -41,6 +41,7 @@ Settings =
     Settings.addSection 'QR',       Settings.qr
     Settings.addSection 'Sauce',    Settings.sauce
     Settings.addSection 'Rice',     Settings.rice
+    Settings.addSection 'Archives', Settings.archives
     Settings.addSection 'Keybinds', Settings.keybinds
     $.on d, 'AddSettingsSection',   Settings.addSection
     $.on d, 'OpenSettings',         (e) -> Settings.open e.detail
@@ -385,6 +386,69 @@ Settings =
     $.cb.checked.call @
   usercss: ->
     CustomCSS.update()
+
+  archives: (section) ->
+    section.innerHTML = """
+    <%= grunt.file.read('html/General/Settings-section-Archives.html').replace(/>\s+</g, '><').trim() %>
+    """
+
+    boards = {}
+    for archive in Redirect.archives
+      for boardID in archive.boards
+        data = boards[boardID] or= {
+          thread: []
+          post:   []
+          file:   []
+        }
+        data.thread.push archive
+        if archive.software is 'foolfuuka'
+          data.post.push archive
+        if boardID in archive.files
+          data.file.push archive
+
+    rows = []
+    for boardID in Object.keys(boards).sort() # Alphabetical order
+      row = $.el 'tr'
+      rows.push row
+      $.add row, $.el 'th',
+        textContent: "/#{boardID}/"
+        className: if boardID is g.BOARD.ID then 'warning' else ''
+
+      data = boards[boardID]
+      Settings.addArchiveCell row, boardID, data, 'thread'
+      Settings.addArchiveCell row, boardID, data, 'post'
+      Settings.addArchiveCell row, boardID, data, 'file'
+    $.add $('tbody', section), rows
+    $.get 'selectedArchives', Conf['selectedArchives'], ({selectedArchives}) ->
+      for boardID, data of selectedArchives
+        for type, uid of data
+          if option = $ "select[data-boardid='#{boardID}'][data-type='#{type}'] > option[value='#{uid}']", section
+            option.selected = true
+      return
+  addArchiveCell: (row, boardID, data, type) ->
+    options = []
+    for archive in data[type]
+      options.push $.el 'option',
+        textContent: archive.name
+        value: archive.uid
+    td = $.el 'td'
+    {length} = options
+    if length
+      td.innerHTML = '<select></select>'
+      select = td.firstElementChild
+      unless select.disabled = length is 1
+        # XXX GM can't into datasets
+        select.setAttribute 'data-boardid', boardID
+        select.setAttribute 'data-type',    type
+        $.on select, 'change', Settings.saveSelectedArchive
+      $.add select, options
+    else
+      td.textContent = 'N/A'
+    $.add row, td
+  saveSelectedArchive: ->
+    $.get 'selectedArchives', Conf['selectedArchives'], ({selectedArchives}) =>
+      (selectedArchives[@dataset.boardid] or= {})[@dataset.type] = +@value
+      $.set 'selectedArchives', selectedArchives
 
   keybinds: (section) ->
     section.innerHTML = """

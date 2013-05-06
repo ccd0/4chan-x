@@ -1,0 +1,101 @@
+{
+  "Foolz": {
+    "uid": 0,
+    "domain": "archive.foolz.us",
+    "http": true,
+    "https": true,
+    "software": "foolfuuka",
+    "boards": ["a", "co", "gd", "jp", "m", "q", "sp", "tg", "tv", "vp", "vr", "wsg"],
+    "files": ["a", "gd", "jp", "m", "q", "tg", "vp", "vr", "wsg"]
+  },
+  "NSFW Foolz": {
+    "uid": 1,
+    "domain": "nsfw.foolz.us",
+    "http": true,
+    "https": true,
+    "software": "foolfuuka",
+    "boards": ["u"],
+    "files": ["u"]
+  },
+  "The Dark Cave": {
+    "uid": 2,
+    "domain": "archive.thedarkcave.org",
+    "http": true,
+    "https": true,
+    "software": "foolfuuka",
+    "boards": ["c", "int", "out", "po"],
+    "files": ["c", "po"]
+  },
+  "4plebs": {
+    "uid": 3,
+    "domain": "archive.4plebs.org",
+    "http": true,
+    "https": false,
+    "software": "foolfuuka",
+    "boards": ["hr", "tg", "tv", "x"],
+    "files": ["hr", "tg", "tv", "x"]
+  },
+  "Nyafuu": {
+    "uid": 4,
+    "domain": "archive.nyafuu.org",
+    "http": true,
+    "https": true,
+    "software": "foolfuuka",
+    "boards": ["c", "w", "wg"],
+    "files": ["c", "w", "wg"]
+  },
+  "Love is Over": {
+    "uid": 5,
+    "domain": "loveisover.me",
+    "http": true,
+    "https": true,
+    "software": "foolfuuka",
+    "boards": ["d", "h", "v"],
+    "files": ["d", "h", "v"]
+  },
+  "nth-chan": {
+    "uid": 6,
+    "domain": "nth.pensivenonsen.se",
+    "http": true,
+    "https": false,
+    "software": "foolfuuka",
+    "boards": ["vg"],
+    "files": ["vg"]
+  },
+  "Install Gentoo": {
+    "uid": 7,
+    "domain": "archive.installgentoo.net",
+    "http": true,
+    "https": true,
+    "software": "fuuka",
+    "boards": ["diy", "g", "sci"],
+    "files": []
+  },
+  "Rebecca Black Tech": {
+    "uid": 8,
+    "domain": "rbt.asia",
+    "http": true,
+    "https": true,
+    "software": "fuuka",
+    "boards": ["cgl", "g", "mu", "w"],
+    "files": ["cgl", "g", "mu", "w"]
+  },
+  "Heinessen": {
+    "uid": 9,
+    "domain": "archive.heinessen.com",
+    "http": true,
+    "https": false,
+    "software": "fuuka",
+    "boards": ["an", "fit", "k", "mlp", "r9k", "toy", "x"],
+    "files": ["an", "k", "toy", "x"]
+  },
+  "warosu": {
+    "uid": 10,
+    "domain": "fuuka.warosu.org",
+    "http": true,
+    "https": true,
+    "software": "fuuka",
+    "boards": ["cgl", "ck", "fa", "jp", "lit", "q", "s4s", "tg", "vr"],
+    "files": ["cgl", "ck", "fa", "jp", "lit", "q", "s4s", "tg", "vr"]
+  }
+}

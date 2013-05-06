@@ -136,7 +136,10 @@ ImageExpand =
 
     src = @src.split '/'
     if src[2] is 'images.4chan.org'
-      if URL = Redirect.image src[3], src[5]
+      URL = Redirect.to 'file',
+        boardID:  src[3]
+        filename: src[5].replace /\?.+$/, ''
+      if URL
         setTimeout ImageExpand.expand, 10000, post, URL
         return
       if g.DEAD or post.isDead or post.file.isDead

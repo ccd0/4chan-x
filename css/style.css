@@ -358,6 +358,18 @@ a[href="javascript:;"] {
 .section-rice textarea {
   height: 150px;
 }
+.section-archives table {
+  width: 100%;
+}
+.section-archives th:not(:first-child) {
+  width: 30%;
+}
+.section-archives td {
+  text-align: center;
+}
+.section-archives select {
+  width: 90%;
+}
 #fourchanx-settings fieldset {
   border: 1px solid;
   border-radius: 3px;

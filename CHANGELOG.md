@@ -1,3 +1,6 @@
+- **New feature**: `Archive selection`
+ - Select which archive you want for specific boards and redirection type.
+ - Access it in the `Archives` tab of the Settings window.
 - Fix quote previews getting 'stuck' in Opera.
 
 ### 3.3.1 - *2013-05-04*

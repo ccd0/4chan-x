@@ -10,8 +10,7 @@ ArchiveLink =
       el: div
       order: 90
       open: ({ID, thread, board}) ->
-        redirect = Redirect.to {postID: ID, threadID: thread.ID, boardID: board.ID}
-        redirect isnt "//boards.4chan.org/#{board}/"
+        !!Redirect.to 'thread', {postID: ID, threadID: thread.ID, boardID: board.ID}
       subEntries: []
 
     for type in [
@@ -35,18 +34,17 @@ ArchiveLink =
 
     open = if type is 'post'
       ({ID, thread, board}) ->
-        el.href = Redirect.to {postID: ID, threadID: thread.ID, boardID: board.ID}
+        el.href = Redirect.to 'thread', {postID: ID, threadID: thread.ID, boardID: board.ID}
         true
     else
       (post) ->
         value = Filter[type] post
         # We want to parse the exact same stuff as the filter does already.
         return false unless value
-        el.href = Redirect.to
+        el.href = Redirect.to 'search',
           boardID:  post.board.ID
           type:     type
           value:    value
-          isSearch: true
         true
 
     return {
