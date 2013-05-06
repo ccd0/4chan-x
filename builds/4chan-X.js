@@ -9578,11 +9578,14 @@
 
         for (key in items) {
           val = items[key];
-          if (['usercss', 'emojiPos', 'archiver'].contains(key)) {
+          if (['emojiPos', 'archiver'].contains(key)) {
             continue;
           }
           input = inputs[key];
           input.value = val;
+          if (key === 'usercss') {
+            continue;
+          }
           $.on(input, event, Settings[key]);
           Settings[key].call(input);
         }
