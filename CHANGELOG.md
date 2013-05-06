@@ -5,6 +5,9 @@ detharonil
 MayhemYDG:
 - Fix whitespaces not being preserved in code tags in /g/.
 
+seaweedchan:
+- Fix QR not being able to drag to the top with fixed header disabled
+
 zixaphir:
 - Fix custom CSS
 

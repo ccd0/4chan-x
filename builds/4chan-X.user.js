@@ -2450,7 +2450,7 @@
         screenWidth: screenWidth,
         isTouching: isTouching
       };
-      _ref = Conf['Header auto-hide'] ? [0, 0] : Conf['Bottom Header'] ? [0, Header.bar.getBoundingClientRect().height] : [Header.bar.getBoundingClientRect().height, 0], o.topBorder = _ref[0], o.bottomBorder = _ref[1];
+      _ref = Conf['Header auto-hide'] || !Conf['Fixed Header'] ? [0, 0] : Conf['Bottom Header'] ? [0, Header.bar.getBoundingClientRect().height] : [Header.bar.getBoundingClientRect().height, 0], o.topBorder = _ref[0], o.bottomBorder = _ref[1];
       if (isTouching) {
         o.identifier = e.identifier;
         o.move = touchmove.bind(o);
