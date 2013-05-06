@@ -50,6 +50,9 @@ a[href="javascript:;"] {
 #boardNavDesktop {
   display: none !important;
 }
+a:active {
+  outline: none;
+}
 
 /* 4chan style fixes */
 .opContainer, .op {

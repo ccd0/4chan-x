@@ -1,7 +1,7 @@
 ThreadWatcher =
   init: ->
     return unless Conf['Thread Watcher']
-    @sc = sc = $.el 'a',
+    @shortcut = sc = $.el 'a',
       textContent: 'Watcher'
       id:   'watcher-link'
       href: 'javascript:;'
@@ -13,9 +13,9 @@ ThreadWatcher =
     $.on d, 'QRPostSuccessful',   @cb.post
     $.sync  'WatchedThreads',     @refresh
     $.on sc, 'click', @toggleWatcher
-
     
     Header.addShortcut sc
+
     $.ready =>
       ThreadWatcher.refresh()
       $.add d.body, ThreadWatcher.dialog
@@ -55,7 +55,7 @@ ThreadWatcher =
         div = $.el 'div'
         $.add div, [x, $.tn(' '), link]
         nodes.push div
-        
+
     $.rmAll ThreadWatcher.dialog
     $.add ThreadWatcher.dialog, nodes
 
@@ -69,7 +69,7 @@ ThreadWatcher =
     return
 
   toggleWatcher: ->
-    $.toggleClass ThreadWatcher.sc, 'disabled'
+    $.toggleClass ThreadWatcher.shortcut, 'disabled'
     if ThreadWatcher.dialog.hidden
       ThreadWatcher.dialog.hidden = false
     else
