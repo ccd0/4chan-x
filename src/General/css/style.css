@@ -442,6 +442,12 @@ a.hide-announcement {
 #watcher a {
   text-decoration: none;
 }
+#watcher .move>.close {
+  position: absolute;
+  right: 4px;
+  top: 0px;
+  padding: 0px 4px;
+}
 
 /* Thread Stats */
 #thread-stats {

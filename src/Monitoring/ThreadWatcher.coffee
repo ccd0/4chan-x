@@ -8,11 +8,12 @@ ThreadWatcher =
       className: 'disabled'
 
     @dialog = UI.dialog 'watcher', 'top: 50px; left: 0px;',
-      '<div class=move>Thread Watcher</div>'
+      '<div class=move>Thread Watcher<a class=close href=javascript:;>x</a></div>'
 
     $.on d, 'QRPostSuccessful',   @cb.post
     $.sync  'WatchedThreads',     @refresh
     $.on sc, 'click', @toggleWatcher
+    $.on $('.move>.close', ThreadWatcher.dialog), 'click', @toggleWatcher
     
     Header.addShortcut sc
 
