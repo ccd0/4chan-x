@@ -1,12 +1,25 @@
 ThreadWatcher =
   init: ->
     return unless Conf['Thread Watcher']
+    @sc = sc = $.el 'a',
+      textContent: 'Watcher'
+      id:   'watcher-link'
+      href: 'javascript:;'
+      className: 'disabled'
+
     @dialog = UI.dialog 'watcher', 'top: 50px; left: 0px;',
       '<div class=move>Thread Watcher</div>'
 
     $.on d, 'QRPostSuccessful',   @cb.post
-    $.on d, '4chanXInitFinished', @ready
     $.sync  'WatchedThreads',     @refresh
+    $.on sc, 'click', @toggleWatcher
+
+    
+    Header.addShortcut sc
+    $.ready =>
+      ThreadWatcher.refresh()
+      $.add d.body, ThreadWatcher.dialog
+      ThreadWatcher.dialog.hidden = true
 
     Thread::callbacks.push
       name: 'Thread Watcher'
@@ -23,18 +36,12 @@ ThreadWatcher =
       ThreadWatcher.watch @
       $.delete 'AutoWatch'
 
-  ready: ->
-    $.off d, '4chanXInitFinished', ThreadWatcher.ready
-    return unless Main.isThisPageLegit()
-    ThreadWatcher.refresh()
-    $.add d.body, ThreadWatcher.dialog
-
   refresh: (watched) ->
     unless watched
       $.get 'WatchedThreads', {}, (item) ->
         ThreadWatcher.refresh item['WatchedThreads']
       return
-    nodes = [$('.move', ThreadWatcher.dialog)]
+    nodes = [$('.move', ThreadWatcher.dialog)] 
     for board of watched
       for id, props of watched[board]
         x = $.el 'a',
@@ -48,7 +55,7 @@ ThreadWatcher =
         div = $.el 'div'
         $.add div, [x, $.tn(' '), link]
         nodes.push div
-
+        
     $.rmAll ThreadWatcher.dialog
     $.add ThreadWatcher.dialog, nodes
 
@@ -60,6 +67,13 @@ ThreadWatcher =
       else
         Favicon.empty
     return
+
+  toggleWatcher: ->
+    $.toggleClass ThreadWatcher.sc, 'disabled'
+    if ThreadWatcher.dialog.hidden
+      ThreadWatcher.dialog.hidden = false
+    else
+      ThreadWatcher.dialog.hidden = true
 
   cb:
     toggle: ->

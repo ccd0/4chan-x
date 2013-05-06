@@ -6731,7 +6731,9 @@
           innerHTML: "<span id=post-count>0</span> / <span id=file-count>0</span>",
           id: 'thread-stats'
         });
-        Header.addShortcut(sc);
+        $.ready(function() {
+          return Header.addShortcut(sc);
+        });
       } else {
         this.dialog = sc = UI.dialog('thread-stats', 'bottom: 0px; right: 0px;', "<div class=move><span id=post-count>0</span> / <span id=file-count>0</span></div>");
         $.ready(function() {
@@ -6796,7 +6798,9 @@
           innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>",
           id: 'updater'
         });
-        Header.addShortcut(sc);
+        $.ready(function() {
+          return Header.addShortcut(sc);
+        });
       } else {
         this.dialog = sc = UI.dialog('updater', 'bottom: 0px; left: 0px;', "<div class=move></div><span id=update-status></span><span id=update-timer title='Update now'></span>");
         $.addClass(doc, 'float');
@@ -7190,13 +7194,28 @@
 
   ThreadWatcher = {
     init: function() {
+      var sc,
+        _this = this;
+
       if (!Conf['Thread Watcher']) {
         return;
       }
+      this.sc = sc = $.el('a', {
+        textContent: 'Watcher',
+        id: 'watcher-link',
+        href: 'javascript:;',
+        className: 'disabled'
+      });
       this.dialog = UI.dialog('watcher', 'top: 50px; left: 0px;', '<div class=move>Thread Watcher</div>');
       $.on(d, 'QRPostSuccessful', this.cb.post);
-      $.on(d, '4chanXInitFinished', this.ready);
       $.sync('WatchedThreads', this.refresh);
+      $.on(sc, 'click', this.toggleWatcher);
+      Header.addShortcut(sc);
+      $.ready(function() {
+        ThreadWatcher.refresh();
+        $.add(d.body, ThreadWatcher.dialog);
+        return ThreadWatcher.dialog.hidden = true;
+      });
       return Thread.prototype.callbacks.push({
         name: 'Thread Watcher',
         cb: this.node
@@ -7221,14 +7240,6 @@
         ThreadWatcher.watch(_this);
         return $["delete"]('AutoWatch');
       });
-    },
-    ready: function() {
-      $.off(d, '4chanXInitFinished', ThreadWatcher.ready);
-      if (!Main.isThisPageLegit()) {
-        return;
-      }
-      ThreadWatcher.refresh();
-      return $.add(d.body, ThreadWatcher.dialog);
     },
     refresh: function(watched) {
       var ID, board, div, favicon, id, link, nodes, props, thread, x, _ref, _ref1;
@@ -7265,6 +7276,14 @@
         thread = _ref1[ID];
         favicon = $('.favicon', thread.OP.nodes.post);
         favicon.src = ID in watched ? Favicon["default"] : Favicon.empty;
+      }
+    },
+    toggleWatcher: function() {
+      $.toggleClass(ThreadWatcher.sc, 'disabled');
+      if (ThreadWatcher.dialog.hidden) {
+        return ThreadWatcher.dialog.hidden = false;
+      } else {
+        return ThreadWatcher.dialog.hidden = true;
       }
     },
     cb: {

@@ -1,5 +1,6 @@
 seaweedchan:
 - Disable settings removing scroll bar when opened, thus fixing the issue where it jumps up the page randomly
+- Hide watcher by default, add [Watcher] shortcut.
 
 ### 1.1.12 - 2013-05-06
 detharonil
