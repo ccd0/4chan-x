@@ -444,7 +444,7 @@ a.hide-announcement {
 }
 #watcher .move>.close {
   position: absolute;
-  right: 4px;
+  right: 0px;
   top: 0px;
   padding: 0px 4px;
 }
