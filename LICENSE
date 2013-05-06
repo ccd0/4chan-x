@@ -59,6 +59,7 @@
 * WakiMiko
 * btmcsweeney
 * AppleBloom
+* detharonil
 *
 * All the people who've taken the time to write bug reports.
 *
