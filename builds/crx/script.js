@@ -9227,16 +9227,12 @@
       (sectionToOpen ? sectionToOpen : links[0]).click();
       $.on($('.close', dialog), 'click', Settings.close);
       $.on(overlay, 'click', Settings.close);
-      d.body.style.width = "" + d.body.clientWidth + "px";
-      $.addClass(d.body, 'unscroll');
       return $.add(d.body, [overlay, dialog]);
     },
     close: function() {
       if (!Settings.dialog) {
         return;
       }
-      d.body.style.removeProperty('width');
-      $.rmClass(d.body, 'unscroll');
       $.rm(Settings.overlay);
       $.rm(Settings.dialog);
       delete Settings.overlay;

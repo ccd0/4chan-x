@@ -1,3 +1,6 @@
+seaweedchan:
+- Disable settings removing scroll bar when opened, thus fixing the issue where it jumps up the page randomly
+
 ### 1.1.12 - 2013-05-06
 detharonil
 - Support for %Y in time formatting

@@ -78,14 +78,10 @@ Settings =
     $.on $('.close', dialog), 'click', Settings.close
     $.on overlay,             'click', Settings.close
 
-    d.body.style.width = "#{d.body.clientWidth}px"
-    $.addClass d.body, 'unscroll'
     $.add d.body, [overlay, dialog]
 
   close: ->
     return unless Settings.dialog
-    d.body.style.removeProperty 'width'
-    $.rmClass d.body, 'unscroll'
     $.rm Settings.overlay
     $.rm Settings.dialog
     delete Settings.overlay
