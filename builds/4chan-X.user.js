@@ -111,8 +111,7 @@
   var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, IDColor, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   Config = {
     main: {
@@ -4672,7 +4671,7 @@
         });
       },
       parseItem: function(item, types) {
-        var boards, match, type, val, _ref, _ref1, _ref2;
+        var boards, match, type, val, _ref, _ref1;
 
         if (item[0] === '#') {
           return;
@@ -4683,7 +4682,7 @@
         _ref = match, match = _ref[0], type = _ref[1], val = _ref[2];
         item = item.replace(match, '');
         boards = ((_ref1 = item.match(/boards:([^;]+)/i)) != null ? _ref1[1].toLowerCase() : void 0) || 'global';
-        if (boards !== 'global' && !(_ref2 = g.BOARD.ID, __indexOf.call(boards.split(','), _ref2) >= 0)) {
+        if (boards !== 'global' && !((boards.split(',')).contains(g.BOARD.ID))) {
           return;
         }
         if (type === 'password') {
@@ -4696,7 +4695,7 @@
         if (/always/i.test(item)) {
           QR.persona.always[type] = val;
         }
-        if (__indexOf.call(types[type], val) < 0) {
+        if (!types[type].contains(val)) {
           return types[type].push(val);
         }
       },
