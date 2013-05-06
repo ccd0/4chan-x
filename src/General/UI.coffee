@@ -203,7 +203,6 @@ UI = do ->
         @parseEntry subEntry
       return
 
-
   dragstart = (e) ->
     return if e.type is 'mousedown' and e.button isnt 0 # not LMB
     # prevent text selection
@@ -245,11 +244,13 @@ UI = do ->
       o.up   = dragend.bind o
       $.on d, 'mousemove', o.move
       $.on d, 'mouseup',   o.up
+
   touchmove = (e) ->
     for touch in e.changedTouches
       if touch.identifier is @identifier
         drag.call @, touch
         return
+
   drag = (e) ->
     {clientX, clientY} = e
 
@@ -284,11 +285,13 @@ UI = do ->
     style.right  = right
     style.top    = top
     style.bottom = bottom
+
   touchend = (e) ->
     for touch in e.changedTouches
       if touch.identifier is @identifier
         dragend.call @
         return
+
   dragend = ->
     if @isTouching
       $.off d, 'touchmove', @move
@@ -318,7 +321,9 @@ UI = do ->
       o.hover o.latestEvent if el.parentNode
 
     $.on root, endEvents,   o.hoverend
+    $.on d,    'keydown',   o.hoverend
     $.on root, 'mousemove', o.hover
+
   hover = (e) ->
     @latestEvent = e
     height = @el.offsetHeight
@@ -341,9 +346,12 @@ UI = do ->
     style.top   = top + 'px'
     style.left  = left
     style.right = right
-  hoverend = ->
+
+  hoverend = (e) ->
+    return if e.type is 'keydown' and e.keyCode isnt 13
     $.rm @el
     $.off @root, @endEvents,  @hoverend
+    $.off d,     'keydown',   @hoverend
     $.off @root, 'mousemove', @hover
     @cb.call @ if @cb
 

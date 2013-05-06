@@ -353,9 +353,10 @@ Settings =
 
     $.get items, (items) ->
       for key, val of items
-        continue if ['usercss', 'emojiPos', 'archiver'].contains key
+        continue if ['emojiPos', 'archiver'].contains key
         input = inputs[key]
         input.value = val
+        continue if key is 'usercss'
         $.on input, event, Settings[key]
         Settings[key].call input
       return

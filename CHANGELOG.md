@@ -1,5 +1,12 @@
+detharonil
+- Support for %Y in time formatting
+- More future-proof %y
+
 MayhemYDG:
 - Fix whitespaces not being preserved in code tags in /g/.
+
+zixaphir:
+- Fix custom CSS
 
 ### 1.1.11 - 2013-05-04
 seaweedchan:
