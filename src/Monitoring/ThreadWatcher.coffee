@@ -17,7 +17,7 @@ ThreadWatcher =
     
     Header.addShortcut sc
 
-    $.ready =>
+    $.ready ->
       ThreadWatcher.refresh()
       $.add d.body, ThreadWatcher.dialog
       ThreadWatcher.dialog.hidden = true
@@ -42,7 +42,7 @@ ThreadWatcher =
       $.get 'WatchedThreads', {}, (item) ->
         ThreadWatcher.refresh item['WatchedThreads']
       return
-    nodes = [$('.move', ThreadWatcher.dialog)] 
+    nodes = [$('.move', ThreadWatcher.dialog)]
     for board of watched
       for id, props of watched[board]
         x = $.el 'a',
@@ -71,10 +71,7 @@ ThreadWatcher =
 
   toggleWatcher: ->
     $.toggleClass ThreadWatcher.shortcut, 'disabled'
-    if ThreadWatcher.dialog.hidden
-      ThreadWatcher.dialog.hidden = false
-    else
-      ThreadWatcher.dialog.hidden = true
+    ThreadWatcher.dialog.hidden = !ThreadWatcher.dialog.hidden
 
   cb:
     toggle: ->

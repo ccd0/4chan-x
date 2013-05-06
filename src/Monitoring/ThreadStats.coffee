@@ -6,7 +6,7 @@ ThreadStats =
       @dialog = sc = $.el 'span',
         innerHTML: "<span id=post-count>0</span> / <span id=file-count>0</span>"
         id:        'thread-stats'
-      $.ready =>
+      $.ready ->
         Header.addShortcut sc
     else 
       @dialog = sc = UI.dialog 'thread-stats', 'bottom: 0px; right: 0px;',

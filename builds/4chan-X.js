@@ -7194,8 +7194,7 @@
 
   ThreadWatcher = {
     init: function() {
-      var sc,
-        _this = this;
+      var sc;
 
       if (!Conf['Thread Watcher']) {
         return;
@@ -7281,11 +7280,7 @@
     },
     toggleWatcher: function() {
       $.toggleClass(ThreadWatcher.shortcut, 'disabled');
-      if (ThreadWatcher.dialog.hidden) {
-        return ThreadWatcher.dialog.hidden = false;
-      } else {
-        return ThreadWatcher.dialog.hidden = true;
-      }
+      return ThreadWatcher.dialog.hidden = !ThreadWatcher.dialog.hidden;
     },
     cb: {
       toggle: function() {

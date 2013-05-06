@@ -8,7 +8,7 @@ ThreadUpdater =
       @dialog = sc = $.el 'span',
         innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>"
         id:        'updater'
-      $.ready =>
+      $.ready ->
         Header.addShortcut sc
     else 
       @dialog = sc = UI.dialog 'updater', 'bottom: 0px; left: 0px;',
