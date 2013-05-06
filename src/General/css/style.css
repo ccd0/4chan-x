@@ -681,6 +681,9 @@ input.field.tripped:not(:hover):not(:focus) {
   width: 25%;
   vertical-align: top;
 }
+:root.webkit #qr [type='submit'] {
+  height: 24px;
+}
 /* Fake File Input */
 #qr-filename,
 .has-file #qr-no-file {
@@ -822,6 +825,9 @@ a:only-of-type > .remove {
 }
 .textarea {
   position: relative;
+}
+:root.webkit .textarea {
+  margin-bottom: -2px;
 }
 #char-count {
   color: #000;
