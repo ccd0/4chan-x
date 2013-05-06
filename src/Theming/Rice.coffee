@@ -8,7 +8,9 @@ Rice =
       cb:   @node
 
   cb:
-    check: ->
+    check: (e)->
+      e.preventDefault()
+      e.stopPropagation()
       @check.click()
 
     option: (e) ->
@@ -90,8 +92,7 @@ Rice =
       className: 'rice'
     div.check = input
     $.after input, div
-    if div.parentElement.tagName isnt 'LABEL'
-      $.on div, 'click', Rice.cb.check
+    $.on div, 'click', Rice.cb.check
 
   select: (select) ->
     $.addClass select, 'riced'

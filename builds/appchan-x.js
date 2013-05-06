@@ -10767,7 +10767,9 @@
       });
     },
     cb: {
-      check: function() {
+      check: function(e) {
+        e.preventDefault();
+        e.stopPropagation();
         return this.check.click();
       },
       option: function(e) {
@@ -10862,9 +10864,7 @@
       });
       div.check = input;
       $.after(input, div);
-      if (div.parentElement.tagName !== 'LABEL') {
-        return $.on(div, 'click', Rice.cb.check);
-      }
+      return $.on(div, 'click', Rice.cb.check);
     },
     select: function(select) {
       var div;
