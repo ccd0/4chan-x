@@ -1,3 +1,4 @@
+### 1.1.12 - 2013-05-06
 detharonil
 - Support for %Y in time formatting
 - More future-proof %y
