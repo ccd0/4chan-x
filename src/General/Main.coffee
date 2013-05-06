@@ -15,6 +15,7 @@ Main =
     for db in DataBoards
       Conf[db] = boards: {}
     Conf['selectedArchives'] = {}
+    Conf['archives'] = Redirect.archives
     $.get Conf, Main.initFeatures
 
     $.on d, '4chanMainInit', Main.initStyle

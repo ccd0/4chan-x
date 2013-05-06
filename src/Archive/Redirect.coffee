@@ -5,16 +5,18 @@ Redirect =
   file:   {}
 
   init: ->
+    Redirect.update()
+
     for boardID, data of Conf['selectedArchives']
       for type, uid of data
-        for archive in Redirect.archives
+        for archive in Conf['archives']
           continue if archive.uid isnt uid or type is 'post' and archive.software isnt 'foolfuuka'
           arr = if type is 'file'
             archive.files
           else
             archive.boards
           Redirect[type][boardID] = archive if boardID in arr
-    for archive in Redirect.archives
+    for archive in Conf['archives']
       for boardID in archive.boards
         unless boardID of Redirect.thread
           Redirect.thread[boardID] = archive
@@ -23,6 +25,23 @@ Redirect =
         unless boardID of Redirect.file or boardID not in archive.files
           Redirect.file[boardID] = archive
     return
+
+  update: ->
+    items =
+      lastarchivecheck: 0
+      lastupdate: 0
+    $.get items, (items) ->
+      now = Date.now()
+      # Update the list of archives every 4 days.
+      # The list is also update when 4chan X gets updated.
+      if items.lastupdate > now - 4 * $.DAY or items.lastarchivecheck > now - 4 * $.DAY
+        return
+      $.ajax '<%= meta.page %>json/archives.json', onload: ->
+        return unless @status is 200
+        Conf['archives'] = JSON.parse @response
+        $.set
+          lastarchivecheck: now
+          archives: Conf['archives']
 
   to: (dest, data) ->
     archive = (if dest is 'search' then Redirect.thread else Redirect[dest])[data.boardID]

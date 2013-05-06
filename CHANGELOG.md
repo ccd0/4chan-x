@@ -1,6 +1,8 @@
 - **New feature**: `Archive selection`
  - Select which archive you want for specific boards and redirection type.
  - Access it in the `Archives` tab of the Settings window.
+- The list of archived boards will now update automatically, separately from 4chan X updates.
+ - If you're an archiver and want [data](https://github.com/MayhemYDG/4chan-x/blob/v3/json/archives.json) about your archive to be updated, added or removed: send a PR or open an issue.
 - Fix quote previews getting 'stuck' in Opera.
 
 ### 3.3.1 - *2013-05-04*

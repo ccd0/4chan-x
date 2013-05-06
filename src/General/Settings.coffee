@@ -32,8 +32,13 @@ Settings =
         new Notification 'info', el, 30
       else
         $.on d, '4chanXInitFinished', Settings.open
+      # The archive list will always be updated with 4chan X updates.
+      Conf['archives'] = Redirect.archives
+      now = Date.now()
       $.set
-        lastupdate: Date.now()
+        archives: Conf['archives']
+        lastarchivecheck: now
+        lastupdate: now
         previousversion: g.VERSION
 
     Settings.addSection 'Main',     Settings.main
@@ -393,7 +398,7 @@ Settings =
     """
 
     boards = {}
-    for archive in Redirect.archives
+    for archive in Conf['archives']
       for boardID in archive.boards
         data = boards[boardID] or= {
           thread: []
