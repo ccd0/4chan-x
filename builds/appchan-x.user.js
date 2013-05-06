@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.0.0 - 2013-05-05
+* appchan x - Version 2.0.0 - 2013-05-06
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -7093,6 +7093,7 @@
       if (!com.value) {
         thread.value = OP.ID;
       }
+      thread.nextElementSibling.firstElementChild.textContent = thread.options[thread.selectedIndex].textContent;
       caretPos = com.selectionStart;
       com.value = com.value.slice(0, caretPos) + text + com.value.slice(com.selectionEnd);
       range = caretPos + text.length;
@@ -7100,9 +7101,7 @@
       com.focus();
       QR.selected.save(com);
       QR.selected.save(thread);
-      if (Conf['QR Shortcut']) {
-        return $.rmClass($('.qr-shortcut'), 'disabled');
-      }
+      return $.rmClass($('.qr-shortcut'), 'disabled');
     },
     characterCount: function() {
       var count, counter;
@@ -7781,7 +7780,7 @@
       for (thread in g.BOARD.threads) {
         $.add(nodes.thread, $.el('option', {
           value: thread,
-          textContent: "Thread No." + thread
+          textContent: "No." + thread
         }));
       }
       $.on(nodes.filename.parentNode, 'click keyup', QR.openFileInput);

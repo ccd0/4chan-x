@@ -355,6 +355,7 @@ QR =
       QR.cooldown.auto = true
     {com, thread} = QR.nodes
     thread.value = OP.ID unless com.value
+    thread.nextElementSibling.firstElementChild.textContent = thread.options[thread.selectedIndex].textContent
 
     caretPos = com.selectionStart
     # Replace selection for text.
@@ -367,8 +368,7 @@ QR =
     QR.selected.save com
     QR.selected.save thread
 
-    if Conf['QR Shortcut']
-      $.rmClass $('.qr-shortcut'), 'disabled'
+    $.rmClass $('.qr-shortcut'), 'disabled'
 
   characterCount: ->
     counter = QR.nodes.charCount
@@ -915,7 +915,7 @@ QR =
     for thread of g.BOARD.threads
       $.add nodes.thread, $.el 'option',
         value: thread
-        textContent: "Thread No.#{thread}"
+        textContent: "No.#{thread}"
 
     $.on nodes.filename.parentNode, 'click keyup', QR.openFileInput
 
