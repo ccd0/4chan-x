@@ -1,3 +1,7 @@
+detharonil
+- Support for %Y in time formatting
+- More future-proof %y
+
 ### 1.1.9 - 2013-05-02
 seaweedchan
 - Fix boards with previously deleted archives not switching to new archives 
