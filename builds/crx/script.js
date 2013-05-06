@@ -1,5 +1,5 @@
 /*
-* 4chan X - Version 1.1.9 - 2013-05-05
+* 4chan X - Version 1.1.9 - 2013-05-06
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -6885,10 +6885,19 @@
           return setTimeout(ThreadUpdater.update, 1000);
         }
       },
-      checkpost: function() {
+      checkpost: function(e) {
+        if (!ThreadUpdater.checkPostCount) {
+          if (e.detail.threadID !== ThreadUpdater.thread.ID) {
+            return;
+          }
+          ThreadUpdater.seconds = 0;
+          ThreadUpdater.outdateCount = 0;
+          ThreadUpdater.set('timer', '...');
+        }
         if (!(g.DEAD || ThreadUpdater.foundPost || ThreadUpdater.checkPostCount >= 5)) {
           return setTimeout(ThreadUpdater.update, ++ThreadUpdater.checkPostCount * $.SECOND);
         }
+        ThreadUpdater.set('timer', ThreadUpdater.getInterval());
         ThreadUpdater.checkPostCount = 0;
         delete ThreadUpdater.foundPost;
         return delete ThreadUpdater.postID;
