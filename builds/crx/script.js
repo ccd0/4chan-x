@@ -1,5 +1,5 @@
 /*
-* 4chan X - Version 1.1.11 - 2013-05-04
+* 4chan X - Version 1.1.11 - 2013-05-05
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -7355,7 +7355,9 @@
         }
       }
       Unread.addPosts(posts);
-      return Unread.scroll();
+      if (Conf['Scroll to Last Read Post']) {
+        return Unread.scroll();
+      }
     },
     scroll: function() {
       var hash, post, posts, prevID, root;

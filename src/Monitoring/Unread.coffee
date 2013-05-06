@@ -30,7 +30,7 @@ Unread =
     for ID, post of Unread.thread.posts
       posts.push post if post.isReply
     Unread.addPosts posts
-    Unread.scroll()
+    Unread.scroll() if Conf['Scroll to Last Read Post'] 
 
   scroll: ->
     # Let the header's onload callback handle it.
