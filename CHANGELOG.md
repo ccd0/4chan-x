@@ -10,6 +10,7 @@ seaweedchan:
 
 zixaphir:
 - Fix custom CSS
+- Fix [Deleted] showing up randomly after submitting a post
 
 ### 1.1.11 - 2013-05-04
 seaweedchan:

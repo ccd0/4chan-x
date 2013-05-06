@@ -96,9 +96,15 @@ ThreadUpdater =
       return unless e.detail.threadID is ThreadUpdater.thread.ID
       ThreadUpdater.outdateCount = 0
       setTimeout ThreadUpdater.update, 1000 if ThreadUpdater.seconds > 2
-    checkpost: ->
+    checkpost: (e) ->
+      unless ThreadUpdater.checkPostCount
+        return unless e.detail.threadID is ThreadUpdater.thread.ID
+        ThreadUpdater.seconds = 0
+        ThreadUpdater.outdateCount = 0
+        ThreadUpdater.set 'timer', '...'
       unless g.DEAD or ThreadUpdater.foundPost or ThreadUpdater.checkPostCount >= 5
         return setTimeout ThreadUpdater.update, ++ThreadUpdater.checkPostCount * $.SECOND
+      ThreadUpdater.set 'timer', ThreadUpdater.getInterval()
       ThreadUpdater.checkPostCount = 0
       delete ThreadUpdater.foundPost
       delete ThreadUpdater.postID
