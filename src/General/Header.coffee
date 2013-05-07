@@ -73,8 +73,11 @@ Header =
       if a = $ "a[href*='/#{g.BOARD}/']", $.id 'boardNavDesktopFoot'
         a.className = 'current'
 
-      cs = $.id('settingsWindowLink')
-      cs.textContent = 'Catalog Settings'
+      cs = $.el 'a',
+        id: 'settingsWindowLink'
+        href: 'javascript:;'
+        textContent: 'Catalog Settings'
+
       @addShortcut cs if g.VIEW is 'catalog'
 
       Header.setFooterVisibility Conf['Bottom Board List']

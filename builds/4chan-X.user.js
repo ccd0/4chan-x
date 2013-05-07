@@ -1514,8 +1514,11 @@
         if (a = $("a[href*='/" + g.BOARD + "/']", $.id('boardNavDesktopFoot'))) {
           a.className = 'current';
         }
-        cs = $.id('settingsWindowLink');
-        cs.textContent = 'Catalog Settings';
+        cs = $.el('a', {
+          id: 'settingsWindowLink',
+          href: 'javascript:;',
+          textContent: 'Catalog Settings'
+        });
         if (g.VIEW === 'catalog') {
           _this.addShortcut(cs);
         }

@@ -1,3 +1,6 @@
+seaweedchan:
+- Fix catalog content sometimes disappearing due to issue with 4chan's javascript
+
 zixaphir:
 - Re-added `Quote Hash Navigation` option
 
