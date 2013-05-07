@@ -1,3 +1,4 @@
+### 1.1.14 - 2013-05-07
 seaweedchan:
 - Fix catalog content sometimes disappearing due to issue with 4chan's javascript
 
