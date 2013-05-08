@@ -105,7 +105,7 @@ Header =
     $.add settings, Header.menuButton
 
     $.add boardList, fullBoardList
-    $.add Header.bar, [boardList, Header.shortcuts, Header.notify, Header.toggle]
+    $.add Header.bar, [Header.shortcuts, boardList, Header.notify, Header.toggle]
 
     Header.setCustomNav Conf['Custom Board Navigation']
     Header.generateBoardList Conf['boardnav']

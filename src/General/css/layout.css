@@ -178,7 +178,10 @@ else "
   color: transparent;
   word-spacing: 2px;
 " else ""}
-   text-align: #{_conf["Navigation Alignment"]};
+  text-align: #{_conf["Navigation Alignment"]};
+}
+#shortcuts {
+  float: right;
 }
 .fixed #header-bar.autohide {
   z-index: 24;

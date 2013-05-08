@@ -642,7 +642,7 @@ Config =
 
     Navigation:
       'Navigation Alignment': [
-        'center'
+        'left'
         'Change the text alignment of the navigation.'
         ['left', 'center', 'right']
       ]
