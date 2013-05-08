@@ -1,9 +1,9 @@
 FappeTyme =
   init: ->
-    return if not Conf['Fappe Tyme'] and (g.VIEW is 'catalog' or g.BOARD is 'f')
+    return if !Conf['Fappe Tyme'] or (g.VIEW is 'catalog' or g.BOARD is 'f')
     el = $.el 'a',
       href: 'javascript:;'
-      id: 'fappeTyme'
+      id:   'fappeTyme'
       title: 'Fappe Tyme'
 
     $.on el, 'click', FappeTyme.toggle

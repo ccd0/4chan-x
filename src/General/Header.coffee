@@ -89,8 +89,9 @@ Header =
 
     $.rm $ '#navtopright', fullBoardList
 
-    $.prepend d.body, $.id('navtopright')
-    $.add d.body, Header.menuButton
+    settings = $.id('navtopright')
+    $.prepend d.body, settings
+    $.add settings, Header.menuButton
 
     $.add boardList, fullBoardList
     $.add Header.bar, [Header.shortcuts, boardList, Header.notify, Header.toggle]

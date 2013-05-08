@@ -58,6 +58,7 @@ body > hr {
 .cataloglink,
 .navLinks,
 a[style="cursor: pointer; float: right;"] {
+  z-index: 7;
   position: fixed;
   top: 100%;
   left: 100%;
