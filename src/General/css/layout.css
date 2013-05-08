@@ -67,7 +67,8 @@ a[style="cursor: pointer; float: right;"] {
   visibility: hidden;
 }
 /* Fappe Tyme */
-.fappeTyme .thread > .noFile {
+.fappeTyme .thread > .noFile,
+.fappeTyme .threadContainer > .noFile {
   display: none;
 }
 /* Defaults */
@@ -282,7 +283,7 @@ else "
   border-right: 3px solid transparent;
   width: 7px;
   #{Style.sizing}: border-box;
-} 
+}
 /* Updater */
 #update-status:not(.null)::after {
   content: ', ';
@@ -645,7 +646,7 @@ hide: "
 #watcher > div {
   max-height: 1.3em;
   overflow: hidden;
-} 
+}
 #{if _conf['Slideout Watcher'] then "
 #watcher {
   width: #{width}px;
@@ -675,7 +676,7 @@ hide: "
 #watcher:not(:hover) {
   max-height: 200px;
   overflow: hidden;
-} 
+}
 "}
 /* Announcements */
 #globalMessage {
@@ -683,7 +684,7 @@ hide: "
   #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
 }
 #{{
-'slideout': " 
+'slideout': "
 #globalMessage {
   position: fixed;
   padding: 2px;
@@ -819,7 +820,7 @@ hide: "
   display: inline-block;
   overflow: visible;
   clear: both;
-} 
+}
 .post {
   #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
 }
