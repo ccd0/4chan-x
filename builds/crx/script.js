@@ -3672,24 +3672,20 @@
       });
       this.barFixedToggler = barFixedToggler.firstElementChild;
       this.barPositionToggler = barPositionToggler.firstElementChild;
-      this.linkJustifyToggler = linkJustifyToggler.firstElementChild;
       this.headerToggler = headerToggler.firstElementChild;
       this.footerToggler = footerToggler.firstElementChild;
       this.customNavToggler = customNavToggler.firstElementChild;
       $.on(this.menuButton, 'click', this.menuToggle);
       $.on(this.barFixedToggler, 'change', this.toggleBarFixed);
       $.on(this.barPositionToggler, 'change', this.toggleBarPosition);
-      $.on(this.linkJustifyToggler, 'change', this.toggleLinkJustify);
       $.on(this.headerToggler, 'change', this.toggleBarVisibility);
       $.on(this.footerToggler, 'change', this.toggleFooterVisibility);
       $.on(this.customNavToggler, 'change', this.toggleCustomNav);
       $.on(editCustomNav, 'click', this.editCustomNav);
       this.setBarFixed(Conf['Fixed Header']);
       this.setBarVisibility(Conf['Header auto-hide']);
-      this.setLinkJustify(Conf['Centered links']);
       $.sync('Fixed Header', Header.setBarFixed);
       $.sync('Bottom Header', Header.setBarPosition);
-      $.sync('Centered links', Header.setLinkJustify);
       $.event('AddMenuEntry', {
         type: 'header',
         el: $.el('span', {
