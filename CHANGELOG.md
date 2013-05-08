@@ -1,3 +1,4 @@
+### 2.0.1 - 2013-05-08
 seaweed
 - Fix an issue with custom board navigation catalog links
 
