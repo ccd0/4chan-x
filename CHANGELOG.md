@@ -1,6 +1,10 @@
 seaweedchan:
 - Add `Centered links` option for header
 - Add `Persistent Thread Watcher` option
+- Watcher styling changes
+
+zixaphir:
+- Simpler update checking
 
 ### 1.1.15 - 2013-05-07
 seaweedchan:
