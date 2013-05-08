@@ -1,3 +1,7 @@
+seaweedchan:
+- Add `Centered links` option for header
+- Add `Persistent Thread Watcher` option
+
 ### 1.1.15 - 2013-05-07
 seaweedchan:
 - Fix update and download urls for Greasemonkey

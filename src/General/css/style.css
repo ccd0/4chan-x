@@ -126,6 +126,13 @@ a {
   border-width: 0;
   transition: all .1s .05s ease-in-out;
 }
+:root.centered-links #header-bar {
+  text-align: center;
+}
+:root.centered-links #custom-board-list {
+  position: relative;
+  left: 80px;
+}
 .fixed.top #header-bar {
   border-bottom-width: 1px;
 }

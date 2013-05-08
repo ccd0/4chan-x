@@ -21,6 +21,7 @@ Header =
 
     @barFixedToggler    = barFixedToggler.firstElementChild
     @barPositionToggler = barPositionToggler.firstElementChild
+    @linkJustifyToggler = linkJustifyToggler.firstElementChild
     @headerToggler      = headerToggler.firstElementChild
     @footerToggler      = footerToggler.firstElementChild
     @customNavToggler   = customNavToggler.firstElementChild
@@ -28,6 +29,7 @@ Header =
     $.on @menuButton,         'click',  @menuToggle
     $.on @barFixedToggler,    'change', @toggleBarFixed
     $.on @barPositionToggler, 'change', @toggleBarPosition
+    $.on @linkJustifyToggler, 'change', @toggleLinkJustify
     $.on @headerToggler,      'change', @toggleBarVisibility
     $.on @footerToggler,      'change', @toggleFooterVisibility
     $.on @customNavToggler,   'change', @toggleCustomNav
@@ -35,10 +37,11 @@ Header =
 
     @setBarFixed      Conf['Fixed Header']
     @setBarVisibility Conf['Header auto-hide']
+    @setLinkJustify   Conf['Centered links']
 
     $.sync 'Fixed Header',     Header.setBarFixed
     $.sync 'Bottom Header',    Header.setBarPosition
-    $.sync 'Header auto-hide', Header.setBarVisibility
+    $.sync 'Centered links',   Header.setLinkJustify
 
     $.event 'AddMenuEntry',
       type: 'header'

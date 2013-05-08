@@ -186,6 +186,7 @@
         'Thread Stats': [true, 'Display reply and image count.'],
         'Updater and Stats in Header': [true, 'Places the thread updater and thread stats in the header instead of floating them.'],
         'Thread Watcher': [true, 'Bookmark threads.'],
+        'Persistent Thread Watcher': [false, 'Opens the thread watcher by default.'],
         'Auto Watch': [true, 'Automatically watch threads you start.'],
         'Auto Watch Reply': [false, 'Automatically watch threads you reply to.']
       },
@@ -333,7 +334,6 @@
       'Fixed Header': true,
       'Header auto-hide': false,
       'Bottom Header': false,
-      'Hide Header': false,
       'Header catalog links': false,
       'Bottom Board List': true,
       'Custom Board Navigation': true
@@ -3670,21 +3670,24 @@
       });
       this.barFixedToggler = barFixedToggler.firstElementChild;
       this.barPositionToggler = barPositionToggler.firstElementChild;
+      this.linkJustifyToggler = linkJustifyToggler.firstElementChild;
       this.headerToggler = headerToggler.firstElementChild;
       this.footerToggler = footerToggler.firstElementChild;
       this.customNavToggler = customNavToggler.firstElementChild;
       $.on(this.menuButton, 'click', this.menuToggle);
       $.on(this.barFixedToggler, 'change', this.toggleBarFixed);
       $.on(this.barPositionToggler, 'change', this.toggleBarPosition);
+      $.on(this.linkJustifyToggler, 'change', this.toggleLinkJustify);
       $.on(this.headerToggler, 'change', this.toggleBarVisibility);
       $.on(this.footerToggler, 'change', this.toggleFooterVisibility);
       $.on(this.customNavToggler, 'change', this.toggleCustomNav);
       $.on(editCustomNav, 'click', this.editCustomNav);
       this.setBarFixed(Conf['Fixed Header']);
       this.setBarVisibility(Conf['Header auto-hide']);
+      this.setLinkJustify(Conf['Centered links']);
       $.sync('Fixed Header', Header.setBarFixed);
       $.sync('Bottom Header', Header.setBarPosition);
-      $.sync('Header auto-hide', Header.setBarVisibility);
+      $.sync('Centered links', Header.setLinkJustify);
       $.event('AddMenuEntry', {
         type: 'header',
         el: $.el('span', {
@@ -14489,24 +14492,22 @@
       }
     },
     checkUpdate: function() {
-      var freq, items, now;
+      var now;
 
       if (!(Conf['Check for Updates'] && Main.isThisPageLegit())) {
         return;
       }
       now = Date.now();
-      freq = 7 * $.DAY;
-      items = {
-        lastupdate: 0,
-        lastchecked: 0
-      };
-      return $.get(items, function(items) {
-        if (items.lastupdate > now - freq || items.lastchecked > now - $.DAY) {
+      return $.get('lastchecked', 0, function(_arg) {
+        var lastchecked;
+
+        lastchecked = _arg.lastchecked;
+        if (lastchecked > now - $.DAY) {
           return;
         }
         return $.ready(function() {
           $.on(window, 'message', Main.message);
-          $.set('lastUpdate', now);
+          $.set('lastchecked', now);
           return $.add(d.head, $.el('script', {
             src: 'https://github.com/zixaphir/appchan-x/raw/Av2/latest.js'
           }));
