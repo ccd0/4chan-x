@@ -15,7 +15,7 @@
     "run_at": "document_start"
   }],
   "homepage_url": "<%= meta.page %>",
-  "minimum_chrome_version": "26",
+  "minimum_chrome_version": "24",
   "permissions": [
     "storage"
   ]
