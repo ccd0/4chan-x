@@ -426,9 +426,8 @@ a.hide-announcement {
   overflow: hidden;
   white-space: nowrap;
   min-width: 120px;
-}
-#watcher:not(:hover) {
-  max-height: 220px;
+  max-height: 92%;
+  overflow-y: auto;
 }
 #watcher > .move {
   padding-top: 3px;
