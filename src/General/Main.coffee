@@ -221,8 +221,9 @@ Main =
     len = nodes.length
     for callback in klass::callbacks
       # c.profile callback.name
-      for i in [0...len]
-        node = nodes[i]
+      i = 0
+      while i < len
+        node = nodes[i++]
         try
           callback.cb.call node
         catch err
@@ -305,8 +306,8 @@ Main =
     items =
       lastupdate:  0
       lastchecked: 0
-    $.get items, (items) ->
-      if items.lastupdate > now - freq or items.lastchecked > now - $.DAY
+    $.get items, ({lastupdate, lastchecked}) ->
+      if (lastupdate > now - freq) or (lastchecked > now - $.DAY)
         return
       $.ready ->
         $.on window, 'message', Main.message
