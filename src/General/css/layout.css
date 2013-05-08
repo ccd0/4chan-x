@@ -283,6 +283,10 @@ else "
   width: 7px;
   #{Style.sizing}: border-box;
 } 
+/* Updater */
+#update-status:not(.null)::after {
+  content: ', ';
+}
 /* Pagination */
 .pagelist {
   border-width: 1px;
