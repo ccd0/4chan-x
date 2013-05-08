@@ -18,7 +18,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.1.16 - 2013-05-07
+* 4chan X - Version 1.1.16 - 2013-05-08
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -1609,7 +1609,10 @@
               a.setAttribute('data-only', m[1]);
               a.href = "//boards.4chan.org/" + board + "/";
               if (m[1] === 'catalog') {
-                a.href += 'catalog';
+                if (m[1] === 'catalog') {
+                  a.href += 'catalog';
+                }
+                $.addClass(a, 'catalog');
               }
             }
             if (board === '@') {
@@ -7951,7 +7954,7 @@
       var a, board, path, _i, _len, _ref;
 
       path = useCatalog ? 'catalog' : '';
-      _ref = $$("#board-list a[href*=\"boards.4chan.org\"],\n#boardNavDesktop a[href*=\"boards.4chan.org\"],\n#boardNavDesktopFoot a[href*=\"boards.4chan.org\"]");
+      _ref = $$("#board-list a[href*=\"boards.4chan.org\"]:not(.catalog),\n#boardNavDesktopFoot a[href*=\"boards.4chan.org\"]");
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
         board = a.pathname.split('/')[1];

@@ -162,7 +162,9 @@ Header =
           if m = t.match /-(index|catalog)/
             a.setAttribute 'data-only', m[1]
             a.href = "//boards.4chan.org/#{board}/"
-            a.href += 'catalog' if m[1] is 'catalog'
+            if m[1] is 'catalog'
+              a.href += 'catalog' if m[1] is 'catalog'
+              $.addClass a, 'catalog'
 
           $.addClass a, 'navSmall' if board is '@'
           return a

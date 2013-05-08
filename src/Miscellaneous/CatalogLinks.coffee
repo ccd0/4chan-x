@@ -28,8 +28,7 @@ CatalogLinks =
   set: (useCatalog) ->
     path = if useCatalog then 'catalog' else ''
     for a in $$ """
-      #board-list a[href*="boards.4chan.org"],
-      #boardNavDesktop a[href*="boards.4chan.org"],
+      #board-list a[href*="boards.4chan.org"]:not(.catalog),
       #boardNavDesktopFoot a[href*="boards.4chan.org"]
     """
       board = a.pathname.split('/')[1]
