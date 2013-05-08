@@ -1609,9 +1609,7 @@
               a.setAttribute('data-only', m[1]);
               a.href = "//boards.4chan.org/" + board + "/";
               if (m[1] === 'catalog') {
-                if (m[1] === 'catalog') {
-                  a.href += 'catalog';
-                }
+                a.href += 'catalog';
                 $.addClass(a, 'catalog');
               }
             }
