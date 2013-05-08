@@ -285,7 +285,7 @@ else "
   #{Style.sizing}: border-box;
 }
 /* Updater */
-#update-status:not(.null)::after {
+#update-status.new::after {
   content: ', ';
 }
 /* Pagination */
