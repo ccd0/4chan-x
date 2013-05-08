@@ -1,6 +1,6 @@
 FappeTyme =
   init: ->
-    return if !Conf['Fappe Tyme'] or (g.VIEW is 'catalog' or g.BOARD is 'f')
+    return if !Conf['Fappe Tyme'] or g.VIEW is 'catalog' or g.BOARD is 'f'
     el = $.el 'a',
       href: 'javascript:;'
       id:   'fappeTyme'

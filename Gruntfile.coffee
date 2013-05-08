@@ -50,6 +50,7 @@ module.exports = (grunt) ->
         files:
           'builds/crx/manifest.json': 'src/General/meta/manifest.json'
           'builds/crx/script.js': [
+            'src/General/meta/botproc.js'
             'src/General/meta/banner.js'
             'tmp-<%= pkg.type %>/script.js'
           ]
@@ -57,6 +58,7 @@ module.exports = (grunt) ->
       userjs:
         options: concatOptions
         src: [
+          'src/General/meta/botproc.js'
           'src/General/meta/metadata.js'
           'src/General/meta/banner.js'
           'tmp-<%= pkg.type %>/script.js'
@@ -68,6 +70,7 @@ module.exports = (grunt) ->
         files:
           'builds/<%= pkg.name %>.meta.js': 'src/General/meta/metadata.js'
           'builds/<%= pkg.name %>.user.js': [
+            'src/General/meta/botproc.js'
             'src/General/meta/metadata.js'
             'src/General/meta/banner.js'
             'tmp-<%= pkg.type %>/script.js'
