@@ -107,7 +107,7 @@ Settings =
     hyphenatedTitle = title.toLowerCase().replace /\s+/g, '-'
     Settings.sections.push {title, hyphenatedTitle, open}
 
-  openSection: (mode)->
+  openSection: (mode) ->
     if selected = $ '.tab-selected', Settings.dialog
       $.rmClass selected, 'tab-selected'
     $.addClass $(".tab-#{@hyphenatedTitle}", Settings.dialog), 'tab-selected'
@@ -549,12 +549,12 @@ Settings =
       for name in keys
         theme = Themes[name]
 
-        unless theme["Deleted"]
+        continue if theme["Deleted"]
 
-          div = $.el 'div',
-            className: "theme #{if name is Conf['theme'] then 'selectedtheme' else ''}"
-            id:        name
-            innerHTML: "
+        div = $.el 'div',
+          className: "theme #{if name is Conf['theme'] then 'selectedtheme' else ''}"
+          id:        name
+          innerHTML: "
 <div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
   <div>
     <div style='cursor: pointer; width: 9px; height: 9px; margin: 2px 3px; display: inline-block; vertical-align: bottom; background: #{theme['Checkbox Background']}; border: 1px solid #{theme['Checkbox Border']};'></div>
@@ -598,14 +598,14 @@ Settings =
   </h1>
 </div>"
 
-          div.style.backgroundColor = theme['Background Color']
+        div.style.backgroundColor = theme['Background Color']
 
-          $.on $('a.edit',   div), 'click', cb.edit
-          $.on $('a.export', div), 'click', cb.export
-          $.on $('a.delete', div), 'click', cb.delete
-          $.on div,                'click', cb.select
+        $.on $('a.edit',   div), 'click', cb.edit
+        $.on $('a.export', div), 'click', cb.export
+        $.on $('a.delete', div), 'click', cb.delete
+        $.on div,                'click', cb.select
 
-          $.add suboptions, div
+        $.add suboptions, div
 
       div = $.el 'div',
         id:        'addthemes'
@@ -639,19 +639,24 @@ Settings =
 
       $.on $('#tUndelete', div), 'click', ->
         $.rm $.id "themeContainer"
-        Settings.openSection themes, 'undelete'
+
+        themes = 
+          open:            Settings.themes
+          hyphenatedTitle: 'themes'
+        
+        Settings.openSection.apply themes, ['undelete']
 
     else
 
       for name in keys
         theme = Themes[name]
 
-        if theme["Deleted"]
+        continue unless theme["Deleted"]
 
-          div = $.el 'div',
-            id:        name
-            className: theme
-            innerHTML: "
+        div = $.el 'div',
+          id:        name
+          className: theme
+          innerHTML: "
 <div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
   <div style='padding: 3px 0px 0px 8px;'>
     <span style='color:#{theme['Subjects']}!important; font-weight: 600 !important'>#{name}</span>
@@ -670,17 +675,21 @@ Settings =
   </blockquote>
 </div>"
 
-          $.on div, 'click', cb.restore
+        $.on div, 'click', cb.restore
 
-          $.add suboptions, div
+        $.add suboptions, div
 
       div = $.el 'div',
         id:        'addthemes'
         innerHTML: "<a href='javascript:;'>Return</a>"
 
       $.on $('a', div), 'click', ->
+        themes = 
+          open:            Settings.themes
+          hyphenatedTitle: 'themes'
+
         $.rm $.id "themeContainer"
-        Settings.openSection themes
+        Settings.openSection.call themes
 
     $.add parentdiv, suboptions
     $.add parentdiv, div
@@ -815,8 +824,10 @@ Settings =
         unless Conf["Deleted Mascots"].length > 0
           alert "No mascots have been deleted."
           return
-        $.rm $.id "mascotContainer"
-        Settings.mascotTab.dialog Settings.el, 'undelete'
+        mascots = 
+          open:            Settings.mascots
+          hyphenatedTitle: 'mascots'
+        Settings.openSection.apply mascots, ['restore']
 
     else
       categories = $.el "div",
@@ -845,8 +856,10 @@ Settings =
         innerHTML: "<a href=\"javascript:;\" id=\"return\">Return</a>"
 
       $.on $('#return', batchmascots), 'click', ->
-        $.rm $.id "mascotContainer"
-        Settings.section 'mascots'
+        mascots = 
+          open:            Settings.mascots
+          hyphenatedTitle: 'mascots'
+        Settings.openSection.apply mascots
 
     $.add parentdiv, [suboptions, batchmascots, mascotHide]
 
@@ -973,8 +986,7 @@ Settings =
               $.set 'theme', Conf['theme']
           Themes[@name]["Deleted"] = true
 
-          $.get "userThemes", {}, ->
-            userThemes = items['userThemes']
+          $.get "userThemes", {}, ({userThemes}) =>
             userThemes[@name] = Themes[@name]
             $.set 'userThemes', userThemes
             $.rm container
@@ -982,8 +994,8 @@ Settings =
       restore: ->
         if confirm "Are you sure you want to restore \"#{@id}\"?"
           Themes[@id]["Deleted"] = false
-          $.get "userThemes", {}, (item) ->
-            userThemes = item["userThemes"]
+
+          $.get "userThemes", {}, ({userThemes}) =>
             userThemes[@id] = Themes[@id]
             $.set 'userThemes', userThemes
             $.rm @

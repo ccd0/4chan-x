@@ -6,16 +6,15 @@ ThemeTools =
   init: (key) ->
     Conf['editMode'] = "theme"
 
-    if Themes[key]
+    if key
       editTheme = JSON.parse(JSON.stringify(Themes[key]))
-      $.get "userThemes", {}, (items) ->
-        if items[key]
-          editTheme["Theme"] = key
-        else
-          editTheme["Theme"] = key += " [custom]"
+      editTheme["Theme"] = if Conf['userThemes'][key]
+        key
+      else
+        key += " [custom]"
     else
       editTheme = JSON.parse(JSON.stringify(Themes['Yotsuba B']))
-      editTheme["Theme"] = "Untitled"
+      editTheme["Theme"]  = "Untitled"
       editTheme["Author"] = "Author"
       editTheme["Author Tripcode"] = "Unknown"
 
@@ -102,8 +101,10 @@ ThemeTools =
       $.on input, 'blur', ->
         editTheme[@name] = @value
     $.add $("#themebar", ThemeTools.dialog), header
-    themecontent = $("#themecontent", ThemeTools.dialog)
+    themeContent = $("#themecontent", ThemeTools.dialog)
 
+    nodes = []
+    
     for item in layout
       unless editTheme[item]
         editTheme[item] = ''
@@ -168,11 +169,9 @@ ThemeTools =
 
         editTheme[@name] = @value
 
-      Style.addStyle(editTheme)
+      nodes.push div
 
-      $.add themecontent, div
-
-    $.add themecontent, div
+    Style.addStyle(editTheme)
 
     unless editTheme["Custom CSS"]
       editTheme["Custom CSS"] = ""
@@ -185,12 +184,15 @@ ThemeTools =
       editTheme["Custom CSS"] = @value
       Style.themeCSS.textContent  = Style.theme editTheme
 
-    $.add themecontent, div
+    nodes.push div
 
     $.on $('#save > a', ThemeTools.dialog), 'click', ->
       ThemeTools.save editTheme
 
     $.on  $('#close > a', ThemeTools.dialog), 'click', ThemeTools.close
+
+    $.add themeContent, nodes
+
     $.add d.body, ThemeTools.dialog
     Style.themeCSS.textContent  = Style.theme editTheme
 

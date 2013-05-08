@@ -11310,18 +11310,12 @@
 
   ThemeTools = {
     init: function(key) {
-      var colorInput, div, fileInput, header, input, item, layout, themecontent, _i, _j, _len, _len1, _ref;
+      var colorInput, div, fileInput, header, input, item, layout, nodes, themeContent, _i, _j, _len, _len1, _ref;
 
       Conf['editMode'] = "theme";
-      if (Themes[key]) {
+      if (key) {
         editTheme = JSON.parse(JSON.stringify(Themes[key]));
-        $.get("userThemes", {}, function(items) {
-          if (items[key]) {
-            return editTheme["Theme"] = key;
-          } else {
-            return editTheme["Theme"] = key += " [custom]";
-          }
-        });
+        editTheme["Theme"] = Conf['userThemes'][key] ? key : key += " [custom]";
       } else {
         editTheme = JSON.parse(JSON.stringify(Themes['Yotsuba B']));
         editTheme["Theme"] = "Untitled";
@@ -11345,7 +11339,8 @@
         });
       }
       $.add($("#themebar", ThemeTools.dialog), header);
-      themecontent = $("#themecontent", ThemeTools.dialog);
+      themeContent = $("#themecontent", ThemeTools.dialog);
+      nodes = [];
       for (_j = 0, _len1 = layout.length; _j < _len1; _j++) {
         item = layout[_j];
         if (!editTheme[item]) {
@@ -11420,10 +11415,9 @@
           }
           return editTheme[this.name] = this.value;
         });
-        Style.addStyle(editTheme);
-        $.add(themecontent, div);
+        nodes.push(div);
       }
-      $.add(themecontent, div);
+      Style.addStyle(editTheme);
       if (!editTheme["Custom CSS"]) {
         editTheme["Custom CSS"] = "";
       }
@@ -11435,11 +11429,12 @@
         editTheme["Custom CSS"] = this.value;
         return Style.themeCSS.textContent = Style.theme(editTheme);
       });
-      $.add(themecontent, div);
+      nodes.push(div);
       $.on($('#save > a', ThemeTools.dialog), 'click', function() {
         return ThemeTools.save(editTheme);
       });
       $.on($('#close > a', ThemeTools.dialog), 'click', ThemeTools.close);
+      $.add(themeContent, nodes);
       $.add(d.body, ThemeTools.dialog);
       return Style.themeCSS.textContent = Style.theme(editTheme);
     },
@@ -13698,19 +13693,20 @@
         for (_i = 0, _len = keys.length; _i < _len; _i++) {
           name = keys[_i];
           theme = Themes[name];
-          if (!theme["Deleted"]) {
-            div = $.el('div', {
-              className: "theme " + (name === Conf['theme'] ? 'selectedtheme' : ''),
-              id: name,
-              innerHTML: "<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div>    <div style='cursor: pointer; width: 9px; height: 9px; margin: 2px 3px; display: inline-block; vertical-align: bottom; background: " + theme['Checkbox Background'] + "; border: 1px solid " + theme['Checkbox Border'] + ";'></div>    <span style='color:" + theme['Subjects'] + "!important; font-weight: 600 !important'>      " + name + "    </span>    <span style='color:" + theme['Names'] + "!important; font-weight: 600 !important'>      " + theme['Author'] + "    </span>    <span style='color:" + theme['Sage'] + "!important'>      (SAGE)    </span>    <span style='color:" + theme['Tripcodes'] + "!important'>      " + theme['Author Tripcode'] + "    </span>    <time style='color:" + theme['Timestamps'] + "'>      20XX.01.01 12:00    </time>    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>      No.27583594    </a>    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important;' href='javascript:;' name='" + name + "' class=edit>      &gt;&gt;edit    </a>    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important;' href='javascript:;' name='" + name + "' class=export>      &gt;&gt;export    </a>    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important;' href='javascript:;' name='" + name + "' class=delete>      &gt;&gt;delete    </a>  </div>  <blockquote style='margin: 0; padding: 12px 40px 12px 38px'>    <a style='color:" + theme['Quotelinks'] + "!important; text-shadow: none;'>      &gt;&gt;27582902    </a>    <br>    Post content is right here.  </blockquote>  <h1 style='color: " + theme['Text'] + "'>    Selected  </h1></div>"
-            });
-            div.style.backgroundColor = theme['Background Color'];
-            $.on($('a.edit', div), 'click', cb.edit);
-            $.on($('a.export', div), 'click', cb["export"]);
-            $.on($('a.delete', div), 'click', cb["delete"]);
-            $.on(div, 'click', cb.select);
-            $.add(suboptions, div);
+          if (theme["Deleted"]) {
+            continue;
           }
+          div = $.el('div', {
+            className: "theme " + (name === Conf['theme'] ? 'selectedtheme' : ''),
+            id: name,
+            innerHTML: "<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div>    <div style='cursor: pointer; width: 9px; height: 9px; margin: 2px 3px; display: inline-block; vertical-align: bottom; background: " + theme['Checkbox Background'] + "; border: 1px solid " + theme['Checkbox Border'] + ";'></div>    <span style='color:" + theme['Subjects'] + "!important; font-weight: 600 !important'>      " + name + "    </span>    <span style='color:" + theme['Names'] + "!important; font-weight: 600 !important'>      " + theme['Author'] + "    </span>    <span style='color:" + theme['Sage'] + "!important'>      (SAGE)    </span>    <span style='color:" + theme['Tripcodes'] + "!important'>      " + theme['Author Tripcode'] + "    </span>    <time style='color:" + theme['Timestamps'] + "'>      20XX.01.01 12:00    </time>    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>      No.27583594    </a>    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important;' href='javascript:;' name='" + name + "' class=edit>      &gt;&gt;edit    </a>    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important;' href='javascript:;' name='" + name + "' class=export>      &gt;&gt;export    </a>    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important;' href='javascript:;' name='" + name + "' class=delete>      &gt;&gt;delete    </a>  </div>  <blockquote style='margin: 0; padding: 12px 40px 12px 38px'>    <a style='color:" + theme['Quotelinks'] + "!important; text-shadow: none;'>      &gt;&gt;27582902    </a>    <br>    Post content is right here.  </blockquote>  <h1 style='color: " + theme['Text'] + "'>    Selected  </h1></div>"
+          });
+          div.style.backgroundColor = theme['Background Color'];
+          $.on($('a.edit', div), 'click', cb.edit);
+          $.on($('a.export', div), 'click', cb["export"]);
+          $.on($('a.delete', div), 'click', cb["delete"]);
+          $.on(div, 'click', cb.select);
+          $.add(suboptions, div);
         }
         div = $.el('div', {
           id: 'addthemes',
@@ -13739,30 +13735,43 @@
           return this.nextSibling.click();
         });
         $.on($('#tUndelete', div), 'click', function() {
+          var themes;
+
           $.rm($.id("themeContainer"));
-          return Settings.openSection(themes, 'undelete');
+          themes = {
+            open: Settings.themes,
+            hyphenatedTitle: 'themes'
+          };
+          return Settings.openSection.apply(themes, ['undelete']);
         });
       } else {
         for (_j = 0, _len1 = keys.length; _j < _len1; _j++) {
           name = keys[_j];
           theme = Themes[name];
-          if (theme["Deleted"]) {
-            div = $.el('div', {
-              id: name,
-              className: theme,
-              innerHTML: "<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div style='padding: 3px 0px 0px 8px;'>    <span style='color:" + theme['Subjects'] + "!important; font-weight: 600 !important'>" + name + "</span>    <span style='color:" + theme['Names'] + "!important; font-weight: 600 !important'>" + theme['Author'] + "</span>    <span style='color:" + theme['Sage'] + "!important'>(SAGE)</span>    <span style='color:" + theme['Tripcodes'] + "!important'>" + theme['Author Tripcode'] + "</span>    <time style='color:" + theme['Timestamps'] + "'>20XX.01.01 12:00</time>    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>No.27583594</a>  </div>  <blockquote style='margin: 0; padding: 12px 40px 12px 38px'>    <a style='color:" + theme['Quotelinks'] + "!important; text-shadow: none;'>      &gt;&gt;27582902    </a>    <br>    I forgive you for using VLC to open me. ;__;  </blockquote></div>"
-            });
-            $.on(div, 'click', cb.restore);
-            $.add(suboptions, div);
+          if (!theme["Deleted"]) {
+            continue;
           }
+          div = $.el('div', {
+            id: name,
+            className: theme,
+            innerHTML: "<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div style='padding: 3px 0px 0px 8px;'>    <span style='color:" + theme['Subjects'] + "!important; font-weight: 600 !important'>" + name + "</span>    <span style='color:" + theme['Names'] + "!important; font-weight: 600 !important'>" + theme['Author'] + "</span>    <span style='color:" + theme['Sage'] + "!important'>(SAGE)</span>    <span style='color:" + theme['Tripcodes'] + "!important'>" + theme['Author Tripcode'] + "</span>    <time style='color:" + theme['Timestamps'] + "'>20XX.01.01 12:00</time>    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>No.27583594</a>  </div>  <blockquote style='margin: 0; padding: 12px 40px 12px 38px'>    <a style='color:" + theme['Quotelinks'] + "!important; text-shadow: none;'>      &gt;&gt;27582902    </a>    <br>    I forgive you for using VLC to open me. ;__;  </blockquote></div>"
+          });
+          $.on(div, 'click', cb.restore);
+          $.add(suboptions, div);
         }
         div = $.el('div', {
           id: 'addthemes',
           innerHTML: "<a href='javascript:;'>Return</a>"
         });
         $.on($('a', div), 'click', function() {
+          var themes;
+
+          themes = {
+            open: Settings.themes,
+            hyphenatedTitle: 'themes'
+          };
           $.rm($.id("themeContainer"));
-          return Settings.openSection(themes);
+          return Settings.openSection.call(themes);
         });
       }
       $.add(parentdiv, suboptions);
@@ -13894,12 +13903,17 @@
           return MascotTools.importMascot(e);
         });
         $.on($('#undelete', batchmascots), 'click', function() {
+          var mascots;
+
           if (!(Conf["Deleted Mascots"].length > 0)) {
             alert("No mascots have been deleted.");
             return;
           }
-          $.rm($.id("mascotContainer"));
-          return Settings.mascotTab.dialog(Settings.el, 'undelete');
+          mascots = {
+            open: Settings.mascots,
+            hyphenatedTitle: 'mascots'
+          };
+          return Settings.openSection.apply(mascots, ['restore']);
         });
       } else {
         categories = $.el("div", {
@@ -13926,8 +13940,13 @@
           innerHTML: "<a href=\"javascript:;\" id=\"return\">Return</a>"
         });
         $.on($('#return', batchmascots), 'click', function() {
-          $.rm($.id("mascotContainer"));
-          return Settings.section('mascots');
+          var mascots;
+
+          mascots = {
+            open: Settings.mascots,
+            hyphenatedTitle: 'mascots'
+          };
+          return Settings.openSection.apply(mascots);
         });
       }
       $.add(parentdiv, [suboptions, batchmascots, mascotHide]);
@@ -14059,7 +14078,8 @@
           }
         },
         "delete": function(e) {
-          var container, settheme;
+          var container, settheme,
+            _this = this;
 
           e.preventDefault();
           e.stopPropagation();
@@ -14077,26 +14097,28 @@
               }
             }
             Themes[this.name]["Deleted"] = true;
-            return $.get("userThemes", {}, function() {
+            return $.get("userThemes", {}, function(_arg) {
               var userThemes;
 
-              userThemes = items['userThemes'];
-              userThemes[this.name] = Themes[this.name];
+              userThemes = _arg.userThemes;
+              userThemes[_this.name] = Themes[_this.name];
               $.set('userThemes', userThemes);
               return $.rm(container);
             });
           }
         },
         restore: function() {
+          var _this = this;
+
           if (confirm("Are you sure you want to restore \"" + this.id + "\"?")) {
             Themes[this.id]["Deleted"] = false;
-            return $.get("userThemes", {}, function(item) {
+            return $.get("userThemes", {}, function(_arg) {
               var userThemes;
 
-              userThemes = item["userThemes"];
-              userThemes[this.id] = Themes[this.id];
+              userThemes = _arg.userThemes;
+              userThemes[_this.id] = Themes[_this.id];
               $.set('userThemes', userThemes);
-              return $.rm(this);
+              return $.rm(_this);
             });
           }
         }
