@@ -886,6 +886,9 @@ else ""
   text-decoration: underline;
   text-decoration: line-through !important;
 }
+.inline + .hashlink {
+  display: none;
+}
 /* Quote Threading */
 .threadContainer {
   padding-left: 2em;
