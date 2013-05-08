@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.0.0 - 2013-05-07
+* appchan x - Version 2.0.0 - 2013-05-08
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -3645,7 +3645,7 @@
 
   Header = {
     init: function() {
-      var barFixedToggler, barPositionToggler, customNavToggler, editCustomNav, footerToggler, headerToggler,
+      var barFixedToggler, barPositionToggler, customNavToggler, editCustomNav, headerToggler,
         _this = this;
 
       this.menu = new UI.Menu('header');
@@ -3665,9 +3665,6 @@
       customNavToggler = $.el('label', {
         innerHTML: '<input type=checkbox name="Custom Board Navigation"> Custom board navigation'
       });
-      footerToggler = $.el('label', {
-        innerHTML: "<input type=checkbox " + (!Conf['Bottom Board List'] ? 'checked' : '') + "> Hide bottom board list"
-      });
       editCustomNav = $.el('a', {
         textContent: 'Edit custom board navigation',
         href: 'javascript:;'
@@ -3675,17 +3672,15 @@
       this.barFixedToggler = barFixedToggler.firstElementChild;
       this.barPositionToggler = barPositionToggler.firstElementChild;
       this.headerToggler = headerToggler.firstElementChild;
-      this.footerToggler = footerToggler.firstElementChild;
       this.customNavToggler = customNavToggler.firstElementChild;
+      this.setBarFixed(Conf['Fixed Header']);
+      this.setBarVisibility(Conf['Header auto-hide']);
       $.on(this.menuButton, 'click', this.menuToggle);
       $.on(this.barFixedToggler, 'change', this.toggleBarFixed);
       $.on(this.barPositionToggler, 'change', this.toggleBarPosition);
       $.on(this.headerToggler, 'change', this.toggleBarVisibility);
-      $.on(this.footerToggler, 'change', this.toggleFooterVisibility);
       $.on(this.customNavToggler, 'change', this.toggleCustomNav);
       $.on(editCustomNav, 'click', this.editCustomNav);
-      this.setBarFixed(Conf['Fixed Header']);
-      this.setBarVisibility(Conf['Header auto-hide']);
       $.sync('Fixed Header', Header.setBarFixed);
       $.sync('Bottom Header', Header.setBarPosition);
       $.event('AddMenuEntry', {
@@ -3701,8 +3696,6 @@
             el: headerToggler
           }, {
             el: barPositionToggler
-          }, {
-            el: footerToggler
           }, {
             el: customNavToggler
           }, {

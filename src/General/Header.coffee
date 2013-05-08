@@ -13,8 +13,6 @@ Header =
       innerHTML: '<input type=checkbox name="Bottom header"> Bottom header'
     customNavToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Custom Board Navigation"> Custom board navigation'
-    footerToggler = $.el 'label',
-      innerHTML: "<input type=checkbox #{unless Conf['Bottom Board List'] then 'checked' else ''}> Hide bottom board list"
     editCustomNav = $.el 'a',
       textContent: 'Edit custom board navigation'
       href: 'javascript:;'
@@ -22,19 +20,17 @@ Header =
     @barFixedToggler    = barFixedToggler.firstElementChild
     @barPositionToggler = barPositionToggler.firstElementChild
     @headerToggler      = headerToggler.firstElementChild
-    @footerToggler      = footerToggler.firstElementChild
     @customNavToggler   = customNavToggler.firstElementChild
+
+    @setBarFixed      Conf['Fixed Header']
+    @setBarVisibility Conf['Header auto-hide']
 
     $.on @menuButton,         'click',  @menuToggle
     $.on @barFixedToggler,    'change', @toggleBarFixed
     $.on @barPositionToggler, 'change', @toggleBarPosition
     $.on @headerToggler,      'change', @toggleBarVisibility
-    $.on @footerToggler,      'change', @toggleFooterVisibility
     $.on @customNavToggler,   'change', @toggleCustomNav
     $.on editCustomNav,       'click',  @editCustomNav
-
-    @setBarFixed      Conf['Fixed Header']
-    @setBarVisibility Conf['Header auto-hide']
 
     $.sync 'Fixed Header',     Header.setBarFixed
     $.sync 'Bottom Header',    Header.setBarPosition
@@ -48,7 +44,6 @@ Header =
         {el: barFixedToggler}
         {el: headerToggler}
         {el: barPositionToggler}
-        {el: footerToggler}
         {el: customNavToggler}
         {el: editCustomNav}
       ]
