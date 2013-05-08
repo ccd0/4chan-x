@@ -3,7 +3,7 @@
 // @version      2.0.0
 // @namespace    zixaphir
 // @description  The most comprehensive 4chan userscript.
-// @license      MIT; https://github.com/zixaphir/appchan-x/blob/stable/LICENSE 
+// @license      MIT; https://github.com/zixaphir/appchan-x/blob/master/LICENSE 
 // @match        *://api.4chan.org/*
 // @match        *://boards.4chan.org/*
 // @match        *://images.4chan.org/*
@@ -13047,7 +13047,7 @@
           if (!(prev[0] <= curr[0] && prev[1] <= curr[1] && prev[2] <= curr[2])) {
             return;
           }
-          changelog = 'https://github.com/zixaphir/appchan-x/blob/stable/CHANGELOG.md';
+          changelog = 'https://github.com/zixaphir/appchan-x/blob/master/CHANGELOG.md';
           el = $.el('span', {
             innerHTML: "appchan x has been updated to <a href='" + changelog + "' target=_blank>version " + g.VERSION + "</a>."
           });
@@ -13101,7 +13101,7 @@
       Settings.dialog = dialog = $.el('div', {
         id: 'appchanx-settings',
         "class": 'dialog',
-        innerHTML: "<nav><div class=sections-list></div><span class='imp-exp-result warning'></span><div class=credits><a class=export>Export</a> |\n  <a class=import>Import</a> |\n  <input type=file style='display: none;'><a href='http://zixaphir.github.com/appchan-x/' target=_blank>appchan x</a> |\n<a href='https://github.com/zixaphir/appchan-x/blob/stable/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |\n<a href='https://github.com/zixaphir/appchan-x/blob/stable/CONTRIBUTING.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |\n<a href=javascript:; class=close title=Close>×</a></div></nav><hr><div class=section-container><section></section></div>"
+        innerHTML: "<nav><div class=sections-list></div><span class='imp-exp-result warning'></span><div class=credits><a class=export>Export</a> |\n  <a class=import>Import</a> |\n  <input type=file style='display: none;'><a href='http://zixaphir.github.com/appchan-x/' target=_blank>appchan x</a> |\n<a href='https://github.com/zixaphir/appchan-x/blob/master/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |\n<a href='https://github.com/zixaphir/appchan-x/blob/master/CONTRIBUTING.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |\n<a href=javascript:; class=close title=Close>×</a></div></nav><hr><div class=section-container><section></section></div>"
       });
       Settings.overlay = overlay = $.el('div', {
         id: 'overlay'
@@ -14486,7 +14486,7 @@
           $.on(window, 'message', Main.message);
           $.set('lastchecked', now);
           return $.add(d.head, $.el('script', {
-            src: 'https://github.com/zixaphir/appchan-x/raw/stable/latest.js'
+            src: 'https://github.com/zixaphir/appchan-x/raw/master/latest.js'
           }));
         });
       });

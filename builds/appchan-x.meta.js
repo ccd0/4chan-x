@@ -3,7 +3,7 @@
 // @version      2.0.0
 // @namespace    zixaphir
 // @description  The most comprehensive 4chan userscript.
-// @license      MIT; https://github.com/zixaphir/appchan-x/blob/stable/LICENSE 
+// @license      MIT; https://github.com/zixaphir/appchan-x/blob/master/LICENSE 
 // @match        *://api.4chan.org/*
 // @match        *://boards.4chan.org/*
 // @match        *://images.4chan.org/*
