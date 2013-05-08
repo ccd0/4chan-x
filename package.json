@@ -2,7 +2,6 @@
   "name": "appchan-x",
   "version": "2.0.0",
   "description": "The most comprehensive 4chan userscript.",
-
   "meta": {
     "name": "appchan x",
     "namespace": "zixaphir",
@@ -17,8 +16,8 @@
       "*://sys.4chan.org/*"
     ],
     "files": {
-      "metajs": "4chan_X.meta.js",
-      "userjs": "4chan_X.user.js"
+      "metajs": "4chan-X.meta.js",
+      "userjs": "4chan-X.user.js"
     }
   },
   "devDependencies": {

@@ -13,13 +13,13 @@
 // @grant        GM_deleteValue
 // @grant        GM_openInTab
 // @run-at       document-start
-// @updateURL 	 https://github.com/zixaphir/appchan-x/raw/stable/builds/4chan_X.meta.js
-// @downloadURL  https://github.com/zixaphir/appchan-x/raw/stable/builds/4chan_X.user.js
+// @updateURL 	 https://github.com/zixaphir/appchan-x/raw/stable/builds/4chan-X.meta.js
+// @downloadURL  https://github.com/zixaphir/appchan-x/raw/stable/builds/4chan-X.user.js
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAElBMVEX///8EZgR8ulSk0oT///8EAgQ1A88mAAAAAXRSTlMAQObYZgAAAIpJREFUeF6t0sENwjAMhWF84N4H6gAYMUBkdQMYwfuvwmstEeD4kl892P0OaaWcpga2/K0SGII1HNBXARgu7veoY3ANd+esgMHZIz85u0EABrbms3pl/bkC1Tn5ihGOfQwqHeZ/FdYdirEMgCG2ZAQWDTL0m9FvjAhcvoGNAK2gZhGYYX9+ZgFm9gaiNmNkMENY4QAAAABJRU5ErkJggg==
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.0.0 - 2013-05-06
+* appchan x - Version 2.0.0 - 2013-05-07
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -3188,7 +3188,7 @@
     }
 
     Post.prototype.parseComment = function() {
-      var bq, data, i, node, nodes, text, _i, _j, _len, _ref, _ref1;
+      var bq, data, i, node, nodes, text, _i, _len, _ref;
 
       bq = this.nodes.comment.cloneNode(true);
       _ref = $$('.abbr, .capcodeReplies, .exif, b', bq);
@@ -3198,8 +3198,9 @@
       }
       text = [];
       nodes = d.evaluate('.//br|.//text()', bq, null, 7, null);
-      for (i = _j = 0, _ref1 = nodes.snapshotLength; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
-        text.push((data = nodes.snapshotItem(i).data) ? data : '\n');
+      i = 0;
+      while (i < nodes.snapshotLength) {
+        text.push((data = nodes.snapshotItem(i++).data) ? data : '\n');
       }
       return this.info.comment = text.join('').trim().replace(/\s+$/gm, '');
     };
@@ -3712,7 +3713,7 @@
       });
       $.on(window, 'load hashchange', Header.hashScroll);
       $.on(d, 'CreateNotification', this.createNotification);
-      $.asap((function() {
+      return $.asap((function() {
         return d.body;
       }), function() {
         if (!Main.isThisPageLegit()) {
@@ -3720,19 +3721,10 @@
         }
         $.asap((function() {
           return $.id('boardNavMobile') || d.readyState === 'complete';
-        }), Header.setBoardList);
+        }), _this.setBoardList);
         $.prepend(d.body, _this.bar);
         $.add(d.body, Header.hover);
         return _this.setBarPosition(Conf['Bottom Header']);
-      });
-      return $.ready(function() {
-        var cs;
-
-        cs = $.id('settingsWindowLink');
-        cs.textContent = 'Catalog Settings';
-        if (g.VIEW === 'catalog') {
-          return _this.addShortcut(cs);
-        }
       });
     },
     bar: $.el('div', {
@@ -14373,14 +14365,15 @@
       return Main.checkUpdate();
     },
     callbackNodes: function(klass, nodes) {
-      var callback, err, errors, i, len, node, _i, _j, _len, _ref;
+      var callback, err, errors, i, len, node, _i, _len, _ref;
 
       len = nodes.length;
       _ref = klass.prototype.callbacks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         callback = _ref[_i];
-        for (i = _j = 0; 0 <= len ? _j < len : _j > len; i = 0 <= len ? ++_j : --_j) {
-          node = nodes[i];
+        i = 0;
+        while (i < len) {
+          node = nodes[i++];
           try {
             callback.cb.call(node);
           } catch (_error) {

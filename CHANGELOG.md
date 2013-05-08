@@ -1,3 +1,14 @@
+### 1.1.15 - 2013-05-07
+seaweedchan:
+- Fix update and download urls for Greasemonkey
+
+### 1.1.14 - 2013-05-07
+seaweedchan:
+- Fix catalog content sometimes disappearing due to issue with 4chan's javascript
+
+zixaphir:
+- Re-added `Quote Hash Navigation` option
+
 ### 1.1.13 - 2013-05-06
 seaweedchan:
 - Disable settings removing scroll bar when opened, thus fixing the issue where it jumps up the page randomly

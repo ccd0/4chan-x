@@ -61,15 +61,10 @@ Header =
       return unless Main.isThisPageLegit()
       # Wait for #boardNavMobile instead of #boardNavDesktop,
       # it might be incomplete otherwise.
-      $.asap (-> $.id('boardNavMobile') or d.readyState is 'complete'), Header.setBoardList
+      $.asap (-> $.id('boardNavMobile') or d.readyState is 'complete'), @setBoardList
       $.prepend d.body, @bar
       $.add d.body, Header.hover
       @setBarPosition Conf['Bottom Header']
-
-    $.ready =>
-      cs = $.id('settingsWindowLink')
-      cs.textContent = 'Catalog Settings'
-      @addShortcut cs if g.VIEW is 'catalog'
 
   bar: $.el 'div',
     id: 'header-bar'
