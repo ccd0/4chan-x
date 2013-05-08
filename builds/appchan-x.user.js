@@ -9445,27 +9445,16 @@
 
   ThreadWatcher = {
     init: function() {
-      var sc;
-
       if (!Conf['Thread Watcher']) {
         return;
       }
-      this.shortcut = sc = $.el('a', {
-        textContent: 'Watcher',
-        id: 'watcher-link',
-        href: 'javascript:;',
-        className: 'disabled'
-      });
       this.dialog = UI.dialog('watcher', 'top: 50px; left: 0px;', '<div class=move>Thread Watcher<a class=close href=javascript:;>×</a></div>');
       $.on(d, 'QRPostSuccessful', this.cb.post);
       $.sync('WatchedThreads', this.refresh);
-      $.on(sc, 'click', this.toggleWatcher);
       $.on($('.move>.close', ThreadWatcher.dialog), 'click', this.toggleWatcher);
-      Header.addShortcut(sc);
       $.ready(function() {
         ThreadWatcher.refresh();
-        $.add(d.body, ThreadWatcher.dialog);
-        return ThreadWatcher.dialog.hidden = true;
+        return $.add(d.body, ThreadWatcher.dialog);
       });
       return Thread.prototype.callbacks.push({
         name: 'Thread Watcher',
