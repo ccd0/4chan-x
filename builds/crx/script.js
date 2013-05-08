@@ -10166,27 +10166,22 @@
       }
     },
     checkUpdate: function() {
-      var freq, items, now;
+      var now;
 
       if (!(Conf['Check for Updates'] && Main.isThisPageLegit())) {
         return;
       }
       now = Date.now();
-      freq = 7 * $.DAY;
-      items = {
-        lastupdate: 0,
-        lastchecked: 0
-      };
-      return $.get(items, function(_arg) {
-        var lastchecked, lastupdate;
+      return $.get('lastchecked', 0, function(_arg) {
+        var lastchecked;
 
-        lastupdate = _arg.lastupdate, lastchecked = _arg.lastchecked;
-        if ((lastupdate > now - freq) || (lastchecked > now - $.DAY)) {
+        lastchecked = _arg.lastchecked;
+        if (lastchecked > now - $.DAY) {
           return;
         }
         return $.ready(function() {
           $.on(window, 'message', Main.message);
-          $.set('lastUpdate', now);
+          $.set('lastchecked', now);
           return $.add(d.head, $.el('script', {
             src: 'https://github.com/seaweedchan/4chan-x/raw/master/latest.js'
           }));

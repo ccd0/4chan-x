@@ -297,21 +297,13 @@ Main =
 
   checkUpdate: ->
     return unless Conf['Check for Updates'] and Main.isThisPageLegit()
-    # Check for updates after:
-    #  - 6 hours since the last update on Opera because it lacks auto-updating.
-    #  - 7 days since the last update on Chrome/Firefox.
-    # After that, check for updates every day if we still haven't updated.
     now  = Date.now()
-    freq = <% if (type === 'userjs') { %>6 * $.HOUR<% } else { %>7 * $.DAY<% } %>
-    items =
-      lastupdate:  0
-      lastchecked: 0
-    $.get items, ({lastupdate, lastchecked}) ->
-      if (lastupdate > now - freq) or (lastchecked > now - $.DAY)
+    $.get 'lastchecked', 0, ({lastchecked}) ->
+      if (lastchecked > now - $.DAY)
         return
       $.ready ->
         $.on window, 'message', Main.message
-        $.set 'lastUpdate', now
+        $.set 'lastchecked', now
         $.add d.head, $.el 'script',
           src: '<%= meta.repo %>raw/<%= meta.mainBranch %>/latest.js'
 
