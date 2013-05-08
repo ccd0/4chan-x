@@ -18,7 +18,8 @@ Main =
     Conf['archives'] = Redirect.archives
     $.get Conf, Main.initFeatures
 
-    $.on d, '4chanMainInit', Main.initStyle
+    $.asap (-> d.head and $('link[rel="shortcut icon"]', d.head) or d.readyState in ['interactive', 'complete']),
+      Main.initStyle
 
   initFeatures: (items) ->
     Conf = items
@@ -118,7 +119,6 @@ Main =
     $.ready Main.initReady
 
   initStyle: ->
-    $.off d, '4chanMainInit', Main.initStyle
     return unless Main.isThisPageLegit()
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true

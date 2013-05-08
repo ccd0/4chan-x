@@ -74,7 +74,7 @@ Header =
       return unless Main.isThisPageLegit()
       # Wait for #boardNavMobile instead of #boardNavDesktop,
       # it might be incomplete otherwise.
-      $.asap (-> $.id('boardNavMobile') or d.readyState is 'complete'), Header.setBoardList
+      $.asap (-> $.id('boardNavMobile') or d.readyState in ['interactive', 'complete']), Header.setBoardList
       $.prepend d.body, headerEl
 
     $.ready ->
