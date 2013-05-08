@@ -189,6 +189,7 @@ MascotTools =
   <a href='javascript:;'>Close</a>
 </div>
 "
+    nodes = []
     for name, item of layout
 
       switch item[2]
@@ -270,7 +271,8 @@ MascotTools =
             MascotTools.addMascot editMascot
             Style.addStyle()
 
-      $.add $("#mascotcontent", dialog), div
+      nodes.push div
+    $.add $("#mascotcontent", dialog), nodes
 
     $.on $('#save > a', dialog), 'click', ->
       MascotTools.save editMascot

@@ -1600,9 +1600,7 @@ article li {
 .section-script fieldset {
   width: 200px;
 }
-.suboptions,
-#mascotcontent,
-#themecontent {
+.suboptions {
   overflow: auto;
   position: absolute;
   top: 0;
@@ -1614,9 +1612,6 @@ article li {
   height: 250px;
   vertical-align: middle;
   display: table-cell;
-}
-#themecontent {
-  top: 1.7em;
 }
 #save,
 .stylesettings {
@@ -1746,9 +1741,6 @@ opacity: 0;
 #themes .selectedtheme h1 {
   right: 11px;
   opacity: 1;
-}
-#themeContainer {
-  margin-bottom: 3px;
 }
 #addthemes {
   position: absolute;

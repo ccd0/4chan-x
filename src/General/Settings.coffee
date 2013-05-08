@@ -543,7 +543,7 @@ Settings =
     keys.sort()
 
     cb = Settings.cb.theme
-    
+
     if mode is "default"
 
       for name in keys
@@ -640,10 +640,10 @@ Settings =
       $.on $('#tUndelete', div), 'click', ->
         $.rm $.id "themeContainer"
 
-        themes = 
+        themes =
           open:            Settings.themes
           hyphenatedTitle: 'themes'
-        
+
         Settings.openSection.apply themes, ['undelete']
 
     else
@@ -684,7 +684,7 @@ Settings =
         innerHTML: "<a href='javascript:;'>Return</a>"
 
       $.on $('a', div), 'click', ->
-        themes = 
+        themes =
           open:            Settings.themes
           hyphenatedTitle: 'themes'
 
@@ -722,9 +722,6 @@ Settings =
     if typeof mode isnt 'string'
       mode = 'default'
 
-    parentdiv = $.el "div",
-      id: "mascotContainer"
-
     suboptions = $.el "div",
       className: "suboptions"
 
@@ -738,64 +735,52 @@ Settings =
 
     if mode is 'default'
       # Create a keyed Unordered List Element and hide option for each mascot category.
+      nodes = {}
       for name in MascotTools.categories
+        nodes[name] = []
         categories[name] = $.el "div",
           className: "mascots"
           id: name
+          innerHTML: "<h3 class=mascotHeader>#{name}</h3>"
 
         if Conf["Hidden Categories"].contains name
           categories[name].hidden = true
-
-        header = $.el "h3",
-          className: "mascotHeader"
-          textContent: name
 
         menu.push option = $.el "label",
           name: name
           innerHTML: "<input name='#{name}' type=checkbox #{if Conf["Hidden Categories"].contains(name) then 'checked' else ''}>#{name}"
 
-        $.on $('input', option), 'change', Settings.cb.mascotCategory
-
-        $.add categories[name], header
-        $.add suboptions, categories[name]
+        $.on $('input', option), 'change', cb.category
 
       for name in keys
 
         continue if Conf["Deleted Mascots"].contains name
         mascot = Mascots[name]
         mascotEl = $.el 'div',
-          className: 'mascot'
+          className: if Conf[g.MASCOTSTRING].contains name then 'mascot enabled' else 'mascot'
           id: name
-          innerHTML: "
-<div class='mascotname'>#{name.replace /_/g, " "}</div>
-<div class='mascotcontainer'><div class='mAlign #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image}'></div></div>
-<div class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a><a class=delete name='#{name}' href='javascript:;'>Delete</a><a class=export name='#{name}' href='javascript:;'>Export</a></div>"
-
-        if Conf[g.MASCOTSTRING].contains name
-          $.addClass mascotEl, 'enabled'
+          innerHTML: "<%= grunt.file.read('src/General/html/Settings/Mascot.html') %>"
 
         $.on $('.edit',   mascotEl), 'click', cb.edit
         $.on $('.delete', mascotEl), 'click', cb.delete
         $.on $('.export', mascotEl), 'click', cb.export
-        $.on mascotEl,               'click', cb.select
+
+        $.on mascotEl, 'click', cb.select
 
         if MascotTools.categories.contains mascot.category
-          $.add categories[mascot.category], mascotEl
+          nodes[mascot.category].push mascotEl
         else
-          $.add categories[MascotTools.categories[0]], mascotEl
+          nodes[MascotTools.categories[0]].push mascotEl
+
+      for name in MascotTools.categories
+        $.add categories[name], nodes[name]
+        $.add suboptions, categories[name]
 
       $.add $('div', mascotHide), menu
 
       batchmascots = $.el 'div',
         id: "mascots_batch"
-        innerHTML: "
-<a href=\"javascript:;\" id=clear>Clear All</a> /
-<a href=\"javascript:;\" id=selectAll>Select All</a> /
-<a href=\"javascript:;\" id=createNew>Add Mascot</a> /
-<a href=\"javascript:;\" id=importMascot>Import Mascot</a><input id=importMascotButton type=file hidden> /
-<a href=\"javascript:;\" id=undelete>Undelete Mascots</a> /
-<a href=\"http://appchan.booru.org/\" target=_blank>Get More Mascots!</a>
-  "
+        innerHTML: """<%= grunt.file.read('src/General/html/Settings/Batch-Mascot.html') %>"""
 
       $.on $('#clear', batchmascots), 'click', ->
         enabledMascots = JSON.parse(JSON.stringify(Conf[g.MASCOTSTRING]))
@@ -824,15 +809,15 @@ Settings =
         unless Conf["Deleted Mascots"].length > 0
           alert "No mascots have been deleted."
           return
-        mascots = 
+        mascots =
           open:            Settings.mascots
           hyphenatedTitle: 'mascots'
         Settings.openSection.apply mascots, ['restore']
 
     else
+      nodes = []
       categories = $.el "div",
         className: "mascots"
-        id: name
 
       for name in keys
         continue unless Conf["Deleted Mascots"].contains name
@@ -845,9 +830,11 @@ Settings =
 <div class='container #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image}'></div>
 "
 
-        $.on mascotEl, 'click', Settings.cb.mascot.restore
+        $.on mascotEl, 'click', cb.restore
 
-        $.add categories, mascotEl
+        nodes.push mascotEl
+
+      $.add categories, nodes
 
       $.add suboptions, categories
 
@@ -856,30 +843,29 @@ Settings =
         innerHTML: "<a href=\"javascript:;\" id=\"return\">Return</a>"
 
       $.on $('#return', batchmascots), 'click', ->
-        mascots = 
+        mascots =
           open:            Settings.mascots
           hyphenatedTitle: 'mascots'
         Settings.openSection.apply mascots
 
-    $.add parentdiv, [suboptions, batchmascots, mascotHide]
+    for node in [suboptions, batchmascots, mascotHide]
+      Rice.nodes node
 
-    Rice.nodes parentdiv
-
-    $.add section, parentdiv
+    $.add section, [suboptions, batchmascots, mascotHide]
 
   cb:
     mascot:
       category: ->
         if $.id(@name).hidden = @checked
           Conf["Hidden Categories"].push @name
-      
+
           # Gather all names of enabled mascots in the hidden category in every context it could be enabled.
           for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
             setting = Conf[type]
             i = setting.length
-      
+
             test = type is g.MASCOTSTRING
-      
+
             while i--
               name = setting[i]
               continue unless Mascots[name].category is @name
@@ -887,17 +873,17 @@ Settings =
               continue unless test
               $.rmClass $.id(name), 'enabled'
             $.set type, setting
-      
+
         else
           Conf["Hidden Categories"].remove @name
-      
+
         $.set "Hidden Categories", Conf["Hidden Categories"]
-      
+
       edit: (e) ->
         e.stopPropagation()
         MascotTools.dialog @name
         Settings.close()
-      
+
       delete: (e) ->
         e.stopPropagation()
         if confirm "Are you sure you want to delete \"#{@name}\"?"
@@ -909,24 +895,24 @@ Settings =
           Conf["Deleted Mascots"].push @name
           $.set "Deleted Mascots", Conf["Deleted Mascots"]
           $.rm $.id @name
-      
+
       export: (e) ->
         e.stopPropagation()
         exportMascot = Mascots[@name]
         exportMascot['Mascot'] = @name
         exportedMascot = "data:application/json," + encodeURIComponent(JSON.stringify(exportMascot))
-      
+
         if window.open exportedMascot, "_blank"
           return
         else if confirm "Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?"
           window.location exportedMascot
-          
+
       restore: ->
         if confirm "Are you sure you want to restore \"#{@id}\"?"
           Conf["Deleted Mascots"].remove @id
           $.set "Deleted Mascots", Conf["Deleted Mascots"]
           $.rm @
-      
+
       select: ->
         if Conf[g.MASCOTSTRING].remove @id
           if Conf['mascot'] is @id
@@ -936,13 +922,13 @@ Settings =
           MascotTools.init @id
         $.toggleClass @, 'enabled'
         $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
-      
-    
+
+
     theme:
       select: ->
         if currentTheme = $.id(Conf['theme'])
           $.rmClass currentTheme, 'selectedtheme'
-      
+
         if Conf["NSFW/SFW Themes"]
           $.set "theme_#{g.TYPE}", @id
         else
