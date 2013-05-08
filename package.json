@@ -8,7 +8,7 @@
     "repo": "https://github.com/zixaphir/appchan-x/",
     "page": "http://zixaphir.github.com/appchan-x/",
     "buildsPath": "builds/",
-    "mainBranch": "Av2",
+    "mainBranch": "stable",
     "matches": [
       "*://api.4chan.org/*",
       "*://boards.4chan.org/*",
