@@ -10143,8 +10143,11 @@
         lastupdate: 0,
         lastchecked: 0
       };
-      return $.get(items, function(items) {
-        if (items.lastupdate > now - freq || items.lastchecked > now - $.DAY) {
+      return $.get(items, function(_arg) {
+        var lastchecked, lastupdate;
+
+        lastupdate = _arg.lastupdate, lastchecked = _arg.lastchecked;
+        if ((lastupdate > now - freq) || (lastchecked > now - $.DAY)) {
           return;
         }
         return $.ready(function() {
