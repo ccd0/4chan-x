@@ -11,6 +11,8 @@ Header =
       innerHTML: '<input type=checkbox name="Header auto-hide"> Auto-hide header'
     barPositionToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Bottom header"> Bottom header'
+    linkJustifyToggler = $.el 'label',
+      innerHTML: "<input type=checkbox #{if Conf['Centered links'] then 'checked' else ''}> Centered links"
     customNavToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Custom Board Navigation"> Custom board navigation'
     footerToggler = $.el 'label',
@@ -21,6 +23,7 @@ Header =
 
     @barFixedToggler    = barFixedToggler.firstElementChild
     @barPositionToggler = barPositionToggler.firstElementChild
+    @linkJustifyToggler = linkJustifyToggler.firstElementChild
     @headerToggler      = headerToggler.firstElementChild
     @footerToggler      = footerToggler.firstElementChild
     @customNavToggler   = customNavToggler.firstElementChild
@@ -28,6 +31,7 @@ Header =
     $.on @menuButton,         'click',  @menuToggle
     $.on @barFixedToggler,    'change', @toggleBarFixed
     $.on @barPositionToggler, 'change', @toggleBarPosition
+    $.on @linkJustifyToggler, 'change', @toggleLinkJustify
     $.on @headerToggler,      'change', @toggleBarVisibility
     $.on @footerToggler,      'change', @toggleFooterVisibility
     $.on @customNavToggler,   'change', @toggleCustomNav
@@ -35,10 +39,12 @@ Header =
 
     @setBarFixed      Conf['Fixed Header']
     @setBarVisibility Conf['Header auto-hide']
+    @setLinkJustify   Conf['Centered links']
 
     $.sync 'Fixed Header',     Header.setBarFixed
     $.sync 'Bottom Header',    Header.setBarPosition
     $.sync 'Header auto-hide', Header.setBarVisibility
+    $.sync 'Centered links',   Header.setLinkJustify
 
     @addShortcut Header.menuButton
 
@@ -51,6 +57,7 @@ Header =
         {el: barFixedToggler}
         {el: headerToggler}
         {el: barPositionToggler}
+        {el: linkJustifyToggler}
         {el: footerToggler}
         {el: customNavToggler}
         {el: editCustomNav}
@@ -181,6 +188,13 @@ Header =
       $.addClass doc, 'top'
       $.add Header.bar, Header.notify
 
+  setLinkJustify: (centered) ->
+    Header.linkJustifyToggler.checked = centered
+    if centered
+      $.addClass doc, 'centered-links'
+    else
+      $.rmClass doc, 'centered-links'
+
   toggleBarPosition: ->
     $.event 'CloseMenu'
 
@@ -188,6 +202,13 @@ Header =
 
     Conf['Bottom Header'] = @checked
     $.set 'Bottom Header',  @checked
+
+  toggleLinkJustify: ->
+    $.event 'CloseMenu'
+    centered = if @nodeName is 'INPUT'
+      @checked
+    Header.setLinkJustify centered
+    $.set 'Centered links', centered
 
   setBarFixed: (fixed) ->
     Header.barFixedToggler.checked = fixed

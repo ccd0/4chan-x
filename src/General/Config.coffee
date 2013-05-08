@@ -439,6 +439,7 @@ http://iqdb.org/?url=%TURL
     'Fixed Header':            true
     'Header auto-hide':        false
     'Bottom Header':           false
+    'Centered links':          false
     'Header catalog links':    false
     'Bottom Board List':       true
     'Custom Board Navigation': true
