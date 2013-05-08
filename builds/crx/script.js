@@ -10916,11 +10916,11 @@
 
   Style = {
     init: function() {
+      this.setup();
       $.asap((function() {
         return d.body;
       }), this.asapInit);
-      $.ready(this.readyInit);
-      return this.setup();
+      return $.ready(this.readyInit);
     },
     asapInit: function() {
       MascotTools.init();

@@ -1,8 +1,8 @@
 Style =
   init: ->
+    @setup()
     $.asap (-> d.body), @asapInit
     $.ready @readyInit
-    @setup()
 
   asapInit: ->
     MascotTools.init()
