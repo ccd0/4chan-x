@@ -181,6 +181,7 @@
         'Thread Stats': [true, 'Display reply and image count.'],
         'Updater and Stats in Header': [true, 'Places the thread updater and thread stats in the header instead of floating them.'],
         'Thread Watcher': [true, 'Bookmark threads.'],
+        'Persistent Thread Watcher': [false, 'Opens the thread watcher by default.'],
         'Auto Watch': [true, 'Automatically watch threads you start.'],
         'Auto Watch Reply': [false, 'Automatically watch threads you reply to.']
       },
@@ -7282,7 +7283,7 @@
         textContent: 'Watcher',
         id: 'watcher-link',
         href: 'javascript:;',
-        className: 'disabled'
+        className: "" + (Conf['Persistent Thread Watcher'] ? '' : 'disabled')
       });
       this.dialog = UI.dialog('watcher', 'top: 50px; left: 0px;', '<div class=move>Thread Watcher<a class=close href=javascript:;>×</a></div>');
       $.on(d, 'QRPostSuccessful', this.cb.post);
@@ -7293,7 +7294,9 @@
       $.ready(function() {
         ThreadWatcher.refresh();
         $.add(d.body, ThreadWatcher.dialog);
-        return ThreadWatcher.dialog.hidden = true;
+        if (!Conf['Persistent Thread Watcher']) {
+          return ThreadWatcher.dialog.hidden = true;
+        }
       });
       return Thread.prototype.callbacks.push({
         name: 'Thread Watcher',

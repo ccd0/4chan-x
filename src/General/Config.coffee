@@ -233,6 +233,10 @@ Config =
         true
         'Bookmark threads.'
       ]
+      'Persistent Thread Watcher': [
+        false
+        'Opens the thread watcher by default.'
+      ]
       'Auto Watch': [
         true
         'Automatically watch threads you start.'

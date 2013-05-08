@@ -5,7 +5,7 @@ ThreadWatcher =
       textContent: 'Watcher'
       id:   'watcher-link'
       href: 'javascript:;'
-      className: 'disabled'
+      className: "#{if Conf['Persistent Thread Watcher'] then '' else 'disabled'}"
 
     @dialog = UI.dialog 'watcher', 'top: 50px; left: 0px;',
       '<div class=move>Thread Watcher<a class=close href=javascript:;>×</a></div>'
@@ -20,7 +20,8 @@ ThreadWatcher =
     $.ready ->
       ThreadWatcher.refresh()
       $.add d.body, ThreadWatcher.dialog
-      ThreadWatcher.dialog.hidden = true
+      unless Conf['Persistent Thread Watcher']
+        ThreadWatcher.dialog.hidden = true
 
     Thread::callbacks.push
       name: 'Thread Watcher'
