@@ -973,7 +973,7 @@
     }
 
     Post.prototype.parseComment = function() {
-      var bq, data, i, node, nodes, text, _i, _j, _len, _ref, _ref1;
+      var bq, data, i, node, nodes, text, _i, _len, _ref;
 
       bq = this.nodes.comment.cloneNode(true);
       _ref = $$('.abbr, .capcodeReplies, .exif, b', bq);
@@ -983,8 +983,9 @@
       }
       text = [];
       nodes = d.evaluate('.//br|.//text()', bq, null, 7, null);
-      for (i = _j = 0, _ref1 = nodes.snapshotLength; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
-        text.push((data = nodes.snapshotItem(i).data) ? data : '\n');
+      i = 0;
+      while (i < nodes.snapshotLength) {
+        text.push((data = nodes.snapshotItem(i++).data) ? data : '\n');
       }
       return this.info.comment = text.join('').trim().replace(/\s+$/gm, '');
     };
@@ -10015,14 +10016,15 @@
       return Main.checkUpdate();
     },
     callbackNodes: function(klass, nodes) {
-      var callback, err, errors, i, len, node, _i, _j, _len, _ref;
+      var callback, err, errors, i, len, node, _i, _len, _ref;
 
       len = nodes.length;
       _ref = klass.prototype.callbacks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         callback = _ref[_i];
-        for (i = _j = 0; 0 <= len ? _j < len : _j > len; i = 0 <= len ? ++_j : --_j) {
-          node = nodes[i];
+        i = 0;
+        while (i < len) {
+          node = nodes[i++];
           try {
             callback.cb.call(node);
           } catch (_error) {

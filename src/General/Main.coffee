@@ -221,8 +221,9 @@ Main =
     len = nodes.length
     for callback in klass::callbacks
       # c.profile callback.name
-      for i in [0...len]
-        node = nodes[i]
+      i = 0
+      while i < len
+        node = nodes[i++]
         try
           callback.cb.call node
         catch err
