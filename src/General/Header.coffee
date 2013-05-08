@@ -93,10 +93,9 @@ Header =
     $.on btn, 'click', Header.toggleBoardList
 
     $.rm $ '#navtopright', fullBoardList
-    
-    settings = $.id('navtopright')
-    $.prepend d.body, settings
-    $.add settings, Header.menuButton
+
+    $.prepend d.body, $.id('navtopright')
+    $.add d.body, Header.menuButton
 
     $.add boardList, fullBoardList
     $.add Header.bar, [Header.shortcuts, boardList, Header.notify, Header.toggle]

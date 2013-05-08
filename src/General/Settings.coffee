@@ -11,8 +11,7 @@ Settings =
       return unless Main.isThisPageLegit()
       # Wait for #boardNavMobile instead of #boardNavDesktop,
       # it might be incomplete otherwise.
-      $.asap (-> $.id 'boardNavMobile'), ->
-        $.prepend $.id('navtopright'), [$.tn(' ['), link, $.tn('] ')]
+      $.add d.body, link
 
     $.get 'previousversion', null, (item) ->
       if previous = item['previousversion']

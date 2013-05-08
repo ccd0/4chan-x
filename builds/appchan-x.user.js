@@ -3738,7 +3738,7 @@
       id: 'scroll-marker'
     }),
     setBoardList: function() {
-      var a, boardList, btn, fourchannav, fullBoardList, settings;
+      var a, boardList, btn, fourchannav, fullBoardList;
 
       fourchannav = $.id('boardNavDesktop');
       if (a = $("a[href*='/" + g.BOARD + "/']", fourchannav)) {
@@ -3752,9 +3752,8 @@
       btn = $('.hide-board-list-button', fullBoardList);
       $.on(btn, 'click', Header.toggleBoardList);
       $.rm($('#navtopright', fullBoardList));
-      settings = $.id('navtopright');
-      $.prepend(d.body, settings);
-      $.add(settings, Header.menuButton);
+      $.prepend(d.body, $.id('navtopright'));
+      $.add(d.body, Header.menuButton);
       $.add(boardList, fullBoardList);
       $.add(Header.bar, [Header.shortcuts, boardList, Header.notify, Header.toggle]);
       Header.setCustomNav(Conf['Custom Board Navigation']);
@@ -13050,11 +13049,7 @@
         if (!Main.isThisPageLegit()) {
           return;
         }
-        return $.asap((function() {
-          return $.id('boardNavMobile');
-        }), function() {
-          return $.prepend($.id('navtopright'), [$.tn(' ['), link, $.tn('] ')]);
-        });
+        return $.add(d.body, link);
       });
       $.get('previousversion', null, function(item) {
         var changelog, curr, el, prev, previous;
