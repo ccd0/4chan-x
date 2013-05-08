@@ -707,11 +707,12 @@ input.field.tripped:not(:hover):not(:focus) {
 }
 #qr-no-file,
 .has-file #qr-filename {
-  display: block;
+  display: inline-block;
   padding: 0px 4px;
   margin-bottom: 2px;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 90%;
 }
 #qr-no-file {
   color: #AAA;
@@ -734,9 +735,10 @@ input.field.tripped:not(:hover):not(:focus) {
 }
 #qr-filerm {
   position: relative;
-  right: 14px;
-  bottom: 6px;
-  margin-right: -8px;
+  bottom: 1px;
+  display: inline;
+  float: right;
+  margin-right: 2px;
   z-index: 2;
 }
 #file-n-submit {
