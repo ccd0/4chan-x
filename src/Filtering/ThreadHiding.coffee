@@ -71,6 +71,11 @@ ThreadHiding =
       makeStub = $.el 'label',
         innerHTML: "<input type=checkbox checked=#{Conf['Stubs']}> Make stub"
 
+      hideStubLink = $.el 'a',
+        textContent: 'Hide stub'
+        href: 'javascript:;'
+      $.on hideStubLink, 'click', ThreadHiding.menu.hideStub
+
       $.event 'AddMenuEntry',
         type: 'post'
         el: div
@@ -81,12 +86,27 @@ ThreadHiding =
           ThreadHiding.menu.thread = thread
           true
         subEntries: [el: apply; el: makeStub]
+
+      $.event 'AddMenuEntry',
+        type: 'post'
+        el: hideStubLink
+        order: 15
+        open: ({thread, isReply}) ->
+          if isReply or !thread.isHidden
+            return false
+          ThreadHiding.menu.thread = thread
+
     hide: ->
       makeStub = $('input', @parentNode).checked
       {thread} = ThreadHiding.menu
       ThreadHiding.hide thread, makeStub
       ThreadHiding.saveHiddenState thread, makeStub
       $.event 'CloseMenu'
+    hideStub: ->
+      {thread} = ThreadHiding.menu
+      ThreadHiding.hide thread, false
+      $.event 'CloseMenu'
+      return
 
   makeButton: (thread, type) ->
     a = $.el 'a',
@@ -122,7 +142,6 @@ ThreadHiding =
     ThreadHiding.saveHiddenState thread
 
   hide: (thread, makeStub=Conf['Stubs']) ->
-    return if thread.isHidden 
     {OP} = thread
     threadRoot = OP.nodes.root.parentNode
     thread.isHidden = true

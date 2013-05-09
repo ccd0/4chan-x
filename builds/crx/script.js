@@ -2967,7 +2967,7 @@
     },
     menu: {
       init: function() {
-        var apply, div, makeStub, replies, thisPost;
+        var apply, div, hideStubLink, makeStub, replies, thisPost;
 
         if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Reply Hiding Link']) {
           return;
@@ -3028,7 +3028,12 @@
         replies = $.el('label', {
           innerHTML: "<input type=checkbox name=replies> Show replies"
         });
-        return $.event('AddMenuEntry', {
+        hideStubLink = $.el('a', {
+          textContent: 'Hide stub',
+          href: 'javascript:;'
+        });
+        $.on(hideStubLink, 'click', PostHiding.menu.hideStub);
+        $.event('AddMenuEntry', {
           type: 'post',
           el: div,
           order: 20,
@@ -3059,6 +3064,26 @@
               el: replies
             }
           ]
+        });
+        return $.event('AddMenuEntry', {
+          type: 'post',
+          el: hideStubLink,
+          order: 15,
+          open: function(post) {
+            var data;
+
+            if (!post.isReply || post.isClone || !post.isHidden) {
+              return false;
+            }
+            if (!(data = PostHiding.db.get({
+              boardID: post.board.ID,
+              threadID: post.thread.ID,
+              postID: post.ID
+            }))) {
+              return false;
+            }
+            return PostHiding.menu.post = post;
+          }
         });
       },
       hide: function() {
@@ -3103,6 +3128,13 @@
           PostHiding.saveHiddenState(post, !(thisPost && replies), !thisPost, data.makeStub, !replies);
         }
         return $.event('CloseMenu');
+      },
+      hideStub: function() {
+        var post;
+
+        post = PostHiding.menu.post;
+        post.nodes.root.hidden = true;
+        $.event('CloseMenu');
       }
     },
     makeButton: function(post, type) {
@@ -3359,7 +3391,7 @@
     },
     menu: {
       init: function() {
-        var apply, div, makeStub;
+        var apply, div, hideStubLink, makeStub;
 
         if (g.VIEW !== 'index' || !Conf['Menu'] || !Conf['Thread Hiding Link']) {
           return;
@@ -3376,7 +3408,12 @@
         makeStub = $.el('label', {
           innerHTML: "<input type=checkbox checked=" + Conf['Stubs'] + "> Make stub"
         });
-        return $.event('AddMenuEntry', {
+        hideStubLink = $.el('a', {
+          textContent: 'Hide stub',
+          href: 'javascript:;'
+        });
+        $.on(hideStubLink, 'click', ThreadHiding.menu.hideStub);
+        $.event('AddMenuEntry', {
           type: 'post',
           el: div,
           order: 20,
@@ -3398,6 +3435,20 @@
             }
           ]
         });
+        return $.event('AddMenuEntry', {
+          type: 'post',
+          el: hideStubLink,
+          order: 15,
+          open: function(_arg) {
+            var isReply, thread;
+
+            thread = _arg.thread, isReply = _arg.isReply;
+            if (isReply || !thread.isHidden) {
+              return false;
+            }
+            return ThreadHiding.menu.thread = thread;
+          }
+        });
       },
       hide: function() {
         var makeStub, thread;
@@ -3407,6 +3458,13 @@
         ThreadHiding.hide(thread, makeStub);
         ThreadHiding.saveHiddenState(thread, makeStub);
         return $.event('CloseMenu');
+      },
+      hideStub: function() {
+        var thread;
+
+        thread = ThreadHiding.menu.thread;
+        ThreadHiding.hide(thread, false);
+        $.event('CloseMenu');
       }
     },
     makeButton: function(thread, type) {
@@ -3459,9 +3517,6 @@
 
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
-      }
-      if (thread.isHidden) {
-        return;
       }
       OP = thread.OP;
       threadRoot = OP.nodes.root.parentNode;
@@ -6605,7 +6660,7 @@
       return $.event('AddMenuEntry', {
         type: 'post',
         el: a,
-        order: 70,
+        order: 100,
         open: function(_arg) {
           var file;
 
