@@ -151,16 +151,20 @@ ThemeTools =
 
       $.on input, 'blur', ->
         depth = 0
+        toggle1 = false
+        toggle2 = false
+        len = @value.length
 
-        unless @value.length > 1000
-          for i in [0..@value.length - 1]
-            switch @value[i]
-              when '(' then depth++
-              when ')' then depth--
-              when '"' then toggle1 = not toggle1
-              when "'" then toggle2 = not toggle2
+        unless len > 1000
+          i = 0
+          while i < len
+            switch @value[i++]
+              when '(' then ++depth
+              when ')' then --depth
+              when '"' then toggle1 = !toggle1
+              when "'" then toggle2 = !toggle2
 
-        if depth != 0 or toggle1 or toggle2
+        if (depth isnt 0) or toggle1 or toggle2
           return alert "Syntax error on #{@name}."
 
         if @className == "colorfield"
@@ -168,6 +172,7 @@ ThemeTools =
           @nextSibling.color.importColor()
 
         editTheme[@name] = @value
+        Style.addStyle(editTheme)
 
       nodes.push div
 

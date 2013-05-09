@@ -1604,6 +1604,8 @@ article li {
 .section-script fieldset {
   width: 200px;
 }
+#mascotcontent,
+#themecontent,
 .suboptions {
   overflow: auto;
   position: absolute;
