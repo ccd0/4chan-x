@@ -1,3 +1,7 @@
+### 1.1.17 - 2013-05-08
+seaweedchan:
+- Bug fixes
+
 ### 1.1.16 - 2013-05-07
 seaweedchan:
 - Add `Centered links` option for header
