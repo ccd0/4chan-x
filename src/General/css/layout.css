@@ -1614,10 +1614,14 @@ article li {
   bottom: 1.7em;
   left: 0;
 }
+#themecontent {
+  top: 1.8em;
+}
 .mAlign {
   height: 250px;
-  vertical-align: middle;
+  vertical-align: bottom;
   display: table-cell;
+  line-height: 0;
 }
 #save,
 .stylesettings {
@@ -1701,24 +1705,25 @@ article li {
   max-width: 200px;
 }
 .mascotname,
-.mascotoptions {
+#mascot-options {
+  #{Style.sizing}: border-box;
   padding: 0;
   width: 100%;
 }
-.mascot .mascotoptions {
-opacity: 0;
+#mascot-options {
+  opacity: 0;
   #{agent}transition: opacity .3s linear;
 }
-.mascot:hover .mascotoptions {
+.mascot:hover #mascot-options {
   opacity: 1;
 }
-.mascotoptions {
+#mascot-options {
   position: absolute;
   bottom: 0;
   right: 0;
   left: 0;
 }
-.mascotoptions a {
+#mascot-options a {
   display: inline-block;
   width: 33%;
 }

@@ -96,7 +96,7 @@ ThemeTools =
 <input class='field name' name='Author' placeholder='Author' value='#{editTheme['Author']}'>
 <input class='field postertrip' name='Author Tripcode' placeholder='Author Tripcode' value='#{editTheme['Author Tripcode']}'>"
 
-    #Setup inputs that are not generated from the layout variable.
+    # Setup inputs that are not generated from the layout variable.
     for input in $$("input", header)
       $.on input, 'blur', ->
         editTheme[@name] = @value
@@ -155,7 +155,7 @@ ThemeTools =
         toggle2 = false
         len = @value.length
 
-        unless len > 1000
+        if len < 1000
           i = 0
           while i < len
             switch @value[i++]

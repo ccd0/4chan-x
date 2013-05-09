@@ -224,7 +224,7 @@ MascotTools =
 
             $.on input, 'blur', ->
               @value = @value.replace /[^a-z-_0-9]/ig, "_"
-              unless /^[a-z]/i.test @value
+              if (@value isnt "") and !/^[a-z]/i.test @value
                 return alert "Mascot names must start with a letter."
               editMascot[@name] = @value
               MascotTools.addMascot editMascot
@@ -249,7 +249,7 @@ MascotTools =
           optionHTML = "<div class=optionlabel>#{item[0]}</div><div class=option><select name='#{name}' value='#{value}'><br>"
           for option in item[3]
             optionHTML = optionHTML + "<option value=\"#{option}\">#{option}</option>"
-          optionHTML = optionHTML + "</select>"
+          optionHTML = optionHTML + "</select></div>"
           div = $.el 'div',
             className: "mascotvar"
             innerHTML: optionHTML

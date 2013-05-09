@@ -10,7 +10,7 @@
   box-shadow: 0 0 5px #{theme["Reply Border"]};
 }
 .mascotname,
-.mascotoptions {
+#mascot-options {
   background: #{theme["Dialog Background"]};
   border: 1px solid #{theme["Buttons Border"]};
 }

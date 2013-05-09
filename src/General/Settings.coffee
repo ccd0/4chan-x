@@ -544,6 +544,8 @@ Settings =
     keys.sort()
 
     cb = Settings.cb.theme
+    mouseover = -> @style.color = "#{@dataset.hover}"
+    mouseout  = -> @style.color = "#{@dataset.color}"
 
     if mode is "default"
 
@@ -555,68 +557,26 @@ Settings =
         div = $.el 'div',
           className: "theme #{if name is Conf['theme'] then 'selectedtheme' else ''}"
           id:        name
-          innerHTML: "
-<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
-  <div>
-    <div style='cursor: pointer; width: 9px; height: 9px; margin: 2px 3px; display: inline-block; vertical-align: bottom; background: #{theme['Checkbox Background']}; border: 1px solid #{theme['Checkbox Border']};'></div>
-    <span style='color:#{theme['Subjects']}!important; font-weight: 600 !important'>
-      #{name}
-    </span>
-    <span style='color:#{theme['Names']}!important; font-weight: 600 !important'>
-      #{theme['Author']}
-    </span>
-    <span style='color:#{theme['Sage']}!important'>
-      (SAGE)
-    </span>
-    <span style='color:#{theme['Tripcodes']}!important'>
-      #{theme['Author Tripcode']}
-    </span>
-    <time style='color:#{theme['Timestamps']}'>
-      20XX.01.01 12:00
-    </time>
-    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Post Numbers']}!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Post Numbers']}!important;' href='javascript:;'>
-      No.27583594
-    </a>
-    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Backlinks']}!important;' href='javascript:;' name='#{name}' class=edit>
-      &gt;&gt;edit
-    </a>
-    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Backlinks']}!important;' href='javascript:;' name='#{name}' class=export>
-      &gt;&gt;export
-    </a>
-    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Backlinks']}!important;' href='javascript:;' name='#{name}' class=delete>
-      &gt;&gt;delete
-    </a>
-  </div>
-  <blockquote style='margin: 0; padding: 12px 40px 12px 38px'>
-    <a style='color:#{theme['Quotelinks']}!important; text-shadow: none;'>
-      &gt;&gt;27582902
-    </a>
-    <br>
-    Post content is right here.
-  </blockquote>
-  <h1 style='color: #{theme['Text']}'>
-    Selected
-  </h1>
-</div>"
+          innerHTML: """<%= grunt.file.read('src/General/html/Settings/Theme.html').replace(/>\s+</g, '><').trim() %>"""
 
         div.style.backgroundColor = theme['Background Color']
+
+        for a in $$ 'a[data-color]', div
+          a.style.color = "#{a.dataset.color}"
+          $.on a, 'mouseover', mouseover
+          $.on a, 'mouseout',  mouseout
 
         $.on $('a.edit',   div), 'click', cb.edit
         $.on $('a.export', div), 'click', cb.export
         $.on $('a.delete', div), 'click', cb.delete
-        $.on div,                'click', cb.select
+
+        $.on div, 'click', cb.select
 
         $.add suboptions, div
 
       div = $.el 'div',
         id:        'addthemes'
-        innerHTML: "
-<a id=newtheme href='javascript:;'>New Theme</a> /
- <a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden> /
- <a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden> /
- <a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden> /
- <a id=tUndelete href='javascript:;'>Undelete Theme</a>
-"
+        innerHTML: """<%= grunt.file.read('src/General/html/Settings/Batch-Theme.html').replace(/>\s+</g, '><').trim() %>"""
 
       $.on $("#newtheme", div), 'click', ->
         ThemeTools.init "untitled"
@@ -657,24 +617,7 @@ Settings =
         div = $.el 'div',
           id:        name
           className: theme
-          innerHTML: "
-<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
-  <div style='padding: 3px 0px 0px 8px;'>
-    <span style='color:#{theme['Subjects']}!important; font-weight: 600 !important'>#{name}</span>
-    <span style='color:#{theme['Names']}!important; font-weight: 600 !important'>#{theme['Author']}</span>
-    <span style='color:#{theme['Sage']}!important'>(SAGE)</span>
-    <span style='color:#{theme['Tripcodes']}!important'>#{theme['Author Tripcode']}</span>
-    <time style='color:#{theme['Timestamps']}'>20XX.01.01 12:00</time>
-    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Post Numbers']}!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important&quot;)' style='color:#{theme['Post Numbers']}!important;' href='javascript:;'>No.27583594</a>
-  </div>
-  <blockquote style='margin: 0; padding: 12px 40px 12px 38px'>
-    <a style='color:#{theme['Quotelinks']}!important; text-shadow: none;'>
-      &gt;&gt;27582902
-    </a>
-    <br>
-    I forgive you for using VLC to open me. ;__;
-  </blockquote>
-</div>"
+          innerHTML: """<%= grunt.file.read('src/General/html/Settings/Deleted-Theme.html').replace(/>\s+</g, '><').trim() %>"""
 
         $.on div, 'click', cb.restore
 
@@ -735,6 +678,18 @@ Settings =
     keys.sort()
 
     if mode is 'default'
+      mascotoptions = $.el 'div',
+        id: 'mascot-options'
+        innerHTML: """<a class=edit name='#{name}' href='javascript:;'>Edit</a><a class=delete name='#{name}' href='javascript:;'>Delete</a><a class=export name='#{name}' href='javascript:;'>Export</a>"""
+
+      $.on $('.edit',   mascotoptions), 'click', cb.edit
+      $.on $('.delete', mascotoptions), 'click', cb.delete
+      $.on $('.export', mascotoptions), 'click', cb.export
+
+      addoptions = ->
+        return if mascotoptions.parentElement is @
+        $.add @, mascotoptions
+
       # Create a keyed Unordered List Element and hide option for each mascot category.
       nodes = {}
       for name in MascotTools.categories
@@ -762,11 +717,8 @@ Settings =
           id: name
           innerHTML: "<%= grunt.file.read('src/General/html/Settings/Mascot.html') %>"
 
-        $.on $('.edit',   mascotEl), 'click', cb.edit
-        $.on $('.delete', mascotEl), 'click', cb.delete
-        $.on $('.export', mascotEl), 'click', cb.export
-
         $.on mascotEl, 'click', cb.select
+        $.on mascotEl, 'mouseover', addoptions
 
         if MascotTools.categories.contains mascot.category
           nodes[mascot.category].push mascotEl
@@ -882,25 +834,27 @@ Settings =
 
       edit: (e) ->
         e.stopPropagation()
-        MascotTools.dialog @name
+        MascotTools.dialog @parentElement.parentElement.id
         Settings.close()
 
       delete: (e) ->
         e.stopPropagation()
-        if confirm "Are you sure you want to delete \"#{@name}\"?"
-          if Conf['mascot'] is @name
+        name = @parentElement.parentElement.id
+        if confirm "Are you sure you want to delete \"#{name}\"?"
+          if Conf['mascot'] is name
             MascotTools.init()
           for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
-            Conf[type].remove @name
+            Conf[type].remove name
             $.set type, Conf[type]
-          Conf["Deleted Mascots"].push @name
+          Conf["Deleted Mascots"].push name
           $.set "Deleted Mascots", Conf["Deleted Mascots"]
-          $.rm $.id @name
+          $.rm $.id name
 
       export: (e) ->
         e.stopPropagation()
-        exportMascot = Mascots[@name]
-        exportMascot['Mascot'] = @name
+        name = @parentElement.parentElement.id
+        exportMascot = Mascots[name]
+        exportMascot['Mascot'] = name
         exportedMascot = "data:application/json," + encodeURIComponent(JSON.stringify(exportMascot))
 
         if window.open exportedMascot, "_blank"
