@@ -2,6 +2,12 @@ QuoteYou =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Mark Quotes of You'] or !Conf['Quick Reply']
 
+    if Conf['Highlight Own Posts']
+      $.addClass doc, 'highlight-own'
+
+    if Conf['Highlight Posts Quoting You']
+      $.addClass doc, 'highlight-you'
+
     # \u00A0 is nbsp
     @text = '\u00A0(You)'
     Post::callbacks.push
@@ -13,12 +19,6 @@ QuoteYou =
 
     if @info.yours
       $.addClass @nodes.root, 'yourPost'
-
-    if Conf['Highlight Own Posts']
-      $.addClass doc, 'highlight-own'
-
-    if Conf['Highlight Posts Quoting You']
-      $.addClass doc, 'highlight-you'
 
     # Stop there if there's no quotes in that post.
     return unless (quotes = @quotes).length

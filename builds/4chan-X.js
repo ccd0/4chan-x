@@ -4106,6 +4106,12 @@
       if (g.VIEW === 'catalog' || !Conf['Mark Quotes of You'] || !Conf['Quick Reply']) {
         return;
       }
+      if (Conf['Highlight Own Posts']) {
+        $.addClass(doc, 'highlight-own');
+      }
+      if (Conf['Highlight Posts Quoting You']) {
+        $.addClass(doc, 'highlight-you');
+      }
       this.text = '\u00A0(You)';
       return Post.prototype.callbacks.push({
         name: 'Mark Quotes of You',
@@ -4120,12 +4126,6 @@
       }
       if (this.info.yours) {
         $.addClass(this.nodes.root, 'yourPost');
-      }
-      if (Conf['Highlight Own Posts']) {
-        $.addClass(doc, 'highlight-own');
-      }
-      if (Conf['Highlight Posts Quoting You']) {
-        $.addClass(doc, 'highlight-you');
       }
       if (!(quotes = this.quotes).length) {
         return;
