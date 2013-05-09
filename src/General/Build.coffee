@@ -35,7 +35,10 @@ Build =
       o.file =
         name:      data.filename + data.ext
         timestamp: "#{data.tim}#{data.ext}"
-        url:       "//images.4chan.org/#{boardID}/src/#{data.tim}#{data.ext}"
+        url: if boardID is 'f'
+          "//images.4channel.org/#{boardID}/src/#{data.filename}#{data.ext}"
+        else
+          "//images.4chan.org/#{boardID}/src/#{data.tim}#{data.ext}"
         height:    data.h
         width:     data.w
         MD5:       data.md5
@@ -56,7 +59,7 @@ Build =
     } = o
     isOP = postID is threadID
 
-    staticPath = '//static.4chan.org'
+    staticPath = '//static.4chan.org/image/'
 
     if email
       emailStart = '<a href="mailto:' + email + '" class="useremail">'
@@ -79,21 +82,21 @@ Build =
         capcodeClass = " capcodeAdmin"
         capcodeStart = " <strong class='capcode hand id_admin'" +
           "title='Highlight posts by the Administrator'>## Admin</strong>"
-        capcode      = " <img src='#{staticPath}/image/adminicon.gif' " +
+        capcode      = " <img src='#{staticPath}adminicon.gif' " +
           "alt='This user is the 4chan Administrator.' " +
           "title='This user is the 4chan Administrator.' class=identityIcon>"
       when 'mod'
         capcodeClass = " capcodeMod"
         capcodeStart = " <strong class='capcode hand id_mod' " +
           "title='Highlight posts by Moderators'>## Mod</strong>"
-        capcode      = " <img src='#{staticPath}/image/modicon.gif' " +
+        capcode      = " <img src='#{staticPath}modicon.gif' " +
           "alt='This user is a 4chan Moderator.' " +
           "title='This user is a 4chan Moderator.' class=identityIcon>"
       when 'developer'
         capcodeClass = " capcodeDeveloper"
         capcodeStart = " <strong class='capcode hand id_developer' " +
           "title='Highlight posts by Developers'>## Developer</strong>"
-        capcode      = " <img src='#{staticPath}/image/developericon.gif' " +
+        capcode      = " <img src='#{staticPath}developericon.gif' " +
           "alt='This user is a 4chan Developer.' " +
           "title='This user is a 4chan Developer.' class=identityIcon>"
       else
@@ -103,21 +106,20 @@ Build =
 
     flag =
       if flagCode
-        " <img src='#{staticPath}/image/country/#{if boardID is 'pol' then 'troll/' else ''}" +
+        " <img src='#{staticPath}country/#{if boardID is 'pol' then 'troll/' else ''}" +
         flagCode.toLowerCase() + ".gif' alt=#{flagCode} title='#{flagName}' class=countryFlag>"
       else
         ''
 
     if file?.isDeleted
-      fileHTML =
-        if isOP
-          "<div id=f#{postID} class=file><div class=fileInfo></div><span class=fileThumb>" +
-              "<img src='#{staticPath}/image/filedeleted.gif' alt='File deleted.' class='fileDeleted retina'>" +
-          "</span></div>"
-        else
-          "<div id=f#{postID} class=file><span class=fileThumb>" +
-            "<img src='#{staticPath}/image/filedeleted-res.gif' alt='File deleted.' class='fileDeletedRes retina'>" +
-          "</span></div>"
+      fileHtml = if isOP
+        "<div class=file id=f#{data.no}><div class=fileInfo></div><span class=fileThumb>" +
+          "<img src='#{staticPath}filedeleted.gif' alt='File deleted.' class=fileDeletedRes>" +
+        "</span></div>"
+      else
+        "<div class=file id=f#{data.no}><span class=fileThumb>" +
+          "<img src='#{staticPath}filedeleted-res.gif' alt='File deleted.' class=fileDeletedRes>" +
+        "</span></div>"
     else if file
       ext = file.name[-3..]
       if !file.twidth and !file.theight and ext is 'gif' # wtf ?
@@ -130,16 +132,19 @@ Build =
       if file.isSpoiler
         fileSize = "Spoiler Image, #{fileSize}"
         unless isArchived
-          fileThumb = '//static.4chan.org/image/spoiler'
+          fileThumb = "#{staticPath}spoiler"
           if spoilerRange = Build.spoilerRange[boardID]
             # Randomize the spoiler image.
             fileThumb += "-#{boardID}" + Math.floor 1 + spoilerRange * Math.random()
           fileThumb += '.png'
           file.twidth = file.theight = 100
 
-      if boardID.ID isnt 'f'
-        imgSrc = "<a class='fileThumb#{if file.isSpoiler then ' imgspoiler' else ''}' href='#{file.url}' target=_blank>" +
-          "<img src='#{fileThumb}' alt='#{fileSize}' data-md5=#{file.MD5} style='height: #{file.theight}px; width: #{file.twidth}px;'></a>"
+      imgSrc = if boardID is 'f'
+        ''
+      else
+        "<a class='fileThumb#{if file.isSpoiler then ' imgspoiler' else ''}' href='#{file.url}' target=_blank>" +
+          "<img src='#{fileThumb}' alt='#{fileSize}' data-md5=#{file.MD5} style='height: #{file.theight}px; width: #{file.twidth}px;'>" +
+        "</a>"
 
       # Ha ha, filenames!
       # html -> text, translate WebKit's %22s into "s
@@ -175,12 +180,12 @@ Build =
 
     sticky =
       if isSticky
-        ' <img src=//static.4chan.org/image/sticky.gif alt=Sticky title=Sticky class=stickyIcon>'
+        " <img src=#{staticPath}sticky.gif alt=Sticky title=Sticky class=stickyIcon>"
       else
         ''
     closed =
       if isClosed
-        ' <img src=//static.4chan.org/image/closed.gif alt=Closed title=Closed class=closedIcon>'
+        " <img src=#{staticPath}closed.gif alt=Closed title=Closed class=closedIcon>"
       else
         ''
 
