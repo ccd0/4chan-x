@@ -1,3 +1,4 @@
+### 1.1.18 - 2013-05-09
 seaweedchan:
 - Hide stub link added in menus of stubs
 - #dump-button moved into #qr-filename-container as a simple + link
