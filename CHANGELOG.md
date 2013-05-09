@@ -4,6 +4,8 @@ seaweedchan:
 - QR with 4chan Pass made a little wider
 - Styling changes for spoiler label, also added `.has-spoiler` class for QR
 
+![QR styling changes](src/General/img/changelog/1.1.18.png)
+
 ### 1.1.17 - 2013-05-08
 seaweedchan:
 - Bug fixes
