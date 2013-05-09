@@ -62,6 +62,15 @@
   "boards": [],
   "files": []
 }, {
+  "uid": 11,
+  "name": "Foolz a Shit",
+  "domain": "archive.foolzashit.com",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["p"],
+  "files": ["p"]
+}, {
   "uid": 7,
   "name": "Install Gentoo",
   "domain": "archive.installgentoo.net",
