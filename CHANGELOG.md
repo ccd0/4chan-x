@@ -1,3 +1,8 @@
+seaweedchan:
+- Hide stub link added in menus of stubs
+- #dump-button moved into #qr-filename-container as a simple + link
+- QR with 4chan Pass made a little wider
+
 ### 1.1.17 - 2013-05-08
 seaweedchan:
 - Bug fixes

@@ -886,6 +886,7 @@ QR =
       fileSubmit: $ '#file-n-submit',    dialog
       filename:   $ '#qr-filename',      dialog
       fileRM:     $ '#qr-filerm',        dialog
+      fileExtras: $ '#qr-extras-container', dialog
       spoiler:    $ '#qr-file-spoiler',  dialog
       status:     $ '[type=submit]',     dialog
       fileInput:  $ '[type=file]',       dialog
@@ -948,9 +949,8 @@ QR =
     $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'
     $.on nodes.addPost,    'click',  -> new QR.post true
     $.on nodes.form,       'submit', QR.submit
-    $.on nodes.fileRM,     'click',  (e) -> 
-      e.stopPropagation()
-      QR.selected.rmFile()
+    $.on nodes.fileRM,     'click', -> QR.selected.rmFile()
+    $.on nodes.fileExtras, 'click', (e) -> e.stopPropagation()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.fileInput
     # save selected post's data

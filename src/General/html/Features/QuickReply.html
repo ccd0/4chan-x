@@ -10,7 +10,6 @@
 </div>
 <form>
   <div class=persona>
-    <input id=dump-button type=button title='Dump list' value=+ tabindex=0>
     <input name=name  data-name=name  list="list-name" placeholder=Name    class=field size=1 tabindex=10>
     <input name=email data-name=email list="list-email" placeholder=E-mail  class=field size=1 tabindex=20>
     <input name=sub   data-name=sub   list="list-sub" placeholder=Subject class=field size=1 tabindex=30>
@@ -27,9 +26,12 @@
     <span id=qr-filename-container class=field tabindex=60>
       <span id=qr-no-file>No selected file</span>
       <span id=qr-filename></span>
-      <a id=qr-filerm href=javascript:; title='Remove file' tabindex=80>×</a>
+      <span id=qr-extras-container>
+        <a id=qr-filerm href=javascript:; title='Remove file'>×</a>
+        <a id=dump-button title='Dump list'>+</a>
+      </span>
     </span>
-    <input type=submit tabindex=70>
+    <input type=submit tabindex=60>
   </div>
   <input type=file multiple>
   <label id=qr-spoiler-label>

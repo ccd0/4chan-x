@@ -619,7 +619,7 @@ a.hide-announcement {
   position: fixed;
   padding: 1px;
   border: 1px solid transparent;
-  min-width: 248px;
+  min-width: 300px;
   border-radius: 3px 3px 0 0;
 }
 #qrtab {
@@ -648,17 +648,17 @@ a.hide-announcement {
   min-width: 100%;
 }
 #dump-button {
-  background: linear-gradient(#EEE, #CCC);
-  border: 1px solid #CCC; 
   width: 10%;
   margin: 0;
+  margin-right: 4px;
   font: 13px sans-serif;
   padding: 1px 0px 2px;
+  opacity: 0.6;
 }
 .persona .field:not(#dump) {
   width: 95px;
-  min-width: 30%;
-  max-width: 30%;
+  min-width: 33.3%;
+  max-width: 33.3%;
 }
 #qr textarea.field {
   height: 14.8em;
@@ -712,7 +712,7 @@ input.field.tripped:not(:hover):not(:focus) {
   margin-bottom: 2px;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 90%;
+  max-width: 89%;
 }
 #qr-no-file {
   color: #AAA;
@@ -733,11 +733,11 @@ input.field.tripped:not(:hover):not(:focus) {
 #qr-filename-container:hover {
   cursor: text;
 }
+#qr-extras-container {
+  position: absolute;
+  right: 0px;
+}
 #qr-filerm {
-  position: relative;
-  bottom: 1px;
-  display: inline;
-  float: right;
   margin-right: 2px;
   z-index: 2;
 }
