@@ -912,7 +912,10 @@ QR =
     <% } %>
 
     QR.spoiler = !!$ 'input[name=spoiler]'
-    nodes.spoiler.parentElement.hidden = !QR.spoiler
+    if QR.spoiler
+      $.addClass QR.nodes.el, 'has-spoiler'
+    else
+      nodes.spoiler.parentElement.hidden = true
 
     if g.BOARD.ID is 'f'
       nodes.flashTag = $.el 'select',

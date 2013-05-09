@@ -712,7 +712,7 @@ input.field.tripped:not(:hover):not(:focus) {
   margin-bottom: 2px;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 89%;
+  max-width: 88%;
 }
 #qr-no-file {
   color: #AAA;
@@ -750,6 +750,25 @@ input.field.tripped:not(:hover):not(:focus) {
 /* Thread Select / Spoiler Label */
 #qr select {
   float: right;
+}
+#qr.has-spoiler .has-file #qr-spoiler-label {
+  width: 6.7%;
+  min-width: 6.7%;
+  max-width: 6.7%;
+  display: inline-block;
+  text-align: center;
+  vertical-align: top;
+}
+#qr.has-spoiler #file-n-submit:not(.has-file) #qr-spoiler-label {
+  display: none;
+}
+#qr.has-spoiler .has-file #qr-filename-container {
+  max-width: 67.9%;
+  min-width: 67.9%;
+}
+#qr-spoiler-label input {
+  position: relative;
+  top: 3px;
 }
 /* Dumping UI */
 .dump #dump-list-container {

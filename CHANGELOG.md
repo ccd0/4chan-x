@@ -2,6 +2,7 @@ seaweedchan:
 - Hide stub link added in menus of stubs
 - #dump-button moved into #qr-filename-container as a simple + link
 - QR with 4chan Pass made a little wider
+- Styling changes for spoiler label, also added `.has-spoiler` class for QR
 
 ### 1.1.17 - 2013-05-08
 seaweedchan:
