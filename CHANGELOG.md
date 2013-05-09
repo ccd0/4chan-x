@@ -1,3 +1,4 @@
+### 2.0.2 - 2013-05-09
 zixaphir
 - More mascot and theme editor fixes
 - Fix stubs in reply hiding menu not following stubs config
