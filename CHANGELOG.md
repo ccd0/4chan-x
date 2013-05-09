@@ -1,6 +1,8 @@
 zixaphir
-- More mascot and theme editor fixes.
-- Fix stubs in reply hiding menu not following stubs config.
+- More mascot and theme editor fixes
+- Fix stubs in reply hiding menu not following stubs config
+- Fix thread hiding
+- Fix Board Subtitle option
 
 ### 2.0.1 - 2013-05-08
 seaweed

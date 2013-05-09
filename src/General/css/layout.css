@@ -497,6 +497,7 @@ else "
 .boardSubtitle a {
   font-size: #{parseInt(_conf["Font Size"], 10) - 1}px;
 }
+#{unless _conf['Board Subtitle'] then ".boardSubtitle { display: none; }" else ""}
 /* Dialogs */
 .move {
   cursor: pointer;
