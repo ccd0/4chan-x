@@ -48,6 +48,8 @@ body > hr {
 .replyContainer .stub ~ div,
 .replyContainer .stub ~ a,
 .stub + div,
+.thread > .stub:first-child ~ .postContainer,
+.thread > .stub:first-child ~ .summary,
 [hidden] {
   display: none !important;
 }

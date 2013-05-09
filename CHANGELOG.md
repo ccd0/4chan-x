@@ -1,3 +1,6 @@
+zixaphir
+- More mascot and theme editor fixes.
+
 ### 2.0.1 - 2013-05-08
 seaweed
 - Fix an issue with custom board navigation catalog links
