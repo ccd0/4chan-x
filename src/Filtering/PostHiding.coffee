@@ -35,9 +35,9 @@ PostHiding =
       thisPost = $.el 'label',
         innerHTML: '<input type=checkbox name=thisPost checked> This post'
       replies  = $.el 'label',
-        innerHTML: "<input type=checkbox name=replies  checked=#{Conf['Recursive Hiding']}> Hide replies"
+        innerHTML: "<input type=checkbox name=replies  #{if Conf['Recursive Hiding'] then 'checked' else ''}> Hide replies"
       makeStub = $.el 'label',
-        innerHTML: "<input type=checkbox name=makeStub checked=#{Conf['Stubs']}> Make stub"
+        innerHTML: "<input type=checkbox name=makeStub #{if Conf['Stubs'] then 'checked' else ''}> Make stub"
 
       $.event 'AddMenuEntry',
         type: 'post'

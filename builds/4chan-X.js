@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.1.16 - 2013-05-08
+* 4chan X - Version 1.1.16 - 2013-05-09
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -2987,10 +2987,10 @@
           innerHTML: '<input type=checkbox name=thisPost checked> This post'
         });
         replies = $.el('label', {
-          innerHTML: "<input type=checkbox name=replies  checked=" + Conf['Recursive Hiding'] + "> Hide replies"
+          innerHTML: "<input type=checkbox name=replies  " + (Conf['Recursive Hiding'] ? 'checked' : '') + "> Hide replies"
         });
         makeStub = $.el('label', {
-          innerHTML: "<input type=checkbox name=makeStub checked=" + Conf['Stubs'] + "> Make stub"
+          innerHTML: "<input type=checkbox name=makeStub " + (Conf['Stubs'] ? 'checked' : '') + "> Make stub"
         });
         $.event('AddMenuEntry', {
           type: 'post',
@@ -3376,7 +3376,7 @@
         });
         $.on(apply, 'click', ThreadHiding.menu.hide);
         makeStub = $.el('label', {
-          innerHTML: "<input type=checkbox checked=" + Conf['Stubs'] + "> Make stub"
+          innerHTML: "<input type=checkbox " + (Conf['Stubs'] ? 'checked' : '') + "> Make stub"
         });
         return $.event('AddMenuEntry', {
           type: 'post',
