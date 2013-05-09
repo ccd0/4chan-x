@@ -5136,10 +5136,10 @@
           innerHTML: '<input type=checkbox name=thisPost checked> This post'
         });
         replies = $.el('label', {
-          innerHTML: "<input type=checkbox name=replies  checked=" + Conf['Recursive Hiding'] + "> Hide replies"
+          innerHTML: "<input type=checkbox name=replies  " + (Conf['Recursive Hiding'] ? 'checked' : '') + "> Hide replies"
         });
         makeStub = $.el('label', {
-          innerHTML: "<input type=checkbox name=makeStub checked=" + Conf['Stubs'] + "> Make stub"
+          innerHTML: "<input type=checkbox name=makeStub " + (Conf['Stubs'] ? 'checked' : '') + "> Make stub"
         });
         $.event('AddMenuEntry', {
           type: 'post',
@@ -5525,7 +5525,7 @@
         });
         $.on(apply, 'click', ThreadHiding.menu.hide);
         makeStub = $.el('label', {
-          innerHTML: "<input type=checkbox checked=" + Conf['Stubs'] + "> Make stub"
+          innerHTML: "<input type=checkbox " + (Conf['Stubs'] ? 'checked' : '') + "> Make stub"
         });
         return $.event('AddMenuEntry', {
           type: 'post',
