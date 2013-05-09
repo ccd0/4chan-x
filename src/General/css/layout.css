@@ -1276,7 +1276,7 @@ if _conf['Compact Post Form Inputs'] then "
   margin: 0 0 0 0.4%;
 }
 #qr textarea.field {
-  height: 14.8em;
+  height: 14.9em;
   min-height: 9em;
 }
 #qr.has-captcha textarea.field {

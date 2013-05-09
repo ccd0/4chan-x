@@ -10509,7 +10509,7 @@
           return null;
         }
       }
-      position = "" + (Conf['Mascot Position'] === 'bottom' || (Conf['Mascot Position'] === "default" && Conf['Post Form Style'] !== "fixed") ? 0 + Style.pfOffset : 19.6 + (g.VIEW !== 'thread' || !!$('#postForm input[name=spoiler]') ? 1.4 : 0) + (Conf['Show Post Form Header'] ? 1.5 : 0) + (Conf['Post Form Decorations'] ? 0.2 : 0) + Style.pfOffset) + "em";
+      position = "" + (Conf['Mascot Position'] === 'bottom' || (Conf['Mascot Position'] === "default" && Conf['Post Form Style'] !== "fixed") ? 0 + Style.pfOffset : 20.1 + (Conf['Show Post Form Header'] && ['fixed', 'transparent fade', 'slideout'].contains(Conf['Post Form Style']) ? 1.5 : 0) + (Conf['Post Form Decorations'] ? 0.2 : 0) + Style.pfOffset) + "em";
       if (Conf['editMode']) {
         if (!(mascot = editMascot || (mascot = Mascots[Conf["mascot"]]))) {
           return;

@@ -7,10 +7,20 @@ MascotTools =
     if !Conf['Mascots'] or (g.CATALOG and Conf['Hide Mascots on Catalog'])
       return if el then el.src = "" else null
 
-    position = "#{if Conf['Mascot Position'] is 'bottom' or (Conf['Mascot Position'] is "default" and Conf['Post Form Style'] isnt "fixed")
-      0 + Style.pfOffset
-    else
-      19.6 + (if g.VIEW isnt 'thread' or !!$ '#postForm input[name=spoiler]' then 1.4 else 0) + (if Conf['Show Post Form Header'] then 1.5 else 0) + (if Conf['Post Form Decorations'] then 0.2 else 0) + Style.pfOffset
+    position = "#{
+      if Conf['Mascot Position'] is 'bottom' or (Conf['Mascot Position'] is "default" and Conf['Post Form Style'] isnt "fixed")
+        0 + Style.pfOffset
+      else
+        20.1 + (
+          if Conf['Show Post Form Header'] and ['fixed', 'transparent fade', 'slideout'].contains Conf['Post Form Style']
+            1.5
+          else 0
+        ) + (
+          if Conf['Post Form Decorations']
+            0.2
+          else
+            0
+        ) + Style.pfOffset
     }em"
 
     # If we're editting anything, let's not change mascots any time we change a value.

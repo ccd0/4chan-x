@@ -5,6 +5,7 @@ zixaphir
 - Fix Board Subtitle option
 - Revert to Mayhem-style notifications
 - Add options for adding QR Shortcuts to the header or page
+- Try to tighten up mascot positions in relation to the post form
 
 ### 2.0.1 - 2013-05-08
 seaweed
