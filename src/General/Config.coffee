@@ -581,7 +581,7 @@ Config =
         'text'
       ]
       'Font Size': [
-        '12'
+        '13'
         'The font size of posts and various UI. This changes most, but not all, font sizes.'
         'text'
       ]
