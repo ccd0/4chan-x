@@ -243,9 +243,13 @@ Config =
       ]
 
     'Posting':
-      'Quick Reply': [
+      'Header Shortcut': [
         true
-        'All-in-one form to reply, create threads, automate dumping and more.'
+        'Add a shortcut to the header to toggle the QR.'
+      ]
+      'Page Shortcut': [
+        false
+        'Add a shortcut to the top of the page to toggle the QR.'
       ]
       'Persistent QR': [
         true

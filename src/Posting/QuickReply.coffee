@@ -1,8 +1,15 @@
 QR =
   init: ->
-    return if !Conf['Quick Reply']
-
     @db = new DataBoard 'yourPosts'
+
+    $.ready @initReady
+    $.on d, '4chanXInitFinished', @persist if Conf['Persistent QR']
+
+    Post::callbacks.push
+      name: 'Quick Reply'
+      cb:   @node
+
+    return unless Conf['Header Shortcut'] or Conf['Page Shortcut']
 
     sc = $.el 'a',
       className: "qr-shortcut #{unless Conf['Persistent QR'] then 'disabled' else ''}"
@@ -19,14 +26,16 @@ QR =
         QR.close()
       $.toggleClass @, 'disabled'
 
-    Header.addShortcut sc
+    return Header.addShortcut sc if Conf['Header Shortcut']
 
-    $.ready @initReady
-    $.on d, '4chanXInitFinished', @persist if Conf['Persistent QR']
-
-    Post::callbacks.push
-      name: 'Quick Reply'
-      cb:   @node
+    $.addClass sc, 'on-page'
+    sc.textContent = if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'
+    con = $.el 'div',
+      className: 'center'
+    $.add con, sc
+    $.asap (-> d.body), ->
+      $.asap (-> $.id 'postForm'), ->
+        $.before $.id('postForm'), con
 
   initReady: ->
     QR.postingIsEnabled = !!$.id 'postForm'
@@ -117,9 +126,9 @@ QR =
       QR.captcha.nodes.input.focus()
     alert el.textContent if d.hidden
     QR.notifications.push new Notification 'warning', el
-  
+
   notifications: []
-  
+
   cleanNotifications: ->
     for notification in QR.notifications
       notification.close()
@@ -571,7 +580,7 @@ QR =
       # Load this post's values.
       for name in ['thread', 'name', 'email', 'sub', 'com']
         QR.nodes[name].value = @[name] or null
-      
+
       QR.tripcodeHider.call QR.nodes['name']
       @showFileData()
       QR.characterCount()
@@ -703,16 +712,16 @@ QR =
 
     dragStart: ->
       $.addClass @, 'drag'
-    
+
     dragEnd: ->
       $.rmClass @, 'drag'
-    
+
     dragEnter: ->
       $.addClass @, 'over'
-    
+
     dragLeave: ->
       $.rmClass @, 'over'
-    
+
     dragOver: (e) ->
       e.preventDefault()
       e.dataTransfer.dropEffect = 'move'
@@ -782,7 +791,7 @@ QR =
 
       $.addClass QR.nodes.el, 'has-captcha'
       $.after QR.nodes.dumpList.parentElement, [imgContainer, input]
-    
+
     sync: (@captchas) ->
       QR.captcha.count()
 
@@ -944,7 +953,7 @@ QR =
     $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'
     $.on nodes.addPost,    'click',  -> new QR.post true
     $.on nodes.form,       'submit', QR.submit
-    $.on nodes.fileRM,     'click',  (e) -> 
+    $.on nodes.fileRM,     'click',  (e) ->
       e.stopPropagation()
       QR.selected.rmFile()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
@@ -969,9 +978,9 @@ QR =
     QR.status()
     QR.cooldown.init()
     QR.captcha.init()
-    
+
     Rice.nodes dialog
-    
+
     $.add d.body, dialog
 
     if Conf['Auto Hide QR']
@@ -987,7 +996,7 @@ QR =
     else if !check and @.className.match "\\btripped\\b" then $.rmClass @, 'tripped'
 
   preSubmitHooks: []
-  
+
   submit: (e) ->
     e?.preventDefault()
 
@@ -1155,11 +1164,11 @@ QR =
       QR.status()
       QR.error err
       return
-      
+
 
     QR.cleanNotifications()
     h1 = $ 'h1', tmpDoc
-    
+
     if Conf['Posting Success Notifications']
       QR.notifications.push new Notification 'success', h1.textContent, 5
 

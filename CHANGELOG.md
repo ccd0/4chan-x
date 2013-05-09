@@ -3,6 +3,8 @@ zixaphir
 - Fix stubs in reply hiding menu not following stubs config
 - Fix thread hiding
 - Fix Board Subtitle option
+- Revert to Mayhem-style notifications
+- Add options for adding QR Shortcuts to the header or page
 
 ### 2.0.1 - 2013-05-08
 seaweed

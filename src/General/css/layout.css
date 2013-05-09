@@ -1120,6 +1120,10 @@ input:checked + .rice {
 #selectrice:empty {
   display: none;
 }
+/* Post Form Shortcut */
+.qr-shortcut.on-page {
+  font-size: 250%;
+}
 /* Post Form */
 #qr {
   z-index: 20;
@@ -1345,16 +1349,6 @@ input:not([type=radio]) {
   position: absolute;
   opacity: 0;
   z-index: -1;
-}
-#showQR {
-  display: #{if _conf["Hide Show Post Form"] then "none" else "block"};
-  z-index: 4;
-  #{Style.sidebarLocation[0]}: 2px;
-  width: #{width}px;
-  background-color: transparent;
-  text-align: center;
-  position: fixed;
-  top: auto;
 }
 /* Fake File Input */
 #qr-filename,
