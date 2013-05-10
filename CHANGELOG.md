@@ -1,3 +1,13 @@
+MayhemYDG:
+- Added Foolzashit archive
+- Added `blink` class to document in preparation for future versions of Chrome and Opera
+- Take advantage of announcement's new `data-utc` value for hiding
+  - `data-utc` is a timestamp, this allows us to not have to store the entire text content of the announcement
+
+seaweedchan:
+- Turn all brackets into pseudo-elements. Brackets can be changed by overwriting the `content` of `.fourchanx-link::before` (`[`) and `.fourchanx-link::after` (`]`), or removed entirely with ease.
+  - Note: This does not change the default brackets around `toggle-all` in the custom navigation. These are up to the user.
+
 ### 1.1.18 - 2013-05-09
 seaweedchan:
 - Hide stub link added in menus of stubs
