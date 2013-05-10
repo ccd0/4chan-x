@@ -251,7 +251,7 @@
     },
     boardnav: '[ toggle-all ] [current-title]',
     QR: {
-      'QR.personas': ['#email:"sage";boards:jp;always'].join('\n')
+      'QR.personas': "#email:\"sage\";boards:jp;always"
     },
     time: '%m/%d/%y(%a)%H:%M:%S',
     backlink: '>>%id',
@@ -1514,7 +1514,9 @@
           return;
         }
         $.asap((function() {
-          return $.id('boardNavMobile') || d.readyState === 'complete';
+          var _ref;
+
+          return $.id('boardNavMobile') || ((_ref = d.readyState) === 'interactive' || _ref === 'complete');
         }), Header.setBoardList);
         $.prepend(d.body, _this.bar);
         $.add(d.body, Header.hover);
@@ -1818,7 +1820,7 @@
         o.file = {
           name: data.filename + data.ext,
           timestamp: "" + data.tim + data.ext,
-          url: "//images.4chan.org/" + boardID + "/src/" + data.tim + data.ext,
+          url: boardID === 'f' ? "//images.4channel.org/" + boardID + "/src/" + data.filename + data.ext : "//images.4chan.org/" + boardID + "/src/" + data.tim + data.ext,
           height: data.h,
           width: data.w,
           MD5: data.md5,
@@ -1838,11 +1840,11 @@
       @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
       */
 
-      var a, boardID, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
+      var a, boardID, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileHtml, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
 
       postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
       isOP = postID === threadID;
-      staticPath = '//static.4chan.org';
+      staticPath = '//static.4chan.org/image/';
       if (email) {
         emailStart = '<a href="mailto:' + email + '" class="useremail">';
         emailEnd = '</a>';
@@ -1857,26 +1859,26 @@
         case 'admin_highlight':
           capcodeClass = " capcodeAdmin";
           capcodeStart = " <strong class='capcode hand id_admin'" + "title='Highlight posts by the Administrator'>## Admin</strong>";
-          capcode = (" <img src='" + staticPath + "/image/adminicon.gif' ") + "alt='This user is the 4chan Administrator.' " + "title='This user is the 4chan Administrator.' class=identityIcon>";
+          capcode = (" <img src='" + staticPath + "adminicon.gif' ") + "alt='This user is the 4chan Administrator.' " + "title='This user is the 4chan Administrator.' class=identityIcon>";
           break;
         case 'mod':
           capcodeClass = " capcodeMod";
           capcodeStart = " <strong class='capcode hand id_mod' " + "title='Highlight posts by Moderators'>## Mod</strong>";
-          capcode = (" <img src='" + staticPath + "/image/modicon.gif' ") + "alt='This user is a 4chan Moderator.' " + "title='This user is a 4chan Moderator.' class=identityIcon>";
+          capcode = (" <img src='" + staticPath + "modicon.gif' ") + "alt='This user is a 4chan Moderator.' " + "title='This user is a 4chan Moderator.' class=identityIcon>";
           break;
         case 'developer':
           capcodeClass = " capcodeDeveloper";
           capcodeStart = " <strong class='capcode hand id_developer' " + "title='Highlight posts by Developers'>## Developer</strong>";
-          capcode = (" <img src='" + staticPath + "/image/developericon.gif' ") + "alt='This user is a 4chan Developer.' " + "title='This user is a 4chan Developer.' class=identityIcon>";
+          capcode = (" <img src='" + staticPath + "developericon.gif' ") + "alt='This user is a 4chan Developer.' " + "title='This user is a 4chan Developer.' class=identityIcon>";
           break;
         default:
           capcodeClass = '';
           capcodeStart = '';
           capcode = '';
       }
-      flag = flagCode ? (" <img src='" + staticPath + "/image/country/" + (boardID === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
+      flag = flagCode ? (" <img src='" + staticPath + "country/" + (boardID === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
       if (file != null ? file.isDeleted : void 0) {
-        fileHTML = isOP ? ("<div id=f" + postID + " class=file><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted.gif' alt='File deleted.' class='fileDeleted retina'>") + "</span></div>" : ("<div id=f" + postID + " class=file><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted-res.gif' alt='File deleted.' class='fileDeletedRes retina'>") + "</span></div>";
+        fileHtml = isOP ? ("<div class=file id=f" + data.no + "><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>" : ("<div class=file id=f" + data.no + "><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted-res.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>";
       } else if (file) {
         ext = file.name.slice(-3);
         if (!file.twidth && !file.theight && ext === 'gif') {
@@ -1888,7 +1890,7 @@
         if (file.isSpoiler) {
           fileSize = "Spoiler Image, " + fileSize;
           if (!isArchived) {
-            fileThumb = '//static.4chan.org/image/spoiler';
+            fileThumb = "" + staticPath + "spoiler";
             if (spoilerRange = Build.spoilerRange[boardID]) {
               fileThumb += ("-" + boardID) + Math.floor(1 + spoilerRange * Math.random());
             }
@@ -1896,9 +1898,7 @@
             file.twidth = file.theight = 100;
           }
         }
-        if (boardID.ID !== 'f') {
-          imgSrc = ("<a class='fileThumb" + (file.isSpoiler ? ' imgspoiler' : '') + "' href='" + file.url + "' target=_blank>") + ("<img src='" + fileThumb + "' alt='" + fileSize + "' data-md5=" + file.MD5 + " style='height: " + file.theight + "px; width: " + file.twidth + "px;'></a>");
-        }
+        imgSrc = boardID === 'f' ? '' : ("<a class='fileThumb" + (file.isSpoiler ? ' imgspoiler' : '') + "' href='" + file.url + "' target=_blank>") + ("<img src='" + fileThumb + "' alt='" + fileSize + "' data-md5=" + file.MD5 + " style='height: " + file.theight + "px; width: " + file.twidth + "px;'>") + "</a>";
         a = $.el('a', {
           innerHTML: file.name
         });
@@ -1914,8 +1914,8 @@
         fileHTML = '';
       }
       tripcode = tripcode ? " <span class=postertrip>" + tripcode + "</span>" : '';
-      sticky = isSticky ? ' <img src=//static.4chan.org/image/sticky.gif alt=Sticky title=Sticky class=stickyIcon>' : '';
-      closed = isClosed ? ' <img src=//static.4chan.org/image/closed.gif alt=Closed title=Closed class=closedIcon>' : '';
+      sticky = isSticky ? " <img src=" + staticPath + "sticky.gif alt=Sticky title=Sticky class=stickyIcon>" : '';
+      closed = isClosed ? " <img src=" + staticPath + "closed.gif alt=Closed title=Closed class=closedIcon>" : '';
       container = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
@@ -7532,12 +7532,13 @@
         }
       }
       Unread.addPosts(posts);
-      if (Conf['Scroll to Last Read Post']) {
-        return Unread.scroll();
+      if (!Conf['Scroll to Last Read Post']) {
+        return;
       }
+      return Unread.scroll();
     },
     scroll: function() {
-      var hash, post, posts, prevID, root;
+      var hash, onload, post, posts, prevID, root;
 
       if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
         return;
@@ -7554,11 +7555,17 @@
             break;
           }
         }
-        root.scrollIntoView(false);
-        return;
+        onload = function() {
+          return root.scrollIntoView(false);
+        };
+      } else {
+        posts = Object.keys(Unread.thread.posts);
+        post = Unread.thread.posts[posts[posts.length - 1]];
+        onload = function() {
+          return Header.scrollToPost(post.nodes.root);
+        };
       }
-      posts = Object.keys(Unread.thread.posts);
-      return Header.scrollToPost(Unread.thread.posts[posts[posts.length - 1]].nodes.root);
+      return $.on(window, 'load', onload);
     },
     sync: function() {
       var lastReadPost;
@@ -9904,7 +9911,11 @@
       }
       Conf['archivers'] = {};
       $.get(Conf, Main.initFeatures);
-      return $.on(d, '4chanMainInit', Main.initStyle);
+      return $.asap((function() {
+        var _ref;
+
+        return d.head && $('link[rel="shortcut icon"]', d.head) || ((_ref = d.readyState) === 'interactive' || _ref === 'complete');
+      }), Main.initStyle);
     },
     initFeatures: function(items) {
       var init, pathname;
@@ -10023,7 +10034,6 @@
     initStyle: function() {
       var MutationObserver, mainStyleSheet, observer, setStyle, style, styleSheets, _ref;
 
-      $.off(d, '4chanMainInit', Main.initStyle);
       if (!Main.isThisPageLegit()) {
         return;
       }
