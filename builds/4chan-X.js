@@ -4133,7 +4133,10 @@
       if (Conf['Highlight Posts Quoting You']) {
         $.addClass(doc, 'highlight-you');
       }
-      return this.text = Post.prototype.callbacks.push({
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
+      }
+      return Post.prototype.callbacks.push({
         name: 'Mark Quotes of You',
         cb: this.node
       });
