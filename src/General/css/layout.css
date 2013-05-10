@@ -1397,7 +1397,7 @@ input:not([type=radio]) {
 #dump-list {
   overflow-x: auto;
   overflow-y: hidden;
-  white-space: pre;
+  white-space: nowrap;
   width: 248px;
   max-width: 100%;
   min-width: 100%;
@@ -1659,7 +1659,7 @@ article li {
 }
 .section-container textarea {
   font-family: monospace;
-  min-height: 350px;
+  min-height: 150px;
   resize: vertical;
   width: 100%;
 }

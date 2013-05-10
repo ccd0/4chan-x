@@ -8,8 +8,9 @@ QuoteYou =
     if Conf['Highlight Posts Quoting You']
       $.addClass doc, 'highlight-you'
 
-    # \u00A0 is nbsp
-    @text = 
+    if Conf['Comment Expansion']
+      ExpandComment.callbacks.push @node
+
     Post::callbacks.push
       name: 'Mark Quotes of You'
       cb:   @node

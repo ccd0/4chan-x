@@ -6,8 +6,8 @@
   </div>
 </fieldset>
 <fieldset>
-  <legend>Custom Board Navigation <span class=warning #{if Conf['Custom Board Navigation'] then 'hidden' else ''}>is disabled.</span></legend>
-  <div><input name=boardnav class=field spellcheck=false></div>
+  <legend>Custom Board Navigation</legend>
+  <div><textarea name=boardnav class=field spellcheck=false></textarea></div>
   <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>
   <div>
     For example:<br>
@@ -23,8 +23,10 @@
   <div>Custom text link: <code>board-text:"VIP Board"</code></div>
  <div>Index-only link: <code>board-index</code></div>
   <div>Catalog-only link: <code>board-catalog</code></div>
+  <div>External link: <code>external-text:"Google","http://www.google.com"</code></div>
   <div>Combinations are possible: <code>board-index-text:"VIP Index"</code></div>
   <div>Full board list toggle: <code>toggle-all</code></div>
+  <div>Line breaks are allowed and will be replaced with spaces</div>
 </fieldset>
 
 <fieldset>

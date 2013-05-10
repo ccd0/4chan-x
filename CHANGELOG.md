@@ -1,3 +1,10 @@
+zixaphir
+- bugfixes
+- Some extra changes on top of seaweed's QR changes for our ricey nature
+- New theme, Generigray
+
+![QR styling rice, generigray](src/General/img/changelog/2.0.2-qr.png)
+
 MayhemYDG:
 - Added Foolzashit archive
 - Added `blink` class to document in preparation for future versions of Chrome and Opera
@@ -5,12 +12,15 @@ MayhemYDG:
   - `data-utc` is a timestamp, this allows us to not have to store the entire text content of the announcement
 
 seaweedchan:
+- Turn all brackets into pseudo-elements. Brackets can be changed by overwriting the `content` of `.fourchanx-link::before` (`[`) and `.fourchanx-link::after` (`]`), or removed entirely with ease.
+  - Note: This does not change the default brackets around `toggle-all` in the custom navigation. These are up to the user.
+- Fix file input in Opera
+- External link support in Custom Board Navigation!
+  - `external-text:"Google","http://www.google.com"`
 - Hide stub link added in menus of stubs
 - #dump-button moved into #qr-filename-container as a simple + link
 - QR with 4chan Pass made a little wider
 - Styling changes for spoiler label, also added `.has-spoiler` class for QR
-- Turn all brackets into pseudo-elements. Brackets can be changed by overwriting the `content` of `.fourchanx-link::before` (`[`) and `.fourchanx-link::after` (`]`), or removed entirely with ease.
-  - Note: This does not change the default brackets around `toggle-all` in the custom navigation. These are up to the user.
 
 ![QR styling changes](src/General/img/changelog/1.1.18.png)
 
