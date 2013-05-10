@@ -21,13 +21,16 @@
       <span id=qr-no-file>No selected file</span>
       <span id=qr-filename></span>
       <span id=qr-extras-container>
-        <a id=qr-filerm href=javascript:; title='Remove file'>×</a>
+        <label id=qr-spoiler-label>
+          <input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70>
+        </label>
+        <span class=description>Spoiler</span>
         <a id=dump-button title='Dump list'>+</a>
+        <span class=description>Dump</span>
+        <a id=qr-filerm href=javascript:; title='Remove file'>×</a>
+        <span class=description>Remove File</span>
       </span>
     </span>
-    <label id=qr-spoiler-label>
-      <input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70>
-    </label>
     <input type=submit tabindex=80>
   </div>
   <input type=file multiple>

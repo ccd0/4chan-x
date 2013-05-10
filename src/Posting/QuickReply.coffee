@@ -874,27 +874,28 @@ QR =
 
     QR.nodes = nodes =
       el:         dialog
-      move:       $ '.move',             dialog
-      autohide:   $ '#autohide',         dialog
-      thread:     $ 'select',            dialog
-      threadPar:  $ '#qr-thread-select', dialog
-      close:      $ '.close',            dialog
-      form:       $ 'form',              dialog
-      dumpButton: $ '#dump-button',      dialog
-      name:       $ '[data-name=name]',  dialog
-      email:      $ '[data-name=email]', dialog
-      sub:        $ '[data-name=sub]',   dialog
-      com:        $ '[data-name=com]',   dialog
-      dumpList:   $ '#dump-list',        dialog
-      addPost:    $ '#add-post',         dialog
-      charCount:  $ '#char-count',       dialog
-      fileSubmit: $ '#file-n-submit',    dialog
-      filename:   $ '#qr-filename',      dialog
-      fileRM:     $ '#qr-filerm',        dialog
+      move:       $ '.move',                dialog
+      autohide:   $ '#autohide',            dialog
+      thread:     $ 'select',               dialog
+      threadPar:  $ '#qr-thread-select',    dialog
+      close:      $ '.close',               dialog
+      form:       $ 'form',                 dialog
+      dumpButton: $ '#dump-button',         dialog
+      name:       $ '[data-name=name]',     dialog
+      email:      $ '[data-name=email]',    dialog
+      sub:        $ '[data-name=sub]',      dialog
+      com:        $ '[data-name=com]',      dialog
+      dumpList:   $ '#dump-list',           dialog
+      addPost:    $ '#add-post',            dialog
+      charCount:  $ '#char-count',          dialog
+      fileSubmit: $ '#file-n-submit',       dialog
+      filename:   $ '#qr-filename',         dialog
+      fileRM:     $ '#qr-filerm',           dialog
       fileExtras: $ '#qr-extras-container', dialog
-      spoiler:    $ '#qr-file-spoiler',  dialog
-      status:     $ '[type=submit]',     dialog
-      fileInput:  $ '[type=file]',       dialog
+      spoiler:    $ '#qr-file-spoiler',     dialog
+      spoilerPar: $ '#qr-spoiler-label',    dialog
+      status:     $ '[type=submit]',        dialog
+      fileInput:  $ '[type=file]',          dialog
 
     # Allow only this board's supported files.
     mimeTypes = $('ul.rules > li').textContent.trim().match(/: (.+)/)[1].toLowerCase().replace /\w+/g, (type) ->
@@ -961,6 +962,9 @@ QR =
     $.on nodes.fileExtras, 'click', (e) -> e.stopPropagation()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.fileInput
+    # mouseover descriptions
+    for name in ['spoilerPar', 'dumpButton', 'fileRM']
+      $.on nodes[name], 'mouseover', QR.mouseover
     # save selected post's data
     for name in ['name', 'email', 'sub', 'com']
       $.on nodes[name], 'input',  -> QR.selected.save @
@@ -1226,3 +1230,22 @@ QR =
       QR.posts[0].unlock()
       QR.notifications.push new Notification 'info', 'QR upload aborted.', 5
     QR.status()
+
+  mouseover: (e) ->
+    mouseover = $.el 'div',
+      id:        'mouseover'
+      className: 'dialog'
+
+    $.add Header.hover, mouseover
+
+    mouseover.innerHTML = @nextElementSibling.innerHTML
+
+    UI.hover
+      root:         @
+      el:           mouseover
+      latestEvent:  e
+      endEvents:    'mouseout'
+      asapTest: ->  true
+      close:        true
+
+    return

@@ -115,7 +115,7 @@ span[style="left: 5px; position: absolute;"] a {
 #qr-filename-container,
 #appchanx-settings input,
 .captcha-img,
-.dump #dump:not(:hover):not(:focus),
+.dump #dump,
 .qr-preview,
 .selectrice,
 button,
@@ -123,10 +123,11 @@ input,
 textarea {
   background: #{theme["Input Background"]};
   border: 1px solid #{theme["Input Border"]};
-  color: #{theme["Inputs"]};
+}
+.has-file #qr-extras-container {
+  background: #{theme["Input Background"]};
 }
 #dump:hover,
-#qr-filename-container:hover,
 #qr-filename-container:hover,
 .selectrice:hover,
 #selectrice li:hover,
@@ -135,7 +136,9 @@ input:hover,
 textarea:hover {
   background: #{theme["Hovered Input Background"]};
   border-color: #{theme["Hovered Input Border"]};
-  color: #{theme["Inputs"]};
+}
+.has-file  #qr-filename-container:hover #qr-extras-container {
+  background: #{theme["Hovered Input Background"]};
 }
 #dump:active,
 #dump:focus,
@@ -150,6 +153,10 @@ textarea.field:focus {
   border-color: #{theme["Focused Input Border"]};
   color: #{theme["Inputs"]};
   outline: none;
+}
+.has-file  #qr-filename-container:active #qr-extras-container,
+.has-file  #qr-filename-container:focus #qr-extras-container {
+  background: #{theme["Focused Input Background"]};
 }
 #mouseover,
 #post-preview,
