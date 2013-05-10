@@ -793,7 +793,7 @@ input.field.tripped:not(:hover):not(:focus) {
 #dump-list {
   overflow-x: auto;
   overflow-y: hidden;
-  white-space: pre;
+  white-space: nowrap;
   width: 248px;
   max-width: 100%;
   min-width: 100%;
