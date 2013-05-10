@@ -13,16 +13,16 @@ Sauce =
       name: 'Sauce'
       cb:   @node
   createSauceLink: (link) ->
-    link = link.replace /%(T?URL|MD5|board)/ig, (parameter) ->
+    # XXX Remove $1-4 after 31-7-2013 (v1 transitioning)
+    link = link.replace /(%(T?URL|MD5|board)|\$[1-4])/ig, (parameter) ->
       switch parameter
-
-        when '%TURL'
+        when '%TURL', '$1'
           "' + encodeURIComponent(post.file.thumbURL) + '"
-        when '%URL'
+        when '%URL', '$2'
           "' + encodeURIComponent(post.file.URL) + '"
-        when '%MD5'
+        when '%MD5', '$3'
           "' + encodeURIComponent(post.file.MD5) + '"
-        when '%board'
+        when '%board', '$4'
           "' + encodeURIComponent(post.board) + '"
         else
           parameter

@@ -2576,7 +2576,7 @@
       "Timestamps": "rgb(100,100,100)",
       "Warnings": "rgb(215,0,0)",
       "Shadow Color": "rgba(0,0,0,.1)",
-      "Custom CSS": ".thread {\npadding: 2px;\nbox-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3) inset, rgba(70,70,70,.5) 1px 1px;\n}\n#header-bar,\ninput,\ntextarea,\n.field,\n.inline .op,\n.pagelist,\n.prettyprint,\n.post.reply,\n.rice,\n.selectrice {\nbox-shadow: 0px 0px 4px rgba(0, 0, 0, 0.2) inset, rgba(70,70,70,.3) 1px 1px;\n}\n#qr .selectrice {\nbox-shadow: none;\n}\n#header-bar {\npadding: 1px 3px;\n}\n.dialog {\nbox-shadow: 0px 0px 4px rgba(0, 0, 0, .3) inset, 1px 1px 5px rgba(0,0,0,0.2);\n}\n.replyContainer {\npadding-left: 20px;\n}\n.threadContainer {\nborder: none;\nbox-shadow: 0px 0px 3px rgba(0, 0, 0, .3) inset, rgba(70,70,70,.3) 1px 1px;\npadding: 2px 0;\nmargin-left: 20px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#appchanx-settings input:not([type=checkbox]):hover {\nbox-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#appchanx-settings input:focus {\nbox-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\ntransition:background .2s,box-shadow .2s;\n}"
+      "Custom CSS": ".thread {\npadding: 2px;\nbox-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3) inset, rgba(70,70,70,.5) 1px 1px;\n}\n#header-bar,\ninput,\ntextarea,\n.field,\n.inline .op,\n.pagelist,\n.prettyprint,\n.post.reply,\n.rice,\n.selectrice {\nbox-shadow: 0px 0px 4px rgba(0, 0, 0, 0.2) inset, rgba(70,70,70,.3) 1px 1px;\n}\n#qr .selectrice {\nbox-shadow: none;\n}\n#header-bar {\npadding: 1px 3px;\n}\n.dialog {\nbox-shadow: 0px 0px 4px rgba(0, 0, 0, .3) inset, 1px 1px 5px rgba(0,0,0,0.2);\n}\n.thread > .replyContainer\n.threadContainer > .replyContainer {\npadding-left: 20px;\n}\n.threadContainer {\nborder: none;\nbox-shadow: 0px 0px 3px rgba(0, 0, 0, .3) inset, rgba(70,70,70,.3) 1px 1px;\npadding: 2px 0;\nmargin-left: 20px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#appchanx-settings input:not([type=checkbox]):hover {\nbox-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#appchanx-settings input:focus {\nbox-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\ntransition:background .2s,box-shadow .2s;\n}"
     },
     "Frost": {
       "Author": "Zixaphir",
@@ -2627,7 +2627,7 @@
       "Timestamps": "rgb(100,100,100)",
       "Warnings": "rgb(215,0,0)",
       "Shadow Color": "rgba(0,0,0,.1)",
-      "Custom CSS": ".thread {\n  padding: 2px;\n  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1) inset, rgba(255,255,255,.5) 1px 1px;\n}\n#header-bar,\ninput,\ntextarea,\n.field,\n.inline .op,\n.pagelist,\n.prettyprint,\n.post.reply,\n.rice,\n.selectrice {\n  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1) inset, rgba(255,255,255,.8) 1px 1px;\n}\n#qr .selectrice {\n  box-shadow: none;\n}\n#header-bar {\n  padding: 1px 3px;\n}\n.dialog {\n  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1) inset, rgba(255,255,255,.5) 1px 1px;\n}\n.replyContainer {\n  padding-left: 20px;\n}\n.threadContainer {\n  border: none;\n  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1) inset, rgba(255,255,255,.5) 1px 1px;\n  padding: 2px 0;\n  margin-left: 20px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#appchanx-settings input:not([type=checkbox]):hover {\n  box-shadow: inset rgba(0,0,0,.1) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#appchanx-settings input:focus {\n  box-shadow: inset rgba(0,0,0,.1) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition: background .2s,box-shadow .2s;\n}"
+      "Custom CSS": ".thread {\n  padding: 2px;\n  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1) inset, rgba(255,255,255,.5) 1px 1px;\n}\n#header-bar,\ninput,\ntextarea,\n.field,\n.inline .op,\n.pagelist,\n.prettyprint,\n.post.reply,\n.rice,\n.selectrice {\n  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1) inset, rgba(255,255,255,.8) 1px 1px;\n}\n#qr .selectrice {\n  box-shadow: none;\n}\n#header-bar {\n  padding: 1px 3px;\n}\n.dialog {\n  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1) inset, rgba(255,255,255,.5) 1px 1px;\n}\n.thread > .replyContainer\n.threadContainer > .replyContainer {\n  padding-left: 20px;\n}\n.threadContainer {\n  border: none;\n  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1) inset, rgba(255,255,255,.5) 1px 1px;\n  padding: 2px 0;\n  margin-left: 20px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#appchanx-settings input:not([type=checkbox]):hover {\n  box-shadow: inset rgba(0,0,0,.1) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#appchanx-settings input:focus {\n  box-shadow: inset rgba(0,0,0,.1) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition: background .2s,box-shadow .2s;\n}"
     }
   };
 
@@ -13118,15 +13118,19 @@
     createSauceLink: function(link) {
       var m, text;
 
-      link = link.replace(/%(T?URL|MD5|board)/ig, function(parameter) {
+      link = link.replace(/(%(T?URL|MD5|board)|\$[1-4])/ig, function(parameter) {
         switch (parameter) {
           case '%TURL':
+          case '$1':
             return "' + encodeURIComponent(post.file.thumbURL) + '";
           case '%URL':
+          case '$2':
             return "' + encodeURIComponent(post.file.URL) + '";
           case '%MD5':
+          case '$3':
             return "' + encodeURIComponent(post.file.MD5) + '";
           case '%board':
+          case '$4':
             return "' + encodeURIComponent(post.board) + '";
           default:
             return parameter;
@@ -13695,7 +13699,20 @@
       section.innerHTML = "  <div class=warning " + (Conf['Sauce'] ? 'hidden' : '') + "><code>Sauce</code> is disabled.</div><div>Lines starting with a <code>#</code> will be ignored.</div><div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div><ul>These parameters will be replaced by their corresponding values:\n<li><code>%TURL</code>: Thumbnail URL.</li><li><code>%URL</code>: Full image URL.</li><li><code>%MD5</code>: MD5 hash.</li><li><code>%board</code>: Current board.</li></ul><textarea name=sauces class=field spellcheck=false></textarea>";
       ta = $('textarea', section);
       $.get('sauces', Conf['sauces'], function(item) {
-        return ta.value = item['sauces'];
+        return ta.value = item['sauces'].replace(/\$\d/g, function(c) {
+          switch (c) {
+            case '$1':
+              return '%TURL';
+            case '$2':
+              return '%URL';
+            case '$3':
+              return '%MD5';
+            case '$4':
+              return '%board';
+            default:
+              return c;
+          }
+        });
       });
       return $.on(ta, 'change', $.cb.value);
     },

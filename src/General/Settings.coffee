@@ -331,7 +331,19 @@ Settings =
     """
     ta = $ 'textarea', section
     $.get 'sauces', Conf['sauces'], (item) ->
-      ta.value = item['sauces']
+      # XXX remove .replace func after 31-7-2013 (v1 transitioning)
+      ta.value = item['sauces'].replace /\$\d/g, (c) ->
+        switch c
+          when '$1'
+            '%TURL'
+          when '$2'
+            '%URL'
+          when '$3'
+            '%MD5'
+          when '$4'
+            '%board'
+          else
+            c
     $.on ta, 'change', $.cb.value
 
   advanced: (section) ->

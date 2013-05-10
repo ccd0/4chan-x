@@ -2884,7 +2884,8 @@ textarea,
 .dialog {
   box-shadow: 0px 0px 4px rgba(0, 0, 0, .3) inset, 1px 1px 5px rgba(0,0,0,0.2);
 }
-.replyContainer {
+.thread > .replyContainer
+.threadContainer > .replyContainer {
   padding-left: 20px;
 }
 .threadContainer {
@@ -2993,7 +2994,8 @@ textarea,
 .dialog {
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1) inset, rgba(255,255,255,.5) 1px 1px;
 }
-.replyContainer {
+.thread > .replyContainer
+.threadContainer > .replyContainer {
   padding-left: 20px;
 }
 .threadContainer {
