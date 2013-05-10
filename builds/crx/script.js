@@ -10013,6 +10013,7 @@
         _ref.disabled = true;
       }
       $.addClass(doc, 'webkit');
+      $.addClass(doc, 'blink');
       $.addClass(doc, 'fourchan-x');
       $.addClass(doc, g.VIEW);
       $.addStyle(Main.css);
