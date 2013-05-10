@@ -1272,8 +1272,10 @@ if _conf['Post Form Style'] isnt 'float' and _conf["Post Form Slideout Transitio
 #{
 if _conf['Compact Post Form Inputs'] then "
 .persona input.field {
-  width: 29.6%;
-  margin: 0 0 0 0.4%;
+  width: 33%;
+}
+.persona input.field:not(:first-child) {
+  margin: 0 0 0 0.5%;
 }
 #qr textarea.field {
   height: 14.9em;
@@ -1287,10 +1289,6 @@ if _conf['Compact Post Form Inputs'] then "
 
 .persona input.field {
   width: 100%;
-}
-.persona input.field[name='name'] {
-  width: 89.6%;
-  margin: 0 0 0 0.4%;
 }
 #qr textarea.field {
   height: 11.6em;
@@ -1352,12 +1350,20 @@ input:not([type=radio]) {
 }
 /* Fake File Input */
 #qr-filename,
+#qr-filerm,
 .has-file #qr-no-file {
   display: none;
 }
 #qr-no-file,
+.has-file #qr-filerm,
 .has-file #qr-filename {
   display: block;
+}
+#qr-extras-container {
+  position: absolute;
+  right: 3px;
+  top: 2px;
+  z-index: 2;
 }
 #qr-filename-container {
   #{Style.sizing}: border-box;
@@ -1369,12 +1375,6 @@ input:not([type=radio]) {
   margin-right: 0.4%;
   overflow: hidden;
   padding: 2px 1px 0;
-}
-#qr-filerm {
-  position: absolute;
-  right: 3px;
-  top: 2px;
-  z-index: 2;
 }
 /* Thread Select / Spoiler Label */
 #qr-thread-select {

@@ -64,6 +64,10 @@ PostHiding =
         innerHTML: '<input type=checkbox name=thisPost> This post'
       replies  = $.el 'label',
         innerHTML: "<input type=checkbox name=replies> Show replies"
+      hideStubLink = $.el 'a',
+        textContent: 'Hide stub'
+        href: 'javascript:;'
+      $.on hideStubLink, 'click', PostHiding.menu.hideStub
 
       $.event 'AddMenuEntry',
         type: 'post'
@@ -79,6 +83,18 @@ PostHiding =
           replies.firstChild.checked  = if data?.hideRecursively? then data.hideRecursively else Conf['Recursive Hiding']
           true
         subEntries: [{el: apply}, {el: thisPost}, {el: replies}]
+
+      # Extra Entry to hide stubs on hidden posts.
+      $.event 'AddMenuEntry',
+        type: 'post'
+        el: hideStubLink
+        order: 15
+        open: (post) ->
+          if !post.isReply or post.isClone or !post.isHidden
+            return false
+          unless data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
+            return false
+          PostHiding.menu.post = post
 
     hide: ->
       parent   = @parentNode
@@ -110,11 +126,16 @@ PostHiding =
       if data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
         PostHiding.saveHiddenState post, !(thisPost and replies), !thisPost, data.makeStub, !replies
       $.event 'CloseMenu'
+    hideStub: ->
+      {post} = PostHiding.menu
+      post.nodes.root.hidden = true
+      $.event 'CloseMenu'
+      return
 
   makeButton: (post, type) ->
     a = $.el 'a',
       className: "#{type}-reply-button"
-      innerHTML: "<span>[&nbsp;#{if type is 'hide' then '-' else '+'}&nbsp;]</span>"
+      innerHTML: "<span class=fourchanx-link>&nbsp;#{if type is 'hide' then '-' else '+'}&nbsp;</span>"
       href:      'javascript:;'
     $.on a, 'click', PostHiding.toggle
     a

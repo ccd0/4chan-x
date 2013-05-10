@@ -55,7 +55,7 @@ Header =
       return unless Main.isThisPageLegit()
       # Wait for #boardNavMobile instead of #boardNavDesktop,
       # it might be incomplete otherwise.
-      $.asap (-> $.id('boardNavMobile') or d.readyState is 'complete'), @setBoardList
+      $.asap (-> $.id('boardNavMobile') or d.readyState in ['interactive', 'complete']), @setBoardList
       $.prepend d.body, @bar
       $.add d.body, Header.hover
       @setBarPosition Conf['Bottom Header']
@@ -82,7 +82,7 @@ Header =
 
     boardList = $.el 'span',
       id: 'board-list'
-      innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden>[<a href=javascript:; class='hide-board-list-button'> - </a>] #{fourchannav.innerHTML}</span>"
+      innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><a href=javascript:; class='hide-board-list-button fourchanx-link'>&nbsp;&nbsp;-&nbsp;&nbsp;</a> #{fourchannav.innerHTML}</span>"
     fullBoardList = $ '#full-board-list', boardList
     btn = $ '.hide-board-list-button', fullBoardList
     $.on btn, 'click', Header.toggleBoardList
@@ -245,8 +245,8 @@ Header =
 
   addShortcut: (el) ->
     shortcut = $.el 'span',
-      className: 'shortcut'
-    $.add shortcut, [$.tn(' ['), el, $.tn(']')]
+      className: 'shortcut fourchanx-link'
+    $.add shortcut, el
     $.prepend Header.shortcuts, shortcut
 
   menuToggle: (e) ->

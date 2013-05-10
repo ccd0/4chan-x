@@ -267,7 +267,7 @@ Style =
         [
           true
           _conf['Slideout Navigation'] isnt 'hide'
-          _conf['Announcements'] is 'slideout' and $ '#globalMessage', d.body
+          _conf['Announcements'] is 'slideout' and (psa = $ '#globalMessage', d.body) and !psa.hidden
           _conf['Thread Watcher'] and _conf['Slideout Watcher']
           $ '#navtopright .exlinksOptionsLink', d.body
           notCatalog and $ 'body > a[style="cursor: pointer; float: right;"]', d.body
@@ -299,7 +299,7 @@ Style =
           true
           true
           _conf['Slideout Navigation'] isnt 'hide'
-          _conf['Announcements'] is 'slideout' and $ '#globalMessage', d.body
+          _conf['Announcements'] is 'slideout' and (psa = $ '#globalMessage', d.body) and !psa.hidden
           _conf['Thread Watcher'] and _conf['Slideout Watcher']
           notCatalog and $ 'body > a[style="cursor: pointer; float: right;"]', d.body
           $ '#navtopright .exlinksOptionsLink', d.body

@@ -18,8 +18,8 @@ Menu =
     a = null
     (post) ->
       a or= $.el 'a',
-        className: 'menu-button'
-        innerHTML: '[<span class=drop-marker></span>]'
+        className: 'menu-button brackets-wrap'
+        innerHTML: '<span class=drop-marker></span>'
         href:      'javascript:;'
       clone = a.cloneNode true
       clone.setAttribute 'data-postid', post.fullID

@@ -786,9 +786,9 @@ http://iqdb.org/?url=%TURL
   boardnav: '[ toggle-all ] [current-title]'
 
   QR:
-    'QR.personas': [
-      '#email:"sage";boards:jp;always'
-      ].join '\n'
+    'QR.personas': """
+      #email:"sage";boards:jp;always
+      """
 
   time: '%m/%d/%y(%a)%H:%M:%S'
 
