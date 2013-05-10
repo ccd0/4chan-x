@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.1.18 - 2013-05-09
+* 4chan X - Version 1.1.18 - 2013-05-10
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -1877,7 +1877,7 @@
           capcodeStart = '';
           capcode = '';
       }
-      flag = flagCode ? (" <img src='" + staticPath + "country/" + (boardID === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
+      flag = flagCode ? (" <img src='" + staticPath + "country/troll/") + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
       if (file != null ? file.isDeleted : void 0) {
         fileHtml = isOP ? ("<div class=file id=f" + data.no + "><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>" : ("<div class=file id=f" + data.no + "><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted-res.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>";
       } else if (file) {

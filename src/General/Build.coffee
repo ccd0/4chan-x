@@ -110,7 +110,7 @@ Build =
 
     flag =
       if flagCode
-        " <img src='#{staticPath}country/#{if boardID is 'pol' then 'troll/' else ''}" +
+        " <img src='#{staticPath}country/troll/" +
         flagCode.toLowerCase() + ".gif' alt=#{flagCode} title='#{flagName}' class=countryFlag>"
       else
         ''
