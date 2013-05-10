@@ -1,3 +1,4 @@
+## 1.2.0 - 2013-05-10 - "Youmu" ![Youmu](src/General/img/changelog/1.2.0.png)
 MayhemYDG:
 - Added Foolzashit archive
 - Added `blink` class to document in preparation for future versions of Chrome and Opera
