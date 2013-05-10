@@ -14453,7 +14453,7 @@
       if (g.VIEW === 'thread') {
         g.THREADID = +pathname[3];
       }
-      if (['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'pol', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains(g.BOARD.ID)) {
+      if (['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'pol', 'r', 'r9k', 'rs', 's', 's4s', 'soc', 't', 'u', 'y'].contains(g.BOARD.ID)) {
         g.TYPE = 'nsfw';
       } else {
         g.TYPE = 'sfw';
