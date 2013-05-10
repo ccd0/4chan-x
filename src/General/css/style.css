@@ -202,12 +202,6 @@ a {
 #shortcuts {
   float: right;
 }
-.shortcut::after {
-  content: "]";
-}
-.shortcut::before {
-  content: "[";
-}
 .shortcut {
   margin-left: 3px;
 }
@@ -218,7 +212,13 @@ a {
 #toggleMsgBtn {
   display: none !important;
 }
-
+/* 4chan X link brackets */
+.fourchanx-link::after {
+  content: "]";
+}
+.fourchanx-link::before {
+  content: "[";
+}
 /* Notifications */
 #notifications {
   position: fixed;

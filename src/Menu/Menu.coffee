@@ -18,8 +18,8 @@ Menu =
     a = null
     (post) ->
       a or= $.el 'a',
-        className: 'menu-button'
-        innerHTML: '[<i></i>]'
+        className: 'menu-button fourchanx-link'
+        innerHTML: '<i></i>'
         href:      'javascript:;'
       clone = a.cloneNode true
       clone.setAttribute 'data-postid', post.fullID
