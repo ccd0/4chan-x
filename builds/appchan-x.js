@@ -420,7 +420,7 @@
 
   g = {
     VERSION: '2.0.2',
-    NAMESPACE: 'appchan x.'.replace(' ', '_'),
+    NAMESPACE: 'appchan_x.',
     TYPE: 'sfw',
     boards: {},
     threads: {},
