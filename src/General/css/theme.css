@@ -195,6 +195,7 @@ textarea.field:focus {
 #themeConf,
 #watcher,
 #watcher:hover,
+.dialog,
 .submenu,
 a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
   background: #{theme["Dialog Background"]};

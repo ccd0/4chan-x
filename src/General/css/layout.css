@@ -318,7 +318,11 @@ else "
   width: 7px;
   #{Style.sizing}: border-box;
 }
-/* Updater */
+/* Updater / Thread Stats */
+.float #thread-stats,
+.float #updater {
+  position: fixed;
+}
 #update-status.new::after {
   content: ', ';
 }
