@@ -7266,8 +7266,8 @@
           continue;
         }
         count++;
-        node = Build.postFromObject(postObject, ThreadUpdater.thread.board);
-        posts.push(new Post(node, ThreadUpdater.thread, ThreadUpdater.thread.board.ID));
+        node = Build.postFromObject(postObject, ThreadUpdater.thread.board.ID);
+        posts.push(new Post(node, ThreadUpdater.thread, ThreadUpdater.thread.board));
       }
       deletedPosts = [];
       deletedFiles = [];
