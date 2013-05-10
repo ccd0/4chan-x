@@ -783,7 +783,11 @@ http://iqdb.org/?url=%TURL
     'Bottom Board List':       true
     'Custom Board Navigation': true
 
-  boardnav: '[ toggle-all ] [current-title]'
+  boardnav: """
+[ toggle-all ]
+[current-title]
+[external-text:"FAQ","https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions"]
+  """
 
   QR:
     'QR.personas': """
