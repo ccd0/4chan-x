@@ -1,13 +1,13 @@
 ## v1.2.0 - "Youmu" ![Youmu](src/General/img/changelog/1.2.0.png)
 *2013-05-10*
 
-MayhemYDG:
+**MayhemYDG**:
 - Added Foolzashit archive
 - Added `blink` class to document in preparation for future versions of Chrome and Opera
 - Take advantage of announcement's new `data-utc` value for hiding
   - `data-utc` is a timestamp, this allows us to not have to store the entire text content of the announcement
 
-seaweedchan:
+**seaweedchan**:
 - Turn all brackets into pseudo-elements. Brackets can be changed by overwriting the `content` of `.fourchanx-link::before` (`[`) and `.fourchanx-link::after` (`]`), or removed entirely with ease.
   - Note: This does not change the default brackets around `toggle-all` in the custom navigation. These are up to the user.
 - Fix file input in Opera
@@ -15,15 +15,16 @@ seaweedchan:
   - `external-text:"Google","http://www.google.com"`
 - Fix JIDF flag on /pol/ when post is fetched by updater
 
-zixaphir:
+**zixaphir**:
 - Change Custom Board Navigation input into textarea, new lines will convert to spaces
 - Fix auto-scrolling in Chrome
 - Fix wrapping of #dump-list in Chrome
 - Fix (You) not being added in expanded comments
 
 ### v1.1.18
-*2013-05-09
-seaweedchan:
+*2013-05-09*
+
+**seaweedchan**:
 - Hide stub link added in menus of stubs
 - #dump-button moved into #qr-filename-container as a simple + link
 - QR with 4chan Pass made a little wider
@@ -34,63 +35,63 @@ seaweedchan:
 ### v1.1.17
 *2013-05-08*
 
-seaweedchan:
+**seaweedchan**:
 - Bug fixes
 
 ### v1.1.16
 *2013-05-07*
 
-seaweedchan:
+**seaweedchan**:
 - Add `Centered links` option for header
 - Add `Persistent Thread Watcher` option
 - Watcher styling changes
 
-zixaphir:
+**zixaphir**:
 - Simpler update checking
 
 ### v1.1.15
 *2013-05-07*
 
-seaweedchan:
+**seaweedchan**:
 - Fix update and download urls for Greasemonkey
 
 ### v1.1.14
 *2013-05-07*
 
-seaweedchan:
+**seaweedchan**:
 - Fix catalog content sometimes disappearing due to issue with 4chan's javascript
 
-zixaphir:
+**zixaphir**:
 - Re-added `Quote Hash Navigation` option
 
 ### v1.1.13
 *2013-05-06*
 
-seaweedchan:
+**seaweedchan**:
 - Disable settings removing scroll bar when opened, thus fixing the issue where it jumps up the page randomly
 - Hide watcher by default, add [Watcher] shortcut.
 
 ### v1.1.12
 *2013-05-06*
 
-detharonil
+**detharonil**:
 - Support for %Y in time formatting
 - More future-proof %y
 
-MayhemYDG:
+**MayhemYDG**:
 - Fix whitespaces not being preserved in code tags in /g/.
 
-seaweedchan:
+**seaweedchan**:
 - Fix QR not being able to drag to the top with fixed header disabled
 
-zixaphir:
+**zixaphir**:
 - Fix custom CSS
 - Fix [Deleted] showing up randomly after submitting a post
 
 ### v1.1.11
 *2013-05-04*
 
-seaweedchan:
+**seaweedchan**:
 - Add `Highlight Posts Quoting You` option
 - Add 'catalog', 'index', or 'thread' classes to document depending on what's open
 - Add `Filtered Backlinks` options that when disabled, hides filtered backlinks
@@ -98,32 +99,32 @@ seaweedchan:
 ### v1.1.10
 *2013-05-03*
 
-seaweedchan:
+**seaweedchan**:
 - Fix update checking
 
 ### v1.1.9
 *2013-05-02*
 
-seaweedchan
+**seaweedchan**
 - Fix boards with previously deleted archives not switching to new archives 
 
-ihavenoface:
+**ihavenoface**:
 - 4chan Pass link by the style selector
 
-zixaphir:
+**zixaphir**:
 - Make Allow False Positives option more efficient
 
 ### v1.1.8
 *2013-05-01*
 
-seaweedchan:
+**seaweedchan**:
 - Fix QR not clearing on submit with Posting Success Notifications disabled
 - New archives for /h/, /v/, and /vg/
 
 ### v1.1.7
 *2013-05-01*
 
-seaweedchan:
+**seaweedchan**:
 - External image embedding
 - Account for time options in youtube links for embedding
 - Once again remove /v/ and /vg/ archiving... ;_;
@@ -134,19 +135,19 @@ seaweedchan:
 ### v1.1.6
 *2013-05-01*
 
-seaweedchan:
+**seaweedchan**:
 - Fix Gist links if no username is specificed
 
-MayhemYDG:
+**MayhemYDG**:
  - Access it in the `Advanced` tab of the Settings window.
 
-zixaphir:
+**zixaphir**:
 - Add Gist link titles
 
 ### v1.1.5
 *2013-04-30*
 
-seaweedchan:
+**seaweedchan**:
 - Fix various embedding issues
 - Fix Link Title depending on Embedding
 - Added favicons to links that can be embedded
@@ -155,40 +156,40 @@ seaweedchan:
 ### v1.1.4
 *2013-04-29*
 
-seaweedchan:
+**seaweedchan**:
 - Change ESC functionality in QR to autohide if Persistent QR is enabled
 - Add /v/ and /vg/ archiving to archive.nihil-ad-rem.net, and make sure Archiver Selection settings actually switch to it
 - Add option to toggle between updater and stats fixed in header or floating
 
-MayhemYDG: 
+**MayhemYDG**: 
 - Add nyafuu archiving for /w/
 - Add /d/ archive
 
 ### v1.1.3
 *2013-04-28*
 
-seaweedchan:
+**seaweedchan**:
 - Chrome doesn't get .null, so don't style it
 - Fix count when auto update is disabled and set updater text to "Update"
 - Remove /v/ and /vg/ redirection from Foolz.
 - Toggle keybind for header auto-hiding
 
-MayhemYDG:
+**MayhemYDG**:
 - Fix Unread Count taking into account hidden posts.
 
 ### v1.1.2
 *2013-04-26*
 
-seaweedchan:
+**seaweedchan**:
 - Fix emoji and favicon previews not updating on change.
 - Fix issue with dragging thread watcher
 - Fix some settings not importing when coming from Mayhem's v3
 - Fix menu z-index
 
-MayhemYDG:
+**MayhemYDG**:
 - Fix bug where a thread would freeze on load.
 
-zixaphir:
+**zixaphir**:
 - Fix preview with favicons and emoji
 - Fix NaN error on Thread Updater Interval
 - Draggable UI can no longer overlap the Header.
@@ -197,14 +198,14 @@ zixaphir:
 ### v1.1.1
 *2013-04-26*
 
-zixaphir:
+**zixaphir**:
 - Fix script on Opera
 
-MayhemYDG:
+**MayhemYDG**:
 - Minor fixes.
 - Chrome only: Due to technical limitations, Filter lists and Custom CSS will not by synchronized across devices anymore.
 
-seaweedchan:
+**seaweedchan**:
 - Allow thread watcher to load on catalog
 
 ### v1.0.10
@@ -215,16 +216,17 @@ seaweedchan:
 ### v1.0.9
 *2013-04-17*
 
-ihavenoface:
+**ihavenoface**:
 - Implement Announcement Hiding
-seaweedchan:
+
+**seaweedchan**:
 - Change #options back to inheriting colors from replies
 - Fix script breaking when disabling image expansion
 
 ### v1.0.8
 *2013-04-15*
 
-seaweedchan:
+**seaweedchan**:
 - Redo settings menu styling
 - Move Export/Import buttons and dialog
 - Update license and use banner.js for license
@@ -235,13 +237,13 @@ seaweedchan:
 qqueue:
 - Relative post dates
 
-MayhemYDG:
+**MayhemYDG**:
 - Exporting/importing settings
 
 ### v1.0.6
 *2013-04-13*
 
-seaweedchan:
+**seaweedchan**:
 - Update supported boards for archive redirection and custom navigation
 - Point to github.io instead of github.com for pages
 - Fix post archive link for InstallGentoo and Foolz
@@ -251,17 +253,17 @@ seaweedchan:
 ### v1.0.5
 *2013-04-09*
 
-seaweedchan:
+**seaweedchan**:
 - Added keybind to toggle Fappe Tyme
 - Fix code tag keybind
 
-Zixaphir:
+**zixaphir**:
 - Add 'yourPost' class to own replies
 
 ### v1.0.4
 *2013-04-08*
 
-seaweedchan:
+**seaweedchan**:
 - Fix Fappe Tyme
 - Re- add label for image expanding
 - Move restore button to left side as per RiDeag
@@ -269,17 +271,17 @@ seaweedchan:
 ### v1.0.3
 *2013-03-23*
 
-seaweedchan:
+**seaweedchan**:
 - Add ad- blocking CSS into Custom CSS examples
 
-Zixaphir:
+**zixaphir**:
 - Fix ctrl+s bringing up save dialog
 - Fix issues with soundcloud embedding
 
 ### v1.0.2
 *2013-03-14*
 
-seaweedchan:
+**seaweedchan**:
 - New Rice option: Emoji Position
 - New layout for Rice tab
 - No more Yotsuba / Yotsuba B in options
@@ -290,7 +292,7 @@ seaweedchan:
 - New option: Emoji
 - New Rice option: Sage Emoji
 
-seaweedchan:
+**seaweedchan**:
 - Prettier error messages
 
 ### v1.0.0
@@ -298,7 +300,7 @@ seaweedchan:
 
 - Initial release
 
-zixaphir:
+**zixaphir**:
 - Fix unread post count for filtered posts
 - Fix issues when switching from ihavenoface's fork
 - Fix backlinks not receiving filtered class
