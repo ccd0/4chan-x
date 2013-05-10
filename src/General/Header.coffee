@@ -132,7 +132,7 @@ Header =
     $.rmAll list
     return unless text
     as = $$('#full-board-list a', Header.bar)
-    nodes = text.match(/[\w@]+(-(all|title|replace|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
+    nodes = text.match(/[\w@]+((-(all|title|replace|full|index|catalog|url:"[^"]+[^"]"|text:"[^"]+")|\,"[^"]+[^"]"))*|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
       if /^toggle-all/.test t
@@ -141,6 +141,12 @@ Header =
           textContent: (t.match(/-text:"(.+)"/) || [null, '+'])[1]
           href: 'javascript:;'
         $.on a, 'click', Header.toggleBoardList
+        return a
+      if /^external/.test t
+        a = $.el 'a',
+          href: (t.match(/\,"(.+)"/) || [null, '+'])[1]
+          textContent: (t.match(/-text:"(.+)"\,/) || [null, '+'])[1]
+          className: 'external'
         return a
       board = if /^current/.test t
         g.BOARD.ID

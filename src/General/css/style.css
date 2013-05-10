@@ -754,7 +754,8 @@ input.field.tripped:not(:hover):not(:focus) {
   height: 23px;
 }
 #qr input[type=file] {
-  display: none;
+  visibility: hidden;
+  position: absolute;
 }
 /* Thread Select / Spoiler Label */
 #qr select {
