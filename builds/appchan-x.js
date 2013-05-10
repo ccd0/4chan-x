@@ -340,7 +340,7 @@
       'Bottom Board List': true,
       'Custom Board Navigation': true
     },
-    boardnav: "[ toggle-all ]\n[current-title]\n[external-text:\"FAQ\",\"https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions\"]",
+    boardnav: "[ toggle-all ]\n[current-title]",
     QR: {
       'QR.personas': "#email:\"sage\";boards:jp;always"
     },
