@@ -7267,7 +7267,7 @@
         }
         count++;
         node = Build.postFromObject(postObject, ThreadUpdater.thread.board);
-        posts.push(new Post(node, ThreadUpdater.thread, ThreadUpdater.thread.board));
+        posts.push(new Post(node, ThreadUpdater.thread, ThreadUpdater.thread.board.ID));
       }
       deletedPosts = [];
       deletedFiles = [];
