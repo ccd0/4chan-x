@@ -1,3 +1,6 @@
+### v2.0.3
+*2013-05-10*
+
 **zixaphir**:
 - Change Custom Board Navigation input into textarea, new lines will convert to spaces
 - Fix auto-scrolling in Chrome
@@ -6,6 +9,7 @@
 - bugfixes
 - Some extra changes on top of seaweed's QR changes for our ricey nature
 - New theme, Generigray
+- New theme, Frost
 
 ![QR styling rice, generigray](src/General/img/changelog/2.0.2-qr.png)
 
