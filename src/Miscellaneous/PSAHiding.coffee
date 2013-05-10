@@ -5,20 +5,6 @@ PSAHiding =
     $.addClass doc, 'hide-announcement'
     $.addClass doc, 'hide-announcement-enabled'
 
-    entry =
-      type: 'header'
-      el: $.el 'a',
-        textContent: 'Show announcement'
-        className: 'show-announcement'
-        href: 'javascript:;'
-      order: 50
-      open: ->
-        if $.id('globalMessage')?.hidden
-          return true
-        false
-    $.event 'AddMenuEntry', entry
-
-    $.on entry.el, 'click', PSAHiding.toggle
     $.on d, '4chanXInitFinished', @setup
   setup: ->
     $.off d, '4chanXInitFinished', PSAHiding.setup
@@ -27,6 +13,17 @@ PSAHiding =
       $.rmClass doc, 'hide-announcement'
       $.rmClass doc, 'hide-announcement-enabled'
       return
+
+    entry =
+      type: 'header'
+      el: $.el 'a',
+        textContent: 'Show announcement'
+        className: 'show-announcement'
+        href: 'javascript:;'
+      order: 50
+      open: -> psa.hidden
+    $.event 'AddMenuEntry', entry
+    $.on entry.el, 'click', PSAHiding.toggle
 
     PSAHiding.btn = btn = $.el 'a',
       innerHTML: '<span>[&nbsp;-&nbsp;]</span>'
