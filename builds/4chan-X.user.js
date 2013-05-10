@@ -7739,12 +7739,14 @@
         cgl: "//rbt.asia/",
         c: "//archive.nyafuu.org/",
         d: "//loveisover.me/",
+        e: "http://archive.foolzashit.com",
         hr: "http://archive.4plebs.org/",
         u: "//nsfw.foolz.us/",
         po: "//archive.thedarkcave.org/",
         vg: "http://nth.pensivenonsen.se/",
         c: "//archive.nyafuu.org/"
       };
+      o.adv = o.asp = o.cm = o.i = o.n = o.o = o.p = o.s = o.t = o.trv = o.y = o.e;
       o.gd = o.jp = o.m = o.q = o.tg = o.vp = o.vr = o.wsg = o.a;
       o.fa = o.lit = o.s4s = o.ck;
       o.k = o.toy = o.x = o.an;
@@ -7838,6 +7840,11 @@
       'PensiveNonsen': {
         base: 'http://nth.pensivenonsen.se',
         boards: ['vg'],
+        type: 'foolfuuka'
+      },
+      'FoolzaShit': {
+        base: 'http://archive.foolzashit.com',
+        boards: ["adv", "asp", "cm", "e", "i", "n", "o", "p", "s", "t", "trv", "y"],
         type: 'foolfuuka'
       },
       'Warosu': {
