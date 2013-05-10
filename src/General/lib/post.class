@@ -41,12 +41,10 @@ class Post
     if date           = $ '.dateTime',     info
       @nodes.date     = date
       @info.date      = new Date date.dataset.utc * 1000
-    if Conf['Quick Reply']
-      @info.yours     = QR.db.get
-        boardID:  @board
-        threadID: @thread
-        postID:   @ID
-
+    @info.yours     = QR.db.get
+      boardID:  @board
+      threadID: @thread
+      postID:   @ID
 
     @parseComment()
     @parseQuotes()
