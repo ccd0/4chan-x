@@ -4117,7 +4117,7 @@
       });
     },
     node: function() {
-      var quotelink, quotelinks, quotes, _i, _len;
+      var quotelink, _i, _len, _ref;
 
       if (this.isClone) {
         return;
@@ -4125,12 +4125,12 @@
       if (this.info.yours) {
         $.addClass(this.nodes.root, 'yourPost');
       }
-      if (!(quotes = this.quotes).length) {
+      if (!this.quotes.length) {
         return;
       }
-      quotelinks = this.nodes.quotelinks;
-      for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
-        quotelink = quotelinks[_i];
+      _ref = this.nodes.quotelinks;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quotelink = _ref[_i];
         if (QR.db.get(Get.postDataFromLink(quotelink))) {
           $.add(quotelink, $.tn('\u00A0(You)'));
           $.addClass(this.nodes.root, 'quotesYou');

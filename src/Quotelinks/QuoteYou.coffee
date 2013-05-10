@@ -21,10 +21,9 @@ QuoteYou =
       $.addClass @nodes.root, 'yourPost'
 
     # Stop there if there's no quotes in that post.
-    return unless (quotes = @quotes).length
-    {quotelinks} = @nodes
+    return unless @quotes.length
 
-    for quotelink in quotelinks
+    for quotelink in @nodes.quotelinks
       if QR.db.get Get.postDataFromLink quotelink
         $.add quotelink, $.tn '\u00A0(You)'
         $.addClass @nodes.root, 'quotesYou'
