@@ -25,6 +25,7 @@ PSAHiding =
 
     unless psa = $.id 'globalMessage'
       $.rmClass doc, 'hide-announcement'
+      $.rmClass doc, 'hide-announcement-enabled'
       return
 
     PSAHiding.btn = btn = $.el 'a',
@@ -34,32 +35,35 @@ PSAHiding =
       href: 'javascript:;'
     $.on btn, 'click', PSAHiding.toggle
 
-    $.get 'hiddenPSAs', [], (item) ->
-      PSAHiding.sync item['hiddenPSAs']
+    # XXX remove hiddenPSAs workaround in the future.
+    items =
+      hiddenPSA: 0
+      hiddenPSAs: null
+
+    $.get items, ({hiddenPSA, hiddenPSAs}) ->
+      if hiddenPSAs
+        $.delete 'hiddenPSAs'
+        if psa.textContent.replace(/\W+/g, '').toLowerCase() in hiddenPSAs
+          hiddenPSA = +$.id('globalMessage').dataset.utc
+          $.set 'hiddenPSA', hiddenPSA
+      PSAHiding.sync hiddenPSA
       $.before psa, btn
       $.rmClass doc, 'hide-announcement'
 
-    $.sync 'hiddenPSAs', PSAHiding.sync
+    $.sync 'hiddenPSA', PSAHiding.sync
   toggle: (e) ->
-    hide = $.hasClass @, 'hide-announcement'
-    text = PSAHiding.trim $.id 'globalMessage'
-    $.get 'hiddenPSAs', [], ({hiddenPSAs}) ->
-      if hide
-        hiddenPSAs.push text
-        hiddenPSAs = hiddenPSAs[-5..]
-      else
-        $.event 'CloseMenu'
-        i = hiddenPSAs.indexOf text
-        hiddenPSAs.splice i, 1
-      PSAHiding.sync hiddenPSAs
-      $.set 'hiddenPSAs', hiddenPSAs
-  sync: (hiddenPSAs) ->
+    if $.hasClass @, 'hide-announcement'
+      UTC = +$.id('globalMessage').dataset.utc
+      $.set 'hiddenPSA', UTC
+    else
+      $.event 'CloseMenu'
+      $.delete 'hiddenPSA'
+    PSAHiding.sync UTC
+  sync: (UTC) ->
     psa = $.id 'globalMessage'
-    psa.hidden = PSAHiding.btn.hidden = if PSAHiding.trim(psa) in hiddenPSAs
+    psa.hidden = PSAHiding.btn.hidden = if UTC and UTC >= +psa.dataset.utc
       true
     else
       false
     if (hr = psa.nextElementSibling) and hr.nodeName is 'HR'
       hr.hidden = psa.hidden
-  trim: (psa) ->
-    psa.textContent.replace(/\W+/g, '').toLowerCase()
