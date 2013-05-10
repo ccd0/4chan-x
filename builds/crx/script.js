@@ -3592,7 +3592,7 @@
       a = $.el('a', {
         href: "/" + this.board + "/res/" + this.thread + "#p" + this,
         className: this.isHidden ? 'filtered backlink' : 'backlink',
-        textContent: (QuoteBacklink.funk(this.ID)) + (Conf['Mark Quotes of You'] && this.info.yours ? QuoteYou.text : '')
+        textContent: (QuoteBacklink.funk(this.ID)) + (Conf['Mark Quotes of You'] && this.info.yours ? '\u00A0(You)' : '')
       });
       _ref = this.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {

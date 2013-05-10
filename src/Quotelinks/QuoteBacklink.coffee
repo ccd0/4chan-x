@@ -27,7 +27,7 @@ QuoteBacklink =
     a = $.el 'a',
       href: "/#{@board}/res/#{@thread}#p#{@}"
       className: if @isHidden then 'filtered backlink' else 'backlink'
-      textContent: (QuoteBacklink.funk @ID) + (if Conf['Mark Quotes of You'] and @info.yours then QuoteYou.text else '')
+      textContent: (QuoteBacklink.funk @ID) + (if Conf['Mark Quotes of You'] and @info.yours then '\u00A0(You)' else '')
     for quote in @quotes
       containers = [QuoteBacklink.getContainer quote]
       if (post = g.posts[quote]) and post.nodes.backlinkContainer
