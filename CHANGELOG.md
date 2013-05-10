@@ -7,6 +7,7 @@ MayhemYDG:
 seaweedchan:
 - Turn all brackets into pseudo-elements. Brackets can be changed by overwriting the `content` of `.fourchanx-link::before` (`[`) and `.fourchanx-link::after` (`]`), or removed entirely with ease.
   - Note: This does not change the default brackets around `toggle-all` in the custom navigation. These are up to the user.
+- Fix file input in Opera
 
 ### 1.1.18 - 2013-05-09
 seaweedchan:
