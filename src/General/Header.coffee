@@ -132,7 +132,7 @@ Header =
     $.rmAll list
     return unless text
     as = $$('#full-board-list a', Header.bar)
-    nodes = text.match(/[\w@]+(-(all|title|replace|full|index|catalog|url:"[^"]+[^"]"|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
+    nodes = text.match(/[\w@]+((-(all|title|replace|full|index|catalog|url:"[^"]+[^"]"|text:"[^"]+")|\,"[^"]+[^"]"))*|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
       if /^toggle-all/.test t
@@ -144,8 +144,8 @@ Header =
         return a
       if /^external/.test t
         a = $.el 'a',
-          href: (t.match(/-url:"(.+)"/) || [null, '+'])[1]
-          textContent: (t.match(/-text:"(.+)"-/) || [null, '+'])[1]
+          href: (t.match(/\,"(.+)"/) || [null, '+'])[1]
+          textContent: (t.match(/-text:"(.+)"\,/) || [null, '+'])[1]
           className: 'external'
           target: '_blank'
         return a
