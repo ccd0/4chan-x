@@ -1769,7 +1769,7 @@
         headRect = Header.bar.getBoundingClientRect();
         top += -headRect.top - headRect.height;
       }
-      return ($.engine === 'webkit' ? d.body : doc).scrollTop += top;
+      return d.body.scrollTop += top;
     },
     addShortcut: function(el) {
       var shortcut;
