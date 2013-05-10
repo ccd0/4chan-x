@@ -9327,14 +9327,12 @@
       $.on(link, 'click', Settings.open);
       Header.addShortcut(link);
       $.get('previousversion', null, function(item) {
-        var changelog, curr, el, prev, previous;
+        var changelog, el, previous;
 
         if (previous = item['previousversion']) {
           if (previous === g.VERSION) {
             return;
           }
-          prev = previous.match(/\d+/g).map(Number);
-          curr = g.VERSION.match(/\d+/g).map(Number);
           changelog = 'https://github.com/seaweedchan/4chan-x/blob/master/CHANGELOG.md';
           el = $.el('span', {
             innerHTML: "4chan X has been updated to <a href='" + changelog + "' target=_blank>version " + g.VERSION + "</a>."
@@ -9344,7 +9342,7 @@
           $.on(d, '4chanXInitFinished', Settings.open);
         }
         return $.set({
-          lastupdate: Date.now(),
+          lastchecked: Date.now(),
           previousversion: g.VERSION
         });
       });

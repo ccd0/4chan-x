@@ -12,10 +12,6 @@ Settings =
     $.get 'previousversion', null, (item) ->
       if previous = item['previousversion']
         return if previous is g.VERSION
-        # Avoid conflicts between sync'd newer versions
-        # and out of date extension on this device.
-        prev = previous.match(/\d+/g).map Number
-        curr = g.VERSION.match(/\d+/g).map Number
 
         changelog = '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
         el = $.el 'span',
@@ -24,7 +20,7 @@ Settings =
       else
         $.on d, '4chanXInitFinished', Settings.open
       $.set
-        lastupdate: Date.now()
+        lastchecked: Date.now()
         previousversion: g.VERSION
 
     Settings.addSection 'Main',     Settings.main
