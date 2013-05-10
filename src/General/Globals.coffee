@@ -2918,6 +2918,116 @@ textarea,
   transition:background .2s,box-shadow .2s;
 }"""
 
+  "Frost":
+    "Author":                       "Zixaphir"
+    "Author Tripcode":              "!M........."
+    "Background Image":             ""
+    "Background Attachment":        ""
+    "Background Position":          ""
+    "Background Repeat":            ""
+    "Background Color":             "rgba(230,230,230,1)"
+    "Thread Wrapper Background":    "rgba(235,235,235,1)"
+    "Thread Wrapper Border":        "rgba(215,215,215,1)"
+    "Dialog Background":            "rgba(230,230,230,1)"
+    "Dialog Border":                "rgba(255,255,255,1)"
+    "Reply Background":             "rgba(230,230,230,1)"
+    "Reply Border":                 "rgba(220,220,220,1)"
+    "Highlighted Reply Background": "rgba(244,244,244,1)"
+    "Highlighted Reply Border":     "rgba(220,220,220,1)"
+    "Backlinked Reply Outline":     "rgba(98,124,141,1)"
+    "Input Background":             "rgba(244,244,244,1)"
+    "Input Border":                 "rgba(220,220,220,1)"
+    "Hovered Input Background":     "rgba(220,220,220,1)"
+    "Hovered Input Border":         "rgba(200,200,200,1)"
+    "Focused Input Background":     "rgba(255,255,255,1)"
+    "Focused Input Border":         "rgba(200,200,200,1)"
+    "Checkbox Background":          "rgba(200,200,200,1)"
+    "Checkbox Border":              "rgba(190,190,190,1)"
+    "Checkbox Checked Background":  "rgba(220,220,220,1)"
+    "Buttons Background":           "rgba(255,255,255,1)"
+    "Buttons Border":               "rgba(220,220,220,1)"
+    "Navigation Background":        "rgba(244,244,244,1)"
+    "Navigation Border":            "rgba(230,230,230,0.9)"
+    "Quotelinks":                   "rgb(61,110,121)"
+    "Backlinks":                    "rgba(51,145,175, 0.9)"
+    "Links":                        "rgb(62,62,160)"
+    "Hovered Links":                "rgb(101,0,150)"
+    "Navigation Links":             "rgb(51,145,175)"
+    "Hovered Navigation Links":     "rgb(141,190,255)"
+    "Names":                        "rgb(100,100,100)"
+    "Tripcodes":                    "rgb(0,125,0)"
+    "Emails":                       "rgb(68,68,68)"
+    "Subjects":                     "rgb(95,0,0)"
+    "Text":                         "rgb(0,0,0)"
+    "Inputs":                       "rgb(0,0,0)"
+    "Post Numbers":                 "rgb(80,80,80)"
+    "Greentext":                    "rgb(113,121,62)"
+    "Sage":                         "rgb(68,68,68)"
+    "Board Title":                  "rgb(0,0,0)"
+    "Timestamps":                   "rgb(100,100,100)"
+    "Warnings":                     "rgb(215,0,0)"
+    "Shadow Color":                 "rgba(0,0,0,.1)"
+    "Custom CSS": """
+.thread {
+  padding: 2px;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1) inset, rgba(255,255,255,.5) 1px 1px;
+}
+#header-bar,
+input,
+textarea,
+.field,
+.inline .op,
+.pagelist,
+.prettyprint,
+.post.reply,
+.rice,
+.selectrice {
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1) inset, rgba(255,255,255,.8) 1px 1px;
+}
+#qr .selectrice {
+  box-shadow: none;
+}
+#header-bar {
+  padding: 1px 3px;
+}
+.dialog {
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1) inset, rgba(255,255,255,.5) 1px 1px;
+}
+.replyContainer {
+  padding-left: 20px;
+}
+.threadContainer {
+  border: none;
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1) inset, rgba(255,255,255,.5) 1px 1px;
+  padding: 2px 0;
+  margin-left: 20px;
+}
+input[type=password]:hover,
+input[type=text]:not([disabled]):hover,
+input#fs_search:hover,
+input.field:hover,
+.webkit select:hover,
+textarea:hover,
+#appchanx-settings input:not([type=checkbox]):hover {
+  box-shadow: inset rgba(0,0,0,.1) 0 1px 2px;
+}
+input[type=password]:focus,
+input[type=text]:focus,
+input#fs_search:focus,
+input.field:focus,
+.webkit select:focus,
+textarea:focus,
+#appchanx-settings input:focus {
+  box-shadow: inset rgba(0,0,0,.1) 0 1px 2px;
+}
+button,
+input,
+textarea,
+.rice {
+  transition: background .2s,box-shadow .2s;
+}
+"""
+
 Icons =
   oneechan:   '<%= grunt.file.read("src/General/img/icons/oneechan.png", {encoding: "base64"}) %>'
   "4chan SS": '<%= grunt.file.read("src/General/img/icons/4chanSS.png",  {encoding: "base64"}) %>'
