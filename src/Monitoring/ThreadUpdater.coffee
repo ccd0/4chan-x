@@ -210,7 +210,7 @@ ThreadUpdater =
       continue if num <= ThreadUpdater.lastPost
       # Insert new posts, not older ones.
       count++
-      node = Build.postFromObject postObject, ThreadUpdater.thread.board
+      node = Build.postFromObject postObject, ThreadUpdater.thread.board.ID
       nodes.push node
       posts.push new Post node, ThreadUpdater.thread, ThreadUpdater.thread.board
 
