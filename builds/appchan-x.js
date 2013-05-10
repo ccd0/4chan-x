@@ -9554,7 +9554,7 @@
           continue;
         }
         count++;
-        node = Build.postFromObject(postObject, ThreadUpdater.thread.board);
+        node = Build.postFromObject(postObject, ThreadUpdater.thread.board.ID);
         posts.push(new Post(node, ThreadUpdater.thread, ThreadUpdater.thread.board));
       }
       deletedPosts = [];
