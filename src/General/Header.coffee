@@ -302,7 +302,7 @@ Header =
   addShortcut: (el) ->
     shortcut = $.el 'span',
       className: 'shortcut'
-    $.add shortcut, [$.tn(' ['), el, $.tn(']')]
+    $.add shortcut, el
     $.prepend Header.shortcuts, shortcut
 
   menuToggle: (e) ->
