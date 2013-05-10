@@ -7922,7 +7922,7 @@
       $.event('AddMenuEntry', entry);
       $.on(entry.el, 'click', PSAHiding.toggle);
       PSAHiding.btn = btn = $.el('a', {
-        innerHTML: '<span>[&nbsp;-&nbsp;]</span>',
+        innerHTML: '<span class=fourchanx-link>&nbsp;-&nbsp;</span>',
         title: 'Hide announcement.',
         className: 'hide-announcement',
         href: 'javascript:;'
