@@ -1607,8 +1607,7 @@
           a = $.el('a', {
             href: (t.match(/\,"(.+)"/) || [null, '+'])[1],
             textContent: (t.match(/-text:"(.+)"\,/) || [null, '+'])[1],
-            className: 'external',
-            target: '_blank'
+            className: 'external'
           });
           return a;
         }
