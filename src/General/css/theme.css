@@ -23,6 +23,10 @@
 hr {
   border-bottom: 1px solid #{theme["Reply Border"]};
 }
+hr#unread-line {
+  border-bottom: 1px solid #{theme["Reply Background"]};
+  visibility: visible;
+}
 a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] > table > tbody > tr > td {
   background: #{backgroundC} !important;
   border: 1px solid #{theme["Reply Border"]} !important;
