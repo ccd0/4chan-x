@@ -59,8 +59,8 @@
   "http": true,
   "https": false,
   "software": "foolfuuka",
-  "boards": [],
-  "files": []
+  "boards": ["vg"],
+  "files": ["vg"]
 }, {
   "uid": 11,
   "name": "Foolz a Shit",
