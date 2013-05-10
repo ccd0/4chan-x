@@ -2678,6 +2678,7 @@ textarea,
   transition:background .2s,box-shadow .2s;
 }
 """
+
   "Mesa":
     "Author"                      : "Tristan"
     "Author Tripcode"             : "!..NoTrip.."
@@ -2807,6 +2808,111 @@ input,
 textarea,
 .rice {
   transition: background .2s,box-shadow .2s;
+}"""
+
+  "Genergray":
+    "Author":                       "Zixaphir"
+    "Author Tripcode":              "!M........."
+    "Background Image":             ""
+    "Background Attachment":        ""
+    "Background Position":          ""
+    "Background Repeat":            ""
+    "Background Color":             "rgba(32,32,32,1)"
+    "Thread Wrapper Background":    "rgba(24,24,24,1)"
+    "Thread Wrapper Border":        "rgba(30,30,30,1)"
+    "Dialog Background":            "rgba(32,32,32,1)"
+    "Dialog Border":                "rgba(20,20,20,1)"
+    "Reply Background":             "rgba(32,32,32,1)"
+    "Reply Border":                 "rgba(20,20,20,1)"
+    "Highlighted Reply Background": "rgba(24,24,24,1)"
+    "Highlighted Reply Border":     "rgba(24,24,24,1)"
+    "Backlinked Reply Outline":     "rgba(98,124,141,1)"
+    "Input Background":             "rgba(32,32,32,1)"
+    "Input Border":                 "rgba(28,28,28,1)"
+    "Hovered Input Background":     "rgba(24,24,24,1)"
+    "Hovered Input Border":         "rgba(24,24,24,1)"
+    "Focused Input Background":     "rgba(16,16,16,1)"
+    "Focused Input Border":         "rgba(28,28,28,1)"
+    "Checkbox Background":          "rgb(25,25,25)"
+    "Checkbox Border":              "rgb(20,20,20)"
+    "Checkbox Checked Background":  "rgb(25,25,25)"
+    "Buttons Background":           "rgba(20,20,20,1)"
+    "Buttons Border":               "rgb(16,16,16)"
+    "Navigation Background":        "rgba(16,16,16,0.9)"
+    "Navigation Border":            "rgba(16,16,16,0.9)"
+    "Quotelinks":                   "rgb(71,140,161)"
+    "Backlinks":                    "rgba(71,140,161, 0.8)"
+    "Links":                        "rgb(141,141,160)"
+    "Hovered Links":                "rgb(141,190,255)"
+    "Navigation Links":             "rgb(51,145,175)"
+    "Hovered Navigation Links":     "rgb(141,190,255)"
+    "Names":                        "rgb(150,150,150)"
+    "Tripcodes":                    "rgb(255,255,255)"
+    "Emails":                       "rgb(68,68,68)"
+    "Subjects":                     "rgb(255,100,100)"
+    "Text":                         "rgb(235,255,235)"
+    "Inputs":                       "rgb(144,144,144)"
+    "Post Numbers":                 "rgb(150,150,150)"
+    "Greentext":                    "rgb(113,121,62)"
+    "Sage":                         "rgb(68,68,68)"
+    "Board Title":                  "rgb(194,194,194)"
+    "Timestamps":                   "rgb(100,100,100)"
+    "Warnings":                     "rgb(215,0,0)"
+    "Shadow Color":                 "rgba(0,0,0,.1)"
+    "Custom CSS": """
+.thread {
+  padding: 2px;
+}
+#header-bar,
+input,
+textarea,
+.field,
+.inline .op,
+.pagelist,
+.prettyprint,
+.post.reply,
+.rice,
+.selectrice {
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.2) inset, rgba(70,70,70,.3) 1px 1px;
+}
+.thread {
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3) inset, rgba(70,70,70,.5) 1px 1px;
+}
+#header-bar {
+  padding: 1px 3px;
+}
+.dialog {
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, .3) inset, 1px 1px 5px rgba(0,0,0,0.2);
+}
+.threadContainer {
+  border: none;
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, .3) inset, rgba(70,70,70,.3) 1px 1px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+}
+input[type=password]:hover,
+input[type=text]:not([disabled]):hover,
+input#fs_search:hover,
+input.field:hover,
+.webkit select:hover,
+textarea:hover,
+#appchanx-settings input:not([type=checkbox]):hover {
+  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
+}
+input[type=password]:focus,
+input[type=text]:focus,
+input#fs_search:focus,
+input.field:focus,
+.webkit select:focus,
+textarea:focus,
+#appchanx-settings input:focus {
+  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
+}
+button,
+input,
+textarea,
+.rice {
+  transition:background .2s,box-shadow .2s;
 }"""
 
 Icons =
