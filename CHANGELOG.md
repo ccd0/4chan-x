@@ -10,6 +10,13 @@ seaweedchan:
 - Fix file input in Opera
 - External link support in Custom Board Navigation!
   - `external-text:"Google","http://www.google.com"`
+- Fix JIDF flag on /pol/ when post is fetched by updater
+
+zixaphir:
+- Change Custom Board Navigation input into textarea, new lines will convert to spaces
+- Fix auto-scrolling in Chrome
+- Fix wrapping of #dump-list in Chrome
+- Fix (You) not being added in expanded comments
 
 ### 1.1.18 - 2013-05-09
 seaweedchan:

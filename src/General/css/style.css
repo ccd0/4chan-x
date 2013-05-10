@@ -372,6 +372,11 @@ a {
 .section-advanced textarea {
   height: 150px;
 }
+.section-advanced .note {
+  font-size: 0.8em; 
+  font-style: italic; 
+  margin-left: 10px;
+}
 #fourchanx-settings fieldset {
   border: 1px solid;
   border-radius: 3px;
