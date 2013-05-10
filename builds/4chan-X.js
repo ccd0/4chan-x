@@ -4125,8 +4125,7 @@
       if (Conf['Highlight Posts Quoting You']) {
         $.addClass(doc, 'highlight-you');
       }
-      this.text = '\u00A0(You)';
-      return Post.prototype.callbacks.push({
+      return this.text = Post.prototype.callbacks.push({
         name: 'Mark Quotes of You',
         cb: this.node
       });
@@ -4147,7 +4146,7 @@
       for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
         quotelink = quotelinks[_i];
         if (QR.db.get(Get.postDataFromLink(quotelink))) {
-          $.add(quotelink, $.tn(QuoteYou.text));
+          $.add(quotelink, $.tn('\u00A0(You)'));
           $.addClass(this.nodes.root, 'quotesYou');
         }
       }

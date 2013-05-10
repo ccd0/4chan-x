@@ -9,7 +9,7 @@ QuoteYou =
       $.addClass doc, 'highlight-you'
 
     # \u00A0 is nbsp
-    @text = '\u00A0(You)'
+    @text = 
     Post::callbacks.push
       name: 'Mark Quotes of You'
       cb:   @node
@@ -26,6 +26,6 @@ QuoteYou =
 
     for quotelink in quotelinks
       if QR.db.get Get.postDataFromLink quotelink
-        $.add quotelink, $.tn QuoteYou.text
+        $.add quotelink, $.tn '\u00A0(You)'
         $.addClass @nodes.root, 'quotesYou'
     return
