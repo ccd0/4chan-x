@@ -1197,6 +1197,7 @@ input:checked + .rice {
 #qrtab input,
 #qrtab .close,
 #qrtab .rice,
+#qrtab .selectrice,
 #qrtab span {
   display: none;
 }"
@@ -1379,10 +1380,23 @@ input:not([type=radio]) {
   padding: 2px 1px 0;
 }
 /* Thread Select */
-#qr-thread-select {
-  vertical-align: bottom;
-  width: 49%;
+#qr-thread-select,
+#qr-thread-select .selectrice div {
+  display: inline;
+}
+#qr-thread-select .selectrice {
+  cursor: pointer;
   display: inline-block;
+  width: 120px;
+  border: none;
+  background: none transparent;
+  padding: 0;
+  margin: 0;
+  height: auto;
+}
+#qr-thread-select .selectrice::before,
+#qr-thread-select .selectrice::after {
+  display: none;
 }
 /* Dumping UI */
 .dump #dump-list-container {

@@ -941,7 +941,7 @@ QR =
     for thread of g.BOARD.threads
       $.add nodes.thread, $.el 'option',
         value: thread
-        textContent: "No.#{thread}"
+        textContent: "Reply to #{thread}"
 
     $.on nodes.filename.parentNode, 'click keyup', QR.openFileInput
 

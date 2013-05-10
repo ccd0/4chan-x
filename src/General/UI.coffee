@@ -10,10 +10,6 @@ UI = do ->
 
     move = $ '.move', el
     $.on move, 'touchstart mousedown', dragstart
-    for child in move.children
-      continue unless child.tagName
-      $.on child, 'touchstart mousedown', (e) ->
-        e.stopPropagation()
 
     el
 

@@ -2875,6 +2875,9 @@ textarea,
 .selectrice {
   box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.2) inset, rgba(70,70,70,.3) 1px 1px;
 }
+#qr .selectrice {
+  box-shadow: none;
+}
 .thread {
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3) inset, rgba(70,70,70,.5) 1px 1px;
 }

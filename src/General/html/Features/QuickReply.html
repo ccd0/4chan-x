@@ -1,5 +1,10 @@
 <div id=qrtab class=move>
-  <input type=checkbox id=autohide title=Auto-hide> Post Form
+  <input type=checkbox id=autohide title=Auto-hide>
+  <div id=qr-thread-select>
+    <select data-name=thread title='Create a new thread / Reply'>
+      <option value=new>New thread</option>
+    </select>
+  </div>
   <a href=javascript:; class=close title=Close>×</a>
 </div>
 <form>
@@ -34,11 +39,6 @@
     <input type=submit tabindex=80>
   </div>
   <input type=file multiple>
-  <div id=qr-thread-select>
-    <select data-name=thread title='Create a new thread / Reply'>
-      <option value=new>New thread</option>
-    </select>
-  </div>
 </form>
 <datalist id="list-name"></datalist>
 <datalist id="list-email"></datalist>
