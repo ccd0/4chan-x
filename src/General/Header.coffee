@@ -147,7 +147,6 @@ Header =
           href: (t.match(/\,"(.+)"/) || [null, '+'])[1]
           textContent: (t.match(/-text:"(.+)"\,/) || [null, '+'])[1]
           className: 'external'
-          target: '_blank'
         return a
       board = if /^current/.test t
         g.BOARD.ID
