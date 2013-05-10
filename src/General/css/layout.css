@@ -86,7 +86,7 @@ html {
 }
 body {
   outline: none;
-  font-size: #{parseInt(_conf["Font Size"], 10)}px;
+  font-size: #{parseInt _conf["Font Size"], 10}px;
   font-family: #{_conf["Font"]};
   min-height: 100%;
   margin-top: 0;
@@ -117,7 +117,7 @@ body {
 button,
 input,
 textarea {
-  font-size: #{parseInt(_conf["Font Size"], 10)}px;
+  font-size: #{parseInt _conf["Font Size"], 10}px;
   font-family: #{_conf["Font"]};
 }
 hr {
@@ -165,7 +165,6 @@ hr {
 #header-bar {
   z-index: 6;
   border-width: 1px;
-  position: absolute;
 #{
 if _conf['4chan SS Navigation'] then "
   left: 0;
@@ -252,7 +251,9 @@ else "
   top: 100%;
 }
 .notification {
-  color: white;
+  font-family: #{_conf["Font"]};
+  font-size: #{parseInt(_conf["Font Size"], 10)};
+  color: #fff;
   font-weight: 700;
   text-shadow: 0 1px 2px rgba(0, 0, 0, .5);
   box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
@@ -276,14 +277,14 @@ else "
   background-color: hsla(104, 100%, 38%, .9);
 }
 .notification a {
-  color: white;
+  color: #fff;
 }
 .notification > .close {
   padding: 6px;
   top: 0;
   right: 5px;
   position: absolute;
-  color: white;
+  color: #fff;
 }
 .message {
   #{Style.sizing}: border-box;
@@ -350,8 +351,7 @@ else "
   #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}"
 
 "top": "
-  position: absolute;
-  top: 0;
+  position: static;
   border-top-width: 0;
   #{if _conf["Rounded Edges"] then "border-radius: 0 0 3px 3px;" else ""}"
 
@@ -396,12 +396,12 @@ else "
   vertical-align: middle;
 }
 #header-bar a {
-  font-size: #{parseInt(_conf["Font Size"], 10)}px;
+  font-size: #{parseInt _conf["Font Size"], 10}px;
 }
 #{if _conf["Hide Navigation Decorations"] then "
 .pages a {
   margin: 0 1px;
-  font-size: #{parseInt(_conf["Font Size"], 10)}px;
+  font-size: #{parseInt _conf["Font Size"], 10}px;
 }" else ""}
 .next,
 .pages,
@@ -1322,7 +1322,7 @@ if _conf["Tripcode Hider"] then "
 button,
 input:not([type=radio]) {
   #{Style.sizing}: border-box;
-  font-size: #{parseInt(_conf['Font Size'], 10)}px;
+  font-size: #{parseInt _conf['Font Size'], 10}px;
   height: 1.6em;
   margin: 1px 0 0;
   vertical-align: bottom;
