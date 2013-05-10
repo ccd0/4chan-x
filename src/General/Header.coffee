@@ -122,7 +122,7 @@ Header =
     $.add Header.bar, [boardList, Header.shortcuts, Header.notify, Header.toggle]
 
     Header.setCustomNav Conf['Custom Board Navigation']
-    Header.generateBoardList Conf['boardnav']
+    Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
 
     $.sync 'Custom Board Navigation', Header.setCustomNav
     $.sync 'boardnav', Header.generateBoardList
