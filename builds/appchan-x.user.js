@@ -3742,7 +3742,7 @@
       }
       boardList = $.el('span', {
         id: 'board-list',
-        innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><a href=javascript:; class='hide-board-list-button fourchanx-link'>&nbsp;&nbsp;-&nbsp;&nbsp;</a> " + fourchannav.innerHTML + "</span>"
+        innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><a href=javascript:; class='hide-board-list-button brackets-wrap'>&nbsp;&nbsp;-&nbsp;&nbsp;</a> " + fourchannav.innerHTML + "</span>"
       });
       fullBoardList = $('#full-board-list', boardList);
       btn = $('.hide-board-list-button', fullBoardList);
@@ -3915,8 +3915,9 @@
       var shortcut;
 
       shortcut = $.el('span', {
-        className: 'shortcut fourchanx-link'
+        className: 'shortcut'
       });
+      $.addClass(el, 'brackets-wrap');
       $.add(shortcut, el);
       return $.prepend(Header.shortcuts, shortcut);
     },
@@ -5293,7 +5294,7 @@
 
       a = $.el('a', {
         className: "" + type + "-reply-button",
-        innerHTML: "<span class=fourchanx-link>&nbsp;" + (type === 'hide' ? '-' : '+') + "&nbsp;</span>",
+        innerHTML: "<span class=brackets-wrap>&nbsp;" + (type === 'hide' ? '-' : '+') + "&nbsp;</span>",
         href: 'javascript:;'
       });
       $.on(a, 'click', PostHiding.toggle);
@@ -5623,7 +5624,7 @@
 
       a = $.el('a', {
         className: "" + type + "-thread-button",
-        innerHTML: "<span class=fourchanx-link>&nbsp;" + (type === 'hide' ? '-' : '+') + "&nbsp;</span>",
+        innerHTML: "<span class=brackets-wrap>&nbsp;" + (type === 'hide' ? '-' : '+') + "&nbsp;</span>",
         href: 'javascript:;'
       });
       a.setAttribute('data-fullid', thread.fullID);
