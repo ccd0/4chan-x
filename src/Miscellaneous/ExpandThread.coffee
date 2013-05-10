@@ -84,7 +84,7 @@ ExpandThread =
       if post = thread.posts[reply.no]
         nodes.push post.nodes.root
         continue
-      node = Build.postFromObject reply, thread.board
+      node = Build.postFromObject reply, thread.board.ID
       post = new Post node, thread, thread.board
       link = $ 'a[title="Highlight this post"]', node
       link.href = "res/#{thread}#p#{post}"

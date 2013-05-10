@@ -1887,7 +1887,7 @@
           capcodeStart = '';
           capcode = '';
       }
-      flag = flagCode ? (" <img src='" + staticPath + "country/troll/") + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
+      flag = flagCode ? (" <img src='" + staticPath + "country/" + (boardID === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
       if (file != null ? file.isDeleted : void 0) {
         fileHtml = isOP ? ("<div class=file id=f" + data.no + "><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>" : ("<div class=file id=f" + data.no + "><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted-res.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>";
       } else if (file) {
@@ -7244,7 +7244,7 @@
           continue;
         }
         count++;
-        node = Build.postFromObject(postObject, ThreadUpdater.thread.board);
+        node = Build.postFromObject(postObject, ThreadUpdater.thread.board.ID);
         posts.push(new Post(node, ThreadUpdater.thread, ThreadUpdater.thread.board));
       }
       deletedPosts = [];
@@ -8400,7 +8400,7 @@
           nodes.push(post.nodes.root);
           continue;
         }
-        node = Build.postFromObject(reply, thread.board);
+        node = Build.postFromObject(reply, thread.board.ID);
         post = new Post(node, thread, thread.board);
         link = $('a[title="Highlight this post"]', node);
         link.href = "res/" + thread + "#p" + post;
