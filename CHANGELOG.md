@@ -1,3 +1,9 @@
+### v1.2.1
+*2013-05-10*
+
+**seaweedchan**:
+- Small bug fixes
+
 ## v1.2.0 - "Youmu" ![Youmu](src/General/img/changelog/1.2.0.png)
 *2013-05-10*
 
