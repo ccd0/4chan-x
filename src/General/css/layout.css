@@ -239,11 +239,9 @@ else "
   bottom: 100%;
 }
 /* Notifications */
-
 #notifications {
   position: fixed;
   top: 0;
-  height: 0;
   text-align: center;
   right: 0;
   left: 0;

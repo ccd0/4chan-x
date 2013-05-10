@@ -2859,9 +2859,9 @@ textarea,
     "Timestamps":                   "rgb(100,100,100)"
     "Warnings":                     "rgb(215,0,0)"
     "Shadow Color":                 "rgba(0,0,0,.1)"
-    "Custom CSS": """
-.thread {
+    "Custom CSS": """.thread {
   padding: 2px;
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3) inset, rgba(70,70,70,.5) 1px 1px;
 }
 #header-bar,
 input,
@@ -2878,20 +2878,20 @@ textarea,
 #qr .selectrice {
   box-shadow: none;
 }
-.thread {
-  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3) inset, rgba(70,70,70,.5) 1px 1px;
-}
 #header-bar {
   padding: 1px 3px;
 }
 .dialog {
   box-shadow: 0px 0px 4px rgba(0, 0, 0, .3) inset, 1px 1px 5px rgba(0,0,0,0.2);
 }
+.replyContainer {
+  padding-left: 20px;
+}
 .threadContainer {
   border: none;
   box-shadow: 0px 0px 3px rgba(0, 0, 0, .3) inset, rgba(70,70,70,.3) 1px 1px;
-  padding-bottom: 2px;
-  padding-top: 2px;
+  padding: 2px 0;
+  margin-left: 20px;
 }
 input[type=password]:hover,
 input[type=text]:not([disabled]):hover,
