@@ -9,7 +9,7 @@ seaweedchan:
   - Note: This does not change the default brackets around `toggle-all` in the custom navigation. These are up to the user.
 - Fix file input in Opera
 - External link support in Custom Board Navigation!
-  - `external-text:"Google","http://www.google.com"
+  - `external-text:"Google","http://www.google.com"`
 
 ### 1.1.18 - 2013-05-09
 seaweedchan:
