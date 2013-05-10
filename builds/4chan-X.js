@@ -113,7 +113,8 @@
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   Config = {
     main: {
@@ -7744,9 +7745,9 @@
         vg: "http://nth.pensivenonsen.se/",
         c: "//archive.nyafuu.org/"
       };
-      o.adv = o.asp = o.cm = o.i = o.n = o.o = o.p = o.s = o.t = o.trv = o.y = o.e;
+      o.adv = o.asp = o.cm = o.i = o.n = o.o = o.p = o.s = o.t = o.trv = o.y = o.lgbt = o.s4s = o.e;
       o.gd = o.jp = o.m = o.q = o.tg = o.vp = o.vr = o.wsg = o.a;
-      o.fa = o.lit = o.s4s = o.ck;
+      o.fa = o.lit = o.ck;
       o.k = o.toy = o.x = o.an;
       o.g = o.mu = o.cgl;
       o.w = o.wg = o.c;
@@ -7842,7 +7843,7 @@
       },
       'FoolzaShit': {
         base: 'http://archive.foolzashit.com',
-        boards: ["adv", "asp", "cm", "e", "i", "n", "o", "p", "s", "t", "trv", "y"],
+        boards: ["adv", "asp", "cm", "e", "i", "lgbt", "n", "o", "p", "s", "s4s", "t", "trv", "y"],
         type: 'foolfuuka'
       },
       'Warosu': {
@@ -7900,9 +7901,18 @@
 
   PSAHiding = {
     init: function() {
-      var entry;
-
       if (!Conf['Announcement Hiding']) {
+        return;
+      }
+      $.addClass(doc, 'hide-announcement');
+      return $.on(d, '4chanXInitFinished', this.setup);
+    },
+    setup: function() {
+      var btn, entry, items, psa;
+
+      $.off(d, '4chanXInitFinished', PSAHiding.setup);
+      if (!(psa = $.id('globalMessage'))) {
+        $.rmClass(doc, 'hide-announcement');
         return;
       }
       entry = {
@@ -7914,27 +7924,11 @@
         }),
         order: 50,
         open: function() {
-          var _ref;
-
-          if ((_ref = $.id('globalMessage')) != null ? _ref.hidden : void 0) {
-            return true;
-          }
-          return false;
+          return psa.hidden;
         }
       };
       $.event('AddMenuEntry', entry);
       $.on(entry.el, 'click', PSAHiding.toggle);
-      $.addClass(doc, 'hide-announcement');
-      return $.on(d, '4chanXInitFinished', this.setup);
-    },
-    setup: function() {
-      var btn, psa;
-
-      $.off(d, '4chanXInitFinished', PSAHiding.setup);
-      if (!(psa = $.id('globalMessage'))) {
-        $.rmClass(doc, 'hide-announcement');
-        return;
-      }
       PSAHiding.btn = btn = $.el('a', {
         innerHTML: '<span>[&nbsp;-&nbsp;]</span>',
         title: 'Hide announcement.',
@@ -7942,45 +7936,47 @@
         href: 'javascript:;'
       });
       $.on(btn, 'click', PSAHiding.toggle);
-      $.get('hiddenPSAs', [], function(item) {
-        PSAHiding.sync(item['hiddenPSAs']);
+      items = {
+        hiddenPSA: 0,
+        hiddenPSAs: null
+      };
+      $.get(items, function(_arg) {
+        var hiddenPSA, hiddenPSAs, _ref;
+
+        hiddenPSA = _arg.hiddenPSA, hiddenPSAs = _arg.hiddenPSAs;
+        if (hiddenPSAs) {
+          $["delete"]('hiddenPSAs');
+          if (_ref = psa.textContent.replace(/\W+/g, '').toLowerCase(), __indexOf.call(hiddenPSAs, _ref) >= 0) {
+            hiddenPSA = +$.id('globalMessage').dataset.utc;
+            $.set('hiddenPSA', hiddenPSA);
+          }
+        }
+        PSAHiding.sync(hiddenPSA);
         $.before(psa, btn);
         return $.rmClass(doc, 'hide-announcement');
       });
-      return $.sync('hiddenPSAs', PSAHiding.sync);
+      return $.sync('hiddenPSA', PSAHiding.sync);
     },
     toggle: function(e) {
-      var hide, text;
+      var UTC;
 
-      hide = $.hasClass(this, 'hide-announcement');
-      text = PSAHiding.trim($.id('globalMessage'));
-      return $.get('hiddenPSAs', [], function(_arg) {
-        var hiddenPSAs, i;
-
-        hiddenPSAs = _arg.hiddenPSAs;
-        if (hide) {
-          hiddenPSAs.push(text);
-          hiddenPSAs = hiddenPSAs.slice(-5);
-        } else {
-          $.event('CloseMenu');
-          i = hiddenPSAs.indexOf(text);
-          hiddenPSAs.splice(i, 1);
-        }
-        PSAHiding.sync(hiddenPSAs);
-        return $.set('hiddenPSAs', hiddenPSAs);
-      });
+      if ($.hasClass(this, 'hide-announcement')) {
+        UTC = +$.id('globalMessage').dataset.utc;
+        $.set('hiddenPSA', UTC);
+      } else {
+        $.event('CloseMenu');
+        $["delete"]('hiddenPSA');
+      }
+      return PSAHiding.sync(UTC);
     },
-    sync: function(hiddenPSAs) {
+    sync: function(UTC) {
       var hr, psa;
 
       psa = $.id('globalMessage');
-      psa.hidden = PSAHiding.btn.hidden = hiddenPSAs.contains(PSAHiding.trim(psa)) ? true : false;
+      psa.hidden = PSAHiding.btn.hidden = UTC && UTC >= +psa.dataset.utc ? true : false;
       if ((hr = psa.nextElementSibling) && hr.nodeName === 'HR') {
         return hr.hidden = psa.hidden;
       }
-    },
-    trim: function(psa) {
-      return psa.textContent.replace(/\W+/g, '').toLowerCase();
     }
   };
 
