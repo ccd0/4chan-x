@@ -542,6 +542,7 @@ QR =
       index = QR.posts.indexOf @
       if QR.posts.length is 1
         new QR.post true
+        $.rmClass QR.nodes.el, 'dump'
       else if @ is QR.selected
         (QR.posts[index-1] or QR.posts[index+1]).select()
       QR.posts.splice index, 1
