@@ -4092,20 +4092,22 @@ Redirect =
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
       when 'po'
         "//archive.thedarkcave.org/#{board}/full_image/#{filename}"
-      when 'hr', 'tv'
+      when 'hr', 'tv', 'x'
         "http://archive.4plebs.org/#{board}/full_image/#{filename}"
       when 'c', 'w', 'wg'
         "//archive.nyafuu.org/#{board}/full_image/#{filename}"
-      when 'vg'
-        "http://archive.nihil-ad-rem.net/#{board}/full_image/#{filename}"
-      when 'd'
+      when 'd', 'h', 'v'
         "//loveisover.me/#{board}/full_image/#{filename}"
-      when 'ck', 'fa', 'lit', 's4s'
-        "//fuuka.warosu.org/#{board}/full_image/#{filename}"
+      when 'vg'
+        "http://nth.pensivenonsen.se/#{board}/full_image/#{filename}"
+      when 'adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 's', 's4s', 't', 'trv', 'y'
+        "//archive.foolzashit.com/#{board}/full_image/#{filename}"
       when 'cgl', 'g', 'mu'
         "//rbt.asia/#{board}/full_image/#{filename}"
-      when 'an', 'k', 'toy', 'x'
+      when 'an', 'k', 'toy'
         "http://archive.heinessen.com/#{board}/full_image/#{filename}"
+      when '3', 'ck', 'fa', 'ic', 'lit'
+        "//fuuka.warosu.org/#{board}/full_image/#{filename}"
   post: (board, postID) ->
     # XXX foolz had HSTS set for 120 days, which broke XHR+CORS+Redirection when on HTTP.
     # Remove necessary HTTPS procotol in September 2013.
@@ -4120,37 +4122,41 @@ Redirect =
         "http://archive.4plebs.org/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'c', 'w', 'wg'
         "//archive.nyafuu.org/_/api/chan/post/?board=#{board}&num=#{postID}"
-      when 'v', 'vg'
-        "http://archive.nihil-ad-rem.net/_/api/chan/post/?board=#{board}&num=#{postID}"
-      when 'd'
+      when 'd', 'h', 'v'
         "//loveisover.me/_/api/chan/post/?board=#{board}&num=#{postID}"
+      when 'vg'
+        "http://nth.pensivenonsen.se/_/api/chan/post/?board=#{board}&num=#{postID}"
+      when 'adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 's', 's4s', 't', 'trv', 'y'
+        "//archive.foolzashit.com/_/api/chan/post/?board=#{board}&num=#{postID}"
   to: (data) ->
     unless data.isSearch
       {threadID} = data
     {board} = data
     switch board
       when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg'
-        url = Redirect.path '//archive.foolz.us', 'foolfuuka', data
+        url = Redirect.path '//archive.foolz.us',           'foolfuuka', data
       when 'u'
-        url = Redirect.path '//nsfw.foolz.us', 'foolfuuka', data
+        url = Redirect.path '//nsfw.foolz.us',              'foolfuuka', data
       when 'int', 'out', 'po'
-        url = Redirect.path '//archive.thedarkcave.org', 'foolfuuka', data
-      when 'hr'
-        url = Redirect.path 'http://archive.4plebs.org', 'foolfuuka', data
+        url = Redirect.path '//archive.thedarkcave.org',    'foolfuuka', data
+      when 'hr', 'x'
+        url = Redirect.path 'http://archive.4plebs.org',    'foolfuuka', data
       when 'c', 'w', 'wg'
-        url = Redirect.path '//archive.nyafuu.org', 'foolfuuka', data
-      when 'v', 'vg'
-        url = Redirect.path 'http://archive.nihil-ad-rem.net', 'foolfuuka', data
-      when 'd'
-        url = Redirect.path '//loveisover.me', 'foolfuuka', data
-      when 'ck', 'fa', 'lit', 's4s'
-        url = Redirect.path '//fuuka.warosu.org', 'fuuka', data
+        url = Redirect.path '//archive.nyafuu.org',         'foolfuuka', data
+      when 'd', 'h', 'v'
+        url = Redirect.path '//loveisover.me',              'foolfuuka', data
+      when 'vg'
+        url = Redirect.path 'http://nth.pensivenonsen.se',  'foolfuuka', data
+      when 'adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 's', 's4s', 't', 'trv', 'y'
+        url = Redirect.path '//archive.foolzashit.com',       'foolfuuka', data
       when 'diy', 'g', 'sci'
-        url = Redirect.path '//archive.installgentoo.net', 'fuuka', data
+        url = Redirect.path '//archive.installgentoo.net',  'fuuka',     data
       when 'cgl', 'mu'
-        url = Redirect.path '//rbt.asia', 'fuuka', data
-      when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
-        url = Redirect.path 'http://archive.heinessen.com', 'fuuka', data
+        url = Redirect.path '//rbt.asia',                   'fuuka',     data
+      when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy'
+        url = Redirect.path 'http://archive.heinessen.com', 'fuuka',     data
+      when '3', 'ck', 'fa', 'ic', 'lit'
+        url = Redirect.path '//fuuka.warosu.org',           'fuuka',     data
       else
         if threadID
           url = "//boards.4chan.org/#{board}/"
