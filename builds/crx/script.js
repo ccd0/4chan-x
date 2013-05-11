@@ -165,8 +165,7 @@
         'Thread Stats': [true, 'Display reply and image count.'],
         'Updater and Stats in Header': [true, 'Places the thread updater and thread stats in the header instead of floating them.'],
         'Thread Watcher': [true, 'Bookmark threads.'],
-        'Fixed Thread Watcher': [true, 'Thread watcher scrolls with you on the page'],
-        'Persistent Thread Watcher': [false, 'Opens the thread watcher by default.'],
+        'Toggleable Thread Watcher': [false, 'Adds a shortcut for the thread watcher, and fixes the watcher to the page.'],
         'Auto Watch': [true, 'Automatically watch threads you start.'],
         'Auto Watch Reply': [false, 'Automatically watch threads you reply to.']
       },
@@ -7346,14 +7345,14 @@
       $.sync('WatchedThreads', this.refresh);
       $.on(sc, 'click', this.toggleWatcher);
       $.on($('.move>.close', ThreadWatcher.dialog), 'click', this.toggleWatcher);
-      if (Conf['Fixed Thread Watcher']) {
+      if (Conf['Toggleable Thread Watcher']) {
+        Header.addShortcut(sc);
         $.addClass(doc, 'fixed-watcher');
       }
-      Header.addShortcut(sc);
       $.ready(function() {
         ThreadWatcher.refresh();
         $.add(d.body, ThreadWatcher.dialog);
-        if (!Conf['Persistent Thread Watcher']) {
+        if (Conf['Toggleable Thread Watcher']) {
           return ThreadWatcher.dialog.hidden = true;
         }
       });

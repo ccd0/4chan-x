@@ -15,15 +15,14 @@ ThreadWatcher =
     $.on sc, 'click', @toggleWatcher
     $.on $('.move>.close', ThreadWatcher.dialog), 'click', @toggleWatcher
 
-    if Conf['Fixed Thread Watcher']
+    if Conf['Toggleable Thread Watcher']
+      Header.addShortcut sc
       $.addClass doc, 'fixed-watcher'
-    
-    Header.addShortcut sc
 
     $.ready ->
       ThreadWatcher.refresh()
       $.add d.body, ThreadWatcher.dialog
-      unless Conf['Persistent Thread Watcher']
+      if Conf['Toggleable Thread Watcher']
         ThreadWatcher.dialog.hidden = true
 
     Thread::callbacks.push
