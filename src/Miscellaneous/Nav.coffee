@@ -37,7 +37,7 @@ Nav =
       Nav.scroll +1
 
   getThread: (full) ->
-    if Conf['Bottom header']
+    if Conf['Bottom header'] or !Conf['Fixed Header']
       topMargin = 0
     else
       headRect  = Header.bar.getBoundingClientRect()

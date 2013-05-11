@@ -12914,7 +12914,7 @@
     getThread: function(full) {
       var headRect, i, rect, thread, threads, topMargin, _i, _len;
 
-      if (Conf['Bottom header']) {
+      if (Conf['Bottom header'] || !Conf['Fixed Header']) {
         topMargin = 0;
       } else {
         headRect = Header.bar.getBoundingClientRect();
