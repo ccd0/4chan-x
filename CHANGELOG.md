@@ -1,3 +1,11 @@
+### v1.2.2
+*2013-05-11*
+
+**seaweedchan**:
+- Small bug fixes
+- Changed `Persistent Thread Watcher` option to `Toggleable Thread Watcher`. 
+  - When disabled, the [Watcher] shortcut is no longer added, and the watcher stays at the top of the page.
+
 ### v1.2.1
 *2013-05-10*
 
