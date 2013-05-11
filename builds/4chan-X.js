@@ -183,7 +183,7 @@
         'Thread Stats': [true, 'Display reply and image count.'],
         'Updater and Stats in Header': [true, 'Places the thread updater and thread stats in the header instead of floating them.'],
         'Thread Watcher': [true, 'Bookmark threads.'],
-        'Toggleable Thread Watcher': [false, 'Adds a shortcut for the thread watcher, and fixes the watcher to the page.'],
+        'Toggleable Thread Watcher': [false, 'Adds a shortcut for the thread watcher, hides the watcher by default, and makes it scroll with the page.'],
         'Auto Watch': [true, 'Automatically watch threads you start.'],
         'Auto Watch Reply': [false, 'Automatically watch threads you reply to.']
       },

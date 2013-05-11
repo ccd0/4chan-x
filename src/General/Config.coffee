@@ -235,7 +235,7 @@ Config =
       ]
       'Toggleable Thread Watcher': [
         false
-        'Adds a shortcut for the thread watcher, and fixes the watcher to the page.'
+        'Adds a shortcut for the thread watcher, hides the watcher by default, and makes it scroll with the page.'
       ]
       'Auto Watch': [
         true
