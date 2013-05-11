@@ -13549,93 +13549,9 @@
       return reader.readAsText(file);
     },
     loadSettings: function(data) {
-      var key, val, version, _ref;
+      var version;
 
       version = data.version.split('.');
-      if (version[0] === '2') {
-        data = Settings.convertSettings(data, {
-          'Disable 4chan\'s extension': '',
-          'Catalog Links': '',
-          'Reply Navigation': '',
-          'Show Stubs': 'Stubs',
-          'Image Auto-Gif': 'Auto-GIF',
-          'Expand From Current': '',
-          'Unread Tab Icon': 'Unread Favicon',
-          'Post in Title': 'Thread Excerpt',
-          'Auto Hide QR': '',
-          'Open Reply in New Tab': '',
-          'Remember QR size': '',
-          'Quote Inline': 'Quote Inlining',
-          'Quote Preview': 'Quote Previewing',
-          'Indicate OP quote': 'Mark OP Quotes',
-          'Indicate Cross-thread Quotes': 'Mark Cross-thread Quotes',
-          'Reply Hiding': 'Reply Hiding Buttons',
-          'Thread Hiding': 'Thread Hiding Buttons',
-          'uniqueid': 'uniqueID',
-          'mod': 'capcode',
-          'country': 'flag',
-          'md5': 'MD5',
-          'openEmptyQR': 'Open empty QR',
-          'openQR': 'Open QR',
-          'openOptions': 'Open settings',
-          'close': 'Close',
-          'spoiler': 'Spoiler tags',
-          'code': 'Code tags',
-          'submit': 'Submit QR',
-          'watch': 'Watch',
-          'update': 'Update',
-          'unreadCountTo0': '',
-          'expandAllImages': 'Expand images',
-          'expandImage': 'Expand image',
-          'zero': 'Front page',
-          'nextPage': 'Next page',
-          'previousPage': 'Previous page',
-          'nextThread': 'Next thread',
-          'previousThread': 'Previous thread',
-          'expandThread': 'Expand thread',
-          'openThreadTab': 'Open thread',
-          'openThread': 'Open thread tab',
-          'nextReply': 'Next reply',
-          'previousReply': 'Previous reply',
-          'hide': 'Hide',
-          'Scrolling': 'Auto Scroll',
-          'Verbose': ''
-        });
-        data.Conf.sauces = data.Conf.sauces.replace(/\$\d/g, function(c) {
-          switch (c) {
-            case '$1':
-              return '%TURL';
-            case '$2':
-              return '%URL';
-            case '$3':
-              return '%MD5';
-            case '$4':
-              return '%board';
-            default:
-              return c;
-          }
-        });
-        _ref = Config.hotkeys;
-        for (key in _ref) {
-          val = _ref[key];
-          if (!(key in data.Conf)) {
-            continue;
-          }
-          data.Conf[key] = data.Conf[key].replace(/ctrl|alt|meta/g, function(s) {
-            return "" + (s[0].toUpperCase()) + s.slice(1);
-          }).replace(/(^|.+\+)[A-Z]$/g, function(s) {
-            return "Shift+" + s.slice(0, -1) + (s.slice(-1).toLowerCase());
-          });
-        }
-        data.Conf.WatchedThreads = data.WatchedThreads;
-      } else if (version[0] === '3') {
-        data = Settings.convertSettings(data, {
-          'Reply Hiding': 'Reply Hiding Buttons',
-          'Thread Hiding': 'Thread Hiding Buttons',
-          'Bottom header': 'Bottom Header',
-          'Unread Tab Icon': 'Unread Favicon'
-        });
-      }
       return $.set(data.Conf);
     },
     convertSettings: function(data, map) {
