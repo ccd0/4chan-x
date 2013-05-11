@@ -212,6 +212,9 @@ a {
 #toggleMsgBtn {
   display: none !important;
 }
+.current {
+  font-weight: bold;
+}
 /* 4chan X link brackets */
 .fourchanx-link::after {
   content: "]";
