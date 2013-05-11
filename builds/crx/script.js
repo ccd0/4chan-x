@@ -5230,6 +5230,7 @@
         index = QR.posts.indexOf(this);
         if (QR.posts.length === 1) {
           new QR.post(true);
+          $.rmClass(QR.nodes.el, 'dump');
         } else if (this === QR.selected) {
           (QR.posts[index - 1] || QR.posts[index + 1]).select();
         }
