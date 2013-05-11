@@ -14,6 +14,9 @@ ThreadWatcher =
     $.sync  'WatchedThreads',     @refresh
     $.on sc, 'click', @toggleWatcher
     $.on $('.move>.close', ThreadWatcher.dialog), 'click', @toggleWatcher
+
+    if Conf['Fixed Thread Watcher']
+      $.addClass doc, 'fixed-watcher'
     
     Header.addShortcut sc
 
