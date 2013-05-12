@@ -1,3 +1,4 @@
+- Added a button in the Archives settings to update the list now.
 - Added the option `Tab to Choose Files First`, disabled by default.
 
 ## 3.4.0 - *2013-05-06*
