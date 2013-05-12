@@ -46,7 +46,7 @@ Redirect =
         $.set
           lastarchivecheck: now
           archives: Conf['archives']
-        cb now if cb
+        cb? now
 
   to: (dest, data) ->
     archive = (if dest is 'search' then Redirect.thread else Redirect[dest])[data.boardID]
