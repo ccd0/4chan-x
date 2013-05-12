@@ -61,6 +61,7 @@ Config =
       'Hide Original Post Form':      [true,  'Hide the normal post form.']
       'Cooldown':                     [true,  'Indicate the remaining time before posting again.']
       'Cooldown Prediction':          [true,  'Decrease the cooldown time by taking into account upload speed. Disable it if it\'s inaccurate for you.']
+      'Tab to Choose Files First':    [false, 'Tab to the file input before the submit button.']
     'Quote Links':
       'Quote Backlinks':              [true,  'Add quote backlinks.']
       'OP Backlinks':                 [true,  'Add backlinks to the OP.']

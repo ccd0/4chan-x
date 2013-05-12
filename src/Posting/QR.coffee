@@ -819,6 +819,9 @@ QR =
       status:     $ '[type=submit]',     dialog
       fileInput:  $ '[type=file]',       dialog
 
+    if Conf['Tab to Choose Files First']
+      $.add nodes.fileSubmit, nodes.status
+
     # Allow only this board's supported files.
     mimeTypes = $('ul.rules > li').textContent.trim().match(/: (.+)/)[1].toLowerCase().replace /\w+/g, (type) ->
       switch type
