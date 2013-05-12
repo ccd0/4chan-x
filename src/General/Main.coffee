@@ -198,6 +198,12 @@ Main =
 
     if $.hasClass d.body, 'fourchan_x'
       alert '4chan X v2 detected: Disable it or v3 will break.'
+
+    try
+      localStorage.getItem '4chan-settings'
+    catch err
+      new Notification 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to properly function.', 30
+
     <% if (type === 'userscript') { %>
     el = $.el 'span'
     el.style.flex = 'test'
