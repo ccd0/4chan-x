@@ -399,6 +399,20 @@ Settings =
     <%= grunt.file.read('html/General/Settings-section-Archives.html').replace(/>\s+</g, '><').trim() %>
     """
 
+    showLastUpdateTime = (time) ->
+      $('time', section).textContent = new Date(time).toLocaleString()
+
+    button = $ 'button', section
+    $.on button, 'click', ->
+      $.delete 'lastarchivecheck'
+      button.textContent = '...'
+      button.disabled = true
+      Redirect.update (time) ->
+        button.textContent = 'Updated'
+        showLastUpdateTime time
+
+    $.get 'lastarchivecheck', 0, ({lastarchivecheck}) -> showLastUpdateTime lastarchivecheck
+
     boards = {}
     for archive in Conf['archives']
       for boardID in archive.boards

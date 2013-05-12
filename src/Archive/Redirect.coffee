@@ -34,7 +34,7 @@ Redirect =
           Redirect.file[boardID] = archive
     return
 
-  update: ->
+  update: (cb) ->
     $.get 'lastarchivecheck', 0, ({lastarchivecheck}) ->
       now = Date.now()
       # Update the list of archives every 4 days.
@@ -46,6 +46,7 @@ Redirect =
         $.set
           lastarchivecheck: now
           archives: Conf['archives']
+        cb now if cb
 
   to: (dest, data) ->
     archive = (if dest is 'search' then Redirect.thread else Redirect[dest])[data.boardID]
