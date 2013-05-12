@@ -57,7 +57,16 @@ class DataBoard
 
   clean: ->
     for boardID of @data.boards
-      @deleteIfEmpty {boardID}
+      try
+        @deleteIfEmpty {boardID}
+      catch err
+        # XXX I get obscure reports of:
+        #   "Unread" initialization crashed. TypeError: Object.keys called on non-object
+        # comming from here, gotta figure out why that happens.
+        Main.logError
+          message: "Couldn't deleteIfEmpty on:\n#{JSON.stringify @data}\n"
+          error: err
+        delete @data.boards[boardID]
 
     now = Date.now()
     if (@data.lastChecked or 0) < now - 2 * $.HOUR
