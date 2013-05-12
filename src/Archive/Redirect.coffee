@@ -5,6 +5,14 @@ Redirect =
   file:   {}
 
   init: ->
+    try
+      Conf['archives'].length
+    catch err
+      # XXX I get obscure reports of:
+      #   "Redirect" initialization crashed. TypeError: Cannot read property 'length' of undefined
+      # comming from here.
+      Conf['archives'] = Redirect.archives
+      $.delete ['archives', 'lastarchivecheck']
     Redirect.update()
 
     for boardID, data of Conf['selectedArchives']
