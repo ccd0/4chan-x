@@ -28,7 +28,7 @@ ImageHover =
 
     src = @src.split '/'
     if src[2] is 'images.4chan.org'
-      URL = Redirect.to 'image',
+      URL = Redirect.to 'file',
         boardID:  src[3]
         filename: src[5].replace /\?.+$/, ''
       if URL

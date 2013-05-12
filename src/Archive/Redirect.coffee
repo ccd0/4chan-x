@@ -13,7 +13,7 @@ Redirect =
           else
             archive.boards
           Redirect[type][boardID] = archive if arr.contains boardID
-    for archive in Redirect.archives
+    for name, archive of Redirect.archives
       for boardID in archive.boards
         unless boardID of Redirect.thread
           Redirect.thread[boardID] = archive

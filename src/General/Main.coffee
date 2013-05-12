@@ -46,7 +46,8 @@ Main =
       when 'images.4chan.org'
         $.ready ->
           if Conf['404 Redirect'] and d.title is '4chan - 404 Not Found'
-            url = Redirect.to 'image',
+            Redirect.init()
+            url = Redirect.to 'file',
               boardID:  pathname[1]
               filename: pathname[3]
             location.href = url if url

@@ -6254,7 +6254,7 @@
       ImageExpand.contract(post);
       src = this.src.split('/');
       if (src[2] === 'images.4chan.org') {
-        URL = Redirect.to('image', {
+        URL = Redirect.to('file', {
           boardID: src[3],
           filename: src[5]
         });
@@ -6394,7 +6394,7 @@
       post = g.posts[this.dataset.fullid];
       src = this.src.split('/');
       if (src[2] === 'images.4chan.org') {
-        URL = Redirect.to('image', {
+        URL = Redirect.to('file', {
           boardID: src[3],
           filename: src[5].replace(/\?.+$/, '')
         });
@@ -7763,7 +7763,7 @@
     post: {},
     file: {},
     init: function() {
-      var archive, arr, boardID, data, id, name, type, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+      var archive, arr, boardID, data, id, name, type, _i, _len, _ref, _ref1, _ref2, _ref3;
 
       _ref = Conf['selectedArchives'];
       for (boardID in _ref) {
@@ -7784,11 +7784,11 @@
         }
       }
       _ref2 = Redirect.archives;
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        archive = _ref2[_i];
+      for (name in _ref2) {
+        archive = _ref2[name];
         _ref3 = archive.boards;
-        for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
-          boardID = _ref3[_j];
+        for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
+          boardID = _ref3[_i];
           if (!(boardID in Redirect.thread)) {
             Redirect.thread[boardID] = archive;
           }
@@ -10063,7 +10063,8 @@
             var url;
 
             if (Conf['404 Redirect'] && d.title === '4chan - 404 Not Found') {
-              url = Redirect.to('image', {
+              Redirect.init();
+              url = Redirect.to('file', {
                 boardID: pathname[1],
                 filename: pathname[3]
               });
