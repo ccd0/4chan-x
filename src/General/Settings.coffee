@@ -27,6 +27,7 @@ Settings =
     Settings.addSection 'Filter',   Settings.filter
     Settings.addSection 'Sauce',    Settings.sauce
     Settings.addSection 'Advanced', Settings.advanced
+    Settings.addSection 'Archives', Settings.archives
     Settings.addSection 'Keybinds', Settings.keybinds
 
     $.on d, 'AddSettingsSection',   Settings.addSection
@@ -329,23 +330,9 @@ Settings =
       ta.value = item['QR.personas']
     $.on ta, 'change', $.cb.value
 
-    # Archiver
-    archiver = $ 'select[name=archiver]', section
-    toSelect = Redirect.select g.BOARD.ID
-    toSelect = ['No Archive Available'] unless toSelect[0]
-
-    $.add archiver, $.el('option', {textContent: name}) for name in toSelect
-
-    if toSelect[1]
-      Conf['archivers'][g.BOARD]
-      archiver.value = Conf['archivers'][g.BOARD] or toSelect[0]
-      $.on archiver, 'change', ->
-        Conf['archivers'][g.BOARD] = @value
-        $.set 'archivers', Conf.archivers
-
     $.get items, (items) ->
       for key, val of items
-        continue if ['emojiPos', 'archiver'].contains key
+        continue if ['emojiPos'].contains key
         input = inputs[key]
         input.value = val
         continue if key is 'usercss'
@@ -397,6 +384,69 @@ Settings =
     $.cb.checked.call @
   usercss: ->
     CustomCSS.update()
+
+  archives: (section) ->
+    section.innerHTML = """
+<%= grunt.file.read('src/General/html/Settings/Archives.html').replace(/>\s+</g, '><').trim() %>
+"""
+
+    boards = {}
+    for name, archive of Redirect.archives
+      for boardID in archive.boards
+        data = boards[boardID] or= {
+          thread: []
+          post:   []
+          file:   []
+        }
+        data.thread.push name
+        if archive.software is 'foolfuuka'
+          data.post.push name
+        if archive.files.contains boardID
+          data.file.push name
+
+    rows = []
+    for boardID in Object.keys(boards).sort() # Alphabetical order
+      row = $.el 'tr'
+      rows.push row
+      $.add row, $.el 'th',
+        textContent: "/#{boardID}/"
+        className: if boardID is g.BOARD.ID then 'warning' else ''
+
+      data = boards[boardID]
+      Settings.addArchiveCell row, boardID, data, 'thread'
+      Settings.addArchiveCell row, boardID, data, 'post'
+      Settings.addArchiveCell row, boardID, data, 'file'
+    $.add $('tbody', section), rows
+    $.get 'selectedArchives', Conf['selectedArchives'], ({selectedArchives}) ->
+      for boardID, data of selectedArchives
+        for type, name of data
+          if option = $ "select[data-boardid='#{boardID}'][data-type='#{type}'] > option[value='#{name}']", section
+            option.selected = true
+      return
+  addArchiveCell: (row, boardID, data, type) ->
+    options = []
+    for archive in data[type]
+      options.push $.el 'option',
+        textContent: archive
+        value: archive
+    td = $.el 'td'
+    {length} = options
+    if length
+      td.innerHTML = '<select></select>'
+      select = td.firstElementChild
+      unless select.disabled = length is 1
+        # XXX GM can't into datasets
+        select.setAttribute 'data-boardid', boardID
+        select.setAttribute 'data-type', type
+        $.on select, 'change', Settings.saveSelectedArchive
+      $.add select, options
+    else
+      td.textContent = 'N/A'
+    $.add row, td
+  saveSelectedArchive: ->
+    $.get 'selectedArchives', Conf['selectedArchives'], ({selectedArchives}) =>
+      (selectedArchives[@dataset.boardid] or= {})[@dataset.type] = @value
+      $.set 'selectedArchives', selectedArchives
 
   keybinds: (section) ->
     section.innerHTML = """
