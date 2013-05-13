@@ -125,12 +125,16 @@ a {
   border-width: 0;
   transition: all .1s .05s ease-in-out;
 }
+:root.centered-links #shortcuts {
+  width: 300px;
+  text-align: right;
+}
 :root.centered-links #header-bar {
   text-align: center;
 }
 :root.centered-links #custom-board-list {
   position: relative;
-  left: 80px;
+  left: 150px;
 }
 .fixed.top #header-bar {
   border-bottom-width: 1px;
@@ -374,6 +378,13 @@ a {
 .section-advanced textarea {
   height: 150px;
 }
+.section-advanced #archive-table {
+  margin-left: 0px;
+  text-align: left;
+}
+.section-advanced .archive-cell {
+  min-width: 160px;
+}
 .section-advanced .note {
   font-size: 0.8em; 
   font-style: italic; 
@@ -436,7 +447,7 @@ a.hide-announcement {
 .new {
   color: limegreen;
 }
-#update-status.warning, #update-status.new {
+#update-status.new {
   margin-right: 5px;
 }
 #update-timer {

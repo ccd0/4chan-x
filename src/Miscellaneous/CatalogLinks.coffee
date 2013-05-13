@@ -4,7 +4,7 @@ CatalogLinks =
     el = $.el 'label',
       id:           'toggleCatalog'
       href:         'javascript:;'
-      innerHTML:    "<input type=checkbox #{if Conf['Header catalog links'] then 'checked' else ''}>Catalog Links"
+      innerHTML:    "<input type=checkbox #{if Conf['Header catalog links'] then 'checked' else ''}> Catalog Links"
       title:        "Turn catalog links #{if Conf['Header catalog links'] then 'off' else 'on'}."
 
     input = $ 'input', el
