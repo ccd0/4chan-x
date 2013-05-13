@@ -378,6 +378,13 @@ a {
 .section-advanced textarea {
   height: 150px;
 }
+.section-advanced #archive-table {
+  margin-left: 0px;
+  text-align: left;
+}
+.section-advanced .archive-cell {
+  min-width: 160px;
+}
 .section-advanced .note {
   font-size: 0.8em; 
   font-style: italic; 

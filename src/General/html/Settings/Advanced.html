@@ -1,4 +1,18 @@
 <fieldset>
+  <legend>Archiver</legend>
+  <div class="warning" #{if Conf['404 Redirect'] then 'hidden' else ''}><code>404 Redirect</code> is disabled.</div>
+  <table id='archive-table'>
+    <thead>
+      <th>Thread redirection</th>
+      <th>Post fetching</th>
+      <th>File redirection</th>
+    </thead>
+    <tbody></tbody>
+  </table>
+<span class=note>Disabled selections indicate that only one archive is available for that board and redirection type.</span>
+</fieldset>
+
+<fieldset>
   <legend>Custom Board Navigation</span></legend>
   <div><textarea name=boardnav class=field spellcheck=false></textarea></div>
   <span class=note>New lines will be converted into spaces.</span><br><br>
