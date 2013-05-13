@@ -125,12 +125,16 @@ a {
   border-width: 0;
   transition: all .1s .05s ease-in-out;
 }
+:root.centered-links #shortcuts {
+  width: 300px;
+  text-align: right;
+}
 :root.centered-links #header-bar {
   text-align: center;
 }
 :root.centered-links #custom-board-list {
   position: relative;
-  left: 80px;
+  left: 150px;
 }
 .fixed.top #header-bar {
   border-bottom-width: 1px;
