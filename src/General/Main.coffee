@@ -14,7 +14,8 @@ Main =
     flatten null, Config
     for db in DataBoards
       Conf[db] = boards: {}
-    Conf['archivers'] = {}
+    Conf['selectedArchives'] = {}
+    
     $.get Conf, Main.initFeatures
 
     $.asap (-> d.head and $('link[rel="shortcut icon"]', d.head) or d.readyState in ['interactive', 'complete']),\
@@ -45,7 +46,10 @@ Main =
       when 'images.4chan.org'
         $.ready ->
           if Conf['404 Redirect'] and d.title is '4chan - 404 Not Found'
-            url = Redirect.image pathname[1], pathname[3]
+            Redirect.init()
+            url = Redirect.to 'file',
+              boardID:  pathname[1]
+              filename: pathname[3]
             location.href = url if url
         return
 
@@ -170,7 +174,7 @@ Main =
   initReady: ->
     if d.title is '4chan - 404 Not Found'
       if Conf['404 Redirect'] and g.VIEW is 'thread'
-        href = Redirect.to
+        href = Redirect.to 'thread',
           boardID:  g.BOARD.ID
           threadID: g.THREADID
           postID:   +location.hash.match /\d+/ # post number or 0
