@@ -19,7 +19,7 @@ Main =
     $.get Conf, Main.initFeatures
 
     $.on d, '4chanMainInit', Main.initStyle
-    $.asap (-> d.head and $('link[rel="shortcut icon"]', d.head) or d.readyState in ['interactive', 'complete']),
+    $.asap (-> d.head and $('title', d.head) or d.readyState in ['interactive', 'complete']),
       Main.initStyle
 
   initFeatures: (items) ->
