@@ -352,21 +352,8 @@ Main =
 
   errors: []
   logError: (data) ->
-    unless Main.errors.length
-      $.on window, 'unload', Main.postErrors
     c.error data.message, data.error.stack
     Main.errors.push data
-
-  postErrors: ->
-    errors = Main.errors.map (d) -> d.message + ' ' + d.error.stack
-    $.ajax '<%= meta.page %>errors', {},
-      sync: true
-      form: $.formData
-        n: "<%= meta.name %> v#{g.VERSION}"
-        t: '<%= type %>'
-        ua:  window.navigator.userAgent
-        url: window.location.href
-        e: errors.join '\n'
 
   isThisPageLegit: ->
     # 404 error page or similar.
