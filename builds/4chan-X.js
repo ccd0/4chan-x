@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.2 - 2013-05-11
+* 4chan X - Version 1.2.2 - 2013-05-12
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -8004,7 +8004,7 @@
       el = $.el('label', {
         id: 'toggleCatalog',
         href: 'javascript:;',
-        innerHTML: "<input type=checkbox " + (Conf['Header catalog links'] ? 'checked' : '') + ">Catalog Links",
+        innerHTML: "<input type=checkbox " + (Conf['Header catalog links'] ? 'checked' : '') + "> Catalog Links",
         title: "Turn catalog links " + (Conf['Header catalog links'] ? 'off' : 'on') + "."
       });
       input = $('input', el);
