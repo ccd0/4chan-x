@@ -56,17 +56,13 @@ class DataBoard
     val or defaultValue
 
   clean: ->
-    for boardID of @data.boards
-      try
-        @deleteIfEmpty {boardID}
-      catch err
-        # XXX I get obscure reports of:
-        #   "Unread" initialization crashed. TypeError: Object.keys called on non-object
-        # comming from here, gotta figure out why that happens.
-        Main.logError
-          message: "Couldn't deleteIfEmpty on:\n#{JSON.stringify @data}\n"
-          error: err
+    for boardID, val of @data.boards
+      # XXX tmp fix for users that had the `null`
+      # value for a board with the Unread features:
+      unless val
         delete @data.boards[boardID]
+      else
+        @deleteIfEmpty {boardID}
 
     now = Date.now()
     if (@data.lastChecked or 0) < now - 2 * $.HOUR
