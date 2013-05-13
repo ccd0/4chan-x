@@ -18,13 +18,6 @@ Main =
     Conf['archives'] = Redirect.archives
     $.get Conf, Main.initFeatures
 
-    $.on d, '4chanMainInit', Main.initStyle
-    $.asap (-> d.head and $('title', d.head) or d.readyState in ['interactive', 'complete']),
-      Main.initStyle
-
-  initFeatures: (items) ->
-    Conf = items
-
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
     g.VIEW   =
@@ -38,6 +31,13 @@ Main =
     if g.VIEW is 'thread'
       g.THREADID = +pathname[3]
 
+    $.on d, '4chanMainInit', Main.initStyle
+    $.asap (-> d.head and $('title', d.head) or d.readyState in ['interactive', 'complete']),
+      Main.initStyle
+
+  initFeatures: (items) ->
+    Conf = items
+
     switch location.hostname
       when 'api.4chan.org'
         return
@@ -48,9 +48,10 @@ Main =
         $.ready ->
           if Conf['404 Redirect'] and d.title is '4chan - 404 Not Found'
             Redirect.init()
+            pathname = location.pathname.split '/'
             URL = Redirect.to 'file',
-              boardID:  pathname[1]
-              filename: pathname[3]
+              boardID:  g.BOARD.ID
+              filename: pathname[pathname.length - 1]
             location.href = URL if URL
         return
 
