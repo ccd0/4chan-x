@@ -436,7 +436,7 @@ a.hide-announcement {
 .new {
   color: limegreen;
 }
-#update-status.warning, #update-status.new {
+#update-status.new {
   margin-right: 5px;
 }
 #update-timer {

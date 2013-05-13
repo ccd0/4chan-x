@@ -112,7 +112,7 @@ Header =
 
     boardList = $.el 'span',
       id: 'board-list'
-      innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><a href=javascript:; class='hide-board-list-button fourchanx-link'>&nbsp;&nbsp;-&nbsp;&nbsp;</a> #{fourchannav.innerHTML}</span>"
+      innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container fourchanx-link'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> #{fourchannav.innerHTML}</span>"
     fullBoardList = $ '#full-board-list', boardList
     btn = $ '.hide-board-list-button', fullBoardList
     $.on btn, 'click', Header.toggleBoardList
