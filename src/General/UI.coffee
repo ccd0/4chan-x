@@ -349,7 +349,7 @@ UI = do ->
     style.right = right
 
   hoverend = (e) ->
-    return if e.type is 'keydown' and e.keyCode isnt 13
+    return if e.type is 'keydown' and e.keyCode isnt 13 or e.target.nodeName is "TEXTAREA"
     $.rm @el
     $.off @root, @endEvents,  @hoverend
     $.off d,     'keydown',   @hoverend
