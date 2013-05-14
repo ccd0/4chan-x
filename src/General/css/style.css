@@ -98,6 +98,9 @@ a {
   z-index: 30;
 }
 #watcher {
+  z-index: 8;
+}
+:root.fixed-watcher #watcher {
   z-index: 20;
 }
 .fixed #header-bar {
@@ -491,6 +494,19 @@ a.hide-announcement {
   right: 0px;
   top: 0px;
   padding: 0px 4px;
+}
+.watch-thread-link {
+  padding-top: 18px;
+  width: 18px;
+  height: 0px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  opacity: 0.2;
+  position: relative;
+  top: 1px;
+}
+.watch-thread-link.watched {
+  opacity: 1;
 }
 
 /* Thread Stats */
