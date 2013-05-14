@@ -1,3 +1,18 @@
+### v1.2.3
+*2013-05-14*
+
+**seaweedchan**:
+- Change watcher favicon to a heart. Change class name from `.favicon` to `.watch-thread-link`. Add `.watched` if thread is watched.
+- Remove new archive selection back into Advanced
+- Some styling fixes
+
+**MayhemYDG**:
+- Add new archive selection
+
+**zixaphir**:
+- Make new archive selection not depend on a JSON file
+- Remove some code from May Ham's 4chan X that sends user errors back to his server (we didn't have a working link anyway)
+
 ### v1.2.2
 *2013-05-11*
 
