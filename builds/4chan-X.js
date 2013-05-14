@@ -2594,7 +2594,9 @@
         }
       });
       $.on(root, endEvents, o.hoverend);
-      $.on(d, 'keydown', o.hoverend);
+      if ($.x('ancestor::div[contains(@class,"inline")][1]', root)) {
+        $.on(d, 'keydown', o.hoverend);
+      }
       return $.on(root, 'mousemove', o.hover);
     };
     hover = function(e) {
