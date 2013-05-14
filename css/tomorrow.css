@@ -31,15 +31,15 @@
 }
 
 /* QR */
+:root.tomorrow #qr select {
+  color: #81A2BE;
+}
+:root.tomorrow #qr select:hover {
+  color: #5F89AC;
+}
 .tomorrow #dump-list::-webkit-scrollbar-thumb {
   background-color: #282A2E;
   border-color: #111;
-}
-:root.tomorrow #qr select {
-  color: #C5C8C6;
-}
-:root.tomorrow #qr option {
-  color: #000;
 }
 :root.tomorrow .qr-preview {
   background-color: rgba(255, 255, 255, .15);

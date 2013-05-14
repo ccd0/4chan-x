@@ -31,6 +31,12 @@
 }
 
 /* QR */
+:root.yotsuba-b #qr select {
+  color: #34345C;
+}
+:root.yotsuba-b #qr select:hover {
+  color: #DD0000;
+}
 .yotsuba-b #dump-list::-webkit-scrollbar-thumb {
   background-color: #D6DAF0;
   border-color: #B7C5D9;

@@ -31,6 +31,12 @@
 }
 
 /* QR */
+:root.futaba #qr select {
+  color: #00E;
+}
+:root.futaba #qr select:hover {
+  color: red;
+}
 .futaba #dump-list::-webkit-scrollbar-thumb {
   background-color: #F0E0D6;
   border-color: #D9BFB7;

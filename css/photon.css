@@ -13,7 +13,7 @@
   color: #333;
 }
 :root.photon #header-bar a {
-  color: #FF6600;
+  color: #F60;
 }
 
 /* Settings */
@@ -31,6 +31,12 @@
 }
 
 /* QR */
+:root.photon #qr select {
+  color: #F60;
+}
+:root.photon #qr select:hover {
+  color: #FF3300;
+}
 .photon #dump-list::-webkit-scrollbar-thumb {
   background-color: #DDD;
   border-color: #CCC;

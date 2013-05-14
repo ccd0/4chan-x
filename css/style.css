@@ -606,6 +606,10 @@ a.hide-announcement {
   border: none;
   background: none;
 }
+#qr option {
+  color: #000;
+  background-color: #F7F7F7;
+}
 .presto #qr select {
   height: 1em;
 }
