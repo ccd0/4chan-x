@@ -23,7 +23,7 @@ Main =
       'Enabled Mascots nsfw': []
       'Deleted Mascots':      []
       'Hidden Categories':    ["Questionable"]
-      selectedArchives:       {}
+      'selectedArchives':     {}
     
     $.get Conf, Main.initFeatures
 

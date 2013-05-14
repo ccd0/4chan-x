@@ -14493,7 +14493,7 @@
         'Enabled Mascots nsfw': [],
         'Deleted Mascots': [],
         'Hidden Categories': ["Questionable"],
-        selectedArchives: {}
+        'selectedArchives': {}
       });
       return $.get(Conf, Main.initFeatures);
     },
