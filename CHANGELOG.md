@@ -1,3 +1,7 @@
+**zixaphir**:
+- Add board selection to archiver options
+- Fix bug where image hover would close when hitting Enter while typing
+
 ### v1.2.3
 *2013-05-14*
 
