@@ -40,7 +40,6 @@ CatalogLinks =
           "//boards.4chan.org/#{board}/"
       else
         a.pathname = "/#{board}/#{path}"
-      a.title = if useCatalog then "#{a.title} - Catalog" else a.title.replace(/\ -\ Catalog$/, '')
     @title = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
 
   external: (board) ->

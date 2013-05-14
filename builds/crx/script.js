@@ -8065,7 +8065,6 @@
         } else {
           a.pathname = "/" + board + "/" + path;
         }
-        a.title = useCatalog ? "" + a.title + " - Catalog" : a.title.replace(/\ -\ Catalog$/, '');
       }
       return this.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
     },
