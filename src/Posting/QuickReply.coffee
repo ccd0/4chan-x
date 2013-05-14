@@ -72,6 +72,7 @@ QR =
     $.on $('a[title="Quote this post"]', @nodes.info), 'click', QR.quote
 
   persist: ->
+    return unless QR.postingIsEnabled
     QR.open()
     QR.hide() if Conf['Auto Hide QR']
   open: ->

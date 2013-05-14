@@ -4679,6 +4679,9 @@
       return $.on($('a[title="Quote this post"]', this.nodes.info), 'click', QR.quote);
     },
     persist: function() {
+      if (!QR.postingIsEnabled) {
+        return;
+      }
       QR.open();
       if (Conf['Auto Hide QR']) {
         return QR.hide();
