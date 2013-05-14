@@ -20,6 +20,7 @@ Main =
 
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
+    return if g.BOARD.ID is 'z'
     g.VIEW   =
       switch pathname[2]
         when 'res'
