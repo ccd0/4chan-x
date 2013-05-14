@@ -949,13 +949,13 @@ QR =
       {challenge, response} = QR.captcha.getOne()
       err = 'No valid captcha.' unless response
 
+    QR.cleanNotifications()
     if err
       # stop auto-posting
       QR.cooldown.auto = false
       QR.status()
       QR.error err
       return
-    QR.cleanNotifications()
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.posts.length > 1
