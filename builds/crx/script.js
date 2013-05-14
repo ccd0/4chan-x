@@ -1306,12 +1306,18 @@
     };
 
     DataBoard.prototype.clean = function() {
-      var boardID, now;
+      var boardID, now, val, _ref;
 
-      for (boardID in this.data.boards) {
-        this.deleteIfEmpty({
-          boardID: boardID
-        });
+      _ref = this.data.boards;
+      for (boardID in _ref) {
+        val = _ref[boardID];
+        if (!val) {
+          delete this.data.boards[boardID];
+        } else {
+          this.deleteIfEmpty({
+            boardID: boardID
+          });
+        }
       }
       now = Date.now();
       if ((this.data.lastChecked || 0) < now - 2 * $.HOUR) {
@@ -2679,6 +2685,10 @@
       }
       for (key in Config.filter) {
         this.filters[key] = [];
+        if (Conf[key] === void 0) {
+          $["delete"](key);
+          continue;
+        }
         _ref = Conf[key].split('\n');
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           filter = _ref[_i];
@@ -9178,7 +9188,7 @@
 
   Sauce = {
     init: function() {
-      var link, links, _i, _len, _ref;
+      var err, link, links, _i, _len, _ref;
 
       if (g.VIEW === 'catalog' || !Conf['Sauce']) {
         return;
@@ -9190,7 +9200,12 @@
         if (link[0] === '#') {
           continue;
         }
-        links.push(this.createSauceLink(link.trim()));
+        try {
+          links.push(this.createSauceLink(link.trim()));
+        } catch (_error) {
+          err = _error;
+          continue;
+        }
       }
       if (!links.length) {
         return;
@@ -9570,6 +9585,7 @@
           };
         }
         $.get(Conf, function(Conf) {
+          delete Conf['archives'];
           data.Conf = Conf;
           return Settings["export"](now, data);
         });
@@ -10027,10 +10043,11 @@
       }
       Conf['selectedArchives'] = {};
       $.get(Conf, Main.initFeatures);
+      $.on(d, '4chanMainInit', Main.initStyle);
       return $.asap((function() {
         var _ref;
 
-        return d.head && $('link[rel="shortcut icon"]', d.head) || ((_ref = d.readyState) === 'interactive' || _ref === 'complete');
+        return d.head && $('title', d.head) || ((_ref = d.readyState) === 'interactive' || _ref === 'complete');
       }), Main.initStyle);
     },
     initFeatures: function(items) {
@@ -10039,6 +10056,9 @@
       Conf = items;
       pathname = location.pathname.split('/');
       g.BOARD = new Board(pathname[1]);
+      if (g.BOARD.ID === 'z') {
+        return;
+      }
       g.VIEW = (function() {
         switch (pathname[2]) {
           case 'res':
@@ -10154,7 +10174,8 @@
     initStyle: function() {
       var MutationObserver, mainStyleSheet, observer, setStyle, style, styleSheets, _ref;
 
-      if (!Main.isThisPageLegit()) {
+      $.off(d, '4chanMainInit', Main.initStyle);
+      if (!Main.isThisPageLegit() || $.hasClass(doc, 'fourchan-x')) {
         return;
       }
       if ((_ref = $('link[href*=mobile]', d.head)) != null) {
@@ -10266,6 +10287,12 @@
           $.before(styleSelector.previousSibling, [$.tn('['), passLink, $.tn(']\u00A0\u00A0')]);
         }
         return;
+      }
+      try {
+        localStorage.getItem('4chan-settings');
+      } catch (_error) {
+        err = _error;
+        new Notification('warning', 'Cookies need to be enabled on 4chan for 4chan X to properly function.', 30);
       }
       $.event('4chanXInitFinished');
       return Main.checkUpdate();
