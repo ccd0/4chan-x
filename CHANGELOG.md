@@ -1,5 +1,19 @@
+**MayhemYDG**:
+- Add new archive selection
+
+**seaweedchan**:
+- Change watcher favicon to a heart. Change class name from `.favicon` to `.watch-thread-link`. Add `.watched` if thread is watched.
+- Remove new archive selection back into Advanced
+- Some styling fixes
+
+**zixaphir**:
+- Make new archive selection not depend on a JSON file
+- Remove some code that sends user errors back to us (we didn't have a working link anyway)
+
 ### v2.0.3
 *2013-05-10*
+**seaweedchan**:
+- bug fixes
 
 **zixaphir**:
 - Change Custom Board Navigation input into textarea, new lines will convert to spaces

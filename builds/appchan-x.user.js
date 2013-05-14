@@ -20,7 +20,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.0.3 - 2013-05-13
+* appchan x - Version 2.0.3 - 2013-05-14
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -188,7 +188,7 @@
         'Thread Stats': [true, 'Display reply and image count.'],
         'Updater and Stats in Header': [true, 'Places the thread updater and thread stats in the header instead of floating them.'],
         'Thread Watcher': [true, 'Bookmark threads.'],
-        'Persistent Thread Watcher': [false, 'Opens the thread watcher by default.'],
+        'Toggleable Thread Watcher': [false, 'Adds a shortcut for the thread watcher, hides the watcher by default, and makes it scroll with the page.'],
         'Auto Watch': [true, 'Automatically watch threads you start.'],
         'Auto Watch Reply': [false, 'Automatically watch threads you reply to.']
       },
@@ -3844,7 +3844,7 @@
       }
       boardList = $.el('span', {
         id: 'board-list',
-        innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><a href=javascript:; class='hide-board-list-button brackets-wrap'>&nbsp;&nbsp;-&nbsp;&nbsp;</a> " + fourchannav.innerHTML + "</span>"
+        innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> " + fourchannav.innerHTML + "</span>"
       });
       fullBoardList = $('#full-board-list', boardList);
       btn = $('.hide-board-list-button', fullBoardList);
@@ -4297,7 +4297,10 @@
         return $.cache("//api.4chan.org/" + boardID + "/res/" + threadID + ".json", function() {
           return Get.fetchedPost(this, boardID, threadID, postID, root, context);
         });
-      } else if (url = Redirect.post(boardID, postID)) {
+      } else if (url = Redirect.to('post', {
+        boardID: boardID,
+        postID: postID
+      })) {
         return $.cache(url, function() {
           return Get.archivedPost(this, boardID, postID, root, context);
         });
@@ -4326,7 +4329,10 @@
       }
       status = req.status;
       if (![200, 304].contains(status)) {
-        if (url = Redirect.post(boardID, postID)) {
+        if (url = Redirect.to('post', {
+          boardID: boardID,
+          postID: postID
+        })) {
           $.cache(url, function() {
             return Get.archivedPost(this, boardID, postID, root, context);
           });
@@ -4344,7 +4350,10 @@
           break;
         }
         if (post.no > postID) {
-          if (url = Redirect.post(boardID, postID)) {
+          if (url = Redirect.to('post', {
+            boardID: boardID,
+            postID: postID
+          })) {
             $.cache(url, function() {
               return Get.archivedPost(this, boardID, postID, root, context);
             });
@@ -4826,7 +4835,9 @@
         }
       });
       $.on(root, endEvents, o.hoverend);
-      $.on(d, 'keydown', o.hoverend);
+      if ($.x('ancestor::div[contains(@class,"inline")][1]', root)) {
+        $.on(d, 'keydown', o.hoverend);
+      }
       return $.on(root, 'mousemove', o.hover);
     };
     hover = function(e) {
@@ -4844,7 +4855,7 @@
       return style.right = right;
     };
     hoverend = function(e) {
-      if (e.type === 'keydown' && e.keyCode !== 13) {
+      if (e.type === 'keydown' && e.keyCode !== 13 || e.target.nodeName === "TEXTAREA") {
         return;
       }
       $.rm(this.el);
@@ -6459,7 +6470,7 @@
           a.setAttribute('data-threadid', post.thread.ID);
           a.setAttribute('data-postid', postID);
         }
-      } else if (redirect = Redirect.to({
+      } else if (redirect = Redirect.to('thread', {
         boardID: boardID,
         threadID: 0,
         postID: postID
@@ -6470,7 +6481,10 @@
           target: '_blank',
           textContent: "" + quote + "\u00A0(Dead)"
         });
-        if (Redirect.post(boardID, postID)) {
+        if (Redirect.to('post', {
+          boardID: boardID,
+          postID: postID
+        })) {
           $.addClass(a, 'quotelink');
           a.setAttribute('data-boardid', boardID);
           a.setAttribute('data-postid', postID);
@@ -6907,6 +6921,9 @@
       return $.on($('a[title="Quote this post"]', this.nodes.info), 'click', QR.quote);
     },
     persist: function() {
+      if (!QR.postingIsEnabled) {
+        return;
+      }
       QR.open();
       if (Conf['Auto Hide QR']) {
         return QR.hide();
@@ -8527,7 +8544,11 @@
       ImageExpand.contract(post);
       src = this.src.split('/');
       if (src[2] === 'images.4chan.org') {
-        if (URL = Redirect.image(src[3], src[5])) {
+        URL = Redirect.to('file', {
+          boardID: src[3],
+          filename: src[5]
+        });
+        if (URL) {
           setTimeout(ImageExpand.expand, 10000, post, URL);
           return;
         }
@@ -8663,7 +8684,11 @@
       post = g.posts[this.dataset.fullid];
       src = this.src.split('/');
       if (src[2] === 'images.4chan.org') {
-        if (URL = Redirect.image(src[3], src[5].replace(/\?.+$/, ''))) {
+        URL = Redirect.to('file', {
+          boardID: src[3],
+          filename: src[5].replace(/\?.+$/, '')
+        });
+        if (URL) {
           this.src = URL;
           return;
         }
@@ -8769,15 +8794,14 @@
         el: div,
         order: 90,
         open: function(_arg) {
-          var ID, board, redirect, thread;
+          var ID, board, thread;
 
           ID = _arg.ID, thread = _arg.thread, board = _arg.board;
-          redirect = Redirect.to({
+          return !!Redirect.to('thread', {
             postID: ID,
             threadID: thread.ID,
             boardID: board.ID
           });
-          return redirect !== ("//boards.4chan.org/" + board + "/");
         },
         subEntries: []
       };
@@ -8799,7 +8823,7 @@
         var ID, board, thread;
 
         ID = _arg.ID, thread = _arg.thread, board = _arg.board;
-        el.href = Redirect.to({
+        el.href = Redirect.to('thread', {
           postID: ID,
           threadID: thread.ID,
           boardID: board.ID
@@ -8812,7 +8836,7 @@
         if (!value) {
           return false;
         }
-        el.href = Redirect.to({
+        el.href = Redirect.to('search', {
           boardID: post.board.ID,
           type: type,
           value: value,
@@ -9152,7 +9176,6 @@
         return Favicon.unreadY = Favicon.unreadNSFWY;
       }
     },
-    empty: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEX////b29sAAAAJ2DVhAAAAAXRSTlMAQObYZgAAAD1JREFUeF5NyrENgEAMxVArFZcpaD4z/TKjZIwrMyoSQoJXuDKf7BhUyyyrkGVycviZhLD6Wd7sq4jzaABukdYKjYsxq7wAAAAASUVORK5CYII=',
     dead: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAACVBMVEX/////AAAAAACalQKRAAAAAXRSTlMAQObYZgAAAD1JREFUeF5NyrENgEAMxVArFZcpaD4z/TKjZIwrMyoSQoJXuDKf7BhUyyyrkGVycviZhLD6Wd7sq4jzaABukdYKjYsxq7wAAAAASUVORK5CYII='
   };
 
@@ -9668,8 +9691,9 @@
       var favicon,
         _this = this;
 
-      favicon = $.el('img', {
-        className: 'favicon'
+      favicon = $.el('a', {
+        className: 'watch-thread-link',
+        href: 'javascript:;'
       });
       $.on(favicon, 'click', ThreadWatcher.cb.toggle);
       $.before($('input', this.OP.nodes.post), favicon);
@@ -9717,8 +9741,12 @@
       _ref1 = g.BOARD.threads;
       for (ID in _ref1) {
         thread = _ref1[ID];
-        favicon = $('.favicon', thread.OP.nodes.post);
-        favicon.src = ID in watched ? Favicon["default"] : Favicon.empty;
+        favicon = $('.watch-thread-link', thread.OP.nodes.post);
+        if (ID in watched) {
+          $.addClass(favicon, 'watched');
+        } else {
+          $.rmClass(favicon, 'watched');
+        }
       }
     },
     toggleWatcher: function() {
@@ -9749,7 +9777,7 @@
       }
     },
     toggle: function(thread) {
-      if ($('.favicon', thread.OP.nodes.post).src === Favicon.empty) {
+      if (!$.hasClass($('.watch-thread-link', thread.OP.nodes.post), 'watched')) {
         return ThreadWatcher.watch(thread);
       } else {
         return ThreadWatcher.unwatch(thread.board, thread.ID);
@@ -10021,185 +10049,197 @@
   };
 
   Redirect = {
+    thread: {},
+    post: {},
+    file: {},
     init: function() {
-      return $.sync('archivers', this.updateArchives);
-    },
-    updateArchives: function() {
-      return $.get('archivers', {}, function(_arg) {
-        var archivers;
+      var archive, arr, boardID, data, id, name, type, _i, _len, _ref, _ref1, _ref2, _ref3;
 
-        archivers = _arg.archivers;
-        return Conf['archivers'] = archivers;
-      });
-    },
-    imageArchives: (function() {
-      var o;
-
-      o = {
-        a: "//archive.foolz.us/",
-        ck: "//fuuka.warosu.org/",
-        an: "http://archive.heinessen.com/",
-        cgl: "//rbt.asia/",
-        c: "//archive.nyafuu.org/",
-        d: "//loveisover.me/",
-        e: "http://archive.foolzashit.com",
-        hr: "http://archive.4plebs.org/",
-        u: "//nsfw.foolz.us/",
-        po: "//archive.thedarkcave.org/",
-        vg: "http://nth.pensivenonsen.se/",
-        c: "//archive.nyafuu.org/"
-      };
-      o.adv = o.asp = o.cm = o.i = o.n = o.o = o.p = o.s = o.t = o.trv = o.y = o.lgbt = o.s4s = o.e;
-      o.gd = o.jp = o.m = o.q = o.tg = o.vp = o.vr = o.wsg = o.a;
-      o.fa = o.lit = o.ck;
-      o.k = o.toy = o.x = o.an;
-      o.g = o.mu = o.cgl;
-      o.w = o.wg = o.c;
-      o.h = o.v = o.d;
-      o.tv = o.hr;
-      return o;
-    })(),
-    image: function(boardID, filename) {
-      return "" + Redirect.imageArchives[boardID] + boardID + "/full_image/" + filename;
-    },
-    post: function(boardID, postID) {
-      var archive, name, _base, _ref;
-
-      if (Redirect.post[boardID] == null) {
-        _ref = this.archiver;
-        for (name in _ref) {
-          archive = _ref[name];
-          if (archive.type === 'foolfuuka' && archive.boards.contains(boardID)) {
-            Redirect.post[boardID] = archive.base;
-            break;
+      _ref = Conf['selectedArchives'];
+      for (boardID in _ref) {
+        data = _ref[boardID];
+        for (type in data) {
+          id = data[type];
+          _ref1 = Redirect.archives;
+          for (name in _ref1) {
+            archive = _ref1[name];
+            if (name !== id || type === 'post' && archive.software !== 'foolfuuka') {
+              continue;
+            }
+            arr = type === 'file' ? archive.files : archive.boards;
+            if (arr.contains(boardID)) {
+              Redirect[type][boardID] = archive;
+            }
           }
         }
-        (_base = Redirect.post)[boardID] || (_base[boardID] = false);
       }
-      if (Redirect.post[boardID]) {
-        return "" + Redirect.post[boardID] + "/_/api/chan/post/?board=" + boardID + "&num=" + postID;
-      } else {
-        return null;
-      }
-    },
-    select: function(board) {
-      var archive, name, _ref, _results;
-
-      _ref = this.archiver;
-      _results = [];
-      for (name in _ref) {
-        archive = _ref[name];
-        if (!archive.boards.contains(board)) {
-          continue;
+      _ref2 = Redirect.archives;
+      for (name in _ref2) {
+        archive = _ref2[name];
+        _ref3 = archive.boards;
+        for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
+          boardID = _ref3[_i];
+          if (!(boardID in Redirect.thread)) {
+            Redirect.thread[boardID] = archive;
+          }
+          if (!(boardID in Redirect.post || archive.software !== 'foolfuuka')) {
+            Redirect.post[boardID] = archive;
+          }
+          if (!(boardID in Redirect.file || !archive.files.contains(boardID))) {
+            Redirect.file[boardID] = archive;
+          }
         }
-        _results.push(name);
-      }
-      return _results;
-    },
-    to: function(data) {
-      var arch, archive, boardID;
-
-      boardID = data.boardID;
-      if ((arch = Conf.archivers[boardID]) == null) {
-        Conf.archivers[boardID] = arch = this.select(boardID)[0];
-        $.set('archivers', Conf.archivers);
-      }
-      return (arch && (archive = this.archiver[arch]) ? Redirect.path(archive.base, archive.type, data) : data.threadID ? "//boards.4chan.org/" + boardID + "/" : null);
-      if (!archive.boards.contains(g.BOARD.ID)) {
-        return Conf['archivers'] = archive;
       }
     },
-    archiver: {
+    archives: {
       'Foolz': {
-        base: 'https://archive.foolz.us',
-        boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg'],
-        type: 'foolfuuka'
+        'domain': 'archive.foolz.us',
+        'http': true,
+        'https': true,
+        'software': 'foolfuuka',
+        'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg'],
+        'files': ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vp', 'vr', 'wsg']
       },
-      'NSFWFoolz': {
-        base: 'https://nsfw.foolz.us',
-        boards: ['u'],
-        type: 'foolfuuka'
+      'NSFW Foolz': {
+        'domain': 'nsfw.foolz.us',
+        'http': true,
+        'https': true,
+        'software': 'foolfuuka',
+        'boards': ['u'],
+        'files': ['u']
       },
-      'TheDarkCave': {
-        base: 'http://archive.thedarkcave.org',
-        boards: ['c', 'int', 'out', 'po'],
-        type: 'foolfuuka'
+      'The Dark Cave': {
+        'domain': 'archive.thedarkcave.org',
+        'http': true,
+        'https': true,
+        'software': 'foolfuuka',
+        'boards': ['c', 'int', 'out', 'po'],
+        'files': ['c', 'po']
       },
       '4plebs': {
-        base: 'http://archive.4plebs.org',
-        boards: ['hr', 'tg', 'tv', 'x'],
-        base: 'foolfuuka'
+        'domain': 'archive.4plebs.org',
+        'http': true,
+        'software': 'foolfuuka',
+        'boards': ['hr', 'tg', 'tv', 'x'],
+        'files': ['hr', 'tg', 'tv', 'x']
       },
-      'NyaFuu': {
-        base: '//archive.nyafuu.org',
-        boards: ['c', 'w', 'wg'],
-        type: 'foolfuuka'
+      'Nyafuu': {
+        'http': true,
+        'https': true,
+        'software': 'foolfuuka',
+        'boards': ['c', 'w', 'wg'],
+        'files': ['c', 'w', 'wg']
       },
-      'LoveIsOver': {
-        base: '//loveisover.me',
-        boards: ['d', 'h', 'v'],
-        type: 'foolfuuka'
+      'Love is Over': {
+        'domain': 'loveisover.me',
+        'http': true,
+        'https': true,
+        'software': 'foolfuuka',
+        'boards': ['d', 'h', 'v'],
+        'files': ['d', 'h', 'v']
       },
-      'PensiveNonsen': {
-        base: 'http://nth.pensivenonsen.se',
-        boards: ['vg'],
-        type: 'foolfuuka'
+      'nth-chan': {
+        'domain': 'nth.pensivenonsen.se',
+        'http': true,
+        'software': 'foolfuuka',
+        'boards': ['vg'],
+        'files': ['vg']
       },
-      'FoolzaShit': {
-        base: 'http://archive.foolzashit.com',
-        boards: ["adv", "asp", "cm", "e", "i", "lgbt", "n", "o", "p", "s", "s4s", "t", "trv", "y"],
-        type: 'foolfuuka'
+      'Foolz a Shit': {
+        'domain': 'archive.foolzashit.com',
+        'http': true,
+        'https': true,
+        'software': 'foolfuuka',
+        'boards': ['adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 's', 's4s', 't', 'trv', 'y'],
+        'files': ['adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 's', 's4s', 't', 'trv', 'y']
       },
-      'Warosu': {
-        base: '//fuuka.warosu.org',
-        boards: ['cgl', 'ck', 'fa', 'jp', 'lit', 's4s', 'q', 'tg', 'vr'],
-        type: 'fuuka'
+      'Install Gentoo': {
+        'domain': 'archive.installgentoo.net',
+        'http': true,
+        'https': true,
+        'software': 'fuuka',
+        'boards': ['diy', 'g', 'sci'],
+        'files': []
       },
-      'InstallGentoo': {
-        base: '//archive.installgentoo.net',
-        boards: ['diy', 'g', 'sci'],
-        type: 'fuuka'
-      },
-      'RebeccaBlackTech': {
-        base: '//rbt.asia',
-        boards: ['cgl', 'g', 'mu', 'w'],
-        type: 'fuuka_mail'
+      'Rebecca Black Tech': {
+        'domain': 'rbt.asia',
+        'http': true,
+        'https': true,
+        'software': 'fuuka',
+        'boards': ['cgl', 'g', 'mu', 'w'],
+        'files': ['cgl', 'g', 'mu', 'w']
       },
       'Heinessen': {
-        base: 'http://archive.heinessen.com',
-        boards: ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'],
-        type: 'fuuka'
+        'domain': 'archive.heinessen.com',
+        'http': true,
+        'software': 'fuuka',
+        'boards': ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'],
+        'files': ['an', 'k', 'toy', 'x']
       },
-      'Cliche': {
-        base: '//www.cliché.net/4chan/cgi-board.pl',
-        boards: ['e'],
-        type: 'fuuka'
+      'warosu': {
+        'domain': 'fuuka.warosu.org',
+        'http': true,
+        'https': true,
+        'software': 'fuuka',
+        'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 's4s', 'tg', 'vr'],
+        'files': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 's4s', 'vr']
       }
     },
-    path: function(base, archiver, data) {
-      var boardID, path, postID, threadID, type, value;
+    to: function(dest, data) {
+      var archive;
 
-      if (data.isSearch) {
-        boardID = data.boardID, type = data.type, value = data.value;
-        type = type === 'name' ? 'username' : type === 'MD5' ? 'image' : type;
-        value = encodeURIComponent(value);
-        if (archiver === 'foolfuuka') {
-          return "" + base + "/" + boardID + "/search/" + type + "/" + value;
-        } else if (type === 'image') {
-          return "" + base + "/" + boardID + "/?task=search2&search_media_hash=" + value;
-        } else {
-          return "" + base + "/" + boardID + "/?task=search2&search_" + type + "=" + value;
-        }
+      archive = (dest === 'search' ? Redirect.thread : Redirect[dest])[data.boardID];
+      if (!archive) {
+        return '';
       }
-      boardID = data.boardID, threadID = data.threadID, postID = data.postID;
+      return Redirect[dest](archive, data);
+    },
+    protocol: function(archive) {
+      var protocol;
+
+      protocol = location.protocol;
+      if (!archive[protocol.slice(0, -1)]) {
+        protocol = protocol === 'https:' ? 'http:' : 'https:';
+      }
+      return "" + protocol + "//";
+    },
+    thread: function(archive, _arg) {
+      var boardID, path, postID, threadID;
+
+      boardID = _arg.boardID, threadID = _arg.threadID, postID = _arg.postID;
       path = threadID ? "" + boardID + "/thread/" + threadID : "" + boardID + "/post/" + postID;
-      if (archiver === 'foolfuuka') {
+      if (archive.software === 'foolfuuka') {
         path += '/';
       }
       if (threadID && postID) {
-        path += archiver === 'foolfuuka' ? "#" + postID : "#p" + postID;
+        path += archive.software === 'foolfuuka' ? "#" + postID : "#p" + postID;
       }
-      return "" + base + "/" + path;
+      return "" + (Redirect.protocol(archive)) + archive.domain + "/" + path;
+    },
+    post: function(archive, _arg) {
+      var boardID, postID, protocol;
+
+      boardID = _arg.boardID, postID = _arg.postID;
+      protocol = Redirect.protocol(archive);
+      if (['Foolz', 'NSFW Foolz'].contains(archive.name)) {
+        protocol = 'https://';
+      }
+      return "" + protocol + archive.domain + "/_/api/chan/post/?board=" + boardID + "&num=" + postID;
+    },
+    file: function(archive, _arg) {
+      var boardID, filename;
+
+      boardID = _arg.boardID, filename = _arg.filename;
+      return "" + (Redirect.protocol(archive)) + archive.domain + "/" + boardID + "/full_image/" + filename;
+    },
+    search: function(archive, _arg) {
+      var boardID, path, type, value;
+
+      boardID = _arg.boardID, type = _arg.type, value = _arg.value;
+      type = type === 'name' ? 'username' : type === 'MD5' ? 'image' : type;
+      value = encodeURIComponent(value);
+      path = archive.software === 'foolfuuka' ? "" + boardID + "/search/" + type + "/" + value : "" + boardID + "/?task=search2&search_" + (type === 'image' ? 'media_hash' : type) + "=" + value;
+      return "" + (Redirect.protocol(archive)) + archive.domain + "/" + path;
     }
   };
 
@@ -11366,7 +11406,7 @@
         hide: 2
       }[_conf['Sidebar']] || (252 + Style.sidebarOffset.W);
       Style.replyMargin = _conf["Post Spacing"];
-      return css = "/* Cleanup */\n#absbot,\n#boardNavDesktop,\n#delPassword,\n#delform > hr:last-of-type,\n#navbotright,\n#postForm,\n#search-label,\n#search-label-bottom,\n#styleSwitcher,\n#togglePostForm,\n.boardBanner > div,\n.mobile,\n.next form,\n.next span,\n.postingMode,\n.prev form,\n.prev span,\n.riced,\n.sideArrows,\n.stylechanger,\nbody > br,\nbody > div[style^=\"text-align\"],\nbody > hr {\n  display: none;\n}\n/* Empties */\n#qr .warning:empty,\n#qr-thread-select:empty {\n  display: none;\n}\n/* File Name Trunctuate */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n/* Unnecessary */\n#qp input,\n#qp .rice,\n.inline .rice {\n  display: none !important;\n}\n/* Hidden Content */\n.forwarded,\n.hidden,\n.hidden_thread ~ div,\n.hidden_thread ~ a,\n.replyContainer .stub ~ div,\n.replyContainer .stub ~ a,\n.stub + div,\n.thread > .stub:first-child ~ .postContainer,\n.thread > .stub:first-child ~ .summary,\n[hidden] {\n  display: none !important;\n}\n/* Hidden UI */\n#catalog,\n#navlinks,\n#navtopright,\n.cataloglink,\n.navLinks,\na[style=\"cursor: pointer; float: right;\"] {\n  z-index: 7;\n  position: fixed;\n  top: 100%;\n  left: 100%;\n}\n/* Hide last horizontal rule, keep clear functionality. */\n.board > hr:last-of-type {\n  visibility: hidden;\n}\n/* Fappe Tyme */\n.fappeTyme .thread > .noFile,\n.fappeTyme .threadContainer > .noFile {\n  display: none;\n}\n/* Defaults */\na {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  outline: none;\n}\nbody,\nhtml {\n  min-height: 100%;\n  " + Style.sizing + ": border-box;\n}\nbody {\n  outline: none;\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n  min-height: 100%;\n  margin-top: 0;\n  margin-bottom: 0;\n  margin-" + Style.sidebarLocation[0] + ": " + (/^boards\.4chan\.org$/.test(location.hostname) ? Style.sidebar : '2') + "px;\n  margin-" + Style.sidebarLocation[1] + ": 2px;\n  padding: 0 " + (parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px 0 " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]) + "px;\n}\nbody.unscroll {\n  overflow: hidden;\n}\n" + (_conf["4chan SS Sidebar"] && /^boards\.4chan\.org$/.test(location.hostname) ? "body::before {  content: '';  position: fixed;  top: 0;  bottom: 0;  " + Style.sidebarLocation[0] + ": 0;  width: " + (_conf['Sidebar'] === 'large' ? 305 : _conf['Sidebar'] === 'normal' ? 254 : _conf['Sidebar'] === 'minimal' ? 27 : 0) + "px;  z-index: 1;  " + Style.sizing + ": border-box;  display: block;}body {  padding-" + Style.sidebarLocation[0] + ": 2px;}" : "") + "\nbutton,\ninput,\ntextarea {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n}\nhr {\n  clear: both;\n  border: 0;\n  padding: 0;\n  margin: 0 0 1px;\n  " + (_conf['Hide Horizontal Rules'] ? 'visibility: hidden;' : '') + "\n}\n.center {\n  text-align: center;\n}\n.disabled {\n  opacity: 0.5;\n}\n.pointer {\n  cursor: pointer;\n}\n/* Symbols */\n.drop-marker {\n  vertical-align: middle;\n  display: inline-block;\n  margin: 2px 2px 3px;\n  border-top: .5em solid;\n  border-right: .3em solid transparent;\n  border-left: .3em solid transparent;\n}\n.brackets-wrap::before {\n  content: \"\\00a0[\";\n}\n.brackets-wrap::after {\n  content: \"]\\00a0\";\n}\n/* Thread / Reply Nav */\n#navlinks a {\n  position: fixed;\n  z-index: 12;\n  opacity: 0.5;\n  display: inline-block;\n  border-right: 6px solid transparent;\n  border-left: 6px solid transparent;\n  margin: 1.5px;\n}\n/* Header */\n#header-bar {\n  z-index: 6;\n  border-width: 1px;\n" + (_conf['4chan SS Navigation'] ? "  left: 0;  right: 0;  border-left: 0;  border-right: 0;  border-radius: 0 !important;" : "  " + Style.sidebarLocation[0] + ": " + (Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;  " + Style.sidebarLocation[1] + ": " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2) + "px;") + "\n" + (_conf["Hide Navigation Decorations"] ? "  font-size: 0;  color: transparent;  word-spacing: 2px;" : "") + "\n  text-align: " + _conf["Navigation Alignment"] + ";\n}\n#shortcuts {\n  float: right;\n}\n.fixed #header-bar.autohide {\n  z-index: 24;\n}\n.fixed #header-bar {\n  position: fixed;\n}\n.top #header-bar {\n  top: 0;\n  border-top-width: 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : "") + "\"\n}\n.fixed.bottom #header-bar {\n  bottom: 0;\n  border-bottom-width: 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\"\n}\n.hide #header-bar {\n  position: fixed;\n  top: 110%;\n  bottom: auto;\n}\n/* Header Autohide */\n.fixed #header-bar.autohide:not(:hover) {\n  box-shadow: none;\n  transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #header-bar.autohide:not(:hover) {\n  margin-bottom: -1em;\n  " + agent + "transform: translateY(-100%);\n}\n.fixed.bottom #header-bar.autohide:not(:hover) {\n  " + agent + "transform: translateY(100%);\n}\n#scroll-marker {\n  left: 0;\n  right: 0;\n  height: 10px;\n  position: absolute;\n}\n#header-bar #scroll-marker {\n  display: none;\n}\n.fixed #header-bar #scroll-marker {\n  display: block;\n}\n.fixed.top header-bar #scroll-marker {\n  top: 100%;\n}\n.fixed.bottom #header-bar #scroll-marker {\n  bottom: 100%;\n}\n/* Notifications */\n#notifications {\n  position: fixed;\n  top: 0;\n  text-align: center;\n  right: 0;\n  left: 0;\n  transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #header-bar #notifications {\n  position: absolute;\n  top: 100%;\n}\n.notification {\n  font-family: " + _conf["Font"] + ";\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + ";\n  color: #fff;\n  font-weight: 700;\n  text-shadow: 0 1px 2px rgba(0, 0, 0, .5);\n  box-shadow: 0 1px 2px rgba(0, 0, 0, .15);\n  border-radius: 2px;\n  margin: 1px auto;\n  width: 500px;\n  max-width: 100%;\n  position: relative;\n  transition: all .25s ease-in-out;\n}\n.notification.error {\n  background-color: hsla(0, 100%, 38%, .9);\n}\n.notification.warning {\n  background-color: hsla(36, 100%, 38%, .9);\n}\n.notification.info {\n  background-color: hsla(200, 100%, 38%, .9);\n}\n.notification.success {\n  background-color: hsla(104, 100%, 38%, .9);\n}\n.notification a {\n  color: #fff;\n}\n.notification > .close {\n  padding: 6px;\n  top: 0;\n  right: 5px;\n  position: absolute;\n  color: #fff;\n}\n.message {\n  " + Style.sizing + ": border-box;\n  padding: 6px 20px;\n  max-height: 200px;\n  width: 100%;\n  overflow: auto;\n}\n/* Main Menu */\n#main-menu {\n  margin: 0;\n  border: 2px solid;\n  border-radius: 10px;\n  height: 14px;\n  width: 14px;\n  " + Style.sizing + ": border-box;\n  border-color: rgb(130,130,130);\n  color: rgb(130,130,130);\n}\n#main-menu::after {\n  content: '';\n  font-size: 10px;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  " + agent + "transform: translate(-60%, -50%);\n  display: block;\n  border-top: 5px solid rgb(130, 130, 130);\n  border-left: 3px solid transparent;\n  border-right: 3px solid transparent;\n  width: 7px;\n  " + Style.sizing + ": border-box;\n}\n/* Updater / Thread Stats */\n.float #thread-stats,\n.float #updater {\n  position: fixed;\n}\n#update-status.new::after {\n  content: ', ';\n}\n/* Pagination */\n.pagelist {\n  border-width: 1px;\n  text-align: " + _conf["Pagination Alignment"] + ";\n" + (_conf['4chan SS Navigation'] ? "  left: 0;  right: 0;  border-left: 0;  border-right: 0;  border-radius: 0 !important;" : "  " + Style.sidebarLocation[0] + ": " + (Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;  " + Style.sidebarLocation[1] + ": " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2) + "px;") + "\n" + {
+      return css = "/* Cleanup */\n#absbot,\n#boardNavDesktop,\n#delPassword,\n#delform > hr:last-of-type,\n#navbotright,\n#postForm,\n#search-label,\n#search-label-bottom,\n#styleSwitcher,\n#togglePostForm,\n.boardBanner > div,\n.mobile,\n.next form,\n.next span,\n.postingMode,\n.prev form,\n.prev span,\n.riced,\n.sideArrows,\n.stylechanger,\nbody > br,\nbody > div[style^=\"text-align\"],\nbody > hr {\n  display: none;\n}\n/* Empties */\n#qr .warning:empty,\n#qr-thread-select:empty {\n  display: none;\n}\n/* File Name Trunctuate */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n/* Unnecessary */\n#qp input,\n#qp .rice,\n.inline .rice {\n  display: none !important;\n}\n/* Hidden Content */\n.forwarded,\n.hidden,\n.hidden_thread ~ div,\n.hidden_thread ~ a,\n.replyContainer .stub ~ div,\n.replyContainer .stub ~ a,\n.stub + div,\n.thread > .stub:first-child ~ .postContainer,\n.thread > .stub:first-child ~ .summary,\n[hidden] {\n  display: none !important;\n}\n/* Hidden UI */\n#catalog,\n#navlinks,\n#navtopright,\n.cataloglink,\n.navLinks,\na[style=\"cursor: pointer; float: right;\"] {\n  z-index: 7;\n  position: fixed;\n  top: 100%;\n  left: 100%;\n}\n/* Hide last horizontal rule, keep clear functionality. */\n.board > hr:last-of-type {\n  visibility: hidden;\n}\n/* Fappe Tyme */\n.fappeTyme .thread > .noFile,\n.fappeTyme .threadContainer > .noFile {\n  display: none;\n}\n/* Defaults */\na {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  outline: none;\n}\nbody,\nhtml {\n  min-height: 100%;\n  " + Style.sizing + ": border-box;\n}\nbody {\n  outline: none;\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n  min-height: 100%;\n  margin-top: 0;\n  margin-bottom: 0;\n  margin-" + Style.sidebarLocation[0] + ": " + (/^boards\.4chan\.org$/.test(location.hostname) ? Style.sidebar : '2') + "px;\n  margin-" + Style.sidebarLocation[1] + ": 2px;\n  padding: 0 " + (parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px 0 " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]) + "px;\n}\nbody.unscroll {\n  overflow: hidden;\n}\n" + (_conf["4chan SS Sidebar"] && /^boards\.4chan\.org$/.test(location.hostname) ? "body::before {  content: '';  position: fixed;  top: 0;  bottom: 0;  " + Style.sidebarLocation[0] + ": 0;  width: " + (_conf['Sidebar'] === 'large' ? 305 : _conf['Sidebar'] === 'normal' ? 254 : _conf['Sidebar'] === 'minimal' ? 27 : 0) + "px;  z-index: 1;  " + Style.sizing + ": border-box;  display: block;}body {  padding-" + Style.sidebarLocation[0] + ": 2px;}" : "") + "\nbutton,\ninput,\ntextarea {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n}\nhr {\n  clear: both;\n  border: 0;\n  padding: 0;\n  margin: 0 0 1px;\n  " + (_conf['Hide Horizontal Rules'] ? 'visibility: hidden;' : '') + "\n}\nth {\n  text-align: left;\n}\n.center {\n  text-align: center;\n}\n.disabled {\n  opacity: 0.5;\n}\n.pointer {\n  cursor: pointer;\n}\n/* Symbols */\n.drop-marker {\n  vertical-align: middle;\n  display: inline-block;\n  margin: 2px 2px 3px;\n  border-top: .5em solid;\n  border-right: .3em solid transparent;\n  border-left: .3em solid transparent;\n}\n.brackets-wrap::before {\n  content: \"\\00a0[\";\n}\n.brackets-wrap::after {\n  content: \"]\\00a0\";\n}\n/* Thread / Reply Nav */\n#navlinks a {\n  position: fixed;\n  z-index: 12;\n  opacity: 0.5;\n  display: inline-block;\n  border-right: 6px solid transparent;\n  border-left: 6px solid transparent;\n  margin: 1.5px;\n}\n/* Header */\n#header-bar {\n  z-index: 6;\n  border-width: 1px;\n" + (_conf['4chan SS Navigation'] ? "  left: 0;  right: 0;  border-left: 0;  border-right: 0;  border-radius: 0 !important;" : "  " + Style.sidebarLocation[0] + ": " + (Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;  " + Style.sidebarLocation[1] + ": " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2) + "px;") + "\n" + (_conf["Hide Navigation Decorations"] ? "  font-size: 0;  color: transparent;  word-spacing: 2px;" : "") + "\n  text-align: " + _conf["Navigation Alignment"] + ";\n}\n#shortcuts {\n  float: right;\n}\n.fixed #header-bar.autohide {\n  z-index: 24;\n}\n.fixed #header-bar {\n  position: fixed;\n}\n.top #header-bar {\n  top: 0;\n  border-top-width: 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : "") + "\"\n}\n.fixed.bottom #header-bar {\n  bottom: 0;\n  border-bottom-width: 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\"\n}\n.hide #header-bar {\n  position: fixed;\n  top: 110%;\n  bottom: auto;\n}\n/* Header Autohide */\n.fixed #header-bar.autohide:not(:hover) {\n  box-shadow: none;\n  transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #header-bar.autohide:not(:hover) {\n  margin-bottom: -1em;\n  " + agent + "transform: translateY(-100%);\n}\n.fixed.bottom #header-bar.autohide:not(:hover) {\n  " + agent + "transform: translateY(100%);\n}\n#scroll-marker {\n  left: 0;\n  right: 0;\n  height: 10px;\n  position: absolute;\n}\n#header-bar #scroll-marker {\n  display: none;\n}\n.fixed #header-bar #scroll-marker {\n  display: block;\n}\n.fixed.top header-bar #scroll-marker {\n  top: 100%;\n}\n.fixed.bottom #header-bar #scroll-marker {\n  bottom: 100%;\n}\n/* Notifications */\n#notifications {\n  position: fixed;\n  top: 0;\n  text-align: center;\n  right: 0;\n  left: 0;\n  transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #header-bar #notifications {\n  position: absolute;\n  top: 100%;\n}\n.notification {\n  font-family: " + _conf["Font"] + ";\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + ";\n  color: #fff;\n  font-weight: 700;\n  text-shadow: 0 1px 2px rgba(0, 0, 0, .5);\n  box-shadow: 0 1px 2px rgba(0, 0, 0, .15);\n  border-radius: 2px;\n  margin: 1px auto;\n  width: 500px;\n  max-width: 100%;\n  position: relative;\n  transition: all .25s ease-in-out;\n}\n.notification.error {\n  background-color: hsla(0, 100%, 38%, .9);\n}\n.notification.warning {\n  background-color: hsla(36, 100%, 38%, .9);\n}\n.notification.info {\n  background-color: hsla(200, 100%, 38%, .9);\n}\n.notification.success {\n  background-color: hsla(104, 100%, 38%, .9);\n}\n.notification a {\n  color: #fff;\n}\n.notification > .close {\n  padding: 6px;\n  top: 0;\n  right: 5px;\n  position: absolute;\n  color: #fff;\n}\n.message {\n  " + Style.sizing + ": border-box;\n  padding: 6px 20px;\n  max-height: 200px;\n  width: 100%;\n  overflow: auto;\n}\n/* Main Menu */\n#main-menu {\n  margin: 0;\n  border: 2px solid;\n  border-radius: 10px;\n  height: 14px;\n  width: 14px;\n  " + Style.sizing + ": border-box;\n  border-color: rgb(130,130,130);\n  color: rgb(130,130,130);\n}\n#main-menu::after {\n  content: '';\n  font-size: 10px;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  " + agent + "transform: translate(-60%, -50%);\n  display: block;\n  border-top: 5px solid rgb(130, 130, 130);\n  border-left: 3px solid transparent;\n  border-right: 3px solid transparent;\n  width: 7px;\n  " + Style.sizing + ": border-box;\n}\n/* Updater / Thread Stats */\n.float #thread-stats,\n.float #updater {\n  position: fixed;\n}\n#update-status.new::after {\n  content: ', ';\n}\n/* Pagination */\n.pagelist {\n  border-width: 1px;\n  text-align: " + _conf["Pagination Alignment"] + ";\n" + (_conf['4chan SS Navigation'] ? "  left: 0;  right: 0;  border-left: 0;  border-right: 0;  border-radius: 0 !important;" : "  " + Style.sidebarLocation[0] + ": " + (Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;  " + Style.sidebarLocation[1] + ": " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2) + "px;") + "\n" + {
         "sticky top": "  position: fixed;  top: 0;  border-top-width: 0;  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : ""),
         "sticky bottom": "  position: fixed;  bottom: 0;  border-bottom-width: 0;  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : ""),
         "top": "  position: static;  border-top-width: 0;  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : ""),
@@ -11389,7 +11429,7 @@
         compact: "#boardNavDesktopFoot {  word-spacing: 1px;}",
         list: "#boardNavDesktopFoot a {  display: block;}#boardNavDesktopFoot:hover {  max-height: 400px;}#boardNavDesktopFoot a::after {  content: ' - ' attr(title);}#boardNavDesktopFoot a[href*='//boards.4chan.org/']::after,#boardNavDesktopFoot a[href*='//rs.4chan.org/']::after {  content: '/ - ' attr(title);}#boardNavDesktopFoot a[href*='//boards.4chan.org/']::before,#boardNavDesktopFoot a[href*='//rs.4chan.org/']::before {  content: '/';}",
         hide: "#boardNavDesktopFoot {  display: none;}"
-      }[_conf["Slideout Navigation"]] + "\n/* Watcher */\n#watcher {\n  position: fixed;\n  z-index: 14;\n  padding: 2px;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#watcher > div {\n  max-height: 1.3em;\n  overflow: hidden;\n}\n" + (_conf['Slideout Watcher'] ? "#watcher {  width: " + width + "px;  " + Style.sidebarLocation[0] + ": 2px !important;  " + Style.sidebarLocation[1] + ": auto !important;  " + Style.sizing + ": border-box;}#watcher .move {  cursor: default;  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";}#watcher > div {  overflow: hidden;}#watcher:hover {  overflow-y: auto;}#watcher:not(:hover) {  height: 0;  overflow: hidden;  border: 0 none;  padding: 0;}" : "#watcher {  width: 200px;}#watcher:not(:hover) {  max-height: 200px;  overflow: hidden;}") + "\n/* Announcements */\n#globalMessage {\n  text-align: center;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n" + ({
+      }[_conf["Slideout Navigation"]] + "\n/* Watcher */\n#watcher {\n  position: fixed;\n  z-index: 14;\n  padding: 2px;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#watcher > div {\n  max-height: 1.3em;\n  overflow: hidden;\n}\n" + (_conf['Slideout Watcher'] ? "#watcher {  width: " + width + "px;  " + Style.sidebarLocation[0] + ": 2px !important;  " + Style.sidebarLocation[1] + ": auto !important;  " + Style.sizing + ": border-box;}#watcher .move {  cursor: default;  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";}#watcher > div {  overflow: hidden;}#watcher:hover {  overflow-y: auto;}#watcher:not(:hover) {  height: 0;  overflow: hidden;  border: 0 none;  padding: 0;}" : "#watcher {  width: 200px;}#watcher:not(:hover) {  max-height: 200px;  overflow: hidden;}") + "\n.watch-thread-link {\n  padding-top: 18px;\n  width: 18px;\n  height: 0px;\n  display: inline-block;\n  background-repeat: no-repeat;\n  opacity: 0.2;\n  position: relative;\n  top: 1px;\n}\n.watch-thread-link.watched {\n  opacity: 1;\n} \n/* Announcements */\n#globalMessage {\n  text-align: center;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n" + ({
         'slideout': "#globalMessage {  position: fixed;  padding: 2px;  width: " + width + "px;  " + Style.sidebarLocation[0] + ": 2px !important;  " + Style.sidebarLocation[1] + ": auto !important;}#globalMessage h3 {  margin: 0;}#globalMessage:hover {  " + Style.sizing + ": border-box;  overflow-y: auto;}#globalMessage:not(:hover) {  height: 0;  overflow: hidden;  padding: 0;  border: 0 none;}",
         'hide': "#globalMessage {  display: none !important;}"
       }[_conf['Announcements']] || "") + "\n/* Threads */\n.thread {\n  margin: " + (parseInt(_conf["Top Thread Padding"], 10)) + "px 0 " + (parseInt(_conf["Bottom Thread Padding"], 10)) + "px 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 4px;" : "") + "\n}\n/* Thread Clearfix */\n.thread > div:last-of-type::after {\n  display: block;\n  content: ' ';\n  clear: both;\n}\n/* Posts */\n.expanding {\n  opacity: .5;\n}\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.expanded-image > .post > .file > .fileThumb > img[data-md5],\n.post > .file > .fileThumb > .full-image {\n  display: none;\n}\n.expanded-image > .post > .file > .fileThumb > .full-image {\n  display: block;\n}\n.post,\n.summary,\n.threadContainer {\n  margin-bottom: " + Style.replyMargin + "px;\n}\n.replyContainer:last-of-type .post {\n  margin-bottom: 0;\n}\n.menu-button {\n  position: relative;\n}\n.stub .menu-button,\n.post .menu-button,\n.hide-thread-button,\n.show-thread-button span,\n.hide-reply-button,\n.show-reply-button span {\n  float: right;\n}\n.post .menu-button,\n.hide-thread-button,\n.hide-reply-button {\n  margin: 0 3px;\n  opacity: 0;\n  " + agent + "transition: opacity .3s ease-out 0s;\n}\n.post:hover .hide-reply-button,\n.post:hover .menu-button,\n.post:hover .hide-thread-button,\n.hidden_thread .hide-thread-button,\n.hidden_thread .menu-button,\n.inline .hide-reply-button,\n.inline .menu-button {\n  opacity: 1;\n}\n.hidden_thread {\n  text-align: right;\n}\n" + (_conf['Color user IDs'] ? ".posteruid .hand {  padding: .1em .3em;  border-radius: 1em;  font-size: 80%;}" : "") + "\n.postInfo > span {\n  vertical-align: bottom;\n}\n.subject,\n.name {\n  " + (_conf["Bolds"] ? 'font-weight: 600;' : '') + "\n}\n.postertrip {\n  " + (_conf["Italics"] ? 'font-style: italic;' : '') + "\n}\n.replylink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n}\n.fileInfo {\n  padding: 0 3px;\n}\n.fileThumb {\n  float: left;\n  margin: 3px 20px;\n  outline: none;\n}\n.reply.post {\n  " + Style.sizing + ": border-box;\n}\n" + (_conf["Fit Width Replies"] ? ".reply.post {  display: block;  overflow: hidden;}.expanded-image .reply.post {  width: 100%;}" : ".reply.post {  display: inline-block;}") + "\n.expanded-image .reply.post,\n.hasInline .reply.post {\n  display: inline-block;\n  overflow: visible;\n  clear: both;\n}\n.post {\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.postMessage {\n  margin: " + _conf['Vertical Post Padding'] + "px " + _conf['Horizontal Post Padding'] + "px;\n}\n.spoiler,\ns {\n  text-decoration: none;\n}\n/* Reply Clearfix */\n.reply.post .postMessage {\n  clear: right;\n}\n" + (_conf['Force Reply Break'] || _conf["OP Background"] ? ".op.post .postMessage::after {  display: block;  content: ' ';  clear: both;}" : "") + "\n/* OP */\n.favicon {\n  vertical-align: bottom;\n}\n" + (_conf["OP Background"] ? ".op.post {  " + Style.sizing + ": border-box;}" : "") + "\n/* Summary */\n" + (_conf["Force Reply Break"] ? ".summary { clear: both;}" : "") + "\n/* Inlined */\n.inline {\n  margin: 2px 8px 2px 2px;\n}\n.post .inline {\n  margin: 2px;\n}\n.inline .replyContainer {\n  display: inline-block;\n}\n/* Inlined Clearfix */\n.inline .postMessage::after {\n  clear: both;\n  display: block;\n  content: \"\";\n}\n/* Quotes */\n.inlined {\n  opacity: .5;\n}\n.quotelink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n}\n.filtered,\n.quotelink.filtered {\n  text-decoration: underline;\n  text-decoration: line-through !important;\n}\n.inline + .hashlink {\n  display: none;\n}\n/* Quote Threading */\n.threadContainer {\n  padding-left: 2em;\n  border-left: 1px solid;\n}\n.threadOP {\n  clear: both;\n}\n/* Backlinks */\n.backlink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n}\n.backlink.dead {\n  text-decoration: none;\n}\n" + (_conf["Filtered Backlinks"] ? ".filtered.backlink {  display: none;}" : void 0) + "\n" + {
@@ -11401,7 +11441,7 @@
         "slideout": "#qrtab input,#qrtab .rice {  display: none;}#qr {  top: auto !important;  bottom: " + Style.pfOffset + "em !important;  " + Style.sidebarLocation[0] + ": 0 !important;  " + Style.sidebarLocation[1] + ": auto !important;  " + agent + "transform: translateX(" + xOffset + "93%);}#qr:hover,#qr.has-focus,#qr.dump {  " + agent + "transform: translate(0);}",
         "tabbed slideout": "#qr {  top: auto !important;  bottom: " + Style.pfOffset + "em !important;  " + Style.sidebarLocation[0] + ": 0 !important;  " + Style.sidebarLocation[1] + ": auto !important;  " + agent + "transform: translateX(" + xOffset + "100%);}#qr:hover,#qr.has-focus,#qr.dump {  " + agent + "transform: translateX(0);}#qrtab {  " + agent + "transform: rotate(" + (Style.sidebarLocation[0] === "left" ? "" : "-") + "90deg);  " + agent + "transform-origin: bottom " + Style.sidebarLocation[0] + ";  position: absolute;  top: 0;  " + Style.sidebarLocation[0] + ": 100%;  width: 110px;  text-align: center;  border-width: 1px 1px 0 1px;  cursor: default;}#qr:hover #qrtab,#qr.has-focus #qrtab,#qr.dump #qrtab {  opacity: 0;  " + Style.sidebarLocation[0] + ": " + (252 + Style.sidebarOffset.W) + "px;}#qrtab input,#qrtab .close,#qrtab .rice,#qrtab .selectrice,#qrtab span {  display: none;}",
         "transparent fade": "#qr {  overflow: visible;  top: auto !important;  bottom: " + Style.pfOffset + "em !important;  " + Style.sidebarLocation[0] + ": 2px !important;  " + Style.sidebarLocation[1] + ": auto !important;  opacity: 0.2;  " + agent + "transition: opacity .3s ease-in-out 1s;}#qr:hover,#qr.has-focus,#qr.dump {  opacity: 1;  " + agent + "transition: opacity .3s linear;}"
-      }[_conf['Post Form Style']] || "") + "\n\n" + (_conf['Post Form Style'] !== 'tabbed slideout' ? (!(_conf['Post Form Style'] === 'float' || _conf['Show Post Form Header']) ? "#qrtab { display: none; }" : _conf['Post Form Style'] !== 'slideout' ? ".autohide:not(:hover):not(.has-focus) > form { display: none !important; }" : "") + "#qrtab { margin-bottom: 1px; }" : "") + "\n\n" + (_conf['Post Form Style'] !== 'float' && _conf["Post Form Slideout Transitions"] ? "#qr {  " + agent + "transition: " + agent + "transform .3s ease-in-out 1s;}#qr:hover,#qr.has-focus,#qr.dump {  " + agent + "transition: " + agent + "transform .3s linear;}#qrtab {  " + agent + "transition: opacity .3s ease-in-out 1s;}#qr:hover #qrtab {  " + agent + "transition: opacity .3s linear;}" : "") + "\n\n#qr .close {\n  float: right;\n  padding: 0 3px;\n}\n#qr .warning {\n  min-height: 1.6em;\n  vertical-align: middle;\n  padding: 0 1px;\n  border-width: 1px;\n  border-style: solid;\n}\n.persona {\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n" + (_conf['Compact Post Form Inputs'] ? ".persona input.field {  width: 33%;}.persona input.field:not(:first-child) {  margin: 0 0 0 0.5%;}#qr textarea.field {  height: 14.9em;  min-height: 9em;}#qr.has-captcha textarea.field {  height: 9em;}" : ".persona input.field {  width: 100%;}#qr textarea.field {  height: 11.6em;  min-height: 6em;}#qr.has-captcha textarea.field {  height: 6em;}") + "\n\n" + (_conf["Tripcode Hider"] ? ".tripped:not(:hover):not(:focus) {  opacity: 0;}" : "") + "\n\n#qr textarea {\n  resize: " + _conf['Textarea Resize'] + ";\n}\n.captcha-img {\n  margin: 1px 0 0;\n  text-align: center;\n  line-height: 0;\n}\n.captcha-img img {\n  width: 100%;\n  height: 4em;\n  width: 246px;\n}\n.captcha-input {\n  width: 100%;\n  margin: 1px 0 0;\n}\n.field,\n.selectrice,\nbutton,\ninput:not([type=radio]) {\n  " + Style.sizing + ": border-box;\n  font-size: " + (parseInt(_conf['Font Size'], 10)) + "px;\n  height: 1.6em;\n  margin: 1px 0 0;\n  vertical-align: bottom;\n  padding: 0 1px;\n}\n.selectrice {\n  padding-right: 1.6em;\n}\n#qr textarea {\n  min-width: 100%;\n}\n#qr [type='submit'] {\n  width: 25%;\n}\n[type='file'] {\n  position: absolute;\n  opacity: 0;\n  z-index: -1;\n}\n/* Fake File Input */\n#qr-filename,\n#qr-filerm,\n.has-file #qr-no-file {\n  display: none;\n}\n#qr-no-file,\n.has-file #qr-filename {\n  display: block;\n}\n.has-file #qr-filerm {\n  display: inline-block;\n}\n#qr-extras-container {\n  position: absolute;\n  right: 0;\n  top: 0;\n  z-index: 2;\n}\n#qr-extras-container > label,\n#qr-extras-container > a {\n  cursor: pointer;\n  margin-right: 3px;\n}\n#qr-filename-container {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  position: relative;\n  width: 100px;\n  min-width: 74.6%;\n  max-width: 74.6%;\n  margin-right: 0.4%;\n  overflow: hidden;\n  padding: 2px 1px 0;\n}\n/* Thread Select */\n#qr-thread-select,\n#qr-thread-select .selectrice div {\n  display: inline;\n}\n#qr-thread-select .selectrice {\n  cursor: pointer;\n  display: inline-block;\n  width: 120px;\n  border: none;\n  background: none transparent;\n  padding: 0;\n  margin: 0;\n  height: auto;\n}\n#qr-thread-select .selectrice::before,\n#qr-thread-select .selectrice::after {\n  display: none;\n}\n/* Dumping UI */\n.dump #dump-list-container {\n  display: block;\n}\n#dump-list-container {\n  display: none;\n  position: relative;\n  overflow-y: hidden;\n  margin-top: 1px;\n}\n#dump-list {\n  overflow-x: auto;\n  overflow-y: hidden;\n  white-space: nowrap;\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-list:hover {\n  overflow-x: auto;\n}\n.qr-preview {\n  " + Style.sizing + ": border-box;\n  counter-increment: thumbnails;\n  cursor: move;\n  display: inline-block;\n  height: 90px;\n  width: 90px;\n  padding: 2px;\n  opacity: .5;\n  overflow: hidden;\n  position: relative;\n  text-shadow: 0 1px 1px #000;\n  " + agent + "transition: opacity .25s ease-in-out;\n  vertical-align: top;\n}\n.qr-preview:hover,\n.qr-preview:focus {\n  opacity: .9;\n}\n.qr-preview::before {\n  content: counter(thumbnails);\n  color: #fff;\n  position: absolute;\n  top: 3px;\n  right: 3px;\n  text-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.qr-preview#selected {\n  opacity: 1;\n}\n.qr-preview.drag {\n  box-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.qr-preview.over {\n  border-color: #fff;\n}\n.qr-preview > span {\n  color: #fff;\n}\n.remove {\n  background: none;\n  color: #e00;\n  font-weight: 700;\n  padding: 3px;\n}\na:only-of-type > .remove {\n  display: none;\n}\n.remove:hover::after {\n  content: \" Remove\";\n}\n.qr-preview > label {\n  background: rgba(0,0,0,.5);\n  color: #fff;\n  right: 0; bottom: 0; left: 0;\n  position: absolute;\n  text-align: center;\n}\n.qr-preview > label > input {\n  margin: 0;\n}\n#add-post {\n  cursor: pointer;\n  font-size: 2em;\n  position: absolute;\n  top: 50%;\n  right: 10px;\n  " + agent + "transform: translateY(-50%);\n}\n/* Ads */\n.topad img,\n.middlead img,\n.bottomad img {\n  opacity: 0.3;\n  " + agent + "transition: opacity .3s linear;\n}\n.topad img:hover,\n.middlead img:hover,\n.bottomad img:hover {\n  opacity: 1;\n}\n" + (_conf["Block Ads"] ? "/* AdBlock Minus */.bottomad + hr,.topad,.middlead,.bottomad {  display: none;}" : "") + "\n" + (_conf["Shrink Ads"] ? ".topad a img,.middlead a img,.bottomad a img {  width: 500px;  height: auto;}" : "") + "\n/* Options */\n#overlay {\n  position: fixed;\n  z-index: 30;\n  top: 0;\n  right: 0;\n  left: 0;\n  bottom: 0;\n  background: rgba(0,0,0,.5);\n}\n#appchanx-settings {\n  width: auto;\n  left: 15%;\n  right: 15%;\n  top: 15%;\n  bottom: 15%;\n  position: fixed;\n  z-index: 31;\n  padding: .3em;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.description {\n  display: none;\n}\n#appchanx-settings h3,\n.section-keybinds,\n.section-mascots,\n.section-script,\n.style {\n  text-align: center;\n}\n.section-keybinds table,\n.section-script fieldset,\n.section-style fieldset {\n  text-align: left;\n}\n.section-keybinds table {\n  margin: auto;\n}\n#appchanx-settings fieldset {\n  padding: 5px 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n  vertical-align: top;\n  " + (_conf["Single Column Mode"] ? "margin: 0 auto 6px;" : "margin: 0 3px 6px;\n display: inline-block;") + "\n  border: 0;\n}\n#appchanx-settings .section-advanced fieldset {\n  display: block;\n  margin: 0 auto 6px;\n}\n.section-advanced .selectrice {\n  display: inline-block;\n  clear: both;\n}\n.section-container {\n  overflow: auto;\n  position: absolute;\n  top: 1.7em;\n  right: 5px;\n  bottom: 5px;\n  left: 5px;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.sections-list {\n  padding: 0 3px;\n  float: left;\n}\n.sections-list > a {\n  cursor: pointer;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\n  position: relative;\n  padding: 0 4px;\n  z-index: 1;\n  height: 1.4em;\n  display: inline-block;\n  border-width: 1px 1px 0 1px;\n  border-color: transparent;\n  border-style: solid;\n}\n.credits {\n  float: right;\n}\n#appchanx-settings h3 {\n  margin: 0;\n}\n.section-script fieldset > div,\n.section-style fieldset > div,\n.section-advanced fieldset > div {\n  overflow: visible;\n  padding: 0 5px 0 7px;\n}\n#appchanx-settings tr:nth-of-type(2n+1),\n.section-script fieldset > div:nth-of-type(2n+1),\n.section-advanced fieldset > div:nth-of-type(2n+1),\n.section-style fieldset > div:nth-of-type(2n+1),\n.section-keybinds tr:nth-of-type(2n+1),\n#selectrice li:nth-of-type(2n+1) {\n  background-color: rgba(0, 0, 0, 0.05);\n}\narticle li {\n  margin: 10px 0 10px 2em;\n}\n#appchanx-settings .option {\n  width: 50%;\n  display: inline-block;\n  vertical-align: bottom;\n}\n.option input {\n  width: 100%;\n}\n.optionlabel {\n  padding-left: 18px;\n}\n.rice + .optionlabel {\n  padding-left: 0;\n}\n.section-script fieldset,\n.styleoption {\n  text-align: left;\n}\n.section-style fieldset {\n  width: 370px;\n}\n.section-script fieldset {\n  width: 200px;\n}\n#mascotcontent,\n#themecontent,\n.suboptions {\n  overflow: auto;\n  position: absolute;\n  top: 0;\n  right: 0;\n  bottom: 1.7em;\n  left: 0;\n}\n#themecontent {\n  top: 1.8em;\n}\n.mAlign {\n  height: 250px;\n  vertical-align: bottom;\n  display: table-cell;\n  line-height: 0;\n}\n#save,\n.stylesettings {\n  position: absolute;\n  right: 10px;\n  bottom: 0;\n}\n.section-style .suboptions {\n  bottom: 0;\n}\n.section-container textarea {\n  font-family: monospace;\n  min-height: 150px;\n  resize: vertical;\n  width: 100%;\n}\n/* Hover Functionality */\n#mouseover {\n  z-index: 33;\n  position: fixed;\n  max-width: 70%;\n}\n#mouseover:empty {\n  display: none;\n}\n/* Mascot Tab */\n#mascot_hide {\n  padding: 3px;\n  position: absolute;\n  top: 2px;\n  right: 18px;\n}\n#mascot_hide .rice {\n  float: left;\n}\n#mascot_hide > div {\n  height: 0;\n  text-align: right;\n  overflow: hidden;\n}\n#mascot_hide:hover > div {\n  height: auto;\n}\n#mascot_hide label {\n  width: 100%;\n  display: block;\n  clear: both;\n  text-decoration: none;\n}\n.mascots {\n  padding: 0;\n  text-align: center;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.mascot,\n.mascotcontainer {\n  overflow: hidden;\n}\n.mascot {\n  position: relative;\n  border: none;\n  margin: 5px;\n  padding: 0;\n  width: 200px;\n  display: inline-block;\n  background-color: transparent;\n}\n.mascotcontainer {\n  height: 250px;\n  border: 0;\n  margin: 0;\n  max-height: 250px;\n  cursor: pointer;\n  bottom: 0;\n  border-width: 0 1px 1px;\n  border-style: solid;\n  border-color: transparent;\n  overflow: hidden;\n}\n.mascot img {\n  max-width: 200px;\n}\n.mascotname,\n#mascot-options {\n  " + Style.sizing + ": border-box;\n  padding: 0;\n  width: 100%;\n}\n#mascot-options {\n  opacity: 0;\n  " + agent + "transition: opacity .3s linear;\n}\n.mascot:hover #mascot-options {\n  opacity: 1;\n}\n#mascot-options {\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n}\n#mascot-options a {\n  display: inline-block;\n  width: 33%;\n}\n#upload {\n  position: absolute;\n  width: 100px;\n  left: 50%;\n  margin-left: -50px;\n  text-align: center;\n  bottom: 0;\n}\n#mascots_batch {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Themes Tab */\n#themes h1 {\n  position: absolute;\n  right: 300px;\n  bottom: 10px;\n  margin: 0;\n  " + agent + "transition: all .2s ease-in-out;\n  opacity: 0;\n}\n#themes .selectedtheme h1 {\n  right: 11px;\n  opacity: 1;\n}\n#addthemes {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n.theme {\n  margin: 1em;\n}\n/* Theme Editor */\n#themeConf {\n  position: fixed;\n  " + Style.sidebarLocation[1] + ": 2px;\n  " + Style.sidebarLocation[0] + ": auto;\n  top: 0;\n  bottom: 0;\n  width: 296px;\n  z-index: 10;\n}\n#themebar input {\n  width: 30%;\n}\n.option .color {\n  width: 10%;\n  border-left: none !important;\n  color: transparent !important;\n}\n.option .colorfield {\n  width: 90%;\n}\n.themevar textarea {\n  min-width: 100%;\n  max-width: 100%;\n  height: 20em;\n  resize: vertical;\n}\n/* Mascot Editor */\n#mascotConf {\n  position: fixed;\n  height: 17em;\n  bottom: 0;\n  left: 50%;\n  width: 500px;\n  margin-left: -250px;\n  overflow: auto;\n  z-index: 10;\n}\n#mascotConf .option,\n#mascotConf .optionlabel {\n  " + Style.sizing + ": border-box;\n  width: 50%;\n  display: inline-block;\n  vertical-align: middle;\n}\n#mascotConf .option input {\n  width: 100%;\n}\n#close {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Catalog */\n#content .navLinks,\n#info .navLinks,\n.btn-wrap {\n  display: block;\n}\n.navLinks > .btn-wrap:not(:first-of-type)::before {\n  content: ' - ';\n}\n.button {\n  cursor: pointer;\n}\n#content .btn-wrap,\n#info .btn-wrap {\n  display: inline-block;\n}\n#post-preview {\n  position: absolute;\n  z-index: 22;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#settings,\n#threads,\n#info .navLinks,\n#content .navLinks {\n  text-align: center;\n}\n#threads .thread {\n  vertical-align: top;\n  display: inline-block;\n  word-wrap: break-word;\n  overflow: hidden;\n  margin-top: 5px;\n  padding: 5px 0 3px;\n  text-align: center;\n}\n.extended-small .thread,\n.small .thread {\n  width: 165px;\n  max-height: 320px;\n}\n.small .teaser,\n.large .teaser {\n  display: none;\n}\n.extended-large .thread,\n.large .thread {\n  width: 270px;\n  max-height: 410px;\n}\n.extended-small .thumb,\n.small .thumb {\n  max-width: 150px;\n  max-height: 150px;\n}\n.panel {\n  position: fixed;\n  top: 50% !important;\n  left: 50%;\n  " + agent + "transform: translate(-50%, -50%);\n}\n.icon::after {\n  display: inline-block;\n  float: right;\n  width: 1em;\n  cursor: pointer;\n}\n.helpIcon::after {\n  content: '?';\n}\n.closeIcon::after {\n  content: '×';\n}\n/* Front Page */\n#logo {\n  text-align: center;\n}\n#doc {\n  margin: 0 auto;\n  width: 1000px;\n  position: relative;\n}\n#boards .boxcontent {\n  vertical-align: top;\n  text-align: center;\n}\n#filter-container,\n#options-container {\n  float: right;\n  position: relative;\n}\n#optionssmenu {\n  top: 100% !important;\n  left: 0 !important;\n}\n#boards .column {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  width: 16em;\n  text-align: left;\n  vertical-align: top;\n}\n.bd ul,\n.boxcontent ul {\n  vertical-align: top;\n  padding: 0;\n}\n.right-box .boxcontent ul {\n  padding: 0 10px;\n}\n.yuimenuitem,\n.boxcontent li {\n  list-style-type: none;\n}\n.bd ul {\n  margin: 0;\n}\n.yuimenuitem::before {\n  content: \" [ ] \";\n  font-family: monospace;\n}\n.yuimenuitem-checked::before {\n  content: \" [x] \"\n}\n.yui-u {\n  display: inline-block;\n  vertical-align: top;\n  width: 475px;\n  margin: 10px;\n}\n#recent-images .boxcontent {\n  text-align: center;\n}\n#ft {\n  text-align: center;\n}\n#ft ul {\n  padding: 0;\n}\n#ft li {\n  list-style-type: none;\n  display: inline-block;\n  width: 100px;\n}\n#preview-tooltip-nws,\n#preview-tooltip-ws,\n#ft .fill,\n.clear-bug {\n  display: none;\n}";
+      }[_conf['Post Form Style']] || "") + "\n\n" + (_conf['Post Form Style'] !== 'tabbed slideout' ? (!(_conf['Post Form Style'] === 'float' || _conf['Show Post Form Header']) ? "#qrtab { display: none; }" : _conf['Post Form Style'] !== 'slideout' ? ".autohide:not(:hover):not(.has-focus) > form { display: none !important; }" : "") + "#qrtab { margin-bottom: 1px; }" : "") + "\n\n" + (_conf['Post Form Style'] !== 'float' && _conf["Post Form Slideout Transitions"] ? "#qr {  " + agent + "transition: " + agent + "transform .3s ease-in-out 1s;}#qr:hover,#qr.has-focus,#qr.dump {  " + agent + "transition: " + agent + "transform .3s linear;}#qrtab {  " + agent + "transition: opacity .3s ease-in-out 1s;}#qr:hover #qrtab {  " + agent + "transition: opacity .3s linear;}" : "") + "\n\n#qr .close {\n  float: right;\n  padding: 0 3px;\n}\n#qr .warning {\n  min-height: 1.6em;\n  vertical-align: middle;\n  padding: 0 1px;\n  border-width: 1px;\n  border-style: solid;\n}\n.persona {\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n" + (_conf['Compact Post Form Inputs'] ? ".persona input.field {  width: 33%;}.persona input.field:not(:first-child) {  margin: 0 0 0 0.5%;}#qr textarea.field {  height: 14.9em;  min-height: 9em;}#qr.has-captcha textarea.field {  height: 9em;}" : ".persona input.field {  width: 100%;}#qr textarea.field {  height: 11.6em;  min-height: 6em;}#qr.has-captcha textarea.field {  height: 6em;}") + "\n\n" + (_conf["Tripcode Hider"] ? ".tripped:not(:hover):not(:focus) {  opacity: 0;}" : "") + "\n\n#qr textarea {\n  resize: " + _conf['Textarea Resize'] + ";\n}\n.captcha-img {\n  margin: 1px 0 0;\n  text-align: center;\n  line-height: 0;\n}\n.captcha-img img {\n  width: 100%;\n  height: 4em;\n  width: 246px;\n}\n.captcha-input {\n  width: 100%;\n  margin: 1px 0 0;\n}\n.field,\n.selectrice,\nbutton,\ninput:not([type=radio]) {\n  " + Style.sizing + ": border-box;\n  font-size: " + (parseInt(_conf['Font Size'], 10)) + "px;\n  height: 1.6em;\n  margin: 1px 0 0;\n  vertical-align: bottom;\n  padding: 0 1px;\n}\n.selectrice {\n  padding-right: 1.6em;\n}\n#qr textarea {\n  min-width: 100%;\n}\n#qr [type='submit'] {\n  width: 25%;\n}\n[type='file'] {\n  position: absolute;\n  opacity: 0;\n  z-index: -1;\n}\n/* Fake File Input */\n#qr-filename,\n#qr-filerm,\n.has-file #qr-no-file {\n  display: none;\n}\n#qr-no-file,\n.has-file #qr-filename {\n  display: block;\n}\n.has-file #qr-filerm {\n  display: inline-block;\n}\n#qr-extras-container {\n  position: absolute;\n  right: 0;\n  top: 0;\n  z-index: 2;\n}\n#qr-extras-container > label,\n#qr-extras-container > a {\n  cursor: pointer;\n  margin-right: 3px;\n}\n#qr-filename-container {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  position: relative;\n  width: 100px;\n  min-width: 74.6%;\n  max-width: 74.6%;\n  margin-right: 0.4%;\n  overflow: hidden;\n  padding: 2px 1px 0;\n}\n/* Thread Select */\n#qr-thread-select,\n#qr-thread-select .selectrice div {\n  display: inline;\n}\n#qr-thread-select .selectrice {\n  cursor: pointer;\n  display: inline-block;\n  width: 120px;\n  border: none;\n  background: none transparent;\n  padding: 0;\n  margin: 0;\n  height: auto;\n}\n#qr-thread-select .selectrice::before,\n#qr-thread-select .selectrice::after {\n  display: none;\n}\n/* Dumping UI */\n.dump #dump-list-container {\n  display: block;\n}\n#dump-list-container {\n  display: none;\n  position: relative;\n  overflow-y: hidden;\n  margin-top: 1px;\n}\n#dump-list {\n  overflow-x: auto;\n  overflow-y: hidden;\n  white-space: nowrap;\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-list:hover {\n  overflow-x: auto;\n}\n.qr-preview {\n  " + Style.sizing + ": border-box;\n  counter-increment: thumbnails;\n  cursor: move;\n  display: inline-block;\n  height: 90px;\n  width: 90px;\n  padding: 2px;\n  opacity: .5;\n  overflow: hidden;\n  position: relative;\n  text-shadow: 0 1px 1px #000;\n  " + agent + "transition: opacity .25s ease-in-out;\n  vertical-align: top;\n}\n.qr-preview:hover,\n.qr-preview:focus {\n  opacity: .9;\n}\n.qr-preview::before {\n  content: counter(thumbnails);\n  color: #fff;\n  position: absolute;\n  top: 3px;\n  right: 3px;\n  text-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.qr-preview#selected {\n  opacity: 1;\n}\n.qr-preview.drag {\n  box-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.qr-preview.over {\n  border-color: #fff;\n}\n.qr-preview > span {\n  color: #fff;\n}\n.remove {\n  background: none;\n  color: #e00;\n  font-weight: 700;\n  padding: 3px;\n}\na:only-of-type > .remove {\n  display: none;\n}\n.remove:hover::after {\n  content: \" Remove\";\n}\n.qr-preview > label {\n  background: rgba(0,0,0,.5);\n  color: #fff;\n  right: 0; bottom: 0; left: 0;\n  position: absolute;\n  text-align: center;\n}\n.qr-preview > label > input {\n  margin: 0;\n}\n#add-post {\n  cursor: pointer;\n  font-size: 2em;\n  position: absolute;\n  top: 50%;\n  right: 10px;\n  " + agent + "transform: translateY(-50%);\n}\n/* Ads */\n.topad img,\n.middlead img,\n.bottomad img {\n  opacity: 0.3;\n  " + agent + "transition: opacity .3s linear;\n}\n.topad img:hover,\n.middlead img:hover,\n.bottomad img:hover {\n  opacity: 1;\n}\n" + (_conf["Block Ads"] ? "/* AdBlock Minus */.bottomad + hr,.topad,.middlead,.bottomad {  display: none;}" : "") + "\n" + (_conf["Shrink Ads"] ? ".topad a img,.middlead a img,.bottomad a img {  width: 500px;  height: auto;}" : "") + "\n/* Options */\n#overlay {\n  position: fixed;\n  z-index: 30;\n  top: 0;\n  right: 0;\n  left: 0;\n  bottom: 0;\n  background: rgba(0,0,0,.5);\n}\n#appchanx-settings {\n  width: auto;\n  left: 15%;\n  right: 15%;\n  top: 15%;\n  bottom: 15%;\n  position: fixed;\n  z-index: 31;\n  padding: .3em;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.description {\n  display: none;\n}\n#appchanx-settings h3,\n.section-keybinds,\n.section-mascots,\n.section-script,\n.style {\n  text-align: center;\n}\n.section-keybinds table,\n.section-script fieldset,\n.section-style fieldset {\n  text-align: left;\n}\n.section-keybinds table {\n  margin: auto;\n}\n#appchanx-settings fieldset {\n  padding: 5px 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n  vertical-align: top;\n  " + (_conf["Single Column Mode"] ? "margin: 0 auto 6px;" : "margin: 0 3px 6px;\n display: inline-block;") + "\n  border: 0;\n}\n#appchanx-settings .section-advanced fieldset {\n  display: block;\n  margin: 0 auto 6px;\n}\n.section-advanced .archive-cell {\n  min-width: 200px;\n}\n.section-advanced .selectrice {\n  display: inline-block;\n  clear: both;\n}\n.section-container {\n  overflow: auto;\n  position: absolute;\n  top: 1.7em;\n  right: 5px;\n  bottom: 5px;\n  left: 5px;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.sections-list {\n  padding: 0 3px;\n  float: left;\n}\n.sections-list > a {\n  cursor: pointer;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\n  position: relative;\n  padding: 0 4px;\n  z-index: 1;\n  height: 1.4em;\n  display: inline-block;\n  border-width: 1px 1px 0 1px;\n  border-color: transparent;\n  border-style: solid;\n}\n.credits {\n  float: right;\n}\n#appchanx-settings h3 {\n  margin: 0;\n}\n.section-script fieldset > div,\n.section-style fieldset > div,\n.section-advanced fieldset > div {\n  overflow: visible;\n  padding: 0 5px 0 7px;\n}\n#appchanx-settings tr:nth-of-type(2n+1),\n.section-script fieldset > div:nth-of-type(2n+1),\n.section-advanced fieldset > div:nth-of-type(2n+1),\n.section-style fieldset > div:nth-of-type(2n+1),\n.section-keybinds tr:nth-of-type(2n+1),\n#selectrice li:nth-of-type(2n+1) {\n  background-color: rgba(0, 0, 0, 0.05);\n}\narticle li {\n  margin: 10px 0 10px 2em;\n}\n#appchanx-settings .option {\n  width: 50%;\n  display: inline-block;\n  vertical-align: bottom;\n}\n.option input {\n  width: 100%;\n}\n.optionlabel {\n  padding-left: 18px;\n}\n.rice + .optionlabel {\n  padding-left: 0;\n}\n.section-script fieldset,\n.styleoption {\n  text-align: left;\n}\n.section-style fieldset {\n  width: 370px;\n}\n.section-script fieldset {\n  width: 200px;\n}\n#mascotcontent,\n#themecontent,\n.suboptions {\n  overflow: auto;\n  position: absolute;\n  top: 0;\n  right: 0;\n  bottom: 1.7em;\n  left: 0;\n}\n#themecontent {\n  top: 1.8em;\n}\n.mAlign {\n  height: 250px;\n  vertical-align: bottom;\n  display: table-cell;\n  line-height: 0;\n}\n#save,\n.stylesettings {\n  position: absolute;\n  right: 10px;\n  bottom: 0;\n}\n.section-style .suboptions {\n  bottom: 0;\n}\n.section-container textarea {\n  font-family: monospace;\n  min-height: 150px;\n  resize: vertical;\n  width: 100%;\n}\n/* Hover Functionality */\n#mouseover {\n  z-index: 33;\n  position: fixed;\n  max-width: 70%;\n}\n#mouseover:empty {\n  display: none;\n}\n/* Mascot Tab */\n#mascot_hide {\n  padding: 3px;\n  position: absolute;\n  top: 2px;\n  right: 18px;\n}\n#mascot_hide .rice {\n  float: left;\n}\n#mascot_hide > div {\n  height: 0;\n  text-align: right;\n  overflow: hidden;\n}\n#mascot_hide:hover > div {\n  height: auto;\n}\n#mascot_hide label {\n  width: 100%;\n  display: block;\n  clear: both;\n  text-decoration: none;\n}\n.mascots {\n  padding: 0;\n  text-align: center;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.mascot,\n.mascotcontainer {\n  overflow: hidden;\n}\n.mascot {\n  position: relative;\n  border: none;\n  margin: 5px;\n  padding: 0;\n  width: 200px;\n  display: inline-block;\n  background-color: transparent;\n}\n.mascotcontainer {\n  height: 250px;\n  border: 0;\n  margin: 0;\n  max-height: 250px;\n  cursor: pointer;\n  bottom: 0;\n  border-width: 0 1px 1px;\n  border-style: solid;\n  border-color: transparent;\n  overflow: hidden;\n}\n.mascot img {\n  max-width: 200px;\n}\n.mascotname,\n#mascot-options {\n  " + Style.sizing + ": border-box;\n  padding: 0;\n  width: 100%;\n}\n#mascot-options {\n  opacity: 0;\n  " + agent + "transition: opacity .3s linear;\n}\n.mascot:hover #mascot-options {\n  opacity: 1;\n}\n#mascot-options {\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n}\n#mascot-options a {\n  display: inline-block;\n  width: 33%;\n}\n#upload {\n  position: absolute;\n  width: 100px;\n  left: 50%;\n  margin-left: -50px;\n  text-align: center;\n  bottom: 0;\n}\n#mascots_batch {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Themes Tab */\n#themes h1 {\n  position: absolute;\n  right: 300px;\n  bottom: 10px;\n  margin: 0;\n  " + agent + "transition: all .2s ease-in-out;\n  opacity: 0;\n}\n#themes .selectedtheme h1 {\n  right: 11px;\n  opacity: 1;\n}\n#addthemes {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n.theme {\n  margin: 1em;\n}\n/* Theme Editor */\n#themeConf {\n  position: fixed;\n  " + Style.sidebarLocation[1] + ": 2px;\n  " + Style.sidebarLocation[0] + ": auto;\n  top: 0;\n  bottom: 0;\n  width: 296px;\n  z-index: 10;\n}\n#themebar input {\n  width: 30%;\n}\n.option .color {\n  width: 10%;\n  border-left: none !important;\n  color: transparent !important;\n}\n.option .colorfield {\n  width: 90%;\n}\n.themevar textarea {\n  min-width: 100%;\n  max-width: 100%;\n  height: 20em;\n  resize: vertical;\n}\n/* Mascot Editor */\n#mascotConf {\n  position: fixed;\n  height: 17em;\n  bottom: 0;\n  left: 50%;\n  width: 500px;\n  margin-left: -250px;\n  overflow: auto;\n  z-index: 10;\n}\n#mascotConf .option,\n#mascotConf .optionlabel {\n  " + Style.sizing + ": border-box;\n  width: 50%;\n  display: inline-block;\n  vertical-align: middle;\n}\n#mascotConf .option input {\n  width: 100%;\n}\n#close {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Catalog */\n#content .navLinks,\n#info .navLinks,\n.btn-wrap {\n  display: block;\n}\n.navLinks > .btn-wrap:not(:first-of-type)::before {\n  content: ' - ';\n}\n.button {\n  cursor: pointer;\n}\n#content .btn-wrap,\n#info .btn-wrap {\n  display: inline-block;\n}\n#post-preview {\n  position: absolute;\n  z-index: 22;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#settings,\n#threads,\n#info .navLinks,\n#content .navLinks {\n  text-align: center;\n}\n#threads .thread {\n  vertical-align: top;\n  display: inline-block;\n  word-wrap: break-word;\n  overflow: hidden;\n  margin-top: 5px;\n  padding: 5px 0 3px;\n  text-align: center;\n}\n.extended-small .thread,\n.small .thread {\n  width: 165px;\n  max-height: 320px;\n}\n.small .teaser,\n.large .teaser {\n  display: none;\n}\n.extended-large .thread,\n.large .thread {\n  width: 270px;\n  max-height: 410px;\n}\n.extended-small .thumb,\n.small .thumb {\n  max-width: 150px;\n  max-height: 150px;\n}\n.panel {\n  position: fixed;\n  top: 50% !important;\n  left: 50%;\n  " + agent + "transform: translate(-50%, -50%);\n}\n.icon::after {\n  display: inline-block;\n  float: right;\n  width: 1em;\n  cursor: pointer;\n}\n.helpIcon::after {\n  content: '?';\n}\n.closeIcon::after {\n  content: '×';\n}\n/* Front Page */\n#logo {\n  text-align: center;\n}\n#doc {\n  margin: 0 auto;\n  width: 1000px;\n  position: relative;\n}\n#boards .boxcontent {\n  vertical-align: top;\n  text-align: center;\n}\n#filter-container,\n#options-container {\n  float: right;\n  position: relative;\n}\n#optionssmenu {\n  top: 100% !important;\n  left: 0 !important;\n}\n#boards .column {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  width: 16em;\n  text-align: left;\n  vertical-align: top;\n}\n.bd ul,\n.boxcontent ul {\n  vertical-align: top;\n  padding: 0;\n}\n.right-box .boxcontent ul {\n  padding: 0 10px;\n}\n.yuimenuitem,\n.boxcontent li {\n  list-style-type: none;\n}\n.bd ul {\n  margin: 0;\n}\n.yuimenuitem::before {\n  content: \" [ ] \";\n  font-family: monospace;\n}\n.yuimenuitem-checked::before {\n  content: \" [x] \"\n}\n.yui-u {\n  display: inline-block;\n  vertical-align: top;\n  width: 475px;\n  margin: 10px;\n}\n#recent-images .boxcontent {\n  text-align: center;\n}\n#ft {\n  text-align: center;\n}\n#ft ul {\n  padding: 0;\n}\n#ft li {\n  list-style-type: none;\n  display: inline-block;\n  width: 100px;\n}\n#preview-tooltip-nws,\n#preview-tooltip-ws,\n#ft .fill,\n.clear-bug {\n  display: none;\n}";
     },
     theme: function(theme) {
       var agent, background, backgroundC, bgColor, css, fileHeading, icons, replyHeading, _conf;
@@ -11411,7 +11451,7 @@
       bgColor = new Style.color(Style.colorToHex(backgroundC = theme["Background Color"]) || 'aaaaaa');
       Style.lightTheme = bgColor.isLight();
       icons = "data:image/png;base64," + Icons[_conf["Icons"]];
-      css = ".hide_thread_button span > span,\n.hide_reply_button span > span {\n  background-color: " + theme["Links"] + ";\n}\n#mascot_hide label {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\n#content .thumb {\n  box-shadow: 0 0 5px " + theme["Reply Border"] + ";\n}\n.mascotname,\n#mascot-options {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.opContainer.filter_highlight {\n  box-shadow: inset 5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\n.filter_highlight > .reply {\n  box-shadow: -5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\nhr {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\nhr#unread-line {\n  border-bottom: 1px solid " + theme["Reply Background"] + ";\n  visibility: visible;\n}\na[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] > table > tbody > tr > td {\n  background: " + backgroundC + " !important;\n  border: 1px solid " + theme["Reply Border"] + " !important;\n}\n#fs_status {\n  background: " + theme["Dialog Background"] + " !important;\n}\n#fs_data tr[style=\"background-color: #EA8;\"] {\n  background: " + theme["Reply Background"] + " !important;\n}\n#fs_data,\n#fs_data *,\n.threadContainer {\n  border-color: " + theme["Reply Border"] + " !important;\n}\nhtml {\n  background: " + (backgroundC || '') + ";\n  background-image: " + (theme["Background Image"] || '') + ";\n  background-repeat: " + (theme["Background Repeat"] || '') + ";\n  background-attachment: " + (theme["Background Attachment"] || '') + ";\n  background-position: " + (theme["Background Position"] || '') + ";\n}\n.panel,\n.section-container,\n#exlinks-options-content,\n#mascotcontent,\n#themecontent {\n  background: " + backgroundC + ";\n  border: 1px solid " + theme["Reply Border"] + ";\n  padding: 5px;\n}\n.sections-list > a.tab-selected {\n  background: " + backgroundC + ";\n  border-color: " + theme["Reply Border"] + ";\n  border-style: solid;\n}\n.captcha-img img {\n  " + (Style.filter(theme["Text"], theme["Input Background"])) + "\n}\n#boardTitle,\n" + (!_conf["Post Form Decorations"] ? '#spoilerLabel' : '') + " {\n  text-shadow:\n     1px  1px " + backgroundC + ",\n    -1px -1px " + backgroundC + ",\n     1px -1px " + backgroundC + ",\n    -1px  1px " + backgroundC + "\n    " + (_conf["Sidebar Glow"] ? ", 0 2px 4px rgba(0,0,0,.6), 0 0 10px rgba(0,0,0,.6);" : ";") + "\n}\n/* Fixes text spoilers */\n" + (_conf['Remove Spoilers'] && _conf['Indicate Spoilers'] ? ".spoiler::before,s::before {  content: '[spoiler]';}.spoiler::after,s::after {  content: '[/spoiler]';}" : !_conf['Remove Spoilers'] ? ".spoiler:not(:hover) *,s:not(:hover) * {  color: rgb(0,0,0) !important;  text-shadow: none !important;}.spoiler:not(:hover),s:not(:hover) {  background-color: rgb(0,0,0);  color: rgb(0,0,0) !important;  text-shadow: none !important;}" : "") + "\n#exlinks-options,\n#appchanx-settings,\n#qrtab,\n" + (_conf["Post Form Decorations"] ? "#qr," : "") + "\ninput[type=\"submit\"],\ninput[value=\"Report\"],\nspan[style=\"left: 5px; position: absolute;\"] a {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.enabled .mascotcontainer {\n  background: " + theme["Buttons Background"] + ";\n  border-color: " + theme["Buttons Border"] + ";\n}\n#dump,\n#qr-filename-container,\n#appchanx-settings input,\n.captcha-img,\n.dump #dump,\n.qr-preview,\n.selectrice,\nbutton,\ninput,\ntextarea {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n}\n.has-file #qr-extras-container {\n  background: " + theme["Input Background"] + ";\n}\n#dump:hover,\n#qr-filename-container:hover,\n.selectrice:hover,\n#selectrice li:hover,\n#selectrice li:nth-of-type(2n+1):hover,\ninput:hover,\ntextarea:hover {\n  background: " + theme["Hovered Input Background"] + ";\n  border-color: " + theme["Hovered Input Border"] + ";\n}\n.has-file  #qr-filename-container:hover #qr-extras-container {\n  background: " + theme["Hovered Input Background"] + ";\n}\n#dump:active,\n#dump:focus,\n#selectrice li:focus,\n.selectrice:focus,\n#qr-filename-container:active,\n#qr-filename-container:focus,\ninput:focus,\ntextarea:focus,\ntextarea.field:focus {\n  background: " + theme["Focused Input Background"] + ";\n  border-color: " + theme["Focused Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n  outline: none;\n}\n.has-file  #qr-filename-container:active #qr-extras-container,\n.has-file  #qr-filename-container:focus #qr-extras-container {\n  background: " + theme["Focused Input Background"] + ";\n}\n#mouseover,\n#post-preview,\n#qp .post,\n#xupdater,\n.reply.post {\n  border-width: 1px;\n  border-style: solid;\n  border-color: " + theme["Reply Border"] + ";\n  background: " + theme["Reply Background"] + ";\n}\n.thread > .replyContainer > .reply.post {\n  border-width: " + (_conf['Post Spacing'] === "0" ? "1px 1px 0 1px" : '1px') + ";\n}\n.exblock.reply,\n.reply.post.highlight,\n.reply.post:target {\n  background: " + theme["Highlighted Reply Background"] + ";\n  border: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n#header-bar,\n.pagelist {\n  background: " + theme["Navigation Background"] + ";\n  border-style: solid;\n  border-color: " + theme["Navigation Border"] + ";\n}\n.thread {\n  background: " + theme["Thread Wrapper Background"] + ";\n  border: 1px solid " + theme["Thread Wrapper Border"] + ";\n}\n#boardNavDesktopFoot,\n#mascotConf,\n#mascot_hide,\n#menu,\n#selectrice,\n#themeConf,\n#watcher,\n#watcher:hover,\n.dialog,\n.submenu,\na[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] > table {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Dialog Border"] + ";\n}\n.deleteform::before,\n.deleteform,\n#qr .warning {\n  background: " + theme["Input Background"] + ";\n  border-color: " + theme["Input Border"] + ";\n}\n.disabledwarning,\n.warning {\n  color: " + theme["Warnings"] + ";\n}\n#navlinks a:first-of-type {\n  border-bottom: 11px solid rgb(130,130,130);\n}\n#navlinks a:last-of-type {\n  border-top: 11px solid rgb(130,130,130);\n}\n#charCount {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)") + ";\n}\n.postNum a {\n  color: " + theme["Post Numbers"] + ";\n}\n.subject {\n  color: " + theme["Subjects"] + " !important;\n}\n.dateTime,\n.post-ago {\n  color: " + theme["Timestamps"] + " !important;\n}\n#fs_status a,\n#updater #update-status:not(.new)::after,\n#showQR,\n.abbr,\n.boxbar,\n.boxcontent,\n.deleteform::before,\n.pages strong,\n.pln,\n.reply,\n.reply.highlight,\n.summary,\nbody,\nbutton,\nspan[style=\"left: 5px; position: absolute;\"] a,\ninput,\ntextarea {\n  color: " + theme["Text"] + ";\n}\n#exlinks-options-content > table,\n#appchanx-settings fieldset,\n#selectrice {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n  box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px;\n}\n.quote + .spoiler:hover,\n.quote {\n  color: " + theme["Greentext"] + ";\n}\n.forwardlink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  border-bottom: 1px dashed " + theme["Backlinks"] + ";\n}\n.container::before {\n  color: " + theme["Timestamps"] + ";\n}\n#menu,\n#post-preview,\n#qp .opContainer,\n#qp .replyContainer,\n.submenu {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.rice {\n  background: " + theme["Checkbox Background"] + ";\n  border: 1px solid " + theme["Checkbox Border"] + ";\n}\n.selectrice::before {\n  border-left: 1px solid " + theme["Input Border"] + ";\n}\n.selectrice::after {\n  border-top: .45em solid " + theme["Inputs"] + ";\n}\n.bd {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.pages a,\n#header-bar a {\n  color: " + theme["Navigation Links"] + ";\n}\ninput[type=checkbox]:checked + .rice {\n  position: relative;\n}\ninput[type=checkbox]:checked + .rice::after {\n  content: \"\";\n  display: block;\n  width: 4px;\n  height: 10px;\n  border: solid " + theme["Inputs"] + ";\n  border-width: 0 3px 3px 0;\n  " + agent + "transform: rotate(45deg);\n  position: absolute;\n  left: 2px;\n  bottom: -1px;\n}\n#addReply,\n#dump,\n.button,\n.entry,\n.replylink,\na {\n  color: " + theme["Links"] + ";\n}\n.backlink {\n  color: " + theme["Backlinks"] + ";\n}\n.qiQuote,\n.quotelink {\n  color: " + theme["Quotelinks"] + ";\n}\n#addReply:hover,\n#dump:hover,\n.entry:hover,\n.sideArrows a:hover,\n.replylink:hover,\n.qiQuote:hover,\n.quotelink:hover,\na .name:hover,\na .postertrip:hover,\na:hover {\n  color: " + theme["Hovered Links"] + ";\n}\n#header-bar a:hover,\n#boardTitle a:hover {\n  color: " + theme["Hovered Navigation Links"] + ";\n}\n#boardTitle {\n  color: " + theme["Board Title"] + ";\n}\n.name,\n.post-author {\n  color: " + theme["Names"] + " !important;\n}\n.post-tripcode,\n.postertrip,\n.trip {\n  color: " + theme["Tripcodes"] + " !important;\n}\na .postertrip,\na .name {\n  color: " + theme["Emails"] + ";\n}\n.post.reply.qphl,\n.post.op.qphl {\n  border-color: " + theme["Backlinked Reply Outline"] + ";\n  background: " + theme["Highlighted Reply Background"] + ";\n}\n.inline .post {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.placeholder,\n#qr input::" + agent + "placeholder,\n#qr textarea::" + agent + "placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#qr input:" + agent + "placeholder,\n#qr textarea:" + agent + "placeholder,\n.placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#appchanx-settings fieldset,\n.boxcontent dd,\n.selectrice ul {\n  border-color: " + (Style.lightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)") + ";\n}\n#appchanx-settings li,\n#selectrice li:not(:first-of-type) {\n  border-top: 1px solid " + (Style.lightTheme ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.025)") + ";\n}\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n.navLinks > a:first-of-type::after,\n#watcher::after,\n#globalMessage::after,\n#boardNavDesktopFoot::after,\na[style=\"cursor: pointer; float: right;\"]::after,\n#img-controls,\n#catalog::after,\n#fappeTyme {\n  background-image: url('" + icons + "');\n" + (!Style.lightTheme ? "filter: url(\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>#filters\");" : "") + "\n}\n" + theme["Custom CSS"];
+      css = ".hide_thread_button span > span,\n.hide_reply_button span > span {\n  background-color: " + theme["Links"] + ";\n}\n#mascot_hide label {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\n#content .thumb {\n  box-shadow: 0 0 5px " + theme["Reply Border"] + ";\n}\n.mascotname,\n#mascot-options {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.opContainer.filter_highlight {\n  box-shadow: inset 5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\n.filter_highlight > .reply {\n  box-shadow: -5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\nhr {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\nhr#unread-line {\n  border-bottom: 1px solid " + theme["Reply Background"] + ";\n  visibility: visible;\n}\na[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] > table > tbody > tr > td {\n  background: " + backgroundC + " !important;\n  border: 1px solid " + theme["Reply Border"] + " !important;\n}\n#fs_status {\n  background: " + theme["Dialog Background"] + " !important;\n}\n#fs_data tr[style=\"background-color: #EA8;\"] {\n  background: " + theme["Reply Background"] + " !important;\n}\n#fs_data,\n#fs_data *,\n.threadContainer {\n  border-color: " + theme["Reply Border"] + " !important;\n}\nhtml {\n  background: " + (backgroundC || '') + ";\n  background-image: " + (theme["Background Image"] || '') + ";\n  background-repeat: " + (theme["Background Repeat"] || '') + ";\n  background-attachment: " + (theme["Background Attachment"] || '') + ";\n  background-position: " + (theme["Background Position"] || '') + ";\n}\n.panel,\n.section-container,\n#exlinks-options-content,\n#mascotcontent,\n#themecontent {\n  background: " + backgroundC + ";\n  border: 1px solid " + theme["Reply Border"] + ";\n  padding: 5px;\n}\n.sections-list > a.tab-selected {\n  background: " + backgroundC + ";\n  border-color: " + theme["Reply Border"] + ";\n  border-style: solid;\n}\n.captcha-img img {\n  " + (Style.filter(theme["Text"], theme["Input Background"])) + "\n}\n#boardTitle,\n" + (!_conf["Post Form Decorations"] ? '#spoilerLabel' : '') + " {\n  text-shadow:\n     1px  1px " + backgroundC + ",\n    -1px -1px " + backgroundC + ",\n     1px -1px " + backgroundC + ",\n    -1px  1px " + backgroundC + "\n    " + (_conf["Sidebar Glow"] ? ", 0 2px 4px rgba(0,0,0,.6), 0 0 10px rgba(0,0,0,.6);" : ";") + "\n}\n/* Fixes text spoilers */\n" + (_conf['Remove Spoilers'] && _conf['Indicate Spoilers'] ? ".spoiler::before,s::before {  content: '[spoiler]';}.spoiler::after,s::after {  content: '[/spoiler]';}" : !_conf['Remove Spoilers'] ? ".spoiler:not(:hover) *,s:not(:hover) * {  color: rgb(0,0,0) !important;  text-shadow: none !important;}.spoiler:not(:hover),s:not(:hover) {  background-color: rgb(0,0,0);  color: rgb(0,0,0) !important;  text-shadow: none !important;}" : "") + "\n#exlinks-options,\n#appchanx-settings,\n#qrtab,\n" + (_conf["Post Form Decorations"] ? "#qr," : "") + "\ninput[type=\"submit\"],\ninput[value=\"Report\"],\nspan[style=\"left: 5px; position: absolute;\"] a {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.enabled .mascotcontainer {\n  background: " + theme["Buttons Background"] + ";\n  border-color: " + theme["Buttons Border"] + ";\n}\n#dump,\n#qr-filename-container,\n#appchanx-settings input,\n.captcha-img,\n.dump #dump,\n.qr-preview,\n.selectrice,\nbutton,\ninput,\ntextarea {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n}\n.has-file #qr-extras-container {\n  background: " + theme["Input Background"] + ";\n}\n#dump:hover,\n#qr-filename-container:hover,\n.selectrice:hover,\n#selectrice li:hover,\n#selectrice li:nth-of-type(2n+1):hover,\ninput:hover,\ntextarea:hover {\n  background: " + theme["Hovered Input Background"] + ";\n  border-color: " + theme["Hovered Input Border"] + ";\n}\n.has-file  #qr-filename-container:hover #qr-extras-container {\n  background: " + theme["Hovered Input Background"] + ";\n}\n#dump:active,\n#dump:focus,\n#selectrice li:focus,\n.selectrice:focus,\n#qr-filename-container:active,\n#qr-filename-container:focus,\ninput:focus,\ntextarea:focus,\ntextarea.field:focus {\n  background: " + theme["Focused Input Background"] + ";\n  border-color: " + theme["Focused Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n  outline: none;\n}\n.has-file  #qr-filename-container:active #qr-extras-container,\n.has-file  #qr-filename-container:focus #qr-extras-container {\n  background: " + theme["Focused Input Background"] + ";\n}\n#mouseover,\n#post-preview,\n#qp .post,\n#xupdater,\n.reply.post {\n  border-width: 1px;\n  border-style: solid;\n  border-color: " + theme["Reply Border"] + ";\n  background: " + theme["Reply Background"] + ";\n}\n.thread > .replyContainer > .reply.post {\n  border-width: " + (_conf['Post Spacing'] === "0" ? "1px 1px 0 1px" : '1px') + ";\n}\n.exblock.reply,\n.reply.post.highlight,\n.reply.post:target {\n  background: " + theme["Highlighted Reply Background"] + ";\n  border: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n#header-bar,\n.pagelist {\n  background: " + theme["Navigation Background"] + ";\n  border-style: solid;\n  border-color: " + theme["Navigation Border"] + ";\n}\n.thread {\n  background: " + theme["Thread Wrapper Background"] + ";\n  border: 1px solid " + theme["Thread Wrapper Border"] + ";\n}\n#boardNavDesktopFoot,\n#mascotConf,\n#mascot_hide,\n#menu,\n#selectrice,\n#themeConf,\n#watcher,\n#watcher:hover,\n.dialog,\n.submenu,\na[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] > table {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Dialog Border"] + ";\n}\n.watch-thread-link {\n  background-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='" + theme["Post Numbers"] + "' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\");\n} \n.deleteform::before,\n.deleteform,\n#qr .warning {\n  background: " + theme["Input Background"] + ";\n  border-color: " + theme["Input Border"] + ";\n}\n.disabledwarning,\n.warning {\n  color: " + theme["Warnings"] + ";\n}\n#navlinks a:first-of-type {\n  border-bottom: 11px solid rgb(130,130,130);\n}\n#navlinks a:last-of-type {\n  border-top: 11px solid rgb(130,130,130);\n}\n#charCount {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)") + ";\n}\n.postNum a {\n  color: " + theme["Post Numbers"] + ";\n}\n.subject {\n  color: " + theme["Subjects"] + " !important;\n}\n.dateTime,\n.post-ago {\n  color: " + theme["Timestamps"] + " !important;\n}\n#fs_status a,\n#updater #update-status:not(.new)::after,\n#showQR,\n.abbr,\n.boxbar,\n.boxcontent,\n.deleteform::before,\n.pages strong,\n.pln,\n.reply,\n.reply.highlight,\n.summary,\nbody,\nbutton,\nspan[style=\"left: 5px; position: absolute;\"] a,\ninput,\ntextarea {\n  color: " + theme["Text"] + ";\n}\n#exlinks-options-content > table,\n#appchanx-settings fieldset,\n#selectrice {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n  box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px;\n}\n.quote + .spoiler:hover,\n.quote {\n  color: " + theme["Greentext"] + ";\n}\n.forwardlink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  border-bottom: 1px dashed " + theme["Backlinks"] + ";\n}\n.container::before {\n  color: " + theme["Timestamps"] + ";\n}\n#menu,\n#post-preview,\n#qp .opContainer,\n#qp .replyContainer,\n.submenu {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.rice {\n  background: " + theme["Checkbox Background"] + ";\n  border: 1px solid " + theme["Checkbox Border"] + ";\n}\n.selectrice::before {\n  border-left: 1px solid " + theme["Input Border"] + ";\n}\n.selectrice::after {\n  border-top: .45em solid " + theme["Inputs"] + ";\n}\n.bd {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.pages a,\n#header-bar a {\n  color: " + theme["Navigation Links"] + ";\n}\ninput[type=checkbox]:checked + .rice {\n  position: relative;\n}\ninput[type=checkbox]:checked + .rice::after {\n  content: \"\";\n  display: block;\n  width: 4px;\n  height: 10px;\n  border: solid " + theme["Inputs"] + ";\n  border-width: 0 3px 3px 0;\n  " + agent + "transform: rotate(45deg);\n  position: absolute;\n  left: 2px;\n  bottom: -1px;\n}\n#addReply,\n#dump,\n.button,\n.entry,\n.replylink,\na {\n  color: " + theme["Links"] + ";\n}\n.backlink {\n  color: " + theme["Backlinks"] + ";\n}\n.qiQuote,\n.quotelink {\n  color: " + theme["Quotelinks"] + ";\n}\n#addReply:hover,\n#dump:hover,\n.entry:hover,\n.sideArrows a:hover,\n.replylink:hover,\n.qiQuote:hover,\n.quotelink:hover,\na .name:hover,\na .postertrip:hover,\na:hover {\n  color: " + theme["Hovered Links"] + ";\n}\n#header-bar a:hover,\n#boardTitle a:hover {\n  color: " + theme["Hovered Navigation Links"] + ";\n}\n#boardTitle {\n  color: " + theme["Board Title"] + ";\n}\n.name,\n.post-author {\n  color: " + theme["Names"] + " !important;\n}\n.post-tripcode,\n.postertrip,\n.trip {\n  color: " + theme["Tripcodes"] + " !important;\n}\na .postertrip,\na .name {\n  color: " + theme["Emails"] + ";\n}\n.post.reply.qphl,\n.post.op.qphl {\n  border-color: " + theme["Backlinked Reply Outline"] + ";\n  background: " + theme["Highlighted Reply Background"] + ";\n}\n.inline .post {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.placeholder,\n#qr input::" + agent + "placeholder,\n#qr textarea::" + agent + "placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#qr input:" + agent + "placeholder,\n#qr textarea:" + agent + "placeholder,\n.placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#appchanx-settings fieldset,\n.boxcontent dd,\n.selectrice ul {\n  border-color: " + (Style.lightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)") + ";\n}\n#appchanx-settings li,\n#selectrice li:not(:first-of-type) {\n  border-top: 1px solid " + (Style.lightTheme ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.025)") + ";\n}\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n.navLinks > a:first-of-type::after,\n#watcher::after,\n#globalMessage::after,\n#boardNavDesktopFoot::after,\na[style=\"cursor: pointer; float: right;\"]::after,\n#img-controls,\n#catalog::after,\n#fappeTyme {\n  background-image: url('" + icons + "');\n" + (!Style.lightTheme ? "filter: url(\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>#filters\");" : "") + "\n}\n" + theme["Custom CSS"];
       css += (Style.lightTheme ? ".prettyprint {\n  background-color: #e7e7e7;\n  border: 1px solid #dcdcdc;\n}\n.com {\n  color: #dd0000;\n}\n.str,\n.atv {\n  color: #7fa61b;\n}\n.pun {\n  color: #61663a;\n}\n.tag {\n  color: #117743;\n}\n.kwd {\n  color: #5a6F9e;\n}\n.typ,\n.atn {\n  color: #9474bd;\n}\n.lit {\n  color: #368c72;\n}\n" : ".prettyprint {\n  background-color: rgba(0,0,0,.1);\n  border: 1px solid rgba(0,0,0,0.5);\n}\n.tag {\n  color: #96562c;\n}\n.pun {\n  color: #5b6f2a;\n}\n.com {\n  color: #a34443;\n}\n.str,\n.atv {\n  color: #8ba446;\n}\n.kwd {\n  color: #987d3e;\n}\n.typ,\n.atn {\n  color: #897399;\n}\n.lit {\n  color: #558773;\n}\n");
       if (_conf["Alternate Post Colors"]) {
         css += ".replyContainer:not(.hidden):nth-of-type(2n+1) .post {\n  background-image: " + agent + "linear-gradient(" + (Style.lightTheme ? "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" : "rgba(255,255,255,0.02), rgba(255,255,255,0.02)") + ");\n}\n";
@@ -11998,7 +12038,7 @@
       el = $.el('label', {
         id: 'toggleCatalog',
         href: 'javascript:;',
-        innerHTML: "<input type=checkbox " + (Conf['Header catalog links'] ? 'checked' : '') + ">Catalog Links",
+        innerHTML: "<input type=checkbox " + (Conf['Header catalog links'] ? 'checked' : '') + "> Catalog Links",
         title: "Turn catalog links " + (Conf['Header catalog links'] ? 'off' : 'on') + "."
       });
       input = $('input', el);
@@ -12036,7 +12076,6 @@
         } else {
           a.pathname = "/" + board + "/" + path;
         }
-        a.title = useCatalog ? "" + a.title + " - Catalog" : a.title.replace(/\ -\ Catalog$/, '');
       }
       return this.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
     },
@@ -12361,7 +12400,7 @@
           nodes.push(post.nodes.root);
           continue;
         }
-        node = Build.postFromObject(reply, thread.board);
+        node = Build.postFromObject(reply, thread.board.ID);
         post = new Post(node, thread, thread.board);
         link = $('a[title="Highlight this post"]', node);
         link.href = "res/" + thread + "#p" + post;
@@ -13301,7 +13340,7 @@
           $.on(d, '4chanXInitFinished', Settings.open);
         }
         return $.set({
-          lastupdate: Date.now(),
+          lastchecked: Date.now(),
           previousversion: g.VERSION
         });
       });
@@ -13634,9 +13673,9 @@
       return $.on(ta, 'change', $.cb.value);
     },
     advanced: function(section) {
-      var archiver, event, input, inputs, items, name, ta, toSelect, _i, _j, _len, _len1, _ref;
+      var archive, boardID, boardOptions, boardSelect, boards, data, event, input, inputs, items, name, row, rows, ta, table, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
 
-      section.innerHTML = "<fieldset><legend>Archiver</legend><div>\n  Select an Archiver for this board:\n  <select name=archiver></select></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea name=boardnav class=field spellcheck=false></textarea></div><span class=note>New lines will be converted into spaces.</span><br><br><div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div><div>\n  For example:<br><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n  will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n  if you are on /g/.\n</div><div>Board link: <code>board</code></div><div>Title link: <code>board-title</code></div><div>Board link (Replace with title when on that board): <code>board-replace</code></div><div>Full text link: <code>board-full</code></div><div>Custom text link: <code>board-text:\"VIP Board\"</code></div><div>Index-only link: <code>board-index</code></div><div>Catalog-only link: <code>board-catalog</code></div><div>External link: <code>external-text:\"Google\",\"http://www.google.com\"</code></div><div>Combinations are possible: <code>board-index-text:\"VIP Index\"</code></div><div>Full board list toggle: <code>toggle-all</code></div></fieldset><fieldset><legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div><div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div></fieldset><fieldset><legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div><div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div></fieldset><fieldset><legend>Quick Reply Personas <span class=\"warning\" " + (Conf['Quick Reply'] ? 'hidden' : '') + ">is disabled.</span></legend><textarea class=personafield name=\"QR.personas\" class=\"field\" spellcheck=\"false\"></textarea><p>\n  One item per line.<br>\n  Items will be added in the relevant input's auto-completion list.<br>\n  Password items will always be used, since there is no password input.<br>\n  Lines starting with a <code>#</code> will be ignored.\n</p><ul>You can use these settings with each item, separate them with semicolons:\n  <li>Possible items are: <code>name</code>, <code>email</code>, <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>email:\"sage\"</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>email:\"sage\";always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>email:\"sage\";boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=warning " + (Conf['Unread Favicon'] ? 'hidden' : '') + ">is disabled.</span></legend><div><select name=favicon><option value=ferongr>ferongr</option><option value=xat->xat-</option><option value=Mayhem>Mayhem</option><option value=4chanJS>4chanJS</option><option value=Original>Original</option></select><span id=favicon-preview></span></div></fieldset><fieldset><legend>Emoji <span class=warning " + (Conf['Emoji'] ? 'hidden' : '') + ">is disabled.</span></legend><div>\n  Sage Icon: <select name=sageEmoji><option value=\"4chan SS\">4chan SS</option><option value=\"appchan\">appchan</option></select><span id=sageicon-preview></span></div><div>\n  Position: <select name=emojiPos><option value=\"before\">Before</option><option value=\"after\">After</option></select></div></fieldset><fieldset><legend>Thread Updater <span class=warning " + (Conf['Thread Updater'] ? 'hidden' : '') + ">is disabled.</span></legend><div>\n  Interval: <input type=number name=Interval class=field min=1 value=" + Conf['Interval'] + "></div></fieldset><fieldset><legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend><div><button id=apply-css>Apply CSS</button><textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea></div></fieldset>";
+      section.innerHTML = "<fieldset><legend>Archiver</legend><div class=\"warning\" " + (Conf['404 Redirect'] ? 'hidden' : '') + "><code>404 Redirect</code> is disabled.</div><div><select id='archive-board-select'></select></div><table id='archive-table'><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><span class=note>Disabled selections indicate that only one archive is available for that board and redirection type.</span></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea name=boardnav class=field spellcheck=false></textarea></div><span class=note>New lines will be converted into spaces.</span><br><br><div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div><div>\n  For example:<br><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n  will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n  if you are on /g/.\n</div><div>Board link: <code>board</code></div><div>Title link: <code>board-title</code></div><div>Board link (Replace with title when on that board): <code>board-replace</code></div><div>Full text link: <code>board-full</code></div><div>Custom text link: <code>board-text:\"VIP Board\"</code></div><div>Index-only link: <code>board-index</code></div><div>Catalog-only link: <code>board-catalog</code></div><div>External link: <code>external-text:\"Google\",\"http://www.google.com\"</code></div><div>Combinations are possible: <code>board-index-text:\"VIP Index\"</code></div><div>Full board list toggle: <code>toggle-all</code></div></fieldset><fieldset><legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div><div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div></fieldset><fieldset><legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div><div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div></fieldset><fieldset><legend>Quick Reply Personas <span class=\"warning\" " + (Conf['Quick Reply'] ? 'hidden' : '') + ">is disabled.</span></legend><textarea class=personafield name=\"QR.personas\" class=\"field\" spellcheck=\"false\"></textarea><p>\n  One item per line.<br>\n  Items will be added in the relevant input's auto-completion list.<br>\n  Password items will always be used, since there is no password input.<br>\n  Lines starting with a <code>#</code> will be ignored.\n</p><ul>You can use these settings with each item, separate them with semicolons:\n  <li>Possible items are: <code>name</code>, <code>email</code>, <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>email:\"sage\"</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>email:\"sage\";always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>email:\"sage\";boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=warning " + (Conf['Unread Favicon'] ? 'hidden' : '') + ">is disabled.</span></legend><div><select name=favicon><option value=ferongr>ferongr</option><option value=xat->xat-</option><option value=Mayhem>Mayhem</option><option value=4chanJS>4chanJS</option><option value=Original>Original</option></select><span id=favicon-preview></span></div></fieldset><fieldset><legend>Emoji <span class=warning " + (Conf['Emoji'] ? 'hidden' : '') + ">is disabled.</span></legend><div>\n  Sage Icon: <select name=sageEmoji><option value=\"4chan SS\">4chan SS</option><option value=\"appchan\">appchan</option></select><span id=sageicon-preview></span></div><div>\n  Position: <select name=emojiPos><option value=\"before\">Before</option><option value=\"after\">After</option></select></div></fieldset><fieldset><legend>Thread Updater <span class=warning " + (Conf['Thread Updater'] ? 'hidden' : '') + ">is disabled.</span></legend><div>\n  Interval: <input type=number name=Interval class=field min=1 value=" + Conf['Interval'] + "></div></fieldset><fieldset><legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend><div><button id=apply-css>Apply CSS</button><textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea></div></fieldset>";
       items = {};
       inputs = {};
       _ref = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'emojiPos', 'sageEmoji', 'usercss'];
@@ -13653,31 +13692,12 @@
         return ta.value = item['QR.personas'];
       });
       $.on(ta, 'change', $.cb.value);
-      archiver = $('select[name=archiver]', section);
-      toSelect = Redirect.select(g.BOARD.ID);
-      if (!toSelect[0]) {
-        toSelect = ['No Archive Available'];
-      }
-      for (_j = 0, _len1 = toSelect.length; _j < _len1; _j++) {
-        name = toSelect[_j];
-        $.add(archiver, $.el('option', {
-          textContent: name
-        }));
-      }
-      if (toSelect[1]) {
-        Conf['archivers'][g.BOARD];
-        archiver.value = Conf['archivers'][g.BOARD] || toSelect[0];
-        $.on(archiver, 'change', function() {
-          Conf['archivers'][g.BOARD] = this.value;
-          return $.set('archivers', Conf.archivers);
-        });
-      }
       $.get(items, function(items) {
         var key, val;
 
         for (key in items) {
           val = items[key];
-          if (['emojiPos', 'archiver'].contains(key)) {
+          if (['emojiPos'].contains(key)) {
             continue;
           }
           input = inputs[key];
@@ -13688,11 +13708,113 @@
           $.on(input, event, Settings[key]);
           Settings[key].call(input);
         }
-        return Rice.nodes(sectionreturn);
+        return Rice.nodes(section);
       });
       $.on($('input[name=Interval]', section), 'change', ThreadUpdater.cb.interval);
       $.on($('input[name="Custom CSS"]', section), 'change', Settings.togglecss);
-      return $.on($.id('apply-css'), 'click', Settings.usercss);
+      $.on($.id('apply-css'), 'click', Settings.usercss);
+      boards = {};
+      _ref1 = Redirect.archives;
+      for (name in _ref1) {
+        archive = _ref1[name];
+        _ref2 = archive.boards;
+        for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+          boardID = _ref2[_j];
+          data = boards[boardID] || (boards[boardID] = {
+            thread: [],
+            post: [],
+            file: []
+          });
+          data.thread.push(name);
+          if (archive.software === 'foolfuuka') {
+            data.post.push(name);
+          }
+          if (archive.files.contains(boardID)) {
+            data.file.push(name);
+          }
+        }
+      }
+      rows = [];
+      boardOptions = [];
+      _ref3 = Object.keys(boards).sort();
+      for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
+        boardID = _ref3[_k];
+        row = $.el('tr', {
+          className: "board-" + boardID
+        });
+        row.hidden = boardID !== g.BOARD.ID;
+        rows.push(row);
+        boardOptions.push($.el('option', {
+          textContent: "/" + boardID + "/",
+          value: "board-" + boardID,
+          selected: boardID === g.BOARD.ID
+        }));
+        data = boards[boardID];
+        $.add(row, [Settings.addArchiveCell(boardID, data, 'thread'), Settings.addArchiveCell(boardID, data, 'post'), Settings.addArchiveCell(boardID, data, 'file')]);
+      }
+      $.add($('tbody', section), rows);
+      boardSelect = $('#archive-board-select', section);
+      $.add(boardSelect, boardOptions);
+      table = $.id('archive-table');
+      $.on(boardSelect, 'change', function() {
+        $('tbody > :not([hidden])', table).hidden = true;
+        return $("tbody > ." + this.value, table).hidden = false;
+      });
+      $.get('selectedArchives', Conf['selectedArchives'], function(_arg) {
+        var option, selectedArchives, type;
+
+        selectedArchives = _arg.selectedArchives;
+        for (boardID in selectedArchives) {
+          data = selectedArchives[boardID];
+          for (type in data) {
+            name = data[type];
+            if (option = $("select[data-boardid='" + boardID + "'][data-type='" + type + "'] > option[value='" + name + "']", section)) {
+              option.selected = true;
+            }
+          }
+        }
+      });
+    },
+    addArchiveCell: function(boardID, data, type) {
+      var archive, i, length, options, select, td;
+
+      length = data[type].length;
+      td = $.el('td', {
+        className: 'archive-cell'
+      });
+      if (!length) {
+        td.textContent = '--';
+        return td;
+      }
+      options = [];
+      i = 0;
+      while (i < length) {
+        archive = data[type][i++];
+        options.push($.el('option', {
+          textContent: archive,
+          value: archive
+        }));
+      }
+      td.innerHTML = '<select></select>';
+      select = td.firstElementChild;
+      if (!(select.disabled = length === 1)) {
+        select.setAttribute('data-boardid', boardID);
+        select.setAttribute('data-type', type);
+        $.on(select, 'change', Settings.saveSelectedArchive);
+      }
+      $.add(select, options);
+      return td;
+    },
+    saveSelectedArchive: function() {
+      var _this = this;
+
+      return $.get('selectedArchives', Conf['selectedArchives'], function(_arg) {
+        var selectedArchives, _name;
+
+        selectedArchives = _arg.selectedArchives;
+        (selectedArchives[_name = _this.dataset.boardid] || (selectedArchives[_name] = {}))[_this.dataset.type] = _this.value;
+        return $.set('selectedArchives', selectedArchives);
+      });
     },
     boardnav: function() {
       return Header.generateBoardList(this.value);
@@ -14371,7 +14493,7 @@
         'Enabled Mascots nsfw': [],
         'Deleted Mascots': [],
         'Hidden Categories': ["Questionable"],
-        'archivers': {}
+        selectedArchives: {}
       });
       return $.get(Conf, Main.initFeatures);
     },
@@ -14420,7 +14542,11 @@
             var url;
 
             if (Conf['404 Redirect'] && d.title === '4chan - 404 Not Found') {
-              url = Redirect.image(pathname[1], pathname[3]);
+              Redirect.init();
+              url = Redirect.to('file', {
+                boardID: pathname[1],
+                filename: pathname[3]
+              });
               if (url) {
                 return location.href = url;
               }
@@ -14515,7 +14641,7 @@
 
       if (d.title === '4chan - 404 Not Found') {
         if (Conf['404 Redirect'] && g.VIEW === 'thread') {
-          href = Redirect.to({
+          href = Redirect.to('thread', {
             boardID: g.BOARD.ID,
             threadID: g.THREADID,
             postID: +location.hash.match(/\d+/)
@@ -14760,28 +14886,8 @@
     },
     errors: [],
     logError: function(data) {
-      if (!Main.errors.length) {
-        $.on(window, 'unload', Main.postErrors);
-      }
       c.error(data.message, data.error.stack);
       return Main.errors.push(data);
-    },
-    postErrors: function() {
-      var errors;
-
-      errors = Main.errors.map(function(d) {
-        return d.message + ' ' + d.error.stack;
-      });
-      return $.ajax('http://zixaphir.github.com/appchan-x/errors', {}, {
-        sync: true,
-        form: $.formData({
-          n: "appchan x v" + g.VERSION,
-          t: 'userscript',
-          ua: window.navigator.userAgent,
-          url: window.location.href,
-          e: errors.join('\n')
-        })
-      });
     },
     isThisPageLegit: function() {
       var _ref;

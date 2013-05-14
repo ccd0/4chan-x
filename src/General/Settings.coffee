@@ -30,7 +30,7 @@ Settings =
       else
         $.on d, '4chanXInitFinished', Settings.open
       $.set
-        lastupdate: Date.now()
+        lastchecked: Date.now()
         previousversion: g.VERSION
 
     Settings.addSection 'Style',    Settings.style
@@ -291,33 +291,100 @@ Settings =
       ta.value = item['QR.personas']
     $.on ta, 'change', $.cb.value
 
-    # Archiver
-    archiver = $ 'select[name=archiver]', section
-    toSelect = Redirect.select g.BOARD.ID
-    toSelect = ['No Archive Available'] unless toSelect[0]
-
-    $.add archiver, $.el('option', {textContent: name}) for name in toSelect
-
-    if toSelect[1]
-      Conf['archivers'][g.BOARD]
-      archiver.value = Conf['archivers'][g.BOARD] or toSelect[0]
-      $.on archiver, 'change', ->
-        Conf['archivers'][g.BOARD] = @value
-        $.set 'archivers', Conf.archivers
-
     $.get items, (items) ->
       for key, val of items
-        continue if ['emojiPos', 'archiver'].contains key
+        continue if ['emojiPos'].contains key
         input = inputs[key]
         input.value = val
         continue if key is 'usercss'
         $.on input, event, Settings[key]
         Settings[key].call input
-      Rice.nodes sectionreturn
+      Rice.nodes section
 
     $.on $('input[name=Interval]', section), 'change', ThreadUpdater.cb.interval
     $.on $('input[name="Custom CSS"]', section), 'change', Settings.togglecss
     $.on $.id('apply-css'), 'click', Settings.usercss
+
+    boards = {}
+    for name, archive of Redirect.archives
+      for boardID in archive.boards
+        data = boards[boardID] or= {
+          thread: []
+          post:   []
+          file:   []
+        }
+        data.thread.push name
+        data.post.push name if archive.software is 'foolfuuka'
+        data.file.push name if archive.files.contains boardID
+
+    rows = []
+    boardOptions = []
+    for boardID in Object.keys(boards).sort() # Alphabetical order
+      row = $.el 'tr',
+        className: "board-#{boardID}"
+      row.hidden = boardID isnt g.BOARD.ID
+      rows.push row
+
+      boardOptions.push $.el 'option',
+        textContent: "/#{boardID}/"
+        value:       "board-#{boardID}"
+        selected:    boardID is g.BOARD.ID
+
+      data = boards[boardID]
+      $.add row, [
+        Settings.addArchiveCell boardID, data, 'thread'
+        Settings.addArchiveCell boardID, data, 'post'
+        Settings.addArchiveCell boardID, data, 'file'
+      ]
+    $.add $('tbody', section), rows
+
+    boardSelect = $('#archive-board-select', section)
+    $.add boardSelect, boardOptions
+    table = $.id 'archive-table'
+    $.on boardSelect, 'change', ->
+      $('tbody > :not([hidden])', table).hidden = true
+      $("tbody > .#{@value}", table).hidden = false
+
+    $.get 'selectedArchives', Conf['selectedArchives'], ({selectedArchives}) ->
+      for boardID, data of selectedArchives
+        for type, name of data
+          if option = $ "select[data-boardid='#{boardID}'][data-type='#{type}'] > option[value='#{name}']", section
+            option.selected = true
+      return
+    return
+
+  addArchiveCell: (boardID, data, type) ->
+    {length} = data[type]
+    td = $.el 'td',
+      className: 'archive-cell'
+
+    unless length
+      td.textContent = '--'
+      return td
+
+    options = []
+    i = 0
+    while i < length
+      archive = data[type][i++]
+      options.push $.el 'option',
+        textContent: archive
+        value: archive
+
+    td.innerHTML = '<select></select>'
+    select = td.firstElementChild
+    unless select.disabled = length is 1
+      # XXX GM can't into datasets
+      select.setAttribute 'data-boardid', boardID
+      select.setAttribute 'data-type', type
+      $.on select, 'change', Settings.saveSelectedArchive
+    $.add select, options
+
+    td
+
+  saveSelectedArchive: ->
+    $.get 'selectedArchives', Conf['selectedArchives'], ({selectedArchives}) =>
+      (selectedArchives[@dataset.boardid] or= {})[@dataset.type] = @value
+      $.set 'selectedArchives', selectedArchives
 
   boardnav: ->
     Header.generateBoardList @value

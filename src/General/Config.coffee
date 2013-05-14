@@ -229,9 +229,9 @@ Config =
         true
         'Bookmark threads.'
       ]
-      'Persistent Thread Watcher': [
+      'Toggleable Thread Watcher': [
         false
-        'Opens the thread watcher by default.'
+        'Adds a shortcut for the thread watcher, hides the watcher by default, and makes it scroll with the page.'
       ]
       'Auto Watch': [
         true

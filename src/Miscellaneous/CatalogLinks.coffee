@@ -5,7 +5,7 @@ CatalogLinks =
     el = $.el 'label',
       id:           'toggleCatalog'
       href:         'javascript:;'
-      innerHTML:    "<input type=checkbox #{if Conf['Header catalog links'] then 'checked' else ''}>Catalog Links"
+      innerHTML:    "<input type=checkbox #{if Conf['Header catalog links'] then 'checked' else ''}> Catalog Links"
       title:        "Turn catalog links #{if Conf['Header catalog links'] then 'off' else 'on'}."
 
     input = $ 'input', el
@@ -41,7 +41,6 @@ CatalogLinks =
           "//boards.4chan.org/#{board}/"
       else
         a.pathname = "/#{board}/#{path}"
-      a.title = if useCatalog then "#{a.title} - Catalog" else a.title.replace(/\ -\ Catalog$/, '')
     @title = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
 
   external: (board) ->

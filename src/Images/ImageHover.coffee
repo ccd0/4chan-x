@@ -28,7 +28,10 @@ ImageHover =
 
     src = @src.split '/'
     if src[2] is 'images.4chan.org'
-      if URL = Redirect.image src[3], src[5].replace /\?.+$/, ''
+      URL = Redirect.to 'file',
+        boardID:  src[3]
+        filename: src[5].replace /\?.+$/, ''
+      if URL
         @src = URL
         return
       if g.DEAD or post.isDead or post.file.isDead

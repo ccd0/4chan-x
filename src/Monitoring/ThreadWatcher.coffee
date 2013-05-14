@@ -9,6 +9,7 @@ ThreadWatcher =
     $.sync  'WatchedThreads',     @refresh
     $.on $('.move>.close', ThreadWatcher.dialog), 'click', @toggleWatcher
 
+
     $.ready ->
       ThreadWatcher.refresh()
       $.add d.body, ThreadWatcher.dialog
@@ -18,8 +19,9 @@ ThreadWatcher =
       cb:   @node
 
   node: ->
-    favicon = $.el 'img',
-      className: 'favicon'
+    favicon = $.el 'a',
+      className: 'watch-thread-link'
+      href: 'javascript:;'
     $.on favicon, 'click', ThreadWatcher.cb.toggle
     $.before $('input', @OP.nodes.post), favicon
     return if g.VIEW isnt 'thread'
@@ -53,11 +55,11 @@ ThreadWatcher =
 
     watched = watched[g.BOARD] or {}
     for ID, thread of g.BOARD.threads
-      favicon = $ '.favicon', thread.OP.nodes.post
-      favicon.src = if ID of watched
-        Favicon.default
+      favicon = $ '.watch-thread-link', thread.OP.nodes.post
+      if ID of watched
+        $.addClass favicon, 'watched'
       else
-        Favicon.empty
+        $.rmClass favicon, 'watched'
     return
 
   toggleWatcher: ->
@@ -79,7 +81,7 @@ ThreadWatcher =
         ThreadWatcher.watch board.threads[threadID]
 
   toggle: (thread) ->
-    if $('.favicon', thread.OP.nodes.post).src is Favicon.empty
+    unless $.hasClass $('.watch-thread-link', thread.OP.nodes.post), 'watched'
       ThreadWatcher.watch thread
     else
       ThreadWatcher.unwatch thread.board, thread.ID

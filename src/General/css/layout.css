@@ -127,6 +127,9 @@ hr {
   margin: 0 0 1px;
   #{if _conf['Hide Horizontal Rules'] then 'visibility: hidden;' else ''}
 }
+th {
+  text-align: left;
+}
 .center {
   text-align: center;
 }
@@ -716,6 +719,19 @@ hide: "
   overflow: hidden;
 }
 "}
+.watch-thread-link {
+  padding-top: 18px;
+  width: 18px;
+  height: 0px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  opacity: 0.2;
+  position: relative;
+  top: 1px;
+}
+.watch-thread-link.watched {
+  opacity: 1;
+} 
 /* Announcements */
 #globalMessage {
   text-align: center;
@@ -1568,6 +1584,9 @@ a:only-of-type > .remove {
 #appchanx-settings .section-advanced fieldset {
   display: block;
   margin: 0 auto 6px;
+}
+.section-advanced .archive-cell {
+  min-width: 200px;
 }
 .section-advanced .selectrice {
   display: inline-block;

@@ -53,5 +53,4 @@ Favicon =
       Favicon.unread  = Favicon.unreadNSFW
       Favicon.unreadY = Favicon.unreadNSFWY
 
-  empty: 'data:image/png;base64,<%= grunt.file.read("src/General/img/favicons/empty.png", {encoding: "base64"}) %>'
   dead:  'data:image/png;base64,<%= grunt.file.read("src/General/img/favicons/dead.png",  {encoding: "base64"}) %>'

@@ -1,159 +1,170 @@
 Redirect =
+  thread: {}
+  post:   {}
+  file:   {}
+
   init: ->
-    $.sync 'archivers', @updateArchives
+    for boardID, data of Conf['selectedArchives']
+      for type, id of data
+        for name, archive of Redirect.archives
+          continue if name isnt id or type is 'post' and archive.software isnt 'foolfuuka'
+          arr = if type is 'file'
+            archive.files
+          else
+            archive.boards
+          Redirect[type][boardID] = archive if arr.contains boardID
+    for name, archive of Redirect.archives
+      for boardID in archive.boards
+        unless boardID of Redirect.thread
+          Redirect.thread[boardID] = archive
+        unless boardID of Redirect.post or archive.software isnt 'foolfuuka'
+          Redirect.post[boardID] = archive
+        unless boardID of Redirect.file or !archive.files.contains boardID
+          Redirect.file[boardID] = archive
+    return
 
-  updateArchives: ->
-    $.get 'archivers', {}, ({archivers}) ->
-      Conf['archivers'] = archivers
-
-  imageArchives: do ->
-    o = 
-      a:   "//archive.foolz.us/"
-      ck:  "//fuuka.warosu.org/"
-      an:  "http://archive.heinessen.com/"
-      cgl: "//rbt.asia/"
-      c:   "//archive.nyafuu.org/"
-      d:   "//loveisover.me/"
-      e:   "http://archive.foolzashit.com"
-      hr:  "http://archive.4plebs.org/"
-      u:   "//nsfw.foolz.us/"
-      po:  "//archive.thedarkcave.org/"
-      vg:  "http://nth.pensivenonsen.se/"
-      c:   "//archive.nyafuu.org/"
-
-    o.adv = o.asp = o.cm = o.i = o.n = o.o = o.p = o.s = o.t = o.trv = o.y = o.lgbt = o.s4s = o.e
-    o.gd = o.jp = o.m = o.q = o.tg = o.vp = o.vr = o.wsg = o.a
-    o.fa = o.lit = o.ck
-    o.k = o.toy = o.x = o.an
-    o.g = o.mu = o.cgl
-    o.w = o.wg = o.c
-    o.h = o.v = o.d
-    o.tv = o.hr
-
-    return o
-
-  image: (boardID, filename) ->
-    # Do not use g.BOARD, the image url can originate from a cross-quote.
-    # Fuck. Your. Shit.
-    "#{Redirect.imageArchives[boardID]}#{boardID}/full_image/#{filename}"
-
-  post: (boardID, postID) ->
-    unless Redirect.post[boardID]?
-      for name, archive of @archiver
-        if archive.type is 'foolfuuka' and archive.boards.contains boardID
-          Redirect.post[boardID] = archive.base
-          break
-      Redirect.post[boardID] or= false
-
-    return if Redirect.post[boardID]
-      "#{Redirect.post[boardID]}/_/api/chan/post/?board=#{boardID}&num=#{postID}"
-    else
-      null
-
-  select: (board) ->
-    for name, archive of @archiver
-      continue unless archive.boards.contains board
-      name
-
-  to: (data) ->
-    {boardID} = data
-
-    unless (arch = Conf.archivers[boardID])?
-      Conf.archivers[boardID] = arch = @select(boardID)[0]
-      $.set 'archivers', Conf.archivers
-
-    return (if arch and archive = @archiver[arch]
-      Redirect.path archive.base, archive.type, data
-    else if data.threadID
-      "//boards.4chan.org/#{boardID}/"
-    else
-      null)
-
-    unless archive.boards.contains g.BOARD.ID
-      Conf['archivers'] = archive
-
-  archiver:
+  archives:
     'Foolz':
-      base:   'https://archive.foolz.us'
-      boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg']
-      type:   'foolfuuka'
-    'NSFWFoolz':
-      base:   'https://nsfw.foolz.us'
-      boards: ['u']
-      type:   'foolfuuka'
-    'TheDarkCave':
-      base:   'http://archive.thedarkcave.org'
-      boards: ['c', 'int', 'out', 'po']
-      type:   'foolfuuka'
+      'domain': 'archive.foolz.us'
+      'http':  true
+      'https': true
+      'software': 'foolfuuka'
+      'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg']
+      'files':  ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vp', 'vr', 'wsg']
+
+    'NSFW Foolz':
+      'domain': 'nsfw.foolz.us'
+      'http':  true
+      'https': true
+      'software': 'foolfuuka'
+      'boards': ['u']
+      'files':  ['u']
+
+    'The Dark Cave':
+      'domain': 'archive.thedarkcave.org'
+      'http':  true
+      'https': true
+      'software': 'foolfuuka'
+      'boards': ['c', 'int', 'out', 'po']
+      'files':  ['c', 'po']
+
     '4plebs':
-      base:   'http://archive.4plebs.org'
-      boards: ['hr', 'tg', 'tv', 'x']
-      base:   'foolfuuka'
-    'NyaFuu':
-      base:   '//archive.nyafuu.org'
-      boards: ['c', 'w', 'wg']
-      type:   'foolfuuka'
-    'LoveIsOver':
-      base:   '//loveisover.me'
-      boards: ['d', 'h', 'v']
-      type:   'foolfuuka'
-    'PensiveNonsen':
-      base:   'http://nth.pensivenonsen.se'
-      boards: ['vg']
-      type:   'foolfuuka'
-    'FoolzaShit':
-      base:   'http://archive.foolzashit.com'
-      boards: ["adv", "asp", "cm", "e", "i", "lgbt", "n", "o", "p", "s", "s4s", "t", "trv", "y"]
-      type:   'foolfuuka'
-    'Warosu':
-      base:   '//fuuka.warosu.org'
-      boards: ['cgl', 'ck', 'fa', 'jp', 'lit', 's4s', 'q', 'tg', 'vr']
-      type:   'fuuka'
-    'InstallGentoo':
-      base:   '//archive.installgentoo.net'
-      boards: ['diy', 'g', 'sci']
-      type:   'fuuka'
-    'RebeccaBlackTech':
-      base:   '//rbt.asia'
-      boards: ['cgl', 'g', 'mu', 'w']
-      type:   'fuuka_mail'
+      'domain': 'archive.4plebs.org'
+      'http': true
+      'software': 'foolfuuka'
+      'boards': ['hr', 'tg', 'tv', 'x']
+      'files':  ['hr', 'tg', 'tv', 'x']
+
+    'Nyafuu':
+      'http':  true
+      'https': true
+      'software': 'foolfuuka'
+      'boards': ['c', 'w', 'wg']
+      'files':  ['c', 'w', 'wg']
+
+    'Love is Over':
+      'domain': 'loveisover.me'
+      'http':  true
+      'https': true
+      'software': 'foolfuuka'
+      'boards': ['d', 'h', 'v']
+      'files':  ['d', 'h', 'v']
+
+    'nth-chan':
+      'domain': 'nth.pensivenonsen.se'
+      'http': true
+      'software': 'foolfuuka'
+      'boards': ['vg']
+      'files':  ['vg']
+
+    'Foolz a Shit':
+      'domain': 'archive.foolzashit.com'
+      'http':  true
+      'https': true
+      'software': 'foolfuuka'
+      'boards': ['adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 's', 's4s', 't', 'trv', 'y']
+      'files':  ['adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 's', 's4s', 't', 'trv', 'y']
+
+    'Install Gentoo':
+      'domain': 'archive.installgentoo.net'
+      'http':  true
+      'https': true
+      'software': 'fuuka'
+      'boards': ['diy', 'g', 'sci']
+      'files':  []
+
+    'Rebecca Black Tech':
+      'domain': 'rbt.asia'
+      'http':  true
+      'https': true
+      'software': 'fuuka'
+      'boards': ['cgl', 'g', 'mu', 'w']
+      'files':  ['cgl', 'g', 'mu', 'w']
+
     'Heinessen':
-      base:   'http://archive.heinessen.com'
-      boards: ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x']
-      type:   'fuuka'
-    'Cliche':
-      base:   '//www.cliché.net/4chan/cgi-board.pl'
-      boards: ['e']
-      type:   'fuuka'
+      'domain': 'archive.heinessen.com'
+      'http': true
+      'software': 'fuuka'
+      'boards': ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x']
+      'files':  ['an', 'k', 'toy', 'x']
 
-  path: (base, archiver, data) ->
-    if data.isSearch
-      {boardID, type, value} = data
-      type = if type is 'name'
-        'username'
-      else if type is 'MD5'
-        'image'
-      else
-        type
-      value = encodeURIComponent value
-      return if archiver is 'foolfuuka'
-        "#{base}/#{boardID}/search/#{type}/#{value}"
-      else if type is 'image'
-        "#{base}/#{boardID}/?task=search2&search_media_hash=#{value}"
-      else
-        "#{base}/#{boardID}/?task=search2&search_#{type}=#{value}"
+    'warosu':
+      'domain': 'fuuka.warosu.org'
+      'http':  true
+      'https': true
+      'software': 'fuuka'
+      'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 's4s', 'tg', 'vr']
+      'files':  ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 's4s', 'vr']
 
-    {boardID, threadID, postID} = data
-    # keep the number only if the location.hash was sent f.e.
+  to: (dest, data) ->
+    archive = (if dest is 'search' then Redirect.thread else Redirect[dest])[data.boardID]
+    return '' unless archive
+    Redirect[dest] archive, data
+
+  protocol: (archive) ->
+    protocol = location.protocol
+    unless archive[protocol[0...-1]]
+      protocol = if protocol is 'https:' then 'http:' else 'https:'
+    "#{protocol}//"
+
+  thread: (archive, {boardID, threadID, postID}) ->
+    # Keep the post number only if the location.hash was sent f.e.
     path = if threadID
       "#{boardID}/thread/#{threadID}"
     else
       "#{boardID}/post/#{postID}"
-    if archiver is 'foolfuuka'
+    if archive.software is 'foolfuuka'
       path += '/'
     if threadID and postID
-      path += if archiver is 'foolfuuka'
+      path += if archive.software is 'foolfuuka'
         "##{postID}"
       else
         "#p#{postID}"
-    "#{base}/#{path}"
+    "#{Redirect.protocol archive}#{archive.domain}/#{path}"
+
+  post: (archive, {boardID, postID}) ->
+    # For fuuka-based archives:
+    # https://github.com/eksopl/fuuka/issues/27
+    protocol = Redirect.protocol archive
+    # XXX foolz had HSTS set for 120 days, which broke XHR+CORS+Redirection when on HTTP.
+    # Remove necessary HTTPS procotol in September 2013.
+    if ['Foolz', 'NSFW Foolz'].contains archive.name
+      protocol = 'https://'
+    "#{protocol}#{archive.domain}/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+
+  file: (archive, {boardID, filename}) ->
+    "#{Redirect.protocol archive}#{archive.domain}/#{boardID}/full_image/#{filename}"
+
+  search: (archive, {boardID, type, value}) ->
+    type = if type is 'name'
+      'username'
+    else if type is 'MD5'
+      'image'
+    else
+      type
+    value = encodeURIComponent value
+    path  = if archive.software is 'foolfuuka'
+      "#{boardID}/search/#{type}/#{value}"
+    else
+      "#{boardID}/?task=search2&search_#{if type is 'image' then 'media_hash' else type}=#{value}"
+    "#{Redirect.protocol archive}#{archive.domain}/#{path}"
