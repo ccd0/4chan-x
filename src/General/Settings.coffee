@@ -368,6 +368,7 @@ Settings =
 
       data = boards[boardID]
       $.add row, Settings.addArchiveCell boardID, data, item for item in ['thread', 'post', 'file']
+      rows.push row
 
     $.add $('tbody', section), rows
 

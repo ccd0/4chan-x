@@ -9844,7 +9844,6 @@
           className: "board-" + boardID
         });
         row.hidden = boardID !== g.BOARD.ID;
-        rows.push(row);
         boardOptions.push($.el('option', {
           textContent: "/" + boardID + "/",
           value: "board-" + boardID,
@@ -9856,6 +9855,7 @@
           item = _ref4[_l];
           $.add(row, Settings.addArchiveCell(boardID, data, item));
         }
+        rows.push(row);
       }
       $.add($('tbody', section), rows);
       boardSelect = $('#archive-board-select', section);
