@@ -89,13 +89,26 @@ Header =
     if a = $ "a[href*='/#{g.BOARD}/']", nav
       a.className = 'current'
     fullBoardList = $ '#full-board-list', Header.bar
-    fullBoardList.innerHTML = nav.innerHTML
-    $.rm $ '#navtopright', fullBoardList
-    btn = $.el 'span',
-      className: 'hide-board-list-button brackets-wrap'
-      innerHTML: '<a href=javascript:;> - </a>'
-    $.on btn, 'click', Header.toggleBoardList
-    $.add fullBoardList, btn
+    # XXX Getting weird reports here of
+    #   "Header" initialization crashed. TypeError: Cannot read property 'innerHTML' of null
+    # Let's try to find the cause.
+    if nav is null
+      Main.logError
+        message: "Header crash: nav is null"
+        error: new Error """
+          #{!!$.id 'boardNavMobile'}
+          d.readyState     = #{d.readyState}
+          doc.className    = #{doc.className}
+          d.body.className = #{d.body.className}
+        """
+    else
+      fullBoardList.innerHTML = nav.innerHTML
+      $.rm $ '#navtopright', fullBoardList
+      btn = $.el 'span',
+        className: 'hide-board-list-button brackets-wrap'
+        innerHTML: '<a href=javascript:;> - </a>'
+      $.on btn, 'click', Header.toggleBoardList
+      $.add fullBoardList, btn
 
     Header.setCustomNav      Conf['Custom Board Navigation']
     Header.generateBoardList Conf['boardnav']
