@@ -311,7 +311,7 @@ Settings =
     section.innerHTML = """
     <%= grunt.file.read('src/General/html/Settings/Advanced.html').replace(/>\s+</g, '><').trim() %>
     """
-    items = {}
+    items  = {}
     inputs = {}
     for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'sageEmoji', 'emojiPos', 'usercss']
       input = $ "[name=#{name}]", section
@@ -346,14 +346,13 @@ Settings =
     boards = {}
     for name, archive of Redirect.archives
       for boardID in archive.boards
-        data = boards[boardID] or= {
+        data = boards[boardID] or=
           thread: []
           post:   []
           file:   []
-        }
         data.thread.push name
-        data.post.push name if archive.software is 'foolfuuka'
-        data.file.push name if archive.files.contains boardID
+        data.post.push   name if archive.software is 'foolfuuka'
+        data.file.push   name if archive.files.contains boardID
 
     rows = []
     boardOptions = []
@@ -361,7 +360,6 @@ Settings =
       row = $.el 'tr',
         className: "board-#{boardID}"
       row.hidden = boardID isnt g.BOARD.ID
-      rows.push row
 
       boardOptions.push $.el 'option',
         textContent: "/#{boardID}/"
@@ -369,11 +367,8 @@ Settings =
         selected:    boardID is g.BOARD.ID
 
       data = boards[boardID]
-      $.add row, [
-        Settings.addArchiveCell boardID, data, 'thread'
-        Settings.addArchiveCell boardID, data, 'post'
-        Settings.addArchiveCell boardID, data, 'file'
-      ]
+      $.add row, Settings.addArchiveCell boardID, data, item for item in ['thread', 'post', 'file']
+
     $.add $('tbody', section), rows
 
     boardSelect = $('#archive-board-select', section)
