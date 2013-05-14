@@ -1,13 +1,13 @@
 ### v1.2.3
 *2013-05-14*
 
+**MayhemYDG**:
+- Add new archive selection
+
 **seaweedchan**:
 - Change watcher favicon to a heart. Change class name from `.favicon` to `.watch-thread-link`. Add `.watched` if thread is watched.
 - Remove new archive selection back into Advanced
 - Some styling fixes
-
-**MayhemYDG**:
-- Add new archive selection
 
 **zixaphir**:
 - Make new archive selection not depend on a JSON file
