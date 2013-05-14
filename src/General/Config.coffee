@@ -331,6 +331,10 @@ Config =
         true
         'Add \'(You)\' to quotes linking to your posts.'
       ]
+      'Quoted Title': [
+        'Change the page title to reflect you\'ve been quoted.'
+        false
+      ]
       'Highlight Posts Quoting You': [
         false
         'Highlights any posts that contain a quote to your post.'
