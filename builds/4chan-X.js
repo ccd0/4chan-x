@@ -9762,9 +9762,9 @@
       return $.on(ta, 'change', $.cb.value);
     },
     advanced: function(section) {
-      var archive, boardID, boards, data, event, input, inputs, items, name, row, rows, ta, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
+      var archive, boardID, boardOptions, boardSelect, boards, data, event, input, inputs, items, name, row, rows, ta, table, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
 
-      section.innerHTML = "  <fieldset><legend>Archiver</legend><div class=\"warning\" " + (Conf['404 Redirect'] ? 'hidden' : '') + "><code>404 Redirect</code> is disabled.</div><table id='archive-table'><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><span class=note>Disabled selections indicate that only one archive is available for that board and redirection type.</span></fieldset><fieldset><legend>Custom Board Navigation</span></legend><div><textarea name=boardnav class=field spellcheck=false></textarea></div><span class=note>New lines will be converted into spaces.</span><br><br><div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div><div>\n  For example:<br><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n  will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n  if you are on /g/.\n</div><div>Board link: <code>board</code></div><div>Title link: <code>board-title</code></div><div>Board link (Replace with title when on that board): <code>board-replace</code></div><div>Full text link: <code>board-full</code></div><div>Custom text link: <code>board-text:\"VIP Board\"</code></div><div>Index-only link: <code>board-index</code></div><div>Catalog-only link: <code>board-catalog</code></div><div>External link: <code>external-text:\"Google\",\"http://www.google.com\"</code></div><div>Combinations are possible: <code>board-index-text:\"VIP Index\"</code></div><div>Full board list toggle: <code>toggle-all</code></div></fieldset><fieldset><legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div><div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div></fieldset><fieldset><legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div><div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div></fieldset><fieldset><legend>Quick Reply Personas <span class=\"warning\" " + (Conf['Quick Reply'] ? 'hidden' : '') + ">is disabled.</span></legend><textarea class=personafield name=\"QR.personas\" class=\"field\" spellcheck=\"false\"></textarea><p>\n  One item per line.<br>\n  Items will be added in the relevant input's auto-completion list.<br>\n  Password items will always be used, since there is no password input.<br>\n  Lines starting with a <code>#</code> will be ignored.\n</p><ul>You can use these settings with each item, separate them with semicolons:\n  <li>Possible items are: <code>name</code>, <code>email</code>, <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>email:\"sage\"</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>email:\"sage\";always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>email:\"sage\";boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=warning " + (Conf['Unread Favicon'] ? 'hidden' : '') + ">is disabled.</span></legend><select name=favicon><option value=ferongr>ferongr</option><option value=xat->xat-</option><option value=Mayhem>Mayhem</option><option value=Original>Original</option></select><span class=favicon-preview></span></fieldset><fieldset><legend>Emoji <span class=warning " + (Conf['Emoji'] ? 'hidden' : '') + ">is disabled.</span></legend><div>\n  Sage Icon: <select name=sageEmoji><option value=\"4chan SS\">4chan SS</option><option value=\"appchan\">appchan</option></select><span class=sage-icon-preview></span></div><div>\n  Position: <select name=emojiPos><option value=\"before\">Before</option><option value=\"after\">After</option></select></div></fieldset><fieldset><legend>Thread Updater <span class=warning " + (Conf['Thread Updater'] ? 'hidden' : '') + ">is disabled.</span></legend><div>\n  Interval: <input type=number name=Interval class=field min=1 value=" + Conf['Interval'] + "></div></fieldset><fieldset><legend><label><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</label></legend><button id=apply-css>Apply CSS</button><textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea></fieldset>";
+      section.innerHTML = "  <fieldset><legend>Archiver</legend><div class=\"warning\" " + (Conf['404 Redirect'] ? 'hidden' : '') + "><code>404 Redirect</code> is disabled.</div><select id='archive-board-select'></select><table id='archive-table'><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><span class=note>Disabled selections indicate that only one archive is available for that board and redirection type.</span></fieldset><fieldset><legend>Custom Board Navigation</span></legend><div><textarea name=boardnav class=field spellcheck=false></textarea></div><span class=note>New lines will be converted into spaces.</span><br><br><div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div><div>\n  For example:<br><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n  will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n  if you are on /g/.\n</div><div>Board link: <code>board</code></div><div>Title link: <code>board-title</code></div><div>Board link (Replace with title when on that board): <code>board-replace</code></div><div>Full text link: <code>board-full</code></div><div>Custom text link: <code>board-text:\"VIP Board\"</code></div><div>Index-only link: <code>board-index</code></div><div>Catalog-only link: <code>board-catalog</code></div><div>External link: <code>external-text:\"Google\",\"http://www.google.com\"</code></div><div>Combinations are possible: <code>board-index-text:\"VIP Index\"</code></div><div>Full board list toggle: <code>toggle-all</code></div></fieldset><fieldset><legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div><div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div></fieldset><fieldset><legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div><div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div></fieldset><fieldset><legend>Quick Reply Personas <span class=\"warning\" " + (Conf['Quick Reply'] ? 'hidden' : '') + ">is disabled.</span></legend><textarea class=personafield name=\"QR.personas\" class=\"field\" spellcheck=\"false\"></textarea><p>\n  One item per line.<br>\n  Items will be added in the relevant input's auto-completion list.<br>\n  Password items will always be used, since there is no password input.<br>\n  Lines starting with a <code>#</code> will be ignored.\n</p><ul>You can use these settings with each item, separate them with semicolons:\n  <li>Possible items are: <code>name</code>, <code>email</code>, <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>email:\"sage\"</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>email:\"sage\";always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>email:\"sage\";boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=warning " + (Conf['Unread Favicon'] ? 'hidden' : '') + ">is disabled.</span></legend><select name=favicon><option value=ferongr>ferongr</option><option value=xat->xat-</option><option value=Mayhem>Mayhem</option><option value=Original>Original</option></select><span class=favicon-preview></span></fieldset><fieldset><legend>Emoji <span class=warning " + (Conf['Emoji'] ? 'hidden' : '') + ">is disabled.</span></legend><div>\n  Sage Icon: <select name=sageEmoji><option value=\"4chan SS\">4chan SS</option><option value=\"appchan\">appchan</option></select><span class=sage-icon-preview></span></div><div>\n  Position: <select name=emojiPos><option value=\"before\">Before</option><option value=\"after\">After</option></select></div></fieldset><fieldset><legend>Thread Updater <span class=warning " + (Conf['Thread Updater'] ? 'hidden' : '') + ">is disabled.</span></legend><div>\n  Interval: <input type=number name=Interval class=field min=1 value=" + Conf['Interval'] + "></div></fieldset><fieldset><legend><label><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</label></legend><button id=apply-css>Apply CSS</button><textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea></fieldset>";
       items = {};
       inputs = {};
       _ref = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'sageEmoji', 'emojiPos', 'usercss'];
@@ -9808,35 +9808,47 @@
         _ref2 = archive.boards;
         for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
           boardID = _ref2[_j];
-          if (boardID === g.BOARD.ID) {
-            data = boards[boardID] || (boards[boardID] = {
-              thread: [],
-              post: [],
-              file: []
-            });
-            data.thread.push(name);
-            if (archive.software === 'foolfuuka') {
-              data.post.push(name);
-            }
-            if (archive.files.contains(boardID)) {
-              data.file.push(name);
-            }
+          data = boards[boardID] || (boards[boardID] = {
+            thread: [],
+            post: [],
+            file: []
+          });
+          data.thread.push(name);
+          if (archive.software === 'foolfuuka') {
+            data.post.push(name);
+          }
+          if (archive.files.contains(boardID)) {
+            data.file.push(name);
           }
         }
       }
       rows = [];
+      boardOptions = [];
       _ref3 = Object.keys(boards).sort();
       for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
         boardID = _ref3[_k];
-        row = $.el('tr');
+        row = $.el('tr', {
+          className: "board-" + boardID
+        });
+        row.hidden = boardID !== g.BOARD.ID;
         rows.push(row);
+        boardOptions.push($.el('option', {
+          textContent: "/" + boardID + "/",
+          value: "board-" + boardID,
+          selected: boardID === g.BOARD.ID
+        }));
         data = boards[boardID];
-        Settings.addArchiveCell(row, boardID, data, 'thread');
-        Settings.addArchiveCell(row, boardID, data, 'post');
-        Settings.addArchiveCell(row, boardID, data, 'file');
+        $.add(row, [Settings.addArchiveCell(boardID, data, 'thread'), Settings.addArchiveCell(boardID, data, 'post'), Settings.addArchiveCell(boardID, data, 'file')]);
       }
       $.add($('tbody', section), rows);
-      return $.get('selectedArchives', Conf['selectedArchives'], function(_arg) {
+      boardSelect = $('#archive-board-select', section);
+      $.add(boardSelect, boardOptions);
+      table = $.id('archive-table');
+      $.on(boardSelect, 'change', function() {
+        $('tbody > :not([hidden])', table).hidden = true;
+        return $("tbody > ." + this.value, table).hidden = false;
+      });
+      $.get('selectedArchives', Conf['selectedArchives'], function(_arg) {
         var option, selectedArchives, type;
 
         selectedArchives = _arg.selectedArchives;
@@ -9849,6 +9861,47 @@
             }
           }
         }
+      });
+    },
+    addArchiveCell: function(boardID, data, type) {
+      var archive, i, length, options, select, td;
+
+      length = data[type].length;
+      td = $.el('td', {
+        className: 'archive-cell'
+      });
+      if (!length) {
+        td.textContent = '--';
+        return td;
+      }
+      options = [];
+      i = 0;
+      while (i < length) {
+        archive = data[type][i++];
+        options.push($.el('option', {
+          textContent: archive,
+          value: archive
+        }));
+      }
+      td.innerHTML = '<select></select>';
+      select = td.firstElementChild;
+      if (!(select.disabled = length === 1)) {
+        select.setAttribute('data-boardid', boardID);
+        select.setAttribute('data-type', type);
+        $.on(select, 'change', Settings.saveSelectedArchive);
+      }
+      $.add(select, options);
+      return td;
+    },
+    saveSelectedArchive: function() {
+      var _this = this;
+
+      return $.get('selectedArchives', Conf['selectedArchives'], function(_arg) {
+        var selectedArchives, _name;
+
+        selectedArchives = _arg.selectedArchives;
+        (selectedArchives[_name = _this.dataset.boardid] || (selectedArchives[_name] = {}))[_this.dataset.type] = _this.value;
+        return $.set('selectedArchives', selectedArchives);
       });
     },
     boardnav: function() {
@@ -9901,47 +9954,6 @@
     },
     usercss: function() {
       return CustomCSS.update();
-    },
-    addArchiveCell: function(row, boardID, data, type) {
-      var archive, length, options, select, td, _i, _len, _ref;
-
-      options = [];
-      _ref = data[type];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        archive = _ref[_i];
-        options.push($.el('option', {
-          textContent: archive,
-          value: archive
-        }));
-      }
-      td = $.el('td', {
-        className: 'archive-cell'
-      });
-      length = options.length;
-      if (length) {
-        td.innerHTML = '<select></select>';
-        select = td.firstElementChild;
-        if (!(select.disabled = length === 1)) {
-          select.setAttribute('data-boardid', boardID);
-          select.setAttribute('data-type', type);
-          $.on(select, 'change', Settings.saveSelectedArchive);
-        }
-        $.add(select, options);
-      } else {
-        td.textContent = '--';
-      }
-      return $.add(row, td);
-    },
-    saveSelectedArchive: function() {
-      var _this = this;
-
-      return $.get('selectedArchives', Conf['selectedArchives'], function(_arg) {
-        var selectedArchives, _name;
-
-        selectedArchives = _arg.selectedArchives;
-        (selectedArchives[_name = _this.dataset.boardid] || (selectedArchives[_name] = {}))[_this.dataset.type] = _this.value;
-        return $.set('selectedArchives', selectedArchives);
-      });
     },
     keybinds: function(section) {
       var arr, input, inputs, items, key, tbody, tr, _ref;
