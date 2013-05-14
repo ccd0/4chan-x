@@ -1,3 +1,5 @@
+### 3.4.2 - *2013-05-14*
+
 ### 3.4.1 - *2013-05-13*
 
 - Added a button in the Archives settings to update the list now.
