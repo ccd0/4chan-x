@@ -1,3 +1,6 @@
+### v1.2.4
+*2013-05-14*
+
 **seaweedchan**:
 - Don't let QR shortcut close a Persistent QR
 - Don't let Reply to Thread link close the QR -- it should only do what it implies
