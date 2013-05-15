@@ -503,6 +503,10 @@ Config =
         true
         'Replies fit the entire width of the page.'
       ]
+      'Indent Replies': [
+        false
+        'Indent posts under the OP.'
+      ]
       'Hide Delete UI': [
         false
         'Hides vanilla report and delete functionality and UI. This does not affect Appchan\'s Menu functionality.'

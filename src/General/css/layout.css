@@ -869,6 +869,11 @@ hide: "
   display: inline-block;
 }
 "}
+#{if _conf["Indent Replies"] then "
+.thread > .replyContainer,
+.threadContainer > .replyContainer {
+  margin-left: 2em;
+}" else ''}
 .expanded-image .reply.post,
 .hasInline .reply.post {
   display: inline-block;
@@ -944,7 +949,7 @@ else ""
 }
 /* Quote Threading */
 .threadContainer {
-  padding-left: 2em;
+  #{if _conf["Indent Replies"] then "margin" else "padding"}-left: 2em;
   border-left: 1px solid;
 }
 .threadOP {
