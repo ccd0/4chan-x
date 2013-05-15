@@ -1,6 +1,11 @@
+**seaweedchan**:
+- Don't let QR shortcut close a Persistent QR
+- Don't let Reply to Thread link close the QR -- it should only do what it implies
+
 **zixaphir**:
 - Add board selection to archiver options
 - Fix bug where image hover would close when hitting Enter while typing
+- Add `Quoted Title` option which adds (!) text to title when user is quoted
 
 ### v1.2.3
 *2013-05-14*
