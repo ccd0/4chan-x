@@ -293,6 +293,10 @@ Config =
         true
         'Show notifications on successful post creation or file uploading.'
       ]
+      'Mistyped Captcha Errors': [
+        true
+        'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.'
+      ]
 
     'Quote Links':
       'Quote Backlinks': [
