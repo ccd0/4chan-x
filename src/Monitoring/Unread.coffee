@@ -30,8 +30,7 @@ Unread =
     for ID, post of Unread.thread.posts
       posts.push post if post.isReply
     Unread.addPosts posts
-    return unless Conf['Scroll to Last Read Post']
-    Unread.scroll()
+    Unread.scroll() if Conf['Scroll to Last Read Post'] 
 
   scroll: ->
     # Let the header's onload callback handle it.
@@ -44,15 +43,11 @@ Unread =
         break if prevID is post.ID
         prevID = post.ID
         break unless post.isHidden
-      onload = -> root.scrollIntoView false
-    else
-      # Scroll to the last read post.
-      posts = Object.keys Unread.thread.posts
-      post  = Unread.thread.posts[posts[posts.length - 1]]
-      onload = -> Header.scrollToPost post.nodes.root
-    # Prevent the browser to scroll back to
-    # the previous scroll location on page load.
-    $.on window, 'load', onload
+      root.scrollIntoView false
+      return
+    # Scroll to the last read post.
+    posts = Object.keys Unread.thread.posts
+    Header.scrollToPost Unread.thread.posts[posts[posts.length - 1]].nodes.root 
 
   sync: ->
     lastReadPost = Unread.db.get

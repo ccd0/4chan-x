@@ -289,6 +289,10 @@ Config =
         true
         'Show notifications on successful post creation or file uploading.'
       ]
+      'Captcha Warning Notifications': [
+        true
+        'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.'
+      ]
 
     'Quote Links':
       'Quote Backlinks': [
@@ -328,8 +332,8 @@ Config =
         'Add \'(You)\' to quotes linking to your posts.'
       ]
       'Quoted Title': [
-        'Change the page title to reflect you\'ve been quoted.'
         false
+        'Change the page title to reflect you\'ve been quoted.'
       ]
       'Highlight Posts Quoting You': [
         false

@@ -9,6 +9,9 @@
 **zixaphir**:
 - Make new archive selection not depend on a JSON file
 - Remove some code that sends user errors back to us (we didn't have a working link anyway)
+- Add board selection to archiver options
+- Fix bug where image hover would close when hitting Enter while typing
+- Add `Quoted Title` option which adds (!) text to title when user is quoted
 
 ### v2.0.3
 *2013-05-10*

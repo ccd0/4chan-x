@@ -176,6 +176,8 @@ Settings =
         Conf[db] = boards: {}
       # Make sure to export the most recent data.
       $.get Conf, (Conf) ->
+        # XXX don't export archives.
+        delete Conf['archives']
         data.Conf = Conf
         Settings.export now, data
       return

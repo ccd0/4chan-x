@@ -87,6 +87,8 @@ QR =
     QR.cleanNotifications()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
+    unless Conf['Captcha Warning Notifications']
+      $.rmClass QR.captcha.nodes.input, 'error'
     if Conf['QR Shortcut']
       $.toggleClass $('.qr-shortcut'), 'disabled'
     for i in QR.posts
@@ -125,6 +127,14 @@ QR =
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
       QR.captcha.nodes.input.focus()
+      if Conf['Captcha Warning Notifications']
+        QR.notifications.push new Notification 'warning', el
+      else
+        $.addClass QR.captcha.nodes.input, 'error'
+        $.on QR.captcha.nodes.input, 'keydown', ->
+          $.rmClass QR.captcha.nodes.input, 'error'
+    else
+      QR.notifications.push new Notification 'warning', el
     alert el.textContent if d.hidden
     QR.notifications.push new Notification 'warning', el
 
@@ -1046,13 +1056,13 @@ QR =
       {challenge, response} = QR.captcha.getOne()
       err = 'No valid captcha.' unless response
 
+    QR.cleanNotifications()
     if err
       # stop auto-posting
       QR.cooldown.auto = false
       QR.status()
       QR.error err
       return
-    QR.cleanNotifications()
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.posts.length > 1

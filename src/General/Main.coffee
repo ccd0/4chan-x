@@ -32,6 +32,7 @@ Main =
 
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
+    return if g.BOARD.ID is 'z'
     g.VIEW   =
       switch pathname[2]
         when 'res'
@@ -207,6 +208,10 @@ Main =
 
       return
 
+    try
+      localStorage.getItem '4chan-settings'
+    catch err
+      new Notification 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to properly function.', 30
 
     $.event '4chanXInitFinished'
     Main.checkUpdate()
