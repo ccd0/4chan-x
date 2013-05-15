@@ -199,7 +199,7 @@
         'Cooldown': [true, 'Indicate the remaining time before posting again.'],
         'Cooldown Prediction': [true, 'Decrease the cooldown time by taking into account upload speed. Disable it if it\'s inaccurate for you.'],
         'Posting Success Notifications': [true, 'Show notifications on successful post creation or file uploading.'],
-        'Mistyped Captcha Errors': [true, 'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.']
+        'Captcha Warning Notifications': [true, 'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.']
       },
       'Quote Links': {
         'Quote Backlinks': [true, 'Add quote backlinks.'],
@@ -4728,7 +4728,7 @@
       QR.cleanNotifications();
       d.activeElement.blur();
       $.rmClass(QR.nodes.el, 'dump');
-      if (!Conf['Mistyped Captcha Errors']) {
+      if (!Conf['Captcha Warning Notifications']) {
         $.rmClass(QR.captcha.nodes.input, 'error');
       }
       if (Conf['QR Shortcut']) {
@@ -4776,7 +4776,7 @@
       }
       if (QR.captcha.isEnabled && /captcha|verification/i.test(el.textContent)) {
         QR.captcha.nodes.input.focus();
-        if (Conf['Mistyped Captcha Errors']) {
+        if (Conf['Captcha Warning Notifications']) {
           QR.notifications.push(new Notification('warning', el));
         } else {
           $.addClass(QR.captcha.nodes.input, 'error');

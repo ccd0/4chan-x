@@ -93,7 +93,7 @@ QR =
     QR.cleanNotifications()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
-    unless Conf['Mistyped Captcha Errors']
+    unless Conf['Captcha Warning Notifications']
       $.rmClass QR.captcha.nodes.input, 'error'
     if Conf['QR Shortcut']
       $.toggleClass $('.qr-shortcut'), 'disabled'
@@ -128,7 +128,7 @@ QR =
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
       QR.captcha.nodes.input.focus()
-      if Conf['Mistyped Captcha Errors']
+      if Conf['Captcha Warning Notifications']
         QR.notifications.push new Notification 'warning', el
       else
         $.addClass QR.captcha.nodes.input, 'error'
