@@ -10054,7 +10054,6 @@
       }
       Conf['selectedArchives'] = {};
       $.get(Conf, Main.initFeatures);
-      $.on(d, '4chanMainInit', Main.initStyle);
       return $.asap((function() {
         var _ref;
 
@@ -10185,7 +10184,6 @@
     initStyle: function() {
       var MutationObserver, mainStyleSheet, observer, setStyle, style, styleSheets, _ref;
 
-      $.off(d, '4chanMainInit', Main.initStyle);
       if (!Main.isThisPageLegit() || $.hasClass(doc, 'fourchan-x')) {
         return;
       }
