@@ -1,3 +1,12 @@
+### v1.2.5
+*2013-05-15*
+
+**seaweedchan**:
+- New option `Captcha Warning Notifications`
+ - When disabled, shows a red border around the captcha to indicate captcha errors. Goes back to normal when any key is pressed.
+- Color Quick Reply's inputs in Tomorrow to match the theme
+- Revert some of Mayhem's changes that caused new bugs
+
 ### v1.2.4
 *2013-05-14*
 
