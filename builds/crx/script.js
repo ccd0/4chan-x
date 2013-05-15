@@ -327,7 +327,7 @@
     },
     time: '%m/%d/%y(%a)%H:%M:%S',
     backlink: '>>%id',
-    fileInfo: '%L (%p%s, %r)',
+    fileInfo: '%l (%p%s, %r)',
     favicon: 'ferongr',
     usercss: "/* Tripcode Italics: */\n/*\nspan.postertrip {\nfont-style: italic;\n}\n*/\n\n/* Add a rounded border to thumbnails (but not expanded images): */\n/*\n.fileThumb > img:first-child {\nborder: solid 2px rgba(0,0,100,0.5);\nborder-radius: 10px;\n}\n*/\n\n/* Make highlighted posts look inset on the page: */\n/*\ndiv.post:target,\ndiv.post.highlight {\nbox-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);\n}\n*/",
     hotkeys: {
