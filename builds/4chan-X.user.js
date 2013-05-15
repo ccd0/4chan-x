@@ -4791,7 +4791,6 @@
         return alert(el.textContent);
       }
     },
-    clearError: function() {},
     notifications: [],
     cleanNotifications: function() {
       var notification, _i, _len, _ref;

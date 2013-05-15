@@ -137,9 +137,6 @@ QR =
     else
       QR.notifications.push new Notification 'warning', el
     alert el.textContent if d.hidden
-
-  clearError: ->
-    
     
   notifications: []
   cleanNotifications: ->
