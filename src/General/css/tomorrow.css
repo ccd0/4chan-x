@@ -3,9 +3,6 @@
   background-color: #282A2E;
   border-color: #111;
 }
-:root.tomorrow .field:focus {
-  border-color: #000;
-}
 
 /* Header */
 :root.tomorrow #header-bar, :root.tomorrow #notifications {
@@ -37,6 +34,15 @@
 }
 :root.tomorrow .qr-preview {
   background-color: rgba(255, 255, 255, .15);
+}
+:root.tomorrow #qr .field {
+  background-color: rgb(26, 27, 29);
+  color: rgb(197,200,198);
+  border-color: rgb(40, 41, 42);
+}
+:root.tomorrow #qr .field:focus {
+  border-color: rgb(129, 162, 190) !important;
+  background-color: rgb(30,32,36);
 }
 
 /* Menu */
