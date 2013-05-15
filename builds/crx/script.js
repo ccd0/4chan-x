@@ -4615,14 +4615,15 @@
           href: 'javascript:;'
         });
         $.on(sc, 'click', function() {
-          if (!QR.nodes || QR.nodes.el.hidden) {
+          if (Conf['Persistent QR'] || !QR.nodes || QR.nodes.el.hidden) {
             $.event('CloseMenu');
             QR.open();
             QR.nodes.com.focus();
+            return $.rmClass(this, 'disabled');
           } else {
             QR.close();
+            return $.addClass(this, 'disabled');
           }
-          return $.toggleClass(this, 'disabled');
         });
         Header.addShortcut(sc);
       }
@@ -4655,15 +4656,11 @@
         className: "qr-link"
       });
       $.on(link, 'click', function() {
-        if (!QR.nodes || QR.nodes.el.hidden) {
-          $.event('CloseMenu');
-          QR.open();
-          QR.nodes.com.focus();
-          if (Conf['QR Shortcut']) {
-            return $.rmClass($('.qr-shortcut'), 'disabled');
-          }
-        } else {
-          return QR.close();
+        $.event('CloseMenu');
+        QR.open();
+        QR.nodes.com.focus();
+        if (Conf['QR Shortcut']) {
+          return $.rmClass($('.qr-shortcut'), 'disabled');
         }
       });
       $.before($.id('postForm'), link);

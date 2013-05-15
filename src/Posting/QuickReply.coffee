@@ -11,13 +11,14 @@ QR =
         title: 'Quick Reply'
         href: 'javascript:;'
       $.on sc, 'click', ->
-        if !QR.nodes or QR.nodes.el.hidden
+        if Conf['Persistent QR'] or !QR.nodes or QR.nodes.el.hidden
           $.event 'CloseMenu'
           QR.open()
           QR.nodes.com.focus()
+          $.rmClass @, 'disabled'
         else
           QR.close()
-        $.toggleClass @, 'disabled'
+          $.addClass @, 'disabled'
 
       Header.addShortcut sc
 
@@ -40,14 +41,11 @@ QR =
       title:  title
       className: "qr-link"
     $.on link, 'click', ->
-      if !QR.nodes or QR.nodes.el.hidden
-        $.event 'CloseMenu'
-        QR.open()
-        QR.nodes.com.focus()
-        if Conf['QR Shortcut']
-          $.rmClass $('.qr-shortcut'), 'disabled'
-      else
-        QR.close()
+      $.event 'CloseMenu'
+      QR.open()
+      QR.nodes.com.focus()
+      if Conf['QR Shortcut']
+        $.rmClass $('.qr-shortcut'), 'disabled'
 
     $.before $.id('postForm'), link
 
