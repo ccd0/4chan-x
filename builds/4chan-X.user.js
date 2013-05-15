@@ -10069,7 +10069,7 @@
       return $.asap((function() {
         var _ref;
 
-        return d.head && $('title', d.head) || ((_ref = d.readyState) === 'interactive' || _ref === 'complete');
+        return d.head && $('link[rel="shortcut icon"]', d.head) || ((_ref = d.readyState) === 'interactive' || _ref === 'complete');
       }), Main.initStyle);
     },
     initFeatures: function(items) {
