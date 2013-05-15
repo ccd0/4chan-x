@@ -53,10 +53,6 @@ Config =
         true
         'Check for updated versions of <%= meta.name %>.'
       ]
-      'Emoji': [
-        false
-        'Adds icons next to names for different emails'
-      ]
       'Color User IDs': [
         false
         'Assign unique colors to user IDs on boards that use them'

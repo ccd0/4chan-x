@@ -138,7 +138,6 @@
         'Index Navigation': [false, 'Add buttons to navigate between threads.'],
         'Reply Navigation': [false, 'Add buttons to navigate to top / bottom of thread.'],
         'Check for Updates': [true, 'Check for updated versions of appchan x.'],
-        'Emoji': [false, 'Adds icons next to names for different emails'],
         'Color User IDs': [false, 'Assign unique colors to user IDs on boards that use them'],
         'Remove Spoilers': [false, 'Remove all spoilers in text.'],
         'Indicate Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled.']
