@@ -11,13 +11,14 @@ QR =
         title: 'Quick Reply'
         href: 'javascript:;'
       $.on sc, 'click', ->
-        if !QR.nodes or QR.nodes.el.hidden
+        if Conf['Persistent QR'] or !QR.nodes or QR.nodes.el.hidden
           $.event 'CloseMenu'
           QR.open()
           QR.nodes.com.focus()
+          $.rmClass @, 'disabled'
         else
           QR.close()
-        $.toggleClass @, 'disabled'
+          $.addClass @, 'disabled'
 
       Header.addShortcut sc
 
@@ -40,14 +41,11 @@ QR =
       title:  title
       className: "qr-link"
     $.on link, 'click', ->
-      if !QR.nodes or QR.nodes.el.hidden
-        $.event 'CloseMenu'
-        QR.open()
-        QR.nodes.com.focus()
-        if Conf['QR Shortcut']
-          $.rmClass $('.qr-shortcut'), 'disabled'
-      else
-        QR.close()
+      $.event 'CloseMenu'
+      QR.open()
+      QR.nodes.com.focus()
+      if Conf['QR Shortcut']
+        $.rmClass $('.qr-shortcut'), 'disabled'
 
     $.before $.id('postForm'), link
 
@@ -95,6 +93,8 @@ QR =
     QR.cleanNotifications()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
+    unless Conf['Captcha Warning Notifications']
+      $.rmClass QR.captcha.nodes.input, 'error'
     if Conf['QR Shortcut']
       $.toggleClass $('.qr-shortcut'), 'disabled'
     for i in QR.posts
@@ -128,8 +128,16 @@ QR =
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
       QR.captcha.nodes.input.focus()
+      if Conf['Captcha Warning Notifications']
+        QR.notifications.push new Notification 'warning', el
+      else
+        $.addClass QR.captcha.nodes.input, 'error'
+        $.on QR.captcha.nodes.input, 'keydown', ->
+          $.rmClass QR.captcha.nodes.input, 'error'
+    else
+      QR.notifications.push new Notification 'warning', el
     alert el.textContent if d.hidden
-    QR.notifications.push new Notification 'warning', el
+    
   notifications: []
   cleanNotifications: ->
     for notification in QR.notifications
@@ -1025,13 +1033,13 @@ QR =
       {challenge, response} = QR.captcha.getOne()
       err = 'No valid captcha.' unless response
 
+    QR.cleanNotifications()
     if err
       # stop auto-posting
       QR.cooldown.auto = false
       QR.status()
       QR.error err
       return
-    QR.cleanNotifications()
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.posts.length > 1

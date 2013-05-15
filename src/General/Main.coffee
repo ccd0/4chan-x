@@ -18,7 +18,8 @@ Main =
     
     $.get Conf, Main.initFeatures
 
-    $.asap (-> d.head and $('link[rel="shortcut icon"]', d.head) or d.readyState in ['interactive', 'complete']),\
+    $.on d, '4chanMainInit', Main.initStyle
+    $.asap (-> d.head and $('title', d.head) or d.readyState in ['interactive', 'complete']),
       Main.initStyle
 
   initFeatures: (items) ->
@@ -26,6 +27,7 @@ Main =
 
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
+    return if g.BOARD.ID is 'z'
     g.VIEW   =
       switch pathname[2]
         when 'res'
@@ -131,7 +133,8 @@ Main =
     $.ready Main.initReady
 
   initStyle: ->
-    return unless Main.isThisPageLegit()
+    $.off d, '4chanMainInit', Main.initStyle
+    return if !Main.isThisPageLegit() or $.hasClass doc, 'fourchan-x'
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
     <% if (type === 'crx') { %>
@@ -223,6 +226,10 @@ Main =
 
       return
 
+    try
+      localStorage.getItem '4chan-settings'
+    catch err
+      new Notification 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to properly function.', 30
 
     $.event '4chanXInitFinished'
     Main.checkUpdate()

@@ -5,7 +5,11 @@ Sauce =
     links = []
     for link in Conf['sauces'].split '\n'
       continue if link[0] is '#'
-      links.push @createSauceLink link.trim()
+      try
+        links.push @createSauceLink link.trim()
+      catch err
+        # Don't add random text plz.
+        continue
     return unless links.length
     @links = links
     @link  = $.el 'a', target: '_blank'
