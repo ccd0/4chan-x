@@ -1,3 +1,9 @@
+### v1.2.6
+*2013-05-16*
+
+**seaweedchan**:
+- Fix bug with theme switching
+
 ### v1.2.5
 *2013-05-15*
 
