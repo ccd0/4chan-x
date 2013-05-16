@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.5 - 2013-05-15
+* 4chan X - Version 1.2.5 - 2013-05-16
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -10054,6 +10054,7 @@
       }
       Conf['selectedArchives'] = {};
       $.get(Conf, Main.initFeatures);
+      $.on(d, '4chanMainInit', Main.initStyle);
       return $.asap((function() {
         var _ref;
 
@@ -10184,6 +10185,7 @@
     initStyle: function() {
       var MutationObserver, mainStyleSheet, observer, setStyle, style, styleSheets, _ref;
 
+      $.off(d, '4chanMainInit', Main.initStyle);
       if (!Main.isThisPageLegit() || $.hasClass(doc, 'fourchan-x')) {
         return;
       }
