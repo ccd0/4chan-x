@@ -92,16 +92,7 @@ Header =
     # XXX Getting weird reports here of
     #   "Header" initialization crashed. TypeError: Cannot read property 'innerHTML' of null
     # Let's try to find the cause.
-    if nav is null
-      Main.logError
-        message: "Header crash: nav is null"
-        error: new Error """
-          #{!!$.id 'boardNavMobile'}
-          d.readyState     = #{d.readyState}
-          doc.className    = #{doc.className}
-          d.body.className = #{d.body.className}
-        """
-    else
+    if nav
       fullBoardList.innerHTML = nav.innerHTML
       $.rm $ '#navtopright', fullBoardList
       btn = $.el 'span',
