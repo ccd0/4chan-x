@@ -2,7 +2,7 @@ Main =
   init: (items) ->
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
-    return if g.BOARD.ID is 'z'
+    return if g.BOARD.ID in ['z', 'fk']
     g.VIEW   =
       switch pathname[2]
         when 'res'
