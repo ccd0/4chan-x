@@ -8389,7 +8389,7 @@
             return;
           }
           thread.isExpanded = 'loading';
-          a.textContent = a.textContent.replace('+', '× Loading...');
+          a.textContent = a.textContent.replace('+', '...');
           $.cache("//api.4chan.org/" + thread.board + "/res/" + thread + ".json", function() {
             return ExpandThread.parse(this, thread, a);
           });
@@ -8399,12 +8399,12 @@
           if (!a) {
             return;
           }
-          a.textContent = a.textContent.replace('× Loading...', '+');
+          a.textContent = a.textContent.replace('...', '+');
           break;
         case true:
           thread.isExpanded = false;
           if (a) {
-            a.textContent = a.textContent.replace('-', '+');
+            a.textContent = a.textContent.replace('-', '+').replace('hide', 'view').replace('expanded', 'omitted');
             num = (function() {
               if (thread.isSticky) {
                 return 1;
@@ -8452,7 +8452,7 @@
         return;
       }
       thread.isExpanded = true;
-      a.textContent = a.textContent.replace('× Loading...', '-');
+      a.textContent = a.textContent.replace('...', '-').replace('view', 'hide').replace('omitted', 'expanded');
       posts = JSON.parse(req.response).posts;
       if (spoilerRange = posts[0].custom_spoiler) {
         Build.spoilerRange[g.BOARD] = spoilerRange;
