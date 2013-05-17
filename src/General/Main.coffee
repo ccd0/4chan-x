@@ -201,6 +201,7 @@ Main =
       Main.callbackNodes Post, posts
 
     if $.hasClass d.body, 'fourchan_x'
+      Main.v2Detected = true
       alert '4chan X v2 detected: Disable it or v3 will break.'
 
     try
@@ -315,6 +316,7 @@ Main =
 
   errors: []
   logError: (data) ->
+    return if Main.v2Detected
     unless Main.errors.length
       $.on window, 'unload', Main.postErrors
     c.error data.message, data.error.stack
