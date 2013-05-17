@@ -212,7 +212,7 @@ QR =
           else 300
         sage: if board is 'q' then 600 else 60
         file: if board is 'q' then 300 else 30
-        post: if board is 'q' then 60  else 30
+        post: if board is 'q' then 150 else 30
       QR.cooldown.upSpd = 0
       QR.cooldown.upSpdAccuracy = .5
       $.get "cooldown.#{board}", {}, (item) ->
