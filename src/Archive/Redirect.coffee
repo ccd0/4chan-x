@@ -56,6 +56,7 @@ Redirect =
       'files':  ['hr', 'tg', 'tv', 'x']
 
     'Nyafuu':
+      'domain': 'archive.nyafuu.org'
       'http':  true
       'https': true
       'software': 'foolfuuka'
