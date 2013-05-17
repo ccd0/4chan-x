@@ -1,5 +1,19 @@
 Main =
   init: (items) ->
+    pathname = location.pathname.split '/'
+    g.BOARD  = new Board pathname[1]
+    return if g.BOARD.ID is 'z'
+    g.VIEW   =
+      switch pathname[2]
+        when 'res'
+          'thread'
+        when 'catalog'
+          'catalog'
+        else
+          'index'
+    if g.VIEW is 'thread'
+      g.THREADID = +pathname[3]
+
     # flatten Config into Conf
     # and get saved or default values
     flatten = (parent, obj) ->
@@ -17,20 +31,6 @@ Main =
     Conf['selectedArchives'] = {}
     Conf['archives'] = Redirect.archives
     $.get Conf, Main.initFeatures
-
-    pathname = location.pathname.split '/'
-    g.BOARD  = new Board pathname[1]
-    return if g.BOARD.ID is 'z'
-    g.VIEW   =
-      switch pathname[2]
-        when 'res'
-          'thread'
-        when 'catalog'
-          'catalog'
-        else
-          'index'
-    if g.VIEW is 'thread'
-      g.THREADID = +pathname[3]
 
     $.on d, '4chanMainInit', Main.initStyle
     $.asap (-> d.head and $('title', d.head) or d.readyState in ['interactive', 'complete']),
