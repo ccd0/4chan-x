@@ -40,7 +40,7 @@ QR =
       innerHTML: "<a href=javascript:;>#{title = if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'}</a>"
       title:  title
       className: "qr-link"
-    $.on link, 'click', ->
+    $.on link.firstChild, 'click', ->
       $.event 'CloseMenu'
       QR.open()
       QR.nodes.com.focus()
