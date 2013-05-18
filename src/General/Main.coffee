@@ -318,13 +318,13 @@ Main =
 
   errors: []
   logError: (data) ->
-    return if Main.v2Detected
     unless Main.errors.length
       $.on window, 'unload', Main.postErrors
     c.error data.message, data.error.stack
     Main.errors.push data
 
   postErrors: ->
+    return if Main.v2Detected
     errors = Main.errors.map (d) -> d.message + ' ' + d.error.stack
     $.ajax '<%= meta.page %>errors', {},
       sync: true
