@@ -78,7 +78,7 @@ Get =
     # Stop here if the container has been removed while loading.
     return unless root.parentNode
     clone = post.addClone context
-    Main.callbackNodes Post, [clone]
+    Main.callbackNodes Clone, [clone]
 
     # Get rid of the side arrows.
     {nodes} = clone
