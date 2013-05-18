@@ -1,3 +1,12 @@
+### v1.2.7
+*2013-05-18*
+
+**seaweedchan**:
+- Update /q/'s posting cooldown
+- Make "___ omitted. Click here to view." text change when thread is expanded.
+- Restrict "Reply to Thread" click event to the link itself
+- Fix Nyafuu being undefined
+
 ### v1.2.6
 *2013-05-16*
 
