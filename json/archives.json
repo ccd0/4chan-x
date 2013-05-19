@@ -95,8 +95,8 @@
   "http": true,
   "https": false,
   "software": "fuuka",
-  "boards": ["an", "fit", "k", "mlp", "r9k", "toy", "x"],
-  "files": ["an", "k", "toy", "x"]
+  "boards": ["an", "fit", "k", "mlp", "r9k", "toy"],
+  "files": ["an", "fit", "k", "r9k", "toy"]
 }, {
   "uid": 10,
   "name": "warosu",
