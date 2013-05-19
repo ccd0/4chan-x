@@ -62,7 +62,7 @@ $.cache = do ->
     req = $.ajax url,
       onload: (e) ->
         cb.call @, e for cb in @callbacks
-        req.evt = e
+        @evt = e
         delete @callbacks
       onabort: rm
       onerror: rm
