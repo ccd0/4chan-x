@@ -1,3 +1,13 @@
+**MayhemYDG**:
+- Tiny fixes
+
+**seaweedchan**:
+- New image expansion option: `Advance on contract`. Advances to next post unless Fappe Tyme is enabled (temporary)
+- Change `.qr-link` to `.qr-link-container` and `.qr-link>a` to `.qr-link`
+
+**Wohlfe**:
+- Add /pol/ archiving for FoolzaShit
+
 ### v1.2.7
 *2013-05-18*
 

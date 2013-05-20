@@ -83,7 +83,7 @@ Redirect =
       'http':  true
       'https': true
       'software': 'foolfuuka'
-      'boards': ['adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 's', 's4s', 't', 'trv', 'y']
+      'boards': ['adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 'pol', 's', 's4s', 't', 'trv', 'y']
       'files':  ['adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 's', 's4s', 't', 'trv', 'y']
 
     'Install Gentoo':
@@ -106,8 +106,8 @@ Redirect =
       'domain': 'archive.heinessen.com'
       'http': true
       'software': 'fuuka'
-      'boards': ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x']
-      'files':  ['an', 'k', 'toy', 'x']
+      'boards': ['an', 'fit', 'k', 'mlp', 'r9k', 'toy']
+      'files':  ['an', 'k', 'toy']
 
     'warosu':
       'domain': 'fuuka.warosu.org'

@@ -438,7 +438,7 @@
   };
 
   $.ajax = function(url, callbacks, opts) {
-    var cred, form, headers, key, r, sync, type, upCallbacks, val;
+    var cred, err, form, headers, key, r, sync, type, upCallbacks, val;
 
     if (opts == null) {
       opts = {};
@@ -454,7 +454,11 @@
     }
     $.extend(r, callbacks);
     $.extend(r.upload, upCallbacks);
-    r.withCredentials = cred;
+    try {
+      r.withCredentials = cred;
+    } catch (_error) {
+      err = _error;
+    }
     r.send(form);
     return r;
   };
@@ -468,7 +472,7 @@
 
       if (req = reqs[url]) {
         if (req.readyState === 4) {
-          cb.call(req);
+          cb.call(req, req.evt);
         } else {
           req.callbacks.push(cb);
         }
@@ -486,6 +490,7 @@
             cb = _ref[_i];
             cb.call(this, e);
           }
+          this.evt = e;
           return delete this.callbacks;
         },
         onabort: rm,
@@ -1311,7 +1316,7 @@
       _ref = this.data.boards;
       for (boardID in _ref) {
         val = _ref[boardID];
-        if (!val) {
+        if (typeof this.data.boards[boardID] !== 'object') {
           delete this.data.boards[boardID];
         } else {
           this.deleteIfEmpty({
@@ -2069,7 +2074,7 @@
         return;
       }
       clone = post.addClone(context);
-      Main.callbackNodes(Post, [clone]);
+      Main.callbackNodes(Clone, [clone]);
       nodes = clone.nodes;
       $.rmAll(nodes.root);
       $.add(nodes.root, nodes.post);
@@ -6635,7 +6640,7 @@
         open: function(post) {
           var node;
 
-          if (post.isDead) {
+          if (post.isDead || post.board.ID === 'q') {
             return false;
           }
           DeleteLink.post = post;
@@ -6711,7 +6716,7 @@
           return;
         }
         DeleteLink.cooldown.counting = post;
-        length = post.board.ID === 'q' ? 600 : 30;
+        length = 30;
         seconds = Math.ceil((length * $.SECOND - (Date.now() - post.info.date)) / $.SECOND);
         return DeleteLink.cooldown.count(post, seconds, length, node);
       },
@@ -7884,7 +7889,7 @@
         'http': true,
         'https': true,
         'software': 'foolfuuka',
-        'boards': ['adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 's', 's4s', 't', 'trv', 'y'],
+        'boards': ['adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 'pol', 's', 's4s', 't', 'trv', 'y'],
         'files': ['adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 's', 's4s', 't', 'trv', 'y']
       },
       'Install Gentoo': {
@@ -7907,8 +7912,8 @@
         'domain': 'archive.heinessen.com',
         'http': true,
         'software': 'fuuka',
-        'boards': ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'],
-        'files': ['an', 'k', 'toy', 'x']
+        'boards': ['an', 'fit', 'k', 'mlp', 'r9k', 'toy'],
+        'files': ['an', 'k', 'toy']
       },
       'warosu': {
         'domain': 'fuuka.warosu.org',
@@ -10041,8 +10046,26 @@
 
   Main = {
     init: function(items) {
-      var db, flatten, _i, _len;
+      var db, flatten, pathname, _i, _len, _ref;
 
+      pathname = location.pathname.split('/');
+      g.BOARD = new Board(pathname[1]);
+      if ((_ref = g.BOARD.ID) === 'z' || _ref === 'fk') {
+        return;
+      }
+      g.VIEW = (function() {
+        switch (pathname[2]) {
+          case 'res':
+            return 'thread';
+          case 'catalog':
+            return 'catalog';
+          default:
+            return 'index';
+        }
+      })();
+      if (g.VIEW === 'thread') {
+        g.THREADID = +pathname[3];
+      }
       flatten = function(parent, obj) {
         var key, val;
 
@@ -10068,9 +10091,9 @@
       $.get(Conf, Main.initFeatures);
       $.on(d, '4chanMainInit', Main.initStyle);
       return $.asap((function() {
-        var _ref;
+        var _ref1;
 
-        return d.head && $('link[rel="shortcut icon"]', d.head) || ((_ref = d.readyState) === 'interactive' || _ref === 'complete');
+        return d.head && $('link[rel="shortcut icon"]', d.head) || ((_ref1 = d.readyState) === 'interactive' || _ref1 === 'complete');
       }), Main.initStyle);
     },
     initFeatures: function(items) {
