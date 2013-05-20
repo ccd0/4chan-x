@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.7 - 2013-05-18
+* 4chan X - Version 1.2.7 - 2013-05-19
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -223,7 +223,8 @@
       'Fit width': [true, ''],
       'Fit height': [false, ''],
       'Expand spoilers': [true, 'Expand all images along with spoilers.'],
-      'Expand from here': [true, 'Expand all images only from current position to thread end.']
+      'Expand from here': [true, 'Expand all images only from current position to thread end.'],
+      'Advance on contract': [false, 'Advance to next post when contracting an expanded image.']
     },
     filter: {
       name: "# Filter any namefags:\n#/^(?!Anonymous$)/",
@@ -6191,7 +6192,7 @@
         return;
       }
       ImageExpand.contract(post);
-      rect = post.nodes.root.getBoundingClientRect();
+      rect = Conf['Advance on contract'] ? post.nodes.root.nextSibling.getBoundingClientRect() : post.nodes.root.getBoundingClientRect();
       if (!(rect.top <= 0 || rect.left <= 0)) {
         return;
       }

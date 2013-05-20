@@ -377,7 +377,11 @@ Config =
       true
       'Expand all images only from current position to thread end.'
     ]
-
+    'Advance on contract': [
+      false
+      'Advance to next post when contracting an expanded image.'
+    ]
+    
   filter:
     name: """
 # Filter any namefags:

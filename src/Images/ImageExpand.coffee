@@ -68,7 +68,10 @@ ImageExpand =
       ImageExpand.expand post
       return
     ImageExpand.contract post
-    rect = post.nodes.root.getBoundingClientRect()
+    rect = if Conf['Advance on contract']
+      post.nodes.root.nextSibling.getBoundingClientRect()
+    else
+      post.nodes.root.getBoundingClientRect()
     return unless rect.top <= 0 or rect.left <= 0
 
     {top} = rect
