@@ -102,13 +102,16 @@ $.cache = do ->
         req.callbacks.push cb
       return
     rm = -> delete reqs[url]
-    req = $.ajax url,
-      onload: (e) ->
-        cb.call @, e for cb in @callbacks
-        @evt = e
-        delete @callbacks
-      onabort: rm
-      onerror: rm
+    try
+      req = $.ajax url,
+        onload: (e) ->
+          cb.call @, e for cb in @callbacks
+          @evt = e
+          delete @callbacks
+        onabort: rm
+        onerror: rm
+    catch err
+      return
     req.callbacks = [cb]
     reqs[url] = req
 

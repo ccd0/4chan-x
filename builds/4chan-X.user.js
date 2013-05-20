@@ -468,7 +468,7 @@
 
     reqs = {};
     return function(url, cb) {
-      var req, rm;
+      var err, req, rm;
 
       if (req = reqs[url]) {
         if (req.readyState === 4) {
@@ -481,21 +481,26 @@
       rm = function() {
         return delete reqs[url];
       };
-      req = $.ajax(url, {
-        onload: function(e) {
-          var _i, _len, _ref;
+      try {
+        req = $.ajax(url, {
+          onload: function(e) {
+            var _i, _len, _ref;
 
-          _ref = this.callbacks;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            cb = _ref[_i];
-            cb.call(this, e);
-          }
-          this.evt = e;
-          return delete this.callbacks;
-        },
-        onabort: rm,
-        onerror: rm
-      });
+            _ref = this.callbacks;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              cb = _ref[_i];
+              cb.call(this, e);
+            }
+            this.evt = e;
+            return delete this.callbacks;
+          },
+          onabort: rm,
+          onerror: rm
+        });
+      } catch (_error) {
+        err = _error;
+        return;
+      }
       req.callbacks = [cb];
       return reqs[url] = req;
     };
