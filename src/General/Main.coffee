@@ -1,19 +1,5 @@
 Main =
   init: (items) ->
-    pathname = location.pathname.split '/'
-    g.BOARD  = new Board pathname[1]
-    return if g.BOARD.ID in ['z', 'fk']
-    g.VIEW   =
-      switch pathname[2]
-        when 'res'
-          'thread'
-        when 'catalog'
-          'catalog'
-        else
-          'index'
-    if g.VIEW is 'thread'
-      g.THREADID = +pathname[3]
-
     # flatten Config into Conf
     # and get saved or default values
     flatten = (parent, obj) ->
@@ -41,7 +27,7 @@ Main =
 
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
-    return if g.BOARD.ID is 'z'
+    return if g.BOARD.ID in ['z', 'fk']
     g.VIEW   =
       switch pathname[2]
         when 'res'

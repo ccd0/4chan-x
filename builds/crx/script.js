@@ -10027,26 +10027,8 @@
 
   Main = {
     init: function(items) {
-      var db, flatten, pathname, _i, _len, _ref;
+      var db, flatten, _i, _len;
 
-      pathname = location.pathname.split('/');
-      g.BOARD = new Board(pathname[1]);
-      if ((_ref = g.BOARD.ID) === 'z' || _ref === 'fk') {
-        return;
-      }
-      g.VIEW = (function() {
-        switch (pathname[2]) {
-          case 'res':
-            return 'thread';
-          case 'catalog':
-            return 'catalog';
-          default:
-            return 'index';
-        }
-      })();
-      if (g.VIEW === 'thread') {
-        g.THREADID = +pathname[3];
-      }
       flatten = function(parent, obj) {
         var key, val;
 
@@ -10072,18 +10054,18 @@
       $.get(Conf, Main.initFeatures);
       $.on(d, '4chanMainInit', Main.initStyle);
       return $.asap((function() {
-        var _ref1;
+        var _ref;
 
-        return d.head && $('link[rel="shortcut icon"]', d.head) || ((_ref1 = d.readyState) === 'interactive' || _ref1 === 'complete');
+        return d.head && $('link[rel="shortcut icon"]', d.head) || ((_ref = d.readyState) === 'interactive' || _ref === 'complete');
       }), Main.initStyle);
     },
     initFeatures: function(items) {
-      var init, pathname;
+      var init, pathname, _ref;
 
       Conf = items;
       pathname = location.pathname.split('/');
       g.BOARD = new Board(pathname[1]);
-      if (g.BOARD.ID === 'z') {
+      if ((_ref = g.BOARD.ID) === 'z' || _ref === 'fk') {
         return;
       }
       g.VIEW = (function() {
