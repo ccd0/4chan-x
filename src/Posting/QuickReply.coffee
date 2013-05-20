@@ -37,10 +37,9 @@ QR =
     return unless QR.postingIsEnabled
 
     link = $.el 'h1',
-      innerHTML: "<a href=javascript:;>#{title = if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'}</a>"
-      title:  title
-      className: "qr-link"
-    $.on link, 'click', ->
+      innerHTML: "<a href=javascript:; class='qr-link'>#{if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'}</a>"
+      className: "qr-link-container"
+    $.on link.firstChild, 'click', ->
       $.event 'CloseMenu'
       QR.open()
       QR.nodes.com.focus()
@@ -248,7 +247,7 @@ QR =
           else 300
         sage: if board is 'q' then 600 else 60
         file: if board is 'q' then 300 else 30
-        post: if board is 'q' then 60  else 30
+        post: if board is 'q' then 150 else 30
       QR.cooldown.upSpd = 0
       QR.cooldown.upSpdAccuracy = .5
       $.get "cooldown.#{board}", {}, (item) ->

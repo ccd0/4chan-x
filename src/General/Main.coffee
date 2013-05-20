@@ -19,7 +19,7 @@ Main =
     $.get Conf, Main.initFeatures
 
     $.on d, '4chanMainInit', Main.initStyle
-    $.asap (-> d.head and $('title', d.head) or d.readyState in ['interactive', 'complete']),
+    $.asap (-> d.head and $('link[rel="shortcut icon"]', d.head) or d.readyState in ['interactive', 'complete']),
       Main.initStyle
 
   initFeatures: (items) ->
@@ -27,7 +27,7 @@ Main =
 
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
-    return if g.BOARD.ID is 'z'
+    return if g.BOARD.ID in ['z', 'fk']
     g.VIEW   =
       switch pathname[2]
         when 'res'

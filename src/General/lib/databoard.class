@@ -62,7 +62,7 @@ class DataBoard
     for boardID, val of @data.boards
       # XXX tmp fix for users that had the `null`
       # value for a board with the Unread features:
-      unless val
+      if typeof @data.boards[boardID] isnt 'object'
         delete @data.boards[boardID]
       else
         @deleteIfEmpty {boardID}

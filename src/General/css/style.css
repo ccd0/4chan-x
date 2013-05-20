@@ -692,7 +692,7 @@ a.hide-announcement {
   border-width: 1px;
   border-style: solid;
 }
-.qr-link {
+.qr-link-container {
   text-align: center;
 }
 .persona {
