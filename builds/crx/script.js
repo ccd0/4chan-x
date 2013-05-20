@@ -6169,7 +6169,7 @@
         return;
       }
       ImageExpand.contract(post);
-      rect = Conf['Advance on contract'] ? post.nodes.root.nextSibling.getBoundingClientRect() : post.nodes.root.getBoundingClientRect();
+      rect = Conf['Advance on contract'] && !($.hasClass(doc, 'fappeTyme')) ? post.nodes.root.nextSibling.getBoundingClientRect() : post.nodes.root.getBoundingClientRect();
       if (!(rect.top <= 0 || rect.left <= 0)) {
         return;
       }

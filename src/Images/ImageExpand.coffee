@@ -68,7 +68,7 @@ ImageExpand =
       ImageExpand.expand post
       return
     ImageExpand.contract post
-    rect = if Conf['Advance on contract']
+    rect = if Conf['Advance on contract'] and !($.hasClass doc, 'fappeTyme')
       post.nodes.root.nextSibling.getBoundingClientRect()
     else
       post.nodes.root.getBoundingClientRect()
