@@ -131,7 +131,7 @@ Unread =
     Unread.db.set
       boardID:  Unread.thread.board.ID
       threadID: Unread.thread.ID
-      val: Unread.lastReadPost
+      val:      Unread.lastReadPost
 
   setLine: (force) ->
     return unless d.hidden or force is true
