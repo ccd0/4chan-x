@@ -4646,14 +4646,14 @@
       });
     },
     initReady: function() {
-      var link, title;
+      var link;
 
       QR.postingIsEnabled = !!$.id('postForm');
       if (!QR.postingIsEnabled) {
         return;
       }
       link = $.el('h1', {
-        innerHTML: "<a href=javascript:; title=" + title + " class='qr-link'>" + (title = g.VIEW === 'thread' ? 'Reply to Thread' : 'Start a Thread') + "</a>",
+        innerHTML: "<a href=javascript:; class='qr-link'>" + (g.VIEW === 'thread' ? 'Reply to Thread' : 'Start a Thread') + "</a>",
         className: "qr-link-container"
       });
       $.on(link.firstChild, 'click', function() {

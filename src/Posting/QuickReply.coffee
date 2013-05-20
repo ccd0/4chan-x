@@ -37,7 +37,7 @@ QR =
     return unless QR.postingIsEnabled
 
     link = $.el 'h1',
-      innerHTML: "<a href=javascript:; title=#{title} class='qr-link'>#{title = if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'}</a>"
+      innerHTML: "<a href=javascript:; class='qr-link'>#{if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'}</a>"
       className: "qr-link-container"
     $.on link.firstChild, 'click', ->
       $.event 'CloseMenu'
