@@ -81,7 +81,14 @@ $.ajax = (url, callbacks, opts={}) ->
     r.setRequestHeader key, val
   $.extend r, callbacks
   $.extend r.upload, upCallbacks
-  r.withCredentials = cred
+  try
+    # Firefox throws an error if you try
+    # to set this on a synchronous XHR.
+    # Only cookies from the remote domain
+    # are used in a request withCredentials.
+    r.withCredentials = cred
+  catch err
+    # do nothing
   r.send form
   r
 
@@ -90,17 +97,21 @@ $.cache = do ->
   (url, cb) ->
     if req = reqs[url]
       if req.readyState is 4
-        cb.call req
+        cb.call req, req.evt
       else
         req.callbacks.push cb
       return
     rm = -> delete reqs[url]
-    req = $.ajax url,
-      onload: (e) ->
-        cb.call @, e for cb in @callbacks
-        delete @callbacks
-      onabort: rm
-      onerror: rm
+    try
+      req = $.ajax url,
+        onload: (e) ->
+          cb.call @, e for cb in @callbacks
+          @evt = e
+          delete @callbacks
+        onabort: rm
+        onerror: rm
+    catch err
+      return
     req.callbacks = [cb]
     reqs[url] = req
 

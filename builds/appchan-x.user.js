@@ -20,7 +20,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.0.4 - 2013-05-15
+* appchan x - Version 2.0.4 - 2013-05-20
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -228,7 +228,8 @@
       'Fit width': [true, ''],
       'Fit height': [false, ''],
       'Expand spoilers': [true, 'Expand all images along with spoilers.'],
-      'Expand from here': [true, 'Expand all images only from current position to thread end.']
+      'Expand from here': [true, 'Expand all images only from current position to thread end.'],
+      'Advance on contract': [false, 'Advance to next post when contracting an expanded image.']
     },
     style: {
       Interface: {
@@ -2753,7 +2754,7 @@
   };
 
   $.ajax = function(url, callbacks, opts) {
-    var cred, form, headers, key, r, sync, type, upCallbacks, val;
+    var cred, err, form, headers, key, r, sync, type, upCallbacks, val;
 
     if (opts == null) {
       opts = {};
@@ -2769,7 +2770,11 @@
     }
     $.extend(r, callbacks);
     $.extend(r.upload, upCallbacks);
-    r.withCredentials = cred;
+    try {
+      r.withCredentials = cred;
+    } catch (_error) {
+      err = _error;
+    }
     r.send(form);
     return r;
   };
@@ -2779,11 +2784,11 @@
 
     reqs = {};
     return function(url, cb) {
-      var req, rm;
+      var err, req, rm;
 
       if (req = reqs[url]) {
         if (req.readyState === 4) {
-          cb.call(req);
+          cb.call(req, req.evt);
         } else {
           req.callbacks.push(cb);
         }
@@ -2792,20 +2797,26 @@
       rm = function() {
         return delete reqs[url];
       };
-      req = $.ajax(url, {
-        onload: function(e) {
-          var _i, _len, _ref;
+      try {
+        req = $.ajax(url, {
+          onload: function(e) {
+            var _i, _len, _ref;
 
-          _ref = this.callbacks;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            cb = _ref[_i];
-            cb.call(this, e);
-          }
-          return delete this.callbacks;
-        },
-        onabort: rm,
-        onerror: rm
-      });
+            _ref = this.callbacks;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              cb = _ref[_i];
+              cb.call(this, e);
+            }
+            this.evt = e;
+            return delete this.callbacks;
+          },
+          onabort: rm,
+          onerror: rm
+        });
+      } catch (_error) {
+        err = _error;
+        return;
+      }
       req.callbacks = [cb];
       return reqs[url] = req;
     };
@@ -3624,7 +3635,7 @@
       _ref = this.data.boards;
       for (boardID in _ref) {
         val = _ref[boardID];
-        if (!val) {
+        if (typeof this.data.boards[boardID] !== 'object') {
           delete this.data.boards[boardID];
         } else {
           this.deleteIfEmpty({
@@ -4321,7 +4332,7 @@
         return;
       }
       clone = post.addClone(context);
-      Main.callbackNodes(Post, [clone]);
+      Main.callbackNodes(Clone, [clone]);
       nodes = clone.nodes;
       $.rmAll(nodes.root);
       $.add(nodes.root, nodes.post);
@@ -7180,7 +7191,7 @@
           })(),
           sage: board === 'q' ? 600 : 60,
           file: board === 'q' ? 300 : 30,
-          post: board === 'q' ? 60 : 30
+          post: board === 'q' ? 150 : 30
         };
         QR.cooldown.upSpd = 0;
         QR.cooldown.upSpdAccuracy = .5;
@@ -8480,7 +8491,7 @@
         return;
       }
       ImageExpand.contract(post);
-      rect = post.nodes.root.getBoundingClientRect();
+      rect = Conf['Advance on contract'] && !($.hasClass(doc, 'fappeTyme')) ? post.nodes.root.nextSibling.getBoundingClientRect() : post.nodes.root.getBoundingClientRect();
       if (!(rect.top <= 0 || rect.left <= 0)) {
         return;
       }
@@ -8924,7 +8935,7 @@
         open: function(post) {
           var node;
 
-          if (post.isDead) {
+          if (post.isDead || post.board.ID === 'q') {
             return false;
           }
           DeleteLink.post = post;
@@ -9000,7 +9011,7 @@
           return;
         }
         DeleteLink.cooldown.counting = post;
-        length = post.board.ID === 'q' ? 600 : 30;
+        length = 30;
         seconds = Math.ceil((length * $.SECOND - (Date.now() - post.info.date)) / $.SECOND);
         return DeleteLink.cooldown.count(post, seconds, length, node);
       },
@@ -10142,6 +10153,7 @@
         'files': ['hr', 'tg', 'tv', 'x']
       },
       'Nyafuu': {
+        'domain': 'archive.nyafuu.org',
         'http': true,
         'https': true,
         'software': 'foolfuuka',
@@ -10168,7 +10180,7 @@
         'http': true,
         'https': true,
         'software': 'foolfuuka',
-        'boards': ['adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 's', 's4s', 't', 'trv', 'y'],
+        'boards': ['adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 'pol', 's', 's4s', 't', 'trv', 'y'],
         'files': ['adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 's', 's4s', 't', 'trv', 'y']
       },
       'Install Gentoo': {
@@ -10191,8 +10203,8 @@
         'domain': 'archive.heinessen.com',
         'http': true,
         'software': 'fuuka',
-        'boards': ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'],
-        'files': ['an', 'k', 'toy', 'x']
+        'boards': ['an', 'fit', 'k', 'mlp', 'r9k', 'toy'],
+        'files': ['an', 'k', 'toy']
       },
       'warosu': {
         'domain': 'fuuka.warosu.org',
@@ -12341,7 +12353,7 @@
             return;
           }
           thread.isExpanded = 'loading';
-          a.textContent = a.textContent.replace('+', '× Loading...');
+          a.textContent = a.textContent.replace('+', '...');
           $.cache("//api.4chan.org/" + thread.board + "/res/" + thread + ".json", function() {
             return ExpandThread.parse(this, thread, a);
           });
@@ -12351,12 +12363,12 @@
           if (!a) {
             return;
           }
-          a.textContent = a.textContent.replace('× Loading...', '+');
+          a.textContent = a.textContent.replace('...', '+');
           break;
         case true:
           thread.isExpanded = false;
           if (a) {
-            a.textContent = a.textContent.replace('-', '+');
+            a.textContent = a.textContent.replace('-', '+').replace('hide', 'view').replace('expanded', 'omitted');
             num = (function() {
               if (thread.isSticky) {
                 return 1;
@@ -12404,7 +12416,7 @@
         return;
       }
       thread.isExpanded = true;
-      a.textContent = a.textContent.replace('× Loading...', '-');
+      a.textContent = a.textContent.replace('...', '-').replace('view', 'hide').replace('omitted', 'expanded');
       posts = JSON.parse(req.response).posts;
       if (spoilerRange = posts[0].custom_spoiler) {
         Build.spoilerRange[g.BOARD] = spoilerRange;
@@ -14526,12 +14538,12 @@
       return $.get(Conf, Main.initFeatures);
     },
     initFeatures: function(items) {
-      var init, pathname;
+      var init, pathname, _ref;
 
       Conf = items;
       pathname = location.pathname.split('/');
       g.BOARD = new Board(pathname[1]);
-      if (g.BOARD.ID === 'z') {
+      if ((_ref = g.BOARD.ID) === 'z' || _ref === 'fk') {
         return;
       }
       g.VIEW = (function() {

@@ -1,6 +1,23 @@
+**MayhemYDG**:
+- Tiny fixes
+
+**seaweedchan**:
+- New image expansion option: `Advance on contract`. Advances to next post unless Fappe Tyme is enabled (temporary)
+- Change `.qr-link` to `.qr-link-container` and `.qr-link>a` to `.qr-link`
+- Update /q/'s posting cooldown
+- Make "___ omitted. Click here to view." text change when thread is expanded.
+- Restrict "Reply to Thread" click event to the link itself
+- Fix Nyafuu being undefined
+- New option `Captcha Warning Notifications`
+ - When disabled, shows a red border around the captcha to indicate captcha errors. Goes back to normal when any key is pressed.
+- Color Quick Reply's inputs in Tomorrow to match the theme
+- Revert some of Mayhem's changes that caused new bugs
+
+**Wohlfe**:
+- Add /pol/ archiving for FoolzaShit
+
 ### v2.0.4
 *2013-05-15*
-
 **MayhemYDG**:
 - Add new archive selection
 
