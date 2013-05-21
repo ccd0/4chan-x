@@ -532,6 +532,9 @@ a.hide-announcement {
   clear: both;
   display: table;
 }
+:root.fit-height .full-image {
+  max-height: 100vh;
+}
 :root.fit-width .full-image {
   max-width: 100%;
 }

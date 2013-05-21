@@ -51,16 +51,20 @@ ImageExpand =
           $.queueTask func, post
       return
     setFitness: ->
-      {checked} = @
-      (if checked then $.addClass else $.rmClass) doc, @name.toLowerCase().replace /\s+/g, '-'
+      (if @checked then $.addClass else $.rmClass) doc, @name.toLowerCase().replace /\s+/g, '-'
+<% if (type === 'userjs') { %>
+# XXX Opera doesn't support CSS vh.
       return unless @name is 'Fit height'
-      if checked
+      if @checked
         $.on window, 'resize', ImageExpand.resize
         unless ImageExpand.style
           ImageExpand.style = $.addStyle null
         ImageExpand.resize()
       else
         $.off window, 'resize', ImageExpand.resize
+  resize: ->
+    ImageExpand.style.textContent = ":root.fit-height .full-image {max-height:#{doc.clientHeight}px}"
+<% } %>
 
   toggle: (post) ->
     {thumb} = post.file
@@ -189,6 +193,3 @@ ImageExpand =
         $.event 'change', null, input
         $.on input, 'change', $.cb.checked
       el: label
-
-  resize: ->
-    ImageExpand.style.textContent = ":root.fit-height .full-image {max-height:#{doc.clientHeight}px}"
