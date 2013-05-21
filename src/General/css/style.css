@@ -393,6 +393,10 @@ a {
   font-style: italic; 
   margin-left: 10px;
 }
+.section-advanced .note code {
+  font-style: normal;
+  font-size: 11px;
+}
 #fourchanx-settings fieldset {
   border: 1px solid;
   border-radius: 3px;
