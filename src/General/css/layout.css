@@ -149,10 +149,10 @@ th {
   border-left: .3em solid transparent;
 }
 .brackets-wrap::before {
-  content: "\\00a0[";
+  content: " [";
 }
 .brackets-wrap::after {
-  content: "]\\00a0";
+  content: "] ";
 }
 /* Thread / Reply Nav */
 #navlinks a {
