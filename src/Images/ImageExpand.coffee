@@ -72,8 +72,14 @@ ImageExpand =
       ImageExpand.expand post
       return
     ImageExpand.contract post
-    rect = if Conf['Advance on contract'] and !($.hasClass doc, 'fappeTyme')
-      post.nodes.root.nextSibling.getBoundingClientRect()
+    node = post.nodes.root
+    rect = if Conf['Advance on contract'] then do ->
+      # FIXME does not work with Quote Threading
+      while node.nextElementSibling
+        return post.nodes.root unless node = node.nextElementSibling
+        continue unless $.hasClass node, 'postContainer'
+        break if node.offsetHeight > 0 and not $ '.stub', node
+      node.getBoundingClientRect()
     else
       post.nodes.root.getBoundingClientRect()
     return unless rect.top <= 0 or rect.left <= 0

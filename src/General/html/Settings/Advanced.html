@@ -17,24 +17,24 @@
   <legend>Custom Board Navigation</legend>
   <div><textarea name=boardnav class=field spellcheck=false></textarea></div>
   <span class=note>New lines will be converted into spaces.</span><br><br>
-  <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>
-  <div>
-    For example:<br>
+  <div class=note>In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>
+  <div>Board link: <code>g</code></div>
+  <div>Title link: <code>g-title</code></div>
+  <div>Board link (Replace with title when on that board): <code>g-replace</code></div>
+  <div>Full text link: <code>g-full</code></div>
+  <div>Custom text link: <code>g-text:"Install Gentoo"</code></div>
+  <div>Index-only link: <code>g-index</code></div>
+  <div>Catalog-only link: <code>g-catalog</code></div>
+  <div>External link: <code>external-text:"Google","http://www.google.com"</code></div>
+  <div>Combinations are possible: <code>g-index-text:"Technology Index"</code></div>
+  <div>Full board list toggle: <code>toggle-all</code></div>
+  <br>
+  <div class=note>
     <code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:"Piracy"]</code><br>
     will give you<br>
     <code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>
     if you are on /g/.
   </div>
-  <div>Board link: <code>board</code></div>
-  <div>Title link: <code>board-title</code></div>
-  <div>Board link (Replace with title when on that board): <code>board-replace</code></div>
-  <div>Full text link: <code>board-full</code></div>
-  <div>Custom text link: <code>board-text:"VIP Board"</code></div>
- <div>Index-only link: <code>board-index</code></div>
-  <div>Catalog-only link: <code>board-catalog</code></div>
-  <div>External link: <code>external-text:"Google","http://www.google.com"</code></div>
-  <div>Combinations are possible: <code>board-index-text:"VIP Index"</code></div>
-  <div>Full board list toggle: <code>toggle-all</code></div>
 </fieldset>
 
 <fieldset>

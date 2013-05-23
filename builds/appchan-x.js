@@ -20,7 +20,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.0.4 - 2013-05-21
+* appchan x - Version 2.0.4 - 2013-05-23
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -115,7 +115,7 @@
 *
 */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, GlobalMessage, Header, IDColor, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, MutationObserver, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, GlobalMessage, Header, IDColor, Icons, ImageExpand, ImageHover, ImageLoader, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, MutationObserver, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -166,6 +166,7 @@
         'Replace GIF': [false, 'Replace thumbnail of gifs with its actual image.'],
         'Replace PNG': [false, 'Replace pngs.'],
         'Replace JPG': [false, 'Replace jpgs.'],
+        'Image Prefetching': [false, 'Preload images'],
         'Fappe Tyme': [false, 'Hide posts without images when toggled. *hint* *hint*']
       },
       'Menu': {
@@ -8474,7 +8475,7 @@
       }
     },
     toggle: function(post) {
-      var headRect, rect, root, thumb, top;
+      var headRect, node, rect, root, thumb, top;
 
       thumb = post.file.thumb;
       if (!(post.file.isExpanded || $.hasClass(thumb, 'expanding'))) {
@@ -8482,7 +8483,21 @@
         return;
       }
       ImageExpand.contract(post);
-      rect = Conf['Advance on contract'] && !($.hasClass(doc, 'fappeTyme')) ? post.nodes.root.nextSibling.getBoundingClientRect() : post.nodes.root.getBoundingClientRect();
+      node = post.nodes.root;
+      rect = Conf['Advance on contract'] ? (function() {
+        while (node.nextElementSibling) {
+          if (!(node = node.nextElementSibling)) {
+            return post.nodes.root;
+          }
+          if (!$.hasClass(node, 'postContainer')) {
+            continue;
+          }
+          if (node.offsetHeight > 0 && !$('.stub', node)) {
+            break;
+          }
+        }
+        return node.getBoundingClientRect();
+      })() : post.nodes.root.getBoundingClientRect();
       if (!(rect.top <= 0 || rect.left <= 0)) {
         return;
       }
@@ -8752,24 +8767,42 @@
     }
   };
 
-  ImageReplace = {
+  ImageLoader = {
     init: function() {
+      var prefetch;
+
       if (g.VIEW === 'catalog') {
         return;
       }
-      return Post.prototype.callbacks.push({
+      if (!(Conf["Image Prefetching"] || Conf["Replace JPG"] || Conf["Replace PNG"] || Conf["Replace GIF"])) {
+        return;
+      }
+      Post.prototype.callbacks.push({
         name: 'Image Replace',
         cb: this.node
       });
+      if (!(Conf['Image Prefetching'] && g.VIEW === 'thread')) {
+        return;
+      }
+      prefetch = $.el('label', {
+        innerHTML: '<input type=checkbox name="prefetch"> Prefetch Images'
+      });
+      this.el = prefetch.firstElementChild;
+      $.on(this.el, 'change', this.toggle);
+      return $.event('AddMenuEntry', {
+        type: 'header',
+        el: prefetch,
+        order: 120
+      });
     },
     node: function() {
-      var URL, img, style, thumb, type, _ref, _ref1;
+      var URL, img, string, style, thumb, type, _ref, _ref1;
 
       if (this.isClone || this.isHidden || this.thread.isHidden || !((_ref = this.file) != null ? _ref.isImage : void 0)) {
         return;
       }
       _ref1 = this.file, thumb = _ref1.thumb, URL = _ref1.URL;
-      if (!(Conf["Replace " + ((type = (URL.match(/\w{3}$/))[0].toUpperCase()) === 'PEG' ? 'JPG' : type)] && !/spoiler/.test(thumb.src))) {
+      if (!((Conf[string = "Replace " + ((type = (URL.match(/\w{3}$/))[0].toUpperCase()) === 'PEG' ? 'JPG' : type)] && !/spoiler/.test(thumb.src)) || Conf['prefetch'])) {
         return;
       }
       if (this.file.isSpoiler) {
@@ -8777,10 +8810,24 @@
         style.maxHeight = style.maxWidth = this.isReply ? '125px' : '250px';
       }
       img = $.el('img');
-      $.on(img, 'load', function() {
-        return thumb.src = URL;
-      });
+      if (Conf[string]) {
+        $.on(img, 'load', function() {
+          return thumb.src = URL;
+        });
+      }
       return img.src = URL;
+    },
+    toggle: function() {
+      var enabled, id, post, _ref;
+
+      enabled = Conf['prefetch'] = this.checked;
+      if (enabled) {
+        _ref = g.threads["" + g.BOARD.ID + "." + g.THREADID].posts;
+        for (id in _ref) {
+          post = _ref[id];
+          ImageLoader.node.call(post);
+        }
+      }
     }
   };
 
@@ -13704,7 +13751,7 @@
     advanced: function(section) {
       var archive, boardID, boardOptions, boardSelect, boards, data, event, input, inputs, item, items, name, row, rows, ta, table, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4;
 
-      section.innerHTML = "<fieldset><legend>Archiver</legend><div class=\"warning\" " + (Conf['404 Redirect'] ? 'hidden' : '') + "><code>404 Redirect</code> is disabled.</div><div><select id='archive-board-select'></select></div><table id='archive-table'><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><span class=note>Disabled selections indicate that only one archive is available for that board and redirection type.</span></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea name=boardnav class=field spellcheck=false></textarea></div><span class=note>New lines will be converted into spaces.</span><br><br><div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div><div>\n  For example:<br><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n  will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n  if you are on /g/.\n</div><div>Board link: <code>board</code></div><div>Title link: <code>board-title</code></div><div>Board link (Replace with title when on that board): <code>board-replace</code></div><div>Full text link: <code>board-full</code></div><div>Custom text link: <code>board-text:\"VIP Board\"</code></div><div>Index-only link: <code>board-index</code></div><div>Catalog-only link: <code>board-catalog</code></div><div>External link: <code>external-text:\"Google\",\"http://www.google.com\"</code></div><div>Combinations are possible: <code>board-index-text:\"VIP Index\"</code></div><div>Full board list toggle: <code>toggle-all</code></div></fieldset><fieldset><legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div><div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div></fieldset><fieldset><legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div><div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div></fieldset><fieldset><legend>Quick Reply Personas <span class=\"warning\" " + (Conf['Quick Reply'] ? 'hidden' : '') + ">is disabled.</span></legend><textarea class=personafield name=\"QR.personas\" class=\"field\" spellcheck=\"false\"></textarea><p>\n  One item per line.<br>\n  Items will be added in the relevant input's auto-completion list.<br>\n  Password items will always be used, since there is no password input.<br>\n  Lines starting with a <code>#</code> will be ignored.\n</p><ul>You can use these settings with each item, separate them with semicolons:\n  <li>Possible items are: <code>name</code>, <code>email</code>, <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>email:\"sage\"</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>email:\"sage\";always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>email:\"sage\";boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=warning " + (Conf['Unread Favicon'] ? 'hidden' : '') + ">is disabled.</span></legend><div><select name=favicon><option value=ferongr>ferongr</option><option value=xat->xat-</option><option value=Mayhem>Mayhem</option><option value=4chanJS>4chanJS</option><option value=Original>Original</option></select><span id=favicon-preview></span></div></fieldset><fieldset><legend>Emoji <span class=warning " + (Conf['Emoji'] ? 'hidden' : '') + ">is disabled.</span></legend><div>\n  Sage Icon: <select name=sageEmoji><option value=\"4chan SS\">4chan SS</option><option value=\"appchan\">appchan</option></select><span id=sageicon-preview></span></div><div>\n  Position: <select name=emojiPos><option value=\"before\">Before</option><option value=\"after\">After</option></select></div></fieldset><fieldset><legend>Thread Updater <span class=warning " + (Conf['Thread Updater'] ? 'hidden' : '') + ">is disabled.</span></legend><div>\n  Interval: <input type=number name=Interval class=field min=1 value=" + Conf['Interval'] + "></div></fieldset><fieldset><legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend><div><button id=apply-css>Apply CSS</button><textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea></div></fieldset>";
+      section.innerHTML = "<fieldset><legend>Archiver</legend><div class=\"warning\" " + (Conf['404 Redirect'] ? 'hidden' : '') + "><code>404 Redirect</code> is disabled.</div><div><select id='archive-board-select'></select></div><table id='archive-table'><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><span class=note>Disabled selections indicate that only one archive is available for that board and redirection type.</span></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea name=boardnav class=field spellcheck=false></textarea></div><span class=note>New lines will be converted into spaces.</span><br><br><div class=note>In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div><div>Board link: <code>g</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:\"Install Gentoo\"</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>External link: <code>external-text:\"Google\",\"http://www.google.com\"</code></div><div>Combinations are possible: <code>g-index-text:\"Technology Index\"</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=note><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n  will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n  if you are on /g/.\n</div></fieldset><fieldset><legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div><div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div></fieldset><fieldset><legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div><div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div></fieldset><fieldset><legend>Quick Reply Personas <span class=\"warning\" " + (Conf['Quick Reply'] ? 'hidden' : '') + ">is disabled.</span></legend><textarea class=personafield name=\"QR.personas\" class=\"field\" spellcheck=\"false\"></textarea><p>\n  One item per line.<br>\n  Items will be added in the relevant input's auto-completion list.<br>\n  Password items will always be used, since there is no password input.<br>\n  Lines starting with a <code>#</code> will be ignored.\n</p><ul>You can use these settings with each item, separate them with semicolons:\n  <li>Possible items are: <code>name</code>, <code>email</code>, <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>email:\"sage\"</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>email:\"sage\";always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>email:\"sage\";boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=warning " + (Conf['Unread Favicon'] ? 'hidden' : '') + ">is disabled.</span></legend><div><select name=favicon><option value=ferongr>ferongr</option><option value=xat->xat-</option><option value=Mayhem>Mayhem</option><option value=4chanJS>4chanJS</option><option value=Original>Original</option></select><span id=favicon-preview></span></div></fieldset><fieldset><legend>Emoji <span class=warning " + (Conf['Emoji'] ? 'hidden' : '') + ">is disabled.</span></legend><div>\n  Sage Icon: <select name=sageEmoji><option value=\"4chan SS\">4chan SS</option><option value=\"appchan\">appchan</option></select><span id=sageicon-preview></span></div><div>\n  Position: <select name=emojiPos><option value=\"before\">Before</option><option value=\"after\">After</option></select></div></fieldset><fieldset><legend>Thread Updater <span class=warning " + (Conf['Thread Updater'] ? 'hidden' : '') + ">is disabled.</span></legend><div>\n  Interval: <input type=number name=Interval class=field min=1 value=" + Conf['Interval'] + "></div></fieldset><fieldset><legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend><div><button id=apply-css>Apply CSS</button><textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea></div></fieldset>";
       items = {};
       inputs = {};
       _ref = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'emojiPos', 'sageEmoji', 'usercss'];
@@ -14654,7 +14701,7 @@
         'Image Expansion': ImageExpand,
         'Image Expansion (Menu)': ImageExpand.menu,
         'Reveal Spoilers': RevealSpoilers,
-        'Image Replace': ImageReplace,
+        'Image Loading': ImageLoader,
         'Image Hover': ImageHover,
         'Fappe Tyme': FappeTyme,
         'Comment Expansion': ExpandComment,

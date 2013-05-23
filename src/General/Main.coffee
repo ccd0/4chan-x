@@ -140,7 +140,7 @@ Main =
       'Image Expansion':          ImageExpand
       'Image Expansion (Menu)':   ImageExpand.menu
       'Reveal Spoilers':          RevealSpoilers
-      'Image Replace':            ImageReplace
+      'Image Loading':            ImageLoader
       'Image Hover':              ImageHover
       'Fappe Tyme':               FappeTyme
       'Comment Expansion':        ExpandComment
