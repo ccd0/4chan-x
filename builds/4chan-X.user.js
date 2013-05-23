@@ -10123,11 +10123,10 @@
       }
       Conf['selectedArchives'] = {};
       $.get(Conf, Main.initFeatures);
-      $.on(d, '4chanMainInit', Main.initStyle);
       return $.asap((function() {
         var _ref;
 
-        return d.head && $('link[rel="shortcut icon"]', d.head) || ((_ref = d.readyState) === 'interactive' || _ref === 'complete');
+        return d.head && $('link[rel="canonical"]', d.head) || ((_ref = d.readyState) === 'interactive' || _ref === 'complete');
       }), Main.initStyle);
     },
     initFeatures: function(items) {
