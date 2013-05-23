@@ -155,6 +155,10 @@ Config =
         false
         'Replace jpgs.'
       ]
+      'Image Prefetching': [
+        false
+        'Preload images'
+      ]
       'Fappe Tyme': [
         false
         'Hide posts without images. *hint* *hint*'

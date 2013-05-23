@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.8 - 2013-05-21
+* 4chan X - Version 1.2.8 - 2013-05-23
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -109,7 +109,7 @@
 *
 */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, IDColor, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -162,6 +162,7 @@
         'Replace GIF': [false, 'Replace thumbnail of gifs with its actual image.'],
         'Replace PNG': [false, 'Replace pngs.'],
         'Replace JPG': [false, 'Replace jpgs.'],
+        'Image Prefetching': [false, 'Preload images'],
         'Fappe Tyme': [false, 'Hide posts without images. *hint* *hint*']
       },
       'Menu': {
@@ -6485,24 +6486,42 @@
     }
   };
 
-  ImageReplace = {
+  ImageLoader = {
     init: function() {
+      var prefetch;
+
       if (g.VIEW === 'catalog') {
         return;
       }
-      return Post.prototype.callbacks.push({
+      if (!(Conf["Image Prefetching"] || Conf["Replace JPG"] || Conf["Replace PNG"] || Conf["Replace GIF"])) {
+        return;
+      }
+      Post.prototype.callbacks.push({
         name: 'Image Replace',
         cb: this.node
       });
+      if (!(Conf['Image Prefetching'] && g.VIEW === 'thread')) {
+        return;
+      }
+      prefetch = $.el('label', {
+        innerHTML: '<input type=checkbox name="prefetch"> Prefetch Images'
+      });
+      this.el = prefetch.firstElementChild;
+      $.on(this.el, 'change', this.toggle);
+      return $.event('AddMenuEntry', {
+        type: 'header',
+        el: prefetch,
+        order: 120
+      });
     },
     node: function() {
-      var URL, img, style, thumb, type, _ref, _ref1;
+      var URL, img, string, style, thumb, type, _ref, _ref1;
 
       if (this.isClone || this.isHidden || this.thread.isHidden || !((_ref = this.file) != null ? _ref.isImage : void 0)) {
         return;
       }
       _ref1 = this.file, thumb = _ref1.thumb, URL = _ref1.URL;
-      if (!(Conf["Replace " + ((type = (URL.match(/\w{3}$/))[0].toUpperCase()) === 'PEG' ? 'JPG' : type)] && !/spoiler/.test(thumb.src))) {
+      if (!((Conf[string = "Replace " + ((type = (URL.match(/\w{3}$/))[0].toUpperCase()) === 'PEG' ? 'JPG' : type)] && !/spoiler/.test(thumb.src)) || Conf['prefetch'])) {
         return;
       }
       if (this.file.isSpoiler) {
@@ -6510,10 +6529,24 @@
         style.maxHeight = style.maxWidth = this.isReply ? '125px' : '250px';
       }
       img = $.el('img');
-      $.on(img, 'load', function() {
-        return thumb.src = URL;
-      });
+      if (Conf[string]) {
+        $.on(img, 'load', function() {
+          return thumb.src = URL;
+        });
+      }
       return img.src = URL;
+    },
+    toggle: function() {
+      var enabled, id, post, _ref;
+
+      enabled = Conf['prefetch'] = this.checked;
+      if (enabled) {
+        _ref = g.threads["" + g.BOARD.ID + "." + g.THREADID].posts;
+        for (id in _ref) {
+          post = _ref[id];
+          ImageLoader.node.call(post);
+        }
+      }
     }
   };
 
@@ -10201,7 +10234,7 @@
         'Image Expansion': ImageExpand,
         'Image Expansion (Menu)': ImageExpand.menu,
         'Reveal Spoilers': RevealSpoilers,
-        'Image Replace': ImageReplace,
+        'Image Loading': ImageLoader,
         'Image Hover': ImageHover,
         'Comment Expansion': ExpandComment,
         'Thread Expansion': ExpandThread,
