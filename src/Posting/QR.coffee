@@ -175,6 +175,8 @@ QR =
     loadPersonas: (type, arr) ->
       list = $ "#list-#{type}", QR.nodes.el
       for val in arr
+        # XXX Firefox displays empty <option>s in the completion list.
+        continue unless val
         $.add list, $.el 'option',
           textContent: val
       return
