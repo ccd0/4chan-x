@@ -44,7 +44,7 @@ Config =
       'Unread Line':                  [true,  'Show a line to distinguish read posts from unread ones.']
       'Scroll to Last Read Post':     [true,  'Scroll back to the last read post when reopening a thread.']
       'Thread Excerpt':               [true,  'Show an excerpt of the thread in the tab title.']
-      'Thread Stats':                 [true,  'Display reply and image count.']
+      'Thread Stats':                 [true,  'Display reply, image and page count.']
       'Thread Watcher':               [true,  'Bookmark threads.']
       'Auto Watch':                   [true,  'Automatically watch threads you start.']
       'Auto Watch Reply':             [false, 'Automatically watch threads you reply to.']

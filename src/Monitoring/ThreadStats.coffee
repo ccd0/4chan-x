@@ -2,11 +2,13 @@ ThreadStats =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Stats']
     @dialog = UI.dialog 'thread-stats', 'bottom: 0; left: 0;', """
-      <div class=move><span id=post-count>0</span> / <span id=file-count>0</span></div>
-      """
+    <%= grunt.file.read('html/Monitoring/ThreadStats.html').replace(/>\s+</g, '><').trim() %>
+    """
 
-    @postCountEl = $ '#post-count', @dialog
-    @fileCountEl = $ '#file-count', @dialog
+    @postCountEl  = $ '#post-count', @dialog
+    @fileCountEl  = $ '#file-count', @dialog
+    @pageCountEl  = $ '#page-count', @dialog
+    @lastModified = '0'
 
     Thread::callbacks.push
       name: 'Thread Stats'
@@ -18,6 +20,7 @@ ThreadStats =
       postCount++
       fileCount++ if post.file
     ThreadStats.thread = @
+    ThreadStats.fetchPage()
     ThreadStats.update postCount, fileCount
     $.on d, 'ThreadUpdate', ThreadStats.onUpdate
     $.add d.body, ThreadStats.dialog
@@ -31,3 +34,18 @@ ThreadStats =
     fileCountEl.textContent = fileCount
     (if thread.postLimit and !thread.isSticky then $.addClass else $.rmClass) postCountEl, 'warning'
     (if thread.fileLimit and !thread.isSticky then $.addClass else $.rmClass) fileCountEl, 'warning'
+  fetchPage: ->
+    return if ThreadStats.thread.isDead
+    setTimeout ThreadStats.fetchPage, 2 * $.MINUTE
+    $.ajax "//api.4chan.org/#{ThreadStats.thread.board}/threads.json", onload: ThreadStats.onThreadsLoad,
+      headers: 'If-Modified-Since': ThreadStats.lastModified
+  onThreadsLoad: ->
+    ThreadStats.lastModified = @getResponseHeader 'Last-Modified'
+    return if @status isnt 200
+    pages = JSON.parse @response
+    for page in pages
+      for thread in page.threads
+        if thread.no is ThreadStats.thread.ID
+          ThreadStats.pageCountEl.textContent = page.page
+          (if page.page is pages.length - 1 then $.addClass else $.rmClass) ThreadStats.pageCountEl, 'warning'
+          return
