@@ -26,7 +26,12 @@ QR =
       $.asap (-> doc), -> $.addClass doc, 'hide-original-post-form'
 
     $.ready @initReady
-    $.on d, '4chanXInitFinished', @persist if Conf['Persistent QR']
+
+    if Conf['Persistent QR']
+      unless g.BOARD.ID is 'f'
+        $.on d, '4chanXInitFinished', @persist
+      else
+        $.ready @persist
 
     Post::callbacks.push
       name: 'Quick Reply'

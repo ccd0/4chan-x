@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.8 - 2013-05-20
+* 4chan X - Version 1.2.8 - 2013-05-24
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -4646,7 +4646,11 @@
       }
       $.ready(this.initReady);
       if (Conf['Persistent QR']) {
-        $.on(d, '4chanXInitFinished', this.persist);
+        if (g.BOARD.ID !== 'f') {
+          $.on(d, '4chanXInitFinished', this.persist);
+        } else {
+          $.ready(this.persist);
+        }
       }
       return Post.prototype.callbacks.push({
         name: 'Quick Reply',
