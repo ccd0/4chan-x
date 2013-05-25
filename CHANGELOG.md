@@ -7,7 +7,7 @@
 
 **zixaphir**:
 - New option: `Image Prefetching`. Adds a toggle to the header menu for per-thread prefetching.
-- Make Advance on contract 
+- Make Advance on contract work with Fappe Tyme
 
 ### v1.2.8
 *2013-05-20*
