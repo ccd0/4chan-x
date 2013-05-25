@@ -4422,7 +4422,7 @@
         style: 'border: 0; width: 150px; height: 45px;',
         el: function() {
           return $.el('object', {
-            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
           });
         }
       },
@@ -4430,7 +4430,7 @@
         regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
         el: function() {
           return $.el('iframe', {
-            src: "//player.vimeo.com/video/" + this.name
+            src: "//player.vimeo.com/video/" + this.name + "?wmode=opaque"
           });
         },
         title: {
@@ -4445,8 +4445,8 @@
       LiveLeak: {
         regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
         el: function() {
-          return $.el('iframe', {
-            src: "http://www.liveleak.com/e/" + this.name + "?autostart=true"
+          return $.el('object', {
+            innerHTML: "<embed src='http://www.liveleak.com/e/" + this.name + "?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
           });
         }
       },
