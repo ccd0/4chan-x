@@ -10127,6 +10127,7 @@
       }
       Conf['selectedArchives'] = {};
       $.get(Conf, Main.initFeatures);
+      $.on(d, '4chanMainInit', Main.initStyle);
       return $.asap((function() {
         var _ref;
 

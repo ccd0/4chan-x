@@ -479,7 +479,7 @@ http://iqdb.org/?url=%TURL
 
   backlink: '>>%id'
 
-  fileInfo: '%l (%p%s, %r)'
+  fileInfo: '%L (%p%s, %r)'
 
   favicon: 'ferongr'
 
