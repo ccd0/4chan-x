@@ -155,6 +155,10 @@ Config =
         false
         'Replace jpgs.'
       ]
+      'Image Prefetching': [
+        false
+        'Preload images'
+      ]
       'Fappe Tyme': [
         false
         'Hide posts without images. *hint* *hint*'
@@ -475,7 +479,7 @@ http://iqdb.org/?url=%TURL
 
   backlink: '>>%id'
 
-  fileInfo: '%L (%p%s, %r)'
+  fileInfo: '%l (%p%s, %r)'
 
   favicon: 'ferongr'
 

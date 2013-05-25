@@ -18,8 +18,7 @@ Main =
     
     $.get Conf, Main.initFeatures
 
-    $.on d, '4chanMainInit', Main.initStyle
-    $.asap (-> d.head and $('link[rel="shortcut icon"]', d.head) or d.readyState in ['interactive', 'complete']),
+    $.asap (-> d.head and $('link[rel="canonical"]', d.head) or d.readyState in ['interactive', 'complete']),
       Main.initStyle
 
   initFeatures: (items) ->
@@ -113,7 +112,7 @@ Main =
       'Image Expansion':          ImageExpand
       'Image Expansion (Menu)':   ImageExpand.menu
       'Reveal Spoilers':          RevealSpoilers
-      'Image Replace':            ImageReplace
+      'Image Loading':            ImageLoader
       'Image Hover':              ImageHover
       'Comment Expansion':        ExpandComment
       'Thread Expansion':         ExpandThread
