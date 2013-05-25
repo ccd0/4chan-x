@@ -5,7 +5,7 @@
 - Fix YouTube videos in Firefox taking z-index priority
 - Fix Persistent QR not working for /f/
 
-**zixaphir**
+**zixaphir**:
 - New option: `Image Prefetching`. Adds a toggle to the header menu for per-thread prefetching.
 - Make Advance on contract 
 
