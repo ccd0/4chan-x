@@ -567,11 +567,11 @@ http://iqdb.org/?url=%TURL
       'Open page 0 in a new tab.'
     ]
     'Next page': [
-      'Right'
+      'Shift+Right'
       'Jump to the next page.'
     ]
     'Previous page': [
-      'Left'
+      'Shift+Left'
       'Jump to the previous page.'
     ]
     'Open catalog': [
@@ -580,11 +580,11 @@ http://iqdb.org/?url=%TURL
     ]
     # Thread Navigation
     'Next thread': [
-      'Down'
+      'Shift+Down'
       'See next thread.'
     ]
     'Previous thread': [
-      'Up'
+      'Shift+Up'
       'See previous thread.'
     ]
     'Expand thread': [

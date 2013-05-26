@@ -283,11 +283,11 @@
       'fappeTyme': ['f', 'Fappe Tyme.'],
       'Front page': ['0', 'Jump to page 0.'],
       'Open front page': ['Shift+0', 'Open page 0 in a new tab.'],
-      'Next page': ['Right', 'Jump to the next page.'],
-      'Previous page': ['Left', 'Jump to the previous page.'],
+      'Next page': ['Shift+Right', 'Jump to the next page.'],
+      'Previous page': ['Shift+Left', 'Jump to the previous page.'],
       'Open catalog': ['Shift+c', 'Open the catalog of the current board'],
-      'Next thread': ['Down', 'See next thread.'],
-      'Previous thread': ['Up', 'See previous thread.'],
+      'Next thread': ['Shift+Down', 'See next thread.'],
+      'Previous thread': ['Shift+Up', 'See previous thread.'],
       'Expand thread': ['Ctrl+e', 'Expand thread.'],
       'Open thread': ['o', 'Open thread in current tab.'],
       'Open thread tab': ['Shift+o', 'Open thread in new tab.'],
@@ -8837,11 +8837,17 @@
           $.open("/" + g.BOARD + "/#delform");
           break;
         case Conf['Next page']:
+          if (g.VIEW === 'thread') {
+            return;
+          }
           if (form = $('.next form')) {
             window.location = form.action;
           }
           break;
         case Conf['Previous page']:
+          if (g.VIEW === 'thread') {
+            return;
+          }
           if (form = $('.prev form')) {
             window.location = form.action;
           }
