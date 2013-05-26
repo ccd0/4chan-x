@@ -6493,7 +6493,7 @@
       return $.event('AddMenuEntry', {
         type: 'header',
         el: prefetch,
-        order: 120
+        order: 104
       });
     },
     node: function() {
