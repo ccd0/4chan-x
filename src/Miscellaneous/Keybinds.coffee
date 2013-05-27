@@ -204,8 +204,11 @@ Keybinds =
       rect = postEl.getBoundingClientRect()
       if rect.bottom >= topMargin and rect.top <= doc.clientHeight # We're at least partially visible
         root = postEl.parentNode
-        next = $.x 'child::div[contains(@class,"post reply")]',
-          if delta is +1 then root.nextElementSibling else root.previousElementSibling
+        axe = if delta is +1
+          'following'
+        else
+          'preceding'
+        next = $.x "#{axe}-sibling::div[contains(@class,'replyContainer')][1]/child::div[contains(@class,'reply')]", root
         unless next
           @focus postEl
           return

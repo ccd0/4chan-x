@@ -1432,18 +1432,22 @@
       return Polyfill.visibility();
     },
     visibility: function() {
-      var event, prefix, property;
-
-      if ('visibilityState' in document || !(prefix = ('webkitVisibilityState' in document ? 'webkit' : 'mozVisibilityState' in document ? 'moz' : void 0))) {
+      if (!('webkitHidden' in document)) {
         return;
       }
-      property = prefix + 'VisibilityState';
-      event = prefix + 'visibilitychange';
-      d.visibilityState = d[property];
-      d.hidden = d.visibilityState === 'hidden';
-      return $.on(d, event, function() {
-        d.visibilityState = d[property];
-        d.hidden = d.visibilityState === 'hidden';
+      Object.defineProperties(HTMLDocument.prototype, {
+        visibilityState: {
+          get: function() {
+            return this.webkitVisibilityState;
+          }
+        },
+        hidden: {
+          get: function() {
+            return this.webkitHidden;
+          }
+        }
+      });
+      return $.on(d, 'webkitvisibilitychange', function() {
         return $.event('visibilitychange');
       });
     }
@@ -3817,12 +3821,16 @@
       return Unread.readSinglePost(post);
     },
     rm: function(quotelink, boardID, threadID, postID, context) {
-      var el, inlined, isBacklink, post, root, _ref;
+      var el, inlined, isBacklink, post, qroot, root, _ref;
 
       isBacklink = $.hasClass(quotelink, 'backlink');
       root = QuoteInline.findRoot(quotelink, isBacklink);
       root = $.x("following-sibling::div[@id='i" + postID + "'][1]", root);
+      qroot = $.x('ancestor::*[contains(@class,"postContainer")][1]', root);
       $.rm(root);
+      if (!$('.inline', qroot)) {
+        $.rmClass(qroot, 'hasInline');
+      }
       if (!(el = root.firstElementChild)) {
         return;
       }
@@ -9024,7 +9032,7 @@
       }
     },
     hl: function(delta, thread) {
-      var headRect, next, postEl, rect, replies, reply, root, topMargin, _i, _len;
+      var axe, headRect, next, postEl, rect, replies, reply, root, topMargin, _i, _len;
 
       if (Conf['Fixed Header'] && Conf['Bottom header']) {
         topMargin = 0;
@@ -9037,7 +9045,8 @@
         rect = postEl.getBoundingClientRect();
         if (rect.bottom >= topMargin && rect.top <= doc.clientHeight) {
           root = postEl.parentNode;
-          next = $.x('child::div[contains(@class,"post reply")]', delta === +1 ? root.nextElementSibling : root.previousElementSibling);
+          axe = delta === +1 ? 'following' : 'preceding';
+          next = $.x("" + axe + "-sibling::div[contains(@class,'replyContainer')][1]/child::div[contains(@class,'reply')]", root);
           if (!next) {
             this.focus(postEl);
             return;
