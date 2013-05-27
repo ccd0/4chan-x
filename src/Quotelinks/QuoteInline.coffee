@@ -54,7 +54,12 @@ QuoteInline =
     inline = $.el 'div',
       id: "i#{postID}"
       className: 'inline'
-    $.after QuoteInline.findRoot(quotelink, isBacklink), inline
+    root = QuoteInline.findRoot(quotelink, isBacklink)
+    $.after root, inline
+
+    qroot = $.x 'ancestor::*[contains(@class,"postContainer")][1]', root
+
+    $.addClass qroot, 'hasInline'
     Get.postClone boardID, threadID, postID, inline, context
 
     return unless (post = g.posts["#{boardID}.#{postID}"]) and
@@ -76,7 +81,11 @@ QuoteInline =
     # Select the corresponding inlined quote, and remove it.
     root = QuoteInline.findRoot quotelink, isBacklink
     root = $.x "following-sibling::div[@id='i#{postID}'][1]", root
+    qroot = $.x 'ancestor::*[contains(@class,"postContainer")][1]', root
     $.rm root
+
+    unless $ '.inline', qroot
+      $.rmClass qroot, 'hasInline'
 
     # Stop if it only contains text.
     return unless el = root.firstElementChild
