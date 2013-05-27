@@ -9564,7 +9564,8 @@
       (sectionToOpen ? sectionToOpen : links[0]).click();
       $.on($('.close', dialog), 'click', Settings.close);
       $.on(overlay, 'click', Settings.close);
-      return $.add(d.body, [overlay, dialog]);
+      $.add(d.body, [overlay, dialog]);
+      return $.event('OpenSettings', null, dialog);
     },
     close: function() {
       if (!Settings.dialog) {
@@ -9600,7 +9601,8 @@
       $.rmAll(section);
       section.className = "section-" + this.hyphenatedTitle;
       this.open(section, g);
-      return section.scrollTop = 0;
+      section.scrollTop = 0;
+      return $.event('OpenSettings', null, section);
     },
     main: function(section) {
       var arr, button, description, div, fs, hiddenNum, input, inputs, items, key, obj, _ref;

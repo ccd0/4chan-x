@@ -76,6 +76,8 @@ Settings =
 
     $.add d.body, [overlay, dialog]
 
+    $.event 'OpenSettings', null, dialog
+
   close: ->
     return unless Settings.dialog
     $.rm Settings.overlay
@@ -98,6 +100,7 @@ Settings =
     section.className = "section-#{@hyphenatedTitle}"
     @open section, g
     section.scrollTop = 0
+    $.event 'OpenSettings', null, section
 
   main: (section) ->
     items  = {}
