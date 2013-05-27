@@ -3792,14 +3792,17 @@
       }
     },
     add: function(quotelink, boardID, threadID, postID, context) {
-      var inline, isBacklink, post;
+      var inline, isBacklink, post, qroot, root;
 
       isBacklink = $.hasClass(quotelink, 'backlink');
       inline = $.el('div', {
         id: "i" + postID,
         className: 'inline'
       });
-      $.after(QuoteInline.findRoot(quotelink, isBacklink), inline);
+      root = QuoteInline.findRoot(quotelink, isBacklink);
+      $.after(root, inline);
+      qroot = $.x('ancestor::*[contains(@class,"postContainer")][1]', root);
+      $.addClass(qroot, 'hasInline');
       Get.postClone(boardID, threadID, postID, inline, context);
       if (!((post = g.posts["" + boardID + "." + postID]) && context.thread === post.thread)) {
         return;
