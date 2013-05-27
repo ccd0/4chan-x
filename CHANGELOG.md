@@ -1,3 +1,6 @@
+### v1.2.11
+*2013-05-27*
+
 **MayhemYDG**:
 - Add page count to thread stats
 - Better performance for Fit Height by using vh
