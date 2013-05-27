@@ -861,7 +861,8 @@ hide: "
   display: block;
   overflow: hidden;
 }
-.expanded-image .reply.post {
+.expanded-image .reply.post,
+.hasInline .reply.post {
   width: 100%;
 }
 " else "
