@@ -31,6 +31,7 @@ ThreadStats =
       postCount++
       fileCount++ if post.file
     ThreadStats.thread = @
+    ThreadStats.fetchPage()
     ThreadStats.update postCount, fileCount
     $.on d, 'ThreadUpdate', ThreadStats.onUpdate
 

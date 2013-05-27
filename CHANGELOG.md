@@ -1,3 +1,12 @@
+**MayhemYDG**:
+- Add page count to thread stats
+- Better performance for Fit Height by using vh
+
+**seaweedchan**:
+- Added OpenSettings event on 4chan X settings/sections open for userscripts like OneeChan and 4chan Style Script
+- Changed defaults that use the arrow keys to shift+arrow key to not conflict with scrolling
+- Made Mayhem's page count in thread stats optional
+
 ### v1.2.10
 *2013-05-25*
 
