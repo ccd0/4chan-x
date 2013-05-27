@@ -1,7 +1,15 @@
 **MayhemYDG**:
 - Tiny fixes
+- Add page count to thread stats
+- Better performance for Fit Height by using vh
 
 **seaweedchan**:
+- Added OpenSettings event on 4chan X settings/sections open for userscripts like OneeChan and 4chan Style Script
+- Changed defaults that use the arrow keys to shift+arrow key to not conflict with scrolling
+- Made Mayhem's page count in thread stats optional
+- Small bug fixes
+- Fix YouTube videos in Firefox taking z-index priority
+- Fix Persistent QR not working for /f/
 - New image expansion option: `Advance on contract`. Advances to next post unless Fappe Tyme is enabled (temporary)
 - Change `.qr-link` to `.qr-link-container` and `.qr-link>a` to `.qr-link`
 - Update /q/'s posting cooldown
@@ -15,6 +23,10 @@
 
 **Wohlfe**:
 - Add /pol/ archiving for FoolzaShit
+
+**zixaphir**:
+- New option: `Image Prefetching`. Adds a toggle to the header menu for per-thread prefetching.
+- Make Advance on contract work with Fappe Tyme
 
 ### v2.0.4
 *2013-05-15*

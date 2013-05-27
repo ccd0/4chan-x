@@ -79,9 +79,11 @@ Keybinds =
       when Conf['Open front page']
         $.open "/#{g.BOARD}/#delform"
       when Conf['Next page']
+        return if g.VIEW is 'thread'
         if form = $ '.next form'
           window.location = form.action
       when Conf['Previous page']
+        return if g.VIEW is 'thread'
         if form = $ '.prev form'
           window.location = form.action
       when Conf['Open catalog']

@@ -18,7 +18,7 @@ ImageLoader =
     $.event 'AddMenuEntry',
       type: 'header'
       el: prefetch
-      order: 120
+      order: 104
 
   node: ->
     return if @isClone or @isHidden or @thread.isHidden or !@file?.isImage

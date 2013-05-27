@@ -20,7 +20,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.0.4 - 2013-05-23
+* appchan x - Version 2.0.4 - 2013-05-27
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -186,6 +186,7 @@
         'Scroll to Last Read Post': [true, 'Scroll back to the last read post when reopening a thread.'],
         'Thread Excerpt': [true, 'Show an excerpt of the thread in the tab title.'],
         'Thread Stats': [true, 'Display reply and image count.'],
+        'Page Count in Stats': [false, 'Display the page count in the thread stats as well.'],
         'Updater and Stats in Header': [true, 'Places the thread updater and thread stats in the header instead of floating them.'],
         'Thread Watcher': [true, 'Bookmark threads.'],
         'Toggleable Thread Watcher': [false, 'Adds a shortcut for the thread watcher, hides the watcher by default, and makes it scroll with the page.'],
@@ -350,7 +351,7 @@
     },
     time: '%m/%d/%y(%a)%H:%M:%S',
     backlink: '>>%id',
-    fileInfo: '%l (%p%s, %r)',
+    fileInfo: '%L (%p%s, %r)',
     favicon: 'ferongr',
     usercss: "/* Tripcode Italics: */\n/*\nspan.postertrip {\nfont-style: italic;\n}\n*/\n\n/* Add a rounded border to thumbnails (but not expanded images): */\n/*\n.fileThumb > img:first-child {\nborder: solid 2px rgba(0,0,100,0.5);\nborder-radius: 10px;\n}\n*/\n\n/* Make highlighted posts look inset on the page: */\n/*\ndiv.post:target,\ndiv.post.highlight {\nbox-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);\n}\n*/",
     hotkeys: {
@@ -373,11 +374,11 @@
       'fappeTyme': ['f', 'Fappe Tyme.'],
       'Front page': ['0', 'Jump to page 0.'],
       'Open front page': ['Shift+0', 'Open page 0 in a new tab.'],
-      'Next page': ['Right', 'Jump to the next page.'],
-      'Previous page': ['Left', 'Jump to the previous page.'],
+      'Next page': ['Shift+Right', 'Jump to the next page.'],
+      'Previous page': ['Shift+Left', 'Jump to the previous page.'],
       'Open catalog': ['Shift+c', 'Open the catalog of the current board'],
-      'Next thread': ['Down', 'See next thread.'],
-      'Previous thread': ['Up', 'See previous thread.'],
+      'Next thread': ['Shift+Down', 'See next thread.'],
+      'Previous thread': ['Shift+Up', 'See previous thread.'],
       'Expand thread': ['Ctrl+e', 'Expand thread.'],
       'Open thread': ['o', 'Open thread in current tab.'],
       'Open thread tab': ['Shift+o', 'Open thread in new tab.'],
@@ -4164,7 +4165,7 @@
       }
       flag = flagCode ? (" <img src='" + staticPath + "country/" + (boardID === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
       if (file != null ? file.isDeleted : void 0) {
-        fileHtml = isOP ? ("<div class=file id=f" + data.no + "><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>" : ("<div class=file id=f" + data.no + "><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted-res.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>";
+        fileHtml = isOP ? ("<div class=file id=f" + postID + "><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>" : ("<div class=file id=f" + postID + "><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted-res.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>";
       } else if (file) {
         ext = file.name.slice(-3);
         if (!file.twidth && !file.theight && ext === 'gif') {
@@ -6671,7 +6672,7 @@
         regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/,
         el: function() {
           return $.el('iframe', {
-            src: "//www.youtube.com/embed/" + this.name + (this.option ? '#' + this.option : '')
+            src: "//www.youtube.com/embed/" + this.name + (this.option ? '#' + this.option : '') + "?wmode=opaque"
           });
         },
         title: {
@@ -6688,7 +6689,7 @@
         style: 'border: 0; width: 150px; height: 45px;',
         el: function() {
           return $.el('object', {
-            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
           });
         }
       },
@@ -6696,7 +6697,7 @@
         regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
         el: function() {
           return $.el('iframe', {
-            src: "//player.vimeo.com/video/" + this.name
+            src: "//player.vimeo.com/video/" + this.name + "?wmode=opaque"
           });
         },
         title: {
@@ -6711,8 +6712,8 @@
       LiveLeak: {
         regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
         el: function() {
-          return $.el('iframe', {
-            src: "http://www.liveleak.com/e/" + this.name + "?autostart=true"
+          return $.el('object', {
+            innerHTML: "<embed src='http://www.liveleak.com/e/" + this.name + "?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
           });
         }
       },
@@ -6885,7 +6886,11 @@
       this.db = new DataBoard('yourPosts');
       $.ready(this.initReady);
       if (Conf['Persistent QR']) {
-        $.on(d, '4chanXInitFinished', this.persist);
+        if (g.BOARD.ID !== 'f') {
+          $.on(d, '4chanXInitFinished', this.persist);
+        } else {
+          $.ready(this.persist);
+        }
       }
       Post.prototype.callbacks.push({
         name: 'Quick Reply',
@@ -7150,6 +7155,9 @@
         list = $("#list-" + type, QR.nodes.el);
         for (_i = 0, _len = arr.length; _i < _len; _i++) {
           val = arr[_i];
+          if (!val) {
+            continue;
+          }
           $.add(list, $.el('option', {
             textContent: val
           }));
@@ -8456,14 +8464,11 @@
         }
       },
       setFitness: function() {
-        var checked;
-
-        checked = this.checked;
-        (checked ? $.addClass : $.rmClass)(doc, this.name.toLowerCase().replace(/\s+/g, '-'));
+        (this.checked ? $.addClass : $.rmClass)(doc, this.name.toLowerCase().replace(/\s+/g, '-'));
         if (this.name !== 'Fit height') {
           return;
         }
-        if (checked) {
+        if (this.checked) {
           $.on(window, 'resize', ImageExpand.resize);
           if (!ImageExpand.style) {
             ImageExpand.style = $.addStyle(null);
@@ -8473,6 +8478,9 @@
           return $.off(window, 'resize', ImageExpand.resize);
         }
       }
+    },
+    resize: function() {
+      return ImageExpand.style.textContent = ":root.fit-height .full-image {max-height:" + doc.clientHeight + "px}";
     },
     toggle: function(post) {
       var headRect, node, rect, root, thumb, top;
@@ -8669,9 +8677,6 @@
         };
       }
     },
-    resize: function() {
-      return ImageExpand.style.textContent = ":root.fit-height .full-image {max-height:" + doc.clientHeight + "px}";
-    },
     menuToggle: function(e) {
       return ImageExpand.opmenu.toggle(e, this, g);
     }
@@ -8792,7 +8797,7 @@
       return $.event('AddMenuEntry', {
         type: 'header',
         el: prefetch,
-        order: 120
+        order: 104
       });
     },
     node: function() {
@@ -9278,20 +9283,23 @@
       }
       if (Conf['Updater and Stats in Header']) {
         this.dialog = sc = $.el('span', {
-          innerHTML: "<span id=post-count>0</span> / <span id=file-count>0</span>",
-          id: 'thread-stats'
+          innerHTML: "<span id=post-count>0</span> / <span id=file-count>0</span>" + (Conf["Page Count in Stats"] ? " / <span id=page-count>0</span>" : ""),
+          id: 'thread-stats',
+          title: 'Post Count / File Count' + (Conf["Page Count in Stats"] ? " / Page Count" : "")
         });
         $.ready(function() {
           return Header.addShortcut(sc);
         });
       } else {
-        this.dialog = sc = UI.dialog('thread-stats', 'bottom: 0px; right: 0px;', "<div class=move><span id=post-count>0</span> / <span id=file-count>0</span></div>");
+        this.dialog = sc = UI.dialog('thread-stats', 'bottom: 0px; right: 0px;', "<div class=move title='Post Count / File Count" + (Conf["Page Count in Stats"] ? " / Page Count" : "") + "'><span id=post-count>0</span> / <span id=file-count>0</span>" + (Conf["Page Count in Stats"] ? " / <span id=page-count>0</span>" : "") + "</div>");
         $.ready(function() {
           return $.add(d.body, sc);
         });
       }
       this.postCountEl = $('#post-count', sc);
       this.fileCountEl = $('#file-count', sc);
+      this.pageCountEl = $('#page-count', sc);
+      this.lastModified = '0';
       return Thread.prototype.callbacks.push({
         name: 'Thread Stats',
         cb: this.node
@@ -9311,6 +9319,7 @@
         }
       }
       ThreadStats.thread = this;
+      ThreadStats.fetchPage();
       ThreadStats.update(postCount, fileCount);
       return $.on(d, 'ThreadUpdate', ThreadStats.onUpdate);
     },
@@ -9331,6 +9340,43 @@
       fileCountEl.textContent = fileCount;
       (thread.postLimit && !thread.isSticky ? $.addClass : $.rmClass)(postCountEl, 'warning');
       return (thread.fileLimit && !thread.isSticky ? $.addClass : $.rmClass)(fileCountEl, 'warning');
+    },
+    fetchPage: function() {
+      if (ThreadStats.thread.isDead || !Conf["Page Count in Stats"]) {
+        return;
+      }
+      setTimeout(ThreadStats.fetchPage, 2 * $.MINUTE);
+      return $.ajax("//api.4chan.org/" + ThreadStats.thread.board + "/threads.json", {
+        onload: ThreadStats.onThreadsLoad
+      }, {
+        headers: {
+          'If-Modified-Since': ThreadStats.lastModified
+        }
+      });
+    },
+    onThreadsLoad: function() {
+      var page, pages, thread, _i, _j, _len, _len1, _ref;
+
+      if (!Conf["Page Count in Stats"]) {
+        return;
+      }
+      ThreadStats.lastModified = this.getResponseHeader('Last-Modified');
+      if (this.status !== 200) {
+        return;
+      }
+      pages = JSON.parse(this.response);
+      for (_i = 0, _len = pages.length; _i < _len; _i++) {
+        page = pages[_i];
+        _ref = page.threads;
+        for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+          thread = _ref[_j];
+          if (thread.no === ThreadStats.thread.ID) {
+            ThreadStats.pageCountEl.textContent = page.page;
+            (page.page === pages.length - 1 ? $.addClass : $.rmClass)(ThreadStats.pageCountEl, 'warning');
+            return;
+          }
+        }
+      }
     }
   };
 
@@ -12766,11 +12812,17 @@
           $.open("/" + g.BOARD + "/#delform");
           break;
         case Conf['Next page']:
+          if (g.VIEW === 'thread') {
+            return;
+          }
           if (form = $('.next form')) {
             window.location = form.action;
           }
           break;
         case Conf['Previous page']:
+          if (g.VIEW === 'thread') {
+            return;
+          }
           if (form = $('.prev form')) {
             window.location = form.action;
           }
@@ -13485,7 +13537,8 @@
       (sectionToOpen ? sectionToOpen : links[0]).click();
       $.on($('.close', dialog), 'click', Settings.close);
       $.on(overlay, 'click', Settings.close);
-      return $.add(d.body, [overlay, dialog]);
+      $.add(d.body, [overlay, dialog]);
+      return $.event('OpenSettings', null, dialog);
     },
     close: function() {
       if (!Settings.dialog) {
@@ -13521,7 +13574,8 @@
       $.rmAll(section);
       section.className = "section-" + this.hyphenatedTitle;
       this.open(section, mode);
-      return section.scrollTop = 0;
+      section.scrollTop = 0;
+      return $.event('OpenSettings', null, section);
     },
     main: function(section) {
       var arr, button, description, div, fs, hiddenNum, input, inputs, items, key, obj, _ref;

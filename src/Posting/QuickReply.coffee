@@ -3,7 +3,12 @@ QR =
     @db = new DataBoard 'yourPosts'
 
     $.ready @initReady
-    $.on d, '4chanXInitFinished', @persist if Conf['Persistent QR']
+
+    if Conf['Persistent QR']
+      unless g.BOARD.ID is 'f'
+        $.on d, '4chanXInitFinished', @persist
+      else
+        $.ready @persist
 
     Post::callbacks.push
       name: 'Quick Reply'
@@ -209,6 +214,8 @@ QR =
     loadPersonas: (type, arr) ->
       list = $ "#list-#{type}", QR.nodes.el
       for val in arr
+        # XXX Firefox displays empty <option>s in the completion list.
+        continue unless val
         $.add list, $.el 'option',
           textContent: val
       return

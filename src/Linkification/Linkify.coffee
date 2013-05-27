@@ -151,7 +151,7 @@ Linkify =
       regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/
       el: ->
         $.el 'iframe',
-          src: "//www.youtube.com/embed/#{@name}#{if @option then '#' + @option else ''}"
+          src: "//www.youtube.com/embed/#{@name}#{if @option then '#' + @option else ''}?wmode=opaque"
       title:
         api:  -> "https://gdata.youtube.com/feeds/api/videos/#{@name}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
         text: -> JSON.parse(@responseText).entry.title.$t
@@ -161,13 +161,13 @@ Linkify =
       style: 'border: 0; width: 150px; height: 45px;'
       el: ->
         $.el 'object',
-          innerHTML:  "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+          innerHTML:  "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
 
     Vimeo:
       regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
       el: ->
         $.el 'iframe',
-          src: "//player.vimeo.com/video/#{@name}"
+          src: "//player.vimeo.com/video/#{@name}?wmode=opaque"
       title:
         api:  -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{@name}"
         text: -> JSON.parse(@responseText).title
@@ -175,8 +175,8 @@ Linkify =
     LiveLeak:
       regExp:  /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
       el: ->
-        $.el 'iframe',
-          src: "http://www.liveleak.com/e/#{@name}?autostart=true"
+        $.el 'object',
+          innerHTML:  "<embed src='http://www.liveleak.com/e/#{@name}?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
 
     audio:
       regExp:  /(.*\.(mp3|ogg|wav))$/

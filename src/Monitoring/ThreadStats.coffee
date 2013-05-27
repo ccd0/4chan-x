@@ -4,18 +4,21 @@ ThreadStats =
 
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
-        innerHTML: "<span id=post-count>0</span> / <span id=file-count>0</span>"
+        innerHTML: "<span id=post-count>0</span> / <span id=file-count>0</span>#{if Conf["Page Count in Stats"] then " / <span id=page-count>0</span>" else ""}"
         id:        'thread-stats'
+        title: 'Post Count / File Count' + (if Conf["Page Count in Stats"] then " / Page Count" else "")
       $.ready ->
         Header.addShortcut sc
     else 
       @dialog = sc = UI.dialog 'thread-stats', 'bottom: 0px; right: 0px;',
-        "<div class=move><span id=post-count>0</span> / <span id=file-count>0</span></div>"
+        "<div class=move title='Post Count / File Count#{if Conf["Page Count in Stats"] then " / Page Count" else ""}'><span id=post-count>0</span> / <span id=file-count>0</span>#{if Conf["Page Count in Stats"] then " / <span id=page-count>0</span>" else ""}</div>"
       $.ready => 
         $.add d.body, sc    
 
     @postCountEl = $ '#post-count', sc
     @fileCountEl = $ '#file-count', sc
+    @pageCountEl  = $ '#page-count', sc
+    @lastModified = '0'
 
     Thread::callbacks.push
       name: 'Thread Stats'
@@ -28,6 +31,7 @@ ThreadStats =
       postCount++
       fileCount++ if post.file
     ThreadStats.thread = @
+    ThreadStats.fetchPage()
     ThreadStats.update postCount, fileCount
     $.on d, 'ThreadUpdate', ThreadStats.onUpdate
 
@@ -42,3 +46,21 @@ ThreadStats =
     fileCountEl.textContent = fileCount
     (if thread.postLimit and !thread.isSticky then $.addClass else $.rmClass) postCountEl, 'warning'
     (if thread.fileLimit and !thread.isSticky then $.addClass else $.rmClass) fileCountEl, 'warning'
+
+  fetchPage: ->
+    return if ThreadStats.thread.isDead or !Conf["Page Count in Stats"]
+    setTimeout ThreadStats.fetchPage, 2 * $.MINUTE
+    $.ajax "//api.4chan.org/#{ThreadStats.thread.board}/threads.json", onload: ThreadStats.onThreadsLoad,
+      headers: 'If-Modified-Since': ThreadStats.lastModified
+
+  onThreadsLoad: ->
+    return if !Conf["Page Count in Stats"]
+    ThreadStats.lastModified = @getResponseHeader 'Last-Modified'
+    return if @status isnt 200
+    pages = JSON.parse @response
+    for page in pages
+      for thread in page.threads
+        if thread.no is ThreadStats.thread.ID
+          ThreadStats.pageCountEl.textContent = page.page
+          (if page.page is pages.length - 1 then $.addClass else $.rmClass) ThreadStats.pageCountEl, 'warning'
+          return

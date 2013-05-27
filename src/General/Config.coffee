@@ -221,6 +221,10 @@ Config =
         true
         'Display reply and image count.'
       ]
+      'Page Count in Stats': [
+        false
+        'Display the page count in the thread stats as well.'
+      ]
       'Updater and Stats in Header': [
         true,
         'Places the thread updater and thread stats in the header instead of floating them.'
@@ -813,7 +817,7 @@ http://iqdb.org/?url=%TURL
 
   backlink: '>>%id'
 
-  fileInfo: '%l (%p%s, %r)'
+  fileInfo: '%L (%p%s, %r)'
 
   favicon: 'ferongr'
 
@@ -924,11 +928,11 @@ box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
       'Open page 0 in a new tab.'
     ]
     'Next page': [
-      'Right'
+      'Shift+Right'
       'Jump to the next page.'
     ]
     'Previous page': [
-      'Left'
+      'Shift+Left'
       'Jump to the previous page.'
     ]
     'Open catalog': [
@@ -937,11 +941,11 @@ box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
     ]
     # Thread Navigation
     'Next thread': [
-      'Down'
+      'Shift+Down'
       'See next thread.'
     ]
     'Previous thread': [
-      'Up'
+      'Shift+Up'
       'See previous thread.'
     ]
     'Expand thread': [
