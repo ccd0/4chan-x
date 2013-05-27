@@ -81,7 +81,11 @@ QuoteInline =
     # Select the corresponding inlined quote, and remove it.
     root = QuoteInline.findRoot quotelink, isBacklink
     root = $.x "following-sibling::div[@id='i#{postID}'][1]", root
+    qroot = $.x 'ancestor::*[contains(@class,"postContainer")][1]', root
     $.rm root
+
+    unless $ '.inline', qroot
+      $.rmClass qroot, 'hasInline'
 
     # Stop if it only contains text.
     return unless el = root.firstElementChild
