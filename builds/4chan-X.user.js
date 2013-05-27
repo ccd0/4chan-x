@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.10 - 2013-05-25
+* 4chan X - Version 1.2.10 - 2013-05-27
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -182,6 +182,7 @@
         'Scroll to Last Read Post': [true, 'Scroll back to the last read post when reopening a thread.'],
         'Thread Excerpt': [true, 'Show an excerpt of the thread in the tab title.'],
         'Thread Stats': [true, 'Display reply and image count.'],
+        'Page Count in Stats': [false, 'Display the page count in the thread stats as well.'],
         'Updater and Stats in Header': [true, 'Places the thread updater and thread stats in the header instead of floating them.'],
         'Thread Watcher': [true, 'Bookmark threads.'],
         'Toggleable Thread Watcher': [false, 'Adds a shortcut for the thread watcher, hides the watcher by default, and makes it scroll with the page.'],
@@ -6990,20 +6991,23 @@
       }
       if (Conf['Updater and Stats in Header']) {
         this.dialog = sc = $.el('span', {
-          innerHTML: "<span id=post-count>0</span> / <span id=file-count>0</span>",
-          id: 'thread-stats'
+          innerHTML: "<span id=post-count>0</span> / <span id=file-count>0</span>" + (Conf["Page Count in Stats"] ? " / <span id=page-count>0</span>" : ""),
+          id: 'thread-stats',
+          title: 'Post Count / File Count' + (Conf["Page Count in Stats"] ? " / Page Count" : "")
         });
         $.ready(function() {
           return Header.addShortcut(sc);
         });
       } else {
-        this.dialog = sc = UI.dialog('thread-stats', 'bottom: 0px; right: 0px;', "<div class=move><span id=post-count>0</span> / <span id=file-count>0</span></div>");
+        this.dialog = sc = UI.dialog('thread-stats', 'bottom: 0px; right: 0px;', "<div class=move title='Post Count / File Count" + (Conf["Page Count in Stats"] ? " / Page Count" : "") + "'><span id=post-count>0</span> / <span id=file-count>0</span>" + (Conf["Page Count in Stats"] ? " / <span id=page-count>0</span>" : "") + "</div>");
         $.ready(function() {
           return $.add(d.body, sc);
         });
       }
       this.postCountEl = $('#post-count', sc);
       this.fileCountEl = $('#file-count', sc);
+      this.pageCountEl = $('#page-count', sc);
+      this.lastModified = '0';
       return Thread.prototype.callbacks.push({
         name: 'Thread Stats',
         cb: this.node
@@ -7043,6 +7047,43 @@
       fileCountEl.textContent = fileCount;
       (thread.postLimit && !thread.isSticky ? $.addClass : $.rmClass)(postCountEl, 'warning');
       return (thread.fileLimit && !thread.isSticky ? $.addClass : $.rmClass)(fileCountEl, 'warning');
+    },
+    fetchPage: function() {
+      if (ThreadStats.thread.isDead || !Conf["Page Count in Stats"]) {
+        return;
+      }
+      setTimeout(ThreadStats.fetchPage, 2 * $.MINUTE);
+      return $.ajax("//api.4chan.org/" + ThreadStats.thread.board + "/threads.json", {
+        onload: ThreadStats.onThreadsLoad
+      }, {
+        headers: {
+          'If-Modified-Since': ThreadStats.lastModified
+        }
+      });
+    },
+    onThreadsLoad: function() {
+      var page, pages, thread, _i, _j, _len, _len1, _ref;
+
+      if (!Conf["Page Count in Stats"]) {
+        return;
+      }
+      ThreadStats.lastModified = this.getResponseHeader('Last-Modified');
+      if (this.status !== 200) {
+        return;
+      }
+      pages = JSON.parse(this.response);
+      for (_i = 0, _len = pages.length; _i < _len; _i++) {
+        page = pages[_i];
+        _ref = page.threads;
+        for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+          thread = _ref[_j];
+          if (thread.no === ThreadStats.thread.ID) {
+            ThreadStats.pageCountEl.textContent = page.page;
+            (page.page === pages.length - 1 ? $.addClass : $.rmClass)(ThreadStats.pageCountEl, 'warning');
+            return;
+          }
+        }
+      }
     }
   };
 

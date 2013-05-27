@@ -229,6 +229,10 @@ Config =
         true
         'Display reply and image count.'
       ]
+      'Page Count in Stats': [
+        false
+        'Display the page count in the thread stats as well.'
+      ]
       'Updater and Stats in Header': [
         true,
         'Places the thread updater and thread stats in the header instead of floating them.'
