@@ -1216,7 +1216,6 @@ input:checked + .rice {
 #qr.has-focus #qrtab,
 #qr.dump #qrtab {
   opacity: 0;
-  #{Style.sidebarLocation[0]}: #{252 + Style.sidebarOffset.W}px;
 }
 #qrtab input,
 #qrtab .close,
