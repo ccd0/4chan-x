@@ -11301,7 +11301,6 @@
       $.addClass(doc, 'webkit');
       $.addClass(doc, 'blink');
       $.addClass(doc, 'appchan-x');
-      $.addClass(doc, g.VIEW);
       MascotTools.init();
       if (g.VIEW === 'index') {
         return $.asap((function() {
@@ -11356,7 +11355,17 @@
     agent: "-webkit-",
     sizing: "box-sizing",
     setup: function() {
-      this.addStyleReady();
+      var theme;
+
+      theme = Themes[Conf['theme']];
+      $.extend(Style, {
+        layoutCSS: $.addStyle(Style.layout(), 'layout'),
+        themeCSS: $.addStyle(Style.theme(theme), 'theme'),
+        icons: $.addStyle("", 'icons'),
+        paddingSheet: $.addStyle("", 'padding'),
+        mascot: $.addStyle("", 'mascotSheet')
+      });
+      $.addStyle(JSColor.css(), 'jsColor');
       if (d.head) {
         this.remStyle();
         if (!Style.headCount) {
@@ -11412,20 +11421,6 @@
       return Style.padding();
     },
     headCount: 12,
-    addStyleReady: function() {
-      var theme;
-
-      theme = Themes[Conf['theme']];
-      $.extend(Style, {
-        layoutCSS: $.addStyle(Style.layout(), 'layout'),
-        themeCSS: $.addStyle(Style.theme(theme), 'theme'),
-        icons: $.addStyle("", 'icons'),
-        paddingSheet: $.addStyle("", 'padding'),
-        mascot: $.addStyle("", 'mascotSheet')
-      });
-      $.addStyle(JSColor.css(), 'jsColor');
-      return delete Style.addStyleReady;
-    },
     remStyle: function() {
       var i, node, nodes;
 

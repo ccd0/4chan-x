@@ -14,7 +14,6 @@ Style =
     $.addClass doc, 'gecko'
     <% } %>
     $.addClass doc, 'appchan-x'
-    $.addClass doc, g.VIEW
 
     MascotTools.init()
 
@@ -62,7 +61,17 @@ Style =
   sizing: "<% if (type === 'userscript') { %>-moz-<% } else { %><% } %>box-sizing"
 
   setup: ->
-    @addStyleReady()
+    theme = Themes[Conf['theme']]
+    $.extend Style,
+      layoutCSS:    $.addStyle Style.layout(),      'layout'
+      themeCSS:     $.addStyle Style.theme(theme),  'theme'
+      icons:        $.addStyle "",                  'icons'
+      paddingSheet: $.addStyle "",                  'padding'
+      mascot:       $.addStyle "",                  'mascotSheet'
+
+    # Non-customizable
+    $.addStyle JSColor.css(), 'jsColor'
+
     if d.head
       @remStyle()
       unless Style.headCount
@@ -108,20 +117,6 @@ Style =
     Style.padding()
 
   headCount: 12
-
-  addStyleReady: ->
-    theme = Themes[Conf['theme']]
-    $.extend Style,
-      layoutCSS:    $.addStyle Style.layout(),      'layout'
-      themeCSS:     $.addStyle Style.theme(theme),  'theme'
-      icons:        $.addStyle "",                  'icons'
-      paddingSheet: $.addStyle "",                  'padding'
-      mascot:       $.addStyle "",                  'mascotSheet'
-
-    # Non-customizable
-    $.addStyle JSColor.css(), 'jsColor'
-
-    delete Style.addStyleReady
 
   remStyle: ->
     nodes = d.head.children
