@@ -1,22 +1,8 @@
-<<<<<<< HEAD
-=======
-### v1.2.12
-*2013-05-27*
-
-**MayhemYDG**:
-- Fix `Jump to Next Reply` keybind not accounting for posts after unread line
-
-**seaweedchan**:
-- Added `.hasInline` (if replyContainer contains .inline) for userstyle/script maintainers
-
-### v1.2.11
-*2013-05-27*
-
->>>>>>> v3
 **MayhemYDG**:
 - Tiny fixes
 - Add page count to thread stats
 - Better performance for Fit Height by using vh
+- Fix `Jump to Next Reply` keybind not accounting for posts after unread line
 
 **seaweedchan**:
 - Added OpenSettings event on 4chan X settings/sections open for userscripts like OneeChan and 4chan Style Script
@@ -35,6 +21,7 @@
  - When disabled, shows a red border around the captcha to indicate captcha errors. Goes back to normal when any key is pressed.
 - Color Quick Reply's inputs in Tomorrow to match the theme
 - Revert some of Mayhem's changes that caused new bugs
+- Added `.hasInline` (if replyContainer contains .inline) for userstyle/script maintainers
 
 **Wohlfe**:
 - Add /pol/ archiving for FoolzaShit
@@ -42,6 +29,15 @@
 **zixaphir**:
 - New option: `Image Prefetching`. Adds a toggle to the header menu for per-thread prefetching.
 - Make Advance on contract work with Fappe Tyme
+- Fix various options and functions that were not working as intended or were unintuitive
+  * Filter Highlighting
+  * Highlight Owned Posts
+  * Highlight Posts Quoting You
+  * Mascot and Theme Exporting will now save as a named JSON file by default
+  * On side pagination
+  * Banner Reflections
+  * Replies with inlined posts will not shrink in Fit Width mode anymore.
+- Fixed odd spacing issues with shortcuts and other bracketed elements
 
 ### v2.0.4
 *2013-05-15*
@@ -59,6 +55,7 @@
 - Add board selection to archiver options
 - Fix bug where image hover would close when hitting Enter while typing
 - Add `Quoted Title` option which adds (!) text to title when user is quoted
+- Add option to indent replies.
 
 ### v2.0.3
 *2013-05-10*
