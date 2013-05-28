@@ -32,18 +32,6 @@ hr#unread-line {
   border-bottom: 1px solid #{theme["Reply Background"]};
   visibility: visible;
 }
-a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] > table > tbody > tr > td {
-  background: #{backgroundC} !important;
-  border: 1px solid #{theme["Reply Border"]} !important;
-}
-#fs_status {
-  background: #{theme["Dialog Background"]} !important;
-}
-#fs_data tr[style="background-color: #EA8;"] {
-  background: #{theme["Reply Background"]} !important;
-}
-#fs_data,
-#fs_data *,
 .threadContainer {
   border-color: #{theme["Reply Border"]} !important;
 }
@@ -295,7 +283,7 @@ textarea {
   background: #{theme["Buttons Background"]};
   border: 1px solid #{theme["Buttons Border"]};
 }
-.pages a,
+.pages a[href],
 #header-bar a {
   color: #{theme["Navigation Links"]};
 }
@@ -319,7 +307,7 @@ input[type=checkbox]:checked + .rice::after {
 .button,
 .entry,
 .replylink,
-a {
+a[href] {
   color: #{theme["Links"]};
 }
 .backlink {
