@@ -143,7 +143,7 @@ module.exports = (grunt) ->
         src: '**'
       opera:
         options:
-          archive: 'builds/4chan-X-Opera.zip'
+          archive: 'builds/4chan-X-Opera.nex'
           level: 9
           pretty: true
         expand: true

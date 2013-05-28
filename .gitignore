@@ -5,5 +5,5 @@ tmp-crx/
 tmp-userjs/
 tmp-userscript/
 builds/4chan-X-Chrome.zip
-builds/4chan-X-Opera.zip
+builds/4chan-X-Opera.nex
 Gruntfile.js
