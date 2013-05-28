@@ -375,7 +375,7 @@ else "
   top: auto;
   bottom: #{if ['fixed', 'transparent fade'].contains(_conf['Post Form Style']) then (21.6 + (if Conf['Show Post Form Header'] then 1.5 else 0) + (if Conf['Post Form Decorations'] then 0.2 else 0)) else .5}em;
   #{Style.sidebarLocation[1]}: auto;
-  #{Style.sidebarLocation[0]}: #{Style.sidebar - 2}px
+  #{Style.sidebarLocation[0]}: #{Style.sidebar - 2}px;
   position: fixed;
 #{if Style.sidebarLocation[0] is 'right' then "
   #{agent}transform: rotate(90deg);
