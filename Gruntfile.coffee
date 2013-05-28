@@ -54,6 +54,16 @@ module.exports = (grunt) ->
             'tmp-<%= pkg.type %>/script.js'
           ]
 
+      opera:
+        options: concatOptions
+        files:
+          'builds/opera/manifest.json': 'src/General/meta/operamanifest.json'
+          'builds/opera/script.js': [
+            'src/General/meta/botproc.js'
+            'src/General/meta/banner.js'
+            'tmp-<%= pkg.type %>/script.js'
+          ]
+
       userjs:
         options: concatOptions
         src: [
@@ -91,6 +101,7 @@ module.exports = (grunt) ->
       build: [
         'concat:meta'
         'build-crx'
+        'build-opera'
         'build-userjs'
         'build-userscript'
       ]
@@ -124,11 +135,19 @@ module.exports = (grunt) ->
     compress:
       crx:
         options:
-          archive: 'builds/4chan-X.zip'
+          archive: 'builds/4chan-X-Chrome.zip'
           level: 9
           pretty: true
         expand: true
         cwd: 'builds/crx/'
+        src: '**'
+      opera:
+        options:
+          archive: 'builds/4chan-X-Opera.zip'
+          level: 9
+          pretty: true
+        expand: true
+        cwd: 'builds/opera/'
         src: '**'
 
     clean:
@@ -168,6 +187,14 @@ module.exports = (grunt) ->
     'clean:tmpcrx'
   ]
 
+  grunt.registerTask 'build-opera', [
+    'set-build:crx'
+    'concat:coffee'
+    'coffee:script'
+    'concat:opera'
+    'clean:tmpcrx'
+  ]
+
   grunt.registerTask 'build-userjs', [
     'set-build:userjs'
     'concat:coffee'
@@ -187,6 +214,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'release', [
     'default'
     'compress:crx'
+    'compress:opera'
     'shell:commit'
     'shell:push'
   ]
