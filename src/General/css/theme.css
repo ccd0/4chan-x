@@ -14,10 +14,14 @@
   background: #{theme["Dialog Background"]};
   border: 1px solid #{theme["Buttons Border"]};
 }
-.opContainer.filter_highlight {
+.highlight-you .opContainer.quotesYou,
+.highlight-own .opContainer.yourPost,
+.opContainer.filter-highlight {
   box-shadow: inset 5px 0 #{theme["Backlinked Reply Outline"]};
 }
-.filter_highlight > .reply {
+.highlight-you .quotesYou > .reply,
+.highlight-own .yourPost > .reply,
+.filter-highlight > .reply {
   box-shadow: -5px 0 #{theme["Backlinked Reply Outline"]};
 }
 hr {
