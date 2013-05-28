@@ -20,7 +20,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.0.4 - 2013-05-27
+* appchan x - Version 2.0.4 - 2013-05-28
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -11701,7 +11701,7 @@
         editTheme["Author"] = "Author";
         editTheme["Author Tripcode"] = "Unknown";
       }
-      layout = ["Background Image", "Background Attachment", "Background Position", "Background Repeat", "Background Color", "Thread Wrapper Background", "Thread Wrapper Border", "Dialog Background", "Dialog Border", "Reply Background", "Reply Border", "Highlighted Reply Background", "Highlighted Reply Border", "Backlinked Reply Outline", "Input Background", "Input Border", "Hovered Input Background", "Hovered Input Border", "Focused Input Background", "Focused Input Border", "Checkbox Background", "Checkbox Border", "Checkbox Checked Background", "Buttons Background", "Buttons Border", "Navigation Background", "Navigation Border", "Links", "Hovered Links", "Quotelinks", "Backlinks", "Navigation Links", "Hovered Navigation Links", "Names", "Tripcodes", "Emails", "Subjects", "Text", "Inputs", "Post Numbers", "Greentext", "Sage", "Board Title", "Timestamps", "Warnings", "Shadow Color"];
+      layout = ["Background Image", "Background Attachment", "Background Position", "Background Repeat", "Background Color", "Thread Wrapper Background", "Thread Wrapper Border", "Dialog Background", "Dialog Border", "Reply Background", "Reply Border", "Highlighted Reply Background", "Highlighted Reply Border", "Backlinked Reply Outline", "Input Background", "Input Border", "Hovered Input Background", "Hovered Input Border", "Focused Input Background", "Focused Input Border", "Checkbox Background", "Checkbox Border", "Buttons Background", "Buttons Border", "Navigation Background", "Navigation Border", "Links", "Hovered Links", "Quotelinks", "Backlinks", "Navigation Links", "Hovered Navigation Links", "Names", "Tripcodes", "Emails", "Subjects", "Text", "Inputs", "Post Numbers", "Greentext", "Sage", "Board Title", "Timestamps", "Warnings", "Shadow Color"];
       ThemeTools.dialog = $.el("div", {
         id: "themeConf",
         className: "reply dialog",
@@ -11837,173 +11837,123 @@
       };
       return reader.readAsDataURL(file);
     },
-    importtheme: function(origin, evt) {
+    importtheme: function(evt) {
       var file, reader;
 
       file = evt.target.files[0];
       reader = new FileReader();
       reader.onload = function(e) {
-        var bgColor, bgRPA, blinkColor, brderColor, err, imported, inputColor, inputbColor, jlinkColor, linkColor, linkHColor, mainColor, name, nameColor, quoteColor, sageColor, textColor, timeColor, titleColor, tripColor, userThemes;
+        var bgColor, bgRPA, blinkColor, brderColor, color, err, imported, inputColor, inputbColor, jlinkColor, linkColor, linkHColor, mainColor, name, nameColor, quoteColor, sageColor, textColor, timeColor, titleColor, tripColor;
 
         try {
           imported = JSON.parse(e.target.result);
+          if (!imported) {
+            throw "Cannot parse file";
+          }
         } catch (_error) {
           err = _error;
           alert(err);
           return;
         }
-        if (!((origin !== 'appchan' && imported.mainColor) || (origin === 'appchan' && imported["Author Tripcode"]))) {
+        name = imported.name || imported['Theme'];
+        if (!name) {
           alert("Theme file is invalid.");
           return;
         }
-        name = imported.name || imported["Theme"];
-        delete imported.name;
+        delete imported.name || imported['Theme'];
         if (Themes[name] && !Themes[name]["Deleted"]) {
-          if (confirm("A theme with this name already exists. Would you like to over-write?")) {
+          if (confirm('A theme with this name already exists. Would you like to over-write?')) {
             delete Themes[name];
           } else {
             return;
           }
         }
-        if (origin === "oneechan" || origin === "SS") {
-          bgColor = new Style.color(imported.bgColor);
-          mainColor = new Style.color(imported.mainColor);
-          brderColor = new Style.color(imported.brderColor);
-          inputColor = new Style.color(imported.inputColor);
-          inputbColor = new Style.color(imported.inputbColor);
-          blinkColor = new Style.color(imported.blinkColor);
-          jlinkColor = new Style.color(imported.jlinkColor);
-          linkColor = new Style.color(imported.linkColor);
-          linkHColor = new Style.color(imported.linkHColor);
-          nameColor = new Style.color(imported.nameColor);
-          quoteColor = new Style.color(imported.quoteColor);
-          sageColor = new Style.color(imported.sageColor);
-          textColor = new Style.color(imported.textColor);
-          titleColor = new Style.color(imported.titleColor);
-          tripColor = new Style.color(imported.tripColor);
-          timeColor = new Style.color(imported.timeColor || imported.textColor);
-          if (imported.bgRPA) {
-            bgRPA = imported.bgRPA.split(' ');
-          } else {
-            bgRPA = ['no-repeat', 'bottom', 'left', 'fixed'];
+        if (imported.bgColor) {
+          if (!imported.replyOp) {
+            imported.replyOp = "0.9";
           }
-          if (origin === "oneechan") {
-            Themes[name] = {
-              'Author': "Anonymous",
-              'Author Tripcode': "!POMF.9waa",
-              'Background Image': "url('" + (imported.bgImg || '') + "')",
-              'Background Attachment': "" + (bgRPA[3] || ''),
-              'Background Position': "" + (bgRPA[1] || '') + " " + (bgRPA[2] || ''),
-              'Background Repeat': "" + (bgRPA[0] || ''),
-              'Background Color': "rgb(" + bgColor.rgb + ")",
-              'Dialog Background': "rgba(" + mainColor.rgb + ",.98)",
-              'Dialog Border': "rgb(" + brderColor.rgb + ")",
-              'Thread Wrapper Background': "rgba(0,0,0,0)",
-              'Thread Wrapper Border': "rgba(0,0,0,0)",
-              'Reply Background': "rgba(" + mainColor.rgb + "," + imported.replyOp + ")",
-              'Reply Border': "rgb(" + brderColor.rgb + ")",
-              'Highlighted Reply Background': "rgba(" + (mainColor.shiftRGB(4, true)) + ", " + imported.replyOp + ")",
-              'Highlighted Reply Border': "rgb(" + linkColor.rgb + ")",
-              'Backlinked Reply Outline': "rgb(" + linkColor.rgb + ")",
-              'Checkbox Background': "rgba(" + inputColor.rgb + ", " + imported.replyOp + ")",
-              'Checkbox Border': "rgb(" + inputbColor.rgb + ")",
-              'Checkbox Checked Background': "rgb(" + inputColor.rgb + ")",
-              'Input Background': "rgba(" + inputColor.rgb + ", " + imported.replyOp + ")",
-              'Input Border': "rgb(" + inputbColor.rgb + ")",
-              'Hovered Input Background': "rgba(" + inputColor.hover + ", " + imported.replyOp + ")",
-              'Hovered Input Border': "rgb(" + inputbColor.rgb + ")",
-              'Focused Input Background': "rgba(" + inputColor.hover + ", " + imported.replyOp + ")",
-              'Focused Input Border': "rgb(" + inputbColor.rgb + ")",
-              'Buttons Background': "rgba(" + inputColor.rgb + ", " + imported.replyOp + ")",
-              'Buttons Border': "rgb(" + inputbColor.rgb + ")",
-              'Navigation Background': "rgba(" + bgColor.rgb + ", 0.8)",
-              'Navigation Border': "rgb(" + mainColor.rgb + ")",
-              'Quotelinks': "rgb(" + linkColor.rgb + ")",
-              'Links': "rgb(" + linkColor.rgb + ")",
-              'Hovered Links': "rgb(" + linkHColor.rgb + ")",
-              'Navigation Links': "rgb(" + textColor.rgb + ")",
-              'Hovered Navigation Links': "rgb(" + linkHColor.rgb + ")",
-              'Subjects': "rgb(" + titleColor.rgb + ")",
-              'Names': "rgb(" + nameColor.rgb + ")",
-              'Sage': "rgb(" + sageColor.rgb + ")",
-              'Tripcodes': "rgb(" + tripColor.rgb + ")",
-              'Emails': "rgb(" + linkColor.rgb + ")",
-              'Post Numbers': "rgb(" + linkColor.rgb + ")",
-              'Text': "rgb(" + textColor.rgb + ")",
-              'Backlinks': "rgb(" + linkColor.rgb + ")",
-              'Greentext': "rgb(" + quoteColor.rgb + ")",
-              'Board Title': "rgb(" + textColor.rgb + ")",
-              'Timestamps': "rgb(" + timeColor.rgb + ")",
-              'Inputs': "rgb(" + textColor.rgb + ")",
-              'Warnings': "rgb(" + sageColor.rgb + ")",
-              'Shadow Color': "rgba(0,0,0,0.1)",
-              'Custom CSS': ".rice {\nbox-shadow:rgba(" + mainColor.shiftRGB(32) + (",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n " + (imported.customCSS || ''))
-            };
-          } else if (origin === "SS") {
-            Themes[name] = {
-              'Author': "Anonymous",
-              'Author Tripcode': "!.pC/AHOKAg",
-              'Background Image': "url('" + (imported.bgImg || '') + "')",
-              'Background Attachment': "" + (bgRPA[3] || ''),
-              'Background Position': "" + (bgRPA[1] || '') + " " + (bgRPA[2] || ''),
-              'Background Repeat': "" + (bgRPA[0] || ''),
-              'Background Color': "rgb(" + bgColor.rgb + ")",
-              'Dialog Background': "rgba(" + mainColor.rgb + ", .98)",
-              'Dialog Border': "rgb(" + brderColor.rgb + ")",
-              'Thread Wrapper Background': "rgba(" + mainColor.rgb + ", .5)",
-              'Thread Wrapper Border': "rgba(" + brderColor.rgb + ", .9)",
-              'Reply Background': "rgba(" + mainColor.rgb + ", .9)",
-              'Reply Border': "rgb(" + brderColor.rgb + ")",
-              'Highlighted Reply Background': "rgba(" + (mainColor.shiftRGB(4, true)) + ", .9)",
-              'Highlighted Reply Border': "rgb(" + linkColor.rgb + ")",
-              'Backlinked Reply Outline': "rgb(" + linkColor.rgb + ")",
-              'Checkbox Background': "rgba(" + inputColor.rgb + ", .9)",
-              'Checkbox Border': "rgb(" + inputbColor.rgb + ")",
-              'Checkbox Checked Background': "rgb(" + inputColor.rgb + ")",
-              'Input Background': "rgba(" + inputColor.rgb + ", .9)",
-              'Input Border': "rgb(" + inputbColor.rgb + ")",
-              'Hovered Input Background': "rgba(" + inputColor.hover + ", .9)",
-              'Hovered Input Border': "rgb(" + inputbColor.rgb + ")",
-              'Focused Input Background': "rgba(" + inputColor.hover + ", .9)",
-              'Focused Input Border': "rgb(" + inputbColor.rgb + ")",
-              'Buttons Background': "rgba(" + inputColor.rgb + ", .9)",
-              'Buttons Border': "rgb(" + inputbColor.rgb + ")",
-              'Navigation Background': "rgba(" + bgColor.rgb + "', 0.8)",
-              'Navigation Border': "rgb(" + mainColor.rgb + ")",
-              'Quotelinks': "rgb(" + linkColor.rgb + ")",
-              'Links': "rgb(" + linkColor.rgb + ")",
-              'Hovered Links': "rgb(" + linkHColor.rgb + ")",
-              'Navigation Links': "rgb(" + textColor.rgb + ")",
-              'Hovered Navigation Links': "rgb(" + linkHColor.rgb + ")",
-              'Subjects': "rgb(" + titleColor.rgb + ")",
-              'Names': "rgb(" + nameColor.rgb + ")",
-              'Sage': "rgb(" + sageColor.rgb + ")",
-              'Tripcodes': "rgb(" + tripColor.rgb + ")",
-              'Emails': "rgb(" + linkColor.rgb + ")",
-              'Post Numbers': "rgb(" + linkColor.rgb + ")",
-              'Text': "rgb(" + textColor.rgb + ")",
-              'Backlinks': "rgb(" + linkColor.rgb + ")",
-              'Greentext': "rgb(" + quoteColor.rgb + ")",
-              'Board Title': "rgb(" + textColor.rgb + ")",
-              'Timestamps': "rgb(" + timeColor.rgb + ")",
-              'Inputs': "rgb(" + textColor.rgb + ")",
-              'Warnings': "rgb(" + sageColor.rgb + ")",
-              'Shadow Color': "rgba(0,0,0,0.1)",
-              'Custom CSS': ".board {\npadding: 1px 2px;\n}\n.rice {\nbox-shadow:rgba(" + mainColor.shiftRGB(32) + (",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n " + (imported.customCSS || ''))
-            };
-          }
-        } else if (origin === 'appchan') {
+          bgRPA = imported.bgRPA ? imported.bgRPA.split(' ') : ['no-repeat', 'bottom', 'left', 'fixed'];
+          color = Style.color;
+          bgColor = new color(imported.bgColor);
+          mainColor = new color(imported.mainColor);
+          brderColor = new color(imported.brderColor);
+          inputColor = new color(imported.inputColor);
+          inputbColor = new color(imported.inputbColor);
+          blinkColor = new color(imported.blinkColor);
+          jlinkColor = new color(imported.jlinkColor);
+          linkColor = new color(imported.linkColor);
+          linkHColor = new color(imported.linkHColor);
+          nameColor = new color(imported.nameColor);
+          quoteColor = new color(imported.quoteColor);
+          sageColor = new color(imported.sageColor);
+          textColor = new color(imported.textColor);
+          titleColor = new color(imported.titleColor);
+          tripColor = new color(imported.tripColor);
+          timeColor = new color(imported.timeColor || imported.textColor);
+          Themes[name] = {
+            'Author': "Anonymous",
+            'Author Tripcode': "!POMF.9waa",
+            'Background Image': "url('" + (imported.bgImg || '') + "')",
+            'Background Attachment': "" + (bgRPA[3] || ''),
+            'Background Position': "" + (bgRPA[1] || '') + " " + (bgRPA[2] || ''),
+            'Background Repeat': "" + (bgRPA[0] || ''),
+            'Background Color': "rgb(" + bgColor.rgb + ")",
+            'Dialog Background': "rgba(" + mainColor.rgb + ",.98)",
+            'Dialog Border': "rgb(" + brderColor.rgb + ")",
+            'Thread Wrapper Background': "rgba(0,0,0,0)",
+            'Thread Wrapper Border': "rgba(0,0,0,0)",
+            'Reply Background': "rgba(" + mainColor.rgb + "," + imported.replyOp + ")",
+            'Reply Border': "rgb(" + brderColor.rgb + ")",
+            'Highlighted Reply Background': "rgba(" + (mainColor.shiftRGB(4, true)) + "," + imported.replyOp + ")",
+            'Highlighted Reply Border': "rgb(" + linkColor.rgb + ")",
+            'Backlinked Reply Outline': "rgb(" + linkColor.rgb + ")",
+            'Checkbox Background': "rgba(" + inputColor.rgb + "," + imported.replyOp + ")",
+            'Checkbox Border': "rgb(" + inputbColor.rgb + ")",
+            'Input Background': "rgba(" + inputColor.rgb + "," + imported.replyOp + ")",
+            'Input Border': "rgb(" + inputbColor.rgb + ")",
+            'Hovered Input Background': "rgba(" + inputColor.hover + "," + imported.replyOp + ")",
+            'Hovered Input Border': "rgb(" + inputbColor.rgb + ")",
+            'Focused Input Background': "rgba(" + inputColor.hover + "," + imported.replyOp + ")",
+            'Focused Input Border': "rgb(" + inputbColor.rgb + ")",
+            'Buttons Background': "rgba(" + inputColor.rgb + "," + imported.replyOp + ")",
+            'Buttons Border': "rgb(" + inputbColor.rgb + ")",
+            'Navigation Background': "rgba(" + bgColor.rgb + ",0.8)",
+            'Navigation Border': "rgb(" + mainColor.rgb + ")",
+            'Quotelinks': "rgb(" + linkColor.rgb + ")",
+            'Links': "rgb(" + linkColor.rgb + ")",
+            'Hovered Links': "rgb(" + linkHColor.rgb + ")",
+            'Navigation Links': "rgb(" + textColor.rgb + ")",
+            'Hovered Navigation Links': "rgb(" + linkHColor.rgb + ")",
+            'Subjects': "rgb(" + titleColor.rgb + ")",
+            'Names': "rgb(" + nameColor.rgb + ")",
+            'Sage': "rgb(" + sageColor.rgb + ")",
+            'Tripcodes': "rgb(" + tripColor.rgb + ")",
+            'Emails': "rgb(" + linkColor.rgb + ")",
+            'Post Numbers': "rgb(" + linkColor.rgb + ")",
+            'Text': "rgb(" + textColor.rgb + ")",
+            'Backlinks': "rgb(" + linkColor.rgb + ")",
+            'Greentext': "rgb(" + quoteColor.rgb + ")",
+            'Board Title': "rgb(" + textColor.rgb + ")",
+            'Timestamps': "rgb(" + timeColor.rgb + ")",
+            'Inputs': "rgb(" + textColor.rgb + ")",
+            'Warnings': "rgb(" + sageColor.rgb + ")",
+            'Shadow Color': "rbga(0,0,0,0.1)",
+            'Custom CSS': ".board {\npadding: 1px 2px;\n}\n.rice {\nbox-shadow:rgba(" + mainColor.shiftRGB(32) + (",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n " + (imported.customCSS || ''))
+          };
+        } else {
           Themes[name] = imported;
         }
-        return userThemes = $.get("userThemes", {}, function(_arg) {
+        return $.get("userThemes", {}, function(_arg) {
           var userThemes;
 
           userThemes = _arg.userThemes;
           userThemes[name] = Themes[name];
           $.set('userThemes', userThemes);
           alert("Theme \"" + name + "\" imported!");
-          $.rm($("#themes", d.body));
-          return Settings.open('themes');
+          return Settings.openSection.call({
+            open: Settings.themes,
+            hyphenatedTitle: 'themes'
+          });
         });
       };
       return reader.readAsText(file);
@@ -14142,7 +14092,7 @@
         }
         div = $.el('div', {
           id: 'addthemes',
-          innerHTML: "<a id=newtheme href='javascript:;'>New Theme</a>\n/\n<a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden>\n/\n<a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden>\n/\n<a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden>\n/\n<a id=tUndelete href='javascript:;'>Undelete Theme</a>"
+          innerHTML: "<a id=newtheme href='javascript:;'>New Theme</a>\n/\n<a id=import href='javascript:;' title='From Appchan X, Oneechan, or 4chan SS'>Import Theme</a><input id=importbutton type=file hidden>\n/\n<a id=tUndelete href='javascript:;'>Undelete Theme</a>"
         });
         $.on($("#newtheme", div), 'click', function() {
           ThemeTools.init("untitled");
@@ -14151,21 +14101,7 @@
         $.on($("#import", div), 'click', function() {
           return this.nextSibling.click();
         });
-        $.on($("#importbutton", div), 'change', function(e) {
-          return ThemeTools.importtheme("appchan", e);
-        });
-        $.on($("#OCimport", div), 'click', function() {
-          return this.nextSibling.click();
-        });
-        $.on($("#OCimportbutton", div), 'change', function(e) {
-          return ThemeTools.importtheme("oneechan", e);
-        });
-        $.on($("#SSimportbutton", div), 'change', function(e) {
-          return ThemeTools.importtheme("SS", e);
-        });
-        $.on($("#SSimport", div), 'click', function() {
-          return this.nextSibling.click();
-        });
+        $.on($("#importbutton", div), 'change', ThemeTools.importtheme);
         $.on($('#tUndelete', div), 'click', function() {
           var themes;
 
@@ -14460,12 +14396,7 @@
           name = this.parentElement.parentElement.id;
           exportMascot = Mascots[name];
           exportMascot['Mascot'] = name;
-          exportedMascot = "data:application/json," + encodeURIComponent(JSON.stringify(exportMascot));
-          if (window.open(exportedMascot, "_blank")) {
-
-          } else if (confirm("Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?")) {
-            return window.location(exportedMascot);
-          }
+          return exportedMascot = "data:application/json," + encodeURIComponent(JSON.stringify(exportMascot));
         },
         restore: function() {
           if (confirm("Are you sure you want to restore \"" + this.id + "\"?")) {
@@ -14510,18 +14441,22 @@
           return Settings.close();
         },
         "export": function(e) {
-          var exportTheme, exportedTheme;
+          var a, data;
 
           e.preventDefault();
           e.stopPropagation();
-          exportTheme = Themes[this.name];
-          exportTheme['Theme'] = this.name;
-          exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme));
-          if (window.open(exportedTheme, "_blank")) {
-
-          } else if (confirm("Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?")) {
-            return window.location(exportedTheme);
-          }
+          data = Themes[this.name];
+          data['Theme'] = this.name;
+          a = $.el('a', {
+            textContent: '>>Save me!',
+            download: "" + this.name + "-" + (Date.now()) + ".json",
+            href: "data:application/json;base64," + (btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))))),
+            target: '_blank'
+          });
+          $.on(a, 'click', function(e) {
+            return e.stopPropagation();
+          });
+          return $.replace(this, a);
         },
         "delete": function(e) {
           var container, settheme,

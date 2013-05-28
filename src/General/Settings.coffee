@@ -192,12 +192,12 @@ Settings =
       target: '_blank'
     <% if (type !== 'userscript') { %>
     a.click()
-    return
-    <% } %>
+    <% } else { %>
     # XXX Firefox won't let us download automatically.
     span = $ '.imp-exp-result', Settings.dialog
     $.rmAll span
     $.add span, a
+    <% } %>
 
   import: ->
     @nextElementSibling.click()
@@ -589,19 +589,8 @@ Settings =
 
       $.on $("#import", div), 'click', ->
         @nextSibling.click()
-      $.on $("#importbutton", div), 'change', (e) ->
-        ThemeTools.importtheme "appchan", e
 
-      $.on $("#OCimport", div), 'click', ->
-        @nextSibling.click()
-      $.on $("#OCimportbutton", div), 'change', (e) ->
-        ThemeTools.importtheme "oneechan", e
-
-      $.on $("#SSimportbutton", div), 'change', (e) ->
-        ThemeTools.importtheme "SS", e
-
-      $.on $("#SSimport", div), 'click', ->
-        @nextSibling.click()
+      $.on $("#importbutton", div), 'change', ThemeTools.importtheme
 
       $.on $('#tUndelete', div), 'click', ->
         $.rm $.id "themeContainer"
@@ -862,11 +851,6 @@ Settings =
         exportMascot['Mascot'] = name
         exportedMascot = "data:application/json," + encodeURIComponent(JSON.stringify(exportMascot))
 
-        if window.open exportedMascot, "_blank"
-          return
-        else if confirm "Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?"
-          window.location exportedMascot
-
       restore: ->
         if confirm "Are you sure you want to restore \"#{@id}\"?"
           Conf["Deleted Mascots"].remove @id
@@ -906,14 +890,22 @@ Settings =
       export: (e) ->
         e.preventDefault()
         e.stopPropagation()
-        exportTheme = Themes[@name]
-        exportTheme['Theme'] = @name
-        exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme))
+        data = Themes[@name]
+        data['Theme'] = @name
 
-        if window.open exportedTheme, "_blank"
-          return
-        else if confirm "Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?"
-          window.location exportedTheme
+        a = $.el 'a',
+          textContent: '>>Save me!'
+          download: "#{@name}-#{Date.now()}.json"
+          href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data, null, 2}"
+          target: '_blank'
+        <% if (type !== 'userscript') { %>
+        a.click()
+        <% } else { %>
+        # XXX Firefox won't let us download automatically.
+        $.on a, 'click', (e) ->
+          e.stopPropagation()
+        $.replace @, a
+        <% } %>
 
       delete: (e) ->
         e.preventDefault()

@@ -44,7 +44,6 @@ ThemeTools =
       "Focused Input Border"
       "Checkbox Background"
       "Checkbox Border"
-      "Checkbox Checked Background"
       "Buttons Background"
       "Buttons Border"
       "Navigation Background"
@@ -111,7 +110,7 @@ ThemeTools =
 
       div = $.el "div",
         className: "themevar"
-        innerHTML: "<div class=optionname><b>#{item}</b></div><div class=option><input name='#{item}' placeholder='#{if item == "Background Image" then "Shift+Click to upload image" else item}'>"
+        innerHTML: "<div class=optionname><b>#{item}</b></div><div class=option><input name='#{item}' placeholder='#{if item is "Background Image" then "Shift+Click to upload image" else item}'>"
 
       input = $('input', div)
 
@@ -167,7 +166,7 @@ ThemeTools =
         if (depth isnt 0) or toggle1 or toggle2
           return alert "Syntax error on #{@name}."
 
-        if @className == "colorfield"
+        if @className is "colorfield"
           @nextSibling.value = "##{Style.colorToHex(@value) or 'aaaaaa'}"
           @nextSibling.color.importColor()
 
@@ -214,7 +213,7 @@ ThemeTools =
 
     reader.readAsDataURL file
 
-  importtheme: (origin, evt) ->
+  importtheme: (evt) ->
     file = evt.target.files[0]
     reader = new FileReader()
 
@@ -222,158 +221,113 @@ ThemeTools =
 
       try
         imported = JSON.parse e.target.result
+        unless imported
+          throw "Cannot parse file"
       catch err
         alert err
         return
 
-      unless (origin != 'appchan' and imported.mainColor) or (origin == 'appchan' and imported["Author Tripcode"])
+      name = imported.name or imported['Theme']
+      unless name
         alert "Theme file is invalid."
         return
-      name = imported.name or imported["Theme"]
-      delete imported.name
+
+      delete imported.name or imported['Theme']
 
       if Themes[name] and not Themes[name]["Deleted"]
-        if confirm "A theme with this name already exists. Would you like to over-write?"
+        if confirm 'A theme with this name already exists. Would you like to over-write?'
           delete Themes[name]
         else
           return
 
-      if origin == "oneechan" or origin == "SS"
-        bgColor     = new Style.color(imported.bgColor);
-        mainColor   = new Style.color(imported.mainColor);
-        brderColor  = new Style.color(imported.brderColor);
-        inputColor  = new Style.color(imported.inputColor);
-        inputbColor = new Style.color(imported.inputbColor);
-        blinkColor  = new Style.color(imported.blinkColor);
-        jlinkColor  = new Style.color(imported.jlinkColor);
-        linkColor   = new Style.color(imported.linkColor);
-        linkHColor  = new Style.color(imported.linkHColor);
-        nameColor   = new Style.color(imported.nameColor);
-        quoteColor  = new Style.color(imported.quoteColor);
-        sageColor   = new Style.color(imported.sageColor);
-        textColor   = new Style.color(imported.textColor);
-        titleColor  = new Style.color(imported.titleColor);
-        tripColor   = new Style.color(imported.tripColor);
-        timeColor   = new Style.color(imported.timeColor || imported.textColor);
+      # 4chan SS / Oneechan
+      if imported.bgColor
+        unless imported.replyOp
+          imported.replyOp = "0.9"
 
-        if imported.bgRPA
-          bgRPA = imported.bgRPA.split(' ')
+        bgRPA = if imported.bgRPA
+          imported.bgRPA.split ' '
         else
-          bgRPA = ['no-repeat', 'bottom', 'left', 'fixed']
+          ['no-repeat', 'bottom', 'left', 'fixed']
 
-        if origin == "oneechan"
-          Themes[name] =
-            'Author'                      : "Anonymous"
-            'Author Tripcode'             : "!POMF.9waa"
-            'Background Image'            : "url('#{imported.bgImg or ''}')"
-            'Background Attachment'       : "#{bgRPA[3] or ''}"
-            'Background Position'         : "#{bgRPA[1] or ''} #{bgRPA[2] or ''}"
-            'Background Repeat'           : "#{bgRPA[0] or ''}"
-            'Background Color'            : "rgb(#{bgColor.rgb})"
-            'Dialog Background'           : "rgba(#{mainColor.rgb},.98)"
-            'Dialog Border'               : "rgb(#{brderColor.rgb})"
-            'Thread Wrapper Background'   : "rgba(0,0,0,0)"
-            'Thread Wrapper Border'       : "rgba(0,0,0,0)"
-            'Reply Background'            : "rgba(#{mainColor.rgb},#{imported.replyOp})"
-            'Reply Border'                : "rgb(#{brderColor.rgb})"
-            'Highlighted Reply Background': "rgba(#{mainColor.shiftRGB(4, true)}, #{imported.replyOp})"
-            'Highlighted Reply Border'    : "rgb(#{linkColor.rgb})"
-            'Backlinked Reply Outline'    : "rgb(#{linkColor.rgb})"
-            'Checkbox Background'         : "rgba(#{inputColor.rgb}, #{imported.replyOp})"
-            'Checkbox Border'             : "rgb(#{inputbColor.rgb})"
-            'Checkbox Checked Background' : "rgb(#{inputColor.rgb})"
-            'Input Background'            : "rgba(#{inputColor.rgb}, #{imported.replyOp})"
-            'Input Border'                : "rgb(#{inputbColor.rgb})"
-            'Hovered Input Background'    : "rgba(#{inputColor.hover}, #{imported.replyOp})"
-            'Hovered Input Border'        : "rgb(#{inputbColor.rgb})"
-            'Focused Input Background'    : "rgba(#{inputColor.hover}, #{imported.replyOp})"
-            'Focused Input Border'        : "rgb(#{inputbColor.rgb})"
-            'Buttons Background'          : "rgba(#{inputColor.rgb}, #{imported.replyOp})"
-            'Buttons Border'              : "rgb(#{inputbColor.rgb})"
-            'Navigation Background'       : "rgba(#{bgColor.rgb}, 0.8)"
-            'Navigation Border'           : "rgb(#{mainColor.rgb})"
-            'Quotelinks'                  : "rgb(#{linkColor.rgb})"
-            'Links'                       : "rgb(#{linkColor.rgb})"
-            'Hovered Links'               : "rgb(#{linkHColor.rgb})"
-            'Navigation Links'            : "rgb(#{textColor.rgb})"
-            'Hovered Navigation Links'    : "rgb(#{linkHColor.rgb})"
-            'Subjects'                    : "rgb(#{titleColor.rgb})"
-            'Names'                       : "rgb(#{nameColor.rgb})"
-            'Sage'                        : "rgb(#{sageColor.rgb})"
-            'Tripcodes'                   : "rgb(#{tripColor.rgb})"
-            'Emails'                      : "rgb(#{linkColor.rgb})"
-            'Post Numbers'                : "rgb(#{linkColor.rgb})"
-            'Text'                        : "rgb(#{textColor.rgb})"
-            'Backlinks'                   : "rgb(#{linkColor.rgb})"
-            'Greentext'                   : "rgb(#{quoteColor.rgb})"
-            'Board Title'                 : "rgb(#{textColor.rgb})"
-            'Timestamps'                  : "rgb(#{timeColor.rgb})"
-            'Inputs'                      : "rgb(#{textColor.rgb})"
-            'Warnings'                    : "rgb(#{sageColor.rgb})"
-            'Shadow Color'                : "rgba(0,0,0,0.1)"
-            'Custom CSS'                  : """<%= grunt.file.read('src/General/css/theme.oneechan.css') %> #{imported.customCSS or ''}"""
+        color = Style.color
 
-        else if origin == "SS"
-          Themes[name] =
-            'Author'                      : "Anonymous"
-            'Author Tripcode'             : "!.pC/AHOKAg"
-            'Background Image'            : "url('#{imported.bgImg or ''}')"
-            'Background Attachment'       : "#{bgRPA[3] or ''}"
-            'Background Position'         : "#{bgRPA[1] or ''} #{bgRPA[2] or ''}"
-            'Background Repeat'           : "#{bgRPA[0] or ''}"
-            'Background Color'            : "rgb(#{bgColor.rgb})"
-            'Dialog Background'           : "rgba(#{mainColor.rgb}, .98)"
-            'Dialog Border'               : "rgb(#{brderColor.rgb})"
-            'Thread Wrapper Background'   : "rgba(#{mainColor.rgb}, .5)"
-            'Thread Wrapper Border'       : "rgba(#{brderColor.rgb}, .9)"
-            'Reply Background'            : "rgba(#{mainColor.rgb}, .9)"
-            'Reply Border'                : "rgb(#{brderColor.rgb})"
-            'Highlighted Reply Background': "rgba(#{mainColor.shiftRGB(4, true)}, .9)"
-            'Highlighted Reply Border'    : "rgb(#{linkColor.rgb})"
-            'Backlinked Reply Outline'    : "rgb(#{linkColor.rgb})"
-            'Checkbox Background'         : "rgba(#{inputColor.rgb}, .9)"
-            'Checkbox Border'             : "rgb(#{inputbColor.rgb})"
-            'Checkbox Checked Background' : "rgb(#{inputColor.rgb})"
-            'Input Background'            : "rgba(#{inputColor.rgb}, .9)"
-            'Input Border'                : "rgb(#{inputbColor.rgb})"
-            'Hovered Input Background'    : "rgba(#{inputColor.hover}, .9)"
-            'Hovered Input Border'        : "rgb(#{inputbColor.rgb})"
-            'Focused Input Background'    : "rgba(#{inputColor.hover}, .9)"
-            'Focused Input Border'        : "rgb(#{inputbColor.rgb})"
-            'Buttons Background'          : "rgba(#{inputColor.rgb}, .9)"
-            'Buttons Border'              : "rgb(#{inputbColor.rgb})"
-            'Navigation Background'       : "rgba(#{bgColor.rgb}', 0.8)"
-            'Navigation Border'           : "rgb(#{mainColor.rgb})"
-            'Quotelinks'                  : "rgb(#{linkColor.rgb})"
-            'Links'                       : "rgb(#{linkColor.rgb})"
-            'Hovered Links'               : "rgb(#{linkHColor.rgb})"
-            'Navigation Links'            : "rgb(#{textColor.rgb})"
-            'Hovered Navigation Links'    : "rgb(#{linkHColor.rgb})"
-            'Subjects'                    : "rgb(#{titleColor.rgb})"
-            'Names'                       : "rgb(#{nameColor.rgb})"
-            'Sage'                        : "rgb(#{sageColor.rgb})"
-            'Tripcodes'                   : "rgb(#{tripColor.rgb})"
-            'Emails'                      : "rgb(#{linkColor.rgb})"
-            'Post Numbers'                : "rgb(#{linkColor.rgb})"
-            'Text'                        : "rgb(#{textColor.rgb})"
-            'Backlinks'                   : "rgb(#{linkColor.rgb})"
-            'Greentext'                   : "rgb(#{quoteColor.rgb})"
-            'Board Title'                 : "rgb(#{textColor.rgb})"
-            'Timestamps'                  : "rgb(#{timeColor.rgb})"
-            'Inputs'                      : "rgb(#{textColor.rgb})"
-            'Warnings'                    : "rgb(#{sageColor.rgb})"
-            'Shadow Color'                : "rgba(0,0,0,0.1)"
-            'Custom CSS'                  : """<%= grunt.file.read('src/General/css/theme.4chanss.css') %> #{imported.customCSS or ''}"""
+        bgColor     = new color imported.bgColor
+        mainColor   = new color imported.mainColor
+        brderColor  = new color imported.brderColor
+        inputColor  = new color imported.inputColor
+        inputbColor = new color imported.inputbColor
+        blinkColor  = new color imported.blinkColor
+        jlinkColor  = new color imported.jlinkColor
+        linkColor   = new color imported.linkColor
+        linkHColor  = new color imported.linkHColor
+        nameColor   = new color imported.nameColor
+        quoteColor  = new color imported.quoteColor
+        sageColor   = new color imported.sageColor
+        textColor   = new color imported.textColor
+        titleColor  = new color imported.titleColor
+        tripColor   = new color imported.tripColor
+        timeColor   = new color imported.timeColor or imported.textColor
 
-      else if origin == 'appchan'
+        Themes[name] =
+          'Author':                       "Anonymous"
+          'Author Tripcode':              "!POMF.9waa"
+          'Background Image':             "url('#{imported.bgImg or ''}')"
+          'Background Attachment':        "#{bgRPA[3] or ''}"
+          'Background Position':          "#{bgRPA[1] or ''} #{bgRPA[2] or ''}"
+          'Background Repeat':            "#{bgRPA[0] or ''}"
+          'Background Color':             "rgb(#{bgColor.rgb})"
+          'Dialog Background':            "rgba(#{mainColor.rgb},.98)"
+          'Dialog Border':                "rgb(#{brderColor.rgb})"
+          'Thread Wrapper Background':    "rgba(0,0,0,0)"
+          'Thread Wrapper Border':        "rgba(0,0,0,0)"
+          'Reply Background':             "rgba(#{mainColor.rgb},#{imported.replyOp})"
+          'Reply Border':                 "rgb(#{brderColor.rgb})"
+          'Highlighted Reply Background': "rgba(#{mainColor.shiftRGB(4, true)},#{imported.replyOp})"
+          'Highlighted Reply Border':     "rgb(#{linkColor.rgb})"
+          'Backlinked Reply Outline':     "rgb(#{linkColor.rgb})"
+          'Checkbox Background':          "rgba(#{inputColor.rgb},#{imported.replyOp})"
+          'Checkbox Border':              "rgb(#{inputbColor.rgb})"
+          'Input Background':             "rgba(#{inputColor.rgb},#{imported.replyOp})"
+          'Input Border':                 "rgb(#{inputbColor.rgb})"
+          'Hovered Input Background':     "rgba(#{inputColor.hover},#{imported.replyOp})"
+          'Hovered Input Border':         "rgb(#{inputbColor.rgb})"
+          'Focused Input Background':     "rgba(#{inputColor.hover},#{imported.replyOp})"
+          'Focused Input Border':         "rgb(#{inputbColor.rgb})"
+          'Buttons Background':           "rgba(#{inputColor.rgb},#{imported.replyOp})"
+          'Buttons Border':               "rgb(#{inputbColor.rgb})"
+          'Navigation Background':        "rgba(#{bgColor.rgb},0.8)"
+          'Navigation Border':            "rgb(#{mainColor.rgb})"
+          'Quotelinks':                   "rgb(#{linkColor.rgb})"
+          'Links':                        "rgb(#{linkColor.rgb})"
+          'Hovered Links':                "rgb(#{linkHColor.rgb})"
+          'Navigation Links':             "rgb(#{textColor.rgb})"
+          'Hovered Navigation Links':     "rgb(#{linkHColor.rgb})"
+          'Subjects':                     "rgb(#{titleColor.rgb})"
+          'Names':                        "rgb(#{nameColor.rgb})"
+          'Sage':                         "rgb(#{sageColor.rgb})"
+          'Tripcodes':                    "rgb(#{tripColor.rgb})"
+          'Emails':                       "rgb(#{linkColor.rgb})"
+          'Post Numbers':                 "rgb(#{linkColor.rgb})"
+          'Text':                         "rgb(#{textColor.rgb})"
+          'Backlinks':                    "rgb(#{linkColor.rgb})"
+          'Greentext':                    "rgb(#{quoteColor.rgb})"
+          'Board Title':                  "rgb(#{textColor.rgb})"
+          'Timestamps':                   "rgb(#{timeColor.rgb})"
+          'Inputs':                       "rgb(#{textColor.rgb})"
+          'Warnings':                     "rgb(#{sageColor.rgb})"
+          'Shadow Color':                 "rbga(0,0,0,0.1)"
+          'Custom CSS':                   """<%= grunt.file.read('src/General/css/theme.import.css') %> #{imported.customCSS or ''}"""
+      
+      else
         Themes[name] = imported
 
-      userThemes = $.get "userThemes", {}, ({userThemes})->
+      $.get "userThemes", {}, ({userThemes}) ->
         userThemes[name] = Themes[name]
         $.set 'userThemes', userThemes
         alert "Theme \"#{name}\" imported!"
-        $.rm $("#themes", d.body)
-        Settings.open 'themes'
+
+        Settings.openSection.call {open: Settings.themes, hyphenatedTitle: 'themes'}
 
     reader.readAsText(file)
 
