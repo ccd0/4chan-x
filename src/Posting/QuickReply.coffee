@@ -141,7 +141,6 @@ QR =
     else
       QR.notifications.push new Notification 'warning', el
     alert el.textContent if d.hidden
-    QR.notifications.push new Notification 'warning', el
 
   notifications: []
 

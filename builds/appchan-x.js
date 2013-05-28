@@ -7114,9 +7114,8 @@
         QR.notifications.push(new Notification('warning', el));
       }
       if (d.hidden) {
-        alert(el.textContent);
+        return alert(el.textContent);
       }
-      return QR.notifications.push(new Notification('warning', el));
     },
     notifications: [],
     cleanNotifications: function() {
