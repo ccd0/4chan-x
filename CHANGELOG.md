@@ -1,3 +1,6 @@
+### v2.0.5
+*2013-05-28*
+
 **MayhemYDG**:
 - Tiny fixes
 - Add page count to thread stats
