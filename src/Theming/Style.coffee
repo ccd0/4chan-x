@@ -157,44 +157,27 @@ Style =
     else
         0
 
-    # Position of submenus in relation to the post menu.
-    position = {
-      right:
-        {
-          hide:
-            if parseInt(_conf['Right Thread Padding'], 10) < 100
-              "right"
-            else
-              "left"
-          minimal: "right"
-        }[_conf["Sidebar"]] or "left"
-      left:
-        if parseInt(_conf['Right Thread Padding'], 10) < 100
-          "right"
-        else
-          "left"
-    }[_conf["Sidebar Location"]]
-
-    # Offsets various UI of the sidebar depending on the sidebar's width.
-    # Only really used for the board banner or right sidebar.
-    Style['sidebarOffset'] = if _conf['Sidebar'] is "large"
-      {
-        W: 51
-        H: 17
-      }
-    else
-      {
-        W: 0
-        H: 0
-      }
+    Style.sidebar = {
+      minimal:  20
+      hide:     2
+      normal:   252
+      large:    303
+    }[_conf['Sidebar']]
 
     Style.logoOffset =
       if _conf["4chan Banner"] is "at sidebar top"
-        83 + Style.sidebarOffset.H
+        if _conf["Sidebar"] is "large"
+          100
+        else
+          83
       else
         0
 
-    width = 248 + Style.sidebarOffset.W
+    width = 
+      if _conf["Sidebar"] is "large"
+        299
+      else
+        248
 
     Style.sidebarLocation = if _conf["Sidebar Location"] is "left"
       ["left",  "right"]
@@ -209,11 +192,6 @@ Style =
       editSpace =
         left:   0
         right:  0
-
-    Style.sidebar = {
-      minimal:  20
-      hide:     2
-    }[_conf['Sidebar']] or (252 + Style.sidebarOffset.W)
 
     Style.replyMargin = _conf["Post Spacing"]
 

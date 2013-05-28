@@ -375,7 +375,7 @@ else "
   top: auto;
   bottom: #{if ['fixed', 'transparent fade'].contains(_conf['Post Form Style']) then (21.6 + (if Conf['Show Post Form Header'] then 1.5 else 0) + (if Conf['Post Form Decorations'] then 0.2 else 0)) else .5}em;
   #{Style.sidebarLocation[1]}: auto;
-  #{Style.sidebarLocation[0]}: #{250 + Style.sidebarOffset.W}px
+  #{Style.sidebarLocation[0]}: #{Style.sidebar - 2}px
   position: fixed;
 #{if Style.sidebarLocation[0] is 'right' then "
   #{agent}transform: rotate(90deg);
@@ -1054,7 +1054,7 @@ if _conf["Filtered Backlinks"] then "
   cursor: pointer;
   display: block;
   outline: none;
-  padding: 3px 7px;
+  padding: 3px 1em 3px 7px;
   position: relative;
   text-decoration: none;
   white-space: nowrap;
@@ -1064,18 +1064,17 @@ if _conf["Filtered Backlinks"] then "
 }
 .has-submenu::after {
   content: "";
-  border-#{position}: .5em solid;
+  border-left: .5em solid;
   border-top: .3em solid transparent;
   border-bottom: .3em solid transparent;
   display: inline-block;
   margin: .3em;
   position: absolute;
-  right: 3px;
+  right: 0;
 }
 .submenu {
   display: none;
   position: absolute;
-  #{position}: 100%;
   top: -1px;
 }
 .focused .submenu {
