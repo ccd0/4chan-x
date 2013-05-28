@@ -11298,6 +11298,10 @@
       return $.ready(this.readyInit);
     },
     asapInit: function() {
+      $.addClass(doc, 'webkit');
+      $.addClass(doc, 'blink');
+      $.addClass(doc, 'appchan-x');
+      $.addClass(doc, g.VIEW);
       MascotTools.init();
       if (g.VIEW === 'index') {
         return $.asap((function() {

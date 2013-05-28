@@ -5,6 +5,17 @@ Style =
     $.ready @readyInit
 
   asapInit: ->
+    <% if (type === 'crx') { %>
+    $.addClass doc, 'webkit'
+    $.addClass doc, 'blink'
+    <% } else if (type === 'userjs') { %>
+    $.addClass doc, 'presto'
+    <% } else { %>
+    $.addClass doc, 'gecko'
+    <% } %>
+    $.addClass doc, 'appchan-x'
+    $.addClass doc, g.VIEW
+
     MascotTools.init()
 
     if g.VIEW is 'index'
