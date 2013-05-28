@@ -674,7 +674,7 @@ Settings =
     if mode is 'default'
       mascotoptions = $.el 'div',
         id: 'mascot-options'
-        innerHTML: """<a class=edit name='#{name}' href='javascript:;'>Edit</a><a class=delete name='#{name}' href='javascript:;'>Delete</a><a class=export name='#{name}' href='javascript:;'>Export</a>"""
+        innerHTML: """<a class=edit href='javascript:;'>Edit</a><a class=delete href='javascript:;'>Delete</a><a class=export href='javascript:;'>Export</a>"""
 
       $.on $('.edit',   mascotoptions), 'click', cb.edit
       $.on $('.delete', mascotoptions), 'click', cb.delete
@@ -847,9 +847,23 @@ Settings =
       export: (e) ->
         e.stopPropagation()
         name = @parentElement.parentElement.id
-        exportMascot = Mascots[name]
-        exportMascot['Mascot'] = name
-        exportedMascot = "data:application/json," + encodeURIComponent(JSON.stringify(exportMascot))
+        data = Mascots[name]
+        data['Mascot'] = name
+
+        a = $.el 'a',
+          className: 'export-button'
+          textContent: 'Save me!'
+          download: "#{name}-#{Date.now()}.json"
+          href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data, null, 2}"
+          target: '_blank'
+        <% if (type !== 'userscript') { %>
+        a.click()
+        <% } else { %>
+        # XXX Firefox won't let us download automatically.
+        $.on a, 'click', (e) ->
+          e.stopPropagation()
+        $.add @parentElement.parentElement, a
+        <% } %>
 
       restore: ->
         if confirm "Are you sure you want to restore \"#{@id}\"?"
@@ -866,7 +880,6 @@ Settings =
           MascotTools.init @id
         $.toggleClass @, 'enabled'
         $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
-
 
     theme:
       select: ->

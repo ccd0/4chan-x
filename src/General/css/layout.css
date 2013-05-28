@@ -1768,6 +1768,7 @@ article li {
 .mascot img {
   max-width: 200px;
 }
+.export-button,
 .mascotname,
 #mascot-options {
   #{Style.sizing}: border-box;
@@ -1786,6 +1787,13 @@ article li {
   bottom: 0;
   right: 0;
   left: 0;
+}
+.export-button {
+  position: absolute;
+  bottom: 1.7em;
+  right: 0;
+  left: 0;
+  text-align: center;
 }
 #mascot-options a {
   display: inline-block;

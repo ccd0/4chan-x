@@ -9,6 +9,7 @@
 #content .thumb {
   box-shadow: 0 0 5px #{theme["Reply Border"]};
 }
+.export-button,
 .mascotname,
 #mascot-options {
   background: #{theme["Dialog Background"]};
