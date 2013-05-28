@@ -2857,7 +2857,8 @@ textarea,
     "Timestamps":                   "rgb(100,100,100)"
     "Warnings":                     "rgb(215,0,0)"
     "Shadow Color":                 "rgba(0,0,0,.1)"
-    "Custom CSS": """.thread {
+    "Custom CSS": """
+.thread {
   padding: 2px;
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3) inset, rgba(70,70,70,.5) 1px 1px;
 }
@@ -3016,6 +3017,73 @@ input,
 textarea,
 .rice {
   transition: background .2s,box-shadow .2s;
+}
+"""
+  "Clone":
+    "Author":                       "Zixaphir"
+    "Author Tripcode":              "!M........."
+    "Background Image":             ""
+    "Background Attachment":        ""
+    "Background Position":          ""
+    "Background Repeat":            ""
+    "Background Color":             "#1e1e1e"
+    "Thread Wrapper Background":    "rgba(0,0,0,0)"
+    "Thread Wrapper Border":        "#111111"
+    "Dialog Background":            "#222222"
+    "Dialog Border":                "#111111"
+    "Reply Background":             "#222222"
+    "Reply Border":                 "#111111"
+    "Highlighted Reply Background": "#141414"
+    "Highlighted Reply Border":     "#111111"
+    "Backlinked Reply Outline":     "#6d6d8c"
+    "Input Background":             "#222222"
+    "Input Border":                 "#111111"
+    "Hovered Input Background":     "#111111"
+    "Hovered Input Border":         "#171717"
+    "Focused Input Background":     "#1e1e1e"
+    "Focused Input Border":         "#111111"
+    "Checkbox Background":          "#242424"
+    "Checkbox Border":              "#0f0f0f"
+    "Buttons Background":           "#171717"
+    "Buttons Border":               "#111111"
+    "Navigation Background":        "rgba(16,16,16,0.9)"
+    "Navigation Border":            "#111111"
+    "Quotelinks":                   "#6d6d8c"
+    "Backlinks":                    "#55555c"
+    "Links":                        "#57577a"
+    "Hovered Links":                "#8787ad"
+    "Navigation Links":             "#bababa"
+    "Hovered Navigation Links":     "#676785"
+    "Names":                        "#6e753c"
+    "Tripcodes":                    "#94531c"
+    "Emails":                       "#5e5e5e"
+    "Subjects":                     "#ababab"
+    "Text":                         "#8c8c8c"
+    "Inputs":                       "#8c8c8c"
+    "Post Numbers":                 "#6b6b6b"
+    "Greentext":                    "#6e753c"
+    "Sage":                         "#592110"
+    "Board Title":                  "#8c8c8c"
+    "Timestamps":                   "#7d7d7d"
+    "Warnings":                     "#7b1126"
+    "Shadow Color":                 "rgba(0,0,0,.1)"
+    "Custom CSS": """
+.rice {
+  box-shadow: 1px 1px rgba(50,50,50,0.4), inset 1px 1px 2px rgba(0,0,0,0.3);
+}
+.reply.post {
+  margin: 0 !important;
+  border-radius: 0;
+}
+.thread .replyContainer,
+#unread-line {
+  margin: -1px;
+}
+#qp { border: none !important; }
+#unread-line {
+  padding: 1px;
+  border: 1px solid #111 !important;
+  background-color: #933;
 }
 """
 
