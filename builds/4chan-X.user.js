@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.12 - 2013-05-27
+* 4chan X - Version 1.2.12 - 2013-05-28
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -113,8 +113,7 @@
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Config = {
     main: {
@@ -8118,12 +8117,12 @@
         hiddenPSAs: null
       };
       $.get(items, function(_arg) {
-        var hiddenPSA, hiddenPSAs, _ref;
+        var hiddenPSA, hiddenPSAs;
 
         hiddenPSA = _arg.hiddenPSA, hiddenPSAs = _arg.hiddenPSAs;
         if (hiddenPSAs) {
           $["delete"]('hiddenPSAs');
-          if (_ref = psa.textContent.replace(/\W+/g, '').toLowerCase(), __indexOf.call(hiddenPSAs, _ref) >= 0) {
+          if (hiddenPSAs.contains(psa.textContent.replace(/\W+/g, '').toLowerCase())) {
             hiddenPSA = +$.id('globalMessage').dataset.utc;
             $.set('hiddenPSA', hiddenPSA);
           }
