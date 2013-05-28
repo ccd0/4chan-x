@@ -320,13 +320,12 @@ a[href] {
 #addReply:hover,
 #dump:hover,
 .entry:hover,
-.sideArrows a:hover,
 .replylink:hover,
 .qiQuote:hover,
 .quotelink:hover,
 a .name:hover,
 a .postertrip:hover,
-a:hover {
+a[href]:hover {
   color: #{theme["Hovered Links"]};
 }
 #header-bar a:hover,
