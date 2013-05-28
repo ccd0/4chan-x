@@ -1,3 +1,18 @@
+<<<<<<< HEAD
+=======
+### v1.2.12
+*2013-05-27*
+
+**MayhemYDG**:
+- Fix `Jump to Next Reply` keybind not accounting for posts after unread line
+
+**seaweedchan**:
+- Added `.hasInline` (if replyContainer contains .inline) for userstyle/script maintainers
+
+### v1.2.11
+*2013-05-27*
+
+>>>>>>> v3
 **MayhemYDG**:
 - Tiny fixes
 - Add page count to thread stats

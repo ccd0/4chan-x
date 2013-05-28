@@ -3744,18 +3744,22 @@
       return Polyfill.visibility();
     },
     visibility: function() {
-      var event, prefix, property;
-
-      if ('visibilityState' in document || !(prefix = ('webkitVisibilityState' in document ? 'webkit' : 'mozVisibilityState' in document ? 'moz' : void 0))) {
+      if (!('webkitHidden' in document)) {
         return;
       }
-      property = prefix + 'VisibilityState';
-      event = prefix + 'visibilitychange';
-      d.visibilityState = d[property];
-      d.hidden = d.visibilityState === 'hidden';
-      return $.on(d, event, function() {
-        d.visibilityState = d[property];
-        d.hidden = d.visibilityState === 'hidden';
+      Object.defineProperties(HTMLDocument.prototype, {
+        visibilityState: {
+          get: function() {
+            return this.webkitVisibilityState;
+          }
+        },
+        hidden: {
+          get: function() {
+            return this.webkitHidden;
+          }
+        }
+      });
+      return $.on(d, 'webkitvisibilitychange', function() {
         return $.event('visibilitychange');
       });
     }
@@ -12879,7 +12883,7 @@
       }
     },
     hl: function(delta, thread) {
-      var headRect, next, postEl, rect, replies, reply, root, topMargin, _i, _len;
+      var axe, headRect, next, postEl, rect, replies, reply, root, topMargin, _i, _len;
 
       if (Conf['Fixed Header'] && Conf['Bottom header']) {
         topMargin = 0;
@@ -12892,7 +12896,8 @@
         rect = postEl.getBoundingClientRect();
         if (rect.bottom >= topMargin && rect.top <= doc.clientHeight) {
           root = postEl.parentNode;
-          next = $.x('child::div[contains(@class,"post reply")]', delta === +1 ? root.nextElementSibling : root.previousElementSibling);
+          axe = delta === +1 ? 'following' : 'preceding';
+          next = $.x("" + axe + "-sibling::div[contains(@class,'replyContainer')][1]/child::div[contains(@class,'reply')]", root);
           if (!next) {
             this.focus(postEl);
             return;
