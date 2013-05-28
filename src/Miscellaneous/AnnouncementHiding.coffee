@@ -38,7 +38,7 @@ PSAHiding =
     $.get items, ({hiddenPSA, hiddenPSAs}) ->
       if hiddenPSAs
         $.delete 'hiddenPSAs'
-        if psa.textContent.replace(/\W+/g, '').toLowerCase() in hiddenPSAs
+        if hiddenPSAs.contains psa.textContent.replace(/\W+/g, '').toLowerCase()
           hiddenPSA = +$.id('globalMessage').dataset.utc
           $.set 'hiddenPSA', hiddenPSA
       PSAHiding.sync hiddenPSA

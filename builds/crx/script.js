@@ -8104,12 +8104,12 @@
         hiddenPSAs: null
       };
       $.get(items, function(_arg) {
-        var hiddenPSA, hiddenPSAs, _ref;
+        var hiddenPSA, hiddenPSAs;
 
         hiddenPSA = _arg.hiddenPSA, hiddenPSAs = _arg.hiddenPSAs;
         if (hiddenPSAs) {
           $["delete"]('hiddenPSAs');
-          if (_ref = psa.textContent.replace(/\W+/g, '').toLowerCase(), __indexOf.call(hiddenPSAs, _ref) >= 0) {
+          if (hiddenPSAs.contains(psa.textContent.replace(/\W+/g, '').toLowerCase())) {
             hiddenPSA = +$.id('globalMessage').dataset.utc;
             $.set('hiddenPSA', hiddenPSA);
           }
