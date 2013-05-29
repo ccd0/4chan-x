@@ -53,10 +53,12 @@ Config =
         false
         'Add buttons to navigate to top / bottom of thread.'
       ]
+      <% if (type !== 'crx') { %>
       'Check for Updates': [
         true
         'Check for updated versions of <%= meta.name %>.'
       ]
+      <% } %>
       'Emoji': [
         false
         'Adds icons next to names for different emails'
