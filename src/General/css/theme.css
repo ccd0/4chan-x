@@ -283,7 +283,7 @@ textarea {
   background: #{theme["Buttons Background"]};
   border: 1px solid #{theme["Buttons Border"]};
 }
-.pages a[href],
+.pages a,
 #header-bar a {
   color: #{theme["Navigation Links"]};
 }
@@ -307,7 +307,7 @@ input[type=checkbox]:checked + .rice::after {
 .button,
 .entry,
 .replylink,
-a[href] {
+a {
   color: #{theme["Links"]};
 }
 .backlink {
@@ -325,7 +325,7 @@ a[href] {
 .quotelink:hover,
 a .name:hover,
 a .postertrip:hover,
-a[href]:hover {
+a:hover {
   color: #{theme["Hovered Links"]};
 }
 #header-bar a:hover,
