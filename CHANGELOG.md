@@ -1,3 +1,9 @@
+### v2.0.6
+*2013-05-29*
+
+**zixaphir**:
+- Fix a small CSS bug resulting in backlinks being the wrong color
+
 ### v2.0.5
 *2013-05-28*
 
