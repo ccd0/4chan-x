@@ -62,7 +62,7 @@ MascotTools =
     else
       '-1'
   };
-  #{if Style.sidebarLocation[0] is "left" then "#{Style.agent}transform: scaleX(-1);" else ""}
+  #{if Style.sidebarLocation[0] is "left" then "<%= sizing %>transform: scaleX(-1);" else ""}
   bottom: #{
     if mascot.position is 'top'
       'auto'
@@ -108,7 +108,7 @@ MascotTools =
   opacity: #{Conf['Mascot Opacity']};
   pointer-events: none;
   #{if filters.length > 0 then "filter: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filters\">" + filters.join("") + "</filter></svg>#filters');" else ""}
-  #{if Conf['Mascot Position'] is 'middle' then "#{Style.agent}transform: translateY(50%);" else ''}
+  #{if Conf['Mascot Position'] is 'middle' then "<%= sizing %>transform: translateY(50%);" else ''}
 }
 """
 

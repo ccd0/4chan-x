@@ -69,7 +69,7 @@ div.navLinks > a:first-of-type::after {
 #boardNavDesktopFoot,
 #globalMessage,
 #watcher {
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
   width: #{Style.sidebar - 18}px !important;
   min-width: 230px;
   #{align}: 18px !important;

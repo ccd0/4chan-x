@@ -154,6 +154,14 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'set-build', 'Set the build type variable', (type) ->
     pkg.type = type;
+    pkg.agent = if type is 'crx'
+      '-webkit-'
+    else
+      '-moz-'
+    pkg.sizing = if type is 'crx'
+      'box-sizing'
+    else
+      '-moz-box-sizing'
     grunt.log.ok 'pkg.type = %s', type
 
   grunt.registerTask 'build', [

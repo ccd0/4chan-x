@@ -19,11 +19,11 @@ Style =
       for name, setting of cat
         if setting[2]
           continue if setting[2] is 'text'
-          hyphenated = "#{name} #{Conf[name]}".toLowerCase().replace /\s+/g, '-'
+          hyphenated = "#{name} #{Conf[name]}".toLowerCase().replace(/^4/, 'four').replace /\s+/g, '-'
           $.addClass doc, hyphenated
         else
           continue unless Conf[name]
-          hyphenated = "#{name}".toLowerCase().replace /\s+/g, '-'
+          hyphenated = "#{name}".toLowerCase().replace(/^4/, 'four').replace /\s+/g, '-'
           $.addClass doc, hyphenated
 
     MascotTools.init()
@@ -67,18 +67,15 @@ Style =
           setTimeout Rice.nodes, 100
     , 500
 
-  agent:  "<% if (type === 'crx') { %>-webkit-<% } else if (type === 'userscript') { %>-moz-<% } else { %>-o-<% } %>"
-
-  sizing: "<% if (type === 'userscript') { %>-moz-<% } else { %><% } %>box-sizing"
-
   setup: ->
     theme = Themes[Conf['theme']]
     $.extend Style,
-      layoutCSS:    $.addStyle Style.layout(),      'layout'
-      themeCSS:     $.addStyle Style.theme(theme),  'theme'
-      icons:        $.addStyle "",                  'icons'
-      paddingSheet: $.addStyle "",                  'padding'
-      mascot:       $.addStyle "",                  'mascotSheet'
+      layoutCSS:    $.addStyle Style.layout(),     'layout'
+      themeCSS:     $.addStyle Style.theme(theme), 'theme'
+      icons:        $.addStyle "",                 'icons'
+      paddingSheet: $.addStyle "",                 'padding'
+      mascot:       $.addStyle "",                 'mascotSheet'
+      dynamic:      $.addStyle Style.dynamic(),    'dynamic'
 
     # Non-customizable
     $.addStyle JSColor.css(), 'jsColor'
@@ -163,8 +160,8 @@ Style =
     return """filter: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='#{string} 0 0 0 1 0' /></filter></svg>#filters");"""
 
   layout: ->
+    # Remove after classes rewrite
     _conf   = Conf
-    agent   = Style.agent
     xOffset = if _conf["Sidebar Location"] is "left" then '-' else ''
     
     Style.pfOffset = if _conf['4chan SS Navigation'] and
@@ -213,10 +210,60 @@ Style =
     Style.replyMargin = _conf["Post Spacing"]
 
     css = """<%= grunt.file.read('src/General/css/layout.css') %>"""
+  
+  dynamic: ->
+    _conf   = Conf
+    xOffset = if _conf["Sidebar Location"] is "left" then '-' else ''
+    
+    Style.pfOffset = if _conf['4chan SS Navigation'] and
+      ((_conf['Bottom Header'] and _conf['Fixed Header']) or
+      (g.VIEW is 'index' and _conf['Pagination'] is 'sticky bottom'))
+        1.5
+    else
+        0
+
+    Style.sidebar = {
+      minimal:  20
+      hide:     2
+      normal:   252
+      large:    303
+    }[_conf['Sidebar']]
+
+    Style.logoOffset =
+      if _conf["4chan Banner"] is "at sidebar top"
+        if _conf["Sidebar"] is "large"
+          100
+        else
+          83
+      else
+        0
+
+    width = 
+      if _conf["Sidebar"] is "large"
+        299
+      else
+        248
+
+    Style.sidebarLocation = if _conf["Sidebar Location"] is "left"
+      ["left",  "right"]
+    else
+      ["right", "left" ]
+
+    if _conf['editMode'] is "theme"
+      editSpace = {}
+      editSpace[Style.sidebarLocation[1]] = 300
+      editSpace[Style.sidebarLocation[0]] = 0
+    else
+      editSpace =
+        left:   0
+        right:  0
+
+    Style.replyMargin = _conf["Post Spacing"]
+
+    css = """<%= grunt.file.read('src/General/css/dynamic.css') %>"""
 
   theme: (theme) ->
     _conf = Conf
-    agent = Style.agent
 
     bgColor = new Style.color(Style.colorToHex(backgroundC = theme["Background Color"]) or 'aaaaaa')
 

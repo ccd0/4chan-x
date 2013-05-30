@@ -297,7 +297,7 @@ input[type=checkbox]:checked + .rice::after {
   height: 10px;
   border: solid #{theme["Inputs"]};
   border-width: 0 3px 3px 0;
-  #{agent}transform: rotate(45deg);
+  <%= agent %>transform: rotate(45deg);
   position: absolute;
   left: 2px;
   bottom: -1px;
@@ -357,12 +357,12 @@ a .name {
   box-shadow: #{if _conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
 }
 .placeholder,
-#qr input::#{agent}placeholder,
-#qr textarea::#{agent}placeholder {
+#qr input::<%= agent %>placeholder,
+#qr textarea::<%= agent %>placeholder {
   color: #{if Style.lightTheme then "rgba(0,0,0,0.3)" else "rgba(255,255,255,0.2)"} !important;
 }
-#qr input:#{agent}placeholder,
-#qr textarea:#{agent}placeholder,
+#qr input:<%= agent %>placeholder,
+#qr textarea:<%= agent %>placeholder,
 .placeholder {
   color: #{if Style.lightTheme then "rgba(0,0,0,0.3)" else "rgba(255,255,255,0.2)"} !important;
 }

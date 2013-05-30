@@ -76,56 +76,71 @@ a[style="cursor: pointer; float: right;"] {
 }
 /* Defaults */
 a {
-  text-decoration: #{if _conf["Underline Links"] then "underline" else "none"};
+  text-decoration: none;
   outline: none;
+}
+.underline-links a {
+  text-decoration: underline;
 }
 body,
 html {
   min-height: 100%;
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
 }
 body {
   outline: none;
-  font-size: #{parseInt _conf["Font Size"], 10}px;
-  font-family: #{_conf["Font"]};
   min-height: 100%;
-  margin-top: 0;
-  margin-bottom: 0;
-  margin-#{Style.sidebarLocation[0]}: #{if /^boards\.4chan\.org$/.test(location.hostname) then Style.sidebar else '2'}px;
-  margin-#{Style.sidebarLocation[1]}: 2px;
-  padding: 0 #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px 0 #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]}px;
+}
+.sidebar-hide body {
+  margin: 0 2px;
+}
+.sidebar-minimal body {
+  margin: 0 20px;
+}
+.sidebar-normal body {
+  margin: 0 252px
+}
+.sidebar-large body {
+  margin: 0 303px;
+}
+.sidebar-location-right body {
+  margin-left: 2px;
+}
+.sidebar-location-left body {
+  margin-right: 2px;
 }
 body.unscroll {
   overflow: hidden;
 }
-#{if _conf["4chan SS Sidebar"] and /^boards\.4chan\.org$/.test location.hostname then "
-body::before {
+.fourchan-ss-sidebar body::before {
   content: '';
   position: fixed;
   top: 0;
   bottom: 0;
-  #{Style.sidebarLocation[0]}: 0;
-  width: #{if _conf['Sidebar'] is 'large' then 305 else if _conf['Sidebar'] is 'normal' then 254 else if _conf['Sidebar'] is 'minimal' then 27 else 0}px;
   z-index: 1;
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
   display: block;
 }
-body {
-  padding-#{Style.sidebarLocation[0]}: 2px;
+.sidebar-right body::before {
+  right: 0;
 }
-" else ""}
-button,
-input,
-textarea {
-  font-size: #{parseInt _conf["Font Size"], 10}px;
-  font-family: #{_conf["Font"]};
+sidebar-left body::before {
+  left: 0;
+}
+.fourchan-ss-sidebar.sidebar-right body {
+  padding-right: 2px;
+}
+.fourchan-ss-sidebar.sidebar-left body {
+  padding-left: 2px;
 }
 hr {
   clear: both;
   border: 0;
   padding: 0;
   margin: 0 0 1px;
-  #{if _conf['Hide Horizontal Rules'] then 'visibility: hidden;' else ''}
+}
+.hide-horizontal-rules hr {
+  visibility: hidden;
 }
 th {
   text-align: left;
@@ -168,23 +183,24 @@ th {
 #header-bar {
   z-index: 6;
   border-width: 1px;
-#{
-if _conf['4chan SS Navigation'] then "
+}
+.navigation-alignment-center #header-bar {
+  text-align: center;
+}
+.navigation-alignment-right #header-bar {
+  text-align: right;
+}
+.fourchan-ss-navigation #header-bar {
   left: 0;
   right: 0;
   border-left: 0;
   border-right: 0;
-  border-radius: 0 !important;"
-else "
-  #{Style.sidebarLocation[0]}: #{Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
-  #{Style.sidebarLocation[1]}: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
+  border-radius: 0 !important;
 }
-#{if _conf["Hide Navigation Decorations"] then "
+.hide-navigation-decorations #header-bar {
   font-size: 0;
   color: transparent;
   word-spacing: 2px;
-" else ""}
-  text-align: #{_conf["Navigation Alignment"]};
 }
 #shortcuts {
   float: right;
@@ -198,12 +214,16 @@ else "
 .top #header-bar {
   top: 0;
   border-top-width: 0;
-  #{if _conf["Rounded Edges"] then "border-radius: 0 0 3px 3px;" else ""}"
+}
+.rounded-edges.top #header-bar {
+  border-radius: 0 0 3px 3px;
 }
 .fixed.bottom #header-bar {
   bottom: 0;
   border-bottom-width: 0;
-  #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}"
+}
+.rounded-edges.bottom #header-bar {
+  border-radius: 3px 3px 0 0;
 }
 .hide #header-bar {
   position: fixed;
@@ -217,10 +237,10 @@ else "
 }
 .fixed.top #header-bar.autohide:not(:hover) {
   margin-bottom: -1em;
-  #{agent}transform: translateY(-100%);
+  <%= agent %>transform: translateY(-100%);
 }
 .fixed.bottom #header-bar.autohide:not(:hover) {
-  #{agent}transform: translateY(100%);
+  <%= agent %>transform: translateY(100%);
 }
 #scroll-marker {
   left: 0;
@@ -290,7 +310,7 @@ else "
   color: #fff;
 }
 .message {
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
   padding: 6px 20px;
   max-height: 200px;
   width: 100%;
@@ -303,7 +323,7 @@ else "
   border-radius: 10px;
   height: 14px;
   width: 14px;
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
   border-color: rgb(130,130,130);
   color: rgb(130,130,130);
 }
@@ -313,13 +333,13 @@ else "
   position: absolute;
   top: 50%;
   left: 50%;
-  #{agent}transform: translate(-60%, -50%);
+  <%= agent %>transform: translate(-60%, -50%);
   display: block;
   border-top: 5px solid rgb(130, 130, 130);
   border-left: 3px solid transparent;
   border-right: 3px solid transparent;
   width: 7px;
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
 }
 /* Updater / Thread Stats */
 .float #thread-stats,
@@ -378,11 +398,11 @@ else "
   #{Style.sidebarLocation[0]}: #{Style.sidebar - 2}px;
   position: fixed;
 #{if Style.sidebarLocation[0] is 'right' then "
-  #{agent}transform: rotate(90deg);
-  #{agent}transform-origin: bottom right;"
+  <%= agent %>transform: rotate(90deg);
+  <%= agent %>transform-origin: bottom right;"
 else "
-  #{agent}transform: rotate(-90deg);
-  #{agent}transform-origin: bottom left;
+  <%= agent %>transform: rotate(-90deg);
+  <%= agent %>transform-origin: bottom left;
 "}
   z-index: 6;
   margin: 0;
@@ -423,11 +443,11 @@ else "
 #{if _conf["Faded 4chan Banner"] then "
 .boardBanner {
   opacity: 0.5;
-  #{agent}transition: opacity 0.3s ease-in-out .5s;
+  <%= agent %>transition: opacity 0.3s ease-in-out .5s;
 }
 .boardBanner:hover {
   opacity: 1;
-  #{agent}transition: opacity 0.3s ease-in;
+  <%= agent %>transition: opacity 0.3s ease-in;
 }
 " else ""}
 #{if _conf["4chan Banner Reflection"] then "
@@ -609,7 +629,7 @@ else "
   bottom: 0;
   right: 0;
   font-size: #{_conf['Font Size']}px;
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
   height: 1.6em;
   width: 1.4em;
   text-align: center;
@@ -629,7 +649,7 @@ else "
   font-size: 0;
   color: transparent;
   overflow: hidden;
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
 }
 #boardNavDesktopFoot a,
 #boardNavDesktopFoot a::after,
@@ -693,7 +713,7 @@ hide: "
   width: #{width}px;
   #{Style.sidebarLocation[0]}: 2px !important;
   #{Style.sidebarLocation[1]}: auto !important;
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
 }
 #watcher .move {
   cursor: default;
@@ -750,7 +770,7 @@ hide: "
   margin: 0;
 }
 #globalMessage:hover {
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
   overflow-y: auto;
 }
 #globalMessage:not(:hover) {
@@ -812,7 +832,7 @@ hide: "
 .hide-reply-button {
   margin: 0 3px;
   opacity: 0;
-  #{agent}transition: opacity .3s ease-out 0s;
+  <%= agent %>transition: opacity .3s ease-out 0s;
 }
 .post:hover .hide-reply-button,
 .post:hover .menu-button,
@@ -854,7 +874,7 @@ hide: "
   outline: none;
 }
 .reply.post {
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
 }
 #{if _conf["Fit Width Replies"] then "
 .reply.post {
@@ -909,7 +929,7 @@ s {
 }
 #{if _conf["OP Background"] then "
 .op.post {
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
 }" else ""}
 /* Summary */
 #{
@@ -1038,7 +1058,7 @@ if _conf["Filtered Backlinks"] then "
 'default': ""}[_conf["Backlinks Position"]]}
 /* Code */
 .prettyprint {
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
   font-family: monospace;
   display: inline-block;
   margin-right: auto;
@@ -1179,12 +1199,12 @@ input:checked + .rice {
   bottom: #{Style.pfOffset}em !important;
   #{Style.sidebarLocation[0]}: 0 !important;
   #{Style.sidebarLocation[1]}: auto !important;
-  #{agent}transform: translateX(#{xOffset}93%);
+  <%= agent %>transform: translateX(#{xOffset}93%);
 }
 #qr:hover,
 #qr.has-focus,
 #qr.dump {
-  #{agent}transform: translate(0);
+  <%= agent %>transform: translate(0);
 }"
 
 "tabbed slideout": "
@@ -1193,16 +1213,16 @@ input:checked + .rice {
   bottom: #{Style.pfOffset}em !important;
   #{Style.sidebarLocation[0]}: 0 !important;
   #{Style.sidebarLocation[1]}: auto !important;
-  #{agent}transform: translateX(#{xOffset}100%);
+  <%= agent %>transform: translateX(#{xOffset}100%);
 }
 #qr:hover,
 #qr.has-focus,
 #qr.dump {
-  #{agent}transform: translateX(0);
+  <%= agent %>transform: translateX(0);
 }
 #qrtab {
-  #{agent}transform: rotate(#{(if Style.sidebarLocation[0] is "left" then "" else "-")}90deg);
-  #{agent}transform-origin: bottom #{Style.sidebarLocation[0]};
+  <%= agent %>transform: rotate(#{(if Style.sidebarLocation[0] is "left" then "" else "-")}90deg);
+  <%= agent %>transform-origin: bottom #{Style.sidebarLocation[0]};
   position: absolute;
   top: 0;
   #{Style.sidebarLocation[0]}: 100%;
@@ -1232,13 +1252,13 @@ input:checked + .rice {
   #{Style.sidebarLocation[0]}: 2px !important;
   #{Style.sidebarLocation[1]}: auto !important;
   opacity: 0.2;
-  #{agent}transition: opacity .3s ease-in-out 1s;
+  <%= agent %>transition: opacity .3s ease-in-out 1s;
 }
 #qr:hover,
 #qr.has-focus,
 #qr.dump {
   opacity: 1;
-  #{agent}transition: opacity .3s linear;
+  <%= agent %>transition: opacity .3s linear;
 }"
 }[_conf['Post Form Style']] or ""}
 
@@ -1256,18 +1276,18 @@ else ""}
 #{
 if _conf['Post Form Style'] isnt 'float' and _conf["Post Form Slideout Transitions"] then "
 #qr {
-  #{agent}transition: #{agent}transform .3s ease-in-out 1s;
+  <%= agent %>transition: <%= agent %>transform .3s ease-in-out 1s;
 }
 #qr:hover,
 #qr.has-focus,
 #qr.dump {
-  #{agent}transition: #{agent}transform .3s linear;
+  <%= agent %>transition: <%= agent %>transform .3s linear;
 }
 #qrtab {
-  #{agent}transition: opacity .3s ease-in-out 1s;
+  <%= agent %>transition: opacity .3s ease-in-out 1s;
 }
 #qr:hover #qrtab {
-  #{agent}transition: opacity .3s linear;
+  <%= agent %>transition: opacity .3s linear;
 }" else ""
 }
 
@@ -1345,7 +1365,7 @@ if _conf["Tripcode Hider"] then "
 .selectrice,
 button,
 input:not([type=radio]) {
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
   font-size: #{parseInt _conf['Font Size'], 10}px;
   height: 1.6em;
   margin: 1px 0 0;
@@ -1391,7 +1411,7 @@ input:not([type=radio]) {
   margin-right: 3px;
 }
 #qr-filename-container {
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
   display: inline-block;
   position: relative;
   width: 100px;
@@ -1442,7 +1462,7 @@ input:not([type=radio]) {
   overflow-x: auto;
 }
 .qr-preview {
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
   counter-increment: thumbnails;
   cursor: move;
   display: inline-block;
@@ -1453,7 +1473,7 @@ input:not([type=radio]) {
   overflow: hidden;
   position: relative;
   text-shadow: 0 1px 1px #000;
-  #{agent}transition: opacity .25s ease-in-out;
+  <%= agent %>transition: opacity .25s ease-in-out;
   vertical-align: top;
 }
 .qr-preview:hover,
@@ -1508,14 +1528,14 @@ a:only-of-type > .remove {
   position: absolute;
   top: 50%;
   right: 10px;
-  #{agent}transform: translateY(-50%);
+  <%= agent %>transform: translateY(-50%);
 }
 /* Ads */
 .topad img,
 .middlead img,
 .bottomad img {
   opacity: 0.3;
-  #{agent}transition: opacity .3s linear;
+  <%= agent %>transition: opacity .3s linear;
 }
 .topad img:hover,
 .middlead img:hover,
@@ -1771,13 +1791,13 @@ article li {
 .export-button,
 .mascotname,
 #mascot-options {
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
   padding: 0;
   width: 100%;
 }
 #mascot-options {
   opacity: 0;
-  #{agent}transition: opacity .3s linear;
+  <%= agent %>transition: opacity .3s linear;
 }
 .mascot:hover #mascot-options {
   opacity: 1;
@@ -1818,7 +1838,7 @@ article li {
   right: 300px;
   bottom: 10px;
   margin: 0;
-  #{agent}transition: all .2s ease-in-out;
+  <%= agent %>transition: all .2s ease-in-out;
   opacity: 0;
 }
 #themes .selectedtheme h1 {
@@ -1873,7 +1893,7 @@ article li {
 }
 #mascotConf .option,
 #mascotConf .optionlabel {
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
   width: 50%;
   display: inline-block;
   vertical-align: middle;
@@ -1945,7 +1965,7 @@ article li {
   position: fixed;
   top: 50% !important;
   left: 50%;
-  #{agent}transform: translate(-50%, -50%);
+  <%= agent %>transform: translate(-50%, -50%);
 }
 .icon::after {
   display: inline-block;
@@ -1982,7 +2002,7 @@ article li {
   left: 0 !important;
 }
 #boards .column {
-  #{Style.sizing}: border-box;
+  <%= sizing %>: border-box;
   display: inline-block;
   width: 16em;
   text-align: left;

@@ -800,7 +800,7 @@ Settings =
     style:
       checked: ->
         $.cb.checked.call @
-        hyphenated = @name.toLowerCase().replace /\s+/g, '-'
+        hyphenated = @name.toLowerCase().replace(/^4/, 'four').replace /\s+/g, '-'
         (if @checked then $.addClass else $.rmClass) doc, hyphenated
       value: ->
         $.cb.value.call @
@@ -808,7 +808,7 @@ Settings =
       select: ->
         $.cb.value.call @
         for option in @options
-          hyphenated = "#{@name} {option.value}".toLowerCase().replace /\s+/g, '-'
+          hyphenated = "#{@name} #{option.value}".toLowerCase().replace(/^4/, 'four').replace /\s+/g, '-'
           (if option.value is @value then $.addClass else $.rmClass) doc, hyphenated
 
     mascot:

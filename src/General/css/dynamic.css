@@ -1,0 +1,43 @@
+body {
+  font-size: #{parseInt _conf["Font Size"], 10}px;
+  font-family: #{_conf["Font"]};
+  padding: 0 #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px 0 #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]}px;
+}
+button,
+input,
+textarea {
+  font-size: #{parseInt _conf["Font Size"], 10}px;
+  font-family: #{_conf["Font"]};
+}
+.sidebar-location-left.sidebar-large #header-bar {
+  left: #{303 + parseInt(_conf["Left Thread Padding"], 10) + editSpace["right"]}px;
+  right: #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+.sidebar-location-left.sidebar-normal #header-bar {
+  left: #{248 + parseInt(_conf["Left Thread Padding"], 10) + editSpace["right"]}px;
+  right: #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+.sidebar-location-left.sidebar-minimal #header-bar {
+  left: #{20 + parseInt(_conf["Left Thread Padding"], 10) + editSpace["right"]}px;
+  right: #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+.sidebar-location-left.sidebar-hide #header-bar {
+  left: #{2 + parseInt(_conf["Left Thread Padding"], 10) + editSpace["right"]}px;
+  right: #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+.sidebar-location-right.sidebar-large #header-bar {
+  right: #{303 + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
+  left: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+.sidebar-location-right.sidebar-normal #header-bar {
+  right: #{248 + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
+  left: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+.sidebar-location-right.sidebar-minimal #header-bar {
+  right: #{20 + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
+  left: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+.sidebar-location-right.sidebar-hide #header-bar {
+  right: #{2 + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
+  left: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}

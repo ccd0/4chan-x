@@ -1,6 +1,5 @@
 JSColor =
   css: ->
-    agent = Style.agent
     """<%= grunt.file.read('src/General/css/jscolor.css') %>"""
 
   bind: (el) ->
