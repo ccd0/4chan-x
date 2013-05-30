@@ -14,6 +14,17 @@ Style =
     $.addClass doc, 'gecko'
     <% } %>
     $.addClass doc, 'appchan-x'
+    
+    for title, cat of Config.style
+      for name, setting of cat
+        if setting[2]
+          continue if setting[2] is 'text'
+          hyphenated = "#{name} #{Conf[name]}".toLowerCase().replace /\s+/g, '-'
+          $.addClass doc, hyphenated
+        else
+          continue unless Conf[name]
+          hyphenated = "#{name}".toLowerCase().replace /\s+/g, '-'
+          $.addClass doc, hyphenated
 
     MascotTools.init()
 

@@ -504,35 +504,31 @@ Settings =
 
           div.innerHTML = "<div class=option><label><input type=checkbox name='#{key}'>#{key}</label></div><span style='display:none;'>#{description}</span>"
           input = $ 'input', div
-          input.bool = true
 
         items[key]  = Conf[key]
         inputs[key] = input
 
         $.on $('.option', div), 'mouseover', Settings.mouseover
 
-        $.on input, 'change', Settings.change
-
         $.add fs, div
       $.add nodes, fs
 
     $.get items, (items) ->
+      cb = Settings.cb
       for key, val of items
         input = inputs[key]
-        if input.bool
+        if input.type is 'checkbox'
           input.checked = val
-          Rice.checkbox input
+          $.on input, 'change', cb.style.checked
+        else if input.nodeName is 'SELECT'
+          input.value   = val
+          $.on input, 'change', cb.style.select
         else
           input.value   = val
-          if input.nodeName is 'SELECT'
-            Rice.select input
+          $.on input, 'change', cb.style.value
 
+      Rice.nodes nodes
       $.add section, nodes
-
-
-  change: ->
-    $.cb[if @bool then 'checked' else 'value'].call @
-    Style.addStyle()
 
   themes: (section, mode) ->
     if typeof mode isnt 'string'
@@ -689,7 +685,7 @@ Settings =
       for name in MascotTools.categories
         nodes[name] = []
         categories[name] = $.el "div",
-          className: "mascots"
+          className: "mascots-container"
           id: name
           innerHTML: "<h3 class=mascotHeader>#{name}</h3>"
 
@@ -801,6 +797,20 @@ Settings =
     $.add section, [suboptions, batchmascots, mascotHide]
 
   cb:
+    style:
+      checked: ->
+        $.cb.checked.call @
+        hyphenated = @name.toLowerCase().replace /\s+/g, '-'
+        (if @checked then $.addClass else $.rmClass) doc, hyphenated
+      value: ->
+        $.cb.value.call @
+        Style.addStyle()
+      select: ->
+        $.cb.value.call @
+        for option in @options
+          hyphenated = "#{@name} {option.value}".toLowerCase().replace /\s+/g, '-'
+          (if option.value is @value then $.addClass else $.rmClass) doc, hyphenated
+
     mascot:
       category: ->
         if $.id(@name).hidden = @checked

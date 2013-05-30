@@ -1735,7 +1735,7 @@ article li {
   clear: both;
   text-decoration: none;
 }
-.mascots {
+.mascots-container {
   padding: 0;
   text-align: center;
   #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
