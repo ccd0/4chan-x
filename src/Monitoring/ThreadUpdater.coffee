@@ -231,43 +231,46 @@ ThreadUpdater =
         post.kill true
         deletedFiles.push post
 
+    sendEvent = ->
+      $.event 'ThreadUpdate',
+        404: false
+        thread: ThreadUpdater.thread
+        newPosts: posts
+        deletedPosts: deletedPosts
+        deletedFiles: deletedFiles
+        postCount: OP.replies + 1
+        fileCount: OP.images + (!!ThreadUpdater.thread.OP.file and !ThreadUpdater.thread.OP.file.isDead)
+
     unless count
       ThreadUpdater.set 'status', null, null
       ThreadUpdater.outdateCount++
+      sendEvent()
+      return
+
+    ThreadUpdater.set 'status', "+#{count}", 'new'
+    ThreadUpdater.outdateCount = 0
+    if Conf['Beep'] and d.hidden and Unread.posts and !Unread.posts.length
+      unless ThreadUpdater.audio
+        ThreadUpdater.audio = $.el 'audio', src: ThreadUpdater.beep
+      ThreadUpdater.audio.play()
+
+    ThreadUpdater.lastPost = posts[count - 1].ID
+    Main.callbackNodes Post, posts
+
+    scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and
+      ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
+    $.add ThreadUpdater.root, nodes
+    sendEvent()
+    if scroll
+      if Conf['Bottom Scroll']
+        <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>.scrollTop = d.body.clientHeight
+      else
+        Header.scrollToPost nodes[0]
+
+    # Enable 4chan features.
+    threadID = ThreadUpdater.thread.ID
+    {length} = $$ '.thread > .postContainer', ThreadUpdater.root
+    if Conf['Enable 4chan\'s Extension']
+      $.globalEval "Parser.parseThread(#{threadID}, #{-count})"
     else
-      ThreadUpdater.set 'status', "+#{count}", 'new'
-      ThreadUpdater.outdateCount = 0
-      if Conf['Beep'] and d.hidden and Unread.posts and !Unread.posts.length
-        unless ThreadUpdater.audio
-          ThreadUpdater.audio = $.el 'audio', src: ThreadUpdater.beep
-        ThreadUpdater.audio.play()
-
-      ThreadUpdater.lastPost = posts[count - 1].ID
-      Main.callbackNodes Post, posts
-
-      scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and
-        ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
-      $.add ThreadUpdater.root, nodes
-      if scroll
-        if Conf['Bottom Scroll']
-          <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>.scrollTop = d.body.clientHeight
-        else
-          Header.scrollToPost nodes[0]
-
-      $.queueTask ->
-        # Enable 4chan features.
-        threadID = ThreadUpdater.thread.ID
-        {length} = $$ '.thread > .postContainer', ThreadUpdater.root
-        if Conf['Enable 4chan\'s Extension']
-          $.globalEval "Parser.parseThread(#{threadID}, #{-count})"
-        else
-          Fourchan.parseThread threadID, length - count, length
-
-    $.event 'ThreadUpdate',
-      404: false
-      thread: ThreadUpdater.thread
-      newPosts: posts
-      deletedPosts: deletedPosts
-      deletedFiles: deletedFiles
-      postCount: OP.replies + 1
-      fileCount: OP.images + (!!ThreadUpdater.thread.OP.file and !ThreadUpdater.thread.OP.file.isDead)
+      Fourchan.parseThread threadID, length - count, length
