@@ -581,10 +581,10 @@ th {
 .board-title-at-sidebar-top.icon-orientation-vertical #boardTitle {
   top: 21px;
 }
-.board-title-at-sidebar-bottom .boardBanner {
+.board-title-at-sidebar-bottom #boardTitle {
   bottom: 280px;
 }
-.board-title-under-post-form .boardBanner {
+.board-title-under-post-form #boardTitle {
   bottom: 140px;
 }
 /* Hover UI */
@@ -1273,36 +1273,33 @@ input:checked + .rice {
   opacity: 1;
   <%= agent %>transition: opacity .3s linear;
 }
-
-#{
-unless _conf['Post Form Style'] is 'tabbed slideout'
-  (
-    unless _conf['Post Form Style'] is 'float' or _conf['Show Post Form Header']
-      "#qrtab { display: none; }"
-    else unless _conf['Post Form Style'] is 'slideout'
-      ".autohide:not(:hover):not(.has-focus) > form { display: none !important; }"
-    else ""
-  ) + "#qrtab { margin-bottom: 1px; }"
-else ""}
-
-#{
-if _conf['Post Form Style'] isnt 'float' and _conf["Post Form Slideout Transitions"] then "
-#qr {
+:root:not(.show-post-form-header):not(.post-form-style-tabbed-slideout) #qrtab,
+.post-form-style-float .autohide:not(:hover):not(.has-focus) > form,
+.show-post-form-header.post-form-style-fixed .autohide:not(:hover):not(.has-focus) > form,
+.show-post-form-header.post-form-style-transparent-fade .autohide:not(:hover):not(.has-focus) > form {
+  display: none !important;
+}
+:root:not(.post-form-style-tabbed-slideout) #qrtab {
+  margin-bottom: 1px;
+}
+.post-form-slideout-transitions.post-form-style-slideout #qr,
+.post-form-slideout-transitions.post-form-style-tabbed-slideout #qr {
   <%= agent %>transition: <%= agent %>transform .3s ease-in-out 1s;
 }
-#qr:hover,
-#qr.has-focus,
-#qr.dump {
+.post-form-slideout-transitions.post-form-style-slideout #qr:hover,
+.post-form-slideout-transitions.post-form-style-tabbed-slideout #qr:hover,
+.post-form-slideout-transitions.post-form-style-slideout #qr.has-focus,
+.post-form-slideout-transitions.post-form-style-tabbed-slideout #qr.has-focus,
+.post-form-slideout-transitions.post-form-style-slideout #qr.dump,
+.post-form-slideout-transitions.post-form-style-tabbed-slideout #qr.dump {
   <%= agent %>transition: <%= agent %>transform .3s linear;
 }
-#qrtab {
+.post-form-slideout-transitions #qrtab {
   <%= agent %>transition: opacity .3s ease-in-out 1s;
 }
-#qr:hover #qrtab {
+.post-form-slideout-transitions #qr:hover #qrtab {
   <%= agent %>transition: opacity .3s linear;
-}" else ""
 }
-
 #qr .close {
   float: right;
   padding: 0 3px;
@@ -1319,24 +1316,6 @@ if _conf['Post Form Style'] isnt 'float' and _conf["Post Form Slideout Transitio
   max-width: 100%;
   min-width: 100%;
 }
-#{
-if _conf['Compact Post Form Inputs'] then "
-.persona input.field {
-  width: 33%;
-}
-.persona input.field:not(:first-child) {
-  margin: 0 0 0 0.5%;
-}
-#qr textarea.field {
-  height: 14.9em;
-  min-height: 9em;
-}
-#qr.has-captcha textarea.field {
-  height: 9em;
-}
-
-" else "
-
 .persona input.field {
   width: 100%;
 }
@@ -1346,18 +1325,34 @@ if _conf['Compact Post Form Inputs'] then "
 }
 #qr.has-captcha textarea.field {
   height: 6em;
-}"
 }
-
-#{
-if _conf["Tripcode Hider"] then "
-.tripped:not(:hover):not(:focus) {
-  opacity: 0;
-}" else ""
+.compact-post-form-inputs .persona input.field {
+  width: 33%;
 }
-
-#qr textarea {
-  resize: #{_conf['Textarea Resize']};
+.compact-post-form-inputs .persona input.field:not(:first-child) {
+  margin: 0 0 0 0.5%;
+}
+.compact-post-form-inputs #qr textarea.field {
+  height: 14.9em;
+  min-height: 9em;
+}
+.compact-post-form-inputs #qr.has-captcha textarea.field {
+  height: 9em;
+}
+.tripcode-hider .tripped:not(:hover):not(:focus) {
+  color: transparent !important;
+}
+.textarea-resize-horizontal #qr textarea {
+  resize: horizontal;
+}
+.textarea-resize-vertical #qr textarea {
+  resize: vertical;
+}
+.textarea-resize-both #qr textarea {
+  resize: both;
+}
+.textarea-resize-none #qr textarea {
+  resize: none;
 }
 .captcha-img {
   margin: 1px 0 0;
@@ -1378,7 +1373,6 @@ if _conf["Tripcode Hider"] then "
 button,
 input:not([type=radio]) {
   <%= sizing %>: border-box;
-  font-size: #{parseInt _conf['Font Size'], 10}px;
   height: 1.6em;
   margin: 1px 0 0;
   vertical-align: bottom;
@@ -1554,23 +1548,19 @@ a:only-of-type > .remove {
 .bottomad img:hover {
   opacity: 1;
 }
-#{if _conf["Block Ads"] then "
 /* AdBlock Minus */
-.bottomad + hr,
-.topad,
-.middlead,
-.bottomad {
+.block-ads .bottomad + hr,
+.block-ads .topad,
+.block-ads .middlead,
+.block-ads .bottomad {
   display: none;
 }
-" else ""}
-#{if _conf["Shrink Ads"] then "
-.topad a img,
-.middlead a img,
-.bottomad a img {
+.shrink-ads .topad a img,
+.shrink-ads .middlead a img,
+.shrink-ads .bottomad a img {
   width: 500px;
   height: auto;
 }
-" else ""}
 /* Options */
 #overlay {
   position: fixed;
@@ -1590,7 +1580,13 @@ a:only-of-type > .remove {
   position: fixed;
   z-index: 31;
   padding: .3em;
-  #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
+}
+.rounded-edges #appchanx-settings,
+.rounded-edges #appchanx-settings fieldset,
+.rounded-edges .mascots-container,
+.rounded-edges .section-container,
+.rounded-edges .sections-list > a {
+  border-radius: 3px;
 }
 .description {
   display: none;
@@ -1612,10 +1608,14 @@ a:only-of-type > .remove {
 }
 #appchanx-settings fieldset {
   padding: 5px 0;
-  #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
   vertical-align: top;
-  #{if _conf["Single Column Mode"] then "margin: 0 auto 6px;" else "margin: 0 3px 6px;\n display: inline-block;"}
   border: 0;
+  margin: 0 3px 6px;
+  display: inline-block;
+}
+.single-column-mode #appchanx-settings fieldset {
+  display: block;
+  margin: 0 auto 6px;
 }
 #appchanx-settings .section-advanced fieldset {
   display: block;
@@ -1635,7 +1635,6 @@ a:only-of-type > .remove {
   right: 5px;
   bottom: 5px;
   left: 5px;
-  #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
 }
 .sections-list {
   padding: 0 3px;
@@ -1643,7 +1642,6 @@ a:only-of-type > .remove {
 }
 .sections-list > a {
   cursor: pointer;
-  #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}
   position: relative;
   padding: 0 4px;
   z-index: 1;
@@ -1770,7 +1768,6 @@ article li {
 .mascots-container {
   padding: 0;
   text-align: center;
-  #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
 }
 .mascot,
 .mascotcontainer {
@@ -1868,12 +1865,18 @@ article li {
 /* Theme Editor */
 #themeConf {
   position: fixed;
-  #{Style.sidebarLocation[1]}: 2px;
-  #{Style.sidebarLocation[0]}: auto;
   top: 0;
   bottom: 0;
   width: 296px;
   z-index: 10;
+}
+.sidebar-location-right #themeConf {
+  right: 2px;
+  left: auto;
+}
+.sidebar-location-right #themeConf {
+  left: 2px;
+  right: auto;
 }
 #themebar input {
   width: 30%;
@@ -1937,7 +1940,9 @@ article li {
 #post-preview {
   position: absolute;
   z-index: 22;
-  #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
+}
+.rounded-edges #post-preview {
+  border-radius: 3px;
 }
 #settings,
 #threads,
