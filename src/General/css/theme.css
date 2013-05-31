@@ -59,40 +59,47 @@ html {
   #{Style.filter theme["Text"], theme["Input Background"]}
 }
 #boardTitle,
-#{unless _conf["Post Form Decorations"] then '#spoilerLabel' else ''} {
+:root:not(.post-form-decorations) #spoilerLabel {
   text-shadow:
      1px  1px #{backgroundC},
     -1px -1px #{backgroundC},
      1px -1px #{backgroundC},
-    -1px  1px #{backgroundC}
-    #{if _conf["Sidebar Glow"] then ", 0 2px 4px rgba(0,0,0,.6), 0 0 10px rgba(0,0,0,.6);" else ";"}
+    -1px  1px #{backgroundC};
+}
+.sidebar-glow #boardTitle,
+:root.sidebar-glow:not(.post-form-decorations) #spoilerLabel {
+  text-shadow:
+     1px  1px  1px #{backgroundC},
+    -1px -1px  1px #{backgroundC},
+     1px -1px  1px #{backgroundC},
+    -1px  1px  1px #{backgroundC},
+     0    2px  4px rgba(0,0,0,.6),
+     0    0   10px rgba(0,0,0,.6);
 }
 /* Fixes text spoilers */
-#{if _conf['Remove Spoilers'] and _conf['Indicate Spoilers'] then "
-.spoiler::before,
-s::before {
+.remove-spoilers.indicate-spoilers .spoiler::before,
+.remove-spoilers.indicate-spoilers s::before {
   content: '[spoiler]';
 }
-.spoiler::after,
-s::after {
+.remove-spoilers.indicate-spoilers .spoiler::after,
+.remove-spoilers.indicate-spoilers s::after {
   content: '[/spoiler]';
 }
-" else unless _conf['Remove Spoilers'] then "
-.spoiler:not(:hover) *,
-s:not(:hover) * {
+:root:not(.remove-spoilers) .spoiler:not(:hover) *,
+:root:not(.remove-spoilers) s:not(:hover) * {
   color: rgb(0,0,0) !important;
   text-shadow: none !important;
 }
-.spoiler:not(:hover),
-s:not(:hover) {
+:root:not(.remove-spoilers) spoiler:not(:hover),
+:root:not(.remove-spoilers) s:not(:hover) {
   background-color: rgb(0,0,0);
   color: rgb(0,0,0) !important;
   text-shadow: none !important;
-}" else ""}
+}
 #exlinks-options,
 #appchanx-settings,
 #qrtab,
-#{if _conf["Post Form Decorations"] then "#qr," else ""}
+.post-form-decorations #qr,
 input[type="submit"],
 input[value="Report"],
 span[style="left: 5px; position: absolute;"] a {
@@ -159,9 +166,6 @@ textarea.field:focus {
   border-style: solid;
   border-color: #{theme["Reply Border"]};
   background: #{theme["Reply Background"]};
-}
-.thread > .replyContainer > .reply.post {
-  border-width: #{if _conf['Post Spacing'] is "0" then "1px 1px 0 1px" else '1px'};
 }
 .exblock.reply,
 .reply.post.highlight,
@@ -260,12 +264,12 @@ textarea {
 .container::before {
   color: #{theme["Timestamps"]};
 }
-#menu,
-#post-preview,
-#qp .opContainer,
-#qp .replyContainer,
-.submenu {
-  box-shadow: #{if _conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else ""};
+.quote-shadows #menu,
+.quote-shadows #post-preview,
+.quote-shadows #qp .opContainer,
+.quote-shadows #qp .replyContainer,
+.quote-shadows .submenu {
+  box-shadow: 5px 5px 5px #{theme['Shadow Color']};
 }
 .rice {
   background: #{theme["Checkbox Background"]};
@@ -420,14 +424,15 @@ data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' 
 .fourchan-ss-sidebar body::before {
   z-index: -1;
   background: none repeat scroll 0% 0% rgba(#{if background = new Style.color Style.colorToHex theme["Reply Background"] then background.shiftRGB -18}, 0.8);
-  border-#{Style.sidebarLocation[1]}: 2px solid #{backgroundC};
 }
 .fourchan-ss-sidebar.sidebar-location-right {
+  border-left: 2px solid #{backgroundC};
   box-shadow:
     inset 1px 0 0 #{theme["Thread Wrapper Border"]},
     -1px 0 0 #{theme["Thread Wrapper Border"]};
 }
 .fourchan-ss-sidebar.sidebar-location-left {
+  border-right: 2px solid #{backgroundC};
   box-shadow:
     1px 0 0 #{theme["Thread Wrapper Border"]},
     inset -1px 0 0 #{theme["Thread Wrapper Border"]};
