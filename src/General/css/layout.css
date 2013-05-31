@@ -192,12 +192,38 @@ th {
 #header-bar {
   z-index: 6;
   border-width: 1px;
+  left: 2px;
+  right: 2px;
 }
 .navigation-alignment-center #header-bar {
   text-align: center;
 }
 .navigation-alignment-right #header-bar {
   text-align: right;
+}
+.sidebar-location-left.sidebar-large:not(.pagination-on-side) .pagelist,
+.sidebar-location-left #header-bar {
+  left: 303px;
+}
+.sidebar-location-left.sidebar-normal:not(.pagination-on-side) .pagelist,
+.sidebar-location-left #header-bar {
+  left: 248px;
+}
+.sidebar-location-left.sidebar-minimal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,
+.sidebar-location-left.sidebar-minimal:not(.fourchan-ss-navigation) #header-bar {
+  left: 20px;
+}
+.sidebar-location-right.sidebar-large:not(.pagination-on-side) .pagelist,
+.sidebar-location-right #header-bar {
+  right: 303px;
+}
+.sidebar-location-right.sidebar-normal:not(.pagination-on-side) .pagelist,
+.sidebar-location-right #header-bar {
+  right: 248px;
+}
+.sidebar-location-right.sidebar-minimal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,
+.sidebar-location-right.sidebar-minimal:not(.fourchan-ss-navigation) #header-bar {
+  right: 20px;
 }
 .fourchan-ss-navigation #header-bar {
   left: 0;
