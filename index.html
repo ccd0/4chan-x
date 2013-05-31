@@ -8,7 +8,15 @@
     <link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/poojninacjpckfopjogaokeegibhkidi">
     <script>
 (function(){
-  var d = document, engine = /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase();
+  var d = document, engine;
+  if (/OPR/.test(navigator.userAgent))
+    engine = "opera";
+  else if (/Firefox/.test(navigator.userAgent))
+    engine = "firefox";
+  else if (/Chrome/.test(navigator.userAgent))
+    engine = "chrome";
+  else if (/Presto/.test(navigator.userAgent))
+    engine = "presto"
   function $(s){return d.querySelector(s, d.body)}
   function id(i){return $('[data-id='+i+']')}
   function a(i){return $('[href="#'+i+'"]')}
@@ -30,17 +38,16 @@
     el.className = 'active';
     a(el.dataset.id).className = 'on';
     install = id('installLink');
-    switch (engine) {
-      case 'webkit':
-        install.href = "https://chrome.google.com/webstore/detail/4chan-x/poojninacjpckfopjogaokeegibhkidi"
-        install.addEventListener('click', function(event) {event.preventDefault(); chrome.webstore.install();})
-        break;
-      case 'gecko':
-        install.href = "https://github.com/seaweedchan/4chan-x/raw/stable/builds/4chan-X.user.js"
-        break;
-      case 'presto':
-        install.href = "https://github.com/seaweedchan/4chan-x/raw/stable/builds/4chan-X.js"
-    };
+    if (engine === 'opera')
+      install.href = "https://addons.opera.com/en/extensions/details/oneechan/?display=en";
+    else if (engine === 'firefox')
+      install.href = "https://github.com/seaweedchan/OneeChan/raw/stable/builds/OneeChan.user.js";
+    else if (engine === 'chrome') {
+      install.href = "https://chrome.google.com/webstore/detail/4chan-x/poojninacjpckfopjogaokeegibhkidi";
+      install.addEventListener('click', function(event) {event.preventDefault(); chrome.webstore.install();});
+    }
+    else if (engine === 'presto')
+      install.href = "https://github.com/seaweedchan/4chan-x/raw/stable/builds/4chan-X.js";
   }, false);
 })();
     </script>
@@ -222,11 +229,11 @@ code {
       </div></div>
     </nav>
     <section data-id=install>
-      <center><p class='authors'>A joint project of Zixaphir and Seaweed.</p><p class='refugees'>The new v3-based version is out!</p><span>Make sure you export your settings and disable your old userscript before installing.</span>
-      <p>The latest stable releases of <b class=chrome>Chrome</b>, <b class=firefox>Firefox</b>, and <b class=opera>Opera</b> are supported.</p></center>
+      <center><p class='authors'>A joint project of Zixaphir and Seaweed.</p>
+      <p>The latest stable releases of <b class=chrome>Chrome</b>, <b class=firefox>Firefox</b>, and <b class=opera>Opera</b> are supported.</p> <b class=operanext>Opera Next 15</b> is also supported.</center>
 
       <h1><a class=install data-id=installLink href="https://raw.github.com/seaweedchan/4chan-x/stable/4chan_x.user.js">Install 4chan X</a></h1>
-      <center style=margin-top:-20px;><a class=chrome href=https://chrome.google.com/webstore/detail/4chan-x/poojninacjpckfopjogaokeegibhkidi></a><a href=https://github.com/seaweedchan/4chan-x/raw/stable/builds/4chan-X.user.js class=firefox></a><a href=https://github.com/seaweedchan/4chan-x/raw/stable/builds/4chan-X.js class=opera></a></center>
+      <center style=margin-top:-20px;><a class=chrome href=https://chrome.google.com/webstore/detail/4chan-x/poojninacjpckfopjogaokeegibhkidi></a><a href=https://github.com/seaweedchan/4chan-x/raw/stable/builds/4chan-X.user.js class=firefox></a><a href=https://github.com/seaweedchan/4chan-x/raw/stable/builds/4chan-X.js class=opera></a><a href=https://addons.opera.com/en/extensions/details/4chan-x/?display=en class=operanext></a></center>
 
       <b class=chrome>Chrome</b>:
       <ol>
@@ -259,11 +266,10 @@ code {
       </ol>
 
       <b class=operanext>Opera Next</b>:
-      <ul>
-        <li>An extension for Opera Next 15 is currently awaiting approval.
-          <li>If you want 4chan X now, you can download the fork and load the <code>crx</code> folder as an "Unpacked Extension" in the Developer Mode of the extensions page.</li>
-        </li>
-      </ul>
+      <ol>
+        <li>Install 4chan X (if using Opera Next 15 or higher). That's it.</li>
+        <li>4chan X will be automatically updated by Opera Next.</li>
+      </ol>
     </section>
     <section data-id=features>
           <ul>
