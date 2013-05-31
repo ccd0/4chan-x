@@ -117,20 +117,29 @@ body.unscroll {
   position: fixed;
   top: 0;
   bottom: 0;
-  z-index: 1;
   <%= sizing %>: border-box;
   display: block;
+  z-index: 0;
 }
-.sidebar-right body::before {
+.fourchan-ss-sidebar.sidebar-large body::before {
+  width: 306px;
+}
+.fourchan-ss-sidebar.sidebar-normal body::before {
+  width: 255px;
+}
+.fourchan-ss-sidebar.sidebar-minimal body::before {
+  width: 23px;
+}
+.sidebar-location-right body::before {
   right: 0;
 }
-sidebar-left body::before {
+sidebar-location-left body::before {
   left: 0;
 }
-.fourchan-ss-sidebar.sidebar-right body {
+.fourchan-ss-sidebar.sidebar-location-right body {
   padding-right: 2px;
 }
-.fourchan-ss-sidebar.sidebar-left body {
+.fourchan-ss-sidebar.sidebar-location-left body {
   padding-left: 2px;
 }
 hr {
@@ -1246,7 +1255,7 @@ input:checked + .rice {
 .post-form-style-tabbed-slideout #qrtab {
   position: absolute;
   top: 0;
-  width: 110px;
+  width: 120px;
   text-align: center;
   border-width: 1px 1px 0 1px;
   cursor: default;

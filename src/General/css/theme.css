@@ -422,20 +422,19 @@ data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' 
   border: 1px solid #{theme["Highlighted Reply Border"]};
 }
 .fourchan-ss-sidebar body::before {
-  z-index: -1;
   background: none repeat scroll 0% 0% rgba(#{if background = new Style.color Style.colorToHex theme["Reply Background"] then background.shiftRGB -18}, 0.8);
 }
-.fourchan-ss-sidebar.sidebar-location-right {
+.fourchan-ss-sidebar.sidebar-location-right body::before {
   border-left: 2px solid #{backgroundC};
   box-shadow:
-    inset 1px 0 0 #{theme["Thread Wrapper Border"]},
-    -1px 0 0 #{theme["Thread Wrapper Border"]};
+    inset 1px 0 0 #{theme["Reply Border"]},
+    -1px 0 0 #{theme["Reply Border"]};
 }
-.fourchan-ss-sidebar.sidebar-location-left {
+.fourchan-ss-sidebar.sidebar-location-left body::before {
   border-right: 2px solid #{backgroundC};
   box-shadow:
-    1px 0 0 #{theme["Thread Wrapper Border"]},
-    inset -1px 0 0 #{theme["Thread Wrapper Border"]};
+    1px 0 0 #{theme["Reply Border"]},
+    inset -1px 0 0 #{theme["Reply Border"]};
 }
 .sage-highlighting-text.sage-highlight-position-before a.useremail[href*="sage"]:last-of-type::before,
 .sage-highlighting-text.sage-highlight-position-before a.useremail[href*="Sage"]:last-of-type::before,
