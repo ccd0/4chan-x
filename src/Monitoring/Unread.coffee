@@ -44,12 +44,18 @@ Unread =
         break if prevID is post.ID
         prevID = post.ID
         break unless post.isHidden
-      onload = -> root.scrollIntoView false
+      onload = -> root.scrollIntoView false if checkPosition root
     else
       # Scroll to the last read post.
-      posts = Object.keys Unread.thread.posts
-      post  = Unread.thread.posts[posts[posts.length - 1]]
-      onload = -> Header.scrollToPost post.nodes.root
+      posts  = Object.keys Unread.thread.posts
+      {root} = Unread.thread.posts[posts[posts.length - 1]].nodes
+      onload = -> Header.scrollToPost root if checkPosition root
+    checkPosition = (target) ->
+      # Don't scroll to the target if
+      #  - it's visible.
+      #  - we've scrolled past it.
+      {top, height} = target.getBoundingClientRect()
+      top + height - doc.clientHeight > 0
     # Prevent the browser to scroll back to
     # the previous scroll location on page load.
     $.on window, 'load', onload
@@ -66,8 +72,8 @@ Unread =
     Unread.setLine()
     Unread.update()
 
-  addPosts: (newPosts) ->
-    for post in newPosts
+  addPosts: (posts) ->
+    for post in posts
       {ID} = post
       if ID <= Unread.lastReadPost or post.isHidden
         continue
@@ -81,7 +87,7 @@ Unread =
       Unread.addPostQuotingYou post
     if Conf['Unread Line']
       # Force line on visible threads if there were no unread posts previously.
-      Unread.setLine Unread.posts[0] in newPosts
+      Unread.setLine Unread.posts[0] in posts
     Unread.read()
     Unread.update()
 
