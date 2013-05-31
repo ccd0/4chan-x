@@ -105,4 +105,10 @@ body {
   left: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
 }
 /* Emoji */
+a.useremail:last-of-type::before {
+  margin-right: #{parseInt _conf['Emoji Spacing']}px;
+}
+a.useremail:last-of-type::after {
+  margin-left: #{parseInt _conf['Emoji Spacing']}px;
+}
 #{unless _conf["Emoji"] is "disable" then Emoji.css _conf["Emoji Position"] else ""}

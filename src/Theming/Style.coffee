@@ -235,13 +235,7 @@ Style =
 
     Style.lightTheme = bgColor.isLight()
 
-    icons = "data:image/png;base64,#{Icons[_conf["Icons"]]}"
-
-    css = """<%= grunt.file.read('src/General/css/theme.css') %>"""
-
-    <%= grunt.file.read('src/General/css/themeoptions.css') %>
-    
-    css
+    css = """<%= grunt.file.read('src/General/css/theme.css') %>""" + <%= grunt.file.read('src/General/css/themeoptions.css') %>
 
   iconPositions: ->
     css = """<%= grunt.file.read('src/General/css/icons.base.css') %>"""

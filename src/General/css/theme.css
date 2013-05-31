@@ -1,4 +1,3 @@
-
 .hide_thread_button span > span,
 .hide_reply_button span > span {
   background-color: #{theme["Links"]};
@@ -256,7 +255,6 @@ textarea {
   color: #{theme["Greentext"]};
 }
 .forwardlink {
-  text-decoration: #{if _conf["Underline Links"] then "underline" else "none"};
   border-bottom: 1px dashed #{theme["Backlinks"]};
 }
 .container::before {
@@ -287,20 +285,8 @@ textarea {
 #header-bar a {
   color: #{theme["Navigation Links"]};
 }
-input[type=checkbox]:checked + .rice {
-  position: relative;
-}
 input[type=checkbox]:checked + .rice::after {
-  content: "";
-  display: block;
-  width: 4px;
-  height: 10px;
-  border: solid #{theme["Inputs"]};
-  border-width: 0 3px 3px 0;
-  <%= agent %>transform: rotate(45deg);
-  position: absolute;
-  left: 2px;
-  bottom: -1px;
+  border-color: #{theme["Inputs"]};
 }
 #addReply,
 #dump,
@@ -353,8 +339,8 @@ a .name {
   border-color: #{theme["Backlinked Reply Outline"]};
   background: #{theme["Highlighted Reply Background"]};
 }
-.inline .post {
-  box-shadow: #{if _conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
+.quote-shadows .inline .post {
+  box-shadow: 5px 5px 5px #{theme['Shadow Color']};
 }
 .placeholder,
 #qr input::<%= agent %>placeholder,
@@ -375,17 +361,29 @@ a .name {
 #selectrice li:not(:first-of-type) {
   border-top: 1px solid #{if Style.lightTheme then "rgba(0,0,0,0.05)" else "rgba(255,255,255,0.025)"};
 }
-#navtopright .exlinksOptionsLink::after,
-#appchanOptions,
-.navLinks > a:first-of-type::after,
-#watcher::after,
-#globalMessage::after,
-#boardNavDesktopFoot::after,
-a[style="cursor: pointer; float: right;"]::after,
-#img-controls,
-#catalog::after,
-#fappeTyme {
-  background-image: url('#{icons}');
+.icons-4chan-ss #navtopright .exlinksOptionsLink::after,
+.icons-4chan-ss #appchanOptions,
+.icons-4chan-ss .navLinks > a:first-of-type::after,
+.icons-4chan-ss #watcher::after,
+.icons-4chan-ss #globalMessage::after,
+.icons-4chan-ss #boardNavDesktopFoot::after,
+.icons-4chan-ss a[style="cursor: pointer; float: right;"]::after,
+.icons-4chan-ss #img-controls,
+.icons-4chan-ss #catalog::after,
+.icons-4chan-ss #fappeTyme {
+  background-image: url("data:image/png;base64,#{Icons['4chan SS']}");
+}
+.icons-oneechan #navtopright .exlinksOptionsLink::after,
+.icons-oneechan #appchanOptions,
+.icons-oneechan .navLinks > a:first-of-type::after,
+.icons-oneechan #watcher::after,
+.icons-oneechan #globalMessage::after,
+.icons-oneechan #boardNavDesktopFoot::after,
+.icons-oneechan a[style="cursor: pointer; float: right;"]::after,
+.icons-oneechan #img-controls,
+.icons-oneechan #catalog::after,
+.icons-oneechan #fappeTyme {
+  background-image: url("data:image/png;base64,#{Icons['oneechan']}");
 #{unless Style.lightTheme then "
 filter: url(\"
 data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='
@@ -394,5 +392,73 @@ data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' 
  0 0 -1 0 1
  0 0 0 1 0' /></filter></svg>#filters
 \");" else ""}
+}
+.alternate-post-colors .replyContainer:not(.hidden):nth-of-type(2n+1) .post {
+  background-image: <%= agent %>linear-gradient(#{if Style.lightTheme then "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" else "rgba(255,255,255,0.02), rgba(255,255,255,0.02)"});
+}
+.color-reply-headings .postInfo {
+  background: #{if (replyHeading = new Style.color Style.colorToHex theme["Reply Background"]) then "rgba(" + (replyHeading.shiftRGB -12, false) + ",0.8)" else "rgba(0,0,0,0.1)"};
+  border-bottom: 1px solid #{theme["Reply Border"]}
+}
+.color-file-info .file {
+  background: #{if (fileHeading = new Style.color Style.colorToHex theme["Reply Background"]) then "rgba(" + (fileHeading.shiftRGB -8, false) + ",0.8)" else "rgba(0,0,0,0.1)"};
+  border-bottom: 1px solid #{theme["Reply Border"]}
+  border-top: 1px solid #{theme["Reply Border"]}
+}
+.color-reply.headings.color-file-info {
+  border-top: none;
+}
+.op-background .op.post {
+  background: #{theme["Reply Background"]};
+  border: 1px solid #{theme["Reply Border"]};
+}
+.op-background .op.post:target
+.op-background .op.post.highlight {
+  background: #{theme["Highlighted Reply Background"]};
+  border: 1px solid #{theme["Highlighted Reply Border"]};
+}
+.fourchan-ss-sidebar body::before {
+  z-index: -1;
+  background: none repeat scroll 0% 0% rgba(#{if background = new Style.color Style.colorToHex theme["Reply Background"] then background.shiftRGB -18}, 0.8);
+  border-#{Style.sidebarLocation[1]}: 2px solid #{backgroundC};
+}
+.fourchan-ss-sidebar.sidebar-location-right {
+  box-shadow:
+    inset 1px 0 0 #{theme["Thread Wrapper Border"]},
+    -1px 0 0 #{theme["Thread Wrapper Border"]};
+}
+.fourchan-ss-sidebar.sidebar-location-left {
+  box-shadow:
+    1px 0 0 #{theme["Thread Wrapper Border"]},
+    inset -1px 0 0 #{theme["Thread Wrapper Border"]};
+}
+.sage-highlighting-text.sage-highlight-position-before a.useremail[href*="sage"]:last-of-type::before,
+.sage-highlighting-text.sage-highlight-position-before a.useremail[href*="Sage"]:last-of-type::before,
+.sage-highlighting-text.sage-highlight-position-before a.useremail[href*="SAGE"]:last-of-type::before,
+.sage-highlighting-text.sage-highlight-position-after a.useremail[href*="sage"]:last-of-type::after,
+.sage-highlighting-text.sage-highlight-position-after a.useremail[href*="Sage"]:last-of-type::after,
+.sage-highlighting-text.sage-highlight-position-after a.useremail[href*="SAGE"]:last-of-type::after {
+  content: " (sage) ";
+  color: #{theme["Sage"]};
+}
+.sage-highlighting-image.sage-highlight-position-before a.useremail[href*="sage"]:last-of-type::before,
+.sage-highlighting-image.sage-highlight-position-before a.useremail[href*="Sage"]:last-of-type::before,
+.sage-highlighting-image.sage-highlight-position-before a.useremail[href*="SAGE"]:last-of-type::before,
+.sage-highlighting-image.sage-highlight-position-after a.useremail[href*="sage"]:last-of-type::after,
+.sage-highlighting-image.sage-highlight-position-after a.useremail[href*="Sage"]:last-of-type::after,
+.sage-highlighting-image.sage-highlight-position-after a.useremail[href*="SAGE"]:last-of-type::after{
+  content: url("data:image/png;base64,<%= grunt.file.read("src/General/img/emoji/sage.png",       {encoding: "base64"}) %>");
+  vertical-align: top;
+}
+.announcements-slideout #globalMessage {
+  background: #{theme["Dialog Background"]};
+  border: 1px solid #{theme["Dialog Border"]};
+}
+.post-form-decorations #qr {
+  border-color: #{theme["Buttons Border"]};
+  background: #{backgroundC};
+}
+.post-form-decorations.quote-shadows #qr {
+  box-shadow: 5px 5px 5px #{theme['Shadow Color']};
 }
 #{theme["Custom CSS"]}

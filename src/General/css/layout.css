@@ -1003,6 +1003,7 @@ s {
   clear: both;
 }
 /* Backlinks */
+.underline-links .forwardlink,
 .underline-links .backlink {
   text-decoration: underline;
 }
@@ -1112,6 +1113,21 @@ backlinks-position-lower-right .inline .container {
   margin: 2px 3px 3px;
   display: inline-block;
   vertical-align: bottom;
+}
+input[type=checkbox]:checked + .rice {
+  position: relative;
+}
+input[type=checkbox]:checked + .rice::after {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 10px;
+  border-width: 0 3px 3px 0;
+  border-style: solid;
+  <%= agent %>transform: rotate(45deg);
+  position: absolute;
+  left: 2px;
+  bottom: -1px;
 }
 .rounded-edges .rice {
   border-radius: 2px;}
