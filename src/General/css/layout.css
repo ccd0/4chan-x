@@ -403,20 +403,20 @@ th {
   border: 0 none !important;
   text-align: right;
 }
-.pagination-on-side.post-form-style-fixed.show-post-form-header.post-form-decorations .pagelist,
-.pagination-on-side.post-form-style-transparent-fade.show-post-form-header.post-form-decorations .pagelist {
+.pagination-on-side..post-form-style-fixed.show-post-form-header.post-form-decorations .pagelist,
+.pagination-on-side..post-form-style-transparent-fade.show-post-form-header.post-form-decorations .pagelist {
   bottom: 23.3em;
 }
-.pagination-on-side.post-form-style-fixed.show-post-form-header .pagelist,
-.pagination-on-side.post-form-style-transparent-fade.show-post-form-header .pagelist {
+.pagination-on-side..post-form-style-fixed.show-post-form-header .pagelist,
+.pagination-on-side..post-form-style-transparent-fade.show-post-form-header .pagelist {
   bottom: 23.1em;
 }
-.pagination-on-side.post-form-style-fixed.post-form-decorations .pagelist,
-.pagination-on-side..post-form-style-transparent-fade.post-form-decorations .pagelist {
+.pagination-on-side..post-form-style-fixed.post-form-decorations .pagelist,
+.pagination-on-side...post-form-style-transparent-fade.post-form-decorations .pagelist {
   bottom: 21.8em;
 }
-.pagination-on-side.post-form-style-fixed .pagelist,
-.pagination-on-side.post-form-style-transparent-fade .pagelist {
+.pagination-on-side..post-form-style-fixed .pagelist,
+.pagination-on-side..post-form-style-transparent-fade .pagelist {
   bottom: 21.6em;
 }
 .sidebar-location-left.pagination-on-side .pagelist {
@@ -470,7 +470,7 @@ th {
   display: inline-block;
   margin: 0 3px;
 }
-/* Banner */
+/* Banner & Board Title */
 .boardBanner {
   line-height: 0;
 }
@@ -490,7 +490,7 @@ th {
   bottom: -100%;
   content: '';
   left: 0;
-  mask: url(\"data:image/svg+xml,<svg version='1.1' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient gradientUnits='objectBoundingBox' id='gradient' x2='0' y2='1'><stop stop-offset='0'/><stop stop-color='white' offset='1'/></linearGradient><mask id='mask' maskUnits='objectBoundingBox' maskContentUnits='objectBoundingBox' x='0' y='0' width='100%' height='100%'> <rect fill='url(%23gradient)' width='1' height='1' /></mask></defs></svg>#mask\");
+  mask: url("data:image/svg+xml,<svg version='1.1' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient gradientUnits='objectBoundingBox' id='gradient' x2='0' y2='1'><stop stop-offset='0'/><stop stop-color='white' offset='1'/></linearGradient><mask id='mask' maskUnits='objectBoundingBox' maskContentUnits='objectBoundingBox' x='0' y='0' width='100%' height='100%'> <rect fill='url(%23gradient)' width='1' height='1' /></mask></defs></svg>#mask");
   opacity: 0.3;
   position: absolute;
   right: 0;
@@ -517,21 +517,33 @@ th {
 .fourchan-banner-under-post-form .boardBanner {
   bottom: 130px;
 }
+.board-title-at-sidebar-top.sidebar-location-right #boardTitle,
+.board-title-at-sidebar-bottom.sidebar-location-right #boardTitle,
+.board-title-under-post-form.sidebar-location-right #boardTitle,
 .fourchan-banner-at-sidebar-top.sidebar-location-right .boardBanner,
 .fourchan-banner-at-sidebar-bottom.sidebar-location-right .boardBanner,
 .fourchan-banner-under-post-form.sidebar-location-right .boardBanner {
   right: 2px;
 }
+.board-title-at-sidebar-top.sidebar-location-left #boardTitle,
+.board-title-at-sidebar-bottom.sidebar-location-left #boardTitle,
+.board-title-under-post-form.sidebar-location-left #boardTitle,
 .fourchan-banner-at-sidebar-top.sidebar-location-left .boardBanner,
 .fourchan-banner-at-sidebar-bottom.sidebar-location-left .boardBanner,
 .fourchan-banner-under-post-form.sidebar-location-left .boardBanner {
   left: 2px;
 }
+.board-title-at-sidebar-top #boardTitle,
+.board-title-at-sidebar-bottom #boardTitle,
+.board-title-under-post-form #boardTitle,
 .fourchan-banner-at-sidebar-top .boardBanner img,
 .fourchan-banner-at-sidebar-bottom .boardBanner img,
 .fourchan-banner-under-post-form .boardBanner img {
   width: 248px;
 }
+.board-title-at-sidebar-top.sidebar-large #boardTitle,
+.board-title-at-sidebar-bottom.sidebar-large #boardTitle,
+.board-title-under-post-form.sidebar-large #boardTitle,
 .fourchan-banner-at-sidebar-top.sidebar-large .boardBanner img,
 .fourchan-banner-at-sidebar-bottom.sidebar-large .boardBanner img,
 .fourchan-banner-under-post-form.sidebar-large .boardBanner img {
@@ -543,53 +555,39 @@ th {
   margin: 12px auto;
   text-align: center;
 }
-fourchan-banner-hide .boardBanner {
+:root:not(.board-subtitle) .boardSubtitle,
+.board-title-hide #boardTitle,
+.fourchan-banner-hide .boardBanner {
   display: none;
 }
-/* Board Title */
 #boardTitle {
-  font-size: #{parseInt(_conf["Font Size"], 10) + 10}px;
   text-align: center;
   z-index: 4;
-#{{
-"at sidebar top": "
+}
+.board-title-at-sidebar-top #boardTitle,
+.board-title-at-sidebar-bottom #boardTitle,
+.board-title-under-post-form #boardTitle {
   position: fixed;
-  #{Style.sidebarLocation[0]}: 2px;
-  top: #{(if Style.logoOffset is 0 and _conf["Icon Orientation"] isnt "vertical" then 40 else 21) + Style.logoOffset}px;
-  width: #{width}px;
-"
-
-"at sidebar bottom": "
-  position: fixed;
-  #{Style.sidebarLocation[0]}: 2px;
+}
+.board-title-at-sidebar-top.fourchan-banner-at-sidebar-top.sidebar-large.icon-orientation-vertical #boardTitle {
+  top: 121px;
+}
+.board-title-at-sidebar-top.fourchan-banner-at-sidebar-top.icon-orientation-vertical #boardTitle {
+  top: 104px;
+}
+.board-title-at-sidebar-top #boardTitle {
+  top: 40px;
+}
+.board-title-at-sidebar-top.icon-orientation-vertical #boardTitle {
+  top: 21px;
+}
+.board-title-at-sidebar-bottom .boardBanner {
   bottom: 280px;
-  width: #{width}px;
-"
-
-"under post form": "
-  position: fixed;
-  #{Style.sidebarLocation[0]}: 2px;
+}
+.board-title-under-post-form .boardBanner {
   bottom: 140px;
-  width: #{width}px;
-"
-
-"at top": "
-  margin: 12px 0;
-"
-
-"hide": "
-  display: none;
-"}[_conf["Board Title"]]}
 }
-.boardTitle a {
-  font-size: #{parseInt(_conf["Font Size"], 10) + 10}px;
-}
-.boardSubtitle,
-.boardSubtitle a {
-  font-size: #{parseInt(_conf["Font Size"], 10) - 1}px;
-}
-#{unless _conf['Board Subtitle'] then ".boardSubtitle { display: none; }" else ""}
-/* Dialogs */
+/* Hover UI */
 .move {
   cursor: pointer;
 }
@@ -623,22 +621,18 @@ fourchan-banner-hide .boardBanner {
   max-width: 100%;
   width: 100%;
 }
-#{if _conf['Images Overlap Post Form'] then "
-.full-image {
+.images-overlap-post-form .full-image {
   position: relative;
   z-index: 21;
-}" else ""
 }
 /* Delete Buttons */
-#{if _conf['Hide Delete UI'] then "
-.deleteform,
-.post:not(#exlinks-options) .rice {
+.hide-delete-ui .deleteform,
+.hide-delete-ui .post:not(#exlinks-options) .rice {
   display: none;
 }
-.postInfo {
+.hide-delete-ui .postInfo {
   padding: 0 0 0 3px;
 }
-" else "
 .deleteform {
   position: fixed;
   z-index: 18;
@@ -662,7 +656,6 @@ fourchan-banner-hide .boardBanner {
   position: fixed;
   bottom: 0;
   right: 0;
-  font-size: #{_conf['Font Size']}px;
   <%= sizing %>: border-box;
   height: 1.6em;
   width: 1.4em;
@@ -673,22 +666,25 @@ fourchan-banner-hide .boardBanner {
 }
 .deleteform input {
   margin: 0 1px 0 0;
-}"}
+}
 /* Slideout Navigation */
 #boardNavDesktopFoot {
   position: fixed;
-  width: #{width}px;
-  #{Style.sidebarLocation[0]}: 2px;
   text-align: center;
   font-size: 0;
   color: transparent;
   overflow: hidden;
   <%= sizing %>: border-box;
+  width: 248px;
 }
-#boardNavDesktopFoot a,
-#boardNavDesktopFoot a::after,
-#boardNavDesktopFoot a::before {
-  font-size: #{_conf['Font Size']}px;
+.sidebar-large #boardNavDesktopFoot {
+  width: 299px;
+}
+.sidebar-location-right #boardNavDesktopFoot {
+  right: 2px;
+}
+.sidebar-location-left #boardNavDesktopFoot {
+  left: 2px;
 }
 #boardNavDesktopFoot:hover {
   overflow-y: auto;
@@ -702,69 +698,35 @@ fourchan-banner-hide .boardBanner {
   padding: 0;
   border: 0 none;
 }
-#{{
-compact: "
-#boardNavDesktopFoot {
+.slideout-navigation-compact #boardNavDesktopFoot {
   word-spacing: 1px;
 }
-"
-list: "
-#boardNavDesktopFoot a {
+.slideout-navigation-list #boardNavDesktopFoot a {
   display: block;
 }
-#boardNavDesktopFoot:hover {
+.slideout-navigation-list #boardNavDesktopFoot:hover {
   max-height: 400px;
 }
-#boardNavDesktopFoot a::after {
+.slideout-navigation-list #boardNavDesktopFoot a::after {
   content: ' - ' attr(title);
 }
-#boardNavDesktopFoot a[href*='//boards.4chan.org/']::after,
-#boardNavDesktopFoot a[href*='//rs.4chan.org/']::after {
+.slideout-navigation-list #boardNavDesktopFoot a[href*='//boards.4chan.org/']::after,
+.slideout-navigation-list #boardNavDesktopFoot a[href*='//rs.4chan.org/']::after {
   content: '/ - ' attr(title);
 }
-#boardNavDesktopFoot a[href*='//boards.4chan.org/']::before,
-#boardNavDesktopFoot a[href*='//rs.4chan.org/']::before {
+.slideout-navigation-list #boardNavDesktopFoot a[href*='//boards.4chan.org/']::before,
+.slideout-navigation-list #boardNavDesktopFoot a[href*='//rs.4chan.org/']::before {
   content: '/';
 }
-"
-hide: "
-#boardNavDesktopFoot {
+.slideout-navigation-hide #boardNavDesktopFoot {
   display: none;
-}"}[_conf["Slideout Navigation"]]}
+}
 /* Watcher */
 #watcher {
   position: fixed;
   z-index: 14;
   padding: 2px;
-  #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
 }
-#watcher > div {
-  max-height: 1.3em;
-  overflow: hidden;
-}
-#{if _conf['Slideout Watcher'] then "
-#watcher {
-  width: #{width}px;
-  #{Style.sidebarLocation[0]}: 2px !important;
-  #{Style.sidebarLocation[1]}: auto !important;
-  <%= sizing %>: border-box;
-}
-#watcher .move {
-  cursor: default;
-  text-decoration: #{if _conf["Underline Links"] then "underline" else "none"};
-}
-#watcher > div {
-  overflow: hidden;
-}
-#watcher:hover {
-  overflow-y: auto;
-}
-#watcher:not(:hover) {
-  height: 0;
-  overflow: hidden;
-  border: 0 none;
-  padding: 0;
-}" else "
 #watcher {
   width: 200px;
 }
@@ -772,7 +734,46 @@ hide: "
   max-height: 200px;
   overflow: hidden;
 }
-"}
+.rounded-edges #watcher {
+  border-radius: 3px;
+}
+#watcher > div {
+  max-height: 1.3em;
+  overflow: hidden;
+}
+.slideout-watcher #watcher {
+  <%= sizing %>: border-box;
+  width: 248px;
+}
+.slideout-watcher.sidebar-large #boardNavDesktopFoot {
+  width: 299px;
+}
+.slideout-watcher.sidebar-location-right #watcher {
+  left: auto;
+  right: 2px;
+}
+.slideout-watcher.sidebar-location-left #watcher {
+  right: auto;
+  left: 2px;
+}
+.slideout-watcher #watcher .move {
+  cursor: default;
+}
+.slideout-watcher.underline-links #watcher .move {
+  text-decoration: underline;
+}
+.slideout-watcher #watcher > div {
+  overflow: hidden;
+}
+.slideout-watcher #watcher:hover {
+  overflow-y: auto;
+}
+.slideout-watcher #watcher:not(:hover) {
+  height: 0;
+  overflow: hidden;
+  border: 0 none;
+  padding: 0;
+}
 .watch-thread-link {
   padding-top: 18px;
   width: 18px;
@@ -789,42 +790,49 @@ hide: "
 /* Announcements */
 #globalMessage {
   text-align: center;
-  #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
 }
-#{{
-'slideout': "
-#globalMessage {
+.rounded-edges #globalMessage {
+  border-radius: 3px;
+}
+.announcements-slideout #globalMessage {
   position: fixed;
   padding: 2px;
-  width: #{width}px;
-  #{Style.sidebarLocation[0]}: 2px !important;
-  #{Style.sidebarLocation[1]}: auto !important;
+  width: 248px;
 }
-#globalMessage h3 {
+.announcements-slideout.sidebar-location-right #globalMessage {
+  left: auto;
+  right: 2px;
+}
+.announcements-slideout.sidebar-location-left #globalMessage {
+  right: auto;
+  left: 2px;
+}
+.announcements-slideout.sidebar-large #globalMessage {
+  width: 299px;
+}
+.announcements-slideout #globalMessage h3 {
   margin: 0;
 }
-#globalMessage:hover {
+.announcements-slideout #globalMessage:hover {
   <%= sizing %>: border-box;
   overflow-y: auto;
 }
-#globalMessage:not(:hover) {
+.announcements-slideout #globalMessage:not(:hover) {
   height: 0;
   overflow: hidden;
   padding: 0;
   border: 0 none;
-}"
-'hide': "
-#globalMessage {
+}
+.announcements-hide #globalMessage {
   display: none !important;
 }
-"}[_conf['Announcements']] or ""}
 /* Threads */
-.thread {
-  margin: #{parseInt _conf["Top Thread Padding"], 10}px 0 #{parseInt _conf["Bottom Thread Padding"], 10}px 0;
-  #{if _conf["Rounded Edges"] then "border-radius: 4px;" else ""}
+.rounded-edges .board > .thread{
+  border-radius: 4px;
 }
 /* Thread Clearfix */
-.thread > div:last-of-type::after {
+.thread > .threadContainer:last-of-type::after,
+.thread > .replyContainer:last-of-type::after {
   display: block;
   content: ' ';
   clear: both;
@@ -842,12 +850,7 @@ hide: "
 .expanded-image > .post > .file > .fileThumb > .full-image {
   display: block;
 }
-.post,
-.summary,
-.threadContainer {
-  margin-bottom: #{Style.replyMargin}px;
-}
-.replyContainer:last-of-type .post {
+.thread > .replyContainer:last-of-type .post {
   margin-bottom: 0;
 }
 .menu-button {
@@ -880,24 +883,23 @@ hide: "
 .hidden_thread {
   text-align: right;
 }
-#{if _conf['Color user IDs'] then "
-.posteruid .hand {
+.color-user-ids .posteruid .hand {
   padding: .1em .3em;
   border-radius: 1em;
   font-size: 80%;
-}" else ""}
+}
 .postInfo > span {
   vertical-align: bottom;
 }
-.subject,
-.name {
-  #{if _conf["Bolds"] then 'font-weight: 600;' else ''}
+.bolds .subject,
+.bolds .name {
+  font-weight: 600;
 }
-.postertrip {
-  #{if _conf["Italics"] then 'font-style: italic;' else ''}
+.italics .postertrip {
+  font-style: italic;
 }
-.replylink {
-  text-decoration: #{if _conf["Underline Links"] then "underline" else "none"};
+.underline-links .replylink {
+  text-decoration: underline;
 }
 .fileInfo {
   padding: 0 3px;
@@ -909,37 +911,29 @@ hide: "
 }
 .reply.post {
   <%= sizing %>: border-box;
+  display: inline-block;
 }
-#{if _conf["Fit Width Replies"] then "
-.reply.post {
+.fit-width-replies .reply.post {
   display: block;
   overflow: hidden;
 }
-.expanded-image .reply.post,
-.hasInline .reply.post {
+.fit-width-replies .expanded-image .reply.post,
+.fit-width-replies .hasInline .reply.post {
   width: 100%;
 }
-" else "
-.reply.post {
-  display: inline-block;
-}
-"}
-#{if _conf["Indent Replies"] then "
-.thread > .replyContainer,
-.threadContainer > .replyContainer {
+.indent-replies #unread-line,
+.indent-replies .thread > .replyContainer,
+.indent-replies .threadContainer > .replyContainer {
   margin-left: 2em;
-}" else ''}
+}
 .expanded-image .reply.post,
 .hasInline .reply.post {
   display: inline-block;
   overflow: visible;
   clear: both;
 }
-.post {
-  #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
-}
-.postMessage {
-  margin: #{_conf['Vertical Post Padding']}px #{_conf['Horizontal Post Padding']}px;
+.rounded-edges .post {
+  border-radius: 3px;
 }
 .spoiler,
 s {
@@ -949,27 +943,22 @@ s {
 .reply.post .postMessage {
   clear: right;
 }
-#{if _conf['Force Reply Break'] or _conf["OP Background"] then "
-.op.post .postMessage::after {
+.op-background .op.post .postMessage::after,
+.force-reply-break .op.post .postMessage::after {
   display: block;
   content: ' ';
   clear: both;
-}
-" else ""
 }
 /* OP */
 .favicon {
   vertical-align: bottom;
 }
-#{if _conf["OP Background"] then "
-.op.post {
+.op-background .op.post {
   <%= sizing %>: border-box;
-}" else ""}
+}
 /* Summary */
-#{
-if _conf["Force Reply Break"]
-  ".summary { clear: both;}"
-else ""
+.force-reply-break .summary {
+  clear: both;
 }
 /* Inlined */
 .inline {
@@ -991,12 +980,11 @@ else ""
 .inlined {
   opacity: .5;
 }
-.quotelink {
-  text-decoration: #{if _conf["Underline Links"] then "underline" else "none"};
+.underline-links .quotelink {
+  text-decoration: underline;
 }
 .filtered,
 .quotelink.filtered {
-  text-decoration: underline;
   text-decoration: line-through !important;
 }
 .inline + .hashlink {
@@ -1004,92 +992,68 @@ else ""
 }
 /* Quote Threading */
 .threadContainer {
-  #{if _conf["Indent Replies"] then "margin" else "padding"}-left: 2em;
+  padding-left: 2em;
   border-left: 1px solid;
+}
+.indent-replies .threadContainer {
+  margin-left: 2em;
+  padding-left: 0;
 }
 .threadOP {
   clear: both;
 }
 /* Backlinks */
-.backlink {
-  text-decoration: #{if _conf["Underline Links"] then "underline" else "none"};
+.underline-links .backlink {
+  text-decoration: underline;
 }
 .backlink.dead {
   text-decoration: none;
 }
-#{
-if _conf["Filtered Backlinks"] then "
-.filtered.backlink {
+.filtered-backlinks .filtered.backlink {
   display: none;
-}"
 }
-#{{
-"lower left": "
-.container {
-  padding: 0 5px;
+backlinks-position-lower-left .container,
+backlinks-position-lower-right .container {
   max-width: 100%;
+  padding: 0 5px;
 }
-.reply.quoted {
+backlinks-position-lower-left .reply.quoted,
+backlinks-position-lower-right .reply.quoted {
   position: relative;
   padding-bottom: 1.7em;
 }
-.reply .container {
+backlinks-position-lower-right .reply .container,
+backlinks-position-lower-left .reply .container {
   position: absolute;
+  bottom: 0;
+  padding: 0 5px;
+}
+backlinks-position-lower-left .reply .container {
   left: 0;
-  bottom: 0;
-  padding: 0 5px;
 }
-.reply .container::before {
-  content: 'REPLIES: ';
-}
-#qp .container {
-  position: static;
-  max-width: 100%;
-}
-#qp .container::before {
-  content: '';
-}
-.inline .container {
-  position: static;
-  max-width: 100%;
-}
-.inline .container::before {
-  content: '';
-}"
-
-'lower right': "
-.reply.quoted {
-  position: relative;
-  padding-bottom: 1.7em;
-}
-.reply .container {
-  position: absolute;
+backlinks-position-lower-right .reply .container {
   right: 0;
-  bottom: 0;
 }
-.container::before {
+backlinks-position-lower-right .container::before,
+backlinks-position-lower-left .reply .container::before {
   content: 'REPLIES: ';
 }
-.container {
-  max-width: 100%;
-  padding: 0 5px;
-}
-#qp .container {
+backlinks-position-lower-left #qp .container,
+backlinks-position-lower-left .inline .container,
+backlinks-position-lower-right .inline .container,
+backlinks-position-lower-right #qp .container {
   position: static;
   max-width: 100%;
 }
-#qp .container::before {
+backlinks-position-lower-left #qp .container::before,
+backlinks-position-lower-left .inline .container::before,
+backlinks-position-lower-right #qp .container::before,
+backlinks-position-lower-right .inline .container::before {
   content: '';
 }
-.inline .container {
-  position: static;
+backlinks-position-lower-right .inline .container {
   float: none;
 }
-.inline .container::before {
-  content: '';
-}"
-
-'default': ""}[_conf["Backlinks Position"]]}
 /* Code */
 .prettyprint {
   <%= sizing %>: border-box;
@@ -1135,14 +1099,11 @@ if _conf["Filtered Backlinks"] then "
   display: block;
 }
 /* Stubs */
-#{if _conf['Fit Width Replies'] then "
-.stub {
+.fit-width-replies .stub {
   display: block;
   text-align: right;
-}" else ""}
-/* Emoji */
-#{unless _conf["Emoji"] is "disable" then Emoji.css _conf["Emoji Position"] else ""}
-/* Element Replacing */
+}
+/* Element Replacing: */
 /* Checkboxes */
 .rice {
   cursor: pointer;
@@ -1151,8 +1112,12 @@ if _conf["Filtered Backlinks"] then "
   margin: 2px 3px 3px;
   display: inline-block;
   vertical-align: bottom;
-  #{if _conf["Rounded Edges"] then "border-radius: 2px;" else ""}
-  #{if _conf["Circle Checkboxes"] then "border-radius: 6px;" else ""}
+}
+.rounded-edges .rice {
+  border-radius: 2px;}
+}
+.circle-checkboxes .rice {
+  border-radius: 6px;}
 }
 input:checked + .rice {
   background-attachment: scroll;
@@ -1207,94 +1172,107 @@ input:checked + .rice {
   position: fixed;
   padding: 1px;
   border: 1px solid transparent;
-  min-width: #{width}px;
-  #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}
+  min-width: 248px;
 }
-#qrtab {
-  #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}
+.sidebar-large #qr {
+  min-width: 299px;
 }
-
-#{{
-"fixed": "
-#qr {
+.rounded-edges #qr,
+.rounded-edges #qrtab {
+  border-radius: 3px 3px 0 0;
+}
+.post-form-style-fixed #qr {
   top: auto !important;
-  bottom: #{Style.pfOffset}em !important;
-  #{Style.sidebarLocation[0]}: 0 !important;
-  #{Style.sidebarLocation[1]}: auto !important;
-}"
-
-"slideout": "
-#qrtab input,
-#qrtab .rice {
-  display: none;
 }
-#qr {
+.sidebar-location-left:not(.post-form-style-float) #qr {
+  left: 0 !important;
+  right: auto !important;
+}
+.sidebar-location-right:not(.post-form-style-float) #qr {
+  right: 0 !important;
+  left: auto !important;
+}
+:root:not(.post-form-style-float) #qr {
+  bottom: 0;
+}
+.fourchan-ss-navigation:not(.post-form-style-float).fixed.bottom #qr,
+.fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-float) #qr {
+  bottom: 1.5em;
+}
+.post-form-style-slideout #qr {
   top: auto !important;
-  bottom: #{Style.pfOffset}em !important;
-  #{Style.sidebarLocation[0]}: 0 !important;
-  #{Style.sidebarLocation[1]}: auto !important;
-  <%= agent %>transform: translateX(#{xOffset}93%);
 }
-#qr:hover,
-#qr.has-focus,
-#qr.dump {
+.post-form-style-slideout.sidebar-location-left #qr {
+  <%= agent %>transform: translateX(-93%);
+}
+.post-form-style-slideout.sidebar-location-right #qr {
+  <%= agent %>transform: translateX(93%);
+}
+.post-form-style-slideout #qr:hover,
+.post-form-style-slideout #qr.has-focus,
+.post-form-style-slideout #qr.dump {
   <%= agent %>transform: translate(0);
-}"
-
-"tabbed slideout": "
-#qr {
-  top: auto !important;
-  bottom: #{Style.pfOffset}em !important;
-  #{Style.sidebarLocation[0]}: 0 !important;
-  #{Style.sidebarLocation[1]}: auto !important;
-  <%= agent %>transform: translateX(#{xOffset}100%);
 }
-#qr:hover,
-#qr.has-focus,
-#qr.dump {
+.post-form-style-tabbed-slideout #qr {
+  top: auto !important;
+}
+.post-form-style-tabbed-slideout.sidebar-location-left #qr {
+  <%= agent %>transform: translateX(-100%);
+}
+.post-form-style-tabbed-slideout.sidebar-location-right #qr {
+  <%= agent %>transform: translateX(100%);
+}
+.post-form-style-tabbed-slideout #qr:hover,
+.post-form-style-tabbed-slideout #qr.has-focus,
+.post-form-style-tabbed-slideout #qr.dump {
   <%= agent %>transform: translateX(0);
 }
-#qrtab {
-  <%= agent %>transform: rotate(#{(if Style.sidebarLocation[0] is "left" then "" else "-")}90deg);
-  <%= agent %>transform-origin: bottom #{Style.sidebarLocation[0]};
+.post-form-style-tabbed-slideout #qrtab {
   position: absolute;
   top: 0;
-  #{Style.sidebarLocation[0]}: 100%;
   width: 110px;
   text-align: center;
   border-width: 1px 1px 0 1px;
   cursor: default;
 }
-#qr:hover #qrtab,
-#qr.has-focus #qrtab,
-#qr.dump #qrtab {
+.post-form-style-tabbed-slideout.sidebar-location-left #qrtab {
+  <%= agent %>transform: rotate(90deg);
+  <%= agent %>transform-origin: bottom right;
+  left: 100%;
+}
+.post-form-style-tabbed-slideout.sidebar-location-right #qrtab {
+  <%= agent %>transform: rotate(-90deg);
+  <%= agent %>transform-origin: bottom right;
+  right: 100%;
+}
+.post-form-style-tabbed-slideout #qr:hover #qrtab,
+.post-form-style-tabbed-slideout #qr.has-focus #qrtab,
+.post-form-style-tabbed-slideout #qr.dump #qrtab {
   opacity: 0;
 }
-#qrtab input,
-#qrtab .close,
-#qrtab .rice,
-#qrtab .selectrice,
-#qrtab span {
+.post-form-style-slideout #qrtab input,
+.post-form-style-slideout #qrtab .rice,
+.post-form-style-tabbed-slideout #qrtab input,
+.post-form-style-tabbed-slideout #qrtab .close,
+.post-form-style-tabbed-slideout #qrtab .rice,
+.post-form-style-tabbed-slideout #qrtab span {
   display: none;
-}"
-
-"transparent fade": "
-#qr {
+}
+.post-form-style-tabbed-slideout #qrtab .selectrice {
+  text-align: center;
+}
+.post-form-style-transparent-fade #qr {
   overflow: visible;
   top: auto !important;
-  bottom: #{Style.pfOffset}em !important;
-  #{Style.sidebarLocation[0]}: 2px !important;
-  #{Style.sidebarLocation[1]}: auto !important;
   opacity: 0.2;
   <%= agent %>transition: opacity .3s ease-in-out 1s;
 }
-#qr:hover,
-#qr.has-focus,
-#qr.dump {
+.post-form-style-transparent-fade #qr:hover,
+.post-form-style-transparent-fade #qr.has-focus,
+.post-form-style-transparent-fade #qr.dump {
   opacity: 1;
   <%= agent %>transition: opacity .3s linear;
-}"
-}[_conf['Post Form Style']] or ""}
+}
 
 #{
 unless _conf['Post Form Style'] is 'tabbed slideout'

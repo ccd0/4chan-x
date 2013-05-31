@@ -176,7 +176,7 @@ textarea.field:focus {
   border-style: solid;
   border-color: #{theme["Navigation Border"]};
 }
-.thread {
+.board > .thread {
   background: #{theme["Thread Wrapper Background"]};
   border: 1px solid #{theme["Thread Wrapper Border"]};
 }

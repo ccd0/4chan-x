@@ -1,7 +1,6 @@
-body {
-  padding: 0 #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px 0 #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]}px;
-}
+#boardNavDesktopFoot a,
 #header-bar a,
+.deleteform::before,
 .hide-navigation-decorations .pages a,
 body,
 button,
@@ -9,11 +8,35 @@ input,
 textarea {
   font-size: #{parseInt _conf["Font Size"], 10}px;
 }
+#boardTitle,
+.boardTitle a {
+  font-size: #{parseInt(_conf["Font Size"], 10) + 10}px;
+}
+.boardSubtitle,
+.boardSubtitle a {
+  font-size: #{parseInt(_conf["Font Size"], 10) - 1}px;
+}
 body,
 button,
 input,
 textarea {
   font-family: #{_conf["Font"]};
+}
+body {
+  padding: 0 #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px 0 #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]}px;
+}
+.board > .thread {
+  margin: #{parseInt _conf["Top Thread Padding"], 10}px 0 #{parseInt _conf["Bottom Thread Padding"], 10}px 0;
+}
+.post,
+.summary {
+  margin-bottom: #{Conf["Post Spacing"]}px;
+}
+.thread > .threadContainer:last-of-type {
+  margin-bottom: -#{Conf["Post Spacing"]}px;
+}
+.postMessage {
+  margin: #{_conf['Vertical Post Padding']}px #{_conf['Horizontal Post Padding']}px;
 }
 .sidebar-location-left.sidebar-large:not(.fourchan-ss-navigation) #header-bar {
   left: #{303 + parseInt(_conf["Left Thread Padding"], 10) + editSpace["right"]}px;
@@ -79,3 +102,5 @@ textarea {
   right: #{2 + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
   left: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
 }
+/* Emoji */
+#{unless _conf["Emoji"] is "disable" then Emoji.css _conf["Emoji Position"] else ""}

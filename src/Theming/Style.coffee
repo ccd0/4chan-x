@@ -13,7 +13,9 @@ Style =
     <% } else { %>
     $.addClass doc, 'gecko'
     <% } %>
+    $.addClass doc, 'fourchan-x'
     $.addClass doc, 'appchan-x'
+    $.addClass doc, g.VIEW
     
     for title, cat of Config.style
       for name, setting of cat
@@ -161,8 +163,7 @@ Style =
 
   layout: ->
     # Remove after classes rewrite
-    _conf   = Conf
-    xOffset = if _conf["Sidebar Location"] is "left" then '-' else ''
+    _conf = Conf
     
     Style.pfOffset = if _conf['4chan SS Navigation'] and
       ((_conf['Bottom Header'] and _conf['Fixed Header']) or
@@ -178,21 +179,6 @@ Style =
       large:    303
     }[_conf['Sidebar']]
 
-    Style.logoOffset =
-      if _conf["4chan Banner"] is "at sidebar top"
-        if _conf["Sidebar"] is "large"
-          100
-        else
-          83
-      else
-        0
-
-    width = 
-      if _conf["Sidebar"] is "large"
-        299
-      else
-        248
-
     Style.sidebarLocation = if _conf["Sidebar Location"] is "left"
       ["left",  "right"]
     else
@@ -206,14 +192,11 @@ Style =
       editSpace =
         left:   0
         right:  0
-
-    Style.replyMargin = _conf["Post Spacing"]
 
     css = """<%= grunt.file.read('src/General/css/layout.css') %>"""
   
   dynamic: ->
     _conf   = Conf
-    xOffset = if _conf["Sidebar Location"] is "left" then '-' else ''
     
     Style.pfOffset = if _conf['4chan SS Navigation'] and
       ((_conf['Bottom Header'] and _conf['Fixed Header']) or
@@ -229,15 +212,6 @@ Style =
       large:    303
     }[_conf['Sidebar']]
 
-    Style.logoOffset =
-      if _conf["4chan Banner"] is "at sidebar top"
-        if _conf["Sidebar"] is "large"
-          100
-        else
-          83
-      else
-        0
-
     Style.sidebarLocation = if _conf["Sidebar Location"] is "left"
       ["left",  "right"]
     else
@@ -251,8 +225,6 @@ Style =
       editSpace =
         left:   0
         right:  0
-
-    Style.replyMargin = _conf["Post Spacing"]
 
     css = """<%= grunt.file.read('src/General/css/dynamic.css') %>"""
 
