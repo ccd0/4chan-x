@@ -44,8 +44,10 @@ QR =
 
   initReady: ->
     QR.postingIsEnabled = !!$.id 'postForm'
-    return unless QR.postingIsEnabled
-
+    unless QR.postingIsEnabled
+      $.addClass doc, 'posting-disabled'
+      return 
+    
     $.on d, 'QRGetSelectedPost', ({detail: cb}) ->
       cb QR.selected
     $.on d, 'QRAddPreSubmitHook', ({detail: cb}) ->

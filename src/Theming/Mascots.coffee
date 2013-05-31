@@ -1,51 +1,27 @@
 MascotTools =
   init: (mascot) ->
-    unless mascot and typeof mascot is string
-      mascot = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)]
+    unless mascot and mascot.image?
+      mascot = Mascots[Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)]]
 
-    Conf['mascot'] = mascot
     @el = el = $('#mascot img', d.body)
 
     if !Conf['Mascots'] or (Conf['Hide Mascots on Catalog'] and g.VIEW is 'catalog')
       return if el then el.src = "" else null
 
-    pfOffset = if Conf['4chan SS Navigation'] and
-      ((Conf['Bottom Header'] and Conf['Fixed Header']) or
-      (g.VIEW is 'index' and Conf['Pagination'] is 'sticky bottom'))
-        1.5
+    if mascot.position is 'bottom' and Conf['Mascot Position'] is 'default'
+      $.rmClass doc, 'mascot-position-default'
+      $.addClass doc, 'mascot-position-bottom'
     else
-        0
-      
-    position = "#{
-      if Conf['Mascot Position'] is 'bottom' or (Conf['Mascot Position'] is "default" and Conf['Post Form Style'] isnt "fixed")
-        0 + pfOffset
-      else
-        20.1 + (
-          if Conf['Show Post Form Header'] and ['fixed', 'transparent fade', 'slideout'].contains Conf['Post Form Style']
-            1.5
-          else 0
-        ) + (
-          if Conf['Post Form Decorations']
-            0.2
-          else
-            0
-        ) + pfOffset
-    }em"
-
-    # If we're editting anything, let's not change mascots any time we change a value.
-    if Conf['editMode']
-      unless mascot = editMascot or mascot = Mascots[Conf["mascot"]]
-        return
-
-    else
-      unless Conf["mascot"]
-        return if el then el.src = "" else null
-
+      $.addClass doc, 'mascot-position-default'
+      $.rmClass doc, 'mascot-position-bottom'
+    
+    unless mascot
       unless mascot = Mascots[Conf["mascot"]]
+        if el then el.src = "" else null
         Conf[g.MASCOTSTRING].remove Conf["mascot"]
         return MascotTools.init()
 
-      MascotTools.addMascot mascot
+    MascotTools.addMascot mascot
 
     if Conf["Sidebar Location"] is 'left'
       if Conf["Mascot Location"] is "sidebar"
@@ -57,47 +33,40 @@ MascotTools =
     else
       location = 'left'
 
-    filters = []
-
-    if Conf["Grayscale Mascots"]
-      filters.push '<feColorMatrix id="color" type="saturate" values="0" />'
-
     Style.mascot.textContent = """
+#mascot {
+  display: none;
+}
+.mascots #mascot {
+  display: block;
+}
 .sidebar-location-left #mascot img {
   <%= sizing %>transform: scaleX(-1);
 }
+.sidebar-location-right.mascot-location-sidebar #mascot img,
+.sidebar-location-left #mascot img {
+  right: 0;
+  left: auto;
+  margin-right: #{mascot.hOffset}px;
+}
+.sidebar-location-right.sidebar-large.mascot-location-sidebar #mascot img,
+.sidebar-location-left.sidebar-large #mascot img {
+  right: #{if mascot.center then 25 else 0}px;
+}
+.sidebar-location-left.mascot-location-sidebar #mascot img,
+.sidebar-location-right #mascot img {
+  left: 0;
+  right: auto;
+  margin-left: #{mascot.hOffset}px;
+}
+.sidebar-location-left.sidebar-large.mascot-location-sidebar #mascot img,
+.sidebar-location-right.sidebar-large #mascot img {
+  left: #{if mascot.center then 25 else 0}px;
+}
 #mascot img {
   position: fixed;
-  z-index: #{
-    if Conf['Mascots Overlap Posts']
-      '3'
-    else
-      '-1'
-  };
-  bottom: #{
-    if mascot.position is 'top'
-      'auto'
-    else if Conf['Mascot Position'] is 'middle'
-      '50%'
-    else if (mascot.position is 'bottom' and Conf['Mascot Position'] is 'default') or !$.id 'postForm'
-      '0'
-    else
-      position
-  };
-  #{location}: #{
-    (mascot.hOffset or 0) + (
-      if Conf['Sidebar'] is 'large' and mascot.center
-        25
-      else
-        0
-    )
-  }px;
-  top: #{
-    if mascot.position is 'top'
-      '0'
-    else
-      'auto'
-  };
+  z-index: -1;
+  bottom: 20.1em;
   height: #{
     if mascot.height and isNaN parseFloat mascot.height
       mascot.height
@@ -114,12 +83,53 @@ MascotTools =
     else
       'auto'
   };
-  margin-#{location}: #{mascot.hOffset or 0}px;
   margin-bottom: #{mascot.vOffset or 0}px;
-  opacity: #{Conf['Mascot Opacity']};
   pointer-events: none;
-  #{if filters.length > 0 then "filter: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filters\">" + filters.join("") + "</filter></svg>#filters');" else ""}
-  #{if Conf['Mascot Position'] is 'middle' then "<%= sizing %>transform: translateY(50%);" else ''}
+}
+.fourchan-ss-navigation.bottom.fixed.posting-disabled #mascot img,
+.fourchan-ss-navigation.bottom.fixed.mascot-position-bottom #mascot img,
+.fourchan-ss-navigation.index.pagination-sticky-bottom.mascot-position-bottom #mascot img,
+.fourchan-ss-navigation.bottom.fixed:not(.post-form-style-fixed):not(.post-form-style-transparent-fade) #mascot img,
+.fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-fixed):not(.post-form-style-transparent-fade) #mascot img {
+  bottom: 1.5em;
+}
+.fourchan-ss-navigation.bottom.fixed #mascot img,
+.fourchan-ss-navigation.index.pagination-sticky-bottom #mascot img {
+  bottom: 21.6em;
+}
+.fourchan-ss-navigation.bottom.fixed.post-form-decorations #mascot img,
+.fourchan-ss-navigation.index.pagination-sticky-bottom.post-form-decorations #mascot img {
+  bottom: 21.8em;
+}
+.fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-fixed #mascot img,
+.fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-fixed #mascot img,
+.fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-transparent-fade #mascot img,
+.fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-transparent-fade #mascot img {
+  bottom: 22.9em;
+}
+.fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-fixed.post-form-decorations #mascot img,
+.fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-fixed.post-form-decorations #mascot img,
+.fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-transparent-fade.post-form-decorations #mascot img,
+.fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-transparent-fade.post-form-decorations #mascot img {
+  bottom: 23.1em;
+}
+.mascot-position-bottom #mascot img,
+.mascot-position-default.posting-disabled #mascot img {
+  bottom: 0;
+}
+.mascots-overlap-posts #mascot img {
+  z-index: 3;
+}
+.mascot-position-middle #mascot img {
+  bottom: 50%;
+  <%= sizing %>transform: translateY(50%);
+}
+.mascot-position-top #mascot img {
+  bottom: auto !important;
+  top: 17px;
+}
+.grayscale-mascots #mascot img {
+  filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filters"><feColorMatrix id="color" type="saturate" values="0" /></filter></svg>#filters');
 }
 """
 
@@ -139,7 +149,7 @@ MascotTools =
       editMascot = {}
     editMascot.name = key or ''
     MascotTools.addMascot editMascot
-    Style.addStyle()
+    MascotTools.init _conf["mascot"]
     layout =
       name: [
         "Mascot Name"
@@ -224,7 +234,7 @@ MascotTools =
             $.on input, 'blur', ->
               editMascot[@name] = @value
               MascotTools.addMascot editMascot
-              Style.addStyle()
+              MascotTools.init _conf["mascot"]
 
             fileInput = $.el 'input',
               type:     "file"

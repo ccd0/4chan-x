@@ -122,7 +122,6 @@ Style =
 
     MascotTools.init _conf["mascot"]
     Style.dynamicCSS.textContent = Style.dynamic()
-    Style.themeCSS.textContent   = Style.theme(theme)
     Style.iconPositions()
     Style.padding()
 
@@ -180,16 +179,14 @@ Style =
         left:   0
         right:  0
 
-    css = """<%= grunt.file.read('src/General/css/dynamic.css') %>"""
+    """<%= grunt.file.read('src/General/css/dynamic.css') %>"""
 
   theme: (theme) ->
-    _conf = Conf
-
     bgColor = new Style.color(Style.colorToHex(backgroundC = theme["Background Color"]) or 'aaaaaa')
 
     Style.lightTheme = bgColor.isLight()
 
-    css = """<%= grunt.file.read('src/General/css/theme.css') %>""" + <%= grunt.file.read('src/General/css/themeoptions.css') %>
+    """<%= grunt.file.read('src/General/css/theme.css') %>""" + <%= grunt.file.read('src/General/css/themeoptions.css') %>
 
   iconPositions: ->
     css = """<%= grunt.file.read('src/General/css/icons.base.css') %>"""

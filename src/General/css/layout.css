@@ -1299,7 +1299,7 @@ input:checked + .rice {
 .post-form-style-tabbed-slideout #qr:hover #qrtab,
 .post-form-style-tabbed-slideout #qr.has-focus #qrtab,
 .post-form-style-tabbed-slideout #qr.dump #qrtab {
-  opacity: 0;
+  opacity: 0 !important;
 }
 .post-form-style-slideout #qrtab input,
 .post-form-style-slideout #qrtab .rice,

@@ -807,7 +807,7 @@ Settings =
         (if @checked then $.addClass else $.rmClass) doc, hyphenated
       value: ->
         $.cb.value.call @
-        Style.addStyle()
+        Style.dynamicCSS = Style.dynamic()
       select: ->
         $.cb.value.call @
         for option in @options
@@ -905,7 +905,7 @@ Settings =
           $.set "theme", @id
         Conf['theme'] = @id
         $.addClass @, 'selectedtheme'
-        Style.addStyle()
+        Style.themeCSS.textContent = Style.theme Themes[@id]
 
       edit: (e) ->
         e.preventDefault()
