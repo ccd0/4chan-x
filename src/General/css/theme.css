@@ -421,6 +421,10 @@ data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' 
   background: #{theme["Highlighted Reply Background"]};
   border: 1px solid #{theme["Highlighted Reply Border"]};
 }
+body::after {
+  background: #{backgroundC};
+}
+.fourchan-ss-sidebar body::after,
 .fourchan-ss-sidebar body::before {
   background: none repeat scroll 0% 0% rgba(#{if background = new Style.color Style.colorToHex theme["Reply Background"] then background.shiftRGB -18}, 0.8);
 }

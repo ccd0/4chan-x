@@ -1,9 +1,8 @@
-
 #navtopright .exlinksOptionsLink::after,
 #appchanOptions,
 body > div.navLinks > a:first-of-type::after,
-#{if Conf['Slideout Watcher'] then '#watcher::after,' else ''}
-#{if Conf['Announcements'] is 'slideout' then '#globalMessage::after,' else ''}
+.slideout-watcher #watcher::after,
+.announcements-slideout #globalMessage::after,
 #boardNavDesktopFoot::after,
 body > a[style="cursor: pointer; float: right;"]::after,
 #img-controls,
@@ -16,7 +15,28 @@ body > a[style="cursor: pointer; float: right;"]::after,
   width: 15px;
   height: 15px;
   content: "";
-  opacity: #{if Conf['Invisible Icons'] then 0 else 0.5};
+  opacity: 0.5;
+}
+body::after {
+  content: "";
+  display: block;
+  position: fixed;
+  z-index: 5;
+  width: 18px;
+  height: 18px;
+}
+.invisible-icons #navtopright .exlinksOptionsLink::after,
+.invisible-icons #appchanOptions,
+.invisible-icons body > div.navLinks > a:first-of-type::after,
+.invisible-icons.slideout-watcher #watcher::after,
+.invisible-icons.announcements-slideout #globalMessage::after,
+.invisible-icons #boardNavDesktopFoot::after,
+.invisible-icons body > a[style="cursor: pointer; float: right;"]::after,
+.invisible-icons #img-controls,
+.invisible-icons #main-menu,
+.invisible-icons #catalog::after,
+.invisible-icons #fappeTyme {
+  opacity: 0;
 }
 #navtopright .exlinksOptionsLink,
 body > div.navLinks > a:first-of-type,
@@ -30,8 +50,8 @@ body > a[style="cursor: pointer; float: right;"],
 }
 #navtopright .exlinksOptionsLink:hover,
 body > div.navLinks > a:first-of-type:hover,
-#{if Conf['Slideout Watcher'] then '#watcher:hover,' else ''}
-#{if Conf['Announcements'] is 'slideout' then '#globalMessage:hover,' else ''}
+.slideout-watcher #watcher:hover,
+.announcements-slideout #globalMessage:hover,
 #boardNavDesktopFoot:hover,
 body > a[style="cursor: pointer; float: right;"]:hover,
 #img-controls,
@@ -46,10 +66,10 @@ body > div.navLinks > a:first-of-type::after {
   cursor: pointer;
   background-position: 0 -15px;
 }
-#watcher::after {
+.slideout-watcher #watcher::after {
   background-position: 0 -30px;
 }
-#globalMessage::after {
+.announcements-slideout #globalMessage::after {
   background-position: 0 -45px;
 }
 #boardNavDesktopFoot::after {
@@ -74,18 +94,18 @@ body > a[style="cursor: pointer; float: right;"]::after {
   background-position: 0 -135px;
 }
 #boardNavDesktopFoot:hover::after,
-#globalMessage:hover::after,
+.announcements-slideout #globalMessage:hover::after,
 #img-controls:hover,
 #navlinks a:hover,
 #appchanOptions:hover,
 #main-menu:hover,
 #navtopright .exlinksOptionsLink:hover::after,
 #qr #qrtab,
-#watcher:hover::after,
+.slideout-watcher #watcher:hover::after,
 .thumbnail#selected,
 body > a[style="cursor: pointer; float: right;"]:hover::after,
 div.navLinks > a:first-of-type:hover::after,
 #catalog:hover::after,
 #fappeTyme:hover {
-  opacity: 1;
+  opacity: 1 !important;
 }

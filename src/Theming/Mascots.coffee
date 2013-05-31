@@ -1,15 +1,24 @@
 MascotTools =
-  init: (mascot = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)]) ->
+  init: (mascot) ->
+    unless mascot and typeof mascot is string
+      mascot = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)]
 
     Conf['mascot'] = mascot
     @el = el = $('#mascot img', d.body)
 
-    if !Conf['Mascots'] or (g.CATALOG and Conf['Hide Mascots on Catalog'])
+    if !Conf['Mascots'] or (Conf['Hide Mascots on Catalog'] and g.VIEW is 'catalog')
       return if el then el.src = "" else null
 
+    pfOffset = if Conf['4chan SS Navigation'] and
+      ((Conf['Bottom Header'] and Conf['Fixed Header']) or
+      (g.VIEW is 'index' and Conf['Pagination'] is 'sticky bottom'))
+        1.5
+    else
+        0
+      
     position = "#{
       if Conf['Mascot Position'] is 'bottom' or (Conf['Mascot Position'] is "default" and Conf['Post Form Style'] isnt "fixed")
-        0 + Style.pfOffset
+        0 + pfOffset
       else
         20.1 + (
           if Conf['Show Post Form Header'] and ['fixed', 'transparent fade', 'slideout'].contains Conf['Post Form Style']
@@ -20,7 +29,7 @@ MascotTools =
             0.2
           else
             0
-        ) + Style.pfOffset
+        ) + pfOffset
     }em"
 
     # If we're editting anything, let's not change mascots any time we change a value.
@@ -54,6 +63,9 @@ MascotTools =
       filters.push '<feColorMatrix id="color" type="saturate" values="0" />'
 
     Style.mascot.textContent = """
+.sidebar-location-left #mascot img {
+  <%= sizing %>transform: scaleX(-1);
+}
 #mascot img {
   position: fixed;
   z-index: #{
@@ -62,7 +74,6 @@ MascotTools =
     else
       '-1'
   };
-  #{if Style.sidebarLocation[0] is "left" then "<%= sizing %>transform: scaleX(-1);" else ""}
   bottom: #{
     if mascot.position is 'top'
       'auto'

@@ -1,5 +1,7 @@
-
 /* Expand Images */
+body::after {
+  top: #{position[i] - 1}px;
+}
 #img-controls {
   top: #{position[i++]}px;
 }
@@ -17,12 +19,13 @@
   top: #{position[i++]}px;
 }
 /* Global Message */
-#globalMessage,
-#globalMessage::after {
+.announcements-slideout #globalMessage,
+.announcements-slideout #globalMessage::after {
   top: #{position[i++]}px;
 }
 /* Watcher */
-#{if _conf["Slideout Watcher"] then "#watcher, #watcher::after" else ""} {
+.slideout-watcher #watcher,
+.slideout-watcher #watcher::after {
   top: #{position[i++]}px !important;
 }
 /* 4sight */
@@ -52,6 +55,10 @@ div.navLinks > a:first-of-type::after {
 #navlinks a:last-of-type {
   top: #{position[i++]}px !important;
 }
+body::after {
+  height: #{position[i] - 2}px;
+  #{align}: 2px;
+}
 #navlinks a,
 #navtopright .exlinksOptionsLink::after,
 #appchanOptions,
@@ -70,13 +77,21 @@ div.navLinks > a:first-of-type::after {
 #globalMessage,
 #watcher {
   <%= sizing %>: border-box;
-  width: #{Style.sidebar - 18}px !important;
-  min-width: 230px;
+  width: 230px !important;
   #{align}: 18px !important;
 }
-.fixed.top #header-bar#{if _conf['Pagination'] is 'top' or _conf['Pagination'] is 'sticky top' then ',\n.pagelist' else ''} {
-  #{if _conf['4chan SS Navigation']
-    "padding-#{align}: #{iconOffset}px;"
-  else
-    "margin-#{align}: #{iconOffset}px;"}
+.sidebar-large #boardNavDesktopFoot,
+.sidebar-large #globalMessage,
+.sidebar-large #watcher {
+  width: 288px !important;
+}
+.fourchan-ss-navigation.fixed.top #header-bar,
+.fourchan-ss-navigation.pagination-top .pagelist,
+.fourchan-ss-navigation.pagination-sticky-top .pagelist {
+  padding-#{align}: #{iconOffset}px;
+}
+.fixed.top:not(.fourchan-ss-navigation) #header-bar,
+.pagination-top:not(.fourchan-ss-navigation) .pagelist,
+.pagination-sticky-top:not(.fourchan-ss-navigation) .pagelist {
+  margin-#{align}: #{iconOffset}px;
 }

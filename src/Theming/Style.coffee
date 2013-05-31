@@ -70,14 +70,14 @@ Style =
     , 500
 
   setup: ->
-    theme = Themes[Conf['theme']]
+    theme = Themes[Conf['theme']] or Themes['Yotsuba B']
     $.extend Style,
-      layoutCSS:    $.addStyle Style.layout(),     'layout'
+      layoutCSS:    $.addStyle Style.layout,       'layout'
       themeCSS:     $.addStyle Style.theme(theme), 'theme'
       icons:        $.addStyle "",                 'icons'
       paddingSheet: $.addStyle "",                 'padding'
       mascot:       $.addStyle "",                 'mascotSheet'
-      dynamic:      $.addStyle Style.dynamic(),    'dynamic'
+      dynamicCSS:   $.addStyle Style.dynamic(),    'dynamic'
 
     # Non-customizable
     $.addStyle JSColor.css(), 'jsColor'
@@ -118,11 +118,11 @@ Style =
   addStyle: (theme) ->
     _conf = Conf
     unless theme
-      theme = Themes[_conf['theme']]
+      theme = Themes[_conf['theme']] or Themes['Yotsuba B']
 
     MascotTools.init _conf["mascot"]
-    Style.layoutCSS.textContent = Style.layout()
-    Style.themeCSS.textContent = Style.theme(theme)
+    Style.dynamicCSS.textContent = Style.dynamic()
+    Style.themeCSS.textContent   = Style.theme(theme)
     Style.iconPositions()
     Style.padding()
 
@@ -161,66 +161,20 @@ Style =
 
     return """filter: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='#{string} 0 0 0 1 0' /></filter></svg>#filters");"""
 
-  layout: ->
-    # Remove after classes rewrite
-    _conf = Conf
-    
-    Style.pfOffset = if _conf['4chan SS Navigation'] and
-      ((_conf['Bottom Header'] and _conf['Fixed Header']) or
-      (g.VIEW is 'index' and _conf['Pagination'] is 'sticky bottom'))
-        1.5
-    else
-        0
-
-    Style.sidebar = {
-      minimal:  20
-      hide:     2
-      normal:   252
-      large:    303
-    }[_conf['Sidebar']]
-
-    Style.sidebarLocation = if _conf["Sidebar Location"] is "left"
-      ["left",  "right"]
-    else
-      ["right", "left" ]
-
-    if _conf['editMode'] is "theme"
-      editSpace = {}
-      editSpace[Style.sidebarLocation[1]] = 300
-      editSpace[Style.sidebarLocation[0]] = 0
-    else
-      editSpace =
-        left:   0
-        right:  0
-
-    css = """<%= grunt.file.read('src/General/css/layout.css') %>"""
+  layout: """<%= grunt.file.read('src/General/css/layout.css') %>"""
   
   dynamic: ->
     _conf   = Conf
-    
-    Style.pfOffset = if _conf['4chan SS Navigation'] and
-      ((_conf['Bottom Header'] and _conf['Fixed Header']) or
-      (g.VIEW is 'index' and _conf['Pagination'] is 'sticky bottom'))
-        1.5
-    else
-        0
 
-    Style.sidebar = {
-      minimal:  20
-      hide:     2
-      normal:   252
-      large:    303
-    }[_conf['Sidebar']]
-
-    Style.sidebarLocation = if _conf["Sidebar Location"] is "left"
+    sidebarLocation = if _conf["Sidebar Location"] is "left"
       ["left",  "right"]
     else
       ["right", "left" ]
 
     if _conf['editMode'] is "theme"
       editSpace = {}
-      editSpace[Style.sidebarLocation[1]] = 300
-      editSpace[Style.sidebarLocation[0]] = 0
+      editSpace[sidebarLocation[1]] = 300
+      editSpace[sidebarLocation[0]] = 0
     else
       editSpace =
         left:   0
@@ -240,7 +194,13 @@ Style =
   iconPositions: ->
     css = """<%= grunt.file.read('src/General/css/icons.base.css') %>"""
     i = 0
-    align = Style.sidebarLocation[0]
+    align = Conf['Sidebar Location']
+    sidebar = {
+      minimal:  20
+      hide:     2
+      normal:   252
+      large:    303
+    }[_conf['Sidebar']]
 
     _conf = Conf
     notCatalog = g.VIEW isnt 'catalog'
@@ -287,7 +247,7 @@ Style =
         position[position.length - 1] - (if _conf['4chan SS Navigation']
           0
         else
-          Style.sidebar + parseInt(_conf["Right Thread Padding"], 10))
+          sidebar + parseInt(_conf["Right Thread Padding"], 10))
       if iconOffset < 0 then iconOffset = 0
 
       css += """<%= grunt.file.read('src/General/css/icons.horz.css') %>"""
@@ -295,7 +255,7 @@ Style =
     else
 
       position = aligner(
-        2 + (if _conf["4chan Banner"] is "at sidebar top" then (Style.logoOffset + 19) else 0)
+        2
         [
           notEither and _conf['Image Expansion']
           true
@@ -324,7 +284,7 @@ Style =
         if _conf['4chan SS Navigation']
           0
         else
-          Style.sidebar + parseInt _conf[align.capitalize() + " Thread Padding"], 10
+          sidebar + parseInt _conf[align.capitalize() + " Thread Padding"], 10
       )
 
       css += """<%= grunt.file.read('src/General/css/icons.vert.css') %>"""

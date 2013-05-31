@@ -1,5 +1,7 @@
-
 /* 4chan X Options */
+body::after {
+  #{align}: #{position[i] - 1}px;
+}
 #appchanOptions {
   #{align}: #{position[i++]}px;
 }
@@ -8,11 +10,11 @@
   #{align}: #{position[i++]}px;
 }
 /* Global Message */
-#globalMessage::after {
+.announcements-slideout #globalMessage::after {
   #{align}: #{position[i++]}px;
 }
 /* Watcher */
-#watcher::after {
+.slideout-watcher #watcher::after {
   #{align}: #{position[i++]}px;
 }
 /* ExLinks */
@@ -54,11 +56,15 @@ div.navLinks > a:first-of-type::after {
 #navlinks a:first-of-type {
   #{align}: #{position[i++]}px;
 }
+body::after {
+  width: #{position[i] - 2}px;
+  top: 0;
+}
 #boardNavDesktopFoot::after,
 #navtopright .exlinksOptionsLink::after,
 #appchanOptions,
-#watcher::after,
-#globalMessage::after,
+.slideout-watcher #watcher::after,
+.announcements-slideout #globalMessage::after,
 #img-controls,
 #main-menu,
 #fappeTyme,
@@ -67,14 +73,18 @@ div.navLinks > a:first-of-type::after,
 body > a[style="cursor: pointer; float: right;"]::after {
   top: 1px !important;
 }
-#{if _conf["Announcements"] is "slideout" then "#globalMessage," else ""}
-#{if _conf["Slideout Watcher"] then "#watcher," else ""}
+.slideout-watcher #globalMessage,
+.slideout-watcher #watcher,
 #boardNavDesktopFoot {
   top: 16px !important;
 }
-.fixed.top #header-bar#{if _conf['Pagination'] is 'top' or _conf['Pagination'] is 'sticky top' then ',\n.pagelist' else ''} {
-  #{if _conf['4chan SS Navigation']
-    "padding-#{align}: #{iconOffset}px;"
-  else
-    "margin-#{align}: #{iconOffset}px;"}
-}\n
+.fourchan-ss-navigation.fixed.top #header-bar,
+.fourchan-ss-navigation.pagination-top .pagelist,
+.fourchan-ss-navigation.pagination-sticky-top .pagelist {
+  padding-#{align}: #{iconOffset}px;
+}
+.fixed.top:not(.fourchan-ss-navigation) #header-bar,
+.pagination-top:not(.fourchan-ss-navigation) .pagelist,
+.pagination-sticky-top:not(.fourchan-ss-navigation) .pagelist {
+  margin-#{align}: #{iconOffset}px;
+}
