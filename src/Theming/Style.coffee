@@ -193,8 +193,9 @@ Style =
 
   iconPositions: ->
     css = """<%= grunt.file.read('src/General/css/icons.base.css') %>"""
+    _conf = Conf
     i = 0
-    align = Conf['Sidebar Location']
+    align = _conf['Sidebar Location']
     sidebar = {
       minimal:  20
       hide:     2
@@ -202,7 +203,6 @@ Style =
       large:    303
     }[_conf['Sidebar']]
 
-    _conf = Conf
     notCatalog = g.VIEW isnt 'catalog'
     notEither  = notCatalog and g.BOARD isnt 'f'
 
