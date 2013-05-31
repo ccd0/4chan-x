@@ -274,8 +274,6 @@ th {
   top: 100%;
 }
 .notification {
-  font-family: #{_conf["Font"]};
-  font-size: #{parseInt(_conf["Font Size"], 10)};
   color: #fff;
   font-weight: 700;
   text-shadow: 0 1px 2px rgba(0, 0, 0, .5);
@@ -352,84 +350,120 @@ th {
 /* Pagination */
 .pagelist {
   border-width: 1px;
-  text-align: #{_conf["Pagination Alignment"]};
-#{
-if _conf['4chan SS Navigation'] then "
+  z-index: 6;
+}
+.pagination-alignment-center .pagelist {
+  text-align: center;
+}
+.pagination-alignment-right .pagelist {
+  text-align: right;
+}
+.fourchan-ss-navigation .pagelist {
   left: 0;
   right: 0;
   border-left: 0;
   border-right: 0;
-  border-radius: 0 !important;"
-else "
-  #{Style.sidebarLocation[0]}: #{Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
-  #{Style.sidebarLocation[1]}: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
+  border-radius: 0 !important;
 }
-#{{
-"sticky top": "
+.pagination-sticky-top .pagelist {
   position: fixed;
   top: 0;
   border-top-width: 0;
-  #{if _conf["Rounded Edges"] then "border-radius: 0 0 3px 3px;" else ""}"
-
-"sticky bottom": "
+}
+.pagination-sticky-bottom .pagelist {
   position: fixed;
   bottom: 0;
   border-bottom-width: 0;
-  #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}"
-
-"top": "
+}
+.pagination-top .pagelist {
   position: static;
   border-top-width: 0;
-  #{if _conf["Rounded Edges"] then "border-radius: 0 0 3px 3px;" else ""}"
-
-"bottom": "
+}
+.pagination-bottom .pagelist {
   position: static;
-  #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}"
-
-"hide": "
-  display: none;"
-
-"on side": "
+}
+.pagination-top.rounded-edges .pagelist,
+.pagination-sticky-top.rounded-edges .pagelist {
+  border-radius: 0 0 3px 3px;
+}
+.pagination-bottom.rounded-edges .pagelist,
+.pagination-sticky-bottom.rounded-edges .pagelist {
+  border-radius: 3px 3px 0 0;
+}
+.pagination-hide .pagelist {
+  display: none;
+}
+.pagination-on-side .pagelist {
   position: fixed;
   padding: 0;
   top: auto;
-  bottom: #{if ['fixed', 'transparent fade'].contains(_conf['Post Form Style']) then (21.6 + (if Conf['Show Post Form Header'] then 1.5 else 0) + (if Conf['Post Form Decorations'] then 0.2 else 0)) else .5}em;
-  #{Style.sidebarLocation[1]}: auto;
-  #{Style.sidebarLocation[0]}: #{Style.sidebar - 2}px;
-  position: fixed;
-#{if Style.sidebarLocation[0] is 'right' then "
-  <%= agent %>transform: rotate(90deg);
-  <%= agent %>transform-origin: bottom right;"
-else "
-  <%= agent %>transform: rotate(-90deg);
-  <%= agent %>transform-origin: bottom left;
-"}
-  z-index: 6;
+  bottom: 0.5em;
   margin: 0;
   background: none transparent !important;
   border: 0 none !important;
   text-align: right;
-"
-}[_conf['Pagination']]}
-#{if _conf["Hide Navigation Decorations"] then "
+}
+.pagination-on-side.post-form-style-fixed.show-post-form-header.post-form-decorations .pagelist,
+.pagination-on-side.post-form-style-transparent-fade.show-post-form-header.post-form-decorations .pagelist {
+  bottom: 23.3em;
+}
+.pagination-on-side.post-form-style-fixed.show-post-form-header .pagelist,
+.pagination-on-side.post-form-style-transparent-fade.show-post-form-header .pagelist {
+  bottom: 23.1em;
+}
+.pagination-on-side.post-form-style-fixed.post-form-decorations .pagelist,
+.pagination-on-side..post-form-style-transparent-fade.post-form-decorations .pagelist {
+  bottom: 21.8em;
+}
+.pagination-on-side.post-form-style-fixed .pagelist,
+.pagination-on-side.post-form-style-transparent-fade .pagelist {
+  bottom: 21.6em;
+}
+.sidebar-location-left.pagination-on-side .pagelist {
+  <%= agent %>transform: rotate(-90deg);
+  <%= agent %>transform-origin: bottom left;
+}
+
+.sidebar-location-right.pagination-on-side .pagelist {
+  <%= agent %>transform: rotate(90deg);
+  <%= agent %>transform-origin: bottom right;"
+}
+.sidebar-location-right.sidebar-large.pagination-on-side .pagelist {
+  left: auto;
+  right: 301px;
+}
+.sidebar-location-left.sidebar-large.pagination-on-side .pagelist {
+  right: auto;
+  left: 301px;
+}
+.sidebar-location-right.sidebar-normal.pagination-on-side .pagelist {
+  left: auto;
+  right: 246px;
+}
+.sidebar-location-left.sidebar-normal.pagination-on-side .pagelist {
+  right: auto;
+  left: 246px;
+}
+.sidebar-location-right.sidebar-minimal.pagination-on-side .pagelist {
+  left: auto;
+  right: 246px;
+}
+.sidebar-location-left.sidebar-minimal.pagination-on-side .pagelist {
+  right: auto;
+  left: 18px;
+}
+.hide-navigation-decorations .pagelist {
   font-size: 0;
   color: transparent;
   word-spacing: 0;
-" else ""}
-  z-index: 6;
 }
 .pagelist input,
 .pagelist div {
   vertical-align: middle;
 }
-#header-bar a {
-  font-size: #{parseInt _conf["Font Size"], 10}px;
-}
-#{if _conf["Hide Navigation Decorations"] then "
-.pages a {
+.hide-navigation-decorations .pages a {
   margin: 0 1px;
-  font-size: #{parseInt _conf["Font Size"], 10}px;
-}" else ""}
+}
 .next,
 .pages,
 .prev {
@@ -440,19 +474,18 @@ else "
 .boardBanner {
   line-height: 0;
 }
-#{if _conf["Faded 4chan Banner"] then "
-.boardBanner {
+
+.faded-4chan-banner .boardBanner {
   opacity: 0.5;
   <%= agent %>transition: opacity 0.3s ease-in-out .5s;
 }
-.boardBanner:hover {
+.faded-4chan-banner .boardBanner:hover {
   opacity: 1;
   <%= agent %>transition: opacity 0.3s ease-in;
 }
-" else ""}
-#{if _conf["4chan Banner Reflection"] then "
 /* From 4chan SS / OneeChan */
-.gecko .boardBanner::after {
+<% if (type === 'userscript') { %>
+.fourchan-banner-reflection .boardBanner::after {
   background-image: -moz-element(#Banner);
   bottom: -100%;
   content: '';
@@ -465,53 +498,54 @@ else "
   -moz-transform: scaleY(-1);
   z-index: -1;
 }
-.webkit #Banner {
+<% } else { %>
+.fourchan-banner-reflection #Banner {
   -webkit-box-reflect: below 0 -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0) 10%, rgba(255,255,255,.5));
 }
-" else ""}
-#{{
-"at sidebar top": "
-.boardBanner {
+<% } %>
+.fourchan-banner-at-sidebar-top .boardBanner,
+.fourchan-banner-at-sidebar-bottom .boardBanner,
+.fourchan-banner-at-sidebar-bottom .boardBanner {
   position: fixed;
+}
+.fourchan-banner-at-sidebar-top .boardBanner {
   top: 16px;
-  #{Style.sidebarLocation[0]}: 2px;
 }
-.boardBanner img {
-  width: #{width}px;
-}"
-"at sidebar bottom": "
-.boardBanner {
-  position: fixed;
+.fourchan-banner-at-sidebar-bottom .boardBanner {
   bottom: 270px;
-  #{Style.sidebarLocation[0]}: 2px;
 }
-.boardBanner img {
-  width: #{width}px;
-}"
-
-"under post form": "
-  .boardBanner {
-  position: fixed;
+.fourchan-banner-under-post-form .boardBanner {
   bottom: 130px;
-  #{Style.sidebarLocation[0]}: 2px;
 }
-.boardBanner img {
-  width: #{width}px;
-}"
-
-"at top": "
-.boardBanner {
+.fourchan-banner-at-sidebar-top.sidebar-location-right .boardBanner,
+.fourchan-banner-at-sidebar-bottom.sidebar-location-right .boardBanner,
+.fourchan-banner-under-post-form.sidebar-location-right .boardBanner {
+  right: 2px;
+}
+.fourchan-banner-at-sidebar-top.sidebar-location-left .boardBanner,
+.fourchan-banner-at-sidebar-bottom.sidebar-location-left .boardBanner,
+.fourchan-banner-under-post-form.sidebar-location-left .boardBanner {
+  left: 2px;
+}
+.fourchan-banner-at-sidebar-top .boardBanner img,
+.fourchan-banner-at-sidebar-bottom .boardBanner img,
+.fourchan-banner-under-post-form .boardBanner img {
+  width: 248px;
+}
+.fourchan-banner-at-sidebar-top.sidebar-large .boardBanner img,
+.fourchan-banner-at-sidebar-bottom.sidebar-large .boardBanner img,
+.fourchan-banner-under-post-form.sidebar-large .boardBanner img {
+  width: 299px;
+}
+.fourchan-banner-at-top .boardBanner {
   position: relative;
   display: table;
   margin: 12px auto;
   text-align: center;
-}"
-
-"hide": "
-.boardBanner {
+}
+fourchan-banner-hide .boardBanner {
   display: none;
-}"
-}[_conf["4chan Banner"]]}
+}
 /* Board Title */
 #boardTitle {
   font-size: #{parseInt(_conf["Font Size"], 10) + 10}px;

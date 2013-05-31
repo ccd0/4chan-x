@@ -238,12 +238,6 @@ Style =
       else
         0
 
-    width = 
-      if _conf["Sidebar"] is "large"
-        299
-      else
-        248
-
     Style.sidebarLocation = if _conf["Sidebar Location"] is "left"
       ["left",  "right"]
     else

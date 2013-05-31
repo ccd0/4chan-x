@@ -1,43 +1,81 @@
 body {
-  font-size: #{parseInt _conf["Font Size"], 10}px;
-  font-family: #{_conf["Font"]};
   padding: 0 #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px 0 #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]}px;
 }
+#header-bar a,
+.hide-navigation-decorations .pages a,
+body,
 button,
 input,
 textarea {
   font-size: #{parseInt _conf["Font Size"], 10}px;
+}
+body,
+button,
+input,
+textarea {
   font-family: #{_conf["Font"]};
 }
-.sidebar-location-left.sidebar-large #header-bar {
+.sidebar-location-left.sidebar-large:not(.fourchan-ss-navigation) #header-bar {
   left: #{303 + parseInt(_conf["Left Thread Padding"], 10) + editSpace["right"]}px;
   right: #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["left"] + 2}px;"
 }
-.sidebar-location-left.sidebar-normal #header-bar {
+.sidebar-location-left.sidebar-normal:not(.fourchan-ss-navigation) #header-bar {
   left: #{248 + parseInt(_conf["Left Thread Padding"], 10) + editSpace["right"]}px;
   right: #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["left"] + 2}px;"
 }
-.sidebar-location-left.sidebar-minimal #header-bar {
+.sidebar-location-left.sidebar-minimal:not(.fourchan-ss-navigation) #header-bar {
   left: #{20 + parseInt(_conf["Left Thread Padding"], 10) + editSpace["right"]}px;
   right: #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["left"] + 2}px;"
 }
-.sidebar-location-left.sidebar-hide #header-bar {
+.sidebar-location-left.sidebar-hide:not(.fourchan-ss-navigation) #header-bar {
   left: #{2 + parseInt(_conf["Left Thread Padding"], 10) + editSpace["right"]}px;
   right: #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["left"] + 2}px;"
 }
-.sidebar-location-right.sidebar-large #header-bar {
+.sidebar-location-right.sidebar-large:not(.fourchan-ss-navigation) #header-bar {
   right: #{303 + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
   left: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
 }
-.sidebar-location-right.sidebar-normal #header-bar {
+.sidebar-location-right.sidebar-normal:not(.fourchan-ss-navigation) #header-bar {
   right: #{248 + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
   left: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
 }
-.sidebar-location-right.sidebar-minimal #header-bar {
+.sidebar-location-right.sidebar-minimal:not(.fourchan-ss-navigation) #header-bar {
   right: #{20 + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
   left: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
 }
-.sidebar-location-right.sidebar-hide #header-bar {
+.sidebar-location-right.sidebar-hide:not(.fourchan-ss-navigation) #header-bar {
+  right: #{2 + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
+  left: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+.sidebar-location-left.sidebar-large:not(.pagination-alignment-on-side):not(.fourchan-ss-navigation) .pagelist {
+  left: #{303 + parseInt(_conf["Left Thread Padding"], 10) + editSpace["right"]}px;
+  right: #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+.sidebar-location-left.sidebar-normal:not(.pagination-alignment-on-side):not(.fourchan-ss-navigation) .pagelist {
+  left: #{248 + parseInt(_conf["Left Thread Padding"], 10) + editSpace["right"]}px;
+  right: #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+.sidebar-location-left.sidebar-minimal:not(.pagination-alignment-on-side):not(.fourchan-ss-navigation) .pagelist {
+  left: #{20 + parseInt(_conf["Left Thread Padding"], 10) + editSpace["right"]}px;
+  right: #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+.sidebar-location-left.sidebar-hide:not(.pagination-alignment-on-side):not(.fourchan-ss-navigation) .pagelist {
+  left: #{2 + parseInt(_conf["Left Thread Padding"], 10) + editSpace["right"]}px;
+  right: #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+.sidebar-location-right.sidebar-large:not(.pagination-alignment-on-side):not(.fourchan-ss-navigation) .pagelist {
+  right: #{303 + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
+  left: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+.sidebar-location-right.sidebar-normal:not(.pagination-alignment-on-side):not(.fourchan-ss-navigation) .pagelist {
+  right: #{248 + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
+  left: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+.sidebar-location-right.sidebar-minimal:not(.pagination-alignment-on-side):not(.fourchan-ss-navigation) .pagelist {
+  right: #{20 + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
+  left: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+.sidebar-location-right.sidebar-hide:not(.pagination-alignment-on-side):not(.fourchan-ss-navigation) .pagelist {
   right: #{2 + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
   left: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
 }
