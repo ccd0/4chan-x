@@ -153,7 +153,7 @@ Config =
   usercss: ''
   hotkeys:
     # Header, QR & Options
-    'Toggle board list':  ['Ctrl+b', 'Toggle the full board list.']
+    'Toggle board list':  ['Ctrl+b',  'Toggle the full board list.']
     'Open empty QR':      ['q',       'Open QR without post number inserted.']
     'Open QR':            ['Shift+q', 'Open QR with post number inserted.']
     'Open settings':      ['Alt+o',   'Open Settings.']
@@ -183,6 +183,7 @@ Config =
     # Reply Navigation
     'Next reply':         ['j',       'Select next reply.']
     'Previous reply':     ['k',       'Select previous reply.']
+    'Deselect reply':     ['Shift+d', 'Deselect reply.']
     'Hide':               ['x',       'Hide thread.']
   updater:
     checkbox:

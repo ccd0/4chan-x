@@ -91,6 +91,8 @@ Keybinds =
         Keybinds.hl +1, threadRoot
       when Conf['Previous reply']
         Keybinds.hl -1, threadRoot
+      when Conf['Deselect reply']
+        Keybinds.hl  0, threadRoot
       when Conf['Hide']
         ThreadHiding.toggle thread if g.VIEW is 'index'
       else
@@ -166,6 +168,10 @@ Keybinds =
       location.href = url
 
   hl: (delta, thread) ->
+    unless delta
+      if postEl = $ '.reply.highlight', thread
+        $.rmClass postEl, 'highlight'
+      return
     if Conf['Bottom header']
       topMargin = 0
     else
