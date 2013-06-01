@@ -161,7 +161,6 @@ Main =
         attributes: true
         attributeFilter: ['href']
     else
-      # XXX this doesn't seem to work?
       $.on mainStyleSheet, 'DOMAttrModified', setStyle
 
   initReady: ->

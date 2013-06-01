@@ -32,17 +32,7 @@ PSAHiding =
       href: 'javascript:;'
     $.on btn, 'click', PSAHiding.toggle
 
-    # XXX remove hiddenPSAs workaround in the future.
-    items =
-      hiddenPSA: 0
-      hiddenPSAs: null
-
-    $.get items, ({hiddenPSA, hiddenPSAs}) ->
-      if hiddenPSAs
-        $.delete 'hiddenPSAs'
-        if psa.textContent.replace(/\W+/g, '').toLowerCase() in hiddenPSAs
-          hiddenPSA = +$.id('globalMessage').dataset.utc
-          $.set 'hiddenPSA', hiddenPSA
+    $.get hiddenPSA, 0, ({hiddenPSA}) ->
       PSAHiding.sync hiddenPSA
       $.before psa, btn
       $.rmClass doc, 'hide-announcement'
