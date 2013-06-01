@@ -303,7 +303,7 @@ MascotTools =
     editMascot = {}
     $.rm $.id 'mascotConf'
     Style.addStyle()
-    Settings.open "mascots"
+    Settings.open "Mascots"
 
   importMascot: (evt) ->
     file = evt.target.files[0]
@@ -336,6 +336,6 @@ MascotTools =
 
       alert "Mascot \"#{name}\" imported!"
       $.rm $("#mascotContainer", d.body)
-      Settings.open 'mascots'
+      Settings.open 'Mascots'
 
     reader.readAsText(file)

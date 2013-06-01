@@ -352,4 +352,4 @@ ThemeTools =
     Conf['editMode'] = false
     $.rm $.id 'themeConf'
     Style.addStyle()
-    Settings.open 'themes'
+    Settings.open 'Themes'

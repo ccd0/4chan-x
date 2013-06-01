@@ -120,7 +120,7 @@ Style =
 
   addStyle: (theme) ->
     unless theme
-      theme = Themes[_conf['theme']] or Themes['Yotsuba B']
+      theme = Themes[Conf['theme']] or Themes['Yotsuba B']
 
     Style.dynamicCSS.textContent = Style.dynamic()
     Style.iconPositions()

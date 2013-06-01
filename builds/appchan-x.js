@@ -11188,7 +11188,7 @@
       editMascot = {};
       $.rm($.id('mascotConf'));
       Style.addStyle();
-      return Settings.open("mascots");
+      return Settings.open("Mascots");
     },
     importMascot: function(evt) {
       var file, reader;
@@ -11225,7 +11225,7 @@
         });
         alert("Mascot \"" + name + "\" imported!");
         $.rm($("#mascotContainer", d.body));
-        return Settings.open('mascots');
+        return Settings.open('Mascots');
       };
       return reader.readAsText(file);
     }
@@ -11498,7 +11498,7 @@
     },
     addStyle: function(theme) {
       if (!theme) {
-        theme = Themes[_conf['theme']] || Themes['Yotsuba B'];
+        theme = Themes[Conf['theme']] || Themes['Yotsuba B'];
       }
       Style.dynamicCSS.textContent = Style.dynamic();
       Style.iconPositions();
@@ -11980,7 +11980,7 @@
       Conf['editMode'] = false;
       $.rm($.id('themeConf'));
       Style.addStyle();
-      return Settings.open('themes');
+      return Settings.open('Themes');
     }
   };
 
