@@ -1,6 +1,12 @@
 **seaweedchan**:
 - Small bug fixes
 
+**zixaphir**:
+- CSS ~70% (maybe?) rewritten to account for class-based options
+- Fixed CSS filters on webkit
+- Hopefully better mascot positioning
+- Fix issues with dialog width and small sidebar with vertical icons
+
 ### v2.0.6
 *2013-05-29*
 
