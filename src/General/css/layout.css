@@ -207,7 +207,7 @@ th {
 }
 .sidebar-location-left.sidebar-normal:not(.pagination-on-side) .pagelist,
 .sidebar-location-left #header-bar {
-  left: 248px;
+  left: 252px;
 }
 .sidebar-location-left.sidebar-minimal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,
 .sidebar-location-left.sidebar-minimal:not(.fourchan-ss-navigation) #header-bar {
@@ -219,7 +219,7 @@ th {
 }
 .sidebar-location-right.sidebar-normal:not(.pagination-on-side) .pagelist,
 .sidebar-location-right #header-bar {
-  right: 248px;
+  right: 252px;
 }
 .sidebar-location-right.sidebar-minimal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,
 .sidebar-location-right.sidebar-minimal:not(.fourchan-ss-navigation) #header-bar {
@@ -438,20 +438,20 @@ th {
   border: 0 none !important;
   text-align: right;
 }
-.pagination-on-side..post-form-style-fixed.show-post-form-header.post-form-decorations .pagelist,
-.pagination-on-side..post-form-style-transparent-fade.show-post-form-header.post-form-decorations .pagelist {
+.pagination-on-side.post-form-style-fixed.show-post-form-header.post-form-decorations .pagelist,
+.pagination-on-side.post-form-style-transparent-fade.show-post-form-header.post-form-decorations .pagelist {
   bottom: 23.3em;
 }
-.pagination-on-side..post-form-style-fixed.show-post-form-header .pagelist,
-.pagination-on-side..post-form-style-transparent-fade.show-post-form-header .pagelist {
+.pagination-on-side.post-form-style-fixed.show-post-form-header .pagelist,
+.pagination-on-side.post-form-style-transparent-fade.show-post-form-header .pagelist {
   bottom: 23.1em;
 }
-.pagination-on-side..post-form-style-fixed.post-form-decorations .pagelist,
-.pagination-on-side...post-form-style-transparent-fade.post-form-decorations .pagelist {
+.pagination-on-side.post-form-style-fixed.post-form-decorations .pagelist,
+.pagination-on-side.post-form-style-transparent-fade.post-form-decorations .pagelist {
   bottom: 21.8em;
 }
-.pagination-on-side..post-form-style-fixed .pagelist,
-.pagination-on-side..post-form-style-transparent-fade .pagelist {
+.pagination-on-side.post-form-style-fixed .pagelist,
+.pagination-on-side.post-form-style-transparent-fade .pagelist {
   bottom: 21.6em;
 }
 .sidebar-location-left.pagination-on-side .pagelist {
@@ -1224,6 +1224,8 @@ input:checked + .rice {
   padding: 1px;
   border: 1px solid transparent;
   min-width: 248px;
+  background: transparent;
+  border: 1px solid transparent;
 }
 .sidebar-large #qr {
   min-width: 299px;
@@ -1244,11 +1246,11 @@ input:checked + .rice {
   left: auto !important;
 }
 :root:not(.post-form-style-float) #qr {
-  bottom: 0;
+  bottom: 0 !important;
 }
-.fourchan-ss-navigation:not(.post-form-style-float).fixed.bottom #qr,
+.fourchan-ss-navigation.fixed.bottom:not(.post-form-style-float) #qr,
 .fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-float) #qr {
-  bottom: 1.5em;
+  bottom: 1.5em !important;
 }
 .post-form-style-slideout #qr {
   top: auto !important;
@@ -1324,14 +1326,14 @@ input:checked + .rice {
   opacity: 1;
   <%= agent %>transition: opacity .3s linear;
 }
-:root:not(.show-post-form-header):not(.post-form-style-tabbed-slideout) #qrtab,
+:root:not(.show-post-form-header):not(.post-form-style-tabbed-slideout):not(.post-form-style-float) #qrtab,
 .post-form-style-float .autohide:not(:hover):not(.has-focus) > form,
 .show-post-form-header.post-form-style-fixed .autohide:not(:hover):not(.has-focus) > form,
 .show-post-form-header.post-form-style-transparent-fade .autohide:not(:hover):not(.has-focus) > form {
   display: none !important;
 }
 :root:not(.post-form-style-tabbed-slideout) #qrtab {
-  margin-bottom: 1px;
+  margin-bottom: .1em;
 }
 .post-form-slideout-transitions.post-form-style-slideout #qr,
 .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr {
@@ -1380,7 +1382,10 @@ input:checked + .rice {
 .compact-post-form-inputs .persona input.field {
   width: 33%;
 }
-.compact-post-form-inputs .persona input.field:not(:first-child) {
+.compact-post-form-inputs .persona input.field:first-child {
+  margin: 0;
+}
+.compact-post-form-inputs .persona input.field {
   margin: 0 0 0 0.5%;
 }
 .compact-post-form-inputs #qr textarea.field {
@@ -1406,7 +1411,7 @@ input:checked + .rice {
   resize: none;
 }
 .captcha-img {
-  margin: 1px 0 0;
+  margin: .1em 0 0;
   text-align: center;
   line-height: 0;
 }
@@ -1417,7 +1422,7 @@ input:checked + .rice {
 }
 .captcha-input {
   width: 100%;
-  margin: 1px 0 0;
+  margin: .1em 0 0;
 }
 .field,
 .selectrice,
@@ -1425,7 +1430,7 @@ button,
 input:not([type=radio]) {
   <%= sizing %>: border-box;
   height: 1.6em;
-  margin: 1px 0 0;
+  margin: .1em 0 0;
   vertical-align: bottom;
   padding: 0 1px;
 }

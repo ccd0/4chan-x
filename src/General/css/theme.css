@@ -58,16 +58,14 @@ html {
 .captcha-img img {
   #{Style.filter theme["Text"], theme["Input Background"]}
 }
-#boardTitle,
-:root:not(.post-form-decorations) #spoilerLabel {
+#boardTitle {
   text-shadow:
      1px  1px #{backgroundC},
     -1px -1px #{backgroundC},
      1px -1px #{backgroundC},
     -1px  1px #{backgroundC};
 }
-.sidebar-glow #boardTitle,
-:root.sidebar-glow:not(.post-form-decorations) #spoilerLabel {
+.sidebar-glow #boardTitle {
   text-shadow:
      1px  1px  1px #{backgroundC},
     -1px -1px  1px #{backgroundC},
@@ -100,6 +98,7 @@ html {
 #appchanx-settings,
 #qrtab,
 .post-form-decorations #qr,
+.post-form-style-float #qr,
 input[type="submit"],
 input[value="Report"],
 span[style="left: 5px; position: absolute;"] a {

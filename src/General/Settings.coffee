@@ -514,19 +514,19 @@ Settings =
       $.add nodes, fs
 
     $.get items, (items) ->
-      cb = Settings.cb
+      cb = Settings.cb.style
       for key, val of items
         input = inputs[key]
         if input.type is 'checkbox'
           input.checked = val
-          $.on input, 'change', cb.style.checked
+          $.on input, 'change', cb.checked
         else if input.nodeName is 'SELECT'
-          input.value   = val
-          $.on input, 'change', cb.style.select
+          input.value = val
+          $.on input, 'change', cb.select
         else
-          input.value   = val
-          $.on input, 'change', cb.style.value
-        
+          input.value = val
+          $.on input, 'change', cb.value
+
         if key is 'Icon Orientation'
           $.on input, 'change', Style.iconPositions
 
@@ -805,9 +805,11 @@ Settings =
         $.cb.checked.call @
         hyphenated = @name.toLowerCase().replace(/^4/, 'four').replace /\s+/g, '-'
         (if @checked then $.addClass else $.rmClass) doc, hyphenated
+
       value: ->
         $.cb.value.call @
-        Style.dynamicCSS = Style.dynamic()
+        Style.dynamicCSS.textContent = Style.dynamic()
+
       select: ->
         $.cb.value.call @
         for option in @options

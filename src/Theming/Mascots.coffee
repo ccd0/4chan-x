@@ -8,7 +8,7 @@ MascotTools =
 
     unless @el
       @el = $ '#mascot img', d.body
-      
+
     el = @el
 
     if !Conf['Mascots'] or (Conf['Hide Mascots on Catalog'] and g.VIEW is 'catalog')
@@ -20,7 +20,7 @@ MascotTools =
     else
       $.addClass doc, 'mascot-position-default'
       $.rmClass doc, 'mascot-position-bottom'
-    
+
     unless mascot
       if name and not mascot = Mascots[name]
         if el then el.src = "" else null
@@ -29,105 +29,7 @@ MascotTools =
 
     MascotTools.addMascot mascot
 
-    Style.mascot.textContent = """
-#mascot {
-  display: none;
-}
-.mascots #mascot {
-  display: block;
-}
-.sidebar-location-left #mascot img {
-  <%= sizing %>transform: scaleX(-1);
-}
-.sidebar-location-right.mascot-location-sidebar #mascot img,
-.sidebar-location-left #mascot img {
-  right: 0;
-  left: auto;
-  margin-right: #{mascot.hOffset}px;
-}
-.sidebar-location-right.sidebar-large.mascot-location-sidebar #mascot img,
-.sidebar-location-left.sidebar-large #mascot img {
-  right: #{if mascot.center then 25 else 0}px;
-}
-.sidebar-location-left.mascot-location-sidebar #mascot img,
-.sidebar-location-right #mascot img {
-  left: 0;
-  right: auto;
-  margin-left: #{mascot.hOffset}px;
-}
-.sidebar-location-left.sidebar-large.mascot-location-sidebar #mascot img,
-.sidebar-location-right.sidebar-large #mascot img {
-  left: #{if mascot.center then 25 else 0}px;
-}
-#mascot img {
-  position: fixed;
-  z-index: -1;
-  bottom: 20.1em;
-  height: #{
-    if mascot.height and isNaN parseFloat mascot.height
-      mascot.height
-    else if mascot.height
-      parseInt(mascot.height, 10) + 'px'
-    else
-      'auto'
-  };
-  width: #{
-    if mascot.width and isNaN parseFloat mascot.width
-      mascot.width
-    else if mascot.width
-      parseInt(mascot.width,  10) + 'px'
-    else
-      'auto'
-  };
-  margin-bottom: #{mascot.vOffset or 0}px;
-  cursor: pointer;
-}
-.fourchan-ss-navigation.bottom.fixed.posting-disabled #mascot img,
-.fourchan-ss-navigation.bottom.fixed.mascot-position-bottom #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.mascot-position-bottom #mascot img,
-.fourchan-ss-navigation.bottom.fixed:not(.post-form-style-fixed):not(.post-form-style-transparent-fade) #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-fixed):not(.post-form-style-transparent-fade) #mascot img {
-  bottom: 1.5em;
-}
-.fourchan-ss-navigation.bottom.fixed #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom #mascot img {
-  bottom: 21.6em;
-}
-.fourchan-ss-navigation.bottom.fixed.post-form-decorations #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.post-form-decorations #mascot img {
-  bottom: 21.8em;
-}
-.fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-fixed #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-fixed #mascot img,
-.fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-transparent-fade #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-transparent-fade #mascot img {
-  bottom: 22.9em;
-}
-.fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-fixed.post-form-decorations #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-fixed.post-form-decorations #mascot img,
-.fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-transparent-fade.post-form-decorations #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-transparent-fade.post-form-decorations #mascot img {
-  bottom: 23.1em;
-}
-.mascot-position-bottom #mascot img,
-.mascot-position-default.posting-disabled #mascot img {
-  bottom: 0;
-}
-.mascots-overlap-posts #mascot img {
-  z-index: 3;
-}
-.mascot-position-middle #mascot img {
-  bottom: 50%;
-  <%= sizing %>transform: translateY(50%);
-}
-.mascot-position-top #mascot img {
-  bottom: auto !important;
-  top: 17px;
-}
-.grayscale-mascots #mascot img {
-  filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filters"><feColorMatrix id="color" type="saturate" values="0" /></filter></svg>#filters');
-}
-"""
+    Style.mascot.textContent = """<%= grunt.file.read('src/General/css/mascot.css') %>"""
 
   categories: [
     'Anime'
@@ -334,8 +236,8 @@ MascotTools =
     reader.readAsDataURL file
 
   addMascot: (mascot) ->
-    image = 
-      if Array.isArray mascot.image 
+    image =
+      if Array.isArray mascot.image
         if Style.lightTheme
           mascot.image[1]
         else
@@ -349,7 +251,7 @@ MascotTools =
         innerHTML: "<img src='#{image}'>"
 
       @el = div.firstElementChild
-      
+
       $.on @el, 'mousedown', MascotTools.click
 
       $.add d.body, div
