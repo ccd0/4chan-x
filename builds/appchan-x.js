@@ -10934,10 +10934,9 @@
       el = this.el;
       if (!Conf['Mascots'] || (Conf['Hide Mascots on Catalog'] && g.VIEW === 'catalog')) {
         if (el) {
-          return el.src = "";
-        } else {
-          return null;
+          el.src = "";
         }
+        return;
       }
       if (mascot.position === 'bottom' && Conf['Mascot Position'] === 'default') {
         $.rmClass(doc, 'mascot-position-default');

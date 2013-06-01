@@ -12,7 +12,8 @@ MascotTools =
     el = @el
 
     if !Conf['Mascots'] or (Conf['Hide Mascots on Catalog'] and g.VIEW is 'catalog')
-      return if el then el.src = "" else null
+      if el then el.src = ""
+      return
 
     if mascot.position is 'bottom' and Conf['Mascot Position'] is 'default'
       $.rmClass doc, 'mascot-position-default'
