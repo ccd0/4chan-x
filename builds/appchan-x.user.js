@@ -14336,17 +14336,15 @@
           return Style.dynamicCSS.textContent = Style.dynamic();
         },
         select: function() {
-          var hyphenated, option, _i, _len, _ref, _results;
+          var hyphenated, option, _i, _len, _ref;
 
           $.cb.value.call(this);
           _ref = this.options;
-          _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             option = _ref[_i];
             hyphenated = ("" + this.name + " " + option.value).toLowerCase().replace(/^4/, 'four').replace(/\s+/g, '-');
-            _results.push((option.value === this.value ? $.addClass : $.rmClass)(doc, hyphenated));
+            (option.value === this.value ? $.addClass : $.rmClass)(doc, hyphenated);
           }
-          return _results;
         }
       },
       mascot: {

@@ -815,6 +815,7 @@ Settings =
         for option in @options
           hyphenated = "#{@name} #{option.value}".toLowerCase().replace(/^4/, 'four').replace /\s+/g, '-'
           (if option.value is @value then $.addClass else $.rmClass) doc, hyphenated
+        return
 
     mascot:
       category: ->
