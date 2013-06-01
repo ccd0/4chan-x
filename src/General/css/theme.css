@@ -56,7 +56,7 @@ html {
   border-style: solid;
 }
 .captcha-img img {
-  #{Style.filter theme["Text"], theme["Input Background"]}
+  <%= filter %>: url("#captcha-filter");
 }
 #boardTitle {
   text-shadow:
@@ -388,13 +388,7 @@ a .name {
 .icons-oneechan #fappeTyme {
   background-image: url("data:image/png;base64,#{Icons['oneechan']}");
 #{unless Style.lightTheme then "
-filter: url(\"
-data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='
--1 0 0 0 1
- 0 -1 0 0 1
- 0 0 -1 0 1
- 0 0 0 1 0' /></filter></svg>#filters
-\");" else ""}
+<%= filter %>: url(\"#icons-filter\");" else ""}
 }
 .alternate-post-colors .replyContainer:not(.hidden):nth-of-type(2n+1) .post {
   background-image: <%= agent %>linear-gradient(#{if Style.lightTheme then "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" else "rgba(255,255,255,0.02), rgba(255,255,255,0.02)"});

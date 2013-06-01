@@ -16,6 +16,7 @@
 .sidebar-location-right.sidebar-large.mascot-location-sidebar #mascot img,
 .sidebar-location-left.sidebar-large #mascot img {
   right: #{if mascot.center then 25 else 0}px;
+  left: auto;
 }
 .sidebar-location-left.mascot-location-sidebar #mascot img,
 .sidebar-location-right #mascot img {
@@ -26,6 +27,7 @@
 .sidebar-location-left.sidebar-large.mascot-location-sidebar #mascot img,
 .sidebar-location-right.sidebar-large #mascot img {
   left: #{if mascot.center then 25 else 0}px;
+  right: auto;
 }
 #mascot img {
   position: fixed;
@@ -104,5 +106,5 @@
   top: 17px;
 }
 .grayscale-mascots #mascot img {
-  filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filters"><feColorMatrix id="color" type="saturate" values="0" /></filter></svg>#filters');
+  <%= filter %>: url('#grayscale');
 }

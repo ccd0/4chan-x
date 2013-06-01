@@ -162,6 +162,10 @@ module.exports = (grunt) ->
       'box-sizing'
     else
       '-moz-box-sizing'
+    pkg.filter = if type is 'crx'
+      '-webkit-filter'
+    else
+      'filter'
     grunt.log.ok 'pkg.type = %s', type
 
   grunt.registerTask 'build', [

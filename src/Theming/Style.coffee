@@ -17,6 +17,8 @@ Style =
     $.addClass doc, 'appchan-x'
     $.addClass doc, g.VIEW
     
+    $.add d.body, Style.svg
+    
     for title, cat of Config.style
       for name, setting of cat
         if setting[2]
@@ -71,6 +73,7 @@ Style =
 
   setup: ->
     theme = Themes[Conf['theme']] or Themes['Yotsuba B']
+    Style.svg = $.el 'div'
     $.extend Style,
       layoutCSS:    $.addStyle Style.layout,       'layout'
       themeCSS:     $.addStyle Style.theme(theme), 'theme'
@@ -116,7 +119,6 @@ Style =
     delete Style.cleanup
 
   addStyle: (theme) ->
-    _conf = Conf
     unless theme
       theme = Themes[_conf['theme']] or Themes['Yotsuba B']
 
@@ -139,15 +141,12 @@ Style =
 
   filter: (text, background) ->
 
-    matrix = (fg, bg) -> "
- #{bg.r} #{-fg.r} 0 0 #{fg.r}
- #{bg.g} #{-fg.g} 0 0 #{fg.g}
- #{bg.b} #{-fg.b} 0 0 #{fg.b}
-"
+    matrix = (fg, bg) -> "#{bg.r} #{-fg.r} 0 0 #{fg.r} #{bg.g} #{-fg.g} 0 0 #{fg.g} #{bg.b} #{-fg.b} 0 0 #{fg.b}"
 
     fgHex = Style.colorToHex(text)
     bgHex = Style.colorToHex(background)
-    string = matrix {
+    
+    matrix {
       r: parseInt(fgHex.substr(0, 2), 16) / 255
       g: parseInt(fgHex.substr(2, 2), 16) / 255
       b: parseInt(fgHex.substr(4, 2), 16) / 255
@@ -157,12 +156,10 @@ Style =
       b: parseInt(bgHex.substr(4, 2), 16) / 255
     }
 
-    return """filter: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='#{string} 0 0 0 1 0' /></filter></svg>#filters");"""
-
   layout: """<%= grunt.file.read('src/General/css/layout.css') %>"""
   
   dynamic: ->
-    _conf   = Conf
+    _conf = Conf
 
     sidebarLocation = if _conf["Sidebar Location"] is "left"
       ["left",  "right"]
@@ -184,6 +181,12 @@ Style =
     bgColor = new Style.color(Style.colorToHex(backgroundC = theme["Background Color"]) or 'aaaaaa')
 
     Style.lightTheme = bgColor.isLight()
+
+    Style.svg.innerHTML = """
+<svg xmlns='http://www.w3.org/2000/svg' height=0><filter id='captcha-filter' color-interpolation-filters='sRGB'><feColorMatrix values='#{Style.filter theme["Text"], theme["Input Background"]} 0 0 0 1 0' /></filter></svg>
+<svg xmlns='http://www.w3.org/2000/svg' height=0><filter id="grayscale"><feColorMatrix id="color" type="saturate" values="0" /></filter></svg>
+<svg xmlns='http://www.w3.org/2000/svg' height=0><filter id="icons-filter" color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>
+    """
 
     """<%= grunt.file.read('src/General/css/theme.css') %>""" + <%= grunt.file.read('src/General/css/themeoptions.css') %>
 
