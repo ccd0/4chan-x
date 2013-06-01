@@ -1,9 +1,15 @@
 MascotTools =
   init: (mascot) ->
     unless mascot and mascot.image?
-      mascot = Mascots[Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)]]
+      return unless Conf[g.MASCOTSTRING].length
+      name = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)]
+      mascot = Mascots[name]
+      Conf['mascot'] = name
 
-    @el = el = $('#mascot img', d.body)
+    unless @el
+      @el = $ '#mascot img', d.body
+      
+    el = @el
 
     if !Conf['Mascots'] or (Conf['Hide Mascots on Catalog'] and g.VIEW is 'catalog')
       return if el then el.src = "" else null
@@ -16,22 +22,12 @@ MascotTools =
       $.rmClass doc, 'mascot-position-bottom'
     
     unless mascot
-      unless mascot = Mascots[Conf["mascot"]]
+      if name and not mascot = Mascots[name]
         if el then el.src = "" else null
-        Conf[g.MASCOTSTRING].remove Conf["mascot"]
+        Conf[g.MASCOTSTRING].remove name
         return MascotTools.init()
 
     MascotTools.addMascot mascot
-
-    if Conf["Sidebar Location"] is 'left'
-      if Conf["Mascot Location"] is "sidebar"
-        location = 'left'
-      else
-        location = 'right'
-    else if Conf["Mascot Location"] is "sidebar"
-      location = 'right'
-    else
-      location = 'left'
 
     Style.mascot.textContent = """
 #mascot {
@@ -84,7 +80,7 @@ MascotTools =
       'auto'
   };
   margin-bottom: #{mascot.vOffset or 0}px;
-  pointer-events: none;
+  cursor: pointer;
 }
 .fourchan-ss-navigation.bottom.fixed.posting-disabled #mascot img,
 .fourchan-ss-navigation.bottom.fixed.mascot-position-bottom #mascot img,
@@ -149,7 +145,7 @@ MascotTools =
       editMascot = {}
     editMascot.name = key or ''
     MascotTools.addMascot editMascot
-    MascotTools.init _conf["mascot"]
+    MascotTools.init editMascot
     layout =
       name: [
         "Mascot Name"
@@ -234,7 +230,7 @@ MascotTools =
             $.on input, 'blur', ->
               editMascot[@name] = @value
               MascotTools.addMascot editMascot
-              MascotTools.init _conf["mascot"]
+              MascotTools.init editMascot
 
             fileInput = $.el 'input',
               type:     "file"
@@ -258,22 +254,19 @@ MascotTools =
               if (@value isnt "") and !/^[a-z]/i.test @value
                 return alert "Mascot names must start with a letter."
               editMascot[@name] = @value
-              MascotTools.addMascot editMascot
-              Style.addStyle()
+              MascotTools.init editMascot
 
           else
 
             $.on input, 'blur', ->
               editMascot[@name] = @value
-              MascotTools.addMascot editMascot
-              Style.addStyle()
+              MascotTools.init editMascot
 
         when "number"
           div = @input item, name
           $.on $('input', div), 'blur', ->
             editMascot[@name] = parseInt @value
-            MascotTools.addMascot editMascot
-            Style.addStyle()
+            MascotTools.init editMascot
 
         when "select"
           value = editMascot[name] or item[1]
@@ -289,8 +282,7 @@ MascotTools =
 
           $.on $('select', div), 'change', ->
             editMascot[@name] = @value
-            MascotTools.addMascot editMascot
-            Style.addStyle()
+            MascotTools.init editMascot
 
         when "checkbox"
           value = editMascot[name] or item[1]
@@ -299,8 +291,7 @@ MascotTools =
             innerHTML: "<label><input type=#{item[2]} class=field name='#{name}' #{if value then 'checked'}>#{item[0]}</label>"
           $.on $('input', div), 'click', ->
             editMascot[@name] = if @checked then true else false
-            MascotTools.addMascot editMascot
-            Style.addStyle()
+            MascotTools.init editMascot
 
       nodes.push div
     $.add $("#mascotcontent", dialog), nodes
@@ -343,14 +334,25 @@ MascotTools =
     reader.readAsDataURL file
 
   addMascot: (mascot) ->
+    image = 
+      if Array.isArray mascot.image 
+        if Style.lightTheme
+          mascot.image[1]
+        else
+          mascot.image[0]
+      else mascot.image
     if el = @el
-      el.src = if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image
+      el.src = image
     else
-      @el = el = $.el 'div',
+      div = $.el 'div',
         id: "mascot"
-        innerHTML: "<img src='#{if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image}'>"
+        innerHTML: "<img src='#{image}'>"
 
-      $.add d.body, el
+      @el = div.firstElementChild
+      
+      $.on @el, 'mousedown', MascotTools.click
+
+      $.add d.body, div
 
   save: (mascot) ->
     {name, image} = mascot
@@ -389,6 +391,10 @@ MascotTools =
       userMascots[name] = Mascots[name]
       $.set 'userMascots', userMascots
       alert "Mascot \"#{name}\" saved."
+
+  click: (e) ->
+    e.preventDefault()
+    MascotTools.init()
 
   close: ->
     Conf['editMode'] = false

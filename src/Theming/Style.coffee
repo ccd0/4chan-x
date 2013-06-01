@@ -74,10 +74,10 @@ Style =
     $.extend Style,
       layoutCSS:    $.addStyle Style.layout,       'layout'
       themeCSS:     $.addStyle Style.theme(theme), 'theme'
+      dynamicCSS:   $.addStyle Style.dynamic(),    'dynamic'
       icons:        $.addStyle "",                 'icons'
       paddingSheet: $.addStyle "",                 'padding'
       mascot:       $.addStyle "",                 'mascotSheet'
-      dynamicCSS:   $.addStyle Style.dynamic(),    'dynamic'
 
     # Non-customizable
     $.addStyle JSColor.css(), 'jsColor'
@@ -120,7 +120,6 @@ Style =
     unless theme
       theme = Themes[_conf['theme']] or Themes['Yotsuba B']
 
-    MascotTools.init _conf["mascot"]
     Style.dynamicCSS.textContent = Style.dynamic()
     Style.iconPositions()
     Style.padding()

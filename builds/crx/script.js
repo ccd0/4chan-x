@@ -10895,12 +10895,20 @@
 
   MascotTools = {
     init: function(mascot) {
-      var el, location;
+      var el, name;
 
       if (!(mascot && (mascot.image != null))) {
-        mascot = Mascots[Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)]];
+        if (!Conf[g.MASCOTSTRING].length) {
+          return;
+        }
+        name = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)];
+        mascot = Mascots[name];
+        Conf['mascot'] = name;
       }
-      this.el = el = $('#mascot img', d.body);
+      if (!this.el) {
+        this.el = $('#mascot img', d.body);
+      }
+      el = this.el;
       if (!Conf['Mascots'] || (Conf['Hide Mascots on Catalog'] && g.VIEW === 'catalog')) {
         if (el) {
           return el.src = "";
@@ -10916,29 +10924,18 @@
         $.rmClass(doc, 'mascot-position-bottom');
       }
       if (!mascot) {
-        if (!(mascot = Mascots[Conf["mascot"]])) {
+        if (name && !(mascot = Mascots[name])) {
           if (el) {
             el.src = "";
           } else {
             null;
           }
-          Conf[g.MASCOTSTRING].remove(Conf["mascot"]);
+          Conf[g.MASCOTSTRING].remove(name);
           return MascotTools.init();
         }
       }
       MascotTools.addMascot(mascot);
-      if (Conf["Sidebar Location"] === 'left') {
-        if (Conf["Mascot Location"] === "sidebar") {
-          location = 'left';
-        } else {
-          location = 'right';
-        }
-      } else if (Conf["Mascot Location"] === "sidebar") {
-        location = 'right';
-      } else {
-        location = 'left';
-      }
-      return Style.mascot.textContent = "#mascot {\n  display: none;\n}\n.mascots #mascot {\n  display: block;\n}\n.sidebar-location-left #mascot img {\n  box-sizingtransform: scaleX(-1);\n}\n.sidebar-location-right.mascot-location-sidebar #mascot img,\n.sidebar-location-left #mascot img {\n  right: 0;\n  left: auto;\n  margin-right: " + mascot.hOffset + "px;\n}\n.sidebar-location-right.sidebar-large.mascot-location-sidebar #mascot img,\n.sidebar-location-left.sidebar-large #mascot img {\n  right: " + (mascot.center ? 25 : 0) + "px;\n}\n.sidebar-location-left.mascot-location-sidebar #mascot img,\n.sidebar-location-right #mascot img {\n  left: 0;\n  right: auto;\n  margin-left: " + mascot.hOffset + "px;\n}\n.sidebar-location-left.sidebar-large.mascot-location-sidebar #mascot img,\n.sidebar-location-right.sidebar-large #mascot img {\n  left: " + (mascot.center ? 25 : 0) + "px;\n}\n#mascot img {\n  position: fixed;\n  z-index: -1;\n  bottom: 20.1em;\n  height: " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height, 10) + 'px' : 'auto') + ";\n  width: " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width, 10) + 'px' : 'auto') + ";\n  margin-bottom: " + (mascot.vOffset || 0) + "px;\n  pointer-events: none;\n}\n.fourchan-ss-navigation.bottom.fixed.posting-disabled #mascot img,\n.fourchan-ss-navigation.bottom.fixed.mascot-position-bottom #mascot img,\n.fourchan-ss-navigation.index.pagination-sticky-bottom.mascot-position-bottom #mascot img,\n.fourchan-ss-navigation.bottom.fixed:not(.post-form-style-fixed):not(.post-form-style-transparent-fade) #mascot img,\n.fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-fixed):not(.post-form-style-transparent-fade) #mascot img {\n  bottom: 1.5em;\n}\n.fourchan-ss-navigation.bottom.fixed #mascot img,\n.fourchan-ss-navigation.index.pagination-sticky-bottom #mascot img {\n  bottom: 21.6em;\n}\n.fourchan-ss-navigation.bottom.fixed.post-form-decorations #mascot img,\n.fourchan-ss-navigation.index.pagination-sticky-bottom.post-form-decorations #mascot img {\n  bottom: 21.8em;\n}\n.fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-fixed #mascot img,\n.fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-fixed #mascot img,\n.fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-transparent-fade #mascot img,\n.fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-transparent-fade #mascot img {\n  bottom: 22.9em;\n}\n.fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-fixed.post-form-decorations #mascot img,\n.fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-fixed.post-form-decorations #mascot img,\n.fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-transparent-fade.post-form-decorations #mascot img,\n.fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-transparent-fade.post-form-decorations #mascot img {\n  bottom: 23.1em;\n}\n.mascot-position-bottom #mascot img,\n.mascot-position-default.posting-disabled #mascot img {\n  bottom: 0;\n}\n.mascots-overlap-posts #mascot img {\n  z-index: 3;\n}\n.mascot-position-middle #mascot img {\n  bottom: 50%;\n  box-sizingtransform: translateY(50%);\n}\n.mascot-position-top #mascot img {\n  bottom: auto !important;\n  top: 17px;\n}\n.grayscale-mascots #mascot img {\n  filter: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filters\"><feColorMatrix id=\"color\" type=\"saturate\" values=\"0\" /></filter></svg>#filters');\n}";
+      return Style.mascot.textContent = "#mascot {\n  display: none;\n}\n.mascots #mascot {\n  display: block;\n}\n.sidebar-location-left #mascot img {\n  box-sizingtransform: scaleX(-1);\n}\n.sidebar-location-right.mascot-location-sidebar #mascot img,\n.sidebar-location-left #mascot img {\n  right: 0;\n  left: auto;\n  margin-right: " + mascot.hOffset + "px;\n}\n.sidebar-location-right.sidebar-large.mascot-location-sidebar #mascot img,\n.sidebar-location-left.sidebar-large #mascot img {\n  right: " + (mascot.center ? 25 : 0) + "px;\n}\n.sidebar-location-left.mascot-location-sidebar #mascot img,\n.sidebar-location-right #mascot img {\n  left: 0;\n  right: auto;\n  margin-left: " + mascot.hOffset + "px;\n}\n.sidebar-location-left.sidebar-large.mascot-location-sidebar #mascot img,\n.sidebar-location-right.sidebar-large #mascot img {\n  left: " + (mascot.center ? 25 : 0) + "px;\n}\n#mascot img {\n  position: fixed;\n  z-index: -1;\n  bottom: 20.1em;\n  height: " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height, 10) + 'px' : 'auto') + ";\n  width: " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width, 10) + 'px' : 'auto') + ";\n  margin-bottom: " + (mascot.vOffset || 0) + "px;\n  cursor: pointer;\n}\n.fourchan-ss-navigation.bottom.fixed.posting-disabled #mascot img,\n.fourchan-ss-navigation.bottom.fixed.mascot-position-bottom #mascot img,\n.fourchan-ss-navigation.index.pagination-sticky-bottom.mascot-position-bottom #mascot img,\n.fourchan-ss-navigation.bottom.fixed:not(.post-form-style-fixed):not(.post-form-style-transparent-fade) #mascot img,\n.fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-fixed):not(.post-form-style-transparent-fade) #mascot img {\n  bottom: 1.5em;\n}\n.fourchan-ss-navigation.bottom.fixed #mascot img,\n.fourchan-ss-navigation.index.pagination-sticky-bottom #mascot img {\n  bottom: 21.6em;\n}\n.fourchan-ss-navigation.bottom.fixed.post-form-decorations #mascot img,\n.fourchan-ss-navigation.index.pagination-sticky-bottom.post-form-decorations #mascot img {\n  bottom: 21.8em;\n}\n.fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-fixed #mascot img,\n.fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-fixed #mascot img,\n.fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-transparent-fade #mascot img,\n.fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-transparent-fade #mascot img {\n  bottom: 22.9em;\n}\n.fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-fixed.post-form-decorations #mascot img,\n.fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-fixed.post-form-decorations #mascot img,\n.fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-transparent-fade.post-form-decorations #mascot img,\n.fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-transparent-fade.post-form-decorations #mascot img {\n  bottom: 23.1em;\n}\n.mascot-position-bottom #mascot img,\n.mascot-position-default.posting-disabled #mascot img {\n  bottom: 0;\n}\n.mascots-overlap-posts #mascot img {\n  z-index: 3;\n}\n.mascot-position-middle #mascot img {\n  bottom: 50%;\n  box-sizingtransform: translateY(50%);\n}\n.mascot-position-top #mascot img {\n  bottom: auto !important;\n  top: 17px;\n}\n.grayscale-mascots #mascot img {\n  filter: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filters\"><feColorMatrix id=\"color\" type=\"saturate\" values=\"0\" /></filter></svg>#filters');\n}";
     },
     categories: ['Anime', 'Ponies', 'Questionable', 'Silhouette', 'Western'],
     dialog: function(key) {
@@ -10952,7 +10949,7 @@
       }
       editMascot.name = key || '';
       MascotTools.addMascot(editMascot);
-      MascotTools.init(_conf["mascot"]);
+      MascotTools.init(editMascot);
       layout = {
         name: ["Mascot Name", "", "text"],
         image: ["Image", "", "text"],
@@ -10980,7 +10977,7 @@
               $.on(input, 'blur', function() {
                 editMascot[this.name] = this.value;
                 MascotTools.addMascot(editMascot);
-                return MascotTools.init(_conf["mascot"]);
+                return MascotTools.init(editMascot);
               });
               fileInput = $.el('input', {
                 type: "file",
@@ -11005,14 +11002,12 @@
                   return alert("Mascot names must start with a letter.");
                 }
                 editMascot[this.name] = this.value;
-                MascotTools.addMascot(editMascot);
-                return Style.addStyle();
+                return MascotTools.init(editMascot);
               });
             } else {
               $.on(input, 'blur', function() {
                 editMascot[this.name] = this.value;
-                MascotTools.addMascot(editMascot);
-                return Style.addStyle();
+                return MascotTools.init(editMascot);
               });
             }
             break;
@@ -11020,8 +11015,7 @@
             div = this.input(item, name);
             $.on($('input', div), 'blur', function() {
               editMascot[this.name] = parseInt(this.value);
-              MascotTools.addMascot(editMascot);
-              return Style.addStyle();
+              return MascotTools.init(editMascot);
             });
             break;
           case "select":
@@ -11041,8 +11035,7 @@
             setting.value = value;
             $.on($('select', div), 'change', function() {
               editMascot[this.name] = this.value;
-              MascotTools.addMascot(editMascot);
-              return Style.addStyle();
+              return MascotTools.init(editMascot);
             });
             break;
           case "checkbox":
@@ -11053,8 +11046,7 @@
             });
             $.on($('input', div), 'click', function() {
               editMascot[this.name] = this.checked ? true : false;
-              MascotTools.addMascot(editMascot);
-              return Style.addStyle();
+              return MascotTools.init(editMascot);
             });
         }
         nodes.push(div);
@@ -11102,16 +11094,19 @@
       return reader.readAsDataURL(file);
     },
     addMascot: function(mascot) {
-      var el;
+      var div, el, image;
 
+      image = Array.isArray(mascot.image) ? Style.lightTheme ? mascot.image[1] : mascot.image[0] : mascot.image;
       if (el = this.el) {
-        return el.src = Array.isArray(mascot.image) ? (Style.lightTheme ? mascot.image[1] : mascot.image[0]) : mascot.image;
+        return el.src = image;
       } else {
-        this.el = el = $.el('div', {
+        div = $.el('div', {
           id: "mascot",
-          innerHTML: "<img src='" + (Array.isArray(mascot.image) ? (Style.lightTheme ? mascot.image[1] : mascot.image[0]) : mascot.image) + "'>"
+          innerHTML: "<img src='" + image + "'>"
         });
-        return $.add(d.body, el);
+        this.el = div.firstElementChild;
+        $.on(this.el, 'mousedown', MascotTools.click);
+        return $.add(d.body, div);
       }
     },
     save: function(mascot) {
@@ -11160,6 +11155,10 @@
         $.set('userMascots', userMascots);
         return alert("Mascot \"" + name + "\" saved.");
       });
+    },
+    click: function(e) {
+      e.preventDefault();
+      return MascotTools.init();
     },
     close: function() {
       Conf['editMode'] = false;
@@ -11426,10 +11425,10 @@
       $.extend(Style, {
         layoutCSS: $.addStyle(Style.layout, 'layout'),
         themeCSS: $.addStyle(Style.theme(theme), 'theme'),
+        dynamicCSS: $.addStyle(Style.dynamic(), 'dynamic'),
         icons: $.addStyle("", 'icons'),
         paddingSheet: $.addStyle("", 'padding'),
-        mascot: $.addStyle("", 'mascotSheet'),
-        dynamicCSS: $.addStyle(Style.dynamic(), 'dynamic')
+        mascot: $.addStyle("", 'mascotSheet')
       });
       $.addStyle(JSColor.css(), 'jsColor');
       if (d.head) {
@@ -11480,7 +11479,6 @@
       if (!theme) {
         theme = Themes[_conf['theme']] || Themes['Yotsuba B'];
       }
-      MascotTools.init(_conf["mascot"]);
       Style.dynamicCSS.textContent = Style.dynamic();
       Style.iconPositions();
       return Style.padding();
@@ -14419,8 +14417,9 @@
               MascotTools.init();
             }
           } else {
+            Conf['mascot'] = this.id;
             Conf[g.MASCOTSTRING].push(this.id);
-            MascotTools.init(this.id);
+            MascotTools.init(Mascots[this.id]);
           }
           $.toggleClass(this, 'enabled');
           return $.set(g.MASCOTSTRING, Conf[g.MASCOTSTRING]);

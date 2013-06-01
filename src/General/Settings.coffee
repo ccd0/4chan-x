@@ -889,8 +889,9 @@ Settings =
           if Conf['mascot'] is @id
             MascotTools.init()
         else
+          Conf['mascot'] = @id
           Conf[g.MASCOTSTRING].push @id
-          MascotTools.init @id
+          MascotTools.init Mascots[@id]
         $.toggleClass @, 'enabled'
         $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
 
