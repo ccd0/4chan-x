@@ -731,7 +731,7 @@ Themes =
   box-shadow: 0px 10px 10px 2px rgba(128,128,128,0.5);
   border-radius: 3px;
 }
-.thread {
+.board > .thread {
   padding:10px;
 }
 #appchanx-settings.reply.dialog,
@@ -945,7 +945,7 @@ input[type="radio"]:checked {
   background: linear-gradient(#595959, #393939);
   border: 1px solid #151515;
 }
-.thread {
+.board > .thread {
   padding: 7px;
 }
 .subject:hover,
@@ -1132,13 +1132,13 @@ a.pointer{
   color:#777;
   padding-right:5px;
 }
-.thread .opContainer,
-.thread .replyContainer {
+.board > .thread .opContainer,
+.board > .thread .replyContainer {
   opacity:0.45;
   transition:all 0.5s ease;
 }
-.thread .opContainer:hover,
-.thread .replyContainer:hover {
+.board > .thread .opContainer:hover,
+.board > .thread .replyContainer:hover {
   opacity:1;
 }
 .reply.post,
@@ -1301,7 +1301,7 @@ a.forwardlink{
     'Warnings'                    : 'rgb(87,87,123)'
     'Shadow Color'                : 'rgba(0,0,0,.07)'
     'Custom CSS'                  : """
-.thread .reply {
+.board > .thread .reply {
   background-color: transparent;
   border-color: #ccc transparent transparent transparent;
   border-style: solid;
@@ -1808,7 +1808,7 @@ textarea,
     "Warnings"                    : "rgb(79,79,79)"
     "Shadow Color"                : "rgba(0,0,0,.1)"
     "Custom CSS"                  : """
-.thread {
+.board > .thread {
   padding: 1px;
 }
 .rice {
@@ -1885,7 +1885,7 @@ textarea,
     "Warnings"                    : "rgb(204,102,102)"
     "Shadow Color"                : "rgba(0,0,0,.1)"
     "Custom CSS"                  : """
-.thread {
+.board > .thread {
   padding: 1px;
 }
 .rice {
@@ -2047,7 +2047,7 @@ textarea,
     "Warnings"                    : "rgb(153,0,0)"
     "Shadow Color"                : "rgba(0,0,0,.05)"
     "Custom CSS"                  : """
-.thread {
+.board > .thread {
   padding: 1px;
 }
 .rice {
@@ -2216,7 +2216,7 @@ textarea,
     "Warnings"                    : "rgb(201,144,144)"
     "Shadow Color"                : "rgba(0,0,0,.1)"
     "Custom CSS"                  : """
-.thread {
+.board > .thread {
   padding: 1px;
 }
 .rice {
@@ -2470,9 +2470,7 @@ textarea,
     "Warnings"                    : "rgb(177,115,133)"
     "Shadow Color"                : "rgba(0,0,0,0.2)"
     "Custom CSS"                  : """
-html {
-}
-.thread {
+.board > .thread {
   padding: 3px 4px;
 }
 .rice {
@@ -2514,7 +2512,7 @@ div.reply.post {
   background-image: -webkit-repeating-linear-gradient(45deg, #303030, #292929, #303030, #303030 3px) !important;
   border-bottom:#1f1f1f!important;
 }
-.thread:not(.stub) {
+.board > .thread:not(.stub) {
   background: 0 !important
 }
 a:not([href='javascript:;']){
@@ -2571,7 +2569,7 @@ a:not([href='javascript:;']){
     "Warnings"                    : "rgb(200,40,41)"
     "Shadow Color"                : "rgba(0,0,0,.05)"
     "Custom CSS"                  : """
-.thread {
+.board > .thread {
   padding: 1px;
 }
 .rice {
@@ -2647,7 +2645,7 @@ textarea,
     "Warnings"                    : "rgb(79,79,79)"
     "Shadow Color"                : "rgba(0,0,0,.1)"
     "Custom CSS"                  : """
-.thread {
+.board > .thread {
   padding: 1px;
 }
 .rice {
@@ -2778,7 +2776,7 @@ textarea,
     "Warnings"                    : "rgb(200,40,41)"
     "Shadow Color"                : "#b0b0b0"
     "Custom CSS"                  : """
-.thread {
+.board > .thread {
   padding: 1px;
 }
 .rice {
@@ -2858,7 +2856,7 @@ textarea,
     "Warnings":                     "rgb(215,0,0)"
     "Shadow Color":                 "rgba(0,0,0,.1)"
     "Custom CSS": """
-.thread {
+.board > .thread {
   padding: 2px;
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3) inset, rgba(70,70,70,.5) 1px 1px;
 }
@@ -2963,7 +2961,7 @@ textarea,
     "Warnings":                     "rgb(215,0,0)"
     "Shadow Color":                 "rgba(0,0,0,.1)"
     "Custom CSS": """
-.thread {
+.board > .thread {
   padding: 2px;
   box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1) inset, rgba(255,255,255,.5) 1px 1px;
 }
@@ -3075,7 +3073,7 @@ textarea,
   margin: 0 !important;
   border-radius: 0;
 }
-.thread .replyContainer,
+.board > .thread .replyContainer,
 #unread-line {
   margin: -1px;
 }
