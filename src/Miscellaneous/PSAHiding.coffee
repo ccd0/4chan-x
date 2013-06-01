@@ -32,7 +32,7 @@ PSAHiding =
       href: 'javascript:;'
     $.on btn, 'click', PSAHiding.toggle
 
-    $.get hiddenPSA, 0, ({hiddenPSA}) ->
+    $.get 'hiddenPSA', 0, ({hiddenPSA}) ->
       PSAHiding.sync hiddenPSA
       $.before psa, btn
       $.rmClass doc, 'hide-announcement'
