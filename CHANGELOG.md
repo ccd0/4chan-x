@@ -1,4 +1,5 @@
 - Added the `Deselect reply` keybind.
+- Minor fixes.
 
 ## 3.5.0 - *2013-05-26*
 
