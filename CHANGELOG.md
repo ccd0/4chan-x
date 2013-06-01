@@ -1,3 +1,6 @@
+## v2.1.0
+*2013-06-01*
+
 **seaweedchan**:
 - Small bug fixes
 
