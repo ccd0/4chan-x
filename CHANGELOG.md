@@ -1,5 +1,7 @@
 ### 3.5.2 - *2013-06-01*
 
+- Fix minor regression.
+
 ### 3.5.1 - *2013-06-01*
 
 - Added the `Deselect reply` keybind.
