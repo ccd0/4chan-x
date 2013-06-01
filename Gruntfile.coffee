@@ -82,6 +82,9 @@ module.exports = (grunt) ->
         dest:   'builds/crx/'
         expand:  true
         flatten: true
+      opera:
+        files:
+          'builds/<%= pkg.name %>.nex': 'builds/<%= pkg.name %>.zip'
 
     coffee:
       script:
@@ -200,6 +203,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'release', [
     'default'
     'compress:crx'
+    'copy:opera'
     'shell:commit'
     'shell:push'
   ]

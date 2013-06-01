@@ -117,7 +117,6 @@
         'Thread Expansion': [true, 'Add buttons to expand threads.'],
         'Index Navigation': [false, 'Add buttons to navigate between threads.'],
         'Reply Navigation': [false, 'Add buttons to navigate to top / bottom of thread.'],
-        'Check for Updates': [true, 'Check for updated versions of appchan x.'],
         'Color User IDs': [false, 'Assign unique colors to user IDs on boards that use them'],
         'Remove Spoilers': [false, 'Remove all spoilers in text.'],
         'Indicate Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled.']
@@ -5275,6 +5274,9 @@
     init: function() {
       if (g.VIEW === 'catalog' || !Conf['Reply Hiding Buttons'] && !Conf['Reply Hiding Link']) {
         return;
+      }
+      if (Conf['Reply Hiding Buttons']) {
+        $.addClass(doc, "reply-hide");
       }
       this.db = new DataBoard('hiddenPosts');
       return Post.prototype.callbacks.push({
@@ -14736,8 +14738,7 @@
         }
         Main.callbackNodes(Thread, threads);
         Main.callbackNodesDB(Post, posts, function() {
-          $.event('4chanXInitFinished');
-          return Main.checkUpdate();
+          return $.event('4chanXInitFinished');
         });
         if (styleSelector = $.id('styleSelector')) {
           passLink = $.el('a', {
@@ -14757,8 +14758,7 @@
         err = _error;
         new Notification('warning', 'Cookies need to be enabled on 4chan for appchan x to properly function.', 30);
       }
-      $.event('4chanXInitFinished');
-      return Main.checkUpdate();
+      return $.event('4chanXInitFinished');
     },
     callbackNodes: function(klass, nodes) {
       var callback, err, errors, i, len, node, _i, _len, _ref;
@@ -14864,40 +14864,6 @@
       }
       obj.callback.isAddon = true;
       return Klass.prototype.callbacks.push(obj.callback);
-    },
-    message: function(e) {
-      var el, version;
-
-      version = e.data.version;
-      if (version && version !== g.VERSION) {
-        el = $.el('span', {
-          innerHTML: "Update: appchan x v" + version + " is out, get it <a href=http://zixaphir.github.com/appchan-x/ target=_blank>here</a>."
-        });
-        return new Notification('info', el, 120);
-      }
-    },
-    checkUpdate: function() {
-      var now;
-
-      if (!(Conf['Check for Updates'] && Main.isThisPageLegit())) {
-        return;
-      }
-      now = Date.now();
-      return $.get('lastchecked', 0, function(_arg) {
-        var lastchecked;
-
-        lastchecked = _arg.lastchecked;
-        if (lastchecked > now - $.DAY) {
-          return;
-        }
-        return $.ready(function() {
-          $.on(window, 'message', Main.message);
-          $.set('lastchecked', now);
-          return $.add(d.head, $.el('script', {
-            src: 'https://github.com/zixaphir/appchan-x/raw/master/latest.js'
-          }));
-        });
-      });
     },
     handleErrors: function(errors) {
       var div, error, logs, _i, _len;

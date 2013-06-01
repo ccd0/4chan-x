@@ -2,6 +2,9 @@ PostHiding =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Reply Hiding Buttons'] and !Conf['Reply Hiding Link']
 
+    if Conf['Reply Hiding Buttons']
+      $.addClass doc, "reply-hide"
+
     @db = new DataBoard 'hiddenPosts'
     Post::callbacks.push
       name: 'Reply Hiding'

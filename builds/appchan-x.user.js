@@ -5274,6 +5274,9 @@
       if (g.VIEW === 'catalog' || !Conf['Reply Hiding Buttons'] && !Conf['Reply Hiding Link']) {
         return;
       }
+      if (Conf['Reply Hiding Buttons']) {
+        $.addClass(doc, "reply-hide");
+      }
       this.db = new DataBoard('hiddenPosts');
       return Post.prototype.callbacks.push({
         name: 'Reply Hiding',

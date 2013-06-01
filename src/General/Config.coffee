@@ -49,10 +49,12 @@ Config =
         false
         'Add buttons to navigate to top / bottom of thread.'
       ]
+      <% if (type !== 'crx') { %>
       'Check for Updates': [
         true
         'Check for updated versions of <%= meta.name %>.'
       ]
+      <% } %>
       'Color User IDs': [
         false
         'Assign unique colors to user IDs on boards that use them'
