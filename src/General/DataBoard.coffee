@@ -60,6 +60,12 @@ class DataBoard
       # XXX tmp fix for users that had the `null`
       # value for a board with the Unread features:
       if typeof @data.boards[boardID] isnt 'object'
+        Main.logError
+          message: 'XXX weird DataBoard values'
+          error: new Error """
+          @key === #{@key}
+          @data.boards[#{boardID}] === #{@data.boards[boardID]}
+          """
         delete @data.boards[boardID]
       else
         @deleteIfEmpty {boardID}

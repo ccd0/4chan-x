@@ -11,6 +11,11 @@ Redirect =
       # XXX I get obscure reports of:
       #   "Redirect" initialization crashed. TypeError: Cannot read property 'length' of undefined
       # comming from here.
+      Main.logError
+        message: "XXX Conf['archives'].length still failing"
+        error: new Error """
+        Conf['archives'] === #{JSON.stringify Conf['archives']}
+        """
       Conf['archives'] = Redirect.archives
       $.delete ['archives', 'lastarchivecheck']
     Redirect.update()
