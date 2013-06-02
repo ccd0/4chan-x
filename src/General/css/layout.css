@@ -865,7 +865,7 @@ th {
 }
 /* Thread Clearfix */
 .thread > .threadContainer:last-of-type::after,
-.thread > .replyContainer:last-of-type::after {
+.thread > .postContainer:last-of-type::after {
   display: block;
   content: ' ';
   clear: both;
