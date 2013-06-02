@@ -558,7 +558,7 @@ Config =
         false
         'Try to emulate the appearance of 4chan SS\'s Sidebar.'
       ]
-      'Block Ads': [
+      'Hide Ads': [
         false
         'Block advertisements. It\'s probably better to use AdBlock for this.'
       ]
