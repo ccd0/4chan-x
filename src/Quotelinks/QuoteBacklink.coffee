@@ -33,6 +33,7 @@ QuoteBacklink =
       if (post = g.posts[quote]) and post.nodes.backlinkContainer
         # Don't add OP clones when OP Backlinks is disabled,
         # as the clones won't have the backlink containers.
+        $.addClass post.nodes.post, 'quoted'
         for clone in post.clones
           containers.push clone.nodes.backlinkContainer
       for container in containers
@@ -53,6 +54,8 @@ QuoteBacklink =
     container = QuoteBacklink.getContainer @fullID
     @nodes.backlinkContainer = container
     $.add @nodes.info, container
+    if container.children.length > 0
+      $.addClass @nodes.post, 'quoted'
   getContainer: (id) ->
     @containers[id] or=
       $.el 'span', className: 'container'
