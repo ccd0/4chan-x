@@ -196,6 +196,12 @@ th {
   left: 2px;
   right: 2px;
 }
+.pagination-sticky-top .pagelist,
+.pagination-sticky-bottom .pagelist,
+#header-bar {
+  left: 2px;
+  right: 2px;
+}
 .navigation-alignment-center #header-bar {
   text-align: center;
 }
@@ -226,6 +232,7 @@ th {
 .sidebar-location-right.sidebar-minimal:not(.fourchan-ss-navigation) #header-bar {
   right: 20px;
 }
+.fourchan-ss-navigation .pagelist,
 .fourchan-ss-navigation #header-bar {
   left: 0;
   right: 0;
@@ -393,13 +400,6 @@ th {
 }
 .pagination-alignment-right .pagelist {
   text-align: right;
-}
-.fourchan-ss-navigation .pagelist {
-  left: 0;
-  right: 0;
-  border-left: 0;
-  border-right: 0;
-  border-radius: 0 !important;
 }
 .pagination-sticky-top .pagelist {
   position: fixed;
