@@ -1,5 +1,9 @@
+### v2.1.1
+*2013-06-02*
+
 **zixaphir**:
 - Changed close character from '×' to '✖'
+- Bugfixes
 
 ## v2.1.0
 *2013-06-01*
