@@ -73,7 +73,8 @@ Style =
 
   setup: ->
     theme = Themes[Conf['theme']] or Themes['Yotsuba B']
-    Style.svg = $.el 'div'
+    Style.svg = $.el 'div',
+      id: 'svg_filters'
     $.extend Style,
       layoutCSS:    $.addStyle Style.layout,       'layout'
       themeCSS:     $.addStyle Style.theme(theme), 'theme'
@@ -301,7 +302,7 @@ Style =
     if _conf['4chan SS Navigation'] and Style.padding.pages and ["sticky top", "top", "sticky bottom"].contains _conf["Pagination"]
       css += "  #{Style.padding.pages.property}: #{Style.padding.pages.offsetHeight}px !important;\n"
 
-    if _conf['Fixed Header']
+    if _conf['4chan SS Navigation'] and _conf['Fixed Header']
       css += "  #{Style.padding.nav.property}: #{Style.padding.nav.offsetHeight}px !important;\n"
 
     css += """

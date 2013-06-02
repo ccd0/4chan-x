@@ -414,10 +414,10 @@ a .name {
   background: #{theme["Highlighted Reply Background"]};
   border: 1px solid #{theme["Highlighted Reply Border"]};
 }
-body::after {
+.icon-position-vertical body::after {
   background: #{backgroundC};
 }
-.fourchan-ss-sidebar body::after,
+.icon-position-vertical .fourchan-ss-sidebar body::after,
 .fourchan-ss-sidebar body::before {
   background: none repeat scroll 0% 0% rgba(#{if background = new Style.color Style.colorToHex theme["Reply Background"] then background.shiftRGB -18}, 0.8);
 }

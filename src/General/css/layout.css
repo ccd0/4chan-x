@@ -57,6 +57,7 @@ body > hr {
 #catalog,
 #navlinks,
 #navtopright,
+#svg_filters,
 .cataloglink,
 .navLinks,
 a[style="cursor: pointer; float: right;"] {
@@ -604,17 +605,14 @@ th {
 .board-title-under-post-form #boardTitle {
   position: fixed;
 }
-.board-title-at-sidebar-top.fourchan-banner-at-sidebar-top.sidebar-large.icon-orientation-vertical #boardTitle {
+.board-title-at-sidebar-top.fourchan-banner-at-sidebar-top.sidebar-large #boardTitle {
   top: 121px;
 }
-.board-title-at-sidebar-top.fourchan-banner-at-sidebar-top.icon-orientation-vertical #boardTitle {
+.board-title-at-sidebar-top.fourchan-banner-at-sidebar-top #boardTitle {
   top: 104px;
 }
 .board-title-at-sidebar-top #boardTitle {
   top: 40px;
-}
-.board-title-at-sidebar-top.icon-orientation-vertical #boardTitle {
-  top: 21px;
 }
 .board-title-at-sidebar-bottom #boardTitle {
   bottom: 280px;
