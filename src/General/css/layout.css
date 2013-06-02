@@ -686,7 +686,7 @@ th {
   z-index: 18;
   border-width: 1px 0 0 1px;
   border-style: solid;
-  content: 'X';
+  content: '✖';
   display: block;
   position: fixed;
   bottom: 0;
@@ -2050,7 +2050,7 @@ article li {
   content: '?';
 }
 .closeIcon::after {
-  content: '×';
+  content: '✖';
 }
 /* Front Page */
 #logo {

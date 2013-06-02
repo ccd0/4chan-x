@@ -1,3 +1,6 @@
+**zixaphir**:
+- Changed close character from '×' to '✖'
+
 ## v2.1.0
 *2013-06-01*
 

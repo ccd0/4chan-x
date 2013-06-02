@@ -493,7 +493,7 @@ QR =
         className: 'qr-preview'
         draggable: true
         href: 'javascript:;'
-        innerHTML: '<a class=remove>×</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
+        innerHTML: '<a class=remove>✖</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
 
       @nodes =
         el:      el

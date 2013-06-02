@@ -3,7 +3,7 @@ ThreadWatcher =
     return unless Conf['Thread Watcher']
 
     @dialog = UI.dialog 'watcher', 'top: 50px; left: 0px;',
-      '<div class=move>Thread Watcher<a class=close href=javascript:;>×</a></div>'
+      '<div class=move>Thread Watcher<a class=close href=javascript:;>✖</a></div>'
 
     $.on d, 'QRPostSuccessful',   @cb.post
     $.sync  'WatchedThreads',     @refresh
@@ -39,7 +39,7 @@ ThreadWatcher =
     for board of watched
       for id, props of watched[board]
         x = $.el 'a',
-          textContent: '×'
+          textContent: '✖'
           className: 'close'
           href: 'javascript:;'
         $.on x, 'click', ThreadWatcher.cb.x
