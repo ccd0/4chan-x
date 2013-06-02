@@ -782,12 +782,12 @@ th {
   width: 299px;
 }
 .slideout-watcher.sidebar-location-right #watcher {
-  left: auto;
-  right: 2px;
+  left: auto !important;
+  right: 2px !important;
 }
 .slideout-watcher.sidebar-location-left #watcher {
-  right: auto;
-  left: 2px;
+  right: auto !important;
+  left: 2px !important;
 }
 .slideout-watcher #watcher .move {
   cursor: default;

@@ -75,7 +75,7 @@ div.navLinks > a:first-of-type::after {
 }
 #boardNavDesktopFoot,
 #globalMessage,
-#watcher {
+.slideout-watcher #watcher.dialog {
   <%= sizing %>: border-box;
   width: 230px !important;
   #{align}: 18px !important;

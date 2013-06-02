@@ -3,11 +3,10 @@ ThreadWatcher =
     return unless Conf['Thread Watcher']
 
     @dialog = UI.dialog 'watcher', 'top: 50px; left: 0px;',
-      '<div class=move>Thread Watcher<a class=close href=javascript:;>✖</a></div>'
+      '<div class=move>Thread Watcher</div>'
 
     $.on d, 'QRPostSuccessful',   @cb.post
     $.sync  'WatchedThreads',     @refresh
-    $.on $('.move>.close', ThreadWatcher.dialog), 'click', @toggleWatcher
 
 
     $.ready ->
@@ -61,10 +60,6 @@ ThreadWatcher =
       else
         $.rmClass favicon, 'watched'
     return
-
-  toggleWatcher: ->
-    $.toggleClass ThreadWatcher.shortcut, 'disabled'
-    ThreadWatcher.dialog.hidden = !ThreadWatcher.dialog.hidden
 
   cb:
     toggle: ->
