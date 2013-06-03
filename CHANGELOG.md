@@ -8,7 +8,6 @@
   * Remove mascot positioning based on post form decorations
   * Remove 4sight support
 
-
 ### v2.1.1
 *2013-06-02*
 

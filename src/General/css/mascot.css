@@ -15,9 +15,11 @@
     else
       'auto'
   };
+}
+#mascot {
   margin: #{mascot.vOffset or 0}px #{mascot.hOffset or 0}px;
 }
-.sidebar-large #mascot img {
+.sidebar-large #mascot {
   left: #{if mascot.center then 25 else 0}px;
   right: #{if mascot.center then 25 else 0}px;
 }

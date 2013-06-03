@@ -45,7 +45,6 @@ QR =
   initReady: ->
     QR.postingIsEnabled = !!$.id 'postForm'
     unless QR.postingIsEnabled
-      $.addClass doc, 'posting-disabled'
       return 
     
     $.on d, 'QRGetSelectedPost', ({detail: cb}) ->
@@ -102,6 +101,8 @@ QR =
       QR.posts[0].rm()
     QR.cooldown.auto = false
     QR.status()
+    if MascotTools.el
+      $.add d.body, MascotTools.el
 
   focusin: ->
     $.addClass QR.nodes.el, 'has-focus'
@@ -1007,6 +1008,9 @@ QR =
     QR.captcha.init()
 
     Rice.nodes dialog
+
+    if MascotTools.el and Conf['Mascot Position'] is 'default' and ['fixed', 'transparent fade'].contains Conf['Post Form Style']
+      $.add dialog, MascotTools.el
 
     $.add d.body, dialog
 

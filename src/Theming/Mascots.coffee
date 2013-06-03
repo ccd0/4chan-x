@@ -7,9 +7,16 @@ MascotTools =
       Conf['mascot'] = name
 
     unless @el
-      @el = $ '#mascot img', d.body
+      @el = $.el 'div',
+        id: "mascot"
+        innerHTML: "<img>"
 
-    el = @el
+      $.on @el, 'mousedown', MascotTools.click
+
+      $.asap (-> d.body), =>
+        $.add d.body, @el
+
+    el = @el.firstElementChild
 
     if !Conf['Mascots'] or (Conf['Hide Mascots on Catalog'] and g.VIEW is 'catalog')
       if el then el.src = ""
@@ -28,7 +35,15 @@ MascotTools =
         Conf[g.MASCOTSTRING].remove name
         return MascotTools.init()
 
-    MascotTools.addMascot mascot
+    image =
+      if Array.isArray mascot.image
+        if Style.lightTheme
+          mascot.image[1]
+        else
+          mascot.image[0]
+      else mascot.image
+
+    el.src = image
 
     Style.mascot.textContent = """<%= grunt.file.read('src/General/css/mascot.css') %>"""
 
@@ -47,7 +62,6 @@ MascotTools =
     else
       editMascot = {}
     editMascot.name = key or ''
-    MascotTools.addMascot editMascot
     MascotTools.init editMascot
     layout =
       name: [
@@ -129,7 +143,6 @@ MascotTools =
 
             $.on input, 'blur', ->
               editMascot[@name] = @value
-              MascotTools.addMascot editMascot
               MascotTools.init editMascot
 
             fileInput = $.el 'input',
@@ -232,27 +245,6 @@ MascotTools =
       Style.addStyle()
 
     reader.readAsDataURL file
-
-  addMascot: (mascot) ->
-    image =
-      if Array.isArray mascot.image
-        if Style.lightTheme
-          mascot.image[1]
-        else
-          mascot.image[0]
-      else mascot.image
-    if el = @el
-      el.src = image
-    else
-      div = $.el 'div',
-        id: "mascot"
-        innerHTML: "<img src='#{image}'>"
-
-      @el = div.firstElementChild
-
-      $.on @el, 'mousedown', MascotTools.click
-
-      $.add d.body, div
 
   save: (mascot) ->
     {name, image} = mascot
