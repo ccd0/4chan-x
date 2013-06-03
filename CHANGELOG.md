@@ -1,3 +1,14 @@
+**zixaphir**:
+- Remove shitty menu placeholder icon
+  * replace it with settings icon
+  * move settings link into menu
+- Fix autoupdating in greasemonkey, apparently
+- Add front page styling (http://www.4chan.org/)
+- Clean up CSS a bit
+  * Remove mascot positioning based on post form decorations
+  * Remove 4sight support
+
+
 ### v2.1.1
 *2013-06-02*
 
