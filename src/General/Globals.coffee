@@ -3044,7 +3044,7 @@ textarea,
     "Checkbox Border":              "#0f0f0f"
     "Buttons Background":           "#171717"
     "Buttons Border":               "#111111"
-    "Navigation Background":        "rgba(16,16,16,0.9)"
+    "Navigation Background":        "rgba(30,30,30,0.9)"
     "Navigation Border":            "#111111"
     "Quotelinks":                   "#6d6d8c"
     "Backlinks":                    "#55555c"

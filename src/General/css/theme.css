@@ -365,7 +365,7 @@ a .name {
   border-top: 1px solid #{if Style.lightTheme then "rgba(0,0,0,0.05)" else "rgba(255,255,255,0.025)"};
 }
 .icons-4chan-ss #navtopright .exlinksOptionsLink::after,
-.icons-4chan-ss #appchanOptions,
+.icons-4chan-ss #main-menu,
 .icons-4chan-ss .navLinks > a:first-of-type::after,
 .icons-4chan-ss #watcher::after,
 .icons-4chan-ss #globalMessage::after,
@@ -377,7 +377,7 @@ a .name {
   background-image: url("data:image/png;base64,#{Icons['4chan SS']}");
 }
 .icons-oneechan #navtopright .exlinksOptionsLink::after,
-.icons-oneechan #appchanOptions,
+.icons-oneechan #main-menu,
 .icons-oneechan .navLinks > a:first-of-type::after,
 .icons-oneechan #watcher::after,
 .icons-oneechan #globalMessage::after,
@@ -414,10 +414,10 @@ a .name {
   background: #{theme["Highlighted Reply Background"]};
   border: 1px solid #{theme["Highlighted Reply Border"]};
 }
-.icon-position-vertical body::after {
+.icon-orientation-vertical body::after {
   background: #{backgroundC};
 }
-.icon-position-vertical .fourchan-ss-sidebar body::after,
+.icon-orientation-vertical .fourchan-ss-sidebar body::after,
 .fourchan-ss-sidebar body::before {
   background: none repeat scroll 0% 0% rgba(#{if background = new Style.color Style.colorToHex theme["Reply Background"] then background.shiftRGB -18}, 0.8);
 }

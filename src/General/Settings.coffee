@@ -1,18 +1,16 @@
 Settings =
   init: ->
     # Appchan X settings link
-    link = $.el 'a',
-      id:          'appchanOptions'
+    el = $.el 'a',
       className:   'settings-link'
       href:        'javascript:;'
-    $.on link, 'click', Settings.open
-
-    $.asap (-> d.body), ->
-      return unless Main.isThisPageLegit()
-      # Wait for #boardNavMobile instead of #boardNavDesktop,
-      # it might be incomplete otherwise.
-      $.asap (-> $.id 'boardNavMobile'), ->
-        $.add $.id('navtopright'), link
+      textContent: 'Settings'
+    $.on el, 'click', Settings.open
+    
+    $.event 'AddMenuEntry',
+      type: 'header'
+      el: el
+      order: 1
 
     $.get 'previousversion', null, (item) ->
       if previous = item['previousversion']

@@ -1,8 +1,8 @@
-/* 4chan X Options */
 body::after {
   #{align}: #{position[i] - 1}px;
 }
-#appchanOptions {
+/* Appchan X Options */
+#main-menu {
   #{align}: #{position[i++]}px;
 }
 /* Slideout Navigation */
@@ -27,10 +27,6 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 /* Expand Images */
 #img-controls {
-  #{align}: #{position[i++]}px;
-}
-/* Main Menu */
-#main-menu {
   #{align}: #{position[i++]}px;
 }
 /* 4chan Catalog */
@@ -62,11 +58,10 @@ body::after {
 }
 #boardNavDesktopFoot::after,
 #navtopright .exlinksOptionsLink::after,
-#appchanOptions,
+#main-menu,
 .slideout-watcher #watcher::after,
 .announcements-slideout #globalMessage::after,
 #img-controls,
-#main-menu,
 #fappeTyme,
 div.navLinks > a:first-of-type::after,
 #catalog::after,

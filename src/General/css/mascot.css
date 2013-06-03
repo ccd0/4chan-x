@@ -1,38 +1,4 @@
-#mascot {
-  display: none;
-}
-.mascots #mascot {
-  display: block;
-}
-.sidebar-location-left #mascot img {
-  <%= sizing %>transform: scaleX(-1);
-}
-.sidebar-location-right.mascot-location-sidebar #mascot img,
-.sidebar-location-left #mascot img {
-  right: 0;
-  left: auto;
-  margin-right: #{mascot.hOffset}px;
-}
-.sidebar-location-right.sidebar-large.mascot-location-sidebar #mascot img,
-.sidebar-location-left.sidebar-large #mascot img {
-  right: #{if mascot.center then 25 else 0}px;
-  left: auto;
-}
-.sidebar-location-left.mascot-location-sidebar #mascot img,
-.sidebar-location-right #mascot img {
-  left: 0;
-  right: auto;
-  margin-left: #{mascot.hOffset}px;
-}
-.sidebar-location-left.sidebar-large.mascot-location-sidebar #mascot img,
-.sidebar-location-right.sidebar-large #mascot img {
-  left: #{if mascot.center then 25 else 0}px;
-  right: auto;
-}
 #mascot img {
-  position: fixed;
-  z-index: -1;
-  bottom: 18.5em;
   height: #{
     if mascot.height and isNaN parseFloat mascot.height
       mascot.height
@@ -49,62 +15,9 @@
     else
       'auto'
   };
-  margin-bottom: #{mascot.vOffset or 0}px;
-  cursor: pointer;
+  margin: #{mascot.vOffset or 0}px #{mascot.hOffset or 0}px;
 }
-.fourchan-ss-navigation.bottom.fixed.posting-disabled #mascot img,
-.fourchan-ss-navigation.bottom.fixed.mascot-position-bottom #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.mascot-position-bottom #mascot img,
-.fourchan-ss-navigation.bottom.fixed:not(.post-form-style-fixed):not(.post-form-style-transparent-fade) #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-fixed):not(.post-form-style-transparent-fade) #mascot img {
-  bottom: 1.5em;
-}
-.fourchan-ss-navigation.bottom.fixed.post-form-style-fixed #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.post-form-style-fixed #mascot img,
-.fourchan-ss-navigation.bottom.fixed.post-form-style-transparent-fade #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.post-form-style-transparent-fade #mascot img {
-  bottom: 20.1em;
-}
-.post-form-style-fixed.show-post-form-header #mascot img,
-.post-form-style-transparent-fade.show-post-form-header #mascot img,
-.fourchan-ss-navigation.bottom.fixed.post-form-style-fixed.post-form-decorations #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.post-form-style-fixed.post-form-decorations #mascot img,
-.fourchan-ss-navigation.bottom.fixed.post-form-style-transparent-fade.post-form-decorations #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.post-form-style-transparent-fade.post-form-decorations #mascot img {
-  bottom: 20.3em;
-}
-.fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-fixed #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-fixed #mascot img,
-.fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-transparent-fade #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-transparent-fade #mascot img {
-  bottom: 21.6em;
-}
-.fourchan-ss-navigation.bottom.fixed.post-form-style-fixed.post-form-decorations.show-post-form-header #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.post-form-style-fixed.post-form-decorations.show-post-form-header #mascot img,
-.fourchan-ss-navigation.bottom.fixed.post-form-style-transparent-fade.post-form-decorations.show-post-form-header #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.post-form-style-transparent-fade.post-form-decorations.show-post-form-header #mascot img {
-  bottom: 21.8em;
-}
-.post-form-style-fixed.post-form-decorations #mascot img,
-.post-form-style-transparent-fade.post-form-decorations #mascot img {
-  bottom: 18.8em;
-}
-.mascot-position-default:not(.post-form-style-fixed):not(.post-form-style-transparent-fade) #mascot img,
-.mascot-position-bottom #mascot img,
-.mascot-position-default.posting-disabled #mascot img {
-  bottom: 0;
-}
-.mascots-overlap-posts #mascot img {
-  z-index: 3;
-}
-.mascot-position-middle #mascot img {
-  bottom: 50%;
-  <%= sizing %>transform: translateY(50%);
-}
-.mascot-position-top #mascot img {
-  bottom: auto !important;
-  top: 17px;
-}
-.grayscale-mascots #mascot img {
-  <%= filter %>: url('#grayscale');
+.sidebar-large #mascot img {
+  left: #{if mascot.center then 25 else 0}px;
+  right: #{if mascot.center then 25 else 0}px;
 }

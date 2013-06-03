@@ -296,6 +296,7 @@ MascotTools =
       alert "Mascot \"#{name}\" saved."
 
   click: (e) ->
+    return if e.button isnt 0 # not LMB
     e.preventDefault()
     MascotTools.init()
 

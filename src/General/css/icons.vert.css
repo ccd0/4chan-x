@@ -5,12 +5,8 @@ body::after {
 #img-controls {
   top: #{position[i++]}px;
 }
-/* Main Menu */
+/* Appchan X Options */
 #main-menu {
-  top: #{position[i++]}px;
-}
-/* 4chan X Options */
-#appchanOptions {
   top: #{position[i++]}px;
 }
 /* Slideout Navigation */
@@ -61,11 +57,10 @@ body::after {
 }
 #navlinks a,
 #navtopright .exlinksOptionsLink::after,
-#appchanOptions,
+#main-menu,
 #boardNavDesktopFoot::after,
 #globalMessage::after,
 #img-controls,
-#main-menu,
 #fappeTyme,
 #{if _conf["Slideout Watcher"] then "#watcher::after," else ""}
 body > a[style="cursor: pointer; float: right;"]::after,

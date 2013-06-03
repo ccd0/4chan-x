@@ -234,7 +234,6 @@ Style =
           $ '#navtopright .exlinksOptionsLink', d.body
           notCatalog and $ 'body > a[style="cursor: pointer; float: right;"]', d.body
           notEither and _conf['Image Expansion']
-          true
           notEither
           g.VIEW is 'thread'
           notEither and _conf['Fappe Tyme']
@@ -258,7 +257,6 @@ Style =
         2
         [
           notEither and _conf['Image Expansion']
-          true
           true
           _conf['Slideout Navigation'] isnt 'hide'
           _conf['Announcements'] is 'slideout' and (psa = $ '#globalMessage', d.body) and !psa.hidden
