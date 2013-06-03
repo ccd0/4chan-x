@@ -188,11 +188,18 @@ th {
   border-left: 6px solid transparent;
   margin: 1.5px;
 }
+#navlinks a:first-of-type {
+  border-bottom: 11px solid rgb(130,130,130);
+}
+#navlinks a:last-of-type {
+  border-top: 11px solid rgb(130,130,130);
+}
 /* Header */
 #header-bar {
   z-index: 6;
   border-width: 1px;
   padding: 0 2px;
+  border-style: solid;
 }
 .pagination-sticky-top .pagelist,
 .pagination-sticky-bottom .pagelist,
@@ -365,6 +372,7 @@ th {
 }
 /* Pagination */
 .pagelist {
+  border-style: solid;
   border-width: 1px;
   z-index: 6;
 }
@@ -412,17 +420,9 @@ th {
   border: 0 none !important;
   text-align: right;
 }
-.pagination-on-side.post-form-style-fixed.show-post-form-header.post-form-decorations .pagelist,
-.pagination-on-side.post-form-style-transparent-fade.show-post-form-header.post-form-decorations .pagelist {
-  bottom: 23.3em;
-}
 .pagination-on-side.post-form-style-fixed.show-post-form-header .pagelist,
 .pagination-on-side.post-form-style-transparent-fade.show-post-form-header .pagelist {
   bottom: 23.1em;
-}
-.pagination-on-side.post-form-style-fixed.post-form-decorations .pagelist,
-.pagination-on-side.post-form-style-transparent-fade.post-form-decorations .pagelist {
-  bottom: 21.8em;
 }
 .pagination-on-side.post-form-style-fixed .pagelist,
 .pagination-on-side.post-form-style-transparent-fade .pagelist {
@@ -478,6 +478,29 @@ th {
 .prev {
   display: inline-block;
   margin: 0 3px;
+}
+/* Icons */
+.icons-4chan-ss #navtopright .exlinksOptionsLink::after,
+.icons-4chan-ss #main-menu,
+.icons-4chan-ss .navLinks > a:first-of-type::after,
+.icons-4chan-ss #watcher::after,
+.icons-4chan-ss #globalMessage::after,
+.icons-4chan-ss #boardNavDesktopFoot::after,
+.icons-4chan-ss #img-controls,
+.icons-4chan-ss #catalog::after,
+.icons-4chan-ss #fappeTyme {
+  background-image: url("data:image/png;base64,<%= grunt.file.read("src/General/img/icons/4chanSS.png",  {encoding: "base64"}) %>");
+}
+.icons-oneechan #navtopright .exlinksOptionsLink::after,
+.icons-oneechan #main-menu,
+.icons-oneechan .navLinks > a:first-of-type::after,
+.icons-oneechan #watcher::after,
+.icons-oneechan #globalMessage::after,
+.icons-oneechan #boardNavDesktopFoot::after,
+.icons-oneechan #img-controls,
+.icons-oneechan #catalog::after,
+.icons-oneechan #fappeTyme {
+  background-image: url("data:image/png;base64,<%= grunt.file.read("src/General/img/icons/oneechan.png", {encoding: "base64"}) %>");
 }
 /* Banner & Board Title */
 .boardBanner {
@@ -1071,6 +1094,26 @@ s {
 .backlinks-position-lower-right .inline .container {
   float: none;
 }
+/* Fixes text spoilers */
+.remove-spoilers.indicate-spoilers .spoiler::before,
+.remove-spoilers.indicate-spoilers s::before {
+  content: '[spoiler]';
+}
+.remove-spoilers.indicate-spoilers .spoiler::after,
+.remove-spoilers.indicate-spoilers s::after {
+  content: '[/spoiler]';
+}
+:root:not(.remove-spoilers) .spoiler:not(:hover) *,
+:root:not(.remove-spoilers) s:not(:hover) * {
+  color: rgb(0,0,0) !important;
+  text-shadow: none !important;
+}
+:root:not(.remove-spoilers) spoiler:not(:hover),
+:root:not(.remove-spoilers) s:not(:hover) {
+  background-color: rgb(0,0,0);
+  color: rgb(0,0,0) !important;
+  text-shadow: none !important;
+}
 /* Code */
 .prettyprint {
   <%= sizing %>: border-box;
@@ -1414,6 +1457,7 @@ input:not([type=radio]) {
   margin: .1em 0 0;
   vertical-align: bottom;
   padding: 0 1px;
+  outline: none;
 }
 .selectrice {
   padding-right: 1.6em;
@@ -1638,11 +1682,7 @@ a:only-of-type > .remove {
   bottom: 20.1em;
 }
 .post-form-style-fixed.show-post-form-header #mascot img,
-.post-form-style-transparent-fade.show-post-form-header #mascot img,
-.fourchan-ss-navigation.bottom.fixed.post-form-style-fixed.post-form-decorations #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.post-form-style-fixed.post-form-decorations #mascot img,
-.fourchan-ss-navigation.bottom.fixed.post-form-style-transparent-fade.post-form-decorations #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.post-form-style-transparent-fade.post-form-decorations #mascot img {
+.post-form-style-transparent-fade.show-post-form-header #mascot img {
   bottom: 20.3em;
 }
 .fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-fixed #mascot img,
@@ -1650,16 +1690,6 @@ a:only-of-type > .remove {
 .fourchan-ss-navigation.bottom.fixed.show-post-form-header.post-form-style-transparent-fade #mascot img,
 .fourchan-ss-navigation.index.pagination-sticky-bottom.show-post-form-header.post-form-style-transparent-fade #mascot img {
   bottom: 21.6em;
-}
-.fourchan-ss-navigation.bottom.fixed.post-form-style-fixed.post-form-decorations.show-post-form-header #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.post-form-style-fixed.post-form-decorations.show-post-form-header #mascot img,
-.fourchan-ss-navigation.bottom.fixed.post-form-style-transparent-fade.post-form-decorations.show-post-form-header #mascot img,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.post-form-style-transparent-fade.post-form-decorations.show-post-form-header #mascot img {
-  bottom: 21.8em;
-}
-.post-form-style-fixed.post-form-decorations #mascot img,
-.post-form-style-transparent-fade.post-form-decorations #mascot img {
-  bottom: 18.8em;
 }
 .mascot-position-default:not(.post-form-style-fixed):not(.post-form-style-transparent-fade) #mascot img,
 .mascot-position-bottom #mascot img,
@@ -1754,6 +1784,7 @@ a:only-of-type > .remove {
   right: 5px;
   bottom: 5px;
   left: 5px;
+  padding: 5px;
 }
 .sections-list {
   padding: 0 3px;
@@ -1768,6 +1799,9 @@ a:only-of-type > .remove {
   display: inline-block;
   border-width: 1px 1px 0 1px;
   border-color: transparent;
+  border-style: solid;
+}
+.sections-list > a.tab-selected {
   border-style: solid;
 }
 .credits {
@@ -1826,6 +1860,10 @@ article li {
   right: 0;
   bottom: 1.7em;
   left: 0;
+}
+#mascotcontent,
+#themecontent {
+  padding: 5px;
 }
 #themecontent {
   top: 1.8em;
@@ -2102,6 +2140,7 @@ article li {
   top: 50% !important;
   left: 50%;
   <%= agent %>transform: translate(-50%, -50%);
+  padding: 5px;
 }
 .icon::after {
   display: inline-block;
@@ -2230,4 +2269,8 @@ article li {
 #ft .fill,
 .clear-bug {
   display: none;
+}
+/* ExLinks */
+#exlinks-options-content {
+  padding: 5px;
 }

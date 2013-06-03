@@ -3084,7 +3084,3 @@ textarea,
   background-color: #933;
 }
 """
-
-Icons =
-  oneechan:   '<%= grunt.file.read("src/General/img/icons/oneechan.png", {encoding: "base64"}) %>'
-  "4chan SS": '<%= grunt.file.read("src/General/img/icons/4chanSS.png",  {encoding: "base64"}) %>'

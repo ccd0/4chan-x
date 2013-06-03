@@ -44,16 +44,13 @@ html {
 .panel,
 .section-container,
 #exlinks-options-content,
-#mascotcontent,
 #themecontent {
   background: #{backgroundC};
   border: 1px solid #{theme["Reply Border"]};
-  padding: 5px;
 }
 .sections-list > a.tab-selected {
   background: #{backgroundC};
   border-color: #{theme["Reply Border"]};
-  border-style: solid;
 }
 .captcha-img img {
   <%= filter %>: url("#captcha-filter");
@@ -73,26 +70,6 @@ html {
     -1px  1px  1px #{backgroundC},
      0    2px  4px rgba(0,0,0,.6),
      0    0   10px rgba(0,0,0,.6);
-}
-/* Fixes text spoilers */
-.remove-spoilers.indicate-spoilers .spoiler::before,
-.remove-spoilers.indicate-spoilers s::before {
-  content: '[spoiler]';
-}
-.remove-spoilers.indicate-spoilers .spoiler::after,
-.remove-spoilers.indicate-spoilers s::after {
-  content: '[/spoiler]';
-}
-:root:not(.remove-spoilers) .spoiler:not(:hover) *,
-:root:not(.remove-spoilers) s:not(:hover) * {
-  color: rgb(0,0,0) !important;
-  text-shadow: none !important;
-}
-:root:not(.remove-spoilers) spoiler:not(:hover),
-:root:not(.remove-spoilers) s:not(:hover) {
-  background-color: rgb(0,0,0);
-  color: rgb(0,0,0) !important;
-  text-shadow: none !important;
 }
 #exlinks-options,
 #appchanx-settings,
@@ -149,7 +126,6 @@ textarea.field:focus {
   background: #{theme["Focused Input Background"]};
   border-color: #{theme["Focused Input Border"]};
   color: #{theme["Inputs"]};
-  outline: none;
 }
 .has-file  #qr-filename-container:active #qr-extras-container,
 .has-file  #qr-filename-container:focus #qr-extras-container {
@@ -176,7 +152,6 @@ textarea.field:focus {
 #header-bar,
 .pagelist {
   background: #{theme["Navigation Background"]};
-  border-style: solid;
   border-color: #{theme["Navigation Border"]};
 }
 #doc,
@@ -185,7 +160,6 @@ textarea.field:focus {
   border: 1px solid #{theme["Thread Wrapper Border"]};
 }
 #boardNavDesktopFoot,
-#mascotConf,
 #mascot_hide,
 #menu,
 #selectrice,
@@ -209,12 +183,6 @@ textarea.field:focus {
 .disabledwarning,
 .warning {
   color: #{theme["Warnings"]};
-}
-#navlinks a:first-of-type {
-  border-bottom: 11px solid rgb(130,130,130);
-}
-#navlinks a:last-of-type {
-  border-top: 11px solid rgb(130,130,130);
 }
 #charCount {
   color: #{(if Style.lightTheme then "rgba(0,0,0,0.7)" else "rgba(255,255,255,0.7)")};
@@ -365,29 +333,16 @@ a .name {
 #selectrice li:not(:first-of-type) {
   border-top: 1px solid #{if Style.lightTheme then "rgba(0,0,0,0.05)" else "rgba(255,255,255,0.025)"};
 }
-.icons-4chan-ss #navtopright .exlinksOptionsLink::after,
-.icons-4chan-ss #main-menu,
-.icons-4chan-ss .navLinks > a:first-of-type::after,
-.icons-4chan-ss #watcher::after,
-.icons-4chan-ss #globalMessage::after,
-.icons-4chan-ss #boardNavDesktopFoot::after,
-.icons-4chan-ss #img-controls,
-.icons-4chan-ss #catalog::after,
-.icons-4chan-ss #fappeTyme {
-  background-image: url("data:image/png;base64,#{Icons['4chan SS']}");
-}
-.icons-oneechan #navtopright .exlinksOptionsLink::after,
-.icons-oneechan #main-menu,
-.icons-oneechan .navLinks > a:first-of-type::after,
-.icons-oneechan #watcher::after,
-.icons-oneechan #globalMessage::after,
-.icons-oneechan #boardNavDesktopFoot::after,
-.icons-oneechan #img-controls,
-.icons-oneechan #catalog::after,
-.icons-oneechan #fappeTyme {
-  background-image: url("data:image/png;base64,#{Icons['oneechan']}");
-#{unless Style.lightTheme then "
-<%= filter %>: url(\"#icons-filter\");" else ""}
+#navtopright .exlinksOptionsLink::after,
+#main-menu,
+.navLinks > a:first-of-type::after,
+#watcher::after,
+#globalMessage::after,
+#boardNavDesktopFoot::after,
+#img-controls,
+#catalog::after,
+#fappeTyme {
+  #{unless Style.lightTheme then "<%= filter %>: url(\"#icons-filter\");" else ""}
 }
 .alternate-post-colors .replyContainer:not(.hidden):nth-of-type(2n+1) .post {
   background-image: <%= agent %>linear-gradient(#{if Style.lightTheme then "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" else "rgba(255,255,255,0.02), rgba(255,255,255,0.02)"});

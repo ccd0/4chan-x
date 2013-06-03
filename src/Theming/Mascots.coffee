@@ -102,9 +102,6 @@ MascotTools =
       id: "mascotConf"
       className: "reply dialog"
       innerHTML: "
-<div id=mascotbar>
-</div>
-<hr>
 <div id=mascotcontent>
   <center>
     PROTIP: Shift-Click the Mascot Image field to upload your own images!
