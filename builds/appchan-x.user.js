@@ -14,13 +14,13 @@
 // @grant        GM_deleteValue
 // @grant        GM_openInTab
 // @run-at       document-start
-// @updateURL 	 https://github.com/zixaphir/appchan-x/raw/stable/builds/4chan-X.meta.js
-// @downloadURL  https://github.com/zixaphir/appchan-x/raw/stable/builds/4chan-X.user.js
+// @updateURL 	 https://github.com/zixaphir/appchan-x/raw/stable/builds/appchan-x.meta.js
+// @downloadURL  https://github.com/zixaphir/appchan-x/raw/stable/builds/appchan-x.user.js
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAElBMVEX///8EZgR8ulSk0oT///8EAgQ1A88mAAAAAXRSTlMAQObYZgAAAIpJREFUeF6t0sENwjAMhWF84N4H6gAYMUBkdQMYwfuvwmstEeD4kl892P0OaaWcpga2/K0SGII1HNBXARgu7veoY3ANd+esgMHZIz85u0EABrbms3pl/bkC1Tn5ihGOfQwqHeZ/FdYdirEMgCG2ZAQWDTL0m9FvjAhcvoGNAK2gZhGYYX9+ZgFm9gaiNmNkMENY4QAAAABJRU5ErkJggg==
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.1.1 - 2013-06-02
+* appchan x - Version 2.1.1 - 2013-06-03
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
