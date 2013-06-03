@@ -246,6 +246,7 @@ Style =
           0
         else
           sidebar + parseInt(_conf["Right Thread Padding"], 10))
+
       if iconOffset < 0 then iconOffset = 0
 
       css += """<%= grunt.file.read('src/General/css/icons.horz.css') %>"""
@@ -282,6 +283,8 @@ Style =
         else
           sidebar + parseInt _conf[align.capitalize() + " Thread Padding"], 10
       )
+
+      if iconOffset < 0 then iconOffset = 0
 
       css += """<%= grunt.file.read('src/General/css/icons.vert.css') %>"""
 

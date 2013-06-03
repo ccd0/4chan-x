@@ -97,7 +97,6 @@ html {
 #exlinks-options,
 #appchanx-settings,
 #qrtab,
-.post-form-decorations #qr,
 .post-form-style-float #qr,
 input[type="submit"],
 input[value="Report"],
@@ -457,10 +456,10 @@ a .name {
   border: 1px solid #{theme["Dialog Border"]};
 }
 .post-form-decorations #qr {
-  border-color: #{theme["Buttons Border"]};
   background: #{backgroundC};
+  border: 1px solid #{theme["Buttons Border"]};
 }
-.post-form-decorations.quote-shadows #qr {
+.quote-shadows #qr {
   box-shadow: 5px 5px 5px #{theme['Shadow Color']};
 }
 #{theme["Custom CSS"]}
