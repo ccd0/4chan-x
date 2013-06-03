@@ -11,10 +11,13 @@ Main =
       else # string or number
         Conf[parent] = obj
       return
+
     flatten null, Config
+
+    # Unflattened Config.
     for db in DataBoards
       Conf[db] = boards: {}
-    # Unflattened Config.
+
     $.extend Conf,
       'userThemes':           []
       'userMascots':          []
@@ -32,7 +35,6 @@ Main =
 
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
-    return if g.BOARD.ID in ['z', 'fk']
     g.VIEW   =
       switch pathname[2]
         when 'res'
@@ -61,10 +63,18 @@ Main =
     if Conf["NSFW/SFW Themes"]
       Conf["theme"] = Conf["theme_#{g.TYPE}"]
 
+    return if g.BOARD.ID in ['z', 'fk'] then Style.init()
+
     switch location.hostname
+      when '4chan.org'
+        g.VIEW = 'home'
+        Style.init()
+        return
       when 'api.4chan.org'
         return
       when 'sys.4chan.org'
+        g.VIEW = 'report'
+        Style.init()
         Report.init()
         return
       when 'images.4chan.org'

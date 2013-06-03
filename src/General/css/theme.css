@@ -156,10 +156,12 @@ textarea.field:focus {
 .has-file  #qr-filename-container:focus #qr-extras-container {
   background: #{theme["Focused Input Background"]};
 }
+#ft,
 #mouseover,
 #post-preview,
 #qp .post,
 #xupdater,
+.box-outer,
 .reply.post {
   border-width: 1px;
   border-style: solid;
@@ -178,6 +180,7 @@ textarea.field:focus {
   border-style: solid;
   border-color: #{theme["Navigation Border"]};
 }
+#doc,
 .board > .thread {
   background: #{theme["Thread Wrapper Background"]};
   border: 1px solid #{theme["Thread Wrapper Border"]};
@@ -393,6 +396,7 @@ a .name {
 .alternate-post-colors .replyContainer:not(.hidden):nth-of-type(2n+1) .post {
   background-image: <%= agent %>linear-gradient(#{if Style.lightTheme then "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" else "rgba(255,255,255,0.02), rgba(255,255,255,0.02)"});
 }
+.color-reply-headings .boxbar,
 .color-reply-headings .postInfo {
   background: #{if (replyHeading = new Style.color Style.colorToHex theme["Reply Background"]) then "rgba(" + (replyHeading.shiftRGB -12, false) + ",0.8)" else "rgba(0,0,0,0.1)"};
   border-bottom: 1px solid #{theme["Reply Border"]}

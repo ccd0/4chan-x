@@ -4,10 +4,8 @@
 // @namespace    zixaphir
 // @description  The most comprehensive 4chan userscript.
 // @license      MIT; https://github.com/zixaphir/appchan-x/blob/master/LICENSE 
-// @match        *://api.4chan.org/*
-// @match        *://boards.4chan.org/*
-// @match        *://images.4chan.org/*
-// @match        *://sys.4chan.org/*
+// @match        *://*.4chan.org/*
+// @match        *://4chan.org/*
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue

@@ -10,7 +10,7 @@
   },
   "content_scripts": [{
     "js": ["script.js"],
-    "matches": ["*://api.4chan.org/*","*://boards.4chan.org/*","*://images.4chan.org/*","*://sys.4chan.org/*"],
+    "matches": ["*://*.4chan.org/*","*://4chan.org/*"],
     "all_frames": true,
     "run_at": "document_start"
   }],
