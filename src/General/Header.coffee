@@ -100,12 +100,6 @@ Header =
         innerHTML: '<a href=javascript:;> - </a>'
       $.on btn, 'click', Header.toggleBoardList
       $.add fullBoardList, btn
-    else
-      Main.logError
-        message: "Header crash: nav is null"
-        error: new Error """
-        #{$$('body > .desktop').map((el) -> el.id).join ','}
-        """
 
     Header.setCustomNav      Conf['Custom Board Navigation']
     Header.generateBoardList Conf['boardnav']

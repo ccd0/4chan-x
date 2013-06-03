@@ -57,18 +57,7 @@ class DataBoard
 
   clean: ->
     for boardID, val of @data.boards
-      # XXX tmp fix for users that had the `null`
-      # value for a board with the Unread features:
-      if typeof @data.boards[boardID] isnt 'object'
-        Main.logError
-          message: 'XXX weird DataBoard values'
-          error: new Error """
-          @key === #{@key}
-          @data.boards[#{boardID}] === #{@data.boards[boardID]}
-          """
-        delete @data.boards[boardID]
-      else
-        @deleteIfEmpty {boardID}
+      @deleteIfEmpty {boardID}
 
     now = Date.now()
     if (@data.lastChecked or 0) < now - 2 * $.HOUR

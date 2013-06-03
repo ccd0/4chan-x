@@ -5,16 +5,6 @@ Filter =
 
     for key of Config.filter
       @filters[key] = []
-      if Conf[key] is undefined
-        # XXX hopefully tmp fix for the rare people getting this mysterious error:
-        #   "Filter" initialization crashed. TypeError: Cannot call method 'split' of undefined
-        Main.logError
-          message: 'XXX some filters are still undefined'
-          error: new Error """
-          Conf[#{key}] === undefined
-          """
-        $.delete key
-        continue
       for filter in Conf[key].split '\n'
         continue if filter[0] is '#'
 
