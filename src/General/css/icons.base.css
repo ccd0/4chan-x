@@ -4,7 +4,6 @@ body > div.navLinks > a:first-of-type::after,
 .slideout-watcher #watcher::after,
 .announcements-slideout #globalMessage::after,
 #boardNavDesktopFoot::after,
-body > a[style="cursor: pointer; float: right;"]::after,
 #img-controls,
 #catalog::after,
 #fappeTyme {
@@ -30,7 +29,6 @@ body::after {
 .invisible-icons.slideout-watcher #watcher::after,
 .invisible-icons.announcements-slideout #globalMessage::after,
 .invisible-icons #boardNavDesktopFoot::after,
-.invisible-icons body > a[style="cursor: pointer; float: right;"]::after,
 .invisible-icons #img-controls,
 .invisible-icons #catalog::after,
 .invisible-icons #fappeTyme {
@@ -41,7 +39,6 @@ body > div.navLinks > a:first-of-type,
 #{if Conf['Slideout Watcher'] then '#watcher,' else ''}
 #{if Conf['Announcements'] is 'slideout' then '#globalMessage,' else ''}
 #boardNavDesktopFoot,
-body > a[style="cursor: pointer; float: right;"],
 #catalog {
   z-index: 16;
 }
@@ -50,7 +47,6 @@ body > div.navLinks > a:first-of-type:hover,
 .slideout-watcher #watcher:hover,
 .announcements-slideout #globalMessage:hover,
 #boardNavDesktopFoot:hover,
-body > a[style="cursor: pointer; float: right;"]:hover,
 #img-controls,
 #catalog:hover {
   z-index: 17;
@@ -58,6 +54,7 @@ body > a[style="cursor: pointer; float: right;"]:hover,
 #main-menu {
   visibility: visible;
   background-position: 0 0;
+  cursor: pointer;
 }
 body > div.navLinks > a:first-of-type::after {
   cursor: pointer;
@@ -71,11 +68,6 @@ body > div.navLinks > a:first-of-type::after {
 }
 #boardNavDesktopFoot::after {
   background-position: 0 -60px;
-}
-body > a[style="cursor: pointer; float: right;"]::after {
-  visibility: visible;
-  cursor: pointer;
-  background-position: 0 -75px;
 }
 #img-controls {
   background-position: 0 -90px;
@@ -100,7 +92,6 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #qr #qrtab,
 .slideout-watcher #watcher:hover::after,
 .thumbnail#selected,
-body > a[style="cursor: pointer; float: right;"]:hover::after,
 div.navLinks > a:first-of-type:hover::after,
 #catalog:hover::after,
 #fappeTyme:hover {

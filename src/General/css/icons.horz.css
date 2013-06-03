@@ -21,10 +21,6 @@ body::after {
 #navtopright .exlinksOptionsLink::after {
   #{align}: #{position[i++]}px;
 }
-/* 4sight */
-body > a[style="cursor: pointer; float: right;"]::after {
-  #{align}: #{position[i++]}px;
-}
 /* Expand Images */
 #img-controls {
   #{align}: #{position[i++]}px;
@@ -64,8 +60,7 @@ body::after {
 #img-controls,
 #fappeTyme,
 div.navLinks > a:first-of-type::after,
-#catalog::after,
-body > a[style="cursor: pointer; float: right;"]::after {
+#catalog::after {
   top: 1px !important;
 }
 .slideout-watcher #globalMessage,

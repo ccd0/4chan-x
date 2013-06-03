@@ -59,8 +59,7 @@ body > hr {
 #navtopright,
 #svg_filters,
 .cataloglink,
-.navLinks,
-a[style="cursor: pointer; float: right;"] {
+.navLinks {
   z-index: 7;
   position: fixed;
   top: 100%;

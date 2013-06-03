@@ -232,7 +232,6 @@ Style =
           _conf['Announcements'] is 'slideout' and (psa = $ '#globalMessage', d.body) and !psa.hidden
           _conf['Thread Watcher'] and _conf['Slideout Watcher']
           $ '#navtopright .exlinksOptionsLink', d.body
-          notCatalog and $ 'body > a[style="cursor: pointer; float: right;"]', d.body
           notEither and _conf['Image Expansion']
           notEither
           g.VIEW is 'thread'
@@ -261,7 +260,6 @@ Style =
           _conf['Slideout Navigation'] isnt 'hide'
           _conf['Announcements'] is 'slideout' and (psa = $ '#globalMessage', d.body) and !psa.hidden
           _conf['Thread Watcher'] and _conf['Slideout Watcher']
-          notCatalog and $ 'body > a[style="cursor: pointer; float: right;"]', d.body
           $ '#navtopright .exlinksOptionsLink', d.body
           notEither
           g.VIEW is 'thread'

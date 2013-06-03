@@ -194,8 +194,7 @@ textarea.field:focus {
 #watcher,
 #watcher:hover,
 .dialog,
-.submenu,
-a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
+.submenu {
   background: #{theme["Dialog Background"]};
   border: 1px solid #{theme["Dialog Border"]};
 }
@@ -373,7 +372,6 @@ a .name {
 .icons-4chan-ss #watcher::after,
 .icons-4chan-ss #globalMessage::after,
 .icons-4chan-ss #boardNavDesktopFoot::after,
-.icons-4chan-ss a[style="cursor: pointer; float: right;"]::after,
 .icons-4chan-ss #img-controls,
 .icons-4chan-ss #catalog::after,
 .icons-4chan-ss #fappeTyme {
@@ -385,7 +383,6 @@ a .name {
 .icons-oneechan #watcher::after,
 .icons-oneechan #globalMessage::after,
 .icons-oneechan #boardNavDesktopFoot::after,
-.icons-oneechan a[style="cursor: pointer; float: right;"]::after,
 .icons-oneechan #img-controls,
 .icons-oneechan #catalog::after,
 .icons-oneechan #fappeTyme {
@@ -418,12 +415,12 @@ a .name {
   background: #{theme["Highlighted Reply Background"]};
   border: 1px solid #{theme["Highlighted Reply Border"]};
 }
-.icon-orientation-vertical body::after {
+.fourchan-banner-at-sidebar-top.icon-orientation-vertical body::after {
   background: #{backgroundC};
 }
-.icon-orientation-vertical .fourchan-ss-sidebar body::after,
-.fourchan-ss-sidebar body::before {
-  background: none repeat scroll 0% 0% rgba(#{if background = new Style.color Style.colorToHex theme["Reply Background"] then background.shiftRGB -18}, 0.8);
+.fourchan-banner-at-sidebar-top.icon-orientation-vertical.fourchan-ss-sidebar body::after,
+.fourchan-banner-at-sidebar-top.fourchan-ss-sidebar body::before {
+  background: rgba(#{if background = new Style.color Style.colorToHex theme["Reply Background"] then background.shiftRGB -18}, 0.8);
 }
 .fourchan-ss-sidebar.sidebar-location-right body::before {
   border-left: 2px solid #{backgroundC};
