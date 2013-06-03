@@ -76,14 +76,17 @@ QR =
     if QR.nodes
       QR.nodes.el.hidden = false
       QR.unhide()
-      return
-    try
-      QR.dialog()
-    catch err
-      delete QR.nodes
-      Main.handleErrors
-        message: 'Quick Reply dialog creation crashed.'
-        error: err
+    else
+      try
+        QR.dialog()
+      catch err
+        delete QR.nodes
+        Main.handleErrors
+          message: 'Quick Reply dialog creation crashed.'
+          error: err
+    if MascotTools.el and ['default', 'above post form'].contains(Conf['Mascot Position']) and
+      ['fixed', 'transparent fade'].contains Conf['Post Form Style']
+        $.add QR.nodes.el, MascotTools.el
 
   close: ->
     if QR.req
@@ -1008,9 +1011,6 @@ QR =
     QR.captcha.init()
 
     Rice.nodes dialog
-
-    if MascotTools.el and Conf['Mascot Position'] is 'default' and ['fixed', 'transparent fade'].contains Conf['Post Form Style']
-      $.add dialog, MascotTools.el
 
     $.add d.body, dialog
 
