@@ -22,7 +22,7 @@
 .jscPad {
   width: 181px;
   height: 101px;
-  background-image: <%= agent %>linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), <%= agent %>linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+  background-image: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
   background-repeat: no-repeat;
   background-position: 0 0;
 }
@@ -44,7 +44,7 @@
 .jscSld {
   width: 16px;
   height: 101px;
-  background-image: <%= agent %>linear-gradient(rgba(0,0,0,0), rgba(0,0,0,1));
+  background-image: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,1));
 }
 .jscSldB {
   right: 10px;

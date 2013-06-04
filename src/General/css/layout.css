@@ -285,10 +285,10 @@ th {
 }
 .fixed.top #header-bar.autohide:not(:hover) {
   margin-bottom: -1em;
-  <%= agent %>transform: translateY(-100%);
+  <%= transform %>: translateY(-100%);
 }
 .fixed.bottom #header-bar.autohide:not(:hover) {
-  <%= agent %>transform: translateY(100%);
+  <%= transform %>: translateY(100%);
 }
 #scroll-marker {
   left: 0;
@@ -420,22 +420,20 @@ th {
   border: 0 none !important;
   text-align: right;
 }
-.pagination-on-side.post-form-style-fixed.show-post-form-header .pagelist,
-.pagination-on-side.post-form-style-transparent-fade.show-post-form-header .pagelist {
+.pagination-on-side.post-form-style-fixed.show-post-form-header .pagelist {
   bottom: 23.1em;
 }
-.pagination-on-side.post-form-style-fixed .pagelist,
-.pagination-on-side.post-form-style-transparent-fade .pagelist {
+.pagination-on-side.post-form-style-fixed .pagelist {
   bottom: 21.6em;
 }
 .sidebar-location-left.pagination-on-side .pagelist {
-  <%= agent %>transform: rotate(-90deg);
-  <%= agent %>transform-origin: bottom left;
+  <%= transform %>: rotate(-90deg);
+  <%= transform %>-origin: bottom left;
 }
 
 .sidebar-location-right.pagination-on-side .pagelist {
-  <%= agent %>transform: rotate(90deg);
-  <%= agent %>transform-origin: bottom right;"
+  <%= transform %>: rotate(90deg);
+  <%= transform %>-origin: bottom right;"
 }
 .sidebar-location-right.sidebar-large.pagination-on-side .pagelist {
   left: auto;
@@ -506,14 +504,13 @@ th {
 .boardBanner {
   line-height: 0;
 }
-
 .faded-4chan-banner .boardBanner {
   opacity: 0.5;
-  <%= agent %>transition: opacity 0.3s ease-in-out .5s;
+  transition: opacity 0.3s ease-in-out .5s;
 }
 .faded-4chan-banner .boardBanner:hover {
   opacity: 1;
-  <%= agent %>transition: opacity 0.3s ease-in;
+  transition: opacity 0.3s ease-in;
 }
 /* From 4chan SS / OneeChan */
 <% if (type === 'userscript') { %>
@@ -815,7 +812,7 @@ th {
 }
 .watch-thread-link.watched {
   opacity: 1;
-} 
+}
 /* Announcements */
 #globalMessage {
   text-align: center;
@@ -898,7 +895,7 @@ th {
 .hide-reply-button {
   margin: 0 3px;
   opacity: 0;
-  <%= agent %>transition: opacity .3s ease-out 0s;
+  transition: opacity .3s ease-out 0s;
 }
 .post:hover .hide-reply-button,
 .post:hover .menu-button,
@@ -1183,7 +1180,7 @@ input[type=checkbox]:checked + .rice::after {
   height: 10px;
   border-width: 0 3px 3px 0;
   border-style: solid;
-  <%= agent %>transform: rotate(45deg);
+  <%= transform %>: rotate(45deg);
   position: absolute;
   left: 2px;
   bottom: -1px;
@@ -1245,8 +1242,11 @@ input:checked + .rice {
 #qr {
   z-index: 20;
   position: fixed;
+  background: none;
+  border: none;
+}
+.qr-wrapper {
   padding: 1px;
-  border: 1px solid transparent;
   min-width: 248px;
   background: transparent;
   border: 1px solid transparent;
@@ -1280,29 +1280,29 @@ input:checked + .rice {
   top: auto !important;
 }
 .post-form-style-slideout.sidebar-location-left #qr {
-  <%= agent %>transform: translateX(-93%);
+  <%= transform %>: translateX(-93%);
 }
 .post-form-style-slideout.sidebar-location-right #qr {
-  <%= agent %>transform: translateX(93%);
+  <%= transform %>: translateX(93%);
 }
 .post-form-style-slideout #qr:hover,
 .post-form-style-slideout #qr.has-focus,
 .post-form-style-slideout #qr.dump {
-  <%= agent %>transform: translate(0);
+  <%= transform %>: translate(0);
 }
 .post-form-style-tabbed-slideout #qr {
   top: auto !important;
 }
 .post-form-style-tabbed-slideout.sidebar-location-left #qr {
-  <%= agent %>transform: translateX(-100%);
+  <%= transform %>: translateX(-100%);
 }
 .post-form-style-tabbed-slideout.sidebar-location-right #qr {
-  <%= agent %>transform: translateX(100%);
+  <%= transform %>: translateX(100%);
 }
 .post-form-style-tabbed-slideout #qr:hover,
 .post-form-style-tabbed-slideout #qr.has-focus,
 .post-form-style-tabbed-slideout #qr.dump {
-  <%= agent %>transform: translateX(0);
+  <%= transform %>: translateX(0);
 }
 .post-form-style-tabbed-slideout #qrtab {
   position: absolute;
@@ -1313,13 +1313,13 @@ input:checked + .rice {
   cursor: default;
 }
 .post-form-style-tabbed-slideout.sidebar-location-left #qrtab {
-  <%= agent %>transform: rotate(90deg);
-  <%= agent %>transform-origin: bottom right;
+  <%= transform %>: rotate(90deg);
+  <%= transform %>-origin: bottom right;
   left: 100%;
 }
 .post-form-style-tabbed-slideout.sidebar-location-right #qrtab {
-  <%= agent %>transform: rotate(-90deg);
-  <%= agent %>transform-origin: bottom right;
+  <%= transform %>: rotate(-90deg);
+  <%= transform %>-origin: bottom right;
   right: 100%;
 }
 .post-form-style-tabbed-slideout #qr:hover #qrtab,
@@ -1338,22 +1338,19 @@ input:checked + .rice {
 .post-form-style-tabbed-slideout #qrtab .selectrice {
   text-align: center;
 }
-.post-form-style-transparent-fade #qr {
-  overflow: visible;
-  top: auto !important;
+.transparent-post-form .qr-wrapper {
   opacity: 0.2;
-  <%= agent %>transition: opacity .3s ease-in-out 1s;
+  transition: opacity .3s ease-in-out 1s;
 }
-.post-form-style-transparent-fade #qr:hover,
-.post-form-style-transparent-fade #qr.has-focus,
-.post-form-style-transparent-fade #qr.dump {
+.transparent-post-form #qr:hover .qr-wrapper,
+.transparent-post-form #qr.has-focus .qr-wrapper,
+.transparent-post-form #qr.dump .qr-wrapper {
   opacity: 1;
-  <%= agent %>transition: opacity .3s linear;
+  transition: opacity .3s linear;
 }
-:root:not(.show-post-form-header):not(.post-form-style-tabbed-slideout):not(.post-form-style-float) #qrtab,
+:root:not(.show-post-form-header):not(.post-form-style-float) #qrtab,
 .post-form-style-float .autohide:not(:hover):not(.has-focus) > form,
-.show-post-form-header.post-form-style-fixed .autohide:not(:hover):not(.has-focus) > form,
-.show-post-form-header.post-form-style-transparent-fade .autohide:not(:hover):not(.has-focus) > form {
+.show-post-form-header.post-form-style-fixed .autohide:not(:hover):not(.has-focus) > form {
   display: none !important;
 }
 :root:not(.post-form-style-tabbed-slideout) #qrtab {
@@ -1361,21 +1358,21 @@ input:checked + .rice {
 }
 .post-form-slideout-transitions.post-form-style-slideout #qr,
 .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr {
-  <%= agent %>transition: <%= agent %>transform .3s ease-in-out 1s;
+  transition: <%= transform %> .3s ease-in-out 1s;
 }
-.post-form-slideout-transitions.post-form-style-slideout #qr:hover,
+.post-form-slideout-transitions.post-form-style-tabbed-slideout #qr.dump,
 .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr:hover,
-.post-form-slideout-transitions.post-form-style-slideout #qr.has-focus,
 .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr.has-focus,
 .post-form-slideout-transitions.post-form-style-slideout #qr.dump,
-.post-form-slideout-transitions.post-form-style-tabbed-slideout #qr.dump {
-  <%= agent %>transition: <%= agent %>transform .3s linear;
+.post-form-slideout-transitions.post-form-style-slideout #qr:hover,
+.post-form-slideout-transitions.post-form-style-slideout #qr.has-focus {
+  transition: <%= transform %> .3s linear;
 }
 .post-form-slideout-transitions #qrtab {
-  <%= agent %>transition: opacity .3s ease-in-out 1s;
+  transition: opacity .3s ease-in-out 1s;
 }
 .post-form-slideout-transitions #qr:hover #qrtab {
-  <%= agent %>transition: opacity .3s linear;
+  transition: opacity .3s linear;
 }
 #qr .close {
   float: right;
@@ -1560,7 +1557,7 @@ input:not([type=radio]) {
   overflow: hidden;
   position: relative;
   text-shadow: 0 1px 1px #000;
-  <%= agent %>transition: opacity .25s ease-in-out;
+  transition: opacity .25s ease-in-out;
   vertical-align: top;
 }
 .qr-preview:hover,
@@ -1615,14 +1612,14 @@ a:only-of-type > .remove {
   position: absolute;
   top: 50%;
   right: 10px;
-  <%= agent %>transform: translateY(-50%);
+  <%= transform %>: translateY(-50%);
 }
 /* Ads */
 .topad img,
 .middlead img,
 .bottomad img {
   opacity: 0.3;
-  <%= agent %>transition: opacity .3s linear;
+  transition: opacity .3s linear;
 }
 .topad img:hover,
 .middlead img:hover,
@@ -1653,16 +1650,12 @@ a:only-of-type > .remove {
   line-height: 0;
   cursor: pointer;
 }
-.mascot-position-default.post-form-style-fixed #qr #mascot,
-.mascot-position-default.post-form-style-transparent-fade #qr #mascot {
+.mascot-position-above-post-form.post-form-style-fixed #qr #mascot {
   position: absolute;
   bottom: 100%;
   margin-bottom: -2px;
 }
-.mascot-position-above-post-form.post-form-style-fixed.post-form-decorations #qr #mascot,
-.mascot-position-above-post-form.post-form-style-transparent-fade.post-form-decorations #qr #mascot,
-.mascot-position-default.post-form-style-fixed.post-form-decorations #qr #mascot,
-.mascot-position-default.post-form-style-transparent-fade.post-form-decorations #qr #mascot {
+.mascot-position-above-post-form.post-form-style-fixed.post-form-decorations #qr #mascot {
   margin-bottom: 1px;
 }
 .mascots #mascot {
@@ -1678,13 +1671,13 @@ a:only-of-type > .remove {
 }
 .sidebar-location-left.mascot-location-sidebar #mascot img,
 .sidebar-location-right.mascot-location-opposite #mascot img {
-  <%= agent %>transform: scaleX(-1);
+  <%= transform %>: scaleX(-1);
 }
 .fourchan-ss-navigation.bottom.fixed.qr-hidden #mascot,
 .fourchan-ss-navigation.bottom.fixed.mascot-position-bottom #mascot,
 .fourchan-ss-navigation.index.pagination-sticky-bottom.mascot-position-bottom #mascot,
-.fourchan-ss-navigation.bottom.fixed:not(.post-form-style-fixed):not(.post-form-style-transparent-fade) #mascot,
-.fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-fixed):not(.post-form-style-transparent-fade) #mascot {
+.fourchan-ss-navigation.bottom.fixed:not(.post-form-style-fixed) #mascot,
+.fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-fixed) #mascot {
   bottom: 1.5em
 }
 #qr #mascot {
@@ -1695,7 +1688,7 @@ a:only-of-type > .remove {
 }
 .mascot-position-middle #mascot {
   bottom: 50% !important;
-  <%= agent %>transform: translateY(50%);
+  <%= transform %>: translateY(50%);
 }
 .mascot-position-top #mascot {
   bottom: auto !important;
@@ -1957,7 +1950,7 @@ article li {
 }
 #mascot-options {
   opacity: 0;
-  <%= agent %>transition: opacity .3s linear;
+  transition: opacity .3s linear;
 }
 .mascot:hover #mascot-options {
   opacity: 1;
@@ -1998,7 +1991,7 @@ article li {
   right: 300px;
   bottom: 10px;
   margin: 0;
-  <%= agent %>transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
   opacity: 0;
 }
 #themes .selectedtheme h1 {
@@ -2133,7 +2126,7 @@ article li {
   position: fixed;
   top: 50% !important;
   left: 50%;
-  <%= agent %>transform: translate(-50%, -50%);
+  <%= transform %>: translate(-50%, -50%);
   padding: 5px;
 }
 .icon::after {

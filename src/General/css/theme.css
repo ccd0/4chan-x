@@ -315,12 +315,12 @@ a .name {
   box-shadow: 5px 5px 5px #{theme['Shadow Color']};
 }
 .placeholder,
-#qr input::<%= agent %>placeholder,
-#qr textarea::<%= agent %>placeholder {
+#qr input::placeholder,
+#qr textarea::placeholder {
   color: #{if Style.lightTheme then "rgba(0,0,0,0.3)" else "rgba(255,255,255,0.2)"} !important;
 }
-#qr input:<%= agent %>placeholder,
-#qr textarea:<%= agent %>placeholder,
+#qr input:placeholder,
+#qr textarea:placeholder,
 .placeholder {
   color: #{if Style.lightTheme then "rgba(0,0,0,0.3)" else "rgba(255,255,255,0.2)"} !important;
 }
@@ -345,7 +345,7 @@ a .name {
   #{unless Style.lightTheme then "<%= filter %>: url(\"#icons-filter\");" else ""}
 }
 .alternate-post-colors .replyContainer:not(.hidden):nth-of-type(2n+1) .post {
-  background-image: <%= agent %>linear-gradient(#{if Style.lightTheme then "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" else "rgba(255,255,255,0.02), rgba(255,255,255,0.02)"});
+  background-image: linear-gradient(#{if Style.lightTheme then "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" else "rgba(255,255,255,0.02), rgba(255,255,255,0.02)"});
 }
 .color-reply-headings .boxbar,
 .color-reply-headings .postInfo {
@@ -403,14 +403,14 @@ a .name {
 .sage-highlighting-image.sage-highlight-position-after a.useremail[href*="sage"]:last-of-type::after,
 .sage-highlighting-image.sage-highlight-position-after a.useremail[href*="Sage"]:last-of-type::after,
 .sage-highlighting-image.sage-highlight-position-after a.useremail[href*="SAGE"]:last-of-type::after{
-  content: url("data:image/png;base64,<%= grunt.file.read("src/General/img/emoji/sage.png",       {encoding: "base64"}) %>");
+  content: url("data:image/png;base64,<%= grunt.file.read("src/General/img/emoji/sage.png", {encoding: "base64"}) %>");
   vertical-align: top;
 }
 .announcements-slideout #globalMessage {
   background: #{theme["Dialog Background"]};
   border: 1px solid #{theme["Dialog Border"]};
 }
-.post-form-decorations #qr {
+.post-form-decorations .qr-wrapper {
   background: #{backgroundC};
   border: 1px solid #{theme["Buttons Border"]};
 }

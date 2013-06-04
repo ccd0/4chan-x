@@ -22,12 +22,14 @@ MascotTools =
       if el then el.src = ""
       return
 
-    if mascot.position is 'bottom' and Conf['Mascot Position'] is 'default'
-      $.rmClass doc, 'mascot-position-default'
-      $.addClass doc, 'mascot-position-bottom'
-    else
-      $.addClass doc, 'mascot-position-default'
+    if Conf['Mascot Position'] is 'default'
+      $.rmClass doc, 'mascot-position-above-post-form'
       $.rmClass doc, 'mascot-position-bottom'
+      $.rmClass doc, 'mascot-position-default'
+      if mascot.position is 'bottom'
+        $.addClass doc, 'mascot-position-bottom'
+      else
+        $.addClass doc, 'mascot-position-above-post-form'
 
     unless mascot
       if name and not mascot = Mascots[name]

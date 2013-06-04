@@ -85,7 +85,7 @@ QR =
           message: 'Quick Reply dialog creation crashed.'
           error: err
     if MascotTools.el and ['default', 'above post form'].contains(Conf['Mascot Position']) and
-      ['fixed', 'transparent fade'].contains Conf['Post Form Style']
+      Conf['Post Form Style'] is 'fixed'
         $.add QR.nodes.el, MascotTools.el
 
   close: ->

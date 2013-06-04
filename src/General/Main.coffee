@@ -33,6 +33,12 @@ Main =
   initFeatures: (items) ->
     Conf = items
 
+    if Conf['Post Form Style'] is 'transparent fade'
+      # XXX Compatibility to break old option into new option(s)
+      # Remove by 2.2.x
+      $.set 'Post Form Style',       Conf['Post Form Style']       = 'fixed'
+      $.set 'Transparent Post Form', Conf['Transparent Post Form'] = true
+
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
     g.VIEW   =

@@ -55,16 +55,6 @@ module.exports = (grunt) ->
             'tmp-<%= pkg.type %>/script.js'
           ]
 
-      userjs:
-        options: concatOptions
-        src: [
-          'src/General/meta/botproc.js'
-          'src/General/meta/metadata.js'
-          'src/General/meta/banner.js'
-          'tmp-<%= pkg.type %>/script.js'
-        ]
-        dest: 'builds/<%= pkg.name %>.js'
-
       userscript:
         options: concatOptions
         files:
@@ -95,7 +85,6 @@ module.exports = (grunt) ->
       build: [
         'concat:meta'
         'build-crx'
-        'build-userjs'
         'build-userscript'
       ]
 
@@ -138,7 +127,6 @@ module.exports = (grunt) ->
     clean:
       builds:        'builds'
       tmpcrx:        'tmp-crx'
-      tmpuserjs:     'tmp-userjs'
       tmpuserscript: 'tmp-userscript'
 
   grunt.loadNpmTasks 'grunt-bump'
@@ -157,10 +145,6 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'set-build', 'Set the build type variable', (type) ->
     pkg.type = type;
-    pkg.agent = if type is 'crx'
-      '-webkit-'
-    else
-      '-moz-'
     pkg.sizing = if type is 'crx'
       'box-sizing'
     else
@@ -169,6 +153,10 @@ module.exports = (grunt) ->
       '-webkit-filter'
     else
       'filter'
+    pkg.transform = if type is 'crx'
+      '-webkit-transform'
+    else
+      'transform'
     grunt.log.ok 'pkg.type = %s', type
 
   grunt.registerTask 'build', [
@@ -182,14 +170,6 @@ module.exports = (grunt) ->
     'concat:crx'
     'copy:crx'
     'clean:tmpcrx'
-  ]
-
-  grunt.registerTask 'build-userjs', [
-    'set-build:userjs'
-    'concat:coffee'
-    'coffee:script'
-    'concat:userjs'
-    'clean:tmpuserjs'
   ]
 
   grunt.registerTask 'build-userscript', [
