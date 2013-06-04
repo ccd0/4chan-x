@@ -1,3 +1,6 @@
+### v2.1.2
+*2013-06-04*
+
 **zixaphir**:
 - Remove shitty menu placeholder icon
   * replace it with settings icon
