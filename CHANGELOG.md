@@ -1,3 +1,9 @@
+### v2.1.3
+*2013-06-04*
+
+**zixaphir**:
+- Fixed a small CSS error resulting in invisible mascot options
+
 ### v2.1.2
 *2013-06-04*
 

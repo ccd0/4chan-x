@@ -1959,7 +1959,7 @@ article li {
   opacity: 0;
   <%= agent %>transition: opacity .3s linear;
 }
-.mascot:hover::after-options {
+.mascot:hover #mascot-options {
   opacity: 1;
 }
 #mascot-options {
