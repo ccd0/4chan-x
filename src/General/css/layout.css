@@ -1348,13 +1348,16 @@ input:checked + .rice {
   opacity: 1;
   transition: opacity .3s linear;
 }
-:root:not(.show-post-form-header):not(.post-form-style-float) #qrtab,
-.post-form-style-float .autohide:not(:hover):not(.has-focus) > form,
-.show-post-form-header.post-form-style-fixed .autohide:not(:hover):not(.has-focus) > form {
+:root:not(.show-post-form-header):not(.post-form-style-float):not(.post-form-tabbed-slideout) #qrtab,
+.post-form-style-float .autohide:not(:hover):not(.has-focus) form,
+.show-post-form-header.post-form-style-fixed .autohide:not(:hover):not(.has-focus) form {
   display: none !important;
 }
 :root:not(.post-form-style-tabbed-slideout) #qrtab {
-  margin-bottom: .1em;
+  margin-bottom: 1px;
+}
+#qr.autohide:not(:hover):not(.has-focus) #qrtab {
+  margin-bottom: 0;
 }
 .post-form-slideout-transitions.post-form-style-slideout #qr,
 .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr {
@@ -1432,7 +1435,7 @@ input:checked + .rice {
   resize: none;
 }
 .captcha-img {
-  margin: .1em 0 0;
+  margin: 1px 0 0;
   text-align: center;
   line-height: 0;
 }
@@ -1443,7 +1446,7 @@ input:checked + .rice {
 }
 .captcha-input {
   width: 100%;
-  margin: .1em 0 0;
+  margin: 1px 0 0;
 }
 .field,
 .selectrice,
@@ -1451,7 +1454,7 @@ button,
 input:not([type=radio]) {
   <%= sizing %>: border-box;
   height: 1.6em;
-  margin: .1em 0 0;
+  margin: 1px 0 0;
   vertical-align: bottom;
   padding: 0 1px;
   outline: none;

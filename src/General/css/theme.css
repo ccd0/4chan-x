@@ -74,7 +74,7 @@ html {
 #exlinks-options,
 #appchanx-settings,
 #qrtab,
-.post-form-style-float #qr,
+.post-form-style-float .qr-wrapper,
 input[type="submit"],
 input[value="Report"],
 span[style="left: 5px; position: absolute;"] a {
@@ -111,7 +111,7 @@ textarea:hover {
   background: #{theme["Hovered Input Background"]};
   border-color: #{theme["Hovered Input Border"]};
 }
-.has-file  #qr-filename-container:hover #qr-extras-container {
+.has-file #qr-filename-container:hover #qr-extras-container {
   background: #{theme["Hovered Input Background"]};
 }
 #dump:active,
@@ -127,8 +127,8 @@ textarea.field:focus {
   border-color: #{theme["Focused Input Border"]};
   color: #{theme["Inputs"]};
 }
-.has-file  #qr-filename-container:active #qr-extras-container,
-.has-file  #qr-filename-container:focus #qr-extras-container {
+.has-file #qr-filename-container:active #qr-extras-container,
+.has-file #qr-filename-container:focus #qr-extras-container {
   background: #{theme["Focused Input Background"]};
 }
 #ft,
