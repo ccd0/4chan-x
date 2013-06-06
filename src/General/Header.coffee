@@ -242,7 +242,7 @@ Header =
     $('input[name=boardnav]', settings).focus()
 
   hashScroll: ->
-    return unless post = $.id @location.hash[1..]
+    return unless (hash = @location.hash[1..]) and post = $.id hash
     return if (Get.postFromRoot post).isHidden
     Header.scrollToPost post
   scrollToPost: (post) ->
