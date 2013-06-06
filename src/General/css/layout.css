@@ -966,6 +966,10 @@ th {
 s {
   text-decoration: none;
 }
+/* Emoji */
+a.useremail:last-of-type {
+  vertical-align: top;
+}
 /* Reply Clearfix */
 .reply.post .postMessage {
   clear: right;

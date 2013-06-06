@@ -8,7 +8,6 @@ ThreadWatcher =
     $.on d, 'QRPostSuccessful',   @cb.post
     $.sync  'WatchedThreads',     @refresh
 
-
     $.ready ->
       ThreadWatcher.refresh()
       $.add d.body, ThreadWatcher.dialog

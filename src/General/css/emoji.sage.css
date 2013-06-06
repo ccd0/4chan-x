@@ -1,0 +1,16 @@
+.sage-highlighting-image.sage-image-appchan.sage-highlight-position-after a.useremail[href*='sage']:last-of-type::after,
+.sage-highlighting-image.sage-image-appchan.sage-highlight-position-after a.useremail[href*='SAGE']:last-of-type::after,
+.sage-highlighting-image.sage-image-appchan.sage-highlight-position-after a.useremail[href*='Sage']:last-of-type::after,
+.sage-highlighting-image.sage-image-appchan.sage-highlight-position-before a.useremail[href*='sage']:last-of-type::before,
+.sage-highlighting-image.sage-image-appchan.sage-highlight-position-before a.useremail[href*='SAGE']:last-of-type::before,
+.sage-highlighting-image.sage-image-appchan.sage-highlight-position-before a.useremail[href*='Sage']:last-of-type::before {
+  content: url('data:image/png;base64,<%= grunt.file.read("src/General/img/emoji/appchan-sage.png", {encoding: "base64"}) %>');
+}
+.sage-highlighting-image.sage-image-4chan-ss.sage-highlight-position-after a.useremail[href*='sage']:last-of-type::after,
+.sage-highlighting-image.sage-image-4chan-ss.sage-highlight-position-after a.useremail[href*='SAGE']:last-of-type::after,
+.sage-highlighting-image.sage-image-4chan-ss.sage-highlight-position-after a.useremail[href*='Sage']:last-of-type::after,
+.sage-highlighting-image.sage-image-4chan-ss.sage-highlight-position-before a.useremail[href*='sage']:last-of-type::before,
+.sage-highlighting-image.sage-image-4chan-ss.sage-highlight-position-before a.useremail[href*='SAGE']:last-of-type::before,
+.sage-highlighting-image.sage-image-4chan-ss.sage-highlight-position-before a.useremail[href*='Sage']:last-of-type::before {
+  content: url('data:image/png;base64,<%= grunt.file.read("src/General/img/emoji/SS-sage.png",      {encoding: "base64"}) %>');
+}

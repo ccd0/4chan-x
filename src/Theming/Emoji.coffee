@@ -1,34 +1,19 @@
 Emoji =
   init: ->
     Emoji.icons['PlanNine'] = Emoji.icons['Plan9']
-    Emoji.icons['Sage']     = Emoji.sage[Conf['sageEmoji']]
 
-  css: (position) ->
+  css: ->
     _conf = Conf
-    css = ["""
-a.useremail[href]:last-of-type::#{position} {
-  vertical-align: top;
-  margin-#{if position is "before" then "right" else "left"}: 5px;
-}\n
-  """]
+    css = []
     
     for key, category of Emoji.icons
       continue unless Emoji.icons.hasOwnProperty key
-      if (_conf['Emoji'] isnt "disable ponies" and key is "pony") or (_conf['Emoji'] isnt "only ponies" and key is "not")
-        for name, icon of category
-          continue unless category.hasOwnProperty name
-          css.push """
-a.useremail[href*='#{name}']:last-of-type::#{position},
-a.useremail[href*='#{name.toLowerCase()}']:last-of-type::#{position},
-a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
-  content: url('data:image/png;base64,#{icon}');
-}\n
-"""
-    css.join ""
+      for name, icon of category
+        continue unless category.hasOwnProperty name
+        css.push """<%= grunt.file.read('src/General/css/emoji.css') %>"""
 
-  sage:
-    '4chan SS': '<%= grunt.file.read("src/General/img/emoji/SS-sage.png",      {encoding: "base64"}) %>'
-    'appchan':  '<%= grunt.file.read("src/General/img/emoji/appchan-sage.png", {encoding: "base64"}) %>'
+    css.push """<%= grunt.file.read('src/General/css/emoji.sage.css') %>"""
+    css.join ""
 
   icons:
     pony:

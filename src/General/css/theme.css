@@ -400,15 +400,6 @@ a .name {
   content: " (sage) ";
   color: #{theme["Sage"]};
 }
-.sage-highlighting-image.sage-highlight-position-before a.useremail[href*="sage"]:last-of-type::before,
-.sage-highlighting-image.sage-highlight-position-before a.useremail[href*="Sage"]:last-of-type::before,
-.sage-highlighting-image.sage-highlight-position-before a.useremail[href*="SAGE"]:last-of-type::before,
-.sage-highlighting-image.sage-highlight-position-after a.useremail[href*="sage"]:last-of-type::after,
-.sage-highlighting-image.sage-highlight-position-after a.useremail[href*="Sage"]:last-of-type::after,
-.sage-highlighting-image.sage-highlight-position-after a.useremail[href*="SAGE"]:last-of-type::after{
-  content: url("data:image/png;base64,<%= grunt.file.read("src/General/img/emoji/sage.png", {encoding: "base64"}) %>");
-  vertical-align: top;
-}
 .announcements-slideout #globalMessage {
   background: #{theme["Dialog Background"]};
   border: 1px solid #{theme["Dialog Border"]};

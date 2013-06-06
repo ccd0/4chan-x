@@ -455,14 +455,6 @@ Config =
         'The positioning of 4chan\'s image banner.'
         ['at sidebar top', 'at sidebar bottom', 'under post form', 'at top', 'hide']
       ]
-      '4chan Banner Reflection': [
-        false
-        'Adds reflection effects to 4chan\'s image banner.'
-      ]
-      'Faded 4chan Banner': [
-        true
-        'Make 4chan\'s image banner translucent.'
-      ]
       'Icon Orientation': [
         'horizontal'
         'Change the orientation of the appchan x icons.'
@@ -494,16 +486,6 @@ Config =
         'default'
         'The position of backlinks in relation to the post.'
         ['default', 'lower left', 'lower right']
-      ]
-      'Sage Highlighting': [
-        'image'
-        'Icons or text to highlight saged posts.'
-        ['text', 'image', 'none']
-      ]
-      'Sage Highlight Position': [
-        'after'
-        'Position of Sage Highlighting'
-        ['before', 'after']
       ]
       'Filtered Backlinks': [
         true
@@ -544,10 +526,6 @@ Config =
         false
         'Hides lines between threads.'
       ]
-      'Images Overlap Post Form': [
-        true
-        'Images expand over the post form and sidebar content, usually used with "Expand images" set to "full".'
-      ]
 
     Aesthetics:
       '4chan SS Navigation': [
@@ -557,6 +535,14 @@ Config =
       '4chan SS Sidebar': [
         false
         'Try to emulate the appearance of 4chan SS\'s Sidebar.'
+      ]
+      '4chan Banner Reflection': [
+        false
+        'Adds reflection effects to 4chan\'s image banner.'
+      ]
+      'Faded 4chan Banner': [
+        true
+        'Make 4chan\'s image banner translucent.'
       ]
       'Hide Ads': [
         false
@@ -581,21 +567,6 @@ Config =
       'Circle Checkboxes': [
         false
         'Make checkboxes circular.'
-      ]
-      'Emoji': [
-        'enabled'
-        'Enable emoji'
-        ['enabled', 'disable ponies', 'only ponies', 'disable']
-      ]
-      'Emoji Position': [
-        'before'
-        'Position of emoji icons, like sega and neko.'
-        ['before', 'after']
-      ]
-      'Emoji Spacing': [
-        '5'
-        'Add some spacing between emoji and text.'
-        'text'
       ]
       'Font': [
         'sans-serif'
@@ -731,6 +702,42 @@ Config =
         true
         'Intelligent name field hiding.'
       ]
+      'Images Overlap Post Form': [
+        true
+        'Images expand over the post form and sidebar content, usually used with "Expand images" set to "full".'
+      ]
+
+    Indicators:
+      'Emoji': [
+        'enabled'
+        'Add icons besides usernames with triggered e-mails, like sega and neko.'
+        ['enabled', 'disable ponies', 'only ponies', 'disable']
+      ]
+      'Emoji Position': [
+        'before'
+        'Position of emoji icons.'
+        ['before', 'after']
+      ]
+      'Emoji Spacing': [
+        '5'
+        'Add some spacing between emoji and text.'
+        'text'
+      ]
+      'Sage Highlighting': [
+        'image'
+        'Icons or text to highlight saged posts.'
+        ['text', 'image', 'none']
+      ]
+      'Sage Image': [
+        'appchan'
+        'Image to use for sage highlighting.'
+        ['4chan SS', 'appchan']
+      ]
+      'Sage Highlight Position': [
+        'after'
+        'Position of Sage Highlighting'
+        ['before', 'after']
+      ]
 
   filter:
     name: """
@@ -795,10 +802,7 @@ http://iqdb.org/?url=%TURL
 #//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/
 #//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/
 """
-  'sageEmoji': 'appchan'
-  
-  'emojiPos': 'before'
-  
+
   'Custom CSS': false
 
   Header:

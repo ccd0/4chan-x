@@ -60,4 +60,3 @@ a.useremail:last-of-type::after {
 #mascot {
   opacity: #{Conf['Mascot Opacity']};
 }
-#{unless _conf["Emoji"] is "disable" then Emoji.css _conf["Emoji Position"] else ""}

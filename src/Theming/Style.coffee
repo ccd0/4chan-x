@@ -78,6 +78,7 @@ Style =
     $.extend Style,
       layoutCSS:    $.addStyle Style.layout,       'layout'
       themeCSS:     $.addStyle Style.theme(theme), 'theme'
+      emojiCSS:     $.addStyle Emoji.css(),        'emoji'
       dynamicCSS:   $.addStyle Style.dynamic(),    'dynamic'
       icons:        $.addStyle "",                 'icons'
       paddingSheet: $.addStyle "",                 'padding'

@@ -278,11 +278,11 @@ Settings =
     section.innerHTML = """<%= grunt.file.read('src/General/html/Settings/Advanced.html').replace(/>\s+</g, '><').trim() %>"""
     items = {}
     inputs = {}
-    for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'emojiPos', 'sageEmoji', 'usercss']
+    for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss']
       input = $ "[name='#{name}']", section
       items[name]  = Conf[name]
       inputs[name] = input
-      event = if ['favicon', 'usercss', 'sageEmoji', 'emojiPos'].contains name
+      event = if ['favicon', 'usercss'].contains name
         'change'
       else
         'input'
@@ -296,7 +296,6 @@ Settings =
 
     $.get items, (items) ->
       for key, val of items
-        continue if ['emojiPos'].contains key
         input = inputs[key]
         input.value = val
         continue if key is 'usercss'
@@ -417,11 +416,6 @@ Settings =
       <img src=#{Favicon.unreadSFW}>
       <img src=#{Favicon.unreadNSFW}>
       <img src=#{Favicon.unreadDead}>
-      """
-
-  sageEmoji: ->
-    $.id('sageicon-preview').innerHTML = """
-      <img src=data:image/png;base64,#{Emoji.sage[@value]}>
       """
 
   togglecss: ->
