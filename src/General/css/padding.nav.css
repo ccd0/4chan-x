@@ -1,0 +1,15 @@
+body {
+  padding-bottom: 1px;
+}
+.fourchan-ss-navigation.fixed.top:not(.autohide) body::before {
+  top: #{Style.padding.nav.offsetHeight}px;
+}
+.fourchan-ss-navigation.fixed.bottom:not(.autohide) body::before {
+  bottom: #{Style.padding.nav.offsetHeight}px;
+}
+.fourchan-ss-navigation.top:not(.autohide) body {
+  padding-top: #{Style.padding.nav.offsetHeight + 1}px;
+}
+.fourchan-ss-navigation.bottom:not(.autohide) body {
+  padding-bottom: #{Style.padding.nav.offsetHeight + 1}px;"
+}
