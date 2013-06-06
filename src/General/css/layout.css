@@ -1661,9 +1661,11 @@ a:only-of-type > .remove {
 .mascot-position-above-post-form.post-form-style-fixed #qr #mascot {
   position: absolute;
   bottom: 100%;
+}
+.mascot-position-above-post-form.post-form-style-fixed #qr #mascot img {
   margin-bottom: -2px;
 }
-.mascot-position-above-post-form.post-form-style-fixed.post-form-decorations #qr #mascot {
+.mascot-position-above-post-form.post-form-style-fixed.post-form-decorations #qr #mascot img {
   margin-bottom: 1px;
 }
 .mascots #mascot {
