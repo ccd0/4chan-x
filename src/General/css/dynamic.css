@@ -41,6 +41,7 @@ body {
 .thread > .replyContainer > .reply.post {
   border-width: #{if _conf['Post Spacing'] is "0" then "1px 1px 0 1px" else '1px'};
 }
+#post-preview,
 .postMessage {
   margin: #{_conf['Vertical Post Padding']}px #{_conf['Horizontal Post Padding']}px;
 }

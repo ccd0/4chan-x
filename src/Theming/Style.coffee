@@ -180,6 +180,7 @@ Style =
 
   theme: (theme) ->
     bgColor = new Style.color(Style.colorToHex(backgroundC = theme["Background Color"]) or 'aaaaaa')
+    replybg = new Style.color Style.colorToHex theme["Reply Background"]
 
     Style.lightTheme = bgColor.isLight()
 
@@ -291,34 +292,12 @@ Style =
     Style.icons.textContent = css
 
   padding: ->
-    return unless (sheet = Style.paddingSheet) and Style.padding.nav
-    _conf = Conf
-    Style.padding.nav.property = if _conf['Bottom Header'] then 'bottom' else 'top'
+    css = """<%= grunt.file.read('src/General/css/padding.nav.css') %>"""
+    
     if Style.padding.pages
-      Style.padding.pages.property = _conf["Pagination"].split(" ")
-      Style.padding.pages.property = Style.padding.pages.property[Style.padding.pages.property.length - 1]
-    css = "body::before {\n"
-    if _conf['4chan SS Navigation'] and Style.padding.pages and ["sticky top", "top", "sticky bottom"].contains _conf["Pagination"]
-      css += "  #{Style.padding.pages.property}: #{Style.padding.pages.offsetHeight}px !important;\n"
+      css += """<%= grunt.file.read('src/General/css/padding.pages.css') %>"""
 
-    if _conf['4chan SS Navigation'] and _conf['Fixed Header']
-      css += "  #{Style.padding.nav.property}: #{Style.padding.nav.offsetHeight}px !important;\n"
-
-    css += """
-}
-body {
-  padding-bottom: 0;\n
-"""
-
-    if Style.padding.pages? and ["sticky top", "top", "sticky bottom"].contains _conf["Pagination"]
-      css += "  padding-#{Style.padding.pages.property}: #{Style.padding.pages.offsetHeight + 1}px;\n"
-
-    unless _conf['Header auto-hide'] or _conf['Hide Header']
-      css += "  padding-#{Style.padding.nav.property}: #{Style.padding.nav.offsetHeight + 1}px;\n"
-
-    css += "}"
-
-    sheet.textContent = css
+    Style.paddingSheet.textContent = css
 
   color: (hex) ->
     @hex = "#" + hex

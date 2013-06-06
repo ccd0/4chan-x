@@ -853,7 +853,8 @@ th {
   display: none !important;
 }
 /* Threads */
-.rounded-edges .board > .thread{
+#threads,
+.rounded-edges .board > .thread {
   border-radius: 4px;
 }
 /* Thread Clearfix */
@@ -2084,7 +2085,8 @@ article li {
 #info .btn-wrap {
   display: inline-block;
 }
-#post-preview {
+#post-preview,
+#quote-preview {
   position: absolute;
   z-index: 22;
 }
@@ -2102,7 +2104,7 @@ article li {
   display: inline-block;
   word-wrap: break-word;
   overflow: hidden;
-  margin-top: 5px;
+  margin: 1px;
   padding: 5px 0 3px;
   text-align: center;
 }
