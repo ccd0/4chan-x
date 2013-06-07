@@ -22,7 +22,7 @@
 .jscPad {
   width: 181px;
   height: 101px;
-  background-image: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1)), linear-gradient(to right, rgb(255,0,0), rgb(255,255,0), rgb(0,255,0), rgb(0,255,255), rgb(0,0,255), rgb(255,0,255), rgb(255,0,0));
   background-repeat: no-repeat;
   background-position: 0 0;
 }
