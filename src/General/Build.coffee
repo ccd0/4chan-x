@@ -112,7 +112,7 @@ Build =
         ''
 
     if file?.isDeleted
-      fileHtml = if isOP
+      fileHTML = if isOP
         "<div class=file id=f#{postID}><div class=fileInfo></div><span class=fileThumb>" +
           "<img src='#{staticPath}filedeleted.gif' alt='File deleted.' class=fileDeletedRes>" +
         "</span></div>"
