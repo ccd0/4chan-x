@@ -31,9 +31,9 @@ class DataBoard
     else unless Object.keys(@data.boards[boardID]).length
       delete @data.boards[boardID]
   set: ({boardID, threadID, postID, val}) ->
-    if postID
+    if postID isnt undefined
       ((@data.boards[boardID] or= {})[threadID] or= {})[postID] = val
-    else if threadID
+    else if threadID isnt undefined
       (@data.boards[boardID] or= {})[threadID] = val
     else
       @data.boards[boardID] = val
