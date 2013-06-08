@@ -265,8 +265,9 @@ $.get = (key, val, cb) ->
 
   count = 0
   done  = (item) ->
-    if chrome.runtime.lastError
-      c.error chrome.runtime.lastError
+    {lastError} = chrome.runtime
+    if lastError
+      c.error lastError, lastError.message or 'No message.'
     $.extend items, item
     cb items unless --count
 
