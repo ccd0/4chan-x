@@ -11,9 +11,8 @@ Reporting bugs:
   4. Your exported settings. If your settings contains sensible information (e.g. personas), edit the text file manually.
 
 Open your console with:
-- `Ctrl + Shift + J` on Chrome.
+- `Ctrl + Shift + J` on Chrome and Opera.
 - `Ctrl + Shift + K` on Firefox.
-- `Ctrl + Shift + O` on Opera.
 
 Respect these guidelines:
 - Describe the issue clearly, put some effort into it. A one-liner isn't a good enough description.

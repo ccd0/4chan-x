@@ -114,8 +114,7 @@ ThreadUpdater =
           By sending the `If-Modified-Since` header we get a proper status code, and no response.
           This saves bandwidth for both the user and the servers and avoid unnecessary computation.
           ###
-          # XXX 304 -> 0 in Opera
-          [text, klass] = if req.status in [0, 304]
+          [text, klass] = if req.status is 304
             [null, null]
           else
             ["#{req.statusText} (#{req.status})", 'warning']

@@ -28,21 +28,6 @@ QuotePreview =
       cb: QuotePreview.mouseout
       asapTest: -> qp.firstElementChild
 
-    <% if (type === 'userjs') { %>
-    # XXX Opera workaround for "no mouseout fired" bug.
-    # Remove it once Opera uses Blink.
-    root = @
-    workaround = (e) ->
-      if @ is root
-        e.stopPropagation()
-        return
-      $.event 'mouseout', null, root
-      $.off d,    'mousemove', workaround
-      $.off root, 'mousemove', workaround
-    $.on d,    'mousemove', workaround
-    $.on root, 'mousemove', workaround
-    <% } %>
-
     return unless origin = g.posts["#{boardID}.#{postID}"]
 
     if Conf['Quote Highlighting']
