@@ -55,7 +55,7 @@ Main =
             URL = Redirect.to 'file',
               boardID:  g.BOARD.ID
               filename: pathname[pathname.length - 1]
-            location.href = URL if URL
+            location.replace URL if URL
         return
 
     initFeature = (name, module) ->
@@ -170,7 +170,7 @@ Main =
           boardID:  g.BOARD.ID
           threadID: g.THREADID
           postID:   +location.hash.match /\d+/ # post number or 0
-        location.href = href or "/#{g.BOARD}/"
+        location.replace href or "/#{g.BOARD}/"
       return
 
     unless $.hasClass doc, 'fourchan-x'
