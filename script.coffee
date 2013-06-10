@@ -1787,10 +1787,10 @@ QR =
         @ready()
       else
         @onready = => @ready()
-        $.on $.id('recaptcha_widget_div'), 'DOMNodeInserted', @onready
+        $.on $.id('captchaContainer'), 'DOMNodeInserted', @onready
     ready: ->
       if @challenge = $.id 'recaptcha_challenge_field_holder'
-        $.off $.id('recaptcha_widget_div'), 'DOMNodeInserted', @onready
+        $.off $.id('captchaContainer'), 'DOMNodeInserted', @onready
         delete @onready
       else
         return

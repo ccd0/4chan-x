@@ -2291,13 +2291,13 @@
           this.onready = function() {
             return _this.ready();
           };
-          return $.on($.id('recaptcha_widget_div'), 'DOMNodeInserted', this.onready);
+          return $.on($.id('captchaContainer'), 'DOMNodeInserted', this.onready);
         }
       },
       ready: function() {
         var _this = this;
         if (this.challenge = $.id('recaptcha_challenge_field_holder')) {
-          $.off($.id('recaptcha_widget_div'), 'DOMNodeInserted', this.onready);
+          $.off($.id('captchaContainer'), 'DOMNodeInserted', this.onready);
           delete this.onready;
         } else {
           return;
@@ -4940,20 +4940,33 @@
           return "//archive.thedarkcave.org/" + board + "/full_image/" + filename;
         case 'hr':
         case 'tv':
+        case 'x':
           return "http://archive.4plebs.org/" + board + "/full_image/" + filename;
         case 'c':
         case 'w':
         case 'wg':
           return "//archive.nyafuu.org/" + board + "/full_image/" + filename;
-        case 'vg':
-          return "http://archive.nihil-ad-rem.net/" + board + "/full_image/" + filename;
         case 'd':
+        case 'h':
+        case 'v':
           return "//loveisover.me/" + board + "/full_image/" + filename;
-        case 'ck':
-        case 'fa':
-        case 'lit':
+        case 'vg':
+          return "http://nth.pensivenonsen.se/" + board + "/full_image/" + filename;
+        case 'adv':
+        case 'asp':
+        case 'cm':
+        case 'e':
+        case 'i':
+        case 'lgbt':
+        case 'n':
+        case 'o':
+        case 'p':
+        case 's':
         case 's4s':
-          return "//fuuka.warosu.org/" + board + "/full_image/" + filename;
+        case 't':
+        case 'trv':
+        case 'y':
+          return "//archive.foolzashit.com/" + board + "/full_image/" + filename;
         case 'cgl':
         case 'g':
         case 'mu':
@@ -4961,8 +4974,13 @@
         case 'an':
         case 'k':
         case 'toy':
-        case 'x':
           return "http://archive.heinessen.com/" + board + "/full_image/" + filename;
+        case '3':
+        case 'ck':
+        case 'fa':
+        case 'ic':
+        case 'lit':
+          return "//fuuka.warosu.org/" + board + "/full_image/" + filename;
       }
     },
     post: function(board, postID) {
@@ -4993,11 +5011,27 @@
         case 'w':
         case 'wg':
           return "//archive.nyafuu.org/_/api/chan/post/?board=" + board + "&num=" + postID;
-        case 'v':
-        case 'vg':
-          return "http://archive.nihil-ad-rem.net/_/api/chan/post/?board=" + board + "&num=" + postID;
         case 'd':
+        case 'h':
+        case 'v':
           return "//loveisover.me/_/api/chan/post/?board=" + board + "&num=" + postID;
+        case 'vg':
+          return "http://nth.pensivenonsen.se/_/api/chan/post/?board=" + board + "&num=" + postID;
+        case 'adv':
+        case 'asp':
+        case 'cm':
+        case 'e':
+        case 'i':
+        case 'lgbt':
+        case 'n':
+        case 'o':
+        case 'p':
+        case 's':
+        case 's4s':
+        case 't':
+        case 'trv':
+        case 'y':
+          return "//archive.foolzashit.com/_/api/chan/post/?board=" + board + "&num=" + postID;
       }
     },
     to: function(data) {
@@ -5030,6 +5064,7 @@
           url = Redirect.path('//archive.thedarkcave.org', 'foolfuuka', data);
           break;
         case 'hr':
+        case 'x':
           url = Redirect.path('http://archive.4plebs.org', 'foolfuuka', data);
           break;
         case 'c':
@@ -5037,18 +5072,29 @@
         case 'wg':
           url = Redirect.path('//archive.nyafuu.org', 'foolfuuka', data);
           break;
-        case 'v':
-        case 'vg':
-          url = Redirect.path('http://archive.nihil-ad-rem.net', 'foolfuuka', data);
-          break;
         case 'd':
+        case 'h':
+        case 'v':
           url = Redirect.path('//loveisover.me', 'foolfuuka', data);
           break;
-        case 'ck':
-        case 'fa':
-        case 'lit':
+        case 'vg':
+          url = Redirect.path('http://nth.pensivenonsen.se', 'foolfuuka', data);
+          break;
+        case 'adv':
+        case 'asp':
+        case 'cm':
+        case 'e':
+        case 'i':
+        case 'lgbt':
+        case 'n':
+        case 'o':
+        case 'p':
+        case 's':
         case 's4s':
-          url = Redirect.path('//fuuka.warosu.org', 'fuuka', data);
+        case 't':
+        case 'trv':
+        case 'y':
+          url = Redirect.path('//archive.foolzashit.com', 'foolfuuka', data);
           break;
         case 'diy':
         case 'g':
@@ -5065,8 +5111,14 @@
         case 'mlp':
         case 'r9k':
         case 'toy':
-        case 'x':
           url = Redirect.path('http://archive.heinessen.com', 'fuuka', data);
+          break;
+        case '3':
+        case 'ck':
+        case 'fa':
+        case 'ic':
+        case 'lit':
+          url = Redirect.path('//fuuka.warosu.org', 'fuuka', data);
           break;
         default:
           if (threadID) {
