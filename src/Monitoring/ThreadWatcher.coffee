@@ -8,13 +8,15 @@ ThreadWatcher =
     """
     @list = @dialog.lastElementChild
 
-    @menuInit()
-    @addHeaderMenuEntry()
-
-    $.on $('.menu-button', @dialog), 'click', @cb.menuToggle
     $.on d, 'QRPostSuccessful',   @cb.post
     $.on d, 'ThreadUpdate',       @cb.threadUpdate if g.VIEW is 'thread'
     $.on d, '4chanXInitFinished', @ready
+
+    now = Date.now()
+    if (@db.data.lastChecked or 0) < now - 2 * $.HOUR
+      @db.data.lastChecked = now
+      ThreadWatcher.fetchAllStatus()
+      @db.save()
 
     # XXX tmp conversion from old to new format
     $.get 'WatchedThreads', null, ({WatchedThreads}) ->
@@ -27,97 +29,36 @@ ThreadWatcher =
     Thread::callbacks.push
       name: 'Thread Watcher'
       cb:   @node
-
   node: ->
     toggler = $.el 'img',
       className: 'watcher-toggler'
     $.on toggler, 'click', ThreadWatcher.cb.toggle
     $.before $('input', @OP.nodes.post), toggler
-
-    return if g.VIEW isnt 'thread' or !Conf['Auto Watch']
-    $.get 'AutoWatch', 0, ({AutoWatch}) =>
-      return if AutoWatch isnt @ID
-      ThreadWatcher.add @
-      $.delete 'AutoWatch'
-
-  menuInit: ->
-    ThreadWatcher.menu = new UI.Menu 'thread watcher'
-
-    # `Open all` entry
-    entry =
-      type: 'thread watcher'
-      el: $.el 'a',
-        textContent: 'Open all threads'
-        href: 'javascript:;'
-      open: ->
-        (if ThreadWatcher.list.firstElementChild then $.rmClass else $.addClass) @el, 'disabled'
-        true
-    $.event 'AddMenuEntry', entry
-    $.on entry.el, 'click', ThreadWatcher.cb.openAll
-
-    # `Prune 404'd threads` entry
-    entry =
-      type: 'thread watcher'
-      el: $.el 'a',
-        textContent: 'Prune 404\'d threads'
-        href: 'javascript:;'
-      open: ->
-        (if $('.dead-thread', ThreadWatcher.list) then $.rmClass else $.addClass) @el, 'disabled'
-        true
-    $.event 'AddMenuEntry', entry
-    $.on entry.el, 'click', ThreadWatcher.cb.pruneDeads
-
-    # `Settings` entries:
-    subEntries = []
-    for name, conf of Config.threadWatcher
-      subEntries.push ThreadWatcher.createSubEntry name, conf[1]
-    $.event 'AddMenuEntry',
-      type: 'thread watcher'
-      el: $.el 'span', textContent: 'Settings'
-      subEntries: subEntries
-  createSubEntry: (name, desc) ->
-    entry =
-      type: 'thread watcher'
-      el: $.el 'label',
-        innerHTML: "<input type=checkbox name='#{name}'> #{name}"
-        title: desc
-    input = entry.el.firstElementChild
-    input.checked = Conf[name]
-    $.on input, 'change', $.cb.checked
-    $.on input, 'change', ThreadWatcher.refresh if name is 'Current Board'
-    entry
-  addHeaderMenuEntry: ->
-    return if g.VIEW isnt 'thread'
-    ThreadWatcher.entryEl = $.el 'a', href: 'javascript:;'
-    entry =
-      type: 'header'
-      el: ThreadWatcher.entryEl
-      order: 60
-    $.event 'AddMenuEntry', entry
-    $.on entry.el, 'click', -> ThreadWatcher.toggle g.threads["#{g.BOARD}.#{g.THREADID}"]
-
   ready: ->
     $.off d, '4chanXInitFinished', ThreadWatcher.ready
     return unless Main.isThisPageLegit()
     ThreadWatcher.refresh()
     $.add d.body, ThreadWatcher.dialog
 
+    return unless Conf['Auto Watch']
+    $.get 'AutoWatch', 0, ({AutoWatch}) ->
+      return unless thread = g.BOARD.threads[AutoWatch]
+      ThreadWatcher.add thread
+      $.delete 'AutoWatch'
+
   cb:
-    menuToggle: (e) ->
-      ThreadWatcher.menu.toggle e, @, ThreadWatcher
     openAll: ->
       return if $.hasClass @, 'disabled'
       for a in $$ 'a[title]', ThreadWatcher.list
         $.open a.href
       $.event 'CloseMenu'
+    checkThreads: ->
+      return if $.hasClass @, 'disabled'
+      ThreadWatcher.fetchAllStatus()
     pruneDeads: ->
       return if $.hasClass @, 'disabled'
-      for boardID, threads of ThreadWatcher.db.data.boards
-        if Conf['Current Board'] and boardID isnt g.BOARD.ID
-          continue
-        for threadID, data of threads
-          continue unless data.isDead
-          delete threads[threadID]
+      for {boardID, threadID, data} in ThreadWatcher.getAll() when data.isDead
+        delete ThreadWatcher.db.data.boards[boardID][threadID]
         ThreadWatcher.db.deleteIfEmpty {boardID}
       ThreadWatcher.db.save()
       ThreadWatcher.refresh()
@@ -125,7 +66,7 @@ ThreadWatcher =
     toggle: ->
       ThreadWatcher.toggle Get.postFromNode(@).thread
     rm: ->
-      [boardID, threadID] = @parentNode.dataset.fullid.split '.'
+      [boardID, threadID] = @parentNode.dataset.fullID.split '.'
       ThreadWatcher.rm boardID, +threadID
     post: (e) ->
       {board, postID, threadID} = e.detail
@@ -135,50 +76,67 @@ ThreadWatcher =
       else if Conf['Auto Watch Reply']
         ThreadWatcher.add board.threads[threadID]
     threadUpdate: (e) ->
-      # Update 404 status.
-      return unless e.detail[404]
       {thread} = e.detail
-      return unless ThreadWatcher.db.get {boardID: thread.board.ID, threadID: thread.ID}
+      return unless e.detail[404] and ThreadWatcher.db.get {boardID: thread.board.ID, threadID: thread.ID}
+      # Update 404 status.
       ThreadWatcher.add thread
 
-  refresh: ->
-    nodes = []
+  fetchAllStatus: ->
+    # XXX need visual feedback
+    for thread in ThreadWatcher.getAll()
+      ThreadWatcher.fetchStatus thread
+    return
+  fetchStatus: ({boardID, threadID, data}) ->
+    return if data.isDead
+    $.ajax "//api.4chan.org/#{boardID}/res/#{threadID}.json",
+      onload: ->
+        return if @status isnt 404
+        if Conf['Auto Prune']
+          ThreadWatcher.rm boardID, threadID
+        else
+          data.isDead = true
+          ThreadWatcher.db.set {boardID, threadID, val: data}
+        ThreadWatcher.refresh()
+    ,
+      type: 'head'
+
+  getAll: ->
+    all = []
     for boardID, threads of ThreadWatcher.db.data.boards
       if Conf['Current Board'] and boardID isnt g.BOARD.ID
         continue
       for threadID, data of threads
-        x = $.el 'a',
-          textContent: '×'
-          href: 'javascript:;'
-        $.on x, 'click', ThreadWatcher.cb.rm
+        all.push {boardID, threadID, data}
+    all
 
-        if data.isDead
-          href = Redirect.to 'thread', {boardID, threadID}
-        link = $.el 'a',
-          href: href or "/#{boardID}/res/#{threadID}"
-          textContent: data.excerpt
-          title: data.excerpt
+  makeLine: (boardID, threadID, data) ->
+    x = $.el 'a',
+      textContent: '×'
+      href: 'javascript:;'
+    $.on x, 'click', ThreadWatcher.cb.rm
 
-        nodes.push div = $.el 'div'
-        div.setAttribute 'data-fullid', "#{boardID}.#{threadID}"
-        $.addClass div, 'dead-thread' if data.isDead
-        $.add div, [x, $.tn(' '), link]
+    if data.isDead
+      href = Redirect.to 'thread', {boardID, threadID}
+    link = $.el 'a',
+      href: href or "/#{boardID}/res/#{threadID}"
+      textContent: data.excerpt
+      title: data.excerpt
 
-    list = ThreadWatcher.dialog.lastElementChild
+    div = $.el 'div'
+    fullID = "#{boardID}.#{threadID}"
+    div.dataset.fullID = fullID
+    $.addClass div, 'current'     if g.VIEW is 'thread' and fullID is "#{g.BOARD}.#{g.THREADID}"
+    $.addClass div, 'dead-thread' if data.isDead
+    $.add div, [x, $.tn(' '), link]
+    div
+  refresh: ->
+    nodes = []
+    for {boardID, threadID, data} in ThreadWatcher.getAll()
+      nodes.push ThreadWatcher.makeLine boardID, threadID, data
+
+    {list} = ThreadWatcher
     $.rmAll list
     $.add list, nodes
-
-    if g.VIEW is 'thread'
-      {entryEl} = ThreadWatcher
-      if div = $ "div[data-fullid='#{g.BOARD}.#{g.THREADID}']", list
-        $.addClass div, 'current'
-        $.addClass entryEl, 'unwatch-thread'
-        $.rmClass  entryEl, 'watch-thread'
-        entryEl.textContent = 'Unwatch thread'
-      else
-        $.addClass entryEl, 'watch-thread'
-        $.rmClass  entryEl, 'unwatch-thread'
-        entryEl.textContent = 'Watch thread'
 
     for threadID, thread of g.BOARD.threads
       toggler = $ '.watcher-toggler', thread.OP.nodes.post
@@ -186,6 +144,9 @@ ThreadWatcher =
         Favicon.default
       else
         Favicon.empty
+
+    for refresher in ThreadWatcher.menu.refreshers
+      refresher()
     return
 
   toggle: (thread) ->
@@ -196,13 +157,16 @@ ThreadWatcher =
     else
       ThreadWatcher.add thread
   add: (thread) ->
-    data = excerpt: Get.threadExcerpt thread
+    data     = {}
+    boardID  = thread.board.ID
+    threadID = thread.ID
     if thread.isDead
+      if Conf['Auto Prune'] and ThreadWatcher.db.get {boardID, threadID}
+        ThreadWatcher.rm boardID, threadID
+        return
       data.isDead = true
-    ThreadWatcher.db.set
-      boardID:  thread.board.ID
-      threadID: thread.ID
-      val: data
+    data.excerpt  = Get.threadExcerpt thread
+    ThreadWatcher.db.set {boardID, threadID, val: data}
     ThreadWatcher.refresh()
   rm: (boardID, threadID) ->
     ThreadWatcher.db.delete {boardID, threadID}
@@ -214,3 +178,89 @@ ThreadWatcher =
       for threadID, data of threads
         (newFormat[boardID] or= {})[threadID] = excerpt: data.textContent
     newFormat
+
+  menu:
+    refreshers: []
+    init: ->
+      return if !Conf['Thread Watcher']
+      menu = new UI.Menu 'thread watcher'
+      $.on $('.menu-button', ThreadWatcher.dialog), 'click', (e) ->
+        menu.toggle e, @, ThreadWatcher
+      @addHeaderMenuEntry()
+      @addMenuEntries()
+
+    addHeaderMenuEntry: ->
+      return if g.VIEW isnt 'thread'
+      entryEl = $.el 'a',
+        href: 'javascript:;'
+      $.event 'AddMenuEntry',
+        type: 'header'
+        el: entryEl
+        order: 60
+      $.on entryEl, 'click', -> ThreadWatcher.toggle g.threads["#{g.BOARD}.#{g.THREADID}"]
+      @refreshers.push ->
+        [addClass, rmClass, text] = if $ '.current', ThreadWatcher.list
+          ['unwatch-thread', 'watch-thread', 'Unwatch thread']
+        else
+          ['watch-thread', 'unwatch-thread', 'Watch thread']
+        $.addClass entryEl, addClass
+        $.rmClass  entryEl, rmClass
+        entryEl.textContent = text
+
+    addMenuEntries: ->
+      entries = []
+
+      # `Open all` entry
+      entries.push
+        cb: ThreadWatcher.cb.openAll
+        entry:
+          type: 'thread watcher'
+          el: $.el 'a',
+            textContent: 'Open all threads'
+        refresh: -> (if ThreadWatcher.list.firstElementChild then $.rmClass else $.addClass) @el, 'disabled'
+
+      # `Check 404'd threads` entry
+      entries.push
+        cb: ThreadWatcher.cb.checkThreads
+        entry:
+          type: 'thread watcher'
+          el: $.el 'a',
+            textContent: 'Check 404\'d threads'
+        refresh: -> (if $('div:not(.dead-thread)', ThreadWatcher.list) then $.rmClass else $.addClass) @el, 'disabled'
+
+      # `Prune 404'd threads` entry
+      entries.push
+        cb: ThreadWatcher.cb.pruneDeads
+        entry:
+          type: 'thread watcher'
+          el: $.el 'a',
+            textContent: 'Prune 404\'d threads'
+        refresh: -> (if $('.dead-thread', ThreadWatcher.list) then $.rmClass else $.addClass) @el, 'disabled'
+
+      # `Settings` entries:
+      subEntries = []
+      for name, conf of Config.threadWatcher
+        subEntries.push @createSubEntry name, conf[1]
+      entries.push
+        entry:
+          type: 'thread watcher'
+          el: $.el 'span',
+            textContent: 'Settings'
+          subEntries: subEntries
+
+      for {entry, cb, refresh} in entries
+        entry.el.href = 'javascript:;' if entry.el.nodeName is 'A'
+        $.on entry.el, 'click', cb if cb
+        @refreshers.push refresh.bind entry if refresh
+        $.event 'AddMenuEntry', entry
+    createSubEntry: (name, desc) ->
+      entry =
+        type: 'thread watcher'
+        el: $.el 'label',
+          innerHTML: "<input type=checkbox name='#{name}'> #{name}"
+          title: desc
+      input = entry.el.firstElementChild
+      input.checked = Conf[name]
+      $.on input, 'change', $.cb.checked
+      $.on input, 'change', ThreadWatcher.refresh if name is 'Current Board'
+      entry

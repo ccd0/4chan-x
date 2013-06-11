@@ -80,6 +80,7 @@ Config =
     'Current Board':    [false, 'Only show watched threads from the current board.']
     'Auto Watch':       [true,  'Automatically watch threads you start.']
     'Auto Watch Reply': [false, 'Automatically watch threads you reply to.']
+    'Auto Prune':       [false, 'Automatically prune 404\'d threads.']
   filter:
     name: """
       # Filter any namefags:
