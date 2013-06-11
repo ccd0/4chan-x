@@ -155,7 +155,7 @@ Main =
       $.addClass doc, style
     setStyle()
     return unless mainStyleSheet
-    if MutationObserver
+    if window.MutationObserver
       observer = new MutationObserver setStyle
       observer.observe mainStyleSheet,
         attributes: true

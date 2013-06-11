@@ -703,7 +703,7 @@ QR =
         img:       imgContainer.firstChild
         input:     input
 
-      if MutationObserver
+      if window.MutationObserver
         observer = new MutationObserver @load.bind @
         observer.observe @nodes.challenge,
           childList: true
