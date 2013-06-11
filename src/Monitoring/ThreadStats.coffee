@@ -35,7 +35,10 @@ ThreadStats =
     (if thread.postLimit and !thread.isSticky then $.addClass else $.rmClass) postCountEl, 'warning'
     (if thread.fileLimit and !thread.isSticky then $.addClass else $.rmClass) fileCountEl, 'warning'
   fetchPage: ->
-    return if ThreadStats.thread.isDead
+    if ThreadStats.thread.isDead
+      ThreadStats.pageCountEl.textContent = 'Dead'
+      $.addClass ThreadStats.pageCountEl, 'warning'
+      return
     setTimeout ThreadStats.fetchPage, 2 * $.MINUTE
     $.ajax "//api.4chan.org/#{ThreadStats.thread.board}/threads.json", onload: ThreadStats.onThreadsLoad,
       headers: 'If-Modified-Since': ThreadStats.lastModified
