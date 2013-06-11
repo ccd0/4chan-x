@@ -1,3 +1,5 @@
+- Minor fixes.
+
 ### 3.5.2 - *2013-06-01*
 
 - Fix minor regression.
