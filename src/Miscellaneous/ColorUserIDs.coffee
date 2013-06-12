@@ -29,7 +29,7 @@ IDColor =
 
   apply: ->
     rgb = IDColor.ids[@] or IDColor.compute @
-    "background-color: rgb(#{rgb[0]},#{rgb[1]},#{rgb[2]}); color: " + if rgb[3] then "black;" else "white; border-radius: 3px; padding: 0px 2px;"
+    "background-color: rgb(#{rgb[0]},#{rgb[1]},#{rgb[2]}); color: " + if rgb[3] then "black; border-radius: 3px; padding: 0px 2px;" else "white; border-radius: 3px; padding: 0px 2px;"
 
   hash: (str) ->
     msg = 0
