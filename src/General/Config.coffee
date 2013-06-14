@@ -73,7 +73,7 @@ Config =
       ]
       'Indicate Spoilers': [
         false
-        'Indicate spoilers if Remove Spoilers is enabled.'
+        'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.'
       ]
 
     'Linkification':

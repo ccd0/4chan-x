@@ -649,6 +649,11 @@ a.hide-announcement {
   box-shadow: -5px 0 rgba(255, 0, 0, .5);
 }
 
+/* Spoiler text */
+:root.reveal-spoilers s {
+  color: white !important;
+}
+
 /* Thread & Reply Hiding */
 .hide-thread-button,
 .hide-reply-button {
