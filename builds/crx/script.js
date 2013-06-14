@@ -116,7 +116,7 @@
         'Emoji': [false, 'Adds icons next to names for different emails'],
         'Color User IDs': [false, 'Assign unique colors to user IDs on boards that use them'],
         'Remove Spoilers': [false, 'Remove all spoilers in text.'],
-        'Indicate Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.']
+        'Reveal Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.']
       },
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
@@ -9244,13 +9244,13 @@
 
   RemoveSpoilers = {
     init: function() {
-      if (Conf['Indicate Spoilers'] && !Conf['Remove Spoilers']) {
+      if (Conf['Reveal Spoilers'] && !Conf['Remove Spoilers']) {
         $.addClass(doc, 'reveal-spoilers');
       }
       if (!Conf['Remove Spoilers']) {
         return;
       }
-      if (Conf['Indicate Spoilers']) {
+      if (Conf['Reveal Spoilers']) {
         this.wrapper = function(text) {
           return "[spoiler]" + text + "[/spoiler]";
         };

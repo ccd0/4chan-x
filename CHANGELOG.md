@@ -1,3 +1,12 @@
+**MayhemYDG**:
+- Remove /s4s/ from warosu archive
+- Fix CAPTCHA duplication on the report page
+- Small bug fixes
+
+**seaweedchan**:
+- Rename `Indicate Spoilers` to `Reveal Spoilers`
+- If `Reveal Spoilers` is enabled but `Remove Spoilers` is not, act as if the spoiler is hovered
+
 ### v1.2.13
 *2013-05-28*
 

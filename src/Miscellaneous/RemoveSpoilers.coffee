@@ -1,11 +1,11 @@
 RemoveSpoilers =
   init: ->
-    if Conf['Indicate Spoilers'] and !Conf['Remove Spoilers']
+    if Conf['Reveal Spoilers'] and !Conf['Remove Spoilers']
       $.addClass doc, 'reveal-spoilers'
 
     return unless Conf['Remove Spoilers']
 
-    if Conf['Indicate Spoilers']
+    if Conf['Reveal Spoilers']
       @wrapper = (text) ->
         "[spoiler]#{text}[/spoiler]"
 
