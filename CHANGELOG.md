@@ -10,6 +10,9 @@
 - Rename `Indicate Spoilers` to `Reveal Spoilers`
 - If `Reveal Spoilers` is enabled but `Remove Spoilers` is not, act as if the spoiler is hovered
 
+**Tracerneo**:
+- Add ID styling for IDs with black text
+
 ### v1.2.13
 *2013-05-28*
 
