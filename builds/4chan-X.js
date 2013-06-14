@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.13 - 2013-05-29
+* 4chan X - Version 1.2.13 - 2013-06-14
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -113,7 +113,8 @@
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   Config = {
     main: {
@@ -292,6 +293,7 @@
       'Open thread tab': ['Shift+o', 'Open thread in new tab.'],
       'Next reply': ['j', 'Select next reply.'],
       'Previous reply': ['k', 'Select previous reply.'],
+      'Deselect reply': ['Shift+d', 'Deselect reply.'],
       'Hide': ['x', 'Hide thread.']
     },
     updater: {
@@ -1286,9 +1288,9 @@
       var boardID, postID, threadID, val, _base, _base1, _base2;
 
       boardID = _arg.boardID, threadID = _arg.threadID, postID = _arg.postID, val = _arg.val;
-      if (postID) {
+      if (postID !== void 0) {
         ((_base = ((_base1 = this.data.boards)[boardID] || (_base1[boardID] = {})))[threadID] || (_base[threadID] = {}))[postID] = val;
-      } else if (threadID) {
+      } else if (threadID !== void 0) {
         ((_base2 = this.data.boards)[boardID] || (_base2[boardID] = {}))[threadID] = val;
       } else {
         this.data.boards[boardID] = val;
@@ -1326,13 +1328,9 @@
       _ref = this.data.boards;
       for (boardID in _ref) {
         val = _ref[boardID];
-        if (typeof this.data.boards[boardID] !== 'object') {
-          delete this.data.boards[boardID];
-        } else {
-          this.deleteIfEmpty({
-            boardID: boardID
-          });
-        }
+        this.deleteIfEmpty({
+          boardID: boardID
+        });
       }
       now = Date.now();
       if ((this.data.lastChecked || 0) < now - 2 * $.HOUR) {
@@ -1779,7 +1777,7 @@
     hashScroll: function() {
       var hash, post;
 
-      if (!((hash = this.location.hash) && (post = $.id(hash.slice(1))))) {
+      if (!((hash = this.location.hash.slice(1)) && (post = $.id(hash)))) {
         return;
       }
       if ((Get.postFromRoot(post)).isHidden) {
@@ -1877,7 +1875,7 @@
       @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
       */
 
-      var a, boardID, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileHtml, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
+      var a, boardID, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
 
       postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
       isOP = postID === threadID;
@@ -1915,7 +1913,7 @@
       }
       flag = flagCode ? (" <img src='" + staticPath + "country/" + (boardID === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
       if (file != null ? file.isDeleted : void 0) {
-        fileHtml = isOP ? ("<div class=file id=f" + postID + "><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>" : ("<div class=file id=f" + postID + "><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted-res.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>";
+        fileHTML = isOP ? ("<div class=file id=f" + postID + "><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>" : ("<div class=file id=f" + postID + "><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted-res.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>";
       } else if (file) {
         ext = file.name.slice(-3);
         if (!file.twidth && !file.theight && ext === 'gif') {
@@ -2170,9 +2168,9 @@
           case '[/b]':
             return '</b>';
           case '[spoiler]':
-            return '<span class=spoiler>';
+            return '<s>';
           case '[/spoiler]':
-            return '</span>';
+            return '</s>';
           case '[code]':
             return '<pre class=prettyprint>';
           case '[/code]':
@@ -2704,10 +2702,6 @@
       }
       for (key in Config.filter) {
         this.filters[key] = [];
-        if (Conf[key] === void 0) {
-          $["delete"](key);
-          continue;
-        }
         _ref = Conf[key].split('\n');
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           filter = _ref[_i];
@@ -5602,7 +5596,7 @@
         }), this.ready.bind(this));
       },
       ready: function() {
-        var MutationObserver, imgContainer, input, observer, setLifetime,
+        var imgContainer, input, observer, setLifetime,
           _this = this;
 
         setLifetime = function(e) {
@@ -5628,7 +5622,7 @@
           img: imgContainer.firstChild,
           input: input
         };
-        if (MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.OMutationObserver) {
+        if (window.MutationObserver) {
           observer = new MutationObserver(this.load.bind(this));
           observer.observe(this.nodes.challenge, {
             childList: true
@@ -7054,7 +7048,12 @@
       return (thread.fileLimit && !thread.isSticky ? $.addClass : $.rmClass)(fileCountEl, 'warning');
     },
     fetchPage: function() {
-      if (ThreadStats.thread.isDead || !Conf["Page Count in Stats"]) {
+      if (!Conf["Page Count in Stats"]) {
+        return;
+      }
+      if (ThreadStats.thread.isDead) {
+        ThreadStats.pageCountEl.textContent = 'Dead';
+        $.addClass(ThreadStats.pageCountEl, 'warning');
         return;
       }
       setTimeout(ThreadStats.fetchPage, 2 * $.MINUTE);
@@ -7395,7 +7394,7 @@
       return $.after(root, [$.tn(' '), icon]);
     },
     parse: function(postObjects) {
-      var ID, OP, count, deletedFiles, deletedPosts, files, index, key, node, num, post, postObject, posts, root, scroll, _i, _len, _ref;
+      var ID, OP, count, deletedFiles, deletedPosts, files, index, length, node, num, post, postObject, posts, scroll, sendEvent, threadID, _i, _len, _ref;
 
       OP = postObjects[0];
       Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler;
@@ -7436,67 +7435,53 @@
           post.kill(true);
           deletedFiles.push(post);
         }
-        if (ThreadUpdater.postID && ThreadUpdater.postID === ID) {
-          ThreadUpdater.foundPost = true;
-        }
       }
+      sendEvent = function() {
+        return $.event('ThreadUpdate', {
+          404: false,
+          thread: ThreadUpdater.thread,
+          newPosts: posts,
+          deletedPosts: deletedPosts,
+          deletedFiles: deletedFiles,
+          postCount: OP.replies + 1,
+          fileCount: OP.images + (!!ThreadUpdater.thread.OP.file && !ThreadUpdater.thread.OP.file.isDead)
+        });
+      };
       if (!count) {
         ThreadUpdater.set('status', null, null);
         ThreadUpdater.outdateCount++;
-      } else {
-        ThreadUpdater.set('status', "+" + count, 'new');
-        ThreadUpdater.outdateCount = 0;
-        if (Conf['Beep'] && d.hidden && Unread.posts && !Unread.posts.length) {
-          if (!ThreadUpdater.audio) {
-            ThreadUpdater.audio = $.el('audio', {
-              src: ThreadUpdater.beep
-            });
-          }
-          ThreadUpdater.audio.play();
-        }
-        ThreadUpdater.lastPost = posts[count - 1].ID;
-        Main.callbackNodes(Post, posts);
-        scroll = Conf['Auto Scroll'] && ThreadUpdater.scrollBG() && ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25;
-        for (key in posts) {
-          post = posts[key];
-          if (!posts.hasOwnProperty(key)) {
-            continue;
-          }
-          root = post.nodes.root;
-          if (post.cb) {
-            if (!post.cb.call(post)) {
-              $.add(ThreadUpdater.root, root);
-            }
-          } else {
-            $.add(ThreadUpdater.root, root);
-          }
-        }
-        if (scroll) {
-          if (Conf['Bottom Scroll']) {
-            doc.scrollTop = d.body.clientHeight;
-          } else {
-            if (root) {
-              Header.scrollToPost(root);
-            }
-          }
-        }
-        $.queueTask(function() {
-          var length, threadID;
-
-          threadID = ThreadUpdater.thread.ID;
-          length = $$('.thread > .postContainer', ThreadUpdater.root).length;
-          return Fourchan.parseThread(threadID, length - count, length);
-        });
+        sendEvent();
+        return;
       }
-      return $.event('ThreadUpdate', {
-        404: false,
-        thread: ThreadUpdater.thread,
-        newPosts: posts,
-        deletedPosts: deletedPosts,
-        deletedFiles: deletedFiles,
-        postCount: OP.replies + 1,
-        fileCount: OP.images + (!!ThreadUpdater.thread.OP.file && !ThreadUpdater.thread.OP.file.isDead)
-      });
+      ThreadUpdater.set('status', "+" + count, 'new');
+      ThreadUpdater.outdateCount = 0;
+      if (Conf['Beep'] && d.hidden && Unread.posts && !Unread.posts.length) {
+        if (!ThreadUpdater.audio) {
+          ThreadUpdater.audio = $.el('audio', {
+            src: ThreadUpdater.beep
+          });
+        }
+        ThreadUpdater.audio.play();
+      }
+      ThreadUpdater.lastPost = posts[count - 1].ID;
+      Main.callbackNodes(Post, posts);
+      scroll = Conf['Auto Scroll'] && ThreadUpdater.scrollBG() && ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25;
+      $.add(ThreadUpdater.root, nodes);
+      sendEvent();
+      if (scroll) {
+        if (Conf['Bottom Scroll']) {
+          doc.scrollTop = d.body.clientHeight;
+        } else {
+          Header.scrollToPost(nodes[0]);
+        }
+      }
+      threadID = ThreadUpdater.thread.ID;
+      length = $$('.thread > .postContainer', ThreadUpdater.root).length;
+      if (Conf['Enable 4chan\'s Extension']) {
+        return $.globalEval("Parser.parseThread(" + threadID + ", " + (-count) + ")");
+      } else {
+        return Fourchan.parseThread(threadID, length - count, length);
+      }
     }
   };
 
@@ -7708,7 +7693,7 @@
       }
     },
     scroll: function() {
-      var hash, post, posts, prevID, root;
+      var checkPosition, hash, onload, post, posts, prevID, root;
 
       if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
         return;
@@ -7725,11 +7710,27 @@
             break;
           }
         }
-        root.scrollIntoView(false);
-        return;
+        onload = function() {
+          if (checkPosition(root)) {
+            return root.scrollIntoView(false);
+          }
+        };
+      } else {
+        posts = Object.keys(Unread.thread.posts);
+        root = Unread.thread.posts[posts[posts.length - 1]].nodes.root;
+        onload = function() {
+          if (checkPosition(root)) {
+            return Header.scrollToPost(root);
+          }
+        };
       }
-      posts = Object.keys(Unread.thread.posts);
-      return Header.scrollToPost(Unread.thread.posts[posts[posts.length - 1]].nodes.root);
+      checkPosition = function(target) {
+        var height, top, _ref;
+
+        _ref = target.getBoundingClientRect(), top = _ref.top, height = _ref.height;
+        return top + height - doc.clientHeight > 0;
+      };
+      return $.on(window, 'load', onload);
     },
     sync: function() {
       var lastReadPost;
@@ -7748,11 +7749,11 @@
       Unread.setLine();
       return Unread.update();
     },
-    addPosts: function(newPosts) {
-      var ID, data, post, _i, _len;
+    addPosts: function(posts) {
+      var ID, data, post, _i, _len, _ref;
 
-      for (_i = 0, _len = newPosts.length; _i < _len; _i++) {
-        post = newPosts[_i];
+      for (_i = 0, _len = posts.length; _i < _len; _i++) {
+        post = posts[_i];
         ID = post.ID;
         if (ID <= Unread.lastReadPost || post.isHidden) {
           continue;
@@ -7771,7 +7772,7 @@
         Unread.addPostQuotingYou(post);
       }
       if (Conf['Unread Line']) {
-        Unread.setLine(newPosts.contains(Unread.posts[0]));
+        Unread.setLine((_ref = Unread.posts[0], __indexOf.call(posts, _ref) >= 0));
       }
       Unread.read();
       return Unread.update();
@@ -8022,8 +8023,8 @@
         'http': true,
         'https': true,
         'software': 'fuuka',
-        'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 's4s', 'tg', 'vr'],
-        'files': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 's4s', 'vr']
+        'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr'],
+        'files': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'vr']
       }
     },
     to: function(dest, data) {
@@ -8093,7 +8094,7 @@
       return $.on(d, '4chanXInitFinished', this.setup);
     },
     setup: function() {
-      var btn, entry, items, psa;
+      var btn, entry, psa;
 
       $.off(d, '4chanXInitFinished', PSAHiding.setup);
       if (!(psa = $.id('globalMessage'))) {
@@ -8121,21 +8122,10 @@
         href: 'javascript:;'
       });
       $.on(btn, 'click', PSAHiding.toggle);
-      items = {
-        hiddenPSA: 0,
-        hiddenPSAs: null
-      };
-      $.get(items, function(_arg) {
-        var hiddenPSA, hiddenPSAs;
+      $.get('hiddenPSA', 0, function(_arg) {
+        var hiddenPSA;
 
-        hiddenPSA = _arg.hiddenPSA, hiddenPSAs = _arg.hiddenPSAs;
-        if (hiddenPSAs) {
-          $["delete"]('hiddenPSAs');
-          if (hiddenPSAs.contains(psa.textContent.replace(/\W+/g, '').toLowerCase())) {
-            hiddenPSA = +$.id('globalMessage').dataset.utc;
-            $.set('hiddenPSA', hiddenPSA);
-          }
-        }
+        hiddenPSA = _arg.hiddenPSA;
         PSAHiding.sync(hiddenPSA);
         $.before(psa, btn);
         return $.rmClass(doc, 'hide-announcement');
@@ -8256,7 +8246,7 @@
       var rgb;
 
       rgb = IDColor.ids[this] || IDColor.compute(this);
-      return ("background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: ") + (rgb[3] ? "black;" : "white; border-radius: 3px; padding: 0px 2px;");
+      return ("background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: ") + (rgb[3] ? "black; border-radius: 3px; padding: 0px 2px;" : "white; border-radius: 3px; padding: 0px 2px;");
     },
     hash: function(str) {
       var i, j, msg;
@@ -8708,7 +8698,7 @@
       }
       board = g.BOARD.ID;
       if (board === 'g') {
-        $.globalEval("window.addEventListener('prettyprint', function(e) {\n  var pre = e.detail;\n  pre.innerHTML = prettyPrintOne(pre.innerHTML.replace(/\\s/g, '&nbsp;'));\n}, false);");
+        $.globalEval("window.addEventListener('prettyprint', function(e) {\n  var pre = e.detail;\n  pre.innerHTML = prettyPrintOne(pre.innerHTML);\n}, false);");
         Post.prototype.callbacks.push({
           name: 'Parse /g/ code',
           cb: this.code
@@ -8932,6 +8922,9 @@
         case Conf['Previous reply']:
           Keybinds.hl(-1, threadRoot);
           break;
+        case Conf['Deselect reply']:
+          Keybinds.hl(0, threadRoot);
+          break;
         case Conf['Hide']:
           if (g.VIEW === 'index') {
             ThreadHiding.toggle(thread);
@@ -9042,6 +9035,12 @@
     hl: function(delta, thread) {
       var axe, headRect, next, postEl, rect, replies, reply, root, topMargin, _i, _len;
 
+      if (!delta) {
+        if (postEl = $('.reply.highlight', thread)) {
+          $.rmClass(postEl, 'highlight');
+        }
+        return;
+      }
       if (Conf['Fixed Header'] && Conf['Bottom header']) {
         topMargin = 0;
       } else {
@@ -9293,22 +9292,23 @@
 
   Report = {
     init: function() {
-      if (!/report/.test(location.search)) {
+      if (!(/report/.test(location.search) && d.cookie.indexOf('pass_enabled=1') === -1)) {
         return;
       }
-      return $.ready(this.ready);
+      return $.asap((function() {
+        return $.id('recaptcha_response_field');
+      }), Report.ready);
     },
     ready: function() {
-      var field, form;
+      var field;
 
-      form = $('form');
       field = $.id('recaptcha_response_field');
       $.on(field, 'keydown', function(e) {
         if (e.keyCode === 8 && !field.value) {
           return $.globalEval('Recaptcha.reload("t")');
         }
       });
-      return $.on(form, 'submit', function(e) {
+      return $.on($('form'), 'submit', function(e) {
         var response;
 
         e.preventDefault();
@@ -9316,7 +9316,7 @@
         if (!/\s/.test(response)) {
           field.value = "" + response + " " + response;
         }
-        return form.submit();
+        return this.submit();
       });
     }
   };
@@ -10217,16 +10217,17 @@
           return;
         case 'images.4chan.org':
           $.ready(function() {
-            var url;
+            var URL;
 
             if (Conf['404 Redirect'] && d.title === '4chan - 404 Not Found') {
               Redirect.init();
-              url = Redirect.to('file', {
-                boardID: pathname[1],
-                filename: pathname[3]
+              pathname = location.pathname.split('/');
+              URL = Redirect.to('file', {
+                boardID: g.BOARD.ID,
+                filename: pathname[pathname.length - 1]
               });
-              if (url) {
-                return location.href = url;
+              if (URL) {
+                return location.replace(URL);
               }
             }
           });
@@ -10309,7 +10310,7 @@
       return $.ready(Main.initReady);
     },
     initStyle: function() {
-      var MutationObserver, mainStyleSheet, observer, setStyle, style, styleSheets, _ref;
+      var mainStyleSheet, observer, setStyle, style, styleSheets, _ref;
 
       $.off(d, '4chanMainInit', Main.initStyle);
       if (!Main.isThisPageLegit() || $.hasClass(doc, 'fourchan-x')) {
@@ -10346,7 +10347,7 @@
       if (!mainStyleSheet) {
         return;
       }
-      if (MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.OMutationObserver) {
+      if (window.MutationObserver) {
         observer = new MutationObserver(setStyle);
         return observer.observe(mainStyleSheet, {
           attributes: true,
@@ -10366,7 +10367,7 @@
             threadID: g.THREADID,
             postID: +location.hash.match(/\d+/)
           });
-          location.href = href || ("/" + g.BOARD + "/");
+          location.replace(href || ("/" + g.BOARD + "/"));
         }
         return;
       }

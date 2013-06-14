@@ -614,6 +614,10 @@ http://iqdb.org/?url=%TURL
       'k'
       'Select previous reply.'
     ]
+    'Deselect reply': [
+      'Shift+d'
+      'Deselect reply.'
+    ]
     'Hide': [
       'x'
       'Hide thread.'

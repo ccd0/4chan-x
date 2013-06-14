@@ -33,9 +33,9 @@ class DataBoard
       delete @data.boards[boardID]
 
   set: ({boardID, threadID, postID, val}) ->
-    if postID
+    if postID isnt undefined
       ((@data.boards[boardID] or= {})[threadID] or= {})[postID] = val
-    else if threadID
+    else if threadID isnt undefined
       (@data.boards[boardID] or= {})[threadID] = val
     else
       @data.boards[boardID] = val
@@ -60,12 +60,7 @@ class DataBoard
 
   clean: ->
     for boardID, val of @data.boards
-      # XXX tmp fix for users that had the `null`
-      # value for a board with the Unread features:
-      if typeof @data.boards[boardID] isnt 'object'
-        delete @data.boards[boardID]
-      else
-        @deleteIfEmpty {boardID}
+      @deleteIfEmpty {boardID}
 
     now = Date.now()
     if (@data.lastChecked or 0) < now - 2 * $.HOUR

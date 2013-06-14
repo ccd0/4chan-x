@@ -779,7 +779,7 @@ QR =
         img:       imgContainer.firstChild
         input:     input
 
-      if MutationObserver = window.MutationObserver or window.WebKitMutationObserver or window.OMutationObserver
+      if window.MutationObserver
         observer = new MutationObserver @load.bind @
         observer.observe @nodes.challenge,
           childList: true

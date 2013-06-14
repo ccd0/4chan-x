@@ -49,10 +49,11 @@ Main =
         $.ready ->
           if Conf['404 Redirect'] and d.title is '4chan - 404 Not Found'
             Redirect.init()
-            url = Redirect.to 'file',
-              boardID:  pathname[1]
-              filename: pathname[3]
-            location.href = url if url
+            pathname = location.pathname.split '/'
+            URL = Redirect.to 'file',
+              boardID:  g.BOARD.ID
+              filename: pathname[pathname.length - 1]
+            location.replace URL if URL
         return
 
     init = (features) ->
@@ -165,13 +166,12 @@ Main =
       $.addClass doc, style
     setStyle()
     return unless mainStyleSheet
-    if MutationObserver = window.MutationObserver or window.WebKitMutationObserver or window.OMutationObserver
+    if window.MutationObserver
       observer = new MutationObserver setStyle
       observer.observe mainStyleSheet,
         attributes: true
         attributeFilter: ['href']
     else
-      # XXX this doesn't seem to work?
       $.on mainStyleSheet, 'DOMAttrModified', setStyle
 
   initReady: ->
@@ -181,7 +181,7 @@ Main =
           boardID:  g.BOARD.ID
           threadID: g.THREADID
           postID:   +location.hash.match /\d+/ # post number or 0
-        location.href = href or "/#{g.BOARD}/"
+        location.replace href or "/#{g.BOARD}/"
       return
 
     unless $.hasClass doc, 'fourchan-x'
