@@ -1,3 +1,10 @@
+### v1.2.15
+*2013-06-14*
+
+**seaweedchan**:
+- Revert Mayhem's updater changes which caused silly issues
+- Make thumbnails in QR show (or most of) the whole image
+
 ### v1.2.14
 *2013-06-14*
 
