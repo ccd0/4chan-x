@@ -29,8 +29,8 @@ Redirect =
       'http':  true
       'https': true
       'software': 'foolfuuka'
-      'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg']
-      'files':  ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vp', 'vr', 'wsg']
+      'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg']
+      'files':  ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg']
 
     'NSFW Foolz':
       'domain': 'nsfw.foolz.us'
@@ -70,13 +70,6 @@ Redirect =
       'software': 'foolfuuka'
       'boards': ['d', 'h', 'v']
       'files':  ['d', 'h', 'v']
-
-    'nth-chan':
-      'domain': 'nth.pensivenonsen.se'
-      'http': true
-      'software': 'foolfuuka'
-      'boards': ['vg']
-      'files':  ['vg']
 
     'Foolz a Shit':
       'domain': 'archive.foolzashit.com'
