@@ -5,8 +5,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["a", "co", "gd", "jp", "m", "q", "sp", "tg", "tv", "vp", "vr", "wsg"],
-  "files": ["a", "gd", "jp", "m", "q", "tg", "vp", "vr", "wsg"]
+  "boards": ["a", "co", "gd", "jp", "m", "q", "sp", "tg", "tv", "vg", "vp", "vr", "wsg"],
+  "files": ["a", "gd", "jp", "m", "q", "tg", "vg", "vp", "vr", "wsg"]
 }, {
   "uid": 1,
   "name": "NSFW Foolz",
@@ -52,15 +52,6 @@
   "software": "foolfuuka",
   "boards": ["d", "h", "v"],
   "files": ["d", "h", "v"]
-}, {
-  "uid": 6,
-  "name": "nth-chan",
-  "domain": "nth.pensivenonsen.se",
-  "http": true,
-  "https": false,
-  "software": "foolfuuka",
-  "boards": ["vg"],
-  "files": ["vg"]
 }, {
   "uid": 11,
   "name": "Foolz a Shit",
