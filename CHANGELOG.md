@@ -1,3 +1,6 @@
+### v1.2.16
+*2013-06-16*
+
 **seaweedchan**:
 - Add `.active` class to `.menu-button` when clicked (and remove on menu close)
 - Move /v/ and /vg/ back to Foolz archive
