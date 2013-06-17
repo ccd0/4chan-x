@@ -1,3 +1,9 @@
+### v1.2.17
+*2013-06-17*
+
+**seaweedchan**:
+- Fix full images being forced onto their own line
+
 ### v1.2.16
 *2013-06-16*
 
