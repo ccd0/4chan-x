@@ -604,14 +604,6 @@ a.hide-announcement {
 .expanding {
   opacity: .5;
 }
-.expanded-image {
-  clear: both;
-}
-.expanded-image > .op > .file::after {
-  content: '';
-  clear: both;
-  display: table;
-}
 :root.fit-height .full-image {
   max-height: 100vh;
 }
