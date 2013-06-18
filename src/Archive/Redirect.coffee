@@ -26,7 +26,7 @@ Redirect =
   archives:
     'Foolz':
       'domain': 'archive.foolz.us'
-      'http':  true
+      'http':  false
       'https': true
       'software': 'foolfuuka'
       'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg']
@@ -34,7 +34,7 @@ Redirect =
 
     'NSFW Foolz':
       'domain': 'nsfw.foolz.us'
-      'http':  true
+      'http':  false
       'https': true
       'software': 'foolfuuka'
       'boards': ['u']
