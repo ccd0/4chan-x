@@ -4086,7 +4086,7 @@ Redirect =
   image: (board, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     switch board
-      when 'a', 'gd', 'jp', 'm', 'q', 'tg', 'vp', 'vr', 'wsg'
+      when 'a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg'
         "//archive.foolz.us/#{board}/full_image/#{filename}"
       when 'u'
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
@@ -4098,8 +4098,6 @@ Redirect =
         "//archive.nyafuu.org/#{board}/full_image/#{filename}"
       when 'd', 'h', 'v'
         "//loveisover.me/#{board}/full_image/#{filename}"
-      when 'vg'
-        "http://nth.pensivenonsen.se/#{board}/full_image/#{filename}"
       when 'adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 's', 's4s', 't', 'trv', 'y'
         "//archive.foolzashit.com/#{board}/full_image/#{filename}"
       when 'cgl', 'g', 'mu'
@@ -4112,7 +4110,7 @@ Redirect =
     # XXX foolz had HSTS set for 120 days, which broke XHR+CORS+Redirection when on HTTP.
     # Remove necessary HTTPS procotol in September 2013.
     switch board
-      when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg'
+      when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vg', 'vp', 'vr', 'wsg'
         "https://archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'u'
         "https://nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
@@ -4124,16 +4122,14 @@ Redirect =
         "//archive.nyafuu.org/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'd', 'h', 'v'
         "//loveisover.me/_/api/chan/post/?board=#{board}&num=#{postID}"
-      when 'vg'
-        "http://nth.pensivenonsen.se/_/api/chan/post/?board=#{board}&num=#{postID}"
-      when 'adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 's', 's4s', 't', 'trv', 'y'
+      when 'adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 'pol', 's', 's4s', 't', 'trv', 'y'
         "//archive.foolzashit.com/_/api/chan/post/?board=#{board}&num=#{postID}"
   to: (data) ->
     unless data.isSearch
       {threadID} = data
     {board} = data
     switch board
-      when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg'
+      when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vg', 'vp', 'vr', 'wsg'
         url = Redirect.path '//archive.foolz.us',           'foolfuuka', data
       when 'u'
         url = Redirect.path '//nsfw.foolz.us',              'foolfuuka', data
@@ -4145,9 +4141,7 @@ Redirect =
         url = Redirect.path '//archive.nyafuu.org',         'foolfuuka', data
       when 'd', 'h', 'v'
         url = Redirect.path '//loveisover.me',              'foolfuuka', data
-      when 'vg'
-        url = Redirect.path 'http://nth.pensivenonsen.se',  'foolfuuka', data
-      when 'adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 's', 's4s', 't', 'trv', 'y'
+      when 'adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 'pol', 's', 's4s', 't', 'trv', 'y'
         url = Redirect.path '//archive.foolzashit.com',       'foolfuuka', data
       when 'diy', 'g', 'sci'
         url = Redirect.path '//archive.installgentoo.net',  'fuuka',     data

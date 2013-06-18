@@ -4930,6 +4930,7 @@
         case 'm':
         case 'q':
         case 'tg':
+        case 'vg':
         case 'vp':
         case 'vr':
         case 'wsg':
@@ -4950,8 +4951,6 @@
         case 'h':
         case 'v':
           return "//loveisover.me/" + board + "/full_image/" + filename;
-        case 'vg':
-          return "http://nth.pensivenonsen.se/" + board + "/full_image/" + filename;
         case 'adv':
         case 'asp':
         case 'cm':
@@ -4994,6 +4993,7 @@
         case 'sp':
         case 'tg':
         case 'tv':
+        case 'vg':
         case 'vp':
         case 'vr':
         case 'wsg':
@@ -5015,8 +5015,6 @@
         case 'h':
         case 'v':
           return "//loveisover.me/_/api/chan/post/?board=" + board + "&num=" + postID;
-        case 'vg':
-          return "http://nth.pensivenonsen.se/_/api/chan/post/?board=" + board + "&num=" + postID;
         case 'adv':
         case 'asp':
         case 'cm':
@@ -5026,6 +5024,7 @@
         case 'n':
         case 'o':
         case 'p':
+        case 'pol':
         case 's':
         case 's4s':
         case 't':
@@ -5050,6 +5049,7 @@
         case 'sp':
         case 'tg':
         case 'tv':
+        case 'vg':
         case 'vp':
         case 'vr':
         case 'wsg':
@@ -5077,9 +5077,6 @@
         case 'v':
           url = Redirect.path('//loveisover.me', 'foolfuuka', data);
           break;
-        case 'vg':
-          url = Redirect.path('http://nth.pensivenonsen.se', 'foolfuuka', data);
-          break;
         case 'adv':
         case 'asp':
         case 'cm':
@@ -5089,6 +5086,7 @@
         case 'n':
         case 'o':
         case 'p':
+        case 'pol':
         case 's':
         case 's4s':
         case 't':
