@@ -5484,7 +5484,7 @@
 
   Main = {
     init: function() {
-      var key, path, pathname, settings, temp, val;
+      var asap, key, path, pathname, settings, temp, val;
       Main.flatten(null, Config);
       path = location.pathname;
       pathname = path.slice(1).split('/');
@@ -5504,10 +5504,13 @@
       switch (location.hostname) {
         case 'sys.4chan.org':
           if (/report/.test(location.search)) {
-            $.ready(function() {
+            asap = function() {
               var field, form;
+              if (!(field = $.id('recaptcha_response_field'))) {
+                setTimeout(asap, 200);
+                return;
+              }
               form = $('form');
-              field = $.id('recaptcha_response_field');
               $.on(field, 'keydown', function(e) {
                 if (e.keyCode === 8 && !e.target.value) {
                   return window.location = 'javascript:Recaptcha.reload()';
@@ -5522,7 +5525,8 @@
                 }
                 return form.submit();
               });
-            });
+            };
+            asap();
           }
           return;
         case 'images.4chan.org':
