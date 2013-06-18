@@ -27,6 +27,9 @@ Config =
       'Image Hover':                  [false, 'Show a floating expanded image on hover.']
       'Sauce':                        [true,  'Add sauce links to images.']
       'Reveal Spoilers':              [false, 'Reveal spoiler thumbnails.']
+    'Linkification':
+      'Linkify':                      [true,  'Convert text links into hyperlinks.']
+      'Clean Links':                  [true,  'Remove spoiler texts commonly used to bypass banned links.']
     'Menu':
       'Menu':                         [true,  'Add a drop-down menu to posts.']
       'Report Link':                  [true,  'Add a report link to the menu.']
