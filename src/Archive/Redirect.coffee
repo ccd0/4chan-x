@@ -22,7 +22,8 @@ Redirect =
           Redirect.post[boardID] = archive
         unless boardID of Redirect.file or boardID not in archive.files
           Redirect.file[boardID] = archive
-    return
+
+    Redirect.update()
 
   update: (cb) ->
     $.get 'lastarchivecheck', 0, ({lastarchivecheck}) ->
