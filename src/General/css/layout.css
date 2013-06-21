@@ -213,11 +213,11 @@ th {
 .navigation-alignment-right #header-bar {
   text-align: right;
 }
-.sidebar-location-left.sidebar-large:not(.pagination-on-side) .pagelist,
+.sidebar-location-left.sidebar-large:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,
 .sidebar-location-left #header-bar {
   left: 303px;
 }
-.sidebar-location-left.sidebar-normal:not(.pagination-on-side) .pagelist,
+.sidebar-location-left.sidebar-normal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,
 .sidebar-location-left #header-bar {
   left: 252px;
 }
@@ -225,11 +225,11 @@ th {
 .sidebar-location-left.sidebar-minimal:not(.fourchan-ss-navigation) #header-bar {
   left: 20px;
 }
-.sidebar-location-right.sidebar-large:not(.pagination-on-side) .pagelist,
+.sidebar-location-right.sidebar-large:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,
 .sidebar-location-right #header-bar {
   right: 303px;
 }
-.sidebar-location-right.sidebar-normal:not(.pagination-on-side) .pagelist,
+.sidebar-location-right.sidebar-normal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,
 .sidebar-location-right #header-bar {
   right: 252px;
 }
@@ -1679,10 +1679,8 @@ a:only-of-type > .remove {
 .sidebar-location-right.mascot-location-opposite #mascot img {
   <%= transform %>: scaleX(-1);
 }
-.fourchan-ss-navigation.bottom.fixed.mascot-position-bottom #mascot,
-.fourchan-ss-navigation.index.pagination-sticky-bottom.mascot-position-bottom #mascot,
-.fourchan-ss-navigation.bottom.fixed:not(.post-form-style-fixed) #mascot,
-.fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-fixed) #mascot {
+.fourchan-ss-navigation.bottom.fixed #mascot,
+.fourchan-ss-navigation.index.pagination-sticky-bottom #mascot {
   bottom: 1.5em
 }
 .mascots-overlap-posts #mascot {
