@@ -1252,8 +1252,6 @@ input:checked + .rice {
   position: fixed;
   background: none;
   border: none;
-}
-.qr-wrapper {
   padding: 1px;
   min-width: 248px;
   background: transparent;
@@ -1346,17 +1344,17 @@ input:checked + .rice {
 .post-form-style-tabbed-slideout #qrtab .selectrice {
   text-align: center;
 }
-.transparent-post-form .qr-wrapper {
+.transparent-post-form #qr {
   opacity: 0.2;
   transition: opacity .3s ease-in-out 1s;
 }
-.transparent-post-form #qr:hover .qr-wrapper,
-.transparent-post-form #qr.has-focus .qr-wrapper,
-.transparent-post-form #qr.dump .qr-wrapper {
+.transparent-post-form #qr:hover,
+.transparent-post-form #qr.has-focus,
+.transparent-post-form #qr.dump {
   opacity: 1;
   transition: opacity .3s linear;
 }
-:root:not(.show-post-form-header):not(.post-form-style-float):not(.post-form-tabbed-slideout) #qrtab,
+:root:not(.show-post-form-header):not(.post-form-style-float):not(.post-form-style-tabbed-slideout) #qrtab,
 .post-form-style-float .autohide:not(:hover):not(.has-focus) form,
 .show-post-form-header.post-form-style-fixed .autohide:not(:hover):not(.has-focus) form {
   display: none !important;
