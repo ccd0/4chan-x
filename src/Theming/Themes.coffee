@@ -5,22 +5,21 @@
 ThemeTools =
   init: (key) ->
     Conf['editMode'] = "theme"
+    theme = Themes[key]
 
-    if key
-      editTheme = JSON.parse(JSON.stringify(Themes[key]))
+    if theme
+      editTheme = JSON.parse JSON.stringify theme
       editTheme["Theme"] = if Conf['userThemes'][key]
         key
       else
         key += " [custom]"
     else
-      editTheme = JSON.parse(JSON.stringify(Themes['Yotsuba B']))
-      editTheme["Theme"]  = "Untitled"
-      editTheme["Author"] = "Author"
+      editTheme = JSON.parse JSON.stringify Themes['Yotsuba B']
+      editTheme["Theme"]           = "Untitled"
+      editTheme["Author"]          = "Author"
       editTheme["Author Tripcode"] = "Unknown"
 
-    # Objects are not guaranteed to have any type of arrangement, so we use a presorted
-    # array to generate the layout of of the theme editor.
-    # (Themes aren't even guaranteed to have any of these values, actually)
+    # Manual Sort
     layout = [
       "Background Image"
       "Background Attachment"
@@ -90,19 +89,18 @@ ThemeTools =
 "
 
     header = $.el "div",
-      innerHTML: "
+      innerHTML: """
 <input class='field subject' name='Theme' placeholder='Theme' value='#{key}'> by
 <input class='field name' name='Author' placeholder='Author' value='#{editTheme['Author']}'>
-<input class='field postertrip' name='Author Tripcode' placeholder='Author Tripcode' value='#{editTheme['Author Tripcode']}'>"
+<input class='field postertrip' name='Author Tripcode' placeholder='Author Tripcode' value='#{editTheme['Author Tripcode']}'>
+"""
 
     # Setup inputs that are not generated from the layout variable.
     for input in $$("input", header)
       $.on input, 'blur', ->
         editTheme[@name] = @value
-    $.add $("#themebar", ThemeTools.dialog), header
-    themeContent = $("#themecontent", ThemeTools.dialog)
-
-    nodes = []
+    $.add $('#themebar', ThemeTools.dialog), header
+    themeContent = $ '#themecontent', ThemeTools.dialog
     
     for item in layout
       unless editTheme[item]
@@ -173,7 +171,7 @@ ThemeTools =
         editTheme[@name] = @value
         Style.addStyle(editTheme)
 
-      nodes.push div
+      $.add themeContent, div
 
     Style.addStyle(editTheme)
 
@@ -188,14 +186,12 @@ ThemeTools =
       editTheme["Custom CSS"] = @value
       Style.themeCSS.textContent  = Style.theme editTheme
 
-    nodes.push div
+    $.add themeContent, div
 
     $.on $('#save > a', ThemeTools.dialog), 'click', ->
       ThemeTools.save editTheme
 
     $.on  $('#close > a', ThemeTools.dialog), 'click', ThemeTools.close
-
-    $.add themeContent, nodes
 
     $.add d.body, ThemeTools.dialog
     Style.themeCSS.textContent  = Style.theme editTheme

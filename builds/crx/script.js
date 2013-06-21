@@ -11664,11 +11664,12 @@
 
   ThemeTools = {
     init: function(key) {
-      var colorInput, div, fileInput, header, input, item, layout, nodes, themeContent, _i, _j, _len, _len1, _ref;
+      var colorInput, div, fileInput, header, input, item, layout, theme, themeContent, _i, _j, _len, _len1, _ref;
 
       Conf['editMode'] = "theme";
-      if (key) {
-        editTheme = JSON.parse(JSON.stringify(Themes[key]));
+      theme = Themes[key];
+      if (theme) {
+        editTheme = JSON.parse(JSON.stringify(theme));
         editTheme["Theme"] = Conf['userThemes'][key] ? key : key += " [custom]";
       } else {
         editTheme = JSON.parse(JSON.stringify(Themes['Yotsuba B']));
@@ -11683,7 +11684,7 @@
         innerHTML: "<div id=themebar></div><hr><div id=themecontent></div><div id=save>  <a href='javascript:;'>Save</a></div><div id=upload>  <a href='javascript:;'>Select Image</a></div><div id=close>  <a href='javascript:;'>Close</a></div>"
       });
       header = $.el("div", {
-        innerHTML: "<input class='field subject' name='Theme' placeholder='Theme' value='" + key + "'> by<input class='field name' name='Author' placeholder='Author' value='" + editTheme['Author'] + "'><input class='field postertrip' name='Author Tripcode' placeholder='Author Tripcode' value='" + editTheme['Author Tripcode'] + "'>"
+        innerHTML: "<input class='field subject' name='Theme' placeholder='Theme' value='" + key + "'> by\n<input class='field name' name='Author' placeholder='Author' value='" + editTheme['Author'] + "'>\n<input class='field postertrip' name='Author Tripcode' placeholder='Author Tripcode' value='" + editTheme['Author Tripcode'] + "'>"
       });
       _ref = $$("input", header);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -11692,9 +11693,8 @@
           return editTheme[this.name] = this.value;
         });
       }
-      $.add($("#themebar", ThemeTools.dialog), header);
-      themeContent = $("#themecontent", ThemeTools.dialog);
-      nodes = [];
+      $.add($('#themebar', ThemeTools.dialog), header);
+      themeContent = $('#themecontent', ThemeTools.dialog);
       for (_j = 0, _len1 = layout.length; _j < _len1; _j++) {
         item = layout[_j];
         if (!editTheme[item]) {
@@ -11774,7 +11774,7 @@
           editTheme[this.name] = this.value;
           return Style.addStyle(editTheme);
         });
-        nodes.push(div);
+        $.add(themeContent, div);
       }
       Style.addStyle(editTheme);
       if (!editTheme["Custom CSS"]) {
@@ -11788,12 +11788,11 @@
         editTheme["Custom CSS"] = this.value;
         return Style.themeCSS.textContent = Style.theme(editTheme);
       });
-      nodes.push(div);
+      $.add(themeContent, div);
       $.on($('#save > a', ThemeTools.dialog), 'click', function() {
         return ThemeTools.save(editTheme);
       });
       $.on($('#close > a', ThemeTools.dialog), 'click', ThemeTools.close);
-      $.add(themeContent, nodes);
       $.add(d.body, ThemeTools.dialog);
       return Style.themeCSS.textContent = Style.theme(editTheme);
     },
