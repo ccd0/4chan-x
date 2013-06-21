@@ -2,14 +2,13 @@ Style =
   init: ->
     @setup()
     $.asap (-> d.body), @asapInit
-    $.ready @readyInit
+    $.on window, "resize", Style.padding
+    $.on doc, '4chanXInitFinished', @readyInit
 
   asapInit: ->
     <% if (type === 'crx') { %>
     $.addClass doc, 'webkit'
     $.addClass doc, 'blink'
-    <% } else if (type === 'userjs') { %>
-    $.addClass doc, 'presto'
     <% } else { %>
     $.addClass doc, 'gecko'
     <% } %>
@@ -57,19 +56,11 @@ Style =
         $.add next, nextA
 
   readyInit: ->
-    return unless $.id 'navtopright'
-
-    # Give ExLinks and 4sight a little time to append their dialog links
-    setTimeout ->
-      Style.padding.nav = Header.bar
-      Style.padding.pages = $(".pagelist", d.body)
-      Style.padding()
-      $.on window, "resize", Style.padding
-      Style.iconPositions()
-      if exLink = $ "#navtopright .exlinksOptionsLink", d.body
-        $.on exLink, "click", ->
-          setTimeout Rice.nodes, 100
-    , 500
+    Style.padding()
+    Style.iconPositions()
+    if exLink = $ "#navtopright .exlinksOptionsLink", d.body
+      $.on exLink, "click", ->
+        setTimeout Rice.nodes, 100
 
   setup: ->
     theme = Themes[Conf['theme']] or Themes['Yotsuba B']
@@ -120,10 +111,7 @@ Style =
     delete Style.headCount
     delete Style.cleanup
 
-  addStyle: (theme) ->
-    unless theme
-      theme = Themes[Conf['theme']] or Themes['Yotsuba B']
-
+  addStyle: ->
     Style.dynamicCSS.textContent = Style.dynamic()
     Style.iconPositions()
     Style.padding()
@@ -294,6 +282,8 @@ Style =
     Style.icons.textContent = css
 
   padding: ->
+    Style.padding.nav   = Header.bar
+    Style.padding.pages = $ '.pagelist', d.body
     css = """<%= grunt.file.read('src/General/css/padding.nav.css') %>"""
     
     if Style.padding.pages

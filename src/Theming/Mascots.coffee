@@ -238,7 +238,6 @@ MascotTools =
 
       el.previousSibling.value = val
       editMascot.image = val
-      Style.addStyle()
 
     reader.readAsDataURL file
 
@@ -289,7 +288,6 @@ MascotTools =
     Conf['editMode'] = false
     editMascot = {}
     $.rm $.id 'mascotConf'
-    Style.addStyle()
     Settings.open "Mascots"
 
   importMascot: (evt) ->

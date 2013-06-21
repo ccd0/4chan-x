@@ -18,7 +18,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.1.3 - 2013-06-20
+* appchan x - Version 2.1.3 - 2013-06-21
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -11122,8 +11122,7 @@
 
         val = evt.target.result;
         el.previousSibling.value = val;
-        editMascot.image = val;
-        return Style.addStyle();
+        return editMascot.image = val;
       };
       return reader.readAsDataURL(file);
     },
@@ -11185,7 +11184,6 @@
       Conf['editMode'] = false;
       editMascot = {};
       $.rm($.id('mascotConf'));
-      Style.addStyle();
       return Settings.open("Mascots");
     },
     importMascot: function(evt) {
@@ -11364,7 +11362,8 @@
       $.asap((function() {
         return d.body;
       }), this.asapInit);
-      return $.ready(this.readyInit);
+      $.on(window, "resize", Style.padding);
+      return $.on(doc, '4chanXInitFinished', this.readyInit);
     },
     asapInit: function() {
       var cat, hyphenated, name, setting, title, _ref;
@@ -11427,23 +11426,15 @@
       }
     },
     readyInit: function() {
-      if (!$.id('navtopright')) {
-        return;
-      }
-      return setTimeout(function() {
-        var exLink;
+      var exLink;
 
-        Style.padding.nav = Header.bar;
-        Style.padding.pages = $(".pagelist", d.body);
-        Style.padding();
-        $.on(window, "resize", Style.padding);
-        Style.iconPositions();
-        if (exLink = $("#navtopright .exlinksOptionsLink", d.body)) {
-          return $.on(exLink, "click", function() {
-            return setTimeout(Rice.nodes, 100);
-          });
-        }
-      }, 500);
+      Style.padding();
+      Style.iconPositions();
+      if (exLink = $("#navtopright .exlinksOptionsLink", d.body)) {
+        return $.on(exLink, "click", function() {
+          return setTimeout(Rice.nodes, 100);
+        });
+      }
     },
     setup: function() {
       var theme;
@@ -11503,10 +11494,7 @@
       delete Style.headCount;
       return delete Style.cleanup;
     },
-    addStyle: function(theme) {
-      if (!theme) {
-        theme = Themes[Conf['theme']] || Themes['Yotsuba B'];
-      }
+    addStyle: function() {
       Style.dynamicCSS.textContent = Style.dynamic();
       Style.iconPositions();
       return Style.padding();
@@ -11618,9 +11606,11 @@
     padding: function() {
       var css;
 
-      css = "body {\npadding-bottom: 1px;\n}\n.fourchan-ss-navigation.fixed.top:not(.autohide) body::before {\ntop: " + Style.padding.nav.offsetHeight + "px;\n}\n.fourchan-ss-navigation.fixed.bottom:not(.autohide) body::before {\nbottom: " + Style.padding.nav.offsetHeight + "px;\n}\n.fourchan-ss-navigation.top:not(.autohide) body {\npadding-top: " + (Style.padding.nav.offsetHeight + 1) + "px;\n}\n.fourchan-ss-navigation.bottom:not(.autohide) body {\npadding-bottom: " + (Style.padding.nav.offsetHeight + 1) + "px;\"\n}";
+      Style.padding.nav = Header.bar;
+      Style.padding.pages = $('.pagelist', d.body);
+      css = "body {\npadding-bottom: 1px;\n}\n.fourchan-ss-navigation.fixed.top:not(.autohide) body::before {\ntop: " + Style.padding.nav.offsetHeight + "px;\n}\n.fourchan-ss-navigation.fixed.bottom:not(.autohide) body::before {\nbottom: " + Style.padding.nav.offsetHeight + "px;\n}\n.top:not(.autohide) body {\npadding-top: " + (Style.padding.nav.offsetHeight + 1) + "px;\n}\n.bottom:not(.autohide) body {\npadding-bottom: " + (Style.padding.nav.offsetHeight + 1) + "px;\"\n}";
       if (Style.padding.pages) {
-        css += ".fourchan-ss-navigation.index.pagination-sticky-top body::before,\n.fourchan-ss-navigation.index.pagination-top body::before {\n  top: " + Style.padding.pages.offsetHeight + "px;\n}\n.fourchan-ss-navigation.index.pagination-sticky-bottom body::before,\n.fourchan-ss-navigation.index.pagination-bottom body::before {\n  bottom: " + Style.padding.pages.offsetHeight + "px;\n}\n.fourchan-ss-navigation.index.pagination-sticky-top body,\n.fourchan-ss-navigation.index.pagination-top body {\n  padding-top: " + (Style.padding.pages.offsetHeight + 1) + "px;\n}\n.fourchan-ss-navigation.index.pagination-sticky-bottom body,\n.fourchan-ss-navigation.index.pagination-bottom body {\n  padding-bottom: " + (Style.padding.pages.offsetHeight + 1) + "px;\n}";
+        css += ".fourchan-ss-navigation.index.pagination-sticky-top body::before,\n.fourchan-ss-navigation.index.pagination-top body::before {\n  top: " + Style.padding.pages.offsetHeight + "px;\n}\n.fourchan-ss-navigation.index.pagination-sticky-bottom body::before,\n.fourchan-ss-navigation.index.pagination-bottom body::before {\n  bottom: " + Style.padding.pages.offsetHeight + "px;\n}\n.index.pagination-sticky-top body,\n.index.pagination-top body {\n  padding-top: " + (Style.padding.pages.offsetHeight + 1) + "px;\n}\n.index.pagination-sticky-bottom body,\n.index.pagination-bottom body {\n  padding-bottom: " + (Style.padding.pages.offsetHeight + 1) + "px;\n}";
       }
       return Style.paddingSheet.textContent = css;
     },
@@ -11750,44 +11740,9 @@
             JSColor.bind(colorInput);
             $.after(input, colorInput);
         }
-        $.on(input, 'blur', function() {
-          var depth, i, len, toggle1, toggle2;
-
-          depth = 0;
-          toggle1 = false;
-          toggle2 = false;
-          len = this.value.length;
-          if (len < 1000) {
-            i = 0;
-            while (i < len) {
-              switch (this.value[i++]) {
-                case '(':
-                  ++depth;
-                  break;
-                case ')':
-                  --depth;
-                  break;
-                case '"':
-                  toggle1 = !toggle1;
-                  break;
-                case "'":
-                  toggle2 = !toggle2;
-              }
-            }
-          }
-          if ((depth !== 0) || toggle1 || toggle2) {
-            return alert("Syntax error on " + this.name + ".");
-          }
-          if (this.className === "colorfield") {
-            this.nextSibling.value = "#" + (Style.colorToHex(this.value) || 'aaaaaa');
-            this.nextSibling.color.importColor();
-          }
-          editTheme[this.name] = this.value;
-          return Style.addStyle(editTheme);
-        });
+        $.on(input, 'blur', ThemeTools.apply);
         $.add(themeContent, div);
       }
-      Style.addStyle(editTheme);
       if (!editTheme["Custom CSS"]) {
         editTheme["Custom CSS"] = "";
       }
@@ -11807,6 +11762,41 @@
       $.add(d.body, ThemeTools.dialog);
       return Style.themeCSS.textContent = Style.theme(editTheme);
     },
+    apply: function() {
+      var depth, i, len, toggle1, toggle2;
+
+      depth = 0;
+      toggle1 = false;
+      toggle2 = false;
+      len = this.value.length;
+      if (len < 1000) {
+        i = 0;
+        while (i < len) {
+          switch (this.value[i++]) {
+            case '(':
+              ++depth;
+              break;
+            case ')':
+              --depth;
+              break;
+            case '"':
+              toggle1 = !toggle1;
+              break;
+            case "'":
+              toggle2 = !toggle2;
+          }
+        }
+      }
+      if ((depth !== 0) || toggle1 || toggle2) {
+        return alert("Syntax error on " + this.name + ".");
+      }
+      if (this.className === "colorfield") {
+        this.nextSibling.value = '#' + (Style.colorToHex(this.value) || 'aaaaaa');
+        this.nextSibling.color.importColor();
+      }
+      editTheme[this.name] = this.value;
+      return Style.themeCSS.textContent = Style.theme(editTheme);
+    },
     uploadImage: function(evt, el) {
       var file, reader;
 
@@ -11815,7 +11805,7 @@
       reader.onload = function(evt) {
         var val;
 
-        val = 'url("' + evt.target.result + '")';
+        val = "url(\"" + evt.target.result + "\")";
         el.previousSibling.value = val;
         editTheme["Background Image"] = val;
         return Style.themeCSS.textContent = Style.theme(editTheme);
@@ -11962,14 +11952,14 @@
         userThemes = _arg.userThemes;
         userThemes[name] = Themes[name];
         $.set('userThemes', userThemes);
-        $.set("theme", Conf['theme'] = name);
+        $.set('theme', Conf['theme'] = name);
         return alert("Theme \"" + name + "\" saved.");
       });
     },
     close: function() {
       Conf['editMode'] = false;
+      Style.themeCSS.textContent = Style.theme(Themes[Conf['theme']]);
       $.rm($.id('themeConf'));
-      Style.addStyle();
       return Settings.open('Themes');
     }
   };

@@ -146,34 +146,9 @@ ThemeTools =
 
           $.after input, colorInput
 
-      $.on input, 'blur', ->
-        depth = 0
-        toggle1 = false
-        toggle2 = false
-        len = @value.length
-
-        if len < 1000
-          i = 0
-          while i < len
-            switch @value[i++]
-              when '(' then ++depth
-              when ')' then --depth
-              when '"' then toggle1 = !toggle1
-              when "'" then toggle2 = !toggle2
-
-        if (depth isnt 0) or toggle1 or toggle2
-          return alert "Syntax error on #{@name}."
-
-        if @className is "colorfield"
-          @nextSibling.value = "##{Style.colorToHex(@value) or 'aaaaaa'}"
-          @nextSibling.color.importColor()
-
-        editTheme[@name] = @value
-        Style.addStyle(editTheme)
+      $.on input, 'blur', ThemeTools.apply
 
       $.add themeContent, div
-
-    Style.addStyle(editTheme)
 
     unless editTheme["Custom CSS"]
       editTheme["Custom CSS"] = ""
@@ -196,12 +171,37 @@ ThemeTools =
     $.add d.body, ThemeTools.dialog
     Style.themeCSS.textContent  = Style.theme editTheme
 
+  apply: ->
+    depth = 0
+    toggle1 = false
+    toggle2 = false
+    len = @value.length
+
+    if len < 1000
+      i = 0
+      while i < len
+        switch @value[i++]
+          when '(' then ++depth
+          when ')' then --depth
+          when '"' then toggle1 = !toggle1
+          when "'" then toggle2 = !toggle2
+
+    if (depth isnt 0) or toggle1 or toggle2
+      return alert "Syntax error on #{@name}."
+
+    if @className is "colorfield"
+      @nextSibling.value = '#' + (Style.colorToHex(@value) or 'aaaaaa')
+      @nextSibling.color.importColor()
+
+    editTheme[@name] = @value
+    Style.themeCSS.textContent = Style.theme editTheme
+
   uploadImage: (evt, el) ->
     file = evt.target.files[0]
     reader = new FileReader()
 
     reader.onload = (evt) ->
-      val = 'url("' + evt.target.result + '")'
+      val = """url("#{evt.target.result}")"""
 
       el.previousSibling.value = val
       editTheme["Background Image"] = val
@@ -336,16 +336,17 @@ ThemeTools =
       else
         return
 
-    Themes[name] = JSON.parse(JSON.stringify(theme))
+    Themes[name] = JSON.parse JSON.stringify theme
     delete Themes[name]["Theme"]
+
     $.get "userThemes", {}, ({userThemes}) ->
       userThemes[name] = Themes[name]
       $.set 'userThemes', userThemes
-      $.set "theme", Conf['theme'] = name
-      alert "Theme \"#{name}\" saved."
+      $.set 'theme', Conf['theme'] = name
+      alert """Theme "#{name}" saved."""
 
   close: ->
     Conf['editMode'] = false
+    Style.themeCSS.textContent = Style.theme Themes[Conf['theme']]
     $.rm $.id 'themeConf'
-    Style.addStyle()
     Settings.open 'Themes'
