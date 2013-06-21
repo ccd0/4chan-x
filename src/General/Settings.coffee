@@ -355,7 +355,7 @@ Settings =
         Settings[key].call input
       return
     $.on $('input[name="Custom CSS"]', section), 'change', Settings.togglecss
-    $.on $.id('apply-css'), 'click', Settings.usercss
+    $.on $('#apply-css', section), 'click', Settings.usercss
   boardnav: ->
     Header.generateBoardList @value
   time: ->
