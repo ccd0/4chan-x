@@ -26,15 +26,15 @@ Redirect =
   archives:
     'Foolz':
       'domain': 'archive.foolz.us'
-      'http':  true
+      'http':  false
       'https': true
       'software': 'foolfuuka'
-      'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg']
-      'files':  ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vp', 'vr', 'wsg']
+      'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg']
+      'files':  ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg']
 
     'NSFW Foolz':
       'domain': 'nsfw.foolz.us'
-      'http':  true
+      'http':  false
       'https': true
       'software': 'foolfuuka'
       'boards': ['u']
@@ -70,13 +70,6 @@ Redirect =
       'software': 'foolfuuka'
       'boards': ['d', 'h', 'v']
       'files':  ['d', 'h', 'v']
-
-    'nth-chan':
-      'domain': 'nth.pensivenonsen.se'
-      'http': true
-      'software': 'foolfuuka'
-      'boards': ['vg']
-      'files':  ['vg']
 
     'Foolz a Shit':
       'domain': 'archive.foolzashit.com'
@@ -114,8 +107,8 @@ Redirect =
       'http':  true
       'https': true
       'software': 'fuuka'
-      'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 's4s', 'tg', 'vr']
-      'files':  ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 's4s', 'vr']
+      'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
+      'files':  ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'vr']
 
   to: (dest, data) ->
     archive = (if dest is 'search' then Redirect.thread else Redirect[dest])[data.boardID]

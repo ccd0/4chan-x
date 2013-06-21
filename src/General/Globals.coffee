@@ -19,8 +19,6 @@ g    =
   threads:   {}
   posts:     {}
 
-MutationObserver = window.MutationObserver or window.WebKitMutationObserver or window.OMutationObserver
-
 Mascots =
   'Akiyama_Mio':
     category:   'Anime'

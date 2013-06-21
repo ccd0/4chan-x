@@ -113,11 +113,12 @@
 *
 */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, MutationObserver, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   Config = {
     main: {
@@ -137,7 +138,7 @@
         'Check for Updates': [true, 'Check for updated versions of appchan x.'],
         'Color User IDs': [false, 'Assign unique colors to user IDs on boards that use them'],
         'Remove Spoilers': [false, 'Remove all spoilers in text.'],
-        'Indicate Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled.']
+        'Reveal Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.']
       },
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
@@ -385,6 +386,7 @@
       'Open thread tab': ['Shift+o', 'Open thread in new tab.'],
       'Next reply': ['j', 'Select next reply.'],
       'Previous reply': ['k', 'Select previous reply.'],
+      'Deselect reply': ['Shift+d', 'Deselect reply.'],
       'Hide': ['x', 'Hide thread.']
     },
     updater: {
@@ -428,8 +430,6 @@
     threads: {},
     posts: {}
   };
-
-  MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.OMutationObserver;
 
   Mascots = {
     'Akiyama_Mio': {
@@ -3639,9 +3639,9 @@
       var boardID, postID, threadID, val, _base, _base1, _base2;
 
       boardID = _arg.boardID, threadID = _arg.threadID, postID = _arg.postID, val = _arg.val;
-      if (postID) {
+      if (postID !== void 0) {
         ((_base = ((_base1 = this.data.boards)[boardID] || (_base1[boardID] = {})))[threadID] || (_base[threadID] = {}))[postID] = val;
-      } else if (threadID) {
+      } else if (threadID !== void 0) {
         ((_base2 = this.data.boards)[boardID] || (_base2[boardID] = {}))[threadID] = val;
       } else {
         this.data.boards[boardID] = val;
@@ -3679,13 +3679,9 @@
       _ref = this.data.boards;
       for (boardID in _ref) {
         val = _ref[boardID];
-        if (typeof this.data.boards[boardID] !== 'object') {
-          delete this.data.boards[boardID];
-        } else {
-          this.deleteIfEmpty({
-            boardID: boardID
-          });
-        }
+        this.deleteIfEmpty({
+          boardID: boardID
+        });
       }
       now = Date.now();
       if ((this.data.lastChecked || 0) < now - 2 * $.HOUR) {
@@ -4070,7 +4066,7 @@
     hashScroll: function() {
       var hash, post;
 
-      if (!((hash = this.location.hash) && (post = $.id(hash.slice(1))))) {
+      if (!((hash = this.location.hash.slice(1)) && (post = $.id(hash)))) {
         return;
       }
       if ((Get.postFromRoot(post)).isHidden) {
@@ -4169,7 +4165,7 @@
       @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
       */
 
-      var a, boardID, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileHtml, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
+      var a, boardID, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
 
       postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
       isOP = postID === threadID;
@@ -4207,7 +4203,7 @@
       }
       flag = flagCode ? (" <img src='" + staticPath + "country/" + (boardID === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
       if (file != null ? file.isDeleted : void 0) {
-        fileHtml = isOP ? ("<div class=file id=f" + postID + "><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>" : ("<div class=file id=f" + postID + "><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted-res.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>";
+        fileHTML = isOP ? ("<div class=file id=f" + postID + "><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>" : ("<div class=file id=f" + postID + "><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted-res.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>";
       } else if (file) {
         ext = file.name.slice(-3);
         if (!file.twidth && !file.theight && ext === 'gif') {
@@ -4462,9 +4458,9 @@
           case '[/b]':
             return '</b>';
           case '[spoiler]':
-            return '<span class=spoiler>';
+            return '<s>';
           case '[/spoiler]':
-            return '</span>';
+            return '</s>';
           case '[code]':
             return '<pre class=prettyprint>';
           case '[/code]':
@@ -4611,6 +4607,7 @@
           entry = _ref[_i];
           this.insertEntry(entry, menu, data);
         }
+        $.addClass(lastToggledButton, 'active');
         $.on(d, 'click', this.close);
         $.on(d, 'CloseMenu', this.close);
         Rice.nodes(menu);
@@ -4664,6 +4661,7 @@
 
       close = function() {
         $.rm(currentMenu);
+        $.rmClass(lastToggledButton, 'active');
         currentMenu = null;
         lastToggledButton = null;
         return $.off(d, 'click CloseMenu', this.close);
@@ -4988,10 +4986,6 @@
       }
       for (key in Config.filter) {
         this.filters[key] = [];
-        if (Conf[key] === void 0) {
-          $["delete"](key);
-          continue;
-        }
         _ref = Conf[key].split('\n');
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           filter = _ref[_i];
@@ -7902,7 +7896,7 @@
           img: imgContainer.firstChild,
           input: input
         };
-        if (MutationObserver) {
+        if (window.MutationObserver) {
           observer = new MutationObserver(this.load.bind(this));
           observer.observe(this.nodes.challenge, {
             childList: true
@@ -9388,7 +9382,12 @@
       return (thread.fileLimit && !thread.isSticky ? $.addClass : $.rmClass)(fileCountEl, 'warning');
     },
     fetchPage: function() {
-      if (ThreadStats.thread.isDead || !Conf["Page Count in Stats"]) {
+      if (!Conf["Page Count in Stats"]) {
+        return;
+      }
+      if (ThreadStats.thread.isDead) {
+        ThreadStats.pageCountEl.textContent = 'Dead';
+        $.addClass(ThreadStats.pageCountEl, 'warning');
         return;
       }
       setTimeout(ThreadStats.fetchPage, 2 * $.MINUTE);
@@ -10022,7 +10021,7 @@
       }
     },
     scroll: function() {
-      var hash, post, posts, prevID, root;
+      var checkPosition, hash, onload, post, posts, prevID, root;
 
       if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
         return;
@@ -10039,11 +10038,27 @@
             break;
           }
         }
-        root.scrollIntoView(false);
-        return;
+        onload = function() {
+          if (checkPosition(root)) {
+            return root.scrollIntoView(false);
+          }
+        };
+      } else {
+        posts = Object.keys(Unread.thread.posts);
+        root = Unread.thread.posts[posts[posts.length - 1]].nodes.root;
+        onload = function() {
+          if (checkPosition(root)) {
+            return Header.scrollToPost(root);
+          }
+        };
       }
-      posts = Object.keys(Unread.thread.posts);
-      return Header.scrollToPost(Unread.thread.posts[posts[posts.length - 1]].nodes.root);
+      checkPosition = function(target) {
+        var height, top, _ref;
+
+        _ref = target.getBoundingClientRect(), top = _ref.top, height = _ref.height;
+        return top + height - doc.clientHeight > 0;
+      };
+      return $.on(window, 'load', onload);
     },
     sync: function() {
       var lastReadPost;
@@ -10062,11 +10077,11 @@
       Unread.setLine();
       return Unread.update();
     },
-    addPosts: function(newPosts) {
-      var ID, data, post, _i, _len;
+    addPosts: function(posts) {
+      var ID, data, post, _i, _len, _ref;
 
-      for (_i = 0, _len = newPosts.length; _i < _len; _i++) {
-        post = newPosts[_i];
+      for (_i = 0, _len = posts.length; _i < _len; _i++) {
+        post = posts[_i];
         ID = post.ID;
         if (ID <= Unread.lastReadPost || post.isHidden) {
           continue;
@@ -10085,7 +10100,7 @@
         Unread.addPostQuotingYou(post);
       }
       if (Conf['Unread Line']) {
-        Unread.setLine(newPosts.contains(Unread.posts[0]));
+        Unread.setLine((_ref = Unread.posts[0], __indexOf.call(posts, _ref) >= 0));
       }
       Unread.read();
       return Unread.update();
@@ -10248,15 +10263,15 @@
     archives: {
       'Foolz': {
         'domain': 'archive.foolz.us',
-        'http': true,
+        'http': false,
         'https': true,
         'software': 'foolfuuka',
-        'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg'],
-        'files': ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vp', 'vr', 'wsg']
+        'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'],
+        'files': ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg']
       },
       'NSFW Foolz': {
         'domain': 'nsfw.foolz.us',
-        'http': true,
+        'http': false,
         'https': true,
         'software': 'foolfuuka',
         'boards': ['u'],
@@ -10292,13 +10307,6 @@
         'software': 'foolfuuka',
         'boards': ['d', 'h', 'v'],
         'files': ['d', 'h', 'v']
-      },
-      'nth-chan': {
-        'domain': 'nth.pensivenonsen.se',
-        'http': true,
-        'software': 'foolfuuka',
-        'boards': ['vg'],
-        'files': ['vg']
       },
       'Foolz a Shit': {
         'domain': 'archive.foolzashit.com',
@@ -10336,8 +10344,8 @@
         'http': true,
         'https': true,
         'software': 'fuuka',
-        'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 's4s', 'tg', 'vr'],
-        'files': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 's4s', 'vr']
+        'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr'],
+        'files': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'vr']
       }
     },
     to: function(dest, data) {
@@ -11457,7 +11465,7 @@
     observe: function() {
       var onMutationObserver;
 
-      if (MutationObserver) {
+      if (window.MutationObserver) {
         Style.observer = new MutationObserver(onMutationObserver = this.wrapper);
         return Style.observer.observe(d, {
           childList: true,
@@ -11968,7 +11976,7 @@
       return $.on(d, '4chanXInitFinished', this.setup);
     },
     setup: function() {
-      var btn, entry, items, psa;
+      var btn, entry, psa;
 
       $.off(d, '4chanXInitFinished', PSAHiding.setup);
       if (!(psa = $.id('globalMessage'))) {
@@ -11996,21 +12004,10 @@
         textContent: '[ - ]'
       });
       $.on(btn, 'click', PSAHiding.toggle);
-      items = {
-        hiddenPSA: 0,
-        hiddenPSAs: null
-      };
-      $.get(items, function(_arg) {
-        var hiddenPSA, hiddenPSAs;
+      $.get('hiddenPSA', 0, function(_arg) {
+        var hiddenPSA;
 
-        hiddenPSA = _arg.hiddenPSA, hiddenPSAs = _arg.hiddenPSAs;
-        if (hiddenPSAs) {
-          $["delete"]('hiddenPSAs');
-          if (hiddenPSAs.contains(psa.textContent.replace(/\W+/g, '').toLowerCase())) {
-            hiddenPSA = +$.id('globalMessage').dataset.utc;
-            $.set('hiddenPSA', hiddenPSA);
-          }
-        }
+        hiddenPSA = _arg.hiddenPSA;
         PSAHiding.sync(hiddenPSA);
         $.prepend(psa, btn);
         return $.rmClass(doc, 'hide-announcement');
@@ -12143,7 +12140,7 @@
       var rgb;
 
       rgb = IDColor.ids[this] || IDColor.compute(this);
-      return ("background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: ") + (rgb[3] ? "black;" : "white; border-radius: 3px; padding: 0px 2px;");
+      return ("background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: ") + (rgb[3] ? "black; border-radius: 3px; padding: 0px 2px;" : "white; border-radius: 3px; padding: 0px 2px;");
     },
     hash: function(str) {
       var i, j, msg;
@@ -12540,7 +12537,7 @@
       }
       board = g.BOARD.ID;
       if (board === 'g') {
-        $.globalEval("window.addEventListener('prettyprint', function(e) {\n  var pre = e.detail;\n  pre.innerHTML = prettyPrintOne(pre.innerHTML.replace(/\\s/g, '&nbsp;'));\n}, false);");
+        $.globalEval("window.addEventListener('prettyprint', function(e) {\n  var pre = e.detail;\n  pre.innerHTML = prettyPrintOne(pre.innerHTML);\n}, false);");
         Post.prototype.callbacks.push({
           name: 'Parse /g/ code',
           cb: this.code
@@ -12761,6 +12758,9 @@
         case Conf['Previous reply']:
           Keybinds.hl(-1, threadRoot);
           break;
+        case Conf['Deselect reply']:
+          Keybinds.hl(0, threadRoot);
+          break;
         case Conf['Hide']:
           if (g.VIEW === 'index') {
             ThreadHiding.toggle(thread);
@@ -12871,6 +12871,12 @@
     hl: function(delta, thread) {
       var axe, headRect, next, postEl, rect, replies, reply, root, topMargin, _i, _len;
 
+      if (!delta) {
+        if (postEl = $('.reply.highlight', thread)) {
+          $.rmClass(postEl, 'highlight');
+        }
+        return;
+      }
       if (Conf['Fixed Header'] && Conf['Bottom header']) {
         topMargin = 0;
       } else {
@@ -13091,10 +13097,13 @@
 
   RemoveSpoilers = {
     init: function() {
+      if (Conf['Reveal Spoilers'] && !Conf['Remove Spoilers']) {
+        $.addClass(doc, 'reveal-spoilers');
+      }
       if (!Conf['Remove Spoilers']) {
         return;
       }
-      if (Conf['Indicate Spoilers']) {
+      if (Conf['Reveal Spoilers']) {
         this.wrapper = function(text) {
           return "[spoiler]" + text + "[/spoiler]";
         };
@@ -13120,22 +13129,23 @@
 
   Report = {
     init: function() {
-      if (!/report/.test(location.search)) {
+      if (!(/report/.test(location.search) && d.cookie.indexOf('pass_enabled=1') === -1)) {
         return;
       }
-      return $.ready(this.ready);
+      return $.asap((function() {
+        return $.id('recaptcha_response_field');
+      }), Report.ready);
     },
     ready: function() {
-      var field, form;
+      var field;
 
-      form = $('form');
       field = $.id('recaptcha_response_field');
       $.on(field, 'keydown', function(e) {
         if (e.keyCode === 8 && !field.value) {
           return $.globalEval('Recaptcha.reload("t")');
         }
       });
-      return $.on(form, 'submit', function(e) {
+      return $.on($('form'), 'submit', function(e) {
         var response;
 
         e.preventDefault();
@@ -13143,7 +13153,7 @@
         if (!/\s/.test(response)) {
           field.value = "" + response + " " + response;
         }
-        return form.submit();
+        return this.submit();
       });
     }
   };
@@ -14592,16 +14602,17 @@
           return;
         case 'images.4chan.org':
           $.ready(function() {
-            var url;
+            var URL;
 
             if (Conf['404 Redirect'] && d.title === '4chan - 404 Not Found') {
               Redirect.init();
-              url = Redirect.to('file', {
-                boardID: pathname[1],
-                filename: pathname[3]
+              pathname = location.pathname.split('/');
+              URL = Redirect.to('file', {
+                boardID: g.BOARD.ID,
+                filename: pathname[pathname.length - 1]
               });
-              if (url) {
-                return location.href = url;
+              if (URL) {
+                return location.replace(URL);
               }
             }
           });
@@ -14699,7 +14710,7 @@
             threadID: g.THREADID,
             postID: +location.hash.match(/\d+/)
           });
-          location.href = href || ("/" + g.BOARD + "/");
+          location.replace(href || ("/" + g.BOARD + "/"));
         }
         return;
       }

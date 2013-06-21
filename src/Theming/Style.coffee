@@ -94,7 +94,7 @@ Style =
     @observe()
 
   observe: ->
-    if MutationObserver
+    if window.MutationObserver
       Style.observer = new MutationObserver onMutationObserver = @wrapper
       Style.observer.observe d,
         childList: true

@@ -57,6 +57,8 @@ UI = do ->
       for entry in @entries
         @insertEntry entry, menu, data
 
+      $.addClass lastToggledButton, 'active'
+
       $.on d, 'click',     @close
       $.on d, 'CloseMenu', @close
       Rice.nodes menu
@@ -111,6 +113,7 @@ UI = do ->
 
     close = ->
       $.rm currentMenu
+      $.rmClass lastToggledButton, 'active'
       currentMenu       = null
       lastToggledButton = null
       $.off d, 'click CloseMenu', @close

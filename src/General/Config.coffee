@@ -63,9 +63,9 @@ Config =
         false
         'Remove all spoilers in text.'
       ]
-      'Indicate Spoilers': [
+      'Reveal Spoilers': [
         false
-        'Indicate spoilers if Remove Spoilers is enabled.'
+        'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.'
       ]
 
     'Linkification':
@@ -982,6 +982,10 @@ box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
     'Previous reply': [
       'k'
       'Select previous reply.'
+    ]
+    'Deselect reply': [
+      'Shift+d'
+      'Deselect reply.'
     ]
     'Hide': [
       'x'

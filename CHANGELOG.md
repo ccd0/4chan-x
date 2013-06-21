@@ -1,3 +1,19 @@
+**MayhemYDG**:
+- Remove /s4s/ from warosu archive
+- Fix CAPTCHA duplication on the report page
+- Small bug fixes
+
+**Tracerneo**:
+- Add ID styling for IDs with black text
+
+**seaweedchan**:
+- Add `.active` class to `.menu-button` when clicked (and remove on menu close)
+- Move /v/ and /vg/ back to Foolz archive
+- Revert Mayhem's updater changes which caused silly issues
+- Make thumbnails in QR show (or most of) the whole image
+- Rename `Indicate Spoilers` to `Reveal Spoilers`
+- If `Reveal Spoilers` is enabled but `Remove Spoilers` is not, act as if the spoiler is hovered
+
 ### v2.1.3
 *2013-06-04*
 
@@ -26,9 +42,6 @@
 
 ## v2.1.0
 *2013-06-01*
-
-**seaweedchan**:
-- Small bug fixes
 
 **zixaphir**:
 - CSS ~70% (maybe?) rewritten to account for class-based options
