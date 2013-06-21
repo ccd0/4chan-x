@@ -2507,10 +2507,9 @@ textarea,
   box-shadow: rgba(0,0,0,.8) 0 0 10px;
 }
 div.reply.post {
-  background-image:    -moz-repeating-linear-gradient(45deg, #303030, #292929, #303030, #303030 3px) !important;
-  background-image:      -o-repeating-linear-gradient(45deg, #303030, #292929, #303030, #303030 3px) !important;
-  background-image: -webkit-repeating-linear-gradient(45deg, #303030, #292929, #303030, #303030 3px) !important;
-  border-bottom:#1f1f1f!important;
+  background-image: linear-gradient(45deg, #303030, #303030 45%, #222222 45%, #222222 55%, #303030 55%, #303030) !important;
+  background-size: 3px 3px;
+  border-bottom: #1f1f1f !important;
 }
 .board .thread:not(.stub) {
   background: 0 !important

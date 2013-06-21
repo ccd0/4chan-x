@@ -640,6 +640,10 @@ Config =
         false
         'Do not show mascots on the official catalog pages.'
       ]
+      'Silhouettize Mascots': [
+        false
+        'Apply a filter to mascots to try to turn them into silhouettes.'
+      ]
 
     Navigation:
       'Navigation Alignment': [

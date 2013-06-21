@@ -141,12 +141,12 @@ Style =
         $.rm node
     return
 
-  filter: (text, background) ->
+  filter: (foreground, background) ->
 
     matrix = (fg, bg) -> "#{bg.r} #{-fg.r} 0 0 #{fg.r} #{bg.g} #{-fg.g} 0 0 #{fg.g} #{bg.b} #{-fg.b} 0 0 #{fg.b}"
 
-    fgHex = Style.colorToHex(text)
-    bgHex = Style.colorToHex(background)
+    fgHex = Style.colorToHex foreground
+    bgHex = Style.colorToHex background
     
     matrix {
       r: parseInt(fgHex.substr(0, 2), 16) / 255
@@ -159,7 +159,7 @@ Style =
     }
 
   layout: """<%= grunt.file.read('src/General/css/layout.css') %>"""
-  
+
   dynamic: ->
     _conf = Conf
 
@@ -187,6 +187,7 @@ Style =
 
     Style.svg.innerHTML = """
 <svg xmlns='http://www.w3.org/2000/svg' height=0><filter id='captcha-filter' color-interpolation-filters='sRGB'><feColorMatrix values='#{Style.filter theme["Text"], theme["Input Background"]} 0 0 0 1 0' /></filter></svg>
+<svg xmlns='http://www.w3.org/2000/svg' height=0><filter id='mascot-filter' color-interpolation-filters='sRGB'><feColorMatrix values='#{Style.filter theme["Reply Background"], theme["Reply Background"]} 0 0 0 1 0' /></filter></svg>
 <svg xmlns='http://www.w3.org/2000/svg' height=0><filter id="grayscale"><feColorMatrix id="color" type="saturate" values="0" /></filter></svg>
 <svg xmlns='http://www.w3.org/2000/svg' height=0><filter id="icons-filter" color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>
     """

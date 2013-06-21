@@ -1,6 +1,6 @@
 MascotTools =
   init: (mascot) ->
-    unless mascot and mascot.image?
+    unless mascot and mascot.image
       return unless Conf[g.MASCOTSTRING].length
       name = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)]
       mascot = Mascots[name]
@@ -9,6 +9,9 @@ MascotTools =
     unless @el
       @el = $.el 'div',
         id: "mascot"
+        # ><img>
+        # >not <img />
+        # >HTML5
         innerHTML: "<img>"
 
       $.on @el, 'mousedown', MascotTools.click
@@ -30,6 +33,11 @@ MascotTools =
         $.addClass doc, 'mascot-position-bottom'
       else
         $.addClass doc, 'mascot-position-above-post-form'
+
+    if mascot.silhouette and not Conf['Silhouette Filter']
+      $.addClass doc, 'silhouette-filter'
+    else unless Conf['Silhouette Filter']
+      $.rmClass doc, 'silhouette-filter'
 
     unless mascot
       if name and not mascot = Mascots[name]

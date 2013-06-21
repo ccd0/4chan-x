@@ -84,9 +84,6 @@ QR =
         Main.handleErrors
           message: 'Quick Reply dialog creation crashed.'
           error: err
-    if MascotTools.el and ['default', 'above post form'].contains(Conf['Mascot Position']) and
-      Conf['Post Form Style'] is 'fixed'
-        $.add QR.nodes.el, MascotTools.el
 
   close: ->
     if QR.req
@@ -104,8 +101,6 @@ QR =
       QR.posts[0].rm()
     QR.cooldown.auto = false
     QR.status()
-    if MascotTools.el
-      $.add d.body, MascotTools.el
 
   focusin: ->
     $.addClass QR.nodes.el, 'has-focus'

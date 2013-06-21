@@ -1658,14 +1658,10 @@ a:only-of-type > .remove {
   line-height: 0;
   cursor: pointer;
 }
-.mascot-position-above-post-form.post-form-style-fixed #qr #mascot {
-  position: absolute;
-  bottom: 100%;
-}
-.mascot-position-above-post-form.post-form-style-fixed #qr #mascot img {
+.mascot-position-above-post-form.post-form-style-fixed #qr ~ #mascot img {
   margin-bottom: -2px;
 }
-.mascot-position-above-post-form.post-form-style-fixed.post-form-decorations #qr #mascot img {
+.mascot-position-above-post-form.post-form-style-fixed.post-form-decorations #qr ~ #mascot img {
   margin-bottom: 1px;
 }
 .mascots #mascot {
@@ -1706,6 +1702,9 @@ a:only-of-type > .remove {
 }
 .grayscale-mascot #mascot {
   <%= filter %>: url('#grayscale');
+}
+.silhouette-filter #mascot img {
+  <%= filter %>: url('#mascot-filter');
 }
 /* Options */
 #overlay {
