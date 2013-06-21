@@ -3,16 +3,29 @@
 - Fix CAPTCHA duplication on the report page
 - Small bug fixes
 
-**Tracerneo**:
-- Add ID styling for IDs with black text
-
 **seaweedchan**:
 - Add `.active` class to `.menu-button` when clicked (and remove on menu close)
 - Move /v/ and /vg/ back to Foolz archive
 - Revert Mayhem's updater changes which caused silly issues
-- Make thumbnails in QR show (or most of) the whole image
 - Rename `Indicate Spoilers` to `Reveal Spoilers`
 - If `Reveal Spoilers` is enabled but `Remove Spoilers` is not, act as if the spoiler is hovered
+
+**Tracerneo**:
+- Add ID styling for IDs with black text
+
+**zixaphir**:
+- Completely redo mascot positions to not depend on other elements to work
+- Add a mascot silhouette feature (this will be available on a per-mascot basis at some point)
+- Fixed Mascot Offsets
+- Fix several bugs with the mascot and theme editors
+- Add an option to toggle between mascots by clicking the current mascot
+- Fix "Fit Height" image expansion option
+- Post Form Decorations now use appchan's dialog colors (instead of random background and border colors)
+  * This may cause some themes to look weird. Please report any issues with the default themes and post form colors
+- 4chan Dark Upgrade's reply backgrounds are consistent now
+- Rewrote Emoji CSS
+- Presto versions of Opera are no longer supported (a Webkit/Blink version is in the works/mostly works)
+- Tiny CSS touch-ups
 
 ### v2.1.3
 *2013-06-04*
