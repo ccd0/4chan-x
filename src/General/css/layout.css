@@ -1446,9 +1446,11 @@ input:checked + .rice {
   line-height: 0;
 }
 .captcha-img img {
-  width: 100%;
-  height: 4em;
   width: 246px;
+}
+.captcha-img,
+.captcha-img img {
+  height: 4em;
 }
 .captcha-input {
   width: 100%;
@@ -1659,11 +1661,8 @@ a:only-of-type > .remove {
   line-height: 0;
   cursor: pointer;
 }
-.mascot-position-above-post-form.post-form-style-fixed #qr ~ #mascot img {
+.mascot-position-above-post-form.post-form-style-fixed #mascot img {
   margin-bottom: -2px;
-}
-.mascot-position-above-post-form.post-form-style-fixed.post-form-decorations #qr ~ #mascot img {
-  margin-bottom: 1px;
 }
 .mascots #mascot {
   display: block;
@@ -1680,15 +1679,11 @@ a:only-of-type > .remove {
 .sidebar-location-right.mascot-location-opposite #mascot img {
   <%= transform %>: scaleX(-1);
 }
-.fourchan-ss-navigation.bottom.fixed.qr-hidden #mascot,
 .fourchan-ss-navigation.bottom.fixed.mascot-position-bottom #mascot,
 .fourchan-ss-navigation.index.pagination-sticky-bottom.mascot-position-bottom #mascot,
 .fourchan-ss-navigation.bottom.fixed:not(.post-form-style-fixed) #mascot,
 .fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-fixed) #mascot {
   bottom: 1.5em
-}
-#qr #mascot {
-  z-index: -1;
 }
 .mascots-overlap-posts #mascot {
   z-index: 3;

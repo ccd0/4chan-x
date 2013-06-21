@@ -23,3 +23,6 @@
   left: #{if mascot.center then 25 else 0}px;
   right: #{if mascot.center then 25 else 0}px;
 }
+.mascot-position-above-post-form.post-form-style-fixed #mascot {
+  <%= transform %>: translateY(-#{if QR.nodes then QR.nodes.el.getBoundingClientRect().height else 0}px);
+}

@@ -14,6 +14,8 @@ MascotTools =
       if Conf['Click to Toggle']
         $.on @el, 'mousedown', MascotTools.click
 
+      $.on doc, 'QRDialogCreation', MascotTools.reposition
+
       $.asap (-> d.body), =>
         $.add d.body, @el
 
@@ -122,22 +124,10 @@ MascotTools =
     dialog = $.el "div",
       id: "mascotConf"
       className: "reply dialog"
-      innerHTML: "
-<div id=mascotcontent>
-  <center>
-    PROTIP: Shift-Click the Mascot Image field to upload your own images!
-    <br>
-    <a href='https://github.com/zixaphir/appchan-x/issues/126#issuecomment-14365049'>This may have some caveats.</a>
-  </center>
-</div>
-<div id=save>
-  <a href='javascript:;'>Save Mascot</a>
-</div>
-<div id=close>
-  <a href='javascript:;'>Close</a>
-</div>
-"
-    nodes = []
+      innerHTML: """<%= grunt.file.read('src/General/html/Features/MascotDialog.html').replace(/>\s+</g, '><').trim() %>"""
+    
+    container = $ "#mascotcontent", dialog
+
     for name, item of layout
       value = editMascot[name] or= item[1]
 
@@ -211,11 +201,9 @@ MascotTools =
             editMascot[@name] = if @checked then true else false
             MascotTools.init editMascot
 
-      nodes.push div
+      $.add container, div
 
     MascotTools.init editMascot
-
-    $.add $("#mascotcontent", dialog), nodes
 
     $.on $('#save > a', dialog), 'click', ->
       MascotTools.save editMascot
@@ -338,3 +326,7 @@ MascotTools =
       Settings.open 'Mascots'
 
     reader.readAsText(file)
+
+  reposition: ->
+    mascot = Mascots[Conf['mascot']]
+    Style.mascot.textContent = """<%= grunt.file.read('src/General/css/mascot.css') %>"""
