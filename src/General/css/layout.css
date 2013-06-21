@@ -1694,10 +1694,10 @@ a:only-of-type > .remove {
   bottom: auto !important;
   top: 17px;
 }
-.grayscale-mascot #mascot {
+.grayscale-mascots #mascot {
   <%= filter %>: url('#grayscale');
 }
-.silhouette-filter #mascot img {
+.silhouettize-mascots #mascot img {
   <%= filter %>: url('#mascot-filter');
 }
 /* Options */

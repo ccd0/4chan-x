@@ -34,10 +34,10 @@ MascotTools =
       else
         $.addClass doc, 'mascot-position-above-post-form'
 
-    if mascot.silhouette and not Conf['Silhouette Filter']
-      $.addClass doc, 'silhouette-filter'
-    else unless Conf['Silhouette Filter']
-      $.rmClass doc, 'silhouette-filter'
+    if mascot.silhouette and not Conf['Silhouettize Mascots']
+      $.addClass doc, 'silhouettize-mascots'
+    else unless Conf['Silhouettize Mascots']
+      $.rmClass doc, 'silhouettize-mascots'
 
     unless mascot
       if name and not mascot = Mascots[name]
