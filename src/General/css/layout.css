@@ -1661,7 +1661,7 @@ a:only-of-type > .remove {
   line-height: 0;
   cursor: pointer;
 }
-.mascot-position-above-post-form.post-form-style-fixed #mascot img {
+.mascot-position-above-post-form.post-form-style-fixed:not(.post-form-decorations) #mascot img {
   margin-bottom: -2px;
 }
 .mascots #mascot {
