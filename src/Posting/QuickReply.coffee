@@ -827,7 +827,7 @@ QR =
         response = response.trim()
         # one-word-captcha:
         # If there's only one word, duplicate it.
-        response = "#{response} #{response}" unless /\s/.test response
+        response += " #{response}" unless /\s/.test response
       {challenge, response}
 
     save: ->

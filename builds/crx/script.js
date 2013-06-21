@@ -7943,7 +7943,7 @@
         if (response) {
           response = response.trim();
           if (!/\s/.test(response)) {
-            response = "" + response + " " + response;
+            response += " " + response;
           }
         }
         return {
@@ -10970,7 +10970,6 @@
         editMascot = {};
       }
       editMascot.name = key || '';
-      MascotTools.init(editMascot);
       layout = {
         name: ["Mascot Name", "", "text"],
         image: ["Image", "", "text"],
@@ -10990,6 +10989,7 @@
       nodes = [];
       for (name in layout) {
         item = layout[name];
+        value = editMascot[name] || (editMascot[name] = item[1]);
         switch (item[2]) {
           case "text":
             div = this.input(item, name);
@@ -11039,14 +11039,13 @@
             });
             break;
           case "select":
-            value = editMascot[name] || item[1];
             optionHTML = "<div class=optionlabel>" + item[0] + "</div><div class=option><select name='" + name + "' value='" + value + "'><br>";
             _ref = item[3];
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               option = _ref[_i];
-              optionHTML = optionHTML + ("<option value=\"" + option + "\">" + option + "</option>");
+              optionHTML += "<option value=\"" + option + "\">" + option + "</option>";
             }
-            optionHTML = optionHTML + "</select></div>";
+            optionHTML += "</select></div>";
             div = $.el('div', {
               className: "mascotvar",
               innerHTML: optionHTML
@@ -11059,7 +11058,6 @@
             });
             break;
           case "checkbox":
-            value = editMascot[name] || item[1];
             div = $.el("div", {
               className: "mascotvar",
               innerHTML: "<label><input type=" + item[2] + " class=field name='" + name + "' " + (value ? 'checked' : void 0) + ">" + item[0] + "</label>"
@@ -11071,6 +11069,7 @@
         }
         nodes.push(div);
       }
+      MascotTools.init(editMascot);
       $.add($("#mascotcontent", dialog), nodes);
       $.on($('#save > a', dialog), 'click', function() {
         return MascotTools.save(editMascot);
@@ -11089,7 +11088,7 @@
           value = editMascot[name][0];
         }
       } else {
-        value = editMascot[name] || item[1];
+        value = editMascot[name];
       }
       editMascot[name] = value;
       div = $.el("div", {
@@ -14122,10 +14121,9 @@
       });
     },
     mascots: function(section, mode) {
-      var addoptions, batchmascots, categories, cb, keys, mascot, mascotEl, mascotHide, mascotoptions, menu, name, node, nodes, option, suboptions, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2;
+      var addoptions, batchmascots, categories, cb, container, div, keys, mascot, mascotEl, mascotHide, mascotoptions, menu, name, node, option, suboptions, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1;
 
       categories = {};
-      menu = [];
       cb = Settings.cb.mascot;
       if (typeof mode !== 'string') {
         mode = 'default';
@@ -14154,24 +14152,23 @@
           }
           return $.add(this, mascotoptions);
         };
-        nodes = {};
         _ref = MascotTools.categories;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           name = _ref[_i];
-          nodes[name] = [];
-          categories[name] = $.el("div", {
-            className: "mascots-container",
+          menu = $('div', mascotHide);
+          categories[name] = div = $.el("div", {
             id: name,
-            innerHTML: "<h3 class=mascotHeader>" + name + "</h3>"
+            className: "mascots-container",
+            innerHTML: "<h3 class=mascotHeader>" + name + "</h3>",
+            hidden: Conf["Hidden Categories"].contains(name)
           });
-          if (Conf["Hidden Categories"].contains(name)) {
-            categories[name].hidden = true;
-          }
-          menu.push(option = $.el("label", {
+          option = $.el("label", {
             name: name,
             innerHTML: "<input name='" + name + "' type=checkbox " + (Conf["Hidden Categories"].contains(name) ? 'checked' : '') + ">" + name
-          }));
+          });
           $.on($('input', option), 'change', cb.category);
+          $.add(suboptions, div);
+          $.add(menu, option);
         }
         for (_j = 0, _len1 = keys.length; _j < _len1; _j++) {
           name = keys[_j];
@@ -14180,35 +14177,24 @@
           }
           mascot = Mascots[name];
           mascotEl = $.el('div', {
-            className: Conf[g.MASCOTSTRING].contains(name) ? 'mascot enabled' : 'mascot',
             id: name,
+            className: Conf[g.MASCOTSTRING].contains(name) ? 'mascot enabled' : 'mascot',
             innerHTML: "<div class='mascotname'>" + (name.replace(/_/g, " ")) + "</div><div class='mascotcontainer'><div class='mAlign " + mascot.category + "'><img class=mascotimg src='" + (Array.isArray(mascot.image) ? (Style.lightTheme ? mascot.image[1] : mascot.image[0]) : mascot.image) + "'></div></div>"
           });
           $.on(mascotEl, 'click', cb.select);
           $.on(mascotEl, 'mouseover', addoptions);
-          if (MascotTools.categories.contains(mascot.category)) {
-            nodes[mascot.category].push(mascotEl);
-          } else {
-            nodes[MascotTools.categories[0]].push(mascotEl);
-          }
+          $.add(categories[mascot.category] || categories[MascotTools.categories[0]], mascotEl);
         }
-        _ref1 = MascotTools.categories;
-        for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-          name = _ref1[_k];
-          $.add(categories[name], nodes[name]);
-          $.add(suboptions, categories[name]);
-        }
-        $.add($('div', mascotHide), menu);
         batchmascots = $.el('div', {
           id: "mascots_batch",
           innerHTML: " <a href=\"javascript:;\" id=clear>Clear All</a>\n/\n<a href=\"javascript:;\" id=selectAll>Select All</a>\n/\n<a href=\"javascript:;\" id=createNew>Add Mascot</a>\n/\n<a href=\"javascript:;\" id=importMascot>Import Mascot</a><input id=importMascotButton type=file hidden>\n/\n<a href=\"javascript:;\" id=undelete>Undelete Mascots</a>\n/\n<a href=\"http://appchan.booru.org/\" target=_blank>Get More Mascots!</a>"
         });
         $.on($('#clear', batchmascots), 'click', function() {
-          var enabledMascots, _l, _len3;
+          var enabledMascots, _k, _len2;
 
           enabledMascots = JSON.parse(JSON.stringify(Conf[g.MASCOTSTRING]));
-          for (_l = 0, _len3 = enabledMascots.length; _l < _len3; _l++) {
-            name = enabledMascots[_l];
+          for (_k = 0, _len2 = enabledMascots.length; _k < _len2; _k++) {
+            name = enabledMascots[_k];
             $.rmClass($.id(name), 'enabled');
           }
           return $.set(g.MASCOTSTRING, Conf[g.MASCOTSTRING] = []);
@@ -14247,12 +14233,11 @@
           return Settings.openSection.apply(mascots, ['restore']);
         });
       } else {
-        nodes = [];
-        categories = $.el("div", {
+        container = $.el("div", {
           className: "mascots"
         });
-        for (_l = 0, _len3 = keys.length; _l < _len3; _l++) {
-          name = keys[_l];
+        for (_k = 0, _len2 = keys.length; _k < _len2; _k++) {
+          name = keys[_k];
           if (!Conf["Deleted Mascots"].contains(name)) {
             continue;
           }
@@ -14263,10 +14248,9 @@
             innerHTML: "<div class='mascotname'>" + (name.replace(/_/g, " ")) + "</span><div class='container " + mascot.category + "'><img class=mascotimg src='" + (Array.isArray(mascot.image) ? (Style.lightTheme ? mascot.image[1] : mascot.image[0]) : mascot.image) + "'></div>"
           });
           $.on(mascotEl, 'click', cb.restore);
-          nodes.push(mascotEl);
+          $.add(container, mascotEl);
         }
-        $.add(categories, nodes);
-        $.add(suboptions, categories);
+        $.add(suboptions, container);
         batchmascots = $.el('div', {
           id: "mascots_batch",
           innerHTML: "<a href=\"javascript:;\" id=\"return\">Return</a>"
@@ -14281,9 +14265,9 @@
           return Settings.openSection.apply(mascots);
         });
       }
-      _ref2 = [suboptions, batchmascots, mascotHide];
-      for (_m = 0, _len4 = _ref2.length; _m < _len4; _m++) {
-        node = _ref2[_m];
+      _ref1 = [suboptions, batchmascots, mascotHide];
+      for (_l = 0, _len3 = _ref1.length; _l < _len3; _l++) {
+        node = _ref1[_l];
         Rice.nodes(node);
       }
       return $.add(section, [suboptions, batchmascots, mascotHide]);

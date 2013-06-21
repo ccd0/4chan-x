@@ -9,9 +9,6 @@ MascotTools =
     unless @el
       @el = $.el 'div',
         id: "mascot"
-        # ><img>
-        # >not <img />
-        # >HTML5
         innerHTML: "<img>"
 
       $.on @el, 'mousedown', MascotTools.click
@@ -72,7 +69,6 @@ MascotTools =
     else
       editMascot = {}
     editMascot.name = key or ''
-    MascotTools.init editMascot
     layout =
       name: [
         "Mascot Name"
@@ -142,6 +138,7 @@ MascotTools =
 "
     nodes = []
     for name, item of layout
+      value = editMascot[name] or= item[1]
 
       switch item[2]
 
@@ -150,7 +147,6 @@ MascotTools =
           input = $ 'input', div
 
           if name is 'image'
-
             $.on input, 'blur', ->
               editMascot[@name] = @value
               MascotTools.init editMascot
@@ -192,11 +188,10 @@ MascotTools =
             MascotTools.init editMascot
 
         when "select"
-          value = editMascot[name] or item[1]
           optionHTML = "<div class=optionlabel>#{item[0]}</div><div class=option><select name='#{name}' value='#{value}'><br>"
           for option in item[3]
-            optionHTML = optionHTML + "<option value=\"#{option}\">#{option}</option>"
-          optionHTML = optionHTML + "</select></div>"
+            optionHTML += "<option value=\"#{option}\">#{option}</option>"
+          optionHTML += "</select></div>"
           div = $.el 'div',
             className: "mascotvar"
             innerHTML: optionHTML
@@ -208,7 +203,6 @@ MascotTools =
             MascotTools.init editMascot
 
         when "checkbox"
-          value = editMascot[name] or item[1]
           div = $.el "div",
             className: "mascotvar"
             innerHTML: "<label><input type=#{item[2]} class=field name='#{name}' #{if value then 'checked'}>#{item[0]}</label>"
@@ -217,23 +211,26 @@ MascotTools =
             MascotTools.init editMascot
 
       nodes.push div
+
+    MascotTools.init editMascot
+
     $.add $("#mascotcontent", dialog), nodes
 
     $.on $('#save > a', dialog), 'click', ->
       MascotTools.save editMascot
 
     $.on  $('#close > a', dialog), 'click', MascotTools.close
-    Rice.nodes(dialog)
+    Rice.nodes dialog
     $.add d.body, dialog
 
   input: (item, name) ->
-    if Array.isArray(editMascot[name])
+    if Array.isArray editMascot[name]
       if Style.lightTheme
         value = editMascot[name][1]
       else
         value = editMascot[name][0]
     else
-      value = editMascot[name] or item[1]
+      value = editMascot[name]
 
     editMascot[name] = value
 

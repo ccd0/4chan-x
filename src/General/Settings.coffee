@@ -645,7 +645,6 @@ Settings =
 
   mascots: (section, mode) ->
     categories = {}
-    menu       = []
     cb         = Settings.cb.mascot
 
     if typeof mode isnt 'string'
@@ -676,45 +675,35 @@ Settings =
         $.add @, mascotoptions
 
       # Create a keyed Unordered List Element and hide option for each mascot category.
-      nodes = {}
       for name in MascotTools.categories
-        nodes[name] = []
-        categories[name] = $.el "div",
+        menu = $ 'div', mascotHide
+        categories[name] = div = $.el "div",
+          id:        name
           className: "mascots-container"
-          id: name
           innerHTML: "<h3 class=mascotHeader>#{name}</h3>"
+          hidden:    Conf["Hidden Categories"].contains name
 
-        if Conf["Hidden Categories"].contains name
-          categories[name].hidden = true
-
-        menu.push option = $.el "label",
+        option = $.el "label",
           name: name
           innerHTML: "<input name='#{name}' type=checkbox #{if Conf["Hidden Categories"].contains(name) then 'checked' else ''}>#{name}"
 
         $.on $('input', option), 'change', cb.category
 
-      for name in keys
+        $.add suboptions, div
+        $.add menu, option
 
+      for name in keys
         continue if Conf["Deleted Mascots"].contains name
         mascot = Mascots[name]
         mascotEl = $.el 'div',
+          id:        name
           className: if Conf[g.MASCOTSTRING].contains name then 'mascot enabled' else 'mascot'
-          id: name
           innerHTML: "<%= grunt.file.read('src/General/html/Settings/Mascot.html') %>"
 
         $.on mascotEl, 'click', cb.select
         $.on mascotEl, 'mouseover', addoptions
 
-        if MascotTools.categories.contains mascot.category
-          nodes[mascot.category].push mascotEl
-        else
-          nodes[MascotTools.categories[0]].push mascotEl
-
-      for name in MascotTools.categories
-        $.add categories[name], nodes[name]
-        $.add suboptions, categories[name]
-
-      $.add $('div', mascotHide), menu
+        $.add (categories[mascot.category] or categories[MascotTools.categories[0]]), mascotEl
 
       batchmascots = $.el 'div',
         id: "mascots_batch"
@@ -753,8 +742,7 @@ Settings =
         Settings.openSection.apply mascots, ['restore']
 
     else
-      nodes = []
-      categories = $.el "div",
+      container = $.el "div",
         className: "mascots"
 
       for name in keys
@@ -770,15 +758,13 @@ Settings =
 
         $.on mascotEl, 'click', cb.restore
 
-        nodes.push mascotEl
+        $.add container, mascotEl
 
-      $.add categories, nodes
-
-      $.add suboptions, categories
+      $.add suboptions, container
 
       batchmascots = $.el 'div',
         id: "mascots_batch"
-        innerHTML: "<a href=\"javascript:;\" id=\"return\">Return</a>"
+        innerHTML: """<a href="javascript:;" id="return">Return</a>"""
 
       $.on $('#return', batchmascots), 'click', ->
         mascots =
