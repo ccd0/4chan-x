@@ -647,6 +647,9 @@ th {
   max-width: 100%;
   width: 100%;
 }
+.fit-height .full-image {
+  max-height: 95vh;
+}
 .images-overlap-post-form .full-image {
   position: relative;
   z-index: 21;
