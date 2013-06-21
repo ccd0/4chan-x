@@ -609,6 +609,10 @@ Config =
         true
         'Add a pretty picture of your waifu to Appchan.'
       ]
+      'Click to Toggle': [
+        true
+        'Click your current mascot to switch between your enabled mascots.'
+      ]
       'Mascot Location': [
         'sidebar'
         'Change where your mascot is located.'

@@ -287,6 +287,7 @@
       },
       Mascots: {
         'Mascots': [true, 'Add a pretty picture of your waifu to Appchan.'],
+        'Click to Toggle': [true, 'Click your current mascot to switch between your enabled mascots.'],
         'Mascot Location': ['sidebar', 'Change where your mascot is located.', ['sidebar', 'opposite']],
         'Mascot Position': ['default', 'Change where your mascot is placed in relation to the post form.', ['above post form', 'default', 'bottom', 'middle']],
         'Mascots Overlap Posts': [true, 'Mascots overlap threads and posts.'],
@@ -10927,7 +10928,9 @@
           id: "mascot",
           innerHTML: "<img>"
         });
-        $.on(this.el, 'mousedown', MascotTools.click);
+        if (Conf['Click to Toggle']) {
+          $.on(this.el, 'mousedown', MascotTools.click);
+        }
         $.asap((function() {
           return d.body;
         }), function() {

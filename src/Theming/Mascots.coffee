@@ -11,7 +11,8 @@ MascotTools =
         id: "mascot"
         innerHTML: "<img>"
 
-      $.on @el, 'mousedown', MascotTools.click
+      if Conf['Click to Toggle']
+        $.on @el, 'mousedown', MascotTools.click
 
       $.asap (-> d.body), =>
         $.add d.body, @el
