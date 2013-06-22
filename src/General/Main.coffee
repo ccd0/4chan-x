@@ -324,7 +324,17 @@ Main =
 
   postErrors: ->
     return if Main.v2Detected
-    errors = Main.errors.map (d) -> d.message + ' ' + d.error.stack
+    errors = Main.errors.map (d) ->
+      {stack} = d.error
+      <% if (type === 'userscript') { %>
+      # Before:
+      # someFn@file:///C:/Users/<USER>/AppData/Roaming/Mozilla/Firefox/Profiles/<garbage>.default/gm_scripts/4chan_X/4chan-X.user.js:line_number
+      # someFn@file:///home/<USER>/.mozilla/firefox/<garbage>.default/gm_scripts/4chan_X/4chan-X.user.js:line_number
+      # After:
+      # someFn@4chan-X.user.js:line_number
+      stack.replace /file:\/{3}.+\//g, '' if stack
+      <% } %>
+      "#{d.message} #{stack}"
     $.ajax '<%= meta.page %>errors', {},
       sync: true
       form: $.formData
