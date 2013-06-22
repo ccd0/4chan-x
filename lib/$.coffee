@@ -13,7 +13,7 @@ $.DAY    = 1000 * 60 * 60 * 24
 $.id = (id) ->
   d.getElementById id
 $.ready = (fc) ->
-  if d.readyState in ['interactive', 'complete']
+  unless d.readyState is 'loading'
     $.queueTask fc
     return
   cb = ->
