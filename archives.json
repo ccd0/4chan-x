@@ -96,5 +96,5 @@
   "https": true,
   "software": "fuuka",
   "boards": ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "q", "tg", "vr"],
-  "files": ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "q", "vr"]
+  "files": ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "q", "tg", "vr"]
 }]
