@@ -65,7 +65,7 @@
   "uid": 7,
   "name": "Install Gentoo",
   "domain": "archive.installgentoo.net",
-  "http": true,
+  "http": false,
   "https": true,
   "software": "fuuka",
   "boards": ["diy", "g", "sci"],
