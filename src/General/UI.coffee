@@ -278,12 +278,12 @@ UI = do ->
 
   hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb}) ->
     o = {
-      root:   root
-      el:     el
-      style:  el.style
-      cb:     cb
-      endEvents:    endEvents
-      latestEvent:  latestEvent
+      root
+      el
+      style: el.style
+      cb
+      endEvents
+      latestEvent
       clientHeight: doc.clientHeight
       clientWidth:  doc.clientWidth
     }
@@ -297,6 +297,11 @@ UI = do ->
 
     $.on root, endEvents,   o.hoverend
     $.on root, 'mousemove', o.hover
+    <% if (type === 'userscript') { %>
+    # Workaround for https://github.com/MayhemYDG/4chan-x/issues/377
+    o.workaround = -> o.hoverend() unless doc.contains root
+    $.on doc,  'mousemove', o.workaround
+    <% } %>
   hover = (e) ->
     @latestEvent = e
     height = @el.offsetHeight
@@ -323,6 +328,10 @@ UI = do ->
     $.rm @el
     $.off @root, @endEvents,  @hoverend
     $.off @root, 'mousemove', @hover
+    <% if (type === 'userscript') { %>
+    # Workaround for https://github.com/MayhemYDG/4chan-x/issues/377
+    $.off doc,   'mousemove', @workaround
+    <% } %>
     @cb.call @ if @cb
 
 
