@@ -16,6 +16,11 @@ class Post
       quotelinks: []
       backlinks: info.getElementsByClassName 'backlink'
 
+    unless @isReply = $.hasClass post, 'reply'
+      @thread.OP = @
+      @thread.isSticky = !!$ '.stickyIcon', info
+      @thread.isClosed = !!$ '.closedIcon', info
+
     @info = {}
     if subject        = $ '.subject',      info
       @nodes.subject  = subject
@@ -77,11 +82,6 @@ class Post
       if @file.isImage = /(jpg|png|gif)$/i.test @file.name
         @file.dimensions = @file.text.textContent.match(/\d+x\d+/)[0]
 
-    unless @isReply = $.hasClass post, 'reply'
-      @thread.OP = @
-      @thread.isSticky = !!$ '.stickyIcon', @nodes.info
-      @thread.isClosed = !!$ '.closedIcon', @nodes.info
-
     @clones = []
     g.posts[@fullID] = thread.posts[@] = board.posts[@] = @
     @kill() if that.isArchived
@@ -110,11 +110,11 @@ class Post
     quotes = {}
     for quotelink in $$ '.quotelink', @nodes.comment
       # Don't add board links. (>>>/b/)
-      hash = quotelink.hash
+      {hash} = quotelink
       continue unless hash
 
       # Don't add catalog links. (>>>/b/catalog or >>>/b/search)
-      pathname = quotelink.pathname
+      {pathname} = quotelink
       continue if /catalog$/.test pathname
 
       # Don't add rules links. (>>>/a/rules)
@@ -123,8 +123,8 @@ class Post
 
       @nodes.quotelinks.push quotelink
 
-      # Don't count capcode replies as quotes. (Admin/Mod/Dev Replies: ...)
-      continue if quotelink.parentNode.parentNode.className is 'capcodeReplies'
+      # Don't count capcode replies as quotes in OPs. (Admin/Mod/Dev Replies: ...)
+      continue if !@isReply and $.hasClass quotelink.parentNode.parentNode, 'capcodeReplies'
 
       # Basically, only add quotes that link to posts on an imageboard.
       quotes["#{pathname.split('/')[1]}.#{hash[2..]}"] = true
