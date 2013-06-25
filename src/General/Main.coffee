@@ -277,8 +277,29 @@ Main =
           $.set 'lastupdate', now
           return
         $.set 'lastchecked', now
+        # dmichnowicz
+        # 19 juin 2013 09:39:28
+        # innerHTML is not allowed in conjunction with external resources: [...]
+        #
+        # mayhemydg
+        # 19 juin 2013 09:43:14
+        # Will it be good if I make sure to match a version number?
+        #
+        # dmichnowicz
+        # 19 juin 2013 09:46:12
+        # Yes.
+        #
+        # mayhemydg
+        # 19 juin 2013 13:04:30
+        # Well actually there is nothing to fix, the following code makes sure this is a
+        # valid version number and precedes the innerHTML part: [see /^\d\.\d+\.\d+$/.test]
+        #
+        # dmichnowicz
+        # 21 juin 2013 04:52:37
+        # OK but anyway please remove that line of code.
         el = $.el 'span',
-          innerHTML: "Update: <%= meta.name %> v#{version} is out, get it <a href=<%= meta.page %> target=_blank>here</a>."
+          textContent: "Update: <%= meta.name %> v#{version} is out, get it "
+        el.innerHTML += '<a href=<%= meta.page %> target=_blank>here</a>.'
         new Notification 'info', el, 120
 
   handleErrors: (errors) ->
