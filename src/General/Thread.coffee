@@ -2,8 +2,7 @@ class Thread
   callbacks: []
   toString: -> @ID
 
-  constructor: (ID, @board) ->
-    @ID     = +ID
+  constructor: (@ID, @board) ->
     @fullID = "#{@board}.#{@ID}"
     @posts  = {}
 

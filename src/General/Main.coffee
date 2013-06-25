@@ -182,7 +182,7 @@ Main =
       posts   = []
 
       for threadRoot in $$ '.board > .thread', board
-        thread = new Thread threadRoot.id[1..], g.BOARD
+        thread = new Thread +threadRoot.id[1..], g.BOARD
         threads.push thread
         for postRoot in $$ '.thread > .postContainer', threadRoot
           try

@@ -185,7 +185,7 @@ Get =
       # quotes
       .replace /((&gt;){2}(&gt;\/[a-z\d]+\/)?\d+)/g, '<span class=deadlink>$1</span>'
 
-    threadID = data.thread_num
+    threadID = +data.thread_num
     o =
       # id
       postID:   "#{postID}"
