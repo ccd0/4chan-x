@@ -49,38 +49,7 @@ class Post
 
     @parseComment()
     @parseQuotes()
-
-    if (file = $ '.file', post) and thumb = $ 'img[data-md5]', file
-      # Supports JPG/PNG/GIF/PDF.
-      # Flash files are not supported.
-      alt      = thumb.alt
-      anchor   = thumb.parentNode
-      fileInfo = file.firstElementChild
-      @file    =
-        info:  fileInfo
-        text:  fileInfo.firstElementChild
-        thumb: thumb
-        URL:   anchor.href
-        size:  alt.match(/[\d.]+\s\w+/)[0]
-        MD5:   thumb.dataset.md5
-        isSpoiler: $.hasClass anchor, 'imgspoiler'
-      size  = +@file.size.match(/[\d.]+/)[0]
-      unit  = ['B', 'KB', 'MB', 'GB'].indexOf @file.size.match(/\w+$/)[0]
-      size *= 1024 while unit-- > 0
-      @file.sizeInBytes = size
-      @file.thumbURL =
-        if that.isArchived
-          thumb.src
-        else
-          "#{location.protocol}//thumbs.4chan.org/#{board}/thumb/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
-      # replace %22 with quotes, see:
-      # crbug.com/81193
-      # webk.it/62107
-      # https://www.w3.org/Bugs/Public/show_bug.cgi?id=16909
-      # http://www.whatwg.org/specs/web-apps/current-work/#multipart-form-data
-      @file.name = $('span[title]', fileInfo).title.replace /%22/g, '"'
-      if @file.isImage = /(jpg|png|gif)$/i.test @file.name
-        @file.dimensions = @file.text.textContent.match(/\d+x\d+/)[0]
+    @parseFile()
 
     @clones = []
     g.posts[@fullID] = thread.posts[@] = board.posts[@] = @
@@ -130,6 +99,41 @@ class Post
       quotes["#{pathname.split('/')[1]}.#{hash[2..]}"] = true
     return if @isClone
     @quotes = Object.keys quotes
+
+  parseFile: ->
+    return unless (fileEl = $ '.file', post) and thumb = $ 'img[data-md5]', fileEl
+    # Supports JPG/PNG/GIF/PDF.
+    # Flash files are not supported.
+    alt      = thumb.alt
+    anchor   = thumb.parentNode
+    fileInfo = fileEl.firstElementChild
+    @file    =
+      info:  fileInfo
+      text:  fileInfo.firstElementChild
+      thumb: thumb
+      URL:   anchor.href
+      size:  alt.match(/[\d.]+\s\w+/)[0]
+      MD5:   thumb.dataset.md5
+      isSpoiler: $.hasClass anchor, 'imgspoiler'
+    size  = +@file.size.match(/[\d.]+/)[0]
+    unit  = ['B', 'KB', 'MB', 'GB'].indexOf @file.size.match(/\w+$/)[0]
+    size *= 1024 while unit-- > 0
+    @file.sizeInBytes = size
+    @file.thumbURL = if that.isArchived
+      thumb.src
+    else
+      "#{location.protocol}//thumbs.4chan.org/#{board}/thumb/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
+    @file.name = $('span[title]', fileInfo).title
+    <% if (type === 'crx') { %>
+    # replace %22 with quotes, see:
+    # crbug.com/81193
+    # webk.it/62107
+    # https://www.w3.org/Bugs/Public/show_bug.cgi?id=16909
+    # http://www.whatwg.org/specs/web-apps/current-work/#multipart-form-data
+    @file.name = @file.name.replace /%22/g, '"'
+    <% } %>
+    if @file.isImage = /(jpg|png|gif)$/i.test @file.name
+      @file.dimensions = @file.text.textContent.match(/\d+x\d+/)[0]
 
   kill: (file, now) ->
     now or= new Date()
