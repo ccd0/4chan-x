@@ -101,7 +101,7 @@ class Post
     @quotes = Object.keys quotes
 
   parseFile: ->
-    return unless (fileEl = $ '.file', post) and thumb = $ 'img[data-md5]', fileEl
+    return unless (fileEl = $ '.file', @nodes.post) and thumb = $ 'img[data-md5]', fileEl
     # Supports JPG/PNG/GIF/PDF.
     # Flash files are not supported.
     alt      = thumb.alt
