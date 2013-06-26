@@ -49,7 +49,7 @@ class Post
 
     @parseComment()
     @parseQuotes()
-    @parseFile()
+    @parseFile(that)
 
     @clones = []
     g.posts[@fullID] = thread.posts[@] = board.posts[@] = @
@@ -100,7 +100,7 @@ class Post
     return if @isClone
     @quotes = Object.keys quotes
 
-  parseFile: ->
+  parseFile: (that) ->
     return unless (fileEl = $ '.file', @nodes.post) and thumb = $ 'img[data-md5]', fileEl
     # Supports JPG/PNG/GIF/PDF.
     # Flash files are not supported.
