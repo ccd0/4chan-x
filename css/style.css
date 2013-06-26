@@ -370,6 +370,9 @@ a[href="javascript:;"] {
 .section-archives select {
   width: 90%;
 }
+.section-keybinds .field {
+  font-family: monospace;
+}
 #fourchanx-settings fieldset {
   border: 1px solid;
   border-radius: 3px;
