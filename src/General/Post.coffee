@@ -122,7 +122,7 @@ class Post
     @file.thumbURL = if that.isArchived
       thumb.src
     else
-      "#{location.protocol}//thumbs.4chan.org/#{board}/thumb/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
+      "#{location.protocol}//thumbs.4chan.org/#{@board}/thumb/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
     @file.name = $('span[title]', fileInfo).title
     <% if (type === 'crx') { %>
     # replace %22 with quotes, see:
