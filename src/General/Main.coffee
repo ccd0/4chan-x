@@ -351,7 +351,7 @@ Main =
       # someFn@file:///home/<USER>/.mozilla/firefox/<garbage>.default/gm_scripts/4chan_X/4chan-X.user.js:line_number
       # After:
       # someFn@4chan-X.user.js:line_number
-      stack.replace /file:\/{3}.+\//g, '' if stack
+      stack = stack.replace /file:\/{3}.+\//g, '' if stack
       <% } %>
       "#{d.message} #{stack}"
     $.ajax '<%= meta.page %>errors', {},
