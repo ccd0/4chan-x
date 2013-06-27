@@ -105,7 +105,7 @@ module.exports = function(grunt) {
       build: ['build-crx', 'build-userjs', 'build-userscript']
     },
     bump: {
-      options: {
+      options: {
         updateConfigs: ['pkg'],
         commit:    false,
         createTag: false,
