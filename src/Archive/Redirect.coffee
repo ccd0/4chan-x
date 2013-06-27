@@ -81,7 +81,7 @@ Redirect =
 
     'Install Gentoo':
       'domain': 'archive.installgentoo.net'
-      'http':  true
+      'http':  false
       'https': true
       'software': 'fuuka'
       'boards': ['diy', 'g', 'sci']
@@ -108,7 +108,7 @@ Redirect =
       'https': true
       'software': 'fuuka'
       'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
-      'files':  ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'vr']
+      'files':  ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
 
   to: (dest, data) ->
     archive = (if dest is 'search' then Redirect.thread else Redirect[dest])[data.boardID]
