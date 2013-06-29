@@ -75,10 +75,10 @@ Keybinds =
           window.location = form.action
       # Thread Navigation
       when Conf['Next thread']
-        return if g.VIEW is 'thread'
+        return if g.VIEW isnt 'index'
         Nav.scroll +1
       when Conf['Previous thread']
-        return if g.VIEW is 'thread'
+        return if g.VIEW isnt 'index'
         Nav.scroll -1
       when Conf['Expand thread']
         ExpandThread.toggle thread
