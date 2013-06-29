@@ -33,10 +33,6 @@ Main =
     $.get Conf, Main.initFeatures
 
     $.on d, '4chanMainInit', Main.initStyle
-    # <title> comes after the stylesheets on the index/thread pages, but before on the catalog.
-    # <link favicon> comes after the stylesheets on the catalog, but before on the index/thread pages.
-    $.asap (-> d.head and $('title', d.head) and $('link[rel="shortcut icon"]', d.head) or d.readyState isnt 'loading'),
-      Main.initStyle
 
   initFeatures: (items) ->
     Conf = items
