@@ -364,7 +364,7 @@ Main =
     unless 'thisPageIsLegit' of Main
       Main.thisPageIsLegit = location.hostname is 'boards.4chan.org' and
         !$('link[href*="favicon-status.ico"]', d.head) and
-        d.title not in ['4chan - Temporarily Offline', '4chan - Error']
+        d.title not in ['4chan - Temporarily Offline', '4chan - Error', '504 Gateway Time-out']
     Main.thisPageIsLegit
 
   css: """
