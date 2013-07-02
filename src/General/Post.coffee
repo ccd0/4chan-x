@@ -22,28 +22,28 @@ class Post
       @thread.isClosed = !!$ '.closedIcon', info
 
     @info = {}
-    if subject        = $ '.subject',      info
+    if subject        = $ '.subject',            info
       @nodes.subject  = subject
       @info.subject   = subject.textContent
-    if name           = $ '.name',         info
+    if name           = $ '.name',               info
       @nodes.name     = name
       @info.name      = name.textContent
-    if email          = $ '.useremail',    info
+    if email          = $ '.useremail',          info
       @nodes.email    = email
       @info.email     = decodeURIComponent email.href[7..]
-    if tripcode       = $ '.postertrip',   info
+    if tripcode       = $ '.postertrip',         info
       @nodes.tripcode = tripcode
       @info.tripcode  = tripcode.textContent
-    if uniqueID       = $ '.posteruid',    info
+    if uniqueID       = $ '.posteruid',          info
       @nodes.uniqueID = uniqueID
       @info.uniqueID  = uniqueID.firstElementChild.textContent
-    if capcode        = $ '.capcode.hand', info
+    if capcode        = $ '.capcode.hand',       info
       @nodes.capcode  = capcode
       @info.capcode   = capcode.textContent.replace '## ', ''
-    if flag           = $ '.countryFlag',  info
+    if flag           = $ '.flag, .countryFlag', info
       @nodes.flag     = flag
       @info.flag      = flag.title
-    if date           = $ '.dateTime',     info
+    if date           = $ '.dateTime',           info
       @nodes.date     = date
       @info.date      = new Date date.dataset.utc * 1000
 
