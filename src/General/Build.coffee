@@ -104,12 +104,12 @@ Build =
         capcodeStart = ''
         capcode      = ''
 
-    flag =
-      if flagCode
-        " <img src='#{staticPath}country/#{if boardID is 'pol' then 'troll/' else ''}" +
-        flagCode.toLowerCase() + ".gif' alt=#{flagCode} title='#{flagName}' class=countryFlag>"
-      else
-        ''
+    flag = unless flagCode
+      ''
+    else if boardID is 'pol'
+      " <img src='#{staticPath}country/troll/#{flagCode.toLowerCase()}.gif' alt=#{flagCode} title='#{flagName}' class=countryFlag>"
+    else
+      " <span title='#{flagName}' class='flag flag-#{flagCode.toLowerCase()}'></span>"
 
     if file?.isDeleted
       fileHTML = if isOP
