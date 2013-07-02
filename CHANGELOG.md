@@ -1,3 +1,5 @@
+- Fix flag filtering on /sp/ and /int/.
+
 ### 3.5.5 - *2013-06-20*
 
 - Minor fixes.
