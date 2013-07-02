@@ -326,13 +326,10 @@ QR =
     e?.preventDefault()
     return unless QR.postingIsEnabled
 
-    sel = d.getSelection()
-    selectionRoot = $.x 'ancestor::div[contains(@class,"postContainer")][1]', sel.anchorNode
-    post = Get.postFromNode @
-    {OP} = Get.contextFromLink(@).thread
-
-    text = ">>#{post}\n"
-    if (s = sel.toString().trim()) and post.nodes.root is selectionRoot
+    sel   = d.getSelection()
+    post  = Get.postFromNode @
+    text  = ">>#{post}\n"
+    if (s = sel.toString().trim()) and post is Get.postFromNode sel.anchorNode
       # XXX Opera doesn't retain `\n`s?
       s = s.replace /\n/g, '\n>'
       text += ">#{s}\n"
@@ -344,7 +341,7 @@ QR =
       $.addClass QR.nodes.el, 'dump'
       QR.cooldown.auto = true
     {com, thread} = QR.nodes
-    thread.value = OP.ID unless com.value
+    thread.value = Get.contextFromLink(@).thread unless com.value
 
     caretPos = com.selectionStart
     # Replace selection for text.
