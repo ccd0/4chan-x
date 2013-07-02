@@ -13,7 +13,7 @@ QuoteInline =
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
     e.preventDefault()
     {boardID, threadID, postID} = Get.postDataFromLink @
-    context = Get.contextFromLink @
+    context = Get.contextFromNode @
     if $.hasClass @, 'inlined'
       QuoteInline.rm @, boardID, threadID, postID, context
     else

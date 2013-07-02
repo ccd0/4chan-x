@@ -19,7 +19,7 @@ Get =
     if index then post.clones[index] else post
   postFromNode: (root) ->
     Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', root
-  contextFromLink: (quotelink) ->
+  contextFromNode: (quotelink) ->
     Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', quotelink
   postDataFromLink: (link) ->
     if link.hostname is 'boards.4chan.org'
