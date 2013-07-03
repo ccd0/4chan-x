@@ -482,6 +482,16 @@ a.hide-announcement {
   text-decoration: none;
   border-bottom: 1px dashed;
 }
+@supports (text-decoration-style: double) or (-moz-text-decoration-style: double) {
+  .quotelink.forwardlink,
+  .backlink.forwardlink {
+    border-bottom: none;
+    -moz-text-decoration-line: underline;
+    -moz-text-decoration-style: double;
+    text-decoration-line: underline;
+    text-decoration-style: double;
+  }
+}
 .filtered {
   text-decoration: underline line-through;
 }
