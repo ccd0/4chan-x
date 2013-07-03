@@ -11524,8 +11524,9 @@
           g: parseInt(bgHex.substr(2, 2), 16) / 255,
           b: parseInt(bgHex.substr(4, 2), 16) / 255
         };
+        return [fg, bg];
       }
-      return [fg, bg || fg];
+      return [fg];
     },
     filter: function(_arg) {
       var bg, fg;

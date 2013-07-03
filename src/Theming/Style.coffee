@@ -126,11 +126,13 @@ Style =
 
   matrix: (foreground, background) ->
     fgHex = Style.colorToHex foreground
+
     fg = {
       r: parseInt(fgHex.substr(0, 2), 16) / 255
       g: parseInt(fgHex.substr(2, 2), 16) / 255
       b: parseInt(fgHex.substr(4, 2), 16) / 255
     }
+
     if background
       bgHex = Style.colorToHex background
 
@@ -140,7 +142,9 @@ Style =
         b: parseInt(bgHex.substr(4, 2), 16) / 255
       }
 
-    [fg, bg or fg]
+      return [fg, bg]
+
+    [fg]
 
   filter: ([fg, bg]) ->
     "#{bg.r} #{-fg.r} 0 0 #{fg.r} #{bg.g} #{-fg.g} 0 0 #{fg.g} #{bg.b} #{-fg.b} 0 0 #{fg.b}"
