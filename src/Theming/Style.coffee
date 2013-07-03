@@ -15,19 +15,14 @@ Style =
     $.addClass doc, 'fourchan-x'
     $.addClass doc, 'appchan-x'
     $.addClass doc, g.VIEW
-    
+
     $.add d.body, Style.svg
-    
+
     for title, cat of Config.style
       for name, setting of cat
-        if setting[2]
-          continue if setting[2] is 'text'
-          hyphenated = "#{name} #{Conf[name]}".toLowerCase().replace(/^4/, 'four').replace /\s+/g, '-'
-          $.addClass doc, hyphenated
-        else
-          continue unless Conf[name]
-          hyphenated = "#{name}".toLowerCase().replace(/^4/, 'four').replace /\s+/g, '-'
-          $.addClass doc, hyphenated
+        continue if !Conf[name] or setting[2] is 'text'
+        hyphenated = "#{name}#{if setting[2] then " #{Conf[name]}" else ""}".toLowerCase().replace(/^4/, 'four').replace /\s+/g, '-'
+        $.addClass doc, hyphenated
 
     MascotTools.init()
 
@@ -138,7 +133,7 @@ Style =
     }
     if background
       bgHex = Style.colorToHex background
-      
+
       bg = {
         r: parseInt(bgHex.substr(0, 2), 16) / 255
         g: parseInt(bgHex.substr(2, 2), 16) / 255
@@ -146,7 +141,7 @@ Style =
       }
 
     [fg, bg or fg]
-  
+
   filter: ([fg, bg]) ->
     "#{bg.r} #{-fg.r} 0 0 #{fg.r} #{bg.g} #{-fg.g} 0 0 #{fg.g} #{bg.b} #{-fg.b} 0 0 #{fg.b}"
 
@@ -292,7 +287,7 @@ Style =
     Style.padding.nav   = Header.bar
     Style.padding.pages = $ '.pagelist', d.body
     css = """<%= grunt.file.read('src/General/css/padding.nav.css') %>"""
-    
+
     if Style.padding.pages
       css += """<%= grunt.file.read('src/General/css/padding.pages.css') %>"""
 
