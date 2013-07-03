@@ -11363,7 +11363,7 @@
         return d.body;
       }), this.asapInit);
       $.on(window, "resize", Style.padding);
-      return $.on(doc, '4chanXInitFinished', this.readyInit);
+      return $.ready(this.readyInit);
     },
     asapInit: function() {
       var cat, hyphenated, name, setting, title, _ref;

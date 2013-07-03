@@ -3,7 +3,7 @@ Style =
     @setup()
     $.asap (-> d.body), @asapInit
     $.on window, "resize", Style.padding
-    $.on doc, '4chanXInitFinished', @readyInit
+    $.ready @readyInit
 
   asapInit: ->
     <% if (type === 'crx') { %>
