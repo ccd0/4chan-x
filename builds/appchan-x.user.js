@@ -11486,11 +11486,6 @@
       delete Style.headCount;
       return delete Style.cleanup;
     },
-    addStyle: function() {
-      Style.dynamicCSS.textContent = Style.dynamic();
-      Style.iconPositions();
-      return Style.padding();
-    },
     headCount: 12,
     remStyle: function() {
       var i, node, nodes;

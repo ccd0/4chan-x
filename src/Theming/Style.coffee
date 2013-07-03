@@ -106,11 +106,6 @@ Style =
     delete Style.headCount
     delete Style.cleanup
 
-  addStyle: ->
-    Style.dynamicCSS.textContent = Style.dynamic()
-    Style.iconPositions()
-    Style.padding()
-
   headCount: 12
 
   remStyle: ->
