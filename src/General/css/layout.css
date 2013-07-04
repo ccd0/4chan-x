@@ -1641,7 +1641,8 @@ a:only-of-type > .remove {
 .hide-ads .bottomad + hr,
 .hide-ads .topad,
 .hide-ads .middlead,
-.hide-ads .bottomad {
+.hide-ads .bottomad,
+.hide-ads .ad-plea {
   display: none;
 }
 .shrink-ads .topad a img,
