@@ -18,7 +18,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.1.3 - 2013-07-04
+* appchan x - Version 2.1.3 - 2013-07-05
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -11488,7 +11488,7 @@
     },
     headCount: 12,
     remStyle: function() {
-      var i, node, nodes;
+      var href, i, node, nodes;
 
       nodes = d.head.children;
       i = nodes.length;
@@ -11497,7 +11497,7 @@
           return;
         }
         node = nodes[i];
-        if ((node.nodeName === 'STYLE' && !node.id) || (("" + node.rel).contains('stylesheet') && node.href.slice(0, 4) !== 'data')) {
+        if ((node.nodeName === 'STYLE' && !node.id) || (("" + node.rel).contains('stylesheet') && !/static\.4chan\.org\/css\/flags\.507\.css/.test(href = node.href) && href.slice(0, 4) !== 'data')) {
           Style.headCount--;
           $.rm(node);
         }
