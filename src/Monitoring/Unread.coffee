@@ -38,11 +38,11 @@ Unread =
     return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
     if Unread.posts.length
       # Scroll to before the first unread post.
-      prevID = 0
-      while root = $.x 'preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root
+      {root} = Unread.posts[0].nodes
+      while root = $.x 'preceding-sibling::div[contains(@class,"postContainer")][1]', root
         post = Get.postFromRoot root
-        break if prevID is post.ID
-        prevID = post.ID
+        # Don't scroll if we have 0 posts read in this thread.
+        return unless post.isReply
         break unless post.isHidden
       onload = -> root.scrollIntoView false if checkPosition root
     else
