@@ -235,10 +235,6 @@ Config =
         true
         'Bookmark threads.'
       ]
-      'Toggleable Thread Watcher': [
-        false
-        'Adds a shortcut for the thread watcher, hides the watcher by default, and makes it scroll with the page.'
-      ]
       'Auto Watch': [
         true
         'Automatically watch threads you start.'
@@ -647,6 +643,11 @@ Config =
       'Silhouettize Mascots': [
         false
         'Apply a filter to mascots to try to turn them into silhouettes.'
+      ]
+      'Silhouette Contrast': [
+        '0'
+        'A number to increase the contrast of silhouettes. Suggested values: 0, 8, 16 ...'
+        'text'
       ]
 
     Navigation:
