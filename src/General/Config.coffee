@@ -548,6 +548,10 @@ Config =
         false
         'Make 4chan advertisements smaller.'
       ]
+      'Fade Ads': [
+        true
+        'Make 4chan\'s ads translucent.'
+      ]
       'Bolds': [
         true
         'Bold text for names and such.'

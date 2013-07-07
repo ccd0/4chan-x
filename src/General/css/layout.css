@@ -1626,18 +1626,17 @@ a:only-of-type > .remove {
   <%= transform %>: translateY(-50%);
 }
 /* Ads */
-.topad img,
-.middlead img,
-.bottomad img {
+.fade-ads .topad img,
+.fade-ads .middlead img,
+.fade-ads .bottomad img {
   opacity: 0.3;
   transition: opacity .3s linear;
 }
-.topad img:hover,
-.middlead img:hover,
-.bottomad img:hover {
+.fade-ads .topad img:hover,
+.fade-ads .middlead img:hover,
+.fade-ads .bottomad img:hover {
   opacity: 1;
 }
-/* AdBlock Minus */
 .hide-ads .bottomad + hr,
 .hide-ads .topad,
 .hide-ads .middlead,
