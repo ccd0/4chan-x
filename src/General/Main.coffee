@@ -339,7 +339,7 @@ Main =
 
   postErrors: ->
     return if Main.v2Detected
-    errors = Main.errors.map (d) ->
+    errors = Main.errors.filter((d) -> !!d.error.stack).map((d) ->
       {stack} = d.error
       <% if (type === 'userscript') { %>
       # Before:
@@ -350,6 +350,8 @@ Main =
       stack = stack.replace /file:\/{3}.+\//g, '' if stack
       <% } %>
       "#{d.message} #{stack}"
+    ).join '\n'
+    return unless errors
     $.ajax '<%= meta.page %>errors', {},
       sync: true
       form: $.formData
@@ -357,7 +359,7 @@ Main =
         t: '<%= type %>'
         ua:  window.navigator.userAgent
         url: window.location.href
-        e: errors.join '\n'
+        e: errors
 
   isThisPageLegit: ->
     # 404 error page or similar.
