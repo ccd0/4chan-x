@@ -1079,7 +1079,11 @@ QR =
       "/#{g.BOARD}/res/#{threadID}"
     else if g.VIEW is 'index' and !QR.cooldown.auto and Conf['Open Post in New Tab'] # replying from the index
       "/#{g.BOARD}/res/#{threadID}#p#{postID}"
-    (if Conf['Open Post in New Tab'] then $.open else location.assign) URL if URL
+    if URL
+      if Conf['Open Post in New Tab']
+        $.open URL
+      else
+        window.location = URL
 
     QR.status()
 
