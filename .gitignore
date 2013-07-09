@@ -1,5 +1,4 @@
 builds/
 node_modules/
 tmp-crx/
-tmp-userjs/
 tmp-userscript/

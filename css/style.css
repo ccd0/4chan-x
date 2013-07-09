@@ -278,10 +278,8 @@ a[href="javascript:;"] {
   box-sizing: border-box;
   box-shadow: 0 0 15px rgba(0, 0, 0, .15);
   height: 600px;
-  min-height: 0;
   max-height: 100%;
   width: 900px;
-  min-width: 0;
   max-width: 100%;
   margin: auto;
   padding: 3px;
@@ -468,7 +466,8 @@ a.hide-announcement {
 .deadlink {
   text-decoration: none !important;
 }
-.backlink.deadlink:not(.forwardlink), .quotelink.deadlink:not(.forwardlink) {
+.backlink.deadlink:not(.forwardlink),
+.quotelink.deadlink:not(.forwardlink) {
   text-decoration: underline !important;
 }
 .inlined {
@@ -508,8 +507,6 @@ a.hide-announcement {
   padding: 2px 2px 5px;
 }
 #qp img {
-  max-height: 300px;
-  max-width: 500px;
   max-height: 80vh;
   max-width: 50vw;
 }
@@ -541,8 +538,7 @@ a.hide-announcement {
 :root.fit-width .full-image {
   max-width: 100%;
 }
-:root.gecko.fit-width .full-image,
-:root.presto.fit-width .full-image {
+:root.gecko.fit-width .full-image {
   width: 100%;
 }
 #ihover {
@@ -616,9 +612,6 @@ a.hide-announcement {
   color: #000;
   background-color: #F7F7F7;
 }
-.presto #qr select {
-  height: 1em;
-}
 #qr .close {
   padding: 0 3px;
 }
@@ -649,13 +642,15 @@ a.hide-announcement {
   outline: none;
   width: 30px;
 }
-#dump-button:hover, #dump-button:focus {
+#dump-button:hover,
+#dump-button:focus {
   background: linear-gradient(#FFF, #DDD);
 }
-#dump-button:active, .dump #dump-button:not(:hover):not(:focus) {
+#dump-button:active,
+.dump #dump-button:not(:hover):not(:focus) {
   background: linear-gradient(#CCC, #DDD);
 }
-.gecko #dump-button {
+:root.gecko #dump-button {
   padding: 0;
 }
 #qr:not(.dump) #dump-list-container {
@@ -670,7 +665,10 @@ a.hide-announcement {
 }
 #dump-list {
   counter-reset: qrpreviews;
-  top: 0; right: 0; bottom: 0; left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   overflow: hidden;
   position: absolute;
   white-space: nowrap;
@@ -696,8 +694,10 @@ a.hide-announcement {
   box-sizing: border-box;
   cursor: move;
   display: inline-block;
-  height: 92px; width: 92px;
-  margin: 4px; padding: 2px;
+  height: 92px;
+  width: 92px;
+  margin: 4px;
+  padding: 2px;
   opacity: .6;
   outline: none;
   overflow: hidden;
@@ -707,7 +707,8 @@ a.hide-announcement {
   vertical-align: top;
   white-space: pre;
 }
-.qr-preview:hover, .qr-preview:focus {
+.qr-preview:hover,
+.qr-preview:focus {
   opacity: .9;
   color: #FFF !important;
 }
@@ -720,7 +721,8 @@ a.hide-announcement {
   font-weight: 700;
   text-shadow: 0 0 3px #000, 0 0 5px #000;
   position: absolute;
-  top: 3px; right: 3px;
+  top: 3px;
+  right: 3px;
 }
 .qr-preview.drag {
   border-color: red;
@@ -740,7 +742,9 @@ a.hide-announcement {
 }
 .qr-preview > label {
   background: rgba(0, 0, 0, .5);
-  right: 0; bottom: 0; left: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   position: absolute;
   text-align: center;
 }
@@ -756,7 +760,8 @@ a.hide-announcement {
   line-height: 1;
   text-align: center;
   position: absolute;
-  right: 0; bottom: 0;
+  right: 0;
+  bottom: 0;
   z-index: 1;
 }
 #qr textarea {
@@ -822,7 +827,10 @@ a.hide-announcement {
 }
 #qr-filename {
   position: absolute;
-  top: 0; right: 0; bottom: 0; left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -837,10 +845,6 @@ a.hide-announcement {
   min-width: 40px;
   -webkit-order: 1;
   order: 1;
-}
-#qr input[type='file'] {
-  position: absolute;
-  visibility: hidden;
 }
 
 /* Menu */

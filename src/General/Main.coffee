@@ -127,8 +127,6 @@ Main =
     <% if (type === 'crx') { %>
     $.addClass doc, 'webkit'
     $.addClass doc, 'blink'
-    <% } else if (type === 'userjs') { %>
-    $.addClass doc, 'presto'
     <% } else { %>
     $.addClass doc, 'gecko'
     <% } %>
@@ -151,13 +149,9 @@ Main =
       $.addClass doc, style
     setStyle()
     return unless mainStyleSheet
-    if window.MutationObserver
-      observer = new MutationObserver setStyle
-      observer.observe mainStyleSheet,
-        attributes: true
-        attributeFilter: ['href']
-    else
-      $.on mainStyleSheet, 'DOMAttrModified', setStyle
+    new MutationObserver(setStyle).observe mainStyleSheet,
+      attributes: true
+      attributeFilter: ['href']
 
   initReady: ->
     if d.title is '4chan - 404 Not Found'
@@ -252,12 +246,10 @@ Main =
 
   checkUpdate: ->
     return unless Conf['Check for Updates'] and Main.isThisPageLegit()
-    # Check for updates after:
-    #  - 6 hours since the last update on Opera because it lacks auto-updating.
-    #  - 7 days since the last update on Chrome/Firefox.
+    # Check for updates after 7 days since the last update.
     # After that, check for updates every day if we still haven't updated.
     now  = Date.now()
-    freq = <% if (type === 'userjs') { %>6 * $.HOUR<% } else { %>7 * $.DAY<% } %>
+    freq = 7 * $.DAY
     items =
       lastupdate:  0
       lastchecked: 0
