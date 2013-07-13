@@ -44,15 +44,6 @@
   "boards": ["c", "w", "wg"],
   "files": ["c", "w", "wg"]
 }, {
-  "uid": 5,
-  "name": "Love is Over",
-  "domain": "loveisover.me",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["d", "h", "v"],
-  "files": ["d", "h", "v"]
-}, {
   "uid": 11,
   "name": "Foolz a Shit",
   "domain": "archive.foolzashit.com",
