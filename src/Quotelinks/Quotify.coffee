@@ -44,10 +44,7 @@ Quotify =
           className:   'quotelink deadlink'
           target:      '_blank'
           textContent: "#{quote}\u00A0(Dead)"
-        $.extend a.dataset,
-          boardid:  boardID
-          threadid: post.thread.ID
-          postid:   postID
+        $.extend a.dataset, {boardID, threadID: post.thread.ID, postID}
     else if redirect = Redirect.to 'thread', {boardID, threadID: 0, postID}
       # Replace the .deadlink span if we can redirect.
       a = $.el 'a',
@@ -58,9 +55,7 @@ Quotify =
       if Redirect.to 'post', {boardID, postID}
         # Make it function as a normal quote if we can fetch the post.
         $.addClass a, 'quotelink'
-        $.extend a.dataset,
-          boardid: boardID
-          postid: postID
+        $.extend a.dataset, {boardID, postID}
 
     unless quoteID in @quotes
       @quotes.push quoteID

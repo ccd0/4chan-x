@@ -443,7 +443,7 @@ Settings =
     $.get 'selectedArchives', Conf['selectedArchives'], ({selectedArchives}) ->
       for boardID, data of selectedArchives
         for type, uid of data
-          if option = $ "select[data-boardid='#{boardID}'][data-type='#{type}'] > option[value='#{uid}']", section
+          if option = $ "select[data-board-i-d='#{boardID}'][data-type='#{type}'] > option[value='#{uid}']", section
             option.selected = true
       return
   addArchiveCell: (row, boardID, data, type) ->
@@ -458,9 +458,7 @@ Settings =
       td.innerHTML = '<select></select>'
       select = td.firstElementChild
       unless select.disabled = length is 1
-        $.extend select.dataset,
-          boardid: boardID
-          type: type
+        $.extend select.dataset, {boardID, type}
         $.on select, 'change', Settings.saveSelectedArchive
       $.add select, options
     else
@@ -468,7 +466,7 @@ Settings =
     $.add row, td
   saveSelectedArchive: ->
     $.get 'selectedArchives', Conf['selectedArchives'], ({selectedArchives}) =>
-      (selectedArchives[@dataset.boardid] or= {})[@dataset.type] = +@value
+      (selectedArchives[@dataset.boardID] or= {})[@dataset.type] = +@value
       $.set 'selectedArchives', selectedArchives
 
   keybinds: (section) ->

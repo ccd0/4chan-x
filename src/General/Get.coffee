@@ -28,9 +28,8 @@ Get =
       threadID = path[3]
       postID   = link.hash[2..]
     else # resurrected quote
-      boardID  = link.dataset.boardid
-      threadID = link.dataset.threadid or 0
-      postID   = link.dataset.postid
+      {boardID, threadID, postID} = link.dataset
+      threadID or= 0
     return {
       boardID:  boardID
       threadID: +threadID

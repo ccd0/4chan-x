@@ -13,7 +13,7 @@ ImageHover =
     el = $.el 'img',
       id: 'ihover'
       src: post.file.URL
-    el.dataset.fullid = post.fullID
+    el.dataset.fullID = post.fullID
     $.add d.body, el
     UI.hover
       root: @
@@ -24,7 +24,7 @@ ImageHover =
     $.on el, 'error', ImageHover.error
   error: ->
     return unless doc.contains @
-    post = g.posts[@dataset.fullid]
+    post = g.posts[@dataset.fullID]
 
     src = @src.split '/'
     if src[2] is 'images.4chan.org'
