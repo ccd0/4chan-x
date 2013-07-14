@@ -72,7 +72,7 @@ class Post
     # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE === 7
     nodes = d.evaluate './/br|.//text()', bq, null, 7, null
     for i in [0...nodes.snapshotLength]
-      text.push if data = nodes.snapshotItem(i).data then data else '\n'
+      text.push nodes.snapshotItem(i).data or '\n'
     @info.comment = text.join('').trim().replace /\s+$/gm, ''
 
   parseQuotes: ->
