@@ -59,6 +59,10 @@ Config =
         'Check for updated versions of <%= meta.name %>.'
       ]
       <% } %>
+      'Show Updated Notifications': [
+        true
+        'Show notifications when 4chan X is successfully updated.'
+      ]
       'Emoji': [
         false
         'Adds icons next to names for different emails'

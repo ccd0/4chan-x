@@ -29,7 +29,7 @@ Redirect =
       'http':  false
       'https': true
       'software': 'foolfuuka'
-      'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg']
+      'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vg', 'vp', 'vr', 'wsg']
       'files':  ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg']
 
     'NSFW Foolz':
@@ -63,21 +63,13 @@ Redirect =
       'boards': ['c', 'w', 'wg']
       'files':  ['c', 'w', 'wg']
 
-    'Love is Over':
-      'domain': 'loveisover.me'
-      'http':  true
-      'https': true
-      'software': 'foolfuuka'
-      'boards': ['d', 'h', 'v']
-      'files':  ['d', 'h', 'v']
-
     'Foolz a Shit':
       'domain': 'archive.foolzashit.com'
       'http':  true
       'https': true
       'software': 'foolfuuka'
-      'boards': ['adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 'pol', 's', 's4s', 't', 'trv', 'y']
-      'files':  ['adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 's', 's4s', 't', 'trv', 'y']
+      'boards': ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
+      'files':  ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
 
     'Install Gentoo':
       'domain': 'archive.installgentoo.net'
@@ -101,14 +93,6 @@ Redirect =
       'software': 'fuuka'
       'boards': ['an', 'fit', 'k', 'mlp', 'r9k', 'toy']
       'files':  ['an', 'k', 'toy']
-
-    'warosu':
-      'domain': 'fuuka.warosu.org'
-      'http':  true
-      'https': true
-      'software': 'fuuka'
-      'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
-      'files':  ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
 
   to: (dest, data) ->
     archive = (if dest is 'search' then Redirect.thread else Redirect[dest])[data.boardID]
