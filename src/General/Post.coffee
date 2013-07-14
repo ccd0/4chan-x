@@ -194,5 +194,5 @@ class Post
   rmClone: (index) ->
     @clones.splice index, 1
     for clone in @clones[index..]
-      clone.nodes.root.setAttribute 'data-clone', index++
+      clone.nodes.root.dataset.clone = index++
     return

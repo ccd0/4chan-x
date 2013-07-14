@@ -13,7 +13,7 @@ ImageHover =
     el = $.el 'img',
       id: 'ihover'
       src: post.file.URL
-    el.setAttribute 'data-fullid', post.fullID
+    el.dataset.fullid = post.fullID
     $.add d.body, el
     UI.hover
       root: @

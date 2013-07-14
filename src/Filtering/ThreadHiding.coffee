@@ -96,7 +96,7 @@ ThreadHiding =
       className: "#{type}-thread-button"
       innerHTML: "<span>[&nbsp;#{if type is 'hide' then '-' else '+'}&nbsp;]</span>"
       href:      'javascript:;'
-    a.setAttribute 'data-fullid', thread.fullID
+    a.dataset.fullid = thread.fullID
     $.on a, 'click', ThreadHiding.toggle
     a
 

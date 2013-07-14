@@ -140,7 +140,7 @@ Header =
             a.textContent
 
           if m = t.match /-(index|catalog)/
-            a.setAttribute 'data-only', m[1]
+            a.dataset.only = m[1]
             a.href = "//boards.4chan.org/#{board}/"
             a.href += 'catalog' if m[1] is 'catalog'
 

@@ -458,9 +458,9 @@ Settings =
       td.innerHTML = '<select></select>'
       select = td.firstElementChild
       unless select.disabled = length is 1
-        # XXX GM can't into datasets
-        select.setAttribute 'data-boardid', boardID
-        select.setAttribute 'data-type',    type
+        $.extend select.dataset,
+          boardid: boardID
+          type: type
         $.on select, 'change', Settings.saveSelectedArchive
       $.add select, options
     else

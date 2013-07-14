@@ -60,4 +60,4 @@ class Clone extends Post
     @isDead  = true if origin.isDead
     @isClone = true
     index = origin.clones.push(@) - 1
-    root.setAttribute 'data-clone', index
+    root.dataset.clone = index
