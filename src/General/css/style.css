@@ -171,6 +171,7 @@ a {
   right: 0;
   height: 10px;
   position: absolute;
+  pointer-events: none;
 }
 #header-bar #scroll-marker {
   display: none;
