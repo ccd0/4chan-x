@@ -18,6 +18,9 @@ Quotify =
     if deadlink.parentNode.className is 'prettyprint'
       # Don't quotify deadlinks inside code tags,
       # un-`span` them.
+      # This won't be necessary once 4chan
+      # stops quotifying inside code tags:
+      # https://github.com/4chan/4chan-JS/issues/77
       $.replace deadlink, [deadlink.childNodes...]
       return
 
