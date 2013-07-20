@@ -74,8 +74,8 @@ QR =
     QR.cleanNotifications()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
-    for i in QR.posts
-      QR.posts[0].rm()
+    for post in QR.posts.splice 0, QR.posts.length, new QR.post true
+      post.delete()
     QR.cooldown.auto = false
     QR.status()
   focusin: ->
@@ -494,15 +494,17 @@ QR =
       @select() if select
       @unlock()
     rm: ->
-      $.rm @nodes.el
+      @delete()
       index = QR.posts.indexOf @
       if QR.posts.length is 1
         new QR.post true
       else if @ is QR.selected
         (QR.posts[index-1] or QR.posts[index+1]).select()
       QR.posts.splice index, 1
-      URL.revokeObjectURL @URL
       QR.status()
+    delete: ->
+      $.rm @nodes.el
+      URL.revokeObjectURL @URL
     lock: (lock=true) ->
       @isLocked = lock
       return unless @ is QR.selected
