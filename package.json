@@ -17,15 +17,15 @@
   },
   "devDependencies": {
     "grunt": "~0.4.1",
-    "grunt-bump": "~0.0.7",
+    "grunt-bump": "~0.0.11",
     "grunt-concurrent": "~0.3.0",
-    "grunt-contrib-clean": "~0.4.1",
+    "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-coffee": "~0.7.0",
     "grunt-contrib-compress": "~0.5.2",
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-copy": "~0.4.1",
-    "grunt-contrib-watch": "~0.4.4",
-    "grunt-shell": "~0.3.0"
+    "grunt-contrib-watch": "~0.5.0",
+    "grunt-shell": "~0.3.1"
   },
   "repository": {
     "type": "git",
