@@ -115,7 +115,8 @@ QR =
 
   status: ->
     return unless QR.nodes
-    if g.DEAD
+    {thread} = QR.posts[0]
+    if thread isnt 'new' and g.threads["#{g.BOARD}.#{thread}"].isDead
       value    = 404
       disabled = true
       QR.cooldown.auto = false
@@ -501,6 +502,7 @@ QR =
         (QR.posts[index-1] or QR.posts[index+1]).select()
       QR.posts.splice index, 1
       URL.revokeObjectURL @URL
+      QR.status()
     lock: (lock=true) ->
       @isLocked = lock
       return unless @ is QR.selected
@@ -536,15 +538,18 @@ QR =
       if input.type is 'checkbox'
         @spoiler = input.checked
         return
-      {value} = input
-      @[input.dataset.name] = value
-      return if input.nodeName isnt 'TEXTAREA'
-      @nodes.span.textContent = value
-      QR.characterCount()
-      # Disable auto-posting if you're typing in the first post
-      # during the last 5 seconds of the cooldown.
-      if QR.cooldown.auto and @ is QR.posts[0] and 0 < QR.cooldown.seconds <= 5
-        QR.cooldown.auto = false
+      {name}  = input.dataset
+      @[name] = input.value
+      switch name
+        when 'thread'
+          QR.status()
+        when 'com'
+          @nodes.span.textContent = @com
+          QR.characterCount()
+          # Disable auto-posting if you're typing in the first post
+          # during the last 5 seconds of the cooldown.
+          if QR.cooldown.auto and @ is QR.posts[0] and 0 < QR.cooldown.seconds <= 5
+            QR.cooldown.auto = false
     forceSave: ->
       return unless @ is QR.selected
       # Do this in case people use extensions
@@ -652,6 +657,7 @@ QR =
       (if oldIndex < newIndex then $.after else $.before) @, el
       post = QR.posts.splice(oldIndex, 1)[0]
       QR.posts.splice newIndex, 0, post
+      QR.status()
 
   captcha:
     init: ->
