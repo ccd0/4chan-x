@@ -16,7 +16,8 @@ Settings =
         changelog = '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
         el = $.el 'span',
           innerHTML: "<%= meta.name %> has been updated to <a href='#{changelog}' target=_blank>version #{g.VERSION}</a>."
-        new Notification 'info', el, 30
+        if Conf['Show Updated Notifications']
+          new Notification 'info', el, 30
       else
         $.on d, '4chanXInitFinished', Settings.open
       $.set

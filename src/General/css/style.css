@@ -172,6 +172,9 @@ a {
   height: 10px;
   position: absolute;
 }
+:root:not(.autohide) #scroll-marker {
+  pointer-events: none;
+}
 #header-bar #scroll-marker {
   display: none;
 }

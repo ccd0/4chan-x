@@ -67,13 +67,13 @@ Redirect =
       'http':  true
       'https': true
       'software': 'foolfuuka'
-      'boards': ['adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 'pol', 's', 's4s', 't', 'trv', 'y']
-      'files':  ['adv', 'asp', 'cm', 'e', 'i', 'lgbt', 'n', 'o', 'p', 's', 's4s', 't', 'trv', 'y']
+      'boards': ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
+      'files':  ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
 
     'Install Gentoo':
       'domain': 'archive.installgentoo.net'
-      'http':  true
-      'https': false
+      'http':  false
+      'https': true
       'software': 'fuuka'
       'boards': ['diy', 'g', 'sci']
       'files':  []

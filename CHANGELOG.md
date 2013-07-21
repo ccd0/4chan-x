@@ -4,6 +4,20 @@
 - Fix flag filtering on /sp/ and /int/.
 - Minor fixes.
 
+### v1.2.19
+*2013-07-14*
+
+**seaweedchan**:
+- Update archives. LoveIsOver is going down permanently until it can find a host, some boards were removed by archivers, and Warosu has been down for 2 days now.
+- Add a new option to hide "4chan X has been updated to ____" notifications for those having issues with them.
+
+### v1.2.18
+*2013-06-27*
+
+**seaweedchan**:
+- Update archives
+>>>>>>> b3db117d714416c4f178c0359372861a1b5bab71
+
 ### v1.2.17
 *2013-06-17*
 **seaweedchan**:

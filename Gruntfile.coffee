@@ -71,9 +71,6 @@ module.exports = (grunt) ->
         dest:   'builds/crx/'
         expand:  true
         flatten: true
-      opera:
-        files:
-          'builds/4chan-X-Opera.nex': 'builds/4chan-X-Chrome.zip'
 
     coffee:
       script:
@@ -170,7 +167,6 @@ module.exports = (grunt) ->
   grunt.registerTask 'release', [
     'default'
     'compress:crx'
-    'copy:opera'
     'shell:commit'
     'shell:push'
   ]
