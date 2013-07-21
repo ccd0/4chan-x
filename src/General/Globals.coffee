@@ -1,6 +1,7 @@
-editTheme = {} # Currently editted theme.
-editMascot = {} # Which mascot we're editting.
-userNavigation = {} # ...
+
+editTheme = {} 
+editMascot = {}
+userNavigation = {}
 Conf = {}
 c    = console
 d    = document

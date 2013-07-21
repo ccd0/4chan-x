@@ -22,8 +22,9 @@ QuotePreview =
     qp = $.el 'div',
       id: 'qp'
       className: 'dialog'
+
     $.add Header.hover, qp
-    Get.postClone boardID, threadID, postID, qp, Get.contextFromLink @
+    Get.postClone boardID, threadID, postID, qp, Get.contextFromNode @
 
     UI.hover
       root: @

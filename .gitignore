@@ -2,9 +2,14 @@ node_modules/
 *~
 *.db
 tmp-crx/
-tmp-userjs/
 tmp-userscript/
+<<<<<<< HEAD
 builds/4chan-X.zip
 Gruntfile.js
 builds/4chan-*
 Gruntfile.js
+=======
+builds/4chan-X-Chrome.zip
+builds/4chan-X-Opera.nex
+Gruntfile.js
+>>>>>>> v3

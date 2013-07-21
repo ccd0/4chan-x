@@ -16,6 +16,7 @@
   }],
   "homepage_url": "<%= meta.page %>",
   "minimum_chrome_version": "24",
+  "minimum_opera_version": "15",
   "permissions": [
     "storage"
   ]

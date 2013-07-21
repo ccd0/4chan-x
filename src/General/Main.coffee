@@ -191,20 +191,18 @@ Main =
       threads = []
       posts   = []
 
-      for boardChild in board.children
-        continue unless $.hasClass boardChild, 'thread'
-        thread = new Thread boardChild.id[1..], g.BOARD
+      for threadRoot in $$ '.board > .thread', board
+        thread = new Thread +threadRoot.id[1..], g.BOARD
         threads.push thread
-        for threadChild in boardChild.children
-          continue unless $.hasClass threadChild, 'postContainer'
+        for postRoot in $$ '.thread > .postContainer', threadRoot
           try
-            posts.push new Post threadChild, thread, g.BOARD
+            posts.push new Post postRoot, thread, g.BOARD
           catch err
             # Skip posts that we failed to parse.
             unless errors
               errors = []
             errors.push
-              message: "Parsing of Post No.#{threadChild.id.match(/\d+/)} failed. Post will be skipped."
+              message: "Parsing of Post No.#{postRoot.id.match(/\d+/)} failed. Post will be skipped."
               error: err
       Main.handleErrors errors if errors
 
@@ -372,7 +370,7 @@ Main =
     unless 'thisPageIsLegit' of Main
       Main.thisPageIsLegit = location.hostname is 'boards.4chan.org' and
         !$('link[href*="favicon-status.ico"]', d.head) and
-        d.title not in ['4chan - Temporarily Offline', '4chan - Error']
+        d.title not in ['4chan - Temporarily Offline', '4chan - Error', '504 Gateway Time-out']
     Main.thisPageIsLegit
 
 Main.init()

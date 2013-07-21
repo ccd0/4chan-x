@@ -16,6 +16,7 @@
   }],
   "homepage_url": "http://zixaphir.github.com/appchan-x/",
   "minimum_chrome_version": "24",
+  "minimum_opera_version": "15",
   "permissions": [
     "storage"
   ]

@@ -303,13 +303,13 @@ UI = do ->
 
   hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb, close}) ->
     o = {
-      root:   root
-      el:     el
-      style:  el.style
-      cb:     cb
+      root
+      el
+      style: el.style
+      cb
       close:  close
-      endEvents:    endEvents
-      latestEvent:  latestEvent
+      endEvents
+      latestEvent
       clientHeight: doc.clientHeight
       clientWidth:  doc.clientWidth
     }
@@ -325,6 +325,11 @@ UI = do ->
     if $.x 'ancestor::div[contains(@class,"inline")][1]', root
       $.on d,    'keydown',   o.hoverend
     $.on root, 'mousemove', o.hover
+    <% if (type === 'userscript') { %>
+    # Workaround for https://github.com/MayhemYDG/4chan-x/issues/377
+    o.workaround = (e) -> o.hoverend() unless root.contains e.target
+    $.on doc,  'mousemove', o.workaround
+    <% } %>
 
   hover = (e) ->
     @latestEvent = e
@@ -355,6 +360,10 @@ UI = do ->
     $.off @root, @endEvents,  @hoverend
     $.off d,     'keydown',   @hoverend
     $.off @root, 'mousemove', @hover
+    <% if (type === 'userscript') { %>
+    # Workaround for https://github.com/MayhemYDG/4chan-x/issues/377
+    $.off doc,   'mousemove', @workaround
+    <% } %>
     @cb.call @ if @cb
 
 

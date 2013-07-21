@@ -1,7 +1,10 @@
 **MayhemYDG**:
 - Remove /s4s/ from warosu archive
 - Fix CAPTCHA duplication on the report page
-- Small bug fixes
+- Fix impossibility to create new threads when in dead threads.
+- Drop Opera <15 support.
+- Fix flag filtering on /sp/ and /int/.
+- Minor fixes.
 
 **seaweedchan**:
 - Add `.active` class to `.menu-button` when clicked (and remove on menu close)
@@ -9,6 +12,10 @@
 - Revert Mayhem's updater changes which caused silly issues
 - Rename `Indicate Spoilers` to `Reveal Spoilers`
 - If `Reveal Spoilers` is enabled but `Remove Spoilers` is not, act as if the spoiler is hovered
+- Add a new option to hide "4chan X has been updated to ____" notifications for those having issues with them.
+- Update archives
+- Add `.active` class to `.menu-button` when clicked (and remove on menu close)
+- Move /v/ and /vg/ back to Foolz archive
 
 **Tracerneo**:
 - Add ID styling for IDs with black text

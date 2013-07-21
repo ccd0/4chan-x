@@ -36,13 +36,11 @@ Unread =
     # Let the header's onload callback handle it.
     return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
     if Unread.posts.length
-      # Scroll to before the first unread post.
-      prevID = 0
-      while root = $.x 'preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root
-        post = Get.postFromRoot root
-        break if prevID is post.ID
-        prevID = post.ID
-        break unless post.isHidden
+      # Scroll to a non-hidden, non-OP post that's before the first unread post.
+      post = Unread.posts[0]
+      while root = $.x 'preceding-sibling::div[contains(@class,"replyContainer")][1]', post.nodes.root
+        break unless (post = Get.postFromRoot root).isHidden
+      return unless root
       onload = -> root.scrollIntoView false if checkPosition root
     else
       # Scroll to the last read post.
@@ -188,9 +186,7 @@ Unread =
         else
           Favicon.default
 
-    <% if (type !== 'crx') { %>
+    <% if (type === 'userscript') { %>
     # `favicon.href = href` doesn't work on Firefox.
-    # `favicon.href = href` isn't enough on Opera.
-    # Opera won't always update the favicon if the href didn't change.
     $.add d.head, Favicon.el
     <% } %>

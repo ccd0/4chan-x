@@ -44,9 +44,8 @@ DeleteLink =
     return if DeleteLink.cooldown.counting is post
 
     $.off @, 'click', DeleteLink.delete
-    @textContent = "Deleting #{@textContent}..."
-
     fileOnly = $.hasClass @, 'delete-file'
+    @textContent = "Deleting #{if fileOnly then 'file' else 'post'}..."
 
     form =
       mode: 'usrdel'
