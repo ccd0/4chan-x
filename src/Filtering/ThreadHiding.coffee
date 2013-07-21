@@ -113,7 +113,7 @@ ThreadHiding =
       className: "#{type}-thread-button"
       innerHTML: "<span class=fourchanx-link>&nbsp;#{if type is 'hide' then '-' else '+'}&nbsp;</span>"
       href:      'javascript:;'
-    a.setAttribute 'data-fullid', thread.fullID
+    a.dataset.fullID = thread.fullID
     $.on a, 'click', ThreadHiding.toggle
     a
 
@@ -134,7 +134,7 @@ ThreadHiding =
 
   toggle: (thread) ->
     unless thread instanceof Thread
-      thread = g.threads[@dataset.fullid]
+      thread = g.threads[@dataset.fullID]
     if thread.isHidden
       ThreadHiding.show thread
     else

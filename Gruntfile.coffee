@@ -54,16 +54,6 @@ module.exports = (grunt) ->
             'tmp-<%= pkg.type %>/script.js'
           ]
 
-      userjs:
-        options: concatOptions
-        src: [
-          'src/General/meta/botproc.js'
-          'src/General/meta/metadata.js'
-          'src/General/meta/banner.js'
-          'tmp-<%= pkg.type %>/script.js'
-        ]
-        dest: 'builds/<%= pkg.name %>.js'
-
       userscript:
         options: concatOptions
         files:
@@ -94,7 +84,6 @@ module.exports = (grunt) ->
       build: [
         'concat:meta'
         'build-crx'
-        'build-userjs'
         'build-userscript'
       ]
 
@@ -137,7 +126,6 @@ module.exports = (grunt) ->
     clean:
       builds:        'builds'
       tmpcrx:        'tmp-crx'
-      tmpuserjs:     'tmp-userjs'
       tmpuserscript: 'tmp-userscript'
 
   grunt.loadNpmTasks 'grunt-bump'
@@ -169,14 +157,6 @@ module.exports = (grunt) ->
     'concat:crx'
     'copy:crx'
     'clean:tmpcrx'
-  ]
-
-  grunt.registerTask 'build-userjs', [
-    'set-build:userjs'
-    'concat:coffee'
-    'coffee:script'
-    'concat:userjs'
-    'clean:tmpuserjs'
   ]
 
   grunt.registerTask 'build-userscript', [

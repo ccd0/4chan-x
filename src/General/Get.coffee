@@ -19,7 +19,7 @@ Get =
     if index then post.clones[index] else post
   postFromNode: (root) ->
     Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', root
-  contextFromLink: (quotelink) ->
+  contextFromNode: (quotelink) ->
     Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', quotelink
   postDataFromLink: (link) ->
     if link.hostname is 'boards.4chan.org'
@@ -28,9 +28,8 @@ Get =
       threadID = path[3]
       postID   = link.hash[2..]
     else # resurrected quote
-      boardID  = link.dataset.boardid
-      threadID = link.dataset.threadid or 0
-      postID   = link.dataset.postid
+      {boardID, threadID, postID} = link.dataset
+      threadID or= 0
     return {
       boardID:  boardID
       threadID: +threadID
@@ -185,7 +184,7 @@ Get =
       # quotes
       .replace /((&gt;){2}(&gt;\/[a-z\d]+\/)?\d+)/g, '<span class=deadlink>$1</span>'
 
-    threadID = data.thread_num
+    threadID = +data.thread_num
     o =
       # id
       postID:   "#{postID}"

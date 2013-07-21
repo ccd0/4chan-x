@@ -70,7 +70,7 @@ Header =
       return unless Main.isThisPageLegit()
       # Wait for #boardNavMobile instead of #boardNavDesktop,
       # it might be incomplete otherwise.
-      $.asap (-> $.id('boardNavMobile') or d.readyState in ['interactive', 'complete']), Header.setBoardList
+      $.asap (-> $.id('boardNavMobile') or d.readyState isnt 'loading'), Header.setBoardList
       $.prepend d.body, @bar
       $.add d.body, Header.hover
       @setBarPosition Conf['Bottom Header']
@@ -131,7 +131,7 @@ Header =
     list = $ '#custom-board-list', Header.bar
     $.rmAll list
     return unless text
-    as = $$('#full-board-list a', Header.bar)
+    as = $$ '#full-board-list a[title]', Header.bar
     nodes = text.match(/[\w@]+((-(all|title|replace|full|index|catalog|url:"[^"]+[^"]"|text:"[^"]+")|\,"[^"]+[^"]"))*|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
@@ -166,7 +166,7 @@ Header =
             a.textContent
 
           if m = t.match /-(index|catalog)/
-            a.setAttribute 'data-only', m[1]
+            a.dataset.only = m[1]
             a.href = "//boards.4chan.org/#{board}/"
             if m[1] is 'catalog'
               a.href += 'catalog'

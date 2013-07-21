@@ -1,6 +1,11 @@
+**MayhemYDG**:
+- Fix impossibility to create new threads when in dead threads.
+- Drop Opera <15 support.
+- Fix flag filtering on /sp/ and /int/.
+- Minor fixes.
+
 ### v1.2.17
 *2013-06-17*
-
 **seaweedchan**:
 - Fix full images being forced onto their own line
 

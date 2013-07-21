@@ -466,7 +466,6 @@ Settings =
     $.cb.checked.call @
   usercss: ->
     CustomCSS.update()
-
   keybinds: (section) ->
     section.innerHTML = """
     <%= grunt.file.read('src/General/html/Settings/Keybinds.html').replace(/>\s+</g, '><').trim() %>

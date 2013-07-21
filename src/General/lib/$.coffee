@@ -49,7 +49,7 @@ $.id = (id) ->
   d.getElementById id
 
 $.ready = (fc) ->
-  if d.readyState in ['interactive', 'complete']
+  unless d.readyState is 'loading'
     $.queueTask fc
     return
   cb = ->
@@ -221,9 +221,7 @@ $.event = (event, detail, root=d) ->
 
 $.open = (URL) ->
 <% if (type === 'userscript') { %>
-  # XXX fix GM opening file://// for protocol-less URLs.
-  # https://github.com/greasemonkey/greasemonkey/issues/1719
-  GM_openInTab ($.el 'a', href: URL).href
+  $.open = (URL) -> GM_openInTab URL
 <% } else { %>
   window.open URL, '_blank'
 <% } %>
@@ -298,29 +296,21 @@ $.minmax = (value, min, max) ->
         value
     )
 
-$.syncing = {}
+$.item = (key, val) ->
+  item = {}
+  item[key] = val
+  item
 
-$.sync = do ->
+$.syncing = {}
 <% if (type === 'crx') { %>
+$.sync = do ->
   chrome.storage.onChanged.addListener (changes) ->
     for key of changes
       if cb = $.syncing[key]
         cb changes[key].newValue
     return
   (key, cb) -> $.syncing[key] = cb
-<% } else { %>
-  window.addEventListener 'storage', (e) ->
-    if cb = $.syncing[e.key]
-      cb JSON.parse e.newValue
-  , false
-  (key, cb) -> $.syncing[g.NAMESPACE + key] = cb
-<% } %>
 
-$.item = (key, val) ->
-  item = {}
-  item[key] = val
-  item
-<% if (type === 'crx') { %>
 $.localKeys = [
   # filters
   'name',
@@ -372,6 +362,7 @@ $.get = (key, val, cb) ->
   if syncItems
     count++
     chrome.storage.sync.get  syncItems,  done
+
 $.set = do ->
   items = {}
   localItems = {}
@@ -396,54 +387,14 @@ $.set = do ->
       $.extend items, key
     set()
 
-<% } else if (type === 'userjs') { %>
-do ->
-  # http://www.opera.com/docs/userjs/specs/#scriptstorage
-  # http://www.opera.com/docs/userjs/using/#securepages
-  # The scriptStorage object is available only during
-  # the main User JavaScript thread, being therefore
-  # accessible only in the main body of the user script.
-  # To access the storage object later, keep a reference
-  # to the object.
-  {scriptStorage} = opera
-  $.delete = (keys) ->
-    unless keys instanceof Array
-      keys = [keys]
-    for key in keys
-      key = g.NAMESPACE + key
-      localStorage.removeItem key
-      delete scriptStorage[key]
-    return
-  $.get = (key, val, cb) ->
-    if typeof cb is 'function'
-      items = $.item key, val
-    else
-      items = key
-      cb = val
-    $.queueTask ->
-      for key of items
-        if val = scriptStorage[g.NAMESPACE + key]
-          items[key] = JSON.parse val
-      cb items
-  $.set = do ->
-    set = (key, val) ->
-      key = g.NAMESPACE + key
-      val = JSON.stringify val
-      if key of $.syncing
-        # for `storage` events
-        localStorage.setItem key, val
-      scriptStorage[key] = val
-    (keys, val) ->
-      if typeof keys is 'string'
-        set keys, val
-        return
-      for key, val of keys
-        set key, val
-      return
-  return
 <% } else { %>
-
 # http://wiki.greasespot.net/Main_Page
+$.sync = do ->
+  $.on window, 'storage', (e) ->
+    if cb = $.syncing[e.key]
+      cb JSON.parse e.newValue
+  (key, cb) -> $.syncing[g.NAMESPACE + key] = cb
+
 $.delete = (keys) ->
   unless keys instanceof Array
     keys = [keys]

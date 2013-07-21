@@ -21,7 +21,6 @@ Redirect =
           Redirect.post[boardID] = archive
         unless boardID of Redirect.file or !archive.files.contains boardID
           Redirect.file[boardID] = archive
-    return
 
   archives:
     'Foolz':
@@ -29,7 +28,7 @@ Redirect =
       'http':  false
       'https': true
       'software': 'foolfuuka'
-      'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg']
+      'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vg', 'vp', 'vr', 'wsg']
       'files':  ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg']
 
     'NSFW Foolz':
@@ -63,14 +62,6 @@ Redirect =
       'boards': ['c', 'w', 'wg']
       'files':  ['c', 'w', 'wg']
 
-    'Love is Over':
-      'domain': 'loveisover.me'
-      'http':  true
-      'https': true
-      'software': 'foolfuuka'
-      'boards': ['d', 'h', 'v']
-      'files':  ['d', 'h', 'v']
-
     'Foolz a Shit':
       'domain': 'archive.foolzashit.com'
       'http':  true
@@ -82,7 +73,7 @@ Redirect =
     'Install Gentoo':
       'domain': 'archive.installgentoo.net'
       'http':  true
-      'https': true
+      'https': false
       'software': 'fuuka'
       'boards': ['diy', 'g', 'sci']
       'files':  []
@@ -109,6 +100,14 @@ Redirect =
       'software': 'fuuka'
       'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
       'files':  ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'vr']
+    
+    'worldathleticproject':
+      'domain': 'fuuka.worldathleticproject.org'
+      'http':  true
+      'https': true
+      'software': 'foolfuuka'
+      'boards': ['e', 'h', 'p', 's', 'u']
+      'files':  ['e', 'h', 'p', 's', 'u']
 
   to: (dest, data) ->
     archive = (if dest is 'search' then Redirect.thread else Redirect[dest])[data.boardID]

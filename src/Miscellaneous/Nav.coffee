@@ -60,8 +60,7 @@ Nav =
     # unless we're not at the beginning of the current thread
     # (and thus wanting to move to beginning)
     # or we're above the first thread and don't want to skip it
-    unless (delta is -1 and Math.ceil(top) < 0) or (delta is +1 and top > 1)
-      i += delta
+    if (delta is -1 and top > -5) or (delta is +1 and top < 5)
+      top = threads[i + delta]?.getBoundingClientRect().top - topMargin
 
-    top = threads[i]?.getBoundingClientRect().top - topMargin
     window.scrollBy 0, top
