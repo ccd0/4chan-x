@@ -16,7 +16,6 @@
 
 **seaweedchan**:
 - Update archives
->>>>>>> b3db117d714416c4f178c0359372861a1b5bab71
 
 ### v1.2.17
 *2013-06-17*
