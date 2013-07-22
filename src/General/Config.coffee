@@ -30,7 +30,7 @@ Config =
         'Localize and format timestamps.'
       ]
       'Relative Post Dates': [
-        false
+        true
         'Display dates like "3 minutes ago". Tooltip shows the timestamp.'
       ]
       'File Info Formatting': [
@@ -116,11 +116,11 @@ Config =
         'Hide replies of hidden posts, recursively.'
       ]
       'Thread Hiding Buttons': [
-        true
+        false
         'Add buttons to hide entire threads.'
       ]
       'Reply Hiding Buttons': [
-        true
+        false
         'Add buttons to hide single replies.'
       ]
       'Filtered Backlinks': [
@@ -138,7 +138,7 @@ Config =
         'Expand images.'
       ]
       'Image Hover': [
-        false
+        true
         'Show full image on mouseover.'
       ]
       'Sauce': [
@@ -248,7 +248,7 @@ Config =
         'Bookmark threads.'
       ]
       'Toggleable Thread Watcher': [
-        false
+        true
         'Adds a shortcut for the thread watcher, hides the watcher by default, and makes it scroll with the page.'
       ]
       'Auto Watch': [
@@ -266,11 +266,11 @@ Config =
         'All-in-one form to reply, create threads, automate dumping and more.'
       ]
       'Persistent QR': [
-        false
+        true
         'The Quick reply won\'t disappear after posting.'
       ]
       'Auto Hide QR': [
-        false
+        true
         'Automatically hide the quick reply when posting.'
       ]
       'Open Post in New Tab': [
@@ -370,13 +370,13 @@ Config =
         'Add \'(Cross-thread)\' to cross-threads quotes.'
       ]
       'Quote Threading': [
-        false
+        true
         'Thread conversations'
       ]
 
   imageExpansion:
     'Fit width': [
-      true
+      false
       ''
     ]
     'Fit height': [
@@ -388,7 +388,7 @@ Config =
       'Expand all images along with spoilers.'
     ]
     'Expand from here': [
-      true
+      false
       'Expand all images only from current position to thread end.'
     ]
     'Advance on contract': [
@@ -476,7 +476,17 @@ http://iqdb.org/?url=%TURL
 
   boardnav: """
 [ toggle-all ]
-[current-title]
+a-replace
+g-replace
+v-replace
+vg-replace
+vr-replace
+ck-replace
+fit-replace
+jp-replace
+mu-replace
+tv-replace
+q-replace
 [external-text:"FAQ","https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions"]
   """
 
