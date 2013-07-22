@@ -78,29 +78,32 @@ class Post
   parseQuotes: ->
     @quotes = []
     for quotelink in $$ '.quotelink', @nodes.comment
-      # Only add quotes that link to posts on an imageboard.
-      # Don't add:
-      #  - board links. (>>>/b/)
-      #  - catalog links. (>>>/b/catalog or >>>/b/search)
-      #  - rules links. (>>>/a/rules)
-      #  - text-board quotelinks. (>>>/img/1234)
-      continue unless match = quotelink.href.match ///
-        boards\.4chan\.org/
-        ([^/]+) # boardID
-        /res/\d+#p
-        (\d+)   # postID
-        $
-      ///
-
-      @nodes.quotelinks.push quotelink
-
-      # Don't count capcode replies as quotes in OPs. (Admin/Mod/Dev Replies: ...)
-      continue if @isClone or !@isReply and $.hasClass quotelink.parentNode.parentNode, 'capcodeReplies'
-      
-      # ES6 Set when?
-      fullID = "#{match[1]}.#{match[2]}"
-      @quotes.push fullID if @quotes.indexOf(fullID) is -1
+      @parseQuote quotelink
     return
+    
+  parseQuote: (quotelink) ->
+    # Only add quotes that link to posts on an imageboard.
+    # Don't add:
+    #  - board links. (>>>/b/)
+    #  - catalog links. (>>>/b/catalog or >>>/b/search)
+    #  - rules links. (>>>/a/rules)
+    #  - text-board quotelinks. (>>>/img/1234)
+    return unless match = quotelink.href.match ///
+      boards\.4chan\.org/
+      ([^/]+) # boardID
+      /res/\d+#p
+      (\d+)   # postID
+      $
+    ///
+
+    @nodes.quotelinks.push quotelink
+
+    # Don't count capcode replies as quotes in OPs. (Admin/Mod/Dev Replies: ...)
+    return if @isClone or !@isReply and $.hasClass quotelink.parentNode.parentNode, 'capcodeReplies'
+    
+    # ES6 Set when?
+    fullID = "#{match[1]}.#{match[2]}"
+    @quotes.push fullID if @quotes.indexOf(fullID) is -1
 
   parseFile: (that) ->
     return unless (fileEl = $ '.file', @nodes.post) and thumb = $ 'img[data-md5]', fileEl
