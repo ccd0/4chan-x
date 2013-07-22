@@ -76,7 +76,7 @@ class Post
     @info.comment = text.join('').trim().replace /\s+$/gm, ''
 
   parseQuotes: ->
-    quotes = {}
+    @quotes = []
     for quotelink in $$ '.quotelink', @nodes.comment
       # Only add quotes that link to posts on an imageboard.
       # Don't add:
@@ -95,11 +95,12 @@ class Post
       @nodes.quotelinks.push quotelink
 
       # Don't count capcode replies as quotes in OPs. (Admin/Mod/Dev Replies: ...)
-      continue if !@isReply and $.hasClass quotelink.parentNode.parentNode, 'capcodeReplies'
-
-      quotes["#{match[1]}.#{match[2]}"] = true
-    return if @isClone
-    @quotes = Object.keys quotes
+      continue if @isClone or !@isReply and $.hasClass quotelink.parentNode.parentNode, 'capcodeReplies'
+      
+      # ES6 Set when?
+      fullID = "#{match[1]}.#{match[2]}"
+      @quotes.push fullID if @quotes.indexOf(fullID) is -1
+    return
 
   parseFile: (that) ->
     return unless (fileEl = $ '.file', @nodes.post) and thumb = $ 'img[data-md5]', fileEl
