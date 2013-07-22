@@ -5,7 +5,7 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["a", "co", "gd", "jp", "m", "q", "sp", "tg", "tv", "vg", "vp", "vr", "wsg"],
+  "boards": ["a", "co", "gd", "jp", "m", "q", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
   "files": ["a", "gd", "jp", "m", "q", "tg", "vg", "vp", "vr", "wsg"]
 }, {
   "uid": 1,
