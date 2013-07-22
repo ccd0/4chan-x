@@ -1,3 +1,10 @@
+### v1.2.21
+*2013-07-22*
+
+**seaweedchan**:
+- Fix /f/ posting.
+- Change the "Connection error" message, and point to my own FAQ instead of Mayhem's.
+
 ### v1.2.20
 *2013-07-22*
 
