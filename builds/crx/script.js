@@ -107,7 +107,7 @@
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
         'Time Formatting': [true, 'Localize and format timestamps.'],
-        'Relative Post Dates': [false, 'Display dates like "3 minutes ago". Tooltip shows the timestamp.'],
+        'Relative Post Dates': [true, 'Display dates like "3 minutes ago". Tooltip shows the timestamp.'],
         'File Info Formatting': [true, 'Reformat the file information.'],
         'Comment Expansion': [true, 'Add buttons to expand long comments.'],
         'Thread Expansion': [true, 'Add buttons to expand threads.'],
@@ -130,14 +130,14 @@
         'Anonymize': [false, 'Make everyone Anonymous.'],
         'Filter': [true, 'Self-moderation placebo.'],
         'Recursive Hiding': [true, 'Hide replies of hidden posts, recursively.'],
-        'Thread Hiding Buttons': [true, 'Add buttons to hide entire threads.'],
-        'Reply Hiding Buttons': [true, 'Add buttons to hide single replies.'],
+        'Thread Hiding Buttons': [false, 'Add buttons to hide entire threads.'],
+        'Reply Hiding Buttons': [false, 'Add buttons to hide single replies.'],
         'Filtered Backlinks': [true, 'When enabled, shows backlinks to filtered posts with a line-through decoration. Otherwise, hides the backlinks.'],
         'Stubs': [true, 'Show stubs of hidden threads / replies.']
       },
       'Images': {
         'Image Expansion': [true, 'Expand images.'],
-        'Image Hover': [false, 'Show full image on mouseover.'],
+        'Image Hover': [true, 'Show full image on mouseover.'],
         'Sauce': [true, 'Add sauce links to images.'],
         'Reveal Spoilers': [false, 'Reveal spoiler thumbnails.'],
         'Replace GIF': [false, 'Replace thumbnail of gifs with its actual image.'],
@@ -167,14 +167,14 @@
         'Page Count in Stats': [false, 'Display the page count in the thread stats as well.'],
         'Updater and Stats in Header': [true, 'Places the thread updater and thread stats in the header instead of floating them.'],
         'Thread Watcher': [true, 'Bookmark threads.'],
-        'Toggleable Thread Watcher': [false, 'Adds a shortcut for the thread watcher, hides the watcher by default, and makes it scroll with the page.'],
+        'Toggleable Thread Watcher': [true, 'Adds a shortcut for the thread watcher, hides the watcher by default, and makes it scroll with the page.'],
         'Auto Watch': [true, 'Automatically watch threads you start.'],
         'Auto Watch Reply': [false, 'Automatically watch threads you reply to.']
       },
       'Posting': {
         'Quick Reply': [true, 'All-in-one form to reply, create threads, automate dumping and more.'],
-        'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
-        'Auto Hide QR': [false, 'Automatically hide the quick reply when posting.'],
+        'Persistent QR': [true, 'The Quick reply won\'t disappear after posting.'],
+        'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.'],
         'Open Post in New Tab': [true, 'Open new threads or replies to a thread from the index in a new tab.'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
@@ -199,14 +199,14 @@
         'Highlight Own Posts': [false, 'Highlights own posts if Mark Quotes of You is enabled.'],
         'Mark OP Quotes': [true, 'Add \'(OP)\' to OP quotes.'],
         'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.'],
-        'Quote Threading': [false, 'Thread conversations']
+        'Quote Threading': [true, 'Thread conversations']
       }
     },
     imageExpansion: {
-      'Fit width': [true, ''],
+      'Fit width': [false, ''],
       'Fit height': [false, ''],
       'Expand spoilers': [true, 'Expand all images along with spoilers.'],
-      'Expand from here': [true, 'Expand all images only from current position to thread end.'],
+      'Expand from here': [false, 'Expand all images only from current position to thread end.'],
       'Advance on contract': [false, 'Advance to next post when contracting an expanded image.']
     },
     filter: {
@@ -236,7 +236,7 @@
       'Bottom Board List': true,
       'Custom Board Navigation': true
     },
-    boardnav: "[ toggle-all ]\n[current-title]\n[external-text:\"FAQ\",\"https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions\"]",
+    boardnav: "[ toggle-all ]\na-replace\ng-replace\nv-replace\nvg-replace\nvr-replace\nck-replace\nfit-replace\njp-replace\nmu-replace\ntv-replace\nq-replace\n[external-text:\"FAQ\",\"https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions\"]",
     QR: {
       'QR.personas': "#email:\"sage\";boards:jp;always"
     },
