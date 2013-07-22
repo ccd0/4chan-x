@@ -1,3 +1,12 @@
+### v1.2.20
+*2013-07-22*
+
+**MayhemYDG**:
+- Fixed captcha caching not syncing across open threads.
+
+**seaweedchan**:
+- Changed some defaults around
+
 ### v1.2.19
 *2013-07-14*
 
