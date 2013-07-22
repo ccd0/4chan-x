@@ -78,25 +78,26 @@ class Post
   parseQuotes: ->
     quotes = {}
     for quotelink in $$ '.quotelink', @nodes.comment
-      # Don't add board links. (>>>/b/)
-      {hash} = quotelink
-      continue unless hash
-
-      # Don't add catalog links. (>>>/b/catalog or >>>/b/search)
-      {pathname} = quotelink
-      continue if /catalog$/.test pathname
-
-      # Don't add rules links. (>>>/a/rules)
-      # Don't add text-board quotelinks. (>>>/img/1234)
-      continue if quotelink.hostname isnt 'boards.4chan.org'
+      # Only add quotes that link to posts on an imageboard.
+      # Don't add:
+      #  - board links. (>>>/b/)
+      #  - catalog links. (>>>/b/catalog or >>>/b/search)
+      #  - rules links. (>>>/a/rules)
+      #  - text-board quotelinks. (>>>/img/1234)
+      continue unless match = quotelink.href.match ///
+        boards\.4chan\.org/
+        ([^/]+) # boardID
+        /res/\d+#p
+        (\d+)   # postID
+        $
+      ///
 
       @nodes.quotelinks.push quotelink
 
       # Don't count capcode replies as quotes in OPs. (Admin/Mod/Dev Replies: ...)
       continue if !@isReply and $.hasClass quotelink.parentNode.parentNode, 'capcodeReplies'
 
-      # Basically, only add quotes that link to posts on an imageboard.
-      quotes["#{pathname.split('/')[1]}.#{hash[2..]}"] = true
+      quotes["#{match[1]}.#{match[2]}"] = true
     return if @isClone
     @quotes = Object.keys quotes
 
