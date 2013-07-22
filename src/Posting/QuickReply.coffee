@@ -790,8 +790,8 @@ QR =
       $.on input,        'keydown', @keydown.bind @
       $.on input,        'focus',   -> $.addClass QR.nodes.el, 'focus'
       $.on input,        'blur',    -> $.rmClass QR.nodes.el,  'focus'
-      $.get 'captchas', [], (item) =>
-        @sync item['captchas']
+      $.get 'captchas', [], ({captchas}) => 
+        @sync captchas
       $.sync 'captchas', @sync
       # start with an uncached captcha
       @reload()
@@ -805,7 +805,8 @@ QR =
       $.addClass QR.nodes.el, 'has-captcha'
       $.after QR.nodes.com.parentNode, [imgContainer, input]
       
-    sync: (@captchas) ->
+    sync: (captchas) -> 
+      QR.captcha.captchas = captchas
       QR.captcha.count()
       
     getOne: ->

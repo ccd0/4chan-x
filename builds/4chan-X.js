@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.19 - 2013-07-15
+* 4chan X - Version 1.2.19 - 2013-07-22
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -5641,8 +5641,11 @@
         $.on(input, 'blur', function() {
           return $.rmClass(QR.nodes.el, 'focus');
         });
-        $.get('captchas', [], function(item) {
-          return _this.sync(item['captchas']);
+        $.get('captchas', [], function(_arg) {
+          var captchas;
+
+          captchas = _arg.captchas;
+          return _this.sync(captchas);
         });
         $.sync('captchas', this.sync);
         this.reload();
@@ -5650,7 +5653,7 @@
         return $.after(QR.nodes.com.parentNode, [imgContainer, input]);
       },
       sync: function(captchas) {
-        this.captchas = captchas;
+        QR.captcha.captchas = captchas;
         return QR.captcha.count();
       },
       getOne: function() {
