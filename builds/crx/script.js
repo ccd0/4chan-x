@@ -236,7 +236,7 @@
       'Bottom Board List': true,
       'Custom Board Navigation': true
     },
-    boardnav: "[ toggle-all ]\na-replace\ng-replace\nv-replace\nvg-replace\nvr-replace\nck-replace\nfit-replace\njp-replace\nmu-replace\ntv-replace\nq-replace\n[external-text:\"FAQ\",\"https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions\"]",
+    boardnav: "[ toggle-all ]\na-replace\nc-replace\ng-replace\nk-replace\nv-replace\nvg-replace\nvr-replace\nck-replace\nco-replace\nfit-replace\njp-replace\nmu-replace\nsp-replace\ntv-replace\nvp-replace\nq-replace\n[external-text:\"FAQ\",\"https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions\"]",
     QR: {
       'QR.personas': "#email:\"sage\";boards:jp;always"
     },
@@ -4664,7 +4664,7 @@
       }
       $.ready(this.initReady);
       if (Conf['Persistent QR']) {
-        if (g.BOARD.ID !== 'f') {
+        if (!(g.BOARD.ID === 'f' && g.VIEW === 'index')) {
           $.on(d, '4chanXInitFinished', this.persist);
         } else {
           $.ready(this.persist);

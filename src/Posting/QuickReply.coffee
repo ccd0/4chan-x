@@ -28,7 +28,7 @@ QR =
     $.ready @initReady
 
     if Conf['Persistent QR']
-      unless g.BOARD.ID is 'f'
+      unless g.BOARD.ID is 'f' and g.VIEW is 'index'
         $.on d, '4chanXInitFinished', @persist
       else
         $.ready @persist
