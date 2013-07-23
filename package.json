@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "grunt": "~0.4.1",
-    "grunt-bump": "~0.0.2",
+    "grunt-bump": "~0.0.11",
     "grunt-concurrent": "~0.2.0",
     "grunt-contrib-clean": "~0.4.1",
     "grunt-contrib-coffee": "~0.7.0",
