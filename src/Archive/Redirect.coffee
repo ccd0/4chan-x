@@ -29,7 +29,7 @@ Redirect =
       'http':  false
       'https': true
       'software': 'foolfuuka'
-      'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vg', 'vp', 'vr', 'wsg']
+      'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg']
       'files':  ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg']
 
     'NSFW Foolz':
@@ -70,6 +70,14 @@ Redirect =
       'software': 'foolfuuka'
       'boards': ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
       'files':  ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
+
+    'World Athletic Project':
+      'domain': 'fuuka.worldathleticproject.org'
+      'http':  true
+      'https': false
+      'software': 'foolfuuka'
+      'boards': ['e', 'h', 'p', 's', 'u']
+      'files':  ['e', 'h', 'p', 's', 'u']
 
     'Install Gentoo':
       'domain': 'archive.installgentoo.net'
