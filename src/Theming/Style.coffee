@@ -114,7 +114,7 @@ Style =
     while i--
       return unless Style.headCount
       node = nodes[i]
-      if (node.nodeName is 'STYLE' and !node.id) or ("#{node.rel}".contains('stylesheet') and !/static\.4chan\.org\/css\/flags\.507\.css/.test(href = node.href) and href[..3] isnt 'data')
+      if (node.nodeName is 'STYLE' and !node.id) or ("#{node.rel}".contains('stylesheet') and !/flags.*\.css$/.test(href = node.href) and href[..3] isnt 'data')
         Style.headCount--
         $.rm node
     return
