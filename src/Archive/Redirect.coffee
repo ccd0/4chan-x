@@ -87,6 +87,14 @@ Redirect =
       'boards': ['diy', 'g', 'sci']
       'files':  []
 
+    'warosu':
+      'domain': 'fuuka.warosu.org'
+      'http':  true
+      'https': true
+      'software': 'fuuka'
+      'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
+      'files':  ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr'] 
+
     'Rebecca Black Tech':
       'domain': 'rbt.asia'
       'http':  true

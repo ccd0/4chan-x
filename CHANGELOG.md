@@ -1,3 +1,9 @@
+### v1.2.24
+*2013-07-24*
+
+**seaweedchan**:
+- Update archives (warosu is back up, and with it, the option to use it).
+
 ### v1.2.23
 *2013-07-23*
 
