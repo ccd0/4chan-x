@@ -1,7 +1,13 @@
+### v1.2.23
+*2013-07-23*
+
+**matt4682**:
+- Small fix for new error message.
+
 ### v1.2.22
 *2013-07-23*
 
-**seaweedchan**
+**seaweedchan**:
 - Update archives.
 
 ### v1.2.21
