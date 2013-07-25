@@ -161,13 +161,6 @@
         'Image Prefetching': [false, 'Preload images'],
         'Fappe Tyme': [false, 'Hide posts without images. *hint* *hint*']
       },
-      'Menu': {
-        'Report Link': [true, 'Add a report link to the menu.'],
-        'Thread Hiding Link': [true, 'Add a link to hide entire threads.'],
-        'Reply Hiding Link': [true, 'Add a link to hide single replies.'],
-        'Delete Link': [true, 'Add post and image deletion links to the menu.'],
-        'Archive Link': [true, 'Add an archive link to the menu.']
-      },
       'Monitoring': {
         'Unread Count': [true, 'Show the unread posts count in the tab title.'],
         'Hide Unread Count at (0)': [false, 'Hide the unread posts count in the tab title when it reaches 0.'],
@@ -2964,7 +2957,7 @@
 
   PostHiding = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Reply Hiding Buttons'] && !Conf['Reply Hiding Link']) {
+      if (g.VIEW === 'catalog') {
         return;
       }
       if (Conf['Reply Hiding Buttons']) {
@@ -3003,7 +2996,7 @@
       init: function() {
         var apply, div, hideStubLink, makeStub, replies, thisPost;
 
-        if (g.VIEW === 'catalog' || !Conf['Reply Hiding Link']) {
+        if (g.VIEW === 'catalog') {
           return;
         }
         div = $.el('div', {
@@ -3345,7 +3338,7 @@
 
   ThreadHiding = {
     init: function() {
-      if (g.VIEW !== 'index' || !Conf['Thread Hiding Buttons'] && !Conf['Thread Hiding Link']) {
+      if (g.VIEW !== 'index') {
         return;
       }
       this.db = new DataBoard('hiddenThreads');
@@ -3425,7 +3418,7 @@
       init: function() {
         var apply, div, hideStubLink, makeStub;
 
-        if (g.VIEW !== 'index' || !Conf['Thread Hiding Link']) {
+        if (g.VIEW !== 'index') {
           return;
         }
         div = $.el('div', {
@@ -3975,7 +3968,7 @@
 
   QuoteStrikeThrough = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Reply Hiding Buttons'] && !Conf['Reply Hiding Link'] && !Conf['Filter']) {
+      if (g.VIEW === 'catalog') {
         return;
       }
       return Post.prototype.callbacks.push({
@@ -6546,7 +6539,7 @@
     init: function() {
       var div, entry, type, _i, _len, _ref;
 
-      if (g.VIEW === 'catalog' || !Conf['Archive Link']) {
+      if (g.VIEW === 'catalog') {
         return;
       }
       div = $.el('div', {
@@ -6618,7 +6611,7 @@
     init: function() {
       var div, fileEl, fileEntry, postEl, postEntry;
 
-      if (g.VIEW === 'catalog' || !Conf['Delete Link']) {
+      if (g.VIEW === 'catalog') {
         return;
       }
       div = $.el('div', {
@@ -6763,7 +6756,7 @@
     init: function() {
       var a;
 
-      if (g.VIEW === 'catalog' || !Conf['Download Link']) {
+      if (g.VIEW === 'catalog') {
         return;
       }
       a = $.el('a', {
@@ -6843,7 +6836,7 @@
     init: function() {
       var a;
 
-      if (g.VIEW === 'catalog' || !Conf['Report Link']) {
+      if (g.VIEW === 'catalog') {
         return;
       }
       a = $.el('a', {

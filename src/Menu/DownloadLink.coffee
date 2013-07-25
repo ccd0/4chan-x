@@ -1,6 +1,6 @@
 DownloadLink =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Download Link']
+    return if g.VIEW is 'catalog'
 
     a = $.el 'a',
       className: 'download-link'

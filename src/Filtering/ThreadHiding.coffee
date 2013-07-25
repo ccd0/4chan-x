@@ -1,6 +1,6 @@
 ThreadHiding =
   init: ->
-    return if g.VIEW isnt 'index' or !Conf['Thread Hiding Buttons'] and !Conf['Thread Hiding Link']
+    return if g.VIEW isnt 'index'
 
     @db = new DataBoard 'hiddenThreads'
     @syncCatalog()
@@ -57,7 +57,7 @@ ThreadHiding =
 
   menu:
     init: ->
-      return if g.VIEW isnt 'index' or !Conf['Thread Hiding Link']
+      return if g.VIEW isnt 'index'
 
       div = $.el 'div',
         className: 'hide-thread-link'

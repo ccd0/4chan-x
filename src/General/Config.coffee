@@ -148,34 +148,6 @@ Config =
         'Hide posts without images. *hint* *hint*'
       ]
 
-    'Menu':
-      'Report Link': [
-        true
-        'Add a report link to the menu.'
-      ]
-      'Thread Hiding Link': [
-        true
-        'Add a link to hide entire threads.'
-      ]
-      'Reply Hiding Link': [
-        true
-        'Add a link to hide single replies.'
-      ]
-      'Delete Link': [
-        true
-        'Add post and image deletion links to the menu.'
-      ]
-      <% if (type === 'crx') { %>
-      'Download Link': [
-        true
-        'Add a download with original filename link to the menu. Chrome-only currently.'
-      ]
-      <% } %>
-      'Archive Link': [
-        true
-        'Add an archive link to the menu.'
-      ]
-
     'Monitoring':
       'Unread Count': [
         true

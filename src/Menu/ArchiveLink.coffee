@@ -1,6 +1,6 @@
 ArchiveLink =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Archive Link']
+    return if g.VIEW is 'catalog'
 
     div = $.el 'div',
       textContent: 'Archive'

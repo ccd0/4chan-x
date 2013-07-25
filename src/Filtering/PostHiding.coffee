@@ -1,6 +1,6 @@
 PostHiding =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Reply Hiding Buttons'] and !Conf['Reply Hiding Link']
+    return if g.VIEW is 'catalog'
 
     if Conf['Reply Hiding Buttons']
       $.addClass doc, "reply-hide"
@@ -23,7 +23,7 @@ PostHiding =
 
   menu:
     init: ->
-      return if g.VIEW is 'catalog' or !Conf['Reply Hiding Link']
+      return if g.VIEW is 'catalog'
 
       # Hide
       div = $.el 'div',
