@@ -207,7 +207,6 @@ Settings =
         'Show Stubs': 'Stubs'
         'Image Auto-Gif': 'Auto-GIF'
         'Expand From Current': ''
-        'Unread Tab Icon': 'Unread Favicon'
         'Post in Title': 'Thread Excerpt'
         'Auto Hide QR': ''
         'Open Reply in New Tab': ''
@@ -272,7 +271,6 @@ Settings =
         'Reply Hiding': 'Reply Hiding Buttons'
         'Thread Hiding': 'Thread Hiding Buttons'
         'Bottom header': 'Bottom Header'
-        'Unread Tab Icon': 'Unread Favicon'
     $.set data.Conf
   convertSettings: (data, map) ->
     for prevKey, newKey of map
@@ -448,7 +446,7 @@ Settings =
     @nextElementSibling.innerHTML = funk FileInfo, data
   favicon: ->
     Favicon.switch()
-    Unread.update() if g.VIEW is 'thread' and Conf['Unread Favicon']
+    Unread.update() if g.VIEW is 'thread'
     @nextElementSibling.innerHTML = """
       <img src=#{Favicon.default}>
       <img src=#{Favicon.unreadSFW}>

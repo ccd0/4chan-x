@@ -207,10 +207,6 @@ Config =
         false
         'Hide the unread posts count in the tab title when it reaches 0.'
       ]
-      'Unread Favicon': [
-        true
-        'Show a different favicon when there are unread posts.'
-      ]
       'Unread Line': [
         true
         'Show a line to distinguish read posts from unread ones.'

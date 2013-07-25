@@ -4,7 +4,9 @@ Favicon =
       Favicon.el      = $ 'link[rel="shortcut icon"]', d.head
       Favicon.el.type = 'image/x-icon'
       {href}          = Favicon.el
-      Favicon.SFW     = /ws\.ico$/.test href
+      Favicon.isSFW   = /ws\.ico$/.test href
+      Favicon.SFW     = '//static.4chan.org/image/favicon-ws.ico'
+      Favicon.NSFW    = '//static.4chan.org/image/favicon.ico'
       Favicon.default = href
       Favicon.switch()
 
@@ -38,7 +40,14 @@ Favicon =
         Favicon.unreadSFWY  = 'data:image/png;base64,<%= grunt.file.read("src/General/img/favicons/Original/unreadSFWY.png",  {encoding: "base64"}) %>'
         Favicon.unreadNSFW  = 'data:image/gif;base64,<%= grunt.file.read("src/General/img/favicons/Original/unreadNSFW.gif",  {encoding: "base64"}) %>'
         Favicon.unreadNSFWY = 'data:image/png;base64,<%= grunt.file.read("src/General/img/favicons/Original/unreadNSFWY.png", {encoding: "base64"}) %>'
-    if Favicon.SFW
+      when 'No Unread'
+        Favicon.unreadDead  = Favicon.dead
+        Favicon.unreadSFW   = Favicon.SFW
+        Favicon.unreadNSFW  = Favicon.NSFW
+        Favicon.unreadDeadY = 'data:image/png;base64,<%= grunt.file.read("src/General/img/favicons/No Unread/unreadDeadY.png", {encoding: "base64"}) %>'
+        Favicon.unreadSFWY  = 'data:image/png;base64,<%= grunt.file.read("src/General/img/favicons/No Unread/unreadSFWY.png",  {encoding: "base64"}) %>'
+        Favicon.unreadNSFWY = 'data:image/png;base64,<%= grunt.file.read("src/General/img/favicons/No Unread/unreadNSFWY.png", {encoding: "base64"}) %>'
+    if Favicon.isSFW
       Favicon.unread  = Favicon.unreadSFW
       Favicon.unreadY = Favicon.unreadSFWY
     else
