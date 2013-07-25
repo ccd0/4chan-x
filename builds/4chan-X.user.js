@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.24 - 2013-07-24
+* 4chan X - Version 1.2.24 - 2013-07-25
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -4245,13 +4245,13 @@
       if (post = g.posts[quoteID]) {
         if (!post.isDead) {
           a = $.el('a', {
-            href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
+            href: "/" + boardID + "/res/" + post.thread + "#p" + postID,
             className: 'quotelink',
             textContent: quote
           });
         } else {
           a = $.el('a', {
-            href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
+            href: "/" + boardID + "/res/" + post.thread + "#p" + postID,
             className: 'quotelink deadlink',
             target: '_blank',
             textContent: "" + quote + "\u00A0(Dead)"
