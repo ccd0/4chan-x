@@ -1011,7 +1011,7 @@
         return;
       }
       fullID = "" + match[1] + "." + match[2];
-      if (this.quotes.indexOf(fullID) === -1) {
+      if (!this.quotes.contains(fullID)) {
         return this.quotes.push(fullID);
       }
     };
