@@ -128,7 +128,6 @@
         'Thread Expansion': [true, 'Add buttons to expand threads.'],
         'Index Navigation': [false, 'Add buttons to navigate between threads.'],
         'Reply Navigation': [false, 'Add buttons to navigate to top / bottom of thread.'],
-        'Check for Updates': [true, 'Check for updated versions of 4chan X.'],
         'Show Updated Notifications': [true, 'Show notifications when 4chan X is successfully updated.'],
         'Emoji': [false, 'Adds icons next to names for different emails'],
         'Color User IDs': [false, 'Assign unique colors to user IDs on boards that use them'],
@@ -9497,7 +9496,7 @@
             innerHTML: "4chan X has been updated to <a href='" + changelog + "' target=_blank>version " + g.VERSION + "</a>."
           });
           if (Conf['Show Updated Notifications']) {
-            new Notification('info', el, 30);
+            new Notification('info', el, 5);
           }
         } else {
           $.on(d, '4chanXInitFinished', Settings.open);

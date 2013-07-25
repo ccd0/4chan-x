@@ -37,12 +37,6 @@ Config =
         false
         'Add buttons to navigate to top / bottom of thread.'
       ]
-      <% if (type !== 'crx') { %>
-      'Check for Updates': [
-        true
-        'Check for updated versions of <%= meta.name %>.'
-      ]
-      <% } %>
       'Show Updated Notifications': [
         true
         'Show notifications when 4chan X is successfully updated.'
