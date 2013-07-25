@@ -663,9 +663,9 @@ a.hide-announcement {
 }
 
 /* QR */
-:root.hide-original-post-form #postForm,
-:root.hide-original-post-form .postingMode,
-:root.hide-original-post-form #togglePostForm,
+#postForm,
+.postingMode,
+#togglePostForm,
 #qr.autohide:not(.has-focus):not(:hover) > form,
 .postingMode ~ #qr select,
 #file-n-submit:not(.has-file) #qr-filerm {

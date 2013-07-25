@@ -287,10 +287,6 @@ Config =
         false
         'Remember the spoiler state, instead of resetting after posting.'
       ]
-      'Hide Original Post Form': [
-        true
-        'Hide the normal post form.'
-      ]
       'Cooldown': [
         true
         'Indicate the remaining time before posting again.'

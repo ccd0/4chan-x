@@ -21,9 +21,6 @@ QR =
 
       Header.addShortcut sc
 
-    if Conf['Hide Original Post Form']
-      $.asap (-> doc), -> $.addClass doc, 'hide-original-post-form'
-
     $.ready @initReady
 
     if Conf['Persistent QR']
