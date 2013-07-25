@@ -18,7 +18,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.1.3 - 2013-07-22
+* appchan x - Version 2.1.3 - 2013-07-24
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -129,7 +129,7 @@
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
         'Time Formatting': [true, 'Localize and format timestamps.'],
-        'Relative Post Dates': [false, 'Display dates like "3 minutes ago". Tooltip shows the timestamp.'],
+        'Relative Post Dates': [true, 'Display dates like "3 minutes ago". Tooltip shows the timestamp.'],
         'File Info Formatting': [true, 'Reformat the file information.'],
         'Comment Expansion': [true, 'Add buttons to expand long comments.'],
         'Thread Expansion': [true, 'Add buttons to expand threads.'],
@@ -151,14 +151,14 @@
         'Anonymize': [false, 'Make everyone Anonymous.'],
         'Filter': [true, 'Self-moderation placebo.'],
         'Recursive Hiding': [true, 'Hide replies of hidden posts, recursively.'],
-        'Thread Hiding Buttons': [true, 'Add buttons to hide entire threads.'],
-        'Reply Hiding Buttons': [true, 'Add buttons to hide single replies.'],
+        'Thread Hiding Buttons': [false, 'Add buttons to hide entire threads.'],
+        'Reply Hiding Buttons': [false, 'Add buttons to hide single replies.'],
         'Filtered Backlinks': [true, 'When enabled, shows backlinks to filtered posts with a line-through decoration. Otherwise, hides the backlinks.'],
         'Stubs': [true, 'Show stubs of hidden threads / replies.']
       },
       'Images': {
         'Image Expansion': [true, 'Expand images.'],
-        'Image Hover': [false, 'Show full image on mouseover.'],
+        'Image Hover': [true, 'Show full image on mouseover.'],
         'Sauce': [true, 'Add sauce links to images.'],
         'Reveal Spoilers': [false, 'Reveal spoiler thumbnails.'],
         'Replace GIF': [false, 'Replace thumbnail of gifs with its actual image.'],
@@ -194,7 +194,7 @@
         'Header Shortcut': [true, 'Add a shortcut to the header to toggle the QR.'],
         'Page Shortcut': [false, 'Add a shortcut to the top of the page to toggle the QR.'],
         'Persistent QR': [true, 'The Quick reply won\'t disappear after posting.'],
-        'Auto Hide QR': [false, 'Automatically hide the quick reply when posting.'],
+        'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.'],
         'Open Post in New Tab': [true, 'Open new threads or replies to a thread from the index in a new tab.'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember QR Size': [false, 'Remember the size of the Quick reply.'],
@@ -220,14 +220,14 @@
         'Highlight Own Posts': [false, 'Highlights own posts if Mark Quotes of You is enabled.'],
         'Mark OP Quotes': [true, 'Add \'(OP)\' to OP quotes.'],
         'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.'],
-        'Quote Threading': [false, 'Thread conversations']
+        'Quote Threading': [true, 'Thread conversations']
       }
     },
     imageExpansion: {
-      'Fit width': [true, ''],
+      'Fit width': [false, ''],
       'Fit height': [false, ''],
       'Expand spoilers': [true, 'Expand all images along with spoilers.'],
-      'Expand from here': [true, 'Expand all images only from current position to thread end.'],
+      'Expand from here': [false, 'Expand all images only from current position to thread end.'],
       'Advance on contract': [false, 'Advance to next post when contracting an expanded image.']
     },
     style: {
@@ -349,7 +349,7 @@
       'Bottom Board List': true,
       'Custom Board Navigation': true
     },
-    boardnav: "[ toggle-all ]\n[current-title]",
+    boardnav: "[ toggle-all ]\n[current-title]\n[external-text:\"FAQ\",\"https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions\"]",
     QR: {
       'QR.personas': "#email:\"sage\";boards:jp;always"
     },
@@ -2695,6 +2695,7 @@
 
   Array.prototype.add = function(object, position) {
     var keep;
+
     keep = this.slice(position);
     this.length = position;
     this.push(object);
@@ -2707,6 +2708,7 @@
 
   Array.prototype.indexOf = function(object) {
     var i;
+
     i = this.length;
     while (i--) {
       if (this[i] === object) {
@@ -2718,6 +2720,7 @@
 
   Array.prototype.pushArrays = function() {
     var arg, args, _i, _len;
+
     args = arguments;
     for (_i = 0, _len = args.length; _i < _len; _i++) {
       arg = args[_i];
@@ -2728,6 +2731,7 @@
 
   Array.prototype.remove = function(object) {
     var index;
+
     if ((index = this.indexOf(object)) > -1) {
       return this.splice(index, 1);
     } else {
@@ -2744,6 +2748,7 @@
 
   $.extend = function(object, properties) {
     var key, val;
+
     for (key in properties) {
       val = properties[key];
       if (!properties.hasOwnProperty(key)) {
@@ -2761,6 +2766,7 @@
 
   $.ready = function(fc) {
     var cb;
+
     if (d.readyState !== 'loading') {
       $.queueTask(fc);
       return;
@@ -2774,6 +2780,7 @@
 
   $.formData = function(form) {
     var fd, key, val;
+
     if (form instanceof HTMLFormElement) {
       return new FormData(form);
     }
@@ -2794,6 +2801,7 @@
 
   $.ajax = function(url, callbacks, opts) {
     var cred, err, form, headers, key, r, sync, type, upCallbacks, val;
+
     if (opts == null) {
       opts = {};
     }
@@ -2819,9 +2827,11 @@
 
   $.cache = (function() {
     var reqs;
+
     reqs = {};
     return function(url, cb) {
       var err, req, rm;
+
       if (req = reqs[url]) {
         if (req.readyState === 4) {
           cb.call(req, req.evt);
@@ -2837,6 +2847,7 @@
         req = $.ajax(url, {
           onload: function(e) {
             var _i, _len, _ref;
+
             _ref = this.callbacks;
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               cb = _ref[_i];
@@ -2878,6 +2889,7 @@
 
   $.addStyle = function(css, id) {
     var style;
+
     style = $.el('style', {
       id: id,
       textContent: css
@@ -2924,6 +2936,7 @@
     } else {
       return function(el) {
         var _ref;
+
         return (_ref = el.parentNode) != null ? _ref.removeChild(el) : void 0;
       };
     }
@@ -2931,6 +2944,7 @@
 
   $.rmAll = function(root) {
     var node;
+
     while (node = root.firstChild) {
       root.removeChild(node);
     }
@@ -2946,6 +2960,7 @@
 
   $.nodes = function(nodes) {
     var frag, node, _i, _len;
+
     if (!(nodes instanceof Array)) {
       return nodes;
     }
@@ -2979,6 +2994,7 @@
 
   $.el = function(tag, properties) {
     var el;
+
     el = d.createElement(tag);
     if (properties) {
       $.extend(el, properties);
@@ -2988,6 +3004,7 @@
 
   $.on = function(el, events, handler) {
     var event, _i, _len, _ref;
+
     _ref = events.split(' ');
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       event = _ref[_i];
@@ -2997,6 +3014,7 @@
 
   $.off = function(el, events, handler) {
     var event, _i, _len, _ref;
+
     _ref = events.split(' ');
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       event = _ref[_i];
@@ -3022,6 +3040,7 @@
 
   $.debounce = function(wait, fn) {
     var args, exec, lastCall, that, timeout;
+
     lastCall = 0;
     timeout = null;
     that = null;
@@ -3043,9 +3062,11 @@
 
   $.queueTask = (function() {
     var execTask, taskChannel, taskQueue;
+
     taskQueue = [];
     execTask = function() {
       var args, func, task;
+
       task = taskQueue.shift();
       func = task[0];
       args = Array.prototype.slice.call(task, 1);
@@ -3068,6 +3089,7 @@
 
   $.globalEval = function(code) {
     var script;
+
     script = $.el('script', {
       textContent: code
     });
@@ -3077,6 +3099,7 @@
 
   $.bytesToString = function(size) {
     var unit;
+
     unit = 0;
     while (size >= 1024) {
       size /= 1024;
@@ -3092,6 +3115,7 @@
 
   $.item = function(key, val) {
     var item;
+
     item = {};
     item[key] = val;
     return item;
@@ -3102,6 +3126,7 @@
   $.sync = (function() {
     $.on(window, 'storage', function(e) {
       var cb;
+
       if (cb = $.syncing[e.key]) {
         return cb(JSON.parse(e.newValue));
       }
@@ -3113,6 +3138,7 @@
 
   $["delete"] = function(keys) {
     var key, _i, _len;
+
     if (!(keys instanceof Array)) {
       keys = [keys];
     }
@@ -3126,6 +3152,7 @@
 
   $.get = function(key, val, cb) {
     var items;
+
     if (typeof cb === 'function') {
       items = $.item(key, val);
     } else {
@@ -3144,6 +3171,7 @@
 
   $.set = (function() {
     var set;
+
     set = function(key, val) {
       key = g.NAMESPACE + key;
       val = JSON.stringify(val);
@@ -3154,6 +3182,7 @@
     };
     return function(keys, val) {
       var key;
+
       if (typeof keys === 'string') {
         set(keys, val);
         return;
@@ -3221,6 +3250,7 @@
 
     function Post(root, thread, board, that) {
       var capcode, date, email, flag, info, name, post, subject, tripcode, uniqueID;
+
       this.thread = thread;
       this.board = board;
       if (that == null) {
@@ -3276,11 +3306,13 @@
         this.nodes.date = date;
         this.info.date = new Date(date.dataset.utc * 1000);
       }
-      this.info.yours = QR.db.get({
-        boardID: this.board,
-        threadID: this.thread,
-        postID: this.ID
-      });
+      if (Conf['Quick Reply']) {
+        this.info.yours = QR.db.get({
+          boardID: this.board,
+          threadID: this.thread,
+          postID: this.ID
+        });
+      }
       this.parseComment();
       this.parseQuotes();
       this.parseFile(that);
@@ -3293,6 +3325,7 @@
 
     Post.prototype.parseComment = function() {
       var bq, i, node, nodes, text, _i, _len, _ref;
+
       bq = this.nodes.comment.cloneNode(true);
       _ref = $$('.abbr, .capcodeReplies, .exif, b', bq);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3309,36 +3342,35 @@
     };
 
     Post.prototype.parseQuotes = function() {
-      var hash, pathname, quotelink, quotes, _i, _len, _ref;
-      quotes = {};
+      var quotelink, _i, _len, _ref;
+
+      this.quotes = [];
       _ref = $$('.quotelink', this.nodes.comment);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quotelink = _ref[_i];
-        hash = quotelink.hash;
-        if (!hash) {
-          continue;
-        }
-        pathname = quotelink.pathname;
-        if (/catalog$/.test(pathname)) {
-          continue;
-        }
-        if (quotelink.hostname !== 'boards.4chan.org') {
-          continue;
-        }
-        this.nodes.quotelinks.push(quotelink);
-        if (!this.isReply && $.hasClass(quotelink.parentNode.parentNode, 'capcodeReplies')) {
-          continue;
-        }
-        quotes["" + (pathname.split('/')[1]) + "." + hash.slice(2)] = true;
+        this.parseQuote(quotelink);
       }
-      if (this.isClone) {
+    };
+
+    Post.prototype.parseQuote = function(quotelink) {
+      var fullID, match;
+
+      if (!(match = quotelink.href.match(/boards\.4chan\.org\/([^\/]+)\/res\/\d+#p(\d+)$/))) {
         return;
       }
-      return this.quotes = Object.keys(quotes);
+      this.nodes.quotelinks.push(quotelink);
+      if (this.isClone || !this.isReply && $.hasClass(quotelink.parentNode.parentNode, 'capcodeReplies')) {
+        return;
+      }
+      fullID = "" + match[1] + "." + match[2];
+      if (!this.quotes.contains(fullID)) {
+        return this.quotes.push(fullID);
+      }
     };
 
     Post.prototype.parseFile = function(that) {
       var alt, anchor, fileEl, fileInfo, size, thumb, unit;
+
       if (!((fileEl = $('.file', this.nodes.post)) && (thumb = $('img[data-md5]', fileEl)))) {
         return;
       }
@@ -3369,6 +3401,7 @@
 
     Post.prototype.kill = function(file, now) {
       var clone, quotelink, strong, _i, _j, _len, _len1, _ref, _ref1;
+
       now || (now = new Date());
       if (file) {
         if (this.file.isDead) {
@@ -3417,6 +3450,7 @@
 
     Post.prototype.resurrect = function() {
       var clone, quotelink, strong, _i, _j, _len, _len1, _ref, _ref1;
+
       delete this.isDead;
       delete this.timeOfDeath;
       $.rmClass(this.nodes.root, 'deleted-post');
@@ -3450,6 +3484,7 @@
 
     Post.prototype.rmClone = function(index) {
       var clone, _i, _len, _ref;
+
       this.clones.splice(index, 1);
       _ref = this.clones.slice(index);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3467,6 +3502,7 @@
 
     function Clone(origin, context) {
       var file, info, inline, inlined, key, nodes, post, root, val, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
+
       this.origin = origin;
       this.context = context;
       _ref = ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply'];
@@ -3554,6 +3590,7 @@
     function DataBoard(key, sync) {
       var init,
         _this = this;
+
       this.key = key;
       this.data = Conf[key];
       $.sync(key, this.onSync.bind(this));
@@ -3570,6 +3607,7 @@
 
     DataBoard.prototype["delete"] = function(_arg) {
       var boardID, postID, threadID;
+
       boardID = _arg.boardID, threadID = _arg.threadID, postID = _arg.postID;
       if (postID) {
         delete this.data.boards[boardID][threadID][postID];
@@ -3590,6 +3628,7 @@
 
     DataBoard.prototype.deleteIfEmpty = function(_arg) {
       var boardID, threadID;
+
       boardID = _arg.boardID, threadID = _arg.threadID;
       if (threadID) {
         if (!Object.keys(this.data.boards[boardID][threadID]).length) {
@@ -3605,6 +3644,7 @@
 
     DataBoard.prototype.set = function(_arg) {
       var boardID, postID, threadID, val, _base, _base1, _base2;
+
       boardID = _arg.boardID, threadID = _arg.threadID, postID = _arg.postID, val = _arg.val;
       if (postID !== void 0) {
         ((_base = ((_base1 = this.data.boards)[boardID] || (_base1[boardID] = {})))[threadID] || (_base[threadID] = {}))[postID] = val;
@@ -3618,6 +3658,7 @@
 
     DataBoard.prototype.get = function(_arg) {
       var ID, board, boardID, defaultValue, postID, thread, threadID, val, _i, _len;
+
       boardID = _arg.boardID, threadID = _arg.threadID, postID = _arg.postID, defaultValue = _arg.defaultValue;
       if (board = this.data.boards[boardID]) {
         if (!threadID) {
@@ -3641,6 +3682,7 @@
 
     DataBoard.prototype.clean = function() {
       var boardID, now, val, _ref;
+
       _ref = this.data.boards;
       for (boardID in _ref) {
         val = _ref[boardID];
@@ -3660,8 +3702,10 @@
 
     DataBoard.prototype.ajaxClean = function(boardID) {
       var _this = this;
+
       return $.cache("//api.4chan.org/" + boardID + "/threads.json", function(e) {
         var board, page, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
+
         if (e.target.status === 404) {
           _this["delete"](boardID);
         } else if (e.target.status === 200) {
@@ -3772,6 +3816,7 @@
     init: function() {
       var barFixedToggler, barPositionToggler, customNavToggler, editCustomNav, headerToggler,
         _this = this;
+
       this.menu = new UI.Menu('header');
       this.menuButton = $.el('span', {
         className: 'menu-button',
@@ -3860,6 +3905,7 @@
     }),
     setBoardList: function() {
       var a, boardList, btn, fourchannav, fullBoardList, settings;
+
       fourchannav = $.id('boardNavDesktop');
       if (a = $("a[href*='/" + g.BOARD + "/']", fourchannav)) {
         a.className = 'current';
@@ -3884,6 +3930,7 @@
     },
     generateBoardList: function(text) {
       var as, list, nodes;
+
       list = $('#custom-board-list', Header.bar);
       $.rmAll(list);
       if (!text) {
@@ -3892,6 +3939,7 @@
       as = $$('#full-board-list a[title]', Header.bar);
       nodes = text.match(/[\w@]+((-(all|title|replace|full|index|catalog|url:"[^"]+[^"]"|text:"[^"]+")|\,"[^"]+[^"]"))*|[^\w@]+/g).map(function(t) {
         var a, board, m, _i, _len;
+
         if (/^[^\w@]/.test(t)) {
           return $.tn(t);
         }
@@ -3938,6 +3986,7 @@
     },
     toggleBoardList: function() {
       var bar, custom, full, showBoardList;
+
       bar = Header.bar;
       custom = $('#custom-board-list', bar);
       full = $('#full-board-list', bar);
@@ -3988,6 +4037,7 @@
     },
     toggleBarVisibility: function(e) {
       var hide, message;
+
       if (e.type === 'mousedown' && e.button !== 0) {
         return;
       }
@@ -4000,6 +4050,7 @@
     },
     setCustomNav: function(show) {
       var btn, cust, full, _ref;
+
       Header.customNavToggler.checked = show;
       cust = $('#custom-board-list', Header.bar);
       full = $('#full-board-list', Header.bar);
@@ -4012,12 +4063,14 @@
     },
     editCustomNav: function() {
       var settings;
+
       Settings.open('Advanced');
       settings = $.id('fourchanx-settings');
       return $('input[name=boardnav]', settings).focus();
     },
     hashScroll: function() {
       var hash, post;
+
       if (!((hash = this.location.hash.slice(1)) && (post = $.id(hash)))) {
         return;
       }
@@ -4028,6 +4081,7 @@
     },
     scrollToPost: function(post) {
       var headRect, top;
+
       top = post.getBoundingClientRect().top;
       if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
         headRect = Header.bar.getBoundingClientRect();
@@ -4037,6 +4091,7 @@
     },
     addShortcut: function(el) {
       var shortcut;
+
       shortcut = $.el('span', {
         className: 'shortcut'
       });
@@ -4049,6 +4104,7 @@
     },
     createNotification: function(e) {
       var cb, content, lifetime, notif, type, _ref;
+
       _ref = e.detail, type = _ref.type, content = _ref.content, lifetime = _ref.lifetime, cb = _ref.cb;
       notif = new Notification(type, content, lifetime);
       if (cb) {
@@ -4061,6 +4117,7 @@
     spoilerRange: {},
     shortFilename: function(filename, isReply) {
       var threshold;
+
       threshold = isReply ? 30 : 40;
       if (filename.length - 4 > threshold) {
         return "" + filename.slice(0, threshold - 5) + "(...)." + filename.slice(-3);
@@ -4070,6 +4127,7 @@
     },
     postFromObject: function(data, boardID) {
       var o;
+
       o = {
         postID: data.no,
         threadID: data.resto || data.no,
@@ -4113,6 +4171,7 @@
       */
 
       var a, boardID, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
+
       postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
       isOP = postID === threadID;
       staticPath = '//static.4chan.org/image/';
@@ -4208,6 +4267,7 @@
   Get = {
     threadExcerpt: function(thread) {
       var OP, excerpt, _ref;
+
       OP = thread.OP;
       excerpt = ((_ref = OP.info.subject) != null ? _ref.trim() : void 0) || OP.info.comment.replace(/\n+/g, ' // ') || Conf['Anonymize'] && 'Anonymous' || $('.nameBlock', OP.nodes.info).textContent.trim();
       if (excerpt.length > 70) {
@@ -4220,6 +4280,7 @@
     },
     postFromRoot: function(root) {
       var boardID, index, link, post, postID;
+
       link = $('a[title="Highlight this post"]', root);
       boardID = link.pathname.split('/')[1];
       postID = link.hash.slice(2);
@@ -4239,6 +4300,7 @@
     },
     postDataFromLink: function(link) {
       var boardID, path, postID, threadID, _ref;
+
       if (link.hostname === 'boards.4chan.org') {
         path = link.pathname.split('/');
         boardID = path[1];
@@ -4256,6 +4318,7 @@
     },
     allQuotelinksLinkingTo: function(post) {
       var ID, quote, quotedPost, quotelinks, quoterPost, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
+
       quotelinks = [];
       _ref = g.posts;
       for (ID in _ref) {
@@ -4284,12 +4347,14 @@
       }
       return quotelinks.filter(function(quotelink) {
         var boardID, postID, _ref4;
+
         _ref4 = Get.postDataFromLink(quotelink), boardID = _ref4.boardID, postID = _ref4.postID;
         return boardID === post.board.ID && postID === post.ID;
       });
     },
     postClone: function(boardID, threadID, postID, root, context) {
       var post, url;
+
       if (post = g.posts["" + boardID + "." + postID]) {
         Get.insert(post, root, context);
         return;
@@ -4310,6 +4375,7 @@
     },
     insert: function(post, root, context) {
       var clone, nodes;
+
       if (!root.parentNode) {
         return;
       }
@@ -4323,6 +4389,7 @@
     },
     fetchedPost: function(req, boardID, threadID, postID, root, context) {
       var board, post, posts, status, thread, url, _i, _len;
+
       if (post = g.posts["" + boardID + "." + postID]) {
         Get.insert(post, root, context);
         return;
@@ -4372,6 +4439,7 @@
     },
     archivedPost: function(req, boardID, postID, root, context) {
       var board, bq, comment, data, o, post, thread, threadID, _ref;
+
       if (post = g.posts["" + boardID + "." + postID]) {
         Get.insert(post, root, context);
         return;
@@ -4465,8 +4533,10 @@
 
   UI = (function() {
     var Menu, dialog, drag, dragend, dragstart, hover, hoverend, hoverstart, touchend, touchmove;
+
     dialog = function(id, position, html) {
       var el, move;
+
       el = $.el('div', {
         className: 'dialog',
         innerHTML: html,
@@ -4496,6 +4566,7 @@
 
       Menu.prototype.makeMenu = function() {
         var menu;
+
         menu = $.el('div', {
           className: 'dialog',
           id: 'menu',
@@ -4510,6 +4581,7 @@
 
       Menu.prototype.toggle = function(e, button, data) {
         var previousButton;
+
         e.preventDefault();
         e.stopPropagation();
         if (currentMenu) {
@@ -4527,6 +4599,7 @@
 
       Menu.prototype.open = function(button, data) {
         var bLeft, bRect, bTop, bottom, cHeight, cWidth, entry, left, mRect, menu, right, style, top, _i, _len, _ref, _ref1, _ref2;
+
         menu = this.makeMenu();
         currentMenu = menu;
         lastToggledButton = button;
@@ -4566,6 +4639,7 @@
 
       Menu.prototype.insertEntry = function(entry, parent, data) {
         var subEntry, submenu, _i, _len, _ref;
+
         if (typeof entry.open === 'function') {
           if (!entry.open(data)) {
             return;
@@ -4599,6 +4673,7 @@
 
       Menu.prototype.findNextEntry = function(entry, direction) {
         var entries;
+
         entries = __slice.call(entry.parentNode.children);
         entries.sort(function(first, second) {
           return +(first.style.order || first.style.webkitOrder) - +(second.style.order || second.style.webkitOrder);
@@ -4608,6 +4683,7 @@
 
       Menu.prototype.keybinds = function(e) {
         var entry, next, nextPrev, subEntry, submenu;
+
         entry = $('.focused', currentMenu);
         while (subEntry = $('.focused', entry)) {
           entry = subEntry;
@@ -4653,6 +4729,7 @@
 
       Menu.prototype.focus = function(entry) {
         var bottom, cHeight, cWidth, eRect, focused, left, right, sRect, style, submenu, top, _i, _len, _ref, _ref1, _ref2;
+
         while (focused = $.x('parent::*/child::*[contains(@class,"focused")]', entry)) {
           $.rmClass(focused, 'focused');
         }
@@ -4680,6 +4757,7 @@
 
       Menu.prototype.addEntry = function(e) {
         var entry;
+
         entry = e.detail;
         if (entry.type !== this.type) {
           return;
@@ -4690,6 +4768,7 @@
 
       Menu.prototype.parseEntry = function(entry) {
         var el, style, subEntries, subEntry, _i, _len;
+
         el = entry.el, subEntries = entry.subEntries;
         $.addClass(el, 'entry');
         $.on(el, 'focus mouseover', (function(e) {
@@ -4713,6 +4792,7 @@
     })();
     dragstart = function(e) {
       var el, isTouching, o, rect, screenHeight, screenWidth, _ref;
+
       if (e.type === 'mousedown' && e.button !== 0) {
         return;
       }
@@ -4751,6 +4831,7 @@
     };
     touchmove = function(e) {
       var touch, _i, _len, _ref;
+
       _ref = e.changedTouches;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         touch = _ref[_i];
@@ -4762,6 +4843,7 @@
     };
     drag = function(e) {
       var bottom, clientX, clientY, left, right, style, top;
+
       clientX = e.clientX, clientY = e.clientY;
       left = clientX - this.dx;
       left = left < 10 ? 0 : this.width - left < 10 ? null : left / this.screenWidth * 100 + '%';
@@ -4777,6 +4859,7 @@
     };
     touchend = function(e) {
       var touch, _i, _len, _ref;
+
       _ref = e.changedTouches;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         touch = _ref[_i];
@@ -4798,6 +4881,7 @@
     };
     hoverstart = function(_arg) {
       var asapTest, cb, close, el, endEvents, latestEvent, o, root;
+
       root = _arg.root, el = _arg.el, latestEvent = _arg.latestEvent, endEvents = _arg.endEvents, asapTest = _arg.asapTest, cb = _arg.cb, close = _arg.close;
       o = {
         root: root,
@@ -4833,6 +4917,7 @@
     };
     hover = function(e) {
       var clientX, clientY, height, left, right, style, top, _ref;
+
       this.latestEvent = e;
       height = this.el.offsetHeight;
       clientX = e.clientX, clientY = e.clientY;
@@ -4876,6 +4961,7 @@
     },
     node: function() {
       var email, name, tripcode, _ref;
+
       if (this.info.capcode || this.isClone) {
         return;
       }
@@ -4902,6 +4988,7 @@
     filters: {},
     init: function() {
       var boards, err, filter, hl, key, op, regexp, stub, top, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4;
+
       if (g.VIEW === 'catalog' || !Conf['Filter']) {
         return;
       }
@@ -4938,6 +5025,7 @@
           op = ((_ref2 = filter.match(/[^t]op:(yes|no|only)/)) != null ? _ref2[1] : void 0) || 'yes';
           stub = (function() {
             var _ref3;
+
             switch ((_ref3 = filter.match(/stub:(yes|no)/)) != null ? _ref3[1] : void 0) {
               case 'yes':
                 return true;
@@ -4968,6 +5056,7 @@
     },
     createFilter: function(regexp, op, stub, hl, top) {
       var settings, test;
+
       test = typeof regexp === 'string' ? function(value) {
         return regexp === value;
       } : function(value) {
@@ -4991,6 +5080,7 @@
     },
     node: function() {
       var filter, firstThread, key, result, thisThread, value, _i, _len, _ref;
+
       if (this.isClone) {
         return;
       }
@@ -5102,6 +5192,7 @@
     menu: {
       init: function() {
         var div, entry, type, _i, _len, _ref;
+
         if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Filter']) {
           return;
         }
@@ -5127,6 +5218,7 @@
       },
       createSubEntry: function(text, type) {
         var el;
+
         el = $.el('a', {
           href: 'javascript:;',
           textContent: text
@@ -5137,6 +5229,7 @@
           el: el,
           open: function(post) {
             var value;
+
             value = Filter[type](post);
             return value !== false;
           }
@@ -5144,6 +5237,7 @@
       },
       makeFilter: function() {
         var re, type, value;
+
         type = this.dataset.type;
         value = Filter[type](Filter.menu.post);
         re = ['uniqueID', 'MD5'].contains(type) ? value : value.replace(/\/|\\|\^|\$|\n|\.|\(|\)|\{|\}|\[|\]|\?|\*|\+|\|/g, function(c) {
@@ -5158,6 +5252,7 @@
         re = ['uniqueID', 'MD5'].contains(type) ? "/" + re + "/" : "/^" + re + "$/";
         return $.get(type, Conf[type], function(item) {
           var save, section, select, ta, tl;
+
           save = item[type];
           save = save ? "" + save + "\n" + re : re;
           $.set(type, save);
@@ -5191,6 +5286,7 @@
     },
     node: function() {
       var data;
+
       if (!this.isReply || this.isClone) {
         return;
       }
@@ -5214,6 +5310,7 @@
     menu: {
       init: function() {
         var apply, div, hideStubLink, makeStub, replies, thisPost;
+
         if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Reply Hiding Link']) {
           return;
         }
@@ -5284,6 +5381,7 @@
           order: 20,
           open: function(post) {
             var data;
+
             if (!post.isReply || post.isClone || !post.isHidden) {
               return false;
             }
@@ -5315,6 +5413,7 @@
           order: 15,
           open: function(post) {
             var data;
+
             if (!post.isReply || post.isClone || !post.isHidden) {
               return false;
             }
@@ -5331,6 +5430,7 @@
       },
       hide: function() {
         var makeStub, parent, post, replies, thisPost;
+
         parent = this.parentNode;
         thisPost = $('input[name=thisPost]', parent).checked;
         replies = $('input[name=replies]', parent).checked;
@@ -5349,6 +5449,7 @@
       },
       show: function() {
         var data, parent, post, replies, thisPost;
+
         parent = this.parentNode;
         thisPost = $('input[name=thisPost]', parent).checked;
         replies = $('input[name=replies]', parent).checked;
@@ -5372,6 +5473,7 @@
       },
       hideStub: function() {
         var post;
+
         post = PostHiding.menu.post;
         post.nodes.root.hidden = true;
         $.event('CloseMenu');
@@ -5379,6 +5481,7 @@
     },
     makeButton: function(post, type) {
       var a;
+
       a = $.el('a', {
         className: "" + type + "-reply-button",
         innerHTML: "<span class=brackets-wrap>&nbsp;" + (type === 'hide' ? '-' : '+') + "&nbsp;</span>",
@@ -5389,6 +5492,7 @@
     },
     saveHiddenState: function(post, isHiding, thisPost, makeStub, hideRecursively) {
       var data;
+
       data = {
         boardID: post.board.ID,
         threadID: post.thread.ID,
@@ -5407,6 +5511,7 @@
     },
     toggle: function() {
       var post;
+
       post = Get.postFromNode(this);
       if (post.isHidden) {
         PostHiding.show(post);
@@ -5417,6 +5522,7 @@
     },
     hide: function(post, makeStub, hideRecursively) {
       var a, postInfo, quotelink, _i, _len, _ref;
+
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
       }
@@ -5454,6 +5560,7 @@
     },
     show: function(post, showRecursively) {
       var quotelink, _i, _len, _ref;
+
       if (showRecursively == null) {
         showRecursively = Conf['Recursive Hiding'];
       }
@@ -5489,6 +5596,7 @@
     },
     node: function() {
       var i, obj, quote, recursive, _i, _j, _len, _len1, _ref, _ref1;
+
       if (this.isClone) {
         return;
       }
@@ -5506,6 +5614,7 @@
     },
     add: function() {
       var args, obj, post, recursive, _base, _name;
+
       recursive = arguments[0], post = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
       obj = (_base = Recursive.recursives)[_name = post.fullID] || (_base[_name] = {
         recursives: [],
@@ -5516,6 +5625,7 @@
     },
     rm: function(recursive, post) {
       var i, obj, rec, _i, _len, _ref;
+
       if (!(obj = Recursive.recursives[post.fullID])) {
         return;
       }
@@ -5530,6 +5640,7 @@
     },
     apply: function() {
       var ID, args, fullID, post, recursive, _ref;
+
       recursive = arguments[0], post = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
       fullID = post.fullID;
       _ref = g.posts;
@@ -5556,6 +5667,7 @@
     },
     node: function() {
       var data;
+
       if (data = ThreadHiding.db.get({
         boardID: this.board.ID,
         threadID: this.ID
@@ -5569,6 +5681,7 @@
     },
     syncCatalog: function() {
       var hiddenThreads, hiddenThreadsOnCatalog, threadID;
+
       hiddenThreads = ThreadHiding.db.get({
         boardID: g.BOARD.ID,
         defaultValue: {}
@@ -5595,6 +5708,7 @@
     cleanCatalog: function(hiddenThreadsOnCatalog) {
       return $.cache("//api.4chan.org/" + g.BOARD + "/threads.json", function() {
         var page, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
+
         if (this.status !== 200) {
           return;
         }
@@ -5620,6 +5734,7 @@
     menu: {
       init: function() {
         var apply, div, hideStubLink, makeStub;
+
         if (g.VIEW !== 'index' || !Conf['Menu'] || !Conf['Thread Hiding Link']) {
           return;
         }
@@ -5646,6 +5761,7 @@
           order: 20,
           open: function(_arg) {
             var isReply, thread;
+
             thread = _arg.thread, isReply = _arg.isReply;
             if (isReply || thread.isHidden) {
               return false;
@@ -5667,6 +5783,7 @@
           order: 15,
           open: function(_arg) {
             var isReply, thread;
+
             thread = _arg.thread, isReply = _arg.isReply;
             if (isReply || !thread.isHidden) {
               return false;
@@ -5677,6 +5794,7 @@
       },
       hide: function() {
         var makeStub, thread;
+
         makeStub = $('input', this.parentNode).checked;
         thread = ThreadHiding.menu.thread;
         ThreadHiding.hide(thread, makeStub);
@@ -5685,6 +5803,7 @@
       },
       hideStub: function() {
         var thread;
+
         thread = ThreadHiding.menu.thread;
         ThreadHiding.hide(thread, false);
         $.event('CloseMenu');
@@ -5692,6 +5811,7 @@
     },
     makeButton: function(thread, type) {
       var a;
+
       a = $.el('a', {
         className: "" + type + "-thread-button",
         innerHTML: "<span class=brackets-wrap>&nbsp;" + (type === 'hide' ? '-' : '+') + "&nbsp;</span>",
@@ -5703,6 +5823,7 @@
     },
     saveHiddenState: function(thread, makeStub) {
       var hiddenThreadsOnCatalog;
+
       hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD)) || {};
       if (thread.isHidden) {
         ThreadHiding.db.set({
@@ -5735,6 +5856,7 @@
     },
     hide: function(thread, makeStub) {
       var OP, a, numReplies, opInfo, span, threadRoot;
+
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
       }
@@ -5765,6 +5887,7 @@
     },
     show: function(thread) {
       var threadRoot;
+
       if (thread.stub) {
         $.rm(thread.stub);
         delete thread.stub;
@@ -5777,6 +5900,7 @@
   QuoteBacklink = {
     init: function() {
       var format;
+
       if (g.VIEW === 'catalog' || !Conf['Quote Backlinks']) {
         return;
       }
@@ -5794,6 +5918,7 @@
     },
     firstNode: function() {
       var a, clone, container, containers, frag, link, post, quote, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+
       if (this.isClone || !this.quotes.length) {
         return;
       }
@@ -5832,6 +5957,7 @@
     },
     secondNode: function() {
       var container;
+
       if (this.isClone && (this.origin.isReply || Conf['OP Backlinks'])) {
         this.nodes.backlinkContainer = $('.container', this.nodes.info);
         return;
@@ -5848,6 +5974,7 @@
     },
     getContainer: function(id) {
       var _base;
+
       return (_base = this.containers)[id] || (_base[id] = $.el('span', {
         className: 'container'
       }));
@@ -5870,6 +5997,7 @@
     },
     node: function() {
       var board, boardID, quotelink, quotelinks, quotes, thread, threadID, _i, _len, _ref, _ref1;
+
       if (this.isClone && this.thread === this.context.thread) {
         return;
       }
@@ -5905,6 +6033,7 @@
       if (Conf['Quote Hash Navigation']) {
         this.node = function() {
           var link, _i, _len, _ref;
+
           _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             link = _ref[_i];
@@ -5917,6 +6046,7 @@
       } else {
         this.node = function() {
           var link, _i, _len, _ref;
+
           _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             link = _ref[_i];
@@ -5940,6 +6070,7 @@
     },
     toggle: function(e) {
       var boardID, context, postID, threadID, _ref;
+
       if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
         return;
       }
@@ -5965,6 +6096,7 @@
     },
     add: function(quotelink, boardID, threadID, postID, context) {
       var inline, isBacklink, post, qroot, root;
+
       isBacklink = $.hasClass(quotelink, 'backlink');
       inline = $.el('div', {
         id: "i" + postID,
@@ -5989,6 +6121,7 @@
     },
     rm: function(quotelink, boardID, threadID, postID, context) {
       var el, inlined, isBacklink, post, qroot, root, _ref;
+
       isBacklink = $.hasClass(quotelink, 'backlink');
       root = QuoteInline.findRoot(quotelink, isBacklink);
       root = $.x("following-sibling::div[@id='i" + postID + "'][1]", root);
@@ -6030,6 +6163,7 @@
     },
     node: function() {
       var boardID, op, postID, quotelink, quotelinks, quotes, _i, _j, _len, _len1, _ref;
+
       if (this.isClone && this.thread === this.context.thread) {
         return;
       }
@@ -6072,6 +6206,7 @@
     },
     node: function() {
       var link, _i, _len, _ref;
+
       _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
@@ -6080,6 +6215,7 @@
     },
     mouseover: function(e) {
       var boardID, clone, origin, post, postID, posts, qp, quote, quoterID, threadID, _i, _j, _len, _len1, _ref, _ref1;
+
       if ($.hasClass(this, 'inlined')) {
         return;
       }
@@ -6123,6 +6259,7 @@
     },
     mouseout: function() {
       var clone, post, root, _i, _len, _ref;
+
       if (!(root = this.el.firstElementChild)) {
         return;
       }
@@ -6152,6 +6289,7 @@
     },
     node: function() {
       var boardID, postID, quotelink, _i, _len, _ref, _ref1, _ref2;
+
       if (this.isClone) {
         return;
       }
@@ -6174,6 +6312,7 @@
   QuoteThreading = {
     init: function() {
       var input;
+
       if (!(Conf['Quote Threading'] && g.VIEW === 'thread')) {
         return;
       }
@@ -6196,6 +6335,7 @@
     },
     setup: function() {
       var ID, post, posts;
+
       $.off(d, '4chanXInitFinished', QuoteThreading.setup);
       posts = g.posts;
       for (ID in posts) {
@@ -6208,6 +6348,7 @@
     },
     node: function() {
       var ID, fullID, keys, len, post, posts, qid, quote, quotes, uniq, _i, _len;
+
       if (this.isClone || !QuoteThreading.enabled || this.thread.OP === this) {
         return;
       }
@@ -6237,6 +6378,7 @@
     },
     nodeinsert: function() {
       var bottom, height, posts, qpost, qroot, threadContainer, top, _ref;
+
       posts = g.posts;
       qpost = posts[this.threaded];
       delete this.threaded;
@@ -6266,12 +6408,14 @@
     },
     toggle: function() {
       var container, containers, node, nodes, replies, reply, thread, _i, _j, _len, _len1;
+
       thread = $('.thread');
       replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
       QuoteThreading.enabled = this.checked;
       if (this.checked) {
         nodes = (function() {
           var _i, _len, _results;
+
           _results = [];
           for (_i = 0, _len = replies.length; _i < _len; _i++) {
             reply = replies[_i];
@@ -6286,6 +6430,7 @@
       } else {
         replies.sort(function(a, b) {
           var aID, bID;
+
           aID = Number(a.id.slice(2));
           bID = Number(b.id.slice(2));
           return aID - bID;
@@ -6301,6 +6446,7 @@
     },
     kb: function() {
       var control;
+
       control = $.id('threadingControl');
       return control.click();
     }
@@ -6327,6 +6473,7 @@
     },
     node: function() {
       var quotelink, _i, _len, _ref;
+
       if (this.isClone) {
         return;
       }
@@ -6362,6 +6509,7 @@
     },
     node: function() {
       var deadlink, _i, _len, _ref;
+
       _ref = $$('.deadlink', this.nodes.comment);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         deadlink = _ref[_i];
@@ -6376,6 +6524,7 @@
     },
     parseDeadlink: function(deadlink) {
       var a, boardID, m, post, postID, quote, quoteID, redirect, _ref;
+
       if (deadlink.parentNode.className === 'prettyprint') {
         $.replace(deadlink, __slice.call(deadlink.childNodes));
         return;
@@ -6459,6 +6608,7 @@
     cypher: $.el('div'),
     node: function() {
       var a, child, cypher, cypherText, data, embed, embedder, embeds, i, index, len, link, links, lookahead, name, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2;
+
       if (this.isClone && Conf['Embedding']) {
         _ref = $$('.embedder', this.nodes.comment);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -6543,6 +6693,7 @@
     },
     toggle: function() {
       var el, embed, style, type, url;
+
       embed = this.previousElementSibling;
       if (this.className.contains("embedded")) {
         el = $.el('a', {
@@ -6636,6 +6787,7 @@
         style: 'height: auto; width: 500px; display: inline-block;',
         el: function() {
           var div;
+
           div = $.el('div', {
             className: "soundcloud",
             name: "soundcloud"
@@ -6661,6 +6813,7 @@
         regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/,
         el: function() {
           var div;
+
           return div = $.el('iframe', {
             src: "http://pastebin.com/embed_iframe.php?i=" + this.name
           });
@@ -6670,6 +6823,7 @@
         regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/,
         el: function() {
           var div;
+
           return div = $.el('iframe', {
             src: "http://www.purplegene.com/script?url=https://gist.github.com/" + this.name + ".js"
           });
@@ -6680,6 +6834,7 @@
           },
           text: function() {
             var file, response;
+
             response = JSON.parse(this.responseText).files;
             for (file in response) {
               if (response.hasOwnProperty(file)) {
@@ -6700,12 +6855,14 @@
     },
     embedder: function(a) {
       var callbacks, embed, key, match, service, titles, type, _ref;
+
       if (!Conf['Link Title']) {
         return [a];
       }
       titles = {};
       callbacks = function() {
         var title;
+
         return a.textContent = (function() {
           switch (this.status) {
             case 200:
@@ -6747,6 +6904,7 @@
         if (Conf['Link Title'] && (service = type.title)) {
           $.get('CachedTitles', {}, function(item) {
             var err, title;
+
             titles = item['CachedTitles'];
             if (title = titles[match[1]]) {
               a.textContent = title[0];
@@ -6770,10 +6928,11 @@
   QR = {
     init: function() {
       var con, sc;
+
       this.db = new DataBoard('yourPosts');
       $.ready(this.initReady);
       if (Conf['Persistent QR']) {
-        if (g.BOARD.ID !== 'f') {
+        if (!(g.BOARD.ID === 'f' && g.VIEW === 'index')) {
           $.on(d, '4chanXInitFinished', this.persist);
         } else {
           $.ready(this.persist);
@@ -6828,11 +6987,13 @@
       }
       $.on(d, 'QRGetSelectedPost', function(_arg) {
         var cb;
+
         cb = _arg.detail;
         return cb(QR.selected);
       });
       $.on(d, 'QRAddPreSubmitHook', function(_arg) {
         var cb;
+
         cb = _arg.detail;
         return QR.preSubmitHooks.push(cb);
       });
@@ -6861,6 +7022,7 @@
     },
     open: function() {
       var err;
+
       if (QR.nodes) {
         QR.nodes.el.hidden = false;
         return QR.unhide();
@@ -6879,6 +7041,7 @@
     },
     close: function() {
       var post, _i, _len, _ref;
+
       if (QR.req) {
         QR.abort();
         return;
@@ -6925,6 +7088,7 @@
     },
     error: function(err) {
       var el;
+
       QR.open();
       if (typeof err === 'string') {
         el = $.tn(err);
@@ -6952,6 +7116,7 @@
     notifications: [],
     cleanNotifications: function() {
       var notification, _i, _len, _ref;
+
       _ref = QR.notifications;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         notification = _ref[_i];
@@ -6961,6 +7126,7 @@
     },
     status: function() {
       var disabled, status, thread, value;
+
       if (!QR.nodes) {
         return;
       }
@@ -6982,6 +7148,7 @@
         QR.persona.getPassword();
         return $.get('QR.personas', Conf['QR.personas'], function(_arg) {
           var arr, item, personas, type, types, _i, _len, _ref;
+
           personas = _arg['QR.personas'];
           types = {
             name: [],
@@ -7001,6 +7168,7 @@
       },
       parseItem: function(item, types) {
         var boards, match, type, val, _ref, _ref1;
+
         if (item[0] === '#') {
           return;
         }
@@ -7029,6 +7197,7 @@
       },
       loadPersonas: function(type, arr) {
         var list, val, _i, _len;
+
         list = $("#list-" + type, QR.nodes.el);
         for (_i = 0, _len = arr.length; _i < _len; _i++) {
           val = arr[_i];
@@ -7042,6 +7211,7 @@
       },
       getPassword: function() {
         var input, m;
+
         if (!QR.persona.pwd) {
           QR.persona.pwd = (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : (input = $.id('postPassword')) ? input.value : $.id('delPassword').value;
         }
@@ -7050,6 +7220,7 @@
       get: function(cb) {
         return $.get('QR.persona', {}, function(_arg) {
           var persona;
+
           persona = _arg['QR.persona'];
           return cb(persona);
         });
@@ -7057,6 +7228,7 @@
       set: function(post) {
         return $.get('QR.persona', {}, function(_arg) {
           var persona;
+
           persona = _arg['QR.persona'];
           persona = {
             name: post.name,
@@ -7070,6 +7242,7 @@
     cooldown: {
       init: function() {
         var board;
+
         if (!Conf['Cooldown']) {
           return;
         }
@@ -7111,6 +7284,7 @@
       },
       sync: function(cooldowns) {
         var id;
+
         for (id in cooldowns) {
           QR.cooldown.cooldowns[id] = cooldowns[id];
         }
@@ -7118,6 +7292,7 @@
       },
       set: function(data) {
         var cooldown, delay, hasFile, isReply, isSage, post, req, start, type, upSpd;
+
         if (!Conf['Cooldown']) {
           return;
         }
@@ -7157,6 +7332,7 @@
       },
       count: function() {
         var cooldown, cooldowns, elapsed, hasFile, isReply, isSage, now, post, seconds, start, type, types, upSpd, upSpdAccuracy, update, _ref;
+
         if (!Object.keys(QR.cooldown.cooldowns).length) {
           $["delete"]("" + g.BOARD + ".cooldown");
           delete QR.cooldown.isCounting;
@@ -7210,6 +7386,7 @@
     },
     quote: function(e) {
       var caretPos, com, index, post, range, s, sel, text, thread, _ref;
+
       if (e != null) {
         e.preventDefault();
       }
@@ -7246,6 +7423,7 @@
     },
     characterCount: function() {
       var count, counter;
+
       counter = QR.nodes.charCount;
       count = QR.nodes.com.textLength;
       counter.textContent = count;
@@ -7254,6 +7432,7 @@
     },
     drag: function(e) {
       var toggle;
+
       toggle = e.type === 'dragstart' ? $.off : $.on;
       toggle(d, 'dragover', QR.dragOver);
       return toggle(d, 'drop', QR.dropFile);
@@ -7273,6 +7452,7 @@
     },
     paste: function(e) {
       var blob, files, item, _i, _len, _ref;
+
       files = [];
       _ref = e.clipboardData.items;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -7300,6 +7480,7 @@
     },
     fileInput: function(files) {
       var file, length, max, post, _i, _len;
+
       if (files instanceof Event) {
         files = __slice.call(this.files);
         QR.nodes.fileInput.value = null;
@@ -7348,6 +7529,7 @@
       function _Class(select) {
         var el, elm, event, prev, _i, _j, _len, _len1, _ref, _ref1,
           _this = this;
+
         el = $.el('a', {
           className: 'qr-preview',
           draggable: true,
@@ -7407,6 +7589,7 @@
 
       _Class.prototype.rm = function() {
         var index;
+
         this["delete"]();
         index = QR.posts.indexOf(this);
         if (QR.posts.length === 1) {
@@ -7426,6 +7609,7 @@
 
       _Class.prototype.lock = function(lock) {
         var name, _i, _len, _ref;
+
         if (lock == null) {
           lock = true;
         }
@@ -7450,6 +7634,7 @@
 
       _Class.prototype.select = function() {
         var rectEl, rectList;
+
         if (QR.selected) {
           QR.selected.nodes.el.id = null;
           QR.selected.forceSave();
@@ -7466,6 +7651,7 @@
 
       _Class.prototype.load = function() {
         var name, _i, _len, _ref;
+
         _ref = ['thread', 'name', 'email', 'sub', 'com'];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           name = _ref[_i];
@@ -7478,6 +7664,7 @@
 
       _Class.prototype.save = function(input) {
         var name, _ref;
+
         if (input.type === 'checkbox') {
           this.spoiler = input.checked;
           return;
@@ -7498,6 +7685,7 @@
 
       _Class.prototype.forceSave = function() {
         var name, _i, _len, _ref;
+
         if (this !== QR.selected) {
           return;
         }
@@ -7527,9 +7715,11 @@
       _Class.prototype.setThumbnail = function() {
         var fileURL, img,
           _this = this;
+
         img = $.el('img');
         img.onload = function() {
           var applyBlob, cv, data, height, i, l, s, ui8a, width, _i;
+
           s = 90 * 2;
           if (_this.file.type === 'image/gif') {
             s *= 3;
@@ -7600,9 +7790,11 @@
       _Class.prototype.pasteText = function(file) {
         var reader,
           _this = this;
+
         reader = new FileReader();
         reader.onload = function(e) {
           var text;
+
           text = e.target.result;
           if (_this.com) {
             _this.com += "\n" + text;
@@ -7640,6 +7832,7 @@
 
       _Class.prototype.drop = function() {
         var el, index, newIndex, oldIndex, post;
+
         $.rmClass(this, 'over');
         if (!this.draggable) {
           return;
@@ -7674,6 +7867,7 @@
       ready: function() {
         var imgContainer, input, setLifetime,
           _this = this;
+
         setLifetime = function(e) {
           return _this.lifetime = e.detail;
         };
@@ -7710,6 +7904,7 @@
         });
         $.get('captchas', [], function(_arg) {
           var captchas;
+
           captchas = _arg.captchas;
           return _this.sync(captchas);
         });
@@ -7726,6 +7921,7 @@
       },
       getOne: function() {
         var captcha, challenge, response;
+
         this.clear();
         if (captcha = this.captchas.shift()) {
           challenge = captcha.challenge, response = captcha.response;
@@ -7750,6 +7946,7 @@
       },
       save: function() {
         var response;
+
         if (!(response = this.nodes.input.value.trim())) {
           return;
         }
@@ -7764,6 +7961,7 @@
       },
       clear: function() {
         var captcha, i, now, _i, _len, _ref;
+
         now = Date.now();
         _ref = this.captchas;
         for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
@@ -7781,6 +7979,7 @@
       },
       load: function() {
         var challenge;
+
         if (!this.nodes.challenge.firstChild) {
           return;
         }
@@ -7793,6 +7992,7 @@
       },
       count: function() {
         var count;
+
         count = this.captchas.length;
         this.nodes.input.placeholder = (function() {
           switch (count) {
@@ -7825,6 +8025,7 @@
     },
     dialog: function() {
       var dialog, elm, mimeTypes, name, nodes, thread, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+
       dialog = UI.dialog('qr', 'top:0;right:0;', "<div id=qrtab class=move><input type=checkbox id=autohide title=Auto-hide><div id=qr-thread-select><select data-name=thread title='Create a new thread / Reply'><option value=new>New thread</option></select></div><a href=javascript:; class=close title=Close>✖</a></div><form><div class=persona><input name=name  data-name=name  list=\"list-name\" placeholder=Name class=field size=1 tabindex=10><input name=email data-name=email list=\"list-email\" placeholder=E-mail class=field size=1 tabindex=20><input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1 tabindex=30></div><div class=textarea><textarea data-name=com placeholder=Comment class=field tabindex=40></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=60><span id=qr-no-file>No selected file</span><span id=qr-filename></span><span id=qr-extras-container><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70></label><span class=description>Spoiler</span><a id=dump-button title='Dump list'>+</a><span class=description>Dump</span><a id=qr-filerm href=javascript:; title='Remove file'>✖</a><span class=description>Remove File</span></span></span><input type=submit tabindex=80></div><input type=file multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist>");
       QR.nodes = nodes = {
         el: dialog,
@@ -7954,6 +8155,7 @@
     },
     tripcodeHider: function() {
       var check;
+
       check = /^.*##?.+/.test(this.value);
       if (check && !this.className.match("\\btripped\\b")) {
         return $.addClass(this, 'tripped');
@@ -7964,6 +8166,7 @@
     preSubmitHooks: [],
     submit: function(e) {
       var callbacks, challenge, err, filetag, hook, opts, post, postData, response, textOnly, thread, threadID, _i, _len, _ref, _ref1;
+
       if (e != null) {
         e.preventDefault();
       }
@@ -8049,7 +8252,7 @@
           QR.cooldown.auto = false;
           QR.status();
           return QR.error($.el('span', {
-            innerHTML: "Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.\n[<a href=\"https://github.com/MayhemYDG/4chan-x/wiki/FAQ#what-does-connection-error-you-may-have-been-banned-mean\" target=_blank>FAQ</a>]"
+            innerHTML: "4chan X encountered an error while posting. Please try again. \n[<a href=\"https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean\" target=_blank>?</a>]"
           }));
         }
       };
@@ -8076,6 +8279,7 @@
     },
     response: function() {
       var URL, ban, board, err, h1, isReply, m, post, postID, req, threadID, tmpDoc, _, _ref, _ref1;
+
       req = QR.req;
       delete QR.req;
       post = QR.posts[0];
@@ -8171,6 +8375,7 @@
     },
     mouseover: function(e) {
       var mouseover;
+
       mouseover = $.el('div', {
         id: 'mouseover',
         className: 'dialog'
@@ -8193,6 +8398,7 @@
   FappeTyme = {
     init: function() {
       var el;
+
       if (!Conf['Fappe Tyme'] || g.VIEW === 'catalog' || g.BOARD === 'f') {
         return;
       }
@@ -8247,6 +8453,7 @@
     },
     node: function() {
       var thumb, _ref;
+
       if (!((_ref = this.file) != null ? _ref.isImage : void 0)) {
         return;
       }
@@ -8271,6 +8478,7 @@
       },
       toggleAll: function() {
         var ID, file, func, post, _i, _len, _ref, _ref1;
+
         $.event('CloseMenu');
         if (ImageExpand.on = $.hasClass(ImageExpand.EAI, 'expand-all-shortcut')) {
           ImageExpand.EAI.className = 'contract-all-shortcut';
@@ -8304,6 +8512,7 @@
     },
     toggle: function(post) {
       var headRect, node, rect, root, thumb, top;
+
       thumb = post.file.thumb;
       if (!(post.file.isExpanded || $.hasClass(thumb, 'expanding'))) {
         ImageExpand.expand(post);
@@ -8348,6 +8557,7 @@
     },
     expand: function(post, src) {
       var img, thumb;
+
       thumb = post.file.thumb;
       if (post.isHidden || post.file.isExpanded || $.hasClass(thumb, 'expanding')) {
         return;
@@ -8375,6 +8585,7 @@
     },
     completeExpand: function(post) {
       var prev, thumb;
+
       thumb = post.file.thumb;
       if (!$.hasClass(thumb, 'expanding')) {
         return;
@@ -8388,6 +8599,7 @@
       prev = post.nodes.root.getBoundingClientRect();
       return $.queueTask(function() {
         var curr, root;
+
         $.addClass(post.nodes.root, 'expanded-image');
         $.rmClass(post.file.thumb, 'expanding');
         if (!(prev.top + prev.height <= 0)) {
@@ -8400,6 +8612,7 @@
     },
     error: function() {
       var URL, post, src, timeoutID;
+
       post = Get.postFromNode(this);
       $.rm(this);
       delete post.file.fullImage;
@@ -8425,6 +8638,7 @@
       return $.ajax("//api.4chan.org/" + post.board + "/res/" + post.thread + ".json", {
         onload: function() {
           var postObj, _i, _len, _ref;
+
           if (this.status !== 200) {
             return;
           }
@@ -8448,6 +8662,7 @@
     menu: {
       init: function() {
         var conf, createSubEntry, el, key, subEntries, _ref;
+
         if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
           return;
         }
@@ -8471,6 +8686,7 @@
       },
       createSubEntry: function(type, config) {
         var input, label;
+
         label = $.el('label', {
           innerHTML: "<input type=checkbox name='" + type + "'> " + type
         });
@@ -8506,6 +8722,7 @@
     },
     node: function() {
       var _ref;
+
       if (!((_ref = this.file) != null ? _ref.isImage : void 0)) {
         return;
       }
@@ -8513,6 +8730,7 @@
     },
     mouseover: function(e) {
       var el, post;
+
       post = Get.postFromNode(this);
       el = $.el('img', {
         id: 'ihover',
@@ -8534,6 +8752,7 @@
     error: function() {
       var URL, post, src, timeoutID,
         _this = this;
+
       if (!doc.contains(this)) {
         return;
       }
@@ -8558,6 +8777,7 @@
       return $.ajax("//api.4chan.org/" + post.board + "/res/" + post.thread + ".json", {
         onload: function() {
           var postObj, _i, _len, _ref;
+
           if (this.status !== 200) {
             return;
           }
@@ -8583,6 +8803,7 @@
   ImageLoader = {
     init: function() {
       var prefetch;
+
       if (g.VIEW === 'catalog') {
         return;
       }
@@ -8609,6 +8830,7 @@
     },
     node: function() {
       var URL, img, string, style, thumb, type, _ref, _ref1;
+
       if (this.isClone || this.isHidden || this.thread.isHidden || !((_ref = this.file) != null ? _ref.isImage : void 0)) {
         return;
       }
@@ -8630,6 +8852,7 @@
     },
     toggle: function() {
       var enabled, id, post, _ref;
+
       enabled = Conf['prefetch'] = this.checked;
       if (enabled) {
         _ref = g.threads["" + g.BOARD.ID + "." + g.THREADID].posts;
@@ -8653,6 +8876,7 @@
     },
     node: function() {
       var thumb, _ref;
+
       if (this.isClone || !((_ref = this.file) != null ? _ref.isSpoiler : void 0)) {
         return;
       }
@@ -8665,6 +8889,7 @@
   Sauce = {
     init: function() {
       var err, link, links, _i, _len, _ref;
+
       if (g.VIEW === 'catalog' || !Conf['Sauce']) {
         return;
       }
@@ -8694,6 +8919,7 @@
     },
     createSauceLink: function(link) {
       var m, text;
+
       link = link.replace(/(%(T?URL|MD5|board)|\$[1-4])/ig, function(parameter) {
         switch (parameter) {
           case '%TURL':
@@ -8718,6 +8944,7 @@
     },
     node: function() {
       var link, nodes, _i, _len, _ref;
+
       if (this.isClone || !this.file) {
         return;
       }
@@ -8734,6 +8961,7 @@
   ArchiveLink = {
     init: function() {
       var div, entry, type, _i, _len, _ref;
+
       if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Archive Link']) {
         return;
       }
@@ -8746,6 +8974,7 @@
         order: 90,
         open: function(_arg) {
           var ID, board, thread;
+
           ID = _arg.ID, thread = _arg.thread, board = _arg.board;
           return !!Redirect.to('thread', {
             postID: ID,
@@ -8764,12 +8993,14 @@
     },
     createSubEntry: function(text, type) {
       var el, open;
+
       el = $.el('a', {
         textContent: text,
         target: '_blank'
       });
       open = type === 'post' ? function(_arg) {
         var ID, board, thread;
+
         ID = _arg.ID, thread = _arg.thread, board = _arg.board;
         el.href = Redirect.to('thread', {
           postID: ID,
@@ -8779,6 +9010,7 @@
         return true;
       } : function(post) {
         var value;
+
         value = Filter[type](post);
         if (!value) {
           return false;
@@ -8801,6 +9033,7 @@
   DeleteLink = {
     init: function() {
       var div, fileEl, fileEntry, postEl, postEntry;
+
       if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Delete Link']) {
         return;
       }
@@ -8828,6 +9061,7 @@
         el: fileEl,
         open: function(_arg) {
           var file;
+
           file = _arg.file;
           if (!file || file.isDead) {
             return false;
@@ -8843,6 +9077,7 @@
         order: 40,
         open: function(post) {
           var node;
+
           if (post.isDead || post.board.ID === 'q') {
             return false;
           }
@@ -8857,6 +9092,7 @@
     },
     "delete": function() {
       var fileOnly, form, link, post;
+
       post = DeleteLink.post;
       if (DeleteLink.cooldown.counting === post) {
         return;
@@ -8885,6 +9121,7 @@
     },
     load: function(link, post, fileOnly, html) {
       var msg, s, tmpDoc;
+
       tmpDoc = d.implementation.createHTMLDocument('');
       tmpDoc.documentElement.innerHTML = html;
       if (tmpDoc.title === '4chan - Banned') {
@@ -8907,6 +9144,7 @@
     cooldown: {
       start: function(post, node) {
         var length, seconds, _ref;
+
         if (!((_ref = QR.db) != null ? _ref.get({
           boardID: post.board.ID,
           threadID: post.thread.ID,
@@ -8940,6 +9178,7 @@
   DownloadLink = {
     init: function() {
       var a;
+
       if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Download Link']) {
         return;
       }
@@ -8953,6 +9192,7 @@
         order: 100,
         open: function(_arg) {
           var file;
+
           file = _arg.file;
           if (!file) {
             return false;
@@ -8978,6 +9218,7 @@
     },
     node: function() {
       var button;
+
       if (this.isClone) {
         button = $('.menu-button', this.nodes.info);
       } else {
@@ -8988,6 +9229,7 @@
     },
     makeButton: (function() {
       var a;
+
       a = null;
       return function() {
         a || (a = $.el('a', {
@@ -9006,6 +9248,7 @@
   ReportLink = {
     init: function() {
       var a;
+
       if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Report Link']) {
         return;
       }
@@ -9027,6 +9270,7 @@
     },
     report: function() {
       var id, post, set, url;
+
       post = ReportLink.post;
       url = "//sys.4chan.org/" + post.board + "/imgboard.php?mode=report&no=" + post;
       id = Date.now();
@@ -9039,6 +9283,7 @@
     init: function() {
       return $.ready(function() {
         var href;
+
         Favicon.el = $('link[rel="shortcut icon"]', d.head);
         Favicon.el.type = 'image/x-icon';
         href = Favicon.el.href;
@@ -9049,6 +9294,7 @@
     },
     "switch": function() {
       var unreadDead;
+
       unreadDead = Favicon.unreadDeadY = Favicon.unreadSFW = Favicon.unreadSFWY = Favicon.unreadNSFW = Favicon.unreadNSFWY = 'data:image/png;base64,';
       switch (Conf['favicon']) {
         case 'ferongr':
@@ -9121,6 +9367,7 @@
     init: function() {
       var sc,
         _this = this;
+
       if (g.VIEW !== 'thread' || !Conf['Thread Stats']) {
         return;
       }
@@ -9150,6 +9397,7 @@
     },
     node: function() {
       var ID, fileCount, post, postCount, _ref;
+
       postCount = 0;
       fileCount = 0;
       _ref = this.posts;
@@ -9167,6 +9415,7 @@
     },
     onUpdate: function(e) {
       var fileCount, postCount, _ref;
+
       if (e.detail[404]) {
         return;
       }
@@ -9175,6 +9424,7 @@
     },
     update: function(postCount, fileCount) {
       var fileCountEl, postCountEl, thread;
+
       thread = ThreadStats.thread, postCountEl = ThreadStats.postCountEl, fileCountEl = ThreadStats.fileCountEl;
       postCountEl.textContent = postCount;
       fileCountEl.textContent = fileCount;
@@ -9201,6 +9451,7 @@
     },
     onThreadsLoad: function() {
       var page, pages, thread, _i, _j, _len, _len1, _ref;
+
       if (!Conf["Page Count in Stats"]) {
         return;
       }
@@ -9228,6 +9479,7 @@
     init: function() {
       var checked, conf, el, input, name, sc, settings, subEntries, _ref,
         _this = this;
+
       if (g.VIEW !== 'thread' || !Conf['Thread Updater']) {
         return;
       }
@@ -9379,6 +9631,7 @@
       },
       interval: function() {
         var val;
+
         val = +this.value;
         if (val < 1) {
           val = 1;
@@ -9388,6 +9641,7 @@
       },
       load: function() {
         var klass, req, text, _ref;
+
         req = ThreadUpdater.req;
         switch (req.status) {
           case 200:
@@ -9431,6 +9685,7 @@
     },
     getInterval: function() {
       var i, j;
+
       i = ThreadUpdater.interval;
       j = Math.min(ThreadUpdater.outdateCount, 10);
       if (!d.hidden) {
@@ -9440,12 +9695,14 @@
     },
     intervalShortcut: function() {
       var settings;
+
       Settings.open('Advanced');
       settings = $.id('fourchanx-settings');
       return $('input[name=Interval]', settings).focus();
     },
     set: function(name, text, klass) {
       var el, node;
+
       el = ThreadUpdater[name];
       if (node = el.firstChild) {
         node.data = text;
@@ -9458,6 +9715,7 @@
     },
     timeout: function() {
       var n;
+
       ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
       if (!(n = --ThreadUpdater.seconds)) {
         return ThreadUpdater.update();
@@ -9470,6 +9728,7 @@
     },
     update: function() {
       var url;
+
       if (!ThreadUpdater.online) {
         return;
       }
@@ -9494,6 +9753,7 @@
     },
     updateThreadStatus: function(title, OP) {
       var icon, message, root, titleLC;
+
       titleLC = title.toLowerCase();
       if (ThreadUpdater.thread["is" + title] === !!OP[titleLC]) {
         return;
@@ -9520,6 +9780,7 @@
     },
     parse: function(postObjects) {
       var ID, OP, count, deletedFiles, deletedPosts, files, index, key, node, num, post, postObject, posts, root, scroll, _i, _len, _ref;
+
       OP = postObjects[0];
       Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler;
       ThreadUpdater.updateThreadStatus('Sticky', OP);
@@ -9605,6 +9866,7 @@
         }
         $.queueTask(function() {
           var length, threadID;
+
           threadID = ThreadUpdater.thread.ID;
           length = $$('.thread > .postContainer', ThreadUpdater.root).length;
           return Fourchan.parseThread(threadID, length - count, length);
@@ -9642,6 +9904,7 @@
     node: function() {
       var favicon,
         _this = this;
+
       favicon = $.el('a', {
         className: 'watch-thread-link',
         href: 'javascript:;'
@@ -9661,6 +9924,7 @@
     },
     refresh: function(watched) {
       var ID, board, div, favicon, id, link, nodes, props, thread, x, _ref, _ref1;
+
       if (!watched) {
         $.get('WatchedThreads', {}, function(item) {
           return ThreadWatcher.refresh(item['WatchedThreads']);
@@ -9705,11 +9969,13 @@
       },
       x: function() {
         var thread;
+
         thread = this.nextElementSibling.pathname.split('/');
         return ThreadWatcher.unwatch(thread[1], thread[3]);
       },
       post: function(e) {
         var board, postID, threadID, _ref;
+
         _ref = e.detail, board = _ref.board, postID = _ref.postID, threadID = _ref.threadID;
         if (postID === threadID) {
           if (Conf['Auto Watch']) {
@@ -9730,6 +9996,7 @@
     unwatch: function(board, threadID) {
       return $.get('WatchedThreads', {}, function(item) {
         var watched;
+
         watched = item['WatchedThreads'];
         delete watched[board][threadID];
         if (!Object.keys(watched[board]).length) {
@@ -9742,6 +10009,7 @@
     watch: function(thread) {
       return $.get('WatchedThreads', {}, function(item) {
         var watched, _name;
+
         watched = item['WatchedThreads'];
         watched[_name = thread.board] || (watched[_name] = {});
         watched[thread.board][thread] = {
@@ -9787,6 +10055,7 @@
     },
     ready: function() {
       var ID, post, posts, _ref;
+
       $.off(d, '4chanXInitFinished', Unread.ready);
       posts = [];
       _ref = Unread.thread.posts;
@@ -9803,6 +10072,7 @@
     },
     scroll: function() {
       var checkPosition, hash, onload, post, posts, root;
+
       if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
         return;
       }
@@ -9832,6 +10102,7 @@
       }
       checkPosition = function(target) {
         var height, top, _ref;
+
         _ref = target.getBoundingClientRect(), top = _ref.top, height = _ref.height;
         return top + height - doc.clientHeight > 0;
       };
@@ -9839,6 +10110,7 @@
     },
     sync: function() {
       var lastReadPost;
+
       lastReadPost = Unread.db.get({
         boardID: Unread.thread.board.ID,
         threadID: Unread.thread.ID,
@@ -9855,6 +10127,7 @@
     },
     addPosts: function(posts) {
       var ID, data, post, _i, _len, _ref;
+
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
         post = posts[_i];
         ID = post.ID;
@@ -9882,6 +10155,7 @@
     },
     addPostQuotingYou: function(post) {
       var quotelink, _i, _len, _ref;
+
       if (!QR.db) {
         return;
       }
@@ -9902,6 +10176,7 @@
     },
     readSinglePost: function(post) {
       var i;
+
       if ((i = Unread.posts.indexOf(post)) === -1) {
         return;
       }
@@ -9917,6 +10192,7 @@
     },
     readArray: function(arr) {
       var i, post, _i, _len;
+
       for (i = _i = 0, _len = arr.length; _i < _len; i = ++_i) {
         post = arr[i];
         if (post.ID > Unread.lastReadPost) {
@@ -9927,6 +10203,7 @@
     },
     read: $.debounce(50, function(e) {
       var ID, bottom, height, i, post, posts, read;
+
       if (d.hidden || !Unread.posts.length) {
         return;
       }
@@ -9960,6 +10237,7 @@
     }),
     setLine: function(force) {
       var post, root;
+
       if (!(d.hidden || force === true)) {
         return;
       }
@@ -9974,6 +10252,7 @@
     },
     update: function() {
       var count;
+
       count = Unread.posts.length;
       if (Conf['Unread Count']) {
         d.title = "" + (Conf['Quoted Title'] && Unread.postsQuotingYou.length ? '(!) ' : '') + (count || !Conf['Hide Unread Count at (0)'] ? "(" + count + ") " : '') + (g.DEAD ? "/" + g.BOARD + "/ - 404" : "" + Unread.title);
@@ -9992,6 +10271,7 @@
     file: {},
     init: function() {
       var archive, arr, boardID, data, id, name, type, _ref, _ref1, _ref2, _results;
+
       _ref = Conf['selectedArchives'];
       for (boardID in _ref) {
         data = _ref[boardID];
@@ -10016,6 +10296,7 @@
         archive = _ref2[name];
         _results.push((function() {
           var _i, _len, _ref3, _results1;
+
           _ref3 = archive.boards;
           _results1 = [];
           for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
@@ -10043,7 +10324,7 @@
         'http': false,
         'https': true,
         'software': 'foolfuuka',
-        'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vg', 'vp', 'vr', 'wsg'],
+        'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'],
         'files': ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg']
       },
       'NSFW Foolz': {
@@ -10085,6 +10366,14 @@
         'boards': ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv'],
         'files': ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
       },
+      'World Athletic Project': {
+        'domain': 'fuuka.worldathleticproject.org',
+        'http': true,
+        'https': false,
+        'software': 'foolfuuka',
+        'boards': ['e', 'h', 'p', 's', 'u'],
+        'files': ['e', 'h', 'p', 's', 'u']
+      },
       'Install Gentoo': {
         'domain': 'archive.installgentoo.net',
         'http': false,
@@ -10092,6 +10381,14 @@
         'software': 'fuuka',
         'boards': ['diy', 'g', 'sci'],
         'files': []
+      },
+      'warosu': {
+        'domain': 'fuuka.warosu.org',
+        'http': true,
+        'https': true,
+        'software': 'fuuka',
+        'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr'],
+        'files': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
       },
       'Rebecca Black Tech': {
         'domain': 'rbt.asia',
@@ -10127,6 +10424,7 @@
     },
     to: function(dest, data) {
       var archive;
+
       archive = (dest === 'search' ? Redirect.thread : Redirect[dest])[data.boardID];
       if (!archive) {
         return '';
@@ -10135,6 +10433,7 @@
     },
     protocol: function(archive) {
       var protocol;
+
       protocol = location.protocol;
       if (!archive[protocol.slice(0, -1)]) {
         protocol = protocol === 'https:' ? 'http:' : 'https:';
@@ -10143,6 +10442,7 @@
     },
     thread: function(archive, _arg) {
       var boardID, path, postID, threadID;
+
       boardID = _arg.boardID, threadID = _arg.threadID, postID = _arg.postID;
       path = threadID ? "" + boardID + "/thread/" + threadID : "" + boardID + "/post/" + postID;
       if (archive.software === 'foolfuuka') {
@@ -10155,6 +10455,7 @@
     },
     post: function(archive, _arg) {
       var boardID, postID, protocol;
+
       boardID = _arg.boardID, postID = _arg.postID;
       protocol = Redirect.protocol(archive);
       if (['Foolz', 'NSFW Foolz'].contains(archive.name)) {
@@ -10164,11 +10465,13 @@
     },
     file: function(archive, _arg) {
       var boardID, filename;
+
       boardID = _arg.boardID, filename = _arg.filename;
       return "" + (Redirect.protocol(archive)) + archive.domain + "/" + boardID + "/full_image/" + filename;
     },
     search: function(archive, _arg) {
       var boardID, path, type, value;
+
       boardID = _arg.boardID, type = _arg.type, value = _arg.value;
       type = type === 'name' ? 'username' : type === 'MD5' ? 'image' : type;
       value = encodeURIComponent(value);
@@ -10189,6 +10492,7 @@
     },
     ready: function() {
       var banner, child, children, i, nodes, title;
+
       banner = $(".boardBanner");
       title = $.el("div", {
         id: "boardTitle"
@@ -10221,6 +10525,7 @@
       },
       focus: function() {
         var items, string;
+
         string = "" + g.BOARD + "." + this.className;
         items = {
           title: this.innerHTML
@@ -10242,9 +10547,11 @@
     },
     custom: function(child) {
       var cachedTest;
+
       cachedTest = child.innerHTML;
       $.get("" + g.BOARD + "." + child.className, cachedTest, function(item) {
         var title;
+
         if (!(title = item["" + g.BOARD + "." + child.className])) {
           return;
         }
@@ -10274,6 +10581,7 @@
     },
     css: function() {
       var category, css, icon, key, name, _conf, _ref;
+
       _conf = Conf;
       css = [];
       _ref = Emoji.icons;
@@ -10346,6 +10654,7 @@
     },
     ready: function() {
       var child, el, _i, _len, _ref;
+
       if (el = $("#globalMessage", d.body)) {
         _ref = el.children;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -10380,6 +10689,7 @@
     },
     getRelMousePos: function(e) {
       var x, y;
+
       e || (e = window.event);
       x = 0;
       y = 0;
@@ -10397,6 +10707,7 @@
     },
     color: function(target) {
       var HSV_RGB, RGB_HSV, THIS, abortBlur, blurTarget, blurValue, drawPicker, holdPad, holdSld, isPickerOwner, leavePad, leaveSld, leaveStyle, leaveValue, redrawPad, redrawSld, removePicker, setPad, setSld, styleElement, valueElement;
+
       this.hsv = [0, 0, 1];
       this.rgb = [1, 1, 1];
       this.valueElement = this.styleElement = target;
@@ -10423,6 +10734,7 @@
       };
       this.exportColor = function(flags) {
         var value;
+
         if (!(flags & leaveValue) && valueElement) {
           value = '#' + this.toString();
           valueElement.value = value;
@@ -10449,6 +10761,7 @@
       };
       this.fromRGB = function(r, g, b, flags) {
         var hsv;
+
         r = r != null ? $.minmax(r, 0.0, 1.0) : this.rgb[0];
         g = g != null ? $.minmax(g, 0.0, 1.0) : this.rgb[1];
         b = b != null ? $.minmax(b, 0.0, 1.0) : this.rgb[2];
@@ -10465,6 +10778,7 @@
       };
       this.fromString = function(number, flags) {
         var m, val;
+
         m = number.match(/^\W*([0-9A-F]{3}([0-9A-F]{3})?)\W*$/i);
         if (!m) {
           return false;
@@ -10482,6 +10796,7 @@
       };
       RGB_HSV = function(r, g, b) {
         var h, m, n, v;
+
         n = (n = r < g ? r : g) < b ? n : b;
         v = (v = r > g ? r : g) > b ? v : b;
         m = v - n;
@@ -10493,6 +10808,7 @@
       };
       HSV_RGB = function(h, s, v) {
         var f, i, m, n;
+
         if (h == null) {
           return [v, v, v];
         }
@@ -10522,6 +10838,7 @@
       };
       drawPicker = function(x, y) {
         var box, boxB, btn, btnS, elements, item, p, pad, padB, padM, sld, sldB, sldM, _i, _len;
+
         if (!(p = JSColor.picker)) {
           elements = ['box', 'boxB', 'pad', 'padB', 'padM', 'sld', 'sldB', 'sldM', 'btn'];
           p = {};
@@ -10594,6 +10911,7 @@
       };
       redrawPad = function() {
         var rgb;
+
         JSColor.picker.padM.style.backgroundPosition = "" + (4 + Math.round((THIS.hsv[0] / 6) * 180)) + "px " + (4 + Math.round((1 - THIS.hsv[1]) * 100)) + "px";
         rgb = HSV_RGB(THIS.hsv[0], THIS.hsv[1], 1);
         JSColor.picker.sld.style.backgroundColor = "rgb(" + (rgb[0] * 100) + "%, " + (rgb[1] * 100) + "%, " + (rgb[2] * 100) + "%)";
@@ -10616,6 +10934,7 @@
       };
       setPad = function(e) {
         var mpos, x, y;
+
         mpos = JSColor.getRelMousePos(e);
         x = mpos.x - 11;
         y = mpos.y - 11;
@@ -10623,6 +10942,7 @@
       };
       setSld = function(e) {
         var mpos, y;
+
         mpos = JSColor.getRelMousePos(e);
         y = mpos.y - 9;
         return THIS.fromHSV(null, null, 1 - y / 100, leavePad);
@@ -10667,6 +10987,7 @@
     init: function(mascot) {
       var el, image, name,
         _this = this;
+
       if (!(mascot && mascot.image)) {
         if (!Conf[g.MASCOTSTRING].length) {
           return;
@@ -10730,6 +11051,7 @@
     categories: ['Anime', 'Ponies', 'Questionable', 'Silhouette', 'Western'],
     dialog: function(key) {
       var container, dialog, div, fileInput, input, item, layout, name, option, optionHTML, setting, value, _i, _len, _ref;
+
       Conf['editMode'] = 'mascot';
       if (Mascots[key]) {
         editMascot = JSON.parse(JSON.stringify(Mascots[key]));
@@ -10846,6 +11168,7 @@
     },
     input: function(item, name) {
       var div, value;
+
       if (Array.isArray(editMascot[name])) {
         if (Style.lightTheme) {
           value = editMascot[name][1];
@@ -10864,10 +11187,12 @@
     },
     uploadImage: function(evt, el) {
       var file, reader;
+
       file = evt.target.files[0];
       reader = new FileReader();
       reader.onload = function(evt) {
         var val;
+
         val = evt.target.result;
         el.previousSibling.value = val;
         return editMascot.image = val;
@@ -10876,6 +11201,7 @@
     },
     save: function(mascot) {
       var image, name, type, _i, _len, _ref;
+
       name = mascot.name, image = mascot.image;
       if ((name == null) || name === "") {
         alert("Please name your mascot.");
@@ -10913,6 +11239,7 @@
       delete Mascots[name].name;
       return $.get("userMascots", {}, function(item) {
         var userMascots;
+
         userMascots = item['userMascots'];
         userMascots[name] = Mascots[name];
         $.set('userMascots', userMascots);
@@ -10934,10 +11261,12 @@
     },
     importMascot: function(evt) {
       var file, reader;
+
       file = evt.target.files[0];
       reader = new FileReader();
       reader.onload = function(e) {
         var err, imported, name;
+
         try {
           imported = JSON.parse(e.target.result);
         } catch (_error) {
@@ -10958,6 +11287,7 @@
         Mascots[name] = imported;
         $.get("userMascots", {}, function(item) {
           var userMascots;
+
           userMascots = item['userMascots'];
           userMascots[name] = Mascots[name];
           return $.set('userMascots', userMascots);
@@ -10970,6 +11300,7 @@
     },
     reposition: function() {
       var mascot;
+
       mascot = Mascots[Conf['mascot']];
       return Style.mascot.textContent = "#mascot img {\nheight: " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height, 10) + 'px' : 'auto') + ";\nwidth: " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width, 10) + 'px' : 'auto') + ";\n}\n#mascot {\nmargin: " + (mascot.vOffset || 0) + "px " + (mascot.hOffset || 0) + "px;\n}\n.sidebar-large #mascot {\nleft: " + (mascot.center ? 25 : 0) + "px;\nright: " + (mascot.center ? 25 : 0) + "px;\n}\n.mascot-position-above-post-form.post-form-style-fixed #mascot {\ntransform: translateY(-" + (QR.nodes ? QR.nodes.el.getBoundingClientRect().height : 0) + "px);\n}";
     }
@@ -10993,6 +11324,7 @@
       },
       option: function(e) {
         var container, select;
+
         e.stopPropagation();
         e.preventDefault();
         select = Rice.input;
@@ -11004,6 +11336,7 @@
       },
       select: function(e) {
         var clientHeight, li, nodes, option, rect, select, style, ul, _i, _len, _ref;
+
         e.stopPropagation();
         e.preventDefault();
         ul = Rice.ul;
@@ -11041,6 +11374,7 @@
     },
     cleanup: function() {
       var child, _i, _len, _ref;
+
       $.off(d, 'click scroll blur resize', Rice.cleanup);
       _ref = __slice.call(Rice.ul.children);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -11050,6 +11384,7 @@
     },
     nodes: function(root) {
       var checkboxes, checkrice, input, select, selectrice, selects, _i, _j, _len, _len1;
+
       root || (root = d.body);
       checkboxes = $$('[type=checkbox]:not(.riced)', root);
       checkrice = Rice.checkbox;
@@ -11069,6 +11404,7 @@
     },
     checkbox: function(input) {
       var div;
+
       if ($.hasClass(input, 'riced')) {
         return;
       }
@@ -11082,6 +11418,7 @@
     },
     select: function(select) {
       var div;
+
       $.addClass(select, 'riced');
       div = $.el('div', {
         className: 'selectrice',
@@ -11103,6 +11440,7 @@
     },
     asapInit: function() {
       var cat, hyphenated, name, setting, title, _ref;
+
       $.addClass(doc, 'gecko');
       $.addClass(doc, 'fourchan-x');
       $.addClass(doc, 'appchan-x');
@@ -11126,6 +11464,7 @@
           return $('.mPagelist');
         }), function() {
           var next, nextA, nextAction, prev, prevA, prevAction;
+
           prev = $(".pagelist > .prev");
           prevA = $.el('a', {
             textContent: '<'
@@ -11153,6 +11492,7 @@
     },
     readyInit: function() {
       var exLink;
+
       Style.padding();
       Style.iconPositions();
       if (exLink = $("#navtopright .exlinksOptionsLink", d.body)) {
@@ -11163,6 +11503,7 @@
     },
     setup: function() {
       var theme;
+
       theme = Themes[Conf['theme']] || Themes['Yotsuba B'];
       Style.svg = $.el('div', {
         id: 'svg_filters'
@@ -11187,6 +11528,7 @@
     },
     observe: function() {
       var onMutationObserver;
+
       if (window.MutationObserver) {
         Style.observer = new MutationObserver(onMutationObserver = this.wrapper);
         return Style.observer.observe(d, {
@@ -11220,6 +11562,7 @@
     headCount: 12,
     remStyle: function() {
       var href, i, node, nodes;
+
       nodes = d.head.children;
       i = nodes.length;
       while (i--) {
@@ -11235,6 +11578,7 @@
     },
     matrix: function(foreground, background) {
       var bg, bgHex, fg, fgHex;
+
       fgHex = Style.colorToHex(foreground);
       fg = {
         r: parseInt(fgHex.substr(0, 2), 16) / 255,
@@ -11254,17 +11598,20 @@
     },
     filter: function(_arg) {
       var bg, fg;
+
       fg = _arg[0], bg = _arg[1];
       return "" + bg.r + " " + (-fg.r) + " 0 0 " + fg.r + " " + bg.g + " " + (-fg.g) + " 0 0 " + fg.g + " " + bg.b + " " + (-fg.b) + " 0 0 " + fg.b;
     },
     silhouette: function(_arg) {
       var fg;
+
       fg = _arg[0];
       return "0 0 0 0 " + fg.r + " 0 0 0 0 " + fg.g + " 0 0 0 0 " + fg.b;
     },
     layout: "/* Cleanup */\n#absbot,\n#boardNavDesktop,\n#delPassword,\n#delform > hr:last-of-type,\n#navbotright,\n#postForm,\n#search-label,\n#search-label-bottom,\n#styleSwitcher,\n#togglePostForm,\n.boardBanner > div,\n.mobile,\n.next form,\n.next span,\n.postingMode,\n.prev form,\n.prev span,\n.riced,\n.sideArrows,\n.stylechanger,\nbody > br,\nbody > div[style^=\"text-align\"],\nbody > hr {\n  display: none;\n}\n/* Empties */\n#qr .warning:empty,\n#qr-thread-select:empty {\n  display: none;\n}\n/* File Name Trunctuate */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n/* Unnecessary */\n#qp input,\n#qp .rice,\n.inline .rice {\n  display: none !important;\n}\n/* Hidden Content */\n.forwarded,\n.hidden,\n.hidden_thread ~ div,\n.hidden_thread ~ a,\n.replyContainer .stub ~ div,\n.replyContainer .stub ~ a,\n.stub + div,\n.thread > .stub:first-child ~ .postContainer,\n.thread > .stub:first-child ~ .summary,\n[hidden] {\n  display: none !important;\n}\n/* Hidden UI */\n#catalog,\n#navlinks,\n#navtopright,\n#svg_filters,\n.cataloglink,\n.navLinks {\n  z-index: 7;\n  position: fixed;\n  top: 100%;\n  left: 100%;\n}\n/* Hide last horizontal rule, keep clear functionality. */\n.board > hr:last-of-type {\n  visibility: hidden;\n}\n/* Fappe Tyme */\n.fappeTyme .thread > .noFile,\n.fappeTyme .threadContainer > .noFile {\n  display: none;\n}\n/* Defaults */\na {\n  text-decoration: none;\n  outline: none;\n}\n.underline-links a {\n  text-decoration: underline;\n}\nbody,\nhtml {\n  min-height: 100%;\n  -moz-box-sizing: border-box;\n}\nbody {\n  outline: none;\n  min-height: 100%;\n}\n.sidebar-hide body {\n  margin: 0 2px;\n}\n.sidebar-minimal body {\n  margin: 0 20px;\n}\n.sidebar-normal body {\n  margin: 0 252px\n}\n.sidebar-large body {\n  margin: 0 303px;\n}\n.sidebar-location-right body {\n  margin-left: 2px;\n}\n.sidebar-location-left body {\n  margin-right: 2px;\n}\nbody.unscroll {\n  overflow: hidden;\n}\n.fourchan-ss-sidebar body::before {\n  content: '';\n  position: fixed;\n  top: 0;\n  bottom: 0;\n  -moz-box-sizing: border-box;\n  display: block;\n  z-index: 0;\n}\n.fourchan-ss-sidebar.sidebar-large body::before {\n  width: 306px;\n}\n.fourchan-ss-sidebar.sidebar-normal body::before {\n  width: 255px;\n}\n.fourchan-ss-sidebar.sidebar-minimal body::before {\n  width: 23px;\n}\n.sidebar-location-right body::before {\n  right: 0;\n}\nsidebar-location-left body::before {\n  left: 0;\n}\n.fourchan-ss-sidebar.sidebar-location-right body {\n  padding-right: 2px;\n}\n.fourchan-ss-sidebar.sidebar-location-left body {\n  padding-left: 2px;\n}\nhr {\n  clear: both;\n  border: 0;\n  padding: 0;\n  margin: 0 0 1px;\n}\n.hide-horizontal-rules hr {\n  visibility: hidden;\n}\nth {\n  text-align: left;\n}\n.center {\n  text-align: center;\n}\n.disabled {\n  opacity: 0.5;\n}\n.pointer {\n  cursor: pointer;\n}\n/* Symbols */\n.drop-marker {\n  vertical-align: middle;\n  display: inline-block;\n  margin: 2px 2px 3px;\n  border-top: .5em solid;\n  border-right: .3em solid transparent;\n  border-left: .3em solid transparent;\n}\n.brackets-wrap::before {\n  content: \" [\";\n}\n.brackets-wrap::after {\n  content: \"] \";\n}\n/* Thread / Reply Nav */\n#navlinks a {\n  position: fixed;\n  z-index: 12;\n  opacity: 0.5;\n  display: inline-block;\n  border-right: 6px solid transparent;\n  border-left: 6px solid transparent;\n  margin: 1.5px;\n}\n#navlinks a:first-of-type {\n  border-bottom: 11px solid rgb(130,130,130);\n}\n#navlinks a:last-of-type {\n  border-top: 11px solid rgb(130,130,130);\n}\n/* Header */\n#header-bar {\n  z-index: 6;\n  border-width: 1px;\n  padding: 0 2px;\n  border-style: solid;\n}\n.pagination-sticky-top .pagelist,\n.pagination-sticky-bottom .pagelist,\n#header-bar {\n  left: 2px;\n  right: 2px;\n}\n.navigation-alignment-center #header-bar {\n  text-align: center;\n}\n.navigation-alignment-right #header-bar {\n  text-align: right;\n}\n.sidebar-location-left.sidebar-large:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,\n.sidebar-location-left #header-bar {\n  left: 303px;\n}\n.sidebar-location-left.sidebar-normal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,\n.sidebar-location-left #header-bar {\n  left: 252px;\n}\n.sidebar-location-left.sidebar-minimal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,\n.sidebar-location-left.sidebar-minimal:not(.fourchan-ss-navigation) #header-bar {\n  left: 20px;\n}\n.sidebar-location-right.sidebar-large:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,\n.sidebar-location-right #header-bar {\n  right: 303px;\n}\n.sidebar-location-right.sidebar-normal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,\n.sidebar-location-right #header-bar {\n  right: 252px;\n}\n.sidebar-location-right.sidebar-minimal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,\n.sidebar-location-right.sidebar-minimal:not(.fourchan-ss-navigation) #header-bar {\n  right: 20px;\n}\n.fourchan-ss-navigation .pagelist,\n.fourchan-ss-navigation #header-bar {\n  left: 0;\n  right: 0;\n  border-left: 0;\n  border-right: 0;\n  border-radius: 0 !important;\n}\n.hide-navigation-decorations #header-bar {\n  font-size: 0;\n  color: transparent;\n  word-spacing: 2px;\n}\n#shortcuts {\n  float: right;\n}\n.fixed #header-bar.autohide {\n  z-index: 24;\n}\n.fixed #header-bar {\n  position: fixed;\n}\n.top #header-bar {\n  top: 0;\n  border-top-width: 0;\n}\n.rounded-edges.top #header-bar {\n  border-radius: 0 0 3px 3px;\n}\n.fixed.bottom #header-bar {\n  bottom: 0;\n  border-bottom-width: 0;\n}\n.rounded-edges.bottom #header-bar {\n  border-radius: 3px 3px 0 0;\n}\n.hide #header-bar {\n  position: fixed;\n  top: 110%;\n  bottom: auto;\n}\n/* Header Autohide */\n.fixed #header-bar.autohide:not(:hover) {\n  box-shadow: none;\n  transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #header-bar.autohide:not(:hover) {\n  margin-bottom: -1em;\n  transform: translateY(-100%);\n}\n.fixed.bottom #header-bar.autohide:not(:hover) {\n  transform: translateY(100%);\n}\n#scroll-marker {\n  left: 0;\n  right: 0;\n  height: 10px;\n  position: absolute;\n}\n#header-bar #scroll-marker {\n  display: none;\n}\n.fixed #header-bar #scroll-marker {\n  display: block;\n}\n.fixed.top header-bar #scroll-marker {\n  top: 100%;\n}\n.fixed.bottom #header-bar #scroll-marker {\n  bottom: 100%;\n}\n/* Notifications */\n#notifications {\n  position: fixed;\n  top: 0;\n  text-align: center;\n  right: 0;\n  left: 0;\n  transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #header-bar #notifications {\n  position: absolute;\n  top: 100%;\n}\n.notification {\n  color: #fff;\n  font-weight: 700;\n  text-shadow: 0 1px 2px rgba(0, 0, 0, .5);\n  box-shadow: 0 1px 2px rgba(0, 0, 0, .15);\n  border-radius: 2px;\n  margin: 1px auto;\n  width: 500px;\n  max-width: 100%;\n  position: relative;\n  transition: all .25s ease-in-out;\n}\n.notification.error {\n  background-color: hsla(0, 100%, 38%, .9);\n}\n.notification.warning {\n  background-color: hsla(36, 100%, 38%, .9);\n}\n.notification.info {\n  background-color: hsla(200, 100%, 38%, .9);\n}\n.notification.success {\n  background-color: hsla(104, 100%, 38%, .9);\n}\n.notification a {\n  color: #fff;\n}\n.notification > .close {\n  padding: 6px;\n  top: 0;\n  right: 5px;\n  position: absolute;\n  color: #fff;\n}\n.message {\n  -moz-box-sizing: border-box;\n  padding: 6px 20px;\n  max-height: 200px;\n  width: 100%;\n  overflow: auto;\n}\n/* Updater / Thread Stats */\n.float #thread-stats,\n.float #updater {\n  position: fixed;\n}\n#update-status.new::after {\n  content: ', ';\n}\n/* Pagination */\n.pagelist {\n  border-style: solid;\n  border-width: 1px;\n  z-index: 6;\n}\n.pagination-alignment-center .pagelist {\n  text-align: center;\n}\n.pagination-alignment-right .pagelist {\n  text-align: right;\n}\n.pagination-sticky-top .pagelist {\n  position: fixed;\n  top: 0;\n  border-top-width: 0;\n}\n.pagination-sticky-bottom .pagelist {\n  position: fixed;\n  bottom: 0;\n  border-bottom-width: 0;\n}\n.pagination-top .pagelist {\n  position: static;\n  border-top-width: 0;\n}\n.pagination-bottom .pagelist {\n  position: static;\n}\n.pagination-top.rounded-edges .pagelist,\n.pagination-sticky-top.rounded-edges .pagelist {\n  border-radius: 0 0 3px 3px;\n}\n.pagination-bottom.rounded-edges .pagelist,\n.pagination-sticky-bottom.rounded-edges .pagelist {\n  border-radius: 3px 3px 0 0;\n}\n.pagination-hide .pagelist {\n  display: none;\n}\n.pagination-on-side .pagelist {\n  position: fixed;\n  padding: 0;\n  top: auto;\n  bottom: 0.5em;\n  margin: 0;\n  background: none transparent !important;\n  border: 0 none !important;\n  text-align: right;\n}\n.pagination-on-side.post-form-style-fixed.show-post-form-header .pagelist {\n  bottom: 23.1em;\n}\n.pagination-on-side.post-form-style-fixed .pagelist {\n  bottom: 21.6em;\n}\n.sidebar-location-left.pagination-on-side .pagelist {\n  transform: rotate(-90deg);\n  transform-origin: bottom left;\n}\n\n.sidebar-location-right.pagination-on-side .pagelist {\n  transform: rotate(90deg);\n  transform-origin: bottom right;\"\n}\n.sidebar-location-right.sidebar-large.pagination-on-side .pagelist {\n  left: auto;\n  right: 301px;\n}\n.sidebar-location-left.sidebar-large.pagination-on-side .pagelist {\n  right: auto;\n  left: 301px;\n}\n.sidebar-location-right.sidebar-normal.pagination-on-side .pagelist {\n  left: auto;\n  right: 246px;\n}\n.sidebar-location-left.sidebar-normal.pagination-on-side .pagelist {\n  right: auto;\n  left: 246px;\n}\n.sidebar-location-right.sidebar-minimal.pagination-on-side .pagelist {\n  left: auto;\n  right: 246px;\n}\n.sidebar-location-left.sidebar-minimal.pagination-on-side .pagelist {\n  right: auto;\n  left: 18px;\n}\n.hide-navigation-decorations .pagelist {\n  font-size: 0;\n  color: transparent;\n  word-spacing: 0;\n}\n.pagelist input,\n.pagelist div {\n  vertical-align: middle;\n}\n.hide-navigation-decorations .pages a {\n  margin: 0 1px;\n}\n.next,\n.pages,\n.prev {\n  display: inline-block;\n  margin: 0 3px;\n}\n/* Icons */\n.icons-4chan-ss #navtopright .exlinksOptionsLink::after,\n.icons-4chan-ss #main-menu,\n.icons-4chan-ss .navLinks > a:first-of-type::after,\n.icons-4chan-ss #watcher::after,\n.icons-4chan-ss #globalMessage::after,\n.icons-4chan-ss #boardNavDesktopFoot::after,\n.icons-4chan-ss #img-controls,\n.icons-4chan-ss #catalog::after,\n.icons-4chan-ss #fappeTyme {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAACWCAMAAAA2YSLzAAAAPFBMVEVkZGRlZWVjY2NmZmZnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dZxmG7AAAAE3RSTlMFFQ0AJD8eQFRqf5CgssDM4+73gHqZRAAAA0pJREFUSMetVlmy5CgMZDMGxK7737Ulgcu8ejMREzHtD7sShJRaKWV/Psq3iz7QGwTF2BZ01hp3N6yasctZJANiN5ZlItDLtNkQDGNeMLU7EqmCbUwhkhZbwsIuNbyWPX7dIyHOrDYOc8SOiEUJjojN0EsWlCXRrq2qvJCsIjic2OcFrwrOpdmTimqVyWG7ZkrWy97p7z/hACd2FUetBcQDpTN+nuKsGng881L5xOz/VQ88xL/eQkyZT3axp+4dUMwvH0Pnhn6wSyR+8IdR4f43/v8XX1BHjXpjwy5RdEcQ7DiuzlBUsFD+GeIFEy6W0pKXoSZOiUz5tf99nvTDD/1sP9VRPvb/un86lT57SVqwSk8KR+L6kgTOlcZslRQe5WmJRKovETW7Anb+HzxUW4Xgnv11fuuj82aKXHz1Tzztx9v4VA9+/6le26B+3VhTC9RMPIr0qx4zaWNsnFRO0s8FWgEIFIRiVUAIlJGciqMmCwpQWyI/OplXA1RrXG1YI2svTQ3ufhWjNlKFqtXFI7Yg+zAXRcBZ+HygJuVHd0ys35bVn6QojLL5cZeVvPht/mVu/r/8s7GMXsLjv2s71GZhgjnEwsEVXogiSl/pl7LWra0IQgO3poTsieoYd4dhWfJlGWqyQf6sLxWt3/MRa4Im04ixeSdAWnxvqCX6tObVmzpZOPOZvrBNJF8gmGciBChsV+YdRYwnAvNpS4AnYFBm0KA2a35Unh+efxjercaLfV7wW0rtUTNl2j715al/9VtfutF+NZ/+aZSa+py/GCpRyvr17EsVLbRhmN++BBY/ik5/+YPK6bKnf2T8fh7P+uEYn0D3E4L3i6QHmvc3+k+8PN6Mb1w52tje6LbAi+M0FT4YneqVbpVDPnL2Xqx7m3tf9ENXHba9H/a/+X3z/+XfCnOo+Zy/o4SgY5Z6iq0nb+9Mc4JxL5f1qYs+xhTP/uiX/cMe4+hDHAfGnmGe+Ev+G88vnG7Ie20wHiUt/S1Kv+6BCM/9fkEfz73/9HNufQ4ZKdzvnwtS/LXltRcJB/yJ23H/mo89nPFa85Li3XOYu435LwTXKVWwO+cnlWFTB47L/AdfR//KI2bvF8sAb0c/M+1+YE3/oS77B8N+UUVHraV6AAAAAElFTkSuQmCC\");\n}\n.icons-oneechan #navtopright .exlinksOptionsLink::after,\n.icons-oneechan #main-menu,\n.icons-oneechan .navLinks > a:first-of-type::after,\n.icons-oneechan #watcher::after,\n.icons-oneechan #globalMessage::after,\n.icons-oneechan #boardNavDesktopFoot::after,\n.icons-oneechan #img-controls,\n.icons-oneechan #catalog::after,\n.icons-oneechan #fappeTyme {\n  background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAACWCAMAAAA2YSLzAAAAPFBMVEVoaGhqampeXl5sbGxsbGxra2tsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGzXmsRLAAAAE3RSTlMAEAYnHBg2QExbcYaWqM++2+z4BMdvAwAAAtVJREFUSMfFVgmu3CAMhYRPAmb3/e9aL5Bl2kptVbXWSOSBsY15NmOMMZs1KnNExC+ezgV4MBtNMIw58+qX2REtQwiifdC6hwlNQBGfUlBzc+KYkP3IxH5hNvicCPXrMfEVi3ts2WrzaiN6jie2OI2GXbBfXiA/XPyexPpEHrHdyDV8YAt6vEYCVpJ3S7rXAZKkkfbnuR8Uk/32xsac6Y01La2ZfyIh1VrX9Rnfu5ygd6/XeQAGFxACkopDb3mkeXug48x5FCKhNzW+1j2t8/5EEwHTIfPm6G3aP37o/w/ir3QZ2V/xY0spdSxWL7MrLU7slmnDSY0UrH6CBJ/wFI3TNGECCDY9G4xmrpDkZvQMJ4q31EzLQuhipr7ag8ueFa+hUQy2d43nnPGg7NopHTUVyYlWpE+lUT4qfhDCnLpzB8oXLLJb4leptD/JblswOaZd0gRkDV0cJi69NNOUaclRpG6S1NPdRVPLjI3VSjWV8+FmaARknTxqfipl0tGR1DXvd0h251Ww/ZlaNQoaX3bqUS+IK6ZX4hysvuQinS+6n9638/6BbK4RLi6R11O8rPS4OnO66KHtw6yK96BWrg5QxDGcVzcoB8cYb/dE1zPO6C+pHxN0Ttw/JtJrx55+oV9Jq+ScF22IfBWDD+sHfTnBmKlpS99hPGSC4SBsi+dP3p0PjVBVedMdO3WoG57cAEbYVNkRHFROIzjYuGjoM7LOaEQKbtQjkuo5hCSMmezaNq3Gl6TE5J3ZLMu26SjpPJZo4h/9FJhT4JQJzjFXD7x54fBgzO9RvDH9Vl5vHIetcGHct1apLh/6gU3c2PYy5rrYh7a1NP29/H/G9xn/d+f7FNVcw9/H/9sf8ymXPnqdDd7Wx3OpzWRJuP8+iMTFe7wZq48Tce7QciNetUzku+pT/t4UHK/iIq2yPR/8y/315M/rWl1A/sM83phVh6+aeZY39OLNN4Y0P2GdHOWPAAAAAElFTkSuQmCC\");\n}\n/* Banner & Board Title */\n.boardBanner {\n  line-height: 0;\n}\n.faded-4chan-banner .boardBanner {\n  opacity: 0.5;\n  transition: opacity 0.3s ease-in-out .5s;\n}\n.faded-4chan-banner .boardBanner:hover {\n  opacity: 1;\n  transition: opacity 0.3s ease-in;\n}\n/* From 4chan SS / OneeChan */\n\n.fourchan-banner-reflection .boardBanner::after {\n  background-image: -moz-element(#Banner);\n  bottom: -100%;\n  content: '';\n  left: 0;\n  mask: url(\"data:image/svg+xml,<svg version='1.1' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient gradientUnits='objectBoundingBox' id='gradient' x2='0' y2='1'><stop stop-offset='0'/><stop stop-color='white' offset='1'/></linearGradient><mask id='mask' maskUnits='objectBoundingBox' maskContentUnits='objectBoundingBox' x='0' y='0' width='100%' height='100%'> <rect fill='url(%23gradient)' width='1' height='1' /></mask></defs></svg>#mask\");\n  opacity: 0.3;\n  position: absolute;\n  right: 0;\n  top: 100%;\n  -moz-transform: scaleY(-1);\n  z-index: -1;\n}\n\n.fourchan-banner-at-sidebar-top .boardBanner,\n.fourchan-banner-at-sidebar-bottom .boardBanner,\n.fourchan-banner-at-sidebar-bottom .boardBanner {\n  position: fixed;\n}\n.fourchan-banner-at-sidebar-top .boardBanner {\n  top: 16px;\n}\n.fourchan-banner-at-sidebar-bottom .boardBanner {\n  bottom: 270px;\n}\n.fourchan-banner-under-post-form .boardBanner {\n  bottom: 130px;\n}\n.board-title-at-sidebar-top.sidebar-location-right #boardTitle,\n.board-title-at-sidebar-bottom.sidebar-location-right #boardTitle,\n.board-title-under-post-form.sidebar-location-right #boardTitle,\n.fourchan-banner-at-sidebar-top.sidebar-location-right .boardBanner,\n.fourchan-banner-at-sidebar-bottom.sidebar-location-right .boardBanner,\n.fourchan-banner-under-post-form.sidebar-location-right .boardBanner {\n  right: 2px;\n}\n.board-title-at-sidebar-top.sidebar-location-left #boardTitle,\n.board-title-at-sidebar-bottom.sidebar-location-left #boardTitle,\n.board-title-under-post-form.sidebar-location-left #boardTitle,\n.fourchan-banner-at-sidebar-top.sidebar-location-left .boardBanner,\n.fourchan-banner-at-sidebar-bottom.sidebar-location-left .boardBanner,\n.fourchan-banner-under-post-form.sidebar-location-left .boardBanner {\n  left: 2px;\n}\n.board-title-at-sidebar-top #boardTitle,\n.board-title-at-sidebar-bottom #boardTitle,\n.board-title-under-post-form #boardTitle,\n.fourchan-banner-at-sidebar-top .boardBanner img,\n.fourchan-banner-at-sidebar-bottom .boardBanner img,\n.fourchan-banner-under-post-form .boardBanner img {\n  width: 248px;\n}\n.board-title-at-sidebar-top.sidebar-large #boardTitle,\n.board-title-at-sidebar-bottom.sidebar-large #boardTitle,\n.board-title-under-post-form.sidebar-large #boardTitle,\n.fourchan-banner-at-sidebar-top.sidebar-large .boardBanner img,\n.fourchan-banner-at-sidebar-bottom.sidebar-large .boardBanner img,\n.fourchan-banner-under-post-form.sidebar-large .boardBanner img {\n  width: 299px;\n}\n.fourchan-banner-at-top .boardBanner {\n  position: relative;\n  display: table;\n  margin: 12px auto;\n  text-align: center;\n}\n:root:not(.board-subtitle) .boardSubtitle,\n.board-title-hide #boardTitle,\n.fourchan-banner-hide .boardBanner {\n  display: none;\n}\n#boardTitle {\n  text-align: center;\n  z-index: 4;\n}\n.board-title-at-sidebar-top #boardTitle,\n.board-title-at-sidebar-bottom #boardTitle,\n.board-title-under-post-form #boardTitle {\n  position: fixed;\n}\n.board-title-at-sidebar-top.fourchan-banner-at-sidebar-top.sidebar-large #boardTitle {\n  top: 121px;\n}\n.board-title-at-sidebar-top.fourchan-banner-at-sidebar-top #boardTitle {\n  top: 104px;\n}\n.board-title-at-sidebar-top #boardTitle {\n  top: 40px;\n}\n.board-title-at-sidebar-bottom #boardTitle {\n  bottom: 280px;\n}\n.board-title-under-post-form #boardTitle {\n  bottom: 140px;\n}\n/* Hover UI */\n.move {\n  cursor: pointer;\n}\n#ihover {\n  position: fixed;\n  max-height: 97%;\n  max-width: 75%;\n  padding: 10px;\n  z-index: 22;\n}\n#qp {\n  position: fixed;\n  z-index: 22;\n}\n#qp .postMessage::after {\n  clear: both;\n  display: block;\n  content: \"\";\n}\n#qp .full-image {\n  max-height: 300px;\n  max-width: 500px;\n}\n#menu {\n  position: fixed;\n  outline: none;\n  z-index: 22;\n}\n/* Image Expansion */\n.fit-width .full-image {\n  max-width: 100%;\n  width: 100%;\n}\n.fit-height .full-image {\n  max-height: 95vh;\n}\n.images-overlap-post-form .full-image {\n  position: relative;\n  z-index: 21;\n}\n/* Delete Buttons */\n.hide-delete-ui .deleteform,\n.hide-delete-ui .post:not(#exlinks-options) .rice {\n  display: none;\n}\n.hide-delete-ui .postInfo {\n  padding: 0 0 0 3px;\n}\n.deleteform {\n  position: fixed;\n  z-index: 18;\n  width: 0;\n  bottom: 0;\n  right: 0;\n  border-width: 1px 0 0 1px;\n  border-style: solid;\n  font-size: 0;\n  color: transparent;\n}\n.deleteform:hover {\n  width: auto;\n}\n.deleteform::before {\n  z-index: 18;\n  border-width: 1px 0 0 1px;\n  border-style: solid;\n  content: '✖';\n  display: block;\n  position: fixed;\n  bottom: 0;\n  right: 0;\n  -moz-box-sizing: border-box;\n  height: 1.6em;\n  width: 1.4em;\n  text-align: center;\n}\n.deleteform:hover::before {\n  display: none;\n}\n.deleteform input {\n  margin: 0 1px 0 0;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot {\n  position: fixed;\n  text-align: center;\n  font-size: 0;\n  color: transparent;\n  overflow: hidden;\n  -moz-box-sizing: border-box;\n  width: 248px;\n}\n.sidebar-large #boardNavDesktopFoot {\n  width: 299px;\n}\n.sidebar-location-right #boardNavDesktopFoot {\n  right: 2px;\n}\n.sidebar-location-left #boardNavDesktopFoot {\n  left: 2px;\n}\n#boardNavDesktopFoot:hover {\n  overflow-y: auto;\n  padding: 2px;\n}\n#boardNavDesktopFoot:not(:hover) {\n  border-color: transparent;\n  background-color: transparent;\n  height: 0;\n  overflow: hidden;\n  padding: 0;\n  border: 0 none;\n}\n.slideout-navigation-compact #boardNavDesktopFoot {\n  word-spacing: 1px;\n}\n.slideout-navigation-list #boardNavDesktopFoot a {\n  display: block;\n}\n.slideout-navigation-list #boardNavDesktopFoot:hover {\n  max-height: 400px;\n}\n.slideout-navigation-list #boardNavDesktopFoot a::after {\n  content: ' - ' attr(title);\n}\n.slideout-navigation-list #boardNavDesktopFoot a[href*='//boards.4chan.org/']::after,\n.slideout-navigation-list #boardNavDesktopFoot a[href*='//rs.4chan.org/']::after {\n  content: '/ - ' attr(title);\n}\n.slideout-navigation-list #boardNavDesktopFoot a[href*='//boards.4chan.org/']::before,\n.slideout-navigation-list #boardNavDesktopFoot a[href*='//rs.4chan.org/']::before {\n  content: '/';\n}\n.slideout-navigation-hide #boardNavDesktopFoot {\n  display: none;\n}\n/* Watcher */\n#watcher {\n  position: fixed;\n  z-index: 14;\n  padding: 2px;\n}\n#watcher {\n  width: 200px;\n}\n#watcher:not(:hover) {\n  max-height: 200px;\n  overflow: hidden;\n}\n.rounded-edges #watcher {\n  border-radius: 3px;\n}\n#watcher > div {\n  max-height: 1.3em;\n  overflow: hidden;\n}\n.slideout-watcher #watcher {\n  -moz-box-sizing: border-box;\n  width: 248px;\n}\n.slideout-watcher.sidebar-large #boardNavDesktopFoot {\n  width: 299px;\n}\n.slideout-watcher.sidebar-location-right #watcher {\n  left: auto !important;\n  right: 2px !important;\n}\n.slideout-watcher.sidebar-location-left #watcher {\n  right: auto !important;\n  left: 2px !important;\n}\n.slideout-watcher #watcher .move {\n  cursor: default;\n}\n.slideout-watcher.underline-links #watcher .move {\n  text-decoration: underline;\n}\n.slideout-watcher #watcher > div {\n  overflow: hidden;\n}\n.slideout-watcher #watcher:hover {\n  overflow-y: auto;\n}\n.slideout-watcher #watcher:not(:hover) {\n  height: 0;\n  overflow: hidden;\n  border: 0 none;\n  padding: 0;\n}\n.watch-thread-link {\n  padding-top: 18px;\n  width: 18px;\n  height: 0px;\n  display: inline-block;\n  background-repeat: no-repeat;\n  opacity: 0.2;\n  position: relative;\n  top: 1px;\n}\n.watch-thread-link.watched {\n  opacity: 1;\n}\n/* Announcements */\n#globalMessage {\n  text-align: center;\n}\n.rounded-edges #globalMessage {\n  border-radius: 3px;\n}\n.announcements-slideout #globalMessage {\n  position: fixed;\n  padding: 2px;\n  width: 248px;\n}\n.announcements-slideout.sidebar-location-right #globalMessage {\n  left: auto;\n  right: 2px;\n}\n.announcements-slideout.sidebar-location-left #globalMessage {\n  right: auto;\n  left: 2px;\n}\n.announcements-slideout.sidebar-large #globalMessage {\n  width: 299px;\n}\n.announcements-slideout #globalMessage h3 {\n  margin: 0;\n}\n.announcements-slideout #globalMessage:hover {\n  -moz-box-sizing: border-box;\n  overflow-y: auto;\n}\n.announcements-slideout #globalMessage:not(:hover) {\n  height: 0;\n  overflow: hidden;\n  padding: 0;\n  border: 0 none;\n}\n.announcements-hide #globalMessage {\n  display: none !important;\n}\n/* Threads */\n#threads,\n.rounded-edges .board > .thread {\n  border-radius: 4px;\n}\n/* Thread Clearfix */\n.thread > .threadContainer:last-of-type::after,\n.thread > .postContainer:last-of-type::after {\n  display: block;\n  content: ' ';\n  clear: both;\n}\n/* Posts */\n.expanding {\n  opacity: .5;\n}\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.expanded-image > .post > .file > .fileThumb > img[data-md5],\n.post > .file > .fileThumb > .full-image {\n  display: none;\n}\n.expanded-image > .post > .file > .fileThumb > .full-image {\n  display: block;\n}\n.thread > .replyContainer:last-of-type .post {\n  margin-bottom: 0;\n}\n.menu-button {\n  position: relative;\n}\n.stub .menu-button,\n.post .menu-button,\n.hide-thread-button,\n.show-thread-button span,\n.hide-reply-button,\n.show-reply-button span {\n  float: right;\n}\n.post .menu-button,\n.hide-thread-button,\n.hide-reply-button {\n  margin: 0 3px;\n  opacity: 0;\n  transition: opacity .3s ease-out 0s;\n}\n.post:hover .hide-reply-button,\n.post:hover .menu-button,\n.post:hover .hide-thread-button,\n.hidden_thread .hide-thread-button,\n.hidden_thread .menu-button,\n.inline .hide-reply-button,\n.inline .menu-button {\n  opacity: 1;\n}\n.hidden_thread {\n  text-align: right;\n}\n.color-user-ids .posteruid .hand {\n  padding: .1em .3em;\n  border-radius: 1em;\n  font-size: 80%;\n}\n.postInfo > span {\n  vertical-align: bottom;\n}\n.bolds .subject,\n.bolds .name {\n  font-weight: 600;\n}\n.italics .postertrip {\n  font-style: italic;\n}\n.underline-links .replylink {\n  text-decoration: underline;\n}\n.fileInfo {\n  padding: 0 3px;\n}\n.fileThumb {\n  float: left;\n  margin: 3px 20px;\n  outline: none;\n}\n.reply.post {\n  -moz-box-sizing: border-box;\n  display: inline-block;\n}\n.fit-width-replies .reply.post {\n  display: block;\n  overflow: hidden;\n}\n.fit-width-replies .expanded-image .reply.post,\n.fit-width-replies .hasInline .reply.post {\n  width: 100%;\n}\n.indent-replies #unread-line,\n.indent-replies .thread > .replyContainer,\n.indent-replies .threadContainer > .replyContainer {\n  margin-left: 2em;\n}\n.expanded-image .reply.post,\n.hasInline .reply.post {\n  display: inline-block;\n  overflow: visible;\n  clear: both;\n}\n.rounded-edges .post {\n  border-radius: 3px;\n}\n.spoiler,\ns {\n  text-decoration: none;\n}\n/* Emoji */\na.useremail:last-of-type {\n  vertical-align: top;\n}\n/* Reply Clearfix */\n.reply.post .postMessage {\n  clear: right;\n}\n.op-background .op.post .postMessage::after,\n.force-reply-break .op.post .postMessage::after {\n  display: block;\n  content: ' ';\n  clear: both;\n}\n/* OP */\n.favicon {\n  vertical-align: bottom;\n}\n.op-background .op.post {\n  -moz-box-sizing: border-box;\n}\n/* Summary */\n.force-reply-break .summary {\n  clear: both;\n}\n/* Inlined */\n.inline {\n  margin: 2px 8px 2px 2px;\n}\n.post .inline {\n  margin: 2px;\n}\n.inline .replyContainer {\n  display: inline-block;\n}\n/* Inlined Clearfix */\n.inline .postMessage::after {\n  clear: both;\n  display: block;\n  content: \"\";\n}\n/* Quotes */\n.inlined {\n  opacity: .5;\n}\n.underline-links .quotelink {\n  text-decoration: underline;\n}\n.filtered,\n.quotelink.filtered {\n  text-decoration: line-through !important;\n}\n.inline + .hashlink {\n  display: none;\n}\n/* Quote Threading */\n.threadContainer {\n  padding-left: 2em;\n  border-left: 1px solid;\n}\n.indent-replies .threadContainer {\n  margin-left: 2em;\n  padding-left: 0;\n}\n.threadOP {\n  clear: both;\n}\n/* Backlinks */\n.underline-links .forwardlink,\n.underline-links .backlink {\n  text-decoration: underline;\n}\n.backlink.dead {\n  text-decoration: none;\n}\n.filtered-backlinks .filtered.backlink {\n  display: none;\n}\n.backlinks-position-lower-left .container,\n.backlinks-position-lower-right .container {\n  max-width: 100%;\n  padding: 0 5px;\n}\n.backlinks-position-lower-left .reply.quoted,\n.backlinks-position-lower-right .reply.quoted {\n  position: relative;\n  padding-bottom: 1.7em;\n}\n.backlinks-position-lower-left .inline .reply.quoted,\n.backlinks-position-lower-right .inline .reply.quoted,\n.backlinks-position-lower-right #qp .reply.quoted,\n.backlinks-position-lower-left #qp .reply.quoted {\n  position: static;\n  padding-bottom: 0;\n}\n.backlinks-position-lower-right .reply .container,\n.backlinks-position-lower-left .reply .container {\n  position: absolute;\n  bottom: 0;\n  padding: 0 5px;\n}\n.backlinks-position-lower-left .reply .container {\n  left: 0;\n}\n.backlinks-position-lower-right .reply .container {\n  right: 0;\n}\n.backlinks-position-lower-right .container::before,\n.backlinks-position-lower-left .reply .container::before {\n  content: 'REPLIES: ';\n}\n.container:empty {\n  display: none;\n}\n.backlinks-position-lower-left #qp .container,\n.backlinks-position-lower-left .inline .container,\n.backlinks-position-lower-right .inline .container,\n.backlinks-position-lower-right #qp .container {\n  position: static;\n  max-width: 100%;\n}\n.backlinks-position-lower-left #qp .container::before,\n.backlinks-position-lower-left .inline .container::before,\n.backlinks-position-lower-right #qp .container::before,\n.backlinks-position-lower-right .inline .container::before {\n  content: '';\n}\n.backlinks-position-lower-right .inline .container {\n  float: none;\n}\n/* Fixes text spoilers */\n.remove-spoilers.indicate-spoilers .spoiler::before,\n.remove-spoilers.indicate-spoilers s::before {\n  content: '[spoiler]';\n}\n.remove-spoilers.indicate-spoilers .spoiler::after,\n.remove-spoilers.indicate-spoilers s::after {\n  content: '[/spoiler]';\n}\n:root:not(.remove-spoilers) .spoiler:not(:hover) *,\n:root:not(.remove-spoilers) s:not(:hover) * {\n  color: rgb(0,0,0) !important;\n  text-shadow: none !important;\n}\n:root:not(.remove-spoilers) spoiler:not(:hover),\n:root:not(.remove-spoilers) s:not(:hover) {\n  background-color: rgb(0,0,0);\n  color: rgb(0,0,0) !important;\n  text-shadow: none !important;\n}\n/* Code */\n.prettyprint {\n  -moz-box-sizing: border-box;\n  font-family: monospace;\n  display: inline-block;\n  margin-right: auto;\n  white-space: pre-wrap;\n  border-radius: 2px;\n  overflow-x: auto;\n  padding: 3px;\n  max-width: 100%;\n}\n/* Menu */\n.entry {\n  border-bottom: 1px solid rgba(0,0,0,.25);\n  cursor: pointer;\n  display: block;\n  outline: none;\n  padding: 3px 1em 3px 7px;\n  position: relative;\n  text-decoration: none;\n  white-space: nowrap;\n}\n.entry:last-child {\n  border-bottom: 0;\n}\n.has-submenu::after {\n  content: \"\";\n  border-left: .5em solid;\n  border-top: .3em solid transparent;\n  border-bottom: .3em solid transparent;\n  display: inline-block;\n  margin: .3em;\n  position: absolute;\n  right: 0;\n}\n.submenu {\n  display: none;\n  position: absolute;\n  top: -1px;\n}\n.focused .submenu {\n  display: block;\n}\n/* Stubs */\n.fit-width-replies .stub {\n  display: block;\n  text-align: right;\n}\n/* Element Replacing: */\n/* Checkboxes */\n.rice {\n  cursor: pointer;\n  width: 9px;\n  height: 9px;\n  margin: 2px 3px 3px;\n  display: inline-block;\n  vertical-align: bottom;\n}\ninput[type=checkbox]:checked + .rice {\n  position: relative;\n}\ninput[type=checkbox]:checked + .rice::after {\n  content: \"\";\n  display: block;\n  width: 4px;\n  height: 10px;\n  border-width: 0 3px 3px 0;\n  border-style: solid;\n  transform: rotate(45deg);\n  position: absolute;\n  left: 2px;\n  bottom: -1px;\n}\n.rounded-edges .rice {\n  border-radius: 2px;}\n}\n.circle-checkboxes .rice {\n  border-radius: 6px;}\n}\ninput:checked + .rice {\n  background-attachment: scroll;\n  background-repeat: no-repeat;\n  background-position: bottom right;\n}\n/* Selects */\n.selectrice {\n  position: relative;\n  cursor: default;\n  overflow: hidden;\n  text-align: left;\n}\n#settings .selectrice {\n  display: inline-block;\n}\n.selectrice::after {\n  content: \"\";\n  border-right: .25em solid transparent;\n  border-left: .25em solid transparent;\n  position: absolute;\n  right: .4em;\n  top: .5em;\n}\n.selectrice::before {\n  content: \"\";\n  height: 1.6em;\n  position: absolute;\n  right: 1.3em;\n  top: 0;\n}\n/* Select Dropdown */\n#selectrice {\n  padding: 0;\n  margin: 0;\n  position: fixed;\n  max-height: 120px;\n  overflow-y: auto;\n  overflow-x: hidden;\n  z-index: 32;\n}\n#selectrice:empty {\n  display: none;\n}\n/* Post Form Shortcut */\n.qr-shortcut.on-page {\n  font-size: 250%;\n}\n/* Post Form */\n#qr {\n  z-index: 20;\n  position: fixed;\n  background: none;\n  border: none;\n  padding: 1px;\n  min-width: 248px;\n  background: transparent;\n  border: 1px solid transparent;\n}\n.sidebar-large #qr {\n  min-width: 299px;\n}\n.rounded-edges #qr,\n.rounded-edges #qrtab {\n  border-radius: 3px 3px 0 0;\n}\n.post-form-style-fixed #qr {\n  top: auto !important;\n}\n.sidebar-location-left:not(.post-form-style-float) #qr {\n  left: 0 !important;\n  right: auto !important;\n}\n.sidebar-location-right:not(.post-form-style-float) #qr {\n  right: 0 !important;\n  left: auto !important;\n}\n:root:not(.post-form-style-float) #qr {\n  bottom: 0 !important;\n}\n.fourchan-ss-navigation.fixed.bottom:not(.post-form-style-float) #qr,\n.fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-float) #qr {\n  bottom: 1.5em !important;\n}\n.post-form-style-slideout #qr {\n  top: auto !important;\n}\n.post-form-style-slideout.sidebar-location-left #qr {\n  transform: translateX(-93%);\n}\n.post-form-style-slideout.sidebar-location-right #qr {\n  transform: translateX(93%);\n}\n.post-form-style-slideout #qr:hover,\n.post-form-style-slideout #qr.has-focus,\n.post-form-style-slideout #qr.dump {\n  transform: translate(0);\n}\n.post-form-style-tabbed-slideout #qr {\n  top: auto !important;\n}\n.post-form-style-tabbed-slideout.sidebar-location-left #qr {\n  transform: translateX(-100%);\n}\n.post-form-style-tabbed-slideout.sidebar-location-right #qr {\n  transform: translateX(100%);\n}\n.post-form-style-tabbed-slideout #qr:hover,\n.post-form-style-tabbed-slideout #qr.has-focus,\n.post-form-style-tabbed-slideout #qr.dump {\n  transform: translateX(0);\n}\n.post-form-style-tabbed-slideout #qrtab {\n  position: absolute;\n  top: 0;\n  width: 120px;\n  text-align: center;\n  border-width: 1px 1px 0 1px;\n  cursor: default;\n}\n.post-form-style-tabbed-slideout.sidebar-location-left #qrtab {\n  transform: rotate(90deg);\n  transform-origin: bottom right;\n  left: 100%;\n}\n.post-form-style-tabbed-slideout.sidebar-location-right #qrtab {\n  transform: rotate(-90deg);\n  transform-origin: bottom right;\n  right: 100%;\n}\n.post-form-style-tabbed-slideout #qr:hover #qrtab,\n.post-form-style-tabbed-slideout #qr.has-focus #qrtab,\n.post-form-style-tabbed-slideout #qr.dump #qrtab {\n  opacity: 0 !important;\n}\n.post-form-style-slideout #qrtab input,\n.post-form-style-slideout #qrtab .rice,\n.post-form-style-tabbed-slideout #qrtab input,\n.post-form-style-tabbed-slideout #qrtab .close,\n.post-form-style-tabbed-slideout #qrtab .rice,\n.post-form-style-tabbed-slideout #qrtab span {\n  display: none;\n}\n.post-form-style-tabbed-slideout #qrtab .selectrice {\n  text-align: center;\n}\n.transparent-post-form #qr {\n  opacity: 0.2;\n  transition: opacity .3s ease-in-out 1s;\n}\n.transparent-post-form #qr:hover,\n.transparent-post-form #qr.has-focus,\n.transparent-post-form #qr.dump {\n  opacity: 1;\n  transition: opacity .3s linear;\n}\n:root:not(.show-post-form-header):not(.post-form-style-float):not(.post-form-style-tabbed-slideout) #qrtab,\n.post-form-style-float .autohide:not(:hover):not(.has-focus) form,\n.show-post-form-header.post-form-style-fixed .autohide:not(:hover):not(.has-focus) form {\n  display: none !important;\n}\n:root:not(.post-form-style-tabbed-slideout) #qrtab {\n  margin-bottom: 1px;\n}\n#qr.autohide:not(:hover):not(.has-focus) #qrtab {\n  margin-bottom: 0;\n}\n.post-form-slideout-transitions.post-form-style-slideout #qr,\n.post-form-slideout-transitions.post-form-style-tabbed-slideout #qr {\n  transition: transform .3s ease-in-out 1s;\n}\n.post-form-slideout-transitions.post-form-style-tabbed-slideout #qr.dump,\n.post-form-slideout-transitions.post-form-style-tabbed-slideout #qr:hover,\n.post-form-slideout-transitions.post-form-style-tabbed-slideout #qr.has-focus,\n.post-form-slideout-transitions.post-form-style-slideout #qr.dump,\n.post-form-slideout-transitions.post-form-style-slideout #qr:hover,\n.post-form-slideout-transitions.post-form-style-slideout #qr.has-focus {\n  transition: transform .3s linear;\n}\n.post-form-slideout-transitions #qrtab {\n  transition: opacity .3s ease-in-out 1s;\n}\n.post-form-slideout-transitions #qr:hover #qrtab {\n  transition: opacity .3s linear;\n}\n#qr .close {\n  float: right;\n  padding: 0 3px;\n}\n#qr .warning {\n  min-height: 1.6em;\n  vertical-align: middle;\n  padding: 0 1px;\n  border-width: 1px;\n  border-style: solid;\n}\n.persona {\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n.persona input.field {\n  width: 100%;\n}\n#qr textarea.field {\n  height: 11.6em;\n  min-height: 6em;\n}\n#qr.has-captcha textarea.field {\n  height: 6em;\n}\n.compact-post-form-inputs .persona input.field {\n  width: 33%;\n}\n.compact-post-form-inputs .persona input.field:first-child {\n  margin: 0;\n}\n.compact-post-form-inputs .persona input.field {\n  margin: 0 0 0 0.5%;\n}\n.compact-post-form-inputs #qr textarea.field {\n  height: 14.9em;\n  min-height: 9em;\n}\n.compact-post-form-inputs #qr.has-captcha textarea.field {\n  height: 9em;\n}\n.tripcode-hider .tripped:not(:hover):not(:focus) {\n  color: transparent !important;\n}\n.textarea-resize-horizontal #qr textarea {\n  resize: horizontal;\n}\n.textarea-resize-vertical #qr textarea {\n  resize: vertical;\n}\n.textarea-resize-both #qr textarea {\n  resize: both;\n}\n.textarea-resize-none #qr textarea {\n  resize: none;\n}\n.captcha-img {\n  margin: 1px 0 0;\n  text-align: center;\n  line-height: 0;\n}\n.captcha-img img {\n  width: 246px;\n}\n.captcha-img,\n.captcha-img img {\n  height: 4em;\n}\n.captcha-input {\n  width: 100%;\n  margin: 1px 0 0;\n}\n.field,\n.selectrice,\nbutton,\ninput:not([type=radio]) {\n  -moz-box-sizing: border-box;\n  height: 1.6em;\n  margin: 1px 0 0;\n  vertical-align: bottom;\n  padding: 0 1px;\n  outline: none;\n}\n.selectrice {\n  padding-right: 1.6em;\n}\n#qr textarea {\n  min-width: 100%;\n}\n#qr [type='submit'] {\n  width: 25%;\n}\n[type='file'] {\n  position: absolute;\n  opacity: 0;\n  z-index: -1;\n}\n/* Fake File Input */\n#qr-filename,\n#qr-filerm,\n.has-file #qr-no-file {\n  display: none;\n}\n#qr-no-file,\n.has-file #qr-filename {\n  display: block;\n}\n.has-file #qr-filerm {\n  display: inline-block;\n}\n#qr-extras-container {\n  position: absolute;\n  right: 0;\n  top: 0;\n  z-index: 2;\n}\n#qr-extras-container > label,\n#qr-extras-container > a {\n  cursor: pointer;\n  margin-right: 3px;\n}\n#qr-filename-container {\n  -moz-box-sizing: border-box;\n  display: inline-block;\n  position: relative;\n  width: 100px;\n  min-width: 74.6%;\n  max-width: 74.6%;\n  margin-right: 0.4%;\n  overflow: hidden;\n  padding: 2px 1px 0;\n}\n/* Thread Select */\n#qr-thread-select,\n#qr-thread-select .selectrice div {\n  display: inline;\n}\n#qr-thread-select .selectrice {\n  cursor: pointer;\n  display: inline-block;\n  width: 120px;\n  border: none;\n  background: none transparent;\n  padding: 0;\n  margin: 0;\n  height: auto;\n}\n#qr-thread-select .selectrice::before,\n#qr-thread-select .selectrice::after {\n  display: none;\n}\n/* Dumping UI */\n.dump #dump-list-container {\n  display: block;\n}\n#dump-list-container {\n  display: none;\n  position: relative;\n  overflow-y: hidden;\n  margin-top: 1px;\n}\n#dump-list {\n  overflow-x: auto;\n  overflow-y: hidden;\n  white-space: nowrap;\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-list:hover {\n  overflow-x: auto;\n}\n.qr-preview {\n  -moz-box-sizing: border-box;\n  counter-increment: thumbnails;\n  cursor: move;\n  display: inline-block;\n  height: 90px;\n  width: 90px;\n  padding: 2px;\n  opacity: .5;\n  overflow: hidden;\n  position: relative;\n  text-shadow: 0 1px 1px #000;\n  transition: opacity .25s ease-in-out;\n  vertical-align: top;\n}\n.qr-preview:hover,\n.qr-preview:focus {\n  opacity: .9;\n}\n.qr-preview::before {\n  content: counter(thumbnails);\n  color: #fff;\n  position: absolute;\n  top: 3px;\n  right: 3px;\n  text-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.qr-preview#selected {\n  opacity: 1;\n}\n.qr-preview.drag {\n  box-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.qr-preview.over {\n  border-color: #fff;\n}\n.qr-preview > span {\n  color: #fff;\n}\n.remove {\n  background: none;\n  color: #e00;\n  font-weight: 700;\n  padding: 3px;\n}\na:only-of-type > .remove {\n  display: none;\n}\n.remove:hover::after {\n  content: \" Remove\";\n}\n.qr-preview > label {\n  background: rgba(0,0,0,.5);\n  color: #fff;\n  right: 0; bottom: 0; left: 0;\n  position: absolute;\n  text-align: center;\n}\n.qr-preview > label > input {\n  margin: 0;\n}\n#add-post {\n  cursor: pointer;\n  font-size: 2em;\n  position: absolute;\n  top: 50%;\n  right: 10px;\n  transform: translateY(-50%);\n}\n/* Ads */\n.fade-ads .topad img,\n.fade-ads .middlead img,\n.fade-ads .bottomad img {\n  opacity: 0.3;\n  transition: opacity .3s linear;\n}\n.fade-ads .topad img:hover,\n.fade-ads .middlead img:hover,\n.fade-ads .bottomad img:hover {\n  opacity: 1;\n}\n.hide-ads .bottomad + hr,\n.hide-ads .topad,\n.hide-ads .middlead,\n.hide-ads .bottomad,\n.hide-ads .ad-plea {\n  display: none;\n}\n.shrink-ads .topad a img,\n.shrink-ads .middlead a img,\n.shrink-ads .bottomad a img {\n  width: 500px;\n  height: auto;\n}\n/* Mascot Positions */\n#mascot {\n  display: none;\n  position: fixed;\n  z-index: -1;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  line-height: 0;\n  cursor: pointer;\n}\n.mascot-position-above-post-form.post-form-style-fixed:not(.post-form-decorations) #mascot img {\n  margin-bottom: -2px;\n}\n.mascots #mascot {\n  display: block;\n}\n.sidebar-location-right.mascot-location-sidebar #mascot,\n.sidebar-location-left.mascot-location-opposite #mascot {\n  left: auto;\n}\n.sidebar-location-left.mascot-location-sidebar #mascot,\n.sidebar-location-right.mascot-location-opposite #mascot {\n  right: auto;\n}\n.sidebar-location-left.mascot-location-sidebar #mascot img,\n.sidebar-location-right.mascot-location-opposite #mascot img {\n  transform: scaleX(-1);\n}\n.fourchan-ss-navigation.bottom.fixed #mascot,\n.fourchan-ss-navigation.index.pagination-sticky-bottom #mascot {\n  bottom: 1.5em\n}\n.mascots-overlap-posts #mascot {\n  z-index: 3;\n}\n.mascot-position-middle #mascot {\n  bottom: 50% !important;\n  transform: translateY(50%);\n}\n.mascot-position-top #mascot {\n  bottom: auto !important;\n  top: 17px;\n}\n.grayscale-mascots #mascot {\n  filter: url('#grayscale');\n}\n.silhouettize-mascots #mascot img {\n  filter: url('#mascot-filter');\n}\n/* Options */\n#overlay {\n  position: fixed;\n  z-index: 30;\n  top: 0;\n  right: 0;\n  left: 0;\n  bottom: 0;\n  background: rgba(0,0,0,.5);\n}\n#appchanx-settings {\n  width: auto;\n  left: 15%;\n  right: 15%;\n  top: 15%;\n  bottom: 15%;\n  position: fixed;\n  z-index: 31;\n  padding: .3em;\n}\n.rounded-edges #appchanx-settings,\n.rounded-edges #appchanx-settings fieldset,\n.rounded-edges .mascots-container,\n.rounded-edges .section-container,\n.rounded-edges .sections-list > a {\n  border-radius: 3px;\n}\n.description {\n  display: none;\n}\n#appchanx-settings h3,\n.section-keybinds,\n.section-mascots,\n.section-script,\n.style {\n  text-align: center;\n}\n.section-keybinds table,\n.section-script fieldset,\n.section-style fieldset {\n  text-align: left;\n}\n.section-keybinds table {\n  margin: auto;\n}\n#appchanx-settings fieldset {\n  padding: 5px 0;\n  vertical-align: top;\n  border: 0;\n  margin: 0 3px 6px;\n  display: inline-block;\n}\n.single-column-mode #appchanx-settings fieldset {\n  display: block;\n  margin: 0 auto 6px;\n}\n#appchanx-settings .section-advanced fieldset {\n  display: block;\n  margin: 0 auto 6px;\n}\n.section-advanced .archive-cell {\n  min-width: 200px;\n}\n.section-advanced .selectrice {\n  display: inline-block;\n  clear: both;\n}\n.section-container {\n  overflow: auto;\n  position: absolute;\n  top: 1.7em;\n  right: 5px;\n  bottom: 5px;\n  left: 5px;\n  padding: 5px;\n}\n.sections-list {\n  padding: 0 3px;\n  float: left;\n}\n.sections-list > a {\n  cursor: pointer;\n  position: relative;\n  padding: 0 4px;\n  z-index: 1;\n  height: 1.4em;\n  display: inline-block;\n  border-width: 1px 1px 0 1px;\n  border-color: transparent;\n  border-style: solid;\n}\n.sections-list > a.tab-selected {\n  border-style: solid;\n}\n.credits {\n  float: right;\n}\n#appchanx-settings h3 {\n  margin: 0;\n}\n.section-script fieldset > div,\n.section-style fieldset > div,\n.section-advanced fieldset > div {\n  overflow: visible;\n  padding: 0 5px 0 7px;\n}\n#appchanx-settings tr:nth-of-type(2n+1),\n.section-script fieldset > div:nth-of-type(2n+1),\n.section-advanced fieldset > div:nth-of-type(2n+1),\n.section-style fieldset > div:nth-of-type(2n+1),\n.section-keybinds tr:nth-of-type(2n+1),\n#selectrice li:nth-of-type(2n+1) {\n  background-color: rgba(0, 0, 0, 0.05);\n}\narticle li {\n  margin: 10px 0 10px 2em;\n}\n#appchanx-settings .option {\n  width: 50%;\n  display: inline-block;\n  vertical-align: bottom;\n}\n.option input {\n  width: 100%;\n}\n.optionlabel {\n  padding-left: 18px;\n}\n.rice + .optionlabel {\n  padding-left: 0;\n}\n.section-script fieldset,\n.styleoption {\n  text-align: left;\n}\n.section-style fieldset {\n  width: 370px;\n}\n.section-script fieldset {\n  width: 200px;\n}\n#mascotcontent,\n#themecontent,\n.suboptions {\n  overflow: auto;\n  position: absolute;\n  top: 0;\n  right: 0;\n  bottom: 1.7em;\n  left: 0;\n}\n#mascotcontent,\n#themecontent {\n  padding: 5px;\n}\n#themecontent {\n  top: 1.8em;\n}\n.mAlign {\n  height: 250px;\n  vertical-align: bottom;\n  display: table-cell;\n  line-height: 0;\n}\n#save,\n.stylesettings {\n  position: absolute;\n  right: 10px;\n  bottom: 0;\n}\n.section-style .suboptions {\n  bottom: 0;\n}\n.section-container textarea {\n  font-family: monospace;\n  min-height: 150px;\n  resize: vertical;\n  width: 100%;\n}\n/* Hover Functionality */\n#mouseover {\n  z-index: 33;\n  position: fixed;\n  max-width: 70%;\n}\n#mouseover:empty {\n  display: none;\n}\n/* Mascot Tab */\n#mascot_hide {\n  padding: 3px;\n  position: absolute;\n  top: 2px;\n  right: 18px;\n}\n#mascot_hide .rice {\n  float: left;\n}\n#mascot_hide > div {\n  height: 0;\n  text-align: right;\n  overflow: hidden;\n}\n#mascot_hide:hover > div {\n  height: auto;\n}\n#mascot_hide label {\n  width: 100%;\n  display: block;\n  clear: both;\n  text-decoration: none;\n}\n.mascots-container {\n  padding: 0;\n  text-align: center;\n}\n.mascot,\n.mascotcontainer {\n  overflow: hidden;\n}\n.mascot {\n  position: relative;\n  border: none;\n  margin: 5px;\n  padding: 0;\n  width: 200px;\n  display: inline-block;\n  background-color: transparent;\n}\n.mascotcontainer {\n  height: 250px;\n  border: 0;\n  margin: 0;\n  max-height: 250px;\n  cursor: pointer;\n  bottom: 0;\n  border-width: 0 1px 1px;\n  border-style: solid;\n  border-color: transparent;\n  overflow: hidden;\n}\n.mascot img {\n  max-width: 200px;\n}\n.export-button,\n.mascotname,\n#mascot-options {\n  -moz-box-sizing: border-box;\n  padding: 0;\n  width: 100%;\n}\n#mascot-options {\n  opacity: 0;\n  transition: opacity .3s linear;\n}\n.mascot:hover #mascot-options {\n  opacity: 1;\n}\n#mascot-options {\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n}\n.export-button {\n  position: absolute;\n  bottom: 1.7em;\n  right: 0;\n  left: 0;\n  text-align: center;\n}\n#mascot-options a {\n  display: inline-block;\n  width: 33%;\n}\n#upload {\n  position: absolute;\n  width: 100px;\n  left: 50%;\n  margin-left: -50px;\n  text-align: center;\n  bottom: 0;\n}\n#mascots_batch {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Themes Tab */\n#themes h1 {\n  position: absolute;\n  right: 300px;\n  bottom: 10px;\n  margin: 0;\n  transition: all .2s ease-in-out;\n  opacity: 0;\n}\n#themes .selectedtheme h1 {\n  right: 11px;\n  opacity: 1;\n}\n#addthemes {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n.theme {\n  margin: 1em;\n}\n/* Theme Editor */\n#themeConf {\n  position: fixed;\n  top: 0;\n  bottom: 0;\n  width: 296px;\n  z-index: 10;\n}\n.sidebar-location-right #themeConf {\n  right: 2px;\n  left: auto;\n}\n.sidebar-location-right #themeConf {\n  left: 2px;\n  right: auto;\n}\n#themebar input {\n  width: 30%;\n}\n.option .color {\n  width: 10%;\n  border-left: none !important;\n  color: transparent !important;\n}\n.option .colorfield {\n  width: 90%;\n}\n.themevar textarea {\n  min-width: 100%;\n  max-width: 100%;\n  height: 20em;\n  resize: vertical;\n}\n/* Mascot Editor */\n#mascotConf {\n  position: fixed;\n  height: 17em;\n  bottom: 0;\n  left: 50%;\n  width: 500px;\n  margin-left: -250px;\n  overflow: auto;\n  z-index: 10;\n}\n#mascotConf .option,\n#mascotConf .optionlabel {\n  -moz-box-sizing: border-box;\n  width: 50%;\n  display: inline-block;\n  vertical-align: middle;\n}\n#mascotConf .option input {\n  width: 100%;\n}\n#close {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Catalog */\n#content .navLinks,\n#info .navLinks,\n.btn-wrap {\n  display: block;\n}\n.navLinks > .btn-wrap:not(:first-of-type)::before {\n  content: ' - ';\n}\n.button {\n  cursor: pointer;\n}\n#content .btn-wrap,\n#info .btn-wrap {\n  display: inline-block;\n}\n#post-preview,\n#quote-preview {\n  position: absolute;\n  z-index: 22;\n}\n.rounded-edges #post-preview {\n  border-radius: 3px;\n}\n#settings,\n#threads,\n#info .navLinks,\n#content .navLinks {\n  text-align: center;\n}\n#threads .thread {\n  vertical-align: top;\n  display: inline-block;\n  word-wrap: break-word;\n  overflow: hidden;\n  margin: 1px;\n  padding: 5px 0 3px;\n  text-align: center;\n}\n.extended-small .thread,\n.small .thread {\n  width: 165px;\n  max-height: 320px;\n}\n.small .teaser,\n.large .teaser {\n  display: none;\n}\n.extended-large .thread,\n.large .thread {\n  width: 270px;\n  max-height: 410px;\n}\n.extended-small .thumb,\n.small .thumb {\n  max-width: 150px;\n  max-height: 150px;\n}\n.panel {\n  position: fixed;\n  top: 50% !important;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  padding: 5px;\n}\n.icon::after {\n  display: inline-block;\n  float: right;\n  width: 1em;\n  cursor: pointer;\n}\n.helpIcon::after {\n  content: '?';\n}\n.closeIcon::after {\n  content: '✖';\n}\n/* Front Page */\n#logo {\n  text-align: center;\n}\n#doc {\n  -moz-box-sizing: border-box;\n  margin: 10px auto;\n  width: 1006px;\n  padding: 2px;\n  position: relative;\n}\n.rounded-edges #doc,\n.rounded-edges #doc div {\n  border-radius: 3px;\n}\n#boards .boxcontent {\n  vertical-align: top;\n  text-align: center;\n}\n#filter-container,\n#options-container {\n  top: 4px;\n  right: 8px;\n  position: absolute;\n}\n#filtermenu,\n#optionsmenu {\n  top: 100% !important;\n  left: auto !important;\n  right: 0 !important;\n}\n#boards .column {\n  -moz-box-sizing: border-box;\n  display: inline-block;\n  width: 180px;\n  text-align: left;\n  vertical-align: top;\n}\n.bd ul,\n.boxcontent ul {\n  vertical-align: top;\n  padding: 0;\n  margin: 0;\n}\n.right-box .boxcontent ul {\n  padding: 0 10px;\n}\n.yuimenuitem,\n.boxcontent li {\n  list-style-type: none;\n}\n.boxbar {\n  position: relative;\n}\n#doc h3,\n.boxbar h2 {\n  margin: 0;\n}\n#doc h3 {\n  text-decoration: none !important;\n}\n.underline-links #doc h3 {\n  text-decoration: underline !important;\n}\n#ft,\n.box-outer {\n  margin: 2px 0 0;\n  overflow: hidden;\n}\n#ft,\n.boxbar,\n.boxcontent {\n  padding: 0 8px;\n}\n.yui-module {\n  position: absolute;\n}\n.yuimenuitem::before {\n  content: \" [ ] \";\n  font-family: monospace;\n}\n.yuimenuitem-checked::before {\n  content: \" [x] \"\n}\n.yui-g {\n  overflow: hidden;\n}\n.yui-u {\n  display: inline-block;\n  vertical-align: top;\n  width: 499px;\n  float: right;\n}\n.yui-u.first {\n  float: left;\n}\n#recent-images .boxcontent {\n  text-align: center;\n}\n#ft {\n  text-align: center;\n}\n#ft ul {\n  padding: 0;\n}\n#ft li {\n  list-style-type: none;\n  display: inline-block;\n  width: 100px;\n}\n#preview-tooltip-nws,\n#preview-tooltip-ws,\n#ft .fill,\n.clear-bug {\n  display: none;\n}\n/* ExLinks */\n#exlinks-options-content {\n  padding: 5px;\n}",
     dynamic: function() {
       var editSpace, sidebarLocation, _conf;
+
       _conf = Conf;
       sidebarLocation = _conf["Sidebar Location"] === "left" ? ["left", "right"] : ["right", "left"];
       if (_conf['editMode'] === "theme") {
@@ -11281,6 +11628,7 @@
     },
     theme: function(theme) {
       var background, backgroundC, bgColor, replyRGB, replybg;
+
       bgColor = new Style.color(Style.colorToHex(backgroundC = theme["Background Color"]) || 'aaaaaa');
       replybg = new Style.color(Style.colorToHex(theme["Reply Background"]));
       replyRGB = "rgb(" + (replybg.shiftRGB(parseInt(Conf['Silhouette Contrast'], 10), true)) + ")";
@@ -11290,6 +11638,7 @@
     },
     iconPositions: function() {
       var align, aligner, css, i, iconOffset, navlinks, notCatalog, notEither, position, psa, sidebar, _conf;
+
       css = "#navtopright .exlinksOptionsLink::after,\n#main-menu,\nbody > div.navLinks > a:first-of-type::after,\n.slideout-watcher #watcher::after,\n.announcements-slideout #globalMessage::after,\n#boardNavDesktopFoot::after,\n#img-controls,\n#catalog::after,\n#fappeTyme {\n  z-index: 18;\n  position: fixed;\n  display: block;\n  width: 15px;\n  height: 15px;\n  content: \"\";\n  opacity: 0.5;\n}\nbody::after {\n  content: \"\";\n  display: block;\n  position: fixed;\n  z-index: 5;\n  width: 18px;\n  height: 18px;\n}\n.invisible-icons #navtopright .exlinksOptionsLink::after,\n.invisible-icons #main-menu,\n.invisible-icons body > div.navLinks > a:first-of-type::after,\n.invisible-icons.slideout-watcher #watcher::after,\n.invisible-icons.announcements-slideout #globalMessage::after,\n.invisible-icons #boardNavDesktopFoot::after,\n.invisible-icons #img-controls,\n.invisible-icons #catalog::after,\n.invisible-icons #fappeTyme {\n  opacity: 0;\n}\n#navtopright .exlinksOptionsLink,\nbody > div.navLinks > a:first-of-type,\n" + (Conf['Slideout Watcher'] ? '#watcher,' : '') + "\n" + (Conf['Announcements'] === 'slideout' ? '#globalMessage,' : '') + "\n#boardNavDesktopFoot,\n#catalog {\n  z-index: 16;\n}\n#navtopright .exlinksOptionsLink:hover,\nbody > div.navLinks > a:first-of-type:hover,\n.slideout-watcher #watcher:hover,\n.announcements-slideout #globalMessage:hover,\n#boardNavDesktopFoot:hover,\n#img-controls,\n#catalog:hover {\n  z-index: 17;\n}\n#main-menu {\n  visibility: visible;\n  background-position: 0 0;\n  cursor: pointer;\n}\nbody > div.navLinks > a:first-of-type::after {\n  cursor: pointer;\n  background-position: 0 -15px;\n}\n.slideout-watcher #watcher::after {\n  background-position: 0 -30px;\n}\n.announcements-slideout #globalMessage::after {\n  background-position: 0 -45px;\n}\n#boardNavDesktopFoot::after {\n  background-position: 0 -60px;\n}\n#img-controls {\n  background-position: 0 -90px;\n}\n#navtopright .exlinksOptionsLink::after {\n  background-position: 0 -105px;\n}\n#catalog::after {\n  visibility: visible;\n  background-position: 0 -120px;\n}\n#fappeTyme {\n  background-position: 0 -135px;\n}\n#boardNavDesktopFoot:hover::after,\n.announcements-slideout #globalMessage:hover::after,\n#img-controls:hover,\n#navlinks a:hover,\n#appchanOptions:hover,\n#main-menu:hover,\n#navtopright .exlinksOptionsLink:hover::after,\n#qr #qrtab,\n.slideout-watcher #watcher:hover::after,\n.thumbnail#selected,\ndiv.navLinks > a:first-of-type:hover::after,\n#catalog:hover::after,\n#fappeTyme:hover {\n  opacity: 1 !important;\n}";
       _conf = Conf;
       i = 0;
@@ -11304,6 +11653,7 @@
       notEither = notCatalog && g.BOARD !== 'f';
       aligner = function(first, checks) {
         var enabled, position, _i, _len;
+
         position = [first];
         for (_i = 0, _len = checks.length; _i < _len; _i++) {
           enabled = checks[_i];
@@ -11330,6 +11680,7 @@
     },
     padding: function() {
       var css;
+
       Style.padding.nav = Header.bar;
       Style.padding.pages = $('.pagelist', d.body);
       css = "body {\npadding-bottom: 1px;\n}\n.fourchan-ss-navigation.fixed.top:not(.autohide) body::before {\ntop: " + Style.padding.nav.offsetHeight + "px;\n}\n.fourchan-ss-navigation.fixed.bottom:not(.autohide) body::before {\nbottom: " + Style.padding.nav.offsetHeight + "px;\n}\n.top:not(.autohide) body {\npadding-top: " + (Style.padding.nav.offsetHeight + 1) + "px;\n}\n.bottom:not(.autohide) body {\npadding-bottom: " + (Style.padding.nav.offsetHeight + 1) + "px;\"\n}";
@@ -11348,11 +11699,13 @@
       this.rgb = this.private_rgb.join(",");
       this.isLight = function() {
         var rgb;
+
         rgb = this.private_rgb;
         return (rgb[0] + rgb[1] + rgb[2]) >= 400;
       };
       this.shiftRGB = function(shift, smart) {
         var minmax, rgb;
+
         minmax = function(base) {
           return Math.min(Math.max(base, 0), 255);
         };
@@ -11364,6 +11717,7 @@
     },
     colorToHex: function(color) {
       var digits, hex;
+
       if (color.substr(0, 1) === '#') {
         return color.slice(1, color.length);
       }
@@ -11387,6 +11741,7 @@
   ThemeTools = {
     init: function(key) {
       var colorInput, div, fileInput, header, input, item, layout, theme, themeContent, _i, _j, _len, _len1, _ref;
+
       Conf['editMode'] = "theme";
       theme = Themes[key];
       if (theme) {
@@ -11484,6 +11839,7 @@
     },
     apply: function() {
       var depth, i, len, toggle1, toggle2;
+
       depth = 0;
       toggle1 = false;
       toggle2 = false;
@@ -11518,10 +11874,12 @@
     },
     uploadImage: function(evt, el) {
       var file, reader;
+
       file = evt.target.files[0];
       reader = new FileReader();
       reader.onload = function(evt) {
         var val;
+
         val = "url(\"" + evt.target.result + "\")";
         el.previousSibling.value = val;
         editTheme["Background Image"] = val;
@@ -11531,10 +11889,12 @@
     },
     importtheme: function(evt) {
       var file, reader;
+
       file = evt.target.files[0];
       reader = new FileReader();
       reader.onload = function(e) {
         var bgColor, bgRPA, blinkColor, brderColor, color, err, imported, inputColor, inputbColor, jlinkColor, linkColor, linkHColor, mainColor, name, nameColor, quoteColor, sageColor, textColor, timeColor, titleColor, tripColor;
+
         try {
           imported = JSON.parse(e.target.result);
           if (!imported) {
@@ -11635,6 +11995,7 @@
         }
         return $.get("userThemes", {}, function(_arg) {
           var userThemes;
+
           userThemes = _arg.userThemes;
           userThemes[name] = Themes[name];
           $.set('userThemes', userThemes);
@@ -11649,6 +12010,7 @@
     },
     save: function(theme) {
       var name;
+
       name = theme["Theme"];
       if (Themes[name] && !Themes[name]["Deleted"]) {
         if (confirm("A theme with this name already exists. Would you like to over-write?")) {
@@ -11661,6 +12023,7 @@
       delete Themes[name]["Theme"];
       return $.get("userThemes", {}, function(_arg) {
         var userThemes;
+
         userThemes = _arg.userThemes;
         userThemes[name] = Themes[name];
         $.set('userThemes', userThemes);
@@ -11686,6 +12049,7 @@
     },
     setup: function() {
       var btn, entry, psa;
+
       $.off(d, '4chanXInitFinished', PSAHiding.setup);
       if (!(psa = $.id('globalMessage'))) {
         return;
@@ -11714,6 +12078,7 @@
       $.on(btn, 'click', PSAHiding.toggle);
       $.get('hiddenPSA', 0, function(_arg) {
         var hiddenPSA;
+
         hiddenPSA = _arg.hiddenPSA;
         PSAHiding.sync(hiddenPSA);
         $.prepend(psa, btn);
@@ -11723,6 +12088,7 @@
     },
     toggle: function(e) {
       var UTC;
+
       if ($.hasClass(this, 'hide-announcement')) {
         UTC = +$.id('globalMessage').dataset.utc;
         $.set('hiddenPSA', UTC);
@@ -11734,6 +12100,7 @@
     },
     sync: function(UTC) {
       var hr, psa;
+
       psa = $.id('globalMessage');
       psa.hidden = PSAHiding.btn.hidden = UTC && UTC >= +psa.dataset.utc ? true : false;
       if ((hr = psa.nextElementSibling) && hr.nodeName === 'HR') {
@@ -11746,6 +12113,7 @@
   CatalogLinks = {
     init: function() {
       var el, input;
+
       $.ready(this.ready);
       if (!Conf['Catalog Links']) {
         return;
@@ -11770,12 +12138,14 @@
     },
     toggle: function() {
       var useCatalog;
+
       $.event('CloseMenu');
       $.set('Header catalog links', useCatalog = this.checked);
       return CatalogLinks.set(useCatalog);
     },
     set: function(useCatalog) {
       var a, board, path, _i, _len, _ref;
+
       path = useCatalog ? 'catalog' : '';
       _ref = $$("#board-list a[href*=\"boards.4chan.org\"]:not(.catalog),\n#boardNavDesktopFoot a[href*=\"boards.4chan.org\"]");
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -11797,6 +12167,7 @@
     },
     ready: function() {
       var catalogLink;
+
       if (catalogLink = $('.pages.cataloglink a', d.body) || $('[href=".././catalog"]', d.body)) {
         if (g.VIEW !== 'thread') {
           $.add(d.body, catalogLink);
@@ -11818,6 +12189,7 @@
     },
     node: function(post) {
       var str, uid;
+
       if (!(uid = $('.hand', this.nodes.uniqueID))) {
         return;
       }
@@ -11829,6 +12201,7 @@
     ids: {},
     compute: function(str) {
       var hash, rgb;
+
       hash = this.hash(str);
       rgb = [(hash >> 24) & 0xFF, (hash >> 16) & 0xFF, (hash >> 8) & 0xFF];
       rgb[3] = ((rgb[0] * 0.299) + (rgb[1] * 0.587) + (rgb[2] * 0.114)) > 125;
@@ -11837,11 +12210,13 @@
     },
     apply: function() {
       var rgb;
+
       rgb = IDColor.ids[this] || IDColor.compute(this);
       return ("background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: ") + (rgb[3] ? "black; border-radius: 3px; padding: 0px 2px;" : "white; border-radius: 3px; padding: 0px 2px;");
     },
     hash: function(str) {
       var i, j, msg;
+
       msg = 0;
       i = 0;
       j = str.length;
@@ -11895,6 +12270,7 @@
     },
     node: function() {
       var a;
+
       if (a = $('.abbr > a:not([onclick])', this.nodes.comment)) {
         return $.on(a, 'click', ExpandComment.cb);
       }
@@ -11902,12 +12278,14 @@
     callbacks: [],
     cb: function(e) {
       var post;
+
       e.preventDefault();
       post = Get.postFromNode(this);
       return ExpandComment.expand(post);
     },
     expand: function(post) {
       var a;
+
       if (post.nodes.longComment && !post.nodes.longComment.parentNode) {
         $.replace(post.nodes.shortComment, post.nodes.longComment);
         post.nodes.comment = post.nodes.longComment;
@@ -11923,6 +12301,7 @@
     },
     contract: function(post) {
       var a;
+
       if (!post.nodes.shortComment) {
         return;
       }
@@ -11933,6 +12312,7 @@
     },
     parse: function(req, a, post) {
       var callback, clone, comment, href, postObj, posts, quote, spoilerRange, status, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+
       status = req.status;
       if (![200, 304].contains(status)) {
         a.textContent = "Error " + req.statusText + " (" + status + ")";
@@ -11989,6 +12369,7 @@
     },
     node: function() {
       var a, span;
+
       if (!(span = $('.summary', this.OP.nodes.root.parentNode))) {
         return;
       }
@@ -12002,11 +12383,13 @@
     },
     cbToggle: function() {
       var op;
+
       op = Get.postFromRoot(this.previousElementSibling);
       return ExpandThread.toggle(op.thread);
     },
     toggle: function(thread) {
       var a, inlined, num, post, replies, reply, threadRoot, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+
       threadRoot = thread.OP.nodes.root.parentNode;
       a = $('.summary', threadRoot);
       switch (thread.isExpanded) {
@@ -12075,6 +12458,7 @@
     },
     parse: function(req, thread, a) {
       var link, node, nodes, post, posts, replies, reply, spoilerRange, status, _i, _len;
+
       if (a.textContent[0] === '+') {
         return;
       }
@@ -12132,6 +12516,7 @@
     },
     createFunc: function(format) {
       var code;
+
       code = format.replace(/%(.)/g, function(s, c) {
         if (c in FileInfo.formatters) {
           return "' + FileInfo.formatters." + c + ".call(post) + '";
@@ -12143,6 +12528,7 @@
     },
     convertUnit: function(size, unit) {
       var i;
+
       if (unit === 'B') {
         return "" + (size.toFixed()) + " Bytes";
       }
@@ -12173,6 +12559,7 @@
       },
       n: function() {
         var fullname, shortname;
+
         fullname = this.file.name;
         shortname = Build.shortFilename(this.file.name, this.isReply);
         if (fullname === shortname) {
@@ -12216,6 +12603,7 @@
   Fourchan = {
     init: function() {
       var board;
+
       if (g.VIEW === 'catalog') {
         return;
       }
@@ -12237,6 +12625,7 @@
     },
     code: function() {
       var pre, _i, _len, _ref;
+
       if (this.isClone) {
         return;
       }
@@ -12266,11 +12655,13 @@
   Keybinds = {
     init: function() {
       var init;
+
       if (g.VIEW === 'catalog' || !Conf['Keybinds']) {
         return;
       }
       init = function() {
         var node, _i, _len, _ref;
+
         $.off(d, '4chanXInitFinished', init);
         $.on(d, 'keydown', Keybinds.keydown);
         _ref = $$('[accesskey]');
@@ -12283,6 +12674,7 @@
     },
     keydown: function(e) {
       var form, key, notification, notifications, op, target, thread, threadRoot, _i, _len;
+
       if (!(key = Keybinds.keyCode(e))) {
         return;
       }
@@ -12454,6 +12846,7 @@
     },
     keyCode: function(e) {
       var kc, key;
+
       key = (function() {
         switch (kc = e.keyCode) {
           case 8:
@@ -12509,6 +12902,7 @@
     },
     tags: function(tag, ta) {
       var range, selEnd, selStart, value;
+
       value = ta.value;
       selStart = ta.selectionStart;
       selEnd = ta.selectionEnd;
@@ -12519,11 +12913,13 @@
     },
     sage: function() {
       var isSage;
+
       isSage = /sage/i.test(QR.nodes.email.value);
       return QR.nodes.email.value = isSage ? "" : "sage";
     },
     img: function(thread, all) {
       var post;
+
       if (all) {
         return ImageExpand.cb.toggleAll();
       } else {
@@ -12533,6 +12929,7 @@
     },
     open: function(thread, tab) {
       var url;
+
       if (g.VIEW !== 'index') {
         return;
       }
@@ -12545,6 +12942,7 @@
     },
     hl: function(delta, thread) {
       var axe, headRect, next, postEl, rect, replies, reply, root, topMargin, _i, _len;
+
       if (!delta) {
         if (postEl = $('.reply.highlight', thread)) {
           $.rmClass(postEl, 'highlight');
@@ -12604,6 +13002,7 @@
   Nav = {
     init: function() {
       var append, next, prev, span;
+
       switch (g.VIEW) {
         case 'index':
           if (!Conf['Index Navigation']) {
@@ -12652,6 +13051,7 @@
     },
     getThread: function(full) {
       var headRect, i, rect, thread, threads, topMargin, _i, _len;
+
       if (Conf['Bottom header'] || !Conf['Fixed Header']) {
         topMargin = 0;
       } else {
@@ -12677,6 +13077,7 @@
     },
     scroll: function(delta) {
       var i, rect, thread, threads, top, topMargin, _ref, _ref1;
+
       _ref = Nav.getThread(true), threads = _ref[0], thread = _ref[1], i = _ref[2], rect = _ref[3], topMargin = _ref[4];
       top = rect.top - topMargin;
       if ((delta === -1 && top > -5) || (delta === +1 && top < 5)) {
@@ -12701,6 +13102,7 @@
     },
     node: function() {
       var dateEl;
+
       if (this.isClone) {
         return;
       }
@@ -12710,6 +13112,7 @@
     },
     relative: function(diff, now, date) {
       var days, months, number, rounded, unit, years;
+
       unit = (number = diff / $.DAY) >= 1 ? (years = now.getYear() - date.getYear(), months = now.getMonth() - date.getMonth(), days = now.getDate() - date.getDate(), years > 1 ? (number = years - (months < 0 || months === 0 && days < 0), 'year') : years === 1 && (months > 0 || months === 0 && days >= 0) ? (number = years, 'year') : (months = (months + 12) % 12) > 1 ? (number = months - (days < 0), 'month') : months === 1 && days >= 0 ? (number = months, 'month') : 'day') : (number = diff / $.HOUR) >= 1 ? 'hour' : (number = diff / $.MINUTE) >= 1 ? 'minute' : (number = Math.max(0, diff) / $.SECOND, 'second');
       rounded = Math.round(number);
       if (rounded !== 1) {
@@ -12720,6 +13123,7 @@
     stale: [],
     flush: function() {
       var now, update, _i, _len, _ref;
+
       if (d.hidden) {
         return;
       }
@@ -12735,13 +13139,16 @@
     },
     setUpdate: function(post) {
       var markStale, setOwnTimeout, update;
+
       setOwnTimeout = function(diff) {
         var delay;
+
         delay = diff < $.MINUTE ? $.SECOND - (diff + $.SECOND / 2) % $.SECOND : diff < $.HOUR ? $.MINUTE - (diff + $.MINUTE / 2) % $.MINUTE : diff < $.DAY ? $.HOUR - (diff + $.HOUR / 2) % $.HOUR : $.DAY - (diff + $.DAY / 2) % $.DAY;
         return setTimeout(markStale, delay);
       };
       update = function(now) {
         var date, diff, relative, singlePost, _i, _len, _ref;
+
         date = post.info.date;
         diff = now - date;
         relative = RelativeDates.relative(diff, now, date);
@@ -12782,6 +13189,7 @@
     },
     node: function(post) {
       var spoiler, spoilers, _i, _len;
+
       spoilers = $$('s', this.nodes.comment);
       for (_i = 0, _len = spoilers.length; _i < _len; _i++) {
         spoiler = spoilers[_i];
@@ -12792,7 +13200,7 @@
 
   Report = {
     init: function() {
-      if (!(/report/.test(location.search) && d.cookie.indexOf('pass_enabled=1') === -1)) {
+      if (!(/report/.test(location.search) && !d.cookie.contains('pass_enabled=1'))) {
         return;
       }
       return $.asap((function() {
@@ -12801,6 +13209,7 @@
     },
     ready: function() {
       var field;
+
       field = $.id('recaptcha_response_field');
       $.on(field, 'keydown', function(e) {
         if (e.keyCode === 8 && !field.value) {
@@ -12809,6 +13218,7 @@
       });
       return $.on($('form'), 'submit', function(e) {
         var response;
+
         e.preventDefault();
         response = field.value.trim();
         if (!/\s/.test(response)) {
@@ -12838,6 +13248,7 @@
     },
     createFunc: function(format) {
       var code;
+
       code = format.replace(/%([A-Za-z])/g, function(s, c) {
         if (c in Time.formatters) {
           return "' + Time.formatters." + c + ".call(date) + '";
@@ -12922,6 +13333,7 @@
   Settings = {
     init: function() {
       var el, settings;
+
       el = $.el('a', {
         className: 'settings-link',
         href: 'javascript:;',
@@ -12935,6 +13347,7 @@
       });
       $.get('previousversion', null, function(item) {
         var changelog, curr, prev, previous;
+
         if (previous = item['previousversion']) {
           if (previous === g.VERSION) {
             return;
@@ -12980,6 +13393,7 @@
     },
     open: function(openSection) {
       var dialog, link, links, overlay, section, sectionToOpen, _i, _len, _ref;
+
       if (Conf['editMode'] === "theme") {
         if (confirm("Opening the options dialog will close and discard any theme changes made with the theme editor.")) {
           ThemeTools.close();
@@ -13041,6 +13455,7 @@
     sections: [],
     addSection: function(title, open) {
       var hyphenatedTitle, _ref;
+
       if (typeof title !== 'string') {
         _ref = title.detail, title = _ref.title, open = _ref.open;
       }
@@ -13053,6 +13468,7 @@
     },
     openSection: function(mode) {
       var section, selected;
+
       if (selected = $('.tab-selected', Settings.dialog)) {
         $.rmClass(selected, 'tab-selected');
       }
@@ -13066,6 +13482,7 @@
     },
     main: function(section) {
       var arr, button, description, div, fs, hiddenNum, input, inputs, items, key, obj, _ref;
+
       items = {};
       inputs = {};
       _ref = Config.main;
@@ -13092,6 +13509,7 @@
       }
       $.get(items, function(items) {
         var val;
+
         for (key in items) {
           val = items[key];
           inputs[key].checked = val;
@@ -13106,6 +13524,7 @@
         boards: {}
       }, function(item) {
         var ID, board, thread, _ref1;
+
         _ref1 = item.hiddenThreads.boards;
         for (ID in _ref1) {
           board = _ref1[ID];
@@ -13120,6 +13539,7 @@
         boards: {}
       }, function(item) {
         var ID, board, post, thread, _ref1;
+
         _ref1 = item.hiddenPosts.boards;
         for (ID in _ref1) {
           board = _ref1[ID];
@@ -13139,6 +13559,7 @@
           boards: {}
         }, function(item) {
           var boardID;
+
           for (boardID in item.hiddenThreads.boards) {
             localStorage.removeItem("4chan-hide-t-" + boardID);
           }
@@ -13149,6 +13570,7 @@
     },
     "export": function(now, data) {
       var a, db, span, _i, _len;
+
       if (typeof now !== 'number') {
         now = Date.now();
         data = {
@@ -13185,6 +13607,7 @@
     },
     onImport: function() {
       var file, output, reader;
+
       if (!(file = this.files[0])) {
         return;
       }
@@ -13196,6 +13619,7 @@
       reader = new FileReader();
       reader.onload = function(e) {
         var data, err;
+
         try {
           data = JSON.parse(e.target.result);
           Settings.loadSettings(data);
@@ -13212,11 +13636,13 @@
     },
     loadSettings: function(data) {
       var version;
+
       version = data.version.split('.');
       return $.set(data.Conf);
     },
     convertSettings: function(data, map) {
       var newKey, prevKey;
+
       for (prevKey in map) {
         newKey = map[prevKey];
         if (newKey) {
@@ -13228,6 +13654,7 @@
     },
     filter: function(section) {
       var select;
+
       section.innerHTML = "<select name=filter><option value=guide>Guide</option><option value=name>Name</option><option value=uniqueID>Unique ID</option><option value=tripcode>Tripcode</option><option value=capcode>Capcode</option><option value=email>E-mail</option><option value=subject>Subject</option><option value=comment>Comment</option><option value=flag>Flag</option><option value=filename>Filename</option><option value=dimensions>Image dimensions</option><option value=filesize>Filesize</option><option value=MD5>Image MD5</option></select><div></div>";
       select = $('select', section);
       $.on(select, 'change', Settings.selectFilter);
@@ -13235,6 +13662,7 @@
     },
     selectFilter: function() {
       var div, name, ta;
+
       div = this.nextElementSibling;
       if ((name = this.value) !== 'guide') {
         $.rmAll(div);
@@ -13254,6 +13682,7 @@
     },
     sauce: function(section) {
       var ta;
+
       section.innerHTML = "  <div class=warning " + (Conf['Sauce'] ? 'hidden' : '') + "><code>Sauce</code> is disabled.</div><div>Lines starting with a <code>#</code> will be ignored.</div><div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div><ul>These parameters will be replaced by their corresponding values:\n<li><code>%TURL</code>: Thumbnail URL.</li><li><code>%URL</code>: Full image URL.</li><li><code>%MD5</code>: MD5 hash.</li><li><code>%board</code>: Current board.</li></ul><textarea name=sauces class=field spellcheck=false></textarea>";
       ta = $('textarea', section);
       $.get('sauces', Conf['sauces'], function(item) {
@@ -13276,6 +13705,7 @@
     },
     advanced: function(section) {
       var archive, boardID, boardOptions, boardSelect, boards, data, event, input, inputs, item, items, name, row, rows, ta, table, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4;
+
       section.innerHTML = "<fieldset><legend>Archiver</legend><div class=\"warning\" " + (Conf['404 Redirect'] ? 'hidden' : '') + "><code>404 Redirect</code> is disabled.</div><div><select id='archive-board-select'></select></div><table id='archive-table'><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><span class=note>Disabled selections indicate that only one archive is available for that board and redirection type.</span></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea name=boardnav class=field spellcheck=false></textarea></div><span class=note>New lines will be converted into spaces.</span><br><br><div class=note>In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div><div>Board link: <code>g</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:\"Install Gentoo\"</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>External link: <code>external-text:\"Google\",\"http://www.google.com\"</code></div><div>Combinations are possible: <code>g-index-text:\"Technology Index\"</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=note><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n  will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n  if you are on /g/.\n</div></fieldset><fieldset><legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div><div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div></fieldset><fieldset><legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div><div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div></fieldset><fieldset><legend>Quick Reply Personas <span class=\"warning\" " + (Conf['Quick Reply'] ? 'hidden' : '') + ">is disabled.</span></legend><textarea class=personafield name=\"QR.personas\" class=\"field\" spellcheck=\"false\"></textarea><p>\n  One item per line.<br>\n  Items will be added in the relevant input's auto-completion list.<br>\n  Password items will always be used, since there is no password input.<br>\n  Lines starting with a <code>#</code> will be ignored.\n</p><ul>You can use these settings with each item, separate them with semicolons:\n  <li>Possible items are: <code>name</code>, <code>email</code>, <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>email:\"sage\"</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>email:\"sage\";always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>email:\"sage\";boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=warning " + (Conf['Unread Favicon'] ? 'hidden' : '') + ">is disabled.</span></legend><div><select name=favicon><option value=ferongr>ferongr</option><option value=xat->xat-</option><option value=Mayhem>Mayhem</option><option value=4chanJS>4chanJS</option><option value=Original>Original</option></select><span id=favicon-preview></span></div></fieldset><fieldset><legend>Thread Updater <span class=warning " + (Conf['Thread Updater'] ? 'hidden' : '') + ">is disabled.</span></legend><div>\n  Interval: <input type=number name=Interval class=field min=1 value=" + Conf['Interval'] + "></div></fieldset><fieldset><legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend><div><button id=apply-css>Apply CSS</button><textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea></div></fieldset>";
       items = {};
       inputs = {};
@@ -13295,6 +13725,7 @@
       $.on(ta, 'change', $.cb.value);
       $.get(items, function(items) {
         var key, val;
+
         for (key in items) {
           val = items[key];
           input = inputs[key];
@@ -13363,6 +13794,7 @@
       });
       $.get('selectedArchives', Conf['selectedArchives'], function(_arg) {
         var option, selectedArchives, type;
+
         selectedArchives = _arg.selectedArchives;
         for (boardID in selectedArchives) {
           data = selectedArchives[boardID];
@@ -13377,6 +13809,7 @@
     },
     addArchiveCell: function(boardID, data, type) {
       var archive, i, length, options, select, td;
+
       length = data[type].length;
       td = $.el('td', {
         className: 'archive-cell'
@@ -13406,8 +13839,10 @@
     },
     saveSelectedArchive: function() {
       var _this = this;
+
       return $.get('selectedArchives', Conf['selectedArchives'], function(_arg) {
         var selectedArchives, _name;
+
         selectedArchives = _arg.selectedArchives;
         (selectedArchives[_name = _this.dataset.boardid] || (selectedArchives[_name] = {}))[_this.dataset.type] = _this.value;
         return $.set('selectedArchives', selectedArchives);
@@ -13418,6 +13853,7 @@
     },
     time: function() {
       var funk;
+
       funk = Time.createFunc(this.value);
       return this.nextElementSibling.textContent = funk(Time, new Date());
     },
@@ -13426,6 +13862,7 @@
     },
     fileInfo: function() {
       var data, funk;
+
       data = {
         isReply: true,
         file: {
@@ -13461,6 +13898,7 @@
     },
     keybinds: function(section) {
       var arr, input, inputs, items, key, tbody, tr, _ref;
+
       section.innerHTML = "<div class=warning " + (Conf['Keybinds'] ? 'hidden' : '') + "><code>Keybinds</code> are disabled.</div><div>Allowed keys: <kbd>a-z</kbd>, <kbd>0-9</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>, <kbd>Meta</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>, <kbd>Up</kbd>, <kbd>Down</kbd>, <kbd>Right</kbd>, <kbd>Left</kbd>.</div><div>Press <kbd>Backspace</kbd> to disable a keybind.</div><table><tbody><tr><th>Actions</th><th>Keybinds</th></tr></tbody></table>";
       tbody = $('tbody', section);
       items = {};
@@ -13482,6 +13920,7 @@
       }
       return $.get(items, function(items) {
         var val;
+
         for (key in items) {
           val = items[key];
           inputs[key].value = val;
@@ -13490,6 +13929,7 @@
     },
     keybind: function(e) {
       var key;
+
       if (e.keyCode === 9) {
         return;
       }
@@ -13503,6 +13943,7 @@
     },
     style: function(section) {
       var arr, description, div, fs, html, input, inputs, items, key, name, nodes, obj, type, value, _i, _len, _ref;
+
       nodes = $.frag();
       items = {};
       inputs = {};
@@ -13545,6 +13986,7 @@
       }
       return $.get(items, function(items) {
         var cb, val;
+
         cb = Settings.cb.style;
         for (key in items) {
           val = items[key];
@@ -13569,6 +14011,7 @@
     },
     themes: function(section, mode) {
       var a, cb, div, keys, mouseout, mouseover, name, parentdiv, suboptions, theme, _i, _j, _k, _len, _len1, _len2, _ref;
+
       if (typeof mode !== 'string') {
         mode = 'default';
       }
@@ -13628,6 +14071,7 @@
         $.on($("#importbutton", div), 'change', ThemeTools.importtheme);
         $.on($('#tUndelete', div), 'click', function() {
           var themes;
+
           $.rm($.id("themeContainer"));
           themes = {
             open: Settings.themes,
@@ -13656,6 +14100,7 @@
         });
         $.on($('a', div), 'click', function() {
           var themes;
+
           themes = {
             open: Settings.themes,
             hyphenatedTitle: 'themes'
@@ -13670,6 +14115,7 @@
     },
     mouseover: function(e) {
       var mouseover;
+
       mouseover = $.el('div', {
         id: 'mouseover',
         className: 'dialog'
@@ -13689,6 +14135,7 @@
     },
     mascots: function(section, mode) {
       var addoptions, batchmascots, categories, cb, container, div, keys, mascot, mascotEl, mascotHide, mascotoptions, menu, name, node, option, suboptions, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1;
+
       categories = {};
       cb = Settings.cb.mascot;
       if (typeof mode !== 'string') {
@@ -13757,6 +14204,7 @@
         });
         $.on($('#clear', batchmascots), 'click', function() {
           var enabledMascots, _k, _len2;
+
           enabledMascots = JSON.parse(JSON.stringify(Conf[g.MASCOTSTRING]));
           for (_k = 0, _len2 = enabledMascots.length; _k < _len2; _k++) {
             name = enabledMascots[_k];
@@ -13786,6 +14234,7 @@
         });
         $.on($('#undelete', batchmascots), 'click', function() {
           var mascots;
+
           if (!(Conf["Deleted Mascots"].length > 0)) {
             alert("No mascots have been deleted.");
             return;
@@ -13821,6 +14270,7 @@
         });
         $.on($('#return', batchmascots), 'click', function() {
           var mascots;
+
           mascots = {
             open: Settings.mascots,
             hyphenatedTitle: 'mascots'
@@ -13839,6 +14289,7 @@
       style: {
         checked: function() {
           var hyphenated;
+
           $.cb.checked.call(this);
           hyphenated = this.name.toLowerCase().replace(/^4/, 'four').replace(/\s+/g, '-');
           return (this.checked ? $.addClass : $.rmClass)(doc, hyphenated);
@@ -13849,6 +14300,7 @@
         },
         select: function() {
           var hyphenated, option, _i, _len, _ref;
+
           $.cb.value.call(this);
           _ref = this.options;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -13861,6 +14313,7 @@
       mascot: {
         category: function() {
           var i, name, setting, test, type, _i, _len, _ref;
+
           if ($.id(this.name).hidden = this.checked) {
             Conf["Hidden Categories"].push(this.name);
             _ref = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
@@ -13894,6 +14347,7 @@
         },
         "delete": function(e) {
           var name, type, _i, _len, _ref;
+
           e.stopPropagation();
           name = this.parentElement.parentElement.id;
           if (confirm("Are you sure you want to delete \"" + name + "\"?")) {
@@ -13913,6 +14367,7 @@
         },
         "export": function(e) {
           var a, data, name;
+
           e.stopPropagation();
           name = this.parentElement.parentElement.id;
           data = Mascots[name];
@@ -13953,6 +14408,7 @@
       theme: {
         select: function() {
           var currentTheme;
+
           if (currentTheme = $.id(Conf['theme'])) {
             $.rmClass(currentTheme, 'selectedtheme');
           }
@@ -13973,6 +14429,7 @@
         },
         "export": function(e) {
           var a, data;
+
           e.preventDefault();
           e.stopPropagation();
           data = Themes[this.name];
@@ -13991,6 +14448,7 @@
         "delete": function(e) {
           var container, settheme,
             _this = this;
+
           e.preventDefault();
           e.stopPropagation();
           container = $.id(this.name);
@@ -14009,6 +14467,7 @@
             Themes[this.name]["Deleted"] = true;
             return $.get("userThemes", {}, function(_arg) {
               var userThemes;
+
               userThemes = _arg.userThemes;
               userThemes[_this.name] = Themes[_this.name];
               $.set('userThemes', userThemes);
@@ -14018,10 +14477,12 @@
         },
         restore: function() {
           var _this = this;
+
           if (confirm("Are you sure you want to restore \"" + this.id + "\"?")) {
             Themes[this.id]["Deleted"] = false;
             return $.get("userThemes", {}, function(_arg) {
               var userThemes;
+
               userThemes = _arg.userThemes;
               userThemes[_this.id] = Themes[_this.id];
               $.set('userThemes', userThemes);
@@ -14036,8 +14497,10 @@
   Main = {
     init: function(items) {
       var db, flatten, _i, _len;
+
       flatten = function(parent, obj) {
         var key, val;
+
         if (obj instanceof Array) {
           Conf[parent] = obj[0];
         } else if (typeof obj === 'object') {
@@ -14070,6 +14533,7 @@
     },
     initFeatures: function(items) {
       var init, pathname, _ref;
+
       Conf = items;
       if (Conf['Post Form Style'] === 'transparent fade') {
         $.set('Post Form Style', Conf['Post Form Style'] = 'fixed');
@@ -14123,6 +14587,7 @@
         case 'images.4chan.org':
           $.ready(function() {
             var URL;
+
             if (Conf['404 Redirect'] && d.title === '4chan - 404 Not Found') {
               Redirect.init();
               pathname = location.pathname.split('/');
@@ -14139,6 +14604,7 @@
       }
       init = function(features) {
         var err, module, name;
+
         for (name in features) {
           module = features[name];
           try {
@@ -14220,6 +14686,7 @@
     },
     initReady: function() {
       var board, err, errors, href, passLink, postRoot, posts, styleSelector, thread, threadRoot, threads, _i, _j, _len, _len1, _ref, _ref1;
+
       if (d.title === '4chan - 404 Not Found') {
         if (Conf['404 Redirect'] && g.VIEW === 'thread') {
           href = Redirect.to('thread', {
@@ -14287,6 +14754,7 @@
     },
     callbackNodes: function(klass, nodes) {
       var callback, err, errors, i, len, node, _i, _len, _ref;
+
       len = nodes.length;
       _ref = klass.prototype.callbacks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -14314,9 +14782,11 @@
     },
     callbackNodesDB: function(klass, nodes, cb) {
       var errors, func, i, len, node, queue, softTask;
+
       queue = [];
       softTask = function() {
         var args, func, task;
+
         task = queue.shift();
         func = task[0];
         args = Array.prototype.slice.call(task, 1);
@@ -14335,6 +14805,7 @@
       errors = null;
       func = function(node, i) {
         var callback, err, _i, _len, _ref;
+
         _ref = klass.prototype.callbacks;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           callback = _ref[_i];
@@ -14368,6 +14839,7 @@
     },
     addCallback: function(e) {
       var Klass, obj;
+
       obj = e.detail;
       if (typeof obj.callback.name !== 'string') {
         throw new Error("Invalid callback name: " + obj.callback.name);
@@ -14387,6 +14859,7 @@
     },
     message: function(e) {
       var el, version;
+
       version = e.data.version;
       if (version && version !== g.VERSION) {
         el = $.el('span', {
@@ -14397,12 +14870,14 @@
     },
     checkUpdate: function() {
       var now;
+
       if (!(Conf['Check for Updates'] && Main.isThisPageLegit())) {
         return;
       }
       now = Date.now();
       return $.get('lastchecked', 0, function(_arg) {
         var lastchecked;
+
         lastchecked = _arg.lastchecked;
         if (lastchecked > now - $.DAY) {
           return;
@@ -14418,6 +14893,7 @@
     },
     handleErrors: function(errors) {
       var div, error, logs, _i, _len;
+
       if (!(errors instanceof Array)) {
         error = errors;
       } else if (errors.length === 1) {
@@ -14432,6 +14908,7 @@
       });
       $.on(div.lastElementChild, 'click', function() {
         var _ref;
+
         return _ref = this.textContent === 'show' ? ['hide', false] : ['show', true], this.textContent = _ref[0], logs.hidden = _ref[1], _ref;
       });
       logs = $.el('div', {
@@ -14445,6 +14922,7 @@
     },
     parseError: function(data) {
       var error, message;
+
       Main.logError(data);
       message = $.el('div', {
         textContent: data.message
@@ -14461,6 +14939,7 @@
     },
     isThisPageLegit: function() {
       var _ref;
+
       if (!('thisPageIsLegit' in Main)) {
         Main.thisPageIsLegit = location.hostname === 'boards.4chan.org' && !$('link[href*="favicon-status.ico"]', d.head) && ((_ref = d.title) !== '4chan - Temporarily Offline' && _ref !== '4chan - Error' && _ref !== '504 Gateway Time-out');
       }

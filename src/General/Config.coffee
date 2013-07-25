@@ -26,7 +26,7 @@ Config =
         'Localize and format timestamps.'
       ]
       'Relative Post Dates': [
-        false
+        true
         'Display dates like "3 minutes ago". Tooltip shows the timestamp.'
       ]
       'File Info Formatting': [
@@ -104,11 +104,11 @@ Config =
         'Hide replies of hidden posts, recursively.'
       ]
       'Thread Hiding Buttons': [
-        true
+        false
         'Add buttons to hide entire threads.'
       ]
       'Reply Hiding Buttons': [
-        true
+        false
         'Add buttons to hide single replies.'
       ]
       'Filtered Backlinks': [
@@ -126,7 +126,7 @@ Config =
         'Expand images.'
       ]
       'Image Hover': [
-        false
+        true
         'Show full image on mouseover.'
       ]
       'Sauce': [
@@ -258,7 +258,7 @@ Config =
         'The Quick reply won\'t disappear after posting.'
       ]
       'Auto Hide QR': [
-        false
+        true
         'Automatically hide the quick reply when posting.'
       ]
       'Open Post in New Tab': [
@@ -358,13 +358,13 @@ Config =
         'Add \'(Cross-thread)\' to cross-threads quotes.'
       ]
       'Quote Threading': [
-        false
+        true
         'Thread conversations'
       ]
 
   imageExpansion:
     'Fit width': [
-      true
+      false
       ''
     ]
     'Fit height': [
@@ -376,7 +376,7 @@ Config =
       'Expand all images along with spoilers.'
     ]
     'Expand from here': [
-      true
+      false
       'Expand all images only from current position to thread end.'
     ]
     'Advance on contract': [
@@ -829,12 +829,11 @@ http://iqdb.org/?url=%TURL
   boardnav: """
 [ toggle-all ]
 [current-title]
+[external-text:"FAQ","https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions"]
   """
 
   QR:
-    'QR.personas': """
-      #email:"sage";boards:jp;always
-      """
+    'QR.personas': """#email:"sage";boards:jp;always"""
 
   time: '%m/%d/%y(%a)%H:%M:%S'
 
