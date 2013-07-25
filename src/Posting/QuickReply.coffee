@@ -1,6 +1,5 @@
 QR =
   init: ->
-    return if !Conf['Quick Reply']
 
     @db = new DataBoard 'yourPosts'
 

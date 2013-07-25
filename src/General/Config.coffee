@@ -261,10 +261,6 @@ Config =
       ]
 
     'Posting':
-      'Quick Reply': [
-        true
-        'All-in-one form to reply, create threads, automate dumping and more.'
-      ]
       'Persistent QR': [
         true
         'The Quick reply won\'t disappear after posting.'

@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.24 - 2013-07-24
+* 4chan X - Version 1.2.24 - 2013-07-25
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -191,7 +191,6 @@
         'Auto Watch Reply': [false, 'Automatically watch threads you reply to.']
       },
       'Posting': {
-        'Quick Reply': [true, 'All-in-one form to reply, create threads, automate dumping and more.'],
         'Persistent QR': [true, 'The Quick reply won\'t disappear after posting.'],
         'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.'],
         'Open Post in New Tab': [true, 'Open new threads or replies to a thread from the index in a new tab.'],
@@ -4004,7 +4003,7 @@
 
   QuoteYou = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Mark Quotes of You'] || !Conf['Quick Reply']) {
+      if (g.VIEW === 'catalog' || !Conf['Mark Quotes of You']) {
         return;
       }
       if (Conf['Highlight Own Posts']) {
@@ -4462,9 +4461,6 @@
   QR = {
     init: function() {
       var sc;
-      if (!Conf['Quick Reply']) {
-        return;
-      }
       this.db = new DataBoard('yourPosts');
       if (Conf['QR Shortcut']) {
         sc = $.el('a', {
@@ -8669,7 +8665,7 @@
       return key;
     },
     qr: function(thread, quote) {
-      if (!(Conf['Quick Reply'] && QR.postingIsEnabled)) {
+      if (!QR.postingIsEnabled) {
         return;
       }
       QR.open();
