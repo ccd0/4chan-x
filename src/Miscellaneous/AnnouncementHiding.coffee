@@ -1,6 +1,5 @@
 PSAHiding =
   init: ->
-    return if !Conf['Announcement Hiding']
 
     $.addClass doc, 'hide-announcement'
 

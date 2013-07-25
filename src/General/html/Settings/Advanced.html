@@ -1,6 +1,5 @@
 <fieldset>
   <legend>Archiver</legend>
-  <div class="warning" #{if Conf['404 Redirect'] then 'hidden' else ''}><code>404 Redirect</code> is disabled.</div>
   <select id='archive-board-select'></select>
   <table id='archive-table'>
     <thead>
@@ -111,7 +110,7 @@
 </fieldset>
 
 <fieldset>
-  <legend>Thread Updater <span class=warning #{if Conf['Thread Updater'] then 'hidden' else ''}>is disabled.</span></legend>
+  <legend>Thread Updater</legend>
   <div>
     Interval: <input type=number name=Interval class=field min=1 value=#{Conf['Interval']}>
   </div>

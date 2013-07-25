@@ -23,7 +23,7 @@ PostHiding =
 
   menu:
     init: ->
-      return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Reply Hiding Link']
+      return if g.VIEW is 'catalog' or !Conf['Reply Hiding Link']
 
       # Hide
       div = $.el 'div',
@@ -189,8 +189,7 @@ PostHiding =
     post.nodes.stub = $.el 'div',
       className: 'stub'
     $.add post.nodes.stub, a
-    if Conf['Menu']
-      $.add post.nodes.stub, [$.tn(' '), Menu.makeButton post]
+    $.add post.nodes.stub, [$.tn(' '), Menu.makeButton post]
     $.prepend post.nodes.root, post.nodes.stub
 
   show: (post, showRecursively=Conf['Recursive Hiding']) ->

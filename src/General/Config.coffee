@@ -13,14 +13,6 @@ Config =
         false,
         'Adds a small [QR] link in the header.'
       ]
-      'Announcement Hiding': [
-        true
-        'Add button to hide 4chan announcements.'
-      ]
-      '404 Redirect': [
-        true
-        'Redirect dead threads and images.'
-      ]
       'Keybinds': [
         true
         'Bind actions to keyboard shortcuts.'
@@ -163,10 +155,6 @@ Config =
       ]
 
     'Menu':
-      'Menu': [
-        true
-        'Add a drop-down menu to posts.'
-      ]
       'Report Link': [
         true
         'Add a report link to the menu.'
@@ -195,10 +183,6 @@ Config =
       ]
 
     'Monitoring':
-      'Thread Updater': [
-        true
-        'Fetch and insert new replies. Has more options in its own dialog.'
-      ]
       'Unread Count': [
         true
         'Show the unread posts count in the tab title.'

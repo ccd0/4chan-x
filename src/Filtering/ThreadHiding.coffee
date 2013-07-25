@@ -57,7 +57,7 @@ ThreadHiding =
 
   menu:
     init: ->
-      return if g.VIEW isnt 'index' or !Conf['Menu'] or !Conf['Thread Hiding Link']
+      return if g.VIEW isnt 'index' or !Conf['Thread Hiding Link']
 
       div = $.el 'div',
         className: 'hide-thread-link'
@@ -166,8 +166,7 @@ ThreadHiding =
     thread.stub = $.el 'div',
       className: 'stub'
     $.add thread.stub, a
-    if Conf['Menu']
-      $.add thread.stub, [$.tn(' '), Menu.makeButton OP]
+    $.add thread.stub, [$.tn(' '), Menu.makeButton OP]
     $.prepend threadRoot, thread.stub
 
   show: (thread) ->

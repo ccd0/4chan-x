@@ -1,6 +1,6 @@
 ThreadUpdater =
   init: ->
-    return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
+    return if g.VIEW isnt 'thread'
 
     checked = if Conf['Auto Update'] then 'checked' else ''
 
