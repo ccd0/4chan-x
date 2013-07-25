@@ -990,33 +990,30 @@
     };
 
     Post.prototype.parseQuotes = function() {
-      var hash, pathname, quotelink, quotes, _i, _len, _ref;
+      var quotelink, _i, _len, _ref;
 
-      quotes = {};
+      this.quotes = [];
       _ref = $$('.quotelink', this.nodes.comment);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quotelink = _ref[_i];
-        hash = quotelink.hash;
-        if (!hash) {
-          continue;
-        }
-        pathname = quotelink.pathname;
-        if (/catalog$/.test(pathname)) {
-          continue;
-        }
-        if (quotelink.hostname !== 'boards.4chan.org') {
-          continue;
-        }
-        this.nodes.quotelinks.push(quotelink);
-        if (!this.isReply && $.hasClass(quotelink.parentNode.parentNode, 'capcodeReplies')) {
-          continue;
-        }
-        quotes["" + (pathname.split('/')[1]) + "." + hash.slice(2)] = true;
+        this.parseQuote(quotelink);
       }
-      if (this.isClone) {
+    };
+
+    Post.prototype.parseQuote = function(quotelink) {
+      var fullID, match;
+
+      if (!(match = quotelink.href.match(/boards\.4chan\.org\/([^\/]+)\/res\/\d+#p(\d+)$/))) {
         return;
       }
-      return this.quotes = Object.keys(quotes);
+      this.nodes.quotelinks.push(quotelink);
+      if (this.isClone || !this.isReply && $.hasClass(quotelink.parentNode.parentNode, 'capcodeReplies')) {
+        return;
+      }
+      fullID = "" + match[1] + "." + match[2];
+      if (this.quotes.indexOf(fullID) === -1) {
+        return this.quotes.push(fullID);
+      }
     };
 
     Post.prototype.parseFile = function(that) {
