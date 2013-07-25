@@ -6538,13 +6538,13 @@
       if (post = g.posts[quoteID]) {
         if (!post.isDead) {
           a = $.el('a', {
-            href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
+            href: "/" + boardID + "/res/" + post.thread + "#p" + postID,
             className: 'quotelink',
             textContent: quote
           });
         } else {
           a = $.el('a', {
-            href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
+            href: "/" + boardID + "/res/" + post.thread + "#p" + postID,
             className: 'quotelink deadlink',
             target: '_blank',
             textContent: "" + quote + "\u00A0(Dead)"
