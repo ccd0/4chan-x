@@ -9345,7 +9345,7 @@
 
   Report = {
     init: function() {
-      if (!(/report/.test(location.search) && d.cookie.indexOf('pass_enabled=1') === -1)) {
+      if (!(/report/.test(location.search) && !d.cookie.contains('pass_enabled=1'))) {
         return;
       }
       return $.asap((function() {
