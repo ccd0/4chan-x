@@ -28,7 +28,7 @@ QR =
     $.ready @initReady
 
     if Conf['Persistent QR']
-      unless g.BOARD.ID is 'f'
+      unless g.BOARD.ID is 'f' and g.VIEW is 'index'
         $.on d, '4chanXInitFinished', @persist
       else
         $.ready @persist
@@ -766,6 +766,7 @@ QR =
       $.on input,        'keydown', @keydown.bind @
       $.on input,        'focus',   -> $.addClass QR.nodes.el, 'focus'
       $.on input,        'blur',    -> $.rmClass QR.nodes.el,  'focus'
+
       $.get 'captchas', [], ({captchas}) =>
         @sync captchas
       $.sync 'captchas', @sync
@@ -1056,8 +1057,8 @@ QR =
         QR.status()
         QR.error $.el 'span',
           innerHTML: """
-          Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.
-          [<a href="https://github.com/MayhemYDG/4chan-x/wiki/FAQ#what-does-connection-error-you-may-have-been-banned-mean" target=_blank>FAQ</a>]
+          4chan X encountered an error while posting. Please try again. 
+          [<a href="https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean" target=_blank>?</a>]
           """
     opts =
       cred: true

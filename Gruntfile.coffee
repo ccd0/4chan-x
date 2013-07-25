@@ -172,19 +172,19 @@ module.exports = (grunt) ->
   ]
 
   grunt.registerTask 'patch',   [
-    'bump'
+    'bump-only'
     'reloadPkg'
     'updcl:3'
   ]
 
   grunt.registerTask 'minor',   [
-    'bump:minor'
+    'bump-only:minor'
     'reloadPkg'
     'updcl:2'
   ]
 
   grunt.registerTask 'major',   [
-    'bump:major'
+    'bump-only:major'
     'reloadPkg'
     'updcl:1'
   ]

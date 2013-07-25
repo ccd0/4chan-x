@@ -4,6 +4,40 @@
 - Fix flag filtering on /sp/ and /int/.
 - Minor fixes.
 
+### v1.2.24
+*2013-07-24*
+
+**seaweedchan**:
+- Update archives (warosu is back up, and with it, the option to use it).
+
+### v1.2.23
+*2013-07-23*
+
+**matt4682**:
+- Small fix for new error message.
+
+### v1.2.22
+*2013-07-23*
+
+**seaweedchan**:
+- Update archives.
+
+### v1.2.21
+*2013-07-22*
+
+**seaweedchan**:
+- Fix /f/ posting.
+- Change the "Connection error" message, and point to my own FAQ instead of Mayhem's.
+
+### v1.2.20
+*2013-07-22*
+
+**MayhemYDG**:
+- Fixed captcha caching not syncing across open threads.
+
+**seaweedchan**:
+- Changed some defaults around
+
 ### v1.2.19
 *2013-07-14*
 

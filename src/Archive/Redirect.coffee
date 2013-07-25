@@ -28,7 +28,7 @@ Redirect =
       'http':  false
       'https': true
       'software': 'foolfuuka'
-      'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vg', 'vp', 'vr', 'wsg']
+      'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg']
       'files':  ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg']
 
     'NSFW Foolz':
@@ -70,6 +70,14 @@ Redirect =
       'boards': ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
       'files':  ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
 
+    'World Athletic Project':
+      'domain': 'fuuka.worldathleticproject.org'
+      'http':  true
+      'https': false
+      'software': 'foolfuuka'
+      'boards': ['e', 'h', 'p', 's', 'u']
+      'files':  ['e', 'h', 'p', 's', 'u']
+
     'Install Gentoo':
       'domain': 'archive.installgentoo.net'
       'http':  false
@@ -77,6 +85,14 @@ Redirect =
       'software': 'fuuka'
       'boards': ['diy', 'g', 'sci']
       'files':  []
+
+    'warosu':
+      'domain': 'fuuka.warosu.org'
+      'http':  true
+      'https': true
+      'software': 'fuuka'
+      'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
+      'files':  ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr'] 
 
     'Rebecca Black Tech':
       'domain': 'rbt.asia'
