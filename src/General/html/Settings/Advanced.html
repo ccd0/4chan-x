@@ -14,7 +14,7 @@
 </fieldset>
 
 <fieldset>
-  <legend>Custom Board Navigation</span></legend>
+  <legend>Custom Board Navigation</legend>
   <div><textarea name=boardnav class=field spellcheck=false></textarea></div>
   <span class=note>New lines will be converted into spaces.</span><br><br>
   <div class=note>In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>
@@ -38,7 +38,7 @@
 </fieldset>
 
 <fieldset>
-  <legend>Time Formatting <span class=warning #{if Conf['Time Formatting'] then 'hidden' else ''}>is disabled.</span></legend>
+  <legend>Time Formatting</legend>
   <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>
   <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>
   <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>
@@ -55,7 +55,7 @@
 </fieldset>
 
 <fieldset>
-  <legend>File Info Formatting <span class=warning #{if Conf['File Info Formatting'] then 'hidden' else ''}>is disabled.</span></legend>
+  <legend>File Info Formatting</legend>
   <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>
   <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>
   <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>
@@ -65,7 +65,7 @@
 </fieldset>
 
 <fieldset>
-  <legend>Quick Reply Personas <span class="warning" #{if Conf['Quick Reply'] then 'hidden' else ''}>is disabled.</span></legend>
+  <legend>Quick Reply Personas</legend>
   <textarea class=personafield name="QR.personas" class="field" spellcheck="false"></textarea>
   <p>
     One item per line.<br>

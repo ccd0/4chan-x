@@ -1,6 +1,6 @@
 FileInfo =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['File Info Formatting']
+    return if g.VIEW is 'catalog'
 
     @funk = @createFunc Conf['fileInfo']
     Post::callbacks.push

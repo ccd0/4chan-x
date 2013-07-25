@@ -25,17 +25,9 @@ Config =
         true
         'Bind actions to keyboard shortcuts.'
       ]
-      'Time Formatting': [
-        true
-        'Localize and format timestamps.'
-      ]
       'Relative Post Dates': [
         true
         'Display dates like "3 minutes ago". Tooltip shows the timestamp.'
-      ]
-      'File Info Formatting': [
-        true
-        'Reformat the file information.'
       ]
       'Comment Expansion': [
         true
@@ -286,10 +278,6 @@ Config =
       'Remember Spoiler': [
         false
         'Remember the spoiler state, instead of resetting after posting.'
-      ]
-      'Cooldown': [
-        true
-        'Indicate the remaining time before posting again.'
       ]
       'Cooldown Prediction': [
         true

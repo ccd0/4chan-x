@@ -1,6 +1,6 @@
 Time =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Time Formatting']
+    return if g.VIEW is 'catalog'
 
     @funk = @createFunc Conf['time']
     Post::callbacks.push
