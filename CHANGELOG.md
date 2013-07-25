@@ -1,3 +1,6 @@
+## v2.2.0
+*2013-07-25*
+
 **MayhemYDG**:
 - Remove /s4s/ from warosu archive
 - Fix CAPTCHA duplication on the report page
