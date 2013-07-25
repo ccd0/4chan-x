@@ -341,10 +341,6 @@ Config =
         true
         'Link dead quotes to the archives.'
       ]
-      'Mark Quotes of You': [
-        true
-        'Add \'(You)\' to quotes linking to your posts.'
-      ]
       'Quoted Title': [
         false
         'Change the page title to reflect you\'ve been quoted.'
@@ -356,14 +352,6 @@ Config =
       'Highlight Own Posts': [
         false
         'Highlights own posts if Mark Quotes of You is enabled.'
-      ]
-      'Mark OP Quotes': [
-        true
-        'Add \'(OP)\' to OP quotes.'
-      ]
-      'Mark Cross-thread Quotes': [
-        true
-        'Add \'(Cross-thread)\' to cross-threads quotes.'
       ]
       'Quote Threading': [
         true

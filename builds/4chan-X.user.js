@@ -212,12 +212,9 @@
         'Quote Previewing': [true, 'Show quoted post on hover.'],
         'Quote Highlighting': [true, 'Highlight the previewed post.'],
         'Resurrect Quotes': [true, 'Link dead quotes to the archives.'],
-        'Mark Quotes of You': [true, 'Add \'(You)\' to quotes linking to your posts.'],
         'Quoted Title': [false, 'Change the page title to reflect you\'ve been quoted.'],
         'Highlight Posts Quoting You': [false, 'Highlights any posts that contain a quote to your post.'],
         'Highlight Own Posts': [false, 'Highlights own posts if Mark Quotes of You is enabled.'],
-        'Mark OP Quotes': [true, 'Add \'(OP)\' to OP quotes.'],
-        'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.'],
         'Quote Threading': [true, 'Thread conversations']
       }
     },
@@ -3499,7 +3496,7 @@
       a = $.el('a', {
         href: "/" + this.board + "/res/" + this.thread + "#p" + this,
         className: this.isHidden ? 'filtered backlink' : 'backlink',
-        textContent: (QuoteBacklink.funk(this.ID)) + (Conf['Mark Quotes of You'] && this.info.yours ? '\u00A0(You)' : '')
+        textContent: (QuoteBacklink.funk(this.ID)) + (this.info.yours ? '\u00A0(You)' : '')
       });
       _ref = this.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3551,7 +3548,7 @@
 
   QuoteCT = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Mark Cross-thread Quotes']) {
+      if (g.VIEW === 'catalog') {
         return;
       }
       if (Conf['Comment Expansion']) {
@@ -3711,7 +3708,7 @@
 
   QuoteOP = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Mark OP Quotes']) {
+      if (g.VIEW === 'catalog') {
         return;
       }
       if (Conf['Comment Expansion']) {
@@ -4003,7 +4000,7 @@
 
   QuoteYou = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Mark Quotes of You']) {
+      if (g.VIEW === 'catalog') {
         return;
       }
       if (Conf['Highlight Own Posts']) {
