@@ -29,7 +29,8 @@ body > hr {
 #qr-thread-select:empty {
   display: none;
 }
-/* File Name Trunctuate */
+/* File Name Trunctuate / /p/ exif */
+.exif,
 .fileText:hover .fntrunc,
 .fileText:not(:hover) .fnfull {
   display: none;
