@@ -1,3 +1,6 @@
+### v2.2.1
+*2013-07-27*
+
 **zixaphir**:
 - Fix exif hiding on /p/
 - Minimum Chrome Version is now 27
