@@ -18,7 +18,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.2.0 - 2013-07-26
+* appchan x - Version 2.2.0 - 2013-07-27
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -220,7 +220,7 @@
         'Highlight Own Posts': [false, 'Highlights own posts if Mark Quotes of You is enabled.'],
         'Mark OP Quotes': [true, 'Add \'(OP)\' to OP quotes.'],
         'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.'],
-        'Quote Threading': [true, 'Thread conversations']
+        'Quote Threading': [false, 'Thread conversations']
       }
     },
     imageExpansion: {
@@ -8354,7 +8354,7 @@
         post: post,
         isReply: isReply
       });
-      URL = threadID === postID ? "/" + g.BOARD + "/res/" + threadID : g.VIEW === 'index' && !QR.cooldown.auto && Conf['Open Post in New Tab'] ? "/" + g.BOARD + "/res/" + threadID + "#p" + postID : void 0;
+      URL = !isReply ? "/" + g.BOARD + "/res/" + threadID : g.VIEW === 'index' && !QR.cooldown.auto && Conf['Open Post in New Tab'] ? "/" + g.BOARD + "/res/" + threadID + "#p" + postID : void 0;
       if (URL) {
         if (Conf['Open Post in New Tab']) {
           $.open(URL);

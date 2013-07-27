@@ -358,7 +358,7 @@ Config =
         'Add \'(Cross-thread)\' to cross-threads quotes.'
       ]
       'Quote Threading': [
-        true
+        false
         'Thread conversations'
       ]
 
