@@ -80,7 +80,7 @@ class Post
     for quotelink in $$ '.quotelink', @nodes.comment
       @parseQuote quotelink
     return
-    
+
   parseQuote: (quotelink) ->
     # Only add quotes that link to posts on an imageboard.
     # Don't add:
@@ -100,7 +100,7 @@ class Post
 
     # Don't count capcode replies as quotes in OPs. (Admin/Mod/Dev Replies: ...)
     return if @isClone or !@isReply and $.hasClass quotelink.parentNode.parentNode, 'capcodeReplies'
-    
+
     # ES6 Set when?
     fullID = "#{match[1]}.#{match[2]}"
     @quotes.push fullID if @quotes.indexOf(fullID) is -1
