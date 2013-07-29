@@ -6,13 +6,10 @@ Redirect =
   init: ->
     for boardID, data of Conf['selectedArchives']
       for type, id of data
-        for name, archive of Redirect.archives
-          continue if name isnt id or type is 'post' and archive.software isnt 'foolfuuka'
-          arr = if type is 'file'
-            archive.files
-          else
-            archive.boards
-          Redirect[type][boardID] = archive if arr.contains boardID
+        if archive = Redirect.archives[id]
+          boards = archive[type] or archive['boards']
+          continue unless boards.contains boardID
+          Redirect[type][boardID] = archive
     for name, archive of Redirect.archives
       for boardID in archive.boards
         unless boardID of Redirect.thread
@@ -21,6 +18,7 @@ Redirect =
           Redirect.post[boardID] = archive
         unless boardID of Redirect.file or !archive.files.contains boardID
           Redirect.file[boardID] = archive
+    return
 
   archives:
     'Foolz':
