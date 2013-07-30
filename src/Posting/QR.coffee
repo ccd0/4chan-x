@@ -74,7 +74,8 @@ QR =
     QR.cleanNotifications()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
-    for post in QR.posts.splice 0, QR.posts.length, new QR.post true
+    new QR.post true
+    for post in QR.posts.splice 0, QR.posts.length - 1
       post.delete()
     QR.cooldown.auto = false
     QR.status()
