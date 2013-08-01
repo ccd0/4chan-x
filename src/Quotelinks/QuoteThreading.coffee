@@ -56,14 +56,13 @@ QuoteThreading =
     @cb       = QuoteThreading.nodeinsert
 
   nodeinsert: ->
-    {posts} = g
-    qpost   = posts[@threaded]
+    qpost   = g.posts[@threaded]
 
     delete @threaded
     delete @cb
 
-    return false if @thread.OP is qpost 
-    
+    return false if @thread.OP is qpost
+
     if QuoteThreading.hasRun
       height  = doc.clientHeight
       {bottom, top} = qpost.nodes.root.getBoundingClientRect()
@@ -88,8 +87,11 @@ QuoteThreading =
     replies = $$ '.thread > .replyContainer, .threadContainer > .replyContainer', thread
     QuoteThreading.enabled = @checked
     if @checked
-      nodes = (Get.postFromNode reply for reply in replies)
-      QuoteThreading.node node for node in nodes
+      QuoteThreading.hasRun = false
+      for reply in replies
+        QuoteThreading.node.call node = Get.postFromRoot reply
+        node.cb() if node.cb
+      QuoteThreading.hasRun = true
     else
       replies.sort (a, b) ->
         aID = Number a.id[2..]
@@ -98,9 +100,9 @@ QuoteThreading =
       $.add thread, replies
       containers = $$ '.threadContainer', thread
       $.rm container for container in containers
-      Unread.update true
-    return
+      $.rmClass post, 'threadOP' for post in $$ '.threadOP'
+    Unread.update true
 
   kb: ->
-      control = $.id 'threadingControl'
-      control.click()
+    control = $.id 'threadingControl'
+    control.click()
