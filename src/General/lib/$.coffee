@@ -221,7 +221,7 @@ $.event = (event, detail, root=d) ->
 
 $.open = (URL) ->
 <% if (type === 'userscript') { %>
-  $.open = (URL) -> GM_openInTab URL
+  GM_openInTab URL
 <% } else { %>
   window.open URL, '_blank'
 <% } %>
