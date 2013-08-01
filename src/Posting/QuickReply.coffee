@@ -101,7 +101,8 @@ QR =
       $.rmClass QR.captcha.nodes.input, 'error'
     if Conf['QR Shortcut']
       $.toggleClass $('.qr-shortcut'), 'disabled'
-    for post in QR.posts.splice 0, QR.posts.length, new QR.post true
+    new QR.post true
+    for post in QR.posts.splice 0, QR.posts.length - 1
       post.delete()
     QR.cooldown.auto = false
     QR.status()

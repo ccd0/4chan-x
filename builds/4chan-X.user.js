@@ -4770,7 +4770,8 @@
       if (Conf['QR Shortcut']) {
         $.toggleClass($('.qr-shortcut'), 'disabled');
       }
-      _ref = QR.posts.splice(0, QR.posts.length, new QR.post(true));
+      new QR.post(true);
+      _ref = QR.posts.splice(0, QR.posts.length - 1);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         post = _ref[_i];
         post["delete"]();
