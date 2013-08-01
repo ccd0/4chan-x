@@ -1,8 +1,9 @@
 Redirect =
   archives: `<%= JSON.stringify(grunt.file.readJSON('json/archives.json')) %>`
-  thread: {}
-  post:   {}
-  file:   {}
+  data:
+    thread: {}
+    post:   {}
+    file:   {}
 
   init: ->
     for boardID, data of Conf['selectedArchives']
@@ -13,15 +14,15 @@ Redirect =
             archive.files
           else
             archive.boards
-          Redirect[type][boardID] = archive if boardID in arr
+          Redirect.data[type][boardID] = archive if boardID in arr
     for archive in Conf['archives']
       for boardID in archive.boards
-        unless boardID of Redirect.thread
-          Redirect.thread[boardID] = archive
-        unless boardID of Redirect.post or archive.software isnt 'foolfuuka'
-          Redirect.post[boardID] = archive
-        unless boardID of Redirect.file or boardID not in archive.files
-          Redirect.file[boardID] = archive
+        unless boardID of Redirect.data.thread
+          Redirect.data.thread[boardID] = archive
+        unless boardID of Redirect.data.post or archive.software isnt 'foolfuuka'
+          Redirect.data.post[boardID] = archive
+        unless boardID of Redirect.data.file or boardID not in archive.files
+          Redirect.data.file[boardID] = archive
 
     Redirect.update()
 
@@ -40,7 +41,7 @@ Redirect =
         cb? now
 
   to: (dest, data) ->
-    archive = (if dest is 'search' then Redirect.thread else Redirect[dest])[data.boardID]
+    archive = (if dest is 'search' then Redirect.data.thread else Redirect.data[dest])[data.boardID]
     return '' unless archive
     Redirect[dest] archive, data
 
