@@ -132,6 +132,7 @@ Unread =
     Unread.update() if e
 
   saveLastReadPost: ->
+    return if Unread.thread.isDead
     Unread.db.set
       boardID:  Unread.thread.board.ID
       threadID: Unread.thread.ID
