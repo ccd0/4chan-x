@@ -1,16 +1,28 @@
+### v2.2.2
+*2013-08-01*
+
+**zixaphir**:
+- Fix opening new threads and posts in a new tab.
+- Minimum Chrome Version is now 27.
+- Minimum Firefox Version is now 22.
+- Minimum Opera version is now 15.
+  * BUG REPORTS FILED WITH BROWSERS THAT DO NOT MEET THESE REQUIREMENTS WILL BE CLOSED AND IGNORED.
+
+**MayhemYDG**:
+- Fix QR Cooldown and clearing bugs.
+
 ### v2.2.1
 *2013-07-27*
 
 **zixaphir**:
-- Fix exif hiding on /p/
-- Minimum Chrome Version is now 27
+- Fix exif hiding on /p/.
 
 ## v2.2.0
 *2013-07-25*
 
 **MayhemYDG**:
-- Remove /s4s/ from warosu archive
-- Fix CAPTCHA duplication on the report page
+- Remove /s4s/ from warosu archive.
+- Fix CAPTCHA duplication on the report page.
 - Fix impossibility to create new threads when in dead threads.
 - Drop Opera <15 support.
 - Fix flag filtering on /sp/ and /int/.
