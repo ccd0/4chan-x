@@ -18,7 +18,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.2.1 - 2013-07-31
+* appchan x - Version 2.2.1 - 2013-08-01
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -3033,9 +3033,7 @@
   };
 
   $.open = function(URL) {
-    return $.open = function(URL) {
-      return GM_openInTab(URL);
-    };
+    return GM_openInTab(URL);
   };
 
   $.debounce = function(wait, fn) {
