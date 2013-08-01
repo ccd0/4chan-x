@@ -52,6 +52,7 @@ module.exports = function(grunt) {
           'builds/crx/manifest.json': 'src/Meta/manifest.json',
           'builds/crx/script.js': [
             'src/Meta/banner.js',
+            'src/Meta/usestrict.js',
             'tmp-<%= pkg.type %>/script.js'
           ]
         }
@@ -63,6 +64,7 @@ module.exports = function(grunt) {
           'builds/<%= pkg.name %>.user.js': [
             'src/Meta/metadata.js',
             'src/Meta/banner.js',
+            'src/Meta/usestrict.js',
             'tmp-<%= pkg.type %>/script.js'
           ]
         }
