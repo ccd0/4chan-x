@@ -132,15 +132,7 @@ module.exports = (grunt) ->
       tmpcrx: 'tmp-crx'
       tmpuserscript: 'tmp-userscript'
 
-  grunt.loadNpmTasks 'grunt-bump'
-  grunt.loadNpmTasks 'grunt-concurrent'
-  grunt.loadNpmTasks 'grunt-contrib-clean'
-  grunt.loadNpmTasks 'grunt-contrib-coffee'
-  grunt.loadNpmTasks 'grunt-contrib-compress'
-  grunt.loadNpmTasks 'grunt-contrib-concat'
-  grunt.loadNpmTasks 'grunt-contrib-copy'
-  grunt.loadNpmTasks 'grunt-contrib-watch'
-  grunt.loadNpmTasks 'grunt-shell'
+  require('matchdep').filterDev('grunt-*').forEach grunt.loadNpmTasks
 
   grunt.registerTask 'default', ['build']
 
