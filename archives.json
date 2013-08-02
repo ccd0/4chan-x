@@ -54,13 +54,13 @@
   "files": ["adv", "asp", "cm", "e", "i", "lgbt", "n", "o", "p", "s", "s4s", "t", "trv", "y"]
 }, {
   "uid": 12,
-  "name": "worldathleticproject",
+  "name": "fap archive",
   "domain": "fuuka.worldathleticproject.org",
   "http": true,
   "https": false,
   "software": "foolfuuka",
-  "boards": ["e", "h", "p", "s", "u"],
-  "files": ["e", "h", "p", "s", "u"]
+  "boards": ["e", "h", "p", "s", "u", "hc"],
+  "files": ["e", "h", "p", "s", "u", "hc"]
 }, {
   "uid": 7,
   "name": "Install Gentoo",
