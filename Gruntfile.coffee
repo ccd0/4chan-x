@@ -65,9 +65,9 @@ module.exports = (grunt) ->
           ]
     copy:
       crx:
-        src: 'img/*.png'
+        src:  'img/*.png'
         dest: 'builds/crx/'
-        expand: true
+        expand:  true
         flatten: true
       # for_d19
       # 19 juin 2013 10:32:22
@@ -76,20 +76,20 @@ module.exports = (grunt) ->
       # This solution is sub-optimal and will be changed in the future.
       # For now, upload an unsigned ZIP-file with the ending .nex or .crx.
       nex:
-        src: 'builds/<%= pkg.name %>.zip'
+        src:  'builds/<%= pkg.name %>.zip'
         dest: 'builds/<%= pkg.name %>.nex'
     coffee:
       script:
-        src: 'tmp-<%= pkg.type %>/script.coffee'
+        src:  'tmp-<%= pkg.type %>/script.coffee'
         dest: 'tmp-<%= pkg.type %>/script.js'
     concurrent:
       build: ['build-crx', 'build-userscript']
     bump:
       options:
         updateConfigs: ['pkg']
-        commit: false
+        commit:    false
         createTag: false
-        push: false
+        push:      false
     shell:
       commit:
         options: shellOptions
@@ -98,7 +98,7 @@ module.exports = (grunt) ->
           'git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."'
           'git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
           'git tag -af stable-v3 -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
-        ].join(' && ')
+        ].join ' && '
       push:
         options: shellOptions
         command: 'git push origin --tags -f && git push origin --all'
@@ -123,7 +123,7 @@ module.exports = (grunt) ->
           archive: 'builds/<%= pkg.name %>.zip'
           level: 9
           pretty: true
-        expand: true
+        expand:  true
         flatten: true
         src: 'builds/crx/*'
         dest: '/'
@@ -167,7 +167,7 @@ module.exports = (grunt) ->
   ]
 
   grunt.registerTask 'release', ['shell:commit', 'shell:push', 'build-crx', 'compress:crx', 'copy:nex']
-  grunt.registerTask 'patch',   ['bump', 'updcl:3', 'release']
+  grunt.registerTask 'patch',   ['bump',       'updcl:3', 'release']
   grunt.registerTask 'minor',   ['bump:minor', 'updcl:2', 'release']
   grunt.registerTask 'major',   ['bump:major', 'updcl:1', 'release']
 
