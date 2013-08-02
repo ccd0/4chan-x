@@ -147,7 +147,7 @@ $.off = (el, events, handler) ->
 $.event = (event, detail, root=d) ->
   root.dispatchEvent new CustomEvent event, {bubbles: true, detail}
 <% if (type === 'userscript') { %>
-$.open = (URL) -> GM_openInTab URL
+$.open = GM_openInTab
 <% } else { %>
 $.open = (URL) -> window.open URL, '_blank'
 <% } %>
