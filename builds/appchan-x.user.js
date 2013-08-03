@@ -18,7 +18,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.2.2 - 2013-08-02
+* appchan x - Version 2.2.2 - 2013-08-03
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -2335,7 +2335,7 @@
       "Inputs": "rgb(255,255,255)",
       "Warnings": "rgb(177,115,133)",
       "Shadow Color": "rgba(0,0,0,0.2)",
-      "Custom CSS": ".board .thread {\n  padding: 3px 4px;\n}\n.rice {\n  box-shadow:rgba(83,83,83,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#appchanx-settings input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#appchanx-settings input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n#delform {\n  background: rgba(22,22,22,.8) !important;\n  border: 0 !important;\n  padding: 1px !important;\n  box-shadow: rgba(0,0,0,.8) 0 0 10px;\n}\ndiv.reply.post {\n  background-image: linear-gradient(45deg, #303030, #303030 45%, #222222 45%, #222222 55%, #303030 55%, #303030) !important;\n  background-size: 3px 3px;\n  border-bottom: #1f1f1f !important;\n}\n.board .thread:not(.stub) {\n  background: 0 !important\n}\na:not([href='javascript:;']){\n  text-shadow: #0f0f0f 0 1px;\n}"
+      "Custom CSS": ".board .thread {\n  padding: 3px 4px;\n}\n.rice {\n  box-shadow:rgba(83,83,83,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#appchanx-settings input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#appchanx-settings input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n#delform {\n  background: rgba(22,22,22,.8) !important;\n  border: 0 !important;\n  padding: 1px !important;\n  box-shadow: rgba(0,0,0,.8) 0 0 10px;\n}\ndiv.reply.post {\n  background-image: url('data:image/gif;base64,R0lGODdhCQAJAIgAADMzMysrKywAAAAACQAJAAACDwxgeMrZF5Jckz1UXaYQFgA7');\n  border-bottom: #1f1f1f !important;\n}\n.board .thread:not(.stub) {\n  background: 0 !important\n}\na:not([href='javascript:;']){\n  text-shadow: #0f0f0f 0 1px;\n}"
     },
     "安心院なじみ ": {
       "Author": "Ahoka",
