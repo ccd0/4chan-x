@@ -69,7 +69,7 @@ Linkify =
       link    = match[0]
       len2    = index + link.length
 
-      break if (len3 = len - len2) is 0
+      break if len - len2 is 0
 
       range = document.createRange();
       range.setStart node, index

@@ -6645,7 +6645,7 @@
       }
     },
     gatherLinks: function(node, post) {
-      var data, index, len, len2, len3, link, links, match, range, _i, _len, _ref;
+      var data, index, len, len2, link, links, match, range, _i, _len, _ref;
 
       data = node.data;
       len = data.length;
@@ -6654,7 +6654,7 @@
         index = match.index;
         link = match[0];
         len2 = index + link.length;
-        if ((len3 = len - len2) === 0) {
+        if (len - len2 === 0) {
           break;
         }
         range = document.createRange();
