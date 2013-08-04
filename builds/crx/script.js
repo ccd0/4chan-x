@@ -6656,13 +6656,13 @@
         range = document.createRange();
         range.setStart(node, len2 = data.indexOf(link));
         range.setEnd(node, len2 + link.length);
-        post.nodes.links.push(Linkify.makeLink(range));
+        Linkify.makeLink(range, post);
       }
       range = document.createRange();
       range.setStart(node, len = data.indexOf(link));
       if ((data.length - (len += link.length)) > 0) {
         range.setEnd(node, len);
-        post.nodes.links.push(Linkify.makeLink(range));
+        Linkify.makeLink(range, post);
         return;
       }
       while ((next = node.nextSibling) && next.nodeName.toLowerCase() !== 'br') {
@@ -6678,9 +6678,9 @@
         }
         range.setEnd(node, node.length);
       }
-      post.nodes.links.push(Linkify.makeLink(range));
+      Linkify.makeLink(range, post);
     },
-    makeLink: function(range) {
+    makeLink: function(range, post) {
       var a, link;
 
       link = range.toString();
@@ -6692,7 +6692,7 @@
         href: link
       });
       range.surroundContents(a);
-      return a;
+      post.nodes.links.push(a);
     },
     services: function(link) {
       var href, key, match, type, _ref;

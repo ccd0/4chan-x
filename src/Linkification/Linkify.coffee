@@ -67,14 +67,14 @@ Linkify =
       range = document.createRange();
       range.setStart node, len2 = data.indexOf link
       range.setEnd   node, len2 + link.length
-      post.nodes.links.push Linkify.makeLink range
+      Linkify.makeLink range, post
 
     range = document.createRange()
     range.setStart node, len = data.indexOf link
 
     if (data.length - (len += link.length)) > 0
       range.setEnd node, len
-      post.nodes.links.push Linkify.makeLink range
+      Linkify.makeLink range, post
       return
 
     while (next = node.nextSibling) and next.nodeName.toLowerCase() isnt 'br'
@@ -88,10 +88,10 @@ Linkify =
         node = node.previousSibling
       range.setEnd node, node.length
 
-    post.nodes.links.push Linkify.makeLink range
+    Linkify.makeLink range, post
     return
 
-  makeLink: (range) ->
+  makeLink: (range, post) ->
     link = range.toString()
     link =
       if link.contains ':'
@@ -108,9 +108,9 @@ Linkify =
       rel:       'nofollow noreferrer'
       target:    '_blank'
       href:      link
-
     range.surroundContents a
-    return a
+    post.nodes.links.push a
+    return
 
   services: (link) ->
     href = link.href
