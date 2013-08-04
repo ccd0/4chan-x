@@ -6607,7 +6607,7 @@
       });
     },
     node: function() {
-      var data, embedder, i, len, match, node, range, snapshot, _i, _j, _len, _len1, _ref, _ref1;
+      var data, embedder, i, len, node, range, snapshot, _i, _j, _len, _len1, _ref, _ref1;
 
       if (this.isClone && Conf['Embedding']) {
         _ref = $$('.embedder', this.nodes.comment);
@@ -6623,8 +6623,9 @@
       while (++i < len) {
         node = snapshot.snapshotItem(i);
         data = node.data;
-        if (match = data.match(Linkify.regString)) {
-          Linkify.gatherLinks(match, node, this);
+        if (Linkify.regString.test(data)) {
+          Linkify.regString.lastIndex = 0;
+          Linkify.gatherLinks(node, this);
         }
       }
       if (!(Conf['Embedding'] || Conf['Link Title'])) {
@@ -6643,26 +6644,41 @@
         }
       }
     },
-    gatherLinks: function(match, node, post) {
-      var data, i, len, len2, link, next, range, result;
+    gatherLinks: function(node, post) {
+      var data, index, len, len2, len3, link, links, match, range, _i, _len, _ref;
 
-      i = 0;
-      len = match.length;
       data = node.data;
-      while ((link = match[i++]) && i > len) {
+      len = data.length;
+      links = [];
+      while ((match = Linkify.regString.exec(data))) {
+        index = match.index;
+        link = match[0];
+        len2 = index + link.length;
+        if ((len3 = len - len2) === 0) {
+          break;
+        }
         range = document.createRange();
-        range.setStart(node, len2 = data.indexOf(link));
-        range.setEnd(node, len2 + link.length);
+        range.setStart(node, index);
+        range.setEnd(node, len2);
+        links.push(range);
+      }
+      if (match) {
+        Linkify.seek(match, node, post);
+      }
+      _ref = links.reverse();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        range = _ref[_i];
         Linkify.makeLink(range, post);
       }
+    },
+    seek: function(match, node, post) {
+      var data, index, link, next, range, result;
+
+      index = match.index;
+      link = match[0];
       range = document.createRange();
-      range.setStart(node, len = data.indexOf(link));
-      if ((data.length - (len += link.length)) > 0) {
-        range.setEnd(node, len);
-        Linkify.makeLink(range, post);
-        return;
-      }
-      while ((next = node.nextSibling) && next.nodeName.toLowerCase() !== 'br') {
+      range.setStart(node, index);
+      while ((next = node.nextSibling) && next.nodeName !== 'BR') {
         node = next;
         data = node.data;
         if (result = /[\s'"]/.exec(data)) {
@@ -6670,12 +6686,12 @@
         }
       }
       if (range.collapsed) {
-        if (node.nodeName.toLowerCase() === 'wbr') {
+        if (node.nodeName === 'WBR') {
           node = node.previousSibling;
         }
         range.setEnd(node, node.length);
       }
-      Linkify.makeLink(range, post);
+      return Linkify.makeLink(range, post);
     },
     makeLink: function(range, post) {
       var a, link;

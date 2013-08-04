@@ -46,8 +46,9 @@ Linkify =
       node = snapshot.snapshotItem i
       data = node.data
 
-      if match = data.match Linkify.regString
-        Linkify.gatherLinks match, node, @
+      if Linkify.regString.test data
+        Linkify.regString.lastIndex = 0
+        Linkify.gatherLinks node, @
 
     return unless Conf['Embedding'] or Conf['Link Title']
 
@@ -58,38 +59,49 @@ Linkify =
 
     return
 
-  gatherLinks: (match, node, post) ->
-    i    = 0
-    len  = match.length
-    data = node.data
+  gatherLinks: (node, post) ->
+    {data} = node
+    len    = data.length
+    links  = []
 
-    while (link = match[i++]) and i > len
+    while (match = Linkify.regString.exec data)
+      {index} = match
+      link    = match[0]
+      len2    = index + link.length
+
+      break if (len3 = len - len2) is 0
+
       range = document.createRange();
-      range.setStart node, len2 = data.indexOf link
-      range.setEnd   node, len2 + link.length
+      range.setStart node, index
+      range.setEnd   node, len2
+      links.push range
+
+    if match
+      Linkify.seek match, node, post
+
+    for range in links.reverse()
       Linkify.makeLink range, post
 
+    return
+
+  seek: (match, node, post) ->
+    {index} = match
+    link    = match[0]
     range = document.createRange()
-    range.setStart node, len = data.indexOf link
+    range.setStart node, index
 
-    if (data.length - (len += link.length)) > 0
-      range.setEnd node, len
-      Linkify.makeLink range, post
-      return
-
-    while (next = node.nextSibling) and next.nodeName.toLowerCase() isnt 'br'
+    while (next = node.nextSibling) and next.nodeName isnt 'BR'
       node = next
       data = node.data
       if result = /[\s'"]/.exec data
         range.setEnd node, result.index
 
     if range.collapsed
-      if node.nodeName.toLowerCase() is 'wbr'
+      if node.nodeName is 'WBR'
         node = node.previousSibling
       range.setEnd node, node.length
 
     Linkify.makeLink range, post
-    return
 
   makeLink: (range, post) ->
     link = range.toString()
