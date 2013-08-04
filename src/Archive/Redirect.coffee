@@ -76,8 +76,8 @@ Redirect =
       'http':  true
       'https': false
       'software': 'foolfuuka'
-      'boards': ['e', 'h', 'p', 's', 'u']
-      'files':  ['e', 'h', 'p', 's', 'u']
+      'boards': ['e', 'h', 'hc', 'p', 's', 'u']
+      'files':  ['e', 'h', 'hc', 'p', 's', 'u']
 
     'Install Gentoo':
       'domain': 'archive.installgentoo.net'

@@ -1,3 +1,10 @@
+### v1.2.25
+*2013-08-04*
+
+**seaweedchan**:
+- Fix issues with having two options called `Reveal Spoilers`. 
+- Update archive.
+
 ### v1.2.24
 *2013-07-24*
 
