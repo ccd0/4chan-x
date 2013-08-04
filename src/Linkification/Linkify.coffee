@@ -1,21 +1,21 @@
 Linkify =
   init: ->
-    return if g.VIEW is 'catalog' or not Conf['Linkify']
+    return if g.VIEW is 'catalog'
 
-    @regString = if Conf['Allow False Positives'] 
+    @regString = if Conf['Allow False Positives']
       ///(
         \b(
           [a-z]+://
           |
-          [a-z]{3,}\.[-a-z0-9]+\.[a-z]+
+          [a-z]{3,}\.[-a-z0-9]+\.[a-z]
           |
           [-a-z0-9]+\.[a-z]
           |
-          [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+
+          [0-9]+\.[0-9]+\.[0-9]+\.[0-9]
           |
           [a-z]{3,}:[a-z0-9?]
           |
-          [a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9]
+          [\S]+@[a-z0-9.-]+\.[a-z0-9]
         )
         [^\s'"]+
       )///gi
@@ -29,122 +29,205 @@ Linkify =
       name: 'Linkify'
       cb:   @node
 
-  cypher: $.el 'div'
-
   node: ->
     if @isClone and Conf['Embedding']
       for embedder in $$ '.embedder', @nodes.comment
-        $.on embedder, "click", Linkify.toggle
+        $.on embedder, "click", Linkify.cb.toggle
       return
+
     snapshot = $.X './/text()', @nodes.comment
-    cypher = Linkify.cypher
     i      = -1
     len    = snapshot.snapshotLength
+    links  = []
 
     while ++i < len
-      nodes = $.frag()
-      node  = snapshot.snapshotItem i
-      data  = node.data
+      node = snapshot.snapshotItem i
+      data = node.data
 
-      # Test for valid links
+      if match = data.match Linkify.regString
+        links.pushArrays Linkify.gatherLinks match, node
 
-      continue unless node.parentNode and Linkify.regString.test data
+    if Conf['Linkify']
+      for range in links
+        @nodes.links.push Linkify.makeLink range
 
-      Linkify.regString.lastIndex = 0
+    return unless Conf['Embedding'] or Conf['Link Title']
+    
+    for range in @nodes.links or links
+      if link = Linkify.services range
+        if Conf['Embedding']
+          Linkify.embed link
+        if Conf['Link Title']
+          Linkify.title link
 
-      cypherText = []
-
-      if next = node.nextSibling
-        cypher.textContent = node.textContent
-        cypherText[0]      = cypher.innerHTML
-
-        while (next.nodeName.toLowerCase() is 'wbr' or next.nodeName.toLowerCase() is 's') and (lookahead = next.nextSibling) and ((name = lookahead.nodeName) is "#text" or name.toLowerCase() is 'br')
-          cypher.textContent = lookahead.textContent
-
-          cypherText.push if spoiler = next.innerHTML then "<s>#{spoiler.replace /</g, ' <'}</s>" else '<wbr>'
-          cypherText.push cypher.innerHTML
-
-          $.rm next
-          next = lookahead.nextSibling
-          $.rm lookahead if lookahead.nodeName is "#text"
-
-          unless next
-            break
-
-      if cypherText.length
-        data = cypherText.join ''
-
-      links = data.match Linkify.regString
-
-      for link in links
-        index = data.indexOf link
-
-        if text = data[...index]
-          # press button get bacon
-          cypher.innerHTML = text
-          for child in [cypher.childNodes...]
-            $.add nodes, child
-
-        cypher.innerHTML = (if link.indexOf(':') < 0 then (if link.indexOf('@') > 0 then 'mailto:' + link else 'http://' + link) else link).replace /<(wbr|s|\/s)>/g, ''
-
-        a = $.el 'a',
-          innerHTML: link
-          className: 'linkify'
-          rel:       'nofollow noreferrer'
-          target:    '_blank'
-          href:      cypher.textContent
-
-        $.add nodes, Linkify.embedder a
-
-        data = data[index + link.length..]
-
-      if data
-        # Potential text after the last valid link.
-        cypher.innerHTML = data
-
-        # Convert <wbr> into elements
-        for child in [cypher.childNodes...]
-          $.add nodes, child
-
-      $.replace node, nodes
-
-    if Conf['Auto-embed']
-      embeds = $$ '.embedder', @nodes.comment
-      for embed in embeds
-        embed.click()
     return
 
-  toggle: ->
-    # We setup the link to be replaced by the embedded video
-    embed = @previousElementSibling
+  gatherLinks: (match, node) ->
+    links = []
+    i = 0
+    len = match.length
+    data  = node.data
 
-    # Unembed.
-    if @className.contains "embedded"
-      # Recreate the original link.
-      el = $.el 'a',
-        rel:         'nofollow noreferrer'
-        target:      'blank'
-        className:   'linkify'
-        href:        url = @getAttribute("data-originalURL")
-        textContent: @getAttribute("data-title") or url
+    while (link = match[i++]) and i > len
+      range = document.createRange();
+      range.setStart node, len2 = data.indexOf link
+      range.setEnd   node, len2 + link.length
+      links.push range
 
-      @textContent = '(embed)'
-      $.addClass el, "#{@getAttribute 'data-service'}"
+    range = document.createRange()
+    range.setStart node, len = data.indexOf link
 
+    if (data.length - (len += link.length)) > 0
+      range.setEnd node, len
+      links.push range
+      return links
+
+    while (next = node.nextSibling) and next.nodeName.toLowerCase() isnt 'br'
+      node = next
+      data = node.data
+      if result = /[\s'"]/.exec data
+        range.setEnd node, result.index
+
+    if range.collapsed
+      if node.nodeName.toLowerCase() is 'wbr'
+        node = node.previousSibling
+      range.setEnd node, node.length
+
+    links.push range
+    return links
+
+  makeLink: (range) ->
+    link = range.toString()
+    link =
+      if link.contains ':'
+        link
+      else (
+        if link.contains '@'
+          'mailto:'
+        else
+          'http://'
+      ) + link
+
+    a = $.el 'a',
+      className: 'linkify'
+      rel:       'nofollow noreferrer'
+      target:    '_blank'
+      href:      link
+
+    range.surroundContents a
+    return a
+
+  services: (link) ->
+    href = if Conf['Linkify']
+      link.href
     else
-      # We create an element to embed
-      el = (type = Linkify.types[@getAttribute("data-service")]).el.call @
+      link.toString()
 
+    for key, type of Linkify.types
+      continue unless match = type.regExp.exec href
+      link = Linkify.makeLink link unless Conf['Linkify']
+      return [key, match[1], match[2], link]
+
+    return
+
+  embed: (data) ->
+    [key, uid, options, link] = data
+    embed = $.el 'a',
+      name:        uid
+      option:      options
+      className:   'embedder'
+      href:        'javascript:;'
+      textContent: '(embed)'
+
+    embed.dataset.service     = key
+    embed.dataset.originalurl = link.href
+
+    $.addClass link, "#{embed.dataset.service}"
+
+    $.on embed, 'click', Linkify.cb.toggle
+    $.after link, [$.tn(' '), embed]
+
+  cb:
+    toggle: ->
+      # We setup the link to be replaced by the embedded video
+      embed = @previousElementSibling
+   
+      # Unembed.
+      el = unless @className.contains "embedded"
+        Linkify.cb.embed @
+      else
+        Linkify.cb.unembed @
+   
+      $.replace embed, el
+      $.toggleClass @, 'embedded'
+   
+    embed: (a) ->
+      # We create an element to embed
+      el = (type = Linkify.types[a.dataset.service]).el.call a
+   
       # Set style values.
       el.style.cssText = if style = type.style
         style
       else
         "border: 0; width: 640px; height: 390px"
+   
+      a.textContent = '(unembed)'
 
-      @textContent = '(unembed)'
+      return el
+   
+    unembed: (a) ->
+      # Recreate the original link.
+      el = $.el 'a',
+        rel:         'nofollow noreferrer'
+        target:      'blank'
+        className:   'linkify'
+        href:        url = a.dataset.originalurl
+        textContent: a.dataset.title or url
+   
+      a.textContent = '(embed)'
+      $.addClass el, "#{a.dataset.service}"
+   
+      return el
 
-    $.replace embed, el
-    $.toggleClass @, 'embedded'
+    title: (data) ->
+      [key, uid, options, link] = data
+      service = Linkify.types[key].title
+      link.textContent = switch @status
+        when 200, 304
+          text = "#{service.text.call @}"
+          if Conf['Embedding']
+             link.nextElementSibling.dataset.title = text
+          text
+        when 404
+          "[#{key}] Not Found"
+        when 403
+          "[#{key}] Forbidden or Private"
+        else
+          "[#{key}] #{@status}'d"
+
+  title: (data) ->
+    [key, uid, options, link] = data
+    titles = {}
+    service = Linkify.types[key].title
+    title = ""
+
+    $.get 'CachedTitles', {}, (item) ->
+      titles = item['CachedTitles']
+      if title = titles[uid]
+        link.textContent = title[0]
+        if Conf['Embedding']
+           link.nextElementSibling.dataset.title = title[0]
+        return
+      else
+        try
+          $.cache service.api(uid), ->
+            title = Linkify.cb.title.apply @, [data]
+        catch err
+          link.innerHTML = "[#{key}] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>"
+          return
+        if title
+          titles[uid]  = [title, Date.now()]
+          $.set 'CachedTitles', titles
 
   types:
     YouTube:
@@ -153,7 +236,7 @@ Linkify =
         $.el 'iframe',
           src: "//www.youtube.com/embed/#{@name}#{if @option then '#' + @option else ''}?wmode=opaque"
       title:
-        api:  -> "https://gdata.youtube.com/feeds/api/videos/#{@name}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
+        api: (uid) -> "https://gdata.youtube.com/feeds/api/videos/#{uid}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
         text: -> JSON.parse(@responseText).entry.title.$t
 
     Vocaroo:
@@ -169,7 +252,7 @@ Linkify =
         $.el 'iframe',
           src: "//player.vimeo.com/video/#{@name}?wmode=opaque"
       title:
-        api:  -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{@name}"
+        api: (uid) -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{uid}"
         text: -> JSON.parse(@responseText).title
 
     LiveLeak:
@@ -191,7 +274,7 @@ Linkify =
       style: 'border: 0; width: auto; height: auto;'
       el: ->
         $.el 'div',
-          innerHTML: "<a target=_blank href='#{@getAttribute 'data-originalURL'}'><img src='#{@getAttribute 'data-originalURL'}'></a>"
+          innerHTML: "<a target=_blank href='#{@dataset.originalurl}'><img src='#{@dataset.originalurl}'></a>"
 
     SoundCloud:
       regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
@@ -208,7 +291,7 @@ Linkify =
           false)
         div
       title:
-        api: -> "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{@name}"
+        api: (uid) -> "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{uid}"
         text: -> JSON.parse(@responseText).title
 
     pastebin:
@@ -224,7 +307,7 @@ Linkify =
           # Github doesn't allow embedding straight from the site, so we use an external site to bypass that.
           src: "http://www.purplegene.com/script?url=https://gist.github.com/#{@name}.js"
       title:
-        api: -> "https://api.github.com/gists/#{@name}"
+        api: (uid) -> "https://api.github.com/gists/#{uid}"
         text: ->
           response = JSON.parse(@responseText).files
           return file for file of response when response.hasOwnProperty file
@@ -234,56 +317,3 @@ Linkify =
       el: ->
         $.el 'iframe',
           src: "http://paste.installgentoo.com/view/embed/#{@name}"
-
-  embedder: (a) ->
-    return [a] unless Conf['Link Title']
-    titles = {}
-
-    callbacks = ->
-      a.textContent = switch @status
-        when 200, 304
-          title = "#{service.text.call @}"
-          embed.setAttribute 'data-title', title
-          titles[embed.name] = [title, Date.now()]
-          $.set 'CachedTitles', titles
-          title
-        when 404
-          "[#{key}] Not Found"
-        when 403
-          "[#{key}] Forbidden or Private"
-        else
-          "[#{key}] #{@status}'d"
-
-    for key, type of Linkify.types
-      continue unless match = a.href.match type.regExp
-
-      embed = $.el 'a',
-        name:         (a.name = match[1])
-        option:       match[2]
-        className:    'embedder'
-        href:         'javascript:;'
-        textContent:  '(embed)'
-
-      embed.setAttribute 'data-service', key
-      embed.setAttribute 'data-originalURL', a.href
-      $.addClass a, "#{embed.getAttribute 'data-service'}"
-
-      $.on embed, 'click', Linkify.toggle
-
-      unless Conf['Embedding']
-        embed.hidden = true
-
-      if Conf['Link Title'] and (service = type.title)
-        $.get 'CachedTitles', {}, (item) ->
-          titles = item['CachedTitles']
-          if title = titles[match[1]]
-            a.textContent = title[0]
-            embed.setAttribute 'data-title', title[0]
-          else
-            try
-              $.cache service.api.call(a), callbacks
-            catch err
-              a.innerHTML = "[#{key}] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>"
-
-      return [a, $.tn(' '), embed]
-    return [a]
