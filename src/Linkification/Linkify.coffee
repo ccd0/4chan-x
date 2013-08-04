@@ -1,6 +1,6 @@
 Linkify =
   init: ->
-    return if g.VIEW is 'catalog'
+    return if g.VIEW is 'catalog' or not Conf['Linkify']
 
     @regString = if Conf['Allow False Positives']
       ///(
@@ -25,6 +25,9 @@ Linkify =
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
+    if Conf['Title Link']
+      $.sync 'CachedTitles', Linkify.titleSync
+
     Post::callbacks.push
       name: 'Linkify'
       cb:   @node
@@ -36,51 +39,43 @@ Linkify =
       return
 
     snapshot = $.X './/text()', @nodes.comment
-    i      = -1
-    len    = snapshot.snapshotLength
-    links  = []
+    i        = -1
+    len      = snapshot.snapshotLength
 
     while ++i < len
       node = snapshot.snapshotItem i
       data = node.data
 
       if match = data.match Linkify.regString
-        links.pushArrays Linkify.gatherLinks match, node
-
-    if Conf['Linkify']
-      for range in links
-        @nodes.links.push Linkify.makeLink range
+        Linkify.gatherLinks match, node, @
 
     return unless Conf['Embedding'] or Conf['Link Title']
-    
-    for range in @nodes.links or links
-      if link = Linkify.services range
-        if Conf['Embedding']
-          Linkify.embed link
-        if Conf['Link Title']
-          Linkify.title link
+
+    for range in @nodes.links
+      if data = Linkify.services range
+        Linkify.embed data if Conf['Embedding']
+        Linkify.title data if Conf['Link Title']
 
     return
 
-  gatherLinks: (match, node) ->
-    links = []
-    i = 0
-    len = match.length
-    data  = node.data
+  gatherLinks: (match, node, post) ->
+    i    = 0
+    len  = match.length
+    data = node.data
 
     while (link = match[i++]) and i > len
       range = document.createRange();
       range.setStart node, len2 = data.indexOf link
       range.setEnd   node, len2 + link.length
-      links.push range
+      post.nodes.links.push Linkify.makeLink range
 
     range = document.createRange()
     range.setStart node, len = data.indexOf link
 
     if (data.length - (len += link.length)) > 0
       range.setEnd node, len
-      links.push range
-      return links
+      post.nodes.links.push Linkify.makeLink range
+      return
 
     while (next = node.nextSibling) and next.nodeName.toLowerCase() isnt 'br'
       node = next
@@ -93,8 +88,8 @@ Linkify =
         node = node.previousSibling
       range.setEnd node, node.length
 
-    links.push range
-    return links
+    post.nodes.links.push Linkify.makeLink range
+    return
 
   makeLink: (range) ->
     link = range.toString()
@@ -118,14 +113,10 @@ Linkify =
     return a
 
   services: (link) ->
-    href = if Conf['Linkify']
-      link.href
-    else
-      link.toString()
+    href = link.href
 
     for key, type of Linkify.types
       continue unless match = type.regExp.exec href
-      link = Linkify.makeLink link unless Conf['Linkify']
       return [key, match[1], match[2], link]
 
     return
@@ -147,34 +138,56 @@ Linkify =
     $.on embed, 'click', Linkify.cb.toggle
     $.after link, [$.tn(' '), embed]
 
+  title: (data) ->
+    [key, uid, options, link] = data
+    service = Linkify.types[key].title
+    titles = Conf['CachedTitles']
+    if title = titles[uid]
+      link.textContent = title[0]
+      if Conf['Embedding']
+         link.nextElementSibling.dataset.title = title[0]
+    else
+      try
+        $.cache service.api(uid), ->
+          title = Linkify.cb.title.apply @, [data]
+      catch err
+        link.innerHTML = "[#{key}] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>"
+        return
+      if title
+        titles[uid]  = [title, Date.now()]
+        $.set 'CachedTitles', titles
+
+  titleSync: (value) ->
+    Conf['CachedTitles'] = value
+
   cb:
     toggle: ->
       # We setup the link to be replaced by the embedded video
       embed = @previousElementSibling
-   
+
       # Unembed.
       el = unless @className.contains "embedded"
         Linkify.cb.embed @
       else
         Linkify.cb.unembed @
-   
+
       $.replace embed, el
       $.toggleClass @, 'embedded'
-   
+
     embed: (a) ->
       # We create an element to embed
       el = (type = Linkify.types[a.dataset.service]).el.call a
-   
+
       # Set style values.
       el.style.cssText = if style = type.style
         style
       else
         "border: 0; width: 640px; height: 390px"
-   
+
       a.textContent = '(unembed)'
 
       return el
-   
+
     unembed: (a) ->
       # Recreate the original link.
       el = $.el 'a',
@@ -183,10 +196,10 @@ Linkify =
         className:   'linkify'
         href:        url = a.dataset.originalurl
         textContent: a.dataset.title or url
-   
+
       a.textContent = '(embed)'
       $.addClass el, "#{a.dataset.service}"
-   
+
       return el
 
     title: (data) ->
@@ -204,30 +217,6 @@ Linkify =
           "[#{key}] Forbidden or Private"
         else
           "[#{key}] #{@status}'d"
-
-  title: (data) ->
-    [key, uid, options, link] = data
-    titles = {}
-    service = Linkify.types[key].title
-    title = ""
-
-    $.get 'CachedTitles', {}, (item) ->
-      titles = item['CachedTitles']
-      if title = titles[uid]
-        link.textContent = title[0]
-        if Conf['Embedding']
-           link.nextElementSibling.dataset.title = title[0]
-        return
-      else
-        try
-          $.cache service.api(uid), ->
-            title = Linkify.cb.title.apply @, [data]
-        catch err
-          link.innerHTML = "[#{key}] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>"
-          return
-        if title
-          titles[uid]  = [title, Date.now()]
-          $.set 'CachedTitles', titles
 
   types:
     YouTube:

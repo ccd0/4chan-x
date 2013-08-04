@@ -6594,12 +6594,15 @@
 
   Linkify = {
     init: function() {
-      if (g.VIEW === 'catalog') {
+      if (g.VIEW === 'catalog' || !Conf['Linkify']) {
         return;
       }
       this.regString = Conf['Allow False Positives'] ? /(\b([a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]|[-a-z0-9]+\.[a-z]|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]|[a-z]{3,}:[a-z0-9?]|[\S]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi : /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi;
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
+      }
+      if (Conf['Title Link']) {
+        $.sync('CachedTitles', Linkify.titleSync);
       }
       return Post.prototype.callbacks.push({
         name: 'Linkify',
@@ -6607,7 +6610,7 @@
       });
     },
     node: function() {
-      var data, embedder, i, len, link, links, match, node, range, snapshot, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+      var data, embedder, i, len, match, node, range, snapshot, _i, _j, _len, _len1, _ref, _ref1;
 
       if (this.isClone && Conf['Embedding']) {
         _ref = $$('.embedder', this.nodes.comment);
@@ -6620,40 +6623,32 @@
       snapshot = $.X('.//text()', this.nodes.comment);
       i = -1;
       len = snapshot.snapshotLength;
-      links = [];
       while (++i < len) {
         node = snapshot.snapshotItem(i);
         data = node.data;
         if (match = data.match(Linkify.regString)) {
-          links.pushArrays(Linkify.gatherLinks(match, node));
-        }
-      }
-      if (Conf['Linkify']) {
-        for (_j = 0, _len1 = links.length; _j < _len1; _j++) {
-          range = links[_j];
-          this.nodes.links.push(Linkify.makeLink(range));
+          Linkify.gatherLinks(match, node, this);
         }
       }
       if (!(Conf['Embedding'] || Conf['Link Title'])) {
         return;
       }
-      _ref1 = this.nodes.links || links;
-      for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-        range = _ref1[_k];
-        if (link = Linkify.services(range)) {
+      _ref1 = this.nodes.links;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        range = _ref1[_j];
+        if (data = Linkify.services(range)) {
           if (Conf['Embedding']) {
-            Linkify.embed(link);
+            Linkify.embed(data);
           }
           if (Conf['Link Title']) {
-            Linkify.title(link);
+            Linkify.title(data);
           }
         }
       }
     },
-    gatherLinks: function(match, node) {
-      var data, i, len, len2, link, links, next, range, result;
+    gatherLinks: function(match, node, post) {
+      var data, i, len, len2, link, next, range, result;
 
-      links = [];
       i = 0;
       len = match.length;
       data = node.data;
@@ -6661,14 +6656,14 @@
         range = document.createRange();
         range.setStart(node, len2 = data.indexOf(link));
         range.setEnd(node, len2 + link.length);
-        links.push(range);
+        post.nodes.links.push(Linkify.makeLink(range));
       }
       range = document.createRange();
       range.setStart(node, len = data.indexOf(link));
       if ((data.length - (len += link.length)) > 0) {
         range.setEnd(node, len);
-        links.push(range);
-        return links;
+        post.nodes.links.push(Linkify.makeLink(range));
+        return;
       }
       while ((next = node.nextSibling) && next.nodeName.toLowerCase() !== 'br') {
         node = next;
@@ -6683,8 +6678,7 @@
         }
         range.setEnd(node, node.length);
       }
-      links.push(range);
-      return links;
+      post.nodes.links.push(Linkify.makeLink(range));
     },
     makeLink: function(range) {
       var a, link;
@@ -6703,15 +6697,12 @@
     services: function(link) {
       var href, key, match, type, _ref;
 
-      href = Conf['Linkify'] ? link.href : link.toString();
+      href = link.href;
       _ref = Linkify.types;
       for (key in _ref) {
         type = _ref[key];
         if (!(match = type.regExp.exec(href))) {
           continue;
-        }
-        if (!Conf['Linkify']) {
-          link = Linkify.makeLink(link);
         }
         return [key, match[1], match[2], link];
       }
@@ -6732,6 +6723,36 @@
       $.addClass(link, "" + embed.dataset.service);
       $.on(embed, 'click', Linkify.cb.toggle);
       return $.after(link, [$.tn(' '), embed]);
+    },
+    title: function(data) {
+      var err, key, link, options, service, title, titles, uid;
+
+      key = data[0], uid = data[1], options = data[2], link = data[3];
+      service = Linkify.types[key].title;
+      titles = Conf['CachedTitles'];
+      if (title = titles[uid]) {
+        link.textContent = title[0];
+        if (Conf['Embedding']) {
+          return link.nextElementSibling.dataset.title = title[0];
+        }
+      } else {
+        try {
+          $.cache(service.api(uid), function() {
+            return title = Linkify.cb.title.apply(this, [data]);
+          });
+        } catch (_error) {
+          err = _error;
+          link.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
+          return;
+        }
+        if (title) {
+          titles[uid] = [title, Date.now()];
+          return $.set('CachedTitles', titles);
+        }
+      }
+    },
+    titleSync: function(value) {
+      return Conf['CachedTitles'] = value;
     },
     cb: {
       toggle: function() {
@@ -6787,39 +6808,6 @@
           }
         }).call(this);
       }
-    },
-    title: function(data) {
-      var key, link, options, service, title, titles, uid;
-
-      key = data[0], uid = data[1], options = data[2], link = data[3];
-      titles = {};
-      service = Linkify.types[key].title;
-      title = "";
-      return $.get('CachedTitles', {}, function(item) {
-        var err;
-
-        titles = item['CachedTitles'];
-        if (title = titles[uid]) {
-          link.textContent = title[0];
-          if (Conf['Embedding']) {
-            link.nextElementSibling.dataset.title = title[0];
-          }
-        } else {
-          try {
-            $.cache(service.api(uid), function() {
-              return title = Linkify.cb.title.apply(this, [data]);
-            });
-          } catch (_error) {
-            err = _error;
-            link.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
-            return;
-          }
-          if (title) {
-            titles[uid] = [title, Date.now()];
-            return $.set('CachedTitles', titles);
-          }
-        }
-      });
     },
     types: {
       YouTube: {
@@ -14526,7 +14514,8 @@
         'Enabled Mascots nsfw': [],
         'Deleted Mascots': [],
         'Hidden Categories': ["Questionable"],
-        'selectedArchives': {}
+        'selectedArchives': {},
+        'CachedTitles': {}
       });
       return $.get(Conf, Main.initFeatures);
     },
@@ -14534,10 +14523,6 @@
       var init, pathname, _ref;
 
       Conf = items;
-      if (Conf['Post Form Style'] === 'transparent fade') {
-        $.set('Post Form Style', Conf['Post Form Style'] = 'fixed');
-        $.set('Transparent Post Form', Conf['Transparent Post Form'] = true);
-      }
       pathname = location.pathname.split('/');
       g.BOARD = new Board(pathname[1]);
       g.VIEW = (function() {
