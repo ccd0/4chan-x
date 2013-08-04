@@ -98,12 +98,12 @@
   "boards": ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "q", "tg", "vr"],
   "files": ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "q", "tg", "vr"]
 }, {
-  "uid": 11,
+  "uid": 13,
   "name": "Foolz Beta",
   "domain": "beta.foolz.us",
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["a", "co", "gd", "jp", "m", "q", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "gd", "jp", "m", "q", "tg", "vg", "vp", "vr", "wsg"]
+  "boards": ["a", "co", "gd", "h", "jp", "m", "mlp", "q", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
+  "files": ["a", "gd", "h", "jp", "m", "q", "tg", "u", "vg", "vp", "vr", "wsg"]
 }]
