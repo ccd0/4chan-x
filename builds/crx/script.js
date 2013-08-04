@@ -6744,7 +6744,9 @@
       var err, key, link, options, service, title, titles, uid;
 
       key = data[0], uid = data[1], options = data[2], link = data[3];
-      service = Linkify.types[key].title;
+      if (!(service = Linkify.types[key].title)) {
+        return;
+      }
       titles = Conf['CachedTitles'];
       if (title = titles[uid]) {
         link.textContent = title[0];

@@ -152,7 +152,7 @@ Linkify =
 
   title: (data) ->
     [key, uid, options, link] = data
-    service = Linkify.types[key].title
+    return unless service = Linkify.types[key].title
     titles = Conf['CachedTitles']
     if title = titles[uid]
       link.textContent = title[0]
