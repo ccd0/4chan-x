@@ -10209,6 +10209,7 @@
         };
       }
       Conf['selectedArchives'] = {};
+      Conf['CachedTitles'] = [];
       $.get(Conf, Main.initFeatures);
       $.on(d, '4chanMainInit', Main.initStyle);
       return $.asap((function() {
