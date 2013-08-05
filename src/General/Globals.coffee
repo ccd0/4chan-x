@@ -1720,7 +1720,6 @@ input[type=password]:hover,
 input[type=text]:not([disabled]):hover,
 input#fs_search:hover,
 input.field:hover,
-.webkit select:hover,
 textarea:hover,
 #appchanx-settings input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
@@ -1729,7 +1728,6 @@ input[type=password]:focus,
 input[type=text]:focus,
 input#fs_search:focus,
 input.field:focus,
-.webkit select:focus,
 textarea:focus,
 #appchanx-settings input:focus {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;

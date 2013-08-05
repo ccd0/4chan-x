@@ -7,7 +7,6 @@ Style =
 
   asapInit: ->
     <% if (type === 'crx') { %>
-    $.addClass doc, 'webkit'
     $.addClass doc, 'blink'
     <% } else { %>
     $.addClass doc, 'gecko'
