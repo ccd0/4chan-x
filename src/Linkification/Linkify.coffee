@@ -233,51 +233,50 @@ Linkify =
           "[#{key}] #{@status}'d"
 
   types:
-    YouTube:
-      regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/
-      el: ->
-        $.el 'iframe',
-          src: "//www.youtube.com/embed/#{@name}#{if @option then '#' + @option else ''}?wmode=opaque"
-      title:
-        api: (uid) -> "https://gdata.youtube.com/feeds/api/videos/#{uid}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
-        text: -> JSON.parse(@responseText).entry.title.$t
-
-    Vocaroo:
-      regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
-      style: 'border: 0; width: 150px; height: 45px;'
-      el: ->
-        $.el 'object',
-          innerHTML:  "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
-
-    Vimeo:
-      regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
-      el: ->
-        $.el 'iframe',
-          src: "//player.vimeo.com/video/#{@name}?wmode=opaque"
-      title:
-        api: (uid) -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{uid}"
-        text: -> JSON.parse(@responseText).title
-
-    LiveLeak:
-      regExp:  /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
-      el: ->
-        $.el 'object',
-          innerHTML:  "<embed src='http://www.liveleak.com/e/#{@name}?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
-
     audio:
-      regExp:  /(.*\.(mp3|ogg|wav))$/
+      regExp: /(.*\.(mp3|ogg|wav))$/
       el: ->
         $.el 'audio',
           controls:    'controls'
           preload:     'auto'
           src:         @name
 
+    gist:
+      regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/
+      el: ->
+        div = $.el 'iframe',
+          # Github doesn't allow embedding straight from the site, so we use an external site to bypass that.
+          src: "http://www.purplegene.com/script?url=https://gist.github.com/#{@name}.js"
+      title:
+        api: (uid) -> "https://api.github.com/gists/#{uid}"
+        text: ->
+          response = JSON.parse(@responseText).files
+          return file for file of response when response.hasOwnProperty file
+
     image:
-      regExp:  /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/
+      regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/
       style: 'border: 0; width: auto; height: auto;'
       el: ->
         $.el 'div',
           innerHTML: "<a target=_blank href='#{@dataset.originalurl}'><img src='#{@dataset.originalurl}'></a>"
+
+    InstallGentoo:
+      regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/
+      el: ->
+        $.el 'iframe',
+          src: "http://paste.installgentoo.com/view/embed/#{@name}"
+
+    LiveLeak:
+      regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
+      el: ->
+        $.el 'object',
+          innerHTML:  "<embed src='http://www.liveleak.com/e/#{@name}?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+
+    pastebin:
+      regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/
+      el: ->
+        div = $.el 'iframe',
+          src: "http://pastebin.com/embed_iframe.php?i=#{@name}"
 
     SoundCloud:
       regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
@@ -297,26 +296,48 @@ Linkify =
         api: (uid) -> "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{uid}"
         text: -> JSON.parse(@responseText).title
 
-    pastebin:
-      regExp:  /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/
-      el: ->
-        div = $.el 'iframe',
-          src: "http://pastebin.com/embed_iframe.php?i=#{@name}"
+#    WIP
+#
+#    TwitchTV:
+#      regExp: /twitch\.tv\/(\w+)\/(?:b\/)?(\d+)/i
+#      style: "border: none; width: 640px; height: 360px;"
+#      el: ->
+#        [_, channel, archive] = @result
+#        el = $.el 'object',
+#          data: 'http://www.twitch.tv/widgets/archive_embed_player.swf'
+#          innerHTML: """
+#<param name='allowFullScreen' value='true' />
+#<param name='flashvars' value='channel=#{channel}&start_volume=25&auto_play=false&archive_id=#{archive}' />
+#"""
 
-    gist:
-      regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/
+    Vocaroo:
+      regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/
+      style: 'border: 0; width: 150px; height: 45px;'
       el: ->
-        div = $.el 'iframe',
-          # Github doesn't allow embedding straight from the site, so we use an external site to bypass that.
-          src: "http://www.purplegene.com/script?url=https://gist.github.com/#{@name}.js"
-      title:
-        api: (uid) -> "https://api.github.com/gists/#{uid}"
-        text: ->
-          response = JSON.parse(@responseText).files
-          return file for file of response when response.hasOwnProperty file
+        $.el 'object',
+          innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
 
-    InstallGentoo:
-      regExp:  /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/
+    Vimeo:
+      regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
       el: ->
         $.el 'iframe',
-          src: "http://paste.installgentoo.com/view/embed/#{@name}"
+          src: "//player.vimeo.com/video/#{@name}?wmode=opaque"
+      title:
+        api: (uid) -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{uid}"
+        text: -> JSON.parse(@responseText).title
+
+    Vine:
+      regExp: /.*(?:vine.co\/)([^#\&\?]*).*/
+      style: 'border: none; width: 500px; height: 500px;'
+      el: ->
+        $.el 'iframe',
+          src: "https://vine.co/#{@name}/card"
+
+    YouTube:
+      regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/
+      el: ->
+        $.el 'iframe',
+          src: "//www.youtube.com/embed/#{@name}#{if @option then '#' + @option else ''}?wmode=opaque"
+      title:
+        api: (uid) -> "https://gdata.youtube.com/feeds/api/videos/#{uid}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
+        text: -> JSON.parse(@responseText).entry.title.$t

@@ -4537,55 +4537,6 @@
       }
     },
     types: {
-      YouTube: {
-        regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/,
-        el: function() {
-          return $.el('iframe', {
-            src: "//www.youtube.com/embed/" + this.name + (this.option ? '#' + this.option : '') + "?wmode=opaque"
-          });
-        },
-        title: {
-          api: function(uid) {
-            return "https://gdata.youtube.com/feeds/api/videos/" + uid + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
-          },
-          text: function() {
-            return JSON.parse(this.responseText).entry.title.$t;
-          }
-        }
-      },
-      Vocaroo: {
-        regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
-        style: 'border: 0; width: 150px; height: 45px;',
-        el: function() {
-          return $.el('object', {
-            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
-          });
-        }
-      },
-      Vimeo: {
-        regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
-        el: function() {
-          return $.el('iframe', {
-            src: "//player.vimeo.com/video/" + this.name + "?wmode=opaque"
-          });
-        },
-        title: {
-          api: function(uid) {
-            return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + uid;
-          },
-          text: function() {
-            return JSON.parse(this.responseText).title;
-          }
-        }
-      },
-      LiveLeak: {
-        regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
-        el: function() {
-          return $.el('object', {
-            innerHTML: "<embed src='http://www.liveleak.com/e/" + this.name + "?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
-          });
-        }
-      },
       audio: {
         regExp: /(.*\.(mp3|ogg|wav))$/,
         el: function() {
@@ -4596,12 +4547,63 @@
           });
         }
       },
+      gist: {
+        regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/,
+        el: function() {
+          var div;
+
+          return div = $.el('iframe', {
+            src: "http://www.purplegene.com/script?url=https://gist.github.com/" + this.name + ".js"
+          });
+        },
+        title: {
+          api: function(uid) {
+            return "https://api.github.com/gists/" + uid;
+          },
+          text: function() {
+            var file, response;
+
+            response = JSON.parse(this.responseText).files;
+            for (file in response) {
+              if (response.hasOwnProperty(file)) {
+                return file;
+              }
+            }
+          }
+        }
+      },
       image: {
         regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/,
         style: 'border: 0; width: auto; height: auto;',
         el: function() {
           return $.el('div', {
             innerHTML: "<a target=_blank href='" + this.dataset.originalurl + "'><img src='" + this.dataset.originalurl + "'></a>"
+          });
+        }
+      },
+      InstallGentoo: {
+        regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/,
+        el: function() {
+          return $.el('iframe', {
+            src: "http://paste.installgentoo.com/view/embed/" + this.name
+          });
+        }
+      },
+      LiveLeak: {
+        regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
+        el: function() {
+          return $.el('object', {
+            innerHTML: "<embed src='http://www.liveleak.com/e/" + this.name + "?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+          });
+        }
+      },
+      pastebin: {
+        regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/,
+        el: function() {
+          var div;
+
+          return div = $.el('iframe', {
+            src: "http://pastebin.com/embed_iframe.php?i=" + this.name
           });
         }
       },
@@ -4632,47 +4634,54 @@
           }
         }
       },
-      pastebin: {
-        regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/,
+      Vocaroo: {
+        regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
+        style: 'border: 0; width: 150px; height: 45px;',
         el: function() {
-          var div;
-
-          return div = $.el('iframe', {
-            src: "http://pastebin.com/embed_iframe.php?i=" + this.name
+          return $.el('object', {
+            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
           });
         }
       },
-      gist: {
-        regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/,
+      Vimeo: {
+        regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
         el: function() {
-          var div;
-
-          return div = $.el('iframe', {
-            src: "http://www.purplegene.com/script?url=https://gist.github.com/" + this.name + ".js"
+          return $.el('iframe', {
+            src: "//player.vimeo.com/video/" + this.name + "?wmode=opaque"
           });
         },
         title: {
           api: function(uid) {
-            return "https://api.github.com/gists/" + uid;
+            return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + uid;
           },
           text: function() {
-            var file, response;
-
-            response = JSON.parse(this.responseText).files;
-            for (file in response) {
-              if (response.hasOwnProperty(file)) {
-                return file;
-              }
-            }
+            return JSON.parse(this.responseText).title;
           }
         }
       },
-      InstallGentoo: {
-        regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/,
+      Vine: {
+        regExp: /.*(?:vine.co\/)([^#\&\?]*).*/,
+        style: 'border: none; width: 500px; height: 500px;',
         el: function() {
           return $.el('iframe', {
-            src: "http://paste.installgentoo.com/view/embed/" + this.name
+            src: "https://vine.co/" + this.name + "/card"
           });
+        }
+      },
+      YouTube: {
+        regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/,
+        el: function() {
+          return $.el('iframe', {
+            src: "//www.youtube.com/embed/" + this.name + (this.option ? '#' + this.option : '') + "?wmode=opaque"
+          });
+        },
+        title: {
+          api: function(uid) {
+            return "https://gdata.youtube.com/feeds/api/videos/" + uid + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
+          },
+          text: function() {
+            return JSON.parse(this.responseText).entry.title.$t;
+          }
         }
       }
     }
