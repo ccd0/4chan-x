@@ -2770,13 +2770,12 @@
     fd = new FormData();
     for (key in form) {
       val = form[key];
-      if (!val) {
-        continue;
-      }
-      if (val.size && val.name) {
-        fd.append(key, val, val.name);
-      } else {
-        fd.append(key, val);
+      if (val) {
+        if (val.size && val.name) {
+          fd.append(key, val, val.name);
+        } else {
+          fd.append(key, val);
+        }
       }
     }
     return fd;
@@ -3451,7 +3450,7 @@
       _ref1 = Get.allQuotelinksLinkingTo(this);
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         quotelink = _ref1[_j];
-        if ($.hasClass(quotelink, 'deadlink')) {
+        if (!(!$.hasClass(quotelink, 'deadlink'))) {
           continue;
         }
         $.add(quotelink, $.tn('\u00A0(Dead)'));
@@ -4154,6 +4153,7 @@
         date: data.now,
         dateUTC: data.time,
         comment: data.com,
+        capReps: data.capcode_replies,
         isSticky: !!data.sticky,
         isClosed: !!data.closed
       };
@@ -4181,9 +4181,9 @@
       @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
       */
 
-      var a, boardID, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
+      var a, array, boardID, capReps, capcode, capcodeClass, capcodeReplies, capcodeStart, capcodeType, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, generateCapcodeReplies, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
 
-      postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
+      postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, capReps = o.capReps, file = o.file;
       isOP = postID === threadID;
       staticPath = '//static.4chan.org/image/';
       if (email) {
@@ -4257,10 +4257,32 @@
       tripcode = tripcode ? " <span class=postertrip>" + tripcode + "</span>" : '';
       sticky = isSticky ? " <img src=" + staticPath + "sticky.gif alt=Sticky title=Sticky class=stickyIcon>" : '';
       closed = isClosed ? " <img src=" + staticPath + "closed.gif alt=Closed title=Closed class=closedIcon>" : '';
+      capcodeReplies = '';
+      if (capReps) {
+        generateCapcodeReplies = function(capcodeType, array) {
+          return "<span class=smaller><span class=bold>" + ((function() {
+            switch (capcodeType) {
+              case 'admin':
+                return 'Administrator';
+              case 'mod':
+                return 'Moderator';
+              case 'developer':
+                return 'Developer';
+            }
+          })()) + " Repl" + (array.length > 1 ? 'ies' : 'y') + ":</span> " + (array.map(function(ID) {
+            return "<a href='/" + boardID + "/res/" + threadID + "#p" + ID + "' class=quotelink>&gt;&gt;" + ID + "</a>";
+          }).join(' ')) + "</span><br>";
+        };
+        for (capcodeType in capReps) {
+          array = capReps[capcodeType];
+          capcodeReplies += generateCapcodeReplies(capcodeType, array);
+        }
+        capcodeReplies = "<br><br><span class=capcodeReplies>" + capcodeReplies + "</span>";
+      }
       container = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote> ") + '</div>'
+        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + capcodeReplies + "</blockquote> ") + '</div>'
       });
       _ref = $$('.quotelink', container);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -6627,6 +6649,9 @@
       len = snapshot.snapshotLength;
       while (++i < len) {
         node = snapshot.snapshotItem(i);
+        if (node.parentElement.nodeName === "A") {
+          continue;
+        }
         data = node.data;
         if (Linkify.regString.test(data)) {
           Linkify.regString.lastIndex = 0;
@@ -6659,7 +6684,7 @@
         index = match.index;
         link = match[0];
         len2 = index + link.length;
-        if (len - len2 === 0) {
+        if (len === len2) {
           break;
         }
         range = document.createRange();
@@ -6692,10 +6717,7 @@
         }
       }
       if (range.collapsed) {
-        if (node.nodeName === 'WBR') {
-          node = node.previousSibling;
-        }
-        range.setEnd(node, node.length);
+        range.setEndAfter(node);
       }
       return Linkify.makeLink(range, post);
     },
@@ -6727,21 +6749,28 @@
       }
     },
     embed: function(data) {
-      var embed, key, link, options, uid;
+      var embed, href, key, link, name, options, uid, value, _ref;
 
       key = data[0], uid = data[1], options = data[2], link = data[3];
+      href = link.href;
       embed = $.el('a', {
-        name: uid,
-        option: options,
         className: 'embedder',
         href: 'javascript:;',
         textContent: '(embed)'
       });
-      embed.dataset.service = key;
-      embed.dataset.originalurl = link.href;
-      $.addClass(link, "" + embed.dataset.service);
+      _ref = {
+        key: key,
+        href: href,
+        uid: uid,
+        options: options
+      };
+      for (name in _ref) {
+        value = _ref[name];
+        embed.dataset[name] = value;
+      }
+      $.addClass(link, "" + embed.dataset.key);
       $.on(embed, 'click', Linkify.cb.toggle);
-      return $.after(link, [$.tn(' '), embed]);
+      $.after(link, [$.tn(' '), embed]);
     },
     title: function(data) {
       var err, key, link, options, service, title, titles, uid;
@@ -6787,23 +6816,24 @@
       embed: function(a) {
         var el, style, type;
 
-        el = (type = Linkify.types[a.dataset.service]).el.call(a);
+        el = (type = Linkify.types[a.dataset.key]).el.call(a);
         el.style.cssText = (style = type.style) ? style : "border: 0; width: 640px; height: 390px";
         a.textContent = '(unembed)';
         return el;
       },
       unembed: function(a) {
-        var el, url;
+        var el, href;
 
+        href = a.dataset.href;
         el = $.el('a', {
           rel: 'nofollow noreferrer',
           target: 'blank',
           className: 'linkify',
-          href: url = a.dataset.originalurl,
-          textContent: a.dataset.title || url
+          href: href,
+          textContent: a.dataset.title || href
         });
         a.textContent = '(embed)';
-        $.addClass(el, "" + a.dataset.service);
+        $.addClass(el, "" + a.dataset.key);
         return el;
       },
       title: function(data) {
@@ -6831,108 +6861,13 @@
       }
     },
     types: {
-      YouTube: {
-        regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/,
-        el: function() {
-          return $.el('iframe', {
-            src: "//www.youtube.com/embed/" + this.name + (this.option ? '#' + this.option : '') + "?wmode=opaque"
-          });
-        },
-        title: {
-          api: function(uid) {
-            return "https://gdata.youtube.com/feeds/api/videos/" + uid + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
-          },
-          text: function() {
-            return JSON.parse(this.responseText).entry.title.$t;
-          }
-        }
-      },
-      Vocaroo: {
-        regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
-        style: 'border: 0; width: 150px; height: 45px;',
-        el: function() {
-          return $.el('object', {
-            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
-          });
-        }
-      },
-      Vimeo: {
-        regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
-        el: function() {
-          return $.el('iframe', {
-            src: "//player.vimeo.com/video/" + this.name + "?wmode=opaque"
-          });
-        },
-        title: {
-          api: function(uid) {
-            return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + uid;
-          },
-          text: function() {
-            return JSON.parse(this.responseText).title;
-          }
-        }
-      },
-      LiveLeak: {
-        regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
-        el: function() {
-          return $.el('object', {
-            innerHTML: "<embed src='http://www.liveleak.com/e/" + this.name + "?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
-          });
-        }
-      },
       audio: {
         regExp: /(.*\.(mp3|ogg|wav))$/,
         el: function() {
           return $.el('audio', {
             controls: 'controls',
             preload: 'auto',
-            src: this.name
-          });
-        }
-      },
-      image: {
-        regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/,
-        style: 'border: 0; width: auto; height: auto;',
-        el: function() {
-          return $.el('div', {
-            innerHTML: "<a target=_blank href='" + this.dataset.originalurl + "'><img src='" + this.dataset.originalurl + "'></a>"
-          });
-        }
-      },
-      SoundCloud: {
-        regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
-        style: 'height: auto; width: 500px; display: inline-block;',
-        el: function() {
-          var div;
-
-          div = $.el('div', {
-            className: "soundcloud",
-            name: "soundcloud"
-          });
-          $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + this.name, {
-            div: div,
-            onloadend: function() {
-              return this.div.innerHTML = JSON.parse(this.responseText).html;
-            }
-          }, false);
-          return div;
-        },
-        title: {
-          api: function(uid) {
-            return "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + uid;
-          },
-          text: function() {
-            return JSON.parse(this.responseText).title;
-          }
-        }
-      },
-      pastebin: {
-        regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/,
-        el: function() {
-          var div;
-
-          return div = $.el('iframe', {
-            src: "http://pastebin.com/embed_iframe.php?i=" + this.name
+            src: this.dataset.uid
           });
         }
       },
@@ -6942,7 +6877,7 @@
           var div;
 
           return div = $.el('iframe', {
-            src: "http://www.purplegene.com/script?url=https://gist.github.com/" + this.name + ".js"
+            src: "http://www.purplegene.com/script?url=https://gist.github.com/" + this.dataset.uid + ".js"
           });
         },
         title: {
@@ -6961,12 +6896,137 @@
           }
         }
       },
+      image: {
+        regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/,
+        style: 'border: 0; width: auto; height: auto;',
+        el: function() {
+          return $.el('div', {
+            innerHTML: "<a target=_blank href='" + this.dataset.href + "'><img src='" + this.dataset.href + "'></a>"
+          });
+        }
+      },
       InstallGentoo: {
         regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/,
         el: function() {
           return $.el('iframe', {
-            src: "http://paste.installgentoo.com/view/embed/" + this.name
+            src: "http://paste.installgentoo.com/view/embed/" + this.dataset.uid
           });
+        }
+      },
+      LiveLeak: {
+        regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
+        el: function() {
+          return $.el('object', {
+            innerHTML: "<embed src='http://www.liveleak.com/e/" + this.dataset.uid + "?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+          });
+        }
+      },
+      pastebin: {
+        regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/,
+        el: function() {
+          var div;
+
+          return div = $.el('iframe', {
+            src: "http://pastebin.com/embed_iframe.php?i=" + this.dataset.uid
+          });
+        }
+      },
+      SoundCloud: {
+        regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
+        style: 'height: auto; width: 500px; display: inline-block;',
+        el: function() {
+          var div;
+
+          div = $.el('div', {
+            className: "soundcloud",
+            name: "soundcloud"
+          });
+          $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + this.dataset.uid, {
+            div: div,
+            onloadend: function() {
+              return this.div.innerHTML = JSON.parse(this.responseText).html;
+            }
+          }, false);
+          return div;
+        },
+        title: {
+          api: function(uid) {
+            return "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + uid;
+          },
+          text: function() {
+            return JSON.parse(this.responseText).title;
+          }
+        }
+      },
+      TwitchTV: {
+        regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/,
+        style: "border: none; width: 640px; height: 360px;",
+        el: function() {
+          var channel, chapter, result, _;
+
+          if (result = /(\w+)\/(?:[a-z]\/)?(\d+)/i.exec(this.dataset.uid)) {
+            _ = result[0], channel = result[1], chapter = result[2];
+            return $.el('object', {
+              data: 'http://www.twitch.tv/widgets/archive_embed_player.swf',
+              innerHTML: "<param name='allowFullScreen' value='true' />\n<param name='flashvars' value='channel=" + channel + "&start_volume=25&auto_play=false" + (chapter ? "&chapter_id=" + chapter : "") + "' />"
+            });
+          } else {
+            channel = (/(\w+)/.exec(this.dataset.uid))[0];
+            return $.el('object', {
+              data: "http://www.twitch.tv/widgets/live_embed_player.swf?channel=" + channel,
+              innerHTML: "<param  name=\"allowFullScreen\" value=\"true\" />\n<param  name=\"movie\" value=\"http://www.twitch.tv/widgets/live_embed_player.swf\" />\n<param  name=\"flashvars\" value=\"hostname=www.twitch.tv&channel=" + channel + "&auto_play=true&start_volume=25\" />"
+            });
+          }
+        }
+      },
+      Vocaroo: {
+        regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
+        style: 'border: 0; width: 150px; height: 45px;',
+        el: function() {
+          return $.el('object', {
+            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.dataset.uid.replace(/^i\//, '')) + "&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+          });
+        }
+      },
+      Vimeo: {
+        regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
+        el: function() {
+          return $.el('iframe', {
+            src: "//player.vimeo.com/video/" + this.dataset.uid + "?wmode=opaque"
+          });
+        },
+        title: {
+          api: function(uid) {
+            return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + uid;
+          },
+          text: function() {
+            return JSON.parse(this.responseText).title;
+          }
+        }
+      },
+      Vine: {
+        regExp: /.*(?:vine.co\/)([^#\&\?]*).*/,
+        style: 'border: none; width: 500px; height: 500px;',
+        el: function() {
+          return $.el('iframe', {
+            src: "https://vine.co/" + this.dataset.uid + "/card"
+          });
+        }
+      },
+      YouTube: {
+        regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/,
+        el: function() {
+          return $.el('iframe', {
+            src: "//www.youtube.com/embed/" + this.dataset.uid + (this.dataset.option ? '#' + this.dataset.option : '') + "?wmode=opaque"
+          });
+        },
+        title: {
+          api: function(uid) {
+            return "https://gdata.youtube.com/feeds/api/videos/" + uid + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
+          },
+          text: function() {
+            return JSON.parse(this.responseText).entry.title.$t;
+          }
         }
       }
     }
@@ -7250,12 +7310,11 @@
         list = $("#list-" + type, QR.nodes.el);
         for (_i = 0, _len = arr.length; _i < _len; _i++) {
           val = arr[_i];
-          if (!val) {
-            continue;
+          if (val) {
+            $.add(list, $.el('option', {
+              textContent: val
+            }));
           }
-          $.add(list, $.el('option', {
-            textContent: val
-          }));
         }
       },
       getPassword: function() {
