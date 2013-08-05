@@ -137,20 +137,20 @@ Linkify =
 
   embed: (data) ->
     [key, uid, options, link] = data
+    href = link.href
     embed = $.el 'a',
-      name:        uid
-      option:      options
       className:   'embedder'
       href:        'javascript:;'
       textContent: '(embed)'
 
-    embed.dataset.service     = key
-    embed.dataset.originalurl = link.href
+    for name, value of {key, href, uid, options}
+      embed.dataset[name] = value
 
-    $.addClass link, "#{embed.dataset.service}"
+    $.addClass link, "#{embed.dataset.key}"
 
     $.on embed, 'click', Linkify.cb.toggle
     $.after link, [$.tn(' '), embed]
+    return
 
   title: (data) ->
     [key, uid, options, link] = data
@@ -190,7 +190,7 @@ Linkify =
 
     embed: (a) ->
       # We create an element to embed
-      el = (type = Linkify.types[a.dataset.service]).el.call a
+      el = (type = Linkify.types[a.dataset.key]).el.call a
 
       # Set style values.
       el.style.cssText = if style = type.style
@@ -204,15 +204,16 @@ Linkify =
 
     unembed: (a) ->
       # Recreate the original link.
+      {href} = a.dataset
       el = $.el 'a',
         rel:         'nofollow noreferrer'
         target:      'blank'
         className:   'linkify'
-        href:        url = a.dataset.originalurl
-        textContent: a.dataset.title or url
+        href:        href
+        textContent: a.dataset.title or href
 
       a.textContent = '(embed)'
-      $.addClass el, "#{a.dataset.service}"
+      $.addClass el, "#{a.dataset.key}"
 
       return el
 
@@ -239,14 +240,14 @@ Linkify =
         $.el 'audio',
           controls:    'controls'
           preload:     'auto'
-          src:         @name
+          src:         @dataset.uid
 
     gist:
       regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/
       el: ->
         div = $.el 'iframe',
           # Github doesn't allow embedding straight from the site, so we use an external site to bypass that.
-          src: "http://www.purplegene.com/script?url=https://gist.github.com/#{@name}.js"
+          src: "http://www.purplegene.com/script?url=https://gist.github.com/#{@dataset.uid}.js"
       title:
         api: (uid) -> "https://api.github.com/gists/#{uid}"
         text: ->
@@ -258,25 +259,25 @@ Linkify =
       style: 'border: 0; width: auto; height: auto;'
       el: ->
         $.el 'div',
-          innerHTML: "<a target=_blank href='#{@dataset.originalurl}'><img src='#{@dataset.originalurl}'></a>"
+          innerHTML: "<a target=_blank href='#{@dataset.href}'><img src='#{@dataset.href}'></a>"
 
     InstallGentoo:
       regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/
       el: ->
         $.el 'iframe',
-          src: "http://paste.installgentoo.com/view/embed/#{@name}"
+          src: "http://paste.installgentoo.com/view/embed/#{@dataset.uid}"
 
     LiveLeak:
       regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
       el: ->
         $.el 'object',
-          innerHTML:  "<embed src='http://www.liveleak.com/e/#{@name}?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+          innerHTML:  "<embed src='http://www.liveleak.com/e/#{@dataset.uid}?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
 
     pastebin:
       regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/
       el: ->
         div = $.el 'iframe',
-          src: "http://pastebin.com/embed_iframe.php?i=#{@name}"
+          src: "http://pastebin.com/embed_iframe.php?i=#{@dataset.uid}"
 
     SoundCloud:
       regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
@@ -286,7 +287,7 @@ Linkify =
           className: "soundcloud"
           name: "soundcloud"
         $.ajax(
-          "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{@name}"
+          "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{@dataset.uid}"
           div: div
           onloadend: ->
             @div.innerHTML = JSON.parse(@responseText).html
@@ -315,13 +316,13 @@ Linkify =
       style: 'border: 0; width: 150px; height: 45px;'
       el: ->
         $.el 'object',
-          innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+          innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@dataset.uid.replace /^i\//, ''}&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
 
     Vimeo:
       regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
       el: ->
         $.el 'iframe',
-          src: "//player.vimeo.com/video/#{@name}?wmode=opaque"
+          src: "//player.vimeo.com/video/#{@dataset.uid}?wmode=opaque"
       title:
         api: (uid) -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{uid}"
         text: -> JSON.parse(@responseText).title
@@ -331,13 +332,13 @@ Linkify =
       style: 'border: none; width: 500px; height: 500px;'
       el: ->
         $.el 'iframe',
-          src: "https://vine.co/#{@name}/card"
+          src: "https://vine.co/#{@dataset.uid}/card"
 
     YouTube:
       regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/
       el: ->
         $.el 'iframe',
-          src: "//www.youtube.com/embed/#{@name}#{if @option then '#' + @option else ''}?wmode=opaque"
+          src: "//www.youtube.com/embed/#{@dataset.uid}#{if @dataset.option then '#' + @dataset.option else ''}?wmode=opaque"
       title:
         api: (uid) -> "https://gdata.youtube.com/feeds/api/videos/#{uid}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
         text: -> JSON.parse(@responseText).entry.title.$t

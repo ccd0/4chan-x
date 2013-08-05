@@ -4433,21 +4433,28 @@
       }
     },
     embed: function(data) {
-      var embed, key, link, options, uid;
+      var embed, href, key, link, name, options, uid, value, _ref;
 
       key = data[0], uid = data[1], options = data[2], link = data[3];
+      href = link.href;
       embed = $.el('a', {
-        name: uid,
-        option: options,
         className: 'embedder',
         href: 'javascript:;',
         textContent: '(embed)'
       });
-      embed.dataset.service = key;
-      embed.dataset.originalurl = link.href;
-      $.addClass(link, "" + embed.dataset.service);
+      _ref = {
+        key: key,
+        href: href,
+        uid: uid,
+        options: options
+      };
+      for (name in _ref) {
+        value = _ref[name];
+        embed.dataset[name] = value;
+      }
+      $.addClass(link, "" + embed.dataset.key);
       $.on(embed, 'click', Linkify.cb.toggle);
-      return $.after(link, [$.tn(' '), embed]);
+      $.after(link, [$.tn(' '), embed]);
     },
     title: function(data) {
       var err, key, link, options, service, title, titles, uid;
@@ -4493,23 +4500,24 @@
       embed: function(a) {
         var el, style, type;
 
-        el = (type = Linkify.types[a.dataset.service]).el.call(a);
+        el = (type = Linkify.types[a.dataset.key]).el.call(a);
         el.style.cssText = (style = type.style) ? style : "border: 0; width: 640px; height: 390px";
         a.textContent = '(unembed)';
         return el;
       },
       unembed: function(a) {
-        var el, url;
+        var el, href;
 
+        href = a.dataset.href;
         el = $.el('a', {
           rel: 'nofollow noreferrer',
           target: 'blank',
           className: 'linkify',
-          href: url = a.dataset.originalurl,
-          textContent: a.dataset.title || url
+          href: href,
+          textContent: a.dataset.title || href
         });
         a.textContent = '(embed)';
-        $.addClass(el, "" + a.dataset.service);
+        $.addClass(el, "" + a.dataset.key);
         return el;
       },
       title: function(data) {
@@ -4543,7 +4551,7 @@
           return $.el('audio', {
             controls: 'controls',
             preload: 'auto',
-            src: this.name
+            src: this.dataset.uid
           });
         }
       },
@@ -4553,7 +4561,7 @@
           var div;
 
           return div = $.el('iframe', {
-            src: "http://www.purplegene.com/script?url=https://gist.github.com/" + this.name + ".js"
+            src: "http://www.purplegene.com/script?url=https://gist.github.com/" + this.dataset.uid + ".js"
           });
         },
         title: {
@@ -4577,7 +4585,7 @@
         style: 'border: 0; width: auto; height: auto;',
         el: function() {
           return $.el('div', {
-            innerHTML: "<a target=_blank href='" + this.dataset.originalurl + "'><img src='" + this.dataset.originalurl + "'></a>"
+            innerHTML: "<a target=_blank href='" + this.dataset.href + "'><img src='" + this.dataset.href + "'></a>"
           });
         }
       },
@@ -4585,7 +4593,7 @@
         regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/,
         el: function() {
           return $.el('iframe', {
-            src: "http://paste.installgentoo.com/view/embed/" + this.name
+            src: "http://paste.installgentoo.com/view/embed/" + this.dataset.uid
           });
         }
       },
@@ -4593,7 +4601,7 @@
         regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
         el: function() {
           return $.el('object', {
-            innerHTML: "<embed src='http://www.liveleak.com/e/" + this.name + "?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+            innerHTML: "<embed src='http://www.liveleak.com/e/" + this.dataset.uid + "?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
           });
         }
       },
@@ -4603,7 +4611,7 @@
           var div;
 
           return div = $.el('iframe', {
-            src: "http://pastebin.com/embed_iframe.php?i=" + this.name
+            src: "http://pastebin.com/embed_iframe.php?i=" + this.dataset.uid
           });
         }
       },
@@ -4617,7 +4625,7 @@
             className: "soundcloud",
             name: "soundcloud"
           });
-          $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + this.name, {
+          $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + this.dataset.uid, {
             div: div,
             onloadend: function() {
               return this.div.innerHTML = JSON.parse(this.responseText).html;
@@ -4639,7 +4647,7 @@
         style: 'border: 0; width: 150px; height: 45px;',
         el: function() {
           return $.el('object', {
-            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.dataset.uid.replace(/^i\//, '')) + "&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
           });
         }
       },
@@ -4647,7 +4655,7 @@
         regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
         el: function() {
           return $.el('iframe', {
-            src: "//player.vimeo.com/video/" + this.name + "?wmode=opaque"
+            src: "//player.vimeo.com/video/" + this.dataset.uid + "?wmode=opaque"
           });
         },
         title: {
@@ -4664,7 +4672,7 @@
         style: 'border: none; width: 500px; height: 500px;',
         el: function() {
           return $.el('iframe', {
-            src: "https://vine.co/" + this.name + "/card"
+            src: "https://vine.co/" + this.dataset.uid + "/card"
           });
         }
       },
@@ -4672,7 +4680,7 @@
         regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/,
         el: function() {
           return $.el('iframe', {
-            src: "//www.youtube.com/embed/" + this.name + (this.option ? '#' + this.option : '') + "?wmode=opaque"
+            src: "//www.youtube.com/embed/" + this.dataset.uid + (this.dataset.option ? '#' + this.dataset.option : '') + "?wmode=opaque"
           });
         },
         title: {
