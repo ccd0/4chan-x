@@ -411,13 +411,12 @@
     fd = new FormData();
     for (key in form) {
       val = form[key];
-      if (!val) {
-        continue;
-      }
-      if (val.size && val.name) {
-        fd.append(key, val, val.name);
-      } else {
-        fd.append(key, val);
+      if (val) {
+        if (val.size && val.name) {
+          fd.append(key, val, val.name);
+        } else {
+          fd.append(key, val);
+        }
       }
     }
     return fd;
@@ -1092,7 +1091,7 @@
       _ref1 = Get.allQuotelinksLinkingTo(this);
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         quotelink = _ref1[_j];
-        if ($.hasClass(quotelink, 'deadlink')) {
+        if (!(!$.hasClass(quotelink, 'deadlink'))) {
           continue;
         }
         $.add(quotelink, $.tn('\u00A0(Dead)'));
@@ -1856,6 +1855,7 @@
         date: data.now,
         dateUTC: data.time,
         comment: data.com,
+        capReps: data.capcode_replies,
         isSticky: !!data.sticky,
         isClosed: !!data.closed
       };
@@ -1883,9 +1883,9 @@
       @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
       */
 
-      var a, boardID, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
+      var a, array, boardID, capReps, capcode, capcodeClass, capcodeReplies, capcodeStart, capcodeType, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, generateCapcodeReplies, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
 
-      postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
+      postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, capReps = o.capReps, file = o.file;
       isOP = postID === threadID;
       staticPath = '//static.4chan.org/image/';
       if (email) {
@@ -1959,10 +1959,32 @@
       tripcode = tripcode ? " <span class=postertrip>" + tripcode + "</span>" : '';
       sticky = isSticky ? " <img src=" + staticPath + "sticky.gif alt=Sticky title=Sticky class=stickyIcon>" : '';
       closed = isClosed ? " <img src=" + staticPath + "closed.gif alt=Closed title=Closed class=closedIcon>" : '';
+      capcodeReplies = '';
+      if (capReps) {
+        generateCapcodeReplies = function(capcodeType, array) {
+          return "<span class=smaller><span class=bold>" + ((function() {
+            switch (capcodeType) {
+              case 'admin':
+                return 'Administrator';
+              case 'mod':
+                return 'Moderator';
+              case 'developer':
+                return 'Developer';
+            }
+          })()) + " Repl" + (array.length > 1 ? 'ies' : 'y') + ":</span> " + (array.map(function(ID) {
+            return "<a href='/" + boardID + "/res/" + threadID + "#p" + ID + "' class=quotelink>&gt;&gt;" + ID + "</a>";
+          }).join(' ')) + "</span><br>";
+        };
+        for (capcodeType in capReps) {
+          array = capReps[capcodeType];
+          capcodeReplies += generateCapcodeReplies(capcodeType, array);
+        }
+        capcodeReplies = "<br><br><span class=capcodeReplies>" + capcodeReplies + "</span>";
+      }
       container = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote> ") + '</div>'
+        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + capcodeReplies + "</blockquote> ") + '</div>'
       });
       _ref = $$('.quotelink', container);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -5002,12 +5024,11 @@
         list = $("#list-" + type, QR.nodes.el);
         for (_i = 0, _len = arr.length; _i < _len; _i++) {
           val = arr[_i];
-          if (!val) {
-            continue;
+          if (val) {
+            $.add(list, $.el('option', {
+              textContent: val
+            }));
           }
-          $.add(list, $.el('option', {
-            textContent: val
-          }));
         }
       },
       getPassword: function() {
@@ -9892,14 +9913,13 @@
         _ref = Config.hotkeys;
         for (key in _ref) {
           val = _ref[key];
-          if (!(key in data.Conf)) {
-            continue;
+          if (key in data.Conf) {
+            data.Conf[key] = data.Conf[key].replace(/ctrl|alt|meta/g, function(s) {
+              return "" + (s[0].toUpperCase()) + s.slice(1);
+            }).replace(/(^|.+\+)[A-Z]$/g, function(s) {
+              return "Shift+" + s.slice(0, -1) + (s.slice(-1).toLowerCase());
+            });
           }
-          data.Conf[key] = data.Conf[key].replace(/ctrl|alt|meta/g, function(s) {
-            return "" + (s[0].toUpperCase()) + s.slice(1);
-          }).replace(/(^|.+\+)[A-Z]$/g, function(s) {
-            return "Shift+" + s.slice(0, -1) + (s.slice(-1).toLowerCase());
-          });
         }
         data.Conf.WatchedThreads = data.WatchedThreads;
       } else if (version[0] === '3') {
