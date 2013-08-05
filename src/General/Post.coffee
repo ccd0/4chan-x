@@ -167,8 +167,7 @@ class Post
     return if file
     # Get quotelinks/backlinks to this post
     # and paint them (Dead).
-    for quotelink in Get.allQuotelinksLinkingTo @
-      continue if $.hasClass quotelink, 'deadlink'
+    for quotelink in Get.allQuotelinksLinkingTo @ when not $.hasClass quotelink, 'deadlink'
       $.add quotelink, $.tn '\u00A0(Dead)'
       $.addClass quotelink, 'deadlink'
     return

@@ -24,8 +24,7 @@ $.formData = (form) ->
   if form instanceof HTMLFormElement
     return new FormData form
   fd = new FormData()
-  for key, val of form
-    continue unless val
+  for key, val of form when val
     # XXX GM bug
     # if val instanceof Blob
     if val.size and val.name

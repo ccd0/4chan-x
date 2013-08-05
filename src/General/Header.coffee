@@ -199,8 +199,7 @@ Header =
       '#boardNavDesktopFoot a[href*="boards.4chan.org"]'
     ].join ', '
     path = if useCatalog then 'catalog' else ''
-    for a in as
-      continue if a.dataset.only
+    for a in as when not a.dataset.only
       a.pathname = "/#{a.pathname.split('/')[1]}/#{path}"
     return
   toggleCatalogLinks: ->
