@@ -27,6 +27,7 @@ Build =
       date:     data.now
       dateUTC:  data.time
       comment:  data.com
+      capReps:  data.capcode_replies
       # thread status
       isSticky: !!data.sticky
       isClosed: !!data.closed
@@ -54,7 +55,7 @@ Build =
       postID, threadID, boardID
       name, capcode, tripcode, uniqueID, email, subject, flagCode, flagName, date, dateUTC
       isSticky, isClosed
-      comment
+      comment, capReps
       file
     } = o
     isOP = postID is threadID
@@ -172,22 +173,39 @@ Build =
     else
       fileHTML = ''
 
-    tripcode =
-      if tripcode
-        " <span class=postertrip>#{tripcode}</span>"
-      else
-        ''
+    tripcode = if tripcode
+      " <span class=postertrip>#{tripcode}</span>"
+    else
+      ''
 
-    sticky =
-      if isSticky
-        " <img src=#{staticPath}sticky.gif alt=Sticky title=Sticky class=stickyIcon>"
-      else
-        ''
-    closed =
-      if isClosed
-        " <img src=#{staticPath}closed.gif alt=Closed title=Closed class=closedIcon>"
-      else
-        ''
+    sticky = if isSticky
+      " <img src=#{staticPath}sticky.gif alt=Sticky title=Sticky class=stickyIcon>"
+    else
+      ''
+    closed = if isClosed
+      " <img src=#{staticPath}closed.gif alt=Closed title=Closed class=closedIcon>"
+    else
+      ''
+
+    capcodeReplies = ''
+    if capReps
+      generateCapcodeReplies = (capcodeType, array) ->
+        "<span class=smaller><span class=bold>#{
+          switch capcodeType
+            when 'admin'
+              'Administrator'
+            when 'mod'
+              'Moderator'
+            when 'developer'
+              'Developer'
+        } Repl#{if array.length > 1 then 'ies' else 'y'}:</span> #{
+          array.map (ID) ->
+            "<a href='/#{boardID}/res/#{threadID}#p#{ID}' class=quotelink>&gt;&gt;#{ID}</a>"
+          .join ' '
+        }</span><br>"
+      for capcodeType, array of capReps
+        capcodeReplies += generateCapcodeReplies capcodeType, array
+      capcodeReplies = "<br><br><span class=capcodeReplies>#{capcodeReplies}</span>"
 
     container = $.el 'div',
       id: "pc#{postID}"
@@ -241,7 +259,7 @@ Build =
 
         (if isOP then '' else fileHTML) +
 
-        "<blockquote class=postMessage id=m#{postID}>#{comment or ''}</blockquote> " +
+        "<blockquote class=postMessage id=m#{postID}>#{comment or ''}#{capcodeReplies}</blockquote> " +
 
       '</div>'
 
