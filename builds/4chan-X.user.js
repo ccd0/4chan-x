@@ -904,6 +904,7 @@
         post: post,
         info: info,
         comment: $('.postMessage', post),
+        links: [],
         quotelinks: [],
         backlinks: info.getElementsByClassName('backlink')
       };
