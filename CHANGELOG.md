@@ -1,7 +1,18 @@
 **MayhemYDG**:
 - Fix impossibility to create new threads when in dead threads.
 - Fix flag filtering on /sp/ and /int/.
+- Update archives. (with woxxy and proplex)
 - Minor fixes.
+- Minor optimizations.
+
+**Zixaphir**:
+- Linkifier Rewrite.
+- Fix Quote Threading toggle.
+- Minor optimizations.
+- Minor fixes.
+
+**aeosynth**:
+- Update Gruntfile.coffee.
 
 ### v1.2.25
 *2013-08-04*
