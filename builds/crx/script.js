@@ -4333,6 +4333,9 @@
       len = snapshot.snapshotLength;
       while (++i < len) {
         node = snapshot.snapshotItem(i);
+        if (node.parentElement.nodeName === "A") {
+          continue;
+        }
         data = node.data;
         if (Linkify.regString.test(data)) {
           Linkify.regString.lastIndex = 0;
@@ -4365,7 +4368,7 @@
         index = match.index;
         link = match[0];
         len2 = index + link.length;
-        if (len - len2 === 0) {
+        if (len === len2) {
           break;
         }
         range = document.createRange();
@@ -4398,10 +4401,7 @@
         }
       }
       if (range.collapsed) {
-        if (node.nodeName === 'WBR') {
-          node = node.previousSibling;
-        }
-        range.setEnd(node, node.length);
+        range.setEndAfter(node);
       }
       return Linkify.makeLink(range, post);
     },
@@ -4639,6 +4639,27 @@
           },
           text: function() {
             return JSON.parse(this.responseText).title;
+          }
+        }
+      },
+      TwitchTV: {
+        regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/,
+        style: "border: none; width: 640px; height: 360px;",
+        el: function() {
+          var channel, chapter, result, _;
+
+          if (result = /(\w+)\/(?:[a-z]\/)?(\d+)/i.exec(this.dataset.uid)) {
+            _ = result[0], channel = result[1], chapter = result[2];
+            return $.el('object', {
+              data: 'http://www.twitch.tv/widgets/archive_embed_player.swf',
+              innerHTML: "<param name='allowFullScreen' value='true' />\n<param name='flashvars' value='channel=" + channel + "&start_volume=25&auto_play=false" + (chapter ? "&chapter_id=" + chapter : "") + "' />"
+            });
+          } else {
+            channel = (/(\w+)/.exec(this.dataset.uid))[0];
+            return $.el('object', {
+              data: "http://www.twitch.tv/widgets/live_embed_player.swf?channel=" + channel,
+              innerHTML: "<param  name=\"allowFullScreen\" value=\"true\" />\n<param  name=\"movie\" value=\"http://www.twitch.tv/widgets/live_embed_player.swf\" />\n<param  name=\"flashvars\" value=\"hostname=www.twitch.tv&channel=" + channel + "&auto_play=true&start_volume=25\" />"
+            });
           }
         }
       },

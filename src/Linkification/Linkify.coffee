@@ -44,6 +44,9 @@ Linkify =
 
     while ++i < len
       node = snapshot.snapshotItem i
+      
+      continue if node.parentElement.nodeName is "A"
+      
       data = node.data
 
       if Linkify.regString.test data
@@ -69,7 +72,7 @@ Linkify =
       link    = match[0]
       len2    = index + link.length
 
-      break if len - len2 is 0
+      break if len is len2
 
       range = document.createRange();
       range.setStart node, index
@@ -99,9 +102,7 @@ Linkify =
         range.setEnd node, result.index
 
     if range.collapsed
-      if node.nodeName is 'WBR'
-        node = node.previousSibling
-      range.setEnd node, node.length
+      range.setEndAfter node
 
     Linkify.makeLink range, post
 
@@ -297,19 +298,30 @@ Linkify =
         api: (uid) -> "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{uid}"
         text: -> JSON.parse(@responseText).title
 
-#    WIP
-#
-#    TwitchTV:
-#      regExp: /twitch\.tv\/(\w+)\/(?:b\/)?(\d+)/i
-#      style: "border: none; width: 640px; height: 360px;"
-#      el: ->
-#        [_, channel, archive] = @result
-#        el = $.el 'object',
-#          data: 'http://www.twitch.tv/widgets/archive_embed_player.swf'
-#          innerHTML: """
-#<param name='allowFullScreen' value='true' />
-#<param name='flashvars' value='channel=#{channel}&start_volume=25&auto_play=false&archive_id=#{archive}' />
-#"""
+    TwitchTV:
+      regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/
+      style: "border: none; width: 640px; height: 360px;"
+      el: ->
+        if result = /(\w+)\/(?:[a-z]\/)?(\d+)/i.exec @dataset.uid
+          [_, channel, chapter] = result
+
+          $.el 'object',
+            data: 'http://www.twitch.tv/widgets/archive_embed_player.swf'
+            innerHTML: """
+<param name='allowFullScreen' value='true' />
+<param name='flashvars' value='channel=#{channel}&start_volume=25&auto_play=false#{if chapter then "&chapter_id=" + chapter else ""}' />
+"""
+
+        else
+          channel = (/(\w+)/.exec @dataset.uid)[0]
+
+          $.el 'object',
+            data: "http://www.twitch.tv/widgets/live_embed_player.swf?channel=#{channel}"
+            innerHTML: """
+<param  name="allowFullScreen" value="true" />
+<param  name="movie" value="http://www.twitch.tv/widgets/live_embed_player.swf" />
+<param  name="flashvars" value="hostname=www.twitch.tv&channel=#{channel}&auto_play=true&start_volume=25" />
+"""
 
     Vocaroo:
       regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/
