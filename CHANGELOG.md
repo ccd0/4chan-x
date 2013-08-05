@@ -1,8 +1,14 @@
 **MayhemYDG**:
 - Fix impossibility to create new threads when in dead threads.
-- Drop Opera <15 support.
 - Fix flag filtering on /sp/ and /int/.
 - Minor fixes.
+
+### v1.2.25
+*2013-08-04*
+
+**seaweedchan**:
+- Fix issues with having two options called `Reveal Spoilers`. 
+- Update archive.
 
 ### v1.2.24
 *2013-07-24*
