@@ -133,9 +133,9 @@ Config =
         true
         'Add sauce links to images.'
       ]
-      'Reveal Spoilers': [
+      'Reveal Spoiler Thumbnails': [
         false
-        'Reveal spoiler thumbnails.'
+        'Replace spoiler thumbnails with the original image.'
       ]
       'Replace GIF': [
         false

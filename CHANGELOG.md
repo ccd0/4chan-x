@@ -1,6 +1,25 @@
+**aeosynth**:
+- Update Gruntfile.coffee.
+
+**MayhemYDG**:
+- Fix impossibility to create new threads when in dead threads.
+- Fix flag filtering on /sp/ and /int/.
+- Update archives. (with woxxy and proplex)
+- Minor fixes.
+- Minor optimizations.
+
+**seaweedchan**:
+- Fix issues with having two options called `Reveal Spoilers`. 
+- Update archive.
+
+**Zixaphir**:
+- Linkifier Rewrite.
+- Fix Quote Threading toggle.
+- Minor optimizations.
+- Minor fixes.
+
 ### v2.2.2
 *2013-08-01*
-
 **zixaphir**:
 - Fix opening new threads and posts in a new tab.
 - Minimum Chrome Version is now 27.

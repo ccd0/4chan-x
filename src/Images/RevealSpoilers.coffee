@@ -1,9 +1,9 @@
 RevealSpoilers =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Reveal Spoilers']
+    return if g.VIEW is 'catalog' or !Conf['Reveal Spoiler Thumbnails']
 
     Post::callbacks.push
-      name: 'Reveal Spoilers'
+      name: 'Reveal Spoiler Thumbnails'
       cb:   @node
   node: ->
     return if @isClone or !@file?.isSpoiler

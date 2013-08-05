@@ -1,7 +1,8 @@
 Redirect =
-  thread: {}
-  post:   {}
-  file:   {}
+  data:
+    thread: {}
+    post:   {}
+    file:   {}
 
   init: ->
     for boardID, data of Conf['selectedArchives']
@@ -9,122 +10,114 @@ Redirect =
         if archive = Redirect.archives[id]
           boards = archive[type] or archive['boards']
           continue unless boards.contains boardID
-          Redirect[type][boardID] = archive
+          Redirect.data[type][boardID] = archive
     for name, archive of Redirect.archives
       for boardID in archive.boards
-        unless boardID of Redirect.thread
-          Redirect.thread[boardID] = archive
-        unless boardID of Redirect.post or archive.software isnt 'foolfuuka'
-          Redirect.post[boardID] = archive
-        unless boardID of Redirect.file or !archive.files.contains boardID
-          Redirect.file[boardID] = archive
+        unless boardID of Redirect.data.thread
+          Redirect.data.thread[boardID] = archive
+        unless boardID of Redirect.data.post or archive.software isnt 'foolfuuka'
+          Redirect.data.post[boardID] = archive
+        unless boardID of Redirect.data.file or !archive.files.contains boardID
+          Redirect.data.file[boardID] = archive
     return
 
   archives:
-    'Foolz':
-      'domain': 'archive.foolz.us'
-      'http':  false
-      'https': true
-      'software': 'foolfuuka'
-      'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg']
-      'files':  ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg']
-
-    'NSFW Foolz':
-      'domain': 'nsfw.foolz.us'
-      'http':  false
-      'https': true
-      'software': 'foolfuuka'
-      'boards': ['u']
-      'files':  ['u']
-
-    'The Dark Cave':
-      'domain': 'archive.thedarkcave.org'
-      'http':  true
-      'https': true
-      'software': 'foolfuuka'
-      'boards': ['c', 'int', 'out', 'po']
-      'files':  ['c', 'po']
-
     '4plebs':
-      'domain': 'archive.4plebs.org'
-      'http': true
-      'software': 'foolfuuka'
-      'boards': ['hr', 'tg', 'tv', 'x']
-      'files':  ['hr', 'tg', 'tv', 'x']
+      domain: 'archive.4plebs.org'
+      http: true
+      software: 'foolfuuka'
+      boards: ['hr', 'tg', 'tv', 'x']
+      files:  ['hr', 'tg', 'tv', 'x']
 
-    'Nyafuu':
-      'domain': 'archive.nyafuu.org'
-      'http':  true
-      'https': true
-      'software': 'foolfuuka'
-      'boards': ['c', 'w', 'wg']
-      'files':  ['c', 'w', 'wg']
+    'fap archive':
+      domain: 'fuuka.worldathleticproject.org'
+      http:  true
+      https: false
+      software: 'foolfuuka'
+      boards: ['b', 'e', 'h', 'hc', 'p', 's', 'u']
+      files:  ['b', 'e', 'h', 'hc', 'p', 's', 'u']
+
+    'Foolz':
+      domain: 'archive.foolz.us'
+      http:  false
+      https: true
+      software: 'foolfuuka'
+      boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg']
+      files:  ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg']
 
     'Foolz a Shit':
-      'domain': 'archive.foolzashit.com'
-      'http':  true
-      'https': true
-      'software': 'foolfuuka'
-      'boards': ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
-      'files':  ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
+      domain: 'archive.foolzashit.com'
+      http:  true
+      https: true
+      software: 'foolfuuka'
+      boards: ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
+      files:  ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
 
-    'World Athletic Project':
-      'domain': 'fuuka.worldathleticproject.org'
-      'http':  true
-      'https': false
-      'software': 'foolfuuka'
-      'boards': ['e', 'h', 'p', 's', 'u']
-      'files':  ['e', 'h', 'p', 's', 'u']
-
-    'Install Gentoo':
-      'domain': 'archive.installgentoo.net'
-      'http':  false
-      'https': true
-      'software': 'fuuka'
-      'boards': ['diy', 'g', 'sci']
-      'files':  []
-
-    'warosu':
-      'domain': 'fuuka.warosu.org'
-      'http':  true
-      'https': true
-      'software': 'fuuka'
-      'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
-      'files':  ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr'] 
-
-    'Rebecca Black Tech':
-      'domain': 'rbt.asia'
-      'http':  true
-      'https': true
-      'software': 'fuuka'
-      'boards': ['cgl', 'g', 'mu', 'w']
-      'files':  ['cgl', 'g', 'mu', 'w']
+    'Foolz Beta':
+      domain: 'beta.foolz.us'
+      http:  true
+      https: true,
+      software: 'foolfuuka'
+      boards: ['a', 'co', 'gd', 'h', 'jp', 'm', 'mlp', 'q', 'sp', 'tg', 'tv', 'u', 'v', 'vg', 'vp', 'vr', 'wsg'],
+      files:  ['a', 'gd', 'h', 'jp', 'm', 'q', 'tg', 'u', 'vg', 'vp', 'vr', 'wsg']
 
     'Heinessen':
-      'domain': 'archive.heinessen.com'
-      'http': true
-      'software': 'fuuka'
-      'boards': ['an', 'fit', 'k', 'mlp', 'r9k', 'toy']
-      'files':  ['an', 'k', 'toy']
+      domain: 'archive.heinessen.com'
+      http: true
+      software: 'fuuka'
+      boards: ['an', 'fit', 'k', 'mlp', 'r9k', 'toy']
+      files:  ['an', 'k', 'toy']
+
+    'Install Gentoo':
+      domain: 'archive.installgentoo.net'
+      http:  false
+      https: true
+      software: 'fuuka'
+      boards: ['diy', 'g', 'sci']
+      files:  []
+
+    'NSFW Foolz':
+      domain: 'nsfw.foolz.us'
+      http:  false
+      https: true
+      software: 'foolfuuka'
+      boards: ['u']
+      files:  ['u']
+
+    'Nyafuu':
+      domain: 'archive.nyafuu.org'
+      http:  true
+      https: true
+      software: 'foolfuuka'
+      boards: ['c', 'w', 'wg']
+      files:  ['c', 'w', 'wg']
+
+    'Rebecca Black Tech':
+      domain: 'rbt.asia'
+      http:  true
+      https: true
+      software: 'fuuka'
+      boards: ['cgl', 'g', 'mu', 'w']
+      files:  ['cgl', 'g', 'mu', 'w']
+
+    'The Dark Cave':
+      domain: 'archive.thedarkcave.org'
+      http:  true
+      https: true
+      software: 'foolfuuka'
+      boards: ['c', 'int', 'out', 'po']
+      files:  ['c', 'po']
 
     'warosu':
-      'domain': 'fuuka.warosu.org'
-      'http':  true
-      'https': true
-      'software': 'fuuka'
-      'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
-      'files':  ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'vr']
-    
-    'worldathleticproject':
-      'domain': 'fuuka.worldathleticproject.org'
-      'http':  true
-      'https': true
-      'software': 'foolfuuka'
-      'boards': ['e', 'h', 'p', 's', 'u']
-      'files':  ['e', 'h', 'p', 's', 'u']
+      domain: 'fuuka.warosu.org'
+      http:  true
+      https: true
+      software: 'fuuka'
+      boards: ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
+      files:  ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
 
   to: (dest, data) ->
-    archive = (if dest is 'search' then Redirect.thread else Redirect[dest])[data.boardID]
+    archive = (if dest is 'search' then Redirect.data.thread else Redirect.data[dest])[data.boardID]
     return '' unless archive
     Redirect[dest] archive, data
 
