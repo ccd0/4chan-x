@@ -120,7 +120,7 @@ Style =
     return
 
   matrix: (foreground, background) ->
-    fgHex = Style.colorToHex foreground
+    fgHex = Style.colorToHex(foreground) or "ffffff"
 
     fg = {
       r: parseInt(fgHex.substr(0, 2), 16) / 255
@@ -129,7 +129,7 @@ Style =
     }
 
     if background
-      bgHex = Style.colorToHex background
+      bgHex = Style.colorToHex(background) or "000000"
 
       bg = {
         r: parseInt(bgHex.substr(0, 2), 16) / 255

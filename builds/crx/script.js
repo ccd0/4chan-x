@@ -11592,14 +11592,14 @@
     matrix: function(foreground, background) {
       var bg, bgHex, fg, fgHex;
 
-      fgHex = Style.colorToHex(foreground);
+      fgHex = Style.colorToHex(foreground) || "ffffff";
       fg = {
         r: parseInt(fgHex.substr(0, 2), 16) / 255,
         g: parseInt(fgHex.substr(2, 2), 16) / 255,
         b: parseInt(fgHex.substr(4, 2), 16) / 255
       };
       if (background) {
-        bgHex = Style.colorToHex(background);
+        bgHex = Style.colorToHex(background) || "000000";
         bg = {
           r: parseInt(bgHex.substr(0, 2), 16) / 255,
           g: parseInt(bgHex.substr(2, 2), 16) / 255,
