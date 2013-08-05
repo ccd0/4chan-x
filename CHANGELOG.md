@@ -15,6 +15,7 @@
 **Zixaphir**:
 - Linkifier Rewrite.
 - Fix Quote Threading toggle.
+- Added Twitch.tv and Vine embedding (with @ihavenoface)
 - Minor optimizations.
 - Minor fixes.
 
