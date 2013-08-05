@@ -76,6 +76,8 @@ Linkify =
       range.setEnd   node, len2
       links.push range
 
+    Linkify.regString.lastIndex = 0
+
     if match
       Linkify.seek match, node, post
 

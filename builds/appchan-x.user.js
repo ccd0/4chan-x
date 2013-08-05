@@ -17,7 +17,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.2.2 - 2013-08-04
+* appchan x - Version 2.2.2 - 2013-08-05
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -6660,6 +6660,7 @@
         range.setEnd(node, len2);
         links.push(range);
       }
+      Linkify.regString.lastIndex = 0;
       if (match) {
         Linkify.seek(match, node, post);
       }
