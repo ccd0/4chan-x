@@ -89,6 +89,8 @@
 *   license: http://userscripts.org/scripts/review/1352
 *
 */
+'use strict';
+
 (function() {
   var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
@@ -7923,6 +7925,9 @@
       }
     }),
     saveLastReadPost: $.debounce(2 * $.SECOND, function() {
+      if (Unread.thread.isDead) {
+        return;
+      }
       return Unread.db.set({
         boardID: Unread.thread.board.ID,
         threadID: Unread.thread.ID,
@@ -7965,9 +7970,11 @@
   };
 
   Redirect = {
-    thread: {},
-    post: {},
-    file: {},
+    data: {
+      thread: {},
+      post: {},
+      file: {}
+    },
     init: function() {
       var archive, boardID, boards, data, id, name, type, _i, _len, _ref, _ref1, _ref2;
 
@@ -7981,7 +7988,7 @@
             if (!boards.contains(boardID)) {
               continue;
             }
-            Redirect[type][boardID] = archive;
+            Redirect.data[type][boardID] = archive;
           }
         }
       }
@@ -7991,126 +7998,118 @@
         _ref2 = archive.boards;
         for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
           boardID = _ref2[_i];
-          if (!(boardID in Redirect.thread)) {
-            Redirect.thread[boardID] = archive;
+          if (!(boardID in Redirect.data.thread)) {
+            Redirect.data.thread[boardID] = archive;
           }
-          if (!(boardID in Redirect.post || archive.software !== 'foolfuuka')) {
-            Redirect.post[boardID] = archive;
+          if (!(boardID in Redirect.data.post || archive.software !== 'foolfuuka')) {
+            Redirect.data.post[boardID] = archive;
           }
-          if (!(boardID in Redirect.file || !archive.files.contains(boardID))) {
-            Redirect.file[boardID] = archive;
+          if (!(boardID in Redirect.data.file || !archive.files.contains(boardID))) {
+            Redirect.data.file[boardID] = archive;
           }
         }
       }
     },
     archives: {
-      'Foolz': {
-        'domain': 'archive.foolz.us',
-        'http': false,
-        'https': true,
-        'software': 'foolfuuka',
-        'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'],
-        'files': ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg']
-      },
-      'NSFW Foolz': {
-        'domain': 'nsfw.foolz.us',
-        'http': false,
-        'https': true,
-        'software': 'foolfuuka',
-        'boards': ['u'],
-        'files': ['u']
-      },
-      'The Dark Cave': {
-        'domain': 'archive.thedarkcave.org',
-        'http': true,
-        'https': true,
-        'software': 'foolfuuka',
-        'boards': ['c', 'int', 'out', 'po'],
-        'files': ['c', 'po']
-      },
       '4plebs': {
-        'domain': 'archive.4plebs.org',
-        'http': true,
-        'software': 'foolfuuka',
-        'boards': ['hr', 'tg', 'tv', 'x'],
-        'files': ['hr', 'tg', 'tv', 'x']
+        domain: 'archive.4plebs.org',
+        http: true,
+        software: 'foolfuuka',
+        boards: ['hr', 'tg', 'tv', 'x'],
+        files: ['hr', 'tg', 'tv', 'x']
       },
-      'Nyafuu': {
-        'domain': 'archive.nyafuu.org',
-        'http': true,
-        'https': true,
-        'software': 'foolfuuka',
-        'boards': ['c', 'w', 'wg'],
-        'files': ['c', 'w', 'wg']
+      'fap archive': {
+        domain: 'fuuka.worldathleticproject.org',
+        http: true,
+        https: false,
+        software: 'foolfuuka',
+        boards: ['b', 'e', 'h', 'hc', 'p', 's', 'u'],
+        files: ['b', 'e', 'h', 'hc', 'p', 's', 'u']
+      },
+      'Foolz': {
+        domain: 'archive.foolz.us',
+        http: false,
+        https: true,
+        software: 'foolfuuka',
+        boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'],
+        files: ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg']
       },
       'Foolz a Shit': {
-        'domain': 'archive.foolzashit.com',
-        'http': true,
-        'https': true,
-        'software': 'foolfuuka',
-        'boards': ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv'],
-        'files': ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
+        domain: 'archive.foolzashit.com',
+        http: true,
+        https: true,
+        software: 'foolfuuka',
+        boards: ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv'],
+        files: ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
       },
-      'World Athletic Project': {
-        'domain': 'fuuka.worldathleticproject.org',
-        'http': true,
-        'https': false,
-        'software': 'foolfuuka',
-        'boards': ['e', 'h', 'hc', 'p', 's', 'u'],
-        'files': ['e', 'h', 'hc', 'p', 's', 'u']
-      },
-      'Install Gentoo': {
-        'domain': 'archive.installgentoo.net',
-        'http': false,
-        'https': true,
-        'software': 'fuuka',
-        'boards': ['diy', 'g', 'sci'],
-        'files': []
-      },
-      'warosu': {
-        'domain': 'fuuka.warosu.org',
-        'http': true,
-        'https': true,
-        'software': 'fuuka',
-        'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr'],
-        'files': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
-      },
-      'Rebecca Black Tech': {
-        'domain': 'rbt.asia',
-        'http': true,
-        'https': true,
-        'software': 'fuuka',
-        'boards': ['cgl', 'g', 'mu', 'w'],
-        'files': ['cgl', 'g', 'mu', 'w']
+      'Foolz Beta': {
+        domain: 'beta.foolz.us',
+        http: true,
+        https: true,
+        software: 'foolfuuka',
+        boards: ['a', 'co', 'gd', 'h', 'jp', 'm', 'mlp', 'q', 'sp', 'tg', 'tv', 'u', 'v', 'vg', 'vp', 'vr', 'wsg'],
+        files: ['a', 'gd', 'h', 'jp', 'm', 'q', 'tg', 'u', 'vg', 'vp', 'vr', 'wsg']
       },
       'Heinessen': {
-        'domain': 'archive.heinessen.com',
-        'http': true,
-        'software': 'fuuka',
-        'boards': ['an', 'fit', 'k', 'mlp', 'r9k', 'toy'],
-        'files': ['an', 'k', 'toy']
+        domain: 'archive.heinessen.com',
+        http: true,
+        software: 'fuuka',
+        boards: ['an', 'fit', 'k', 'mlp', 'r9k', 'toy'],
+        files: ['an', 'k', 'toy']
+      },
+      'Install Gentoo': {
+        domain: 'archive.installgentoo.net',
+        http: false,
+        https: true,
+        software: 'fuuka',
+        boards: ['diy', 'g', 'sci'],
+        files: []
+      },
+      'NSFW Foolz': {
+        domain: 'nsfw.foolz.us',
+        http: false,
+        https: true,
+        software: 'foolfuuka',
+        boards: ['u'],
+        files: ['u']
+      },
+      'Nyafuu': {
+        domain: 'archive.nyafuu.org',
+        http: true,
+        https: true,
+        software: 'foolfuuka',
+        boards: ['c', 'w', 'wg'],
+        files: ['c', 'w', 'wg']
+      },
+      'Rebecca Black Tech': {
+        domain: 'rbt.asia',
+        http: true,
+        https: true,
+        software: 'fuuka',
+        boards: ['cgl', 'g', 'mu', 'w'],
+        files: ['cgl', 'g', 'mu', 'w']
+      },
+      'The Dark Cave': {
+        domain: 'archive.thedarkcave.org',
+        http: true,
+        https: true,
+        software: 'foolfuuka',
+        boards: ['c', 'int', 'out', 'po'],
+        files: ['c', 'po']
       },
       'warosu': {
-        'domain': 'fuuka.warosu.org',
-        'http': true,
-        'https': true,
-        'software': 'fuuka',
-        'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr'],
-        'files': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'vr']
-      },
-      'worldathleticproject': {
-        'domain': 'fuuka.worldathleticproject.org',
-        'http': true,
-        'https': true,
-        'software': 'foolfuuka',
-        'boards': ['e', 'h', 'p', 's', 'u'],
-        'files': ['e', 'h', 'p', 's', 'u']
+        domain: 'fuuka.warosu.org',
+        http: true,
+        https: true,
+        software: 'fuuka',
+        boards: ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr'],
+        files: ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
       }
     },
     to: function(dest, data) {
       var archive;
 
-      archive = (dest === 'search' ? Redirect.thread : Redirect[dest])[data.boardID];
+      archive = (dest === 'search' ? Redirect.data.thread : Redirect.data[dest])[data.boardID];
       if (!archive) {
         return '';
       }
@@ -10331,7 +10330,6 @@
       if ((_ref = $('link[href*=mobile]', d.head)) != null) {
         _ref.disabled = true;
       }
-      $.addClass(doc, 'webkit');
       $.addClass(doc, 'blink');
       $.addClass(doc, 'fourchan-x');
       $.addClass(doc, g.VIEW);

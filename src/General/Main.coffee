@@ -139,7 +139,6 @@ Main =
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
     <% if (type === 'crx') { %>
-    $.addClass doc, 'webkit'
     $.addClass doc, 'blink'
     <% } else { %>
     $.addClass doc, 'gecko'
