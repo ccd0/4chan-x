@@ -117,7 +117,6 @@ Main =
       'Settings':                 Settings
       'Announcement Hiding':      PSAHiding
       'Fourchan thingies':        Fourchan
-      'Emoji':                    Emoji
       'Color User IDs':           IDColor
       'Remove Spoilers':          RemoveSpoilers
       'Custom CSS':               CustomCSS
@@ -154,7 +153,6 @@ Main =
       'Reveal Spoilers':          RevealSpoilers
       'Image Loading':            ImageLoader
       'Image Hover':              ImageHover
-      'Fappe Tyme':               FappeTyme
       'Comment Expansion':        ExpandComment
       'Thread Expansion':         ExpandThread
       'Thread Excerpt':           ThreadExcerpt
