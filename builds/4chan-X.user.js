@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.24 - 2013-08-01
+* 4chan X - Version 1.2.24 - 2013-08-04
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -4300,122 +4300,235 @@
       if (g.VIEW === 'catalog' || !Conf['Linkify']) {
         return;
       }
-      this.regString = Conf['Allow False Positives'] ? /(\b([a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]+|[-a-z0-9]+\.[a-z]|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+|[a-z]{3,}:[a-z0-9?]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi : /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi;
+      this.regString = Conf['Allow False Positives'] ? /(\b([a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]|[-a-z0-9]+\.[a-z]|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]|[a-z]{3,}:[a-z0-9?]|[\S]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi : /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi;
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
+      }
+      if (Conf['Title Link']) {
+        $.sync('CachedTitles', Linkify.titleSync);
       }
       return Post.prototype.callbacks.push({
         name: 'Linkify',
         cb: this.node
       });
     },
-    cypher: $.el('div'),
     node: function() {
-      var a, child, cypher, cypherText, data, embed, embedder, embeds, i, index, len, link, links, lookahead, name, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2;
+      var data, embedder, i, len, node, range, snapshot, _i, _j, _len, _len1, _ref, _ref1;
 
       if (this.isClone && Conf['Embedding']) {
         _ref = $$('.embedder', this.nodes.comment);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           embedder = _ref[_i];
-          $.on(embedder, "click", Linkify.toggle);
+          $.on(embedder, "click", Linkify.cb.toggle);
         }
         return;
       }
       snapshot = $.X('.//text()', this.nodes.comment);
-      cypher = Linkify.cypher;
       i = -1;
       len = snapshot.snapshotLength;
       while (++i < len) {
-        nodes = $.frag();
         node = snapshot.snapshotItem(i);
         data = node.data;
-        if (!(node.parentNode && Linkify.regString.test(data))) {
-          continue;
+        if (Linkify.regString.test(data)) {
+          Linkify.regString.lastIndex = 0;
+          Linkify.gatherLinks(node, this);
         }
-        Linkify.regString.lastIndex = 0;
-        cypherText = [];
-        if (next = node.nextSibling) {
-          cypher.textContent = node.textContent;
-          cypherText[0] = cypher.innerHTML;
-          while ((next.nodeName.toLowerCase() === 'wbr' || next.nodeName.toLowerCase() === 's') && (lookahead = next.nextSibling) && ((name = lookahead.nodeName) === "#text" || name.toLowerCase() === 'br')) {
-            cypher.textContent = lookahead.textContent;
-            cypherText.push((spoiler = next.innerHTML) ? "<s>" + (spoiler.replace(/</g, ' <')) + "</s>" : '<wbr>');
-            cypherText.push(cypher.innerHTML);
-            $.rm(next);
-            next = lookahead.nextSibling;
-            if (lookahead.nodeName === "#text") {
-              $.rm(lookahead);
-            }
-            if (!next) {
-              break;
-            }
-          }
-        }
-        if (cypherText.length) {
-          data = cypherText.join('');
-        }
-        links = data.match(Linkify.regString);
-        for (_j = 0, _len1 = links.length; _j < _len1; _j++) {
-          link = links[_j];
-          index = data.indexOf(link);
-          if (text = data.slice(0, index)) {
-            cypher.innerHTML = text;
-            _ref1 = __slice.call(cypher.childNodes);
-            for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-              child = _ref1[_k];
-              $.add(nodes, child);
-            }
-          }
-          cypher.innerHTML = (link.indexOf(':') < 0 ? (link.indexOf('@') > 0 ? 'mailto:' + link : 'http://' + link) : link).replace(/<(wbr|s|\/s)>/g, '');
-          a = $.el('a', {
-            innerHTML: link,
-            className: 'linkify',
-            rel: 'nofollow noreferrer',
-            target: '_blank',
-            href: cypher.textContent
-          });
-          $.add(nodes, Linkify.embedder(a));
-          data = data.slice(index + link.length);
-        }
-        if (data) {
-          cypher.innerHTML = data;
-          _ref2 = __slice.call(cypher.childNodes);
-          for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
-            child = _ref2[_l];
-            $.add(nodes, child);
-          }
-        }
-        $.replace(node, nodes);
       }
-      if (Conf['Auto-embed']) {
-        embeds = $$('.embedder', this.nodes.comment);
-        for (_m = 0, _len4 = embeds.length; _m < _len4; _m++) {
-          embed = embeds[_m];
-          embed.click();
+      if (!(Conf['Embedding'] || Conf['Link Title'])) {
+        return;
+      }
+      _ref1 = this.nodes.links;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        range = _ref1[_j];
+        if (data = Linkify.services(range)) {
+          if (Conf['Embedding']) {
+            Linkify.embed(data);
+          }
+          if (Conf['Link Title']) {
+            Linkify.title(data);
+          }
         }
       }
     },
-    toggle: function() {
-      var el, embed, style, type, url;
+    gatherLinks: function(node, post) {
+      var data, index, len, len2, link, links, match, range, _i, _len, _ref;
 
-      embed = this.previousElementSibling;
-      if (this.className.contains("embedded")) {
+      data = node.data;
+      len = data.length;
+      links = [];
+      while ((match = Linkify.regString.exec(data))) {
+        index = match.index;
+        link = match[0];
+        len2 = index + link.length;
+        if (len - len2 === 0) {
+          break;
+        }
+        range = document.createRange();
+        range.setStart(node, index);
+        range.setEnd(node, len2);
+        links.push(range);
+      }
+      if (match) {
+        Linkify.seek(match, node, post);
+      }
+      _ref = links.reverse();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        range = _ref[_i];
+        Linkify.makeLink(range, post);
+      }
+    },
+    seek: function(match, node, post) {
+      var data, index, link, next, range, result;
+
+      index = match.index;
+      link = match[0];
+      range = document.createRange();
+      range.setStart(node, index);
+      while ((next = node.nextSibling) && next.nodeName !== 'BR') {
+        node = next;
+        data = node.data;
+        if (result = /[\s'"]/.exec(data)) {
+          range.setEnd(node, result.index);
+        }
+      }
+      if (range.collapsed) {
+        if (node.nodeName === 'WBR') {
+          node = node.previousSibling;
+        }
+        range.setEnd(node, node.length);
+      }
+      return Linkify.makeLink(range, post);
+    },
+    makeLink: function(range, post) {
+      var a, link;
+
+      link = range.toString();
+      link = link.contains(':') ? link : (link.contains('@') ? 'mailto:' : 'http://') + link;
+      a = $.el('a', {
+        className: 'linkify',
+        rel: 'nofollow noreferrer',
+        target: '_blank',
+        href: link
+      });
+      range.surroundContents(a);
+      post.nodes.links.push(a);
+    },
+    services: function(link) {
+      var href, key, match, type, _ref;
+
+      href = link.href;
+      _ref = Linkify.types;
+      for (key in _ref) {
+        type = _ref[key];
+        if (!(match = type.regExp.exec(href))) {
+          continue;
+        }
+        return [key, match[1], match[2], link];
+      }
+    },
+    embed: function(data) {
+      var embed, key, link, options, uid;
+
+      key = data[0], uid = data[1], options = data[2], link = data[3];
+      embed = $.el('a', {
+        name: uid,
+        option: options,
+        className: 'embedder',
+        href: 'javascript:;',
+        textContent: '(embed)'
+      });
+      embed.dataset.service = key;
+      embed.dataset.originalurl = link.href;
+      $.addClass(link, "" + embed.dataset.service);
+      $.on(embed, 'click', Linkify.cb.toggle);
+      return $.after(link, [$.tn(' '), embed]);
+    },
+    title: function(data) {
+      var err, key, link, options, service, title, titles, uid;
+
+      key = data[0], uid = data[1], options = data[2], link = data[3];
+      if (!(service = Linkify.types[key].title)) {
+        return;
+      }
+      titles = Conf['CachedTitles'];
+      if (title = titles[uid]) {
+        link.textContent = title[0];
+        if (Conf['Embedding']) {
+          return link.nextElementSibling.dataset.title = title[0];
+        }
+      } else {
+        try {
+          $.cache(service.api(uid), function() {
+            return title = Linkify.cb.title.apply(this, [data]);
+          });
+        } catch (_error) {
+          err = _error;
+          link.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
+          return;
+        }
+        if (title) {
+          titles[uid] = [title, Date.now()];
+          return $.set('CachedTitles', titles);
+        }
+      }
+    },
+    titleSync: function(value) {
+      return Conf['CachedTitles'] = value;
+    },
+    cb: {
+      toggle: function() {
+        var el, embed;
+
+        embed = this.previousElementSibling;
+        el = !this.className.contains("embedded") ? Linkify.cb.embed(this) : Linkify.cb.unembed(this);
+        $.replace(embed, el);
+        return $.toggleClass(this, 'embedded');
+      },
+      embed: function(a) {
+        var el, style, type;
+
+        el = (type = Linkify.types[a.dataset.service]).el.call(a);
+        el.style.cssText = (style = type.style) ? style : "border: 0; width: 640px; height: 390px";
+        a.textContent = '(unembed)';
+        return el;
+      },
+      unembed: function(a) {
+        var el, url;
+
         el = $.el('a', {
           rel: 'nofollow noreferrer',
           target: 'blank',
           className: 'linkify',
-          href: url = this.getAttribute("data-originalURL"),
-          textContent: this.getAttribute("data-title") || url
+          href: url = a.dataset.originalurl,
+          textContent: a.dataset.title || url
         });
-        this.textContent = '(embed)';
-        $.addClass(el, "" + (this.getAttribute('data-service')));
-      } else {
-        el = (type = Linkify.types[this.getAttribute("data-service")]).el.call(this);
-        el.style.cssText = (style = type.style) ? style : "border: 0; width: 640px; height: 390px";
-        this.textContent = '(unembed)';
+        a.textContent = '(embed)';
+        $.addClass(el, "" + a.dataset.service);
+        return el;
+      },
+      title: function(data) {
+        var key, link, options, service, text, uid;
+
+        key = data[0], uid = data[1], options = data[2], link = data[3];
+        service = Linkify.types[key].title;
+        return link.textContent = (function() {
+          switch (this.status) {
+            case 200:
+            case 304:
+              text = "" + (service.text.call(this));
+              if (Conf['Embedding']) {
+                link.nextElementSibling.dataset.title = text;
+              }
+              return text;
+            case 404:
+              return "[" + key + "] Not Found";
+            case 403:
+              return "[" + key + "] Forbidden or Private";
+            default:
+              return "[" + key + "] " + this.status + "'d";
+          }
+        }).call(this);
       }
-      $.replace(embed, el);
-      return $.toggleClass(this, 'embedded');
     },
     types: {
       YouTube: {
@@ -4426,8 +4539,8 @@
           });
         },
         title: {
-          api: function() {
-            return "https://gdata.youtube.com/feeds/api/videos/" + this.name + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
+          api: function(uid) {
+            return "https://gdata.youtube.com/feeds/api/videos/" + uid + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
           },
           text: function() {
             return JSON.parse(this.responseText).entry.title.$t;
@@ -4451,8 +4564,8 @@
           });
         },
         title: {
-          api: function() {
-            return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + this.name;
+          api: function(uid) {
+            return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + uid;
           },
           text: function() {
             return JSON.parse(this.responseText).title;
@@ -4482,7 +4595,7 @@
         style: 'border: 0; width: auto; height: auto;',
         el: function() {
           return $.el('div', {
-            innerHTML: "<a target=_blank href='" + (this.getAttribute('data-originalURL')) + "'><img src='" + (this.getAttribute('data-originalURL')) + "'></a>"
+            innerHTML: "<a target=_blank href='" + this.dataset.originalurl + "'><img src='" + this.dataset.originalurl + "'></a>"
           });
         }
       },
@@ -4505,8 +4618,8 @@
           return div;
         },
         title: {
-          api: function() {
-            return "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + this.name;
+          api: function(uid) {
+            return "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + uid;
           },
           text: function() {
             return JSON.parse(this.responseText).title;
@@ -4533,8 +4646,8 @@
           });
         },
         title: {
-          api: function() {
-            return "https://api.github.com/gists/" + this.name;
+          api: function(uid) {
+            return "https://api.github.com/gists/" + uid;
           },
           text: function() {
             var file, response;
@@ -4556,76 +4669,6 @@
           });
         }
       }
-    },
-    embedder: function(a) {
-      var callbacks, embed, key, match, service, titles, type, _ref;
-
-      if (!Conf['Link Title']) {
-        return [a];
-      }
-      titles = {};
-      callbacks = function() {
-        var title;
-
-        return a.textContent = (function() {
-          switch (this.status) {
-            case 200:
-            case 304:
-              title = "" + (service.text.call(this));
-              embed.setAttribute('data-title', title);
-              titles[embed.name] = [title, Date.now()];
-              $.set('CachedTitles', titles);
-              return title;
-            case 404:
-              return "[" + key + "] Not Found";
-            case 403:
-              return "[" + key + "] Forbidden or Private";
-            default:
-              return "[" + key + "] " + this.status + "'d";
-          }
-        }).call(this);
-      };
-      _ref = Linkify.types;
-      for (key in _ref) {
-        type = _ref[key];
-        if (!(match = a.href.match(type.regExp))) {
-          continue;
-        }
-        embed = $.el('a', {
-          name: (a.name = match[1]),
-          option: match[2],
-          className: 'embedder',
-          href: 'javascript:;',
-          textContent: '(embed)'
-        });
-        embed.setAttribute('data-service', key);
-        embed.setAttribute('data-originalURL', a.href);
-        $.addClass(a, "" + (embed.getAttribute('data-service')));
-        $.on(embed, 'click', Linkify.toggle);
-        if (!Conf['Embedding']) {
-          embed.hidden = true;
-        }
-        if (Conf['Link Title'] && (service = type.title)) {
-          $.get('CachedTitles', {}, function(item) {
-            var err, title;
-
-            titles = item['CachedTitles'];
-            if (title = titles[match[1]]) {
-              a.textContent = title[0];
-              return embed.setAttribute('data-title', title[0]);
-            } else {
-              try {
-                return $.cache(service.api.call(a), callbacks);
-              } catch (_error) {
-                err = _error;
-                return a.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
-              }
-            }
-          });
-        }
-        return [a, $.tn(' '), embed];
-      }
-      return [a];
     }
   };
 
