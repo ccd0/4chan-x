@@ -4302,7 +4302,7 @@
       if (g.VIEW === 'catalog' || !Conf['Linkify']) {
         return;
       }
-      this.regString = Conf['Allow False Positives'] ? /(\b([a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]|[-a-z0-9]+\.[a-z]|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]|[a-z]{3,}:[a-z0-9?]|[\S]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi : /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi;
+      this.regString = Conf['Allow False Positives'] ? /(\b([a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]|[-a-z0-9]+\.[a-z]|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]|[a-z]{3,}:[a-z0-9?]|[^\s@]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi : /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi;
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
