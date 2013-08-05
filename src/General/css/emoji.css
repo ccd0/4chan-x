@@ -1,8 +1,8 @@
-.emoji-position-after:not(.emoji-disabled):not(.emoji-#{if key is "pony" then 'disable-ponies' else 'only-ponies'}) a.useremail[href*='#{name}']:last-of-type::after,
-.emoji-position-after:not(.emoji-disabled):not(.emoji-#{if key is "pony" then 'disable-ponies' else 'only-ponies'}) a.useremail[href*='#{name.toLowerCase()}']:last-of-type::after,
-.emoji-position-after:not(.emoji-disabled):not(.emoji-#{if key is "pony" then 'disable-ponies' else 'only-ponies'}) a.useremail[href*='#{name.toUpperCase()}']:last-of-type::after,
-.emoji-position-before:not(.emoji-disabled):not(.emoji-#{if key is "pony" then 'disable-ponies' else 'only-ponies'}) a.useremail[href*='#{name}']:last-of-type::before,
-.emoji-position-before:not(.emoji-disabled):not(.emoji-#{if key is "pony" then 'disable-ponies' else 'only-ponies'}) a.useremail[href*='#{name.toLowerCase()}']:last-of-type::before,
-.emoji-position-before:not(.emoji-disabled):not(.emoji-#{if key is "pony" then 'disable-ponies' else 'only-ponies'}) a.useremail[href*='#{name.toUpperCase()}']:last-of-type::before {
+.emoji-position-after:not(.emoji-disable):not(.emoji-#{pony = if key is "pony" then 'disable-ponies' else 'only-ponies'}) a.useremail[href*='#{name}']:last-of-type::after,
+.emoji-position-after:not(.emoji-disable):not(.emoji-#{pony}) a.useremail[href*='#{name.toLowerCase()}']:last-of-type::after,
+.emoji-position-after:not(.emoji-disable):not(.emoji-#{pony}) a.useremail[href*='#{name.toUpperCase()}']:last-of-type::after,
+.emoji-position-before:not(.emoji-disable):not(.emoji-#{pony}) a.useremail[href*='#{name}']:last-of-type::before,
+.emoji-position-before:not(.emoji-disable):not(.emoji-#{pony}) a.useremail[href*='#{name.toLowerCase()}']:last-of-type::before,
+.emoji-position-before:not(.emoji-disable):not(.emoji-#{pony}) a.useremail[href*='#{name.toUpperCase()}']:last-of-type::before {
   content: url('data:image/png;base64,#{icon}');
 }\n
