@@ -15,6 +15,7 @@ Main =
     for db in DataBoards
       Conf[db] = boards: {}
     Conf['selectedArchives'] = {}
+    Conf['CachedTitles']     = []
     
     $.get Conf, Main.initFeatures
 
