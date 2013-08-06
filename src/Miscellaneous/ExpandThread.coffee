@@ -7,12 +7,20 @@ ExpandThread =
       cb:   @node
   node: ->
     return unless span = $.x 'following-sibling::span[contains(@class,"summary")][1]', @OP.nodes.root
+    [posts, files] = span.textContent.match /\d+/g
     a = $.el 'a',
-      textContent: "+ #{span.textContent}"
+      textContent: ExpandThread.text '+', posts, files
       className: 'summary'
       href: 'javascript:;'
     $.on a, 'click', ExpandThread.cbToggle
     $.replace span, a
+
+  text: (status, posts, files) ->
+    text = [status]
+    text.push "#{posts} post#{if posts > 1 then 's' else ''}"
+    text.push "and #{files} image repl#{if files > 1 then 'ies' else 'y'}" if +files
+    text.push if status is '-' then 'shown' else 'omitted'
+    text.join(' ') + '.'
 
   cbToggle: ->
     ExpandThread.toggle Get.threadFromRoot @parentNode
@@ -29,14 +37,16 @@ ExpandThread =
           thread.isExpanded = true
           return
         thread.isExpanded = 'loading'
-        a.textContent = a.textContent.replace '+', '× Loading...'
+        [posts, files] = a.textContent.match /\d+/g
+        a.textContent  = ExpandThread.text '...', posts, files
         $.cache "//api.4chan.org/#{thread.board}/res/#{thread}.json", ->
           ExpandThread.parse @, thread, a
 
       when 'loading'
         thread.isExpanded = false
         return unless a
-        a.textContent = a.textContent.replace '× Loading...', '+'
+        [posts, files] = a.textContent.match /\d+/g
+        a.textContent  = ExpandThread.text '+', posts, files
 
       when true
         thread.isExpanded = false
@@ -52,12 +62,16 @@ ExpandThread =
         for post in [thread.OP.nodes.root].concat posts[-num..]
           ExpandComment.contract Get.postFromRoot post
         return unless a
-        a.textContent = a.textContent.replace '-', '+'
+        postsCount = 0
+        filesCount = 0
         for reply in posts[...-num]
           if Conf['Quote Inlining']
             # rm clones
             inlined.click() while inlined = $ '.inlined', reply
+          postsCount++
+          filesCount++ if 'file' of Get.postFromRoot reply
           $.rm reply
+        a.textContent = ExpandThread.text '+', postsCount, filesCount
     return
 
   parse: (req, thread, a) ->
@@ -68,30 +82,35 @@ ExpandThread =
       return
 
     thread.isExpanded = true
-    a.textContent = a.textContent.replace '× Loading...', '-'
 
     {posts} = JSON.parse req.response
     if spoilerRange = posts.shift().custom_spoiler
       Build.spoilerRange[thread.board] = spoilerRange
 
-    postsObj  = []
-    postsRoot = []
-    for post in posts
-      if post = thread.posts[post.no]
+    postsObj   = []
+    postsRoot  = []
+    filesCount = 0
+    for reply in posts
+      if post = thread.posts[reply.no]
+        filesCount++ if 'file' of post
         postsRoot.push post.nodes.root
         continue
-      root = Build.postFromObject post, thread.board.ID
+      root = Build.postFromObject reply, thread.board.ID
       post = new Post root, thread, thread.board
       link = $ 'a[title="Highlight this post"]', root
       link.href = "res/#{thread}#p#{post}"
       link.nextSibling.href = "res/#{thread}#q#{post}"
+      filesCount++ if 'file' of post
       postsObj.push  post
       postsRoot.push root
     Main.callbackNodes Post, postsObj
     $.after a, postsRoot
 
+    postsCount = postsRoot.length
+    a.textContent = ExpandThread.text '-', postsCount, filesCount
+
     # Enable 4chan features.
     if Conf['Enable 4chan\'s Extension']
-      $.globalEval "Parser.parseThread(#{thread.ID}, 1, #{postsRoot.length})"
+      $.globalEval "Parser.parseThread(#{thread.ID}, 1, #{postsCount})"
     else
-      Fourchan.parseThread thread.ID, 1, postsRoot.length
+      Fourchan.parseThread thread.ID, 1, postsCount
