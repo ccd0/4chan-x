@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.25 - 2013-08-05
+* 4chan X - Version 1.2.25 - 2013-08-06
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -8612,34 +8612,42 @@
       });
     },
     node: function() {
-      var a, span;
+      var a, files, posts, span, _ref;
 
-      if (!(span = $('.summary', this.OP.nodes.root.parentNode))) {
+      if (!(span = $.x('following-sibling::span[contains(@class,"summary")][1]', this.OP.nodes.root))) {
         return;
       }
+      _ref = span.textContent.match(/\d+/g), posts = _ref[0], files = _ref[1];
       a = $.el('a', {
-        textContent: "+ " + span.textContent,
+        textContent: ExpandThread.text('+', posts, files),
         className: 'summary',
         href: 'javascript:;'
       });
       $.on(a, 'click', ExpandThread.cbToggle);
       return $.replace(span, a);
     },
-    cbToggle: function() {
-      var op;
+    text: function(status, posts, files) {
+      var text;
 
-      op = Get.postFromRoot(this.previousElementSibling);
-      return ExpandThread.toggle(op.thread);
+      text = [status];
+      text.push("" + posts + " post" + (posts > 1 ? 's' : ''));
+      if (+files) {
+        text.push("and " + files + " image repl" + (files > 1 ? 'ies' : 'y'));
+      }
+      text.push(status === '-' ? 'shown' : 'omitted');
+      return text.join(' ') + '.';
+    },
+    cbToggle: function() {
+      return ExpandThread.toggle(Get.threadFromRoot(this.parentNode));
     },
     toggle: function(thread) {
-      var a, inlined, num, post, replies, reply, threadRoot, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+      var a, files, filesCount, inlined, num, post, posts, postsCount, reply, threadRoot, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
 
       threadRoot = thread.OP.nodes.root.parentNode;
       a = $('.summary', threadRoot);
       switch (thread.isExpanded) {
         case false:
         case void 0:
-          thread.isExpanded = 'loading';
           _ref = $$('.thread > .postContainer', threadRoot);
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             post = _ref[_i];
@@ -8650,7 +8658,8 @@
             return;
           }
           thread.isExpanded = 'loading';
-          a.textContent = a.textContent.replace('+', '...');
+          _ref1 = a.textContent.match(/\d+/g), posts = _ref1[0], files = _ref1[1];
+          a.textContent = ExpandThread.text('...', posts, files);
           $.cache("//api.4chan.org/" + thread.board + "/res/" + thread + ".json", function() {
             return ExpandThread.parse(this, thread, a);
           });
@@ -8660,84 +8669,99 @@
           if (!a) {
             return;
           }
-          a.textContent = a.textContent.replace('...', '+');
+          _ref2 = a.textContent.match(/\d+/g), posts = _ref2[0], files = _ref2[1];
+          a.textContent = ExpandThread.text('+', posts, files);
           break;
         case true:
           thread.isExpanded = false;
-          if (a) {
-            a.textContent = a.textContent.replace('-', '+').replace('hide', 'view').replace('expanded', 'omitted');
-            num = (function() {
-              if (thread.isSticky) {
-                return 1;
-              } else {
-                switch (g.BOARD.ID) {
-                  case 'b':
-                  case 'vg':
-                  case 'q':
-                    return 3;
-                  case 't':
-                    return 1;
-                  default:
-                    return 5;
-                }
+          num = (function() {
+            if (thread.isSticky) {
+              return 1;
+            } else {
+              switch (g.BOARD.ID) {
+                case 'b':
+                case 'vg':
+                case 'q':
+                  return 3;
+                case 't':
+                  return 1;
+                default:
+                  return 5;
               }
-            })();
-            replies = $$('.thread > .replyContainer', threadRoot).slice(0, -num);
-            for (_j = 0, _len1 = replies.length; _j < _len1; _j++) {
-              reply = replies[_j];
-              if (Conf['Quote Inlining']) {
-                while (inlined = $('.inlined', reply)) {
-                  inlined.click();
-                }
-              }
-              $.rm(reply);
             }
-          }
-          _ref1 = $$('.thread > .postContainer', threadRoot);
-          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-            post = _ref1[_k];
+          })();
+          posts = $$(".thread > .replyContainer", threadRoot);
+          _ref3 = [thread.OP.nodes.root].concat(posts.slice(-num));
+          for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
+            post = _ref3[_j];
             ExpandComment.contract(Get.postFromRoot(post));
           }
+          if (!a) {
+            return;
+          }
+          postsCount = 0;
+          filesCount = 0;
+          _ref4 = posts.slice(0, -num);
+          for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
+            reply = _ref4[_k];
+            if (Conf['Quote Inlining']) {
+              while (inlined = $('.inlined', reply)) {
+                inlined.click();
+              }
+            }
+            postsCount++;
+            if ('file' in Get.postFromRoot(reply)) {
+              filesCount++;
+            }
+            $.rm(reply);
+          }
+          a.textContent = ExpandThread.text('+', postsCount, filesCount);
       }
     },
     parse: function(req, thread, a) {
-      var link, node, nodes, post, posts, replies, reply, spoilerRange, status, _i, _len;
+      var filesCount, link, post, posts, postsCount, postsObj, postsRoot, reply, root, spoilerRange, _i, _len;
 
       if (a.textContent[0] === '+') {
         return;
       }
-      status = req.status;
-      if (![200, 304].contains(status)) {
-        a.textContent = "Error " + req.statusText + " (" + status + ")";
-        $.off(a, 'click', ExpandThread.cb.toggle);
+      if (![200, 304].contains(req.status)) {
+        a.textContent = "Error " + req.statusText + " (" + req.status + ")";
+        $.off(a, 'click', ExpandThread.cbToggle);
         return;
       }
       thread.isExpanded = true;
-      a.textContent = a.textContent.replace('...', '-').replace('view', 'hide').replace('omitted', 'expanded');
       posts = JSON.parse(req.response).posts;
-      if (spoilerRange = posts[0].custom_spoiler) {
-        Build.spoilerRange[g.BOARD] = spoilerRange;
+      if (spoilerRange = posts.shift().custom_spoiler) {
+        Build.spoilerRange[thread.board] = spoilerRange;
       }
-      replies = posts.slice(1);
-      posts = [];
-      nodes = [];
-      for (_i = 0, _len = replies.length; _i < _len; _i++) {
-        reply = replies[_i];
+      postsObj = [];
+      postsRoot = [];
+      filesCount = 0;
+      for (_i = 0, _len = posts.length; _i < _len; _i++) {
+        reply = posts[_i];
         if (post = thread.posts[reply.no]) {
-          nodes.push(post.nodes.root);
+          if ('file' in post) {
+            filesCount++;
+          }
+          postsRoot.push(post.nodes.root);
           continue;
         }
-        node = Build.postFromObject(reply, thread.board.ID);
-        post = new Post(node, thread, thread.board);
-        link = $('a[title="Highlight this post"]', node);
+        root = Build.postFromObject(reply, thread.board.ID);
+        post = new Post(root, thread, thread.board);
+        link = $('a[title="Highlight this post"]', root);
         link.href = "res/" + thread + "#p" + post;
         link.nextSibling.href = "res/" + thread + "#q" + post;
-        posts.push(post);
-        nodes.push(node);
+        if ('file' in post) {
+          filesCount++;
+        }
+        postsObj.push(post);
+        postsRoot.push(root);
       }
-      Main.callbackNodes(Post, posts);
-      $.after(a, nodes);
-      return Fourchan.parseThread(thread.ID, 1, nodes.length);
+      Main.callbackNodes(Post, postsObj);
+      $.after(a, postsRoot);
+      postsCount = postsRoot.length;
+      a.textContent = ExpandThread.text('-', postsCount, filesCount);
+      return Fourchan.parseThread(thread.ID, 1, postsCount);
     }
   };
 
