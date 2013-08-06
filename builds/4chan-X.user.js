@@ -6292,12 +6292,7 @@
       }
       ImageExpand.contract(post);
       root = post.nodes.root;
-      rect = (Conf['Advance on contract'] ? (function() {
-        var next;
-
-        next = $.x("following::div[contains(@class,'postContainer')][1]", root);
-        return next || root;
-      })() : root).getBoundingClientRect();
+      rect = (Conf['Advance on contract'] ? $.x("following::div[contains(@class,'postContainer')][1]", root) || root : root).getBoundingClientRect();
       if (rect.top < 0) {
         y = rect.top;
         if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
