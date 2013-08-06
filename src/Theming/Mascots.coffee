@@ -19,10 +19,6 @@ MascotTools =
   change: (mascot) ->
     el = @el.firstElementChild
 
-    if !Conf['Mascots']
-      el.src = ""
-      return
-
     if Conf['Mascot Position'] is 'default'
       $.rmClass doc, 'mascot-position-above-post-form'
       $.rmClass doc, 'mascot-position-bottom'

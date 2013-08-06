@@ -11088,10 +11088,6 @@
       var el;
 
       el = this.el.firstElementChild;
-      if (!Conf['Mascots']) {
-        el.src = "";
-        return;
-      }
       if (Conf['Mascot Position'] === 'default') {
         $.rmClass(doc, 'mascot-position-above-post-form');
         $.rmClass(doc, 'mascot-position-bottom');
