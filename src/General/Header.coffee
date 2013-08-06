@@ -302,8 +302,8 @@ Header =
     {top} = post.getBoundingClientRect()
     if Conf['Fixed Header'] and not Conf['Bottom Header']
       headRect = Header.bar.getBoundingClientRect()
-      top += - headRect.top - headRect.height
-    <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>.scrollTop += top
+      top -= headRect.top + headRect.height
+    window.scrollBy 0, top
 
   addShortcut: (el) ->
     shortcut = $.el 'span',

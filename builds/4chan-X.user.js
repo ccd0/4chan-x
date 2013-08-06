@@ -1787,9 +1787,9 @@
       top = post.getBoundingClientRect().top;
       if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
         headRect = Header.bar.getBoundingClientRect();
-        top += -headRect.top - headRect.height;
+        top -= headRect.top + headRect.height;
       }
-      return doc.scrollTop += top;
+      return window.scrollBy(0, top);
     },
     addShortcut: function(el) {
       var shortcut;
@@ -2351,8 +2351,8 @@
         $.add(Header.hover, menu);
         mRect = menu.getBoundingClientRect();
         bRect = button.getBoundingClientRect();
-        bTop = doc.scrollTop + d.body.scrollTop + bRect.top;
-        bLeft = doc.scrollLeft + d.body.scrollLeft + bRect.left;
+        bTop = window.scrollY + bRect.top;
+        bLeft = window.scrollX + bRect.left;
         cHeight = doc.clientHeight;
         cWidth = doc.clientWidth;
         _ref1 = bRect.top + bRect.height + mRect.height < cHeight ? [bRect.bottom, null] : [null, cHeight - bRect.top], top = _ref1[0], bottom = _ref1[1];
@@ -6283,7 +6283,7 @@
       }
     },
     toggle: function(post) {
-      var headRect, node, rect, root, thumb, top;
+      var headRect, node, rect, thumb, x, y;
 
       thumb = post.file.thumb;
       if (!(post.file.isExpanded || $.hasClass(thumb, 'expanding'))) {
@@ -6309,17 +6309,18 @@
       if (!(rect.top <= 0 || rect.left <= 0)) {
         return;
       }
-      top = rect.top;
-      if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
-        headRect = Header.bar.getBoundingClientRect();
-        top += -headRect.top - headRect.height;
-      }
-      root = doc;
       if (rect.top < 0) {
-        root.scrollTop += top;
+        y = rect.top;
+        if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
+          headRect = Header.toggle.getBoundingClientRect();
+          y -= headRect.top + headRect.height;
+        }
       }
       if (rect.left < 0) {
-        return root.scrollLeft = 0;
+        x = -window.scrollX;
+      }
+      if (x || y) {
+        return window.scrollBy(x, y);
       }
     },
     contract: function(post) {
@@ -6370,16 +6371,15 @@
       }
       prev = post.nodes.root.getBoundingClientRect();
       return $.queueTask(function() {
-        var curr, root;
+        var curr;
 
         $.addClass(post.nodes.root, 'expanded-image');
         $.rmClass(post.file.thumb, 'expanding');
         if (!(prev.top + prev.height <= 0)) {
           return;
         }
-        root = doc;
         curr = post.nodes.root.getBoundingClientRect();
-        return root.scrollTop += curr.height - prev.height + curr.top - prev.top;
+        return window.scrollBy(0, curr.height - prev.height + curr.top - prev.top);
       });
     },
     error: function() {
@@ -7613,7 +7613,7 @@
         }
         if (scroll) {
           if (Conf['Bottom Scroll']) {
-            doc.scrollTop = d.body.clientHeight;
+            window.scrollTo(0, d.body.clientHeight);
           } else {
             if (root) {
               Header.scrollToPost(root);

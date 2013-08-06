@@ -293,7 +293,6 @@ ThreadUpdater =
     unless count
       ThreadUpdater.set 'status', null, null
       ThreadUpdater.outdateCount++
-
     else
       ThreadUpdater.set 'status', "+#{count}", 'new'
       ThreadUpdater.outdateCount = 0
@@ -319,7 +318,7 @@ ThreadUpdater =
 
       if scroll
         if Conf['Bottom Scroll']
-          <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>.scrollTop = d.body.clientHeight
+          window.scrollTo 0, d.body.clientHeight
         else
           Header.scrollToPost root if root
 
