@@ -6263,7 +6263,7 @@
       }
     },
     toggle: function(post) {
-      var headRect, node, rect, thumb, x, y;
+      var headRect, rect, root, thumb, x, y;
 
       thumb = post.file.thumb;
       if (!(post.file.isExpanded || $.hasClass(thumb, 'expanding'))) {
@@ -6271,28 +6271,17 @@
         return;
       }
       ImageExpand.contract(post);
-      node = post.nodes.root;
-      rect = Conf['Advance on contract'] ? (function() {
-        while (node.nextElementSibling) {
-          if (!(node = node.nextElementSibling)) {
-            return post.nodes.root;
-          }
-          if (!$.hasClass(node, 'postContainer')) {
-            continue;
-          }
-          if (node.offsetHeight > 0 && !$('.stub', node)) {
-            break;
-          }
-        }
-        return node.getBoundingClientRect();
-      })() : post.nodes.root.getBoundingClientRect();
-      if (!(rect.top <= 0 || rect.left <= 0)) {
-        return;
-      }
+      root = post.nodes.root;
+      rect = (Conf['Advance on contract'] ? (function() {
+        var next;
+
+        next = $.x("following::div[contains(@class,'postContainer')][1]", root);
+        return next || root;
+      })() : root).getBoundingClientRect();
       if (rect.top < 0) {
         y = rect.top;
         if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
-          headRect = Header.toggle.getBoundingClientRect();
+          headRect = Header.bar.getBoundingClientRect();
           y -= headRect.top + headRect.height;
         }
       }

@@ -59,24 +59,19 @@ ImageExpand =
       ImageExpand.expand post
       return
     ImageExpand.contract post
-    node = post.nodes.root
     # Scroll back to the thumbnail when contracting the image
     # to avoid being left miles away from the relevant post.
-    rect = if Conf['Advance on contract'] then do ->
-      # FIXME does not work with Quote Threading
-      while node.nextElementSibling
-        return post.nodes.root unless node = node.nextElementSibling
-        continue unless $.hasClass node, 'postContainer'
-        break if node.offsetHeight > 0 and not $ '.stub', node
-      node.getBoundingClientRect()
+    {root} = post.nodes
+    rect = (if Conf['Advance on contract'] then do ->
+      next = $.x "following::div[contains(@class,'postContainer')][1]", root
+      next or root
     else
-      post.nodes.root.getBoundingClientRect()
-    return unless rect.top <= 0 or rect.left <= 0
+      root).getBoundingClientRect()
 
     if rect.top < 0
       y = rect.top
       if Conf['Fixed Header'] and not Conf['Bottom Header']
-        headRect = Header.toggle.getBoundingClientRect()
+        headRect = Header.bar.getBoundingClientRect()
         y -= headRect.top + headRect.height
 
     if rect.left < 0
