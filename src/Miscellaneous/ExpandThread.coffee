@@ -5,6 +5,7 @@ ExpandThread =
     Thread::callbacks.push
       name: 'Thread Expansion'
       cb:   @node
+
   node: ->
     return unless span = $.x 'following-sibling::span[contains(@class,"summary")][1]', @OP.nodes.root
     [posts, files] = span.textContent.match /\d+/g
@@ -16,11 +17,9 @@ ExpandThread =
     $.replace span, a
 
   text: (status, posts, files) ->
-    text = [status]
-    text.push "#{posts} post#{if posts > 1 then 's' else ''}"
-    text.push "and #{files} image repl#{if files > 1 then 'ies' else 'y'}" if +files
-    text.push if status is '-' then 'shown' else 'omitted'
-    text.join(' ') + '.'
+    "#{status} #{posts} post#{if posts > 1 then 's' else ''}" +
+    (if +files then " and #{files} image repl#{if files > 1 then 'ies' else 'y'}" else "") +
+    " #{if status is '-' then 'shown' else 'omitted'}."
 
   cbToggle: ->
     ExpandThread.toggle Get.threadFromRoot @parentNode

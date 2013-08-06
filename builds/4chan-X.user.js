@@ -8627,15 +8627,7 @@
       return $.replace(span, a);
     },
     text: function(status, posts, files) {
-      var text;
-
-      text = [status];
-      text.push("" + posts + " post" + (posts > 1 ? 's' : ''));
-      if (+files) {
-        text.push("and " + files + " image repl" + (files > 1 ? 'ies' : 'y'));
-      }
-      text.push(status === '-' ? 'shown' : 'omitted');
-      return text.join(' ') + '.';
+      return ("" + status + " " + posts + " post" + (posts > 1 ? 's' : '')) + (+files ? " and " + files + " image repl" + (files > 1 ? 'ies' : 'y') : "") + (" " + (status === '-' ? 'shown' : 'omitted') + ".");
     },
     cbToggle: function() {
       return ExpandThread.toggle(Get.threadFromRoot(this.parentNode));
