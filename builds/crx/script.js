@@ -6263,7 +6263,7 @@
       }
     },
     toggle: function(post) {
-      var headRect, rect, root, thumb, x, y;
+      var headRect, next, rect, root, thumb, x, y;
 
       thumb = post.file.thumb;
       if (!(post.file.isExpanded || $.hasClass(thumb, 'expanding'))) {
@@ -6272,7 +6272,14 @@
       }
       ImageExpand.contract(post);
       root = post.nodes.root;
-      rect = (Conf['Advance on contract'] ? $.x("following::div[contains(@class,'postContainer')][1]", root) || root : root).getBoundingClientRect();
+      if (Conf['Advance on contract']) {
+        while (next = $.x("following::div[contains(@class,'postContainer')][1]", root)) {
+          if (!($('.stub', next) || next.offsetHeight === 0)) {
+            break;
+          }
+        }
+      }
+      rect = (next || root).getBoundingClientRect();
       if (rect.top < 0) {
         y = rect.top;
         if (Conf['Fixed Header'] && !Conf['Bottom Header']) {

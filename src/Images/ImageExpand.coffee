@@ -62,11 +62,11 @@ ImageExpand =
     # Scroll back to the thumbnail when contracting the image
     # to avoid being left miles away from the relevant post.
     {root} = post.nodes
-    rect = (if Conf['Advance on contract']
-      $.x("following::div[contains(@class,'postContainer')][1]", root) or root
-    else
-      root
-    ).getBoundingClientRect()
+    if Conf['Advance on contract']
+      while next = $.x "following::div[contains(@class,'postContainer')][1]", root
+        break unless $('.stub', next) or next.offsetHeight is 0
+
+    rect = (next or root).getBoundingClientRect()
 
     if rect.top < 0
       y = rect.top
