@@ -1,28 +1,26 @@
 MascotTools =
-  init: (mascot) ->
-    unless mascot and mascot.image
-      return unless Conf[g.MASCOTSTRING].length
-      name = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)]
-      mascot = Mascots[name]
-      Conf['mascot'] = name
+  init: ->
+    return if !Conf['Mascots'] or (g.VIEW is 'catalog' and Conf['Hide Mascots on Catalog'])
 
-    unless @el
-      @el = $.el 'div',
-        id: "mascot"
-        innerHTML: "<img>"
+    if Conf['Click to Toggle']
+      $.on @el, 'mousedown', MascotTools.click
 
-      if Conf['Click to Toggle']
-        $.on @el, 'mousedown', MascotTools.click
+    $.on doc, 'QRDialogCreation', MascotTools.reposition
 
-      $.on doc, 'QRDialogCreation', MascotTools.reposition
+    $.asap (-> d.body), =>
+      $.add d.body, @el
 
-      $.asap (-> d.body), =>
-        $.add d.body, @el
+    MascotTools.toggle()
 
+  el: $.el 'div',
+    id: "mascot"
+    innerHTML: "<img>"
+
+  change: (mascot) ->
     el = @el.firstElementChild
 
-    if !Conf['Mascots'] or (Conf['Hide Mascots on Catalog'] and g.VIEW is 'catalog')
-      if el then el.src = ""
+    if !Conf['Mascots']
+      el.src = ""
       return
 
     if Conf['Mascot Position'] is 'default'
@@ -39,23 +37,33 @@ MascotTools =
     else unless Conf['Silhouettize Mascots']
       $.rmClass doc, 'silhouettize-mascots'
 
-    unless mascot
-      if name and not mascot = Mascots[name]
-        if el then el.src = "" else null
-        Conf[g.MASCOTSTRING].remove name
-        return MascotTools.init()
-
     image =
       if Array.isArray mascot.image
         if Style.lightTheme
           mascot.image[1]
         else
           mascot.image[0]
-      else mascot.image
+      else
+        mascot.image
 
     el.src = image
 
     Style.mascot.textContent = """<%= grunt.file.read('src/General/css/mascot.css') %>"""
+
+  toggle: ->
+    string  = g.MASCOTSTRING
+    enabled = Conf[string]
+    return unless len = enabled.length
+
+    name = enabled[Math.floor(Math.random() * len)]
+
+    unless mascot = Mascots[name]
+      enabled.remove name
+      el.src = "" if el
+      $.set string, Conf[string] = enabled
+      return MascotTools.toggle()
+
+    MascotTools.change mascot
 
   categories: [
     'Anime'
@@ -125,7 +133,7 @@ MascotTools =
       id: "mascotConf"
       className: "reply dialog"
       innerHTML: """<%= grunt.file.read('src/General/html/Features/MascotDialog.html').replace(/>\s+</g, '><').trim() %>"""
-    
+
     container = $ "#mascotcontent", dialog
 
     for name, item of layout
@@ -140,7 +148,7 @@ MascotTools =
           if name is 'image'
             $.on input, 'blur', ->
               editMascot[@name] = @value
-              MascotTools.init editMascot
+              MascotTools.change editMascot
 
             fileInput = $.el 'input',
               type:     "file"
@@ -164,19 +172,19 @@ MascotTools =
               if (@value isnt "") and !/^[a-z]/i.test @value
                 return alert "Mascot names must start with a letter."
               editMascot[@name] = @value
-              MascotTools.init editMascot
+              MascotTools.change editMascot
 
           else
 
             $.on input, 'blur', ->
               editMascot[@name] = @value
-              MascotTools.init editMascot
+              MascotTools.change editMascot
 
         when "number"
           div = @input item, name
           $.on $('input', div), 'blur', ->
             editMascot[@name] = parseInt @value
-            MascotTools.init editMascot
+            MascotTools.change editMascot
 
         when "select"
           optionHTML = "<div class=optionlabel>#{item[0]}</div><div class=option><select name='#{name}' value='#{value}'><br>"
@@ -191,7 +199,7 @@ MascotTools =
 
           $.on $('select', div), 'change', ->
             editMascot[@name] = @value
-            MascotTools.init editMascot
+            MascotTools.change editMascot
 
         when "checkbox"
           div = $.el "div",
@@ -199,11 +207,11 @@ MascotTools =
             innerHTML: "<label><input type=#{item[2]} class=field name='#{name}' #{if value then 'checked'}>#{item[0]}</label>"
           $.on $('input', div), 'click', ->
             editMascot[@name] = if @checked then true else false
-            MascotTools.init editMascot
+            MascotTools.change editMascot
 
       $.add container, div
 
-    MascotTools.init editMascot
+    MascotTools.change editMascot
 
     $.on $('#save > a', dialog), 'click', ->
       MascotTools.save editMascot
@@ -266,23 +274,25 @@ MascotTools =
         else
           return alert "Creation of \"#{name}\" aborted."
 
-    for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
-      unless Conf[type].contains name
-        Conf[type].push name
-        $.set type, Conf[type]
-    Mascots[name]        = JSON.parse(JSON.stringify(mascot))
-    Conf["mascot"]       = name
+    Mascots[name] = JSON.parse JSON.stringify mascot
     delete Mascots[name].name
-    $.get "userMascots", {}, (item) ->
-      userMascots = item['userMascots']
+
+    $.get "userMascots", {}, ({userMascots}) ->
       userMascots[name] = Mascots[name]
       $.set 'userMascots', userMascots
+
+      Conf["mascot"] = name
+
+      for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
+        unless Conf[type].contains name
+          Conf[type].push name
+          $.set type, Conf[type]
       alert "Mascot \"#{name}\" saved."
 
   click: (e) ->
     return if e.button isnt 0 # not LMB
     e.preventDefault()
-    MascotTools.init()
+    MascotTools.toggle()
 
   close: ->
     Conf['editMode'] = false

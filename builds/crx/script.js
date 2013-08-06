@@ -11050,38 +11050,33 @@
   };
 
   MascotTools = {
-    init: function(mascot) {
-      var el, image, name,
-        _this = this;
+    init: function() {
+      var _this = this;
 
-      if (!(mascot && mascot.image)) {
-        if (!Conf[g.MASCOTSTRING].length) {
-          return;
-        }
-        name = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)];
-        mascot = Mascots[name];
-        Conf['mascot'] = name;
+      if (!Conf['Mascots'] || (g.VIEW === 'catalog' && Conf['Hide Mascots on Catalog'])) {
+        return;
       }
-      if (!this.el) {
-        this.el = $.el('div', {
-          id: "mascot",
-          innerHTML: "<img>"
-        });
-        if (Conf['Click to Toggle']) {
-          $.on(this.el, 'mousedown', MascotTools.click);
-        }
-        $.on(doc, 'QRDialogCreation', MascotTools.reposition);
-        $.asap((function() {
-          return d.body;
-        }), function() {
-          return $.add(d.body, _this.el);
-        });
+      if (Conf['Click to Toggle']) {
+        $.on(this.el, 'mousedown', MascotTools.click);
       }
+      $.on(doc, 'QRDialogCreation', MascotTools.reposition);
+      $.asap((function() {
+        return d.body;
+      }), function() {
+        return $.add(d.body, _this.el);
+      });
+      return MascotTools.toggle();
+    },
+    el: $.el('div', {
+      id: "mascot",
+      innerHTML: "<img>"
+    }),
+    change: function(mascot) {
+      var el, image;
+
       el = this.el.firstElementChild;
-      if (!Conf['Mascots'] || (Conf['Hide Mascots on Catalog'] && g.VIEW === 'catalog')) {
-        if (el) {
-          el.src = "";
-        }
+      if (!Conf['Mascots']) {
+        el.src = "";
         return;
       }
       if (Conf['Mascot Position'] === 'default') {
@@ -11099,20 +11094,28 @@
       } else if (!Conf['Silhouettize Mascots']) {
         $.rmClass(doc, 'silhouettize-mascots');
       }
-      if (!mascot) {
-        if (name && !(mascot = Mascots[name])) {
-          if (el) {
-            el.src = "";
-          } else {
-            null;
-          }
-          Conf[g.MASCOTSTRING].remove(name);
-          return MascotTools.init();
-        }
-      }
       image = Array.isArray(mascot.image) ? Style.lightTheme ? mascot.image[1] : mascot.image[0] : mascot.image;
       el.src = image;
       return Style.mascot.textContent = "#mascot img {\nheight: " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height, 10) + 'px' : 'auto') + ";\nwidth: " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width, 10) + 'px' : 'auto') + ";\n}\n#mascot {\nmargin: " + (mascot.vOffset || 0) + "px " + (mascot.hOffset || 0) + "px;\n}\n.sidebar-large #mascot {\nleft: " + (mascot.center ? 25 : 0) + "px;\nright: " + (mascot.center ? 25 : 0) + "px;\n}\n.mascot-position-above-post-form.post-form-style-fixed #mascot {\n-webkit-transform: translateY(-" + (QR.nodes ? QR.nodes.el.getBoundingClientRect().height : 0) + "px);\n}";
+    },
+    toggle: function() {
+      var enabled, len, mascot, name, string;
+
+      string = g.MASCOTSTRING;
+      enabled = Conf[string];
+      if (!(len = enabled.length)) {
+        return;
+      }
+      name = enabled[Math.floor(Math.random() * len)];
+      if (!(mascot = Mascots[name])) {
+        enabled.remove(name);
+        if (el) {
+          el.src = "";
+        }
+        $.set(string, Conf[string] = enabled);
+        return MascotTools.toggle();
+      }
+      return MascotTools.change(mascot);
     },
     categories: ['Anime', 'Ponies', 'Questionable', 'Silhouette', 'Western'],
     dialog: function(key) {
@@ -11152,7 +11155,7 @@
             if (name === 'image') {
               $.on(input, 'blur', function() {
                 editMascot[this.name] = this.value;
-                return MascotTools.init(editMascot);
+                return MascotTools.change(editMascot);
               });
               fileInput = $.el('input', {
                 type: "file",
@@ -11177,12 +11180,12 @@
                   return alert("Mascot names must start with a letter.");
                 }
                 editMascot[this.name] = this.value;
-                return MascotTools.init(editMascot);
+                return MascotTools.change(editMascot);
               });
             } else {
               $.on(input, 'blur', function() {
                 editMascot[this.name] = this.value;
-                return MascotTools.init(editMascot);
+                return MascotTools.change(editMascot);
               });
             }
             break;
@@ -11190,7 +11193,7 @@
             div = this.input(item, name);
             $.on($('input', div), 'blur', function() {
               editMascot[this.name] = parseInt(this.value);
-              return MascotTools.init(editMascot);
+              return MascotTools.change(editMascot);
             });
             break;
           case "select":
@@ -11209,7 +11212,7 @@
             setting.value = value;
             $.on($('select', div), 'change', function() {
               editMascot[this.name] = this.value;
-              return MascotTools.init(editMascot);
+              return MascotTools.change(editMascot);
             });
             break;
           case "checkbox":
@@ -11219,12 +11222,12 @@
             });
             $.on($('input', div), 'click', function() {
               editMascot[this.name] = this.checked ? true : false;
-              return MascotTools.init(editMascot);
+              return MascotTools.change(editMascot);
             });
         }
         $.add(container, div);
       }
-      MascotTools.init(editMascot);
+      MascotTools.change(editMascot);
       $.on($('#save > a', dialog), 'click', function() {
         return MascotTools.save(editMascot);
       });
@@ -11266,7 +11269,7 @@
       return reader.readAsDataURL(file);
     },
     save: function(mascot) {
-      var image, name, type, _i, _len, _ref;
+      var image, name;
 
       name = mascot.name, image = mascot.image;
       if ((name == null) || name === "") {
@@ -11292,23 +11295,23 @@
           }
         }
       }
-      _ref = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        type = _ref[_i];
-        if (!Conf[type].contains(name)) {
-          Conf[type].push(name);
-          $.set(type, Conf[type]);
-        }
-      }
       Mascots[name] = JSON.parse(JSON.stringify(mascot));
-      Conf["mascot"] = name;
       delete Mascots[name].name;
-      return $.get("userMascots", {}, function(item) {
-        var userMascots;
+      return $.get("userMascots", {}, function(_arg) {
+        var type, userMascots, _i, _len, _ref;
 
-        userMascots = item['userMascots'];
+        userMascots = _arg.userMascots;
         userMascots[name] = Mascots[name];
         $.set('userMascots', userMascots);
+        Conf["mascot"] = name;
+        _ref = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          type = _ref[_i];
+          if (!Conf[type].contains(name)) {
+            Conf[type].push(name);
+            $.set(type, Conf[type]);
+          }
+        }
         return alert("Mascot \"" + name + "\" saved.");
       });
     },
@@ -11317,7 +11320,7 @@
         return;
       }
       e.preventDefault();
-      return MascotTools.init();
+      return MascotTools.toggle();
     },
     close: function() {
       Conf['editMode'] = false;
@@ -11524,7 +11527,6 @@
           $.addClass(doc, hyphenated);
         }
       }
-      MascotTools.init();
       if (g.VIEW === 'index') {
         return $.asap((function() {
           return $('.mPagelist');
@@ -14432,7 +14434,7 @@
           name = this.parentElement.parentElement.id;
           if (confirm("Are you sure you want to delete \"" + name + "\"?")) {
             if (Conf['mascot'] === name) {
-              MascotTools.init();
+              MascotTools.toggle();
             }
             _ref = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -14471,12 +14473,12 @@
         select: function() {
           if (Conf[g.MASCOTSTRING].remove(this.id)) {
             if (Conf['mascot'] === this.id) {
-              MascotTools.init();
+              MascotTools.toggle();
             }
           } else {
             Conf['mascot'] = this.id;
             Conf[g.MASCOTSTRING].push(this.id);
-            MascotTools.init(Mascots[this.id]);
+            MascotTools.change(Mascots[this.id]);
           }
           $.toggleClass(this, 'enabled');
           return $.set(g.MASCOTSTRING, Conf[g.MASCOTSTRING]);
@@ -14693,6 +14695,7 @@
         'Polyfill': Polyfill,
         'Emoji': Emoji,
         'Style': Style,
+        'Mascots': MascotTools,
         'Rice': Rice,
         'Banner': Banner,
         'Announcements': GlobalMessage,

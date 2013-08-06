@@ -23,8 +23,6 @@ Style =
         hyphenated = "#{name}#{if setting[2] then " #{Conf[name]}" else ""}".toLowerCase().replace(/^4/, 'four').replace /\s+/g, '-'
         $.addClass doc, hyphenated
 
-    MascotTools.init()
-
     if g.VIEW is 'index'
       $.asap (-> $ '.mPagelist'), ->
 

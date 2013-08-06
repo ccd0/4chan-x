@@ -108,6 +108,7 @@ Main =
       'Polyfill':                 Polyfill
       'Emoji':                    Emoji
       'Style':                    Style
+      'Mascots':                  MascotTools
       'Rice':                     Rice
       'Banner':                   Banner
       'Announcements':            GlobalMessage

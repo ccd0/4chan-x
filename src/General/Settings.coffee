@@ -830,7 +830,7 @@ Settings =
         name = @parentElement.parentElement.id
         if confirm "Are you sure you want to delete \"#{name}\"?"
           if Conf['mascot'] is name
-            MascotTools.init()
+            MascotTools.toggle()
           for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
             Conf[type].remove name
             $.set type, Conf[type]
@@ -868,11 +868,11 @@ Settings =
       select: ->
         if Conf[g.MASCOTSTRING].remove @id
           if Conf['mascot'] is @id
-            MascotTools.init()
+            MascotTools.toggle()
         else
           Conf['mascot'] = @id
           Conf[g.MASCOTSTRING].push @id
-          MascotTools.init Mascots[@id]
+          MascotTools.change Mascots[@id]
         $.toggleClass @, 'enabled'
         $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
 
