@@ -11085,7 +11085,7 @@
       innerHTML: "<img>"
     }),
     change: function(mascot) {
-      var el, image;
+      var el;
 
       el = this.el.firstElementChild;
       if (!Conf['Mascots']) {
@@ -11107,8 +11107,7 @@
       } else if (!Conf['Silhouettize Mascots']) {
         $.rmClass(doc, 'silhouettize-mascots');
       }
-      image = Array.isArray(mascot.image) ? Style.lightTheme ? mascot.image[1] : mascot.image[0] : mascot.image;
-      el.src = image;
+      el.src = Array.isArray(mascot.image) ? Style.lightTheme ? mascot.image[1] : mascot.image[0] : mascot.image;
       return Style.mascot.textContent = "#mascot img {\nheight: " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height, 10) + 'px' : 'auto') + ";\nwidth: " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width, 10) + 'px' : 'auto') + ";\n}\n#mascot {\nmargin: " + (mascot.vOffset || 0) + "px " + (mascot.hOffset || 0) + "px;\n}\n.sidebar-large #mascot {\nleft: " + (mascot.center ? 25 : 0) + "px;\nright: " + (mascot.center ? 25 : 0) + "px;\n}\n.mascot-position-above-post-form.post-form-style-fixed #mascot {\ntransform: translateY(-" + (QR.nodes ? QR.nodes.el.getBoundingClientRect().height : 0) + "px);\n}";
     },
     toggle: function() {
@@ -11249,7 +11248,7 @@
       return $.add(d.body, dialog);
     },
     input: function(item, name) {
-      var div, value;
+      var value;
 
       if (Array.isArray(editMascot[name])) {
         if (Style.lightTheme) {
@@ -11261,11 +11260,10 @@
         value = editMascot[name];
       }
       editMascot[name] = value;
-      div = $.el("div", {
+      return $.el("div", {
         className: "mascotvar",
         innerHTML: "<div class=optionlabel>" + item[0] + "</div><div class=option><input type=" + item[2] + " class=field name='" + name + "' placeholder='" + item[0] + "' value='" + value + "'></div>"
       });
-      return div;
     },
     uploadImage: function(evt, el) {
       var file, reader;

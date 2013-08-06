@@ -34,10 +34,11 @@ MascotTools =
 
     if mascot.silhouette and not Conf['Silhouettize Mascots']
       $.addClass doc, 'silhouettize-mascots'
+
     else unless Conf['Silhouettize Mascots']
       $.rmClass doc, 'silhouettize-mascots'
 
-    image =
+    el.src = 
       if Array.isArray mascot.image
         if Style.lightTheme
           mascot.image[1]
@@ -45,8 +46,6 @@ MascotTools =
           mascot.image[0]
       else
         mascot.image
-
-    el.src = image
 
     Style.mascot.textContent = """<%= grunt.file.read('src/General/css/mascot.css') %>"""
 
@@ -231,11 +230,9 @@ MascotTools =
 
     editMascot[name] = value
 
-    div = $.el "div",
+    $.el "div",
       className: "mascotvar"
       innerHTML: "<div class=optionlabel>#{item[0]}</div><div class=option><input type=#{item[2]} class=field name='#{name}' placeholder='#{item[0]}' value='#{value}'></div>"
-
-    return div
 
   uploadImage: (evt, el) ->
     file = evt.target.files[0]
