@@ -262,7 +262,7 @@ ThreadUpdater =
     sendEvent()
     if scroll
       if Conf['Bottom Scroll']
-        <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>.scrollTop = d.body.clientHeight
+        window.scrollTo 0, d.body.clientHeight
       else
         Header.scrollToPost nodes[0]
 

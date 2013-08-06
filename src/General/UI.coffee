@@ -63,8 +63,8 @@ UI = do ->
       # Position
       mRect   = menu.getBoundingClientRect()
       bRect   = button.getBoundingClientRect()
-      bTop    = doc.scrollTop  + d.body.scrollTop  + bRect.top
-      bLeft   = doc.scrollLeft + d.body.scrollLeft + bRect.left
+      bTop    = window.scrollY + bRect.top
+      bLeft   = window.scrollX + bRect.left
       cHeight = doc.clientHeight
       cWidth  = doc.clientWidth
       [top, bottom] = if bRect.top + bRect.height + mRect.height < cHeight
