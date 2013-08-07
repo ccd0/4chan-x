@@ -408,4 +408,4 @@ a .name {
 .quote-shadows #qr {
   box-shadow: 5px 5px 5px #{theme['Shadow Color']};
 }
-#{theme["Custom CSS"]}
+#{theme["Custom CSS"].replace(/\s+/g, ' ').trim()}
