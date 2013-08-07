@@ -4657,9 +4657,8 @@
             name: "soundcloud"
           });
           $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + a.dataset.uid, {
-            div: div,
             onloadend: function() {
-              return this.div.innerHTML = JSON.parse(this.responseText).html;
+              return div.innerHTML = JSON.parse(this.responseText).html;
             }
           }, false);
           return div;

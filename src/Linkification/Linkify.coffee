@@ -295,9 +295,8 @@ Linkify =
           name: "soundcloud"
         $.ajax(
           "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{a.dataset.uid}"
-          div: div
           onloadend: ->
-            @div.innerHTML = JSON.parse(@responseText).html
+            div.innerHTML = JSON.parse(@responseText).html
           false)
         div
       title:
