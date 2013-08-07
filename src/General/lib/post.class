@@ -72,15 +72,16 @@ class Post
     #   Preceding and following new lines.
     #   Trailing spaces.
     bq = @nodes.comment.cloneNode true
-    for node in $$ '.abbr, .capcodeReplies, .exif, b', bq
-      $.rm node
-    text = []
-    # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE === 7
-    nodes = d.evaluate './/br|.//text()', bq, null, 7, null
+    nodes = $$ '.abbr, .capcodeReplies, .exif, b', bq
     i = 0
-    while i < nodes.snapshotLength
-      text.push nodes.snapshotItem(i++).data or '\n'
-    @info.comment = text.join('').trim().replace /\s+$/gm, ''
+    while node = nodes[i++]
+      $.rm node
+    text = ""
+    nodes = $.X './/br|.//text()', bq
+    i = 0
+    while node = nodes.snapshotItem i++
+      text += node.data or '\n'
+    @info.comment = text.trim().replace /\s+$/gm, ''
 
   parseQuotes: ->
     @quotes = []
