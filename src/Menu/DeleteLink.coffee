@@ -55,10 +55,10 @@ DeleteLink =
 
     link = @
     $.ajax $.id('delform').action.replace("/#{g.BOARD}/", "/#{post.board}/"),
+      withCredentials: true
       onload:  -> DeleteLink.load  link, post, fileOnly, @response
       onerror: -> DeleteLink.error link
     ,
-      cred: true
       form: $.formData form
   load: (link, post, fileOnly, html) ->
     tmpDoc = d.implementation.createHTMLDocument ''

@@ -345,7 +345,7 @@ Main =
       <% } %>
     ).join '\n'
     return unless errors
-    $.ajax '<%= meta.page %>errors', {},
+    $.ajax '<%= meta.page %>errors', null,
       sync: true
       form: $.formData
         n: "<%= meta.name %> v#{g.VERSION}"

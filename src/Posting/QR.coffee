@@ -959,7 +959,8 @@ QR =
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response
 
-    callbacks =
+    options =
+      withCredentials: true
       onload: QR.response
       onerror: ->
         # Connection error, or
@@ -973,8 +974,7 @@ QR =
           Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.
           [<a href="https://github.com/MayhemYDG/4chan-x/wiki/FAQ#what-does-connection-error-you-may-have-been-banned-mean" target=_blank>FAQ</a>]
           """
-    opts =
-      cred: true
+    extra =
       form: $.formData postData
       upCallbacks:
         onload: ->
@@ -988,7 +988,7 @@ QR =
           QR.req.progress = "#{Math.round e.loaded / e.total * 100}%"
           QR.status()
 
-    QR.req = $.ajax $.id('postForm').parentNode.action, callbacks, opts
+    QR.req = $.ajax $.id('postForm').parentNode.action, options, extra
     # Starting to upload might take some time.
     # Provide some feedback that we're starting to submit.
     QR.req.uploadStartTime = Date.now()
