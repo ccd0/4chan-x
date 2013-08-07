@@ -4594,12 +4594,12 @@
           api: function(uid) {
             return "https://api.github.com/gists/" + uid;
           },
-          text: function(data) {
-            var file, response;
+          text: function(_arg) {
+            var file, files;
 
-            response = data.files;
-            for (file in response) {
-              if (response.hasOwnProperty(file)) {
+            files = _arg.files;
+            for (file in files) {
+              if (files.hasOwnProperty(file)) {
                 return file;
               }
             }
@@ -4662,8 +4662,11 @@
           api: function(uid) {
             return "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + uid;
           },
-          text: function(data) {
-            return data.title;
+          text: function(_arg) {
+            var title;
+
+            title = _arg.title;
+            return title;
           }
         }
       },
@@ -4708,8 +4711,11 @@
           api: function(uid) {
             return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + uid;
           },
-          text: function(data) {
-            return data.title;
+          text: function(_arg) {
+            var title;
+
+            title = _arg.title;
+            return title;
           }
         }
       },

@@ -257,9 +257,8 @@ Linkify =
           src: "http://www.purplegene.com/script?url=https://gist.github.com/#{a.dataset.uid}.js"
       title:
         api: (uid) -> "https://api.github.com/gists/#{uid}"
-        text: (data) ->
-          response = data.files
-          return file for file of response when response.hasOwnProperty file
+        text: ({files}) ->
+          return file for file of files when files.hasOwnProperty file
 
     image:
       regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/
@@ -301,7 +300,7 @@ Linkify =
         div
       title:
         api: (uid) -> "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{uid}"
-        text: (data) -> data.title
+        text: ({title}) -> title
 
     TwitchTV:
       regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/
@@ -342,7 +341,7 @@ Linkify =
           src: "//player.vimeo.com/video/#{a.dataset.uid}?wmode=opaque"
       title:
         api: (uid) -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{uid}"
-        text: (data) -> data.title
+        text: ({title}) -> title
 
     Vine:
       regExp: /.*(?:vine.co\/)([^#\&\?]*).*/
