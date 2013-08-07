@@ -59,7 +59,6 @@ Linkify =
 
     items = @nodes.links
     i = 0
-    
     while range = items[i++]
       if data = Linkify.services range
         Linkify.embed data if Conf['Embedding']
@@ -162,22 +161,27 @@ Linkify =
     if Conf['Auto-embed']
       Linkify.cb.toggle.call embed
 
+    data.push embed
+
     return
 
   title: (data) ->
-    [key, uid, options, link] = data
+    [key, uid, options, link, embed] = data
     return unless service = Linkify.types[key].title
     titles = Conf['CachedTitles']
     if title = titles[uid]
-      link.textContent = title[0]
+      # Auto-embed may destroy our links.
+      if link
+        link.textContent = title[0]
       if Conf['Embedding']
-         link.nextElementSibling.dataset.title = title[0]
+        embed.dataset.title = title[0]
     else
       try
         $.cache service.api(uid), ->
-          title = Linkify.cb.title.apply @, [data]
+          title = Linkify.cb.title @, data
       catch err
-        link.innerHTML = "[#{key}] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>"
+        if link
+          link.innerHTML = "[#{key}] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>"
         return
       if title
         titles[uid]  = [title, Date.now()]
@@ -197,7 +201,7 @@ Linkify =
 
     embed: (a) ->
       # We create an element to embed
-      el = (type = Linkify.types[a.dataset.key]).el.call a
+      el = (type = Linkify.types[a.dataset.key]).el a
 
       # Set style values.
       el.style.cssText = if style = type.style
@@ -220,77 +224,77 @@ Linkify =
 
       return el
 
-    title: (data) ->
-      [key, uid, options, link] = data
+    title: (response, data) ->
+      [key, uid, options, link, embed] = data
       service = Linkify.types[key].title
-      link.textContent = switch @status
+      switch response.status
         when 200, 304
-          text = "#{service.text.call @}"
+          text = "#{service.text JSON.parse response.responseText}"
           if Conf['Embedding']
-             link.nextElementSibling.dataset.title = text
-          text
+            embed.dataset.title = text
         when 404
-          "[#{key}] Not Found"
+          text = "[#{key}] Not Found"
         when 403
-          "[#{key}] Forbidden or Private"
+          text = "[#{key}] Forbidden or Private"
         else
-          "[#{key}] #{@status}'d"
+          text = "[#{key}] #{@status}'d"
+      link.textContent = text if link
 
   types:
     audio:
       regExp: /(.*\.(mp3|ogg|wav))$/
-      el: ->
+      el: (a) ->
         $.el 'audio',
           controls:    'controls'
           preload:     'auto'
-          src:         @dataset.uid
+          src:         a.dataset.uid
 
     gist:
       regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/
-      el: ->
+      el: (a) ->
         div = $.el 'iframe',
           # Github doesn't allow embedding straight from the site, so we use an external site to bypass that.
-          src: "http://www.purplegene.com/script?url=https://gist.github.com/#{@dataset.uid}.js"
+          src: "http://www.purplegene.com/script?url=https://gist.github.com/#{a.dataset.uid}.js"
       title:
         api: (uid) -> "https://api.github.com/gists/#{uid}"
-        text: ->
-          response = JSON.parse(@responseText).files
+        text: (data) ->
+          response = data.files
           return file for file of response when response.hasOwnProperty file
 
     image:
       regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/
       style: 'border: 0; width: auto; height: auto;'
-      el: ->
+      el: (a) ->
         $.el 'div',
-          innerHTML: "<a target=_blank href='#{@dataset.href}'><img src='#{@dataset.href}'></a>"
+          innerHTML: "<a target=_blank href='#{a.dataset.href}'><img src='#{a.dataset.href}'></a>"
 
     InstallGentoo:
       regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/
-      el: ->
+      el: (a) ->
         $.el 'iframe',
-          src: "http://paste.installgentoo.com/view/embed/#{@dataset.uid}"
+          src: "http://paste.installgentoo.com/view/embed/#{a.dataset.uid}"
 
     LiveLeak:
       regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
-      el: ->
+      el: (a) ->
         $.el 'object',
-          innerHTML:  "<embed src='http://www.liveleak.com/e/#{@dataset.uid}?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+          innerHTML:  "<embed src='http://www.liveleak.com/e/#{a.dataset.uid}?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
 
     pastebin:
       regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/
-      el: ->
+      el: (a) ->
         div = $.el 'iframe',
-          src: "http://pastebin.com/embed_iframe.php?i=#{@dataset.uid}"
+          src: "http://pastebin.com/embed_iframe.php?i=#{a.dataset.uid}"
 
     SoundCloud:
       regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
       style: 'height: auto; width: 500px; display: inline-block;'
-      el: ->
+      el: (a) ->
         div = $.el 'div',
           className: "soundcloud"
           name: "soundcloud"
         $.ajax(
-          "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{@dataset.uid}"
+          "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{a.dataset.uid}"
           div: div
           onloadend: ->
             @div.innerHTML = JSON.parse(@responseText).html
@@ -298,13 +302,13 @@ Linkify =
         div
       title:
         api: (uid) -> "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{uid}"
-        text: -> JSON.parse(@responseText).title
+        text: (data) -> data.title
 
     TwitchTV:
       regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/
       style: "border: none; width: 640px; height: 360px;"
-      el: ->
-        if result = /(\w+)\/(?:[a-z]\/)?(\d+)/i.exec @dataset.uid
+      el: (a) ->
+        if result = /(\w+)\/(?:[a-z]\/)?(\d+)/i.exec a.dataset.uid
           [_, channel, chapter] = result
 
           $.el 'object',
@@ -315,7 +319,7 @@ Linkify =
 """
 
         else
-          channel = (/(\w+)/.exec @dataset.uid)[0]
+          channel = (/(\w+)/.exec a.dataset.uid)[0]
 
           $.el 'object',
             data: "http://www.twitch.tv/widgets/live_embed_player.swf?channel=#{channel}"
@@ -328,31 +332,31 @@ Linkify =
     Vocaroo:
       regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/
       style: 'border: 0; width: 150px; height: 45px;'
-      el: ->
+      el: (a) ->
         $.el 'object',
-          innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@dataset.uid.replace /^i\//, ''}&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+          innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=#{a.dataset.uid.replace /^i\//, ''}&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
 
     Vimeo:
       regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
-      el: ->
+      el: (a) ->
         $.el 'iframe',
-          src: "//player.vimeo.com/video/#{@dataset.uid}?wmode=opaque"
+          src: "//player.vimeo.com/video/#{a.dataset.uid}?wmode=opaque"
       title:
         api: (uid) -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{uid}"
-        text: -> JSON.parse(@responseText).title
+        text: (data) -> data.title
 
     Vine:
       regExp: /.*(?:vine.co\/)([^#\&\?]*).*/
       style: 'border: none; width: 500px; height: 500px;'
-      el: ->
+      el: (a) ->
         $.el 'iframe',
-          src: "https://vine.co/#{@dataset.uid}/card"
+          src: "https://vine.co/#{a.dataset.uid}/card"
 
     YouTube:
       regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/
-      el: ->
+      el: (a) ->
         $.el 'iframe',
-          src: "//www.youtube.com/embed/#{@dataset.uid}#{if @dataset.option then '#' + @dataset.option else ''}?wmode=opaque"
+          src: "//www.youtube.com/embed/#{a.dataset.uid}#{if a.dataset.option then '#' + a.dataset.option else ''}?wmode=opaque"
       title:
         api: (uid) -> "https://gdata.youtube.com/feeds/api/videos/#{uid}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
-        text: -> JSON.parse(@responseText).entry.title.$t
+        text: (data) -> data.entry.title.$t
