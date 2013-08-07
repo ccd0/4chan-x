@@ -4327,6 +4327,12 @@
         ExpandComment.callbacks.push(this.node);
       }
       if (Conf['Title Link']) {
+        this.types.Vimeo.api.text = this.types.SoundCould.api.text = function(_arg) {
+          var title;
+
+          title = _arg.title;
+          return title;
+        };
         $.sync('CachedTitles', Linkify.titleSync);
       }
       return Post.prototype.callbacks.push({
@@ -4661,12 +4667,6 @@
         title: {
           api: function(uid) {
             return "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + uid;
-          },
-          text: function(_arg) {
-            var title;
-
-            title = _arg.title;
-            return title;
           }
         }
       },
@@ -4710,12 +4710,6 @@
         title: {
           api: function(uid) {
             return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + uid;
-          },
-          text: function(_arg) {
-            var title;
-
-            title = _arg.title;
-            return title;
           }
         }
       },
