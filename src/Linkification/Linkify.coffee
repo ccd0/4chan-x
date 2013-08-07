@@ -33,20 +33,22 @@ Linkify =
       cb:   @node
 
   node: ->
-    if @isClone and Conf['Embedding']
-      for embedder in $$ '.embedder', @nodes.comment
-        $.on embedder, "click", Linkify.cb.toggle
+    if @isClone
+      if Conf['Embedding']
+        i = 0
+        items = $$ '.embedded', @nodes.comment
+        while el = items[i++]
+          $.on el, "click", Linkify.cb.toggle
+          Linkify.cb.toggle.call el
+
       return
 
     snapshot = $.X './/text()', @nodes.comment
-    i        = -1
-    len      = snapshot.snapshotLength
+    i = 0
+    while node = snapshot.snapshotItem i++
 
-    while ++i < len
-      node = snapshot.snapshotItem i
-      
       continue if node.parentElement.nodeName is "A"
-      
+
       data = node.data
 
       if Linkify.regString.test data
@@ -146,13 +148,17 @@ Linkify =
 
     for name, value of {key, href, uid, options}
       embed.dataset[name] = value
-    
+
     embed.dataset.nodedata = link.innerHTML
 
     $.addClass link, "#{embed.dataset.key}"
 
     $.on embed, 'click', Linkify.cb.toggle
     $.after link, [$.tn(' '), embed]
+
+    if Conf['Auto-embed']
+      Linkify.cb.toggle.call embed
+
     return
 
   title: (data) ->
@@ -179,16 +185,11 @@ Linkify =
 
   cb:
     toggle: ->
-      # We setup the link to be replaced by the embedded video
-      embed = @previousElementSibling
-
-      # Unembed.
-      el = unless @className.contains "embedded"
-        Linkify.cb.embed @
+      [string, @textContent] = if $.hasClass @, "embedded"
+        ['unembed', '(embed)']
       else
-        Linkify.cb.unembed @
-
-      $.replace embed, el
+        ['embed', '(unembed)']
+      $.replace @previousElementSibling, Linkify.cb[string] @
       $.toggleClass @, 'embedded'
 
     embed: (a) ->
@@ -201,8 +202,6 @@ Linkify =
       else
         "border: 0; width: 640px; height: 390px"
 
-      a.textContent = '(unembed)'
-
       return el
 
     unembed: (a) ->
@@ -214,7 +213,6 @@ Linkify =
         href:        a.dataset.href
         innerHTML:   a.dataset.title or a.dataset.nodedata
 
-      a.textContent = '(embed)'
       $.addClass el, a.dataset.key
 
       return el

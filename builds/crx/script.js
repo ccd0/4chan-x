@@ -4340,21 +4340,22 @@
       });
     },
     node: function() {
-      var data, embedder, i, len, node, range, snapshot, _i, _j, _len, _len1, _ref, _ref1;
+      var data, el, i, items, node, range, snapshot, _i, _len, _ref;
 
-      if (this.isClone && Conf['Embedding']) {
-        _ref = $$('.embedder', this.nodes.comment);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          embedder = _ref[_i];
-          $.on(embedder, "click", Linkify.cb.toggle);
+      if (this.isClone) {
+        if (Conf['Embedding']) {
+          i = 0;
+          items = $$('.embedded', this.nodes.comment);
+          while (el = items[i++]) {
+            $.on(el, "click", Linkify.cb.toggle);
+            Linkify.cb.toggle.call(el);
+          }
         }
         return;
       }
       snapshot = $.X('.//text()', this.nodes.comment);
-      i = -1;
-      len = snapshot.snapshotLength;
-      while (++i < len) {
-        node = snapshot.snapshotItem(i);
+      i = 0;
+      while (node = snapshot.snapshotItem(i++)) {
         if (node.parentElement.nodeName === "A") {
           continue;
         }
@@ -4367,9 +4368,9 @@
       if (!(Conf['Embedding'] || Conf['Link Title'])) {
         return;
       }
-      _ref1 = this.nodes.links;
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        range = _ref1[_j];
+      _ref = this.nodes.links;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        range = _ref[_i];
         if (data = Linkify.services(range)) {
           if (Conf['Embedding']) {
             Linkify.embed(data);
@@ -4478,6 +4479,9 @@
       $.addClass(link, "" + embed.dataset.key);
       $.on(embed, 'click', Linkify.cb.toggle);
       $.after(link, [$.tn(' '), embed]);
+      if (Conf['Auto-embed']) {
+        Linkify.cb.toggle.call(embed);
+      }
     },
     title: function(data) {
       var err, key, link, options, service, title, titles, uid;
@@ -4513,11 +4517,10 @@
     },
     cb: {
       toggle: function() {
-        var el, embed;
+        var string, _ref;
 
-        embed = this.previousElementSibling;
-        el = !this.className.contains("embedded") ? Linkify.cb.embed(this) : Linkify.cb.unembed(this);
-        $.replace(embed, el);
+        _ref = $.hasClass(this, "embedded") ? ['unembed', '(embed)'] : ['embed', '(unembed)'], string = _ref[0], this.textContent = _ref[1];
+        $.replace(this.previousElementSibling, Linkify.cb[string](this));
         return $.toggleClass(this, 'embedded');
       },
       embed: function(a) {
@@ -4525,7 +4528,6 @@
 
         el = (type = Linkify.types[a.dataset.key]).el.call(a);
         el.style.cssText = (style = type.style) ? style : "border: 0; width: 640px; height: 390px";
-        a.textContent = '(unembed)';
         return el;
       },
       unembed: function(a) {
@@ -4538,7 +4540,6 @@
           href: a.dataset.href,
           innerHTML: a.dataset.title || a.dataset.nodedata
         });
-        a.textContent = '(embed)';
         $.addClass(el, a.dataset.key);
         return el;
       },
