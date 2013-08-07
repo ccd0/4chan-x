@@ -6634,21 +6634,22 @@
       });
     },
     node: function() {
-      var data, embedder, i, len, node, range, snapshot, _i, _j, _len, _len1, _ref, _ref1;
+      var data, el, i, items, node, range, snapshot;
 
-      if (this.isClone && Conf['Embedding']) {
-        _ref = $$('.embedder', this.nodes.comment);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          embedder = _ref[_i];
-          $.on(embedder, "click", Linkify.cb.toggle);
+      if (this.isClone) {
+        if (Conf['Embedding']) {
+          i = 0;
+          items = $$('.embedded', this.nodes.comment);
+          while (el = items[i++]) {
+            $.on(el, "click", Linkify.cb.toggle);
+            Linkify.cb.toggle.call(el);
+          }
         }
         return;
       }
       snapshot = $.X('.//text()', this.nodes.comment);
-      i = -1;
-      len = snapshot.snapshotLength;
-      while (++i < len) {
-        node = snapshot.snapshotItem(i);
+      i = 0;
+      while (node = snapshot.snapshotItem(i++)) {
         if (node.parentElement.nodeName === "A") {
           continue;
         }
@@ -6661,9 +6662,9 @@
       if (!(Conf['Embedding'] || Conf['Link Title'])) {
         return;
       }
-      _ref1 = this.nodes.links;
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        range = _ref1[_j];
+      items = this.nodes.links;
+      i = 0;
+      while (range = items[i++]) {
         if (data = Linkify.services(range)) {
           if (Conf['Embedding']) {
             Linkify.embed(data);
@@ -6768,31 +6769,40 @@
         value = _ref[name];
         embed.dataset[name] = value;
       }
+      embed.dataset.nodedata = link.innerHTML;
       $.addClass(link, "" + embed.dataset.key);
       $.on(embed, 'click', Linkify.cb.toggle);
       $.after(link, [$.tn(' '), embed]);
+      if (Conf['Auto-embed']) {
+        Linkify.cb.toggle.call(embed);
+      }
+      data.push(embed);
     },
     title: function(data) {
-      var err, key, link, options, service, title, titles, uid;
+      var embed, err, key, link, options, service, title, titles, uid;
 
-      key = data[0], uid = data[1], options = data[2], link = data[3];
+      key = data[0], uid = data[1], options = data[2], link = data[3], embed = data[4];
       if (!(service = Linkify.types[key].title)) {
         return;
       }
       titles = Conf['CachedTitles'];
       if (title = titles[uid]) {
-        link.textContent = title[0];
+        if (link) {
+          link.textContent = title[0];
+        }
         if (Conf['Embedding']) {
-          return link.nextElementSibling.dataset.title = title[0];
+          return embed.dataset.title = title[0];
         }
       } else {
         try {
           $.cache(service.api(uid), function() {
-            return title = Linkify.cb.title.apply(this, [data]);
+            return title = Linkify.cb.title(this, data);
           });
         } catch (_error) {
           err = _error;
-          link.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
+          if (link) {
+            link.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
+          }
           return;
         }
         if (title) {
@@ -6806,90 +6816,89 @@
     },
     cb: {
       toggle: function() {
-        var el, embed;
+        var string, _ref;
 
-        embed = this.previousElementSibling;
-        el = !this.className.contains("embedded") ? Linkify.cb.embed(this) : Linkify.cb.unembed(this);
-        $.replace(embed, el);
+        _ref = $.hasClass(this, "embedded") ? ['unembed', '(embed)'] : ['embed', '(unembed)'], string = _ref[0], this.textContent = _ref[1];
+        $.replace(this.previousElementSibling, Linkify.cb[string](this));
         return $.toggleClass(this, 'embedded');
       },
       embed: function(a) {
         var el, style, type;
 
-        el = (type = Linkify.types[a.dataset.key]).el.call(a);
+        el = (type = Linkify.types[a.dataset.key]).el(a);
         el.style.cssText = (style = type.style) ? style : "border: 0; width: 640px; height: 390px";
-        a.textContent = '(unembed)';
         return el;
       },
       unembed: function(a) {
-        var el, href;
+        var el;
 
-        href = a.dataset.href;
         el = $.el('a', {
           rel: 'nofollow noreferrer',
           target: 'blank',
           className: 'linkify',
-          href: href,
-          textContent: a.dataset.title || href
+          href: a.dataset.href,
+          innerHTML: a.dataset.title || a.dataset.nodedata
         });
-        a.textContent = '(embed)';
-        $.addClass(el, "" + a.dataset.key);
+        $.addClass(el, a.dataset.key);
         return el;
       },
-      title: function(data) {
-        var key, link, options, service, text, uid;
+      title: function(response, data) {
+        var embed, key, link, options, service, text, uid;
 
-        key = data[0], uid = data[1], options = data[2], link = data[3];
+        key = data[0], uid = data[1], options = data[2], link = data[3], embed = data[4];
         service = Linkify.types[key].title;
-        return link.textContent = (function() {
-          switch (this.status) {
-            case 200:
-            case 304:
-              text = "" + (service.text.call(this));
-              if (Conf['Embedding']) {
-                link.nextElementSibling.dataset.title = text;
-              }
-              return text;
-            case 404:
-              return "[" + key + "] Not Found";
-            case 403:
-              return "[" + key + "] Forbidden or Private";
-            default:
-              return "[" + key + "] " + this.status + "'d";
-          }
-        }).call(this);
+        switch (response.status) {
+          case 200:
+          case 304:
+            text = "" + (service.text(JSON.parse(response.responseText)));
+            if (Conf['Embedding']) {
+              embed.dataset.title = text;
+            }
+            break;
+          case 404:
+            text = "[" + key + "] Not Found";
+            break;
+          case 403:
+            text = "[" + key + "] Forbidden or Private";
+            break;
+          default:
+            text = "[" + key + "] " + this.status + "'d";
+        }
+        if (link) {
+          return link.textContent = text;
+        }
       }
     },
     types: {
       audio: {
         regExp: /(.*\.(mp3|ogg|wav))$/,
-        el: function() {
+        el: function(a) {
           return $.el('audio', {
             controls: 'controls',
             preload: 'auto',
-            src: this.dataset.uid
+            src: a.dataset.uid
           });
         }
       },
       gist: {
         regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/,
-        el: function() {
+        el: function(a) {
           var div;
 
           return div = $.el('iframe', {
-            src: "http://www.purplegene.com/script?url=https://gist.github.com/" + this.dataset.uid + ".js"
+            src: "http://www.purplegene.com/script?url=https://gist.github.com/" + a.dataset.uid + ".js"
           });
         },
         title: {
           api: function(uid) {
             return "https://api.github.com/gists/" + uid;
           },
-          text: function() {
-            var file, response;
+          text: function(_arg) {
+            var file, files;
 
-            response = JSON.parse(this.responseText).files;
-            for (file in response) {
-              if (response.hasOwnProperty(file)) {
+            files = _arg.files;
+            for (file in files) {
+              if (files.hasOwnProperty(file)) {
                 return file;
               }
             }
@@ -6899,52 +6908,51 @@
       image: {
         regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/,
         style: 'border: 0; width: auto; height: auto;',
-        el: function() {
+        el: function(a) {
           return $.el('div', {
-            innerHTML: "<a target=_blank href='" + this.dataset.href + "'><img src='" + this.dataset.href + "'></a>"
+            innerHTML: "<a target=_blank href='" + a.dataset.href + "'><img src='" + a.dataset.href + "'></a>"
           });
         }
       },
       InstallGentoo: {
         regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/,
-        el: function() {
+        el: function(a) {
           return $.el('iframe', {
-            src: "http://paste.installgentoo.com/view/embed/" + this.dataset.uid
+            src: "http://paste.installgentoo.com/view/embed/" + a.dataset.uid
           });
         }
       },
       LiveLeak: {
         regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
-        el: function() {
+        el: function(a) {
           return $.el('object', {
-            innerHTML: "<embed src='http://www.liveleak.com/e/" + this.dataset.uid + "?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+            innerHTML: "<embed src='http://www.liveleak.com/e/" + a.dataset.uid + "?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
           });
         }
       },
       pastebin: {
         regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/,
-        el: function() {
+        el: function(a) {
           var div;
 
           return div = $.el('iframe', {
-            src: "http://pastebin.com/embed_iframe.php?i=" + this.dataset.uid
+            src: "http://pastebin.com/embed_iframe.php?i=" + a.dataset.uid
           });
         }
       },
       SoundCloud: {
         regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
         style: 'height: auto; width: 500px; display: inline-block;',
-        el: function() {
+        el: function(a) {
           var div;
 
           div = $.el('div', {
             className: "soundcloud",
             name: "soundcloud"
           });
-          $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + this.dataset.uid, {
-            div: div,
+          $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + a.dataset.uid, {
             onloadend: function() {
-              return this.div.innerHTML = JSON.parse(this.responseText).html;
+              return div.innerHTML = JSON.parse(this.responseText).html;
             }
           }, false);
           return div;
@@ -6953,25 +6961,25 @@
           api: function(uid) {
             return "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + uid;
           },
-          text: function() {
-            return JSON.parse(this.responseText).title;
+          text: function(_) {
+            return _.title;
           }
         }
       },
       TwitchTV: {
         regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/,
         style: "border: none; width: 640px; height: 360px;",
-        el: function() {
+        el: function(a) {
           var channel, chapter, result, _;
 
-          if (result = /(\w+)\/(?:[a-z]\/)?(\d+)/i.exec(this.dataset.uid)) {
+          if (result = /(\w+)\/(?:[a-z]\/)?(\d+)/i.exec(a.dataset.uid)) {
             _ = result[0], channel = result[1], chapter = result[2];
             return $.el('object', {
               data: 'http://www.twitch.tv/widgets/archive_embed_player.swf',
               innerHTML: "<param name='allowFullScreen' value='true' />\n<param name='flashvars' value='channel=" + channel + "&start_volume=25&auto_play=false" + (chapter ? "&chapter_id=" + chapter : "") + "' />"
             });
           } else {
-            channel = (/(\w+)/.exec(this.dataset.uid))[0];
+            channel = (/(\w+)/.exec(a.dataset.uid))[0];
             return $.el('object', {
               data: "http://www.twitch.tv/widgets/live_embed_player.swf?channel=" + channel,
               innerHTML: "<param  name=\"allowFullScreen\" value=\"true\" />\n<param  name=\"movie\" value=\"http://www.twitch.tv/widgets/live_embed_player.swf\" />\n<param  name=\"flashvars\" value=\"hostname=www.twitch.tv&channel=" + channel + "&auto_play=true&start_volume=25\" />"
@@ -6982,50 +6990,50 @@
       Vocaroo: {
         regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
         style: 'border: 0; width: 150px; height: 45px;',
-        el: function() {
+        el: function(a) {
           return $.el('object', {
-            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.dataset.uid.replace(/^i\//, '')) + "&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (a.dataset.uid.replace(/^i\//, '')) + "&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
           });
         }
       },
       Vimeo: {
         regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
-        el: function() {
+        el: function(a) {
           return $.el('iframe', {
-            src: "//player.vimeo.com/video/" + this.dataset.uid + "?wmode=opaque"
+            src: "//player.vimeo.com/video/" + a.dataset.uid + "?wmode=opaque"
           });
         },
         title: {
           api: function(uid) {
             return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + uid;
           },
-          text: function() {
-            return JSON.parse(this.responseText).title;
+          text: function(_) {
+            return _.title;
           }
         }
       },
       Vine: {
         regExp: /.*(?:vine.co\/)([^#\&\?]*).*/,
         style: 'border: none; width: 500px; height: 500px;',
-        el: function() {
+        el: function(a) {
           return $.el('iframe', {
-            src: "https://vine.co/" + this.dataset.uid + "/card"
+            src: "https://vine.co/" + a.dataset.uid + "/card"
           });
         }
       },
       YouTube: {
         regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/,
-        el: function() {
+        el: function(a) {
           return $.el('iframe', {
-            src: "//www.youtube.com/embed/" + this.dataset.uid + (this.dataset.option ? '#' + this.dataset.option : '') + "?wmode=opaque"
+            src: "//www.youtube.com/embed/" + a.dataset.uid + (a.dataset.option ? '#' + a.dataset.option : '') + "?wmode=opaque"
           });
         },
         title: {
           api: function(uid) {
             return "https://gdata.youtube.com/feeds/api/videos/" + uid + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
           },
-          text: function() {
-            return JSON.parse(this.responseText).entry.title.$t;
+          text: function(data) {
+            return data.entry.title.$t;
           }
         }
       }
