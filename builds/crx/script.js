@@ -11525,15 +11525,14 @@
         return $.asap((function() {
           return $('.mPagelist');
         }), function() {
-          Style.pages(['prev', '<']);
-          return Style.pages(['next', '>']);
+          Style.pages('prev', '<');
+          return Style.pages('next', '>');
         });
       }
     },
-    pages: function(_arg) {
-      var action, el, elA, name, text;
+    pages: function(name, text) {
+      var action, el, elA;
 
-      name = _arg[0], text = _arg[1];
       el = $(".pagelist > ." + name);
       elA = $.el('a', {
         textContent: text

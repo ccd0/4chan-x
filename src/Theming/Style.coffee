@@ -25,10 +25,10 @@ Style =
 
     if g.VIEW is 'index'
       $.asap (-> $ '.mPagelist'), ->
-        Style.pages ['prev', '<']
-        Style.pages ['next', '>']
+        Style.pages 'prev', '<'
+        Style.pages 'next', '>'
 
-  pages: ([name, text]) ->
+  pages: (name, text) ->
     el = $ ".pagelist > .#{name}"
     elA = $.el 'a',
       textContent: text
