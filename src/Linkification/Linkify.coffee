@@ -57,7 +57,10 @@ Linkify =
 
     return unless Conf['Embedding'] or Conf['Link Title']
 
-    for range in @nodes.links
+    items = @nodes.links
+    i = 0
+    
+    while range = items[i++]
       if data = Linkify.services range
         Linkify.embed data if Conf['Embedding']
         Linkify.title data if Conf['Link Title']

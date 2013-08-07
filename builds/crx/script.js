@@ -4340,7 +4340,7 @@
       });
     },
     node: function() {
-      var data, el, i, items, node, range, snapshot, _i, _len, _ref;
+      var data, el, i, items, node, range, snapshot;
 
       if (this.isClone) {
         if (Conf['Embedding']) {
@@ -4368,9 +4368,9 @@
       if (!(Conf['Embedding'] || Conf['Link Title'])) {
         return;
       }
-      _ref = this.nodes.links;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        range = _ref[_i];
+      items = this.nodes.links;
+      i = 0;
+      while (range = items[i++]) {
         if (data = Linkify.services(range)) {
           if (Conf['Embedding']) {
             Linkify.embed(data);
