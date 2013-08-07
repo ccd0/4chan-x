@@ -142,7 +142,7 @@ QR =
     else
       QR.notifications.push new Notification 'warning', el
     alert el.textContent if d.hidden
-    
+
   notifications: []
   cleanNotifications: ->
     for notification in QR.notifications
@@ -718,7 +718,7 @@ QR =
     dragOver: (e) ->
       e.preventDefault()
       e.dataTransfer.dropEffect = 'move'
-      
+
     drop: ->
       $.rmClass @, 'over'
       return unless @draggable
@@ -736,7 +736,7 @@ QR =
       return if d.cookie.indexOf('pass_enabled=1') >= 0
       return unless @isEnabled = !!$.id 'captchaFormPart'
       $.asap (-> $.id 'recaptcha_challenge_field_holder'), @ready.bind @
-      
+
     ready: ->
       setLifetime = (e) => @lifetime = e.detail
       $.on  window, 'captcha:timeout', setLifetime
@@ -784,7 +784,7 @@ QR =
     sync: (captchas) ->
       QR.captcha.captchas = captchas
       QR.captcha.count()
-      
+
     getOne: ->
       @clear()
       if captcha = @captchas.shift()
@@ -800,7 +800,7 @@ QR =
         # If there's only one word, duplicate it.
         response = "#{response} #{response}" unless /\s/.test response
       {challenge, response}
-      
+
     save: ->
       return unless response = @nodes.input.value.trim()
       @captchas.push
@@ -810,7 +810,7 @@ QR =
       @count()
       @reload()
       $.set 'captchas', @captchas
-      
+
     clear: ->
       now = Date.now()
       for captcha, i in @captchas
@@ -819,7 +819,7 @@ QR =
       @captchas = @captchas[i..]
       @count()
       $.set 'captchas', @captchas
-      
+
     load: ->
       return unless @nodes.challenge.firstChild
       # -1 minute to give upload some time.
@@ -829,7 +829,7 @@ QR =
       @nodes.img.src = "//www.google.com/recaptcha/api/image?c=#{challenge}"
       @nodes.input.value = null
       @clear()
-      
+
     count: ->
       count = @captchas.length
       @nodes.input.placeholder = switch count
@@ -840,13 +840,13 @@ QR =
         else
           "Verification (#{count} cached captchas)"
       @nodes.input.alt = count
-      
+
     reload: (focus) ->
       # the 't' argument prevents the input from being focused
       $.globalEval 'Recaptcha.reload("t")'
       # Focus if we meant to.
       @nodes.input.focus() if focus
-      
+
     keydown: (e) ->
       if e.keyCode is 8 and not @nodes.input.value
         @reload()
@@ -971,7 +971,7 @@ QR =
     $.event 'QRDialogCreation', null, dialog
 
   preSubmitHooks: []
-  
+
   submit: (e) ->
     e?.preventDefault()
 
@@ -1045,7 +1045,9 @@ QR =
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response
 
-    callbacks =
+    options =
+      responseType: 'document'
+      withCredentials: true
       onload: QR.response
       onerror: ->
         # Connection error, or
@@ -1056,11 +1058,10 @@ QR =
         QR.status()
         QR.error $.el 'span',
           innerHTML: """
-          4chan X encountered an error while posting. Please try again. 
+          4chan X encountered an error while posting. Please try again.
           [<a href="https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean" target=_blank>?</a>]
           """
-    opts =
-      cred: true
+    extra =
       form: $.formData postData
       upCallbacks:
         onload: ->
@@ -1074,7 +1075,7 @@ QR =
           QR.req.progress = "#{Math.round e.loaded / e.total * 100}%"
           QR.status()
 
-    QR.req = $.ajax $.id('postForm').parentNode.action, callbacks, opts
+    QR.req = $.ajax $.id('postForm').parentNode.action, options, extra
     # Starting to upload might take some time.
     # Provide some feedback that we're starting to submit.
     QR.req.uploadStartTime = Date.now()
@@ -1088,20 +1089,23 @@ QR =
     post = QR.posts[0]
     post.unlock()
 
-    tmpDoc = d.implementation.createHTMLDocument ''
-    tmpDoc.documentElement.innerHTML = req.response
-    if ban  = $ '.banType', tmpDoc # banned/warning
-      board = $('.board', tmpDoc).innerHTML
+    resDoc  = req.response
+    if ban  = $ '.banType', resDoc # banned/warning
+      board = $('.board', resDoc).innerHTML
       err   = $.el 'span', innerHTML:
         if ban.textContent.toLowerCase() is 'banned'
-          "You are banned on #{board}! ;_;<br>" +
-          "Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason."
+          """
+          You are banned on #{board}! ;_;<br>
+          Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason.
+          """
         else
-          "You were issued a warning on #{board} as #{$('.nameBlock', tmpDoc).innerHTML}.<br>" +
-          "Reason: #{$('.reason', tmpDoc).innerHTML}"
-    else if err = tmpDoc.getElementById 'errmsg' # error!
+          """
+          You were issued a warning on #{board} as #{$('.nameBlock', resDoc).innerHTML}.<br>
+          Reason: #{$('.reason', resDoc).innerHTML}
+          """
+    else if err = resDoc.getElementById 'errmsg' # error!
       $('a', err)?.target = '_blank' # duplicate image link
-    else if tmpDoc.title isnt 'Post successful!'
+    else if resDoc.title isnt 'Post successful!'
       err = 'Connection error with sys.4chan.org.'
     else if req.status isnt 200
       err = "Error #{req.statusText} (#{req.status})"
@@ -1134,11 +1138,10 @@ QR =
       QR.status()
       QR.error err
       return
-      
 
+    h1 = $ 'h1', resDoc
     QR.cleanNotifications()
-    h1 = $ 'h1', tmpDoc
-    
+
     if Conf['Posting Success Notifications']
       QR.notifications.push new Notification 'success', h1.textContent, 5
 
