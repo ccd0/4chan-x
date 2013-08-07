@@ -11554,7 +11554,7 @@
       elA = $.el('a', {
         textContent: text
       });
-      if ((action = prev.firstElementChild).nodeName === 'FORM') {
+      if ((action = el.firstElementChild).nodeName === 'FORM') {
         elA.href = 'javascript:;';
         $.on(elA, 'click', function() {
           return action.firstElementChild.click();

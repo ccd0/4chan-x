@@ -39,7 +39,7 @@ Style =
     elA = $.el 'a',
       textContent: text
 
-    if (action = prev.firstElementChild).nodeName is 'FORM'
+    if (action = el.firstElementChild).nodeName is 'FORM'
       elA.href = 'javascript:;'
       $.on elA, 'click', ->
         action.firstElementChild.click()
