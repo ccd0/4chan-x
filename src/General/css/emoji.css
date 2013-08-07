@@ -5,4 +5,4 @@
 .emoji-position-before:not(.emoji-disable):not(.emoji-#{pony}) a.useremail[href*='#{name.toLowerCase()}']:last-of-type::before,
 .emoji-position-before:not(.emoji-disable):not(.emoji-#{pony}) a.useremail[href*='#{name.toUpperCase()}']:last-of-type::before {
   content: url('data:image/png;base64,#{icon}');
-}\n
+}

@@ -434,7 +434,7 @@ th {
 
 .sidebar-location-right.pagination-on-side .pagelist {
   <%= transform %>: rotate(90deg);
-  <%= transform %>-origin: bottom right;"
+  <%= transform %>-origin: bottom right;
 }
 .sidebar-location-right.sidebar-large.pagination-on-side .pagelist {
   left: auto;

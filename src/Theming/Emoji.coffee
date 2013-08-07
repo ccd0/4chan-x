@@ -10,9 +10,9 @@ Emoji =
       continue unless Emoji.icons.hasOwnProperty key
       for name, icon of category
         continue unless category.hasOwnProperty name
-        css.push """<%= grunt.file.read('src/General/css/emoji.css') %>"""
+        css.push """<%= grunt.file.read('src/General/css/emoji.css').replace(/\s+/g, ' ').trim() %>"""
 
-    css.push """<%= grunt.file.read('src/General/css/emoji.sage.css') %>"""
+    css.push """<%= grunt.file.read('src/General/css/emoji.sage.css').replace(/\s+/g, ' ').trim() %>"""
     css.join ""
 
   icons:

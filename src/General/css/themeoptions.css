@@ -1,4 +1,4 @@
-(if Style.lightTheme then """
+"""#{if Style.lightTheme then "
 .prettyprint {
   background-color: #e7e7e7;
   border: 1px solid #dcdcdc;
@@ -26,7 +26,7 @@
 .lit {
   color: #368c72;
 }
-""" else """
+"} else {"
 .prettyprint {
   background-color: rgba(0,0,0,.1);
   border: 1px solid rgba(0,0,0,0.5);
@@ -54,4 +54,4 @@
 .lit {
   color: #558773;
 }
-""")
+"}"""

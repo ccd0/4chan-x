@@ -146,7 +146,7 @@ Style =
   silhouette: ([fg]) ->
     "0 0 0 0 #{fg.r} 0 0 0 0 #{fg.g} 0 0 0 0 #{fg.b}"
 
-  layout: """<%= grunt.file.read('src/General/css/layout.css') %>"""
+  layout: """<%= grunt.file.read('src/General/css/layout.css').replace(/\s+/g, ' ').trim() %>"""
 
   dynamic: ->
     _conf = Conf
@@ -165,7 +165,7 @@ Style =
         left:   0
         right:  0
 
-    """<%= grunt.file.read('src/General/css/dynamic.css') %>"""
+    """<%= grunt.file.read('src/General/css/dynamic.css').replace(/\s+/g, ' ').trim() %>"""
 
   theme: (theme) ->
     bgColor = new Style.color(Style.colorToHex(backgroundC = theme["Background Color"]) or 'aaaaaa')
@@ -181,10 +181,10 @@ Style =
 <svg xmlns='http://www.w3.org/2000/svg' height=0><filter id="icons-filter" color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>
     """
 
-    """<%= grunt.file.read('src/General/css/theme.css') %>""" + <%= grunt.file.read('src/General/css/themeoptions.css') %>
+    """<%= grunt.file.read('src/General/css/theme.css').replace(/\s+/g, ' ').trim() %>""" + <%= grunt.file.read('src/General/css/themeoptions.css').replace(/\s+/g, ' ').trim() %>
 
   iconPositions: ->
-    css = """<%= grunt.file.read('src/General/css/icons.base.css') %>"""
+    css = """<%= grunt.file.read('src/General/css/icons.base.css').replace(/\s+/g, ' ').trim() %>"""
     _conf = Conf
     i = 0
     align = _conf['Sidebar Location']
@@ -241,7 +241,7 @@ Style =
 
       if iconOffset < 0 then iconOffset = 0
 
-      css += """<%= grunt.file.read('src/General/css/icons.horz.css') %>"""
+      css += """<%= grunt.file.read('src/General/css/icons.horz.css').replace(/\s+/g, ' ').trim() %>"""
 
     else
 
@@ -278,17 +278,17 @@ Style =
 
       if iconOffset < 0 then iconOffset = 0
 
-      css += """<%= grunt.file.read('src/General/css/icons.vert.css') %>"""
+      css += """<%= grunt.file.read('src/General/css/icons.vert.css').replace(/\s+/g, ' ').trim() %>"""
 
     Style.icons.textContent = css
 
   padding: ->
     Style.padding.nav   = Header.bar
     Style.padding.pages = $ '.pagelist', d.body
-    css = """<%= grunt.file.read('src/General/css/padding.nav.css') %>"""
+    css = """<%= grunt.file.read('src/General/css/padding.nav.css').replace(/\s+/g, ' ').trim() %>"""
 
     if Style.padding.pages
-      css += """<%= grunt.file.read('src/General/css/padding.pages.css') %>"""
+      css += """<%= grunt.file.read('src/General/css/padding.pages.css').replace(/\s+/g, ' ').trim() %>"""
 
     Style.paddingSheet.textContent = css
 

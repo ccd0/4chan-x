@@ -1,6 +1,6 @@
 JSColor =
   css: ->
-    """<%= grunt.file.read('src/General/css/jscolor.css') %>"""
+    """<%= grunt.file.read('src/General/css/jscolor.css').replace(/\s+/g, ' ').trim() %>"""
 
   bind: (el) ->
     el.color = new JSColor.color(el) if not el.color
