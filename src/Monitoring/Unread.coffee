@@ -84,7 +84,7 @@ Unread =
       Unread.addPostQuotingYou post
     if Conf['Unread Line']
       # Force line on visible threads if there were no unread posts previously.
-      Unread.setLine Unread.posts[0] in posts
+      Unread.setLine posts.contains Unread.posts[0]
     Unread.read()
     Unread.update()
 

@@ -7878,7 +7878,7 @@
       return Unread.update();
     },
     addPosts: function(posts) {
-      var ID, data, post, _i, _len, _ref;
+      var ID, data, post, _i, _len;
 
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
         post = posts[_i];
@@ -7900,7 +7900,7 @@
         Unread.addPostQuotingYou(post);
       }
       if (Conf['Unread Line']) {
-        Unread.setLine((_ref = Unread.posts[0], __indexOf.call(posts, _ref) >= 0));
+        Unread.setLine(posts.contains(Unread.posts[0]));
       }
       Unread.read();
       return Unread.update();
