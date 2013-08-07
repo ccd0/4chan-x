@@ -11530,14 +11530,15 @@
           items = [['prev', '<'], ['next', '>']];
           i = 0;
           while (item = items[i++]) {
-            Style.pages(item[0], item[1]);
+            Style.pages(item);
           }
         });
       }
     },
-    pages: function(name, text) {
-      var action, el, elA;
+    pages: function(_arg) {
+      var action, el, elA, name, text;
 
+      name = _arg[0], text = _arg[1];
       el = $(".pagelist > ." + name);
       elA = $.el('a', {
         textContent: text

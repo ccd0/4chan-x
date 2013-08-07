@@ -31,10 +31,10 @@ Style =
         ]
         i = 0
         while item = items[i++]
-          Style.pages item[0], item[1]
+          Style.pages item
         return
 
-  pages: (name, text) ->
+  pages: ([name, text]) ->
     el = $ ".pagelist > .#{name}"
     elA = $.el 'a',
       textContent: text
