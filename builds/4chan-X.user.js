@@ -115,8 +115,7 @@
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Config = {
     main: {
@@ -7898,7 +7897,7 @@
       return Unread.update();
     },
     addPosts: function(posts) {
-      var ID, data, post, _i, _len, _ref;
+      var ID, data, post, _i, _len;
 
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
         post = posts[_i];
@@ -7920,7 +7919,7 @@
         Unread.addPostQuotingYou(post);
       }
       if (Conf['Unread Line']) {
-        Unread.setLine((_ref = Unread.posts[0], __indexOf.call(posts, _ref) >= 0));
+        Unread.setLine(posts.contains(Unread.posts[0]));
       }
       Unread.read();
       return Unread.update();
