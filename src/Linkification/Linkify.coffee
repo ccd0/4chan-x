@@ -146,6 +146,8 @@ Linkify =
 
     for name, value of {key, href, uid, options}
       embed.dataset[name] = value
+    
+    embed.dataset.nodedata = link.innerHTML
 
     $.addClass link, "#{embed.dataset.key}"
 
@@ -205,16 +207,15 @@ Linkify =
 
     unembed: (a) ->
       # Recreate the original link.
-      {href} = a.dataset
       el = $.el 'a',
         rel:         'nofollow noreferrer'
         target:      'blank'
         className:   'linkify'
-        href:        href
-        textContent: a.dataset.title or href
+        href:        a.dataset.href
+        innerHTML:   a.dataset.title or a.dataset.nodedata
 
       a.textContent = '(embed)'
-      $.addClass el, "#{a.dataset.key}"
+      $.addClass el, a.dataset.key
 
       return el
 

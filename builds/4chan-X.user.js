@@ -4469,6 +4469,7 @@
         value = _ref[name];
         embed.dataset[name] = value;
       }
+      embed.dataset.nodedata = link.innerHTML;
       $.addClass(link, "" + embed.dataset.key);
       $.on(embed, 'click', Linkify.cb.toggle);
       $.after(link, [$.tn(' '), embed]);
@@ -4523,18 +4524,17 @@
         return el;
       },
       unembed: function(a) {
-        var el, href;
+        var el;
 
-        href = a.dataset.href;
         el = $.el('a', {
           rel: 'nofollow noreferrer',
           target: 'blank',
           className: 'linkify',
-          href: href,
-          textContent: a.dataset.title || href
+          href: a.dataset.href,
+          innerHTML: a.dataset.title || a.dataset.nodedata
         });
         a.textContent = '(embed)';
-        $.addClass(el, "" + a.dataset.key);
+        $.addClass(el, a.dataset.key);
         return el;
       },
       title: function(data) {
