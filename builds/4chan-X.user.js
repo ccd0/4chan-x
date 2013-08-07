@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.25 - 2013-08-06
+* 4chan X - Version 1.2.25 - 2013-08-07
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -551,7 +551,7 @@
 
   $.X = function(path, root) {
     root || (root = d.body);
-    return d.evaluate(path, root, null, 6, null);
+    return d.evaluate(path, root, null, 7, null);
   };
 
   $.addClass = function(el, className) {
@@ -963,21 +963,21 @@
     }
 
     Post.prototype.parseComment = function() {
-      var bq, i, node, nodes, text, _i, _len, _ref;
+      var bq, i, node, nodes, text;
 
       bq = this.nodes.comment.cloneNode(true);
-      _ref = $$('.abbr, .capcodeReplies, .exif, b', bq);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        node = _ref[_i];
+      nodes = $$('.abbr, .capcodeReplies, .exif, b', bq);
+      i = 0;
+      while (node = nodes[i++]) {
         $.rm(node);
       }
-      text = [];
-      nodes = d.evaluate('.//br|.//text()', bq, null, 7, null);
+      text = "";
+      nodes = $.X('.//br|.//text()', bq);
       i = 0;
-      while (i < nodes.snapshotLength) {
-        text.push(nodes.snapshotItem(i++).data || '\n');
+      while (node = nodes.snapshotItem(i++)) {
+        text = +node.data || '\n';
       }
-      return this.info.comment = text.join('').trim().replace(/\s+$/gm, '');
+      return this.info.comment = text.trim().replace(/\s+$/gm, '');
     };
 
     Post.prototype.parseQuotes = function() {

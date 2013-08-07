@@ -143,8 +143,8 @@ $.x = (path, root) ->
 
 $.X = (path, root) ->
   root or= d.body
-  # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE === 6
-  d.evaluate path, root, null, 6, null
+  # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE === 7
+  d.evaluate path, root, null, 7, null
 
 $.addClass = (el, className) ->
   el.classList.add className
