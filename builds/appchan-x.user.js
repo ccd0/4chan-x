@@ -11537,32 +11537,30 @@
         return $.asap((function() {
           return $('.mPagelist');
         }), function() {
-          var next, nextA, nextAction, prev, prevA, prevAction;
+          var i, item, items;
 
-          prev = $(".pagelist > .prev");
-          prevA = $.el('a', {
-            textContent: '<'
-          });
-          next = $(".pagelist > .next");
-          nextA = $.el('a', {
-            textContent: '>'
-          });
-          if ((prevAction = prev.firstElementChild).nodeName === 'FORM') {
-            prevA.href = 'javascript:;';
-            $.on(prevA, 'click', function() {
-              return prevAction.firstElementChild.click();
-            });
+          items = [['prev', '<'], ['next', '>']];
+          i = 0;
+          while (item = items[i++]) {
+            Style.pages(item[0], item[1]);
           }
-          if ((nextAction = next.firstElementChild).nodeName === 'FORM') {
-            nextA.href = 'javascript:;';
-            $.on(nextA, 'click', function() {
-              return nextAction.firstElementChild.click();
-            });
-          }
-          $.add(prev, prevA);
-          return $.add(next, nextA);
         });
       }
+    },
+    pages: function(name, text) {
+      var action, el, elA;
+
+      el = $(".pagelist > ." + name);
+      elA = $.el('a', {
+        textContent: text
+      });
+      if ((action = prev.firstElementChild).nodeName === 'FORM') {
+        elA.href = 'javascript:;';
+        $.on(elA, 'click', function() {
+          return action.firstElementChild.click();
+        });
+      }
+      return $.add(el, elA);
     },
     readyInit: function() {
       var exLink;

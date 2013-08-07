@@ -25,27 +25,26 @@ Style =
 
     if g.VIEW is 'index'
       $.asap (-> $ '.mPagelist'), ->
+        items = [
+          ['prev', '<']
+          ['next', '>']
+        ]
+        i = 0
+        while item = items[i++]
+          Style.pages item[0], item[1]
+        return
 
-        prev = $ ".pagelist > .prev"
-        prevA = $.el 'a',
-          textContent: '<'
+  pages: (name, text) ->
+    el = $ ".pagelist > .#{name}"
+    elA = $.el 'a',
+      textContent: text
 
-        next = $ ".pagelist > .next"
-        nextA = $.el 'a',
-          textContent: '>'
+    if (action = prev.firstElementChild).nodeName is 'FORM'
+      elA.href = 'javascript:;'
+      $.on elA, 'click', ->
+        action.firstElementChild.click()
 
-        if (prevAction = prev.firstElementChild).nodeName is 'FORM'
-          prevA.href = 'javascript:;'
-          $.on prevA, 'click', ->
-            prevAction.firstElementChild.click()
-
-        if (nextAction = next.firstElementChild).nodeName is 'FORM'
-          nextA.href = 'javascript:;'
-          $.on nextA, 'click', ->
-            nextAction.firstElementChild.click()
-
-        $.add prev, prevA
-        $.add next, nextA
+    $.add el, elA
 
   readyInit: ->
     Style.padding()
