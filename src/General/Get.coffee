@@ -153,30 +153,7 @@ Get =
       | \[/?code\]
       | \[/?moot\]
       | \[/?banned\]
-      ///g, (text) ->
-        switch text
-          when '\n'
-            '<br>'
-          when '[b]'
-            '<b>'
-          when '[/b]'
-            '</b>'
-          when '[spoiler]'
-            '<s>'
-          when '[/spoiler]'
-            '</s>'
-          when '[code]'
-            '<pre class=prettyprint>'
-          when '[/code]'
-            '</pre>'
-          when '[moot]'
-            '<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">'
-          when '[/moot]'
-            '</div>'
-          when '[banned]'
-            '<b style="color: red;">'
-          when '[/banned]'
-            '</b>'
+    ///g, Get.parseMarkup
 
     comment = bq.innerHTML
       # greentext
@@ -228,3 +205,27 @@ Get =
       isArchived: true
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
+  parseMarkup: (text) ->
+    switch text
+      when '\n'
+        '<br>'
+      when '[b]'
+        '<b>'
+      when '[/b]'
+        '</b>'
+      when '[spoiler]'
+        '<s>'
+      when '[/spoiler]'
+        '</s>'
+      when '[code]'
+        '<pre class=prettyprint>'
+      when '[/code]'
+        '</pre>'
+      when '[moot]'
+        '<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">'
+      when '[/moot]'
+        '</div>'
+      when '[banned]'
+        '<b style="color: red;">'
+      when '[/banned]'
+        '</b>'

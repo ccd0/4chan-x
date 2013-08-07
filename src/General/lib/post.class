@@ -80,7 +80,7 @@ class Post
     nodes = $.X './/br|.//text()', bq
     i = 0
     while node = nodes.snapshotItem i++
-      text =+ node.data or '\n'
+      text += node.data or '\n'
     @info.comment = text.trim().replace /\s+$/gm, ''
 
   parseQuotes: ->
