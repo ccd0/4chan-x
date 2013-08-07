@@ -11537,13 +11537,8 @@
         return $.asap((function() {
           return $('.mPagelist');
         }), function() {
-          var i, item, items;
-
-          items = [['prev', '<'], ['next', '>']];
-          i = 0;
-          while (item = items[i++]) {
-            Style.pages(item);
-          }
+          Style.pages(['prev', '<']);
+          return Style.pages(['next', '>']);
         });
       }
     },

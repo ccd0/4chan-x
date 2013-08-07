@@ -25,14 +25,8 @@ Style =
 
     if g.VIEW is 'index'
       $.asap (-> $ '.mPagelist'), ->
-        items = [
-          ['prev', '<']
-          ['next', '>']
-        ]
-        i = 0
-        while item = items[i++]
-          Style.pages item
-        return
+        Style.pages ['prev', '<']
+        Style.pages ['next', '>']
 
   pages: ([name, text]) ->
     el = $ ".pagelist > .#{name}"
