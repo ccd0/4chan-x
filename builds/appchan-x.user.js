@@ -11568,22 +11568,24 @@
         });
       }
     },
+    addSheet: function(_arg) {
+      var id, key, text;
+
+      key = _arg[0], text = _arg[1], id = _arg[2];
+      return Style[key] = $.addStyle(text, id);
+    },
     setup: function() {
-      var theme;
+      var i, item, items, theme;
 
       theme = Themes[Conf['theme']] || Themes['Yotsuba B'];
       Style.svg = $.el('div', {
         id: 'svg_filters'
       });
-      $.extend(Style, {
-        layoutCSS: $.addStyle(Style.layout, 'layout'),
-        themeCSS: $.addStyle(Style.theme(theme), 'theme'),
-        emojiCSS: $.addStyle(Emoji.css(), 'emoji'),
-        dynamicCSS: $.addStyle(Style.dynamic(), 'dynamic'),
-        icons: $.addStyle("", 'icons'),
-        paddingSheet: $.addStyle("", 'padding'),
-        mascot: $.addStyle("", 'mascotSheet')
-      });
+      items = [['layoutCSS', Style.layout, 'layout'], ['themeCSS', Style.theme(theme), 'theme'], ['emojiCSS', Emoji.css(), 'emoji'], ['dynamicCSS', Style.dynamic(), 'dynamic'], ['icons', "", 'icons'], ['paddingSheet', "", 'padding'], ['mascot', "", 'mascotSheet']];
+      i = 0;
+      while (item = items[i++]) {
+        Style.addSheet(item);
+      }
       $.addStyle(JSColor.css(), 'jsColor');
       if (d.head) {
         this.remStyle();

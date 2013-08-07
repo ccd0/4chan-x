@@ -47,18 +47,27 @@ Style =
       $.on exLink, "click", ->
         setTimeout Rice.nodes, 100
 
+  addSheet: ([key, text, id]) ->
+    Style[key] = $.addStyle text, id
+
   setup: ->
     theme = Themes[Conf['theme']] or Themes['Yotsuba B']
     Style.svg = $.el 'div',
       id: 'svg_filters'
-    $.extend Style,
-      layoutCSS:    $.addStyle Style.layout,       'layout'
-      themeCSS:     $.addStyle Style.theme(theme), 'theme'
-      emojiCSS:     $.addStyle Emoji.css(),        'emoji'
-      dynamicCSS:   $.addStyle Style.dynamic(),    'dynamic'
-      icons:        $.addStyle "",                 'icons'
-      paddingSheet: $.addStyle "",                 'padding'
-      mascot:       $.addStyle "",                 'mascotSheet'
+
+    items = [
+      ['layoutCSS',    Style.layout,       'layout']
+      ['themeCSS',     Style.theme(theme), 'theme']
+      ['emojiCSS',     Emoji.css(),        'emoji']
+      ['dynamicCSS',   Style.dynamic(),    'dynamic']
+      ['icons',        "",                 'icons']
+      ['paddingSheet', "",                 'padding']
+      ['mascot',       "",                 'mascotSheet']
+    ]
+
+    i = 0
+    while item = items[i++]
+      Style.addSheet item
 
     # Non-customizable
     $.addStyle JSColor.css(), 'jsColor'
