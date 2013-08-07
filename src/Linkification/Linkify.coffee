@@ -26,7 +26,6 @@ Linkify =
       ExpandComment.callbacks.push @node
 
     if Conf['Title Link']
-      @types.Vimeo.api.text = @types.SoundCould.api.text = ({title}) -> title
       $.sync 'CachedTitles', Linkify.titleSync
 
     Post::callbacks.push
@@ -301,6 +300,7 @@ Linkify =
         div
       title:
         api: (uid) -> "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{uid}"
+        text: (_) -> _.title
 
     TwitchTV:
       regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/
@@ -341,6 +341,7 @@ Linkify =
           src: "//player.vimeo.com/video/#{a.dataset.uid}?wmode=opaque"
       title:
         api: (uid) -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{uid}"
+        text: (_) -> _.title
 
     Vine:
       regExp: /.*(?:vine.co\/)([^#\&\?]*).*/
