@@ -8345,13 +8345,14 @@
         cb: this.node
       });
     },
-    node: function(post) {
-      var str, _ref;
+    node: function() {
+      var str, uid;
 
-      if (((_ref = $('.hand', this.nodes.uniqueID)) != null ? _ref.nodeName : void 0) !== 'SPAN') {
+      str = this.info.uniqueID;
+      uid = $('.hand', this.nodes.uniqueID);
+      if (!(str && uid && uid.nodeName === 'SPAN')) {
         return;
       }
-      str = this.info.uniqueID;
       return uid.style.cssText = IDColor.css(IDColor.ids[str] || IDColor.compute(str));
     },
     ids: {},

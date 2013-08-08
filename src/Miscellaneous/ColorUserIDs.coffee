@@ -6,9 +6,10 @@ IDColor =
       name: 'Color User IDs'
       cb:   @node
 
-  node: (post) ->
-    return unless $('.hand', @nodes.uniqueID)?.nodeName is 'SPAN'
+  node: ->
     str = @info.uniqueID
+    uid = $ '.hand', @nodes.uniqueID
+    return unless str and uid and uid.nodeName is 'SPAN'
     uid.style.cssText = IDColor.css IDColor.ids[str] or IDColor.compute str
 
   ids: {}
