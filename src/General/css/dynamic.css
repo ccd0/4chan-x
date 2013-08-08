@@ -9,27 +9,27 @@ body,
 button,
 input,
 textarea {
-  font-size: #{parseInt _conf["Font Size"], 10}px;
+  font-size: #{parseInt Conf["Font Size"], 10}px;
 }
 #boardTitle,
 .boardTitle a {
-  font-size: #{parseInt(_conf["Font Size"], 10) + 10}px;
+  font-size: #{parseInt(Conf["Font Size"], 10) + 10}px;
 }
 .boardSubtitle,
 .boardSubtitle a {
-  font-size: #{parseInt(_conf["Font Size"], 10) - 1}px;
+  font-size: #{parseInt(Conf["Font Size"], 10) - 1}px;
 }
 body,
 button,
 input,
 textarea {
-  font-family: #{_conf["Font"]};
+  font-family: #{Conf["Font"]};
 }
 body {
-  padding: 0 #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px 0 #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]}px;
+  padding: 0 #{parseInt(Conf["Right Thread Padding"], 10) + editSpace["right"]}px 0 #{parseInt(Conf["Left Thread Padding"], 10) + editSpace["left"]}px;
 }
 .board > .thread {
-  margin: #{parseInt _conf["Top Thread Padding"], 10}px 0 #{parseInt _conf["Bottom Thread Padding"], 10}px 0;
+  margin: #{parseInt Conf["Top Thread Padding"], 10}px 0 #{parseInt Conf["Bottom Thread Padding"], 10}px 0;
 }
 .post,
 .summary {
@@ -39,23 +39,23 @@ body {
   margin-bottom: -#{Conf["Post Spacing"]}px;
 }
 .thread > .replyContainer > .reply.post {
-  border-width: #{if _conf['Post Spacing'] is "0" then "1px 1px 0 1px" else '1px'};
+  border-width: #{if Conf['Post Spacing'] is "0" then "1px 1px 0 1px" else '1px'};
 }
 #post-preview,
 .postMessage {
-  margin: #{_conf['Vertical Post Padding']}px #{_conf['Horizontal Post Padding']}px;
+  margin: #{Conf['Vertical Post Padding']}px #{Conf['Horizontal Post Padding']}px;
 }
 :root:not(fourchan-ss-navigation):not(.pagination-on-side) .pagelist,
 :root:not(fourchan-ss-navigation) #header-bar {
-  margin-left: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["right"]}px;
-  margin-right: #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["left"]}px;
+  margin-left: #{parseInt(Conf["Left Thread Padding"], 10) + editSpace["right"]}px;
+  margin-right: #{parseInt(Conf["Right Thread Padding"], 10) + editSpace["left"]}px;
 }
 /* Emoji */
 a.useremail:last-of-type::before {
-  margin-right: #{parseInt _conf['Emoji Spacing']}px;
+  margin-right: #{parseInt Conf['Emoji Spacing']}px;
 }
 a.useremail:last-of-type::after {
-  margin-left: #{parseInt _conf['Emoji Spacing']}px;
+  margin-left: #{parseInt Conf['Emoji Spacing']}px;
 }
 #mascot {
   opacity: #{Conf['Mascot Opacity']};

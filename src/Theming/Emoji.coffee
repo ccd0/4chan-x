@@ -3,7 +3,6 @@ Emoji =
     Emoji.icons['PlanNine'] = Emoji.icons['Plan9']
 
   css: ->
-    _conf = Conf
     css = []
     
     for key, category of Emoji.icons

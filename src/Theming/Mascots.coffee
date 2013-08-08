@@ -50,10 +50,10 @@ MascotTools =
     enabled = Conf[string]
     return unless len = enabled.length
 
-    name = enabled[Math.floor(Math.random() * len)]
+    name = enabled[i = Math.floor(Math.random() * len)]
 
     unless mascot = Mascots[name]
-      enabled.remove name
+      enabled.splice i, 1
       el.src = "" if el
       $.set string, Conf[string] = enabled
       return MascotTools.toggle()
@@ -256,9 +256,7 @@ MascotTools =
       mascot.category = MascotTools.categories[0]
 
     if Mascots[name]
-
-      if Conf["Deleted Mascots"].contains name
-        Conf["Deleted Mascots"].remove name
+      if $.remove Conf["Deleted Mascots"], name
         $.set "Deleted Mascots", Conf["Deleted Mascots"]
 
       else
@@ -311,7 +309,7 @@ MascotTools =
       name = imported["Mascot"]
       delete imported["Mascot"]
 
-      if Mascots[name] and not Conf["Deleted Mascots"].remove name
+      if Mascots[name] and not $.remove Conf["Deleted Mascots"], name
         unless confirm "A mascot with this name already exists. Would you like to over-write?"
           return
 

@@ -217,7 +217,7 @@ JSColor =
         elements = ['box', 'boxB', 'pad', 'padB', 'padM', 'sld', 'sldB', 'sldM', 'btn']
         p = {}
         for item in elements
-          p[item] = $.el 'div', {className: "jsc#{item.capitalize()}"}
+          p[item] = $.el 'div', {className: "jsc#{item.charAt(0).toUpperCase() + item.slice 1}"}
 
         p.btnS = $.el 'span', {className: 'jscBtnS'}
         p.btnT = $.tn 'Close'

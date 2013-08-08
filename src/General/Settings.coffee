@@ -805,20 +805,22 @@ Settings =
             setting = Conf[type]
             i = setting.length
 
-            test = type is g.MASCOTSTRING
-
             while i--
               name = setting[i]
               continue unless Mascots[name].category is @name
-              setting.remove name
-              continue unless test
+              setting.splice i, 1
+              continue unless type is g.MASCOTSTRING
               $.rmClass $.id(name), 'enabled'
+              if Conf['mascot'] is name
+                cb = MascotTools.toggle
             $.set type, setting
 
         else
-          Conf["Hidden Categories"].remove @name
+          $.remove Conf["Hidden Categories"], @name
 
         $.set "Hidden Categories", Conf["Hidden Categories"]
+
+        cb() if cb
 
       edit: (e) ->
         e.stopPropagation()
@@ -832,7 +834,7 @@ Settings =
           if Conf['mascot'] is name
             MascotTools.toggle()
           for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
-            Conf[type].remove name
+            $.remove Conf[type], name
             $.set type, Conf[type]
           Conf["Deleted Mascots"].push name
           $.set "Deleted Mascots", Conf["Deleted Mascots"]
@@ -861,20 +863,22 @@ Settings =
 
       restore: ->
         if confirm "Are you sure you want to restore \"#{@id}\"?"
-          Conf["Deleted Mascots"].remove @id
+          $.remove Conf["Deleted Mascots"], @id
           $.set "Deleted Mascots", Conf["Deleted Mascots"]
           $.rm @
 
       select: ->
-        if Conf[g.MASCOTSTRING].remove @id
+        string = g.MASCOTSTRING
+        if $.remove Conf[string], @id
           if Conf['mascot'] is @id
             MascotTools.toggle()
         else
           Conf['mascot'] = @id
-          Conf[g.MASCOTSTRING].push @id
+          Conf[string].push @id
           MascotTools.change Mascots[@id]
         $.toggleClass @, 'enabled'
-        $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
+        $.set string, Conf[string]
+        $.set string, Conf[string]
 
     theme:
       select: ->

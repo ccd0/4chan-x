@@ -149,14 +149,12 @@ Style =
   layout: """<%= grunt.file.read('src/General/css/layout.css').replace(/\s+/g, ' ').trim() %>"""
 
   dynamic: ->
-    _conf = Conf
-
-    sidebarLocation = if _conf["Sidebar Location"] is "left"
+    sidebarLocation = if Conf["Sidebar Location"] is "left"
       ["left",  "right"]
     else
       ["right", "left" ]
 
-    if _conf['editMode'] is "theme"
+    if Conf['editMode'] is "theme"
       editSpace = {}
       editSpace[sidebarLocation[1]] = 300
       editSpace[sidebarLocation[0]] = 0
@@ -185,15 +183,14 @@ Style =
 
   iconPositions: ->
     css = """<%= grunt.file.read('src/General/css/icons.base.css').replace(/\s+/g, ' ').trim() %>"""
-    _conf = Conf
     i = 0
-    align = _conf['Sidebar Location']
+    align = Conf['Sidebar Location']
     sidebar = {
       minimal:  20
       hide:     2
       normal:   252
       large:    303
-    }[_conf['Sidebar']]
+    }[Conf['Sidebar']]
 
     notCatalog = g.VIEW isnt 'catalog'
     notEither  = notCatalog and g.BOARD isnt 'f'
@@ -214,30 +211,30 @@ Style =
 
       position
 
-    if _conf["Icon Orientation"] is "horizontal"
+    if Conf["Icon Orientation"] is "horizontal"
 
       position = aligner(
         2
         [
           true
-          _conf['Slideout Navigation'] isnt 'hide'
-          _conf['Announcements'] is 'slideout' and (psa = $ '#globalMessage', d.body) and !psa.hidden
-          _conf['Thread Watcher'] and _conf['Slideout Watcher']
+          Conf['Slideout Navigation'] isnt 'hide'
+          Conf['Announcements'] is 'slideout' and (psa = $ '#globalMessage', d.body) and !psa.hidden
+          Conf['Thread Watcher'] and Conf['Slideout Watcher']
           $ '#navtopright .exlinksOptionsLink', d.body
-          notEither and _conf['Image Expansion']
+          notEither and Conf['Image Expansion']
           notEither
           g.VIEW is 'thread'
-          notEither and _conf['Fappe Tyme']
-          navlinks = ((g.VIEW isnt 'thread' and _conf['Index Navigation']) or (g.VIEW is 'thread' and _conf['Reply Navigation'])) and notCatalog
+          notEither and Conf['Fappe Tyme']
+          navlinks = ((g.VIEW isnt 'thread' and Conf['Index Navigation']) or (g.VIEW is 'thread' and Conf['Reply Navigation'])) and notCatalog
           navlinks
         ]
       )
 
       iconOffset =
-        position[position.length - 1] - (if _conf['4chan SS Navigation']
+        position[position.length - 1] - (if Conf['4chan SS Navigation']
           0
         else
-          sidebar + parseInt(_conf["Right Thread Padding"], 10))
+          sidebar + parseInt(Conf["Right Thread Padding"], 10))
 
       if iconOffset < 0 then iconOffset = 0
 
@@ -248,32 +245,32 @@ Style =
       position = aligner(
         2
         [
-          notEither and _conf['Image Expansion']
+          notEither and Conf['Image Expansion']
           true
-          _conf['Slideout Navigation'] isnt 'hide'
-          _conf['Announcements'] is 'slideout' and (psa = $ '#globalMessage', d.body) and !psa.hidden
-          _conf['Thread Watcher'] and _conf['Slideout Watcher']
+          Conf['Slideout Navigation'] isnt 'hide'
+          Conf['Announcements'] is 'slideout' and (psa = $ '#globalMessage', d.body) and !psa.hidden
+          Conf['Thread Watcher'] and Conf['Slideout Watcher']
           $ '#navtopright .exlinksOptionsLink', d.body
           notEither
           g.VIEW is 'thread'
-          notEither and _conf['Fappe Tyme']
-          navlinks = ((g.VIEW isnt 'thread' and _conf['Index Navigation']) or (g.VIEW is 'thread' and _conf['Reply Navigation'])) and notCatalog
+          notEither and Conf['Fappe Tyme']
+          navlinks = ((g.VIEW isnt 'thread' and Conf['Index Navigation']) or (g.VIEW is 'thread' and Conf['Reply Navigation'])) and notCatalog
           navlinks
         ]
       )
 
       iconOffset = (
         20 + (
-          if g.VIEW is 'thread' and _conf['Updater Position'] is 'top'
+          if g.VIEW is 'thread' and Conf['Updater Position'] is 'top'
             100
           else
             0
         )
       ) - (
-        if _conf['4chan SS Navigation']
+        if Conf['4chan SS Navigation']
           0
         else
-          sidebar + parseInt _conf[align.capitalize() + " Thread Padding"], 10
+          sidebar + parseInt Conf[align.charAt(0).toUpperCase() + align.slice(1) + " Thread Padding"], 10
       )
 
       if iconOffset < 0 then iconOffset = 0

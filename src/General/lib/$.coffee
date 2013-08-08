@@ -1,16 +1,13 @@
-String::capitalize = ->
-  @charAt(0).toUpperCase() + @slice(1);
-
 String::contains = (string) ->
   @indexOf(string) > -1
 
-Array::contains = (object) ->
-  @indexOf(object) > -1
+Array::contains = (value) ->
+  @indexOf(value) > -1
 
-Array::indexOf = (object) ->
+Array::indexOf = (value) ->
   i = @length
   while i--
-    return i if @[i] is object
+    return i if @[i] is value
   return i
 
 # loosely follows the jquery api:
@@ -410,6 +407,14 @@ $.set = do ->
       set key, val
     return
 <% } %>
+
+$.remove = (array, value) ->
+  i = array.indexOf value
+  if i > -1
+    array.splice i, 1
+    true
+  else
+    false
 
 $$ = (selector, root=d.body) ->
   [root.querySelectorAll(selector)...]
