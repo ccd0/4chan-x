@@ -123,18 +123,20 @@ Unread =
 
     while post = posts[i]
       {bottom} = post.nodes.root.getBoundingClientRect()
-      if bottom > height  # post isnt completely read
-        i++
-        continue
-
-      {ID} = post
-      if Conf['Quote Threading']
-        posts.splice i, 1
-        continue
+      if bottom < height  # post is completely read
+        {ID} = post
+        if Conf['Quote Threading']
+          posts.splice i, 1
+          continue
       else
-        posts.splice 0, i
-        break
+        unless Conf['Quote Threading']
+          break
       i++
+    
+    unless Conf['Quote Threading']
+      if i
+        posts.splice 0, i
+
     return unless ID
 
     Unread.lastReadPost = ID if Unread.lastReadPost < ID or !Unread.lastReadPost
