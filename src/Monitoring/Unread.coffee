@@ -121,14 +121,23 @@ Unread =
     {posts} = Unread
     i = 0
 
-    while post = posts[i++]
+    while post = posts[i]
       {bottom} = post.nodes.root.getBoundingClientRect()
-      if (bottom < height)  # post is completely read
-        {ID} = post
-        posts.remove post
+      if bottom > height  # post isnt completely read
+        i++
+        continue
+
+      {ID} = post
+      if Conf['Quote Threading']
+        posts.splice i, 1
+        continue
+      else
+        posts.splice 0, i
+        break
+      i++
     return unless ID
 
-    Unread.lastReadPost = ID
+    Unread.lastReadPost = ID if Unread.lastReadPost < ID or !Unread.lastReadPost
     Unread.saveLastReadPost()
     Unread.readArray Unread.postsQuotingYou
     Unread.update()

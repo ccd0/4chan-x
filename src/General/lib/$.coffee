@@ -4,12 +4,6 @@ String::capitalize = ->
 String::contains = (string) ->
   @indexOf(string) > -1
 
-Array::add = (object, position) ->
-  keep = @slice position
-  @length = position
-  @push object
-  @pushArrays keep
-
 Array::contains = (object) ->
   @indexOf(object) > -1
 
@@ -18,18 +12,6 @@ Array::indexOf = (object) ->
   while i--
     return i if @[i] is object
   return i
-
-Array::pushArrays = ->
-  args = arguments
-  for arg in args
-    @push.apply @, arg
-  return @
-
-Array::remove = (object) ->
-  if (index = @indexOf object) > -1
-    @splice index, 1
-  else
-    false
 
 # loosely follows the jquery api:
 # http://api.jquery.com/

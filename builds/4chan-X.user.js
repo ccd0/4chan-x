@@ -336,15 +336,6 @@
     return this.indexOf(string) > -1;
   };
 
-  Array.prototype.add = function(object, position) {
-    var keep;
-
-    keep = this.slice(position);
-    this.length = position;
-    this.push(object);
-    return this.pushArrays(keep);
-  };
-
   Array.prototype.contains = function(object) {
     return this.indexOf(object) > -1;
   };
@@ -359,27 +350,6 @@
       }
     }
     return i;
-  };
-
-  Array.prototype.pushArrays = function() {
-    var arg, args, _i, _len;
-
-    args = arguments;
-    for (_i = 0, _len = args.length; _i < _len; _i++) {
-      arg = args[_i];
-      this.push.apply(this, arg);
-    }
-    return this;
-  };
-
-  Array.prototype.remove = function(object) {
-    var index;
-
-    if ((index = this.indexOf(object)) > -1) {
-      return this.splice(index, 1);
-    } else {
-      return false;
-    }
   };
 
   $ = function(selector, root) {
@@ -3683,7 +3653,7 @@
           if (Conf['Quote Inlining']) {
             $.on(link, 'click', QuoteInline.toggle);
             if (Conf['Quote Hash Navigation']) {
-              frag.pushArrays(QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
+              frag.push.apply(frag, QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
             }
           }
           $.add(container, frag);
@@ -7992,17 +7962,28 @@
       height = doc.clientHeight;
       posts = Unread.posts;
       i = 0;
-      while (post = posts[i++]) {
+      while (post = posts[i]) {
         bottom = post.nodes.root.getBoundingClientRect().bottom;
-        if (bottom < height) {
-          ID = post.ID;
-          posts.remove(post);
+        if (bottom > height) {
+          i++;
+          continue;
         }
+        ID = post.ID;
+        if (Conf['Quote Threading']) {
+          posts.splice(i, 1);
+          continue;
+        } else {
+          posts.splice(0, i);
+          break;
+        }
+        i++;
       }
       if (!ID) {
         return;
       }
-      Unread.lastReadPost = ID;
+      if (Unread.lastReadPost < ID || !Unread.lastReadPost) {
+        Unread.lastReadPost = ID;
+      }
       Unread.saveLastReadPost();
       Unread.readArray(Unread.postsQuotingYou);
       return Unread.update();
