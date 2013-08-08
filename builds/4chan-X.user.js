@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.25 - 2013-08-07
+* 4chan X - Version 1.2.25 - 2013-08-08
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -8355,20 +8355,18 @@
         return;
       }
       return Post.prototype.callbacks.push({
-        name: 'Reveal Spoilers',
+        name: 'Color User IDs',
         cb: this.node
       });
     },
     node: function(post) {
-      var str, uid;
+      var str, _ref;
 
-      if (!(uid = $('.hand', this.nodes.uniqueID))) {
+      if (((_ref = $('.hand', this.nodes.uniqueID)) != null ? _ref.nodeName : void 0) !== 'SPAN') {
         return;
       }
       str = this.info.uniqueID;
-      if (uid.nodeName === 'SPAN') {
-        return uid.style.cssText = IDColor.apply.call(str);
-      }
+      return uid.style.cssText = IDColor.css(IDColor.ids[str] || IDColor.compute(str));
     },
     ids: {},
     compute: function(str) {
@@ -8380,11 +8378,8 @@
       this.ids[str] = rgb;
       return rgb;
     },
-    apply: function() {
-      var rgb;
-
-      rgb = IDColor.ids[this] || IDColor.compute(this);
-      return ("background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: ") + (rgb[3] ? "black; border-radius: 3px; padding: 0px 2px;" : "white; border-radius: 3px; padding: 0px 2px;");
+    css: function(rgb) {
+      return "background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: " + (rgb[3] ? "black;" : "white;") + " border-radius: 3px; padding: 0px 2px;";
     },
     hash: function(str) {
       var i, j, msg;
@@ -10347,7 +10342,7 @@
         'Fourchan thingies': Fourchan,
         'Emoji': Emoji,
         'Color User IDs': IDColor,
-        'Remove Spoilers': RemoveSpoilers,
+        'Reveal Spoilers': RemoveSpoilers,
         'Custom CSS': CustomCSS,
         'Linkify': Linkify,
         'Resurrect Quotes': Quotify,
@@ -10379,7 +10374,7 @@
         'Sauce': Sauce,
         'Image Expansion': ImageExpand,
         'Image Expansion (Menu)': ImageExpand.menu,
-        'Reveal Spoilers': RevealSpoilers,
+        'Reveal Spoiler Thumbnails': RevealSpoilers,
         'Image Loading': ImageLoader,
         'Image Hover': ImageHover,
         'Comment Expansion': ExpandComment,

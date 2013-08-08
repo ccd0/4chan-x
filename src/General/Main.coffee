@@ -73,61 +73,61 @@ Main =
     # c.time 'All initializations'
 
     init
-      'Polyfill':                 Polyfill
-      'Redirect':                 Redirect
-      'Header':                   Header
-      'Catalog Links':            CatalogLinks
-      'Settings':                 Settings
-      'Announcement Hiding':      PSAHiding
-      'Fourchan thingies':        Fourchan
-      'Emoji':                    Emoji
-      'Color User IDs':           IDColor
-      'Remove Spoilers':          RemoveSpoilers
-      'Custom CSS':               CustomCSS
-      'Linkify':                  Linkify
-      'Resurrect Quotes':         Quotify
-      'Filter':                   Filter
-      'Thread Hiding Buttons':    ThreadHiding
-      'Reply Hiding Buttons':     PostHiding
-      'Recursive':                Recursive
-      'Strike-through Quotes':    QuoteStrikeThrough
-      'Quick Reply':              QR
-      'Menu':                     Menu
-      'Report Link':              ReportLink
-      'Thread Hiding (Menu)':     ThreadHiding.menu
-      'Reply Hiding (Menu)':      PostHiding.menu
-      'Delete Link':              DeleteLink
-      'Filter (Menu)':            Filter.menu
-      'Download Link':            DownloadLink
-      'Archive Link':             ArchiveLink
-      'Quote Inlining':           QuoteInline
-      'Quote Previewing':         QuotePreview
-      'Quote Backlinks':          QuoteBacklink
-      'Mark Quotes of You':       QuoteYou
-      'Mark OP Quotes':           QuoteOP
-      'Mark Cross-thread Quotes': QuoteCT
-      'Anonymize':                Anonymize
-      'Time Formatting':          Time
-      'Relative Post Dates':      RelativeDates
-      'File Info Formatting':     FileInfo
-      'Fappe Tyme':               FappeTyme
-      'Sauce':                    Sauce
-      'Image Expansion':          ImageExpand
-      'Image Expansion (Menu)':   ImageExpand.menu
-      'Reveal Spoilers':          RevealSpoilers
-      'Image Loading':            ImageLoader
-      'Image Hover':              ImageHover
-      'Comment Expansion':        ExpandComment
-      'Thread Expansion':         ExpandThread
-      'Thread Excerpt':           ThreadExcerpt
-      'Favicon':                  Favicon
-      'Unread':                   Unread
-      'Quote Threading':          QuoteThreading
-      'Thread Stats':             ThreadStats
-      'Thread Updater':           ThreadUpdater
-      'Thread Watcher':           ThreadWatcher
-      'Index Navigation':         Nav
-      'Keybinds':                 Keybinds
+      'Polyfill':                  Polyfill
+      'Redirect':                  Redirect
+      'Header':                    Header
+      'Catalog Links':             CatalogLinks
+      'Settings':                  Settings
+      'Announcement Hiding':       PSAHiding
+      'Fourchan thingies':         Fourchan
+      'Emoji':                     Emoji
+      'Color User IDs':            IDColor
+      'Reveal Spoilers':           RemoveSpoilers
+      'Custom CSS':                CustomCSS
+      'Linkify':                   Linkify
+      'Resurrect Quotes':          Quotify
+      'Filter':                    Filter
+      'Thread Hiding Buttons':     ThreadHiding
+      'Reply Hiding Buttons':      PostHiding
+      'Recursive':                 Recursive
+      'Strike-through Quotes':     QuoteStrikeThrough
+      'Quick Reply':               QR
+      'Menu':                      Menu
+      'Report Link':               ReportLink
+      'Thread Hiding (Menu)':      ThreadHiding.menu
+      'Reply Hiding (Menu)':       PostHiding.menu
+      'Delete Link':               DeleteLink
+      'Filter (Menu)':             Filter.menu
+      'Download Link':             DownloadLink
+      'Archive Link':              ArchiveLink
+      'Quote Inlining':            QuoteInline
+      'Quote Previewing':          QuotePreview
+      'Quote Backlinks':           QuoteBacklink
+      'Mark Quotes of You':        QuoteYou
+      'Mark OP Quotes':            QuoteOP
+      'Mark Cross-thread Quotes':  QuoteCT
+      'Anonymize':                 Anonymize
+      'Time Formatting':           Time
+      'Relative Post Dates':       RelativeDates
+      'File Info Formatting':      FileInfo
+      'Fappe Tyme':                FappeTyme
+      'Sauce':                     Sauce
+      'Image Expansion':           ImageExpand
+      'Image Expansion (Menu)':    ImageExpand.menu
+      'Reveal Spoiler Thumbnails': RevealSpoilers
+      'Image Loading':             ImageLoader
+      'Image Hover':               ImageHover
+      'Comment Expansion':         ExpandComment
+      'Thread Expansion':          ExpandThread
+      'Thread Excerpt':            ThreadExcerpt
+      'Favicon':                   Favicon
+      'Unread':                    Unread
+      'Quote Threading':           QuoteThreading
+      'Thread Stats':              ThreadStats
+      'Thread Updater':            ThreadUpdater
+      'Thread Watcher':            ThreadWatcher
+      'Index Navigation':          Nav
+      'Keybinds':                  Keybinds
 
     # c.timeEnd 'All initializations'
 
