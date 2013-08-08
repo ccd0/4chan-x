@@ -1,3 +1,4 @@
+- Added dice monitoring on /tg/
 - Fix impossibility to create new threads when in dead threads.
 
 ### 3.5.7 - *2013-07-13*
