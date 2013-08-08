@@ -1,4 +1,5 @@
-- Added dice monitoring on /tg/
+- **New feature**: `Show Dice Roll`
+ - Shows dice that were entered into the email field on /tg/.
 - Fix impossibility to create new threads when in dead threads.
 
 ### 3.5.7 - *2013-07-13*
