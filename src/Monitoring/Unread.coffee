@@ -86,7 +86,6 @@ Unread =
       # Force line on visible threads if there were no unread posts previously.
       Unread.setLine posts.contains Unread.posts[0]
     Unread.read()
-    Unread.update()
 
   addPostQuotingYou: (post) ->
     return unless QR.db
@@ -116,24 +115,32 @@ Unread =
       break if post.ID > Unread.lastReadPost
     arr.splice 0, i
 
-  read: $.debounce 50, (e) ->
+  read: $.debounce 50, ->
     return if d.hidden or !Unread.posts.length
     height  = doc.clientHeight
     {posts} = Unread
-    read    = []
-    i = posts.length
+    i = 0
 
-    while post = posts[--i]
+    while post = posts[i]
       {bottom} = post.nodes.root.getBoundingClientRect()
-      if (bottom < height)  # post is completely read
-        ID = post.ID
-        posts.remove post
+      if bottom > height  # post isnt completely read
+        i++
+        continue
+
+      {ID} = post
+      if Conf['Quote Threading']
+        posts.splice i, 1
+        continue
+      else
+        posts.splice 0, i
+        break
+      i++
     return unless ID
 
-    Unread.lastReadPost = ID
+    Unread.lastReadPost = ID if Unread.lastReadPost < ID or !Unread.lastReadPost
     Unread.saveLastReadPost()
     Unread.readArray Unread.postsQuotingYou
-    Unread.update() if e
+    Unread.update()
 
   saveLastReadPost: $.debounce 2 * $.SECOND, ->
     return if Unread.thread.isDead

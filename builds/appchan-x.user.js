@@ -18,7 +18,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.2.2 - 2013-08-07
+* appchan x - Version 2.2.2 - 2013-08-08
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -2693,15 +2693,6 @@
     return this.indexOf(string) > -1;
   };
 
-  Array.prototype.add = function(object, position) {
-    var keep;
-
-    keep = this.slice(position);
-    this.length = position;
-    this.push(object);
-    return this.pushArrays(keep);
-  };
-
   Array.prototype.contains = function(object) {
     return this.indexOf(object) > -1;
   };
@@ -2716,27 +2707,6 @@
       }
     }
     return i;
-  };
-
-  Array.prototype.pushArrays = function() {
-    var arg, args, _i, _len;
-
-    args = arguments;
-    for (_i = 0, _len = args.length; _i < _len; _i++) {
-      arg = args[_i];
-      this.push.apply(this, arg);
-    }
-    return this;
-  };
-
-  Array.prototype.remove = function(object) {
-    var index;
-
-    if ((index = this.indexOf(object)) > -1) {
-      return this.splice(index, 1);
-    } else {
-      return false;
-    }
   };
 
   $ = function(selector, root) {
@@ -2798,13 +2768,22 @@
     return fd;
   };
 
-  $.ajax = function(url, callbacks, opts) {
-    var cred, err, form, headers, key, r, sync, type, upCallbacks, val;
+  $.extend = function(object, properties) {
+    var key, val;
 
-    if (opts == null) {
-      opts = {};
+    for (key in properties) {
+      val = properties[key];
+      object[key] = val;
     }
-    type = opts.type, cred = opts.cred, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form, sync = opts.sync;
+  };
+
+  $.ajax = function(url, options, extra) {
+    var form, headers, key, r, sync, type, upCallbacks, val;
+
+    if (extra == null) {
+      extra = {};
+    }
+    type = extra.type, headers = extra.headers, upCallbacks = extra.upCallbacks, form = extra.form, sync = extra.sync;
     r = new XMLHttpRequest();
     r.overrideMimeType('text/html');
     type || (type = form && 'post' || 'get');
@@ -2813,13 +2792,8 @@
       val = headers[key];
       r.setRequestHeader(key, val);
     }
-    $.extend(r, callbacks);
+    $.extend(r, options);
     $.extend(r.upload, upCallbacks);
-    try {
-      r.withCredentials = cred;
-    } catch (_error) {
-      err = _error;
-    }
     r.send(form);
     return r;
   };
@@ -3966,7 +3940,11 @@
               a.dataset.only = m[1];
               a.href = "//boards.4chan.org/" + board + "/";
               if (m[1] === 'catalog') {
-                a.href += 'catalog';
+                if (Conf['External Catalog']) {
+                  a.href = CatalogLinks.external(board);
+                } else {
+                  a.href += 'catalog';
+                }
                 $.addClass(a, 'catalog');
               }
             }
@@ -5968,7 +5946,7 @@
           if (Conf['Quote Inlining']) {
             $.on(link, 'click', QuoteInline.toggle);
             if (Conf['Quote Hash Navigation']) {
-              frag.pushArrays(QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
+              frag.push.apply(frag, QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
             }
           }
           $.add(container, frag);
@@ -6047,9 +6025,6 @@
       if (g.VIEW === 'catalog' || !Conf['Quote Inlining']) {
         return;
       }
-      if (Conf['Comment Expansion']) {
-        ExpandComment.callbacks.push(this.node);
-      }
       if (Conf['Quote Hash Navigation']) {
         this.node = function() {
           var link, _i, _len, _ref;
@@ -6073,6 +6048,9 @@
             $.on(link, 'click', QuoteInline.toggle);
           }
         };
+      }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
       }
       return Post.prototype.callbacks.push({
         name: 'Quote Inlining',
@@ -8274,7 +8252,7 @@
     },
     preSubmitHooks: [],
     submit: function(e) {
-      var callbacks, challenge, err, filetag, hook, opts, post, postData, response, textOnly, thread, threadID, _i, _len, _ref, _ref1;
+      var challenge, err, extra, filetag, hook, options, post, postData, response, textOnly, thread, threadID, _i, _len, _ref, _ref1;
 
       if (e != null) {
         e.preventDefault();
@@ -8353,7 +8331,9 @@
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response
       };
-      callbacks = {
+      options = {
+        responseType: 'document',
+        withCredentials: true,
         onload: QR.response,
         onerror: function() {
           delete QR.req;
@@ -8361,12 +8341,11 @@
           QR.cooldown.auto = false;
           QR.status();
           return QR.error($.el('span', {
-            innerHTML: "Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.\n[<a href='https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean' target=_blank>?</a>]"
+            innerHTML: "Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.\n[<a href=\"https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean\" target=_blank>?</a>]"
           }));
         }
       };
-      opts = {
-        cred: true,
+      extra = {
         form: $.formData(postData),
         upCallbacks: {
           onload: function() {
@@ -8381,30 +8360,29 @@
           }
         }
       };
-      QR.req = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
+      QR.req = $.ajax($.id('postForm').parentNode.action, options, extra);
       QR.req.uploadStartTime = Date.now();
       QR.req.progress = '...';
       return QR.status();
     },
     response: function() {
-      var URL, ban, board, err, h1, isReply, m, post, postID, req, threadID, tmpDoc, _, _ref, _ref1;
+      var URL, ban, board, err, h1, isReply, m, post, postID, req, resDoc, threadID, _, _ref, _ref1;
 
       req = QR.req;
       delete QR.req;
       post = QR.posts[0];
       post.unlock();
-      tmpDoc = d.implementation.createHTMLDocument('');
-      tmpDoc.documentElement.innerHTML = req.response;
-      if (ban = $('.banType', tmpDoc)) {
-        board = $('.board', tmpDoc).innerHTML;
+      resDoc = req.response;
+      if (ban = $('.banType', resDoc)) {
+        board = $('.board', resDoc).innerHTML;
         err = $.el('span', {
-          innerHTML: ban.textContent.toLowerCase() === 'banned' ? ("You are banned on " + board + "! ;_;<br>") + "Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason." : ("You were issued a warning on " + board + " as " + ($('.nameBlock', tmpDoc).innerHTML) + ".<br>") + ("Reason: " + ($('.reason', tmpDoc).innerHTML))
+          innerHTML: ban.textContent.toLowerCase() === 'banned' ? "You are banned on " + board + "! ;_;<br>\nClick <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason." : "You were issued a warning on " + board + " as " + ($('.nameBlock', resDoc).innerHTML) + ".<br>\nReason: " + ($('.reason', resDoc).innerHTML)
         });
-      } else if (err = tmpDoc.getElementById('errmsg')) {
+      } else if (err = resDoc.getElementById('errmsg')) {
         if ((_ref = $('a', err)) != null) {
           _ref.target = '_blank';
         }
-      } else if (tmpDoc.title !== 'Post successful!') {
+      } else if (resDoc.title !== 'Post successful!') {
         err = 'Connection error with sys.4chan.org.';
       } else if (req.status !== 200) {
         err = "Error " + req.statusText + " (" + req.status + ")";
@@ -8430,8 +8408,8 @@
         QR.error(err);
         return;
       }
+      h1 = $('h1', resDoc);
       QR.cleanNotifications();
-      h1 = $('h1', tmpDoc);
       if (Conf['Posting Success Notifications']) {
         QR.notifications.push(new Notification('success', h1.textContent, 5));
       }
@@ -9212,6 +9190,8 @@
       form[post.ID] = 'delete';
       link = this;
       return $.ajax($.id('delform').action.replace("/" + g.BOARD + "/", "/" + post.board + "/"), {
+        responseType: 'document',
+        withCredentials: true,
         onload: function() {
           return DeleteLink.load(link, post, fileOnly, this.response);
         },
@@ -9219,22 +9199,19 @@
           return DeleteLink.error(link);
         }
       }, {
-        cred: true,
         form: $.formData(form)
       });
     },
-    load: function(link, post, fileOnly, html) {
-      var msg, s, tmpDoc;
+    load: function(link, post, fileOnly, resDoc) {
+      var msg, s;
 
-      tmpDoc = d.implementation.createHTMLDocument('');
-      tmpDoc.documentElement.innerHTML = html;
-      if (tmpDoc.title === '4chan - Banned') {
+      if (resDoc.title === '4chan - Banned') {
         s = 'Banned!';
-      } else if (msg = tmpDoc.getElementById('errmsg')) {
+      } else if (msg = resDoc.getElementById('errmsg')) {
         s = msg.textContent;
         $.on(link, 'click', DeleteLink["delete"]);
       } else {
-        if (tmpDoc.title === 'Updating index...') {
+        if (resDoc.title === 'Updating index...') {
           (post.origin || post).kill(fileOnly);
         }
         s = 'Deleted';
@@ -10254,8 +10231,7 @@
       if (Conf['Unread Line']) {
         Unread.setLine(posts.contains(Unread.posts[0]));
       }
-      Unread.read();
-      return Unread.update();
+      return Unread.read();
     },
     addPostQuotingYou: function(post) {
       var quotelink, _i, _len, _ref;
@@ -10305,32 +10281,40 @@
       }
       return arr.splice(0, i);
     },
-    read: $.debounce(50, function(e) {
-      var ID, bottom, height, i, post, posts, read;
+    read: $.debounce(50, function() {
+      var ID, bottom, height, i, post, posts;
 
       if (d.hidden || !Unread.posts.length) {
         return;
       }
       height = doc.clientHeight;
       posts = Unread.posts;
-      read = [];
-      i = posts.length;
-      while (post = posts[--i]) {
+      i = 0;
+      while (post = posts[i]) {
         bottom = post.nodes.root.getBoundingClientRect().bottom;
-        if (bottom < height) {
-          ID = post.ID;
-          posts.remove(post);
+        if (bottom > height) {
+          i++;
+          continue;
         }
+        ID = post.ID;
+        if (Conf['Quote Threading']) {
+          posts.splice(i, 1);
+          continue;
+        } else {
+          posts.splice(0, i);
+          break;
+        }
+        i++;
       }
       if (!ID) {
         return;
       }
-      Unread.lastReadPost = ID;
+      if (Unread.lastReadPost < ID || !Unread.lastReadPost) {
+        Unread.lastReadPost = ID;
+      }
       Unread.saveLastReadPost();
       Unread.readArray(Unread.postsQuotingYou);
-      if (e) {
-        return Unread.update();
-      }
+      return Unread.update();
     }),
     saveLastReadPost: $.debounce(2 * $.SECOND, function() {
       if (Unread.thread.isDead) {
@@ -12261,20 +12245,19 @@
         return;
       }
       return Post.prototype.callbacks.push({
-        name: 'Reveal Spoilers',
+        name: 'Color User IDs',
         cb: this.node
       });
     },
-    node: function(post) {
+    node: function() {
       var str, uid;
 
-      if (!(uid = $('.hand', this.nodes.uniqueID))) {
+      str = this.info.uniqueID;
+      uid = $('.hand', this.nodes.uniqueID);
+      if (!(str && uid && uid.nodeName === 'SPAN')) {
         return;
       }
-      str = this.info.uniqueID;
-      if (uid.nodeName === 'SPAN') {
-        return uid.style.cssText = IDColor.apply.call(str);
-      }
+      return uid.style.cssText = IDColor.css(IDColor.ids[str] || IDColor.compute(str));
     },
     ids: {},
     compute: function(str) {
@@ -12286,11 +12269,8 @@
       this.ids[str] = rgb;
       return rgb;
     },
-    apply: function() {
-      var rgb;
-
-      rgb = IDColor.ids[this] || IDColor.compute(this);
-      return ("background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: ") + (rgb[3] ? "black; border-radius: 3px; padding: 0px 2px;" : "white; border-radius: 3px; padding: 0px 2px;");
+    css: function(rgb) {
+      return "background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: " + (rgb[3] ? "black;" : "white;") + " border-radius: 3px; padding: 0px 2px;";
     },
     hash: function(str) {
       var i, j, msg;
@@ -14724,7 +14704,7 @@
         'Announcement Hiding': PSAHiding,
         'Fourchan thingies': Fourchan,
         'Color User IDs': IDColor,
-        'Remove Spoilers': RemoveSpoilers,
+        'Reveal Spoilers': RemoveSpoilers,
         'Custom CSS': CustomCSS,
         'Linkify': Linkify,
         'Resurrect Quotes': Quotify,
@@ -14756,7 +14736,7 @@
         'Sauce': Sauce,
         'Image Expansion': ImageExpand,
         'Image Expansion (Menu)': ImageExpand.menu,
-        'Reveal Spoilers': RevealSpoilers,
+        'Reveal Spoiler Thumbnails': RevealSpoilers,
         'Image Loading': ImageLoader,
         'Image Hover': ImageHover,
         'Comment Expansion': ExpandComment,

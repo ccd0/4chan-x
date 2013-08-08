@@ -42,7 +42,7 @@ QuoteBacklink =
           $.on link, 'mouseover', QuotePreview.mouseover
         if Conf['Quote Inlining']
           $.on link, 'click', QuoteInline.toggle
-          frag.pushArrays QuoteInline.qiQuote link, $.hasClass link, 'filtered' if Conf['Quote Hash Navigation']
+          frag.push.apply frag, QuoteInline.qiQuote link, $.hasClass link, 'filtered' if Conf['Quote Hash Navigation']
         $.add container, frag
     return
   secondNode: ->

@@ -4,12 +4,6 @@ String::capitalize = ->
 String::contains = (string) ->
   @indexOf(string) > -1
 
-Array::add = (object, position) ->
-  keep = @slice position
-  @length = position
-  @push object
-  @pushArrays keep
-
 Array::contains = (object) ->
   @indexOf(object) > -1
 
@@ -18,18 +12,6 @@ Array::indexOf = (object) ->
   while i--
     return i if @[i] is object
   return i
-
-Array::pushArrays = ->
-  args = arguments
-  for arg in args
-    @push.apply @, arg
-  return @
-
-Array::remove = (object) ->
-  if (index = @indexOf object) > -1
-    @splice index, 1
-  else
-    false
 
 # loosely follows the jquery api:
 # http://api.jquery.com/
@@ -70,24 +52,21 @@ $.formData = (form) ->
       fd.append key, val
   fd
 
-$.ajax = (url, callbacks, opts={}) ->
-  {type, cred, headers, upCallbacks, form, sync} = opts
+$.extend = (object, properties) ->
+  for key, val of properties
+    object[key] = val
+  return
+
+$.ajax = (url, options, extra={}) ->
+  {type, headers, upCallbacks, form, sync} = extra
   r = new XMLHttpRequest()
   r.overrideMimeType 'text/html'
   type or= form and 'post' or 'get'
   r.open type, url, !sync
   for key, val of headers
     r.setRequestHeader key, val
-  $.extend r, callbacks
+  $.extend r, options
   $.extend r.upload, upCallbacks
-  try
-    # Firefox throws an error if you try
-    # to set this on a synchronous XHR.
-    # Only cookies from the remote domain
-    # are used in a request withCredentials.
-    r.withCredentials = cred
-  catch err
-    # do nothing
   r.send form
   r
 

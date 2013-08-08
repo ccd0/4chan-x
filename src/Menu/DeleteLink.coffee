@@ -55,21 +55,20 @@ DeleteLink =
 
     link = @
     $.ajax $.id('delform').action.replace("/#{g.BOARD}/", "/#{post.board}/"),
+      responseType: 'document'
+      withCredentials: true
       onload:  -> DeleteLink.load  link, post, fileOnly, @response
       onerror: -> DeleteLink.error link
     ,
-      cred: true
       form: $.formData form
-  load: (link, post, fileOnly, html) ->
-    tmpDoc = d.implementation.createHTMLDocument ''
-    tmpDoc.documentElement.innerHTML = html
-    if tmpDoc.title is '4chan - Banned' # Ban/warn check
+  load: (link, post, fileOnly, resDoc) ->
+    if resDoc.title is '4chan - Banned' # Ban/warn check
       s = 'Banned!'
-    else if msg = tmpDoc.getElementById 'errmsg' # error!
+    else if msg = resDoc.getElementById 'errmsg' # error!
       s = msg.textContent
       $.on link, 'click', DeleteLink.delete
     else
-      if tmpDoc.title is 'Updating index...'
+      if resDoc.title is 'Updating index...'
         # We're 100% sure.
         (post.origin or post).kill fileOnly
       s = 'Deleted'
