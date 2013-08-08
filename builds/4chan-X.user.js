@@ -1616,7 +1616,11 @@
               a.dataset.only = m[1];
               a.href = "//boards.4chan.org/" + board + "/";
               if (m[1] === 'catalog') {
-                a.href += 'catalog';
+                if (Conf['External Catalog']) {
+                  a.href = CatalogLinks.external(board);
+                } else {
+                  a.href += 'catalog';
+                }
                 $.addClass(a, 'catalog');
               }
             }

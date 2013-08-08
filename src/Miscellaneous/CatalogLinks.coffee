@@ -35,7 +35,7 @@ CatalogLinks =
       continue if ['f', 'status', '4chan'].contains(board) or !board
       if Conf['External Catalog']
         a.href = if useCatalog
-          CatalogLinks.external(board)
+          CatalogLinks.external board
         else
           "//boards.4chan.org/#{board}/"
       else
