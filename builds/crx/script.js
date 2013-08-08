@@ -3738,9 +3738,6 @@
       if (g.VIEW === 'catalog' || !Conf['Quote Inlining']) {
         return;
       }
-      if (Conf['Comment Expansion']) {
-        ExpandComment.callbacks.push(this.node);
-      }
       if (Conf['Quote Hash Navigation']) {
         this.node = function() {
           var link, _i, _len, _ref;
@@ -3764,6 +3761,9 @@
             $.on(link, 'click', QuoteInline.toggle);
           }
         };
+      }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
       }
       return Post.prototype.callbacks.push({
         name: 'Quote Inlining',

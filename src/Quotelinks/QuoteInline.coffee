@@ -2,9 +2,6 @@ QuoteInline =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Quote Inlining']
 
-    if Conf['Comment Expansion']
-      ExpandComment.callbacks.push @node
-
     if Conf['Quote Hash Navigation']
       @node = ->
         for link in @nodes.quotelinks.concat [@nodes.backlinks...]
@@ -17,6 +14,9 @@ QuoteInline =
         for link in @nodes.quotelinks.concat [@nodes.backlinks...]
           $.on link, 'click', QuoteInline.toggle
         return
+
+    if Conf['Comment Expansion']
+      ExpandComment.callbacks.push @node
 
     Post::callbacks.push
       name: 'Quote Inlining'
