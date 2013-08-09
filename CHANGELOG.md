@@ -17,6 +17,7 @@
 - Fix Quote Threading toggle.
 - Added Twitch.tv and Vine embedding (with @ihavenoface)
 - Keybinds to scroll to posts that quote you.
+- New Feature: toggle between image banners by clicking them.
 - Minor optimizations.
 - Minor fixes.
 
