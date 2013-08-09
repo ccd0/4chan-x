@@ -126,6 +126,9 @@ Unread =
       {bottom} = post.nodes.root.getBoundingClientRect()
       if bottom < height  # post is completely read
         {ID} = post
+        if Conf['Mark Quotes of You']
+          if post.info.yours
+            QuoteYou.lastRead = post.nodes.root
         if Conf['Quote Threading']
           posts.splice i, 1
           continue

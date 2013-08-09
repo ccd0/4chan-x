@@ -993,6 +993,14 @@ box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
       'x'
       'Hide thread.'
     ]
+    'Previous Post Quoting You': [
+      'Alt+Up'
+      'Scroll to the previous post that quotes you.'
+    ]
+    'Next Post Quoting You': [
+      'Alt+Down'
+      'Scroll to the next post that quotes you.'
+    ]
 
   updater:
     checkbox:

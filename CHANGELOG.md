@@ -16,6 +16,7 @@
 - Linkifier Rewrite.
 - Fix Quote Threading toggle.
 - Added Twitch.tv and Vine embedding (with @ihavenoface)
+- Keybinds to scroll to posts that quote you.
 - Minor optimizations.
 - Minor fixes.
 

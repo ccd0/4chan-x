@@ -389,7 +389,9 @@
       'Next reply': ['j', 'Select next reply.'],
       'Previous reply': ['k', 'Select previous reply.'],
       'Deselect reply': ['Shift+d', 'Deselect reply.'],
-      'Hide': ['x', 'Hide thread.']
+      'Hide': ['x', 'Hide thread.'],
+      'Previous Post Quoting You': ['Alt+Up', 'Scroll to the previous post that quotes you.'],
+      'Next Post Quoting You': ['Alt+Down', 'Scroll to the next post that quotes you.']
     },
     updater: {
       checkbox: {
@@ -6496,6 +6498,38 @@
           $.addClass(this.nodes.root, 'quotesYou');
         }
       }
+    },
+    cb: {
+      seek: function(type) {
+        var post, posts, result, str;
+
+        if (!QuoteYou.lastRead) {
+          if (!(post = QuoteYou.lastRead = $('.quotesYou'))) {
+            new Notification('warning', 'No posts are currently quoting you, loser.', 20);
+          }
+          if (QuoteYou.cb.scroll(post)) {
+            return;
+          }
+        }
+        str = "" + type + "::div[contains(@class,'quotesYou')]";
+        result = $.X(str, QuoteYou.lastRead);
+        while (post = result.snapshotItem(type === 'preceding' ? result.snapshotLength - 1 : 0)) {
+          if (QuoteYou.cb.scroll(post)) {
+            return;
+          }
+        }
+        posts = $$('.quotesYou');
+        return QuoteYou.cb.scroll(posts[type === 'following' ? 0 : posts.length - 1]);
+      },
+      scroll: function(post) {
+        QuoteYou.lastRead = post;
+        if (Get.postFromRoot(post).isHidden) {
+          return false;
+        } else {
+          Header.scrollToPost(post);
+          return true;
+        }
+      }
     }
   };
 
@@ -10303,6 +10337,11 @@
         bottom = post.nodes.root.getBoundingClientRect().bottom;
         if (bottom < height) {
           ID = post.ID;
+          if (Conf['Mark Quotes of You']) {
+            if (post.info.yours) {
+              QuoteYou.lastRead = post.nodes.root;
+            }
+          }
           if (Conf['Quote Threading']) {
             posts.splice(i, 1);
             continue;
@@ -12923,6 +12962,12 @@
             ThreadHiding.toggle(thread);
           }
           break;
+        case Conf['Previous Post Quoting You']:
+          QuoteYou.cb.seek('preceding');
+          break;
+        case Conf['Next Post Quoting You']:
+          QuoteYou.cb.seek('following');
+          break;
         default:
           return;
       }
@@ -14679,7 +14724,7 @@
           $.ready(function() {
             var URL;
 
-            if (Conf['404 Redirect'] && d.title === '4chan - 404 Not Found') {
+            if (Conf['404 Redirect'] && ['4chan - Temporarily Offline', '4chan - 404 Not Found'].contains(d.title)) {
               Redirect.init();
               pathname = location.pathname.split('/');
               URL = Redirect.to('file', {

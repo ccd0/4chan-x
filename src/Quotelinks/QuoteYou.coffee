@@ -14,6 +14,7 @@ QuoteYou =
     Post::callbacks.push
       name: 'Mark Quotes of You'
       cb:   @node
+
   node: ->
     # Stop there if it's a clone.
     return if @isClone
@@ -29,3 +30,27 @@ QuoteYou =
         $.add quotelink, $.tn '\u00A0(You)'
         $.addClass @nodes.root, 'quotesYou'
     return
+
+  cb:
+    seek: (type) ->
+      unless QuoteYou.lastRead
+        unless post = QuoteYou.lastRead = $ '.quotesYou'
+          new Notification 'warning', 'No posts are currently quoting you, loser.', 20
+        return if QuoteYou.cb.scroll post
+
+      str = "#{type}::div[contains(@class,'quotesYou')]"
+
+      result = $.X(str, QuoteYou.lastRead)
+      while post = result.snapshotItem(if type is 'preceding' then result.snapshotLength - 1 else 0)
+        return if QuoteYou.cb.scroll post
+
+      posts = $$ '.quotesYou'
+      QuoteYou.cb.scroll posts[if type is 'following' then 0 else posts.length - 1]
+
+    scroll: (post) ->
+      QuoteYou.lastRead = post
+      if Get.postFromRoot(post).isHidden
+        return false
+      else
+        Header.scrollToPost post
+        return true
