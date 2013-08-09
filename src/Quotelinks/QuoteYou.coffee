@@ -36,21 +36,27 @@ QuoteYou =
       unless QuoteYou.lastRead
         unless post = QuoteYou.lastRead = $ '.quotesYou'
           new Notification 'warning', 'No posts are currently quoting you, loser.', 20
+          return
         return if QuoteYou.cb.scroll post
+      else
+        post = QuoteYou.lastRead
+
+      $.rmClass $('.highlight'), 'highlight'
 
       str = "#{type}::div[contains(@class,'quotesYou')]"
 
-      result = $.X(str, QuoteYou.lastRead)
-      while post = result.snapshotItem(if type is 'preceding' then result.snapshotLength - 1 else 0)
+      while post = (result = $.X(str, post)).snapshotItem(if type is 'preceding' then result.snapshotLength - 1 else 0)
         return if QuoteYou.cb.scroll post
 
       posts = $$ '.quotesYou'
       QuoteYou.cb.scroll posts[if type is 'following' then 0 else posts.length - 1]
 
     scroll: (post) ->
-      QuoteYou.lastRead = post
       if Get.postFromRoot(post).isHidden
         return false
       else
+        QuoteYou.lastRead = post
+        window.location = "##{post.id}"
         Header.scrollToPost post
+        $.addClass $('.post', post), 'highlight'
         return true
