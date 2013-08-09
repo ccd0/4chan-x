@@ -7888,7 +7888,8 @@
       if (Conf['Unread Line']) {
         Unread.setLine(posts.contains(Unread.posts[0]));
       }
-      return Unread.read();
+      Unread.read();
+      return Unread.update();
     },
     addPostQuotingYou: function(post) {
       var quotelink, _i, _len, _ref;
@@ -7938,7 +7939,7 @@
       }
       return arr.splice(0, i);
     },
-    read: $.debounce(50, function() {
+    read: $.debounce(50, function(e) {
       var ID, bottom, height, i, post, posts;
 
       if (d.hidden || !Unread.posts.length) {
@@ -7975,7 +7976,9 @@
       }
       Unread.saveLastReadPost();
       Unread.readArray(Unread.postsQuotingYou);
-      return Unread.update();
+      if (e) {
+        return Unread.update();
+      }
     }),
     saveLastReadPost: $.debounce(2 * $.SECOND, function() {
       if (Unread.thread.isDead) {
