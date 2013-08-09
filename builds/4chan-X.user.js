@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.25 - 2013-08-08
+* 4chan X - Version 1.2.25 - 2013-08-09
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -4161,7 +4161,7 @@
 
   QuoteYou = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Mark Quotes of You'] || !Conf['Quick Reply']) {
+      if (!(g.VIEW !== 'catalog' && Conf['Mark Quotes of You'] && Conf['Quick Reply'])) {
         return;
       }
       if (Conf['Highlight Own Posts']) {
@@ -4203,17 +4203,21 @@
       seek: function(type) {
         var post, posts, result, str;
 
+        return unlses(Conf['Mark Quotes of You'] && Conf['Quick Reply']);
+        $.rmClass($('.highlight'), 'highlight');
         if (!QuoteYou.lastRead) {
           if (!(post = QuoteYou.lastRead = $('.quotesYou'))) {
             new Notification('warning', 'No posts are currently quoting you, loser.', 20);
+            return;
           }
           if (QuoteYou.cb.scroll(post)) {
             return;
           }
+        } else {
+          post = QuoteYou.lastRead;
         }
         str = "" + type + "::div[contains(@class,'quotesYou')]";
-        result = $.X(str, QuoteYou.lastRead);
-        while (post = result.snapshotItem(type === 'preceding' ? result.snapshotLength - 1 : 0)) {
+        while (post = (result = $.X(str, post)).snapshotItem(type === 'preceding' ? result.snapshotLength - 1 : 0)) {
           if (QuoteYou.cb.scroll(post)) {
             return;
           }
@@ -4222,11 +4226,13 @@
         return QuoteYou.cb.scroll(posts[type === 'following' ? 0 : posts.length - 1]);
       },
       scroll: function(post) {
-        QuoteYou.lastRead = post;
         if (Get.postFromRoot(post).isHidden) {
           return false;
         } else {
+          QuoteYou.lastRead = post;
+          window.location = "#" + post.id;
           Header.scrollToPost(post);
+          $.addClass($('.post', post), 'highlight');
           return true;
         }
       }
