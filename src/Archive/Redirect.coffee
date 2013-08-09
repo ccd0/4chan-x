@@ -74,7 +74,9 @@ Redirect =
     # Remove necessary HTTPS procotol in September 2013.
     if archive.name in ['Foolz', 'NSFW Foolz']
       protocol = 'https://'
-    "#{protocol}#{archive.domain}/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+    URL = new String "#{protocol}#{archive.domain}/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+    URL.archive = archive
+    URL
 
   file: (archive, {boardID, filename}) ->
     "#{Redirect.protocol archive}#{archive.domain}/#{boardID}/full_image/#{filename}"

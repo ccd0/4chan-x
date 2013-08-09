@@ -71,8 +71,10 @@ Get =
       $.cache "//api.4chan.org/#{boardID}/res/#{threadID}.json", ->
         Get.fetchedPost @, boardID, threadID, postID, root, context
     else if url = Redirect.to 'post', {boardID, postID}
-      $.cache url, ->
-        Get.archivedPost @, boardID, postID, root, context
+      $.cache url,
+        -> Get.archivedPost @, boardID, postID, root, context
+      ,
+        withCredentials: url.archive.withCredentials
   insert: (post, root, context) ->
     # Stop here if the container has been removed while loading.
     return unless root.parentNode
@@ -97,8 +99,10 @@ Get =
     if status not in [200, 304]
       # The thread can die by the time we check a quote.
       if url = Redirect.to 'post', {boardID, postID}
-        $.cache url, ->
-          Get.archivedPost @, boardID, postID, root, context
+        $.cache url,
+          -> Get.archivedPost @, boardID, postID, root, context
+        ,
+          withCredentials: url.archive.withCredentials
       else
         $.addClass root, 'warning'
         root.textContent =
@@ -115,8 +119,10 @@ Get =
       if post.no > postID
         # The post can be deleted by the time we check a quote.
         if url = Redirect.to 'post', {boardID, postID}
-          $.cache url, ->
-            Get.archivedPost @, boardID, postID, root, context
+          $.cache url,
+            -> Get.archivedPost @, boardID, postID, root, context
+          ,
+            withCredentials: url.archive.withCredentials
         else
           $.addClass root, 'warning'
           root.textContent = "Post No.#{postID} was not found."
