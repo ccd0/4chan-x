@@ -18,7 +18,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.2.2 - 2013-08-08
+* appchan x - Version 2.2.2 - 2013-08-09
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -10629,6 +10629,7 @@
         child = children[i];
         if (child.tagName.toLowerCase() === "img") {
           child.id = "Banner";
+          $.on(child, 'click', Banner.cb.toggle);
           continue;
         }
         if (Conf['Custom Board Titles']) {
@@ -10639,7 +10640,19 @@
       $.add(title, nodes.reverse());
       $.after(banner, title);
     },
+    types: {
+      jpg: 227,
+      png: 270,
+      gif: 253
+    },
     cb: {
+      toggle: function() {
+        var num, type;
+
+        type = ['jpg', 'png', 'gif'][Math.floor(3 * Math.random())];
+        num = Math.floor(Banner.types[type] * Math.random());
+        return this.src = "//static.4chan.org/image/title/" + num + "." + type;
+      },
       click: function(e) {
         if (e.shiftKey) {
           return this.contentEditable = true;

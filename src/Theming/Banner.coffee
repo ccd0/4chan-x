@@ -14,6 +14,7 @@ Banner =
       child = children[i]
       if child.tagName.toLowerCase() is "img"
         child.id = "Banner"
+        $.on child, 'click', Banner.cb.toggle
         continue
 
       if Conf['Custom Board Titles']
@@ -25,7 +26,17 @@ Banner =
     $.after banner, title
     return
 
+  types:
+    jpg: 227
+    png: 270
+    gif: 253
+
   cb:
+    toggle: ->
+      type = ['jpg', 'png', 'gif'][Math.floor 3 * Math.random()]
+      num  = Math.floor Banner.types[type] * Math.random()
+      @src = "//static.4chan.org/image/title/#{num}.#{type}"
+      
     click: (e) ->
       if e.shiftKey
         @contentEditable = true
