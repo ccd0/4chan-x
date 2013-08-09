@@ -1124,7 +1124,8 @@ a.useremail:last-of-type {
   <%= sizing %>: border-box;
   font-family: monospace;
   display: inline-block;
-  margin-right: auto;
+  margin: 0 auto .1em 0;
+  vertical-align: middle;
   white-space: pre-wrap;
   border-radius: 2px;
   overflow-x: auto;
