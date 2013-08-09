@@ -323,7 +323,6 @@ th {
   top: 100%;
 }
 .notification {
-  color: #fff;
   font-weight: 700;
   text-shadow: 0 1px 2px rgba(0, 0, 0, .5);
   box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
@@ -346,13 +345,14 @@ th {
 .notification.success {
   background-color: hsla(104, 100%, 38%, .9);
 }
+.notification,
 .notification a {
-  color: #fff;
+  color: #fff !important;
 }
 .notification > .close {
-  padding: 6px;
   top: 0;
-  right: 5px;
+  padding: 2px;
+  right: 4px;
   position: absolute;
   color: #fff;
 }
