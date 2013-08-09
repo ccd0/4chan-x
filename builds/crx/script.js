@@ -10283,19 +10283,23 @@
       i = 0;
       while (post = posts[i]) {
         bottom = post.nodes.root.getBoundingClientRect().bottom;
-        if (bottom > height) {
-          i++;
-          continue;
-        }
-        ID = post.ID;
-        if (Conf['Quote Threading']) {
-          posts.splice(i, 1);
-          continue;
+        if (bottom < height) {
+          ID = post.ID;
+          if (Conf['Quote Threading']) {
+            posts.splice(i, 1);
+            continue;
+          }
         } else {
-          posts.splice(0, i);
-          break;
+          if (!Conf['Quote Threading']) {
+            break;
+          }
         }
         i++;
+      }
+      if (!Conf['Quote Threading']) {
+        if (i) {
+          posts.splice(0, i);
+        }
       }
       if (!ID) {
         return;
