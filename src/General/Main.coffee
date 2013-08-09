@@ -48,7 +48,7 @@ Main =
         return
       when 'images.4chan.org'
         $.ready ->
-          if Conf['404 Redirect'] and d.title is '4chan - 404 Not Found'
+          if Conf['404 Redirect'] and ['4chan - Temporarily Offline', '4chan - 404 Not Found'].contains d.title
             Redirect.init()
             pathname = location.pathname.split '/'
             URL = Redirect.to 'file',

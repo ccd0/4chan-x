@@ -10298,7 +10298,7 @@
           $.ready(function() {
             var URL;
 
-            if (Conf['404 Redirect'] && d.title === '4chan - 404 Not Found') {
+            if (Conf['404 Redirect'] && ['4chan - Temporarily Offline', '4chan - 404 Not Found'].contains(d.title)) {
               Redirect.init();
               pathname = location.pathname.split('/');
               URL = Redirect.to('file', {
