@@ -4166,7 +4166,7 @@
 
   QuoteYou = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Mark Quotes of You'] || !Conf['Quick Reply']) {
+      if (!(g.VIEW !== 'catalog' && Conf['Mark Quotes of You'] && Conf['Quick Reply'])) {
         return;
       }
       if (Conf['Highlight Own Posts']) {
@@ -4208,6 +4208,8 @@
       seek: function(type) {
         var post, posts, result, str;
 
+        return unlses(Conf['Mark Quotes of You'] && Conf['Quick Reply']);
+        $.rmClass($('.highlight'), 'highlight');
         if (!QuoteYou.lastRead) {
           if (!(post = QuoteYou.lastRead = $('.quotesYou'))) {
             new Notification('warning', 'No posts are currently quoting you, loser.', 20);
@@ -4219,7 +4221,6 @@
         } else {
           post = QuoteYou.lastRead;
         }
-        $.rmClass($('.highlight'), 'highlight');
         str = "" + type + "::div[contains(@class,'quotesYou')]";
         while (post = (result = $.X(str, post)).snapshotItem(type === 'preceding' ? result.snapshotLength - 1 : 0)) {
           if (QuoteYou.cb.scroll(post)) {

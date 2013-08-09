@@ -1,6 +1,6 @@
 QuoteYou =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Mark Quotes of You'] or !Conf['Quick Reply']
+    return unless g.VIEW isnt 'catalog' and Conf['Mark Quotes of You'] and Conf['Quick Reply']
 
     if Conf['Highlight Own Posts']
       $.addClass doc, 'highlight-own'
@@ -33,6 +33,9 @@ QuoteYou =
 
   cb:
     seek: (type) ->
+      return unlses Conf['Mark Quotes of You'] and Conf['Quick Reply']
+      $.rmClass $('.highlight'), 'highlight'
+
       unless QuoteYou.lastRead
         unless post = QuoteYou.lastRead = $ '.quotesYou'
           new Notification 'warning', 'No posts are currently quoting you, loser.', 20
@@ -40,8 +43,6 @@ QuoteYou =
         return if QuoteYou.cb.scroll post
       else
         post = QuoteYou.lastRead
-
-      $.rmClass $('.highlight'), 'highlight'
 
       str = "#{type}::div[contains(@class,'quotesYou')]"
 
