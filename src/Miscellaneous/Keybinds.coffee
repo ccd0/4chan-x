@@ -115,6 +115,10 @@ Keybinds =
         Keybinds.hl  0, threadRoot
       when Conf['Hide']
         ThreadHiding.toggle thread if g.VIEW is 'index'
+      when Conf['Previous Post Quoting You']
+        QuoteYou.cb.seek 'preceding'
+      when Conf['Next Post Quoting You']
+        QuoteYou.cb.seek 'following'
       else
         return
     e.preventDefault()
