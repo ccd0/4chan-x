@@ -1,3 +1,5 @@
+## 3.6.0 - *2013-08-10*
+
 - **New feature**: `Show Dice Roll`
  - Shows dice that were entered into the email field on /tg/.
 - Fix impossibility to create new threads when in dead threads.
