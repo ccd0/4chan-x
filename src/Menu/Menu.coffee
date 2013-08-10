@@ -1,7 +1,7 @@
 Menu = do ->
   a = $.el 'a',
     className: 'menu-button brackets-wrap'
-    innerHTML: '<span class=drop-marker></span>'
+    innerHTML: '<i></i>'
     href:      'javascript:;'
 
   init: ->
