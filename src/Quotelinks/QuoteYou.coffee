@@ -8,7 +8,6 @@ QuoteYou =
       name: 'Mark Quotes of You'
       cb:   @node
   node: ->
-    # Stop there if it's a clone.
     return if @isClone
     for quotelink in @nodes.quotelinks when QR.db.get Get.postDataFromLink quotelink
       $.add quotelink, $.tn QuoteYou.text
