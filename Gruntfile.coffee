@@ -71,9 +71,6 @@ module.exports = (grunt) ->
         dest: 'builds/crx/'
         expand:  true
         flatten: true
-      nex:
-        src:  'builds/<%= pkg.name %>.zip'
-        dest: 'builds/<%= pkg.name %>.nex'
 
     coffee:
       script:
@@ -174,7 +171,6 @@ module.exports = (grunt) ->
     'shell:push'
     'build-crx'
     'compress:crx'
-    'copy:nex'
   ]
   grunt.registerTask 'patch', [
     'bump'

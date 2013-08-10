@@ -4220,10 +4220,11 @@
       _ref = this.nodes.quotelinks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quotelink = _ref[_i];
-        if (QR.db.get(Get.postDataFromLink(quotelink))) {
-          $.add(quotelink, $.tn('\u00A0(You)'));
-          $.addClass(this.nodes.root, 'quotesYou');
+        if (!(QR.db.get(Get.postDataFromLink(quotelink)))) {
+          continue;
         }
+        $.add(quotelink, $.tn('\u00A0(You)'));
+        $.addClass(this.nodes.root, 'quotesYou');
       }
     },
     cb: {
@@ -4302,11 +4303,15 @@
       var a, boardID, m, post, postID, quote, quoteID, redirect, _ref;
 
       if (deadlink.parentNode.className === 'prettyprint') {
-        $.replace(deadlink, __slice.call(deadlink.childNodes));
+        Quotify.fixDeadlink(deadlink);
         return;
       }
       quote = deadlink.textContent;
       if (!(postID = (_ref = quote.match(/\d+$/)) != null ? _ref[0] : void 0)) {
+        return;
+      }
+      if (postID[0] === '0') {
+        Quotify.fixDeadlink(deadlink);
         return;
       }
       boardID = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : this.board.ID;
@@ -4364,6 +4369,9 @@
       if ($.hasClass(a, 'quotelink')) {
         return this.nodes.quotelinks.push(a);
       }
+    },
+    fixDeadlink: function(deadlink) {
+      return $.replace(deadlink, __slice.call(deadlink.childNodes));
     }
   };
 
@@ -8522,7 +8530,7 @@
         return;
       }
       roll = $('b', this.nodes.comment).firstChild;
-      return roll.data = "Rolled " + dicestats[1] + "d" + dicestats[2] + " and got " + (roll.data.slice(7));
+      return roll.data = "Rolled " + dicestats[1] + "d" + dicestats[2] + ": " + (roll.data.slice(7));
     }
   };
 
