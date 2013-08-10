@@ -100,7 +100,7 @@ module.exports = (grunt) ->
           'git checkout <%= pkg.meta.mainBranch %>'
           'git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."'
           'git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
-          'git tag -af stable-v3 -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
+          'git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
         ].join ' && '
 
       push:
