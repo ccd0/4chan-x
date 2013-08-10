@@ -27,7 +27,7 @@ Build =
       date:     data.now
       dateUTC:  data.time
       comment:  data.com
-      capReps:  data.capcode_replies
+      capcodeReplies: data.capcode_replies
       # thread status
       isSticky: !!data.sticky
       isClosed: !!data.closed
@@ -55,7 +55,7 @@ Build =
       postID, threadID, boardID
       name, capcode, tripcode, uniqueID, email, subject, flagCode, flagName, date, dateUTC
       isSticky, isClosed
-      comment, capReps
+      comment, capcodeReplies
       file
     } = o
     isOP = postID is threadID
@@ -187,26 +187,6 @@ Build =
     else
       ''
 
-    capcodeReplies = ''
-    if capReps
-      generateCapcodeReplies = (capcodeType, array) ->
-        "<span class=smaller><span class=bold>#{
-          switch capcodeType
-            when 'admin'
-              'Administrator'
-            when 'mod'
-              'Moderator'
-            when 'developer'
-              'Developer'
-        } Repl#{if array.length > 1 then 'ies' else 'y'}:</span> #{
-          array.map (ID) ->
-            "<a href='/#{boardID}/res/#{threadID}#p#{ID}' class=quotelink>&gt;&gt;#{ID}</a>"
-          .join ' '
-        }</span><br>"
-      for capcodeType, array of capReps
-        capcodeReplies += generateCapcodeReplies capcodeType, array
-      capcodeReplies = "<br><br><span class=capcodeReplies>#{capcodeReplies}</span>"
-
     container = $.el 'div',
       id: "pc#{postID}"
       className: "postContainer #{if isOP then 'op' else 'reply'}Container"
@@ -259,7 +239,7 @@ Build =
 
         (if isOP then '' else fileHTML) +
 
-        "<blockquote class=postMessage id=m#{postID}>#{comment or ''}#{capcodeReplies}</blockquote> " +
+        "<blockquote class=postMessage id=m#{postID}>#{comment or ''}</blockquote> " +
 
       '</div>'
 
@@ -268,4 +248,36 @@ Build =
       continue if href[0] is '/' # Cross-board quote, or board link
       quote.href = "/#{boardID}/res/#{href}" # Fix pathnames
 
+    Build.capcodeReplies {boardID, threadID, root: container, capcodeReplies}
+
     container
+
+  capcodeReplies: ({boardID, threadID, bq, root, capcodeReplies}) ->
+    return unless capcodeReplies
+
+    generateCapcodeReplies = (capcodeType, array) ->
+      "<span class=smaller><span class=bold>#{
+        switch capcodeType
+          when 'admin'
+            'Administrator'
+          when 'mod'
+            'Moderator'
+          when 'developer'
+            'Developer'
+      } Repl#{if array.length > 1 then 'ies' else 'y'}:</span> #{
+        array.map (ID) ->
+          "<a href='/#{boardID}/res/#{threadID}#p#{ID}' class=quotelink>&gt;&gt;#{ID}</a>"
+        .join ' '
+      }</span><br>"
+    html = []
+    for capcodeType, array of capcodeReplies
+      html.push generateCapcodeReplies capcodeType, array
+
+    bq or= $ 'blockquote', root
+    $.add bq, [
+      $.el 'br'
+      $.el 'br'
+      $.el 'span',
+        className: 'capcodeReplies'
+        innerHTML: html.join ''
+    ]
