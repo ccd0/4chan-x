@@ -10,6 +10,6 @@ QuoteYou =
   node: ->
     # Stop there if it's a clone.
     return if @isClone
-    for quotelink in quotelinks when QR.db.get Get.postDataFromLink quotelink
+    for quotelink in @nodes.quotelinks when QR.db.get Get.postDataFromLink quotelink
       $.add quotelink, $.tn QuoteYou.text
     return
