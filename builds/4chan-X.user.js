@@ -5904,7 +5904,7 @@
       }
     },
     dialog: function() {
-      var dialog, elm, mimeTypes, name, nodes, thread, _i, _j, _len, _len1, _ref, _ref1;
+      var dialog, elm, i, items, mimeTypes, name, nodes, thread;
 
       dialog = UI.dialog('qr', 'top:0;right:0;', "  <div class=move><label><input type=checkbox id=autohide title=Auto-hide>\n  Quick Reply\n</label><a href=javascript:; class=close title=Close>×</a><select data-name=thread title='Create a new thread / Reply'><option value=new>New thread</option></select></div><form><div class=persona><input name=name  data-name=name  list=\"list-name\" placeholder=Name    class=field size=1 tabindex=10><input name=email data-name=email list=\"list-email\" placeholder=E-mail  class=field size=1 tabindex=20><input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1 tabindex=30></div><div class=textarea><textarea data-name=com placeholder=Comment class=field tabindex=40></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=60><span id=qr-no-file>No selected file</span><span id=qr-filename></span><span id=qr-extras-container><a id=qr-filerm href=javascript:; title='Remove file'>×</a><a id=dump-button title='Dump list'>+</a></span></span><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70></label><input type=submit tabindex=80></div><input type=file multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist>");
       QR.nodes = nodes = {
@@ -5965,9 +5965,9 @@
         }));
       }
       $.on(nodes.filename.parentNode, 'click keyup', QR.openFileInput);
-      _ref = $$('*', QR.nodes.el);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        elm = _ref[_i];
+      items = $$('*', QR.nodes.el);
+      i = 0;
+      while (elm = items[i++]) {
         $.on(elm, 'blur', QR.focusout);
         $.on(elm, 'focus', QR.focusin);
       }
@@ -5992,9 +5992,9 @@
         return QR.selected.nodes.spoiler.click();
       });
       $.on(nodes.fileInput, 'change', QR.fileInput);
-      _ref1 = ['name', 'email', 'sub', 'com'];
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        name = _ref1[_j];
+      items = ['name', 'email', 'sub', 'com'];
+      i = 0;
+      while (name = items[i++]) {
         $.on(nodes[name], 'input', function() {
           return QR.selected.save(this);
         });
