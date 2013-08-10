@@ -1,3 +1,5 @@
+## 2.3.0 - *2013-08-10*
+
 **aeosynth**:
 - Update Gruntfile.coffee.
 
