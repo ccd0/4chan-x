@@ -3066,7 +3066,9 @@ textarea,
 #unread-line {
   margin: -1px;
 }
-#qp { border: none !important; }
+#qp {
+  border: none !important;
+}
 #unread-line {
   padding: 1px;
   border: 1px solid #111 !important;
