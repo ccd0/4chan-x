@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.25 - 2013-08-09
+* 4chan X - Version 1.2.25 - 2013-08-10
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -4385,10 +4385,12 @@
       if (this.isClone) {
         if (Conf['Embedding']) {
           i = 0;
-          items = $$('.embedded', this.nodes.comment);
+          items = $$('.embed', this.nodes.comment);
           while (el = items[i++]) {
-            $.on(el, "click", Linkify.cb.toggle);
-            Linkify.cb.toggle.call(el);
+            $.on(el, 'click', Linkify.cb.toggle);
+            if ($.hasClass(el, 'embedded')) {
+              Linkify.cb.toggle.call(el);
+            }
           }
         }
         return;
@@ -4673,6 +4675,15 @@
         el: function(a) {
           return $.el('object', {
             innerHTML: "<embed src='http://www.liveleak.com/e/" + a.dataset.uid + "?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+          });
+        }
+      },
+      MediaCrush: {
+        regExp: /.*(?:mediacru.sh\/)([0-9a-z_]+)/i,
+        style: 'border: 0; width: 640px; height: 480px; resize: both;',
+        el: function(a) {
+          return $.el('iframe', {
+            src: "https://mediacru.sh/" + a.dataset.uid
           });
         }
       },

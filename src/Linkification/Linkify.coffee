@@ -36,10 +36,10 @@ Linkify =
     if @isClone
       if Conf['Embedding']
         i = 0
-        items = $$ '.embedded', @nodes.comment
+        items = $$ '.embed', @nodes.comment
         while el = items[i++]
-          $.on el, "click", Linkify.cb.toggle
-          Linkify.cb.toggle.call el
+          $.on el, 'click', Linkify.cb.toggle
+          Linkify.cb.toggle.call el if $.hasClass el, 'embedded'
 
       return
 
@@ -278,6 +278,36 @@ Linkify =
       el: (a) ->
         $.el 'object',
           innerHTML:  "<embed src='http://www.liveleak.com/e/#{a.dataset.uid}?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+
+    MediaCrush:
+      regExp: /.*(?:mediacru.sh\/)([0-9a-z_]+)/i
+      style: 'border: 0; width: 640px; height: 480px; resize: both;'
+      el: (a) ->
+        $.el 'iframe',
+          src: "https://mediacru.sh/#{a.dataset.uid}"
+# MediaCrush CORS When?
+#
+#        el = $.el 'div'
+#        $.cache "https://mediacru.sh/#{a.dataset.uid}.json", ->
+#          {status} = @
+#          return unless [200, 304].contains status
+#          {files} = JSON.parse req.response
+#          file = file for file of files when files.hasOwnProperty file
+#          el.innerHTML = switch file.type
+#            when 'video/mp4', 'video/ogv'
+#              """
+#<video autoplay loop>
+#  <source src="https://mediacru.sh/#{a.dataset.uid}.mp4" type="video/mp4;">
+#  <source src="https://mediacru.sh/#{a.dataset.uid}.ogv" type="video/ogg; codecs='theora, vorbis'">
+#</video>"""
+#            when 'image/png', 'image/gif', 'image/jpeg'
+#              "<a target=_blank href='#{a.dataset.href}'><img src='https://mediacru.sh/#{file.file}'></a>"
+#            when 'image/svg', 'image/svg+xml'
+#              "<embed src='https://mediacru.sh/#{file.file}' type='image/svg+xml' />"
+#            when 'audio/mpeg'
+#              "<audio controls><source src='https://mediacru.sh/#{file.file}'></audio>"
+#        el
+
 
     pastebin:
       regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/
