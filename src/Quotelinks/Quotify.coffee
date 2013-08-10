@@ -21,11 +21,15 @@ Quotify =
       # This won't be necessary once 4chan
       # stops quotifying inside code tags:
       # https://github.com/4chan/4chan-JS/issues/77
-      $.replace deadlink, [deadlink.childNodes...]
+      Quotify.fixDeadlink deadlink
       return
 
     quote = deadlink.textContent
     return unless postID = quote.match(/\d+$/)?[0]
+    if postID[0] is '0'
+      # Fix quotelinks that start with a `0`.
+      Quotify.fixDeadlink deadlink
+      return
     boardID = if m = quote.match /^>>>\/([a-z\d]+)/
       m[1]
     else
@@ -70,3 +74,6 @@ Quotify =
     $.replace deadlink, a
     if $.hasClass a, 'quotelink'
       @nodes.quotelinks.push a
+
+  fixDeadlink: (deadlink) ->
+    $.replace deadlink, [deadlink.childNodes...]
