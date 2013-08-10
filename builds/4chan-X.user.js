@@ -111,7 +111,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -133,6 +133,7 @@
         'Thread Expansion': [true, 'Add buttons to expand threads.'],
         'Index Navigation': [false, 'Add buttons to navigate between threads.'],
         'Reply Navigation': [false, 'Add buttons to navigate to top / bottom of thread.'],
+        'Show Dice Roll': [true, 'Show dice that were entered into the email field.'],
         'Check for Updates': [true, 'Check for updated versions of 4chan X.'],
         'Show Updated Notifications': [true, 'Show notifications when 4chan X is successfully updated.'],
         'Emoji': [false, 'Adds icons next to names for different emails'],
@@ -447,7 +448,7 @@
     var reqs;
 
     reqs = {};
-    return function(url, cb) {
+    return function(url, cb, options) {
       var err, req, rm;
 
       if (req = reqs[url]) {
@@ -462,25 +463,23 @@
         return delete reqs[url];
       };
       try {
-        req = $.ajax(url, {
-          onload: function(e) {
-            var _i, _len, _ref;
-
-            _ref = this.callbacks;
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              cb = _ref[_i];
-              cb.call(this, e);
-            }
-            this.evt = e;
-            return delete this.callbacks;
-          },
-          onabort: rm,
-          onerror: rm
-        });
+        req = $.ajax(url, options);
       } catch (_error) {
         err = _error;
         return;
       }
+      $.on(req, 'load', function(e) {
+        var _i, _len, _ref;
+
+        _ref = this.callbacks;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          cb = _ref[_i];
+          cb.call(this, e);
+        }
+        this.evt = e;
+        return delete this.callbacks;
+      });
+      $.on(req, 'abort error', rm);
       req.callbacks = [cb];
       return reqs[url] = req;
     };
@@ -1996,7 +1995,7 @@
       }
     },
     postFromNode: function(root) {
-      return Get.postFromRoot($.x('ancestor::div[contains(@class,"postContainer")][1]', root));
+      return Get.postFromRoot($.x('(ancestor::div[contains(@class,"postContainer")]|following::div[contains(@class,"postContainer")])[1]', root));
     },
     contextFromNode: function(quotelink) {
       return Get.postFromRoot($.x('ancestor::div[parent::div[@class="thread"]][1]', quotelink));
@@ -2073,6 +2072,8 @@
       })) {
         return $.cache(url, function() {
           return Get.archivedPost(this, boardID, postID, root, context);
+        }, {
+          withCredentials: url.archive.withCredentials
         });
       }
     },
@@ -2105,6 +2106,8 @@
         })) {
           $.cache(url, function() {
             return Get.archivedPost(this, boardID, postID, root, context);
+          }, {
+            withCredentials: url.archive.withCredentials
           });
         } else {
           $.addClass(root, 'warning');
@@ -2126,6 +2129,8 @@
           })) {
             $.cache(url, function() {
               return Get.archivedPost(this, boardID, postID, root, context);
+            }, {
+              withCredentials: url.archive.withCredentials
             });
           } else {
             $.addClass(root, 'warning');
@@ -3225,15 +3230,11 @@
       var post;
 
       post = Get.postFromNode(this);
-      if (post.isHidden) {
-        PostHiding.show(post);
-      } else {
-        PostHiding.hide(post);
-      }
+      PostHiding[(post.isHidden ? 'show' : 'hide')](post);
       return PostHiding.saveHiddenState(post, post.isHidden);
     },
     hide: function(post, makeStub, hideRecursively) {
-      var a, postInfo, quotelink, _i, _len, _ref;
+      var a, button, postInfo, quotelink, _i, _len, _ref;
 
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
@@ -3259,15 +3260,12 @@
         return;
       }
       a = PostHiding.makeButton(post, 'show');
-      postInfo = Conf['Anonymize'] ? 'Anonymous' : $('.nameBlock', post.nodes.info).textContent;
+      postInfo = Conf['Anonymize'] ? 'Anonymous' : post.info.name;
       $.add(a, $.tn(" " + postInfo));
       post.nodes.stub = $.el('div', {
         className: 'stub'
       });
-      $.add(post.nodes.stub, a);
-      if (Conf['Menu']) {
-        $.add(post.nodes.stub, [$.tn(' '), Menu.makeButton(post)]);
-      }
+      $.add(post.nodes.stub, !Conf['Menu'] ? a : [a, $.tn(' '), button = Menu.makeButton(post)]);
       return $.prepend(post.nodes.root, post.nodes.stub);
     },
     show: function(post, showRecursively) {
@@ -3462,11 +3460,6 @@
         makeStub = $.el('label', {
           innerHTML: "<input type=checkbox " + (Conf['Stubs'] ? 'checked' : '') + "> Make stub"
         });
-        hideStubLink = $.el('a', {
-          textContent: 'Hide stub',
-          href: 'javascript:;'
-        });
-        $.on(hideStubLink, 'click', ThreadHiding.menu.hideStub);
         $.event('AddMenuEntry', {
           type: 'post',
           el: div,
@@ -3489,6 +3482,34 @@
             }
           ]
         });
+        div = $.el('a', {
+          className: 'show-thread-link',
+          textContent: 'Show thread',
+          href: 'javascript:;'
+        });
+        $.on(show, 'click', ThreadHiding.menu.show);
+        $.event('AddMenuEntry', {
+          type: 'post'
+        });
+        ({
+          el: div,
+          order: 20,
+          open: function(_arg) {
+            var isReply, thread;
+
+            thread = _arg.thread, isReply = _arg.isReply;
+            if (isReply || !thread.isHidden) {
+              return false;
+            }
+            ThreadHiding.menu.thread = thread;
+            return true;
+          }
+        });
+        hideStubLink = $.el('a', {
+          textContent: 'Hide stub',
+          href: 'javascript:;'
+        });
+        $.on(hideStubLink, 'click', ThreadHiding.menu.hideStub);
         return $.event('AddMenuEntry', {
           type: 'post',
           el: hideStubLink,
@@ -3511,6 +3532,14 @@
         thread = ThreadHiding.menu.thread;
         ThreadHiding.hide(thread, makeStub);
         ThreadHiding.saveHiddenState(thread, makeStub);
+        return $.event('CloseMenu');
+      },
+      show: function() {
+        var thread;
+
+        thread = ThreadHiding.menu.thread;
+        ThreadHiding.show(thread);
+        ThreadHiding.saveHiddenState(thread);
         return $.event('CloseMenu');
       },
       hideStub: function() {
@@ -3567,7 +3596,7 @@
       return ThreadHiding.saveHiddenState(thread);
     },
     hide: function(thread, makeStub) {
-      var OP, a, numReplies, opInfo, span, threadRoot;
+      var OP, a, button, numReplies, opInfo, span, threadRoot;
 
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
@@ -3579,22 +3608,15 @@
         threadRoot.hidden = threadRoot.nextElementSibling.hidden = true;
         return;
       }
-      numReplies = 0;
-      if (span = $('.summary', threadRoot)) {
-        numReplies = +span.textContent.match(/\d+/);
-      }
-      numReplies += $$('.opContainer ~ .replyContainer', threadRoot).length;
-      numReplies = numReplies === 1 ? '1 reply' : "" + numReplies + " replies";
-      opInfo = Conf['Anonymize'] ? 'Anonymous' : $('.nameBlock', OP.nodes.info).textContent;
+      numReplies = ((span = $('.summary', threadRoot)) ? +span.textContent.match(/\d+/) : 0) + $$('.opContainer ~ .replyContainer', threadRoot).length;
+      numReplies = numReplies === 1 ? '1 reply' : "" + (numReplies || 'No') + " replies";
+      opInfo = Conf['Anonymize'] ? 'Anonymous' : OP.info.name;
       a = ThreadHiding.makeButton(thread, 'show');
       $.add(a, $.tn(" " + opInfo + " (" + numReplies + ")"));
       thread.stub = $.el('div', {
         className: 'stub'
       });
-      $.add(thread.stub, a);
-      if (Conf['Menu']) {
-        $.add(thread.stub, [$.tn(' '), Menu.makeButton(OP)]);
-      }
+      $.add(thread.stub, !Conf['Menu'] ? a : [a, $.tn(' '), button = Menu.makeButton(OP)]);
       return $.prepend(threadRoot, thread.stub);
     },
     show: function(thread) {
@@ -4203,7 +4225,9 @@
       seek: function(type) {
         var post, posts, result, str;
 
-        return unlses(Conf['Mark Quotes of You'] && Conf['Quick Reply']);
+        if (!(Conf['Mark Quotes of You'] && Conf['Quick Reply'])) {
+          return;
+        }
         $.rmClass($('.highlight'), 'highlight');
         if (!QuoteYou.lastRead) {
           if (!(post = QuoteYou.lastRead = $('.quotesYou'))) {
@@ -6993,45 +7017,48 @@
     }
   };
 
-  Menu = {
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Menu']) {
-        return;
-      }
-      this.menu = new UI.Menu('post');
-      return Post.prototype.callbacks.push({
-        name: 'Menu',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var button;
+  Menu = (function() {
+    var a;
 
-      if (this.isClone) {
-        button = $('.menu-button', this.nodes.info);
-      } else {
-        button = Menu.makeButton(this);
-        $.add(this.nodes.info, [$.tn('\u00A0'), button]);
-      }
-      return $.on(button, 'click', Menu.toggle);
-    },
-    makeButton: (function() {
-      var a;
+    a = $.el('a', {
+      className: 'menu-button brackets-wrap',
+      innerHTML: '<span class=drop-marker></span>',
+      href: 'javascript:;'
+    });
+    return {
+      init: function() {
+        if (g.VIEW === 'catalog' || !Conf['Menu']) {
+          return;
+        }
+        this.menu = new UI.Menu('post');
+        return Post.prototype.callbacks.push({
+          name: 'Menu',
+          cb: this.node
+        });
+      },
+      node: function() {
+        var button;
 
-      a = null;
-      return function() {
-        a || (a = $.el('a', {
-          className: 'menu-button fourchanx-link',
-          innerHTML: '<i></i>',
-          href: 'javascript:;'
-        }));
-        return a.cloneNode(true);
-      };
-    })(),
-    toggle: function(e) {
-      return Menu.menu.toggle(e, this, Get.postFromNode(this));
-    }
-  };
+        if (this.isClone) {
+          button = $('.menu-button', this.nodes.info);
+        } else {
+          button = a.cloneNode(true);
+          $.add(this.nodes.info, [$.tn('\u00A0'), button]);
+        }
+        return $.on(button, 'click', Menu.toggle);
+      },
+      makeButton: function() {
+        var el;
+
+        el = a.cloneNode(true);
+        $.on(el, 'click', Menu.toggle);
+        return el;
+      },
+      toggle: function(e) {
+        return Menu.menu.toggle(e, this, Get.postFromNode(this));
+      }
+    };
+  })();
 
   ReportLink = {
     init: function() {
@@ -8161,6 +8188,7 @@
         domain: 'beta.foolz.us',
         http: true,
         https: true,
+        withCredentials: true,
         software: 'foolfuuka',
         boards: ['a', 'co', 'gd', 'h', 'jp', 'm', 'mlp', 'q', 'sp', 'tg', 'tv', 'u', 'v', 'vg', 'vp', 'vr', 'wsg'],
         files: ['a', 'gd', 'h', 'jp', 'm', 'q', 'tg', 'u', 'vg', 'vp', 'vr', 'wsg']
@@ -8253,14 +8281,16 @@
       return "" + (Redirect.protocol(archive)) + archive.domain + "/" + path;
     },
     post: function(archive, _arg) {
-      var boardID, postID, protocol;
+      var URL, boardID, postID, protocol;
 
       boardID = _arg.boardID, postID = _arg.postID;
       protocol = Redirect.protocol(archive);
       if (['Foolz', 'NSFW Foolz'].contains(archive.name)) {
         protocol = 'https://';
       }
-      return "" + protocol + archive.domain + "/_/api/chan/post/?board=" + boardID + "&num=" + postID;
+      URL = new String("" + protocol + archive.domain + "/_/api/chan/post/?board=" + boardID + "&num=" + postID);
+      URL.archive = archive;
+      return URL;
     },
     file: function(archive, _arg) {
       var boardID, filename;
@@ -8473,6 +8503,27 @@
         this.addStyle();
       }
       return this.style.textContent = Conf['usercss'];
+    }
+  };
+
+  Dice = {
+    init: function() {
+      if (g.BOARD.ID !== 'tg' || g.VIEW === 'catalog' || !Conf['Show Dice Roll']) {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Show Dice Roll',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var dicestats, roll, _ref;
+
+      if (this.isClone || !(dicestats = (_ref = this.info.email) != null ? _ref.match(/dice[+\s](\d+)d(\d+)/) : void 0)) {
+        return;
+      }
+      roll = $('b', this.nodes.comment).firstChild;
+      return roll.data = "Rolled " + dicestats[1] + "d" + dicestats[2] + " and got " + (roll.data.slice(7));
     }
   };
 
@@ -9628,7 +9679,7 @@
         return Time.zeroPad(this.getSeconds());
       },
       y: function() {
-        return this.getFullYear() % 100;
+        return this.getFullYear().toString().slice(2);
       },
       Y: function() {
         return this.getFullYear();
@@ -10450,7 +10501,8 @@
         'Thread Updater': ThreadUpdater,
         'Thread Watcher': ThreadWatcher,
         'Index Navigation': Nav,
-        'Keybinds': Keybinds
+        'Keybinds': Keybinds,
+        'Show Dice Roll': Dice
       });
       $.on(d, 'AddCallback', Main.addCallback);
       return $.ready(Main.initReady);

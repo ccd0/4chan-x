@@ -59,15 +59,9 @@ ThreadHiding =
     init: ->
       return if g.VIEW isnt 'index' or !Conf['Menu'] or !Conf['Thread Hiding Link']
 
-      hide = $.el 'div',
+      div = $.el 'div',
         className: 'hide-thread-link'
         textContent: 'Hide thread'
-
-      show = $.el 'a',
-        className: 'show-thread-link'
-        textContent: 'Show thread'
-        href: 'javascript:;'
-      $.on show, 'click', ThreadHiding.menu.show
 
       apply = $.el 'a',
         textContent: 'Apply'
@@ -77,14 +71,9 @@ ThreadHiding =
       makeStub = $.el 'label',
         innerHTML: "<input type=checkbox #{if Conf['Stubs'] then 'checked' else ''}> Make stub"
 
-      hideStubLink = $.el 'a',
-        textContent: 'Hide stub'
-        href: 'javascript:;'
-      $.on hideStubLink, 'click', ThreadHiding.menu.hideStub
-
       $.event 'AddMenuEntry',
         type: 'post'
-        el: hide
+        el: div
         order: 20
         open: ({thread, isReply}) ->
           if isReply or thread.isHidden
@@ -93,15 +82,26 @@ ThreadHiding =
           true
         subEntries: [el: apply; el: makeStub]
 
+      div = $.el 'a',
+        className: 'show-thread-link'
+        textContent: 'Show thread'
+        href: 'javascript:;'
+      $.on show, 'click', ThreadHiding.menu.show 
+
       $.event 'AddMenuEntry',
-        type: 'post'
-        el: show
+         type: 'post'
+        el: div
         order: 20
         open: ({thread, isReply}) ->
           if isReply or !thread.isHidden
             return false
           ThreadHiding.menu.thread = thread
           true
+
+      hideStubLink = $.el 'a',
+        textContent: 'Hide stub'
+        href: 'javascript:;'
+      $.on hideStubLink, 'click', ThreadHiding.menu.hideStub
 
       $.event 'AddMenuEntry',
         type: 'post'

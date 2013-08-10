@@ -69,7 +69,7 @@ $.ajax = (url, options, extra={}) ->
 
 $.cache = do ->
   reqs = {}
-  (url, cb) ->
+  (url, cb, options) ->
     if req = reqs[url]
       if req.readyState is 4
         cb.call req, req.evt
@@ -78,15 +78,14 @@ $.cache = do ->
       return
     rm = -> delete reqs[url]
     try
-      req = $.ajax url,
-        onload: (e) ->
-          cb.call @, e for cb in @callbacks
-          @evt = e
-          delete @callbacks
-        onabort: rm
-        onerror: rm
+      req = $.ajax url, options
     catch err
       return
+    $.on req, 'load', (e) ->
+      cb.call @, e for cb in @callbacks
+      @evt = e
+      delete @callbacks
+    $.on req, 'abort error', rm
     req.callbacks = [cb]
     reqs[url] = req
 

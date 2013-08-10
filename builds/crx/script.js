@@ -97,7 +97,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
@@ -119,6 +119,7 @@
         'Thread Expansion': [true, 'Add buttons to expand threads.'],
         'Index Navigation': [false, 'Add buttons to navigate between threads.'],
         'Reply Navigation': [false, 'Add buttons to navigate to top / bottom of thread.'],
+        'Show Dice Roll': [true, 'Show dice that were entered into the email field.'],
         'Color User IDs': [false, 'Assign unique colors to user IDs on boards that use them'],
         'Remove Spoilers': [false, 'Remove all spoilers in text.'],
         'Reveal Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.']
@@ -2783,7 +2784,7 @@
     var reqs;
 
     reqs = {};
-    return function(url, cb) {
+    return function(url, cb, options) {
       var err, req, rm;
 
       if (req = reqs[url]) {
@@ -2798,25 +2799,23 @@
         return delete reqs[url];
       };
       try {
-        req = $.ajax(url, {
-          onload: function(e) {
-            var _i, _len, _ref;
-
-            _ref = this.callbacks;
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              cb = _ref[_i];
-              cb.call(this, e);
-            }
-            this.evt = e;
-            return delete this.callbacks;
-          },
-          onabort: rm,
-          onerror: rm
-        });
+        req = $.ajax(url, options);
       } catch (_error) {
         err = _error;
         return;
       }
+      $.on(req, 'load', function(e) {
+        var _i, _len, _ref;
+
+        _ref = this.callbacks;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          cb = _ref[_i];
+          cb.call(this, e);
+        }
+        this.evt = e;
+        return delete this.callbacks;
+      });
+      $.on(req, 'abort error', rm);
       req.callbacks = [cb];
       return reqs[url] = req;
     };
@@ -4391,6 +4390,8 @@
       })) {
         return $.cache(url, function() {
           return Get.archivedPost(this, boardID, postID, root, context);
+        }, {
+          withCredentials: url.archive.withCredentials
         });
       }
     },
@@ -4423,6 +4424,8 @@
         })) {
           $.cache(url, function() {
             return Get.archivedPost(this, boardID, postID, root, context);
+          }, {
+            withCredentials: url.archive.withCredentials
           });
         } else {
           $.addClass(root, 'warning');
@@ -4444,6 +4447,8 @@
           })) {
             $.cache(url, function() {
               return Get.archivedPost(this, boardID, postID, root, context);
+            }, {
+              withCredentials: url.archive.withCredentials
             });
           } else {
             $.addClass(root, 'warning');
@@ -5741,21 +5746,15 @@
     },
     menu: {
       init: function() {
-        var apply, hide, hideStubLink, makeStub, show;
+        var apply, div, hideStubLink, makeStub;
 
         if (g.VIEW !== 'index' || !Conf['Menu'] || !Conf['Thread Hiding Link']) {
           return;
         }
-        hide = $.el('div', {
+        div = $.el('div', {
           className: 'hide-thread-link',
           textContent: 'Hide thread'
         });
-        show = $.el('a', {
-          className: 'show-thread-link',
-          textContent: 'Show thread',
-          href: 'javascript:;'
-        });
-        $.on(show, 'click', ThreadHiding.menu.show);
         apply = $.el('a', {
           textContent: 'Apply',
           href: 'javascript:;'
@@ -5764,14 +5763,9 @@
         makeStub = $.el('label', {
           innerHTML: "<input type=checkbox " + (Conf['Stubs'] ? 'checked' : '') + "> Make stub"
         });
-        hideStubLink = $.el('a', {
-          textContent: 'Hide stub',
-          href: 'javascript:;'
-        });
-        $.on(hideStubLink, 'click', ThreadHiding.menu.hideStub);
         $.event('AddMenuEntry', {
           type: 'post',
-          el: hide,
+          el: div,
           order: 20,
           open: function(_arg) {
             var isReply, thread;
@@ -5791,9 +5785,17 @@
             }
           ]
         });
+        div = $.el('a', {
+          className: 'show-thread-link',
+          textContent: 'Show thread',
+          href: 'javascript:;'
+        });
+        $.on(show, 'click', ThreadHiding.menu.show);
         $.event('AddMenuEntry', {
-          type: 'post',
-          el: show,
+          type: 'post'
+        });
+        ({
+          el: div,
           order: 20,
           open: function(_arg) {
             var isReply, thread;
@@ -5806,6 +5808,11 @@
             return true;
           }
         });
+        hideStubLink = $.el('a', {
+          textContent: 'Hide stub',
+          href: 'javascript:;'
+        });
+        $.on(hideStubLink, 'click', ThreadHiding.menu.hideStub);
         return $.event('AddMenuEntry', {
           type: 'post',
           el: hideStubLink,
@@ -10501,6 +10508,7 @@
         domain: 'beta.foolz.us',
         http: true,
         https: true,
+        withCredentials: true,
         software: 'foolfuuka',
         boards: ['a', 'co', 'gd', 'h', 'jp', 'm', 'mlp', 'q', 'sp', 'tg', 'tv', 'u', 'v', 'vg', 'vp', 'vr', 'wsg'],
         files: ['a', 'gd', 'h', 'jp', 'm', 'q', 'tg', 'u', 'vg', 'vp', 'vr', 'wsg']
@@ -10593,14 +10601,16 @@
       return "" + (Redirect.protocol(archive)) + archive.domain + "/" + path;
     },
     post: function(archive, _arg) {
-      var boardID, postID, protocol;
+      var URL, boardID, postID, protocol;
 
       boardID = _arg.boardID, postID = _arg.postID;
       protocol = Redirect.protocol(archive);
       if (['Foolz', 'NSFW Foolz'].contains(archive.name)) {
         protocol = 'https://';
       }
-      return "" + protocol + archive.domain + "/_/api/chan/post/?board=" + boardID + "&num=" + postID;
+      URL = new String("" + protocol + archive.domain + "/_/api/chan/post/?board=" + boardID + "&num=" + postID);
+      URL.archive = archive;
+      return URL;
     },
     file: function(archive, _arg) {
       var boardID, filename;
@@ -12387,6 +12397,27 @@
     }
   };
 
+  Dice = {
+    init: function() {
+      if (g.BOARD.ID !== 'tg' || g.VIEW === 'catalog' || !Conf['Show Dice Roll']) {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Show Dice Roll',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var dicestats, roll, _ref;
+
+      if (this.isClone || !(dicestats = (_ref = this.info.email) != null ? _ref.match(/dice[+\s](\d+)d(\d+)/) : void 0)) {
+        return;
+      }
+      roll = $('b', this.nodes.comment).firstChild;
+      return roll.data = "Rolled " + dicestats[1] + "d" + dicestats[2] + " and got " + (roll.data.slice(7));
+    }
+  };
+
   ExpandComment = {
     init: function() {
       if (g.VIEW !== 'index' || !Conf['Comment Expansion']) {
@@ -13479,7 +13510,7 @@
         return Time.zeroPad(this.getSeconds());
       },
       y: function() {
-        return this.getFullYear() % 100;
+        return this.getFullYear().toString().slice(2);
       },
       Y: function() {
         return this.getFullYear();
@@ -14833,7 +14864,8 @@
         'Thread Stats': ThreadStats,
         'Thread Watcher': ThreadWatcher,
         'Index Navigation': Nav,
-        'Keybinds': Keybinds
+        'Keybinds': Keybinds,
+        'Show Dice Roll': Dice
       });
       $.on(d, 'AddCallback', Main.addCallback);
       return $.ready(Main.initReady);

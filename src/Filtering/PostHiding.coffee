@@ -17,7 +17,7 @@ PostHiding =
         PostHiding.hide @, data.makeStub, data.hideRecursively
       else
         Recursive.apply PostHiding.hide, @, data.makeStub, true
-        Recursive.add PostHiding.hide, @, data.makeStub, true
+        Recursive.add   PostHiding.hide, @, data.makeStub, true
     return unless Conf['Reply Hiding Buttons']
     $.add $('.postInfo', @nodes.post), PostHiding.makeButton @, 'hide'
 
@@ -161,7 +161,6 @@ PostHiding =
 
   toggle: ->
     post = Get.postFromNode @
-    
     PostHiding[(if post.isHidden then 'show' else 'hide')] post
     PostHiding.saveHiddenState post, post.isHidden
 
@@ -204,7 +203,7 @@ PostHiding =
     post.isHidden = false
     if showRecursively
       Recursive.apply PostHiding.show, post, true
-      Recursive.rm PostHiding.hide, post
+      Recursive.rm    PostHiding.hide, post
     for quotelink in Get.allQuotelinksLinkingTo post
       $.rmClass quotelink, 'filtered'
     return

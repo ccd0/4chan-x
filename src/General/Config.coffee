@@ -49,6 +49,10 @@ Config =
         false
         'Add buttons to navigate to top / bottom of thread.'
       ]
+      'Show Dice Roll': [
+        true
+        'Show dice that were entered into the email field.'
+      ]
       <% if (type !== 'crx') { %>
       'Check for Updates': [
         true
