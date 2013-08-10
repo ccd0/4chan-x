@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.25 - 2013-08-09
+* 4chan X - Version 1.2.25 - 2013-08-10
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -4215,10 +4215,11 @@
       _ref = this.nodes.quotelinks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quotelink = _ref[_i];
-        if (QR.db.get(Get.postDataFromLink(quotelink))) {
-          $.add(quotelink, $.tn('\u00A0(You)'));
-          $.addClass(this.nodes.root, 'quotesYou');
+        if (!(QR.db.get(Get.postDataFromLink(quotelink)))) {
+          continue;
         }
+        $.add(quotelink, $.tn('\u00A0(You)'));
+        $.addClass(this.nodes.root, 'quotesYou');
       }
     },
     cb: {
@@ -4297,11 +4298,15 @@
       var a, boardID, m, post, postID, quote, quoteID, redirect, _ref;
 
       if (deadlink.parentNode.className === 'prettyprint') {
-        $.replace(deadlink, __slice.call(deadlink.childNodes));
+        Quotify.fixDeadlink(deadlink);
         return;
       }
       quote = deadlink.textContent;
       if (!(postID = (_ref = quote.match(/\d+$/)) != null ? _ref[0] : void 0)) {
+        return;
+      }
+      if (postID[0] === '0') {
+        Quotify.fixDeadlink(deadlink);
         return;
       }
       boardID = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : this.board.ID;
@@ -4359,6 +4364,9 @@
       if ($.hasClass(a, 'quotelink')) {
         return this.nodes.quotelinks.push(a);
       }
+    },
+    fixDeadlink: function(deadlink) {
+      return $.replace(deadlink, __slice.call(deadlink.childNodes));
     }
   };
 
@@ -4385,10 +4393,12 @@
       if (this.isClone) {
         if (Conf['Embedding']) {
           i = 0;
-          items = $$('.embedded', this.nodes.comment);
+          items = $$('.embed', this.nodes.comment);
           while (el = items[i++]) {
-            $.on(el, "click", Linkify.cb.toggle);
-            Linkify.cb.toggle.call(el);
+            $.on(el, 'click', Linkify.cb.toggle);
+            if ($.hasClass(el, 'embedded')) {
+              Linkify.cb.toggle.call(el);
+            }
           }
         }
         return;
@@ -4673,6 +4683,15 @@
         el: function(a) {
           return $.el('object', {
             innerHTML: "<embed src='http://www.liveleak.com/e/" + a.dataset.uid + "?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+          });
+        }
+      },
+      MediaCrush: {
+        regExp: /.*(?:mediacru.sh\/)([0-9a-z_]+)/i,
+        style: 'border: 0; width: 640px; height: 480px; resize: both;',
+        el: function(a) {
+          return $.el('iframe', {
+            src: "https://mediacru.sh/" + a.dataset.uid
           });
         }
       },
@@ -5893,7 +5912,7 @@
       }
     },
     dialog: function() {
-      var dialog, elm, mimeTypes, name, nodes, thread, _i, _j, _len, _len1, _ref, _ref1;
+      var dialog, elm, i, items, mimeTypes, name, nodes, thread;
 
       dialog = UI.dialog('qr', 'top:0;right:0;', "  <div class=move><label><input type=checkbox id=autohide title=Auto-hide>\n  Quick Reply\n</label><a href=javascript:; class=close title=Close>×</a><select data-name=thread title='Create a new thread / Reply'><option value=new>New thread</option></select></div><form><div class=persona><input name=name  data-name=name  list=\"list-name\" placeholder=Name    class=field size=1 tabindex=10><input name=email data-name=email list=\"list-email\" placeholder=E-mail  class=field size=1 tabindex=20><input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1 tabindex=30></div><div class=textarea><textarea data-name=com placeholder=Comment class=field tabindex=40></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=60><span id=qr-no-file>No selected file</span><span id=qr-filename></span><span id=qr-extras-container><a id=qr-filerm href=javascript:; title='Remove file'>×</a><a id=dump-button title='Dump list'>+</a></span></span><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70></label><input type=submit tabindex=80></div><input type=file multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist>");
       QR.nodes = nodes = {
@@ -5954,9 +5973,9 @@
         }));
       }
       $.on(nodes.filename.parentNode, 'click keyup', QR.openFileInput);
-      _ref = $$('*', QR.nodes.el);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        elm = _ref[_i];
+      items = $$('*', QR.nodes.el);
+      i = 0;
+      while (elm = items[i++]) {
         $.on(elm, 'blur', QR.focusout);
         $.on(elm, 'focus', QR.focusin);
       }
@@ -5981,9 +6000,9 @@
         return QR.selected.nodes.spoiler.click();
       });
       $.on(nodes.fileInput, 'change', QR.fileInput);
-      _ref1 = ['name', 'email', 'sub', 'com'];
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        name = _ref1[_j];
+      items = ['name', 'email', 'sub', 'com'];
+      i = 0;
+      while (name = items[i++]) {
         $.on(nodes[name], 'input', function() {
           return QR.selected.save(this);
         });
@@ -7024,7 +7043,7 @@
 
     a = $.el('a', {
       className: 'menu-button brackets-wrap',
-      innerHTML: '<span class=drop-marker></span>',
+      innerHTML: '<i></i>',
       href: 'javascript:;'
     });
     return {
@@ -8525,7 +8544,7 @@
         return;
       }
       roll = $('b', this.nodes.comment).firstChild;
-      return roll.data = "Rolled " + dicestats[1] + "d" + dicestats[2] + " and got " + (roll.data.slice(7));
+      return roll.data = "Rolled " + dicestats[1] + "d" + dicestats[2] + ": " + (roll.data.slice(7));
     }
   };
 

@@ -941,10 +941,13 @@ QR =
 
     <% if (type === 'userscript') { %>
     # XXX Firefox lacks focusin/focusout support.
-    for elm in $$ '*', QR.nodes.el
+    items = $$ '*', QR.nodes.el
+    i = 0
+    while elm = items[i++]
       $.on elm, 'blur',  QR.focusout
       $.on elm, 'focus', QR.focusin
     <% } %>
+
     $.on dialog,           'focusin',  QR.focusin
     $.on dialog,           'focusout', QR.focusout
     $.on nodes.autohide,   'change', QR.toggleHide
@@ -956,11 +959,17 @@ QR =
     $.on nodes.fileExtras, 'click', (e) -> e.stopPropagation()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.fileInput
+
     # mouseover descriptions
-    for name in ['spoilerPar', 'dumpButton', 'fileRM']
+    items = ['spoilerPar', 'dumpButton', 'fileRM']
+    i = 0
+    while name = items[i++]
       $.on nodes[name], 'mouseover', QR.mouseover
+
     # save selected post's data
-    for name in ['name', 'email', 'sub', 'com']
+    items = ['name', 'email', 'sub', 'com']
+    i = 0
+    while name = items[i++]
       $.on nodes[name], 'input',  -> QR.selected.save @
     $.on nodes['name'], 'blur', QR.tripcodeHider
     $.on nodes.thread,  'change', -> QR.selected.save @
