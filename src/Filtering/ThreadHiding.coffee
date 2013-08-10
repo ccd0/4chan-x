@@ -86,7 +86,7 @@ ThreadHiding =
         className: 'show-thread-link'
         textContent: 'Show thread'
         href: 'javascript:;'
-      $.on show, 'click', ThreadHiding.menu.show 
+      $.on div, 'click', ThreadHiding.menu.show 
 
       $.event 'AddMenuEntry',
          type: 'post'

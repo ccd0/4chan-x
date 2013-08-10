@@ -3487,7 +3487,7 @@
           textContent: 'Show thread',
           href: 'javascript:;'
         });
-        $.on(show, 'click', ThreadHiding.menu.show);
+        $.on(div, 'click', ThreadHiding.menu.show);
         $.event('AddMenuEntry', {
           type: 'post'
         });
@@ -4223,12 +4223,14 @@
     },
     cb: {
       seek: function(type) {
-        var post, posts, result, str;
+        var highlight, post, posts, result, str;
 
         if (!(Conf['Mark Quotes of You'] && Conf['Quick Reply'])) {
           return;
         }
-        $.rmClass($('.highlight'), 'highlight');
+        if (highlight = $('.highlight')) {
+          $.rmClass(highlight, 'highlight');
+        }
         if (!QuoteYou.lastRead) {
           if (!(post = QuoteYou.lastRead = $('.quotesYou'))) {
             new Notification('warning', 'No posts are currently quoting you, loser.', 20);
