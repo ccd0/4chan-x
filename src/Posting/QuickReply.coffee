@@ -45,8 +45,8 @@ QR =
   initReady: ->
     QR.postingIsEnabled = !!$.id 'postForm'
     unless QR.postingIsEnabled
-      return 
-    
+      return
+
     $.on d, 'QRGetSelectedPost', ({detail: cb}) ->
       cb QR.selected
     $.on d, 'QRAddPreSubmitHook', ({detail: cb}) ->
@@ -757,7 +757,7 @@ QR =
         title:        'Verification'
         autocomplete: 'off'
         spellcheck:   false
-        tabIndex:     55
+        tabIndex:     45
       @nodes =
         challenge: $.id 'recaptcha_challenge_field_holder'
         img:       imgContainer.firstChild
@@ -785,7 +785,7 @@ QR =
       <% } %>
 
       $.addClass QR.nodes.el, 'has-captcha'
-      $.after QR.nodes.dumpList.parentElement, [imgContainer, input]
+      $.after QR.nodes.com.parentElement, [imgContainer, input]
 
     sync: (captchas) ->
       QR.captcha.captchas = captchas
@@ -864,46 +864,44 @@ QR =
       e.preventDefault()
 
   dialog: ->
-    dialog = UI.dialog 'qr', 'top:0;right:0;', """
-    <%= grunt.file.read('src/General/html/Features/QuickReply.html').replace(/>\s+</g, '><').trim() %>
-    """
-
     QR.nodes = nodes =
-      el:         dialog
-      move:       $ '.move',                dialog
-      autohide:   $ '#autohide',            dialog
-      thread:     $ 'select',               dialog
-      threadPar:  $ '#qr-thread-select',    dialog
-      close:      $ '.close',               dialog
-      form:       $ 'form',                 dialog
-      dumpButton: $ '#dump-button',         dialog
-      name:       $ '[data-name=name]',     dialog
-      email:      $ '[data-name=email]',    dialog
-      sub:        $ '[data-name=sub]',      dialog
-      com:        $ '[data-name=com]',      dialog
-      dumpList:   $ '#dump-list',           dialog
-      addPost:    $ '#add-post',            dialog
-      charCount:  $ '#char-count',          dialog
-      fileSubmit: $ '#file-n-submit',       dialog
-      filename:   $ '#qr-filename',         dialog
-      fileRM:     $ '#qr-filerm',           dialog
-      fileExtras: $ '#qr-extras-container', dialog
-      spoiler:    $ '#qr-file-spoiler',     dialog
-      spoilerPar: $ '#qr-spoiler-label',    dialog
-      status:     $ '[type=submit]',        dialog
-      fileInput:  $ '[type=file]',          dialog
+      el:
+        dialog = UI.dialog 'qr', 'top:0;right:0;', """<%= grunt.file.read('src/General/html/Features/QuickReply.html').replace(/>\s+</g, '><').trim() %>"""
+
+    nodes[key] = $ value, dialog for key, value of {
+      move:       '.move'
+      autohide:   '#autohide'
+      thread:     'select'
+      threadPar:  '#qr-thread-select'
+      close:      '.close'
+      form:       'form'
+      dumpButton: '#dump-button'
+      name:       '[data-name=name]'
+      email:      '[data-name=email]'
+      sub:        '[data-name=sub]'
+      com:        '[data-name=com]'
+      dumpList:   '#dump-list'
+      addPost:    '#add-post'
+      charCount:  '#char-count'
+      fileSubmit: '#file-n-submit'
+      filename:   '#qr-filename'
+      fileRM:     '#qr-filerm'
+      fileExtras: '#qr-extras-container'
+      spoiler:    '#qr-file-spoiler'
+      spoilerPar: '#qr-spoiler-label'
+      status:     '[type=submit]'
+      fileInput:  '[type=file]'
+    }
+
+    check =
+      jpg: 'image/jpeg'
+      pdf: 'application/pdf'
+      swf: 'application/x-shockwave-flash'
 
     # Allow only this board's supported files.
     mimeTypes = $('ul.rules > li').textContent.trim().match(/: (.+)/)[1].toLowerCase().replace /\w+/g, (type) ->
-      switch type
-        when 'jpg'
-          'image/jpeg'
-        when 'pdf'
-          'application/pdf'
-        when 'swf'
-          'application/x-shockwave-flash'
-        else
-          "image/#{type}"
+      check[type] or "image/#{type}"
+
     QR.mimeTypes = mimeTypes.split ', '
     # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
     QR.mimeTypes.push ''
@@ -914,6 +912,10 @@ QR =
       $.addClass QR.nodes.el, 'has-spoiler'
     else
       nodes.spoiler.parentElement.hidden = true
+
+    if Conf['Dump List Before Comment']
+      $.after nodes.name.parentElement, nodes.dumpList.parentElement
+      nodes.addPost.tabIndex = 35
 
     if g.BOARD.ID is 'f'
       nodes.flashTag = $.el 'select',

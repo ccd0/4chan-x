@@ -187,7 +187,8 @@
         'Cooldown': [true, 'Indicate the remaining time before posting again.'],
         'Cooldown Prediction': [true, 'Decrease the cooldown time by taking into account upload speed. Disable it if it\'s inaccurate for you.'],
         'Posting Success Notifications': [true, 'Show notifications on successful post creation or file uploading.'],
-        'Captcha Warning Notifications': [true, 'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.']
+        'Captcha Warning Notifications': [true, 'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.'],
+        'Dump List Before Comment': [false, 'Position of the QR\'s Dump List.']
       },
       'Quote Links': {
         'Quote Backlinks': [true, 'Add quote backlinks.'],
@@ -8045,7 +8046,7 @@
           title: 'Verification',
           autocomplete: 'off',
           spellcheck: false,
-          tabIndex: 55
+          tabIndex: 45
         });
         this.nodes = {
           challenge: $.id('recaptcha_challenge_field_holder'),
@@ -8072,7 +8073,7 @@
         $.sync('captchas', this.sync);
         this.reload();
         $.addClass(QR.nodes.el, 'has-captcha');
-        return $.after(QR.nodes.dumpList.parentElement, [imgContainer, input]);
+        return $.after(QR.nodes.com.parentElement, [imgContainer, input]);
       },
       sync: function(captchas) {
         QR.captcha.captchas = captchas;
@@ -8183,45 +8184,46 @@
       }
     },
     dialog: function() {
-      var dialog, mimeTypes, name, nodes, thread, _i, _j, _len, _len1, _ref, _ref1;
+      var check, dialog, key, mimeTypes, name, nodes, thread, value, _i, _j, _len, _len1, _ref, _ref1, _ref2;
 
-      dialog = UI.dialog('qr', 'top:0;right:0;', "<div id=qrtab class=move><input type=checkbox id=autohide title=Auto-hide><div id=qr-thread-select><select data-name=thread title='Create a new thread / Reply'><option value=new>New thread</option></select></div><a href=javascript:; class=close title=Close>✖</a></div><form><div class=persona><input name=name  data-name=name  list=\"list-name\" placeholder=Name class=field size=1 tabindex=10><input name=email data-name=email list=\"list-email\" placeholder=E-mail class=field size=1 tabindex=20><input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1 tabindex=30></div><div class=textarea><textarea data-name=com placeholder=Comment class=field tabindex=40></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=60><span id=qr-no-file>No selected file</span><span id=qr-filename></span><span id=qr-extras-container><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70></label><span class=description>Spoiler</span><a id=dump-button title='Dump list'>+</a><span class=description>Dump</span><a id=qr-filerm href=javascript:; title='Remove file'>✖</a><span class=description>Remove File</span></span></span><input type=submit tabindex=80></div><input type=file multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist>");
       QR.nodes = nodes = {
-        el: dialog,
-        move: $('.move', dialog),
-        autohide: $('#autohide', dialog),
-        thread: $('select', dialog),
-        threadPar: $('#qr-thread-select', dialog),
-        close: $('.close', dialog),
-        form: $('form', dialog),
-        dumpButton: $('#dump-button', dialog),
-        name: $('[data-name=name]', dialog),
-        email: $('[data-name=email]', dialog),
-        sub: $('[data-name=sub]', dialog),
-        com: $('[data-name=com]', dialog),
-        dumpList: $('#dump-list', dialog),
-        addPost: $('#add-post', dialog),
-        charCount: $('#char-count', dialog),
-        fileSubmit: $('#file-n-submit', dialog),
-        filename: $('#qr-filename', dialog),
-        fileRM: $('#qr-filerm', dialog),
-        fileExtras: $('#qr-extras-container', dialog),
-        spoiler: $('#qr-file-spoiler', dialog),
-        spoilerPar: $('#qr-spoiler-label', dialog),
-        status: $('[type=submit]', dialog),
-        fileInput: $('[type=file]', dialog)
+        el: dialog = UI.dialog('qr', 'top:0;right:0;', "<div id=qrtab class=move><input type=checkbox id=autohide title=Auto-hide><div id=qr-thread-select><select data-name=thread title='Create a new thread / Reply'><option value=new>New thread</option></select></div><a href=javascript:; class=close title=Close>✖</a></div><form><div class=persona><input name=name  data-name=name  list=\"list-name\" placeholder=Name class=field size=1 tabindex=10><input name=email data-name=email list=\"list-email\" placeholder=E-mail class=field size=1 tabindex=20><input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1 tabindex=30></div><div class=textarea><textarea data-name=com placeholder=Comment class=field tabindex=40></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=60><span id=qr-no-file>No selected file</span><span id=qr-filename></span><span id=qr-extras-container><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70></label><span class=description>Spoiler</span><a id=dump-button title='Dump list'>+</a><span class=description>Dump</span><a id=qr-filerm href=javascript:; title='Remove file'>✖</a><span class=description>Remove File</span></span></span><input type=submit tabindex=80></div><input type=file multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist>")
+      };
+      _ref = {
+        move: '.move',
+        autohide: '#autohide',
+        thread: 'select',
+        threadPar: '#qr-thread-select',
+        close: '.close',
+        form: 'form',
+        dumpButton: '#dump-button',
+        name: '[data-name=name]',
+        email: '[data-name=email]',
+        sub: '[data-name=sub]',
+        com: '[data-name=com]',
+        dumpList: '#dump-list',
+        addPost: '#add-post',
+        charCount: '#char-count',
+        fileSubmit: '#file-n-submit',
+        filename: '#qr-filename',
+        fileRM: '#qr-filerm',
+        fileExtras: '#qr-extras-container',
+        spoiler: '#qr-file-spoiler',
+        spoilerPar: '#qr-spoiler-label',
+        status: '[type=submit]',
+        fileInput: '[type=file]'
+      };
+      for (key in _ref) {
+        value = _ref[key];
+        nodes[key] = $(value, dialog);
+      }
+      check = {
+        jpg: 'image/jpeg',
+        pdf: 'application/pdf',
+        swf: 'application/x-shockwave-flash'
       };
       mimeTypes = $('ul.rules > li').textContent.trim().match(/: (.+)/)[1].toLowerCase().replace(/\w+/g, function(type) {
-        switch (type) {
-          case 'jpg':
-            return 'image/jpeg';
-          case 'pdf':
-            return 'application/pdf';
-          case 'swf':
-            return 'application/x-shockwave-flash';
-          default:
-            return "image/" + type;
-        }
+        return check[type] || ("image/" + type);
       });
       QR.mimeTypes = mimeTypes.split(', ');
       QR.mimeTypes.push('');
@@ -8231,6 +8233,10 @@
         $.addClass(QR.nodes.el, 'has-spoiler');
       } else {
         nodes.spoiler.parentElement.hidden = true;
+      }
+      if (Conf['Dump List Before Comment']) {
+        $.after(nodes.name.parentElement, nodes.dumpList.parentElement);
+        nodes.addPost.tabIndex = 35;
       }
       if (g.BOARD.ID === 'f') {
         nodes.flashTag = $.el('select', {
@@ -8267,14 +8273,14 @@
         return QR.selected.nodes.spoiler.click();
       });
       $.on(nodes.fileInput, 'change', QR.fileInput);
-      _ref = ['spoilerPar', 'dumpButton', 'fileRM'];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        name = _ref[_i];
+      _ref1 = ['spoilerPar', 'dumpButton', 'fileRM'];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        name = _ref1[_i];
         $.on(nodes[name], 'mouseover', QR.mouseover);
       }
-      _ref1 = ['name', 'email', 'sub', 'com'];
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        name = _ref1[_j];
+      _ref2 = ['name', 'email', 'sub', 'com'];
+      for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+        name = _ref2[_j];
         $.on(nodes[name], 'input', function() {
           return QR.selected.save(this);
         });

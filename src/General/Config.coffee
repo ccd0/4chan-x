@@ -297,6 +297,10 @@ Config =
         true
         'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.'
       ]
+      'Dump List Before Comment': [
+        false
+        'Position of the QR\'s Dump List.'
+      ]
 
     'Quote Links':
       'Quote Backlinks': [
