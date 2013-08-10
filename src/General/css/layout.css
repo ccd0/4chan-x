@@ -1168,6 +1168,7 @@ a.useremail:last-of-type {
 .fit-width-replies .stub {
   display: block;
   text-align: right;
+  clear: both;
 }
 /* Element Replacing: */
 /* Checkboxes */

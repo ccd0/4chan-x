@@ -59,9 +59,15 @@ ThreadHiding =
     init: ->
       return if g.VIEW isnt 'index' or !Conf['Menu'] or !Conf['Thread Hiding Link']
 
-      div = $.el 'div',
+      hide = $.el 'div',
         className: 'hide-thread-link'
         textContent: 'Hide thread'
+
+      show = $.el 'a',
+        className: 'show-thread-link'
+        textContent: 'Show thread'
+        href: 'javascript:;'
+      $.on show, 'click', ThreadHiding.menu.show
 
       apply = $.el 'a',
         textContent: 'Apply'
@@ -78,7 +84,7 @@ ThreadHiding =
 
       $.event 'AddMenuEntry',
         type: 'post'
-        el: div
+        el: hide
         order: 20
         open: ({thread, isReply}) ->
           if isReply or thread.isHidden
@@ -86,6 +92,16 @@ ThreadHiding =
           ThreadHiding.menu.thread = thread
           true
         subEntries: [el: apply; el: makeStub]
+
+      $.event 'AddMenuEntry',
+        type: 'post'
+        el: show
+        order: 20
+        open: ({thread, isReply}) ->
+          if isReply or !thread.isHidden
+            return false
+          ThreadHiding.menu.thread = thread
+          true
 
       $.event 'AddMenuEntry',
         type: 'post'
@@ -102,6 +118,13 @@ ThreadHiding =
       ThreadHiding.hide thread, makeStub
       ThreadHiding.saveHiddenState thread, makeStub
       $.event 'CloseMenu'
+
+    show: ->
+      {thread} = ThreadHiding.menu
+      ThreadHiding.show thread
+      ThreadHiding.saveHiddenState thread
+      $.event 'CloseMenu'
+
     hideStub: ->
       {thread} = ThreadHiding.menu
       ThreadHiding.hide thread, false
@@ -150,24 +173,28 @@ ThreadHiding =
       threadRoot.hidden = threadRoot.nextElementSibling.hidden = true # <hr>
       return
 
-    numReplies = 0
-    if span = $ '.summary', threadRoot
-      numReplies = +span.textContent.match /\d+/
-    numReplies += $$('.opContainer ~ .replyContainer', threadRoot).length
-    numReplies  = if numReplies is 1 then '1 reply' else "#{numReplies} replies"
+    numReplies = (
+      if span = $ '.summary', threadRoot
+        +span.textContent.match /\d+/
+      else
+        0
+      ) +
+      $$('.opContainer ~ .replyContainer', threadRoot).length
+    numReplies = if numReplies is 1 then '1 reply' else "#{numReplies or 'no'} replies"
     opInfo =
       if Conf['Anonymize']
         'Anonymous'
       else
-        $('.nameBlock', OP.nodes.info).textContent
+        OP.info.name
 
     a = ThreadHiding.makeButton thread, 'show'
     $.add a, $.tn " #{opInfo} (#{numReplies})"
     thread.stub = $.el 'div',
       className: 'stub'
-    $.add thread.stub, a
-    if Conf['Menu']
-      $.add thread.stub, [$.tn(' '), Menu.makeButton OP]
+    $.add thread.stub, unless Conf['Menu']
+      a
+    else
+      [a, $.tn(' '), button = Menu.makeButton OP]
     $.prepend threadRoot, thread.stub
 
   show: (thread) ->

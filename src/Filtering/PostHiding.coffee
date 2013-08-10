@@ -109,11 +109,12 @@ PostHiding =
         PostHiding.hide post, makeStub, replies
       else if replies
         Recursive.apply PostHiding.hide, post, makeStub, true
-        Recursive.add PostHiding.hide, post, makeStub, true
+        Recursive.add   PostHiding.hide, post, makeStub, true
       else
         return
       PostHiding.saveHiddenState post, true, thisPost, makeStub, replies
       $.event 'CloseMenu'
+
     show: ->
       parent   = @parentNode
       thisPost = $('input[name=thisPost]', parent).checked
@@ -123,12 +124,13 @@ PostHiding =
         PostHiding.show post, replies
       else if replies
         Recursive.apply PostHiding.show, post, true
-        Recursive.rm PostHiding.hide, post, true
+        Recursive.rm    PostHiding.hide, post, true
       else
         return
       if data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
         PostHiding.saveHiddenState post, !(thisPost and replies), !thisPost, data.makeStub, !replies
       $.event 'CloseMenu'
+
     hideStub: ->
       {post} = PostHiding.menu
       post.nodes.root.hidden = true
@@ -159,10 +161,8 @@ PostHiding =
 
   toggle: ->
     post = Get.postFromNode @
-    if post.isHidden
-      PostHiding.show post
-    else
-      PostHiding.hide post
+    
+    PostHiding[(if post.isHidden then 'show' else 'hide')] post
     PostHiding.saveHiddenState post, post.isHidden
 
   hide: (post, makeStub=Conf['Stubs'], hideRecursively=Conf['Recursive Hiding']) ->
@@ -171,7 +171,7 @@ PostHiding =
 
     if hideRecursively
       Recursive.apply PostHiding.hide, post, makeStub, true
-      Recursive.add PostHiding.hide, post, makeStub, true
+      Recursive.add   PostHiding.hide, post, makeStub, true
 
     for quotelink in Get.allQuotelinksLinkingTo post
       $.addClass quotelink, 'filtered'
@@ -185,13 +185,14 @@ PostHiding =
       if Conf['Anonymize']
         'Anonymous'
       else
-        $('.nameBlock', post.nodes.info).textContent
+        post.info.name
     $.add a, $.tn " #{postInfo}"
     post.nodes.stub = $.el 'div',
       className: 'stub'
-    $.add post.nodes.stub, a
-    if Conf['Menu']
-      $.add post.nodes.stub, [$.tn(' '), Menu.makeButton post]
+    $.add post.nodes.stub, unless Conf['Menu']
+      a
+    else
+      [a, $.tn(' '), button = Menu.makeButton post]
     $.prepend post.nodes.root, post.nodes.stub
 
   show: (post, showRecursively=Conf['Recursive Hiding']) ->
