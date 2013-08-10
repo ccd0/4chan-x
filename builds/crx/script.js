@@ -2007,7 +2007,7 @@
       }
     },
     postFromNode: function(root) {
-      return Get.postFromRoot($.x('(ancestor::div[contains(@class,"postContainer")]|following::div[contains(@class,"postContainer")])', root));
+      return Get.postFromRoot($.x('(ancestor::div[contains(@class,"postContainer")]|following::div[contains(@class,"postContainer")])[1]', root));
     },
     contextFromNode: function(quotelink) {
       return Get.postFromRoot($.x('ancestor::div[parent::div[@class="thread"]][1]', quotelink));

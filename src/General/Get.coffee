@@ -18,7 +18,7 @@ Get =
     post    = g.posts["#{boardID}.#{postID}"]
     if index then post.clones[index] else post
   postFromNode: (root) ->
-    Get.postFromRoot $.x '(ancestor::div[contains(@class,"postContainer")]|following::div[contains(@class,"postContainer")])', root
+    Get.postFromRoot $.x '(ancestor::div[contains(@class,"postContainer")]|following::div[contains(@class,"postContainer")])[1]', root
   contextFromNode: (quotelink) ->
     Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', quotelink
   postDataFromLink: (link) ->
