@@ -69,15 +69,6 @@ module.exports = (grunt) ->
         dest: 'builds/crx/'
         expand:  true
         flatten: true
-      # for_d19
-      # 19 juin 2013 10:32:22
-      # We're currently sniffing the type of the file based on file extension.
-      # We have a different type of content, Themes, which use a pure zip-file with a .zip ending.
-      # This solution is sub-optimal and will be changed in the future.
-      # For now, upload an unsigned ZIP-file with the ending .nex or .crx.
-      nex:
-        src:  'builds/<%= pkg.name %>.zip'
-        dest: 'builds/<%= pkg.name %>.nex'
     coffee:
       script:
         src:  'tmp-<%= pkg.type %>/script.coffee'
@@ -158,7 +149,7 @@ module.exports = (grunt) ->
     'clean:tmpuserscript'
   ]
 
-  grunt.registerTask 'release', ['shell:commit', 'shell:push', 'build-crx', 'compress:crx', 'copy:nex']
+  grunt.registerTask 'release', ['shell:commit', 'shell:push', 'build-crx', 'compress:crx']
   grunt.registerTask 'patch',   ['bump',       'updcl:3', 'release']
   grunt.registerTask 'minor',   ['bump:minor', 'updcl:2', 'release']
   grunt.registerTask 'major',   ['bump:major', 'updcl:1', 'release']
