@@ -1,7 +1,9 @@
 **MayhemYDG**:
+- **New feature**: `Show Dice Roll` (with @carboncopy)
+ - Shows dice that were entered into the email field on /tg/.
 - Fix impossibility to create new threads when in dead threads.
 - Fix flag filtering on /sp/ and /int/.
-- Update archives. (with woxxy and proplex)
+- Update archives. (with @woxxy and @proplex)
 - Minor fixes.
 - Minor optimizations.
 

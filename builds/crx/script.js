@@ -92,7 +92,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
@@ -115,6 +115,7 @@
         'Thread Expansion': [true, 'Add buttons to expand threads.'],
         'Index Navigation': [false, 'Add buttons to navigate between threads.'],
         'Reply Navigation': [false, 'Add buttons to navigate to top / bottom of thread.'],
+        'Show Dice Roll': [true, 'Show dice that were entered into the email field.'],
         'Show Updated Notifications': [true, 'Show notifications when 4chan X is successfully updated.'],
         'Emoji': [false, 'Adds icons next to names for different emails'],
         'Color User IDs': [false, 'Assign unique colors to user IDs on boards that use them'],
@@ -428,7 +429,7 @@
     var reqs;
 
     reqs = {};
-    return function(url, cb) {
+    return function(url, cb, options) {
       var err, req, rm;
 
       if (req = reqs[url]) {
@@ -443,25 +444,23 @@
         return delete reqs[url];
       };
       try {
-        req = $.ajax(url, {
-          onload: function(e) {
-            var _i, _len, _ref;
-
-            _ref = this.callbacks;
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              cb = _ref[_i];
-              cb.call(this, e);
-            }
-            this.evt = e;
-            return delete this.callbacks;
-          },
-          onabort: rm,
-          onerror: rm
-        });
+        req = $.ajax(url, options);
       } catch (_error) {
         err = _error;
         return;
       }
+      $.on(req, 'load', function(e) {
+        var _i, _len, _ref;
+
+        _ref = this.callbacks;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          cb = _ref[_i];
+          cb.call(this, e);
+        }
+        this.evt = e;
+        return delete this.callbacks;
+      });
+      $.on(req, 'abort error', rm);
       req.callbacks = [cb];
       return reqs[url] = req;
     };
@@ -2085,6 +2084,8 @@
       })) {
         return $.cache(url, function() {
           return Get.archivedPost(this, boardID, postID, root, context);
+        }, {
+          withCredentials: url.archive.withCredentials
         });
       }
     },
@@ -2117,6 +2118,8 @@
         })) {
           $.cache(url, function() {
             return Get.archivedPost(this, boardID, postID, root, context);
+          }, {
+            withCredentials: url.archive.withCredentials
           });
         } else {
           $.addClass(root, 'warning');
@@ -2138,6 +2141,8 @@
           })) {
             $.cache(url, function() {
               return Get.archivedPost(this, boardID, postID, root, context);
+            }, {
+              withCredentials: url.archive.withCredentials
             });
           } else {
             $.addClass(root, 'warning');
@@ -8169,6 +8174,7 @@
         domain: 'beta.foolz.us',
         http: true,
         https: true,
+        withCredentials: true,
         software: 'foolfuuka',
         boards: ['a', 'co', 'gd', 'h', 'jp', 'm', 'mlp', 'q', 'sp', 'tg', 'tv', 'u', 'v', 'vg', 'vp', 'vr', 'wsg'],
         files: ['a', 'gd', 'h', 'jp', 'm', 'q', 'tg', 'u', 'vg', 'vp', 'vr', 'wsg']
@@ -8261,14 +8267,16 @@
       return "" + (Redirect.protocol(archive)) + archive.domain + "/" + path;
     },
     post: function(archive, _arg) {
-      var boardID, postID, protocol;
+      var URL, boardID, postID, protocol;
 
       boardID = _arg.boardID, postID = _arg.postID;
       protocol = Redirect.protocol(archive);
       if (['Foolz', 'NSFW Foolz'].contains(archive.name)) {
         protocol = 'https://';
       }
-      return "" + protocol + archive.domain + "/_/api/chan/post/?board=" + boardID + "&num=" + postID;
+      URL = new String("" + protocol + archive.domain + "/_/api/chan/post/?board=" + boardID + "&num=" + postID);
+      URL.archive = archive;
+      return URL;
     },
     file: function(archive, _arg) {
       var boardID, filename;
@@ -8481,6 +8489,27 @@
         this.addStyle();
       }
       return this.style.textContent = Conf['usercss'];
+    }
+  };
+
+  Dice = {
+    init: function() {
+      if (g.BOARD.ID !== 'tg' || g.VIEW === 'catalog' || !Conf['Show Dice Roll']) {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Show Dice Roll',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var dicestats, roll, _ref;
+
+      if (this.isClone || !(dicestats = (_ref = this.info.email) != null ? _ref.match(/dice[+\s](\d+)d(\d+)/) : void 0)) {
+        return;
+      }
+      roll = $('b', this.nodes.comment).firstChild;
+      return roll.data = "Rolled " + dicestats[1] + "d" + dicestats[2] + " and got " + (roll.data.slice(7));
     }
   };
 
@@ -9636,7 +9665,7 @@
         return Time.zeroPad(this.getSeconds());
       },
       y: function() {
-        return this.getFullYear() % 100;
+        return this.getFullYear().toString().slice(2);
       },
       Y: function() {
         return this.getFullYear();
@@ -10456,7 +10485,8 @@
         'Thread Updater': ThreadUpdater,
         'Thread Watcher': ThreadWatcher,
         'Index Navigation': Nav,
-        'Keybinds': Keybinds
+        'Keybinds': Keybinds,
+        'Show Dice Roll': Dice
       });
       $.on(d, 'AddCallback', Main.addCallback);
       return $.ready(Main.initReady);

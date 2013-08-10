@@ -128,6 +128,7 @@ Main =
       'Thread Watcher':            ThreadWatcher
       'Index Navigation':          Nav
       'Keybinds':                  Keybinds
+      'Show Dice Roll':            Dice
 
     # c.timeEnd 'All initializations'
 

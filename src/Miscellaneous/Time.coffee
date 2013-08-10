@@ -56,5 +56,6 @@ Time =
     p: -> if @getHours() < 12 then 'AM' else 'PM'
     P: -> if @getHours() < 12 then 'am' else 'pm'
     S: -> Time.zeroPad @getSeconds()
-    y: -> @getFullYear() % 100
+    y: -> @getFullYear().toString()[2..]
     Y: -> @getFullYear()
+

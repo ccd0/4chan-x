@@ -56,7 +56,8 @@ Redirect =
     'Foolz Beta':
       domain: 'beta.foolz.us'
       http:  true
-      https: true,
+      https: true
+      withCredentials: true
       software: 'foolfuuka'
       boards: ['a', 'co', 'gd', 'h', 'jp', 'm', 'mlp', 'q', 'sp', 'tg', 'tv', 'u', 'v', 'vg', 'vp', 'vr', 'wsg'],
       files:  ['a', 'gd', 'h', 'jp', 'm', 'q', 'tg', 'u', 'vg', 'vp', 'vr', 'wsg']
@@ -150,7 +151,9 @@ Redirect =
     # Remove necessary HTTPS procotol in September 2013.
     if ['Foolz', 'NSFW Foolz'].contains archive.name
       protocol = 'https://'
-    "#{protocol}#{archive.domain}/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+    URL = new String "#{protocol}#{archive.domain}/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+    URL.archive = archive
+    URL
 
   file: (archive, {boardID, filename}) ->
     "#{Redirect.protocol archive}#{archive.domain}/#{boardID}/full_image/#{filename}"
