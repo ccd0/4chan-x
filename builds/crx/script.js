@@ -2008,7 +2008,7 @@
       }
     },
     postFromNode: function(root) {
-      return Get.postFromRoot($.x('ancestor::div[contains(@class,"postContainer")][1]', root));
+      return Get.postFromRoot($.x('(ancestor::div[contains(@class,"postContainer")]|following::div[contains(@class,"postContainer")])', root));
     },
     contextFromNode: function(quotelink) {
       return Get.postFromRoot($.x('ancestor::div[parent::div[@class="thread"]][1]', quotelink));
@@ -3230,15 +3230,11 @@
       var post;
 
       post = Get.postFromNode(this);
-      if (post.isHidden) {
-        PostHiding.show(post);
-      } else {
-        PostHiding.hide(post);
-      }
+      PostHiding[(post.isHidden ? 'show' : 'hide')](post);
       return PostHiding.saveHiddenState(post, post.isHidden);
     },
     hide: function(post, makeStub, hideRecursively) {
-      var a, postInfo, quotelink, _i, _len, _ref;
+      var a, button, postInfo, quotelink, _i, _len, _ref;
 
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
@@ -3264,15 +3260,12 @@
         return;
       }
       a = PostHiding.makeButton(post, 'show');
-      postInfo = Conf['Anonymize'] ? 'Anonymous' : $('.nameBlock', post.nodes.info).textContent;
+      postInfo = Conf['Anonymize'] ? 'Anonymous' : post.info.name;
       $.add(a, $.tn(" " + postInfo));
       post.nodes.stub = $.el('div', {
         className: 'stub'
       });
-      $.add(post.nodes.stub, a);
-      if (Conf['Menu']) {
-        $.add(post.nodes.stub, [$.tn(' '), Menu.makeButton(post)]);
-      }
+      $.add(post.nodes.stub, !Conf['Menu'] ? a : [a, $.tn(' '), button = Menu.makeButton(post)]);
       return $.prepend(post.nodes.root, post.nodes.stub);
     },
     show: function(post, showRecursively) {
@@ -3467,11 +3460,6 @@
         makeStub = $.el('label', {
           innerHTML: "<input type=checkbox " + (Conf['Stubs'] ? 'checked' : '') + "> Make stub"
         });
-        hideStubLink = $.el('a', {
-          textContent: 'Hide stub',
-          href: 'javascript:;'
-        });
-        $.on(hideStubLink, 'click', ThreadHiding.menu.hideStub);
         $.event('AddMenuEntry', {
           type: 'post',
           el: div,
@@ -3494,6 +3482,34 @@
             }
           ]
         });
+        div = $.el('a', {
+          className: 'show-thread-link',
+          textContent: 'Show thread',
+          href: 'javascript:;'
+        });
+        $.on(show, 'click', ThreadHiding.menu.show);
+        $.event('AddMenuEntry', {
+          type: 'post'
+        });
+        ({
+          el: div,
+          order: 20,
+          open: function(_arg) {
+            var isReply, thread;
+
+            thread = _arg.thread, isReply = _arg.isReply;
+            if (isReply || !thread.isHidden) {
+              return false;
+            }
+            ThreadHiding.menu.thread = thread;
+            return true;
+          }
+        });
+        hideStubLink = $.el('a', {
+          textContent: 'Hide stub',
+          href: 'javascript:;'
+        });
+        $.on(hideStubLink, 'click', ThreadHiding.menu.hideStub);
         return $.event('AddMenuEntry', {
           type: 'post',
           el: hideStubLink,
@@ -3516,6 +3532,14 @@
         thread = ThreadHiding.menu.thread;
         ThreadHiding.hide(thread, makeStub);
         ThreadHiding.saveHiddenState(thread, makeStub);
+        return $.event('CloseMenu');
+      },
+      show: function() {
+        var thread;
+
+        thread = ThreadHiding.menu.thread;
+        ThreadHiding.show(thread);
+        ThreadHiding.saveHiddenState(thread);
         return $.event('CloseMenu');
       },
       hideStub: function() {
@@ -3572,7 +3596,7 @@
       return ThreadHiding.saveHiddenState(thread);
     },
     hide: function(thread, makeStub) {
-      var OP, a, numReplies, opInfo, span, threadRoot;
+      var OP, a, button, numReplies, opInfo, span, threadRoot;
 
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
@@ -3584,22 +3608,15 @@
         threadRoot.hidden = threadRoot.nextElementSibling.hidden = true;
         return;
       }
-      numReplies = 0;
-      if (span = $('.summary', threadRoot)) {
-        numReplies = +span.textContent.match(/\d+/);
-      }
-      numReplies += $$('.opContainer ~ .replyContainer', threadRoot).length;
-      numReplies = numReplies === 1 ? '1 reply' : "" + numReplies + " replies";
-      opInfo = Conf['Anonymize'] ? 'Anonymous' : $('.nameBlock', OP.nodes.info).textContent;
+      numReplies = ((span = $('.summary', threadRoot)) ? +span.textContent.match(/\d+/) : 0) + $$('.opContainer ~ .replyContainer', threadRoot).length;
+      numReplies = numReplies === 1 ? '1 reply' : "" + (numReplies || 'No') + " replies";
+      opInfo = Conf['Anonymize'] ? 'Anonymous' : OP.info.name;
       a = ThreadHiding.makeButton(thread, 'show');
       $.add(a, $.tn(" " + opInfo + " (" + numReplies + ")"));
       thread.stub = $.el('div', {
         className: 'stub'
       });
-      $.add(thread.stub, a);
-      if (Conf['Menu']) {
-        $.add(thread.stub, [$.tn(' '), Menu.makeButton(OP)]);
-      }
+      $.add(thread.stub, !Conf['Menu'] ? a : [a, $.tn(' '), button = Menu.makeButton(OP)]);
       return $.prepend(threadRoot, thread.stub);
     },
     show: function(thread) {
@@ -4208,7 +4225,9 @@
       seek: function(type) {
         var post, posts, result, str;
 
-        return unlses(Conf['Mark Quotes of You'] && Conf['Quick Reply']);
+        if (!(Conf['Mark Quotes of You'] && Conf['Quick Reply'])) {
+          return;
+        }
         $.rmClass($('.highlight'), 'highlight');
         if (!QuoteYou.lastRead) {
           if (!(post = QuoteYou.lastRead = $('.quotesYou'))) {
@@ -6974,45 +6993,48 @@
     }
   };
 
-  Menu = {
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Menu']) {
-        return;
-      }
-      this.menu = new UI.Menu('post');
-      return Post.prototype.callbacks.push({
-        name: 'Menu',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var button;
+  Menu = (function() {
+    var a;
 
-      if (this.isClone) {
-        button = $('.menu-button', this.nodes.info);
-      } else {
-        button = Menu.makeButton(this);
-        $.add(this.nodes.info, [$.tn('\u00A0'), button]);
-      }
-      return $.on(button, 'click', Menu.toggle);
-    },
-    makeButton: (function() {
-      var a;
+    a = $.el('a', {
+      className: 'menu-button brackets-wrap',
+      innerHTML: '<span class=drop-marker></span>',
+      href: 'javascript:;'
+    });
+    return {
+      init: function() {
+        if (g.VIEW === 'catalog' || !Conf['Menu']) {
+          return;
+        }
+        this.menu = new UI.Menu('post');
+        return Post.prototype.callbacks.push({
+          name: 'Menu',
+          cb: this.node
+        });
+      },
+      node: function() {
+        var button;
 
-      a = null;
-      return function() {
-        a || (a = $.el('a', {
-          className: 'menu-button fourchanx-link',
-          innerHTML: '<i></i>',
-          href: 'javascript:;'
-        }));
-        return a.cloneNode(true);
-      };
-    })(),
-    toggle: function(e) {
-      return Menu.menu.toggle(e, this, Get.postFromNode(this));
-    }
-  };
+        if (this.isClone) {
+          button = $('.menu-button', this.nodes.info);
+        } else {
+          button = a.cloneNode(true);
+          $.add(this.nodes.info, [$.tn('\u00A0'), button]);
+        }
+        return $.on(button, 'click', Menu.toggle);
+      },
+      makeButton: function() {
+        var el;
+
+        el = a.cloneNode(true);
+        $.on(el, 'click', Menu.toggle);
+        return el;
+      },
+      toggle: function(e) {
+        return Menu.menu.toggle(e, this, Get.postFromNode(this));
+      }
+    };
+  })();
 
   ReportLink = {
     init: function() {

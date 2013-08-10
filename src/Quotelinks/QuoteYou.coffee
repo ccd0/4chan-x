@@ -33,7 +33,7 @@ QuoteYou =
 
   cb:
     seek: (type) ->
-      return unlses Conf['Mark Quotes of You'] and Conf['Quick Reply']
+      return unless Conf['Mark Quotes of You'] and Conf['Quick Reply']
       $.rmClass $('.highlight'), 'highlight'
 
       unless QuoteYou.lastRead
