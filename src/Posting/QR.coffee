@@ -595,21 +595,9 @@ QR =
         cv.width  = img.width  = width
         cv.getContext('2d').drawImage img, 0, 0, width, height
         URL.revokeObjectURL fileURL
-        applyBlob = (blob) =>
+        cv.toBlob (blob) =>
           @URL = URL.createObjectURL blob
           @nodes.el.style.backgroundImage = "url(#{@URL})"
-        if cv.toBlob
-          cv.toBlob applyBlob
-          return
-        data = atob cv.toDataURL().split(',')[1]
-
-        # DataUrl to Binary code from Aeosynth's 4chan X repo
-        l = data.length
-        ui8a = new Uint8Array l
-        for i in  [0...l]
-          ui8a[i] = data.charCodeAt i
-
-        applyBlob new Blob [ui8a], type: 'image/png'
 
       fileURL = URL.createObjectURL @file
       img.src = fileURL
