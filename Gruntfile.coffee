@@ -181,6 +181,7 @@ module.exports = (grunt) ->
   ]
 
   grunt.registerTask 'release', [
+    'build'
     'shell:commit'
     'shell:push'
     'build-crx'
