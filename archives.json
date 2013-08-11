@@ -51,7 +51,7 @@
   "https": true,
   "software": "foolfuuka",
   "boards": ["adv", "asp", "cm", "e", "i", "lgbt", "n", "o", "p", "pol", "s", "s4s", "t", "trv", "y"],
-  "files": ["adv", "asp", "cm", "e", "i", "lgbt", "n", "o", "p", "s", "s4s", "t", "trv", "y"]
+  "files": ["cm", "e", "i", "n", "o", "p", "s", "trv", "y"]
 }, {
   "uid": 12,
   "name": "fap archive",
