@@ -25,7 +25,6 @@ ThreadUpdater =
     ThreadUpdater.root         = @OP.nodes.root.parentNode
     ThreadUpdater.lastPost     = +ThreadUpdater.root.lastElementChild.id.match(/\d+/)[0]
     ThreadUpdater.outdateCount = 0
-    ThreadUpdater.lastModified = '0'
 
     for input in $$ 'input', ThreadUpdater.dialog
       if input.type is 'checkbox'
@@ -95,7 +94,6 @@ ThreadUpdater =
         when 200
           g.DEAD = false
           ThreadUpdater.parse JSON.parse(req.response).posts
-          ThreadUpdater.lastModified = req.getResponseHeader 'Last-Modified'
           ThreadUpdater.set 'timer', ThreadUpdater.getInterval()
         when 404
           g.DEAD = true
@@ -108,12 +106,7 @@ ThreadUpdater =
             thread: ThreadUpdater.thread
         else
           ThreadUpdater.outdateCount++
-          ThreadUpdater.set 'timer',  ThreadUpdater.getInterval()
-          ###
-          Status Code 304: Not modified
-          By sending the `If-Modified-Since` header we get a proper status code, and no response.
-          This saves bandwidth for both the user and the servers and avoid unnecessary computation.
-          ###
+          ThreadUpdater.set 'timer', ThreadUpdater.getInterval()
           [text, klass] = if req.status is 304
             [null, null]
           else
@@ -159,7 +152,7 @@ ThreadUpdater =
       ThreadUpdater.req.abort()
     url = "//api.4chan.org/#{ThreadUpdater.thread.board}/res/#{ThreadUpdater.thread}.json"
     ThreadUpdater.req = $.ajax url, onloadend: ThreadUpdater.cb.load,
-      headers: 'If-Modified-Since': ThreadUpdater.lastModified
+      whenModified: true
 
   updateThreadStatus: (title, OP) ->
     titleLC = title.toLowerCase()

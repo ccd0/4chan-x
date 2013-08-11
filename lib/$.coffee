@@ -36,17 +36,23 @@ $.extend = (object, properties) ->
   for key, val of properties
     object[key] = val
   return
-$.ajax = (url, options, extra={}) ->
-  {type, headers, upCallbacks, form, sync} = extra
-  r = new XMLHttpRequest()
-  type or= form and 'post' or 'get'
-  r.open type, url, !sync
-  for key, val of headers
-    r.setRequestHeader key, val
-  $.extend r, options
-  $.extend r.upload, upCallbacks
-  r.send form
-  r
+$.ajax = do ->
+  # Status Code 304: Not modified
+  # With the `If-Modified-Since` header we only receive the HTTP headers and no body for 304 responses.
+  # This saves a lot of bandwidth and CPU time for both the users and the servers.
+  lastModified = {}
+  (url, options, extra={}) ->
+    {type, whenModified, upCallbacks, form, sync} = extra
+    r = new XMLHttpRequest()
+    type or= form and 'post' or 'get'
+    r.open type, url, !sync
+    if whenModified
+      r.setRequestHeader 'If-Modified-Since', lastModified[url] or '0'
+      $.on r, 'load', -> lastModified[url] = r.getResponseHeader 'Last-Modified'
+    $.extend r, options
+    $.extend r.upload, upCallbacks
+    r.send form
+    r
 $.cache = do ->
   reqs = {}
   (url, cb, options) ->
