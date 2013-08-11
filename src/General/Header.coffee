@@ -89,17 +89,13 @@ Header =
     if a = $ "a[href*='/#{g.BOARD}/']", nav
       a.className = 'current'
     fullBoardList = $ '#full-board-list', Header.bar
-    # XXX Getting weird reports here of
-    #   "Header" initialization crashed. TypeError: Cannot read property 'innerHTML' of null
-    # Let's try to find the cause.
-    if nav
-      fullBoardList.innerHTML = nav.innerHTML
-      $.rm $ '#navtopright', fullBoardList
-      btn = $.el 'span',
-        className: 'hide-board-list-button brackets-wrap'
-        innerHTML: '<a href=javascript:;> - </a>'
-      $.on btn, 'click', Header.toggleBoardList
-      $.add fullBoardList, btn
+    fullBoardList.innerHTML = nav.innerHTML
+    $.rm $ '#navtopright', fullBoardList
+    btn = $.el 'span',
+      className: 'hide-board-list-button brackets-wrap'
+      innerHTML: '<a href=javascript:;> - </a>'
+    $.on btn, 'click', Header.toggleBoardList
+    $.add fullBoardList, btn
 
     Header.setCustomNav      Conf['Custom Board Navigation']
     Header.generateBoardList Conf['boardnav']
