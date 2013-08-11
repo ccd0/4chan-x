@@ -10,8 +10,7 @@ ExpandComment =
       $.on a, 'click', ExpandComment.cb
   cb: (e) ->
     e.preventDefault()
-    post = Get.postFromNode @
-    ExpandComment.expand post
+    ExpandComment.expand Get.postFromNode @
   expand: (post) ->
     if post.nodes.longComment and !post.nodes.longComment.parentNode
       $.replace post.nodes.shortComment, post.nodes.longComment
