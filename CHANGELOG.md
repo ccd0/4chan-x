@@ -1,3 +1,8 @@
+### 2.3.1 - *2013-08-11*
+
+**zixaphir**:
+- Fix issue with release process not properly reversioning.
+
 ## 2.3.0 - *2013-08-10*
 
 **aeosynth**:
