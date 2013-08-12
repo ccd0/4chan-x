@@ -107,7 +107,7 @@ Linkify =
         return range
 
     if range.collapsed
-      range.setEndAfter node
+      range.setEnd node, node.data.length
 
     range
 
