@@ -112,6 +112,7 @@ Main =
     initFeature 'Thread Stats',             ThreadStats
     initFeature 'Thread Updater',           ThreadUpdater
     initFeature 'Thread Watcher',           ThreadWatcher
+    initFeature 'Thread Watcher (Menu)',    ThreadWatcher.menu
     initFeature 'Index Navigation',         Nav
     initFeature 'Keybinds',                 Keybinds
     initFeature 'Show Dice Roll',           Dice

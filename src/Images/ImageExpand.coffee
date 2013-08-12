@@ -159,8 +159,8 @@ ImageExpand =
 
       {createSubEntry} = ImageExpand.menu
       subEntries = []
-      for key, conf of Config.imageExpansion
-        subEntries.push createSubEntry key, conf
+      for name, conf of Config.imageExpansion
+        subEntries.push createSubEntry name, conf[1]
 
       $.event 'AddMenuEntry',
         type: 'header'
@@ -168,15 +168,14 @@ ImageExpand =
         order: 80
         subEntries: subEntries
 
-    createSubEntry: (type, config) ->
+    createSubEntry: (name, desc) ->
       label = $.el 'label',
-        innerHTML: "<input type=checkbox name='#{type}'> #{type}"
+        innerHTML: "<input type=checkbox name='#{name}'> #{name}"
+        title: desc
       input = label.firstElementChild
-      if type in ['Fit width', 'Fit height']
+      if name in ['Fit width', 'Fit height']
         $.on input, 'change', ImageExpand.cb.setFitness
-      if config
-        label.title   = config[1]
-        input.checked = Conf[type]
-        $.event 'change', null, input
-        $.on input, 'change', $.cb.checked
+      input.checked = Conf[name]
+      $.event 'change', null, input
+      $.on input, 'change', $.cb.checked
       el: label
