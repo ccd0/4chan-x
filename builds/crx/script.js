@@ -4393,7 +4393,7 @@
       });
     },
     node: function() {
-      var data, el, i, items, node, range, snapshot;
+      var data, el, i, items, links, node, range, snapshot, _i, _len, _ref;
 
       if (this.isClone) {
         if (Conf['Embedding']) {
@@ -4414,9 +4414,15 @@
         if (node.parentElement.nodeName === "A") {
           continue;
         }
+        links = [];
         if (Linkify.regString.test(node.data)) {
           Linkify.regString.lastIndex = 0;
           Linkify.gatherLinks(snapshot, this, node, i);
+        }
+        _ref = links.reverse();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          range = _ref[_i];
+          Linkify.makeLink(range, post);
         }
       }
       if (!(Conf['Embedding'] || Conf['Link Title'])) {
@@ -4436,11 +4442,10 @@
       }
     },
     gatherLinks: function(snapshot, post, node, i) {
-      var data, index, len, len2, link, links, match, range, _i, _len, _ref;
+      var data, index, len, len2, link, match, range;
 
       data = node.data;
       len = data.length;
-      links = [];
       while ((match = Linkify.regString.exec(data))) {
         index = match.index;
         link = match[0];
@@ -4456,11 +4461,6 @@
       Linkify.regString.lastIndex = 0;
       if (match) {
         links.push(Linkify.seek(snapshot, post, node, match, i));
-      }
-      _ref = links.reverse();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        range = _ref[_i];
-        Linkify.makeLink(range, post);
       }
     },
     seek: function(snapshot, post, node, match, i) {

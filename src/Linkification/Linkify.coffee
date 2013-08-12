@@ -48,10 +48,14 @@ Linkify =
     while node = snapshot.snapshotItem i++
 
       continue if node.parentElement.nodeName is "A"
+      links  = []
 
       if Linkify.regString.test node.data
         Linkify.regString.lastIndex = 0
         Linkify.gatherLinks snapshot, @, node, i
+
+      for range in links.reverse()
+        Linkify.makeLink range, post
 
     return unless Conf['Embedding'] or Conf['Link Title']
 
@@ -67,7 +71,6 @@ Linkify =
   gatherLinks: (snapshot, post, node, i) ->
     {data} = node
     len    = data.length
-    links  = []
 
     while (match = Linkify.regString.exec data)
       {index} = match
@@ -85,9 +88,6 @@ Linkify =
 
     if match
       links.push Linkify.seek snapshot, post, node, match, i
-
-    for range in links.reverse()
-      Linkify.makeLink range, post
 
     return
 
