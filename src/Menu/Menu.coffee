@@ -1,4 +1,9 @@
-Menu =
+Menu = do ->
+  a = $.el 'a',
+    className: 'menu-button brackets-wrap'
+    innerHTML: '<i></i>'
+    href:      'javascript:;'
+
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Menu']
 
@@ -8,29 +13,17 @@ Menu =
       cb:   @node
 
   node: ->
-    button = Menu.makeButton @
     if @isClone
-      $.replace $('.menu-button', @nodes.info), button
-      return
-    $.add @nodes.info, [$.tn('\u00A0'), button]
+      button = $ '.menu-button', @nodes.info
+    else
+      button = a.cloneNode true
+      $.add @nodes.info, [$.tn('\u00A0'), button]
+    $.on button, 'click', Menu.toggle
 
-  makeButton: do ->
-    a = null
-    (post) ->
-      a or= $.el 'a',
-        className: 'menu-button fourchanx-link'
-        innerHTML: '<i></i>'
-        href:      'javascript:;'
-      clone = a.cloneNode true
-      clone.setAttribute 'data-postid', post.fullID
-      clone.setAttribute 'data-clone', true if post.isClone
-      $.on clone, 'click', Menu.toggle
-      clone
+  makeButton: ->
+    el = a.cloneNode true
+    $.on el, 'click', Menu.toggle
+    el
 
   toggle: (e) ->
-    post =
-      if @dataset.clone
-        Get.postFromNode @
-      else
-        g.posts[@dataset.postid]
-    Menu.menu.toggle e, @, post
+    Menu.menu.toggle e, @, Get.postFromNode @

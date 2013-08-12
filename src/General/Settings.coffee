@@ -262,8 +262,7 @@ Settings =
             '%board'
           else
             c
-      for key, val of Config.hotkeys
-        continue unless key of data.Conf
+      for key, val of Config.hotkeys when key of data.Conf
         data.Conf[key] = data.Conf[key].replace(/ctrl|alt|meta/g, (s) -> "#{s[0].toUpperCase()}#{s[1..]}").replace /(^|.+\+)[A-Z]$/g, (s) ->
           "Shift+#{s[0...-1]}#{s[-1..].toLowerCase()}"
       data.Conf.WatchedThreads = data.WatchedThreads
@@ -467,7 +466,6 @@ Settings =
     $.cb.checked.call @
   usercss: ->
     CustomCSS.update()
-
   keybinds: (section) ->
     section.innerHTML = """
     <%= grunt.file.read('src/General/html/Settings/Keybinds.html').replace(/>\s+</g, '><').trim() %>

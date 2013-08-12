@@ -22,8 +22,9 @@ QuotePreview =
     qp = $.el 'div',
       id: 'qp'
       className: 'dialog'
+
     $.add Header.hover, qp
-    Get.postClone boardID, threadID, postID, qp, Get.contextFromLink @
+    Get.postClone boardID, threadID, postID, qp, Get.contextFromNode @
 
     UI.hover
       root: @
@@ -32,21 +33,6 @@ QuotePreview =
       endEvents: 'mouseout click'
       cb: QuotePreview.mouseout
       asapTest: -> qp.firstElementChild
-
-    <% if (type === 'userjs') { %>
-    # XXX Opera workaround for "no mouseout fired" bug.
-    # Remove it once Opera uses Blink.
-    root = @
-    workaround = (e) ->
-      if @ is root
-        e.stopPropagation()
-        return
-      $.event 'mouseout', null, root
-      $.off d,    'mousemove', workaround
-      $.off root, 'mousemove', workaround
-    $.on d,    'mousemove', workaround
-    $.on root, 'mousemove', workaround
-    <% } %>
 
     return unless origin = g.posts["#{boardID}.#{postID}"]
 

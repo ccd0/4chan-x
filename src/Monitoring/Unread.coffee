@@ -36,13 +36,11 @@ Unread =
     # Let the header's onload callback handle it.
     return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
     if Unread.posts.length
-      # Scroll to before the first unread post.
-      prevID = 0
-      while root = $.x 'preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root
-        post = Get.postFromRoot root
-        break if prevID is post.ID
-        prevID = post.ID
-        break unless post.isHidden
+      # Scroll to a non-hidden, non-OP post that's before the first unread post.
+      post = Unread.posts[0]
+      while root = $.x 'preceding-sibling::div[contains(@class,"replyContainer")][1]', post.nodes.root
+        break unless (post = Get.postFromRoot root).isHidden
+      return unless root
       onload = -> root.scrollIntoView false if checkPosition root
     else
       # Scroll to the last read post.
@@ -86,7 +84,7 @@ Unread =
       Unread.addPostQuotingYou post
     if Conf['Unread Line']
       # Force line on visible threads if there were no unread posts previously.
-      Unread.setLine Unread.posts[0] in posts
+      Unread.setLine posts.contains Unread.posts[0]
     Unread.read()
     Unread.update()
 
@@ -122,22 +120,36 @@ Unread =
     return if d.hidden or !Unread.posts.length
     height  = doc.clientHeight
     {posts} = Unread
-    read    = []
-    i = posts.length
+    i = 0
 
-    while post = posts[--i]
+    while post = posts[i]
       {bottom} = post.nodes.root.getBoundingClientRect()
-      if (bottom < height)  # post is completely read
-        ID = post.ID
-        posts.remove post
+      if bottom < height  # post is completely read
+        {ID} = post
+        if Conf['Mark Quotes of You']
+          if post.info.yours
+            QuoteYou.lastRead = post.nodes.root
+        if Conf['Quote Threading']
+          posts.splice i, 1
+          continue
+      else
+        unless Conf['Quote Threading']
+          break
+      i++
+    
+    unless Conf['Quote Threading']
+      if i
+        posts.splice 0, i
+
     return unless ID
 
-    Unread.lastReadPost = ID
+    Unread.lastReadPost = ID if Unread.lastReadPost < ID or !Unread.lastReadPost
     Unread.saveLastReadPost()
     Unread.readArray Unread.postsQuotingYou
     Unread.update() if e
 
   saveLastReadPost: $.debounce 2 * $.SECOND, ->
+    return if Unread.thread.isDead
     Unread.db.set
       boardID: Unread.thread.board.ID
       threadID: Unread.thread.ID
@@ -188,9 +200,7 @@ Unread =
         else
           Favicon.default
 
-    <% if (type !== 'crx') { %>
+    <% if (type === 'userscript') { %>
     # `favicon.href = href` doesn't work on Firefox.
-    # `favicon.href = href` isn't enough on Opera.
-    # Opera won't always update the favicon if the href didn't change.
     $.add d.head, Favicon.el
     <% } %>

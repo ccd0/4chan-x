@@ -108,13 +108,14 @@
 *   license: http://userscripts.org/scripts/review/1352
 *
 */
+'use strict';
+
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Config = {
     main: {
@@ -132,6 +133,7 @@
         'Thread Expansion': [true, 'Add buttons to expand threads.'],
         'Index Navigation': [false, 'Add buttons to navigate between threads.'],
         'Reply Navigation': [false, 'Add buttons to navigate to top / bottom of thread.'],
+        'Show Dice Roll': [true, 'Show dice that were entered into the email field.'],
         'Check for Updates': [true, 'Check for updated versions of 4chan X.'],
         'Show Updated Notifications': [true, 'Show notifications when 4chan X is successfully updated.'],
         'Emoji': [false, 'Adds icons next to names for different emails'],
@@ -296,7 +298,9 @@
       'Next reply': ['j', 'Select next reply.'],
       'Previous reply': ['k', 'Select previous reply.'],
       'Deselect reply': ['Shift+d', 'Deselect reply.'],
-      'Hide': ['x', 'Hide thread.']
+      'Hide': ['x', 'Hide thread.'],
+      'Previous Post Quoting You': ['Alt+Up', 'Scroll to the previous post that quotes you.'],
+      'Next Post Quoting You': ['Alt+Down', 'Scroll to the next post that quotes you.']
     },
     updater: {
       checkbox: {
@@ -335,14 +339,6 @@
     return this.indexOf(string) > -1;
   };
 
-  Array.prototype.add = function(object, position) {
-    var keep;
-    keep = this.slice(position);
-    this.length = position;
-    this.push(object);
-    return this.pushArrays(keep);
-  };
-
   Array.prototype.contains = function(object) {
     return this.indexOf(object) > -1;
   };
@@ -356,25 +352,6 @@
       }
     }
     return i;
-  };
-
-  Array.prototype.pushArrays = function() {
-    var arg, args, _i, _len;
-    args = arguments;
-    for (_i = 0, _len = args.length; _i < _len; _i++) {
-      arg = args[_i];
-      this.push.apply(this, arg);
-    }
-    return this;
-  };
-
-  Array.prototype.remove = function(object) {
-    var index;
-    if ((index = this.indexOf(object)) > -1) {
-      return this.splice(index, 1);
-    } else {
-      return false;
-    }
   };
 
   $ = function(selector, root) {
@@ -402,8 +379,8 @@
   };
 
   $.ready = function(fc) {
-    var cb, _ref;
-    if ((_ref = d.readyState) === 'interactive' || _ref === 'complete') {
+    var cb;
+    if (d.readyState !== 'loading') {
       $.queueTask(fc);
       return;
     }
@@ -422,24 +399,31 @@
     fd = new FormData();
     for (key in form) {
       val = form[key];
-      if (!val) {
-        continue;
-      }
-      if (val.size && val.name) {
-        fd.append(key, val, val.name);
-      } else {
-        fd.append(key, val);
+      if (val) {
+        if (val.size && val.name) {
+          fd.append(key, val, val.name);
+        } else {
+          fd.append(key, val);
+        }
       }
     }
     return fd;
   };
 
-  $.ajax = function(url, callbacks, opts) {
-    var cred, err, form, headers, key, r, sync, type, upCallbacks, val;
-    if (opts == null) {
-      opts = {};
+  $.extend = function(object, properties) {
+    var key, val;
+    for (key in properties) {
+      val = properties[key];
+      object[key] = val;
     }
-    type = opts.type, cred = opts.cred, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form, sync = opts.sync;
+  };
+
+  $.ajax = function(url, options, extra) {
+    var form, headers, key, r, sync, type, upCallbacks, val;
+    if (extra == null) {
+      extra = {};
+    }
+    type = extra.type, headers = extra.headers, upCallbacks = extra.upCallbacks, form = extra.form, sync = extra.sync;
     r = new XMLHttpRequest();
     r.overrideMimeType('text/html');
     type || (type = form && 'post' || 'get');
@@ -448,13 +432,8 @@
       val = headers[key];
       r.setRequestHeader(key, val);
     }
-    $.extend(r, callbacks);
+    $.extend(r, options);
     $.extend(r.upload, upCallbacks);
-    try {
-      r.withCredentials = cred;
-    } catch (_error) {
-      err = _error;
-    }
     r.send(form);
     return r;
   };
@@ -462,7 +441,7 @@
   $.cache = (function() {
     var reqs;
     reqs = {};
-    return function(url, cb) {
+    return function(url, cb, options) {
       var err, req, rm;
       if (req = reqs[url]) {
         if (req.readyState === 4) {
@@ -476,24 +455,22 @@
         return delete reqs[url];
       };
       try {
-        req = $.ajax(url, {
-          onload: function(e) {
-            var _i, _len, _ref;
-            _ref = this.callbacks;
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              cb = _ref[_i];
-              cb.call(this, e);
-            }
-            this.evt = e;
-            return delete this.callbacks;
-          },
-          onabort: rm,
-          onerror: rm
-        });
+        req = $.ajax(url, options);
       } catch (_error) {
         err = _error;
         return;
       }
+      $.on(req, 'load', function(e) {
+        var _i, _len, _ref;
+        _ref = this.callbacks;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          cb = _ref[_i];
+          cb.call(this, e);
+        }
+        this.evt = e;
+        return delete this.callbacks;
+      });
+      $.on(req, 'abort error', rm);
       req.callbacks = [cb];
       return reqs[url] = req;
     };
@@ -539,7 +516,7 @@
 
   $.X = function(path, root) {
     root || (root = d.body);
-    return d.evaluate(path, root, null, 6, null);
+    return d.evaluate(path, root, null, 7, null);
   };
 
   $.addClass = function(el, className) {
@@ -656,11 +633,7 @@
     }));
   };
 
-  $.open = function(URL) {
-    return GM_openInTab(($.el('a', {
-      href: URL
-    })).href);
-  };
+  $.open = GM_openInTab;
 
   $.debounce = function(wait, fn) {
     var args, exec, lastCall, that, timeout;
@@ -732,26 +705,26 @@
     return (value < min ? min : value > max ? max : value);
   };
 
-  $.syncing = {};
-
-  $.sync = (function() {
-    window.addEventListener('storage', function(e) {
-      var cb;
-      if (cb = $.syncing[e.key]) {
-        return cb(JSON.parse(e.newValue));
-      }
-    }, false);
-    return function(key, cb) {
-      return $.syncing[g.NAMESPACE + key] = cb;
-    };
-  })();
-
   $.item = function(key, val) {
     var item;
     item = {};
     item[key] = val;
     return item;
   };
+
+  $.syncing = {};
+
+  $.sync = (function() {
+    $.on(window, 'storage', function(e) {
+      var cb;
+      if (cb = $.syncing[e.key]) {
+        return cb(JSON.parse(e.newValue));
+      }
+    });
+    return function(key, cb) {
+      return $.syncing[g.NAMESPACE + key] = cb;
+    };
+  })();
 
   $["delete"] = function(keys) {
     var key, _i, _len;
@@ -838,8 +811,8 @@
     };
 
     function Thread(ID, board) {
+      this.ID = ID;
       this.board = board;
-      this.ID = +ID;
       this.fullID = "" + this.board + "." + this.ID;
       this.posts = {};
       g.threads[this.fullID] = board.threads[this] = this;
@@ -862,7 +835,7 @@
     };
 
     function Post(root, thread, board, that) {
-      var alt, anchor, capcode, date, email, file, fileInfo, flag, info, name, post, size, subject, thumb, tripcode, uniqueID, unit;
+      var capcode, date, email, flag, info, name, post, subject, tripcode, uniqueID;
       this.thread = thread;
       this.board = board;
       if (that == null) {
@@ -877,9 +850,15 @@
         post: post,
         info: info,
         comment: $('.postMessage', post),
+        links: [],
         quotelinks: [],
         backlinks: info.getElementsByClassName('backlink')
       };
+      if (!(this.isReply = $.hasClass(post, 'reply'))) {
+        this.thread.OP = this;
+        this.thread.isSticky = !!$('.stickyIcon', info);
+        this.thread.isClosed = !!$('.closedIcon', info);
+      }
       this.info = {};
       if (subject = $('.subject', info)) {
         this.nodes.subject = subject;
@@ -905,7 +884,7 @@
         this.nodes.capcode = capcode;
         this.info.capcode = capcode.textContent.replace('## ', '');
       }
-      if (flag = $('.countryFlag', info)) {
+      if (flag = $('.flag, .countryFlag', info)) {
         this.nodes.flag = flag;
         this.info.flag = flag.title;
       }
@@ -922,36 +901,7 @@
       }
       this.parseComment();
       this.parseQuotes();
-      if ((file = $('.file', post)) && (thumb = $('img[data-md5]', file))) {
-        alt = thumb.alt;
-        anchor = thumb.parentNode;
-        fileInfo = file.firstElementChild;
-        this.file = {
-          info: fileInfo,
-          text: fileInfo.firstElementChild,
-          thumb: thumb,
-          URL: anchor.href,
-          size: alt.match(/[\d.]+\s\w+/)[0],
-          MD5: thumb.dataset.md5,
-          isSpoiler: $.hasClass(anchor, 'imgspoiler')
-        };
-        size = +this.file.size.match(/[\d.]+/)[0];
-        unit = ['B', 'KB', 'MB', 'GB'].indexOf(this.file.size.match(/\w+$/)[0]);
-        while (unit-- > 0) {
-          size *= 1024;
-        }
-        this.file.sizeInBytes = size;
-        this.file.thumbURL = that.isArchived ? thumb.src : "" + location.protocol + "//thumbs.4chan.org/" + board + "/thumb/" + (this.file.URL.match(/(\d+)\./)[1]) + "s.jpg";
-        this.file.name = $('span[title]', fileInfo).title.replace(/%22/g, '"');
-        if (this.file.isImage = /(jpg|png|gif)$/i.test(this.file.name)) {
-          this.file.dimensions = this.file.text.textContent.match(/\d+x\d+/)[0];
-        }
-      }
-      if (!(this.isReply = $.hasClass(post, 'reply'))) {
-        this.thread.OP = this;
-        this.thread.isSticky = !!$('.stickyIcon', this.nodes.info);
-        this.thread.isClosed = !!$('.closedIcon', this.nodes.info);
-      }
+      this.parseFile(that);
       this.clones = [];
       g.posts[this.fullID] = thread.posts[this] = board.posts[this] = this;
       if (that.isArchived) {
@@ -960,49 +910,75 @@
     }
 
     Post.prototype.parseComment = function() {
-      var bq, data, i, node, nodes, text, _i, _len, _ref;
+      var bq, i, node, nodes, text;
       bq = this.nodes.comment.cloneNode(true);
-      _ref = $$('.abbr, .capcodeReplies, .exif, b', bq);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        node = _ref[_i];
+      nodes = $$('.abbr, .capcodeReplies, .exif, b', bq);
+      i = 0;
+      while (node = nodes[i++]) {
         $.rm(node);
       }
-      text = [];
-      nodes = d.evaluate('.//br|.//text()', bq, null, 7, null);
+      text = "";
+      nodes = $.X('.//br|.//text()', bq);
       i = 0;
-      while (i < nodes.snapshotLength) {
-        text.push((data = nodes.snapshotItem(i++).data) ? data : '\n');
+      while (node = nodes.snapshotItem(i++)) {
+        text += node.data || '\n';
       }
-      return this.info.comment = text.join('').trim().replace(/\s+$/gm, '');
+      return this.info.comment = text.trim().replace(/\s+$/gm, '');
     };
 
     Post.prototype.parseQuotes = function() {
-      var hash, pathname, quotelink, quotes, _i, _len, _ref;
-      quotes = {};
+      var quotelink, _i, _len, _ref;
+      this.quotes = [];
       _ref = $$('.quotelink', this.nodes.comment);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quotelink = _ref[_i];
-        hash = quotelink.hash;
-        if (!hash) {
-          continue;
-        }
-        pathname = quotelink.pathname;
-        if (/catalog$/.test(pathname)) {
-          continue;
-        }
-        if (quotelink.hostname !== 'boards.4chan.org') {
-          continue;
-        }
-        this.nodes.quotelinks.push(quotelink);
-        if (quotelink.parentNode.parentNode.className === 'capcodeReplies') {
-          continue;
-        }
-        quotes["" + (pathname.split('/')[1]) + "." + hash.slice(2)] = true;
+        this.parseQuote(quotelink);
       }
-      if (this.isClone) {
+    };
+
+    Post.prototype.parseQuote = function(quotelink) {
+      var fullID, match;
+      if (!(match = quotelink.href.match(/boards\.4chan\.org\/([^\/]+)\/res\/\d+#p(\d+)$/))) {
         return;
       }
-      return this.quotes = Object.keys(quotes);
+      this.nodes.quotelinks.push(quotelink);
+      if (this.isClone || !this.isReply && $.hasClass(quotelink.parentNode.parentNode, 'capcodeReplies')) {
+        return;
+      }
+      fullID = "" + match[1] + "." + match[2];
+      if (!this.quotes.contains(fullID)) {
+        return this.quotes.push(fullID);
+      }
+    };
+
+    Post.prototype.parseFile = function(that) {
+      var alt, anchor, fileEl, fileInfo, size, thumb, unit;
+      if (!((fileEl = $('.file', this.nodes.post)) && (thumb = $('img[data-md5]', fileEl)))) {
+        return;
+      }
+      alt = thumb.alt;
+      anchor = thumb.parentNode;
+      fileInfo = fileEl.firstElementChild;
+      this.file = {
+        info: fileInfo,
+        text: fileInfo.firstElementChild,
+        thumb: thumb,
+        URL: anchor.href,
+        size: alt.match(/[\d.]+\s\w+/)[0],
+        MD5: thumb.dataset.md5,
+        isSpoiler: $.hasClass(anchor, 'imgspoiler')
+      };
+      size = +this.file.size.match(/[\d.]+/)[0];
+      unit = ['B', 'KB', 'MB', 'GB'].indexOf(this.file.size.match(/\w+$/)[0]);
+      while (unit-- > 0) {
+        size *= 1024;
+      }
+      this.file.sizeInBytes = size;
+      this.file.thumbURL = that.isArchived ? thumb.src : "" + location.protocol + "//thumbs.4chan.org/" + this.board + "/thumb/" + (this.file.URL.match(/(\d+)\./)[1]) + "s.jpg";
+      this.file.name = $('span[title]', fileInfo).title;
+      if (this.file.isImage = /(jpg|png|gif)$/i.test(this.file.name)) {
+        return this.file.dimensions = this.file.text.textContent.match(/\d+x\d+/)[0];
+      }
     };
 
     Post.prototype.kill = function(file, now) {
@@ -1045,7 +1021,7 @@
       _ref1 = Get.allQuotelinksLinkingTo(this);
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         quotelink = _ref1[_j];
-        if ($.hasClass(quotelink, 'deadlink')) {
+        if (!(!$.hasClass(quotelink, 'deadlink'))) {
           continue;
         }
         $.add(quotelink, $.tn('\u00A0(Dead)'));
@@ -1092,7 +1068,7 @@
       _ref = this.clones.slice(index);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         clone = _ref[_i];
-        clone.nodes.root.setAttribute('data-clone', index++);
+        clone.nodes.root.dataset.clone = index++;
       }
     };
 
@@ -1104,7 +1080,7 @@
     __extends(Clone, _super);
 
     function Clone(origin, context) {
-      var file, index, info, inline, inlined, key, nodes, post, root, val, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
+      var file, info, inline, inlined, key, nodes, post, root, val, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
       this.origin = origin;
       this.context = context;
       _ref = ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply'];
@@ -1179,8 +1155,7 @@
         this.isDead = true;
       }
       this.isClone = true;
-      index = origin.clones.push(this) - 1;
-      root.setAttribute('data-clone', index);
+      root.dataset.clone = origin.clones.push(this) - 1;
     }
 
     return Clone;
@@ -1493,8 +1468,7 @@
           return;
         }
         $.asap((function() {
-          var _ref;
-          return $.id('boardNavMobile') || ((_ref = d.readyState) === 'interactive' || _ref === 'complete');
+          return $.id('boardNavMobile') || d.readyState !== 'loading';
         }), Header.setBoardList);
         $.prepend(d.body, _this.bar);
         $.add(d.body, Header.hover);
@@ -1561,7 +1535,7 @@
       if (!text) {
         return;
       }
-      as = $$('#full-board-list a', Header.bar);
+      as = $$('#full-board-list a[title]', Header.bar);
       nodes = text.match(/[\w@]+((-(all|title|replace|full|index|catalog|url:"[^"]+[^"]"|text:"[^"]+")|\,"[^"]+[^"]"))*|[^\w@]+/g).map(function(t) {
         var a, board, m, _i, _len;
         if (/^[^\w@]/.test(t)) {
@@ -1591,10 +1565,14 @@
             a = a.cloneNode(true);
             a.textContent = /-title/.test(t) || /-replace/.test(t) && $.hasClass(a, 'current') ? a.title : /-full/.test(t) ? "/" + board + "/ - " + a.title : (m = t.match(/-text:"(.+)"/)) ? m[1] : a.textContent;
             if (m = t.match(/-(index|catalog)/)) {
-              a.setAttribute('data-only', m[1]);
+              a.dataset.only = m[1];
               a.href = "//boards.4chan.org/" + board + "/";
               if (m[1] === 'catalog') {
-                a.href += 'catalog';
+                if (Conf['External Catalog']) {
+                  a.href = CatalogLinks.external(board);
+                } else {
+                  a.href += 'catalog';
+                }
                 $.addClass(a, 'catalog');
               }
             }
@@ -1730,9 +1708,9 @@
       top = post.getBoundingClientRect().top;
       if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
         headRect = Header.bar.getBoundingClientRect();
-        top += -headRect.top - headRect.height;
+        top -= headRect.top + headRect.height;
       }
-      return doc.scrollTop += top;
+      return window.scrollBy(0, top);
     },
     addShortcut: function(el) {
       var shortcut;
@@ -1783,6 +1761,7 @@
         date: data.now,
         dateUTC: data.time,
         comment: data.com,
+        capReps: data.capcode_replies,
         isSticky: !!data.sticky,
         isClosed: !!data.closed
       };
@@ -1810,8 +1789,8 @@
       @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
       */
 
-      var a, boardID, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
-      postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
+      var a, array, boardID, capReps, capcode, capcodeClass, capcodeReplies, capcodeStart, capcodeType, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, generateCapcodeReplies, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
+      postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, capReps = o.capReps, file = o.file;
       isOP = postID === threadID;
       staticPath = '//static.4chan.org/image/';
       if (email) {
@@ -1845,7 +1824,7 @@
           capcodeStart = '';
           capcode = '';
       }
-      flag = flagCode ? (" <img src='" + staticPath + "country/" + (boardID === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
+      flag = !flagCode ? '' : boardID === 'pol' ? " <img src='" + staticPath + "country/troll/" + (flagCode.toLowerCase()) + ".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>" : " <span title='" + flagName + "' class='flag flag-" + (flagCode.toLowerCase()) + "'></span>";
       if (file != null ? file.isDeleted : void 0) {
         fileHTML = isOP ? ("<div class=file id=f" + postID + "><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>" : ("<div class=file id=f" + postID + "><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted-res.gif' alt='File deleted.' class=fileDeletedRes>") + "</span></div>";
       } else if (file) {
@@ -1885,10 +1864,32 @@
       tripcode = tripcode ? " <span class=postertrip>" + tripcode + "</span>" : '';
       sticky = isSticky ? " <img src=" + staticPath + "sticky.gif alt=Sticky title=Sticky class=stickyIcon>" : '';
       closed = isClosed ? " <img src=" + staticPath + "closed.gif alt=Closed title=Closed class=closedIcon>" : '';
+      capcodeReplies = '';
+      if (capReps) {
+        generateCapcodeReplies = function(capcodeType, array) {
+          return "<span class=smaller><span class=bold>" + ((function() {
+            switch (capcodeType) {
+              case 'admin':
+                return 'Administrator';
+              case 'mod':
+                return 'Moderator';
+              case 'developer':
+                return 'Developer';
+            }
+          })()) + " Repl" + (array.length > 1 ? 'ies' : 'y') + ":</span> " + (array.map(function(ID) {
+            return "<a href='/" + boardID + "/res/" + threadID + "#p" + ID + "' class=quotelink>&gt;&gt;" + ID + "</a>";
+          }).join(' ')) + "</span><br>";
+        };
+        for (capcodeType in capReps) {
+          array = capReps[capcodeType];
+          capcodeReplies += generateCapcodeReplies(capcodeType, array);
+        }
+        capcodeReplies = "<br><br><span class=capcodeReplies>" + capcodeReplies + "</span>";
+      }
       container = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote> ") + '</div>'
+        innerHTML: "" + (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + "<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'><div class='postInfoM mobile' id=pim" + postID + "><span class='nameBlock" + capcodeClass + "'><span class=name>" + (name || '') + "</span>" + (tripcode + capcodeStart + capcode + userID + flag + sticky + closed) + "<br>" + subject + "</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date + "<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + ">No.</a><a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a></span></div>" + (isOP ? fileHTML : '') + "<div class='postInfo desktop' id=pi" + postID + "><input type=checkbox name=" + postID + " value=delete>" + subject + "<span class='nameBlock" + capcodeClass + "'>" + emailStart + "<span class=name>" + (name || '') + "</span>" + (tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed) + "</span>" + " " + "<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span>" + " " + "<span class='postNum desktop'><a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a><a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a></span></div>" + (isOP ? '' : fileHTML) + "<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + capcodeReplies + "</blockquote>" + " " + "</div>"
       });
       _ref = $$('.quotelink', container);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1930,22 +1931,21 @@
       }
     },
     postFromNode: function(root) {
-      return Get.postFromRoot($.x('ancestor::div[contains(@class,"postContainer")][1]', root));
+      return Get.postFromRoot($.x('(ancestor::div[contains(@class,"postContainer")][1]|following::div[contains(@class,"postContainer")][1])', root));
     },
-    contextFromLink: function(quotelink) {
+    contextFromNode: function(quotelink) {
       return Get.postFromRoot($.x('ancestor::div[parent::div[@class="thread"]][1]', quotelink));
     },
     postDataFromLink: function(link) {
-      var boardID, path, postID, threadID;
+      var boardID, path, postID, threadID, _ref;
       if (link.hostname === 'boards.4chan.org') {
         path = link.pathname.split('/');
         boardID = path[1];
         threadID = path[3];
         postID = link.hash.slice(2);
       } else {
-        boardID = link.dataset.boardid;
-        threadID = link.dataset.threadid || 0;
-        postID = link.dataset.postid;
+        _ref = link.dataset, boardID = _ref.boardID, threadID = _ref.threadID, postID = _ref.postID;
+        threadID || (threadID = 0);
       }
       return {
         boardID: boardID,
@@ -2004,6 +2004,8 @@
       })) {
         return $.cache(url, function() {
           return Get.archivedPost(this, boardID, postID, root, context);
+        }, {
+          withCredentials: url.archive.withCredentials
         });
       }
     },
@@ -2034,6 +2036,8 @@
         })) {
           $.cache(url, function() {
             return Get.archivedPost(this, boardID, postID, root, context);
+          }, {
+            withCredentials: url.archive.withCredentials
           });
         } else {
           $.addClass(root, 'warning');
@@ -2055,6 +2059,8 @@
           })) {
             $.cache(url, function() {
               return Get.archivedPost(this, boardID, postID, root, context);
+            }, {
+              withCredentials: url.archive.withCredentials
             });
           } else {
             $.addClass(root, 'warning');
@@ -2084,34 +2090,9 @@
       bq = $.el('blockquote', {
         textContent: data.comment
       });
-      bq.innerHTML = bq.innerHTML.replace(/\n|\[\/?b\]|\[\/?spoiler\]|\[\/?code\]|\[\/?moot\]|\[\/?banned\]/g, function(text) {
-        switch (text) {
-          case '\n':
-            return '<br>';
-          case '[b]':
-            return '<b>';
-          case '[/b]':
-            return '</b>';
-          case '[spoiler]':
-            return '<s>';
-          case '[/spoiler]':
-            return '</s>';
-          case '[code]':
-            return '<pre class=prettyprint>';
-          case '[/code]':
-            return '</pre>';
-          case '[moot]':
-            return '<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">';
-          case '[/moot]':
-            return '</div>';
-          case '[banned]':
-            return '<b style="color: red;">';
-          case '[/banned]':
-            return '</b>';
-        }
-      });
+      bq.innerHTML = bq.innerHTML.replace(/\n|\[\/?b\]|\[\/?spoiler\]|\[\/?code\]|\[\/?moot\]|\[\/?banned\]/g, Get.parseMarkup);
       comment = bq.innerHTML.replace(/(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class=quote>$2</span>$3').replace(/((&gt;){2}(&gt;\/[a-z\d]+\/)?\d+)/g, '<span class=deadlink>$1</span>');
-      threadID = data.thread_num;
+      threadID = +data.thread_num;
       o = {
         postID: "" + postID,
         threadID: "" + threadID,
@@ -2159,6 +2140,32 @@
       });
       Main.callbackNodes(Post, [post]);
       return Get.insert(post, root, context);
+    },
+    parseMarkup: function(text) {
+      switch (text) {
+        case '\n':
+          return '<br>';
+        case '[b]':
+          return '<b>';
+        case '[/b]':
+          return '</b>';
+        case '[spoiler]':
+          return '<s>';
+        case '[/spoiler]':
+          return '</s>';
+        case '[code]':
+          return '<pre class=prettyprint>';
+        case '[/code]':
+          return '</pre>';
+        case '[moot]':
+          return '<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">';
+        case '[/moot]':
+          return '</div>';
+        case '[banned]':
+          return '<b style="color: red;">';
+        case '[/banned]':
+          return '</b>';
+      }
     }
   };
 
@@ -2253,8 +2260,8 @@
         $.add(Header.hover, menu);
         mRect = menu.getBoundingClientRect();
         bRect = button.getBoundingClientRect();
-        bTop = doc.scrollTop + d.body.scrollTop + bRect.top;
-        bLeft = doc.scrollLeft + d.body.scrollLeft + bRect.left;
+        bTop = window.scrollY + bRect.top;
+        bLeft = window.scrollX + bRect.left;
         cHeight = doc.clientHeight;
         cWidth = doc.clientWidth;
         _ref1 = bRect.top + bRect.height + mRect.height < cHeight ? [bRect.bottom, null] : [null, cHeight - bRect.top], top = _ref1[0], bottom = _ref1[1];
@@ -2530,7 +2537,13 @@
       if ($.x('ancestor::div[contains(@class,"inline")][1]', root)) {
         $.on(d, 'keydown', o.hoverend);
       }
-      return $.on(root, 'mousemove', o.hover);
+      $.on(root, 'mousemove', o.hover);
+      o.workaround = function(e) {
+        if (!root.contains(e.target)) {
+          return o.hoverend();
+        }
+      };
+      return $.on(doc, 'mousemove', o.workaround);
     };
     hover = function(e) {
       var clientX, clientY, height, left, right, style, top, _ref;
@@ -2553,6 +2566,7 @@
       $.off(this.root, this.endEvents, this.hoverend);
       $.off(d, 'keydown', this.hoverend);
       $.off(this.root, 'mousemove', this.hover);
+      $.off(doc, 'mousemove', this.workaround);
       if (this.cb) {
         return this.cb.call(this);
       }
@@ -2831,7 +2845,7 @@
           href: 'javascript:;',
           textContent: text
         });
-        el.setAttribute('data-type', type);
+        el.dataset.type = type;
         $.on(el, 'click', Filter.menu.makeFilter);
         return {
           el: el,
@@ -3108,15 +3122,11 @@
     toggle: function() {
       var post;
       post = Get.postFromNode(this);
-      if (post.isHidden) {
-        PostHiding.show(post);
-      } else {
-        PostHiding.hide(post);
-      }
+      PostHiding[(post.isHidden ? 'show' : 'hide')](post);
       return PostHiding.saveHiddenState(post, post.isHidden);
     },
     hide: function(post, makeStub, hideRecursively) {
-      var a, postInfo, quotelink, _i, _len, _ref;
+      var a, button, postInfo, quotelink, _i, _len, _ref;
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
       }
@@ -3141,15 +3151,12 @@
         return;
       }
       a = PostHiding.makeButton(post, 'show');
-      postInfo = Conf['Anonymize'] ? 'Anonymous' : $('.nameBlock', post.nodes.info).textContent;
+      postInfo = Conf['Anonymize'] ? 'Anonymous' : post.info.name;
       $.add(a, $.tn(" " + postInfo));
       post.nodes.stub = $.el('div', {
         className: 'stub'
       });
-      $.add(post.nodes.stub, a);
-      if (Conf['Menu']) {
-        $.add(post.nodes.stub, [$.tn(' '), Menu.makeButton(post)]);
-      }
+      $.add(post.nodes.stub, !Conf['Menu'] ? a : [a, $.tn(' '), button = Menu.makeButton(post)]);
       return $.prepend(post.nodes.root, post.nodes.stub);
     },
     show: function(post, showRecursively) {
@@ -3335,11 +3342,6 @@
         makeStub = $.el('label', {
           innerHTML: "<input type=checkbox " + (Conf['Stubs'] ? 'checked' : '') + "> Make stub"
         });
-        hideStubLink = $.el('a', {
-          textContent: 'Hide stub',
-          href: 'javascript:;'
-        });
-        $.on(hideStubLink, 'click', ThreadHiding.menu.hideStub);
         $.event('AddMenuEntry', {
           type: 'post',
           el: div,
@@ -3361,6 +3363,33 @@
             }
           ]
         });
+        div = $.el('a', {
+          className: 'show-thread-link',
+          textContent: 'Show thread',
+          href: 'javascript:;'
+        });
+        $.on(div, 'click', ThreadHiding.menu.show);
+        $.event('AddMenuEntry', {
+          type: 'post'
+        });
+        ({
+          el: div,
+          order: 20,
+          open: function(_arg) {
+            var isReply, thread;
+            thread = _arg.thread, isReply = _arg.isReply;
+            if (isReply || !thread.isHidden) {
+              return false;
+            }
+            ThreadHiding.menu.thread = thread;
+            return true;
+          }
+        });
+        hideStubLink = $.el('a', {
+          textContent: 'Hide stub',
+          href: 'javascript:;'
+        });
+        $.on(hideStubLink, 'click', ThreadHiding.menu.hideStub);
         return $.event('AddMenuEntry', {
           type: 'post',
           el: hideStubLink,
@@ -3383,6 +3412,13 @@
         ThreadHiding.saveHiddenState(thread, makeStub);
         return $.event('CloseMenu');
       },
+      show: function() {
+        var thread;
+        thread = ThreadHiding.menu.thread;
+        ThreadHiding.show(thread);
+        ThreadHiding.saveHiddenState(thread);
+        return $.event('CloseMenu');
+      },
       hideStub: function() {
         var thread;
         thread = ThreadHiding.menu.thread;
@@ -3397,7 +3433,7 @@
         innerHTML: "<span class=fourchanx-link>&nbsp;" + (type === 'hide' ? '-' : '+') + "&nbsp;</span>",
         href: 'javascript:;'
       });
-      a.setAttribute('data-fullid', thread.fullID);
+      a.dataset.fullID = thread.fullID;
       $.on(a, 'click', ThreadHiding.toggle);
       return a;
     },
@@ -3424,7 +3460,7 @@
     },
     toggle: function(thread) {
       if (!(thread instanceof Thread)) {
-        thread = g.threads[this.dataset.fullid];
+        thread = g.threads[this.dataset.fullID];
       }
       if (thread.isHidden) {
         ThreadHiding.show(thread);
@@ -3434,7 +3470,7 @@
       return ThreadHiding.saveHiddenState(thread);
     },
     hide: function(thread, makeStub) {
-      var OP, a, numReplies, opInfo, span, threadRoot;
+      var OP, a, button, numReplies, opInfo, span, threadRoot;
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
       }
@@ -3445,22 +3481,15 @@
         threadRoot.hidden = threadRoot.nextElementSibling.hidden = true;
         return;
       }
-      numReplies = 0;
-      if (span = $('.summary', threadRoot)) {
-        numReplies = +span.textContent.match(/\d+/);
-      }
-      numReplies += $$('.opContainer ~ .replyContainer', threadRoot).length;
-      numReplies = numReplies === 1 ? '1 reply' : "" + numReplies + " replies";
-      opInfo = Conf['Anonymize'] ? 'Anonymous' : $('.nameBlock', OP.nodes.info).textContent;
+      numReplies = ((span = $('.summary', threadRoot)) ? +span.textContent.match(/\d+/) : 0) + $$('.opContainer ~ .replyContainer', threadRoot).length;
+      numReplies = numReplies === 1 ? '1 reply' : "" + (numReplies || 'No') + " replies";
+      opInfo = Conf['Anonymize'] ? 'Anonymous' : OP.info.name;
       a = ThreadHiding.makeButton(thread, 'show');
       $.add(a, $.tn(" " + opInfo + " (" + numReplies + ")"));
       thread.stub = $.el('div', {
         className: 'stub'
       });
-      $.add(thread.stub, a);
-      if (Conf['Menu']) {
-        $.add(thread.stub, [$.tn(' '), Menu.makeButton(OP)]);
-      }
+      $.add(thread.stub, !Conf['Menu'] ? a : [a, $.tn(' '), button = Menu.makeButton(OP)]);
       return $.prepend(threadRoot, thread.stub);
     },
     show: function(thread) {
@@ -3522,7 +3551,7 @@
           if (Conf['Quote Inlining']) {
             $.on(link, 'click', QuoteInline.toggle);
             if (Conf['Quote Hash Navigation']) {
-              frag.pushArrays(QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
+              frag.push.apply(frag, QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
             }
           }
           $.add(container, frag);
@@ -3595,9 +3624,6 @@
       if (g.VIEW === 'catalog' || !Conf['Quote Inlining']) {
         return;
       }
-      if (Conf['Comment Expansion']) {
-        ExpandComment.callbacks.push(this.node);
-      }
       if (Conf['Quote Hash Navigation']) {
         this.node = function() {
           var link, _i, _len, _ref;
@@ -3620,6 +3646,9 @@
           }
         };
       }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
+      }
       return Post.prototype.callbacks.push({
         name: 'Quote Inlining',
         cb: this.node
@@ -3641,7 +3670,7 @@
       }
       e.preventDefault();
       _ref = Get.postDataFromLink(this), boardID = _ref.boardID, threadID = _ref.threadID, postID = _ref.postID;
-      context = Get.contextFromLink(this);
+      context = Get.contextFromNode(this);
       if ($.hasClass(this, 'inlined')) {
         QuoteInline.rm(this, boardID, threadID, postID, context);
       } else {
@@ -3785,7 +3814,7 @@
         className: 'dialog'
       });
       $.add(Header.hover, qp);
-      Get.postClone(boardID, threadID, postID, qp, Get.contextFromLink(this));
+      Get.postClone(boardID, threadID, postID, qp, Get.contextFromNode(this));
       UI.hover({
         root: this,
         el: qp,
@@ -3932,9 +3961,8 @@
       return this.cb = QuoteThreading.nodeinsert;
     },
     nodeinsert: function() {
-      var bottom, height, posts, qpost, qroot, threadContainer, top, _ref;
-      posts = g.posts;
-      qpost = posts[this.threaded];
+      var bottom, height, qpost, qroot, threadContainer, top, _ref;
+      qpost = g.posts[this.threaded];
       delete this.threaded;
       delete this.cb;
       if (this.thread.OP === qpost) {
@@ -3961,24 +3989,20 @@
       return true;
     },
     toggle: function() {
-      var container, containers, node, nodes, replies, reply, thread, _i, _j, _len, _len1;
+      var container, containers, node, post, replies, reply, thread, _i, _j, _k, _len, _len1, _len2, _ref;
       thread = $('.thread');
       replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
       QuoteThreading.enabled = this.checked;
       if (this.checked) {
-        nodes = (function() {
-          var _i, _len, _results;
-          _results = [];
-          for (_i = 0, _len = replies.length; _i < _len; _i++) {
-            reply = replies[_i];
-            _results.push(Get.postFromNode(reply));
+        QuoteThreading.hasRun = false;
+        for (_i = 0, _len = replies.length; _i < _len; _i++) {
+          reply = replies[_i];
+          QuoteThreading.node.call(node = Get.postFromRoot(reply));
+          if (node.cb) {
+            node.cb();
           }
-          return _results;
-        })();
-        for (_i = 0, _len = nodes.length; _i < _len; _i++) {
-          node = nodes[_i];
-          QuoteThreading.node(node);
         }
+        QuoteThreading.hasRun = true;
       } else {
         replies.sort(function(a, b) {
           var aID, bID;
@@ -3992,8 +4016,13 @@
           container = containers[_j];
           $.rm(container);
         }
-        Unread.update(true);
+        _ref = $$('.threadOP');
+        for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
+          post = _ref[_k];
+          $.rmClass(post, 'threadOP');
+        }
       }
+      return Unread.update(true);
     },
     kb: function() {
       var control;
@@ -4004,7 +4033,7 @@
 
   QuoteYou = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Mark Quotes of You'] || !Conf['Quick Reply']) {
+      if (!(g.VIEW !== 'catalog' && Conf['Mark Quotes of You'] && Conf['Quick Reply'])) {
         return;
       }
       if (Conf['Highlight Own Posts']) {
@@ -4035,9 +4064,51 @@
       _ref = this.nodes.quotelinks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quotelink = _ref[_i];
-        if (QR.db.get(Get.postDataFromLink(quotelink))) {
-          $.add(quotelink, $.tn('\u00A0(You)'));
-          $.addClass(this.nodes.root, 'quotesYou');
+        if (!(QR.db.get(Get.postDataFromLink(quotelink)))) {
+          continue;
+        }
+        $.add(quotelink, $.tn('\u00A0(You)'));
+        $.addClass(this.nodes.root, 'quotesYou');
+      }
+    },
+    cb: {
+      seek: function(type) {
+        var highlight, post, posts, result, str;
+        if (!(Conf['Mark Quotes of You'] && Conf['Quick Reply'])) {
+          return;
+        }
+        if (highlight = $('.highlight')) {
+          $.rmClass(highlight, 'highlight');
+        }
+        if (!QuoteYou.lastRead) {
+          if (!(post = QuoteYou.lastRead = $('.quotesYou'))) {
+            new Notification('warning', 'No posts are currently quoting you, loser.', 20);
+            return;
+          }
+          if (QuoteYou.cb.scroll(post)) {
+            return;
+          }
+        } else {
+          post = QuoteYou.lastRead;
+        }
+        str = "" + type + "::div[contains(@class,'quotesYou')]";
+        while (post = (result = $.X(str, post)).snapshotItem(type === 'preceding' ? result.snapshotLength - 1 : 0)) {
+          if (QuoteYou.cb.scroll(post)) {
+            return;
+          }
+        }
+        posts = $$('.quotesYou');
+        return QuoteYou.cb.scroll(posts[type === 'following' ? 0 : posts.length - 1]);
+      },
+      scroll: function(post) {
+        if (Get.postFromRoot(post).isHidden) {
+          return false;
+        } else {
+          QuoteYou.lastRead = post;
+          window.location = "#" + post.id;
+          Header.scrollToPost(post);
+          $.addClass($('.post', post), 'highlight');
+          return true;
         }
       }
     }
@@ -4073,11 +4144,15 @@
     parseDeadlink: function(deadlink) {
       var a, boardID, m, post, postID, quote, quoteID, redirect, _ref;
       if (deadlink.parentNode.className === 'prettyprint') {
-        $.replace(deadlink, __slice.call(deadlink.childNodes));
+        Quotify.fixDeadlink(deadlink);
         return;
       }
       quote = deadlink.textContent;
       if (!(postID = (_ref = quote.match(/\d+$/)) != null ? _ref[0] : void 0)) {
+        return;
+      }
+      if (postID[0] === '0') {
+        Quotify.fixDeadlink(deadlink);
         return;
       }
       boardID = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : this.board.ID;
@@ -4085,20 +4160,22 @@
       if (post = g.posts[quoteID]) {
         if (!post.isDead) {
           a = $.el('a', {
-            href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
+            href: "/" + boardID + "/res/" + post.thread + "#p" + postID,
             className: 'quotelink',
             textContent: quote
           });
         } else {
           a = $.el('a', {
-            href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
+            href: "/" + boardID + "/res/" + post.thread + "#p" + postID,
             className: 'quotelink deadlink',
             target: '_blank',
             textContent: "" + quote + "\u00A0(Dead)"
           });
-          a.setAttribute('data-boardid', boardID);
-          a.setAttribute('data-threadid', post.thread.ID);
-          a.setAttribute('data-postid', postID);
+          $.extend(a.dataset, {
+            boardID: boardID,
+            threadID: post.thread.ID,
+            postID: postID
+          });
         }
       } else if (redirect = Redirect.to('thread', {
         boardID: boardID,
@@ -4116,8 +4193,10 @@
           postID: postID
         })) {
           $.addClass(a, 'quotelink');
-          a.setAttribute('data-boardid', boardID);
-          a.setAttribute('data-postid', postID);
+          $.extend(a.dataset, {
+            boardID: boardID,
+            postID: postID
+          });
         }
       }
       if (!this.quotes.contains(quoteID)) {
@@ -4131,6 +4210,9 @@
       if ($.hasClass(a, 'quotelink')) {
         return this.nodes.quotelinks.push(a);
       }
+    },
+    fixDeadlink: function(deadlink) {
+      return $.replace(deadlink, __slice.call(deadlink.childNodes));
     }
   };
 
@@ -4139,323 +4221,420 @@
       if (g.VIEW === 'catalog' || !Conf['Linkify']) {
         return;
       }
-      this.regString = Conf['Allow False Positives'] ? /(\b([a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]+|[-a-z0-9]+\.[a-z]|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+|[a-z]{3,}:[a-z0-9?]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi : /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi;
+      this.regString = Conf['Allow False Positives'] ? /(\b([-a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]|[-a-z0-9]+\.[a-z]|[\d]+\.[\d]+\.[\d]+\.[\d]+\/|[a-z]{3,}:[a-z0-9?]|[^\s@]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi : /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi;
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
+      }
+      if (Conf['Title Link']) {
+        $.sync('CachedTitles', Linkify.titleSync);
       }
       return Post.prototype.callbacks.push({
         name: 'Linkify',
         cb: this.node
       });
     },
-    cypher: $.el('div'),
     node: function() {
-      var a, child, cypher, cypherText, data, embed, embedder, embeds, i, index, len, link, links, lookahead, name, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2;
-      if (this.isClone && Conf['Embedding']) {
-        _ref = $$('.embedder', this.nodes.comment);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          embedder = _ref[_i];
-          $.on(embedder, "click", Linkify.toggle);
+      var data, el, i, items, links, node, range, snapshot, _i, _len, _ref;
+      if (this.isClone) {
+        if (Conf['Embedding']) {
+          i = 0;
+          items = $$('.embed', this.nodes.comment);
+          while (el = items[i++]) {
+            $.on(el, 'click', Linkify.cb.toggle);
+            if ($.hasClass(el, 'embedded')) {
+              Linkify.cb.toggle.call(el);
+            }
+          }
         }
         return;
       }
-      snapshot = $.X('.//text()', this.nodes.comment);
-      cypher = Linkify.cypher;
-      i = -1;
-      len = snapshot.snapshotLength;
-      while (++i < len) {
-        nodes = $.frag();
-        node = snapshot.snapshotItem(i);
-        data = node.data;
-        if (!(node.parentNode && Linkify.regString.test(data))) {
+      snapshot = $.X('.//br|.//text()', this.nodes.comment);
+      i = 0;
+      while (node = snapshot.snapshotItem(i++)) {
+        if (node.parentElement.nodeName === "A") {
           continue;
         }
-        Linkify.regString.lastIndex = 0;
-        cypherText = [];
-        if (next = node.nextSibling) {
-          cypher.textContent = node.textContent;
-          cypherText[0] = cypher.innerHTML;
-          while ((next.nodeName.toLowerCase() === 'wbr' || next.nodeName.toLowerCase() === 's') && (lookahead = next.nextSibling) && ((name = lookahead.nodeName) === "#text" || name.toLowerCase() === 'br')) {
-            cypher.textContent = lookahead.textContent;
-            cypherText.push((spoiler = next.innerHTML) ? "<s>" + (spoiler.replace(/</g, ' <')) + "</s>" : '<wbr>');
-            cypherText.push(cypher.innerHTML);
-            $.rm(next);
-            next = lookahead.nextSibling;
-            if (lookahead.nodeName === "#text") {
-              $.rm(lookahead);
-            }
-            if (!next) {
-              break;
-            }
-          }
+        links = [];
+        if (Linkify.regString.test(node.data)) {
+          Linkify.regString.lastIndex = 0;
+          Linkify.gatherLinks(snapshot, this, node, links, i);
         }
-        if (cypherText.length) {
-          data = cypherText.join('');
+        _ref = links.reverse();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          range = _ref[_i];
+          this.nodes.links.push(Linkify.makeLink(range, this));
         }
-        links = data.match(Linkify.regString);
-        for (_j = 0, _len1 = links.length; _j < _len1; _j++) {
-          link = links[_j];
-          index = data.indexOf(link);
-          if (text = data.slice(0, index)) {
-            cypher.innerHTML = text;
-            _ref1 = __slice.call(cypher.childNodes);
-            for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-              child = _ref1[_k];
-              $.add(nodes, child);
-            }
-          }
-          cypher.innerHTML = (link.indexOf(':') < 0 ? (link.indexOf('@') > 0 ? 'mailto:' + link : 'http://' + link) : link).replace(/<(wbr|s|\/s)>/g, '');
-          a = $.el('a', {
-            innerHTML: link,
-            className: 'linkify',
-            rel: 'nofollow noreferrer',
-            target: '_blank',
-            href: cypher.textContent
-          });
-          $.add(nodes, Linkify.embedder(a));
-          data = data.slice(index + link.length);
-        }
-        if (data) {
-          cypher.innerHTML = data;
-          _ref2 = __slice.call(cypher.childNodes);
-          for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
-            child = _ref2[_l];
-            $.add(nodes, child);
-          }
-        }
-        $.replace(node, nodes);
       }
-      if (Conf['Auto-embed']) {
-        embeds = $$('.embedder', this.nodes.comment);
-        for (_m = 0, _len4 = embeds.length; _m < _len4; _m++) {
-          embed = embeds[_m];
-          embed.click();
+      if (!(Conf['Embedding'] || Conf['Link Title'])) {
+        return;
+      }
+      items = this.nodes.links;
+      i = 0;
+      while (range = items[i++]) {
+        if (data = Linkify.services(range)) {
+          if (Conf['Embedding']) {
+            Linkify.embed(data);
+          }
+          if (Conf['Link Title']) {
+            Linkify.title(data);
+          }
         }
       }
     },
-    toggle: function() {
-      var el, embed, style, type, url;
-      embed = this.previousElementSibling;
-      if (this.className.contains("embedded")) {
+    gatherLinks: function(snapshot, post, node, links, i) {
+      var data, index, len, len2, link, match, range;
+      data = node.data;
+      len = data.length;
+      while ((match = Linkify.regString.exec(data))) {
+        index = match.index;
+        link = match[0];
+        len2 = index + link.length;
+        if (len === len2) {
+          break;
+        }
+        range = document.createRange();
+        range.setStart(node, index);
+        range.setEnd(node, len2);
+        links.push(range);
+      }
+      Linkify.regString.lastIndex = 0;
+      if (match) {
+        links.push(Linkify.seek(snapshot, post, node, links, match, i));
+      }
+    },
+    seek: function(snapshot, post, node, links, match, i) {
+      var data, index, link, next, range, result;
+      link = match[0];
+      range = document.createRange();
+      range.setStart(node, match.index);
+      while ((next = snapshot.snapshotItem(i++)) && next.nodeName !== 'BR') {
+        node = next;
+        data = node.data;
+        if (result = /[\s'"]/.exec(data)) {
+          index = result.index;
+          range.setEnd(node, index);
+          Linkify.regString.lastIndex = index;
+          Linkify.gatherLinks(snapshot, post, node, links, i);
+          return range;
+        }
+      }
+      if (range.collapsed) {
+        range.setEndAfter(node);
+      }
+      return range;
+    },
+    makeLink: function(range) {
+      var a, link;
+      link = range.toString();
+      link = link.contains(':') ? link : (link.contains('@') ? 'mailto:' : 'http://') + link;
+      a = $.el('a', {
+        className: 'linkify',
+        rel: 'nofollow noreferrer',
+        target: '_blank',
+        href: link
+      });
+      $.add(a, range.extractContents());
+      range.insertNode(a);
+      return a;
+    },
+    services: function(link) {
+      var href, key, match, type, _ref;
+      href = link.href;
+      _ref = Linkify.types;
+      for (key in _ref) {
+        type = _ref[key];
+        if (!(match = type.regExp.exec(href))) {
+          continue;
+        }
+        return [key, match[1], match[2], link];
+      }
+    },
+    embed: function(data) {
+      var embed, href, key, link, name, options, uid, value, _ref;
+      key = data[0], uid = data[1], options = data[2], link = data[3];
+      href = link.href;
+      embed = $.el('a', {
+        className: 'embedder',
+        href: 'javascript:;',
+        textContent: '(embed)'
+      });
+      _ref = {
+        key: key,
+        href: href,
+        uid: uid,
+        options: options
+      };
+      for (name in _ref) {
+        value = _ref[name];
+        embed.dataset[name] = value;
+      }
+      embed.dataset.nodedata = link.innerHTML;
+      $.addClass(link, "" + embed.dataset.key);
+      $.on(embed, 'click', Linkify.cb.toggle);
+      $.after(link, [$.tn(' '), embed]);
+      if (Conf['Auto-embed']) {
+        Linkify.cb.toggle.call(embed);
+      }
+      data.push(embed);
+    },
+    title: function(data) {
+      var embed, err, key, link, options, service, title, titles, uid;
+      key = data[0], uid = data[1], options = data[2], link = data[3], embed = data[4];
+      if (!(service = Linkify.types[key].title)) {
+        return;
+      }
+      titles = Conf['CachedTitles'];
+      if (title = titles[uid]) {
+        if (link) {
+          link.textContent = title[0];
+        }
+        if (Conf['Embedding']) {
+          return embed.dataset.title = title[0];
+        }
+      } else {
+        try {
+          $.cache(service.api(uid), function() {
+            return title = Linkify.cb.title(this, data);
+          });
+        } catch (_error) {
+          err = _error;
+          if (link) {
+            link.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
+          }
+          return;
+        }
+        if (title) {
+          titles[uid] = [title, Date.now()];
+          return $.set('CachedTitles', titles);
+        }
+      }
+    },
+    titleSync: function(value) {
+      return Conf['CachedTitles'] = value;
+    },
+    cb: {
+      toggle: function() {
+        var string, _ref;
+        _ref = $.hasClass(this, "embedded") ? ['unembed', '(embed)'] : ['embed', '(unembed)'], string = _ref[0], this.textContent = _ref[1];
+        $.replace(this.previousElementSibling, Linkify.cb[string](this));
+        return $.toggleClass(this, 'embedded');
+      },
+      embed: function(a) {
+        var el, style, type;
+        el = (type = Linkify.types[a.dataset.key]).el(a);
+        el.style.cssText = (style = type.style) ? style : "border: 0; width: 640px; height: 390px";
+        return el;
+      },
+      unembed: function(a) {
+        var el;
         el = $.el('a', {
           rel: 'nofollow noreferrer',
           target: 'blank',
           className: 'linkify',
-          href: url = this.getAttribute("data-originalURL"),
-          textContent: this.getAttribute("data-title") || url
+          href: a.dataset.href,
+          innerHTML: a.dataset.title || a.dataset.nodedata
         });
-        this.textContent = '(embed)';
-        $.addClass(el, "" + (this.getAttribute('data-service')));
-      } else {
-        el = (type = Linkify.types[this.getAttribute("data-service")]).el.call(this);
-        el.style.cssText = (style = type.style) ? style : "border: 0; width: 640px; height: 390px";
-        this.textContent = '(unembed)';
+        $.addClass(el, a.dataset.key);
+        return el;
+      },
+      title: function(response, data) {
+        var embed, key, link, options, service, text, uid;
+        key = data[0], uid = data[1], options = data[2], link = data[3], embed = data[4];
+        service = Linkify.types[key].title;
+        switch (response.status) {
+          case 200:
+          case 304:
+            text = "" + (service.text(JSON.parse(response.responseText)));
+            if (Conf['Embedding']) {
+              embed.dataset.title = text;
+            }
+            break;
+          case 404:
+            text = "[" + key + "] Not Found";
+            break;
+          case 403:
+            text = "[" + key + "] Forbidden or Private";
+            break;
+          default:
+            text = "[" + key + "] " + this.status + "'d";
+        }
+        if (link) {
+          return link.textContent = text;
+        }
       }
-      $.replace(embed, el);
-      return $.toggleClass(this, 'embedded');
     },
     types: {
-      YouTube: {
-        regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/,
-        el: function() {
-          return $.el('iframe', {
-            src: "//www.youtube.com/embed/" + this.name + (this.option ? '#' + this.option : '') + "?wmode=opaque"
-          });
-        },
-        title: {
-          api: function() {
-            return "https://gdata.youtube.com/feeds/api/videos/" + this.name + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
-          },
-          text: function() {
-            return JSON.parse(this.responseText).entry.title.$t;
-          }
-        }
-      },
-      Vocaroo: {
-        regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
-        style: 'border: 0; width: 150px; height: 45px;',
-        el: function() {
-          return $.el('object', {
-            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
-          });
-        }
-      },
-      Vimeo: {
-        regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
-        el: function() {
-          return $.el('iframe', {
-            src: "//player.vimeo.com/video/" + this.name + "?wmode=opaque"
-          });
-        },
-        title: {
-          api: function() {
-            return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + this.name;
-          },
-          text: function() {
-            return JSON.parse(this.responseText).title;
-          }
-        }
-      },
-      LiveLeak: {
-        regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
-        el: function() {
-          return $.el('object', {
-            innerHTML: "<embed src='http://www.liveleak.com/e/" + this.name + "?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
-          });
-        }
-      },
       audio: {
         regExp: /(.*\.(mp3|ogg|wav))$/,
-        el: function() {
+        el: function(a) {
           return $.el('audio', {
             controls: 'controls',
             preload: 'auto',
-            src: this.name
-          });
-        }
-      },
-      image: {
-        regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/,
-        style: 'border: 0; width: auto; height: auto;',
-        el: function() {
-          return $.el('div', {
-            innerHTML: "<a target=_blank href='" + (this.getAttribute('data-originalURL')) + "'><img src='" + (this.getAttribute('data-originalURL')) + "'></a>"
-          });
-        }
-      },
-      SoundCloud: {
-        regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
-        style: 'height: auto; width: 500px; display: inline-block;',
-        el: function() {
-          var div;
-          div = $.el('div', {
-            className: "soundcloud",
-            name: "soundcloud"
-          });
-          $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + this.name, {
-            div: div,
-            onloadend: function() {
-              return this.div.innerHTML = JSON.parse(this.responseText).html;
-            }
-          }, false);
-          return div;
-        },
-        title: {
-          api: function() {
-            return "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + this.name;
-          },
-          text: function() {
-            return JSON.parse(this.responseText).title;
-          }
-        }
-      },
-      pastebin: {
-        regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/,
-        el: function() {
-          var div;
-          return div = $.el('iframe', {
-            src: "http://pastebin.com/embed_iframe.php?i=" + this.name
+            src: a.dataset.uid
           });
         }
       },
       gist: {
         regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/,
-        el: function() {
+        el: function(a) {
           var div;
           return div = $.el('iframe', {
-            src: "http://www.purplegene.com/script?url=https://gist.github.com/" + this.name + ".js"
+            src: "http://www.purplegene.com/script?url=https://gist.github.com/" + a.dataset.uid + ".js"
           });
         },
         title: {
-          api: function() {
-            return "https://api.github.com/gists/" + this.name;
+          api: function(uid) {
+            return "https://api.github.com/gists/" + uid;
           },
-          text: function() {
-            var file, response;
-            response = JSON.parse(this.responseText).files;
-            for (file in response) {
-              if (response.hasOwnProperty(file)) {
+          text: function(_arg) {
+            var file, files;
+            files = _arg.files;
+            for (file in files) {
+              if (files.hasOwnProperty(file)) {
                 return file;
               }
             }
           }
         }
       },
+      image: {
+        regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/,
+        style: 'border: 0; width: auto; height: auto;',
+        el: function(a) {
+          return $.el('div', {
+            innerHTML: "<a target=_blank href='" + a.dataset.href + "'><img src='" + a.dataset.href + "'></a>"
+          });
+        }
+      },
       InstallGentoo: {
         regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/,
-        el: function() {
+        el: function(a) {
           return $.el('iframe', {
-            src: "http://paste.installgentoo.com/view/embed/" + this.name
+            src: "http://paste.installgentoo.com/view/embed/" + a.dataset.uid
           });
         }
-      }
-    },
-    embedder: function(a) {
-      var callbacks, embed, key, match, service, titles, type, _ref;
-      if (!Conf['Link Title']) {
-        return [a];
-      }
-      titles = {};
-      callbacks = function() {
-        var title;
-        return a.textContent = (function() {
-          switch (this.status) {
-            case 200:
-            case 304:
-              title = "" + (service.text.call(this));
-              embed.setAttribute('data-title', title);
-              titles[embed.name] = [title, Date.now()];
-              $.set('CachedTitles', titles);
-              return title;
-            case 404:
-              return "[" + key + "] Not Found";
-            case 403:
-              return "[" + key + "] Forbidden or Private";
-            default:
-              return "[" + key + "] " + this.status + "'d";
-          }
-        }).call(this);
-      };
-      _ref = Linkify.types;
-      for (key in _ref) {
-        type = _ref[key];
-        if (!(match = a.href.match(type.regExp))) {
-          continue;
+      },
+      LiveLeak: {
+        regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
+        el: function(a) {
+          return $.el('object', {
+            innerHTML: "<embed src='http://www.liveleak.com/e/" + a.dataset.uid + "?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+          });
         }
-        embed = $.el('a', {
-          name: (a.name = match[1]),
-          option: match[2],
-          className: 'embedder',
-          href: 'javascript:;',
-          textContent: '(embed)'
-        });
-        embed.setAttribute('data-service', key);
-        embed.setAttribute('data-originalURL', a.href);
-        $.addClass(a, "" + (embed.getAttribute('data-service')));
-        $.on(embed, 'click', Linkify.toggle);
-        if (!Conf['Embedding']) {
-          embed.hidden = true;
+      },
+      MediaCrush: {
+        regExp: /.*(?:mediacru.sh\/)([0-9a-z_]+)/i,
+        style: 'border: 0; width: 640px; height: 480px; resize: both;',
+        el: function(a) {
+          return $.el('iframe', {
+            src: "https://mediacru.sh/" + a.dataset.uid
+          });
         }
-        if (Conf['Link Title'] && (service = type.title)) {
-          $.get('CachedTitles', {}, function(item) {
-            var err, title;
-            titles = item['CachedTitles'];
-            if (title = titles[match[1]]) {
-              a.textContent = title[0];
-              return embed.setAttribute('data-title', title[0]);
-            } else {
-              try {
-                return $.cache(service.api.call(a), callbacks);
-              } catch (_error) {
-                err = _error;
-                return a.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
-              }
+      },
+      pastebin: {
+        regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/,
+        el: function(a) {
+          var div;
+          return div = $.el('iframe', {
+            src: "http://pastebin.com/embed_iframe.php?i=" + a.dataset.uid
+          });
+        }
+      },
+      SoundCloud: {
+        regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
+        style: 'height: auto; width: 500px; display: inline-block;',
+        el: function(a) {
+          var div;
+          div = $.el('div', {
+            className: "soundcloud",
+            name: "soundcloud"
+          });
+          $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + a.dataset.uid, {
+            onloadend: function() {
+              return div.innerHTML = JSON.parse(this.responseText).html;
             }
+          }, false);
+          return div;
+        },
+        title: {
+          api: function(uid) {
+            return "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + uid;
+          },
+          text: function(_) {
+            return _.title;
+          }
+        }
+      },
+      TwitchTV: {
+        regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/,
+        style: "border: none; width: 640px; height: 360px;",
+        el: function(a) {
+          var channel, chapter, result, _;
+          if (result = /(\w+)\/(?:[a-z]\/)?(\d+)/i.exec(a.dataset.uid)) {
+            _ = result[0], channel = result[1], chapter = result[2];
+            return $.el('object', {
+              data: 'http://www.twitch.tv/widgets/archive_embed_player.swf',
+              innerHTML: "<param name='allowFullScreen' value='true' />\n<param name='flashvars' value='channel=" + channel + "&start_volume=25&auto_play=false" + (chapter ? "&chapter_id=" + chapter : "") + "' />"
+            });
+          } else {
+            channel = (/(\w+)/.exec(a.dataset.uid))[0];
+            return $.el('object', {
+              data: "http://www.twitch.tv/widgets/live_embed_player.swf?channel=" + channel,
+              innerHTML: "<param  name=\"allowFullScreen\" value=\"true\" />\n<param  name=\"movie\" value=\"http://www.twitch.tv/widgets/live_embed_player.swf\" />\n<param  name=\"flashvars\" value=\"hostname=www.twitch.tv&channel=" + channel + "&auto_play=true&start_volume=25\" />"
+            });
+          }
+        }
+      },
+      Vocaroo: {
+        regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
+        style: 'border: 0; width: 150px; height: 45px;',
+        el: function(a) {
+          return $.el('object', {
+            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (a.dataset.uid.replace(/^i\//, '')) + "&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
           });
         }
-        return [a, $.tn(' '), embed];
+      },
+      Vimeo: {
+        regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
+        el: function(a) {
+          return $.el('iframe', {
+            src: "//player.vimeo.com/video/" + a.dataset.uid + "?wmode=opaque"
+          });
+        },
+        title: {
+          api: function(uid) {
+            return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + uid;
+          },
+          text: function(_) {
+            return _.title;
+          }
+        }
+      },
+      Vine: {
+        regExp: /.*(?:vine.co\/)([^#\&\?]*).*/,
+        style: 'border: none; width: 500px; height: 500px;',
+        el: function(a) {
+          return $.el('iframe', {
+            src: "https://vine.co/" + a.dataset.uid + "/card"
+          });
+        }
+      },
+      YouTube: {
+        regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/,
+        el: function(a) {
+          return $.el('iframe', {
+            src: "//www.youtube.com/embed/" + a.dataset.uid + (a.dataset.option ? '#' + a.dataset.option : '') + "?wmode=opaque"
+          });
+        },
+        title: {
+          api: function(uid) {
+            return "https://gdata.youtube.com/feeds/api/videos/" + uid + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
+          },
+          text: function(data) {
+            return data.entry.title.$t;
+          }
+        }
       }
-      return [a];
     }
   };
 
@@ -4577,7 +4756,7 @@
       }
     },
     close: function() {
-      var i, _i, _len, _ref;
+      var post, _i, _len, _ref;
       if (QR.req) {
         QR.abort();
         return;
@@ -4592,10 +4771,11 @@
       if (Conf['QR Shortcut']) {
         $.toggleClass($('.qr-shortcut'), 'disabled');
       }
-      _ref = QR.posts;
+      new QR.post(true);
+      _ref = QR.posts.splice(0, QR.posts.length - 1);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        i = _ref[_i];
-        QR.posts[0].rm();
+        post = _ref[_i];
+        post["delete"]();
       }
       QR.cooldown.auto = false;
       return QR.status();
@@ -4659,11 +4839,12 @@
       return QR.notifications = [];
     },
     status: function() {
-      var disabled, status, value;
+      var disabled, status, thread, value;
       if (!QR.nodes) {
         return;
       }
-      if (g.DEAD) {
+      thread = QR.posts[0].thread;
+      if (thread !== 'new' && g.threads["" + g.BOARD + "." + thread].isDead) {
         value = 404;
         disabled = true;
         QR.cooldown.auto = false;
@@ -4730,12 +4911,11 @@
         list = $("#list-" + type, QR.nodes.el);
         for (_i = 0, _len = arr.length; _i < _len; _i++) {
           val = arr[_i];
-          if (!val) {
-            continue;
+          if (val) {
+            $.add(list, $.el('option', {
+              textContent: val
+            }));
           }
-          $.add(list, $.el('option', {
-            textContent: val
-          }));
         }
       },
       getPassword: function() {
@@ -4907,7 +5087,7 @@
       }
     },
     quote: function(e) {
-      var OP, caretPos, com, index, post, range, s, sel, selectionRoot, text, thread, _ref;
+      var caretPos, com, index, post, range, s, sel, text, thread, _ref;
       if (e != null) {
         e.preventDefault();
       }
@@ -4915,11 +5095,9 @@
         return;
       }
       sel = d.getSelection();
-      selectionRoot = $.x('ancestor::div[contains(@class,"postContainer")][1]', sel.anchorNode);
       post = Get.postFromNode(this);
-      OP = Get.contextFromLink(this).thread.OP;
       text = ">>" + post + "\n";
-      if ((s = sel.toString().trim()) && post.nodes.root === selectionRoot) {
+      if ((s = sel.toString().trim()) && post === Get.postFromNode(sel.anchorNode)) {
         s = s.replace(/\n/g, '\n>');
         text += ">" + s + "\n";
       }
@@ -4932,7 +5110,7 @@
       }
       _ref = QR.nodes, com = _ref.com, thread = _ref.thread;
       if (!com.value) {
-        thread.value = OP.ID;
+        thread.value = Get.contextFromNode(this).thread;
       }
       caretPos = com.selectionStart;
       com.value = com.value.slice(0, caretPos) + text + com.value.slice(com.selectionEnd);
@@ -5001,7 +5179,7 @@
     },
     fileInput: function(files) {
       var file, length, max, post, _i, _len;
-      if (this instanceof Element) {
+      if (files instanceof Event) {
         files = __slice.call(this.files);
         QR.nodes.fileInput.value = null;
       }
@@ -5108,7 +5286,7 @@
 
       _Class.prototype.rm = function() {
         var index;
-        $.rm(this.nodes.el);
+        this["delete"]();
         index = QR.posts.indexOf(this);
         if (QR.posts.length === 1) {
           new QR.post(true);
@@ -5117,9 +5295,11 @@
           (QR.posts[index - 1] || QR.posts[index + 1]).select();
         }
         QR.posts.splice(index, 1);
-        if (!window.URL) {
-          return;
-        }
+        return QR.status();
+      };
+
+      _Class.prototype["delete"] = function() {
+        $.rm(this.nodes.el);
         return URL.revokeObjectURL(this.URL);
       };
 
@@ -5175,20 +5355,22 @@
       };
 
       _Class.prototype.save = function(input) {
-        var value, _ref;
+        var name, _ref;
         if (input.type === 'checkbox') {
           this.spoiler = input.checked;
           return;
         }
-        value = input.value;
-        this[input.dataset.name] = value;
-        if (input.nodeName !== 'TEXTAREA') {
-          return;
-        }
-        this.nodes.span.textContent = value;
-        QR.characterCount();
-        if (QR.cooldown.auto && this === QR.posts[0] && (0 < (_ref = QR.cooldown.seconds) && _ref <= 5)) {
-          return QR.cooldown.auto = false;
+        name = input.dataset.name;
+        this[name] = input.value;
+        switch (name) {
+          case 'thread':
+            return QR.status();
+          case 'com':
+            this.nodes.span.textContent = this.com;
+            QR.characterCount();
+            if (QR.cooldown.auto && this === QR.posts[0] && (0 < (_ref = QR.cooldown.seconds) && _ref <= 5)) {
+              return QR.cooldown.auto = false;
+            }
         }
       };
 
@@ -5211,9 +5393,7 @@
         if (QR.spoiler) {
           this.nodes.label.hidden = false;
         }
-        if (window.URL) {
-          URL.revokeObjectURL(this.URL);
-        }
+        URL.revokeObjectURL(this.URL);
         this.showFileData();
         if (!/^image/.test(file.type)) {
           this.nodes.el.style.backgroundImage = null;
@@ -5222,21 +5402,9 @@
         return this.setThumbnail();
       };
 
-      _Class.prototype.setThumbnail = function(fileURL) {
-        var img, reader,
+      _Class.prototype.setThumbnail = function() {
+        var fileURL, img,
           _this = this;
-        if (!window.URL) {
-          if (!fileURL) {
-            reader = new FileReader();
-            reader.onload = function(e) {
-              return _this.setThumbnail(e.target.result);
-            };
-            reader.readAsDataURL(this.file);
-            return;
-          }
-        } else {
-          fileURL = URL.createObjectURL(this.file);
-        }
         img = $.el('img');
         img.onload = function() {
           var applyBlob, cv, data, height, i, l, s, ui8a, width, _i;
@@ -5246,9 +5414,7 @@
           }
           height = img.height, width = img.width;
           if (height < s || width < s) {
-            if (window.URL) {
-              _this.URL = fileURL;
-            }
+            _this.URL = fileURL;
             _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
             return;
           }
@@ -5263,11 +5429,6 @@
           cv.height = img.height = height;
           cv.width = img.width = width;
           cv.getContext('2d').drawImage(img, 0, 0, width, height);
-          if (!window.URL) {
-            _this.nodes.el.style.backgroundImage = "url(" + (cv.toDataURL()) + ")";
-            delete _this.URL;
-            return;
-          }
           URL.revokeObjectURL(fileURL);
           applyBlob = function(blob) {
             _this.URL = URL.createObjectURL(blob);
@@ -5287,6 +5448,7 @@
             type: 'image/png'
           }));
         };
+        fileURL = URL.createObjectURL(this.file);
         return img.src = fileURL;
       };
 
@@ -5299,9 +5461,6 @@
           this.nodes.label.hidden = true;
         }
         this.showFileData();
-        if (!window.URL) {
-          return;
-        }
         return URL.revokeObjectURL(this.URL);
       };
 
@@ -5359,12 +5518,11 @@
 
       _Class.prototype.drop = function() {
         var el, index, newIndex, oldIndex, post;
-        el = $('.drag', this.parentNode);
-        $.rmClass(el, 'drag');
         $.rmClass(this, 'over');
         if (!this.draggable) {
           return;
         }
+        el = $('.drag', this.parentNode);
         index = function(el) {
           return __slice.call(el.parentNode.children).indexOf(el);
         };
@@ -5372,7 +5530,8 @@
         newIndex = index(this);
         (oldIndex < newIndex ? $.after : $.before)(this, el);
         post = QR.posts.splice(oldIndex, 1)[0];
-        return QR.posts.splice(newIndex, 0, post);
+        QR.posts.splice(newIndex, 0, post);
+        return QR.status();
       };
 
       return _Class;
@@ -5391,7 +5550,7 @@
         }), this.ready.bind(this));
       },
       ready: function() {
-        var imgContainer, input, observer, setLifetime,
+        var imgContainer, input, setLifetime,
           _this = this;
         setLifetime = function(e) {
           return _this.lifetime = e.detail;
@@ -5416,14 +5575,9 @@
           img: imgContainer.firstChild,
           input: input
         };
-        if (window.MutationObserver) {
-          observer = new MutationObserver(this.load.bind(this));
-          observer.observe(this.nodes.challenge, {
-            childList: true
-          });
-        } else {
-          $.on(this.nodes.challenge, 'DOMNodeInserted', this.load.bind(this));
-        }
+        new MutationObserver(this.load.bind(this)).observe(this.nodes.challenge, {
+          childList: true
+        });
         $.on(imgContainer, 'click', this.reload.bind(this));
         $.on(input, 'keydown', this.keydown.bind(this));
         $.on(input, 'focus', function() {
@@ -5548,7 +5702,7 @@
       }
     },
     dialog: function() {
-      var dialog, elm, mimeTypes, name, nodes, thread, _i, _j, _len, _len1, _ref, _ref1;
+      var dialog, elm, i, items, mimeTypes, name, nodes, thread;
       dialog = UI.dialog('qr', 'top:0;right:0;', "  <div class=move><label><input type=checkbox id=autohide title=Auto-hide>\n  Quick Reply\n</label><a href=javascript:; class=close title=Close>×</a><select data-name=thread title='Create a new thread / Reply'><option value=new>New thread</option></select></div><form><div class=persona><input name=name  data-name=name  list=\"list-name\" placeholder=Name    class=field size=1 tabindex=10><input name=email data-name=email list=\"list-email\" placeholder=E-mail  class=field size=1 tabindex=20><input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1 tabindex=30></div><div class=textarea><textarea data-name=com placeholder=Comment class=field tabindex=40></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=60><span id=qr-no-file>No selected file</span><span id=qr-filename></span><span id=qr-extras-container><a id=qr-filerm href=javascript:; title='Remove file'>×</a><a id=dump-button title='Dump list'>+</a></span></span><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70></label><input type=submit tabindex=80></div><input type=file multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist>");
       QR.nodes = nodes = {
         el: dialog,
@@ -5588,7 +5742,6 @@
       QR.mimeTypes = mimeTypes.split(', ');
       QR.mimeTypes.push('');
       nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
-      nodes.fileInput.accept = "text/*, " + mimeTypes;
       QR.spoiler = !!$('input[name=spoiler]');
       if (QR.spoiler) {
         $.addClass(QR.nodes.el, 'has-spoiler');
@@ -5609,9 +5762,9 @@
         }));
       }
       $.on(nodes.filename.parentNode, 'click keyup', QR.openFileInput);
-      _ref = $$('*', QR.nodes.el);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        elm = _ref[_i];
+      items = $$('*', QR.nodes.el);
+      i = 0;
+      while (elm = items[i++]) {
         $.on(elm, 'blur', QR.focusout);
         $.on(elm, 'focus', QR.focusin);
       }
@@ -5636,9 +5789,9 @@
         return QR.selected.nodes.spoiler.click();
       });
       $.on(nodes.fileInput, 'change', QR.fileInput);
-      _ref1 = ['name', 'email', 'sub', 'com'];
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        name = _ref1[_j];
+      items = ['name', 'email', 'sub', 'com'];
+      i = 0;
+      while (name = items[i++]) {
         $.on(nodes[name], 'input', function() {
           return QR.selected.save(this);
         });
@@ -5667,7 +5820,7 @@
     },
     preSubmitHooks: [],
     submit: function(e) {
-      var callbacks, challenge, err, filetag, hook, opts, post, postData, response, textOnly, thread, threadID, _i, _len, _ref, _ref1;
+      var challenge, err, extra, filetag, hook, options, post, postData, response, textOnly, thread, threadID, _i, _len, _ref, _ref1;
       if (e != null) {
         e.preventDefault();
       }
@@ -5745,7 +5898,9 @@
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response
       };
-      callbacks = {
+      options = {
+        responseType: 'document',
+        withCredentials: true,
         onload: QR.response,
         onerror: function() {
           delete QR.req;
@@ -5757,8 +5912,7 @@
           }));
         }
       };
-      opts = {
-        cred: true,
+      extra = {
         form: $.formData(postData),
         upCallbacks: {
           onload: function() {
@@ -5773,29 +5927,28 @@
           }
         }
       };
-      QR.req = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
+      QR.req = $.ajax($.id('postForm').parentNode.action, options, extra);
       QR.req.uploadStartTime = Date.now();
       QR.req.progress = '...';
       return QR.status();
     },
     response: function() {
-      var URL, ban, board, err, h1, isReply, m, post, postID, req, threadID, tmpDoc, _, _ref, _ref1;
+      var URL, ban, board, err, h1, isReply, m, post, postID, req, resDoc, threadID, _, _ref, _ref1;
       req = QR.req;
       delete QR.req;
       post = QR.posts[0];
       post.unlock();
-      tmpDoc = d.implementation.createHTMLDocument('');
-      tmpDoc.documentElement.innerHTML = req.response;
-      if (ban = $('.banType', tmpDoc)) {
-        board = $('.board', tmpDoc).innerHTML;
+      resDoc = req.response;
+      if (ban = $('.banType', resDoc)) {
+        board = $('.board', resDoc).innerHTML;
         err = $.el('span', {
-          innerHTML: ban.textContent.toLowerCase() === 'banned' ? ("You are banned on " + board + "! ;_;<br>") + "Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason." : ("You were issued a warning on " + board + " as " + ($('.nameBlock', tmpDoc).innerHTML) + ".<br>") + ("Reason: " + ($('.reason', tmpDoc).innerHTML))
+          innerHTML: ban.textContent.toLowerCase() === 'banned' ? "You are banned on " + board + "! ;_;<br>\nClick <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason." : "You were issued a warning on " + board + " as " + ($('.nameBlock', resDoc).innerHTML) + ".<br>\nReason: " + ($('.reason', resDoc).innerHTML)
         });
-      } else if (err = tmpDoc.getElementById('errmsg')) {
+      } else if (err = resDoc.getElementById('errmsg')) {
         if ((_ref = $('a', err)) != null) {
           _ref.target = '_blank';
         }
-      } else if (tmpDoc.title !== 'Post successful!') {
+      } else if (resDoc.title !== 'Post successful!') {
         err = 'Connection error with sys.4chan.org.';
       } else if (req.status !== 200) {
         err = "Error " + req.statusText + " (" + req.status + ")";
@@ -5821,8 +5974,8 @@
         QR.error(err);
         return;
       }
+      h1 = $('h1', resDoc);
       QR.cleanNotifications();
-      h1 = $('h1', tmpDoc);
       if (Conf['Posting Success Notifications']) {
         QR.notifications.push(new Notification('success', h1.textContent, 5));
       }
@@ -5854,16 +6007,12 @@
         post: post,
         isReply: isReply
       });
-      if (threadID === postID) {
-        URL = "/" + g.BOARD + "/res/" + threadID;
-      } else if (g.VIEW === 'index' && !QR.cooldown.auto && Conf['Open Post in New Tab']) {
-        URL = "/" + g.BOARD + "/res/" + threadID + "#p" + postID;
-      }
+      URL = threadID === postID ? "/" + g.BOARD + "/res/" + threadID : g.VIEW === 'index' && !QR.cooldown.auto && Conf['Open Post in New Tab'] ? "/" + g.BOARD + "/res/" + threadID + "#p" + postID : void 0;
       if (URL) {
         if (Conf['Open Post in New Tab']) {
-          $.open("/" + g.BOARD + "/res/" + threadID);
+          $.open(URL);
         } else {
-          window.location = "/" + g.BOARD + "/res/" + threadID;
+          window.location = URL;
         }
       }
       return QR.status();
@@ -5989,42 +6138,37 @@
       }
     },
     toggle: function(post) {
-      var headRect, node, rect, root, thumb, top;
+      var headRect, rect, root, thumb, x, y;
       thumb = post.file.thumb;
       if (!(post.file.isExpanded || $.hasClass(thumb, 'expanding'))) {
         ImageExpand.expand(post);
         return;
       }
       ImageExpand.contract(post);
-      node = post.nodes.root;
-      rect = Conf['Advance on contract'] ? (function() {
-        while (node.nextElementSibling) {
-          if (!(node = node.nextElementSibling)) {
-            return post.nodes.root;
-          }
-          if (!$.hasClass(node, 'postContainer')) {
+      root = post.nodes.root;
+      rect = (Conf['Advance on contract'] ? (function() {
+        var next;
+        next = root;
+        while (next = $.x("following::div[contains(@class,'postContainer')][1]", next)) {
+          if ($('.stub', next) || next.offsetHeight === 0) {
             continue;
           }
-          if (node.offsetHeight > 0 && !$('.stub', node)) {
-            break;
-          }
+          return next;
         }
-        return node.getBoundingClientRect();
-      })() : post.nodes.root.getBoundingClientRect();
-      if (!(rect.top <= 0 || rect.left <= 0)) {
-        return;
-      }
-      top = rect.top;
-      if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
-        headRect = Header.bar.getBoundingClientRect();
-        top += -headRect.top - headRect.height;
-      }
-      root = doc;
+        return root;
+      })() : root).getBoundingClientRect();
       if (rect.top < 0) {
-        root.scrollTop += top;
+        y = rect.top;
+        if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
+          headRect = Header.bar.getBoundingClientRect();
+          y -= headRect.top + headRect.height;
+        }
       }
       if (rect.left < 0) {
-        return root.scrollLeft = 0;
+        x = -window.scrollX;
+      }
+      if (x || y) {
+        return window.scrollBy(x, y);
       }
     },
     contract: function(post) {
@@ -6073,15 +6217,14 @@
       }
       prev = post.nodes.root.getBoundingClientRect();
       return $.queueTask(function() {
-        var curr, root;
+        var curr;
         $.addClass(post.nodes.root, 'expanded-image');
         $.rmClass(post.file.thumb, 'expanding');
         if (!(prev.top + prev.height <= 0)) {
           return;
         }
-        root = doc;
         curr = post.nodes.root.getBoundingClientRect();
-        return root.scrollTop += curr.height - prev.height + curr.top - prev.top;
+        return window.scrollBy(0, curr.height - prev.height + curr.top - prev.top);
       });
     },
     error: function() {
@@ -6204,7 +6347,7 @@
         id: 'ihover',
         src: post.file.URL
       });
-      el.setAttribute('data-fullid', post.fullID);
+      el.dataset.fullID = post.fullID;
       $.add(Header.hover, el);
       UI.hover({
         root: this,
@@ -6223,7 +6366,7 @@
       if (!doc.contains(this)) {
         return;
       }
-      post = g.posts[this.dataset.fullid];
+      post = g.posts[this.dataset.fullID];
       src = this.src.split('/');
       if (src[2] === 'images.4chan.org') {
         URL = Redirect.to('file', {
@@ -6345,6 +6488,71 @@
       thumb = this.file.thumb;
       thumb.removeAttribute('style');
       return thumb.src = this.file.thumbURL;
+    }
+  };
+
+  Sauce = {
+    init: function() {
+      var err, link, links, _i, _len, _ref;
+      if (g.VIEW === 'catalog' || !Conf['Sauce']) {
+        return;
+      }
+      links = [];
+      _ref = Conf['sauces'].split('\n');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        try {
+          if (link[0] !== '#') {
+            links.push(this.createSauceLink(link.trim()));
+          }
+        } catch (_error) {
+          err = _error;
+        }
+      }
+      if (!links.length) {
+        return;
+      }
+      this.links = links;
+      this.link = $.el('a', {
+        target: '_blank'
+      });
+      return Post.prototype.callbacks.push({
+        name: 'Sauce',
+        cb: this.node
+      });
+    },
+    createSauceLink: function(link) {
+      var m, text;
+      link = link.replace(/%(T?URL|MD5|board)/ig, function(parameter) {
+        switch (parameter) {
+          case '%TURL':
+            return "' + encodeURIComponent(post.file.thumbURL) + '";
+          case '%URL':
+            return "' + encodeURIComponent(post.file.URL) + '";
+          case '%MD5':
+            return "' + encodeURIComponent(post.file.MD5) + '";
+          case '%board':
+            return "' + encodeURIComponent(post.board) + '";
+          default:
+            return parameter;
+        }
+      });
+      text = (m = link.match(/;text:(.+)$/)) ? m[1] : link.match(/(\w+)\.\w+\//)[1];
+      link = link.replace(/;text:.+$/, '');
+      return Function('post', 'a', "a.href = '" + link + "';\na.textContent = '" + text + "';\nreturn a;");
+    },
+    node: function() {
+      var link, nodes, _i, _len, _ref;
+      if (this.isClone || !this.file) {
+        return;
+      }
+      nodes = [];
+      _ref = Sauce.links;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        nodes.push($.tn('\u00A0'), link(this, Sauce.link.cloneNode(true)));
+      }
+      return $.add(this.file.info, nodes);
     }
   };
 
@@ -6479,8 +6687,8 @@
         return;
       }
       $.off(this, 'click', DeleteLink["delete"]);
-      this.textContent = "Deleting " + this.textContent + "...";
       fileOnly = $.hasClass(this, 'delete-file');
+      this.textContent = "Deleting " + (fileOnly ? 'file' : 'post') + "...";
       form = {
         mode: 'usrdel',
         onlyimgdel: fileOnly,
@@ -6489,6 +6697,8 @@
       form[post.ID] = 'delete';
       link = this;
       return $.ajax($.id('delform').action.replace("/" + g.BOARD + "/", "/" + post.board + "/"), {
+        responseType: 'document',
+        withCredentials: true,
         onload: function() {
           return DeleteLink.load(link, post, fileOnly, this.response);
         },
@@ -6496,21 +6706,18 @@
           return DeleteLink.error(link);
         }
       }, {
-        cred: true,
         form: $.formData(form)
       });
     },
-    load: function(link, post, fileOnly, html) {
-      var msg, s, tmpDoc;
-      tmpDoc = d.implementation.createHTMLDocument('');
-      tmpDoc.documentElement.innerHTML = html;
-      if (tmpDoc.title === '4chan - Banned') {
+    load: function(link, post, fileOnly, resDoc) {
+      var msg, s;
+      if (resDoc.title === '4chan - Banned') {
         s = 'Banned!';
-      } else if (msg = tmpDoc.getElementById('errmsg')) {
+      } else if (msg = resDoc.getElementById('errmsg')) {
         s = msg.textContent;
         $.on(link, 'click', DeleteLink["delete"]);
       } else {
-        if (tmpDoc.title === 'Updating index...') {
+        if (resDoc.title === 'Updating index...') {
           (post.origin || post).kill(fileOnly);
         }
         s = 'Deleted';
@@ -6582,51 +6789,45 @@
     }
   };
 
-  Menu = {
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Menu']) {
-        return;
-      }
-      this.menu = new UI.Menu('post');
-      return Post.prototype.callbacks.push({
-        name: 'Menu',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var button;
-      button = Menu.makeButton(this);
-      if (this.isClone) {
-        $.replace($('.menu-button', this.nodes.info), button);
-        return;
-      }
-      return $.add(this.nodes.info, [$.tn('\u00A0'), button]);
-    },
-    makeButton: (function() {
-      var a;
-      a = null;
-      return function(post) {
-        var clone;
-        a || (a = $.el('a', {
-          className: 'menu-button fourchanx-link',
-          innerHTML: '<i></i>',
-          href: 'javascript:;'
-        }));
-        clone = a.cloneNode(true);
-        clone.setAttribute('data-postid', post.fullID);
-        if (post.isClone) {
-          clone.setAttribute('data-clone', true);
+  Menu = (function() {
+    var a;
+    a = $.el('a', {
+      className: 'menu-button brackets-wrap',
+      innerHTML: '<i></i>',
+      href: 'javascript:;'
+    });
+    return {
+      init: function() {
+        if (g.VIEW === 'catalog' || !Conf['Menu']) {
+          return;
         }
-        $.on(clone, 'click', Menu.toggle);
-        return clone;
-      };
-    })(),
-    toggle: function(e) {
-      var post;
-      post = this.dataset.clone ? Get.postFromNode(this) : g.posts[this.dataset.postid];
-      return Menu.menu.toggle(e, this, post);
-    }
-  };
+        this.menu = new UI.Menu('post');
+        return Post.prototype.callbacks.push({
+          name: 'Menu',
+          cb: this.node
+        });
+      },
+      node: function() {
+        var button;
+        if (this.isClone) {
+          button = $('.menu-button', this.nodes.info);
+        } else {
+          button = a.cloneNode(true);
+          $.add(this.nodes.info, [$.tn('\u00A0'), button]);
+        }
+        return $.on(button, 'click', Menu.toggle);
+      },
+      makeButton: function() {
+        var el;
+        el = a.cloneNode(true);
+        $.on(el, 'click', Menu.toggle);
+        return el;
+      },
+      toggle: function(e) {
+        return Menu.menu.toggle(e, this, Get.postFromNode(this));
+      }
+    };
+  })();
 
   ReportLink = {
     init: function() {
@@ -7034,7 +7235,7 @@
             This saves bandwidth for both the user and the servers and avoid unnecessary computation.
             */
 
-            _ref = [0, 304].contains(req.status) ? [null, null] : ["" + req.statusText + " (" + req.status + ")", 'warning'], text = _ref[0], klass = _ref[1];
+            _ref = req.status === 304 ? [null, null] : ["" + req.statusText + " (" + req.status + ")", 'warning'], text = _ref[0], klass = _ref[1];
             ThreadUpdater.set('status', text, klass);
         }
         if (ThreadUpdater.postID) {
@@ -7210,7 +7411,7 @@
         }
         if (scroll) {
           if (Conf['Bottom Scroll']) {
-            doc.scrollTop = d.body.clientHeight;
+            window.scrollTo(0, d.body.clientHeight);
           } else {
             if (root) {
               Header.scrollToPost(root);
@@ -7436,21 +7637,19 @@
       }
     },
     scroll: function() {
-      var checkPosition, hash, onload, post, posts, prevID, root;
+      var checkPosition, hash, onload, post, posts, root;
       if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
         return;
       }
       if (Unread.posts.length) {
-        prevID = 0;
-        while (root = $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root)) {
-          post = Get.postFromRoot(root);
-          if (prevID === post.ID) {
+        post = Unread.posts[0];
+        while (root = $.x('preceding-sibling::div[contains(@class,"replyContainer")][1]', post.nodes.root)) {
+          if (!(post = Get.postFromRoot(root)).isHidden) {
             break;
           }
-          prevID = post.ID;
-          if (!post.isHidden) {
-            break;
-          }
+        }
+        if (!root) {
+          return;
         }
         onload = function() {
           if (checkPosition(root)) {
@@ -7490,7 +7689,7 @@
       return Unread.update();
     },
     addPosts: function(posts) {
-      var ID, data, post, _i, _len, _ref;
+      var ID, data, post, _i, _len;
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
         post = posts[_i];
         ID = post.ID;
@@ -7511,7 +7710,7 @@
         Unread.addPostQuotingYou(post);
       }
       if (Conf['Unread Line']) {
-        Unread.setLine((_ref = Unread.posts[0], __indexOf.call(posts, _ref) >= 0));
+        Unread.setLine(posts.contains(Unread.posts[0]));
       }
       Unread.read();
       return Unread.update();
@@ -7562,25 +7761,44 @@
       return arr.splice(0, i);
     },
     read: $.debounce(50, function(e) {
-      var ID, bottom, height, i, post, posts, read;
+      var ID, bottom, height, i, post, posts;
       if (d.hidden || !Unread.posts.length) {
         return;
       }
       height = doc.clientHeight;
       posts = Unread.posts;
-      read = [];
-      i = posts.length;
-      while (post = posts[--i]) {
+      i = 0;
+      while (post = posts[i]) {
         bottom = post.nodes.root.getBoundingClientRect().bottom;
         if (bottom < height) {
           ID = post.ID;
-          posts.remove(post);
+          if (Conf['Mark Quotes of You']) {
+            if (post.info.yours) {
+              QuoteYou.lastRead = post.nodes.root;
+            }
+          }
+          if (Conf['Quote Threading']) {
+            posts.splice(i, 1);
+            continue;
+          }
+        } else {
+          if (!Conf['Quote Threading']) {
+            break;
+          }
+        }
+        i++;
+      }
+      if (!Conf['Quote Threading']) {
+        if (i) {
+          posts.splice(0, i);
         }
       }
       if (!ID) {
         return;
       }
-      Unread.lastReadPost = ID;
+      if (Unread.lastReadPost < ID || !Unread.lastReadPost) {
+        Unread.lastReadPost = ID;
+      }
       Unread.saveLastReadPost();
       Unread.readArray(Unread.postsQuotingYou);
       if (e) {
@@ -7588,6 +7806,9 @@
       }
     }),
     saveLastReadPost: $.debounce(2 * $.SECOND, function() {
+      if (Unread.thread.isDead) {
+        return;
+      }
       return Unread.db.set({
         boardID: Unread.thread.board.ID,
         threadID: Unread.thread.ID,
@@ -7623,138 +7844,145 @@
   };
 
   Redirect = {
-    thread: {},
-    post: {},
-    file: {},
+    data: {
+      thread: {},
+      post: {},
+      file: {}
+    },
     init: function() {
-      var archive, arr, boardID, data, id, name, type, _i, _len, _ref, _ref1, _ref2, _ref3;
+      var archive, boardID, boards, data, id, name, type, _i, _len, _ref, _ref1, _ref2;
       _ref = Conf['selectedArchives'];
       for (boardID in _ref) {
         data = _ref[boardID];
         for (type in data) {
           id = data[type];
-          _ref1 = Redirect.archives;
-          for (name in _ref1) {
-            archive = _ref1[name];
-            if (name !== id || type === 'post' && archive.software !== 'foolfuuka') {
+          if (archive = Redirect.archives[id]) {
+            boards = archive[type] || archive['boards'];
+            if (!boards.contains(boardID)) {
               continue;
             }
-            arr = type === 'file' ? archive.files : archive.boards;
-            if (arr.contains(boardID)) {
-              Redirect[type][boardID] = archive;
-            }
+            Redirect.data[type][boardID] = archive;
           }
         }
       }
-      _ref2 = Redirect.archives;
-      for (name in _ref2) {
-        archive = _ref2[name];
-        _ref3 = archive.boards;
-        for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
-          boardID = _ref3[_i];
-          if (!(boardID in Redirect.thread)) {
-            Redirect.thread[boardID] = archive;
+      _ref1 = Redirect.archives;
+      for (name in _ref1) {
+        archive = _ref1[name];
+        _ref2 = archive.boards;
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          boardID = _ref2[_i];
+          if (!(boardID in Redirect.data.thread)) {
+            Redirect.data.thread[boardID] = archive;
           }
-          if (!(boardID in Redirect.post || archive.software !== 'foolfuuka')) {
-            Redirect.post[boardID] = archive;
+          if (!(boardID in Redirect.data.post || archive.software !== 'foolfuuka')) {
+            Redirect.data.post[boardID] = archive;
           }
-          if (!(boardID in Redirect.file || !archive.files.contains(boardID))) {
-            Redirect.file[boardID] = archive;
+          if (!(boardID in Redirect.data.file || !archive.files.contains(boardID))) {
+            Redirect.data.file[boardID] = archive;
           }
         }
       }
     },
     archives: {
-      'Foolz': {
-        'domain': 'archive.foolz.us',
-        'http': false,
-        'https': true,
-        'software': 'foolfuuka',
-        'boards': ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'],
-        'files': ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg']
-      },
-      'NSFW Foolz': {
-        'domain': 'nsfw.foolz.us',
-        'http': false,
-        'https': true,
-        'software': 'foolfuuka',
-        'boards': ['u'],
-        'files': ['u']
-      },
-      'The Dark Cave': {
-        'domain': 'archive.thedarkcave.org',
-        'http': true,
-        'https': true,
-        'software': 'foolfuuka',
-        'boards': ['c', 'int', 'out', 'po'],
-        'files': ['c', 'po']
-      },
       '4plebs': {
-        'domain': 'archive.4plebs.org',
-        'http': true,
-        'software': 'foolfuuka',
-        'boards': ['hr', 'tg', 'tv', 'x'],
-        'files': ['hr', 'tg', 'tv', 'x']
+        domain: 'archive.4plebs.org',
+        http: true,
+        software: 'foolfuuka',
+        boards: ['hr', 'tg', 'tv', 'x'],
+        files: ['hr', 'tg', 'tv', 'x']
       },
-      'Nyafuu': {
-        'domain': 'archive.nyafuu.org',
-        'http': true,
-        'https': true,
-        'software': 'foolfuuka',
-        'boards': ['c', 'w', 'wg'],
-        'files': ['c', 'w', 'wg']
+      'fap archive': {
+        domain: 'fuuka.worldathleticproject.org',
+        http: true,
+        https: false,
+        software: 'foolfuuka',
+        boards: ['b', 'e', 'h', 'hc', 'p', 's', 'u'],
+        files: ['b', 'e', 'h', 'hc', 'p', 's', 'u']
+      },
+      'Foolz': {
+        domain: 'archive.foolz.us',
+        http: false,
+        https: true,
+        software: 'foolfuuka',
+        boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'],
+        files: ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg']
       },
       'Foolz a Shit': {
-        'domain': 'archive.foolzashit.com',
-        'http': true,
-        'https': true,
-        'software': 'foolfuuka',
-        'boards': ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv'],
-        'files': ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
+        domain: 'archive.foolzashit.com',
+        http: true,
+        https: true,
+        software: 'foolfuuka',
+        boards: ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv'],
+        files: ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
       },
-      'World Athletic Project': {
-        'domain': 'fuuka.worldathleticproject.org',
-        'http': true,
-        'https': false,
-        'software': 'foolfuuka',
-        'boards': ['e', 'h', 'hc', 'p', 's', 'u'],
-        'files': ['e', 'h', 'hc', 'p', 's', 'u']
-      },
-      'Install Gentoo': {
-        'domain': 'archive.installgentoo.net',
-        'http': false,
-        'https': true,
-        'software': 'fuuka',
-        'boards': ['diy', 'g', 'sci'],
-        'files': []
-      },
-      'warosu': {
-        'domain': 'fuuka.warosu.org',
-        'http': true,
-        'https': true,
-        'software': 'fuuka',
-        'boards': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr'],
-        'files': ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
-      },
-      'Rebecca Black Tech': {
-        'domain': 'rbt.asia',
-        'http': true,
-        'https': true,
-        'software': 'fuuka',
-        'boards': ['cgl', 'g', 'mu', 'w'],
-        'files': ['cgl', 'g', 'mu', 'w']
+      'Foolz Beta': {
+        domain: 'beta.foolz.us',
+        http: true,
+        https: true,
+        withCredentials: true,
+        software: 'foolfuuka',
+        boards: ['a', 'co', 'gd', 'h', 'jp', 'm', 'mlp', 'q', 'sp', 'tg', 'tv', 'u', 'v', 'vg', 'vp', 'vr', 'wsg'],
+        files: ['a', 'gd', 'h', 'jp', 'm', 'q', 'tg', 'u', 'vg', 'vp', 'vr', 'wsg']
       },
       'Heinessen': {
-        'domain': 'archive.heinessen.com',
-        'http': true,
-        'software': 'fuuka',
-        'boards': ['an', 'fit', 'k', 'mlp', 'r9k', 'toy'],
-        'files': ['an', 'k', 'toy']
+        domain: 'archive.heinessen.com',
+        http: true,
+        software: 'fuuka',
+        boards: ['an', 'fit', 'k', 'mlp', 'r9k', 'toy'],
+        files: ['an', 'k', 'toy']
+      },
+      'Install Gentoo': {
+        domain: 'archive.installgentoo.net',
+        http: false,
+        https: true,
+        software: 'fuuka',
+        boards: ['diy', 'g', 'sci'],
+        files: []
+      },
+      'NSFW Foolz': {
+        domain: 'nsfw.foolz.us',
+        http: false,
+        https: true,
+        software: 'foolfuuka',
+        boards: ['u'],
+        files: ['u']
+      },
+      'Nyafuu': {
+        domain: 'archive.nyafuu.org',
+        http: true,
+        https: true,
+        software: 'foolfuuka',
+        boards: ['c', 'w', 'wg'],
+        files: ['c', 'w', 'wg']
+      },
+      'Rebecca Black Tech': {
+        domain: 'rbt.asia',
+        http: true,
+        https: true,
+        software: 'fuuka',
+        boards: ['cgl', 'g', 'mu', 'w'],
+        files: ['cgl', 'g', 'mu', 'w']
+      },
+      'The Dark Cave': {
+        domain: 'archive.thedarkcave.org',
+        http: true,
+        https: true,
+        software: 'foolfuuka',
+        boards: ['c', 'int', 'out', 'po'],
+        files: ['c', 'po']
+      },
+      'warosu': {
+        domain: 'fuuka.warosu.org',
+        http: true,
+        https: true,
+        software: 'fuuka',
+        boards: ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr'],
+        files: ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
       }
     },
     to: function(dest, data) {
       var archive;
-      archive = (dest === 'search' ? Redirect.thread : Redirect[dest])[data.boardID];
+      archive = (dest === 'search' ? Redirect.data.thread : Redirect.data[dest])[data.boardID];
       if (!archive) {
         return '';
       }
@@ -7781,13 +8009,15 @@
       return "" + (Redirect.protocol(archive)) + archive.domain + "/" + path;
     },
     post: function(archive, _arg) {
-      var boardID, postID, protocol;
+      var URL, boardID, postID, protocol;
       boardID = _arg.boardID, postID = _arg.postID;
       protocol = Redirect.protocol(archive);
       if (['Foolz', 'NSFW Foolz'].contains(archive.name)) {
         protocol = 'https://';
       }
-      return "" + protocol + archive.domain + "/_/api/chan/post/?board=" + boardID + "&num=" + postID;
+      URL = new String("" + protocol + archive.domain + "/_/api/chan/post/?board=" + boardID + "&num=" + postID);
+      URL.archive = archive;
+      return URL;
     },
     file: function(archive, _arg) {
       var boardID, filename;
@@ -7929,19 +8159,18 @@
         return;
       }
       return Post.prototype.callbacks.push({
-        name: 'Reveal Spoilers',
+        name: 'Color User IDs',
         cb: this.node
       });
     },
-    node: function(post) {
+    node: function() {
       var str, uid;
-      if (!(uid = $('.hand', this.nodes.uniqueID))) {
+      str = this.info.uniqueID;
+      uid = $('.hand', this.nodes.uniqueID);
+      if (!(str && uid && uid.nodeName === 'SPAN')) {
         return;
       }
-      str = this.info.uniqueID;
-      if (uid.nodeName === 'SPAN') {
-        return uid.style.cssText = IDColor.apply.call(str);
-      }
+      return uid.style.cssText = IDColor.css(IDColor.ids[str] || IDColor.compute(str));
     },
     ids: {},
     compute: function(str) {
@@ -7952,10 +8181,8 @@
       this.ids[str] = rgb;
       return rgb;
     },
-    apply: function() {
-      var rgb;
-      rgb = IDColor.ids[this] || IDColor.compute(this);
-      return ("background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: ") + (rgb[3] ? "black; border-radius: 3px; padding: 0px 2px;" : "white; border-radius: 3px; padding: 0px 2px;");
+    css: function(rgb) {
+      return "background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: " + (rgb[3] ? "black;" : "white;") + " border-radius: 3px; padding: 0px 2px;";
     },
     hash: function(str) {
       var i, j, msg;
@@ -7991,6 +8218,26 @@
         this.addStyle();
       }
       return this.style.textContent = Conf['usercss'];
+    }
+  };
+
+  Dice = {
+    init: function() {
+      if (g.BOARD.ID !== 'tg' || g.VIEW === 'catalog' || !Conf['Show Dice Roll']) {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Show Dice Roll',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var dicestats, roll, _ref;
+      if (this.isClone || !(dicestats = (_ref = this.info.email) != null ? _ref.match(/dice[+\s](\d+)d(\d+)/) : void 0)) {
+        return;
+      }
+      roll = $('b', this.nodes.comment).firstChild;
+      return roll.data = "Rolled " + dicestats[1] + "d" + dicestats[2] + ": " + (roll.data.slice(7));
     }
   };
 
@@ -8159,31 +8406,32 @@
       });
     },
     node: function() {
-      var a, span;
-      if (!(span = $('.summary', this.OP.nodes.root.parentNode))) {
+      var a, files, posts, span, _ref;
+      if (!(span = $.x('following-sibling::span[contains(@class,"summary")][1]', this.OP.nodes.root))) {
         return;
       }
+      _ref = span.textContent.match(/\d+/g), posts = _ref[0], files = _ref[1];
       a = $.el('a', {
-        textContent: "+ " + span.textContent,
+        textContent: ExpandThread.text('+', posts, files),
         className: 'summary',
         href: 'javascript:;'
       });
       $.on(a, 'click', ExpandThread.cbToggle);
       return $.replace(span, a);
     },
+    text: function(status, posts, files) {
+      return ("" + status + " " + posts + " post" + (posts > 1 ? 's' : '')) + (+files ? " and " + files + " image repl" + (files > 1 ? 'ies' : 'y') : "") + (" " + (status === '-' ? 'shown' : 'omitted') + ".");
+    },
     cbToggle: function() {
-      var op;
-      op = Get.postFromRoot(this.previousElementSibling);
-      return ExpandThread.toggle(op.thread);
+      return ExpandThread.toggle(Get.threadFromRoot(this.parentNode));
     },
     toggle: function(thread) {
-      var a, inlined, num, post, replies, reply, threadRoot, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+      var a, files, filesCount, inlined, num, post, posts, postsCount, reply, threadRoot, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
       threadRoot = thread.OP.nodes.root.parentNode;
       a = $('.summary', threadRoot);
       switch (thread.isExpanded) {
         case false:
         case void 0:
-          thread.isExpanded = 'loading';
           _ref = $$('.thread > .postContainer', threadRoot);
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             post = _ref[_i];
@@ -8194,7 +8442,8 @@
             return;
           }
           thread.isExpanded = 'loading';
-          a.textContent = a.textContent.replace('+', '...');
+          _ref1 = a.textContent.match(/\d+/g), posts = _ref1[0], files = _ref1[1];
+          a.textContent = ExpandThread.text('...', posts, files);
           $.cache("//api.4chan.org/" + thread.board + "/res/" + thread + ".json", function() {
             return ExpandThread.parse(this, thread, a);
           });
@@ -8204,83 +8453,98 @@
           if (!a) {
             return;
           }
-          a.textContent = a.textContent.replace('...', '+');
+          _ref2 = a.textContent.match(/\d+/g), posts = _ref2[0], files = _ref2[1];
+          a.textContent = ExpandThread.text('+', posts, files);
           break;
         case true:
           thread.isExpanded = false;
-          if (a) {
-            a.textContent = a.textContent.replace('-', '+').replace('hide', 'view').replace('expanded', 'omitted');
-            num = (function() {
-              if (thread.isSticky) {
-                return 1;
-              } else {
-                switch (g.BOARD.ID) {
-                  case 'b':
-                  case 'vg':
-                  case 'q':
-                    return 3;
-                  case 't':
-                    return 1;
-                  default:
-                    return 5;
-                }
+          num = (function() {
+            if (thread.isSticky) {
+              return 1;
+            } else {
+              switch (g.BOARD.ID) {
+                case 'b':
+                case 'vg':
+                case 'q':
+                  return 3;
+                case 't':
+                  return 1;
+                default:
+                  return 5;
               }
-            })();
-            replies = $$('.thread > .replyContainer', threadRoot).slice(0, -num);
-            for (_j = 0, _len1 = replies.length; _j < _len1; _j++) {
-              reply = replies[_j];
-              if (Conf['Quote Inlining']) {
-                while (inlined = $('.inlined', reply)) {
-                  inlined.click();
-                }
-              }
-              $.rm(reply);
             }
-          }
-          _ref1 = $$('.thread > .postContainer', threadRoot);
-          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-            post = _ref1[_k];
+          })();
+          posts = $$(".thread > .replyContainer", threadRoot);
+          _ref3 = [thread.OP.nodes.root].concat(posts.slice(-num));
+          for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
+            post = _ref3[_j];
             ExpandComment.contract(Get.postFromRoot(post));
           }
+          if (!a) {
+            return;
+          }
+          postsCount = 0;
+          filesCount = 0;
+          _ref4 = posts.slice(0, -num);
+          for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
+            reply = _ref4[_k];
+            if (Conf['Quote Inlining']) {
+              while (inlined = $('.inlined', reply)) {
+                inlined.click();
+              }
+            }
+            postsCount++;
+            if ('file' in Get.postFromRoot(reply)) {
+              filesCount++;
+            }
+            $.rm(reply);
+          }
+          a.textContent = ExpandThread.text('+', postsCount, filesCount);
       }
     },
     parse: function(req, thread, a) {
-      var link, node, nodes, post, posts, replies, reply, spoilerRange, status, _i, _len;
+      var filesCount, link, post, posts, postsCount, postsObj, postsRoot, reply, root, spoilerRange, _i, _len;
       if (a.textContent[0] === '+') {
         return;
       }
-      status = req.status;
-      if (![200, 304].contains(status)) {
-        a.textContent = "Error " + req.statusText + " (" + status + ")";
-        $.off(a, 'click', ExpandThread.cb.toggle);
+      if (![200, 304].contains(req.status)) {
+        a.textContent = "Error " + req.statusText + " (" + req.status + ")";
+        $.off(a, 'click', ExpandThread.cbToggle);
         return;
       }
       thread.isExpanded = true;
-      a.textContent = a.textContent.replace('...', '-').replace('view', 'hide').replace('omitted', 'expanded');
       posts = JSON.parse(req.response).posts;
-      if (spoilerRange = posts[0].custom_spoiler) {
-        Build.spoilerRange[g.BOARD] = spoilerRange;
+      if (spoilerRange = posts.shift().custom_spoiler) {
+        Build.spoilerRange[thread.board] = spoilerRange;
       }
-      replies = posts.slice(1);
-      posts = [];
-      nodes = [];
-      for (_i = 0, _len = replies.length; _i < _len; _i++) {
-        reply = replies[_i];
+      postsObj = [];
+      postsRoot = [];
+      filesCount = 0;
+      for (_i = 0, _len = posts.length; _i < _len; _i++) {
+        reply = posts[_i];
         if (post = thread.posts[reply.no]) {
-          nodes.push(post.nodes.root);
+          if ('file' in post) {
+            filesCount++;
+          }
+          postsRoot.push(post.nodes.root);
           continue;
         }
-        node = Build.postFromObject(reply, thread.board.ID);
-        post = new Post(node, thread, thread.board);
-        link = $('a[title="Highlight this post"]', node);
+        root = Build.postFromObject(reply, thread.board.ID);
+        post = new Post(root, thread, thread.board);
+        link = $('a[title="Highlight this post"]', root);
         link.href = "res/" + thread + "#p" + post;
         link.nextSibling.href = "res/" + thread + "#q" + post;
-        posts.push(post);
-        nodes.push(node);
+        if ('file' in post) {
+          filesCount++;
+        }
+        postsObj.push(post);
+        postsRoot.push(root);
       }
-      Main.callbackNodes(Post, posts);
-      $.after(a, nodes);
-      return Fourchan.parseThread(thread.ID, 1, nodes.length);
+      Main.callbackNodes(Post, postsObj);
+      $.after(a, postsRoot);
+      postsCount = postsRoot.length;
+      a.textContent = ExpandThread.text('-', postsCount, filesCount);
+      return Fourchan.parseThread(thread.ID, 1, postsCount);
     }
   };
 
@@ -8586,13 +8850,13 @@
           }
           break;
         case Conf['Next thread']:
-          if (g.VIEW === 'thread') {
+          if (g.VIEW !== 'index') {
             return;
           }
           Nav.scroll(+1);
           break;
         case Conf['Previous thread']:
-          if (g.VIEW === 'thread') {
+          if (g.VIEW !== 'index') {
             return;
           }
           Nav.scroll(-1);
@@ -8619,6 +8883,12 @@
           if (g.VIEW === 'index') {
             ThreadHiding.toggle(thread);
           }
+          break;
+        case Conf['Previous Post Quoting You']:
+          QuoteYou.cb.seek('preceding');
+          break;
+        case Conf['Next Post Quoting You']:
+          QuoteYou.cb.seek('following');
           break;
         default:
           return;
@@ -8855,10 +9125,9 @@
       var i, rect, thread, threads, top, topMargin, _ref, _ref1;
       _ref = Nav.getThread(true), threads = _ref[0], thread = _ref[1], i = _ref[2], rect = _ref[3], topMargin = _ref[4];
       top = rect.top - topMargin;
-      if (!((delta === -1 && Math.ceil(top) < 0) || (delta === +1 && top > 1))) {
-        i += delta;
+      if ((delta === -1 && top > -5) || (delta === +1 && top < 5)) {
+        top = ((_ref1 = threads[i + delta]) != null ? _ref1.getBoundingClientRect().top : void 0) - topMargin;
       }
-      top = ((_ref1 = threads[i]) != null ? _ref1.getBoundingClientRect().top : void 0) - topMargin;
       return window.scrollBy(0, top);
     }
   };
@@ -8969,7 +9238,7 @@
 
   Report = {
     init: function() {
-      if (!(/report/.test(location.search) && d.cookie.indexOf('pass_enabled=1') === -1)) {
+      if (!(/report/.test(location.search) && !d.cookie.contains('pass_enabled=1'))) {
         return;
       }
       return $.asap((function() {
@@ -8993,73 +9262,6 @@
         }
         return this.submit();
       });
-    }
-  };
-
-  Sauce = {
-    init: function() {
-      var err, link, links, _i, _len, _ref;
-      if (g.VIEW === 'catalog' || !Conf['Sauce']) {
-        return;
-      }
-      links = [];
-      _ref = Conf['sauces'].split('\n');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        link = _ref[_i];
-        if (link[0] === '#') {
-          continue;
-        }
-        try {
-          links.push(this.createSauceLink(link.trim()));
-        } catch (_error) {
-          err = _error;
-          continue;
-        }
-      }
-      if (!links.length) {
-        return;
-      }
-      this.links = links;
-      this.link = $.el('a', {
-        target: '_blank'
-      });
-      return Post.prototype.callbacks.push({
-        name: 'Sauce',
-        cb: this.node
-      });
-    },
-    createSauceLink: function(link) {
-      var m, text;
-      link = link.replace(/%(T?URL|MD5|board)/ig, function(parameter) {
-        switch (parameter) {
-          case '%TURL':
-            return "' + encodeURIComponent(post.file.thumbURL) + '";
-          case '%URL':
-            return "' + encodeURIComponent(post.file.URL) + '";
-          case '%MD5':
-            return "' + encodeURIComponent(post.file.MD5) + '";
-          case '%board':
-            return "' + encodeURIComponent(post.board) + '";
-          default:
-            return parameter;
-        }
-      });
-      text = (m = link.match(/;text:(.+)$/)) ? m[1] : link.match(/(\w+)\.\w+\//)[1];
-      link = link.replace(/;text:.+$/, '');
-      return Function('post', 'a', "a.href = '" + link + "';\na.textContent = '" + text + "';\nreturn a;");
-    },
-    node: function() {
-      var link, nodes, _i, _len, _ref;
-      if (this.isClone || !this.file) {
-        return;
-      }
-      nodes = [];
-      _ref = Sauce.links;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        link = _ref[_i];
-        nodes.push($.tn('\u00A0'), link(this, Sauce.link.cloneNode(true)));
-      }
-      return $.add(this.file.info, nodes);
     }
   };
 
@@ -9155,7 +9357,7 @@
         return Time.zeroPad(this.getSeconds());
       },
       y: function() {
-        return this.getFullYear() % 100;
+        return this.getFullYear().toString().slice(2);
       },
       Y: function() {
         return this.getFullYear();
@@ -9500,14 +9702,13 @@
         _ref = Config.hotkeys;
         for (key in _ref) {
           val = _ref[key];
-          if (!(key in data.Conf)) {
-            continue;
+          if (key in data.Conf) {
+            data.Conf[key] = data.Conf[key].replace(/ctrl|alt|meta/g, function(s) {
+              return "" + (s[0].toUpperCase()) + s.slice(1);
+            }).replace(/(^|.+\+)[A-Z]$/g, function(s) {
+              return "Shift+" + s.slice(0, -1) + (s.slice(-1).toLowerCase());
+            });
           }
-          data.Conf[key] = data.Conf[key].replace(/ctrl|alt|meta/g, function(s) {
-            return "" + (s[0].toUpperCase()) + s.slice(1);
-          }).replace(/(^|.+\+)[A-Z]$/g, function(s) {
-            return "Shift+" + s.slice(0, -1) + (s.slice(-1).toLowerCase());
-          });
         }
         data.Conf.WatchedThreads = data.WatchedThreads;
       } else if (version[0] === '3') {
@@ -9555,7 +9756,7 @@
         $.add(div, ta);
         return;
       }
-      return div.innerHTML = "  <div class=warning " + (Conf['Filter'] ? 'hidden' : '') + "><code>Filter</code> is disabled.</div><p>\nUse <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>\nLines starting with a <code>#</code> will be ignored.<br>\nFor example, <code>/weeaboo/i</code> will filter posts containing the string `<code>weeaboo</code>`, case-insensitive.<br>\nMD5 filtering uses exact string matching, not regular expressions.\n</p><ul>You can use these settings with each regular expression, separate them with semicolons:\n<li>\n  Per boards, separate them with commas. It is global if not specified.<br>\n  For example: <code>boards:a,jp;</code>.\n</li><li>\n  Filter OPs only along with their threads (`only`), replies only (`no`), or both (`yes`, this is default).<br>\n  For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.\n</li><li>\n  Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>\n  For example: <code>stub:yes;</code> or <code>stub:no;</code>.\n</li><li>\n  Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>\n  For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.\n</li><li>\n  Highlighted OPs will have their threads put on top of board pages by default.<br>\n  For example: <code>top:yes;</code> or <code>top:no;</code>.\n</li></ul>";
+      return div.innerHTML = "  <div class=warning " + (Conf['Filter'] ? 'hidden' : '') + "><code>Filter</code> is disabled.</div><p>\nUse <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions\">regular expressions</a>, one per line.<br>\nLines starting with a <code>#</code> will be ignored.<br>\nFor example, <code>/weeaboo/i</code> will filter posts containing the string `<code>weeaboo</code>`, case-insensitive.<br>\nMD5 filtering uses exact string matching, not regular expressions.\n</p><ul>You can use these settings with each regular expression, separate them with semicolons:\n<li>\n  Per boards, separate them with commas. It is global if not specified.<br>\n  For example: <code>boards:a,jp;</code>.\n</li><li>\n  Filter OPs only along with their threads (`only`), replies only (`no`), or both (`yes`, this is default).<br>\n  For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.\n</li><li>\n  Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>\n  For example: <code>stub:yes;</code> or <code>stub:no;</code>.\n</li><li>\n  Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>\n  For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.\n</li><li>\n  Highlighted OPs will have their threads put on top of board pages by default.<br>\n  For example: <code>top:yes;</code> or <code>top:no;</code>.\n</li></ul>";
     },
     sauce: function(section) {
       var ta;
@@ -9823,11 +10024,11 @@
         };
       }
       Conf['selectedArchives'] = {};
+      Conf['CachedTitles'] = [];
       $.get(Conf, Main.initFeatures);
       $.on(d, '4chanMainInit', Main.initStyle);
       return $.asap((function() {
-        var _ref;
-        return d.head && $('link[rel="shortcut icon"]', d.head) || ((_ref = d.readyState) === 'interactive' || _ref === 'complete');
+        return d.head && $('link[rel="shortcut icon"]', d.head) || d.readyState !== 'loading';
       }), Main.initStyle);
     },
     initFeatures: function(items) {
@@ -9860,7 +10061,7 @@
         case 'images.4chan.org':
           $.ready(function() {
             var URL;
-            if (Conf['404 Redirect'] && d.title === '4chan - 404 Not Found') {
+            if (Conf['404 Redirect'] && ['4chan - Temporarily Offline', '4chan - 404 Not Found'].contains(d.title)) {
               Redirect.init();
               pathname = location.pathname.split('/');
               URL = Redirect.to('file', {
@@ -9899,7 +10100,7 @@
         'Fourchan thingies': Fourchan,
         'Emoji': Emoji,
         'Color User IDs': IDColor,
-        'Remove Spoilers': RemoveSpoilers,
+        'Reveal Spoilers': RemoveSpoilers,
         'Custom CSS': CustomCSS,
         'Linkify': Linkify,
         'Resurrect Quotes': Quotify,
@@ -9931,7 +10132,7 @@
         'Sauce': Sauce,
         'Image Expansion': ImageExpand,
         'Image Expansion (Menu)': ImageExpand.menu,
-        'Reveal Spoilers': RevealSpoilers,
+        'Reveal Spoiler Thumbnails': RevealSpoilers,
         'Image Loading': ImageLoader,
         'Image Hover': ImageHover,
         'Comment Expansion': ExpandComment,
@@ -9944,13 +10145,14 @@
         'Thread Updater': ThreadUpdater,
         'Thread Watcher': ThreadWatcher,
         'Index Navigation': Nav,
-        'Keybinds': Keybinds
+        'Keybinds': Keybinds,
+        'Show Dice Roll': Dice
       });
       $.on(d, 'AddCallback', Main.addCallback);
       return $.ready(Main.initReady);
     },
     initStyle: function() {
-      var mainStyleSheet, observer, setStyle, style, styleSheets, _ref;
+      var mainStyleSheet, setStyle, style, styleSheets, _ref;
       $.off(d, '4chanMainInit', Main.initStyle);
       if (!Main.isThisPageLegit() || $.hasClass(doc, 'fourchan-x')) {
         return;
@@ -9985,18 +10187,13 @@
       if (!mainStyleSheet) {
         return;
       }
-      if (window.MutationObserver) {
-        observer = new MutationObserver(setStyle);
-        return observer.observe(mainStyleSheet, {
-          attributes: true,
-          attributeFilter: ['href']
-        });
-      } else {
-        return $.on(mainStyleSheet, 'DOMAttrModified', setStyle);
-      }
+      return new MutationObserver(setStyle).observe(mainStyleSheet, {
+        attributes: true,
+        attributeFilter: ['href']
+      });
     },
     initReady: function() {
-      var board, boardChild, err, errors, href, passLink, posts, styleSelector, thread, threadChild, threads, _i, _j, _len, _len1, _ref, _ref1;
+      var board, err, errors, href, passLink, postRoot, posts, styleSelector, thread, threadRoot, threads, _i, _j, _len, _len1, _ref, _ref1;
       if (d.title === '4chan - 404 Not Found') {
         if (Conf['404 Redirect'] && g.VIEW === 'thread') {
           href = Redirect.to('thread', {
@@ -10014,29 +10211,23 @@
       if (board = $('.board')) {
         threads = [];
         posts = [];
-        _ref = board.children;
+        _ref = $$('.board > .thread', board);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          boardChild = _ref[_i];
-          if (!$.hasClass(boardChild, 'thread')) {
-            continue;
-          }
-          thread = new Thread(boardChild.id.slice(1), g.BOARD);
+          threadRoot = _ref[_i];
+          thread = new Thread(+threadRoot.id.slice(1), g.BOARD);
           threads.push(thread);
-          _ref1 = boardChild.children;
+          _ref1 = $$('.thread > .postContainer', threadRoot);
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            threadChild = _ref1[_j];
-            if (!$.hasClass(threadChild, 'postContainer')) {
-              continue;
-            }
+            postRoot = _ref1[_j];
             try {
-              posts.push(new Post(threadChild, thread, g.BOARD));
+              posts.push(new Post(postRoot, thread, g.BOARD));
             } catch (_error) {
               err = _error;
               if (!errors) {
                 errors = [];
               }
               errors.push({
-                message: "Parsing of Post No." + (threadChild.id.match(/\d+/)) + " failed. Post will be skipped.",
+                message: "Parsing of Post No." + (postRoot.id.match(/\d+/)) + " failed. Post will be skipped.",
                 error: err
               });
             }
@@ -10248,11 +10439,11 @@
     isThisPageLegit: function() {
       var _ref;
       if (!('thisPageIsLegit' in Main)) {
-        Main.thisPageIsLegit = location.hostname === 'boards.4chan.org' && !$('link[href*="favicon-status.ico"]', d.head) && ((_ref = d.title) !== '4chan - Temporarily Offline' && _ref !== '4chan - Error');
+        Main.thisPageIsLegit = location.hostname === 'boards.4chan.org' && !$('link[href*="favicon-status.ico"]', d.head) && ((_ref = d.title) !== '4chan - Temporarily Offline' && _ref !== '4chan - Error' && _ref !== '504 Gateway Time-out');
       }
       return Main.thisPageIsLegit;
     },
-    css: "/* General */\n.dialog {\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder: 1px solid;\ndisplay: block;\npadding: 0;\n}\n.captcha-img,\n.field {\nbackground-color: #FFF;\nborder: 1px solid #CCC;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncolor: #333;\nfont: 13px sans-serif;\noutline: none;\ntransition: color .25s, border-color .25s;\ntransition: color .25s, border-color .25s;\n}\n.field::-moz-placeholder,\n.field:hover::-moz-placeholder {\ncolor: #AAA !important;\nfont-size: 13px !important;\nopacity: 1.0 !important;\n}\n.captch-img:hover,\n.field:hover {\nborder-color: #999;\n}\n.field:hover, .field:focus {\ncolor: #000;\n}\n.field[disabled] {\nbackground-color: #F2F2F2;\ncolor: #888;\n}\n.move {\ncursor: move;\noverflow: hidden;\n}\nlabel, .favicon {\ncursor: pointer;\n}\na[href=\"javascript:;\"] {\ntext-decoration: none;\n}\n.warning {\ncolor: red;\n}\n#boardNavDesktop {\ndisplay: none !important;\n}\na {\noutline: none !important;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\ndisplay: block !important;\noverflow: visible !important;\n}\n[hidden] {\ndisplay: none !important;\n}\n\n/* fixed, z-index */\n#overlay,\n#fourchanx-settings,\n#qp, #ihover,\n#navlinks, .fixed #header-bar,\n:root.float #updater,\n:root.float #thread-stats,\n#qr {\nposition: fixed;\n}\n#fourchanx-settings {\nz-index: 999;\n}\n#overlay {\nz-index: 900;\n}\n#notifications {\nz-index: 70;\n}\n#qp, #ihover {\nz-index: 60;\n}\n#menu {\nz-index: 50;\n}\n#navlinks, #updater, #thread-stats {\nz-index: 40;\n}\n.fixed #header-bar.autohide {\nz-index: 35;\n}\n#qr {\nz-index: 30;\n}\n#watcher {\nz-index: 8;\n}\n:root.fixed-watcher #watcher {\nz-index: 20;\n}\n.fixed #header-bar {\nz-index: 10;\n}\n/* Header */\n.fixed.top body {\npadding-top: 2em;\n}\n.fixed.bottom body {\npadding-bottom: 2em;\n}\n.fixed #header-bar {\nright: 0;\nleft: 0;\npadding: 3px 4px 4px;\n}\n.fixed.top #header-bar {\ntop: 0;\n}\n.fixed.bottom #header-bar {\nbottom: 0;\n}\n#header-bar {\nborder-width: 0;\ntransition: all .1s .05s ease-in-out;\n}\n:root.centered-links #shortcuts {\nwidth: 300px;\ntext-align: right;\n}\n:root.centered-links #header-bar {\ntext-align: center;\n}\n:root.centered-links #custom-board-list {\nposition: relative;\nleft: 150px;\n}\n.fixed.top #header-bar {\nborder-bottom-width: 1px;\n}\n.fixed.bottom #header-bar {\nbox-shadow: 0 -1px 2px rgba(0, 0, 0, .15);\nborder-top-width: 1px;\n}\n.fixed.bottom #header-bar .menu-button i {\nborder-top: none;\nborder-bottom: 6px solid;\n}\n#board-list {\ntext-align: center;\n}\n.fixed #header-bar.autohide:not(:hover) {\nbox-shadow: none;\ntransition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #header-bar.autohide:not(:hover) {\nmargin-bottom: -1em;\n-webkit-transform: translateY(-100%);\ntransform: translateY(-100%);\n}\n.fixed.bottom #header-bar.autohide:not(:hover) {\n-webkit-transform: translateY(100%);\ntransform: translateY(100%);\n}\n#scroll-marker {\nleft: 0;\nright: 0;\nheight: 10px;\nposition: absolute;\n}\n:root:not(.autohide) #scroll-marker {\npointer-events: none;\n}\n#header-bar #scroll-marker {\ndisplay: none;\n}\n.fixed #header-bar #scroll-marker {\ndisplay: block;\n}\n.fixed.top #header-bar #scroll-marker {\ntop: 100%;\n}\n.fixed.bottom #header-bar #scroll-marker {\nbottom: 100%;\n}\n#header-bar a:not(.entry):not(.close) {\ntext-decoration: none;\npadding: 1px;\n}\n#header-bar input {\nmargin: 0;\nvertical-align: bottom;\n}\n#shortcuts:empty {\ndisplay: none;\n}\n.brackets-wrap::before {\ncontent: \"\\00a0[\";\n}\n.brackets-wrap::after {\ncontent: \"]\\00a0\";\n}\n.disabled,\n.expand-all-shortcut {\nopacity: .45;\n}\n#shortcuts {\nfloat: right;\n}\n.shortcut {\nmargin-left: 3px;\n}\n#navbotright,\n#navtopright {\ndisplay: none;\n}\n#toggleMsgBtn {\ndisplay: none !important;\n}\n.current {\nfont-weight: bold;\n}\n/* 4chan X link brackets */\n.fourchanx-link::after {\ncontent: \"]\";\n}\n.fourchanx-link::before {\ncontent: \"[\";\n}\n/* Notifications */\n#notifications {\nposition: fixed;\ntop: 0;\nheight: 0;\ntext-align: center;\nright: 0;\nleft: 0;\ntransition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #header-bar #notifications {\nposition: absolute;\ntop: 100%;\n}\n.notification {\ncolor: #FFF;\nfont-weight: 700;\ntext-shadow: 0 1px 2px rgba(0, 0, 0, .5);\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder-radius: 2px;\nmargin: 1px auto;\nwidth: 500px;\nmax-width: 100%;\nposition: relative;\ntransition: all .25s ease-in-out;\n}\n.notification.error {\nbackground-color: hsla(0, 100%, 38%, .9);\n}\n.notification.warning {\nbackground-color: hsla(36, 100%, 38%, .9);\n}\n.notification.info {\nbackground-color: hsla(200, 100%, 38%, .9);\n}\n.notification.success {\nbackground-color: hsla(104, 100%, 38%, .9);\n}\n.notification a {\ncolor: white;\n}\n.notification > .close {\npadding: 6px;\ntop: 0;\nright: 5px;\nposition: absolute;\n}\n.message {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 6px 20px;\nmax-height: 200px;\nwidth: 100%;\noverflow: auto;\n}\n\n/* Settings */\n:root.fourchan-x body {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\n}\n#overlay {\nbackground-color: rgba(0, 0, 0, .5);\ntop: 0;\nleft: 0;\nheight: 100%;\nwidth: 100%;\n}\n#fourchanx-settings {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nbox-shadow: 0 0 15px rgba(0, 0, 0, .15);\nheight: 600px;\nmin-height: 0;\nmax-height: 100%;\nwidth: 900px;\nmin-width: 0;\nmax-width: 100%;\nmargin: auto;\npadding: 3px;\ntop: 50%;\nleft: 50%;\n-moz-transform: translate(-50%, -50%);\n-webkit-transform: translate(-50%, -50%);\n-o-transform: translate(-50%, -50%);\ntransform: translate(-50%, -50%);\n}\n#fourchanx-settings > nav {\npadding: 2px 2px 0;\nheight: 15px;\n}\n#fourchanx-settings > nav a {\ntext-decoration: underline;\n}\n#fourchanx-settings > nav a.close {\ntext-decoration: none;\npadding: 2px;\n}\n.section-container {\noverflow: auto;\nposition: absolute;\ntop: 2.1em;\nright: 5px;\nbottom: 5px;\nleft: 5px;\npadding-right: 5px;\n}\n.sections-list {\npadding: 0 3px;\nfloat: left;\n}\n.credits {\nfloat: right;\n}\n.tab-selected {\nfont-weight: 700;\n}\n.section-sauce ul,\n.section-advanced ul {\nlist-style: none;\nmargin: 0;\n}\n.section-sauce ul {\npadding: 8px;\n}\n.section-advanced ul {\npadding: 0px;\n}\n.section-sauce li,\n.section-advanced li {\npadding-left: 4px;\n}\n.section-main label {\ntext-decoration: underline;\n}\n.section-filter ul {\npadding: 0;\n}\n.section-filter li {\nmargin: 10px 40px;\n}\n.section-filter textarea {\nheight: 500px;\n}\n.section-sauce textarea {\nheight: 350px;\n}\n.section-advanced .field[name=\"boardnav\"] {\nwidth: 100%;\n}\n.section-advanced textarea {\nheight: 150px;\n}\n.section-advanced .archive-cell {\nmin-width: 160px;\ntext-align: center;\n}\n.section-advanced #archive-board-select {\nposition: absolute;\n}\n.section-advanced .note {\nfont-size: 0.8em; \nfont-style: italic; \nmargin-left: 10px;\n}\n.section-advanced .note code {\nfont-style: normal;\nfont-size: 11px;\n}\n#fourchanx-settings fieldset {\nborder: 1px solid;\nborder-radius: 3px;\n}\n#fourchanx-settings legend {\nfont-weight: 700;\n}\n#fourchanx-settings textarea {\nfont-family: monospace;\nmin-width: 100%;\nmax-width: 100%;\n}\n#fourchanx-settings code {\ncolor: #000;\nbackground-color: #FFF;\npadding: 0 2px;\n}\n.unscroll {\noverflow: hidden;\n}\n\n/* Announcement Hiding */\n:root.hide-announcement #globalMessage {\ndisplay: none;\n}\na.hide-announcement {\nfloat: left;\n}\n\n/* Unread */\n#unread-line {\nmargin: 0;\nborder-color: rgb(255,0,0);\n}\n\n/* Thread Updater */\n#updater {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n#updater > .move {\npadding: 5px 3px 0px;\nmargin-bottom: -3px;\n}\n#updater > div:last-child {\ntext-align: center;\n}\n#updater input[type=number] {\nwidth: 4em;\n}\n:root.float #updater {\npadding: 0px 3px;\n}\n.new {\ncolor: limegreen;\n}\n#update-status.new {\nmargin-right: 5px;\n}\n#update-timer {\ncursor: pointer;\n}\n\n/* Thread Watcher */\n#watcher {\nposition: absolute;\n}\n#watcher {\npadding-bottom: 3px;\noverflow: hidden;\nwhite-space: nowrap;\nmin-width: 120px;\nmax-height: 92%;\noverflow-y: auto;\n}\n:root.fixed-watcher #watcher {\nposition: fixed;\n}\n:root:not(.fixed-watcher) #watcher:not(:hover) {\nmax-height: 210px;\noverflow-y: hidden;\n}\n#watcher > .move {\npadding-top: 3px;\n}\n#watcher > div {\nmax-width: 250px;\noverflow: hidden;\npadding-left: 3px;\npadding-right: 3px;\ntext-overflow: ellipsis;\n}\n#watcher a {\ntext-decoration: none;\n}\n#watcher .move>.close {\nposition: absolute;\nright: 0px;\ntop: 0px;\npadding: 0px 4px;\n}\n.watch-thread-link {\npadding-top: 18px;\nwidth: 18px;\nheight: 0px;\ndisplay: inline-block;\nbackground-repeat: no-repeat;\nopacity: 0.2;\nposition: relative;\ntop: 1px;\n}\n.watch-thread-link.watched {\nopacity: 1;\n}\n\n/* Thread Stats */\n#thread-stats {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n:root.float #post-count, :root.float #file-count {\npointer-events: none;\n}\n:root.float #thread-stats {\npadding: 0px 3px;\n}\n\n/* Quote */\n.deadlink {\ntext-decoration: none !important;\n}\n.backlink.deadlink:not(.forwardlink), .quotelink.deadlink:not(.forwardlink) {\ntext-decoration: underline !important;\n}\n.inlined {\nopacity: .5;\n}\n#qp input, .forwarded {\ndisplay: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\ntext-decoration: none;\nborder-bottom: 1px dashed;\n}\n.filtered {\ntext-decoration: underline line-through;\n}\n:root.hide-backlinks .backlink.filtered {\ndisplay: none;\n}\n.inline {\nborder: 1px solid;\ndisplay: table;\nmargin: 2px 0;\n}\n.inline .post {\nborder: 0 !important;\nbackground-color: transparent !important;\ndisplay: table !important;\nmargin: 0 !important;\npadding: 1px 2px !important;\n}\n#qp > .opContainer::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n#qp .post {\nborder: none;\nmargin: 0;\npadding: 2px 2px 5px;\n}\n#qp img {\nmax-height: 300px;\nmax-width: 500px;\nmax-height: 80vh;\nmax-width: 50vw;\n}\n.qphl {\noutline: 2px solid rgba(216, 94, 49, .7);\n}\n:root.highlight-own .yourPost>.reply,\n:root.highlight-you .quotesYou>.reply {\nborder-left: 2px solid rgba(221,0,0,.5);\n}\n/* Quote Threading */\n.threadContainer {\nmargin-left: 20px;\nborder-left: 1px solid rgba(128,128,128,.3);\n}\n.threadOP {\nclear: both;\n} \n\n/* File */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.expanded-image > .post > .file > .fileThumb > img[data-md5],\n:not(.expanded-image) > .post > .file > .fileThumb > .full-image {\ndisplay: none;\n}\n.expanding {\nopacity: .5;\n}\n:root.fit-height .full-image {\nmax-height: 100vh;\n}\n:root.fit-width .full-image {\nmax-width: 100%;\n}\n:root.gecko.fit-width .full-image,\n:root.presto.fit-width .full-image {\nwidth: 100%;\n}\n#ihover {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmax-height: 100%;\nmax-width: 75%;\npadding-bottom: 16px;\n}\n.fappeTyme  .thread > .noFile,\n.fappeTyme .threadContainer > .noFile {\ndisplay: none;\n}\n\n/* Index/Reply Navigation */\n#navlinks {\nfont-size: 16px;\ntop: 25px;\nright: 10px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n\n/* Spoiler text */\n:root.reveal-spoilers s {\ncolor: white !important;\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\nfloat: left;\nmargin-right: 2px;\n}\n.stub ~ * {\ndisplay: none !important;\n}\n.stub input {\ndisplay: inline-block;\n}\n\n/* QR */\n:root.hide-original-post-form #postForm,\n:root.hide-original-post-form .postingMode,\n:root.hide-original-post-form #togglePostForm,\n#qr.autohide:not(.has-focus):not(:hover) > form,\n.postingMode ~ #qr select,\n#file-n-submit:not(.has-file) #qr-filerm {\ndisplay: none;\n}\n#qr select, #dump-button, .remove, .captcha-img {\ncursor: pointer;\n}\n#qr {\nz-index: 20;\nposition: fixed;\npadding: 1px;\nborder: 1px solid transparent;\nmin-width: 300px;\nborder-radius: 3px 3px 0 0;\n}\n#qrtab {\nborder-radius: 3px 3px 0 0;\n}\n#qrtab {\nmargin-bottom: 1px;\n}\n#qr .close {\nfloat: right;\npadding: 0 3px;\n}\n#qr .warning {\nmin-height: 1.6em;\nvertical-align: middle;\npadding: 0 1px;\nborder-width: 1px;\nborder-style: solid;\n}\n.qr-link-container {\ntext-align: center;\n}\n.persona {\nwidth: 248px;\nmax-width: 100%;\nmin-width: 100%;\n}\n#dump-button {\nwidth: 10%;\nmargin: 0;\nmargin-right: 4px;\nfont: 13px sans-serif;\npadding: 1px 0px 2px;\nopacity: 0.6;\n}\n.persona .field:not(#dump) {\nwidth: 95px;\nmin-width: 33.3%;\nmax-width: 33.3%;\n}\n#qr textarea.field {\nheight: 14.8em;\nmin-height: 9em;\n}\n#qr.has-captcha textarea.field {\nheight: 9em;\n}\ninput.field.tripped:not(:hover):not(:focus) {\ncolor: transparent !important;  text-shadow: none !important;\n}\n#qr textarea {\nresize: both;\n}\n.captcha-img {\nmargin: 0px;\ntext-align: center;\nbackground-image: #fff;\nfont-size: 0px;\nmin-height: 59px;\nmin-width: 302px;\n}\n.captcha-input {\nwidth: 100%;\nmargin: 1px 0 0;\n}\n.captcha-input.error:focus {\nborder-color: rgb(255,0,0) !important;\n}\n.field {\n-moz-box-sizing: border-box;\nmargin: 0px;\npadding: 2px 4px 3px;\n}\n#qr textarea {\nmin-width: 100%;\n}\n#qr [type='submit'] {\nwidth: 25%;\nvertical-align: top;\n}\n:root.webkit #qr [type='submit'] {\nheight: 24px;\n}\n/* Fake File Input */\n#qr-filename,\n.has-file #qr-no-file {\ndisplay: none;\n}\n#qr-no-file,\n.has-file #qr-filename {\ndisplay: inline-block;\npadding: 0px 4px;\nmargin-bottom: 2px;\noverflow: hidden;\ntext-overflow: ellipsis;\nmax-width: 88%;\n}\n#qr-no-file {\ncolor: #AAA;\n}\n#qr-filename-container {\n-moz-box-sizing: border-box;\ndisplay: inline-block;\nposition: relative;\nwidth: 100px;\nmin-width: 74.6%;\nmax-width: 74.6%;\nmargin-right: 0.4%;\nmargin-top: 1px;\noverflow: hidden;\npadding: 2px 1px 0;\nheight: 22px;\n}\n#qr-filename-container:hover {\ncursor: text;\n}\n#qr-extras-container {\nposition: absolute;\nright: 0px;\n}\n#qr-filerm {\nmargin-right: 2px;\nz-index: 2;\n}\n#file-n-submit {\nheight: 23px;\n}\n#qr input[type=file] {\nvisibility: hidden;\nposition: absolute;\n}\n/* Thread Select / Spoiler Label */\n#qr select {\nfloat: right;\n}\n#qr.has-spoiler .has-file #qr-spoiler-label {\nwidth: 6.7%;\nmin-width: 6.7%;\nmax-width: 6.7%;\ndisplay: inline-block;\ntext-align: center;\nvertical-align: top;\n}\n#qr.has-spoiler #file-n-submit:not(.has-file) #qr-spoiler-label {\ndisplay: none;\n}\n#qr.has-spoiler .has-file #qr-filename-container {\nmax-width: 67.9%;\nmin-width: 67.9%;\n}\n#qr-spoiler-label input {\nposition: relative;\ntop: 3px;\n}\n/* Dumping UI */\n.dump #dump-list-container {\ndisplay: block;\n}\n#dump-list-container {\ndisplay: none;\nposition: relative;\noverflow-y: hidden;\nmargin-top: 1px;\n}\n#dump-list {\noverflow-x: auto;\noverflow-y: hidden;\nwhite-space: nowrap;\nwidth: 248px;\nmax-width: 100%;\nmin-width: 100%;\n}\n#dump-list:hover {\noverflow-x: auto;\n}\n.qr-preview {\n-moz-box-sizing: border-box;\ncounter-increment: thumbnails;\ncursor: move;\ndisplay: inline-block;\nheight: 90px;\nwidth: 90px;\npadding: 2px;\nopacity: .5;\noverflow: hidden;\nposition: relative;\ntext-shadow: 0 1px 1px #000;\n-moz-transition: opacity .25s ease-in-out;\nvertical-align: top;\nbackground-size: cover;\n}\n.qr-preview:hover,\n.qr-preview:focus {\nopacity: .9;\n}\n.qr-preview::before {\ncontent: counter(thumbnails);\ncolor: #fff;\nposition: absolute;\ntop: 3px;\nright: 3px;\ntext-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.qr-preview#selected {\nopacity: 1;\n}\n.qr-preview.drag {\nbox-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.qr-preview.over {\nborder-color: #fff;\n}\n.qr-preview > span {\ncolor: #fff;\n}\n.remove {\nbackground: none;\ncolor: #e00;\nfont-weight: 700;\npadding: 3px;\n}\na:only-of-type > .remove {\ndisplay: none;\n}\n.remove:hover::after {\ncontent: \" Remove\";\n}\n.qr-preview > label {\nbackground: rgba(0,0,0,.5);\ncolor: #fff;\nright: 0; bottom: 0; left: 0;\nposition: absolute;\ntext-align: center;\n}\n.qr-preview > label > input {\nmargin: 0;\n}\n#add-post {\ncursor: pointer;\nfont-size: 2em;\nposition: absolute;\ntop: 50%;\nright: 10px;\n-moz-transform: translateY(-50%);\n}\n.textarea {\nposition: relative;\n}\n:root.webkit .textarea {\nmargin-bottom: -2px;\n}\n#char-count {\ncolor: #000;\nbackground: hsla(0, 0%, 100%, .5);\nfont-size: 8pt;\nposition: absolute;\nbottom: 1px;\nright: 1px;\npointer-events: none;\n}\n\n/* Menu */\n.menu-button {\ndisplay: inline-block;\nposition: relative;\ncursor: pointer;\n}\n.menu-button i {\nborder-top:   6px solid;\nborder-right: 4px solid transparent;\nborder-left:  4px solid transparent;\ndisplay: inline-block;\nmargin: 2px;\nvertical-align: middle;\n}\n#menu {\nposition: fixed;\noutline: none;\n}\n.entry {\nborder-bottom: 1px solid rgba(0,0,0,.25);\ncursor: pointer;\ndisplay: block;\noutline: none;\npadding: 3px 7px;\nposition: relative;\ntext-decoration: none;\nwhite-space: nowrap;\n}\n.left>.entry.has-submenu {\npadding-right: 17px !important;\n}\n.entry:last-child {\nborder-bottom: 0;\n}\n.has-submenu::after {\ncontent: \"\";\nborder-left: .5em solid;\nborder-top: .3em solid transparent;\nborder-bottom: .3em solid transparent;\ndisplay: inline-block;\nmargin: .3em;\nposition: absolute;\nright: 3px;\n}\n.left .has-submenu::after {\nborder-left: 0;\nborder-right: .5em solid;\n}\n.submenu {\ndisplay: none;\nposition: absolute;\nleft: 100%;\ntop: -1px;\n}\n.focused .submenu {\ndisplay: block;\n}\n.imp-exp-result {\nposition: absolute;\ntext-align: center;\nmargin: auto;\nright: 0px;\nleft: 0px;\nwidth: 200px;\n}\n.export, .import {\ncursor: pointer;\ntext-decoration: none !important;\n}\n/* Link Title Favicons */\n.linkify.YouTube {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAMCAYAAABr5z2BAAABIklEQVQoz53LvUrDUBjG8bOoOammSf1IoBSvoCB4JeIqOHgBLt6AIMRBBQelWurQ2kERnMRBsBUcIp5FJSBI5oQsJVkkUHh8W0o5nhaFHvjBgef/Mq+Q46RJBMkI/vE+aOus956tnEswIZe1LV0QyJ5sE2GzgZfVMtRNIdiDpccEssdlB1mW4bvTwdvWJtRdErM7U+8S/FJykCRJX5qm+KpVce8UMNLRLbulz4iSjTAMh6Iowsd5BeNadp3nUF0VlxAEwZBotXC0Usa4ll3meZdA1iguwvf9vpvDA2wvmKgYGtSud8suDB4TyGr2PF49D/vra9jRZ1BVdknMzgwuCGSnZEObwu6sBnVTCHZiaC7BhFx2PKdxUidiAH/4lLo9Mv0DELVs9qsOHXwAAAAASUVORK5CYII=') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.Vimeo {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAASJJREFUOE9jYAAC7ln7/pODQXrBmq333PvPu/YaSRikB6QXbACpmmHqsRoAMll7+20UQ0H8tmuv/pdffPFfZtNNuByGASBFIPDh5x+4IV6HHoDFYGDJgw+YBoBMBUkgA5BtIKduuvvy//svX+FSB+88wTTAc+/t/83bj/0HScLA5BPXwc7lKJ36f+L6XXDxhUfOYxrAPWUnWKFp9UQUm3iWQxSDXAEDSX3zcIcB96wD/x+8eA1XDNKMHAYg20GW4Y0FkCIYAAUqzEBQOIBciRzlWKMxZelOlMCEcVxq+jHSC1YDJPs3YBgA8jey0/F6ARRwsFAHORukmat9NdbUijMpg/wKcrJodDFOzSBXwA3Alh9AToZFI7a8Asu98BxJbnYGAJb5vYLDANzSAAAAAElFTkSuQmCC') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.SoundCloud {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABsklEQVQ4y5WTy2pUQRCGv2rbzDjJeAlIBmOyipGIIJqFEBDElwh4yULGeRFXPoEIBl/AvQ/gC2RnxCAoxijiwks852S6+3dxzslcHJCpTXVX11/Xv0097gLPgVNMJxnQNfX4zsqleWbnpoMf/oa9d988MM9MC/rp+E0a+A0dsVobMNMCOO8B6McRoABJI+A6gJmN3D2A8jgEBCEkSEMBrcrsDAzDWWn3AjgKFaDMmgRqniGFgsaDp1jrLOngDf1XT1D+A1dFc4MKAkkiCVKjjVu7g9+4Rzx4i1u6hjXbuMWr0O5QPNvCu7IaCZwEKQukLGDrm5x8uI0tr6MkiGlkiv7yLfzN+6S5i6QsIMABkEfcxhbWWYMkVAOjxvYAjc3HNHrbKI9VBQBFwF25XQKSBjqIf1YBuAurEMrczgDygD6/x2LCpFLXLUyQ+PoldphhBhYfIX09XU1+Flaukz7uYqs3SHs7cG4BmTsmkBUF9mmXEwa28BNLPaQPLepuNcbGSWQquQC2/Kdcox1FUGkcB0ykck1nA2+wTzMs8stGnP4rbWGw74EuS/GFQWfK7/wF6P4F7fzIAYkdmdEAAAAASUVORK5CYII=') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.audio {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAitJREFUOE9jYCAWKJWwavr0KyXWb/FIbDtUFFyzJx6nVofE2Xo5nXsj0rqPNSR0nVkR2Hjmgmfd+U9Otdf+m5Vf/6+SfeU/R9ChVVgNYDRtlfJuuPA/rPfe/4QpD/6nznj0P27Kw/9unff/69Xf+69c/+C/SO7N/0z+OAxgMmmRCe++/r9i3ev/KWvf/vdY8PK/bt/9/wrNV3/IN5y/IVt1YqNg4pGTTP4HsbuA2bhZ2qvpyn+xjIObxAp3VwqlrgngLFyryVy5nhPmZJHANS2cwYexG8BmVC/pWn3hP4NZlzWuQDJI3dIiFnUUuwEsQAOcq87jNcC7fHeLUtJxHF4AGmBWeAavAWH1+1rUUk7giAWjOknllON4DXAs2NEiG4/DBQxAF/CFHfrPYI4jDFSLuJVjNrUJhB/B7gIGo1pJRt99GAZYJK7wLJ1z7Xzl4vu/7aqv/GRBj0bjqAX2qb0nJ7mXH17C4HcUxQA+hymWtSue/C5a9up/9Ozn/7Vr7v1nRY7GqMb91T3b3v6vWvPmf/S0p/9ZQk+DDLCBRSOz06Jqk+o7/21nvfqvsebDf7kZL/5zBaxphkezd+OFn7HzXvz3Wvjmv9a8N//5Ek//ZTBpVYUrMG2X5wjcdl68+uI/wa5Lr3hSNjczGFeywOVZ/bbcVGp//F9izfv/Ql03f3P4LC/HSEQquYwMFnUCDJ7dzBhyjGZNQpye89M5gpfnMvtNUyE2h4PUAQBovvT7lyNljwAAAABJRU5ErkJggg==') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.LiveLeak {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAydJREFUOE9Nk1tIk2EYx79NyUNqTk0o6KYrnZeChodLDxfeZpCbJk4RXU5Nm7tYRYhiYXbQlaeGutyW2gxtpB1RIyKDEjKwA6Ti2dR5KNDn+fq/S6TBj/f93r3P732e53s/qfnkSdej4GB2SBLbwf+jmB+gUMgOheLg/z7EdCUnO6Ref392SpK8Hyh3I+gBwBo7lUp2xcbyQEoKD6alyQOpqd754/h4FjJXZCRJTl9ftmEzoK5/wdQJxPgkLY2WV1dpc2uLtnZ2eHNnhza3t2nd46GhjAzuValY6jx0iIfS03msoIDuQ9COQCtoUSjohU5HuwgaN5loeXycd3d3aW9vzwvW2K5SkdTi58fvzGb+3tdHFggA3QONEAzn59PvjQ1yqNX0zenkvX0B4ffWaGRraChJd/385JGqKvlzTw/fRqOaIGkEd1DjU52O/3g83BkTw5MOh7yJuUCUM2o0yi2hoSw1IIOhykr+YLNRHYKu4XQvyKA/N5c8yMCCDD7Z7bz26xcJ1rH2rKKCG0UJdRAMlJbyG6uVrkJQjWAB5tSbk0Nr2HwDgvcQiIYur6zQyvo6ucvLueHIEZKuQPBQr+dXra1kRuqXEOwFArtWSytra1QdFUVjNhvPLS3R3OIiLUDUD0F1WBhJJtwDW2Ehu5uaqBICI4IFlRB0QLCEzaboaHrd0cHzCBYsIIuesjK+LAQXkEFrXh676uupGCWcR6AeghLQptGQONUAwfOuLp6Zn6eZuTmaXVig7pISrhI90ENgQbdHhoep32JhFzLpu3WLio8epUYIfs7OUjF6UKJW88XERLqYkEBNej11oG8XhCAvMFAuOn5cNiclsTkhQTbhmpri4lgbEMANWi1DwC/xit3t7bK7rY0Fo4OD3G4wyEURESzloAdnceezlErK8vH5N4KzPj50PTOTfkxP0+THj/RlYoInJyZI8HVqim5qNFwQHk7SucBAPo2PKRMNPLM/4pnFszYkhJsNBu6uqWFHba1sr61lQSveQFZQkFx07BhJmhMnrLn4NLMPH/aSExR0QDbmWhwgyEapwDvXoDxdWBiXnjrV/Bdm2kYUxLwmEgAAAABJRU5ErkJggg==') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.Vocaroo {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAw9JREFUOE9jYMABuMwYmCyTJKUCGlSnFSy02TTzeOyCiQcDViX26qVz2TAyYtWmEMwuoZ3M7V40LcB79pHkc0svpvzY8jD//87nxf+3Pyn8v/ZO8v+VNyP/2mZJumI1QCWSI8232Hjumitlfw5+qPp/9l8TCt76JP//xkdx/wsXWCzjtWFkwTCkbWFe9plPk/+ga4Txz/xt/D/hkN//gMXif21a+NbyWjIwoRiy6GDT5rP/mlFsPfyp5n/NpOj/22+0gMUXXIz/H7hC/L/bFKFbPDZMrHAD5H35OPt2J9zacDv/f3V7xv9FhwrBGubsT/1//Pjx/1GJ/mD+/nfl/1v3Ovy3KRJNQbHdOlXCvOO03/+pm1P/v3v37n90hhtYw9HPtf8Xb2v937cmHswHeWPRxYj/LvkK3igGKARwicTO07118H3V/5kbi/4vPZMJtK3s/6YH2f+Pfq1B8VbjWrdnMu5s4nAD9CNFhKwz5DTUvLl419zKvAcLtG1P84BRl/b/5M/6/6f/NPzf/qzo84yj0Uus0xUU4Zor54bm9+4OfZG02OCuoAMTb9ZkC9ull1Nvrr2Z+XvRpaRfc65H/68F+jl9svEhzyLFWoccWVc+eyTHq/twydjlKRln7jX9bNMkMJnbhoFRL1xCqmKx6/yi2fYXa/c5/e846PV/5fW0/7OPx/yfcjzop34ulxdGGvDuU8mMXaX507lBuiN6ueadmQeT/p/93vf/1O+G//sP5fw/eL3o/5JLif8zVxs+Tlir9S26UyeFQQvJGBE7FvaFZ9LfN+1y+WjbItSb3GmXvXd15v8zroH/HxgE/D+aGPx/18vi/z07PeZNPRKxe/Kh0Ae8toxscCO4zBkYXArk9C1SxJUYjBkYPPIVtbbuTftz3cz//2O9wP/75iSAXdO72/dt2HL5F6YlfBW4MiJYXMiBiW3t7azHBx+V/t89N+H/8a+1//e9K/9attDp5LQjYX8SuvVL8RoAkmxa65299Erq1FnHo0qrl7t4BddriIs4MrM3rfWcFd+pGwVSAwBZ0bKP8yrZPAAAAABJRU5ErkJggg==') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.pastebin {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAtZJREFUOE+NU91LWmEc7sJtQew/2MUY7INg7CLY3W5GMHazyzEQo9UmfYxZTbAiVlgRqLMSZ+XnDC3z2+Y0+8JGakKZTtR0Tl2wtgtLLQh29cz3ZZ3h3Q68vOc95zzP73l+z+/U1f292O09DRxubxOH23P//1bvtQts3dPnry7LZnXJhcUl5Avf8dHtwY+fv2AyW5DOfIXFakMm+w0G4wISyRRm55TQG0y/Wzv6mikJ52Xf9TmVBoFAAD6fDwqFAqFQCJubmzCbzZiensbp6SmkUikikQi0Wi0kEgm6ewVaStDCfXPDandifn6egoaGhrCzswO1Wg2Hw4HBwUGk02kIBAL4/X4IhUJMTk6ii8dfYggy2RwymQzOz88Rj8dRLpexv7+PSqWCYDCIQqGAra0tJBIJrK2t0XdVAjNDEIl+wfj4OEqlEq2wt7dHrchkMmrBYDCAz+fTIjweD7FYrJbgIJOlgLOzM8jlcip1eXmZ2rFarVAqlRCLxcjlchCJRFRljYJYPAG32418Pg+n04lsNouVlRUcHh7C4/FQIOlHNBqlezgcJgQWxkIgGMbExASVNjY2hvX1dVo9mUzS5wREFLhcLrqTcw2B//M2RkdHodPp4PV6oVKpqH+SCom3v7+fNnF4eJiJusbCJ6+PviSyScakiaR5RIHRaKQpmEwmbAdCeD8zB6vdhebHT8SMhcUlC83bbrdTJRsbG3RwiCVCRNJJpDIoVeNNJJJQzKryV+rrmxiCtyNCCmaz2VhdXQWXy6XDpNfrodFoYLXZUTw+pk222Z3lW3ca26rgSwzBwqIZAwMDlITMAVEwNTVFR5fEJpK8Qyp1AJvDVbrTeLenCmxgfiZ22+urCtWHyu7uLp2wVCpFKx0dHaFYLOLk5KT6Y9kgk89kb95ubK0BX7A8a+1qannRLeW0daj/rU51S3tn9dypfvDw0QiLxbpX/Z7FVK7e/AEj4Wf24/2f5AAAAABJRU5ErkJggg==') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.gist {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAk1JREFUeNqUkzuIE1EUhv955MnsbB6r4kYQLUQQFncV3SnCIqJsoWGDYOGjsIiCtY2Kla1sjLBIsFFcXJC1kaSwENQmXUQSRSUSjCQSTCbkbR4z47lXEgtBNwcu3DNzvvO8R8jlcj7LshKmaWqYQERRTAmCcEru9/sJr9er0QF92BJMAVGr1TQ6CeZAc7lcGAwGkyQAxpTLZU0eDoc8crfbRTgcRjAYRCQSYSmi1WpxY7fbjU6ng1gshmaziXg8zhnGIpVKWbquW9ls1mLZsaMoiqWq6lgnBxY55He/328Vi0XOMFZmqVMD4fF4QBAajcY48khY9JE4HA4enTGMFVkaTHmy+ZzD/5NSqYSNB484w1h55ODO3TVu4FXcWDywl24Cmp0e1WBhyuWELAtIf/qKUrWOONmev3Lpt4NRCXq1gplpBS/v3cDc0nGg9h1o1ZkfwO4Atu1B8cM7HLt8k37V/y5B2b4bJxf2Y+7oEbyJrkMvUjki0YYJ03LidfQxAt4dOHdCw5RdGZcgGobBlQtnV/BDr1GfDai7ZiHZZRi9PoY/e5SCCTUwC9gk1GmMh5YWOcNYkR4Sv1y9uAJbYB82N57h4OnDmN7phjQ0qUkWRJuB+TMaPn/5iFfvv+Ha7eucYey4iWw8q6tRJJNJ3Fp7ClUawEkViBTfkCR0YUNTVHD/4Tpm/P4/U2CeKpUKfD4fJDIMhUKEhP45St50XedZyLQY6Xw+v8AUemVb2oNqtYpCocCWKi2TLLfb7ReZTGZ+kmUi7i2VvfxLgAEAZChMriPcl+IAAAAASUVORK5CYII=') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.image {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAs5JREFUOE+lk/tvi1EYx98/xT8gW4REIpGFMEQWl2FiM9ZMZhm2xRAyOsmujFFmdFRHu0tWm87UypxStr69zPauN5e5rHVp3IYhbOvHy+wHEQlxkm+ek+d8nm9OznkeSfrfldmgJC7QyUlTymsJTfuTZ25z4HdWYwyLreYhtpgekGPw0+kKvo1Eo+IXRSIiEhkWZuc9tqnsJD9EqTUopCxjSGTpB0iueczSo1HyW8cpsExQ1DbxI2pt45j9cXpexul4FEd79RnZphAa/SD7WvuFtO6UItbU9LC+YQxNI2w0wwYT5LRAdhOU3oBTIXC9gXP3oUSGgz2vST3gYHejR0jptT1C332f8yrUEYHrz8CgxDnpm6DKCUfc0KnmXa/AEVPPwnDcD0cvetA2uYRk67Ive/lpjO7YBO1PPuF8Df3vwf4cbNE4tqdw7YVq8HYyHx6FvhE1hkMEg8HDUqvFkjT4aIjMqkqyqkswDSrcfBfH+Q561YLAZ/B+BLda6FXlU/cPv0AoEPhuoP1h4Av7Wbh9E/Py15NWWUjeSR3nZDfeN+N0DY9hG/7K1eGP3P0S5/EYRFUF/IOTBrUXHPm9fT6mr1xEwupkZqxbzLyiDJYUZ5NSnkdqdSHpxyrYdFpPgdmAsdfJwPMI/Yr65bf7tZLGGBQ7DNdJWFtIYvoOZmbuZE7OXpIKKli86zAr9p9gTVktWTVnKTI2U95uRWe3U2IJUDbVB5p6hVm5x5m9Vc/cnedZUNzC8lILaQesZBy6hEZ3maKzgvJWFzVWD9XtXvVGQbSWASFtMATVRlJIKbOTWtlJXaeXepuPM1f6MNp9GLt8mLvvYLmp0OhQ2Fwvk6m7xaqDTvY0eYWUVtcnllXfYlGpnfklVuraHHg8HjxuN+6fktUHlWWZPaZeUo/ILK0UKttBcbNbSB9GP0yLxWJJUxoZGUn80zD9C/vXQ/4NHY10h3M1zmQAAAAASUVORK5CYII=') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.InstallGentoo {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAklJREFUOE9jYEAAASBTCorZkcSRmTjVCDLziCwG4hfM3EIvGNm44oC6WNEM4WXi5FsEkmfhFX3BxMmfAJSHW9Qr55Px3aZp3X/btq3/hQydPzKysMcCFbBBDeFj4uBdqBJR/gskb1W34j+PmulLoJwbzBJJoMm7dNO7/ntMP/XfpW/v//SKvk+7tl7fvXfTpx5pCdWVSiHFv1wnHQbLi9sE/Wdk5SwBauaCGQB3gUPb5v+7Lr/8/+fvr/9fv/z+f+Pyr/9bV735l9Wy/79Dx/b/Nk0bsLoAHgbeAVHv/v77/f8f0IB7N7+cu3DuecK54z9+7lzz639e9pK/7HwSWMMA5BJwCJeXtOm/fvVj1fcfv369f//92cN7X6ZcPvf9x6Htv//vXP3r/+T245UEYgpskPTNq08LgN749/PH7/93rv/6f/rw7//nj//4f+bU0zQcUQwWBkdVbGz62y+fv3wHeeXrlz//H9798//qpY//M3KqfzGxc8djiWKwZnBUuWQ2/fr46fv/P39+///x/ff/d69//z97+s7fyMb5/+y7d2GLYriDZikFF/1qXXXj/4Pbv/8/f/jn/5MH316/eP6jVlBAaIt6VO1/jxmn/zv27P7Pp2HxEajLD90ra9Sj6/979O37X73w0n+vqOL/0lJyMVBFq0EGgDSD0oKAlu1/oHg4ugGzVCKqfouYuL1Xj676Iajr8AnJFricGqYc3Bw+Zi6BVUxsXLHAdL6QiYMPFNrwpIxHDsUhgtAMAopKDjQn4pPDF7P45QC4hSmc1eX8WgAAAABJRU5ErkJggg==') center left no-repeat!important;\npadding-left: 18px;\n}\n\n/* General */\n:root.yotsuba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.yotsuba #header-bar, :root.yotsuba #notifications {\nfont-size: 9pt;\ncolor: #B86;\n}\n:root.yotsuba #header-bar a, :root.yotsuba #notifications a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.yotsuba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.yotsuba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.yotsuba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba #menu {\ncolor: #800000;\n}\n:root.yotsuba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 10pt;\n}\n:root.yotsuba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* Watcher Favicon */\n:root.yotsuba .watch-thread-link\n{\nbackground-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(128,0,0)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\");\n}\n\n/* General */\n:root.yotsuba-b .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.yotsuba-b #header-bar, :root.yotsuba-b #notifications {\nfont-size: 9pt;\ncolor: #89A;\n}\n:root.yotsuba-b #header-bar a, :root.yotsuba-b #notifications a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.yotsuba-b #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.yotsuba-b .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.yotsuba-b .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba-b #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba-b #menu {\ncolor: #000;\n}\n:root.yotsuba-b .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 10pt;\n}\n:root.yotsuba-b .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* Watcher Favicon */\n:root.yotsuba-b .watch-thread-link\n{\nbackground-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(0,0,0)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\");\n}\n\n/* General */\n:root.futaba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.futaba #header-bar, :root.futaba #notifications {\nfont-size: 11pt;\ncolor: #B86;\n}\n:root.futaba #header-bar a, :root.futaba #notifications a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.futaba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.futaba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.futaba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.futaba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.futaba #menu {\ncolor: #800000;\n}\n:root.futaba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 12pt;\n}\n:root.futaba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* Watcher Favicon */\n:root.futaba .watch-thread-link\n{\nbackground-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(128,0,0)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\");\n}\n\n/* General */\n:root.burichan .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.burichan #header-bar, :root.burichan #header-bar #notifications {\nfont-size: 11pt;\ncolor: #89A;\n}\n:root.burichan #header-bar a, :root.burichan #header-bar #notifications a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.burichan #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.burichan .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.burichan .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.burichan #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.burichan #menu {\ncolor: #000000;\n}\n:root.burichan .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 12pt;\n}\n:root.burichan .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* Watcher Favicon */\n:root.burichan .watch-thread-link\n{\nbackground-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(0,0,0)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\");\n}\n\n/* General */\n:root.tomorrow .dialog {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n\n/* Header */\n:root.tomorrow #header-bar, :root.tomorrow #notifications {\nfont-size: 9pt;\ncolor: #C5C8C6;\n}\n:root.tomorrow #header-bar a, :root.tomorrow #notifications a {\ncolor: #81A2BE;\n}\n\n/* Settings */\n:root.tomorrow #fourchanx-settings fieldset {\nborder-color: #111;\n}\n\n/* Quote */\n:root.tomorrow .backlink.deadlink {\ncolor: #81A2BE !important;\n}\n:root.tomorrow .inline {\nborder-color: #111;\nbackground-color: rgba(0, 0, 0, .14);\n}\n\n/* QR */\n.tomorrow #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow .qr-preview {\nbackground-color: rgba(255, 255, 255, .15);\n}\n:root.tomorrow #qr .field {\nbackground-color: rgb(26, 27, 29);\ncolor: rgb(197,200,198);\nborder-color: rgb(40, 41, 42);\n}\n:root.tomorrow #qr .field:focus {\nborder-color: rgb(129, 162, 190) !important;\nbackground-color: rgb(30,32,36);\n}\n\n/* Menu */\n:root.tomorrow #menu {\ncolor: #C5C8C6;\n}\n:root.tomorrow .entry {\nborder-bottom: 1px solid #111;\nfont-size: 10pt;\n}\n:root.tomorrow .focused.entry {\nbackground: rgba(0, 0, 0, .33);\n}\n\n/* Watcher Favicon */\n:root.tomorrow .watch-thread-link\n{\nbackground-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(197,200,198)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\");\n}\n\n/* General */\n:root.photon .dialog {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.photon #header-bar, :root.photon #notifications {\nfont-size: 9pt;\ncolor: #333;\n}\n:root.photon #header-bar a, :root.photon #notifications a {\ncolor: #FF6600;\n}\n\n/* Settings */\n:root.photon #fourchanx-settings fieldset {\nborder-color: #CCC;\n}\n\n/* Quote */\n:root.photon .backlink.deadlink {\ncolor: #F60 !important;\n}\n:root.photon .inline {\nborder-color: #CCC;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.photon #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.photon #menu {\ncolor: #333;\n}\n:root.photon .entry {\nborder-bottom: 1px solid #CCC;\nfont-size: 10pt;\n}\n:root.photon .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* Watcher Favicon */\n:root.photon .watch-thread-link\n{\nbackground-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(51,51,51)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\");\n}\n"
+    css: "/* General */\n.dialog {\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder: 1px solid;\ndisplay: block;\npadding: 0;\n}\n.captcha-img,\n.field {\nbackground-color: #FFF;\nborder: 1px solid #CCC;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncolor: #333;\nfont: 13px sans-serif;\noutline: none;\ntransition: color .25s, border-color .25s;\ntransition: color .25s, border-color .25s;\n}\n.field::-moz-placeholder,\n.field:hover::-moz-placeholder {\ncolor: #AAA !important;\nfont-size: 13px !important;\nopacity: 1.0 !important;\n}\n.captch-img:hover,\n.field:hover {\nborder-color: #999;\n}\n.field:hover, .field:focus {\ncolor: #000;\n}\n.field[disabled] {\nbackground-color: #F2F2F2;\ncolor: #888;\n}\n.move {\ncursor: move;\noverflow: hidden;\n}\nlabel, .favicon {\ncursor: pointer;\n}\na[href=\"javascript:;\"] {\ntext-decoration: none;\n}\n.warning {\ncolor: red;\n}\n#boardNavDesktop {\ndisplay: none !important;\n}\na {\noutline: none !important;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\ndisplay: block !important;\noverflow: visible !important;\n}\n[hidden] {\ndisplay: none !important;\n}\n\n/* fixed, z-index */\n#overlay,\n#fourchanx-settings,\n#qp, #ihover,\n#navlinks, .fixed #header-bar,\n:root.float #updater,\n:root.float #thread-stats,\n#qr {\nposition: fixed;\n}\n#fourchanx-settings {\nz-index: 999;\n}\n#overlay {\nz-index: 900;\n}\n#notifications {\nz-index: 70;\n}\n#qp, #ihover {\nz-index: 60;\n}\n#menu {\nz-index: 50;\n}\n#navlinks, #updater, #thread-stats {\nz-index: 40;\n}\n.fixed #header-bar.autohide {\nz-index: 35;\n}\n#qr {\nz-index: 30;\n}\n#watcher {\nz-index: 8;\n}\n:root.fixed-watcher #watcher {\nz-index: 20;\n}\n.fixed #header-bar {\nz-index: 10;\n}\n/* Header */\n.fixed.top body {\npadding-top: 2em;\n}\n.fixed.bottom body {\npadding-bottom: 2em;\n}\n.fixed #header-bar {\nright: 0;\nleft: 0;\npadding: 3px 4px 4px;\n}\n.fixed.top #header-bar {\ntop: 0;\n}\n.fixed.bottom #header-bar {\nbottom: 0;\n}\n#header-bar {\nborder-width: 0;\ntransition: all .1s .05s ease-in-out;\n}\n:root.centered-links #shortcuts {\nwidth: 300px;\ntext-align: right;\n}\n:root.centered-links #header-bar {\ntext-align: center;\n}\n:root.centered-links #custom-board-list {\nposition: relative;\nleft: 150px;\n}\n.fixed.top #header-bar {\nborder-bottom-width: 1px;\n}\n.fixed.bottom #header-bar {\nbox-shadow: 0 -1px 2px rgba(0, 0, 0, .15);\nborder-top-width: 1px;\n}\n.fixed.bottom #header-bar .menu-button i {\nborder-top: none;\nborder-bottom: 6px solid;\n}\n#board-list {\ntext-align: center;\n}\n.fixed #header-bar.autohide:not(:hover) {\nbox-shadow: none;\ntransition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #header-bar.autohide:not(:hover) {\nmargin-bottom: -1em;\n-webkit-transform: translateY(-100%);\ntransform: translateY(-100%);\n}\n.fixed.bottom #header-bar.autohide:not(:hover) {\n-webkit-transform: translateY(100%);\ntransform: translateY(100%);\n}\n#scroll-marker {\nleft: 0;\nright: 0;\nheight: 10px;\nposition: absolute;\n}\n:root:not(.autohide) #scroll-marker {\npointer-events: none;\n}\n#header-bar #scroll-marker {\ndisplay: none;\n}\n.fixed #header-bar #scroll-marker {\ndisplay: block;\n}\n.fixed.top #header-bar #scroll-marker {\ntop: 100%;\n}\n.fixed.bottom #header-bar #scroll-marker {\nbottom: 100%;\n}\n#header-bar a:not(.entry):not(.close) {\ntext-decoration: none;\npadding: 1px;\n}\n#header-bar input {\nmargin: 0;\nvertical-align: bottom;\n}\n#shortcuts:empty {\ndisplay: none;\n}\n.brackets-wrap::before {\ncontent: \"\\00a0[\";\n}\n.brackets-wrap::after {\ncontent: \"]\\00a0\";\n}\n.disabled,\n.expand-all-shortcut {\nopacity: .45;\n}\n#shortcuts {\nfloat: right;\n}\n.shortcut {\nmargin-left: 3px;\n}\n#navbotright,\n#navtopright {\ndisplay: none;\n}\n#toggleMsgBtn {\ndisplay: none !important;\n}\n.current {\nfont-weight: bold;\n}\n/* 4chan X link brackets */\n.fourchanx-link::after {\ncontent: \"]\";\n}\n.fourchanx-link::before {\ncontent: \"[\";\n}\n/* Notifications */\n#notifications {\nposition: fixed;\ntop: 0;\nheight: 0;\ntext-align: center;\nright: 0;\nleft: 0;\ntransition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #header-bar #notifications {\nposition: absolute;\ntop: 100%;\n}\n.notification {\ncolor: #FFF;\nfont-weight: 700;\ntext-shadow: 0 1px 2px rgba(0, 0, 0, .5);\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder-radius: 2px;\nmargin: 1px auto;\nwidth: 500px;\nmax-width: 100%;\nposition: relative;\ntransition: all .25s ease-in-out;\n}\n.notification.error {\nbackground-color: hsla(0, 100%, 38%, .9);\n}\n.notification.warning {\nbackground-color: hsla(36, 100%, 38%, .9);\n}\n.notification.info {\nbackground-color: hsla(200, 100%, 38%, .9);\n}\n.notification.success {\nbackground-color: hsla(104, 100%, 38%, .9);\n}\n.notification a {\ncolor: white;\n}\n.notification > .close {\npadding: 6px;\ntop: 0;\nright: 5px;\nposition: absolute;\n}\n.message {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 6px 20px;\nmax-height: 200px;\nwidth: 100%;\noverflow: auto;\n}\n\n/* Settings */\n:root.fourchan-x body {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\n}\n#overlay {\nbackground-color: rgba(0, 0, 0, .5);\ntop: 0;\nleft: 0;\nheight: 100%;\nwidth: 100%;\n}\n#fourchanx-settings {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nbox-shadow: 0 0 15px rgba(0, 0, 0, .15);\nheight: 600px;\nmax-height: 100%;\nwidth: 900px;\nmax-width: 100%;\nmargin: auto;\npadding: 3px;\ntop: 50%;\nleft: 50%;\n-moz-transform: translate(-50%, -50%);\n-webkit-transform: translate(-50%, -50%);\ntransform: translate(-50%, -50%);\n}\n#fourchanx-settings > nav {\npadding: 2px 2px 0;\nheight: 15px;\n}\n#fourchanx-settings > nav a {\ntext-decoration: underline;\n}\n#fourchanx-settings > nav a.close {\ntext-decoration: none;\npadding: 2px;\n}\n.section-container {\noverflow: auto;\nposition: absolute;\ntop: 2.1em;\nright: 5px;\nbottom: 5px;\nleft: 5px;\npadding-right: 5px;\n}\n.sections-list {\npadding: 0 3px;\nfloat: left;\n}\n.credits {\nfloat: right;\n}\n.tab-selected {\nfont-weight: 700;\n}\n.section-sauce ul,\n.section-advanced ul {\nlist-style: none;\nmargin: 0;\n}\n.section-sauce ul {\npadding: 8px;\n}\n.section-advanced ul {\npadding: 0px;\n}\n.section-sauce li,\n.section-advanced li {\npadding-left: 4px;\n}\n.section-main label {\ntext-decoration: underline;\n}\n.section-filter ul {\npadding: 0;\n}\n.section-filter li {\nmargin: 10px 40px;\n}\n.section-filter textarea {\nheight: 500px;\n}\n.section-sauce textarea {\nheight: 350px;\n}\n.section-advanced .field[name=\"boardnav\"] {\nwidth: 100%;\n}\n.section-advanced textarea {\nheight: 150px;\n}\n.section-advanced .archive-cell {\nmin-width: 160px;\ntext-align: center;\n}\n.section-advanced #archive-board-select {\nposition: absolute;\n}\n.section-advanced .note {\nfont-size: 0.8em;\nfont-style: italic;\nmargin-left: 10px;\n}\n.section-advanced .note code {\nfont-style: normal;\nfont-size: 11px;\n}\n.section-keybinds .field {\nfont-family: monospace;\n} \n#fourchanx-settings fieldset {\nborder: 1px solid;\nborder-radius: 3px;\n}\n#fourchanx-settings legend {\nfont-weight: 700;\n}\n#fourchanx-settings textarea {\nfont-family: monospace;\nmin-width: 100%;\nmax-width: 100%;\n}\n#fourchanx-settings code {\ncolor: #000;\nbackground-color: #FFF;\npadding: 0 2px;\n}\n.unscroll {\noverflow: hidden;\n}\n\n/* Announcement Hiding */\n:root.hide-announcement #globalMessage {\ndisplay: none;\n}\na.hide-announcement {\nfloat: left;\n}\n\n/* Unread */\n#unread-line {\nmargin: 0;\nborder-color: rgb(255,0,0);\n}\n\n/* Thread Updater */\n#updater {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n#updater > .move {\npadding: 5px 3px 0px;\nmargin-bottom: -3px;\n}\n#updater > div:last-child {\ntext-align: center;\n}\n#updater input[type=number] {\nwidth: 4em;\n}\n:root.float #updater {\npadding: 0px 3px;\n}\n.new {\ncolor: limegreen;\n}\n#update-status.new {\nmargin-right: 5px;\n}\n#update-timer {\ncursor: pointer;\n}\n\n/* Thread Watcher */\n#watcher {\nposition: absolute;\n}\n#watcher {\npadding-bottom: 3px;\noverflow: hidden;\nwhite-space: nowrap;\nmin-width: 120px;\nmax-height: 92%;\noverflow-y: auto;\n}\n:root.fixed-watcher #watcher {\nposition: fixed;\n}\n:root:not(.fixed-watcher) #watcher:not(:hover) {\nmax-height: 210px;\noverflow-y: hidden;\n}\n#watcher > .move {\npadding-top: 3px;\n}\n#watcher > div {\nmax-width: 250px;\noverflow: hidden;\npadding-left: 3px;\npadding-right: 3px;\ntext-overflow: ellipsis;\n}\n#watcher a {\ntext-decoration: none;\n}\n#watcher .move>.close {\nposition: absolute;\nright: 0px;\ntop: 0px;\npadding: 0px 4px;\n}\n.watch-thread-link {\npadding-top: 18px;\nwidth: 18px;\nheight: 0px;\ndisplay: inline-block;\nbackground-repeat: no-repeat;\nopacity: 0.2;\nposition: relative;\ntop: 1px;\n}\n.watch-thread-link.watched {\nopacity: 1;\n}\n\n/* Thread Stats */\n#thread-stats {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n:root.float #post-count, :root.float #file-count {\npointer-events: none;\n}\n:root.float #thread-stats {\npadding: 0px 3px;\n}\n\n/* Quote */\n.deadlink {\ntext-decoration: none !important;\n}\n.backlink.deadlink:not(.forwardlink),\n.quotelink.deadlink:not(.forwardlink) {\ntext-decoration: underline !important;\n}\n.inlined {\nopacity: .5;\n}\n#qp input, .forwarded {\ndisplay: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\ntext-decoration: none;\nborder-bottom: 1px dashed;\n}\n.filtered {\ntext-decoration: underline line-through;\n}\n:root.hide-backlinks .backlink.filtered {\ndisplay: none;\n}\n.inline {\nborder: 1px solid;\ndisplay: table;\nmargin: 2px 0;\n}\n.inline .post {\nborder: 0 !important;\nbackground-color: transparent !important;\ndisplay: table !important;\nmargin: 0 !important;\npadding: 1px 2px !important;\n}\n#qp > .opContainer::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n#qp .post {\nborder: none;\nmargin: 0;\npadding: 2px 2px 5px;\n}\n#qp img {\nmax-height: 80vh;\nmax-width: 50vw;\n}\n.qphl {\noutline: 2px solid rgba(216, 94, 49, .7);\n}\n:root.highlight-own .yourPost > .reply,\n:root.highlight-you .quotesYou > .reply {\nborder-left: 2px solid rgba(221,0,0,.5);\n}\n/* Quote Threading */\n.threadContainer {\nmargin-left: 20px;\nborder-left: 1px solid rgba(128,128,128,.3);\n}\n.threadOP {\nclear: both;\n} \n\n/* File */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.expanded-image > .post > .file > .fileThumb > img[data-md5],\n:not(.expanded-image) > .post > .file > .fileThumb > .full-image {\ndisplay: none;\n}\n.expanding {\nopacity: .5;\n}\n:root.fit-height .full-image {\nmax-height: 100vh;\n}\n:root.fit-width .full-image {\nmax-width: 100%;\n}\n:root.gecko.fit-width .full-image {\nwidth: 100%;\n}\n#ihover {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmax-height: 100%;\nmax-width: 75%;\npadding-bottom: 16px;\n}\n.fappeTyme  .thread > .noFile,\n.fappeTyme .threadContainer > .noFile {\ndisplay: none;\n}\n\n/* Index/Reply Navigation */\n#navlinks {\nfont-size: 16px;\ntop: 25px;\nright: 10px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n\n/* Spoiler text */\n:root.reveal-spoilers s {\ncolor: white !important;\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\nfloat: left;\nmargin-right: 2px;\n}\n.stub ~ * {\ndisplay: none !important;\n}\n.stub input {\ndisplay: inline-block;\n}\n\n/* QR */\n:root.hide-original-post-form #postForm,\n:root.hide-original-post-form .postingMode,\n:root.hide-original-post-form #togglePostForm,\n#qr.autohide:not(.has-focus):not(:hover) > form,\n.postingMode ~ #qr select,\n#file-n-submit:not(.has-file) #qr-filerm {\ndisplay: none;\n}\n#qr select,\n#dump-button,\n.remove,\n.captcha-img {\ncursor: pointer;\n}\n#qr {\nz-index: 20;\nposition: fixed;\npadding: 1px;\nborder: 1px solid transparent;\nmin-width: 300px;\nborder-radius: 3px 3px 0 0;\n}\n#qrtab {\nborder-radius: 3px 3px 0 0;\n}\n#qrtab {\nmargin-bottom: 1px;\n}\n#qr .close {\nfloat: right;\npadding: 0 3px;\n}\n#qr .warning {\nmin-height: 1.6em;\nvertical-align: middle;\npadding: 0 1px;\nborder-width: 1px;\nborder-style: solid;\n}\n.qr-link-container {\ntext-align: center;\n}\n.persona {\nwidth: 248px;\nmax-width: 100%;\nmin-width: 100%;\n}\n#dump-button {\nwidth: 10%;\nmargin: 0;\nmargin-right: 4px;\nfont: 13px sans-serif;\npadding: 1px 0px 2px;\nopacity: 0.6;\n}\n.persona .field:not(#dump) {\nwidth: 95px;\nmin-width: 33.3%;\nmax-width: 33.3%;\n}\n#qr textarea.field {\nheight: 14.8em;\nmin-height: 9em;\n}\n#qr.has-captcha textarea.field {\nheight: 9em;\n}\ninput.field.tripped:not(:hover):not(:focus) {\ncolor: transparent !important;\ntext-shadow: none !important;\n}\n#qr textarea {\nresize: both;\n}\n.captcha-img {\nmargin: 0px;\ntext-align: center;\nbackground-image: #fff;\nfont-size: 0px;\nmin-height: 59px;\nmin-width: 302px;\n}\n.captcha-input {\nwidth: 100%;\nmargin: 1px 0 0;\n}\n.captcha-input.error:focus {\nborder-color: rgb(255,0,0) !important;\n}\n.field {\n-moz-box-sizing: border-box;\nmargin: 0px;\npadding: 2px 4px 3px;\n}\n#qr textarea {\nmin-width: 100%;\n}\n#qr [type='submit'] {\nwidth: 25%;\nvertical-align: top;\n}\n:root.webkit #qr [type='submit'] {\nheight: 24px;\n}\n/* Fake File Input */\n#qr-filename,\n.has-file #qr-no-file {\ndisplay: none;\n}\n#qr-no-file,\n.has-file #qr-filename {\ndisplay: inline-block;\npadding: 0px 4px;\nmargin-bottom: 2px;\noverflow: hidden;\ntext-overflow: ellipsis;\nmax-width: 88%;\n}\n#qr-no-file {\ncolor: #AAA;\n}\n#qr-filename-container {\n-moz-box-sizing: border-box;\ndisplay: inline-block;\nposition: relative;\nwidth: 100px;\nmin-width: 74.6%;\nmax-width: 74.6%;\nmargin-right: 0.4%;\nmargin-top: 1px;\noverflow: hidden;\npadding: 2px 1px 0;\nheight: 22px;\n}\n#qr-filename-container:hover {\ncursor: text;\n}\n#qr-extras-container {\nposition: absolute;\nright: 0px;\n}\n#qr-filerm {\nmargin-right: 2px;\nz-index: 2;\n}\n#file-n-submit {\nheight: 23px;\n}\n#qr input[type=file] {\nvisibility: hidden;\nposition: absolute;\n}\n/* Thread Select / Spoiler Label */\n#qr select {\nfloat: right;\n}\n#qr.has-spoiler .has-file #qr-spoiler-label {\nwidth: 6.7%;\nmin-width: 6.7%;\nmax-width: 6.7%;\ndisplay: inline-block;\ntext-align: center;\nvertical-align: top;\n}\n#qr.has-spoiler #file-n-submit:not(.has-file) #qr-spoiler-label {\ndisplay: none;\n}\n#qr.has-spoiler .has-file #qr-filename-container {\nmax-width: 67.9%;\nmin-width: 67.9%;\n}\n#qr-spoiler-label input {\nposition: relative;\ntop: 3px;\n}\n/* Dumping UI */\n.dump #dump-list-container {\ndisplay: block;\n}\n#dump-list-container {\ndisplay: none;\nposition: relative;\noverflow-y: hidden;\nmargin-top: 1px;\n}\n#dump-list {\noverflow-x: auto;\noverflow-y: hidden;\nwhite-space: nowrap;\nwidth: 248px;\nmax-width: 100%;\nmin-width: 100%;\n}\n#dump-list:hover {\noverflow-x: auto;\n}\n.qr-preview {\n-moz-box-sizing: border-box;\ncounter-increment: thumbnails;\ncursor: move;\ndisplay: inline-block;\nheight: 90px;\nwidth: 90px;\npadding: 2px;\nopacity: .5;\noverflow: hidden;\nposition: relative;\ntext-shadow: 0 1px 1px #000;\n-moz-transition: opacity .25s ease-in-out;\nvertical-align: top;\nbackground-size: cover;\n}\n.qr-preview:hover,\n.qr-preview:focus {\nopacity: .9;\n}\n.qr-preview::before {\ncontent: counter(thumbnails);\ncolor: #fff;\nposition: absolute;\ntop: 3px;\nright: 3px;\ntext-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.qr-preview#selected {\nopacity: 1;\n}\n.qr-preview.drag {\nbox-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.qr-preview.over {\nborder-color: #fff;\n}\n.qr-preview > span {\ncolor: #fff;\n}\n.remove {\nbackground: none;\ncolor: #e00;\nfont-weight: 700;\npadding: 3px;\n}\na:only-of-type > .remove {\ndisplay: none;\n}\n.remove:hover::after {\ncontent: \" Remove\";\n}\n.qr-preview > label {\nbackground: rgba(0,0,0,.5);\ncolor: #fff;\nright: 0;\nbottom: 0;\nleft: 0;\nposition: absolute;\ntext-align: center;\n}\n.qr-preview > label > input {\nmargin: 0;\n}\n#add-post {\ncursor: pointer;\nfont-size: 2em;\nposition: absolute;\ntop: 50%;\nright: 10px;\n-moz-transform: translateY(-50%);\n}\n.textarea {\nposition: relative;\n}\n:root.webkit .textarea {\nmargin-bottom: -2px;\n}\n#char-count {\ncolor: #000;\nbackground: hsla(0, 0%, 100%, .5);\nfont-size: 8pt;\nposition: absolute;\nbottom: 1px;\nright: 1px;\npointer-events: none;\n}\n\n/* Menu */\n.menu-button {\ndisplay: inline-block;\nposition: relative;\ncursor: pointer;\n}\n.menu-button i {\nborder-top:   6px solid;\nborder-right: 4px solid transparent;\nborder-left:  4px solid transparent;\ndisplay: inline-block;\nmargin: 2px;\nvertical-align: middle;\n}\n#menu {\nposition: fixed;\noutline: none;\n}\n.entry {\nborder-bottom: 1px solid rgba(0,0,0,.25);\ncursor: pointer;\ndisplay: block;\noutline: none;\npadding: 3px 7px;\nposition: relative;\ntext-decoration: none;\nwhite-space: nowrap;\n}\n.left>.entry.has-submenu {\npadding-right: 17px !important;\n}\n.entry:last-child {\nborder-bottom: 0;\n}\n.has-submenu::after {\ncontent: \"\";\nborder-left: .5em solid;\nborder-top: .3em solid transparent;\nborder-bottom: .3em solid transparent;\ndisplay: inline-block;\nmargin: .3em;\nposition: absolute;\nright: 3px;\n}\n.left .has-submenu::after {\nborder-left: 0;\nborder-right: .5em solid;\n}\n.submenu {\ndisplay: none;\nposition: absolute;\nleft: 100%;\ntop: -1px;\n}\n.focused .submenu {\ndisplay: block;\n}\n.imp-exp-result {\nposition: absolute;\ntext-align: center;\nmargin: auto;\nright: 0px;\nleft: 0px;\nwidth: 200px;\n}\n.export, .import {\ncursor: pointer;\ntext-decoration: none !important;\n}\n/* Link Title Favicons */\n.linkify.YouTube {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAMCAYAAABr5z2BAAABIklEQVQoz53LvUrDUBjG8bOoOammSf1IoBSvoCB4JeIqOHgBLt6AIMRBBQelWurQ2kERnMRBsBUcIp5FJSBI5oQsJVkkUHh8W0o5nhaFHvjBgef/Mq+Q46RJBMkI/vE+aOus956tnEswIZe1LV0QyJ5sE2GzgZfVMtRNIdiDpccEssdlB1mW4bvTwdvWJtRdErM7U+8S/FJykCRJX5qm+KpVce8UMNLRLbulz4iSjTAMh6Iowsd5BeNadp3nUF0VlxAEwZBotXC0Usa4ll3meZdA1iguwvf9vpvDA2wvmKgYGtSud8suDB4TyGr2PF49D/vra9jRZ1BVdknMzgwuCGSnZEObwu6sBnVTCHZiaC7BhFx2PKdxUidiAH/4lLo9Mv0DELVs9qsOHXwAAAAASUVORK5CYII=') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.Vimeo {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAASJJREFUOE9jYAAC7ln7/pODQXrBmq333PvPu/YaSRikB6QXbACpmmHqsRoAMll7+20UQ0H8tmuv/pdffPFfZtNNuByGASBFIPDh5x+4IV6HHoDFYGDJgw+YBoBMBUkgA5BtIKduuvvy//svX+FSB+88wTTAc+/t/83bj/0HScLA5BPXwc7lKJ36f+L6XXDxhUfOYxrAPWUnWKFp9UQUm3iWQxSDXAEDSX3zcIcB96wD/x+8eA1XDNKMHAYg20GW4Y0FkCIYAAUqzEBQOIBciRzlWKMxZelOlMCEcVxq+jHSC1YDJPs3YBgA8jey0/F6ARRwsFAHORukmat9NdbUijMpg/wKcrJodDFOzSBXwA3Alh9AToZFI7a8Asu98BxJbnYGAJb5vYLDANzSAAAAAElFTkSuQmCC') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.SoundCloud {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABsklEQVQ4y5WTy2pUQRCGv2rbzDjJeAlIBmOyipGIIJqFEBDElwh4yULGeRFXPoEIBl/AvQ/gC2RnxCAoxijiwks852S6+3dxzslcHJCpTXVX11/Xv0097gLPgVNMJxnQNfX4zsqleWbnpoMf/oa9d988MM9MC/rp+E0a+A0dsVobMNMCOO8B6McRoABJI+A6gJmN3D2A8jgEBCEkSEMBrcrsDAzDWWn3AjgKFaDMmgRqniGFgsaDp1jrLOngDf1XT1D+A1dFc4MKAkkiCVKjjVu7g9+4Rzx4i1u6hjXbuMWr0O5QPNvCu7IaCZwEKQukLGDrm5x8uI0tr6MkiGlkiv7yLfzN+6S5i6QsIMABkEfcxhbWWYMkVAOjxvYAjc3HNHrbKI9VBQBFwF25XQKSBjqIf1YBuAurEMrczgDygD6/x2LCpFLXLUyQ+PoldphhBhYfIX09XU1+Flaukz7uYqs3SHs7cG4BmTsmkBUF9mmXEwa28BNLPaQPLepuNcbGSWQquQC2/Kdcox1FUGkcB0ykck1nA2+wTzMs8stGnP4rbWGw74EuS/GFQWfK7/wF6P4F7fzIAYkdmdEAAAAASUVORK5CYII=') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.audio {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAitJREFUOE9jYCAWKJWwavr0KyXWb/FIbDtUFFyzJx6nVofE2Xo5nXsj0rqPNSR0nVkR2Hjmgmfd+U9Otdf+m5Vf/6+SfeU/R9ChVVgNYDRtlfJuuPA/rPfe/4QpD/6nznj0P27Kw/9unff/69Xf+69c/+C/SO7N/0z+OAxgMmmRCe++/r9i3ev/KWvf/vdY8PK/bt/9/wrNV3/IN5y/IVt1YqNg4pGTTP4HsbuA2bhZ2qvpyn+xjIObxAp3VwqlrgngLFyryVy5nhPmZJHANS2cwYexG8BmVC/pWn3hP4NZlzWuQDJI3dIiFnUUuwEsQAOcq87jNcC7fHeLUtJxHF4AGmBWeAavAWH1+1rUUk7giAWjOknllON4DXAs2NEiG4/DBQxAF/CFHfrPYI4jDFSLuJVjNrUJhB/B7gIGo1pJRt99GAZYJK7wLJ1z7Xzl4vu/7aqv/GRBj0bjqAX2qb0nJ7mXH17C4HcUxQA+hymWtSue/C5a9up/9Ozn/7Vr7v1nRY7GqMb91T3b3v6vWvPmf/S0p/9ZQk+DDLCBRSOz06Jqk+o7/21nvfqvsebDf7kZL/5zBaxphkezd+OFn7HzXvz3Wvjmv9a8N//5Ek//ZTBpVYUrMG2X5wjcdl68+uI/wa5Lr3hSNjczGFeywOVZ/bbcVGp//F9izfv/Ql03f3P4LC/HSEQquYwMFnUCDJ7dzBhyjGZNQpye89M5gpfnMvtNUyE2h4PUAQBovvT7lyNljwAAAABJRU5ErkJggg==') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.LiveLeak {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAydJREFUOE9Nk1tIk2EYx79NyUNqTk0o6KYrnZeChodLDxfeZpCbJk4RXU5Nm7tYRYhiYXbQlaeGutyW2gxtpB1RIyKDEjKwA6Ti2dR5KNDn+fq/S6TBj/f93r3P732e53s/qfnkSdej4GB2SBLbwf+jmB+gUMgOheLg/z7EdCUnO6Ref392SpK8Hyh3I+gBwBo7lUp2xcbyQEoKD6alyQOpqd754/h4FjJXZCRJTl9ftmEzoK5/wdQJxPgkLY2WV1dpc2uLtnZ2eHNnhza3t2nd46GhjAzuValY6jx0iIfS03msoIDuQ9COQCtoUSjohU5HuwgaN5loeXycd3d3aW9vzwvW2K5SkdTi58fvzGb+3tdHFggA3QONEAzn59PvjQ1yqNX0zenkvX0B4ffWaGRraChJd/385JGqKvlzTw/fRqOaIGkEd1DjU52O/3g83BkTw5MOh7yJuUCUM2o0yi2hoSw1IIOhykr+YLNRHYKu4XQvyKA/N5c8yMCCDD7Z7bz26xcJ1rH2rKKCG0UJdRAMlJbyG6uVrkJQjWAB5tSbk0Nr2HwDgvcQiIYur6zQyvo6ucvLueHIEZKuQPBQr+dXra1kRuqXEOwFArtWSytra1QdFUVjNhvPLS3R3OIiLUDUD0F1WBhJJtwDW2Ehu5uaqBICI4IFlRB0QLCEzaboaHrd0cHzCBYsIIuesjK+LAQXkEFrXh676uupGCWcR6AeghLQptGQONUAwfOuLp6Zn6eZuTmaXVig7pISrhI90ENgQbdHhoep32JhFzLpu3WLio8epUYIfs7OUjF6UKJW88XERLqYkEBNej11oG8XhCAvMFAuOn5cNiclsTkhQTbhmpri4lgbEMANWi1DwC/xit3t7bK7rY0Fo4OD3G4wyEURESzloAdnceezlErK8vH5N4KzPj50PTOTfkxP0+THj/RlYoInJyZI8HVqim5qNFwQHk7SucBAPo2PKRMNPLM/4pnFszYkhJsNBu6uqWFHba1sr61lQSveQFZQkFx07BhJmhMnrLn4NLMPH/aSExR0QDbmWhwgyEapwDvXoDxdWBiXnjrV/Bdm2kYUxLwmEgAAAABJRU5ErkJggg==') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.Vocaroo {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAw9JREFUOE9jYMABuMwYmCyTJKUCGlSnFSy02TTzeOyCiQcDViX26qVz2TAyYtWmEMwuoZ3M7V40LcB79pHkc0svpvzY8jD//87nxf+3Pyn8v/ZO8v+VNyP/2mZJumI1QCWSI8232Hjumitlfw5+qPp/9l8TCt76JP//xkdx/wsXWCzjtWFkwTCkbWFe9plPk/+ga4Txz/xt/D/hkN//gMXif21a+NbyWjIwoRiy6GDT5rP/mlFsPfyp5n/NpOj/22+0gMUXXIz/H7hC/L/bFKFbPDZMrHAD5H35OPt2J9zacDv/f3V7xv9FhwrBGubsT/1//Pjx/1GJ/mD+/nfl/1v3Ovy3KRJNQbHdOlXCvOO03/+pm1P/v3v37n90hhtYw9HPtf8Xb2v937cmHswHeWPRxYj/LvkK3igGKARwicTO07118H3V/5kbi/4vPZMJtK3s/6YH2f+Pfq1B8VbjWrdnMu5s4nAD9CNFhKwz5DTUvLl419zKvAcLtG1P84BRl/b/5M/6/6f/NPzf/qzo84yj0Uus0xUU4Zor54bm9+4OfZG02OCuoAMTb9ZkC9ull1Nvrr2Z+XvRpaRfc65H/68F+jl9svEhzyLFWoccWVc+eyTHq/twydjlKRln7jX9bNMkMJnbhoFRL1xCqmKx6/yi2fYXa/c5/e846PV/5fW0/7OPx/yfcjzop34ulxdGGvDuU8mMXaX507lBuiN6ueadmQeT/p/93vf/1O+G//sP5fw/eL3o/5JLif8zVxs+Tlir9S26UyeFQQvJGBE7FvaFZ9LfN+1y+WjbItSb3GmXvXd15v8zroH/HxgE/D+aGPx/18vi/z07PeZNPRKxe/Kh0Ae8toxscCO4zBkYXArk9C1SxJUYjBkYPPIVtbbuTftz3cz//2O9wP/75iSAXdO72/dt2HL5F6YlfBW4MiJYXMiBiW3t7azHBx+V/t89N+H/8a+1//e9K/9attDp5LQjYX8SuvVL8RoAkmxa65299Erq1FnHo0qrl7t4BddriIs4MrM3rfWcFd+pGwVSAwBZ0bKP8yrZPAAAAABJRU5ErkJggg==') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.pastebin {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAtZJREFUOE+NU91LWmEc7sJtQew/2MUY7INg7CLY3W5GMHazyzEQo9UmfYxZTbAiVlgRqLMSZ+XnDC3z2+Y0+8JGakKZTtR0Tl2wtgtLLQh29cz3ZZ3h3Q68vOc95zzP73l+z+/U1f292O09DRxubxOH23P//1bvtQts3dPnry7LZnXJhcUl5Avf8dHtwY+fv2AyW5DOfIXFakMm+w0G4wISyRRm55TQG0y/Wzv6mikJ52Xf9TmVBoFAAD6fDwqFAqFQCJubmzCbzZiensbp6SmkUikikQi0Wi0kEgm6ewVaStDCfXPDandifn6egoaGhrCzswO1Wg2Hw4HBwUGk02kIBAL4/X4IhUJMTk6ii8dfYggy2RwymQzOz88Rj8dRLpexv7+PSqWCYDCIQqGAra0tJBIJrK2t0XdVAjNDEIl+wfj4OEqlEq2wt7dHrchkMmrBYDCAz+fTIjweD7FYrJbgIJOlgLOzM8jlcip1eXmZ2rFarVAqlRCLxcjlchCJRFRljYJYPAG32418Pg+n04lsNouVlRUcHh7C4/FQIOlHNBqlezgcJgQWxkIgGMbExASVNjY2hvX1dVo9mUzS5wREFLhcLrqTcw2B//M2RkdHodPp4PV6oVKpqH+SCom3v7+fNnF4eJiJusbCJ6+PviSyScakiaR5RIHRaKQpmEwmbAdCeD8zB6vdhebHT8SMhcUlC83bbrdTJRsbG3RwiCVCRNJJpDIoVeNNJJJQzKryV+rrmxiCtyNCCmaz2VhdXQWXy6XDpNfrodFoYLXZUTw+pk222Z3lW3ca26rgSwzBwqIZAwMDlITMAVEwNTVFR5fEJpK8Qyp1AJvDVbrTeLenCmxgfiZ22+urCtWHyu7uLp2wVCpFKx0dHaFYLOLk5KT6Y9kgk89kb95ubK0BX7A8a+1qannRLeW0daj/rU51S3tn9dypfvDw0QiLxbpX/Z7FVK7e/AEj4Wf24/2f5AAAAABJRU5ErkJggg==') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.gist {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAk1JREFUeNqUkzuIE1EUhv955MnsbB6r4kYQLUQQFncV3SnCIqJsoWGDYOGjsIiCtY2Kla1sjLBIsFFcXJC1kaSwENQmXUQSRSUSjCQSTCbkbR4z47lXEgtBNwcu3DNzvvO8R8jlcj7LshKmaWqYQERRTAmCcEru9/sJr9er0QF92BJMAVGr1TQ6CeZAc7lcGAwGkyQAxpTLZU0eDoc8crfbRTgcRjAYRCQSYSmi1WpxY7fbjU6ng1gshmaziXg8zhnGIpVKWbquW9ls1mLZsaMoiqWq6lgnBxY55He/328Vi0XOMFZmqVMD4fF4QBAajcY48khY9JE4HA4enTGMFVkaTHmy+ZzD/5NSqYSNB484w1h55ODO3TVu4FXcWDywl24Cmp0e1WBhyuWELAtIf/qKUrWOONmev3Lpt4NRCXq1gplpBS/v3cDc0nGg9h1o1ZkfwO4Atu1B8cM7HLt8k37V/y5B2b4bJxf2Y+7oEbyJrkMvUjki0YYJ03LidfQxAt4dOHdCw5RdGZcgGobBlQtnV/BDr1GfDai7ZiHZZRi9PoY/e5SCCTUwC9gk1GmMh5YWOcNYkR4Sv1y9uAJbYB82N57h4OnDmN7phjQ0qUkWRJuB+TMaPn/5iFfvv+Ha7eucYey4iWw8q6tRJJNJ3Fp7ClUawEkViBTfkCR0YUNTVHD/4Tpm/P4/U2CeKpUKfD4fJDIMhUKEhP45St50XedZyLQY6Xw+v8AUemVb2oNqtYpCocCWKi2TLLfb7ReZTGZ+kmUi7i2VvfxLgAEAZChMriPcl+IAAAAASUVORK5CYII=') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.image {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAs5JREFUOE+lk/tvi1EYx98/xT8gW4REIpGFMEQWl2FiM9ZMZhm2xRAyOsmujFFmdFRHu0tWm87UypxStr69zPauN5e5rHVp3IYhbOvHy+wHEQlxkm+ek+d8nm9OznkeSfrfldmgJC7QyUlTymsJTfuTZ25z4HdWYwyLreYhtpgekGPw0+kKvo1Eo+IXRSIiEhkWZuc9tqnsJD9EqTUopCxjSGTpB0iueczSo1HyW8cpsExQ1DbxI2pt45j9cXpexul4FEd79RnZphAa/SD7WvuFtO6UItbU9LC+YQxNI2w0wwYT5LRAdhOU3oBTIXC9gXP3oUSGgz2vST3gYHejR0jptT1C332f8yrUEYHrz8CgxDnpm6DKCUfc0KnmXa/AEVPPwnDcD0cvetA2uYRk67Ive/lpjO7YBO1PPuF8Df3vwf4cbNE4tqdw7YVq8HYyHx6FvhE1hkMEg8HDUqvFkjT4aIjMqkqyqkswDSrcfBfH+Q561YLAZ/B+BLda6FXlU/cPv0AoEPhuoP1h4Av7Wbh9E/Py15NWWUjeSR3nZDfeN+N0DY9hG/7K1eGP3P0S5/EYRFUF/IOTBrUXHPm9fT6mr1xEwupkZqxbzLyiDJYUZ5NSnkdqdSHpxyrYdFpPgdmAsdfJwPMI/Yr65bf7tZLGGBQ7DNdJWFtIYvoOZmbuZE7OXpIKKli86zAr9p9gTVktWTVnKTI2U95uRWe3U2IJUDbVB5p6hVm5x5m9Vc/cnedZUNzC8lILaQesZBy6hEZ3maKzgvJWFzVWD9XtXvVGQbSWASFtMATVRlJIKbOTWtlJXaeXepuPM1f6MNp9GLt8mLvvYLmp0OhQ2Fwvk6m7xaqDTvY0eYWUVtcnllXfYlGpnfklVuraHHg8HjxuN+6fktUHlWWZPaZeUo/ILK0UKttBcbNbSB9GP0yLxWJJUxoZGUn80zD9C/vXQ/4NHY10h3M1zmQAAAAASUVORK5CYII=') center left no-repeat!important;\npadding-left: 18px;\n}\n.linkify.InstallGentoo {\nbackground: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAklJREFUOE9jYEAAASBTCorZkcSRmTjVCDLziCwG4hfM3EIvGNm44oC6WNEM4WXi5FsEkmfhFX3BxMmfAJSHW9Qr55Px3aZp3X/btq3/hQydPzKysMcCFbBBDeFj4uBdqBJR/gskb1W34j+PmulLoJwbzBJJoMm7dNO7/ntMP/XfpW/v//SKvk+7tl7fvXfTpx5pCdWVSiHFv1wnHQbLi9sE/Wdk5SwBauaCGQB3gUPb5v+7Lr/8/+fvr/9fv/z+f+Pyr/9bV735l9Wy/79Dx/b/Nk0bsLoAHgbeAVHv/v77/f8f0IB7N7+cu3DuecK54z9+7lzz639e9pK/7HwSWMMA5BJwCJeXtOm/fvVj1fcfv369f//92cN7X6ZcPvf9x6Htv//vXP3r/+T245UEYgpskPTNq08LgN749/PH7/93rv/6f/rw7//nj//4f+bU0zQcUQwWBkdVbGz62y+fv3wHeeXrlz//H9798//qpY//M3KqfzGxc8djiWKwZnBUuWQ2/fr46fv/P39+///x/ff/d69//z97+s7fyMb5/+y7d2GLYriDZikFF/1qXXXj/4Pbv/8/f/jn/5MH316/eP6jVlBAaIt6VO1/jxmn/zv27P7Pp2HxEajLD90ra9Sj6/979O37X73w0n+vqOL/0lJyMVBFq0EGgDSD0oKAlu1/oHg4ugGzVCKqfouYuL1Xj676Iajr8AnJFricGqYc3Bw+Zi6BVUxsXLHAdL6QiYMPFNrwpIxHDsUhgtAMAopKDjQn4pPDF7P45QC4hSmc1eX8WgAAAABJRU5ErkJggg==') center left no-repeat!important;\npadding-left: 18px;\n}\n\n/* General */\n:root.yotsuba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.yotsuba #header-bar, :root.yotsuba #notifications {\nfont-size: 9pt;\ncolor: #B86;\n}\n:root.yotsuba #header-bar a, :root.yotsuba #notifications a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.yotsuba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.yotsuba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.yotsuba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba #menu {\ncolor: #800000;\n}\n:root.yotsuba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 10pt;\n}\n:root.yotsuba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* Watcher Favicon */\n:root.yotsuba .watch-thread-link\n{\nbackground-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(128,0,0)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\");\n}\n\n/* General */\n:root.yotsuba-b .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.yotsuba-b #header-bar, :root.yotsuba-b #notifications {\nfont-size: 9pt;\ncolor: #89A;\n}\n:root.yotsuba-b #header-bar a, :root.yotsuba-b #notifications a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.yotsuba-b #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.yotsuba-b .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.yotsuba-b .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba-b #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba-b #menu {\ncolor: #000;\n}\n:root.yotsuba-b .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 10pt;\n}\n:root.yotsuba-b .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* Watcher Favicon */\n:root.yotsuba-b .watch-thread-link\n{\nbackground-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(0,0,0)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\");\n}\n\n/* General */\n:root.futaba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.futaba #header-bar, :root.futaba #notifications {\nfont-size: 11pt;\ncolor: #B86;\n}\n:root.futaba #header-bar a, :root.futaba #notifications a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.futaba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.futaba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.futaba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.futaba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.futaba #menu {\ncolor: #800000;\n}\n:root.futaba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 12pt;\n}\n:root.futaba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* Watcher Favicon */\n:root.futaba .watch-thread-link\n{\nbackground-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(128,0,0)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\");\n}\n\n/* General */\n:root.burichan .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.burichan #header-bar, :root.burichan #header-bar #notifications {\nfont-size: 11pt;\ncolor: #89A;\n}\n:root.burichan #header-bar a, :root.burichan #header-bar #notifications a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.burichan #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.burichan .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.burichan .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.burichan #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.burichan #menu {\ncolor: #000000;\n}\n:root.burichan .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 12pt;\n}\n:root.burichan .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* Watcher Favicon */\n:root.burichan .watch-thread-link\n{\nbackground-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(0,0,0)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\");\n}\n\n/* General */\n:root.tomorrow .dialog {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n\n/* Header */\n:root.tomorrow #header-bar, :root.tomorrow #notifications {\nfont-size: 9pt;\ncolor: #C5C8C6;\n}\n:root.tomorrow #header-bar a, :root.tomorrow #notifications a {\ncolor: #81A2BE;\n}\n\n/* Settings */\n:root.tomorrow #fourchanx-settings fieldset {\nborder-color: #111;\n}\n\n/* Quote */\n:root.tomorrow .backlink.deadlink {\ncolor: #81A2BE !important;\n}\n:root.tomorrow .inline {\nborder-color: #111;\nbackground-color: rgba(0, 0, 0, .14);\n}\n\n/* QR */\n.tomorrow #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow .qr-preview {\nbackground-color: rgba(255, 255, 255, .15);\n}\n:root.tomorrow #qr .field {\nbackground-color: rgb(26, 27, 29);\ncolor: rgb(197,200,198);\nborder-color: rgb(40, 41, 42);\n}\n:root.tomorrow #qr .field:focus {\nborder-color: rgb(129, 162, 190) !important;\nbackground-color: rgb(30,32,36);\n}\n\n/* Menu */\n:root.tomorrow #menu {\ncolor: #C5C8C6;\n}\n:root.tomorrow .entry {\nborder-bottom: 1px solid #111;\nfont-size: 10pt;\n}\n:root.tomorrow .focused.entry {\nbackground: rgba(0, 0, 0, .33);\n}\n\n/* Watcher Favicon */\n:root.tomorrow .watch-thread-link\n{\nbackground-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(197,200,198)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\");\n}\n\n/* General */\n:root.photon .dialog {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.photon #header-bar, :root.photon #notifications {\nfont-size: 9pt;\ncolor: #333;\n}\n:root.photon #header-bar a, :root.photon #notifications a {\ncolor: #FF6600;\n}\n\n/* Settings */\n:root.photon #fourchanx-settings fieldset {\nborder-color: #CCC;\n}\n\n/* Quote */\n:root.photon .backlink.deadlink {\ncolor: #F60 !important;\n}\n:root.photon .inline {\nborder-color: #CCC;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.photon #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.photon #menu {\ncolor: #333;\n}\n:root.photon .entry {\nborder-bottom: 1px solid #CCC;\nfont-size: 10pt;\n}\n:root.photon .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* Watcher Favicon */\n:root.photon .watch-thread-link\n{\nbackground-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(51,51,51)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\");\n}\n"
   };
 
   Main.init();

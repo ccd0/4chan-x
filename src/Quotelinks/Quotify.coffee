@@ -21,11 +21,18 @@ Quotify =
     if deadlink.parentNode.className is 'prettyprint'
       # Don't quotify deadlinks inside code tags,
       # un-`span` them.
-      $.replace deadlink, [deadlink.childNodes...]
+      # This won't be necessary once 4chan
+      # stops quotifying inside code tags:
+      # https://github.com/4chan/4chan-JS/issues/77
+      Quotify.fixDeadlink deadlink
       return
 
     quote = deadlink.textContent
     return unless postID = quote.match(/\d+$/)?[0]
+    if postID[0] is '0'
+      # Fix quotelinks that start with a `0`.
+      Quotify.fixDeadlink deadlink
+      return
     boardID = if m = quote.match /^>>>\/([a-z\d]+)/
       m[1]
     else
@@ -37,20 +44,19 @@ Quotify =
         # Don't (Dead) when quotifying in an archived post,
         # and we know the post still exists.
         a = $.el 'a',
-          href:        "/#{boardID}/#{post.thread}/res/#p#{postID}"
+          href:        "/#{boardID}/res/#{post.thread}#p#{postID}"
           className:   'quotelink'
           textContent: quote
       else
         # Replace the .deadlink span if we can redirect.
         a = $.el 'a',
-          href:        "/#{boardID}/#{post.thread}/res/#p#{postID}"
+          href:        "/#{boardID}/res/#{post.thread}#p#{postID}"
           className:   'quotelink deadlink'
           target:      '_blank'
           textContent: "#{quote}\u00A0(Dead)"
 
-        a.setAttribute 'data-boardid',  boardID
-        a.setAttribute 'data-threadid', post.thread.ID
-        a.setAttribute 'data-postid',   postID
+        $.extend a.dataset, {boardID, threadID: post.thread.ID, postID}
+
     else if redirect = Redirect.to 'thread', {boardID, threadID: 0, postID}
       # Replace the .deadlink span if we can redirect.
       a = $.el 'a',
@@ -60,9 +66,8 @@ Quotify =
         textContent: "#{quote}\u00A0(Dead)"
       if Redirect.to 'post', {boardID, postID}
         # Make it function as a normal quote if we can fetch the post.
-        $.addClass a,  'quotelink'
-        a.setAttribute 'data-boardid', boardID
-        a.setAttribute 'data-postid',  postID
+        $.addClass a, 'quotelink'
+        $.extend a.dataset, {boardID, postID}
 
     unless @quotes.contains quoteID
       @quotes.push quoteID
@@ -74,3 +79,6 @@ Quotify =
     $.replace deadlink, a
     if $.hasClass a, 'quotelink'
       @nodes.quotelinks.push a
+
+  fixDeadlink: (deadlink) ->
+    $.replace deadlink, [deadlink.childNodes...]

@@ -1,18 +1,18 @@
 module.exports = (grunt) ->
 
-  pkg = grunt.file.readJSON 'package.json'
   concatOptions =
-    process:
-      data: pkg
-
+    process: Object.create(null, data:
+      get: -> grunt.config 'pkg'
+      enumerable: true
+    )
   shellOptions =
-    stdout:      true
-    stderr:      true
+    stdout: true
+    stderr: true
     failOnError: true
 
   # Project configuration.
   grunt.initConfig
-    pkg: pkg
+    pkg: grunt.file.readJSON 'package.json'
     concat:
       coffee:
         options: concatOptions
@@ -41,8 +41,8 @@ module.exports = (grunt) ->
       meta:
         options: concatOptions
         files:
-          'LICENSE': 'src/General/meta/banner.js',
-          'latest.js': 'src/General/meta/latest.js'
+          'LICENSE':   'src/General/meta/banner.js',
+          'latest.js': 'src/General/meta/latest.js' 
 
       crx:
         options: concatOptions
@@ -51,19 +51,9 @@ module.exports = (grunt) ->
           'builds/crx/script.js': [
             'src/General/meta/botproc.js'
             'src/General/meta/banner.js'
+            'src/General/meta/usestrict.js'
             'tmp-<%= pkg.type %>/script.js'
           ]
-
-      userjs:
-        options: concatOptions
-        src: [
-          'src/General/meta/botproc.js'
-          'src/General/meta/metadata.js'
-          'src/General/meta/banner.js'
-          'tmp-<%= pkg.type %>/script.js'
-        ]
-        dest: 'builds/<%= pkg.name %>.js'
-
       userscript:
         options: concatOptions
         files:
@@ -72,13 +62,13 @@ module.exports = (grunt) ->
             'src/General/meta/botproc.js'
             'src/General/meta/metadata.js'
             'src/General/meta/banner.js'
+            'src/General/meta/usestrict.js'
             'tmp-<%= pkg.type %>/script.js'
           ]
-
     copy:
       crx:
-        src:    'src/General/img/*.png'
-        dest:   'builds/crx/'
+        src:  'src/General/img/*.png'
+        dest: 'builds/crx/'
         expand:  true
         flatten: true
 
@@ -91,24 +81,31 @@ module.exports = (grunt) ->
       build: [
         'concat:meta'
         'build-crx'
-        'build-userjs'
         'build-userscript'
       ]
+
+    bump:
+      options:
+        updateConfigs: [
+          'pkg'
+        ]
+        commit:    false
+        createTag: false
+        push:      false
 
     shell:
       commit:
         options: shellOptions
         command: [
-          'git checkout <%= pkg.meta.mainBranch %>',
-          'git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."',
-          'git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."',
+          'git checkout <%= pkg.meta.mainBranch %>'
+          'git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."'
+          'git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
           'git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
-        ].join(' && ')
-        stdout: true
+        ].join ' && '
 
       push:
         options: shellOptions
-        command: 'git push origin --tags -f && git push origin --all' 
+        command: 'git push origin --tags -f && git push origin --all'
 
     watch:
       all:
@@ -124,35 +121,28 @@ module.exports = (grunt) ->
     compress:
       crx:
         options:
-          archive: 'builds/4chan-X-Chrome.zip'
+          archive: 'builds/<%= pkg.name %>.zip'
           level: 9
           pretty: true
-        expand: true
-        cwd: 'builds/crx/'
-        src: '**'
-
+        expand:  true
+        flatten: true
+        src: 'builds/crx/*'
+        dest: '/'
     clean:
-      builds:        'builds'
-      tmpcrx:        'tmp-crx'
-      tmpuserjs:     'tmp-userjs'
+      builds: 'builds'
+      tmpcrx: 'tmp-crx'
       tmpuserscript: 'tmp-userscript'
 
-  grunt.loadNpmTasks 'grunt-bump'
-  grunt.loadNpmTasks 'grunt-concurrent'
-  grunt.loadNpmTasks 'grunt-contrib-clean'
-  grunt.loadNpmTasks 'grunt-contrib-coffee'
-  grunt.loadNpmTasks 'grunt-contrib-compress'
-  grunt.loadNpmTasks 'grunt-contrib-concat'
-  grunt.loadNpmTasks 'grunt-contrib-copy'
-  grunt.loadNpmTasks 'grunt-contrib-watch'
-  grunt.loadNpmTasks 'grunt-shell'
+  require('matchdep').filterDev('grunt-*').forEach grunt.loadNpmTasks
 
   grunt.registerTask 'default', [
     'build'
   ]
 
   grunt.registerTask 'set-build', 'Set the build type variable', (type) ->
-    pkg.type = type;
+    pkg = grunt.config 'pkg'
+    pkg.type = type
+    grunt.config 'pkg', pkg
     grunt.log.ok 'pkg.type = %s', type
 
   grunt.registerTask 'build', [
@@ -168,14 +158,6 @@ module.exports = (grunt) ->
     'clean:tmpcrx'
   ]
 
-  grunt.registerTask 'build-userjs', [
-    'set-build:userjs'
-    'concat:coffee'
-    'coffee:script'
-    'concat:userjs'
-    'clean:tmpuserjs'
-  ]
-
   grunt.registerTask 'build-userscript', [
     'set-build:userscript'
     'concat:coffee'
@@ -185,40 +167,36 @@ module.exports = (grunt) ->
   ]
 
   grunt.registerTask 'release', [
-    'default'
-    'compress:crx'
+    'build'
     'shell:commit'
     'shell:push'
+    'build-crx'
+    'compress:crx'
   ]
-
-  grunt.registerTask 'patch',   [
-    'bump-only'
-    'reloadPkg'
+  grunt.registerTask 'patch', [
+    'bump'
     'updcl:3'
+    'release'
   ]
 
-  grunt.registerTask 'minor',   [
-    'bump-only:minor'
-    'reloadPkg'
+  grunt.registerTask 'minor', [
+    'bump:minor'
     'updcl:2'
+    'release'
   ]
 
-  grunt.registerTask 'major',   [
-    'bump-only:major'
-    'reloadPkg'
+  grunt.registerTask 'major', [
+    'bump:major'
     'updcl:1'
+    'release'
   ]
 
-  grunt.registerTask 'reloadPkg', 'Reload the package', ->
-    # Update the `pkg` object with the new version.
-    pkg = grunt.file.readJSON('package.json')
-    grunt.config.data.pkg = concatOptions.process.data = pkg
-    grunt.log.ok('pkg reloaded.')
+  grunt.registerTask 'updcl', 'Update the changelog', (headerLevel) ->
+    headerPrefix = new Array(+headerLevel + 1).join '#'
+    {version} = grunt.config 'pkg'
+    today     = grunt.template.today 'yyyy-mm-dd'
+    changelog = grunt.file.read 'CHANGELOG.md'
 
-  grunt.registerTask 'updcl',   'Update the changelog', (i) ->
-    # i is the number of #s for markdown.
-    version = []
-    version.length = +i + 1
-    version = version.join('#') + ' v' + pkg.version + '\n*' + grunt.template.today('yyyy-mm-dd') + '*\n'
-    grunt.file.write 'CHANGELOG.md', version + '\n' + grunt.file.read('CHANGELOG.md')
-    grunt.log.ok     'Changelog updated for v' + pkg.version + '.'
+    grunt.file.write 'CHANGELOG.md', "#{headerPrefix} #{version} - *#{today}*\n\n#{changelog}"
+    grunt.log.ok "Changelog updated for v#{version}."
+

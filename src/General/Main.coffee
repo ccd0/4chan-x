@@ -15,11 +15,12 @@ Main =
     for db in DataBoards
       Conf[db] = boards: {}
     Conf['selectedArchives'] = {}
+    Conf['CachedTitles']     = []
     
     $.get Conf, Main.initFeatures
 
     $.on d, '4chanMainInit', Main.initStyle
-    $.asap (-> d.head and $('link[rel="shortcut icon"]', d.head) or d.readyState in ['interactive', 'complete']),
+    $.asap (-> d.head and $('link[rel="shortcut icon"]', d.head) or d.readyState isnt 'loading'),
       Main.initStyle
 
   initFeatures: (items) ->
@@ -47,7 +48,7 @@ Main =
         return
       when 'images.4chan.org'
         $.ready ->
-          if Conf['404 Redirect'] and d.title is '4chan - 404 Not Found'
+          if Conf['404 Redirect'] and ['4chan - Temporarily Offline', '4chan - 404 Not Found'].contains d.title
             Redirect.init()
             pathname = location.pathname.split '/'
             URL = Redirect.to 'file',
@@ -72,61 +73,62 @@ Main =
     # c.time 'All initializations'
 
     init
-      'Polyfill':                 Polyfill
-      'Redirect':                 Redirect
-      'Header':                   Header
-      'Catalog Links':            CatalogLinks
-      'Settings':                 Settings
-      'Announcement Hiding':      PSAHiding
-      'Fourchan thingies':        Fourchan
-      'Emoji':                    Emoji
-      'Color User IDs':           IDColor
-      'Remove Spoilers':          RemoveSpoilers
-      'Custom CSS':               CustomCSS
-      'Linkify':                  Linkify
-      'Resurrect Quotes':         Quotify
-      'Filter':                   Filter
-      'Thread Hiding Buttons':    ThreadHiding
-      'Reply Hiding Buttons':     PostHiding
-      'Recursive':                Recursive
-      'Strike-through Quotes':    QuoteStrikeThrough
-      'Quick Reply':              QR
-      'Menu':                     Menu
-      'Report Link':              ReportLink
-      'Thread Hiding (Menu)':     ThreadHiding.menu
-      'Reply Hiding (Menu)':      PostHiding.menu
-      'Delete Link':              DeleteLink
-      'Filter (Menu)':            Filter.menu
-      'Download Link':            DownloadLink
-      'Archive Link':             ArchiveLink
-      'Quote Inlining':           QuoteInline
-      'Quote Previewing':         QuotePreview
-      'Quote Backlinks':          QuoteBacklink
-      'Mark Quotes of You':       QuoteYou
-      'Mark OP Quotes':           QuoteOP
-      'Mark Cross-thread Quotes': QuoteCT
-      'Anonymize':                Anonymize
-      'Time Formatting':          Time
-      'Relative Post Dates':      RelativeDates
-      'File Info Formatting':     FileInfo
-      'Fappe Tyme':               FappeTyme
-      'Sauce':                    Sauce
-      'Image Expansion':          ImageExpand
-      'Image Expansion (Menu)':   ImageExpand.menu
-      'Reveal Spoilers':          RevealSpoilers
-      'Image Loading':            ImageLoader
-      'Image Hover':              ImageHover
-      'Comment Expansion':        ExpandComment
-      'Thread Expansion':         ExpandThread
-      'Thread Excerpt':           ThreadExcerpt
-      'Favicon':                  Favicon
-      'Unread':                   Unread
-      'Quote Threading':          QuoteThreading
-      'Thread Stats':             ThreadStats
-      'Thread Updater':           ThreadUpdater
-      'Thread Watcher':           ThreadWatcher
-      'Index Navigation':         Nav
-      'Keybinds':                 Keybinds
+      'Polyfill':                  Polyfill
+      'Redirect':                  Redirect
+      'Header':                    Header
+      'Catalog Links':             CatalogLinks
+      'Settings':                  Settings
+      'Announcement Hiding':       PSAHiding
+      'Fourchan thingies':         Fourchan
+      'Emoji':                     Emoji
+      'Color User IDs':            IDColor
+      'Reveal Spoilers':           RemoveSpoilers
+      'Custom CSS':                CustomCSS
+      'Linkify':                   Linkify
+      'Resurrect Quotes':          Quotify
+      'Filter':                    Filter
+      'Thread Hiding Buttons':     ThreadHiding
+      'Reply Hiding Buttons':      PostHiding
+      'Recursive':                 Recursive
+      'Strike-through Quotes':     QuoteStrikeThrough
+      'Quick Reply':               QR
+      'Menu':                      Menu
+      'Report Link':               ReportLink
+      'Thread Hiding (Menu)':      ThreadHiding.menu
+      'Reply Hiding (Menu)':       PostHiding.menu
+      'Delete Link':               DeleteLink
+      'Filter (Menu)':             Filter.menu
+      'Download Link':             DownloadLink
+      'Archive Link':              ArchiveLink
+      'Quote Inlining':            QuoteInline
+      'Quote Previewing':          QuotePreview
+      'Quote Backlinks':           QuoteBacklink
+      'Mark Quotes of You':        QuoteYou
+      'Mark OP Quotes':            QuoteOP
+      'Mark Cross-thread Quotes':  QuoteCT
+      'Anonymize':                 Anonymize
+      'Time Formatting':           Time
+      'Relative Post Dates':       RelativeDates
+      'File Info Formatting':      FileInfo
+      'Fappe Tyme':                FappeTyme
+      'Sauce':                     Sauce
+      'Image Expansion':           ImageExpand
+      'Image Expansion (Menu)':    ImageExpand.menu
+      'Reveal Spoiler Thumbnails': RevealSpoilers
+      'Image Loading':             ImageLoader
+      'Image Hover':               ImageHover
+      'Comment Expansion':         ExpandComment
+      'Thread Expansion':          ExpandThread
+      'Thread Excerpt':            ThreadExcerpt
+      'Favicon':                   Favicon
+      'Unread':                    Unread
+      'Quote Threading':           QuoteThreading
+      'Thread Stats':              ThreadStats
+      'Thread Updater':            ThreadUpdater
+      'Thread Watcher':            ThreadWatcher
+      'Index Navigation':          Nav
+      'Keybinds':                  Keybinds
+      'Show Dice Roll':            Dice
 
     # c.timeEnd 'All initializations'
 
@@ -139,10 +141,7 @@ Main =
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
     <% if (type === 'crx') { %>
-    $.addClass doc, 'webkit'
     $.addClass doc, 'blink'
-    <% } else if (type === 'userjs') { %>
-    $.addClass doc, 'presto'
     <% } else { %>
     $.addClass doc, 'gecko'
     <% } %>
@@ -166,13 +165,9 @@ Main =
       $.addClass doc, style
     setStyle()
     return unless mainStyleSheet
-    if window.MutationObserver
-      observer = new MutationObserver setStyle
-      observer.observe mainStyleSheet,
-        attributes: true
-        attributeFilter: ['href']
-    else
-      $.on mainStyleSheet, 'DOMAttrModified', setStyle
+    new MutationObserver(setStyle).observe mainStyleSheet,
+      attributes: true
+      attributeFilter: ['href']
 
   initReady: ->
     if d.title is '4chan - 404 Not Found'
@@ -192,20 +187,18 @@ Main =
       threads = []
       posts   = []
 
-      for boardChild in board.children
-        continue unless $.hasClass boardChild, 'thread'
-        thread = new Thread boardChild.id[1..], g.BOARD
+      for threadRoot in $$ '.board > .thread', board
+        thread = new Thread +threadRoot.id[1..], g.BOARD
         threads.push thread
-        for threadChild in boardChild.children
-          continue unless $.hasClass threadChild, 'postContainer'
+        for postRoot in $$ '.thread > .postContainer', threadRoot
           try
-            posts.push new Post threadChild, thread, g.BOARD
+            posts.push new Post postRoot, thread, g.BOARD
           catch err
             # Skip posts that we failed to parse.
             unless errors
               errors = []
             errors.push
-              message: "Parsing of Post No.#{threadChild.id.match(/\d+/)} failed. Post will be skipped."
+              message: "Parsing of Post No.#{postRoot.id.match(/\d+/)} failed. Post will be skipped."
               error: err
       Main.handleErrors errors if errors
 
@@ -373,7 +366,7 @@ Main =
     unless 'thisPageIsLegit' of Main
       Main.thisPageIsLegit = location.hostname is 'boards.4chan.org' and
         !$('link[href*="favicon-status.ico"]', d.head) and
-        d.title not in ['4chan - Temporarily Offline', '4chan - Error']
+        d.title not in ['4chan - Temporarily Offline', '4chan - Error', '504 Gateway Time-out']
     Main.thisPageIsLegit
 
   css: """

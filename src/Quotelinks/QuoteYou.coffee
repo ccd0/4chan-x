@@ -1,6 +1,6 @@
 QuoteYou =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Mark Quotes of You'] or !Conf['Quick Reply']
+    return unless g.VIEW isnt 'catalog' and Conf['Mark Quotes of You'] and Conf['Quick Reply']
 
     if Conf['Highlight Own Posts']
       $.addClass doc, 'highlight-own'
@@ -14,6 +14,7 @@ QuoteYou =
     Post::callbacks.push
       name: 'Mark Quotes of You'
       cb:   @node
+
   node: ->
     # Stop there if it's a clone.
     return if @isClone
@@ -24,8 +25,38 @@ QuoteYou =
     # Stop there if there's no quotes in that post.
     return unless @quotes.length
 
-    for quotelink in @nodes.quotelinks
-      if QR.db.get Get.postDataFromLink quotelink
+    for quotelink in @nodes.quotelinks when QR.db.get Get.postDataFromLink quotelink
         $.add quotelink, $.tn '\u00A0(You)'
         $.addClass @nodes.root, 'quotesYou'
     return
+
+  cb:
+    seek: (type) ->
+      return unless Conf['Mark Quotes of You'] and Conf['Quick Reply']
+      $.rmClass highlight, 'highlight' if highlight = $ '.highlight'
+
+      unless QuoteYou.lastRead
+        unless post = QuoteYou.lastRead = $ '.quotesYou'
+          new Notification 'warning', 'No posts are currently quoting you, loser.', 20
+          return
+        return if QuoteYou.cb.scroll post
+      else
+        post = QuoteYou.lastRead
+
+      str = "#{type}::div[contains(@class,'quotesYou')]"
+
+      while post = (result = $.X(str, post)).snapshotItem(if type is 'preceding' then result.snapshotLength - 1 else 0)
+        return if QuoteYou.cb.scroll post
+
+      posts = $$ '.quotesYou'
+      QuoteYou.cb.scroll posts[if type is 'following' then 0 else posts.length - 1]
+
+    scroll: (post) ->
+      if Get.postFromRoot(post).isHidden
+        return false
+      else
+        QuoteYou.lastRead = post
+        window.location = "##{post.id}"
+        Header.scrollToPost post
+        $.addClass $('.post', post), 'highlight'
+        return true

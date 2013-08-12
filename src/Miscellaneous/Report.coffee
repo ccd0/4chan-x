@@ -1,6 +1,6 @@
 Report =
   init: ->
-    return unless /report/.test(location.search) and d.cookie.indexOf('pass_enabled=1') is -1
+    return unless /report/.test(location.search) and not d.cookie.contains 'pass_enabled=1'
     $.asap (-> $.id 'recaptcha_response_field'), Report.ready
   ready: ->
     field = $.id 'recaptcha_response_field'

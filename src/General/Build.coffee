@@ -27,6 +27,7 @@ Build =
       date:     data.now
       dateUTC:  data.time
       comment:  data.com
+      capReps:  data.capcode_replies
       # thread status
       isSticky: !!data.sticky
       isClosed: !!data.closed
@@ -58,7 +59,7 @@ Build =
       postID, threadID, boardID
       name, capcode, tripcode, uniqueID, email, subject, flagCode, flagName, date, dateUTC
       isSticky, isClosed
-      comment
+      comment, capReps
       file
     } = o
     isOP = postID is threadID
@@ -108,12 +109,12 @@ Build =
         capcodeStart = ''
         capcode      = ''
 
-    flag =
-      if flagCode
-        " <img src='#{staticPath}country/#{if boardID is 'pol' then 'troll/' else ''}" +
-        flagCode.toLowerCase() + ".gif' alt=#{flagCode} title='#{flagName}' class=countryFlag>"
-      else
-        ''
+    flag = unless flagCode
+      ''
+    else if boardID is 'pol'
+      " <img src='#{staticPath}country/troll/#{flagCode.toLowerCase()}.gif' alt=#{flagCode} title='#{flagName}' class=countryFlag>"
+    else
+      " <span title='#{flagName}' class='flag flag-#{flagCode.toLowerCase()}'></span>"
 
     if file?.isDeleted
       fileHTML = if isOP
@@ -176,78 +177,44 @@ Build =
     else
       fileHTML = ''
 
-    tripcode =
-      if tripcode
-        " <span class=postertrip>#{tripcode}</span>"
-      else
-        ''
+    tripcode = if tripcode
+      " <span class=postertrip>#{tripcode}</span>"
+    else
+      ''
 
-    sticky =
-      if isSticky
-        " <img src=#{staticPath}sticky.gif alt=Sticky title=Sticky class=stickyIcon>"
-      else
-        ''
-    closed =
-      if isClosed
-        " <img src=#{staticPath}closed.gif alt=Closed title=Closed class=closedIcon>"
-      else
-        ''
+    sticky = if isSticky
+      " <img src=#{staticPath}sticky.gif alt=Sticky title=Sticky class=stickyIcon>"
+    else
+      ''
+    closed = if isClosed
+      " <img src=#{staticPath}closed.gif alt=Closed title=Closed class=closedIcon>"
+    else
+      ''
+
+    capcodeReplies = ''
+    if capReps
+      generateCapcodeReplies = (capcodeType, array) ->
+        "<span class=smaller><span class=bold>#{
+          switch capcodeType
+            when 'admin'
+              'Administrator'
+            when 'mod'
+              'Moderator'
+            when 'developer'
+              'Developer'
+        } Repl#{if array.length > 1 then 'ies' else 'y'}:</span> #{
+          array.map (ID) ->
+            "<a href='/#{boardID}/res/#{threadID}#p#{ID}' class=quotelink>&gt;&gt;#{ID}</a>"
+          .join ' '
+        }</span><br>"
+      for capcodeType, array of capReps
+        capcodeReplies += generateCapcodeReplies capcodeType, array
+      capcodeReplies = "<br><br><span class=capcodeReplies>#{capcodeReplies}</span>"
 
     container = $.el 'div',
       id: "pc#{postID}"
       className: "postContainer #{if isOP then 'op' else 'reply'}Container"
-      innerHTML: \
-      (if isOP then '' else "<div class=sideArrows id=sa#{postID}>&gt;&gt;</div>") +
-      "<div id=p#{postID} class='post #{if isOP then 'op' else 'reply'}#{
-        if capcode is 'admin_highlight'
-          ' highlightPost'
-        else
-          ''
-        }'>" +
-
-        "<div class='postInfoM mobile' id=pim#{postID}>" +
-          "<span class='nameBlock#{capcodeClass}'>" +
-              "<span class=name>#{name or ''}</span>" + tripcode +
-            capcodeStart + capcode + userID + flag + sticky + closed +
-            "<br>#{subject}" +
-          "</span><span class='dateTime postNum' data-utc=#{dateUTC}>#{date}" +
-            "<a href=#{"/#{boardID}/res/#{threadID}#p#{postID}"}>No.</a>" +
-            "<a href='#{
-              if g.VIEW is 'thread' and g.THREADID is +threadID
-                "javascript:quote(#{postID})"
-              else
-                "/#{boardID}/res/#{threadID}#q#{postID}"
-              }'>#{postID}</a>" +
-          '</span>' +
-        '</div>' +
-
-        (if isOP then fileHTML else '') +
-
-        "<div class='postInfo desktop' id=pi#{postID}>" +
-          "<input type=checkbox name=#{postID} value=delete> " +
-          "#{subject} " +
-          "<span class='nameBlock#{capcodeClass}'>" +
-            emailStart +
-              "<span class=name>#{name or ''}</span>" + tripcode +
-            capcodeStart + emailEnd + capcode + userID + flag + sticky + closed +
-          ' </span> ' +
-          "<span class=dateTime data-utc=#{dateUTC}>#{date}</span> " +
-          "<span class='postNum desktop'>" +
-            "<a href=#{"/#{boardID}/res/#{threadID}#p#{postID}"} title='Highlight this post'>No.</a>" +
-            "<a href='#{
-              if g.VIEW is 'thread' and g.THREADID is +threadID
-                "javascript:quote(#{postID})"
-              else
-                "/#{boardID}/res/#{threadID}#q#{postID}"
-              }' title='Quote this post'>#{postID}</a>" +
-          '</span>' +
-        '</div>' +
-
-        (if isOP then '' else fileHTML) +
-
-        "<blockquote class=postMessage id=m#{postID}>#{comment or ''}</blockquote> " +
-
-      '</div>'
+      innerHTML: <%= grunt.file.read('src/General/html/Build/post.html').replace(/>\s+/g, '>').replace(/\s+</g, '<').replace(/\s+/g, ' ').trim() %>
 
     for quote in $$ '.quotelink', container
       href = quote.getAttribute 'href'

@@ -18,8 +18,8 @@ Get =
     post    = g.posts["#{boardID}.#{postID}"]
     if index then post.clones[index] else post
   postFromNode: (root) ->
-    Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', root
-  contextFromLink: (quotelink) ->
+    Get.postFromRoot $.x '(ancestor::div[contains(@class,"postContainer")][1]|following::div[contains(@class,"postContainer")][1])', root
+  contextFromNode: (quotelink) ->
     Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', quotelink
   postDataFromLink: (link) ->
     if link.hostname is 'boards.4chan.org'
@@ -28,9 +28,8 @@ Get =
       threadID = path[3]
       postID   = link.hash[2..]
     else # resurrected quote
-      boardID  = link.dataset.boardid
-      threadID = link.dataset.threadid or 0
-      postID   = link.dataset.postid
+      {boardID, threadID, postID} = link.dataset
+      threadID or= 0
     return {
       boardID:  boardID
       threadID: +threadID
@@ -72,8 +71,10 @@ Get =
       $.cache "//api.4chan.org/#{boardID}/res/#{threadID}.json", ->
         Get.fetchedPost @, boardID, threadID, postID, root, context
     else if url = Redirect.to 'post', {boardID, postID}
-      $.cache url, ->
-        Get.archivedPost @, boardID, postID, root, context
+      $.cache url,
+        -> Get.archivedPost @, boardID, postID, root, context
+      ,
+        withCredentials: url.archive.withCredentials
   insert: (post, root, context) ->
     # Stop here if the container has been removed while loading.
     return unless root.parentNode
@@ -98,8 +99,10 @@ Get =
     unless [200, 304].contains status
       # The thread can die by the time we check a quote.
       if url = Redirect.to 'post', {boardID, postID}
-        $.cache url, ->
-          Get.archivedPost @, boardID, postID, root, context
+        $.cache url,
+          -> Get.archivedPost @, boardID, postID, root, context
+        ,
+          withCredentials: url.archive.withCredentials
       else
         $.addClass root, 'warning'
         root.textContent =
@@ -116,8 +119,10 @@ Get =
       if post.no > postID
         # The post can be deleted by the time we check a quote.
         if url = Redirect.to 'post', {boardID, postID}
-          $.cache url, ->
-            Get.archivedPost @, boardID, postID, root, context
+          $.cache url,
+            -> Get.archivedPost @, boardID, postID, root, context
+          ,
+            withCredentials: url.archive.withCredentials
         else
           $.addClass root, 'warning'
           root.textContent = "Post No.#{postID} was not found."
@@ -154,30 +159,7 @@ Get =
       | \[/?code\]
       | \[/?moot\]
       | \[/?banned\]
-      ///g, (text) ->
-        switch text
-          when '\n'
-            '<br>'
-          when '[b]'
-            '<b>'
-          when '[/b]'
-            '</b>'
-          when '[spoiler]'
-            '<s>'
-          when '[/spoiler]'
-            '</s>'
-          when '[code]'
-            '<pre class=prettyprint>'
-          when '[/code]'
-            '</pre>'
-          when '[moot]'
-            '<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">'
-          when '[/moot]'
-            '</div>'
-          when '[banned]'
-            '<b style="color: red;">'
-          when '[/banned]'
-            '</b>'
+    ///g, Get.parseMarkup
 
     comment = bq.innerHTML
       # greentext
@@ -185,7 +167,7 @@ Get =
       # quotes
       .replace /((&gt;){2}(&gt;\/[a-z\d]+\/)?\d+)/g, '<span class=deadlink>$1</span>'
 
-    threadID = data.thread_num
+    threadID = +data.thread_num
     o =
       # id
       postID:   "#{postID}"
@@ -229,3 +211,27 @@ Get =
       isArchived: true
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
+  parseMarkup: (text) ->
+    switch text
+      when '\n'
+        '<br>'
+      when '[b]'
+        '<b>'
+      when '[/b]'
+        '</b>'
+      when '[spoiler]'
+        '<s>'
+      when '[/spoiler]'
+        '</s>'
+      when '[code]'
+        '<pre class=prettyprint>'
+      when '[/code]'
+        '</pre>'
+      when '[moot]'
+        '<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">'
+      when '[/moot]'
+        '</div>'
+      when '[banned]'
+        '<b style="color: red;">'
+      when '[/banned]'
+        '</b>'

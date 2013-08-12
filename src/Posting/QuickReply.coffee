@@ -101,8 +101,9 @@ QR =
       $.rmClass QR.captcha.nodes.input, 'error'
     if Conf['QR Shortcut']
       $.toggleClass $('.qr-shortcut'), 'disabled'
-    for i in QR.posts
-      QR.posts[0].rm()
+    new QR.post true
+    for post in QR.posts.splice 0, QR.posts.length - 1
+      post.delete()
     QR.cooldown.auto = false
     QR.status()
   focusin: ->
@@ -141,7 +142,7 @@ QR =
     else
       QR.notifications.push new Notification 'warning', el
     alert el.textContent if d.hidden
-    
+
   notifications: []
   cleanNotifications: ->
     for notification in QR.notifications
@@ -150,7 +151,8 @@ QR =
 
   status: ->
     return unless QR.nodes
-    if g.DEAD
+    {thread} = QR.posts[0]
+    if thread isnt 'new' and g.threads["#{g.BOARD}.#{thread}"].isDead
       value    = 404
       disabled = true
       QR.cooldown.auto = false
@@ -211,9 +213,7 @@ QR =
 
     loadPersonas: (type, arr) ->
       list = $ "#list-#{type}", QR.nodes.el
-      for val in arr
-        # XXX Firefox displays empty <option>s in the completion list.
-        continue unless val
+      for val in arr when val
         $.add list, $.el 'option',
           textContent: val
       return
@@ -371,14 +371,10 @@ QR =
     e?.preventDefault()
     return unless QR.postingIsEnabled
 
-    sel = d.getSelection()
-    selectionRoot = $.x 'ancestor::div[contains(@class,"postContainer")][1]', sel.anchorNode
-    post = Get.postFromNode @
-    {OP} = Get.contextFromLink(@).thread
-
-    text = ">>#{post}\n"
-    if (s = sel.toString().trim()) and post.nodes.root is selectionRoot
-      # XXX Opera doesn't retain `\n`s?
+    sel   = d.getSelection()
+    post  = Get.postFromNode @
+    text  = ">>#{post}\n"
+    if (s = sel.toString().trim()) and post is Get.postFromNode sel.anchorNode
       s = s.replace /\n/g, '\n>'
       text += ">#{s}\n"
 
@@ -389,7 +385,7 @@ QR =
       $.addClass QR.nodes.el, 'dump'
       QR.cooldown.auto = true
     {com, thread} = QR.nodes
-    thread.value = OP.ID unless com.value
+    thread.value = Get.contextFromNode(@).thread unless com.value
 
     caretPos = com.selectionStart
     # Replace selection for text.
@@ -447,7 +443,7 @@ QR =
     QR.nodes.fileInput.click()
 
   fileInput: (files) ->
-    if @ instanceof Element #or files instanceof Event # file input
+    if files instanceof Event # file input
       files = [@files...]
       QR.nodes.fileInput.value = null # Don't hold the files from being modified on windows
     {length} = files
@@ -504,7 +500,7 @@ QR =
       for elm in $$ '*', el
         $.on elm, 'blur',  QR.focusout
         $.on elm, 'focus', QR.focusin
-      <% } %>
+      <% } %>
       $.on el,             'click',  @select.bind @
       $.on @nodes.rm,      'click',  (e) => e.stopPropagation(); @rm()
       $.on @nodes.label,   'click',  (e) => e.stopPropagation()
@@ -553,7 +549,7 @@ QR =
       @unlock()
 
     rm: ->
-      $.rm @nodes.el
+      @delete()
       index = QR.posts.indexOf @
       if QR.posts.length is 1
         new QR.post true
@@ -561,7 +557,9 @@ QR =
       else if @ is QR.selected
         (QR.posts[index-1] or QR.posts[index+1]).select()
       QR.posts.splice index, 1
-      return unless window.URL
+      QR.status()
+    delete: ->
+      $.rm @nodes.el
       URL.revokeObjectURL @URL
 
     lock: (lock=true) ->
@@ -603,15 +601,18 @@ QR =
       if input.type is 'checkbox'
         @spoiler = input.checked
         return
-      {value} = input
-      @[input.dataset.name] = value
-      return if input.nodeName isnt 'TEXTAREA'
-      @nodes.span.textContent = value
-      QR.characterCount()
-      # Disable auto-posting if you're typing in the first post
-      # during the last 5 seconds of the cooldown.
-      if QR.cooldown.auto and @ is QR.posts[0] and 0 < QR.cooldown.seconds <= 5
-        QR.cooldown.auto = false
+      {name}  = input.dataset
+      @[name] = input.value
+      switch name
+        when 'thread'
+          QR.status()
+        when 'com'
+          @nodes.span.textContent = @com
+          QR.characterCount()
+          # Disable auto-posting if you're typing in the first post
+          # during the last 5 seconds of the cooldown.
+          if QR.cooldown.auto and @ is QR.posts[0] and 0 < QR.cooldown.seconds <= 5
+            QR.cooldown.auto = false
 
     forceSave: ->
       return unless @ is QR.selected
@@ -625,26 +626,15 @@ QR =
       @filename           = "#{file.name} (#{$.bytesToString file.size})"
       @nodes.el.title     = @filename
       @nodes.label.hidden = false if QR.spoiler
-      URL.revokeObjectURL @URL if window.URL
+      URL.revokeObjectURL @URL
       @showFileData()
       unless /^image/.test file.type
         @nodes.el.style.backgroundImage = null
         return
       @setThumbnail()
 
-    setThumbnail: (fileURL) ->
-      # XXX Opera does not support blob URL
+    setThumbnail: ->
       # Create a redimensioned thumbnail.
-      unless window.URL
-        unless fileURL
-          reader = new FileReader()
-          reader.onload = (e) =>
-            @setThumbnail e.target.result
-          reader.readAsDataURL @file
-          return
-      else
-        fileURL = URL.createObjectURL @file
-
       img = $.el 'img'
 
       img.onload = =>
@@ -656,7 +646,7 @@ QR =
         s *= 3 if @file.type is 'image/gif' # let them animate
         {height, width} = img
         if height < s or width < s
-          @URL = fileURL if window.URL
+          @URL = fileURL
           @nodes.el.style.backgroundImage = "url(#{@URL})"
           return
         if height <= width
@@ -669,10 +659,6 @@ QR =
         cv.height = img.height = height
         cv.width  = img.width  = width
         cv.getContext('2d').drawImage img, 0, 0, width, height
-        unless window.URL
-          @nodes.el.style.backgroundImage = "url(#{cv.toDataURL()})"
-          delete @URL
-          return
         URL.revokeObjectURL fileURL
         applyBlob = (blob) =>
           @URL = URL.createObjectURL blob
@@ -690,6 +676,7 @@ QR =
 
         applyBlob new Blob [ui8a], type: 'image/png'
 
+      fileURL = URL.createObjectURL @file
       img.src = fileURL
 
     rmFile: ->
@@ -699,7 +686,6 @@ QR =
       @nodes.el.style.backgroundImage = null
       @nodes.label.hidden = true if QR.spoiler
       @showFileData()
-      return unless window.URL
       URL.revokeObjectURL @URL
 
     showFileData: ->
@@ -724,40 +710,33 @@ QR =
         @nodes.span.textContent = @com
       reader.readAsText file
 
-    dragStart: ->
-      $.addClass @, 'drag'
+    dragStart: -> $.addClass @, 'drag'
+    dragEnd:   -> $.rmClass  @, 'drag'
+    dragEnter: -> $.addClass @, 'over'
+    dragLeave: -> $.rmClass  @, 'over'
 
-    dragEnd: ->
-      $.rmClass @, 'drag'
-
-    dragEnter: ->
-      $.addClass @, 'over'
-      
-    dragLeave: ->
-      $.rmClass @, 'over'
-      
     dragOver: (e) ->
       e.preventDefault()
       e.dataTransfer.dropEffect = 'move'
-      
+
     drop: ->
-      el = $ '.drag', @parentNode
-      $.rmClass el, 'drag' # Opera doesn't fire dragEnd if we drop it on something else
-      $.rmClass @,  'over'
+      $.rmClass @, 'over'
       return unless @draggable
+      el       = $ '.drag', @parentNode
       index    = (el) -> [el.parentNode.children...].indexOf el
       oldIndex = index el
       newIndex = index @
       (if oldIndex < newIndex then $.after else $.before) @, el
       post = QR.posts.splice(oldIndex, 1)[0]
       QR.posts.splice newIndex, 0, post
+      QR.status()
 
   captcha:
     init: ->
       return if d.cookie.indexOf('pass_enabled=1') >= 0
       return unless @isEnabled = !!$.id 'captchaFormPart'
       $.asap (-> $.id 'recaptcha_challenge_field_holder'), @ready.bind @
-      
+
     ready: ->
       setLifetime = (e) => @lifetime = e.detail
       $.on  window, 'captcha:timeout', setLifetime
@@ -779,18 +758,15 @@ QR =
         img:       imgContainer.firstChild
         input:     input
 
-      if window.MutationObserver
-        observer = new MutationObserver @load.bind @
-        observer.observe @nodes.challenge,
-          childList: true
-      else
-        $.on @nodes.challenge, 'DOMNodeInserted', @load.bind @
+      new MutationObserver(@load.bind @).observe @nodes.challenge,
+        childList: true
 
       $.on imgContainer, 'click',   @reload.bind @
       $.on input,        'keydown', @keydown.bind @
       $.on input,        'focus',   -> $.addClass QR.nodes.el, 'focus'
       $.on input,        'blur',    -> $.rmClass QR.nodes.el,  'focus'
-      $.get 'captchas', [], ({captchas}) => 
+
+      $.get 'captchas', [], ({captchas}) =>
         @sync captchas
       $.sync 'captchas', @sync
       # start with an uncached captcha
@@ -800,15 +776,15 @@ QR =
       # XXX Firefox lacks focusin/focusout support.
       $.on input, 'blur',  QR.focusout
       $.on input, 'focus', QR.focusin
-      <% } %>
+      <% } %>
 
       $.addClass QR.nodes.el, 'has-captcha'
       $.after QR.nodes.com.parentNode, [imgContainer, input]
-      
-    sync: (captchas) -> 
+
+    sync: (captchas) ->
       QR.captcha.captchas = captchas
       QR.captcha.count()
-      
+
     getOne: ->
       @clear()
       if captcha = @captchas.shift()
@@ -824,7 +800,7 @@ QR =
         # If there's only one word, duplicate it.
         response = "#{response} #{response}" unless /\s/.test response
       {challenge, response}
-      
+
     save: ->
       return unless response = @nodes.input.value.trim()
       @captchas.push
@@ -834,7 +810,7 @@ QR =
       @count()
       @reload()
       $.set 'captchas', @captchas
-      
+
     clear: ->
       now = Date.now()
       for captcha, i in @captchas
@@ -843,7 +819,7 @@ QR =
       @captchas = @captchas[i..]
       @count()
       $.set 'captchas', @captchas
-      
+
     load: ->
       return unless @nodes.challenge.firstChild
       # -1 minute to give upload some time.
@@ -853,7 +829,7 @@ QR =
       @nodes.img.src = "//www.google.com/recaptcha/api/image?c=#{challenge}"
       @nodes.input.value = null
       @clear()
-      
+
     count: ->
       count = @captchas.length
       @nodes.input.placeholder = switch count
@@ -864,13 +840,13 @@ QR =
         else
           "Verification (#{count} cached captchas)"
       @nodes.input.alt = count
-      
+
     reload: (focus) ->
       # the 't' argument prevents the input from being focused
       $.globalEval 'Recaptcha.reload("t")'
       # Focus if we meant to.
       @nodes.input.focus() if focus
-      
+
     keydown: (e) ->
       if e.keyCode is 8 and not @nodes.input.value
         @reload()
@@ -923,10 +899,6 @@ QR =
     # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
     QR.mimeTypes.push ''
     nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
-    <% if (type !== 'userjs') { %>
-    # Opera's accept attribute is fucked up
-    nodes.fileInput.accept = "text/*, #{mimeTypes}"
-    <% } %>
 
     QR.spoiler = !!$ 'input[name=spoiler]'
     if QR.spoiler
@@ -958,10 +930,12 @@ QR =
 
     <% if (type === 'userscript') { %>
     # XXX Firefox lacks focusin/focusout support.
-    for elm in $$ '*', QR.nodes.el
+    items = $$ '*', QR.nodes.el
+    i = 0
+    while elm = items[i++]
       $.on elm, 'blur',  QR.focusout
       $.on elm, 'focus', QR.focusin
-    <% } %>
+    <% } %>
     $.on dialog,           'focusin',  QR.focusin
     $.on dialog,           'focusout', QR.focusout
     $.on nodes.autohide,   'change', QR.toggleHide
@@ -974,7 +948,9 @@ QR =
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.fileInput
     # save selected post's data
-    for name in ['name', 'email', 'sub', 'com']
+    items = ['name', 'email', 'sub', 'com']
+    i = 0
+    while name = items[i++]
       $.on nodes[name], 'input',  -> QR.selected.save @
     $.on nodes.thread,  'change', -> QR.selected.save @
 
@@ -999,7 +975,7 @@ QR =
     $.event 'QRDialogCreation', null, dialog
 
   preSubmitHooks: []
-  
+
   submit: (e) ->
     e?.preventDefault()
 
@@ -1073,7 +1049,9 @@ QR =
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response
 
-    callbacks =
+    options =
+      responseType: 'document'
+      withCredentials: true
       onload: QR.response
       onerror: ->
         # Connection error, or
@@ -1087,8 +1065,7 @@ QR =
           4chan X encountered an error while posting. 
           [<a href="//4chan.org/banned" target=_blank>Banned?</a>] [<a href="https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean" target=_blank>More info</a>]
           """
-    opts =
-      cred: true
+    extra =
       form: $.formData postData
       upCallbacks:
         onload: ->
@@ -1102,7 +1079,7 @@ QR =
           QR.req.progress = "#{Math.round e.loaded / e.total * 100}%"
           QR.status()
 
-    QR.req = $.ajax $.id('postForm').parentNode.action, callbacks, opts
+    QR.req = $.ajax $.id('postForm').parentNode.action, options, extra
     # Starting to upload might take some time.
     # Provide some feedback that we're starting to submit.
     QR.req.uploadStartTime = Date.now()
@@ -1110,31 +1087,29 @@ QR =
     QR.status()
 
   response: ->
-    <% if (type === 'userjs') { %>
-    # The upload.onload callback is not called
-    # or at least not in time with Opera.
-    QR.req.upload.onload()
-    <% } %>
     {req} = QR
     delete QR.req
 
     post = QR.posts[0]
     post.unlock()
 
-    tmpDoc = d.implementation.createHTMLDocument ''
-    tmpDoc.documentElement.innerHTML = req.response
-    if ban  = $ '.banType', tmpDoc # banned/warning
-      board = $('.board', tmpDoc).innerHTML
+    resDoc  = req.response
+    if ban  = $ '.banType', resDoc # banned/warning
+      board = $('.board', resDoc).innerHTML
       err   = $.el 'span', innerHTML:
         if ban.textContent.toLowerCase() is 'banned'
-          "You are banned on #{board}! ;_;<br>" +
-          "Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason."
+          """
+          You are banned on #{board}! ;_;<br>
+          Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason.
+          """
         else
-          "You were issued a warning on #{board} as #{$('.nameBlock', tmpDoc).innerHTML}.<br>" +
-          "Reason: #{$('.reason', tmpDoc).innerHTML}"
-    else if err = tmpDoc.getElementById 'errmsg' # error!
+          """
+          You were issued a warning on #{board} as #{$('.nameBlock', resDoc).innerHTML}.<br>
+          Reason: #{$('.reason', resDoc).innerHTML}
+          """
+    else if err = resDoc.getElementById 'errmsg' # error!
       $('a', err)?.target = '_blank' # duplicate image link
-    else if tmpDoc.title isnt 'Post successful!'
+    else if resDoc.title isnt 'Post successful!'
       err = 'Connection error with sys.4chan.org.'
     else if req.status isnt 200
       err = "Error #{req.statusText} (#{req.status})"
@@ -1167,11 +1142,10 @@ QR =
       QR.status()
       QR.error err
       return
-      
 
+    h1 = $ 'h1', resDoc
     QR.cleanNotifications()
-    h1 = $ 'h1', tmpDoc
-    
+
     if Conf['Posting Success Notifications']
       QR.notifications.push new Notification 'success', h1.textContent, 5
 
@@ -1207,15 +1181,15 @@ QR =
 
     QR.cooldown.set {req, post, isReply}
 
-    if threadID is postID # new thread
-      URL = "/#{g.BOARD}/res/#{threadID}"
+    URL = if threadID is postID # new thread
+      "/#{g.BOARD}/res/#{threadID}"
     else if g.VIEW is 'index' and !QR.cooldown.auto and Conf['Open Post in New Tab'] # replying from the index
-      URL = "/#{g.BOARD}/res/#{threadID}#p#{postID}"
+      "/#{g.BOARD}/res/#{threadID}#p#{postID}"
     if URL
       if Conf['Open Post in New Tab']
-        $.open "/#{g.BOARD}/res/#{threadID}"
+        $.open URL
       else
-        window.location = "/#{g.BOARD}/res/#{threadID}"
+        window.location = URL
 
     QR.status()
 

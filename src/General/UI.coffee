@@ -70,8 +70,8 @@ UI = do ->
       # Position
       mRect   = menu.getBoundingClientRect()
       bRect   = button.getBoundingClientRect()
-      bTop    = doc.scrollTop  + d.body.scrollTop  + bRect.top
-      bLeft   = doc.scrollLeft + d.body.scrollLeft + bRect.left
+      bTop    = window.scrollY + bRect.top
+      bLeft   = window.scrollX + bRect.left
       cHeight = doc.clientHeight
       cWidth  = doc.clientWidth
       [top, bottom] = if bRect.top + bRect.height + mRect.height < cHeight
@@ -306,12 +306,12 @@ UI = do ->
 
   hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb}) ->
     o = {
-      root:   root
-      el:     el
-      style:  el.style
-      cb:     cb
-      endEvents:    endEvents
-      latestEvent:  latestEvent
+      root
+      el
+      style: el.style
+      cb
+      endEvents
+      latestEvent
       clientHeight: doc.clientHeight
       clientWidth:  doc.clientWidth
     }
@@ -327,6 +327,11 @@ UI = do ->
     if $.x 'ancestor::div[contains(@class,"inline")][1]', root
       $.on d,    'keydown',   o.hoverend
     $.on root, 'mousemove', o.hover
+    <% if (type === 'userscript') { %>
+    # Workaround for https://github.com/MayhemYDG/4chan-x/issues/377
+    o.workaround = (e) -> o.hoverend() unless root.contains e.target
+    $.on doc,  'mousemove', o.workaround
+    <% } %>
 
   hover = (e) ->
     @latestEvent = e
@@ -357,6 +362,10 @@ UI = do ->
     $.off @root, @endEvents,  @hoverend
     $.off d,     'keydown',   @hoverend
     $.off @root, 'mousemove', @hover
+    <% if (type === 'userscript') { %>
+    # Workaround for https://github.com/MayhemYDG/4chan-x/issues/377
+    $.off doc,   'mousemove', @workaround
+    <% } %>
     @cb.call @ if @cb
 
 

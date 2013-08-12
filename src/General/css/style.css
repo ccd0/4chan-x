@@ -304,10 +304,8 @@ a {
   box-sizing: border-box;
   box-shadow: 0 0 15px rgba(0, 0, 0, .15);
   height: 600px;
-  min-height: 0;
   max-height: 100%;
   width: 900px;
-  min-width: 0;
   max-width: 100%;
   margin: auto;
   padding: 3px;
@@ -315,7 +313,6 @@ a {
   left: 50%;
   -moz-transform: translate(-50%, -50%);
   -webkit-transform: translate(-50%, -50%);
-  -o-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
 }
 #fourchanx-settings > nav {
@@ -392,14 +389,17 @@ a {
   position: absolute;
 }
 .section-advanced .note {
-  font-size: 0.8em; 
-  font-style: italic; 
+  font-size: 0.8em;
+  font-style: italic;
   margin-left: 10px;
 }
 .section-advanced .note code {
   font-style: normal;
   font-size: 11px;
 }
+.section-keybinds .field {
+  font-family: monospace;
+} 
 #fourchanx-settings fieldset {
   border: 1px solid;
   border-radius: 3px;
@@ -533,7 +533,8 @@ a.hide-announcement {
 .deadlink {
   text-decoration: none !important;
 }
-.backlink.deadlink:not(.forwardlink), .quotelink.deadlink:not(.forwardlink) {
+.backlink.deadlink:not(.forwardlink),
+.quotelink.deadlink:not(.forwardlink) {
   text-decoration: underline !important;
 }
 .inlined {
@@ -576,16 +577,14 @@ a.hide-announcement {
   padding: 2px 2px 5px;
 }
 #qp img {
-  max-height: 300px;
-  max-width: 500px;
   max-height: 80vh;
   max-width: 50vw;
 }
 .qphl {
   outline: 2px solid rgba(216, 94, 49, .7);
 }
-:root.highlight-own .yourPost>.reply,
-:root.highlight-you .quotesYou>.reply {
+:root.highlight-own .yourPost > .reply,
+:root.highlight-you .quotesYou > .reply {
   border-left: 2px solid rgba(221,0,0,.5);
 }
 /* Quote Threading */
@@ -613,8 +612,7 @@ a.hide-announcement {
 :root.fit-width .full-image {
   max-width: 100%;
 }
-:root.gecko.fit-width .full-image,
-:root.presto.fit-width .full-image {
+:root.gecko.fit-width .full-image {
   width: 100%;
 }
 #ihover {
@@ -671,7 +669,10 @@ a.hide-announcement {
 #file-n-submit:not(.has-file) #qr-filerm {
   display: none;
 }
-#qr select, #dump-button, .remove, .captcha-img {
+#qr select,
+#dump-button,
+.remove,
+.captcha-img {
   cursor: pointer;
 }
 #qr {
@@ -728,7 +729,8 @@ a.hide-announcement {
   height: 9em;
 }
 input.field.tripped:not(:hover):not(:focus) {
-  color: transparent !important;  text-shadow: none !important;
+  color: transparent !important;
+  text-shadow: none !important;
 }
 #qr textarea {
   resize: both;
@@ -910,7 +912,9 @@ a:only-of-type > .remove {
 .qr-preview > label {
   background: rgba(0,0,0,.5);
   color: #fff;
-  right: 0; bottom: 0; left: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   position: absolute;
   text-align: center;
 }

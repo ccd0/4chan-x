@@ -53,6 +53,10 @@ Config =
         false
         'Add buttons to navigate to top / bottom of thread.'
       ]
+      'Show Dice Roll': [
+        true
+        'Show dice that were entered into the email field.'
+      ]
       <% if (type !== 'crx') { %>
       'Check for Updates': [
         true
@@ -640,6 +644,14 @@ q-replace
     'Hide': [
       'x'
       'Hide thread.'
+    ]
+    'Previous Post Quoting You': [
+      'Alt+Up'
+      'Scroll to the previous post that quotes you.'
+    ]
+    'Next Post Quoting You': [
+      'Alt+Down'
+      'Scroll to the next post that quotes you.'
     ]
 
   updater:

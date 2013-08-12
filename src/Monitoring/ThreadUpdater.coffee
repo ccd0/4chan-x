@@ -157,8 +157,7 @@ ThreadUpdater =
           By sending the `If-Modified-Since` header we get a proper status code, and no response.
           This saves bandwidth for both the user and the servers and avoid unnecessary computation.
           ###
-          # XXX 304 -> 0 in Opera
-          [text, klass] = if [0, 304].contains req.status
+          [text, klass] = if req.status is 304
             [null, null]
           else
             ["#{req.statusText} (#{req.status})", 'warning']
@@ -294,7 +293,6 @@ ThreadUpdater =
     unless count
       ThreadUpdater.set 'status', null, null
       ThreadUpdater.outdateCount++
-
     else
       ThreadUpdater.set 'status', "+#{count}", 'new'
       ThreadUpdater.outdateCount = 0
@@ -320,7 +318,7 @@ ThreadUpdater =
 
       if scroll
         if Conf['Bottom Scroll']
-          <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>.scrollTop = d.body.clientHeight
+          window.scrollTo 0, d.body.clientHeight
         else
           Header.scrollToPost root if root
 

@@ -1,0 +1,110 @@
+[{
+  "uid": 0,
+  "name": "Foolz",
+  "domain": "archive.foolz.us",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["a", "co", "gd", "jp", "m", "q", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
+  "files": ["a", "gd", "jp", "m", "q", "tg", "vg", "vp", "vr", "wsg"]
+}, {
+  "uid": 1,
+  "name": "NSFW Foolz",
+  "domain": "nsfw.foolz.us",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["u"],
+  "files": ["u"]
+}, {
+  "uid": 2,
+  "name": "The Dark Cave",
+  "domain": "archive.thedarkcave.org",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["c", "int", "out", "po"],
+  "files": ["c", "po"]
+}, {
+  "uid": 3,
+  "name": "4plebs",
+  "domain": "archive.4plebs.org",
+  "http": true,
+  "https": false,
+  "software": "foolfuuka",
+  "boards": ["hr", "tg", "tv", "x"],
+  "files": ["hr", "tg", "tv", "x"]
+}, {
+  "uid": 4,
+  "name": "Nyafuu",
+  "domain": "archive.nyafuu.org",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["c", "w", "wg"],
+  "files": ["c", "w", "wg"]
+}, {
+  "uid": 11,
+  "name": "Foolz a Shit",
+  "domain": "archive.foolzashit.com",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["adv", "asp", "cm", "e", "i", "lgbt", "n", "o", "p", "pol", "s", "s4s", "t", "trv", "y"],
+  "files": ["adv", "asp", "cm", "e", "i", "lgbt", "n", "o", "p", "s", "s4s", "t", "trv", "y"]
+}, {
+  "uid": 12,
+  "name": "fap archive",
+  "domain": "fuuka.worldathleticproject.org",
+  "http": true,
+  "https": false,
+  "software": "foolfuuka",
+  "boards": ["b", "e", "h", "hc", "p", "s", "u"],
+  "files": ["b", "e", "h", "hc", "p", "s", "u"]
+}, {
+  "uid": 7,
+  "name": "Install Gentoo",
+  "domain": "archive.installgentoo.net",
+  "http": false,
+  "https": true,
+  "software": "fuuka",
+  "boards": ["diy", "g", "sci"],
+  "files": []
+}, {
+  "uid": 8,
+  "name": "Rebecca Black Tech",
+  "domain": "rbt.asia",
+  "http": true,
+  "https": true,
+  "software": "fuuka",
+  "boards": ["cgl", "g", "mu", "w"],
+  "files": ["cgl", "g", "mu", "w"]
+}, {
+  "uid": 9,
+  "name": "Heinessen",
+  "domain": "archive.heinessen.com",
+  "http": true,
+  "https": false,
+  "software": "fuuka",
+  "boards": ["an", "fit", "k", "mlp", "r9k", "toy"],
+  "files": ["an", "fit", "k", "r9k", "toy"]
+}, {
+  "uid": 10,
+  "name": "warosu",
+  "domain": "fuuka.warosu.org",
+  "http": true,
+  "https": true,
+  "software": "fuuka",
+  "boards": ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "q", "tg", "vr"],
+  "files": ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "q", "tg", "vr"]
+}, {
+  "uid": 13,
+  "name": "Foolz Beta",
+  "domain": "beta.foolz.us",
+  "http": true,
+  "https": true,
+  "withCredentials": true,
+  "software": "foolfuuka",
+  "boards": ["a", "co", "gd", "h", "jp", "m", "mlp", "q", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
+  "files": ["a", "gd", "h", "jp", "m", "q", "tg", "u", "vg", "vp", "vr", "wsg"]
+}]

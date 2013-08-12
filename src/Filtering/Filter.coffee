@@ -209,7 +209,7 @@ Filter =
       el = $.el 'a',
         href: 'javascript:;'
         textContent: text
-      el.setAttribute 'data-type', type
+      el.dataset.type = type
       $.on el, 'click', Filter.menu.makeFilter
 
       return {

@@ -95,10 +95,10 @@ Keybinds =
           window.location = "/#{g.BOARD}/catalog"
       # Thread Navigation
       when Conf['Next thread']
-        return if g.VIEW is 'thread'
+        return if g.VIEW isnt 'index'
         Nav.scroll +1
       when Conf['Previous thread']
-        return if g.VIEW is 'thread'
+        return if g.VIEW isnt 'index'
         Nav.scroll -1
       when Conf['Expand thread']
         ExpandThread.toggle thread
@@ -115,6 +115,10 @@ Keybinds =
         Keybinds.hl  0, threadRoot
       when Conf['Hide']
         ThreadHiding.toggle thread if g.VIEW is 'index'
+      when Conf['Previous Post Quoting You']
+        QuoteYou.cb.seek 'preceding'
+      when Conf['Next Post Quoting You']
+        QuoteYou.cb.seek 'following'
       else
         return
     e.preventDefault()

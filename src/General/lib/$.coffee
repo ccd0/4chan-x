@@ -4,12 +4,6 @@ String::capitalize = ->
 String::contains = (string) ->
   @indexOf(string) > -1
 
-Array::add = (object, position) ->
-  keep = @slice position
-  @length = position
-  @push object
-  @pushArrays keep
-
 Array::contains = (object) ->
   @indexOf(object) > -1
 
@@ -18,18 +12,6 @@ Array::indexOf = (object) ->
   while i--
     return i if @[i] is object
   return i
-
-Array::pushArrays = ->
-  args = arguments
-  for arg in args
-    @push.apply @, arg
-  return @
-
-Array::remove = (object) ->
-  if (index = @indexOf object) > -1
-    @splice index, 1
-  else
-    false
 
 # loosely follows the jquery api:
 # http://api.jquery.com/
@@ -49,7 +31,7 @@ $.id = (id) ->
   d.getElementById id
 
 $.ready = (fc) ->
-  if d.readyState in ['interactive', 'complete']
+  unless d.readyState is 'loading'
     $.queueTask fc
     return
   cb = ->
@@ -61,8 +43,7 @@ $.formData = (form) ->
   if form instanceof HTMLFormElement
     return new FormData form
   fd = new FormData()
-  for key, val of form
-    continue unless val
+  for key, val of form when val
     # XXX GM bug
     # if val instanceof Blob
     if val.size and val.name
@@ -71,30 +52,27 @@ $.formData = (form) ->
       fd.append key, val
   fd
 
-$.ajax = (url, callbacks, opts={}) ->
-  {type, cred, headers, upCallbacks, form, sync} = opts
+$.extend = (object, properties) ->
+  for key, val of properties
+    object[key] = val
+  return
+
+$.ajax = (url, options, extra={}) ->
+  {type, headers, upCallbacks, form, sync} = extra
   r = new XMLHttpRequest()
   r.overrideMimeType 'text/html'
   type or= form and 'post' or 'get'
   r.open type, url, !sync
   for key, val of headers
     r.setRequestHeader key, val
-  $.extend r, callbacks
+  $.extend r, options
   $.extend r.upload, upCallbacks
-  try
-    # Firefox throws an error if you try
-    # to set this on a synchronous XHR.
-    # Only cookies from the remote domain
-    # are used in a request withCredentials.
-    r.withCredentials = cred
-  catch err
-    # do nothing
   r.send form
   r
 
 $.cache = do ->
   reqs = {}
-  (url, cb) ->
+  (url, cb, options) ->
     if req = reqs[url]
       if req.readyState is 4
         cb.call req, req.evt
@@ -103,15 +81,14 @@ $.cache = do ->
       return
     rm = -> delete reqs[url]
     try
-      req = $.ajax url,
-        onload: (e) ->
-          cb.call @, e for cb in @callbacks
-          @evt = e
-          delete @callbacks
-        onabort: rm
-        onerror: rm
+      req = $.ajax url, options
     catch err
       return
+    $.on req, 'load', (e) ->
+      cb.call @, e for cb in @callbacks
+      @evt = e
+      delete @callbacks
+    $.on req, 'abort error', rm
     req.callbacks = [cb]
     reqs[url] = req
 
@@ -144,8 +121,8 @@ $.x = (path, root) ->
 
 $.X = (path, root) ->
   root or= d.body
-  # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE === 6
-  d.evaluate path, root, null, 6, null
+  # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE === 7
+  d.evaluate path, root, null, 7, null
 
 $.addClass = (el, className) ->
   el.classList.add className
@@ -219,13 +196,11 @@ $.off = (el, events, handler) ->
 $.event = (event, detail, root=d) ->
   root.dispatchEvent new CustomEvent event, {bubbles: true, detail}
 
-$.open = (URL) ->
+$.open = 
 <% if (type === 'userscript') { %>
-  # XXX fix GM opening file://// for protocol-less URLs.
-  # https://github.com/greasemonkey/greasemonkey/issues/1719
-  GM_openInTab ($.el 'a', href: URL).href
+  GM_openInTab
 <% } else { %>
-  window.open URL, '_blank'
+  (URL) -> window.open URL, '_blank'
 <% } %>
 
 $.debounce = (wait, fn) ->
@@ -298,29 +273,21 @@ $.minmax = (value, min, max) ->
         value
     )
 
-$.syncing = {}
+$.item = (key, val) ->
+  item = {}
+  item[key] = val
+  item
 
-$.sync = do ->
+$.syncing = {}
 <% if (type === 'crx') { %>
+$.sync = do ->
   chrome.storage.onChanged.addListener (changes) ->
     for key of changes
       if cb = $.syncing[key]
         cb changes[key].newValue
     return
   (key, cb) -> $.syncing[key] = cb
-<% } else { %>
-  window.addEventListener 'storage', (e) ->
-    if cb = $.syncing[e.key]
-      cb JSON.parse e.newValue
-  , false
-  (key, cb) -> $.syncing[g.NAMESPACE + key] = cb
-<% } %>
 
-$.item = (key, val) ->
-  item = {}
-  item[key] = val
-  item
-<% if (type === 'crx') { %>
 $.localKeys = [
   # filters
   'name',
@@ -372,6 +339,7 @@ $.get = (key, val, cb) ->
   if syncItems
     count++
     chrome.storage.sync.get  syncItems,  done
+
 $.set = do ->
   items = {}
   localItems = {}
@@ -396,54 +364,14 @@ $.set = do ->
       $.extend items, key
     set()
 
-<% } else if (type === 'userjs') { %>
-do ->
-  # http://www.opera.com/docs/userjs/specs/#scriptstorage
-  # http://www.opera.com/docs/userjs/using/#securepages
-  # The scriptStorage object is available only during
-  # the main User JavaScript thread, being therefore
-  # accessible only in the main body of the user script.
-  # To access the storage object later, keep a reference
-  # to the object.
-  {scriptStorage} = opera
-  $.delete = (keys) ->
-    unless keys instanceof Array
-      keys = [keys]
-    for key in keys
-      key = g.NAMESPACE + key
-      localStorage.removeItem key
-      delete scriptStorage[key]
-    return
-  $.get = (key, val, cb) ->
-    if typeof cb is 'function'
-      items = $.item key, val
-    else
-      items = key
-      cb = val
-    $.queueTask ->
-      for key of items
-        if val = scriptStorage[g.NAMESPACE + key]
-          items[key] = JSON.parse val
-      cb items
-  $.set = do ->
-    set = (key, val) ->
-      key = g.NAMESPACE + key
-      val = JSON.stringify val
-      if key of $.syncing
-        # for `storage` events
-        localStorage.setItem key, val
-      scriptStorage[key] = val
-    (keys, val) ->
-      if typeof keys is 'string'
-        set keys, val
-        return
-      for key, val of keys
-        set key, val
-      return
-  return
 <% } else { %>
-
 # http://wiki.greasespot.net/Main_Page
+$.sync = do ->
+  $.on window, 'storage', (e) ->
+    if cb = $.syncing[e.key]
+      cb JSON.parse e.newValue
+  (key, cb) -> $.syncing[g.NAMESPACE + key] = cb
+
 $.delete = (keys) ->
   unless keys instanceof Array
     keys = [keys]
