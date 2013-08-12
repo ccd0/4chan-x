@@ -6,7 +6,8 @@ ThreadWatcher =
     @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', """
     <%= grunt.file.read('html/Monitoring/ThreadWatcher.html').replace(/>\s+</g, '><').trim() %>
     """
-    @list = @dialog.lastElementChild
+    @status = $ '#watcher-status', @dialog
+    @list   = @dialog.lastElementChild
 
     $.on d, 'QRPostSuccessful',   @cb.post
     $.on d, 'ThreadUpdate',       @cb.threadUpdate if g.VIEW is 'thread'
@@ -81,15 +82,28 @@ ThreadWatcher =
       # Update 404 status.
       ThreadWatcher.add thread
 
+  fetchCount:
+    fetched:  0
+    fetching: 0
   fetchAllStatus: ->
-    # XXX need visual feedback
+    ThreadWatcher.status.textContent = '...'
     for thread in ThreadWatcher.getAll()
       ThreadWatcher.fetchStatus thread
     return
   fetchStatus: ({boardID, threadID, data}) ->
     return if data.isDead
+    {fetchCount} = ThreadWatcher
+    fetchCount.fetching++
     $.ajax "//api.4chan.org/#{boardID}/res/#{threadID}.json",
-      onload: ->
+      onloadend: ->
+        fetchCount.fetched++
+        if fetchCount.fetched is fetchCount.fetching
+          fetchCount.fetched = 0
+          fetchCount.fetching = 0
+          status = ''
+        else
+          status = "#{Math.round fetchCount.fetched / fetchCount.fetching * 100}%"
+        ThreadWatcher.status.textContent = status
         return if @status isnt 404
         if Conf['Auto Prune']
           ThreadWatcher.rm boardID, threadID

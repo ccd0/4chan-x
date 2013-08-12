@@ -448,6 +448,12 @@ a.hide-announcement {
   -webkit-flex: 1;
   flex: 1;
 }
+#watcher-status:not(:empty)::before {
+  content: "(";
+}
+#watcher-status:not(:empty)::after {
+  content: ")";
+}
 #watched-threads:not(:hover) {
   max-height: 150px;
   overflow: hidden;
