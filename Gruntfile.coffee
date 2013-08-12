@@ -1,5 +1,6 @@
 module.exports = (grunt) ->
 
+  pkg = grunt.file.readJSON 'package.json'
   concatOptions =
     process: Object.create(null, data:
       get: -> grunt.config 'pkg'
@@ -12,7 +13,7 @@ module.exports = (grunt) ->
 
   # Project configuration.
   grunt.initConfig
-    pkg: grunt.file.readJSON 'package.json'
+    pkg: pkg
     concat:
       coffee:
         options: concatOptions
@@ -174,21 +175,27 @@ module.exports = (grunt) ->
   ]
   grunt.registerTask 'patch', [
     'bump'
+    'reloadPkg'
     'updcl:3'
-    'release'
   ]
 
   grunt.registerTask 'minor', [
     'bump:minor'
+    'reloadPkg'
     'updcl:2'
-    'release'
   ]
 
   grunt.registerTask 'major', [
     'bump:major'
+    'reloadPkg'
     'updcl:1'
-    'release'
   ]
+
+  grunt.registerTask 'reloadPkg', 'Reload the package', ->
+    # Update the `pkg` object with the new version.
+    pkg = grunt.file.readJSON('package.json')
+    grunt.config.data.pkg = concatOptions.process.data = pkg
+    grunt.log.ok('pkg reloaded.')
 
   grunt.registerTask 'updcl',   'Update the changelog', (i) ->
     # i is the number of #s for markdown.

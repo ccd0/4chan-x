@@ -1,3 +1,6 @@
+### v1.2.26
+*2013-08-12*
+
 **MayhemYDG**:
 - Show dice rolls that were entered into the email field on /tg/.
 - Fix flag filtering on /sp/ and /int/.
