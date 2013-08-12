@@ -13,7 +13,6 @@ Config =
       'Index Navigation':             [false, 'Add buttons to navigate between threads.']
       'Reply Navigation':             [false, 'Add buttons to navigate to top / bottom of thread.']
       'Show Dice Roll':               [true,  'Show dice that were entered into the email field.']
-      'Check for Updates':            [true,  'Notify when updated versions of <%= meta.name %> are available.']
     'Filtering':
       'Anonymize':                    [false, 'Make everyone Anonymous.']
       'Filter':                       [true,  'Self-moderation placebo.']

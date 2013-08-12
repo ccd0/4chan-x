@@ -38,7 +38,6 @@ Settings =
       $.set
         archives: Conf['archives']
         lastarchivecheck: now
-        lastupdate: now
         previousversion: g.VERSION
 
     Settings.addSection 'Main',     Settings.main

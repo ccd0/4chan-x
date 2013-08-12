@@ -1,3 +1,6 @@
+- Removed the `Check for Updates` setting:
+ - Your browser/userscript manager should handle updates itself automatically.
+
 ## 3.6.0 - *2013-08-10*
 
 - **New feature**: `Show Dice Roll`
