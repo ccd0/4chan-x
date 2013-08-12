@@ -4434,17 +4434,16 @@
             }
             range = Linkify.makeRange(node, endNode, index, length);
             if (link = Linkify.regString.exec(text = range.toString())) {
-              if ((lIndex = link.index) !== index) {
-                range.setStart(node, lIndex);
+              if (lIndex = link.index) {
+                range.setStart(node, lIndex + index);
               }
               links.push([range, text]);
             }
             break;
           } else {
-            if (result = Linkify.regString.exec(result[0])) {
-              Linkify.regString.lastIndex = 0;
-              range = Linkify.makeRange(node, node, result.index, result.length);
-              links.push([range, result[0]]);
+            if (link = Linkify.regString.exec(result[0])) {
+              range = Linkify.makeRange(node, node, link.index, link.length);
+              links.push([range, link]);
             }
           }
         }
