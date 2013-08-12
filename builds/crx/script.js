@@ -4380,7 +4380,7 @@
       if (g.VIEW === 'catalog' || !Conf['Linkify']) {
         return;
       }
-      this.regString = Conf['Allow False Positives'] ? /(\b([-a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]|[-a-z0-9]+\.[a-z]|[\d]+\.[\d]+\.[\d]+\.[\d]+\/|[a-z]{3,}:[a-z0-9?]|[^\s@]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi : /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi;
+      this.regString = Conf['Allow False Positives'] ? /([-a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]|[-a-z0-9]+\.[a-z]|[\d]+\.[\d]+\.[\d]+\.[\d]+\/|[a-z]{3,}:[a-z0-9?]|[^\s@]+@[a-z0-9.-]+\.[a-z0-9])/i : /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1})/i;
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
@@ -4393,7 +4393,7 @@
       });
     },
     node: function() {
-      var data, el, i, items, links, node, range, snapshot, _i, _len, _ref;
+      var data, el, end, endNode, i, index, items, lIndex, length, link, links, node, range, result, saved, snapshot, space, test, text, _i, _len, _ref;
 
       if (this.isClone) {
         if (Conf['Embedding']) {
@@ -4408,16 +4408,50 @@
         }
         return;
       }
+      test = /[^\s'"]+/g;
+      space = /[\s'"]/;
       snapshot = $.X('.//br|.//text()', this.nodes.comment);
       i = 0;
       while (node = snapshot.snapshotItem(i++)) {
-        if (node.parentElement.nodeName === "A") {
+        links = [];
+        data = node.data;
+        if (node.parentElement.nodeName === "A" || !data) {
           continue;
         }
-        links = [];
-        if (Linkify.regString.test(node.data)) {
-          Linkify.regString.lastIndex = 0;
-          Linkify.gatherLinks(snapshot, this, node, links, i);
+        while (result = test.exec(data)) {
+          index = result.index;
+          endNode = node;
+          if ((length = index + result[0].length) === data.length) {
+            while ((saved = snapshot.snapshotItem(i++))) {
+              if (saved.nodeName === 'BR') {
+                break;
+              }
+              endNode = saved;
+              length = saved.data.length;
+              if (end = space.exec(saved.data)) {
+                length = end.index;
+                i--;
+                break;
+              }
+            }
+            if (length === endNode.data.length) {
+              test.lastIndex = 0;
+            }
+            range = Linkify.makeRange(node, endNode, index, length);
+            if (link = Linkify.regString.exec(text = range.toString())) {
+              if ((lIndex = link.index) !== index) {
+                range.setStart(node, lIndex);
+              }
+              links.push([range, text]);
+            }
+            break;
+          } else {
+            if (result = Linkify.regString.exec(result[0])) {
+              Linkify.regString.lastIndex = 0;
+              range = Linkify.makeRange(node, node, result.index, result.length);
+              links.push([range, result[0]]);
+            }
+          }
         }
         _ref = links.reverse();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -4441,60 +4475,25 @@
         }
       }
     },
-    gatherLinks: function(snapshot, post, node, links, i) {
-      var data, index, len, len2, link, match, range;
+    makeRange: function(startNode, endNode, startOffset, endOffset) {
+      var range;
 
-      data = node.data;
-      len = data.length;
-      while ((match = Linkify.regString.exec(data))) {
-        index = match.index;
-        link = match[0];
-        len2 = index + link.length;
-        if (len === len2) {
-          break;
-        }
-        range = document.createRange();
-        range.setStart(node, index);
-        range.setEnd(node, len2);
-        links.push(range);
-      }
-      Linkify.regString.lastIndex = 0;
-      if (match) {
-        links.push(Linkify.seek(snapshot, post, node, links, match, i));
-      }
-    },
-    seek: function(snapshot, post, node, links, match, i) {
-      var data, index, link, next, range, result;
-
-      link = match[0];
       range = document.createRange();
-      range.setStart(node, match.index);
-      while ((next = snapshot.snapshotItem(i++)) && next.nodeName !== 'BR') {
-        node = next;
-        data = node.data;
-        if (result = /[\s'"]/.exec(data)) {
-          index = result.index;
-          range.setEnd(node, index);
-          Linkify.regString.lastIndex = index;
-          Linkify.gatherLinks(snapshot, post, node, links, i);
-          return range;
-        }
-      }
-      if (range.collapsed) {
-        range.setEnd(node, node.data.length);
-      }
+      range.setStart(startNode, startOffset);
+      range.setEnd(endNode, endOffset);
       return range;
     },
-    makeLink: function(range) {
-      var a, link;
+    makeLink: function(_arg) {
+      var a, range, text;
 
-      link = range.toString();
-      link = link.contains(':') ? link : (link.contains('@') ? 'mailto:' : 'http://') + link;
+      range = _arg[0], text = _arg[1];
+      text;
+      text = text.contains(':') ? text : (text.contains('@') ? 'mailto:' : 'http://') + text;
       a = $.el('a', {
         className: 'linkify',
         rel: 'nofollow noreferrer',
         target: '_blank',
-        href: link
+        href: text
       });
       $.add(a, range.extractContents());
       range.insertNode(a);
