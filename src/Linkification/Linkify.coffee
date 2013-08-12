@@ -5,13 +5,13 @@ Linkify =
     @regString = if Conf['Allow False Positives']
       ///(
         \b(
-          [a-z]+://
+          [-a-z]+://
           |
           [a-z]{3,}\.[-a-z0-9]+\.[a-z]
           |
           [-a-z0-9]+\.[a-z]
           |
-          [0-9]+\.[0-9]+\.[0-9]+\.[0-9]
+          [\d]+\.[\d]+\.[\d]+\.[\d]+/
           |
           [a-z]{3,}:[a-z0-9?]
           |
@@ -43,17 +43,15 @@ Linkify =
 
       return
 
-    snapshot = $.X './/text()', @nodes.comment
+    snapshot = $.X './/br|.//text()', @nodes.comment
     i = 0
     while node = snapshot.snapshotItem i++
 
       continue if node.parentElement.nodeName is "A"
 
-      data = node.data
-
-      if Linkify.regString.test data
+      if Linkify.regString.test node.data
         Linkify.regString.lastIndex = 0
-        Linkify.gatherLinks node, @
+        Linkify.gatherLinks snapshot, @, node, i
 
     return unless Conf['Embedding'] or Conf['Link Title']
 
@@ -66,7 +64,7 @@ Linkify =
 
     return
 
-  gatherLinks: (node, post) ->
+  gatherLinks: (snapshot, post, node, i) ->
     {data} = node
     len    = data.length
     links  = []
@@ -86,20 +84,19 @@ Linkify =
     Linkify.regString.lastIndex = 0
 
     if match
-      Linkify.seek match, node, post
+      links.push Linkify.seek snapshot, node, match, i
 
     for range in links.reverse()
       Linkify.makeLink range, post
 
     return
 
-  seek: (match, node, post) ->
-    {index} = match
+  seek: (snapshot, node, match, i) ->
     link    = match[0]
     range = document.createRange()
-    range.setStart node, index
+    range.setStart node, match.index
 
-    while (next = node.nextSibling) and next.nodeName isnt 'BR'
+    while (next = snapshot.snapshotItem i++) and next.nodeName isnt 'BR'
       node = next
       data = node.data
       if result = /[\s'"]/.exec data
@@ -108,7 +105,7 @@ Linkify =
     if range.collapsed
       range.setEndAfter node
 
-    Linkify.makeLink range, post
+    range
 
   makeLink: (range, post) ->
     link = range.toString()
@@ -127,7 +124,8 @@ Linkify =
       rel:       'nofollow noreferrer'
       target:    '_blank'
       href:      link
-    range.surroundContents a
+    $.add a, range.extractContents()
+    range.insertNode a
     post.nodes.links.push a
     return
 

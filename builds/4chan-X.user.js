@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.25 - 2013-08-10
+* 4chan X - Version 1.2.25 - 2013-08-11
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -4375,7 +4375,7 @@
       if (g.VIEW === 'catalog' || !Conf['Linkify']) {
         return;
       }
-      this.regString = Conf['Allow False Positives'] ? /(\b([a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]|[-a-z0-9]+\.[a-z]|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]|[a-z]{3,}:[a-z0-9?]|[^\s@]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi : /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi;
+      this.regString = Conf['Allow False Positives'] ? /(\b([-a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]|[-a-z0-9]+\.[a-z]|[\d]+\.[\d]+\.[\d]+\.[\d]+\/|[a-z]{3,}:[a-z0-9?]|[^\s@]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi : /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi;
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
@@ -4403,16 +4403,15 @@
         }
         return;
       }
-      snapshot = $.X('.//text()', this.nodes.comment);
+      snapshot = $.X('.//br|.//text()', this.nodes.comment);
       i = 0;
       while (node = snapshot.snapshotItem(i++)) {
         if (node.parentElement.nodeName === "A") {
           continue;
         }
-        data = node.data;
-        if (Linkify.regString.test(data)) {
+        if (Linkify.regString.test(node.data)) {
           Linkify.regString.lastIndex = 0;
-          Linkify.gatherLinks(node, this);
+          Linkify.gatherLinks(snapshot, this, node, i);
         }
       }
       if (!(Conf['Embedding'] || Conf['Link Title'])) {
@@ -4431,7 +4430,7 @@
         }
       }
     },
-    gatherLinks: function(node, post) {
+    gatherLinks: function(snapshot, post, node, i) {
       var data, index, len, len2, link, links, match, range, _i, _len, _ref;
 
       data = node.data;
@@ -4451,7 +4450,7 @@
       }
       Linkify.regString.lastIndex = 0;
       if (match) {
-        Linkify.seek(match, node, post);
+        links.push(Linkify.seek(snapshot, node, match, i));
       }
       _ref = links.reverse();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -4459,14 +4458,13 @@
         Linkify.makeLink(range, post);
       }
     },
-    seek: function(match, node, post) {
-      var data, index, link, next, range, result;
+    seek: function(snapshot, node, match, i) {
+      var data, link, next, range, result;
 
-      index = match.index;
       link = match[0];
       range = document.createRange();
-      range.setStart(node, index);
-      while ((next = node.nextSibling) && next.nodeName !== 'BR') {
+      range.setStart(node, match.index);
+      while ((next = snapshot.snapshotItem(i++)) && next.nodeName !== 'BR') {
         node = next;
         data = node.data;
         if (result = /[\s'"]/.exec(data)) {
@@ -4476,7 +4474,7 @@
       if (range.collapsed) {
         range.setEndAfter(node);
       }
-      return Linkify.makeLink(range, post);
+      return range;
     },
     makeLink: function(range, post) {
       var a, link;
@@ -4489,7 +4487,8 @@
         target: '_blank',
         href: link
       });
-      range.surroundContents(a);
+      $.add(a, range.extractContents());
+      range.insertNode(a);
       post.nodes.links.push(a);
     },
     services: function(link) {
