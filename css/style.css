@@ -83,13 +83,13 @@ a[href="javascript:;"] {
 #qr {
   z-index: 30;
 }
-#watcher:hover {
+#thread-watcher:hover {
   z-index: 20;
 }
 #header {
   z-index: 10;
 }
-#watcher {
+#thread-watcher {
   z-index: 5;
 }
 
@@ -432,27 +432,39 @@ a.hide-announcement {
 }
 
 /* Thread Watcher */
-#watcher {
-  padding-bottom: 3px;
+#thread-watcher {
+  max-width: 200px;
+  min-width: 150px;
+  padding: 3px;
   position: absolute;
+}
+#thread-watcher > div:first-child {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+}
+#thread-watcher .move {
+  -webkit-flex: 1;
+  flex: 1;
+}
+#watched-threads:not(:hover) {
+  max-height: 150px;
   overflow: hidden;
+}
+#watched-threads div {
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
-#watcher:not(:hover) {
-  max-height: 220px;
+#watched-threads .current {
+  font-weight: 700;
 }
-#watcher > .move {
-  padding-top: 3px;
-}
-#watcher > div {
-  max-width: 200px;
-  overflow: hidden;
-  padding-left: 3px;
-  padding-right: 3px;
-  text-overflow: ellipsis;
-}
-#watcher a {
+#watched-threads a {
   text-decoration: none;
+}
+#watched-threads .dead-thread a[title] {
+  text-decoration: line-through;
 }
 
 /* Thread Stats */
@@ -877,6 +889,9 @@ a.hide-announcement {
   position: relative;
   text-decoration: none;
   white-space: nowrap;
+}
+.entry.disabled {
+  color: graytext !important;
 }
 .entry.has-submenu {
   padding-right: 20px;

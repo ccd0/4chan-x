@@ -46,8 +46,6 @@ Config =
       'Thread Excerpt':               [true,  'Show an excerpt of the thread in the tab title.']
       'Thread Stats':                 [true,  'Display reply, image, and page count.']
       'Thread Watcher':               [true,  'Bookmark threads.']
-      'Auto Watch':                   [true,  'Automatically watch threads you start.']
-      'Auto Watch Reply':             [false, 'Automatically watch threads you reply to.']
     'Posting':
       'Quick Reply':                  [true,  'All-in-one form to reply, create threads, automate dumping and more.']
       'Persistent QR':                [false, 'The Quick reply won\'t disappear after posting.']
@@ -78,6 +76,10 @@ Config =
     'Fit height':       [false, '']
     'Expand spoilers':  [false, 'Expand all images along with spoilers.']
     'Expand from here': [true,  'Expand all images only from current position to thread end.']
+  threadWatcher:
+    'Current Board':    [false, 'Only show watched threads from the current board.']
+    'Auto Watch':       [true,  'Automatically watch threads you start.']
+    'Auto Watch Reply': [false, 'Automatically watch threads you reply to.']
   filter:
     name: """
       # Filter any namefags:
