@@ -1,22 +1,18 @@
 **MayhemYDG**:
-- **New feature**: `Show Dice Roll` (with @carboncopy)
- - Shows dice that were entered into the email field on /tg/.
-- Fix impossibility to create new threads when in dead threads.
+- Show dice rolls that were entered into the email field on /tg/.
 - Fix flag filtering on /sp/ and /int/.
-- Update archives. (with @woxxy and @proplex)
 - Minor fixes.
 - Minor optimizations.
 
+**seaweedchan**:
+- Change new error message to link to ban page just in case
+
 **Zixaphir**:
 - Linkifier Rewrite.
-- Fix Quote Threading toggle.
 - Added Twitch.tv and Vine embedding (with @ihavenoface)
 - Keybinds to scroll to posts that quote you.
 - Minor optimizations.
 - Minor fixes.
-
-**aeosynth**:
-- Update Gruntfile.coffee.
 
 ### v1.2.25
 *2013-08-04*
