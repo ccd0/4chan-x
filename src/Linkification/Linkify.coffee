@@ -52,10 +52,10 @@ Linkify =
 
       if Linkify.regString.test node.data
         Linkify.regString.lastIndex = 0
-        Linkify.gatherLinks snapshot, @, node, i
+        Linkify.gatherLinks snapshot, @, node, links, i
 
       for range in links.reverse()
-        Linkify.makeLink range, post
+        @nodes.links.push Linkify.makeLink range, @
 
     return unless Conf['Embedding'] or Conf['Link Title']
 
@@ -68,7 +68,7 @@ Linkify =
 
     return
 
-  gatherLinks: (snapshot, post, node, i) ->
+  gatherLinks: (snapshot, post, node, links, i) ->
     {data} = node
     len    = data.length
 
@@ -87,11 +87,11 @@ Linkify =
     Linkify.regString.lastIndex = 0
 
     if match
-      links.push Linkify.seek snapshot, post, node, match, i
+      links.push Linkify.seek snapshot, post, node, links, match, i
 
     return
 
-  seek: (snapshot, post, node, match, i) ->
+  seek: (snapshot, post, node, links, match, i) ->
     link    = match[0]
     range = document.createRange()
     range.setStart node, match.index
@@ -103,14 +103,15 @@ Linkify =
         {index} = result
         range.setEnd node, index
         Linkify.regString.lastIndex = index
-        Linkify.gatherLinks snapshot, post, node, i
+        Linkify.gatherLinks snapshot, post, node, links, i
+        return range
 
     if range.collapsed
       range.setEndAfter node
 
     range
 
-  makeLink: (range, post) ->
+  makeLink: (range) ->
     link = range.toString()
     link =
       if link.contains ':'
@@ -129,8 +130,7 @@ Linkify =
       href:      link
     $.add a, range.extractContents()
     range.insertNode a
-    post.nodes.links.push a
-    return
+    a
 
   services: (link) ->
     href = link.href

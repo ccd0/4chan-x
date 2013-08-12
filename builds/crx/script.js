@@ -4417,12 +4417,12 @@
         links = [];
         if (Linkify.regString.test(node.data)) {
           Linkify.regString.lastIndex = 0;
-          Linkify.gatherLinks(snapshot, this, node, i);
+          Linkify.gatherLinks(snapshot, this, node, links, i);
         }
         _ref = links.reverse();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           range = _ref[_i];
-          Linkify.makeLink(range, post);
+          this.nodes.links.push(Linkify.makeLink(range, this));
         }
       }
       if (!(Conf['Embedding'] || Conf['Link Title'])) {
@@ -4441,7 +4441,7 @@
         }
       }
     },
-    gatherLinks: function(snapshot, post, node, i) {
+    gatherLinks: function(snapshot, post, node, links, i) {
       var data, index, len, len2, link, match, range;
 
       data = node.data;
@@ -4460,10 +4460,10 @@
       }
       Linkify.regString.lastIndex = 0;
       if (match) {
-        links.push(Linkify.seek(snapshot, post, node, match, i));
+        links.push(Linkify.seek(snapshot, post, node, links, match, i));
       }
     },
-    seek: function(snapshot, post, node, match, i) {
+    seek: function(snapshot, post, node, links, match, i) {
       var data, index, link, next, range, result;
 
       link = match[0];
@@ -4476,7 +4476,8 @@
           index = result.index;
           range.setEnd(node, index);
           Linkify.regString.lastIndex = index;
-          Linkify.gatherLinks(snapshot, post, node, i);
+          Linkify.gatherLinks(snapshot, post, node, links, i);
+          return range;
         }
       }
       if (range.collapsed) {
@@ -4484,7 +4485,7 @@
       }
       return range;
     },
-    makeLink: function(range, post) {
+    makeLink: function(range) {
       var a, link;
 
       link = range.toString();
@@ -4497,7 +4498,7 @@
       });
       $.add(a, range.extractContents());
       range.insertNode(a);
-      post.nodes.links.push(a);
+      return a;
     },
     services: function(link) {
       var href, key, match, type, _ref;
