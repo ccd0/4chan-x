@@ -1,3 +1,8 @@
+### 2.3.2 - *2013-08-12*
+
+**zixaphir**:
+- Fix Linkifier bug in Chrome.
+
 ### 2.3.1 - *2013-08-11*
 
 **zixaphir**:
@@ -21,7 +26,7 @@
 - Fix issues with having two options called `Reveal Spoilers`. 
 - Update archive.
 
-**Zixaphir**:
+**zixaphir**:
 - Linkifier Rewrite.
 - Fix Quote Threading toggle.
 - Added Twitch.tv and Vine embedding (with @ihavenoface)
