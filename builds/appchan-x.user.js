@@ -18,7 +18,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.3.1 - 2013-08-11
+* appchan x - Version 2.3.1 - 2013-08-12
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -6674,7 +6674,7 @@
       if (g.VIEW === 'catalog' || !Conf['Linkify']) {
         return;
       }
-      this.regString = Conf['Allow False Positives'] ? /(\b([a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]|[-a-z0-9]+\.[a-z]|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]|[a-z]{3,}:[a-z0-9?]|[^\s@]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi : /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi;
+      this.regString = Conf['Allow False Positives'] ? /(\b([-a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]|[-a-z0-9]+\.[a-z]|[\d]+\.[\d]+\.[\d]+\.[\d]+\/|[a-z]{3,}:[a-z0-9?]|[^\s@]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi : /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi;
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
@@ -6687,7 +6687,7 @@
       });
     },
     node: function() {
-      var data, el, i, items, node, range, snapshot;
+      var data, el, i, items, links, node, range, snapshot, _i, _len, _ref;
 
       if (this.isClone) {
         if (Conf['Embedding']) {
@@ -6702,16 +6702,21 @@
         }
         return;
       }
-      snapshot = $.X('.//text()', this.nodes.comment);
+      snapshot = $.X('.//br|.//text()', this.nodes.comment);
       i = 0;
       while (node = snapshot.snapshotItem(i++)) {
         if (node.parentElement.nodeName === "A") {
           continue;
         }
-        data = node.data;
-        if (Linkify.regString.test(data)) {
+        links = [];
+        if (Linkify.regString.test(node.data)) {
           Linkify.regString.lastIndex = 0;
-          Linkify.gatherLinks(node, this);
+          Linkify.gatherLinks(snapshot, this, node, links, i);
+        }
+        _ref = links.reverse();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          range = _ref[_i];
+          this.nodes.links.push(Linkify.makeLink(range, this));
         }
       }
       if (!(Conf['Embedding'] || Conf['Link Title'])) {
@@ -6730,12 +6735,11 @@
         }
       }
     },
-    gatherLinks: function(node, post) {
-      var data, index, len, len2, link, links, match, range, _i, _len, _ref;
+    gatherLinks: function(snapshot, post, node, links, i) {
+      var data, index, len, len2, link, match, range;
 
       data = node.data;
       len = data.length;
-      links = [];
       while ((match = Linkify.regString.exec(data))) {
         index = match.index;
         link = match[0];
@@ -6750,34 +6754,32 @@
       }
       Linkify.regString.lastIndex = 0;
       if (match) {
-        Linkify.seek(match, node, post);
-      }
-      _ref = links.reverse();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        range = _ref[_i];
-        Linkify.makeLink(range, post);
+        links.push(Linkify.seek(snapshot, post, node, links, match, i));
       }
     },
-    seek: function(match, node, post) {
+    seek: function(snapshot, post, node, links, match, i) {
       var data, index, link, next, range, result;
 
-      index = match.index;
       link = match[0];
       range = document.createRange();
-      range.setStart(node, index);
-      while ((next = node.nextSibling) && next.nodeName !== 'BR') {
+      range.setStart(node, match.index);
+      while ((next = snapshot.snapshotItem(i++)) && next.nodeName !== 'BR') {
         node = next;
         data = node.data;
         if (result = /[\s'"]/.exec(data)) {
-          range.setEnd(node, result.index);
+          index = result.index;
+          range.setEnd(node, index);
+          Linkify.regString.lastIndex = index;
+          Linkify.gatherLinks(snapshot, post, node, links, i);
+          return range;
         }
       }
       if (range.collapsed) {
-        range.setEndAfter(node);
+        range.setEnd(node, node.data.length);
       }
-      return Linkify.makeLink(range, post);
+      return range;
     },
-    makeLink: function(range, post) {
+    makeLink: function(range) {
       var a, link;
 
       link = range.toString();
@@ -6788,8 +6790,9 @@
         target: '_blank',
         href: link
       });
-      range.surroundContents(a);
-      post.nodes.links.push(a);
+      $.add(a, range.extractContents());
+      range.insertNode(a);
+      return a;
     },
     services: function(link) {
       var href, key, match, type, _ref;
