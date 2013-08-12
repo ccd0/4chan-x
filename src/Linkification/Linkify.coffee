@@ -84,14 +84,14 @@ Linkify =
     Linkify.regString.lastIndex = 0
 
     if match
-      links.push Linkify.seek snapshot, node, match, i
+      links.push Linkify.seek snapshot, post, node, match, i
 
     for range in links.reverse()
       Linkify.makeLink range, post
 
     return
 
-  seek: (snapshot, node, match, i) ->
+  seek: (snapshot, post, node, match, i) ->
     link    = match[0]
     range = document.createRange()
     range.setStart node, match.index
@@ -100,7 +100,10 @@ Linkify =
       node = next
       data = node.data
       if result = /[\s'"]/.exec data
-        range.setEnd node, result.index
+        {index} = result
+        range.setEnd node, index
+        Linkify.regString.lastIndex = index
+        Linkify.gatherLinks snapshot, post, node, i
 
     if range.collapsed
       range.setEndAfter node

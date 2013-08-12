@@ -4450,7 +4450,7 @@
       }
       Linkify.regString.lastIndex = 0;
       if (match) {
-        links.push(Linkify.seek(snapshot, node, match, i));
+        links.push(Linkify.seek(snapshot, post, node, match, i));
       }
       _ref = links.reverse();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -4458,8 +4458,8 @@
         Linkify.makeLink(range, post);
       }
     },
-    seek: function(snapshot, node, match, i) {
-      var data, link, next, range, result;
+    seek: function(snapshot, post, node, match, i) {
+      var data, index, link, next, range, result;
 
       link = match[0];
       range = document.createRange();
@@ -4468,7 +4468,10 @@
         node = next;
         data = node.data;
         if (result = /[\s'"]/.exec(data)) {
-          range.setEnd(node, result.index);
+          index = result.index;
+          range.setEnd(node, index);
+          Linkify.regString.lastIndex = index;
+          Linkify.gatherLinks(snapshot, post, node, i);
         }
       }
       if (range.collapsed) {
