@@ -168,10 +168,9 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'release', [
     'build'
+    'compress:crx'
     'shell:commit'
     'shell:push'
-    'build-crx'
-    'compress:crx'
   ]
   grunt.registerTask 'patch', [
     'bump'
@@ -191,12 +190,11 @@ module.exports = (grunt) ->
     'release'
   ]
 
-  grunt.registerTask 'updcl', 'Update the changelog', (headerLevel) ->
-    headerPrefix = new Array(+headerLevel + 1).join '#'
-    {version} = grunt.config 'pkg'
-    today     = grunt.template.today 'yyyy-mm-dd'
-    changelog = grunt.file.read 'CHANGELOG.md'
-
-    grunt.file.write 'CHANGELOG.md', "#{headerPrefix} #{version} - *#{today}*\n\n#{changelog}"
-    grunt.log.ok "Changelog updated for v#{version}."
+  grunt.registerTask 'updcl',   'Update the changelog', (i) ->
+    # i is the number of #s for markdown.
+    version = []
+    version.length = +i + 1
+    version = version.join('#') + ' v' + pkg.version + '\n*' + grunt.template.today('yyyy-mm-dd') + '*\n'
+    grunt.file.write 'CHANGELOG.md', version + '\n' + grunt.file.read('CHANGELOG.md')
+    grunt.log.ok     'Changelog updated for v' + pkg.version + '.'
 
