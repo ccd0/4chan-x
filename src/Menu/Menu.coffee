@@ -1,6 +1,6 @@
 Menu = do ->
   a = $.el 'a',
-    className: 'menu-button brackets-wrap'
+    className: 'menu-button fourchanx-link'
     innerHTML: '<i></i>'
     href:      'javascript:;'
 

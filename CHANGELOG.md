@@ -1,3 +1,9 @@
+### v1.2.27
+*2013-08-12*
+
+**seaweedchan**:
+- Fix minor class name change from last version's merge
+
 ### v1.2.26
 *2013-08-12*
 
