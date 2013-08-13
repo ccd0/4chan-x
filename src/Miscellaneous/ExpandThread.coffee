@@ -23,7 +23,7 @@ ExpandThread =
     text.join(' ') + '.'
 
   cbToggle: ->
-    ExpandThread.toggle Get.threadFromRoot @parentNode
+    ExpandThread.toggle Get.threadFromNode @
 
   toggle: (thread) ->
     threadRoot = thread.OP.nodes.root.parentNode

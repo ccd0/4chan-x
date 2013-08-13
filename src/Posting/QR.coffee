@@ -340,7 +340,7 @@ QR =
       $.addClass QR.nodes.el, 'dump'
       QR.cooldown.auto = true
     {com, thread} = QR.nodes
-    thread.value = Get.contextFromNode(@).thread unless com.value
+    thread.value = Get.threadFromNode @ unless com.value
 
     caretPos = com.selectionStart
     # Replace selection for text.

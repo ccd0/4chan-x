@@ -10,6 +10,8 @@ Get =
     "/#{thread.board}/ - #{excerpt}"
   threadFromRoot: (root) ->
     g.threads["#{g.BOARD}.#{root.id[1..]}"]
+  threadFromNode: (node) ->
+    Get.threadFromRoot $.x 'ancestor::div[@class="thread"]', node
   postFromRoot: (root) ->
     link    = $ 'a[title="Highlight this post"]', root
     boardID = link.pathname.split('/')[1]
@@ -17,10 +19,10 @@ Get =
     index   = root.dataset.clone
     post    = g.posts["#{boardID}.#{postID}"]
     if index then post.clones[index] else post
-  postFromNode: (root) ->
-    Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', root
-  contextFromNode: (quotelink) ->
-    Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', quotelink
+  postFromNode: (node) ->
+    Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', node
+  contextFromNode: (node) ->
+    Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', node
   postDataFromLink: (link) ->
     if link.hostname is 'boards.4chan.org'
       path     = link.pathname.split '/'

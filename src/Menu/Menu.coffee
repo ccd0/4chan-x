@@ -10,10 +10,10 @@ Menu =
   node: ->
     if @isClone
       button = $ '.menu-button', @nodes.info
-    else
-      button = Menu.makeButton @
-      $.add @nodes.info, [$.tn('\u00A0'), button]
-    $.on button, 'click', Menu.toggle
+      $.on button, 'click', Menu.toggle
+      return
+    button = Menu.makeButton()
+    $.add @nodes.info, [$.tn('\u00A0'), button]
 
   makeButton: do ->
     a = null
@@ -22,7 +22,15 @@ Menu =
         className: 'menu-button'
         innerHTML: '[<i></i>]'
         href:      'javascript:;'
-      a.cloneNode true
+      button = a.cloneNode true
+      $.on button, 'click', Menu.toggle
+      button
 
   toggle: (e) ->
-    Menu.menu.toggle e, @, Get.postFromNode @
+    try
+      # Posts, inlined posts, hidden replies.
+      post = Get.postFromNode @
+    catch
+      # Hidden threads.
+      post = Get.threadFromNode(@).OP
+    Menu.menu.toggle e, @, post
