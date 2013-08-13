@@ -38,7 +38,8 @@
   cursor: move;
   overflow: hidden;
 }
-label, .favicon {
+label,
+.watcher-toggler {
   cursor: pointer;
 }
 a[href="javascript:;"] {
@@ -204,6 +205,7 @@ a {
 .brackets-wrap::after {
   content: "]\\00a0";
 }
+.dead-thread,
 .disabled,
 .expand-all-shortcut {
   opacity: .45;
@@ -502,7 +504,7 @@ a.hide-announcement {
   top: 0px;
   padding: 0px 4px;
 }
-.watch-thread-link {
+.watcher-toggler {
   padding-top: 18px;
   width: 18px;
   height: 0px;
@@ -512,9 +514,10 @@ a.hide-announcement {
   position: relative;
   top: 1px;
 }
-.watch-thread-link.watched {
+.watcher-toggler.watched {
   opacity: 1;
 }
+
 
 /* Thread Stats */
 #thread-stats {
