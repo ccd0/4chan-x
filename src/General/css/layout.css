@@ -158,8 +158,9 @@ th {
 .center {
   text-align: center;
 }
+.dead-thread,
 .disabled {
-  opacity: 0.5;
+  opacity: 0.4;
 }
 .pointer {
   cursor: pointer;
@@ -803,7 +804,7 @@ th {
   border: 0 none;
   padding: 0;
 }
-.watch-thread-link {
+.watcher-toggler {
   padding-top: 18px;
   width: 18px;
   height: 0px;
@@ -813,7 +814,7 @@ th {
   position: relative;
   top: 1px;
 }
-.watch-thread-link.watched {
+.watcher-toggler.watched {
   opacity: 1;
 }
 /* Announcements */

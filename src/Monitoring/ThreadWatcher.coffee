@@ -157,10 +157,8 @@ ThreadWatcher =
 
     for threadID, thread of g.BOARD.threads
       toggler = $ '.watcher-toggler', thread.OP.nodes.post
-      toggler.src = if ThreadWatcher.db.get {boardID: thread.board.ID, threadID}
-        Favicon.default
-      else
-        Favicon.empty
+      watched = ThreadWatcher.db.get {boardID: thread.board.ID, threadID}
+      $[if watched then 'addClass' else 'rmClass'] toggler, 'watched'
 
     for refresher in ThreadWatcher.menu.refreshers
       refresher()

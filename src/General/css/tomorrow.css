@@ -1,0 +1,64 @@
+/* General */
+:root.tomorrow .dialog {
+  background-color: #282A2E;
+  border-color: #111;
+}
+
+/* Header */
+:root.tomorrow #header-bar, :root.tomorrow #notifications {
+  font-size: 9pt;
+  color: #C5C8C6;
+}
+:root.tomorrow #header-bar a, :root.tomorrow #notifications a {
+  color: #81A2BE;
+}
+
+/* Settings */
+:root.tomorrow #fourchanx-settings fieldset {
+  border-color: #111;
+}
+
+/* Quote */
+:root.tomorrow .backlink.deadlink {
+  color: #81A2BE !important;
+}
+:root.tomorrow .inline {
+  border-color: #111;
+  background-color: rgba(0, 0, 0, .14);
+}
+
+/* QR */
+.tomorrow #dump-list::-webkit-scrollbar-thumb {
+  background-color: #282A2E;
+  border-color: #111;
+}
+:root.tomorrow .qr-preview {
+  background-color: rgba(255, 255, 255, .15);
+}
+:root.tomorrow #qr .field {
+  background-color: rgb(26, 27, 29);
+  color: rgb(197,200,198);
+  border-color: rgb(40, 41, 42);
+}
+:root.tomorrow #qr .field:focus {
+  border-color: rgb(129, 162, 190) !important;
+  background-color: rgb(30,32,36);
+}
+
+/* Menu */
+:root.tomorrow #menu {
+  color: #C5C8C6;
+}
+:root.tomorrow .entry {
+  border-bottom: 1px solid #111;
+  font-size: 10pt;
+}
+:root.tomorrow .focused.entry {
+  background: rgba(0, 0, 0, .33);
+}
+
+/* Watcher Favicon */
+:root.tomorrow .watcher-toggler
+{
+  background-image: url("data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(197,200,198)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>");
+}
