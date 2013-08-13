@@ -10338,8 +10338,26 @@
   };
 
   Main = {
-    init: function(items) {
-      var db, flatten, _i, _len;
+    init: function() {
+      var db, flatten, pathname, _i, _len, _ref;
+      pathname = location.pathname.split('/');
+      g.BOARD = new Board(pathname[1]);
+      if ((_ref = g.BOARD.ID) === 'z' || _ref === 'fk') {
+        return;
+      }
+      g.VIEW = (function() {
+        switch (pathname[2]) {
+          case 'res':
+            return 'thread';
+          case 'catalog':
+            return 'catalog';
+          default:
+            return 'index';
+        }
+      })();
+      if (g.VIEW === 'thread') {
+        g.THREADID = +pathname[3];
+      }
       flatten = function(parent, obj) {
         var key, val;
         if (obj instanceof Array) {
@@ -10362,15 +10380,18 @@
       }
       Conf['selectedArchives'] = {};
       Conf['CachedTitles'] = [];
-      $.get(Conf, Main.initFeatures);
+      Conf['archives'] = Redirect.archives;
+      $.get(Conf, function(items) {
+        $.extend(Conf, items);
+        return Main.initFeatures();
+      });
       $.on(d, '4chanMainInit', Main.initStyle);
       return $.asap((function() {
         return d.head && $('link[rel="shortcut icon"]', d.head) || d.readyState !== 'loading';
       }), Main.initStyle);
     },
-    initFeatures: function(items) {
+    initFeatures: function() {
       var init, pathname, _ref;
-      Conf = items;
       pathname = location.pathname.split('/');
       g.BOARD = new Board(pathname[1]);
       if ((_ref = g.BOARD.ID) === 'z' || _ref === 'fk') {
@@ -10543,9 +10564,7 @@
         }
         return;
       }
-      if (!$.hasClass(doc, 'fourchan-x')) {
-        Main.initStyle();
-      }
+      Main.initStyle();
       if (board = $('.board')) {
         threads = [];
         posts = [];
