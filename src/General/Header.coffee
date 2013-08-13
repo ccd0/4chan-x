@@ -10,7 +10,12 @@ Header =
     @toggle = $ '#toggle-header-bar', @bar
 
     @menu = new UI.Menu 'header'
-    $.on $('.menu-button', @bar), 'click', @menuToggle
+    menuButton = $.el 'a',
+      className: 'menu-button'
+      innerHTML: '<i></i>'
+      href: 'javascript:;'
+    $.on menuButton, 'click', @menuToggle
+    @addShortcut menuButton, 0
     $.on @toggle, 'mousedown', @toggleBarVisibility
     $.on window, 'load hashchange', Header.hashScroll
     $.on d, 'CreateNotification', @createNotification
@@ -247,11 +252,15 @@ Header =
       top -= headRect.top + headRect.height
     window.scrollBy 0, top
 
-  addShortcut: (el) ->
+  addShortcut: (el, index) ->
     shortcut = $.el 'span',
       className: 'shortcut'
     $.add shortcut, el
-    $.prepend $('#shortcuts', Header.bar), shortcut
+    shortcuts = $ '#shortcuts', Header.bar
+    nodes = [shortcuts.childNodes...]
+    nodes.splice index, 0, shortcut
+    $.add shortcuts, nodes
+
 
   menuToggle: (e) ->
     Header.menu.toggle e, @, g

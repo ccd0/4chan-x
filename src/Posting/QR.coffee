@@ -27,7 +27,7 @@ QR =
       $.event 'CloseMenu'
       QR.open()
       QR.nodes.com.focus()
-    Header.addShortcut sc
+    Header.addShortcut sc, 1
 
     $.on d, 'QRGetSelectedPost', ({detail: cb}) ->
       cb QR.selected
