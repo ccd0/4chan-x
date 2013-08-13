@@ -109,7 +109,6 @@ Header =
     fourchannav = $.id 'boardNavDesktop'
     if a = $ "a[href*='/#{g.BOARD}/']", fourchannav
       a.className = 'current'
-
     boardList = $.el 'span',
       id: 'board-list'
       innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container fourchanx-link'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> #{fourchannav.innerHTML}</span>"

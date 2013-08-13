@@ -16,7 +16,6 @@ QuoteYou =
       cb:   @node
 
   node: ->
-    # Stop there if it's a clone.
     return if @isClone
 
     if @info.yours

@@ -1,6 +1,18 @@
 **MayhemYDG**:
 - **New feature**: `Show Dice Roll` (with @carboncopy)
  - Shows dice that were entered into the email field on /tg/.
+- **Thread Watcher** improvements:
+ - It is now possible to open all watched threads via the `Open all threads` button in the Thread Watcher's menu.
+ - Added the `Current Board` setting to switch between showing watched threads from the current board or all boards, disabled by default.
+ - About dead (404'd) threads:
+  - Dead threads will be typographically indicated with a strikethrough.
+  - Dead threads will directly link to the corresponding archive when available.
+  - A button to prune all 404'd threads from the list is now available.
+  - Added the `Auto Prune` setting to automatically prune 404'd threads, disabled by default.
+ - The current thread is now highlighted in the list of watched threads.
+ - Watching the current thread can be done in the Header's menu too.
+- Removed the `Check for Updates` setting:
+ - Your browser/userscript manager should handle updates itself automatically.
 - Fix impossibility to create new threads when in dead threads.
 - Fix flag filtering on /sp/ and /int/.
 - Update archives. (with @woxxy and @proplex)

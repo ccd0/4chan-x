@@ -21,7 +21,8 @@ Settings =
       else
         $.on d, '4chanXInitFinished', Settings.open
       $.set
-        lastchecked: Date.now()
+        archives: Conf['archives']
+        lastarchivecheck: now
         previousversion: g.VERSION
 
     Settings.addSection 'Main',     Settings.main
@@ -153,7 +154,6 @@ Settings =
       data =
         version: g.VERSION
         date: now
-      Conf['WatchedThreads'] = {}
       for db in DataBoards
         Conf[db] = boards: {}
       # Make sure to export the most recent data.
@@ -265,13 +265,10 @@ Settings =
       for key, val of Config.hotkeys when key of data.Conf
         data.Conf[key] = data.Conf[key].replace(/ctrl|alt|meta/g, (s) -> "#{s[0].toUpperCase()}#{s[1..]}").replace /(^|.+\+)[A-Z]$/g, (s) ->
           "Shift+#{s[0...-1]}#{s[-1..].toLowerCase()}"
-      data.Conf.WatchedThreads = data.WatchedThreads
-    else if version[0] is '3'
-      data = Settings.convertSettings data,
-        'Reply Hiding': 'Reply Hiding Buttons'
-        'Thread Hiding': 'Thread Hiding Buttons'
-        'Bottom header': 'Bottom Header'
-        'Unread Tab Icon': 'Unread Favicon'
+      data.Conf['WatchedThreads'] = data.WatchedThreads
+    if data.Conf['WatchedThreads']
+      data.Conf['watchedThreads'] = boards: ThreadWatcher.convert data.Conf['WatchedThreads']
+      delete data.Conf['WatchedThreads']
     $.set data.Conf
   convertSettings: (data, map) ->
     for prevKey, newKey of map
