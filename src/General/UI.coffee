@@ -67,19 +67,18 @@ UI = do ->
       bLeft   = window.scrollX + bRect.left
       cHeight = doc.clientHeight
       cWidth  = doc.clientWidth
-      [top, bottom] = if bRect.top + bRect.height + mRect.height < cHeight
-        ['100%', null]
+      if bRect.top + bRect.height + mRect.height < cHeight
+        $.addClass menu, 'top'
+        $.rmClass  menu, 'bottom'
       else
-        [null, '100%']
-      [left, right] = if bRect.left + mRect.width < cWidth
-        ['0px', null]
+        $.addClass menu, 'bottom'
+        $.rmClass  menu, 'top'
+      if bRect.left + mRect.width < cWidth
+        $.addClass menu, 'left'
+        $.rmClass  menu, 'right'
       else
-        [null, '0px']
-      {style} = menu
-      style.top    = top
-      style.right  = right
-      style.bottom = bottom
-      style.left   = left
+        $.addClass menu, 'right'
+        $.rmClass  menu, 'left'
 
       menu.focus()
 
@@ -155,19 +154,18 @@ UI = do ->
       eRect   = entry.getBoundingClientRect()
       cHeight = doc.clientHeight
       cWidth  = doc.clientWidth
-      [top, bottom] = if eRect.top + sRect.height < cHeight
-        ['0px', 'auto']
+      if eRect.top + sRect.height < cHeight
+        $.addClass submenu, 'top'
+        $.rmClass  submenu, 'bottom'
       else
-        ['auto', '0px']
-      [left, right] = if eRect.right + sRect.width < cWidth
-        ['100%', 'auto']
+        $.addClass submenu, 'bottom'
+        $.rmClass  submenu, 'top'
+      if eRect.right + sRect.width < cWidth
+        $.addClass submenu, 'left'
+        $.rmClass  submenu, 'right'
       else
-        ['auto', '100%']
-      {style} = submenu
-      style.top    = top
-      style.bottom = bottom
-      style.left   = left
-      style.right  = right
+        $.addClass submenu, 'right'
+        $.rmClass  submenu, 'left'
 
     addEntry: (e) ->
       entry = e.detail

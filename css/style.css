@@ -885,6 +885,18 @@ a.hide-announcement {
   position: absolute;
   outline: none;
 }
+#menu.top {
+  top: 100%;
+}
+#menu.bottom {
+  bottom: 100%;
+}
+#menu.left {
+  left: 0;
+}
+#menu.right {
+  right: 0;
+}
 .entry {
   cursor: pointer;
   outline: none;
@@ -920,6 +932,18 @@ a.hide-announcement {
   flex-direction: column;
   position: absolute;
   margin: -1px 0;
+}
+.submenu.top {
+  top: 0;
+}
+.submenu.bottom {
+  bottom: 0;
+}
+.submenu.left {
+  left: 100%;
+}
+.submenu.right {
+  right: 100%;
 }
 .entry input {
   margin: 0;
