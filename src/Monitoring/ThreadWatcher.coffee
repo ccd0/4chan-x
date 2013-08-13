@@ -86,8 +86,9 @@ ThreadWatcher =
     fetched:  0
     fetching: 0
   fetchAllStatus: ->
+    return unless (threads = ThreadWatcher.getAll()).length
     ThreadWatcher.status.textContent = '...'
-    for thread in ThreadWatcher.getAll()
+    for thread in threads
       ThreadWatcher.fetchStatus thread
     return
   fetchStatus: ({boardID, threadID, data}) ->
