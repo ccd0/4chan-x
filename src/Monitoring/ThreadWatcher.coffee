@@ -2,16 +2,28 @@ ThreadWatcher =
   init: ->
     return if !Conf['Thread Watcher']
 
+    @shortcut = sc = $.el 'a',
+      textContent: 'Watcher'
+      id:   'watcher-link'
+      href: 'javascript:;'
+      className: 'disabled'
+
     @db     = new DataBoard 'watchedThreads', @refresh, true
     @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', """
-    <%= grunt.file.read('html/Monitoring/ThreadWatcher.html').replace(/>\s+</g, '><').trim() %>
+    <%= grunt.file.read('src/General/html/Monitoring/ThreadWatcher.html').replace(/>\s+</g, '><').trim() %>
     """
     @status = $ '#watcher-status', @dialog
     @list   = @dialog.lastElementChild
 
     $.on d, 'QRPostSuccessful',   @cb.post
     $.on d, 'ThreadUpdate',       @cb.threadUpdate if g.VIEW is 'thread'
+    $.on sc, 'click', @toggleWatcher
+    $.on $('.move>.close', ThreadWatcher.dialog), 'click', @toggleWatcher
     $.on d, '4chanXInitFinished', @ready
+
+    if Conf['Toggleable Thread Watcher']
+      Header.addShortcut sc
+      $.addClass doc, 'fixed-watcher'
 
     now = Date.now()
     if (@db.data.lastChecked or 0) < now - 2 * $.HOUR
@@ -42,6 +54,9 @@ ThreadWatcher =
     return unless Main.isThisPageLegit()
     ThreadWatcher.refresh()
     $.add d.body, ThreadWatcher.dialog
+
+    if Conf['Toggleable Thread Watcher']
+      ThreadWatcher.dialog.hidden = true
 
     return unless Conf['Auto Watch']
     $.get 'AutoWatch', 0, ({AutoWatch}) ->
