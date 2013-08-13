@@ -10324,25 +10324,7 @@
 
   Main = {
     init: function() {
-      var db, flatten, pathname, _i, _len, _ref;
-      pathname = location.pathname.split('/');
-      g.BOARD = new Board(pathname[1]);
-      if ((_ref = g.BOARD.ID) === 'z' || _ref === 'fk') {
-        return;
-      }
-      g.VIEW = (function() {
-        switch (pathname[2]) {
-          case 'res':
-            return 'thread';
-          case 'catalog':
-            return 'catalog';
-          default:
-            return 'index';
-        }
-      })();
-      if (g.VIEW === 'thread') {
-        g.THREADID = +pathname[3];
-      }
+      var db, flatten, _i, _len;
       flatten = function(parent, obj) {
         var key, val;
         if (obj instanceof Array) {
