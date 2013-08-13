@@ -20,6 +20,6 @@ QuoteCT =
       continue unless threadID # deadlink
       if @isClone
         quotelink.textContent = quotelink.textContent.replace QuoteCT.text, ''
-      if boardID is @board.ID and threadID isnt thread.ID
+      if boardID is board.ID and threadID isnt thread.ID
         $.add quotelink, $.tn QuoteCT.text
     return
