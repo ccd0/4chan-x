@@ -1,5 +1,5 @@
 Main =
-  init: (items) ->
+  init: ->
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
     return if g.BOARD.ID in ['z', 'fk']
@@ -30,13 +30,25 @@ Main =
       Conf[db] = boards: {}
     Conf['selectedArchives'] = {}
     Conf['archives'] = Redirect.archives
-    $.get Conf, Main.initFeatures
+    $.get Conf, (items) ->
+      $.extend Conf, items
+      <% if (type === 'crx') { %>
+      unless items
+        new Notification 'error', $.el 'span',
+          innerHTML: """
+          It seems like your <%= meta.name %> settings became corrupted due to a <a href="https://code.google.com/p/chromium/issues/detail?id=261623" target=_blank>Chrome bug</a>.<br>
+          Unfortunately, you'll have to <a href="https://github.com/MayhemYDG/4chan-x/wiki/FAQ#known-problems" target=_blank>fix it yourself</a>.
+          """
+        # Track resolution of this bug.
+        Main.logError
+          message: 'Chrome Storage API bug'
+          error: new Error chrome.runtime.lastError.message or 'no lastError.message'
+      <% } %>
+      Main.initFeatures()
 
     $.on d, '4chanMainInit', Main.initStyle
 
-  initFeatures: (items) ->
-    Conf = items
-
+  initFeatures: ->
     switch location.hostname
       when 'api.4chan.org'
         return
