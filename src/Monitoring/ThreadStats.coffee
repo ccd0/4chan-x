@@ -18,7 +18,6 @@ ThreadStats =
     @postCountEl = $ '#post-count', sc
     @fileCountEl = $ '#file-count', sc
     @pageCountEl  = $ '#page-count', sc
-    @lastModified = '0'
 
     Thread::callbacks.push
       name: 'Thread Stats'
@@ -55,12 +54,10 @@ ThreadStats =
       return
     setTimeout ThreadStats.fetchPage, 2 * $.MINUTE
     $.ajax "//api.4chan.org/#{ThreadStats.thread.board}/threads.json", onload: ThreadStats.onThreadsLoad,
-      headers: 'If-Modified-Since': ThreadStats.lastModified
+      whenModified: true
 
   onThreadsLoad: ->
-    return if !Conf["Page Count in Stats"]
-    ThreadStats.lastModified = @getResponseHeader 'Last-Modified'
-    return if @status isnt 200
+    return unless Conf["Page Count in Stats"] and @status is 200
     pages = JSON.parse @response
     for page in pages
       for thread in page.threads

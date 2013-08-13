@@ -126,6 +126,7 @@ Main =
       'Thread Stats':              ThreadStats
       'Thread Updater':            ThreadUpdater
       'Thread Watcher':            ThreadWatcher
+      'Thread Watcher (Menu)':     ThreadWatcher.menu
       'Index Navigation':          Nav
       'Keybinds':                  Keybinds
       'Show Dice Roll':            Dice
@@ -205,9 +206,6 @@ Main =
       Main.callbackNodes Thread, threads
       Main.callbackNodesDB Post, posts, ->
         $.event '4chanXInitFinished'
-        <% if (type !== 'crx') { %>
-        Main.checkUpdate()
-        <% } %>
 
       if styleSelector = $.id 'styleSelector'
         passLink = $.el 'a',
@@ -227,9 +225,6 @@ Main =
       new Notification 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to properly function.', 30
 
     $.event '4chanXInitFinished'
-    <% if (type !== 'crx') { %>
-    Main.checkUpdate()
-    <% } %>
 
   callbackNodes: (klass, nodes) ->
     # get the nodes' length only once
@@ -302,27 +297,6 @@ Main =
         return
     obj.callback.isAddon = true
     Klass::callbacks.push obj.callback
-
-  <% if (type !== 'crx') { %>
-  message: (e) ->
-    {version} = e.data
-    if version and version isnt g.VERSION
-        el = $.el 'span',
-          innerHTML: "Update: <%= meta.name %> v#{version} is out, get it <a href=<%= meta.page %> target=_blank>here</a>."
-        new Notification 'info', el, 120
-
-  checkUpdate: ->
-    return unless Conf['Check for Updates'] and Main.isThisPageLegit()
-    now  = Date.now()
-    $.get 'lastchecked', 0, ({lastchecked}) ->
-      if (lastchecked > now - $.DAY)
-        return
-      $.ready ->
-        $.on window, 'message', Main.message
-        $.set 'lastchecked', now
-        $.add d.head, $.el 'script',
-          src: '<%= meta.repo %>raw/<%= meta.mainBranch %>/latest.js'
-  <% } %>
 
   handleErrors: (errors) ->
     unless errors instanceof Array

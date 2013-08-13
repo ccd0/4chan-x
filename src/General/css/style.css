@@ -38,7 +38,8 @@
   cursor: move;
   overflow: hidden;
 }
-label, .favicon {
+label,
+.watcher-toggler {
   cursor: pointer;
 }
 a[href="javascript:;"] {
@@ -97,10 +98,10 @@ a {
 #qr {
   z-index: 30;
 }
-#watcher {
+#thread-watcher {
   z-index: 8;
 }
-:root.fixed-watcher #watcher {
+:root.fixed-watcher #thread-watcher {
   z-index: 20;
 }
 .fixed #header-bar {
@@ -204,6 +205,7 @@ a {
 .brackets-wrap::after {
   content: "]\\00a0";
 }
+.dead-thread,
 .disabled,
 .expand-all-shortcut {
   opacity: .45;
@@ -465,44 +467,48 @@ a.hide-announcement {
 }
 
 /* Thread Watcher */
-#watcher {
+#thread-watcher {
   position: absolute;
 }
-#watcher {
+#thread-watcher {
   padding-bottom: 3px;
+  padding-left: 3px;
   overflow: hidden;
   white-space: nowrap;
-  min-width: 120px;
+  min-width: 136px;
   max-height: 92%;
   overflow-y: auto;
 }
-:root.fixed-watcher #watcher {
+#thread-watcher .menu-button {
+  bottom: 1px;
+}
+:root.fixed-watcher #thread-watcher {
   position: fixed;
 }
-:root:not(.fixed-watcher) #watcher:not(:hover) {
+:root:not(.fixed-watcher) #thread-watcher:not(:hover) {
   max-height: 210px;
   overflow-y: hidden;
 }
-#watcher > .move {
+#thread-watcher > .move {
   padding-top: 3px;
 }
-#watcher > div {
+#watched-threads > div {
   max-width: 250px;
   overflow: hidden;
   padding-left: 3px;
   padding-right: 3px;
   text-overflow: ellipsis;
 }
-#watcher a {
+#thread-watcher a {
   text-decoration: none;
 }
-#watcher .move>.close {
+#thread-watcher .move>.close {
   position: absolute;
   right: 0px;
   top: 0px;
   padding: 0px 4px;
 }
-.watch-thread-link {
+.watcher-toggler {
   padding-top: 18px;
   width: 18px;
   height: 0px;
@@ -512,9 +518,10 @@ a.hide-announcement {
   position: relative;
   top: 1px;
 }
-.watch-thread-link.watched {
+.watcher-toggler.watched {
   opacity: 1;
 }
+
 
 /* Thread Stats */
 #thread-stats {

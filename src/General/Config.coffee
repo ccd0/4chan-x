@@ -57,12 +57,6 @@ Config =
         true
         'Show dice that were entered into the email field.'
       ]
-      <% if (type !== 'crx') { %>
-      'Check for Updates': [
-        true
-        'Check for updated versions of <%= meta.name %>.'
-      ]
-      <% } %>
       'Show Updated Notifications': [
         true
         'Show notifications when 4chan X is successfully updated.'
@@ -255,14 +249,6 @@ Config =
         true
         'Adds a shortcut for the thread watcher, hides the watcher by default, and makes it scroll with the page.'
       ]
-      'Auto Watch': [
-        true
-        'Automatically watch threads you start.'
-      ]
-      'Auto Watch Reply': [
-        false
-        'Automatically watch threads you reply to.'
-      ]
 
     'Posting':
       'Quick Reply': [
@@ -399,7 +385,25 @@ Config =
       false
       'Advance to next post when contracting an expanded image.'
     ]
-    
+
+  threadWatcher:
+    'Current Board': [
+      false
+      'Only show watched threads from the current board.'
+    ]
+    'Auto Watch': [
+      true
+      'Automatically watch threads you start.'
+    ]
+    'Auto Watch Reply': [
+      false
+      'Automatically watch threads you reply to.'
+    ]
+    'Auto Prune': [
+      false
+      'Automatically prune 404\'d threads.'
+    ]
+
   filter:
     name: """
 # Filter any namefags:
