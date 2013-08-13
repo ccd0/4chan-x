@@ -4431,7 +4431,7 @@
       if (g.VIEW === 'catalog' || !Conf['Linkify']) {
         return;
       }
-      this.regString = /(?:[a-z][-\w]+:([a-z\d%\/])|www\d{0,3}[.]|[-a-z\d.]+[.](com|net|org|jp|uk|ru|be|tv|xxx|edu|gov|cd|es|de|se|tk|dk|io|fm|fi)|[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i;
+      this.regString = /(?:[a-z][-\w]+:([a-z\d%\/])|www\d{0,3}[.]|[-a-z\d.]+[.](com|net|org|co\.jp|uk|ru|be|tv|xxx|edu|gov|cd|es|de|se|tk|dk|io|fm|fi)|[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i;
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
@@ -4444,7 +4444,7 @@
       });
     },
     node: function() {
-      var data, el, end, endNode, i, index, items, lIndex, length, link, links, node, range, result, saved, snapshot, space, test, text, _i, _len, _ref;
+      var data, el, end, endNode, i, index, items, lIndex, len, length, link, links, node, range, result, saved, snapshot, space, test, text, _i, _len, _ref;
 
       if (this.isClone) {
         if (Conf['Embedding']) {
@@ -4490,10 +4490,10 @@
             }
             range = Linkify.makeRange(node, endNode, index, length);
             if (link = Linkify.regString.exec(text = range.toString())) {
-              if (lIndex = link.index) {
-                range.setStart(node, lIndex + index);
-                text = text.slice(0, lIndex);
+              if ((lIndex = link.index) && (len = lIndex + index) < node.data.length) {
+                range.setStart(node, len);
               }
+              text = text.slice(0, lIndex);
               links.push([range, text]);
             }
             break;
@@ -8802,7 +8802,7 @@
 
   IDColor = {
     init: function() {
-      if (!Conf['Color User IDs']) {
+      if (g.VIEW === 'catalog' || !Conf['Color user IDs']) {
         return;
       }
       return Post.prototype.callbacks.push({
@@ -8813,9 +8813,11 @@
     node: function() {
       var str, uid;
 
-      str = this.info.uniqueID;
+      if (this.isClone || !(str = this.info.uniqueID)) {
+        return;
+      }
       uid = $('.hand', this.nodes.uniqueID);
-      if (!(str && uid && uid.nodeName === 'SPAN')) {
+      if (!(uid && uid.nodeName === 'SPAN')) {
         return;
       }
       return uid.style.cssText = IDColor.css(IDColor.ids[str] || IDColor.compute(str));
@@ -8824,7 +8826,7 @@
     compute: function(str) {
       var hash, rgb;
 
-      hash = this.hash(str);
+      hash = IDColor.hash(str);
       rgb = [(hash >> 24) & 0xFF, (hash >> 16) & 0xFF, (hash >> 8) & 0xFF];
       rgb[3] = ((rgb[0] * 0.299) + (rgb[1] * 0.587) + (rgb[2] * 0.114)) > 125;
       this.ids[str] = rgb;

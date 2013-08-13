@@ -14,7 +14,7 @@ Linkify =
         # This should account for virtually all links posted without www or http:
         # If it misses any, screw it. No, I will not add canv.as
         [-a-z\d.]+[.](
-          com|net|org|jp|uk|ru|be|tv|xxx|edu|gov|cd|es|de|se|tk|dk|io|fm|fi
+          com|net|org|co\.jp|uk|ru|be|tv|xxx|edu|gov|cd|es|de|se|tk|dk|io|fm|fi
         )
         |
         # IPv4 Addresses
@@ -76,9 +76,9 @@ Linkify =
           test.lastIndex = 0 if length is endNode.data.length
           range = Linkify.makeRange node, endNode, index, length
           if link = Linkify.regString.exec text = range.toString()
-            if lIndex = link.index
-              range.setStart node, lIndex + index
-              text = text[...lIndex]
+            if (lIndex = link.index) and (len = lIndex + index) < node.data.length
+              range.setStart node, len
+            text = text[...lIndex]
             links.push [range, text]
           break
 
