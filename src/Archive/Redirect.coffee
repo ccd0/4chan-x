@@ -50,8 +50,8 @@ Redirect =
       http:  true
       https: true
       software: 'foolfuuka'
-      boards: ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
-      files:  ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
+      boards: ['adv', 'asp', 'cm', 'd', 'e', 'i', 'lgbt', 'n', 'o', 'p', 'pol', 's', 's4s', 't', 'trv', 'y']
+      files:  ['cm', 'd', 'e', 'i', 'n', 'o', 'p', 's', 'trv', 'y']
 
     'Foolz Beta':
       domain: 'beta.foolz.us'
