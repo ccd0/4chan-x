@@ -124,7 +124,6 @@
       },
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
-        'Allow False Positives': [false, 'Linkify everything, allowing more false positives but reducing missed links'],
         'Embedding': [true, 'Embed supported services.'],
         'Auto-embed': [false, 'Auto-embed Linkify Embeds.'],
         'Link Title': [true, 'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud, and Github gists']
@@ -4274,7 +4273,7 @@
       if (g.VIEW === 'catalog' || !Conf['Linkify']) {
         return;
       }
-      this.regString = Conf['Allow False Positives'] ? /([-a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]|[-a-z0-9]+\.[a-z]|[\d]+\.[\d]+\.[\d]+\.[\d]+\/|[a-z]{3,}:[a-z0-9?]|[^\s@]+@[a-z0-9.-]+\.[a-z0-9])/i : /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1})/i;
+      this.regString = /(?:[a-z][-\w]+:([a-z\d%\/])|www\d{0,3}[.]|[-a-z\d.]+[.](com|net|org|jp|uk|ru|be|tv|xxx|edu|gov|cd|es|de|se|tk|dk|io|fm|fi)|[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i;
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
@@ -4305,8 +4304,8 @@
       space = /[\s'"]/;
       snapshot = $.X('.//br|.//text()', this.nodes.comment);
       i = 0;
+      links = [];
       while (node = snapshot.snapshotItem(i++)) {
-        links = [];
         data = node.data;
         if (node.parentElement.nodeName === "A" || !data) {
           continue;
@@ -4322,7 +4321,7 @@
               endNode = saved;
               length = saved.data.length;
               if (end = space.exec(saved.data)) {
-                length = end.index;
+                test.lastIndex = length = end.index;
                 i--;
                 break;
               }
@@ -4334,22 +4333,23 @@
             if (link = Linkify.regString.exec(text = range.toString())) {
               if (lIndex = link.index) {
                 range.setStart(node, lIndex + index);
+                text = text.slice(0, lIndex);
               }
               links.push([range, text]);
             }
             break;
           } else {
             if (link = Linkify.regString.exec(result[0])) {
-              range = Linkify.makeRange(node, node, link.index, link.length);
+              range = Linkify.makeRange(node, node, index + link.index, length + link.index);
               links.push([range, link]);
             }
           }
         }
-        _ref = links.reverse();
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          range = _ref[_i];
-          this.nodes.links.push(Linkify.makeLink(range, this));
-        }
+      }
+      _ref = links.reverse();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        range = _ref[_i];
+        this.nodes.links.push(Linkify.makeLink(range, this));
       }
       if (!(Conf['Embedding'] || Conf['Link Title'])) {
         return;
