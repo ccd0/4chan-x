@@ -176,9 +176,8 @@ Main =
         location.replace href or "/#{g.BOARD}/"
       return
 
-    unless $.hasClass doc, 'fourchan-x'
-      # Something might have gone wrong!
-      Main.initStyle()
+    # Something might have gone wrong!
+    Main.initStyle()
 
     if board = $ '.board'
       threads = []
