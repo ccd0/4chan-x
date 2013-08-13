@@ -261,7 +261,6 @@ Header =
     nodes.splice index, 0, shortcut
     $.add shortcuts, nodes
 
-
   menuToggle: (e) ->
     Header.menu.toggle e, @, g
 
