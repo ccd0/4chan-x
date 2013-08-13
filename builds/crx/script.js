@@ -171,9 +171,7 @@
         'Thread Stats': [true, 'Display reply and image count.'],
         'Page Count in Stats': [false, 'Display the page count in the thread stats as well.'],
         'Updater and Stats in Header': [true, 'Places the thread updater and thread stats in the header instead of floating them.'],
-        'Thread Watcher': [true, 'Bookmark threads.'],
-        'Auto Watch': [true, 'Automatically watch threads you start.'],
-        'Auto Watch Reply': [false, 'Automatically watch threads you reply to.']
+        'Thread Watcher': [true, 'Bookmark threads.']
       },
       'Posting': {
         'Header Shortcut': [true, 'Add a shortcut to the header to toggle the QR.'],
@@ -309,6 +307,12 @@
         'Sage Image': ['appchan', 'Image to use for sage highlighting.', ['4chan SS', 'appchan']],
         'Sage Highlight Position': ['after', 'Position of Sage Highlighting', ['before', 'after']]
       }
+    },
+    threadWatcher: {
+      'Current Board': [false, 'Only show watched threads from the current board.'],
+      'Auto Watch': [true, 'Automatically watch threads you start.'],
+      'Auto Watch Reply': [false, 'Automatically watch threads you reply to.'],
+      'Auto Prune': [false, 'Automatically prune 404\'d threads.']
     },
     filter: {
       name: "# Filter any namefags:\n#/^(?!Anonymous$)/",
@@ -2760,26 +2764,32 @@
     }
   };
 
-  $.ajax = function(url, options, extra) {
-    var form, headers, key, r, sync, type, upCallbacks, val;
+  $.ajax = (function() {
+    var lastModified;
 
-    if (extra == null) {
-      extra = {};
-    }
-    type = extra.type, headers = extra.headers, upCallbacks = extra.upCallbacks, form = extra.form, sync = extra.sync;
-    r = new XMLHttpRequest();
-    r.overrideMimeType('text/html');
-    type || (type = form && 'post' || 'get');
-    r.open(type, url, !sync);
-    for (key in headers) {
-      val = headers[key];
-      r.setRequestHeader(key, val);
-    }
-    $.extend(r, options);
-    $.extend(r.upload, upCallbacks);
-    r.send(form);
-    return r;
-  };
+    lastModified = {};
+    return function(url, options, extra) {
+      var form, r, sync, type, upCallbacks, whenModified;
+
+      if (extra == null) {
+        extra = {};
+      }
+      type = extra.type, whenModified = extra.whenModified, upCallbacks = extra.upCallbacks, form = extra.form, sync = extra.sync;
+      r = new XMLHttpRequest();
+      type || (type = form && 'post' || 'get');
+      r.open(type, url, !sync);
+      if (whenModified) {
+        r.setRequestHeader('If-Modified-Since', lastModified[url] || '0');
+        $.on(r, 'load', function() {
+          return lastModified[url] = r.getResponseHeader('Last-Modified');
+        });
+      }
+      $.extend(r, options);
+      $.extend(r.upload, upCallbacks);
+      r.send(form);
+      return r;
+    };
+  })();
 
   $.cache = (function() {
     var reqs;
@@ -3578,17 +3588,19 @@
 
   })(Post);
 
-  DataBoards = ['hiddenThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts'];
+  DataBoards = ['hiddenThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts', 'watchedThreads'];
 
   DataBoard = (function() {
-    function DataBoard(key, sync) {
+    function DataBoard(key, sync, dontClean) {
       var init,
         _this = this;
 
       this.key = key;
       this.data = Conf[key];
       $.sync(key, this.onSync.bind(this));
-      this.clean();
+      if (!dontClean) {
+        this.clean();
+      }
       if (!sync) {
         return;
       }
@@ -3598,6 +3610,10 @@
       };
       $.on(d, '4chanXInitFinished', init);
     }
+
+    DataBoard.prototype.save = function() {
+      return $.set(this.key, this.data);
+    };
 
     DataBoard.prototype["delete"] = function(_arg) {
       var boardID, postID, threadID;
@@ -3617,7 +3633,7 @@
       } else {
         delete this.data.boards[boardID];
       }
-      return $.set(this.key, this.data);
+      return this.save();
     };
 
     DataBoard.prototype.deleteIfEmpty = function(_arg) {
@@ -3647,7 +3663,7 @@
       } else {
         this.data.boards[boardID] = val;
       }
-      return $.set(this.key, this.data);
+      return this.save();
     };
 
     DataBoard.prototype.get = function(_arg) {
@@ -3691,7 +3707,7 @@
           this.ajaxClean(boardID);
         }
       }
-      return $.set(this.key, this.data);
+      return this.save();
     };
 
     DataBoard.prototype.ajaxClean = function(boardID) {
@@ -3721,7 +3737,7 @@
             boardID: boardID
           });
         }
-        return $.set(_this.key, _this.data);
+        return _this.save();
       });
     };
 
@@ -3782,7 +3798,25 @@
 
   Polyfill = {
     init: function() {
+      Polyfill.toBlob();
       return Polyfill.visibility();
+    },
+    toBlob: function() {
+      var _base;
+
+      return (_base = HTMLCanvasElement.prototype).toBlob || (_base.toBlob = function(cb) {
+        var data, i, l, ui8a, _i;
+
+        data = atob(this.toDataURL().slice(22));
+        l = data.length;
+        ui8a = new Uint8Array(l);
+        for (i = _i = 0; 0 <= l ? _i < l : _i > l; i = 0 <= l ? ++_i : --_i) {
+          ui8a[i] = data.charCodeAt(i);
+        }
+        return cb(new Blob([ui8a], {
+          type: 'image/png'
+        }));
+      });
     },
     visibility: function() {
       if (!('webkitHidden' in document)) {
@@ -4141,7 +4175,7 @@
         date: data.now,
         dateUTC: data.time,
         comment: data.com,
-        capReps: data.capcode_replies,
+        capcodeReplies: data.capcode_replies,
         isSticky: !!data.sticky,
         isClosed: !!data.closed
       };
@@ -4169,9 +4203,9 @@
       @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
       */
 
-      var a, array, boardID, capReps, capcode, capcodeClass, capcodeReplies, capcodeStart, capcodeType, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, generateCapcodeReplies, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
+      var a, boardID, capcode, capcodeClass, capcodeReplies, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
 
-      postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, capReps = o.capReps, file = o.file;
+      postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, capcodeReplies = o.capcodeReplies, file = o.file;
       isOP = postID === threadID;
       staticPath = '//static.4chan.org/image/';
       if (email) {
@@ -4245,32 +4279,10 @@
       tripcode = tripcode ? " <span class=postertrip>" + tripcode + "</span>" : '';
       sticky = isSticky ? " <img src=" + staticPath + "sticky.gif alt=Sticky title=Sticky class=stickyIcon>" : '';
       closed = isClosed ? " <img src=" + staticPath + "closed.gif alt=Closed title=Closed class=closedIcon>" : '';
-      capcodeReplies = '';
-      if (capReps) {
-        generateCapcodeReplies = function(capcodeType, array) {
-          return "<span class=smaller><span class=bold>" + ((function() {
-            switch (capcodeType) {
-              case 'admin':
-                return 'Administrator';
-              case 'mod':
-                return 'Moderator';
-              case 'developer':
-                return 'Developer';
-            }
-          })()) + " Repl" + (array.length > 1 ? 'ies' : 'y') + ":</span> " + (array.map(function(ID) {
-            return "<a href='/" + boardID + "/res/" + threadID + "#p" + ID + "' class=quotelink>&gt;&gt;" + ID + "</a>";
-          }).join(' ')) + "</span><br>";
-        };
-        for (capcodeType in capReps) {
-          array = capReps[capcodeType];
-          capcodeReplies += generateCapcodeReplies(capcodeType, array);
-        }
-        capcodeReplies = "<br><br><span class=capcodeReplies>" + capcodeReplies + "</span>";
-      }
       container = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: "" + (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + "<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'><div class='postInfoM mobile' id=pim" + postID + "><span class='nameBlock" + capcodeClass + "'><span class=name>" + (name || '') + "</span>" + (tripcode + capcodeStart + capcode + userID + flag + sticky + closed) + "<br>" + subject + "</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date + "<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + ">No.</a><a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a></span></div>" + (isOP ? fileHTML : '') + "<div class='postInfo desktop' id=pi" + postID + "><input type=checkbox name=" + postID + " value=delete>" + subject + "<span class='nameBlock" + capcodeClass + "'>" + emailStart + "<span class=name>" + (name || '') + "</span>" + (tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed) + "</span>" + " " + "<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span>" + " " + "<span class='postNum desktop'><a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a><a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a></span></div>" + (isOP ? '' : fileHTML) + "<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + capcodeReplies + "</blockquote>" + " " + "</div>"
+        innerHTML: "" + (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + "<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'><div class='postInfoM mobile' id=pim" + postID + "><span class='nameBlock" + capcodeClass + "'><span class=name>" + (name || '') + "</span>" + (tripcode + capcodeStart + capcode + userID + flag + sticky + closed) + "<br>" + subject + "</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date + "<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + ">No.</a><a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a></span></div>" + (isOP ? fileHTML : '') + "<div class='postInfo desktop' id=pi" + postID + "><input type=checkbox name=" + postID + " value=delete>" + subject + "<span class='nameBlock" + capcodeClass + "'>" + emailStart + "<span class=name>" + (name || '') + "</span>" + (tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed) + "</span>" + " " + "<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span>" + " " + "<span class='postNum desktop'><a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a><a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a></span></div>" + (isOP ? '' : fileHTML) + "<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote>" + " " + "</div>"
       });
       _ref = $$('.quotelink', container);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -4281,7 +4293,47 @@
         }
         quote.href = "/" + boardID + "/res/" + href;
       }
+      Build.capcodeReplies({
+        boardID: boardID,
+        threadID: threadID,
+        root: container,
+        capcodeReplies: capcodeReplies
+      });
       return container;
+    },
+    capcodeReplies: function(_arg) {
+      var array, boardID, bq, capcodeReplies, capcodeType, generateCapcodeReplies, html, root, threadID;
+
+      boardID = _arg.boardID, threadID = _arg.threadID, bq = _arg.bq, root = _arg.root, capcodeReplies = _arg.capcodeReplies;
+      if (!capcodeReplies) {
+        return;
+      }
+      generateCapcodeReplies = function(capcodeType, array) {
+        return "<span class=smaller><span class=bold>" + ((function() {
+          switch (capcodeType) {
+            case 'admin':
+              return 'Administrator';
+            case 'mod':
+              return 'Moderator';
+            case 'developer':
+              return 'Developer';
+          }
+        })()) + " Repl" + (array.length > 1 ? 'ies' : 'y') + ":</span> " + (array.map(function(ID) {
+          return "<a href='/" + boardID + "/res/" + threadID + "#p" + ID + "' class=quotelink>&gt;&gt;" + ID + "</a>";
+        }).join(' ')) + "</span><br>";
+      };
+      html = [];
+      for (capcodeType in capcodeReplies) {
+        array = capcodeReplies[capcodeType];
+        html.push(generateCapcodeReplies(capcodeType, array));
+      }
+      bq || (bq = $('blockquote', root));
+      return $.add(bq, [
+        $.el('br'), $.el('br'), $.el('span', {
+          className: 'capcodeReplies',
+          innerHTML: html.join('')
+        })
+      ]);
     }
   };
 
@@ -6681,7 +6733,7 @@
       if (g.VIEW === 'catalog' || !Conf['Linkify']) {
         return;
       }
-      this.regString = Conf['Allow False Positives'] ? /(\b([-a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]|[-a-z0-9]+\.[a-z]|[\d]+\.[\d]+\.[\d]+\.[\d]+\/|[a-z]{3,}:[a-z0-9?]|[^\s@]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi : /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi;
+      this.regString = Conf['Allow False Positives'] ? /([-a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]|[-a-z0-9]+\.[a-z]|[\d]+\.[\d]+\.[\d]+\.[\d]+\/|[a-z]{3,}:[a-z0-9?]|[^\s@]+@[a-z0-9.-]+\.[a-z0-9])/i : /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1})/i;
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
@@ -6694,7 +6746,7 @@
       });
     },
     node: function() {
-      var data, el, i, items, links, node, range, snapshot, _i, _len, _ref;
+      var data, el, end, endNode, i, index, items, lIndex, length, link, links, node, range, result, saved, snapshot, space, test, text, _i, _len, _ref;
 
       if (this.isClone) {
         if (Conf['Embedding']) {
@@ -6709,16 +6761,49 @@
         }
         return;
       }
+      test = /[^\s'"]+/g;
+      space = /[\s'"]/;
       snapshot = $.X('.//br|.//text()', this.nodes.comment);
       i = 0;
       while (node = snapshot.snapshotItem(i++)) {
-        if (node.parentElement.nodeName === "A") {
+        links = [];
+        data = node.data;
+        if (node.parentElement.nodeName === "A" || !data) {
           continue;
         }
-        links = [];
-        if (Linkify.regString.test(node.data)) {
-          Linkify.regString.lastIndex = 0;
-          Linkify.gatherLinks(snapshot, this, node, links, i);
+        while (result = test.exec(data)) {
+          index = result.index;
+          endNode = node;
+          if ((length = index + result[0].length) === data.length) {
+            while ((saved = snapshot.snapshotItem(i++))) {
+              if (saved.nodeName === 'BR') {
+                break;
+              }
+              endNode = saved;
+              length = saved.data.length;
+              if (end = space.exec(saved.data)) {
+                length = end.index;
+                i--;
+                break;
+              }
+            }
+            if (length === endNode.data.length) {
+              test.lastIndex = 0;
+            }
+            range = Linkify.makeRange(node, endNode, index, length);
+            if (link = Linkify.regString.exec(text = range.toString())) {
+              if (lIndex = link.index) {
+                range.setStart(node, lIndex + index);
+              }
+              links.push([range, text]);
+            }
+            break;
+          } else {
+            if (link = Linkify.regString.exec(result[0])) {
+              range = Linkify.makeRange(node, node, link.index, link.length);
+              links.push([range, link]);
+            }
+          }
         }
         _ref = links.reverse();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -6742,60 +6827,25 @@
         }
       }
     },
-    gatherLinks: function(snapshot, post, node, links, i) {
-      var data, index, len, len2, link, match, range;
+    makeRange: function(startNode, endNode, startOffset, endOffset) {
+      var range;
 
-      data = node.data;
-      len = data.length;
-      while ((match = Linkify.regString.exec(data))) {
-        index = match.index;
-        link = match[0];
-        len2 = index + link.length;
-        if (len === len2) {
-          break;
-        }
-        range = document.createRange();
-        range.setStart(node, index);
-        range.setEnd(node, len2);
-        links.push(range);
-      }
-      Linkify.regString.lastIndex = 0;
-      if (match) {
-        links.push(Linkify.seek(snapshot, post, node, links, match, i));
-      }
-    },
-    seek: function(snapshot, post, node, links, match, i) {
-      var data, index, link, next, range, result;
-
-      link = match[0];
       range = document.createRange();
-      range.setStart(node, match.index);
-      while ((next = snapshot.snapshotItem(i++)) && next.nodeName !== 'BR') {
-        node = next;
-        data = node.data;
-        if (result = /[\s'"]/.exec(data)) {
-          index = result.index;
-          range.setEnd(node, index);
-          Linkify.regString.lastIndex = index;
-          Linkify.gatherLinks(snapshot, post, node, links, i);
-          return range;
-        }
-      }
-      if (range.collapsed) {
-        range.setEnd(node, node.data.length);
-      }
+      range.setStart(startNode, startOffset);
+      range.setEnd(endNode, endOffset);
       return range;
     },
-    makeLink: function(range) {
-      var a, link;
+    makeLink: function(_arg) {
+      var a, range, text;
 
-      link = range.toString();
-      link = link.contains(':') ? link : (link.contains('@') ? 'mailto:' : 'http://') + link;
+      range = _arg[0], text = _arg[1];
+      text;
+      text = text.contains(':') ? text : (text.contains('@') ? 'mailto:' : 'http://') + text;
       a = $.el('a', {
         className: 'linkify',
         rel: 'nofollow noreferrer',
         target: '_blank',
-        href: link
+        href: text
       });
       $.add(a, range.extractContents());
       range.insertNode(a);
@@ -7902,7 +7952,7 @@
 
         img = $.el('img');
         img.onload = function() {
-          var applyBlob, cv, data, height, i, l, s, ui8a, width, _i;
+          var cv, height, s, width;
 
           s = 90 * 2;
           if (_this.file.type === 'image/gif') {
@@ -7926,23 +7976,10 @@
           cv.width = img.width = width;
           cv.getContext('2d').drawImage(img, 0, 0, width, height);
           URL.revokeObjectURL(fileURL);
-          applyBlob = function(blob) {
+          return cv.toBlob(function(blob) {
             _this.URL = URL.createObjectURL(blob);
             return _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
-          };
-          if (cv.toBlob) {
-            cv.toBlob(applyBlob);
-            return;
-          }
-          data = atob(cv.toDataURL().split(',')[1]);
-          l = data.length;
-          ui8a = new Uint8Array(l);
-          for (i = _i = 0; 0 <= l ? _i < l : _i > l; i = 0 <= l ? ++_i : --_i) {
-            ui8a[i] = data.charCodeAt(i);
-          }
-          return applyBlob(new Blob([ui8a], {
-            type: 'image/png'
-          }));
+          });
         };
         fileURL = URL.createObjectURL(this.file);
         return img.src = fileURL;
@@ -8826,7 +8863,7 @@
     },
     menu: {
       init: function() {
-        var conf, createSubEntry, el, key, subEntries, _ref;
+        var conf, createSubEntry, el, name, subEntries, _ref;
 
         if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
           return;
@@ -8838,9 +8875,9 @@
         createSubEntry = ImageExpand.menu.createSubEntry;
         subEntries = [];
         _ref = Config.imageExpansion;
-        for (key in _ref) {
-          conf = _ref[key];
-          subEntries.push(createSubEntry(key, conf));
+        for (name in _ref) {
+          conf = _ref[name];
+          subEntries.push(createSubEntry(name, conf[1]));
         }
         return $.event('AddMenuEntry', {
           type: 'header',
@@ -8849,22 +8886,20 @@
           subEntries: subEntries
         });
       },
-      createSubEntry: function(type, config) {
+      createSubEntry: function(name, desc) {
         var input, label;
 
         label = $.el('label', {
-          innerHTML: "<input type=checkbox name='" + type + "'> " + type
+          innerHTML: "<input type=checkbox name='" + name + "'> " + name,
+          title: desc
         });
         input = label.firstElementChild;
-        if (type === 'Fit width' || type === 'Fit height') {
+        if (name === 'Fit width' || name === 'Fit height') {
           $.on(input, 'change', ImageExpand.cb.setFitness);
         }
-        if (config) {
-          label.title = config[1];
-          input.checked = Conf[type];
-          $.event('change', null, input);
-          $.on(input, 'change', $.cb.checked);
-        }
+        input.checked = Conf[name];
+        $.event('change', null, input);
+        $.on(input, 'change', $.cb.checked);
         return {
           el: label
         };
@@ -9556,7 +9591,6 @@
       this.postCountEl = $('#post-count', sc);
       this.fileCountEl = $('#file-count', sc);
       this.pageCountEl = $('#page-count', sc);
-      this.lastModified = '0';
       return Thread.prototype.callbacks.push({
         name: 'Thread Stats',
         cb: this.node
@@ -9611,19 +9645,13 @@
       return $.ajax("//api.4chan.org/" + ThreadStats.thread.board + "/threads.json", {
         onload: ThreadStats.onThreadsLoad
       }, {
-        headers: {
-          'If-Modified-Since': ThreadStats.lastModified
-        }
+        whenModified: true
       });
     },
     onThreadsLoad: function() {
       var page, pages, thread, _i, _j, _len, _len1, _ref;
 
-      if (!Conf["Page Count in Stats"]) {
-        return;
-      }
-      ThreadStats.lastModified = this.getResponseHeader('Last-Modified');
-      if (this.status !== 200) {
+      if (!(Conf["Page Count in Stats"] && this.status === 200)) {
         return;
       }
       pages = JSON.parse(this.response);
@@ -9718,7 +9746,6 @@
       ThreadUpdater.root = this.OP.nodes.root.parentNode;
       ThreadUpdater.lastPost = +ThreadUpdater.root.lastElementChild.id.match(/\d+/)[0];
       ThreadUpdater.outdateCount = 0;
-      ThreadUpdater.lastModified = '0';
       ThreadUpdater.cb.interval.call($.el('input', {
         value: Conf['Interval']
       }));
@@ -9814,10 +9841,7 @@
           case 200:
             g.DEAD = false;
             ThreadUpdater.parse(JSON.parse(req.response).posts);
-            ThreadUpdater.lastModified = req.getResponseHeader('Last-Modified');
-            if (Conf['Auto Update']) {
-              ThreadUpdater.set('timer', ThreadUpdater.getInterval());
-            }
+            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
             break;
           case 404:
             g.DEAD = true;
@@ -9831,16 +9855,8 @@
             });
             break;
           default:
-            if (Conf['Auto Update']) {
-              ThreadUpdater.outdateCount++;
-              ThreadUpdater.set('timer', ThreadUpdater.getInterval());
-            }
-            /*
-            Status Code 304: Not modified
-            By sending the `If-Modified-Since` header we get a proper status code, and no response.
-            This saves bandwidth for both the user and the servers and avoid unnecessary computation.
-            */
-
+            ThreadUpdater.outdateCount++;
+            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
             _ref = req.status === 304 ? [null, null] : ["" + req.statusText + " (" + req.status + ")", 'warning'], text = _ref[0], klass = _ref[1];
             ThreadUpdater.set('status', text, klass);
         }
@@ -9913,9 +9929,7 @@
       return ThreadUpdater.req = $.ajax(url, {
         onloadend: ThreadUpdater.cb.load
       }, {
-        headers: {
-          'If-Modified-Since': ThreadUpdater.lastModified
-        }
+        whenModified: true
       });
     },
     updateThreadStatus: function(title, OP) {
@@ -10053,15 +10067,46 @@
 
   ThreadWatcher = {
     init: function() {
+      var now;
+
       if (!Conf['Thread Watcher']) {
         return;
       }
-      this.dialog = UI.dialog('watcher', 'top: 50px; left: 0px;', '<div class=move>Thread Watcher</div>');
+      this.db = new DataBoard('watchedThreads', this.refresh, true);
+      this.dialog = UI.dialog('thread-watcher', 'top: 50px; left: 0px;', "<div><span class=\"move\">Thread Watcher <span id=\"watcher-status\"></span></span><a class=\"menu-button brackets-wrap\" href=\"javascript:;\"><i class=drop-marker></i></a></div><div id=\"watched-threads\"></div>");
+      this.status = $('#watcher-status', this.dialog);
+      this.list = this.dialog.lastElementChild;
       $.on(d, 'QRPostSuccessful', this.cb.post);
-      $.sync('WatchedThreads', this.refresh);
-      $.ready(function() {
-        ThreadWatcher.refresh();
-        return $.add(d.body, ThreadWatcher.dialog);
+      if (g.VIEW === 'thread') {
+        $.on(d, 'ThreadUpdate', this.cb.threadUpdate);
+      }
+      $.on(d, '4chanXInitFinished', this.ready);
+      now = Date.now();
+      if ((this.db.data.lastChecked || 0) < now - 2 * $.HOUR) {
+        this.db.data.lastChecked = now;
+        ThreadWatcher.fetchAllStatus();
+        this.db.save();
+      }
+      $.get('WatchedThreads', null, function(_arg) {
+        var WatchedThreads, boardID, data, threadID, threads, _ref;
+
+        WatchedThreads = _arg.WatchedThreads;
+        if (!WatchedThreads) {
+          return;
+        }
+        _ref = ThreadWatcher.convert(WatchedThreads);
+        for (boardID in _ref) {
+          threads = _ref[boardID];
+          for (threadID in threads) {
+            data = threads[threadID];
+            ThreadWatcher.db.set({
+              boardID: boardID,
+              threadID: threadID,
+              val: data
+            });
+          }
+        }
+        return $["delete"]('WatchedThreads');
       });
       return Thread.prototype.callbacks.push({
         name: 'Thread Watcher',
@@ -10069,76 +10114,84 @@
       });
     },
     node: function() {
-      var favicon,
-        _this = this;
+      var toggler;
 
-      favicon = $.el('a', {
-        className: 'watch-thread-link',
-        href: 'javascript:;'
+      toggler = $.el('img', {
+        className: 'watcher-toggler'
       });
-      $.on(favicon, 'click', ThreadWatcher.cb.toggle);
-      $.before($('input', this.OP.nodes.post), favicon);
-      if (g.VIEW !== 'thread') {
+      $.on(toggler, 'click', ThreadWatcher.cb.toggle);
+      return $.before($('input', this.OP.nodes.post), toggler);
+    },
+    ready: function() {
+      $.off(d, '4chanXInitFinished', ThreadWatcher.ready);
+      if (!Main.isThisPageLegit()) {
         return;
       }
-      return $.get('AutoWatch', 0, function(item) {
-        if (item['AutoWatch'] !== _this.ID) {
+      ThreadWatcher.refresh();
+      $.add(d.body, ThreadWatcher.dialog);
+      if (!Conf['Auto Watch']) {
+        return;
+      }
+      return $.get('AutoWatch', 0, function(_arg) {
+        var AutoWatch, thread;
+
+        AutoWatch = _arg.AutoWatch;
+        if (!(thread = g.BOARD.threads[AutoWatch])) {
           return;
         }
-        ThreadWatcher.watch(_this);
+        ThreadWatcher.add(thread);
         return $["delete"]('AutoWatch');
       });
     },
-    refresh: function(watched) {
-      var ID, board, div, favicon, id, link, nodes, props, thread, x, _ref, _ref1;
-
-      if (!watched) {
-        $.get('WatchedThreads', {}, function(item) {
-          return ThreadWatcher.refresh(item['WatchedThreads']);
-        });
-        return;
-      }
-      nodes = [$('.move', ThreadWatcher.dialog)];
-      for (board in watched) {
-        _ref = watched[board];
-        for (id in _ref) {
-          props = _ref[id];
-          x = $.el('a', {
-            textContent: '✖',
-            className: 'close',
-            href: 'javascript:;'
-          });
-          $.on(x, 'click', ThreadWatcher.cb.x);
-          link = $.el('a', props);
-          link.title = link.textContent;
-          div = $.el('div');
-          $.add(div, [x, $.tn(' '), link]);
-          nodes.push(div);
-        }
-      }
-      $.rmAll(ThreadWatcher.dialog);
-      $.add(ThreadWatcher.dialog, nodes);
-      watched = watched[g.BOARD] || {};
-      _ref1 = g.BOARD.threads;
-      for (ID in _ref1) {
-        thread = _ref1[ID];
-        favicon = $('.watch-thread-link', thread.OP.nodes.post);
-        if (ID in watched) {
-          $.addClass(favicon, 'watched');
-        } else {
-          $.rmClass(favicon, 'watched');
-        }
-      }
-    },
     cb: {
+      openAll: function() {
+        var a, _i, _len, _ref;
+
+        if ($.hasClass(this, 'disabled')) {
+          return;
+        }
+        _ref = $$('a[title]', ThreadWatcher.list);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          a = _ref[_i];
+          $.open(a.href);
+        }
+        return $.event('CloseMenu');
+      },
+      checkThreads: function() {
+        if ($.hasClass(this, 'disabled')) {
+          return;
+        }
+        return ThreadWatcher.fetchAllStatus();
+      },
+      pruneDeads: function() {
+        var boardID, data, threadID, _i, _len, _ref, _ref1;
+
+        if ($.hasClass(this, 'disabled')) {
+          return;
+        }
+        _ref = ThreadWatcher.getAll();
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          _ref1 = _ref[_i], boardID = _ref1.boardID, threadID = _ref1.threadID, data = _ref1.data;
+          if (!data.isDead) {
+            continue;
+          }
+          delete ThreadWatcher.db.data.boards[boardID][threadID];
+          ThreadWatcher.db.deleteIfEmpty({
+            boardID: boardID
+          });
+        }
+        ThreadWatcher.db.save();
+        ThreadWatcher.refresh();
+        return $.event('CloseMenu');
+      },
       toggle: function() {
         return ThreadWatcher.toggle(Get.postFromNode(this).thread);
       },
-      x: function() {
-        var thread;
+      rm: function() {
+        var boardID, threadID, _ref;
 
-        thread = this.nextElementSibling.pathname.split('/');
-        return ThreadWatcher.unwatch(thread[1], thread[3]);
+        _ref = this.parentNode.dataset.fullID.split('.'), boardID = _ref[0], threadID = _ref[1];
+        return ThreadWatcher.rm(boardID, +threadID);
       },
       post: function(e) {
         var board, postID, threadID, _ref;
@@ -10149,43 +10202,346 @@
             return $.set('AutoWatch', threadID);
           }
         } else if (Conf['Auto Watch Reply']) {
-          return ThreadWatcher.watch(board.threads[threadID]);
+          return ThreadWatcher.add(board.threads[threadID]);
         }
+      },
+      threadUpdate: function(e) {
+        var thread;
+
+        thread = e.detail.thread;
+        if (!(e.detail[404] && ThreadWatcher.db.get({
+          boardID: thread.board.ID,
+          threadID: thread.ID
+        }))) {
+          return;
+        }
+        return ThreadWatcher.add(thread);
+      }
+    },
+    fetchCount: {
+      fetched: 0,
+      fetching: 0
+    },
+    fetchAllStatus: function() {
+      var thread, _i, _len, _ref;
+
+      ThreadWatcher.status.textContent = '...';
+      _ref = ThreadWatcher.getAll();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        thread = _ref[_i];
+        ThreadWatcher.fetchStatus(thread);
+      }
+    },
+    fetchStatus: function(_arg) {
+      var boardID, data, fetchCount, threadID;
+
+      boardID = _arg.boardID, threadID = _arg.threadID, data = _arg.data;
+      if (data.isDead) {
+        return;
+      }
+      fetchCount = ThreadWatcher.fetchCount;
+      fetchCount.fetching++;
+      return $.ajax("//api.4chan.org/" + boardID + "/res/" + threadID + ".json", {
+        onloadend: function() {
+          var status;
+
+          fetchCount.fetched++;
+          if (fetchCount.fetched === fetchCount.fetching) {
+            fetchCount.fetched = 0;
+            fetchCount.fetching = 0;
+            status = '';
+          } else {
+            status = "" + (Math.round(fetchCount.fetched / fetchCount.fetching * 100)) + "%";
+          }
+          ThreadWatcher.status.textContent = status;
+          if (this.status !== 404) {
+            return;
+          }
+          if (Conf['Auto Prune']) {
+            ThreadWatcher.rm(boardID, threadID);
+          } else {
+            data.isDead = true;
+            ThreadWatcher.db.set({
+              boardID: boardID,
+              threadID: threadID,
+              val: data
+            });
+          }
+          return ThreadWatcher.refresh();
+        }
+      }, {
+        type: 'head'
+      });
+    },
+    getAll: function() {
+      var all, boardID, data, threadID, threads, _ref;
+
+      all = [];
+      _ref = ThreadWatcher.db.data.boards;
+      for (boardID in _ref) {
+        threads = _ref[boardID];
+        if (Conf['Current Board'] && boardID !== g.BOARD.ID) {
+          continue;
+        }
+        for (threadID in threads) {
+          data = threads[threadID];
+          all.push({
+            boardID: boardID,
+            threadID: threadID,
+            data: data
+          });
+        }
+      }
+      return all;
+    },
+    makeLine: function(boardID, threadID, data) {
+      var div, fullID, href, link, x;
+
+      x = $.el('a', {
+        textContent: '✖',
+        href: 'javascript:;'
+      });
+      $.on(x, 'click', ThreadWatcher.cb.rm);
+      if (data.isDead) {
+        href = Redirect.to('thread', {
+          boardID: boardID,
+          threadID: threadID
+        });
+      }
+      link = $.el('a', {
+        href: href || ("/" + boardID + "/res/" + threadID),
+        textContent: data.excerpt,
+        title: data.excerpt
+      });
+      div = $.el('div');
+      fullID = "" + boardID + "." + threadID;
+      div.dataset.fullID = fullID;
+      if (g.VIEW === 'thread' && fullID === ("" + g.BOARD + "." + g.THREADID)) {
+        $.addClass(div, 'current');
+      }
+      if (data.isDead) {
+        $.addClass(div, 'dead-thread');
+      }
+      $.add(div, [x, $.tn(' '), link]);
+      return div;
+    },
+    refresh: function() {
+      var boardID, data, list, nodes, refresher, thread, threadID, toggler, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+
+      nodes = [];
+      _ref = ThreadWatcher.getAll();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        _ref1 = _ref[_i], boardID = _ref1.boardID, threadID = _ref1.threadID, data = _ref1.data;
+        nodes.push(ThreadWatcher.makeLine(boardID, threadID, data));
+      }
+      list = ThreadWatcher.list;
+      $.rmAll(list);
+      $.add(list, nodes);
+      _ref2 = g.BOARD.threads;
+      for (threadID in _ref2) {
+        thread = _ref2[threadID];
+        toggler = $('.watcher-toggler', thread.OP.nodes.post);
+        toggler.src = ThreadWatcher.db.get({
+          boardID: thread.board.ID,
+          threadID: threadID
+        }) ? Favicon["default"] : Favicon.empty;
+      }
+      _ref3 = ThreadWatcher.menu.refreshers;
+      for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
+        refresher = _ref3[_j];
+        refresher();
       }
     },
     toggle: function(thread) {
-      if (!$.hasClass($('.watch-thread-link', thread.OP.nodes.post), 'watched')) {
-        return ThreadWatcher.watch(thread);
+      var boardID, threadID;
+
+      boardID = thread.board.ID;
+      threadID = thread.ID;
+      if (ThreadWatcher.db.get({
+        boardID: boardID,
+        threadID: threadID
+      })) {
+        return ThreadWatcher.rm(boardID, threadID);
       } else {
-        return ThreadWatcher.unwatch(thread.board, thread.ID);
+        return ThreadWatcher.add(thread);
       }
     },
-    unwatch: function(board, threadID) {
-      return $.get('WatchedThreads', {}, function(item) {
-        var watched;
+    add: function(thread) {
+      var boardID, data, threadID;
 
-        watched = item['WatchedThreads'];
-        delete watched[board][threadID];
-        if (!Object.keys(watched[board]).length) {
-          delete watched[board];
+      data = {};
+      boardID = thread.board.ID;
+      threadID = thread.ID;
+      if (thread.isDead) {
+        if (Conf['Auto Prune'] && ThreadWatcher.db.get({
+          boardID: boardID,
+          threadID: threadID
+        })) {
+          ThreadWatcher.rm(boardID, threadID);
+          return;
         }
-        ThreadWatcher.refresh(watched);
-        return $.set('WatchedThreads', watched);
+        data.isDead = true;
+      }
+      data.excerpt = Get.threadExcerpt(thread);
+      ThreadWatcher.db.set({
+        boardID: boardID,
+        threadID: threadID,
+        val: data
       });
+      return ThreadWatcher.refresh();
     },
-    watch: function(thread) {
-      return $.get('WatchedThreads', {}, function(item) {
-        var watched, _name;
-
-        watched = item['WatchedThreads'];
-        watched[_name = thread.board] || (watched[_name] = {});
-        watched[thread.board][thread] = {
-          href: "/" + thread.board + "/res/" + thread,
-          textContent: Get.threadExcerpt(thread)
-        };
-        ThreadWatcher.refresh(watched);
-        return $.set('WatchedThreads', watched);
+    rm: function(boardID, threadID) {
+      ThreadWatcher.db["delete"]({
+        boardID: boardID,
+        threadID: threadID
       });
+      return ThreadWatcher.refresh();
+    },
+    convert: function(oldFormat) {
+      var boardID, data, newFormat, threadID, threads;
+
+      newFormat = {};
+      for (boardID in oldFormat) {
+        threads = oldFormat[boardID];
+        for (threadID in threads) {
+          data = threads[threadID];
+          (newFormat[boardID] || (newFormat[boardID] = {}))[threadID] = {
+            excerpt: data.textContent
+          };
+        }
+      }
+      return newFormat;
+    },
+    menu: {
+      refreshers: [],
+      init: function() {
+        var menu;
+
+        if (!Conf['Thread Watcher']) {
+          return;
+        }
+        menu = new UI.Menu('thread watcher');
+        $.on($('.menu-button', ThreadWatcher.dialog), 'click', function(e) {
+          return menu.toggle(e, this, ThreadWatcher);
+        });
+        this.addHeaderMenuEntry();
+        return this.addMenuEntries();
+      },
+      addHeaderMenuEntry: function() {
+        var entryEl;
+
+        if (g.VIEW !== 'thread') {
+          return;
+        }
+        entryEl = $.el('a', {
+          href: 'javascript:;'
+        });
+        $.event('AddMenuEntry', {
+          type: 'header',
+          el: entryEl,
+          order: 60
+        });
+        $.on(entryEl, 'click', function() {
+          return ThreadWatcher.toggle(g.threads["" + g.BOARD + "." + g.THREADID]);
+        });
+        return this.refreshers.push(function() {
+          var addClass, rmClass, text, _ref;
+
+          _ref = $('.current', ThreadWatcher.list) ? ['unwatch-thread', 'watch-thread', 'Unwatch thread'] : ['watch-thread', 'unwatch-thread', 'Watch thread'], addClass = _ref[0], rmClass = _ref[1], text = _ref[2];
+          $.addClass(entryEl, addClass);
+          $.rmClass(entryEl, rmClass);
+          return entryEl.textContent = text;
+        });
+      },
+      addMenuEntries: function() {
+        var cb, conf, entries, entry, name, refresh, subEntries, _i, _len, _ref, _ref1, _results;
+
+        entries = [];
+        entries.push({
+          cb: ThreadWatcher.cb.openAll,
+          entry: {
+            type: 'thread watcher',
+            el: $.el('a', {
+              textContent: 'Open all threads'
+            })
+          },
+          refresh: function() {
+            return (ThreadWatcher.list.firstElementChild ? $.rmClass : $.addClass)(this.el, 'disabled');
+          }
+        });
+        entries.push({
+          cb: ThreadWatcher.cb.checkThreads,
+          entry: {
+            type: 'thread watcher',
+            el: $.el('a', {
+              textContent: 'Check 404\'d threads'
+            })
+          },
+          refresh: function() {
+            return ($('div:not(.dead-thread)', ThreadWatcher.list) ? $.rmClass : $.addClass)(this.el, 'disabled');
+          }
+        });
+        entries.push({
+          cb: ThreadWatcher.cb.pruneDeads,
+          entry: {
+            type: 'thread watcher',
+            el: $.el('a', {
+              textContent: 'Prune 404\'d threads'
+            })
+          },
+          refresh: function() {
+            return ($('.dead-thread', ThreadWatcher.list) ? $.rmClass : $.addClass)(this.el, 'disabled');
+          }
+        });
+        subEntries = [];
+        _ref = Config.threadWatcher;
+        for (name in _ref) {
+          conf = _ref[name];
+          subEntries.push(this.createSubEntry(name, conf[1]));
+        }
+        entries.push({
+          entry: {
+            type: 'thread watcher',
+            el: $.el('span', {
+              textContent: 'Settings'
+            }),
+            subEntries: subEntries
+          }
+        });
+        _results = [];
+        for (_i = 0, _len = entries.length; _i < _len; _i++) {
+          _ref1 = entries[_i], entry = _ref1.entry, cb = _ref1.cb, refresh = _ref1.refresh;
+          if (entry.el.nodeName === 'A') {
+            entry.el.href = 'javascript:;';
+          }
+          if (cb) {
+            $.on(entry.el, 'click', cb);
+          }
+          if (refresh) {
+            this.refreshers.push(refresh.bind(entry));
+          }
+          _results.push($.event('AddMenuEntry', entry));
+        }
+        return _results;
+      },
+      createSubEntry: function(name, desc) {
+        var entry, input;
+
+        entry = {
+          type: 'thread watcher',
+          el: $.el('label', {
+            innerHTML: "<input type=checkbox name='" + name + "'> " + name,
+            title: desc
+          })
+        };
+        input = entry.el.firstElementChild;
+        input.checked = Conf[name];
+        $.on(input, 'change', $.cb.checked);
+        if (name === 'Current Board') {
+          $.on(input, 'change', ThreadWatcher.refresh);
+        }
+        return entry;
+      }
     }
   };
 
@@ -10529,8 +10885,8 @@
         http: true,
         https: true,
         software: 'foolfuuka',
-        boards: ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv'],
-        files: ['adv', 'asp', 'cm', 'i', 'lgbt', 'n', 'o', 'p', 's4s', 't', 'trv']
+        boards: ['adv', 'asp', 'cm', 'd', 'e', 'i', 'lgbt', 'n', 'o', 'p', 'pol', 's', 's4s', 't', 'trv', 'y'],
+        files: ['cm', 'd', 'e', 'i', 'n', 'o', 'p', 's', 'trv', 'y']
       },
       'Foolz Beta': {
         domain: 'beta.foolz.us',
@@ -11787,7 +12143,7 @@
       fg = _arg[0];
       return "0 0 0 0 " + fg.r + " 0 0 0 0 " + fg.g + " 0 0 0 0 " + fg.b;
     },
-    layout: "/* Cleanup */ #absbot, #boardNavDesktop, #delPassword, #delform > hr:last-of-type, #navbotright, #postForm, #search-label, #search-label-bottom, #styleSwitcher, #togglePostForm, .boardBanner > div, .mobile, .next form, .next span, .postingMode, .prev form, .prev span, .riced, .sideArrows, .stylechanger, body > br, body > div[style^=\"text-align\"], body > hr { display: none; } /* Empties */ #qr .warning:empty, #qr-thread-select:empty { display: none; } /* File Name Trunctuate / /p/ exif */ .exif, .fileText:hover .fntrunc, .fileText:not(:hover) .fnfull { display: none; } /* Unnecessary */ #qp input, #qp .rice, .inline .rice { display: none !important; } /* Hidden Content */ .forwarded, .hidden, .hidden_thread ~ div, .hidden_thread ~ a, .replyContainer .stub ~ div, .replyContainer .stub ~ a, .stub + div, .thread > .stub:first-child ~ .postContainer, .thread > .stub:first-child ~ .summary, [hidden] { display: none !important; } /* Hidden UI */ #catalog, #navlinks, #navtopright, #svg_filters, .cataloglink, .navLinks { z-index: 7; position: fixed; top: 100%; left: 100%; } /* Hide last horizontal rule, keep clear functionality. */ .board > hr:last-of-type { visibility: hidden; } /* Fappe Tyme */ .fappeTyme .thread > .noFile, .fappeTyme .threadContainer > .noFile { display: none; } /* Defaults */ a { text-decoration: none; outline: none; } .underline-links a { text-decoration: underline; } body, html { min-height: 100%; box-sizing: border-box; } body { outline: none; min-height: 100%; } .sidebar-hide body { margin: 0 2px; } .sidebar-minimal body { margin: 0 20px; } .sidebar-normal body { margin: 0 252px } .sidebar-large body { margin: 0 303px; } .sidebar-location-right body { margin-left: 2px; } .sidebar-location-left body { margin-right: 2px; } body.unscroll { overflow: hidden; } .fourchan-ss-sidebar body::before { content: ''; position: fixed; top: 0; bottom: 0; box-sizing: border-box; display: block; z-index: 0; } .fourchan-ss-sidebar.sidebar-large body::before { width: 306px; } .fourchan-ss-sidebar.sidebar-normal body::before { width: 255px; } .fourchan-ss-sidebar.sidebar-minimal body::before { width: 23px; } .sidebar-location-right body::before { right: 0; } sidebar-location-left body::before { left: 0; } .fourchan-ss-sidebar.sidebar-location-right body { padding-right: 2px; } .fourchan-ss-sidebar.sidebar-location-left body { padding-left: 2px; } hr { clear: both; border: 0; padding: 0; margin: 0 0 1px; } .hide-horizontal-rules hr { visibility: hidden; } th { text-align: left; } .center { text-align: center; } .disabled { opacity: 0.5; } .pointer { cursor: pointer; } /* Symbols */ .drop-marker { vertical-align: middle; display: inline-block; margin: 2px 2px 3px; border-top: .5em solid; border-right: .3em solid transparent; border-left: .3em solid transparent; } .brackets-wrap::before { content: \" [\"; } .brackets-wrap::after { content: \"] \"; } /* Thread / Reply Nav */ #navlinks a { position: fixed; z-index: 12; opacity: 0.5; display: inline-block; border-right: 6px solid transparent; border-left: 6px solid transparent; margin: 1.5px; } #navlinks a:first-of-type { border-bottom: 11px solid rgb(130,130,130); } #navlinks a:last-of-type { border-top: 11px solid rgb(130,130,130); } /* Header */ #header-bar { z-index: 6; border-width: 1px; padding: 0 2px; border-style: solid; } .pagination-sticky-top .pagelist, .pagination-sticky-bottom .pagelist, #header-bar { left: 2px; right: 2px; } .navigation-alignment-center #header-bar { text-align: center; } .navigation-alignment-right #header-bar { text-align: right; } .sidebar-location-left.sidebar-large:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist, .sidebar-location-left #header-bar { left: 303px; } .sidebar-location-left.sidebar-normal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist, .sidebar-location-left #header-bar { left: 252px; } .sidebar-location-left.sidebar-minimal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist, .sidebar-location-left.sidebar-minimal:not(.fourchan-ss-navigation) #header-bar { left: 20px; } .sidebar-location-right.sidebar-large:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist, .sidebar-location-right #header-bar { right: 303px; } .sidebar-location-right.sidebar-normal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist, .sidebar-location-right #header-bar { right: 252px; } .sidebar-location-right.sidebar-minimal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist, .sidebar-location-right.sidebar-minimal:not(.fourchan-ss-navigation) #header-bar { right: 20px; } .fourchan-ss-navigation .pagelist, .fourchan-ss-navigation #header-bar { left: 0; right: 0; border-left: 0; border-right: 0; border-radius: 0 !important; } .hide-navigation-decorations #header-bar { font-size: 0; color: transparent; word-spacing: 2px; } #shortcuts { float: right; } .fixed #header-bar.autohide { z-index: 24; } .fixed #header-bar { position: fixed; } .top #header-bar { top: 0; border-top-width: 0; } .rounded-edges.top #header-bar { border-radius: 0 0 3px 3px; } .fixed.bottom #header-bar { bottom: 0; border-bottom-width: 0; } .rounded-edges.bottom #header-bar { border-radius: 3px 3px 0 0; } .hide #header-bar { position: fixed; top: 110%; bottom: auto; } /* Header Autohide */ .fixed #header-bar.autohide:not(:hover) { box-shadow: none; transition: all .8s .6s cubic-bezier(.55, .055, .675, .19); } .fixed.top #header-bar.autohide:not(:hover) { margin-bottom: -1em; -webkit-transform: translateY(-100%); } .fixed.bottom #header-bar.autohide:not(:hover) { -webkit-transform: translateY(100%); } #scroll-marker { left: 0; right: 0; height: 10px; position: absolute; } #header-bar #scroll-marker { display: none; } .fixed #header-bar #scroll-marker { display: block; } .fixed.top header-bar #scroll-marker { top: 100%; } .fixed.bottom #header-bar #scroll-marker { bottom: 100%; } /* Notifications */ #notifications { position: fixed; top: 0; text-align: center; right: 0; left: 0; transition: all .8s .6s cubic-bezier(.55, .055, .675, .19); } .fixed.top #header-bar #notifications { position: absolute; top: 100%; } .notification { font-weight: 700; text-shadow: 0 1px 2px rgba(0, 0, 0, .5); box-shadow: 0 1px 2px rgba(0, 0, 0, .15); border-radius: 2px; margin: 1px auto; width: 500px; max-width: 100%; position: relative; transition: all .25s ease-in-out; } .notification.error { background-color: hsla(0, 100%, 38%, .9); } .notification.warning { background-color: hsla(36, 100%, 38%, .9); } .notification.info { background-color: hsla(200, 100%, 38%, .9); } .notification.success { background-color: hsla(104, 100%, 38%, .9); } .notification, .notification a { color: #fff !important; } .notification > .close { top: 0; padding: 2px; right: 4px; position: absolute; color: #fff; } .message { box-sizing: border-box; padding: 6px 20px; max-height: 200px; width: 100%; overflow: auto; } /* Updater / Thread Stats */ .float #thread-stats, .float #updater { position: fixed; } #update-status.new::after { content: ', '; } /* Pagination */ .pagelist { border-style: solid; border-width: 1px; z-index: 6; } .pagination-alignment-center .pagelist { text-align: center; } .pagination-alignment-right .pagelist { text-align: right; } .pagination-sticky-top .pagelist { position: fixed; top: 0; border-top-width: 0; } .pagination-sticky-bottom .pagelist { position: fixed; bottom: 0; border-bottom-width: 0; } .pagination-top .pagelist { position: static; border-top-width: 0; } .pagination-bottom .pagelist { position: static; } .pagination-top.rounded-edges .pagelist, .pagination-sticky-top.rounded-edges .pagelist { border-radius: 0 0 3px 3px; } .pagination-bottom.rounded-edges .pagelist, .pagination-sticky-bottom.rounded-edges .pagelist { border-radius: 3px 3px 0 0; } .pagination-hide .pagelist { display: none; } .pagination-on-side .pagelist { position: fixed; padding: 0; top: auto; bottom: 0.5em; margin: 0; background: none transparent !important; border: 0 none !important; text-align: right; } .pagination-on-side.post-form-style-fixed.show-post-form-header .pagelist { bottom: 23.1em; } .pagination-on-side.post-form-style-fixed .pagelist { bottom: 21.6em; } .sidebar-location-left.pagination-on-side .pagelist { -webkit-transform: rotate(-90deg); -webkit-transform-origin: bottom left; } .sidebar-location-right.pagination-on-side .pagelist { -webkit-transform: rotate(90deg); -webkit-transform-origin: bottom right; } .sidebar-location-right.sidebar-large.pagination-on-side .pagelist { left: auto; right: 301px; } .sidebar-location-left.sidebar-large.pagination-on-side .pagelist { right: auto; left: 301px; } .sidebar-location-right.sidebar-normal.pagination-on-side .pagelist { left: auto; right: 246px; } .sidebar-location-left.sidebar-normal.pagination-on-side .pagelist { right: auto; left: 246px; } .sidebar-location-right.sidebar-minimal.pagination-on-side .pagelist { left: auto; right: 246px; } .sidebar-location-left.sidebar-minimal.pagination-on-side .pagelist { right: auto; left: 18px; } .hide-navigation-decorations .pagelist { font-size: 0; color: transparent; word-spacing: 0; } .pagelist input, .pagelist div { vertical-align: middle; } .hide-navigation-decorations .pages a { margin: 0 1px; } .next, .pages, .prev { display: inline-block; margin: 0 3px; } /* Icons */ .icons-4chan-ss #navtopright .exlinksOptionsLink::after, .icons-4chan-ss #main-menu, .icons-4chan-ss .navLinks > a:first-of-type::after, .icons-4chan-ss #watcher::after, .icons-4chan-ss #globalMessage::after, .icons-4chan-ss #boardNavDesktopFoot::after, .icons-4chan-ss #img-controls, .icons-4chan-ss #catalog::after, .icons-4chan-ss #fappeTyme { background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAACWCAMAAAA2YSLzAAAAPFBMVEVkZGRlZWVjY2NmZmZnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dZxmG7AAAAE3RSTlMFFQ0AJD8eQFRqf5CgssDM4+73gHqZRAAAA0pJREFUSMetVlmy5CgMZDMGxK7737Ulgcu8ejMREzHtD7sShJRaKWV/Psq3iz7QGwTF2BZ01hp3N6yasctZJANiN5ZlItDLtNkQDGNeMLU7EqmCbUwhkhZbwsIuNbyWPX7dIyHOrDYOc8SOiEUJjojN0EsWlCXRrq2qvJCsIjic2OcFrwrOpdmTimqVyWG7ZkrWy97p7z/hACd2FUetBcQDpTN+nuKsGng881L5xOz/VQ88xL/eQkyZT3axp+4dUMwvH0Pnhn6wSyR+8IdR4f43/v8XX1BHjXpjwy5RdEcQ7DiuzlBUsFD+GeIFEy6W0pKXoSZOiUz5tf99nvTDD/1sP9VRPvb/un86lT57SVqwSk8KR+L6kgTOlcZslRQe5WmJRKovETW7Anb+HzxUW4Xgnv11fuuj82aKXHz1Tzztx9v4VA9+/6le26B+3VhTC9RMPIr0qx4zaWNsnFRO0s8FWgEIFIRiVUAIlJGciqMmCwpQWyI/OplXA1RrXG1YI2svTQ3ufhWjNlKFqtXFI7Yg+zAXRcBZ+HygJuVHd0ys35bVn6QojLL5cZeVvPht/mVu/r/8s7GMXsLjv2s71GZhgjnEwsEVXogiSl/pl7LWra0IQgO3poTsieoYd4dhWfJlGWqyQf6sLxWt3/MRa4Im04ixeSdAWnxvqCX6tObVmzpZOPOZvrBNJF8gmGciBChsV+YdRYwnAvNpS4AnYFBm0KA2a35Unh+efxjercaLfV7wW0rtUTNl2j715al/9VtfutF+NZ/+aZSa+py/GCpRyvr17EsVLbRhmN++BBY/ik5/+YPK6bKnf2T8fh7P+uEYn0D3E4L3i6QHmvc3+k+8PN6Mb1w52tje6LbAi+M0FT4YneqVbpVDPnL2Xqx7m3tf9ENXHba9H/a/+X3z/+XfCnOo+Zy/o4SgY5Z6iq0nb+9Mc4JxL5f1qYs+xhTP/uiX/cMe4+hDHAfGnmGe+Ev+G88vnG7Ie20wHiUt/S1Kv+6BCM/9fkEfz73/9HNufQ4ZKdzvnwtS/LXltRcJB/yJ23H/mo89nPFa85Li3XOYu435LwTXKVWwO+cnlWFTB47L/AdfR//KI2bvF8sAb0c/M+1+YE3/oS77B8N+UUVHraV6AAAAAElFTkSuQmCC\"); } .icons-oneechan #navtopright .exlinksOptionsLink::after, .icons-oneechan #main-menu, .icons-oneechan .navLinks > a:first-of-type::after, .icons-oneechan #watcher::after, .icons-oneechan #globalMessage::after, .icons-oneechan #boardNavDesktopFoot::after, .icons-oneechan #img-controls, .icons-oneechan #catalog::after, .icons-oneechan #fappeTyme { background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAACWCAMAAAA2YSLzAAAAPFBMVEVoaGhqampeXl5sbGxsbGxra2tsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGzXmsRLAAAAE3RSTlMAEAYnHBg2QExbcYaWqM++2+z4BMdvAwAAAtVJREFUSMfFVgmu3CAMhYRPAmb3/e9aL5Bl2kptVbXWSOSBsY15NmOMMZs1KnNExC+ezgV4MBtNMIw58+qX2REtQwiifdC6hwlNQBGfUlBzc+KYkP3IxH5hNvicCPXrMfEVi3ts2WrzaiN6jie2OI2GXbBfXiA/XPyexPpEHrHdyDV8YAt6vEYCVpJ3S7rXAZKkkfbnuR8Uk/32xsac6Y01La2ZfyIh1VrX9Rnfu5ygd6/XeQAGFxACkopDb3mkeXug48x5FCKhNzW+1j2t8/5EEwHTIfPm6G3aP37o/w/ir3QZ2V/xY0spdSxWL7MrLU7slmnDSY0UrH6CBJ/wFI3TNGECCDY9G4xmrpDkZvQMJ4q31EzLQuhipr7ag8ueFa+hUQy2d43nnPGg7NopHTUVyYlWpE+lUT4qfhDCnLpzB8oXLLJb4leptD/JblswOaZd0gRkDV0cJi69NNOUaclRpG6S1NPdRVPLjI3VSjWV8+FmaARknTxqfipl0tGR1DXvd0h251Ww/ZlaNQoaX3bqUS+IK6ZX4hysvuQinS+6n9638/6BbK4RLi6R11O8rPS4OnO66KHtw6yK96BWrg5QxDGcVzcoB8cYb/dE1zPO6C+pHxN0Ttw/JtJrx55+oV9Jq+ScF22IfBWDD+sHfTnBmKlpS99hPGSC4SBsi+dP3p0PjVBVedMdO3WoG57cAEbYVNkRHFROIzjYuGjoM7LOaEQKbtQjkuo5hCSMmezaNq3Gl6TE5J3ZLMu26SjpPJZo4h/9FJhT4JQJzjFXD7x54fBgzO9RvDH9Vl5vHIetcGHct1apLh/6gU3c2PYy5rrYh7a1NP29/H/G9xn/d+f7FNVcw9/H/9sf8ymXPnqdDd7Wx3OpzWRJuP8+iMTFe7wZq48Tce7QciNetUzku+pT/t4UHK/iIq2yPR/8y/315M/rWl1A/sM83phVh6+aeZY39OLNN4Y0P2GdHOWPAAAAAElFTkSuQmCC\"); } /* Banner & Board Title */ .boardBanner { line-height: 0; } .faded-4chan-banner .boardBanner { opacity: 0.5; transition: opacity 0.3s ease-in-out .5s; } .faded-4chan-banner .boardBanner:hover { opacity: 1; transition: opacity 0.3s ease-in; } /* From 4chan SS / OneeChan */  .fourchan-banner-reflection #Banner { -webkit-box-reflect: below 0 -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0) 10%, rgba(255,255,255,.5)); }  .fourchan-banner-at-sidebar-top .boardBanner, .fourchan-banner-at-sidebar-bottom .boardBanner, .fourchan-banner-at-sidebar-bottom .boardBanner { position: fixed; } .fourchan-banner-at-sidebar-top .boardBanner { top: 16px; } .fourchan-banner-at-sidebar-bottom .boardBanner { bottom: 270px; } .fourchan-banner-under-post-form .boardBanner { bottom: 130px; } .board-title-at-sidebar-top.sidebar-location-right #boardTitle, .board-title-at-sidebar-bottom.sidebar-location-right #boardTitle, .board-title-under-post-form.sidebar-location-right #boardTitle, .fourchan-banner-at-sidebar-top.sidebar-location-right .boardBanner, .fourchan-banner-at-sidebar-bottom.sidebar-location-right .boardBanner, .fourchan-banner-under-post-form.sidebar-location-right .boardBanner { right: 2px; } .board-title-at-sidebar-top.sidebar-location-left #boardTitle, .board-title-at-sidebar-bottom.sidebar-location-left #boardTitle, .board-title-under-post-form.sidebar-location-left #boardTitle, .fourchan-banner-at-sidebar-top.sidebar-location-left .boardBanner, .fourchan-banner-at-sidebar-bottom.sidebar-location-left .boardBanner, .fourchan-banner-under-post-form.sidebar-location-left .boardBanner { left: 2px; } .board-title-at-sidebar-top #boardTitle, .board-title-at-sidebar-bottom #boardTitle, .board-title-under-post-form #boardTitle, .fourchan-banner-at-sidebar-top .boardBanner img, .fourchan-banner-at-sidebar-bottom .boardBanner img, .fourchan-banner-under-post-form .boardBanner img { width: 248px; } .board-title-at-sidebar-top.sidebar-large #boardTitle, .board-title-at-sidebar-bottom.sidebar-large #boardTitle, .board-title-under-post-form.sidebar-large #boardTitle, .fourchan-banner-at-sidebar-top.sidebar-large .boardBanner img, .fourchan-banner-at-sidebar-bottom.sidebar-large .boardBanner img, .fourchan-banner-under-post-form.sidebar-large .boardBanner img { width: 299px; } .fourchan-banner-at-top .boardBanner { position: relative; display: table; margin: 12px auto; text-align: center; } :root:not(.board-subtitle) .boardSubtitle, .board-title-hide #boardTitle, .fourchan-banner-hide .boardBanner { display: none; } #boardTitle { text-align: center; z-index: 4; } .board-title-at-sidebar-top #boardTitle, .board-title-at-sidebar-bottom #boardTitle, .board-title-under-post-form #boardTitle { position: fixed; } .board-title-at-sidebar-top.fourchan-banner-at-sidebar-top.sidebar-large #boardTitle { top: 121px; } .board-title-at-sidebar-top.fourchan-banner-at-sidebar-top #boardTitle { top: 104px; } .board-title-at-sidebar-top #boardTitle { top: 40px; } .board-title-at-sidebar-bottom #boardTitle { bottom: 280px; } .board-title-under-post-form #boardTitle { bottom: 140px; } /* Hover UI */ .move { cursor: pointer; } #ihover { position: fixed; max-height: 97%; max-width: 75%; z-index: 22; } #qp { position: fixed; z-index: 22; } #qp .postMessage::after { clear: both; display: block; content: \"\"; } #qp .full-image { max-height: 300px; max-width: 500px; } #menu { position: fixed; outline: none; z-index: 22; } /* Image Expansion */ .fit-width .full-image { max-width: 100%; width: 100%; } .fit-height .full-image { max-height: 95vh; } .images-overlap-post-form .full-image { position: relative; z-index: 21; } /* Delete Buttons */ .hide-delete-ui .deleteform, .hide-delete-ui .post:not(#exlinks-options) .rice { display: none; } .hide-delete-ui .postInfo { padding: 0 0 0 3px; } .deleteform { position: fixed; z-index: 18; width: 0; bottom: 0; right: 0; border-width: 1px 0 0 1px; border-style: solid; font-size: 0; color: transparent; } .deleteform:hover { width: auto; } .deleteform::before { z-index: 18; border-width: 1px 0 0 1px; border-style: solid; content: '✖'; display: block; position: fixed; bottom: 0; right: 0; box-sizing: border-box; height: 1.6em; width: 1.4em; text-align: center; } .deleteform:hover::before { display: none; } .deleteform input { margin: 0 1px 0 0; } /* Slideout Navigation */ #boardNavDesktopFoot { position: fixed; text-align: center; font-size: 0; color: transparent; overflow: hidden; box-sizing: border-box; width: 248px; } .sidebar-large #boardNavDesktopFoot { width: 299px; } .sidebar-location-right #boardNavDesktopFoot { right: 2px; } .sidebar-location-left #boardNavDesktopFoot { left: 2px; } #boardNavDesktopFoot:hover { overflow-y: auto; padding: 2px; } #boardNavDesktopFoot:not(:hover) { border-color: transparent; background-color: transparent; height: 0; overflow: hidden; padding: 0; border: 0 none; } .slideout-navigation-compact #boardNavDesktopFoot { word-spacing: 1px; } .slideout-navigation-list #boardNavDesktopFoot a { display: block; } .slideout-navigation-list #boardNavDesktopFoot:hover { max-height: 400px; } .slideout-navigation-list #boardNavDesktopFoot a::after { content: ' - ' attr(title); } .slideout-navigation-list #boardNavDesktopFoot a[href*='//boards.4chan.org/']::after, .slideout-navigation-list #boardNavDesktopFoot a[href*='//rs.4chan.org/']::after { content: '/ - ' attr(title); } .slideout-navigation-list #boardNavDesktopFoot a[href*='//boards.4chan.org/']::before, .slideout-navigation-list #boardNavDesktopFoot a[href*='//rs.4chan.org/']::before { content: '/'; } .slideout-navigation-hide #boardNavDesktopFoot { display: none; } /* Watcher */ #watcher { position: fixed; z-index: 14; padding: 2px; } #watcher { width: 200px; } #watcher:not(:hover) { max-height: 200px; overflow: hidden; } .rounded-edges #watcher { border-radius: 3px; } #watcher > div { max-height: 1.3em; overflow: hidden; } .slideout-watcher #watcher { box-sizing: border-box; width: 248px; } .slideout-watcher.sidebar-large #boardNavDesktopFoot { width: 299px; } .slideout-watcher.sidebar-location-right #watcher { left: auto !important; right: 2px !important; } .slideout-watcher.sidebar-location-left #watcher { right: auto !important; left: 2px !important; } .slideout-watcher #watcher .move { cursor: default; } .slideout-watcher.underline-links #watcher .move { text-decoration: underline; } .slideout-watcher #watcher > div { overflow: hidden; } .slideout-watcher #watcher:hover { overflow-y: auto; } .slideout-watcher #watcher:not(:hover) { height: 0; overflow: hidden; border: 0 none; padding: 0; } .watch-thread-link { padding-top: 18px; width: 18px; height: 0px; display: inline-block; background-repeat: no-repeat; opacity: 0.2; position: relative; top: 1px; } .watch-thread-link.watched { opacity: 1; } /* Announcements */ #globalMessage { text-align: center; } .rounded-edges #globalMessage { border-radius: 3px; } .announcements-slideout #globalMessage { position: fixed; padding: 2px; width: 248px; } .announcements-slideout.sidebar-location-right #globalMessage { left: auto; right: 2px; } .announcements-slideout.sidebar-location-left #globalMessage { right: auto; left: 2px; } .announcements-slideout.sidebar-large #globalMessage { width: 299px; } .announcements-slideout #globalMessage h3 { margin: 0; } .announcements-slideout #globalMessage:hover { box-sizing: border-box; overflow-y: auto; } .announcements-slideout #globalMessage:not(:hover) { height: 0; overflow: hidden; padding: 0; border: 0 none; } .announcements-hide #globalMessage { display: none !important; } /* Threads */ #threads, .rounded-edges .board > .thread { border-radius: 4px; } /* Thread Clearfix */ .thread > .threadContainer:last-of-type::after, .thread > .postContainer:last-of-type::after { display: block; content: ' '; clear: both; } /* Posts */ .expanding { opacity: .5; } .fileText:hover .fntrunc, .fileText:not(:hover) .fnfull, .expanded-image > .post > .file > .fileThumb > img[data-md5], .post > .file > .fileThumb > .full-image { display: none; } .expanded-image > .post > .file > .fileThumb > .full-image { display: block; } .thread > .replyContainer:last-of-type .post { margin-bottom: 0; } .menu-button { position: relative; } .stub .menu-button, .post .menu-button, .hide-thread-button, .show-thread-button span, .hide-reply-button, .show-reply-button span { float: right; } .post .menu-button, .hide-thread-button, .hide-reply-button { margin: 0 3px; opacity: 0; transition: opacity .3s ease-out 0s; } .post:hover .hide-reply-button, .post:hover .menu-button, .post:hover .hide-thread-button, .hidden_thread .hide-thread-button, .hidden_thread .menu-button, .inline .hide-reply-button, .inline .menu-button { opacity: 1; } .hidden_thread { text-align: right; } .color-user-ids .posteruid .hand { padding: .1em .3em; border-radius: 1em; font-size: 80%; } .postInfo > span { vertical-align: bottom; } .bolds .subject, .bolds .name { font-weight: 600; } .italics .postertrip { font-style: italic; } .underline-links .replylink { text-decoration: underline; } .fileInfo { padding: 0 3px; } .fileThumb { float: left; margin: 3px 20px; outline: none; } .reply.post { box-sizing: border-box; display: inline-block; } .fit-width-replies .reply.post { display: block; overflow: hidden; } .fit-width-replies .expanded-image .reply.post, .fit-width-replies .hasInline .reply.post { width: 100%; } .indent-replies #unread-line, .indent-replies .thread > .replyContainer, .indent-replies .threadContainer > .replyContainer { margin-left: 2em; } .expanded-image .reply.post, .hasInline .reply.post { display: inline-block; overflow: visible; clear: both; } .rounded-edges .post { border-radius: 3px; } .spoiler, s { text-decoration: none; } /* Emoji */ a.useremail:last-of-type { vertical-align: top; } /* Reply Clearfix */ .reply.post .postMessage { clear: right; } .op-background .op.post .postMessage::after, .force-reply-break .op.post .postMessage::after { display: block; content: ' '; clear: both; } /* OP */ .favicon { vertical-align: bottom; } .op-background .op.post { box-sizing: border-box; } /* Summary */ .force-reply-break .summary { clear: both; } /* Inlined */ .inline { margin: 2px 8px 2px 2px; } .post .inline { margin: 2px; } .inline .replyContainer { display: inline-block; } /* Inlined Clearfix */ .inline .postMessage::after { clear: both; display: block; content: \"\"; } /* Quotes */ .inlined { opacity: .5; } .underline-links .quotelink { text-decoration: underline; } .filtered, .quotelink.filtered { text-decoration: line-through !important; } .inline + .hashlink { display: none; } /* Quote Threading */ .threadContainer { padding-left: 2em; border-left: 1px solid; } .indent-replies .threadContainer { margin-left: 2em; padding-left: 0; } .threadOP { clear: both; } /* Backlinks */ .underline-links .forwardlink, .underline-links .backlink { text-decoration: underline; } .backlink.dead { text-decoration: none; } .filtered-backlinks .filtered.backlink { display: none; } .backlinks-position-lower-left .container, .backlinks-position-lower-right .container { max-width: 100%; padding: 0 5px; } .backlinks-position-lower-left .reply.quoted, .backlinks-position-lower-right .reply.quoted { position: relative; padding-bottom: 1.7em; } .backlinks-position-lower-left .inline .reply.quoted, .backlinks-position-lower-right .inline .reply.quoted, .backlinks-position-lower-right #qp .reply.quoted, .backlinks-position-lower-left #qp .reply.quoted { position: static; padding-bottom: 0; } .backlinks-position-lower-right .reply .container, .backlinks-position-lower-left .reply .container { position: absolute; bottom: 0; padding: 0 5px; } .backlinks-position-lower-left .reply .container { left: 0; } .backlinks-position-lower-right .reply .container { right: 0; } .backlinks-position-lower-right .container::before, .backlinks-position-lower-left .reply .container::before { content: 'REPLIES: '; } .container:empty { display: none; } .backlinks-position-lower-left #qp .container, .backlinks-position-lower-left .inline .container, .backlinks-position-lower-right .inline .container, .backlinks-position-lower-right #qp .container { position: static; max-width: 100%; } .backlinks-position-lower-left #qp .container::before, .backlinks-position-lower-left .inline .container::before, .backlinks-position-lower-right #qp .container::before, .backlinks-position-lower-right .inline .container::before { content: ''; } .backlinks-position-lower-right .inline .container { float: none; } /* Fixes text spoilers */ .remove-spoilers.indicate-spoilers .spoiler::before, .remove-spoilers.indicate-spoilers s::before { content: '[spoiler]'; } .remove-spoilers.indicate-spoilers .spoiler::after, .remove-spoilers.indicate-spoilers s::after { content: '[/spoiler]'; } :root:not(.remove-spoilers) .spoiler:not(:hover) *, :root:not(.remove-spoilers) s:not(:hover) * { color: rgb(0,0,0) !important; text-shadow: none !important; } :root:not(.remove-spoilers) spoiler:not(:hover), :root:not(.remove-spoilers) s:not(:hover) { background-color: rgb(0,0,0); color: rgb(0,0,0) !important; text-shadow: none !important; } /* Code */ .prettyprint { box-sizing: border-box; font-family: monospace; display: inline-block; margin: 0 auto .1em 0; vertical-align: middle; white-space: pre-wrap; border-radius: 2px; overflow-x: auto; padding: 3px; max-width: 100%; } /* Menu */ .entry { border-bottom: 1px solid rgba(0,0,0,.25); cursor: pointer; display: block; outline: none; padding: 3px 1em 3px 7px; position: relative; text-decoration: none; white-space: nowrap; } .entry:last-child { border-bottom: 0; } .has-submenu::after { content: \"\"; border-left: .5em solid; border-top: .3em solid transparent; border-bottom: .3em solid transparent; display: inline-block; margin: .3em; position: absolute; right: 0; } .submenu { display: none; position: absolute; top: -1px; } .focused .submenu { display: block; } /* Stubs */ .fit-width-replies .stub { display: block; text-align: right; clear: both; } /* Element Replacing: */ /* Checkboxes */ .rice { cursor: pointer; width: 9px; height: 9px; margin: 2px 3px 3px; display: inline-block; vertical-align: bottom; } input[type=checkbox]:checked + .rice { position: relative; } input[type=checkbox]:checked + .rice::after { content: \"\"; display: block; width: 4px; height: 10px; border-width: 0 3px 3px 0; border-style: solid; -webkit-transform: rotate(45deg); position: absolute; left: 2px; bottom: -1px; } .rounded-edges .rice { border-radius: 2px;} } .circle-checkboxes .rice { border-radius: 6px;} } input:checked + .rice { background-attachment: scroll; background-repeat: no-repeat; background-position: bottom right; } /* Selects */ .selectrice { position: relative; cursor: default; overflow: hidden; text-align: left; } #settings .selectrice { display: inline-block; } .selectrice::after { content: \"\"; border-right: .25em solid transparent; border-left: .25em solid transparent; position: absolute; right: .4em; top: .5em; } .selectrice::before { content: \"\"; height: 1.6em; position: absolute; right: 1.3em; top: 0; } /* Select Dropdown */ #selectrice { padding: 0; margin: 0; position: fixed; max-height: 120px; overflow-y: auto; overflow-x: hidden; z-index: 32; } #selectrice:empty { display: none; } /* Post Form Shortcut */ .qr-shortcut.on-page { font-size: 250%; } /* Post Form */ #qr { z-index: 20; position: fixed; background: none; border: none; padding: 1px; min-width: 248px; background: transparent; border: 1px solid transparent; } .sidebar-large #qr { min-width: 299px; } .rounded-edges #qr, .rounded-edges #qrtab { border-radius: 3px 3px 0 0; } .post-form-style-fixed #qr { top: auto !important; } .sidebar-location-left:not(.post-form-style-float) #qr { left: 0 !important; right: auto !important; } .sidebar-location-right:not(.post-form-style-float) #qr { right: 0 !important; left: auto !important; } :root:not(.post-form-style-float) #qr { bottom: 0 !important; } .fourchan-ss-navigation.fixed.bottom:not(.post-form-style-float) #qr, .fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-float) #qr { bottom: 1.5em !important; } .post-form-style-slideout #qr { top: auto !important; } .post-form-style-slideout.sidebar-location-left #qr { -webkit-transform: translateX(-93%); } .post-form-style-slideout.sidebar-location-right #qr { -webkit-transform: translateX(93%); } .post-form-style-slideout #qr:hover, .post-form-style-slideout #qr.has-focus, .post-form-style-slideout #qr.dump { -webkit-transform: translate(0); } .post-form-style-tabbed-slideout #qr { top: auto !important; } .post-form-style-tabbed-slideout.sidebar-location-left #qr { -webkit-transform: translateX(-100%); } .post-form-style-tabbed-slideout.sidebar-location-right #qr { -webkit-transform: translateX(100%); } .post-form-style-tabbed-slideout #qr:hover, .post-form-style-tabbed-slideout #qr.has-focus, .post-form-style-tabbed-slideout #qr.dump { -webkit-transform: translateX(0); } .post-form-style-tabbed-slideout #qrtab { position: absolute; top: 0; width: 120px; text-align: center; border-width: 1px 1px 0 1px; cursor: default; } .post-form-style-tabbed-slideout.sidebar-location-left #qrtab { -webkit-transform: rotate(90deg); -webkit-transform-origin: bottom right; left: 100%; } .post-form-style-tabbed-slideout.sidebar-location-right #qrtab { -webkit-transform: rotate(-90deg); -webkit-transform-origin: bottom right; right: 100%; } .post-form-style-tabbed-slideout #qr:hover #qrtab, .post-form-style-tabbed-slideout #qr.has-focus #qrtab, .post-form-style-tabbed-slideout #qr.dump #qrtab { opacity: 0 !important; } .post-form-style-slideout #qrtab input, .post-form-style-slideout #qrtab .rice, .post-form-style-tabbed-slideout #qrtab input, .post-form-style-tabbed-slideout #qrtab .close, .post-form-style-tabbed-slideout #qrtab .rice, .post-form-style-tabbed-slideout #qrtab span { display: none; } .post-form-style-tabbed-slideout #qrtab .selectrice { text-align: center; } .transparent-post-form #qr { opacity: 0.2; transition: opacity .3s ease-in-out 1s; } .transparent-post-form #qr:hover, .transparent-post-form #qr.has-focus, .transparent-post-form #qr.dump { opacity: 1; transition: opacity .3s linear; } :root:not(.show-post-form-header):not(.post-form-style-float):not(.post-form-style-tabbed-slideout) #qrtab, .post-form-style-float .autohide:not(:hover):not(.has-focus) form, .show-post-form-header.post-form-style-fixed .autohide:not(:hover):not(.has-focus) form { display: none !important; } :root:not(.post-form-style-tabbed-slideout) #qrtab { margin-bottom: 1px; } #qr.autohide:not(:hover):not(.has-focus) #qrtab { margin-bottom: 0; } .post-form-slideout-transitions.post-form-style-slideout #qr, .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr { transition: -webkit-transform .3s ease-in-out 1s; } .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr.dump, .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr:hover, .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr.has-focus, .post-form-slideout-transitions.post-form-style-slideout #qr.dump, .post-form-slideout-transitions.post-form-style-slideout #qr:hover, .post-form-slideout-transitions.post-form-style-slideout #qr.has-focus { transition: -webkit-transform .3s linear; } .post-form-slideout-transitions #qrtab { transition: opacity .3s ease-in-out 1s; } .post-form-slideout-transitions #qr:hover #qrtab { transition: opacity .3s linear; } #qr .close { float: right; padding: 0 3px; } #qr .warning { min-height: 1.6em; vertical-align: middle; padding: 0 1px; border-width: 1px; border-style: solid; } .persona { width: 248px; max-width: 100%; min-width: 100%; } .persona input.field { width: 100%; } #qr textarea.field { height: 11.6em; min-height: 6em; } #qr.has-captcha textarea.field { height: 6em; } .compact-post-form-inputs .persona input.field { width: 33%; } .compact-post-form-inputs .persona input.field:first-child { margin: 0; } .compact-post-form-inputs .persona input.field { margin: 0 0 0 0.5%; } .compact-post-form-inputs #qr textarea.field { height: 14.9em; min-height: 9em; } .compact-post-form-inputs #qr.has-captcha textarea.field { height: 9em; } .tripcode-hider .tripped:not(:hover):not(:focus) { color: transparent !important; } .textarea-resize-horizontal #qr textarea { resize: horizontal; } .textarea-resize-vertical #qr textarea { resize: vertical; } .textarea-resize-both #qr textarea { resize: both; } .textarea-resize-none #qr textarea { resize: none; } .captcha-img { margin: 1px 0 0; text-align: center; line-height: 0; } .captcha-img img { width: 246px; } .captcha-img, .captcha-img img { height: 4em; } .captcha-input { width: 100%; margin: 1px 0 0; } .field, .selectrice, button, input:not([type=radio]) { box-sizing: border-box; height: 1.6em; margin: 1px 0 0; vertical-align: bottom; padding: 0 1px; outline: none; } .selectrice { padding-right: 1.6em; } #qr textarea { min-width: 100%; } #qr [type='submit'] { width: 25%; } [type='file'] { position: absolute; opacity: 0; z-index: -1; } /* Fake File Input */ #qr-filename, #qr-filerm, .has-file #qr-no-file { display: none; } #qr-no-file, .has-file #qr-filename { display: block; } .has-file #qr-filerm { display: inline-block; } #qr-extras-container { position: absolute; right: 0; top: 0; z-index: 2; } #qr-extras-container > label, #qr-extras-container > a { cursor: pointer; margin-right: 3px; } #qr-filename-container { box-sizing: border-box; display: inline-block; position: relative; width: 100px; min-width: 74.6%; max-width: 74.6%; margin-right: 0.4%; overflow: hidden; padding: 2px 1px 0; } /* Thread Select */ #qr-thread-select, #qr-thread-select .selectrice div { display: inline; } #qr-thread-select .selectrice { cursor: pointer; display: inline-block; width: 120px; border: none; background: none transparent; padding: 0; margin: 0; height: auto; } #qr-thread-select .selectrice::before, #qr-thread-select .selectrice::after { display: none; } /* Dumping UI */ .dump #dump-list-container { display: block; } #dump-list-container { display: none; position: relative; overflow-y: hidden; margin-top: 1px; } #dump-list { overflow-x: auto; overflow-y: hidden; white-space: nowrap; width: 248px; max-width: 100%; min-width: 100%; } #dump-list:hover { overflow-x: auto; } .qr-preview { box-sizing: border-box; counter-increment: thumbnails; cursor: move; display: inline-block; height: 90px; width: 90px; padding: 2px; opacity: .5; overflow: hidden; position: relative; text-shadow: 0 1px 1px #000; transition: opacity .25s ease-in-out; vertical-align: top; } .qr-preview:hover, .qr-preview:focus { opacity: .9; } .qr-preview::before { content: counter(thumbnails); color: #fff; position: absolute; top: 3px; right: 3px; text-shadow: 0 0 3px #000, 0 0 8px #000; } .qr-preview#selected { opacity: 1; } .qr-preview.drag { box-shadow: 0 0 10px rgba(0,0,0,.5); } .qr-preview.over { border-color: #fff; } .qr-preview > span { color: #fff; } .remove { background: none; color: #e00; font-weight: 700; padding: 3px; } a:only-of-type > .remove { display: none; } .remove:hover::after { content: \" Remove\"; } .qr-preview > label { background: rgba(0,0,0,.5); color: #fff; right: 0; bottom: 0; left: 0; position: absolute; text-align: center; } .qr-preview > label > input { margin: 0; } #add-post { cursor: pointer; font-size: 2em; position: absolute; top: 50%; right: 10px; -webkit-transform: translateY(-50%); } /* Ads */ .fade-ads .topad img, .fade-ads .middlead img, .fade-ads .bottomad img { opacity: 0.3; transition: opacity .3s linear; } .fade-ads .topad img:hover, .fade-ads .middlead img:hover, .fade-ads .bottomad img:hover { opacity: 1; } .hide-ads .bottomad + hr, .hide-ads .topad, .hide-ads .middlead, .hide-ads .bottomad, .hide-ads .ad-plea { display: none; } .shrink-ads .topad a img, .shrink-ads .middlead a img, .shrink-ads .bottomad a img { width: 500px; height: auto; } /* Mascot Positions */ #mascot { display: none; position: fixed; z-index: -1; bottom: 0; left: 0; right: 0; line-height: 0; cursor: pointer; } .mascot-position-above-post-form.post-form-style-fixed:not(.post-form-decorations) #mascot img { margin-bottom: -2px; } .mascots #mascot { display: block; } .sidebar-location-right.mascot-location-sidebar #mascot, .sidebar-location-left.mascot-location-opposite #mascot { left: auto; } .sidebar-location-left.mascot-location-sidebar #mascot, .sidebar-location-right.mascot-location-opposite #mascot { right: auto; } .sidebar-location-left.mascot-location-sidebar #mascot img, .sidebar-location-right.mascot-location-opposite #mascot img { -webkit-transform: scaleX(-1); } .fourchan-ss-navigation.bottom.fixed #mascot, .fourchan-ss-navigation.index.pagination-sticky-bottom #mascot { bottom: 1.5em } .mascots-overlap-posts #mascot { z-index: 3; } .mascot-position-middle #mascot { bottom: 50% !important; -webkit-transform: translateY(50%); } .mascot-position-top #mascot { bottom: auto !important; top: 17px; } .grayscale-mascots #mascot { -webkit-filter: url('#grayscale'); } .silhouettize-mascots #mascot img { -webkit-filter: url('#mascot-filter'); } /* Options */ #overlay { position: fixed; z-index: 30; top: 0; right: 0; left: 0; bottom: 0; background: rgba(0,0,0,.5); } #appchanx-settings { width: auto; left: 15%; right: 15%; top: 15%; bottom: 15%; position: fixed; z-index: 31; padding: .3em; } .rounded-edges #appchanx-settings, .rounded-edges #appchanx-settings fieldset, .rounded-edges .mascots-container, .rounded-edges .section-container, .rounded-edges .sections-list > a { border-radius: 3px; } .description { display: none; } #appchanx-settings h3, .section-keybinds, .section-mascots, .section-script, .style { text-align: center; } .section-keybinds table, .section-script fieldset, .section-style fieldset { text-align: left; } .section-keybinds table { margin: auto; } #appchanx-settings fieldset { padding: 5px 0; vertical-align: top; border: 0; margin: 0 3px 6px; display: inline-block; } .single-column-mode #appchanx-settings fieldset { display: block; margin: 0 auto 6px; } #appchanx-settings .section-advanced fieldset { display: block; margin: 0 auto 6px; } .section-advanced .archive-cell { min-width: 200px; } .section-advanced .selectrice { display: inline-block; clear: both; } .section-container { overflow: auto; position: absolute; top: 1.7em; right: 5px; bottom: 5px; left: 5px; padding: 5px; } .sections-list { padding: 0 3px; float: left; } .sections-list > a { cursor: pointer; position: relative; padding: 0 4px; z-index: 1; height: 1.4em; display: inline-block; border-width: 1px 1px 0 1px; border-color: transparent; border-style: solid; } .sections-list > a.tab-selected { border-style: solid; } .credits { float: right; } #appchanx-settings h3 { margin: 0; } .section-script fieldset > div, .section-style fieldset > div, .section-advanced fieldset > div { overflow: visible; padding: 0 5px 0 7px; } #appchanx-settings tr:nth-of-type(2n+1), .section-script fieldset > div:nth-of-type(2n+1), .section-advanced fieldset > div:nth-of-type(2n+1), .section-style fieldset > div:nth-of-type(2n+1), .section-keybinds tr:nth-of-type(2n+1), #selectrice li:nth-of-type(2n+1) { background-color: rgba(0, 0, 0, 0.05); } article li { margin: 10px 0 10px 2em; } #appchanx-settings .option { width: 50%; display: inline-block; vertical-align: bottom; } .option input { width: 100%; } .optionlabel { padding-left: 18px; } .rice + .optionlabel { padding-left: 0; } .section-script fieldset, .styleoption { text-align: left; } .section-style fieldset { width: 370px; } .section-script fieldset { width: 200px; } #mascotcontent, #themecontent, .suboptions { overflow: auto; position: absolute; top: 0; right: 0; bottom: 1.7em; left: 0; } #mascotcontent, #themecontent { padding: 5px; } #themecontent { top: 1.8em; } .mAlign { height: 250px; vertical-align: bottom; display: table-cell; line-height: 0; } #save, .stylesettings { position: absolute; right: 10px; bottom: 0; } .section-style .suboptions { bottom: 0; } .section-container textarea { font-family: monospace; min-height: 150px; resize: vertical; width: 100%; } /* Hover Functionality */ #mouseover { z-index: 33; position: fixed; max-width: 70%; } #mouseover:empty { display: none; } /* Mascot Tab */ #mascot_hide { padding: 3px; position: absolute; top: 2px; right: 18px; } #mascot_hide .rice { float: left; } #mascot_hide > div { height: 0; text-align: right; overflow: hidden; } #mascot_hide:hover > div { height: auto; } #mascot_hide label { width: 100%; display: block; clear: both; text-decoration: none; } .mascots-container { padding: 0; text-align: center; } .mascot, .mascotcontainer { overflow: hidden; } .mascot { position: relative; border: none; margin: 5px; padding: 0; width: 200px; display: inline-block; background-color: transparent; } .mascotcontainer { height: 250px; border: 0; margin: 0; max-height: 250px; cursor: pointer; bottom: 0; border-width: 0 1px 1px; border-style: solid; border-color: transparent; overflow: hidden; } .mascot img { max-width: 200px; } .export-button, .mascotname, #mascot-options { box-sizing: border-box; padding: 0; width: 100%; } #mascot-options { opacity: 0; transition: opacity .3s linear; } .mascot:hover #mascot-options { opacity: 1; } #mascot-options { position: absolute; bottom: 0; right: 0; left: 0; } .export-button { position: absolute; bottom: 1.7em; right: 0; left: 0; text-align: center; } #mascot-options a { display: inline-block; width: 33%; } #upload { position: absolute; width: 100px; left: 50%; margin-left: -50px; text-align: center; bottom: 0; } #mascots_batch { position: absolute; left: 10px; bottom: 0; } /* Themes Tab */ #themes h1 { position: absolute; right: 300px; bottom: 10px; margin: 0; transition: all .2s ease-in-out; opacity: 0; } #themes .selectedtheme h1 { right: 11px; opacity: 1; } #addthemes { position: absolute; left: 10px; bottom: 0; } .theme { margin: 1em; } /* Theme Editor */ #themeConf { position: fixed; top: 0; bottom: 0; width: 296px; z-index: 10; } .sidebar-location-right #themeConf { right: 2px; left: auto; } .sidebar-location-right #themeConf { left: 2px; right: auto; } #themebar input { width: 30%; } .option .color { width: 10%; border-left: none !important; color: transparent !important; } .option .colorfield { width: 90%; } .themevar textarea { min-width: 100%; max-width: 100%; height: 20em; resize: vertical; } /* Mascot Editor */ #mascotConf { position: fixed; height: 17em; bottom: 0; left: 50%; width: 500px; margin-left: -250px; overflow: auto; z-index: 10; } #mascotConf .option, #mascotConf .optionlabel { box-sizing: border-box; width: 50%; display: inline-block; vertical-align: middle; } #mascotConf .option input { width: 100%; } #close { position: absolute; left: 10px; bottom: 0; } /* Catalog */ #content .navLinks, #info .navLinks, .btn-wrap { display: block; } .navLinks > .btn-wrap:not(:first-of-type)::before { content: ' - '; } .button { cursor: pointer; } #content .btn-wrap, #info .btn-wrap { display: inline-block; } #post-preview, #quote-preview { position: absolute; z-index: 22; } .rounded-edges #post-preview { border-radius: 3px; } #settings, #threads, #info .navLinks, #content .navLinks { text-align: center; } #threads .thread { vertical-align: top; display: inline-block; word-wrap: break-word; overflow: hidden; margin: 1px; padding: 5px 0 3px; text-align: center; } .extended-small .thread, .small .thread { width: 165px; max-height: 320px; } .small .teaser, .large .teaser { display: none; } .extended-large .thread, .large .thread { width: 270px; max-height: 410px; } .extended-small .thumb, .small .thumb { max-width: 150px; max-height: 150px; } .panel { position: fixed; top: 50% !important; left: 50%; -webkit-transform: translate(-50%, -50%); padding: 5px; } .icon::after { display: inline-block; float: right; width: 1em; cursor: pointer; } .helpIcon::after { content: '?'; } .closeIcon::after { content: '✖'; } /* Front Page */ #logo { text-align: center; } #doc { box-sizing: border-box; margin: 10px auto; width: 1006px; padding: 2px; position: relative; } .rounded-edges #doc, .rounded-edges #doc div { border-radius: 3px; } #boards .boxcontent { vertical-align: top; text-align: center; } #filter-container, #options-container { top: 4px; right: 8px; position: absolute; } #filtermenu, #optionsmenu { top: 100% !important; left: auto !important; right: 0 !important; } #boards .column { box-sizing: border-box; display: inline-block; width: 180px; text-align: left; vertical-align: top; } .bd ul, .boxcontent ul { vertical-align: top; padding: 0; margin: 0; } .right-box .boxcontent ul { padding: 0 10px; } .yuimenuitem, .boxcontent li { list-style-type: none; } .boxbar { position: relative; } #doc h3, .boxbar h2 { margin: 0; } #doc h3 { text-decoration: none !important; } .underline-links #doc h3 { text-decoration: underline !important; } #ft, .box-outer { margin: 2px 0 0; overflow: hidden; } #ft, .boxbar, .boxcontent { padding: 0 8px; } .yui-module { position: absolute; } .yuimenuitem::before { content: \" [ ] \"; font-family: monospace; } .yuimenuitem-checked::before { content: \" [x] \" } .yui-g { overflow: hidden; } .yui-u { display: inline-block; vertical-align: top; width: 499px; float: right; } .yui-u.first { float: left; } #recent-images .boxcontent { text-align: center; } #ft { text-align: center; } #ft ul { padding: 0; } #ft li { list-style-type: none; display: inline-block; width: 100px; } #preview-tooltip-nws, #preview-tooltip-ws, #ft .fill, .clear-bug { display: none; } /* ExLinks */ #exlinks-options-content { padding: 5px; }",
+    layout: "/* Cleanup */ #absbot, #boardNavDesktop, #delPassword, #delform > hr:last-of-type, #navbotright, #postForm, #search-label, #search-label-bottom, #styleSwitcher, #togglePostForm, .boardBanner > div, .mobile, .next form, .next span, .postingMode, .prev form, .prev span, .riced, .sideArrows, .stylechanger, body > br, body > div[style^=\"text-align\"], body > hr { display: none; } /* Empties */ #qr .warning:empty, #qr-thread-select:empty { display: none; } /* File Name Trunctuate / /p/ exif */ .exif, .fileText:hover .fntrunc, .fileText:not(:hover) .fnfull { display: none; } /* Unnecessary */ #qp input, #qp .rice, .inline .rice { display: none !important; } /* Hidden Content */ .forwarded, .hidden, .hidden_thread ~ div, .hidden_thread ~ a, .replyContainer .stub ~ div, .replyContainer .stub ~ a, .stub + div, .thread > .stub:first-child ~ .postContainer, .thread > .stub:first-child ~ .summary, [hidden] { display: none !important; } /* Hidden UI */ #catalog, #navlinks, #navtopright, #svg_filters, .cataloglink, .navLinks { z-index: 7; position: fixed; top: 100%; left: 100%; } /* Hide last horizontal rule, keep clear functionality. */ .board > hr:last-of-type { visibility: hidden; } /* Fappe Tyme */ .fappeTyme .thread > .noFile, .fappeTyme .threadContainer > .noFile { display: none; } /* Defaults */ a { text-decoration: none; outline: none; } .underline-links a { text-decoration: underline; } body, html { min-height: 100%; box-sizing: border-box; } body { outline: none; min-height: 100%; } .sidebar-hide body { margin: 0 2px; } .sidebar-minimal body { margin: 0 20px; } .sidebar-normal body { margin: 0 252px } .sidebar-large body { margin: 0 303px; } .sidebar-location-right body { margin-left: 2px; } .sidebar-location-left body { margin-right: 2px; } body.unscroll { overflow: hidden; } .fourchan-ss-sidebar body::before { content: ''; position: fixed; top: 0; bottom: 0; box-sizing: border-box; display: block; z-index: 0; } .fourchan-ss-sidebar.sidebar-large body::before { width: 306px; } .fourchan-ss-sidebar.sidebar-normal body::before { width: 255px; } .fourchan-ss-sidebar.sidebar-minimal body::before { width: 23px; } .sidebar-location-right body::before { right: 0; } sidebar-location-left body::before { left: 0; } .fourchan-ss-sidebar.sidebar-location-right body { padding-right: 2px; } .fourchan-ss-sidebar.sidebar-location-left body { padding-left: 2px; } hr { clear: both; border: 0; padding: 0; margin: 0 0 1px; } .hide-horizontal-rules hr { visibility: hidden; } th { text-align: left; } .center { text-align: center; } .disabled { opacity: 0.5; } .pointer { cursor: pointer; } /* Symbols */ .drop-marker { vertical-align: middle; display: inline-block; margin: 2px 2px 3px; border-top: .5em solid; border-right: .3em solid transparent; border-left: .3em solid transparent; } .brackets-wrap::before { content: \" [\"; } .brackets-wrap::after { content: \"] \"; } /* Thread / Reply Nav */ #navlinks a { position: fixed; z-index: 12; opacity: 0.5; display: inline-block; border-right: 6px solid transparent; border-left: 6px solid transparent; margin: 1.5px; } #navlinks a:first-of-type { border-bottom: 11px solid rgb(130,130,130); } #navlinks a:last-of-type { border-top: 11px solid rgb(130,130,130); } /* Header */ #header-bar { z-index: 6; border-width: 1px; padding: 0 2px; border-style: solid; } .pagination-sticky-top .pagelist, .pagination-sticky-bottom .pagelist, #header-bar { left: 2px; right: 2px; } .navigation-alignment-center #header-bar { text-align: center; } .navigation-alignment-right #header-bar { text-align: right; } .sidebar-location-left.sidebar-large:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist, .sidebar-location-left #header-bar { left: 303px; } .sidebar-location-left.sidebar-normal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist, .sidebar-location-left #header-bar { left: 252px; } .sidebar-location-left.sidebar-minimal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist, .sidebar-location-left.sidebar-minimal:not(.fourchan-ss-navigation) #header-bar { left: 20px; } .sidebar-location-right.sidebar-large:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist, .sidebar-location-right #header-bar { right: 303px; } .sidebar-location-right.sidebar-normal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist, .sidebar-location-right #header-bar { right: 252px; } .sidebar-location-right.sidebar-minimal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist, .sidebar-location-right.sidebar-minimal:not(.fourchan-ss-navigation) #header-bar { right: 20px; } .fourchan-ss-navigation .pagelist, .fourchan-ss-navigation #header-bar { left: 0; right: 0; border-left: 0; border-right: 0; border-radius: 0 !important; } .hide-navigation-decorations #header-bar { font-size: 0; color: transparent; word-spacing: 2px; } #shortcuts { float: right; } .fixed #header-bar.autohide { z-index: 24; } .fixed #header-bar { position: fixed; } .top #header-bar { top: 0; border-top-width: 0; } .rounded-edges.top #header-bar { border-radius: 0 0 3px 3px; } .fixed.bottom #header-bar { bottom: 0; border-bottom-width: 0; } .rounded-edges.bottom #header-bar { border-radius: 3px 3px 0 0; } .hide #header-bar { position: fixed; top: 110%; bottom: auto; } /* Header Autohide */ .fixed #header-bar.autohide:not(:hover) { box-shadow: none; transition: all .8s .6s cubic-bezier(.55, .055, .675, .19); } .fixed.top #header-bar.autohide:not(:hover) { margin-bottom: -1em; -webkit-transform: translateY(-100%); } .fixed.bottom #header-bar.autohide:not(:hover) { -webkit-transform: translateY(100%); } #scroll-marker { left: 0; right: 0; height: 10px; position: absolute; } #header-bar #scroll-marker { display: none; } .fixed #header-bar #scroll-marker { display: block; } .fixed.top header-bar #scroll-marker { top: 100%; } .fixed.bottom #header-bar #scroll-marker { bottom: 100%; } /* Notifications */ #notifications { position: fixed; top: 0; text-align: center; right: 0; left: 0; transition: all .8s .6s cubic-bezier(.55, .055, .675, .19); } .fixed.top #header-bar #notifications { position: absolute; top: 100%; } .notification { font-weight: 700; text-shadow: 0 1px 2px rgba(0, 0, 0, .5); box-shadow: 0 1px 2px rgba(0, 0, 0, .15); border-radius: 2px; margin: 1px auto; width: 500px; max-width: 100%; position: relative; transition: all .25s ease-in-out; } .notification.error { background-color: hsla(0, 100%, 38%, .9); } .notification.warning { background-color: hsla(36, 100%, 38%, .9); } .notification.info { background-color: hsla(200, 100%, 38%, .9); } .notification.success { background-color: hsla(104, 100%, 38%, .9); } .notification, .notification a { color: #fff !important; } .notification > .close { top: 0; padding: 2px; right: 4px; position: absolute; color: #fff; } .message { box-sizing: border-box; padding: 6px 20px; max-height: 200px; width: 100%; overflow: auto; } /* Updater / Thread Stats */ .float #thread-stats, .float #updater { position: fixed; } #update-status.new::after { content: ', '; } /* Pagination */ .pagelist { border-style: solid; border-width: 1px; z-index: 6; } .pagination-alignment-center .pagelist { text-align: center; } .pagination-alignment-right .pagelist { text-align: right; } .pagination-sticky-top .pagelist { position: fixed; top: 0; border-top-width: 0; } .pagination-sticky-bottom .pagelist { position: fixed; bottom: 0; border-bottom-width: 0; } .pagination-top .pagelist { position: static; border-top-width: 0; } .pagination-bottom .pagelist { position: static; } .pagination-top.rounded-edges .pagelist, .pagination-sticky-top.rounded-edges .pagelist { border-radius: 0 0 3px 3px; } .pagination-bottom.rounded-edges .pagelist, .pagination-sticky-bottom.rounded-edges .pagelist { border-radius: 3px 3px 0 0; } .pagination-hide .pagelist { display: none; } .pagination-on-side .pagelist { position: fixed; padding: 0; top: auto; bottom: 0.5em; margin: 0; background: none transparent !important; border: 0 none !important; text-align: right; } .pagination-on-side.post-form-style-fixed.show-post-form-header .pagelist { bottom: 23.1em; } .pagination-on-side.post-form-style-fixed .pagelist { bottom: 21.6em; } .sidebar-location-left.pagination-on-side .pagelist { -webkit-transform: rotate(-90deg); -webkit-transform-origin: bottom left; } .sidebar-location-right.pagination-on-side .pagelist { -webkit-transform: rotate(90deg); -webkit-transform-origin: bottom right; } .sidebar-location-right.sidebar-large.pagination-on-side .pagelist { left: auto; right: 301px; } .sidebar-location-left.sidebar-large.pagination-on-side .pagelist { right: auto; left: 301px; } .sidebar-location-right.sidebar-normal.pagination-on-side .pagelist { left: auto; right: 246px; } .sidebar-location-left.sidebar-normal.pagination-on-side .pagelist { right: auto; left: 246px; } .sidebar-location-right.sidebar-minimal.pagination-on-side .pagelist { left: auto; right: 246px; } .sidebar-location-left.sidebar-minimal.pagination-on-side .pagelist { right: auto; left: 18px; } .hide-navigation-decorations .pagelist { font-size: 0; color: transparent; word-spacing: 0; } .pagelist input, .pagelist div { vertical-align: middle; } .hide-navigation-decorations .pages a { margin: 0 1px; } .next, .pages, .prev { display: inline-block; margin: 0 3px; } /* Icons */ .icons-4chan-ss #navtopright .exlinksOptionsLink::after, .icons-4chan-ss #main-menu, .icons-4chan-ss .navLinks > a:first-of-type::after, .icons-4chan-ss #thread-watcher::after, .icons-4chan-ss #globalMessage::after, .icons-4chan-ss #boardNavDesktopFoot::after, .icons-4chan-ss #img-controls, .icons-4chan-ss #catalog::after, .icons-4chan-ss #fappeTyme { background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAACWCAMAAAA2YSLzAAAAPFBMVEVkZGRlZWVjY2NmZmZnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dZxmG7AAAAE3RSTlMFFQ0AJD8eQFRqf5CgssDM4+73gHqZRAAAA0pJREFUSMetVlmy5CgMZDMGxK7737Ulgcu8ejMREzHtD7sShJRaKWV/Psq3iz7QGwTF2BZ01hp3N6yasctZJANiN5ZlItDLtNkQDGNeMLU7EqmCbUwhkhZbwsIuNbyWPX7dIyHOrDYOc8SOiEUJjojN0EsWlCXRrq2qvJCsIjic2OcFrwrOpdmTimqVyWG7ZkrWy97p7z/hACd2FUetBcQDpTN+nuKsGng881L5xOz/VQ88xL/eQkyZT3axp+4dUMwvH0Pnhn6wSyR+8IdR4f43/v8XX1BHjXpjwy5RdEcQ7DiuzlBUsFD+GeIFEy6W0pKXoSZOiUz5tf99nvTDD/1sP9VRPvb/un86lT57SVqwSk8KR+L6kgTOlcZslRQe5WmJRKovETW7Anb+HzxUW4Xgnv11fuuj82aKXHz1Tzztx9v4VA9+/6le26B+3VhTC9RMPIr0qx4zaWNsnFRO0s8FWgEIFIRiVUAIlJGciqMmCwpQWyI/OplXA1RrXG1YI2svTQ3ufhWjNlKFqtXFI7Yg+zAXRcBZ+HygJuVHd0ys35bVn6QojLL5cZeVvPht/mVu/r/8s7GMXsLjv2s71GZhgjnEwsEVXogiSl/pl7LWra0IQgO3poTsieoYd4dhWfJlGWqyQf6sLxWt3/MRa4Im04ixeSdAWnxvqCX6tObVmzpZOPOZvrBNJF8gmGciBChsV+YdRYwnAvNpS4AnYFBm0KA2a35Unh+efxjercaLfV7wW0rtUTNl2j715al/9VtfutF+NZ/+aZSa+py/GCpRyvr17EsVLbRhmN++BBY/ik5/+YPK6bKnf2T8fh7P+uEYn0D3E4L3i6QHmvc3+k+8PN6Mb1w52tje6LbAi+M0FT4YneqVbpVDPnL2Xqx7m3tf9ENXHba9H/a/+X3z/+XfCnOo+Zy/o4SgY5Z6iq0nb+9Mc4JxL5f1qYs+xhTP/uiX/cMe4+hDHAfGnmGe+Ev+G88vnG7Ie20wHiUt/S1Kv+6BCM/9fkEfz73/9HNufQ4ZKdzvnwtS/LXltRcJB/yJ23H/mo89nPFa85Li3XOYu435LwTXKVWwO+cnlWFTB47L/AdfR//KI2bvF8sAb0c/M+1+YE3/oS77B8N+UUVHraV6AAAAAElFTkSuQmCC\"); } .icons-oneechan #navtopright .exlinksOptionsLink::after, .icons-oneechan #main-menu, .icons-oneechan .navLinks > a:first-of-type::after, .icons-oneechan #thread-watcher::after, .icons-oneechan #globalMessage::after, .icons-oneechan #boardNavDesktopFoot::after, .icons-oneechan #img-controls, .icons-oneechan #catalog::after, .icons-oneechan #fappeTyme { background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAACWCAMAAAA2YSLzAAAAPFBMVEVoaGhqampeXl5sbGxsbGxra2tsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGzXmsRLAAAAE3RSTlMAEAYnHBg2QExbcYaWqM++2+z4BMdvAwAAAtVJREFUSMfFVgmu3CAMhYRPAmb3/e9aL5Bl2kptVbXWSOSBsY15NmOMMZs1KnNExC+ezgV4MBtNMIw58+qX2REtQwiifdC6hwlNQBGfUlBzc+KYkP3IxH5hNvicCPXrMfEVi3ts2WrzaiN6jie2OI2GXbBfXiA/XPyexPpEHrHdyDV8YAt6vEYCVpJ3S7rXAZKkkfbnuR8Uk/32xsac6Y01La2ZfyIh1VrX9Rnfu5ygd6/XeQAGFxACkopDb3mkeXug48x5FCKhNzW+1j2t8/5EEwHTIfPm6G3aP37o/w/ir3QZ2V/xY0spdSxWL7MrLU7slmnDSY0UrH6CBJ/wFI3TNGECCDY9G4xmrpDkZvQMJ4q31EzLQuhipr7ag8ueFa+hUQy2d43nnPGg7NopHTUVyYlWpE+lUT4qfhDCnLpzB8oXLLJb4leptD/JblswOaZd0gRkDV0cJi69NNOUaclRpG6S1NPdRVPLjI3VSjWV8+FmaARknTxqfipl0tGR1DXvd0h251Ww/ZlaNQoaX3bqUS+IK6ZX4hysvuQinS+6n9638/6BbK4RLi6R11O8rPS4OnO66KHtw6yK96BWrg5QxDGcVzcoB8cYb/dE1zPO6C+pHxN0Ttw/JtJrx55+oV9Jq+ScF22IfBWDD+sHfTnBmKlpS99hPGSC4SBsi+dP3p0PjVBVedMdO3WoG57cAEbYVNkRHFROIzjYuGjoM7LOaEQKbtQjkuo5hCSMmezaNq3Gl6TE5J3ZLMu26SjpPJZo4h/9FJhT4JQJzjFXD7x54fBgzO9RvDH9Vl5vHIetcGHct1apLh/6gU3c2PYy5rrYh7a1NP29/H/G9xn/d+f7FNVcw9/H/9sf8ymXPnqdDd7Wx3OpzWRJuP8+iMTFe7wZq48Tce7QciNetUzku+pT/t4UHK/iIq2yPR/8y/315M/rWl1A/sM83phVh6+aeZY39OLNN4Y0P2GdHOWPAAAAAElFTkSuQmCC\"); } /* Banner & Board Title */ .boardBanner { line-height: 0; } .faded-4chan-banner .boardBanner { opacity: 0.5; transition: opacity 0.3s ease-in-out .5s; } .faded-4chan-banner .boardBanner:hover { opacity: 1; transition: opacity 0.3s ease-in; } /* From 4chan SS / OneeChan */  .fourchan-banner-reflection #Banner { -webkit-box-reflect: below 0 -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0) 10%, rgba(255,255,255,.5)); }  .fourchan-banner-at-sidebar-top .boardBanner, .fourchan-banner-at-sidebar-bottom .boardBanner, .fourchan-banner-at-sidebar-bottom .boardBanner { position: fixed; } .fourchan-banner-at-sidebar-top .boardBanner { top: 16px; } .fourchan-banner-at-sidebar-bottom .boardBanner { bottom: 270px; } .fourchan-banner-under-post-form .boardBanner { bottom: 130px; } .board-title-at-sidebar-top.sidebar-location-right #boardTitle, .board-title-at-sidebar-bottom.sidebar-location-right #boardTitle, .board-title-under-post-form.sidebar-location-right #boardTitle, .fourchan-banner-at-sidebar-top.sidebar-location-right .boardBanner, .fourchan-banner-at-sidebar-bottom.sidebar-location-right .boardBanner, .fourchan-banner-under-post-form.sidebar-location-right .boardBanner { right: 2px; } .board-title-at-sidebar-top.sidebar-location-left #boardTitle, .board-title-at-sidebar-bottom.sidebar-location-left #boardTitle, .board-title-under-post-form.sidebar-location-left #boardTitle, .fourchan-banner-at-sidebar-top.sidebar-location-left .boardBanner, .fourchan-banner-at-sidebar-bottom.sidebar-location-left .boardBanner, .fourchan-banner-under-post-form.sidebar-location-left .boardBanner { left: 2px; } .board-title-at-sidebar-top #boardTitle, .board-title-at-sidebar-bottom #boardTitle, .board-title-under-post-form #boardTitle, .fourchan-banner-at-sidebar-top .boardBanner img, .fourchan-banner-at-sidebar-bottom .boardBanner img, .fourchan-banner-under-post-form .boardBanner img { width: 248px; } .board-title-at-sidebar-top.sidebar-large #boardTitle, .board-title-at-sidebar-bottom.sidebar-large #boardTitle, .board-title-under-post-form.sidebar-large #boardTitle, .fourchan-banner-at-sidebar-top.sidebar-large .boardBanner img, .fourchan-banner-at-sidebar-bottom.sidebar-large .boardBanner img, .fourchan-banner-under-post-form.sidebar-large .boardBanner img { width: 299px; } .fourchan-banner-at-top .boardBanner { position: relative; display: table; margin: 12px auto; text-align: center; } :root:not(.board-subtitle) .boardSubtitle, .board-title-hide #boardTitle, .fourchan-banner-hide .boardBanner { display: none; } #boardTitle { text-align: center; z-index: 4; } .board-title-at-sidebar-top #boardTitle, .board-title-at-sidebar-bottom #boardTitle, .board-title-under-post-form #boardTitle { position: fixed; } .board-title-at-sidebar-top.fourchan-banner-at-sidebar-top.sidebar-large #boardTitle { top: 121px; } .board-title-at-sidebar-top.fourchan-banner-at-sidebar-top #boardTitle { top: 104px; } .board-title-at-sidebar-top #boardTitle { top: 40px; } .board-title-at-sidebar-bottom #boardTitle { bottom: 280px; } .board-title-under-post-form #boardTitle { bottom: 140px; } /* Hover UI */ .move { cursor: pointer; } #ihover { position: fixed; max-height: 97%; max-width: 75%; z-index: 22; } #qp { position: fixed; z-index: 22; } #qp .postMessage::after { clear: both; display: block; content: \"\"; } #qp .full-image { max-height: 300px; max-width: 500px; } #menu { position: fixed; outline: none; z-index: 22; } /* Image Expansion */ .fit-width .full-image { max-width: 100%; width: 100%; } .fit-height .full-image { max-height: 95vh; } .images-overlap-post-form .full-image { position: relative; z-index: 21; } /* Delete Buttons */ .hide-delete-ui .deleteform, .hide-delete-ui .post:not(#exlinks-options) .rice { display: none; } .hide-delete-ui .postInfo { padding: 0 0 0 3px; } .deleteform { position: fixed; z-index: 18; width: 0; bottom: 0; right: 0; border-width: 1px 0 0 1px; border-style: solid; font-size: 0; color: transparent; } .deleteform:hover { width: auto; } .deleteform::before { z-index: 18; border-width: 1px 0 0 1px; border-style: solid; content: '✖'; display: block; position: fixed; bottom: 0; right: 0; box-sizing: border-box; height: 1.6em; width: 1.4em; text-align: center; } .deleteform:hover::before { display: none; } .deleteform input { margin: 0 1px 0 0; } /* Slideout Navigation */ #boardNavDesktopFoot { position: fixed; text-align: center; font-size: 0; color: transparent; overflow: hidden; box-sizing: border-box; width: 248px; } .sidebar-large #boardNavDesktopFoot { width: 299px; } .sidebar-location-right #boardNavDesktopFoot { right: 2px; } .sidebar-location-left #boardNavDesktopFoot { left: 2px; } #boardNavDesktopFoot:hover { overflow-y: auto; padding: 2px; } #boardNavDesktopFoot:not(:hover) { border-color: transparent; background-color: transparent; height: 0; overflow: hidden; padding: 0; border: 0 none; } .slideout-navigation-compact #boardNavDesktopFoot { word-spacing: 1px; } .slideout-navigation-list #boardNavDesktopFoot a { display: block; } .slideout-navigation-list #boardNavDesktopFoot:hover { max-height: 400px; } .slideout-navigation-list #boardNavDesktopFoot a::after { content: ' - ' attr(title); } .slideout-navigation-list #boardNavDesktopFoot a[href*='//boards.4chan.org/']::after, .slideout-navigation-list #boardNavDesktopFoot a[href*='//rs.4chan.org/']::after { content: '/ - ' attr(title); } .slideout-navigation-list #boardNavDesktopFoot a[href*='//boards.4chan.org/']::before, .slideout-navigation-list #boardNavDesktopFoot a[href*='//rs.4chan.org/']::before { content: '/'; } .slideout-navigation-hide #boardNavDesktopFoot { display: none; } /* Watcher */ #thread-watcher { position: fixed; z-index: 14; padding: 2px; } #thread-watcher { width: 200px; } #thread-watcher:not(:hover) { max-height: 200px; overflow: hidden; } .rounded-edges #thread-watcher { border-radius: 3px; } #thread-watcher > div { max-height: 1.3em; overflow: hidden; } .slideout-watcher #thread-watcher { box-sizing: border-box; width: 248px; } .slideout-watcher.sidebar-large #boardNavDesktopFoot { width: 299px; } .slideout-watcher.sidebar-location-right #thread-watcher { left: auto !important; right: 2px !important; } .slideout-watcher.sidebar-location-left #thread-watcher { right: auto !important; left: 2px !important; } .slideout-watcher #thread-watcher .move { cursor: default; } .slideout-watcher.underline-links #thread-watcher .move { text-decoration: underline; } .slideout-watcher #thread-watcher > div { overflow: hidden; } .slideout-watcher #thread-watcher:hover { overflow-y: auto; } .slideout-watcher #thread-watcher:not(:hover) { height: 0; overflow: hidden; border: 0 none; padding: 0; } .watch-thread-link { padding-top: 18px; width: 18px; height: 0px; display: inline-block; background-repeat: no-repeat; opacity: 0.2; position: relative; top: 1px; } .watch-thread-link.watched { opacity: 1; } /* Announcements */ #globalMessage { text-align: center; } .rounded-edges #globalMessage { border-radius: 3px; } .announcements-slideout #globalMessage { position: fixed; padding: 2px; width: 248px; } .announcements-slideout.sidebar-location-right #globalMessage { left: auto; right: 2px; } .announcements-slideout.sidebar-location-left #globalMessage { right: auto; left: 2px; } .announcements-slideout.sidebar-large #globalMessage { width: 299px; } .announcements-slideout #globalMessage h3 { margin: 0; } .announcements-slideout #globalMessage:hover { box-sizing: border-box; overflow-y: auto; } .announcements-slideout #globalMessage:not(:hover) { height: 0; overflow: hidden; padding: 0; border: 0 none; } .announcements-hide #globalMessage { display: none !important; } /* Threads */ #threads, .rounded-edges .board > .thread { border-radius: 4px; } /* Thread Clearfix */ .thread > .threadContainer:last-of-type::after, .thread > .postContainer:last-of-type::after { display: block; content: ' '; clear: both; } /* Posts */ .expanding { opacity: .5; } .fileText:hover .fntrunc, .fileText:not(:hover) .fnfull, .expanded-image > .post > .file > .fileThumb > img[data-md5], .post > .file > .fileThumb > .full-image { display: none; } .expanded-image > .post > .file > .fileThumb > .full-image { display: block; } .thread > .replyContainer:last-of-type .post { margin-bottom: 0; } .menu-button { position: relative; } .stub .menu-button, .post .menu-button, .hide-thread-button, .show-thread-button span, .hide-reply-button, .show-reply-button span { float: right; } .post .menu-button, .hide-thread-button, .hide-reply-button { margin: 0 3px; opacity: 0; transition: opacity .3s ease-out 0s; } .post:hover .hide-reply-button, .post:hover .menu-button, .post:hover .hide-thread-button, .hidden_thread .hide-thread-button, .hidden_thread .menu-button, .inline .hide-reply-button, .inline .menu-button { opacity: 1; } .hidden_thread { text-align: right; } .color-user-ids .posteruid .hand { padding: .1em .3em; border-radius: 1em; font-size: 80%; } .postInfo > span { vertical-align: bottom; } .bolds .subject, .bolds .name { font-weight: 600; } .italics .postertrip { font-style: italic; } .underline-links .replylink { text-decoration: underline; } .fileInfo { padding: 0 3px; } .fileThumb { float: left; margin: 3px 20px; outline: none; } .reply.post { box-sizing: border-box; display: inline-block; } .fit-width-replies .reply.post { display: block; overflow: hidden; } .fit-width-replies .expanded-image .reply.post, .fit-width-replies .hasInline .reply.post { width: 100%; } .indent-replies #unread-line, .indent-replies .thread > .replyContainer, .indent-replies .threadContainer > .replyContainer { margin-left: 2em; } .expanded-image .reply.post, .hasInline .reply.post { display: inline-block; overflow: visible; clear: both; } .rounded-edges .post { border-radius: 3px; } .spoiler, s { text-decoration: none; } /* Emoji */ a.useremail:last-of-type { vertical-align: top; } /* Reply Clearfix */ .reply.post .postMessage { clear: right; } .op-background .op.post .postMessage::after, .force-reply-break .op.post .postMessage::after { display: block; content: ' '; clear: both; } /* OP */ .favicon { vertical-align: bottom; } .op-background .op.post { box-sizing: border-box; } /* Summary */ .force-reply-break .summary { clear: both; } /* Inlined */ .inline { margin: 2px 8px 2px 2px; } .post .inline { margin: 2px; } .inline .replyContainer { display: inline-block; } /* Inlined Clearfix */ .inline .postMessage::after { clear: both; display: block; content: \"\"; } /* Quotes */ .inlined { opacity: .5; } .underline-links .quotelink { text-decoration: underline; } .filtered, .quotelink.filtered { text-decoration: line-through !important; } .inline + .hashlink { display: none; } /* Quote Threading */ .threadContainer { padding-left: 2em; border-left: 1px solid; } .indent-replies .threadContainer { margin-left: 2em; padding-left: 0; } .threadOP { clear: both; } /* Backlinks */ .underline-links .forwardlink, .underline-links .backlink { text-decoration: underline; } .backlink.dead { text-decoration: none; } .filtered-backlinks .filtered.backlink { display: none; } .backlinks-position-lower-left .container, .backlinks-position-lower-right .container { max-width: 100%; padding: 0 5px; } .backlinks-position-lower-left .reply.quoted, .backlinks-position-lower-right .reply.quoted { position: relative; padding-bottom: 1.7em; } .backlinks-position-lower-left .inline .reply.quoted, .backlinks-position-lower-right .inline .reply.quoted, .backlinks-position-lower-right #qp .reply.quoted, .backlinks-position-lower-left #qp .reply.quoted { position: static; padding-bottom: 0; } .backlinks-position-lower-right .reply .container, .backlinks-position-lower-left .reply .container { position: absolute; bottom: 0; padding: 0 5px; } .backlinks-position-lower-left .reply .container { left: 0; } .backlinks-position-lower-right .reply .container { right: 0; } .backlinks-position-lower-right .container::before, .backlinks-position-lower-left .reply .container::before { content: 'REPLIES: '; } .container:empty { display: none; } .backlinks-position-lower-left #qp .container, .backlinks-position-lower-left .inline .container, .backlinks-position-lower-right .inline .container, .backlinks-position-lower-right #qp .container { position: static; max-width: 100%; } .backlinks-position-lower-left #qp .container::before, .backlinks-position-lower-left .inline .container::before, .backlinks-position-lower-right #qp .container::before, .backlinks-position-lower-right .inline .container::before { content: ''; } .backlinks-position-lower-right .inline .container { float: none; } /* Fixes text spoilers */ .remove-spoilers.indicate-spoilers .spoiler::before, .remove-spoilers.indicate-spoilers s::before { content: '[spoiler]'; } .remove-spoilers.indicate-spoilers .spoiler::after, .remove-spoilers.indicate-spoilers s::after { content: '[/spoiler]'; } :root:not(.remove-spoilers) .spoiler:not(:hover) *, :root:not(.remove-spoilers) s:not(:hover) * { color: rgb(0,0,0) !important; text-shadow: none !important; } :root:not(.remove-spoilers) spoiler:not(:hover), :root:not(.remove-spoilers) s:not(:hover) { background-color: rgb(0,0,0); color: rgb(0,0,0) !important; text-shadow: none !important; } /* Code */ .prettyprint { box-sizing: border-box; font-family: monospace; display: inline-block; margin: 0 auto .1em 0; vertical-align: middle; white-space: pre-wrap; border-radius: 2px; overflow-x: auto; padding: 3px; max-width: 100%; } /* Menu */ .entry { border-bottom: 1px solid rgba(0,0,0,.25); cursor: pointer; display: block; outline: none; padding: 3px 1em 3px 7px; position: relative; text-decoration: none; white-space: nowrap; } .entry:last-child { border-bottom: 0; } .has-submenu::after { content: \"\"; border-left: .5em solid; border-top: .3em solid transparent; border-bottom: .3em solid transparent; display: inline-block; margin: .3em; position: absolute; right: 0; } .submenu { display: none; position: absolute; top: -1px; } .focused .submenu { display: block; } /* Stubs */ .fit-width-replies .stub { display: block; text-align: right; clear: both; } /* Element Replacing: */ /* Checkboxes */ .rice { cursor: pointer; width: 9px; height: 9px; margin: 2px 3px 3px; display: inline-block; vertical-align: bottom; } input[type=checkbox]:checked + .rice { position: relative; } input[type=checkbox]:checked + .rice::after { content: \"\"; display: block; width: 4px; height: 10px; border-width: 0 3px 3px 0; border-style: solid; -webkit-transform: rotate(45deg); position: absolute; left: 2px; bottom: -1px; } .rounded-edges .rice { border-radius: 2px;} } .circle-checkboxes .rice { border-radius: 6px;} } input:checked + .rice { background-attachment: scroll; background-repeat: no-repeat; background-position: bottom right; } /* Selects */ .selectrice { position: relative; cursor: default; overflow: hidden; text-align: left; } #settings .selectrice { display: inline-block; } .selectrice::after { content: \"\"; border-right: .25em solid transparent; border-left: .25em solid transparent; position: absolute; right: .4em; top: .5em; } .selectrice::before { content: \"\"; height: 1.6em; position: absolute; right: 1.3em; top: 0; } /* Select Dropdown */ #selectrice { padding: 0; margin: 0; position: fixed; max-height: 120px; overflow-y: auto; overflow-x: hidden; z-index: 32; } #selectrice:empty { display: none; } /* Post Form Shortcut */ .qr-shortcut.on-page { font-size: 250%; } /* Post Form */ #qr { z-index: 20; position: fixed; background: none; border: none; padding: 1px; min-width: 248px; background: transparent; border: 1px solid transparent; } .sidebar-large #qr { min-width: 299px; } .rounded-edges #qr, .rounded-edges #qrtab { border-radius: 3px 3px 0 0; } .post-form-style-fixed #qr { top: auto !important; } .sidebar-location-left:not(.post-form-style-float) #qr { left: 0 !important; right: auto !important; } .sidebar-location-right:not(.post-form-style-float) #qr { right: 0 !important; left: auto !important; } :root:not(.post-form-style-float) #qr { bottom: 0 !important; } .fourchan-ss-navigation.fixed.bottom:not(.post-form-style-float) #qr, .fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-float) #qr { bottom: 1.5em !important; } .post-form-style-slideout #qr { top: auto !important; } .post-form-style-slideout.sidebar-location-left #qr { -webkit-transform: translateX(-93%); } .post-form-style-slideout.sidebar-location-right #qr { -webkit-transform: translateX(93%); } .post-form-style-slideout #qr:hover, .post-form-style-slideout #qr.has-focus, .post-form-style-slideout #qr.dump { -webkit-transform: translate(0); } .post-form-style-tabbed-slideout #qr { top: auto !important; } .post-form-style-tabbed-slideout.sidebar-location-left #qr { -webkit-transform: translateX(-100%); } .post-form-style-tabbed-slideout.sidebar-location-right #qr { -webkit-transform: translateX(100%); } .post-form-style-tabbed-slideout #qr:hover, .post-form-style-tabbed-slideout #qr.has-focus, .post-form-style-tabbed-slideout #qr.dump { -webkit-transform: translateX(0); } .post-form-style-tabbed-slideout #qrtab { position: absolute; top: 0; width: 120px; text-align: center; border-width: 1px 1px 0 1px; cursor: default; } .post-form-style-tabbed-slideout.sidebar-location-left #qrtab { -webkit-transform: rotate(90deg); -webkit-transform-origin: bottom right; left: 100%; } .post-form-style-tabbed-slideout.sidebar-location-right #qrtab { -webkit-transform: rotate(-90deg); -webkit-transform-origin: bottom right; right: 100%; } .post-form-style-tabbed-slideout #qr:hover #qrtab, .post-form-style-tabbed-slideout #qr.has-focus #qrtab, .post-form-style-tabbed-slideout #qr.dump #qrtab { opacity: 0 !important; } .post-form-style-slideout #qrtab input, .post-form-style-slideout #qrtab .rice, .post-form-style-tabbed-slideout #qrtab input, .post-form-style-tabbed-slideout #qrtab .close, .post-form-style-tabbed-slideout #qrtab .rice, .post-form-style-tabbed-slideout #qrtab span { display: none; } .post-form-style-tabbed-slideout #qrtab .selectrice { text-align: center; } .transparent-post-form #qr { opacity: 0.2; transition: opacity .3s ease-in-out 1s; } .transparent-post-form #qr:hover, .transparent-post-form #qr.has-focus, .transparent-post-form #qr.dump { opacity: 1; transition: opacity .3s linear; } :root:not(.show-post-form-header):not(.post-form-style-float):not(.post-form-style-tabbed-slideout) #qrtab, .post-form-style-float .autohide:not(:hover):not(.has-focus) form, .show-post-form-header.post-form-style-fixed .autohide:not(:hover):not(.has-focus) form { display: none !important; } :root:not(.post-form-style-tabbed-slideout) #qrtab { margin-bottom: 1px; } #qr.autohide:not(:hover):not(.has-focus) #qrtab { margin-bottom: 0; } .post-form-slideout-transitions.post-form-style-slideout #qr, .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr { transition: -webkit-transform .3s ease-in-out 1s; } .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr.dump, .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr:hover, .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr.has-focus, .post-form-slideout-transitions.post-form-style-slideout #qr.dump, .post-form-slideout-transitions.post-form-style-slideout #qr:hover, .post-form-slideout-transitions.post-form-style-slideout #qr.has-focus { transition: -webkit-transform .3s linear; } .post-form-slideout-transitions #qrtab { transition: opacity .3s ease-in-out 1s; } .post-form-slideout-transitions #qr:hover #qrtab { transition: opacity .3s linear; } #qr .close { float: right; padding: 0 3px; } #qr .warning { min-height: 1.6em; vertical-align: middle; padding: 0 1px; border-width: 1px; border-style: solid; } .persona { width: 248px; max-width: 100%; min-width: 100%; } .persona input.field { width: 100%; } #qr textarea.field { height: 11.6em; min-height: 6em; } #qr.has-captcha textarea.field { height: 6em; } .compact-post-form-inputs .persona input.field { width: 33%; } .compact-post-form-inputs .persona input.field:first-child { margin: 0; } .compact-post-form-inputs .persona input.field { margin: 0 0 0 0.5%; } .compact-post-form-inputs #qr textarea.field { height: 14.9em; min-height: 9em; } .compact-post-form-inputs #qr.has-captcha textarea.field { height: 9em; } .tripcode-hider .tripped:not(:hover):not(:focus) { color: transparent !important; } .textarea-resize-horizontal #qr textarea { resize: horizontal; } .textarea-resize-vertical #qr textarea { resize: vertical; } .textarea-resize-both #qr textarea { resize: both; } .textarea-resize-none #qr textarea { resize: none; } .captcha-img { margin: 1px 0 0; text-align: center; line-height: 0; } .captcha-img img { width: 246px; } .captcha-img, .captcha-img img { height: 4em; } .captcha-input { width: 100%; margin: 1px 0 0; } .field, .selectrice, button, input:not([type=radio]) { box-sizing: border-box; height: 1.6em; margin: 1px 0 0; vertical-align: bottom; padding: 0 1px; outline: none; } .selectrice { padding-right: 1.6em; } #qr textarea { min-width: 100%; } #qr [type='submit'] { width: 25%; } [type='file'] { position: absolute; opacity: 0; z-index: -1; } /* Fake File Input */ #qr-filename, #qr-filerm, .has-file #qr-no-file { display: none; } #qr-no-file, .has-file #qr-filename { display: block; } .has-file #qr-filerm { display: inline-block; } #qr-extras-container { position: absolute; right: 0; top: 0; z-index: 2; } #qr-extras-container > label, #qr-extras-container > a { cursor: pointer; margin-right: 3px; } #qr-filename-container { box-sizing: border-box; display: inline-block; position: relative; width: 100px; min-width: 74.6%; max-width: 74.6%; margin-right: 0.4%; overflow: hidden; padding: 2px 1px 0; } /* Thread Select */ #qr-thread-select, #qr-thread-select .selectrice div { display: inline; } #qr-thread-select .selectrice { cursor: pointer; display: inline-block; width: 120px; border: none; background: none transparent; padding: 0; margin: 0; height: auto; } #qr-thread-select .selectrice::before, #qr-thread-select .selectrice::after { display: none; } /* Dumping UI */ .dump #dump-list-container { display: block; } #dump-list-container { display: none; position: relative; overflow-y: hidden; margin-top: 1px; } #dump-list { overflow-x: auto; overflow-y: hidden; white-space: nowrap; width: 248px; max-width: 100%; min-width: 100%; } #dump-list:hover { overflow-x: auto; } .qr-preview { box-sizing: border-box; counter-increment: thumbnails; cursor: move; display: inline-block; height: 90px; width: 90px; padding: 2px; opacity: .5; overflow: hidden; position: relative; text-shadow: 0 1px 1px #000; transition: opacity .25s ease-in-out; vertical-align: top; } .qr-preview:hover, .qr-preview:focus { opacity: .9; } .qr-preview::before { content: counter(thumbnails); color: #fff; position: absolute; top: 3px; right: 3px; text-shadow: 0 0 3px #000, 0 0 8px #000; } .qr-preview#selected { opacity: 1; } .qr-preview.drag { box-shadow: 0 0 10px rgba(0,0,0,.5); } .qr-preview.over { border-color: #fff; } .qr-preview > span { color: #fff; } .remove { background: none; color: #e00; font-weight: 700; padding: 3px; } a:only-of-type > .remove { display: none; } .remove:hover::after { content: \" Remove\"; } .qr-preview > label { background: rgba(0,0,0,.5); color: #fff; right: 0; bottom: 0; left: 0; position: absolute; text-align: center; } .qr-preview > label > input { margin: 0; } #add-post { cursor: pointer; font-size: 2em; position: absolute; top: 50%; right: 10px; -webkit-transform: translateY(-50%); } /* Ads */ .fade-ads .topad img, .fade-ads .middlead img, .fade-ads .bottomad img { opacity: 0.3; transition: opacity .3s linear; } .fade-ads .topad img:hover, .fade-ads .middlead img:hover, .fade-ads .bottomad img:hover { opacity: 1; } .hide-ads .bottomad + hr, .hide-ads .topad, .hide-ads .middlead, .hide-ads .bottomad, .hide-ads .ad-plea { display: none; } .shrink-ads .topad a img, .shrink-ads .middlead a img, .shrink-ads .bottomad a img { width: 500px; height: auto; } /* Mascot Positions */ #mascot { display: none; position: fixed; z-index: -1; bottom: 0; left: 0; right: 0; line-height: 0; cursor: pointer; } .mascot-position-above-post-form.post-form-style-fixed:not(.post-form-decorations) #mascot img { margin-bottom: -2px; } .mascots #mascot { display: block; } .sidebar-location-right.mascot-location-sidebar #mascot, .sidebar-location-left.mascot-location-opposite #mascot { left: auto; } .sidebar-location-left.mascot-location-sidebar #mascot, .sidebar-location-right.mascot-location-opposite #mascot { right: auto; } .sidebar-location-left.mascot-location-sidebar #mascot img, .sidebar-location-right.mascot-location-opposite #mascot img { -webkit-transform: scaleX(-1); } .fourchan-ss-navigation.bottom.fixed #mascot, .fourchan-ss-navigation.index.pagination-sticky-bottom #mascot { bottom: 1.5em } .mascots-overlap-posts #mascot { z-index: 3; } .mascot-position-middle #mascot { bottom: 50% !important; -webkit-transform: translateY(50%); } .mascot-position-top #mascot { bottom: auto !important; top: 17px; } .grayscale-mascots #mascot { -webkit-filter: url('#grayscale'); } .silhouettize-mascots #mascot img { -webkit-filter: url('#mascot-filter'); } /* Options */ #overlay { position: fixed; z-index: 30; top: 0; right: 0; left: 0; bottom: 0; background: rgba(0,0,0,.5); } #appchanx-settings { width: auto; left: 15%; right: 15%; top: 15%; bottom: 15%; position: fixed; z-index: 31; padding: .3em; } .rounded-edges #appchanx-settings, .rounded-edges #appchanx-settings fieldset, .rounded-edges .mascots-container, .rounded-edges .section-container, .rounded-edges .sections-list > a { border-radius: 3px; } .description { display: none; } #appchanx-settings h3, .section-keybinds, .section-mascots, .section-script, .style { text-align: center; } .section-keybinds table, .section-script fieldset, .section-style fieldset { text-align: left; } .section-keybinds table { margin: auto; } #appchanx-settings fieldset { padding: 5px 0; vertical-align: top; border: 0; margin: 0 3px 6px; display: inline-block; } .single-column-mode #appchanx-settings fieldset { display: block; margin: 0 auto 6px; } #appchanx-settings .section-advanced fieldset { display: block; margin: 0 auto 6px; } .section-advanced .archive-cell { min-width: 200px; } .section-advanced .selectrice { display: inline-block; clear: both; } .section-container { overflow: auto; position: absolute; top: 1.7em; right: 5px; bottom: 5px; left: 5px; padding: 5px; } .sections-list { padding: 0 3px; float: left; } .sections-list > a { cursor: pointer; position: relative; padding: 0 4px; z-index: 1; height: 1.4em; display: inline-block; border-width: 1px 1px 0 1px; border-color: transparent; border-style: solid; } .sections-list > a.tab-selected { border-style: solid; } .credits { float: right; } #appchanx-settings h3 { margin: 0; } .section-script fieldset > div, .section-style fieldset > div, .section-advanced fieldset > div { overflow: visible; padding: 0 5px 0 7px; } #appchanx-settings tr:nth-of-type(2n+1), .section-script fieldset > div:nth-of-type(2n+1), .section-advanced fieldset > div:nth-of-type(2n+1), .section-style fieldset > div:nth-of-type(2n+1), .section-keybinds tr:nth-of-type(2n+1), #selectrice li:nth-of-type(2n+1) { background-color: rgba(0, 0, 0, 0.05); } article li { margin: 10px 0 10px 2em; } #appchanx-settings .option { width: 50%; display: inline-block; vertical-align: bottom; } .option input { width: 100%; } .optionlabel { padding-left: 18px; } .rice + .optionlabel { padding-left: 0; } .section-script fieldset, .styleoption { text-align: left; } .section-style fieldset { width: 370px; } .section-script fieldset { width: 200px; } #mascotcontent, #themecontent, .suboptions { overflow: auto; position: absolute; top: 0; right: 0; bottom: 1.7em; left: 0; } #mascotcontent, #themecontent { padding: 5px; } #themecontent { top: 1.8em; } .mAlign { height: 250px; vertical-align: bottom; display: table-cell; line-height: 0; } #save, .stylesettings { position: absolute; right: 10px; bottom: 0; } .section-style .suboptions { bottom: 0; } .section-container textarea { font-family: monospace; min-height: 150px; resize: vertical; width: 100%; } /* Hover Functionality */ #mouseover { z-index: 33; position: fixed; max-width: 70%; } #mouseover:empty { display: none; } /* Mascot Tab */ #mascot_hide { padding: 3px; position: absolute; top: 2px; right: 18px; } #mascot_hide .rice { float: left; } #mascot_hide > div { height: 0; text-align: right; overflow: hidden; } #mascot_hide:hover > div { height: auto; } #mascot_hide label { width: 100%; display: block; clear: both; text-decoration: none; } .mascots-container { padding: 0; text-align: center; } .mascot, .mascotcontainer { overflow: hidden; } .mascot { position: relative; border: none; margin: 5px; padding: 0; width: 200px; display: inline-block; background-color: transparent; } .mascotcontainer { height: 250px; border: 0; margin: 0; max-height: 250px; cursor: pointer; bottom: 0; border-width: 0 1px 1px; border-style: solid; border-color: transparent; overflow: hidden; } .mascot img { max-width: 200px; } .export-button, .mascotname, #mascot-options { box-sizing: border-box; padding: 0; width: 100%; } #mascot-options { opacity: 0; transition: opacity .3s linear; } .mascot:hover #mascot-options { opacity: 1; } #mascot-options { position: absolute; bottom: 0; right: 0; left: 0; } .export-button { position: absolute; bottom: 1.7em; right: 0; left: 0; text-align: center; } #mascot-options a { display: inline-block; width: 33%; } #upload { position: absolute; width: 100px; left: 50%; margin-left: -50px; text-align: center; bottom: 0; } #mascots_batch { position: absolute; left: 10px; bottom: 0; } /* Themes Tab */ #themes h1 { position: absolute; right: 300px; bottom: 10px; margin: 0; transition: all .2s ease-in-out; opacity: 0; } #themes .selectedtheme h1 { right: 11px; opacity: 1; } #addthemes { position: absolute; left: 10px; bottom: 0; } .theme { margin: 1em; } /* Theme Editor */ #themeConf { position: fixed; top: 0; bottom: 0; width: 296px; z-index: 10; } .sidebar-location-right #themeConf { right: 2px; left: auto; } .sidebar-location-right #themeConf { left: 2px; right: auto; } #themebar input { width: 30%; } .option .color { width: 10%; border-left: none !important; color: transparent !important; } .option .colorfield { width: 90%; } .themevar textarea { min-width: 100%; max-width: 100%; height: 20em; resize: vertical; } /* Mascot Editor */ #mascotConf { position: fixed; height: 17em; bottom: 0; left: 50%; width: 500px; margin-left: -250px; overflow: auto; z-index: 10; } #mascotConf .option, #mascotConf .optionlabel { box-sizing: border-box; width: 50%; display: inline-block; vertical-align: middle; } #mascotConf .option input { width: 100%; } #close { position: absolute; left: 10px; bottom: 0; } /* Catalog */ #content .navLinks, #info .navLinks, .btn-wrap { display: block; } .navLinks > .btn-wrap:not(:first-of-type)::before { content: ' - '; } .button { cursor: pointer; } #content .btn-wrap, #info .btn-wrap { display: inline-block; } #post-preview, #quote-preview { position: absolute; z-index: 22; } .rounded-edges #post-preview { border-radius: 3px; } #settings, #threads, #info .navLinks, #content .navLinks { text-align: center; } #threads .thread { vertical-align: top; display: inline-block; word-wrap: break-word; overflow: hidden; margin: 1px; padding: 5px 0 3px; text-align: center; } .extended-small .thread, .small .thread { width: 165px; max-height: 320px; } .small .teaser, .large .teaser { display: none; } .extended-large .thread, .large .thread { width: 270px; max-height: 410px; } .extended-small .thumb, .small .thumb { max-width: 150px; max-height: 150px; } .panel { position: fixed; top: 50% !important; left: 50%; -webkit-transform: translate(-50%, -50%); padding: 5px; } .icon::after { display: inline-block; float: right; width: 1em; cursor: pointer; } .helpIcon::after { content: '?'; } .closeIcon::after { content: '✖'; } /* Front Page */ #logo { text-align: center; } #doc { box-sizing: border-box; margin: 10px auto; width: 1006px; padding: 2px; position: relative; } .rounded-edges #doc, .rounded-edges #doc div { border-radius: 3px; } #boards .boxcontent { vertical-align: top; text-align: center; } #filter-container, #options-container { top: 4px; right: 8px; position: absolute; } #filtermenu, #optionsmenu { top: 100% !important; left: auto !important; right: 0 !important; } #boards .column { box-sizing: border-box; display: inline-block; width: 180px; text-align: left; vertical-align: top; } .bd ul, .boxcontent ul { vertical-align: top; padding: 0; margin: 0; } .right-box .boxcontent ul { padding: 0 10px; } .yuimenuitem, .boxcontent li { list-style-type: none; } .boxbar { position: relative; } #doc h3, .boxbar h2 { margin: 0; } #doc h3 { text-decoration: none !important; } .underline-links #doc h3 { text-decoration: underline !important; } #ft, .box-outer { margin: 2px 0 0; overflow: hidden; } #ft, .boxbar, .boxcontent { padding: 0 8px; } .yui-module { position: absolute; } .yuimenuitem::before { content: \" [ ] \"; font-family: monospace; } .yuimenuitem-checked::before { content: \" [x] \" } .yui-g { overflow: hidden; } .yui-u { display: inline-block; vertical-align: top; width: 499px; float: right; } .yui-u.first { float: left; } #recent-images .boxcontent { text-align: center; } #ft { text-align: center; } #ft ul { padding: 0; } #ft li { list-style-type: none; display: inline-block; width: 100px; } #preview-tooltip-nws, #preview-tooltip-ws, #ft .fill, .clear-bug { display: none; } /* ExLinks */ #exlinks-options-content { padding: 5px; }",
     dynamic: function() {
       var editSpace, sidebarLocation;
 
@@ -11812,12 +12168,12 @@
       replyRGB = "rgb(" + (replybg.shiftRGB(parseInt(Conf['Silhouette Contrast'], 10), true)) + ")";
       Style.lightTheme = bgColor.isLight();
       Style.svg.innerHTML = "<svg xmlns='http://www.w3.org/2000/svg' height=0><filter id='captcha-filter' color-interpolation-filters='sRGB'><feColorMatrix values='" + (Style.filter(Style.matrix(theme["Text"], theme["Input Background"]))) + " 0 0 0 1 0' /></filter></svg>\n<svg xmlns='http://www.w3.org/2000/svg' height=0><filter id='mascot-filter' color-interpolation-filters='sRGB'><feColorMatrix values='" + (Style.silhouette(Style.matrix(replyRGB))) + " 0 0 0 1 0' /></filter></svg>\n<svg xmlns='http://www.w3.org/2000/svg' height=0><filter id=\"grayscale\"><feColorMatrix id=\"color\" type=\"saturate\" values=\"0\" /></filter></svg>\n<svg xmlns='http://www.w3.org/2000/svg' height=0><filter id=\"icons-filter\" color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>";
-      return (".hide_thread_button span > span, .hide_reply_button span > span { background-color: " + theme["Links"] + "; } #mascot_hide label { border-bottom: 1px solid " + theme["Reply Border"] + "; } #content .thumb { box-shadow: 0 0 5px " + theme["Reply Border"] + "; } .export-button, .mascotname, #mascot-options { background: " + theme["Dialog Background"] + "; border: 1px solid " + theme["Buttons Border"] + "; } .highlight-you .opContainer.quotesYou, .highlight-own .opContainer.yourPost, .opContainer.filter-highlight { box-shadow: inset 5px 0 " + theme["Backlinked Reply Outline"] + "; } .highlight-you .quotesYou > .reply, .highlight-own .yourPost > .reply, .filter-highlight > .reply { box-shadow: -5px 0 " + theme["Backlinked Reply Outline"] + "; } hr { border-bottom: 1px solid " + theme["Reply Border"] + "; } hr#unread-line { border-bottom: 1px solid " + theme["Reply Background"] + "; visibility: visible; } .threadContainer { border-color: " + theme["Reply Border"] + " !important; } html { background: " + (backgroundC || '') + "; background-image: " + (theme["Background Image"] || '') + "; background-repeat: " + (theme["Background Repeat"] || '') + "; background-attachment: " + (theme["Background Attachment"] || '') + "; background-position: " + (theme["Background Position"] || '') + "; } .panel, .section-container, #exlinks-options-content, #themecontent { background: " + backgroundC + "; border: 1px solid " + theme["Reply Border"] + "; } .sections-list > a.tab-selected { background: " + backgroundC + "; border-color: " + theme["Reply Border"] + "; } .captcha-img img { -webkit-filter: url(\"#captcha-filter\"); } #boardTitle { text-shadow: 1px 1px " + backgroundC + ", -1px -1px " + backgroundC + ", 1px -1px " + backgroundC + ", -1px 1px " + backgroundC + "; } .sidebar-glow #boardTitle { text-shadow: 1px 1px 1px " + backgroundC + ", -1px -1px 1px " + backgroundC + ", 1px -1px 1px " + backgroundC + ", -1px 1px 1px " + backgroundC + ", 0 2px 4px rgba(0,0,0,.6), 0 0 10px rgba(0,0,0,.6); } #exlinks-options, #appchanx-settings, #qrtab, input[type=\"submit\"], input[value=\"Report\"], span[style=\"left: 5px; position: absolute;\"] a { background: " + theme["Buttons Background"] + "; border: 1px solid " + theme["Buttons Border"] + "; } .enabled .mascotcontainer { background: " + theme["Buttons Background"] + "; border-color: " + theme["Buttons Border"] + "; } #dump, #qr-filename-container, #appchanx-settings input, .captcha-img, .dump #dump, .qr-preview, .selectrice, button, input, textarea { background: " + theme["Input Background"] + "; border: 1px solid " + theme["Input Border"] + "; } .has-file #qr-extras-container { background: " + theme["Input Background"] + "; } #dump:hover, #qr-filename-container:hover, .selectrice:hover, #selectrice li:hover, #selectrice li:nth-of-type(2n+1):hover, input:hover, textarea:hover { background: " + theme["Hovered Input Background"] + "; border-color: " + theme["Hovered Input Border"] + "; } .has-file #qr-filename-container:hover #qr-extras-container { background: " + theme["Hovered Input Background"] + "; } #dump:active, #dump:focus, #selectrice li:focus, .selectrice:focus, #qr-filename-container:active, #qr-filename-container:focus, input:focus, textarea:focus, textarea.field:focus { background: " + theme["Focused Input Background"] + "; border-color: " + theme["Focused Input Border"] + "; color: " + theme["Inputs"] + "; } .has-file #qr-filename-container:active #qr-extras-container, .has-file #qr-filename-container:focus #qr-extras-container { background: " + theme["Focused Input Background"] + "; } #ft, #mouseover, #post-preview, #qp .post, #threads > .thread, #xupdater, .box-outer, .reply.post { border-width: 1px; border-style: solid; border-color: " + theme["Reply Border"] + "; background: " + theme["Reply Background"] + "; } .exblock.reply, .reply.post.highlight, .reply.post:target { background: " + theme["Highlighted Reply Background"] + "; border: 1px solid " + theme["Highlighted Reply Border"] + "; } #header-bar, .pagelist { background: " + theme["Navigation Background"] + "; border-color: " + theme["Navigation Border"] + "; } #doc, #threads, .board > .thread { background: " + theme["Thread Wrapper Background"] + "; border: 1px solid " + theme["Thread Wrapper Border"] + "; } #boardNavDesktopFoot, #mascot_hide, #menu, #selectrice, #themeConf, #watcher, #watcher:hover, .announcements-slideout #globalMessage, .dialog, .post-form-style-float #qr, .post-form-decorations #qr, .submenu { background: " + theme["Dialog Background"] + "; border: 1px solid " + theme["Dialog Border"] + "; } #qp.dialog { border: none; } .watch-thread-link { background-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='" + (theme["Post Numbers"].replace('#', '%23')) + "' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\"); } .deleteform::before, .deleteform, #qr .warning { background: " + theme["Input Background"] + "; border-color: " + theme["Input Border"] + "; } .disabledwarning, .warning { color: " + theme["Warnings"] + "; } #charCount { color: " + (Style.lightTheme ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)") + "; } .postNum a { color: " + theme["Post Numbers"] + "; } .subject { color: " + theme["Subjects"] + " !important; } .dateTime, .post-ago { color: " + theme["Timestamps"] + " !important; } #fs_status a, #updater #update-status:not(.new)::after, #showQR, .abbr, .boxbar, .boxcontent, .deleteform::before, .pages strong, .pln, .reply, .reply.highlight, .summary, body, button, span[style=\"left: 5px; position: absolute;\"] a, input, textarea { color: " + theme["Text"] + "; } #exlinks-options-content > table, #appchanx-settings fieldset, #selectrice { border-bottom: 1px solid " + theme["Reply Border"] + "; box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px; } .quote + .spoiler:hover, .quote { color: " + theme["Greentext"] + "; } .forwardlink { border-bottom: 1px dashed " + theme["Backlinks"] + "; } .container::before { color: " + theme["Timestamps"] + "; } .quote-shadows #menu, .quote-shadows #post-preview, .quote-shadows #qp .opContainer, .quote-shadows #qp .replyContainer, .quote-shadows .submenu { box-shadow: 5px 5px 5px " + theme['Shadow Color'] + "; } .rice { background: " + theme["Checkbox Background"] + "; border: 1px solid " + theme["Checkbox Border"] + "; } .selectrice::before { border-left: 1px solid " + theme["Input Border"] + "; } .selectrice::after { border-top: .45em solid " + theme["Inputs"] + "; } .bd { background: " + theme["Buttons Background"] + "; border: 1px solid " + theme["Buttons Border"] + "; } .pages a, #header-bar a { color: " + theme["Navigation Links"] + "; } input[type=checkbox]:checked + .rice::after { border-color: " + theme["Inputs"] + "; } #addReply, #dump, .button, .entry, .replylink, a { color: " + theme["Links"] + "; } .backlink { color: " + theme["Backlinks"] + "; } .qiQuote, .quotelink { color: " + theme["Quotelinks"] + "; } #addReply:hover, #dump:hover, .entry:hover, .replylink:hover, .qiQuote:hover, .quotelink:hover, a .name:hover, a .postertrip:hover, a:hover { color: " + theme["Hovered Links"] + "; } #header-bar a:hover, #boardTitle a:hover { color: " + theme["Hovered Navigation Links"] + "; } #boardTitle { color: " + theme["Board Title"] + "; } .name, .post-author { color: " + theme["Names"] + " !important; } .post-tripcode, .postertrip, .trip { color: " + theme["Tripcodes"] + " !important; } a .postertrip, a .name { color: " + theme["Emails"] + "; } .post.reply.qphl, .post.op.qphl { border-color: " + theme["Backlinked Reply Outline"] + "; background: " + theme["Highlighted Reply Background"] + "; } .quote-shadows .inline .post { box-shadow: 5px 5px 5px " + theme['Shadow Color'] + "; } .placeholder, #qr input::placeholder, #qr textarea::placeholder { color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important; } #qr input:placeholder, #qr textarea:placeholder, .placeholder { color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important; } #appchanx-settings fieldset, .boxcontent dd, .selectrice ul { border-color: " + (Style.lightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)") + "; } #appchanx-settings li, #selectrice li:not(:first-of-type) { border-top: 1px solid " + (Style.lightTheme ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.025)") + "; } #navtopright .exlinksOptionsLink::after, #main-menu, .navLinks > a:first-of-type::after, #watcher::after, #globalMessage::after, #boardNavDesktopFoot::after, #img-controls, #catalog::after, #fappeTyme { " + (!Style.lightTheme ? "-webkit-filter: url(\"#icons-filter\");" : "") + " } .alternate-post-colors #threads > .thread:nth-of-type(2n+1), .alternate-post-colors .replyContainer:nth-of-type(2n+1) .post { background-image: linear-gradient(" + (replybg ? "rgba(" + (replybg.shiftRGB(-4, false)) + ",0.8), rgba(" + (replybg.shiftRGB(-4, false)) + ",0.8)" : Style.lightTheme ? "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" : "rgba(255,255,255,0.02), rgba(255,255,255,0.02)") + "); } .color-reply-headings .boxbar, .color-reply-headings .postInfo { background: " + (replybg ? "rgba(" + (replybg.shiftRGB(-12, false)) + ",0.8)" : "rgba(0,0,0,0.1)") + "; border-bottom: 1px solid " + theme["Reply Border"] + " } .color-file-info .file { background: " + (replybg ? "rgba(" + (replybg.shiftRGB(-8, false)) + ",0.8)" : "rgba(0,0,0,0.1)") + "; border-bottom: 1px solid " + theme["Reply Border"] + " border-top: 1px solid " + theme["Reply Border"] + " } .color-reply.headings.color-file-info { border-top: none; } .op-background .op.post { background: " + theme["Reply Background"] + "; border: 1px solid " + theme["Reply Border"] + "; } .op-background .op.post:target .op-background .op.post.highlight { background: " + theme["Highlighted Reply Background"] + "; border: 1px solid " + theme["Highlighted Reply Border"] + "; } .fourchan-banner-at-sidebar-top.icon-orientation-vertical body::after { background: " + backgroundC + "; } .fourchan-banner-at-sidebar-top.icon-orientation-vertical.fourchan-ss-sidebar body::after, .fourchan-banner-at-sidebar-top.fourchan-ss-sidebar body::before { background: rgba(" + ((background = new Style.color(Style.colorToHex(theme["Reply Background"]))) ? background.shiftRGB(-18) : void 0) + ", 0.8); } .fourchan-ss-sidebar.sidebar-location-right body::before { border-left: 2px solid " + backgroundC + "; box-shadow: inset 1px 0 0 " + theme["Reply Border"] + ", -1px 0 0 " + theme["Reply Border"] + "; } .fourchan-ss-sidebar.sidebar-location-left body::before { border-right: 2px solid " + backgroundC + "; box-shadow: 1px 0 0 " + theme["Reply Border"] + ", inset -1px 0 0 " + theme["Reply Border"] + "; } .sage-highlighting-text.sage-highlight-position-before a.useremail[href*=\"sage\"]:last-of-type::before, .sage-highlighting-text.sage-highlight-position-before a.useremail[href*=\"Sage\"]:last-of-type::before, .sage-highlighting-text.sage-highlight-position-before a.useremail[href*=\"SAGE\"]:last-of-type::before, .sage-highlighting-text.sage-highlight-position-after a.useremail[href*=\"sage\"]:last-of-type::after, .sage-highlighting-text.sage-highlight-position-after a.useremail[href*=\"Sage\"]:last-of-type::after, .sage-highlighting-text.sage-highlight-position-after a.useremail[href*=\"SAGE\"]:last-of-type::after { content: \" (sage) \"; color: " + theme["Sage"] + "; } .quote-shadows #qr { box-shadow: 5px 5px 5px " + theme['Shadow Color'] + "; } " + (theme["Custom CSS"].replace(/\s+/g, ' ').trim())) + ("" + (Style.lightTheme ? " .prettyprint { background-color: #e7e7e7; border: 1px solid #dcdcdc; } .com { color: #dd0000; } .str, .atv { color: #7fa61b; } .pun { color: #61663a; } .tag { color: #117743; } .kwd { color: #5a6F9e; } .typ, .atn { color: #9474bd; } .lit { color: #368c72; } " : " .prettyprint { background-color: rgba(0,0,0,.1); border: 1px solid rgba(0,0,0,0.5); } .tag { color: #96562c; } .pun { color: #5b6f2a; } .com { color: #a34443; } .str, .atv { color: #8ba446; } .kwd { color: #987d3e; } .typ, .atn { color: #897399; } .lit { color: #558773; } "));
+      return (".hide_thread_button span > span, .hide_reply_button span > span { background-color: " + theme["Links"] + "; } #mascot_hide label { border-bottom: 1px solid " + theme["Reply Border"] + "; } #content .thumb { box-shadow: 0 0 5px " + theme["Reply Border"] + "; } .export-button, .mascotname, #mascot-options { background: " + theme["Dialog Background"] + "; border: 1px solid " + theme["Buttons Border"] + "; } .highlight-you .opContainer.quotesYou, .highlight-own .opContainer.yourPost, .opContainer.filter-highlight { box-shadow: inset 5px 0 " + theme["Backlinked Reply Outline"] + "; } .highlight-you .quotesYou > .reply, .highlight-own .yourPost > .reply, .filter-highlight > .reply { box-shadow: -5px 0 " + theme["Backlinked Reply Outline"] + "; } hr { border-bottom: 1px solid " + theme["Reply Border"] + "; } hr#unread-line { border-bottom: 1px solid " + theme["Reply Background"] + "; visibility: visible; } .threadContainer { border-color: " + theme["Reply Border"] + " !important; } html { background: " + (backgroundC || '') + "; background-image: " + (theme["Background Image"] || '') + "; background-repeat: " + (theme["Background Repeat"] || '') + "; background-attachment: " + (theme["Background Attachment"] || '') + "; background-position: " + (theme["Background Position"] || '') + "; } .panel, .section-container, #exlinks-options-content, #themecontent { background: " + backgroundC + "; border: 1px solid " + theme["Reply Border"] + "; } .sections-list > a.tab-selected { background: " + backgroundC + "; border-color: " + theme["Reply Border"] + "; } .captcha-img img { -webkit-filter: url(\"#captcha-filter\"); } #boardTitle { text-shadow: 1px 1px " + backgroundC + ", -1px -1px " + backgroundC + ", 1px -1px " + backgroundC + ", -1px 1px " + backgroundC + "; } .sidebar-glow #boardTitle { text-shadow: 1px 1px 1px " + backgroundC + ", -1px -1px 1px " + backgroundC + ", 1px -1px 1px " + backgroundC + ", -1px 1px 1px " + backgroundC + ", 0 2px 4px rgba(0,0,0,.6), 0 0 10px rgba(0,0,0,.6); } #exlinks-options, #appchanx-settings, #qrtab, input[type=\"submit\"], input[value=\"Report\"], span[style=\"left: 5px; position: absolute;\"] a { background: " + theme["Buttons Background"] + "; border: 1px solid " + theme["Buttons Border"] + "; } .enabled .mascotcontainer { background: " + theme["Buttons Background"] + "; border-color: " + theme["Buttons Border"] + "; } #dump, #qr-filename-container, #appchanx-settings input, .captcha-img, .dump #dump, .qr-preview, .selectrice, button, input, textarea { background: " + theme["Input Background"] + "; border: 1px solid " + theme["Input Border"] + "; } .has-file #qr-extras-container { background: " + theme["Input Background"] + "; } #dump:hover, #qr-filename-container:hover, .selectrice:hover, #selectrice li:hover, #selectrice li:nth-of-type(2n+1):hover, input:hover, textarea:hover { background: " + theme["Hovered Input Background"] + "; border-color: " + theme["Hovered Input Border"] + "; } .has-file #qr-filename-container:hover #qr-extras-container { background: " + theme["Hovered Input Background"] + "; } #dump:active, #dump:focus, #selectrice li:focus, .selectrice:focus, #qr-filename-container:active, #qr-filename-container:focus, input:focus, textarea:focus, textarea.field:focus { background: " + theme["Focused Input Background"] + "; border-color: " + theme["Focused Input Border"] + "; color: " + theme["Inputs"] + "; } .has-file #qr-filename-container:active #qr-extras-container, .has-file #qr-filename-container:focus #qr-extras-container { background: " + theme["Focused Input Background"] + "; } #ft, #mouseover, #post-preview, #qp .post, #threads > .thread, #xupdater, .box-outer, .reply.post { border-width: 1px; border-style: solid; border-color: " + theme["Reply Border"] + "; background: " + theme["Reply Background"] + "; } .exblock.reply, .reply.post.highlight, .reply.post:target { background: " + theme["Highlighted Reply Background"] + "; border: 1px solid " + theme["Highlighted Reply Border"] + "; } #header-bar, .pagelist { background: " + theme["Navigation Background"] + "; border-color: " + theme["Navigation Border"] + "; } #doc, #threads, .board > .thread { background: " + theme["Thread Wrapper Background"] + "; border: 1px solid " + theme["Thread Wrapper Border"] + "; } #boardNavDesktopFoot, #mascot_hide, #menu, #selectrice, #themeConf, #thread-watcher, #thread-watcher:hover, .announcements-slideout #globalMessage, .dialog, .post-form-style-float #qr, .post-form-decorations #qr, .submenu { background: " + theme["Dialog Background"] + "; border: 1px solid " + theme["Dialog Border"] + "; } #qp.dialog { border: none; } .watch-thread-link { background-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='" + (theme["Post Numbers"].replace('#', '%23')) + "' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\"); } .deleteform::before, .deleteform, #qr .warning { background: " + theme["Input Background"] + "; border-color: " + theme["Input Border"] + "; } .disabledwarning, .warning { color: " + theme["Warnings"] + "; } #charCount { color: " + (Style.lightTheme ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)") + "; } .postNum a { color: " + theme["Post Numbers"] + "; } .subject { color: " + theme["Subjects"] + " !important; } .dateTime, .post-ago { color: " + theme["Timestamps"] + " !important; } #fs_status a, #updater #update-status:not(.new)::after, #showQR, .abbr, .boxbar, .boxcontent, .deleteform::before, .pages strong, .pln, .reply, .reply.highlight, .summary, body, button, span[style=\"left: 5px; position: absolute;\"] a, input, textarea { color: " + theme["Text"] + "; } #exlinks-options-content > table, #appchanx-settings fieldset, #selectrice { border-bottom: 1px solid " + theme["Reply Border"] + "; box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px; } .quote + .spoiler:hover, .quote { color: " + theme["Greentext"] + "; } .forwardlink { border-bottom: 1px dashed " + theme["Backlinks"] + "; } .container::before { color: " + theme["Timestamps"] + "; } .quote-shadows #menu, .quote-shadows #post-preview, .quote-shadows #qp .opContainer, .quote-shadows #qp .replyContainer, .quote-shadows .submenu { box-shadow: 5px 5px 5px " + theme['Shadow Color'] + "; } .rice { background: " + theme["Checkbox Background"] + "; border: 1px solid " + theme["Checkbox Border"] + "; } .selectrice::before { border-left: 1px solid " + theme["Input Border"] + "; } .selectrice::after { border-top: .45em solid " + theme["Inputs"] + "; } .bd { background: " + theme["Buttons Background"] + "; border: 1px solid " + theme["Buttons Border"] + "; } .pages a, #header-bar a { color: " + theme["Navigation Links"] + "; } input[type=checkbox]:checked + .rice::after { border-color: " + theme["Inputs"] + "; } #addReply, #dump, .button, .entry, .replylink, a { color: " + theme["Links"] + "; } .backlink { color: " + theme["Backlinks"] + "; } .qiQuote, .quotelink { color: " + theme["Quotelinks"] + "; } #addReply:hover, #dump:hover, .entry:hover, .replylink:hover, .qiQuote:hover, .quotelink:hover, a .name:hover, a .postertrip:hover, a:hover { color: " + theme["Hovered Links"] + "; } #header-bar a:hover, #boardTitle a:hover { color: " + theme["Hovered Navigation Links"] + "; } #boardTitle { color: " + theme["Board Title"] + "; } .name, .post-author { color: " + theme["Names"] + " !important; } .post-tripcode, .postertrip, .trip { color: " + theme["Tripcodes"] + " !important; } a .postertrip, a .name { color: " + theme["Emails"] + "; } .post.reply.qphl, .post.op.qphl { border-color: " + theme["Backlinked Reply Outline"] + "; background: " + theme["Highlighted Reply Background"] + "; } .quote-shadows .inline .post { box-shadow: 5px 5px 5px " + theme['Shadow Color'] + "; } .placeholder, #qr input::placeholder, #qr textarea::placeholder { color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important; } #qr input:placeholder, #qr textarea:placeholder, .placeholder { color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important; } #appchanx-settings fieldset, .boxcontent dd, .selectrice ul { border-color: " + (Style.lightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)") + "; } #appchanx-settings li, #selectrice li:not(:first-of-type) { border-top: 1px solid " + (Style.lightTheme ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.025)") + "; } #navtopright .exlinksOptionsLink::after, #main-menu, .navLinks > a:first-of-type::after, #thread-watcher::after, #globalMessage::after, #boardNavDesktopFoot::after, #img-controls, #catalog::after, #fappeTyme { " + (!Style.lightTheme ? "-webkit-filter: url(\"#icons-filter\");" : "") + " } .alternate-post-colors #threads > .thread:nth-of-type(2n+1), .alternate-post-colors .replyContainer:nth-of-type(2n+1) .post { background-image: linear-gradient(" + (replybg ? "rgba(" + (replybg.shiftRGB(-4, false)) + ",0.8), rgba(" + (replybg.shiftRGB(-4, false)) + ",0.8)" : Style.lightTheme ? "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" : "rgba(255,255,255,0.02), rgba(255,255,255,0.02)") + "); } .color-reply-headings .boxbar, .color-reply-headings .postInfo { background: " + (replybg ? "rgba(" + (replybg.shiftRGB(-12, false)) + ",0.8)" : "rgba(0,0,0,0.1)") + "; border-bottom: 1px solid " + theme["Reply Border"] + " } .color-file-info .file { background: " + (replybg ? "rgba(" + (replybg.shiftRGB(-8, false)) + ",0.8)" : "rgba(0,0,0,0.1)") + "; border-bottom: 1px solid " + theme["Reply Border"] + " border-top: 1px solid " + theme["Reply Border"] + " } .color-reply.headings.color-file-info { border-top: none; } .op-background .op.post { background: " + theme["Reply Background"] + "; border: 1px solid " + theme["Reply Border"] + "; } .op-background .op.post:target .op-background .op.post.highlight { background: " + theme["Highlighted Reply Background"] + "; border: 1px solid " + theme["Highlighted Reply Border"] + "; } .fourchan-banner-at-sidebar-top.icon-orientation-vertical body::after { background: " + backgroundC + "; } .fourchan-banner-at-sidebar-top.icon-orientation-vertical.fourchan-ss-sidebar body::after, .fourchan-banner-at-sidebar-top.fourchan-ss-sidebar body::before { background: rgba(" + ((background = new Style.color(Style.colorToHex(theme["Reply Background"]))) ? background.shiftRGB(-18) : void 0) + ", 0.8); } .fourchan-ss-sidebar.sidebar-location-right body::before { border-left: 2px solid " + backgroundC + "; box-shadow: inset 1px 0 0 " + theme["Reply Border"] + ", -1px 0 0 " + theme["Reply Border"] + "; } .fourchan-ss-sidebar.sidebar-location-left body::before { border-right: 2px solid " + backgroundC + "; box-shadow: 1px 0 0 " + theme["Reply Border"] + ", inset -1px 0 0 " + theme["Reply Border"] + "; } .sage-highlighting-text.sage-highlight-position-before a.useremail[href*=\"sage\"]:last-of-type::before, .sage-highlighting-text.sage-highlight-position-before a.useremail[href*=\"Sage\"]:last-of-type::before, .sage-highlighting-text.sage-highlight-position-before a.useremail[href*=\"SAGE\"]:last-of-type::before, .sage-highlighting-text.sage-highlight-position-after a.useremail[href*=\"sage\"]:last-of-type::after, .sage-highlighting-text.sage-highlight-position-after a.useremail[href*=\"Sage\"]:last-of-type::after, .sage-highlighting-text.sage-highlight-position-after a.useremail[href*=\"SAGE\"]:last-of-type::after { content: \" (sage) \"; color: " + theme["Sage"] + "; } .quote-shadows #qr { box-shadow: 5px 5px 5px " + theme['Shadow Color'] + "; } " + (theme["Custom CSS"].replace(/\s+/g, ' ').trim())) + ("" + (Style.lightTheme ? " .prettyprint { background-color: #e7e7e7; border: 1px solid #dcdcdc; } .com { color: #dd0000; } .str, .atv { color: #7fa61b; } .pun { color: #61663a; } .tag { color: #117743; } .kwd { color: #5a6F9e; } .typ, .atn { color: #9474bd; } .lit { color: #368c72; } " : " .prettyprint { background-color: rgba(0,0,0,.1); border: 1px solid rgba(0,0,0,0.5); } .tag { color: #96562c; } .pun { color: #5b6f2a; } .com { color: #a34443; } .str, .atv { color: #8ba446; } .kwd { color: #987d3e; } .typ, .atn { color: #897399; } .lit { color: #558773; } "));
     },
     iconPositions: function() {
       var align, aligner, css, i, iconOffset, navlinks, notCatalog, notEither, position, psa, sidebar;
 
-      css = "#navtopright .exlinksOptionsLink::after, #main-menu, body > div.navLinks > a:first-of-type::after, .slideout-watcher #watcher::after, .announcements-slideout #globalMessage::after, #boardNavDesktopFoot::after, #img-controls, #catalog::after, #fappeTyme { z-index: 18; position: fixed; display: block; width: 15px; height: 15px; content: \"\"; opacity: 0.5; } body::after { content: \"\"; display: block; position: fixed; z-index: 5; width: 18px; height: 18px; } .invisible-icons #navtopright .exlinksOptionsLink::after, .invisible-icons #main-menu, .invisible-icons body > div.navLinks > a:first-of-type::after, .invisible-icons.slideout-watcher #watcher::after, .invisible-icons.announcements-slideout #globalMessage::after, .invisible-icons #boardNavDesktopFoot::after, .invisible-icons #img-controls, .invisible-icons #catalog::after, .invisible-icons #fappeTyme { opacity: 0; } #navtopright .exlinksOptionsLink, body > div.navLinks > a:first-of-type, " + (Conf['Slideout Watcher'] ? '#watcher,' : '') + " " + (Conf['Announcements'] === 'slideout' ? '#globalMessage,' : '') + " #boardNavDesktopFoot, #catalog { z-index: 16; } #navtopright .exlinksOptionsLink:hover, body > div.navLinks > a:first-of-type:hover, .slideout-watcher #watcher:hover, .announcements-slideout #globalMessage:hover, #boardNavDesktopFoot:hover, #img-controls, #catalog:hover { z-index: 17; } #main-menu { visibility: visible; background-position: 0 0; cursor: pointer; } body > div.navLinks > a:first-of-type::after { cursor: pointer; background-position: 0 -15px; } .slideout-watcher #watcher::after { background-position: 0 -30px; } .announcements-slideout #globalMessage::after { background-position: 0 -45px; } #boardNavDesktopFoot::after { background-position: 0 -60px; } #img-controls { background-position: 0 -90px; } #navtopright .exlinksOptionsLink::after { background-position: 0 -105px; } #catalog::after { visibility: visible; background-position: 0 -120px; } #fappeTyme { background-position: 0 -135px; } #boardNavDesktopFoot:hover::after, .announcements-slideout #globalMessage:hover::after, #img-controls:hover, #navlinks a:hover, #appchanOptions:hover, #main-menu:hover, #navtopright .exlinksOptionsLink:hover::after, #qr #qrtab, .slideout-watcher #watcher:hover::after, .thumbnail#selected, div.navLinks > a:first-of-type:hover::after, #catalog:hover::after, #fappeTyme:hover { opacity: 1 !important; }";
+      css = "#navtopright .exlinksOptionsLink::after, #main-menu, body > div.navLinks > a:first-of-type::after, .slideout-watcher #thread-watcher::after, .announcements-slideout #globalMessage::after, #boardNavDesktopFoot::after, #img-controls, #catalog::after, #fappeTyme { z-index: 18; position: fixed; display: block; width: 15px; height: 15px; content: \"\"; opacity: 0.5; } body::after { content: \"\"; display: block; position: fixed; z-index: 5; width: 18px; height: 18px; } .invisible-icons #navtopright .exlinksOptionsLink::after, .invisible-icons #main-menu, .invisible-icons body > div.navLinks > a:first-of-type::after, .invisible-icons.slideout-watcher #thread-watcher::after, .invisible-icons.announcements-slideout #globalMessage::after, .invisible-icons #boardNavDesktopFoot::after, .invisible-icons #img-controls, .invisible-icons #catalog::after, .invisible-icons #fappeTyme { opacity: 0; } #navtopright .exlinksOptionsLink, body > div.navLinks > a:first-of-type, " + (Conf['Slideout Watcher'] ? '#thread-watcher,' : '') + " " + (Conf['Announcements'] === 'slideout' ? '#globalMessage,' : '') + " #boardNavDesktopFoot, #catalog { z-index: 16; } #navtopright .exlinksOptionsLink:hover, body > div.navLinks > a:first-of-type:hover, .slideout-watcher #thread-watcher:hover, .announcements-slideout #globalMessage:hover, #boardNavDesktopFoot:hover, #img-controls, #catalog:hover { z-index: 17; } #main-menu { visibility: visible; background-position: 0 0; cursor: pointer; } body > div.navLinks > a:first-of-type::after { cursor: pointer; background-position: 0 -15px; } .slideout-watcher #thread-watcher::after { background-position: 0 -30px; } .announcements-slideout #globalMessage::after { background-position: 0 -45px; } #boardNavDesktopFoot::after { background-position: 0 -60px; } #img-controls { background-position: 0 -90px; } #navtopright .exlinksOptionsLink::after { background-position: 0 -105px; } #catalog::after { visibility: visible; background-position: 0 -120px; } #fappeTyme { background-position: 0 -135px; } #boardNavDesktopFoot:hover::after, .announcements-slideout #globalMessage:hover::after, #img-controls:hover, #navlinks a:hover, #appchanOptions:hover, #main-menu:hover, #navtopright .exlinksOptionsLink:hover::after, #qr #qrtab, .slideout-watcher #thread-watcher:hover::after, .thumbnail#selected, div.navLinks > a:first-of-type:hover::after, #catalog:hover::after, #fappeTyme:hover { opacity: 1 !important; }";
       i = 0;
       align = Conf['Sidebar Location'];
       sidebar = {
@@ -11844,14 +12200,14 @@
         if (iconOffset < 0) {
           iconOffset = 0;
         }
-        css += "body::after { " + align + ": " + (position[i] - 1) + "px; } /* Appchan X Options */ #main-menu { " + align + ": " + position[i++] + "px; } /* Slideout Navigation */ #boardNavDesktopFoot::after { " + align + ": " + position[i++] + "px; } /* Global Message */ .announcements-slideout #globalMessage::after { " + align + ": " + position[i++] + "px; } /* Watcher */ .slideout-watcher #watcher::after { " + align + ": " + position[i++] + "px; } /* ExLinks */ #navtopright .exlinksOptionsLink::after { " + align + ": " + position[i++] + "px; } /* Expand Images */ #img-controls { " + align + ": " + position[i++] + "px; } /* 4chan Catalog */ #catalog::after { " + align + ": " + position[i++] + "px; } /* Back */ div.navLinks > a:first-of-type::after { " + align + ": " + position[i++] + "px; } /* Fappe Tyme */ #fappeTyme { " + align + ": " + position[i++] + "px; } /* Thread Navigation Links */ #navlinks a { margin: 2px; top: 1px; } #navlinks a:last-of-type { " + align + ": " + position[i++] + "px; } #navlinks a:first-of-type { " + align + ": " + position[i++] + "px; } body::after { width: " + (position[i] - 2) + "px; top: 0; } #boardNavDesktopFoot::after, #navtopright .exlinksOptionsLink::after, #main-menu, .slideout-watcher #watcher::after, .announcements-slideout #globalMessage::after, #img-controls, #fappeTyme, div.navLinks > a:first-of-type::after, #catalog::after { top: 1px !important; } .slideout-watcher #globalMessage, .slideout-watcher #watcher, #boardNavDesktopFoot { top: 16px !important; } .fourchan-ss-navigation.fixed.top #header-bar, .fourchan-ss-navigation.pagination-top .pagelist, .fourchan-ss-navigation.pagination-sticky-top .pagelist { padding-" + align + ": " + iconOffset + "px; } .fixed.top:not(.fourchan-ss-navigation) #header-bar, .pagination-top:not(.fourchan-ss-navigation) .pagelist, .pagination-sticky-top:not(.fourchan-ss-navigation) .pagelist { margin-" + align + ": " + iconOffset + "px; }";
+        css += "body::after { " + align + ": " + (position[i] - 1) + "px; } /* Appchan X Options */ #main-menu { " + align + ": " + position[i++] + "px; } /* Slideout Navigation */ #boardNavDesktopFoot::after { " + align + ": " + position[i++] + "px; } /* Global Message */ .announcements-slideout #globalMessage::after { " + align + ": " + position[i++] + "px; } /* Watcher */ .slideout-watcher #thread-watcher::after { " + align + ": " + position[i++] + "px; } /* ExLinks */ #navtopright .exlinksOptionsLink::after { " + align + ": " + position[i++] + "px; } /* Expand Images */ #img-controls { " + align + ": " + position[i++] + "px; } /* 4chan Catalog */ #catalog::after { " + align + ": " + position[i++] + "px; } /* Back */ div.navLinks > a:first-of-type::after { " + align + ": " + position[i++] + "px; } /* Fappe Tyme */ #fappeTyme { " + align + ": " + position[i++] + "px; } /* Thread Navigation Links */ #navlinks a { margin: 2px; top: 1px; } #navlinks a:last-of-type { " + align + ": " + position[i++] + "px; } #navlinks a:first-of-type { " + align + ": " + position[i++] + "px; } body::after { width: " + (position[i] - 2) + "px; top: 0; } #boardNavDesktopFoot::after, #navtopright .exlinksOptionsLink::after, #main-menu, .slideout-watcher #thread-watcher::after, .announcements-slideout #globalMessage::after, #img-controls, #fappeTyme, div.navLinks > a:first-of-type::after, #catalog::after { top: 1px !important; } .slideout-watcher #globalMessage, .slideout-watcher #thread-watcher, #boardNavDesktopFoot { top: 16px !important; } .fourchan-ss-navigation.fixed.top #header-bar, .fourchan-ss-navigation.pagination-top .pagelist, .fourchan-ss-navigation.pagination-sticky-top .pagelist { padding-" + align + ": " + iconOffset + "px; } .fixed.top:not(.fourchan-ss-navigation) #header-bar, .pagination-top:not(.fourchan-ss-navigation) .pagelist, .pagination-sticky-top:not(.fourchan-ss-navigation) .pagelist { margin-" + align + ": " + iconOffset + "px; }";
       } else {
         position = aligner(2, [notEither && Conf['Image Expansion'], true, Conf['Slideout Navigation'] !== 'hide', Conf['Announcements'] === 'slideout' && (psa = $('#globalMessage', d.body)) && !psa.hidden, Conf['Thread Watcher'] && Conf['Slideout Watcher'], $('#navtopright .exlinksOptionsLink', d.body), notEither, g.VIEW === 'thread', notEither && Conf['Fappe Tyme'], navlinks = ((g.VIEW !== 'thread' && Conf['Index Navigation']) || (g.VIEW === 'thread' && Conf['Reply Navigation'])) && notCatalog, navlinks]);
         iconOffset = (20 + (g.VIEW === 'thread' && Conf['Updater Position'] === 'top' ? 100 : 0)) - (Conf['4chan SS Navigation'] ? 0 : sidebar + parseInt(Conf[align.charAt(0).toUpperCase() + align.slice(1) + " Thread Padding"], 10));
         if (iconOffset < 0) {
           iconOffset = 0;
         }
-        css += "/* Expand Images */ body::after { top: " + (position[i] - 1) + "px; } #img-controls { top: " + position[i++] + "px; } /* Appchan X Options */ #main-menu { top: " + position[i++] + "px; } /* Slideout Navigation */ #boardNavDesktopFoot, #boardNavDesktopFoot::after { top: " + position[i++] + "px; } /* Global Message */ .announcements-slideout #globalMessage, .announcements-slideout #globalMessage::after { top: " + position[i++] + "px; } /* Watcher */ .slideout-watcher #watcher, .slideout-watcher #watcher::after { top: " + position[i++] + "px !important; } /* ExLinks */ #navtopright .exlinksOptionsLink::after { top: " + position[i++] + "px; } /* 4chan Catalog */ #catalog::after { top: " + position[i++] + "px; } /* Back */ div.navLinks > a:first-of-type::after { top: " + position[i++] + "px; } /* Fappe Tyme */ #fappeTyme { top: " + position[i++] + "px; } /* Thread Navigation Links */ #navlinks a:first-of-type { top: " + position[i++] + "px !important; } #navlinks a:last-of-type { top: " + position[i++] + "px !important; } body::after { height: " + (position[i] - 2) + "px; " + align + ": 2px; } #navlinks a, #navtopright .exlinksOptionsLink::after, #main-menu, #boardNavDesktopFoot::after, #globalMessage::after, #img-controls, #fappeTyme, .slideout-watcher #watcher::after, #catalog::after, div.navLinks > a:first-of-type::after { " + align + ": 3px !important; } #boardNavDesktopFoot, #globalMessage, .slideout-watcher #watcher.dialog { box-sizing: border-box; width: 232px !important; " + align + ": 18px !important; } .sidebar-large #boardNavDesktopFoot, .sidebar-large #globalMessage, .sidebar-large #watcher { width: 288px !important; } .fourchan-ss-navigation.fixed.top #header-bar, .fourchan-ss-navigation.pagination-top .pagelist, .fourchan-ss-navigation.pagination-sticky-top .pagelist { padding-" + align + ": " + iconOffset + "px; } .fixed.top:not(.fourchan-ss-navigation) #header-bar, .pagination-top:not(.fourchan-ss-navigation) .pagelist, .pagination-sticky-top:not(.fourchan-ss-navigation) .pagelist { margin-" + align + ": " + iconOffset + "px; }";
+        css += "/* Expand Images */ body::after { top: " + (position[i] - 1) + "px; } #img-controls { top: " + position[i++] + "px; } /* Appchan X Options */ #main-menu { top: " + position[i++] + "px; } /* Slideout Navigation */ #boardNavDesktopFoot, #boardNavDesktopFoot::after { top: " + position[i++] + "px; } /* Global Message */ .announcements-slideout #globalMessage, .announcements-slideout #globalMessage::after { top: " + position[i++] + "px; } /* Watcher */ .slideout-watcher #thread-watcher, .slideout-watcher #thread-watcher::after { top: " + position[i++] + "px !important; } /* ExLinks */ #navtopright .exlinksOptionsLink::after { top: " + position[i++] + "px; } /* 4chan Catalog */ #catalog::after { top: " + position[i++] + "px; } /* Back */ div.navLinks > a:first-of-type::after { top: " + position[i++] + "px; } /* Fappe Tyme */ #fappeTyme { top: " + position[i++] + "px; } /* Thread Navigation Links */ #navlinks a:first-of-type { top: " + position[i++] + "px !important; } #navlinks a:last-of-type { top: " + position[i++] + "px !important; } body::after { height: " + (position[i] - 2) + "px; " + align + ": 2px; } #navlinks a, #navtopright .exlinksOptionsLink::after, #main-menu, #boardNavDesktopFoot::after, #globalMessage::after, #img-controls, #fappeTyme, .slideout-watcher #thread-watcher::after, #catalog::after, div.navLinks > a:first-of-type::after { " + align + ": 3px !important; } #boardNavDesktopFoot, #globalMessage, .slideout-watcher #thread-watcher.dialog { box-sizing: border-box; width: 232px !important; " + align + ": 18px !important; } .sidebar-large #boardNavDesktopFoot, .sidebar-large #globalMessage, .sidebar-large #thread-watcher { width: 288px !important; } .fourchan-ss-navigation.fixed.top #header-bar, .fourchan-ss-navigation.pagination-top .pagelist, .fourchan-ss-navigation.pagination-sticky-top .pagelist { padding-" + align + ": " + iconOffset + "px; } .fixed.top:not(.fourchan-ss-navigation) #header-bar, .pagination-top:not(.fourchan-ss-navigation) .pagelist, .pagination-sticky-top:not(.fourchan-ss-navigation) .pagelist { margin-" + align + ": " + iconOffset + "px; }";
       }
       return Style.icons.textContent = css;
     },
@@ -12471,11 +12827,8 @@
     },
     callbacks: [],
     cb: function(e) {
-      var post;
-
       e.preventDefault();
-      post = Get.postFromNode(this);
-      return ExpandComment.expand(post);
+      return ExpandComment.expand(Get.postFromNode(this));
     },
     expand: function(post) {
       var a;
@@ -12538,6 +12891,12 @@
         }
         quote.href = "/" + post.board + "/res/" + href;
       }
+      Build.capcodeReplies({
+        boardID: post.board.ID,
+        threadID: post.thread.ID,
+        bq: clone,
+        capcodeReplies: postObj.capcode_replies
+      });
       post.nodes.shortComment = comment;
       $.replace(comment, clone);
       post.nodes.comment = post.nodes.longComment = clone;
@@ -13584,7 +13943,8 @@
           $.on(d, '4chanXInitFinished', Settings.open);
         }
         return $.set({
-          lastchecked: Date.now(),
+          archives: Conf['archives'],
+          lastarchivecheck: now,
           previousversion: g.VERSION
         });
       });
@@ -13793,7 +14153,6 @@
           version: g.VERSION,
           date: now
         };
-        Conf['WatchedThreads'] = {};
         for (_i = 0, _len = DataBoards.length; _i < _len; _i++) {
           db = DataBoards[_i];
           Conf[db] = {
@@ -13849,9 +14208,12 @@
       return reader.readAsText(file);
     },
     loadSettings: function(data) {
-      var version;
-
-      version = data.version.split('.');
+      if (data.Conf['WatchedThreads']) {
+        data.Conf['watchedThreads'] = {
+          boards: ThreadWatcher.convert(data.Conf['WatchedThreads'])
+        };
+        delete data.Conf['WatchedThreads'];
+      }
       return $.set(data.Conf);
     },
     convertSettings: function(data, map) {
@@ -14891,6 +15253,7 @@
         'Thread Updater': ThreadUpdater,
         'Thread Stats': ThreadStats,
         'Thread Watcher': ThreadWatcher,
+        'Thread Watcher (Menu)': ThreadWatcher.menu,
         'Index Navigation': Nav,
         'Keybinds': Keybinds,
         'Show Dice Roll': Dice

@@ -4,23 +4,20 @@ Linkify =
 
     @regString = if Conf['Allow False Positives']
       ///(
-        \b(
-          [-a-z]+://
-          |
-          [a-z]{3,}\.[-a-z0-9]+\.[a-z]
-          |
-          [-a-z0-9]+\.[a-z]
-          |
-          [\d]+\.[\d]+\.[\d]+\.[\d]+/
-          |
-          [a-z]{3,}:[a-z0-9?]
-          |
-          [^\s@]+@[a-z0-9.-]+\.[a-z0-9]
-        )
-        [^\s'"]+
-      )///gi
+        [-a-z]+://
+        |
+        [a-z]{3,}\.[-a-z0-9]+\.[a-z]
+        |
+        [-a-z0-9]+\.[a-z]
+        |
+        [\d]+\.[\d]+\.[\d]+\.[\d]+/
+        |
+        [a-z]{3,}:[a-z0-9?]
+        |
+        [^\s@]+@[a-z0-9.-]+\.[a-z0-9]
+      )///i
     else
-      /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi
+      /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1})/i
 
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
@@ -43,16 +40,44 @@ Linkify =
 
       return
 
+    test = /[^\s'"]+/g
+    space = /[\s'"]/
+
     snapshot = $.X './/br|.//text()', @nodes.comment
     i = 0
     while node = snapshot.snapshotItem i++
+      links = []
+      {data} = node
+      continue if node.parentElement.nodeName is "A" or not data
 
-      continue if node.parentElement.nodeName is "A"
-      links  = []
+      while result = test.exec data
+        {index} = result
+        endNode = node
+        if (length = index + result[0].length) is data.length
 
-      if Linkify.regString.test node.data
-        Linkify.regString.lastIndex = 0
-        Linkify.gatherLinks snapshot, @, node, links, i
+          while (saved = snapshot.snapshotItem i++)
+            break if saved.nodeName is 'BR'
+
+            endNode = saved
+            {length} = saved.data
+
+            if end = space.exec saved.data
+              length = end.index
+              i--
+              break
+
+          if length is endNode.data.length then test.lastIndex = 0
+          range = Linkify.makeRange node, endNode, index, length
+          if link = Linkify.regString.exec text = range.toString()
+            if lIndex = link.index
+              range.setStart node, lIndex + index
+            links.push [range, text]
+          break
+
+        else
+          if link = Linkify.regString.exec result[0]
+            range = Linkify.makeRange node, node, link.index, link.length
+            links.push [range, link]
 
       for range in links.reverse()
         @nodes.links.push Linkify.makeLink range, @
@@ -68,66 +93,29 @@ Linkify =
 
     return
 
-  gatherLinks: (snapshot, post, node, links, i) ->
-    {data} = node
-    len    = data.length
-
-    while (match = Linkify.regString.exec data)
-      {index} = match
-      link    = match[0]
-      len2    = index + link.length
-
-      break if len is len2
-
-      range = document.createRange();
-      range.setStart node, index
-      range.setEnd   node, len2
-      links.push range
-
-    Linkify.regString.lastIndex = 0
-
-    if match
-      links.push Linkify.seek snapshot, post, node, links, match, i
-
-    return
-
-  seek: (snapshot, post, node, links, match, i) ->
-    link    = match[0]
-    range = document.createRange()
-    range.setStart node, match.index
-
-    while (next = snapshot.snapshotItem i++) and next.nodeName isnt 'BR'
-      node = next
-      data = node.data
-      if result = /[\s'"]/.exec data
-        {index} = result
-        range.setEnd node, index
-        Linkify.regString.lastIndex = index
-        Linkify.gatherLinks snapshot, post, node, links, i
-        return range
-
-    if range.collapsed
-      range.setEnd node, node.data.length
-
+  makeRange: (startNode, endNode, startOffset, endOffset) ->
+    range = document.createRange();
+    range.setStart startNode,  startOffset
+    range.setEnd   endNode,    endOffset
     range
 
-  makeLink: (range) ->
-    link = range.toString()
-    link =
-      if link.contains ':'
-        link
+  makeLink: ([range, text]) ->
+    text
+    text =
+      if text.contains ':'
+        text
       else (
-        if link.contains '@'
+        if text.contains '@'
           'mailto:'
         else
           'http://'
-      ) + link
+      ) + text
 
     a = $.el 'a',
       className: 'linkify'
       rel:       'nofollow noreferrer'
       target:    '_blank'
-      href:      link
+      href:      text
     $.add a, range.extractContents()
     range.insertNode a
     a

@@ -19,9 +19,8 @@ ExpandComment =
   
   cb: (e) ->
     e.preventDefault()
-    post = Get.postFromNode @
-    ExpandComment.expand post
-  
+    ExpandComment.expand Get.postFromNode @
+
   expand: (post) ->
     if post.nodes.longComment and !post.nodes.longComment.parentNode
       $.replace post.nodes.shortComment, post.nodes.longComment
@@ -61,6 +60,11 @@ ExpandComment =
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote, or board link
       quote.href = "/#{post.board}/res/#{href}" # Fix pathnames
+    Build.capcodeReplies
+      boardID: post.board.ID
+      threadID: post.thread.ID
+      bq: clone
+      capcodeReplies: postObj.capcode_replies
     post.nodes.shortComment = comment
     $.replace comment, clone
     post.nodes.comment = post.nodes.longComment = clone

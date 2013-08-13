@@ -14,7 +14,7 @@ body::after {
   #{align}: #{position[i++]}px;
 }
 /* Watcher */
-.slideout-watcher #watcher::after {
+.slideout-watcher #thread-watcher::after {
   #{align}: #{position[i++]}px;
 }
 /* ExLinks */
@@ -55,7 +55,7 @@ body::after {
 #boardNavDesktopFoot::after,
 #navtopright .exlinksOptionsLink::after,
 #main-menu,
-.slideout-watcher #watcher::after,
+.slideout-watcher #thread-watcher::after,
 .announcements-slideout #globalMessage::after,
 #img-controls,
 #fappeTyme,
@@ -64,7 +64,7 @@ div.navLinks > a:first-of-type::after,
   top: 1px !important;
 }
 .slideout-watcher #globalMessage,
-.slideout-watcher #watcher,
+.slideout-watcher #thread-watcher,
 #boardNavDesktopFoot {
   top: 16px !important;
 }

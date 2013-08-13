@@ -97,10 +97,10 @@ a {
 #qr {
   z-index: 30;
 }
-#watcher {
+#thread-watcher {
   z-index: 8;
 }
-:root.fixed-watcher #watcher {
+:root.fixed-watcher #thread-watcher {
   z-index: 20;
 }
 .fixed #header-bar {
@@ -465,10 +465,10 @@ a.hide-announcement {
 }
 
 /* Thread Watcher */
-#watcher {
+#thread-watcher {
   position: absolute;
 }
-#watcher {
+#thread-watcher {
   padding-bottom: 3px;
   overflow: hidden;
   white-space: nowrap;
@@ -476,27 +476,27 @@ a.hide-announcement {
   max-height: 92%;
   overflow-y: auto;
 }
-:root.fixed-watcher #watcher {
+:root.fixed-watcher #thread-watcher {
   position: fixed;
 }
-:root:not(.fixed-watcher) #watcher:not(:hover) {
+:root:not(.fixed-watcher) #thread-watcher:not(:hover) {
   max-height: 210px;
   overflow-y: hidden;
 }
-#watcher > .move {
+#thread-watcher > .move {
   padding-top: 3px;
 }
-#watcher > div {
+#thread-watcher > div {
   max-width: 250px;
   overflow: hidden;
   padding-left: 3px;
   padding-right: 3px;
   text-overflow: ellipsis;
 }
-#watcher a {
+#thread-watcher a {
   text-decoration: none;
 }
-#watcher .move>.close {
+#thread-watcher .move>.close {
   position: absolute;
   right: 0px;
   top: 0px;

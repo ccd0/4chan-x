@@ -482,7 +482,7 @@ th {
 .icons-4chan-ss #navtopright .exlinksOptionsLink::after,
 .icons-4chan-ss #main-menu,
 .icons-4chan-ss .navLinks > a:first-of-type::after,
-.icons-4chan-ss #watcher::after,
+.icons-4chan-ss #thread-watcher::after,
 .icons-4chan-ss #globalMessage::after,
 .icons-4chan-ss #boardNavDesktopFoot::after,
 .icons-4chan-ss #img-controls,
@@ -493,7 +493,7 @@ th {
 .icons-oneechan #navtopright .exlinksOptionsLink::after,
 .icons-oneechan #main-menu,
 .icons-oneechan .navLinks > a:first-of-type::after,
-.icons-oneechan #watcher::after,
+.icons-oneechan #thread-watcher::after,
 .icons-oneechan #globalMessage::after,
 .icons-oneechan #boardNavDesktopFoot::after,
 .icons-oneechan #img-controls,
@@ -751,53 +751,53 @@ th {
   display: none;
 }
 /* Watcher */
-#watcher {
+#thread-watcher {
   position: fixed;
   z-index: 14;
   padding: 2px;
 }
-#watcher {
+#thread-watcher {
   width: 200px;
 }
-#watcher:not(:hover) {
+#thread-watcher:not(:hover) {
   max-height: 200px;
   overflow: hidden;
 }
-.rounded-edges #watcher {
+.rounded-edges #thread-watcher {
   border-radius: 3px;
 }
-#watcher > div {
+#thread-watcher > div {
   max-height: 1.3em;
   overflow: hidden;
 }
-.slideout-watcher #watcher {
+.slideout-watcher #thread-watcher {
   <%= sizing %>: border-box;
   width: 248px;
 }
 .slideout-watcher.sidebar-large #boardNavDesktopFoot {
   width: 299px;
 }
-.slideout-watcher.sidebar-location-right #watcher {
+.slideout-watcher.sidebar-location-right #thread-watcher {
   left: auto !important;
   right: 2px !important;
 }
-.slideout-watcher.sidebar-location-left #watcher {
+.slideout-watcher.sidebar-location-left #thread-watcher {
   right: auto !important;
   left: 2px !important;
 }
-.slideout-watcher #watcher .move {
+.slideout-watcher #thread-watcher .move {
   cursor: default;
 }
-.slideout-watcher.underline-links #watcher .move {
+.slideout-watcher.underline-links #thread-watcher .move {
   text-decoration: underline;
 }
-.slideout-watcher #watcher > div {
+.slideout-watcher #thread-watcher > div {
   overflow: hidden;
 }
-.slideout-watcher #watcher:hover {
+.slideout-watcher #thread-watcher:hover {
   overflow-y: auto;
 }
-.slideout-watcher #watcher:not(:hover) {
+.slideout-watcher #thread-watcher:not(:hover) {
   height: 0;
   overflow: hidden;
   border: 0 none;

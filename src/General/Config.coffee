@@ -53,12 +53,6 @@ Config =
         true
         'Show dice that were entered into the email field.'
       ]
-      <% if (type !== 'crx') { %>
-      'Check for Updates': [
-        true
-        'Check for updated versions of <%= meta.name %>.'
-      ]
-      <% } %>
       'Color User IDs': [
         false
         'Assign unique colors to user IDs on boards that use them'
@@ -238,14 +232,6 @@ Config =
       'Thread Watcher': [
         true
         'Bookmark threads.'
-      ]
-      'Auto Watch': [
-        true
-        'Automatically watch threads you start.'
-      ]
-      'Auto Watch Reply': [
-        false
-        'Automatically watch threads you reply to.'
       ]
 
     'Posting':
@@ -753,6 +739,24 @@ Config =
         'Position of Sage Highlighting'
         ['before', 'after']
       ]
+
+  threadWatcher:
+    'Current Board': [
+      false
+      'Only show watched threads from the current board.'
+    ]
+    'Auto Watch': [
+      true
+      'Automatically watch threads you start.'
+    ]
+    'Auto Watch Reply': [
+      false
+      'Automatically watch threads you reply to.'
+    ]
+    'Auto Prune': [
+      false
+      'Automatically prune 404\'d threads.'
+    ]
 
   filter:
     name: """

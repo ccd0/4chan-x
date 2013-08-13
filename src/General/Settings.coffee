@@ -29,7 +29,8 @@ Settings =
       else
         $.on d, '4chanXInitFinished', Settings.open
       $.set
-        lastchecked: Date.now()
+        archives: Conf['archives']
+        lastarchivecheck: now
         previousversion: g.VERSION
 
     Settings.addSection 'Style',    Settings.style
@@ -173,7 +174,6 @@ Settings =
       data =
         version: g.VERSION
         date: now
-      Conf['WatchedThreads'] = {}
       for db in DataBoards
         Conf[db] = boards: {}
       # Make sure to export the most recent data.
@@ -220,7 +220,9 @@ Settings =
     reader.readAsText file
 
   loadSettings: (data) ->
-    version = data.version.split '.'
+    if data.Conf['WatchedThreads']
+      data.Conf['watchedThreads'] = boards: ThreadWatcher.convert data.Conf['WatchedThreads']
+      delete data.Conf['WatchedThreads']
     $.set data.Conf
 
   convertSettings: (data, map) ->

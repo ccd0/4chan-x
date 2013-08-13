@@ -20,8 +20,8 @@ body::after {
   top: #{position[i++]}px;
 }
 /* Watcher */
-.slideout-watcher #watcher,
-.slideout-watcher #watcher::after {
+.slideout-watcher #thread-watcher,
+.slideout-watcher #thread-watcher::after {
   top: #{position[i++]}px !important;
 }
 /* ExLinks */
@@ -58,21 +58,21 @@ body::after {
 #globalMessage::after,
 #img-controls,
 #fappeTyme,
-.slideout-watcher #watcher::after,
+.slideout-watcher #thread-watcher::after,
 #catalog::after,
 div.navLinks > a:first-of-type::after {
   #{align}: 3px !important;
 }
 #boardNavDesktopFoot,
 #globalMessage,
-.slideout-watcher #watcher.dialog {
+.slideout-watcher #thread-watcher.dialog {
   <%= sizing %>: border-box;
   width: 232px !important;
   #{align}: 18px !important;
 }
 .sidebar-large #boardNavDesktopFoot,
 .sidebar-large #globalMessage,
-.sidebar-large #watcher {
+.sidebar-large #thread-watcher {
   width: 288px !important;
 }
 .fourchan-ss-navigation.fixed.top #header-bar,
