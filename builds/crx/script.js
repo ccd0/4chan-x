@@ -7749,8 +7749,11 @@
       var ID, board, div, favicon, id, link, nodes, props, thread, x, _ref, _ref1;
 
       if (!watched) {
-        $.get('WatchedThreads', {}, function(item) {
-          return ThreadWatcher.refresh(item['WatchedThreads']);
+        $.get('WatchedThreads', {}, function(_arg) {
+          var WatchedThreads;
+
+          WatchedThreads = _arg.WatchedThreads;
+          return ThreadWatcher.refresh(WatchedThreads);
         });
         return;
       }
@@ -7779,11 +7782,7 @@
       for (ID in _ref1) {
         thread = _ref1[ID];
         favicon = $('.watch-thread-link', thread.OP.nodes.post);
-        if (ID in watched) {
-          $.addClass(favicon, 'watched');
-        } else {
-          $.rmClass(favicon, 'watched');
-        }
+        $[ID in watched ? 'addClass' : 'rmClass'](favicon, 'watched');
       }
     },
     toggleWatcher: function() {

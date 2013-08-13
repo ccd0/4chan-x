@@ -43,8 +43,8 @@ ThreadWatcher =
 
   refresh: (watched) ->
     unless watched
-      $.get 'WatchedThreads', {}, (item) ->
-        ThreadWatcher.refresh item['WatchedThreads']
+      $.get 'WatchedThreads', {}, ({WatchedThreads}) ->
+        ThreadWatcher.refresh WatchedThreads
       return
     nodes = [$('.move', ThreadWatcher.dialog)]
     for board of watched
@@ -67,10 +67,7 @@ ThreadWatcher =
     watched = watched[g.BOARD] or {}
     for ID, thread of g.BOARD.threads
       favicon = $ '.watch-thread-link', thread.OP.nodes.post
-      if ID of watched
-        $.addClass favicon, 'watched'
-      else
-        $.rmClass favicon, 'watched'
+      $[if ID of watched then 'addClass' else 'rmClass'] favicon, 'watched'
     return
 
   toggleWatcher: ->
