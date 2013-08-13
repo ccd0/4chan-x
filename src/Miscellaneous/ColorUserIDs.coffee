@@ -1,21 +1,21 @@
 IDColor =
   init: ->
-    return unless Conf['Color User IDs']
+    return if g.VIEW is 'catalog' or !Conf['Color user IDs']
 
     Post::callbacks.push
       name: 'Color User IDs'
       cb:   @node
 
   node: ->
-    str = @info.uniqueID
+    return if @isClone or not str = @info.uniqueID
     uid = $ '.hand', @nodes.uniqueID
-    return unless str and uid and uid.nodeName is 'SPAN'
+    return unless uid and uid.nodeName is 'SPAN'
     uid.style.cssText = IDColor.css IDColor.ids[str] or IDColor.compute str
 
   ids: {}
 
   compute: (str) ->
-    hash = @hash str
+    hash = IDColor.hash str
 
     rgb = [
       (hash >> 24) & 0xFF

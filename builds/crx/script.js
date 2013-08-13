@@ -8802,7 +8802,7 @@
 
   IDColor = {
     init: function() {
-      if (!Conf['Color User IDs']) {
+      if (g.VIEW === 'catalog' || !Conf['Color user IDs']) {
         return;
       }
       return Post.prototype.callbacks.push({
@@ -8813,9 +8813,11 @@
     node: function() {
       var str, uid;
 
-      str = this.info.uniqueID;
+      if (this.isClone || !(str = this.info.uniqueID)) {
+        return;
+      }
       uid = $('.hand', this.nodes.uniqueID);
-      if (!(str && uid && uid.nodeName === 'SPAN')) {
+      if (!(uid && uid.nodeName === 'SPAN')) {
         return;
       }
       return uid.style.cssText = IDColor.css(IDColor.ids[str] || IDColor.compute(str));
@@ -8824,7 +8826,7 @@
     compute: function(str) {
       var hash, rgb;
 
-      hash = this.hash(str);
+      hash = IDColor.hash(str);
       rgb = [(hash >> 24) & 0xFF, (hash >> 16) & 0xFF, (hash >> 8) & 0xFF];
       rgb[3] = ((rgb[0] * 0.299) + (rgb[1] * 0.587) + (rgb[2] * 0.114)) > 125;
       this.ids[str] = rgb;
