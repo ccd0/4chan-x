@@ -2,22 +2,27 @@ Linkify =
   init: ->
     return if g.VIEW is 'catalog' or not Conf['Linkify']
 
-    @regString = if Conf['Allow False Positives']
+    @regString = 
       ///(
-        [-a-z]+://
+        # http, magnet, ftp, etc
+        ?:[a-z][-\w]+:(
+          [a-z\d%/]
+        )
         |
-        [a-z]{3,}\.[-a-z0-9]+\.[a-z]
+        www\d{0,3}[.]
         |
-        [-a-z0-9]+\.[a-z]
+        # This should account for virtually all links posted without www or http:
+        # If it misses any, screw it. No, I will not add canv.as
+        [-a-z\d.]+[.](
+          com|net|org|jp|uk|ru|be|tv|xxx|edu|gov|cd|es|de|se|tk|dk|io|fm|fi
+        )
         |
-        [\d]+\.[\d]+\.[\d]+\.[\d]+/
+        # IPv4 Addresses
+        [\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}
         |
-        [a-z]{3,}:[a-z0-9?]
-        |
-        [^\s@]+@[a-z0-9.-]+\.[a-z0-9]
+        # E-mails
+        [-\w\d.@]+@[a-z\d.-]+\.[a-z\d]
       )///i
-    else
-      /(((magnet|mailto)\:|(www\.)|(news|(ht|f)tp(s?))\:\/\/){1})/i
 
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
@@ -45,14 +50,15 @@ Linkify =
 
     snapshot = $.X './/br|.//text()', @nodes.comment
     i = 0
+    links = []
     while node = snapshot.snapshotItem i++
-      links = []
       {data} = node
       continue if node.parentElement.nodeName is "A" or not data
 
       while result = test.exec data
         {index} = result
         endNode = node
+        # End of node, not necessarily end of space-delimited string
         if (length = index + result[0].length) is data.length
 
           while (saved = snapshot.snapshotItem i++)
@@ -62,25 +68,27 @@ Linkify =
             {length} = saved.data
 
             if end = space.exec saved.data
-              length = end.index
+              # Set our snapshot and regex to start on this node at this position when the loop resumes
+              test.lastIndex = length = end.index
               i--
               break
 
-          if length is endNode.data.length then test.lastIndex = 0
+          test.lastIndex = 0 if length is endNode.data.length
           range = Linkify.makeRange node, endNode, index, length
           if link = Linkify.regString.exec text = range.toString()
             if lIndex = link.index
               range.setStart node, lIndex + index
+              text = text[...lIndex]
             links.push [range, text]
           break
 
         else
           if link = Linkify.regString.exec result[0]
-            range = Linkify.makeRange node, node, link.index, link.length
+            range = Linkify.makeRange node, node, index + link.index, length + link.index
             links.push [range, link]
 
-      for range in links.reverse()
-        @nodes.links.push Linkify.makeLink range, @
+    for range in links.reverse()
+      @nodes.links.push Linkify.makeLink range, @
 
     return unless Conf['Embedding'] or Conf['Link Title']
 
