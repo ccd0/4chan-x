@@ -211,17 +211,6 @@ Main =
     catch err
       new Notification 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to properly function.', 30
 
-    <% if (type === 'userscript') { %>
-    el = $.el 'span'
-    el.style.flex = 'test'
-    if el.style.flex is 'test'
-      el.innerHTML = """
-      Firefox is not correctly set up and some <%= meta.name %> features will be displayed incorrectly.<br>
-      Follow the instructions of the <a href='<%= meta.page %>' target=_blank>install guide</a> to fix it.
-      """
-      new Notification 'warning', el, 30
-    <% } %>
-
     $.event '4chanXInitFinished'
 
   callbackNodes: (klass, nodes) ->
