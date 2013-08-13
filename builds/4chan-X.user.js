@@ -4438,7 +4438,7 @@
       });
     },
     node: function() {
-      var data, el, end, endNode, i, index, items, lIndex, length, link, links, node, range, result, saved, snapshot, space, test, text, _i, _len, _ref;
+      var data, el, end, endNode, i, index, items, lIndex, len, length, link, links, node, range, result, saved, snapshot, space, test, text, _i, _len, _ref;
 
       if (this.isClone) {
         if (Conf['Embedding']) {
@@ -4484,10 +4484,10 @@
             }
             range = Linkify.makeRange(node, endNode, index, length);
             if (link = Linkify.regString.exec(text = range.toString())) {
-              if (lIndex = link.index) {
-                range.setStart(node, lIndex + index);
-                text = text.slice(0, lIndex);
+              if ((lIndex = link.index) && (len = lIndex + index) < node.data.length) {
+                range.setStart(node, len);
               }
+              text = text.slice(0, lIndex);
               links.push([range, text]);
             }
             break;

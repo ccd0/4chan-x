@@ -76,9 +76,9 @@ Linkify =
           test.lastIndex = 0 if length is endNode.data.length
           range = Linkify.makeRange node, endNode, index, length
           if link = Linkify.regString.exec text = range.toString()
-            if lIndex = link.index
-              range.setStart node, lIndex + index
-              text = text[...lIndex]
+            if (lIndex = link.index) and (len = lIndex + index) < node.data.length
+              range.setStart node, len
+            text = text[...lIndex]
             links.push [range, text]
           break
 
