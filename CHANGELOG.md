@@ -1,3 +1,5 @@
+- Fixed an error for Firefox <23 users.
+
 ## 3.7.0 - *2013-08-13*
 
 - **Thread Watcher** improvements:
