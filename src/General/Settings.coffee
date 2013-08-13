@@ -22,7 +22,6 @@ Settings =
         $.on d, '4chanXInitFinished', Settings.open
       $.set
         archives: Conf['archives']
-        lastarchivecheck: now
         previousversion: g.VERSION
 
     Settings.addSection 'Main',     Settings.main
