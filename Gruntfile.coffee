@@ -168,10 +168,9 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'release', [
     'build'
+    'compress:crx'
     'shell:commit'
     'shell:push'
-    'build-crx'
-    'compress:crx'
   ]
   grunt.registerTask 'patch', [
     'bump'
