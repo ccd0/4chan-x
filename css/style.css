@@ -812,54 +812,73 @@ a.hide-announcement {
   height: 57px;
   width: 300px;
 }
-#file-n-submit > input {
-  margin: 0;
-}
-#file-n-submit.has-file #qr-no-file {
-  visibility: hidden;
-}
-#file-n-submit:not(.has-file) #qr-filename,
-#file-n-submit:not(.has-file) #qr-file-spoiler,
-#file-n-submit:not(.has-file) #qr-filerm {
-  display: none;
+#file-n-submit-container {
+  position: relative;
 }
 #file-n-submit {
-  display: -webkit-flex;
-  display: flex;
-  -webkit-flex-direction: row;
-  flex-direction: row;
-  -webkit-align-items: center;
-  align-items: center;
-}
-#qr-no-file, #qr-filename-container {
-  -webkit-flex: 1;
-  flex: 1;
-}
-#qr-filename-container {
-  cursor: default;
-  position: relative;
-  margin-left: 2px;
-}
-#qr-filename {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
 }
-#qr-filerm {
-  padding: 0 2px;
+#file-n-submit-container input[type='file'] {
+  /* Keep it to set an appropriate height to the container. */
+  visibility: hidden;
 }
-#file-n-submit > #qr-file-spoiler {
-  margin: 0 2px;
+#file-n-submit-container input {
+  margin: 0;
+  padding: 0;
 }
 #file-n-submit input[type='submit'] {
-  min-width: 40px;
   -webkit-order: 1;
   order: 1;
+}
+#file-n-submit.has-file #qr-no-file,
+#file-n-submit:not(.has-file) #qr-filename,
+#file-n-submit:not(.has-file) #qr-filesize,
+#file-n-submit:not(.has-file) #qr-file-spoiler,
+#file-n-submit:not(.has-file) #qr-filerm,
+#qr-filename:focus ~ #qr-filesize {
+  display: none;
+}
+#qr-no-file,
+#qr-filename,
+#qr-filesize,
+#qr-filerm,
+#qr-file-spoiler {
+  margin: 0 2px !important;
+}
+#qr-no-file {
+  cursor: default;
+  -webkit-flex: 1;
+  flex: 1;
+}
+#qr-filename {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: none;
+  border: none !important;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  -webkit-flex: 1;
+  flex: 1;
+  text-overflow: ellipsis;
+}
+#qr-filesize {
+  font-size: .8em;
+}
+#qr-filesize::before {
+  content: " (";
+}
+#qr-filesize::after {
+  content: ")";
 }
 
 /* Menu */

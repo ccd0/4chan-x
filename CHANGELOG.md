@@ -1,3 +1,5 @@
+- The QR now allows you to edit the filename on the fly.
+
 ### 3.7.1 - *2013-08-13*
 
 - Fixed an error for Firefox <23 users.

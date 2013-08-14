@@ -507,11 +507,11 @@ QR =
     lock: (lock=true) ->
       @isLocked = lock
       return unless @ is QR.selected
-      for name in ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'spoiler']
+      for name in ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler']
         QR.nodes[name].disabled = lock
       @nodes.rm.style.visibility =
         QR.nodes.fileRM.style.visibility = if lock then 'hidden' else ''
-      (if lock then $.off else $.on) QR.nodes.filename.parentNode, 'click', QR.openFileInput
+      (if lock then $.off else $.on) QR.nodes.filename.previousElementSibling, 'click', QR.openFileInput
       @nodes.spoiler.disabled = lock
       @nodes.el.draggable = !lock
     unlock: ->
@@ -531,7 +531,7 @@ QR =
       $.event 'QRPostSelection', @
     load: ->
       # Load this post's values.
-      for name in ['thread', 'name', 'email', 'sub', 'com']
+      for name in ['thread', 'name', 'email', 'sub', 'com', 'filename']
         QR.nodes[name].value = @[name] or null
       @showFileData()
       QR.characterCount()
@@ -551,16 +551,20 @@ QR =
           # during the last 5 seconds of the cooldown.
           if QR.cooldown.auto and @ is QR.posts[0] and 0 < QR.cooldown.seconds <= 5
             QR.cooldown.auto = false
+        when 'filename'
+          return unless @file
+          @file.newName = @filename
+          @updateFilename()
     forceSave: ->
       return unless @ is QR.selected
       # Do this in case people use extensions
       # that do not trigger the `input` event.
-      for name in ['thread', 'name', 'email', 'sub', 'com', 'spoiler']
+      for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler']
         @save QR.nodes[name]
       return
     setFile: (@file) ->
-      @filename           = "#{file.name} (#{$.bytesToString file.size})"
-      @nodes.el.title     = @filename
+      @filename = file.name
+      @filesize = $.bytesToString file.size
       @nodes.label.hidden = false if QR.spoiler
       URL.revokeObjectURL @URL
       @showFileData()
@@ -604,15 +608,22 @@ QR =
     rmFile: ->
       delete @file
       delete @filename
+      delete @filesize
       @nodes.el.title = null
       @nodes.el.style.backgroundImage = null
       @nodes.label.hidden = true if QR.spoiler
       @showFileData()
       URL.revokeObjectURL @URL
+    updateFilename: ->
+      long = "#{@filename} (#{@filesize})"
+      @nodes.el.title = long
+      return unless @ is QR.selected
+      QR.nodes.filename.title = long
     showFileData: ->
       if @file
-        QR.nodes.filename.textContent = @filename
-        QR.nodes.filename.title       = @filename
+        @updateFilename()
+        QR.nodes.filename.value       = @filename
+        QR.nodes.filesize.textContent = @filesize
         QR.nodes.spoiler.checked      = @spoiler
         $.addClass QR.nodes.fileSubmit, 'has-file'
       else
@@ -783,6 +794,7 @@ QR =
       fileSubmit: $ '#file-n-submit',    dialog
       fileButton: $ '#qr-file-button',   dialog
       filename:   $ '#qr-filename',      dialog
+      filesize:   $ '#qr-filesize',      dialog
       fileRM:     $ '#qr-filerm',        dialog
       spoiler:    $ '#qr-file-spoiler',  dialog
       status:     $ '[type=submit]',     dialog
@@ -836,10 +848,9 @@ QR =
       $.on elm, 'blur',  QR.focusout
       $.on elm, 'focus', QR.focusin
     <% } %>
-    $.on dialog,          'focusin',  QR.focusin
-    $.on dialog,          'focusout', QR.focusout
-    for node in [nodes.fileButton, nodes.filename.parentNode]
-      $.on node,           'click',  QR.openFileInput
+    $.on dialog, 'focusin',  QR.focusin
+    $.on dialog, 'focusout', QR.focusout
+    $.on nodes.fileButton, 'click',  QR.openFileInput
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
     $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'
@@ -849,7 +860,7 @@ QR =
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.fileInput
     # save selected post's data
-    for name in ['name', 'email', 'sub', 'com']
+    for name in ['name', 'email', 'sub', 'com', 'filename']
       $.on nodes[name], 'input',  -> QR.selected.save @
     $.on nodes.thread,  'change', -> QR.selected.save @
 

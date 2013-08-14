@@ -25,10 +25,8 @@ $.formData = (form) ->
     return new FormData form
   fd = new FormData()
   for key, val of form when val
-    # XXX GM bug
-    # if val instanceof Blob
-    if val.size and val.name
-      fd.append key, val, val.name
+    if typeof val is 'object' and 'newName' of val
+      fd.append key, val, val.newName
     else
       fd.append key, val
   fd

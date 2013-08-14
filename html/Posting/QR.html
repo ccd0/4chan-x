@@ -21,17 +21,18 @@
     <textarea data-name="com" placeholder="Comment" class="field"></textarea>
     <span id="char-count"></span>
   </div>
-  <div id="file-n-submit">
-    <input type="submit">
-    <input type="button" id="qr-file-button" value="Choose files">
-    <span id="qr-filename-container">
+  <div id="file-n-submit-container">
+    <input type="file" multiple>
+    <div id="file-n-submit">
+      <input type="submit">
+      <input type="button" id="qr-file-button" value="Choose files">
       <span id="qr-no-file">No selected file</span>
-      <span id="qr-filename"></span>
-    </span>
-    <a id="qr-filerm" href="javascript:;" title="Remove file">×</a>
-    <input type="checkbox" id="qr-file-spoiler" title="Spoiler image">
+      <input id="qr-filename" data-name="filename" spellcheck="false">
+      <span id="qr-filesize"></span>
+      <a id="qr-filerm" href="javascript:;" title="Remove file">×</a>
+      <input type="checkbox" id="qr-file-spoiler" title="Spoiler image">
+    </div>
   </div>
-  <input type="file" multiple hidden>
 </form>
 <datalist id="list-name"></datalist>
 <datalist id="list-email"></datalist>
