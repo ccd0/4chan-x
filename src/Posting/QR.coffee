@@ -82,7 +82,13 @@ QR =
   focusin: ->
     $.addClass QR.nodes.el, 'has-focus'
   focusout: ->
+    <% if (type === 'crx') { %>
     $.rmClass QR.nodes.el, 'has-focus'
+    <% } else { %>
+    $.queueTask ->
+      return if $.x 'ancestor::div[@id="qr"]', d.activeElement
+      $.rmClass QR.nodes.el, 'has-focus'
+    <% } %>
   hide: ->
     d.activeElement.blur()
     $.addClass QR.nodes.el, 'autohide'
