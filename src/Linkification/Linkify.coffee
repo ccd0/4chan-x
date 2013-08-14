@@ -110,27 +110,20 @@ Linkify =
       range.setEnd range.endContainer, range.endOffset - 1 unless range.endOffset < 1
       text = text.slice 0, -1
 
-    # Clean brackets, hanging commas
+    # Clean leading brackets
     if /[(\[{<]/.test text.charAt 0
-      trim() if /[\)\]}>]/.test text.charAt text.length - 1
-      text.slice 1
+      text = text.slice 1
       unless range.startOffset is range.startContainer.data.length
         range.setStart range.startContainer, range.startOffset + 1
     
-    while /[\)\]}>,]/.exec char = text.charAt text.length - 1
-      if char is ','
-        trim()
-        continue
-      len = text.length
-      while i < len
-        toggle = false
-        switch text[i++]
-          when '(', ')', '[', ']', '{', '}', '<', '>' then toggle = !toggle
-      if toggle
+    # Clean hanging brackets, commas, periods
+    while /[)\]}>.,]/.test char = text.charAt text.length - 1
+      if /[.,]/.test(char) or (text.match /[()\[\]{}<>]/g).length % 2
         trim()
         continue
       break
 
+    # This is the only piece of code left based on Anthony Lieuallen's Linkify
     text =
       if text.contains ':'
         text
