@@ -118,15 +118,9 @@ Linkify =
     
     # Clean hanging brackets, commas, periods
     while /[)\]}>.,]/.test char = text.charAt (len = text.length) - 1
-      if /[.,]/.test char
+      if /[.,]/.test(char) or (text.match /[()\[\]{}<>]/).length % 2
         trim()
         continue
-      i = 0
-      toggle = false
-      while i < len
-        if /[()\[\]{}<>]/.test text[i++] then toggle = !toggle
-      if toggle
-        trim()
       break
 
     text =
