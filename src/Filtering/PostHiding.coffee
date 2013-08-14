@@ -186,10 +186,10 @@ PostHiding =
     $.add a, $.tn " #{postInfo}"
     post.nodes.stub = $.el 'div',
       className: 'stub'
-    $.add post.nodes.stub, unless Conf['Menu']
-      a
+    $.add post.nodes.stub, if Conf['Menu']
+      [a, $.tn(' '), button = Menu.makeButton post]
     else
-      [a, $.tn(' '), button = Menu.makeButton post] 
+      a
     $.prepend post.nodes.root, post.nodes.stub
 
   show: (post, showRecursively=Conf['Recursive Hiding']) ->

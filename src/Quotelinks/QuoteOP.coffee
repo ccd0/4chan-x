@@ -10,6 +10,7 @@ QuoteOP =
     Post::callbacks.push
       name: 'Mark OP Quotes'
       cb:   @node
+
   node: ->
     # Stop there if it's a clone of a post in the same thread.
     return if @isClone and @thread is @context.thread
@@ -19,14 +20,16 @@ QuoteOP =
 
     # rm (OP) from cross-thread quotes.
     if @isClone and quotes.contains @thread.fullID
-      for quotelink in quotelinks
+      i = 0
+      while quotelink = quotelinks[i++]
         quotelink.textContent = quotelink.textContent.replace QuoteOP.text, ''
 
-    op = (if @isClone then @context else @).thread.fullID
+    {fullID} = (if @isClone then @context else @).thread
     # add (OP) to quotes quoting this context's OP.
-    return unless quotes.contains op
-    for quotelink in quotelinks
+    return unless quotes.contains fullID
+    i = 0
+    while quotelink = quotelinks[i++]
       {boardID, postID} = Get.postDataFromLink quotelink
-      if "#{boardID}.#{postID}" is op
+      if "#{boardID}.#{postID}" is fullID
         $.add quotelink, $.tn QuoteOP.text
     return

@@ -1,5 +1,6 @@
 Main =
   init: ->
+
     # flatten Config into Conf
     # and get saved or default values
     flatten = (parent, obj) ->
@@ -16,7 +17,6 @@ Main =
       Conf[db] = boards: {}
     Conf['selectedArchives'] = {}
     Conf['CachedTitles']     = []
-    Conf['archives'] = Redirect.archives
     $.get Conf, (items) ->
       $.extend Conf, items
       <% if (type === 'crx') { %>
@@ -52,6 +52,7 @@ Main =
           'index'
     if g.VIEW is 'thread'
       g.THREADID = +pathname[3]
+
     switch location.hostname
       when 'api.4chan.org'
         return
@@ -183,7 +184,7 @@ Main =
       attributeFilter: ['href']
 
   initReady: ->
-    if d.title is '4chan - 404 Not Found'
+    if ['4chan - Temporarily Offline', '4chan - 404 Not Found'].contains d.title
       if Conf['404 Redirect'] and g.VIEW is 'thread'
         href = Redirect.to 'thread',
           boardID:  g.BOARD.ID

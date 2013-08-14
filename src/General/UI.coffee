@@ -91,7 +91,7 @@ UI = do ->
         $.addClass menu, 'left'
 
       entry = $ '.entry', menu
-      # We've removed flexbox, so we don't user order anymore.
+      # We've removed flexbox, so we don't use order anymore.
       # while prevEntry = @findNextEntry entry, -1
       #   entry = prevEntry
       @focus entry
@@ -171,19 +171,18 @@ UI = do ->
       eRect   = entry.getBoundingClientRect()
       cHeight = doc.clientHeight
       cWidth  = doc.clientWidth
-      [top, bottom] = if eRect.top + sRect.height < cHeight
-        ['0px', 'auto']
+      if eRect.top + sRect.height < cHeight
+        $.addClass submenu, 'top'
+        $.rmClass  submenu, 'bottom'
       else
-        ['auto', '0px']
-      [left, right] = if eRect.right + sRect.width < cWidth
-        ['100%', 'auto']
+        $.addClass submenu, 'bottom'
+        $.rmClass  submenu, 'top'
+      if eRect.right + sRect.width < cWidth
+        $.addClass submenu, 'left'
+        $.rmClass  submenu, 'right'
       else
-        ['auto', '100%']
-      {style} = submenu
-      style.top    = top
-      style.bottom = bottom
-      style.left   = left
-      style.right  = right
+        $.addClass submenu, 'right'
+        $.rmClass  submenu, 'left'
 
     addEntry: (e) ->
       entry = e.detail
