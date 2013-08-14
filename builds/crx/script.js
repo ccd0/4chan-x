@@ -10520,6 +10520,7 @@
       }
       $.addClass(doc, 'blink');
       $.addClass(doc, 'fourchan-x');
+      $.addClass(doc, 'seaweedchan');
       $.addClass(doc, g.VIEW);
       $.addStyle(Main.css);
       if (g.VIEW === 'catalog') {

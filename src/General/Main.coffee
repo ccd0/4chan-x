@@ -160,6 +160,7 @@ Main =
     $.addClass doc, 'gecko'
     <% } %>
     $.addClass doc, 'fourchan-x'
+    $.addClass doc, 'seaweedchan'
     $.addClass doc, g.VIEW
     $.addStyle Main.css
 
