@@ -14,8 +14,8 @@ Linkify =
         # This should account for virtually all links posted without www or http:
         # If it misses any, screw it. No, I will not add canv.as
         [-a-z\d.]+[.](
-          com|net|org|co\.jp|us|uk|ru|be|tv|xxx|edu|gov|cd|es|de|se|tk|dk|io|fm|fi|mp|ly|info
-        )
+          com|net|org|jp|us|uk|ru|be|tv|xxx|edu|gov|cd|es|de|se|tk|dk|io|fm|fi|mp|ly|info
+        )(?![\d\w])
         |
         # IPv4 Addresses
         [\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}

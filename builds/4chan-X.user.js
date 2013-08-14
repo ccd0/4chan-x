@@ -4422,7 +4422,7 @@
       if (g.VIEW === 'catalog' || !Conf['Linkify']) {
         return;
       }
-      this.regString = /((https?|mailto|git|magnet|ftp|irc):([a-z\d%\/])|www\d{0,3}[.]|[-a-z\d.]+[.](com|net|org|co\.jp|us|uk|ru|be|tv|xxx|edu|gov|cd|es|de|se|tk|dk|io|fm|fi|mp|ly|info)|[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i;
+      this.regString = /((https?|mailto|git|magnet|ftp|irc):([a-z\d%\/])|www\d{0,3}[.]|[-a-z\d.]+[.](com|net|org|jp|us|uk|ru|be|tv|xxx|edu|gov|cd|es|de|se|tk|dk|io|fm|fi|mp|ly|info)(?![\d\w])|[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i;
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
