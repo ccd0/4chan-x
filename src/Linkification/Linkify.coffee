@@ -5,7 +5,7 @@ Linkify =
     @regString = 
       ///(
         # http, magnet, ftp, etc
-        ?:(http|https|mailto|git|magnet|ftp|irc):(
+        (https?|mailto|git|magnet|ftp|irc):(
           [a-z\d%/]
         )
         |
@@ -80,7 +80,7 @@ Linkify =
 
         else
           if link = Linkify.regString.exec result[0]
-            range = Linkify.makeRange node, node, index + link.index, length + link.index
+            range = Linkify.makeRange node, node, index + link.index, length
             links.push range
 
     for range in links.reverse()

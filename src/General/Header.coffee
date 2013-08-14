@@ -111,7 +111,7 @@ Header =
       a.className = 'current'
     boardList = $.el 'span',
       id: 'board-list'
-      innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container fourchanx-link'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> #{fourchannav.innerHTML}</span>"
+      innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> #{fourchannav.innerHTML}</span>"
     fullBoardList = $ '#full-board-list', boardList
     btn = $ '.hide-board-list-button', fullBoardList
     $.on btn, 'click', Header.toggleBoardList
@@ -309,7 +309,7 @@ Header =
 
   addShortcut: (el) ->
     shortcut = $.el 'span',
-      className: 'shortcut fourchanx-link'
+      className: 'shortcut brackets-wrap'
     $.add shortcut, el
     $.prepend Header.shortcuts, shortcut
 
