@@ -171,18 +171,19 @@ UI = do ->
       eRect   = entry.getBoundingClientRect()
       cHeight = doc.clientHeight
       cWidth  = doc.clientWidth
-      if eRect.top + sRect.height < cHeight
-        $.addClass submenu, 'top'
-        $.rmClass  submenu, 'bottom'
+      [top, bottom] = if eRect.top + sRect.height < cHeight
+        ['0px', 'auto']
       else
-        $.addClass submenu, 'bottom'
-        $.rmClass  submenu, 'top'
-      if eRect.right + sRect.width < cWidth
-        $.addClass submenu, 'left'
-        $.rmClass  submenu, 'right'
+        ['auto', '0px']
+      [left, right] = if eRect.right + sRect.width < cWidth
+        ['100%', 'auto']
       else
-        $.addClass submenu, 'right'
-        $.rmClass  submenu, 'left'
+        ['auto', '100%']
+      {style} = submenu
+      style.top    = top
+      style.bottom = bottom
+      style.left   = left
+      style.right  = right
 
     addEntry: (e) ->
       entry = e.detail
