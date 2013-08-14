@@ -5,10 +5,12 @@
  - It is now possible to open all watched threads via the `Open all threads` button in the Thread Watcher's menu.
  - Added the `Current Board` setting to switch between showing watched threads from the current board or all boards, disabled by default.
  - About dead (404'd) threads:
-  - Dead threads will be typographically indicated with a strikethrough.
-  - Dead threads will directly link to the corresponding archive when available.
-  - A button to prune all 404'd threads from the list is now available.
-  - Added the `Auto Prune` setting to automatically prune 404'd threads, disabled by default.
+ <ul>
+  <li> Dead threads will be typographically indicated with a strikethrough.
+  <li> Dead threads will directly link to the corresponding archive when available.
+  <li> A button to prune all 404'd threads from the list is now available.
+  <li> Added the `Auto Prune` setting to automatically prune 404'd threads, disabled by default.
+ </ul>
  - The current thread is now highlighted in the list of watched threads.
  - Watching the current thread can be done in the Header's menu too.
 - Removed the `Check for Updates` setting:

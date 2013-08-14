@@ -1473,11 +1473,11 @@
 
   Header = {
     init: function() {
-      var barFixedToggler, barPositionToggler, customNavToggler, editCustomNav, footerToggler, headerToggler, linkJustifyToggler,
+      var barFixedToggler, barPositionToggler, customNavToggler, editCustomNav, footerToggler, headerToggler, linkJustifyToggler, menuButton,
         _this = this;
 
       this.menu = new UI.Menu('header');
-      this.menuButton = $.el('span', {
+      menuButton = $.el('span', {
         className: 'menu-button',
         innerHTML: '<i></i>'
       });
@@ -1509,7 +1509,7 @@
       this.headerToggler = headerToggler.firstElementChild;
       this.footerToggler = footerToggler.firstElementChild;
       this.customNavToggler = customNavToggler.firstElementChild;
-      $.on(this.menuButton, 'click', this.menuToggle);
+      $.on(menuButton, 'click', this.menuToggle);
       $.on(this.barFixedToggler, 'change', this.toggleBarFixed);
       $.on(this.barPositionToggler, 'change', this.toggleBarPosition);
       $.on(this.linkJustifyToggler, 'change', this.toggleLinkJustify);
@@ -1524,7 +1524,7 @@
       $.sync('Bottom Header', Header.setBarPosition);
       $.sync('Header auto-hide', Header.setBarVisibility);
       $.sync('Centered links', Header.setLinkJustify);
-      this.addShortcut(Header.menuButton);
+      this.addShortcut(menuButton);
       $.event('AddMenuEntry', {
         type: 'header',
         el: $.el('span', {
@@ -2043,6 +2043,9 @@
     threadFromRoot: function(root) {
       return g.threads["" + g.BOARD + "." + root.id.slice(1)];
     },
+    threadFromNode: function(node) {
+      return Get.threadFromRoot($.x('ancestor::div[@class="thread"]', node));
+    },
     postFromRoot: function(root) {
       var boardID, index, link, post, postID;
 
@@ -2060,8 +2063,8 @@
     postFromNode: function(root) {
       return Get.postFromRoot($.x('(ancestor::div[contains(@class,"postContainer")][1]|following::div[contains(@class,"postContainer")][1])', root));
     },
-    contextFromNode: function(quotelink) {
-      return Get.postFromRoot($.x('ancestor::div[parent::div[@class="thread"]][1]', quotelink));
+    contextFromNode: function(node) {
+      return Get.postFromRoot($.x('ancestor::div[parent::div[@class="thread"]][1]', node));
     },
     postDataFromLink: function(link) {
       var boardID, path, postID, threadID, _ref;
@@ -2509,7 +2512,7 @@
       };
 
       Menu.prototype.focus = function(entry) {
-        var bottom, cHeight, cWidth, eRect, focused, left, right, sRect, style, submenu, top, _i, _len, _ref, _ref1, _ref2;
+        var cHeight, cWidth, eRect, focused, sRect, submenu, _i, _len, _ref;
 
         while (focused = $.x('parent::*/child::*[contains(@class,"focused")]', entry)) {
           $.rmClass(focused, 'focused');
@@ -2527,13 +2530,20 @@
         eRect = entry.getBoundingClientRect();
         cHeight = doc.clientHeight;
         cWidth = doc.clientWidth;
-        _ref1 = eRect.top + sRect.height < cHeight ? ['0px', 'auto'] : ['auto', '0px'], top = _ref1[0], bottom = _ref1[1];
-        _ref2 = eRect.right + sRect.width < cWidth ? ['100%', 'auto'] : ['auto', '100%'], left = _ref2[0], right = _ref2[1];
-        style = submenu.style;
-        style.top = top;
-        style.bottom = bottom;
-        style.left = left;
-        return style.right = right;
+        if (eRect.top + sRect.height < cHeight) {
+          $.addClass(submenu, 'top');
+          $.rmClass(submenu, 'bottom');
+        } else {
+          $.addClass(submenu, 'bottom');
+          $.rmClass(submenu, 'top');
+        }
+        if (eRect.right + sRect.width < cWidth) {
+          $.addClass(submenu, 'left');
+          return $.rmClass(submenu, 'right');
+        } else {
+          $.addClass(submenu, 'right');
+          return $.rmClass(submenu, 'left');
+        }
       };
 
       Menu.prototype.addEntry = function(e) {
@@ -3321,7 +3331,7 @@
       post.nodes.stub = $.el('div', {
         className: 'stub'
       });
-      $.add(post.nodes.stub, !Conf['Menu'] ? a : [a, $.tn(' '), button = Menu.makeButton(post)]);
+      $.add(post.nodes.stub, Conf['Menu'] ? [a, $.tn(' '), button = Menu.makeButton(post)] : a);
       return $.prepend(post.nodes.root, post.nodes.stub);
     },
     show: function(post, showRecursively) {
@@ -3652,7 +3662,7 @@
       return ThreadHiding.saveHiddenState(thread);
     },
     hide: function(thread, makeStub) {
-      var OP, a, button, numReplies, opInfo, span, threadRoot;
+      var OP, a, numReplies, opInfo, span, threadRoot;
 
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
@@ -3672,7 +3682,7 @@
       thread.stub = $.el('div', {
         className: 'stub'
       });
-      $.add(thread.stub, !Conf['Menu'] ? a : [a, $.tn(' '), button = Menu.makeButton(OP)]);
+      $.add(thread.stub, Conf['Menu'] ? [a, $.tn(' '), Menu.makeButton()] : a);
       return $.prepend(threadRoot, thread.stub);
     },
     show: function(thread) {
@@ -3782,26 +3792,23 @@
       });
     },
     node: function() {
-      var board, boardID, quotelink, quotelinks, quotes, thread, threadID, _i, _len, _ref, _ref1;
+      var board, boardID, quotelink, thread, threadID, _i, _len, _ref, _ref1, _ref2;
 
       if (this.isClone && this.thread === this.context.thread) {
         return;
       }
-      if (!(quotes = this.quotes).length) {
-        return;
-      }
-      quotelinks = this.nodes.quotelinks;
       _ref = this.isClone ? this.context : this, board = _ref.board, thread = _ref.thread;
-      for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
-        quotelink = quotelinks[_i];
-        _ref1 = Get.postDataFromLink(quotelink), boardID = _ref1.boardID, threadID = _ref1.threadID;
+      _ref1 = this.nodes.quotelinks;
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        quotelink = _ref1[_i];
+        _ref2 = Get.postDataFromLink(quotelink), boardID = _ref2.boardID, threadID = _ref2.threadID;
         if (!threadID) {
           continue;
         }
         if (this.isClone) {
           quotelink.textContent = quotelink.textContent.replace(QuoteCT.text, '');
         }
-        if (boardID === this.board.ID && threadID !== thread.ID) {
+        if (boardID === board.ID && threadID !== thread.ID) {
           $.add(quotelink, $.tn(QuoteCT.text));
         }
       }
@@ -3948,7 +3955,7 @@
       });
     },
     node: function() {
-      var boardID, op, postID, quotelink, quotelinks, quotes, _i, _j, _len, _len1, _ref;
+      var boardID, fullID, i, postID, quotelink, quotelinks, quotes, _ref;
 
       if (this.isClone && this.thread === this.context.thread) {
         return;
@@ -3958,19 +3965,19 @@
       }
       quotelinks = this.nodes.quotelinks;
       if (this.isClone && quotes.contains(this.thread.fullID)) {
-        for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
-          quotelink = quotelinks[_i];
+        i = 0;
+        while (quotelink = quotelinks[i++]) {
           quotelink.textContent = quotelink.textContent.replace(QuoteOP.text, '');
         }
       }
-      op = (this.isClone ? this.context : this).thread.fullID;
-      if (!quotes.contains(op)) {
+      fullID = (this.isClone ? this.context : this).thread.fullID;
+      if (!quotes.contains(fullID)) {
         return;
       }
-      for (_j = 0, _len1 = quotelinks.length; _j < _len1; _j++) {
-        quotelink = quotelinks[_j];
+      i = 0;
+      while (quotelink = quotelinks[i++]) {
         _ref = Get.postDataFromLink(quotelink), boardID = _ref.boardID, postID = _ref.postID;
-        if (("" + boardID + "." + postID) === op) {
+        if (("" + boardID + "." + postID) === fullID) {
           $.add(quotelink, $.tn(QuoteOP.text));
         }
       }
@@ -5370,7 +5377,7 @@
       }
       _ref = QR.nodes, com = _ref.com, thread = _ref.thread;
       if (!com.value) {
-        thread.value = Get.contextFromNode(this).thread;
+        thread.value = Get.threadFromNode(this);
       }
       caretPos = com.selectionStart;
       com.value = com.value.slice(0, caretPos) + text + com.value.slice(com.selectionEnd);
@@ -6323,7 +6330,7 @@
         href: 'javascript:;'
       });
       $.on(this.EAI, 'click', ImageExpand.cb.toggleAll);
-      Header.addShortcut(this.EAI);
+      Header.addShortcut(this.EAI, 2);
       return Post.prototype.callbacks.push({
         name: 'Image Expansion',
         cb: this.node
@@ -7071,48 +7078,47 @@
     }
   };
 
-  Menu = (function() {
-    var a;
+  Menu = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Menu']) {
+        return;
+      }
+      this.menu = new UI.Menu('post');
+      return Post.prototype.callbacks.push({
+        name: 'Menu',
+        cb: this.node
+      });
+    },
+    node: function() {
+      if (this.isClone) {
+        return $.on($('.menu-button', this.nodes.info), 'click', Menu.toggle);
+      } else {
+        return $.add(this.nodes.info, [$.tn('\u00A0'), Menu.makeButton()]);
+      }
+    },
+    makeButton: (function() {
+      var a;
 
-    a = $.el('a', {
-      className: 'menu-button brackets-wrap',
-      innerHTML: '<i></i>',
-      href: 'javascript:;'
-    });
-    return {
-      init: function() {
-        if (g.VIEW === 'catalog' || !Conf['Menu']) {
-          return;
-        }
-        this.menu = new UI.Menu('post');
-        return Post.prototype.callbacks.push({
-          name: 'Menu',
-          cb: this.node
-        });
-      },
-      node: function() {
+      a = $.el('a', {
+        className: 'menu-button brackets-wrap',
+        innerHTML: '<i></i>',
+        href: 'javascript:;'
+      });
+      return function() {
         var button;
 
-        if (this.isClone) {
-          button = $('.menu-button', this.nodes.info);
-        } else {
-          button = a.cloneNode(true);
-          $.add(this.nodes.info, [$.tn('\u00A0'), button]);
-        }
-        return $.on(button, 'click', Menu.toggle);
-      },
-      makeButton: function() {
-        var el;
+        button = a.cloneNode(true);
+        $.on(button, 'click', Menu.toggle);
+        return button;
+      };
+    })(),
+    toggle: function(e) {
+      var post;
 
-        el = a.cloneNode(true);
-        $.on(el, 'click', Menu.toggle);
-        return el;
-      },
-      toggle: function(e) {
-        return Menu.menu.toggle(e, this, Get.postFromNode(this));
-      }
-    };
-  })();
+      post = Get.postFromNode(this);
+      return Menu.menu.toggle(e, this, post);
+    }
+  };
 
   ReportLink = {
     init: function() {
@@ -7897,12 +7903,14 @@
       fetching: 0
     },
     fetchAllStatus: function() {
-      var thread, _i, _len, _ref;
+      var thread, threads, _i, _len;
 
+      if (!(threads = ThreadWatcher.getAll()).length) {
+        return;
+      }
       ThreadWatcher.status.textContent = '...';
-      _ref = ThreadWatcher.getAll();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        thread = _ref[_i];
+      for (_i = 0, _len = threads.length; _i < _len; _i++) {
+        thread = threads[_i];
         ThreadWatcher.fetchStatus(thread);
       }
     },
@@ -9100,7 +9108,7 @@
       return ("" + status + " " + posts + " post" + (posts > 1 ? 's' : '')) + (+files ? " and " + files + " image repl" + (files > 1 ? 'ies' : 'y') : "") + (" " + (status === '-' ? 'shown' : 'omitted') + ".");
     },
     cbToggle: function() {
-      return ExpandThread.toggle(Get.threadFromRoot(this.parentNode));
+      return ExpandThread.toggle(Get.threadFromNode(this));
     },
     toggle: function(thread) {
       var a, files, filesCount, inlined, num, post, posts, postsCount, reply, threadRoot, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
@@ -10733,9 +10741,27 @@
   };
 
   Main = {
-    init: function(items) {
-      var db, flatten, _i, _len;
+    init: function() {
+      var db, flatten, pathname, _i, _len, _ref;
 
+      pathname = location.pathname.split('/');
+      g.BOARD = new Board(pathname[1]);
+      if ((_ref = g.BOARD.ID) === 'z' || _ref === 'fk') {
+        return;
+      }
+      g.VIEW = (function() {
+        switch (pathname[2]) {
+          case 'res':
+            return 'thread';
+          case 'catalog':
+            return 'catalog';
+          default:
+            return 'index';
+        }
+      })();
+      if (g.VIEW === 'thread') {
+        g.THREADID = +pathname[3];
+      }
       flatten = function(parent, obj) {
         var key, val;
 
@@ -10759,16 +10785,28 @@
       }
       Conf['selectedArchives'] = {};
       Conf['CachedTitles'] = [];
-      $.get(Conf, Main.initFeatures);
+      $.get(Conf, function(items) {
+        $.extend(Conf, items);
+        if (!items) {
+          new Notification('error', $.el('span', {
+            innerHTML: "It seems like your 4chan X settings became corrupted due to a <a href=\"https://code.google.com/p/chromium/issues/detail?id=261623\" target=_blank>Chrome bug</a>.<br>\nUnfortunately, you'll have to <a href=\"https://github.com/MayhemYDG/4chan-x/wiki/FAQ#known-problems\" target=_blank>fix it yourself</a>."
+          }));
+          Main.logError({
+            message: 'Chrome Storage API bug',
+            error: new Error(chrome.runtime.lastError.message || 'no lastError.message')
+          });
+        }
+        return Main.initFeatures();
+      });
       $.on(d, '4chanMainInit', Main.initStyle);
       return $.asap((function() {
         return d.head && $('link[rel="shortcut icon"]', d.head) || d.readyState !== 'loading';
       }), Main.initStyle);
     },
-    initFeatures: function(items) {
+    initFeatures: function() {
+      Conf;
       var init, pathname, _ref;
 
-      Conf = items;
       pathname = location.pathname.split('/');
       g.BOARD = new Board(pathname[1]);
       if ((_ref = g.BOARD.ID) === 'z' || _ref === 'fk') {
@@ -10935,7 +10973,7 @@
     initReady: function() {
       var board, err, errors, href, passLink, postRoot, posts, styleSelector, thread, threadRoot, threads, _i, _j, _len, _len1, _ref, _ref1;
 
-      if (d.title === '4chan - 404 Not Found') {
+      if (['4chan - Temporarily Offline', '4chan - 404 Not Found'].contains(d.title)) {
         if (Conf['404 Redirect'] && g.VIEW === 'thread') {
           href = Redirect.to('thread', {
             boardID: g.BOARD.ID,
@@ -10946,9 +10984,7 @@
         }
         return;
       }
-      if (!$.hasClass(doc, 'fourchan-x')) {
-        Main.initStyle();
-      }
+      Main.initStyle();
       if (board = $('.board')) {
         threads = [];
         posts = [];

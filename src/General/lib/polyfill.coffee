@@ -1,7 +1,9 @@
 Polyfill =
   init: ->
+    <% if (type === 'crx') { %>
     Polyfill.toBlob()
     Polyfill.visibility()
+    <% } %>
   toBlob: ->
     HTMLCanvasElement::toBlob or= (cb) ->
       data = atob @toDataURL()[22..]

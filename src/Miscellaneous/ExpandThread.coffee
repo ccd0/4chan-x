@@ -22,7 +22,7 @@ ExpandThread =
     " #{if status is '-' then 'shown' else 'omitted'}."
 
   cbToggle: ->
-    ExpandThread.toggle Get.threadFromRoot @parentNode
+    ExpandThread.toggle Get.threadFromNode @
 
   toggle: (thread) ->
     threadRoot = thread.OP.nodes.root.parentNode

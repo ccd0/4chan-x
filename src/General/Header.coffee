@@ -1,7 +1,8 @@
 Header =
   init: ->
     @menu = new UI.Menu 'header'
-    @menuButton = $.el 'span',
+
+    menuButton = $.el 'span',
       className: 'menu-button'
       innerHTML: '<i></i>'
 
@@ -28,7 +29,7 @@ Header =
     @footerToggler      = footerToggler.firstElementChild
     @customNavToggler   = customNavToggler.firstElementChild
 
-    $.on @menuButton,         'click',  @menuToggle
+    $.on menuButton,          'click',  @menuToggle
     $.on @barFixedToggler,    'change', @toggleBarFixed
     $.on @barPositionToggler, 'change', @toggleBarPosition
     $.on @linkJustifyToggler, 'change', @toggleLinkJustify
@@ -46,7 +47,7 @@ Header =
     $.sync 'Header auto-hide', Header.setBarVisibility
     $.sync 'Centered links',   Header.setLinkJustify
 
-    @addShortcut Header.menuButton
+    @addShortcut menuButton
 
     $.event 'AddMenuEntry',
       type: 'header'
