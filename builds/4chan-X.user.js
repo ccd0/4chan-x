@@ -4547,7 +4547,7 @@
       }
       if (i) {
         text = text.slice(0, -i);
-        while (range.endOffset > i) {
+        while (range.endOffset - i < 0) {
           i--;
         }
         if (i) {

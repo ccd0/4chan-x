@@ -124,7 +124,7 @@ Linkify =
 
     if i
       text = text.slice 0, -i
-      i-- while range.endOffset > i
+      i-- while range.endOffset - i < 0
 
       if i
         range.setEnd range.endContainer, range.endOffset - i
