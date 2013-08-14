@@ -1,36 +1,27 @@
+### v1.2.27
+*2013-08-12*
+
+**seaweedchan**:
+- Fix minor class name change from last version's merge
+
+### v1.2.26
+*2013-08-12*
+
 **MayhemYDG**:
-- **New feature**: `Show Dice Roll` (with @carboncopy)
- - Shows dice that were entered into the email field on /tg/.
-- **Thread Watcher** improvements:
- - It is now possible to open all watched threads via the `Open all threads` button in the Thread Watcher's menu.
- - Added the `Current Board` setting to switch between showing watched threads from the current board or all boards, disabled by default.
- - About dead (404'd) threads:
- <ul>
-  <li> Dead threads will be typographically indicated with a strikethrough.
-  <li> Dead threads will directly link to the corresponding archive when available.
-  <li> A button to prune all 404'd threads from the list is now available.
-  <li> Added the `Auto Prune` setting to automatically prune 404'd threads, disabled by default.
- </ul>
- - The current thread is now highlighted in the list of watched threads.
- - Watching the current thread can be done in the Header's menu too.
-- Removed the `Check for Updates` setting:
- - Your browser/userscript manager should handle updates itself automatically.
-- Fix impossibility to create new threads when in dead threads.
+- Show dice rolls that were entered into the email field on /tg/.
 - Fix flag filtering on /sp/ and /int/.
-- Update archives. (with @woxxy and @proplex)
 - Minor fixes.
 - Minor optimizations.
 
+**seaweedchan**:
+- Change new error message to link to ban page just in case
+
 **Zixaphir**:
 - Linkifier Rewrite.
-- Fix Quote Threading toggle.
 - Added Twitch.tv and Vine embedding (with @ihavenoface)
 - Keybinds to scroll to posts that quote you.
 - Minor optimizations.
 - Minor fixes.
-
-**aeosynth**:
-- Update Gruntfile.coffee.
 
 ### v1.2.25
 *2013-08-04*

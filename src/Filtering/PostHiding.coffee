@@ -138,7 +138,7 @@ PostHiding =
   makeButton: (post, type) ->
     a = $.el 'a',
       className: "#{type}-reply-button"
-      innerHTML: "<span class=fourchanx-link>&nbsp;#{if type is 'hide' then '-' else '+'}&nbsp;</span>"
+      innerHTML: "<span class=brackets-wrap>&nbsp;#{if type is 'hide' then '-' else '+'}&nbsp;</span>"
       href:      'javascript:;'
     $.on a, 'click', PostHiding.toggle
     a

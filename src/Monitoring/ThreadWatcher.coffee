@@ -45,7 +45,7 @@ ThreadWatcher =
 
   node: ->
     toggler = $.el 'img',
-      className: 'watcher-toggler'
+      className: 'watch-thread-link'
     $.on toggler, 'click', ThreadWatcher.cb.toggle
     $.before $('input', @OP.nodes.post), toggler
 
@@ -175,7 +175,7 @@ ThreadWatcher =
     $.add list, nodes
 
     for threadID, thread of g.BOARD.threads
-      toggler = $ '.watcher-toggler', thread.OP.nodes.post
+      toggler = $ '.watch-thread-link', thread.OP.nodes.post
       watched = ThreadWatcher.db.get {boardID: thread.board.ID, threadID}
       $[if watched then 'addClass' else 'rmClass'] toggler, 'watched'
 

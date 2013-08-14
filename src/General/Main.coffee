@@ -1,18 +1,5 @@
 Main =
   init: ->
-    pathname = location.pathname.split '/'
-    g.BOARD  = new Board pathname[1]
-    return if g.BOARD.ID in ['z', 'fk']
-    g.VIEW   =
-      switch pathname[2]
-        when 'res'
-          'thread'
-        when 'catalog'
-          'catalog'
-        else
-          'index'
-    if g.VIEW is 'thread'
-      g.THREADID = +pathname[3]
 
     # flatten Config into Conf
     # and get saved or default values
@@ -30,7 +17,6 @@ Main =
       Conf[db] = boards: {}
     Conf['selectedArchives'] = {}
     Conf['CachedTitles']     = []
-
     $.get Conf, (items) ->
       $.extend Conf, items
       <% if (type === 'crx') { %>
@@ -52,7 +38,6 @@ Main =
       Main.initStyle
 
   initFeatures: ->
-    Conf
 
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
