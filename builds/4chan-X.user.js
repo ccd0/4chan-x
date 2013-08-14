@@ -4529,27 +4529,37 @@
       return range;
     },
     makeLink: function(range) {
-      var a, char, text, trim;
+      var a, char, i, text;
 
       text = range.toString();
-      trim = function() {
-        if (!(range.endOffset < 1)) {
-          range.setEnd(range.endContainer, range.endOffset - 1);
+      i = 0;
+      while (/[(\[{<>]/.test(text.charAt(i))) {
+        i++;
+      }
+      if (i) {
+        text = text.slice(i);
+        while (range.startOffset + i >= range.startContainer.data.length) {
+          i--;
         }
-        return text = text.slice(0, -1);
-      };
-      if (/[(\[{<]/.test(text.charAt(0))) {
-        text = text.slice(1);
-        if (range.startOffset !== range.startContainer.data.length) {
-          range.setStart(range.startContainer, range.startOffset + 1);
+        if (i) {
+          range.setStart(range.startContainer, range.startOffset + i);
         }
       }
-      while (/[)\]}>.,]/.test(char = text.charAt(text.length - 1))) {
-        if (/[.,]/.test(char) || (text.match(/[()\[\]{}<>]/g)).length % 2) {
-          trim();
-          continue;
+      i = 0;
+      while (/[)\]}>.,]/.test(char = text.charAt(text.length - (1 + i)))) {
+        if (!(/[.,]/.test(char) || (text.match(/[()\[\]{}<>]/g)).length % 2)) {
+          break;
         }
-        break;
+        i++;
+      }
+      if (i) {
+        text = text.slice(0, -i);
+        while (range.endOffset > i) {
+          i--;
+        }
+        if (i) {
+          range.setEnd(range.endContainer, range.endOffset - i);
+        }
       }
       text = text.contains(':') ? text : (text.contains('@') ? 'mailto:' : 'http://') + text;
       a = $.el('a', {

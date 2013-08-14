@@ -2,7 +2,7 @@ Linkify =
   init: ->
     return if g.VIEW is 'catalog' or not Conf['Linkify']
 
-    @regString = 
+    @regString =
       ///(
         # http, magnet, ftp, etc
         (https?|mailto|git|magnet|ftp|irc):(
@@ -105,23 +105,29 @@ Linkify =
 
   makeLink: (range) ->
     text = range.toString()
-    
-    trim = ->
-      range.setEnd range.endContainer, range.endOffset - 1 unless range.endOffset < 1
-      text = text.slice 0, -1
 
-    # Clean leading brackets
-    if /[(\[{<]/.test text.charAt 0
-      text = text.slice 1
-      unless range.startOffset is range.startContainer.data.length
-        range.setStart range.startContainer, range.startOffset + 1
-    
+    # Clean leading brackets, >
+    i = 0
+    i++ while /[(\[{<>]/.test text.charAt i
+
+    if i
+      text = text.slice i
+      i-- while range.startOffset + i >= range.startContainer.data.length
+
+      range.setStart range.startContainer, range.startOffset + i if i
+
     # Clean hanging brackets, commas, periods
-    while /[)\]}>.,]/.test char = text.charAt text.length - 1
-      if /[.,]/.test(char) or (text.match /[()\[\]{}<>]/g).length % 2
-        trim()
-        continue
-      break
+    i = 0
+    while /[)\]}>.,]/.test char = text.charAt text.length - (1 + i)
+      break unless /[.,]/.test(char) or (text.match /[()\[\]{}<>]/g).length % 2
+      i++
+
+    if i
+      text = text.slice 0, -i
+      i-- while range.endOffset > i
+
+      if i
+        range.setEnd range.endContainer, range.endOffset - i
 
     # This is the only piece of code left based on Anthony Lieuallen's Linkify
     text =
