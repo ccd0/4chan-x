@@ -105,18 +105,31 @@ Linkify =
 
   makeLink: (range) ->
     text = range.toString()
+    
+    trim = ->
+      range.setEnd range.endContainer, range.endOffset - 1 unless range.endOffset < 1
+      text = text.slice 0, -1
 
-    # Clean brackets
+    # Clean brackets, hanging commas
     if /[(\[{<]/.test text.charAt 0
-      if check = /[\)\]}>]/.test text.charAt text.length - 1
-        unless range.endOffset < 1
-          range.setEnd range.endContainer, range.endOffset - 1
-      text = if check
-        text.slice 1, -1
-      else
-        text.slice 1
+      trim() if /[\)\]}>]/.test text.charAt text.length - 1
+      text.slice 1
       unless range.startOffset is range.startContainer.data.length
         range.setStart range.startContainer, range.startOffset + 1
+    
+    while /[\)\]}>,]/.exec char = text.charAt text.length - 1
+      if char is ','
+        trim()
+        continue
+      len = text.length
+      while i < len
+        toggle = false
+        switch text[i++]
+          when '(', ')', '[', ']', '{', '}', '<', '>' then toggle = !toggle
+      if toggle
+        trim()
+        continue
+      break
 
     text =
       if text.contains ':'

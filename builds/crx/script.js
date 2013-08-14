@@ -4531,19 +4531,49 @@
       return range;
     },
     makeLink: function(range) {
-      var a, check, text;
+      var a, char, len, text, toggle, trim;
 
       text = range.toString();
-      if (/[(\[{<]/.test(text.charAt(0))) {
-        if (check = /[\)\]}>]/.test(text.charAt(text.length - 1))) {
-          if (!(range.endOffset < 1)) {
-            range.setEnd(range.endContainer, range.endOffset - 1);
-          }
+      trim = function() {
+        if (!(range.endOffset < 1)) {
+          range.setEnd(range.endContainer, range.endOffset - 1);
         }
-        text = check ? text.slice(1, -1) : text.slice(1);
+        return text = text.slice(0, -1);
+      };
+      if (/[(\[{<]/.test(text.charAt(0))) {
+        if (/[\)\]}>]/.test(text.charAt(text.length - 1))) {
+          trim();
+        }
+        text.slice(1);
         if (range.startOffset !== range.startContainer.data.length) {
           range.setStart(range.startContainer, range.startOffset + 1);
         }
+      }
+      while (/[\)\]}>,]/.exec(char = text.charAt(text.length - 1))) {
+        if (char === ',') {
+          trim();
+          continue;
+        }
+        len = text.length;
+        while (i < len) {
+          toggle = false;
+          switch (text[i++]) {
+            case '(':
+            case ')':
+            case '[':
+            case ']':
+            case '{':
+            case '}':
+            case '<':
+            case '>':
+              toggle = !toggle;
+          }
+        }
+        if (toggle) {
+          trim();
+          continue;
+        }
+        break;
       }
       text = text.contains(':') ? text : (text.contains('@') ? 'mailto:' : 'http://') + text;
       a = $.el('a', {
