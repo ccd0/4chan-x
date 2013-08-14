@@ -117,12 +117,13 @@ Linkify =
         range.setStart range.startContainer, range.startOffset + 1
     
     # Clean hanging brackets, commas, periods
-    while /[)\]}>.,]/.test char = text.charAt (len = text.length) - 1
+    while /[)\]}>.,]/.test char = text.charAt text.length - 1
       if /[.,]/.test(char) or (text.match /[()\[\]{}<>]/g).length % 2
         trim()
         continue
       break
 
+    # This is the only piece of code left based on Anthony Lieuallen's Linkify
     text =
       if text.contains ':'
         text

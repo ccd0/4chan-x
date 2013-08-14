@@ -4525,7 +4525,7 @@
       return range;
     },
     makeLink: function(range) {
-      var a, char, len, text, trim;
+      var a, char, text, trim;
 
       text = range.toString();
       trim = function() {
@@ -4540,7 +4540,7 @@
           range.setStart(range.startContainer, range.startOffset + 1);
         }
       }
-      while (/[)\]}>.,]/.test(char = text.charAt((len = text.length) - 1))) {
+      while (/[)\]}>.,]/.test(char = text.charAt(text.length - 1))) {
         if (/[.,]/.test(char) || (text.match(/[()\[\]{}<>]/g)).length % 2) {
           trim();
           continue;
