@@ -175,19 +175,16 @@ module.exports = (grunt) ->
   grunt.registerTask 'patch', [
     'bump'
     'updcl:3'
-    'release'
   ]
 
   grunt.registerTask 'minor', [
     'bump:minor'
     'updcl:2'
-    'release'
   ]
 
   grunt.registerTask 'major', [
     'bump:major'
     'updcl:1'
-    'release'
   ]
 
   grunt.registerTask 'updcl', 'Update the changelog', (headerLevel) ->
