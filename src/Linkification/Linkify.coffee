@@ -110,25 +110,23 @@ Linkify =
       range.setEnd range.endContainer, range.endOffset - 1 unless range.endOffset < 1
       text = text.slice 0, -1
 
-    # Clean brackets, hanging commas
+    # Clean leading brackets
     if /[(\[{<]/.test text.charAt 0
-      trim() if /[\)\]}>]/.test text.charAt text.length - 1
-      text.slice 1
+      text = text.slice 1
       unless range.startOffset is range.startContainer.data.length
         range.setStart range.startContainer, range.startOffset + 1
     
-    while /[\)\]}>,]/.exec char = text.charAt text.length - 1
-      if char is ','
+    # Clean hanging brackets, commas, periods
+    while /[)\]}>.,]/.test char = text.charAt (len = text.length) - 1
+      if /[.,]/.test char
         trim()
         continue
-      len = text.length
+      i = 0
+      toggle = false
       while i < len
-        toggle = false
-        switch text[i++]
-          when '(', ')', '[', ']', '{', '}', '<', '>' then toggle = !toggle
+        if /[()\[\]{}<>]/.test text[i++] then toggle = !toggle
       if toggle
         trim()
-        continue
       break
 
     text =

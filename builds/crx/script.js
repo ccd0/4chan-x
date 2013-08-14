@@ -4531,7 +4531,7 @@
       return range;
     },
     makeLink: function(range) {
-      var a, char, len, text, toggle, trim;
+      var a, char, i, len, text, toggle, trim;
 
       text = range.toString();
       trim = function() {
@@ -4541,37 +4541,25 @@
         return text = text.slice(0, -1);
       };
       if (/[(\[{<]/.test(text.charAt(0))) {
-        if (/[\)\]}>]/.test(text.charAt(text.length - 1))) {
-          trim();
-        }
-        text.slice(1);
+        text = text.slice(1);
         if (range.startOffset !== range.startContainer.data.length) {
           range.setStart(range.startContainer, range.startOffset + 1);
         }
       }
-      while (/[\)\]}>,]/.exec(char = text.charAt(text.length - 1))) {
-        if (char === ',') {
+      while (/[)\]}>.,]/.test(char = text.charAt((len = text.length) - 1))) {
+        if (/[.,]/.test(char)) {
           trim();
           continue;
         }
-        len = text.length;
+        i = 0;
+        toggle = false;
         while (i < len) {
-          toggle = false;
-          switch (text[i++]) {
-            case '(':
-            case ')':
-            case '[':
-            case ']':
-            case '{':
-            case '}':
-            case '<':
-            case '>':
-              toggle = !toggle;
+          if (/[()\[\]{}<>]/.test(text[i++])) {
+            toggle = !toggle;
           }
         }
         if (toggle) {
           trim();
-          continue;
         }
         break;
       }
