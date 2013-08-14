@@ -4444,7 +4444,7 @@
       });
     },
     node: function() {
-      var data, el, end, endNode, i, index, items, lIndex, len, length, link, links, node, range, result, saved, snapshot, space, test, text, _i, _len, _ref;
+      var data, el, end, endNode, i, index, items, length, link, links, node, range, result, saved, snapshot, space, test, _i, _len, _ref;
 
       if (this.isClone) {
         if (Conf['Embedding']) {
@@ -4489,18 +4489,14 @@
               test.lastIndex = 0;
             }
             range = Linkify.makeRange(node, endNode, index, length);
-            if (link = Linkify.regString.exec(text = range.toString())) {
-              if ((lIndex = link.index) && (len = lIndex + index) < node.data.length) {
-                range.setStart(node, len);
-              }
-              text = text.slice(0, lIndex);
-              links.push([range, text]);
+            if (link = Linkify.regString.exec(range.toString())) {
+              links.push(range);
             }
             break;
           } else {
             if (link = Linkify.regString.exec(result[0])) {
               range = Linkify.makeRange(node, node, index + link.index, length + link.index);
-              links.push([range, link]);
+              links.push(range);
             }
           }
         }
@@ -4534,11 +4530,21 @@
       range.setEnd(endNode, endOffset);
       return range;
     },
-    makeLink: function(_arg) {
-      var a, range, text;
+    makeLink: function(range) {
+      var a, check, text;
 
-      range = _arg[0], text = _arg[1];
-      text;
+      text = range.toString();
+      if (/[(\[{<]/.test(text.charAt(0))) {
+        if (check = /[\)\]}>]/.test(text.charAt(text.length - 1))) {
+          if (!(range.endOffset < 1)) {
+            range.setEnd(range.endContainer, range.endOffset - 1);
+          }
+        }
+        text = check ? text.slice(1, -1) : text.slice(1);
+        if (range.startOffset !== range.startContainer.data.length) {
+          range.setStart(range.startContainer, range.startOffset + 1);
+        }
+      }
       text = text.contains(':') ? text : (text.contains('@') ? 'mailto:' : 'http://') + text;
       a = $.el('a', {
         className: 'linkify',
