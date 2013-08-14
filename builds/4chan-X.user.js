@@ -4489,7 +4489,7 @@
             break;
           } else {
             if (link = Linkify.regString.exec(result[0])) {
-              range = Linkify.makeRange(node, node, index + link.index, length + link.index);
+              range = Linkify.makeRange(node, node, index + link.index, length);
               links.push(range);
             }
           }
