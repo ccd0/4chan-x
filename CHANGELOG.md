@@ -1,5 +1,7 @@
 **MayhemYDG**:
+
 ![New thread watcher](src/General/img/changelog/1.2.28.png)
+
 - Greatly improved thread watcher
   - Added submenu with ability to prune 404'd threads, filter by current board, etc
   - Periodically checks which threads have 404'd and indicates them with a strikethrough
@@ -11,7 +13,9 @@
 - Changed class `.fourchanx-link` for brackets to `.brackets-wrap` to be consistent with Mayhem's 4chan X
 
 **Zixaphir**:
+
 ![Linkifier in action](src/General/img/changelog/1.2.28-2.png)
+
 - Drastically improved the accuracy and quality of the linkifier (with seaweedchan)
 - Removed `Allow False Positives` option due to the accuracy of the new linkifier regex
 
