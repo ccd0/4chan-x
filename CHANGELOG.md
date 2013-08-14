@@ -1,3 +1,6 @@
+### v1.2.28 
+*2013-08-14*
+
 **MayhemYDG**:
 
 ![New thread watcher](src/General/img/changelog/1.2.28.png)
