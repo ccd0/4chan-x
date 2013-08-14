@@ -1,8 +1,5 @@
 class Notification
   constructor: (type, content, @timeout) ->
-    @add   = add.bind @
-    @close = close.bind @
-
     @el = $.el 'div',
       innerHTML: '<a href=javascript:; class=close title=Close>×</a><div class=message></div>'
     @el.style.opacity = 0
@@ -17,7 +14,7 @@ class Notification
   setType: (type) ->
     @el.className = "notification #{type}"
 
-  add = ->
+  add: =>
     if d.hidden
       $.on d, 'visibilitychange', @add
       return
@@ -27,5 +24,5 @@ class Notification
     @el.style.opacity = 1
     setTimeout @close, @timeout * $.SECOND if @timeout
 
-  close = ->
+  close: =>
     $.rm @el

@@ -446,7 +446,7 @@ QR =
         $.on elm, 'blur',  QR.focusout
         $.on elm, 'focus', QR.focusin
       <% } %>
-      $.on el,             'click',  @select.bind @
+      $.on el,             'click',  @select
       $.on @nodes.rm,      'click',  (e) => e.stopPropagation(); @rm()
       $.on @nodes.label,   'click',  (e) => e.stopPropagation()
       $.on @nodes.spoiler, 'change', (e) =>
@@ -516,7 +516,7 @@ QR =
       @nodes.el.draggable = !lock
     unlock: ->
       @lock false
-    select: ->
+    select: =>
       if QR.selected
         QR.selected.nodes.el.id = null
         QR.selected.forceSave()

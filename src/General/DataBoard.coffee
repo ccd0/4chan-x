@@ -3,7 +3,7 @@ DataBoards = ['hiddenThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts', 'wat
 class DataBoard
   constructor: (@key, sync, dontClean) ->
     @data = Conf[key]
-    $.sync key, @onSync.bind @
+    $.sync key, @onSync
     @clean() unless dontClean
     return unless sync
     # Chrome also fires the onChanged callback on the current tab,
@@ -84,6 +84,6 @@ class DataBoard
         @deleteIfEmpty {boardID}
       @save()
 
-  onSync: (data) ->
+  onSync: (data) =>
     @data = data or boards: {}
     @sync?()
