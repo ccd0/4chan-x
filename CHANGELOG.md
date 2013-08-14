@@ -14,6 +14,7 @@
 
 **seaweedchan**:
 - Changed class `.fourchanx-link` for brackets to `.brackets-wrap` to be consistent with Mayhem's 4chan X
+- Added `.seaweedchan` class to the document for those that need a way to tell this fork from other forks for CSS/JS
 
 **Zixaphir**:
 
