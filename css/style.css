@@ -138,6 +138,8 @@ a[href="javascript:;"] {
 #board-list {
   -webkit-flex: 1;
   flex: 1;
+  -webkit-align-self: center;
+  align-self: center;
   text-align: center;
 }
 #header-bar.autohide:not(:hover) {
