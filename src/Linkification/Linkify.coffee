@@ -76,16 +76,13 @@ Linkify =
           test.lastIndex = 0 if length is endNode.data.length
           range = Linkify.makeRange node, endNode, index, length
           if link = Linkify.regString.exec text = range.toString()
-            if (lIndex = link.index) and (len = lIndex + index) < node.data.length
-              range.setStart node, len
-            text = text[...lIndex]
-            links.push [range, text]
+            links.push range
           break
 
         else
           if link = Linkify.regString.exec result[0]
             range = Linkify.makeRange node, node, index + link.index, length + link.index
-            links.push [range, link]
+            links.push range
 
     for range in links.reverse()
       @nodes.links.push Linkify.makeLink range, @
@@ -107,8 +104,21 @@ Linkify =
     range.setEnd   endNode,    endOffset
     range
 
-  makeLink: ([range, text]) ->
-    text
+  makeLink: (range) ->
+    text = range.toString()
+
+    # Clean brackets
+    if /[(\[{<]/.test text.charAt 0
+      if check = /[\)\]}>]/.test text.charAt text.length - 1
+        unless range.endOffset < 1
+          range.setEnd range.endContainer, range.endOffset - 1
+      text = if check
+        text.slice 1, -1
+      else
+        text.slice 1
+      unless range.startOffset is range.startContainer.data.length
+        range.setStart range.startContainer, range.startOffset + 1
+
     text =
       if text.contains ':'
         text
