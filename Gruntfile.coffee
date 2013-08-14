@@ -1,6 +1,5 @@
 module.exports = (grunt) ->
 
-  pkg = grunt.file.readJSON 'package.json'
   concatOptions =
     process: Object.create(null, data:
       get: -> grunt.config 'pkg'
@@ -13,7 +12,7 @@ module.exports = (grunt) ->
 
   # Project configuration.
   grunt.initConfig
-    pkg: pkg
+    pkg: grunt.file.readJSON 'package.json'
     concat:
       coffee:
         options: concatOptions
@@ -175,33 +174,27 @@ module.exports = (grunt) ->
   ]
   grunt.registerTask 'patch', [
     'bump'
-    'reloadPkg'
     'updcl:3'
+    'release'
   ]
 
   grunt.registerTask 'minor', [
     'bump:minor'
-    'reloadPkg'
     'updcl:2'
+    'release'
   ]
 
   grunt.registerTask 'major', [
     'bump:major'
-    'reloadPkg'
     'updcl:1'
+    'release'
   ]
 
-  grunt.registerTask 'reloadPkg', 'Reload the package', ->
-    # Update the `pkg` object with the new version.
-    pkg = grunt.file.readJSON('package.json')
-    grunt.config.data.pkg = concatOptions.process.data = pkg
-    grunt.log.ok('pkg reloaded.')
+  grunt.registerTask 'updcl', 'Update the changelog', (headerLevel) ->
+    headerPrefix = new Array(+headerLevel + 1).join '#'
+    {version} = grunt.config 'pkg'
+    today     = grunt.template.today 'yyyy-mm-dd'
+    changelog = grunt.file.read 'CHANGELOG.md'
 
-  grunt.registerTask 'updcl',   'Update the changelog', (i) ->
-    # i is the number of #s for markdown.
-    version = []
-    version.length = +i + 1
-    version = version.join('#') + ' v' + pkg.version + '\n*' + grunt.template.today('yyyy-mm-dd') + '*\n'
-    grunt.file.write 'CHANGELOG.md', version + '\n' + grunt.file.read('CHANGELOG.md')
-    grunt.log.ok     'Changelog updated for v' + pkg.version + '.'
-
+    grunt.file.write 'CHANGELOG.md', "#{headerPrefix} #{version} - *#{today}*\n\n#{changelog}"
+    grunt.log.ok "Changelog updated for v#{version}."
