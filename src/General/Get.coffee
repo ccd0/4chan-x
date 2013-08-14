@@ -182,9 +182,9 @@ Get =
           when '[/moot]'
             '</div>'
           when '[banned]'
-            '<b style="color: red;">'
+            '<strong style="color: red;">'
           when '[/banned]'
-            '</b>'
+            '</strong>'
 
     comment = bq.innerHTML
       # greentext
