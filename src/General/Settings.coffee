@@ -20,9 +20,7 @@ Settings =
           new Notification 'info', el, 30
       else
         $.on d, '4chanXInitFinished', Settings.open
-      $.set
-        archives: Conf['archives']
-        previousversion: g.VERSION
+      $.set 'previousversion', g.VERSION
 
     Settings.addSection 'Main',     Settings.main
     Settings.addSection 'Filter',   Settings.filter

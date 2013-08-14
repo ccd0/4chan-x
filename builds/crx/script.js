@@ -10110,10 +10110,7 @@
         } else {
           $.on(d, '4chanXInitFinished', Settings.open);
         }
-        return $.set({
-          archives: Conf['archives'],
-          previousversion: g.VERSION
-        });
+        return $.set('previousversion', g.VERSION);
       });
       Settings.addSection('Main', Settings.main);
       Settings.addSection('Filter', Settings.filter);
