@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.27 - 2013-08-13
+* 4chan X - Version 1.2.27 - 2013-08-14
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -4267,7 +4267,7 @@
       if (g.VIEW === 'catalog' || !Conf['Linkify']) {
         return;
       }
-      this.regString = /(?:[a-z][-\w]+:([a-z\d%\/])|www\d{0,3}[.]|[-a-z\d.]+[.](com|net|org|co\.jp|us|uk|ru|be|tv|xxx|edu|gov|cd|es|de|se|tk|dk|io|fm|fi)|[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i;
+      this.regString = /(?:[a-z][-\w]+:([a-z\d%\/])|www\d{0,3}[.]|[-a-z\d.]+[.](com|net|org|co\.jp|us|uk|ru|be|tv|xxx|edu|gov|cd|es|de|se|tk|dk|io|fm|fi|mp|ly)|[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i;
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
