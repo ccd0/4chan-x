@@ -156,11 +156,7 @@ Get =
     # https://github.com/eksopl/asagi/blob/master/src/main/java/net/easymodo/asagi/Yotsuba.java#L109-138
     bq.innerHTML = bq.innerHTML.replace ///
       \n
-      | \[/?b\]
-      | \[/?spoiler\]
-      | \[/?code\]
-      | \[/?moot\]
-      | \[/?banned\]
+      | \[/?[a-z]+(:lit)?\]
       ///g, (text) ->
         switch text
           when '\n'
@@ -185,6 +181,8 @@ Get =
             '<strong style="color: red;">'
           when '[/banned]'
             '</strong>'
+          else
+            text.replace ':lit', ''
 
     comment = bq.innerHTML
       # greentext
