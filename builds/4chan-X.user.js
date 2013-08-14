@@ -4438,7 +4438,7 @@
       });
     },
     node: function() {
-      var data, el, end, endNode, i, index, items, length, link, links, node, range, result, saved, snapshot, space, test, text, _i, _len, _ref;
+      var data, el, end, endNode, i, index, items, length, link, links, node, range, result, saved, snapshot, space, test, _i, _len, _ref;
 
       if (this.isClone) {
         if (Conf['Embedding']) {
@@ -4483,7 +4483,7 @@
               test.lastIndex = 0;
             }
             range = Linkify.makeRange(node, endNode, index, length);
-            if (link = Linkify.regString.exec(text = range.toString())) {
+            if (link = Linkify.regString.exec(range.toString())) {
               links.push(range);
             }
             break;

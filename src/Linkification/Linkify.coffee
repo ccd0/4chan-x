@@ -75,8 +75,7 @@ Linkify =
 
           test.lastIndex = 0 if length is endNode.data.length
           range = Linkify.makeRange node, endNode, index, length
-          if link = Linkify.regString.exec text = range.toString()
-            links.push range
+          links.push range if link = Linkify.regString.exec range.toString()
           break
 
         else
@@ -100,8 +99,8 @@ Linkify =
 
   makeRange: (startNode, endNode, startOffset, endOffset) ->
     range = document.createRange();
-    range.setStart startNode,  startOffset
-    range.setEnd   endNode,    endOffset
+    range.setStart startNode, startOffset
+    range.setEnd   endNode,   endOffset
     range
 
   makeLink: (range) ->
