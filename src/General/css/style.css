@@ -472,12 +472,16 @@ a.hide-announcement {
 }
 #thread-watcher {
   padding-bottom: 3px;
+  padding-left: 3px;
   overflow: hidden;
   white-space: nowrap;
-  min-width: 120px;
+  min-width: 136px;
   max-height: 92%;
   overflow-y: auto;
 }
+#thread-watcher .menu-button {
+  bottom: 1px;
+} 
 :root.fixed-watcher #thread-watcher {
   position: fixed;
 }
@@ -488,7 +492,7 @@ a.hide-announcement {
 #thread-watcher > .move {
   padding-top: 3px;
 }
-#thread-watcher > div {
+#watched-threads > div {
   max-width: 250px;
   overflow: hidden;
   padding-left: 3px;
