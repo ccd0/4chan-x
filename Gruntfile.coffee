@@ -196,5 +196,5 @@ module.exports = (grunt) ->
     today     = grunt.template.today 'yyyy-mm-dd'
     changelog = grunt.file.read 'CHANGELOG.md'
 
-    grunt.file.write 'CHANGELOG.md', "#{headerPrefix} #{version} - *#{today}*\n\n#{changelog}"
+    grunt.file.write 'CHANGELOG.md', "#{headerPrefix} v#{version} \n*#{today}*\n\n#{changelog}"
     grunt.log.ok "Changelog updated for v#{version}."
