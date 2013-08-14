@@ -15,7 +15,7 @@ Quotify =
     return
 
   parseDeadlink: (deadlink) ->
-    if deadlink.parentNode.className is 'prettyprint'
+    if $.hasClass deadlink.parentNode, 'prettyprint'
       # Don't quotify deadlinks inside code tags,
       # un-`span` them.
       # This won't be necessary once 4chan
