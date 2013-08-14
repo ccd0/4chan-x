@@ -5,7 +5,7 @@ Linkify =
     @regString = 
       ///(
         # http, magnet, ftp, etc
-        ?:(http|https|mailto|git|magnet|ftp|irc|https):(
+        ?:(http|https|mailto|git|magnet|ftp|irc):(
           [a-z\d%/]
         )
         |
