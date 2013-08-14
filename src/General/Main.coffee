@@ -26,7 +26,7 @@ Main =
         Conf[parent] = obj
       return
     flatten null, Config
-    for db in DataBoards
+    for db in DataBoard.keys
       Conf[db] = boards: {}
     Conf['selectedArchives'] = {}
     Conf['archives'] = Redirect.archives

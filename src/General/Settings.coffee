@@ -169,7 +169,7 @@ Settings =
       data =
         version: g.VERSION
         date: now
-      for db in DataBoards
+      for db in DataBoard.keys
         Conf[db] = boards: {}
       # Make sure to export the most recent data.
       $.get Conf, (Conf) ->

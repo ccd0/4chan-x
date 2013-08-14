@@ -1,6 +1,6 @@
-DataBoards = ['hiddenThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts', 'watchedThreads']
-
 class DataBoard
+  @keys = ['hiddenThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts', 'watchedThreads']
+
   constructor: (@key, sync, dontClean) ->
     @data = Conf[key]
     $.sync key, @onSync
