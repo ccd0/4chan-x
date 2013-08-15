@@ -9,16 +9,10 @@ Linkify =
           [a-z\d%/]
         )
         |
-        www\d{0,3}[.]
-        |
-        # This should account for virtually all links posted without www or http:
-        # If it misses any, screw it. No, I will not add canv.as
+        # This should account for virtually all links posted without www or http:, including IPv4 addresses
         [-a-z\d.]+[.](
-          com|net|org|jp|us|uk|ru|be|tv|xxx|edu|gov|cd|es|de|se|tk|dk|io|fm|fi|mp|ly|info
-        )(?![\d\w])
-        |
-        # IPv4 Addresses
-        [\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}
+          aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[\d]{1,3}|[a-z]{2}
+        )(/|\z)
         |
         # E-mails
         [-\w\d.@]+@[a-z\d.-]+\.[a-z\d]
