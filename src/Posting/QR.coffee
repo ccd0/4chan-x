@@ -1114,5 +1114,6 @@ QR =
       QR.req.abort()
       delete QR.req
       QR.posts[0].unlock()
+      QR.cooldown.auto = false
       QR.notifications.push new Notification 'info', 'QR upload aborted.', 5
     QR.status()
