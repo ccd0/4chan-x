@@ -1,3 +1,5 @@
+## 3.8.0 - *2013-08-15*
+
 - The QR now allows you to edit the filename on the fly:<br>
 ![filename editing](img/changelog/3.8.0/0.gif)
 
