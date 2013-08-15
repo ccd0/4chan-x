@@ -1,3 +1,9 @@
+### v1.2.29 
+*2013-08-14*
+
+**Zixaphir**:
+- Fix issue that caused 4chan X to show settings after every page load
+
 ### v1.2.28 
 *2013-08-14*
 
