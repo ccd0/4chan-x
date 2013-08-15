@@ -559,7 +559,7 @@ QR =
             QR.cooldown.auto = false
         when 'filename'
           return unless @file
-          @file.newName = @filename
+          @file.newName = @filename.replace /[/\\]/g, '-'
           unless /\.(jpe?g|png|gif|pdf|sfw)$/i.test @filename
             # 4chan will truncate the filename if it has no extension,
             # but it will always replace the extension by the correct one,
