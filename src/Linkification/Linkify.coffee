@@ -12,10 +12,9 @@ Linkify =
         www\d{0,3}[.]
         |
         # This should account for virtually all links posted without www or http:
-        # If it misses any, screw it. No, I will not add canv.as
         [-a-z\d.]+[.](
-          com|net|org|jp|us|uk|ru|be|tv|xxx|edu|gov|cd|es|de|se|tk|dk|io|fm|fi|mp|ly|info
-        )(?![\d\w])
+          aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2}
+        )(/|\z)
         |
         # IPv4 Addresses
         [\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}
