@@ -515,8 +515,7 @@ QR =
       return unless @ is QR.selected
       for name in ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler']
         QR.nodes[name].disabled = lock
-      @nodes.rm.style.visibility =
-        QR.nodes.fileRM.style.visibility = if lock then 'hidden' else ''
+      @nodes.rm.style.visibility = if lock then 'hidden' else ''
       (if lock then $.off else $.on) QR.nodes.filename.previousElementSibling, 'click', QR.openFileInput
       @nodes.spoiler.disabled = lock
       @nodes.el.draggable = !lock
@@ -617,6 +616,7 @@ QR =
       fileURL = URL.createObjectURL @file
       img.src = fileURL
     rmFile: ->
+      return if @isLocked
       delete @file
       delete @filename
       delete @filesize
