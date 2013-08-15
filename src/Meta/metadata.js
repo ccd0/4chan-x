@@ -1,6 +1,8 @@
 // ==UserScript==
 // @name         <%= meta.name %>
 // @version      <%= version %>
+// @minGMVer     1.13
+// @minFFVer     22
 // @namespace    <%= name %>
 // @description  <%= description %>
 // @license      MIT; <%= meta.repo %>blob/<%= meta.mainBranch %>/LICENSE
