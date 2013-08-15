@@ -123,7 +123,7 @@ module.exports = (grunt) ->
       tmpcrx: 'tmp-crx'
       tmpuserscript: 'tmp-userscript'
 
-  require('matchdep').filterDev('grunt-*').forEach grunt.loadNpmTasks
+  require('load-grunt-tasks') grunt
 
   grunt.registerTask 'default', ['build']
 
