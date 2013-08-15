@@ -443,7 +443,13 @@ QR =
     QR.nodes.fileInput.click()
 
   fileInput: (files) ->
-    if files instanceof Event # file input
+    try
+      if files instanceof Event # file input
+        check = true
+    catch err
+      if @ instanceof Element # file input
+        check = true
+    if check
       files = [@files...]
       QR.nodes.fileInput.value = null # Don't hold the files from being modified on windows
     {length} = files
