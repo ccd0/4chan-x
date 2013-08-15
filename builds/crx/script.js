@@ -4431,7 +4431,7 @@
       if (g.VIEW === 'catalog' || !Conf['Linkify']) {
         return;
       }
-      this.regString = /((https?|mailto|git|magnet|ftp|irc):([a-z\d%\/])|[-a-z\d.]+[.](aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[\d]{1,3}|[a-z]{2})(\/|(?!.))|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i;
+      this.regString = /((https?|mailto|git|magnet|ftp|irc):([a-z\d%\/])|[-a-z\d.]+[.](aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2})(\/|(?!.))|[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i;
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
