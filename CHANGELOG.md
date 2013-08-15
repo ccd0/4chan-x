@@ -1,4 +1,5 @@
-- The QR now allows you to edit the filename on the fly.
+- The QR now allows you to edit the filename on the fly:
+![filename editing](img/changelog/3.8.0/0.png)
 
 ### 3.7.1 - *2013-08-13*
 
