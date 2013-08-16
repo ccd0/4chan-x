@@ -318,6 +318,13 @@ Main =
     Main.thisPageIsLegit
 
   css: """
+  @font-face {
+    font-family: 'FontAwesome';
+    src: url('data:application/font-woff;base64,<%= grunt.file.read('node_modules/font-awesome/font/fontawesome-webfont.woff', {encoding: 'base64'}) %>') format('woff');
+    font-weight: normal;
+    font-style: normal;
+  }
+  <%= grunt.file.read('node_modules/font-awesome/css/font-awesome.min.css').replace(/@font-face\{[^}]+\}/, '').replace(/\\/g, '\\\\') %>
   <%= grunt.file.read('css/style.css') %>
   <%= grunt.file.read('css/yotsuba.css') %>
   <%= grunt.file.read('css/yotsuba-b.css') %>

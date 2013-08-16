@@ -200,9 +200,6 @@ a[href="javascript:;"] {
 .brackets-wrap::after {
   content: "]\\00a0";
 }
-.expand-all-shortcut {
-  opacity: .35;
-}
 
 /* Notifications */
 #notifications {
