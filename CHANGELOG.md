@@ -1,3 +1,6 @@
+### v1.2.30 
+*2013-08-15*
+
 **seaweedchan**:
 - Fix Color User IDs
 - Fix Mayhem breaking uploading images in Pale Moon (and other forks based on Firefox <22)
