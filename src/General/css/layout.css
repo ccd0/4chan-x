@@ -368,6 +368,7 @@ th {
 .float #thread-stats,
 .float #updater {
   position: fixed;
+  z-index: 25;
 }
 #update-status.new::after {
   content: ', ';
