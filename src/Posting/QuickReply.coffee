@@ -443,13 +443,7 @@ QR =
     QR.nodes.fileInput.click()
 
   fileInput: (files) ->
-    try
-      if files instanceof Event # file input
-        check = true
-    catch err
-      if @ instanceof Element # file input
-        check = true
-    if check
+    if @ instanceof Element # file input, revert to "files instanceof Event" after a Pale Moon update
       files = [@files...]
       QR.nodes.fileInput.value = null # Don't hold the files from being modified on windows
     {length} = files

@@ -5436,19 +5436,9 @@
       return QR.nodes.fileInput.click();
     },
     fileInput: function(files) {
-      var check, err, file, length, max, post, _i, _len;
+      var file, length, max, post, _i, _len;
 
-      try {
-        if (files instanceof Event) {
-          check = true;
-        }
-      } catch (_error) {
-        err = _error;
-        if (this instanceof Element) {
-          check = true;
-        }
-      }
-      if (check) {
+      if (this instanceof Element) {
         files = __slice.call(this.files);
         QR.nodes.fileInput.value = null;
       }
