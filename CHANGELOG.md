@@ -1,5 +1,21 @@
+<<<<<<< HEAD
 ### v2.3.3 
 *2013-08-16*
+=======
+**seaweedchan**:
+
+![Board title editing in action](src/General/img/changelog/1.2.31.png)
+
+- Ported `Custom Board Titles` feature from Appchan X (with Zixaphir)
+  - This allows you to edit the board title and subtitle in real-time by ctrl+clicking them
+- Ported ability to change to a new random banner image on click from Appchan X
+
+**Zixaphir**:
+- Small linkifier fix
+
+### v1.2.30 
+*2013-08-15*
+>>>>>>> v3
 
 **seaweedchan**:
 - Fix Color User IDs

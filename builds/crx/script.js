@@ -11047,100 +11047,104 @@
       });
     },
     ready: function() {
-      var banner, child, children, i, nodes, title;
+      var banner, child, children, i, title;
 
       banner = $(".boardBanner");
       title = $.el("div", {
         id: "boardTitle"
       });
       children = banner.children;
-      i = children.length;
-      nodes = [];
-      while (i--) {
-        child = children[i];
-        if (child.tagName.toLowerCase() === "img") {
+      i = 0;
+      while (child = children[i++]) {
+        if (i === 1) {
           child.id = "Banner";
+          child.title = "Click to change";
           $.on(child, 'click', Banner.cb.toggle);
           continue;
         }
         if (Conf['Custom Board Titles']) {
-          Banner.custom(child);
+          Banner.custom(child).title = "Ctrl+click to edit board " + (i === 3 ? 'sub' : '') + "title";
         }
-        nodes.push(child);
       }
-      $.add(title, nodes.reverse());
+      $.add(title, [children[1], children[2]]);
       $.after(banner, title);
-    },
-    types: {
-      jpg: 227,
-      png: 270,
-      gif: 253
     },
     cb: {
       toggle: function() {
-        var num, type;
+        var num, type, types;
 
-        type = ['jpg', 'png', 'gif'][Math.floor(3 * Math.random())];
-        num = Math.floor(Banner.types[type] * Math.random());
+        types = {
+          jpg: 227,
+          png: 270,
+          gif: 253
+        };
+        type = Object.keys(types)[Math.floor(3 * Math.random())];
+        num = Math.floor(types[type] * Math.random());
         return this.src = "//static.4chan.org/image/title/" + num + "." + type;
       },
       click: function(e) {
-        if (e.shiftKey) {
-          return this.contentEditable = true;
+        if (e.ctrlKey) {
+          this.contentEditable = true;
+          return this.focus();
         }
       },
       keydown: function(e) {
-        return e.stopPropagation();
+        e.stopPropagation();
+        if (!e.shiftKey && e.keyCode === 13) {
+          return this.blur();
+        }
       },
       focus: function() {
-        var items, string;
+        var items, string, string2;
 
+        this.textContent = this.innerHTML;
         string = "" + g.BOARD + "." + this.className;
+        string2 = "" + string + ".orig";
         items = {
           title: this.innerHTML
         };
-        items["" + string] = '';
-        items["" + string + ".orig"] = false;
+        items[string] = '';
+        items[string2] = false;
         $.get(items, function(items) {
-          if (!(items["" + string + ".orig"] && items.title === items["" + string])) {
-            return $.set("" + string + ".orig", items.title);
+          if (!(items[string2] && items.title === items[string])) {
+            return $.set(string2, items.title);
           }
         });
-        return this.textContent = this.innerHTML;
       },
       blur: function() {
-        $.set("" + g.BOARD + "." + this.className, this.textContent);
         this.innerHTML = this.textContent;
-        return this.contentEditable = false;
+        this.contentEditable = false;
+        return $.set("" + g.BOARD + "." + this.className, this.textContent);
       }
     },
     custom: function(child) {
-      var cachedTest;
+      var cachedTest, string;
 
       cachedTest = child.innerHTML;
-      $.get("" + g.BOARD + "." + child.className, cachedTest, function(item) {
-        var title;
+      string = "" + g.BOARD + "." + child.className;
+      $.on(child, 'click keydown focus blur', function(e) {
+        return Banner.cb[e.type].apply(this, [e]);
+      });
+      $.get(string, cachedTest, function(item) {
+        var string2, title;
 
-        if (!(title = item["" + g.BOARD + "." + child.className])) {
+        if (!(title = item[string])) {
           return;
         }
         if (Conf['Persistent Custom Board Titles']) {
           return child.innerHTML = title;
-        } else {
-          return $.get("" + g.BOARD + "." + child.className + ".orig", cachedTest, function(itemb) {
-            if (cachedTest === itemb["" + g.BOARD + "." + child.className + ".orig"]) {
-              return child.innerHTML = title;
-            } else {
-              $.set("" + g.BOARD + "." + child.className, cachedTest);
-              return $.set("" + g.BOARD + "." + child.className + ".orig", cachedTest);
-            }
-          });
         }
+        string2 = "" + string + ".orig";
+        return $.get(string2, cachedTest, function(itemb) {
+          if (cachedTest === itemb[string2]) {
+            return child.innerHTML = title;
+          } else {
+            $.set(string, cachedTest);
+            return $.set(string2, cachedTest);
+          }
+        });
       });
-      $.on(child, 'click', Banner.cb.click);
-      $.on(child, 'keydown', Banner.cb.keydown);
-      $.on(child, 'focus', Banner.cb.focus);
-      return $.on(child, 'blur', Banner.cb.blur);
+      return child;
     }
   };
 
