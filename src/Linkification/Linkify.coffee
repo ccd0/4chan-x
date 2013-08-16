@@ -77,7 +77,7 @@ Linkify =
 
         else
           if link = Linkify.regString.exec result[0]
-            range = Linkify.makeRange node, node, index + link.index, length
+            range = Linkify.makeRange node, node, index, length
             links.push range
 
     for range in links.reverse()
