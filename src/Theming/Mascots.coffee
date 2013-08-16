@@ -50,7 +50,7 @@ MascotTools =
     enabled = Conf[string]
     return unless len = enabled.length
 
-    name = enabled[i = Math.floor(Math.random() * len)]
+    Conf['mascot'] = name = enabled[i = Math.floor(Math.random() * len)]
 
     unless mascot = Mascots[name]
       enabled.splice i, 1

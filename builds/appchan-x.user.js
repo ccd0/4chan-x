@@ -11607,7 +11607,7 @@
       if (!(len = enabled.length)) {
         return;
       }
-      name = enabled[i = Math.floor(Math.random() * len)];
+      Conf['mascot'] = name = enabled[i = Math.floor(Math.random() * len)];
       if (!(mascot = Mascots[name])) {
         enabled.splice(i, 1);
         if (el) {
