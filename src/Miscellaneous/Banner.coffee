@@ -49,12 +49,12 @@ Banner =
       string = "#{g.BOARD}.#{@className}"
       items = 
         title: @innerHTML
-      items["#{string}"]      = ''
-      items["#{string}.orig"] = false
+      items[string]      = ''
+      items[string.orig] = false
 
       $.get items, (items) ->
-        unless items["#{string}.orig"] and items.title is items["#{string}"]
-          $.set "#{string}.orig", items.title
+        unless items[string.orig] and items.title is items[string]
+          $.set string.orig, items.title
       @textContent = @innerHTML
 
     blur: ->
@@ -64,20 +64,18 @@ Banner =
 
   custom: (child) ->
     cachedTest = child.innerHTML
+    string = "#{g.BOARD}.#{child.className}"
 
-    $.get "#{g.BOARD}.#{child.className}", cachedTest, (item) ->
-      return unless title = item["#{g.BOARD}.#{child.className}"]
+    $.get string, cachedTest, (item) ->
+      return unless title = item[string]
       if Conf['Persistent Custom Board Titles']
         child.innerHTML = title
       else
-        $.get "#{g.BOARD}.#{child.className}.orig", cachedTest, (itemb) ->
-          if cachedTest is itemb["#{g.BOARD}.#{child.className}.orig"]
+        $.get string.org, cachedTest, (itemb) ->
+          if cachedTest is itemb[string.orig]
             child.innerHTML = title
           else
-            $.set "#{g.BOARD}.#{child.className}",      cachedTest
-            $.set "#{g.BOARD}.#{child.className}.orig", cachedTest
+            $.set string,      cachedTest
+            $.set string.orig, cachedTest
 
-    $.on child, 'click',   Banner.cb.click
-    $.on child, 'keydown', Banner.cb.keydown
-    $.on child, 'focus',   Banner.cb.focus
-    $.on child, 'blur',    Banner.cb.blur
+    $.on child, 'click keydown focus blur', (e) -> Banner.cb[e.type].call @

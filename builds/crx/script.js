@@ -8507,11 +8507,11 @@
         items = {
           title: this.innerHTML
         };
-        items["" + string] = '';
-        items["" + string + ".orig"] = false;
+        items[string] = '';
+        items[string.orig] = false;
         $.get(items, function(items) {
-          if (!(items["" + string + ".orig"] && items.title === items["" + string])) {
-            return $.set("" + string + ".orig", items.title);
+          if (!(items[string.orig] && items.title === items[string])) {
+            return $.set(string.orig, items.title);
           }
         });
         return this.textContent = this.innerHTML;
@@ -8523,30 +8523,30 @@
       }
     },
     custom: function(child) {
-      var cachedTest;
+      var cachedTest, string;
       cachedTest = child.innerHTML;
-      $.get("" + g.BOARD + "." + child.className, cachedTest, function(item) {
+      string = "" + g.BOARD + "." + child.className;
+      $.get(string, cachedTest, function(item) {
         var title;
-        if (!(title = item["" + g.BOARD + "." + child.className])) {
+        if (!(title = item[string])) {
           return;
         }
         if (Conf['Persistent Custom Board Titles']) {
           return child.innerHTML = title;
         } else {
-          return $.get("" + g.BOARD + "." + child.className + ".orig", cachedTest, function(itemb) {
-            if (cachedTest === itemb["" + g.BOARD + "." + child.className + ".orig"]) {
+          return $.get(string.org, cachedTest, function(itemb) {
+            if (cachedTest === itemb[string.orig]) {
               return child.innerHTML = title;
             } else {
-              $.set("" + g.BOARD + "." + child.className, cachedTest);
-              return $.set("" + g.BOARD + "." + child.className + ".orig", cachedTest);
+              $.set(string, cachedTest);
+              return $.set(string.orig, cachedTest);
             }
           });
         }
       });
-      $.on(child, 'click', Banner.cb.click);
-      $.on(child, 'keydown', Banner.cb.keydown);
-      $.on(child, 'focus', Banner.cb.focus);
-      return $.on(child, 'blur', Banner.cb.blur);
+      return $.on(child, 'click keydown focus blur', function(e) {
+        return Banner.cb[e.type].call(this);
+      });
     }
   };
 
