@@ -12,7 +12,6 @@ Banner =
       subtitle.title = "Ctrl+click to edit board subtitle"
     children = banner.children
     i = children.length
-    nodes = []
     while i--
       child = children[i]
       if child.tagName.toLowerCase() is "img"
@@ -23,8 +22,6 @@ Banner =
 
       if Conf['Custom Board Titles']
         Banner.custom child
-
-      nodes.push child
 
     return
 

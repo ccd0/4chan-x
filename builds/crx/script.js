@@ -8454,7 +8454,7 @@
       });
     },
     ready: function() {
-      var banner, btitle, child, children, i, nodes, subtitle;
+      var banner, btitle, child, children, i, subtitle;
       banner = $(".boardBanner");
       if (Conf['Custom Board Titles']) {
         btitle = $(".boardTitle");
@@ -8464,7 +8464,6 @@
       }
       children = banner.children;
       i = children.length;
-      nodes = [];
       while (i--) {
         child = children[i];
         if (child.tagName.toLowerCase() === "img") {
@@ -8476,7 +8475,6 @@
         if (Conf['Custom Board Titles']) {
           Banner.custom(child);
         }
-        nodes.push(child);
       }
     },
     types: {
