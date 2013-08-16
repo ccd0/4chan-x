@@ -116,7 +116,8 @@
         'Index Navigation': [false, 'Add buttons to navigate between threads.'],
         'Reply Navigation': [false, 'Add buttons to navigate to top / bottom of thread.'],
         'Show Dice Roll': [true, 'Show dice that were entered into the email field.'],
-        'Custom Board Titles': [true, 'Allow editing of the board titles'],
+        'Custom Board Titles': [true, 'Allow editing of the board title and subtitle by ctrl+clicking them'],
+        'Persistent Custom Board Titles': [false, 'Force custom board titles to be persistent, even if moot updates the board titles.'],
         'Show Updated Notifications': [true, 'Show notifications when 4chan X is successfully updated.'],
         'Emoji': [false, 'Adds icons next to names for different emails'],
         'Color User IDs': [false, 'Assign unique colors to user IDs on boards that use them'],
@@ -8502,16 +8503,17 @@
         }
       },
       focus: function() {
-        var items, string;
+        var items, string, string2;
         string = "" + g.BOARD + "." + this.className;
+        string2 = "" + string + ".orig";
         items = {
           title: this.innerHTML
         };
         items[string] = '';
-        items[string.orig] = false;
+        items[string2] = false;
         $.get(items, function(items) {
-          if (!(items[string.orig] && items.title === items[string])) {
-            return $.set(string.orig, items.title);
+          if (!(items[string2] && items.title === items[string])) {
+            return $.set(string2, items.title);
           }
         });
         return this.textContent = this.innerHTML;
@@ -8523,9 +8525,10 @@
       }
     },
     custom: function(child) {
-      var cachedTest, string;
+      var cachedTest, string, string2;
       cachedTest = child.innerHTML;
       string = "" + g.BOARD + "." + child.className;
+      string2 = "" + string + ".orig";
       $.get(string, cachedTest, function(item) {
         var title;
         if (!(title = item[string])) {
@@ -8534,18 +8537,18 @@
         if (Conf['Persistent Custom Board Titles']) {
           return child.innerHTML = title;
         } else {
-          return $.get(string.org, cachedTest, function(itemb) {
-            if (cachedTest === itemb[string.orig]) {
+          return $.get(string2, cachedTest, function(itemb) {
+            if (cachedTest === itemb[string2]) {
               return child.innerHTML = title;
             } else {
               $.set(string, cachedTest);
-              return $.set(string.orig, cachedTest);
+              return $.set(string2, cachedTest);
             }
           });
         }
       });
       return $.on(child, 'click keydown focus blur', function(e) {
-        return Banner.cb[e.type].call(this);
+        return Banner.cb[e.type].apply(this, [e]);
       });
     }
   };

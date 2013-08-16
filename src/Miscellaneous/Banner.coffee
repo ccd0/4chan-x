@@ -47,14 +47,15 @@ Banner =
 
     focus: ->
       string = "#{g.BOARD}.#{@className}"
+      string2 = "#{string}.orig"
       items = 
         title: @innerHTML
       items[string]      = ''
-      items[string.orig] = false
+      items[string2] = false
 
       $.get items, (items) ->
-        unless items[string.orig] and items.title is items[string]
-          $.set string.orig, items.title
+        unless items[string2] and items.title is items[string]
+          $.set string2, items.title
       @textContent = @innerHTML
 
     blur: ->
@@ -65,17 +66,18 @@ Banner =
   custom: (child) ->
     cachedTest = child.innerHTML
     string = "#{g.BOARD}.#{child.className}"
+    string2 = "#{string}.orig"
 
     $.get string, cachedTest, (item) ->
       return unless title = item[string]
       if Conf['Persistent Custom Board Titles']
         child.innerHTML = title
       else
-        $.get string.org, cachedTest, (itemb) ->
-          if cachedTest is itemb[string.orig]
+        $.get string2, cachedTest, (itemb) ->
+          if cachedTest is itemb[string2]
             child.innerHTML = title
           else
             $.set string,      cachedTest
-            $.set string.orig, cachedTest
+            $.set string2, cachedTest
 
-    $.on child, 'click keydown focus blur', (e) -> Banner.cb[e.type].call @
+    $.on child, 'click keydown focus blur', (e) -> Banner.cb[e.type].apply @, [e]

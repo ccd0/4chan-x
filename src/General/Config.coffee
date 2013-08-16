@@ -59,7 +59,11 @@ Config =
       ]
       'Custom Board Titles': [
         true
-        'Allow editing of the board titles'
+        'Allow editing of the board title and subtitle by ctrl+clicking them'
+      ]
+      'Persistent Custom Board Titles': [
+        false
+        'Force custom board titles to be persistent, even if moot updates the board titles.'
       ]
       'Show Updated Notifications': [
         true
