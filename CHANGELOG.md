@@ -1,3 +1,9 @@
+### v1.2.32 
+*2013-08-16*
+
+**seaweedchan**:
+- Optimizations for the banner and board title code, including a fix for boards without subtitles throwing an error
+
 ### v1.2.31 
 *2013-08-16*
 
