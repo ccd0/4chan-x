@@ -3539,9 +3539,7 @@
         });
         $.on(div, 'click', ThreadHiding.menu.show);
         $.event('AddMenuEntry', {
-          type: 'post'
-        });
-        ({
+          type: 'post',
           el: div,
           order: 20,
           open: function(_arg) {
