@@ -1,3 +1,11 @@
+**seaweedchan**:
+- Fix Color User IDs
+- Fix Mayhem breaking uploading images in Pale Moon (and other forks based on Firefox <22)
+
+**Zixaphir**:
+- More under-the-hood linkifier changes, including support for all top-level domains (with seaweedchan)
+- Fix header auto-hide toggle keybind
+
 ### v1.2.29 
 *2013-08-14*
 
