@@ -182,27 +182,23 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'release', [
     'build'
+    'compress:crx'
     'shell:commit'
     'shell:push'
-    'build-crx'
-    'compress:crx'
   ]
   grunt.registerTask 'patch', [
     'bump'
     'updcl:3'
-    'release'
   ]
 
   grunt.registerTask 'minor', [
     'bump:minor'
     'updcl:2'
-    'release'
   ]
 
   grunt.registerTask 'major', [
     'bump:major'
     'updcl:1'
-    'release'
   ]
 
   grunt.registerTask 'updcl', 'Update the changelog', (headerLevel) ->
@@ -211,6 +207,5 @@ module.exports = (grunt) ->
     today     = grunt.template.today 'yyyy-mm-dd'
     changelog = grunt.file.read 'CHANGELOG.md'
 
-    grunt.file.write 'CHANGELOG.md', "#{headerPrefix} #{version} - *#{today}*\n\n#{changelog}"
+    grunt.file.write 'CHANGELOG.md', "#{headerPrefix} v#{version} \n*#{today}*\n\n#{changelog}"
     grunt.log.ok "Changelog updated for v#{version}."
-

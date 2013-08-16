@@ -2,24 +2,21 @@ Linkify =
   init: ->
     return if g.VIEW is 'catalog' or not Conf['Linkify']
 
-    @regString = 
+    @regString =
       ///(
         # http, magnet, ftp, etc
-        ?:[a-z][-\w]+:(
+        (https?|mailto|git|magnet|ftp|irc):(
           [a-z\d%/]
         )
         |
-        www\d{0,3}[.]
-        |
-        # This should account for virtually all links posted without www or http:
-        # If it misses any, screw it. No, I will not add canv.as
-        [-a-z\d.]+[.](
-          com|net|org|jp|uk|ru|be|tv|xxx|edu|gov|cd|es|de|se|tk|dk|io|fm|fi
-        )
+        # This should account for virtually all links posted without http:
+        [-a-z\d]+[.](
+          aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2}
+        )(/|(?!.))
         |
         # IPv4 Addresses
         [\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}
-        |
+        | 
         # E-mails
         [-\w\d.@]+@[a-z\d.-]+\.[a-z\d]
       )///i
@@ -75,17 +72,13 @@ Linkify =
 
           test.lastIndex = 0 if length is endNode.data.length
           range = Linkify.makeRange node, endNode, index, length
-          if link = Linkify.regString.exec text = range.toString()
-            if lIndex = link.index
-              range.setStart node, lIndex + index
-              text = text[...lIndex]
-            links.push [range, text]
+          links.push range if link = Linkify.regString.exec range.toString()
           break
 
         else
           if link = Linkify.regString.exec result[0]
-            range = Linkify.makeRange node, node, index + link.index, length + link.index
-            links.push [range, link]
+            range = Linkify.makeRange node, node, index + link.index, length
+            links.push range
 
     for range in links.reverse()
       @nodes.links.push Linkify.makeLink range, @
@@ -103,12 +96,37 @@ Linkify =
 
   makeRange: (startNode, endNode, startOffset, endOffset) ->
     range = document.createRange();
-    range.setStart startNode,  startOffset
-    range.setEnd   endNode,    endOffset
+    range.setStart startNode, startOffset
+    range.setEnd   endNode,   endOffset
     range
 
-  makeLink: ([range, text]) ->
-    text
+  makeLink: (range) ->
+    text = range.toString()
+
+    # Clean leading brackets, >
+    i = 0
+    i++ while /[(\[{<>]/.test text.charAt i
+
+    if i
+      text = text.slice i
+      i-- while range.startOffset + i >= range.startContainer.data.length
+
+      range.setStart range.startContainer, range.startOffset + i if i
+
+    # Clean hanging brackets, commas, periods
+    i = 0
+    while /[)\]}>.,]/.test char = text.charAt text.length - (1 + i)
+      break unless /[.,]/.test(char) or (text.match /[()\[\]{}<>]/g).length % 2
+      i++
+
+    if i
+      text = text.slice 0, -i
+      i-- while range.endOffset - i < 0
+
+      if i
+        range.setEnd range.endContainer, range.endOffset - i
+
+    # This is the only piece of code left based on Anthony Lieuallen's Linkify
     text =
       if text.contains ':'
         text

@@ -28,10 +28,7 @@ Settings =
           new Notification 'info', el, 30
       else
         $.on d, '4chanXInitFinished', Settings.open
-      $.set
-        archives: Conf['archives']
-        lastarchivecheck: now
-        previousversion: g.VERSION
+      $.set 'previousversion', g.VERSION
 
     Settings.addSection 'Style',    Settings.style
     Settings.addSection 'Themes',   Settings.themes

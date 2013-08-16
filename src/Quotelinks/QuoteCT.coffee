@@ -13,16 +13,13 @@ QuoteCT =
   node: ->
     # Stop there if it's a clone of a post in the same thread.
     return if @isClone and @thread is @context.thread
-    # Stop there if there's no quotes in that post.
-    return unless (quotes = @quotes).length
-    {quotelinks} = @nodes
 
     {board, thread} = if @isClone then @context else @
-    for quotelink in quotelinks
+    for quotelink in @nodes.quotelinks
       {boardID, threadID} = Get.postDataFromLink quotelink
       continue unless threadID # deadlink
       if @isClone
         quotelink.textContent = quotelink.textContent.replace QuoteCT.text, ''
-      if boardID is @board.ID and threadID isnt thread.ID
+      if boardID is board.ID and threadID isnt thread.ID
         $.add quotelink, $.tn QuoteCT.text
     return

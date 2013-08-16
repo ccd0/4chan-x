@@ -88,7 +88,7 @@ UI = do ->
         $.addClass menu, 'left'
 
       entry = $ '.entry', menu
-      # We've removed flexbox, so we don't user order anymore.
+      # We've removed flexbox, so we don't use order anymore.
       # while prevEntry = @findNextEntry entry, -1
       #   entry = prevEntry
       @focus entry

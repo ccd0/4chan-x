@@ -1,3 +1,25 @@
+**seaweedchan**:
+- Fix Color User IDs
+
+**MayhemYDG**:
+
+![New thread watcher](src/General/img/changelog/1.2.28.png)
+
+- Greatly improved thread watcher
+  - Added submenu with ability to prune 404'd threads, filter by current board, etc
+  - Periodically checks which threads have 404'd and indicates them with a strikethrough
+- Removed `Check for Updates` as your browser should now handle this automatically
+- Fixed an error for Firefox <23 users
+- Add a message for Chrome users who experience the Corrupted File bug
+
+**Zixaphir**:
+
+![Linkifier in action](src/General/img/changelog/1.2.28-2.png)
+
+- Drastically improved the accuracy and quality of the linkifier (with seaweedchan)
+- More under-the-hood linkifier changes, including support for all top-level domains (with seaweedchan)
+- Removed `Allow False Positives` option due to the accuracy of the new linkifier regex
+
 ### 2.3.2 - *2013-08-12*
 
 **zixaphir**:
@@ -13,24 +35,16 @@
 **aeosynth**:
 - Update Gruntfile.coffee.
 
+**Zixaphir**:
+- Added Twitch.tv and Vine embedding (with @ihavenoface)
+- Keybinds to scroll to posts that quote you.
+- New Feature: toggle between image banners by clicking them.
+- Minor optimizations.
+- Minor fixes.
+
 **MayhemYDG**:
-- **New feature**: `Show Dice Roll` (with @carboncopy)
- - Shows dice that were entered into the email field on /tg/.
-- **Thread Watcher** improvements:
- - It is now possible to open all watched threads via the `Open all threads` button in the Thread Watcher's menu.
- - Added the `Current Board` setting to switch between showing watched threads from the current board or all boards, disabled by default.
- - About dead (404'd) threads:
-  - Dead threads will be typographically indicated with a strikethrough.
-  - Dead threads will directly link to the corresponding archive when available.
-  - A button to prune all 404'd threads from the list is now available.
-  - Added the `Auto Prune` setting to automatically prune 404'd threads, disabled by default.
- - The current thread is now highlighted in the list of watched threads.
- - Watching the current thread can be done in the Header's menu too.
-- Removed the `Check for Updates` setting:
- - Your browser/userscript manager should handle updates itself automatically.
-- Fix impossibility to create new threads when in dead threads.
+- Show dice rolls that were entered into the email field on /tg/.
 - Fix flag filtering on /sp/ and /int/.
-- Update archives. (with @woxxy and @proplex)
 - Minor fixes.
 - Minor optimizations.
 
@@ -38,14 +52,7 @@
 - Fix issues with having two options called `Reveal Spoilers`. 
 - Update archive.
 
-**zixaphir**:
-- Linkifier Rewrite.
-- Fix Quote Threading toggle.
-- Added Twitch.tv and Vine embedding (with @ihavenoface)
-- Keybinds to scroll to posts that quote you.
-- New Feature: toggle between image banners by clicking them.
-- Minor optimizations.
-- Minor fixes.
+**Zixaphir**:
 
 ### v2.2.2
 *2013-08-01*

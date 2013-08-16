@@ -191,10 +191,10 @@ ThreadHiding =
     $.add a, $.tn " #{opInfo} (#{numReplies})"
     thread.stub = $.el 'div',
       className: 'stub'
-    $.add thread.stub, unless Conf['Menu']
-      a
+    $.add thread.stub, if Conf['Menu']
+      [a, $.tn(' '), Menu.makeButton()] 
     else
-      [a, $.tn(' '), button = Menu.makeButton OP]
+      a
     $.prepend threadRoot, thread.stub
 
   show: (thread) ->

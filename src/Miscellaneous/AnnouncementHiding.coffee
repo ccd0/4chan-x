@@ -23,7 +23,7 @@ PSAHiding =
     $.on entry.el, 'click', PSAHiding.toggle
 
     PSAHiding.btn = btn = $.el 'a',
-      innerHTML: '<span class=fourchanx-link>&nbsp;-&nbsp;</span>'
+      innerHTML: '<span class=brackets-wrap>&nbsp;-&nbsp;</span>'
       title:     'Hide announcement.'
       className: 'hide-announcement' 
       href: 'javascript:;'

@@ -1,5 +1,6 @@
 Main =
-  init: (items) ->
+  init: ->
+
     # flatten Config into Conf
     # and get saved or default values
     flatten = (parent, obj) ->
@@ -28,11 +29,28 @@ Main =
       'Hidden Categories':    ["Questionable"]
       'selectedArchives':     {}
       'CachedTitles':         {}
-    
-    $.get Conf, Main.initFeatures
 
-  initFeatures: (items) ->
-    Conf = items
+    $.get Conf, (items) ->
+      $.extend Conf, items
+      <% if (type === 'crx') { %>
+      unless items
+        new Notification 'error', $.el 'span',
+          innerHTML: """
+          It seems like your <%= meta.name %> settings became corrupted due to a <a href="https://code.google.com/p/chromium/issues/detail?id=261623" target=_blank>Chrome bug</a>.<br>
+          Unfortunately, you'll have to <a href="https://github.com/MayhemYDG/4chan-x/wiki/FAQ#known-problems" target=_blank>fix it yourself</a>.
+          """
+        # Track resolution of this bug.
+        Main.logError
+          message: 'Chrome Storage API bug'
+          error: new Error chrome.runtime.lastError.message or 'no lastError.message'
+      <% } %>
+      Main.initFeatures()
+
+    $.on d, '4chanMainInit', Main.initStyle
+    $.asap (-> d.head and $('link[rel="shortcut icon"]', d.head) or d.readyState isnt 'loading'),
+      Main.initStyle
+
+  initFeatures: ->
 
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
@@ -174,7 +192,7 @@ Main =
     $.ready Main.initReady
 
   initReady: ->
-    if d.title is '4chan - 404 Not Found'
+    if ['4chan - Temporarily Offline', '4chan - 404 Not Found'].contains d.title
       if Conf['404 Redirect'] and g.VIEW is 'thread'
         href = Redirect.to 'thread',
           boardID:  g.BOARD.ID

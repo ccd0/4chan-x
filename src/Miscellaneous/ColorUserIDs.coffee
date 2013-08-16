@@ -1,6 +1,8 @@
 IDColor =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Color user IDs']
+    return if g.VIEW is 'catalog' or !Conf['Color User IDs']
+
+    @ids = {}
 
     Post::callbacks.push
       name: 'Color User IDs'
@@ -11,8 +13,6 @@ IDColor =
     uid = $ '.hand', @nodes.uniqueID
     return unless uid and uid.nodeName is 'SPAN'
     uid.style.cssText = IDColor.css IDColor.ids[str] or IDColor.compute str
-
-  ids: {}
 
   compute: (str) ->
     hash = IDColor.hash str
@@ -28,13 +28,11 @@ IDColor =
     @ids[str] = rgb
     rgb
 
-  css: (rgb) -> "background-color: rgb(#{rgb[0]},#{rgb[1]},#{rgb[2]}); color: #{if rgb[3] then "black;" else "white;"} border-radius: 3px; padding: 0px 2px;"
+  css: (rgb) -> "background-color: rgb(#{rgb[0]},#{rgb[1]},#{rgb[2]}); color: #{if rgb[3] then "#000" else "#fff"}; border-radius: 3px; padding: 0px 2px;"
 
   hash: (str) ->
     msg = 0
     i = 0
-    j = str.length
-    while i < j
-      msg = ((msg << 5) - msg) + str.charCodeAt i
-      ++i
+    while i < 8
+      msg = ((msg << 5) - msg) + str.charCodeAt i++
     msg

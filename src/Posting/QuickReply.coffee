@@ -387,7 +387,7 @@ QR =
       $.addClass QR.nodes.el, 'dump'
       QR.cooldown.auto = true
     {com, thread} = QR.nodes
-    thread.value = Get.contextFromNode(@).thread unless com.value
+    thread.value = Get.threadFromNode @ unless com.value
     thread.nextElementSibling.firstElementChild.textContent = thread.options[thread.selectedIndex].textContent
 
     caretPos = com.selectionStart
@@ -445,7 +445,7 @@ QR =
     QR.nodes.fileInput.click()
 
   fileInput: (files) ->
-    if files instanceof Event # file input
+    if files instanceof Event # file input, revert to "files instanceof Event" after a Pale Moon update
       files = [@files...]
       QR.nodes.fileInput.value = null # Don't hold the files from being modified on windows
     {length} = files
