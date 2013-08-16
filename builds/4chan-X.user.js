@@ -8473,9 +8473,8 @@
         subtitle.title = "Ctrl+click to edit board subtitle";
       }
       children = banner.children;
-      i = children.length;
-      while (i--) {
-        child = children[i];
+      i = 0;
+      while (child = children[i++]) {
         if (child.tagName.toLowerCase() === "img") {
           child.id = "Banner";
           child.title = "Click to change";

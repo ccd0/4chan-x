@@ -10,10 +10,9 @@ Banner =
       subtitle = $ ".boardSubtitle"
       btitle.title = "Ctrl+click to edit board title"
       subtitle.title = "Ctrl+click to edit board subtitle"
-    children = banner.children
-    i = children.length
-    while i--
-      child = children[i]
+    {children} = banner
+    i = 0
+    while child = children[i++]
       if child.tagName.toLowerCase() is "img"
         child.id = "Banner"
         child.title = "Click to change"
