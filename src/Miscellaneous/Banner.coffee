@@ -6,8 +6,8 @@ Banner =
   ready: ->
     banner = $ ".boardBanner"
     if Conf['Custom Board Titles']
-      btitle = $ ".boardTitle"
-      subtitle = $ ".boardSubtitle"
+      btitle = $ ".boardTitle", banner
+      subtitle = $ ".boardSubtitle", banner
       btitle.title = "Ctrl+click to edit board title"
       subtitle.title = "Ctrl+click to edit board subtitle"
     {children} = banner
