@@ -18,7 +18,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.3.2 - 2013-08-15
+* appchan x - Version 2.3.2 - 2013-08-16
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -7721,8 +7721,12 @@
       return QR.fileInput(files);
     },
     openFileInput: function(e) {
-      if (e.keyCode && e.keyCode !== 32) {
+      e.preventDefault();
+      if (e.keyCode && ![32, 13].contains(e.keyCode)) {
         return;
+      }
+      if (e.shiftKey && !e.keyCode) {
+        return QR.selected.rmFile();
       }
       return QR.nodes.fileInput.click();
     },

@@ -441,7 +441,10 @@ QR =
     QR.fileInput files
 
   openFileInput: (e) ->
-    return if e.keyCode and e.keyCode isnt 32
+    e.preventDefault()
+    return if e.keyCode and not [32, 13].contains e.keyCode
+    if e.shiftKey and not e.keyCode
+      return QR.selected.rmFile()
     QR.nodes.fileInput.click()
 
   fileInput: (files) ->
