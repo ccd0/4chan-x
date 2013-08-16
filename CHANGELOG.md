@@ -1,3 +1,6 @@
+### v1.2.31 
+*2013-08-16*
+
 **seaweedchan**:
 
 ![Board title editing in action](src/General/img/changelog/1.2.31.png)
