@@ -21,20 +21,21 @@ Banner =
           'sub'
         else
           ''}title"
-        Banner.custom(child).spellcheck = false
+        child.spellcheck = false
 
     return
 
   cb:
-    toggle: ->
+    toggle: do ->
       types =
         jpg: 227
         png: 270
         gif: 253
 
-      type = Object.keys(types)[Math.floor 3 * Math.random()]
-      num = Math.floor types[type] * Math.random()
-      @src = "//static.4chan.org/image/title/#{num}.#{type}"
+      ->
+        type = Object.keys(types)[Math.floor 3 * Math.random()]
+        num = Math.floor types[type] * Math.random()
+        @src = "//static.4chan.org/image/title/#{num}.#{type}"
       
     click: (e) ->
       if e.ctrlKey
