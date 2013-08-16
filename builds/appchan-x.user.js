@@ -3823,11 +3823,11 @@
 
   Header = {
     init: function() {
-      var barFixedToggler, barPositionToggler, customNavToggler, editCustomNav, headerToggler, menuButton,
+      var barFixedToggler, barPositionToggler, customNavToggler, editCustomNav, headerToggler,
         _this = this;
 
       this.menu = new UI.Menu('header');
-      menuButton = $.el('span', {
+      this.menuButton = $.el('span', {
         className: 'menu-button',
         id: 'main-menu'
       });

@@ -2,7 +2,7 @@ Header =
   init: ->
     @menu = new UI.Menu 'header'
 
-    menuButton = $.el 'span',
+    @menuButton = $.el 'span',
       className: 'menu-button'
       id:        'main-menu'
 
