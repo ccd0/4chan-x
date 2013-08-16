@@ -1021,6 +1021,12 @@ a:only-of-type > .remove {
   cursor: pointer;
   text-decoration: none !important;
 }
+/* Custom Board Titles */
+.boardTitle[contenteditable="true"],
+.boardSubtitle[contenteditable="true"] {
+  cursor: text !important;
+}
+
 /* Link Title Favicons */
 .linkify.YouTube {
   background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/youtube.png",    {encoding: "base64"}) %>') center left no-repeat!important;

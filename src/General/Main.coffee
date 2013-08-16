@@ -143,6 +143,7 @@ Main =
       'Index Navigation':          Nav
       'Keybinds':                  Keybinds
       'Show Dice Roll':            Dice
+      'Banner':                    Banner
 
     # c.timeEnd 'All initializations'
 

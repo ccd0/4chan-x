@@ -57,6 +57,10 @@ Config =
         true
         'Show dice that were entered into the email field.'
       ]
+      'Custom Board Titles': [
+        true
+        'Allow editing of the board titles'
+      ]
       'Show Updated Notifications': [
         true
         'Show notifications when 4chan X is successfully updated.'
