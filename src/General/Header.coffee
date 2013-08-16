@@ -244,19 +244,21 @@ Header =
     (if hide then $.addClass else $.rmClass) Header.bar, 'autohide'
     (if hide then $.addClass else $.rmClass) doc, 'autohide'
 
-  toggleBarVisibility: (e) ->
-    return if e.type is 'mousedown' and e.button isnt 0 # not LMB
+  toggleBarVisibility: ->
     hide = if @nodeName is 'INPUT'
       @checked
     else
       !$.hasClass Header.bar, 'autohide'
-    Conf['Header auto-hide'] = hide
-    $.set 'Header auto-hide', hide
+    # set checked status if called from keybind
+    @checked = hide
+
+    $.set 'Header auto-hide', Conf['Header auto-hide'] = hide
     Header.setBarVisibility hide
-    message = if hide
-      'The header bar will automatically hide itself.'
+    message = "The header bar will #{if hide
+      'automatically hide itself.'
     else
-      'The header bar will remain visible.'
+      'remain visible.'}"
+
     new Notification 'info', message, 2
 
   setFooterVisibility: (hide) ->

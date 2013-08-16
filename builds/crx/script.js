@@ -1746,17 +1746,14 @@
       (hide ? $.addClass : $.rmClass)(Header.bar, 'autohide');
       return (hide ? $.addClass : $.rmClass)(doc, 'autohide');
     },
-    toggleBarVisibility: function(e) {
+    toggleBarVisibility: function() {
       var hide, message;
 
-      if (e.type === 'mousedown' && e.button !== 0) {
-        return;
-      }
       hide = this.nodeName === 'INPUT' ? this.checked : !$.hasClass(Header.bar, 'autohide');
-      Conf['Header auto-hide'] = hide;
-      $.set('Header auto-hide', hide);
+      this.checked = hide;
+      $.set('Header auto-hide', Conf['Header auto-hide'] = hide);
       Header.setBarVisibility(hide);
-      message = hide ? 'The header bar will automatically hide itself.' : 'The header bar will remain visible.';
+      message = "The header bar will " + (hide ? 'automatically hide itself.' : 'remain visible.');
       return new Notification('info', message, 2);
     },
     setFooterVisibility: function(hide) {
@@ -9442,10 +9439,7 @@
           }
           break;
         case Conf['Toggle header']:
-          if (!$('#menu.left')) {
-            Header.menuButton.click();
-          }
-          Header.headerToggler.click();
+          Header.toggleBarVisibility();
           break;
         case Conf['Open empty QR']:
           Keybinds.qr(threadRoot);
