@@ -8840,6 +8840,7 @@
       if (g.VIEW === 'catalog' || !Conf['Color User IDs']) {
         return;
       }
+      this.ids = {};
       return Post.prototype.callbacks.push({
         name: 'Color User IDs',
         cb: this.node
@@ -8857,7 +8858,6 @@
       }
       return uid.style.cssText = IDColor.css(IDColor.ids[str] || IDColor.compute(str));
     },
-    ids: {},
     compute: function(str) {
       var hash, rgb;
 
@@ -8868,17 +8868,15 @@
       return rgb;
     },
     css: function(rgb) {
-      return "background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: " + (rgb[3] ? "black;" : "white;") + " border-radius: 3px; padding: 0px 2px;";
+      return "background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: " + (rgb[3] ? "#000" : "#fff") + "; border-radius: 3px; padding: 0px 2px;";
     },
     hash: function(str) {
-      var i, j, msg;
+      var i, msg;
 
       msg = 0;
       i = 0;
-      j = str.length;
-      while (i < j) {
-        msg = ((msg << 5) - msg) + str.charCodeAt(i);
-        ++i;
+      while (i < 8) {
+        msg = ((msg << 5) - msg) + str.charCodeAt(i++);
       }
       return msg;
     }
