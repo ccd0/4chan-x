@@ -647,6 +647,8 @@ th {
 /* Image Expansion */
 .fit-width .full-image {
   max-width: 100%;
+}
+.gecko.fit-width .full-image {
   width: 100%;
 }
 .fit-height .full-image {
