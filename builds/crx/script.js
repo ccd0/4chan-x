@@ -8455,44 +8455,38 @@
       });
     },
     ready: function() {
-      var banner, btitle, child, children, i, subtitle;
+      var banner, child, children, i;
       banner = $(".boardBanner");
-      if (Conf['Custom Board Titles']) {
-        btitle = $(".boardTitle", banner);
-        subtitle = $(".boardSubtitle", banner);
-        btitle.title = "Ctrl+click to edit board title";
-        subtitle.title = "Ctrl+click to edit board subtitle";
-      }
       children = banner.children;
       i = 0;
       while (child = children[i++]) {
-        if (child.tagName.toLowerCase() === "img") {
+        if (i === 1) {
           child.id = "Banner";
           child.title = "Click to change";
           $.on(child, 'click', Banner.cb.toggle);
           continue;
         }
         if (Conf['Custom Board Titles']) {
-          Banner.custom(child);
+          Banner.custom(child).title = "Ctrl+click to edit board " + (i === 3 ? 'sub' : '') + "title";
+          Banner.custom(child).spellcheck = false;
         }
       }
     },
-    types: {
-      jpg: 227,
-      png: 270,
-      gif: 253
-    },
     cb: {
       toggle: function() {
-        var num, type;
-        type = ['jpg', 'png', 'gif'][Math.floor(3 * Math.random())];
-        num = Math.floor(Banner.types[type] * Math.random());
+        var num, type, types;
+        types = {
+          jpg: 227,
+          png: 270,
+          gif: 253
+        };
+        type = Object.keys(types)[Math.floor(3 * Math.random())];
+        num = Math.floor(types[type] * Math.random());
         return this.src = "//static.4chan.org/image/title/" + num + "." + type;
       },
       click: function(e) {
         if (e.ctrlKey) {
           this.contentEditable = true;
-          this.spellcheck = false;
           return this.focus();
         }
       },
@@ -8504,6 +8498,7 @@
       },
       focus: function() {
         var items, string, string2;
+        this.textContent = this.innerHTML;
         string = "" + g.BOARD + "." + this.className;
         string2 = "" + string + ".orig";
         items = {
@@ -8516,40 +8511,39 @@
             return $.set(string2, items.title);
           }
         });
-        return this.textContent = this.innerHTML;
       },
       blur: function() {
-        $.set("" + g.BOARD + "." + this.className, this.textContent);
         this.innerHTML = this.textContent;
-        return this.contentEditable = false;
+        this.contentEditable = false;
+        return $.set("" + g.BOARD + "." + this.className, this.textContent);
       }
     },
     custom: function(child) {
-      var cachedTest, string, string2;
+      var cachedTest, string;
       cachedTest = child.innerHTML;
       string = "" + g.BOARD + "." + child.className;
-      string2 = "" + string + ".orig";
+      $.on(child, 'click keydown focus blur', function(e) {
+        return Banner.cb[e.type].apply(this, [e]);
+      });
       $.get(string, cachedTest, function(item) {
-        var title;
+        var string2, title;
         if (!(title = item[string])) {
           return;
         }
         if (Conf['Persistent Custom Board Titles']) {
           return child.innerHTML = title;
-        } else {
-          return $.get(string2, cachedTest, function(itemb) {
-            if (cachedTest === itemb[string2]) {
-              return child.innerHTML = title;
-            } else {
-              $.set(string, cachedTest);
-              return $.set(string2, cachedTest);
-            }
-          });
         }
+        string2 = "" + string + ".orig";
+        return $.get(string2, cachedTest, function(itemb) {
+          if (cachedTest === itemb[string2]) {
+            return child.innerHTML = title;
+          } else {
+            $.set(string, cachedTest);
+            return $.set(string2, cachedTest);
+          }
+        });
       });
-      return $.on(child, 'click keydown focus blur', function(e) {
-        return Banner.cb[e.type].apply(this, [e]);
-      });
+      return child;
     }
   };
 

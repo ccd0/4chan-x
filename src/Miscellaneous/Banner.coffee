@@ -5,40 +5,40 @@ Banner =
 
   ready: ->
     banner = $ ".boardBanner"
-    if Conf['Custom Board Titles']
-      btitle = $ ".boardTitle", banner
-      subtitle = $ ".boardSubtitle", banner
-      btitle.title = "Ctrl+click to edit board title"
-      subtitle.title = "Ctrl+click to edit board subtitle"
     {children} = banner
+
     i = 0
     while child = children[i++]
-      if child.tagName.toLowerCase() is "img"
+      if i is 1
         child.id = "Banner"
         child.title = "Click to change"
         $.on child, 'click', Banner.cb.toggle
+
         continue
 
       if Conf['Custom Board Titles']
-        Banner.custom child
+        Banner.custom(child).title = "Ctrl+click to edit board #{if i is 3
+          'sub'
+        else
+          ''}title"
+        Banner.custom(child).spellcheck = false
 
     return
 
-  types:
-    jpg: 227
-    png: 270
-    gif: 253
-
   cb:
     toggle: ->
-      type = ['jpg', 'png', 'gif'][Math.floor 3 * Math.random()]
-      num  = Math.floor Banner.types[type] * Math.random()
+      types =
+        jpg: 227
+        png: 270
+        gif: 253
+
+      type = Object.keys(types)[Math.floor 3 * Math.random()]
+      num = Math.floor types[type] * Math.random()
       @src = "//static.4chan.org/image/title/#{num}.#{type}"
       
     click: (e) ->
       if e.ctrlKey
         @contentEditable = true
-        @spellcheck = false
         @focus()
 
     keydown: (e) ->
@@ -46,38 +46,43 @@ Banner =
       return @blur() if !e.shiftKey and e.keyCode is 13
 
     focus: ->
+      @textContent = @innerHTML
+
       string = "#{g.BOARD}.#{@className}"
       string2 = "#{string}.orig"
-      items = 
-        title: @innerHTML
-      items[string]      = ''
+
+      items = {title: @innerHTML}
+      items[string] = ''
       items[string2] = false
 
       $.get items, (items) ->
         unless items[string2] and items.title is items[string]
           $.set string2, items.title
-      @textContent = @innerHTML
+
+      return
 
     blur: ->
-      $.set "#{g.BOARD}.#{@className}",           @textContent
       @innerHTML = @textContent
       @contentEditable = false
+      $.set "#{g.BOARD}.#{@className}", @textContent
 
   custom: (child) ->
     cachedTest = child.innerHTML
     string = "#{g.BOARD}.#{child.className}"
-    string2 = "#{string}.orig"
+
+    $.on child, 'click keydown focus blur', (e) -> Banner.cb[e.type].apply @, [e]
 
     $.get string, cachedTest, (item) ->
       return unless title = item[string]
-      if Conf['Persistent Custom Board Titles']
-        child.innerHTML = title
-      else
-        $.get string2, cachedTest, (itemb) ->
-          if cachedTest is itemb[string2]
-            child.innerHTML = title
-          else
-            $.set string,      cachedTest
-            $.set string2, cachedTest
+      return child.innerHTML = title if Conf['Persistent Custom Board Titles']
 
-    $.on child, 'click keydown focus blur', (e) -> Banner.cb[e.type].apply @, [e]
+      string2 = "#{string}.orig"
+
+      $.get string2, cachedTest, (itemb) ->
+       if cachedTest is itemb[string2]
+          child.innerHTML = title
+        else
+          $.set string, cachedTest
+          $.set string2, cachedTest
+
+    child
