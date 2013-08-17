@@ -11070,18 +11070,22 @@
       $.after(banner, title);
     },
     cb: {
-      toggle: function() {
-        var num, type, types;
+      toggle: (function() {
+        var types;
 
         types = {
           jpg: 227,
           png: 270,
           gif: 253
         };
-        type = Object.keys(types)[Math.floor(3 * Math.random())];
-        num = Math.floor(types[type] * Math.random());
-        return this.src = "//static.4chan.org/image/title/" + num + "." + type;
-      },
+        return function() {
+          var num, type;
+
+          type = Object.keys(types)[Math.floor(3 * Math.random())];
+          num = Math.floor(types[type] * Math.random());
+          return this.src = "//static.4chan.org/image/title/" + num + "." + type;
+        };
+      })(),
       click: function(e) {
         if (e.ctrlKey) {
           this.contentEditable = true;

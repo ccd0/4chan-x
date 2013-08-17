@@ -1,3 +1,6 @@
+**seaweedchan**:
+- Optimizations for the banner and board title code
+
 ### v2.3.3 
 *2013-08-16*
 
