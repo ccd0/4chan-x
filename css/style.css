@@ -191,6 +191,9 @@ a[href="javascript:;"] {
   text-decoration: none;
   padding: 1px;
 }
+#shortcuts::after {
+  margin-left: 2px;
+}
 .shortcut:not(:last-child)::after {
   content: " / ";
 }
