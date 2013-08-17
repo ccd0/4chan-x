@@ -6,7 +6,7 @@ Polyfill =
     @visibility()
     <% } %>
   notificationPermission: ->
-    return if window.Notification and 'permission' of Notification
+    return if !window.Notification or 'permission' of Notification
     Object.defineProperty Notification, 'permission',
       get: ->
         switch webkitNotifications.checkPermission()
