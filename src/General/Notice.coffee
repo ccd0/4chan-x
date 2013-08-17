@@ -25,4 +25,5 @@ class Notice
     setTimeout @close, @timeout * $.SECOND if @timeout
 
   close: =>
+    $.off d, 'visibilitychange', @add
     $.rm @el

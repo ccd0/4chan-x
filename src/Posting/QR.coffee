@@ -111,8 +111,17 @@ QR =
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
       QR.captcha.nodes.input.focus()
-    alert el.textContent if d.hidden
-    QR.notifications.push new Notice 'warning', el
+    notice = new Notice 'warning', el
+    QR.notifications.push notice
+    return unless d.hidden
+    notif = new Notification el.textContent,
+      iconUrl: Favicon.empty
+    notif.onclick = -> window.focus()
+    notif.onclose = -> notice.close()
+    setTimeout ->
+      notif.onclose = null
+      notif.close()
+    , 5 * $.SECOND
   notifications: []
   cleanNotifications: ->
     for notification in QR.notifications
