@@ -22,7 +22,7 @@ ImageExpand =
       ImageExpand.contract @
       ImageExpand.expand @
       return
-    if ImageExpand.on and !@isHidden
+    if ImageExpand.on and !@isHidden and (Conf['Expand spoilers'] or !@file.isSpoiler)
       ImageExpand.expand @
   cb:
     toggle: (e) ->
