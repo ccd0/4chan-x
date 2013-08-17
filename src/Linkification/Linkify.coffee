@@ -126,12 +126,9 @@ Linkify =
       if i
         range.setEnd range.endContainer, range.endOffset - i
 
-    # This is the only piece of code left based on Anthony Lieuallen's Linkify
-    text =
-      if text.contains ':'
-        text
-      else (
-        if text.contains '@'
+    unless /(https?|mailto|git|magnet|ftp|irc):/.test text
+      text = (
+        if /@/.test text
           'mailto:'
         else
           'http://'

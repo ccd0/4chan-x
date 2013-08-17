@@ -97,16 +97,6 @@
 *   All rights reserved.
 *
 *   license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
-*
-* Linkify: (http://userscripts.org/scripts/show/1352)
-*   Copyright (c) 2011, Anthony Lieuallen
-*   All rights reserved.
-*   Originally written by Anthony Lieuallen of http://arantius.com/
-*   Licensed for unlimited modification and redistribution as long as
-*   this notice is kept intact.
-*
-*   license: http://userscripts.org/scripts/review/1352
-*
 */
 'use strict';
 
@@ -4548,7 +4538,9 @@
           range.setEnd(range.endContainer, range.endOffset - i);
         }
       }
-      text = text.contains(':') ? text : (text.contains('@') ? 'mailto:' : 'http://') + text;
+      if (!/(https?|mailto|git|magnet|ftp|irc):/.test(text)) {
+        text = (/@/.test(text) ? 'mailto:' : 'http://') + text;
+      }
       a = $.el('a', {
         className: 'linkify',
         rel: 'nofollow noreferrer',
