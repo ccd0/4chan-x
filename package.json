@@ -16,7 +16,7 @@
     ]
   },
   "devDependencies": {
-    "font-awesome": "git://github.com/tagliala/Font-Awesome.git#1f882574ab9067c69789e4be39bf8d86eee53815",
+    "font-awesome": "git://github.com/MayhemYDG/Font-Awesome.git#df4285951124f9ca1f3907438462e5ba9e464bcb",
     "grunt": "~0.4.1",
     "grunt-bump": "~0.0.11",
     "grunt-concurrent": "~0.3.0",
