@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.2.32 - 2013-08-16
+* 4chan X - Version 1.2.32 - 2013-08-17
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -4432,7 +4432,7 @@
       });
     },
     node: function() {
-      var data, el, end, endNode, i, index, items, length, link, links, node, range, result, saved, snapshot, space, test, _i, _len, _ref;
+      var data, el, end, endNode, i, index, items, length, link, links, node, result, saved, snapshot, space, test, word, _i, _len, _ref;
 
       if (this.isClone) {
         if (Conf['Embedding']) {
@@ -4460,47 +4460,44 @@
         while (result = test.exec(data)) {
           index = result.index;
           endNode = node;
-          if ((length = index + result[0].length) === data.length) {
+          word = result[0];
+          if ((length = index + word.length) === data.length) {
+            test.lastIndex = 0;
             while ((saved = snapshot.snapshotItem(i++))) {
               if (saved.nodeName === 'BR') {
                 break;
               }
               endNode = saved;
-              length = saved.data.length;
-              if (end = space.exec(saved.data)) {
+              data = saved.data;
+              word += data;
+              length = data.length;
+              if (end = space.exec(data)) {
                 test.lastIndex = length = end.index;
                 i--;
                 break;
               }
             }
-            if (length === endNode.data.length) {
-              test.lastIndex = 0;
-            }
-            range = Linkify.makeRange(node, endNode, index, length);
-            if (link = Linkify.regString.exec(range.toString())) {
-              links.push(range);
-            }
+          }
+          if (Linkify.regString.exec(word)) {
+            links.push(Linkify.makeRange(node, endNode, index, length));
+          }
+          if (!(test.lastIndex || node === endNode)) {
             break;
-          } else {
-            if (link = Linkify.regString.exec(result[0])) {
-              range = Linkify.makeRange(node, node, index, length);
-              links.push(range);
-            }
           }
         }
       }
       _ref = links.reverse();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        range = _ref[_i];
-        this.nodes.links.push(Linkify.makeLink(range, this));
+        link = _ref[_i];
+        this.nodes.links.push(Linkify.makeLink(link, this));
       }
       if (!(Conf['Embedding'] || Conf['Link Title'])) {
         return;
       }
-      items = this.nodes.links;
+      links = this.nodes.links;
       i = 0;
-      while (range = items[i++]) {
-        if (data = Linkify.services(range)) {
+      while (link = links[i++]) {
+        if (data = Linkify.services(link)) {
           if (Conf['Embedding']) {
             Linkify.embed(data);
           }
