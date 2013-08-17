@@ -103,6 +103,7 @@ Unread =
       $('.nameBlock', post.nodes.info).textContent.trim()
     notif = new Notification "#{name} replied to you.",
       body: post.info.comment
+      icon: Favicon.logo
     notif.onclick = ->
       Header.scrollToPost post.nodes.root
       window.focus()
