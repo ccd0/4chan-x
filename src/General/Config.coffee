@@ -2,6 +2,7 @@ Config =
   main:
     'Miscellaneous':
       'Enable 4chan\'s Extension':    [false, 'Compatibility between <%= meta.name %> and 4chan\'s inline extension is NOT guaranteed.']
+      'Desktop Notifications':        [true,  'Enables desktop notifications across various <%= meta.name %> features.']
       'Announcement Hiding':          [true,  'Add button to hide 4chan announcements.']
       '404 Redirect':                 [true,  'Redirect dead threads and images.']
       'Keybinds':                     [true,  'Bind actions to keyboard shortcuts.']

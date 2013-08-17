@@ -1,9 +1,21 @@
 Polyfill =
   init: ->
     <% if (type === 'crx') { %>
-    Polyfill.toBlob()
-    Polyfill.visibility()
+    @notificationPermission()
+    @toBlob()
+    @visibility()
     <% } %>
+  notificationPermission: ->
+    return if window.Notification and 'permission' of Notification
+    Object.defineProperty Notification, 'permission',
+      get: ->
+        switch webkitNotifications.checkPermission()
+          when 0
+            'granted'
+          when 1
+            'default'
+          when 2
+            'denied'
   toBlob: ->
     HTMLCanvasElement::toBlob or= (cb) ->
       data = atob @toDataURL()[22..]

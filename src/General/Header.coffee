@@ -89,6 +89,8 @@ Header =
       Header.setCatalogLinks Conf['Header catalog links']
       $.sync 'Header catalog links', Header.setCatalogLinks
 
+    @enableDesktopNotifications()
+
   setBoardList: ->
     nav = $.id 'boardNavDesktop'
     if a = $ "a[href*='/#{g.BOARD}/']", nav
@@ -268,3 +270,31 @@ Header =
     {type, content, lifetime, cb} = e.detail
     notif = new Notice type, content, lifetime
     cb notif if cb
+
+  areNotificationsEnabled: false
+  enableDesktopNotifications: ->
+    return unless window.Notification and Conf['Desktop Notifications']
+    switch Notification.permission
+      when 'granted'
+        Header.areNotificationsEnabled = true
+        return
+      when 'denied'
+        # requestPermission doesn't work if status is 'denied',
+        # but it'll still work if status is 'default'.
+        return
+
+    el = $.el 'span',
+      innerHTML: """
+      Desktop notification permissions are not granted:<br>
+      <button>Authorize</button> or <button>Disable</button>
+      """
+    [authorize, disable] = $$ 'button', el
+    $.on authorize, 'click', ->
+      Notification.requestPermission (status) ->
+        Header.areNotificationsEnabled = status is 'granted'
+        return if status is 'default'
+        notice.close()
+    $.on disable, 'click', ->
+      $.set 'Desktop Notifications', false
+      notice.close()
+    notice = new Notice 'info', el

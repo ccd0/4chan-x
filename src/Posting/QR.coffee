@@ -113,7 +113,7 @@ QR =
       QR.captcha.nodes.input.focus()
     notice = new Notice 'warning', el
     QR.notifications.push notice
-    return unless d.hidden
+    return unless d.hidden and Header.areNotificationsEnabled
     notif = new Notification 'Quick reply warning',
       body: el.textContent
       icon: Favicon.logo
