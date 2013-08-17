@@ -30,7 +30,7 @@ Filter =
             regexp = RegExp regexp[1], regexp[2]
           catch err
             # I warned you, bro.
-            new Notification 'warning', err.message, 60
+            new Notice 'warning', err.message, 60
             continue
 
         # Filter OPs along with their threads, replies only, or both.

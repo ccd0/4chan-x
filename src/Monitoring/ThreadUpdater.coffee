@@ -162,14 +162,14 @@ ThreadUpdater =
         'The thread is not a sticky anymore.'
       else
         'The thread is not closed anymore.'
-      new Notification 'info', message, 30
+      new Notice 'info', message, 30
       $.rm $ ".#{titleLC}Icon", ThreadUpdater.thread.OP.nodes.info
       return
     message = if title is 'Sticky'
       'The thread is now a sticky.'
     else
       'The thread is now closed.'
-    new Notification 'info', message, 30
+    new Notice 'info', message, 30
     icon = $.el 'img',
       src: "//static.4chan.org/image/#{titleLC}.gif"
       alt: title

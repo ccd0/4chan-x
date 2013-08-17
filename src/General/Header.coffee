@@ -175,7 +175,7 @@ Header =
       'The header bar will automatically hide itself.'
     else
       'The header bar will remain visible.'
-    new Notification 'info', message, 2
+    new Notice 'info', message, 2
 
   setBarPosition: (bottom) ->
     Header.barPositionToggler.checked = bottom
@@ -266,5 +266,5 @@ Header =
 
   createNotification: (e) ->
     {type, content, lifetime, cb} = e.detail
-    notif = new Notification type, content, lifetime
+    notif = new Notice type, content, lifetime
     cb notif if cb

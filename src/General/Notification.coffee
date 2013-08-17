@@ -1,4 +1,4 @@
-class Notification
+class Notice
   constructor: (type, content, @timeout) ->
     @el = $.el 'div',
       innerHTML: '<a href=javascript:; class=close title=Close>×</a><div class=message></div>'

@@ -29,7 +29,7 @@ Settings =
         changelog = '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
         el = $.el 'span',
           innerHTML: "<%= meta.name %> has been updated to <a href='#{changelog}' target=_blank>version #{g.VERSION}</a>."
-        new Notification 'info', el, 30
+        new Notice 'info', el, 30
       else
         $.on d, '4chanXInitFinished', Settings.open
       # The archive list will always be updated with 4chan X updates.
