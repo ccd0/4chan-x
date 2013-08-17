@@ -91,10 +91,24 @@ Unread =
 
   addPostQuotingYou: (post) ->
     return unless QR.db
-    for quotelink in post.nodes.quotelinks
-      if QR.db.get Get.postDataFromLink quotelink
-        Unread.postsQuotingYou.push post
-    return
+    for quotelink in post.nodes.quotelinks when QR.db.get Get.postDataFromLink quotelink
+      Unread.postsQuotingYou.push post
+      Unread.openNotification post
+      return
+  openNotification: (post) ->
+    return unless d.hidden
+    name = if Conf['Anonymize']
+      'Anonymous'
+    else
+      $('.nameBlock', post.nodes.info).textContent.trim()
+    notif = new Notification "#{name} replied to you.",
+      body: post.info.comment
+    notif.onclick = ->
+      Header.scrollToPost post.nodes.root
+      window.focus()
+    setTimeout ->
+      notif.close()
+    , 5 * $.SECOND
 
   onUpdate: (e) ->
     if e.detail[404]
