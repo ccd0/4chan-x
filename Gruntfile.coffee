@@ -22,7 +22,7 @@ module.exports = (grunt) ->
           'lib/**/*'
           'src/General/UI.coffee'
           'src/General/Header.coffee'
-          'src/General/Notification.coffee'
+          'src/General/Notice.coffee'
           'src/General/Settings.coffee'
           'src/General/Get.coffee'
           'src/General/Build.coffee'

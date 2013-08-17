@@ -114,8 +114,8 @@ QR =
     notice = new Notice 'warning', el
     QR.notifications.push notice
     return unless d.hidden
-    notif = new Notification el.textContent,
-      iconUrl: Favicon.empty
+    notif = new Notification '<%= meta.name %> QR warning',
+      body: el.textContent
     notif.onclick = -> window.focus()
     notif.onclose = -> notice.close()
     setTimeout ->
