@@ -118,11 +118,15 @@ QR =
       body: el.textContent
       icon: Favicon.logo
     notif.onclick = -> window.focus()
+    <% if (type === 'crx') { %>
+    # Firefox automatically closes notifications
+    # so we can't control the onclose properly.
     notif.onclose = -> notice.close()
     setTimeout ->
       notif.onclose = null
       notif.close()
     , 5 * $.SECOND
+    <% } %>
   notifications: []
   cleanNotifications: ->
     for notification in QR.notifications
