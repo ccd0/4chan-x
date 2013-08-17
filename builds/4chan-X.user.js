@@ -4481,7 +4481,7 @@
           if (Linkify.regString.exec(word)) {
             links.push(Linkify.makeRange(node, endNode, index, length));
           }
-          if (!(test.lastIndex || node === endNode)) {
+          if (!(test.lastIndex && node === endNode)) {
             break;
           }
         }

@@ -78,7 +78,7 @@ Linkify =
         if Linkify.regString.exec word
           links.push Linkify.makeRange node, endNode, index, length
 
-        break unless test.lastIndex or node is endNode
+        break unless test.lastIndex and node is endNode
 
     for link in links.reverse()
       @nodes.links.push Linkify.makeLink link, @
