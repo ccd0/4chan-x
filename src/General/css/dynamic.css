@@ -1,5 +1,6 @@
 #boardNavDesktopFoot a,
 #header-bar a,
+#header-bar .shortcut > span,
 .deleteform::before,
 .field,
 .hide-navigation-decorations .pages a,

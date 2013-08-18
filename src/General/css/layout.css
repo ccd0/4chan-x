@@ -247,7 +247,7 @@ th {
   border-right: 0;
   border-radius: 0 !important;
 }
-.hide-navigation-decorations #header-bar {
+.hide-navigation-decorations #board-list {
   font-size: 0;
   color: transparent;
   word-spacing: 2px;

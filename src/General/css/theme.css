@@ -205,6 +205,7 @@ textarea.field:focus {
   color: #{theme["Timestamps"]} !important;
 }
 #fs_status a,
+#header-bar .shortcut > span,
 #updater #update-status:not(.new)::after,
 #showQR,
 .abbr,
