@@ -24,6 +24,7 @@ module.exports = (grunt) ->
           'src/General/Build.coffee'
           'src/General/Get.coffee'
           'src/General/UI.coffee'
+          'src/General/Notice.coffee'
           'src/Filtering/**/*'
           'src/Quotelinks/**/*'
           'src/Linkification/**/*'
@@ -133,7 +134,7 @@ module.exports = (grunt) ->
       tmpcrx: 'tmp-crx'
       tmpuserscript: 'tmp-userscript'
 
-  require('matchdep').filterDev('grunt-*').forEach grunt.loadNpmTasks
+  require('load-grunt-tasks') grunt
 
   grunt.registerTask 'default', [
     'build'

@@ -773,18 +773,24 @@ input.field.tripped:not(:hover):not(:focus) {
   height: 24px;
 }
 /* Fake File Input */
+input#qr-filename {
+  border: none !important;
+  width: 65%;
+  padding: 0px 4px;
+}
 #qr-filename,
+#qr-filesize,
 .has-file #qr-no-file {
   display: none;
 }
 #qr-no-file,
-.has-file #qr-filename {
+.has-file #qr-filename,
+.has-file #qr-filesize {
   display: inline-block;
-  padding: 0px 4px;
-  margin-bottom: 2px;
+  margin: 0 0 2px;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 88%;
+  vertical-align: top;
 }
 #qr-no-file {
   color: #AAA;

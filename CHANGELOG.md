@@ -1,3 +1,9 @@
+**MayhemYDG**:
+
+![filename editing](img/changelog/3.8.0/0.gif)
+
+- The QR now allows you to edit the filename on the fly:
+
 ### v1.2.32 
 *2013-08-16*
 

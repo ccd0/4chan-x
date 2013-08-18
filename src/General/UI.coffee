@@ -23,8 +23,7 @@ UI = do ->
 
     constructor: (@type) ->
       # Doc here: https://github.com/MayhemYDG/4chan-x/wiki/Menu-API
-      $.on d, 'AddMenuEntry', @addEntry.bind @
-      @close   = close.bind @
+      $.on d, 'AddMenuEntry', @addEntry
       @entries = []
 
     makeMenu: ->
@@ -33,7 +32,7 @@ UI = do ->
         id:        'menu'
         tabIndex:  0
       $.on menu, 'click', (e) -> e.stopPropagation()
-      $.on menu, 'keydown', @keybinds.bind @
+      $.on menu, 'keydown', @keybinds
       menu
 
     toggle: (e, button, data) ->
@@ -114,7 +113,7 @@ UI = do ->
       $.add entry.el, submenu
       return
 
-    close = ->
+    close: =>
       $.rm currentMenu
       $.rmClass lastToggledButton, 'active'
       currentMenu       = null
@@ -127,7 +126,7 @@ UI = do ->
         +(first.style.order or first.style.webkitOrder) - +(second.style.order or second.style.webkitOrder)
       entries[entries.indexOf(entry) + direction]
 
-    keybinds: (e) ->
+    keybinds: (e) =>
       entry = $ '.focused', currentMenu
       while subEntry = $ '.focused', entry
         entry = subEntry
@@ -185,7 +184,7 @@ UI = do ->
       style.left   = left
       style.right  = right
 
-    addEntry: (e) ->
+    addEntry: (e) =>
       entry = e.detail
       return if entry.type isnt @type
       @parseEntry entry

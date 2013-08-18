@@ -258,8 +258,7 @@ Header =
       'automatically hide itself.'
     else
       'remain visible.'}"
-
-    new Notification 'info', message, 2
+    new Notice 'info', message, 2
 
   setFooterVisibility: (hide) ->
     Header.footerToggler.checked = hide
@@ -321,5 +320,5 @@ Header =
 
   createNotification: (e) ->
     {type, content, lifetime, cb} = e.detail
-    notif = new Notification type, content, lifetime
+    notif = new Notice type, content, lifetime
     cb notif if cb

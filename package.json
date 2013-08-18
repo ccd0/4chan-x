@@ -2,7 +2,6 @@
   "name": "4chan-X",
   "version": "1.2.32",
   "description": "Cross-browser userscript for maximum lurking on 4chan.",
-
   "meta": {
     "name": "4chan X",
     "repo": "https://github.com/seaweedchan/4chan-x/",
@@ -21,6 +20,7 @@
     }
   },
   "devDependencies": {
+    "font-awesome": "git://github.com/MayhemYDG/Font-Awesome.git#df4285951124f9ca1f3907438462e5ba9e464bcb",
     "grunt": "~0.4.1",
     "grunt-bump": "~0.0.11",
     "grunt-concurrent": "~0.3.0",
@@ -31,7 +31,7 @@
     "grunt-contrib-copy": "~0.4.1",
     "grunt-contrib-watch": "~0.5.0",
     "grunt-shell": "~0.3.1",
-    "matchdep": "~0.1.2"
+    "load-grunt-tasks": "~0.1.0"
   },
   "repository": {
     "type": "git",
