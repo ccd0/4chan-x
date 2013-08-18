@@ -12247,7 +12247,7 @@
       i = nodes.length;
       while (i--) {
         node = nodes[i];
-        if (node.nodeName === 'STYLE' && node.id || (/stylesheet/.test(node.rel) && (/flags.*\.css$/.test(href = node.href) || href.slice(0, 4) === 'data')) || (/\.typeset/.test(node.textContent))) {
+        if (node.id || !['STYLE', 'LINK'].contains(node.nodeName) || node.rel && !(/stylesheet/.test(node.rel) || (/flags.*\.css$/.test(href = node.href) || href.slice(0, 4) === 'data')) || (/\.typeset/.test(node.textContent))) {
           continue;
         }
         $.rm(node);

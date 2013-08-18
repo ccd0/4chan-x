@@ -98,8 +98,9 @@ Style =
     while i--
       node = nodes[i]
 
-      continue if node.nodeName is 'STYLE' and node.id or
-        (/stylesheet/.test(node.rel) and (/flags.*\.css$/.test(href = node.href) or href[..3] is 'data')) or
+      continue if node.id or
+        !['STYLE', 'LINK'].contains(node.nodeName) or
+        node.rel and !(/stylesheet/.test(node.rel) or (/flags.*\.css$/.test(href = node.href) or href[..3] is 'data')) or
         (/\.typeset/.test node.textContent)
       $.rm node
     return
