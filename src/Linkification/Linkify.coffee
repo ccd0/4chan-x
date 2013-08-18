@@ -45,9 +45,10 @@ Linkify =
       startNode = node
       while start.length < link.length
         start += data = (node = walker.nextNode())?.data
-        {parentNode} = node
-        if parentNode.nodeName is 'S' and Conf['Clean Links']
-          $.replace parentNode, node
+        if Conf['Clean Links']
+          {parentNode} = node
+          if parentNode.nodeName is 'S' and parentNode.textContent.length < link.length
+            $.replace parentNode, node
       continue unless start[...link.length] is link
       endIndex = link[start.length - data.length...].length
       walker.currentNode = Linkify.sourround anchor, link, index, endIndex, startNode, node
@@ -88,5 +89,4 @@ Linkify =
       range.surroundContents anchor
       if !Conf['Clean Links'] and parentClone and anchor.firstChild
         $.replace anchor.firstChild, parentClone
-    catch
     endNode
