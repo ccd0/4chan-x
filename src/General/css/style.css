@@ -1038,22 +1038,6 @@ a:only-of-type > .remove {
 .boardSubtitle[contenteditable="true"] {
   cursor: text !important;
 }
-
-/* Shortcut Icons */
-:root:not(.shortcut-icons) [class*=" icon-"]::before {
-  display: none !important;
-}
-:root:not(.shortcut-icons) [class*=" icon-"] {
-  font-family: '' !important;
-}
-
-:root.shortcut-icons [class*=" icon-"] {
-font-size: 0px;
-}
-:root.shortcut-icons [class*=" icon-"]::before {
-font-size: 13px !important;
-}
-
 /* Link Title Favicons */
 .linkify.YouTube {
   background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/youtube.png",    {encoding: "base64"}) %>') center left no-repeat!important;

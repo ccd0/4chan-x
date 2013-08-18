@@ -358,20 +358,14 @@ Main =
     Main.thisPageIsLegit
 
   css: """
-  @font-face {
-    font-family: 'FontAwesome';
-    src: url('data:application/font-woff;base64,<%= grunt.file.read('node_modules/font-awesome/font/fontawesome-webfont.woff', {encoding: 'base64'}) %>') format('woff');
-    font-weight: normal;
-    font-style: normal;
-  }
-  <%= grunt.file.read('node_modules/font-awesome/css/font-awesome.min.css').replace(/@font-face\{[^}]+\}/, '').replace(/\\/g, '\\\\') %>
-  <%= grunt.file.read('src/General/css/style.css') %>
-  <%= grunt.file.read('src/General/css/yotsuba.css') %>
-  <%= grunt.file.read('src/General/css/yotsuba-b.css') %>
-  <%= grunt.file.read('src/General/css/futaba.css') %>
-  <%= grunt.file.read('src/General/css/burichan.css') %>
-  <%= grunt.file.read('src/General/css/tomorrow.css') %>
-  <%= grunt.file.read('src/General/css/photon.css') %>
+  <%= grunt.file.read('src/General/css/font-awesome.css').replace(/\s+/g, ' ').replace(/\\/g, '\\\\').trim() %>
+  <%= grunt.file.read('src/General/css/style.css').replace(/\s+/g, ' ').trim() %>
+  <%= grunt.file.read('src/General/css/yotsuba.css').replace(/\s+/g, ' ').trim() %>
+  <%= grunt.file.read('src/General/css/yotsuba-b.css').replace(/\s+/g, ' ').trim() %>
+  <%= grunt.file.read('src/General/css/futaba.css').replace(/\s+/g, ' ').trim() %>
+  <%= grunt.file.read('src/General/css/burichan.css').replace(/\s+/g, ' ').trim() %>
+  <%= grunt.file.read('src/General/css/tomorrow.css').replace(/\s+/g, ' ').trim() %>
+  <%= grunt.file.read('src/General/css/photon.css').replace(/\s+/g, ' ').trim() %>
   """
 
 Main.init()
