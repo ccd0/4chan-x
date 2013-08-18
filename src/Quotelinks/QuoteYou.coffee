@@ -26,6 +26,7 @@ QuoteYou =
 
     for quotelink in @nodes.quotelinks when QR.db.get Get.postDataFromLink quotelink
         $.add quotelink, $.tn '\u00A0(You)'
+        $.addClass quotelink, 'you'
         $.addClass @nodes.root, 'quotesYou'
     return
 

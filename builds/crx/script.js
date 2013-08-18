@@ -4165,6 +4165,7 @@
           continue;
         }
         $.add(quotelink, $.tn('\u00A0(You)'));
+        $.addClass(quotelink, 'you');
         $.addClass(this.nodes.root, 'quotesYou');
       }
     },
