@@ -2,8 +2,7 @@ Settings =
   init: ->
     # 4chan X settings link
     link = $.el 'a',
-      className:   'settings-link'
-      textContent: 'Settings'
+      className:   'settings-link icon-wrench'
       href:        'javascript:;'
     $.on link, 'click', Settings.open
 

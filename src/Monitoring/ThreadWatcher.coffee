@@ -3,10 +3,9 @@ ThreadWatcher =
     return if !Conf['Thread Watcher']
 
     @shortcut = sc = $.el 'a',
-      textContent: 'Watcher'
       id:   'watcher-link'
       href: 'javascript:;'
-      className: 'disabled'
+      className: 'disabled icon-bookmark'
 
     @db     = new DataBoard 'watchedThreads', @refresh, true
     @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', """

@@ -206,8 +206,7 @@ a {
   content: "]\\00a0";
 }
 .dead-thread,
-.disabled,
-.expand-all-shortcut {
+.disabled {
   opacity: .45;
 }
 #shortcuts {
