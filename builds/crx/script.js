@@ -5093,7 +5093,9 @@
       d.activeElement.blur();
       $.rmClass(QR.nodes.el, 'dump');
       if (!Conf['Captcha Warning Notifications']) {
-        $.rmClass(QR.captcha.nodes.input, 'error');
+        if (QR.captcha.isEnabled) {
+          $.rmClass(QR.captcha.nodes.input, 'error');
+        }
       }
       if (Conf['QR Shortcut']) {
         $.toggleClass($('.qr-shortcut'), 'disabled');
