@@ -2203,7 +2203,7 @@ article li {
   padding: 0 10px;
 }
 .yuimenuitem,
-.boxcontent li {
+.boxcontent ul > li {
   list-style-type: none;
 }
 .boxbar {

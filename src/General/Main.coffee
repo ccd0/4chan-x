@@ -1,6 +1,5 @@
 Main =
   init: ->
-
     # flatten Config into Conf
     # and get saved or default values
     flatten = (parent, obj) ->
@@ -46,10 +45,6 @@ Main =
       <% } %>
       Main.initFeatures()
 
-    $.on d, '4chanMainInit', Main.initStyle
-    $.asap (-> d.head and $('link[rel="shortcut icon"]', d.head) or d.readyState isnt 'loading'),
-      Main.initStyle
-
   initFeatures: ->
 
     pathname = location.pathname.split '/'
@@ -85,7 +80,7 @@ Main =
     return if g.BOARD.ID in ['z', 'fk'] then Style.init()
 
     switch location.hostname
-      when '4chan.org'
+      when '4chan.org', 'www.4chan.org'
         g.VIEW = 'home'
         Style.init()
         return
