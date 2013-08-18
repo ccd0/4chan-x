@@ -158,6 +158,10 @@ th {
 .center {
   text-align: center;
 }
+.ad-plea {
+  text-align: center;
+  font-size: .8em;
+}
 .dead-thread,
 .disabled {
   opacity: 0.4;
