@@ -12197,12 +12197,6 @@
         });
       }
     },
-    addSheet: function(_arg) {
-      var id, key, text;
-
-      key = _arg[0], text = _arg[1], id = _arg[2];
-      return Style[key] = $.addStyle(text, id);
-    },
     setup: function() {
       var i, item, items, theme;
 
@@ -12213,14 +12207,11 @@
       items = [['layoutCSS', Style.layout, 'layout'], ['themeCSS', Style.theme(theme), 'theme'], ['emojiCSS', Emoji.css(), 'emoji'], ['dynamicCSS', Style.dynamic(), 'dynamic'], ['icons', "", 'icons'], ['paddingSheet', "", 'padding'], ['mascot', "", 'mascotSheet']];
       i = 0;
       while (item = items[i++]) {
-        Style.addSheet(item);
+        Style[item[0]] = $.addStyle(item[1], item[2]);
       }
       $.addStyle(JSColor.css(), 'jsColor');
       if (d.head) {
         this.remStyle();
-        if (!Style.headCount) {
-          return this.cleanup();
-        }
       }
       return this.observe();
     },
@@ -12240,38 +12231,25 @@
     wrapper: function() {
       if (d.head) {
         Style.remStyle();
-        if (!Style.headCount || d.readyState === 'complete') {
+        if (d.readyState === 'complete') {
           if (Style.observer) {
-            Style.observer.disconnect();
+            return Style.observer.disconnect();
           } else {
-            $.off(d, 'DOMNodeInserted', Style.wrapper);
+            return $.off(d, 'DOMNodeInserted', Style.wrapper);
           }
-          return Style.cleanup();
         }
       }
     },
-    cleanup: function() {
-      delete Style.observe;
-      delete Style.wrapper;
-      delete Style.remStyle;
-      delete Style.headCount;
-      return delete Style.cleanup;
-    },
-    headCount: 12,
     remStyle: function() {
       var href, i, node, nodes;
 
       nodes = d.head.children;
       i = nodes.length;
       while (i--) {
-        if (!Style.headCount) {
-          return;
-        }
         node = nodes[i];
         if (node.nodeName === 'STYLE' && node.id || (/stylesheet/.test(node.rel) && (/flags.*\.css$/.test(href = node.href) || href.slice(0, 4) === 'data')) || (/\.typeset/.test(node.textContent))) {
           continue;
         }
-        Style.headCount--;
         $.rm(node);
       }
     },

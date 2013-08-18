@@ -47,9 +47,6 @@ Style =
       $.on exLink, "click", ->
         setTimeout Rice.nodes, 100
 
-  addSheet: ([key, text, id]) ->
-    Style[key] = $.addStyle text, id
-
   setup: ->
     theme = Themes[Conf['theme']] or Themes['Yotsuba B']
     Style.svg = $.el 'div',
@@ -67,15 +64,13 @@ Style =
 
     i = 0
     while item = items[i++]
-      Style.addSheet item
+      Style[item[0]] = $.addStyle item[1], item[2]
 
     # Non-customizable
     $.addStyle JSColor.css(), 'jsColor'
 
     if d.head
       @remStyle()
-      unless Style.headCount
-        return @cleanup()
     @observe()
 
   observe: ->
@@ -91,34 +86,21 @@ Style =
     if d.head
       Style.remStyle()
 
-      if not Style.headCount or d.readyState is 'complete'
+      if d.readyState is 'complete'
         if Style.observer
           Style.observer.disconnect()
         else
           $.off d, 'DOMNodeInserted', Style.wrapper
-        Style.cleanup()
-
-  cleanup: ->
-    delete Style.observe
-    delete Style.wrapper
-    delete Style.remStyle
-    delete Style.headCount
-    delete Style.cleanup
-
-  headCount: 12
 
   remStyle: ->
     nodes = d.head.children
     i = nodes.length
     while i--
-      return unless Style.headCount
       node = nodes[i]
 
       continue if node.nodeName is 'STYLE' and node.id or
         (/stylesheet/.test(node.rel) and (/flags.*\.css$/.test(href = node.href) or href[..3] is 'data')) or
         (/\.typeset/.test node.textContent)
-
-      Style.headCount--
       $.rm node
     return
 
@@ -216,7 +198,6 @@ Style =
       position
 
     if Conf["Icon Orientation"] is "horizontal"
-
       position = aligner(
         2
         [
