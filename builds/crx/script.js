@@ -12136,13 +12136,13 @@
           return;
         }
         node = nodes[i];
-        if (!(node.nodeName === 'STYLE' && !node.id)) {
+        if (node.nodeName === 'STYLE' && node.id) {
           continue;
         }
-        if (("" + node.rel).contains('stylesheet') && (/flags.*\.css$/.test(href = node.href) || href.slice(0, 4) === 'data')) {
+        if (/stylesheet/.test(node.rel) && (/flags.*\.css$/.test(href = node.href) || href.slice(0, 4) === 'data')) {
           continue;
         }
-        if (/\b(\.typeset)/.test(node.textContent)) {
+        if (/\.typeset/.test(node.textContent)) {
           continue;
         }
         Style.headCount--;
