@@ -113,9 +113,13 @@ Style =
     while i--
       return unless Style.headCount
       node = nodes[i]
-      if (node.nodeName is 'STYLE' and !node.id) or ("#{node.rel}".contains('stylesheet') and !/flags.*\.css$/.test(href = node.href) and href[..3] isnt 'data')
-        Style.headCount--
-        $.rm node
+
+      continue unless node.nodeName is 'STYLE' and !node.id
+      continue if "#{node.rel}".contains('stylesheet') and (/flags.*\.css$/.test(href = node.href) or href[..3] is 'data')
+      continue if /\b(\.typeset)/.test node.textContent
+      
+      Style.headCount--
+      $.rm node
     return
 
   matrix: (foreground, background) ->
