@@ -5164,7 +5164,7 @@
       if (!Header.areNotificationsEnabled) {
         return;
       }
-      notif = new Notice('Quick reply warning', {
+      notif = new Notification(el.textContent, {
         body: el.textContent,
         icon: Favicon.logo
       });
@@ -8526,7 +8526,7 @@
         return;
       }
       name = Conf['Anonymize'] ? 'Anonymous' : $('.nameBlock', post.nodes.info).textContent.trim();
-      notif = new Notice("" + name + " replied to you", {
+      notif = new Notification("" + name + " replied to you", {
         body: post.info.comment,
         icon: Favicon.logo
       });
