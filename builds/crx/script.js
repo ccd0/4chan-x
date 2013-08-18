@@ -12136,13 +12136,7 @@
           return;
         }
         node = nodes[i];
-        if (node.nodeName === 'STYLE' && node.id) {
-          continue;
-        }
-        if (/stylesheet/.test(node.rel) && (/flags.*\.css$/.test(href = node.href) || href.slice(0, 4) === 'data')) {
-          continue;
-        }
-        if (/\.typeset/.test(node.textContent)) {
+        if (node.nodeName === 'STYLE' && node.id || (/stylesheet/.test(node.rel) && (/flags.*\.css$/.test(href = node.href) || href.slice(0, 4) === 'data')) || (/\.typeset/.test(node.textContent))) {
           continue;
         }
         Style.headCount--;

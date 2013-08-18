@@ -114,9 +114,9 @@ Style =
       return unless Style.headCount
       node = nodes[i]
 
-      continue if node.nodeName is 'STYLE' and node.id
-        or (/stylesheet/.test(node.rel) and (/flags.*\.css$/.test(href = node.href) or href[..3] is 'data'))
-        or (/\.typeset/.test node.textContent)
+      continue if node.nodeName is 'STYLE' and node.id or
+        (/stylesheet/.test(node.rel) and (/flags.*\.css$/.test(href = node.href) or href[..3] is 'data')) or
+        (/\.typeset/.test node.textContent)
 
       Style.headCount--
       $.rm node
