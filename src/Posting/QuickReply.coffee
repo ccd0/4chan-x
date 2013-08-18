@@ -6,7 +6,7 @@ QR =
 
     if Conf['QR Shortcut']
       sc = $.el 'a',
-        className: "qr-shortcut icon icon-comment-alt #{unless Conf['Persistent QR'] then 'disabled' else ''}"
+        className: "qr-shortcut icon icon-comment #{unless Conf['Persistent QR'] then 'disabled' else ''}"
         textContent: 'QR' 
         title: 'Quick Reply'
         href: 'javascript:;'

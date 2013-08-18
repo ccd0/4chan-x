@@ -42,12 +42,22 @@
 }
 :root.shortcut-icons .icon::before {
   display: inline-block;
-  font-size: 13px; /* Or whatever. This is the value Mayhem uses. */
+  font-size: 13px; 
   visibility: visible;
+}
+:root.shortcut-icons #shortcuts .icon::before {
+  font-size: 15px !important;
+  margin-top: -3px !important;
+  position: relative;
+  top: 1px;
 }
 :root.shortcut-icons .icon {
   font-size: 0;
   visibility: hidden;
+}
+:root.shortcut-icons .shortcut.brackets-wrap::before,
+:root.shortcut-icons .shortcut.brackets-wrap::after {
+  display: none;
 }
 /* makes sure icons active on rollover in links */
 a .icon {
