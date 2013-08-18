@@ -105,8 +105,7 @@ UI = do ->
 
     findNextEntry: (entry, direction) ->
       entries = [entry.parentNode.children...]
-      entries.sort (first, second) ->
-        +(first.style.order or first.style.webkitOrder) - +(second.style.order or second.style.webkitOrder)
+      entries.sort (first, second) -> first.style.order - second.style.order
       entries[entries.indexOf(entry) + direction]
 
     keybinds: (e) =>
@@ -179,8 +178,7 @@ UI = do ->
         e.stopPropagation()
         @focus el
       ).bind @
-      {style} = el
-      style.webkitOrder = style.order = entry.order or 100
+      el.style.order = entry.order or 100
       return unless subEntries
       $.addClass el, 'has-submenu'
       for subEntry in subEntries
