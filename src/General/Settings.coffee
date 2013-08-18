@@ -3,6 +3,7 @@ Settings =
     # 4chan X settings link
     link = $.el 'a',
       className:   'settings-link icon-wrench'
+      textContent: 'Settings'
       href:        'javascript:;'
     $.on link, 'click', Settings.open
 

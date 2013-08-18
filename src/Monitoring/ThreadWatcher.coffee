@@ -4,6 +4,7 @@ ThreadWatcher =
 
     @shortcut = sc = $.el 'a',
       id:   'watcher-link'
+      textContent: 'Watcher'
       href: 'javascript:;'
       className: 'disabled icon-bookmark'
 

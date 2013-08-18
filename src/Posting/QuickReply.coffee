@@ -7,6 +7,7 @@ QR =
     if Conf['QR Shortcut']
       sc = $.el 'a',
         className: "qr-shortcut icon-comment-alt #{unless Conf['Persistent QR'] then 'disabled' else ''}"
+        textContent: 'QR' 
         title: 'Quick Reply'
         href: 'javascript:;'
       $.on sc, 'click', ->
@@ -720,7 +721,7 @@ QR =
       URL.revokeObjectURL @URL
 
     updateFilename: ->
-      long = "#{@filename} (#{@filesize}) - Ctrl+click to edit filename"
+      long = "#{@filename} (#{@filesize})\nCtrl+click to edit filename. Shift+click to clear."
       @nodes.el.title = long
       return unless @ is QR.selected
       QR.nodes.fileContainer.title = long

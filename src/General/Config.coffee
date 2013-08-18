@@ -488,6 +488,7 @@ http://iqdb.org/?url=%TURL
     'Centered links':          false
     'Header catalog links':    false
     'Bottom Board List':       true
+    'Shortcut Icons':          false
     'Custom Board Navigation': true
 
   boardnav: """

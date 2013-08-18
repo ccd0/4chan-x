@@ -18,6 +18,8 @@ Header =
       innerHTML: '<input type=checkbox name="Custom Board Navigation"> Custom board navigation'
     footerToggler = $.el 'label',
       innerHTML: "<input type=checkbox #{unless Conf['Bottom Board List'] then 'checked' else ''}> Hide bottom board list"
+    shortcutToggler = $.el 'label',
+      innerHTML: "<input type=checkbox #{unless Conf['Shortcut Icons'] then 'checked' else ''}> Shortcut Icons"
     editCustomNav = $.el 'a',
       textContent: 'Edit custom board navigation'
       href: 'javascript:;'
@@ -27,6 +29,7 @@ Header =
     @linkJustifyToggler = linkJustifyToggler.firstElementChild
     @headerToggler      = headerToggler.firstElementChild
     @footerToggler      = footerToggler.firstElementChild
+    @shortcutToggler      = shortcutToggler.firstElementChild
     @customNavToggler   = customNavToggler.firstElementChild
 
     $.on menuButton,          'click',  @menuToggle
@@ -35,15 +38,18 @@ Header =
     $.on @linkJustifyToggler, 'change', @toggleLinkJustify
     $.on @headerToggler,      'change', @toggleBarVisibility
     $.on @footerToggler,      'change', @toggleFooterVisibility
+    $.on @shortcutToggler,      'change', @toggleShortcutIcons
     $.on @customNavToggler,   'change', @toggleCustomNav
     $.on editCustomNav,       'click',  @editCustomNav
 
     @setBarFixed      Conf['Fixed Header']
     @setBarVisibility Conf['Header auto-hide']
     @setLinkJustify   Conf['Centered links']
+    @setShortcutIcons Conf['Shortcut Icons']
 
     $.sync 'Fixed Header',     Header.setBarFixed
     $.sync 'Bottom Header',    Header.setBarPosition
+    $.sync 'Shortcut Icons',   Header.setShortcutIcons
     $.sync 'Header auto-hide', Header.setBarVisibility
     $.sync 'Centered links',   Header.setLinkJustify
 
@@ -60,6 +66,7 @@ Header =
         {el: barPositionToggler}
         {el: linkJustifyToggler}
         {el: footerToggler}
+        {el: shortcutToggler}
         {el: customNavToggler}
         {el: editCustomNav}
       ]
@@ -75,6 +82,7 @@ Header =
       $.prepend d.body, @bar
       $.add d.body, Header.hover
       @setBarPosition Conf['Bottom Header']
+      @
 
     $.ready =>
       @footer = $.id 'boardNavDesktopFoot'
@@ -239,6 +247,21 @@ Header =
 
     Conf['Fixed Header'] = @checked
     $.set 'Fixed Header',  @checked
+
+  setShortcutIcons: (show) ->
+    Header.shortcutToggler.checked = show
+    if show
+      $.addClass doc, 'shortcut-icons'
+    else
+      $.rmClass doc, 'shortcut-icons'
+
+  toggleShortcutIcons: ->
+    $.event 'CloseMenu'
+
+    Header.setShortcutIcons @checked
+
+    Conf['Shortcut Icons'] = @checked
+    $.set 'Shortcut Icons',  @checked
 
   setBarVisibility: (hide) ->
     Header.headerToggler.checked = hide

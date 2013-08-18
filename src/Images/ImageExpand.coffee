@@ -4,6 +4,7 @@ ImageExpand =
 
     @EAI = $.el 'a',
       className: 'expand-all-shortcut icon-resize-full'
+      textContent: 'EAI' 
       title: 'Expand All Images'
       href: 'javascript:;'
     $.on @EAI, 'click', ImageExpand.cb.toggleAll
