@@ -100,7 +100,7 @@ Unread =
       'Anonymous'
     else
       $('.nameBlock', post.nodes.info).textContent.trim()
-    notif = new Notice "#{name} replied to you",
+    notif = new Notification "#{name} replied to you",
       body: post.info.comment
       icon: Favicon.logo
     notif.onclick = ->

@@ -154,7 +154,7 @@ QR =
     notice = new Notice 'warning', el
     QR.notifications.push notice
     return unless Header.areNotificationsEnabled
-    notif = new Notice 'Quick reply warning',
+    notif = new Notification el.textContent,
       body: el.textContent
       icon: Favicon.logo
     notif.onclick = -> window.focus()
