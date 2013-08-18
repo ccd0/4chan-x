@@ -7857,7 +7857,6 @@
         return;
       }
       this.shortcut = sc = $.el('a', {
-        textContent: 'Watcher',
         id: 'watcher-link',
         href: 'javascript:;',
         className: 'disabled icon-bookmark'
