@@ -1,3 +1,5 @@
+## 3.9.0 - *2013-08-18*
+
 - **New feature**: `Desktop Notifications`
  - Enabled by default, but you will have to grant your browser permissions to display them or disable them altogether:<br>
   ![authorize or disable](img/changelog/3.9.0/0.png)
