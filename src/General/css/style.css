@@ -778,6 +778,7 @@ input#qr-filename {
   padding: 0px 4px;
   position: relative;
   bottom: 1px;
+  background: none !important;
 }
 input#qr-filename:not(.edit) {
   pointer-events: none;
@@ -791,7 +792,6 @@ input#qr-filename:not(.edit) {
 .has-file #qr-filename,
 .has-file #qr-filesize {
   display: inline-block;
-  background: none;
   margin: 0 0 2px;
   overflow: hidden;
   text-overflow: ellipsis;
