@@ -1,3 +1,11 @@
+- **New feature**: `Desktop Notifications`
+ - Enabled by default, but you will have to grant your browser permissions to display them or disable them altogether:<br>
+  ![authorize or disable](img/changelog/3.9.0/0.png)
+ - Clicking on a notification will bring up the relevant tab. (Does not work on Firefox unfortunately, [see bug 874050](https://bugzilla.mozilla.org/show_bug.cgi?id=874050).)
+ - Notifications will appear when someone quotes you, clicking such notification will also scroll the thread to the relevant post.
+ - Notifications will appear for posting errors instead of alert popups.
+ - Opera does *not* support desktop notifications yet.
+
 ## 3.8.0 - *2013-08-15*
 
 - The QR now allows you to edit the filename on the fly:<br>
