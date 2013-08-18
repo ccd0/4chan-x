@@ -27,7 +27,7 @@ Linkify =
         return unless link = links.shift()
         [anchor, link] = Linkify.parseLink link
       if data.length >= link.length and (index = data.indexOf link) >= 0
-        walker.currentNode = Linkify.sourround anchor, link, index, index + link.length, node
+        walker.currentNode = Linkify.surround anchor, link, index, index + link.length, node
         anchor = false
         continue
       index = found = 0
@@ -51,7 +51,7 @@ Linkify =
             $.replace parentNode, node
       continue unless start[...link.length] is link
       endIndex = link[start.length - data.length...].length
-      walker.currentNode = Linkify.sourround anchor, link, index, endIndex, startNode, node
+      walker.currentNode = Linkify.surround anchor, link, index, endIndex, startNode, node
       anchor = false
     return
 
@@ -77,7 +77,7 @@ Linkify =
       rel: 'noreferrer'
     [anchor, link]
 
-  sourround: (anchor, link, startIndex, endIndex, startNode, endNode = startNode) ->
+  surround: (anchor, link, startIndex, endIndex, startNode, endNode = startNode) ->
     parent = startNode.parentNode
     if parent?.nodeName is 'S' and parent.textContent.length < link.length
       parentClone = parent.cloneNode true
