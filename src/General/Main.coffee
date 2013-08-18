@@ -14,8 +14,7 @@ Main =
 
     flatten null, Config
 
-    # Unflattened Config.
-    for db in DataBoards
+    for db in DataBoard.keys
       Conf[db] = boards: {}
 
     $.extend Conf,
@@ -33,7 +32,7 @@ Main =
       $.extend Conf, items
       <% if (type === 'crx') { %>
       unless items
-        new Notification 'error', $.el 'span',
+        new Notice 'error', $.el 'span',
           innerHTML: """
           It seems like your <%= meta.name %> settings became corrupted due to a <a href="https://code.google.com/p/chromium/issues/detail?id=261623" target=_blank>Chrome bug</a>.<br>
           Unfortunately, you'll have to <a href="https://github.com/MayhemYDG/4chan-x/wiki/FAQ#known-problems" target=_blank>fix it yourself</a>.
@@ -234,7 +233,7 @@ Main =
     try
       localStorage.getItem '4chan-settings'
     catch err
-      new Notification 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to properly function.', 30
+      new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to properly function.', 30
 
     $.event '4chanXInitFinished'
 
@@ -316,7 +315,7 @@ Main =
     else if errors.length is 1
       error = errors[0]
     if error
-      new Notification 'error', Main.parseError(error), 15
+      new Notice 'error', Main.parseError(error), 15
       return
 
     div = $.el 'div',
@@ -332,7 +331,7 @@ Main =
     for error in errors
       $.add logs, Main.parseError error
 
-    new Notification 'error', [div, logs], 30
+    new Notice 'error', [div, logs], 30
 
   parseError: (data) ->
     Main.logError data

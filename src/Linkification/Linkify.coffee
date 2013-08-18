@@ -2,24 +2,23 @@ Linkify =
   init: ->
     return if g.VIEW is 'catalog' or not Conf['Linkify']
 
-    @regString =
-      ///(
-        # http, magnet, ftp, etc
-        (https?|mailto|git|magnet|ftp|irc):(
-          [a-z\d%/]
-        )
-        |
-        # This should account for virtually all links posted without http:
-        [-a-z\d]+[.](
-          aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2}
-        )(/|(?!.))
-        |
-        # IPv4 Addresses
-        [\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}
-        | 
-        # E-mails
-        [-\w\d.@]+@[a-z\d.-]+\.[a-z\d]
-      )///i
+    @regString = ///(
+      # http, magnet, ftp, etc
+      (https?|mailto|git|magnet|ftp|irc):(
+        [a-z\d%/]
+      )
+      |
+      # This should account for virtually all links posted without http:
+      [-a-z\d]+[.](
+        aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2}
+      )(/|(?!.))
+      |
+      # IPv4 Addresses
+      [\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}
+      |
+      # E-mails
+      [-\w\d.@]+@[a-z\d.-]+\.[a-z\d]
+    )///i
 
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
@@ -55,40 +54,40 @@ Linkify =
       while result = test.exec data
         {index} = result
         endNode = node
+        word    = result[0]
         # End of node, not necessarily end of space-delimited string
-        if (length = index + result[0].length) is data.length
+        if (length = index + word.length) is data.length
+          test.lastIndex = 0
 
           while (saved = snapshot.snapshotItem i++)
-            break if saved.nodeName is 'BR'
+            if saved.nodeName is 'BR'
+              break
 
-            endNode = saved
-            {length} = saved.data
+            endNode  = saved
+            {data}   = saved
+            word    += data
+            {length} = data
 
-            if end = space.exec saved.data
+            if end = space.exec data
               # Set our snapshot and regex to start on this node at this position when the loop resumes
               test.lastIndex = length = end.index
               i--
               break
 
-          test.lastIndex = 0 if length is endNode.data.length
-          range = Linkify.makeRange node, endNode, index, length
-          links.push range if link = Linkify.regString.exec range.toString()
-          break
+        if Linkify.regString.exec word
+          links.push Linkify.makeRange node, endNode, index, length
 
-        else
-          if link = Linkify.regString.exec result[0]
-            range = Linkify.makeRange node, node, index, length
-            links.push range
+        break unless test.lastIndex and node is endNode
 
-    for range in links.reverse()
-      @nodes.links.push Linkify.makeLink range, @
+    for link in links.reverse()
+      @nodes.links.push Linkify.makeLink link, @
 
     return unless Conf['Embedding'] or Conf['Link Title']
 
-    items = @nodes.links
+    {links} = @nodes
     i = 0
-    while range = items[i++]
-      if data = Linkify.services range
+    while link = links[i++]
+      if data = Linkify.services link
         Linkify.embed data if Conf['Embedding']
         Linkify.title data if Conf['Link Title']
 
@@ -126,12 +125,9 @@ Linkify =
       if i
         range.setEnd range.endContainer, range.endOffset - i
 
-    # This is the only piece of code left based on Anthony Lieuallen's Linkify
-    text =
-      if text.contains ':'
-        text
-      else (
-        if text.contains '@'
+    unless /(https?|mailto|git|magnet|ftp|irc):/.test text
+      text = (
+        if /@/.test text
           'mailto:'
         else
           'http://'

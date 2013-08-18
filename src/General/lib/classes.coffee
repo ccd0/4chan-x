@@ -3,4 +3,4 @@
 <%= grunt.file.read('src/General/lib/post.class') %>
 <%= grunt.file.read('src/General/lib/clone.class') %>
 <%= grunt.file.read('src/General/lib/databoard.class') %>
-<%= grunt.file.read('src/General/lib/notification.class') %>
+<%= grunt.file.read('src/General/lib/notice.class') %>

@@ -36,6 +36,7 @@ Header =
     $.sync 'Fixed Header',     Header.setBarFixed
     $.sync 'Bottom Header',    Header.setBarPosition
 
+
     $.event 'AddMenuEntry',
       type: 'header'
       el: $.el 'span',
@@ -60,6 +61,7 @@ Header =
       $.prepend d.body, @bar
       $.add d.body, Header.hover
       @setBarPosition Conf['Bottom Header']
+      @
 
   bar: $.el 'div',
     id: 'header-bar'
@@ -200,6 +202,21 @@ Header =
     Conf['Fixed Header'] = @checked
     $.set 'Fixed Header',  @checked
 
+  setShortcutIcons: (show) ->
+    Header.shortcutToggler.checked = show
+    if show
+      $.addClass doc, 'shortcut-icons'
+    else
+      $.rmClass doc, 'shortcut-icons'
+
+  toggleShortcutIcons: ->
+    $.event 'CloseMenu'
+
+    Header.setShortcutIcons @checked
+
+    Conf['Shortcut Icons'] = @checked
+    $.set 'Shortcut Icons',  @checked
+
   setBarVisibility: (hide) ->
     Header.headerToggler.checked = hide
     $.event 'CloseMenu'
@@ -220,8 +237,7 @@ Header =
       'automatically hide itself.'
     else
       'remain visible.'}"
-
-    new Notification 'info', message, 2
+    new Notice 'info', message, 2
 
   setCustomNav: (show) ->
     Header.customNavToggler.checked = show
@@ -265,5 +281,33 @@ Header =
 
   createNotification: (e) ->
     {type, content, lifetime, cb} = e.detail
-    notif = new Notification type, content, lifetime
+    notif = new Notice type, content, lifetime
     cb notif if cb
+
+  areNotificationsEnabled: false
+  enableDesktopNotifications: ->
+    return unless window.Notification and Conf['Desktop Notifications']
+    switch Notification.permission
+      when 'granted'
+        Header.areNotificationsEnabled = true
+        return
+      when 'denied'
+        # requestPermission doesn't work if status is 'denied',
+        # but it'll still work if status is 'default'.
+        return
+
+    el = $.el 'span',
+      innerHTML: """
+      Desktop notification permissions are not granted:<br>
+      <button>Authorize</button> or <button>Disable</button>
+      """
+    [authorize, disable] = $$ 'button', el
+    $.on authorize, 'click', ->
+      Notification.requestPermission (status) ->
+        Header.areNotificationsEnabled = status is 'granted'
+        return if status is 'default'
+        notice.close()
+    $.on disable, 'click', ->
+      $.set 'Desktop Notifications', false
+      notice.close()
+    notice = new Notice 'info', el

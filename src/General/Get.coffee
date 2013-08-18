@@ -156,11 +156,8 @@ Get =
     # https://github.com/eksopl/asagi/blob/master/src/main/java/net/easymodo/asagi/Yotsuba.java#L109-138
     bq.innerHTML = bq.innerHTML.replace ///
       \n
-      | \[/?b\]
-      | \[/?spoiler\]
-      | \[/?code\]
-      | \[/?moot\]
-      | \[/?banned\]
+      |
+      \[/?[a-z]+(:lit)?\]
     ///g, Get.parseMarkup
 
     comment = bq.innerHTML
@@ -234,6 +231,8 @@ Get =
       when '[/moot]'
         '</div>'
       when '[banned]'
-        '<b style="color: red;">'
+        '<strong style="color: red;">'
       when '[/banned]'
-        '</b>'
+        '</strong>'
+      else
+        text.replace ':lit', ''

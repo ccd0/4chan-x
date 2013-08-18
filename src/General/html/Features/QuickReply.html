@@ -9,9 +9,9 @@
 </div>
 <form>
   <div class=persona>
-    <input name=name  data-name=name  list="list-name" placeholder=Name class=field size=1 tabindex=10>
-    <input name=email data-name=email list="list-email" placeholder=E-mail class=field size=1 tabindex=20>
-    <input name=sub   data-name=sub   list="list-sub" placeholder=Subject class=field size=1 tabindex=30>
+    <input data-name=name  list="list-name"  placeholder=Name    class=field size=1 tabindex=10>
+    <input data-name=email list="list-email" placeholder=E-mail  class=field size=1 tabindex=20>
+    <input data-name=sub   list="list-sub"   placeholder=Subject class=field size=1 tabindex=30>
   </div>
   <div class=textarea>
     <textarea data-name=com placeholder=Comment class=field tabindex=40></textarea>
@@ -24,7 +24,7 @@
   <div id=file-n-submit>
     <span id=qr-filename-container class=field tabindex=60>
       <span id=qr-no-file>No selected file</span>
-      <span id=qr-filename></span>
+      <input id="qr-filename" data-name="filename" spellcheck="false">
       <span id=qr-extras-container>
         <label id=qr-spoiler-label>
           <input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70>

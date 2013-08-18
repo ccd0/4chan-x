@@ -13,6 +13,10 @@ Config =
         true
         'Add button to hide 4chan announcements.'
       ]
+      'Desktop Notifications': [
+        true
+        'Enables desktop notifications across various <%= meta.name %> features.'
+      ]
       '404 Redirect': [
         true
         'Redirect dead threads and images.'
@@ -826,6 +830,7 @@ http://iqdb.org/?url=%TURL
     'Bottom Header':           false
     'Header catalog links':    false
     'Bottom Board List':       true
+    'Shortcut Icons':          false
     'Custom Board Navigation': true
 
   boardnav: """

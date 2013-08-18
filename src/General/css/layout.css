@@ -1501,6 +1501,19 @@ input:not([type=radio]) {
 .has-file #qr-filename {
   display: block;
 }
+#qr-filename {
+  border: medium none;
+  vertical-align: top;
+  padding: 0;
+  margin: 0;
+  height: auto;
+  background: transparent none;
+  overflow: hidden;
+  text-overflow: ellipsis; 
+}
+#qr-filename:not(.edit) {
+  pointer-events: none;
+}
 .has-file #qr-filerm {
   display: inline-block;
 }

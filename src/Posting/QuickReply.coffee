@@ -17,7 +17,7 @@ QR =
     return unless Conf['Header Shortcut'] or Conf['Page Shortcut']
 
     sc = $.el 'a',
-      className: "qr-shortcut #{unless Conf['Persistent QR'] then 'disabled' else ''}"
+      className: "qr-shortcut icon icon-comment #{unless Conf['Persistent QR'] then 'disabled' else ''}"
       textContent: 'QR'
       title: 'Quick Reply'
       href: 'javascript:;'
@@ -94,7 +94,7 @@ QR =
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
     unless Conf['Captcha Warning Notifications']
-      $.rmClass QR.captcha.nodes.input, 'error'
+      $.rmClass QR.captcha.nodes.input, 'error' if QR.captcha.isEnabled
     if Conf['QR Shortcut']
       $.toggleClass $('.qr-shortcut'), 'disabled'
     new QR.post true
@@ -107,8 +107,13 @@ QR =
     $.addClass QR.nodes.el, 'has-focus'
 
   focusout: ->
+    <% if (type === 'crx') { %>
     $.rmClass QR.nodes.el, 'has-focus'
-
+    <% } else { %>
+    $.queueTask ->
+      return if $.x 'ancestor::div[@id="qr"]', d.activeElement
+      $.rmClass QR.nodes.el, 'has-focus'
+    <% } %>
   hide: ->
     d.activeElement.blur()
     $.addClass QR.nodes.el, 'autohide'
@@ -135,14 +140,32 @@ QR =
       # Focus the captcha input on captcha error.
       QR.captcha.nodes.input.focus()
       if Conf['Captcha Warning Notifications']
-        QR.notifications.push new Notification 'warning', el
+        QR.notify el
       else
         $.addClass QR.captcha.nodes.input, 'error'
         $.on QR.captcha.nodes.input, 'keydown', ->
           $.rmClass QR.captcha.nodes.input, 'error'
     else
-      QR.notifications.push new Notification 'warning', el
+      QR.notify el
     alert el.textContent if d.hidden
+
+  notify: (el) ->
+    notice = new Notice 'warning', el
+    QR.notifications.push notice
+    return unless Header.areNotificationsEnabled
+    notif = new Notification el.textContent,
+      body: el.textContent
+      icon: Favicon.logo
+    notif.onclick = -> window.focus()
+    <% if (type === 'crx') { %>
+    # Firefox automatically closes notifications
+    # so we can't control the onclose properly.
+    notif.onclose = -> notice.close()
+    setTimeout ->
+      notif.onclose = null
+      notif.close()
+    , 5 * $.SECOND
+    <% } %>
 
   notifications: []
 
@@ -441,10 +464,15 @@ QR =
     QR.fileInput files
 
   openFileInput: (e) ->
-    e.preventDefault()
-    return if e.keyCode and not [32, 13].contains e.keyCode
-    if e.shiftKey and not e.keyCode
+    e.stopPropagation()
+    if e.shiftKey and e.type is 'click'
       return QR.selected.rmFile()
+    if e.ctrlKey and e.type is 'click'
+      $.addClass QR.nodes.filename, 'edit'
+      QR.nodes.filename.focus()
+      return
+    return if e.target.nodeName is 'INPUT' or (e.keyCode and not [32, 13].contains e.keyCode) or e.ctrlKey
+    e.preventDefault()
     QR.nodes.fileInput.click()
 
   fileInput: (files) ->
@@ -505,8 +533,8 @@ QR =
       for elm in $$ '*', el
         $.on elm, 'blur',  QR.focusout
         $.on elm, 'focus', QR.focusin
-      <% } %>
-      $.on el,             'click',  @select.bind @
+      <% } %>
+      $.on el,             'click',  @select
       $.on @nodes.rm,      'click',  (e) => e.stopPropagation(); @rm()
       $.on @nodes.label,   'click',  (e) => e.stopPropagation()
       $.on @nodes.spoiler, 'change', (e) =>
@@ -570,18 +598,17 @@ QR =
     lock: (lock=true) ->
       @isLocked = lock
       return unless @ is QR.selected
-      for name in ['thread', 'name', 'email', 'sub', 'com', 'spoiler']
+      for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler']
         QR.nodes[name].disabled = lock
-      @nodes.rm.style.visibility =
-        QR.nodes.fileRM.style.visibility = if lock then 'hidden' else ''
-      (if lock then $.off else $.on) QR.nodes.filename.parentNode, 'click', QR.openFileInput
+      @nodes.rm.style.visibility = if lock then 'hidden' else ''
+      (if lock then $.off else $.on) QR.nodes.filename.previousElementSibling, 'click', QR.openFileInput
       @nodes.spoiler.disabled = lock
       @nodes.el.draggable = !lock
 
     unlock: ->
       @lock false
 
-    select: ->
+    select: =>
       if QR.selected
         QR.selected.nodes.el.id = null
         QR.selected.forceSave()
@@ -598,7 +625,7 @@ QR =
 
     load: ->
       # Load this post's values.
-      for name in ['thread', 'name', 'email', 'sub', 'com']
+      for name in ['thread', 'name', 'email', 'sub', 'com', 'filename']
         QR.nodes[name].value = @[name] or null
 
       QR.tripcodeHider.call QR.nodes['name']
@@ -621,18 +648,27 @@ QR =
           # during the last 5 seconds of the cooldown.
           if QR.cooldown.auto and @ is QR.posts[0] and 0 < QR.cooldown.seconds <= 5
             QR.cooldown.auto = false
+        when 'filename'
+          return unless @file
+          @file.newName = @filename.replace /[/\\]/g, '-'
+          unless /\.(jpe?g|png|gif|pdf|swf)$/i.test @filename
+            # 4chan will truncate the filename if it has no extension,
+            # but it will always replace the extension by the correct one,
+            # so we suffix it with '.jpg' when needed.
+            @file.newName += '.jpg'
+          @updateFilename()
 
     forceSave: ->
       return unless @ is QR.selected
       # Do this in case people use extensions
       # that do not trigger the `input` event.
-      for name in ['thread', 'name', 'email', 'sub', 'com', 'spoiler']
+      for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler']
         @save QR.nodes[name]
       return
 
     setFile: (@file) ->
-      @filename           = "#{file.name} (#{$.bytesToString file.size})"
-      @nodes.el.title     = @filename
+      @filename = file.name
+      @filesize = $.bytesToString file.size
       @nodes.label.hidden = false if QR.spoiler
       URL.revokeObjectURL @URL
       @showFileData()
@@ -676,18 +712,27 @@ QR =
       img.src = fileURL
 
     rmFile: ->
+      return if @isLocked
       delete @file
       delete @filename
+      delete @filesize
       @nodes.el.title = null
+      QR.nodes.fileContainer.title = ''
       @nodes.el.style.backgroundImage = null
       @nodes.label.hidden = true if QR.spoiler
       @showFileData()
       URL.revokeObjectURL @URL
 
+    updateFilename: ->
+      long = "#{@filename} (#{@filesize})\nCtrl+click to edit filename. Shift+click to clear."
+      @nodes.el.title = long
+      return unless @ is QR.selected
+      QR.nodes.fileContainer.title = long
+
     showFileData: ->
       if @file
-        QR.nodes.filename.textContent = @filename
-        QR.nodes.filename.title       = @filename
+        @updateFilename()
+        QR.nodes.filename.value       = @filename
         QR.nodes.spoiler.checked      = @spoiler
         $.addClass QR.nodes.fileSubmit, 'has-file'
       else
@@ -860,28 +905,29 @@ QR =
         dialog = UI.dialog 'qr', 'top:0;right:0;', """<%= grunt.file.read('src/General/html/Features/QuickReply.html').replace(/>\s+</g, '><').trim() %>"""
 
     nodes[key] = $ value, dialog for key, value of {
-      move:       '.move'
-      autohide:   '#autohide'
-      thread:     'select'
-      threadPar:  '#qr-thread-select'
-      close:      '.close'
-      form:       'form'
-      dumpButton: '#dump-button'
-      name:       '[data-name=name]'
-      email:      '[data-name=email]'
-      sub:        '[data-name=sub]'
-      com:        '[data-name=com]'
-      dumpList:   '#dump-list'
-      addPost:    '#add-post'
-      charCount:  '#char-count'
-      fileSubmit: '#file-n-submit'
-      filename:   '#qr-filename'
-      fileRM:     '#qr-filerm'
-      fileExtras: '#qr-extras-container'
-      spoiler:    '#qr-file-spoiler'
-      spoilerPar: '#qr-spoiler-label'
-      status:     '[type=submit]'
-      fileInput:  '[type=file]'
+      move:          '.move'
+      autohide:      '#autohide'
+      thread:        'select'
+      threadPar:     '#qr-thread-select'
+      close:         '.close'
+      form:          'form'
+      dumpButton:    '#dump-button'
+      name:          '[data-name=name]'
+      email:         '[data-name=email]'
+      sub:           '[data-name=sub]'
+      com:           '[data-name=com]'
+      dumpList:      '#dump-list'
+      addPost:       '#add-post'
+      charCount:     '#char-count'
+      fileSubmit:    '#file-n-submit'
+      filename:      '#qr-filename'
+      fileContainer: '#qr-filename-container'
+      fileRM:        '#qr-filerm'
+      fileExtras:    '#qr-extras-container'
+      spoiler:       '#qr-file-spoiler'
+      spoilerPar:    '#qr-spoiler-label'
+      status:        '[type=submit]'
+      fileInput:     '[type=file]'
     }
 
     check =
@@ -939,15 +985,17 @@ QR =
       $.on elm, 'focus', QR.focusin
     <% } %>
 
-    $.on dialog,           'focusin',  QR.focusin
-    $.on dialog,           'focusout', QR.focusout
+    $.on dialog, 'focusin',  QR.focusin
+    $.on dialog, 'focusout', QR.focusout
+
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
     $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'
     $.on nodes.addPost,    'click',  -> new QR.post true
     $.on nodes.form,       'submit', QR.submit
-    $.on nodes.fileRM,     'click', -> QR.selected.rmFile()
-    $.on nodes.fileExtras, 'click', (e) -> e.stopPropagation()
+    $.on nodes.filename,   'blur',   -> $.rmClass @, 'edit'
+    $.on nodes.fileRM,     'click',  -> QR.selected.rmFile()
+    $.on nodes.fileExtras, 'click',  (e) -> e.stopPropagation()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.fileInput
 
@@ -958,7 +1006,7 @@ QR =
       $.on nodes[name], 'mouseover', QR.mouseover
 
     # save selected post's data
-    items = ['name', 'email', 'sub', 'com']
+    items = ['name', 'email', 'sub', 'com', 'filename']
     i = 0
     while name = items[i++]
       $.on nodes[name], 'input',  -> QR.selected.save @
@@ -1169,7 +1217,7 @@ QR =
     QR.cleanNotifications()
 
     if Conf['Posting Success Notifications']
-      QR.notifications.push new Notification 'success', h1.textContent, 5
+      QR.notifications.push new Notice 'success', h1.textContent, 5
 
     QR.persona.set post
 
@@ -1221,7 +1269,8 @@ QR =
       QR.req.abort()
       delete QR.req
       QR.posts[0].unlock()
-      QR.notifications.push new Notification 'info', 'QR upload aborted.', 5
+      QR.cooldown.auto = false
+      QR.notifications.push new Notice 'info', 'QR upload aborted.', 5
     QR.status()
 
   mouseover: (e) ->

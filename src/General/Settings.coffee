@@ -2,7 +2,7 @@ Settings =
   init: ->
     # Appchan X settings link
     el = $.el 'a',
-      className:   'settings-link'
+      className:   'settings-link icon icon-wrench'
       href:        'javascript:;'
       textContent: 'Settings'
     $.on el, 'click', Settings.open
@@ -25,7 +25,7 @@ Settings =
         el = $.el 'span',
           innerHTML: "<%= meta.name %> has been updated to <a href='#{changelog}' target=_blank>version #{g.VERSION}</a>."
         if Conf['Show Updated Notifications']
-          new Notification 'info', el, 30
+          new Notice 'info', el, 30
       else
         $.on d, '4chanXInitFinished', Settings.open
       $.set 'previousversion', g.VERSION
@@ -171,7 +171,7 @@ Settings =
       data =
         version: g.VERSION
         date: now
-      for db in DataBoards
+      for db in DataBoard.keys
         Conf[db] = boards: {}
       # Make sure to export the most recent data.
       $.get Conf, (Conf) ->

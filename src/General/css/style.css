@@ -206,8 +206,7 @@ a {
   content: "]\\00a0";
 }
 .dead-thread,
-.disabled,
-.expand-all-shortcut {
+.disabled {
   opacity: .45;
 }
 #shortcuts {
@@ -773,21 +772,34 @@ input.field.tripped:not(:hover):not(:focus) {
   height: 24px;
 }
 /* Fake File Input */
+input#qr-filename {
+  border: none !important;
+  width: 80%;
+  padding: 0px 4px;
+  position: relative;
+  bottom: 1px;
+  background: none !important;
+}
+input#qr-filename:not(.edit) {
+  pointer-events: none;
+}
 #qr-filename,
+#qr-filesize,
 .has-file #qr-no-file {
   display: none;
 }
 #qr-no-file,
-.has-file #qr-filename {
+.has-file #qr-filename,
+.has-file #qr-filesize {
   display: inline-block;
-  padding: 0px 4px;
-  margin-bottom: 2px;
+  margin: 0 0 2px;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 88%;
+  vertical-align: top;
 }
 #qr-no-file {
   color: #AAA;
+  padding: 1px 4px;
 }
 #qr-filename-container {
   -moz-box-sizing: border-box;
@@ -1026,7 +1038,6 @@ a:only-of-type > .remove {
 .boardSubtitle[contenteditable="true"] {
   cursor: text !important;
 }
-
 /* Link Title Favicons */
 .linkify.YouTube {
   background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/youtube.png",    {encoding: "base64"}) %>') center left no-repeat!important;

@@ -26,6 +26,7 @@ QuoteYou =
 
     for quotelink in @nodes.quotelinks when QR.db.get Get.postDataFromLink quotelink
         $.add quotelink, $.tn '\u00A0(You)'
+        $.addClass quotelink, 'you'
         $.addClass @nodes.root, 'quotesYou'
     return
 
@@ -36,7 +37,7 @@ QuoteYou =
 
       unless QuoteYou.lastRead
         unless post = QuoteYou.lastRead = $ '.quotesYou'
-          new Notification 'warning', 'No posts are currently quoting you, loser.', 20
+          new Notice 'warning', 'No posts are currently quoting you, loser.', 20
           return
         return if QuoteYou.cb.scroll post
       else

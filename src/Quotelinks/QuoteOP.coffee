@@ -26,6 +26,7 @@ QuoteOP =
 
     {fullID} = (if @isClone then @context else @).thread
     # add (OP) to quotes quoting this context's OP.
+
     return unless quotes.contains fullID
     i = 0
     while quotelink = quotelinks[i++]

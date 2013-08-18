@@ -4,9 +4,9 @@ ImageExpand =
 
     @EAI = $.el 'a',
       id:        'img-controls'
-      className: 'expand-all-shortcut'
-      title:     'Expand All Images'
-      href:      'javascript:;'
+      className:   'expand-all-shortcut icon icon-resize-full'
+      title:       'Expand All Images'
+      href:        'javascript:;'
 
     $.on @EAI, 'click', ImageExpand.cb.toggleAll
 
@@ -27,7 +27,7 @@ ImageExpand =
       ImageExpand.contract @
       ImageExpand.expand @
       return
-    if ImageExpand.on and !@isHidden
+    if ImageExpand.on and !@isHidden and (Conf['Expand spoilers'] or !@file.isSpoiler)
       ImageExpand.expand @
   cb:
     toggle: (e) ->
@@ -37,11 +37,11 @@ ImageExpand =
     toggleAll: ->
       $.event 'CloseMenu'
       if ImageExpand.on = $.hasClass ImageExpand.EAI, 'expand-all-shortcut'
-        ImageExpand.EAI.className = 'contract-all-shortcut'
+        ImageExpand.EAI.className = 'contract-all-shortcut icon icon-resize-small'
         ImageExpand.EAI.title     = 'Contract All Images'
         func = ImageExpand.expand
       else
-        ImageExpand.EAI.className = 'expand-all-shortcut'
+        ImageExpand.EAI.className = 'expand-all-shortcut icon icon-resize-full'
         ImageExpand.EAI.title     = 'Expand All Images'
         func = ImageExpand.contract
       for ID, post of g.posts

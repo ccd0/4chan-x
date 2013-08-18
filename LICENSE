@@ -78,15 +78,6 @@
 *
 *   license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
 *
-* Linkify: (http://userscripts.org/scripts/show/1352)
-*   Copyright (c) 2011, Anthony Lieuallen
-*   All rights reserved.
-*   Originally written by Anthony Lieuallen of http://arantius.com/
-*   Licensed for unlimited modification and redistribution as long as
-*   this notice is kept intact.
-*
-*   license: http://userscripts.org/scripts/review/1352
-*
 * jsColor: (http://jscolor.com/)
 *   Copyright (c) Jan Odvarko, http://odvarko.cz
 *
