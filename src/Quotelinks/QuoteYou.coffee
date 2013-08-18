@@ -36,7 +36,7 @@ QuoteYou =
 
       unless QuoteYou.lastRead
         unless post = QuoteYou.lastRead = $ '.quotesYou'
-          new Notification 'warning', 'No posts are currently quoting you, loser.', 20
+          new Notice 'warning', 'No posts are currently quoting you, loser.', 20
           return
         return if QuoteYou.cb.scroll post
       else

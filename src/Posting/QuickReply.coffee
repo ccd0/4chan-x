@@ -153,16 +153,20 @@ QR =
   notify: (el) ->
     notice = new Notice 'warning', el
     QR.notifications.push notice
-    return unless d.hidden
-    notif = new Notification 'Quick reply warning',
+    return unless Header.areNotificationsEnabled
+    notif = new Notice 'Quick reply warning',
       body: el.textContent
       icon: Favicon.logo
     notif.onclick = -> window.focus()
+    <% if (type === 'crx') { %>
+    # Firefox automatically closes notifications
+    # so we can't control the onclose properly.
     notif.onclose = -> notice.close()
     setTimeout ->
       notif.onclose = null
       notif.close()
     , 5 * $.SECOND
+    <% } %>
 
   notifications: []
   cleanNotifications: ->
@@ -1180,7 +1184,7 @@ QR =
     QR.cleanNotifications()
 
     if Conf['Posting Success Notifications']
-      QR.notifications.push new Notification 'success', h1.textContent, 5
+      QR.notifications.push new Notice 'success', h1.textContent, 5
 
     QR.persona.set post
 

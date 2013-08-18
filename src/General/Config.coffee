@@ -17,6 +17,10 @@ Config =
         true
         'Add button to hide 4chan announcements.'
       ]
+      'Desktop Notifications': [
+        true
+        'Enables desktop notifications across various <%= meta.name %> features.'
+      ]
       '404 Redirect': [
         true
         'Redirect dead threads and images.'
