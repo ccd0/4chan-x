@@ -572,7 +572,7 @@ QR =
         when 'filename'
           return unless @file
           @file.newName = @filename.replace /[/\\]/g, '-'
-          unless /\.(jpe?g|png|gif|pdf|sfw)$/i.test @filename
+          unless /\.(jpe?g|png|gif|pdf|swf)$/i.test @filename
             # 4chan will truncate the filename if it has no extension,
             # but it will always replace the extension by the correct one,
             # so we suffix it with '.jpg' when needed.
