@@ -807,7 +807,7 @@ th {
   border: 0 none;
   padding: 0;
 }
-.watcher-toggler {
+.watch-thread-link {
   padding-top: 18px;
   width: 18px;
   height: 0px;
@@ -817,7 +817,7 @@ th {
   position: relative;
   top: 1px;
 }
-.watcher-toggler.watched {
+.watch-thread-link.watched {
   opacity: 1;
 }
 /* Announcements */
@@ -988,7 +988,7 @@ a.useremail:last-of-type {
   clear: both;
 }
 /* OP */
-.favicon {
+.watch-thread-link {
   vertical-align: bottom;
 }
 .op-background .op.post {
