@@ -96,7 +96,7 @@ Unread =
       Unread.openNotification post
       return
   openNotification: (post) ->
-    return unless !document.hasFocus() and Header.areNotificationsEnabled
+    return unless Header.areNotificationsEnabled
     name = if Conf['Anonymize']
       'Anonymous'
     else
