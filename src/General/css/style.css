@@ -774,8 +774,13 @@ input.field.tripped:not(:hover):not(:focus) {
 /* Fake File Input */
 input#qr-filename {
   border: none !important;
-  width: 65%;
+  width: 80%;
   padding: 0px 4px;
+  position: relative;
+  bottom: 1px;
+}
+input#qr-filename:not(.edit) {
+  pointer-events: none;
 }
 #qr-filename,
 #qr-filesize,
@@ -786,6 +791,7 @@ input#qr-filename {
 .has-file #qr-filename,
 .has-file #qr-filesize {
   display: inline-block;
+  background: none;
   margin: 0 0 2px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -793,6 +799,7 @@ input#qr-filename {
 }
 #qr-no-file {
   color: #AAA;
+  padding: 1px 4px;
 }
 #qr-filename-container {
   -moz-box-sizing: border-box;

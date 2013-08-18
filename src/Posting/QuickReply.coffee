@@ -466,6 +466,10 @@ QR =
     e.stopPropagation()
     if e.shiftKey and e.type is 'click'
       return QR.selected.rmFile()
+    if e.ctrlKey and e.type is 'click'
+      $.addClass QR.nodes.filename, 'edit'
+      QR.nodes.filename.focus()
+      return $.on QR.nodes.filename, 'blur', -> $.rmClass QR.nodes.filename, 'edit'
     return if e.target.nodeName is 'INPUT' or (e.keyCode and not [32, 13].contains e.keyCode) or e.ctrlKey
     e.preventDefault()
     QR.nodes.fileInput.click()
@@ -709,22 +713,22 @@ QR =
       delete @filename
       delete @filesize
       @nodes.el.title = null
+      QR.nodes.fileContainer.title = ''
       @nodes.el.style.backgroundImage = null
       @nodes.label.hidden = true if QR.spoiler
       @showFileData()
       URL.revokeObjectURL @URL
 
     updateFilename: ->
-      long = "#{@filename} (#{@filesize})"
+      long = "#{@filename} (#{@filesize}) - Ctrl+click to edit filename"
       @nodes.el.title = long
       return unless @ is QR.selected
-      QR.nodes.filename.title = long
+      QR.nodes.fileContainer.title = long
 
     showFileData: ->
       if @file
         @updateFilename()
         QR.nodes.filename.value       = @filename
-        QR.nodes.filesize.textContent = @filesize
         QR.nodes.spoiler.checked      = @spoiler
         $.addClass QR.nodes.fileSubmit, 'has-file'
       else
@@ -912,7 +916,7 @@ QR =
       charCount:  '#char-count'
       fileSubmit: '#file-n-submit'
       filename:   '#qr-filename'
-      filesize:   '#qr-filesize'
+      fileContainer: '#qr-filename-container'
       fileRM:     '#qr-filerm'
       fileExtras: '#qr-extras-container'
       spoiler:    '#qr-file-spoiler'
