@@ -20,7 +20,6 @@
 
 **Zixaphir**:
 - Forked and minimized the Font Awesome CSS used for the shortcut icons
-- Implemented the bulk of the notifications and shortcut icons
 - Some more linkifier improvements
 
 ### v1.2.32 
