@@ -189,7 +189,9 @@ th {
   border-right: 6px solid transparent;
   border-left: 6px solid transparent;
   opacity: 0.5;
-  margin: 3px 2px;
+  margin: 2px 1px;
+  width: 0;
+  height: 0;
 }
 #navPrev {
   border-bottom: 11px solid rgb(130,130,130);
@@ -201,7 +203,7 @@ th {
 #header-bar {
   z-index: 6;
   border-width: 1px;
-  padding: 0 2px;
+  padding: 1px 2px;
   border-style: solid;
 }
 .pagination-sticky-top .pagelist,
@@ -252,19 +254,6 @@ th {
   font-size: 0;
   color: transparent;
   word-spacing: 2px;
-}
-#shortcuts {
-  position: fixed;
-  display: flex;
-  display: -webkit-flex;
-  top: 1px;
-}
-.sidebar-location-right #shortcuts {
-  right: 0;
-  text-align: right;
-}
-.sidebar-location-left #shortcuts {
-  left: 0;
 }
 .fixed #header-bar.autohide {
   z-index: 24;
@@ -374,6 +363,161 @@ th {
   max-height: 200px;
   width: 100%;
   overflow: auto;
+}
+/* Shortcuts */
+#shortcuts {
+  position: fixed;
+  display: <%= flex %>;
+  top: 0;
+}
+.shortcut {
+  margin: 1px;
+}
+.icon-orientation-vertical #shortcuts {
+  <%= flex %>-direction: column;
+}
+.sidebar-location-right #shortcuts {
+  right: 0;
+  text-align: right;
+}
+.sidebar-location-right .shortcut {
+  align-self: flex-end;
+  -webkit-align-self: flex-end;
+}
+.sidebar-location-left #shortcuts {
+  left: 0;
+}
+.icon-orientation-horizontal #shortcuts {
+  <%= flex %>-direction: row-reverse;
+}
+.icon-orientation-horizontal.sidebar-location-left #shortcuts {
+  <%= flex %>-direction: row;
+}
+#main-menu {
+  <%= order %>: 0;
+}
+#qr-shortcut {
+  <%= order %>: 10;
+}
+#img-controls {
+  <%= order %>: 20;
+}
+#fappeTyme {
+  <%= order %>: 30;
+}
+#slideNav {
+  <%= order %>: 40;
+}
+#sowIcon {
+  <%= order %>: 50;
+}
+#psaIcon {
+  <%= order %>: 60;
+}
+#navPrev {
+  <%= order %>: 70;
+}
+#navNext {
+  <%= order %>: 80;
+}
+#catalog {
+  <%= order %>: 90;
+}
+#returnIcon {
+  <%= order %>: 100;
+}
+#thread-stats {
+  <%= order %>: 110;
+}
+#updater {
+  <%= order %>: 120;
+}
+#main-menu,
+#returnIcon,
+#sowIcon,
+#psaIcon,
+#slideNav,
+#img-controls,
+#catalog,
+#fappeTyme,
+#shortcuts .icon {
+  z-index: 18;
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  content: "";
+  opacity: 0.5;
+  cursor: pointer;
+}
+.invisible-icons #main-menu,
+.invisible-icons #returnIcon,
+.invisible-icons #sowIcon,
+.invisible-icons #psaIcon,
+.invisible-icons #slideNav,
+.invisible-icons #img-controls,
+.invisible-icons #catalog,
+.invisible-icons #fappeTyme,
+.invisible-icons #navPrev,
+.invisible-icons #navNext,
+.invisible-icons #shortcuts .icon {
+  opacity: 0;
+}
+#navtopright .exlinksOptionsLink,
+#returnIcon,
+#{if Conf['Slideout Watcher'] then '#thread-watcher,' else ''}
+#{if Conf['Announcements'] is 'slideout' then '#globalMessage,' else ''}
+#boardNavDesktopFoot,
+#catalog {
+  z-index: 16;
+}
+#navtopright .exlinksOptionsLink:hover,
+#returnIcon:hover,
+#thread-watcher:hover,
+#globalMessage:hover,
+#slideNav:hover,
+#img-controls,
+#catalog:hover {
+  z-index: 17;
+}
+#main-menu {
+  background-position: 0 0;
+}
+#returnIcon {
+  background-position: 0 -15px;
+}
+#sowIcon {
+  background-position: 0 -30px;
+}
+#psaIcon {
+  background-position: 0 -45px;
+}
+#slideNav {
+  background-position: 0 -60px;
+}
+#img-controls {
+  background-position: 0 -90px;
+}
+#catalog {
+  background-position: 0 -120px;
+}
+#fappeTyme {
+  background-position: 0 -135px;
+}
+#slideNav:hover,
+#psaIcon:hover,
+#img-controls:hover,
+#navPrev:hover,
+#navNext:hover,
+#appchanOptions:hover,
+#main-menu:hover,
+#qr #qrtab,
+#sowIcon:hover,
+.thumbnail#selected,
+#returnIcon:hover,
+#catalog:hover,
+#fappeTyme:hover,
+#shortcuts .icon:hover {
+  opacity: 1 !important;
 }
 /* Updater / Thread Stats */
 .float #thread-stats,

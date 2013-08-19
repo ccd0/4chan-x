@@ -6,10 +6,10 @@ ThreadUpdater =
 
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
-        innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>"
+        innerHTML: "[<span id=update-status></span><span id=update-timer title='Update now'></span>]\u00A0"
         id:        'updater'
       $.ready ->
-        Header.addShortcut [$.tn('['), sc, $.tn("]\u00A0")], [0,0]
+        Header.addShortcut sc
     else 
       @dialog = sc = UI.dialog 'updater', 'bottom: 0px; left: 0px;',
         "<div class=move><span id=update-status></span><span id=update-timer title='Update now'></span></div>"

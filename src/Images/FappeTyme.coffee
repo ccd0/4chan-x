@@ -8,7 +8,7 @@ FappeTyme =
 
     $.on el, 'click', FappeTyme.toggle
 
-    Header.addShortcut el, [30, 30]
+    Header.addShortcut el
 
     Post::callbacks.push
       name: 'Fappe Tyme'

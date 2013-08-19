@@ -53,7 +53,7 @@ Header =
     $.on d, 'CreateNotification', @createNotification
 
     @enableDesktopNotifications()
-    @addShortcut menuButton, [110, 100]
+    @addShortcut menuButton
 
     $.asap (-> d.body), =>
       return unless Main.isThisPageLegit()
@@ -269,16 +269,9 @@ Header =
       top -= headRect.top + headRect.height
     window.scrollBy 0, top
 
-  addShortcut: do ->
-    span = $.el 'span',
-      className: 'shortcut'
-  
-    (el, order) ->
-      order = order[if Conf["Icon Orientation"] is "horizontal" then 0 else 1]
-      shortcut = span.cloneNode()
-      shortcut.style.cssText = "order: #{order}; -webkit-order: #{order};"
-      $.add shortcut, el
-      $.prepend Header.shortcuts, shortcut
+  addShortcut: (el) ->
+    $.addClass el, 'shortcut'
+    $.add Header.shortcuts, el
 
   menuToggle: (e) ->
     Header.menu.toggle e, @, g

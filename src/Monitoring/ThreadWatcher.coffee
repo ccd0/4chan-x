@@ -44,7 +44,7 @@ ThreadWatcher =
 
     if Conf['Slideout Watcher']
       el = $.el 'i', id: 'sowIcon'
-      Header.addShortcut el, [80, 70]
+      Header.addShortcut el
     else
       el = d.body
 

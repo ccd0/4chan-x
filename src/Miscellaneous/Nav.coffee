@@ -15,8 +15,8 @@ Nav =
       href: 'javascript:;'
       id:   'navNext'
 
-    Header.addShortcut prev, [10, 10]
-    Header.addShortcut next, [20, 20]
+    Header.addShortcut prev
+    Header.addShortcut next
 
     $.on prev, 'click', @prev
     $.on next, 'click', @next

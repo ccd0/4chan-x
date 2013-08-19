@@ -56,5 +56,5 @@ CatalogLinks =
   ready: ->
     if catalogLink = ($('.pages.cataloglink a', d.body) or $ '[href=".././catalog"]', d.body)
       catalogLink.textContent = ''
-      Header.addShortcut catalogLink, [70, 70]
+      Header.addShortcut catalogLink
       catalogLink.id = 'catalog'

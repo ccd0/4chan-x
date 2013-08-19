@@ -145,18 +145,32 @@ module.exports = (grunt) ->
     pkg = grunt.config 'pkg' 
     pkg.type = type;
     grunt.config 'pkg', pkg
+
     pkg.sizing = if type is 'crx'
       'box-sizing'
     else
       '-moz-box-sizing'
+
     pkg.filter = if type is 'crx'
       '-webkit-filter'
     else
       'filter'
+
     pkg.transform = if type is 'crx'
       '-webkit-transform'
     else
       'transform'
+
+    pkg.flex = if type is 'crx'
+      '-webkit-flex'
+    else
+      'flex'
+
+    pkg.order = if type is 'crx'
+      '-webkit-order'
+    else
+      'order'
+
     grunt.log.ok 'pkg.type = %s', type
 
   grunt.registerTask 'build', [

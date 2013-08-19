@@ -178,20 +178,20 @@ Style =
     # Slideout Navigation
     slideNav = $.el 'i', id: 'slideNav'
     $.add $.id('boardNavDesktopFoot'), slideNav
-    Header.addShortcut slideNav, [50, 110] if Conf['Slideout Navigation'] isnt 'hide'
+    Header.addShortcut slideNav if Conf['Slideout Navigation'] isnt 'hide'
 
     # Announcements
     if Conf['Announcements'] is 'slideout'
       if (psa = $.id '#globalMessage') and !psa.hidden
         psaIcon = $.el 'i', id: 'psaIcon'
         $.add psa, psaIcon
-        Header.addShortcut psaIcon, [90, 80]
+        Header.addShortcut psaIcon
 
     if g.VIEW is 'thread'
       el = $('body > div.navLinks > a')
       el.textContent = ''
       el.id = 'returnIcon'
-      Header.addShortcut el, [40, 40]
+      Header.addShortcut el
 
     Style.icons.textContent = css
 
