@@ -55,6 +55,6 @@ CatalogLinks =
 
   ready: ->
     if catalogLink = ($('.pages.cataloglink a', d.body) or $ '[href=".././catalog"]', d.body)
-      if g.VIEW isnt 'thread'
-        $.add d.body, catalogLink
+      catalogLink.textContent = ''
+      Header.addShortcut catalogLink, [70, 70]
       catalogLink.id = 'catalog'

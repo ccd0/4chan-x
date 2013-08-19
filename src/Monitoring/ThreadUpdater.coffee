@@ -9,7 +9,7 @@ ThreadUpdater =
         innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>"
         id:        'updater'
       $.ready ->
-        Header.addShortcut sc
+        Header.addShortcut sc [0,0]
     else 
       @dialog = sc = UI.dialog 'updater', 'bottom: 0px; left: 0px;',
         "<div class=move><span id=update-status></span><span id=update-timer title='Update now'></span></div>"

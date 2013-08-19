@@ -170,98 +170,24 @@ Style =
 
   iconPositions: ->
     css = """<%= grunt.file.read('src/General/css/icons.base.css').replace(/\s+/g, ' ').trim() %>"""
-    i = 0
-    align = Conf['Sidebar Location']
-    sidebar = {
-      minimal:  20
-      hide:     2
-      normal:   252
-      large:    303
-    }[Conf['Sidebar']]
 
-    notCatalog = g.VIEW isnt 'catalog'
-    notEither  = notCatalog and g.BOARD isnt 'f'
+    # Slideout Navigation
+    slideNav = $.el 'i', id: 'slideNav'
+    $.add $.id('boardNavDesktopFoot'), slideNav
+    Header.addShortcut slideNav, [120, 110] if Conf['Slideout Navigation'] isnt 'hide'
 
-    aligner = (first, checks) ->
-      # Create a position to hold values
-      position = [first]
+    # Announcements
+    if Conf['Announcements'] is 'slideout'
+      if (psa = $.id '#globalMessage') and !psa.hidden
+        psaIcon = $.el 'i', id: 'psaIcon'
+        $.add psa, psaIcon
+        Header.addShortcut psaIcon, [90, 80]
 
-      # Check which elements we actually have. Some are easy, because the script creates them so we'd know they're here
-      # Some are hard, like 4sight, which we have no way of knowing if available without looking for it.
-      for enabled in checks
-        position.push(
-          if enabled
-            first += 19
-          else
-            first
-        )
-
-      position
-
-    if Conf["Icon Orientation"] is "horizontal"
-      position = aligner(
-        2
-        [
-          true
-          Conf['Slideout Navigation'] isnt 'hide'
-          Conf['Announcements'] is 'slideout' and (psa = $ '#globalMessage', d.body) and !psa.hidden
-          Conf['Thread Watcher'] and Conf['Slideout Watcher']
-          $ '#navtopright .exlinksOptionsLink', d.body
-          notEither and Conf['Image Expansion']
-          notEither
-          g.VIEW is 'thread'
-          notEither and Conf['Fappe Tyme']
-          navlinks = ((g.VIEW isnt 'thread' and Conf['Index Navigation']) or (g.VIEW is 'thread' and Conf['Reply Navigation'])) and notCatalog
-          navlinks
-        ]
-      )
-
-      iconOffset =
-        position[position.length - 1] - (if Conf['4chan SS Navigation']
-          0
-        else
-          sidebar + parseInt(Conf["Right Thread Padding"], 10))
-
-      if iconOffset < 0 then iconOffset = 0
-
-      css += """<%= grunt.file.read('src/General/css/icons.horz.css').replace(/\s+/g, ' ').trim() %>"""
-
-    else
-
-      position = aligner(
-        2
-        [
-          notEither and Conf['Image Expansion']
-          true
-          Conf['Slideout Navigation'] isnt 'hide'
-          Conf['Announcements'] is 'slideout' and (psa = $ '#globalMessage', d.body) and !psa.hidden
-          Conf['Thread Watcher'] and Conf['Slideout Watcher']
-          $ '#navtopright .exlinksOptionsLink', d.body
-          notEither
-          g.VIEW is 'thread'
-          notEither and Conf['Fappe Tyme']
-          navlinks = ((g.VIEW isnt 'thread' and Conf['Index Navigation']) or (g.VIEW is 'thread' and Conf['Reply Navigation'])) and notCatalog
-          navlinks
-        ]
-      )
-
-      iconOffset = (
-        20 + (
-          if g.VIEW is 'thread' and Conf['Updater Position'] is 'top'
-            100
-          else
-            0
-        )
-      ) - (
-        if Conf['4chan SS Navigation']
-          0
-        else
-          sidebar + parseInt Conf[align.charAt(0).toUpperCase() + align.slice(1) + " Thread Padding"], 10
-      )
-
-      if iconOffset < 0 then iconOffset = 0
-
-      css += """<%= grunt.file.read('src/General/css/icons.vert.css').replace(/\s+/g, ' ').trim() %>"""
+    if g.VIEW is 'thread'
+      el = $('body > div.navLinks > a')
+      el.textContent = ''
+      el.id = 'returnIcon'
+      Header.addShortcut el, [40, 40]
 
     Style.icons.textContent = css
 

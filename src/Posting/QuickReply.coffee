@@ -31,7 +31,7 @@ QR =
         QR.close()
       $.toggleClass @, 'disabled'
 
-    return Header.addShortcut sc if Conf['Header Shortcut']
+    return Header.addShortcut sc, [20, 140] if Conf['Header Shortcut']
 
     $.addClass sc, 'on-page'
     sc.textContent = if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'

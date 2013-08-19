@@ -10,12 +10,11 @@ ImageExpand =
 
     $.on @EAI, 'click', ImageExpand.cb.toggleAll
 
+    Header.addShortcut @EAI, [80, 130]
+
     Post::callbacks.push
       name: 'Image Expansion'
       cb: @node
-
-    $.asap (-> $.id 'delform'), ->
-      $.prepend $.id('delform'), ImageExpand.EAI
 
   node: ->
     return unless @file?.isImage

@@ -2,7 +2,7 @@ Header =
   init: ->
     @menu = new UI.Menu 'header'
 
-    @menuButton = $.el 'span',
+    menuButton = $.el 'span',
       className: 'menu-button'
       id:        'main-menu'
 
@@ -26,7 +26,7 @@ Header =
     @setBarFixed      Conf['Fixed Header']
     @setBarVisibility Conf['Header auto-hide']
 
-    $.on @menuButton,         'click',  @menuToggle
+    $.on menuButton,          'click',  @menuToggle
     $.on @barFixedToggler,    'change', @toggleBarFixed
     $.on @barPositionToggler, 'change', @toggleBarPosition
     $.on @headerToggler,      'change', @toggleBarVisibility
@@ -52,6 +52,9 @@ Header =
     $.on window, 'load hashchange', Header.hashScroll
     $.on d, 'CreateNotification', @createNotification
 
+    @enableDesktopNotifications()
+    @addShortcut menuButton, [110, 100]
+
     $.asap (-> d.body), =>
       return unless Main.isThisPageLegit()
       # Wait for #boardNavMobile instead of #boardNavDesktop,
@@ -60,9 +63,6 @@ Header =
       $.prepend d.body, @bar
       $.add d.body, Header.hover
       @setBarPosition Conf['Bottom Header']
-      @
-
-    @enableDesktopNotifications()
 
   bar: $.el 'div',
     id: 'header-bar'
@@ -92,9 +92,7 @@ Header =
 
     $.rm $ '#navtopright', fullBoardList
 
-    settings = $.id('navtopright')
-    $.prepend d.body, settings
-    $.add settings, Header.menuButton
+    $.prepend d.body, $.id 'navtopright'
 
     $.add boardList, fullBoardList
     $.add Header.bar, [Header.shortcuts, boardList, Header.notify, Header.toggle]
@@ -271,9 +269,11 @@ Header =
       top -= headRect.top + headRect.height
     window.scrollBy 0, top
 
-  addShortcut: (el) ->
+  addShortcut: (el, order) ->
+    order = order[if Conf["Icon Orientation"] is "horizontal" then 0 else 1]
     shortcut = $.el 'span',
       className: 'shortcut brackets-wrap'
+    shortcut.style.cssText = "order: #{order}; -webkit-order: #{order};"
     $.add shortcut, el
     $.prepend Header.shortcuts, shortcut
 

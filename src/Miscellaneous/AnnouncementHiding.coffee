@@ -28,6 +28,7 @@ PSAHiding =
       className: 'hide-announcement' 
       href: 'javascript:;'
       textContent: '[ - ]'
+
     $.on btn, 'click', PSAHiding.toggle
 
     $.get 'hiddenPSA', 0, ({hiddenPSA}) ->
@@ -52,4 +53,3 @@ PSAHiding =
       false
     if (hr = psa.nextElementSibling) and hr.nodeName is 'HR'
       hr.hidden = psa.hidden
-    Style.iconPositions()

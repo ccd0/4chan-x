@@ -8,8 +8,7 @@ FappeTyme =
 
     $.on el, 'click', FappeTyme.toggle
 
-    $.asap (-> $.id 'boardNavMobile'), ->
-      $.add $.id('navtopright'), el
+    Header.addShortcut el, [30, 30]
 
     Post::callbacks.push
       name: 'Fappe Tyme'

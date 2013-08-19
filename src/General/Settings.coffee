@@ -518,9 +518,6 @@ Settings =
           input.value = val
           $.on input, 'change', cb.value
 
-        if key is 'Icon Orientation'
-          $.on input, 'change', Style.iconPositions
-
       Rice.nodes nodes
       $.add section, nodes
 

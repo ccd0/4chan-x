@@ -1,7 +1,3 @@
-/* Expand Images */
-body::after {
-  top: #{position[i] - 1}px;
-}
 #img-controls {
   top: #{position[i++]}px;
 }
@@ -29,7 +25,7 @@ body::after {
   top: #{position[i++]}px;
 }
 /* 4chan Catalog */
-#catalog::after {
+#catalog {
   top: #{position[i++]}px;
 }
 /* Back */
@@ -47,10 +43,6 @@ div.navLinks > a:first-of-type::after {
 #navlinks a:last-of-type {
   top: #{position[i++]}px !important;
 }
-body::after {
-  height: #{position[i] - 2}px;
-  #{align}: 2px;
-}
 #navlinks a,
 #navtopright .exlinksOptionsLink::after,
 #main-menu,
@@ -59,7 +51,7 @@ body::after {
 #img-controls,
 #fappeTyme,
 .slideout-watcher #thread-watcher::after,
-#catalog::after,
+#catalog,
 div.navLinks > a:first-of-type::after {
   #{align}: 3px !important;
 }

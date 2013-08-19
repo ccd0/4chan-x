@@ -8,20 +8,19 @@ Nav =
       else # catalog
         return
 
-    span = $.el 'span',
-      id: 'navlinks'
     prev = $.el 'a',
       href: 'javascript:;'
+      id:   'navPrev'
     next = $.el 'a',
       href: 'javascript:;'
+      id:   'navNext'
+
+    Header.addShortcut prev, [10, 10]
+    Header.addShortcut next, [20, 20]
 
     $.on prev, 'click', @prev
     $.on next, 'click', @next
 
-    $.add span, [prev, $.tn(' '), next]
-    append = ->
-      $.off d, '4chanXInitFinished', append
-      $.add d.body, span
     $.on d, '4chanXInitFinished', append
 
   prev: ->

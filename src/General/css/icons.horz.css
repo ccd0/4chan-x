@@ -1,6 +1,3 @@
-body::after {
-  #{align}: #{position[i] - 1}px;
-}
 /* Appchan X Options */
 #main-menu {
   #{align}: #{position[i++]}px;
@@ -26,7 +23,7 @@ body::after {
   #{align}: #{position[i++]}px;
 }
 /* 4chan Catalog */
-#catalog::after {
+#catalog {
   #{align}: #{position[i++]}px;
 }
 /* Back */
@@ -48,10 +45,6 @@ div.navLinks > a:first-of-type::after {
 #navlinks a:first-of-type {
   #{align}: #{position[i++]}px;
 }
-body::after {
-  width: #{position[i] - 2}px;
-  top: 0;
-}
 #boardNavDesktopFoot::after,
 #navtopright .exlinksOptionsLink::after,
 #main-menu,
@@ -60,7 +53,7 @@ body::after {
 #img-controls,
 #fappeTyme,
 div.navLinks > a:first-of-type::after,
-#catalog::after {
+#catalog {
   top: 1px !important;
 }
 .slideout-watcher #globalMessage,

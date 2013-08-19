@@ -1,36 +1,25 @@
-#navtopright .exlinksOptionsLink::after,
 #main-menu,
 body > div.navLinks > a:first-of-type::after,
-.slideout-watcher #thread-watcher::after,
-.announcements-slideout #globalMessage::after,
-#boardNavDesktopFoot::after,
+.slideout-watcher #sowIcon,
+.announcements-slideout #psaIcon,
+#slideNav,
 #img-controls,
-#catalog::after,
+#catalog,
 #fappeTyme {
   z-index: 18;
-  position: fixed;
-  display: block;
+  display: inline-block;
   width: 15px;
   height: 15px;
   content: "";
   opacity: 0.5;
 }
-body::after {
-  content: "";
-  display: block;
-  position: fixed;
-  z-index: 5;
-  width: 18px;
-  height: 18px;
-}
-.invisible-icons #navtopright .exlinksOptionsLink::after,
 .invisible-icons #main-menu,
 .invisible-icons body > div.navLinks > a:first-of-type::after,
-.invisible-icons.slideout-watcher #thread-watcher::after,
-.invisible-icons.announcements-slideout #globalMessage::after,
-.invisible-icons #boardNavDesktopFoot::after,
+.invisible-icons.slideout-watcher #sowIcon,
+.invisible-icons.announcements-slideout #psaIcon,
+.invisible-icons #slideNav,
 .invisible-icons #img-controls,
-.invisible-icons #catalog::after,
+.invisible-icons #catalog,
 .invisible-icons #fappeTyme {
   opacity: 0;
 }
@@ -46,7 +35,7 @@ body > div.navLinks > a:first-of-type,
 body > div.navLinks > a:first-of-type:hover,
 .slideout-watcher #thread-watcher:hover,
 .announcements-slideout #globalMessage:hover,
-#boardNavDesktopFoot:hover,
+#slideNav:hover,
 #img-controls,
 #catalog:hover {
   z-index: 17;
@@ -60,13 +49,13 @@ body > div.navLinks > a:first-of-type::after {
   cursor: pointer;
   background-position: 0 -15px;
 }
-.slideout-watcher #thread-watcher::after {
+.slideout-watcher #sowIcon {
   background-position: 0 -30px;
 }
-.announcements-slideout #globalMessage::after {
+.announcements-slideout #psaIcon {
   background-position: 0 -45px;
 }
-#boardNavDesktopFoot::after {
+#slideNav {
   background-position: 0 -60px;
 }
 #img-controls {
@@ -75,22 +64,21 @@ body > div.navLinks > a:first-of-type::after {
 #navtopright .exlinksOptionsLink::after {
   background-position: 0 -105px;
 }
-#catalog::after {
+#catalog {
   visibility: visible;
   background-position: 0 -120px;
 }
 #fappeTyme {
   background-position: 0 -135px;
 }
-#boardNavDesktopFoot:hover::after,
-.announcements-slideout #globalMessage:hover::after,
+#slideNav:hover,
+.announcements-slideout #psaIcon:hover,
 #img-controls:hover,
 #navlinks a:hover,
 #appchanOptions:hover,
 #main-menu:hover,
-#navtopright .exlinksOptionsLink:hover::after,
 #qr #qrtab,
-.slideout-watcher #thread-watcher:hover::after,
+.slideout-watcher #sowIcon:hover,
 .thumbnail#selected,
 div.navLinks > a:first-of-type:hover::after,
 #catalog:hover::after,

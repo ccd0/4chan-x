@@ -41,7 +41,14 @@ ThreadWatcher =
     $.off d, '4chanXInitFinished', ThreadWatcher.ready
     return unless Main.isThisPageLegit()
     ThreadWatcher.refresh()
-    $.add d.body, ThreadWatcher.dialog
+
+    if Conf['Slideout Watcher']
+      el = $.el 'i', id: 'sowIcon'
+      Header.addShortcut el, [80, 70]
+    else
+      el = d.body
+
+    $.add el, ThreadWatcher.dialog
 
     return unless Conf['Auto Watch']
     $.get 'AutoWatch', 0, ({AutoWatch}) ->

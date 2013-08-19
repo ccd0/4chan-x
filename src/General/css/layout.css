@@ -55,7 +55,6 @@ body > hr {
   display: none !important;
 }
 /* Hidden UI */
-#catalog,
 #navlinks,
 #navtopright,
 #svg_filters,
@@ -258,6 +257,8 @@ th {
 }
 #shortcuts {
   float: right;
+  display: flex;
+  display: -webkit-flex;
 }
 .fixed #header-bar.autohide {
   z-index: 24;
@@ -485,25 +486,23 @@ th {
   margin: 0 3px;
 }
 /* Icons */
-.icons-4chan-ss #navtopright .exlinksOptionsLink::after,
 .icons-4chan-ss #main-menu,
 .icons-4chan-ss .navLinks > a:first-of-type::after,
-.icons-4chan-ss #thread-watcher::after,
-.icons-4chan-ss #globalMessage::after,
-.icons-4chan-ss #boardNavDesktopFoot::after,
+.icons-4chan-ss #sowIcon,
+.icons-4chan-ss #psaIcon,
+.icons-4chan-ss #slideNav,
 .icons-4chan-ss #img-controls,
-.icons-4chan-ss #catalog::after,
+.icons-4chan-ss #catalog,
 .icons-4chan-ss #fappeTyme {
   background-image: url("data:image/png;base64,<%= grunt.file.read("src/General/img/icons/4chanSS.png",  {encoding: "base64"}) %>");
 }
-.icons-oneechan #navtopright .exlinksOptionsLink::after,
 .icons-oneechan #main-menu,
 .icons-oneechan .navLinks > a:first-of-type::after,
-.icons-oneechan #thread-watcher::after,
-.icons-oneechan #globalMessage::after,
-.icons-oneechan #boardNavDesktopFoot::after,
+.icons-oneechan #sowIcon,
+.icons-oneechan #psaIcon,
+.icons-oneechan #slideNav,
 .icons-oneechan #img-controls,
-.icons-oneechan #catalog::after,
+.icons-oneechan #catalog,
 .icons-oneechan #fappeTyme {
   background-image: url("data:image/png;base64,<%= grunt.file.read("src/General/img/icons/oneechan.png", {encoding: "base64"}) %>");
 }

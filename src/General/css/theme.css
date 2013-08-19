@@ -348,7 +348,7 @@ a .name {
 #globalMessage::after,
 #boardNavDesktopFoot::after,
 #img-controls,
-#catalog::after,
+#catalog,
 #fappeTyme {
   #{unless Style.lightTheme then "<%= filter %>: url(\"#icons-filter\");" else ""}
 }
