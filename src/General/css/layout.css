@@ -1510,6 +1510,7 @@ input:not([type=radio]) {
   background: transparent none;
   overflow: hidden;
   text-overflow: ellipsis; 
+  width: 88%;
 }
 #qr-filename:not(.edit) {
   pointer-events: none;
