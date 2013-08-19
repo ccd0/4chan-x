@@ -23,7 +23,7 @@ Linkify =
           # Replace already-linkified links,
           # f.e.: https://boards.4chan.org/b/%
           $.replace parent, anchor
-        Linkify.cleanLink anchor if Conf['Clean Links']
+        Linkify.cleanLink anchor, link if Conf['Clean Links']
         walker.currentNode = anchor.lastChild
       else
         walker.currentNode = boundaries.endNode
@@ -97,5 +97,8 @@ Linkify =
       boundaries.endNode   = parent
       boundaries.endOffset = [parent.childNodes...].indexOf(parentNode) + 1
 
-  cleanLink: (anchor) ->
-    # TODO
+  cleanLink: (anchor, link) ->
+    {length} = link
+    for node in $$ 's, .prettyprint', anchor
+      $.replace node, [node.childNodes...] if length > node.textContent.length
+    return
