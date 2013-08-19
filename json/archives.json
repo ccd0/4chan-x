@@ -54,10 +54,10 @@
   "files": ["cm", "d", "e", "i", "n", "o", "p", "s", "trv", "y"]
 }, {
   "uid": 12,
-  "name": "fap archive",
+  "name": "FapArchive",
   "domain": "fuuka.worldathleticproject.org",
   "http": true,
-  "https": false,
+  "https": true,
   "software": "foolfuuka",
   "boards": ["b", "e", "h", "hc", "p", "s", "u"],
   "files": ["b", "e", "h", "hc", "p", "s", "u"]
