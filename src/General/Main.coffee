@@ -42,7 +42,7 @@ Main =
         # Track resolution of this bug.
         Main.logError
           message: 'Chrome Storage API bug'
-          error: new Error chrome.runtime.lastError.message or 'no lastError.message'
+          error: new Error '~'
       <% } %>
       Main.initFeatures()
 
@@ -202,13 +202,14 @@ Main =
       Main.callbackNodes Post, posts
 
     if $.hasClass d.body, 'fourchan_x'
-      Main.v2Detected = true
+      Main.disableReports = true
       alert '4chan X v2 detected: Disable it or v3 will break.'
 
     try
       localStorage.getItem '4chan-settings'
     catch err
       new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to properly function.', 30
+      Main.disableReports = true
 
     $.event '4chanXInitFinished'
 
@@ -284,7 +285,7 @@ Main =
     Main.errors.push data
 
   postErrors: ->
-    return if Main.v2Detected
+    return if Main.disableReports
     errors = Main.errors.filter((d) -> !!d.error.stack).map((d) ->
       <% if (type === 'userscript') { %>
       # Before:
