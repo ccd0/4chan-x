@@ -87,7 +87,7 @@ Linkify =
         {parentNode} = parentNode
       parent = parentNode.parentNode
       boundaries.endNode   = parent
-      boundaries.endOffset = [parent.childNodes...].indexOf parentNode
+      boundaries.endOffset = [parent.childNodes...].indexOf(parentNode) + 1
 
   cleanLink: (anchor) ->
     # TODO
