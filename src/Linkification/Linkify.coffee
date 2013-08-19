@@ -16,9 +16,9 @@ Linkify =
     range  = d.createRange()
     for link in links
       boundaries = Linkify.find link, walker
-      # continue unless boundaries
+      # break unless boundaries
       anchor = Linkify.createLink link
-      if Linkify.surround anchor, link, range, boundaries
+      if Linkify.surround anchor, range, boundaries
         Linkify.cleanLink anchor if Conf['Clean Links']
         walker.currentNode = anchor.lastChild
       else
@@ -29,14 +29,13 @@ Linkify =
     # Walk through the nodes until we find the entire link.
     text = ''
     while node = walker.nextNode()
-      {data} = node
       text += node.data
-      if text.indexOf(link) > -1
-        startNode = endNode = node
-        break
+      break if text.indexOf(link) > -1
+    # return unless node
+    startNode = endNode = node
 
     # Walk backwards to find the startNode.
-    text = data
+    text = node.data
     until (index = text.indexOf link) > -1
       startNode = walker.previousNode()
       text = "#{startNode.data}#{text}"
@@ -55,20 +54,40 @@ Linkify =
       target: '_blank'
     a
 
-  surround: (anchor, link, range, {startOffset, endOffset, startNode, endNode}) ->
-    # parent = startNode.parentNode
-    # if parent?.nodeName is 'S' and parent.textContent.length < link.length
-    #   parentClone = parent.cloneNode true
-    #   $.replace parent, startNode
+  surround: (anchor, range, boundaries) ->
+    {startOffset, endOffset, startNode, endNode} = boundaries
     range.setStart startNode, startOffset
     range.setEnd endNode, endOffset
     try
       range.surroundContents anchor
-      # if !Conf['Clean Links'] and parentClone and anchor.firstChild
-      #   $.replace anchor.firstChild, parentClone
       true
     catch
-      false
+      # Attempt to handle cases such as:
+      # [spoiler]www.[/spoiler]example.com #
+      # www.example[spoiler].com[/spoiler] #
+      return false if boundaries.areRelocated
+      Linkify.relocate boundaries
+      Linkify.surround anchor, range, boundaries
+
+  relocate: (boundaries) ->
+    # What do you mean, "silly"?
+    boundaries.areRelocated = true
+
+    if boundaries.startOffset is 0
+      parentNode = boundaries.startNode
+      until parentNode.previousSibling
+        {parentNode} = parentNode
+      parent = parentNode.parentNode
+      boundaries.startNode   = parent
+      boundaries.startOffset = [parent.childNodes...].indexOf parentNode
+
+    if boundaries.endOffset is boundaries.endNode.length
+      parentNode = boundaries.endNode
+      until parentNode.nextSibling
+        {parentNode} = parentNode
+      parent = parentNode.parentNode
+      boundaries.endNode   = parent
+      boundaries.endOffset = [parent.childNodes...].indexOf parentNode
 
   cleanLink: (anchor) ->
     # TODO
