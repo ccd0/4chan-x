@@ -19,6 +19,10 @@ Linkify =
       # break unless boundaries
       anchor = Linkify.createLink link
       if Linkify.surround anchor, range, boundaries
+        if (parent = anchor.parentNode).href is anchor.href
+          # Replace already-linkified links,
+          # f.e.: https://boards.4chan.org/b/%
+          $.replace parent, anchor
         Linkify.cleanLink anchor if Conf['Clean Links']
         walker.currentNode = anchor.lastChild
       else
