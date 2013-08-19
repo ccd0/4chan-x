@@ -98,7 +98,6 @@ module.exports = (grunt) ->
       commit:
         options: shellOptions
         command: [
-          'git checkout <%= pkg.meta.mainBranch %>'
           'git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."'
           'git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
           'git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
