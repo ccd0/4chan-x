@@ -29,7 +29,7 @@
   font-weight: normal;
   font-style: normal;
 }
-.icon::before {
+.fourchanx-icon::before {
   font-family: FontAwesome;
   font-weight: normal;
   font-style: normal;
@@ -40,18 +40,18 @@
   display: none;
   speak: none;
 }
-:root.shortcut-icons .icon::before {
+:root.shortcut-icons .fourchanx-icon::before {
   display: inline-block;
   font-size: 13px; 
   visibility: visible;
 }
-:root.shortcut-icons #shortcuts .icon::before {
+:root.shortcut-icons #shortcuts .fourchanx-icon::before {
   font-size: 15px !important;
   margin-top: -3px !important;
   position: relative;
   top: 1px;
 }
-:root.shortcut-icons .icon {
+:root.shortcut-icons .fourchanx-icon {
   font-size: 0;
   visibility: hidden;
 }
@@ -60,7 +60,7 @@
   display: none;
 }
 /* makes sure icons active on rollover in links */
-a .icon {
+:root.shortcut-icons a .fourchanx-icon {
   display: inline;
 }
 /* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen

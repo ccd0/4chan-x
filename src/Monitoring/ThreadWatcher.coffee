@@ -6,7 +6,7 @@ ThreadWatcher =
       id:   'watcher-link'
       textContent: 'Watcher'
       href: 'javascript:;'
-      className: 'disabled icon icon-eye-open'
+      className: 'disabled fourchanx-icon icon-eye-open'
 
     @db     = new DataBoard 'watchedThreads', @refresh, true
     @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', """

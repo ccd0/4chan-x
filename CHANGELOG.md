@@ -1,3 +1,9 @@
+### v1.2.34 
+*2013-08-19*
+
+**seaweedchan**:
+- `.icon` to `.fourchanx-icon` to avoid conflicts with 4chan's CSS
+
 ### v1.2.33 
 *2013-08-18*
 
