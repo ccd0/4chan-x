@@ -13,16 +13,17 @@ Linkify =
   node: ->
     return if @isClone or !links = @info.comment.match Linkify.catchAll
     walker = d.createTreeWalker @nodes.comment, 4
+    range  = d.createRange()
     for link in links
       boundaries = Linkify.find link, walker
       # continue unless boundaries
       anchor = Linkify.createLink link
-      if Linkify.surround anchor, link, boundaries
+      if Linkify.surround anchor, link, range, boundaries
         Linkify.cleanLink anchor if Conf['Clean Links']
         walker.currentNode = anchor.lastChild
       else
         walker.currentNode = boundaries.endNode
-    return
+    range.detach()
 
   find: (link, walker) ->
     # Walk through the nodes until we find the entire link.
@@ -54,12 +55,11 @@ Linkify =
       target: '_blank'
     a
 
-  surround: (anchor, link, {startOffset, endOffset, startNode, endNode}) ->
+  surround: (anchor, link, range, {startOffset, endOffset, startNode, endNode}) ->
     # parent = startNode.parentNode
     # if parent?.nodeName is 'S' and parent.textContent.length < link.length
     #   parentClone = parent.cloneNode true
     #   $.replace parent, startNode
-    range = d.createRange()
     range.setStart startNode, startOffset
     range.setEnd endNode, endOffset
     try
