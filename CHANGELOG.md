@@ -1,3 +1,6 @@
+### v2.3.4 
+*2013-08-18*
+
 **MayhemYDG**:
 - **New feature**: `Desktop Notifications`
  - Enabled by default, but you will have to grant your browser permissions to display them or disable them altogether:<br>
@@ -13,6 +16,9 @@
 
 **seaweedchan**:
 - Optimizations for the banner and board title code
+
+**zixaphir**:
+- Bugfixes, mostly
 
 ### v2.3.3 
 *2013-08-16*
