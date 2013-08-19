@@ -36,7 +36,6 @@ Header =
     $.sync 'Fixed Header',     Header.setBarFixed
     $.sync 'Bottom Header',    Header.setBarPosition
 
-
     $.event 'AddMenuEntry',
       type: 'header'
       el: $.el 'span',
@@ -62,6 +61,8 @@ Header =
       $.add d.body, Header.hover
       @setBarPosition Conf['Bottom Header']
       @
+
+    @enableDesktopNotifications()
 
   bar: $.el 'div',
     id: 'header-bar'

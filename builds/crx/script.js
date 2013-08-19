@@ -3914,7 +3914,7 @@
       });
       $.on(window, 'load hashchange', Header.hashScroll);
       $.on(d, 'CreateNotification', this.createNotification);
-      return $.asap((function() {
+      $.asap((function() {
         return d.body;
       }), function() {
         if (!Main.isThisPageLegit()) {
@@ -3928,6 +3928,7 @@
         _this.setBarPosition(Conf['Bottom Header']);
         return _this;
       });
+      return this.enableDesktopNotifications();
     },
     bar: $.el('div', {
       id: 'header-bar'
