@@ -53,10 +53,10 @@ Linkify =
   createLink: (link) ->
     unless /^[a-z][\w-]+:/.test link
       link = "http://#{link}"
-    a = $.el 'a',
+    $.el 'a',
       href: link
+      className: 'linkified'
       target: '_blank'
-    a
 
   surround: (anchor, range, boundaries) ->
     {startOffset, endOffset, startNode, endNode} = boundaries
