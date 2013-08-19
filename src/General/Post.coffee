@@ -56,6 +56,8 @@ class Post
     @kill() if that.isArchived
 
   parseComment: ->
+    # Merge text nodes and remove empty ones.
+    @nodes.comment.normalize()
     # Get the comment's text.
     # <br> -> \n
     # Remove:

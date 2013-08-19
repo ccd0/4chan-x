@@ -31,6 +31,7 @@ module.exports = (grunt) ->
           'src/Quotelinks/**/*'
           'src/Posting/**/*'
           'src/Images/**/*'
+          'src/Linkification/**/*'
           'src/Menu/**/*'
           'src/Monitoring/**/*'
           'src/Archive/**/*'

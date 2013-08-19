@@ -1,3 +1,7 @@
+- **New feature**: `Linkify` and `Clean Links`, enabled by default
+ - Linkify will turn text URLs into working links.
+ - Clean Links will get rid of spoiler and code tags in linkified URLs used to bypass spam blocks.
+
 ## 3.9.0 - *2013-08-18*
 
 - **New feature**: `Desktop Notifications`

@@ -128,6 +128,7 @@ Main =
     initFeature 'Index Navigation',         Nav
     initFeature 'Keybinds',                 Keybinds
     initFeature 'Show Dice Roll',           Dice
+    initFeature 'Linkify',                  Linkify
     # c.timeEnd 'All initializations'
 
     $.on d, 'AddCallback', Main.addCallback
