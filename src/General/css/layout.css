@@ -774,7 +774,7 @@ th {
 .rounded-edges #thread-watcher {
   border-radius: 3px;
 }
-#thread-watcher > div {
+#watched-threads > div {
   max-height: 1.3em;
   overflow: hidden;
 }
