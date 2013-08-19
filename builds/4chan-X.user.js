@@ -117,7 +117,7 @@
         'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
         'QR Shortcut': [false, 'Adds a small [QR] link in the header.'],
         'Announcement Hiding': [true, 'Add button to hide 4chan announcements.'],
-        'Desktop Notifications': [true, 'Enables desktop notifications across various 4chan X features.'],
+        'Desktop Notifications': [false, 'Enables desktop notifications across various 4chan X features.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
         'Time Formatting': [true, 'Localize and format timestamps.'],

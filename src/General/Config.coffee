@@ -18,7 +18,7 @@ Config =
         'Add button to hide 4chan announcements.'
       ]
       'Desktop Notifications': [
-        true
+        false
         'Enables desktop notifications across various <%= meta.name %> features.'
       ]
       '404 Redirect': [
