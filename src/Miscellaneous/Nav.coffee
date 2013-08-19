@@ -21,8 +21,6 @@ Nav =
     $.on prev, 'click', @prev
     $.on next, 'click', @next
 
-    $.on d, '4chanXInitFinished', append
-
   prev: ->
     if g.VIEW is 'thread'
       window.scrollTo 0, 0

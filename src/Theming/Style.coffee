@@ -133,7 +133,11 @@ Style =
   silhouette: ([fg]) ->
     "0 0 0 0 #{fg.r} 0 0 0 0 #{fg.g} 0 0 0 0 #{fg.b}"
 
-  layout: """<%= grunt.file.read('src/General/css/layout.css').replace(/\s+/g, ' ').trim() %>"""
+  layout: """<%=
+    grunt.file.read('src/General/css/layout.css').replace(/\s+/g, ' ').trim()
+    + ' ' +
+    grunt.file.read('src/General/css/font-awesome.css').replace(/\s+/g, ' ').replace(/\\/g, '\\\\').trim()
+  %>"""
 
   dynamic: ->
     sidebarLocation = if Conf["Sidebar Location"] is "left"
@@ -174,7 +178,7 @@ Style =
     # Slideout Navigation
     slideNav = $.el 'i', id: 'slideNav'
     $.add $.id('boardNavDesktopFoot'), slideNav
-    Header.addShortcut slideNav, [120, 110] if Conf['Slideout Navigation'] isnt 'hide'
+    Header.addShortcut slideNav, [50, 110] if Conf['Slideout Navigation'] isnt 'hide'
 
     # Announcements
     if Conf['Announcements'] is 'slideout'

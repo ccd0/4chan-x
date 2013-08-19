@@ -341,15 +341,15 @@ a .name {
 #selectrice li:not(:first-of-type) {
   border-top: 1px solid #{if Style.lightTheme then "rgba(0,0,0,0.05)" else "rgba(255,255,255,0.025)"};
 }
-#navtopright .exlinksOptionsLink::after,
 #main-menu,
-.navLinks > a:first-of-type::after,
-#thread-watcher::after,
-#globalMessage::after,
-#boardNavDesktopFoot::after,
+#returnIcon,
+#sowIcon,
+#psaIcon,
+#slideNav,
 #img-controls,
 #catalog,
-#fappeTyme {
+#fappeTyme,
+.icon {
   #{unless Style.lightTheme then "<%= filter %>: url(\"#icons-filter\");" else ""}
 }
 .alternate-post-colors #threads > .thread:nth-of-type(2n+1),

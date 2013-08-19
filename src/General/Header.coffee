@@ -269,13 +269,16 @@ Header =
       top -= headRect.top + headRect.height
     window.scrollBy 0, top
 
-  addShortcut: (el, order) ->
-    order = order[if Conf["Icon Orientation"] is "horizontal" then 0 else 1]
-    shortcut = $.el 'span',
-      className: 'shortcut brackets-wrap'
-    shortcut.style.cssText = "order: #{order}; -webkit-order: #{order};"
-    $.add shortcut, el
-    $.prepend Header.shortcuts, shortcut
+  addShortcut: do ->
+    span = $.el 'span',
+      className: 'shortcut'
+  
+    (el, order) ->
+      order = order[if Conf["Icon Orientation"] is "horizontal" then 0 else 1]
+      shortcut = span.cloneNode()
+      shortcut.style.cssText = "order: #{order}; -webkit-order: #{order};"
+      $.add shortcut, el
+      $.prepend Header.shortcuts, shortcut
 
   menuToggle: (e) ->
     Header.menu.toggle e, @, g

@@ -55,7 +55,6 @@ body > hr {
   display: none !important;
 }
 /* Hidden UI */
-#navlinks,
 #navtopright,
 #svg_filters,
 .cataloglink,
@@ -184,19 +183,18 @@ th {
   content: "] ";
 }
 /* Thread / Reply Nav */
-#navlinks a {
-  position: fixed;
-  z-index: 12;
-  opacity: 0.5;
+#navPrev,
+#navNext {
   display: inline-block;
   border-right: 6px solid transparent;
   border-left: 6px solid transparent;
-  margin: 1.5px;
+  opacity: 0.5;
+  margin: 3px 2px;
 }
-#navlinks a:first-of-type {
+#navPrev {
   border-bottom: 11px solid rgb(130,130,130);
 }
-#navlinks a:last-of-type {
+#navNext {
   border-top: 11px solid rgb(130,130,130);
 }
 /* Header */
@@ -256,9 +254,17 @@ th {
   word-spacing: 2px;
 }
 #shortcuts {
-  float: right;
+  position: fixed;
   display: flex;
   display: -webkit-flex;
+  top: 1px;
+}
+.sidebar-location-right #shortcuts {
+  right: 0;
+  text-align: right;
+}
+.sidebar-location-left #shortcuts {
+  left: 0;
 }
 .fixed #header-bar.autohide {
   z-index: 24;
@@ -487,7 +493,7 @@ th {
 }
 /* Icons */
 .icons-4chan-ss #main-menu,
-.icons-4chan-ss .navLinks > a:first-of-type::after,
+.icons-4chan-ss #returnIcon,
 .icons-4chan-ss #sowIcon,
 .icons-4chan-ss #psaIcon,
 .icons-4chan-ss #slideNav,
@@ -497,7 +503,7 @@ th {
   background-image: url("data:image/png;base64,<%= grunt.file.read("src/General/img/icons/4chanSS.png",  {encoding: "base64"}) %>");
 }
 .icons-oneechan #main-menu,
-.icons-oneechan .navLinks > a:first-of-type::after,
+.icons-oneechan #returnIcon,
 .icons-oneechan #sowIcon,
 .icons-oneechan #psaIcon,
 .icons-oneechan #slideNav,
