@@ -1,15 +1,21 @@
+### v1.2.33 
+*2013-08-18*
+
 **MayhemYDG**:
-- **New feature**: `Desktop Notifications`
- - Enabled by default, but you will have to grant your browser permissions to display them or disable them altogether:<br>
-  ![authorize or disable](img/changelog/3.9.0/0.png)
- - Clicking on a notification will bring up the relevant tab. (Does not work on Firefox unfortunately, [see bug 874050](https://bugzilla.mozilla.org/show_bug.cgi?id=874050).)
- - Notifications will appear when someone quotes you, clicking such notification will also scroll the thread to the relevant post.
- - Notifications will appear for posting errors instead of alert popups.
- - Opera does *not* support desktop notifications yet.
+- Added new option: `Desktop Notifications`
+- Implement filename editing
+- Replace shortcuts with icons
 
-![filename editing](img/changelog/3.8.0/0.gif)
+**seaweedchan**:
+- Made shortcut icons optional under the Header submenu, disabled by default, as well as edited some of the icons
+- Disabled desktop notifications by default
+- Edited filename editing to require a ctrl+click, so otherwise the file input will look and behave the same as before
+- Added `.you` class to quotelinks that quote you
 
-- The QR now allows you to edit the filename on the fly:
+**Zixaphir**:
+- Forked and minimized the Font Awesome CSS used for the shortcut icons
+- Implemented the bulk of the notifications and shortcut icons
+- Some more linkifier improvements
 
 ### v1.2.32 
 *2013-08-16*
