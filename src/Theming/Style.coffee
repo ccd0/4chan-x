@@ -9,7 +9,6 @@ Style =
       ['themeCSS',     Style.theme(theme), 'theme']
       ['emojiCSS',     Emoji.css(),        'emoji']
       ['dynamicCSS',   Style.dynamic(),    'dynamic']
-      ['icons',        "",                 'icons']
       ['paddingSheet', "",                 'padding']
       ['mascot',       "",                 'mascotSheet']
     ]
@@ -168,8 +167,6 @@ Style =
     """<%= grunt.file.read('src/General/css/theme.css').replace(/\s+/g, ' ').trim() %>""" + <%= grunt.file.read('src/General/css/themeoptions.css').replace(/\s+/g, ' ').trim() %>
 
   iconPositions: ->
-    css = """<%= grunt.file.read('src/General/css/icons.base.css').replace(/\s+/g, ' ').trim() %>"""
-
     # Slideout Navigation
     slideNav = $.el 'i',
       id: 'so-nav'
@@ -192,8 +189,6 @@ Style =
       el.id = 'returnIcon'
       el.className = 'a-icon'
       Header.addShortcut el
-
-    Style.icons.textContent = css
 
   padding: ->
     Style.padding.nav   = Header.bar

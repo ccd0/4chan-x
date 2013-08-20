@@ -2,7 +2,7 @@ Settings =
   init: ->
     # Appchan X settings link
     el = $.el 'a',
-      className:   'settings-link icon icon-wrench'
+      className:   'settings-link'
       href:        'javascript:;'
       textContent: 'Settings'
     $.on el, 'click', Settings.open
