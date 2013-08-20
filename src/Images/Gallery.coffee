@@ -1,5 +1,7 @@
 Gallery =
   init: ->
+    return if g.VIEW is 'catalog' or g.BOARD is 'f'
+    
     el = $.el 'a',
       href: 'javascript:;'
       id:   'appchan-gal'
@@ -14,7 +16,7 @@ Gallery =
     Post::callbacks.push
       name: 'Gallery'
       cb: @node
-  
+
   node: ->
     return unless Gallery.el and @file?.isImage
 
@@ -24,50 +26,82 @@ Gallery =
     Gallery.el = dialog = $.el 'div',
       id: 'a-gallery'
       innerHTML: """
-<a href=javascript:; class=gal-close></a>
+<a href=javascript:; class=gal-close>✖</a>
 <div class=gal-viewport>
   <div class=gal-prev></div>
   <div class=gal-image>
-    <img>
+    <a><img></a>
   </div>
   <div class=gal-next></div>
 </div>
 <div class=gal-thumbnails></div>
 """
-    files = $$ '.post .file'
-    Gallery.current = $ '.gal-image img', dialog
+    Gallery.current = $ '.gal-image img',  dialog
+    Gallery.url     = $ '.gal-image a',    dialog
     Gallery.thumbs  = $ '.gal-thumbnails', dialog
     Gallery.images  = []
 
-    $.on ($ '.gal-prev', dialog), 'click', Gallery.cb.prev
-    $.on ($ '.gal-next', dialog), 'click', Gallery.cb.next
-    
+    $.on Gallery.current, 'click', Gallery.cb.download
+
+    $.on ($ '.gal-prev',  dialog), 'click', Gallery.cb.prev
+    $.on ($ '.gal-next',  dialog), 'click', Gallery.cb.next
+    $.on ($ '.gal-close', dialog), 'click', Gallery.cb.close
+
+    $.on  d, 'keydown', Gallery.cb.keybinds
+    $.off d, 'keydown', Keybinds.keydown
+
     i = 0
+    files = $$ '.post .file'
     while file = files[i++]
       Gallery.generateThumb file
     $.add d.body, dialog
 
+    Gallery.thumbs.scrollTop = 0
+    Gallery.current.parentElement.scrollTop = 0
+
+    Gallery.cb.open.call if @ isnt Gallery
+      $ "[href=#{@href}]", Gallery.thumbs
+    else
+      Gallery.images[0]
+
   generateThumb: (file) ->
-    image = $ '.fileThumb', file
-    name  = ($ '.fileText a', file).textContent
-    thumb = image.cloneNode true
+    title = ($ '.fileText a', file).textContent
+    thumb = ($ '.fileThumb', file).cloneNode true
+    if double = $ 'img + img', thumb
+      $.rm double
 
     thumb.className = 'a-thumb'
-    thumb.name = name
-    thumb.dataset.id   = Gallery.images.length
+    thumb.title = title
+    thumb.dataset.id = Gallery.images.length
+    thumb.firstElementChild.style.cssText = ''
 
     $.on thumb, 'click', Gallery.cb.open
 
     Gallery.images.push thumb
     $.add Gallery.thumbs, thumb
-  
+
   cb:
+    keybinds: (e) ->
+      return unless key = Keybinds.keyCode e
+      e.stopPropagation()
+      switch key
+        when 'Esc'
+          e.stopPropagation()
+          Gallery.cb.close()
+        when 'Right', 'Enter'
+          Gallery.cb.next()
+        when 'Left', ''
+          Gallery.cb.prev()
+        when Conf['Open Gallery']
+          Gallery.cb.close()
     open: (e) ->
       if e
         e.preventDefault()
       Gallery.current.dataset.id = @dataset.id
-      Gallery.current.src = @href
-      Gallery.current.name = @name
+      Gallery.url.href = Gallery.current.src = @href
+      Gallery.url.download = Gallery.current.title = @title
+      Gallery.current.parentElement.scrollTop = 0
+      d.body.style.overflow = 'hidden'
     prev: ->
       Gallery.cb.open.call Gallery.images[+Gallery.current.dataset.id - 1]
     next: ->
@@ -79,3 +113,7 @@ Gallery =
     close: ->
       $.rm Gallery.el
       delete Gallery.el
+      d.body.style.overflow = ''
+
+      $.off d, 'keydown', Gallery.cb.keybinds
+      $.on  d, 'keydown', Keybinds.keydown

@@ -171,6 +171,16 @@ module.exports = (grunt) ->
     else
       'order'
 
+    pkg.align = if type is 'crx'
+      '-webkit-align'
+    else
+      'align'
+
+    pkg.justify = if type is 'crx'
+      '-webkit-justify-content'
+    else
+      'justify-content'
+
     grunt.log.ok 'pkg.type = %s', type
 
   grunt.registerTask 'build', [

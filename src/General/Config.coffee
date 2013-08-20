@@ -127,6 +127,10 @@ Config =
         true
         'Show full image on mouseover.'
       ]
+      'Gallery': [
+        false
+        'Adds a cute gallery.'
+      ]
       'Sauce': [
         true
         'Add sauce links to images.'
@@ -946,6 +950,10 @@ box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
     'Expand images': [
       'e'
       'Expand all images.'
+    ]
+    'Open Gallery': [
+      'g'
+      'Opens the gallery.'
     ]
     'fappeTyme': [
       'f'

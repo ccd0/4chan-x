@@ -69,6 +69,8 @@ Keybinds =
         Keybinds.img threadRoot
       when Conf['Expand images']
         Keybinds.img threadRoot, true
+      when Conf['Open Gallery']
+        Gallery.cb.toggle()
       when Conf['fappeTyme']
         FappeTyme.cb.fappe()
       when Conf['werkTyme']
@@ -119,8 +121,8 @@ Keybinds =
         QuoteYou.cb.seek 'following'
       else
         return
-    do e.preventDefault
-    do e.stopPropagation
+    e.preventDefault()
+    e.stopPropagation()
 
   keyCode: (e) ->
     key = switch kc = e.keyCode
