@@ -132,7 +132,7 @@ body.unscroll {
 .sidebar-location-right body::before {
   right: 0;
 }
-sidebar-location-left body::before {
+.sidebar-location-left body::before {
   left: 0;
 }
 .fourchan-ss-sidebar.sidebar-location-right body {
@@ -369,16 +369,16 @@ th {
   position: fixed;
   display: <%= flex %>;
   top: 0;
+  z-index: 16;
 }
 .shortcut {
-  margin: 1px;
+  margin: 0 1px;
 }
 .icon-orientation-vertical #shortcuts {
   <%= flex %>-direction: column;
 }
 .sidebar-location-right #shortcuts {
   right: 0;
-  text-align: right;
 }
 .sidebar-location-right .shortcut {
   align-self: flex-end;
@@ -405,13 +405,13 @@ th {
 #fappeTyme {
   <%= order %>: 30;
 }
-#slideNav {
+#so-nav {
   <%= order %>: 40;
 }
-#sowIcon {
+#so-watcher {
   <%= order %>: 50;
 }
-#psaIcon {
+#so-psa {
   <%= order %>: 60;
 }
 #navPrev {
@@ -432,16 +432,35 @@ th {
 #updater {
   <%= order %>: 120;
 }
-#main-menu,
-#returnIcon,
-#sowIcon,
-#psaIcon,
-#slideNav,
-#img-controls,
-#catalog,
-#fappeTyme,
+.icon-orientation-horizontal #so-psa #globalMessage,
+.icon-orientation-horizontal #so-watcher  #thread-watcher,
+.icon-orientation-horizontal #so-nav #boardNavDesktopFoot {
+  top: 16px !important;
+}
+.icon-orientation-vertical #so-psa,
+.icon-orientation-vertical #so-watcher,
+.icon-orientation-vertical #so-nav {
+  position: relative;
+}
+.icon-orientation-vertical #so-psa #globalMessage,
+.icon-orientation-vertical #so-watcher  #thread-watcher,
+.icon-orientation-vertical #so-nav #boardNavDesktopFoot {
+  top: 0 !important;
+  position: absolute !important;
+  z-index: -1;
+}
+.sidebar-location-right.icon-orientation-vertical #so-psa #globalMessage,
+.sidebar-location-right.icon-orientation-vertical #so-watcher  #thread-watcher,
+.sidebar-location-right.icon-orientation-vertical #so-nav #boardNavDesktopFoot {
+  padding-right: 17px;
+}
+.sidebar-location-left.icon-orientation-vertical #so-psa #globalMessage,
+.sidebar-location-left.icon-orientation-vertical #so-watcher  #thread-watcher,
+.sidebar-location-left.icon-orientation-vertical #so-nav #boardNavDesktopFoot {
+  padding-left: 17px;
+}
+.a-icon,
 #shortcuts .icon {
-  z-index: 18;
   display: inline-block;
   width: 15px;
   height: 15px;
@@ -449,35 +468,17 @@ th {
   opacity: 0.5;
   cursor: pointer;
 }
-.invisible-icons #main-menu,
-.invisible-icons #returnIcon,
-.invisible-icons #sowIcon,
-.invisible-icons #psaIcon,
-.invisible-icons #slideNav,
-.invisible-icons #img-controls,
-.invisible-icons #catalog,
-.invisible-icons #fappeTyme,
-.invisible-icons #navPrev,
-.invisible-icons #navNext,
+.invisible-icons .a-icon,
 .invisible-icons #shortcuts .icon {
   opacity: 0;
 }
-#navtopright .exlinksOptionsLink,
-#returnIcon,
-#{if Conf['Slideout Watcher'] then '#thread-watcher,' else ''}
-#{if Conf['Announcements'] is 'slideout' then '#globalMessage,' else ''}
-#boardNavDesktopFoot,
-#catalog {
-  z-index: 16;
+#so-nav,
+#so-watcher,
+#so-psa {
+  line-height: 0;
 }
-#navtopright .exlinksOptionsLink:hover,
-#returnIcon:hover,
-#thread-watcher:hover,
-#globalMessage:hover,
-#slideNav:hover,
-#img-controls,
-#catalog:hover {
-  z-index: 17;
+.shortcut > div {
+  line-height: normal;
 }
 #main-menu {
   background-position: 0 0;
@@ -485,13 +486,13 @@ th {
 #returnIcon {
   background-position: 0 -15px;
 }
-#sowIcon {
+#so-watcher .a-icon {
   background-position: 0 -30px;
 }
-#psaIcon {
+#so-psa .a-icon  {
   background-position: 0 -45px;
 }
-#slideNav {
+#so-nav .a-icon  {
   background-position: 0 -60px;
 }
 #img-controls {
@@ -503,19 +504,9 @@ th {
 #fappeTyme {
   background-position: 0 -135px;
 }
-#slideNav:hover,
-#psaIcon:hover,
-#img-controls:hover,
 #navPrev:hover,
 #navNext:hover,
-#appchanOptions:hover,
-#main-menu:hover,
-#qr #qrtab,
-#sowIcon:hover,
-.thumbnail#selected,
-#returnIcon:hover,
-#catalog:hover,
-#fappeTyme:hover,
+.a-icon:hover,
 #shortcuts .icon:hover {
   opacity: 1 !important;
 }
@@ -636,24 +627,10 @@ th {
   margin: 0 3px;
 }
 /* Icons */
-.icons-4chan-ss #main-menu,
-.icons-4chan-ss #returnIcon,
-.icons-4chan-ss #sowIcon,
-.icons-4chan-ss #psaIcon,
-.icons-4chan-ss #slideNav,
-.icons-4chan-ss #img-controls,
-.icons-4chan-ss #catalog,
-.icons-4chan-ss #fappeTyme {
+.icons-4chan-ss  .a-icon {
   background-image: url("data:image/png;base64,<%= grunt.file.read("src/General/img/icons/4chanSS.png",  {encoding: "base64"}) %>");
 }
-.icons-oneechan #main-menu,
-.icons-oneechan #returnIcon,
-.icons-oneechan #sowIcon,
-.icons-oneechan #psaIcon,
-.icons-oneechan #slideNav,
-.icons-oneechan #img-controls,
-.icons-oneechan #catalog,
-.icons-oneechan #fappeTyme {
+.icons-oneechan .a-icon {
   background-image: url("data:image/png;base64,<%= grunt.file.read("src/General/img/icons/oneechan.png", {encoding: "base64"}) %>");
 }
 /* Banner & Board Title */
@@ -872,17 +849,12 @@ th {
 .sidebar-location-left #boardNavDesktopFoot {
   left: 2px;
 }
-#boardNavDesktopFoot:hover {
-  overflow-y: auto;
-  padding: 2px;
+#so-nav:hover #boardNavDesktopFoot {
+  display: block;
 }
-#boardNavDesktopFoot:not(:hover) {
-  border-color: transparent;
-  background-color: transparent;
-  height: 0;
-  overflow: hidden;
-  padding: 0;
-  border: 0 none;
+#boardNavDesktopFoot {
+  display: none;
+  padding: 2px;
 }
 .slideout-navigation-compact #boardNavDesktopFoot {
   word-spacing: 1px;
@@ -951,14 +923,12 @@ th {
 .slideout-watcher #thread-watcher > div {
   overflow: hidden;
 }
-.slideout-watcher #thread-watcher:hover {
-  overflow-y: auto;
+.slideout-watcher #so-watcher:hover #thread-watcher {
+  display: block;
 }
-.slideout-watcher #thread-watcher:not(:hover) {
-  height: 0;
-  overflow: hidden;
-  border: 0 none;
-  padding: 0;
+.slideout-watcher #thread-watcher {
+  display: none;
+  overflow-y: auto;
 }
 .watch-thread-link {
   padding-top: 18px;
@@ -999,15 +969,12 @@ th {
 .announcements-slideout #globalMessage h3 {
   margin: 0;
 }
-.announcements-slideout #globalMessage:hover {
+.announcements-slideout #globalMessage {
   <%= sizing %>: border-box;
-  overflow-y: auto;
+  display: none;
 }
-.announcements-slideout #globalMessage:not(:hover) {
-  height: 0;
-  overflow: hidden;
-  padding: 0;
-  border: 0 none;
+.announcements-slideout #so-psa:hover #globalMessage {
+  display: block;
 }
 .announcements-hide #globalMessage {
   display: none !important;

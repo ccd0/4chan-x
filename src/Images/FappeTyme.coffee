@@ -5,6 +5,7 @@ FappeTyme =
       href: 'javascript:;'
       id:   'fappeTyme'
       title: 'Fappe Tyme'
+      className: 'a-icon'
 
     $.on el, 'click', FappeTyme.toggle
 

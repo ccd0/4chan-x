@@ -171,14 +171,18 @@ Style =
     css = """<%= grunt.file.read('src/General/css/icons.base.css').replace(/\s+/g, ' ').trim() %>"""
 
     # Slideout Navigation
-    slideNav = $.el 'i', id: 'slideNav'
-    $.add $.id('boardNavDesktopFoot'), slideNav
+    slideNav = $.el 'i',
+      id: 'so-nav'
+      innerHTML: '<i class=a-icon></a>'
+    $.add slideNav, $.id('boardNavDesktopFoot')
     Header.addShortcut slideNav if Conf['Slideout Navigation'] isnt 'hide'
 
     # Announcements
     if Conf['Announcements'] is 'slideout'
       if (psa = $.id '#globalMessage') and !psa.hidden
-        psaIcon = $.el 'i', id: 'psaIcon'
+        psaIcon = $.el 'i',
+          id: 'so-psa'
+          innerHTML: '<i class=a-icon></a>'
         $.add psa, psaIcon
         Header.addShortcut psaIcon
 
@@ -186,6 +190,7 @@ Style =
       el = $('body > div.navLinks > a')
       el.textContent = ''
       el.id = 'returnIcon'
+      el.className = 'a-icon'
       Header.addShortcut el
 
     Style.icons.textContent = css

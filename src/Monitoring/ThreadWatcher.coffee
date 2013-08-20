@@ -43,7 +43,9 @@ ThreadWatcher =
     ThreadWatcher.refresh()
 
     if Conf['Slideout Watcher']
-      el = $.el 'i', id: 'sowIcon'
+      el = $.el 'div',
+        id: 'so-watcher'
+        innerHTML: '<i class=a-icon></a>'
       Header.addShortcut el
     else
       el = d.body

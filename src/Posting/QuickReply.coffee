@@ -34,6 +34,7 @@ QR =
     return Header.addShortcut sc if Conf['Header Shortcut']
 
     $.addClass sc, 'on-page'
+    $.rmClass  sc, 'icon'
     sc.textContent = if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'
     con = $.el 'div',
       className: 'center'

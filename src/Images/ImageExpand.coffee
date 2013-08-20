@@ -4,7 +4,7 @@ ImageExpand =
 
     @EAI = $.el 'a',
       id:        'img-controls'
-      className:   'expand-all-shortcut icon icon-resize-full'
+      className:   'expand-all-shortcut a-icon'
       title:       'Expand All Images'
       href:        'javascript:;'
 
@@ -36,11 +36,11 @@ ImageExpand =
     toggleAll: ->
       $.event 'CloseMenu'
       if ImageExpand.on = $.hasClass ImageExpand.EAI, 'expand-all-shortcut'
-        ImageExpand.EAI.className = 'contract-all-shortcut icon icon-resize-small'
+        ImageExpand.EAI.className = 'contract-all-shortcut a-icon'
         ImageExpand.EAI.title     = 'Contract All Images'
         func = ImageExpand.expand
       else
-        ImageExpand.EAI.className = 'expand-all-shortcut icon icon-resize-full'
+        ImageExpand.EAI.className = 'expand-all-shortcut a-icon'
         ImageExpand.EAI.title     = 'Expand All Images'
         func = ImageExpand.contract
       for ID, post of g.posts

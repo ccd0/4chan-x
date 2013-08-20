@@ -56,11 +56,6 @@ div.navLinks > a:first-of-type::after,
 #catalog {
   top: 1px !important;
 }
-.slideout-watcher #globalMessage,
-.slideout-watcher #thread-watcher,
-#boardNavDesktopFoot {
-  top: 16px !important;
-}
 .fourchan-ss-navigation.fixed.top #header-bar,
 .fourchan-ss-navigation.pagination-top .pagelist,
 .fourchan-ss-navigation.pagination-sticky-top .pagelist {

@@ -3,7 +3,7 @@ Header =
     @menu = new UI.Menu 'header'
 
     menuButton = $.el 'span',
-      className: 'menu-button'
+      className: 'menu-button a-icon'
       id:        'main-menu'
 
     barFixedToggler  = $.el 'label',
