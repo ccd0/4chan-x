@@ -94,7 +94,7 @@ Style =
       node = addedNodes[i]
 
       continue if node.nodeName is 'STYLE' and node.id or
-        node.nodeName isnt 'LINK' or
+        !['LINK', 'STYLE'].contains(node.nodeName) or
         node.rel and ((!/stylesheet/.test(node.rel) or /flags.*\.css$/.test(href = node.href) or href[..3] is 'data')) or
         /\.typeset/.test node.textContent
       $.rm node

@@ -12247,7 +12247,7 @@
       i = addedNodes.length;
       while (i--) {
         node = addedNodes[i];
-        if (node.nodeName === 'STYLE' && node.id || node.nodeName !== 'LINK' || node.rel && (!/stylesheet/.test(node.rel) || /flags.*\.css$/.test(href = node.href) || href.slice(0, 4) === 'data') || /\.typeset/.test(node.textContent)) {
+        if (node.nodeName === 'STYLE' && node.id || !['LINK', 'STYLE'].contains(node.nodeName) || node.rel && (!/stylesheet/.test(node.rel) || /flags.*\.css$/.test(href = node.href) || href.slice(0, 4) === 'data') || /\.typeset/.test(node.textContent)) {
           continue;
         }
         $.rm(node);
