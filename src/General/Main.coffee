@@ -160,6 +160,7 @@ Main =
       'Relative Post Dates':       RelativeDates
       'File Info Formatting':      FileInfo
       'Fappe Tyme':                FappeTyme
+      'Gallery':                   Gallery
       'Sauce':                     Sauce
       'Image Expansion':           ImageExpand
       'Image Expansion (Menu)':    ImageExpand.menu

@@ -406,6 +406,9 @@ th {
 #img-controls {
   <%= order %>: 20;
 }
+#appchan-gal {
+  <%= order %>: 25;
+}
 #fappeTyme {
   <%= order %>: 30;
 }
@@ -2214,6 +2217,46 @@ article li {
   position: absolute;
   left: 10px;
   bottom: 0;
+}
+/* Gallery */
+#a-gallery {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: <%= flex %>;
+  <%= flex %>-direction: column;
+}
+.gal-viewport {
+  display: <%= flex %>;
+  align-items: stretch;
+  <%= flex %>-direction: row;
+  <%= flex %>: 1 1 auto;
+}
+.gal-thumbnails {
+  <%= flex %>: 0 0 270px;
+  overflow-x: auto;
+}
+.gal-prev {
+  order: 0;
+  <%= flex %>: 0 0 20px;
+}
+.gal-next {
+  order: 2;
+  <%= flex %>: 0 0 20px;
+}
+.gal-image {
+  order: 1;
+  <%= flex %>: 1 0 auto;
+  display: <%= flex %>;
+  align-items: center;
+  justify-content: center;
+}
+.gal-image img {
+  max-height: 100%;
+  max-width: 100%;
 }
 /* Catalog */
 #content .navLinks,
