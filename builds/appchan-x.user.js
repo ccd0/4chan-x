@@ -8868,7 +8868,8 @@
       $.add(d.body, dialog);
       Gallery.thumbs.scrollTop = 0;
       Gallery.current.parentElement.scrollTop = 0;
-      return Gallery.cb.open.call(this !== Gallery ? $("[href=" + this.href + "]", Gallery.thumbs) : Gallery.images[0]);
+      Gallery.cb.open.call(this !== Gallery ? $("[href=" + this.href + "]", Gallery.thumbs) : Gallery.images[0]);
+      return d.body.style.overflow = 'hidden';
     },
     generateThumb: function(file) {
       var double, thumb, title;
@@ -8915,8 +8916,7 @@
         Gallery.current.dataset.id = this.dataset.id;
         Gallery.url.href = Gallery.current.src = this.href;
         Gallery.url.download = Gallery.current.title = this.title;
-        Gallery.current.parentElement.scrollTop = 0;
-        return d.body.style.overflow = 'hidden';
+        return Gallery.url.parentElement.scrollTop = 0;
       },
       prev: function() {
         return Gallery.cb.open.call(Gallery.images[+Gallery.current.dataset.id - 1]);

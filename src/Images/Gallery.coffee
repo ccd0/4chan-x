@@ -64,6 +64,8 @@ Gallery =
     else
       Gallery.images[0]
 
+    d.body.style.overflow = 'hidden'
+
   generateThumb: (file) ->
     title = ($ '.fileText a', file).textContent
     thumb = ($ '.fileThumb', file).cloneNode true
@@ -98,10 +100,9 @@ Gallery =
       if e
         e.preventDefault()
       Gallery.current.dataset.id = @dataset.id
-      Gallery.url.href = Gallery.current.src = @href
+      Gallery.url.href     = Gallery.current.src   = @href
       Gallery.url.download = Gallery.current.title = @title
-      Gallery.current.parentElement.scrollTop = 0
-      d.body.style.overflow = 'hidden'
+      Gallery.url.parentElement.scrollTop = 0
     prev: ->
       Gallery.cb.open.call Gallery.images[+Gallery.current.dataset.id - 1]
     next: ->
