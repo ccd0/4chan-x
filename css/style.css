@@ -191,17 +191,14 @@ a[href="javascript:;"] {
   text-decoration: none;
   padding: 1px;
 }
-#shortcuts::after {
-  margin-left: 2px;
-}
 .shortcut:not(:last-child)::after {
   content: " / ";
 }
 .brackets-wrap::before {
-  content: "\\00a0[";
+  content: " [ ";
 }
 .brackets-wrap::after {
-  content: "]\\00a0";
+  content: " ] ";
 }
 
 /* Notifications */
@@ -885,16 +882,23 @@ a.hide-announcement {
 
 /* Menu */
 .menu-button {
-  display: inline-block;
   position: relative;
 }
-.menu-button i {
+.menu-button i:not(.icon-reorder) {
   border-top:   6px solid;
   border-right: 4px solid transparent;
   border-left:  4px solid transparent;
   display: inline-block;
   margin: 2px;
   vertical-align: middle;
+}
+:root.blink .menu-button .icon-reorder {
+  /* crbug.com/25541 */
+  font-size: 14px;
+}
+:root.blink #shortcuts .icon-reorder {
+  /* crbug.com/25541 */
+  vertical-align: -1px;
 }
 #menu {
   border-bottom: 0;
