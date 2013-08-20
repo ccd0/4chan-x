@@ -624,6 +624,7 @@ a.hide-announcement {
   appearance: none;
   border: none;
   background: none;
+  font: inherit;
 }
 #qr option {
   color: #000;
@@ -867,8 +868,7 @@ a.hide-announcement {
   background: none;
   border: none !important;
   color: inherit;
-  font-family: inherit;
-  font-size: inherit;
+  font: inherit;
   -webkit-flex: 1;
   flex: 1;
   text-overflow: ellipsis;
