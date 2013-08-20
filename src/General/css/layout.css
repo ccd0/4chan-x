@@ -793,9 +793,6 @@ th {
 .hide-delete-ui .post:not(#exlinks-options) .rice {
   display: none;
 }
-.hide-delete-ui .postInfo {
-  padding-left: 3px;
-}
 .deleteform {
   position: fixed;
   z-index: 18;
