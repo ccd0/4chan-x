@@ -1,6 +1,28 @@
 Style =
   init: ->
-    @setup()
+    theme = Themes[Conf['theme']] or Themes['Yotsuba B']
+    Style.svg = $.el 'div',
+      id: 'svg_filters'
+
+    items = [
+      ['layoutCSS',    Style.layout,       'layout']
+      ['themeCSS',     Style.theme(theme), 'theme']
+      ['emojiCSS',     Emoji.css(),        'emoji']
+      ['dynamicCSS',   Style.dynamic(),    'dynamic']
+      ['icons',        "",                 'icons']
+      ['paddingSheet', "",                 'padding']
+      ['mascot',       "",                 'mascotSheet']
+    ]
+
+    i = 0
+    while item = items[i++]
+      Style[item[0]] = $.addStyle item[1], item[2]
+
+    # Non-customizable
+    $.addStyle JSColor.css(), 'jsColor'
+
+    $.asap (-> d.head), Style.observe
+
     $.asap (-> d.body), @asapInit
     $.on window, "resize", Style.padding
     $.ready @readyInit
@@ -47,61 +69,34 @@ Style =
       $.on exLink, "click", ->
         setTimeout Rice.nodes, 100
 
-  setup: ->
-    theme = Themes[Conf['theme']] or Themes['Yotsuba B']
-    Style.svg = $.el 'div',
-      id: 'svg_filters'
-
-    items = [
-      ['layoutCSS',    Style.layout,       'layout']
-      ['themeCSS',     Style.theme(theme), 'theme']
-      ['emojiCSS',     Emoji.css(),        'emoji']
-      ['dynamicCSS',   Style.dynamic(),    'dynamic']
-      ['icons',        "",                 'icons']
-      ['paddingSheet', "",                 'padding']
-      ['mascot',       "",                 'mascotSheet']
-    ]
-
-    i = 0
-    while item = items[i++]
-      Style[item[0]] = $.addStyle item[1], item[2]
-
-    # Non-customizable
-    $.addStyle JSColor.css(), 'jsColor'
-
-    if d.head
-      @remStyle()
-    @observe()
-
   observe: ->
     if window.MutationObserver
-      Style.observer = new MutationObserver onMutationObserver = @wrapper
-      Style.observer.observe d,
+      Style.observer = new MutationObserver onMutationObserver = Style.wrapper
+      Style.observer.observe d.head,
         childList: true
         subtree: true
     else
-      $.on d, 'DOMNodeInserted', @wrapper
+      $.on d.head, 'DOMNodeInserted', Style.wrapper
 
   wrapper: ->
-    if d.head
-      Style.remStyle()
+    first = {addedNodes: d.head.children}
+    Style.remStyle(first)
 
-      if d.readyState is 'complete'
-        if Style.observer
-          Style.observer.disconnect()
-        else
-          $.off d, 'DOMNodeInserted', Style.wrapper
+    if d.readyState is 'complete'
+      if Style.observer
+        Style.observer.disconnect()
+      else
+        $.off d, 'DOMNodeInserted', Style.wrapper
 
-  remStyle: ->
-    nodes = d.head.children
-    i = nodes.length
+  remStyle: ({addedNodes}) ->
+    i = addedNodes.length
     while i--
-      node = nodes[i]
+      node = addedNodes[i]
 
-      continue if node.id or
-        !['STYLE', 'LINK'].contains(node.nodeName) or
-        node.rel and !(/stylesheet/.test(node.rel) or (/flags.*\.css$/.test(href = node.href) or href[..3] is 'data')) or
-        (/\.typeset/.test node.textContent)
+      continue if node.nodeName is 'STYLE' and node.id or
+        !['LINK', 'STYLE'].contains(node.nodeName) or
+        node.rel and ((!/stylesheet/.test(node.rel) or /flags.*\.css$/.test(href = node.href) or href[..3] is 'data')) or
+        /\.typeset/.test node.textContent
       $.rm node
     return
 

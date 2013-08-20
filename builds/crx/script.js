@@ -12124,7 +12124,21 @@
 
   Style = {
     init: function() {
-      this.setup();
+      var i, item, items, theme;
+
+      theme = Themes[Conf['theme']] || Themes['Yotsuba B'];
+      Style.svg = $.el('div', {
+        id: 'svg_filters'
+      });
+      items = [['layoutCSS', Style.layout, 'layout'], ['themeCSS', Style.theme(theme), 'theme'], ['emojiCSS', Emoji.css(), 'emoji'], ['dynamicCSS', Style.dynamic(), 'dynamic'], ['icons', "", 'icons'], ['paddingSheet', "", 'padding'], ['mascot', "", 'mascotSheet']];
+      i = 0;
+      while (item = items[i++]) {
+        Style[item[0]] = $.addStyle(item[1], item[2]);
+      }
+      $.addStyle(JSColor.css(), 'jsColor');
+      $.asap((function() {
+        return d.head;
+      }), Style.observe);
       $.asap((function() {
         return d.body;
       }), this.asapInit);
@@ -12186,57 +12200,42 @@
         });
       }
     },
-    setup: function() {
-      var i, item, items, theme;
-
-      theme = Themes[Conf['theme']] || Themes['Yotsuba B'];
-      Style.svg = $.el('div', {
-        id: 'svg_filters'
-      });
-      items = [['layoutCSS', Style.layout, 'layout'], ['themeCSS', Style.theme(theme), 'theme'], ['emojiCSS', Emoji.css(), 'emoji'], ['dynamicCSS', Style.dynamic(), 'dynamic'], ['icons', "", 'icons'], ['paddingSheet', "", 'padding'], ['mascot', "", 'mascotSheet']];
-      i = 0;
-      while (item = items[i++]) {
-        Style[item[0]] = $.addStyle(item[1], item[2]);
-      }
-      $.addStyle(JSColor.css(), 'jsColor');
-      if (d.head) {
-        this.remStyle();
-      }
-      return this.observe();
-    },
     observe: function() {
       var onMutationObserver;
 
       if (window.MutationObserver) {
-        Style.observer = new MutationObserver(onMutationObserver = this.wrapper);
-        return Style.observer.observe(d, {
+        Style.observer = new MutationObserver(onMutationObserver = Style.wrapper);
+        return Style.observer.observe(d.head, {
           childList: true,
           subtree: true
         });
       } else {
-        return $.on(d, 'DOMNodeInserted', this.wrapper);
+        return $.on(d.head, 'DOMNodeInserted', Style.wrapper);
       }
     },
     wrapper: function() {
-      if (d.head) {
-        Style.remStyle();
-        if (d.readyState === 'complete') {
-          if (Style.observer) {
-            return Style.observer.disconnect();
-          } else {
-            return $.off(d, 'DOMNodeInserted', Style.wrapper);
-          }
+      var first;
+
+      first = {
+        addedNodes: d.head.children
+      };
+      Style.remStyle(first);
+      if (d.readyState === 'complete') {
+        if (Style.observer) {
+          return Style.observer.disconnect();
+        } else {
+          return $.off(d, 'DOMNodeInserted', Style.wrapper);
         }
       }
     },
-    remStyle: function() {
-      var href, i, node, nodes;
+    remStyle: function(_arg) {
+      var addedNodes, href, i, node;
 
-      nodes = d.head.children;
-      i = nodes.length;
+      addedNodes = _arg.addedNodes;
+      i = addedNodes.length;
       while (i--) {
-        node = nodes[i];
-        if (node.id || !['STYLE', 'LINK'].contains(node.nodeName) || node.rel && !(/stylesheet/.test(node.rel) || (/flags.*\.css$/.test(href = node.href) || href.slice(0, 4) === 'data')) || (/\.typeset/.test(node.textContent))) {
+        node = addedNodes[i];
+        if (node.nodeName === 'STYLE' && node.id || !['LINK', 'STYLE'].contains(node.nodeName) || node.rel && (!/stylesheet/.test(node.rel) || /flags.*\.css$/.test(href = node.href) || href.slice(0, 4) === 'data') || /\.typeset/.test(node.textContent)) {
           continue;
         }
         $.rm(node);
