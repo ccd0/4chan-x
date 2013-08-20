@@ -1,3 +1,9 @@
+### v1.2.35 
+*2013-08-20*
+
+**seaweedchan**:
+- Fix Mayhem breaking input history (names, emails, subjects) in Firefox
+
 ### v1.2.34 
 *2013-08-19*
 
