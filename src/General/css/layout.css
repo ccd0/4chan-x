@@ -73,6 +73,10 @@ body > hr {
 .fappeTyme .threadContainer > .noFile {
   display: none;
 }
+/* Werk Tyme */
+.werkTyme .post .file {
+  display: none;
+}
 /* Defaults */
 a {
   text-decoration: none;
@@ -404,6 +408,9 @@ th {
 }
 #fappeTyme {
   <%= order %>: 30;
+}
+#werkTyme {
+  <%= order %>: 35;
 }
 #so-nav {
   <%= order %>: 40;

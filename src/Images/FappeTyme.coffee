@@ -1,15 +1,30 @@
 FappeTyme =
   init: ->
-    return if !Conf['Fappe Tyme'] or g.VIEW is 'catalog' or g.BOARD is 'f'
-    el = $.el 'a',
-      href: 'javascript:;'
-      id:   'fappeTyme'
-      title: 'Fappe Tyme'
-      className: 'a-icon'
+    return if !(Conf['Fappe Tyme'] or Conf['Werk Tyme']) or g.VIEW is 'catalog' or g.BOARD is 'f'
 
-    $.on el, 'click', FappeTyme.toggle
+    if Conf['Fappe Tyme']
+      el = $.el 'a',
+        href: 'javascript:;'
+        id:   'fappeTyme'
+        title: 'Fappe Tyme'
+        className: 'a-icon'
 
-    Header.addShortcut el
+      $.on el, 'click', FappeTyme.cb.fappe
+
+      Header.addShortcut el
+    
+    if Conf['Werk Tyme']
+      el = $.el 'a',
+        href: 'javascript:;'
+        id:   'werkTyme'
+        title: 'Werk Tyme'
+        className: 'icon'
+        textContent: '\uf0b1'
+
+      $.on el, 'click', FappeTyme.cb.werk
+
+      Header.addShortcut el
+    
 
     Post::callbacks.push
       name: 'Fappe Tyme'
@@ -19,5 +34,9 @@ FappeTyme =
     return if @file
     $.addClass @nodes.root, "noFile"
 
-  toggle: ->
-    $.toggleClass doc, 'fappeTyme'
+  cb: 
+    fappe: ->
+      $.toggleClass doc, 'fappeTyme'
+    werk: ->
+      $.toggleClass doc, 'werkTyme'
+      

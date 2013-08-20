@@ -70,7 +70,9 @@ Keybinds =
       when Conf['Expand images']
         Keybinds.img threadRoot, true
       when Conf['fappeTyme']
-        FappeTyme.toggle()
+        FappeTyme.cb.fappe()
+      when Conf['werkTyme']
+        FappeTyme.cb.werk()
       # Board Navigation
       when Conf['Front page']
         window.location = "/#{g.BOARD}/0#delform"

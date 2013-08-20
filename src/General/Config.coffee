@@ -155,6 +155,10 @@ Config =
         false
         'Hide posts without images when toggled. *hint* *hint*'
       ]
+      'Werk Tyme': [
+        false
+        'Hide images when toggled.'
+      ]
 
     'Menu':
       'Menu': [
@@ -946,6 +950,10 @@ box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
     'fappeTyme': [
       'f'
       'Fappe Tyme.'
+    ]
+    'werkTyme': [
+      'Shift+w'
+      'Werk Tyme'
     ]
     # Board Navigation
     'Front page': [
