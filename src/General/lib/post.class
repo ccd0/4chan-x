@@ -163,10 +163,10 @@ class Post
 
     unless strong = $ 'strong.warning', @nodes.info
       strong = $.el 'strong',
-          className: 'warning'
-          textContent: if @isReply then '[Deleted]' else '[Dead]'
+          className: 'warning icon'
       $.after $('input', @nodes.info), strong
-    strong.textContent = if file then '[File deleted]' else '[Deleted]'
+    strong.textContent = if file then '\uf070' else '\uf014'
+    strong.title = "#{if file then 'File' else 'Post'} Deleted"
 
     return if @isClone
     for clone in @clones

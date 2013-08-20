@@ -794,7 +794,7 @@ th {
   display: none;
 }
 .hide-delete-ui .postInfo {
-  padding: 0 0 0 3px;
+  padding-left: 3px;
 }
 .deleteform {
   position: fixed;
@@ -1041,6 +1041,9 @@ th {
   padding: .1em .3em;
   border-radius: 1em;
   font-size: 80%;
+}
+.postInfo {
+  padding: 3px 3px 0;
 }
 .postInfo > span {
   vertical-align: bottom;

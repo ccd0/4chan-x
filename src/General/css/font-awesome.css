@@ -38,8 +38,6 @@
   speak: none;
   font-size: 14px !important;
 }
-.icon,
-a.icon,
-a .icon {
+#shortcuts .icon {
   color: rgb(130,130,130) !important;
 }
