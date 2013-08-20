@@ -34,5 +34,8 @@ audio/beep.wav from http://freesound.org/people/pierrecartoons1979/sounds/90112/
 Font Awesome by Dave Gandy (http://fontawesome.io)
   license: http://fontawesome.io/license/
 
+URL-matching regular expression by John Gruber (http://df4.us/fv9)
+  "Consider it public domain."
+
 seaweedchan/4chan-x (https://github.com/seaweedchan/4chan-x)
   license: https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
