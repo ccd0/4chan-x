@@ -1,6 +1,6 @@
 Gallery =
   init: ->
-    return if g.VIEW is 'catalog' or g.BOARD is 'f'
+    return if g.VIEW is 'catalog' or g.BOARD is 'f' or !Conf['Gallery']
     
     el = $.el 'a',
       href: 'javascript:;'

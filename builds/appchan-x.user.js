@@ -8818,7 +8818,7 @@
     init: function() {
       var el;
 
-      if (g.VIEW === 'catalog' || g.BOARD === 'f') {
+      if (g.VIEW === 'catalog' || g.BOARD === 'f' || !Conf['Gallery']) {
         return;
       }
       el = $.el('a', {
