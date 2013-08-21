@@ -1,6 +1,8 @@
 - **New feature**: `Linkify` and `Clean Links`, enabled by default
  - Linkify will turn text URLs into working links.
  - Clean Links will get rid of spoiler and code tags in linkified URLs used to bypass spam blocks.
+- New desktop notification:
+ - The QR will now warn you when you are running low on cached captchas while auto-posting.
 
 ## 3.9.0 - *2013-08-18*
 

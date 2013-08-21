@@ -106,7 +106,7 @@ Unread =
       window.focus()
     setTimeout ->
       notif.close()
-    , 5 * $.SECOND
+    , 7 * $.SECOND
 
   onUpdate: (e) ->
     if e.detail[404]

@@ -125,7 +125,7 @@ QR =
     setTimeout ->
       notif.onclose = null
       notif.close()
-    , 5 * $.SECOND
+    , 7 * $.SECOND
     <% } %>
   notifications: []
   cleanNotifications: ->
@@ -1101,7 +1101,16 @@ QR =
     }
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
-    QR.cooldown.auto = QR.posts.length > 1 and isReply
+    postsCount = QR.posts.length
+    QR.cooldown.auto = postsCount > 1 and isReply
+    if QR.cooldown.auto and QR.captcha.isEnabled and (captchasCount = QR.captcha.captchas.length) < 3 and captchasCount < postsCount
+      notif = new Notification 'Quick reply warning',
+        body: "You are running low on cached captchas. Cache count: #{captchasCount}."
+        icon: Favicon.logo
+      notif.onclick = -> window.focus()
+      setTimeout ->
+        notif.close()
+      , 7 * $.SECOND
 
     unless Conf['Persistent QR'] or QR.cooldown.auto
       QR.close()
