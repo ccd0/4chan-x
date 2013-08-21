@@ -1791,28 +1791,28 @@ a:only-of-type > .remove {
 }
 /* Ads */
 .fade-ads .topad img,
-.fade-ads .middlead img,
 .fade-ads .bottomad img {
   opacity: 0.3;
   transition: opacity .3s linear;
 }
 .fade-ads .topad img:hover,
-.fade-ads .middlead img:hover,
 .fade-ads .bottomad img:hover {
   opacity: 1;
 }
 .hide-ads .bottomad + hr,
 .hide-ads .topad,
-.hide-ads .middlead,
 .hide-ads .bottomad,
 .hide-ads .ad-plea {
   display: none;
 }
 .shrink-ads .topad a img,
-.shrink-ads .middlead a img,
 .shrink-ads .bottomad a img {
   width: 500px;
   height: auto;
+}
+.ad-plea-middle,
+.middlead {
+  display: none;
 }
 /* Mascot Positions */
 #mascot {
@@ -2244,17 +2244,12 @@ article li {
   <%= flex %>-direction: row;
   background: linear-gradient(rgba(0,0,0,1), rgba(0,0,0,0.5));
 }
-.gal-close {
-  position: fixed;
-  top: 10px;
-  left: 25px;
-  font-size: 20px;
-}
 .gal-viewport {
   display: <%= flex %>;
   <%= align %>-items: stretch;
   <%= flex %>-direction: row;
   <%= flex %>: 1 1 auto;
+  position: relative;
 }
 .gal-thumbnails {
   <%= flex %>: 0 0 150px;
@@ -2323,12 +2318,38 @@ article li {
   overflow: auto;
   /* Flex > Non-Flex child max-width and overflow fix (Firefox only?) */
   width: 1%;
+  padding-top: 4em;
 }
 .gal-image a {
   margin: auto;
 }
 .gal-image img {
   max-width: 100%;
+}
+.gal-info {
+  position: absolute;
+  top: 0;
+  right: 40px;
+  left: 20px;
+  height: 4em;
+  background-color: rgba(0,0,0,0.3);
+  text-align: center;
+  text-overflow: ellipsis
+  overflow: hidden;
+  padding: 0 20px;
+}
+.gal-close {
+  font-size: 2.8em;
+  float: right;
+  padding-right: 8px;
+}
+.gal-name {
+  font-size: 2.8em;
+  color: #ddd;
+}
+.gal-count {
+  font-size: 1.6em;
+  color: #ddd;
 }
 /* Catalog */
 #content .navLinks,
