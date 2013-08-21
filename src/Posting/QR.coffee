@@ -392,56 +392,51 @@ QR =
     return unless e.dataTransfer.files.length
     e.preventDefault()
     QR.open()
-    QR.fileInput e.dataTransfer.files
+    QR.handleFiles e.dataTransfer.files
     $.addClass QR.nodes.el, 'dump'
   paste: (e) ->
     files = []
-    for item in e.clipboardData.items
-      if item.kind is 'file'
-        blob = item.getAsFile()
-        blob.name  = 'file'
-        blob.name += '.' + blob.type.split('/')[1] if blob.type
-        files.push blob
+    for item in e.clipboardData.items when item.kind is 'file'
+      blob = item.getAsFile()
+      blob.name  = 'file'
+      blob.name += '.' + blob.type.split('/')[1] if blob.type
+      files.push blob
     return unless files.length
     QR.open()
-    QR.fileInput files
+    QR.handleFiles files
+    $.addClass QR.nodes.el, 'dump'
+  handleFiles: (files) ->
+    if @ isnt QR # file input
+      files  = [@files...]
+      @value = null
+    return unless files.length
+    max = QR.nodes.fileInput.max
+    isSingle = files.length is 1
+    QR.cleanNotifications()
+    for file in files
+      QR.handleFile file, isSingle, max
+    $.addClass QR.nodes.el, 'dump' unless isSingle
+  handleFile: (file, isSingle, max) ->
+    if file.size > max
+      QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
+      return
+    unless file.type in QR.mimeTypes
+      unless /^text/.test file.type
+        QR.error "#{file.name}: Unsupported file type."
+        return
+      if isSingle
+        post = QR.selected
+      else if (post = QR.posts[QR.posts.length - 1]).com
+        post = new QR.post()
+      post.pasteText file
+      return
+    if isSingle
+      post = QR.selected
+    else if (post = QR.posts[QR.posts.length - 1]).file
+      post = new QR.post()
+    post.setFile file
   openFileInput: ->
     QR.nodes.fileInput.click()
-  fileInput: (files) ->
-    if files instanceof Event # file input
-      files = [@files...]
-      QR.nodes.fileInput.value = null # Don't hold the files from being modified on windows
-    {length} = files
-    return unless length
-    max = QR.nodes.fileInput.max
-    QR.cleanNotifications()
-    # Set or change current post's file.
-    if length is 1
-      file = files[0]
-      if /^text/.test file.type
-        QR.selected.pasteText file
-      else if file.size > max
-        QR.error "File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
-      else unless file.type in QR.mimeTypes
-        QR.error 'Unsupported file type.'
-      else
-        QR.selected.setFile file
-      return
-    # Create new posts with these files.
-    for file in files
-      if /^text/.test file.type
-        if (post = QR.posts[QR.posts.length - 1]).com
-          post = new QR.post()
-        post.pasteText file
-      else if file.size > max
-        QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
-      else unless file.type in QR.mimeTypes
-        QR.error "#{file.name}: Unsupported file type."
-      else
-        if (post = QR.posts[QR.posts.length - 1]).file
-          post = new QR.post()
-        post.setFile file
-    $.addClass QR.nodes.el, 'dump'
 
   posts: []
   post: class
@@ -884,7 +879,7 @@ QR =
     $.on nodes.form,       'submit', QR.submit
     $.on nodes.fileRM,     'click',  -> QR.selected.rmFile()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
-    $.on nodes.fileInput,  'change', QR.fileInput
+    $.on nodes.fileInput,  'change', QR.handleFiles
     # save selected post's data
     for name in ['name', 'email', 'sub', 'com', 'filename']
       $.on nodes[name], 'input',  -> QR.selected.save @
