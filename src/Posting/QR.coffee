@@ -1104,7 +1104,10 @@ QR =
       notif = new Notification 'Quick reply warning',
         body: "You are running low on cached captchas. Cache count: #{captchasCount}."
         icon: Favicon.logo
-      notif.onclick = -> window.focus()
+      notif.onclick = ->
+        QR.open()
+        QR.captcha.nodes.input.focus()
+        window.focus()
       setTimeout ->
         notif.close()
       , 7 * $.SECOND
