@@ -12519,13 +12519,13 @@
       }
     },
     padding: function() {
-      var css;
+      var css, navHeight, pageHeight, _ref;
 
-      Style.padding.nav = Header.bar;
-      Style.padding.pages = $('.pagelist', d.body);
-      css = "body { padding-bottom: 1px; } .fourchan-ss-navigation.fixed.top:not(.autohide) body::before { top: " + Style.padding.nav.offsetHeight + "px; } .fourchan-ss-navigation.fixed.bottom:not(.autohide) body::before { bottom: " + Style.padding.nav.offsetHeight + "px; } .top:not(.autohide) body { padding-top: " + (Style.padding.nav.offsetHeight + 1) + "px; } .bottom:not(.autohide) body { padding-bottom: " + (Style.padding.nav.offsetHeight + 1) + "px;\" }";
-      if (Style.padding.pages) {
-        css += ".fourchan-ss-navigation.index.pagination-sticky-top body::before, .fourchan-ss-navigation.index.pagination-top body::before { top: " + Style.padding.pages.offsetHeight + "px; } .fourchan-ss-navigation.index.pagination-sticky-bottom body::before, .fourchan-ss-navigation.index.pagination-bottom body::before { bottom: " + Style.padding.pages.offsetHeight + "px; } .index.pagination-sticky-top body, .index.pagination-top body { padding-top: " + (Style.padding.pages.offsetHeight + 1) + "px; } .index.pagination-sticky-bottom body, .index.pagination-bottom body { padding-bottom: " + (Style.padding.pages.offsetHeight + 1) + "px; }";
+      navHeight = Header.bar.offsetHeight;
+      pageHeight = (_ref = $('.pagelist', d.body)) != null ? _ref.offsetHeight : void 0;
+      css = "body { padding-bottom: 1px; } .fourchan-ss-navigation.fixed.top:not(.autohide) body::before { top: " + navHeight + "px; } .fourchan-ss-navigation.fixed.bottom:not(.autohide) body::before { bottom: " + navHeight + "px; } .top:not(.autohide) body { padding-top: " + (navHeight + 1) + "px; } .bottom:not(.autohide) body { padding-bottom: " + (navHeight + 1) + "px; }";
+      if (pageHeight) {
+        css += ".fourchan-ss-navigation.index.pagination-sticky-top body::before, .fourchan-ss-navigation.index.pagination-top body::before { top: " + pageHeight + "px; } .fourchan-ss-navigation.index.pagination-sticky-bottom body::before, .fourchan-ss-navigation.index.pagination-bottom body::before { bottom: " + pageHeight + "px; } .index.pagination-sticky-top body, .index.pagination-top body { padding-top: " + (pageHeight + 1) + "px; } .index.pagination-sticky-bottom body, .index.pagination-bottom body { padding-bottom: " + (pageHeight + 1) + "px; }";
       }
       return Style.paddingSheet.textContent = css;
     },

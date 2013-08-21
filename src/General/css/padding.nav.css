@@ -2,14 +2,14 @@ body {
   padding-bottom: 1px;
 }
 .fourchan-ss-navigation.fixed.top:not(.autohide) body::before {
-  top: #{Style.padding.nav.offsetHeight}px;
+  top: #{navHeight}px;
 }
 .fourchan-ss-navigation.fixed.bottom:not(.autohide) body::before {
-  bottom: #{Style.padding.nav.offsetHeight}px;
+  bottom: #{navHeight}px;
 }
 .top:not(.autohide) body {
-  padding-top: #{Style.padding.nav.offsetHeight + 1}px;
+  padding-top: #{navHeight + 1}px;
 }
 .bottom:not(.autohide) body {
-  padding-bottom: #{Style.padding.nav.offsetHeight + 1}px;"
+  padding-bottom: #{navHeight + 1}px;
 }

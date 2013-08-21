@@ -191,11 +191,11 @@ Style =
       Header.addShortcut el, true
 
   padding: ->
-    Style.padding.nav   = Header.bar
-    Style.padding.pages = $ '.pagelist', d.body
+    navHeight  = Header.bar.offsetHeight
+    pageHeight = ($ '.pagelist', d.body)?.offsetHeight
     css = """<%= grunt.file.read('src/General/css/padding.nav.css').replace(/\s+/g, ' ').trim() %>"""
 
-    if Style.padding.pages
+    if pageHeight
       css += """<%= grunt.file.read('src/General/css/padding.pages.css').replace(/\s+/g, ' ').trim() %>"""
 
     Style.paddingSheet.textContent = css
