@@ -49,11 +49,8 @@ Unread =
       {root} = Unread.thread.posts[posts[posts.length - 1]].nodes
       onload = -> Header.scrollToPost root if checkPosition root
     checkPosition = (target) ->
-      # Don't scroll to the target if
-      #  - it's visible.
-      #  - we've scrolled past it.
-      {top, height} = target.getBoundingClientRect()
-      top + height - doc.clientHeight > 0
+      # Scroll to the target unless we scrolled past it.
+      target.getBoundingClientRect().bottom > doc.clientHeight
     # Prevent the browser to scroll back to
     # the previous scroll location on page load.
     $.on window, 'load', onload
@@ -136,8 +133,7 @@ Unread =
     return if d.hidden or !Unread.posts.length
     height = doc.clientHeight
     for post, i in Unread.posts
-      {bottom} = post.nodes.root.getBoundingClientRect()
-      break if bottom > height # post is not completely read
+      break if post.nodes.root.getBoundingClientRect().bottom > height # post is not completely read
     return unless i
 
     Unread.lastReadPost = Unread.posts.splice(0, i)[i - 1].ID
