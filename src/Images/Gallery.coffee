@@ -18,8 +18,9 @@ Gallery =
       cb: @node
 
   node: ->
-    return unless Gallery.el and @file?.isImage
-    Gallery.generateThumb $ '.file', @nodes.root
+    return unless @file?.isImage
+
+    Gallery.generateThumb $ '.file', @nodes.root if Gallery.el
 
     unless Conf['Image Expansion']
       $.on @file.thumb.parentNode, 'click', Gallery.cb.image
@@ -63,7 +64,7 @@ Gallery =
     Gallery.current.parentElement.scrollTop = 0
 
     Gallery.cb.open.call if image
-      $ "[href=#{image.href}]", Gallery.thumbs
+      $ "[href='#{image.href.replace /https?:/, ''}']", Gallery.thumbs
     else
       Gallery.images[0]
 
@@ -88,6 +89,7 @@ Gallery =
   cb:
     keybinds: (e) ->
       return unless key = Keybinds.keyCode e
+
       cb = switch key
         when 'Esc', Conf['Open Gallery']
           Gallery.cb.close
@@ -102,9 +104,8 @@ Gallery =
       cb()
         
     open: (e) ->
-      if e
-        e.preventDefault()
-      
+      e.preventDefault() if e
+
       $.rmClass  el, 'gal-highlight' if el = $ '.gal-highlight', Gallery.thumbs
       $.addClass @,  'gal-highlight'
 
@@ -117,16 +118,16 @@ Gallery =
       Gallery.current = img
       Gallery.frame.scrollTop = 0
       Gallery.url.focus()
-    prev: ->
-      Gallery.cb.open.call Gallery.images[+Gallery.current.dataset.id - 1]
-    next: ->
-      Gallery.cb.open.call Gallery.images[+Gallery.current.dataset.id + 1]
-    image: ->
+
+    image: (e) ->
+      e.preventDefault()
+      e.stopPropagation()
       Gallery.build @
-    toggle: ->
-      if Gallery.el
-        return Gallery.cb.close()
-      Gallery.build()
+
+    prev:   -> Gallery.cb.open.call Gallery.images[+Gallery.current.dataset.id - 1]
+    next:   -> Gallery.cb.open.call Gallery.images[+Gallery.current.dataset.id + 1]
+    toggle: -> (if Gallery.el then Gallery.cb.close else Gallery.build)()
+
     close: ->
       $.rm Gallery.el
       delete Gallery.el
