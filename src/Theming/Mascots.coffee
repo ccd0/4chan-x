@@ -315,8 +315,7 @@ MascotTools =
 
       Mascots[name] = imported
 
-      $.get "userMascots", {}, (item) ->
-        userMascots = item['userMascots']
+      $.get "userMascots", {}, ({userMascots}) ->
         userMascots[name] = Mascots[name]
         $.set 'userMascots', userMascots
 

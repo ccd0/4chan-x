@@ -18,17 +18,20 @@ Main =
       Conf[db] = boards: {}
 
     $.extend Conf,
-      'userThemes':           []
-      'userMascots':          []
       'Enabled Mascots':      []
       'Enabled Mascots sfw':  []
       'Enabled Mascots nsfw': []
       'Deleted Mascots':      []
       'Hidden Categories':    ["Questionable"]
+      'userThemes':           {}
+      'userMascots':          {}
       'selectedArchives':     {}
       'CachedTitles':         {}
 
     $.get Conf, (items) ->
+      # TempFix for accidental declaration as an array. Remove by 2.4.?
+      $.set 'userMascots', items.userMascots = {} if items.userMascots instanceof Array
+      $.set 'userThemes',  items.userThemes  = {} if items.userThemes  instanceof Array
       $.extend Conf, items
       <% if (type === 'crx') { %>
       unless items

@@ -20,7 +20,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.3.5 - 2013-08-20
+* appchan x - Version 2.3.5 - 2013-08-21
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -12136,10 +12136,10 @@
           }
         }
         Mascots[name] = imported;
-        $.get("userMascots", {}, function(item) {
+        $.get("userMascots", {}, function(_arg) {
           var userMascots;
 
-          userMascots = item['userMascots'];
+          userMascots = _arg.userMascots;
           userMascots[name] = Mascots[name];
           return $.set('userMascots', userMascots);
         });
@@ -15374,17 +15374,23 @@
         };
       }
       $.extend(Conf, {
-        'userThemes': [],
-        'userMascots': [],
         'Enabled Mascots': [],
         'Enabled Mascots sfw': [],
         'Enabled Mascots nsfw': [],
         'Deleted Mascots': [],
         'Hidden Categories': ["Questionable"],
+        'userThemes': {},
+        'userMascots': {},
         'selectedArchives': {},
         'CachedTitles': {}
       });
       return $.get(Conf, function(items) {
+        if (items.userMascots instanceof Array) {
+          $.set('userMascots', items.userMascots = {});
+        }
+        if (items.userThemes instanceof Array) {
+          $.set('userThemes', items.userThemes = {});
+        }
         $.extend(Conf, items);
         return Main.initFeatures();
       });
