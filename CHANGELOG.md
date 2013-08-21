@@ -1,5 +1,21 @@
+### v2.3.6 
+*2013-08-21*
+
+**Zixaphir**:
+![Galleyr](src/General/img/changelog/2.3.6.png)
+- **New Feature**: `Gallery`.
+  * Disabled by default.
+  * Opens images in a lightweight Gallery script.
+  * If enabled while Image Expansion is disabled, will takeover as the default action when images are clicked.
+  * Supports several hotkeys: left is previous, right and enter are next, escape closes.
+  * Works with Thread Updater to add new images to the Gallery while its open.
+  * BLINK/WEBKIT ONLY: Clicking the file title will download the image with the original name.
+
 ### v2.3.5 
 *2013-08-19*
+
+**Zixaphir**:
+- Bugfixes on catalog, /sp/, and /int/
 
 ### v2.3.4 
 *2013-08-18*
