@@ -2,7 +2,7 @@
 *2013-08-21*
 
 **Zixaphir**:
-![Galleyr](src/General/img/changelog/2.3.6.png)
+![Gallery](src/General/img/changelog/2.3.6.png)
 - **New Feature**: `Gallery`.
   * Disabled by default.
   * Opens images in a lightweight Gallery script.
