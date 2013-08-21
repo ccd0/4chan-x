@@ -726,10 +726,12 @@ a.hide-announcement {
 .qr-preview.drag {
   border-color: red;
   border-style: dashed;
+  opacity: 1;
 }
 .qr-preview.over {
   border-color: #FFF;
   border-style: dashed;
+  opacity: 1;
 }
 .remove {
   color: #E00 !important;

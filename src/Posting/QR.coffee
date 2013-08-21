@@ -664,7 +664,9 @@ QR =
           QR.nodes.com.value    = @com
         @nodes.span.textContent = @com
       reader.readAsText file
-    dragStart: -> $.addClass @, 'drag'
+    dragStart: (e) ->
+      e.dataTransfer.setDragImage @, e.offsetX, e.offsetY
+      $.addClass @, 'drag'
     dragEnd:   -> $.rmClass  @, 'drag'
     dragEnter: -> $.addClass @, 'over'
     dragLeave: -> $.rmClass  @, 'over'
