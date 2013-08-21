@@ -2334,7 +2334,7 @@ article li {
   height: 4em;
   background-color: rgba(0,0,0,0.3);
   text-align: center;
-  text-overflow: ellipsis
+  text-overflow: ellipsis;
   overflow: hidden;
   padding: 0 20px;
 }
