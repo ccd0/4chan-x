@@ -12478,7 +12478,7 @@
     iconPositions: function() {
       var el, psa, psaIcon, slideNav;
 
-      slideNav = $.el('i', {
+      slideNav = $.el('span', {
         id: 'so-nav',
         innerHTML: '<i class=a-icon></a>'
       });

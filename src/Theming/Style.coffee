@@ -168,7 +168,7 @@ Style =
 
   iconPositions: ->
     # Slideout Navigation
-    slideNav = $.el 'i',
+    slideNav = $.el 'span',
       id: 'so-nav'
       innerHTML: '<i class=a-icon></a>'
     $.add slideNav, $.id('boardNavDesktopFoot')
