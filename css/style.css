@@ -892,13 +892,13 @@ a.hide-announcement {
   margin: 2px;
   vertical-align: middle;
 }
-:root.blink .menu-button .icon-reorder {
-  /* crbug.com/25541 */
-  font-size: 14px;
-}
-:root.blink #shortcuts .icon-reorder {
-  /* crbug.com/25541 */
-  vertical-align: -1px;
+@media screen and (resolution: 1dppx) {
+  .icon-reorder {
+    font-size: 14px;
+  }
+  #shortcuts .icon-reorder {
+    vertical-align: -1px;
+  }
 }
 #menu {
   border-bottom: 0;
