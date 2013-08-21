@@ -19,10 +19,12 @@ Gallery =
 
   node: ->
     return unless Gallery.el and @file?.isImage
-
     Gallery.generateThumb $ '.file', @nodes.root
 
-  build: ->
+    unless Conf['Image Expansion']
+      $.on @file.thumb.parentNode, 'click', Gallery.cb.image
+
+  build: (image) ->
     Gallery.el = dialog = $.el 'div',
       id: 'a-gallery'
       innerHTML: """
@@ -36,8 +38,9 @@ Gallery =
 </div>
 <div class=gal-thumbnails></div>
 """
-    Gallery.current = $ '.gal-image img',  dialog
-    Gallery.url     = $ '.gal-image a',    dialog
+    Gallery.frame   = $ '.gal-image', dialog
+    Gallery.url     = $ 'a',          Gallery.frame
+    Gallery.current = $ 'img',        Gallery.url
     Gallery.thumbs  = $ '.gal-thumbnails', dialog
     Gallery.images  = []
 
@@ -59,8 +62,8 @@ Gallery =
     Gallery.thumbs.scrollTop = 0
     Gallery.current.parentElement.scrollTop = 0
 
-    Gallery.cb.open.call if @ isnt Gallery
-      $ "[href=#{@href}]", Gallery.thumbs
+    Gallery.cb.open.call if image
+      $ "[href=#{image.href}]", Gallery.thumbs
     else
       Gallery.images[0]
 
@@ -85,20 +88,25 @@ Gallery =
   cb:
     keybinds: (e) ->
       return unless key = Keybinds.keyCode e
-      e.stopPropagation()
-      switch key
-        when 'Esc'
-          e.stopPropagation()
-          Gallery.cb.close()
+      cb = switch key
+        when 'Esc', Conf['Open Gallery']
+          Gallery.cb.close
         when 'Right', 'Enter'
-          Gallery.cb.next()
+          Gallery.cb.next
         when 'Left', ''
-          Gallery.cb.prev()
-        when Conf['Open Gallery']
-          Gallery.cb.close()
+          Gallery.cb.prev
+
+      return unless cb
+      e.stopPropagation()
+      e.preventDefault()
+      cb()
+        
     open: (e) ->
       if e
         e.preventDefault()
+      
+      $.rmClass  el, 'gal-highlight' if el = $ '.gal-highlight', Gallery.thumbs
+      $.addClass @,  'gal-highlight'
 
       img = $.el 'img',
         src:   Gallery.url.href     = @href
@@ -107,14 +115,17 @@ Gallery =
       img.dataset.id = @dataset.id
       $.replace Gallery.current, img
       Gallery.current = img
-      Gallery.url.parentElement.scrollTop = 0
+      Gallery.frame.scrollTop = 0
+      Gallery.url.focus()
     prev: ->
       Gallery.cb.open.call Gallery.images[+Gallery.current.dataset.id - 1]
     next: ->
       Gallery.cb.open.call Gallery.images[+Gallery.current.dataset.id + 1]
+    image: ->
+      Gallery.build @
     toggle: ->
       if Gallery.el
-        return Gallery.close()
+        return Gallery.cb.close()
       Gallery.build()
     close: ->
       $.rm Gallery.el

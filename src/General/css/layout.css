@@ -2246,7 +2246,8 @@ article li {
   overflow-y: auto;
   display: <%= flex %>;
   <%= flex %>-direction: column;
-  <%= align %>-items: flex-start;
+  <%= align %>-items: stretch;
+  text-align: center;
 }
 .gal-thumbnails img {
   max-width: 125px;
@@ -2256,7 +2257,12 @@ article li {
 }
 .gal-thumbnails a {
   <%= flex %>: 0 0 auto;
-  margin: 3px auto;
+  padding: 3px;
+  line-height: 0;
+  transition: background .3s linear;
+}
+.gal-highlight {
+  background: rgb(190, 190, 255);
 }
 .gal-prev {
   order: 0;
