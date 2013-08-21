@@ -57,5 +57,5 @@ CatalogLinks =
     if catalogLink = ($('.pages.cataloglink a', d.body) or $ '[href=".././catalog"]', d.body)
       catalogLink.textContent = ''
       catalogLink.className = 'a-icon'
-      Header.addShortcut catalogLink
+      Header.addShortcut catalogLink, true
       catalogLink.id = 'catalog'

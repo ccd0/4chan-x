@@ -53,7 +53,7 @@ Header =
     $.on d, 'CreateNotification', @createNotification
 
     @enableDesktopNotifications()
-    @addShortcut menuButton
+    @addShortcut menuButton, true
 
     $.asap (-> d.body), =>
       return unless Main.isThisPageLegit()
@@ -70,8 +70,11 @@ Header =
   notify: $.el 'div',
     id: 'notifications'
 
-  shortcuts: $.el 'span',
-    id: 'shortcuts'
+  stats: $.el 'span',
+    id: 'a-stats'
+  
+  icons: $.el 'span',
+    id: 'a-icons'
 
   hover: $.el 'div',
     id: 'hoverUI'
@@ -81,6 +84,7 @@ Header =
 
   setBoardList: ->
     fourchannav = $.id 'boardNavDesktop'
+    
     if a = $ "a[href*='/#{g.BOARD}/']", fourchannav
       a.className = 'current'
     boardList = $.el 'span',
@@ -91,11 +95,16 @@ Header =
     $.on btn, 'click', Header.toggleBoardList
 
     $.rm $ '#navtopright', fullBoardList
-
-    $.prepend d.body, $.id 'navtopright'
+    
+    shortcuts = $.el 'span',
+      id: 'shortcuts'
+    
+    $.add shortcuts, [Header.stats, Header.icons]
+    
+    $.prepend d.body, shortcuts
 
     $.add boardList, fullBoardList
-    $.add Header.bar, [Header.shortcuts, boardList, Header.notify, Header.toggle]
+    $.add Header.bar, [boardList, Header.notify, Header.toggle]
 
     Header.setCustomNav Conf['Custom Board Navigation']
     Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
@@ -269,9 +278,10 @@ Header =
       top -= headRect.top + headRect.height
     window.scrollBy 0, top
 
-  addShortcut: (el) ->
+  addShortcut: (el, icon) ->
     $.addClass el, 'shortcut'
-    $.add Header.shortcuts, el
+    
+    $.add Header[if icon then 'icons' else 'stats'], el
 
   menuToggle: (e) ->
     Header.menu.toggle e, @, g

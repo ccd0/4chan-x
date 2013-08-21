@@ -11,7 +11,7 @@ FappeTyme =
 
       $.on el, 'click', FappeTyme.cb.fappe
 
-      Header.addShortcut el
+      Header.addShortcut el, true
     
     if Conf['Werk Tyme']
       el = $.el 'a',
@@ -23,7 +23,7 @@ FappeTyme =
 
       $.on el, 'click', FappeTyme.cb.werk
 
-      Header.addShortcut el
+      Header.addShortcut el, true
     
 
     Post::callbacks.push

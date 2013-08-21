@@ -46,7 +46,7 @@ ThreadWatcher =
       el = $.el 'div',
         id: 'so-watcher'
         innerHTML: '<i class=a-icon></a>'
-      Header.addShortcut el
+      Header.addShortcut el, true
     else
       el = d.body
 

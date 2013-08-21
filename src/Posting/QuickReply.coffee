@@ -31,7 +31,7 @@ QR =
         QR.close()
       $.toggleClass @, 'disabled'
 
-    return Header.addShortcut sc if Conf['Header Shortcut']
+    return Header.addShortcut sc, true if Conf['Header Shortcut']
 
     $.addClass sc, 'on-page'
     $.rmClass  sc, 'icon'

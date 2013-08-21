@@ -172,7 +172,7 @@ Style =
       id: 'so-nav'
       innerHTML: '<i class=a-icon></a>'
     $.add slideNav, $.id('boardNavDesktopFoot')
-    Header.addShortcut slideNav if Conf['Slideout Navigation'] isnt 'hide'
+    Header.addShortcut slideNav, true if Conf['Slideout Navigation'] isnt 'hide'
 
     # Announcements
     if Conf['Announcements'] is 'slideout'
@@ -181,14 +181,14 @@ Style =
           id: 'so-psa'
           innerHTML: '<i class=a-icon></a>'
         $.add psa, psaIcon
-        Header.addShortcut psaIcon
+        Header.addShortcut psaIcon, true
 
     if g.VIEW is 'thread'
       el = $('body > div.navLinks > a')
       el.textContent = ''
       el.id = 'returnIcon'
       el.className = 'a-icon'
-      Header.addShortcut el
+      Header.addShortcut el, true
 
   padding: ->
     Style.padding.nav   = Header.bar

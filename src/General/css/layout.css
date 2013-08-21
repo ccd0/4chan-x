@@ -374,27 +374,48 @@ th {
   display: <%= flex %>;
   top: 0;
   z-index: 16;
+  <%= flex %>-direction: row;
+  max-height: 1.3em;
+  overflow: visible;
 }
 .shortcut {
   margin: 0 1px;
 }
-.icon-orientation-vertical #shortcuts {
-  <%= flex %>-direction: column;
+#a-icons,
+#a-stats {
+  <%= order %>: 0;
+  display: <%= flex %>;
+}
+#a-icons {
+  <%= order %>: 10;
 }
 .sidebar-location-right #shortcuts {
   right: 0;
 }
-.sidebar-location-right .shortcut {
-  <%= align %>-self: flex-end;
-}
 .sidebar-location-left #shortcuts {
   left: 0;
 }
-.icon-orientation-horizontal #shortcuts {
+.sidebar-location-right .shortcut {
+  <%= align %>-self: flex-end;
+}
+.icon-orientation-vertical #a-icons{
+  <%= flex %>-direction: column;
+  height: 200px;
+}
+.icon-orientation-horizontal #a-stats,
+.icon-orientation-horizontal #a-icons,
+.sidebar-location-left #shortcuts {
   <%= flex %>-direction: row-reverse;
 }
-.icon-orientation-horizontal.sidebar-location-left #shortcuts {
+.icon-orientation-horizontal.sidebar-location-left #a-stats,
+.icon-orientation-horizontal.sidebar-location-left #a-icons {
   <%= flex %>-direction: row;
+}
+#thread-stats {
+  <%= order %>: 0;
+}
+#updater {
+  <%= order %>: 10;
 }
 #main-menu {
   <%= order %>: 0;
@@ -434,12 +455,6 @@ th {
 }
 #returnIcon {
   <%= order %>: 100;
-}
-#thread-stats {
-  <%= order %>: 110;
-}
-#updater {
-  <%= order %>: 120;
 }
 .icon-orientation-horizontal #so-psa #globalMessage,
 .icon-orientation-horizontal #so-watcher  #thread-watcher,

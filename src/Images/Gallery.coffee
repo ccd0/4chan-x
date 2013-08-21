@@ -11,7 +11,7 @@ Gallery =
 
     $.on el, 'click', @cb.toggle
 
-    Header.addShortcut el
+    Header.addShortcut el, true
 
     Post::callbacks.push
       name: 'Gallery'
