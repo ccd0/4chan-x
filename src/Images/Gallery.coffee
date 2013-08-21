@@ -99,9 +99,14 @@ Gallery =
     open: (e) ->
       if e
         e.preventDefault()
-      Gallery.current.dataset.id = @dataset.id
-      Gallery.url.href     = Gallery.current.src   = @href
-      Gallery.url.download = Gallery.current.title = @title
+
+      img = $.el 'img',
+        src:   Gallery.url.href     = @href
+        title: Gallery.url.download = @title
+
+      img.dataset.id = @dataset.id
+      $.replace Gallery.current, img
+      Gallery.current = img
       Gallery.url.parentElement.scrollTop = 0
     prev: ->
       Gallery.cb.open.call Gallery.images[+Gallery.current.dataset.id - 1]

@@ -8898,12 +8898,18 @@
         }
       },
       open: function(e) {
+        var img;
+
         if (e) {
           e.preventDefault();
         }
-        Gallery.current.dataset.id = this.dataset.id;
-        Gallery.url.href = Gallery.current.src = this.href;
-        Gallery.url.download = Gallery.current.title = this.title;
+        img = $.el('img', {
+          src: Gallery.url.href = this.href,
+          title: Gallery.url.download = this.title
+        });
+        img.dataset.id = this.dataset.id;
+        $.replace(Gallery.current, img);
+        Gallery.current = img;
         return Gallery.url.parentElement.scrollTop = 0;
       },
       prev: function() {
