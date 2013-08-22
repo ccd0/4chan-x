@@ -2318,7 +2318,7 @@ article li {
   overflow: auto;
   /* Flex > Non-Flex child max-width and overflow fix (Firefox only?) */
   width: 1%;
-  padding-top: 4em;
+  padding-top: 2.4em;
 }
 .gal-image a {
   margin: auto;
@@ -2331,7 +2331,7 @@ article li {
   top: 0;
   right: 40px;
   left: 20px;
-  height: 4em;
+  height: 2.4em;
   background-color: rgba(0,0,0,0.3);
   text-align: center;
   text-overflow: ellipsis;
@@ -2339,16 +2339,15 @@ article li {
   padding: 0 20px;
 }
 .gal-close {
-  font-size: 2.8em;
+  font-size: 2em;
   float: right;
   padding-right: 8px;
 }
 .gal-name {
-  font-size: 2.8em;
+  font-size: 2em;
   color: #ddd;
 }
 .gal-count {
-  font-size: 1.6em;
   color: #ddd;
 }
 /* Catalog */
