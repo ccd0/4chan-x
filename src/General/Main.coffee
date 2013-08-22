@@ -107,7 +107,7 @@ Main =
     initFeature 'Mark OP Quotes',           QuoteOP
     initFeature 'Mark Cross-thread Quotes', QuoteCT
     initFeature 'Anonymize',                Anonymize
-    initFeature 'Color user IDs',           IDColor
+    initFeature 'Color User IDs',           IDColor
     initFeature 'Time Formatting',          Time
     initFeature 'Relative Post Dates',      RelativeDates
     initFeature 'File Info Formatting',     FileInfo

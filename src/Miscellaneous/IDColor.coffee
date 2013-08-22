@@ -1,10 +1,10 @@
 IDColor =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Color user IDs']
+    return if g.VIEW is 'catalog' or !Conf['Color User IDs']
     @ids = {}
 
     Post::callbacks.push
-      name: 'Color user IDs'
+      name: 'Color User IDs'
       cb:   @node
 
   node: ->

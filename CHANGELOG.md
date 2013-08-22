@@ -1,4 +1,4 @@
-- **New feature**: `Color user IDs`, enabled by default
+- **New feature**: `Color User IDs`, enabled by default
 
 ## 3.10.0 - *2013-08-22*
 
