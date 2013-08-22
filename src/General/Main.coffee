@@ -29,7 +29,7 @@ Main =
         # Track resolution of this bug.
         Main.logError
           message: 'Chrome Storage API bug'
-          error: new Error chrome.runtime.lastError.message or 'no lastError.message'
+          error: new Error '~'
       <% } %>
       Main.initFeatures()
 
@@ -237,6 +237,7 @@ Main =
       localStorage.getItem '4chan-settings'
     catch err
       new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to properly function.', 30
+      Main.disableReports = true
 
     $.event '4chanXInitFinished'
 

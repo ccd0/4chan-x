@@ -399,3 +399,4 @@ Linkify =
       title:
         api: (uid) -> "https://gdata.youtube.com/feeds/api/videos/#{uid}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
         text: (data) -> data.entry.title.$t
+

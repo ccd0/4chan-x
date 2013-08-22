@@ -1,3 +1,8 @@
+
+**MayhemYDG**:
+- New desktop notification:
+ - The QR will now warn you when you are running low on cached captchas while auto-posting.
+
 ### v1.2.35 
 *2013-08-20*
 

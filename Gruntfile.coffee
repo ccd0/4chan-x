@@ -30,6 +30,7 @@ module.exports = (grunt) ->
           'src/Linkification/**/*'
           'src/Posting/**/*'
           'src/Images/**/*'
+          'src/Linkification/**/*'
           'src/Menu/**/*'
           'src/Monitoring/**/*'
           'src/Archive/**/*'

@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.35 - 2013-08-20
+* 4chan X - Version 1.2.35 - 2013-08-22
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -945,6 +945,7 @@
     Post.prototype.parseComment = function() {
       var bq, i, node, nodes, text;
 
+      this.nodes.comment.normalize();
       bq = this.nodes.comment.cloneNode(true);
       nodes = $$('.abbr, .capcodeReplies, .exif, b', bq);
       i = 0;
@@ -1872,7 +1873,7 @@
           return;
       }
       el = $.el('span', {
-        innerHTML: "Desktop notification permissions are not granted:<br>\n<button>Authorize</button> or <button>Disable</button>"
+        innerHTML: "Desktop notification permissions are not granted.\n[<a href='https://github.com/MayhemYDG/4chan-x/wiki/FAQ#desktop-notifications' target=_blank>FAQ</a>]<br>\n<button>Authorize</button> or <button>Disable</button>"
       });
       _ref = $$('button', el), authorize = _ref[0], disable = _ref[1];
       $.on(authorize, 'click', function() {
@@ -5505,7 +5506,7 @@
       }
       e.preventDefault();
       QR.open();
-      QR.fileInput(e.dataTransfer.files);
+      QR.handleFiles(e.dataTransfer.files);
       return $.addClass(QR.nodes.el, 'dump');
     },
     paste: function(e) {
@@ -5515,84 +5516,72 @@
       _ref = e.clipboardData.items;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         item = _ref[_i];
-        if (item.kind === 'file') {
-          blob = item.getAsFile();
-          blob.name = 'file';
-          if (blob.type) {
-            blob.name += '.' + blob.type.split('/')[1];
-          }
-          files.push(blob);
+        if (!(item.kind === 'file')) {
+          continue;
         }
+        blob = item.getAsFile();
+        blob.name = 'file';
+        if (blob.type) {
+          blob.name += '.' + blob.type.split('/')[1];
+        }
+        files.push(blob);
       }
       if (!files.length) {
         return;
       }
       QR.open();
-      return QR.fileInput(files);
+      QR.handleFiles(files);
+      return $.addClass(QR.nodes.el, 'dump');
     },
-    openFileInput: function(e) {
-      e.stopPropagation();
-      if (e.shiftKey && e.type === 'click') {
-        return QR.selected.rmFile();
-      }
-      if (e.ctrlKey && e.type === 'click') {
-        $.addClass(QR.nodes.filename, 'edit');
-        QR.nodes.filename.focus();
-        return $.on(QR.nodes.filename, 'blur', function() {
-          return $.rmClass(QR.nodes.filename, 'edit');
-        });
-      }
-      if (e.target.nodeName === 'INPUT' || (e.keyCode && ![32, 13].contains(e.keyCode)) || e.ctrlKey) {
-        return;
-      }
-      e.preventDefault();
-      return QR.nodes.fileInput.click();
-    },
-    fileInput: function(files) {
-      var file, length, max, post, _i, _len;
+    handleFiles: function(files) {
+      var file, isSingle, max, _i, _len;
 
-      if (this instanceof Element) {
+      if (this !== QR) {
         files = __slice.call(this.files);
-        QR.nodes.fileInput.value = null;
+        this.value = null;
       }
-      length = files.length;
-      if (!length) {
+      if (!files.length) {
         return;
       }
       max = QR.nodes.fileInput.max;
+      isSingle = files.length === 1;
       QR.cleanNotifications();
-      if (length === 1) {
-        file = files[0];
-        if (/^text/.test(file.type)) {
-          QR.selected.pasteText(file);
-        } else if (file.size > max) {
-          QR.error("File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(max)) + ").");
-        } else if (!QR.mimeTypes.contains(file.type)) {
-          QR.error('Unsupported file type.');
-        } else {
-          QR.selected.setFile(file);
-        }
-        return;
-      }
       for (_i = 0, _len = files.length; _i < _len; _i++) {
         file = files[_i];
-        if (/^text/.test(file.type)) {
-          if ((post = QR.posts[QR.posts.length - 1]).com) {
-            post = new QR.post();
-          }
-          post.pasteText(file);
-        } else if (file.size > max) {
-          QR.error("" + file.name + ": File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(max)) + ").");
-        } else if (!QR.mimeTypes.contains(file.type)) {
-          QR.error("" + file.name + ": Unsupported file type.");
-        } else {
-          if ((post = QR.posts[QR.posts.length - 1]).file) {
-            post = new QR.post();
-          }
-          post.setFile(file);
-        }
+        QR.handleFile(file, isSingle, max);
       }
-      return $.addClass(QR.nodes.el, 'dump');
+      if (!isSingle) {
+        return $.addClass(QR.nodes.el, 'dump');
+      }
+    },
+    handleFile: function(file, isSingle, max) {
+      var post;
+
+      if (file.size > max) {
+        QR.error("" + file.name + ": File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(max)) + ").");
+        return;
+      } else if (!QR.mimeTypes.contains(file.type)) {
+        if (!/^text/.test(file.type)) {
+          QR.error("" + file.name + ": Unsupported file type.");
+          return;
+        }
+        if (isSingle) {
+          post = QR.selected;
+        } else if ((post = QR.posts[QR.posts.length - 1]).com) {
+          post = new QR.post();
+        }
+        post.pasteText(file);
+        return;
+      }
+      if (isSingle) {
+        post = QR.selected;
+      } else if ((post = QR.posts[QR.posts.length - 1]).file) {
+        post = new QR.post();
+      }
+      return post.setFile(file);
+    },
+    openFileInput: function() {
+      return QR.nodes.fileInput.click();
     },
     posts: [],
     post: (function() {
@@ -5892,7 +5881,8 @@
         return reader.readAsText(file);
       };
 
-      _Class.prototype.dragStart = function() {
+      _Class.prototype.dragStart = function(e) {
+        e.dataTransfer.setDragImage(this, e.layerX, e.layerY);
         return $.addClass(this, 'drag');
       };
 
@@ -6198,7 +6188,7 @@
       $.on(nodes.spoiler, 'change', function() {
         return QR.selected.nodes.spoiler.click();
       });
-      $.on(nodes.fileInput, 'change', QR.fileInput);
+      $.on(nodes.fileInput, 'change', QR.handleFiles);
       items = ['name', 'email', 'sub', 'com', 'filename'];
       i = 0;
       while (name = items[i++]) {
@@ -6344,7 +6334,7 @@
       return QR.status();
     },
     response: function() {
-      var URL, ban, board, err, h1, isReply, m, post, postID, req, resDoc, threadID, _, _ref, _ref1;
+      var URL, ban, board, captchasCount, err, h1, isReply, m, notif, post, postID, postsCount, req, resDoc, threadID, _, _ref, _ref1;
 
       req = QR.req;
       delete QR.req;
@@ -6408,7 +6398,22 @@
         threadID: threadID,
         postID: postID
       });
-      QR.cooldown.auto = QR.posts.length > 1 && isReply;
+      postsCount = QR.posts.length;
+      QR.cooldown.auto = postsCount > 1 && isReply;
+      if (QR.cooldown.auto && QR.captcha.isEnabled && (captchasCount = QR.captcha.captchas.length) < 3 && captchasCount < postsCount) {
+        notif = new Notification('Quick reply warning', {
+          body: "You are running low on cached captchas. Cache count: " + captchasCount + ".",
+          icon: Favicon.logo
+        });
+        notif.onclick = function() {
+          QR.open();
+          QR.captcha.nodes.input.focus();
+          return window.focus();
+        };
+        setTimeout(function() {
+          return notif.close();
+        }, 7 * $.SECOND);
+      }
       if (!(Conf['Persistent QR'] || QR.cooldown.auto)) {
         QR.close();
       } else {
@@ -7367,7 +7372,6 @@
         return Favicon.unreadY = Favicon.unreadNSFWY;
       }
     },
-    empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
     dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
     logo: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACAAgMAAAC+UIlYAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAGlJREFUWMPtlkEKADEIA/tJP9lXLttQto2yHxgDHozTi0ToGK2WKZZ+HAQQMZc+xBwI4EZ+wAC2IfPuSIDOZJrSZQEAX9eVJhhwIuUYAnQe8rhAEMAZlTI2MID9f5Clyh0JeE1V1ZEAvB4qDfwuJTSGRAAAAABJRU5ErkJggg=='
   };
@@ -8168,7 +8172,7 @@
       return div;
     },
     refresh: function() {
-      var boardID, data, list, nodes, refresher, thread, threadID, toggler, watched, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+      var boardID, data, helper, list, nodes, refresher, thread, threadID, toggler, watched, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
 
       nodes = [];
       _ref = ThreadWatcher.getAll();
@@ -8187,7 +8191,9 @@
           boardID: thread.board.ID,
           threadID: threadID
         });
-        $[watched ? 'addClass' : 'rmClass'](toggler, 'watched');
+        helper = watched ? ['addClass', 'Unwatch'] : ['rmClass', 'Watch'];
+        $[helper[0]](toggler, 'watched');
+        toggler.title = "" + helper[1] + " Thread";
       }
       _ref3 = ThreadWatcher.menu.refreshers;
       for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
@@ -8390,7 +8396,7 @@
 
   Unread = {
     init: function() {
-      if (g.VIEW !== 'thread' || !Conf['Unread Count'] && !Conf['Unread Favicon']) {
+      if (g.VIEW !== 'thread' || !Conf['Unread Count'] && !Conf['Unread Favicon'] && !Conf['Desktop Notifications']) {
         return;
       }
       this.db = new DataBoard('lastReadPosts', this.sync);
@@ -8432,18 +8438,18 @@
         }
       }
       Unread.addPosts(posts);
-      if (Conf['Scroll to Last Read Post']) {
-        return Unread.scroll();
-      }
+      return Unread.scroll();
     },
     scroll: function() {
       var checkPosition, hash, onload, post, posts, root;
 
+      if (!Conf['Scroll to Last Read Post']) {
+        return;
+      }
       if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
         return;
       }
-      if (Unread.posts.length) {
-        post = Unread.posts[0];
+      if (post = Unread.posts[0]) {
         while (root = $.x('preceding-sibling::div[contains(@class,"replyContainer")][1]', post.nodes.root)) {
           if (!(post = Get.postFromRoot(root)).isHidden) {
             break;
@@ -8467,10 +8473,7 @@
         };
       }
       checkPosition = function(target) {
-        var height, top, _ref;
-
-        _ref = target.getBoundingClientRect(), top = _ref.top, height = _ref.height;
-        return top + height - doc.clientHeight > 0;
+        return target.getBoundingClientRect().bottom > doc.clientHeight;
       };
       return $.on(window, 'load', onload);
     },
@@ -8488,7 +8491,9 @@
       Unread.lastReadPost = lastReadPost;
       Unread.readArray(Unread.posts);
       Unread.readArray(Unread.postsQuotingYou);
-      Unread.setLine();
+      if (Conf['Unread Line']) {
+        Unread.setLine();
+      }
       return Unread.update();
     },
     addPosts: function(posts) {
@@ -8533,7 +8538,6 @@
         }
         Unread.postsQuotingYou.push(post);
         Unread.openNotification(post);
-        return;
       }
     },
     openNotification: function(post) {
@@ -8553,7 +8557,7 @@
       };
       return setTimeout(function() {
         return notif.close();
-      }, 5 * $.SECOND);
+      }, 7 * $.SECOND);
     },
     onUpdate: function(e) {
       if (e.detail[404]) {
@@ -8590,7 +8594,7 @@
       return arr.splice(0, i);
     },
     read: $.debounce(50, function(e) {
-      var ID, bottom, height, i, post, posts;
+      var ID, height, i, post, posts;
 
       if (d.hidden || !Unread.posts.length) {
         return;
@@ -8599,8 +8603,7 @@
       posts = Unread.posts;
       i = 0;
       while (post = posts[i]) {
-        bottom = post.nodes.root.getBoundingClientRect().bottom;
-        if (bottom < height) {
+        if (post.nodes.root.getBoundingClientRect().bottom < height) {
           ID = post.ID;
           if (Conf['Mark Quotes of You']) {
             if (post.info.yours) {
@@ -8618,10 +8621,8 @@
         }
         i++;
       }
-      if (!Conf['Quote Threading']) {
-        if (i) {
-          posts.splice(0, i);
-        }
+      if (i && !Conf['Quote Threading']) {
+        posts.splice(0, i);
       }
       if (!ID) {
         return;
@@ -8646,18 +8647,16 @@
       });
     }),
     setLine: function(force) {
-      var post, root;
+      var post;
 
       if (!(d.hidden || force === true)) {
         return;
       }
-      if (post = Unread.posts[0]) {
-        root = post.nodes.root;
-        if (root !== $('.thread > .replyContainer', root.parentNode)) {
-          return $.before(root, Unread.hr);
-        }
-      } else {
+      if (!(post = Unread.posts[0])) {
         return $.rm(Unread.hr);
+      }
+      if ($.x('preceding-sibling::div[contains(@class,"replyContainer")]', post.nodes.root)) {
+        return $.before(post.nodes.root, Unread.hr);
       }
     },
     update: function() {
@@ -8670,7 +8669,7 @@
       if (!Conf['Unread Favicon']) {
         return;
       }
-      Favicon.el.href = g.DEAD ? Unread.postsQuotingYou.length ? Favicon.unreadDeadY : count ? Favicon.unreadDead : Favicon.dead : count ? Unread.postsQuotingYou.length ? Favicon.unreadY : Favicon.unread : Favicon["default"];
+      Favicon.el.href = g.DEAD ? Unread.postsQuotingYou[0] ? Favicon.unreadDeadY : count ? Favicon.unreadDead : Favicon.dead : count ? Unread.postsQuotingYou[0] ? Favicon.unreadY : Favicon.unread : Favicon["default"];
       return $.add(d.head, Favicon.el);
     }
   };
@@ -11291,6 +11290,7 @@
       } catch (_error) {
         err = _error;
         new Notice('warning', 'Cookies need to be enabled on 4chan for 4chan X to properly function.', 30);
+        Main.disableReports = true;
       }
       return $.event('4chanXInitFinished');
     },

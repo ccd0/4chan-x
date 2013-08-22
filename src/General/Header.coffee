@@ -29,7 +29,7 @@ Header =
     @linkJustifyToggler = linkJustifyToggler.firstElementChild
     @headerToggler      = headerToggler.firstElementChild
     @footerToggler      = footerToggler.firstElementChild
-    @shortcutToggler      = shortcutToggler.firstElementChild
+    @shortcutToggler    = shortcutToggler.firstElementChild
     @customNavToggler   = customNavToggler.firstElementChild
 
     $.on menuButton,          'click',  @menuToggle
@@ -362,7 +362,8 @@ Header =
 
     el = $.el 'span',
       innerHTML: """
-      Desktop notification permissions are not granted:<br>
+      Desktop notification permissions are not granted.
+      [<a href='https://github.com/MayhemYDG/4chan-x/wiki/FAQ#desktop-notifications' target=_blank>FAQ</a>]<br>
       <button>Authorize</button> or <button>Disable</button>
       """
     [authorize, disable] = $$ 'button', el

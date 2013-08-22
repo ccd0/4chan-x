@@ -1,6 +1,6 @@
 Unread =
   init: ->
-    return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Favicon']
+    return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Favicon'] and !Conf['Desktop Notifications']
 
     @db = new DataBoard 'lastReadPosts', @sync
     @hr = $.el 'hr',
@@ -30,14 +30,14 @@ Unread =
     for ID, post of Unread.thread.posts
       posts.push post if post.isReply
     Unread.addPosts posts
-    Unread.scroll() if Conf['Scroll to Last Read Post'] 
+    Unread.scroll()
 
   scroll: ->
+    return unless Conf['Scroll to Last Read Post']
     # Let the header's onload callback handle it.
     return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
-    if Unread.posts.length
+    if post = Unread.posts[0]
       # Scroll to a non-hidden, non-OP post that's before the first unread post.
-      post = Unread.posts[0]
       while root = $.x 'preceding-sibling::div[contains(@class,"replyContainer")][1]', post.nodes.root
         break unless (post = Get.postFromRoot root).isHidden
       return unless root
@@ -48,11 +48,8 @@ Unread =
       {root} = Unread.thread.posts[posts[posts.length - 1]].nodes
       onload = -> Header.scrollToPost root if checkPosition root
     checkPosition = (target) ->
-      # Don't scroll to the target if
-      #  - it's visible.
-      #  - we've scrolled past it.
-      {top, height} = target.getBoundingClientRect()
-      top + height - doc.clientHeight > 0
+      # Scroll to the target unless we scrolled past it.
+      target.getBoundingClientRect().bottom > doc.clientHeight
     # Prevent the browser to scroll back to
     # the previous scroll location on page load.
     $.on window, 'load', onload
@@ -66,7 +63,7 @@ Unread =
     Unread.lastReadPost = lastReadPost
     Unread.readArray Unread.posts
     Unread.readArray Unread.postsQuotingYou
-    Unread.setLine()
+    Unread.setLine() if Conf['Unread Line']
     Unread.update()
 
   addPosts: (posts) ->
@@ -93,7 +90,8 @@ Unread =
     for quotelink in post.nodes.quotelinks when QR.db.get Get.postDataFromLink quotelink
       Unread.postsQuotingYou.push post
       Unread.openNotification post
-      return
+    return
+
   openNotification: (post) ->
     return unless Header.areNotificationsEnabled
     name = if Conf['Anonymize']
@@ -108,7 +106,7 @@ Unread =
       window.focus()
     setTimeout ->
       notif.close()
-    , 5 * $.SECOND
+    , 7 * $.SECOND
 
   onUpdate: (e) ->
     if e.detail[404]
@@ -138,8 +136,7 @@ Unread =
     i = 0
 
     while post = posts[i]
-      {bottom} = post.nodes.root.getBoundingClientRect()
-      if bottom < height  # post is completely read
+      if post.nodes.root.getBoundingClientRect().bottom < height # post is not completely read
         {ID} = post
         if Conf['Mark Quotes of You']
           if post.info.yours
@@ -152,9 +149,8 @@ Unread =
           break
       i++
     
-    unless Conf['Quote Threading']
-      if i
-        posts.splice 0, i
+    if i and !Conf['Quote Threading']
+      posts.splice 0, i
 
     return unless ID
 
@@ -172,12 +168,9 @@ Unread =
 
   setLine: (force) ->
     return unless d.hidden or force is true
-    if post = Unread.posts[0]
-      {root} = post.nodes
-      if root isnt $ '.thread > .replyContainer', root.parentNode # not the first reply
-        $.before root, Unread.hr
-    else
-      $.rm Unread.hr
+    return $.rm Unread.hr unless post = Unread.posts[0]
+    if $.x 'preceding-sibling::div[contains(@class,"replyContainer")]', post.nodes.root # not the first reply
+      $.before post.nodes.root, Unread.hr
 
   update: <% if (type === 'crx') { %>(dontrepeat) <% } %>->
     count = Unread.posts.length
@@ -189,18 +182,18 @@ Unread =
       # crbug.com/124381
       # Call it one second later,
       # but don't display outdated unread count.
-      unless dontrepeat
-        setTimeout ->
-          d.title = ''
-          Unread.update true
-        , $.SECOND
+      return if dontrepeat
+      setTimeout ->
+        d.title = ''
+        Unread.update true
+      , $.SECOND
       <% } %>
 
     return unless Conf['Unread Favicon']
 
     Favicon.el.href =
       if g.DEAD
-        if Unread.postsQuotingYou.length
+        if Unread.postsQuotingYou[0]
           Favicon.unreadDeadY
         else if count
           Favicon.unreadDead
@@ -208,7 +201,7 @@ Unread =
           Favicon.dead
       else
         if count
-          if Unread.postsQuotingYou.length
+          if Unread.postsQuotingYou[0]
             Favicon.unreadY
           else
             Favicon.unread
