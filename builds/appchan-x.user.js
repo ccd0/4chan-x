@@ -153,7 +153,7 @@
       'Images': {
         'Image Expansion': [true, 'Expand images.'],
         'Image Hover': [true, 'Show full image on mouseover.'],
-        'Gallery': [false, 'Adds a cute gallery.'],
+        'Gallery': [true, 'Adds a cute gallery.'],
         'Sauce': [true, 'Add sauce links to images.'],
         'Reveal Spoiler Thumbnails': [false, 'Replace spoiler thumbnails with the original image.'],
         'Replace GIF': [false, 'Replace thumbnail of gifs with its actual image.'],

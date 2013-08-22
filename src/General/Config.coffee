@@ -128,7 +128,7 @@ Config =
         'Show full image on mouseover.'
       ]
       'Gallery': [
-        false
+        true
         'Adds a cute gallery.'
       ]
       'Sauce': [
