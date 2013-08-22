@@ -4569,6 +4569,7 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
         this.nodes.links.push(Linkify.makeLink(link, this));
+        link.detach();
       }
       if (!(Conf['Embedding'] || Conf['Link Title'])) {
         return;

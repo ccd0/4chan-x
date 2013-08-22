@@ -81,6 +81,7 @@ Linkify =
 
     for link in links.reverse()
       @nodes.links.push Linkify.makeLink link, @
+      link.detach()
 
     return unless Conf['Embedding'] or Conf['Link Title']
 
