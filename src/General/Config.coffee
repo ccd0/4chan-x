@@ -50,6 +50,7 @@ Config =
       'Thread Excerpt':               [true,  'Show an excerpt of the thread in the tab title.']
       'Thread Stats':                 [true,  'Display reply, image, and page count.']
       'Thread Watcher':               [true,  'Bookmark threads.']
+      'Color user IDs':               [true,  'Assign unique colors to user IDs on boards that use them.']
     'Posting':
       'Quick Reply':                  [true,  'All-in-one form to reply, create threads, automate dumping and more.']
       'Persistent QR':                [false, 'The Quick reply won\'t disappear after posting.']
