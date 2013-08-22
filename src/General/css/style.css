@@ -1079,3 +1079,122 @@ a:only-of-type > .remove {
   background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/installgentoo.png",    {encoding: "base64"}) %>') center left no-repeat!important;
   padding-left: 18px;
 }
+
+/* Gallery */
+#a-gallery {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: <%= flex %>;
+  <%= flex %>-direction: row;
+  background: linear-gradient(rgba(0,0,0,1), rgba(0,0,0,0.5));
+}
+.gal-viewport {
+  display: <%= flex %>;
+  <%= align %>-items: stretch;
+  <%= flex %>-direction: row;
+  <%= flex %>: 1 1 auto;
+  position: relative;
+}
+.gal-thumbnails {
+  <%= flex %>: 0 0 150px;
+  overflow-y: auto;
+  display: <%= flex %>;
+  <%= flex %>-direction: column;
+  <%= align %>-items: stretch;
+  text-align: center;
+}
+.gal-thumbnails img {
+  max-width: 125px;
+  max-height: 125px;
+  height: auto;
+  width: auto;
+}
+.gal-thumbnails a {
+  <%= flex %>: 0 0 auto;
+  padding: 3px;
+  line-height: 0;
+  transition: background .3s linear;
+}
+.gal-highlight {
+  background: rgb(190, 190, 255);
+}
+.gal-prev {
+  order: 0;
+}
+.gal-next {
+  order: 2;
+}
+.gal-prev,
+.gal-next {
+  <%= flex %>: 0 0 20px;
+  background-color: #000;
+  position: relative;
+  cursor: pointer;
+  opacity: 0.5;
+}
+.gal-prev:hover,
+.gal-next:hover {
+  opacity: 0.9;
+}
+.gal-prev::after,
+.gal-next::after {
+  position: absolute;
+  top: 50%;
+  right: 2px;
+  <%= transform %>: translateY(-50%)
+  display: inline-block;
+  border-top: 15px solid transparent;
+  border-bottom: 15px solid transparent;
+  content: "";
+}
+.gal-prev::after {
+  border-right: 15px solid #fff;
+}
+.gal-next::after {
+  border-left: 15px solid #fff;
+}
+.gal-image {
+  order: 1;
+  <%= flex %>: 1 0 auto;
+  display: <%= flex %>;
+  <%= align %>-items: flex-start;
+  <%= justify %>: space-around;
+  overflow: auto;
+  /* Flex > Non-Flex child max-width and overflow fix (Firefox only?) */
+  width: 1%;
+  padding-top: 2.4em;
+}
+.gal-image a {
+  margin: auto;
+}
+.gal-image img {
+  max-width: 100%;
+}
+.gal-info {
+  position: absolute;
+  top: 0;
+  right: 40px;
+  left: 20px;
+  height: 2.4em;
+  background-color: rgba(0,0,0,0.3);
+  text-align: center;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding: 0 20px;
+}
+.gal-close {
+  font-size: 2em;
+  float: right;
+  padding-right: 8px;
+}
+.gal-name {
+  font-size: 2em;
+  color: #ddd;
+}
+.gal-count {
+  color: #ddd;
+}
