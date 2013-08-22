@@ -1,3 +1,5 @@
+- **New feature**: `Color user IDs`, enabled by default
+
 ## 3.10.0 - *2013-08-22*
 
 - **New feature**: `Linkify` and `Clean Links`, enabled by default
