@@ -1106,6 +1106,7 @@ a:only-of-type > .remove {
   <%= flex %>-direction: column;
   <%= align %>-items: stretch;
   text-align: center;
+  background: rgba(0,0,0,.5);
 }
 .gal-thumbnails img {
   max-width: 125px;
@@ -1117,11 +1118,10 @@ a:only-of-type > .remove {
   <%= flex %>: 0 0 auto;
   padding: 3px;
   line-height: 0;
-  transition: background .3s linear;
-  background: rgba(0,0,0,.5);
+  transition: background .2s linear;
 }
 .gal-highlight {
-  background: rgb(190, 190, 255);
+  background: rgba(0, 190, 255,.8);
 }
 .gal-prev {
   order: 0;
