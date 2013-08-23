@@ -27,7 +27,7 @@ IDColor =
       (hash >> 16) & 0xFF
       (hash >> 8)  & 0xFF
     ]
-    rgb.push if (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125
+    rgb.push if (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 170
       'black'
     else
       'white'
