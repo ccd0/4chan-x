@@ -5582,7 +5582,22 @@
       }
       return post.setFile(file);
     },
-    openFileInput: function() {
+    openFileInput: function(e) {
+      e.stopPropagation();
+      if (e.shiftKey && e.type === 'click') {
+        return QR.selected.rmFile();
+      }
+      if (e.ctrlKey && e.type === 'click') {
+        $.addClass(QR.nodes.filename, 'edit');
+        QR.nodes.filename.focus();
+        return $.on(QR.nodes.filename, 'blur', function() {
+          return $.rmClass(QR.nodes.filename, 'edit');
+        });
+      }
+      if (e.target.nodeName === 'INPUT' || (e.keyCode && ![32, 13].contains(e.keyCode)) || e.ctrlKey) {
+        return;
+      }
+      e.preventDefault();
       return QR.nodes.fileInput.click();
     },
     posts: [],
