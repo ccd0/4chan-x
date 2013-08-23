@@ -1163,7 +1163,7 @@ a:only-of-type > .remove {
   display: <%= flex %>;
   <%= align %>-items: flex-start;
   <%= justify %>: space-around;
-  overflow-y: scroll;
+  overflow: hidden;
   /* Flex > Non-Flex child max-width and overflow fix (Firefox only?) */
   width: 1%;
 }
@@ -1172,20 +1172,21 @@ a:only-of-type > .remove {
 }
 .gal-image img {
   max-width: 100%;
+  max-height: 100vh;
 }
 .gal-close {
   font-size: 2em;
   padding-right: 8px;
   position: fixed;
   top: 5px;
-  right: 195px;
+  right: 180px;
   color: #ffffff;
   text-shadow: 0px 0px 1px #000000;
 }
 .gal-name {
   position: fixed;
   bottom: 5px;
-  right: 190px;
+  right: 175px;
   background: rgba(0,0,0,0.6) !important;
   border-radius: 3px;
   padding: 1px 5px 2px 5px;
@@ -1199,7 +1200,7 @@ a:only-of-type > .remove {
 .gal-count {
   position: fixed;
   bottom: 26px;
-  right: 190px;
+  right: 175px;
   background: rgba(0,0,0,0.6) !important;
   border-radius: 3px;
   padding: 1px 5px 2px 5px;
