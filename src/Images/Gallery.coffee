@@ -19,19 +19,25 @@ Gallery =
 
   node: ->
     return unless @file?.isImage
-    if Gallery.el
+    if Gallery.nodes
       Gallery.generateThumb $ '.file', @nodes.root
-      Gallery.total.textContent = Gallery.images.length
+      Gallery.nodes.total.textContent = Gallery.images.length
 
     unless Conf['Image Expansion']
       $.on @file.thumb.parentNode, 'click', Gallery.cb.image
 
   build: (image) ->
-    Gallery.el = dialog = $.el 'div',
+    Gallery.images  = []
+    nodes = Gallery.nodes = {}
+
+    nodes.el = dialog = $.el 'div',
       id: 'a-gallery'
       innerHTML: """
 <div class=gal-viewport>
-  <a href=javascript:; class=gal-close>×</a>
+  <span class=gal-buttons>
+    <a class="menu-button" href="javascript:;"><i></i></a>
+    <a href=javascript:; class=gal-close>×</a>
+  </span>
   <a class=gal-name target="_blank"></a>
   <span class=gal-count><span class='count'></span> / <span class='total'></span></a></span>
   <div class=gal-prev></div>
@@ -42,7 +48,8 @@ Gallery =
 </div>
 <div class=gal-thumbnails></div>
 """
-    Gallery[key] = $ value, dialog for key, value of {
+
+    nodes[key] = $ value, dialog for key, value of {
       frame:   '.gal-image'
       name:    '.gal-name'
       count:   '.count'
@@ -51,27 +58,42 @@ Gallery =
       next:    '.gal-image a'
       current: '.gal-image img'
     }
+    
+    menuButton = $ '.menu-button', dialog
+    nodes.menu = new UI.Menu 'gallery'
 
-    Gallery.images  = []
+    {cb} = Gallery
+    $.on nodes.frame,              'click', cb.blank
+    $.on nodes.current,            'click', cb.download
+    $.on nodes.next,               'click', cb.next
+    $.on ($ '.gal-prev',  dialog), 'click', cb.prev
+    $.on ($ '.gal-next',  dialog), 'click', cb.next
+    $.on ($ '.gal-close', dialog), 'click', cb.close
 
-    $.on Gallery.frame,            'click', Gallery.cb.blank
-    $.on Gallery.current,          'click', Gallery.cb.download
-    $.on Gallery.next,             'click', Gallery.cb.next
-    $.on ($ '.gal-prev',  dialog), 'click', Gallery.cb.prev
-    $.on ($ '.gal-next',  dialog), 'click', Gallery.cb.next
-    $.on ($ '.gal-close', dialog), 'click', Gallery.cb.close
+    $.on menuButton, 'click', (e) ->
+      nodes.menu.toggle e, @, g
 
-    $.on  d, 'keydown', Gallery.cb.keybinds
+    {createSubEntry} = Gallery.menu
+    for name in ['Fit width', 'Fit height', 'Hide thumbnails']
+      {el} = createSubEntry name
+
+      $.event 'AddMenuEntry',
+        type: 'gallery'
+        el: el
+        order: 0
+
+    $.on  d, 'keydown', cb.keybinds
     $.off d, 'keydown', Keybinds.keydown
 
     i = 0
     files = $$ '.post .file'
     while file = files[i++]
+      continue if $ '.fileDeletedRes, .fileDeleted', file
       Gallery.generateThumb file
     $.add d.body, dialog
 
-    Gallery.thumbs.scrollTop = 0
-    Gallery.current.parentElement.scrollTop = 0
+    nodes.thumbs.scrollTop = 0
+    nodes.current.parentElement.scrollTop = 0
 
     Gallery.cb.open.call if image
       $ "[href='#{image.href.replace /https?:/, ''}']", Gallery.thumbs
@@ -79,7 +101,7 @@ Gallery =
       Gallery.images[0]
 
     d.body.style.overflow = 'hidden'
-    Gallery.total.textContent = --i
+    nodes.total.textContent = --i
 
   generateThumb: (file) ->
     title = ($ '.fileText a', file).textContent
@@ -87,7 +109,7 @@ Gallery =
     if double = $ 'img + img', thumb
       $.rm double
 
-    thumb.className = 'a-thumb'
+    thumb.className = 'gal-thumb'
     thumb.title = title
     thumb.dataset.id = Gallery.images.length
     thumb.firstElementChild.style.cssText = ''
@@ -95,7 +117,7 @@ Gallery =
     $.on thumb, 'click', Gallery.cb.open
 
     Gallery.images.push thumb
-    $.add Gallery.thumbs, thumb
+    $.add Gallery.nodes.thumbs, thumb
 
   cb:
     keybinds: (e) ->
@@ -116,35 +138,67 @@ Gallery =
         
     open: (e) ->
       e.preventDefault() if e
+      {nodes} = Gallery
+      {name}  = nodes
 
       $.rmClass  el, 'gal-highlight' if el = $ '.gal-highlight', Gallery.thumbs
       $.addClass @,  'gal-highlight'
 
       img = $.el 'img',
-        src:   Gallery.name.href     = @href
-        title: Gallery.name.download = Gallery.name.textContent = @title
+        src:   name.href     = @href
+        title: name.download = name.textContent = @title
 
       img.dataset.id = @dataset.id
-      $.replace Gallery.current, img
-      Gallery.count.textContent = +@dataset.id + 1
-      Gallery.current = img
-      Gallery.frame.scrollTop = 0
-      Gallery.current.focus()
+      $.replace nodes.current, img
+      nodes.count.textContent = +@dataset.id + 1
+      nodes.current = img
+      nodes.frame.scrollTop = 0
+      nodes.current.focus()
 
     image: (e) ->
       e.preventDefault()
       e.stopPropagation()
       Gallery.build @
 
-    prev:   -> Gallery.cb.open.call Gallery.images[+Gallery.current.dataset.id - 1]
-    next:   -> Gallery.cb.open.call Gallery.images[+Gallery.current.dataset.id + 1]
-    toggle: -> (if Gallery.el then Gallery.cb.close else Gallery.build)()
+    prev:   -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id - 1]
+    next:   -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id + 1]
+    toggle: -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
     blank: (e) -> Gallery.cb.close() if e.target is @
 
     close: ->
-      $.rm Gallery.el
-      delete Gallery.el
+      $.rm Gallery.nodes.el
+      delete Gallery.nodes
       d.body.style.overflow = ''
 
       $.off d, 'keydown', Gallery.cb.keybinds
       $.on  d, 'keydown', Keybinds.keydown
+
+  menu:
+    init: ->
+      return if g.VIEW is 'catalog' or !Conf['Gallery'] or Conf['Image Expansion']
+
+      el = $.el 'span',
+        textContent: 'Gallery'
+        className: 'gallery-link'
+
+      {createSubEntry} = Gallery.menu
+      subEntries = []
+      for name in ['Fit width', 'Fit height', 'Hide thumbnails']
+        subEntries.push createSubEntry name
+
+      $.event 'AddMenuEntry',
+        type: 'header'
+        el: el
+        order: 105
+        subEntries: subEntries
+
+    createSubEntry: (name) ->
+      label = $.el 'label',
+        innerHTML: "<input type=checkbox name='#{name}'> #{name}"
+      input = label.firstElementChild
+      # Reusing ImageExpand here because this code doesn't need any auditing to work for what we need
+      $.on input, 'change', ImageExpand.cb.setFitness
+      input.checked = Conf[name]
+      $.event 'change', null, input
+      $.on input, 'change', $.cb.checked
+      el: label

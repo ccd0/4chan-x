@@ -396,6 +396,12 @@ Config =
       false
       'Advance to next post when contracting an expanded image.'
     ]
+  
+  gallery:
+    # Gallery mostly gets its config from imageExpansion
+    'Hide thumbnails': [
+      false
+    ]
 
   threadWatcher:
     'Current Board': [
