@@ -31,11 +31,9 @@ Gallery =
       id: 'a-gallery'
       innerHTML: """
 <div class=gal-viewport>
-  <div class=gal-info>
-    <a href=javascript:; class=gal-close>×</a>
-    <a class=gal-name></a>
-    <span class=gal-count>(<span class='count'></span> / <span class='total'></span>)</a>
-  </div>
+  <a href=javascript:; class=gal-close>×</a>
+  <a class=gal-name target="_blank"></a>
+  <span class=gal-count><span class='count'></span> / <span class='total'></span></a></span>
   <div class=gal-prev></div>
   <div class=gal-image>
     <a href=javascript:;><img></a>
