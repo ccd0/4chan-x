@@ -73,7 +73,7 @@ class Post
     text = []
     # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE === 7
     nodes = d.evaluate './/br|.//text()', bq, null, 7, null
-    for i in [0...nodes.snapshotLength]
+    for i in [0...nodes.snapshotLength] by 1
       text.push nodes.snapshotItem(i).data or '\n'
     @info.comment = text.join('').trim().replace /\s+$/gm, ''
 

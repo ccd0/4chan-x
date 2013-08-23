@@ -220,7 +220,7 @@ Main =
     len = nodes.length
     for callback in klass::callbacks
       # c.profile callback.name
-      for i in [0...len]
+      for i in [0...len] by 1
         node = nodes[i]
         try
           callback.cb.call node

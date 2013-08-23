@@ -35,6 +35,6 @@ IDColor =
 
   hash: (uniqueID) ->
     msg = 0
-    for i in [0...uniqueID.length]
+    for i in [0...uniqueID.length] by 1
       msg = (msg << 5) - msg + uniqueID.charCodeAt i
     msg
