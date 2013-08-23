@@ -1118,6 +1118,7 @@ a:only-of-type > .remove {
   padding: 3px;
   line-height: 0;
   transition: background .3s linear;
+  background: rgba(0,0,0,.5);
 }
 .gal-highlight {
   background: rgb(190, 190, 255);
@@ -1127,35 +1128,38 @@ a:only-of-type > .remove {
 }
 .gal-next {
   order: 2;
+  border-left: 1px solid #222;
 }
 .gal-prev,
 .gal-next {
   <%= flex %>: 0 0 20px;
-  background-color: #000;
   position: relative;
   cursor: pointer;
-  opacity: 0.5;
+  border-right: 1px solid #222;
+  opacity: 0.7;
+  background-color: rgba(0, 0, 0, 0.3);
 }
 .gal-prev:hover,
 .gal-next:hover {
-  opacity: 0.9;
+  opacity: 1;
 }
 .gal-prev::after,
 .gal-next::after {
   position: absolute;
-  top: 50%;
-  right: 2px;
+  top: 48.6%;
   <%= transform %>: translateY(-50%)
   display: inline-block;
-  border-top: 15px solid transparent;
-  border-bottom: 15px solid transparent;
+  border-top: 11px solid transparent;
+  border-bottom: 11px solid transparent;
   content: "";
 }
 .gal-prev::after {
-  border-right: 15px solid #fff;
+  border-right: 12px solid #fff;
+  right: 5px;
 }
 .gal-next::after {
-  border-left: 15px solid #fff;
+  border-left: 12px solid #fff;
+  right: 3px;
 }
 .gal-image {
   order: 1;
@@ -1186,7 +1190,7 @@ a:only-of-type > .remove {
 .gal-name {
   position: fixed;
   bottom: 5px;
-  right: 175px;
+  right: 178px;
   background: rgba(0,0,0,0.6) !important;
   border-radius: 3px;
   padding: 1px 5px 2px 5px;
@@ -1200,7 +1204,7 @@ a:only-of-type > .remove {
 .gal-count {
   position: fixed;
   bottom: 26px;
-  right: 175px;
+  right: 178px;
   background: rgba(0,0,0,0.6) !important;
   border-radius: 3px;
   padding: 1px 5px 2px 5px;
