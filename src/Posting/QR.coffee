@@ -52,7 +52,7 @@ QR =
 
   persist: ->
     QR.open()
-    QR.hide() if Conf['Auto-Hide QR']
+    QR.hide() if Conf['Auto-Hide QR'] or g.VIEW is 'catalog'
   open: ->
     if QR.nodes
       QR.nodes.el.hidden = false
