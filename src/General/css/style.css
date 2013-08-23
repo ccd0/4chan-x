@@ -1163,7 +1163,7 @@ a:only-of-type > .remove {
   display: <%= flex %>;
   <%= align %>-items: flex-start;
   <%= justify %>: space-around;
-  overflow: auto;
+  overflow-y: scroll;
   /* Flex > Non-Flex child max-width and overflow fix (Firefox only?) */
   width: 1%;
 }
@@ -1179,6 +1179,8 @@ a:only-of-type > .remove {
   position: fixed;
   top: 5px;
   right: 195px;
+  color: #ffffff;
+  text-shadow: 0px 0px 1px #000000;
 }
 .gal-name {
   position: fixed;
@@ -1186,8 +1188,13 @@ a:only-of-type > .remove {
   right: 190px;
   background: rgba(0,0,0,0.6) !important;
   border-radius: 3px;
-  padding: 2px 5px;
+  padding: 1px 5px 2px 5px;
+  text-decoration: none !important;
   color: white !important;
+}
+.gal-name:hover,
+.gal-close:hover {
+  color: rgb(95, 95, 101) !important;
 }
 .gal-count {
   position: fixed;
@@ -1195,6 +1202,6 @@ a:only-of-type > .remove {
   right: 190px;
   background: rgba(0,0,0,0.6) !important;
   border-radius: 3px;
-  padding: 2px 5px;
-  color: white !important;
+  padding: 1px 5px 2px 5px;
+  color: #ffffff !important;
 }
