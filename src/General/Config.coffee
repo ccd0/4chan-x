@@ -317,6 +317,7 @@ Config =
         true
         'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.'
       ]
+
     'Quote Links':
       'Quote Backlinks': [
         true

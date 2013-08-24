@@ -1350,27 +1350,26 @@
       return $.cache("//api.4chan.org/" + boardID + "/threads.json", function(e) {
         var board, page, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
 
-        if (e.target.status === 404) {
-          _this["delete"](boardID);
-        } else if (e.target.status === 200) {
-          board = _this.data.boards[boardID];
-          threads = {};
-          _ref = JSON.parse(e.target.response);
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            page = _ref[_i];
-            _ref1 = page.threads;
-            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-              thread = _ref1[_j];
-              if (thread.no in board) {
-                threads[thread.no] = board[thread.no];
-              }
+        if (e.target.status !== 200) {
+          return;
+        }
+        board = _this.data.boards[boardID];
+        threads = {};
+        _ref = JSON.parse(e.target.response);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          page = _ref[_i];
+          _ref1 = page.threads;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            thread = _ref1[_j];
+            if (thread.no in board) {
+              threads[thread.no] = board[thread.no];
             }
           }
-          _this.data.boards[boardID] = threads;
-          _this.deleteIfEmpty({
-            boardID: boardID
-          });
         }
+        _this.data.boards[boardID] = threads;
+        _this.deleteIfEmpty({
+          boardID: boardID
+        });
         return _this.save();
       });
     };
@@ -1463,7 +1462,7 @@
         data = atob(this.toDataURL().slice(22));
         l = data.length;
         ui8a = new Uint8Array(l);
-        for (i = _i = 0; 0 <= l ? _i < l : _i > l; i = 0 <= l ? ++_i : --_i) {
+        for (i = _i = 0; _i < l; i = _i += 1) {
           ui8a[i] = data.charCodeAt(i);
         }
         return cb(new Blob([ui8a], {
@@ -5067,7 +5066,7 @@
         return;
       }
       QR.open();
-      if (Conf['Auto Hide QR']) {
+      if (Conf['Auto-Hide QR'] || g.VIEW === 'catalog') {
         return QR.hide();
       }
     },
@@ -9941,6 +9940,54 @@
         offset: offset,
         limit: limit
       });
+    }
+  };
+
+  IDColor = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Color User IDs']) {
+        return;
+      }
+      this.ids = {};
+      return Post.prototype.callbacks.push({
+        name: 'Color User IDs',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var rgb, span, style, uid;
+
+      if (this.isClone || !(uid = this.info.uniqueID)) {
+        return;
+      }
+      rgb = IDColor.compute(uid);
+      span = this.nodes.uniqueID;
+      style = span.style;
+      style.color = rgb[3];
+      style.backgroundColor = "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
+      $.addClass(span, 'painted');
+      span.textContent = uid;
+      return span.title = 'Highlight posts by this ID';
+    },
+    compute: function(uniqueID) {
+      var hash, rgb;
+
+      if (uniqueID in IDColor.ids) {
+        return IDColor.ids[uniqueID];
+      }
+      hash = this.hash(uniqueID);
+      rgb = [(hash >> 24) & 0xFF, (hash >> 16) & 0xFF, (hash >> 8) & 0xFF];
+      rgb.push((rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 170 ? 'black' : 'white');
+      return this.ids[uniqueID] = rgb;
+    },
+    hash: function(uniqueID) {
+      var i, msg, _i, _ref;
+
+      msg = 0;
+      for (i = _i = 0, _ref = uniqueID.length; _i < _ref; i = _i += 1) {
+        msg = (msg << 5) - msg + uniqueID.charCodeAt(i);
+      }
+      return msg;
     }
   };
 
