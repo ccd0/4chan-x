@@ -6602,7 +6602,7 @@
       $.add(d.body, dialog);
       nodes.thumbs.scrollTop = 0;
       nodes.current.parentElement.scrollTop = 0;
-      Gallery.cb.open.call(image ? $("[href='" + (image.href.replace(/https?:/, '')) + "']", Gallery.thumbs) : Gallery.images[0]);
+      Gallery.cb.open.call(image ? $("[href='" + (image.href.replace(/https?:/, '')) + "']", nodes.thumbs) : Gallery.images[0]);
       d.body.style.overflow = 'hidden';
       return nodes.total.textContent = --i;
     },
