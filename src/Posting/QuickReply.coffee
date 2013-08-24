@@ -495,7 +495,16 @@ QR =
       post = new QR.post()
     post.setFile file
 
-  openFileInput: ->
+  openFileInput: (e) ->
+    e.stopPropagation()
+    if e.shiftKey and e.type is 'click'
+      return QR.selected.rmFile()
+    if e.ctrlKey and e.type is 'click'
+      $.addClass QR.nodes.filename, 'edit'
+      QR.nodes.filename.focus()
+      return $.on QR.nodes.filename, 'blur', -> $.rmClass QR.nodes.filename, 'edit'
+    return if e.target.nodeName is 'INPUT' or (e.keyCode and not [32, 13].contains e.keyCode) or e.ctrlKey
+    e.preventDefault()
     QR.nodes.fileInput.click()
 
   posts: []
