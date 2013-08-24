@@ -9952,54 +9952,6 @@
     }
   };
 
-  IDColor = {
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Color User IDs']) {
-        return;
-      }
-      this.ids = {};
-      return Post.prototype.callbacks.push({
-        name: 'Color User IDs',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var rgb, span, style, uid;
-
-      if (this.isClone || !(uid = this.info.uniqueID)) {
-        return;
-      }
-      rgb = IDColor.compute(uid);
-      span = this.nodes.uniqueID;
-      style = span.style;
-      style.color = rgb[3];
-      style.backgroundColor = "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
-      $.addClass(span, 'painted');
-      span.textContent = uid;
-      return span.title = 'Highlight posts by this ID';
-    },
-    compute: function(uniqueID) {
-      var hash, rgb;
-
-      if (uniqueID in IDColor.ids) {
-        return IDColor.ids[uniqueID];
-      }
-      hash = this.hash(uniqueID);
-      rgb = [(hash >> 24) & 0xFF, (hash >> 16) & 0xFF, (hash >> 8) & 0xFF];
-      rgb.push((rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 170 ? 'black' : 'white');
-      return this.ids[uniqueID] = rgb;
-    },
-    hash: function(uniqueID) {
-      var i, msg, _i, _ref;
-
-      msg = 0;
-      for (i = _i = 0, _ref = uniqueID.length; _i < _ref; i = _i += 1) {
-        msg = (msg << 5) - msg + uniqueID.charCodeAt(i);
-      }
-      return msg;
-    }
-  };
-
   Keybinds = {
     init: function() {
       var init;

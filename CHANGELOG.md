@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-=======
-- **New feature**: `Color User IDs`, enabled by default
-
-## 3.10.0 - *2013-08-22*
->>>>>>> 667abe7480b04161ec10cf00fffad17accdf23a0
 
 **MayhemYDG**:
 - New desktop notification:
