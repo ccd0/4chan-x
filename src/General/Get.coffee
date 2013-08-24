@@ -118,17 +118,18 @@ Get =
     Build.spoilerRange[boardID] = posts[0].custom_spoiler
     for post in posts
       break if post.no is postID # we found it!
-      if post.no > postID
-        # The post can be deleted by the time we check a quote.
-        if url = Redirect.to 'post', {boardID, postID}
-          $.cache url,
-            -> Get.archivedPost @, boardID, postID, root, context
-          ,
-            withCredentials: url.archive.withCredentials
-        else
-          $.addClass root, 'warning'
-          root.textContent = "Post No.#{postID} was not found."
-        return
+
+    if post.no isnt postID
+      # The post can be deleted by the time we check a quote.
+      if url = Redirect.to 'post', {boardID, postID}
+        $.cache url,
+          -> Get.archivedPost @, boardID, postID, root, context
+        ,
+          withCredentials: url.archive.withCredentials
+      else
+        $.addClass root, 'warning'
+        root.textContent = "Post No.#{postID} was not found."
+      return
 
     board = g.boards[boardID] or
       new Board boardID
