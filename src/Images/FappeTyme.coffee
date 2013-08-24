@@ -1,18 +1,34 @@
 FappeTyme =
   init: ->
-    return if !Conf['Fappe Tyme'] or g.VIEW is 'catalog' or g.BOARD is 'f'
-    el = $.el 'label',
-      innerHTML: "<input type=checkbox name=fappe-tyme> Fappe Tyme"
-      title: 'Fappe Tyme'
-    
-    FappeTyme.input = input = el.firstElementChild
+    return if !(Conf['Fappe Tyme'] or Conf['Werk Tyme']) or g.VIEW is 'catalog' or g.BOARD is 'f'
 
-    $.on input, 'change', FappeTyme.toggle
+    if Conf['Fappe Tyme']
+      el = $.el 'label',
+        innerHTML: "<input type=checkbox name=fappe-tyme> Fappe Tyme"
+        title: 'Fappe Tyme'
 
-    $.event 'AddMenuEntry',
-      type:  'header'
-      el:    el
-      order: 97
+      FappeTyme.fappe = input = el.firstElementChild
+
+      $.on input, 'change', FappeTyme.cb.fappe
+
+      $.event 'AddMenuEntry',
+        type:  'header'
+        el:    el
+        order: 97
+
+    if Conf['Werk Tyme']
+      el = $.el 'label',
+        innerHTML: "<input type=checkbox name=werk-tyme> Werk Tyme"
+        title: 'Werk Tyme'
+
+      FappeTyme.werk = input = el.firstElementChild
+
+      $.on input, 'change', FappeTyme.cb.werk
+
+      $.event 'AddMenuEntry',
+        type:  'header'
+        el:    el
+        order: 98
 
     Post::callbacks.push
       name: 'Fappe Tyme'
@@ -22,6 +38,10 @@ FappeTyme =
     return if @file
     $.addClass @nodes.root, "noFile"
 
-  toggle: ->
-    $.event 'CloseMenu'
-    (if @checked then $.addClass else $.rmClass) doc, 'fappeTyme'
+  cb:
+    fappe: ->
+      $.toggleClass doc, 'fappeTyme'
+      FappeTyme.fappe.checked = $.hasClass doc, 'fappeTyme'
+    werk: ->
+      $.toggleClass doc, 'werkTyme'
+      FappeTyme.werk.checked = $.hasClass doc, 'werkTyme'

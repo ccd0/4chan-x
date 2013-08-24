@@ -179,6 +179,10 @@ Config =
         false
         'Hide posts without images. *hint* *hint*'
       ]
+      'Werk Tyme': [
+        false
+        'Hide all post images.'
+      ]
 
     'Menu':
       'Menu': [
@@ -604,9 +608,17 @@ q-replace
       'e'
       'Expand all images.'
     ]
+    'Open Gallery': [
+      'g'
+      'Opens the gallery.'
+    ]
     'fappeTyme': [
       'f'
       'Fappe Tyme.'
+    ]
+    'werkTyme': [
+      'Shift+w'
+      'Werk Tyme'
     ]
     # Board Navigation
     'Front page': [

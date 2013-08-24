@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.35 - 2013-08-23
+* 4chan X - Version 1.2.35 - 2013-08-24
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -161,7 +161,8 @@
         'Replace PNG': [false, 'Replace pngs.'],
         'Replace JPG': [false, 'Replace jpgs.'],
         'Image Prefetching': [false, 'Preload images'],
-        'Fappe Tyme': [false, 'Hide posts without images. *hint* *hint*']
+        'Fappe Tyme': [false, 'Hide posts without images. *hint* *hint*'],
+        'Werk Tyme': [false, 'Hide all post images.']
       },
       'Menu': {
         'Menu': [true, 'Add a drop-down menu to posts.'],
@@ -287,7 +288,9 @@
       'Update': ['r', 'Update the thread now.'],
       'Expand image': ['Shift+e', 'Expand selected image.'],
       'Expand images': ['e', 'Expand all images.'],
+      'Open Gallery': ['g', 'Opens the gallery.'],
       'fappeTyme': ['f', 'Fappe Tyme.'],
+      'werkTyme': ['Shift+w', 'Werk Tyme'],
       'Front page': ['0', 'Jump to page 0.'],
       'Open front page': ['Shift+0', 'Open page 0 in a new tab.'],
       'Next page': ['Shift+Right', 'Jump to the next page.'],
@@ -6455,20 +6458,35 @@
     init: function() {
       var el, input;
 
-      if (!Conf['Fappe Tyme'] || g.VIEW === 'catalog' || g.BOARD === 'f') {
+      if (!(Conf['Fappe Tyme'] || Conf['Werk Tyme']) || g.VIEW === 'catalog' || g.BOARD === 'f') {
         return;
       }
-      el = $.el('label', {
-        innerHTML: "<input type=checkbox name=fappe-tyme> Fappe Tyme",
-        title: 'Fappe Tyme'
-      });
-      FappeTyme.input = input = el.firstElementChild;
-      $.on(input, 'change', FappeTyme.toggle);
-      $.event('AddMenuEntry', {
-        type: 'header',
-        el: el,
-        order: 97
-      });
+      if (Conf['Fappe Tyme']) {
+        el = $.el('label', {
+          innerHTML: "<input type=checkbox name=fappe-tyme> Fappe Tyme",
+          title: 'Fappe Tyme'
+        });
+        FappeTyme.fappe = input = el.firstElementChild;
+        $.on(input, 'change', FappeTyme.cb.fappe);
+        $.event('AddMenuEntry', {
+          type: 'header',
+          el: el,
+          order: 97
+        });
+      }
+      if (Conf['Werk Tyme']) {
+        el = $.el('label', {
+          innerHTML: "<input type=checkbox name=werk-tyme> Werk Tyme",
+          title: 'Werk Tyme'
+        });
+        FappeTyme.werk = input = el.firstElementChild;
+        $.on(input, 'change', FappeTyme.cb.werk);
+        $.event('AddMenuEntry', {
+          type: 'header',
+          el: el,
+          order: 98
+        });
+      }
       return Post.prototype.callbacks.push({
         name: 'Fappe Tyme',
         cb: this.node
@@ -6480,9 +6498,15 @@
       }
       return $.addClass(this.nodes.root, "noFile");
     },
-    toggle: function() {
-      $.event('CloseMenu');
-      return (this.checked ? $.addClass : $.rmClass)(doc, 'fappeTyme');
+    cb: {
+      fappe: function() {
+        $.toggleClass(doc, 'fappeTyme');
+        return FappeTyme.fappe.checked = $.hasClass(doc, 'fappeTyme');
+      },
+      werk: function() {
+        $.toggleClass(doc, 'werkTyme');
+        return FappeTyme.werk.checked = $.hasClass(doc, 'werkTyme');
+      }
     }
   };
 
@@ -9357,36 +9381,40 @@
       });
     },
     node: function() {
-      var str, uid;
+      var rgb, span, style, uid;
 
-      if (this.isClone || !(str = this.info.uniqueID)) {
+      if (this.isClone || !(uid = this.info.uniqueID)) {
         return;
       }
-      uid = $('.hand', this.nodes.uniqueID);
-      if (!(uid && uid.nodeName === 'SPAN')) {
+      span = $('.hand', this.nodes.uniqueID);
+      if (!(span && span.nodeName === 'SPAN')) {
         return;
       }
-      return uid.style.cssText = IDColor.css(IDColor.ids[str] || IDColor.compute(str));
+      rgb = IDColor.compute(uid);
+      style = span.style;
+      style.color = rgb[3];
+      style.backgroundColor = "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
+      $.addClass(span, painted);
+      return span.title = 'Highlight posts by this ID';
     },
-    compute: function(str) {
+    compute: function(uid) {
       var hash, rgb;
 
-      hash = IDColor.hash(str);
+      if (IDColor.ids[uid]) {
+        return IDColor.ids[uid];
+      }
+      hash = IDColor.hash(uid);
       rgb = [(hash >> 24) & 0xFF, (hash >> 16) & 0xFF, (hash >> 8) & 0xFF];
-      rgb[3] = ((rgb[0] * 0.299) + (rgb[1] * 0.587) + (rgb[2] * 0.114)) > 125;
-      this.ids[str] = rgb;
-      return rgb;
+      rgb[3] = (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125 ? '#000' : '#fff';
+      return this.ids[uid] = rgb;
     },
-    css: function(rgb) {
-      return "background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: " + (rgb[3] ? "#000" : "#fff") + "; border-radius: 3px; padding: 0px 2px;";
-    },
-    hash: function(str) {
+    hash: function(uid) {
       var i, msg;
 
       msg = 0;
       i = 0;
       while (i < 8) {
-        msg = ((msg << 5) - msg) + str.charCodeAt(i++);
+        msg = (msg << 5) - msg + uid.charCodeAt(i++);
       }
       return msg;
     }
@@ -10026,11 +10054,14 @@
         case Conf['Expand images']:
           Keybinds.img(threadRoot, true);
           break;
+        case Conf['Open Gallery']:
+          Gallery.cb.toggle();
+          break;
         case Conf['fappeTyme']:
-          if (!$('#menu.left')) {
-            Header.menuButton.click();
-          }
-          FappeTyme.input.click();
+          FappeTyme.cb.fappe();
+          break;
+        case Conf['werkTyme']:
+          FappeTyme.cb.werk();
           break;
         case Conf['Front page']:
           window.location = "/" + g.BOARD + "/0#delform";
