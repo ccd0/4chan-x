@@ -98,7 +98,7 @@ Gallery =
     nodes.current.parentElement.scrollTop = 0
 
     Gallery.cb.open.call if image
-      $ "[href='#{image.href.replace /https?:/, ''}']", Gallery.thumbs
+      $ "[href='#{image.href.replace /https?:/, ''}']", nodes.thumbs
     else
       Gallery.images[0]
 
