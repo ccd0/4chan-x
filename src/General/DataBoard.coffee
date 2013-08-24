@@ -70,18 +70,15 @@ class DataBoard
     @save()
   ajaxClean: (boardID) ->
     $.cache "//api.4chan.org/#{boardID}/threads.json", (e) =>
-      if e.target.status is 404
-        # Deleted board.
-        @delete boardID
-      else if e.target.status is 200
-        board   = @data.boards[boardID]
-        threads = {}
-        for page in JSON.parse e.target.response
-          for thread in page.threads
-            if thread.no of board
-              threads[thread.no] = board[thread.no]
-        @data.boards[boardID] = threads
-        @deleteIfEmpty {boardID}
+      return if e.target.status isnt 200
+      board   = @data.boards[boardID]
+      threads = {}
+      for page in JSON.parse e.target.response
+        for thread in page.threads
+          if thread.no of board
+            threads[thread.no] = board[thread.no]
+      @data.boards[boardID] = threads
+      @deleteIfEmpty {boardID}
       @save()
 
   onSync: (data) =>
