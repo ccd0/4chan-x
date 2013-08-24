@@ -15,7 +15,7 @@ IDColor =
     {style} = span
     style.color = rgb[3]
     style.backgroundColor = "rgb(#{rgb[0]},#{rgb[1]},#{rgb[2]})"
-    $.addClass span, painted
+    $.addClass span, 'painted'
     span.title = 'Highlight posts by this ID'
 
   compute: (uid) ->

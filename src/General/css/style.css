@@ -54,6 +54,10 @@ a[href="javascript:;"] {
 a {
   outline: none !important;
 }
+.painted {
+  border-radius: 3px;
+  padding: 0px 2px;
+}
 
 /* 4chan style fixes */
 .opContainer, .op {
