@@ -12,7 +12,7 @@ FappeTyme =
       $.on el, 'click', FappeTyme.cb.fappe
 
       Header.addShortcut el, true
-    
+
     if Conf['Werk Tyme']
       el = $.el 'a',
         href: 'javascript:;'
@@ -24,7 +24,6 @@ FappeTyme =
       $.on el, 'click', FappeTyme.cb.werk
 
       Header.addShortcut el, true
-    
 
     Post::callbacks.push
       name: 'Fappe Tyme'
@@ -34,9 +33,8 @@ FappeTyme =
     return if @file
     $.addClass @nodes.root, "noFile"
 
-  cb: 
+  cb:
     fappe: ->
       $.toggleClass doc, 'fappeTyme'
     werk: ->
       $.toggleClass doc, 'werkTyme'
-      

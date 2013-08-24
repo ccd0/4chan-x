@@ -14,7 +14,7 @@ Config =
         'Add button to hide 4chan announcements.'
       ]
       'Desktop Notifications': [
-        true
+        false
         'Enables desktop notifications across various <%= meta.name %> features.'
       ]
       '404 Redirect': [
@@ -129,7 +129,7 @@ Config =
       ]
       'Gallery': [
         true
-        'Adds a cute gallery.'
+        'Adds a simple and cute image gallery.' 
       ]
       'Sauce': [
         true
@@ -161,7 +161,7 @@ Config =
       ]
       'Werk Tyme': [
         false
-        'Hide images when toggled.'
+        'Hide all post images when toggled.'
       ]
 
     'Menu':
@@ -378,6 +378,12 @@ Config =
     'Advance on contract': [
       false
       'Advance to next post when contracting an expanded image.'
+    ]
+  
+  gallery:
+    # Gallery mostly gets its config from imageExpansion
+    'Hide thumbnails': [
+      false
     ]
 
   style:

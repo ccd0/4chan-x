@@ -99,7 +99,6 @@ module.exports = (grunt) ->
       commit:
         options: shellOptions
         command: [
-          'git checkout <%= pkg.meta.mainBranch %>'
           'git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."'
           'git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
           'git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
@@ -146,40 +145,31 @@ module.exports = (grunt) ->
     pkg.type = type;
     grunt.config 'pkg', pkg
 
-    pkg.sizing = if type is 'crx'
+    [
+      pkg.sizing
+      pkg.filter
+      pkg.flex
+      pkg.order
+      pkg.align
+      pkg.justify
+      pkg.transform
+    ] = if type is 'crx' then [
       'box-sizing'
-    else
-      '-moz-box-sizing'
-
-    pkg.filter = if type is 'crx'
       '-webkit-filter'
-    else
-      'filter'
-
-    pkg.transform = if type is 'crx'
-      '-webkit-transform'
-    else
-      'transform'
-
-    pkg.flex = if type is 'crx'
       '-webkit-flex'
-    else
-      'flex'
-
-    pkg.order = if type is 'crx'
       '-webkit-order'
-    else
-      'order'
-
-    pkg.align = if type is 'crx'
       '-webkit-align'
-    else
-      'align'
-
-    pkg.justify = if type is 'crx'
       '-webkit-justify-content'
-    else
+      '-webkit-transform'
+    ] else [
+      '-moz-box-sizing'
+      'filter'
+      'flex'
+      'order'
+      'align'
       'justify-content'
+      'transform'
+    ]
 
     grunt.log.ok 'pkg.type = %s', type
 

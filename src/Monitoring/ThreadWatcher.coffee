@@ -167,7 +167,9 @@ ThreadWatcher =
     for threadID, thread of g.BOARD.threads
       toggler = $ '.watch-thread-link', thread.OP.nodes.post
       watched = ThreadWatcher.db.get {boardID: thread.board.ID, threadID}
-      $[if watched then 'addClass' else 'rmClass'] toggler, 'watched'
+      helper = if watched then ['addClass', 'Unwatch'] else ['rmClass', 'Watch']
+      $[helper[0]] toggler, 'watched'
+      toggler.title = "#{helper[1]} Thread"
 
     for refresher in ThreadWatcher.menu.refreshers
       refresher()

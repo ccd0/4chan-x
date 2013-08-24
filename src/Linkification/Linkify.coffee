@@ -81,6 +81,7 @@ Linkify =
 
     for link in links.reverse()
       @nodes.links.push Linkify.makeLink link, @
+      link.detach()
 
     return unless Conf['Embedding'] or Conf['Link Title']
 
@@ -399,3 +400,4 @@ Linkify =
       title:
         api: (uid) -> "https://gdata.youtube.com/feeds/api/videos/#{uid}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
         text: (data) -> data.entry.title.$t
+

@@ -71,7 +71,7 @@ QR =
   persist: ->
     return unless QR.postingIsEnabled
     QR.open()
-    QR.hide() if Conf['Auto Hide QR']
+    QR.hide() if Conf['Auto-Hide QR'] or g.VIEW is 'catalog'
 
   open: ->
     if QR.nodes
@@ -165,7 +165,7 @@ QR =
     setTimeout ->
       notif.onclose = null
       notif.close()
-    , 5 * $.SECOND
+    , 7 * $.SECOND
     <% } %>
 
   notifications: []
@@ -449,20 +449,52 @@ QR =
     return unless e.dataTransfer.files.length
     e.preventDefault()
     QR.open()
-    QR.fileInput e.dataTransfer.files
+    QR.handleFiles e.dataTransfer.files
     $.addClass QR.nodes.el, 'dump'
 
   paste: (e) ->
     files = []
-    for item in e.clipboardData.items
-      if item.kind is 'file'
-        blob = item.getAsFile()
-        blob.name  = 'file'
-        blob.name += '.' + blob.type.split('/')[1] if blob.type
-        files.push blob
+    for item in e.clipboardData.items when item.kind is 'file'
+      blob = item.getAsFile()
+      blob.name  = 'file'
+      blob.name += '.' + blob.type.split('/')[1] if blob.type
+      files.push blob
     return unless files.length
     QR.open()
-    QR.fileInput files
+    QR.handleFiles files
+    $.addClass QR.nodes.el, 'dump'
+
+  handleFiles: (files) ->
+    if @ isnt QR # file input
+      files  = [@files...]
+      @value = null
+    return unless files.length
+    max = QR.nodes.fileInput.max
+    isSingle = files.length is 1
+    QR.cleanNotifications()
+    for file in files
+      QR.handleFile file, isSingle, max
+    $.addClass QR.nodes.el, 'dump' unless isSingle
+
+  handleFile: (file, isSingle, max) ->
+    if file.size > max
+      QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
+      return
+    else unless QR.mimeTypes.contains file.type
+      unless /^text/.test file.type
+        QR.error "#{file.name}: Unsupported file type."
+        return
+      if isSingle
+        post = QR.selected
+      else if (post = QR.posts[QR.posts.length - 1]).com
+        post = new QR.post()
+      post.pasteText file
+      return
+    if isSingle
+      post = QR.selected
+    else if (post = QR.posts[QR.posts.length - 1]).file
+      post = new QR.post()
+    post.setFile file
 
   openFileInput: (e) ->
     e.stopPropagation()
@@ -475,42 +507,6 @@ QR =
     return if e.target.nodeName is 'INPUT' or (e.keyCode and not [32, 13].contains e.keyCode) or e.ctrlKey
     e.preventDefault()
     QR.nodes.fileInput.click()
-
-  fileInput: (files) ->
-    if files instanceof Event # file input, revert to "files instanceof Event" after a Pale Moon update
-      files = [@files...]
-      QR.nodes.fileInput.value = null # Don't hold the files from being modified on windows
-    {length} = files
-    return unless length
-    max = QR.nodes.fileInput.max
-    QR.cleanNotifications()
-    # Set or change current post's file.
-    if length is 1
-      file = files[0]
-      if /^text/.test file.type
-        QR.selected.pasteText file
-      else if file.size > max
-        QR.error "File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
-      else unless QR.mimeTypes.contains file.type
-        QR.error 'Unsupported file type.'
-      else
-        QR.selected.setFile file
-      return
-    # Create new posts with these files.
-    for file in files
-      if /^text/.test file.type
-        if (post = QR.posts[QR.posts.length - 1]).com
-          post = new QR.post()
-        post.pasteText file
-      else if file.size > max
-        QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
-      else unless QR.mimeTypes.contains file.type
-        QR.error "#{file.name}: Unsupported file type."
-      else
-        if (post = QR.posts[QR.posts.length - 1]).file
-          post = new QR.post()
-        post.setFile file
-    $.addClass QR.nodes.el, 'dump'
 
   posts: []
 
@@ -752,7 +748,9 @@ QR =
         @nodes.span.textContent = @com
       reader.readAsText file
 
-    dragStart: -> $.addClass @, 'drag'
+    dragStart: (e) ->
+      e.dataTransfer.setDragImage @, e.layerX, e.layerY
+      $.addClass @, 'drag'
     dragEnd:   -> $.rmClass  @, 'drag'
     dragEnter: -> $.addClass @, 'over'
     dragLeave: -> $.rmClass  @, 'over'
@@ -998,7 +996,7 @@ QR =
     $.on nodes.fileRM,     'click',  -> QR.selected.rmFile()
     $.on nodes.fileExtras, 'click',  (e) -> e.stopPropagation()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
-    $.on nodes.fileInput,  'change', QR.fileInput
+    $.on nodes.fileInput,  'change', QR.handleFiles
 
     # mouseover descriptions
     items = ['spoilerPar', 'dumpButton', 'fileRM']
@@ -1243,7 +1241,19 @@ QR =
     }
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
-    QR.cooldown.auto = QR.posts.length > 1 and isReply
+    postsCount = QR.posts.length
+    QR.cooldown.auto = postsCount > 1 and isReply
+    if QR.cooldown.auto and QR.captcha.isEnabled and (captchasCount = QR.captcha.captchas.length) < 3 and captchasCount < postsCount
+      notif = new Notification 'Quick reply warning',
+        body: "You are running low on cached captchas. Cache count: #{captchasCount}."
+        icon: Favicon.logo
+      notif.onclick = ->
+        QR.open()
+        QR.captcha.nodes.input.focus()
+        window.focus()
+      setTimeout ->
+        notif.close()
+      , 7 * $.SECOND
 
     unless Conf['Persistent QR'] or QR.cooldown.auto
       QR.close()
