@@ -1110,6 +1110,7 @@ a:only-of-type > .remove {
   <%= align %>-items: stretch;
   text-align: center;
   background: rgba(0,0,0,.5);
+  border-left: 1px solid #222;
 }
 .hide-thumbnails .gal-thumbnails {
   display: none;
