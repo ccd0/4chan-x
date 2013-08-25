@@ -26,7 +26,7 @@ Linkify =
         Linkify.cleanLink anchor, link if Conf['Clean Links']
         walker.currentNode = anchor.lastChild
       else
-        walker.currentNode = boundaries.endNode
+        walker.previousNode()
     range.detach()
 
   find: (link, walker) ->
