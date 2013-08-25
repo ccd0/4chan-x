@@ -12557,9 +12557,16 @@
       Style.padding();
       Style.iconPositions();
       if (exLink = $("#navtopright .exlinksOptionsLink", d.body)) {
-        return $.on(exLink, "click", function() {
+        $.on(exLink, "click", function() {
           return setTimeout(Rice.nodes, 100);
         });
+      }
+      if (g.VIEW === 'catalog') {
+        if (!$.id('threads').children.length) {
+          return setTimeout((function() {
+            return $.globalEval('fourcat.init(); fourcat.loadCatalog(catalog);');
+          }), 1000);
+        }
       }
     },
     observe: function() {

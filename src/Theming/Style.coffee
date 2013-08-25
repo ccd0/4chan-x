@@ -67,6 +67,11 @@ Style =
     if exLink = $ "#navtopright .exlinksOptionsLink", d.body
       $.on exLink, "click", ->
         setTimeout Rice.nodes, 100
+    
+    if g.VIEW is 'catalog'
+      unless $.id('threads').children.length
+        # Race conditions
+        setTimeout (-> $.globalEval 'fourcat.init(); fourcat.loadCatalog(catalog);'), 1000
 
   observe: ->
     if window.MutationObserver
