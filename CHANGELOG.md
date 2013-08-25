@@ -1,3 +1,18 @@
+### v2.3.7 
+*2013-08-25*
+
+**Zixaphir**:
+- Some new gallery features
+  * Fit Width
+  * Fit Height
+  * Hide Thumbnails
+  * The gallery thumbnail bar will now scroll to the current thumbnail if it is out of the visible range.
+  * Now enabled by default (but won't be used as the default thumbnail option without disabling Image Expansion)
+- Bugfixes
+
+**seaweedchan**: 
+- Gallery layout and aesthetics overhaul
+
 ### v2.3.6 
 *2013-08-21*
 
