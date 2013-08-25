@@ -799,7 +799,7 @@ th {
 #menu {
   position: fixed;
   outline: none;
-  z-index: 22;
+  z-index: 27;
 }
 /* Image Expansion */
 .fit-width .full-image {
@@ -2243,7 +2243,7 @@ article li {
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 30;
+  z-index: 26;
   display: <%= flex %>;
   <%= flex %>-direction: row;
   background: rgba(0,0,0,0.7);
