@@ -381,6 +381,9 @@ th {
 .shortcut {
   margin: 0 1px;
 }
+.icon-orientation-vertical #a-icons .shortcut {
+  margin: 0;
+}
 #a-icons,
 #a-stats {
   <%= order %>: 0;
@@ -398,7 +401,7 @@ th {
 .sidebar-location-right .shortcut {
   <%= align %>-self: flex-end;
 }
-.icon-orientation-vertical #a-icons{
+.icon-orientation-vertical #a-icons {
   <%= flex %>-direction: column;
   height: 200px;
 }
@@ -459,7 +462,7 @@ th {
 .icon-orientation-horizontal #so-psa #globalMessage,
 .icon-orientation-horizontal #so-watcher  #thread-watcher,
 .icon-orientation-horizontal #so-nav #boardNavDesktopFoot {
-  top: 16px !important;
+  top: 15px !important;
 }
 .icon-orientation-vertical #so-psa,
 .icon-orientation-vertical #so-watcher,
