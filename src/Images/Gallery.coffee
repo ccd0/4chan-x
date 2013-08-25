@@ -74,7 +74,7 @@ Gallery =
       nodes.menu.toggle e, @, g
 
     {createSubEntry} = Gallery.menu
-    for name in ['Gallery fit width', 'Gallery fit height', 'Hide thumbnails']
+    for name in Config.gallery
       {el} = createSubEntry name
 
       $.event 'AddMenuEntry',
@@ -221,9 +221,12 @@ Gallery =
       $.off d, 'keydown', Gallery.cb.keybinds
       $.on  d, 'keydown', Keybinds.keydown
 
+    setFitness: ->
+      (if @checked then $.addClass else $.rmClass) doc, "gal-#{@name.toLowerCase().replace /\s+/g, '-'}"
+
   menu:
     init: ->
-      return if g.VIEW is 'catalog' or !Conf['Gallery'] or Conf['Image Expansion']
+      return if g.VIEW is 'catalog' or !Conf['Gallery']
 
       el = $.el 'span',
         textContent: 'Gallery'
@@ -231,7 +234,7 @@ Gallery =
 
       {createSubEntry} = Gallery.menu
       subEntries = []
-      for name in ['Gallery fit width', 'Gallery fit height', 'Hide thumbnails']
+      for name in Config.gallery
         subEntries.push createSubEntry name
 
       $.event 'AddMenuEntry',
@@ -244,8 +247,8 @@ Gallery =
       label = $.el 'label',
         innerHTML: "<input type=checkbox name='#{name}'> #{name}"
       input = label.firstElementChild
-      # Reusing ImageExpand here because this code doesn't need any auditing to work for what we need
-      $.on input, 'change', ImageExpand.cb.setFitness
+      if ['Fit Width', 'Fit Height'].contains name
+        $.on input, 'change', Gallery.cb.setFitness
       input.checked = Conf[name]
       $.event 'change', null, input
       $.on input, 'change', $.cb.checked

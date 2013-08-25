@@ -1182,10 +1182,10 @@ a:only-of-type > .remove {
   margin: auto;
   line-height: 0;
 }
-.fit-width .gal-image img {
+.gal-fit-width .gal-image img {
   max-width: 100%;
 }
-.fit-height .gal-image img {
+.gal-fit-height .gal-image img {
   max-height: calc(100vh - 25px);
 }
 .gal-buttons {
