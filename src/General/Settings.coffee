@@ -6,7 +6,7 @@ Settings =
       href:        'javascript:;'
       textContent: 'Settings'
     $.on el, 'click', Settings.open
-    
+
     $.event 'AddMenuEntry',
       type: 'header'
       el: el
@@ -30,22 +30,30 @@ Settings =
         $.on d, '4chanXInitFinished', Settings.open
       $.set 'previousversion', g.VERSION
 
-    Settings.addSection 'Style',    Settings.style
-    Settings.addSection 'Themes',   Settings.themes
-    Settings.addSection 'Mascots',  Settings.mascots
-    Settings.addSection 'Script',   Settings.main
-    Settings.addSection 'Filter',   Settings.filter
-    Settings.addSection 'Sauce',    Settings.sauce
-    Settings.addSection 'Advanced', Settings.advanced
-    Settings.addSection 'Keybinds', Settings.keybinds
+    {addSection} = Settings
+    addSection value, Settings[key] for key, value of {
+      'style':    'Style'
+      'themes':   'Themes'
+      'mascots':  'Mascots'
+      'main':     'Script'
+      'filter':   'Filter'
+      'sauce':    'Sauce'
+      'advanced': 'Advanced'
+      'keybinds': 'Keybinds'
+    }
 
-    $.on d, 'AddSettingsSection',   Settings.addSection
-    $.on d, 'OpenSettings',         (e) -> Settings.open e.detail
+    $.on d, 'AddSettingsSection', Settings.addSection
+    $.on d, 'OpenSettings',       (e) -> Settings.open e.detail
 
     settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
-    return if settings.disableAll
-    settings.disableAll = true
-    localStorage.setItem '4chan-settings', JSON.stringify settings
+    unless settings.disableAll
+      settings.disableAll = true
+      check = true
+    if settings.keyBinds
+      # Keybinds persist even with disableAll. Thanks moot.
+      settings.keyBinds = false
+      check = true
+    localStorage.setItem '4chan-settings', JSON.stringify settings if check
 
   open: (openSection) ->
     if Conf['editMode'] is "theme"

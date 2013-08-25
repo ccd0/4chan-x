@@ -14394,7 +14394,7 @@
 
   Settings = {
     init: function() {
-      var el, settings;
+      var addSection, check, el, key, settings, value, _ref;
 
       el = $.el('a', {
         className: 'settings-link',
@@ -14431,24 +14431,37 @@
         }
         return $.set('previousversion', g.VERSION);
       });
-      Settings.addSection('Style', Settings.style);
-      Settings.addSection('Themes', Settings.themes);
-      Settings.addSection('Mascots', Settings.mascots);
-      Settings.addSection('Script', Settings.main);
-      Settings.addSection('Filter', Settings.filter);
-      Settings.addSection('Sauce', Settings.sauce);
-      Settings.addSection('Advanced', Settings.advanced);
-      Settings.addSection('Keybinds', Settings.keybinds);
+      addSection = Settings.addSection;
+      _ref = {
+        'style': 'Style',
+        'themes': 'Themes',
+        'mascots': 'Mascots',
+        'main': 'Script',
+        'filter': 'Filter',
+        'sauce': 'Sauce',
+        'advanced': 'Advanced',
+        'keybinds': 'Keybinds'
+      };
+      for (key in _ref) {
+        value = _ref[key];
+        addSection(value, Settings[key]);
+      }
       $.on(d, 'AddSettingsSection', Settings.addSection);
       $.on(d, 'OpenSettings', function(e) {
         return Settings.open(e.detail);
       });
       settings = JSON.parse(localStorage.getItem('4chan-settings')) || {};
-      if (settings.disableAll) {
-        return;
+      if (!settings.disableAll) {
+        settings.disableAll = true;
+        check = true;
       }
-      settings.disableAll = true;
-      return localStorage.setItem('4chan-settings', JSON.stringify(settings));
+      if (settings.keyBinds) {
+        settings.keyBinds = false;
+        check = true;
+      }
+      if (check) {
+        return localStorage.setItem('4chan-settings', JSON.stringify(settings));
+      }
     },
     open: function(openSection) {
       var dialog, link, links, overlay, section, sectionToOpen, _i, _len, _ref;
