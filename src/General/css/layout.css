@@ -1010,8 +1010,7 @@ th {
   border-radius: 4px;
 }
 /* Thread Clearfix */
-.thread > .threadContainer:last-of-type::after,
-.thread > .postContainer:last-of-type::after {
+.thread > .threadContainer:last-of-type::after {
   display: block;
   content: ' ';
   clear: both;
@@ -1095,9 +1094,11 @@ th {
   <%= sizing %>: border-box;
   display: inline-block;
 }
+.replyContainer {
+  display: <%= flex %>;
+}
 .fit-width-replies .reply.post {
-  display: block;
-  overflow: hidden;
+  <%= flex %>: 1 0;
 }
 .fit-width-replies .expanded-image .reply.post,
 .fit-width-replies .hasInline .reply.post {
@@ -1107,12 +1108,6 @@ th {
 .indent-replies .thread > .replyContainer,
 .indent-replies .threadContainer > .replyContainer {
   margin-left: 2em;
-}
-.expanded-image .reply.post,
-.hasInline .reply.post {
-  display: inline-block;
-  overflow: visible;
-  clear: both;
 }
 .rounded-edges .post {
   border-radius: 3px;
@@ -1124,10 +1119,6 @@ s {
 /* Emoji */
 a.useremail:last-of-type {
   vertical-align: top;
-}
-/* Reply Clearfix */
-.reply.post .postMessage {
-  clear: right;
 }
 .op-background .op.post .postMessage::after,
 .force-reply-break .op.post .postMessage::after {
@@ -1155,12 +1146,6 @@ a.useremail:last-of-type {
 }
 .inline .replyContainer {
   display: inline-block;
-}
-/* Inlined Clearfix */
-.inline .postMessage::after {
-  clear: both;
-  display: block;
-  content: "";
 }
 /* Quotes */
 .inlined {
