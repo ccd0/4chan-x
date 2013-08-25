@@ -54,6 +54,10 @@ a[href="javascript:;"] {
 a {
   outline: none !important;
 }
+.painted {
+  border-radius: 3px;
+  padding: 0px 2px;
+}
 
 /* 4chan style fixes */
 .opContainer, .op {
@@ -1097,7 +1101,6 @@ a:only-of-type > .remove {
   <%= align %>-items: stretch;
   <%= flex %>-direction: row;
   <%= flex %>: 1 1 auto;
-  position: relative;
 }
 .gal-thumbnails {
   <%= flex %>: 0 0 150px;
@@ -1107,14 +1110,18 @@ a:only-of-type > .remove {
   <%= align %>-items: stretch;
   text-align: center;
   background: rgba(0,0,0,.5);
+  border-left: 1px solid #222;
 }
-.gal-thumbnails img {
+.hide-thumbnails .gal-thumbnails {
+  display: none;
+}
+.gal-thumb img {
   max-width: 125px;
   max-height: 125px;
   height: auto;
   width: auto;
 }
-.gal-thumbnails a {
+.gal-thumb {
   <%= flex %>: 0 0 auto;
   padding: 3px;
   line-height: 0;
@@ -1125,6 +1132,7 @@ a:only-of-type > .remove {
 }
 .gal-prev {
   order: 0;
+  border-right: 1px solid #222;
 }
 .gal-next {
   order: 2;
@@ -1135,7 +1143,6 @@ a:only-of-type > .remove {
   <%= flex %>: 0 0 20px;
   position: relative;
   cursor: pointer;
-  border-right: 1px solid #222;
   opacity: 0.7;
   background-color: rgba(0, 0, 0, 0.3);
 }
@@ -1167,30 +1174,46 @@ a:only-of-type > .remove {
   display: <%= flex %>;
   <%= align %>-items: flex-start;
   <%= justify %>: space-around;
-  overflow: hidden;
+  overflow: auto;
   /* Flex > Non-Flex child max-width and overflow fix (Firefox only?) */
   width: 1%;
 }
 .gal-image a {
   margin: auto;
+  line-height: 0;
 }
-.gal-image img {
+.fit-width .gal-image img {
   max-width: 100%;
-  max-height: 100vh;
 }
-.gal-close {
+.fit-height .gal-image img {
+  max-height: calc(100vh - 25px);
+}
+.gal-buttons {
   font-size: 2em;
-  padding-right: 8px;
-  position: fixed;
+  margin-right: 10px;
   top: 5px;
-  right: 180px;
   color: #ffffff;
   text-shadow: 0px 0px 1px #000000;
 }
-.gal-name {
+.gal-buttons i {
+  vertical-align: baseline;
+  border-top-width: .5em;
+  border-right-width: .3em;
+  border-left-width: .3em;
+}
+.gal-buttons,
+.gal-name,
+.gal-count {
   position: fixed;
-  bottom: 5px;
   right: 178px;
+}
+.hide-thumbnails .gal-buttons,
+.hide-thumbnails .gal-count,
+.hide-thumbnails .gal-name {
+  right: 28px;
+}
+.gal-name {
+  bottom: 5px;
   background: rgba(0,0,0,0.6) !important;
   border-radius: 3px;
   padding: 1px 5px 2px 5px;
@@ -1202,9 +1225,7 @@ a:only-of-type > .remove {
   color: rgb(95, 95, 101) !important;
 }
 .gal-count {
-  position: fixed;
   bottom: 26px;
-  right: 178px;
   background: rgba(0,0,0,0.6) !important;
   border-radius: 3px;
   padding: 1px 5px 2px 5px;

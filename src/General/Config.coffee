@@ -179,6 +179,10 @@ Config =
         false
         'Hide posts without images. *hint* *hint*'
       ]
+      'Werk Tyme': [
+        false
+        'Hide all post images.'
+      ]
 
     'Menu':
       'Menu': [
@@ -313,6 +317,7 @@ Config =
         true
         'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.'
       ]
+
     'Quote Links':
       'Quote Backlinks': [
         true
@@ -395,6 +400,18 @@ Config =
     'Advance on contract': [
       false
       'Advance to next post when contracting an expanded image.'
+    ]
+  
+  gallery:
+    # Gallery mostly gets its config from imageExpansion
+    'Hide thumbnails': [
+      false
+    ]
+    'Gallery fit width': [
+      true
+    ]
+    'Gallery fit height': [
+      true
     ]
 
   threadWatcher:
@@ -598,9 +615,17 @@ q-replace
       'e'
       'Expand all images.'
     ]
+    'Open Gallery': [
+      'g'
+      'Opens the gallery.'
+    ]
     'fappeTyme': [
       'f'
       'Fappe Tyme.'
+    ]
+    'werkTyme': [
+      'Shift+w'
+      'Werk Tyme'
     ]
     # Board Navigation
     'Front page': [
