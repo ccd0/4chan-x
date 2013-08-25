@@ -6673,7 +6673,7 @@
         nodes.count.textContent = +this.dataset.id + 1;
         nodes.current = img;
         nodes.frame.scrollTop = 0;
-        nodes.current.focus();
+        nodes.next.focus();
         rect = this.getBoundingClientRect();
         top = rect.top;
         if (top > 0) {
