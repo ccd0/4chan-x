@@ -104,14 +104,16 @@ Gallery =
     nodes.total.textContent = --i
 
   generateThumb: (file) ->
+    post  = Get.postFromNode file
     title = ($ '.fileText a', file).textContent
-    thumb = ($ '.fileThumb', file).cloneNode true
+    thumb = post.file.thumb.parentNode
     if double = $ 'img + img', thumb
       $.rm double
 
     thumb.className = 'gal-thumb'
     thumb.title = title
-    thumb.dataset.id = Gallery.images.length
+    thumb.dataset.id   = Gallery.images.length
+    thumb.dataset.post = $('a[title="Highlight this post"]', post.nodes.info).href
     thumb.firstElementChild.style.cssText = ''
 
     $.on thumb, 'click', Gallery.cb.open
@@ -150,7 +152,7 @@ Gallery =
         src:   name.href     = @href
         title: name.download = name.textContent = @title
 
-      img.dataset.id = @dataset.id
+      $.extend  img.dataset,   @dataset
       $.replace nodes.current, img
       nodes.count.textContent = +@dataset.id + 1
       nodes.current = img
@@ -165,11 +167,46 @@ Gallery =
         return if top < 0
 
       nodes.thumbs.scrollTop += top
+      
+      $.on img, 'error', ->
+        Gallery.cb.error img, thumb
 
     image: (e) ->
       e.preventDefault()
       e.stopPropagation()
       Gallery.build @
+
+    error: (img, thumb) ->
+      post = Get.postFromLink $.el 'a', href: img.dataset.post
+      delete post.file.fullImage
+
+      src = @src.split '/'
+      if src[2] is 'images.4chan.org'
+        URL = Redirect.to 'file',
+          boardID:  src[3]
+          filename: src[5]
+        if URL
+          thumb.href = URL
+          return unless Gallery.nodes.current is img
+          revived = $.el 'img',
+            src:   URL
+            title: img.title
+          $.extend revived.dataset, img.dataset
+          $.replace img, revived
+          return
+        if g.DEAD or post.isDead or post.file.isDead
+          return
+
+      # XXX CORS for images.4chan.org WHEN?
+      $.ajax "//api.4chan.org/#{post.board}/res/#{post.thread}.json", onload: ->
+        return if @status isnt 200
+        i = 0
+        while postObj = JSON.parse(@response).posts[i++]
+          break if postObj.no is post.ID
+        unless postObj.no
+          return post.kill()
+        if postObj.filedeleted
+          post.kill true
 
     prev:   -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id - 1]
     next:   -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id + 1]
