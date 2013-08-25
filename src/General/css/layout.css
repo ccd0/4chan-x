@@ -1534,12 +1534,12 @@ input:checked + .rice {
   border-style: solid;
 }
 .persona {
-  width: 248px;
-  max-width: 100%;
-  min-width: 100%;
+  display: <%= flex %>;
+  <%= flex %>-direction: column;
+  <%= align %>-items: stretch;
 }
-.persona input.field {
-  width: 100%;
+.compact-post-form-inputs .persona {
+  <%= flex %>-direction: row;
 }
 #qr textarea.field {
   height: 11.6em;
@@ -1549,13 +1549,14 @@ input:checked + .rice {
   height: 6em;
 }
 .compact-post-form-inputs .persona input.field {
-  width: 33%;
+  <%= flex %>: 1 1;
+  margin: 0 0 0 1px;
+}
+.compact-post-form-inputs .persona input:focus {
+  <%= flex %>: 3 1;
 }
 .compact-post-form-inputs .persona input.field:first-child {
   margin: 0;
-}
-.compact-post-form-inputs .persona input.field {
-  margin: 0 0 0 0.5%;
 }
 .compact-post-form-inputs #qr textarea.field {
   height: 14.9em;
@@ -1605,6 +1606,7 @@ input:not([type=radio]) {
   vertical-align: bottom;
   padding: 0 1px;
   outline: none;
+  transition: color .25s, border-color .25s, <%= flex %> .25s;
 }
 .selectrice {
   padding-right: 1.6em;
@@ -1612,8 +1614,11 @@ input:not([type=radio]) {
 #qr textarea {
   min-width: 100%;
 }
+#file-n-submit {
+  display: <%= flex %>
+}
 #qr [type='submit'] {
-  width: 25%;
+  width: 60px;
 }
 [type='file'] {
   position: absolute;
@@ -1638,7 +1643,7 @@ input:not([type=radio]) {
   height: auto;
   background: transparent none;
   overflow: hidden;
-  text-overflow: ellipsis; 
+  text-overflow: ellipsis;
   width: 88%;
 }
 #qr-filename:not(.edit) {
@@ -1662,10 +1667,8 @@ input:not([type=radio]) {
   <%= sizing %>: border-box;
   display: inline-block;
   position: relative;
-  width: 100px;
-  min-width: 74.6%;
-  max-width: 74.6%;
-  margin-right: 0.4%;
+  margin-right: 1px;
+  <%= flex %>: 1 1;
   overflow: hidden;
   padding: 2px 1px 0;
 }
