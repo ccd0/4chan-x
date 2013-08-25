@@ -74,7 +74,7 @@ Gallery =
       nodes.menu.toggle e, @, g
 
     {createSubEntry} = Gallery.menu
-    for name in Config.gallery
+    for name of Config.gallery
       {el} = createSubEntry name
 
       $.event 'AddMenuEntry',
@@ -106,7 +106,7 @@ Gallery =
   generateThumb: (file) ->
     post  = Get.postFromNode file
     title = ($ '.fileText a', file).textContent
-    thumb = post.file.thumb.parentNode
+    thumb = post.file.thumb.parentNode.cloneNode true
     if double = $ 'img + img', thumb
       $.rm double
 
@@ -234,7 +234,7 @@ Gallery =
 
       {createSubEntry} = Gallery.menu
       subEntries = []
-      for name in Config.gallery
+      for name of Config.gallery
         subEntries.push createSubEntry name
 
       $.event 'AddMenuEntry',

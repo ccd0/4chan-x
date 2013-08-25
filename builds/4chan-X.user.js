@@ -6565,7 +6565,7 @@
       }
     },
     build: function(image) {
-      var cb, createSubEntry, dialog, el, file, files, i, key, menuButton, name, nodes, value, _i, _len, _ref, _ref1;
+      var cb, createSubEntry, dialog, el, file, files, i, key, menuButton, name, nodes, value, _ref;
 
       Gallery.images = [];
       nodes = Gallery.nodes = {};
@@ -6599,9 +6599,7 @@
         return nodes.menu.toggle(e, this, g);
       });
       createSubEntry = Gallery.menu.createSubEntry;
-      _ref1 = Config.gallery;
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        name = _ref1[_i];
+      for (name in Config.gallery) {
         el = createSubEntry(name).el;
         $.event('AddMenuEntry', {
           type: 'gallery',
@@ -6631,7 +6629,7 @@
 
       post = Get.postFromNode(file);
       title = ($('.fileText a', file)).textContent;
-      thumb = post.file.thumb.parentNode;
+      thumb = post.file.thumb.parentNode.cloneNode(true);
       if (double = $('img + img', thumb)) {
         $.rm(double);
       }
@@ -6793,7 +6791,7 @@
     },
     menu: {
       init: function() {
-        var createSubEntry, el, name, subEntries, _i, _len, _ref;
+        var createSubEntry, el, name, subEntries;
 
         if (g.VIEW === 'catalog' || !Conf['Gallery']) {
           return;
@@ -6804,9 +6802,7 @@
         });
         createSubEntry = Gallery.menu.createSubEntry;
         subEntries = [];
-        _ref = Config.gallery;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          name = _ref[_i];
+        for (name in Config.gallery) {
           subEntries.push(createSubEntry(name));
         }
         return $.event('AddMenuEntry', {
@@ -11518,6 +11514,7 @@
         'File Info Formatting': FileInfo,
         'Fappe Tyme': FappeTyme,
         'Gallery': Gallery,
+        'Gallery (menu)': Gallery.menu,
         'Sauce': Sauce,
         'Image Expansion': ImageExpand,
         'Image Expansion (Menu)': ImageExpand.menu,

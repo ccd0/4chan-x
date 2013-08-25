@@ -125,6 +125,7 @@ Main =
       'File Info Formatting':      FileInfo
       'Fappe Tyme':                FappeTyme
       'Gallery':                   Gallery
+      'Gallery (menu)':            Gallery.menu
       'Sauce':                     Sauce
       'Image Expansion':           ImageExpand
       'Image Expansion (Menu)':    ImageExpand.menu
