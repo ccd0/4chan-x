@@ -2239,7 +2239,7 @@ article li {
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 20;
+  z-index: 30;
   display: <%= flex %>;
   <%= flex %>-direction: row;
   background: rgba(0,0,0,0.7);
@@ -2330,10 +2330,10 @@ article li {
   margin: auto;
   line-height: 0;
 }
-.fit-width .gal-image img {
+.gal-fit-width .gal-image img {
   max-width: 100%;
 }
-.fit-height .gal-image img {
+.gal-fit-height .gal-image img {
   max-height: calc(100vh - 25px);
 }
 .gal-buttons {
@@ -2341,7 +2341,7 @@ article li {
   margin-right: 10px;
   top: 5px;
   color: #ffffff;
-  text-shadow: 0px 0px 1px #000000;
+  text-shadow: 0px 0px 1px #000;
 }
 .gal-buttons,
 .gal-name,
@@ -2360,7 +2360,7 @@ article li {
   border-radius: 3px;
   padding: 1px 5px 2px 5px;
   text-decoration: none !important;
-  color: white !important;
+  color: #fff !important;
 }
 .gal-name:hover,
 .gal-close:hover {
@@ -2371,7 +2371,7 @@ article li {
   background: rgba(0,0,0,0.6) !important;
   border-radius: 3px;
   padding: 1px 5px 2px 5px;
-  color: #ffffff !important;
+  color: #fff !important;
 }
 /* Catalog */
 #content .navLinks,
