@@ -6902,7 +6902,7 @@
       return range;
     },
     makeLink: function(range) {
-      var a, char, i, text;
+      var a, i, t, text;
 
       text = range.toString();
       i = 0;
@@ -6919,8 +6919,8 @@
         }
       }
       i = 0;
-      while (/[)\]}>.,]/.test(char = text.charAt(text.length - (1 + i)))) {
-        if (!(/[.,]/.test(char) || (text.match(/[()\[\]{}<>]/g)).length % 2)) {
+      while (/[)\]}>.,]/.test(t = text.charAt(text.length - (1 + i)))) {
+        if (!(/[.,]/.test(t) || (text.match(/[()\[\]{}<>]/g)).length % 2)) {
           break;
         }
         i++;
@@ -8152,14 +8152,14 @@
       };
 
       _Class.prototype.updateFilename = function() {
-        var long;
+        var title;
 
-        long = "" + this.filename + " (" + this.filesize + ")\nCtrl+click to edit filename. Shift+click to clear.";
-        this.nodes.el.title = long;
+        title = "" + this.filename + " (" + this.filesize + ")\nCtrl+click to edit filename. Shift+click to clear.";
+        this.nodes.el.title = title;
         if (this !== QR.selected) {
           return;
         }
-        return QR.nodes.fileContainer.title = long;
+        return QR.nodes.fileContainer.title = title;
       };
 
       _Class.prototype.showFileData = function() {
@@ -8933,13 +8933,13 @@
       return nodes.total.textContent = --i;
     },
     generateThumb: function(file) {
-      var double, post, thumb, title;
+      var dupe, post, thumb, title;
 
       post = Get.postFromNode(file);
       title = ($('.fileText a', file)).textContent;
       thumb = post.file.thumb.parentNode.cloneNode(true);
-      if (double = $('img + img', thumb)) {
-        $.rm(double);
+      if (dupe = $('img + img', thumb)) {
+        $.rm(dupe);
       }
       thumb.className = 'gal-thumb';
       thumb.title = title;

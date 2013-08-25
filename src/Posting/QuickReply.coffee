@@ -722,10 +722,10 @@ QR =
       URL.revokeObjectURL @URL
 
     updateFilename: ->
-      long = "#{@filename} (#{@filesize})\nCtrl+click to edit filename. Shift+click to clear."
-      @nodes.el.title = long
+      title = "#{@filename} (#{@filesize})\nCtrl+click to edit filename. Shift+click to clear."
+      @nodes.el.title = title
       return unless @ is QR.selected
-      QR.nodes.fileContainer.title = long
+      QR.nodes.fileContainer.title = title
 
     showFileData: ->
       if @file

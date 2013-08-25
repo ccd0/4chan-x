@@ -109,8 +109,8 @@ Gallery =
     post  = Get.postFromNode file
     title = ($ '.fileText a', file).textContent
     thumb = post.file.thumb.parentNode.cloneNode true
-    if double = $ 'img + img', thumb
-      $.rm double
+    if dupe = $ 'img + img', thumb
+      $.rm dupe
 
     thumb.className = 'gal-thumb'
     thumb.title = title
