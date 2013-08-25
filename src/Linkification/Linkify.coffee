@@ -107,8 +107,8 @@ Linkify =
 
     # Clean end of range
     i = 0
-    while /[)\]}>.,]/.test char = text.charAt text.length - (1 + i)
-      break unless /[.,]/.test(char) or (text.match /[()\[\]{}<>]/g).length % 2
+    while /[)\]}>.,]/.test t = text.charAt text.length - (1 + i)
+      break unless /[.,]/.test(t) or (text.match /[()\[\]{}<>]/g).length % 2
       i++
 
     if i
