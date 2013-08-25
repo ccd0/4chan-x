@@ -497,6 +497,7 @@ QR =
     post.setFile file
 
   openFileInput: (e) ->
+    return if e.keyCode and not [32, 13].contains e.keyCode
     e.stopPropagation()
     if e.shiftKey and e.type is 'click'
       return QR.selected.rmFile()

@@ -76,7 +76,7 @@ Gallery =
       nodes.menu.toggle e, @, g
 
     {createSubEntry} = Gallery.menu
-    for name in ['Fit width', 'Fit height', 'Hide thumbnails']
+    for name of Config.gallery
       {el} = createSubEntry name
 
       $.event 'AddMenuEntry',
@@ -106,14 +106,16 @@ Gallery =
     nodes.total.textContent = --i
 
   generateThumb: (file) ->
+    post  = Get.postFromNode file
     title = ($ '.fileText a', file).textContent
-    thumb = ($ '.fileThumb', file).cloneNode true
+    thumb = post.file.thumb.parentNode.cloneNode true
     if double = $ 'img + img', thumb
       $.rm double
 
     thumb.className = 'gal-thumb'
     thumb.title = title
-    thumb.dataset.id = Gallery.images.length
+    thumb.dataset.id   = Gallery.images.length
+    thumb.dataset.post = $('a[title="Highlight this post"]', post.nodes.info).href
     thumb.firstElementChild.style.cssText = ''
 
     $.on thumb, 'click', Gallery.cb.open
@@ -140,6 +142,8 @@ Gallery =
 
     open: (e) ->
       e.preventDefault() if e
+      return unless @
+
       {nodes} = Gallery
       {name}  = nodes
 
@@ -150,17 +154,61 @@ Gallery =
         src:   name.href     = @href
         title: name.download = name.textContent = @title
 
-      img.dataset.id = @dataset.id
+      $.extend  img.dataset,   @dataset
       $.replace nodes.current, img
       nodes.count.textContent = +@dataset.id + 1
       nodes.current = img
       nodes.frame.scrollTop = 0
       nodes.next.focus()
 
+      # Scroll
+      rect  = @getBoundingClientRect()
+      {top} = rect
+      if top > 0
+        top += rect.height - doc.clientHeight
+        return if top < 0
+
+      nodes.thumbs.scrollTop += top
+      
+      $.on img, 'error', ->
+        Gallery.cb.error img, thumb
+
     image: (e) ->
       e.preventDefault()
       e.stopPropagation()
       Gallery.build @
+
+    error: (img, thumb) ->
+      post = Get.postFromLink $.el 'a', href: img.dataset.post
+      delete post.file.fullImage
+
+      src = @src.split '/'
+      if src[2] is 'images.4chan.org'
+        URL = Redirect.to 'file',
+          boardID:  src[3]
+          filename: src[5]
+        if URL
+          thumb.href = URL
+          return unless Gallery.nodes.current is img
+          revived = $.el 'img',
+            src:   URL
+            title: img.title
+          $.extend revived.dataset, img.dataset
+          $.replace img, revived
+          return
+        if g.DEAD or post.isDead or post.file.isDead
+          return
+
+      # XXX CORS for images.4chan.org WHEN?
+      $.ajax "//api.4chan.org/#{post.board}/res/#{post.thread}.json", onload: ->
+        return if @status isnt 200
+        i = 0
+        while postObj = JSON.parse(@response).posts[i++]
+          break if postObj.no is post.ID
+        unless postObj.no
+          return post.kill()
+        if postObj.filedeleted
+          post.kill true
 
     prev:   -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id - 1]
     next:   -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id + 1]
@@ -175,9 +223,12 @@ Gallery =
       $.off d, 'keydown', Gallery.cb.keybinds
       $.on  d, 'keydown', Keybinds.keydown
 
+    setFitness: ->
+      (if @checked then $.addClass else $.rmClass) doc, "gal-#{@name.toLowerCase().replace /\s+/g, '-'}"
+
   menu:
     init: ->
-      return if g.VIEW is 'catalog' or !Conf['Gallery'] or Conf['Image Expansion']
+      return if g.VIEW is 'catalog' or !Conf['Gallery']
 
       el = $.el 'span',
         textContent: 'Gallery'
@@ -185,7 +236,7 @@ Gallery =
 
       {createSubEntry} = Gallery.menu
       subEntries = []
-      for name in ['Fit width', 'Fit height', 'Hide thumbnails']
+      for name of Config.gallery
         subEntries.push createSubEntry name
 
       $.event 'AddMenuEntry',
@@ -198,8 +249,8 @@ Gallery =
       label = $.el 'label',
         innerHTML: "<input type=checkbox name='#{name}'> #{name}"
       input = label.firstElementChild
-      # Reusing ImageExpand here because this code doesn't need any auditing to work for what we need
-      $.on input, 'change', ImageExpand.cb.setFitness
+      if ['Fit Width', 'Fit Height'].contains name
+        $.on input, 'change', Gallery.cb.setFitness
       input.checked = Conf[name]
       $.event 'change', null, input
       $.on input, 'change', $.cb.checked

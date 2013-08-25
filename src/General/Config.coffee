@@ -381,9 +381,15 @@ Config =
     ]
   
   gallery:
-    # Gallery mostly gets its config from imageExpansion
     'Hide thumbnails': [
       false
+    ]
+    # Fit Width =/= Fit width
+    'Fit Width': [
+      true
+    ]
+    'Fit Height': [
+      true
     ]
 
   style:
