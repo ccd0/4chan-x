@@ -6822,7 +6822,7 @@
       if (this.isClone) {
         if (Conf['Embedding']) {
           i = 0;
-          items = $$('.embed', this.nodes.comment);
+          items = $$('.embedder', this.nodes.comment);
           while (el = items[i++]) {
             $.on(el, 'click', Linkify.cb.toggle);
             if ($.hasClass(el, 'embedded')) {
