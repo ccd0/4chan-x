@@ -860,7 +860,8 @@ th {
   text-align: center;
   font-size: 0;
   color: transparent;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   <%= sizing %>: border-box;
   width: 248px;
 }
@@ -886,7 +887,7 @@ th {
 .slideout-navigation-list #boardNavDesktopFoot a {
   display: block;
 }
-.slideout-navigation-list #boardNavDesktopFoot:hover {
+.slideout-navigation-list #boardNavDesktopFoot {
   max-height: 400px;
 }
 .slideout-navigation-list #boardNavDesktopFoot a::after {
