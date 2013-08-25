@@ -6650,10 +6650,13 @@
         return cb();
       },
       open: function(e) {
-        var el, img, name, nodes;
+        var el, img, name, nodes, rect, top;
 
         if (e) {
           e.preventDefault();
+        }
+        if (!this) {
+          return;
         }
         nodes = Gallery.nodes;
         name = nodes.name;
@@ -6670,7 +6673,16 @@
         nodes.count.textContent = +this.dataset.id + 1;
         nodes.current = img;
         nodes.frame.scrollTop = 0;
-        return nodes.current.focus();
+        nodes.current.focus();
+        rect = this.getBoundingClientRect();
+        top = rect.top;
+        if (top > 0) {
+          top += rect.height - doc.clientHeight;
+          if (top < 0) {
+            return;
+          }
+        }
+        return nodes.thumbs.scrollTop += top;
       },
       image: function(e) {
         e.preventDefault();

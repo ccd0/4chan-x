@@ -1,7 +1,7 @@
 Gallery =
   init: ->
     return if g.VIEW is 'catalog' or g.BOARD is 'f' or !Conf['Gallery']
-    
+
     el = $.el 'a',
       href: 'javascript:;'
       id:   'appchan-gal'
@@ -58,7 +58,7 @@ Gallery =
       next:    '.gal-image a'
       current: '.gal-image img'
     }
-    
+
     menuButton = $ '.menu-button', dialog
     nodes.menu = new UI.Menu 'gallery'
 
@@ -135,9 +135,11 @@ Gallery =
       e.stopPropagation()
       e.preventDefault()
       cb()
-        
+
     open: (e) ->
       e.preventDefault() if e
+      return unless @
+
       {nodes} = Gallery
       {name}  = nodes
 
@@ -154,6 +156,15 @@ Gallery =
       nodes.current = img
       nodes.frame.scrollTop = 0
       nodes.current.focus()
+
+      # Scroll
+      rect  = @getBoundingClientRect()
+      {top} = rect
+      if top > 0
+        top += rect.height - doc.clientHeight
+        return if top < 0
+
+      nodes.thumbs.scrollTop += top
 
     image: (e) ->
       e.preventDefault()
