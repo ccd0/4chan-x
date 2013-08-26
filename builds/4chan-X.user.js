@@ -5060,7 +5060,7 @@
         return;
       }
       QR.open();
-      if (Conf['Auto-Hide QR'] || g.VIEW === 'catalog') {
+      if (Conf['Auto Hide QR'] || g.VIEW === 'catalog') {
         return QR.hide();
       }
     },
