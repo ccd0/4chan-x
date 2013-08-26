@@ -122,10 +122,11 @@ QR =
     # Firefox automatically closes notifications
     # so we can't control the onclose properly.
     notif.onclose = -> notice.close()
-    setTimeout ->
-      notif.onclose = null
-      notif.close()
-    , 7 * $.SECOND
+    notif.onshow  = ->
+      setTimeout ->
+        notif.onclose = null
+        notif.close()
+      , 7 * $.SECOND
     <% } %>
   notifications: []
   cleanNotifications: ->
@@ -1108,9 +1109,10 @@ QR =
         QR.open()
         QR.captcha.nodes.input.focus()
         window.focus()
-      setTimeout ->
-        notif.close()
-      , 7 * $.SECOND
+      notif.onshow = ->
+        setTimeout ->
+          notif.close()
+        , 7 * $.SECOND
 
     unless Conf['Persistent QR'] or QR.cooldown.auto
       QR.close()
