@@ -1112,7 +1112,7 @@ a:only-of-type > .remove {
   background: rgba(0,0,0,.5);
   border-left: 1px solid #222;
 }
-.hide-thumbnails .gal-thumbnails {
+.gal-hide-thumbnails .gal-thumbnails {
   display: none;
 }
 .gal-thumb img {
@@ -1174,9 +1174,15 @@ a:only-of-type > .remove {
   display: <%= flex %>;
   <%= align %>-items: flex-start;
   <%= justify %>: space-around;
-  overflow: auto;
+  overflow: hidden;
   /* Flex > Non-Flex child max-width and overflow fix (Firefox only?) */
   width: 1%;
+}
+:root:not(.gal-fit-height) .gal-image {
+  overflow-y: scroll !important;
+}
+:root:not(.gal-fit-width) .gal-image {
+  overflow-x: scroll !important;
 }
 .gal-image a {
   margin: auto;
@@ -1192,14 +1198,21 @@ a:only-of-type > .remove {
   font-size: 2em;
   margin-right: 10px;
   top: 5px;
-  color: #ffffff;
-  text-shadow: 0px 0px 1px #000000;
 }
 .gal-buttons i {
   vertical-align: baseline;
-  border-top-width: .5em;
-  border-right-width: .3em;
-  border-left-width: .3em;
+  border-top-width: .4em;
+  border-right-width: .25em;
+  border-left-width: .25em;
+}
+.gal-buttons .menu-button {
+  bottom: 2px;
+  color: #ffffff;
+  text-shadow: 0px 0px 1px #000000;
+}
+.gal-close {
+  color: #ffffff;
+  text-shadow: 0px 0px 1px #000000;
 }
 .gal-buttons,
 .gal-name,
@@ -1207,13 +1220,13 @@ a:only-of-type > .remove {
   position: fixed;
   right: 178px;
 }
-.hide-thumbnails .gal-buttons,
-.hide-thumbnails .gal-count,
-.hide-thumbnails .gal-name {
+.gal-hide-thumbnails .gal-buttons,
+.gal-hide-thumbnails .gal-count,
+.gal-hide-thumbnails .gal-name {
   right: 28px;
 }
 .gal-name {
-  bottom: 5px;
+  bottom: 6px;
   background: rgba(0,0,0,0.6) !important;
   border-radius: 3px;
   padding: 1px 5px 2px 5px;
@@ -1221,13 +1234,30 @@ a:only-of-type > .remove {
   color: white !important;
 }
 .gal-name:hover,
-.gal-close:hover {
+.gal-close:hover,
+.gal-buttons .menu-button:hover {
   color: rgb(95, 95, 101) !important;
 }
 .gal-count {
-  bottom: 26px;
+  bottom: 27px;
   background: rgba(0,0,0,0.6) !important;
   border-radius: 3px;
   padding: 1px 5px 2px 5px;
   color: #ffffff !important;
+}
+:root:not(.gal-fit-width) .gal-name {
+  bottom: 23px !important;
+}
+:root:not(.gal-fit-width) .gal-count {
+  bottom: 44px !important;
+}
+:root:not(.gal-fit-height):not(.gal-hide-thumbnails) .gal-buttons,
+:root:not(.gal-fit-height):not(.gal-hide-thumbnails) .gal-name,
+:root:not(.gal-fit-height):not(.gal-hide-thumbnails) .gal-count {
+  right: 195px !important;
+}
+:root.gal-hide-thumbnails:not(.gal-fit-height) .gal-buttons,
+:root.gal-hide-thumbnails:not(.gal-fit-height) .gal-name,
+:root.gal-hide-thumbnails:not(.gal-fit-height) .gal-count {
+  right: 44px !important;
 }

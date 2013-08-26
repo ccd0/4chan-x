@@ -403,7 +403,7 @@ Config =
     ]
   
   gallery:
-    'Hide thumbnails': [
+    'Hide Thumbnails': [
       false
     ]
     # Fit Width =/= Fit width
