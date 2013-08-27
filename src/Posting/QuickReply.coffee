@@ -966,7 +966,7 @@ QR =
         value: thread
         textContent: "Thread No.#{thread}"
 
-    $.on nodes.filename.parentNode, 'click keyup', QR.openFileInput
+    $.on nodes.filename.parentNode, 'click keydown', QR.openFileInput
 
     <% if (type === 'userscript') { %>
     # XXX Firefox lacks focusin/focusout support.

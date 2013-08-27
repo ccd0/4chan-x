@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.35 - 2013-08-25
+* 4chan X - Version 1.2.35 - 2013-08-26
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -6188,7 +6188,7 @@
           textContent: "Thread No." + thread
         }));
       }
-      $.on(nodes.filename.parentNode, 'click keyup', QR.openFileInput);
+      $.on(nodes.filename.parentNode, 'click keydown', QR.openFileInput);
       items = $$('*', QR.nodes.el);
       i = 0;
       while (elm = items[i++]) {
