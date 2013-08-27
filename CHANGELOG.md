@@ -1,7 +1,24 @@
+### v1.2.36 
+*2013-08-26*
 
 **MayhemYDG**:
 - New desktop notification:
- - The QR will now warn you when you are running low on cached captchas while auto-posting.
+  * The QR will now warn you when you are running low on cached captchas while auto-posting.
+
+ **seaweedchan**:
+ - Visual overhaul for gallery mode
+
+ **Zixaphir**:
+ - Fix an issue with the file dialog randomly opening multiple times (with seaweedchan)
+![Gallery](src/General/img/changelog/2.3.6.png)
+- Add new feature: `Gallery`.
+  * Opens images in a lightweight Gallery script.
+  * If enabled while Image Expansion is disabled, will takeover as the default action when images are clicked.
+  * Supports several hotkeys: left is previous, right and enter are next, escape closes.
+  * Works with Thread Updater to add new images to the Gallery while its open.
+  * BLINK/WEBKIT ONLY: Clicking the file title will download the image with the original name.
+  * Menu button to hide thumbnails, enable/disable fit width/height
+  * Thumbnails scroll with the active image
 
 ### v1.2.35 
 *2013-08-20*
