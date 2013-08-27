@@ -5600,9 +5600,6 @@
       return post.setFile(file);
     },
     openFileInput: function(e) {
-      if (e.keyCode && ![32, 13].contains(e.keyCode)) {
-        return;
-      }
       e.stopPropagation();
       if (e.shiftKey && e.type === 'click') {
         return QR.selected.rmFile();
