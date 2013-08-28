@@ -57,7 +57,6 @@ ImageExpand =
     unless post.file.isExpanded or $.hasClass thumb, 'expanding'
       ImageExpand.expand post
       return
-    ImageExpand.contract post
 
     # Scroll back to the thumbnail when contracting the image
     # to avoid being left miles away from the relevant post.
@@ -70,6 +69,7 @@ ImageExpand =
     if rect.left < 0
       x = -window.scrollX
     window.scrollBy x, y if x or y
+    ImageExpand.contract post
 
   contract: (post) ->
     $.rmClass post.nodes.root, 'expanded-image'
