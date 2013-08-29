@@ -32,18 +32,6 @@ Main =
     Conf['archives'] = Redirect.archives
     $.get Conf, (items) ->
       $.extend Conf, items
-      <% if (type === 'crx') { %>
-      unless items
-        new Notice 'error', $.el 'span',
-          innerHTML: """
-          It seems like your <%= meta.name %> settings became corrupted due to a <a href="https://code.google.com/p/chromium/issues/detail?id=261623" target=_blank>Chrome bug</a>.<br>
-          Unfortunately, you'll have to <a href="https://github.com/MayhemYDG/4chan-x/wiki/FAQ#known-problems" target=_blank>fix it yourself</a>.
-          """
-        # Track resolution of this bug.
-        Main.logError
-          message: 'Chrome Storage API bug'
-          error: new Error '~'
-      <% } %>
       Main.initFeatures()
 
     $.on d, '4chanMainInit', Main.initStyle
