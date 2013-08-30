@@ -67,30 +67,19 @@ Style =
     if exLink = $ "#navtopright .exlinksOptionsLink", d.body
       $.on exLink, "click", ->
         setTimeout Rice.nodes, 100
-    
-    if g.VIEW is 'catalog'
-      unless $.id('threads').children.length
-        # Race conditions
-        setTimeout (-> $.globalEval 'fourcat.init(); fourcat.loadCatalog(catalog);'), 1000
 
   observe: ->
-    if window.MutationObserver
-      Style.observer = new MutationObserver onMutationObserver = Style.wrapper
-      Style.observer.observe d.head,
-        childList: true
-        subtree: true
-    else
-      $.on d.head, 'DOMNodeInserted', Style.wrapper
+    Style.observer = new MutationObserver onMutationObserver = Style.wrapper
+    Style.observer.observe d.head,
+      childList: true
+      subtree: true
 
   wrapper: ->
     first = {addedNodes: d.head.children}
-    Style.remStyle(first)
+    Style.remStyle first
 
     if d.readyState is 'complete'
-      if Style.observer
-        Style.observer.disconnect()
-      else
-        $.off d, 'DOMNodeInserted', Style.wrapper
+      Style.observer.disconnect()
 
   remStyle: ({addedNodes}) ->
     i = addedNodes.length
@@ -101,7 +90,7 @@ Style =
         !['LINK', 'STYLE'].contains(node.nodeName) or
         node.rel and ((!/stylesheet/.test(node.rel) or /flags.*\.css$/.test(href = node.href) or href[..3] is 'data')) or
         /\.typeset/.test node.textContent
-      $.rm node
+      node.disabled = true
     return
 
   matrix: (foreground, background) ->
