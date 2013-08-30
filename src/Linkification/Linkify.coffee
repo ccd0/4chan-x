@@ -16,7 +16,7 @@ Linkify =
     range  = d.createRange()
     for link in links
       boundaries = Linkify.find link, walker
-      # break unless boundaries
+      continue unless boundaries
       anchor = Linkify.createLink link
       if Linkify.surround anchor, range, boundaries
         if (parent = anchor.parentNode).href is anchor.href
@@ -35,7 +35,7 @@ Linkify =
     while node = walker.nextNode()
       text += node.data
       break if text.indexOf(link) > -1
-    # return unless node
+    return unless node
     startNode = endNode = node
 
     # Walk backwards to find the startNode.
