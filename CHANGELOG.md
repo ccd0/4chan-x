@@ -1,3 +1,6 @@
+### v2.3.9 
+*2013-08-30*
+
 
 **MayhemYDG**:
 - New desktop notification:
@@ -7,6 +10,7 @@
 - Gallery Bugfix: hide thumbnails
 
 **Zixaphir**:
+- Add some css flex support
 - General bugfixes
 
 ### v2.3.8 
