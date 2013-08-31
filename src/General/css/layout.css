@@ -881,6 +881,9 @@ th {
   display: none;
   padding: 2px;
 }
+.slideout-navigation-hide #so-nav {
+  display: none;
+}
 .slideout-navigation-compact #boardNavDesktopFoot {
   word-spacing: 1px;
 }
