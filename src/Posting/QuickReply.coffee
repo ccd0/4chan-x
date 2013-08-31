@@ -163,10 +163,11 @@ QR =
     # Firefox automatically closes notifications
     # so we can't control the onclose properly.
     notif.onclose = -> notice.close()
-    setTimeout ->
-      notif.onclose = null
-      notif.close()
-    , 7 * $.SECOND
+    notif.onshow  = ->
+      setTimeout ->
+        notif.onclose = null
+        notif.close()
+      , 7 * $.SECOND
     <% } %>
 
   notifications: []
@@ -665,7 +666,7 @@ QR =
       @filesize = $.bytesToString file.size
       @nodes.label.hidden = false if QR.spoiler
       URL.revokeObjectURL @URL
-      @showFileData()
+      @showFileData() if @ is QR.selected
       unless /^image/.test file.type
         @nodes.el.style.backgroundImage = null
         return
@@ -1222,9 +1223,10 @@ QR =
         QR.open()
         QR.captcha.nodes.input.focus()
         window.focus()
-      setTimeout ->
-        notif.close()
-      , 7 * $.SECOND
+      notif.onshow = ->
+        setTimeout ->
+          notif.close()
+        , 7 * $.SECOND
 
     unless Conf['Persistent QR'] or QR.cooldown.auto
       QR.close()
