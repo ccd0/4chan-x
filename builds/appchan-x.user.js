@@ -225,7 +225,7 @@
       'Advance on contract': [false, 'Advance to next post when contracting an expanded image.']
     },
     gallery: {
-      'Hide thumbnails': [false],
+      'Hide Thumbnails': [false],
       'Fit Width': [true],
       'Fit Height': [true]
     },
@@ -4545,22 +4545,22 @@
         if (post.no === postID) {
           break;
         }
-        if (post.no > postID) {
-          if (url = Redirect.to('post', {
-            boardID: boardID,
-            postID: postID
-          })) {
-            $.cache(url, function() {
-              return Get.archivedPost(this, boardID, postID, root, context);
-            }, {
-              withCredentials: url.archive.withCredentials
-            });
-          } else {
-            $.addClass(root, 'warning');
-            root.textContent = "Post No." + postID + " was not found.";
-          }
-          return;
+      }
+      if (post.no !== postID) {
+        if (url = Redirect.to('post', {
+          boardID: boardID,
+          postID: postID
+        })) {
+          $.cache(url, function() {
+            return Get.archivedPost(this, boardID, postID, root, context);
+          }, {
+            withCredentials: url.archive.withCredentials
+          });
+        } else {
+          $.addClass(root, 'warning');
+          root.textContent = "Post No." + postID + " was not found.";
         }
+        return;
       }
       board = g.boards[boardID] || new Board(boardID);
       thread = g.threads["" + boardID + "." + threadID] || new Thread(threadID, board);
@@ -4812,7 +4812,7 @@
 
         entries = __slice.call(entry.parentNode.children);
         entries.sort(function(first, second) {
-          return +(first.style.order || first.style.webkitOrder) - +(second.style.order || second.style.webkitOrder);
+          return first.style.order - second.style.order;
         });
         return entries[entries.indexOf(entry) + direction];
       };
@@ -4903,7 +4903,7 @@
       };
 
       Menu.prototype.parseEntry = function(entry) {
-        var el, style, subEntries, subEntry, _i, _len;
+        var el, subEntries, subEntry, _i, _len;
 
         el = entry.el, subEntries = entry.subEntries;
         $.addClass(el, 'entry');
@@ -4911,8 +4911,7 @@
           e.stopPropagation();
           return this.focus(el);
         }).bind(this));
-        style = el.style;
-        style.webkitOrder = style.order = entry.order || 100;
+        el.style.order = entry.order || 100;
         if (!subEntries) {
           return;
         }
@@ -7342,7 +7341,7 @@
         return;
       }
       QR.open();
-      if (Conf['Auto-Hide QR'] || g.VIEW === 'catalog') {
+      if (Conf['Auto Hide QR'] || g.VIEW === 'catalog') {
         return QR.hide();
       }
     },
@@ -7871,9 +7870,6 @@
       return post.setFile(file);
     },
     openFileInput: function(e) {
-      if (e.keyCode && ![32, 13].contains(e.keyCode)) {
-        return;
-      }
       e.stopPropagation();
       if (e.shiftKey && e.type === 'click') {
         return QR.selected.rmFile();
@@ -8080,7 +8076,9 @@
           this.nodes.label.hidden = false;
         }
         URL.revokeObjectURL(this.URL);
-        this.showFileData();
+        if (this === QR.selected) {
+          this.showFileData();
+        }
         if (!/^image/.test(file.type)) {
           this.nodes.el.style.backgroundImage = null;
           return;
@@ -8472,7 +8470,7 @@
           textContent: "Reply to " + thread
         }));
       }
-      $.on(nodes.filename.parentNode, 'click keyup', QR.openFileInput);
+      $.on(nodes.filename.parentNode, 'click keydown', QR.openFileInput);
       items = $$('*', QR.nodes.el);
       i = 0;
       while (elm = items[i++]) {
@@ -8744,9 +8742,11 @@
           QR.captcha.nodes.input.focus();
           return window.focus();
         };
-        setTimeout(function() {
-          return notif.close();
-        }, 7 * $.SECOND);
+        notif.onshow = function() {
+          return setTimeout(function() {
+            return notif.close();
+          }, 7 * $.SECOND);
+        };
       }
       if (!(Conf['Persistent QR'] || QR.cooldown.auto)) {
         QR.close();
@@ -9139,7 +9139,7 @@
           innerHTML: "<input type=checkbox name='" + name + "'> " + name
         });
         input = label.firstElementChild;
-        if (['Fit Width', 'Fit Height'].contains(name)) {
+        if (['Fit Width', 'Fit Height', 'Hide Thumbnails'].contains(name)) {
           $.on(input, 'change', Gallery.cb.setFitness);
         }
         input.checked = Conf[name];
@@ -9237,7 +9237,6 @@
         ImageExpand.expand(post);
         return;
       }
-      ImageExpand.contract(post);
       root = post.nodes.root;
       rect = (Conf['Advance on contract'] ? (function() {
         var next;
@@ -9262,8 +9261,9 @@
         x = -window.scrollX;
       }
       if (x || y) {
-        return window.scrollBy(x, y);
+        window.scrollBy(x, y);
       }
+      return ImageExpand.contract(post);
     },
     contract: function(post) {
       $.rmClass(post.nodes.root, 'expanded-image');
@@ -10245,7 +10245,7 @@
       online: function() {
         if (ThreadUpdater.online = navigator.onLine) {
           ThreadUpdater.outdateCount = 0;
-          ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+          ThreadUpdater.setInterval();
           ThreadUpdater.update();
           ThreadUpdater.set('status', null, null);
         } else {
@@ -10286,7 +10286,7 @@
         }
         ThreadUpdater.outdateCount = 0;
         if (ThreadUpdater.seconds > ThreadUpdater.interval) {
-          return ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+          return ThreadUpdater.setInterval();
         }
       },
       scrollBG: function() {
@@ -10298,7 +10298,7 @@
       },
       autoUpdate: function() {
         if (ThreadUpdater.online) {
-          return ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
+          return ThreadUpdater.timeout();
         } else {
           return clearTimeout(ThreadUpdater.timeoutID);
         }
@@ -10313,21 +10313,29 @@
         ThreadUpdater.interval = this.value = val;
         return $.cb.value.call(this);
       },
-      load: function() {
+      load: function(e) {
         var klass, req, text, _ref;
 
         req = ThreadUpdater.req;
+        if (e.type !== 'loadend') {
+          req.onloadend = null;
+          delete ThreadUpdater.req;
+          if (e.type === 'timeout') {
+            ThreadUpdater.set('status', 'Retrying', null);
+            ThreadUpdater.update();
+          }
+          return;
+        }
         switch (req.status) {
           case 200:
             g.DEAD = false;
             ThreadUpdater.parse(JSON.parse(req.response).posts);
-            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+            ThreadUpdater.setInterval();
             break;
           case 404:
             g.DEAD = true;
             ThreadUpdater.set('timer', null);
             ThreadUpdater.set('status', '404', 'warning');
-            clearTimeout(ThreadUpdater.timeoutID);
             ThreadUpdater.thread.kill();
             $.event('ThreadUpdate', {
               404: true,
@@ -10336,7 +10344,7 @@
             break;
           default:
             ThreadUpdater.outdateCount++;
-            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+            ThreadUpdater.setInterval();
             _ref = req.status === 304 ? [null, null] : ["" + req.statusText + " (" + req.status + ")", 'warning'], text = _ref[0], klass = _ref[1];
             ThreadUpdater.set('status', text, klass);
         }
@@ -10346,15 +10354,18 @@
         return delete ThreadUpdater.req;
       }
     },
-    getInterval: function() {
-      var i, j;
+    setInterval: function() {
+      var cur, i, j;
 
       i = ThreadUpdater.interval;
-      j = Math.min(ThreadUpdater.outdateCount, 10);
+      j = (cur = ThreadUpdater.outdateCount < 10) ? cur : 10;
       if (!d.hidden) {
-        j = Math.min(j, 7);
+        j = j < 7 ? j : 7;
       }
-      return ThreadUpdater.seconds = Conf['Optional Increase'] ? Math.max(i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]) : i;
+      ThreadUpdater.seconds = Conf['Optional Increase'] ? (cur = [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j] > i) ? cur : i : i;
+      ThreadUpdater.set('timer', ThreadUpdater.seconds);
+      clearTimeout(ThreadUpdater.timeoutID);
+      return ThreadUpdater.timeout();
     },
     intervalShortcut: function() {
       var settings;
@@ -10377,16 +10388,10 @@
       }
     },
     timeout: function() {
-      var n;
-
       ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
-      if (!(n = --ThreadUpdater.seconds)) {
+      ThreadUpdater.set('timer', --ThreadUpdater.seconds);
+      if (ThreadUpdater.seconds <= 0) {
         return ThreadUpdater.update();
-      } else if (n <= -60) {
-        ThreadUpdater.set('status', 'Retrying', null);
-        return ThreadUpdater.update();
-      } else if (n > 0) {
-        return ThreadUpdater.set('timer', n);
       }
     },
     update: function() {
@@ -10395,19 +10400,21 @@
       if (!ThreadUpdater.online) {
         return;
       }
-      ThreadUpdater.seconds = 0;
+      clearTimeout(ThreadUpdater.timeoutID);
       if (Conf['Auto Update']) {
         ThreadUpdater.set('timer', '...');
       } else {
         ThreadUpdater.set('timer', 'Update');
       }
       if (ThreadUpdater.req) {
-        ThreadUpdater.req.onloadend = null;
         ThreadUpdater.req.abort();
       }
       url = "//api.4chan.org/" + ThreadUpdater.thread.board + "/res/" + ThreadUpdater.thread + ".json";
       return ThreadUpdater.req = $.ajax(url, {
-        onloadend: ThreadUpdater.cb.load
+        onabort: ThreadUpdater.cb.load,
+        onloadend: ThreadUpdater.cb.load,
+        ontimeout: ThreadUpdater.cb.load,
+        timeout: $.MINUTE
       }, {
         whenModified: true
       });
@@ -11202,9 +11209,11 @@
         Header.scrollToPost(post.nodes.root);
         return window.focus();
       };
-      return setTimeout(function() {
-        return notif.close();
-      }, 7 * $.SECOND);
+      return notif.onshow = function() {
+        return setTimeout(function() {
+          return notif.close();
+        }, 7 * $.SECOND);
+      };
     },
     onUpdate: function(e) {
       if (e.detail[404]) {

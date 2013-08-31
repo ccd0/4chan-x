@@ -71,7 +71,7 @@ QR =
   persist: ->
     return unless QR.postingIsEnabled
     QR.open()
-    QR.hide() if Conf['Auto-Hide QR'] or g.VIEW is 'catalog'
+    QR.hide() if Conf['Auto Hide QR'] or g.VIEW is 'catalog'
 
   open: ->
     if QR.nodes
@@ -162,10 +162,11 @@ QR =
     # Firefox automatically closes notifications
     # so we can't control the onclose properly.
     notif.onclose = -> notice.close()
-    setTimeout ->
-      notif.onclose = null
-      notif.close()
-    , 7 * $.SECOND
+    notif.onshow  = ->
+      setTimeout ->
+        notif.onclose = null
+        notif.close()
+      , 7 * $.SECOND
     <% } %>
 
   notifications: []
@@ -497,7 +498,6 @@ QR =
     post.setFile file
 
   openFileInput: (e) ->
-    return if e.keyCode and not [32, 13].contains e.keyCode
     e.stopPropagation()
     if e.shiftKey and e.type is 'click'
       return QR.selected.rmFile()
@@ -669,7 +669,7 @@ QR =
       @filesize = $.bytesToString file.size
       @nodes.label.hidden = false if QR.spoiler
       URL.revokeObjectURL @URL
-      @showFileData()
+      @showFileData() if @ is QR.selected
       unless /^image/.test file.type
         @nodes.el.style.backgroundImage = null
         return
@@ -974,7 +974,7 @@ QR =
         value: thread
         textContent: "Reply to #{thread}"
 
-    $.on nodes.filename.parentNode, 'click keyup', QR.openFileInput
+    $.on nodes.filename.parentNode, 'click keydown', QR.openFileInput
 
     <% if (type === 'userscript') { %>
     # XXX Firefox lacks focusin/focusout support.
@@ -1252,9 +1252,10 @@ QR =
         QR.open()
         QR.captcha.nodes.input.focus()
         window.focus()
-      setTimeout ->
-        notif.close()
-      , 7 * $.SECOND
+      notif.onshow = ->
+        setTimeout ->
+          notif.close()
+        , 7 * $.SECOND
 
     unless Conf['Persistent QR'] or QR.cooldown.auto
       QR.close()

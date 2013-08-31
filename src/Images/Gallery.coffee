@@ -249,7 +249,7 @@ Gallery =
       label = $.el 'label',
         innerHTML: "<input type=checkbox name='#{name}'> #{name}"
       input = label.firstElementChild
-      if ['Fit Width', 'Fit Height'].contains name
+      if ['Fit Width', 'Fit Height', 'Hide Thumbnails'].contains name
         $.on input, 'change', Gallery.cb.setFitness
       input.checked = Conf[name]
       $.event 'change', null, input

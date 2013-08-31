@@ -104,9 +104,10 @@ Unread =
     notif.onclick = ->
       Header.scrollToPost post.nodes.root
       window.focus()
-    setTimeout ->
-      notif.close()
-    , 7 * $.SECOND
+    notif.onshow = ->
+      setTimeout ->
+        notif.close()
+      , 7 * $.SECOND
 
   onUpdate: (e) ->
     if e.detail[404]

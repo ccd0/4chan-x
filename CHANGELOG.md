@@ -1,3 +1,14 @@
+
+**MayhemYDG**:
+- New desktop notification:
+  * The QR will now warn you when you are running low on cached captchas while auto-posting.
+
+**seaweedchan**:
+- Gallery Bugfix: hide thumbnails
+
+**Zixaphir**:
+- General bugfixes
+
 ### v2.3.8 
 *2013-08-25*
 
