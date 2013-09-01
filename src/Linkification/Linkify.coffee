@@ -95,7 +95,7 @@ Linkify =
     return
 
   makeRange: (startNode, endNode, startOffset, endOffset) ->
-    range = document.createRange();
+    range = document.createRange()
     range.setStart startNode, startOffset
     range.setEnd   endNode,   endOffset
     range

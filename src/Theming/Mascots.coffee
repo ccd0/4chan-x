@@ -17,8 +17,6 @@ MascotTools =
     innerHTML: "<img>"
 
   change: (mascot) ->
-    el = @el.firstElementChild
-
     if Conf['Mascot Position'] is 'default'
       $.rmClass doc, 'mascot-position-above-post-form'
       $.rmClass doc, 'mascot-position-bottom'
@@ -34,7 +32,10 @@ MascotTools =
     else unless Conf['Silhouettize Mascots']
       $.rmClass doc, 'silhouettize-mascots'
 
-    el.src = 
+    el = $.el 'img'
+    $.on el, 'error', MascotTools.error
+
+    el.src =
       if Array.isArray mascot.image
         if Style.lightTheme
           mascot.image[1]
@@ -43,7 +44,25 @@ MascotTools =
       else
         mascot.image
 
+    $.off img = @el.firstElementChild, 'error', MascotTools.error
+
+    $.replace img, el
+
     Style.mascot.textContent = """<%= grunt.file.read('src/General/css/mascot.css') %>"""
+
+  error: ->
+    @src = MascotTools.imageError if MascotTools.imageError
+    el = $.el 'canvas',
+      width:  248
+      height: 100
+    ctx = el.getContext('2d')
+    ctx.font         = "50px #{Conf['Font']}"
+    ctx.fillStyle    = "#" + Style.colorToHex (Themes[Conf['theme']] or Themes['Yotsuba B'])['Text']
+    ctx.textAlign    = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText "Mascot 404", 124, 50
+    el.toBlob (blob) =>
+      @src = MascotTools.imageError = URL.createObjectURL blob
 
   toggle: ->
     string  = g.MASCOTSTRING
@@ -140,40 +159,43 @@ MascotTools =
           div = @input item, name
           input = $ 'input', div
 
-          if name is 'image'
-            $.on input, 'blur', ->
-              editMascot[@name] = @value
-              MascotTools.change editMascot
+          switch name
+            when 'image'
+              $.on input, 'blur', ->
+                if MascotTools.URL is @value
+                  return MascotTools.change editMascot
+                else if MascotTools.URL
+                  URL.revokeObjectURL MascotTools.URL
+                  delete MascotTools.URL
+                editMascot[@name] = @value
+                MascotTools.change editMascot
 
-            fileInput = $.el 'input',
-              type:     "file"
-              accept:   "image/*"
-              title:    "imagefile"
-              hidden:   "hidden"
+              fileInput = $.el 'input',
+                type:     "file"
+                accept:   "image/*"
+                title:    "imagefile"
+                hidden:   "hidden"
 
-            $.on input, 'click', (evt) ->
-              if evt.shiftKey
-                @.nextSibling.click()
+              $.on input, 'click', (e) ->
+                if e.shiftKey
+                  @nextSibling.click()
 
-            $.on fileInput, 'change', (evt) ->
-              MascotTools.uploadImage evt, @
+              $.on fileInput, 'change', MascotTools.uploadImage
 
-            $.after input, fileInput
+              $.after input, fileInput
 
-          if name is 'name'
+            when 'name'
+              $.on input, 'blur', ->
+                @value = @value.replace /[^a-z-_0-9]/ig, "_"
+                if (@value isnt "") and !/^[a-z]/i.test @value
+                  return alert "Mascot names must start with a letter."
+                editMascot[@name] = @value
+                MascotTools.change editMascot
 
-            $.on input, 'blur', ->
-              @value = @value.replace /[^a-z-_0-9]/ig, "_"
-              if (@value isnt "") and !/^[a-z]/i.test @value
-                return alert "Mascot names must start with a letter."
-              editMascot[@name] = @value
-              MascotTools.change editMascot
-
-          else
-
-            $.on input, 'blur', ->
-              editMascot[@name] = @value
-              MascotTools.change editMascot
+            else
+              $.on input, 'blur', ->
+                editMascot[@name] = @value
+                MascotTools.change editMascot
 
         when "number"
           div = @input item, name
@@ -230,17 +252,36 @@ MascotTools =
       className: "mascotvar"
       innerHTML: "<div class=optionlabel>#{item[0]}</div><div class=option><input type=#{item[2]} class=field name='#{name}' placeholder='#{item[0]}' value='#{value}'></div>"
 
-  uploadImage: (evt, el) ->
-    file = evt.target.files[0]
+  uploadImage: ->
+    return unless @files and file = @files[0]
+    URL.revokeObjectURL MascotTools.URL if MascotTools.URL
+    img = $.el 'img'
+    img.onload = =>
+      s = 400
+      {width, height} = img
+      if width <= s
+        MascotTools.setImage fileURL
+        @previousElementSibling.value = fileURL
+        return
+
+      cv = $.el 'canvas'
+      cv.height = height = s / width * height
+      cv.width  = width  = s
+      cv.getContext('2d').drawImage img, 0, 0, width, height
+      URL.revokeObjectURL fileURL
+      cv.toBlob (blob) =>
+        MascotTools.URL = fileURL = URL.createObjectURL MascotTools.file = blob
+        MascotTools.setImage fileURL
+        @previousElementSibling.value = fileURL
+
+    MascotTools.URL = fileURL = URL.createObjectURL MascotTools.file = file
+    img.src = fileURL
+
+  setImage: (fileURL) ->
     reader = new FileReader()
-
-    reader.onload = (evt) ->
-      val = evt.target.result
-
-      el.previousSibling.value = val
-      editMascot.image = val
-
-    reader.readAsDataURL file
+    reader.onload = ->
+      editMascot.image = reader.result
+    reader.readAsDataURL MascotTools.file
 
   save: (mascot) ->
     {name, image} = mascot
@@ -296,7 +337,6 @@ MascotTools =
     reader = new FileReader()
 
     reader.onload = (e) ->
-
       try
         imported = JSON.parse e.target.result
       catch err

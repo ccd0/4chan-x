@@ -12070,9 +12070,8 @@
       innerHTML: "<img>"
     }),
     change: function(mascot) {
-      var el;
+      var el, img;
 
-      el = this.el.firstElementChild;
       if (Conf['Mascot Position'] === 'default') {
         $.rmClass(doc, 'mascot-position-above-post-form');
         $.rmClass(doc, 'mascot-position-bottom');
@@ -12088,8 +12087,33 @@
       } else if (!Conf['Silhouettize Mascots']) {
         $.rmClass(doc, 'silhouettize-mascots');
       }
+      el = $.el('img');
+      $.on(el, 'error', MascotTools.error);
       el.src = Array.isArray(mascot.image) ? Style.lightTheme ? mascot.image[1] : mascot.image[0] : mascot.image;
+      $.off(img = this.el.firstElementChild, 'error', MascotTools.error);
+      $.replace(img, el);
       return Style.mascot.textContent = "#mascot img {\nheight: " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height, 10) + 'px' : 'auto') + ";\nwidth: " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width, 10) + 'px' : 'auto') + ";\n}\n#mascot {\nmargin: " + (mascot.vOffset || 0) + "px " + (mascot.hOffset || 0) + "px;\n}\n.sidebar-large #mascot {\nleft: " + (mascot.center ? 25 : 0) + "px;\nright: " + (mascot.center ? 25 : 0) + "px;\n}\n.mascot-position-above-post-form.post-form-style-fixed #mascot {\n-webkit-transform: translateY(-" + (QR.nodes ? QR.nodes.el.getBoundingClientRect().height : 0) + "px);\n}";
+    },
+    error: function() {
+      var ctx, el,
+        _this = this;
+
+      if (MascotTools.imageError) {
+        this.src = MascotTools.imageError;
+      }
+      el = $.el('canvas', {
+        width: 248,
+        height: 100
+      });
+      ctx = el.getContext('2d');
+      ctx.font = "50px " + Conf['Font'];
+      ctx.fillStyle = "#" + Style.colorToHex((Themes[Conf['theme']] || Themes['Yotsuba B'])['Text']);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText("Mascot 404", 124, 50);
+      return el.toBlob(function(blob) {
+        return _this.src = MascotTools.imageError = URL.createObjectURL(blob);
+      });
     },
     toggle: function() {
       var enabled, i, len, mascot, name, string;
@@ -12145,41 +12169,47 @@
           case "text":
             div = this.input(item, name);
             input = $('input', div);
-            if (name === 'image') {
-              $.on(input, 'blur', function() {
-                editMascot[this.name] = this.value;
-                return MascotTools.change(editMascot);
-              });
-              fileInput = $.el('input', {
-                type: "file",
-                accept: "image/*",
-                title: "imagefile",
-                hidden: "hidden"
-              });
-              $.on(input, 'click', function(evt) {
-                if (evt.shiftKey) {
-                  return this.nextSibling.click();
-                }
-              });
-              $.on(fileInput, 'change', function(evt) {
-                return MascotTools.uploadImage(evt, this);
-              });
-              $.after(input, fileInput);
-            }
-            if (name === 'name') {
-              $.on(input, 'blur', function() {
-                this.value = this.value.replace(/[^a-z-_0-9]/ig, "_");
-                if ((this.value !== "") && !/^[a-z]/i.test(this.value)) {
-                  return alert("Mascot names must start with a letter.");
-                }
-                editMascot[this.name] = this.value;
-                return MascotTools.change(editMascot);
-              });
-            } else {
-              $.on(input, 'blur', function() {
-                editMascot[this.name] = this.value;
-                return MascotTools.change(editMascot);
-              });
+            switch (name) {
+              case 'image':
+                $.on(input, 'blur', function() {
+                  if (MascotTools.URL === this.value) {
+                    return MascotTools.change(editMascot);
+                  } else if (MascotTools.URL) {
+                    URL.revokeObjectURL(MascotTools.URL);
+                    delete MascotTools.URL;
+                  }
+                  editMascot[this.name] = this.value;
+                  return MascotTools.change(editMascot);
+                });
+                fileInput = $.el('input', {
+                  type: "file",
+                  accept: "image/*",
+                  title: "imagefile",
+                  hidden: "hidden"
+                });
+                $.on(input, 'click', function(e) {
+                  if (e.shiftKey) {
+                    return this.nextSibling.click();
+                  }
+                });
+                $.on(fileInput, 'change', MascotTools.uploadImage);
+                $.after(input, fileInput);
+                break;
+              case 'name':
+                $.on(input, 'blur', function() {
+                  this.value = this.value.replace(/[^a-z-_0-9]/ig, "_");
+                  if ((this.value !== "") && !/^[a-z]/i.test(this.value)) {
+                    return alert("Mascot names must start with a letter.");
+                  }
+                  editMascot[this.name] = this.value;
+                  return MascotTools.change(editMascot);
+                });
+                break;
+              default:
+                $.on(input, 'blur', function() {
+                  editMascot[this.name] = this.value;
+                  return MascotTools.change(editMascot);
+                });
             }
             break;
           case "number":
@@ -12246,19 +12276,51 @@
         innerHTML: "<div class=optionlabel>" + item[0] + "</div><div class=option><input type=" + item[2] + " class=field name='" + name + "' placeholder='" + item[0] + "' value='" + value + "'></div>"
       });
     },
-    uploadImage: function(evt, el) {
-      var file, reader;
+    uploadImage: function() {
+      var file, fileURL, img,
+        _this = this;
 
-      file = evt.target.files[0];
-      reader = new FileReader();
-      reader.onload = function(evt) {
-        var val;
+      if (!(this.files && (file = this.files[0]))) {
+        return;
+      }
+      if (MascotTools.URL) {
+        URL.revokeObjectURL(MascotTools.URL);
+      }
+      img = $.el('img');
+      img.onload = function() {
+        var cv, height, s, width;
 
-        val = evt.target.result;
-        el.previousSibling.value = val;
-        return editMascot.image = val;
+        s = 400;
+        width = img.width, height = img.height;
+        if (width <= s) {
+          MascotTools.setImage(fileURL);
+          _this.previousElementSibling.value = fileURL;
+          return;
+        }
+        cv = $.el('canvas');
+        cv.height = height = s / width * height;
+        cv.width = width = s;
+        cv.getContext('2d').drawImage(img, 0, 0, width, height);
+        URL.revokeObjectURL(fileURL);
+        return cv.toBlob(function(blob) {
+          var fileURL;
+
+          MascotTools.URL = fileURL = URL.createObjectURL(MascotTools.file = blob);
+          MascotTools.setImage(fileURL);
+          return _this.previousElementSibling.value = fileURL;
+        });
       };
-      return reader.readAsDataURL(file);
+      MascotTools.URL = fileURL = URL.createObjectURL(MascotTools.file = file);
+      return img.src = fileURL;
+    },
+    setImage: function(fileURL) {
+      var reader;
+
+      reader = new FileReader();
+      reader.onload = function() {
+        return editMascot.image = reader.result;
+      };
+      return reader.readAsDataURL(MascotTools.file);
     },
     save: function(mascot) {
       var image, name;

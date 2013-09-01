@@ -1,9 +1,11 @@
 ### v2.3.10 
 *2013-08-31*
 
+**Zixaphir**:
+- Catalog bugfix
+
 ### v2.3.9 
 *2013-08-30*
-
 
 **MayhemYDG**:
 - New desktop notification:
