@@ -20,7 +20,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.3.10 - 2013-08-31
+* appchan x - Version 2.3.10 - 2013-09-03
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -10275,7 +10275,7 @@
         if (!(g.DEAD || ThreadUpdater.foundPost || ThreadUpdater.checkPostCount >= 5)) {
           return setTimeout(ThreadUpdater.update, ++ThreadUpdater.checkPostCount * $.SECOND);
         }
-        ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+        ThreadUpdater.setInterval();
         ThreadUpdater.checkPostCount = 0;
         delete ThreadUpdater.foundPost;
         return delete ThreadUpdater.postID;

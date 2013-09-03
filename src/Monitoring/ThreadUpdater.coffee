@@ -103,7 +103,7 @@ ThreadUpdater =
         ThreadUpdater.set 'timer', '...'
       unless g.DEAD or ThreadUpdater.foundPost or ThreadUpdater.checkPostCount >= 5
         return setTimeout ThreadUpdater.update, ++ThreadUpdater.checkPostCount * $.SECOND
-      ThreadUpdater.set 'timer', ThreadUpdater.getInterval()
+      ThreadUpdater.setInterval()
       ThreadUpdater.checkPostCount = 0
       delete ThreadUpdater.foundPost
       delete ThreadUpdater.postID
