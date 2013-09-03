@@ -73,7 +73,7 @@ MascotTools =
 
     unless mascot = Mascots[name]
       enabled.splice i, 1
-      el.src = "" if el
+      $.replace el, $.el 'img' if el = @el.firstElementChild
       $.set string, Conf[string] = enabled
       return MascotTools.toggle()
 

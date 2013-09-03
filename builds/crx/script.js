@@ -12116,7 +12116,7 @@
       });
     },
     toggle: function() {
-      var enabled, i, len, mascot, name, string;
+      var el, enabled, i, len, mascot, name, string;
 
       string = g.MASCOTSTRING;
       enabled = Conf[string];
@@ -12126,8 +12126,8 @@
       Conf['mascot'] = name = enabled[i = Math.floor(Math.random() * len)];
       if (!(mascot = Mascots[name])) {
         enabled.splice(i, 1);
-        if (el) {
-          el.src = "";
+        if (el = this.el.firstElementChild) {
+          $.replace(el, $.el('img'));
         }
         $.set(string, Conf[string] = enabled);
         return MascotTools.toggle();
