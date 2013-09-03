@@ -404,7 +404,7 @@ a {
 }
 .section-keybinds .field {
   font-family: monospace;
-} 
+}
 #fourchanx-settings fieldset {
   border: 1px solid;
   border-radius: 3px;
@@ -484,7 +484,7 @@ a.hide-announcement {
 }
 #thread-watcher .menu-button {
   bottom: 1px;
-} 
+}
 :root.fixed-watcher #thread-watcher {
   position: fixed;
 }
@@ -604,7 +604,7 @@ a.hide-announcement {
 }
 .threadOP {
   clear: both;
-} 
+}
 
 /* File */
 .fileText:hover .fntrunc,
@@ -1192,6 +1192,13 @@ a:only-of-type > .remove {
   max-width: 100%;
 }
 .gal-fit-height .gal-image img {
+  /*
+    Chrome doesn't support viewpoint units in calc()
+    http://bugs.chromium.org/168840
+    "It looks like the original author of viewport units in WebKit is not coming back to fix this stuff."
+    Well, fuck.
+  */
+  max-height: 95vh;
   max-height: calc(100vh - 25px);
 }
 .gal-buttons {
