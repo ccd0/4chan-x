@@ -21,28 +21,21 @@ MascotTools =
       $.rmClass doc, 'mascot-position-above-post-form'
       $.rmClass doc, 'mascot-position-bottom'
       $.rmClass doc, 'mascot-position-default'
-      if mascot.position is 'bottom'
-        $.addClass doc, 'mascot-position-bottom'
+      $.addClass doc, if mascot.position is 'bottom'
+        'mascot-position-bottom'
       else
-        $.addClass doc, 'mascot-position-above-post-form'
+        'mascot-position-above-post-form'
 
-    if mascot.silhouette and not Conf['Silhouettize Mascots']
-      $.addClass doc, 'silhouettize-mascots'
-
-    else unless Conf['Silhouettize Mascots']
-      $.rmClass doc, 'silhouettize-mascots'
+    $[if mascot.silhouette or Conf['Silhouettize Mascots']
+      'addClass'
+    else
+      'rmClass'
+    ] doc, 'silhouettize-mascots'
 
     el = $.el 'img'
     $.on el, 'error', MascotTools.error
 
-    el.src =
-      if Array.isArray mascot.image
-        if Style.lightTheme
-          mascot.image[1]
-        else
-          mascot.image[0]
-      else
-        mascot.image
+    el.src = mascot.image
 
     $.off img = @el.firstElementChild, 'error', MascotTools.error
 
@@ -142,6 +135,11 @@ MascotTools =
         false
         "checkbox"
       ]
+      silhouette: [
+        "Silhouette"
+        false
+        "checkbox"
+      ]
 
     dialog = $.el "div",
       id: "mascotConf"
@@ -238,13 +236,7 @@ MascotTools =
     $.add d.body, dialog
 
   input: (item, name) ->
-    if Array.isArray editMascot[name]
-      if Style.lightTheme
-        value = editMascot[name][1]
-      else
-        value = editMascot[name][0]
-    else
-      value = editMascot[name]
+    value = editMascot[name]
 
     editMascot[name] = value
 

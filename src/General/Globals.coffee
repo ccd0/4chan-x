@@ -212,10 +212,13 @@ Mascots =
     image:      '//i.minus.com/iPtrwFEEtPLhn.png'
   'Horo':
     category:   'Silhouette'
-    image:       ['//i.minus.com/i429JguITUibN.png', '//i.minus.com/icpvfMuZEQCtS.png']
+    image:      '//i.minus.com/ibbMKiznORGJ00.png'
+    silhouette: true
   'Horo_2':
     category:   'Silhouette'
-    image:       ['//i.minus.com/ibv270koIdRjm7.png', '//i.minus.com/iPM4lDD53yB5n.png']
+    image:      '//i.minus.com/ibyT9dlTe1HN5P.png'
+    silhouette: true
+    width:      205
   'Horo_3':
     category:   'Questionable'
     image:      '//i.minus.com/ibyT9dlTe1HN5P.png'
@@ -399,11 +402,9 @@ Mascots =
     center:     true
   'Nagato_Yuki_5':
     category:   'Silhouette'
-    image:       ['https://i.minus.com/iW0iHUkHwu44d.png', 'https://i.minus.com/i859zL9JXZLbD.png']
-    center:     true
-  'Nagato_Yuki_6':
-    category:   'Silhouette'
-    image:       ['https://i.minus.com/iJdxNEMekrQjp.png', 'https://i.minus.com/ibbHeuocMgN5Eu.png']
+    width:      202
+    image:      '//i.minus.com/iFQQPEaC3aEV7.png'
+    silhouette: true
     center:     true
   'Nagato_Yuki_7':
     category:   'Questionable'

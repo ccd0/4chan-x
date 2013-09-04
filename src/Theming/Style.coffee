@@ -152,10 +152,12 @@ Style =
     Style.lightTheme = bgColor.isLight()
 
     Style.svg.innerHTML = """
-<svg xmlns='http://www.w3.org/2000/svg' height=0><filter id='captcha-filter' color-interpolation-filters='sRGB'><feColorMatrix values='#{Style.filter Style.matrix theme["Text"], theme["Input Background"]} 0 0 0 1 0' /></filter></svg>
-<svg xmlns='http://www.w3.org/2000/svg' height=0><filter id='mascot-filter' color-interpolation-filters='sRGB'><feColorMatrix values='#{Style.silhouette Style.matrix replyRGB} 0 0 0 1 0' /></filter></svg>
-<svg xmlns='http://www.w3.org/2000/svg' height=0><filter id="grayscale"><feColorMatrix id="color" type="saturate" values="0" /></filter></svg>
-<svg xmlns='http://www.w3.org/2000/svg' height=0><filter id="icons-filter" color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>
+<svg xmlns='http://www.w3.org/2000/svg' height=0>
+  <filter id='captcha-filter' color-interpolation-filters='sRGB'><feColorMatrix values='#{Style.filter Style.matrix theme["Text"], theme["Input Background"]} 0 0 0 1 0' /></filter>
+  <filter id='mascot-filter' color-interpolation-filters='sRGB'><feColorMatrix values='#{Style.silhouette Style.matrix replyRGB} 0 0 0 1 0' /></filter>
+  <filter id="grayscale"><feColorMatrix id="color" type="saturate" values="0" /></filter>
+  <filter id="icons-filter" color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter>
+</svg>
     """
 
     """<%= grunt.file.read('src/General/css/theme.css').replace(/\s+/g, ' ').trim() %>""" + <%= grunt.file.read('src/General/css/themeoptions.css').replace(/\s+/g, ' ').trim() %>

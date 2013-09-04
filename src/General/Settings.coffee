@@ -753,11 +753,11 @@ Settings =
         continue unless Conf["Deleted Mascots"].contains name
         mascot = Mascots[name]
         mascotEl = $.el 'div',
-          className: 'mascot'
+          className: 'mascot' 
           id: name
           innerHTML: "
 <div class='mascotname'>#{name.replace /_/g, " "}</span>
-<div class='container #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image}'></div>
+<div class='mascotcontainer #{mascot.category} #{if mascot.silhouette then 'silhouette' else ''}'><img class=mascotimg src='#{mascot.image}'></div>
 "
 
         $.on mascotEl, 'click', cb.restore

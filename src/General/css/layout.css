@@ -2105,6 +2105,9 @@ article li {
 .mascot img {
   max-width: 200px;
 }
+.silhouette img {
+  <%= filter %>: url('#mascot-filter');
+}
 .export-button,
 .mascotname,
 #mascot-options {
