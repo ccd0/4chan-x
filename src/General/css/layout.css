@@ -1818,6 +1818,8 @@ a:only-of-type > .remove {
   left: 0;
   right: 0;
   line-height: 0;
+}
+.click-to-toggle #mascot {
   cursor: pointer;
 }
 .mascot-position-above-post-form.post-form-style-fixed:not(.post-form-decorations) #mascot img {

@@ -264,9 +264,9 @@ MascotTools =
         @previousElementSibling.value = fileURL
         return
 
-      cv = $.el 'canvas'
-      cv.height = height = s / width * height
-      cv.width  = width  = s
+      cv = $.el 'canvas',
+        height: height = s / width * height
+        width:  width  = s
       cv.getContext('2d').drawImage img, 0, 0, width, height
       URL.revokeObjectURL fileURL
       cv.toBlob (blob) =>
@@ -332,8 +332,8 @@ MascotTools =
     $.rm $.id 'mascotConf'
     Settings.open "Mascots"
 
-  importMascot: (evt) ->
-    file = evt.target.files[0]
+  importMascot: ->
+    file = @files[0]
     reader = new FileReader()
 
     reader.onload = (e) ->
@@ -360,10 +360,10 @@ MascotTools =
         $.set 'userMascots', userMascots
 
       alert "Mascot \"#{name}\" imported!"
-      $.rm $("#mascotContainer", d.body)
+      $.rm $ "#mascotContainer", d.body
       Settings.open 'Mascots'
 
-    reader.readAsText(file)
+    reader.readAsText file
 
   reposition: ->
     mascot = Mascots[Conf['mascot']]
