@@ -176,7 +176,7 @@ ThreadUpdater =
         if cur = [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j] > i then cur else i
       else
         i
-    ThreadUpdater.set 'timer', ThreadUpdater.seconds
+    ThreadUpdater.set 'timer', ThreadUpdater.seconds++
     clearTimeout ThreadUpdater.timeoutID
     ThreadUpdater.timeout()
 

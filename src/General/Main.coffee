@@ -122,9 +122,9 @@ Main =
       'Announcement Hiding':       PSAHiding
       'Fourchan thingies':         Fourchan
       'Color User IDs':            IDColor
-      'Reveal Spoilers':           RemoveSpoilers
       'Custom CSS':                CustomCSS
       'Linkify':                   Linkify
+      'Reveal Spoilers':           RemoveSpoilers
       'Resurrect Quotes':          Quotify
       'Filter':                    Filter
       'Thread Hiding Buttons':     ThreadHiding
