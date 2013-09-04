@@ -8043,7 +8043,7 @@
         j = j < 7 ? j : 7;
       }
       ThreadUpdater.seconds = Conf['Optional Increase'] ? (cur = [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j] > i) ? cur : i : i;
-      ThreadUpdater.set('timer', ThreadUpdater.seconds);
+      ThreadUpdater.set('timer', ThreadUpdater.seconds++);
       clearTimeout(ThreadUpdater.timeoutID);
       return ThreadUpdater.timeout();
     },
