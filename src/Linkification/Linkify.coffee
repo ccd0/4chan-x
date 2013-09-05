@@ -7,18 +7,25 @@ Linkify =
     @catchAll = ///
       \b
       (
-        [a-z][\w-]+:                 # URL protocol and colon
+        (            # Allowed URL protocols and colon
+          https?
+          | ftps?
+          | about
+          | bitcoin
+          | git
+          | irc[s6]?
+        ):
         (
-          /{1,3}                     # 1-3 slashes
-          |                          #   or
-          [a-z0-9%]                  # Single letter or digit or '%'
-          |                          #   or
-          \?(dn|x[lts]|as|kt|mt|tr)= # Magnet parameters
+          /{1,3}    # 1-3 slashes
+          |         #   or
+          [a-z0-9%] # Single letter or digit or '%'
         )
-        |                          #   or
-        www\d{0,3}[.]              # "www.", "www1.", "www2." … "www999."
-        |                          #   or
-        [a-z0-9.\-]+[.][a-z]{2,4}/ # looks like domain name followed by a slash
+        |                                 #   or
+        www\d{0,3}[.]                     # "www.", "www1.", "www2." … "www999."
+        |                                 #   or
+        [a-z0-9.\-]+[.][a-z]{2,4}/        # looks like domain name followed by a slash
+        |                                 #   or
+        magnet:\?(dn|x[lts]|as|kt|mt|tr)= # magnet protocol with its parameters
       )
       (                                    # One or more:
         [^\s()<>]+                         # Run of non-space, non-()<>
