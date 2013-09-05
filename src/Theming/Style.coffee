@@ -151,14 +151,7 @@ Style =
 
     Style.lightTheme = bgColor.isLight()
 
-    Style.svg.innerHTML = """
-<svg xmlns='http://www.w3.org/2000/svg' height=0 color-interpolation-filters='sRGB'>
-  <filter id='captcha-filter'><feColorMatrix values='#{Style.filter Style.matrix theme["Text"], theme["Input Background"]} 0 0 0 1 0' /></filter>
-  <filter id='mascot-filter'><feColorMatrix values='#{Style.silhouette Style.matrix replyRGB} 0 0 0 1 0' /></filter>
-  <filter id="grayscale"><feColorMatrix id="color" type="saturate" values="0" /></filter>
-  <filter id="icons-filter"><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter>
-</svg>
-    """
+    Style.svg.innerHTML = """<%= grunt.file.read('src/General/html/Features/Filters.svg').replace(/>\s+</g, '><') %>"""
 
     """<%= grunt.file.read('src/General/css/theme.css').replace(/\s+/g, ' ').trim() %>""" + <%= grunt.file.read('src/General/css/themeoptions.css').replace(/\s+/g, ' ').trim() %>
 
