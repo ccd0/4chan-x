@@ -45,7 +45,11 @@ Linkify =
 
   node: ->
     return if @isClone or !links = @info.comment.match Linkify.catchAll
-    walker = d.createTreeWalker @nodes.comment, 4
+    walker = d.createTreeWalker @nodes.comment, 1 | 4, acceptNode: (node) ->
+      return if node.nodeName in ['#text', 'BR']
+        1 # NodeFilter.FILTER_ACCEPT
+      else
+        3 # NodeFilter.FILTER_SKIP
     range  = d.createRange()
     for link in links
       boundaries = Linkify.find link, walker
@@ -66,6 +70,8 @@ Linkify =
     # Walk through the nodes until we find the entire link.
     text = ''
     while node = walker.nextNode()
+      if node.nodeName is 'BR'
+        return Linkify.find link, walker
       text += node.data
       break if text.indexOf(link) > -1
     return unless node
