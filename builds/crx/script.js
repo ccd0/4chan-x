@@ -12648,25 +12648,22 @@
         node.disabled = true;
       }
     },
-    matrix: function(foreground, background) {
-      var bg, bgHex, fg, fgHex;
+    matrix: function() {
+      var arg, color, colors, hex, i, rgb, val, _i, _len;
 
-      fgHex = Style.colorToHex(foreground) || "ffffff";
-      fg = {
-        r: parseInt(fgHex.substr(0, 2), 16) / 255,
-        g: parseInt(fgHex.substr(2, 2), 16) / 255,
-        b: parseInt(fgHex.substr(4, 2), 16) / 255
-      };
-      if (background) {
-        bgHex = Style.colorToHex(background) || "000000";
-        bg = {
-          r: parseInt(bgHex.substr(0, 2), 16) / 255,
-          g: parseInt(bgHex.substr(2, 2), 16) / 255,
-          b: parseInt(bgHex.substr(4, 2), 16) / 255
-        };
-        return [fg, bg];
+      colors = [];
+      for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+        arg = arguments[_i];
+        hex = Style.colorToHex(arg) || "ffffff";
+        color = {};
+        rgb = ['r', 'g', 'b'];
+        i = 0;
+        while (val = rgb[i]) {
+          color[val] = parseInt(hex.substr(2 * i++, 2), 16) / 255;
+        }
+        colors.push(color);
       }
-      return [fg];
+      return colors;
     },
     filter: function(_arg) {
       var bg, fg;

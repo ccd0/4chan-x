@@ -93,27 +93,18 @@ Style =
       node.disabled = true
     return
 
-  matrix: (foreground, background) ->
-    fgHex = Style.colorToHex(foreground) or "ffffff"
+  matrix: ->
+    colors = []
+    for arg in arguments
+      hex = Style.colorToHex(arg) or "ffffff"
+      color = {}
+      rgb   = ['r', 'g', 'b']
+      i     = 0
+      while val = rgb[i]
+        color[val] = parseInt(hex.substr((2 * i++), 2), 16) / 255
+      colors.push color
 
-    fg = {
-      r: parseInt(fgHex.substr(0, 2), 16) / 255
-      g: parseInt(fgHex.substr(2, 2), 16) / 255
-      b: parseInt(fgHex.substr(4, 2), 16) / 255
-    }
-
-    if background
-      bgHex = Style.colorToHex(background) or "000000"
-
-      bg = {
-        r: parseInt(bgHex.substr(0, 2), 16) / 255
-        g: parseInt(bgHex.substr(2, 2), 16) / 255
-        b: parseInt(bgHex.substr(4, 2), 16) / 255
-      }
-
-      return [fg, bg]
-
-    [fg]
+    colors
 
   filter: ([fg, bg]) ->
     "#{bg.r} #{-fg.r} 0 0 #{fg.r} #{bg.g} #{-fg.g} 0 0 #{fg.g} #{bg.b} #{-fg.b} 0 0 #{fg.b}"
