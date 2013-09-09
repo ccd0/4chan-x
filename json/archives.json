@@ -30,7 +30,7 @@
   "name": "4plebs",
   "domain": "archive.4plebs.org",
   "http": true,
-  "https": false,
+  "https": true,
   "software": "foolfuuka",
   "boards": ["hr", "tg", "tv", "x"],
   "files": ["hr", "tg", "tv", "x"]
