@@ -182,7 +182,7 @@ PostHiding =
       if Conf['Anonymize']
         'Anonymous'
       else
-        post.info.name
+        $('.nameBlock', post.nodes.info).textContent
     $.add a, $.tn " #{postInfo}"
     post.nodes.stub = $.el 'div',
       className: 'stub'

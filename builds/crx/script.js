@@ -3401,7 +3401,7 @@
         return;
       }
       a = PostHiding.makeButton(post, 'show');
-      postInfo = Conf['Anonymize'] ? 'Anonymous' : post.info.name;
+      postInfo = Conf['Anonymize'] ? 'Anonymous' : $('.nameBlock', post.nodes.info).textContent;
       $.add(a, $.tn(" " + postInfo));
       post.nodes.stub = $.el('div', {
         className: 'stub'
@@ -3749,7 +3749,7 @@
       }
       numReplies = ((span = $('.summary', threadRoot)) ? +span.textContent.match(/\d+/) : 0) + $$('.opContainer ~ .replyContainer', threadRoot).length;
       numReplies = numReplies === 1 ? '1 reply' : "" + (numReplies || 'No') + " replies";
-      opInfo = Conf['Anonymize'] ? 'Anonymous' : OP.info.name;
+      opInfo = Conf['Anonymize'] ? 'Anonymous' : $('.nameBlock', OP.nodes.info).textContent;
       a = ThreadHiding.makeButton(thread, 'show');
       $.add(a, $.tn(" " + opInfo + " (" + numReplies + ")"));
       thread.stub = $.el('div', {
