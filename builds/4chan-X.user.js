@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.36 - 2013-08-26
+* 4chan X - Version 1.2.36 - 2013-09-12
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -5797,7 +5797,9 @@
           this.nodes.label.hidden = false;
         }
         URL.revokeObjectURL(this.URL);
-        this.showFileData();
+        if (this === QR.selected) {
+          this.showFileData();
+        }
         if (!/^image/.test(file.type)) {
           this.nodes.el.style.backgroundImage = null;
           return;
