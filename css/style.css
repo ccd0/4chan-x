@@ -794,7 +794,6 @@ a.hide-announcement {
 }
 #file-n-submit-container input {
   margin: 0;
-  padding: 0;
 }
 #file-n-submit input[type='submit'] {
   order: 1;
