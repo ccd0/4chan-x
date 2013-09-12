@@ -1,3 +1,9 @@
+### v1.2.37 
+*2013-09-12*
+
+**seaweedchan**:
+- Just some small fixes.
+
 ### v1.2.36 
 *2013-08-26*
 
