@@ -995,6 +995,7 @@ a:only-of-type > .remove {
   position: relative;
   text-decoration: none;
   white-space: nowrap;
+  min-width: 70px;
 }
 .left>.entry.has-submenu {
   padding-right: 17px !important;
