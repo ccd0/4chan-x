@@ -581,7 +581,7 @@ a.hide-announcement {
   align-self: stretch;
   flex: 1;
 }
-#qr select {
+#qr select[data-name=thread] {
   margin: 0;
   -webkit-appearance: none;
   -moz-appearance: none;
