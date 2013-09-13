@@ -1,3 +1,5 @@
+### 3.11.1 - *2013-09-13*
+
 - Added support for the flag selector on /pol/.
 
 ## 3.11.0 - *2013-09-06*
