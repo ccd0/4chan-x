@@ -221,6 +221,7 @@ QR =
           name:  post.name
           email: if /^sage$/.test post.email then persona.email else post.email
           sub:   if Conf['Remember Subject'] then post.sub      else undefined
+          flag:  post.flag
         $.set 'QR.persona', persona
 
   cooldown:
@@ -504,6 +505,12 @@ QR =
           if prev then prev.sub else persona.sub
         else
           ''
+
+        if QR.nodes.flag
+          @flag = if prev
+            prev.flag
+          else
+            persona.flag
         @load() if QR.selected is @ # load persona
       @select() if select
       @unlock()
