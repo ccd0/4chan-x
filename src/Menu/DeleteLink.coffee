@@ -84,7 +84,7 @@ DeleteLink =
         delete DeleteLink.cooldown.counting
         return
       DeleteLink.cooldown.counting = post
-      length = 30
+      length  = 60
       seconds = Math.ceil (length * $.SECOND - (Date.now() - post.info.date)) / $.SECOND
       DeleteLink.cooldown.count post, seconds, length, node
     count: (post, seconds, length, node) ->

@@ -233,9 +233,9 @@ QR =
           when 'q' then 86400
           when 'b', 'soc', 'r9k' then 600
           else 300
-        sage: if board is 'q' then 600 else 60
-        file: if board is 'q' then 300 else 30
-        post: if board is 'q' then 150 else 30
+        sage: if board is 'q' then 600 else 120
+        file: if board is 'q' then 300 else 60
+        post: if board is 'q' then 150 else 60
       QR.cooldown.upSpd = 0
       QR.cooldown.upSpdAccuracy = .5
       $.get "cooldown.#{board}", {}, (item) ->
