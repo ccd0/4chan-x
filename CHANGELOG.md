@@ -1,3 +1,5 @@
+Updated post and deletion cooldown timers to match 4chan changes: they are now twice longer.
+
 ### 3.11.1 - *2013-09-13*
 
 - Added support for the flag selector on /pol/.
