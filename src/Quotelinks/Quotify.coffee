@@ -41,13 +41,13 @@ Quotify =
         # Don't (Dead) when quotifying in an archived post,
         # and we know the post still exists.
         a = $.el 'a',
-          href:        "/#{boardID}/#{post.thread}/res/#p#{postID}"
+          href:        "/#{boardID}/res/#{post.thread}#p#{postID}"
           className:   'quotelink'
           textContent: quote
       else
         # Replace the .deadlink span if we can redirect.
         a = $.el 'a',
-          href:        "/#{boardID}/#{post.thread}/res/#p#{postID}"
+          href:        "/#{boardID}/res/#{post.thread}#p#{postID}"
           className:   'quotelink deadlink'
           target:      '_blank'
           textContent: "#{quote}\u00A0(Dead)"
