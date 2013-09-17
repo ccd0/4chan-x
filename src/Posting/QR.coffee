@@ -231,8 +231,7 @@ QR =
       QR.cooldown.types =
         thread: switch board
           when 'q' then 86400
-          when 'b', 'soc', 'r9k' then 600
-          else 300
+          else 600
         sage: if board is 'q' then 600 else 120
         file: if board is 'q' then 300 else 60
         post: if board is 'q' then 150 else 60
