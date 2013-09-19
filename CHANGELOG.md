@@ -1,3 +1,13 @@
+### v1.2.38 
+*2013-09-19*
+
+**MayhemYDG**:
+ - Update posting cooldown timers to match 4chan settings:
+   - Cooldown may vary between inter-thread and intra-thread replies.
+   - Cooldown may vary when posting a file or not.
+   - Cooldown does not take sageing into account anymore.
+   - Timers vary across boards.
+
 ### v1.2.37 
 *2013-09-12*
 
