@@ -14,8 +14,5 @@ Anonymize =
       $.rm tripcode
       delete @nodes.tripcode
     if @info.email
-      if /sage/i.test @info.email
-        email.href = 'mailto:sage'
-      else
-        $.replace email, name
-        delete @nodes.email
+      $.replace email, name
+      delete @nodes.email
