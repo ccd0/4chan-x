@@ -230,6 +230,7 @@ QR =
       setTimers = (e) => QR.cooldown.types = e.detail
       $.on  window, 'cooldown:timers', setTimers
       $.globalEval 'window.dispatchEvent(new CustomEvent("cooldown:timers", {detail: cooldowns}))'
+      QR.cooldown.types or= {} # XXX tmp workaround until all pages and the catalogs get the cooldowns var.
       $.off window, 'cooldown:timers', setTimers
       for type of QR.cooldown.types
         QR.cooldown.types[type] = +QR.cooldown.types[type]
@@ -316,7 +317,7 @@ QR =
             'image'
           else
             'reply'
-          maxTimer = Math.max types[type], types[type + '_intra'] or 0
+          maxTimer = Math.max types[type] or 0, types[type + '_intra'] or 0
           unless start <= now <= start + maxTimer * $.SECOND
             QR.cooldown.unset start
           type   += '_intra' if isReply and +post.thread is cooldown.threadID
