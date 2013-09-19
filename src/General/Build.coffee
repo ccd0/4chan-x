@@ -27,7 +27,6 @@ Build =
       date:     data.now
       dateUTC:  data.time
       comment:  data.com
-      capcodeReplies: data.capcode_replies
       # thread status
       isSticky: !!data.sticky
       isClosed: !!data.closed
@@ -55,7 +54,7 @@ Build =
       postID, threadID, boardID
       name, capcode, tripcode, uniqueID, email, subject, flagCode, flagName, date, dateUTC
       isSticky, isClosed
-      comment, capcodeReplies
+      comment
       file
     } = o
     isOP = postID is threadID
@@ -248,36 +247,4 @@ Build =
       continue if href[0] is '/' # Cross-board quote, or board link
       quote.href = "/#{boardID}/res/#{href}" # Fix pathnames
 
-    Build.capcodeReplies {boardID, threadID, root: container, capcodeReplies}
-
     container
-
-  capcodeReplies: ({boardID, threadID, bq, root, capcodeReplies}) ->
-    return unless capcodeReplies
-
-    generateCapcodeReplies = (capcodeType, array) ->
-      "<span class=smaller><span class=bold>#{
-        switch capcodeType
-          when 'admin'
-            'Administrator'
-          when 'mod'
-            'Moderator'
-          when 'developer'
-            'Developer'
-      } Repl#{if array.length > 1 then 'ies' else 'y'}:</span> #{
-        array.map (ID) ->
-          "<a href='/#{boardID}/res/#{threadID}#p#{ID}' class=quotelink>&gt;&gt;#{ID}</a>"
-        .join ' '
-      }</span><br>"
-    html = []
-    for capcodeType, array of capcodeReplies
-      html.push generateCapcodeReplies capcodeType, array
-
-    bq or= $ 'blockquote', root
-    $.add bq, [
-      $.el 'br'
-      $.el 'br'
-      $.el 'span',
-        className: 'capcodeReplies'
-        innerHTML: html.join ''
-    ]

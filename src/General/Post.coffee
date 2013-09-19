@@ -62,13 +62,12 @@ class Post
     # <br> -> \n
     # Remove:
     #   'Comment too long'...
-    #   Admin/Mod/Dev replies. (/q/)
     #   EXIF data. (/p/)
     #   Rolls. (/tg/)
     #   Preceding and following new lines.
     #   Trailing spaces.
     bq = @nodes.comment.cloneNode true
-    for node in $$ '.abbr, .capcodeReplies, .exif, b', bq
+    for node in $$ '.abbr, .exif, b', bq
       $.rm node
     text = []
     # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE === 7
@@ -100,8 +99,7 @@ class Post
 
     @nodes.quotelinks.push quotelink
 
-    # Don't count capcode replies as quotes in OPs. (Admin/Mod/Dev Replies: ...)
-    return if @isClone or !@isReply and $.hasClass quotelink.parentNode.parentNode, 'capcodeReplies'
+    return if @isClone
 
     # ES6 Set when?
     fullID = "#{match[1]}.#{match[2]}"
