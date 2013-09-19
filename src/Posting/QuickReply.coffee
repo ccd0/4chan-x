@@ -898,7 +898,7 @@ QR =
       form:       'form'
       dumpButton: '#dump-button'
       name:       '[data-name=name]'
-      email:      '[data-'q'=email]'
+      email:      '[data-name=email]'
       sub:        '[data-name=sub]'
       com:        '[data-name=com]'
       dumpList:   '#dump-list'
