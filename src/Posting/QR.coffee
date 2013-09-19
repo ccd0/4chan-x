@@ -263,8 +263,7 @@ QR =
           upSpd = post.file.size / ((start - req.uploadStartTime) / $.SECOND)
           QR.cooldown.upSpdAccuracy = ((upSpd > QR.cooldown.upSpd * .9) + QR.cooldown.upSpdAccuracy) / 2
           QR.cooldown.upSpd = upSpd
-        hasFile  = !!post.file
-        cooldown = {isReply, hasFile, threadID}
+        cooldown = {isReply, threadID}
       QR.cooldown.cooldowns[start] = cooldown
       $.set "cooldown.#{g.BOARD}", QR.cooldown.cooldowns
       QR.cooldown.start()
