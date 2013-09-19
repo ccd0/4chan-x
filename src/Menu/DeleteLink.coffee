@@ -31,7 +31,7 @@ DeleteLink =
       el: div
       order: 40
       open: (post) ->
-        return false if post.isDead or post.board.ID is 'q'
+        return false if post.isDead
         DeleteLink.post = post
         node = div.firstChild
         node.textContent = 'Delete'

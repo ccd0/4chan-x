@@ -946,7 +946,7 @@ QR =
     # prevent errors
     if threadID is 'new'
       threadID = null
-      if g.BOARD.ID in ['vg', 'q'] and !post.sub
+      if g.BOARD.ID is 'vg' and !post.sub
         err = 'New threads require a subject.'
       else unless post.file or textOnly = !!$ 'input[name=textonly]', $.id 'postForm'
         err = 'No file selected.'
