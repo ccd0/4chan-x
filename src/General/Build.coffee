@@ -58,6 +58,7 @@ Build =
       postID, threadID, boardID
       name, capcode, tripcode, uniqueID, email, subject, flagCode, flagName, date, dateUTC
       isSticky, isClosed
+      comment
       file
     } = o
     isOP = postID is threadID
