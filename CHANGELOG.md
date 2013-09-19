@@ -1,3 +1,9 @@
+### v1.2.39 
+*2013-09-19*
+
+**seaweedchan**:
+ - Fix thread updater bug introduced in last version
+
 ### v1.2.38 
 *2013-09-19*
 
