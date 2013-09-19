@@ -1,3 +1,5 @@
+### 3.11.3 - *2013-09-19*
+
 Update posting cooldown timers to match 4chan settings:
  - Cooldown may vary between inter-thread and intra-thread replies.
  - Cooldown may vary when posting a file or not.
