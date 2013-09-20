@@ -1,3 +1,6 @@
+Tiny posting cooldown adjustment:
+ - You can post an image reply immediately after a non-image reply.
+
 ### 3.11.3 - *2013-09-19*
 
 Update posting cooldown timers to match 4chan settings:
