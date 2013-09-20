@@ -2,8 +2,6 @@ ThreadUpdater =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
 
-    checked = if Conf['Auto Update'] then 'checked' else ''
-
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
         innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>"
@@ -16,12 +14,13 @@ ThreadUpdater =
       $.addClass doc, 'float'
       $.ready => 
         $.addClass doc, 'float'
-        $.add d.body, sc    
+        $.add d.body, sc
 
     @checkPostCount = 0
 
     @timer  = $ '#update-timer', sc
     @status = $ '#update-status', sc
+    @isUpdating = Conf['Auto Update']
 
     $.on @timer,  'click', ThreadUpdater.update
     $.on @status, 'click', ThreadUpdater.update
@@ -38,7 +37,7 @@ ThreadUpdater =
         $.on input, 'change', ThreadUpdater.cb.scrollBG
         ThreadUpdater.cb.scrollBG()
       else if input.name is 'Auto Update'
-        $.on input, 'change', ThreadUpdater.update
+        $.on input, 'change', ThreadUpdater.cb.update
       subEntries.push el: el
 
     settings = $.el 'span',
@@ -63,7 +62,6 @@ ThreadUpdater =
     ThreadUpdater.thread       = @
     ThreadUpdater.root         = @OP.nodes.root.parentNode
     ThreadUpdater.lastPost     = +ThreadUpdater.root.lastElementChild.id.match(/\d+/)[0]
-    ThreadUpdater.outdateCount = 0
 
     ThreadUpdater.cb.interval.call $.el 'input', value: Conf['Interval']
 
@@ -81,17 +79,16 @@ ThreadUpdater =
 
   cb:
     online: ->
-      if ThreadUpdater.online = navigator.onLine
+      if navigator.onLine
         ThreadUpdater.outdateCount = 0
         ThreadUpdater.setInterval()
-        ThreadUpdater.update()
         ThreadUpdater.set 'status', null, null
       else
         ThreadUpdater.set 'timer', null
         ThreadUpdater.set 'status', 'Offline', 'warning'
-      ThreadUpdater.cb.autoUpdate()
+      ThreadUpdater.count true
     post: (e) ->
-      return unless e.detail.threadID is ThreadUpdater.thread.ID
+      return unless ThreadUpdater.isUpdating and e.detail.threadID is ThreadUpdater.thread.ID
       ThreadUpdater.outdateCount = 0
       setTimeout ThreadUpdater.update, 1000 if ThreadUpdater.seconds > 2
     checkpost: (e) ->
@@ -110,28 +107,22 @@ ThreadUpdater =
       return if d.hidden
       # Reset the counter when we focus this tab.
       ThreadUpdater.outdateCount = 0
-      if ThreadUpdater.seconds > ThreadUpdater.interval
-        ThreadUpdater.setInterval()
+      ThreadUpdater.seconds = Math.min ThreadUpdater.seconds, ThreadUpdater.interval
     scrollBG: ->
       ThreadUpdater.scrollBG = if Conf['Scroll BG']
         -> true
       else
         -> not d.hidden
-    autoUpdate: ->
-      if ThreadUpdater.online
-        ThreadUpdater.timeout()
-      else
-        clearTimeout ThreadUpdater.timeoutID
     interval: ->
-      val = +@value
+      val = parseInt @value, 10
       if val < 1 then val = 1
       ThreadUpdater.interval = @value = val
       $.cb.value.call @
     load: (e) ->
       {req} = ThreadUpdater
+      delete ThreadUpdater.req
       if e.type isnt 'loadend' # timeout or abort
         req.onloadend = null
-        delete ThreadUpdater.req
         if e.type is 'timeout'
           ThreadUpdater.set 'status', 'Retrying', null
           ThreadUpdater.update()
@@ -161,8 +152,6 @@ ThreadUpdater =
       if ThreadUpdater.postID
         ThreadUpdater.cb.checkpost()
 
-      delete ThreadUpdater.req
-
   setInterval: ->
     i = ThreadUpdater.interval
     # Math.min/max is provably slow: http://jsperf.com/math-s-min-max-vs-homemade/5
@@ -176,8 +165,7 @@ ThreadUpdater =
       else
         i
     ThreadUpdater.set 'timer', ThreadUpdater.seconds++
-    clearTimeout ThreadUpdater.timeoutID
-    ThreadUpdater.timeout()
+    ThreadUpdater.count true
 
   intervalShortcut: ->
     Settings.open 'Advanced'
@@ -194,14 +182,19 @@ ThreadUpdater =
       el.textContent = text
     el.className = klass if klass isnt undefined
 
+  count: (start) ->
+    clearTimeout ThreadUpdater.timeoutID
+    ThreadUpdater.timeout() if start and ThreadUpdater.isUpdating and navigator.onLine
+
   timeout: ->
     ThreadUpdater.timeoutID = setTimeout ThreadUpdater.timeout, 1000
-    ThreadUpdater.set 'timer', --ThreadUpdater.seconds
-    ThreadUpdater.update() if ThreadUpdater.seconds <= 0
+    sec = ThreadUpdater.seconds--
+    ThreadUpdater.set 'timer', sec
+    ThreadUpdater.update() if sec <= 0
 
   update: ->
-    return unless ThreadUpdater.online
-    clearTimeout ThreadUpdater.timeoutID
+    return unless navigator.onLine
+    ThreadUpdater.count()
     if Conf['Auto Update']
       ThreadUpdater.set 'timer', '...'
     else

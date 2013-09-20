@@ -453,9 +453,8 @@ Config =
 #/Mod$/;highlight:mod;op:yes
 # Set a custom class for moot:
 #/Admin$/;highlight:moot;op:yes
-"""
-
-    email: "" 
+    """
+    email: ""
     subject: """
 # Filter Generals on /v/:
 #/general/i;boards:v;op:only

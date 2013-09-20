@@ -23,14 +23,14 @@
     "font-awesome": "git://github.com/MayhemYDG/Font-Awesome.git#df4285951124f9ca1f3907438462e5ba9e464bcb",
     "grunt": "~0.4.1",
     "grunt-bump": "~0.0.11",
-    "grunt-concurrent": "~0.3.0",
+    "grunt-concurrent": "~0.3.1",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-coffee": "~0.7.0",
     "grunt-contrib-compress": "~0.5.2",
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-copy": "~0.4.1",
-    "grunt-contrib-watch": "~0.5.0",
-    "grunt-shell": "~0.3.1",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-shell": "~0.4.0",
     "load-grunt-tasks": "~0.1.0"
   },
   "repository": {

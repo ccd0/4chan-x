@@ -5254,7 +5254,8 @@
           persona = {
             name: post.name,
             email: /^sage$/.test(post.email) ? persona.email : post.email,
-            sub: Conf['Remember Subject'] ? post.sub : void 0
+            sub: Conf['Remember Subject'] ? post.sub : void 0,
+            flag: post.flag
           };
           return $.set('QR.persona', persona);
         });
@@ -5318,12 +5319,11 @@
             delay: delay
           };
         } else {
-          if (post.file) {
+          if (hasFile = !!post.file) {
             upSpd = post.file.size / ((start - req.uploadStartTime) / $.SECOND);
             QR.cooldown.upSpdAccuracy = ((upSpd > QR.cooldown.upSpd * .9) + QR.cooldown.upSpdAccuracy) / 2;
             QR.cooldown.upSpd = upSpd;
           }
-          hasFile = !!post.file;
           cooldown = {
             isReply: isReply,
             hasFile: hasFile,
@@ -5380,7 +5380,17 @@
             if (elapsed < 0) {
               continue;
             }
-            type = !isReply ? 'thread' : hasFile ? 'image' : 'reply';
+            if (!isReply) {
+              type = 'thread';
+            } else if (hasFile) {
+              if (!cooldown.hasFile) {
+                seconds = Math.max(seconds, 0);
+                continue;
+              }
+              type = 'image';
+            } else {
+              type = 'reply';
+            }
             maxTimer = Math.max(types[type] || 0, types[type + '_intra'] || 0);
             if (!((start <= now && now <= start + maxTimer * $.SECOND))) {
               QR.cooldown.unset(start);
@@ -5393,7 +5403,7 @@
         }
         if (seconds && Conf['Cooldown Prediction'] && hasFile && upSpd) {
           seconds -= Math.floor(post.file.size / upSpd * upSpdAccuracy);
-          seconds = Math.max(seconds, 0);
+          seconds = seconds > 0 ? seconds : 0;
         }
         update = seconds !== null || !!QR.cooldown.seconds;
         QR.cooldown.seconds = seconds;
@@ -5615,6 +5625,9 @@
           _this.name = 'name' in QR.persona.always ? QR.persona.always.name : prev ? prev.name : persona.name;
           _this.email = 'email' in QR.persona.always ? QR.persona.always.email : prev && !/^sage$/.test(prev.email) ? prev.email : persona.email;
           _this.sub = 'sub' in QR.persona.always ? QR.persona.always.sub : Conf['Remember Subject'] ? prev ? prev.sub : persona.sub : '';
+          if (QR.nodes.flag) {
+            _this.flag = prev ? prev.flag : persona.flag;
+          }
           if (QR.selected === _this) {
             return _this.load();
           }
@@ -5646,7 +5659,7 @@
       };
 
       _Class.prototype.lock = function(lock) {
-        var name, _i, _len, _ref;
+        var name, node, _i, _len, _ref;
 
         if (lock == null) {
           lock = true;
@@ -5655,10 +5668,12 @@
         if (this !== QR.selected) {
           return;
         }
-        _ref = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler'];
+        _ref = ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler', 'flag'];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           name = _ref[_i];
-          QR.nodes[name].disabled = lock;
+          if (node = QR.nodes[name]) {
+            node.disabled = lock;
+          }
         }
         this.nodes.rm.style.visibility = lock ? 'hidden' : '';
         (lock ? $.off : $.on)(QR.nodes.filename.previousElementSibling, 'click', QR.openFileInput);
@@ -5688,12 +5703,15 @@
       };
 
       _Class.prototype.load = function() {
-        var name, _i, _len, _ref;
+        var name, node, _i, _len, _ref;
 
-        _ref = ['thread', 'name', 'email', 'sub', 'com', 'filename'];
+        _ref = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag'];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           name = _ref[_i];
-          QR.nodes[name].value = this[name] || null;
+          if (!(node = QR.nodes[name])) {
+            continue;
+          }
+          node.value = this[name] || node.dataset["default"] || null;
         }
         this.showFileData();
         return QR.characterCount();
@@ -5707,7 +5725,7 @@
           return;
         }
         name = input.dataset.name;
-        this[name] = input.value;
+        this[name] = input.value || input.dataset["default"] || null;
         switch (name) {
           case 'thread':
             return QR.status();
@@ -5731,15 +5749,18 @@
       };
 
       _Class.prototype.forceSave = function() {
-        var name, _i, _len, _ref;
+        var name, node, _i, _len, _ref;
 
         if (this !== QR.selected) {
           return;
         }
-        _ref = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler'];
+        _ref = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler', 'flag'];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           name = _ref[_i];
-          this.save(QR.nodes[name]);
+          if (!(node = QR.nodes[name])) {
+            continue;
+          }
+          this.save(node);
         }
       };
 
@@ -6077,7 +6098,7 @@
       }
     },
     dialog: function() {
-      var check, dialog, elm, i, items, key, mimeTypes, name, nodes, thread, value, _ref;
+      var check, dialog, elm, event, flagSelector, i, items, key, mimeTypes, name, node, nodes, save, thread, value, _ref;
 
       QR.nodes = nodes = {
         el: dialog = UI.dialog('qr', 'top:0;right:0;', "      <div class=move><label><input type=checkbox id=autohide title=Auto-hide>\n  Quick Reply\n</label><a href=javascript:; class=close title=Close>×</a><select data-name=thread title='Create a new thread / Reply'><option value=new>New thread</option></select></div><form><div class=persona><input name=name  data-name=name  list=\"list-name\" placeholder=Name    class=field size=1 tabindex=10><input name=email data-name=email list=\"list-email\" placeholder=E-mail  class=field size=1 tabindex=20><input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1 tabindex=30></div><div class=textarea><textarea data-name=com placeholder=Comment class=field tabindex=40></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=60><span id=qr-no-file>No selected file</span><input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\"><span id=qr-extras-container><a id=qr-filerm href=javascript:; title='Remove file'>×</a><a id=dump-button title='Dump list'>+</a></span></span><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70></label><input type=submit tabindex=80></div><input type=file multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist>")
@@ -6133,7 +6154,14 @@
           name: 'filetag',
           innerHTML: "<option value=0>Hentai</option>\n<option value=6>Porn</option>\n<option value=1>Japanese</option>\n<option value=2>Anime</option>\n<option value=3>Game</option>\n<option value=5>Loop</option>\n<option value=4 selected>Other</option>"
         });
+        nodes.flashTag.dataset["default"] = '4';
         $.add(nodes.form, nodes.flashTag);
+      }
+      if (flagSelector = $('.flagSelector')) {
+        nodes.flag = flagSelector.cloneNode(true);
+        nodes.flag.dataset.name = 'flag';
+        nodes.flag.dataset["default"] = '0';
+        $.add(nodes.form, nodes.flag);
       }
       for (thread in g.BOARD.threads) {
         $.add(nodes.thread, $.el('option', {
@@ -6169,16 +6197,18 @@
         return QR.selected.nodes.spoiler.click();
       });
       $.on(nodes.fileInput, 'change', QR.handleFiles);
-      items = ['name', 'email', 'sub', 'com', 'filename'];
+      items = ['name', 'email', 'sub', 'com', 'filename', 'flag'];
       i = 0;
-      while (name = items[i++]) {
-        $.on(nodes[name], 'input', function() {
-          return QR.selected.save(this);
-        });
-      }
-      $.on(nodes.thread, 'change', function() {
+      save = function() {
         return QR.selected.save(this);
-      });
+      };
+      while (name = items[i++]) {
+        if (!(node = nodes[name])) {
+          continue;
+        }
+        event = node.nodeName === 'SELECT' ? 'change' : 'input';
+        $.on(nodes[name], event, save);
+      }
       if (Conf['Remember QR Size']) {
         $.get('QR Size', '', function(item) {
           return nodes.com.style.cssText = item['QR Size'];
@@ -6200,7 +6230,7 @@
     },
     preSubmitHooks: [],
     submit: function(e) {
-      var challenge, err, extra, filetag, hook, options, post, postData, response, textOnly, thread, threadID, _i, _len, _ref, _ref1;
+      var challenge, err, extra, filetag, formData, hook, options, post, response, textOnly, thread, threadID, _i, _len, _ref, _ref1;
 
       if (e != null) {
         e.preventDefault();
@@ -6264,7 +6294,7 @@
         d.activeElement.blur();
       }
       post.lock();
-      postData = {
+      formData = {
         resto: threadID,
         name: post.name,
         email: post.email,
@@ -6273,6 +6303,7 @@
         upfile: post.file,
         filetag: filetag,
         spoiler: post.spoiler,
+        flag: post.flag,
         textonly: textOnly,
         mode: 'regist',
         pwd: QR.persona.pwd,
@@ -6294,7 +6325,7 @@
         }
       };
       extra = {
-        form: $.formData(postData),
+        form: $.formData(formData),
         upCallbacks: {
           onload: function() {
             QR.req.isUploadFinished = true;
@@ -6378,8 +6409,8 @@
         threadID: threadID,
         postID: postID
       });
-      postsCount = QR.posts.length;
-      QR.cooldown.auto = postsCount > 1 && isReply;
+      postsCount = QR.posts.length - 1;
+      QR.cooldown.auto = postsCount && isReply;
       if (QR.cooldown.auto && QR.captcha.isEnabled && (captchasCount = QR.captcha.captchas.length) < 3 && captchasCount < postsCount) {
         notif = new Notification('Quick reply warning', {
           body: "You are running low on cached captchas. Cache count: " + captchasCount + ".",
@@ -7494,7 +7525,7 @@
           return;
         }
         DeleteLink.cooldown.counting = post;
-        length = 30;
+        length = 60;
         seconds = Math.ceil((length * $.SECOND - (Date.now() - post.info.date)) / $.SECOND);
         return DeleteLink.cooldown.count(post, seconds, length, node);
       },
@@ -7808,7 +7839,6 @@
       if (g.VIEW !== 'thread' || !Conf['Thread Updater']) {
         return;
       }
-      checked = Conf['Auto Update'] ? 'checked' : '';
       if (Conf['Updater and Stats in Header']) {
         this.dialog = sc = $.el('span', {
           innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>",
@@ -7828,6 +7858,7 @@
       this.checkPostCount = 0;
       this.timer = $('#update-timer', sc);
       this.status = $('#update-status', sc);
+      this.isUpdating = Conf['Auto Update'];
       $.on(this.timer, 'click', ThreadUpdater.update);
       $.on(this.status, 'click', ThreadUpdater.update);
       subEntries = [];
@@ -7845,7 +7876,7 @@
           $.on(input, 'change', ThreadUpdater.cb.scrollBG);
           ThreadUpdater.cb.scrollBG();
         } else if (input.name === 'Auto Update') {
-          $.on(input, 'change', ThreadUpdater.update);
+          $.on(input, 'change', ThreadUpdater.cb.update);
         }
         subEntries.push({
           el: el
@@ -7875,7 +7906,6 @@
       ThreadUpdater.thread = this;
       ThreadUpdater.root = this.OP.nodes.root.parentNode;
       ThreadUpdater.lastPost = +ThreadUpdater.root.lastElementChild.id.match(/\d+/)[0];
-      ThreadUpdater.outdateCount = 0;
       ThreadUpdater.cb.interval.call($.el('input', {
         value: Conf['Interval']
       }));
@@ -7892,19 +7922,18 @@
     beep: 'data:audio/wav;base64,UklGRjQDAABXQVZFZm10IBAAAAABAAEAgD4AAIA+AAABAAgAc21wbDwAAABBAAADAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkYXRhzAIAAGMms8em0tleMV4zIpLVo8nhfSlcPR102Ki+5JspVEkdVtKzs+K1NEhUIT7DwKrcy0g6WygsrM2k1NpiLl0zIY/WpMrjgCdbPhxw2Kq+5Z4qUkkdU9K1s+K5NkVTITzBwqnczko3WikrqM+l1NxlLF0zIIvXpsnjgydZPhxs2ay95aIrUEkdUdC3suK8N0NUIjq+xKrcz002WioppdGm091pK1w0IIjYp8jkhydXPxxq2K295aUrTkoeTs65suK+OUFUIzi7xqrb0VA0WSoootKm0t5tKlo1H4TYqMfkiydWQBxm16+85actTEseS8y7seHAPD9TIza5yKra01QyWSson9On0d5wKVk2H4DYqcfkjidUQB1j1rG75KsvSkseScu8seDCPz1TJDW2yara1FYxWSwnm9Sn0N9zKVg2H33ZqsXkkihSQR1g1bK65K0wSEsfR8i+seDEQTxUJTOzy6rY1VowWC0mmNWoz993KVc3H3rYq8TklSlRQh1d1LS647AyR0wgRMbAsN/GRDpTJTKwzKrX1l4vVy4lldWpzt97KVY4IXbUr8LZljVPRCxhw7W3z6ZISkw1VK+4sMWvXEhSPk6buay9sm5JVkZNiLWqtrJ+TldNTnquqbCwilZXU1BwpKirrpNgWFhTaZmnpquZbFlbVmWOpaOonHZcXlljhaGhpZ1+YWBdYn2cn6GdhmdhYGN3lp2enIttY2Jjco+bnJuOdGZlZXCImJqakHpoZ2Zug5WYmZJ/bGlobX6RlpeSg3BqaW16jZSVkoZ0bGtteImSk5KIeG5tbnaFkJKRinxxbm91gY2QkIt/c3BwdH6Kj4+LgnZxcXR8iI2OjIR5c3J0e4WLjYuFe3VzdHmCioyLhn52dHR5gIiKioeAeHV1eH+GiYqHgXp2dnh9hIiJh4J8eHd4fIKHiIeDfXl4eHyBhoeHhH96eHmA',
     cb: {
       online: function() {
-        if (ThreadUpdater.online = navigator.onLine) {
+        if (navigator.onLine) {
           ThreadUpdater.outdateCount = 0;
           ThreadUpdater.setInterval();
-          ThreadUpdater.update();
           ThreadUpdater.set('status', null, null);
         } else {
           ThreadUpdater.set('timer', null);
           ThreadUpdater.set('status', 'Offline', 'warning');
         }
-        return ThreadUpdater.cb.autoUpdate();
+        return ThreadUpdater.count(true);
       },
       post: function(e) {
-        if (e.detail.threadID !== ThreadUpdater.thread.ID) {
+        if (!(ThreadUpdater.isUpdating && e.detail.threadID === ThreadUpdater.thread.ID)) {
           return;
         }
         ThreadUpdater.outdateCount = 0;
@@ -7934,9 +7963,7 @@
           return;
         }
         ThreadUpdater.outdateCount = 0;
-        if (ThreadUpdater.seconds > ThreadUpdater.interval) {
-          return ThreadUpdater.setInterval();
-        }
+        return ThreadUpdater.seconds = Math.min(ThreadUpdater.seconds, ThreadUpdater.interval);
       },
       scrollBG: function() {
         return ThreadUpdater.scrollBG = Conf['Scroll BG'] ? function() {
@@ -7945,17 +7972,10 @@
           return !d.hidden;
         };
       },
-      autoUpdate: function() {
-        if (ThreadUpdater.online) {
-          return ThreadUpdater.timeout();
-        } else {
-          return clearTimeout(ThreadUpdater.timeoutID);
-        }
-      },
       interval: function() {
         var val;
 
-        val = +this.value;
+        val = parseInt(this.value, 10);
         if (val < 1) {
           val = 1;
         }
@@ -7966,9 +7986,9 @@
         var klass, req, text, _ref;
 
         req = ThreadUpdater.req;
+        delete ThreadUpdater.req;
         if (e.type !== 'loadend') {
           req.onloadend = null;
-          delete ThreadUpdater.req;
           if (e.type === 'timeout') {
             ThreadUpdater.set('status', 'Retrying', null);
             ThreadUpdater.update();
@@ -7998,9 +8018,8 @@
             ThreadUpdater.set('status', text, klass);
         }
         if (ThreadUpdater.postID) {
-          ThreadUpdater.cb.checkpost();
+          return ThreadUpdater.cb.checkpost();
         }
-        return delete ThreadUpdater.req;
       }
     },
     setInterval: function() {
@@ -8013,8 +8032,7 @@
       }
       ThreadUpdater.seconds = Conf['Optional Increase'] ? (cur = [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j] > i) ? cur : i : i;
       ThreadUpdater.set('timer', ThreadUpdater.seconds++);
-      clearTimeout(ThreadUpdater.timeoutID);
-      return ThreadUpdater.timeout();
+      return ThreadUpdater.count(true);
     },
     intervalShortcut: function() {
       var settings;
@@ -8036,20 +8054,29 @@
         return el.className = klass;
       }
     },
+    count: function(start) {
+      clearTimeout(ThreadUpdater.timeoutID);
+      if (start && ThreadUpdater.isUpdating && navigator.onLine) {
+        return ThreadUpdater.timeout();
+      }
+    },
     timeout: function() {
+      var sec;
+
       ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
-      ThreadUpdater.set('timer', --ThreadUpdater.seconds);
-      if (ThreadUpdater.seconds <= 0) {
+      sec = ThreadUpdater.seconds--;
+      ThreadUpdater.set('timer', sec);
+      if (sec <= 0) {
         return ThreadUpdater.update();
       }
     },
     update: function() {
       var url;
 
-      if (!ThreadUpdater.online) {
+      if (!navigator.onLine) {
         return;
       }
-      clearTimeout(ThreadUpdater.timeoutID);
+      ThreadUpdater.count();
       if (Conf['Auto Update']) {
         ThreadUpdater.set('timer', '...');
       } else {
@@ -8235,27 +8262,6 @@
         ThreadWatcher.fetchAllStatus();
         this.db.save();
       }
-      $.get('WatchedThreads', null, function(_arg) {
-        var WatchedThreads, boardID, data, threadID, threads, _ref;
-
-        WatchedThreads = _arg.WatchedThreads;
-        if (!WatchedThreads) {
-          return;
-        }
-        _ref = ThreadWatcher.convert(WatchedThreads);
-        for (boardID in _ref) {
-          threads = _ref[boardID];
-          for (threadID in threads) {
-            data = threads[threadID];
-            ThreadWatcher.db.set({
-              boardID: boardID,
-              threadID: threadID,
-              val: data
-            });
-          }
-        }
-        return $["delete"]('WatchedThreads');
-      });
       return Thread.prototype.callbacks.push({
         name: 'Thread Watcher',
         cb: this.node

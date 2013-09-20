@@ -268,6 +268,7 @@ QR =
           name:  post.name
           email: if /^sage$/.test post.email then persona.email else post.email
           sub:   if Conf['Remember Subject'] then post.sub      else undefined
+          flag:  post.flag
         $.set 'QR.persona', persona
 
   cooldown:
@@ -307,11 +308,10 @@ QR =
       if delay
         cooldown = {delay}
       else
-        if post.file
+        if hasFile = !!post.file
           upSpd = post.file.size / ((start - req.uploadStartTime) / $.SECOND)
           QR.cooldown.upSpdAccuracy = ((upSpd > QR.cooldown.upSpd * .9) + QR.cooldown.upSpdAccuracy) / 2
           QR.cooldown.upSpd = upSpd
-        hasFile = !!post.file
         cooldown = {isReply, hasFile, threadID}
       QR.cooldown.cooldowns[start] = cooldown
       $.set "cooldown.#{g.BOARD}", QR.cooldown.cooldowns
@@ -358,24 +358,28 @@ QR =
 
         if isReply is cooldown.isReply
           # Only cooldowns relevant to this post can set the seconds variable:
-          # reply cooldown with a reply, thread cooldown with a thread
+          #   reply cooldown with a reply, thread cooldown with a thread
           elapsed = Math.floor (now - start) / $.SECOND
           continue if elapsed < 0 # clock changed since then?
-          type = unless isReply
-            'thread'
+          unless isReply
+            type = 'thread'
           else if hasFile
-            'image'
+            # You can post an image reply immediately after a non-image reply.
+            unless cooldown.hasFile
+              seconds = Math.max seconds, 0
+              continue
+            type = 'image'
           else
-            'reply'
-          maxTimer = Math.max types[type] or 0, types[type + '_intra'] or 0 
+            type = 'reply'
+          maxTimer = Math.max types[type] or 0, types[type + '_intra'] or 0
           unless start <= now <= start + maxTimer * $.SECOND
             QR.cooldown.unset start
-          type += '_intra' if isReply and +post.thread is cooldown.threadID
+          type   += '_intra' if isReply and +post.thread is cooldown.threadID
           seconds = Math.max seconds, types[type] - elapsed
 
       if seconds and Conf['Cooldown Prediction'] and hasFile and upSpd
         seconds -= Math.floor post.file.size / upSpd * upSpdAccuracy
-        seconds = Math.max seconds, 0
+        seconds  = if seconds > 0 then seconds else 0
       # Update the status when we change posting type.
       # Don't get stuck at some random number.
       # Don't interfere with progress status updates.
@@ -565,6 +569,12 @@ QR =
           if prev then prev.sub else persona.sub
         else
           ''
+
+        if QR.nodes.flag
+          @flag = if prev
+            prev.flag
+          else
+            persona.flag
         @load() if QR.selected is @ # load persona
       @select() if select
       @unlock()
@@ -586,8 +596,8 @@ QR =
     lock: (lock=true) ->
       @isLocked = lock
       return unless @ is QR.selected
-      for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler']
-        QR.nodes[name].disabled = lock
+      for name in ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler', 'flag'] when node = QR.nodes[name]
+        node.disabled = lock
       @nodes.rm.style.visibility = if lock then 'hidden' else ''
       (if lock then $.off else $.on) QR.nodes.filename.previousElementSibling, 'click', QR.openFileInput
       @nodes.spoiler.disabled = lock
@@ -612,8 +622,9 @@ QR =
 
     load: ->
       # Load this post's values.
-      for name in ['thread', 'name', 'email', 'sub', 'com', 'filename']
-        QR.nodes[name].value = @[name] or null
+      for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag']
+        continue unless node = QR.nodes[name]
+        node.value = @[name] or node.dataset.default or null
       @showFileData()
       QR.characterCount()
 
@@ -622,7 +633,7 @@ QR =
         @spoiler = input.checked
         return
       {name}  = input.dataset
-      @[name] = input.value
+      @[name] = input.value or input.dataset.default or null
       switch name
         when 'thread'
           QR.status()
@@ -647,8 +658,9 @@ QR =
       return unless @ is QR.selected
       # Do this in case people use extensions
       # that do not trigger the `input` event.
-      for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler']
-        @save QR.nodes[name]
+      for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler', 'flag']
+        continue unless node = QR.nodes[name]
+        @save node
       return
 
     setFile: (@file) ->
@@ -948,7 +960,13 @@ QR =
           <option value=5>Loop</option>
           <option value=4 selected>Other</option>
         """
+      nodes.flashTag.dataset.default = '4'
       $.add nodes.form, nodes.flashTag
+    if flagSelector = $ '.flagSelector'
+      nodes.flag = flagSelector.cloneNode true
+      nodes.flag.dataset.name    = 'flag'
+      nodes.flag.dataset.default = '0'
+      $.add nodes.form, nodes.flag
 
     # Make a list of threads.
     for thread of g.BOARD.threads
@@ -978,12 +996,15 @@ QR =
     $.on nodes.fileExtras, 'click', (e) -> e.stopPropagation()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.handleFiles
+
     # save selected post's data
-    items = ['name', 'email', 'sub', 'com', 'filename']
+    items = ['name', 'email', 'sub', 'com', 'filename', 'flag']
     i = 0
+    save = -> QR.selected.save @
     while name = items[i++]
-      $.on nodes[name], 'input',  -> QR.selected.save @
-    $.on nodes.thread,  'change', -> QR.selected.save @
+      continue unless node = nodes[name]
+      event = if node.nodeName is 'SELECT' then 'change' else 'input'
+      $.on nodes[name], event, save
 
     <% if (type === 'userscript') { %>
     if Conf['Remember QR Size']
@@ -1029,7 +1050,7 @@ QR =
     # prevent errors
     if threadID is 'new'
       threadID = null
-      if g.BOARD.ID is 'vg' and !post.sub 
+      if g.BOARD.ID is 'vg' and !post.sub
         err = 'New threads require a subject.'
       else unless post.file or textOnly = !!$ 'input[name=textonly]', $.id 'postForm'
         err = 'No file selected.'
@@ -1065,7 +1086,7 @@ QR =
 
     post.lock()
 
-    postData =
+    formData =
       resto:    threadID
       name:     post.name
       email:    post.email
@@ -1074,6 +1095,7 @@ QR =
       upfile:   post.file
       filetag:  filetag
       spoiler:  post.spoiler
+      flag:     post.flag
       textonly: textOnly
       mode:     'regist'
       pwd:      QR.persona.pwd
@@ -1097,7 +1119,7 @@ QR =
           [<a href="//4chan.org/banned" target=_blank>Banned?</a>] [<a href="https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean" target=_blank>More info</a>]
           """
     extra =
-      form: $.formData postData
+      form: $.formData formData
       upCallbacks:
         onload: ->
           # Upload done, waiting for server response.
@@ -1202,9 +1224,9 @@ QR =
       postID
     }
 
-    # Enable auto-posting if we have stuff to post, disable it otherwise.
-    postsCount = QR.posts.length
-    QR.cooldown.auto = postsCount > 1 and isReply
+    # Enable auto-posting if we have stuff left to post, disable it otherwise.
+    postsCount = QR.posts.length - 1
+    QR.cooldown.auto = postsCount and isReply
     if QR.cooldown.auto and QR.captcha.isEnabled and (captchasCount = QR.captcha.captchas.length) < 3 and captchasCount < postsCount
       notif = new Notification 'Quick reply warning',
         body: "You are running low on cached captchas. Cache count: #{captchasCount}."
