@@ -1111,9 +1111,9 @@ QR =
       postID
     }
 
-    # Enable auto-posting if we have stuff to post, disable it otherwise.
-    postsCount = QR.posts.length
-    QR.cooldown.auto = postsCount > 1 and isReply
+    # Enable auto-posting if we have stuff left to post, disable it otherwise.
+    postsCount = QR.posts.length - 1
+    QR.cooldown.auto = postsCount and isReply
     if QR.cooldown.auto and QR.captcha.isEnabled and (captchasCount = QR.captcha.captchas.length) < 3 and captchasCount < postsCount
       notif = new Notification 'Quick reply warning',
         body: "You are running low on cached captchas. Cache count: #{captchasCount}."
