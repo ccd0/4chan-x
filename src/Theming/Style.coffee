@@ -95,10 +95,10 @@ Style =
 
   matrix: ->
     colors = []
+    rgb    = ['r', 'g', 'b']
     for arg in arguments
       hex = Style.colorToHex(arg) or "ffffff"
       color = {}
-      rgb   = ['r', 'g', 'b']
       i     = 0
       while val = rgb[i]
         color[val] = parseInt(hex.substr((2 * i++), 2), 16) / 255
