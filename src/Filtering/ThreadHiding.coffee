@@ -185,7 +185,7 @@ ThreadHiding =
       if Conf['Anonymize']
         'Anonymous'
       else
-        OP.info.name
+        $('.nameBlock', OP.nodes.info).textContent
 
     a = ThreadHiding.makeButton thread, 'show'
     $.add a, $.tn " #{opInfo} (#{numReplies})"
