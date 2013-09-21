@@ -69,12 +69,7 @@ Redirect =
   post: (archive, {boardID, postID}) ->
     # For fuuka-based archives:
     # https://github.com/eksopl/fuuka/issues/27
-    protocol = Redirect.protocol archive
-    # XXX foolz had HSTS set for 120 days, which broke XHR+CORS+Redirection when on HTTP.
-    # Remove necessary HTTPS procotol in September 2013.
-    if archive.name in ['Foolz', 'NSFW Foolz']
-      protocol = 'https://'
-    URL = new String "#{protocol}#{archive.domain}/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+    URL = new String "#{Redirect.protocol archive}#{archive.domain}/_/api/chan/post/?board=#{boardID}&num=#{postID}"
     URL.archive = archive
     URL
 
