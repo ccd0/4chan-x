@@ -1,3 +1,6 @@
+**seaweedchan**:
+- Delete cooldown update
+
 ### v1.2.39 
 *2013-09-19*
 
