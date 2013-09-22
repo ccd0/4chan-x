@@ -1,3 +1,6 @@
+**MayhemYDG**:
+- /pol/ flag selector
+
 **seaweedchan**:
 - Delete cooldown update
 

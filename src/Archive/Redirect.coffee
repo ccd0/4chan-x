@@ -25,6 +25,7 @@ Redirect =
     '4plebs':
       domain: 'archive.4plebs.org'
       http: true
+      https: true
       software: 'foolfuuka'
       boards: ['hr', 'tg', 'tv', 'x']
       files:  ['hr', 'tg', 'tv', 'x']
@@ -34,8 +35,8 @@ Redirect =
       http:  true
       https: false
       software: 'foolfuuka'
-      boards: ['b', 'e', 'h', 'hc', 'p', 's', 'u']
-      files:  ['b', 'e', 'h', 'hc', 'p', 's', 'u']
+      boards: ['b', 'e', 'h', 'hc', 'p', 's', 'soc', 'sp', 'u']
+      files:  ['b', 'e', 'h', 'hc', 'p', 's', 'soc', 'sp', 'u']
 
     'Foolz':
       domain: 'archive.foolz.us'
@@ -146,12 +147,7 @@ Redirect =
   post: (archive, {boardID, postID}) ->
     # For fuuka-based archives:
     # https://github.com/eksopl/fuuka/issues/27
-    protocol = Redirect.protocol archive
-    # XXX foolz had HSTS set for 120 days, which broke XHR+CORS+Redirection when on HTTP.
-    # Remove necessary HTTPS procotol in September 2013.
-    if ['Foolz', 'NSFW Foolz'].contains archive.name
-      protocol = 'https://'
-    URL = new String "#{protocol}#{archive.domain}/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+    URL = new String "#{Redirect.protocol archive}#{archive.domain}/_/api/chan/post/?board=#{boardID}&num=#{postID}"
     URL.archive = archive
     URL
 

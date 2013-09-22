@@ -1,21 +1,14 @@
 module.exports = (grunt) ->
 
-  concatOptions =
-    process: Object.create(null, data:
-      get: -> grunt.config 'pkg'
-      enumerable: true
-    )
-  shellOptions =
-    stdout: true
-    stderr: true
-    failOnError: true
-
   # Project configuration.
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
     concat:
+      options: process: Object.create(null, data:
+        get: -> grunt.config 'pkg'
+        enumerable: true
+      )
       coffee:
-        options: concatOptions
         src: [
           'src/General/Config.coffee'
           'src/General/Globals.coffee'
@@ -41,13 +34,11 @@ module.exports = (grunt) ->
         dest: 'tmp-<%= pkg.type %>/script.coffee'
 
       meta:
-        options: concatOptions
         files:
           'LICENSE':   'src/General/meta/banner.js',
           'latest.js': 'src/General/meta/latest.js' 
 
       crx:
-        options: concatOptions
         files:
           'builds/crx/manifest.json': 'src/General/meta/manifest.json'
           'builds/crx/script.js': [
@@ -57,7 +48,6 @@ module.exports = (grunt) ->
             'tmp-<%= pkg.type %>/script.js'
           ]
       userscript:
-        options: concatOptions
         files:
           'builds/<%= pkg.name %>.meta.js': 'src/General/meta/metadata.js'
           'builds/<%= pkg.name %>.user.js': [
@@ -96,22 +86,23 @@ module.exports = (grunt) ->
         push:      false
 
     shell:
+      options:
+        stdout: true
+        stderr: true
+        failOnError: true
       commit:
-        options: shellOptions
-        command: [
-          'git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."'
-          'git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
-          'git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
-        ].join ' && '
-
+        command: """
+          git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."
+          git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."
+          git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.version %>."
+        """
       push:
-        options: shellOptions
         command: 'git push origin --tags -f && git push origin --all'
 
     watch:
+      options:
+        interrupt: true
       all:
-        options:
-          interrupt: true
         files: [
           'Gruntfile.coffee'
           'package.json'
