@@ -4924,7 +4924,7 @@
       }
       if (QR.captcha.isEnabled && /captcha|verification/i.test(el.textContent)) {
         QR.captcha.nodes.input.focus();
-        if (Conf['Captcha Warning Notifications']) {
+        if (Conf['Captcha Warning Notifications'] && !d.hidden) {
           QR.notify(el);
         } else {
           $.addClass(QR.captcha.nodes.input, 'error');
@@ -4942,17 +4942,17 @@
     notify: function(el) {
       var notice, notif;
       notice = new Notice('warning', el);
-      QR.notifications.push(notice);
-      if (!Header.areNotificationsEnabled) {
-        return;
+      if (!(Header.areNotificationsEnabled && d.hidden)) {
+        return QR.notifications.push(notice);
+      } else {
+        notif = new Notification(el.textContent, {
+          body: el.textContent,
+          icon: Favicon.logo
+        });
+        return notif.onclick = function() {
+          return window.focus();
+        };
       }
-      notif = new Notification(el.textContent, {
-        body: el.textContent,
-        icon: Favicon.logo
-      });
-      return notif.onclick = function() {
-        return window.focus();
-      };
     },
     notifications: [],
     cleanNotifications: function() {

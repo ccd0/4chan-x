@@ -4927,7 +4927,7 @@
       }
       if (QR.captcha.isEnabled && /captcha|verification/i.test(el.textContent)) {
         QR.captcha.nodes.input.focus();
-        if (Conf['Captcha Warning Notifications']) {
+        if (Conf['Captcha Warning Notifications'] && !d.hidden) {
           QR.notify(el);
         } else {
           $.addClass(QR.captcha.nodes.input, 'error');
@@ -4945,26 +4945,26 @@
     notify: function(el) {
       var notice, notif;
       notice = new Notice('warning', el);
-      QR.notifications.push(notice);
-      if (!Header.areNotificationsEnabled) {
-        return;
+      if (!(Header.areNotificationsEnabled && d.hidden)) {
+        return QR.notifications.push(notice);
+      } else {
+        notif = new Notification(el.textContent, {
+          body: el.textContent,
+          icon: Favicon.logo
+        });
+        notif.onclick = function() {
+          return window.focus();
+        };
+        notif.onclose = function() {
+          return notice.close();
+        };
+        return notif.onshow = function() {
+          return setTimeout(function() {
+            notif.onclose = null;
+            return notif.close();
+          }, 7 * $.SECOND);
+        };
       }
-      notif = new Notification(el.textContent, {
-        body: el.textContent,
-        icon: Favicon.logo
-      });
-      notif.onclick = function() {
-        return window.focus();
-      };
-      notif.onclose = function() {
-        return notice.close();
-      };
-      return notif.onshow = function() {
-        return setTimeout(function() {
-          notif.onclose = null;
-          return notif.close();
-        }, 7 * $.SECOND);
-      };
     },
     notifications: [],
     cleanNotifications: function() {
