@@ -1,8 +1,13 @@
+### v1.2.40 
+*2013-09-22*
+
 **MayhemYDG**:
 - /pol/ flag selector
 
 **seaweedchan**:
 - Delete cooldown update
+- Small bug fixes
+- Don't show warnings AND desktop notifications at the same time, and prefer QR warnings unless the document is hidden
 
 ### v1.2.39 
 *2013-09-19*
