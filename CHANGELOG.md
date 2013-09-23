@@ -1,3 +1,5 @@
+### 3.11.4 - *2013-09-23*
+
 Tiny posting cooldown adjustment:
  - You can post an image reply immediately after a non-image reply.
 
