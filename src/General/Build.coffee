@@ -72,7 +72,7 @@ Build =
       emailStart = ''
       emailEnd   = ''
 
-    subject = "<span class=subject>#{subject or ''}</span>"
+    subject = "<span class=subject>#{subject or ''}</span> "
 
     userID =
       if !capcode and uniqueID
