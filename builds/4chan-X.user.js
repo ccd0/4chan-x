@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.39 - 2013-09-20
+* 4chan X - Version 1.2.39 - 2013-09-24
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -9038,6 +9038,7 @@
       '4plebs': {
         domain: 'archive.4plebs.org',
         http: true,
+        https: true,
         software: 'foolfuuka',
         boards: ['hr', 'tg', 'tv', 'x'],
         files: ['hr', 'tg', 'tv', 'x']
@@ -9045,10 +9046,10 @@
       'fap archive': {
         domain: 'fuuka.worldathleticproject.org',
         http: true,
-        https: false,
+        https: true,
         software: 'foolfuuka',
         boards: ['b', 'e', 'h', 'hc', 'p', 's', 'u'],
-        files: ['b', 'e', 'h', 'hc', 'p', 's', 'u']
+        files: ['b', 'e', 'h', 'hc', 'p', 's', 'soc', 'sp', 'u']
       },
       'Foolz': {
         domain: 'archive.foolz.us',
@@ -9072,8 +9073,8 @@
         https: true,
         withCredentials: true,
         software: 'foolfuuka',
-        boards: ['a', 'co', 'gd', 'h', 'jp', 'm', 'mlp', 'q', 'sp', 'tg', 'tv', 'u', 'v', 'vg', 'vp', 'vr', 'wsg'],
-        files: ['a', 'gd', 'h', 'jp', 'm', 'q', 'tg', 'u', 'vg', 'vp', 'vr', 'wsg']
+        boards: ['a', 'co', 'd', 'gd', 'h', 'jp', 'm', 'mlp', 'q', 'sp', 'tg', 'tv', 'u', 'v', 'vg', 'vp', 'vr', 'wsg'],
+        files: ['a', 'd', 'gd', 'h', 'jp', 'm', 'q', 'tg', 'u', 'vg', 'vp', 'vr', 'wsg']
       },
       'Heinessen': {
         domain: 'archive.heinessen.com',
@@ -9163,14 +9164,10 @@
       return "" + (Redirect.protocol(archive)) + archive.domain + "/" + path;
     },
     post: function(archive, _arg) {
-      var URL, boardID, postID, protocol;
+      var URL, boardID, postID;
 
       boardID = _arg.boardID, postID = _arg.postID;
-      protocol = Redirect.protocol(archive);
-      if (['Foolz', 'NSFW Foolz'].contains(archive.name)) {
-        protocol = 'https://';
-      }
-      URL = new String("" + protocol + archive.domain + "/_/api/chan/post/?board=" + boardID + "&num=" + postID);
+      URL = new String("" + (Redirect.protocol(archive)) + archive.domain + "/_/api/chan/post/?board=" + boardID + "&num=" + postID);
       URL.archive = archive;
       return URL;
     },
