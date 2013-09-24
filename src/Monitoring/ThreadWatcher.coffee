@@ -19,14 +19,6 @@ ThreadWatcher =
       ThreadWatcher.fetchAllStatus()
       @db.save()
 
-    # XXX tmp conversion from old to new format
-    $.get 'WatchedThreads', null, ({WatchedThreads}) ->
-      return unless WatchedThreads
-      for boardID, threads of ThreadWatcher.convert WatchedThreads
-        for threadID, data of threads
-          ThreadWatcher.db.set {boardID, threadID, val: data}
-      $.delete 'WatchedThreads'
-
     Thread::callbacks.push
       name: 'Thread Watcher'
       cb:   @node

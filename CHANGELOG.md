@@ -1,3 +1,27 @@
+
+**MayhemYDG**:
+- Tiny posting cooldown adjustment:
+  * You can post an image reply immediately after a non-image reply.
+- Update posting cooldown timers to match 4chan settings:
+  * Cooldown may vary between inter-thread and intra-thread replies.
+  * Cooldown may vary when posting a file or not.
+  * Cooldown does not take sageing into account anymore.
+  * Timers vary across boards.
+- Updated post and deletion cooldown timers to match 4chan changes: they are now twice longer.
+- Added support for the flag selector on /pol/.
+
+**seaweedchan**:
+- Fix thread updater bug introduced in last version
+- Just some small fixes.
+
+**zixaphir**:
+- Some changes to mascots
+  * Silhouette mascots are now generated dynamically with the silhouette filter
+  * Images are now compressed client side before being uploaded via the upload interface (this is only for mascots, not posts)
+- Fix an issue with Linkifier linkifying replaced spoilers
+- Fix an issue with "fit height" in the gallery on Chrome
+- Small thread updater fixes
+
 ### v2.3.10 
 *2013-08-31*
 

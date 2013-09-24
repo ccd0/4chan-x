@@ -31,7 +31,7 @@ DeleteLink =
       el: div
       order: 40
       open: (post) ->
-        return false if post.isDead or post.board.ID is 'q'
+        return false if post.isDead
         DeleteLink.post = post
         node = div.firstChild
         node.textContent = 'Delete'
@@ -84,7 +84,7 @@ DeleteLink =
         delete DeleteLink.cooldown.counting
         return
       DeleteLink.cooldown.counting = post
-      length = 30
+      length  = 60
       seconds = Math.ceil (length * $.SECOND - (Date.now() - post.info.date)) / $.SECOND
       DeleteLink.cooldown.count post, seconds, length, node
     count: (post, seconds, length, node) ->

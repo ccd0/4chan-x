@@ -799,12 +799,8 @@ Config =
 #/Mod$/;highlight:mod;op:yes
 # Set a custom class for moot:
 #/Admin$/;highlight:moot;op:yes
-"""
-
-    email: """
-# Filter any e-mails that are not `sage` on /a/ and /jp/:
-#/^(?!sage$)/;boards:a,jp
-"""
+    """
+    email: ""
     subject: """
 # Filter Generals on /v/:
 #/general/i;boards:v;op:only
