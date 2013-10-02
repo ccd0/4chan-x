@@ -3,7 +3,7 @@ IDColor =
     return if g.VIEW is 'catalog' or !Conf['Color User IDs']
     @ids = {}
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Color User IDs'
       cb:   @node
 

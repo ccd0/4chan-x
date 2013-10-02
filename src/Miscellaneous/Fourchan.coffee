@@ -10,7 +10,7 @@ Fourchan =
           pre.innerHTML = prettyPrintOne(pre.innerHTML);
         }, false);
       """
-      Post::callbacks.push
+      Post.callbacks.push
         name: 'Parse /g/ code'
         cb:   @code
     if board is 'sci'
@@ -27,7 +27,7 @@ Fourchan =
           }
         }, false);
       """
-      Post::callbacks.push
+      Post.callbacks.push
         name: 'Parse /sci/ math'
         cb:   @math
   code: ->

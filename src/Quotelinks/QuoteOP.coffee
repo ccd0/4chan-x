@@ -4,7 +4,7 @@ QuoteOP =
 
     # \u00A0 is nbsp
     @text = '\u00A0(OP)'
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Mark OP Quotes'
       cb:   @node
   node: ->

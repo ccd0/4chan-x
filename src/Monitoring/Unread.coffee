@@ -8,7 +8,7 @@ Unread =
     @posts = []
     @postsQuotingYou = []
 
-    Thread::callbacks.push
+    Thread.callbacks.push
       name: 'Unread'
       cb:   @node
 

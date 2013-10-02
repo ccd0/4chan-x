@@ -4,7 +4,7 @@ QuoteCT =
 
     # \u00A0 is nbsp
     @text = '\u00A0(Cross-thread)'
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Mark Cross-thread Quotes'
       cb:   @node
   node: ->

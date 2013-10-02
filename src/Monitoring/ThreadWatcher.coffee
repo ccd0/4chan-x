@@ -19,7 +19,7 @@ ThreadWatcher =
       ThreadWatcher.fetchAllStatus()
       @db.save()
 
-    Thread::callbacks.push
+    Thread.callbacks.push
       name: 'Thread Watcher'
       cb:   @node
   node: ->

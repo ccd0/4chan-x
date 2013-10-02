@@ -2,7 +2,7 @@ RevealSpoilers =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Reveal Spoilers']
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Reveal Spoilers'
       cb:   @node
   node: ->

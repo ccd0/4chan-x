@@ -2,7 +2,7 @@ QuoteInline =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Quote Inlining']
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Quote Inlining'
       cb:   @node
   node: ->

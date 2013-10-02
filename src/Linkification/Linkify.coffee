@@ -39,7 +39,7 @@ Linkify =
       )
     ///g
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Linkify'
       cb:   @node
 

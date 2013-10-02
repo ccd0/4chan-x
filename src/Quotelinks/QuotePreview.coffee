@@ -2,7 +2,7 @@ QuotePreview =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Quote Previewing']
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Quote Previewing'
       cb:   @node
   node: ->

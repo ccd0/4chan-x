@@ -2,7 +2,7 @@ ExpandComment =
   init: ->
     return if g.VIEW isnt 'index' or !Conf['Comment Expansion']
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Comment Expansion'
       cb:   @node
   node: ->

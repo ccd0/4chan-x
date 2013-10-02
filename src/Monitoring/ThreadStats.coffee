@@ -9,7 +9,7 @@ ThreadStats =
     @fileCountEl  = $ '#file-count', @dialog
     @pageCountEl  = $ '#page-count', @dialog
 
-    Thread::callbacks.push
+    Thread.callbacks.push
       name: 'Thread Stats'
       cb:   @node
   node: ->

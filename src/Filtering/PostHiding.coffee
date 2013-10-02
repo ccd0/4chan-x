@@ -3,7 +3,7 @@ PostHiding =
     return if g.VIEW is 'catalog' or !Conf['Reply Hiding'] and !Conf['Reply Hiding Link']
 
     @db = new DataBoard 'hiddenPosts'
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Reply Hiding'
       cb:   @node
 

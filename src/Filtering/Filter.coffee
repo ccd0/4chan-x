@@ -64,7 +64,7 @@ Filter =
         delete @filters[key]
 
     return unless Object.keys(@filters).length
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Filter'
       cb:   @node
 

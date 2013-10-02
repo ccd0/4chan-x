@@ -206,7 +206,7 @@ Main =
   callbackNodes: (klass, nodes) ->
     # get the nodes' length only once
     len = nodes.length
-    for callback in klass::callbacks
+    for callback in klass.callbacks
       # c.profile callback.name
       for i in [0...len] by 1
         node = nodes[i]
@@ -233,7 +233,7 @@ Main =
       else
         return
     obj.callback.isAddon = true
-    Klass::callbacks.push obj.callback
+    Klass.callbacks.push obj.callback
 
   handleErrors: (errors) ->
     unless errors instanceof Array

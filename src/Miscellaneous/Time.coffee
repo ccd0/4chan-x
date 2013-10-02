@@ -3,7 +3,7 @@ Time =
     return if g.VIEW is 'catalog' or !Conf['Time Formatting']
 
     @funk = @createFunc Conf['time']
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Time Formatting'
       cb:   @node
   node: ->

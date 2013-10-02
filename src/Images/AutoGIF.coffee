@@ -2,7 +2,7 @@ AutoGIF =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Auto-GIF'] or g.BOARD.ID in ['gif', 'wsg']
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Auto-GIF'
       cb:   @node
   node: ->

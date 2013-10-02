@@ -9,7 +9,7 @@ ImageExpand =
     $.on @EAI, 'click', ImageExpand.cb.toggleAll
     Header.addShortcut @EAI, 2
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Image Expansion'
       cb:   @node
   node: ->

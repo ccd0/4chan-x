@@ -2,7 +2,7 @@ ExpandThread =
   init: ->
     return if g.VIEW isnt 'index' or !Conf['Thread Expansion']
 
-    Thread::callbacks.push
+    Thread.callbacks.push
       name: 'Thread Expansion'
       cb:   @node
   node: ->

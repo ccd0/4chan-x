@@ -2,7 +2,7 @@ Quotify =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Resurrect Quotes']
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Resurrect Quotes'
       cb:   @node
   node: ->
