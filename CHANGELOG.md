@@ -1,3 +1,5 @@
+Minor Chrome 30 fix.
+
 ### 3.11.4 - *2013-09-23*
 
 Tiny posting cooldown adjustment:
