@@ -1,3 +1,6 @@
+### v1.2.41 
+*2013-10-03*
+
 **MayhemYDG**:
 - Minor Chrome 30 fix
 
