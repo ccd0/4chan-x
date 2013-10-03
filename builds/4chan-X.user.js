@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.40 - 2013-09-22
+* 4chan X - Version 1.2.40 - 2013-10-03
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -6185,6 +6185,10 @@
       ThreadUpdater.postID = postID;
       $.event('QRPostSuccessful', {
         board: g.BOARD,
+        threadID: threadID,
+        postID: postID
+      });
+      $.event('QRPostSuccessful_', {
         threadID: threadID,
         postID: postID
       });
