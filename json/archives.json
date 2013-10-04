@@ -77,8 +77,8 @@
   "http": true,
   "https": true,
   "software": "fuuka",
-  "boards": ["cgl", "g", "mu", "w"],
-  "files": ["cgl", "g", "mu", "w"]
+  "boards": ["cgl", "con", "g", "mu", "w"],
+  "files": ["cgl", "con", "g", "mu", "w"]
 }, {
   "uid": 9,
   "name": "Heinessen",
