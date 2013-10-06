@@ -76,4 +76,9 @@ Quotify =
       @nodes.quotelinks.push a
 
   fixDeadlink: (deadlink) ->
+    if !(el = deadlink.previousSibling) or el.nodeName is 'BR'
+      green = $.el 'span',
+        className: 'quote'
+      $.before deadlink, green
+      $.add green, deadlink
     $.replace deadlink, [deadlink.childNodes...]
