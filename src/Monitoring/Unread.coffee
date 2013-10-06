@@ -91,7 +91,7 @@ Unread =
     for quotelink in post.nodes.quotelinks when QR.db.get Get.postDataFromLink quotelink
       Unread.postsQuotingYou.push post
       Unread.openNotification post
-    return
+      return
   openNotification: (post) ->
     return unless Header.areNotificationsEnabled
     name = if Conf['Anonymize']
