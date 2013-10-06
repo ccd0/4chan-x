@@ -389,7 +389,6 @@ QR =
     e.preventDefault()
     QR.open()
     QR.handleFiles e.dataTransfer.files
-    $.addClass QR.nodes.el, 'dump'
   paste: (e) ->
     files = []
     for item in e.clipboardData.items when item.kind is 'file'
