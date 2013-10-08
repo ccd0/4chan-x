@@ -44,15 +44,6 @@
   "boards": ["c", "w", "wg"],
   "files": ["c", "w", "wg"]
 }, {
-  "uid": 11,
-  "name": "Foolz a Shit",
-  "domain": "archive.foolzashit.com",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["adv", "asp", "cm", "d", "e", "i", "lgbt", "n", "o", "p", "pol", "s", "s4s", "t", "trv", "y"],
-  "files": ["cm", "d", "e", "i", "n", "o", "p", "s", "trv", "y"]
-}, {
   "uid": 12,
   "name": "FapArchive",
   "domain": "fuuka.worldathleticproject.org",
