@@ -4,7 +4,7 @@ ThreadHiding =
 
     @db = new DataBoard 'hiddenThreads'
     @syncCatalog()
-    Thread::callbacks.push
+    Thread.callbacks.push
       name: 'Thread Hiding'
       cb:   @node
 

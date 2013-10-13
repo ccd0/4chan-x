@@ -11,7 +11,9 @@ QuoteYou =
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
-    Post::callbacks.push
+    # \u00A0 is nbsp
+    @text = '\u00A0(You)'
+    Post.callbacks.push
       name: 'Mark Quotes of You'
       cb:   @node
 
@@ -25,7 +27,7 @@ QuoteYou =
     return unless @quotes.length
 
     for quotelink in @nodes.quotelinks when QR.db.get Get.postDataFromLink quotelink
-        $.add quotelink, $.tn '\u00A0(You)'
+        $.add quotelink, $.tn QuoteYou.text
         $.addClass quotelink, 'you'
         $.addClass @nodes.root, 'quotesYou'
     return

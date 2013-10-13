@@ -35,7 +35,7 @@ Redirect =
       http:  true
       https: true
       software: 'foolfuuka'
-      boards: ['b', 'e', 'h', 'hc', 'p', 's', 'u']
+      boards: ['b', 'e', 'h', 'hc', 'p', 's', 'soc', 'sp', 'u']
       files:  ['b', 'e', 'h', 'hc', 'p', 's', 'soc', 'sp', 'u']
 
     'Foolz':
@@ -45,14 +45,6 @@ Redirect =
       software: 'foolfuuka'
       boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg']
       files:  ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg']
-
-    'Foolz a Shit':
-      domain: 'archive.foolzashit.com'
-      http:  true
-      https: true
-      software: 'foolfuuka'
-      boards: ['adv', 'asp', 'cm', 'd', 'e', 'i', 'lgbt', 'n', 'o', 'p', 'pol', 's', 's4s', 't', 'trv', 'y']
-      files:  ['cm', 'd', 'e', 'i', 'n', 'o', 'p', 's', 'trv', 'y']
 
     'Foolz Beta':
       domain: 'beta.foolz.us'

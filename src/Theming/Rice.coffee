@@ -3,7 +3,7 @@ Rice =
     $.ready ->
       Rice.nodes d.body
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Rice Checkboxes'
       cb:   @node
 

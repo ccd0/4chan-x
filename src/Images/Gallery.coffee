@@ -13,7 +13,7 @@ Gallery =
 
     Header.addShortcut el, true
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Gallery'
       cb: @node
 

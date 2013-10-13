@@ -3,7 +3,7 @@ Recursive =
   init: ->
     return if g.VIEW is 'catalog'
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Recursive'
       cb:   @node
 

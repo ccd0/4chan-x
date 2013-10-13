@@ -44,23 +44,14 @@
   "boards": ["c", "w", "wg"],
   "files": ["c", "w", "wg"]
 }, {
-  "uid": 11,
-  "name": "Foolz a Shit",
-  "domain": "archive.foolzashit.com",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["adv", "asp", "cm", "d", "e", "i", "lgbt", "n", "o", "p", "pol", "s", "s4s", "t", "trv", "y"],
-  "files": ["cm", "d", "e", "i", "n", "o", "p", "s", "trv", "y"]
-}, {
   "uid": 12,
   "name": "FapArchive",
   "domain": "fuuka.worldathleticproject.org",
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["b", "e", "h", "hc", "p", "s", "soc", "sp", "u"],
-  "files": ["b", "e", "h", "hc", "p", "s", "soc", "sp", "u"]
+  "boards": ["b", "con", "e", "h", "hc", "p", "s", "soc", "sp", "u"],
+  "files": ["b", "con", "e", "h", "hc", "p", "s", "soc", "sp", "u"]
 }, {
   "uid": 7,
   "name": "Install Gentoo",
@@ -77,8 +68,8 @@
   "http": true,
   "https": true,
   "software": "fuuka",
-  "boards": ["cgl", "g", "mu", "w"],
-  "files": ["cgl", "g", "mu", "w"]
+  "boards": ["cgl", "con", "g", "mu", "w"],
+  "files": ["cgl", "con", "g", "mu", "w"]
 }, {
   "uid": 9,
   "name": "Heinessen",

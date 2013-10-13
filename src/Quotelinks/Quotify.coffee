@@ -5,7 +5,7 @@ Quotify =
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Resurrect Quotes'
       cb:   @node
   node: ->
@@ -81,4 +81,9 @@ Quotify =
       @nodes.quotelinks.push a
 
   fixDeadlink: (deadlink) ->
+    if !(el = deadlink.previousSibling) or el.nodeName is 'BR'
+      green = $.el 'span',
+        className: 'quote'
+      $.before deadlink, green
+      $.add green, deadlink
     $.replace deadlink, [deadlink.childNodes...]

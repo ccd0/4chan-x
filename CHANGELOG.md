@@ -1,4 +1,3 @@
-
 **MayhemYDG**:
 - Tiny posting cooldown adjustment:
   * You can post an image reply immediately after a non-image reply.
@@ -9,10 +8,14 @@
   * Timers vary across boards.
 - Updated post and deletion cooldown timers to match 4chan changes: they are now twice longer.
 - Added support for the flag selector on /pol/.
+- Minor Chrome 30 fix.
 
 **seaweedchan**:
 - Fix thread updater bug introduced in last version
 - Just some small fixes.
+- Delete cooldown update
+- Small bug fixes
+- Don't show warnings AND desktop notifications at the same time, and prefer QR warnings unless the document is hidden
 
 **zixaphir**:
 - Some changes to mascots
@@ -36,6 +39,7 @@
   * The QR will now warn you when you are running low on cached captchas while auto-posting.
 
 **seaweedchan**:
+<<<<<<< HEAD
 - Gallery Bugfix: hide thumbnails
 
 **Zixaphir**:
@@ -66,6 +70,12 @@
 *2013-08-21*
 
 **Zixaphir**:
+=======
+ - Visual overhaul for gallery mode
+
+**Zixaphir**:
+ - Fix an issue with the file dialog randomly opening multiple times (with seaweedchan)
+>>>>>>> v3
 ![Gallery](src/General/img/changelog/2.3.6.png)
 - **New Feature**: `Gallery`.
   * Disabled by default.

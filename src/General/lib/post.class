@@ -1,5 +1,5 @@
 class Post
-  callbacks: []
+  @callbacks = []
   toString: -> @ID
 
   constructor: (root, @thread, @board, that={}) ->

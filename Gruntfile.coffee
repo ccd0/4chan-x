@@ -90,11 +90,11 @@ module.exports = (grunt) ->
         stderr: true
         failOnError: true
       commit:
-        command: [
-          'git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."'
-          'git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
-          'git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
-        ].join ' && '
+        command: """
+          git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."
+          git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."
+          git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.version %>."
+        """
       push:
         command: 'git push origin --tags -f && git push origin --all'
 

@@ -20,7 +20,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.3.10 - 2013-09-24
+* appchan x - Version 2.3.10 - 2013-10-13
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -108,7 +108,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -3209,7 +3209,7 @@
   })();
 
   Thread = (function() {
-    Thread.prototype.callbacks = [];
+    Thread.callbacks = [];
 
     Thread.prototype.toString = function() {
       return this.ID;
@@ -3233,7 +3233,7 @@
   })();
 
   Post = (function() {
-    Post.prototype.callbacks = [];
+    Post.callbacks = [];
 
     Post.prototype.toString = function() {
       return this.ID;
@@ -4263,7 +4263,7 @@
         emailStart = '';
         emailEnd = '';
       }
-      subject = "<span class=subject>" + (subject || '') + "</span>";
+      subject = " <span class=subject>" + (subject || '') + "</span> ";
       userID = !capcode && uniqueID ? (" <span class='posteruid id_" + uniqueID + "'>(ID: ") + ("<span class=hand title='Highlight posts by this ID'>" + uniqueID + "</span>)</span> ") : '';
       switch (capcode) {
         case 'admin':
@@ -4330,7 +4330,7 @@
       container = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: "" + (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + "<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'><div class='postInfoM mobile' id=pim" + postID + "><span class='nameBlock" + capcodeClass + "'><span class=name>" + (name || '') + "</span>" + (tripcode + capcodeStart + capcode + userID + flag + sticky + closed) + "<br>" + subject + "</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date + "<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + ">No.</a><a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a></span></div>" + (isOP ? fileHTML : '') + "<div class='postInfo desktop' id=pi" + postID + "><input type=checkbox name=" + postID + " value=delete>&nbsp;" + subject + "&nbsp;<span class='nameBlock" + capcodeClass + "'>" + emailStart + "<span class=name>" + (name || '') + "</span>" + (tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed) + "</span>" + " " + "<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span>" + " " + "<span class='postNum desktop'><a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a><a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a></span></div>" + (isOP ? '' : fileHTML) + "<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote>" + " " + "</div>"
+        innerHTML: "" + (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + "<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'><div class='postInfoM mobile' id=pim" + postID + "><span class='nameBlock" + capcodeClass + "'><span class=name>" + (name || '') + "</span>" + (tripcode + capcodeStart + capcode + userID + flag + sticky + closed) + "<br>" + subject + "</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date + "<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + ">No.</a><a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a></span></div>" + (isOP ? fileHTML : '') + "<div class='postInfo desktop' id=pi" + postID + "><input type=checkbox name=" + postID + " value=delete>" + subject + "<span class='nameBlock" + capcodeClass + "'>" + emailStart + "<span class=name>" + (name || '') + "</span>" + (tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed) + "</span>" + " " + "<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span>" + " " + "<span class='postNum desktop'><a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a><a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a></span></div>" + (isOP ? '' : fileHTML) + "<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote>" + " " + "</div>"
       });
       _ref = $$('.quotelink', container);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -5048,7 +5048,7 @@
       if (g.VIEW === 'catalog' || !Conf['Anonymize']) {
         return;
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Anonymize',
         cb: this.node
       });
@@ -5139,7 +5139,7 @@
       if (!Object.keys(this.filters).length) {
         return;
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Filter',
         cb: this.node
       });
@@ -5369,7 +5369,7 @@
         $.addClass(doc, "reply-hide");
       }
       this.db = new DataBoard('hiddenPosts');
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Reply Hiding',
         cb: this.node
       });
@@ -5672,7 +5672,7 @@
       if (g.VIEW === 'catalog') {
         return;
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Recursive',
         cb: this.node
       });
@@ -5743,7 +5743,7 @@
       }
       this.db = new DataBoard('hiddenThreads');
       this.syncCatalog();
-      return Thread.prototype.callbacks.push({
+      return Thread.callbacks.push({
         name: 'Thread Hiding',
         cb: this.node
       });
@@ -6012,11 +6012,11 @@
       format = Conf['backlink'].replace(/%id/g, "' + id + '");
       this.funk = Function('id', "return '" + format + "'");
       this.containers = {};
-      Post.prototype.callbacks.push({
+      Post.callbacks.push({
         name: 'Quote Backlinking Part 1',
         cb: this.firstNode
       });
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Quote Backlinking Part 2',
         cb: this.secondNode
       });
@@ -6095,7 +6095,7 @@
         ExpandComment.callbacks.push(this.node);
       }
       this.text = '\u00A0(Cross-thread)';
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Mark Cross-thread Quotes',
         cb: this.node
       });
@@ -6156,7 +6156,7 @@
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Quote Inlining',
         cb: this.node
       });
@@ -6258,7 +6258,7 @@
         ExpandComment.callbacks.push(this.node);
       }
       this.text = '\u00A0(OP)';
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Mark OP Quotes',
         cb: this.node
       });
@@ -6301,7 +6301,7 @@
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Quote Previewing',
         cb: this.node
       });
@@ -6384,7 +6384,7 @@
       if (g.VIEW === 'catalog' || !Conf['Reply Hiding Buttons'] && !Conf['Reply Hiding Link'] && !Conf['Filter']) {
         return;
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Strike-through Quotes',
         cb: this.node
       });
@@ -6430,7 +6430,7 @@
         order: 98
       });
       $.on(d, '4chanXInitFinished', this.setup);
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Quote Threading',
         cb: this.node
       });
@@ -6567,7 +6567,8 @@
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
-      return Post.prototype.callbacks.push({
+      this.text = '\u00A0(You)';
+      return Post.callbacks.push({
         name: 'Mark Quotes of You',
         cb: this.node
       });
@@ -6590,7 +6591,7 @@
         if (!(QR.db.get(Get.postDataFromLink(quotelink)))) {
           continue;
         }
-        $.add(quotelink, $.tn('\u00A0(You)'));
+        $.add(quotelink, $.tn(QuoteYou.text));
         $.addClass(quotelink, 'you');
         $.addClass(this.nodes.root, 'quotesYou');
       }
@@ -6647,7 +6648,7 @@
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Resurrect Quotes',
         cb: this.node
       });
@@ -6739,6 +6740,15 @@
       }
     },
     fixDeadlink: function(deadlink) {
+      var el, green;
+
+      if (!(el = deadlink.previousSibling) || el.nodeName === 'BR') {
+        green = $.el('span', {
+          className: 'quote'
+        });
+        $.before(deadlink, green);
+        $.add(green, deadlink);
+      }
       return $.replace(deadlink, __slice.call(deadlink.childNodes));
     }
   };
@@ -6755,7 +6765,7 @@
       if (Conf['Title Link']) {
         $.sync('CachedTitles', Linkify.titleSync);
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Linkify',
         cb: this.node
       });
@@ -7217,7 +7227,7 @@
           $.ready(this.persist);
         }
       }
-      Post.prototype.callbacks.push({
+      Post.callbacks.push({
         name: 'Quick Reply',
         cb: this.node
       });
@@ -7386,7 +7396,7 @@
       }
       if (QR.captcha.isEnabled && /captcha|verification/i.test(el.textContent)) {
         QR.captcha.nodes.input.focus();
-        if (Conf['Captcha Warning Notifications']) {
+        if (Conf['Captcha Warning Notifications'] && !d.hidden) {
           QR.notify(el);
         } else {
           $.addClass(QR.captcha.nodes.input, 'error');
@@ -7405,17 +7415,17 @@
       var notice, notif;
 
       notice = new Notice('warning', el);
-      QR.notifications.push(notice);
-      if (!Header.areNotificationsEnabled) {
-        return;
+      if (!(Header.areNotificationsEnabled && d.hidden)) {
+        return QR.notifications.push(notice);
+      } else {
+        notif = new Notification(el.textContent, {
+          body: el.textContent,
+          icon: Favicon.logo
+        });
+        return notif.onclick = function() {
+          return window.focus();
+        };
       }
-      notif = new Notification(el.textContent, {
-        body: el.textContent,
-        icon: Favicon.logo
-      });
-      return notif.onclick = function() {
-        return window.focus();
-      };
     },
     notifications: [],
     cleanNotifications: function() {
@@ -7760,8 +7770,7 @@
       }
       e.preventDefault();
       QR.open();
-      QR.handleFiles(e.dataTransfer.files);
-      return $.addClass(QR.nodes.el, 'dump');
+      return QR.handleFiles(e.dataTransfer.files);
     },
     paste: function(e) {
       var blob, files, item, _i, _len, _ref;
@@ -8719,6 +8728,10 @@
         threadID: threadID,
         postID: postID
       });
+      $.event('QRPostSuccessful_', {
+        threadID: threadID,
+        postID: postID
+      });
       postsCount = QR.posts.length - 1;
       QR.cooldown.auto = postsCount && isReply;
       if (QR.cooldown.auto && QR.captcha.isEnabled && (captchasCount = QR.captcha.captchas.length) < 3 && captchasCount < postsCount) {
@@ -8790,6 +8803,40 @@
     }
   };
 
+  AutoGIF = {
+    init: function() {
+      var _ref;
+
+      if (g.VIEW === 'catalog' || !Conf['Auto-GIF'] || ((_ref = g.BOARD.ID) === 'gif' || _ref === 'wsg')) {
+        return;
+      }
+      return Post.callbacks.push({
+        name: 'Auto-GIF',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var URL, gif, style, thumb, _ref, _ref1;
+
+      if (this.isClone || this.isHidden || this.thread.isHidden || !((_ref = this.file) != null ? _ref.isImage : void 0)) {
+        return;
+      }
+      _ref1 = this.file, thumb = _ref1.thumb, URL = _ref1.URL;
+      if (!(/gif$/.test(URL) && !/spoiler/.test(thumb.src))) {
+        return;
+      }
+      if (this.file.isSpoiler) {
+        style = thumb.style;
+        style.maxHeight = style.maxWidth = this.isReply ? '125px' : '250px';
+      }
+      gif = $.el('img');
+      $.on(gif, 'load', function() {
+        return thumb.src = URL;
+      });
+      return gif.src = URL;
+    }
+  };
+
   FappeTyme = {
     init: function() {
       var el;
@@ -8818,7 +8865,7 @@
         $.on(el, 'click', FappeTyme.cb.werk);
         Header.addShortcut(el, true);
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Fappe Tyme',
         cb: this.node
       });
@@ -8855,7 +8902,7 @@
       });
       $.on(el, 'click', this.cb.toggle);
       Header.addShortcut(el, true);
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Gallery',
         cb: this.node
       });
@@ -9155,7 +9202,7 @@
       });
       $.on(this.EAI, 'click', ImageExpand.cb.toggleAll);
       Header.addShortcut(this.EAI, true);
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Image Expansion',
         cb: this.node
       });
@@ -9414,7 +9461,7 @@
       if (g.VIEW === 'catalog' || !Conf['Image Hover']) {
         return;
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Image Hover',
         cb: this.node
       });
@@ -9509,7 +9556,7 @@
       if (!(Conf["Image Prefetching"] || Conf["Replace JPG"] || Conf["Replace PNG"] || Conf["Replace GIF"])) {
         return;
       }
-      Post.prototype.callbacks.push({
+      Post.callbacks.push({
         name: 'Image Replace',
         cb: this.node
       });
@@ -9568,8 +9615,7 @@
       if (g.VIEW === 'catalog' || !Conf['Reveal Spoiler Thumbnails']) {
         return;
       }
-      return Post.prototype.callbacks.push({
-        name: 'Reveal Spoiler Thumbnails',
+      return Post.callbacks.push({
         cb: this.node
       });
     },
@@ -9611,7 +9657,7 @@
       this.link = $.el('a', {
         target: '_blank'
       });
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Sauce',
         cb: this.node
       });
@@ -9909,7 +9955,7 @@
         return;
       }
       this.menu = new UI.Menu('post');
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Menu',
         cb: this.node
       });
@@ -10025,7 +10071,7 @@
       if (g.VIEW !== 'thread' || !Conf['Thread Excerpt']) {
         return;
       }
-      return Thread.prototype.callbacks.push({
+      return Thread.callbacks.push({
         name: 'Thread Excerpt',
         cb: this.node
       });
@@ -10061,7 +10107,7 @@
       this.postCountEl = $('#post-count', sc);
       this.fileCountEl = $('#file-count', sc);
       this.pageCountEl = $('#page-count', sc);
-      return Thread.prototype.callbacks.push({
+      return Thread.callbacks.push({
         name: 'Thread Stats',
         cb: this.node
       });
@@ -10206,7 +10252,7 @@
         order: 110,
         subEntries: subEntries
       });
-      return Thread.prototype.callbacks.push({
+      return Thread.callbacks.push({
         name: 'Thread Updater',
         cb: this.node
       });
@@ -10215,6 +10261,7 @@
       ThreadUpdater.thread = this;
       ThreadUpdater.root = this.OP.nodes.root.parentNode;
       ThreadUpdater.lastPost = +ThreadUpdater.root.lastElementChild.id.match(/\d+/)[0];
+      ThreadUpdater.outdateCount = 0;
       ThreadUpdater.cb.interval.call($.el('input', {
         value: Conf['Interval']
       }));
@@ -10232,7 +10279,7 @@
     beep: 'data:audio/wav;base64,UklGRjQDAABXQVZFZm10IBAAAAABAAEAgD4AAIA+AAABAAgAc21wbDwAAABBAAADAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkYXRhzAIAAGMms8em0tleMV4zIpLVo8nhfSlcPR102Ki+5JspVEkdVtKzs+K1NEhUIT7DwKrcy0g6WygsrM2k1NpiLl0zIY/WpMrjgCdbPhxw2Kq+5Z4qUkkdU9K1s+K5NkVTITzBwqnczko3WikrqM+l1NxlLF0zIIvXpsnjgydZPhxs2ay95aIrUEkdUdC3suK8N0NUIjq+xKrcz002WioppdGm091pK1w0IIjYp8jkhydXPxxq2K295aUrTkoeTs65suK+OUFUIzi7xqrb0VA0WSoootKm0t5tKlo1H4TYqMfkiydWQBxm16+85actTEseS8y7seHAPD9TIza5yKra01QyWSson9On0d5wKVk2H4DYqcfkjidUQB1j1rG75KsvSkseScu8seDCPz1TJDW2yara1FYxWSwnm9Sn0N9zKVg2H33ZqsXkkihSQR1g1bK65K0wSEsfR8i+seDEQTxUJTOzy6rY1VowWC0mmNWoz993KVc3H3rYq8TklSlRQh1d1LS647AyR0wgRMbAsN/GRDpTJTKwzKrX1l4vVy4lldWpzt97KVY4IXbUr8LZljVPRCxhw7W3z6ZISkw1VK+4sMWvXEhSPk6buay9sm5JVkZNiLWqtrJ+TldNTnquqbCwilZXU1BwpKirrpNgWFhTaZmnpquZbFlbVmWOpaOonHZcXlljhaGhpZ1+YWBdYn2cn6GdhmdhYGN3lp2enIttY2Jjco+bnJuOdGZlZXCImJqakHpoZ2Zug5WYmZJ/bGlobX6RlpeSg3BqaW16jZSVkoZ0bGtteImSk5KIeG5tbnaFkJKRinxxbm91gY2QkIt/c3BwdH6Kj4+LgnZxcXR8iI2OjIR5c3J0e4WLjYuFe3VzdHmCioyLhn52dHR5gIiKioeAeHV1eH+GiYqHgXp2dnh9hIiJh4J8eHd4fIKHiIeDfXl4eHyBhoeHhH96eHmA',
     cb: {
       online: function() {
-        if (navigator.onLine) {
+        if (ThreadUpdater.online = navigator.onLine) {
           ThreadUpdater.outdateCount = 0;
           ThreadUpdater.setInterval();
           ThreadUpdater.set('status', null, null);
@@ -10240,7 +10287,7 @@
           ThreadUpdater.set('timer', null);
           ThreadUpdater.set('status', 'Offline', 'warning');
         }
-        return ThreadUpdater.count(true);
+        return ThreadUpdater.cb.autoUpdate();
       },
       post: function(e) {
         if (!(ThreadUpdater.isUpdating && e.detail.threadID === ThreadUpdater.thread.ID)) {
@@ -10273,7 +10320,9 @@
           return;
         }
         ThreadUpdater.outdateCount = 0;
-        return ThreadUpdater.seconds = Math.min(ThreadUpdater.seconds, ThreadUpdater.interval);
+        if (ThreadUpdater.seconds > ThreadUpdater.interval) {
+          return ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+        }
       },
       scrollBG: function() {
         return ThreadUpdater.scrollBG = Conf['Scroll BG'] ? function() {
@@ -10296,25 +10345,17 @@
         var klass, req, text, _ref;
 
         req = ThreadUpdater.req;
-        delete ThreadUpdater.req;
-        if (e.type !== 'loadend') {
-          req.onloadend = null;
-          if (e.type === 'timeout') {
-            ThreadUpdater.set('status', 'Retrying', null);
-            ThreadUpdater.update();
-          }
-          return;
-        }
         switch (req.status) {
           case 200:
             g.DEAD = false;
             ThreadUpdater.parse(JSON.parse(req.response).posts);
-            ThreadUpdater.setInterval();
+            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
             break;
           case 404:
             g.DEAD = true;
             ThreadUpdater.set('timer', null);
             ThreadUpdater.set('status', '404', 'warning');
+            clearTimeout(ThreadUpdater.timeoutID);
             ThreadUpdater.thread.kill();
             $.event('ThreadUpdate', {
               404: true,
@@ -10323,7 +10364,7 @@
             break;
           default:
             ThreadUpdater.outdateCount++;
-            ThreadUpdater.setInterval();
+            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
             _ref = req.status === 304 ? [null, null] : ["" + req.statusText + " (" + req.status + ")", 'warning'], text = _ref[0], klass = _ref[1];
             ThreadUpdater.set('status', text, klass);
         }
@@ -10364,20 +10405,17 @@
         return el.className = klass;
       }
     },
-    count: function(start) {
-      clearTimeout(ThreadUpdater.timeoutID);
-      if (start && ThreadUpdater.isUpdating && navigator.onLine) {
-        return ThreadUpdater.timeout();
-      }
-    },
     timeout: function() {
-      var sec;
+      var n;
 
       ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
-      sec = ThreadUpdater.seconds--;
-      ThreadUpdater.set('timer', sec);
-      if (sec <= 0) {
+      if (!(n = --ThreadUpdater.seconds)) {
         return ThreadUpdater.update();
+      } else if (n <= -60) {
+        ThreadUpdater.set('status', 'Retrying', null);
+        return ThreadUpdater.update();
+      } else if (n > 0) {
+        return ThreadUpdater.set('timer', n);
       }
     },
     update: function() {
@@ -10397,10 +10435,7 @@
       }
       url = "//api.4chan.org/" + ThreadUpdater.thread.board + "/res/" + ThreadUpdater.thread + ".json";
       return ThreadUpdater.req = $.ajax(url, {
-        onabort: ThreadUpdater.cb.load,
-        onloadend: ThreadUpdater.cb.load,
-        ontimeout: ThreadUpdater.cb.load,
-        timeout: $.MINUTE
+        onloadend: ThreadUpdater.cb.load
       }, {
         whenModified: true
       });
@@ -10560,7 +10595,7 @@
         ThreadWatcher.fetchAllStatus();
         this.db.save();
       }
-      return Thread.prototype.callbacks.push({
+      return Thread.callbacks.push({
         name: 'Thread Watcher',
         cb: this.node
       });
@@ -11024,7 +11059,7 @@
       });
       this.posts = [];
       this.postsQuotingYou = [];
-      return Thread.prototype.callbacks.push({
+      return Thread.callbacks.push({
         name: 'Unread',
         cb: this.node
       });
@@ -11157,6 +11192,7 @@
         }
         Unread.postsQuotingYou.push(post);
         Unread.openNotification(post);
+        return;
       }
     },
     openNotification: function(post) {
@@ -11350,7 +11386,7 @@
         http: true,
         https: true,
         software: 'foolfuuka',
-        boards: ['b', 'e', 'h', 'hc', 'p', 's', 'u'],
+        boards: ['b', 'e', 'h', 'hc', 'p', 's', 'soc', 'sp', 'u'],
         files: ['b', 'e', 'h', 'hc', 'p', 's', 'soc', 'sp', 'u']
       },
       'Foolz': {
@@ -11360,14 +11396,6 @@
         software: 'foolfuuka',
         boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'],
         files: ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg']
-      },
-      'Foolz a Shit': {
-        domain: 'archive.foolzashit.com',
-        http: true,
-        https: true,
-        software: 'foolfuuka',
-        boards: ['adv', 'asp', 'cm', 'd', 'e', 'i', 'lgbt', 'n', 'o', 'p', 'pol', 's', 's4s', 't', 'trv', 'y'],
-        files: ['cm', 'd', 'e', 'i', 'n', 'o', 'p', 's', 'trv', 'y']
       },
       'Foolz Beta': {
         domain: 'beta.foolz.us',
@@ -12385,7 +12413,7 @@
       $.ready(function() {
         return Rice.nodes(d.body);
       });
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Rice Checkboxes',
         cb: this.node
       });
@@ -13201,7 +13229,7 @@
         return;
       }
       this.ids = {};
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Color User IDs',
         cb: this.node
       });
@@ -13275,7 +13303,7 @@
       if (g.BOARD.ID !== 'tg' || g.VIEW === 'catalog' || !Conf['Show Dice Roll']) {
         return;
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Show Dice Roll',
         cb: this.node
       });
@@ -13302,7 +13330,7 @@
       if (g.BOARD.ID === 'sci') {
         this.callbacks.push(Fourchan.math);
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Comment Expansion',
         cb: this.node
       });
@@ -13398,7 +13426,7 @@
       if (g.VIEW !== 'index' || !Conf['Thread Expansion']) {
         return;
       }
-      return Thread.prototype.callbacks.push({
+      return Thread.callbacks.push({
         name: 'Thread Expansion',
         cb: this.node
       });
@@ -13554,7 +13582,7 @@
         return;
       }
       this.funk = this.createFunc(Conf['fileInfo']);
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'File Info Formatting',
         cb: this.node
       });
@@ -13661,14 +13689,14 @@
       board = g.BOARD.ID;
       if (board === 'g') {
         $.globalEval("window.addEventListener('prettyprint', function(e) {\n  var pre = e.detail;\n  pre.innerHTML = prettyPrintOne(pre.innerHTML);\n}, false);");
-        Post.prototype.callbacks.push({
+        Post.callbacks.push({
           name: 'Parse /g/ code',
           cb: this.code
         });
       }
       if (board === 'sci') {
         $.globalEval("window.addEventListener('jsmath', function(e) {\n  if (jsMath.loaded) {\n    // process one post\n    jsMath.ProcessBeforeShowing(e.detail);\n  } else {\n    // load jsMath and process whole document\n    jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);\n    jsMath.Autoload.LoadJsMath();\n  }\n}, false);");
-        return Post.prototype.callbacks.push({
+        return Post.callbacks.push({
           name: 'Parse /sci/ math',
           cb: this.math
         });
@@ -13699,6 +13727,54 @@
         offset: offset,
         limit: limit
       });
+    }
+  };
+
+  IDColor = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Color User IDs']) {
+        return;
+      }
+      this.ids = {};
+      return Post.callbacks.push({
+        name: 'Color User IDs',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var rgb, span, style, uid;
+
+      if (this.isClone || !(uid = this.info.uniqueID)) {
+        return;
+      }
+      rgb = IDColor.compute(uid);
+      span = this.nodes.uniqueID;
+      style = span.style;
+      style.color = rgb[3];
+      style.backgroundColor = "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
+      $.addClass(span, 'painted');
+      span.textContent = uid;
+      return span.title = 'Highlight posts by this ID';
+    },
+    compute: function(uniqueID) {
+      var hash, rgb;
+
+      if (uniqueID in IDColor.ids) {
+        return IDColor.ids[uniqueID];
+      }
+      hash = this.hash(uniqueID);
+      rgb = [(hash >> 24) & 0xFF, (hash >> 16) & 0xFF, (hash >> 8) & 0xFF];
+      rgb.push((rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 170 ? 'black' : 'white');
+      return this.ids[uniqueID] = rgb;
+    },
+    hash: function(uniqueID) {
+      var i, msg, _i, _ref;
+
+      msg = 0;
+      for (i = _i = 0, _ref = uniqueID.length; _i < _ref; i = _i += 1) {
+        msg = (msg << 5) - msg + uniqueID.charCodeAt(i);
+      }
+      return msg;
     }
   };
 
@@ -14149,7 +14225,7 @@
       }
       $.on(d, 'visibilitychange ThreadUpdate', this.flush);
       this.flush();
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Relative Post Dates',
         cb: this.node
       });
@@ -14233,7 +14309,7 @@
           return "[spoiler]" + text + "[/spoiler]";
         };
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Reveal Spoilers',
         cb: this.node
       });
@@ -14289,7 +14365,7 @@
         return;
       }
       this.funk = this.createFunc(Conf['time']);
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Time Formatting',
         cb: this.node
       });
@@ -14773,7 +14849,7 @@
     advanced: function(section) {
       var archive, boardID, boardOptions, boardSelect, boards, data, event, input, inputs, item, items, name, row, rows, ta, table, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4;
 
-      section.innerHTML = "<fieldset><legend>Archiver</legend><div class=\"warning\" " + (Conf['404 Redirect'] ? 'hidden' : '') + "><code>404 Redirect</code> is disabled.</div><div><select id='archive-board-select'></select></div><table id='archive-table'><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><span class=note>Disabled selections indicate that only one archive is available for that board and redirection type.</span></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea name=boardnav class=field spellcheck=false></textarea></div><span class=note>New lines will be converted into spaces.</span><br><br><div class=note>In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div><div>Board link: <code>g</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:\"Install Gentoo\"</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>External link: <code>external-text:\"Google\",\"http://www.google.com\"</code></div><div>Combinations are possible: <code>g-index-text:\"Technology Index\"</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=note><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n  will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n  if you are on /g/.\n</div></fieldset><fieldset><legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div><div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div></fieldset><fieldset><legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div><div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div></fieldset><fieldset><legend>Quick Reply Personas <span class=\"warning\" " + (Conf['Quick Reply'] ? 'hidden' : '') + ">is disabled.</span></legend><textarea class=personafield name=\"QR.personas\" class=\"field\" spellcheck=\"false\"></textarea><p>\n  One item per line.<br>\n  Items will be added in the relevant input's auto-completion list.<br>\n  Password items will always be used, since there is no password input.<br>\n  Lines starting with a <code>#</code> will be ignored.\n</p><ul>You can use these settings with each item, separate them with semicolons:\n  <li>Possible items are: <code>name</code>, <code>email</code>, <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>email:\"sage\"</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>email:\"sage\";always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>email:\"sage\";boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=warning " + (Conf['Unread Favicon'] ? 'hidden' : '') + ">is disabled.</span></legend><div><select name=favicon><option value=ferongr>ferongr</option><option value=xat->xat-</option><option value=Mayhem>Mayhem</option><option value=4chanJS>4chanJS</option><option value=Original>Original</option></select><span id=favicon-preview></span></div></fieldset><fieldset><legend>Thread Updater <span class=warning " + (Conf['Thread Updater'] ? 'hidden' : '') + ">is disabled.</span></legend><div>\n  Interval: <input type=number name=Interval class=field min=1 value=" + Conf['Interval'] + "></div></fieldset><fieldset><legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend><div><button id=apply-css>Apply CSS</button><textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea></div></fieldset>";
+      section.innerHTML = "<fieldset><legend>Archiver</legend><div class=\"warning\" " + (Conf['404 Redirect'] ? 'hidden' : '') + "><code>404 Redirect</code> is disabled.</div><div><select id='archive-board-select'></select></div><table id='archive-table'><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><span class=note>Disabled selections indicate that only one archive is available for that board and redirection type.</span></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea name=boardnav class=field spellcheck=false></textarea></div><span class=note>New lines will be converted into spaces.</span><br><br><div class=note>In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:\"Install Gentoo\"</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>External link: <code>external-text:\"Google\",\"http://www.google.com\"</code></div><div>Combinations are possible: <code>g-index-text:\"Technology Index\"</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=note><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n  will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n  if you are on /g/.\n</div></fieldset><fieldset><legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div><div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div></fieldset><fieldset><legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div><div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div></fieldset><fieldset><legend>Quick Reply Personas <span class=\"warning\" " + (Conf['Quick Reply'] ? 'hidden' : '') + ">is disabled.</span></legend><textarea class=personafield name=\"QR.personas\" class=\"field\" spellcheck=\"false\"></textarea><p>\n  One item per line.<br>\n  Items will be added in the relevant input's auto-completion list.<br>\n  Password items will always be used, since there is no password input.<br>\n  Lines starting with a <code>#</code> will be ignored.\n</p><ul>You can use these settings with each item, separate them with semicolons:\n  <li>Possible items are: <code>name</code>, <code>email</code>, <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>email:\"sage\"</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>email:\"sage\";always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>email:\"sage\";boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=warning " + (Conf['Unread Favicon'] ? 'hidden' : '') + ">is disabled.</span></legend><div><select name=favicon><option value=ferongr>ferongr</option><option value=xat->xat-</option><option value=Mayhem>Mayhem</option><option value=4chanJS>4chanJS</option><option value=Original>Original</option></select><span id=favicon-preview></span></div></fieldset><fieldset><legend>Thread Updater <span class=warning " + (Conf['Thread Updater'] ? 'hidden' : '') + ">is disabled.</span></legend><div>\n  Interval: <input type=number name=Interval class=field min=1 value=" + Conf['Interval'] + "></div></fieldset><fieldset><legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend><div><button id=apply-css>Apply CSS</button><textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea></div></fieldset>";
       items = {};
       inputs = {};
       _ref = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss'];
@@ -15838,7 +15914,7 @@
       var callback, err, errors, i, len, node, _i, _len, _ref;
 
       len = nodes.length;
-      _ref = klass.prototype.callbacks;
+      _ref = klass.callbacks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         callback = _ref[_i];
         i = 0;
@@ -15888,7 +15964,7 @@
       func = function(node, i) {
         var callback, err, _i, _len, _ref;
 
-        _ref = klass.prototype.callbacks;
+        _ref = klass.callbacks;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           callback = _ref[_i];
           try {
@@ -15937,7 +16013,7 @@
           return;
       }
       obj.callback.isAddon = true;
-      return Klass.prototype.callbacks.push(obj.callback);
+      return Klass.callbacks.push(obj.callback);
     },
     handleErrors: function(errors) {
       var div, error, logs, _i, _len;

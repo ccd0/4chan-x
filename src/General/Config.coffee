@@ -799,8 +799,10 @@ Config =
 #/Mod$/;highlight:mod;op:yes
 # Set a custom class for moot:
 #/Admin$/;highlight:moot;op:yes
-    """
+"""
+
     email: ""
+
     subject: """
 # Filter Generals on /v/:
 #/general/i;boards:v;op:only
@@ -853,7 +855,7 @@ http://iqdb.org/?url=%TURL
 [ toggle-all ]
 [current-title]
 [external-text:"FAQ","https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions"]
-  """
+"""
 
   QR:
     'QR.personas': """#email:"sage";boards:jp;always"""

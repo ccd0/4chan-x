@@ -1,7 +1,7 @@
 Dice =
   init: ->
     return if g.BOARD.ID isnt 'tg' or g.VIEW is 'catalog' or !Conf['Show Dice Roll']
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Show Dice Roll'
       cb:   @node
   node: ->

@@ -16,10 +16,10 @@ QuoteBacklink =
     format = Conf['backlink'].replace /%id/g, "' + id + '"
     @funk  = Function 'id', "return '#{format}'"
     @containers = {}
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Quote Backlinking Part 1'
       cb:   @firstNode
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Quote Backlinking Part 2'
       cb:   @secondNode
   firstNode: ->

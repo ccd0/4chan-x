@@ -3,7 +3,7 @@ Menu =
     return if g.VIEW is 'catalog' or !Conf['Menu']
 
     @menu = new UI.Menu 'post'
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Menu'
       cb:   @node
 

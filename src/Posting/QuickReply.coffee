@@ -10,7 +10,7 @@ QR =
       else
         $.ready @persist
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Quick Reply'
       cb:   @node
 
@@ -140,7 +140,7 @@ QR =
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
       QR.captcha.nodes.input.focus()
-      if Conf['Captcha Warning Notifications']
+      if Conf['Captcha Warning Notifications'] and !d.hidden
         QR.notify el
       else
         $.addClass QR.captcha.nodes.input, 'error'
@@ -152,22 +152,23 @@ QR =
 
   notify: (el) ->
     notice = new Notice 'warning', el
-    QR.notifications.push notice
-    return unless Header.areNotificationsEnabled
-    notif = new Notification el.textContent,
-      body: el.textContent
-      icon: Favicon.logo
-    notif.onclick = -> window.focus()
-    <% if (type === 'crx') { %>
-    # Firefox automatically closes notifications
-    # so we can't control the onclose properly.
-    notif.onclose = -> notice.close()
-    notif.onshow  = ->
-      setTimeout ->
-        notif.onclose = null
-        notif.close()
-      , 7 * $.SECOND
-    <% } %>
+    unless Header.areNotificationsEnabled and d.hidden
+      QR.notifications.push notice
+    else
+      notif = new Notification el.textContent,
+        body: el.textContent
+        icon: Favicon.logo
+      notif.onclick = -> window.focus()
+      <% if (type === 'crx') { %>
+      # Firefox automatically closes notifications
+      # so we can't control the onclose properly.
+      notif.onclose = -> notice.close()
+      notif.onshow  = ->
+        setTimeout ->
+          notif.onclose = null
+          notif.close()
+        , 7 * $.SECOND
+      <% } %>
 
   notifications: []
 
@@ -445,7 +446,6 @@ QR =
     e.preventDefault()
     QR.open()
     QR.handleFiles e.dataTransfer.files
-    $.addClass QR.nodes.el, 'dump'
 
   paste: (e) ->
     files = []
@@ -1247,12 +1247,15 @@ QR =
 
     ThreadUpdater.postID = postID
 
+
+
     # Post/upload confirmed as successful.
     $.event 'QRPostSuccessful', {
       board: g.BOARD
       threadID
       postID
     }
+    $.event 'QRPostSuccessful_', {threadID, postID}
 
     # Enable auto-posting if we have stuff left to post, disable it otherwise.
     postsCount = QR.posts.length - 1

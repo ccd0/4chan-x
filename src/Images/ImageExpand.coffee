@@ -12,7 +12,7 @@ ImageExpand =
 
     Header.addShortcut @EAI, true
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Image Expansion'
       cb: @node
 

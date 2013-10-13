@@ -19,7 +19,7 @@ ThreadStats =
     @fileCountEl = $ '#file-count', sc
     @pageCountEl  = $ '#page-count', sc
 
-    Thread::callbacks.push
+    Thread.callbacks.push
       name: 'Thread Stats'
       cb:   @node
 

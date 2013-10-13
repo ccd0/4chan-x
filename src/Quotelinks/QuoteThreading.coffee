@@ -20,7 +20,7 @@ QuoteThreading =
 
     $.on d, '4chanXInitFinished', @setup
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Quote Threading'
       cb:   @node
 

@@ -11,7 +11,7 @@ Sauce =
     return unless links.length
     @links = links
     @link  = $.el 'a', target: '_blank'
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Sauce'
       cb:   @node
   createSauceLink: (link) ->

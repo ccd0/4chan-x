@@ -9,7 +9,7 @@ RelativeDates =
     # Start the timeout.
     @flush()
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Relative Post Dates'
       cb:   @node
   node: ->
