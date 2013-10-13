@@ -50,7 +50,7 @@ Mascots =
     center:     true
   'Asuka_Langley_Soryu_3':
     category:   'Anime'
-    image:      '//i.minus.com/lbq2hFrE4q75KT.png'
+    image:      '//i4.minus.com/jbq2hFrE4q75KT.png'
     center:     true
   'Asuka_Langley_Soryu_4':
     category:   'Anime'
