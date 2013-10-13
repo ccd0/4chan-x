@@ -7973,11 +7973,10 @@
           ThreadUpdater.outdateCount = 0;
           ThreadUpdater.setInterval();
           ThreadUpdater.set('status', null, null);
-        } else {
-          ThreadUpdater.set('timer', null);
-          ThreadUpdater.set('status', 'Offline', 'warning');
+          return;
         }
-        return ThreadUpdater.cb.autoUpdate();
+        ThreadUpdater.set('timer', null);
+        return ThreadUpdater.set('status', 'Offline', 'warning');
       },
       post: function(e) {
         if (!(ThreadUpdater.isUpdating && e.detail.threadID === ThreadUpdater.thread.ID)) {
