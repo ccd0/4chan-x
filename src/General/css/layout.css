@@ -223,11 +223,11 @@ th {
   text-align: right;
 }
 .sidebar-location-left.sidebar-large:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,
-.sidebar-location-left #header-bar {
+.sidebar-location-left.sidebar-large #header-bar {
   left: 303px;
 }
 .sidebar-location-left.sidebar-normal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,
-.sidebar-location-left #header-bar {
+.sidebar-location-left.sidebar-normal #header-bar {
   left: 252px;
 }
 .sidebar-location-left.sidebar-minimal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,
@@ -235,11 +235,11 @@ th {
   left: 20px;
 }
 .sidebar-location-right.sidebar-large:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,
-.sidebar-location-right #header-bar {
+.sidebar-location-right.sidebar-large #header-bar {
   right: 303px;
 }
 .sidebar-location-right.sidebar-normal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,
-.sidebar-location-right #header-bar {
+.sidebar-location-right.sidebar-normal #header-bar {
   right: 252px;
 }
 .sidebar-location-right.sidebar-minimal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist,
