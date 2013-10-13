@@ -1,3 +1,6 @@
+## v2.4.0 
+*2013-10-13*
+
 **MayhemYDG**:
 - Tiny posting cooldown adjustment:
   * You can post an image reply immediately after a non-image reply.
