@@ -151,8 +151,10 @@ Style =
     slideNav = $.el 'span',
       id: 'so-nav'
       innerHTML: '<i class=a-icon></a>'
-    $.add slideNav, $.id('boardNavDesktopFoot')
-    Header.addShortcut slideNav, true
+    exec = -> if g.VIEW is 'catalog' then $ '#threads .thread' else true
+    $.asap exec, -> 
+      $.add slideNav, $.id('boardNavDesktopFoot')
+      Header.addShortcut slideNav, true
 
     # Announcements
     if Conf['Announcements'] is 'slideout'
