@@ -269,7 +269,7 @@ Main =
     errors = null
 
     func = (node, i) ->
-      for callback in klass::callbacks
+      for callback in klass.callbacks
         try
           callback.cb.call node
         catch err

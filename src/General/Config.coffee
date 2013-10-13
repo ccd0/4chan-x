@@ -453,8 +453,10 @@ Config =
 #/Mod$/;highlight:mod;op:yes
 # Set a custom class for moot:
 #/Admin$/;highlight:moot;op:yes
-    """
+"""
+
     email: ""
+
     subject: """
 # Filter Generals on /v/:
 #/general/i;boards:v;op:only
@@ -524,7 +526,6 @@ mu-replace
 sp-replace
 tv-replace
 vp-replace
-q-replace
 [external-text:"FAQ","https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions"]
   """
 

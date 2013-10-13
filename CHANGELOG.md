@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 **MayhemYDG**:
 - Tiny posting cooldown adjustment:
   * You can post an image reply immediately after a non-image reply.
@@ -12,6 +13,28 @@
 
 ### v1.2.39 
 *2013-09-19*
+=======
+### v1.2.41 
+*2013-10-03*
+
+**MayhemYDG**:
+- Minor Chrome 30 fix
+
+### v1.2.40 
+*2013-09-22*
+
+**MayhemYDG**:
+- /pol/ flag selector
+
+**seaweedchan**:
+- Delete cooldown update
+- Small bug fixes
+- Don't show warnings AND desktop notifications at the same time, and prefer QR warnings unless the document is hidden
+
+### v1.2.39 
+*2013-09-19*
+
+>>>>>>> 26a0c27ac304d70bc296de9294b7fd4bc6e52048
 **seaweedchan**:
 - Fix thread updater bug introduced in last version
 

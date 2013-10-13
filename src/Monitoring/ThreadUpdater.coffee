@@ -62,6 +62,7 @@ ThreadUpdater =
     ThreadUpdater.thread       = @
     ThreadUpdater.root         = @OP.nodes.root.parentNode
     ThreadUpdater.lastPost     = +ThreadUpdater.root.lastElementChild.id.match(/\d+/)[0]
+    ThreadUpdater.outdateCount = 0
 
     ThreadUpdater.cb.interval.call $.el 'input', value: Conf['Interval']
 
@@ -79,14 +80,14 @@ ThreadUpdater =
 
   cb:
     online: ->
-      if navigator.onLine
+      if ThreadUpdater.online = navigator.onLine
         ThreadUpdater.outdateCount = 0
         ThreadUpdater.setInterval()
         ThreadUpdater.set 'status', null, null
       else
         ThreadUpdater.set 'timer', null
         ThreadUpdater.set 'status', 'Offline', 'warning'
-      ThreadUpdater.count true
+      ThreadUpdater.cb.autoUpdate()
     post: (e) ->
       return unless ThreadUpdater.isUpdating and e.detail.threadID is ThreadUpdater.thread.ID
       ThreadUpdater.outdateCount = 0
@@ -107,7 +108,8 @@ ThreadUpdater =
       return if d.hidden
       # Reset the counter when we focus this tab.
       ThreadUpdater.outdateCount = 0
-      ThreadUpdater.seconds = Math.min ThreadUpdater.seconds, ThreadUpdater.interval
+      if ThreadUpdater.seconds > ThreadUpdater.interval
+        ThreadUpdater.set 'timer', ThreadUpdater.getInterval()
     scrollBG: ->
       ThreadUpdater.scrollBG = if Conf['Scroll BG']
         -> true
@@ -120,29 +122,23 @@ ThreadUpdater =
       $.cb.value.call @
     load: (e) ->
       {req} = ThreadUpdater
-      delete ThreadUpdater.req
-      if e.type isnt 'loadend' # timeout or abort
-        req.onloadend = null
-        if e.type is 'timeout'
-          ThreadUpdater.set 'status', 'Retrying', null
-          ThreadUpdater.update()
-        return
       switch req.status
         when 200
           g.DEAD = false
           ThreadUpdater.parse JSON.parse(req.response).posts
-          ThreadUpdater.setInterval()
+          ThreadUpdater.set 'timer', ThreadUpdater.getInterval()
         when 404
           g.DEAD = true
           ThreadUpdater.set 'timer', null
           ThreadUpdater.set 'status', '404', 'warning'
+          clearTimeout ThreadUpdater.timeoutID
           ThreadUpdater.thread.kill()
           $.event 'ThreadUpdate',
             404: true
             thread: ThreadUpdater.thread
         else
           ThreadUpdater.outdateCount++
-          ThreadUpdater.setInterval()
+          ThreadUpdater.set 'timer', ThreadUpdater.getInterval()
           [text, klass] = if req.status is 304
             [null, null]
           else
@@ -182,15 +178,15 @@ ThreadUpdater =
       el.textContent = text
     el.className = klass if klass isnt undefined
 
-  count: (start) ->
-    clearTimeout ThreadUpdater.timeoutID
-    ThreadUpdater.timeout() if start and ThreadUpdater.isUpdating and navigator.onLine
-
   timeout: ->
     ThreadUpdater.timeoutID = setTimeout ThreadUpdater.timeout, 1000
-    sec = ThreadUpdater.seconds--
-    ThreadUpdater.set 'timer', sec
-    ThreadUpdater.update() if sec <= 0
+    unless n = --ThreadUpdater.seconds
+      ThreadUpdater.update()
+    else if n <= -60
+      ThreadUpdater.set 'status', 'Retrying', null
+      ThreadUpdater.update()
+    else if n > 0
+      ThreadUpdater.set 'timer', n
 
   update: ->
     return unless navigator.onLine
@@ -201,12 +197,7 @@ ThreadUpdater =
       ThreadUpdater.set 'timer', 'Update'
     ThreadUpdater.req.abort() if ThreadUpdater.req
     url = "//api.4chan.org/#{ThreadUpdater.thread.board}/res/#{ThreadUpdater.thread}.json"
-    ThreadUpdater.req = $.ajax url,
-      onabort:   ThreadUpdater.cb.load
-      onloadend: ThreadUpdater.cb.load
-      ontimeout: ThreadUpdater.cb.load
-      timeout:   $.MINUTE
-    ,
+    ThreadUpdater.req = $.ajax url, onloadend: ThreadUpdater.cb.load,
       whenModified: true
 
   updateThreadStatus: (title, OP) ->

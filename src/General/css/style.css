@@ -675,7 +675,7 @@ a.hide-announcement {
 :root.hide-original-post-form .postingMode,
 :root.hide-original-post-form #togglePostForm,
 #qr.autohide:not(.has-focus):not(:hover) > form,
-.postingMode ~ #qr select,
+.postingMode ~ #qr select[data-name=thread],
 #file-n-submit:not(.has-file) #qr-filerm {
   display: none;
 }
@@ -837,7 +837,7 @@ input#qr-filename:not(.edit) {
   position: absolute;
 }
 /* Thread Select / Spoiler Label */
-#qr select {
+#qr select[data-name=thread] {
   float: right;
 }
 #qr.has-spoiler .has-file #qr-spoiler-label {
