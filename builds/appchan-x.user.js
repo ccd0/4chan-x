@@ -10405,6 +10405,12 @@
         return el.className = klass;
       }
     },
+    count: function(start) {
+      clearTimeout(ThreadUpdater.timeoutID);
+      if (start && ThreadUpdater.isUpdating && navigator.onLine) {
+        return ThreadUpdater.timeout();
+      }
+    },
     timeout: function() {
       var n;
 
