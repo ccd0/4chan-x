@@ -2,7 +2,7 @@ Anonymize =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Anonymize']
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Anonymize'
       cb:   @node
   node: ->

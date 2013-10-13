@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.39 - 2013-09-24
+* 4chan X - Version 1.2.39 - 2013-10-13
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -104,7 +104,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Gallery, Get, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Keybinds, Linkify, Main, Menu, Nav, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Gallery, Get, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Keybinds, Linkify, Main, Menu, Nav, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -845,7 +845,7 @@
   })();
 
   Thread = (function() {
-    Thread.prototype.callbacks = [];
+    Thread.callbacks = [];
 
     Thread.prototype.toString = function() {
       return this.ID;
@@ -869,7 +869,7 @@
   })();
 
   Post = (function() {
-    Post.prototype.callbacks = [];
+    Post.callbacks = [];
 
     Post.prototype.toString = function() {
       return this.ID;
@@ -2763,7 +2763,7 @@
       if (g.VIEW === 'catalog' || !Conf['Anonymize']) {
         return;
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Anonymize',
         cb: this.node
       });
@@ -2854,7 +2854,7 @@
       if (!Object.keys(this.filters).length) {
         return;
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Filter',
         cb: this.node
       });
@@ -3084,7 +3084,7 @@
         $.addClass(doc, "reply-hide");
       }
       this.db = new DataBoard('hiddenPosts');
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Reply Hiding',
         cb: this.node
       });
@@ -3387,7 +3387,7 @@
       if (g.VIEW === 'catalog') {
         return;
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Recursive',
         cb: this.node
       });
@@ -3458,7 +3458,7 @@
       }
       this.db = new DataBoard('hiddenThreads');
       this.syncCatalog();
-      return Thread.prototype.callbacks.push({
+      return Thread.callbacks.push({
         name: 'Thread Hiding',
         cb: this.node
       });
@@ -3727,11 +3727,11 @@
       format = Conf['backlink'].replace(/%id/g, "' + id + '");
       this.funk = Function('id', "return '" + format + "'");
       this.containers = {};
-      Post.prototype.callbacks.push({
+      Post.callbacks.push({
         name: 'Quote Backlinking Part 1',
         cb: this.firstNode
       });
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Quote Backlinking Part 2',
         cb: this.secondNode
       });
@@ -3806,7 +3806,7 @@
         ExpandComment.callbacks.push(this.node);
       }
       this.text = '\u00A0(Cross-thread)';
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Mark Cross-thread Quotes',
         cb: this.node
       });
@@ -3867,7 +3867,7 @@
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Quote Inlining',
         cb: this.node
       });
@@ -3969,7 +3969,7 @@
         ExpandComment.callbacks.push(this.node);
       }
       this.text = '\u00A0(OP)';
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Mark OP Quotes',
         cb: this.node
       });
@@ -4012,7 +4012,7 @@
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Quote Previewing',
         cb: this.node
       });
@@ -4095,7 +4095,7 @@
       if (g.VIEW === 'catalog' || !Conf['Reply Hiding Buttons'] && !Conf['Reply Hiding Link'] && !Conf['Filter']) {
         return;
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Strike-through Quotes',
         cb: this.node
       });
@@ -4141,7 +4141,7 @@
         order: 98
       });
       $.on(d, '4chanXInitFinished', this.setup);
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Quote Threading',
         cb: this.node
       });
@@ -4278,7 +4278,8 @@
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
-      return Post.prototype.callbacks.push({
+      this.text = '\u00A0(You)';
+      return Post.callbacks.push({
         name: 'Mark Quotes of You',
         cb: this.node
       });
@@ -4301,7 +4302,7 @@
         if (!(QR.db.get(Get.postDataFromLink(quotelink)))) {
           continue;
         }
-        $.add(quotelink, $.tn('\u00A0(You)'));
+        $.add(quotelink, $.tn(QuoteYou.text));
         $.addClass(quotelink, 'you');
         $.addClass(this.nodes.root, 'quotesYou');
       }
@@ -4358,7 +4359,7 @@
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Resurrect Quotes',
         cb: this.node
       });
@@ -4450,6 +4451,15 @@
       }
     },
     fixDeadlink: function(deadlink) {
+      var el, green;
+
+      if (!(el = deadlink.previousSibling) || el.nodeName === 'BR') {
+        green = $.el('span', {
+          className: 'quote'
+        });
+        $.before(deadlink, green);
+        $.add(green, deadlink);
+      }
       return $.replace(deadlink, __slice.call(deadlink.childNodes));
     }
   };
@@ -4466,7 +4476,7 @@
       if (Conf['Title Link']) {
         $.sync('CachedTitles', Linkify.titleSync);
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Linkify',
         cb: this.node
       });
@@ -4958,7 +4968,7 @@
           $.ready(this.persist);
         }
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Quick Reply',
         cb: this.node
       });
@@ -5479,8 +5489,7 @@
       }
       e.preventDefault();
       QR.open();
-      QR.handleFiles(e.dataTransfer.files);
-      return $.addClass(QR.nodes.el, 'dump');
+      return QR.handleFiles(e.dataTransfer.files);
     },
     paste: function(e) {
       var blob, files, item, _i, _len, _ref;
@@ -6409,6 +6418,10 @@
         threadID: threadID,
         postID: postID
       });
+      $.event('QRPostSuccessful_', {
+        threadID: threadID,
+        postID: postID
+      });
       postsCount = QR.posts.length - 1;
       QR.cooldown.auto = postsCount && isReply;
       if (QR.cooldown.auto && QR.captcha.isEnabled && (captchasCount = QR.captcha.captchas.length) < 3 && captchasCount < postsCount) {
@@ -6460,6 +6473,40 @@
     }
   };
 
+  AutoGIF = {
+    init: function() {
+      var _ref;
+
+      if (g.VIEW === 'catalog' || !Conf['Auto-GIF'] || ((_ref = g.BOARD.ID) === 'gif' || _ref === 'wsg')) {
+        return;
+      }
+      return Post.callbacks.push({
+        name: 'Auto-GIF',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var URL, gif, style, thumb, _ref, _ref1;
+
+      if (this.isClone || this.isHidden || this.thread.isHidden || !((_ref = this.file) != null ? _ref.isImage : void 0)) {
+        return;
+      }
+      _ref1 = this.file, thumb = _ref1.thumb, URL = _ref1.URL;
+      if (!(/gif$/.test(URL) && !/spoiler/.test(thumb.src))) {
+        return;
+      }
+      if (this.file.isSpoiler) {
+        style = thumb.style;
+        style.maxHeight = style.maxWidth = this.isReply ? '125px' : '250px';
+      }
+      gif = $.el('img');
+      $.on(gif, 'load', function() {
+        return thumb.src = URL;
+      });
+      return gif.src = URL;
+    }
+  };
+
   FappeTyme = {
     init: function() {
       var el, input;
@@ -6493,7 +6540,7 @@
           order: 98
         });
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Fappe Tyme',
         cb: this.node
       });
@@ -6532,7 +6579,7 @@
       });
       $.on(el, 'click', this.cb.toggle);
       Header.addShortcut(el);
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Gallery',
         cb: this.node
       });
@@ -6832,7 +6879,7 @@
       });
       $.on(this.EAI, 'click', ImageExpand.cb.toggleAll);
       Header.addShortcut(this.EAI, 2);
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Image Expansion',
         cb: this.node
       });
@@ -7091,7 +7138,7 @@
       if (g.VIEW === 'catalog' || !Conf['Image Hover']) {
         return;
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Image Hover',
         cb: this.node
       });
@@ -7186,7 +7233,7 @@
       if (!(Conf["Image Prefetching"] || Conf["Replace JPG"] || Conf["Replace PNG"] || Conf["Replace GIF"])) {
         return;
       }
-      Post.prototype.callbacks.push({
+      Post.callbacks.push({
         name: 'Image Replace',
         cb: this.node
       });
@@ -7245,8 +7292,7 @@
       if (g.VIEW === 'catalog' || !Conf['Reveal Spoiler Thumbnails']) {
         return;
       }
-      return Post.prototype.callbacks.push({
-        name: 'Reveal Spoiler Thumbnails',
+      return Post.callbacks.push({
         cb: this.node
       });
     },
@@ -7288,7 +7334,7 @@
       this.link = $.el('a', {
         target: '_blank'
       });
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Sauce',
         cb: this.node
       });
@@ -7582,7 +7628,7 @@
         return;
       }
       this.menu = new UI.Menu('post');
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Menu',
         cb: this.node
       });
@@ -7716,7 +7762,7 @@
       if (g.VIEW !== 'thread' || !Conf['Thread Excerpt']) {
         return;
       }
-      return Thread.prototype.callbacks.push({
+      return Thread.callbacks.push({
         name: 'Thread Excerpt',
         cb: this.node
       });
@@ -7752,7 +7798,7 @@
       this.postCountEl = $('#post-count', sc);
       this.fileCountEl = $('#file-count', sc);
       this.pageCountEl = $('#page-count', sc);
-      return Thread.prototype.callbacks.push({
+      return Thread.callbacks.push({
         name: 'Thread Stats',
         cb: this.node
       });
@@ -7897,7 +7943,7 @@
         order: 110,
         subEntries: subEntries
       });
-      return Thread.prototype.callbacks.push({
+      return Thread.callbacks.push({
         name: 'Thread Updater',
         cb: this.node
       });
@@ -8262,7 +8308,7 @@
         ThreadWatcher.fetchAllStatus();
         this.db.save();
       }
-      return Thread.prototype.callbacks.push({
+      return Thread.callbacks.push({
         name: 'Thread Watcher',
         cb: this.node
       });
@@ -8722,7 +8768,7 @@
       });
       this.posts = [];
       this.postsQuotingYou = [];
-      return Thread.prototype.callbacks.push({
+      return Thread.callbacks.push({
         name: 'Unread',
         cb: this.node
       });
@@ -8855,6 +8901,7 @@
         }
         Unread.postsQuotingYou.push(post);
         Unread.openNotification(post);
+        return;
       }
     },
     openNotification: function(post) {
@@ -9432,7 +9479,7 @@
         return;
       }
       this.ids = {};
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Color User IDs',
         cb: this.node
       });
@@ -9506,7 +9553,7 @@
       if (g.BOARD.ID !== 'tg' || g.VIEW === 'catalog' || !Conf['Show Dice Roll']) {
         return;
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Show Dice Roll',
         cb: this.node
       });
@@ -9588,7 +9635,7 @@
       if (g.BOARD.ID === 'sci') {
         this.callbacks.push(Fourchan.math);
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Comment Expansion',
         cb: this.node
       });
@@ -9684,7 +9731,7 @@
       if (g.VIEW !== 'index' || !Conf['Thread Expansion']) {
         return;
       }
-      return Thread.prototype.callbacks.push({
+      return Thread.callbacks.push({
         name: 'Thread Expansion',
         cb: this.node
       });
@@ -9840,7 +9887,7 @@
         return;
       }
       this.funk = this.createFunc(Conf['fileInfo']);
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'File Info Formatting',
         cb: this.node
       });
@@ -9947,14 +9994,14 @@
       board = g.BOARD.ID;
       if (board === 'g') {
         $.globalEval("window.addEventListener('prettyprint', function(e) {\n  var pre = e.detail;\n  pre.innerHTML = prettyPrintOne(pre.innerHTML);\n}, false);");
-        Post.prototype.callbacks.push({
+        Post.callbacks.push({
           name: 'Parse /g/ code',
           cb: this.code
         });
       }
       if (board === 'sci') {
         $.globalEval("window.addEventListener('jsmath', function(e) {\n  if (jsMath.loaded) {\n    // process one post\n    jsMath.ProcessBeforeShowing(e.detail);\n  } else {\n    // load jsMath and process whole document\n    jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);\n    jsMath.Autoload.LoadJsMath();\n  }\n}, false);");
-        return Post.prototype.callbacks.push({
+        return Post.callbacks.push({
           name: 'Parse /sci/ math',
           cb: this.math
         });
@@ -9985,6 +10032,54 @@
         offset: offset,
         limit: limit
       });
+    }
+  };
+
+  IDColor = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Color User IDs']) {
+        return;
+      }
+      this.ids = {};
+      return Post.callbacks.push({
+        name: 'Color User IDs',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var rgb, span, style, uid;
+
+      if (this.isClone || !(uid = this.info.uniqueID)) {
+        return;
+      }
+      rgb = IDColor.compute(uid);
+      span = this.nodes.uniqueID;
+      style = span.style;
+      style.color = rgb[3];
+      style.backgroundColor = "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
+      $.addClass(span, 'painted');
+      span.textContent = uid;
+      return span.title = 'Highlight posts by this ID';
+    },
+    compute: function(uniqueID) {
+      var hash, rgb;
+
+      if (uniqueID in IDColor.ids) {
+        return IDColor.ids[uniqueID];
+      }
+      hash = this.hash(uniqueID);
+      rgb = [(hash >> 24) & 0xFF, (hash >> 16) & 0xFF, (hash >> 8) & 0xFF];
+      rgb.push((rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 170 ? 'black' : 'white');
+      return this.ids[uniqueID] = rgb;
+    },
+    hash: function(uniqueID) {
+      var i, msg, _i, _ref;
+
+      msg = 0;
+      for (i = _i = 0, _ref = uniqueID.length; _i < _ref; i = _i += 1) {
+        msg = (msg << 5) - msg + uniqueID.charCodeAt(i);
+      }
+      return msg;
     }
   };
 
@@ -10442,7 +10537,7 @@
       }
       $.on(d, 'visibilitychange ThreadUpdate', this.flush);
       this.flush();
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Relative Post Dates',
         cb: this.node
       });
@@ -10526,7 +10621,7 @@
           return "[spoiler]" + text + "[/spoiler]";
         };
       }
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Reveal Spoilers',
         cb: this.node
       });
@@ -10582,7 +10677,7 @@
         return;
       }
       this.funk = this.createFunc(Conf['time']);
-      return Post.prototype.callbacks.push({
+      return Post.callbacks.push({
         name: 'Time Formatting',
         cb: this.node
       });
@@ -11616,7 +11711,7 @@
       var callback, err, errors, i, len, node, _i, _len, _ref;
 
       len = nodes.length;
-      _ref = klass.prototype.callbacks;
+      _ref = klass.callbacks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         callback = _ref[_i];
         i = 0;
@@ -11715,7 +11810,7 @@
           return;
       }
       obj.callback.isAddon = true;
-      return Klass.prototype.callbacks.push(obj.callback);
+      return Klass.callbacks.push(obj.callback);
     },
     handleErrors: function(errors) {
       var div, error, logs, _i, _len;

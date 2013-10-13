@@ -2,7 +2,7 @@ ImageHover =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Image Hover']
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Image Hover'
       cb:   @node
   node: ->

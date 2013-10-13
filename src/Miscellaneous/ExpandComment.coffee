@@ -2,14 +2,13 @@ ExpandComment =
   init: ->
     return if g.VIEW isnt 'index' or !Conf['Comment Expansion']
 
-    if g.BOARD.ID is 'g'
-      @callbacks.push Fourchan.code
-    if g.BOARD.ID is 'sci'
-      @callbacks.push Fourchan.math
+    @callbacks.push Fourchan.code if g.BOARD.ID is 'g'
+    @callbacks.push Fourchan.math if g.BOARD.ID is 'sci'
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Comment Expansion'
       cb:   @node
+
   node: ->
     if a = $ '.abbr > a:not([onclick])', @nodes.comment
       $.on a, 'click', ExpandComment.cb

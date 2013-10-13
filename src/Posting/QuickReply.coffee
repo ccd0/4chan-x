@@ -33,7 +33,7 @@ QR =
       else
         $.ready @persist
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Quick Reply'
       cb:   @node
 
@@ -445,7 +445,6 @@ QR =
     e.preventDefault()
     QR.open()
     QR.handleFiles e.dataTransfer.files
-    $.addClass QR.nodes.el, 'dump'
 
   paste: (e) ->
     files = []
@@ -1223,6 +1222,7 @@ QR =
       threadID
       postID
     }
+    $.event 'QRPostSuccessful_', {threadID, postID}
 
     # Enable auto-posting if we have stuff left to post, disable it otherwise.
     postsCount = QR.posts.length - 1

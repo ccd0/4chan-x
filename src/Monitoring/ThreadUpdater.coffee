@@ -54,7 +54,7 @@ ThreadUpdater =
       order: 110
       subEntries: subEntries
 
-    Thread::callbacks.push
+    Thread.callbacks.push
       name: 'Thread Updater'
       cb:   @node
 

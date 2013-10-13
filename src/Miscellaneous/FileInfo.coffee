@@ -3,7 +3,7 @@ FileInfo =
     return if g.VIEW is 'catalog' or !Conf['File Info Formatting']
 
     @funk = @createFunc Conf['fileInfo']
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'File Info Formatting'
       cb:   @node
   node: ->

@@ -9,7 +9,7 @@ RemoveSpoilers =
       @wrapper = (text) ->
         "[spoiler]#{text}[/spoiler]"
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Reveal Spoilers'
       cb:   @node
   

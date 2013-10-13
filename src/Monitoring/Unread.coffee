@@ -8,7 +8,7 @@ Unread =
     @posts = []
     @postsQuotingYou = []
 
-    Thread::callbacks.push
+    Thread.callbacks.push
       name: 'Unread'
       cb:   @node
 
@@ -90,7 +90,7 @@ Unread =
     for quotelink in post.nodes.quotelinks when QR.db.get Get.postDataFromLink quotelink
       Unread.postsQuotingYou.push post
       Unread.openNotification post
-    return
+      return
 
   openNotification: (post) ->
     return unless Header.areNotificationsEnabled

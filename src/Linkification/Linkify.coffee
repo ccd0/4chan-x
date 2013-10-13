@@ -26,7 +26,7 @@ Linkify =
     if Conf['Title Link']
       $.sync 'CachedTitles', Linkify.titleSync
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Linkify'
       cb:   @node
 

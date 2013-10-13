@@ -30,7 +30,7 @@ FappeTyme =
         el:    el
         order: 98
 
-    Post::callbacks.push
+    Post.callbacks.push
       name: 'Fappe Tyme'
       cb:   @node
 
