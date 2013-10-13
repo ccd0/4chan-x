@@ -178,6 +178,10 @@ ThreadUpdater =
       el.textContent = text
     el.className = klass if klass isnt undefined
 
+  count: (start) ->
+    clearTimeout ThreadUpdater.timeoutID
+    ThreadUpdater.timeout() if start and ThreadUpdater.isUpdating and navigator.onLine
+
   timeout: ->
     ThreadUpdater.timeoutID = setTimeout ThreadUpdater.timeout, 1000
     unless n = --ThreadUpdater.seconds
