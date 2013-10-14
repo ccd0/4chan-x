@@ -10320,7 +10320,7 @@
         }
         ThreadUpdater.outdateCount = 0;
         if (ThreadUpdater.seconds > ThreadUpdater.interval) {
-          return ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+          return ThreadUpdater.setInterval();
         }
       },
       scrollBG: function() {
@@ -10348,7 +10348,7 @@
           case 200:
             g.DEAD = false;
             ThreadUpdater.parse(JSON.parse(req.response).posts);
-            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+            ThreadUpdater.setInterval();
             break;
           case 404:
             g.DEAD = true;
@@ -10363,7 +10363,7 @@
             break;
           default:
             ThreadUpdater.outdateCount++;
-            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+            ThreadUpdater.setInterval();
             _ref = req.status === 304 ? [null, null] : ["" + req.statusText + " (" + req.status + ")", 'warning'], text = _ref[0], klass = _ref[1];
             ThreadUpdater.set('status', text, klass);
         }
