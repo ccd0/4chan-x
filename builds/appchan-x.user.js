@@ -20,7 +20,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.4.1 - 2013-10-13
+* appchan x - Version 2.4.1 - 2013-10-14
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
