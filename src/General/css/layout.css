@@ -2334,6 +2334,7 @@ article li {
   max-width: 100%;
 }
 .gal-fit-height .gal-image img {
+  max-height: 95vh;
   max-height: calc(100vh - 25px);
 }
 .gal-buttons {
