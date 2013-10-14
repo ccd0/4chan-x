@@ -108,7 +108,7 @@ ThreadUpdater =
       # Reset the counter when we focus this tab.
       ThreadUpdater.outdateCount = 0
       if ThreadUpdater.seconds > ThreadUpdater.interval
-        ThreadUpdater.set 'timer', ThreadUpdater.getInterval()
+        ThreadUpdater.setInterval()
     scrollBG: ->
       ThreadUpdater.scrollBG = if Conf['Scroll BG']
         -> true
@@ -125,7 +125,7 @@ ThreadUpdater =
         when 200
           g.DEAD = false
           ThreadUpdater.parse JSON.parse(req.response).posts
-          ThreadUpdater.set 'timer', ThreadUpdater.getInterval()
+          ThreadUpdater.setInterval()
         when 404
           g.DEAD = true
           ThreadUpdater.set 'timer', null
@@ -137,7 +137,7 @@ ThreadUpdater =
             thread: ThreadUpdater.thread
         else
           ThreadUpdater.outdateCount++
-          ThreadUpdater.set 'timer', ThreadUpdater.getInterval()
+          ThreadUpdater.setInterval()
           [text, klass] = if req.status is 304
             [null, null]
           else
