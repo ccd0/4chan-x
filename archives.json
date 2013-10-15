@@ -50,7 +50,7 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["b", "d", "e", "h", "hc", "p", "pol", "s", "s4s", "soc", "sp", "u"],
+  "boards": ["adv", "b", "d", "e", "h", "hc", "p", "pol", "s", "s4s", "soc", "trv","sp", "u"],
   "files": ["b", "d", "e", "h", "hc", "p", "pol", "s", "s4s", "soc", "sp", "u"]
 }, {
   "uid": 7,
