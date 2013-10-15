@@ -41,6 +41,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{pos} {
     'Arch':       '<%= grunt.file.read("src/General/img/emoji/arch.png",       {encoding: "base64"}) %>'
     'CentOS':     '<%= grunt.file.read("src/General/img/emoji/centos.png",     {encoding: "base64"}) %>'
     'Debian':     '<%= grunt.file.read("src/General/img/emoji/debian.png",     {encoding: "base64"}) %>'
+    'Elementary': '<%= grunt.file.read("src/General/img/emoji/elementary.png", {encoding: "base64"}) %>'
     'Fedora':     '<%= grunt.file.read("src/General/img/emoji/fedora.png",     {encoding: "base64"}) %>'
     'FreeBSD':    '<%= grunt.file.read("src/General/img/emoji/freebsd.png",    {encoding: "base64"}) %>'
     'Gentoo':     '<%= grunt.file.read("src/General/img/emoji/gentoo.png",     {encoding: "base64"}) %>'
