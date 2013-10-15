@@ -50,8 +50,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["adv", "b", "d", "e", "h", "hc", "p", "pol", "s", "s4s", "soc", "trv","sp", "u"],
-  "files": ["b", "d", "e", "h", "hc", "p", "pol", "s", "s4s", "soc", "sp", "u"]
+  "boards": ["adv", "b", "cm", "d", "e", "h", "hc", "lgbt", "pol", "r", "s", "s4s", "soc", "trv", "u", "y"],
+  "files": ["b", "cm", "d", "e", "h", "hc", "pol", "r", "s", "s4s", "soc", "u", "y"]
 }, {
   "uid": 7,
   "name": "Install Gentoo",
