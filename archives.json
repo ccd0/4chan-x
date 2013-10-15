@@ -5,8 +5,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["a", "co", "gd", "jp", "m", "q", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "gd", "jp", "m", "q", "tg", "vg", "vp", "vr", "wsg"]
+  "boards": ["a", "co", "gd", "jp", "m", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
+  "files": ["a", "gd", "jp", "m", "tg", "vg", "vp", "vr", "wsg"]
 }, {
   "uid": 1,
   "name": "NSFW Foolz",
@@ -50,8 +50,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["b", "con", "d", "e", "h", "hc", "p", "pol", "s", "s4s", "soc", "sp", "u"],
-  "files": ["b", "con", "d", "e", "h", "hc", "p", "pol", "s", "s4s", "soc", "sp", "u"]
+  "boards": ["b", "d", "e", "h", "hc", "p", "pol", "s", "s4s", "soc", "sp", "u"],
+  "files": ["b", "d", "e", "h", "hc", "p", "pol", "s", "s4s", "soc", "sp", "u"]
 }, {
   "uid": 7,
   "name": "Install Gentoo",
@@ -68,8 +68,8 @@
   "http": true,
   "https": true,
   "software": "fuuka",
-  "boards": ["cgl", "con", "g", "mu", "w"],
-  "files": ["cgl", "con", "g", "mu", "w"]
+  "boards": ["cgl", "g", "mu", "w"],
+  "files": ["cgl", "g", "mu", "w"]
 }, {
   "uid": 9,
   "name": "Heinessen",
@@ -86,8 +86,8 @@
   "http": true,
   "https": true,
   "software": "fuuka",
-  "boards": ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "q", "tg", "vr"],
-  "files": ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "q", "tg", "vr"]
+  "boards": ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"],
+  "files": ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"]
 }, {
   "uid": 13,
   "name": "Foolz Beta",
@@ -96,6 +96,6 @@
   "https": true,
   "withCredentials": true,
   "software": "foolfuuka",
-  "boards": ["a", "co", "d", "gd", "h", "jp", "m", "mlp", "q", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "d", "gd", "h", "jp", "m", "q", "tg", "u", "vg", "vp", "vr", "wsg"]
+  "boards": ["a", "co", "d", "gd", "h", "jp", "m", "mlp", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
+  "files": ["a", "d", "gd", "h", "jp", "m", "tg", "u", "vg", "vp", "vr", "wsg"]
 }]
