@@ -45,7 +45,6 @@
   * The QR will now warn you when you are running low on cached captchas while auto-posting.
 
 **seaweedchan**:
-<<<<<<< HEAD
 - Gallery Bugfix: hide thumbnails
 
 **Zixaphir**:
@@ -76,12 +75,6 @@
 *2013-08-21*
 
 **Zixaphir**:
-=======
- - Visual overhaul for gallery mode
-
-**Zixaphir**:
- - Fix an issue with the file dialog randomly opening multiple times (with seaweedchan)
->>>>>>> v3
 ![Gallery](src/General/img/changelog/2.3.6.png)
 - **New Feature**: `Gallery`.
   * Disabled by default.

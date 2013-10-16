@@ -293,33 +293,35 @@ Linkify =
 
     MediaCrush:
       regExp: /.*(?:mediacru.sh\/)([0-9a-z_]+)/i
-      style: 'border: 0; width: 640px; height: 480px; resize: both;'
+      style: 'border: 0;'
       el: (a) ->
-        $.el 'iframe',
-          src: "https://mediacru.sh/#{a.dataset.uid}"
-# MediaCrush CORS When?
-#
-#        el = $.el 'div'
-#        $.cache "https://mediacru.sh/#{a.dataset.uid}.json", ->
-#          {status} = @
-#          return unless [200, 304].contains status
-#          {files} = JSON.parse req.response
-#          file = file for file of files when files.hasOwnProperty file
-#          el.innerHTML = switch file.type
-#            when 'video/mp4', 'video/ogv'
-#              """
-#<video autoplay loop>
-#  <source src="https://mediacru.sh/#{a.dataset.uid}.mp4" type="video/mp4;">
-#  <source src="https://mediacru.sh/#{a.dataset.uid}.ogv" type="video/ogg; codecs='theora, vorbis'">
-#</video>"""
-#            when 'image/png', 'image/gif', 'image/jpeg'
-#              "<a target=_blank href='#{a.dataset.href}'><img src='https://mediacru.sh/#{file.file}'></a>"
-#            when 'image/svg', 'image/svg+xml'
-#              "<embed src='https://mediacru.sh/#{file.file}' type='image/svg+xml' />"
-#            when 'audio/mpeg'
-#              "<audio controls><source src='https://mediacru.sh/#{file.file}'></audio>"
-#        el
-
+        el = $.el 'div'
+        $.cache "https://mediacru.sh/#{a.dataset.uid}.json", ->
+          {status} = @
+          return div.innerHTML = "ERROR #{status}" unless [200, 304].contains status
+          {files} = JSON.parse @response
+          for type in ['video/mp4', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'image/svg', 'audio/mpeg']
+            for file in files
+              if file.type is type
+                embed = file
+                break
+            break if embed
+          return div.innerHTML = "ERROR: Not a valid filetype" unless embed
+          el.innerHTML = switch embed.type
+            when 'video/mp4', 'video/ogv' then """
+<video autoplay loop>
+  <source src="https://mediacru.sh/#{a.dataset.uid}.mp4" type="video/mp4;">
+  <source src="https://mediacru.sh/#{a.dataset.uid}.ogv" type="video/ogg; codecs='theora, vorbis'">
+</video>"""
+            when 'image/png', 'image/gif', 'image/jpeg'
+              "<a target=_blank href='#{a.dataset.href}'><img src='https://mediacru.sh/#{file.file}'></a>"
+            when 'image/svg', 'image/svg+xml'
+              "<embed src='https://mediacru.sh/#{file.file}' type='image/svg+xml' />"
+            when 'audio/mpeg'
+              "<audio controls><source src='https://mediacru.sh/#{file.file}'></audio>"
+            else
+              "ERROR: No valid filetype."
+        el
 
     pastebin:
       regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/
