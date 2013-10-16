@@ -4808,11 +4808,56 @@
       },
       MediaCrush: {
         regExp: /.*(?:mediacru.sh\/)([0-9a-z_]+)/i,
-        style: 'border: 0; width: 640px; height: 480px; resize: both;',
+        style: 'border: 0;',
         el: function(a) {
-          return $.el('iframe', {
-            src: "https://mediacru.sh/" + a.dataset.uid
+          var el;
+
+          el = $.el('div');
+          $.cache("https://mediacru.sh/" + a.dataset.uid + ".json", function() {
+            var embed, file, files, status, type, _i, _j, _len, _len1, _ref;
+
+            status = this.status;
+            if (![200, 304].contains(status)) {
+              return div.innerHTML = "ERROR " + status;
+            }
+            files = JSON.parse(this.response).files;
+            _ref = ['video/mp4', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'image/svg', 'audio/mpeg'];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              type = _ref[_i];
+              for (_j = 0, _len1 = files.length; _j < _len1; _j++) {
+                file = files[_j];
+                if (file.type === type) {
+                  embed = file;
+                  break;
+                }
+              }
+              if (embed) {
+                break;
+              }
+            }
+            if (!embed) {
+              return div.innerHTML = "ERROR: Not a valid filetype";
+            }
+            return el.innerHTML = (function() {
+              switch (embed.type) {
+                case 'video/mp4':
+                case 'video/ogv':
+                  return "<video autoplay loop>\n  <source src=\"https://mediacru.sh/" + a.dataset.uid + ".mp4\" type=\"video/mp4;\">\n  <source src=\"https://mediacru.sh/" + a.dataset.uid + ".ogv\" type=\"video/ogg; codecs='theora, vorbis'\">\n</video>";
+                case 'image/png':
+                case 'image/gif':
+                case 'image/jpeg':
+                  return "<a target=_blank href='" + a.dataset.href + "'><img src='https://mediacru.sh/" + file.file + "'></a>";
+                case 'image/svg':
+                case 'image/svg+xml':
+                  return "<embed src='https://mediacru.sh/" + file.file + "' type='image/svg+xml' />";
+                case 'audio/mpeg':
+                  return "<audio controls><source src='https://mediacru.sh/" + file.file + "'></audio>";
+                default:
+                  return "ERROR: No valid filetype.";
+              }
+            })();
           });
+          return el;
         }
       },
       pastebin: {

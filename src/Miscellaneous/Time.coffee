@@ -58,4 +58,3 @@ Time =
     S: -> Time.zeroPad @getSeconds()
     y: -> @getFullYear().toString()[2..]
     Y: -> @getFullYear()
-
