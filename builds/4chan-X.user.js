@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.41 - 2013-10-13
+* 4chan X - Version 1.2.41 - 2013-10-16
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -9459,57 +9459,6 @@
     }
   };
 
-  IDColor = {
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Color User IDs']) {
-        return;
-      }
-      this.ids = {};
-      return Post.callbacks.push({
-        name: 'Color User IDs',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var rgb, span, style, uid;
-
-      if (this.isClone || !(uid = this.info.uniqueID)) {
-        return;
-      }
-      span = $('.hand', this.nodes.uniqueID);
-      if (!(span && span.nodeName === 'SPAN')) {
-        return;
-      }
-      rgb = IDColor.compute(uid);
-      style = span.style;
-      style.color = rgb[3];
-      style.backgroundColor = "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
-      $.addClass(span, 'painted');
-      return span.title = 'Highlight posts by this ID';
-    },
-    compute: function(uid) {
-      var hash, rgb;
-
-      if (IDColor.ids[uid]) {
-        return IDColor.ids[uid];
-      }
-      hash = IDColor.hash(uid);
-      rgb = [(hash >> 24) & 0xFF, (hash >> 16) & 0xFF, (hash >> 8) & 0xFF];
-      rgb[3] = (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125 ? '#000' : '#fff';
-      return this.ids[uid] = rgb;
-    },
-    hash: function(uid) {
-      var i, msg;
-
-      msg = 0;
-      i = 0;
-      while (i < 8) {
-        msg = (msg << 5) - msg + uid.charCodeAt(i++);
-      }
-      return msg;
-    }
-  };
-
   CustomCSS = {
     init: function() {
       if (!Conf['Custom CSS']) {
@@ -10038,32 +9987,35 @@
       if (this.isClone || !(uid = this.info.uniqueID)) {
         return;
       }
+      span = $('.hand', this.nodes.uniqueID);
+      if (!(span && span.nodeName === 'SPAN')) {
+        return;
+      }
       rgb = IDColor.compute(uid);
-      span = this.nodes.uniqueID;
       style = span.style;
       style.color = rgb[3];
       style.backgroundColor = "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
       $.addClass(span, 'painted');
-      span.textContent = uid;
       return span.title = 'Highlight posts by this ID';
     },
-    compute: function(uniqueID) {
+    compute: function(uid) {
       var hash, rgb;
 
-      if (uniqueID in IDColor.ids) {
-        return IDColor.ids[uniqueID];
+      if (IDColor.ids[uid]) {
+        return IDColor.ids[uid];
       }
-      hash = this.hash(uniqueID);
+      hash = IDColor.hash(uid);
       rgb = [(hash >> 24) & 0xFF, (hash >> 16) & 0xFF, (hash >> 8) & 0xFF];
-      rgb.push((rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 170 ? 'black' : 'white');
-      return this.ids[uniqueID] = rgb;
+      rgb[3] = (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125 ? '#000' : '#fff';
+      return this.ids[uid] = rgb;
     },
-    hash: function(uniqueID) {
-      var i, msg, _i, _ref;
+    hash: function(uid) {
+      var i, msg;
 
       msg = 0;
-      for (i = _i = 0, _ref = uniqueID.length; _i < _ref; i = _i += 1) {
-        msg = (msg << 5) - msg + uniqueID.charCodeAt(i);
+      i = 0;
+      while (i < 8) {
+        msg = (msg << 5) - msg + uid.charCodeAt(i++);
       }
       return msg;
     }
