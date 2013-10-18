@@ -252,23 +252,9 @@ Main =
 
   callbackNodesDB: (klass, nodes, cb) ->
     queue = []
-    softTask =  ->
-      task = queue.shift()
-      func = task[0]
-      args = Array::slice.call task, 1
-      func.apply func, args
-      return unless queue.length
-      if (queue.length % 7) is 0
-        setTimeout softTask, 0
-      else
-        softTask()
-
-    # get the nodes' length only once
-    len    = nodes.length
-    i      = 0
     errors = null
 
-    func = (node, i) ->
+    func = (node) ->
       for callback in klass.callbacks
         try
           callback.cb.call node
@@ -279,13 +265,26 @@ Main =
             message: "\"#{callback.name}\" crashed on #{klass.name} No.#{node} (/#{node.board}/)."
             error: err
       # finish
-      if i is len
+      unless queue.length
         Main.handleErrors errors if errors
         cb() if cb
 
+    softTask =  ->
+      node = queue.shift()
+      func node
+      return unless queue.length
+      unless queue.length % 7
+        setTimeout softTask, 0
+      else
+        softTask()
+
+    # get the nodes' length only once
+    len    = nodes.length
+    i      = 0
+
     while i < len
-      node = nodes[i]
-      queue.push [func, node, ++i]
+      node = nodes[i++]
+      queue.push node
 
     softTask()
 
