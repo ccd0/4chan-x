@@ -1,3 +1,5 @@
+Added a keybind to open the catalog search form on index pages.
+
 ### 3.11.5 - *2013-10-03*
 
 Minor Chrome 30 fix.
@@ -17,7 +19,7 @@ Update posting cooldown timers to match 4chan settings:
 
 ### 3.11.2 - *2013-09-17*
 
-Updated post and deletion cooldown timers to match 4chan changes: they are now twice longer.
+Updated post and deletion cooldown timers to match 4chan changes: they are now twice as long.
 
 ### 3.11.1 - *2013-09-13*
 

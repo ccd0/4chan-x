@@ -73,6 +73,8 @@ Keybinds =
       when Conf['Previous page']
         if form = $ '.prev form'
           window.location = form.action
+      when Conf['Search form']
+        $.id('search-btn').click()
       # Thread Navigation
       when Conf['Next thread']
         return if g.VIEW isnt 'index'
