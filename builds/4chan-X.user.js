@@ -11902,26 +11902,8 @@
       var errors, func, i, len, node, queue, softTask;
 
       queue = [];
-      softTask = function() {
-        var args, func, task;
-
-        task = queue.shift();
-        func = task[0];
-        args = Array.prototype.slice.call(task, 1);
-        func.apply(func, args);
-        if (!queue.length) {
-          return;
-        }
-        if ((queue.length % 7) === 0) {
-          return setTimeout(softTask, 0);
-        } else {
-          return softTask();
-        }
-      };
-      len = nodes.length;
-      i = 0;
       errors = null;
-      func = function(node, i) {
+      func = function(node) {
         var callback, err, _i, _len, _ref;
 
         _ref = klass.callbacks;
@@ -11940,7 +11922,7 @@
             });
           }
         }
-        if (i === len) {
+        if (!queue.length) {
           if (errors) {
             Main.handleErrors(errors);
           }
@@ -11949,9 +11931,25 @@
           }
         }
       };
+      softTask = function() {
+        var node;
+
+        node = queue.shift();
+        func(node);
+        if (!queue.length) {
+          return;
+        }
+        if (!(queue.length % 7)) {
+          return setTimeout(softTask, 0);
+        } else {
+          return softTask();
+        }
+      };
+      len = nodes.length;
+      i = 0;
       while (i < len) {
-        node = nodes[i];
-        queue.push([func, node, ++i]);
+        node = nodes[i++];
+        queue.push(node);
       }
       return softTask();
     },

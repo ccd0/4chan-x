@@ -20,7 +20,11 @@
 // ==/UserScript==
 
 /*
+<<<<<<< HEAD
 * appchan x - Version 2.4.1 - 2013-10-19
+=======
+* appchan x - Version 2.4.1 - 2013-10-17
+>>>>>>> fefe8a2... softTask optimizations.
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
