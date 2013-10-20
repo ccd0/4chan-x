@@ -172,6 +172,7 @@ Main =
       'Index Navigation':          Nav
       'Keybinds':                  Keybinds
       'Show Dice Roll':            Dice
+      'Infinite Scrolling':        InfiniScroll
 
     # c.timeEnd 'All initializations'
 
@@ -242,8 +243,7 @@ Main =
         try
           callback.cb.call node
         catch err
-          unless errors
-            errors = []
+          errors = [] unless errors
           errors.push
             message: "\"#{callback.name}\" crashed on #{klass.name} No.#{node} (/#{node.board}/)."
             error: err
@@ -259,8 +259,7 @@ Main =
         try
           callback.cb.call node
         catch err
-          unless errors
-            errors = []
+          errors = [] unless errors
           errors.push
             message: "\"#{callback.name}\" crashed on #{klass.name} No.#{node} (/#{node.board}/)."
             error: err
