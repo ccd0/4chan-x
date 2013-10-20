@@ -9122,93 +9122,93 @@
       }
     },
     archives: {
-      '4plebs': {
-        domain: 'archive.4plebs.org',
-        http: true,
-        https: true,
-        software: 'foolfuuka',
-        boards: ['hr', 'tg', 'tv', 'x'],
-        files: ['hr', 'tg', 'tv', 'x']
-      },
-      'fap archive': {
-        domain: 'fuuka.worldathleticproject.org',
-        http: true,
-        https: true,
-        software: 'foolfuuka',
-        boards: ['b', 'e', 'h', 'hc', 'p', 's', 'soc', 'sp', 'u'],
-        files: ['b', 'e', 'h', 'hc', 'p', 's', 'soc', 'sp', 'u']
-      },
-      'Foolz': {
-        domain: 'archive.foolz.us',
+      "Foolz": {
+        domain: "archive.foolz.us",
         http: false,
         https: true,
-        software: 'foolfuuka',
-        boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'],
-        files: ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg']
+        software: "foolfuuka",
+        boards: ["a", "co", "gd", "jp", "m", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
+        files: ["a", "gd", "jp", "m", "tg", "vg", "vp", "vr", "wsg"]
       },
-      'Foolz Beta': {
-        domain: 'beta.foolz.us',
+      "NSFW Foolz": {
+        domain: "nsfw.foolz.us",
+        http: false,
+        https: true,
+        software: "foolfuuka",
+        boards: ["u"],
+        files: ["u"]
+      },
+      "The Dark Cave": {
+        domain: "archive.thedarkcave.org",
+        http: true,
+        https: true,
+        software: "foolfuuka",
+        boards: ["c", "int", "out", "po"],
+        files: ["c", "po"]
+      },
+      "4plebs": {
+        domain: "archive.4plebs.org",
+        http: true,
+        https: true,
+        software: "foolfuuka",
+        boards: ["hr", "tg", "tv", "x"],
+        files: ["hr", "tg", "tv", "x"]
+      },
+      "Nyafuu": {
+        domain: "archive.nyafuu.org",
+        http: true,
+        https: true,
+        software: "foolfuuka",
+        boards: ["c", "w", "wg"],
+        files: ["c", "w", "wg"]
+      },
+      "fap archive": {
+        domain: "fuuka.worldathleticproject.org",
+        http: true,
+        https: true,
+        software: "foolfuuka",
+        boards: ["adv", "b", "cm", "d", "e", "h", "hc", "lgbt", "pol", "r", "s", "s4s", "soc", "trv", "u", "y"],
+        files: ["b", "cm", "d", "e", "h", "hc", "pol", "r", "s", "s4s", "soc", "u", "y"]
+      },
+      "Install Gentoo": {
+        domain: "archive.installgentoo.net",
+        http: false,
+        https: true,
+        software: "fuuka",
+        boards: ["diy", "g", "sci"],
+        files: []
+      },
+      "Rebecca Black Tech": {
+        domain: "rbt.asia",
+        http: true,
+        https: true,
+        software: "fuuka",
+        boards: ["cgl", "g", "mu", "w"],
+        files: ["cgl", "g", "mu", "w"]
+      },
+      "Heinessen": {
+        domain: "archive.heinessen.com",
+        http: true,
+        software: "fuuka",
+        boards: ["an", "fit", "k", "mlp", "r9k", "toy"],
+        files: ["an", "k", "toy"]
+      },
+      "warosu": {
+        domain: "fuuka.warosu.org",
+        http: true,
+        https: true,
+        software: "fuuka",
+        boards: ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"],
+        files: ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"]
+      },
+      "Foolz Beta": {
+        domain: "beta.foolz.us",
         http: true,
         https: true,
         withCredentials: true,
-        software: 'foolfuuka',
-        boards: ['a', 'co', 'd', 'gd', 'h', 'jp', 'm', 'mlp', 'q', 'sp', 'tg', 'tv', 'u', 'v', 'vg', 'vp', 'vr', 'wsg'],
-        files: ['a', 'd', 'gd', 'h', 'jp', 'm', 'q', 'tg', 'u', 'vg', 'vp', 'vr', 'wsg']
-      },
-      'Heinessen': {
-        domain: 'archive.heinessen.com',
-        http: true,
-        software: 'fuuka',
-        boards: ['an', 'fit', 'k', 'mlp', 'r9k', 'toy'],
-        files: ['an', 'k', 'toy']
-      },
-      'Install Gentoo': {
-        domain: 'archive.installgentoo.net',
-        http: false,
-        https: true,
-        software: 'fuuka',
-        boards: ['diy', 'g', 'sci'],
-        files: []
-      },
-      'NSFW Foolz': {
-        domain: 'nsfw.foolz.us',
-        http: false,
-        https: true,
-        software: 'foolfuuka',
-        boards: ['u'],
-        files: ['u']
-      },
-      'Nyafuu': {
-        domain: 'archive.nyafuu.org',
-        http: true,
-        https: true,
-        software: 'foolfuuka',
-        boards: ['c', 'w', 'wg'],
-        files: ['c', 'w', 'wg']
-      },
-      'Rebecca Black Tech': {
-        domain: 'rbt.asia',
-        http: true,
-        https: true,
-        software: 'fuuka',
-        boards: ['cgl', 'g', 'mu', 'w'],
-        files: ['cgl', 'g', 'mu', 'w']
-      },
-      'The Dark Cave': {
-        domain: 'archive.thedarkcave.org',
-        http: true,
-        https: true,
-        software: 'foolfuuka',
-        boards: ['c', 'int', 'out', 'po'],
-        files: ['c', 'po']
-      },
-      'warosu': {
-        domain: 'fuuka.warosu.org',
-        http: true,
-        https: true,
-        software: 'fuuka',
-        boards: ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr'],
-        files: ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
+        software: "foolfuuka",
+        boards: ["a", "co", "d", "gd", "h", "jp", "m", "mlp", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
+        files: ["a", "d", "gd", "h", "jp", "m", "tg", "u", "vg", "vp", "vr", "wsg"]
       }
     },
     to: function(dest, data) {
@@ -9587,6 +9587,7 @@
       'Arch': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABCFBMVEUAAAAA//8rqtVAqtUQj88tpdIYks46otwVldUbktEaldMjldM2qNcXk9IWktQZkdIYlc8mnNUXlNEZktEZlNIYktIWlNMXktE7o9klmdMXktFHqdkXk9EWk9EYk9IlmtQXlNEXktAWk9AWlNEYlNFDptkZldMYk9E4otg/p9kXktEXk9AXlNA4otclmdQXk9IYktEXlNEwn9YXk9IXk9FFp9o3otgXk9FPrdwXk9E2otdCptkXk9E/ptkcldIXk9Edl9IXk9EjmdUXk9EXk9EXk9EbldIcldIjmdMmmtQsndUvntYyn9YyoNYzoNc0odc1odc2odc6pNg7pNg9pdlDp9pJqttOrdzlYlFbAAAARXRSTlMAAQYMEBEVFhgcHR0mLS8zNTY3PT4/RU1kdXp6e3+Cg4WIiYqMjZGXl5mbnqSnrbS3zMzV3OPk7Ozv8fT29vf4+fz8/f7SyXIjAAAAmUlEQVR4XlXI1WLCUBQF0YM3SHB3a1B3l7Bx1///E6ANkDtva0jKbCW2XIH1z2hiZEZ4uUgxo7JedTQye/KN/Sb5tbJ+7V9OXd1n+O+38257TL+tah3mADAwSMM7wzQWF4Hff6ubQIZIAIb6vxEF4CZyATXhZa4HwEnEA+2QgoiyQDnIEWkjVSBBZBqXbCRlKYo8+Rwkyx54AOYfFe7HhFa7AAAAAElFTkSuQmCC',
       'CentOS': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAB5lBMVEUAAADy8tng4Ovs9tnk5O3c7bX44LLduNO1tdDh7r/eutj43q2kocX23az07N+qqsvUqcmXl7331ZXJj7r40o/Pn8T42qP63KjNw9n21p3Y387Ml7732JzR55z05MSxtMLGn8TC4Hx8eqt8e62Af6/B4HnG4oPC4HzH44fBf7LCgbOkoMTcsrmtn8PWqcfFtKrj4Jvs2ZOz2FnMqLXT3KfY5p60Z6NUU5XRuqHzwWSywqDn3JaiiLWahrWhkry5zJjRmqm1Z6P1wmb1y319fK632mK5cKi5nH+73Gu73Gy73W283W+9eK17e6y1yZS3aqRZWJdcW5ldXJplXZppaKBwb6VwcKV5eKswL306OYNPTpGkfK+m0kGpUJWq1EnEqIuXK3+Xh7ahP4qhkryMfK6BgK+CdpGMaKKMa6O9ea2+eq6+oYW/eq+NbqWVlL2Wlr7AjanA4HnA4HrBkqbBlafB33rCgbLCmKjCxIzC1mSs1UytV5mtxIWt1lCuz2evWpuvXJywxYzHjrvH4oXIjrrN2HXO5pTO5pXUlYnUlYvVl5Hb0G7e0XTg03rhr5fpzHPpzXTp0Hvtz3/wrDHytknyt0zyuE3yuVHzvVr0wGP1x3T1yHf1yXe0ZaL2zYP30o730pD31ZeRIcF5AAAAQ3RSTlMAFBkbHEhJS0xMTk5UWWBsd4SEiIiPkJCVlZaam6CjpK29wMPDxMTFxcnK193e3+Dg4uTn5+fo6e/v8/P4+fn7/P7+J4XBAAAAAOBJREFUeF5Vj1OvAwEYBb/yGlu717atLW0b17Zt2/6nze42TTpvMw8nOZCAmwUpiIY6c5IiLi9tPX64GairqszHQ4X2VB64v1Cs6PxMPJSdHM777s6/jyaMRGiRLyyrb88OpjZ3CzAXrm1sqzSNNeN7kVBPNgB7cG51abE5l9cXDces7emQ1uadHhutFUg6gpPKkSIqQGavwz7r7O/+/3t/rSdjI9XDM3qz4fr3B/3iA0aJTG9x71+9oR/PLDwUe2wm19bly+fTIxHyEETatbPewGEw6Mk/tKZCEqSQQUlIHB/QNBEjjVN1AAAAAElFTkSuQmCC',
       'Debian': 'iVBORw0KGgoAAAANSUhEUgAAAA0AAAAQCAYAAADNo/U5AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAZ5JREFUOE+Nkk0oBHEYxv8fu5GQj3JwcaDkIAc5IpR87M7MKnIVJVKclaIQ5Sy5OLkgR7n5OigcSNpmd2c2Vyfl4KT8/muWiVU79TTv+7zv837NCBF6PG1X+NpZyEYSD9mIc+tHnBPe23B9xKrCuTmbQA/JKfABrhBswa1hH4A38IwfOxPdX1qcjiCQxO5NyrjKV70TnSbeRPwJvGN3i4yyqnEucPY8ZZX9GSEgGK+RvFfyjk2VKZxzBNG8wJWWgh/xtDOeUXZ7Slr6TrSLYL9N4SMgYTTcwdc2ArvJcElhSVcM6mCNSV8n9hA59yTU5UWMG6HIbLhIWlglgWiC2L4Z79qTdo40D6ISuOWwKCWHyk9Fv8ldpUHOuGTuynwSBUynddPdlbEosVpP9Eu4FnOsRzUYNTsdmZN/d5LDiqM0w+2CMdAFFsFGWgfXxZnheqe/z+0puwEM0HHYV3Z9Sgz8TEz7GkQvpuJ/36ggj2AaHLrSlkULWV5x+h2E8xkZL16YVjGNaAUscfZ/f6c/k9ywLKI2MMcRWl0RLy007idmRbQJ7RIfDAAAAABJRU5ErkJggg==',
+      'Elementary': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAAmJLR0QA/4ePzL8AAAAJcEhZcwAAAEgAAABIAEbJaz4AAAGcSURBVCjPfZE7aFRhFIS/+TchRAtRlBQqiMpiEILsf/cBoviqxC42hliktsgKK4gKkS2sUkRUUFCwCGoqZclFiIUQWN1k790gKFHBxkdhYSMIgeT+x+KqpTPdzMBwzsjIUS2GMfN4IFXqHi19zHUHIPl61rFt1tIM09Zie7bs6xKADMnPM2Tn3VG7okVzHLHJsOIe6ld6xgyjVPeJ7/cN/7N8yDD8cf9l/8DIZr9YqhuqFLOOHS640GE0Wch7o2/hdO9NbWhjtVBzYYzZdDXcVvzP3sRgYQ0635nbOOfM25IcVZ79OQebYLn7ASR2KXJ4euU9DGavc3tkqy6qAeAvcwrvoG8tCHQAINoysGBPum/Bn6BJExyp7Us+WVcVqJR5aQ/Sa1DZrcfcsM+kTmkYBc1yKbofYmskd6F8NvR4nl5X1RJVillbc3aMg0BbrbBXETvsQjrvh9Uu1Apff9xb5yp3wgSpdnJSfbxYH195F/UrtlvdGAP52L/Pv/iXpWGf+BgZMkAqTWpKT+2VOiGjpCrj1uzdNCMP/G/u39MktJ21xpKNAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDEzLTEwLTE1VDIyOjIzOjU0KzA4OjAwkOuuIAAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxMy0xMC0xNVQyMjoyMzo1NCswODowMOG2FpwAAAAASUVORK5CYII=',
       'Fedora': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABPlBMVEUAAAApQXIpQXIpQXIqQ3UpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIqQ3QpQXIpQXIqRHYpQXIpQXIqQ3QqRHYpQXI8brT///8uTYMpQnM5Zqg5ZqnS1+I4ZaY4ZactSn8uRnYrQ3MrRXgsRHUsR3s8bbM8brMtSX4wUosxVI01XZw2X50vUIguToQvR3c6X5o6aKs6aq08Un8qQnM9VIFDWINJXohKcKlXapEqQ3UvUIc2X55bhcBdcJVgcpdhfapmd5tuk8dxgqJ1hKR5jbB6iah/m8Shudq3v9C4wNG/x9bFy9nFzNnFzNrIz9zK0NzK0t/O2+3P1eA2YaDU2eTb3+jb4Oje4urj6fHm6e/s7/Tz9fj3+fz7/P38/f3+/v83YaEa/NNxAAAAHnRSTlMABAoVGyY1SVlpeIuQsLfDzdHW4+3y8/b39/n6+vr4+ns8AAAAyklEQVR4XiWN5XrDMAxF75KOknYdZJS0klNmHjMzMzO9/wvMcH7I37mSJShsJ+5NjMT6umDoHyXDcI/2qJadh++P3cle1de+9yPe3/bTY92wzfzr7wGtP3JrAI72BZGVtcAdQlwHy+JS1pDbBE9qamZF3BYrjQxPEXwKc6dC8bXFm0QIpmt8kn0Rn093q82UCtK8oXZckwFJzuulV8bHkajPyXdbnJnARfDHs0trz+JQ+5AFvzp/L0+cL2qPAINUPrq5OC6p/64F/AMnrST+Dq/r7QAAAABJRU5ErkJggg==',
       'FreeBSD': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAABIAAAASABGyWs+AAAABmJLR0QA/wD/AP+gvaeTAAADXklEQVQYGQXBS2wUZQDA8f83j33M9rF9d7u4loaWklaDpkSo9KDGaIKUaGxshD2YSPRiuDVeTDyhBxosJCoa40ktpAkPDcUqAYVIpUSUPrAulEdD2bbb7e7ObGcfM/P5+4kwKDvq6yJ1FYYcvb+YAkqAHo/HQ7FYrFIoCiurq9ZXJ06YSOkA+kBzfX06bys3zHxS9EL0tXDVyZfefacqV+X/ZSJx5+qLbx98LhaL9RiGEZWlEsWC/Thd9q6Pf3vs2u6Orc83rFsvTwwfLf5obgywT1Vjh2Hh+rbNsnTssJdNLedK5aIrpSuldKVXKsnH4+Pyn6FDXn5tMef9O+3NvdkvP1V4+EYw2AoQ+KSx8dRYS6NXXnwovaItXduSrrkinWxGOmZWJi9OyOK9m1LmsjIz9IH8QUMOd3WfAQwNKCy2tJwbHB5+XasPaxIHmc4g7WWEZ1MquBiRFlJTf1E7+Tl/H/8asavPzTY1nWd2ZkMDRPeBeHPz5ojwsilEQCBvTSKunCF3M8FSNkBGVTHDYYrLj8jVNhDZ2SMa2zo3MTamaIC/u6Ojr3DtrOrvP0BpdATnyBeIhTxpR5ABUlKSUlXS1dWstbVxdz6hPL0l1quGqkLaKwNvVcjEXNRd/4mit4Z19DjefBEPyCKxgQJQcF28dBrHNDGTSZSezsjeff0hraa2Vs2vrvit81O4vj9xLJcC4ADrQA7YAGqBGsAql/EtLdFQE/L7dF1XZmdnSrbPMJfXoLDmolQK8gJyQBowgQhQDRQBD+hsraVhd4e5MH+/oExfvWLJ9q3/3S7qMpNH2hsS40kFS4EUUAMA2IANRIBXv4uzuO67c2PykqkA5YmZ6bN18YPi0Yoknxc4AsJPCMLVAk2BLKDosCWqs/PZaulkuxk9fekcUBAAQGDks5FT0W++3NuYuC0DVUL4DIEdlIQDAj0IRkigaMjArkFx0tf523sffrQHyKsAgHPhwoXLL+yP9/kePNhk5ExUTyKFkJVAUAiCFZrQup4Rv9ftuLV/6ONBYBVABQAArMvJ5MXW7duD6P62sD8UrPAFRU1TpeCpCnGvPZr7WW///v0jpw+VC9ZdAAABAAAAAMLo7drWrmQyPWG/r8tnaGIjaM05ujr16x/ZBFh5AACA/wGZnIuw4Z4A3AAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxMi0wNy0wNFQxMDowOTo0OS0wNDowMOPVpFwAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTItMDctMDRUMTA6MDk6NDktMDQ6MDCSiBzgAAAAAElFTkSuQmCC',
       'Gentoo': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAB9VBMVEUAAAD///+AgICqqv+AgIC/v9+Ojqqii9GAgKptYZKQkOmPj/ddUYBgW4eVjeCTgfiWjO5wbJaZkvPBvepkXomYkNldV4Bzbpl6dJ+Uj7ynoO6Vi+1qZI63se2mnudjXYjOy+GCfaqZjvWlm/Pc2e+Oh7NeWIOWjfeXjeW1sd+gl+diXIfp5/KHgKnn5/F2cZx6c6ZgWoXc2e6dltrAvNu0scrX1eTOyujCvup4c5qpovVpY43///+6uPPJyPXq6fvm5vrz8/z8/P7+/v/d3PixqvmxrPSyrfe0sPO0sfS3tMve2/3r6vy6ufPz8/3d3fi3tM63tPO4tsu5tsu5tvO6tfe6t/Vva5KRjKy7tvW7t/W9vPO/vM+/vvPCwfPEw/TFwvTFxOfGxfTGxvTHxvTIx/TJx/aTiOrNzPXNzfXQzfnRzuHS0fbS0vbT0uHU0e/U0uTU0/bW0+zW1ffX1vfY1/jZ2Pjb2/jc2uSTiemVkLSlnvbe3PTe3vng3fzg3f3g4Pnh4Pnh4fri4enj4/nk5Prl5Prm4/ymn/bn5vro5/rp6O/p6funoPWsqs3t7Pvt7fXv7vzv7v3w7/nx7/3y8f3y8v3z8vytqPWuqPX09P319P319P719f339v739/34+P35+f37+/+uqev9/f6vqvSwrPQAR0dcAAAAPHRSTlMAAQIDBAgJCwwVFyAsNUFHSVBneH+Bh4mVmZmanKCxsrK2tr3ExtDW19rb4ODl5u3t7u/w8/T6+/z9/f4MkNJ1AAAA8ElEQVR4XjXNw5aDURSE0YrRtm3b54+dtm3btm3bz9k3Wek9+2pSYFwT8ibzE93hwAtdJqK3nZo4J9hFXbP+vFHOthV6gnGzstZq94wdCs4UCCDymQ2v7X0LdYoSQ0MIENRYzJbRlPTTHu73ZNAL8vivmVui98PpzuqffX0mIPHJGtOQenukteJ+aS3b9htNpDnT9TeZH1bHAwBRMhGpd6e6uNrLoRgxBKmsX47nBlp678ojpEA40fejcmW4e/No0V8IIPfj6eKgbEJ3ZUnzgE1OqWp9Q3VeWRAsg51f1dZ8c31RmAsc+N5JGbG+zvj3BzDCPrzMDC9SAAAAAElFTkSuQmCC',
