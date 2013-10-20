@@ -1,3 +1,8 @@
+### v2.5.1 
+*2013-10-20*
+**Zixaphir**:
+- Infinite Scrolling Bugfix (chrome)
+
 ## v2.5.0 
 *2013-10-19*
 
