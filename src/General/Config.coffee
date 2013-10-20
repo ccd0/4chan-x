@@ -89,6 +89,10 @@ Config =
         false
         'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.'
       ]
+      'Infinite Scrolling': [
+        false
+        'Add new posts to the board index upon reaching the bottom of the board.'
+      ]
 
     'Linkification':
       'Linkify': [
