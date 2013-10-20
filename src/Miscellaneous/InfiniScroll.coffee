@@ -34,7 +34,7 @@ InfiniScroll =
     return unless threads.length
       InfiniScroll.notice()
       InfiniScroll.isDead = true
-    
+
     for thread in threads
       posts = []
       {omitted_posts, omitted_images} = thread
@@ -46,12 +46,12 @@ InfiniScroll =
 
       op = Build.postFromObject thread, g.BOARD
       posts.push op
-      
+
       replylink = $.el 'a',
         href: "res/#{threadID}"
         className: 'replylink'
         textContent: 'Reply'
-      
+
       postlink = $.el 'div',
         className: "postLink mobile"
         innerHTML: """<a href="res/#{threadID}" class="button">View Thread</a>"""
@@ -68,7 +68,7 @@ InfiniScroll =
           innerHTML: """
             <strong>#{omitted_posts} posts omitted</strong>#{if omitted_images then "<br><em>(#{omitted_images} have images)</em>" else ""}
           """
-      
+
       $.add $('.postInfo', op), [$.tn('\u00A0\u00A0\u00A0['), replylink, $.tn(']\u00A0')]
       $.add op, postlink
 
@@ -119,7 +119,7 @@ InfiniScroll =
 
     Main.callbackNodes Thread, threads
     Main.callbackNodes Post,   posts
-  
+
   notice: do ->
     notify = false
     reset = -> notify = false
@@ -133,7 +133,7 @@ InfiniScroll =
     load: ->
       InfiniScroll.isFetching = false
       return unless @status is 200
-      
+
       InfiniScroll.cache = new String @response
       InfiniScroll.cache.time = Date.now()
       InfiniScroll.parse @response
