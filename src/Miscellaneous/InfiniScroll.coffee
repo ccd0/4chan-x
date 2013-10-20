@@ -12,7 +12,7 @@ InfiniScroll =
     InfiniScroll.scroll()
 
   scroll: $.debounce 100, ->
-    return if InfiniScroll.isFetching or (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight))
+    return if InfiniScroll.isFetching or ((d.body.scrollTop or doc.scrollTop) <= doc.scrollHeight - (300 + window.innerHeight))
     return InfiniScroll.notice() if InfiniScroll.isDead
 
     # For once, lets respect 4chan's API rules.

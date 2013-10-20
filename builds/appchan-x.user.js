@@ -20,7 +20,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.5.0 - 2013-10-19
+* appchan x - Version 2.5.0 - 2013-10-20
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -13807,7 +13807,7 @@
     scroll: $.debounce(100, function() {
       var url;
 
-      if (InfiniScroll.isFetching || (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight))) {
+      if (InfiniScroll.isFetching || ((d.body.scrollTop || doc.scrollTop) <= doc.scrollHeight - (300 + window.innerHeight))) {
         return;
       }
       if (InfiniScroll.isDead) {
