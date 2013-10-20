@@ -22,93 +22,93 @@ Redirect =
     return
 
   archives:
-    '4plebs':
-      domain: 'archive.4plebs.org'
-      http:  true
-      https: true
-      software: 'foolfuuka'
-      boards: ['hr', 'tg', 'tv', 'x']
-      files:  ['hr', 'tg', 'tv', 'x']
-
-    'fap archive':
-      domain: 'fuuka.worldathleticproject.org'
-      http:  true
-      https: true
-      software: 'foolfuuka'
-      boards: ['b', 'e', 'h', 'hc', 'p', 's', 'soc', 'sp', 'u']
-      files:  ['b', 'e', 'h', 'hc', 'p', 's', 'soc', 'sp', 'u']
-
-    'Foolz':
-      domain: 'archive.foolz.us'
+    "Foolz":
+      domain: "archive.foolz.us"
       http:  false
       https: true
-      software: 'foolfuuka'
-      boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg']
-      files:  ['a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg']
+      software: "foolfuuka"
+      boards: ["a", "co", "gd", "jp", "m", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"]
+      files:  ["a", "gd", "jp", "m", "tg", "vg", "vp", "vr", "wsg"]
 
-    'Foolz Beta':
-      domain: 'beta.foolz.us'
+    "NSFW Foolz":
+      domain: "nsfw.foolz.us"
+      http:  false
+      https: true
+      software: "foolfuuka"
+      boards: ["u"]
+      files:  ["u"]
+
+    "The Dark Cave":
+      domain: "archive.thedarkcave.org"
+      http:  true
+      https: true
+      software: "foolfuuka"
+      boards: ["c", "int", "out", "po"]
+      files:  ["c", "po"]
+
+    "4plebs":
+      domain: "archive.4plebs.org"
+      http:  true
+      https: true
+      software: "foolfuuka"
+      boards: ["hr", "tg", "tv", "x"]
+      files:  ["hr", "tg", "tv", "x"]
+
+    "Nyafuu":
+      domain: "archive.nyafuu.org"
+      http:  true
+      https: true
+      software: "foolfuuka"
+      boards: ["c", "w", "wg"]
+      files:  ["c", "w", "wg"]
+
+    "fap archive":
+      domain: "fuuka.worldathleticproject.org"
+      http:  true
+      https: true
+      software: "foolfuuka"
+      boards: ["adv", "b", "cm", "d", "e", "h", "hc", "lgbt", "pol", "r", "s", "s4s", "soc", "trv", "u", "y"]
+      files:  ["b", "cm", "d", "e", "h", "hc", "pol", "r", "s", "s4s", "soc", "u", "y"] 
+
+    "Install Gentoo":
+      domain: "archive.installgentoo.net"
+      http:  false
+      https: true
+      software: "fuuka"
+      boards: ["diy", "g", "sci"]
+      files:  []
+
+    "Rebecca Black Tech":
+      domain: "rbt.asia"
+      http:  true
+      https: true
+      software: "fuuka"
+      boards: ["cgl", "g", "mu", "w"]
+      files:  ["cgl", "g", "mu", "w"]
+
+    "Heinessen":
+      domain: "archive.heinessen.com"
+      http: true
+      software: "fuuka"
+      boards: ["an", "fit", "k", "mlp", "r9k", "toy"]
+      files:  ["an", "k", "toy"]
+
+    "warosu":
+      domain: "fuuka.warosu.org"
+      http:  true
+      https: true
+      software: "fuuka"
+      boards: ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"]
+      files:  ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"]
+
+    "Foolz Beta":
+      domain: "beta.foolz.us"
       http:  true
       https: true
       withCredentials: true
-      software: 'foolfuuka'
-      boards: ['a', 'co', 'd', 'gd', 'h', 'jp', 'm', 'mlp', 'q', 'sp', 'tg', 'tv', 'u', 'v', 'vg', 'vp', 'vr', 'wsg'],
-      files:  ['a', 'd', 'gd', 'h', 'jp', 'm', 'q', 'tg', 'u', 'vg', 'vp', 'vr', 'wsg']
-
-    'Heinessen':
-      domain: 'archive.heinessen.com'
-      http: true
-      software: 'fuuka'
-      boards: ['an', 'fit', 'k', 'mlp', 'r9k', 'toy']
-      files:  ['an', 'k', 'toy']
-
-    'Install Gentoo':
-      domain: 'archive.installgentoo.net'
-      http:  false
-      https: true
-      software: 'fuuka'
-      boards: ['diy', 'g', 'sci']
-      files:  []
-
-    'NSFW Foolz':
-      domain: 'nsfw.foolz.us'
-      http:  false
-      https: true
-      software: 'foolfuuka'
-      boards: ['u']
-      files:  ['u']
-
-    'Nyafuu':
-      domain: 'archive.nyafuu.org'
-      http:  true
-      https: true
-      software: 'foolfuuka'
-      boards: ['c', 'w', 'wg']
-      files:  ['c', 'w', 'wg']
-
-    'Rebecca Black Tech':
-      domain: 'rbt.asia'
-      http:  true
-      https: true
-      software: 'fuuka'
-      boards: ['cgl', 'g', 'mu', 'w']
-      files:  ['cgl', 'g', 'mu', 'w']
-
-    'The Dark Cave':
-      domain: 'archive.thedarkcave.org'
-      http:  true
-      https: true
-      software: 'foolfuuka'
-      boards: ['c', 'int', 'out', 'po']
-      files:  ['c', 'po']
-
-    'warosu':
-      domain: 'fuuka.warosu.org'
-      http:  true
-      https: true
-      software: 'fuuka'
-      boards: ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
-      files:  ['3', 'cgl', 'ck', 'fa', 'ic', 'jp', 'lit', 'q', 'tg', 'vr']
+      software: "foolfuuka"
+      boards: ["a", "co", "d", "gd", "h", "jp", "m", "mlp", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
+      files:  ["a", "d", "gd", "h", "jp", "m", "tg", "u", "vg", "vp", "vr", "wsg"]
 
   to: (dest, data) ->
     archive = (if dest is 'search' then Redirect.data.thread else Redirect.data[dest])[data.boardID]
