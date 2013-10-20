@@ -1,19 +1,7 @@
-<<<<<<< HEAD
-**MayhemYDG**:
-- Tiny posting cooldown adjustment:
-  * You can post an image reply immediately after a non-image reply.
-- Update posting cooldown timers to match 4chan settings:
-  * Cooldown may vary between inter-thread and intra-thread replies.
-  * Cooldown may vary when posting a file or not.
-  * Cooldown does not take sageing into account anymore.
-  * Timers vary across boards.
-- Updated post and deletion cooldown timers to match 4chan changes: they are now twice longer.
-- Added support for the flag selector on /pol/.
-- Minor Chrome 30 fix.
+**Zixaphir**:
+- Better MediaCru.sh embedding
+- Infinite Scrolling
 
-### v1.2.39 
-*2013-09-19*
-=======
 ### v1.2.41 
 *2013-10-03*
 
@@ -34,7 +22,6 @@
 ### v1.2.39 
 *2013-09-19*
 
->>>>>>> 26a0c27ac304d70bc296de9294b7fd4bc6e52048
 **seaweedchan**:
 - Fix thread updater bug introduced in last version
 
