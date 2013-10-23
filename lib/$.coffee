@@ -211,7 +211,7 @@ $.sync = do ->
   chrome.storage.onChanged.addListener (changes) ->
     for key of changes
       if cb = $.syncing[key]
-        cb changes[key].newValue
+        cb changes[key].newValue, key
     return
   (key, cb) -> $.syncing[key] = cb
 $.localKeys = [
@@ -289,9 +289,9 @@ $.set = do ->
 <% } else { %>
 # http://wiki.greasespot.net/Main_Page
 $.sync = do ->
-  $.on window, 'storage', (e) ->
-    if cb = $.syncing[e.key]
-      cb JSON.parse e.newValue
+  $.on window, 'storage', ({key, newValue}) ->
+    if cb = $.syncing[key]
+      cb JSON.parse(newValue), key
   (key, cb) -> $.syncing[g.NAMESPACE + key] = cb
 $.delete = (keys) ->
   unless keys instanceof Array

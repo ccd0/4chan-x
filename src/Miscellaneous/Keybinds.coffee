@@ -2,6 +2,9 @@ Keybinds =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Keybinds']
 
+    for hotkey of Conf.hotkeys
+      $.sync hotkey, Keybinds.sync
+
     init = ->
       $.off d, '4chanXInitFinished', init
       $.on d, 'keydown',  Keybinds.keydown
@@ -9,6 +12,9 @@ Keybinds =
         node.removeAttribute 'accesskey'
       return
     $.on d, '4chanXInitFinished', init
+
+  sync: (key, hotkey) ->
+    Conf[hotkey] = key
 
   keydown: (e) ->
     return unless key = Keybinds.keyCode e
