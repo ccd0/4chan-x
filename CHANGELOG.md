@@ -1,3 +1,6 @@
+### v1.2.42 
+*2013-10-22*
+
 **Zixaphir**:
 - Better MediaCru.sh embedding
 - Infinite Scrolling
