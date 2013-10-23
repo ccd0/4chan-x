@@ -19,7 +19,7 @@ QR =
     return unless QR.postingIsEnabled
 
     sc = $.el 'a',
-      className: 'qr-shortcut icon-comment-alt'
+      className: 'qr-shortcut fa fa-comment-o'
       title: 'Quick Reply'
       href: 'javascript:;'
     $.on sc, 'click', ->

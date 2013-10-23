@@ -12,7 +12,7 @@ Header =
     @menu = new UI.Menu 'header'
     menuButton = $.el 'a',
       className: 'menu-button'
-      innerHTML: '<i class=icon-reorder></i>'
+      innerHTML: '<i class="fa fa-reorder"></i>'
       href: 'javascript:;'
     $.on menuButton, 'click', @menuToggle
     @addShortcut menuButton, 0

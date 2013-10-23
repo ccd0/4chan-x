@@ -311,7 +311,7 @@ Main =
   css: """
   @font-face {
     font-family: 'FontAwesome';
-    src: url('data:application/font-woff;base64,<%= grunt.file.read('node_modules/font-awesome/font/fontawesome-webfont.woff', {encoding: 'base64'}) %>') format('woff');
+    src: url('data:application/font-woff;base64,<%= grunt.file.read('node_modules/font-awesome/fonts/fontawesome-webfont.woff', {encoding: 'base64'}) %>') format('woff');
     font-weight: normal;
     font-style: normal;
   }

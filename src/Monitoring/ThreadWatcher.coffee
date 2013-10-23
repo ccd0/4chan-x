@@ -149,10 +149,10 @@ ThreadWatcher =
     for threadID, thread of g.BOARD.threads
       $.extend $('.watcher-toggler', thread.OP.nodes.post),
         if ThreadWatcher.db.get {boardID: thread.board.ID, threadID}
-          className: 'watcher-toggler icon-bookmark'
+          className: 'watcher-toggler fa fa-bookmark'
           title:     'Unwatch thread'
         else
-          className: 'watcher-toggler icon-bookmark-empty'
+          className: 'watcher-toggler fa fa-bookmark-o'
           title:     'Watch thread'
 
     for refresher in ThreadWatcher.menu.refreshers
