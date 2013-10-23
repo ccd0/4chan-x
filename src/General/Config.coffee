@@ -181,7 +181,7 @@ Config =
     'Open front page':    ['Shift+0', 'Open page 0 in a new tab.']
     'Next page':          ['Right',   'Jump to the next page.']
     'Previous page':      ['Left',    'Jump to the previous page.']
-    'Search form':        ['Ctrl+Alt+s', 'Open the catalog search form.']
+    'Search form':        ['Ctrl+Alt+s', 'Open the search field on the board index.']
     # Thread Navigation
     'Next thread':        ['Down',    'See next thread.']
     'Previous thread':    ['Up',      'See previous thread.']

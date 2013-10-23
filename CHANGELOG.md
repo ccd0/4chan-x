@@ -1,4 +1,4 @@
-Added a keybind to open the catalog search form on index pages.
+Added a keybind to open the catalog search field on index pages.
 
 ### 3.11.5 - *2013-10-03*
 
