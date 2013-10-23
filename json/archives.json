@@ -44,15 +44,6 @@
   "boards": ["c", "w", "wg"],
   "files": ["c", "w", "wg"]
 }, {
-  "uid": 12,
-  "name": "FapArchive",
-  "domain": "fuuka.worldathleticproject.org",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["adv", "b", "cm", "d", "e", "h", "hc", "lgbt", "pol", "r", "s", "s4s", "soc", "trv", "u", "y"],
-  "files": ["b", "cm", "d", "e", "h", "hc", "pol", "r", "s", "s4s", "soc", "u", "y"]
-}, {
   "uid": 7,
   "name": "Install Gentoo",
   "domain": "archive.installgentoo.net",
