@@ -20,7 +20,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.5.1 - 2013-10-20
+* appchan x - Version 2.5.1 - 2013-10-28
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -12688,10 +12688,9 @@
       i = addedNodes.length;
       while (i--) {
         node = addedNodes[i];
-        if (node.nodeName === 'STYLE' && node.id || !['LINK', 'STYLE'].contains(node.nodeName) || node.rel && (!/stylesheet/.test(node.rel) || /flags.*\.css$/.test(href = node.href) || href.slice(0, 4) === 'data') || /\.typeset/.test(node.textContent)) {
-          continue;
+        if (!(node.nodeName === 'STYLE' && node.id || !['LINK', 'STYLE'].contains(node.nodeName) || node.rel && (!/stylesheet/.test(node.rel) || /flags.*\.css$/.test(href = node.href) || href.slice(0, 4) === 'data') || /\.typeset/.test(node.textContent))) {
+          $.rm(node);
         }
-        node.disabled = true;
       }
     },
     matrix: function() {

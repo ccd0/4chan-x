@@ -86,11 +86,11 @@ Style =
     while i--
       node = addedNodes[i]
 
-      continue if node.nodeName is 'STYLE' and node.id or
+      $.rm node unless node.nodeName is 'STYLE' and node.id or
         !['LINK', 'STYLE'].contains(node.nodeName) or
         node.rel and ((!/stylesheet/.test(node.rel) or /flags.*\.css$/.test(href = node.href) or href[..3] is 'data')) or
         /\.typeset/.test node.textContent
-      node.disabled = true
+      
     return
 
   matrix: ->
