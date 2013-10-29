@@ -248,3 +248,27 @@ Build =
       quote.href = "/#{boardID}/res/#{href}" # Fix pathnames
 
     container
+
+  thread: (board, data) ->
+    root = $.el 'div',
+      className: 'thread'
+      id: "t#{data.no}"
+
+    for obj in [data].concat data.last_replies or []
+      $.add root, if post = g.posts["#{board}.#{obj.no}"]
+        post.nodes.root
+      else
+        Build.postFromObject obj, board.ID
+
+    # build if necessary
+    if data.omitted_posts
+      {omitted_posts, omitted_images} = data
+      html = []
+      html.push "#{omitted_posts} post#{if omitted_posts > 1 then 's' else ''}"
+      html.push "and #{omitted_images} image repl#{if omitted_images > 1 then 'ies' else 'y'}" if omitted_images
+      html.push "omitted. Click <a href=/#{board}/res/#{data.no} class=replylink>here</a> to view."
+      $.after root.firstChild, $.el 'span',
+        className: 'summary'
+        innerHTML: html.join ' '
+
+    root

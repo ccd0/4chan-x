@@ -3,7 +3,7 @@ Index =
     return if g.VIEW isnt 'index'
 
   update: ->
-    # return unless navigator.onLine
+    return unless navigator.onLine
     Index.req?.abort()
     Index.notice?.close()
     Index.notice = new Notice 'info', 'Refreshing index...'
@@ -23,8 +23,9 @@ Index =
       return
 
     try
-      Index.parse JSON.parse req.response
-    catch e
+      Index.parse JSON.parse req.response if req.status is 200
+    catch err
+      c.error err.stack
       # network error or non-JSON content for example.
       notice.setType 'error'
       notice.el.lastElementChild.textContent = 'Index refresh failed.'
@@ -38,4 +39,33 @@ Index =
     Header.scrollTo $.id 'delform'
   parse: (pages) ->
     pageNum = +window.location.pathname.split('/')[2]
-    threads = pages[pageNum].threads
+    dataThr = pages[pageNum].threads
+
+    nodes   = []
+    threads = []
+    posts   = []
+    for data in dataThr
+      threadRoot = Build.thread g.BOARD, data
+      nodes.push threadRoot, $.el 'hr'
+      unless thread = g.threads["#{g.BOARD}.#{data.no}"]
+        thread = new Thread data.no, g.BOARD
+      threads.push thread
+      for postRoot in $$ '.thread > .postContainer', threadRoot
+        continue if thread.posts[postRoot.id.match /\d+/]
+        try
+          posts.push new Post postRoot, thread, g.BOARD
+        catch err
+          # Skip posts that we failed to parse.
+          unless errors
+            errors = []
+          errors.push
+            message: "Parsing of Post No.#{postRoot.id.match /\d+/} failed. Post will be skipped."
+            error: err
+    Main.handleErrors errors if errors
+
+    Main.callbackNodes Thread, threads
+    Main.callbackNodes Post, posts
+
+    board = $ '.board'
+    $.rmAll board
+    $.add board, nodes

@@ -185,7 +185,7 @@ Main =
             unless errors
               errors = []
             errors.push
-              message: "Parsing of Post No.#{postRoot.id.match(/\d+/)} failed. Post will be skipped."
+              message: "Parsing of Post No.#{postRoot.id.match /\d+/} failed. Post will be skipped."
               error: err
       Main.handleErrors errors if errors
 
