@@ -186,6 +186,11 @@ Build =
     else
       ''
 
+    replyLink = if isOP and g.VIEW is 'index'
+      " &nbsp; <span>[<a href='/#{boardID}/res/#{threadID}' class=replylink>Reply</a>]</span>"
+    else
+      ''
+
     container = $.el 'div',
       id: "pc#{postID}"
       className: "postContainer #{if isOP then 'op' else 'reply'}Container"
@@ -233,6 +238,7 @@ Build =
               else
                 "/#{boardID}/res/#{threadID}#q#{postID}"
               }' title='Quote this post'>#{postID}</a>" +
+              replyLink +
           '</span>' +
         '</div>' +
 
@@ -266,7 +272,7 @@ Build =
       html = []
       html.push "#{omitted_posts} post#{if omitted_posts > 1 then 's' else ''}"
       html.push "and #{omitted_images} image repl#{if omitted_images > 1 then 'ies' else 'y'}" if omitted_images
-      html.push "omitted. Click <a href=/#{board}/res/#{data.no} class=replylink>here</a> to view."
+      html.push "omitted. Click <a href='/#{board}/res/#{data.no}' class=replylink>here</a> to view."
       $.after root.firstChild, $.el 'span',
         className: 'summary'
         innerHTML: html.join ' '
