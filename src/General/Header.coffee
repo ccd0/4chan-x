@@ -246,8 +246,8 @@ Header =
   hashScroll: ->
     return unless (hash = @location.hash[1..]) and post = $.id hash
     return if (Get.postFromRoot post).isHidden
-    Header.scrollToPost post
-  scrollToPost: (post) ->
+    Header.scrollTo post
+  scrollTo: (post) ->
     {top} = post.getBoundingClientRect()
     unless Conf['Bottom header']
       headRect = Header.toggle.getBoundingClientRect()
@@ -268,8 +268,8 @@ Header =
 
   createNotification: (e) ->
     {type, content, lifetime, cb} = e.detail
-    notif = new Notice type, content, lifetime
-    cb notif if cb
+    notice = new Notice type, content, lifetime
+    cb notice if cb
 
   areNotificationsEnabled: false
   enableDesktopNotifications: ->

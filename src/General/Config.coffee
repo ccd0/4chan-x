@@ -170,9 +170,9 @@ Config =
     'Eqn tags':           ['Alt+e',   'Insert eqn tags.']
     'Math tags':          ['Alt+m',   'Insert math tags.']
     'Submit QR':          ['Alt+s',   'Submit post.']
-    # Thread related
+    # Index/Thread related
+    'Update':             ['r',       'Refresh the index/thread.']
     'Watch':              ['w',       'Watch thread.']
-    'Update':             ['r',       'Update the thread.']
     # Images
     'Expand image':       ['Shift+e', 'Expand selected image.']
     'Expand images':      ['e',       'Expand all images.']

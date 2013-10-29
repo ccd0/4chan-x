@@ -58,11 +58,15 @@ Keybinds =
         Keybinds.tags 'math', target
       when Conf['Submit QR']
         QR.submit() if QR.nodes and !QR.status()
-      # Thread related
+      # Index/Thread related
+      when Conf['Update']
+        switch g.VIEW
+          when 'thread'
+            ThreadUpdater.update()
+          when 'index'
+            Index.update()
       when Conf['Watch']
         ThreadWatcher.toggle thread
-      when Conf['Update']
-        ThreadUpdater.update()
       # Images
       when Conf['Expand image']
         Keybinds.img threadRoot

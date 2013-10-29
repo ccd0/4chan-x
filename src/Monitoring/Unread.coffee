@@ -47,7 +47,7 @@ Unread =
       # Scroll to the last read post.
       posts  = Object.keys Unread.thread.posts
       {root} = Unread.thread.posts[posts[posts.length - 1]].nodes
-      onload = -> Header.scrollToPost root if checkPosition root
+      onload = -> Header.scrollTo root if checkPosition root
     checkPosition = (target) ->
       # Scroll to the target unless we scrolled past it.
       target.getBoundingClientRect().bottom > doc.clientHeight
@@ -102,7 +102,7 @@ Unread =
       body: post.info.comment
       icon: Favicon.logo
     notif.onclick = ->
-      Header.scrollToPost post.nodes.root
+      Header.scrollTo post.nodes.root
       window.focus()
     notif.onshow = ->
       setTimeout ->

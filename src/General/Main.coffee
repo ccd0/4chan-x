@@ -69,6 +69,7 @@ Main =
     initFeature 'Polyfill',                 Polyfill
     initFeature 'Header',                   Header
     initFeature 'Settings',                 Settings
+    initFeature 'Index Pager',              Index
     initFeature 'Announcement Hiding',      PSAHiding
     initFeature 'Fourchan thingies',        Fourchan
     initFeature 'Custom CSS',               CustomCSS

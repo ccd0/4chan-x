@@ -145,7 +145,7 @@ ThreadUpdater =
     return unless navigator.onLine
     ThreadUpdater.count()
     ThreadUpdater.set 'timer', '...'
-    ThreadUpdater.req.abort() if ThreadUpdater.req
+    ThreadUpdater.req?.abort()
     url = "//api.4chan.org/#{ThreadUpdater.thread.board}/res/#{ThreadUpdater.thread}.json"
     ThreadUpdater.req = $.ajax url,
       onabort:   ThreadUpdater.cb.load
@@ -258,7 +258,7 @@ ThreadUpdater =
       if Conf['Bottom Scroll']
         window.scrollTo 0, d.body.clientHeight
       else
-        Header.scrollToPost nodes[0]
+        Header.scrollTo nodes[0]
 
     # Enable 4chan features.
     threadID = ThreadUpdater.thread.ID
