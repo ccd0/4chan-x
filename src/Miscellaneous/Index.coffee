@@ -2,25 +2,27 @@ Index =
   init: ->
     return if g.VIEW isnt 'index'
 
-    label = $.el 'label',
-      innerHTML: """
-      <select name='Index Mode' title='Change the index view mode.'>
-        <option disabled>Index Mode</option>
-        <option value='paged'>Paged</option>
-        <option value='all pages'>All threads</option>
-      <select>
-      """
-    select = label.firstChild
-    select.value = Conf['Index Mode']
-    $.on select, 'change', $.cb.value
-    $.on select, 'change', @update
+    subEntries = []
+
+    subEntry =
+      el: $.el 'span', textContent: 'Index Mode'
+      subEntries: [
+        { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="paged"> Paged' }
+        { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="all pages"> All threads' }
+      ]
+    for label in subEntry.subEntries
+      input = label.el.firstChild
+      input.checked = Conf['Index Mode'] is input.value
+      $.on input, 'change', $.cb.value
+      $.on input, 'change', @update
+    subEntries.push subEntry
 
     $.event 'AddMenuEntry',
       type: 'header'
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 90
-      subEntries: [el: label]
+      subEntries: subEntries
 
     $.on d, '4chanXInitFinished', @initReady
 
