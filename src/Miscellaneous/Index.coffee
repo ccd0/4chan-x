@@ -2,6 +2,13 @@ Index =
   init: ->
     return if g.VIEW isnt 'index'
 
+    button = $.el 'a',
+      className: 'index-refresh-shortcut fa fa-refresh'
+      title: 'Refresh Index'
+      href: 'javascript:;'
+    $.on button, 'click', Index.update
+    Header.addShortcut button, 1
+
     subEntries = []
 
     subEntry =

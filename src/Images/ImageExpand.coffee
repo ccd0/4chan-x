@@ -7,7 +7,7 @@ ImageExpand =
       title: 'Expand All Images'
       href: 'javascript:;'
     $.on @EAI, 'click', ImageExpand.cb.toggleAll
-    Header.addShortcut @EAI, 2
+    Header.addShortcut @EAI, 3
 
     Post.callbacks.push
       name: 'Image Expansion'

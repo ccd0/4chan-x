@@ -257,11 +257,10 @@ Header =
   addShortcut: (el, index) ->
     shortcut = $.el 'span',
       className: 'shortcut'
+    shortcut.dataset.index = index
     $.add shortcut, el
     shortcuts = $ '#shortcuts', Header.bar
-    nodes = [shortcuts.childNodes...]
-    nodes.splice index, 0, shortcut
-    $.add shortcuts, nodes
+    $.add shortcuts, [shortcuts.childNodes...].concat(shortcut).sort (a, b) -> a.dataset.index - b.dataset.index
 
   menuToggle: (e) ->
     Header.menu.toggle e, @, g
