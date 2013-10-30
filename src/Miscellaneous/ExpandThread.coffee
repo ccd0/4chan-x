@@ -2,6 +2,8 @@ ExpandThread =
   init: ->
     return if g.VIEW isnt 'index' or !Conf['Thread Expansion']
 
+    $.on d, 'IndexRefresh', @onrefresh
+
     Thread.callbacks.push
       name: 'Thread Expansion'
       cb:   @node
@@ -14,6 +16,11 @@ ExpandThread =
       href: 'javascript:;'
     $.on a, 'click', ExpandThread.cbToggle
     $.replace span, a
+
+  onrefresh: ->
+    for threadID, thread of g.BOARD.threads
+      ExpandThread.node.call thread
+    return
 
   text: (status, posts, files) ->
     text = [status]

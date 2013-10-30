@@ -83,7 +83,7 @@ Index =
       nodes.push threadRoot, $.el 'hr'
       unless thread = g.threads["#{g.BOARD}.#{data.no}"]
         thread = new Thread data.no, g.BOARD
-      threads.push thread
+        threads.push thread
       for postRoot in $$ '.thread > .postContainer', threadRoot
         continue if thread.posts[postRoot.id.match /\d+/]
         try
@@ -104,3 +104,4 @@ Index =
     $.rmAll board
     $.add board, nodes
     $('.pagelist').hidden = Conf['Index Mode'] isnt 'paged'
+    $.event 'IndexRefresh'
