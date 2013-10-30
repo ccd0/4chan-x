@@ -2,6 +2,33 @@ Index =
   init: ->
     return if g.VIEW isnt 'index'
 
+    label = $.el 'label',
+      innerHTML: """
+      <select name='Index Mode' title='Change the index view mode.'>
+        <option disabled>Index Mode</option>
+        <option value='paged'>Paged</option>
+        <option value='all pages'>All threads</option>
+      <select>
+      """
+    select = label.firstChild
+    select.value = Conf['Index Mode']
+    $.on select, 'change', $.cb.value
+    $.on select, 'change', @update
+
+    $.event 'AddMenuEntry',
+      type: 'header'
+      el: $.el 'span',
+        textContent: 'Index Navigation'
+      order: 90
+      subEntries: [el: label]
+
+    $.on d, '4chanXInitFinished', @initReady
+
+  initReady: ->
+    $.off d, '4chanXInitFinished', Index.initReady
+    return if Conf['Index Mode'] is 'paged'
+    Index.update()
+
   update: ->
     return unless navigator.onLine
     Index.req?.abort()
@@ -38,8 +65,13 @@ Index =
 
     Header.scrollTo $.id 'delform'
   parse: (pages) ->
-    pageNum = +window.location.pathname.split('/')[2]
-    dataThr = pages[pageNum].threads
+    if Conf['Index Mode'] is 'paged'
+      pageNum = +window.location.pathname.split('/')[2]
+      dataThr = pages[pageNum].threads
+    else
+      dataThr = []
+      for page in pages
+        dataThr.push page.threads...
 
     nodes   = []
     threads = []

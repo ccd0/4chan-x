@@ -238,7 +238,7 @@ Build =
               else
                 "/#{boardID}/res/#{threadID}#q#{postID}"
               }' title='Quote this post'>#{postID}</a>" +
-              replyLink +
+            replyLink +
           '</span>' +
         '</div>' +
 

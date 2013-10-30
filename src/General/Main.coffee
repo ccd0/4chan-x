@@ -208,7 +208,7 @@ Main =
     try
       localStorage.getItem '4chan-settings'
     catch err
-      new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to properly function.', 30
+      new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to operate properly.', 30
       Main.disableReports = true
 
     $.event '4chanXInitFinished'

@@ -139,6 +139,7 @@ Config =
     #//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/
     #//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/
   """
+  'Index Mode': 'paged'
   'Custom CSS': false
   Header:
     'Header auto-hide':        false
