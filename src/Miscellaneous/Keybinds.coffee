@@ -78,9 +78,11 @@ Keybinds =
       when Conf['Open front page']
         $.open "/#{g.BOARD}/#delform"
       when Conf['Next page']
+        return if Conf['Index Mode'] isnt 'paged'
         if form = $ '.next form'
           window.location = form.action
       when Conf['Previous page']
+        return if Conf['Index Mode'] isnt 'paged'
         if form = $ '.prev form'
           window.location = form.action
       when Conf['Search form']
