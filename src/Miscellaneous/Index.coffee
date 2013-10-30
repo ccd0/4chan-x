@@ -99,11 +99,13 @@ Index =
             error: err
     Main.handleErrors errors if errors
 
+    # Add the threads and <hr>s in a container to make sure all features work.
+    $.nodes nodes
     Main.callbackNodes Thread, threads
     Main.callbackNodes Post, posts
+    $.event 'IndexRefresh'
 
     Index.setIndex nodes
-    $.event 'IndexRefresh'
   setIndex: (nodes) ->
     $.rmAll Index.root
     $.add Index.root, Index.sort nodes
