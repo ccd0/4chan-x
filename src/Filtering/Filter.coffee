@@ -110,13 +110,8 @@ Filter =
 
         # Highlight
         $.addClass @nodes.root, result.class
-        if !@isReply and result.top and g.VIEW is 'index'
-          # Put the highlighted OPs' thread on top of the board page...
-          thisThread = @nodes.root.parentNode
-          # ...before the first non highlighted thread.
-          if firstThread = $ 'div[class="postContainer opContainer"]'
-            unless firstThread is @nodes.root
-              $.before firstThread.parentNode, [thisThread, thisThread.nextElementSibling]
+        if !@isReply and result.top
+          @thread.isOnTop = true
 
   name: (post) ->
     if 'name' of post.info
