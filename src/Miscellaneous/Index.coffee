@@ -101,3 +101,4 @@ Index =
     board = $ '.board'
     $.rmAll board
     $.add board, nodes
+    $('.pagelist').hidden = Conf['Index Mode'] isnt 'paged'
