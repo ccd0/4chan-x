@@ -247,8 +247,8 @@ Header =
     return unless (hash = @location.hash[1..]) and post = $.id hash
     return if (Get.postFromRoot post).isHidden
     Header.scrollTo post
-  scrollTo: (post) ->
-    {top} = post.getBoundingClientRect()
+  scrollTo: (root) ->
+    {top} = root.getBoundingClientRect()
     unless Conf['Bottom header']
       headRect = Header.toggle.getBoundingClientRect()
       top -= headRect.top + headRect.height

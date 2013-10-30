@@ -67,7 +67,7 @@ Index =
     notice.el.lastElementChild.textContent = 'Index refreshed!'
     setTimeout notice.close, $.SECOND
 
-    Header.scrollTo $.id 'delform'
+    Header.scrollTo Index.root if Index.root.getBoundingClientRect().top < 0
   parse: (pages) ->
     if Conf['Index Mode'] is 'paged'
       pageNum = +window.location.pathname.split('/')[2]
