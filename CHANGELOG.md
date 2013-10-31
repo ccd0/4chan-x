@@ -1,6 +1,10 @@
 Index navigation improvements:
  - You can now refresh the index page you are on with the icon in the header bar or the same keybind for refreshing threads.
  - You can now switch between single-page and all-pages navigation via the "Index Navigation" header sub-menu.
+ - Threads in the index can now be sorted by:
+  - bump order
+  - creation date
+
 Added a keybind to open the catalog search field on index pages.
 
 ### 3.11.5 - *2013-10-03*

@@ -104,7 +104,7 @@ $.rm = do ->
     (el) -> el.parentNode?.removeChild el
 $.rmAll = (root) ->
   # jsperf.com/emptify-element
-  while node = root.firstChild
+  for node in [root.childNodes...]
     # HTMLSelectElement.remove !== Element.remove
     root.removeChild node
   return
