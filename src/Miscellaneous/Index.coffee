@@ -122,14 +122,14 @@ Index =
     $('.pagelist').hidden = Conf['Index Mode'] isnt 'paged'
   sort: (nodes) ->
     return nodes unless Conf['Filter']
-    # Put the highlighted thread on top of the index
+    # Put the highlighted thread & <hr> on top of the index
     # while keeping the original order they appear in.
-    tops = []
-    for threadRoot in nodes by 2 when Get.threadFromRoot(threadRoot).isOnTop
-      tops.push threadRoot
-    for top, i in tops
-      arr = nodes.splice nodes.indexOf(top), 2
-      nodes.splice i * 2, 0, arr...
+    i = offset = 0
+    while threadRoot = nodes[i]
+      if Get.threadFromRoot(threadRoot).isOnTop
+        nodes.splice offset, 0, nodes.splice(i, 2)...
+        offset += 2
+      i += 2
     nodes
 
   collectDeadThreads: (liveThreads) ->
