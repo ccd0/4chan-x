@@ -701,7 +701,7 @@ QR =
 
       imgContainer = $.el 'div',
         className: 'captcha-img'
-        title: 'Reload'
+        title: 'Reload reCAPTCHA'
         innerHTML: '<img>'
       input = $.el 'input',
         className: 'captcha-input field'

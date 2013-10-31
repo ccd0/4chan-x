@@ -142,7 +142,7 @@ Settings =
       return
 
     div = $.el 'div',
-      innerHTML: "<button></button><span class=description>: Clear manually-hidden threads and posts on all boards. Refresh the page to apply."
+      innerHTML: "<button></button><span class=description>: Clear manually-hidden threads and posts on all boards. Reload the page to apply."
     button = $ 'button', div
     hiddenNum = 0
     $.get 'hiddenThreads', boards: {}, (item) ->
@@ -205,7 +205,7 @@ Settings =
       try
         data = JSON.parse e.target.result
         Settings.loadSettings data
-        if confirm 'Import successful. Refresh now?'
+        if confirm 'Import successful. Reload now?'
           window.location.reload()
       catch err
         output.textContent = 'Import failed due to an error.'
