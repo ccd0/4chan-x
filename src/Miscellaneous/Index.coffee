@@ -84,15 +84,17 @@ Index =
       for page in pages
         dataThr.push page.threads...
 
-    nodes   = []
-    threads = []
-    posts   = []
+    nodes       = []
+    threads     = []
+    liveThreads = []
+    posts       = []
     for data in dataThr
       threadRoot = Build.thread g.BOARD, data
       nodes.push threadRoot, $.el 'hr'
       unless thread = g.threads["#{g.BOARD}.#{data.no}"]
         thread = new Thread data.no, g.BOARD
         threads.push thread
+      liveThreads.push thread
       for postRoot in $$ '.thread > .postContainer', threadRoot
         continue if thread.posts[postRoot.id.match /\d+/]
         try
@@ -106,6 +108,7 @@ Index =
             error: err
     Main.handleErrors errors if errors
 
+    Index.collectDeadThreads liveThreads
     # Add the threads and <hr>s in a container to make sure all features work.
     $.nodes nodes
     Main.callbackNodes Thread, threads
@@ -128,3 +131,8 @@ Index =
       arr = nodes.splice nodes.indexOf(top), 2
       nodes.splice i * 2, 0, arr...
     nodes
+
+  collectDeadThreads: (liveThreads) ->
+    for threadID, thread of g.threads when thread not in liveThreads
+      thread.collect()
+    return

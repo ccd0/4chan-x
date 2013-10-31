@@ -11,3 +11,9 @@ class Thread
   kill: ->
     @isDead = true
     @timeOfDeath = Date.now()
+
+  collect: ->
+    for postID, post in @posts
+      post.collect()
+    delete g.threads[@fullID]
+    delete @board.threads[@]
