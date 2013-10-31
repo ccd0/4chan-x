@@ -10,9 +10,12 @@ ThreadWatcher =
     @list   = @dialog.lastElementChild
 
     $.on d, 'QRPostSuccessful',   @cb.post
-    $.on d, 'ThreadUpdate',       @cb.threadUpdate if g.VIEW is 'thread'
     $.on d, '4chanXInitFinished', @ready
-    $.on d, 'IndexRefresh',       @refresh
+    switch g.VIEW
+      when 'index'
+        $.on d, 'IndexRefresh', @refresh
+      when 'thread'
+        $.on d, 'ThreadUpdate', @cb.threadUpdate
 
     now = Date.now()
     if (@db.data.lastChecked or 0) < now - 2 * $.HOUR
