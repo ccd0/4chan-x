@@ -801,6 +801,7 @@ QR =
       e.preventDefault()
 
   generatePostableThreadsList: ->
+    return unless QR.nodes
     list    = QR.nodes.thread
     options = [list.firstChild]
     for thread of g.BOARD.threads

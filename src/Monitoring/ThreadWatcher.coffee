@@ -13,6 +13,7 @@ ThreadWatcher =
     $.on d, '4chanXInitFinished', @ready
     switch g.VIEW
       when 'index'
+        $.on d, 'IndexRefresh', @cb.indexUpdate
         $.on d, 'IndexRefresh', @refresh
       when 'thread'
         $.on d, 'ThreadUpdate', @cb.threadUpdate
@@ -73,6 +74,16 @@ ThreadWatcher =
           $.set 'AutoWatch', threadID
       else if Conf['Auto Watch Reply']
         ThreadWatcher.add board.threads[threadID]
+    indexUpdate: ->
+      {db} = ThreadWatcher
+      for threadID, data of db.data.boards[g.BOARD.ID] when threadID not in g.BOARD.threads
+        if Conf['Auto Prune']
+          ThreadWatcher.rm g.BOARD.ID, threadID
+        else
+          data.isDead = true
+      db.data.lastChecked = Date.now()
+      db.save()
+      ThreadWatcher.refresh()
     threadUpdate: (e) ->
       {thread} = e.detail
       return unless e.detail[404] and ThreadWatcher.db.get {boardID: thread.board.ID, threadID: thread.ID}
