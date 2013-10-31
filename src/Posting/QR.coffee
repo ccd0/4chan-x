@@ -39,11 +39,15 @@ QR =
     $.on d, 'dragover',           QR.dragOver
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
-    $.on d, 'ThreadUpdate', ->
-      if g.DEAD
-        QR.abort()
-      else
-        QR.status()
+    switch g.VIEW
+      when 'index'
+        $.on d, 'IndexRefresh', QR.generatePostableThreadsList
+      when 'thread'
+        $.on d, 'ThreadUpdate', ->
+          if g.DEAD
+            QR.abort()
+          else
+            QR.status()
 
     QR.persist() if Conf['Persistent QR']
 
@@ -796,6 +800,24 @@ QR =
         return
       e.preventDefault()
 
+  generatePostableThreadsList: ->
+    list    = QR.nodes.thread
+    options = [list.firstChild]
+    for thread of g.BOARD.threads
+      options.push $.el 'option',
+        value: thread
+        textContent: "Thread No.#{thread}"
+    val = list.value
+    $.rmAll list
+    $.add list, options
+    list.value = val
+    return unless list.value
+    # Fix the value if the option disappeared.
+    list.value = if g.VIEW is 'thread'
+      g.THREADID
+    else
+      'new'
+
   dialog: ->
     dialog = UI.dialog 'qr', 'top:0;right:0;', """
     <%= grunt.file.read('html/Posting/QR.html').replace(/>\s+</g, '><').trim() %>
@@ -867,12 +889,6 @@ QR =
       nodes.flag.dataset.default = '0'
       $.add nodes.form, nodes.flag
 
-    # Make a list of threads.
-    for thread of g.BOARD.threads
-      $.add nodes.thread, $.el 'option',
-        value: thread
-        textContent: "Thread No.#{thread}"
-
     <% if (type === 'userscript') { %>
     # XXX Firefox lacks focusin/focusout support.
     for elm in $$ '*', QR.nodes.el
@@ -906,6 +922,7 @@ QR =
         $.set 'QR Size', @style.cssText
     <% } %>
 
+    QR.generatePostableThreadsList()
     QR.persona.init()
     new QR.post true
     QR.status()
