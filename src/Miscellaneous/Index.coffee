@@ -118,7 +118,10 @@ Index =
     for threadData in Index.liveThreadData
       threadRoot = Build.thread g.BOARD, threadData
       Index.nodes.push threadRoot, $.el 'hr'
-      unless thread = g.BOARD.threads[threadData.no]
+      if thread = g.BOARD.threads[threadData.no]
+        thread.setStatus 'Sticky', !!threadData.sticky
+        thread.setStatus 'Closed', !!threadData.closed
+      else
         thread = new Thread threadData.no, g.BOARD
         threads.push thread
       postRoots = $$ '.thread > .postContainer', threadRoot

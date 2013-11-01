@@ -227,7 +227,7 @@ Build =
           "<span class='nameBlock#{capcodeClass}'>" +
             emailStart +
               "<span class=name>#{name or ''}</span>" + tripcode +
-            capcodeStart + emailEnd + capcode + userID + flag + sticky + closed +
+            capcodeStart + emailEnd + capcode + userID + flag +
           ' </span> ' +
           "<span class=dateTime data-utc=#{dateUTC}>#{date}</span> " +
           "<span class='postNum desktop'>" +
@@ -238,7 +238,7 @@ Build =
               else
                 "/#{boardID}/res/#{threadID}#q#{postID}"
               }' title='Quote this post'>#{postID}</a>" +
-            replyLink +
+            sticky + closed + replyLink +
           '</span>' +
         '</div>' +
 
