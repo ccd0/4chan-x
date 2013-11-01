@@ -4,6 +4,9 @@ Index navigation improvements:
  - Threads in the index can now be sorted by:
   - bump order
   - creation date
+  - reply count
+  - file count
+  - last reply
 
 Added a keybind to open the catalog search field on index pages.
 

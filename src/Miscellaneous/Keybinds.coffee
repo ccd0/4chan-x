@@ -7,7 +7,7 @@ Keybinds =
 
     init = ->
       $.off d, '4chanXInitFinished', init
-      $.on d, 'keydown',  Keybinds.keydown
+      $.on d, 'keydown', Keybinds.keydown
       for node in $$ '[accesskey]'
         node.removeAttribute 'accesskey'
       return

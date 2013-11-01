@@ -26,6 +26,9 @@ Index =
       subEntries: [
         { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="bump"> Bump order' }
         { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="birth"> Creation date' }
+        { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="replycount"> Reply count' }
+        { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="filecount"> File count' }
+        { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="lastreply"> Last reply' }
       ]
     for label in sortEntry.subEntries
       input = label.el.firstChild
@@ -136,6 +139,16 @@ Index =
         sortedThreadIDs = Index.liveThreadIDs
       when 'birth'
         sortedThreadIDs = [Index.liveThreadIDs...].sort (a, b) -> b - a
+      when 'replycount'
+        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.replies - a.replies).map (data) -> data.no
+      when 'filecount'
+        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.images - a.images).map (data) -> data.no
+      when 'lastreply'
+        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) ->
+          a = a.last_replies[a.last_replies.length - 1] if 'last_replies' of a
+          b = b.last_replies[b.last_replies.length - 1] if 'last_replies' of b
+          b.no - a.no
+        ).map (data) -> data.no
     Index.sortedNodes = []
     for threadID in sortedThreadIDs
       i = Index.liveThreadIDs.indexOf(threadID) * 2
