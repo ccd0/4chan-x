@@ -74,17 +74,18 @@ Keybinds =
         Keybinds.img threadRoot, true
       # Board Navigation
       when Conf['Front page']
-        window.location = "/#{g.BOARD}/0#delform"
+        if g.VIEW is 'index'
+          Index.pageNav 0
+        else
+          window.location = "/#{g.BOARD}/"
       when Conf['Open front page']
-        $.open "/#{g.BOARD}/#delform"
+        $.open "/#{g.BOARD}/"
       when Conf['Next page']
-        return if Conf['Index Mode'] isnt 'paged'
-        if form = $ '.next form'
-          window.location = form.action
+        return unless g.VIEW is 'index' and Conf['Index Mode'] is 'paged'
+        $('.next a', Index.pagelist).click()
       when Conf['Previous page']
-        return if Conf['Index Mode'] isnt 'paged'
-        if form = $ '.prev form'
-          window.location = form.action
+        return unless g.VIEW is 'index' and Conf['Index Mode'] is 'paged'
+        $('.prev a', Index.pagelist).click()
       when Conf['Search form']
         $.id('search-btn').click()
       # Thread Navigation

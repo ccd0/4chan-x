@@ -2,12 +2,12 @@ Index =
   init: ->
     return if g.VIEW isnt 'index'
 
-    Index.button = $.el 'a',
+    @button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'
       title: 'Refresh Index'
       href: 'javascript:;'
-    $.on Index.button, 'click', Index.update
-    Header.addShortcut Index.button, 1
+    $.on @button, 'click', @update
+    Header.addShortcut @button, 1
 
     modeEntry =
       el: $.el 'span', textContent: 'Index mode'
@@ -44,11 +44,15 @@ Index =
       subEntries: [modeEntry, sortEntry]
 
     $.addClass doc, 'index-loading'
-    Index.update()
-    Index.root = $.el 'div', className: 'board'
-    Index.pagelist = $.el 'div',
+    @update()
+    @root = $.el 'div', className: 'board'
+    @pagelist = $.el 'div',
       className: 'pagelist'
+      hidden: true
       innerHTML: <%= importHTML('General/Index-pagelist') %>
+    Index.currentPage = +window.location.pathname.split('/')[2]
+    $.on window, 'popstate', @cb.popstate
+    $.on @pagelist, 'click', @cb.pageNav
     $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
       $.replace $('.board'),    Index.root
       $.replace $('.pagelist'), Index.pagelist
@@ -61,9 +65,38 @@ Index =
     sort: ->
       Index.sort()
       Index.buildIndex()
+    popstate: (e) ->
+      Index.currentPage = +window.location.pathname.split('/')[2]
+      Index.pageLoad()
+    pageNav: (e) ->
+      return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+      switch e.target.nodeName
+        when 'BUTTON'
+          a = e.target.parentNode
+        when 'A'
+          a = e.target
+        else
+          return
+      e.preventDefault()
+      Index.pageNav +a.pathname.split('/')[2]
+
+  scrollToIndex: ->
+    Header.scrollTo Index.root if Index.root.getBoundingClientRect().top < 0
+
+  pageNav: (pageNum) ->
+    return if Index.currentPage is pageNum
+    history.pushState null, '', if pageNum is 0 then './' else pageNum
+    Index.currentPage = pageNum
+    Index.pageLoad()
+  pageLoad: ->
+    return unless 'currentPage' of Index # unnecessary popstate on page load
+    return if Conf['Index Mode'] isnt 'paged'
+    Index.buildIndex()
+    Index.setPage()
+    Index.scrollToIndex()
 
   togglePagelist: ->
-    (if Conf['Index Mode'] is 'paged' then $.rmClass else $.addClass) doc, 'index-hide-pagelist'
+    Index.pagelist.hidden = Conf['Index Mode'] isnt 'paged'
   buildPagelist: ->
     pagesRoot = $ '.pages', Index.pagelist
     if pagesRoot.childElementCount isnt Index.pagesNum
@@ -76,6 +109,7 @@ Index =
       $.rmAll pagesRoot
       $.add pagesRoot, nodes
     Index.setPage()
+    Index.togglePagelist()
   setPage: ->
     pageNum   = +window.location.pathname.split('/')[2]
     pagesRoot = $ '.pages', Index.pagelist
@@ -134,7 +168,7 @@ Index =
     notice.el.lastElementChild.textContent = 'Index refreshed!'
     setTimeout notice.close, $.SECOND
 
-    Header.scrollTo Index.root if Index.root.getBoundingClientRect().top < 0
+    Index.scrollToIndex()
   parse: (pages) ->
     Index.parseThreadList pages
     Index.buildAll()

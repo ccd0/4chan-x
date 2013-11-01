@@ -364,8 +364,7 @@ a[href="javascript:;"] {
 
 /* Index */
 :root.index-loading .board,
-:root.index-loading .pagelist,
-:root.index-hide-pagelist .pagelist {
+:root.index-loading .pagelist {
   display: none;
 }
 
