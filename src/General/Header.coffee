@@ -2,9 +2,7 @@ Header =
   init: ->
     headerEl = $.el 'div',
       id: 'header'
-      innerHTML: """
-      <%= grunt.file.read('html/General/Header.html').replace(/>\s+</g, '><').trim() %>
-      """
+      innerHTML: <%= importHTML('General/Header') %>
 
     @bar    = $ '#header-bar', headerEl
     @toggle = $ '#toggle-header-bar', @bar

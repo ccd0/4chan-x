@@ -7,9 +7,7 @@ ThreadUpdater =
       checked = if Conf[name] then 'checked' else ''
       html   += "<div><label title='#{conf[1]}'><input name='#{name}' type=checkbox #{checked}> #{name}</label></div>"
 
-    html = """
-    <%= grunt.file.read('html/Monitoring/ThreadUpdater.html').replace(/>\s+</g, '><').trim() %>
-    """
+    html = <%= importHTML('Monitoring/ThreadUpdater') %>
 
     @dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
     @timer  = $ '#update-timer',  @dialog

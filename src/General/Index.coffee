@@ -48,9 +48,7 @@ Index =
     Index.root = $.el 'div', className: 'board'
     Index.pagelist = $.el 'div',
       className: 'pagelist'
-      innerHTML: """
-      <%= grunt.file.read('html/General/Index-pagelist.html').replace(/>\s+</g, '><').trim() %>
-      """
+      innerHTML: <%= importHTML('General/Index-pagelist') %>
     $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
       $.replace $('.board'),    Index.root
       $.replace $('.pagelist'), Index.pagelist

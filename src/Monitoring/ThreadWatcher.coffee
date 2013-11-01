@@ -3,9 +3,7 @@ ThreadWatcher =
     return if !Conf['Thread Watcher']
 
     @db     = new DataBoard 'watchedThreads', @refresh, true
-    @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', """
-    <%= grunt.file.read('html/Monitoring/ThreadWatcher.html').replace(/>\s+</g, '><').trim() %>
-    """
+    @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', <%= importHTML('Monitoring/ThreadWatcher') %>
     @status = $ '#watcher-status', @dialog
     @list   = @dialog.lastElementChild
 

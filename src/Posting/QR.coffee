@@ -820,9 +820,7 @@ QR =
       'new'
 
   dialog: ->
-    dialog = UI.dialog 'qr', 'top:0;right:0;', """
-    <%= grunt.file.read('html/Posting/QR.html').replace(/>\s+</g, '><').trim() %>
-    """
+    dialog = UI.dialog 'qr', 'top:0;right:0;', <%= importHTML('Posting/QR') %>
 
     QR.nodes = nodes =
       el:         dialog

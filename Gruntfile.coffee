@@ -1,11 +1,17 @@
 module.exports = (grunt) ->
 
+  importHTML = (filename) ->
+    "\"\"\"#{grunt.file.read("html/#{filename}.html").replace(/^\s+|\s+$</gm, '').replace(/\n/g, '')}\"\"\""
+
   # Project configuration.
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
     concat:
       options: process: Object.create(null, data:
-        get: -> grunt.config 'pkg'
+        get: ->
+          pkg = grunt.config 'pkg'
+          pkg.importHTML = importHTML
+          pkg
         enumerable: true
       )
       coffee:

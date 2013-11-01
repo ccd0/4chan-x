@@ -1,9 +1,7 @@
 ThreadStats =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Stats']
-    @dialog = UI.dialog 'thread-stats', 'bottom: 0; left: 0;', """
-    <%= grunt.file.read('html/Monitoring/ThreadStats.html').replace(/>\s+</g, '><').trim() %>
-    """
+    @dialog = UI.dialog 'thread-stats', 'bottom: 0; left: 0;', <%= importHTML('Monitoring/ThreadStats') %>
 
     @postCountEl  = $ '#post-count', @dialog
     @fileCountEl  = $ '#file-count', @dialog
