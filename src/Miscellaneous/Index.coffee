@@ -169,9 +169,9 @@ Index =
     if Conf['Index Mode'] is 'paged'
       pageNum = +window.location.pathname.split('/')[2]
       nodesPerPage = Index.threadsNumPerPage * 2
-      nodes   = Index.sortedNodes.slice nodesPerPage * pageNum, nodesPerPage * (pageNum + 1)
+      nodes = Index.sortedNodes.slice nodesPerPage * pageNum, nodesPerPage * (pageNum + 1)
     else
-      nodes   = Index.sortedNodes
+      nodes = Index.sortedNodes
     $.event 'IndexRefresh'
     $.rmAll Index.root
     $.add Index.root, nodes

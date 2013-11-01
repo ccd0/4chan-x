@@ -74,14 +74,14 @@ ThreadWatcher =
       else if Conf['Auto Watch Reply']
         ThreadWatcher.add board.threads[threadID]
     onIndexRefresh: ->
-      {db} = ThreadWatcher
-      for threadID, data of db.data.boards[g.BOARD.ID] when threadID not in g.BOARD.threads
+      {db}    = ThreadWatcher
+      boardID = g.BOARD.ID
+      for threadID, data of db.data.boards[boardID] when not data.isDead and threadID not of g.BOARD.threads
         if Conf['Auto Prune']
-          ThreadWatcher.rm g.BOARD.ID, threadID
+          ThreadWatcher.db.delete {boardID, threadID}
         else
           data.isDead = true
-      db.data.lastChecked = Date.now()
-      db.save()
+          ThreadWatcher.db.set {boardID, threadID, val: data}
       ThreadWatcher.refresh()
     onThreadRefresh: (e) ->
       {thread} = e.detail
@@ -114,7 +114,7 @@ ThreadWatcher =
         ThreadWatcher.status.textContent = status
         return if @status isnt 404
         if Conf['Auto Prune']
-          ThreadWatcher.rm boardID, threadID
+          ThreadWatcher.db.delete {boardID, threadID}
         else
           data.isDead = true
           ThreadWatcher.db.set {boardID, threadID, val: data}
