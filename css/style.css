@@ -363,7 +363,8 @@ a[href="javascript:;"] {
 }
 
 /* Index */
-:root.index-loading .board {
+:root.index-loading .board,
+:root.index-hide-pagelist .pagelist {
   display: none;
 }
 

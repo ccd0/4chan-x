@@ -44,6 +44,7 @@ Index =
       subEntries: [modeEntry, sortEntry]
 
     $.addClass doc, 'index-loading'
+    Index.togglePagelist()
     Index.root = $.el 'div', className: 'board'
     Index.update()
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
@@ -52,10 +53,14 @@ Index =
 
   cb:
     mode: ->
+      Index.togglePagelist()
       Index.buildIndex()
     sort: ->
       Index.sort()
       Index.buildIndex()
+
+  togglePagelist: ->
+    (if Conf['Index Mode'] is 'paged' then $.rmClass else $.addClass) doc, 'index-hide-pagelist'
 
   update: ->
     return unless navigator.onLine
@@ -170,4 +175,3 @@ Index =
     $.event 'IndexRefresh'
     $.rmAll Index.root
     $.add Index.root, nodes
-    $('.pagelist').hidden = Conf['Index Mode'] isnt 'paged'

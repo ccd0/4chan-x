@@ -45,7 +45,7 @@ $.ajax = do ->
     type or= form and 'post' or 'get'
     r.open type, url, !sync
     if whenModified
-      r.setRequestHeader 'If-Modified-Since', lastModified[url] or '0'
+      r.setRequestHeader 'If-Modified-Since', lastModified[url] if url of lastModified
       $.on r, 'load', -> lastModified[url] = r.getResponseHeader 'Last-Modified'
     $.extend r, options
     $.extend r.upload, upCallbacks
