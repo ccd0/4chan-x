@@ -40,12 +40,12 @@ Index =
       order: 90
       subEntries: [modeEntry, sortEntry]
 
-    $.on d, '4chanXInitFinished', @initReady
-
-  initReady: ->
-    $.off d, '4chanXInitFinished', Index.initReady
-    Index.root = $ '.board'
+    $.addClass doc, 'index-loading'
+    Index.root = $.el 'div', className: 'board'
     Index.update()
+    $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
+      $.replace $('.board'), Index.root
+      $.rmClass doc, 'index-loading'
 
   cb:
     mode: ->

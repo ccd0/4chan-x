@@ -362,6 +362,11 @@ a[href="javascript:;"] {
   overflow: hidden;
 }
 
+/* Index */
+:root.index-loading .board {
+  display: none;
+}
+
 /* Announcement Hiding */
 :root.hide-announcement #globalMessage,
 :root.hide-announcement-enabled #toggleMsgBtn {
