@@ -161,6 +161,10 @@ Index =
     for threadID in sortedThreadIDs
       i = Index.liveThreadIDs.indexOf(threadID) * 2
       Index.sortedNodes.push Index.nodes[i], Index.nodes[i + 1]
+    # Put the sticky threads on top of the index.g
+    offset = 0
+    for threadRoot, i in Index.sortedNodes by 2 when Get.threadFromRoot(threadRoot).isSticky
+      Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
     return unless Conf['Filter']
     # Put the highlighted thread & <hr> on top of the index
     # while keeping the original order they appear in.
