@@ -22,7 +22,7 @@ class Thread
       $.rm $ ".#{typeLC}Icon", @OP.nodes.info
       return
     icon = $.el 'img',
-      src: "//static.4chan.org/image/#{typeLC}.gif"
+      src: "//static.4chan.org/image/#{typeLC}#{if window.devicePixelRatio >= 2 then '@2x' else ''}.gif"
       alt:   type
       title: type
       className: "#{typeLC}Icon"
