@@ -25,10 +25,10 @@ Index =
       el: $.el 'span', textContent: 'Sort by'
       subEntries: [
         { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="bump"> Bump order' }
+        { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="lastreply"> Last reply' }
         { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="birth"> Creation date' }
         { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="replycount"> Reply count' }
         { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="filecount"> File count' }
-        { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="lastreply"> Last reply' }
       ]
     for label in sortEntry.subEntries
       input = label.el.firstChild
@@ -44,11 +44,16 @@ Index =
       subEntries: [modeEntry, sortEntry]
 
     $.addClass doc, 'index-loading'
-    Index.togglePagelist()
-    Index.root = $.el 'div', className: 'board'
     Index.update()
-    $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
-      $.replace $('.board'), Index.root
+    Index.root = $.el 'div', className: 'board'
+    Index.pagelist = $.el 'div',
+      className: 'pagelist'
+      innerHTML: """
+      <%= grunt.file.read('html/General/Index-pagelist.html').replace(/>\s+</g, '><').trim() %>
+      """
+    $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
+      $.replace $('.board'),    Index.root
+      $.replace $('.pagelist'), Index.pagelist
       $.rmClass doc, 'index-loading'
 
   cb:
@@ -61,6 +66,39 @@ Index =
 
   togglePagelist: ->
     (if Conf['Index Mode'] is 'paged' then $.rmClass else $.addClass) doc, 'index-hide-pagelist'
+  buildPagelist: ->
+    pagesRoot = $ '.pages', Index.pagelist
+    if pagesRoot.childElementCount isnt Index.pagesNum
+      nodes = []
+      for i in [0..Index.pagesNum - 1]
+        a = $.el 'a',
+          textContent: i
+          href: if i then i else './'
+        nodes.push $.tn('['), a, $.tn '] '
+      $.rmAll pagesRoot
+      $.add pagesRoot, nodes
+    Index.setPage()
+  setPage: ->
+    pageNum   = +window.location.pathname.split('/')[2]
+    pagesRoot = $ '.pages', Index.pagelist
+    # Previous/Next buttons
+    prev = pagesRoot.previousSibling.firstChild
+    next = pagesRoot.nextSibling.firstChild
+    href = Math.max pageNum - 1, 0
+    prev.href = if href is 0 then './' else href
+    prev.firstChild.disabled = href is pageNum
+    href = Math.min pageNum + 1, Index.pagesNum - 1
+    next.href = if href is 0 then './' else href
+    next.firstChild.disabled = href is pageNum
+    # <strong> current page
+    if strong = $ 'strong', pagesRoot
+      return if +strong.textContent is pageNum
+      $.replace strong, strong.firstChild
+    else
+      strong = $.el 'strong'
+    a = pagesRoot.children[pageNum]
+    $.before a, strong
+    $.add strong, a
 
   update: ->
     return unless navigator.onLine
@@ -104,7 +142,9 @@ Index =
     Index.buildAll()
     Index.sort()
     Index.buildIndex()
+    Index.buildPagelist()
   parseThreadList: (pages) ->
+    Index.pagesNum          = pages.length
     Index.threadsNumPerPage = pages[0].threads.length
     Index.liveThreadData    = pages.reduce ((arr, next) -> arr.concat next.threads), []
     Index.liveThreadIDs     = Index.liveThreadData.map (data) -> data.no
@@ -145,18 +185,18 @@ Index =
     switch Conf['Index Sort']
       when 'bump'
         sortedThreadIDs = Index.liveThreadIDs
-      when 'birth'
-        sortedThreadIDs = [Index.liveThreadIDs...].sort (a, b) -> b - a
-      when 'replycount'
-        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.replies - a.replies).map (data) -> data.no
-      when 'filecount'
-        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.images - a.images).map (data) -> data.no
       when 'lastreply'
         sortedThreadIDs = [Index.liveThreadData...].sort((a, b) ->
           a = a.last_replies[a.last_replies.length - 1] if 'last_replies' of a
           b = b.last_replies[b.last_replies.length - 1] if 'last_replies' of b
           b.no - a.no
         ).map (data) -> data.no
+      when 'birth'
+        sortedThreadIDs = [Index.liveThreadIDs...].sort (a, b) -> b - a
+      when 'replycount'
+        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.replies - a.replies).map (data) -> data.no
+      when 'filecount'
+        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.images - a.images).map (data) -> data.no
     Index.sortedNodes = []
     for threadID in sortedThreadIDs
       i = Index.liveThreadIDs.indexOf(threadID) * 2

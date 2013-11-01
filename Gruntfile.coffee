@@ -17,6 +17,7 @@ module.exports = (grunt) ->
           'src/General/Header.coffee'
           'src/General/Notice.coffee'
           'src/General/Settings.coffee'
+          'src/General/Index.coffee'
           'src/General/Get.coffee'
           'src/General/Build.coffee'
           # Features -->
