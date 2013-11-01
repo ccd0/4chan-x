@@ -19,7 +19,7 @@ Index =
       input = label.el.firstChild
       input.checked = Conf['Index Mode'] is input.value
       $.on input, 'change', $.cb.value
-      $.on input, 'change', @update
+      $.on input, 'change', @cb.mode
 
     sortEntry =
       el: $.el 'span', textContent: 'Sort by'
@@ -31,7 +31,7 @@ Index =
       input = label.el.firstChild
       input.checked = Conf['Index Sort'] is input.value
       $.on input, 'change', $.cb.value
-      $.on input, 'change', @resort
+      $.on input, 'change', @cb.sort
 
     $.event 'AddMenuEntry',
       type: 'header'
@@ -45,10 +45,14 @@ Index =
   initReady: ->
     $.off d, '4chanXInitFinished', Index.initReady
     Index.root = $ '.board'
-    Index.liveThreads = $$('.board > .thread', Index.root).map Get.threadFromRoot
-    Index.resort()
-    return if Conf['Index Mode'] is 'paged'
     Index.update()
+
+  cb:
+    mode: ->
+      Index.buildIndex()
+    sort: ->
+      Index.sort()
+      Index.buildIndex()
 
   update: ->
     return unless navigator.onLine
@@ -86,27 +90,29 @@ Index =
 
     Header.scrollTo Index.root if Index.root.getBoundingClientRect().top < 0
   parse: (pages) ->
-    if Conf['Index Mode'] is 'paged'
-      pageNum = +window.location.pathname.split('/')[2]
-      dataThr = pages[pageNum].threads
-    else
-      dataThr = []
-      for page in pages
-        dataThr.push page.threads...
-
-    nodes   = []
-    threads = []
-    posts   = []
-    Index.liveThreads = []
-    for data in dataThr
-      threadRoot = Build.thread g.BOARD, data
-      nodes.push threadRoot, $.el 'hr'
-      unless thread = g.threads["#{g.BOARD}.#{data.no}"]
-        thread = new Thread data.no, g.BOARD
+    Index.parseThreadList pages
+    Index.buildAll()
+    Index.sort()
+    Index.buildIndex()
+  parseThreadList: (pages) ->
+    Index.threadsNumPerPage = pages[0].threads.length
+    Index.liveThreadData    = pages.reduce ((arr, next) -> arr.concat next.threads), []
+    Index.liveThreadIDs     = Index.liveThreadData.map (data) -> data.no
+    for threadID, thread of g.BOARD.threads when thread.ID not in Index.liveThreadIDs
+      thread.collect()
+    return
+  buildAll: ->
+    Index.nodes = []
+    threads     = []
+    posts       = []
+    for threadData in Index.liveThreadData
+      threadRoot = Build.thread g.BOARD, threadData
+      Index.nodes.push threadRoot, $.el 'hr'
+      unless thread = g.BOARD.threads[threadData.no]
+        thread = new Thread threadData.no, g.BOARD
         threads.push thread
-      Index.liveThreads.push thread
-      for postRoot in $$ '.thread > .postContainer', threadRoot
-        continue if thread.posts[postRoot.id.match /\d+/]
+      postRoots = $$ '.thread > .postContainer', threadRoot
+      for postRoot in postRoots when postRoot.id.match(/\d+/)[0] not of thread.posts
         try
           posts.push new Post postRoot, thread, g.BOARD
         catch err
@@ -118,44 +124,35 @@ Index =
             error: err
     Main.handleErrors errors if errors
 
-    Index.collectDeadThreads()
     # Add the threads and <hr>s in a container to make sure all features work.
-    $.nodes nodes
+    $.nodes Index.nodes
     Main.callbackNodes Thread, threads
-    Main.callbackNodes Post, posts
-    $.event 'IndexRefresh'
-
-    Index.setIndex nodes
-  setIndex: (nodes) ->
-    $.rmAll Index.root
-    $.add Index.root, Index.sort nodes
-    $('.pagelist').hidden = Conf['Index Mode'] isnt 'paged'
-  sort: (unsortedNodes) ->
-    nodes = []
+    Main.callbackNodes Post,   posts
+  sort: ->
     switch Conf['Index Sort']
       when 'bump'
-        for thread in Index.liveThreads
-          i = unsortedNodes.indexOf thread.OP.nodes.root.parentNode
-          nodes.push unsortedNodes[i], unsortedNodes[i + 1]
+        sortedThreadIDs = Index.liveThreadIDs
       when 'birth'
-        dates = []
-        for threadRoot, i in unsortedNodes by 2
-          dates.push Get.threadFromRoot(threadRoot).OP.info.date
-        unsortedDates = [dates...]
-        for date in dates.sort((a, b) -> b - a)
-          i = unsortedDates.indexOf(date) * 2
-          nodes.push unsortedNodes[i], unsortedNodes[i + 1]
-    return nodes unless Conf['Filter']
+        sortedThreadIDs = [Index.liveThreadIDs...].sort (a, b) -> b - a
+    Index.sortedNodes = []
+    for threadID in sortedThreadIDs
+      i = Index.liveThreadIDs.indexOf(threadID) * 2
+      Index.sortedNodes.push Index.nodes[i], Index.nodes[i + 1]
+    return unless Conf['Filter']
     # Put the highlighted thread & <hr> on top of the index
     # while keeping the original order they appear in.
     offset = 0
-    for threadRoot, i in nodes by 2 when Get.threadFromRoot(threadRoot).isOnTop
-      nodes.splice offset++ * 2, 0, nodes.splice(i, 2)...
-    nodes
-  resort: ->
-    Index.setIndex $$ '.board > .thread, .board > hr', Index.root
-
-  collectDeadThreads: (liveThreads) ->
-    for threadID, thread of g.threads when thread not in Index.liveThreads
-      thread.collect()
+    for threadRoot, i in Index.sortedNodes by 2 when Get.threadFromRoot(threadRoot).isOnTop
+      Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
     return
+  buildIndex: ->
+    if Conf['Index Mode'] is 'paged'
+      pageNum = +window.location.pathname.split('/')[2]
+      nodesPerPage = Index.threadsNumPerPage * 2
+      nodes   = Index.sortedNodes.slice nodesPerPage * pageNum, nodesPerPage * (pageNum + 1)
+    else
+      nodes   = Index.sortedNodes
+    $.event 'IndexRefresh'
+    $.rmAll Index.root
+    $.add Index.root, nodes
+    $('.pagelist').hidden = Conf['Index Mode'] isnt 'paged'

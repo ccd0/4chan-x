@@ -170,7 +170,7 @@ Main =
     # Something might have gone wrong!
     Main.initStyle()
 
-    if board = $ '.board'
+    if g.VIEW is 'thread' and board = $ '.board'
       threads = []
       posts   = []
 
