@@ -2,12 +2,12 @@ Index =
   init: ->
     return if g.VIEW isnt 'index'
 
-    button = $.el 'a',
+    Index.button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'
       title: 'Refresh Index'
       href: 'javascript:;'
-    $.on button, 'click', Index.update
-    Header.addShortcut button, 1
+    $.on Index.button, 'click', Index.update
+    Header.addShortcut Index.button, 1
 
     modeEntry =
       el: $.el 'span', textContent: 'Index mode'
@@ -64,7 +64,9 @@ Index =
       onloadend: Index.load
     ,
       whenModified: true
+    $.addClass Index.button, 'fa-spin'
   load: (e) ->
+    $.rmClass Index.button, 'fa-spin'
     {req, notice} = Index
     delete Index.req
     delete Index.notice
