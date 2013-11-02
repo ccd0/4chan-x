@@ -259,28 +259,31 @@ Build =
 
     container
 
+  summary: (boardID, threadID, posts, files) ->
+    text = []
+    text.push "#{posts} post#{if posts > 1 then 's' else ''}"
+    text.push "and #{files} image repl#{if files > 1 then 'ies' else 'y'}" if files
+    text.push 'omitted.'
+    $.el 'a',
+      className: 'summary'
+      textContent: text.join ' '
+      href: "/#{boardID}/res/#{threadID}"
   thread: (board, data) ->
-    root = $.el 'div',
-      className: 'thread'
-      id: "t#{data.no}"
-
     Build.spoilerRange[board] = data.custom_spoiler
 
+    nodes = []
     for obj in [data].concat data.last_replies or []
-      $.add root, if post = g.posts["#{board}.#{obj.no}"]
+      nodes.push if post = board.posts[obj.no]
         post.nodes.root
       else
         Build.postFromObject obj, board.ID
 
     # build if necessary
     if data.omitted_posts
-      {omitted_posts, omitted_images} = data
-      html = []
-      html.push "#{omitted_posts} post#{if omitted_posts > 1 then 's' else ''}"
-      html.push "and #{omitted_images} image repl#{if omitted_images > 1 then 'ies' else 'y'}" if omitted_images
-      html.push "omitted. Click <a href='/#{board}/res/#{data.no}' class=replylink>here</a> to view."
-      $.after root.firstChild, $.el 'span',
-        className: 'summary'
-        innerHTML: html.join ' '
+      nodes.splice 1, 0, Build.summary board.ID, data.no, data.omitted_posts, data.omitted_images
 
+    root = $.el 'div',
+      className: 'thread'
+      id: "t#{data.no}"
+    $.add root, nodes
     root

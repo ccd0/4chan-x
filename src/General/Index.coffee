@@ -158,7 +158,6 @@ Index =
     try
       Index.parse JSON.parse req.response if req.status is 200
     catch err
-      c.error err.stack
       # network error or non-JSON content for example.
       notice.setType 'error'
       notice.el.lastElementChild.textContent = 'Index refresh failed.'

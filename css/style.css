@@ -367,6 +367,9 @@ a[href="javascript:;"] {
 :root.index-loading .pagelist {
   display: none;
 }
+.summary {
+  text-decoration: none;
+}
 
 /* Announcement Hiding */
 :root.hide-announcement #globalMessage,

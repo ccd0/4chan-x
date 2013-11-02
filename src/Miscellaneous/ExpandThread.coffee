@@ -10,13 +10,9 @@ ExpandThread =
     ExpandThread.setButton @
 
   setButton: (thread) ->
-    return unless span = $.x 'following-sibling::span[contains(@class,"summary")][1]', thread.OP.nodes.root
-    a = $.el 'a',
-      textContent: ExpandThread.text '+', span.textContent.match(/\d+/g)...
-      className: 'summary'
-      href: 'javascript:;'
+    return unless a = $.x 'following-sibling::a[contains(@class,"summary")][1]', thread.OP.nodes.root
+    a.textContent = ExpandThread.text '+', a.textContent.match(/\d+/g)...
     $.on a, 'click', ExpandThread.cbToggle
-    $.replace span, a
 
   onIndexRefresh: ->
     for threadID, status of ExpandThread.statuses
@@ -33,7 +29,9 @@ ExpandThread =
     text.push if status is '-' then 'shown' else 'omitted'
     text.join(' ') + '.'
 
-  cbToggle: ->
+  cbToggle: (e) ->
+    return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+    e.preventDefault()
     ExpandThread.toggle Get.threadFromNode @
 
   toggle: (thread) ->
@@ -92,7 +90,7 @@ ExpandThread =
       root = Build.postFromObject postData, thread.board.ID
       post = new Post root, thread, thread.board
       filesCount++ if 'file' of post
-      posts.push  post
+      posts.push post
       postsRoot.push root
     Main.callbackNodes Post, posts
     $.after a, postsRoot
