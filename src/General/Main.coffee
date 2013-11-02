@@ -106,7 +106,6 @@ Main =
     initFeature 'Reveal Spoilers',          RevealSpoilers
     initFeature 'Auto-GIF',                 AutoGIF
     initFeature 'Image Hover',              ImageHover
-    initFeature 'Comment Expansion',        ExpandComment
     initFeature 'Thread Expansion',         ExpandThread
     initFeature 'Thread Excerpt',           ThreadExcerpt
     initFeature 'Favicon',                  Favicon

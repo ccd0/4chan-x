@@ -38,16 +38,13 @@ ExpandThread =
 
   toggle: (thread) ->
     threadRoot = thread.OP.nodes.root.parentNode
-    a = $ '.summary', threadRoot
+    return unless a = $ '.summary', threadRoot
     if thread.ID of ExpandThread.statuses
       ExpandThread.contract thread, a, threadRoot
     else
       ExpandThread.expand   thread, a, threadRoot
   expand: (thread, a, threadRoot) ->
     ExpandThread.statuses[thread] = status = {}
-    for post in $$ '.thread > .postContainer', threadRoot
-      ExpandComment.expand Get.postFromRoot post
-    return unless a
     a.textContent = ExpandThread.text '...', a.textContent.match(/\d+/g)...
     status.req = $.cache "//api.4chan.org/#{thread.board}/res/#{thread}.json", ->
       delete status.req
@@ -67,13 +64,9 @@ ExpandThread =
       when 'b', 'vg' then 3
       when 't' then 1
       else 5
-    posts = $$ '.thread > .replyContainer', threadRoot
-    for post in [thread.OP.nodes.root].concat posts[-num..]
-      ExpandComment.contract Get.postFromRoot post
-    return unless a
     postsCount = 0
     filesCount = 0
-    for reply in posts[...-num]
+    for reply in $$('.thread > .replyContainer', threadRoot)[...-num]
       # rm clones
       inlined.click() while inlined = $ '.inlined', reply if Conf['Quote Inlining']
       postsCount++
