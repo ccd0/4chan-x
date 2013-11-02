@@ -2,6 +2,13 @@ ThreadUpdater =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
 
+    @button = $.el 'a',
+      className: 'thread-refresh-shortcut fa fa-refresh'
+      title: 'Refresh Thread'
+      href: 'javascript:;'
+    $.on @button, 'click', @update
+    Header.addShortcut @button, 1
+
     html = ''
     for name, conf of Config.updater.checkbox
       checked = if Conf[name] then 'checked' else ''
@@ -79,6 +86,7 @@ ThreadUpdater =
       ThreadUpdater.interval = @value = val
       $.cb.value.call @ if e
     load: (e) ->
+      $.rmClass ThreadUpdater.button, 'fa-spin'
       {req} = ThreadUpdater
       delete ThreadUpdater.req
       if e.type isnt 'loadend' # timeout or abort
@@ -141,6 +149,7 @@ ThreadUpdater =
 
   update: ->
     return unless navigator.onLine
+    $.addClass ThreadUpdater.button, 'fa-spin'
     ThreadUpdater.count()
     ThreadUpdater.set 'timer', '...'
     ThreadUpdater.req?.abort()
