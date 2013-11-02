@@ -6,6 +6,7 @@ Header =
 
     @bar    = $ '#header-bar', headerEl
     @toggle = $ '#toggle-header-bar', @bar
+    @noticesRoot = $ '#notifications', headerEl
 
     @menu = new UI.Menu 'header'
     menuButton = $.el 'a',
