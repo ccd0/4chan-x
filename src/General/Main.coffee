@@ -195,6 +195,15 @@ Main =
       Main.disableReports = true
       alert '4chan X v2 detected: Disable it or v3 will break.'
 
+    <% if (type === 'userscript') { %>
+    GMver = GM_info.version.split '.'
+    for v, i in "<%= meta.min.greasemonkey %>".split '.'
+      break if v < GMver[i]
+      continue if v is GMver[i]
+      new Notice 'warning', "Your version of Greasemonkey is outdated (v#{GM_info.version} instead of v<%= meta.min.greasemonkey %> minimum) and <%= meta.name %> may not operate correctly.", 30
+      break
+    <% } %>
+
     try
       localStorage.getItem '4chan-settings'
     catch err

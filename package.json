@@ -13,7 +13,12 @@
       "*://boards.4chan.org/*",
       "*://images.4chan.org/*",
       "*://sys.4chan.org/*"
-    ]
+    ],
+    "min": {
+      "chrome": "29",
+      "firefox": "22",
+      "greasemonkey": "1.12"
+    }
   },
   "devDependencies": {
     "font-awesome": "https://github.com/FortAwesome/Font-Awesome/archive/v4.0.0.tar.gz",
