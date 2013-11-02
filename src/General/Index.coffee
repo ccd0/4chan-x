@@ -50,7 +50,7 @@ Index =
       className: 'pagelist'
       hidden: true
       innerHTML: <%= importHTML('General/Index-pagelist') %>
-    Index.currentPage = +window.location.pathname.split('/')[2]
+    Index.currentPage = Index.getCurrentPage()
     $.on window, 'popstate', @cb.popstate
     $.on @pagelist, 'click', @cb.pageNav
     $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
@@ -66,8 +66,8 @@ Index =
       Index.sort()
       Index.buildIndex()
     popstate: (e) ->
-      Index.currentPage = +window.location.pathname.split('/')[2]
-      Index.pageLoad()
+      pageNum = Index.getCurrentPage()
+      Index.pageLoad pageNum if Index.currentPage isnt pageNum
     pageNav: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       switch e.target.nodeName
@@ -83,13 +83,14 @@ Index =
   scrollToIndex: ->
     Header.scrollTo Index.root if Index.root.getBoundingClientRect().top < 0
 
+  getCurrentPage: ->
+    +window.location.pathname.split('/')[2]
   pageNav: (pageNum) ->
     return if Index.currentPage is pageNum
     history.pushState null, '', if pageNum is 0 then './' else pageNum
+    Index.pageLoad pageNum
+  pageLoad: (pageNum) ->
     Index.currentPage = pageNum
-    Index.pageLoad()
-  pageLoad: ->
-    return unless 'currentPage' of Index # unnecessary popstate on page load
     return if Conf['Index Mode'] isnt 'paged'
     Index.buildIndex()
     Index.setPage()
@@ -111,7 +112,7 @@ Index =
     Index.setPage()
     Index.togglePagelist()
   setPage: ->
-    pageNum   = +window.location.pathname.split('/')[2]
+    pageNum   = Index.getCurrentPage()
     pagesRoot = $ '.pages', Index.pagelist
     # Previous/Next buttons
     prev = pagesRoot.previousSibling.firstChild
@@ -246,9 +247,9 @@ Index =
     return
   buildIndex: ->
     if Conf['Index Mode'] is 'paged'
-      pageNum = +window.location.pathname.split('/')[2]
+      pageNum = Index.getCurrentPage()
       nodesPerPage = Index.threadsNumPerPage * 2
-      nodes = Index.sortedNodes.slice nodesPerPage * pageNum, nodesPerPage * (pageNum + 1)
+      nodes = Index.sortedNodes[nodesPerPage * pageNum ... nodesPerPage * (pageNum + 1)]
     else
       nodes = Index.sortedNodes
     $.event 'IndexRefresh'

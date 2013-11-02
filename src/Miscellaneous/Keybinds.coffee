@@ -82,10 +82,10 @@ Keybinds =
         $.open "/#{g.BOARD}/"
       when Conf['Next page']
         return unless g.VIEW is 'index' and Conf['Index Mode'] is 'paged'
-        $('.next a', Index.pagelist).click()
+        $('.next button', Index.pagelist).click()
       when Conf['Previous page']
         return unless g.VIEW is 'index' and Conf['Index Mode'] is 'paged'
-        $('.prev a', Index.pagelist).click()
+        $('.prev button', Index.pagelist).click()
       when Conf['Search form']
         $.id('search-btn').click()
       # Thread Navigation
