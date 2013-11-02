@@ -1,25 +1,29 @@
 ExpandThread =
   init: ->
     return if g.VIEW isnt 'index' or !Conf['Thread Expansion']
-
-    $.on d, 'IndexRefresh', @onrefresh
-
+    @statuses = {}
+    $.on d, 'IndexRefresh', @onIndexRefresh
     Thread.callbacks.push
       name: 'Thread Expansion'
       cb:   @node
   node: ->
-    return unless span = $.x 'following-sibling::span[contains(@class,"summary")][1]', @OP.nodes.root
-    [posts, files] = span.textContent.match /\d+/g
+    ExpandThread.setButton @
+
+  setButton: (thread) ->
+    return unless span = $.x 'following-sibling::span[contains(@class,"summary")][1]', thread.OP.nodes.root
     a = $.el 'a',
-      textContent: ExpandThread.text '+', posts, files
+      textContent: ExpandThread.text '+', span.textContent.match(/\d+/g)...
       className: 'summary'
       href: 'javascript:;'
     $.on a, 'click', ExpandThread.cbToggle
     $.replace span, a
 
-  onrefresh: ->
+  onIndexRefresh: ->
+    for threadID, status of ExpandThread.statuses
+      status.req?.abort()
+      delete ExpandThread.statuses[threadID]
     for threadID, thread of g.BOARD.threads
-      ExpandThread.node.call thread
+      ExpandThread.setButton thread
     return
 
   text: (status, posts, files) ->
@@ -35,89 +39,76 @@ ExpandThread =
   toggle: (thread) ->
     threadRoot = thread.OP.nodes.root.parentNode
     a = $ '.summary', threadRoot
-
-    switch thread.isExpanded
-      when false, undefined
-        for post in $$ '.thread > .postContainer', threadRoot
-          ExpandComment.expand Get.postFromRoot post
-        unless a
-          thread.isExpanded = true
-          return
-        thread.isExpanded = 'loading'
-        [posts, files] = a.textContent.match /\d+/g
-        a.textContent  = ExpandThread.text '...', posts, files
-        $.cache "//api.4chan.org/#{thread.board}/res/#{thread}.json", ->
-          ExpandThread.parse @, thread, a
-
-      when 'loading'
-        thread.isExpanded = false
-        return unless a
-        [posts, files] = a.textContent.match /\d+/g
-        a.textContent  = ExpandThread.text '+', posts, files
-
-      when true
-        thread.isExpanded = false
-        #goddamit moot
-        num = if thread.isSticky
-          1
-        else switch g.BOARD.ID
-          # XXX boards config
-          when 'b', 'vg' then 3
-          when 't' then 1
-          else 5
-        posts = $$ ".thread > .replyContainer", threadRoot
-        for post in [thread.OP.nodes.root].concat posts[-num..]
-          ExpandComment.contract Get.postFromRoot post
-        return unless a
-        postsCount = 0
-        filesCount = 0
-        for reply in posts[...-num]
-          if Conf['Quote Inlining']
-            # rm clones
-            inlined.click() while inlined = $ '.inlined', reply
-          postsCount++
-          filesCount++ if 'file' of Get.postFromRoot reply
-          $.rm reply
-        a.textContent = ExpandThread.text '+', postsCount, filesCount
-    return
-
-  parse: (req, thread, a) ->
-    return if a.textContent[0] is '+'
-    if req.status not in [200, 304]
-      a.textContent = "Error #{req.statusText} (#{req.status})"
-      $.off a, 'click', ExpandThread.cbToggle
+    if thread.ID of ExpandThread.statuses
+      ExpandThread.contract thread, a, threadRoot
+    else
+      ExpandThread.expand   thread, a, threadRoot
+  expand: (thread, a, threadRoot) ->
+    ExpandThread.statuses[thread] = status = {}
+    for post in $$ '.thread > .postContainer', threadRoot
+      ExpandComment.expand Get.postFromRoot post
+    return unless a
+    a.textContent = ExpandThread.text '...', a.textContent.match(/\d+/g)...
+    status.req = $.cache "//api.4chan.org/#{thread.board}/res/#{thread}.json", ->
+      delete status.req
+      ExpandThread.parse @, thread, a
+  contract: (thread, a, threadRoot) ->
+    status = ExpandThread.statuses[thread]
+    delete ExpandThread.statuses[thread]
+    if status.req
+      status.req.abort()
+      a.textContent = ExpandThread.text '+', a.textContent.match(/\d+/g)... if a
       return
 
-    thread.isExpanded = true
+    num = if thread.isSticky
+      1
+    else switch g.BOARD.ID
+      # XXX boards config
+      when 'b', 'vg' then 3
+      when 't' then 1
+      else 5
+    posts = $$ '.thread > .replyContainer', threadRoot
+    for post in [thread.OP.nodes.root].concat posts[-num..]
+      ExpandComment.contract Get.postFromRoot post
+    return unless a
+    postsCount = 0
+    filesCount = 0
+    for reply in posts[...-num]
+      # rm clones
+      inlined.click() while inlined = $ '.inlined', reply if Conf['Quote Inlining']
+      postsCount++
+      filesCount++ if 'file' of Get.postFromRoot reply
+      $.rm reply
+    a.textContent = ExpandThread.text '+', postsCount, filesCount
+  parse: (req, thread, a) ->
+    if req.status not in [200, 304]
+      a.textContent = "Error #{req.statusText} (#{req.status})"
+      return
 
-    {posts} = JSON.parse req.response
-    if spoilerRange = posts.shift().custom_spoiler
-      Build.spoilerRange[thread.board] = spoilerRange
+    data = JSON.parse(req.response).posts
+    Build.spoilerRange[thread.board] = data.shift().custom_spoiler
 
-    postsObj   = []
+    posts      = []
     postsRoot  = []
     filesCount = 0
-    for reply in posts
-      if post = thread.posts[reply.no]
+    for postData in data
+      if post = thread.posts[postData.no]
         filesCount++ if 'file' of post
         postsRoot.push post.nodes.root
         continue
-      root = Build.postFromObject reply, thread.board.ID
+      root = Build.postFromObject postData, thread.board.ID
       post = new Post root, thread, thread.board
-      link = $ 'a[title="Highlight this post"]', root
-      link.href = "res/#{thread}#p#{post}"
-      link.nextSibling.href = "res/#{thread}#q#{post}"
       filesCount++ if 'file' of post
-      postsObj.push  post
+      posts.push  post
       postsRoot.push root
-    Main.callbackNodes Post, postsObj
+    Main.callbackNodes Post, posts
     $.after a, postsRoot
 
-    postsCount = postsRoot.length
+    postsCount    = postsRoot.length
     a.textContent = ExpandThread.text '-', postsCount, filesCount
 
     # Enable 4chan features.
     if Conf['Enable 4chan\'s Extension']
-      $.globalEval "Parser.parseThread(#{thread.ID}, 1, #{postsCount})"
+      $.globalEval "Parser.parseThread(#{thread}, 1, #{postsCount})"
     else
       Fourchan.parseThread thread.ID, 1, postsCount
