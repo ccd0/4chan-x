@@ -1,6 +1,6 @@
 Index =
   init: ->
-    return if g.VIEW isnt 'index'
+    return if g.VIEW isnt 'index' or g.BOARD.ID is 'f'
 
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'
