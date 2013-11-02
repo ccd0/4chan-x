@@ -264,6 +264,8 @@ Build =
       className: 'thread'
       id: "t#{data.no}"
 
+    Build.spoilerRange[board] = data.custom_spoiler
+
     for obj in [data].concat data.last_replies or []
       $.add root, if post = g.posts["#{board}.#{obj.no}"]
         post.nodes.root

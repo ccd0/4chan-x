@@ -32,8 +32,7 @@ ExpandComment =
       return
 
     posts = JSON.parse(req.response).posts
-    if spoilerRange = posts[0].custom_spoiler
-      Build.spoilerRange[g.BOARD] = spoilerRange
+    Build.spoilerRange[g.BOARD] = posts[0].custom_spoiler
 
     for postObj in posts
       break if postObj.no is post.ID
