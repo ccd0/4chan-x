@@ -169,26 +169,21 @@ Main =
     # Something might have gone wrong!
     Main.initStyle()
 
-    if g.VIEW is 'thread' and board = $ '.board'
-      threads = []
-      posts   = []
-
-      for threadRoot in $$ '.board > .thread', board
-        thread = new Thread +threadRoot.id[1..], g.BOARD
-        threads.push thread
-        for postRoot in $$ '.thread > .postContainer', threadRoot
-          try
-            posts.push new Post postRoot, thread, g.BOARD
-          catch err
-            # Skip posts that we failed to parse.
-            unless errors
-              errors = []
-            errors.push
-              message: "Parsing of Post No.#{postRoot.id.match /\d+/} failed. Post will be skipped."
-              error: err
+    if g.VIEW is 'thread' and threadRoot = $ '.thread'
+      thread = new Thread +threadRoot.id[1..], g.BOARD
+      posts  = []
+      for postRoot in $$ '.thread > .postContainer', threadRoot
+        try
+          posts.push new Post postRoot, thread, g.BOARD
+        catch err
+          # Skip posts that we failed to parse.
+          errors = [] unless errors
+          errors.push
+            message: "Parsing of Post No.#{postRoot.id.match /\d+/} failed. Post will be skipped."
+            error: err
       Main.handleErrors errors if errors
 
-      Main.callbackNodes Thread, threads
+      Main.callbackNodes Thread, [thread]
       Main.callbackNodes Post, posts
 
     if $.hasClass d.body, 'fourchan_x'

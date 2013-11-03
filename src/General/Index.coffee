@@ -202,8 +202,7 @@ Index =
           posts.push new Post postRoot, thread, g.BOARD
         catch err
           # Skip posts that we failed to parse.
-          unless errors
-            errors = []
+          errors = [] unless errors
           errors.push
             message: "Parsing of Post No.#{postRoot.id.match /\d+/} failed. Post will be skipped."
             error: err
