@@ -1,3 +1,5 @@
+## 3.12.0 - *2013-11-03*
+
 Index navigation improvements:
  - You can now refresh the index page you are on with the refresh shortcut in the header bar or the same keybind for refreshing threads.
  - You can now switch between paged and all-threads index modes via the "Index Navigation" header sub-menu:<br>
