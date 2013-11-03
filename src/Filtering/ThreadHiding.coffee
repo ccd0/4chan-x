@@ -21,7 +21,7 @@ ThreadHiding =
       if thread.stub
         $.prepend root, thread.stub
       else
-        threadRoot.nextElementSibling.hidden = true
+        root.nextElementSibling.hidden = true
     return
 
   syncCatalog: ->
