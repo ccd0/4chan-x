@@ -16,8 +16,12 @@ ThreadHiding =
     $.prepend @OP.nodes.root, ThreadHiding.makeButton @, 'hide'
 
   onrefresh: ->
-    for threadID, thread of g.BOARD.threads when thread.isHidden and thread.stub
-      $.prepend thread.OP.nodes.root.parentNode, thread.stub
+    for threadID, thread of g.BOARD.threads when thread.isHidden
+      root = thread.OP.nodes.root.parentNode
+      if thread.stub
+        $.prepend root, thread.stub
+      else
+        threadRoot.nextElementSibling.hidden = true
     return
 
   syncCatalog: ->

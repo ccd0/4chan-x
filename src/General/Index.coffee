@@ -158,6 +158,7 @@ Index =
     try
       Index.parse JSON.parse req.response if req.status is 200
     catch err
+      c.error 'Index failure:', err.stack
       # network error or non-JSON content for example.
       notice.setType 'error'
       notice.el.lastElementChild.textContent = 'Index refresh failed.'
@@ -171,7 +172,7 @@ Index =
     Index.scrollToIndex()
   parse: (pages) ->
     Index.parseThreadList pages
-    Index.buildAll()
+    Index.buildThreads()
     Index.sort()
     Index.buildIndex()
     Index.buildPagelist()
@@ -183,35 +184,59 @@ Index =
     for threadID, thread of g.BOARD.threads when thread.ID not in Index.liveThreadIDs
       thread.collect()
     return
-  buildAll: ->
+  buildThreads: ->
     Index.nodes = []
     threads     = []
     posts       = []
     for threadData in Index.liveThreadData
-      [threadRoot, hr] = Build.thread g.BOARD, threadData
-      Index.nodes.push threadRoot, hr
+      threadRoot = Build.thread g.BOARD, threadData
+      Index.nodes.push threadRoot, $.el 'hr'
       if thread = g.BOARD.threads[threadData.no]
         thread.setStatus 'Sticky', !!threadData.sticky
         thread.setStatus 'Closed', !!threadData.closed
       else
         thread = new Thread threadData.no, g.BOARD
         threads.push thread
-      postRoots = $$ '.thread > .postContainer', threadRoot
-      for postRoot in postRoots when postRoot.id.match(/\d+/)[0] not of thread.posts
+      # postRoots = $$ '.thread > .postContainer', threadRoot
+      # for postRoot in postRoots when postRoot.id.match(/\d+/)[0] not of thread.posts
+      OPRoot = $ '.opContainer', threadRoot
+      continue if OPRoot.id.match(/\d+/)[0] of thread.posts
+      try
+        posts.push new Post OPRoot, thread, g.BOARD
+      catch err
+        # Skip posts that we failed to parse.
+        Main.handleErrors
+          message: "Parsing of Post No.#{postRoot.id.match /\d+/} failed. Post will be skipped."
+          error: err
+
+    # Add the threads and <hr>s in a container to make sure all features work.
+    $.nodes Index.nodes
+    Main.callbackNodes Thread, threads
+    Main.callbackNodes Post,   posts
+  buildReplies: (threadRoots) ->
+    posts = []
+    for threadRoot in threadRoots by 2
+      thread = Get.threadFromRoot threadRoot
+      i = Index.liveThreadIDs.indexOf thread.ID
+      continue unless lastReplies = Index.liveThreadData[i].last_replies
+      nodes = []
+      for data in lastReplies
+        if post = thread.posts[data.no]
+          nodes.push post.nodes.root
+          continue
+        nodes.push node = Build.postFromObject data, thread.board.ID
         try
-          posts.push new Post postRoot, thread, g.BOARD
+          posts.push new Post node, thread, thread.board
         catch err
           # Skip posts that we failed to parse.
           errors = [] unless errors
           errors.push
             message: "Parsing of Post No.#{postRoot.id.match /\d+/} failed. Post will be skipped."
             error: err
-    Main.handleErrors errors if errors
+      $.add threadRoot, nodes
 
-    # Add the threads and <hr>s in a container to make sure all features work.
-    $.nodes Index.nodes
-    Main.callbackNodes Thread, threads
-    Main.callbackNodes Post,   posts
+    Main.handleErrors errors if errors
+    Main.callbackNodes Post, posts
   sort: ->
     switch Conf['Index Sort']
       when 'bump'
@@ -232,7 +257,7 @@ Index =
     for threadID in sortedThreadIDs
       i = Index.liveThreadIDs.indexOf(threadID) * 2
       Index.sortedNodes.push Index.nodes[i], Index.nodes[i + 1]
-    # Put the sticky threads on top of the index.g
+    # Put the sticky threads on top of the index.
     offset = 0
     for threadRoot, i in Index.sortedNodes by 2 when Get.threadFromRoot(threadRoot).isSticky
       Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
@@ -251,5 +276,6 @@ Index =
     else
       nodes = Index.sortedNodes
     $.rmAll Index.root
+    Index.buildReplies nodes
     $.event 'IndexRefresh'
     $.add Index.root, nodes
