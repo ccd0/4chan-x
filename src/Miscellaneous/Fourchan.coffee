@@ -35,7 +35,7 @@ Fourchan =
     return if @isClone
     apply = (e) -> pre.innerHTML = e.detail
     $.on window, 'prettyprint:cb', apply
-    for pre in $$ '.prettyprint', @nodes.comment
+    for pre in $$ '.prettyprint:not(.prettyprinted)', @nodes.comment
       $.event 'prettyprint', pre.innerHTML, window
     $.off window, 'prettyprint:cb', apply
     return
