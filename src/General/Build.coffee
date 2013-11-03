@@ -271,6 +271,16 @@ Build =
   thread: (board, data) ->
     Build.spoilerRange[board] = data.custom_spoiler
 
+    if (OP = board.posts[data.no]) and parent = OP.nodes.root.parentNode
+      root = parent
+      hr   = parent.nextElementSibling
+      $.rmAll root
+    else
+      root = $.el 'div',
+        className: 'thread'
+        id: "t#{data.no}"
+      hr   = $.el 'hr'
+
     nodes = []
     for obj in [data].concat data.last_replies or []
       nodes.push if post = board.posts[obj.no]
@@ -282,8 +292,5 @@ Build =
     if data.omitted_posts
       nodes.splice 1, 0, Build.summary board.ID, data.no, data.omitted_posts, data.omitted_images
 
-    root = $.el 'div',
-      className: 'thread'
-      id: "t#{data.no}"
     $.add root, nodes
-    root
+    [root, hr]

@@ -188,8 +188,8 @@ Index =
     threads     = []
     posts       = []
     for threadData in Index.liveThreadData
-      threadRoot = Build.thread g.BOARD, threadData
-      Index.nodes.push threadRoot, $.el 'hr'
+      [threadRoot, hr] = Build.thread g.BOARD, threadData
+      Index.nodes.push threadRoot, hr
       if thread = g.BOARD.threads[threadData.no]
         thread.setStatus 'Sticky', !!threadData.sticky
         thread.setStatus 'Closed', !!threadData.closed
@@ -250,6 +250,6 @@ Index =
       nodes = Index.sortedNodes[nodesPerPage * pageNum ... nodesPerPage * (pageNum + 1)]
     else
       nodes = Index.sortedNodes
-    $.event 'IndexRefresh'
     $.rmAll Index.root
+    $.event 'IndexRefresh'
     $.add Index.root, nodes
