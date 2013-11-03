@@ -85,9 +85,10 @@ module.exports = (grunt) ->
         stdout: true
         stderr: true
         failOnError: true
+      checkout:
+        command: 'git checkout <%= pkg.meta.mainBranch %>'
       commit:
         command: """
-          git checkout <%= pkg.meta.mainBranch %>
           git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."
           git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."
           git tag -af stable-v3 -m "<%= pkg.meta.name %> v<%= pkg.version %>."
@@ -151,9 +152,9 @@ module.exports = (grunt) ->
   ]
 
   grunt.registerTask 'release', ['shell:commit', 'shell:push', 'build-crx', 'compress:crx']
-  grunt.registerTask 'patch',   ['bump',       'updcl:3', 'release']
-  grunt.registerTask 'minor',   ['bump:minor', 'updcl:2', 'release']
-  grunt.registerTask 'major',   ['bump:major', 'updcl:1', 'release']
+  grunt.registerTask 'patch',   ['shell:checkout', 'bump',       'updcl:3', 'release']
+  grunt.registerTask 'minor',   ['shell:checkout', 'bump:minor', 'updcl:2', 'release']
+  grunt.registerTask 'major',   ['shell:checkout', 'bump:major', 'updcl:1', 'release']
 
   grunt.registerTask 'updcl', 'Update the changelog', (headerLevel) ->
     headerPrefix = new Array(+headerLevel + 1).join '#'
