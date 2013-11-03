@@ -247,12 +247,28 @@ Header =
     return unless /^p\d+$/.test(hash) and post = $.id hash
     return if (Get.postFromRoot post).isHidden
     Header.scrollTo post
-  scrollTo: (root) ->
+  scrollTo: (root, down, needed) ->
+    if down
+      x = Header.getBottomOf root
+      window.scrollBy 0, -x unless needed and x >= 0
+    else
+      x = Header.getTopOf root
+      window.scrollBy 0,  x unless needed and x >= 0
+  scrollToIfNeeded: (root, down) ->
+    Header.scrollTo root, down, true
+  getTopOf: (root) ->
     {top} = root.getBoundingClientRect()
     unless Conf['Bottom header']
       headRect = Header.toggle.getBoundingClientRect()
-      top -= headRect.top + headRect.height
-    window.scrollBy 0, top
+      top     -= headRect.top + headRect.height
+    top
+  getBottomOf: (root) ->
+    {clientHeight} = doc
+    bottom = clientHeight - root.getBoundingClientRect().bottom
+    if Conf['Bottom header']
+      headRect = Header.toggle.getBoundingClientRect()
+      bottom  -= clientHeight - headRect.bottom + headRect.height
+    bottom
 
   addShortcut: (el, index) ->
     shortcut = $.el 'span',

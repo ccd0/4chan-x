@@ -183,43 +183,31 @@ Keybinds =
       location.href = url
 
   hl: (delta, thread) ->
+    postEl = $ '.reply.highlight', thread
+
     unless delta
-      if postEl = $ '.reply.highlight', thread
-        $.rmClass postEl, 'highlight'
+      $.rmClass postEl, 'highlight' if postEl
       return
-    if Conf['Bottom header']
-      topMargin = 0
-    else
-      headRect  = Header.toggle.getBoundingClientRect()
-      topMargin = headRect.top + headRect.height
-    if postEl = $ '.reply.highlight', thread
-      $.rmClass postEl, 'highlight'
-      rect = postEl.getBoundingClientRect()
-      if rect.bottom >= topMargin and rect.top <= doc.clientHeight # We're at least partially visible
+
+    if postEl
+      {height} = postEl.getBoundingClientRect()
+      if Header.getTopOf(postEl) >= -height and Header.getBottomOf(postEl) >= -height # We're at least partially visible
         root = postEl.parentNode
         axe = if delta is +1
           'following'
         else
           'preceding'
-        next = $.x "#{axe}-sibling::div[contains(@class,'replyContainer')][1]/child::div[contains(@class,'reply')]", root
-        unless next
-          @focus postEl
-          return
-        return unless g.VIEW is 'thread' or $.x('ancestor::div[parent::div[@class="board"]]', next) is thread
-        rect = next.getBoundingClientRect()
-        if rect.top < 0 or rect.bottom > doc.clientHeight
-          if delta is -1
-            window.scrollBy 0, rect.top - topMargin
-          else
-            next.scrollIntoView false
+        return unless next = $.x "#{axe}-sibling::div[contains(@class,'replyContainer')][1]/child::div[contains(@class,'reply')]", root
+        Header.scrollToIfNeeded next, delta is +1
         @focus next
+        $.rmClass postEl, 'highlight'
         return
+      $.rmClass postEl, 'highlight'
 
     replies = $$ '.reply', thread
     replies.reverse() if delta is -1
     for reply in replies
-      rect = reply.getBoundingClientRect()
-      if delta is +1 and rect.top >= topMargin or delta is -1 and rect.bottom <= doc.clientHeight
+      if delta is +1 and Header.getTopOf(reply) > 0 or delta is -1 and Header.getBottomOf(reply) > 0
         @focus reply
         return
 

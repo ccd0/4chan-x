@@ -50,7 +50,7 @@ Index =
       className: 'pagelist'
       hidden: true
       innerHTML: <%= importHTML('General/Index-pagelist') %>
-    Index.currentPage = Index.getCurrentPage()
+    @currentPage = @getCurrentPage()
     $.on window, 'popstate', @cb.popstate
     $.on @pagelist, 'click', @cb.pageNav
     $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
@@ -81,7 +81,7 @@ Index =
       Index.pageNav +a.pathname.split('/')[2]
 
   scrollToIndex: ->
-    Header.scrollTo Index.root if Index.root.getBoundingClientRect().top < 0
+    Header.scrollToIfNeeded Index.root
 
   getCurrentPage: ->
     +window.location.pathname.split('/')[2]

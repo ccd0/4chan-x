@@ -38,29 +38,24 @@ Nav =
     else
       Nav.scroll +1
 
-  getThread: (full) ->
-    if Conf['Bottom header']
-      topMargin = 0
-    else
-      headRect  = Header.toggle.getBoundingClientRect()
-      topMargin = headRect.top + headRect.height
-    threads = $$('.thread').filter (thread) ->
-      thread = Get.threadFromRoot thread
-      !(thread.isHidden and !thread.stub)
-    for thread, i in threads
-      rect = thread.getBoundingClientRect()
-      if rect.bottom > topMargin # not scrolled past
-        return if full then [threads, thread, i, rect, topMargin] else thread
+  getThread: ->
+    for threadRoot in $$ '.thread'
+      thread = Get.threadFromRoot threadRoot
+      continue if thread.isHidden and !thread.stub
+      if Header.getTopOf(threadRoot) >= -threadRoot.getBoundingClientRect().height # not scrolled past
+        return threadRoot
     return $ '.board'
 
   scroll: (delta) ->
-    [threads, thread, i, rect, topMargin] = Nav.getThread true
-    top = rect.top - topMargin
-
-    # unless we're not at the beginning of the current thread
-    # (and thus wanting to move to beginning)
-    # or we're above the first thread and don't want to skip it
-    if (delta is -1 and top > -5) or (delta is +1 and top < 5)
-      top = threads[i + delta]?.getBoundingClientRect().top - topMargin
-
-    window.scrollBy 0, top
+    thread = Nav.getThread()
+    axe = if delta is +1
+      'following'
+    else
+      'preceding'
+    if next = $.x "#{axe}-sibling::div[contains(@class,'thread')][1]", thread
+      # Unless we're not at the beginning of the current thread,
+      # and thus wanting to move to beginning,
+      # or we're above the first thread and don't want to skip it.
+      top = Header.getTopOf thread
+      thread = next if delta is +1 and top < 5 or delta is -1 and top > -5
+    Header.scrollTo thread
