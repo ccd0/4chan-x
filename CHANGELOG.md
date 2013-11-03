@@ -1,5 +1,5 @@
 Index navigation improvements:
- - You can now refresh the index page you are on with the icon in the header bar or the same keybind for refreshing threads.
+ - You can now refresh the index page you are on with the refresh shortcut in the header bar or the same keybind for refreshing threads.
  - You can now switch between paged and all-threads index modes via the "Index Navigation" header sub-menu.
  - Threads in the index can now be sorted by:
   - Bump order

@@ -131,7 +131,7 @@ Unread =
   read: (e) ->
     return if d.hidden or !Unread.posts.length
     for post, i in Unread.posts
-      break if Header.getBottomOf(post.nodes.root) <= 0 # post is not completely read
+      break if Header.getBottomOf(post.nodes.root) < -1 # post is not completely read
     return unless i
 
     Unread.lastReadPost = Unread.posts.splice(0, i)[i - 1].ID
