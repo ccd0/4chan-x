@@ -193,6 +193,13 @@ class Post
         quotelink.textContent = quotelink.textContent.replace '\u00A0(Dead)', ''
         $.rmClass quotelink, 'deadlink'
     return
+
+  collect: ->
+    @kill()
+    delete g.posts[@fullID]
+    delete @thread.posts[@]
+    delete @board.posts[@]
+
   addClone: (context) ->
     new Clone @, context
   rmClone: (index) ->

@@ -4,6 +4,7 @@ ThreadHiding =
 
     @db = new DataBoard 'hiddenThreads'
     @syncCatalog()
+    $.on d, 'IndexRefresh', @onrefresh
     Thread.callbacks.push
       name: 'Thread Hiding'
       cb:   @node
@@ -13,6 +14,15 @@ ThreadHiding =
       ThreadHiding.hide @, data.makeStub
     return unless Conf['Thread Hiding']
     $.prepend @OP.nodes.root, ThreadHiding.makeButton @, 'hide'
+
+  onrefresh: ->
+    for threadID, thread of g.BOARD.threads when thread.isHidden
+      root = thread.OP.nodes.root.parentNode
+      if thread.stub
+        $.prepend root, thread.stub
+      else
+        threadRoot.nextElementSibling.hidden = true
+    return
 
   syncCatalog: ->
     # Sync hidden threads from the catalog into the index.

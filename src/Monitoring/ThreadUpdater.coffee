@@ -2,14 +2,19 @@ ThreadUpdater =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
 
+    @button = $.el 'a',
+      className: 'thread-refresh-shortcut fa fa-refresh'
+      title: 'Refresh Thread'
+      href: 'javascript:;'
+    $.on @button, 'click', @update
+    Header.addShortcut @button, 1
+
     html = ''
     for name, conf of Config.updater.checkbox
       checked = if Conf[name] then 'checked' else ''
       html   += "<div><label title='#{conf[1]}'><input name='#{name}' type=checkbox #{checked}> #{name}</label></div>"
 
-    html = """
-    <%= grunt.file.read('html/Monitoring/ThreadUpdater.html').replace(/>\s+</g, '><').trim() %>
-    """
+    html = <%= importHTML('Monitoring/ThreadUpdater') %>
 
     @dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
     @timer  = $ '#update-timer',  @dialog
@@ -81,6 +86,7 @@ ThreadUpdater =
       ThreadUpdater.interval = @value = val
       $.cb.value.call @ if e
     load: (e) ->
+      $.rmClass ThreadUpdater.button, 'fa-spin'
       {req} = ThreadUpdater
       delete ThreadUpdater.req
       if e.type isnt 'loadend' # timeout or abort
@@ -143,9 +149,10 @@ ThreadUpdater =
 
   update: ->
     return unless navigator.onLine
+    $.addClass ThreadUpdater.button, 'fa-spin'
     ThreadUpdater.count()
     ThreadUpdater.set 'timer', '...'
-    ThreadUpdater.req.abort() if ThreadUpdater.req
+    ThreadUpdater.req?.abort()
     url = "//api.4chan.org/#{ThreadUpdater.thread.board}/res/#{ThreadUpdater.thread}.json"
     ThreadUpdater.req = $.ajax url,
       onabort:   ThreadUpdater.cb.load
@@ -155,38 +162,27 @@ ThreadUpdater =
     ,
       whenModified: true
 
-  updateThreadStatus: (title, OP) ->
-    titleLC = title.toLowerCase()
-    return if ThreadUpdater.thread["is#{title}"] is !!OP[titleLC]
-    unless ThreadUpdater.thread["is#{title}"] = !!OP[titleLC]
-      message = if title is 'Sticky'
-        'The thread is not a sticky anymore.'
+  updateThreadStatus: (type, status) ->
+    return unless hasChanged = ThreadUpdater.thread["is#{type}"] isnt status
+    ThreadUpdater.thread.setStatus type, status
+    change = if type is 'Sticky'
+      if status
+        'now a sticky'
       else
-        'The thread is not closed anymore.'
-      new Notice 'info', message, 30
-      $.rm $ ".#{titleLC}Icon", ThreadUpdater.thread.OP.nodes.info
-      return
-    message = if title is 'Sticky'
-      'The thread is now a sticky.'
+        'not a sticky anymore'
     else
-      'The thread is now closed.'
-    new Notice 'info', message, 30
-    icon = $.el 'img',
-      src: "//static.4chan.org/image/#{titleLC}.gif"
-      alt: title
-      title: title
-      className: "#{titleLC}Icon"
-    root = $ '[title="Quote this post"]', ThreadUpdater.thread.OP.nodes.info
-    if title is 'Closed'
-      root = $('.stickyIcon', ThreadUpdater.thread.OP.nodes.info) or root
-    $.after root, [$.tn(' '), icon]
+      if status
+        'now closed'
+      else
+        'not closed anymore'
+    new Notice 'info', "The thread is #{change}.", 30
 
   parse: (postObjects) ->
     OP = postObjects[0]
     Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler
 
-    ThreadUpdater.updateThreadStatus 'Sticky', OP
-    ThreadUpdater.updateThreadStatus 'Closed', OP
+    ThreadUpdater.updateThreadStatus 'Sticky', !!OP.sticky
+    ThreadUpdater.updateThreadStatus 'Closed', !!OP.closed
     ThreadUpdater.thread.postLimit = !!OP.bumplimit
     ThreadUpdater.thread.fileLimit = !!OP.imagelimit
 
@@ -250,15 +246,14 @@ ThreadUpdater =
     ThreadUpdater.lastPost = posts[count - 1].ID
     Main.callbackNodes Post, posts
 
-    scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and
-      ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
+    scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and Header.getBottomOf(ThreadUpdater.root) > -25
     $.add ThreadUpdater.root, nodes
     sendEvent()
     if scroll
       if Conf['Bottom Scroll']
         window.scrollTo 0, d.body.clientHeight
       else
-        Header.scrollToPost nodes[0]
+        Header.scrollTo nodes[0]
 
     # Enable 4chan features.
     threadID = ThreadUpdater.thread.ID

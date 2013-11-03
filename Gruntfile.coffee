@@ -1,11 +1,17 @@
 module.exports = (grunt) ->
 
+  importHTML = (filename) ->
+    "\"\"\"#{grunt.file.read("html/#{filename}.html").replace(/^\s+|\s+$</gm, '').replace(/\n/g, '')}\"\"\""
+
   # Project configuration.
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
     concat:
       options: process: Object.create(null, data:
-        get: -> grunt.config 'pkg'
+        get: ->
+          pkg = grunt.config 'pkg'
+          pkg.importHTML = importHTML
+          pkg
         enumerable: true
       )
       coffee:
@@ -17,6 +23,7 @@ module.exports = (grunt) ->
           'src/General/Header.coffee'
           'src/General/Notice.coffee'
           'src/General/Settings.coffee'
+          'src/General/Index.coffee'
           'src/General/Get.coffee'
           'src/General/Build.coffee'
           # Features -->
@@ -78,9 +85,10 @@ module.exports = (grunt) ->
         stdout: true
         stderr: true
         failOnError: true
+      checkout:
+        command: 'git checkout <%= pkg.meta.mainBranch %>'
       commit:
         command: """
-          git checkout <%= pkg.meta.mainBranch %>
           git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."
           git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."
           git tag -af stable-v3 -m "<%= pkg.meta.name %> v<%= pkg.version %>."
@@ -144,9 +152,9 @@ module.exports = (grunt) ->
   ]
 
   grunt.registerTask 'release', ['shell:commit', 'shell:push', 'build-crx', 'compress:crx']
-  grunt.registerTask 'patch',   ['bump',       'updcl:3', 'release']
-  grunt.registerTask 'minor',   ['bump:minor', 'updcl:2', 'release']
-  grunt.registerTask 'major',   ['bump:major', 'updcl:1', 'release']
+  grunt.registerTask 'patch',   ['shell:checkout', 'bump',       'updcl:3', 'release']
+  grunt.registerTask 'minor',   ['shell:checkout', 'bump:minor', 'updcl:2', 'release']
+  grunt.registerTask 'major',   ['shell:checkout', 'bump:major', 'updcl:1', 'release']
 
   grunt.registerTask 'updcl', 'Update the changelog', (headerLevel) ->
     headerPrefix = new Array(+headerLevel + 1).join '#'

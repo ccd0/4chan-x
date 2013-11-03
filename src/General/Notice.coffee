@@ -19,7 +19,7 @@ class Notice
       $.on d, 'visibilitychange', @add
       return
     $.off d, 'visibilitychange', @add
-    $.add $.id('notifications'), @el
+    $.add Header.noticesRoot, @el
     @el.clientHeight # force reflow
     @el.style.opacity = 1
     setTimeout @close, @timeout * $.SECOND if @timeout

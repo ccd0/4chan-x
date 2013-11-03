@@ -3,15 +3,17 @@ ThreadWatcher =
     return if !Conf['Thread Watcher']
 
     @db     = new DataBoard 'watchedThreads', @refresh, true
-    @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', """
-    <%= grunt.file.read('html/Monitoring/ThreadWatcher.html').replace(/>\s+</g, '><').trim() %>
-    """
+    @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', <%= importHTML('Monitoring/ThreadWatcher') %>
     @status = $ '#watcher-status', @dialog
     @list   = @dialog.lastElementChild
 
     $.on d, 'QRPostSuccessful',   @cb.post
-    $.on d, 'ThreadUpdate',       @cb.threadUpdate if g.VIEW is 'thread'
     $.on d, '4chanXInitFinished', @ready
+    switch g.VIEW
+      when 'index'
+        $.on d, 'IndexRefresh', @cb.onIndexRefresh
+      when 'thread'
+        $.on d, 'ThreadUpdate', @cb.onThreadRefresh
 
     now = Date.now()
     if (@db.data.lastChecked or 0) < now - 2 * $.HOUR
@@ -69,7 +71,17 @@ ThreadWatcher =
           $.set 'AutoWatch', threadID
       else if Conf['Auto Watch Reply']
         ThreadWatcher.add board.threads[threadID]
-    threadUpdate: (e) ->
+    onIndexRefresh: ->
+      {db}    = ThreadWatcher
+      boardID = g.BOARD.ID
+      for threadID, data of db.data.boards[boardID] when not data.isDead and threadID not of g.BOARD.threads
+        if Conf['Auto Prune']
+          ThreadWatcher.db.delete {boardID, threadID}
+        else
+          data.isDead = true
+          ThreadWatcher.db.set {boardID, threadID, val: data}
+      ThreadWatcher.refresh()
+    onThreadRefresh: (e) ->
       {thread} = e.detail
       return unless e.detail[404] and ThreadWatcher.db.get {boardID: thread.board.ID, threadID: thread.ID}
       # Update 404 status.
@@ -100,7 +112,7 @@ ThreadWatcher =
         ThreadWatcher.status.textContent = status
         return if @status isnt 404
         if Conf['Auto Prune']
-          ThreadWatcher.rm boardID, threadID
+          ThreadWatcher.db.delete {boardID, threadID}
         else
           data.isDead = true
           ThreadWatcher.db.set {boardID, threadID, val: data}

@@ -45,7 +45,7 @@ $.ajax = do ->
     type or= form and 'post' or 'get'
     r.open type, url, !sync
     if whenModified
-      r.setRequestHeader 'If-Modified-Since', lastModified[url] or '0'
+      r.setRequestHeader 'If-Modified-Since', lastModified[url] if url of lastModified
       $.on r, 'load', -> lastModified[url] = r.getResponseHeader 'Last-Modified'
     $.extend r, options
     $.extend r.upload, upCallbacks
@@ -104,7 +104,7 @@ $.rm = do ->
     (el) -> el.parentNode?.removeChild el
 $.rmAll = (root) ->
   # jsperf.com/emptify-element
-  while node = root.firstChild
+  for node in [root.childNodes...]
     # HTMLSelectElement.remove !== Element.remove
     root.removeChild node
   return

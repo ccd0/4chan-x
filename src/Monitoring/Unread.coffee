@@ -42,18 +42,16 @@ Unread =
       while root = $.x 'preceding-sibling::div[contains(@class,"replyContainer")][1]', post.nodes.root
         break unless (post = Get.postFromRoot root).isHidden
       return unless root
-      onload = -> root.scrollIntoView false if checkPosition root
+      down = true
     else
       # Scroll to the last read post.
       posts  = Object.keys Unread.thread.posts
       {root} = Unread.thread.posts[posts[posts.length - 1]].nodes
-      onload = -> Header.scrollToPost root if checkPosition root
-    checkPosition = (target) ->
-      # Scroll to the target unless we scrolled past it.
-      target.getBoundingClientRect().bottom > doc.clientHeight
     # Prevent the browser to scroll back to
     # the previous scroll location on page load.
-    $.on window, 'load', onload
+    $.on window, 'load', ->
+      # Scroll to the target unless we scrolled past it.
+      Header.scrollTo root, down if Header.getBottomOf(root) < 0
 
   sync: ->
     lastReadPost = Unread.db.get
@@ -102,7 +100,7 @@ Unread =
       body: post.info.comment
       icon: Favicon.logo
     notif.onclick = ->
-      Header.scrollToPost post.nodes.root
+      Header.scrollToIfNeeded post.nodes.root, true
       window.focus()
     notif.onshow = ->
       setTimeout ->
@@ -132,9 +130,8 @@ Unread =
 
   read: (e) ->
     return if d.hidden or !Unread.posts.length
-    height = doc.clientHeight
     for post, i in Unread.posts
-      break if post.nodes.root.getBoundingClientRect().bottom > height # post is not completely read
+      break if Header.getBottomOf(post.nodes.root) < -1 # post is not completely read
     return unless i
 
     Unread.lastReadPost = Unread.posts.splice(0, i)[i - 1].ID
