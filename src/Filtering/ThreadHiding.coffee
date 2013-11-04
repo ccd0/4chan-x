@@ -19,8 +19,7 @@ ThreadHiding =
     for threadID, thread of g.BOARD.threads when thread.isHidden
       root = thread.OP.nodes.root.parentNode
       if thread.stub
-        thread.stub = ThreadHiding.makeStub thread, root
-        $.prepend root, thread.stub
+        ThreadHiding.makeStub thread, root
       else
         root.nextElementSibling.hidden = true
     return
@@ -120,13 +119,13 @@ ThreadHiding =
 
     a = ThreadHiding.makeButton thread, 'show'
     $.add a, $.tn " #{opInfo} (#{if numReplies is 1 then '1 reply' else "#{numReplies} replies"})"
-    stub = $.el 'div',
+    thread.stub = $.el 'div',
       className: 'stub'
     if Conf['Menu']
-      $.add stub, [a, $.tn(' '), Menu.makeButton()]
+      $.add thread.stub, [a, $.tn(' '), Menu.makeButton()]
     else
-      $.add stub, a
-    stub
+      $.add thread.stub, a
+    $.prepend root, thread.stub
 
   saveHiddenState: (thread, makeStub) ->
     hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
@@ -154,16 +153,14 @@ ThreadHiding =
 
   hide: (thread, makeStub=Conf['Stubs']) ->
     return if thread.isHidden
-    {OP} = thread
-    threadRoot = OP.nodes.root.parentNode
+    threadRoot = thread.OP.nodes.root.parentNode
     thread.isHidden = true
 
     unless makeStub
       threadRoot.hidden = threadRoot.nextElementSibling.hidden = true # <hr>
       return
 
-    thread.stub = ThreadHiding.makeStub thread, threadRoot
-    $.prepend threadRoot, thread.stub
+    ThreadHiding.makeStub thread, threadRoot
 
   show: (thread) ->
     if thread.stub

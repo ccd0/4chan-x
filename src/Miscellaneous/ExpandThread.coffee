@@ -3,11 +3,6 @@ ExpandThread =
     return if g.VIEW isnt 'index' or !Conf['Thread Expansion']
     @statuses = {}
     $.on d, 'IndexRefresh', @onIndexRefresh
-    Thread.callbacks.push
-      name: 'Thread Expansion'
-      cb:   @node
-  node: ->
-    ExpandThread.setButton @
 
   setButton: (thread) ->
     return unless a = $.x 'following-sibling::a[contains(@class,"summary")][1]', thread.OP.nodes.root
