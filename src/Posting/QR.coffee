@@ -234,7 +234,6 @@ QR =
       setTimers = (e) => QR.cooldown.types = e.detail
       $.on  window, 'cooldown:timers', setTimers
       $.globalEval 'window.dispatchEvent(new CustomEvent("cooldown:timers", {detail: cooldowns}))'
-      QR.cooldown.types or= {} # XXX tmp workaround until all pages and the catalogs get the cooldowns var.
       $.off window, 'cooldown:timers', setTimers
       for type of QR.cooldown.types
         QR.cooldown.types[type] = +QR.cooldown.types[type]
@@ -302,11 +301,6 @@ QR =
           else
             seconds = Math.max seconds, 0
             QR.cooldown.unset start
-          continue
-
-        if 'timeout' of cooldown
-          # XXX tmp conversion from previous cooldowns
-          QR.cooldown.unset start
           continue
 
         if isReply is cooldown.isReply
