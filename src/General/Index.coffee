@@ -137,7 +137,17 @@ Index =
     return unless navigator.onLine
     Index.req?.abort()
     Index.notice?.close()
-    Index.notice = new Notice 'info', 'Refreshing index...'
+    if d.readyState isnt 'loading'
+      Index.notice = new Notice 'info', 'Refreshing index...'
+    else
+      # Delay the notice on initial page load
+      # and only display it for slow connections.
+      now = Date.now()
+      $.ready ->
+        setTimeout (->
+          return unless Index.req and !Index.notice
+          Index.notice = new Notice 'info', 'Refreshing index...'
+        ), $.SECOND - (Date.now() - now)
     Index.req = $.ajax "//api.4chan.org/#{g.BOARD}/catalog.json",
       onabort:   Index.load
       onloadend: Index.load
@@ -160,14 +170,18 @@ Index =
     catch err
       c.error 'Index failure:', err.stack
       # network error or non-JSON content for example.
-      notice.setType 'error'
-      notice.el.lastElementChild.textContent = 'Index refresh failed.'
-      setTimeout notice.close, 2 * $.SECOND
+      if notice
+        notice.setType 'error'
+        notice.el.lastElementChild.textContent = 'Index refresh failed.'
+        setTimeout notice.close, 2 * $.SECOND
+      else
+        new Notice 'error', 'Index refresh failed.', 2
       return
 
-    notice.setType 'success'
-    notice.el.lastElementChild.textContent = 'Index refreshed!'
-    setTimeout notice.close, $.SECOND
+    if notice
+      notice.setType 'success'
+      notice.el.lastElementChild.textContent = 'Index refreshed!'
+      setTimeout notice.close, $.SECOND
 
     Index.scrollToIndex()
   parse: (pages) ->
