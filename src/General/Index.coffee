@@ -77,6 +77,7 @@ Index =
           a = e.target
         else
           return
+      return if a.textContent is 'Catalog'
       e.preventDefault()
       Index.pageNav +a.pathname.split('/')[2]
 
