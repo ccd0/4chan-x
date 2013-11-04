@@ -1,3 +1,6 @@
+- The index refreshing notification will now only appear on initial page load with slow connections.
+- Minor fixes.
+
 ## 3.12.0 - *2013-11-03*
 
 Index navigation improvements:
