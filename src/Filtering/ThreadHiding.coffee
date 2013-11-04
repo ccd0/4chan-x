@@ -19,6 +19,7 @@ ThreadHiding =
     for threadID, thread of g.BOARD.threads when thread.isHidden
       root = thread.OP.nodes.root.parentNode
       if thread.stub
+        thread.stub = ThreadHiding.makeStub thread, root
         $.prepend root, thread.stub
       else
         root.nextElementSibling.hidden = true
@@ -109,6 +110,23 @@ ThreadHiding =
     a.dataset.fullID = thread.fullID
     $.on a, 'click', ThreadHiding.toggle
     a
+  makeStub: (thread, root) ->
+    numReplies  = $$('.thread > .replyContainer', root).length
+    numReplies += +summary.textContent.match /\d+/ if summary = $ '.summary', root
+    opInfo = if Conf['Anonymize']
+      'Anonymous'
+    else
+      $('.nameBlock', thread.OP.nodes.info).textContent
+
+    a = ThreadHiding.makeButton thread, 'show'
+    $.add a, $.tn " #{opInfo} (#{if numReplies is 1 then '1 reply' else "#{numReplies} replies"})"
+    stub = $.el 'div',
+      className: 'stub'
+    if Conf['Menu']
+      $.add stub, [a, $.tn(' '), Menu.makeButton()]
+    else
+      $.add stub, a
+    stub
 
   saveHiddenState: (thread, makeStub) ->
     hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
@@ -144,24 +162,7 @@ ThreadHiding =
       threadRoot.hidden = threadRoot.nextElementSibling.hidden = true # <hr>
       return
 
-    numReplies = 0
-    if span = $ '.summary', threadRoot
-      numReplies = +span.textContent.match /\d+/
-    numReplies += $$('.opContainer ~ .replyContainer', threadRoot).length
-    numReplies  = if numReplies is 1 then '1 reply' else "#{numReplies} replies"
-    opInfo =
-      if Conf['Anonymize']
-        'Anonymous'
-      else
-        $('.nameBlock', OP.nodes.info).textContent
-
-    a = ThreadHiding.makeButton thread, 'show'
-    $.add a, $.tn " #{opInfo} (#{numReplies})"
-    thread.stub = $.el 'div',
-      className: 'stub'
-    $.add thread.stub, a
-    if Conf['Menu']
-      $.add thread.stub, [$.tn(' '), Menu.makeButton()]
+    thread.stub = ThreadHiding.makeStub thread, threadRoot
     $.prepend threadRoot, thread.stub
 
   show: (thread) ->
