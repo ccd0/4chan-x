@@ -197,17 +197,16 @@ Index =
       else
         thread = new Thread threadData.no, g.BOARD
         threads.push thread
-      # postRoots = $$ '.thread > .postContainer', threadRoot
-      # for postRoot in postRoots when postRoot.id.match(/\d+/)[0] not of thread.posts
-      OPRoot = $ '.opContainer', threadRoot
-      continue if OPRoot.id.match(/\d+/)[0] of thread.posts
+      continue if thread.ID of thread.posts
       try
-        posts.push new Post OPRoot, thread, g.BOARD
+        posts.push new Post $('.opContainer', threadRoot), thread, g.BOARD
       catch err
         # Skip posts that we failed to parse.
-        Main.handleErrors
-          message: "Parsing of Post No.#{postRoot.id.match /\d+/} failed. Post will be skipped."
+        errors = [] unless errors
+        errors.push
+          message: "Parsing of Post No.#{thread} failed. Post will be skipped."
           error: err
+    Main.handleErrors errors if errors
 
     # Add the threads and <hr>s in a container to make sure all features work.
     $.nodes Index.nodes
@@ -231,7 +230,7 @@ Index =
           # Skip posts that we failed to parse.
           errors = [] unless errors
           errors.push
-            message: "Parsing of Post No.#{postRoot.id.match /\d+/} failed. Post will be skipped."
+            message: "Parsing of Post No.#{data.no} failed. Post will be skipped."
             error: err
       $.add threadRoot, nodes
 
