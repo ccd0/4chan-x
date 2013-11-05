@@ -5,32 +5,33 @@
 
 ## 3.12.0 - *2013-11-03*
 
-Index navigation improvements:
+- Index navigation improvements:
  - You can now refresh the index page you are on with the refresh shortcut in the header bar or the same keybind for refreshing threads.
  - You can now switch between paged and all-threads index modes via the "Index Navigation" header sub-menu:<br>
   ![index navigation](img/changelog/3.12.0/0.png)
  - Threads in the index can now be sorted by:
-  - Bump order
-  - Last reply
-  - Creation date
-  - Reply count
-  - File count
+ <ul>
+  <li> Bump order
+  <li> Last reply
+  <li> Creation date
+  <li> Reply count
+  <li> File count
+ </ul>
  - Navigating across index pages is now instantaneous.
-
-Added a keybind to open the catalog search field on index pages.
+- Added a keybind to open the catalog search field on index pages.
 
 ### 3.11.5 - *2013-10-03*
 
-Minor Chrome 30 fix.
+- Minor Chrome 30 fix.
 
 ### 3.11.4 - *2013-09-23*
 
-Tiny posting cooldown adjustment:
+- Tiny posting cooldown adjustment:
  - You can post an image reply immediately after a non-image reply.
 
 ### 3.11.3 - *2013-09-19*
 
-Update posting cooldown timers to match 4chan settings:
+- Update posting cooldown timers to match 4chan settings:
  - Cooldown may vary between inter-thread and intra-thread replies.
  - Cooldown may vary when posting a file or not.
  - Cooldown does not take sageing into account anymore.
@@ -38,7 +39,7 @@ Update posting cooldown timers to match 4chan settings:
 
 ### 3.11.2 - *2013-09-17*
 
-Updated post and deletion cooldown timers to match 4chan changes: they are now twice as long.
+- Updated post and deletion cooldown timers to match 4chan changes: they are now twice as long.
 
 ### 3.11.1 - *2013-09-13*
 
@@ -149,7 +150,7 @@ Updated post and deletion cooldown timers to match 4chan changes: they are now t
 - **New feature**: `Archive selection`
  - Select which archive you want for specific boards and redirection type.
  - Access it in the `Archives` tab of the Settings window.
-- The list of archived boards will now update automatically, separately from 4chan X updates.
+- The list of archived boards will now update automatically, independently from 4chan X updates.
  - If you're an archiver and want [data](https://github.com/MayhemYDG/4chan-x/blob/v3/json/archives.json) about your archive to be updated, added or removed: send a PR or open an issue.
 - Fix quote previews getting 'stuck' in Opera.
 
