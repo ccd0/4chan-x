@@ -4,7 +4,7 @@ ThreadHiding =
 
     @db = new DataBoard 'hiddenThreads'
     @syncCatalog()
-    $.on d, 'IndexRefresh', @onrefresh
+    $.on d, 'IndexBuild', @onIndexBuild
     Thread.callbacks.push
       name: 'Thread Hiding'
       cb:   @node
@@ -15,13 +15,15 @@ ThreadHiding =
     return unless Conf['Thread Hiding']
     $.prepend @OP.nodes.root, ThreadHiding.makeButton @, 'hide'
 
-  onrefresh: ->
-    for threadID, thread of g.BOARD.threads when thread.isHidden
-      root = thread.OP.nodes.root.parentNode
-      if thread.stub
+  onIndexBuild: ({detail: nodes}) ->
+    for root, i in nodes by 2
+      thread = Get.threadFromRoot root
+      continue unless thread.isHidden
+      unless thread.stub
+        nodes[i + 1].hidden = true
+      else unless root.contains thread.stub
+        # When we come back to a page, the stub is already there.
         ThreadHiding.makeStub thread, root
-      else
-        root.nextElementSibling.hidden = true
     return
 
   syncCatalog: ->

@@ -227,6 +227,7 @@ Index =
     $.nodes Index.nodes
     Main.callbackNodes Thread, threads
     Main.callbackNodes Post,   posts
+    $.event 'IndexRefresh'
   buildReplies: (threadRoots) ->
     posts = []
     for threadRoot in threadRoots by 2
@@ -291,5 +292,5 @@ Index =
       nodes = Index.sortedNodes
     $.rmAll Index.root
     Index.buildReplies nodes
-    $.event 'IndexRefresh'
+    $.event 'IndexBuild', nodes
     $.add Index.root, nodes
