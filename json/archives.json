@@ -89,4 +89,13 @@
   "software": "foolfuuka",
   "boards": ["a", "co", "gd", "jp", "m", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
   "files": ["a", "gd", "jp", "m", "tg", "u", "vg", "vp", "vr", "wsg"]
+}, {
+  "uid": 14,
+  "name": "FoolFrame",
+  "domain": "archive.bui.pm",
+  "http": true,
+  "https": false,
+  "software": "foolfuuka",
+  "boards": ["an", "b"],
+  "files": ["an", "b"]
 }]
