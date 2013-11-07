@@ -851,7 +851,7 @@ a.hide-announcement {
 .menu-button {
   position: relative;
 }
-.menu-button i:not(.fa-reorder) {
+.menu-button i:not(.fa-bars) {
   border-top:   6px solid;
   border-right: 4px solid transparent;
   border-left:  4px solid transparent;
@@ -860,10 +860,10 @@ a.hide-announcement {
   vertical-align: middle;
 }
 @media screen and (resolution: 1dppx) {
-  .fa-reorder {
+  .fa-bars {
     font-size: 14px;
   }
-  #shortcuts .fa-reorder {
+  #shortcuts .fa-bars {
     vertical-align: -1px;
   }
 }

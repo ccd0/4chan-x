@@ -21,7 +21,7 @@
     }
   },
   "devDependencies": {
-    "font-awesome": "https://github.com/FortAwesome/Font-Awesome/archive/v4.0.0.tar.gz",
+    "font-awesome": "https://github.com/FortAwesome/Font-Awesome/archive/v4.0.3.tar.gz",
     "grunt": "~0.4.1",
     "grunt-bump": "~0.0.11",
     "grunt-concurrent": "~0.4.0",
