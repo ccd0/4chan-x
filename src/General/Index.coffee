@@ -313,14 +313,16 @@ Index =
   search: (keywords) ->
     found = []
     for threadRoot, i in Index.sortedNodes by 2
-      {OP} = Get.threadFromRoot threadRoot
-      text = []
-      for key in ['comment', 'subject', 'name', 'tripcode', 'email']
-        text.push OP.info[key] if key of OP.info
-      text.push OP.file.name if 'file' of OP
-      text = text.join(' ').toLowerCase()
-      for keyword in keywords
-        continue if -1 is text.indexOf keyword
+      if Index.searchMatch Get.threadFromRoot(threadRoot), keywords
         found.push Index.sortedNodes[i], Index.sortedNodes[i + 1]
-        break
     found
+  searchMatch: (thread, keywords) ->
+    {info, file} = thread.OP
+    text = []
+    for key in ['comment', 'subject', 'name', 'tripcode', 'email']
+      text.push info[key] if key of info
+    text.push file.name if file
+    text = text.join(' ').toLowerCase()
+    for keyword in keywords
+      return false if -1 is text.indexOf keyword
+    return true
