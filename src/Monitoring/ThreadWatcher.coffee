@@ -275,6 +275,7 @@ ThreadWatcher =
         $.on entry.el, 'click', cb if cb
         @refreshers.push refresh.bind entry if refresh
         $.event 'AddMenuEntry', entry
+      return
     createSubEntry: (name, desc) ->
       entry =
         type: 'thread watcher'
