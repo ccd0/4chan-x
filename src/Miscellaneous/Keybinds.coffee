@@ -87,7 +87,7 @@ Keybinds =
         return unless g.VIEW is 'index' and Conf['Index Mode'] is 'paged'
         $('.prev button', Index.pagelist).click()
       when Conf['Search form']
-        $.id('search-btn').click()
+        Index.searchInput.focus()
       # Thread Navigation
       when Conf['Next thread']
         return if g.VIEW isnt 'index'

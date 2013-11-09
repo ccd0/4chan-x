@@ -363,6 +363,7 @@ a[href="javascript:;"] {
 }
 
 /* Index */
+:root.index-loading .navLinks,
 :root.index-loading .board,
 :root.index-loading .pagelist {
   display: none;

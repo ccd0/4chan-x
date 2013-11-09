@@ -49,7 +49,7 @@ class Post
 
     @parseComment()
     @parseQuotes()
-    @parseFile(that)
+    @parseFile that
 
     @clones = []
     g.posts[@fullID] = thread.posts[@] = board.posts[@] = @

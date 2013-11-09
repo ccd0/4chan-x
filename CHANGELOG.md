@@ -1,3 +1,11 @@
+- Searching in the index will now show matched OPs by:
+ - comment
+ - subject
+ - filename
+ - name
+ - tripcode
+ - e-mail
+
 ### 3.12.1 - *2013-11-04*
 
 - The index refreshing notification will now only appear on initial page load with slow connections.
