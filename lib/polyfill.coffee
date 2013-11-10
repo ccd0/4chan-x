@@ -27,7 +27,7 @@ Polyfill =
       cb new Blob [ui8a], type: 'image/png'
   visibility: ->
     # page visibility API
-    return unless 'webkitHidden' of document
+    return if 'visibilityState' of d
     Object.defineProperties HTMLDocument.prototype,
       visibilityState:
         get: -> @webkitVisibilityState
