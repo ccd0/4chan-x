@@ -64,7 +64,7 @@ Index =
       $.rmClass doc, 'index-loading'
       for navLink in $$ '.navLinks'
         $.rm navLink
-      $.after $.x('child::form/preceding-sibling::hr'), Index.navLinks
+      $.after $.x('child::form/preceding-sibling::hr[1]'), Index.navLinks
 
   cb:
     mode: ->
