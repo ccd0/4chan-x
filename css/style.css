@@ -32,6 +32,9 @@
   background-color: #F2F2F2;
   color: #888;
 }
+.field::-webkit-search-decoration {
+  display: none;
+}
 .move {
   cursor: move;
 }
