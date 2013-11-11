@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.42 - 2013-10-22
+* 4chan X - Version 1.2.42 - 2013-11-10
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -4895,6 +4895,15 @@
           text: function(_) {
             return _.title;
           }
+        }
+      },
+      StrawPoll: {
+        regExp: /strawpoll\.me\/(?:embed_\d+\/)?(\d+)/,
+        style: 'border: 0; width: 600px; height: 406px;',
+        el: function(a) {
+          return $.el('iframe', {
+            src: "http://strawpoll.me/embed_1/" + a.dataset.uid
+          });
         }
       },
       TwitchTV: {
