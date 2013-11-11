@@ -1,3 +1,6 @@
+### v1.2.43 
+*2013-11-10*
+
 **noface**:
 - Strawpoll.me embedding support (as usual, only works on HTTP 4chan due to lack of HTTPS)
 
