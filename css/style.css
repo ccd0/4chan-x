@@ -371,6 +371,14 @@ a[href="javascript:;"] {
 :root.index-loading .pagelist {
   display: none;
 }
+#index-search {
+  width: 100px;
+  transition: color .25s, border-color .25s, width .25s;
+}
+#index-search:hover,
+#index-search:focus {
+  width: 200px;
+}
 .summary {
   text-decoration: none;
 }
