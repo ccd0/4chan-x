@@ -1,10 +1,11 @@
-- Searching in the index will now show matched OPs by:
+- Searching in the index is now possible and will show matched OPs by:
  - comment
  - subject
  - filename
  - name
  - tripcode
  - e-mail
+- The elapsed time since the last index refresh is now indicated at the top of the index.
 
 ### 3.12.1 - *2013-11-04*
 

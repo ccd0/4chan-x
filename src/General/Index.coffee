@@ -192,6 +192,13 @@ Index =
       notice.el.lastElementChild.textContent = 'Index refreshed!'
       setTimeout notice.close, $.SECOND
 
+    timeEl = $ '#index-last-refresh', Index.navLinks
+    timeEl.dataset.utc = e.timeStamp
+    if timeEl.dataset.init
+      RelativeDates.setUpdate el: timeEl
+      delete timeEl.dataset.init
+    else
+      RelativeDates.flush()
     Index.scrollToIndex()
   parse: (pages) ->
     Index.parseThreadList pages

@@ -1,13 +1,17 @@
 RelativeDates =
   INTERVAL: $.MINUTE / 2
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Relative Post Dates']
-
-    # Flush when page becomes visible again or when the thread updates.
-    $.on d, 'visibilitychange ThreadUpdate', @flush
-
-    # Start the timeout.
-    @flush()
+    switch g.VIEW
+      when 'index'
+        @flush()
+        $.on d, 'visibilitychange', @flush
+        return unless Conf['Relative Post Dates']
+      when 'thread'
+        return unless Conf['Relative Post Dates']
+        @flush()
+        $.on d, 'visibilitychange ThreadUpdate', @flush if g.VIEW is 'thread'
+      else
+        return
 
     Post.callbacks.push
       name: 'Relative Post Dates'
@@ -21,7 +25,7 @@ RelativeDates =
     dateEl = @nodes.date
     dateEl.title = dateEl.textContent
 
-    RelativeDates.setUpdate @
+    RelativeDates.setUpdate post: @
 
   # diff is milliseconds from now.
   relative: (diff, now, date) ->
@@ -81,7 +85,7 @@ RelativeDates =
   # Create function `update()`, closed over post, that, when called
   # from `flush()`, updates the elements, and re-calls `setOwnTimeout()` to
   # re-add `update()` to the stale list later.
-  setUpdate: (post) ->
+  setUpdate: ({post, el}) ->
     setOwnTimeout = (diff) ->
       delay = if diff < $.MINUTE
         $.SECOND - (diff + $.SECOND / 2) % $.SECOND
@@ -94,11 +98,17 @@ RelativeDates =
       setTimeout markStale, delay
 
     update = (now) ->
-      {date} = post.info
+      date = if post
+        post.info.date
+      else
+        new Date +el.dataset.utc
       diff = now - date
       relative = RelativeDates.relative diff, now, date
-      for singlePost in [post].concat post.clones
-        singlePost.nodes.date.firstChild.textContent = relative
+      if post
+        for singlePost in [post].concat post.clones
+          singlePost.nodes.date.firstChild.textContent = relative
+      else
+        el.firstChild.textContent = RelativeDates.relative diff, now, date
       setOwnTimeout diff
 
     markStale = -> RelativeDates.stale.push update
