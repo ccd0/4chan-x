@@ -187,7 +187,6 @@ Main =
       Main.callbackNodes Post, posts
 
     if $.hasClass d.body, 'fourchan_x'
-      Main.disableReports = true
       alert '4chan X v2 detected: Disable it or v3 will break.'
 
     <% if (type === 'userscript') { %>
@@ -203,7 +202,6 @@ Main =
       localStorage.getItem '4chan-settings'
     catch err
       new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to operate properly.', 30
-      Main.disableReports = true
 
     $.event '4chanXInitFinished'
 
@@ -264,45 +262,12 @@ Main =
     new Notice 'error', [div, logs], 30
 
   parseError: (data) ->
-    Main.logError data
+    c.error data.message, data.error.stack
     message = $.el 'div',
       textContent: data.message
     error = $.el 'div',
       textContent: data.error
     [message, error]
-
-  errors: []
-  logError: (data) ->
-    unless Main.errors.length
-      $.on window, 'unload', Main.postErrors
-    c.error data.message, data.error.stack
-    Main.errors.push data
-
-  postErrors: ->
-    return if Main.disableReports
-    errors = Main.errors.filter((d) -> !!d.error.stack).map((d) ->
-      <% if (type === 'userscript') { %>
-      # Before:
-      # someFn@file:///C:/Users/<USER>/AppData/Roaming/Mozilla/Firefox/Profiles/<garbage>.default/gm_scripts/4chan_X/4chan-X.user.js:line_number
-      # someFn@file:///home/<USER>/.mozilla/firefox/<garbage>.default/gm_scripts/4chan_X/4chan-X.user.js:line_number
-      # After:
-      # someFn@4chan-X.user.js:line_number
-      {name, message, stack} = d.error
-      stack = stack.replace /file:\/{3}.+\//g, ''
-      "#{d.message} #{name}: #{message} #{stack}"
-      <% } else { %>
-      "#{d.message} #{d.error.stack}"
-      <% } %>
-    ).join '\n'
-    return unless errors
-    $.ajax '<%= meta.page %>errors', null,
-      sync: true
-      form: $.formData
-        n: "<%= meta.name %> v#{g.VERSION}"
-        t: '<%= type %>'
-        ua:  window.navigator.userAgent
-        url: window.location.href
-        e: errors
 
   isThisPageLegit: ->
     # 404 error page or similar.
