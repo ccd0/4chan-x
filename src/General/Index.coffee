@@ -330,8 +330,13 @@ Index =
     Index.searchInput.focus()
   onSearchInput: ->
     if Index.isSearching = !!Index.searchInput.value.trim()
-      Index.searchInput.dataset.searching = 1
+      unless Index.searchInput.dataset.searching
+        Index.searchInput.dataset.searching = 1
+        Index.pageBeforeSearch = Index.getCurrentPage()
+        pageNum = 0
     else
+      pageNum = Index.pageBeforeSearch
+      delete Index.pageBeforeSearch
       <% if (type === 'userscript') { %>
       # XXX https://github.com/greasemonkey/greasemonkey/issues/1571
       Index.searchInput.removeAttribute 'data-searching'
@@ -339,7 +344,10 @@ Index =
       delete Index.searchInput.dataset.searching
       <% } %>
     Index.sort()
-    Index.buildIndex()
+    if Index.currentPage is pageNum
+      Index.buildIndex()
+    else
+      Index.pageNav pageNum
   querySearch: (query) ->
     return unless keywords = query.toLowerCase().match /\S+/g
     Index.search keywords
