@@ -279,8 +279,13 @@ Build =
         id: "t#{data.no}"
 
     nodes = [if OP then OP.nodes.root else Build.postFromObject data, board.ID]
-    if data.omitted_posts
-      nodes.push Build.summary board.ID, data.no, data.omitted_posts, data.omitted_images
+    if data.omitted_posts or !Conf['Show Replies'] and data.replies
+      [posts, files] = if Conf['Show Replies']
+        [data.omitted_posts, data.omitted_images]
+      else
+        # XXX data.images is not accurate.
+        [data.replies, data.omitted_images + data.last_replies.filter((data) -> !!data.ext).length]
+      nodes.push Build.summary board.ID, data.no, posts, files
 
     $.add root, nodes
     root

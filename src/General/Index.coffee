@@ -36,12 +36,19 @@ Index =
       $.on input, 'change', $.cb.value
       $.on input, 'change', @cb.sort
 
+    repliesEntry =
+      el: $.el 'label', innerHTML: '<input type=checkbox name="Show Replies"> Show replies'
+    input = repliesEntry.el.firstChild
+    input.checked = Conf['Show Replies']
+    $.on input, 'change', $.cb.checked
+    $.on input, 'change', @cb.replies
+
     $.event 'AddMenuEntry',
       type: 'header'
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 90
-      subEntries: [modeEntry, sortEntry]
+      subEntries: [modeEntry, sortEntry, repliesEntry]
 
     $.addClass doc, 'index-loading'
     @update()
@@ -83,6 +90,10 @@ Index =
       Index.togglePagelist()
       Index.buildIndex()
     sort: ->
+      Index.sort()
+      Index.buildIndex()
+    replies: ->
+      Index.buildThreads()
       Index.sort()
       Index.buildIndex()
     popstate: (e) ->
@@ -328,7 +339,7 @@ Index =
     else
       nodes = Index.sortedNodes
     $.rmAll Index.root
-    Index.buildReplies nodes
+    Index.buildReplies nodes if Conf['Show Replies']
     $.event 'IndexBuild', nodes
     $.add Index.root, nodes
 

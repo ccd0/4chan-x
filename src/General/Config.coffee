@@ -142,6 +142,7 @@ Config =
   Index:
     'Index Mode': 'paged'
     'Index Sort': 'bump'
+    'Show Replies': true
   Header:
     'Header auto-hide':        false
     'Bottom header':           false
