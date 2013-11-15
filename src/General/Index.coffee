@@ -332,7 +332,12 @@ Index =
     if Index.isSearching = !!Index.searchInput.value.trim()
       Index.searchInput.dataset.searching = 1
     else
+      <% if (type === 'userscript') { %>
+      # XXX https://github.com/greasemonkey/greasemonkey/issues/1571
+      Index.searchInput.removeAttribute 'data-searching'
+      <% } else { %>
       delete Index.searchInput.dataset.searching
+      <% } %>
     Index.sort()
     Index.buildIndex()
   querySearch: (query) ->

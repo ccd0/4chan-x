@@ -383,7 +383,10 @@ a[href="javascript:;"] {
   color: gray;
   margin-left: -1.25em;
 }
+<% if (type === 'crx') { %>
+/* ``::-webkit-*'' selectors break selector lists on Firefox. */
 #index-search::-webkit-search-cancel-button,
+<% } %>
 #index-search:not([data-searching]) + #index-search-clear {
   display: none;
 }
