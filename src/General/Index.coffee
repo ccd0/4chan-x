@@ -59,13 +59,24 @@ Index =
     $.on @pagelist, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
-    $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
-      $.replace $('.board'),    Index.root
-      $.replace $('.pagelist'), Index.pagelist
-      $.rmClass doc, 'index-loading'
+    $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
+      board = $ '.board'
+      $.replace board, Index.root
+      # Hacks:
+      # - When removing an element from the document during page load,
+      #   its ancestors will still be correctly created inside of it.
+      # - Creating loadable elements inside of an origin-less document
+      #   will not download them.
+      # - Combine the two and you get a download canceller!
+      #   Does not work on Firefox unfortunately.
+      d.implementation.createDocument(null, null, null).appendChild board
+
       for navLink in $$ '.navLinks'
         $.rm navLink
       $.after $.x('child::form/preceding-sibling::hr[1]'), Index.navLinks
+      $.rmClass doc, 'index-loading'
+      $.asap (-> $('.pagelist') or d.readyState isnt 'loading'), ->
+        $.replace $('.pagelist'), Index.pagelist
 
   cb:
     mode: ->
