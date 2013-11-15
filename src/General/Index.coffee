@@ -316,6 +316,7 @@ Index =
   clearSearch: ->
     Index.searchInput.value = null
     Index.onSearchInput()
+    Index.searchInput.focus()
   onSearchInput: ->
     if Index.isSearching = !!Index.searchInput.value.trim()
       Index.searchInput.dataset.searching = 1
