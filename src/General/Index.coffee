@@ -117,31 +117,39 @@ Index =
     Index.setPage()
     Index.scrollToIndex()
 
+  getPagesNum: ->
+    if Index.isSearching
+      Math.ceil (Index.sortedNodes.length / 2) / Index.threadsNumPerPage
+    else
+      Index.pagesNum
+  getMaxPageNum: ->
+    Math.max 0, Index.getPagesNum() - 1
   togglePagelist: ->
     Index.pagelist.hidden = Conf['Index Mode'] isnt 'paged'
   buildPagelist: ->
     pagesRoot = $ '.pages', Index.pagelist
-    if pagesRoot.childElementCount isnt Index.pagesNum
+    maxPageNum = Index.getMaxPageNum()
+    if pagesRoot.childElementCount isnt maxPageNum + 1
       nodes = []
-      for i in [0..Index.pagesNum - 1]
+      for i in [0..maxPageNum] by 1
         a = $.el 'a',
           textContent: i
           href: if i then i else './'
         nodes.push $.tn('['), a, $.tn '] '
       $.rmAll pagesRoot
       $.add pagesRoot, nodes
-    Index.setPage()
     Index.togglePagelist()
   setPage: ->
-    pageNum   = Index.getCurrentPage()
-    pagesRoot = $ '.pages', Index.pagelist
+    pageNum    = Index.getCurrentPage()
+    maxPageNum = Index.getMaxPageNum()
+    pagesRoot  = $ '.pages', Index.pagelist
     # Previous/Next buttons
     prev = pagesRoot.previousSibling.firstChild
     next = pagesRoot.nextSibling.firstChild
     href = Math.max pageNum - 1, 0
     prev.href = if href is 0 then './' else href
     prev.firstChild.disabled = href is pageNum
-    href = Math.min pageNum + 1, Index.pagesNum - 1
+    href = Math.min pageNum + 1, maxPageNum
     next.href = if href is 0 then './' else href
     next.firstChild.disabled = href is pageNum
     # <strong> current page
@@ -218,6 +226,7 @@ Index =
     Index.sort()
     Index.buildIndex()
     Index.buildPagelist()
+    Index.setPage()
   parseThreadList: (pages) ->
     Index.pagesNum          = pages.length
     Index.threadsNumPerPage = pages[0].threads.length
@@ -334,6 +343,8 @@ Index =
         Index.searchInput.dataset.searching = 1
         Index.pageBeforeSearch = Index.getCurrentPage()
         pageNum = 0
+      else
+        pageNum = Index.getCurrentPage()
     else
       pageNum = Index.pageBeforeSearch
       delete Index.pageBeforeSearch
@@ -344,8 +355,12 @@ Index =
       delete Index.searchInput.dataset.searching
       <% } %>
     Index.sort()
+    # Go to the last available page if we were past the limit.
+    pageNum = Math.min pageNum, Index.getMaxPageNum() if Conf['Index Mode'] is 'paged'
+    Index.buildPagelist()
     if Index.currentPage is pageNum
       Index.buildIndex()
+      Index.setPage()
     else
       Index.pageNav pageNum
   querySearch: (query) ->
