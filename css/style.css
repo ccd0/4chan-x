@@ -372,12 +372,20 @@ a[href="javascript:;"] {
   display: none;
 }
 #index-search {
+  padding-right: 1.5em;
   width: 100px;
   transition: color .25s, border-color .25s, width .25s;
 }
-#index-search:hover,
-#index-search:focus {
+#index-search[data-searching] {
   width: 200px;
+}
+#index-search-clear {
+  color: gray;
+  margin-left: -1.25em;
+}
+#index-search::-webkit-search-cancel-button,
+#index-search:not([data-searching]) + #index-search-clear {
+  display: none;
 }
 .summary {
   text-decoration: none;

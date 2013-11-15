@@ -58,6 +58,7 @@ Index =
     $.on window, 'popstate', @cb.popstate
     $.on @pagelist, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
+    $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
     $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
       $.replace $('.board'),    Index.root
       $.replace $('.pagelist'), Index.pagelist
@@ -297,7 +298,7 @@ Index =
       offset = 0
       for threadRoot, i in Index.sortedNodes by 2 when Get.threadFromRoot(threadRoot).isOnTop
         Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
-    if Index.searchInput.value
+    if Index.isSearching
       Index.sortedNodes = Index.querySearch(Index.searchInput.value) or Index.sortedNodes
   buildIndex: ->
     if Conf['Index Mode'] is 'paged'
@@ -311,7 +312,15 @@ Index =
     $.event 'IndexBuild', nodes
     $.add Index.root, nodes
 
+  isSearching: false
+  clearSearch: ->
+    Index.searchInput.value = null
+    Index.onSearchInput()
   onSearchInput: ->
+    if Index.isSearching = !!Index.searchInput.value.trim()
+      Index.searchInput.dataset.searching = 1
+    else
+      delete Index.searchInput.dataset.searching
     Index.sort()
     Index.buildIndex()
   querySearch: (query) ->
