@@ -15,7 +15,7 @@
   <li> searching through the index.
   <li> using different index modes and sorting types.
   <li> threads highlighted by the filter are moved to the top and move other threads down.
- <ul>
+ </ul>
  - The elapsed time since the last index refresh is now indicated at the top of the index.
  - New setting: `Show replies`, enabled by default. Disable it to only show OPs in the index.
 
