@@ -223,7 +223,7 @@ a[href="javascript:;"] {
   color: white;
 }
 .notification > .close {
-  padding: 6px;
+  padding: 7px;
   top: 0;
   right: 0;
   position: absolute;
@@ -273,7 +273,7 @@ a[href="javascript:;"] {
 }
 #fourchanx-settings > nav a.close {
   text-decoration: none;
-  padding: 2px;
+  padding: 0 2px;
 }
 .sections-list {
   flex: 1;
@@ -743,13 +743,13 @@ a.hide-announcement {
   border-style: dashed;
   opacity: 1;
 }
-.remove {
+a.remove {
   color: #E00 !important;
-  font-weight: 700;
-  padding: 3px;
+  padding: 1px;
 }
 .remove:hover::after {
   content: ' Remove';
+  font-weight: 700;
 }
 .qr-preview > label {
   background: rgba(0, 0, 0, .5);
@@ -841,7 +841,6 @@ a.hide-announcement {
 #qr-no-file,
 #qr-filename,
 #qr-filesize,
-#qr-filerm,
 #qr-file-spoiler {
   margin: 0 2px !important;
 }

@@ -131,7 +131,7 @@ ThreadWatcher =
 
   makeLine: (boardID, threadID, data) ->
     x = $.el 'a',
-      textContent: '×'
+      className: 'fa fa-times'
       href: 'javascript:;'
     $.on x, 'click', ThreadWatcher.cb.rm
 
