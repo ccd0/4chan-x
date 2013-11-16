@@ -376,6 +376,7 @@ a[href="javascript:;"] {
   width: 100px;
   transition: color .25s, border-color .25s, width .25s;
 }
+#index-search:focus,
 #index-search[data-searching] {
   width: 200px;
 }
