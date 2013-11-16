@@ -1,3 +1,5 @@
+## 3.13.0 - *2013-11-16*
+
 - More index navigation improvements:
  - Searching in the index is now possible and will show matched OPs by:
  <ul>
