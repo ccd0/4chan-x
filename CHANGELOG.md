@@ -1,3 +1,5 @@
+- **New option**: `Auto-hide header on scroll`.
+
 ## 3.13.0 - *2013-11-16*
 
 - More index navigation improvements:

@@ -21,6 +21,8 @@ Header =
 
     headerToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Header auto-hide"> Auto-hide header'
+    scrollHeaderToggler = $.el 'label',
+      innerHTML: '<input type=checkbox name="Header auto-hide on scroll"> Auto-hide header on scroll'
     barPositionToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Bottom header"> Bottom header'
     catalogToggler = $.el 'label',
@@ -35,30 +37,34 @@ Header =
       textContent: 'Edit custom board navigation'
       href: 'javascript:;'
 
-    @headerToggler      = headerToggler.firstElementChild
-    @barPositionToggler = barPositionToggler.firstElementChild
-    @catalogToggler     = catalogToggler.firstElementChild
-    @topBoardToggler    = topBoardToggler.firstElementChild
-    @botBoardToggler    = botBoardToggler.firstElementChild
-    @customNavToggler   = customNavToggler.firstElementChild
+    @headerToggler       = headerToggler.firstElementChild
+    @scrollHeaderToggler = scrollHeaderToggler.firstElementChild
+    @barPositionToggler  = barPositionToggler.firstElementChild
+    @catalogToggler      = catalogToggler.firstElementChild
+    @topBoardToggler     = topBoardToggler.firstElementChild
+    @botBoardToggler     = botBoardToggler.firstElementChild
+    @customNavToggler    = customNavToggler.firstElementChild
 
-    $.on @headerToggler,      'change', @toggleBarVisibility
-    $.on @barPositionToggler, 'change', @toggleBarPosition
-    $.on @catalogToggler,     'change', @toggleCatalogLinks
-    $.on @topBoardToggler,    'change', @toggleOriginalBoardList
-    $.on @botBoardToggler,    'change', @toggleOriginalBoardList
-    $.on @customNavToggler,   'change', @toggleCustomNav
-    $.on editCustomNav,       'click',  @editCustomNav
+    $.on @headerToggler,       'change', @toggleBarVisibility
+    $.on @scrollHeaderToggler, 'change', @toggleHideBarOnScroll
+    $.on @barPositionToggler,  'change', @toggleBarPosition
+    $.on @catalogToggler,      'change', @toggleCatalogLinks
+    $.on @topBoardToggler,     'change', @toggleOriginalBoardList
+    $.on @botBoardToggler,     'change', @toggleOriginalBoardList
+    $.on @customNavToggler,    'change', @toggleCustomNav
+    $.on editCustomNav,        'click',  @editCustomNav
 
-    @setBarVisibility Conf['Header auto-hide']
-    @setBarPosition   Conf['Bottom header']
-    @setTopBoardList  Conf['Top Board List']
-    @setBotBoardList  Conf['Bottom Board List']
+    @setBarVisibility   Conf['Header auto-hide']
+    @setHideBarOnScroll Conf['Header auto-hide on scroll']
+    @setBarPosition     Conf['Bottom header']
+    @setTopBoardList    Conf['Top Board List']
+    @setBotBoardList    Conf['Bottom Board List']
 
-    $.sync 'Header auto-hide',  @setBarVisibility
-    $.sync 'Bottom header',     @setBarPosition
-    $.sync 'Top Board List',    @setTopBoardList
-    $.sync 'Bottom Board List', @setBotBoardList
+    $.sync 'Header auto-hide',           @setBarVisibility
+    $.sync 'Header auto-hide on scroll', @setHideBarOnScroll
+    $.sync 'Bottom header',              @setBarPosition
+    $.sync 'Top Board List',             @setTopBoardList
+    $.sync 'Bottom Board List',          @setBotBoardList
 
     $.event 'AddMenuEntry',
       type: 'header'
@@ -66,6 +72,7 @@ Header =
       order: 105
       subEntries: [
         {el: headerToggler}
+        {el: scrollHeaderToggler}
         {el: barPositionToggler}
         {el: catalogToggler}
         {el: topBoardToggler}
@@ -177,6 +184,28 @@ Header =
     else
       'The header bar will remain visible.'
     new Notice 'info', message, 2
+
+  setHideBarOnScroll: (hide) ->
+    Header.scrollHeaderToggler.checked = hide
+    if hide
+      $.on window, 'scroll', Header.hideBarOnScroll
+      return
+    $.off window, 'scroll', Header.hideBarOnScroll
+    $.rmClass Header.bar, 'scroll'
+    $.rmClass Header.bar, 'autohide' unless Conf['Header auto-hide']
+  toggleHideBarOnScroll: (e) ->
+    hide = @checked
+    $.set 'Header auto-hide on scroll', hide
+    Header.setHideBarOnScroll hide
+  hideBarOnScroll: ->
+    offsetY = window.pageYOffset
+    if offsetY > (Header.previousOffset or 0)
+      $.addClass Header.bar, 'autohide'
+      $.addClass Header.bar, 'scroll'
+    else
+      $.rmClass Header.bar, 'autohide'
+      $.rmClass Header.bar, 'scroll'
+    Header.previousOffset = offsetY
 
   setBarPosition: (bottom) ->
     Header.barPositionToggler.checked = bottom

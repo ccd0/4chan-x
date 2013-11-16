@@ -141,6 +141,10 @@ a[href="javascript:;"] {
   box-shadow: none;
   transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
 }
+#header-bar.scroll:not(:hover) {
+  transition: -webkit-transform .2s !important;
+  transition: transform .2s !important;
+}
 #header.top #header-bar.autohide:not(:hover) {
   margin-bottom: -1em;
   -webkit-transform: translateY(-100%);
