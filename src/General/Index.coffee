@@ -250,10 +250,11 @@ Index =
     Index.nodes = []
     threads     = []
     posts       = []
-    for threadData in Index.liveThreadData
+    for threadData, i in Index.liveThreadData
       threadRoot = Build.thread g.BOARD, threadData
       Index.nodes.push threadRoot, $.el 'hr'
       if thread = g.BOARD.threads[threadData.no]
+        thread.setPage Math.floor i / Index.threadsNumPerPage
         thread.setStatus 'Sticky', !!threadData.sticky
         thread.setStatus 'Closed', !!threadData.closed
       else

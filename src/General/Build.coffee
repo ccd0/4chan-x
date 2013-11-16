@@ -190,10 +190,12 @@ Build =
     else
       ''
 
-    replyLink = if isOP and g.VIEW is 'index'
-      " &nbsp; <span>[<a href='/#{boardID}/res/#{threadID}' class=replylink>Reply</a>]</span>"
+    if isOP and g.VIEW is 'index'
+      pageNum   = Math.floor Index.liveThreadIDs.indexOf(postID) / Index.threadsNumPerPage
+      pageIcon  = "<i class='page-num fa fa-file-o' title='This thread is on page #{pageNum} in the original index.'> #{pageNum}</i> "
+      replyLink = " &nbsp; <span>[<a href='/#{boardID}/res/#{threadID}' class=replylink>Reply</a>]</span>"
     else
-      ''
+      pageIcon = replyLink = ''
 
     container = $.el 'div',
       id: "pc#{postID}"
@@ -226,6 +228,7 @@ Build =
         (if isOP then fileHTML else '') +
 
         "<div class='postInfo desktop' id=pi#{postID}>" +
+          pageIcon +
           "<input type=checkbox name=#{postID} value=delete> " +
           "#{subject} " +
           "<span class='nameBlock#{capcodeClass}'>" +
