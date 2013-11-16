@@ -224,10 +224,15 @@ Index =
       setTimeout notice.close, $.SECOND
 
     timeEl = $ '#index-last-refresh', Index.navLinks
-    timeEl.dataset.utc = e.timeStamp
+    timeEl.dataset.utc = e.timeStamp <% if (type === 'userscript') { %>/ 1000<% } %>
     if timeEl.dataset.init
       RelativeDates.setUpdate el: timeEl
+      <% if (type === 'userscript') { %>
+      # XXX https://github.com/greasemonkey/greasemonkey/issues/1571
+      timeEl.removeAttribute 'data-init'
+      <% } else { %>
       delete timeEl.dataset.init
+      <% } %>
     else
       RelativeDates.flush()
     Index.scrollToIndex()
