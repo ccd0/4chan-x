@@ -748,10 +748,6 @@ a.remove {
   color: #E00 !important;
   padding: 1px;
 }
-.remove:hover::after {
-  content: ' Remove';
-  font-weight: 700;
-}
 .qr-preview > label {
   background: rgba(0, 0, 0, .5);
   right: 0;
