@@ -712,7 +712,7 @@ a.hide-announcement {
   outline: none;
   overflow: hidden;
   position: relative;
-  text-shadow: 0 1px 1px #000;
+  text-shadow: 0 0 2px #000;
   transition: opacity .25s ease-in-out;
   vertical-align: top;
   white-space: pre;
