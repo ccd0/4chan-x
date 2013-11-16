@@ -36,12 +36,19 @@ Index =
       $.on input, 'change', $.cb.value
       $.on input, 'change', @cb.sort
 
+    repliesEntry =
+      el: $.el 'label', innerHTML: '<input type=checkbox name="Show Replies"> Show replies'
+    input = repliesEntry.el.firstChild
+    input.checked = Conf['Show Replies']
+    $.on input, 'change', $.cb.checked
+    $.on input, 'change', @cb.replies
+
     $.event 'AddMenuEntry',
       type: 'header'
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 90
-      subEntries: [modeEntry, sortEntry]
+      subEntries: [modeEntry, sortEntry, repliesEntry]
 
     $.addClass doc, 'index-loading'
     @update()
@@ -50,19 +57,43 @@ Index =
       className: 'pagelist'
       hidden: true
       innerHTML: <%= importHTML('General/Index-pagelist') %>
+    @navLinks = $.el 'div',
+      className: 'navLinks'
+      innerHTML: <%= importHTML('General/Index-navlinks') %>
+    @searchInput = $ '#index-search', @navLinks
     @currentPage = @getCurrentPage()
     $.on window, 'popstate', @cb.popstate
     $.on @pagelist, 'click', @cb.pageNav
-    $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
-      $.replace $('.board'),    Index.root
-      $.replace $('.pagelist'), Index.pagelist
+    $.on @searchInput, 'input', @onSearchInput
+    $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
+    $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
+      board = $ '.board'
+      $.replace board, Index.root
+      # Hacks:
+      # - When removing an element from the document during page load,
+      #   its ancestors will still be correctly created inside of it.
+      # - Creating loadable elements inside of an origin-less document
+      #   will not download them.
+      # - Combine the two and you get a download canceller!
+      #   Does not work on Firefox unfortunately.
+      d.implementation.createDocument(null, null, null).appendChild board
+
+      for navLink in $$ '.navLinks'
+        $.rm navLink
+      $.after $.x('child::form/preceding-sibling::hr[1]'), Index.navLinks
       $.rmClass doc, 'index-loading'
+      $.asap (-> $('.pagelist') or d.readyState isnt 'loading'), ->
+        $.replace $('.pagelist'), Index.pagelist
 
   cb:
     mode: ->
       Index.togglePagelist()
       Index.buildIndex()
     sort: ->
+      Index.sort()
+      Index.buildIndex()
+    replies: ->
+      Index.buildThreads()
       Index.sort()
       Index.buildIndex()
     popstate: (e) ->
@@ -97,31 +128,39 @@ Index =
     Index.setPage()
     Index.scrollToIndex()
 
+  getPagesNum: ->
+    if Index.isSearching
+      Math.ceil (Index.sortedNodes.length / 2) / Index.threadsNumPerPage
+    else
+      Index.pagesNum
+  getMaxPageNum: ->
+    Math.max 0, Index.getPagesNum() - 1
   togglePagelist: ->
     Index.pagelist.hidden = Conf['Index Mode'] isnt 'paged'
   buildPagelist: ->
     pagesRoot = $ '.pages', Index.pagelist
-    if pagesRoot.childElementCount isnt Index.pagesNum
+    maxPageNum = Index.getMaxPageNum()
+    if pagesRoot.childElementCount isnt maxPageNum + 1
       nodes = []
-      for i in [0..Index.pagesNum - 1]
+      for i in [0..maxPageNum] by 1
         a = $.el 'a',
           textContent: i
           href: if i then i else './'
         nodes.push $.tn('['), a, $.tn '] '
       $.rmAll pagesRoot
       $.add pagesRoot, nodes
-    Index.setPage()
     Index.togglePagelist()
   setPage: ->
-    pageNum   = Index.getCurrentPage()
-    pagesRoot = $ '.pages', Index.pagelist
+    pageNum    = Index.getCurrentPage()
+    maxPageNum = Index.getMaxPageNum()
+    pagesRoot  = $ '.pages', Index.pagelist
     # Previous/Next buttons
     prev = pagesRoot.previousSibling.firstChild
     next = pagesRoot.nextSibling.firstChild
     href = Math.max pageNum - 1, 0
     prev.href = if href is 0 then './' else href
     prev.firstChild.disabled = href is pageNum
-    href = Math.min pageNum + 1, Index.pagesNum - 1
+    href = Math.min pageNum + 1, maxPageNum
     next.href = if href is 0 then './' else href
     next.firstChild.disabled = href is pageNum
     # <strong> current page
@@ -184,6 +223,18 @@ Index =
       notice.el.lastElementChild.textContent = 'Index refreshed!'
       setTimeout notice.close, $.SECOND
 
+    timeEl = $ '#index-last-refresh', Index.navLinks
+    timeEl.dataset.utc = e.timeStamp <% if (type === 'userscript') { %>/ 1000<% } %>
+    if timeEl.dataset.init
+      RelativeDates.setUpdate el: timeEl
+      <% if (type === 'userscript') { %>
+      # XXX https://github.com/greasemonkey/greasemonkey/issues/1571
+      timeEl.removeAttribute 'data-init'
+      <% } else { %>
+      delete timeEl.dataset.init
+      <% } %>
+    else
+      RelativeDates.flush()
     Index.scrollToIndex()
   parse: (pages) ->
     Index.parseThreadList pages
@@ -191,6 +242,7 @@ Index =
     Index.sort()
     Index.buildIndex()
     Index.buildPagelist()
+    Index.setPage()
   parseThreadList: (pages) ->
     Index.pagesNum          = pages.length
     Index.threadsNumPerPage = pages[0].threads.length
@@ -203,10 +255,11 @@ Index =
     Index.nodes = []
     threads     = []
     posts       = []
-    for threadData in Index.liveThreadData
+    for threadData, i in Index.liveThreadData
       threadRoot = Build.thread g.BOARD, threadData
       Index.nodes.push threadRoot, $.el 'hr'
       if thread = g.BOARD.threads[threadData.no]
+        thread.setPage Math.floor i / Index.threadsNumPerPage
         thread.setStatus 'Sticky', !!threadData.sticky
         thread.setStatus 'Closed', !!threadData.closed
       else
@@ -276,13 +329,14 @@ Index =
     offset = 0
     for threadRoot, i in Index.sortedNodes by 2 when Get.threadFromRoot(threadRoot).isSticky
       Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
-    return unless Conf['Filter']
-    # Put the highlighted thread & <hr> on top of the index
-    # while keeping the original order they appear in.
-    offset = 0
-    for threadRoot, i in Index.sortedNodes by 2 when Get.threadFromRoot(threadRoot).isOnTop
-      Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
-    return
+    if Conf['Filter']
+      # Put the highlighted thread & <hr> on top of the index
+      # while keeping the original order they appear in.
+      offset = 0
+      for threadRoot, i in Index.sortedNodes by 2 when Get.threadFromRoot(threadRoot).isOnTop
+        Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
+    if Index.isSearching
+      Index.sortedNodes = Index.querySearch(Index.searchInput.value) or Index.sortedNodes
   buildIndex: ->
     if Conf['Index Mode'] is 'paged'
       pageNum = Index.getCurrentPage()
@@ -291,6 +345,57 @@ Index =
     else
       nodes = Index.sortedNodes
     $.rmAll Index.root
-    Index.buildReplies nodes
+    Index.buildReplies nodes if Conf['Show Replies']
     $.event 'IndexBuild', nodes
     $.add Index.root, nodes
+
+  isSearching: false
+  clearSearch: ->
+    Index.searchInput.value = null
+    Index.onSearchInput()
+    Index.searchInput.focus()
+  onSearchInput: ->
+    if Index.isSearching = !!Index.searchInput.value.trim()
+      unless Index.searchInput.dataset.searching
+        Index.searchInput.dataset.searching = 1
+        Index.pageBeforeSearch = Index.getCurrentPage()
+        pageNum = 0
+      else
+        pageNum = Index.getCurrentPage()
+    else
+      pageNum = Index.pageBeforeSearch
+      delete Index.pageBeforeSearch
+      <% if (type === 'userscript') { %>
+      # XXX https://github.com/greasemonkey/greasemonkey/issues/1571
+      Index.searchInput.removeAttribute 'data-searching'
+      <% } else { %>
+      delete Index.searchInput.dataset.searching
+      <% } %>
+    Index.sort()
+    # Go to the last available page if we were past the limit.
+    pageNum = Math.min pageNum, Index.getMaxPageNum() if Conf['Index Mode'] is 'paged'
+    Index.buildPagelist()
+    if Index.currentPage is pageNum
+      Index.buildIndex()
+      Index.setPage()
+    else
+      Index.pageNav pageNum
+  querySearch: (query) ->
+    return unless keywords = query.toLowerCase().match /\S+/g
+    Index.search keywords
+  search: (keywords) ->
+    found = []
+    for threadRoot, i in Index.sortedNodes by 2
+      if Index.searchMatch Get.threadFromRoot(threadRoot), keywords
+        found.push Index.sortedNodes[i], Index.sortedNodes[i + 1]
+    found
+  searchMatch: (thread, keywords) ->
+    {info, file} = thread.OP
+    text = []
+    for key in ['comment', 'subject', 'name', 'tripcode', 'email']
+      text.push info[key] if key of info
+    text.push file.name if file
+    text = text.join(' ').toLowerCase()
+    for keyword in keywords
+      return false if -1 is text.indexOf keyword
+    return true

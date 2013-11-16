@@ -12,6 +12,11 @@ class Thread
 
     g.threads[@fullID] = board.threads[@] = @
 
+  setPage: (pageNum) ->
+    icon = $ '.page-num', @OP.nodes.post
+    for key in ['title', 'textContent']
+      icon[key] = icon[key].replace /\d+/, pageNum
+    return
   setStatus: (type, status) ->
     name = "is#{type}"
     return if @[name] is status

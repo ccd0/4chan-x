@@ -190,10 +190,12 @@ Build =
     else
       ''
 
-    replyLink = if isOP and g.VIEW is 'index'
-      " &nbsp; <span>[<a href='/#{boardID}/res/#{threadID}' class=replylink>Reply</a>]</span>"
+    if isOP and g.VIEW is 'index'
+      pageNum   = Math.floor Index.liveThreadIDs.indexOf(postID) / Index.threadsNumPerPage
+      pageIcon  = "<i class='page-num fa fa-file-o' title='This thread is on page #{pageNum} in the original index.'> #{pageNum}</i> "
+      replyLink = " &nbsp; <span>[<a href='/#{boardID}/res/#{threadID}' class=replylink>Reply</a>]</span>"
     else
-      ''
+      pageIcon = replyLink = ''
 
     container = $.el 'div',
       id: "pc#{postID}"
@@ -226,6 +228,7 @@ Build =
         (if isOP then fileHTML else '') +
 
         "<div class='postInfo desktop' id=pi#{postID}>" +
+          pageIcon +
           "<input type=checkbox name=#{postID} value=delete> " +
           "#{subject} " +
           "<span class='nameBlock#{capcodeClass}'>" +
@@ -279,8 +282,13 @@ Build =
         id: "t#{data.no}"
 
     nodes = [if OP then OP.nodes.root else Build.postFromObject data, board.ID]
-    if data.omitted_posts
-      nodes.push Build.summary board.ID, data.no, data.omitted_posts, data.omitted_images
+    if data.omitted_posts or !Conf['Show Replies'] and data.replies
+      [posts, files] = if Conf['Show Replies']
+        [data.omitted_posts, data.omitted_images]
+      else
+        # XXX data.images is not accurate.
+        [data.replies, data.omitted_images + data.last_replies.filter((data) -> !!data.ext).length]
+      nodes.push Build.summary board.ID, data.no, posts, files
 
     $.add root, nodes
     root

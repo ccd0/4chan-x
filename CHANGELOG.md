@@ -1,3 +1,22 @@
+- More index navigation improvements:
+ - Searching in the index is now possible and will show matched OPs by:
+ <ul>
+  <li> comment
+  <li> subject
+  <li> filename
+  <li> name
+  <li> tripcode
+  <li> e-mail
+ </ul>
+ - The page number on which threads are will now be displayed in OPs, to easily identify where threads are located when:
+ <ul>
+  <li> searching through the index.
+  <li> using different index sorting types.
+  <li> threads highlighted by the filter are moved to the top and move other threads down.
+ <ul>
+ - The elapsed time since the last index refresh is now indicated at the top of the index.
+ - New setting: `Show replies`, enabled by default. Disable it to only show OPs in the index.
+
 ### 3.12.1 - *2013-11-04*
 
 - The index refreshing notification will now only appear on initial page load with slow connections.

@@ -50,16 +50,19 @@ ExpandThread =
       a.textContent = ExpandThread.text '+', a.textContent.match(/\d+/g)... if a
       return
 
-    num = if thread.isSticky
-      1
-    else switch g.BOARD.ID
-      # XXX boards config
-      when 'b', 'vg' then 3
-      when 't' then 1
-      else 5
+    replies = $$ '.thread > .replyContainer', threadRoot
+    if Conf['Show Replies']
+      num = if thread.isSticky
+        1
+      else switch g.BOARD.ID
+        # XXX boards config
+        when 'b', 'vg' then 3
+        when 't' then 1
+        else 5
+      replies = replies[...-num]
     postsCount = 0
     filesCount = 0
-    for reply in $$('.thread > .replyContainer', threadRoot)[...-num]
+    for reply in replies
       # rm clones
       inlined.click() while inlined = $ '.inlined', reply if Conf['Quote Inlining']
       postsCount++
