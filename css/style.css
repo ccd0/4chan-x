@@ -391,6 +391,12 @@ a[href="javascript:;"] {
 #index-search:not([data-searching]) + #index-search-clear {
   display: none;
 }
+.page-num {
+  font-family: inherit;
+}
+.page-num::before {
+  font-family: FontAwesome;
+}
 .summary {
   text-decoration: none;
 }
