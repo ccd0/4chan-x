@@ -11,7 +11,7 @@
  - The page number on which threads are will now be displayed in OPs, to easily identify where threads are located when:
  <ul>
   <li> searching through the index.
-  <li> using different index sorting types.
+  <li> using different index modes and sorting types.
   <li> threads highlighted by the filter are moved to the top and move other threads down.
  <ul>
  - The elapsed time since the last index refresh is now indicated at the top of the index.
