@@ -325,18 +325,19 @@ Index =
     for threadID in sortedThreadIDs
       i = Index.liveThreadIDs.indexOf(threadID) * 2
       Index.sortedNodes.push Index.nodes[i], Index.nodes[i + 1]
+    if Index.isSearching
+      Index.sortedNodes = Index.querySearch(Index.searchInput.value) or Index.sortedNodes
     # Put the sticky threads on top of the index.
     offset = 0
     for threadRoot, i in Index.sortedNodes by 2 when Get.threadFromRoot(threadRoot).isSticky
       Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
-    if Conf['Filter']
-      # Put the highlighted thread & <hr> on top of the index
-      # while keeping the original order they appear in.
-      offset = 0
-      for threadRoot, i in Index.sortedNodes by 2 when Get.threadFromRoot(threadRoot).isOnTop
-        Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
-    if Index.isSearching
-      Index.sortedNodes = Index.querySearch(Index.searchInput.value) or Index.sortedNodes
+    return unless Conf['Filter']
+    # Put the highlighted thread & <hr> on top of the index
+    # while keeping the original order they appear in.
+    offset = 0
+    for threadRoot, i in Index.sortedNodes by 2 when Get.threadFromRoot(threadRoot).isOnTop
+      Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
+    return
   buildIndex: ->
     if Conf['Index Mode'] is 'paged'
       pageNum = Index.getCurrentPage()
