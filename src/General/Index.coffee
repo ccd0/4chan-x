@@ -75,7 +75,7 @@ Index =
       # - Creating loadable elements inside of an origin-less document
       #   will not download them.
       # - Combine the two and you get a download canceller!
-      #   Does not work on Firefox unfortunately.
+      #   Does not work on Firefox unfortunately. bugzil.la/939713
       d.implementation.createDocument(null, null, null).appendChild board
 
       for navLink in $$ '.navLinks'
