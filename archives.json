@@ -32,8 +32,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["hr", "tg", "tv", "x"],
-  "files": ["hr", "tg", "tv", "x"]
+  "boards": ["hr", "s4s", "tg", "tv", "x"],
+  "files": ["hr", "s4s", "tg", "tv", "x"]
 }, {
   "uid": 4,
   "name": "Nyafuu",
