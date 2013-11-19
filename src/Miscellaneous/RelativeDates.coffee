@@ -25,7 +25,7 @@ RelativeDates =
     dateEl = @nodes.date
     dateEl.title = dateEl.textContent
 
-    RelativeDates.setUpdate post: @
+    RelativeDates.update @
 
   # diff is milliseconds from now.
   relative: (diff, now, date) ->
@@ -75,43 +75,41 @@ RelativeDates =
     return if d.hidden
 
     now = new Date()
-    update now for update in RelativeDates.stale
+    RelativeDates.update data, now for data in RelativeDates.stale
     RelativeDates.stale = []
 
     # Reset automatic flush.
     clearTimeout RelativeDates.timeout
     RelativeDates.timeout = setTimeout RelativeDates.flush, RelativeDates.INTERVAL
 
-  # Create function `update()`, closed over post, that, when called
-  # from `flush()`, updates the elements, and re-calls `setOwnTimeout()` to
-  # re-add `update()` to the stale list later.
-  setUpdate: ({post, el}) ->
-    setOwnTimeout = (diff) ->
-      delay = if diff < $.MINUTE
-        $.SECOND - (diff + $.SECOND / 2) % $.SECOND
-      else if diff < $.HOUR
-        $.MINUTE - (diff + $.MINUTE / 2) % $.MINUTE
-      else if diff < $.DAY
-        $.HOUR - (diff + $.HOUR / 2) % $.HOUR
-      else
-        $.DAY - (diff + $.DAY / 2) % $.DAY
-      setTimeout markStale, delay
-
-    update = (now) ->
-      date = if post
-        post.info.date
-      else
-        new Date +el.dataset.utc
-      diff = now - date
-      relative = RelativeDates.relative diff, now, date
-      if post
-        for singlePost in [post].concat post.clones
-          singlePost.nodes.date.firstChild.textContent = relative
-      else
-        el.firstChild.textContent = RelativeDates.relative diff, now, date
-      setOwnTimeout diff
-
-    markStale = -> RelativeDates.stale.push update
-
-    # Kick off initial timeout.
-    update new Date()
+  # `update()`, when called from `flush()`, updates the elements,
+  # and re-calls `setOwnTimeout()` to re-add `data` to the stale list later.
+  update: (data, now) ->
+    isPost = data instanceof Post
+    date = if isPost
+      data.info.date
+    else
+      new Date +data.dataset.utc
+    now or= new Date()
+    diff = now - date
+    relative = RelativeDates.relative diff, now, date
+    if isPost
+      for singlePost in [data].concat data.clones
+        singlePost.nodes.date.firstChild.textContent = relative
+    else
+      data.firstChild.textContent = relative
+    RelativeDates.setOwnTimeout diff, data
+  setOwnTimeout: (diff, data) ->
+    delay = if diff < $.MINUTE
+      $.SECOND - (diff + $.SECOND / 2) % $.SECOND
+    else if diff < $.HOUR
+      $.MINUTE - (diff + $.MINUTE / 2) % $.MINUTE
+    else if diff < $.DAY
+      $.HOUR - (diff + $.HOUR / 2) % $.HOUR
+    else
+      $.DAY - (diff + $.DAY / 2) % $.DAY
+    setTimeout RelativeDates.markStale, delay, data
+  markStale: (data) ->
+    return if data in RelativeDates.stale # We can call RelativeDates.update() multiple times.
+    return if data instanceof Post and !g.posts[data.fullID] # collected post.
+    RelativeDates.stale.push data
