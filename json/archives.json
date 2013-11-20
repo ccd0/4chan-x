@@ -87,8 +87,8 @@
   "https": true,
   "withCredentials": true,
   "software": "foolfuuka",
-  "boards": ["a", "co", "gd", "jp", "m", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "gd", "jp", "m", "tg", "u", "vg", "vp", "vr", "wsg"]
+  "boards": ["a", "co", "gd", "jp", "m", "s4s", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
+  "files": ["a", "gd", "jp", "m", "s4s", "tg", "u", "vg", "vp", "vr", "wsg"]
 }, {
   "uid": 14,
   "name": "Bui's Archive",
