@@ -69,7 +69,7 @@ class DataBoard
 
     @save()
   ajaxClean: (boardID) ->
-    $.cache "//api.4chan.org/#{boardID}/threads.json", (e) =>
+    $.cache "//a.4cdn.org/#{boardID}/threads.json", (e) =>
       if e.target.status isnt 200
         @delete boardID if e.target.status is 404
         return

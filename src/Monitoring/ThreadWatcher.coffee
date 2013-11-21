@@ -100,7 +100,7 @@ ThreadWatcher =
     return if data.isDead
     {fetchCount} = ThreadWatcher
     fetchCount.fetching++
-    $.ajax "//api.4chan.org/#{boardID}/res/#{threadID}.json",
+    $.ajax "//a.4cdn.org/#{boardID}/res/#{threadID}.json",
       onloadend: ->
         fetchCount.fetched++
         if fetchCount.fetched is fetchCount.fetching

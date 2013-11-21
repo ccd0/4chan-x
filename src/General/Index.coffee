@@ -188,7 +188,7 @@ Index =
           return unless Index.req and !Index.notice
           Index.notice = new Notice 'info', 'Refreshing index...'
         ), 5 * $.SECOND - (Date.now() - now)
-    Index.req = $.ajax "//api.4chan.org/#{g.BOARD}/catalog.json",
+    Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
       onabort:   Index.load
       onloadend: Index.load
     ,

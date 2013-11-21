@@ -1,4 +1,5 @@
 - **New option**: `Auto-hide header on scroll`.
+- Added support for `4cdn.org`.
 
 ## 3.13.0 - *2013-11-16*
 

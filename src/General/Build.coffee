@@ -36,14 +36,14 @@ Build =
         name:      data.filename + data.ext
         timestamp: "#{data.tim}#{data.ext}"
         url: if boardID is 'f'
-          "//images.4channel.org/#{boardID}/src/#{data.filename}#{data.ext}"
+          "//i.4cdn.org/#{boardID}/src/#{data.filename}#{data.ext}"
         else
-          "//images.4chan.org/#{boardID}/src/#{data.tim}#{data.ext}"
+          "//i.4cdn.org/#{boardID}/src/#{data.tim}#{data.ext}"
         height:    data.h
         width:     data.w
         MD5:       data.md5
         size:      data.fsize
-        turl:      "//thumbs.4chan.org/#{boardID}/thumb/#{data.tim}s.jpg"
+        turl:      "//t.4cdn.org/#{boardID}/thumb/#{data.tim}s.jpg"
         theight:   data.tn_h
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
@@ -59,7 +59,7 @@ Build =
     } = o
     isOP = postID is threadID
 
-    staticPath = '//static.4chan.org/image/'
+    staticPath = '//s.4cdn.org/image/'
     gifIcon = if window.devicePixelRatio >= 2
       '@2x.gif'
     else

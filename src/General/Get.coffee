@@ -70,7 +70,7 @@ Get =
 
     root.textContent = "Loading post No.#{postID}..."
     if threadID
-      $.cache "//api.4chan.org/#{boardID}/res/#{threadID}.json", ->
+      $.cache "//a.4cdn.org/#{boardID}/res/#{threadID}.json", ->
         Get.fetchedPost @, boardID, threadID, postID, root, context
     else if url = Redirect.to 'post', {boardID, postID}
       $.cache url,
@@ -222,7 +222,7 @@ Get =
         width:     data.media.media_w
         MD5:       data.media.media_hash
         size:      data.media.media_size
-        turl:      data.media.thumb_link or "//thumbs.4chan.org/#{boardID}/thumb/#{data.media.preview_orig}"
+        turl:      data.media.thumb_link or "//t.4cdn.org/#{boardID}/thumb/#{data.media.preview_orig}"
         theight:   data.media.preview_h
         twidth:    data.media.preview_w
         isSpoiler: data.media.spoiler is '1'

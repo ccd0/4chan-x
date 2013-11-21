@@ -37,7 +37,7 @@ ThreadStats =
       $.addClass ThreadStats.pageCountEl, 'warning'
       return
     setTimeout ThreadStats.fetchPage, 2 * $.MINUTE
-    $.ajax "//api.4chan.org/#{ThreadStats.thread.board}/threads.json", onload: ThreadStats.onThreadsLoad,
+    $.ajax "//a.4cdn.org/#{ThreadStats.thread.board}/threads.json", onload: ThreadStats.onThreadsLoad,
       whenModified: true
   onThreadsLoad: ->
     return if @status isnt 200

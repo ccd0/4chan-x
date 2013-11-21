@@ -9,10 +9,10 @@
     "buildsPath": "builds/",
     "mainBranch": "v3",
     "matches": [
-      "*://api.4chan.org/*",
       "*://boards.4chan.org/*",
-      "*://images.4chan.org/*",
-      "*://sys.4chan.org/*"
+      "*://sys.4chan.org/*",
+      "*://a.4cdn.org/*",
+      "*://i.4cdn.org/*"
     ],
     "min": {
       "chrome": "29",

@@ -38,12 +38,12 @@ Main =
 
   initFeatures: ->
     switch location.hostname
-      when 'api.4chan.org'
+      when 'a.4cdn.org'
         return
       when 'sys.4chan.org'
         Report.init()
         return
-      when 'images.4chan.org'
+      when 'i.4cdn.org'
         $.ready ->
           if Conf['404 Redirect'] and d.title is '4chan - 404 Not Found'
             Redirect.init()

@@ -39,7 +39,7 @@ ExpandThread =
   expand: (thread, a, threadRoot) ->
     ExpandThread.statuses[thread] = status = {}
     a.textContent = ExpandThread.text '...', a.textContent.match(/\d+/g)...
-    status.req = $.cache "//api.4chan.org/#{thread.board}/res/#{thread}.json", ->
+    status.req = $.cache "//a.4cdn.org/#{thread.board}/res/#{thread}.json", ->
       delete status.req
       ExpandThread.parse @, thread, a
   contract: (thread, a, threadRoot) ->

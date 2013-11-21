@@ -153,7 +153,7 @@ ThreadUpdater =
     ThreadUpdater.count()
     ThreadUpdater.set 'timer', '...'
     ThreadUpdater.req?.abort()
-    url = "//api.4chan.org/#{ThreadUpdater.thread.board}/res/#{ThreadUpdater.thread}.json"
+    url = "//a.4cdn.org/#{ThreadUpdater.thread.board}/res/#{ThreadUpdater.thread}.json"
     ThreadUpdater.req = $.ajax url,
       onabort:   ThreadUpdater.cb.load
       onloadend: ThreadUpdater.cb.load

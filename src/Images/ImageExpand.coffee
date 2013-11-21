@@ -121,7 +121,7 @@ ImageExpand =
     ImageExpand.contract post
 
     src = @src.split '/'
-    if src[2] is 'images.4chan.org'
+    if src[2] is 'i.4cdn.org'
       URL = Redirect.to 'file',
         boardID:  src[3]
         filename: src[5].replace /\?.+$/, ''
@@ -132,8 +132,8 @@ ImageExpand =
         return
 
     timeoutID = setTimeout ImageExpand.expand, 10000, post
-    # XXX CORS for images.4chan.org WHEN?
-    $.ajax "//api.4chan.org/#{post.board}/res/#{post.thread}.json", onload: ->
+    # XXX CORS for i.4cdn.org WHEN?
+    $.ajax "//a.4cdn.org/#{post.board}/res/#{post.thread}.json", onload: ->
       return if @status isnt 200
       for postObj in JSON.parse(@response).posts
         break if postObj.no is post.ID
