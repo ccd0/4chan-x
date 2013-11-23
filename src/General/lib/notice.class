@@ -1,7 +1,7 @@
 class Notice
   constructor: (type, content, @timeout) ->
     @el = $.el 'div',
-      innerHTML: '<a href=javascript:; class=close title=Close>×</a><div class=message></div>'
+      innerHTML: '<a href=javascript:; class="close fa fa-times" title=Close></a><div class=message></div>'
     @el.style.opacity = 0
     @setType type
     $.on @el.firstElementChild, 'click', @close
@@ -19,7 +19,7 @@ class Notice
       $.on d, 'visibilitychange', @add
       return
     $.off d, 'visibilitychange', @add
-    $.add $.id('notifications'), @el
+    $.add Header.noticesRoot, @el
     @el.clientHeight # force reflow
     @el.style.opacity = 1
     setTimeout @close, @timeout * $.SECOND if @timeout

@@ -42,12 +42,12 @@ Main =
       g.THREADID = +pathname[3]
 
     switch location.hostname
-      when 'api.4chan.org'
+      when 'a.4cdn.org'
         return
       when 'sys.4chan.org'
         Report.init()
         return
-      when 'images.4chan.org'
+      when 'i.4cdn.org'
         $.ready ->
           if Conf['404 Redirect'] and ['4chan - Temporarily Offline', '4chan - 404 Not Found'].contains d.title
             Redirect.init()
@@ -72,13 +72,13 @@ Main =
       return
 
     # c.time 'All initializations'
-
     init
       'Polyfill':                  Polyfill
       'Redirect':                  Redirect
       'Header':                    Header
       'Catalog Links':             CatalogLinks
       'Settings':                  Settings
+      'Index Generator':           Index
       'Announcement Hiding':       PSAHiding
       'Fourchan thingies':         Fourchan
       'Emoji':                     Emoji
@@ -120,7 +120,6 @@ Main =
       'Reveal Spoiler Thumbnails': RevealSpoilers
       'Image Loading':             ImageLoader
       'Image Hover':               ImageHover
-      'Comment Expansion':         ExpandComment
       'Thread Expansion':          ExpandThread
       'Thread Excerpt':            ThreadExcerpt
       'Favicon':                   Favicon
@@ -134,8 +133,6 @@ Main =
       'Keybinds':                  Keybinds
       'Show Dice Roll':            Dice
       'Banner':                    Banner
-      'Infinite Scrolling':        InfiniScroll
-
     # c.timeEnd 'All initializations'
 
     $.on d, 'AddCallback', Main.addCallback
@@ -189,26 +186,21 @@ Main =
     # Something might have gone wrong!
     Main.initStyle()
 
-    if board = $ '.board'
-      threads = []
-      posts   = []
-
-      for threadRoot in $$ '.board > .thread', board
-        thread = new Thread +threadRoot.id[1..], g.BOARD
-        threads.push thread
-        for postRoot in $$ '.thread > .postContainer', threadRoot
-          try
-            posts.push new Post postRoot, thread, g.BOARD
-          catch err
-            # Skip posts that we failed to parse.
-            unless errors
-              errors = []
-            errors.push
-              message: "Parsing of Post No.#{postRoot.id.match(/\d+/)} failed. Post will be skipped."
-              error: err
+    if g.VIEW is 'thread' and threadRoot = $ '.thread'
+      thread = new Thread +threadRoot.id[1..], g.BOARD
+      posts  = []
+      for postRoot in $$ '.thread > .postContainer', threadRoot
+        try
+          posts.push new Post postRoot, thread, g.BOARD
+        catch err
+          # Skip posts that we failed to parse.
+          errors = [] unless errors
+          errors.push
+            message: "Parsing of Post No.#{postRoot.id.match /\d+/} failed. Post will be skipped."
+            error: err
       Main.handleErrors errors if errors
 
-      Main.callbackNodes Thread, threads
+      Main.callbackNodes Thread, [thread]
       Main.callbackNodesDB Post, posts, ->
         $.event '4chanXInitFinished'
 
@@ -224,11 +216,19 @@ Main =
 
       return
 
+    <% if (type === 'userscript') { %>
+    GMver = GM_info.version.split '.'
+    for v, i in "<%= meta.min.greasemonkey %>".split '.'
+      break if v < GMver[i]
+      continue if v is GMver[i]
+      new Notice 'warning', "Your version of Greasemonkey is outdated (v#{GM_info.version} instead of v<%= meta.min.greasemonkey %> minimum) and <%= meta.name %> may not operate correctly.", 30
+      break
+    <% } %>
+
     try
       localStorage.getItem '4chan-settings'
     catch err
-      new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to properly function.', 30
-      Main.disableReports = true
+      new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to operate properly.', 30
 
     $.event '4chanXInitFinished'
 
@@ -326,17 +326,12 @@ Main =
     new Notice 'error', [div, logs], 30
 
   parseError: (data) ->
-    Main.logError data
+    c.error data.message, data.error.stack
     message = $.el 'div',
       textContent: data.message
     error = $.el 'div',
       textContent: data.error
     [message, error]
-
-  errors: []
-  logError: (data) ->
-    c.error data.message, data.error.stack
-    Main.errors.push data
 
   isThisPageLegit: ->
     # 404 error page or similar.

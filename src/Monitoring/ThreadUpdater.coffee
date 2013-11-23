@@ -120,6 +120,7 @@ ThreadUpdater =
       ThreadUpdater.interval = @value = val
       $.cb.value.call @
     load: (e) ->
+      $.rmClass ThreadUpdater.button, 'fa-spin'
       {req} = ThreadUpdater
       switch req.status
         when 200
@@ -193,48 +194,38 @@ ThreadUpdater =
 
   update: ->
     return unless navigator.onLine
+    $.addClass ThreadUpdater.button, 'fa-spin'
     ThreadUpdater.count()
     if Conf['Auto Update']
       ThreadUpdater.set 'timer', '...'
     else
       ThreadUpdater.set 'timer', 'Update'
-    ThreadUpdater.req.abort() if ThreadUpdater.req
-    url = "//api.4chan.org/#{ThreadUpdater.thread.board}/res/#{ThreadUpdater.thread}.json"
+    ThreadUpdater.req?.abort()
+    url = "//a.4cdn.org/#{ThreadUpdater.thread.board}/res/#{ThreadUpdater.thread}.json"
     ThreadUpdater.req = $.ajax url, onloadend: ThreadUpdater.cb.load,
       whenModified: true
 
-  updateThreadStatus: (title, OP) ->
-    titleLC = title.toLowerCase()
-    return if ThreadUpdater.thread["is#{title}"] is !!OP[titleLC]
-    unless ThreadUpdater.thread["is#{title}"] = !!OP[titleLC]
-      message = if title is 'Sticky'
-        'The thread is not a sticky anymore.'
+  updateThreadStatus: (type, status) ->
+    return unless hasChanged = ThreadUpdater.thread["is#{type}"] isnt status
+    ThreadUpdater.thread.setStatus type, status
+    change = if type is 'Sticky'
+      if status
+        'now a sticky'
       else
-        'The thread is not closed anymore.'
-      new Notice 'info', message, 30
-      $.rm $ ".#{titleLC}Icon", ThreadUpdater.thread.OP.nodes.info
-      return
-    message = if title is 'Sticky'
-      'The thread is now a sticky.'
+        'not a sticky anymore'
     else
-      'The thread is now closed.'
-    new Notice 'info', message, 30
-    icon = $.el 'img',
-      src: "//static.4chan.org/image/#{titleLC}.gif"
-      alt: title
-      title: title
-      className: "#{titleLC}Icon"
-    root = $ '[title="Quote this post"]', ThreadUpdater.thread.OP.nodes.info
-    if title is 'Closed'
-      root = $('.stickyIcon', ThreadUpdater.thread.OP.nodes.info) or root
-    $.after root, [$.tn(' '), icon]
+      if status
+        'now closed'
+      else
+        'not closed anymore'
+    new Notice 'info', "The thread is #{change}.", 30
 
   parse: (postObjects) ->
     OP = postObjects[0]
     Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler
 
-    ThreadUpdater.updateThreadStatus 'Sticky', OP
-    ThreadUpdater.updateThreadStatus 'Closed', OP
+    ThreadUpdater.updateThreadStatus 'Sticky', !!OP.sticky
+    ThreadUpdater.updateThreadStatus 'Closed', !!OP.closed
     ThreadUpdater.thread.postLimit = !!OP.bumplimit
     ThreadUpdater.thread.fileLimit = !!OP.imagelimit
 
@@ -303,7 +294,7 @@ ThreadUpdater =
         if Conf['Bottom Scroll']
           window.scrollTo 0, d.body.clientHeight
         else
-          Header.scrollToPost root if root
+          Header.scrollTo root if root
 
       $.queueTask ->
         # Enable 4chan features.

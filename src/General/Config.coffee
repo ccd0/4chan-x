@@ -41,10 +41,6 @@ Config =
         true
         'Reformat the file information.'
       ]
-      'Comment Expansion': [
-        true
-        'Add buttons to expand long comments.'
-      ]
       'Thread Expansion': [
         true
         'Add buttons to expand threads.'
@@ -503,15 +499,21 @@ http://iqdb.org/?url=%TURL
   
   'Custom CSS': false
 
+  Index:
+    'Index Mode': 'paged'
+    'Index Sort': 'bump'
+    'Show Replies': true
+
   Header:
-    'Fixed Header':            true
-    'Header auto-hide':        false
-    'Bottom Header':           false
-    'Centered links':          false
-    'Header catalog links':    false
-    'Bottom Board List':       true
-    'Shortcut Icons':          false
-    'Custom Board Navigation': true
+    'Fixed Header':               true
+    'Header auto-hide':           false
+    'Header auto-hide on scroll': false
+    'Bottom Header':              false
+    'Centered links':             false
+    'Header catalog links':       false
+    'Bottom Board List':          true
+    'Shortcut Icons':             false
+    'Custom Board Navigation':    true
 
   boardnav: """
 [ toggle-all ]
@@ -648,6 +650,10 @@ vp-replace
     'Open catalog': [
       'Shift+c'
       'Open the catalog of the current board'
+    ]
+    'Search form': [
+      'Ctrl+Alt+s'
+      'Focus the search field on the board index.'
     ]
     # Thread Navigation
     'Next thread': [

@@ -10,6 +10,8 @@ Header =
       innerHTML: '<input type=checkbox name="Fixed Header"> Fixed Header'
     headerToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Header auto-hide"> Auto-hide header'
+    scrollHeaderToggler = $.el 'label',
+      innerHTML: '<input type=checkbox name="Header auto-hide on scroll"> Auto-hide header on scroll'
     barPositionToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Bottom header"> Bottom header'
     linkJustifyToggler = $.el 'label',
@@ -24,34 +26,38 @@ Header =
       textContent: 'Edit custom board navigation'
       href: 'javascript:;'
 
-    @barFixedToggler    = barFixedToggler.firstElementChild
-    @barPositionToggler = barPositionToggler.firstElementChild
-    @linkJustifyToggler = linkJustifyToggler.firstElementChild
-    @headerToggler      = headerToggler.firstElementChild
-    @footerToggler      = footerToggler.firstElementChild
-    @shortcutToggler    = shortcutToggler.firstElementChild
-    @customNavToggler   = customNavToggler.firstElementChild
+    @barFixedToggler     = barFixedToggler.firstElementChild
+    @scrollHeaderToggler = scrollHeaderToggler.firstElementChild
+    @barPositionToggler  = barPositionToggler.firstElementChild
+    @linkJustifyToggler  = linkJustifyToggler.firstElementChild
+    @headerToggler       = headerToggler.firstElementChild
+    @footerToggler       = footerToggler.firstElementChild
+    @shortcutToggler     = shortcutToggler.firstElementChild
+    @customNavToggler    = customNavToggler.firstElementChild
 
     $.on menuButton,          'click',  @menuToggle
+    $.on @headerToggler,      'change', @toggleBarVisibility
     $.on @barFixedToggler,    'change', @toggleBarFixed
     $.on @barPositionToggler, 'change', @toggleBarPosition
     $.on @linkJustifyToggler, 'change', @toggleLinkJustify
     $.on @headerToggler,      'change', @toggleBarVisibility
     $.on @footerToggler,      'change', @toggleFooterVisibility
-    $.on @shortcutToggler,      'change', @toggleShortcutIcons
+    $.on @shortcutToggler,    'change', @toggleShortcutIcons
     $.on @customNavToggler,   'change', @toggleCustomNav
     $.on editCustomNav,       'click',  @editCustomNav
 
-    @setBarFixed      Conf['Fixed Header']
-    @setBarVisibility Conf['Header auto-hide']
-    @setLinkJustify   Conf['Centered links']
-    @setShortcutIcons Conf['Shortcut Icons']
+    @setBarFixed        Conf['Fixed Header']
+    @setHideBarOnScroll Conf['Header auto-hide on scroll']
+    @setBarVisibility   Conf['Header auto-hide']
+    @setLinkJustify     Conf['Centered links']
+    @setShortcutIcons   Conf['Shortcut Icons']
 
-    $.sync 'Fixed Header',     Header.setBarFixed
-    $.sync 'Bottom Header',    Header.setBarPosition
-    $.sync 'Shortcut Icons',   Header.setShortcutIcons
-    $.sync 'Header auto-hide', Header.setBarVisibility
-    $.sync 'Centered links',   Header.setLinkJustify
+    $.sync 'Fixed Header',               @setBarFixed
+    $.sync 'Header auto-hide on scroll', @setHideBarOnScroll
+    $.sync 'Bottom Header',              @setBarPosition
+    $.sync 'Shortcut Icons',             @setShortcutIcons
+    $.sync 'Header auto-hide',           @setBarVisibility
+    $.sync 'Centered links',             @setLinkJustify
 
     @addShortcut menuButton
 
@@ -63,6 +69,7 @@ Header =
       subEntries: [
         {el: barFixedToggler}
         {el: headerToggler}
+        {el: scrollHeaderToggler}
         {el: barPositionToggler}
         {el: linkJustifyToggler}
         {el: footerToggler}
@@ -198,31 +205,12 @@ Header =
     custom.hidden = !showBoardList
     full.hidden   =  showBoardList
 
-  setBarPosition: (bottom) ->
-    Header.barPositionToggler.checked = bottom
-    if bottom
-      $.rmClass  doc, 'top'
-      $.addClass doc, 'bottom'
-      $.after Header.bar, Header.notify
-    else
-      $.rmClass  doc, 'bottom'
-      $.addClass doc, 'top'
-      $.add Header.bar, Header.notify
-
   setLinkJustify: (centered) ->
     Header.linkJustifyToggler.checked = centered
     if centered
       $.addClass doc, 'centered-links'
     else
       $.rmClass doc, 'centered-links'
-
-  toggleBarPosition: ->
-    $.event 'CloseMenu'
-
-    Header.setBarPosition @checked
-
-    Conf['Bottom Header'] = @checked
-    $.set 'Bottom Header',  @checked
 
   toggleLinkJustify: ->
     $.event 'CloseMenu'
@@ -285,6 +273,46 @@ Header =
       'remain visible.'}"
     new Notice 'info', message, 2
 
+  setHideBarOnScroll: (hide) ->
+    Header.scrollHeaderToggler.checked = hide
+    if hide
+      $.on window, 'scroll', Header.hideBarOnScroll
+      return
+    $.off window, 'scroll', Header.hideBarOnScroll
+    $.rmClass Header.bar, 'scroll'
+    $.rmClass Header.bar, 'autohide' unless Conf['Header auto-hide']
+
+  toggleHideBarOnScroll: (e) ->
+    hide = @checked
+    $.set 'Header auto-hide on scroll', hide
+    Header.setHideBarOnScroll hide
+
+  hideBarOnScroll: ->
+    offsetY = window.pageYOffset
+    if offsetY > (Header.previousOffset or 0)
+      $.addClass Header.bar, 'autohide'
+      $.addClass Header.bar, 'scroll'
+    else
+      $.rmClass Header.bar, 'autohide'
+      $.rmClass Header.bar, 'scroll'
+    Header.previousOffset = offsetY
+
+  setBarPosition: (bottom) ->
+    Header.barPositionToggler.checked = bottom
+    $.event 'CloseMenu'
+    if bottom
+      $.addClass doc, 'bottom-header'
+      $.rmClass  doc, 'top-header'
+      Header.bar.parentNode.className = 'bottom'
+    else
+      $.addClass doc, 'top-header'
+      $.rmClass  doc, 'bottom-header'
+      Header.bar.parentNode.className = 'top'
+
+  toggleBarPosition: ->
+    $.cb.checked.call @
+    Header.setBarPosition @checked
+
   setFooterVisibility: (hide) ->
     Header.footerToggler.checked = hide
     Header.footer.hidden = hide
@@ -323,16 +351,33 @@ Header =
     $('input[name=boardnav]', settings).focus()
 
   hashScroll: ->
-    return unless (hash = @location.hash[1..]) and post = $.id hash
+    hash = @location.hash[1..]
+    return unless /^p\d+$/.test(hash) and post = $.id hash
     return if (Get.postFromRoot post).isHidden
-    Header.scrollToPost post
 
-  scrollToPost: (post) ->
-    {top} = post.getBoundingClientRect()
+    Header.scrollTo post
+  scrollTo: (root, down, needed) ->
+    if down
+      x = Header.getBottomOf root
+      window.scrollBy 0, -x unless needed and x >= 0
+    else
+      x = Header.getTopOf root
+      window.scrollBy 0,  x unless needed and x >= 0
+  scrollToIfNeeded: (root, down) ->
+    Header.scrollTo root, down, true
+  getTopOf: (root) ->
+    {top} = root.getBoundingClientRect()
     if Conf['Fixed Header'] and not Conf['Bottom Header']
-      headRect = Header.bar.getBoundingClientRect()
-      top -= headRect.top + headRect.height
-    window.scrollBy 0, top
+      headRect = Header.toggle.getBoundingClientRect()
+      top     -= headRect.top + headRect.height
+    top
+  getBottomOf: (root) ->
+    {clientHeight} = doc
+    bottom = clientHeight - root.getBoundingClientRect().bottom
+    if Conf['Bottom header']
+      headRect = Header.toggle.getBoundingClientRect()
+      bottom  -= clientHeight - headRect.bottom + headRect.height
+    bottom
 
   addShortcut: (el) ->
     shortcut = $.el 'span',
@@ -340,13 +385,14 @@ Header =
     $.add shortcut, el
     $.prepend Header.shortcuts, shortcut
 
+
   menuToggle: (e) ->
     Header.menu.toggle e, @, g
 
   createNotification: (e) ->
     {type, content, lifetime, cb} = e.detail
-    notif = new Notice type, content, lifetime
-    cb notif if cb
+    notice = new Notice type, content, lifetime
+    cb notice if cb
 
   areNotificationsEnabled: false
   enableDesktopNotifications: ->
