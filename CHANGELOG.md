@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-**Zixaphir**:
-- Better MediaCru.sh embedding
-- Infinite Scrolling
 
-### v1.2.41 
-*2013-10-03*
-=======
-## 3.14.0 - *2013-11-21*
-
+**MayhemYDG**:
+- Tiny posting cooldown adjustment:
+ - You can post an image reply immediately after a non-image reply.
 - **New option**: `Auto-hide header on scroll`.
 - Added support for `4cdn.org`.
-
-## 3.13.0 - *2013-11-16*
-
 - More index navigation improvements:
  - Searching in the index is now possible and will show matched OPs by:
  <ul>
@@ -31,14 +22,7 @@
  </ul>
  - The elapsed time since the last index refresh is now indicated at the top of the index.
  - New setting: `Show replies`, enabled by default. Disable it to only show OPs in the index.
-
-### 3.12.1 - *2013-11-04*
-
 - The index refreshing notification will now only appear on initial page load with slow connections.
-- Minor fixes.
-
-## 3.12.0 - *2013-11-03*
-
 - Index navigation improvements:
  - You can now refresh the index page you are on with the refresh shortcut in the header bar or the same keybind for refreshing threads.
  - You can now switch between paged and all-threads index modes via the "Index Navigation" header sub-menu:<br>
@@ -53,48 +37,43 @@
  </ul>
  - Navigating across index pages is now instantaneous.
 - Added a keybind to open the catalog search field on index pages.
+- Various minor fixes
 
-### 3.11.5 - *2013-10-03*
+### v1.2.43 
+*2013-11-10*
 
-- Minor Chrome 30 fix.
->>>>>>> ce0c0c1623702e7931908183160fa04a31b26897
+**noface**:
+- Strawpoll.me embedding support (as usual, only works on HTTP 4chan due to lack of HTTPS)
+
+### v1.2.42 
+*2013-10-22*
+
+**Zixaphir**:
+- Better MediaCru.sh embedding
+- Infinite Scrolling
+
+### v1.2.41 
+*2013-10-03*
 
 **MayhemYDG**:
 - Minor Chrome 30 fix
 
-<<<<<<< HEAD
 ### v1.2.40 
 *2013-09-22*
-=======
-- Tiny posting cooldown adjustment:
- - You can post an image reply immediately after a non-image reply.
->>>>>>> ce0c0c1623702e7931908183160fa04a31b26897
 
 **MayhemYDG**:
 - /pol/ flag selector
 
-<<<<<<< HEAD
 **seaweedchan**:
 - Delete cooldown update
 - Small bug fixes
 - Don't show warnings AND desktop notifications at the same time, and prefer QR warnings unless the document is hidden
-=======
-- Update posting cooldown timers to match 4chan settings:
- - Cooldown may vary between inter-thread and intra-thread replies.
- - Cooldown may vary when posting a file or not.
- - Cooldown does not take sageing into account anymore.
- - Timers vary across boards.
->>>>>>> ce0c0c1623702e7931908183160fa04a31b26897
 
 ### v1.2.39 
 *2013-09-19*
 
-<<<<<<< HEAD
 **seaweedchan**:
 - Fix thread updater bug introduced in last version
-=======
-- Updated post and deletion cooldown timers to match 4chan changes: they are now twice as long.
->>>>>>> ce0c0c1623702e7931908183160fa04a31b26897
 
 ### v1.2.38 
 *2013-09-19*
@@ -436,17 +415,8 @@
 ### v1.2.3
 *2013-05-14*
 
-<<<<<<< HEAD
 **MayhemYDG**:
 - Add new archive selection
-=======
-- **New feature**: `Archive selection`
- - Select which archive you want for specific boards and redirection type.
- - Access it in the `Archives` tab of the Settings window.
-- The list of archived boards will now update automatically, independently from 4chan X updates.
- - If you're an archiver and want [data](https://github.com/MayhemYDG/4chan-x/blob/v3/json/archives.json) about your archive to be updated, added or removed: send a PR or open an issue.
-- Fix quote previews getting 'stuck' in Opera.
->>>>>>> ce0c0c1623702e7931908183160fa04a31b26897
 
 **seaweedchan**:
 - Change watcher favicon to a heart. Change class name from `.favicon` to `.watch-thread-link`. Add `.watched` if thread is watched.

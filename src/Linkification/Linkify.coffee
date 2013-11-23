@@ -346,6 +346,13 @@ Linkify =
         api: (uid) -> "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{uid}"
         text: (_) -> _.title
 
+    StrawPoll:
+      regExp: /strawpoll\.me\/(?:embed_\d+\/)?(\d+)/
+      style: 'border: 0; width: 600px; height: 406px;'
+      el: (a) ->
+        $.el 'iframe',
+          src: "http://strawpoll.me/embed_1/#{a.dataset.uid}"
+
     TwitchTV:
       regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/
       style: "border: none; width: 640px; height: 360px;"
