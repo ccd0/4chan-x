@@ -146,8 +146,9 @@ ThreadWatcher =
 
   makeLine: (boardID, threadID, data) ->
     x = $.el 'a',
-      className: 'fa fa-times'
+      className: 'fa'
       href: 'javascript:;'
+      textContent: '\uf00d'
     $.on x, 'click', ThreadWatcher.cb.rm
 
     if data.isDead

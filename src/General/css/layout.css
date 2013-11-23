@@ -838,7 +838,13 @@ th {
   z-index: 18;
   border-width: 1px 0 0 1px;
   border-style: solid;
-  content: '✖';
+  content: '\uf00d';
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: inherit;
+  -webkit-font-smoothing: antialiased;
+  font-size:14px !important;
   display: block;
   position: fixed;
   bottom: 0;
@@ -1301,7 +1307,7 @@ a.useremail:last-of-type {
   position: absolute;
   top: -1px;
 }
-.focused .submenu {
+.focused > .submenu {
   display: block;
 }
 /* Stubs */
@@ -2449,7 +2455,13 @@ article li {
   content: '?';
 }
 .closeIcon::after {
-  content: '✖';
+  content: '\uf00d';
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: inherit;
+  -webkit-font-smoothing: antialiased;
+  font-size:14px !important;
 }
 /* Front Page */
 #logo {

@@ -3,9 +3,10 @@ Index =
     return if g.VIEW isnt 'index' or g.BOARD.ID is 'f'
 
     @button = $.el 'a',
-      className: 'index-refresh-shortcut fa fa-refresh'
+      className: 'index-refresh-shortcut fa'
       title: 'Refresh Index'
       href: 'javascript:;'
+      textContent: "\uf021"
     $.on @button, 'click', @update
     Header.addShortcut @button, 1
 
