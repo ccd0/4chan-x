@@ -8924,7 +8924,6 @@
       load: function(e) {
         var klass, req, text, _ref;
 
-        $.rmClass(ThreadUpdater.button, 'fa-spin');
         req = ThreadUpdater.req;
         switch (req.status) {
           case 200:
@@ -9011,7 +9010,6 @@
       if (!navigator.onLine) {
         return;
       }
-      $.addClass(ThreadUpdater.button, 'fa-spin');
       ThreadUpdater.count();
       if (Conf['Auto Update']) {
         ThreadUpdater.set('timer', '...');

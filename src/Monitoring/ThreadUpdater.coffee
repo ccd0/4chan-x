@@ -120,7 +120,6 @@ ThreadUpdater =
       ThreadUpdater.interval = @value = val
       $.cb.value.call @
     load: (e) ->
-      $.rmClass ThreadUpdater.button, 'fa-spin'
       {req} = ThreadUpdater
       switch req.status
         when 200
@@ -194,7 +193,6 @@ ThreadUpdater =
 
   update: ->
     return unless navigator.onLine
-    $.addClass ThreadUpdater.button, 'fa-spin'
     ThreadUpdater.count()
     if Conf['Auto Update']
       ThreadUpdater.set 'timer', '...'
