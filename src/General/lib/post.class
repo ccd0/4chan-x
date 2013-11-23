@@ -55,7 +55,7 @@ class Post
 
     @parseComment()
     @parseQuotes()
-    @parseFile(that)
+    @parseFile that
 
     @clones = []
     g.posts[@fullID] = thread.posts[@] = board.posts[@] = @
@@ -135,7 +135,7 @@ class Post
     @file.thumbURL = if that.isArchived
       thumb.src
     else
-      "#{location.protocol}//thumbs.4chan.org/#{@board}/thumb/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
+      "#{location.protocol}//t.4cdn.org/#{@board}/thumb/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
     @file.name = $('span[title]', fileInfo).title
     <% if (type === 'crx') { %>
     # replace %22 with quotes, see:
@@ -201,6 +201,12 @@ class Post
         quotelink.textContent = quotelink.textContent.replace '\u00A0(Dead)', ''
         $.rmClass quotelink, 'deadlink'
     return
+
+  collect: ->
+    @kill()
+    delete g.posts[@fullID]
+    delete @thread.posts[@]
+    delete @board.posts[@]
 
   addClone: (context) ->
     new Clone @, context

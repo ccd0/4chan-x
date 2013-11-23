@@ -59,11 +59,15 @@ QR =
     $.on d, 'dragover',           QR.dragOver
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
-    $.on d, 'ThreadUpdate', ->
-      if g.DEAD
-        QR.abort()
-      else
-        QR.status()
+    switch g.VIEW
+      when 'index'
+        $.on d, 'IndexRefresh', QR.generatePostableThreadsList
+      when 'thread'
+        $.on d, 'ThreadUpdate', ->
+          if g.DEAD
+            QR.abort()
+          else
+            QR.status()
 
   node: ->
     $.on $('a[title="Quote this post"]', @nodes.info), 'click', QR.quote
@@ -278,7 +282,6 @@ QR =
       setTimers = (e) => QR.cooldown.types = e.detail
       $.on window, 'cooldown:timers', setTimers
       $.globalEval 'window.dispatchEvent(new CustomEvent("cooldown:timers", {detail: cooldowns}))'
-      QR.cooldown.types or= {} # XXX tmp workaround until all pages and the catalogs get the cooldowns var.
       $.off window, 'cooldown:timers', setTimers
       for type of QR.cooldown.types
         QR.cooldown.types[type] = +QR.cooldown.types[type]
@@ -350,11 +353,6 @@ QR =
           else
             seconds = Math.max seconds, 0
             QR.cooldown.unset start
-          continue
-
-        if 'timeout' of cooldown
-          # XXX tmp conversion from previous cooldowns
-          QR.cooldown.unset start
           continue
 
         if isReply is cooldown.isReply
@@ -511,7 +509,7 @@ QR =
         className: 'qr-preview'
         draggable: true
         href: 'javascript:;'
-        innerHTML: '<a class=remove>✖</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
+        innerHTML: '<a class="remove fa fa-times-circle" title=Remove></a><label hidden><input type=checkbox> Spoiler</label><span></span>'
 
       @nodes =
         el:      el
@@ -687,7 +685,7 @@ QR =
         # Resized pictures through canvases look like ass,
         # so we generate thumbnails `s` times bigger then expected
         # to avoid crappy resized quality.
-        s = 90*2
+        s = 90 * 2 * window.devicePixelRatio
         s *= 3 if @file.type is 'image/gif' # let them animate
         {height, width} = img
         if height < s or width < s
@@ -789,7 +787,7 @@ QR =
 
       imgContainer = $.el 'div',
         className: 'captcha-img'
-        title: 'Reload'
+        title: 'Reload reCAPTCHA'
         innerHTML: '<img>'
       input = $.el 'input',
         className:    'captcha-input field'
@@ -902,10 +900,28 @@ QR =
         return
       e.preventDefault()
 
+  generatePostableThreadsList: ->
+    return unless QR.nodes
+    list    = QR.nodes.thread
+    options = [list.firstChild]
+    for thread of g.BOARD.threads
+      options.push $.el 'option',
+        value: thread
+        textContent: "Thread No.#{thread}"
+    val = list.value
+    $.rmAll list
+    $.add list, options
+    list.value = val
+    return unless list.value
+    # Fix the value if the option disappeared.
+    list.value = if g.VIEW is 'thread'
+      g.THREADID
+    else
+      'new'
+
   dialog: ->
     QR.nodes = nodes =
-      el:
-        dialog = UI.dialog 'qr', 'top:0;right:0;', """<%= grunt.file.read('src/General/html/Features/QuickReply.html').replace(/>\s+</g, '><').trim() %>"""
+      el: dialog = UI.dialog 'qr', 'top:0;right:0;', <%= importHTML('Features/QuickReply') %>
 
     nodes[key] = $ value, dialog for key, value of {
       move:          '.move'
@@ -977,12 +993,6 @@ QR =
       nodes.flag.dataset.default = '0'
       $.add nodes.form, nodes.flag
 
-    # Make a list of threads.
-    for thread of g.BOARD.threads
-      $.add nodes.thread, $.el 'option',
-        value: thread
-        textContent: "Reply to #{thread}"
-
     $.on nodes.filename.parentNode, 'click keydown', QR.openFileInput
 
     <% if (type === 'userscript') { %>
@@ -1034,6 +1044,7 @@ QR =
         $.set 'QR Size', @style.cssText
     <% } %>
 
+    QR.generatePostableThreadsList()
     QR.persona.init()
     new QR.post true
     QR.status()

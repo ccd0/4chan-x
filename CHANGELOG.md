@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ### v2.5.1 
 *2013-10-20*
 **Zixaphir**:
@@ -5,6 +6,57 @@
 
 ## v2.5.0 
 *2013-10-19*
+=======
+
+**MayhemYDG**:
+- Tiny posting cooldown adjustment:
+ - You can post an image reply immediately after a non-image reply.
+- **New option**: `Auto-hide header on scroll`.
+- Added support for `4cdn.org`.
+- More index navigation improvements:
+ - Searching in the index is now possible and will show matched OPs by:
+ <ul>
+  <li> comment
+  <li> subject
+  <li> filename
+  <li> name
+  <li> tripcode
+  <li> e-mail
+ </ul>
+ - The page number on which threads are will now be displayed in OPs, to easily identify where threads are located when:
+ <ul>
+  <li> searching through the index.
+  <li> using different index modes and sorting types.
+  <li> threads highlighted by the filter are moved to the top and move other threads down.
+ </ul>
+ - The elapsed time since the last index refresh is now indicated at the top of the index.
+ - New setting: `Show replies`, enabled by default. Disable it to only show OPs in the index.
+- The index refreshing notification will now only appear on initial page load with slow connections.
+- Index navigation improvements:
+ - You can now refresh the index page you are on with the refresh shortcut in the header bar or the same keybind for refreshing threads.
+ - You can now switch between paged and all-threads index modes via the "Index Navigation" header sub-menu:<br>
+  ![index navigation](img/changelog/3.12.0/0.png)
+ - Threads in the index can now be sorted by:
+ <ul>
+  <li> Bump order
+  <li> Last reply
+  <li> Creation date
+  <li> Reply count
+  <li> File count
+ </ul>
+ - Navigating across index pages is now instantaneous.
+- Added a keybind to open the catalog search field on index pages.
+- Various minor fixes
+
+### v1.2.43 
+*2013-11-10*
+
+**noface**:
+- Strawpoll.me embedding support (as usual, only works on HTTP 4chan due to lack of HTTPS)
+
+### v1.2.42 
+*2013-10-22*
+>>>>>>> v3
 
 **Zixaphir**:
 - Better MediaCru.sh embedding

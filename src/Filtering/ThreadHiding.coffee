@@ -4,6 +4,7 @@ ThreadHiding =
 
     @db = new DataBoard 'hiddenThreads'
     @syncCatalog()
+    $.on d, 'IndexBuild', @onIndexBuild
     Thread.callbacks.push
       name: 'Thread Hiding'
       cb:   @node
@@ -13,6 +14,17 @@ ThreadHiding =
       ThreadHiding.hide @, data.makeStub
     return unless Conf['Thread Hiding Buttons']
     $.prepend @OP.nodes.info, ThreadHiding.makeButton @, 'hide'
+
+  onIndexBuild: ({detail: nodes}) ->
+    for root, i in nodes by 2
+      thread = Get.threadFromRoot root
+      continue unless thread.isHidden
+      unless thread.stub
+        nodes[i + 1].hidden = true
+      else unless root.contains thread.stub
+        # When we come back to a page, the stub is already there.
+        ThreadHiding.makeStub thread, root
+    return
 
   syncCatalog: ->
     # Sync hidden threads from the catalog into the index.
@@ -43,7 +55,7 @@ ThreadHiding =
     # We need to clean hidden threads on the catalog ourselves,
     # otherwise if we don't visit the catalog regularly
     # it will pollute the localStorage and our data.
-    $.cache "//api.4chan.org/#{g.BOARD}/threads.json", ->
+    $.cache "//a.4cdn.org/#{g.BOARD}/threads.json", ->
       return unless @status is 200
       threads = {}
       for page in JSON.parse @response
@@ -139,6 +151,23 @@ ThreadHiding =
     a.dataset.fullID = thread.fullID
     $.on a, 'click', ThreadHiding.toggle
     a
+  makeStub: (thread, root) ->
+    numReplies  = $$('.thread > .replyContainer', root).length
+    numReplies += +summary.textContent.match /\d+/ if summary = $ '.summary', root
+    opInfo = if Conf['Anonymize']
+      'Anonymous'
+    else
+      $('.nameBlock', thread.OP.nodes.info).textContent
+
+    a = ThreadHiding.makeButton thread, 'show'
+    $.add a, $.tn " #{opInfo} (#{if numReplies is 1 then '1 reply' else "#{numReplies} replies"})"
+    thread.stub = $.el 'div',
+      className: 'stub'
+    if Conf['Menu']
+      $.add thread.stub, [a, $.tn(' '), Menu.makeButton()]
+    else
+      $.add thread.stub, a
+    $.prepend root, thread.stub
 
   saveHiddenState: (thread, makeStub) ->
     hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
@@ -165,37 +194,13 @@ ThreadHiding =
     ThreadHiding.saveHiddenState thread
 
   hide: (thread, makeStub=Conf['Stubs']) ->
-    {OP} = thread
-    threadRoot = OP.nodes.root.parentNode
+    return if thread.isHidden
+    threadRoot = thread.OP.nodes.root.parentNode
     thread.isHidden = true
 
-    unless makeStub
-      threadRoot.hidden = threadRoot.nextElementSibling.hidden = true # <hr>
-      return
+    return threadRoot.hidden = threadRoot.nextElementSibling.hidden = true unless makeStub # <hr>
 
-    numReplies = (
-      if span = $ '.summary', threadRoot
-        +span.textContent.match /\d+/
-      else
-        0
-      ) +
-      $$('.opContainer ~ .replyContainer', threadRoot).length
-    numReplies = if numReplies is 1 then '1 reply' else "#{numReplies or 'no'} replies"
-    opInfo =
-      if Conf['Anonymize']
-        'Anonymous'
-      else
-        $('.nameBlock', OP.nodes.info).textContent
-
-    a = ThreadHiding.makeButton thread, 'show'
-    $.add a, $.tn " #{opInfo} (#{numReplies})"
-    thread.stub = $.el 'div',
-      className: 'stub'
-    $.add thread.stub, if Conf['Menu']
-      [a, $.tn(' '), Menu.makeButton()] 
-    else
-      a
-    $.prepend threadRoot, thread.stub
+    ThreadHiding.makeStub thread, threadRoot
 
   show: (thread) ->
     if thread.stub

@@ -6,7 +6,7 @@ Gallery =
       href: 'javascript:;'
       id:   'appchan-gal'
       title: 'Gallery'
-      className: 'icon'
+      className: 'fa'
       textContent: '\uf03e'
 
     $.on el, 'click', @cb.toggle

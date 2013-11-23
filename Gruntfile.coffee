@@ -1,11 +1,17 @@
 module.exports = (grunt) ->
 
+  importHTML = (filename) ->
+    "\"\"\"#{grunt.file.read("src/General/html/#{filename}.html").replace(/^\s+|\s+$</gm, '').replace(/\n/g, '')}\"\"\""
+
   # Project configuration.
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
     concat:
       options: process: Object.create(null, data:
-        get: -> grunt.config 'pkg'
+        get: ->
+          pkg = grunt.config 'pkg'
+          pkg.importHTML = importHTML
+          pkg
         enumerable: true
       )
       coffee:
@@ -14,6 +20,7 @@ module.exports = (grunt) ->
           'src/General/Globals.coffee'
           'src/General/lib/*.coffee'
           'src/General/Header.coffee'
+          'src/General/Index.coffee'
           'src/General/Build.coffee'
           'src/General/Get.coffee'
           'src/General/UI.coffee'
@@ -89,6 +96,8 @@ module.exports = (grunt) ->
         stdout: true
         stderr: true
         failOnError: true
+      checkout:
+        command: 'git checkout <%= pkg.meta.mainBranch %>'
       commit:
         command: [
           'git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."'

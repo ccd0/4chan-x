@@ -34,6 +34,9 @@
   background-color: #F2F2F2;
   color: #888;
 }
+.field::-webkit-search-decoration {
+  display: none;
+}
 .move {
   cursor: move;
   overflow: hidden;
@@ -278,7 +281,7 @@ a {
   color: white;
 }
 .notification > .close {
-  padding: 6px;
+  padding: 7px;
   top: 0;
   right: 5px;
   position: absolute;
@@ -329,7 +332,7 @@ a {
 }
 #fourchanx-settings > nav a.close {
   text-decoration: none;
-  padding: 2px;
+  padding: 0 2px;
 }
 .section-container {
   overflow: auto;
@@ -425,6 +428,37 @@ a {
 .unscroll {
   overflow: hidden;
 }
+
+/* Index */
+:root.index-loading .navLinks,
+:root.index-loading .board,
+:root.index-loading .pagelist {
+  display: none;
+}
+#index-search {
+  padding-right: 1.5em;
+  width: 100px;
+  transition: color .25s, border-color .25s, width .25s;
+}
+#index-search:focus,
+#index-search[data-searching] {
+  width: 200px;
+}
+#index-search-clear {
+  color: gray;
+  margin-left: -1.25em;
+}
+<% if (type === 'crx') { %>
+/* ``::-webkit-*'' selectors break selector lists on Firefox. */
+#index-search::-webkit-search-cancel-button,
+<% } %>
+#index-search:not([data-searching]) + #index-search-clear {
+  display: none;
+}
+.summary {
+  text-decoration: none;
+}
+
 
 /* Announcement Hiding */
 :root.hide-announcement #globalMessage {
@@ -891,7 +925,7 @@ input#qr-filename:not(.edit) {
   opacity: .5;
   overflow: hidden;
   position: relative;
-  text-shadow: 0 1px 1px #000;
+  text-shadow: 0 0 2px #000;
   -moz-transition: opacity .25s ease-in-out;
   vertical-align: top;
   background-size: cover;
@@ -923,8 +957,7 @@ input#qr-filename:not(.edit) {
 .remove {
   background: none;
   color: #e00;
-  font-weight: 700;
-  padding: 3px;
+  padding: 1px;
 }
 a:only-of-type > .remove {
   display: none;
@@ -969,7 +1002,7 @@ a:only-of-type > .remove {
 }
 
 /* Menu */
-.menu-button {
+.menu-button:not(.fa-bars) {
   display: inline-block;
   position: relative;
   cursor: pointer;
@@ -1023,7 +1056,7 @@ a:only-of-type > .remove {
   left: 100%;
   top: -1px;
 }
-.focused .submenu {
+.focused > .submenu {
   display: block;
 }
 .imp-exp-result {
@@ -1268,4 +1301,12 @@ a:only-of-type > .remove {
 :root.gal-hide-thumbnails:not(.gal-fit-height) .gal-name,
 :root.gal-hide-thumbnails:not(.gal-fit-height) .gal-count {
   right: 44px !important;
+}
+@media screen and (resolution: 1dppx) {
+ .fa-bars {
+    font-size: 14px;
+  }
+  #shortcuts .fa-bars {
+    vertical-align: -1px;
+  }
 }

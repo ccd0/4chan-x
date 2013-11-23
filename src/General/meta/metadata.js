@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         <%= meta.name %>
 // @version      <%= version %>
-// @minGMVer     1.13
-// @minFFVer     22
+// @minGMVer     <%= meta.min.greasemonkey %>
+// @minFFVer     <%= meta.min.firefox %>
 // @namespace    <%= meta.namespace %>
 // @description  <%= description %>
 // @license      MIT; <%= meta.repo %>blob/<%= meta.mainBranch %>/LICENSE 

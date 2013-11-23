@@ -10,16 +10,23 @@
     "buildsPath": "builds/",
     "mainBranch": "master",
     "matches": [
-      "*://*.4chan.org/*",
-      "*://4chan.org/*"
+      "*://boards.4chan.org/*",
+      "*://sys.4chan.org/*",
+      "*://a.4cdn.org/*",
+      "*://i.4cdn.org/*"
     ],
     "files": {
       "metajs": "appchan-x.meta.js",
       "userjs": "appchan-x.user.js"
+    },
+    "min": {
+      "chrome": "29",
+      "firefox": "22",
+      "greasemonkey": "1.12"
     }
   },
   "devDependencies": {
-    "font-awesome": "git://github.com/MayhemYDG/Font-Awesome.git#df4285951124f9ca1f3907438462e5ba9e464bcb",
+    "font-awesome": "https://github.com/FortAwesome/Font-Awesome/archive/v4.0.3.tar.gz",
     "grunt": "~0.4.1",
     "grunt-bump": "~0.0.11",
     "grunt-concurrent": "~0.4.0",
@@ -29,8 +36,8 @@
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-copy": "~0.4.1",
     "grunt-contrib-watch": "~0.5.3",
-    "grunt-shell": "~0.4.0",
-    "load-grunt-tasks": "~0.1.0"
+    "grunt-shell": "~0.6.0",
+    "load-grunt-tasks": "~0.2.0"
   },
   "repository": {
     "type": "git",

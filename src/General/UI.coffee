@@ -170,7 +170,7 @@ UI = do ->
         ['0px', 'auto']
       else
         ['auto', '0px']
-      [left, right] = if eRect.right + sRect.width < cWidth
+      [left, right] = if eRect.right + sRect.width < cWidth - 150
         ['100%', 'auto']
       else
         ['auto', '100%']
