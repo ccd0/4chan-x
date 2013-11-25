@@ -262,11 +262,11 @@ QR =
       if delay
         cooldown = {delay}
       else
-        if hasFile = !!post.file
+        if post.file
           upSpd = post.file.size / ((start - req.uploadStartTime) / $.SECOND)
           QR.cooldown.upSpdAccuracy = ((upSpd > QR.cooldown.upSpd * .9) + QR.cooldown.upSpdAccuracy) / 2
           QR.cooldown.upSpd = upSpd
-        cooldown = {isReply, hasFile, threadID}
+        cooldown = {isReply, threadID}
       QR.cooldown.cooldowns[start] = cooldown
       $.set "cooldown.#{g.BOARD}", QR.cooldown.cooldowns
       QR.cooldown.start()
@@ -308,16 +308,12 @@ QR =
           #   reply cooldown with a reply, thread cooldown with a thread
           elapsed = Math.floor (now - start) / $.SECOND
           continue if elapsed < 0 # clock changed since then?
-          unless isReply
-            type = 'thread'
+          type = unless isReply
+            'thread'
           else if hasFile
-            # You can post an image reply immediately after a non-image reply.
-            unless cooldown.hasFile
-              seconds = Math.max seconds, 0
-              continue
-            type = 'image'
+            'image'
           else
-            type = 'reply'
+            'reply'
           maxTimer = Math.max types[type] or 0, types[type + '_intra'] or 0
           unless start <= now <= start + maxTimer * $.SECOND
             QR.cooldown.unset start

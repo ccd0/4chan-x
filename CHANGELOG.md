@@ -1,3 +1,6 @@
+- Minor cooldown fix:
+ - You cannot post an image reply immediately after a non-image reply anymore.
+
 ## 3.14.0 - *2013-11-21*
 
 - **New option**: `Auto-hide header on scroll`.
