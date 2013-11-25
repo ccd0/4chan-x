@@ -9,6 +9,9 @@ Build =
       "#{filename[...threshold - 5]}(...).#{filename[-3..]}"
     else
       filename
+  thumbRotate: do ->
+    n = 0
+    -> n = (n + 1) % 2
   postFromObject: (data, boardID) ->
     o =
       # id
@@ -43,7 +46,7 @@ Build =
         width:     data.w
         MD5:       data.md5
         size:      data.fsize
-        turl:      "//t.4cdn.org/#{boardID}/thumb/#{data.tim}s.jpg"
+        turl:      "//#{Build.thumbRotate()}.t.4cdn.org/#{boardID}/thumb/#{data.tim}s.jpg"
         theight:   data.tn_h
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
