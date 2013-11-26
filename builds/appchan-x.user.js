@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.5.1 - 2013-11-23
+* appchan x - Version 2.5.1 - 2013-11-26
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -4948,6 +4948,14 @@
         return filename;
       }
     },
+    thumbRotate: (function() {
+      var n;
+
+      n = 0;
+      return function() {
+        return n = (n + 1) % 3;
+      };
+    })(),
     postFromObject: function(data, boardID) {
       var o;
 
@@ -4978,7 +4986,7 @@
           width: data.w,
           MD5: data.md5,
           size: data.fsize,
-          turl: "//t.4cdn.org/" + boardID + "/thumb/" + data.tim + "s.jpg",
+          turl: "//" + (Build.thumbRotate()) + ".t.4cdn.org/" + boardID + "/thumb/" + data.tim + "s.jpg",
           theight: data.tn_h,
           twidth: data.tn_w,
           isSpoiler: !!data.spoiler,
@@ -8475,7 +8483,7 @@
         return QR.cooldown.start();
       },
       set: function(data) {
-        var cooldown, delay, hasFile, isReply, post, req, start, threadID, upSpd;
+        var cooldown, delay, isReply, post, req, start, threadID, upSpd;
 
         if (!Conf['Cooldown']) {
           return;
@@ -8487,14 +8495,13 @@
             delay: delay
           };
         } else {
-          if (hasFile = !!post.file) {
+          if (post.file) {
             upSpd = post.file.size / ((start - req.uploadStartTime) / $.SECOND);
             QR.cooldown.upSpdAccuracy = ((upSpd > QR.cooldown.upSpd * .9) + QR.cooldown.upSpdAccuracy) / 2;
             QR.cooldown.upSpd = upSpd;
           }
           cooldown = {
             isReply: isReply,
-            hasFile: hasFile,
             threadID: threadID
           };
         }
@@ -8544,17 +8551,7 @@
             if (elapsed < 0) {
               continue;
             }
-            if (!isReply) {
-              type = 'thread';
-            } else if (hasFile) {
-              if (!cooldown.hasFile) {
-                seconds = Math.max(seconds, 0);
-                continue;
-              }
-              type = 'image';
-            } else {
-              type = 'reply';
-            }
+            type = !isReply ? 'thread' : hasFile ? 'image' : 'reply';
             maxTimer = Math.max(types[type] || 0, types[type + '_intra'] || 0);
             if (!((start <= now && now <= start + maxTimer * $.SECOND))) {
               QR.cooldown.unset(start);

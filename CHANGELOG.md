@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-### v2.5.1 
-*2013-10-20*
-**Zixaphir**:
-- Infinite Scrolling Bugfix (chrome)
-
-## v2.5.0 
-*2013-10-19*
-=======
-
 **MayhemYDG**:
 - Tiny posting cooldown adjustment:
  - You can post an image reply immediately after a non-image reply.
@@ -46,21 +36,14 @@
  </ul>
  - Navigating across index pages is now instantaneous.
 - Added a keybind to open the catalog search field on index pages.
+- Minor cooldown fix:
+ - You cannot post an image reply immediately after a non-image reply anymore.
 - Various minor fixes
 
-### v1.2.43 
-*2013-11-10*
-
-**noface**:
-- Strawpoll.me embedding support (as usual, only works on HTTP 4chan due to lack of HTTPS)
-
-### v1.2.42 
-*2013-10-22*
->>>>>>> v3
-
+### v2.5.1 
+*2013-10-20*
 **Zixaphir**:
-- Better MediaCru.sh embedding
-- Infinite Scrolling
+- Infinite Scrolling Bugfix (chrome)
 
 ### v2.4.1 
 *2013-10-13*
