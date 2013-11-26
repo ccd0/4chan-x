@@ -1,4 +1,3 @@
-
 **MayhemYDG**:
 - Tiny posting cooldown adjustment:
  - You can post an image reply immediately after a non-image reply.
@@ -37,6 +36,8 @@
  </ul>
  - Navigating across index pages is now instantaneous.
 - Added a keybind to open the catalog search field on index pages.
+- Minor cooldown fix:
+ - You cannot post an image reply immediately after a non-image reply anymore.
 - Various minor fixes
 
 ### v1.2.43 
