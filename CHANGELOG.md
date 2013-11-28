@@ -1,3 +1,9 @@
+### v2.6.1 
+*2013-11-27*
+
+**Zixaphir**:
+- Fix an incorrect classname resulting in icons not showing correctly.
+
 ## v2.6.0 
 *2013-11-27*
 

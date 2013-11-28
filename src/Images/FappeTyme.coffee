@@ -18,7 +18,7 @@ FappeTyme =
         href: 'javascript:;'
         id:   'werkTyme'
         title: 'Werk Tyme'
-        className: 'icon'
+        className: 'fa'
         textContent: '\uf0b1'
 
       $.on el, 'click', FappeTyme.cb.werk

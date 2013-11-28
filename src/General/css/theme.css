@@ -342,7 +342,7 @@ a .name {
   border-top: 1px solid #{if Style.lightTheme then "rgba(0,0,0,0.05)" else "rgba(255,255,255,0.025)"};
 }
 .a-icon,
-#shortcuts .icon {
+#shortcuts .fa {
   #{unless Style.lightTheme then "<%= filter %>: url(\"#icons-filter\");" else ""}
 }
 .alternate-post-colors #threads > .thread:nth-of-type(2n+1),
