@@ -17,7 +17,7 @@ QR =
     return unless Conf['Header Shortcut'] or Conf['Page Shortcut']
 
     sc = $.el 'a',
-      className: "qr-shortcut icon #{unless Conf['Persistent QR'] then 'disabled' else ''}"
+      className: "qr-shortcut fa #{unless Conf['Persistent QR'] then 'disabled' else ''}"
       textContent: '\uf075'
       title: 'Quick Reply'
       href: 'javascript:;'
@@ -34,7 +34,7 @@ QR =
     return Header.addShortcut sc, true if Conf['Header Shortcut']
 
     $.addClass sc, 'on-page'
-    $.rmClass  sc, 'icon'
+    $.rmClass  sc, 'fa'
     sc.textContent = if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'
     con = $.el 'div',
       className: 'center'
