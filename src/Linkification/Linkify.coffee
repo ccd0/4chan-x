@@ -30,10 +30,10 @@ Linkify =
       (                                    # One or more:
         [^\s()<>]+                         # Run of non-space, non-()<>
         |                                  #   or
-        \(([^\s()<>]+|(\([^\s()<>]+\)))*\) # balanced parens, up to 2 levels
+        \([^\s()<>]+\)                     # balanced parens, up to 1 level
       )+
       (                                    # End with:
-        \(([^\s()<>]+|(\([^\s()<>]+\)))*\) # balanced parens, up to 2 levels
+        \([^\s()<>]+\)                     # balanced parens, up to 1 level
         |                                  #   or
         [^\s`!()\[\]{};:'".,<>?«»“”‘’]     # not a space or one of these punct chars
       )
