@@ -37,10 +37,17 @@ Index =
       $.on input, 'change', @cb.sort
 
     repliesEntry =
-      el: $.el 'label', innerHTML: '<input type=checkbox name="Show Replies"> Show replies'
+      el: $.el 'label',
+        innerHTML: '<input type=checkbox name="Show Replies"> Show replies'
     anchorEntry =
-      el: $.el 'label', innerHTML: '<input type=checkbox name="Anchor Hidden Threads" title="Move hidden threads at the end of the index."> Anchor hidden threads'
-    for label in [repliesEntry, anchorEntry]
+      el: $.el 'label',
+        innerHTML: '<input type=checkbox name="Anchor Hidden Threads"> Anchor hidden threads'
+        title: 'Move hidden threads at the end of the index.'
+    refNavEntry =
+      el: $.el 'label',
+        innerHTML: '<input type=checkbox name="Refreshed Navigation"> Refreshed navigation'
+        title: 'Refresh index when navigating through pages.'
+    for label in [repliesEntry, anchorEntry, refNavEntry]
       input = label.el.firstChild
       {name} = input
       input.checked = Conf[name]
@@ -56,7 +63,7 @@ Index =
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 90
-      subEntries: [modeEntry, sortEntry, repliesEntry, anchorEntry]
+      subEntries: [modeEntry, sortEntry, repliesEntry, anchorEntry, refNavEntry]
 
     $.addClass doc, 'index-loading'
     @update()
@@ -118,13 +125,18 @@ Index =
           return
       return if a.textContent is 'Catalog'
       e.preventDefault()
-      Index.pageNav +a.pathname.split('/')[2]
+      Index.userPageNav +a.pathname.split('/')[2]
 
   scrollToIndex: ->
     Header.scrollToIfNeeded Index.root
 
   getCurrentPage: ->
     +window.location.pathname.split('/')[2]
+  userPageNav: (pageNum) ->
+    if Conf['Refreshed Navigation'] and Conf['Index Mode'] is 'paged'
+      Index.update pageNum
+    else
+      Index.pageNav pageNum
   pageNav: (pageNum) ->
     return if Index.currentPage is pageNum
     history.pushState null, '', if pageNum is 0 then './' else pageNum
@@ -181,7 +193,7 @@ Index =
     $.before a, strong
     $.add strong, a
 
-  update: ->
+  update: (pageNum) ->
     return unless navigator.onLine
     Index.req?.abort()
     Index.notice?.close()
@@ -196,13 +208,14 @@ Index =
           return unless Index.req and !Index.notice
           Index.notice = new Notice 'info', 'Refreshing index...'
         ), 5 * $.SECOND - (Date.now() - now)
+    onload = (e) -> Index.load e, pageNum
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
-      onabort:   Index.load
-      onloadend: Index.load
+      onabort:   onload
+      onloadend: onload
     ,
       whenModified: true
     $.addClass Index.button, 'fa-spin'
-  load: (e) ->
+  load: (e, pageNum) ->
     $.rmClass Index.button, 'fa-spin'
     {req, notice} = Index
     delete Index.req
@@ -214,7 +227,10 @@ Index =
       return
 
     try
-      Index.parse JSON.parse req.response if req.status is 200
+      if req.status is 200
+        Index.parse JSON.parse(req.response), pageNum
+      else if req.status is 304 and pageNum?
+        Index.pageNav pageNum
     catch err
       c.error 'Index failure:', err.stack
       # network error or non-JSON content for example.
@@ -235,12 +251,15 @@ Index =
     timeEl.dataset.utc = e.timeStamp <% if (type === 'userscript') { %>/ 1000<% } %>
     RelativeDates.update timeEl
     Index.scrollToIndex()
-  parse: (pages) ->
+  parse: (pages, pageNum) ->
     Index.parseThreadList pages
     Index.buildThreads()
     Index.sort()
-    Index.buildIndex()
     Index.buildPagelist()
+    if pageNum?
+      Index.pageNav pageNum
+      return
+    Index.buildIndex()
     Index.setPage()
   parseThreadList: (pages) ->
     Index.pagesNum          = pages.length

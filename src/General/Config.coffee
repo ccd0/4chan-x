@@ -144,6 +144,7 @@ Config =
     'Index Sort': 'bump'
     'Show Replies': true
     'Anchor Hidden Threads': true
+    'Refreshed Navigation': false
   Header:
     'Header auto-hide':           false
     'Header auto-hide on scroll': false
