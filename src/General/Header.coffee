@@ -225,12 +225,12 @@ Header =
   setCatalogLinks: (useCatalog) ->
     Header.catalogToggler.checked = useCatalog
     as = $$ [
-      '#board-list a[href*="boards.4chan.org"]'
-      '#boardNavDesktop a[href*="boards.4chan.org"]'
-      '#boardNavDesktopFoot a[href*="boards.4chan.org"]'
+      '#board-list a'
+      '#boardNavDesktop a'
+      '#boardNavDesktopFoot a'
     ].join ', '
     path = if useCatalog then 'catalog' else ''
-    for a in as when not a.dataset.only
+    for a in as when a.hostname is 'boards.4chan.org' and not a.dataset.only
       a.pathname = "/#{a.pathname.split('/')[1]}/#{path}"
     return
   toggleCatalogLinks: ->
