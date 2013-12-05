@@ -52,8 +52,7 @@ class Clone extends Post
       for key, val of origin.file
         @file[key] = val
       file = $ '.file', post
-      @file.info  = file.firstElementChild
-      @file.text  = @file.info.firstElementChild
+      @file.text  = file.firstElementChild
       @file.thumb = $ 'img[data-md5]', file
       @file.fullImage = $ '.full-image', file
 

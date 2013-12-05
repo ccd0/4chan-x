@@ -167,15 +167,15 @@ Build =
       filename      = a.innerHTML.replace /'/g, '&apos;'
 
       fileDims = if ext is 'pdf' then 'PDF' else "#{file.width}x#{file.height}"
-      fileInfo = "<span class=fileText id=fT#{postID}#{if file.isSpoiler then " title='#{filename}'" else ''}>File: <a href='#{file.url}' target=_blank>#{file.timestamp}</a>" +
+      fileInfo = "<div class=fileText id=fT#{postID}#{if file.isSpoiler then " title='#{filename}'" else ''}>File: <a href='#{file.url}' target=_blank>#{file.timestamp}</a>" +
         "-(#{fileSize}, #{fileDims}#{
           if file.isSpoiler
             ''
           else
-            ", <span title='#{filename}'>#{shortFilename}</span>"
-        }" + ")</span>"
+            ", <span#{if filename isnt shortFilename then " title='#{filename}'" else ''}>#{shortFilename}</span>"
+        }" + ")</div>"
 
-      fileHTML = "<div id=f#{postID} class=file><div class=fileInfo>#{fileInfo}</div>#{imgSrc}</div>"
+      fileHTML = "<div class=file id=f#{postID}>#{fileInfo}#{imgSrc}</div>"
     else
       fileHTML = ''
 

@@ -1,3 +1,5 @@
+- Fix 4chan X breaking in threads following a 4chan markup change.
+
 ### 3.14.1 - *2013-11-25*
 
 - Minor cooldown fix:
