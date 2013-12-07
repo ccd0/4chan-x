@@ -1,3 +1,13 @@
+### v1.2.44 
+*2013-12-06*
+
+**MayhemYDG**:
+- Cooldown fix (You can no longer post an image reply immediately after a text reply)
+- Fix for 4chan markup change that caused a lot of errors
+
+**seaweedchan**:
+- Fix catalog links option
+
 ### v1.2.43 
 *2013-11-10*
 
