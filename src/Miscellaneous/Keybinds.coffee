@@ -109,7 +109,7 @@ Keybinds =
       when Conf['Deselect reply']
         Keybinds.hl  0, threadRoot
       when Conf['Hide']
-        ThreadHiding.toggle thread if g.VIEW is 'index'
+        ThreadHiding.toggle thread if ThreadHiding.db
       else
         return
     e.preventDefault()
