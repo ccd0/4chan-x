@@ -197,7 +197,7 @@ Keybinds =
           'following'
         else
           'preceding'
-        return unless next = $.x "#{axe}-sibling::div[contains(@class,'replyContainer')][1]/child::div[contains(@class,'reply')]", root
+        return unless next = $.x "#{axe}-sibling::div[contains(@class,'replyContainer') and not(@hidden) and not(child::div[@class='stub'])][1]/child::div[contains(@class,'reply')]", root
         Header.scrollToIfNeeded next, delta is +1
         @focus next
         $.rmClass postEl, 'highlight'
