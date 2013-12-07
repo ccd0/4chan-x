@@ -115,10 +115,10 @@ a {
   z-index: 10;
 }
 /* Header */
-.fixed.top body {
+.fixed.top-header body {
   padding-top: 2em;
 }
-.fixed.bottom body {
+.fixed.bottom-header body {
   padding-bottom: 2em;
 }
 .fixed #header-bar {
@@ -126,10 +126,10 @@ a {
   left: 0;
   padding: 3px 4px 4px;
 }
-.fixed.top #header-bar {
+.fixed.top-header #header-bar {
   top: 0;
 }
-.fixed.bottom #header-bar {
+.fixed.bottom-header #header-bar {
   bottom: 0;
 }
 #header-bar {
@@ -147,7 +147,7 @@ a {
   position: relative;
   left: 150px;
 }
-.fixed.top #header-bar {
+.fixed.top-header #header-bar {
   border-bottom-width: 1px;
 }
 .fixed.bottom #header-bar {
@@ -165,7 +165,7 @@ a {
   box-shadow: none;
   transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
 }
-.fixed.top #header-bar.autohide:not(:hover) {
+.fixed.top-header #header-bar.autohide:not(:hover) {
   margin-bottom: -1em;
   -webkit-transform: translateY(-100%);
   transform: translateY(-100%);
@@ -189,10 +189,10 @@ a {
 .fixed #header-bar #scroll-marker {
   display: block;
 }
-.fixed.top #header-bar #scroll-marker {
+.fixed.top-header #header-bar #scroll-marker {
   top: 100%;
 }
-.fixed.bottom #header-bar #scroll-marker {
+.fixed.bottom-header #header-bar #scroll-marker {
   bottom: 100%;
 }
 #header-bar a:not(.entry):not(.close) {
@@ -249,7 +249,7 @@ a {
   left: 0;
   transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
 }
-.fixed.top #header-bar #notifications {
+.fixed.top-header #header-bar #notifications {
   position: absolute;
   top: 100%;
 }
