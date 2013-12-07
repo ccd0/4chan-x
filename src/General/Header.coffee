@@ -111,7 +111,7 @@ Header =
   bar: $.el 'div',
     id: 'header-bar'
 
-  notify: $.el 'div',
+  noticesRoot: $.el 'div',
     id: 'notifications'
 
   shortcuts: $.el 'span',
@@ -136,7 +136,7 @@ Header =
 
     $.rm $ '#navtopright', fullBoardList
     $.add boardList, fullBoardList
-    $.add Header.bar, [boardList, Header.shortcuts, Header.notify, Header.toggle]
+    $.add Header.bar, [boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]
 
     Header.setCustomNav Conf['Custom Board Navigation']
     Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
