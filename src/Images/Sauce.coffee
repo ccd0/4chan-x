@@ -41,4 +41,4 @@ Sauce =
     for link in Sauce.links
       # \u00A0 is nbsp
       nodes.push $.tn('\u00A0'), link @, Sauce.link.cloneNode true
-    $.add @file.info, nodes
+    $.add @file.text, nodes

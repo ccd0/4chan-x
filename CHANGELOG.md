@@ -14,8 +14,9 @@
 *2013-11-27*
 
 **MayhemYDG**:
-- Tiny posting cooldown adjustment:
- - You can post an image reply immediately after a non-image reply.
+- Fix 4chan X breaking in threads following a 4chan markup change.
+- Minor cooldown fix:
+ - You cannot post an image reply immediately after a non-image reply anymore.
 - **New option**: `Auto-hide header on scroll`.
 - Added support for `4cdn.org`.
 - More index navigation improvements:

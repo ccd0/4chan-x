@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.43 - 2013-11-26
+* 4chan X - Version 1.2.43 - 2013-12-06
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -1064,20 +1064,18 @@
     };
 
     Post.prototype.parseFile = function(that) {
-      var alt, anchor, fileEl, fileInfo, size, thumb, unit;
+      var anchor, fileEl, fileText, nameNode, size, thumb, unit;
 
       if (!((fileEl = $('.file', this.nodes.post)) && (thumb = $('img[data-md5]', fileEl)))) {
         return;
       }
-      alt = thumb.alt;
       anchor = thumb.parentNode;
-      fileInfo = fileEl.firstElementChild;
+      fileText = fileEl.firstElementChild;
       this.file = {
-        info: fileInfo,
-        text: fileInfo.firstElementChild,
+        text: fileText,
         thumb: thumb,
         URL: anchor.href,
-        size: alt.match(/[\d.]+\s\w+/)[0],
+        size: thumb.alt.match(/[\d.]+\s\w+/)[0],
         MD5: thumb.dataset.md5,
         isSpoiler: $.hasClass(anchor, 'imgspoiler')
       };
@@ -1088,9 +1086,9 @@
       }
       this.file.sizeInBytes = size;
       this.file.thumbURL = that.isArchived ? thumb.src : "" + location.protocol + "//t.4cdn.org/" + this.board + "/thumb/" + (this.file.URL.match(/(\d+)\./)[1]) + "s.jpg";
-      this.file.name = $('span[title]', fileInfo).title;
+      this.file.name = (nameNode = $('span', fileText)) ? nameNode.title || nameNode.textContent : fileText.title;
       if (this.file.isImage = /(jpg|png|gif)$/i.test(this.file.name)) {
-        return this.file.dimensions = this.file.text.textContent.match(/\d+x\d+/)[0];
+        return this.file.dimensions = fileText.textContent.match(/\d+x\d+/)[0];
       }
     };
 
@@ -1270,8 +1268,7 @@
           this.file[key] = val;
         }
         file = $('.file', post);
-        this.file.info = file.firstElementChild;
-        this.file.text = this.file.info.firstElementChild;
+        this.file.text = file.firstElementChild;
         this.file.thumb = $('img[data-md5]', file);
         this.file.fullImage = $('.full-image', file);
       }
@@ -1691,7 +1688,7 @@
     bar: $.el('div', {
       id: 'header-bar'
     }),
-    notify: $.el('div', {
+    noticesRoot: $.el('div', {
       id: 'notifications'
     }),
     shortcuts: $.el('span', {
@@ -1719,7 +1716,7 @@
       $.on(btn, 'click', Header.toggleBoardList);
       $.rm($('#navtopright', fullBoardList));
       $.add(boardList, fullBoardList);
-      $.add(Header.bar, [boardList, Header.shortcuts, Header.notify, Header.toggle]);
+      $.add(Header.bar, [boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]);
       Header.setCustomNav(Conf['Custom Board Navigation']);
       Header.generateBoardList(Conf['boardnav'].replace(/(\r\n|\n|\r)/g, ' '));
       $.sync('Custom Board Navigation', Header.setCustomNav);
@@ -2785,8 +2782,8 @@
         a.textContent = filename;
         filename = a.innerHTML.replace(/'/g, '&apos;');
         fileDims = ext === 'pdf' ? 'PDF' : "" + file.width + "x" + file.height;
-        fileInfo = ("<span class=fileText id=fT" + postID + (file.isSpoiler ? " title='" + filename + "'" : '') + ">File: <a href='" + file.url + "' target=_blank>" + file.timestamp + "</a>") + ("-(" + fileSize + ", " + fileDims + (file.isSpoiler ? '' : ", <span title='" + filename + "'>" + shortFilename + "</span>")) + ")</span>";
-        fileHTML = "<div id=f" + postID + " class=file><div class=fileInfo>" + fileInfo + "</div>" + imgSrc + "</div>";
+        fileInfo = ("<div class=fileText id=fT" + postID + (file.isSpoiler ? " title='" + filename + "'" : '') + ">File: <a href='" + file.url + "' target=_blank>" + file.timestamp + "</a>") + ("-(" + fileSize + ", " + fileDims + (file.isSpoiler ? '' : ", <span" + (filename !== shortFilename ? " title='" + filename + "'" : '') + ">" + shortFilename + "</span>")) + ")</div>";
+        fileHTML = "<div class=file id=f" + postID + ">" + fileInfo + imgSrc + "</div>";
       } else {
         fileHTML = '';
       }
@@ -8260,7 +8257,7 @@
         link = _ref[_i];
         nodes.push($.tn('\u00A0'), link(this, Sauce.link.cloneNode(true)));
       }
-      return $.add(this.file.info, nodes);
+      return $.add(this.file.text, nodes);
     }
   };
 

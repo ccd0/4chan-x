@@ -55,6 +55,9 @@ a[href="javascript:;"] {
 .post {
   overflow: visible !important;
 }
+.reply > .file > .fileText {
+  margin: 0 20px;
+}
 [hidden] {
   display: none !important;
 }

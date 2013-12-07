@@ -1091,7 +1091,7 @@ th {
 .underline-links .replylink {
   text-decoration: underline;
 }
-.fileInfo {
+.reply .fileText {
   padding: 0 3px;
 }
 .fileThumb {
