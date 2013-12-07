@@ -64,7 +64,7 @@ a {
   display: block !important;
   overflow: visible !important;
 }
-.fileText {
+.reply > .file > .fileText {
   margin: 0 20px;
 }
 [hidden] {
