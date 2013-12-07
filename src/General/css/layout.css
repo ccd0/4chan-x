@@ -265,18 +265,18 @@ th {
 .fixed #header-bar {
   position: fixed;
 }
-.top #header-bar {
+.top-header #header-bar {
   top: 0;
   border-top-width: 0;
 }
-.rounded-edges.top #header-bar {
+.rounded-edges.top-header #header-bar {
   border-radius: 0 0 3px 3px;
 }
-.fixed.bottom #header-bar {
+.fixed.bottom-header #header-bar {
   bottom: 0;
   border-bottom-width: 0;
 }
-.rounded-edges.bottom #header-bar {
+.rounded-edges.bottom-header #header-bar {
   border-radius: 3px 3px 0 0;
 }
 .hide #header-bar {
@@ -289,11 +289,11 @@ th {
   box-shadow: none;
   transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
 }
-.fixed.top #header-bar.autohide:not(:hover) {
+.fixed.top-header #header-bar.autohide:not(:hover) {
   margin-bottom: -1em;
   <%= transform %>: translateY(-100%);
 }
-.fixed.bottom #header-bar.autohide:not(:hover) {
+.fixed.bottom-header #header-bar.autohide:not(:hover) {
   <%= transform %>: translateY(100%);
 }
 #scroll-marker {
@@ -308,10 +308,10 @@ th {
 .fixed #header-bar #scroll-marker {
   display: block;
 }
-.fixed.top header-bar #scroll-marker {
+.fixed.top-header header-bar #scroll-marker {
   top: 100%;
 }
-.fixed.bottom #header-bar #scroll-marker {
+.fixed.bottom-header #header-bar #scroll-marker {
   bottom: 100%;
 }
 /* Notifications */
@@ -323,7 +323,7 @@ th {
   left: 0;
   transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
 }
-.fixed.top #header-bar #notifications {
+.fixed.top-header #header-bar #notifications {
   position: absolute;
   top: 100%;
 }
@@ -1426,7 +1426,7 @@ input:checked + .rice {
 :root:not(.post-form-style-float) #qr {
   bottom: 0 !important;
 }
-.fourchan-ss-navigation.fixed.bottom:not(.post-form-style-float) #qr,
+.fourchan-ss-navigation.fixed.bottom-header:not(.post-form-style-float) #qr,
 .fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-float) #qr {
   bottom: 1.5em !important;
 }
@@ -1846,7 +1846,7 @@ a:only-of-type > .remove {
 .sidebar-location-right.mascot-location-opposite #mascot img {
   <%= transform %>: scaleX(-1);
 }
-.fourchan-ss-navigation.bottom.fixed #mascot,
+.fourchan-ss-navigation.bottom-header.fixed #mascot,
 .fourchan-ss-navigation.index.pagination-sticky-bottom #mascot {
   bottom: 1.5em
 }

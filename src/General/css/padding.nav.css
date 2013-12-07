@@ -1,15 +1,15 @@
 body {
   padding-bottom: 1px;
 }
-.fourchan-ss-navigation.fixed.top:not(.autohide) body::before {
+.fourchan-ss-navigation.fixed.top-header:not(.autohide) body::before {
   top: #{navHeight}px;
 }
-.fourchan-ss-navigation.fixed.bottom:not(.autohide) body::before {
+.fourchan-ss-navigation.fixed.bottom-header:not(.autohide) body::before {
   bottom: #{navHeight}px;
 }
-.top:not(.autohide) body {
+.top-header:not(.autohide) body {
   padding-top: #{navHeight + 1}px;
 }
-.bottom:not(.autohide) body {
+.bottom-header:not(.autohide) body {
   padding-bottom: #{navHeight + 1}px;
 }
