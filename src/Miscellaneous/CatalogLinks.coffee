@@ -28,8 +28,8 @@ CatalogLinks =
   set: (useCatalog) ->
     path = if useCatalog then 'catalog' else ''
     for a in $$ """
-      #board-list a[href*="boards.4chan.org"]:not(.catalog),
-      #boardNavDesktopFoot a[href*="boards.4chan.org"]
+      #board-list a:not(.catalog),
+      #boardNavDesktopFoot a
     """
       board = a.pathname.split('/')[1]
       continue if ['f', 'status', '4chan'].contains(board) or !board
@@ -37,7 +37,7 @@ CatalogLinks =
         a.href = if useCatalog
           CatalogLinks.external board
         else
-          "//boards.4chan.org/#{board}/"
+          "/#{board}/"
       else
         a.pathname = "/#{board}/#{path}"
     @title = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
@@ -49,5 +49,5 @@ CatalogLinks =
       else if ['d', 'e', 'gif', 'h', 'hr', 'hc', 'r9k', 's', 'pol', 'soc', 'u', 'i', 'ic', 'hm', 'r', 'w', 'wg', 'wsg', 't', 'y'].contains board
         "http://4index.gropes.us/#{board}"
       else
-        "//boards.4chan.org/#{board}/catalog"
+        "/#{board}/catalog"
     )

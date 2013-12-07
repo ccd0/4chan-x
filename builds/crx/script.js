@@ -9484,7 +9484,7 @@
       var a, board, path, _i, _len, _ref;
 
       path = useCatalog ? 'catalog' : '';
-      _ref = $$("#board-list a[href*=\"boards.4chan.org\"]:not(.catalog),\n#boardNavDesktopFoot a[href*=\"boards.4chan.org\"]");
+      _ref = $$("#board-list a:not(.catalog),\n#boardNavDesktopFoot a");
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
         board = a.pathname.split('/')[1];
@@ -9492,7 +9492,7 @@
           continue;
         }
         if (Conf['External Catalog']) {
-          a.href = useCatalog ? CatalogLinks.external(board) : "//boards.4chan.org/" + board + "/";
+          a.href = useCatalog ? CatalogLinks.external(board) : "/" + board + "/";
         } else {
           a.pathname = "/" + board + "/" + path;
         }
@@ -9500,7 +9500,7 @@
       return this.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
     },
     external: function(board) {
-      return (['a', 'c', 'g', 'co', 'k', 'm', 'o', 'p', 'v', 'vg', 'w', 'cm', '3', 'adv', 'an', 'cgl', 'ck', 'diy', 'fa', 'fit', 'int', 'jp', 'mlp', 'lit', 'mu', 'n', 'po', 'sci', 'toy', 'trv', 'tv', 'vp', 'x', 'q'].contains(board) ? "http://catalog.neet.tv/" + board : ['d', 'e', 'gif', 'h', 'hr', 'hc', 'r9k', 's', 'pol', 'soc', 'u', 'i', 'ic', 'hm', 'r', 'w', 'wg', 'wsg', 't', 'y'].contains(board) ? "http://4index.gropes.us/" + board : "//boards.4chan.org/" + board + "/catalog");
+      return (['a', 'c', 'g', 'co', 'k', 'm', 'o', 'p', 'v', 'vg', 'w', 'cm', '3', 'adv', 'an', 'cgl', 'ck', 'diy', 'fa', 'fit', 'int', 'jp', 'mlp', 'lit', 'mu', 'n', 'po', 'sci', 'toy', 'trv', 'tv', 'vp', 'x', 'q'].contains(board) ? "http://catalog.neet.tv/" + board : ['d', 'e', 'gif', 'h', 'hr', 'hc', 'r9k', 's', 'pol', 'soc', 'u', 'i', 'ic', 'hm', 'r', 'w', 'wg', 'wsg', 't', 'y'].contains(board) ? "http://4index.gropes.us/" + board : "/" + board + "/catalog");
     }
   };
 
