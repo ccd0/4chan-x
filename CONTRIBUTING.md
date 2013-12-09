@@ -41,6 +41,6 @@ Note: this is only used to release new 4chan X versions, and is **not** needed o
 
 ### Contribute
 
-- Edit the CoffeeScript sources.
+- Edit the sources.
 - If the edits affect regular users, edit the changelog.
 - Open a pull request.
