@@ -151,7 +151,7 @@ module.exports = (grunt) ->
     'clean:tmpuserscript'
   ]
 
-  grunt.registerTask 'release', ['shell:commit', 'shell:push', 'build-crx', 'compress:crx']
+  grunt.registerTask 'release', ['clean', 'shell:commit', 'shell:push', 'build-crx', 'compress:crx']
   grunt.registerTask 'patch',   ['shell:checkout', 'bump',       'updcl:3', 'release']
   grunt.registerTask 'minor',   ['shell:checkout', 'bump:minor', 'updcl:2', 'release']
   grunt.registerTask 'major',   ['shell:checkout', 'bump:major', 'updcl:1', 'release']
