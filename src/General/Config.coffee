@@ -143,6 +143,7 @@ Config =
     'Index Mode': 'paged'
     'Index Sort': 'bump'
     'Show Replies': true
+    'Anchor Hidden Threads': true
   Header:
     'Header auto-hide':           false
     'Header auto-hide on scroll': false

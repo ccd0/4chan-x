@@ -1,3 +1,6 @@
+- More index navigation improvements:
+ - New setting: `Anchor Hidden Threads`, enabled by default. Hidden threads will be moved at the end of the index to fill the first pages.
+
 ### 3.14.3 - *2013-12-09*
 
 - Minor bug fixes.

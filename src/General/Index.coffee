@@ -38,17 +38,25 @@ Index =
 
     repliesEntry =
       el: $.el 'label', innerHTML: '<input type=checkbox name="Show Replies"> Show replies'
-    input = repliesEntry.el.firstChild
-    input.checked = Conf['Show Replies']
-    $.on input, 'change', $.cb.checked
-    $.on input, 'change', @cb.replies
+    anchorEntry =
+      el: $.el 'label', innerHTML: '<input type=checkbox name="Anchor Hidden Threads" title="Move hidden threads at the end of the index."> Anchor hidden threads'
+    for label in [repliesEntry, anchorEntry]
+      input = label.el.firstChild
+      {name} = input
+      input.checked = Conf[name]
+      $.on input, 'change', $.cb.checked
+      switch name
+        when 'Show Replies'
+          $.on input, 'change', @cb.replies
+        when 'Anchor Hidden Threads'
+          $.on input, 'change', @cb.sort
 
     $.event 'AddMenuEntry',
       type: 'header'
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 90
-      subEntries: [modeEntry, sortEntry, repliesEntry]
+      subEntries: [modeEntry, sortEntry, repliesEntry, anchorEntry]
 
     $.addClass doc, 'index-loading'
     @update()
@@ -318,12 +326,17 @@ Index =
       Index.sortedNodes.push Index.nodes[i], Index.nodes[i + 1]
     if Index.isSearching
       Index.sortedNodes = Index.querySearch(Index.searchInput.value) or Index.sortedNodes
-    # Put the sticky threads on top of the index.
+    # Move non-hidden threads on top of the index.
+    if Conf['Anchor Hidden Threads']
+      offset = 0
+      for threadRoot, i in Index.sortedNodes by 2 when not Get.threadFromRoot(threadRoot).isHidden
+        Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
+    # Move sticky threads on top of the index.
     offset = 0
     for threadRoot, i in Index.sortedNodes by 2 when Get.threadFromRoot(threadRoot).isSticky
       Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
     return unless Conf['Filter']
-    # Put the highlighted thread & <hr> on top of the index
+    # Move highlighted threads & <hr> on top of the index
     # while keeping the original order they appear in.
     offset = 0
     for threadRoot, i in Index.sortedNodes by 2 when Get.threadFromRoot(threadRoot).isOnTop
