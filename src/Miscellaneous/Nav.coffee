@@ -48,11 +48,11 @@ Nav =
 
   scroll: (delta) ->
     thread = Nav.getThread()
-    axe = if delta is +1
+    axis = if delta is +1
       'following'
     else
       'preceding'
-    if next = $.x "#{axe}-sibling::div[contains(@class,'thread') and not(@hidden)][1]", thread
+    if next = $.x "#{axis}-sibling::div[contains(@class,'thread') and not(@hidden)][1]", thread
       # Unless we're not at the beginning of the current thread,
       # and thus wanting to move to beginning,
       # or we're above the first thread and don't want to skip it.

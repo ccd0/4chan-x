@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.43 - 2013-12-06
+* 4chan X - Version 1.2.43 - 2013-12-09
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -2752,7 +2752,7 @@
       }
       flag = !flagCode ? '' : boardID === 'pol' ? " <img src='" + staticPath + "country/troll/" + (flagCode.toLowerCase()) + ".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>" : " <span title='" + flagName + "' class='flag flag-" + (flagCode.toLowerCase()) + "'></span>";
       if (file != null ? file.isDeleted : void 0) {
-        fileHTML = isOP ? ("<div class=file id=f" + postID + "><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted" + gifIcon + "' alt='File deleted.' class=fileDeleted>") + "</span></div>" : ("<div class=file id=f" + postID + "><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted-res" + gifIcon + "' alt='File deleted.' class=fileDeletedRes>") + "</span></div>";
+        fileHTML = isOP ? ("<div class=file id=f" + postID + "><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted" + gifIcon + "' alt='File deleted.' class=fileDeleted>") + "</span></div>" : ("<div class=file id=f" + postID + "><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted-res" + gifIcon + "' alt='File deleted.' class=fileDeletedRes>") + "</span></div>";
       } else if (file) {
         ext = file.name.slice(-3);
         if (!file.twidth && !file.theight && ext === 'gif') {
@@ -10723,7 +10723,7 @@
       if (!this.file || this.isClone) {
         return;
       }
-      return this.file.text.innerHTML = FileInfo.funk(FileInfo, this);
+      return this.file.text.innerHTML = "<span class=file-info>" + (FileInfo.funk(FileInfo, this)) + "</span>";
     },
     createFunc: function(format) {
       var code;
@@ -11295,7 +11295,7 @@
           Keybinds.hl(0, threadRoot);
           break;
         case Conf['Hide']:
-          if (g.VIEW === 'index') {
+          if (ThreadHiding.db) {
             ThreadHiding.toggle(thread);
           }
           break;
@@ -11408,7 +11408,7 @@
       }
     },
     hl: function(delta, thread) {
-      var axe, height, next, postEl, replies, reply, root, _i, _len;
+      var axis, height, next, postEl, replies, reply, root, _i, _len;
 
       postEl = $('.reply.highlight', thread);
       if (!delta) {
@@ -11421,8 +11421,8 @@
         height = postEl.getBoundingClientRect().height;
         if (Header.getTopOf(postEl) >= -height && Header.getBottomOf(postEl) >= -height) {
           root = postEl.parentNode;
-          axe = delta === +1 ? 'following' : 'preceding';
-          if (!(next = $.x("" + axe + "-sibling::div[contains(@class,'replyContainer')][1]/child::div[contains(@class,'reply')]", root))) {
+          axis = delta === +1 ? 'following' : 'preceding';
+          if (!(next = $.x("" + axis + "-sibling::div[contains(@class,'replyContainer') and not(@hidden) and not(child::div[@class='stub'])][1]/child::div[contains(@class,'reply')]", root))) {
             return;
           }
           Header.scrollToIfNeeded(next, delta === +1);
@@ -11518,11 +11518,11 @@
       return $('.board');
     },
     scroll: function(delta) {
-      var axe, next, thread, top;
+      var axis, next, thread, top;
 
       thread = Nav.getThread();
-      axe = delta === +1 ? 'following' : 'preceding';
-      if (next = $.x("" + axe + "-sibling::div[contains(@class,'thread') and not(@hidden)][1]", thread)) {
+      axis = delta === +1 ? 'following' : 'preceding';
+      if (next = $.x("" + axis + "-sibling::div[contains(@class,'thread') and not(@hidden)][1]", thread)) {
         top = Header.getTopOf(thread);
         if (delta === +1 && top < 5 || delta === -1 && top > -5) {
           thread = next;

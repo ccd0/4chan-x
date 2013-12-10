@@ -126,7 +126,7 @@ Keybinds =
       when Conf['Deselect reply']
         Keybinds.hl  0, threadRoot
       when Conf['Hide']
-        ThreadHiding.toggle thread if g.VIEW is 'index'
+        ThreadHiding.toggle thread if ThreadHiding.db
       when Conf['Previous Post Quoting You']
         QuoteYou.cb.seek 'preceding'
       when Conf['Next Post Quoting You']
@@ -222,11 +222,11 @@ Keybinds =
       {height} = postEl.getBoundingClientRect()
       if Header.getTopOf(postEl) >= -height and Header.getBottomOf(postEl) >= -height # We're at least partially visible
         root = postEl.parentNode
-        axe = if delta is +1
+        axis = if delta is +1
           'following'
         else
           'preceding'
-        return unless next = $.x "#{axe}-sibling::div[contains(@class,'replyContainer')][1]/child::div[contains(@class,'reply')]", root
+        return unless next = $.x "#{axis}-sibling::div[contains(@class,'replyContainer') and not(@hidden) and not(child::div[@class='stub'])][1]/child::div[contains(@class,'reply')]", root
         Header.scrollToIfNeeded next, delta is +1
         @focus next
         $.rmClass postEl, 'highlight'
