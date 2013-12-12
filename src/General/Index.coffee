@@ -249,7 +249,7 @@ Index =
       setTimeout notice.close, $.SECOND
 
     timeEl = $ '#index-last-refresh', Index.navLinks
-    timeEl.dataset.utc = e.timeStamp <% if (type === 'userscript') { %>/ 1000<% } %>
+    timeEl.dataset.utc = Date.parse req.getResponseHeader 'Last-Modified'
     RelativeDates.update timeEl
     Index.scrollToIndex()
   parse: (pages, pageNum) ->
