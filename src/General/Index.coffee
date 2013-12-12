@@ -208,6 +208,7 @@ Index =
           return unless Index.req and !Index.notice
           Index.notice = new Notice 'info', 'Refreshing index...'
         ), 5 * $.SECOND - (Date.now() - now)
+    pageNum = null if typeof pageNum isnt 'number' # event
     onload = (e) -> Index.load e, pageNum
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
       onabort:   onload
