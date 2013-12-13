@@ -1,3 +1,5 @@
+## 3.15.0 - *2013-12-13*
+
 - More index navigation improvements:
  - New setting: `Anchor Hidden Threads`, enabled by default. Hidden threads will be moved at the end of the index to fill the first pages.
  - New setting: `Refreshed Navigation`, disabled by default. When enabled, navigating through pages will refresh the index.
