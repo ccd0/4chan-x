@@ -1,3 +1,8 @@
+- More index navigation improvements:
+ - New setting: `Anchor Hidden Threads`, enabled by default. Hidden threads will be moved at the end of the index to fill the first pages.
+ - New setting: `Refreshed Navigation`, disabled by default. When enabled, navigating through pages will refresh the index.
+ - The last index refresh timer will now indicate the last time the index changed from 4chan's side, instead of the last time you refreshed the index.
+
 ### 3.14.3 - *2013-12-09*
 
 - Minor bug fixes.
