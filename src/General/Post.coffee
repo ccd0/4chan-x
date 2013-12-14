@@ -141,6 +141,13 @@ class Post
     if @file.isImage = /(jpg|png|gif)$/i.test @file.name
       @file.dimensions = fileText.textContent.match(/\d+x\d+/)[0]
 
+  cleanup: ->
+    for node in $$ '.mobile', @nodes.root
+      $.rm node
+    for node in $$ '.desktop', @nodes.root
+      $.rmClass node, 'desktop'
+    return
+
   kill: (file, now) ->
     now or= new Date()
     if file
