@@ -6,6 +6,7 @@ class Post
     @ID     = +root.id[2..]
     @fullID = "#{@board}.#{@ID}"
 
+    @cleanup root if that.isOriginalMarkup
     post = $ '.post',     root
     info = $ '.postInfo', post
     @nodes =
@@ -141,10 +142,10 @@ class Post
     if @file.isImage = /(jpg|png|gif)$/i.test @file.name
       @file.dimensions = fileText.textContent.match(/\d+x\d+/)[0]
 
-  cleanup: ->
-    for node in $$ '.mobile', @nodes.root
+  cleanup: (root) ->
+    for node in $$ '.mobile', root
       $.rm node
-    for node in $$ '.desktop', @nodes.root
+    for node in $$ '.desktop', root
       $.rmClass node, 'desktop'
     return
 
