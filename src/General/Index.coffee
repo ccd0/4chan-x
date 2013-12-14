@@ -346,20 +346,15 @@ Index =
       Index.sortedNodes.push Index.nodes[i], Index.nodes[i + 1]
     if Index.isSearching
       Index.sortedNodes = Index.querySearch(Index.searchInput.value) or Index.sortedNodes
-    # Move non-hidden threads on top of the index.
-    if Conf['Anchor Hidden Threads']
-      offset = 0
-      for threadRoot, i in Index.sortedNodes by 2 when not Get.threadFromRoot(threadRoot).isHidden
-        Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
-    # Move sticky threads on top of the index.
+    # Sticky threads
+    Index.sortOnTop (thread) -> thread.isSticky
+    # Highlighted threads
+    Index.sortOnTop((thread) -> thread.isOnTop) if Conf['Filter']
+    # Non-hidden threads
+    Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
+  sortOnTop: (match) ->
     offset = 0
-    for threadRoot, i in Index.sortedNodes by 2 when Get.threadFromRoot(threadRoot).isSticky
-      Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
-    return unless Conf['Filter']
-    # Move highlighted threads & <hr> on top of the index
-    # while keeping the original order they appear in.
-    offset = 0
-    for threadRoot, i in Index.sortedNodes by 2 when Get.threadFromRoot(threadRoot).isOnTop
+    for threadRoot, i in Index.sortedNodes by 2 when match Get.threadFromRoot threadRoot
       Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
     return
   buildIndex: ->
