@@ -111,10 +111,12 @@ PostHiding =
       $.event 'CloseMenu'
 
   makeButton: (post, type) ->
+    span = $.el 'span',
+      textContent: "[\u00A0#{if type is 'hide' then '-' else '+'}\u00A0]"
     a = $.el 'a',
       className: "#{type}-reply-button"
-      innerHTML: "<span>[&nbsp;#{if type is 'hide' then '-' else '+'}&nbsp;]</span>"
       href:      'javascript:;'
+    $.add a, span
     $.on a, 'click', PostHiding.toggle
     a
 
