@@ -212,25 +212,9 @@ Build =
           ''
         }'>" +
 
-        "<div class='postInfoM mobile' id=pim#{postID}>" +
-          "<span class='nameBlock#{capcodeClass}'>" +
-              "<span class=name>#{name or ''}</span>" + tripcode +
-            capcodeStart + capcode + userID + flag + sticky + closed +
-            "<br>#{subject}" +
-          "</span><span class='dateTime postNum' data-utc=#{dateUTC}>#{date}" +
-            "<a href=#{"/#{boardID}/res/#{threadID}#p#{postID}"}>No.</a>" +
-            "<a href='#{
-              if g.VIEW is 'thread' and g.THREADID is +threadID
-                "javascript:quote(#{postID})"
-              else
-                "/#{boardID}/res/#{threadID}#q#{postID}"
-              }'>#{postID}</a>" +
-          '</span>' +
-        '</div>' +
-
         (if isOP then fileHTML else '') +
 
-        "<div class='postInfo desktop' id=pi#{postID}>" +
+        "<div class='postInfo' id=pi#{postID}>" +
           "<input type=checkbox name=#{postID} value=delete> " +
           "#{subject} " +
           "<span class='nameBlock#{capcodeClass}'>" +
@@ -239,7 +223,7 @@ Build =
             capcodeStart + emailEnd + capcode + userID + flag +
           ' </span> ' +
           "<span class=dateTime data-utc=#{dateUTC}>#{date}</span> " +
-          "<span class='postNum desktop'>" +
+          "<span class='postNum'>" +
             "<a href=#{"/#{boardID}/res/#{threadID}#p#{postID}"} title='Highlight this post'>No.</a>" +
             "<a href='#{
               if g.VIEW is 'thread' and g.THREADID is +threadID
