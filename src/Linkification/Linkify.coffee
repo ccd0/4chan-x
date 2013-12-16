@@ -288,12 +288,13 @@ Linkify =
     LiveLeak:
       regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
       el: (a) ->
-        ret = $.el 'iframe',
+        el = $.el 'iframe',
           width: "640",
           height: "360",
           src: "http://www.liveleak.com/ll_embed?i=#{a.dataset.uid}",
           frameborder: "0"
-        ret.setAttribute "allowfullscreen", "true"
+        el.setAttribute "allowfullscreen", "true"
+        el
 
     MediaCrush:
       regExp: /.*(?:mediacru.sh\/)([0-9a-z_]+)/i
@@ -408,10 +409,10 @@ Linkify =
     YouTube:
       regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/
       el: (a) ->
-        ret = $.el 'iframe',
+        el = $.el 'iframe',
           src: "//www.youtube.com/embed/#{a.dataset.uid}#{if a.dataset.option then '#' + a.dataset.option else ''}?wmode=opaque"
-        ret.setAttribute "allowfullscreen", "true"
-        ret
+        el.setAttribute "allowfullscreen", "true"
+        el
       title:
         api: (uid) -> "https://gdata.youtube.com/feeds/api/videos/#{uid}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
         text: (data) -> data.entry.title.$t
