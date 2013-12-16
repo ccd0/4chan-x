@@ -16,7 +16,7 @@ FappeTyme =
 
       $.on el, 'click', FappeTyme.cb.toggle.bind {name: "#{lc}"}
       Header.addShortcut el, true
-      FappeTyme.cb.set type if Conf[lc]
+      FappeTyme.cb.set lc if Conf[lc]
 
     Post.callbacks.push
       name: 'Fappe Tyme'

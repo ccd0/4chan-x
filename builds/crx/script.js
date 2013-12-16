@@ -9796,7 +9796,7 @@
         }));
         Header.addShortcut(el, true);
         if (Conf[lc]) {
-          FappeTyme.cb.set(type);
+          FappeTyme.cb.set(lc);
         }
       }
       return Post.callbacks.push({
