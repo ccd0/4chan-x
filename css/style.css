@@ -540,8 +540,8 @@ a.hide-announcement {
 }
 
 /* File */
-.fileText:hover .fntrunc,
-.fileText:not(:hover) .fnfull,
+.file-info:hover .fntrunc,
+.file-info:not(:hover) .fnfull,
 .expanded-image > .post > .file > .fileThumb > img[data-md5],
 :not(.expanded-image) > .post > .file > .fileThumb > .full-image {
   display: none;

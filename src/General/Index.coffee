@@ -38,18 +38,33 @@ Index =
       $.on input, 'change', @cb.sort
 
     repliesEntry =
-      el: $.el 'label', innerHTML: '<input type=checkbox name="Show Replies"> Show replies'
-    input = repliesEntry.el.firstChild
-    input.checked = Conf['Show Replies']
-    $.on input, 'change', $.cb.checked
-    $.on input, 'change', @cb.replies
+      el: $.el 'label',
+        innerHTML: '<input type=checkbox name="Show Replies"> Show replies'
+    anchorEntry =
+      el: $.el 'label',
+        innerHTML: '<input type=checkbox name="Anchor Hidden Threads"> Anchor hidden threads'
+        title: 'Move hidden threads at the end of the index.'
+    refNavEntry =
+      el: $.el 'label',
+        innerHTML: '<input type=checkbox name="Refreshed Navigation"> Refreshed navigation'
+        title: 'Refresh index when navigating through pages.'
+    for label in [repliesEntry, anchorEntry, refNavEntry]
+      input = label.el.firstChild
+      {name} = input
+      input.checked = Conf[name]
+      $.on input, 'change', $.cb.checked
+      switch name
+        when 'Show Replies'
+          $.on input, 'change', @cb.replies
+        when 'Anchor Hidden Threads'
+          $.on input, 'change', @cb.sort
 
     $.event 'AddMenuEntry',
       type: 'header'
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 90
-      subEntries: [modeEntry, sortEntry, repliesEntry]
+      subEntries: [modeEntry, sortEntry, repliesEntry, anchorEntry, refNavEntry]
 
     $.addClass doc, 'index-loading'
     @update()
@@ -111,13 +126,18 @@ Index =
           return
       return if a.textContent is 'Catalog'
       e.preventDefault()
-      Index.pageNav +a.pathname.split('/')[2]
+      Index.userPageNav +a.pathname.split('/')[2]
 
   scrollToIndex: ->
     Header.scrollToIfNeeded Index.root
 
   getCurrentPage: ->
     +window.location.pathname.split('/')[2]
+  userPageNav: (pageNum) ->
+    if Conf['Refreshed Navigation'] and Conf['Index Mode'] is 'paged'
+      Index.update pageNum
+    else
+      Index.pageNav pageNum
   pageNav: (pageNum) ->
     return if Index.currentPage is pageNum
     history.pushState null, '', if pageNum is 0 then './' else pageNum
@@ -174,7 +194,7 @@ Index =
     $.before a, strong
     $.add strong, a
 
-  update: ->
+  update: (pageNum) ->
     return unless navigator.onLine
     Index.req?.abort()
     Index.notice?.close()
@@ -189,13 +209,15 @@ Index =
           return unless Index.req and !Index.notice
           Index.notice = new Notice 'info', 'Refreshing index...'
         ), 5 * $.SECOND - (Date.now() - now)
+    pageNum = null if typeof pageNum isnt 'number' # event
+    onload = (e) -> Index.load e, pageNum
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
-      onabort:   Index.load
-      onloadend: Index.load
+      onabort:   onload
+      onloadend: onload
     ,
       whenModified: true
     $.addClass Index.button, 'fa-spin'
-  load: (e) ->
+  load: (e, pageNum) ->
     $.rmClass Index.button, 'fa-spin'
     {req, notice} = Index
     delete Index.req
@@ -207,7 +229,10 @@ Index =
       return
 
     try
-      Index.parse JSON.parse req.response if req.status is 200
+      if req.status is 200
+        Index.parse JSON.parse(req.response), pageNum
+      else if req.status is 304 and pageNum?
+        Index.pageNav pageNum
     catch err
       c.error 'Index failure:', err.stack
       # network error or non-JSON content for example.
@@ -225,15 +250,18 @@ Index =
       setTimeout notice.close, $.SECOND
 
     timeEl = $ '#index-last-refresh', Index.navLinks
-    timeEl.dataset.utc = e.timeStamp <% if (type === 'userscript') { %>/ 1000<% } %>
+    timeEl.dataset.utc = Date.parse req.getResponseHeader 'Last-Modified'
     RelativeDates.update timeEl
     Index.scrollToIndex()
-  parse: (pages) ->
+  parse: (pages, pageNum) ->
     Index.parseThreadList pages
     Index.buildThreads()
     Index.sort()
-    Index.buildIndex()
     Index.buildPagelist()
+    if pageNum?
+      Index.pageNav pageNum
+      return
+    Index.buildIndex()
     Index.setPage()
   parseThreadList: (pages) ->
     Index.pagesNum          = pages.length
@@ -319,15 +347,15 @@ Index =
       Index.sortedNodes.push Index.nodes[i], Index.nodes[i + 1]
     if Index.isSearching
       Index.sortedNodes = Index.querySearch(Index.searchInput.value) or Index.sortedNodes
-    # Put the sticky threads on top of the index.
+    # Sticky threads
+    Index.sortOnTop (thread) -> thread.isSticky
+    # Highlighted threads
+    Index.sortOnTop((thread) -> thread.isOnTop) if Conf['Filter']
+    # Non-hidden threads
+    Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
+  sortOnTop: (match) ->
     offset = 0
-    for threadRoot, i in Index.sortedNodes by 2 when Get.threadFromRoot(threadRoot).isSticky
-      Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
-    return unless Conf['Filter']
-    # Put the highlighted thread & <hr> on top of the index
-    # while keeping the original order they appear in.
-    offset = 0
-    for threadRoot, i in Index.sortedNodes by 2 when Get.threadFromRoot(threadRoot).isOnTop
+    for threadRoot, i in Index.sortedNodes by 2 when match Get.threadFromRoot threadRoot
       Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
     return
   buildIndex: ->

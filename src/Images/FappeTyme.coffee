@@ -2,28 +2,21 @@ FappeTyme =
   init: ->
     return if !(Conf['Fappe Tyme'] or Conf['Werk Tyme']) or g.VIEW is 'catalog' or g.BOARD is 'f'
 
-    if Conf['Fappe Tyme']
+    for type in ["Fappe", "Werk"] when Conf["#{type} Tyme"]
+      lc = type.toLowerCase()
       el = $.el 'a',
         href: 'javascript:;'
-        id:   'fappeTyme'
-        title: 'Fappe Tyme'
+        id:   "#{lc}Tyme"
+        title: "#{type} Tyme"
         className: 'a-icon'
+      
+      if type is 'Werk'
+        el.textContent = '\uf0b1'
+        el.className   = 'fa'
 
-      $.on el, 'click', FappeTyme.cb.fappe
-
+      $.on el, 'click', FappeTyme.cb.toggle.bind {name: "#{lc}"}
       Header.addShortcut el, true
-
-    if Conf['Werk Tyme']
-      el = $.el 'a',
-        href: 'javascript:;'
-        id:   'werkTyme'
-        title: 'Werk Tyme'
-        className: 'fa'
-        textContent: '\uf0b1'
-
-      $.on el, 'click', FappeTyme.cb.werk
-
-      Header.addShortcut el, true
+      FappeTyme.cb.set type if Conf[lc]
 
     Post.callbacks.push
       name: 'Fappe Tyme'
@@ -34,7 +27,11 @@ FappeTyme =
     $.addClass @nodes.root, "noFile"
 
   cb:
-    fappe: ->
-      $.toggleClass doc, 'fappeTyme'
-    werk: ->
-      $.toggleClass doc, 'werkTyme'
+    set: (type) ->
+      FappeTyme[type].checked = Conf[type]
+      $["#{if Conf[type] then 'add' else 'rm'}Class"] doc, "#{type}Tyme"
+
+    toggle: ->
+      Conf[@name] = !Conf[@name]
+      FappeTyme.cb.set @name
+      $.cb.checked.call {name: @name, checked: Conf[@name]}

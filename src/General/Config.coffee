@@ -836,12 +836,18 @@ http://iqdb.org/?url=%TURL
 #//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/
 """
 
+  FappeT:
+    fappe: false
+    werk:  true
+
   'Custom CSS': false
 
   Index:
     'Index Mode': 'paged'
     'Index Sort': 'bump'
     'Show Replies': true
+    'Anchor Hidden Threads': true
+    'Refreshed Navigation': false
 
   Header:
     'Fixed Header':               true

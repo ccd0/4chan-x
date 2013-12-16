@@ -8,7 +8,7 @@ FileInfo =
       cb:   @node
   node: ->
     return if !@file or @isClone
-    @file.text.innerHTML = FileInfo.funk FileInfo, @
+    @file.text.innerHTML = "<span class=file-info>#{FileInfo.funk FileInfo, @}</span>"
   createFunc: (format) ->
     code = format.replace /%(.)/g, (s, c) ->
       if c of FileInfo.formatters
@@ -21,11 +21,10 @@ FileInfo =
       return "#{size.toFixed()} Bytes"
     i = 1 + ['KB', 'MB'].indexOf unit
     size /= 1024 while i--
-    size =
-      if unit is 'MB'
-        Math.round(size * 100) / 100
-      else
-        size.toFixed()
+    size = if unit is 'MB'
+      Math.round(size * 100) / 100
+    else
+      size.toFixed()
     "#{size} #{unit}"
   escape: (name) ->
     name.replace /<|>/g, (c) ->
