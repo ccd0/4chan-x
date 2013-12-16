@@ -16,7 +16,7 @@ FappeTyme =
         el:    el
         order: 97
 
-      FappeTyme.cb.set type if Conf[lc]
+      FappeTyme.cb.set lc if Conf[lc]
 
     Post.callbacks.push
       name: 'Fappe Tyme'
