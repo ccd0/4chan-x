@@ -2,33 +2,21 @@ FappeTyme =
   init: ->
     return if !(Conf['Fappe Tyme'] or Conf['Werk Tyme']) or g.VIEW is 'catalog' or g.BOARD is 'f'
 
-    if Conf['Fappe Tyme']
+    for type in ["Fappe", "Werk"] when Conf["#{type} Tyme"]
+      lc = type.toLowerCase()
       el = $.el 'label',
-        innerHTML: "<input type=checkbox name=fappe-tyme> Fappe Tyme"
-        title: 'Fappe Tyme'
+        innerHTML: "<input type=checkbox name=#{lc}> #{type} Tyme"
+        title: "#{type} Tyme"
 
-      FappeTyme.fappe = input = el.firstElementChild
-
-      $.on input, 'change', FappeTyme.cb.fappe
+      FappeTyme[lc] = input = el.firstElementChild
+      $.on input, 'change', FappeTyme.cb.toggle.bind input
 
       $.event 'AddMenuEntry',
         type:  'header'
         el:    el
         order: 97
 
-    if Conf['Werk Tyme']
-      el = $.el 'label',
-        innerHTML: "<input type=checkbox name=werk-tyme> Werk Tyme"
-        title: 'Werk Tyme'
-
-      FappeTyme.werk = input = el.firstElementChild
-
-      $.on input, 'change', FappeTyme.cb.werk
-
-      $.event 'AddMenuEntry',
-        type:  'header'
-        el:    el
-        order: 98
+      FappeTyme.cb.set type if Conf[lc]
 
     Post.callbacks.push
       name: 'Fappe Tyme'
@@ -39,9 +27,11 @@ FappeTyme =
     $.addClass @nodes.root, "noFile"
 
   cb:
-    fappe: ->
-      $.toggleClass doc, 'fappeTyme'
-      FappeTyme.fappe.checked = $.hasClass doc, 'fappeTyme'
-    werk: ->
-      $.toggleClass doc, 'werkTyme'
-      FappeTyme.werk.checked = $.hasClass doc, 'werkTyme'
+    set: (type) ->
+      FappeTyme[type].checked = Conf[type]
+      $["#{if Conf[type] then 'add' else 'rm'}Class"] doc, "#{type}Tyme"
+
+    toggle: ->
+      Conf[@name] = !Conf[@name]
+      FappeTyme.cb.set @name
+      $.cb.checked.call FappeTyme[@name]

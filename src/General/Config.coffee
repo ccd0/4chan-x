@@ -494,6 +494,10 @@ http://iqdb.org/?url=%TURL
 #//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/
 """
 
+  FappeT:
+    fappe: false
+    werk:  true
+
   'sageEmoji': '4chan SS'
   
   'emojiPos': 'before'

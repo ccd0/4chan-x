@@ -44,6 +44,9 @@
  - You cannot post an image reply immediately after a non-image reply anymore.
 - Various minor fixes
 
+**Zixaphir**:
+- FappeTyme and WerkTyme now persist across sessions.
+
 ### v1.2.43 
 *2013-11-10*
 

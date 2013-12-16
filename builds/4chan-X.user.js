@@ -252,6 +252,10 @@
       MD5: ''
     },
     sauces: "https://www.google.com/searchbyimage?image_url=%TURL\nhttp://iqdb.org/?url=%TURL\n#//tineye.com/search?url=%TURL\n#http://saucenao.com/search.php?url=%TURL\n#http://3d.iqdb.org/?url=%TURL\n#http://regex.info/exif.cgi?imgurl=%URL\n# uploaders:\n#http://imgur.com/upload?url=%URL;text:Upload to imgur\n#http://ompldr.org/upload?url1=%URL;text:Upload to ompldr\n# \"View Same\" in archives:\n#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz\n#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/\n#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/",
+    FappeT: {
+      fappe: false,
+      werk: true
+    },
     'sageEmoji': '4chan SS',
     'emojiPos': 'before',
     'Custom CSS': false,
@@ -7447,36 +7451,32 @@
 
   FappeTyme = {
     init: function() {
-      var el, input;
+      var el, input, lc, type, _i, _len, _ref;
 
       if (!(Conf['Fappe Tyme'] || Conf['Werk Tyme']) || g.VIEW === 'catalog' || g.BOARD === 'f') {
         return;
       }
-      if (Conf['Fappe Tyme']) {
+      _ref = ["Fappe", "Werk"];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        type = _ref[_i];
+        if (!Conf["" + type + " Tyme"]) {
+          continue;
+        }
+        lc = type.toLowerCase();
         el = $.el('label', {
-          innerHTML: "<input type=checkbox name=fappe-tyme> Fappe Tyme",
-          title: 'Fappe Tyme'
+          innerHTML: "<input type=checkbox name=" + lc + "> " + type + " Tyme",
+          title: "" + type + " Tyme"
         });
-        FappeTyme.fappe = input = el.firstElementChild;
-        $.on(input, 'change', FappeTyme.cb.fappe);
+        FappeTyme[lc] = input = el.firstElementChild;
+        $.on(input, 'change', FappeTyme.cb.toggle.bind(input));
         $.event('AddMenuEntry', {
           type: 'header',
           el: el,
           order: 97
         });
-      }
-      if (Conf['Werk Tyme']) {
-        el = $.el('label', {
-          innerHTML: "<input type=checkbox name=werk-tyme> Werk Tyme",
-          title: 'Werk Tyme'
-        });
-        FappeTyme.werk = input = el.firstElementChild;
-        $.on(input, 'change', FappeTyme.cb.werk);
-        $.event('AddMenuEntry', {
-          type: 'header',
-          el: el,
-          order: 98
-        });
+        if (Conf[lc]) {
+          FappeTyme.cb.set(type);
+        }
       }
       return Post.callbacks.push({
         name: 'Fappe Tyme',
@@ -7490,13 +7490,14 @@
       return $.addClass(this.nodes.root, "noFile");
     },
     cb: {
-      fappe: function() {
-        $.toggleClass(doc, 'fappeTyme');
-        return FappeTyme.fappe.checked = $.hasClass(doc, 'fappeTyme');
+      set: function(type) {
+        FappeTyme[type].checked = Conf[type];
+        return $["" + (Conf[type] ? 'add' : 'rm') + "Class"](doc, "" + type + "Tyme");
       },
-      werk: function() {
-        $.toggleClass(doc, 'werkTyme');
-        return FappeTyme.werk.checked = $.hasClass(doc, 'werkTyme');
+      toggle: function() {
+        Conf[this.name] = !Conf[this.name];
+        FappeTyme.cb.set(this.name);
+        return $.cb.checked.call(FappeTyme[this.name]);
       }
     }
   };
@@ -11277,10 +11278,14 @@
           Gallery.cb.toggle();
           break;
         case Conf['fappeTyme']:
-          FappeTyme.cb.fappe();
+          FappeTyme.cb.toggle.call({
+            name: 'fappe'
+          });
           break;
         case Conf['werkTyme']:
-          FappeTyme.cb.werk();
+          FappeTyme.cb.toggle.call({
+            name: 'werk'
+          });
           break;
         case Conf['Front page']:
           if (g.VIEW === 'index') {

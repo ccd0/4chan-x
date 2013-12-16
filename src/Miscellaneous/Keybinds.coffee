@@ -81,9 +81,9 @@ Keybinds =
       when Conf['Open Gallery']
         Gallery.cb.toggle()
       when Conf['fappeTyme']
-        FappeTyme.cb.fappe()
+        FappeTyme.cb.toggle.call {name: 'fappe'}
       when Conf['werkTyme']
-        FappeTyme.cb.werk()
+        FappeTyme.cb.toggle.call {name: 'werk'}
       # Board Navigation
       when Conf['Front page']
         if g.VIEW is 'index'
