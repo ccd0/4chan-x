@@ -10050,8 +10050,8 @@
         http: true,
         https: true,
         software: "foolfuuka",
-        boards: ["hr", "tg", "tv", "x"],
-        files: ["hr", "tg", "tv", "x"]
+        boards: ["hr", "pol", "s4s", "tg", "tv", "x"],
+        files: ["hr", "pol", "s4s", "tg", "tv", "x"]
       },
       "Nyafuu": {
         domain: "archive.nyafuu.org",
@@ -10060,14 +10060,6 @@
         software: "foolfuuka",
         boards: ["c", "w", "wg"],
         files: ["c", "w", "wg"]
-      },
-      "fap archive": {
-        domain: "fuuka.worldathleticproject.org",
-        http: true,
-        https: true,
-        software: "foolfuuka",
-        boards: ["adv", "b", "cm", "d", "e", "h", "hc", "lgbt", "pol", "r", "s", "s4s", "soc", "trv", "u", "y"],
-        files: ["b", "cm", "d", "e", "h", "hc", "pol", "r", "s", "s4s", "soc", "u", "y"]
       },
       "Install Gentoo": {
         domain: "archive.installgentoo.net",
@@ -10090,7 +10082,7 @@
         http: true,
         software: "fuuka",
         boards: ["an", "fit", "k", "mlp", "r9k", "toy"],
-        files: ["an", "k", "toy"]
+        files: ["an", "fit", "k", "r9k", "toy"]
       },
       "warosu": {
         domain: "fuuka.warosu.org",
@@ -10099,6 +10091,14 @@
         software: "fuuka",
         boards: ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"],
         files: ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"]
+      },
+      "Bui's Archive": {
+        domain: "archive.bui.pm",
+        http: true,
+        https: true,
+        software: "foolfuuka",
+        boards: ["b"],
+        files: ["b"]
       },
       "Foolz Beta": {
         domain: "beta.foolz.us",
