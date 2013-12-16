@@ -288,8 +288,12 @@ Linkify =
     LiveLeak:
       regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
       el: (a) ->
-        $.el 'object',
-          innerHTML:  "<embed src='http://www.liveleak.com/e/#{a.dataset.uid}?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+        ret = $.el 'iframe',
+          width: "640",
+          height: "360",
+          src: "http://www.liveleak.com/ll_embed?i=#{a.dataset.uid}",
+          frameborder: "0"
+        ret.setAttribute "allowfullscreen", "true"
 
     MediaCrush:
       regExp: /.*(?:mediacru.sh\/)([0-9a-z_]+)/i
@@ -404,8 +408,10 @@ Linkify =
     YouTube:
       regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/
       el: (a) ->
-        $.el 'iframe',
+        ret = $.el 'iframe',
           src: "//www.youtube.com/embed/#{a.dataset.uid}#{if a.dataset.option then '#' + a.dataset.option else ''}?wmode=opaque"
+        ret.setAttribute "allowfullscreen", "true"
+        ret
       title:
         api: (uid) -> "https://gdata.youtube.com/feeds/api/videos/#{uid}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
         text: (data) -> data.entry.title.$t

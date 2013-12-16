@@ -5687,9 +5687,15 @@
       LiveLeak: {
         regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
         el: function(a) {
-          return $.el('object', {
-            innerHTML: "<embed src='http://www.liveleak.com/e/" + a.dataset.uid + "?autostart=true' wmode='opaque' width='640' height='390' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+          var ret;
+
+          ret = $.el('iframe', {
+            width: "640",
+            height: "360",
+            src: "http://www.liveleak.com/ll_embed?i=" + a.dataset.uid,
+            frameborder: "0"
           });
+          return ret.setAttribute("allowfullscreen", "true");
         }
       },
       MediaCrush: {
@@ -5849,9 +5855,13 @@
       YouTube: {
         regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/,
         el: function(a) {
-          return $.el('iframe', {
+          var ret;
+
+          ret = $.el('iframe', {
             src: "//www.youtube.com/embed/" + a.dataset.uid + (a.dataset.option ? '#' + a.dataset.option : '') + "?wmode=opaque"
           });
+          ret.setAttribute("allowfullscreen", "true");
+          return ret;
         },
         title: {
           api: function(uid) {
