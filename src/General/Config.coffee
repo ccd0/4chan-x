@@ -493,6 +493,7 @@ http://iqdb.org/?url=%TURL
 #//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/
 #//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/
 """
+
   'sageEmoji': '4chan SS'
   
   'emojiPos': 'before'
@@ -503,6 +504,8 @@ http://iqdb.org/?url=%TURL
     'Index Mode': 'paged'
     'Index Sort': 'bump'
     'Show Replies': true
+    'Anchor Hidden Threads': true
+    'Refreshed Navigation': false
 
   Header:
     'Fixed Header':               true

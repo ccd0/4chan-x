@@ -666,8 +666,13 @@ a.hide-announcement {
   max-width: 75%;
   padding-bottom: 16px;
 }
+/* Fappe Tyme */
 .fappeTyme  .thread > .noFile,
 .fappeTyme .threadContainer > .noFile {
+  display: none;
+}
+/* Werk Tyme */
+.werkTyme .post .file {
   display: none;
 }
 
