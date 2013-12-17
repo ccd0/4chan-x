@@ -31,8 +31,8 @@ body > hr {
 }
 /* File Name Trunctuate / /p/ exif */
 .exif,
-.fileText:hover .fntrunc,
-.fileText:not(:hover) .fnfull {
+.file-info:hover .fntrunc,
+.file-info:not(:hover) .fnfull {
   display: none;
 }
 /* Unnecessary */
