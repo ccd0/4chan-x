@@ -28,7 +28,6 @@ FappeTyme =
 
   cb:
     set: (type) -> $["#{if Conf[type] then 'add' else 'rm'}Class"] doc, "#{type}Tyme"
-
     toggle: ->
       Conf[@name] = !Conf[@name]
       FappeTyme.cb.set @name
