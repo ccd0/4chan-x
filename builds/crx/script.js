@@ -325,7 +325,7 @@
     sauces: "https://www.google.com/searchbyimage?image_url=%TURL\nhttp://iqdb.org/?url=%TURL\n#//tineye.com/search?url=%TURL\n#http://saucenao.com/search.php?url=%TURL\n#http://3d.iqdb.org/?url=%TURL\n#http://regex.info/exif.cgi?imgurl=%URL\n# uploaders:\n#http://imgur.com/upload?url=%URL;text:Upload to imgur\n#http://ompldr.org/upload?url1=%URL;text:Upload to ompldr\n# \"View Same\" in archives:\n#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz\n#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/\n#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/",
     FappeT: {
       fappe: false,
-      werk: true
+      werk: false
     },
     'Custom CSS': false,
     Index: {
@@ -11306,15 +11306,19 @@
       }
     },
     setInterval: function() {
-      var cur, i, j;
+      var cur, i, j, limit;
 
-      i = ThreadUpdater.interval;
-      j = (cur = ThreadUpdater.outdateCount < 10) ? cur : 10;
-      if (!d.hidden) {
-        j = j < 7 ? j : 7;
+      i = ThreadUpdater.interval + 1;
+      if (Conf['Optional Increase']) {
+        cur = ThreadUpdater.outdateCount || 1;
+        limit = d.hidden ? 7 : 10;
+        j = cur <= limit ? cur : limit;
+        cur = ((i * 0.1).floor() || 1) * j * j;
+        ThreadUpdater.seconds = cur > i ? cur <= 300 ? cur : 300 : i;
+      } else {
+        ThreadUpdater.seconds = i;
       }
-      ThreadUpdater.seconds = Conf['Optional Increase'] ? (cur = [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j] > i) ? cur : i : i;
-      ThreadUpdater.set('timer', ThreadUpdater.seconds++);
+      ThreadUpdater.set('timer', ThreadUpdater.seconds);
       return ThreadUpdater.count(true);
     },
     intervalShortcut: function() {

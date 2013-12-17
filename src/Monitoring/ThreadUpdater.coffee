@@ -149,18 +149,28 @@ ThreadUpdater =
         ThreadUpdater.cb.checkpost()
 
   setInterval: ->
-    i = ThreadUpdater.interval
-    # Math.min/max is provably slow: http://jsperf.com/math-s-min-max-vs-homemade/5
-    j = if cur = ThreadUpdater.outdateCount < 10 then cur else 10
-    unless d.hidden
+    i   = ThreadUpdater.interval + 1
+    
+    if Conf['Optional Increase']
       # Lower the max refresh rate limit on visible tabs.
-      j = if j < 7 then j else 7
-    ThreadUpdater.seconds =
-      if Conf['Optional Increase']
-        if cur = [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j] > i then cur else i
-      else
-        i
-    ThreadUpdater.set 'timer', ThreadUpdater.seconds++
+      cur   = ThreadUpdater.outdateCount or 1
+      limit = if d.hidden then 7 else 10
+      j     = if cur <= limit then cur else limit
+
+      # 1 second to 100, 30 to 300.
+      cur = ((i * 0.1).floor() or 1) * j * j
+      ThreadUpdater.seconds =
+        if cur > i
+          if cur <= 300
+            cur
+          else
+            300
+        else
+          i
+    else
+      ThreadUpdater.seconds = i
+
+    ThreadUpdater.set 'timer', ThreadUpdater.seconds
     ThreadUpdater.count true
 
   intervalShortcut: ->
