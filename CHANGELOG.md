@@ -1,3 +1,6 @@
+## v2.7.0 
+*2013-12-16*
+
 **MayhemYDG**:
 - More Index Improvements:
  - New setting: `Anchor Hidden Threads`, enabled by default. Hidden threads will be moved at the end of the index to fill the first pages.
@@ -9,6 +12,7 @@
 
 **Zixaphir**:
 - FappeTyme and WerkTyme now persist across sessions.
+- Bugfixes everywhere.
 
 ### v2.6.1 
 *2013-11-27*
