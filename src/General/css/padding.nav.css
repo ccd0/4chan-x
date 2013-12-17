@@ -1,5 +1,6 @@
 body {
-  padding-bottom: 1px;
+  padding-bottom: 15px;
+  padding-top: 15px;
 }
 .fourchan-ss-navigation.fixed.top-header:not(.autohide) body::before {
   top: #{navHeight}px;
