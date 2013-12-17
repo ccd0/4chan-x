@@ -496,7 +496,7 @@ http://iqdb.org/?url=%TURL
 
   FappeT:
     fappe: false
-    werk:  true
+    werk:  false
 
   'sageEmoji': '4chan SS'
   
