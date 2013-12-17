@@ -11313,7 +11313,7 @@
         cur = ThreadUpdater.outdateCount || 1;
         limit = d.hidden ? 7 : 10;
         j = cur <= limit ? cur : limit;
-        cur = ((i * 0.1).floor() || 1) * j * j;
+        cur = (Math.floor(i * 0.1) || 1) * j * j;
         ThreadUpdater.seconds = cur > i ? cur <= 300 ? cur : 300 : i;
       } else {
         ThreadUpdater.seconds = i;
