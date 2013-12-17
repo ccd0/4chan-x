@@ -299,10 +299,7 @@
       Indicators: {
         'Emoji': ['enabled', 'Add icons besides usernames with triggered e-mails, like sega and neko.', ['enabled', 'disable ponies', 'only ponies', 'disable']],
         'Emoji Position': ['before', 'Position of emoji icons.', ['before', 'after']],
-        'Emoji Spacing': ['5', 'Add some spacing between emoji and text.', 'text'],
-        'Sage Highlighting': ['image', 'Icons or text to highlight saged posts.', ['text', 'image', 'none']],
-        'Sage Image': ['appchan', 'Image to use for sage highlighting.', ['4chan SS', 'appchan']],
-        'Sage Highlight Position': ['after', 'Position of Sage Highlighting', ['before', 'after']]
+        'Emoji Spacing': ['5', 'Add some spacing between emoji and text.', 'text']
       }
     },
     threadWatcher: {
@@ -368,8 +365,9 @@
       'Code tags': ['Alt+c', 'Insert code tags.'],
       'Eqn tags': ['Alt+e', 'Insert eqn tags.'],
       'Math tags': ['Alt+m', 'Insert math tags.'],
-      'Toggle sage': ['Alt+s', 'Toggle sage in email field'],
+      'Toggle sage': ['Alt+s', 'Toggle sage in email field.'],
       'Submit QR': ['Ctrl+Enter', 'Submit post.'],
+      'Post Without Name': ['Alt+n', 'Clear name field and then submits post.'],
       'Watch': ['w', 'Watch thread.'],
       'Update': ['r', 'Update the thread now.'],
       'Expand image': ['Shift+e', 'Expand selected image.'],
@@ -14979,6 +14977,12 @@
             QR.submit();
           }
           break;
+        case Conf['Post Without Name']:
+          if (QR.nodes && !QR.status()) {
+            Keybinds.name();
+            QR.submit();
+          }
+          break;
         case Conf['Update']:
           switch (g.VIEW) {
             case 'thread':
@@ -15155,6 +15159,9 @@
       range = ("[" + tag + "]").length + selEnd;
       ta.setSelectionRange(range, range);
       return $.event('input', null, ta);
+    },
+    name: function() {
+      return QR.nodes.name.value = '';
     },
     sage: function() {
       var isSage;

@@ -64,6 +64,10 @@ Keybinds =
         Keybinds.sage() if QR.nodes
       when Conf['Submit QR']
         QR.submit() if QR.nodes and !QR.status()
+      when Conf['Post Without Name']
+        if QR.nodes and !QR.status()
+          Keybinds.name()
+          QR.submit()
       # Index/Thread related
       when Conf['Update']
         switch g.VIEW
@@ -190,6 +194,8 @@ Keybinds =
 
     # Fire the 'input' event
     $.event 'input', null, ta
+
+  name: -> QR.nodes.name.value = ''
 
   sage: ->
     isSage  = /sage/i.test QR.nodes.email.value

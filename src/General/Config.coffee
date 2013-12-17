@@ -740,21 +740,6 @@ Config =
         'Add some spacing between emoji and text.'
         'text'
       ]
-      'Sage Highlighting': [
-        'image'
-        'Icons or text to highlight saged posts.'
-        ['text', 'image', 'none']
-      ]
-      'Sage Image': [
-        'appchan'
-        'Image to use for sage highlighting.'
-        ['4chan SS', 'appchan']
-      ]
-      'Sage Highlight Position': [
-        'after'
-        'Position of Sage Highlighting'
-        ['before', 'after']
-      ]
 
   threadWatcher:
     'Current Board': [
@@ -945,11 +930,15 @@ box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
     ]
     'Toggle sage': [
       'Alt+s'
-      'Toggle sage in email field'
+      'Toggle sage in email field.'
     ]
     'Submit QR': [
       'Ctrl+Enter'
       'Submit post.'
+    ]
+    'Post Without Name': [
+      'Alt+n'
+      'Clear name field and then submits post.'
     ]
     # Thread related
     'Watch': [
