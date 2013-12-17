@@ -29,13 +29,14 @@ Header =
     @setBarFixed      Conf['Fixed Header']
     @setBarVisibility Conf['Header auto-hide']
 
-    $.on menuButton,          'click',  @menuToggle
-    $.on @headerToggler,      'change', @toggleBarVisibility
-    $.on @barFixedToggler,    'change', @toggleBarFixed
-    $.on @barPositionToggler, 'change', @toggleBarPosition
-    $.on @headerToggler,      'change', @toggleBarVisibility
-    $.on @customNavToggler,   'change', @toggleCustomNav
-    $.on editCustomNav,       'click',  @editCustomNav
+    $.on menuButton,           'click',  @menuToggle
+    $.on @headerToggler,       'change', @toggleBarVisibility
+    $.on @barFixedToggler,     'change', @toggleBarFixed
+    $.on @scrollHeaderToggler, 'change', @setHideBarOnScroll
+    $.on @barPositionToggler,  'change', @toggleBarPosition
+    $.on @headerToggler,       'change', @toggleBarVisibility
+    $.on @customNavToggler,    'change', @toggleCustomNav
+    $.on editCustomNav,        'click',  @editCustomNav
 
     @setBarFixed        Conf['Fixed Header']
     @setHideBarOnScroll Conf['Header auto-hide on scroll']

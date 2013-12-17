@@ -1812,6 +1812,7 @@ a:only-of-type > .remove {
   height: auto;
 }
 /* Possibly temporary. Non-classed Ad Pleas only appear to be showing up in threads now? */
+.mobile + .mobile + .center,
 .thread body > .center {
   display: none;
 }
