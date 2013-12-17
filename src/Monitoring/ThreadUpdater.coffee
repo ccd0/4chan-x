@@ -157,7 +157,7 @@ ThreadUpdater =
       j     = if cur <= limit then cur else limit
 
       # 1 second to 100, 30 to 300.
-      cur = ((i * 0.1).floor() or 1) * j * j
+      cur = (Math.floor(i * 0.1) or 1) * j * j
       ThreadUpdater.seconds =
         if cur > i
           if cur <= 300
