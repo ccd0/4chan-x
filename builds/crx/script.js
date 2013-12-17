@@ -3493,7 +3493,7 @@
       }
       if (!(strong = $('strong.warning', this.nodes.info))) {
         strong = $.el('strong', {
-          className: 'warning icon'
+          className: 'warning fa'
         });
         $.after($('input', this.nodes.info), strong);
       }

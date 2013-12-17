@@ -164,7 +164,7 @@ class Post
 
     unless strong = $ 'strong.warning', @nodes.info
       strong = $.el 'strong',
-          className: 'warning icon'
+          className: 'warning fa'
       $.after $('input', @nodes.info), strong
     strong.textContent = if file then '\uf070' else '\uf014'
     strong.title = "#{if file then 'File' else 'Post'} Deleted"
