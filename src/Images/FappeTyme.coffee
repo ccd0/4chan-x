@@ -4,7 +4,7 @@ FappeTyme =
 
     for type in ["Fappe", "Werk"] when Conf["#{type} Tyme"]
       lc = type.toLowerCase()
-      el = $.el 'a',
+      FappeTyme[lc] = el = $.el 'a',
         href: 'javascript:;'
         id:   "#{lc}Tyme"
         title: "#{type} Tyme"
@@ -16,7 +16,7 @@ FappeTyme =
 
       $.on el, 'click', FappeTyme.cb.toggle.bind {name: "#{lc}"}
       Header.addShortcut el, true
-      FappeTyme.cb.set lc if Conf[lc]
+      FappeTyme.cb.set lc
 
     Post.callbacks.push
       name: 'Fappe Tyme'
@@ -27,9 +27,7 @@ FappeTyme =
     $.addClass @nodes.root, "noFile"
 
   cb:
-    set: (type) ->
-      FappeTyme[type].checked = Conf[type]
-      $["#{if Conf[type] then 'add' else 'rm'}Class"] doc, "#{type}Tyme"
+    set: (type) -> $["#{if Conf[type] then 'add' else 'rm'}Class"] doc, "#{type}Tyme"
 
     toggle: ->
       Conf[@name] = !Conf[@name]

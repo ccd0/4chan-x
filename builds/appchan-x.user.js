@@ -9795,7 +9795,7 @@
           continue;
         }
         lc = type.toLowerCase();
-        el = $.el('a', {
+        FappeTyme[lc] = el = $.el('a', {
           href: 'javascript:;',
           id: "" + lc + "Tyme",
           title: "" + type + " Tyme",
@@ -9809,9 +9809,7 @@
           name: "" + lc
         }));
         Header.addShortcut(el, true);
-        if (Conf[lc]) {
-          FappeTyme.cb.set(lc);
-        }
+        FappeTyme.cb.set(lc);
       }
       return Post.callbacks.push({
         name: 'Fappe Tyme',
@@ -9826,7 +9824,6 @@
     },
     cb: {
       set: function(type) {
-        FappeTyme[type].checked = Conf[type];
         return $["" + (Conf[type] ? 'add' : 'rm') + "Class"](doc, "" + type + "Tyme");
       },
       toggle: function() {
