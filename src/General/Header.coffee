@@ -13,7 +13,7 @@ Header =
     scrollHeaderToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Header auto-hide on scroll"> Auto-hide header on scroll'
     barPositionToggler = $.el 'label',
-      innerHTML: '<input type=checkbox name="Bottom header"> Bottom header'
+      innerHTML: '<input type=checkbox name="Bottom Header"> Bottom header'
     customNavToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Custom Board Navigation"> Custom board navigation'
     editCustomNav = $.el 'a',
@@ -25,9 +25,6 @@ Header =
     @barPositionToggler  = barPositionToggler.firstElementChild
     @headerToggler       = headerToggler.firstElementChild
     @customNavToggler    = customNavToggler.firstElementChild
-
-    @setBarFixed      Conf['Fixed Header']
-    @setBarVisibility Conf['Header auto-hide']
 
     $.on menuButton,           'click',  @menuToggle
     $.on @headerToggler,       'change', @toggleBarVisibility
@@ -309,7 +306,7 @@ Header =
   getBottomOf: (root) ->
     {clientHeight} = doc
     bottom = clientHeight - root.getBoundingClientRect().bottom
-    if Conf['Bottom header']
+    if Conf['Bottom Header']
       headRect = Header.toggle.getBoundingClientRect()
       bottom  -= clientHeight - headRect.bottom + headRect.height
     bottom
