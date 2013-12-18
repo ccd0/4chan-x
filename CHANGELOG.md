@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ## v2.7.0 
 *2013-12-16*
 
@@ -24,8 +23,6 @@
 ## v2.6.0 
 *2013-11-27*
 
-=======
->>>>>>> v3
 **MayhemYDG**:
 - **New option**: `Auto-hide header on scroll`.
 - Added support for `4cdn.org`.
@@ -73,29 +70,8 @@
 **Zixaphir**:
 - Infinite Scrolling Bugfix (chrome)
 
-<<<<<<< HEAD
 ### v2.4.1 
 *2013-10-13*
-=======
-### v1.2.44 
-*2013-12-06*
-
-**MayhemYDG**:
-- Cooldown fix (You can no longer post an image reply immediately after a text reply)
-- Fix for 4chan markup change that caused a lot of errors
-
-**seaweedchan**:
-- Fix catalog links option
-
-### v1.2.43 
-*2013-11-10*
-
-**noface**:
-- Strawpoll.me embedding support (as usual, only works on HTTP 4chan due to lack of HTTPS)
-
-### v1.2.42 
-*2013-10-22*
->>>>>>> v3
 
 **Zixaphir**:
 - Bugfixes

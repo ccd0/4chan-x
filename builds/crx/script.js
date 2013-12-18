@@ -14125,11 +14125,10 @@
       if (!Conf['Catalog Links']) {
         return;
       }
-      el = $.el('label', {
+      CatalogLinks.el = el = $.el('label', {
         id: 'toggleCatalog',
         href: 'javascript:;',
-        innerHTML: "<input type=checkbox " + (Conf['Header catalog links'] ? 'checked' : '') + "> Catalog Links",
-        title: "Turn catalog links " + (Conf['Header catalog links'] ? 'off' : 'on') + "."
+        innerHTML: "<input type=checkbox " + (Conf['Header catalog links'] ? 'checked' : '') + "> Catalog Links"
       });
       input = $('input', el);
       $.on(input, 'change', this.toggle);
@@ -14144,33 +14143,88 @@
       });
     },
     toggle: function() {
-      var useCatalog;
-
       $.event('CloseMenu');
-      $.set('Header catalog links', useCatalog = this.checked);
-      return CatalogLinks.set(useCatalog);
+      $.set('Header catalog links', this.checked);
+      return CatalogLinks.set(this.checked);
     },
     set: function(useCatalog) {
-      var a, board, path, _i, _len, _ref;
+      var a, board, generateURL, path, _i, _len, _ref;
 
       path = useCatalog ? 'catalog' : '';
-      _ref = $$("#board-list a:not(.catalog),\n#boardNavDesktopFoot a");
+      generateURL = useCatalog && Conf['External Catalog'] ? CatalogLinks.external : function(board) {
+        return a.href = "/" + board + "/" + path;
+      };
+      _ref = $$("#board-list a:not(.catalog), #boardNavDesktopFoot a");
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
-        board = a.pathname.split('/')[1];
-        if (['f', 'status', '4chan'].contains(board) || !board) {
+        if (!['boards.4chan.org', 'catalog.neet.tv', '4index.gropes.us'].contains(a.hostname) || !(board = a.pathname.split('/')[1]) || ['f', 'status', '4chan'].contains(board)) {
           continue;
         }
-        if (Conf['External Catalog']) {
-          a.href = useCatalog ? CatalogLinks.external(board) : "/" + board + "/";
-        } else {
-          a.pathname = "/" + board + "/" + path;
-        }
+        a.href = generateURL(board);
       }
-      return this.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
+      return CatalogLinks.el.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
     },
     external: function(board) {
-      return (['a', 'c', 'g', 'co', 'k', 'm', 'o', 'p', 'v', 'vg', 'w', 'cm', '3', 'adv', 'an', 'cgl', 'ck', 'diy', 'fa', 'fit', 'int', 'jp', 'mlp', 'lit', 'mu', 'n', 'po', 'sci', 'toy', 'trv', 'tv', 'vp', 'x', 'q'].contains(board) ? "http://catalog.neet.tv/" + board : ['d', 'e', 'gif', 'h', 'hr', 'hc', 'r9k', 's', 'pol', 'soc', 'u', 'i', 'ic', 'hm', 'r', 'w', 'wg', 'wsg', 't', 'y'].contains(board) ? "http://4index.gropes.us/" + board : "/" + board + "/catalog");
+      switch (board) {
+        case 'a':
+        case 'c':
+        case 'g':
+        case 'co':
+        case 'k':
+        case 'm':
+        case 'o':
+        case 'p':
+        case 'v':
+        case 'vg':
+        case 'w':
+        case 'cm':
+        case '3':
+        case 'adv':
+        case 'an':
+        case 'cgl':
+        case 'ck':
+        case 'diy':
+        case 'fa':
+        case 'fit':
+        case 'int':
+        case 'jp':
+        case 'mlp':
+        case 'lit':
+        case 'mu':
+        case 'n':
+        case 'po':
+        case 'sci':
+        case 'toy':
+        case 'trv':
+        case 'tv':
+        case 'vp':
+        case 'x':
+        case 'q':
+          return "http://catalog.neet.tv/" + board;
+        case 'd':
+        case 'e':
+        case 'gif':
+        case 'h':
+        case 'hr':
+        case 'hc':
+        case 'r9k':
+        case 's':
+        case 'pol':
+        case 'soc':
+        case 'u':
+        case 'i':
+        case 'ic':
+        case 'hm':
+        case 'r':
+        case 'w':
+        case 'wg':
+        case 'wsg':
+        case 't':
+        case 'y':
+          return "http://4index.gropes.us/" + board;
+        default:
+          return "/" + board + "/catalog";
+      }
     },
     ready: function() {
       var catalogLink;
