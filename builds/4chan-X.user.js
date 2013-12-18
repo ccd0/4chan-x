@@ -1578,7 +1578,7 @@
         innerHTML: '<input type=checkbox name="Header auto-hide on scroll"> Auto-hide header on scroll'
       });
       barPositionToggler = $.el('label', {
-        innerHTML: '<input type=checkbox name="Bottom header"> Bottom header'
+        innerHTML: '<input type=checkbox name="Bottom Header"> Bottom header'
       });
       linkJustifyToggler = $.el('label', {
         innerHTML: "<input type=checkbox " + (Conf['Centered links'] ? 'checked' : '') + "> Centered links"
@@ -1988,7 +1988,7 @@
 
       clientHeight = doc.clientHeight;
       bottom = clientHeight - root.getBoundingClientRect().bottom;
-      if (Conf['Bottom header']) {
+      if (Conf['Bottom Header']) {
         headRect = Header.toggle.getBoundingClientRect();
         bottom -= clientHeight - headRect.bottom + headRect.height;
       }

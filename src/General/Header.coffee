@@ -13,7 +13,7 @@ Header =
     scrollHeaderToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Header auto-hide on scroll"> Auto-hide header on scroll'
     barPositionToggler = $.el 'label',
-      innerHTML: '<input type=checkbox name="Bottom header"> Bottom header'
+      innerHTML: '<input type=checkbox name="Bottom Header"> Bottom header'
     linkJustifyToggler = $.el 'label',
       innerHTML: "<input type=checkbox #{if Conf['Centered links'] then 'checked' else ''}> Centered links"
     customNavToggler = $.el 'label',
@@ -375,7 +375,7 @@ Header =
   getBottomOf: (root) ->
     {clientHeight} = doc
     bottom = clientHeight - root.getBoundingClientRect().bottom
-    if Conf['Bottom header']
+    if Conf['Bottom Header']
       headRect = Header.toggle.getBoundingClientRect()
       bottom  -= clientHeight - headRect.bottom + headRect.height
     bottom
