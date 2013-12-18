@@ -35,16 +35,17 @@ Header =
     @shortcutToggler     = shortcutToggler.firstElementChild
     @customNavToggler    = customNavToggler.firstElementChild
 
-    $.on menuButton,          'click',  @menuToggle
-    $.on @headerToggler,      'change', @toggleBarVisibility
-    $.on @barFixedToggler,    'change', @toggleBarFixed
-    $.on @barPositionToggler, 'change', @toggleBarPosition
-    $.on @linkJustifyToggler, 'change', @toggleLinkJustify
-    $.on @headerToggler,      'change', @toggleBarVisibility
-    $.on @footerToggler,      'change', @toggleFooterVisibility
-    $.on @shortcutToggler,    'change', @toggleShortcutIcons
-    $.on @customNavToggler,   'change', @toggleCustomNav
-    $.on editCustomNav,       'click',  @editCustomNav
+    $.on menuButton,           'click',  @menuToggle
+    $.on @headerToggler,       'change', @toggleBarVisibility
+    $.on @barFixedToggler,     'change', @toggleBarFixed
+    $.on @barPositionToggler,  'change', @toggleBarPosition
+    $.on @scrollHeaderToggler, 'change', @toggleHideBarOnScroll
+    $.on @linkJustifyToggler,  'change', @toggleLinkJustify
+    $.on @headerToggler,       'change', @toggleBarVisibility
+    $.on @footerToggler,       'change', @toggleFooterVisibility
+    $.on @shortcutToggler,     'change', @toggleShortcutIcons
+    $.on @customNavToggler,    'change', @toggleCustomNav
+    $.on editCustomNav,        'click',  @editCustomNav
 
     @setBarFixed        Conf['Fixed Header']
     @setHideBarOnScroll Conf['Header auto-hide on scroll']
