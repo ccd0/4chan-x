@@ -63,10 +63,7 @@ Build =
     isOP = postID is threadID
 
     staticPath = '//s.4cdn.org/image/'
-    gifIcon = if window.devicePixelRatio >= 2
-      '@2x.gif'
-    else
-      '.gif'
+    gifIcon = if window.devicePixelRatio >= 2 then '@2x.gif' else '.gif'
 
     if email
       emailStart = '<a href="mailto:' + email + '" class="useremail">'
@@ -226,7 +223,7 @@ Build =
           "<span class='postNum'>" +
             "<a href=#{"/#{boardID}/res/#{threadID}#p#{postID}"} title='Highlight this post'>No.</a>" +
             "<a href='#{
-              if g.VIEW is 'thread' and g.THREADID is +threadID
+              if g.VIEW is 'thread' and g.THREADID is threadID
                 "javascript:quote(#{postID})"
               else
                 "/#{boardID}/res/#{threadID}#q#{postID}"

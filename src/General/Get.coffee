@@ -194,8 +194,8 @@ Get =
     threadID = +data.thread_num
     o =
       # id
-      postID:   "#{postID}"
-      threadID: "#{threadID}"
+      postID:   postID
+      threadID: threadID
       boardID:  boardID
       # info
       name:     data.name_processed
