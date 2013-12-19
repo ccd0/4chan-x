@@ -29,6 +29,7 @@ module.exports = (grunt) ->
           # Features -->
           'src/Filtering/**/*'
           'src/Quotelinks/**/*'
+          'src/Posting/QR.coffee'
           'src/Posting/**/*'
           'src/Images/**/*'
           'src/Linkification/**/*'
