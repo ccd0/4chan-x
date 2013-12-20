@@ -1,4 +1,6 @@
 Build =
+  staticPath: '//s.4cdn.org/image/'
+  gifIcon: if window.devicePixelRatio >= 2 then '@2x.gif' else '.gif'
   spoilerRange: {}
   shortFilename: (filename, isReply) ->
     # FILENAME SHORTENING SCIENCE:
@@ -61,9 +63,12 @@ Build =
       file
     } = o
     isOP = postID is threadID
+    {staticPath, gifIcon} = Build
 
-    staticPath = '//s.4cdn.org/image/'
-    gifIcon = if window.devicePixelRatio >= 2 then '@2x.gif' else '.gif'
+    tripcode = if tripcode
+      " <span class=postertrip>#{tripcode}</span>"
+    else
+      ''
 
     if email
       emailStart = '<a href="mailto:' + email + '" class="useremail">'
@@ -72,41 +77,35 @@ Build =
       emailStart = ''
       emailEnd   = ''
 
-    subject = "<span class=subject>#{subject or ''}</span>"
-
-    userID =
-      if !capcode and uniqueID
-        " <span class='posteruid id_#{uniqueID}'>(ID: " +
-          "<span class=hand title='Highlight posts by this ID'>#{uniqueID}</span>)</span> "
-      else
-        ''
-
     switch capcode
       when 'admin', 'admin_highlight'
         capcodeClass = " capcodeAdmin"
         capcodeStart = " <strong class='capcode hand id_admin'" +
           "title='Highlight posts by the Administrator'>## Admin</strong>"
-        capcode      = " <img src='#{staticPath}adminicon#{gifIcon}' " +
-          "alt='This user is the 4chan Administrator.' " +
+        capcodeIcon  = " <img src='#{staticPath}adminicon#{gifIcon}' " +
           "title='This user is the 4chan Administrator.' class=identityIcon>"
       when 'mod'
         capcodeClass = " capcodeMod"
         capcodeStart = " <strong class='capcode hand id_mod' " +
           "title='Highlight posts by Moderators'>## Mod</strong>"
-        capcode      = " <img src='#{staticPath}modicon#{gifIcon}' " +
-          "alt='This user is a 4chan Moderator.' " +
+        capcodeIcon  = " <img src='#{staticPath}modicon#{gifIcon}' " +
           "title='This user is a 4chan Moderator.' class=identityIcon>"
       when 'developer'
         capcodeClass = " capcodeDeveloper"
         capcodeStart = " <strong class='capcode hand id_developer' " +
           "title='Highlight posts by Developers'>## Developer</strong>"
-        capcode      = " <img src='#{staticPath}developericon#{gifIcon}' " +
-          "alt='This user is a 4chan Developer.' " +
+        capcodeIcon  = " <img src='#{staticPath}developericon#{gifIcon}' " +
           "title='This user is a 4chan Developer.' class=identityIcon>"
       else
         capcodeClass = ''
         capcodeStart = ''
-        capcode      = ''
+        capcodeIcon  = ''
+
+    userID = if uniqueID and !capcode
+      " <span class='posteruid id_#{uniqueID}'>(ID: " +
+        "<span class=hand title='Highlight posts by this ID'>#{uniqueID}</span>)</span>"
+    else
+      ''
 
     flag = unless flagCode
       ''
@@ -125,13 +124,7 @@ Build =
           "<img src='#{staticPath}filedeleted-res#{gifIcon}' alt='File deleted.' class=fileDeletedRes>" +
         "</span></div>"
     else if file
-      ext = file.name[-3..]
-      if !file.twidth and !file.theight and ext is 'gif' # wtf ?
-        file.twidth  = file.width
-        file.theight = file.height
-
-      fileSize = $.bytesToString file.size
-
+      fileSize  = $.bytesToString file.size
       fileThumb = file.turl
       if file.isSpoiler
         fileSize = "Spoiler Image, #{fileSize}"
@@ -150,20 +143,17 @@ Build =
           "<img src='#{fileThumb}' alt='#{fileSize}' data-md5=#{file.MD5} style='height: #{file.theight}px; width: #{file.twidth}px;'>" +
         "</a>"
 
-      # Ha ha, filenames!
       # html -> text, translate WebKit's %22s into "s
       a = $.el 'a', innerHTML: file.name
       filename = a.textContent.replace /%22/g, '"'
-
       # shorten filename, get html
       a.textContent = Build.shortFilename filename
       shortFilename = a.innerHTML
-
       # get html
       a.textContent = filename
       filename      = a.innerHTML.replace /'/g, '&apos;'
 
-      fileDims = if ext is 'pdf' then 'PDF' else "#{file.width}x#{file.height}"
+      fileDims = if file.name[-3..] is 'pdf' then 'PDF' else "#{file.width}x#{file.height}"
       fileInfo = "<div class=fileText id=fT#{postID}#{if file.isSpoiler then " title='#{filename}'" else ''}>File: <a href='#{file.url}' target=_blank>#{file.timestamp}</a>" +
         "-(#{fileSize}, #{fileDims}#{
           if file.isSpoiler
@@ -175,11 +165,6 @@ Build =
       fileHTML = "<div class=file id=f#{postID}>#{fileInfo}#{imgSrc}</div>"
     else
       fileHTML = ''
-
-    tripcode = if tripcode
-      " <span class=postertrip>#{tripcode}</span>"
-    else
-      ''
 
     sticky = if isSticky
       " <img src=#{staticPath}sticky#{gifIcon} alt=Sticky title=Sticky class=stickyIcon>"
@@ -213,11 +198,11 @@ Build =
 
         "<div class='postInfo' id=pi#{postID}>" +
           "<input type=checkbox name=#{postID} value=delete> " +
-          "#{subject} " +
+          "<span class=subject>#{subject or ''}</span> " +
           "<span class='nameBlock#{capcodeClass}'>" +
             emailStart +
               "<span class=name>#{name or ''}</span>" + tripcode +
-            capcodeStart + emailEnd + capcode + userID + flag +
+            capcodeStart + emailEnd + capcodeIcon + userID + flag +
           ' </span> ' +
           "<span class=dateTime data-utc=#{dateUTC}>#{date}</span> " +
           "<span class='postNum'>" +
