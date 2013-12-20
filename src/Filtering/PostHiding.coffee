@@ -111,10 +111,12 @@ PostHiding =
       $.event 'CloseMenu'
 
   makeButton: (post, type) ->
+    span = $.el 'span',
+      textContent: "[\u00A0#{if type is 'hide' then '-' else '+'}\u00A0]"
     a = $.el 'a',
       className: "#{type}-reply-button"
-      innerHTML: "<span>[&nbsp;#{if type is 'hide' then '-' else '+'}&nbsp;]</span>"
       href:      'javascript:;'
+    $.add a, span
     $.on a, 'click', PostHiding.toggle
     a
 
@@ -166,7 +168,7 @@ PostHiding =
       className: 'stub'
     $.add post.nodes.stub, a
     if Conf['Menu']
-      $.add post.nodes.stub, [$.tn(' '), Menu.makeButton()]
+      $.add post.nodes.stub, Menu.makeButton()
     $.prepend post.nodes.root, post.nodes.stub
 
   show: (post, showRecursively=Conf['Recursive Hiding']) ->

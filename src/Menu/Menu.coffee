@@ -9,22 +9,22 @@ Menu =
 
   node: ->
     if @isClone
-      button = $ '.menu-button', @nodes.info
-      $.on button, 'click', Menu.toggle
+      $.on $('.menu-button', @nodes.info), 'click', Menu.toggle
       return
-    button = Menu.makeButton()
-    $.add @nodes.info, [$.tn('\u00A0'), button]
+    $.add @nodes.info, Menu.makeButton()
 
   makeButton: do ->
-    a = null
+    frag = null
     ->
-      a or= $.el 'a',
-        className: 'menu-button'
-        innerHTML: '[<i></i>]'
-        href:      'javascript:;'
-      button = a.cloneNode true
-      $.on button, 'click', Menu.toggle
-      button
+      unless frag
+        a = $.el 'a',
+          className: 'menu-button'
+          innerHTML: '[<i></i>]'
+          href:      'javascript:;'
+        frag = $.nodes [$.tn(' '), a]
+      clone = frag.cloneNode true
+      $.on clone.lastElementChild, 'click', Menu.toggle
+      clone
 
   toggle: (e) ->
     try

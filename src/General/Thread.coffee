@@ -33,6 +33,8 @@ class Thread
       className: "#{typeLC}Icon"
     root = if type is 'Closed' and @isSticky
       $ '.stickyIcon', @OP.nodes.info
+    else if g.VIEW is 'index'
+      $ '.page-num',  @OP.nodes.info
     else
       $ '[title="Quote this post"]', @OP.nodes.info
     $.after root, [$.tn(' '), icon]

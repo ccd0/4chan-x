@@ -174,7 +174,7 @@ Main =
       posts  = []
       for postRoot in $$ '.thread > .postContainer', threadRoot
         try
-          posts.push new Post postRoot, thread, g.BOARD
+          posts.push post = new Post postRoot, thread, g.BOARD, {isOriginalMarkup: true}
         catch err
           # Skip posts that we failed to parse.
           errors = [] unless errors

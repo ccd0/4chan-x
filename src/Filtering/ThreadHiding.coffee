@@ -124,7 +124,7 @@ ThreadHiding =
     thread.stub = $.el 'div',
       className: 'stub'
     if Conf['Menu']
-      $.add thread.stub, [a, $.tn(' '), Menu.makeButton()]
+      $.add thread.stub, [a, Menu.makeButton()]
     else
       $.add thread.stub, a
     $.prepend root, thread.stub
