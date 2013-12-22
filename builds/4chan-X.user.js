@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.44 - 2013-12-18
+* 4chan X - Version 1.2.44 - 2013-12-21
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -2060,7 +2060,8 @@
       this.button = $.el('a', {
         className: 'index-refresh-shortcut fa fa-refresh',
         title: 'Refresh Index',
-        href: 'javascript:;'
+        href: 'javascript:;',
+        textContent: 'Refresh Index'
       });
       $.on(this.button, 'click', this.update);
       Header.addShortcut(this.button, 1);

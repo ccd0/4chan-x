@@ -6,6 +6,7 @@ Index =
       className: 'index-refresh-shortcut fa fa-refresh'
       title: 'Refresh Index'
       href: 'javascript:;'
+      textContent: 'Refresh Index'
     $.on @button, 'click', @update
     Header.addShortcut @button, 1
 
