@@ -89,13 +89,4 @@
   "software": "foolfuuka",
   "boards": ["a", "co", "gd", "jp", "m", "s4s", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
   "files": ["a", "gd", "jp", "m", "s4s", "tg", "u", "vg", "vp", "vr", "wsg"]
-}, {
-  "uid": 14,
-  "name": "Bui's Archive",
-  "domain": "archive.bui.pm",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["b"],
-  "files": ["b"]
 }]
