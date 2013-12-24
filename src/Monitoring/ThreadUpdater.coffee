@@ -267,7 +267,7 @@ ThreadUpdater =
         deletedPosts.push post
       else if post.isDead
         post.resurrect()
-      else if post.file and not (post.file.isDead and ID in files)
+      else if post.file and not (post.file.isDead or ID in files)
         post.kill true
         deletedFiles.push post
 

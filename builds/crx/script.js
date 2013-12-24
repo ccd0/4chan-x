@@ -9108,7 +9108,7 @@
           deletedPosts.push(post);
         } else if (post.isDead) {
           post.resurrect();
-        } else if (post.file && !(post.file.isDead && __indexOf.call(files, ID) >= 0)) {
+        } else if (post.file && !(post.file.isDead || __indexOf.call(files, ID) >= 0)) {
           post.kill(true);
           deletedFiles.push(post);
         }
