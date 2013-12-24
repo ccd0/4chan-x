@@ -251,9 +251,8 @@ $.get = (key, val, cb) ->
 
   count = 0
   done  = (item) ->
-    {lastError} = chrome.runtime
-    if lastError
-      c.error lastError, lastError.message or 'No message.'
+    if chrome.runtime.lastError
+      c.error chrome.runtime.lastError.message
     $.extend items, item
     cb items unless --count
 
@@ -264,28 +263,38 @@ $.get = (key, val, cb) ->
     count++
     chrome.storage.sync.get  syncItems,  done
 $.set = do ->
-  items = {}
-  localItems = {}
+  items =
+    sync: {}
+    local: {}
+  timeout = {}
 
-  set = $.debounce $.SECOND, ->
+  setArea = (area) ->
+    return if timeout[area]
+    chrome.storage[area].set items[area], ->
+      if chrome.runtime.lastError
+        c.error chrome.runtime.lastError.message
+        timeout[area] = setTimeout setArea, $.MINUTE, area
+        return
+      items[area] = {}
+      delete timeout[area]
+
+  setAll = $.debounce $.SECOND, ->
     for key in $.localKeys
-      if key of items
-        (localItems or= {})[key] = items[key]
-        delete items[key]
+      if key of items.sync
+        items.local[key] = items.sync[key]
+        delete items.sync[key]
     try
-      chrome.storage.local.set localItems
-      chrome.storage.sync.set items
-      items = {}
-      localItems = {}
+      setArea 'local'
+      setArea 'sync'
     catch err
       c.error err.stack
 
   (key, val) ->
     if typeof key is 'string'
-      items[key] = val
+      items.sync[key] = val
     else
-      $.extend items, key
-    set()
+      $.extend items.sync, key
+    setAll()
 <% } else { %>
 # http://wiki.greasespot.net/Main_Page
 $.sync = do ->
