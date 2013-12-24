@@ -1,28 +1,17 @@
-String::contains = (string) ->
-  @indexOf(string) > -1
-
-Array::contains = (value) ->
-  @indexOf(value) > -1
-
-Array::indexOf = (value) ->
-  i = @length
-  while i--
-    return i if @[i] is value
-  return i
-
 # loosely follows the jquery api:
 # http://api.jquery.com/
 # not chainable
 $ = (selector, root=d.body) ->
   root.querySelector selector
 
-$.extend = (object, properties) ->
-  for key, val of properties
-    continue unless properties.hasOwnProperty key
-    object[key] = val
+$.extend = (obj, prop) ->
+  obj[key] = val for key, val of prop when prop.hasOwnProperty key
   return
 
-$.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)))
+$.DAY = 24 * 
+  $.HOUR = 60 * 
+    $.MINUTE = 60 * 
+      $.SECOND = 1000
 
 $.id = (id) ->
   d.getElementById id
@@ -134,7 +123,7 @@ $.toggleClass = (el, className) ->
   el.classList.toggle className
 
 $.hasClass = (el, className) ->
-  el.classList.contains className
+  className in el.classList
 
 $.rm = do ->
   if 'remove' of Element::

@@ -284,7 +284,7 @@ Settings =
       input = $ "[name='#{name}']", section
       items[name]  = Conf[name]
       inputs[name] = input
-      event = if ['favicon', 'usercss'].contains name
+      event = if name in ['favicon', 'usercss']
         'change'
       else
         'input'
@@ -318,7 +318,7 @@ Settings =
           file:   []
         data.thread.push name
         data.post.push   name if archive.software is 'foolfuuka'
-        data.file.push   name if archive.files.contains boardID
+        data.file.push   name if boardID in archive.files
 
     rows = []
     boardOptions = []
@@ -679,11 +679,11 @@ Settings =
           id:        name
           className: "mascots-container"
           innerHTML: "<h3 class=mascotHeader>#{name}</h3>"
-          hidden:    Conf["Hidden Categories"].contains name
+          hidden:    name in Conf["Hidden Categories"]
 
         option = $.el "label",
           name: name
-          innerHTML: "<input name='#{name}' type=checkbox #{if Conf["Hidden Categories"].contains(name) then 'checked' else ''}>#{name}"
+          innerHTML: "<input name='#{name}' type=checkbox #{if name in Conf["Hidden Categories"] then 'checked' else ''}>#{name}"
 
         $.on $('input', option), 'change', cb.category
 
@@ -691,11 +691,11 @@ Settings =
         $.add menu, option
 
       for name in keys
-        continue if Conf["Deleted Mascots"].contains name
+        continue if name in Conf["Deleted Mascots"]
         mascot = Mascots[name]
         mascotEl = $.el 'div',
           id:        name
-          className: if Conf[g.MASCOTSTRING].contains name then 'mascot enabled' else 'mascot'
+          className: if name in Conf[g.MASCOTSTRING] then 'mascot enabled' else 'mascot'
           innerHTML: "<%= grunt.file.read('src/General/html/Settings/Mascot.html') %>"
 
         $.on mascotEl, 'click', cb.select
@@ -715,7 +715,7 @@ Settings =
 
       $.on $('#selectAll', batchmascots), 'click', ->
         for name, mascot of Mascots
-          unless Conf["Hidden Categories"].contains(mascot.category) or Conf[g.MASCOTSTRING].contains(name) or Conf["Deleted Mascots"].contains(name)
+          unless mascot.category in Conf["Hidden Categories"] or name in Conf[g.MASCOTSTRING] or name in Conf["Deleted Mascots"]
             $.addClass $.id(name), 'enabled'
             Conf[g.MASCOTSTRING].push name
         $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
@@ -743,8 +743,7 @@ Settings =
       container = $.el "div",
         className: "mascots"
 
-      for name in keys
-        continue unless Conf["Deleted Mascots"].contains name
+      for name in keys when name in Conf["Deleted Mascots"]
         mascot = Mascots[name]
         mascotEl = $.el 'div',
           className: 'mascot' 

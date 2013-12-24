@@ -34,9 +34,9 @@ CatalogLinks =
       (board) -> a.href = "/#{board}/#{path}"
 
     for a in $$ """#board-list a:not(.catalog), #boardNavDesktopFoot a""" 
-      continue if !['boards.4chan.org', 'catalog.neet.tv', '4index.gropes.us'].contains(a.hostname) or
+      continue if not a.hostname in ['boards.4chan.org', 'catalog.neet.tv', '4index.gropes.us'] or
       !(board = a.pathname.split('/')[1]) or
-      ['f', 'status', '4chan'].contains board
+      board in ['f', 'status', '4chan']
 
       # Href is easier than pathname because then we don't have
       # conditions where External Catalog has been disabled between switches.

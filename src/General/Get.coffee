@@ -45,7 +45,7 @@ Get =
     #   if it did quote this post,
     #   get all their backlinks.
     for ID, quoterPost of g.posts
-      if quoterPost.quotes.contains post.fullID
+      if post.fullID in quoterPost.quotes
         for quoterPost in [quoterPost].concat quoterPost.clones
           quotelinks.push.apply quotelinks, quoterPost.nodes.quotelinks
     # Second:
@@ -98,7 +98,7 @@ Get =
       return
 
     {status} = req
-    unless [200, 304].contains status
+    unless status in [200, 304]
       # The thread can die by the time we check a quote.
       if url = Redirect.to 'post', {boardID, postID}
         $.cache url,

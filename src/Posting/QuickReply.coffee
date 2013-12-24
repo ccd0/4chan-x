@@ -228,8 +228,7 @@ QR =
       item = item.replace match, ''
 
       boards = item.match(/boards:([^;]+)/i)?[1].toLowerCase() or 'global'
-      if boards isnt 'global' and not ((boards.split ',').contains g.BOARD.ID)
-        return
+      return if boards isnt 'global' and not g.BOARD.ID in boards.split ','
 
       if type is 'password'
         QR.persona.pwd = val
@@ -240,7 +239,7 @@ QR =
       if /always/i.test item
         QR.persona.always[type] = val
 
-      unless types[type].contains val
+      unless val in types[type]
         types[type].push val
 
     loadPersonas: (type, arr) ->
@@ -469,7 +468,7 @@ QR =
     if file.size > max
       QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
       return
-    else unless QR.mimeTypes.contains file.type
+    else unless file.type in QR.mimeTypes
       unless /^text/.test file.type
         QR.error "#{file.name}: Unsupported file type."
         return
@@ -493,7 +492,7 @@ QR =
       $.addClass QR.nodes.filename, 'edit'
       QR.nodes.filename.focus()
       return
-    return if e.target.nodeName is 'INPUT' or (e.keyCode and not [32, 13].contains e.keyCode) or e.ctrlKey
+    return if e.target.nodeName is 'INPUT' or (e.keyCode and not e.keyCode in [32, 13]) or e.ctrlKey
     e.preventDefault()
     QR.nodes.fileInput.click()
 

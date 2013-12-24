@@ -87,7 +87,7 @@ Style =
       node = addedNodes[i]
 
       $.rm node unless node.nodeName is 'STYLE' and node.id or
-        !['LINK', 'STYLE'].contains(node.nodeName) or
+        node.nodeName not in ['LINK', 'STYLE'] or
         node.rel and ((!/stylesheet/.test(node.rel) or /flags.*\.css$/.test(href = node.href) or href[..3] is 'data')) or
         /\.typeset/.test node.textContent
       

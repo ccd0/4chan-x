@@ -255,18 +255,20 @@ ThreadUpdater =
 
     deletedPosts = []
     deletedFiles = []
+
     # Check for deleted posts/files.
     for ID, post of ThreadUpdater.thread.posts
       # XXX tmp fix for 4chan's racing condition
       # giving us false-positive dead posts.
       # continue if post.isDead
       ID = +ID
-      if post.isDead and index.contains ID
-        post.resurrect()
-      else unless index.contains ID
+
+      unless ID in index
         post.kill()
         deletedPosts.push post
-      else if post.file and !post.file.isDead and not files.contains ID
+      else if post.isDead
+        post.resurrect()
+      else if post.file and not (post.file.isDead or ID in files)
         post.kill true
         deletedFiles.push post
 

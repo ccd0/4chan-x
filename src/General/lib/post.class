@@ -111,7 +111,7 @@ class Post
 
     # ES6 Set when?
     fullID = "#{match[1]}.#{match[2]}"
-    @quotes.push fullID unless @quotes.contains fullID
+    @quotes.push fullID unless fullID in @quotes
 
   parseFile: (that) ->
     return unless (fileEl = $ '.file', @nodes.post) and thumb = $ 'img[data-md5]', fileEl

@@ -68,7 +68,7 @@ QuoteThreading =
       {bottom, top} = qpost.nodes.root.getBoundingClientRect()
 
       # Post is unread or is fully visible.
-      return false unless Unread.posts.contains(qpost) or ((bottom < height) and (top > 0))
+      return false unless qpost in Unread.posts or ((bottom < height) and (top > 0))
 
     qroot = qpost.nodes.root
     unless $.hasClass qroot, 'threadOP'

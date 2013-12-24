@@ -51,10 +51,11 @@ Main =
       g.THREADID = +pathname[3]
 
     # Check if the current board we're on is SFW or not, so we can handle options that need to know that.
-    if ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'pol', 'r', 'r9k', 'rs', 's', 's4s', 'soc', 't', 'u', 'y'].contains g.BOARD.ID
-      g.TYPE = 'nsfw'
-    else
-      g.TYPE = 'sfw'
+    g.TYPE = 
+      if g.BOARD.ID in ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'pol', 'r', 'r9k', 'rs', 's', 's4s', 'soc', 't', 'u', 'y']
+        'nsfw'
+      else
+        'sfw'
 
     $.extend Themes,  Conf["userThemes"]
     $.extend Mascots, Conf["userMascots"]
@@ -83,7 +84,7 @@ Main =
         return
       when 'i.4cdn.org'
         $.ready ->
-          if Conf['404 Redirect'] and ['4chan - Temporarily Offline', '4chan - 404 Not Found'].contains d.title
+          if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
             Redirect.init()
             pathname = location.pathname.split '/'
             URL = Redirect.to 'file',
@@ -177,7 +178,7 @@ Main =
     $.ready Main.initReady
 
   initReady: ->
-    if ['4chan - Temporarily Offline', '4chan - 404 Not Found'].contains d.title
+    if d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
       if Conf['404 Redirect'] and g.VIEW is 'thread'
         href = Redirect.to 'thread',
           boardID:  g.BOARD.ID

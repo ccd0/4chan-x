@@ -308,7 +308,7 @@ MascotTools =
       Conf["mascot"] = name
 
       for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
-        unless Conf[type].contains name
+        unless name in Conf[type]
           Conf[type].push name
           $.set type, Conf[type]
       alert "Mascot \"#{name}\" saved."
