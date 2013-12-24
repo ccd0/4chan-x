@@ -9,7 +9,7 @@ Redirect =
       for type, id of data
         if archive = Redirect.archives[id]
           boards = archive[type] or archive['boards']
-          continue unless boards.contains boardID
+          continue unless boardID in boards
           Redirect.data[type][boardID] = archive
     for name, archive of Redirect.archives
       for boardID in archive.boards
@@ -17,7 +17,7 @@ Redirect =
           Redirect.data.thread[boardID] = archive
         unless boardID of Redirect.data.post or archive.software isnt 'foolfuuka'
           Redirect.data.post[boardID] = archive
-        unless boardID of Redirect.data.file or !archive.files.contains boardID
+        unless boardID of Redirect.data.file or not boardID in archive.files
           Redirect.data.file[boardID] = archive
     return
 

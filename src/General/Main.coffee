@@ -49,7 +49,7 @@ Main =
         return
       when 'i.4cdn.org'
         $.ready ->
-          if Conf['404 Redirect'] and ['4chan - Temporarily Offline', '4chan - 404 Not Found'].contains d.title
+          if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
             Redirect.init()
             pathname = location.pathname.split '/'
             URL = Redirect.to 'file',
@@ -174,7 +174,7 @@ Main =
       attributeFilter: ['href']
 
   initReady: ->
-    if ['4chan - Temporarily Offline', '4chan - 404 Not Found'].contains d.title
+    if d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
       if Conf['404 Redirect'] and g.VIEW is 'thread'
         href = Redirect.to 'thread',
           boardID:  g.BOARD.ID

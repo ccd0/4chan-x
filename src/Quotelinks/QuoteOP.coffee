@@ -19,7 +19,7 @@ QuoteOP =
     {quotelinks} = @nodes
 
     # rm (OP) from cross-thread quotes.
-    if @isClone and quotes.contains @thread.fullID
+    if @isClone and @thread.fullID in quotes
       i = 0
       while quotelink = quotelinks[i++]
         quotelink.textContent = quotelink.textContent.replace QuoteOP.text, ''
@@ -27,7 +27,7 @@ QuoteOP =
     {fullID} = (if @isClone then @context else @).thread
     # add (OP) to quotes quoting this context's OP.
 
-    return unless quotes.contains fullID
+    return unless fullID in quotes
     i = 0
     while quotelink = quotelinks[i++]
       {boardID, postID} = Get.postDataFromLink quotelink

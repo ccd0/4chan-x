@@ -19,7 +19,7 @@ Keybinds =
   keydown: (e) ->
     return unless key = Keybinds.keyCode e
     {target} = e
-    if ['INPUT', 'TEXTAREA'].contains target.nodeName
+    if target.nodeName in ['INPUT', 'TEXTAREA']
       return unless /(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test key
     threadRoot = Nav.getThread()
     if op = $ '.op', threadRoot

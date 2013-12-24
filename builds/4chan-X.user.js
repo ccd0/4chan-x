@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.44 - 2013-12-21
+* 4chan X - Version 1.2.44 - 2013-12-24
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -105,11 +105,11 @@
 
 (function() {
   var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Gallery, Get, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, InfiniScroll, Keybinds, Linkify, Main, Menu, Nav, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Config = {
     main: {
@@ -352,24 +352,12 @@
     posts: {}
   };
 
-  String.prototype.capitalize = function() {
-    return this.charAt(0).toUpperCase() + this.slice(1);
-  };
-
-  String.prototype.contains = function(string) {
-    return this.indexOf(string) > -1;
-  };
-
-  Array.prototype.contains = function(object) {
-    return this.indexOf(object) > -1;
-  };
-
-  Array.prototype.indexOf = function(object) {
+  Array.prototype.indexOf = function(val) {
     var i;
 
     i = this.length;
     while (i--) {
-      if (this[i] === object) {
+      if (this[i] === val) {
         return i;
       }
     }
@@ -383,15 +371,14 @@
     return root.querySelector(selector);
   };
 
-  $.extend = function(object, properties) {
+  $.extend = function(obj, prop) {
     var key, val;
 
-    for (key in properties) {
-      val = properties[key];
-      if (!properties.hasOwnProperty(key)) {
-        continue;
+    for (key in prop) {
+      val = prop[key];
+      if (prop.hasOwnProperty(key)) {
+        obj[key] = val;
       }
-      object[key] = val;
     }
   };
 
@@ -571,7 +558,7 @@
   };
 
   $.hasClass = function(el, className) {
-    return el.classList.contains(className);
+    return __indexOf.call(el.classList, className) >= 0;
   };
 
   $.rm = (function() {
@@ -1063,7 +1050,7 @@
         return;
       }
       fullID = "" + match[1] + "." + match[2];
-      if (!this.quotes.contains(fullID)) {
+      if (__indexOf.call(this.quotes, fullID) < 0) {
         return this.quotes.push(fullID);
       }
     };
@@ -2965,38 +2952,38 @@
       };
     },
     allQuotelinksLinkingTo: function(post) {
-      var ID, quote, quotedPost, quotelinks, quoterPost, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
+      var ID, quote, quotedPost, quotelinks, quoterPost, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
 
       quotelinks = [];
       _ref = g.posts;
       for (ID in _ref) {
         quoterPost = _ref[ID];
-        if (quoterPost.quotes.contains(post.fullID)) {
-          _ref1 = [quoterPost].concat(quoterPost.clones);
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            quoterPost = _ref1[_i];
+        if (_ref1 = post.fullID, __indexOf.call(quoterPost.quotes, _ref1) >= 0) {
+          _ref2 = [quoterPost].concat(quoterPost.clones);
+          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+            quoterPost = _ref2[_i];
             quotelinks.push.apply(quotelinks, quoterPost.nodes.quotelinks);
           }
         }
       }
       if (Conf['Quote Backlinks']) {
-        _ref2 = post.quotes;
-        for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-          quote = _ref2[_j];
+        _ref3 = post.quotes;
+        for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
+          quote = _ref3[_j];
           if (!(quotedPost = g.posts[quote])) {
             continue;
           }
-          _ref3 = [quotedPost].concat(quotedPost.clones);
-          for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
-            quotedPost = _ref3[_k];
+          _ref4 = [quotedPost].concat(quotedPost.clones);
+          for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
+            quotedPost = _ref4[_k];
             quotelinks.push.apply(quotelinks, __slice.call(quotedPost.nodes.backlinks));
           }
         }
       }
       return quotelinks.filter(function(quotelink) {
-        var boardID, postID, _ref4;
+        var boardID, postID, _ref5;
 
-        _ref4 = Get.postDataFromLink(quotelink), boardID = _ref4.boardID, postID = _ref4.postID;
+        _ref5 = Get.postDataFromLink(quotelink), boardID = _ref5.boardID, postID = _ref5.postID;
         return boardID === post.board.ID && postID === post.ID;
       });
     },
@@ -3045,7 +3032,7 @@
         return;
       }
       status = req.status;
-      if (![200, 304].contains(status)) {
+      if (status !== 200 && status !== 304) {
         if (url = Redirect.to('post', {
           boardID: boardID,
           postID: postID
@@ -3575,7 +3562,9 @@
       }
       $.on(root, 'mousemove', o.hover);
       o.workaround = function(e) {
-        if (!root.contains(e.target)) {
+        var _ref;
+
+        if (_ref = e.target, __indexOf.call(root, _ref) < 0) {
           return o.hoverend();
         }
       };
@@ -3649,7 +3638,7 @@
   Filter = {
     filters: {},
     init: function() {
-      var boards, err, filter, hl, key, op, regexp, stub, top, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4;
+      var boards, err, filter, hl, key, op, regexp, stub, top, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
 
       if (g.VIEW === 'catalog' || !Conf['Filter']) {
         return;
@@ -3670,10 +3659,10 @@
           }
           filter = filter.replace(regexp[0], '');
           boards = ((_ref1 = filter.match(/boards:([^;]+)/)) != null ? _ref1[1].toLowerCase() : void 0) || 'global';
-          if (boards !== 'global' && !(boards.split(',')).contains(g.BOARD.ID)) {
+          if (boards !== 'global' && (_ref2 = !g.BOARD.ID, __indexOf.call(boards.split(','), _ref2) >= 0)) {
             continue;
           }
-          if (['uniqueID', 'MD5'].contains(key)) {
+          if (key === 'uniqueID' || key === 'MD5') {
             regexp = regexp[1];
           } else {
             try {
@@ -3684,11 +3673,11 @@
               continue;
             }
           }
-          op = ((_ref2 = filter.match(/[^t]op:(yes|no|only)/)) != null ? _ref2[1] : void 0) || 'yes';
+          op = ((_ref3 = filter.match(/[^t]op:(yes|no|only)/)) != null ? _ref3[1] : void 0) || 'yes';
           stub = (function() {
-            var _ref3;
+            var _ref4;
 
-            switch ((_ref3 = filter.match(/stub:(yes|no)/)) != null ? _ref3[1] : void 0) {
+            switch ((_ref4 = filter.match(/stub:(yes|no)/)) != null ? _ref4[1] : void 0) {
               case 'yes':
                 return true;
               case 'no':
@@ -3698,8 +3687,8 @@
             }
           })();
           if (hl = /highlight/.test(filter)) {
-            hl = ((_ref3 = filter.match(/highlight:(\w+)/)) != null ? _ref3[1] : void 0) || 'filter-highlight';
-            top = ((_ref4 = filter.match(/top:(yes|no)/)) != null ? _ref4[1] : void 0) || 'yes';
+            hl = ((_ref4 = filter.match(/highlight:(\w+)/)) != null ? _ref4[1] : void 0) || 'filter-highlight';
+            top = ((_ref5 = filter.match(/top:(yes|no)/)) != null ? _ref5[1] : void 0) || 'yes';
             top = top === 'yes';
           }
           this.filters[key].push(this.createFilter(regexp, op, stub, hl, top));
@@ -3897,7 +3886,7 @@
 
         type = this.dataset.type;
         value = Filter[type](Filter.menu.post);
-        re = ['uniqueID', 'MD5'].contains(type) ? value : value.replace(/\/|\\|\^|\$|\n|\.|\(|\)|\{|\}|\[|\]|\?|\*|\+|\|/g, function(c) {
+        re = type === 'uniqueID' || type === 'MD5' ? value : value.replace(/\/|\\|\^|\$|\n|\.|\(|\)|\{|\}|\[|\]|\?|\*|\+|\|/g, function(c) {
           if (c === '\n') {
             return '\\n';
           } else if (c === '\\') {
@@ -3906,7 +3895,7 @@
             return "\\" + c;
           }
         });
-        re = ['uniqueID', 'MD5'].contains(type) ? "/" + re + "/" : "/^" + re + "$/";
+        re = type === 'uniqueID' || type === 'MD5' ? "/" + re + "/" : "/^" + re + "$/";
         return $.get(type, Conf[type], function(item) {
           var save, section, select, ta, tl;
 
@@ -4296,7 +4285,7 @@
       _ref = g.posts;
       for (ID in _ref) {
         post = _ref[ID];
-        if (post.quotes.contains(fullID)) {
+        if (__indexOf.call(post.quotes, fullID) >= 0) {
           recursive.apply(null, [post].concat(__slice.call(args)));
         }
       }
@@ -4331,7 +4320,7 @@
       return $.prepend(this.OP.nodes.root, ThreadHiding.makeButton(this, 'hide'));
     },
     onIndexBuild: function(_arg) {
-      var i, nodes, root, thread, _i, _len;
+      var i, nodes, root, thread, _i, _len, _ref;
 
       nodes = _arg.detail;
       for (i = _i = 0, _len = nodes.length; _i < _len; i = _i += 2) {
@@ -4342,7 +4331,7 @@
         }
         if (!thread.stub) {
           nodes[i + 1].hidden = true;
-        } else if (!root.contains(thread.stub)) {
+        } else if (_ref = thread.stub, __indexOf.call(root, _ref) < 0) {
           ThreadHiding.makeStub(thread, root);
         }
       }
@@ -4857,7 +4846,7 @@
       });
     },
     node: function() {
-      var boardID, fullID, i, postID, quotelink, quotelinks, quotes, _ref;
+      var boardID, fullID, i, postID, quotelink, quotelinks, quotes, _ref, _ref1;
 
       if (this.isClone && this.thread === this.context.thread) {
         return;
@@ -4866,19 +4855,19 @@
         return;
       }
       quotelinks = this.nodes.quotelinks;
-      if (this.isClone && quotes.contains(this.thread.fullID)) {
+      if (this.isClone && (_ref = this.thread.fullID, __indexOf.call(quotes, _ref) >= 0)) {
         i = 0;
         while (quotelink = quotelinks[i++]) {
           quotelink.textContent = quotelink.textContent.replace(QuoteOP.text, '');
         }
       }
       fullID = (this.isClone ? this.context : this).thread.fullID;
-      if (!quotes.contains(fullID)) {
+      if (__indexOf.call(quotes, fullID) < 0) {
         return;
       }
       i = 0;
       while (quotelink = quotelinks[i++]) {
-        _ref = Get.postDataFromLink(quotelink), boardID = _ref.boardID, postID = _ref.postID;
+        _ref1 = Get.postDataFromLink(quotelink), boardID = _ref1.boardID, postID = _ref1.postID;
         if (("" + boardID + "." + postID) === fullID) {
           $.add(quotelink, $.tn(QuoteOP.text));
         }
@@ -5083,7 +5072,7 @@
       if (QuoteThreading.hasRun) {
         height = doc.clientHeight;
         _ref = qpost.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
-        if (!(Unread.posts.contains(qpost) || ((bottom < height) && (top > 0)))) {
+        if (!(__indexOf.call(Unread.posts, qpost) >= 0 || ((bottom < height) && (top > 0)))) {
           return false;
         }
       }
@@ -5320,12 +5309,11 @@
           });
         }
       }
-      if (!this.quotes.contains(quoteID)) {
+      if (__indexOf.call(this.quotes, quoteID) < 0) {
         this.quotes.push(quoteID);
       }
       if (!a) {
-        deadlink.textContent = "" + quote + "\u00A0(Dead)";
-        return;
+        return deadlink.textContent = "" + quote + "\u00A0(Dead)";
       }
       $.replace(deadlink, a);
       if ($.hasClass(a, 'quotelink')) {
@@ -5706,7 +5694,7 @@
             var embed, file, files, status, type, _i, _j, _len, _len1, _ref;
 
             status = this.status;
-            if (![200, 304].contains(status)) {
+            if (status !== 200 && status !== 304) {
               return div.innerHTML = "ERROR " + status;
             }
             files = JSON.parse(this.response).files;
@@ -6151,7 +6139,7 @@
         });
       },
       parseItem: function(item, types) {
-        var boards, match, type, val, _ref, _ref1;
+        var boards, match, type, val, _ref, _ref1, _ref2;
 
         if (item[0] === '#') {
           return;
@@ -6162,7 +6150,7 @@
         _ref = match, match = _ref[0], type = _ref[1], val = _ref[2];
         item = item.replace(match, '');
         boards = ((_ref1 = item.match(/boards:([^;]+)/i)) != null ? _ref1[1].toLowerCase() : void 0) || 'global';
-        if (boards !== 'global' && !((boards.split(',')).contains(g.BOARD.ID))) {
+        if (boards !== 'global' && (_ref2 = !g.BOARD.ID, __indexOf.call(boards.split(','), _ref2) >= 0)) {
           return;
         }
         if (type === 'password') {
@@ -6175,7 +6163,7 @@
         if (/always/i.test(item)) {
           QR.persona.always[type] = val;
         }
-        if (!types[type].contains(val)) {
+        if (__indexOf.call(types[type], val) < 0) {
           return types[type].push(val);
         }
       },
@@ -6473,12 +6461,12 @@
       }
     },
     handleFile: function(file, isSingle, max) {
-      var post;
+      var post, _ref;
 
       if (file.size > max) {
         QR.error("" + file.name + ": File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(max)) + ").");
         return;
-      } else if (!QR.mimeTypes.contains(file.type)) {
+      } else if (_ref = file.type, __indexOf.call(QR.mimeTypes, _ref) < 0) {
         if (!/^text/.test(file.type)) {
           QR.error("" + file.name + ": Unsupported file type.");
           return;
@@ -6499,6 +6487,8 @@
       return post.setFile(file);
     },
     openFileInput: function(e) {
+      var _ref;
+
       e.stopPropagation();
       if (e.shiftKey && e.type === 'click') {
         return QR.selected.rmFile();
@@ -6510,7 +6500,7 @@
           return $.rmClass(QR.nodes.filename, 'edit');
         });
       }
-      if (e.target.nodeName === 'INPUT' || (e.keyCode && ![32, 13].contains(e.keyCode)) || e.ctrlKey) {
+      if (e.target.nodeName === 'INPUT' || (e.keyCode && ((_ref = !e.keyCode) === 32 || _ref === 13)) || e.ctrlKey) {
         return;
       }
       e.preventDefault();
@@ -7804,7 +7794,7 @@
           innerHTML: "<input type=checkbox name='" + name + "'> " + name
         });
         input = label.firstElementChild;
-        if (['Fit Width', 'Fit Height', 'Hide Thumbnails'].contains(name)) {
+        if (name === 'Fit Width' || name === 'Fit Height' || name === 'Hide Thumbnails') {
           $.on(input, 'change', Gallery.cb.setFitness);
         }
         input.checked = Conf[name];
@@ -7861,7 +7851,7 @@
         return ImageExpand.toggle(Get.postFromNode(this));
       },
       toggleAll: function() {
-        var ID, file, func, post, _i, _len, _ref, _ref1;
+        var ID, file, func, post, _i, _len, _ref, _ref1, _ref2;
 
         $.event('CloseMenu');
         if (ImageExpand.on = $.hasClass(ImageExpand.EAI, 'expand-all-shortcut')) {
@@ -7880,7 +7870,7 @@
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             post = _ref1[_i];
             file = post.file;
-            if (!(file && file.isImage && doc.contains(post.nodes.root))) {
+            if (!(file && file.isImage && (_ref2 = post.nodes.root, __indexOf.call(doc, _ref2) >= 0))) {
               continue;
             }
             if (ImageExpand.on && (!Conf['Expand spoilers'] && file.isSpoiler || Conf['Expand from here'] && Header.getTopOf(file.thumb) < 0)) {
@@ -8124,7 +8114,7 @@
       var URL, post, src, timeoutID,
         _this = this;
 
-      if (!doc.contains(this)) {
+      if (__indexOf.call(doc, this) < 0) {
         return;
       }
       post = g.posts[this.dataset.fullID];
@@ -9130,12 +9120,12 @@
       for (ID in _ref) {
         post = _ref[ID];
         ID = +ID;
-        if (post.isDead && index.contains(ID)) {
-          post.resurrect();
-        } else if (!index.contains(ID)) {
+        if (__indexOf.call(index, ID) < 0) {
           post.kill();
           deletedPosts.push(post);
-        } else if (post.file && !post.file.isDead && !files.contains(ID)) {
+        } else if (post.isDead) {
+          post.resurrect();
+        } else if (post.file && !(post.file.isDead && __indexOf.call(files, ID) >= 0)) {
           post.kill(true);
           deletedFiles.push(post);
         }
@@ -9815,7 +9805,7 @@
       return Unread.update();
     },
     addPosts: function(posts) {
-      var ID, data, post, _i, _len;
+      var ID, data, post, _i, _len, _ref;
 
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
         post = posts[_i];
@@ -9837,7 +9827,7 @@
         Unread.addPostQuotingYou(post);
       }
       if (Conf['Unread Line']) {
-        Unread.setLine(posts.contains(Unread.posts[0]));
+        Unread.setLine((_ref = Unread.posts[0], __indexOf.call(posts, _ref) >= 0));
       }
       Unread.read();
       return Unread.update();
@@ -10002,7 +9992,7 @@
       file: {}
     },
     init: function() {
-      var archive, boardID, boards, data, id, name, type, _i, _len, _ref, _ref1, _ref2;
+      var archive, boardID, boards, data, id, name, type, _i, _len, _ref, _ref1, _ref2, _ref3;
 
       _ref = Conf['selectedArchives'];
       for (boardID in _ref) {
@@ -10011,7 +10001,7 @@
           id = data[type];
           if (archive = Redirect.archives[id]) {
             boards = archive[type] || archive['boards'];
-            if (!boards.contains(boardID)) {
+            if (__indexOf.call(boards, boardID) < 0) {
               continue;
             }
             Redirect.data[type][boardID] = archive;
@@ -10030,7 +10020,7 @@
           if (!(boardID in Redirect.data.post || archive.software !== 'foolfuuka')) {
             Redirect.data.post[boardID] = archive;
           }
-          if (!(boardID in Redirect.data.file || !archive.files.contains(boardID))) {
+          if (!(boardID in Redirect.data.file || (_ref3 = !boardID, __indexOf.call(archive.files, _ref3) >= 0))) {
             Redirect.data.file[boardID] = archive;
           }
         }
@@ -10394,7 +10384,7 @@
       return CatalogLinks.set(this.checked);
     },
     set: function(useCatalog) {
-      var a, board, generateURL, path, _i, _len, _ref;
+      var a, board, generateURL, path, _i, _len, _ref, _ref1;
 
       path = useCatalog ? 'catalog' : '';
       generateURL = useCatalog && Conf['External Catalog'] ? CatalogLinks.external : function(board) {
@@ -10403,7 +10393,7 @@
       _ref = $$("#board-list a:not(.catalog), #boardNavDesktopFoot a");
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
-        if (!['boards.4chan.org', 'catalog.neet.tv', '4index.gropes.us'].contains(a.hostname) || !(board = a.pathname.split('/')[1]) || ['f', 'status', '4chan'].contains(board)) {
+        if (((_ref1 = !a.hostname) === 'boards.4chan.org' || _ref1 === 'catalog.neet.tv' || _ref1 === '4index.gropes.us') || !(board = a.pathname.split('/')[1]) || (board === 'f' || board === 'status' || board === '4chan')) {
           continue;
         }
         a.href = generateURL(board);
@@ -10634,7 +10624,7 @@
       var callback, clone, comment, href, postObj, posts, quote, spoilerRange, status, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
 
       status = req.status;
-      if (![200, 304].contains(status)) {
+      if (status !== 200 && status !== 304) {
         a.textContent = "Error " + req.statusText + " (" + status + ")";
         return;
       }
@@ -11243,13 +11233,13 @@
       return Conf[hotkey] = key;
     },
     keydown: function(e) {
-      var key, notification, notifications, op, target, thread, threadRoot, _i, _len;
+      var key, notification, notifications, op, target, thread, threadRoot, _i, _len, _ref;
 
       if (!(key = Keybinds.keyCode(e))) {
         return;
       }
       target = e.target;
-      if (['INPUT', 'TEXTAREA'].contains(target.nodeName)) {
+      if ((_ref = target.nodeName) === 'INPUT' || _ref === 'TEXTAREA') {
         if (!/(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test(key)) {
           return;
         }
@@ -12350,7 +12340,7 @@
         input = $("[name=" + name + "]", section);
         items[name] = Conf[name];
         inputs[name] = input;
-        event = ['favicon', 'usercss', 'sageEmoji', 'emojiPos'].contains(name) ? 'change' : 'input';
+        event = name === 'favicon' || name === 'usercss' || name === 'sageEmoji' || name === 'emojiPos' ? 'change' : 'input';
         $.on(input, event, $.cb.value);
       }
       ta = $('.personafield', section);
@@ -12363,7 +12353,7 @@
 
         for (key in items) {
           val = items[key];
-          if (['emojiPos'].contains(key)) {
+          if (key === 'emojiPos') {
             continue;
           }
           input = inputs[key];
@@ -12394,7 +12384,7 @@
           if (archive.software === 'foolfuuka') {
             data.post.push(name);
           }
-          if (archive.files.contains(boardID)) {
+          if (__indexOf.call(archive.files, boardID) >= 0) {
             data.file.push(name);
           }
         }
@@ -12648,9 +12638,9 @@
           return;
         case 'i.4cdn.org':
           $.ready(function() {
-            var URL;
+            var URL, _ref1;
 
-            if (Conf['404 Redirect'] && ['4chan - Temporarily Offline', '4chan - 404 Not Found'].contains(d.title)) {
+            if (Conf['404 Redirect'] && ((_ref1 = d.title) === '4chan - Temporarily Offline' || _ref1 === '4chan - 404 Not Found')) {
               Redirect.init();
               pathname = location.pathname.split('/');
               URL = Redirect.to('file', {
@@ -12790,9 +12780,9 @@
       });
     },
     initReady: function() {
-      var GMver, err, errors, href, i, passLink, postRoot, posts, styleSelector, thread, threadRoot, v, _i, _j, _len, _len1, _ref, _ref1;
+      var GMver, err, errors, href, i, passLink, postRoot, posts, styleSelector, thread, threadRoot, v, _i, _j, _len, _len1, _ref, _ref1, _ref2;
 
-      if (['4chan - Temporarily Offline', '4chan - 404 Not Found'].contains(d.title)) {
+      if ((_ref = d.title) === '4chan - Temporarily Offline' || _ref === '4chan - 404 Not Found') {
         if (Conf['404 Redirect'] && g.VIEW === 'thread') {
           href = Redirect.to('thread', {
             boardID: g.BOARD.ID,
@@ -12807,9 +12797,9 @@
       if (g.VIEW === 'thread' && (threadRoot = $('.thread'))) {
         thread = new Thread(+threadRoot.id.slice(1), g.BOARD);
         posts = [];
-        _ref = $$('.thread > .postContainer', threadRoot);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          postRoot = _ref[_i];
+        _ref1 = $$('.thread > .postContainer', threadRoot);
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          postRoot = _ref1[_i];
           try {
             posts.push(new Post(postRoot, thread, g.BOARD));
           } catch (_error) {
@@ -12843,9 +12833,9 @@
         return;
       }
       GMver = GM_info.version.split('.');
-      _ref1 = "1.12".split('.');
-      for (i = _j = 0, _len1 = _ref1.length; _j < _len1; i = ++_j) {
-        v = _ref1[i];
+      _ref2 = "1.12".split('.');
+      for (i = _j = 0, _len1 = _ref2.length; _j < _len1; i = ++_j) {
+        v = _ref2[i];
         if (v < GMver[i]) {
           break;
         }

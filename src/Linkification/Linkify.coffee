@@ -303,7 +303,7 @@ Linkify =
         el = $.el 'div'
         $.cache "https://mediacru.sh/#{a.dataset.uid}.json", ->
           {status} = @
-          return div.innerHTML = "ERROR #{status}" unless [200, 304].contains status
+          return div.innerHTML = "ERROR #{status}" unless status in [200, 304]
           {files} = JSON.parse @response
           for type in ['video/mp4', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'image/svg', 'audio/mpeg']
             for file in files

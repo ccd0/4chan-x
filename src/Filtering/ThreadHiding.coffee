@@ -21,7 +21,7 @@ ThreadHiding =
       continue unless thread.isHidden
       unless thread.stub
         nodes[i + 1].hidden = true
-      else unless root.contains thread.stub
+      else unless thread.stub in root
         # When we come back to a page, the stub is already there.
         ThreadHiding.makeStub thread, root
     return

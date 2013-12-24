@@ -33,6 +33,6 @@ Recursive =
   apply: (recursive, post, args...) ->
     {fullID} = post
     for ID, post of g.posts
-      if post.quotes.contains fullID
+      if fullID in post.quotes
         recursive post, args...
     return

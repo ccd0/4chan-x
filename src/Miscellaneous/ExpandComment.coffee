@@ -32,7 +32,7 @@ ExpandComment =
     post.nodes.comment = post.nodes.shortComment
   parse: (req, a, post) ->
     {status} = req
-    unless [200, 304].contains status
+    unless status in [200, 304]
       a.textContent = "Error #{req.statusText} (#{status})"
       return
 

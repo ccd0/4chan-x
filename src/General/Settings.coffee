@@ -307,7 +307,7 @@ Settings =
       input = $ "[name=#{name}]", section
       items[name]  = Conf[name]
       inputs[name] = input
-      event = if ['favicon', 'usercss', 'sageEmoji', 'emojiPos'].contains name
+      event = if name in ['favicon', 'usercss', 'sageEmoji', 'emojiPos']
         'change'
       else
         'input'
@@ -321,7 +321,7 @@ Settings =
 
     $.get items, (items) ->
       for key, val of items
-        continue if ['emojiPos'].contains key
+        continue if key is 'emojiPos'
         input = inputs[key]
         input.value = val
         continue if key is 'usercss'
@@ -342,7 +342,7 @@ Settings =
           file:   []
         data.thread.push name
         data.post.push   name if archive.software is 'foolfuuka'
-        data.file.push   name if archive.files.contains boardID
+        data.file.push   name if boardID in archive.files
 
     rows = []
     boardOptions = []

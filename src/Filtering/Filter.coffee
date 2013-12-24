@@ -21,10 +21,10 @@ Filter =
         # and it's not specifically applicable to the current board.
         # Defaults to global.
         boards = filter.match(/boards:([^;]+)/)?[1].toLowerCase() or 'global'
-        if boards isnt 'global' and not (boards.split ',').contains g.BOARD.ID
+        if boards isnt 'global' and not g.BOARD.ID in boards.split ','
           continue
 
-        if ['uniqueID', 'MD5'].contains key
+        if key in ['uniqueID', 'MD5']
           # MD5 filter will use strings instead of regular expressions.
           regexp = regexp[1]
         else
@@ -218,7 +218,7 @@ Filter =
       {type} = @dataset
       # Convert value -> regexp, unless type is MD5
       value = Filter[type] Filter.menu.post
-      re = if ['uniqueID', 'MD5'].contains type then value else value.replace ///
+      re = if type in ['uniqueID', 'MD5'] then value else value.replace ///
         /
         | \\
         | \^
@@ -243,7 +243,7 @@ Filter =
           else
             "\\#{c}"
 
-      re = if ['uniqueID', 'MD5'].contains type
+      re = if type in ['uniqueID', 'MD5']
         "/#{re}/"
       else
         "/^#{re}$/"
