@@ -1,3 +1,9 @@
+### v2.7.1 
+*2013-12-24*
+
+**Zixaphir**:
+- Bug fixes and optimizations
+
 ## v2.7.0 
 *2013-12-16*
 
