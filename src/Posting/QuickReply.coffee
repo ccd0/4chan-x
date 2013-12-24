@@ -228,7 +228,7 @@ QR =
       item = item.replace match, ''
 
       boards = item.match(/boards:([^;]+)/i)?[1].toLowerCase() or 'global'
-      return if boards isnt 'global' and not g.BOARD.ID in boards.split ','
+      return if boards isnt 'global' and g.BOARD.ID not in boards.split ','
 
       if type is 'password'
         QR.persona.pwd = val
@@ -492,7 +492,7 @@ QR =
       $.addClass QR.nodes.filename, 'edit'
       QR.nodes.filename.focus()
       return
-    return if e.target.nodeName is 'INPUT' or (e.keyCode and not e.keyCode in [32, 13]) or e.ctrlKey
+    return if e.target.nodeName is 'INPUT' or (e.keyCode and e.keyCode not in [32, 13]) or e.ctrlKey
     e.preventDefault()
     QR.nodes.fileInput.click()
 

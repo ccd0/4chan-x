@@ -34,7 +34,7 @@ CatalogLinks =
       (board) -> a.href = "/#{board}/#{path}"
 
     for a in $$ """#board-list a:not(.catalog), #boardNavDesktopFoot a""" 
-      continue if not a.hostname in ['boards.4chan.org', 'catalog.neet.tv', '4index.gropes.us'] or
+      continue if a.hostname not in ['boards.4chan.org', 'catalog.neet.tv', '4index.gropes.us'] or
       !(board = a.pathname.split('/')[1]) or
       board in ['f', 'status', '4chan']
 
