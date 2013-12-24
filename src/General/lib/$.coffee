@@ -1,9 +1,3 @@
-Array::indexOf = (val) ->
-  i = @length
-  while i--
-    return i if @[i] is val
-  return i
-
 # loosely follows the jquery api:
 # http://api.jquery.com/
 # not chainable

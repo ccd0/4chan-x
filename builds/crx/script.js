@@ -330,18 +330,6 @@
     posts: {}
   };
 
-  Array.prototype.indexOf = function(val) {
-    var i;
-
-    i = this.length;
-    while (i--) {
-      if (this[i] === val) {
-        return i;
-      }
-    }
-    return i;
-  };
-
   $ = function(selector, root) {
     if (root == null) {
       root = d.body;
@@ -839,6 +827,20 @@
     }
     return __slice.call(root.querySelectorAll(selector));
   };
+
+  Array.prototype.indexOf = function(val) {
+    var i;
+
+    i = this.length;
+    while (i--) {
+      if (this[i] === val) {
+        return i;
+      }
+    }
+    return i;
+  };
+
+  __indexOf = [].indexOf;
 
   Board = (function() {
     Board.prototype.toString = function() {
