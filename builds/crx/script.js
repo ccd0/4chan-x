@@ -3664,7 +3664,7 @@
           }
           filter = filter.replace(regexp[0], '');
           boards = ((_ref1 = filter.match(/boards:([^;]+)/)) != null ? _ref1[1].toLowerCase() : void 0) || 'global';
-          if (boards !== 'global' && (_ref2 = !g.BOARD.ID, __indexOf.call(boards.split(','), _ref2) >= 0)) {
+          if (boards !== 'global' && (_ref2 = g.BOARD.ID, __indexOf.call(boards.split(','), _ref2) < 0)) {
             continue;
           }
           if (key === 'uniqueID' || key === 'MD5') {
@@ -6160,7 +6160,7 @@
         _ref = match, match = _ref[0], type = _ref[1], val = _ref[2];
         item = item.replace(match, '');
         boards = ((_ref1 = item.match(/boards:([^;]+)/i)) != null ? _ref1[1].toLowerCase() : void 0) || 'global';
-        if (boards !== 'global' && (_ref2 = !g.BOARD.ID, __indexOf.call(boards.split(','), _ref2) >= 0)) {
+        if (boards !== 'global' && (_ref2 = g.BOARD.ID, __indexOf.call(boards.split(','), _ref2) < 0)) {
           return;
         }
         if (type === 'password') {
@@ -6510,7 +6510,7 @@
           return $.rmClass(QR.nodes.filename, 'edit');
         });
       }
-      if (e.target.nodeName === 'INPUT' || (e.keyCode && ((_ref = !e.keyCode) === 32 || _ref === 13)) || e.ctrlKey) {
+      if (e.target.nodeName === 'INPUT' || (e.keyCode && ((_ref = e.keyCode) !== 32 && _ref !== 13)) || e.ctrlKey) {
         return;
       }
       e.preventDefault();
@@ -9983,7 +9983,7 @@
       file: {}
     },
     init: function() {
-      var archive, boardID, boards, data, id, name, type, _i, _len, _ref, _ref1, _ref2, _ref3;
+      var archive, boardID, boards, data, id, name, type, _i, _len, _ref, _ref1, _ref2;
 
       _ref = Conf['selectedArchives'];
       for (boardID in _ref) {
@@ -10011,7 +10011,7 @@
           if (!(boardID in Redirect.data.post || archive.software !== 'foolfuuka')) {
             Redirect.data.post[boardID] = archive;
           }
-          if (!(boardID in Redirect.data.file || (_ref3 = !boardID, __indexOf.call(archive.files, _ref3) >= 0))) {
+          if (!(boardID in Redirect.data.file || __indexOf.call(archive.files, boardID) < 0)) {
             Redirect.data.file[boardID] = archive;
           }
         }
@@ -10384,7 +10384,7 @@
       _ref = $$("#board-list a:not(.catalog), #boardNavDesktopFoot a");
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
-        if (((_ref1 = !a.hostname) === 'boards.4chan.org' || _ref1 === 'catalog.neet.tv' || _ref1 === '4index.gropes.us') || !(board = a.pathname.split('/')[1]) || (board === 'f' || board === 'status' || board === '4chan')) {
+        if (((_ref1 = a.hostname) !== 'boards.4chan.org' && _ref1 !== 'catalog.neet.tv' && _ref1 !== '4index.gropes.us') || !(board = a.pathname.split('/')[1]) || (board === 'f' || board === 'status' || board === '4chan')) {
           continue;
         }
         a.href = generateURL(board);

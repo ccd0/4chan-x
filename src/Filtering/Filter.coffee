@@ -21,7 +21,7 @@ Filter =
         # and it's not specifically applicable to the current board.
         # Defaults to global.
         boards = filter.match(/boards:([^;]+)/)?[1].toLowerCase() or 'global'
-        if boards isnt 'global' and not g.BOARD.ID in boards.split ','
+        if boards isnt 'global' and g.BOARD.ID not in boards.split ','
           continue
 
         if key in ['uniqueID', 'MD5']
