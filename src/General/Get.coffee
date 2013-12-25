@@ -170,8 +170,8 @@ Get =
     threadID = +data.thread_num
     o =
       # id
-      postID:   "#{postID}"
-      threadID: "#{threadID}"
+      postID:   postID
+      threadID: threadID
       boardID:  boardID
       # info
       name:     data.name_processed
@@ -207,8 +207,7 @@ Get =
       new Board boardID
     thread = g.threads["#{boardID}.#{threadID}"] or
       new Thread threadID, board
-    post = new Post Build.post(o, true), thread, board,
-      isArchived: true
+    post = new Post Build.post(o, true), thread, board, {isArchived: true}
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
   parseMarkup: (text) ->

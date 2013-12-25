@@ -28,7 +28,7 @@ module.exports = (grunt) ->
           'src/General/Notice.coffee'
           'src/Filtering/**/*'
           'src/Quotelinks/**/*'
-          'src/Linkification/**/*'
+          'src/Posting/QR.coffee'
           'src/Posting/**/*'
           'src/Images/**/*'
           'src/Linkification/**/*'

@@ -778,11 +778,8 @@
     }
     count = 0;
     done = function(item) {
-      var lastError;
-
-      lastError = chrome.runtime.lastError;
-      if (lastError) {
-        c.error(lastError, lastError.message || 'No message.');
+      if (chrome.runtime.lastError) {
+        c.error(chrome.runtime.lastError.message);
       }
       $.extend(items, item);
       if (!--count) {
@@ -800,26 +797,41 @@
   };
 
   $.set = (function() {
-    var items, localItems, set;
+    var items, setAll, setArea, timeout;
 
-    items = {};
-    localItems = {};
-    set = $.debounce($.SECOND, function() {
+    items = {
+      sync: {},
+      local: {}
+    };
+    timeout = {};
+    setArea = function(area) {
+      if (timeout[area]) {
+        return;
+      }
+      return chrome.storage[area].set(items[area], function() {
+        if (chrome.runtime.lastError) {
+          c.error(chrome.runtime.lastError.message);
+          timeout[area] = setTimeout(setArea, $.MINUTE, area);
+          return;
+        }
+        items[area] = {};
+        return delete timeout[area];
+      });
+    };
+    setAll = $.debounce($.SECOND, function() {
       var err, key, _i, _len, _ref;
 
       _ref = $.localKeys;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         key = _ref[_i];
-        if (key in items) {
-          (localItems || (localItems = {}))[key] = items[key];
-          delete items[key];
+        if (key in items.sync) {
+          items.local[key] = items.sync[key];
+          delete items.sync[key];
         }
       }
       try {
-        chrome.storage.local.set(localItems);
-        chrome.storage.sync.set(items);
-        items = {};
-        return localItems = {};
+        setArea('local');
+        return setArea('sync');
       } catch (_error) {
         err = _error;
         return c.error(err.stack);
@@ -827,11 +839,11 @@
     });
     return function(key, val) {
       if (typeof key === 'string') {
-        items[key] = val;
+        items.sync[key] = val;
       } else {
-        $.extend(items, key);
+        $.extend(items.sync, key);
       }
-      return set();
+      return setAll();
     };
   })();
 
@@ -910,7 +922,7 @@
         title: type,
         className: "" + typeLC + "Icon"
       });
-      root = type === 'Closed' && this.isSticky ? $('.stickyIcon', this.OP.nodes.info) : $('[title="Quote this post"]', this.OP.nodes.info);
+      root = type === 'Closed' && this.isSticky ? $('.stickyIcon', this.OP.nodes.info) : g.VIEW === 'index' ? $('.page-num', this.OP.nodes.info) : $('[title="Quote this post"]', this.OP.nodes.info);
       return $.after(root, [$.tn(' '), icon]);
     };
 
@@ -952,6 +964,9 @@
       }
       this.ID = +root.id.slice(2);
       this.fullID = "" + this.board + "." + this.ID;
+      if (that.isOriginalMarkup) {
+        this.cleanup(root);
+      }
       post = $('.post', root);
       info = $('.postInfo', post);
       this.nodes = {
@@ -1091,6 +1106,21 @@
       this.file.name = this.file.name.replace(/%22/g, '"');
       if (this.file.isImage = /(jpg|png|gif)$/i.test(this.file.name)) {
         return this.file.dimensions = fileText.textContent.match(/\d+x\d+/)[0];
+      }
+    };
+
+    Post.prototype.cleanup = function(root) {
+      var node, _i, _j, _len, _len1, _ref, _ref1;
+
+      _ref = $$('.mobile', root);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        node = _ref[_i];
+        $.rm(node);
+      }
+      _ref1 = $$('.desktop', root);
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        node = _ref1[_j];
+        $.rmClass(node, 'desktop');
       }
     };
 
@@ -2705,6 +2735,8 @@
   };
 
   Build = {
+    staticPath: '//s.4cdn.org/image/',
+    gifIcon: window.devicePixelRatio >= 2 ? '@2x.gif' : '.gif',
     spoilerRange: {},
     shortFilename: function(filename, isReply) {
       var threshold;
@@ -2769,12 +2801,12 @@
       @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
       */
 
-      var a, boardID, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, gifIcon, href, imgSrc, isClosed, isOP, isSticky, name, pageIcon, pageNum, postID, quote, replyLink, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
+      var a, boardID, capcode, capcodeClass, capcodeIcon, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, gifIcon, href, imgSrc, isClosed, isOP, isSticky, name, pageIcon, pageNum, postID, quote, replyLink, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
 
       postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
       isOP = postID === threadID;
-      staticPath = '//s.4cdn.org/image/';
-      gifIcon = window.devicePixelRatio >= 2 ? '@2x.gif' : '.gif';
+      staticPath = Build.staticPath, gifIcon = Build.gifIcon;
+      tripcode = tripcode ? " <span class=postertrip>" + tripcode + "</span>" : '';
       if (email) {
         emailStart = '<a href="mailto:' + email + '" class="useremail">';
         emailEnd = '</a>';
@@ -2782,39 +2814,33 @@
         emailStart = '';
         emailEnd = '';
       }
-      subject = " <span class=subject>" + (subject || '') + "</span> ";
-      userID = !capcode && uniqueID ? (" <span class='posteruid id_" + uniqueID + "'>(ID: ") + ("<span class=hand title='Highlight posts by this ID'>" + uniqueID + "</span>)</span> ") : '';
       switch (capcode) {
         case 'admin':
         case 'admin_highlight':
           capcodeClass = " capcodeAdmin";
           capcodeStart = " <strong class='capcode hand id_admin'" + "title='Highlight posts by the Administrator'>## Admin</strong>";
-          capcode = (" <img src='" + staticPath + "adminicon" + gifIcon + "' ") + "alt='This user is the 4chan Administrator.' " + "title='This user is the 4chan Administrator.' class=identityIcon>";
+          capcodeIcon = (" <img src='" + staticPath + "adminicon" + gifIcon + "' ") + "title='This user is the 4chan Administrator.' class=identityIcon>";
           break;
         case 'mod':
           capcodeClass = " capcodeMod";
           capcodeStart = " <strong class='capcode hand id_mod' " + "title='Highlight posts by Moderators'>## Mod</strong>";
-          capcode = (" <img src='" + staticPath + "modicon" + gifIcon + "' ") + "alt='This user is a 4chan Moderator.' " + "title='This user is a 4chan Moderator.' class=identityIcon>";
+          capcodeIcon = (" <img src='" + staticPath + "modicon" + gifIcon + "' ") + "title='This user is a 4chan Moderator.' class=identityIcon>";
           break;
         case 'developer':
           capcodeClass = " capcodeDeveloper";
           capcodeStart = " <strong class='capcode hand id_developer' " + "title='Highlight posts by Developers'>## Developer</strong>";
-          capcode = (" <img src='" + staticPath + "developericon" + gifIcon + "' ") + "alt='This user is a 4chan Developer.' " + "title='This user is a 4chan Developer.' class=identityIcon>";
+          capcodeIcon = (" <img src='" + staticPath + "developericon" + gifIcon + "' ") + "title='This user is a 4chan Developer.' class=identityIcon>";
           break;
         default:
           capcodeClass = '';
           capcodeStart = '';
-          capcode = '';
+          capcodeIcon = '';
       }
+      userID = !capcode && uniqueID ? (" <span class='posteruid id_" + uniqueID + "'>(ID: ") + ("<span class=hand title='Highlight posts by this ID'>" + uniqueID + "</span>)</span> ") : '';
       flag = !flagCode ? '' : boardID === 'pol' ? " <img src='" + staticPath + "country/troll/" + (flagCode.toLowerCase()) + ".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>" : " <span title='" + flagName + "' class='flag flag-" + (flagCode.toLowerCase()) + "'></span>";
       if (file != null ? file.isDeleted : void 0) {
         fileHTML = isOP ? ("<div class=file id=f" + postID + "><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted" + gifIcon + "' alt='File deleted.' class=fileDeleted>") + "</span></div>" : ("<div class=file id=f" + postID + "><span class=fileThumb>") + ("<img src='" + staticPath + "filedeleted-res" + gifIcon + "' alt='File deleted.' class=fileDeletedRes>") + "</span></div>";
       } else if (file) {
-        ext = file.name.slice(-3);
-        if (!file.twidth && !file.theight && ext === 'gif') {
-          file.twidth = file.width;
-          file.theight = file.height;
-        }
         fileSize = $.bytesToString(file.size);
         fileThumb = file.turl;
         if (file.isSpoiler) {
@@ -2837,13 +2863,12 @@
         shortFilename = a.innerHTML;
         a.textContent = filename;
         filename = a.innerHTML.replace(/'/g, '&apos;');
-        fileDims = ext === 'pdf' ? 'PDF' : "" + file.width + "x" + file.height;
+        fileDims = file.name.slice(-3) === 'pdf' ? 'PDF' : "" + file.width + "x" + file.height;
         fileInfo = ("<div class=fileText id=fT" + postID + (file.isSpoiler ? " title='" + filename + "'" : '') + ">File: <a href='" + file.url + "' target=_blank>" + file.timestamp + "</a>") + ("-(" + fileSize + ", " + fileDims + (file.isSpoiler ? '' : ", <span" + (filename !== shortFilename ? " title='" + filename + "'" : '') + ">" + shortFilename + "</span>")) + ")</div>";
         fileHTML = "<div class=file id=f" + postID + ">" + fileInfo + imgSrc + "</div>";
       } else {
         fileHTML = '';
       }
-      tripcode = tripcode ? " <span class=postertrip>" + tripcode + "</span>" : '';
       sticky = isSticky ? " <img src=" + staticPath + "sticky" + gifIcon + " alt=Sticky title=Sticky class=stickyIcon>" : '';
       closed = isClosed ? " <img src=" + staticPath + "closed" + gifIcon + " alt=Closed title=Closed class=closedIcon>" : '';
       if (isOP && g.VIEW === 'index') {
@@ -2856,7 +2881,7 @@
       container = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: "" + (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + "<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'><div class='postInfoM mobile' id=pim" + postID + "><span class='nameBlock" + capcodeClass + "'><span class=name>" + (name || '') + "</span>" + (tripcode + capcodeStart + capcode + userID + flag + sticky + closed) + "<br>" + subject + "</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date + "<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + ">No.</a><a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a></span></div>" + (isOP ? fileHTML : '') + "<div class='postInfo desktop' id=pi" + postID + "><input type=checkbox name=" + postID + " value=delete>" + subject + "<span class='nameBlock" + capcodeClass + "'>" + emailStart + "<span class=name>" + (name || '') + "</span>" + (tripcode + capcodeStart + emailEnd + capcode + userID + flag) + "</span>" + " " + "<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span>" + " " + "<span class='postNum desktop'><a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a><a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>" + (pageIcon + sticky + closed + replyLink) + "</span></div>" + (isOP ? '' : fileHTML) + "<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote>" + " " + "</div>"
+        innerHTML: "" + (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + "<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>" + (isOP ? fileHTML : '') + "<div class='postInfo' id=pi" + postID + "><input type=checkbox name=" + postID + " value=delete>" + subject + "<span class='nameBlock" + capcodeClass + "'>" + emailStart + "<span class=name>" + (name || '') + "</span>" + (tripcode + capcodeStart + emailEnd + capcode + userID + flag) + "</span>" + " " + "<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span>" + " " + "<span class='postNum'><a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a><a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>" + (pageIcon + sticky + closed + replyLink) + "</span></div>" + (isOP ? '' : fileHTML) + "<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote>" + " " + "</div>"
       });
       _ref = $$('.quotelink', container);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3112,8 +3137,8 @@
       comment = bq.innerHTML.replace(/(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class=quote>$2</span>$3').replace(/((&gt;){2}(&gt;\/[a-z\d]+\/)?\d+)/g, '<span class=deadlink>$1</span>');
       threadID = +data.thread_num;
       o = {
-        postID: "" + postID,
-        threadID: "" + threadID,
+        postID: postID,
+        threadID: threadID,
         boardID: boardID,
         name: data.name_processed,
         capcode: (function() {
@@ -4131,13 +4156,17 @@
       }
     },
     makeButton: function(post, type) {
-      var a;
+      var a, span;
 
+      span = $.el('span', {
+        className: "brackets-wrap",
+        textContent: "\u00A0" + (type === 'hide' ? '-' : '+') + "\u00A0"
+      });
       a = $.el('a', {
         className: "" + type + "-reply-button",
-        innerHTML: "<span class=brackets-wrap>&nbsp;" + (type === 'hide' ? '-' : '+') + "&nbsp;</span>",
         href: 'javascript:;'
       });
+      $.add(a, span);
       $.on(a, 'click', PostHiding.toggle);
       return a;
     },
@@ -4168,7 +4197,7 @@
       return PostHiding.saveHiddenState(post, post.isHidden);
     },
     hide: function(post, makeStub, hideRecursively) {
-      var a, button, postInfo, quotelink, _i, _len, _ref;
+      var a, postInfo, quotelink, _i, _len, _ref;
 
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
@@ -4199,7 +4228,10 @@
       post.nodes.stub = $.el('div', {
         className: 'stub'
       });
-      $.add(post.nodes.stub, Conf['Menu'] ? [a, $.tn(' '), button = Menu.makeButton(post)] : a);
+      $.add(post.nodes.stub, a);
+      if (Conf['Menu']) {
+        $.add(post.nodes.stub, Menu.makeButton());
+      }
       return $.prepend(post.nodes.root, post.nodes.stub);
     },
     show: function(post, showRecursively) {
@@ -4526,7 +4558,7 @@
         className: 'stub'
       });
       if (Conf['Menu']) {
-        $.add(thread.stub, [a, $.tn(' '), Menu.makeButton()]);
+        $.add(thread.stub, [a, Menu.makeButton()]);
       } else {
         $.add(thread.stub, a);
       }
@@ -5339,532 +5371,6 @@
     }
   };
 
-  Linkify = {
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Linkify']) {
-        return;
-      }
-      this.regString = /((https?|mailto|git|magnet|ftp|irc):([a-z\d%\/])|[-a-z\d]+[.](aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2})(\/|(?!.))|[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i;
-      if (Conf['Comment Expansion']) {
-        ExpandComment.callbacks.push(this.node);
-      }
-      if (Conf['Title Link']) {
-        $.sync('CachedTitles', Linkify.titleSync);
-      }
-      return Post.callbacks.push({
-        name: 'Linkify',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var data, el, end, endNode, i, index, items, length, link, links, node, result, saved, snapshot, space, test, word, _i, _len, _ref;
-
-      if (this.isClone) {
-        if (Conf['Embedding']) {
-          i = 0;
-          items = $$('.embed', this.nodes.comment);
-          while (el = items[i++]) {
-            $.on(el, 'click', Linkify.cb.toggle);
-            if ($.hasClass(el, 'embedded')) {
-              Linkify.cb.toggle.call(el);
-            }
-          }
-        }
-        return;
-      }
-      test = /[^\s'"]+/g;
-      space = /[\s'"]/;
-      snapshot = $.X('.//br|.//text()', this.nodes.comment);
-      i = 0;
-      links = [];
-      while (node = snapshot.snapshotItem(i++)) {
-        data = node.data;
-        if (node.parentElement.nodeName === "A" || !data) {
-          continue;
-        }
-        while (result = test.exec(data)) {
-          index = result.index;
-          endNode = node;
-          word = result[0];
-          if ((length = index + word.length) === data.length) {
-            test.lastIndex = 0;
-            while ((saved = snapshot.snapshotItem(i++))) {
-              if (saved.nodeName === 'BR') {
-                break;
-              }
-              endNode = saved;
-              data = saved.data;
-              word += data;
-              length = data.length;
-              if (end = space.exec(data)) {
-                test.lastIndex = length = end.index;
-                i--;
-                break;
-              }
-            }
-          }
-          if (Linkify.regString.exec(word)) {
-            links.push(Linkify.makeRange(node, endNode, index, length));
-          }
-          if (!(test.lastIndex && node === endNode)) {
-            break;
-          }
-        }
-      }
-      _ref = links.reverse();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        link = _ref[_i];
-        this.nodes.links.push(Linkify.makeLink(link, this));
-        link.detach();
-      }
-      if (!(Conf['Embedding'] || Conf['Link Title'])) {
-        return;
-      }
-      links = this.nodes.links;
-      i = 0;
-      while (link = links[i++]) {
-        if (data = Linkify.services(link)) {
-          if (Conf['Embedding']) {
-            Linkify.embed(data);
-          }
-          if (Conf['Link Title']) {
-            Linkify.title(data);
-          }
-        }
-      }
-    },
-    makeRange: function(startNode, endNode, startOffset, endOffset) {
-      var range;
-
-      range = document.createRange();
-      range.setStart(startNode, startOffset);
-      range.setEnd(endNode, endOffset);
-      return range;
-    },
-    makeLink: function(range) {
-      var a, char, i, text;
-
-      text = range.toString();
-      i = 0;
-      while (/[(\[{<>]/.test(text.charAt(i))) {
-        i++;
-      }
-      if (i) {
-        text = text.slice(i);
-        while (range.startOffset + i >= range.startContainer.data.length) {
-          i--;
-        }
-        if (i) {
-          range.setStart(range.startContainer, range.startOffset + i);
-        }
-      }
-      i = 0;
-      while (/[)\]}>.,]/.test(char = text.charAt(text.length - (1 + i)))) {
-        if (!(/[.,]/.test(char) || (text.match(/[()\[\]{}<>]/g)).length % 2)) {
-          break;
-        }
-        i++;
-      }
-      if (i) {
-        text = text.slice(0, -i);
-        while (range.endOffset - i < 0) {
-          i--;
-        }
-        if (i) {
-          range.setEnd(range.endContainer, range.endOffset - i);
-        }
-      }
-      if (!/(https?|mailto|git|magnet|ftp|irc):/.test(text)) {
-        text = (/@/.test(text) ? 'mailto:' : 'http://') + text;
-      }
-      a = $.el('a', {
-        className: 'linkify',
-        rel: 'nofollow noreferrer',
-        target: '_blank',
-        href: text
-      });
-      $.add(a, range.extractContents());
-      range.insertNode(a);
-      return a;
-    },
-    services: function(link) {
-      var href, key, match, type, _ref;
-
-      href = link.href;
-      _ref = Linkify.types;
-      for (key in _ref) {
-        type = _ref[key];
-        if (!(match = type.regExp.exec(href))) {
-          continue;
-        }
-        return [key, match[1], match[2], link];
-      }
-    },
-    embed: function(data) {
-      var embed, href, key, link, name, options, uid, value, _ref;
-
-      key = data[0], uid = data[1], options = data[2], link = data[3];
-      href = link.href;
-      embed = $.el('a', {
-        className: 'embedder',
-        href: 'javascript:;',
-        textContent: '(embed)'
-      });
-      _ref = {
-        key: key,
-        href: href,
-        uid: uid,
-        options: options
-      };
-      for (name in _ref) {
-        value = _ref[name];
-        embed.dataset[name] = value;
-      }
-      embed.dataset.nodedata = link.innerHTML;
-      $.addClass(link, "" + embed.dataset.key);
-      $.on(embed, 'click', Linkify.cb.toggle);
-      $.after(link, [$.tn(' '), embed]);
-      if (Conf['Auto-embed']) {
-        Linkify.cb.toggle.call(embed);
-      }
-      data.push(embed);
-    },
-    title: function(data) {
-      var embed, err, key, link, options, service, title, titles, uid;
-
-      key = data[0], uid = data[1], options = data[2], link = data[3], embed = data[4];
-      if (!(service = Linkify.types[key].title)) {
-        return;
-      }
-      titles = Conf['CachedTitles'];
-      if (title = titles[uid]) {
-        if (link) {
-          link.textContent = title[0];
-        }
-        if (Conf['Embedding']) {
-          return embed.dataset.title = title[0];
-        }
-      } else {
-        try {
-          $.cache(service.api(uid), function() {
-            return title = Linkify.cb.title(this, data);
-          });
-        } catch (_error) {
-          err = _error;
-          if (link) {
-            link.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
-          }
-          return;
-        }
-        if (title) {
-          titles[uid] = [title, Date.now()];
-          return $.set('CachedTitles', titles);
-        }
-      }
-    },
-    titleSync: function(value) {
-      return Conf['CachedTitles'] = value;
-    },
-    cb: {
-      toggle: function() {
-        var string, _ref;
-
-        _ref = $.hasClass(this, "embedded") ? ['unembed', '(embed)'] : ['embed', '(unembed)'], string = _ref[0], this.textContent = _ref[1];
-        $.replace(this.previousElementSibling, Linkify.cb[string](this));
-        return $.toggleClass(this, 'embedded');
-      },
-      embed: function(a) {
-        var el, style, type;
-
-        el = (type = Linkify.types[a.dataset.key]).el(a);
-        el.style.cssText = (style = type.style) ? style : "border: 0; width: 640px; height: 390px";
-        return el;
-      },
-      unembed: function(a) {
-        var el;
-
-        el = $.el('a', {
-          rel: 'nofollow noreferrer',
-          target: 'blank',
-          className: 'linkify',
-          href: a.dataset.href,
-          innerHTML: a.dataset.title || a.dataset.nodedata
-        });
-        $.addClass(el, a.dataset.key);
-        return el;
-      },
-      title: function(response, data) {
-        var embed, key, link, options, service, text, uid;
-
-        key = data[0], uid = data[1], options = data[2], link = data[3], embed = data[4];
-        service = Linkify.types[key].title;
-        switch (response.status) {
-          case 200:
-          case 304:
-            text = "" + (service.text(JSON.parse(response.responseText)));
-            if (Conf['Embedding']) {
-              embed.dataset.title = text;
-            }
-            break;
-          case 404:
-            text = "[" + key + "] Not Found";
-            break;
-          case 403:
-            text = "[" + key + "] Forbidden or Private";
-            break;
-          default:
-            text = "[" + key + "] " + this.status + "'d";
-        }
-        if (link) {
-          return link.textContent = text;
-        }
-      }
-    },
-    types: {
-      audio: {
-        regExp: /(.*\.(mp3|ogg|wav))$/,
-        el: function(a) {
-          return $.el('audio', {
-            controls: 'controls',
-            preload: 'auto',
-            src: a.dataset.uid
-          });
-        }
-      },
-      gist: {
-        regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/,
-        el: function(a) {
-          var div;
-
-          return div = $.el('iframe', {
-            src: "http://www.purplegene.com/script?url=https://gist.github.com/" + a.dataset.uid + ".js"
-          });
-        },
-        title: {
-          api: function(uid) {
-            return "https://api.github.com/gists/" + uid;
-          },
-          text: function(_arg) {
-            var file, files;
-
-            files = _arg.files;
-            for (file in files) {
-              if (files.hasOwnProperty(file)) {
-                return file;
-              }
-            }
-          }
-        }
-      },
-      image: {
-        regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/,
-        style: 'border: 0; width: auto; height: auto;',
-        el: function(a) {
-          return $.el('div', {
-            innerHTML: "<a target=_blank href='" + a.dataset.href + "'><img src='" + a.dataset.href + "'></a>"
-          });
-        }
-      },
-      InstallGentoo: {
-        regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/,
-        el: function(a) {
-          return $.el('iframe', {
-            src: "http://paste.installgentoo.com/view/embed/" + a.dataset.uid
-          });
-        }
-      },
-      LiveLeak: {
-        regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
-        el: function(a) {
-          var el;
-
-          el = $.el('iframe', {
-            width: "640",
-            height: "360",
-            src: "http://www.liveleak.com/ll_embed?i=" + a.dataset.uid,
-            frameborder: "0"
-          });
-          el.setAttribute("allowfullscreen", "true");
-          return el;
-        }
-      },
-      MediaCrush: {
-        regExp: /.*(?:mediacru.sh\/)([0-9a-z_]+)/i,
-        style: 'border: 0;',
-        el: function(a) {
-          var el;
-
-          el = $.el('div');
-          $.cache("https://mediacru.sh/" + a.dataset.uid + ".json", function() {
-            var embed, file, files, status, type, _i, _j, _len, _len1, _ref;
-
-            status = this.status;
-            if (status !== 200 && status !== 304) {
-              return div.innerHTML = "ERROR " + status;
-            }
-            files = JSON.parse(this.response).files;
-            _ref = ['video/mp4', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'image/svg', 'audio/mpeg'];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              type = _ref[_i];
-              for (_j = 0, _len1 = files.length; _j < _len1; _j++) {
-                file = files[_j];
-                if (file.type === type) {
-                  embed = file;
-                  break;
-                }
-              }
-              if (embed) {
-                break;
-              }
-            }
-            if (!embed) {
-              return div.innerHTML = "ERROR: Not a valid filetype";
-            }
-            return el.innerHTML = (function() {
-              switch (embed.type) {
-                case 'video/mp4':
-                case 'video/ogv':
-                  return "<video autoplay loop>\n  <source src=\"https://mediacru.sh/" + a.dataset.uid + ".mp4\" type=\"video/mp4;\">\n  <source src=\"https://mediacru.sh/" + a.dataset.uid + ".ogv\" type=\"video/ogg; codecs='theora, vorbis'\">\n</video>";
-                case 'image/png':
-                case 'image/gif':
-                case 'image/jpeg':
-                  return "<a target=_blank href='" + a.dataset.href + "'><img src='https://mediacru.sh/" + file.file + "'></a>";
-                case 'image/svg':
-                case 'image/svg+xml':
-                  return "<embed src='https://mediacru.sh/" + file.file + "' type='image/svg+xml' />";
-                case 'audio/mpeg':
-                  return "<audio controls><source src='https://mediacru.sh/" + file.file + "'></audio>";
-                default:
-                  return "ERROR: No valid filetype.";
-              }
-            })();
-          });
-          return el;
-        }
-      },
-      pastebin: {
-        regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/,
-        el: function(a) {
-          var div;
-
-          return div = $.el('iframe', {
-            src: "http://pastebin.com/embed_iframe.php?i=" + a.dataset.uid
-          });
-        }
-      },
-      SoundCloud: {
-        regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
-        style: 'height: auto; width: 500px; display: inline-block;',
-        el: function(a) {
-          var div;
-
-          div = $.el('div', {
-            className: "soundcloud",
-            name: "soundcloud"
-          });
-          $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + a.dataset.uid, {
-            onloadend: function() {
-              return div.innerHTML = JSON.parse(this.responseText).html;
-            }
-          }, false);
-          return div;
-        },
-        title: {
-          api: function(uid) {
-            return "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + uid;
-          },
-          text: function(_) {
-            return _.title;
-          }
-        }
-      },
-      StrawPoll: {
-        regExp: /strawpoll\.me\/(?:embed_\d+\/)?(\d+)/,
-        style: 'border: 0; width: 600px; height: 406px;',
-        el: function(a) {
-          return $.el('iframe', {
-            src: "http://strawpoll.me/embed_1/" + a.dataset.uid
-          });
-        }
-      },
-      TwitchTV: {
-        regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/,
-        style: "border: none; width: 640px; height: 360px;",
-        el: function(a) {
-          var channel, chapter, result, _;
-
-          if (result = /(\w+)\/(?:[a-z]\/)?(\d+)/i.exec(a.dataset.uid)) {
-            _ = result[0], channel = result[1], chapter = result[2];
-            return $.el('object', {
-              data: 'http://www.twitch.tv/widgets/archive_embed_player.swf',
-              innerHTML: "<param name='allowFullScreen' value='true' />\n<param name='flashvars' value='channel=" + channel + "&start_volume=25&auto_play=false" + (chapter ? "&chapter_id=" + chapter : "") + "' />"
-            });
-          } else {
-            channel = (/(\w+)/.exec(a.dataset.uid))[0];
-            return $.el('object', {
-              data: "http://www.twitch.tv/widgets/live_embed_player.swf?channel=" + channel,
-              innerHTML: "<param  name=\"allowFullScreen\" value=\"true\" />\n<param  name=\"movie\" value=\"http://www.twitch.tv/widgets/live_embed_player.swf\" />\n<param  name=\"flashvars\" value=\"hostname=www.twitch.tv&channel=" + channel + "&auto_play=true&start_volume=25\" />"
-            });
-          }
-        }
-      },
-      Vocaroo: {
-        regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
-        style: 'border: 0; width: 150px; height: 45px;',
-        el: function(a) {
-          return $.el('object', {
-            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (a.dataset.uid.replace(/^i\//, '')) + "&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
-          });
-        }
-      },
-      Vimeo: {
-        regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
-        el: function(a) {
-          return $.el('iframe', {
-            src: "//player.vimeo.com/video/" + a.dataset.uid + "?wmode=opaque"
-          });
-        },
-        title: {
-          api: function(uid) {
-            return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + uid;
-          },
-          text: function(_) {
-            return _.title;
-          }
-        }
-      },
-      Vine: {
-        regExp: /.*(?:vine.co\/)([^#\&\?]*).*/,
-        style: 'border: none; width: 500px; height: 500px;',
-        el: function(a) {
-          return $.el('iframe', {
-            src: "https://vine.co/" + a.dataset.uid + "/card"
-          });
-        }
-      },
-      YouTube: {
-        regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/,
-        el: function(a) {
-          var el;
-
-          el = $.el('iframe', {
-            src: "//www.youtube.com/embed/" + a.dataset.uid + (a.dataset.option ? '#' + a.dataset.option : '') + "?wmode=opaque"
-          });
-          el.setAttribute("allowfullscreen", "true");
-          return el;
-        },
-        title: {
-          api: function(uid) {
-            return "https://gdata.youtube.com/feeds/api/videos/" + uid + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
-          },
-          text: function(data) {
-            return data.entry.title.$t;
-          }
-        }
-      }
-    }
-  };
-
   QR = {
     init: function() {
       var sc;
@@ -5873,6 +5379,7 @@
         return;
       }
       this.db = new DataBoard('yourPosts');
+      this.posts = [];
       if (Conf['QR Shortcut']) {
         sc = $.el('a', {
           className: "qr-shortcut fa fa-comment-o " + (!Conf['Persistent QR'] ? 'disabled' : ''),
@@ -6123,242 +5630,6 @@
       status.value = !value ? 'Submit' : QR.cooldown.auto ? "Auto " + value : value;
       return status.disabled = disabled || false;
     },
-    persona: {
-      pwd: '',
-      always: {},
-      init: function() {
-        QR.persona.getPassword();
-        return $.get('QR.personas', Conf['QR.personas'], function(_arg) {
-          var arr, item, personas, type, types, _i, _len, _ref;
-
-          personas = _arg['QR.personas'];
-          types = {
-            name: [],
-            email: [],
-            sub: []
-          };
-          _ref = personas.split('\n');
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            item = _ref[_i];
-            QR.persona.parseItem(item.trim(), types);
-          }
-          for (type in types) {
-            arr = types[type];
-            QR.persona.loadPersonas(type, arr);
-          }
-        });
-      },
-      parseItem: function(item, types) {
-        var boards, match, type, val, _ref, _ref1, _ref2;
-
-        if (item[0] === '#') {
-          return;
-        }
-        if (!(match = item.match(/(name|email|subject|password):"(.*)"/i))) {
-          return;
-        }
-        _ref = match, match = _ref[0], type = _ref[1], val = _ref[2];
-        item = item.replace(match, '');
-        boards = ((_ref1 = item.match(/boards:([^;]+)/i)) != null ? _ref1[1].toLowerCase() : void 0) || 'global';
-        if (boards !== 'global' && (_ref2 = g.BOARD.ID, __indexOf.call(boards.split(','), _ref2) < 0)) {
-          return;
-        }
-        if (type === 'password') {
-          QR.persona.pwd = val;
-          return;
-        }
-        if (type === 'subject') {
-          type = 'sub';
-        }
-        if (/always/i.test(item)) {
-          QR.persona.always[type] = val;
-        }
-        if (__indexOf.call(types[type], val) < 0) {
-          return types[type].push(val);
-        }
-      },
-      loadPersonas: function(type, arr) {
-        var list, val, _i, _len;
-
-        list = $("#list-" + type, QR.nodes.el);
-        for (_i = 0, _len = arr.length; _i < _len; _i++) {
-          val = arr[_i];
-          if (val) {
-            $.add(list, $.el('option', {
-              textContent: val
-            }));
-          }
-        }
-      },
-      getPassword: function() {
-        var input, m;
-
-        if (!QR.persona.pwd) {
-          QR.persona.pwd = (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : (input = $.id('postPassword')) ? input.value : $.id('delPassword').value;
-        }
-        return QR.persona.pwd;
-      },
-      get: function(cb) {
-        return $.get('QR.persona', {}, function(_arg) {
-          var persona;
-
-          persona = _arg['QR.persona'];
-          return cb(persona);
-        });
-      },
-      set: function(post) {
-        return $.get('QR.persona', {}, function(_arg) {
-          var persona;
-
-          persona = _arg['QR.persona'];
-          persona = {
-            name: post.name,
-            email: /^sage$/.test(post.email) ? persona.email : post.email,
-            sub: Conf['Remember Subject'] ? post.sub : void 0,
-            flag: post.flag
-          };
-          return $.set('QR.persona', persona);
-        });
-      }
-    },
-    cooldown: {
-      init: function() {
-        var key, setTimers, type,
-          _this = this;
-
-        if (!Conf['Cooldown']) {
-          return;
-        }
-        setTimers = function(e) {
-          return QR.cooldown.types = e.detail;
-        };
-        $.on(window, 'cooldown:timers', setTimers);
-        $.globalEval('window.dispatchEvent(new CustomEvent("cooldown:timers", {detail: cooldowns}))');
-        $.off(window, 'cooldown:timers', setTimers);
-        for (type in QR.cooldown.types) {
-          QR.cooldown.types[type] = +QR.cooldown.types[type];
-        }
-        QR.cooldown.upSpd = 0;
-        QR.cooldown.upSpdAccuracy = .5;
-        key = "cooldown." + g.BOARD;
-        $.get(key, {}, function(item) {
-          QR.cooldown.cooldowns = item[key];
-          return QR.cooldown.start();
-        });
-        return $.sync(key, QR.cooldown.sync);
-      },
-      start: function() {
-        if (!Conf['Cooldown']) {
-          return;
-        }
-        if (QR.cooldown.isCounting) {
-          return;
-        }
-        QR.cooldown.isCounting = true;
-        return QR.cooldown.count();
-      },
-      sync: function(cooldowns) {
-        var id;
-
-        for (id in cooldowns) {
-          QR.cooldown.cooldowns[id] = cooldowns[id];
-        }
-        return QR.cooldown.start();
-      },
-      set: function(data) {
-        var cooldown, delay, isReply, post, req, start, threadID, upSpd;
-
-        if (!Conf['Cooldown']) {
-          return;
-        }
-        req = data.req, post = data.post, isReply = data.isReply, threadID = data.threadID, delay = data.delay;
-        start = req ? req.uploadEndTime : Date.now();
-        if (delay) {
-          cooldown = {
-            delay: delay
-          };
-        } else {
-          if (post.file) {
-            upSpd = post.file.size / ((start - req.uploadStartTime) / $.SECOND);
-            QR.cooldown.upSpdAccuracy = ((upSpd > QR.cooldown.upSpd * .9) + QR.cooldown.upSpdAccuracy) / 2;
-            QR.cooldown.upSpd = upSpd;
-          }
-          cooldown = {
-            isReply: isReply,
-            threadID: threadID
-          };
-        }
-        QR.cooldown.cooldowns[start] = cooldown;
-        $.set("cooldown." + g.BOARD, QR.cooldown.cooldowns);
-        return QR.cooldown.start();
-      },
-      unset: function(id) {
-        delete QR.cooldown.cooldowns[id];
-        if (Object.keys(QR.cooldown.cooldowns).length) {
-          return $.set("cooldown." + g.BOARD, QR.cooldown.cooldowns);
-        } else {
-          return $["delete"]("cooldown." + g.BOARD);
-        }
-      },
-      count: function() {
-        var cooldown, cooldowns, elapsed, hasFile, isReply, maxTimer, now, post, seconds, start, type, types, upSpd, upSpdAccuracy, update, _ref;
-
-        if (!Object.keys(QR.cooldown.cooldowns).length) {
-          $["delete"]("" + g.BOARD + ".cooldown");
-          delete QR.cooldown.isCounting;
-          delete QR.cooldown.seconds;
-          QR.status();
-          return;
-        }
-        clearTimeout(QR.cooldown.timeout);
-        QR.cooldown.timeout = setTimeout(QR.cooldown.count, $.SECOND);
-        now = Date.now();
-        post = QR.posts[0];
-        isReply = post.thread !== 'new';
-        hasFile = !!post.file;
-        seconds = null;
-        _ref = QR.cooldown, types = _ref.types, cooldowns = _ref.cooldowns, upSpd = _ref.upSpd, upSpdAccuracy = _ref.upSpdAccuracy;
-        for (start in cooldowns) {
-          cooldown = cooldowns[start];
-          if ('delay' in cooldown) {
-            if (cooldown.delay) {
-              seconds = Math.max(seconds, cooldown.delay--);
-            } else {
-              seconds = Math.max(seconds, 0);
-              QR.cooldown.unset(start);
-            }
-            continue;
-          }
-          if (isReply === cooldown.isReply) {
-            elapsed = Math.floor((now - start) / $.SECOND);
-            if (elapsed < 0) {
-              continue;
-            }
-            type = !isReply ? 'thread' : hasFile ? 'image' : 'reply';
-            maxTimer = Math.max(types[type] || 0, types[type + '_intra'] || 0);
-            if (!((start <= now && now <= start + maxTimer * $.SECOND))) {
-              QR.cooldown.unset(start);
-            }
-            if (isReply && +post.thread === cooldown.threadID) {
-              type += '_intra';
-            }
-            seconds = Math.max(seconds, types[type] - elapsed);
-          }
-        }
-        if (seconds && Conf['Cooldown Prediction'] && hasFile && upSpd) {
-          seconds -= Math.floor(post.file.size / upSpd * upSpdAccuracy);
-          seconds = seconds > 0 ? seconds : 0;
-        }
-        update = seconds !== null || !!QR.cooldown.seconds;
-        QR.cooldown.seconds = seconds;
-        if (update) {
-          QR.status();
-        }
-        if (seconds === 0 && QR.cooldown.auto && !QR.req) {
-          return QR.submit();
-        }
-      }
-    },
     quote: function(e) {
       var caretPos, com, index, post, range, s, sel, text, thread, _ref;
 
@@ -6515,524 +5786,6 @@
       }
       e.preventDefault();
       return QR.nodes.fileInput.click();
-    },
-    posts: [],
-    post: (function() {
-      function _Class(select) {
-        this.select = __bind(this.select, this);
-        var el, event, prev, _i, _len, _ref,
-          _this = this;
-
-        el = $.el('a', {
-          className: 'qr-preview',
-          draggable: true,
-          href: 'javascript:;',
-          innerHTML: '<a class="remove fa fa-times-circle" title=Remove></a><label hidden><input type=checkbox> Spoiler</label><span></span>'
-        });
-        this.nodes = {
-          el: el,
-          rm: el.firstChild,
-          label: $('label', el),
-          spoiler: $('input', el),
-          span: el.lastChild
-        };
-        $.on(el, 'click', this.select);
-        $.on(this.nodes.rm, 'click', function(e) {
-          e.stopPropagation();
-          return _this.rm();
-        });
-        $.on(this.nodes.label, 'click', function(e) {
-          return e.stopPropagation();
-        });
-        $.on(this.nodes.spoiler, 'change', function(e) {
-          _this.spoiler = e.target.checked;
-          if (_this === QR.selected) {
-            return QR.nodes.spoiler.checked = _this.spoiler;
-          }
-        });
-        $.add(QR.nodes.dumpList, el);
-        _ref = ['dragStart', 'dragEnter', 'dragLeave', 'dragOver', 'dragEnd', 'drop'];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          event = _ref[_i];
-          $.on(el, event.toLowerCase(), this[event]);
-        }
-        this.thread = g.VIEW === 'thread' ? g.THREADID : 'new';
-        prev = QR.posts[QR.posts.length - 1];
-        QR.posts.push(this);
-        this.nodes.spoiler.checked = this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
-        QR.persona.get(function(persona) {
-          _this.name = 'name' in QR.persona.always ? QR.persona.always.name : prev ? prev.name : persona.name;
-          _this.email = 'email' in QR.persona.always ? QR.persona.always.email : prev && !/^sage$/.test(prev.email) ? prev.email : persona.email;
-          _this.sub = 'sub' in QR.persona.always ? QR.persona.always.sub : Conf['Remember Subject'] ? prev ? prev.sub : persona.sub : '';
-          if (QR.nodes.flag) {
-            _this.flag = prev ? prev.flag : persona.flag;
-          }
-          if (QR.selected === _this) {
-            return _this.load();
-          }
-        });
-        if (select) {
-          this.select();
-        }
-        this.unlock();
-      }
-
-      _Class.prototype.rm = function() {
-        var index;
-
-        this["delete"]();
-        index = QR.posts.indexOf(this);
-        if (QR.posts.length === 1) {
-          new QR.post(true);
-          $.rmClass(QR.nodes.el, 'dump');
-        } else if (this === QR.selected) {
-          (QR.posts[index - 1] || QR.posts[index + 1]).select();
-        }
-        QR.posts.splice(index, 1);
-        return QR.status();
-      };
-
-      _Class.prototype["delete"] = function() {
-        $.rm(this.nodes.el);
-        return URL.revokeObjectURL(this.URL);
-      };
-
-      _Class.prototype.lock = function(lock) {
-        var name, node, _i, _len, _ref;
-
-        if (lock == null) {
-          lock = true;
-        }
-        this.isLocked = lock;
-        if (this !== QR.selected) {
-          return;
-        }
-        _ref = ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler', 'flag'];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          name = _ref[_i];
-          if (node = QR.nodes[name]) {
-            node.disabled = lock;
-          }
-        }
-        this.nodes.rm.style.visibility = lock ? 'hidden' : '';
-        (lock ? $.off : $.on)(QR.nodes.filename.previousElementSibling, 'click', QR.openFileInput);
-        this.nodes.spoiler.disabled = lock;
-        return this.nodes.el.draggable = !lock;
-      };
-
-      _Class.prototype.unlock = function() {
-        return this.lock(false);
-      };
-
-      _Class.prototype.select = function() {
-        var rectEl, rectList;
-
-        if (QR.selected) {
-          QR.selected.nodes.el.id = null;
-          QR.selected.forceSave();
-        }
-        QR.selected = this;
-        this.lock(this.isLocked);
-        this.nodes.el.id = 'selected';
-        rectEl = this.nodes.el.getBoundingClientRect();
-        rectList = this.nodes.el.parentNode.getBoundingClientRect();
-        this.nodes.el.parentNode.scrollLeft += rectEl.left + rectEl.width / 2 - rectList.left - rectList.width / 2;
-        this.load();
-        return $.event('QRPostSelection', this);
-      };
-
-      _Class.prototype.load = function() {
-        var name, node, _i, _len, _ref;
-
-        _ref = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag'];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          name = _ref[_i];
-          if (!(node = QR.nodes[name])) {
-            continue;
-          }
-          node.value = this[name] || node.dataset["default"] || null;
-        }
-        this.showFileData();
-        return QR.characterCount();
-      };
-
-      _Class.prototype.save = function(input) {
-        var name, _ref;
-
-        if (input.type === 'checkbox') {
-          this.spoiler = input.checked;
-          return;
-        }
-        name = input.dataset.name;
-        this[name] = input.value || input.dataset["default"] || null;
-        switch (name) {
-          case 'thread':
-            return QR.status();
-          case 'com':
-            this.nodes.span.textContent = this.com;
-            QR.characterCount();
-            if (QR.cooldown.auto && this === QR.posts[0] && (0 < (_ref = QR.cooldown.seconds) && _ref <= 5)) {
-              return QR.cooldown.auto = false;
-            }
-            break;
-          case 'filename':
-            if (!this.file) {
-              return;
-            }
-            this.file.newName = this.filename.replace(/[/\\]/g, '-');
-            if (!/\.(jpe?g|png|gif|pdf|swf)$/i.test(this.filename)) {
-              this.file.newName += '.jpg';
-            }
-            return this.updateFilename();
-        }
-      };
-
-      _Class.prototype.forceSave = function() {
-        var name, node, _i, _len, _ref;
-
-        if (this !== QR.selected) {
-          return;
-        }
-        _ref = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler', 'flag'];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          name = _ref[_i];
-          if (!(node = QR.nodes[name])) {
-            continue;
-          }
-          this.save(node);
-        }
-      };
-
-      _Class.prototype.setFile = function(file) {
-        this.file = file;
-        this.filename = file.name;
-        this.filesize = $.bytesToString(file.size);
-        if (QR.spoiler) {
-          this.nodes.label.hidden = false;
-        }
-        URL.revokeObjectURL(this.URL);
-        if (this === QR.selected) {
-          this.showFileData();
-        }
-        if (!/^image/.test(file.type)) {
-          this.nodes.el.style.backgroundImage = null;
-          return;
-        }
-        return this.setThumbnail();
-      };
-
-      _Class.prototype.setThumbnail = function() {
-        var fileURL, img,
-          _this = this;
-
-        img = $.el('img');
-        img.onload = function() {
-          var cv, height, s, width;
-
-          s = 90 * 2 * window.devicePixelRatio;
-          if (_this.file.type === 'image/gif') {
-            s *= 3;
-          }
-          height = img.height, width = img.width;
-          if (height < s || width < s) {
-            _this.URL = fileURL;
-            _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
-            return;
-          }
-          if (height <= width) {
-            width = s / height * width;
-            height = s;
-          } else {
-            height = s / width * height;
-            width = s;
-          }
-          cv = $.el('canvas');
-          cv.height = img.height = height;
-          cv.width = img.width = width;
-          cv.getContext('2d').drawImage(img, 0, 0, width, height);
-          URL.revokeObjectURL(fileURL);
-          return cv.toBlob(function(blob) {
-            _this.URL = URL.createObjectURL(blob);
-            return _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
-          });
-        };
-        fileURL = URL.createObjectURL(this.file);
-        return img.src = fileURL;
-      };
-
-      _Class.prototype.rmFile = function() {
-        if (this.isLocked) {
-          return;
-        }
-        delete this.file;
-        delete this.filename;
-        delete this.filesize;
-        this.nodes.el.title = null;
-        QR.nodes.fileContainer.title = '';
-        this.nodes.el.style.backgroundImage = null;
-        if (QR.spoiler) {
-          this.nodes.label.hidden = true;
-        }
-        this.showFileData();
-        return URL.revokeObjectURL(this.URL);
-      };
-
-      _Class.prototype.updateFilename = function() {
-        var long;
-
-        long = "" + this.filename + " (" + this.filesize + ")\nCtrl+click to edit filename. Shift+click to clear.";
-        this.nodes.el.title = long;
-        if (this !== QR.selected) {
-          return;
-        }
-        return QR.nodes.fileContainer.title = long;
-      };
-
-      _Class.prototype.showFileData = function() {
-        if (this.file) {
-          this.updateFilename();
-          QR.nodes.filename.value = this.filename;
-          QR.nodes.spoiler.checked = this.spoiler;
-          return $.addClass(QR.nodes.fileSubmit, 'has-file');
-        } else {
-          return $.rmClass(QR.nodes.fileSubmit, 'has-file');
-        }
-      };
-
-      _Class.prototype.pasteText = function(file) {
-        var reader,
-          _this = this;
-
-        reader = new FileReader();
-        reader.onload = function(e) {
-          var text;
-
-          text = e.target.result;
-          if (_this.com) {
-            _this.com += "\n" + text;
-          } else {
-            _this.com = text;
-          }
-          if (QR.selected === _this) {
-            QR.nodes.com.value = _this.com;
-          }
-          return _this.nodes.span.textContent = _this.com;
-        };
-        return reader.readAsText(file);
-      };
-
-      _Class.prototype.dragStart = function(e) {
-        e.dataTransfer.setDragImage(this, e.layerX, e.layerY);
-        return $.addClass(this, 'drag');
-      };
-
-      _Class.prototype.dragEnd = function() {
-        return $.rmClass(this, 'drag');
-      };
-
-      _Class.prototype.dragEnter = function() {
-        return $.addClass(this, 'over');
-      };
-
-      _Class.prototype.dragLeave = function() {
-        return $.rmClass(this, 'over');
-      };
-
-      _Class.prototype.dragOver = function(e) {
-        e.preventDefault();
-        return e.dataTransfer.dropEffect = 'move';
-      };
-
-      _Class.prototype.drop = function() {
-        var el, index, newIndex, oldIndex, post;
-
-        $.rmClass(this, 'over');
-        if (!this.draggable) {
-          return;
-        }
-        el = $('.drag', this.parentNode);
-        index = function(el) {
-          return __slice.call(el.parentNode.children).indexOf(el);
-        };
-        oldIndex = index(el);
-        newIndex = index(this);
-        (oldIndex < newIndex ? $.after : $.before)(this, el);
-        post = QR.posts.splice(oldIndex, 1)[0];
-        QR.posts.splice(newIndex, 0, post);
-        return QR.status();
-      };
-
-      return _Class;
-
-    })(),
-    captcha: {
-      init: function() {
-        if (d.cookie.indexOf('pass_enabled=1') >= 0) {
-          return;
-        }
-        if (!(this.isEnabled = !!$.id('captchaFormPart'))) {
-          return;
-        }
-        return $.asap((function() {
-          return $.id('recaptcha_challenge_field_holder');
-        }), this.ready.bind(this));
-      },
-      ready: function() {
-        var imgContainer, input, setLifetime,
-          _this = this;
-
-        setLifetime = function(e) {
-          return _this.lifetime = e.detail;
-        };
-        $.on(window, 'captcha:timeout', setLifetime);
-        $.globalEval('window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))');
-        $.off(window, 'captcha:timeout', setLifetime);
-        imgContainer = $.el('div', {
-          className: 'captcha-img',
-          title: 'Reload reCAPTCHA',
-          innerHTML: '<img>'
-        });
-        input = $.el('input', {
-          className: 'captcha-input field',
-          title: 'Verification',
-          autocomplete: 'off',
-          spellcheck: false,
-          tabIndex: 55
-        });
-        this.nodes = {
-          challenge: $.id('recaptcha_challenge_field_holder'),
-          img: imgContainer.firstChild,
-          input: input
-        };
-        new MutationObserver(this.load.bind(this)).observe(this.nodes.challenge, {
-          childList: true
-        });
-        $.on(imgContainer, 'click', this.reload.bind(this));
-        $.on(input, 'keydown', this.keydown.bind(this));
-        $.on(input, 'focus', function() {
-          return $.addClass(QR.nodes.el, 'focus');
-        });
-        $.on(input, 'blur', function() {
-          return $.rmClass(QR.nodes.el, 'focus');
-        });
-        $.get('captchas', [], function(_arg) {
-          var captchas;
-
-          captchas = _arg.captchas;
-          return _this.sync(captchas);
-        });
-        $.sync('captchas', this.sync);
-        this.reload();
-        $.addClass(QR.nodes.el, 'has-captcha');
-        return $.after(QR.nodes.com.parentNode, [imgContainer, input]);
-      },
-      sync: function(captchas) {
-        QR.captcha.captchas = captchas;
-        return QR.captcha.count();
-      },
-      getOne: function() {
-        var captcha, challenge, response;
-
-        this.clear();
-        if (captcha = this.captchas.shift()) {
-          challenge = captcha.challenge, response = captcha.response;
-          this.count();
-          $.set('captchas', this.captchas);
-        } else {
-          challenge = this.nodes.img.alt;
-          if (response = this.nodes.input.value) {
-            this.reload();
-          }
-        }
-        if (response) {
-          response = response.trim();
-          if (!/\s/.test(response)) {
-            response = "" + response + " " + response;
-          }
-        }
-        return {
-          challenge: challenge,
-          response: response
-        };
-      },
-      save: function() {
-        var response;
-
-        if (!(response = this.nodes.input.value.trim())) {
-          return;
-        }
-        this.captchas.push({
-          challenge: this.nodes.img.alt,
-          response: response,
-          timeout: this.timeout
-        });
-        this.count();
-        this.reload();
-        return $.set('captchas', this.captchas);
-      },
-      clear: function() {
-        var captcha, i, now, _i, _len, _ref;
-
-        now = Date.now();
-        _ref = this.captchas;
-        for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-          captcha = _ref[i];
-          if (captcha.timeout > now) {
-            break;
-          }
-        }
-        if (!i) {
-          return;
-        }
-        this.captchas = this.captchas.slice(i);
-        this.count();
-        return $.set('captchas', this.captchas);
-      },
-      load: function() {
-        var challenge;
-
-        if (!this.nodes.challenge.firstChild) {
-          return;
-        }
-        this.timeout = Date.now() + this.lifetime * $.SECOND - $.MINUTE;
-        challenge = this.nodes.challenge.firstChild.value;
-        this.nodes.img.alt = challenge;
-        this.nodes.img.src = "//www.google.com/recaptcha/api/image?c=" + challenge;
-        this.nodes.input.value = null;
-        return this.clear();
-      },
-      count: function() {
-        var count;
-
-        count = this.captchas.length;
-        this.nodes.input.placeholder = (function() {
-          switch (count) {
-            case 0:
-              return 'Verification (Shift + Enter to cache)';
-            case 1:
-              return 'Verification (1 cached captcha)';
-            default:
-              return "Verification (" + count + " cached captchas)";
-          }
-        })();
-        return this.nodes.input.alt = count;
-      },
-      reload: function(focus) {
-        $.globalEval('Recaptcha.reload("t")');
-        if (focus) {
-          return this.nodes.input.focus();
-        }
-      },
-      keydown: function(e) {
-        if (e.keyCode === 8 && !this.nodes.input.value) {
-          this.reload();
-        } else if (e.keyCode === 13 && e.shiftKey) {
-          this.save();
-        } else {
-          return;
-        }
-        return e.preventDefault();
-      }
     },
     generatePostableThreadsList: function() {
       var list, options, thread, val;
@@ -7401,6 +6154,763 @@
       return QR.status();
     }
   };
+
+  QR.captcha = {
+    init: function() {
+      if (d.cookie.indexOf('pass_enabled=1') >= 0) {
+        return;
+      }
+      if (!(this.isEnabled = !!$.id('captchaFormPart'))) {
+        return;
+      }
+      return $.asap((function() {
+        return $.id('recaptcha_challenge_field_holder');
+      }), this.ready.bind(this));
+    },
+    ready: function() {
+      var imgContainer, input, setLifetime,
+        _this = this;
+
+      setLifetime = function(e) {
+        return _this.lifetime = e.detail;
+      };
+      $.on(window, 'captcha:timeout', setLifetime);
+      $.globalEval('window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))');
+      $.off(window, 'captcha:timeout', setLifetime);
+      imgContainer = $.el('div', {
+        className: 'captcha-img',
+        title: 'Reload reCAPTCHA',
+        innerHTML: '<img>'
+      });
+      input = $.el('input', {
+        className: 'captcha-input field',
+        title: 'Verification',
+        autocomplete: 'off',
+        spellcheck: false,
+        tabIndex: 55
+      });
+      this.nodes = {
+        challenge: $.id('recaptcha_challenge_field_holder'),
+        img: imgContainer.firstChild,
+        input: input
+      };
+      new MutationObserver(this.load.bind(this)).observe(this.nodes.challenge, {
+        childList: true
+      });
+      $.on(imgContainer, 'click', this.reload.bind(this));
+      $.on(input, 'keydown', this.keydown.bind(this));
+      $.on(input, 'focus', function() {
+        return $.addClass(QR.nodes.el, 'focus');
+      });
+      $.on(input, 'blur', function() {
+        return $.rmClass(QR.nodes.el, 'focus');
+      });
+      $.get('captchas', [], function(_arg) {
+        var captchas;
+
+        captchas = _arg.captchas;
+        return _this.sync(captchas);
+      });
+      $.sync('captchas', this.sync);
+      this.reload();
+      $.addClass(QR.nodes.el, 'has-captcha');
+      return $.after(QR.nodes.com.parentNode, [imgContainer, input]);
+    },
+    sync: function(captchas) {
+      QR.captcha.captchas = captchas;
+      return QR.captcha.count();
+    },
+    getOne: function() {
+      var captcha, challenge, response;
+
+      this.clear();
+      if (captcha = this.captchas.shift()) {
+        challenge = captcha.challenge, response = captcha.response;
+        this.count();
+        $.set('captchas', this.captchas);
+      } else {
+        challenge = this.nodes.img.alt;
+        if (response = this.nodes.input.value) {
+          this.reload();
+        }
+      }
+      if (response) {
+        response = response.trim();
+        if (!/\s/.test(response)) {
+          response = "" + response + " " + response;
+        }
+      }
+      return {
+        challenge: challenge,
+        response: response
+      };
+    },
+    save: function() {
+      var response;
+
+      if (!(response = this.nodes.input.value.trim())) {
+        return;
+      }
+      this.captchas.push({
+        challenge: this.nodes.img.alt,
+        response: response,
+        timeout: this.timeout
+      });
+      this.count();
+      this.reload();
+      return $.set('captchas', this.captchas);
+    },
+    clear: function() {
+      var captcha, i, now, _i, _len, _ref;
+
+      now = Date.now();
+      _ref = this.captchas;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        captcha = _ref[i];
+        if (captcha.timeout > now) {
+          break;
+        }
+      }
+      if (!i) {
+        return;
+      }
+      this.captchas = this.captchas.slice(i);
+      this.count();
+      return $.set('captchas', this.captchas);
+    },
+    load: function() {
+      var challenge;
+
+      if (!this.nodes.challenge.firstChild) {
+        return;
+      }
+      this.timeout = Date.now() + this.lifetime * $.SECOND - $.MINUTE;
+      challenge = this.nodes.challenge.firstChild.value;
+      this.nodes.img.alt = challenge;
+      this.nodes.img.src = "//www.google.com/recaptcha/api/image?c=" + challenge;
+      this.nodes.input.value = null;
+      return this.clear();
+    },
+    count: function() {
+      var count;
+
+      count = this.captchas.length;
+      this.nodes.input.placeholder = (function() {
+        switch (count) {
+          case 0:
+            return 'Verification (Shift + Enter to cache)';
+          case 1:
+            return 'Verification (1 cached captcha)';
+          default:
+            return "Verification (" + count + " cached captchas)";
+        }
+      })();
+      return this.nodes.input.alt = count;
+    },
+    reload: function(focus) {
+      $.globalEval('Recaptcha.reload("t")');
+      if (focus) {
+        return this.nodes.input.focus();
+      }
+    },
+    keydown: function(e) {
+      if (e.keyCode === 8 && !this.nodes.input.value) {
+        this.reload();
+      } else if (e.keyCode === 13 && e.shiftKey) {
+        this.save();
+      } else {
+        return;
+      }
+      return e.preventDefault();
+    }
+  };
+
+  QR.cooldown = {
+    init: function() {
+      var key, setTimers, type,
+        _this = this;
+
+      if (!Conf['Cooldown']) {
+        return;
+      }
+      setTimers = function(e) {
+        return QR.cooldown.types = e.detail;
+      };
+      $.on(window, 'cooldown:timers', setTimers);
+      $.globalEval('window.dispatchEvent(new CustomEvent("cooldown:timers", {detail: cooldowns}))');
+      $.off(window, 'cooldown:timers', setTimers);
+      for (type in QR.cooldown.types) {
+        QR.cooldown.types[type] = +QR.cooldown.types[type];
+      }
+      QR.cooldown.upSpd = 0;
+      QR.cooldown.upSpdAccuracy = .5;
+      key = "cooldown." + g.BOARD;
+      $.get(key, {}, function(item) {
+        QR.cooldown.cooldowns = item[key];
+        return QR.cooldown.start();
+      });
+      return $.sync(key, QR.cooldown.sync);
+    },
+    start: function() {
+      if (!Conf['Cooldown']) {
+        return;
+      }
+      if (QR.cooldown.isCounting) {
+        return;
+      }
+      QR.cooldown.isCounting = true;
+      return QR.cooldown.count();
+    },
+    sync: function(cooldowns) {
+      var id;
+
+      for (id in cooldowns) {
+        QR.cooldown.cooldowns[id] = cooldowns[id];
+      }
+      return QR.cooldown.start();
+    },
+    set: function(data) {
+      var cooldown, delay, isReply, post, req, start, threadID, upSpd;
+
+      if (!Conf['Cooldown']) {
+        return;
+      }
+      req = data.req, post = data.post, isReply = data.isReply, threadID = data.threadID, delay = data.delay;
+      start = req ? req.uploadEndTime : Date.now();
+      if (delay) {
+        cooldown = {
+          delay: delay
+        };
+      } else {
+        if (post.file) {
+          upSpd = post.file.size / ((start - req.uploadStartTime) / $.SECOND);
+          QR.cooldown.upSpdAccuracy = ((upSpd > QR.cooldown.upSpd * .9) + QR.cooldown.upSpdAccuracy) / 2;
+          QR.cooldown.upSpd = upSpd;
+        }
+        cooldown = {
+          isReply: isReply,
+          threadID: threadID
+        };
+      }
+      QR.cooldown.cooldowns[start] = cooldown;
+      $.set("cooldown." + g.BOARD, QR.cooldown.cooldowns);
+      return QR.cooldown.start();
+    },
+    unset: function(id) {
+      delete QR.cooldown.cooldowns[id];
+      if (Object.keys(QR.cooldown.cooldowns).length) {
+        return $.set("cooldown." + g.BOARD, QR.cooldown.cooldowns);
+      } else {
+        return $["delete"]("cooldown." + g.BOARD);
+      }
+    },
+    count: function() {
+      var cooldown, cooldowns, elapsed, hasFile, isReply, maxTimer, now, post, seconds, start, type, types, upSpd, upSpdAccuracy, update, _ref;
+
+      if (!Object.keys(QR.cooldown.cooldowns).length) {
+        $["delete"]("" + g.BOARD + ".cooldown");
+        delete QR.cooldown.isCounting;
+        delete QR.cooldown.seconds;
+        QR.status();
+        return;
+      }
+      clearTimeout(QR.cooldown.timeout);
+      QR.cooldown.timeout = setTimeout(QR.cooldown.count, $.SECOND);
+      now = Date.now();
+      post = QR.posts[0];
+      isReply = post.thread !== 'new';
+      hasFile = !!post.file;
+      seconds = null;
+      _ref = QR.cooldown, types = _ref.types, cooldowns = _ref.cooldowns, upSpd = _ref.upSpd, upSpdAccuracy = _ref.upSpdAccuracy;
+      for (start in cooldowns) {
+        cooldown = cooldowns[start];
+        if ('delay' in cooldown) {
+          if (cooldown.delay) {
+            seconds = Math.max(seconds, cooldown.delay--);
+          } else {
+            seconds = Math.max(seconds, 0);
+            QR.cooldown.unset(start);
+          }
+          continue;
+        }
+        if (isReply === cooldown.isReply) {
+          elapsed = Math.floor((now - start) / $.SECOND);
+          if (elapsed < 0) {
+            continue;
+          }
+          type = !isReply ? 'thread' : hasFile ? 'image' : 'reply';
+          maxTimer = Math.max(types[type] || 0, types[type + '_intra'] || 0);
+          if (!((start <= now && now <= start + maxTimer * $.SECOND))) {
+            QR.cooldown.unset(start);
+          }
+          if (isReply && +post.thread === cooldown.threadID) {
+            type += '_intra';
+          }
+          seconds = Math.max(seconds, types[type] - elapsed);
+        }
+      }
+      if (seconds && Conf['Cooldown Prediction'] && hasFile && upSpd) {
+        seconds -= Math.floor(post.file.size / upSpd * upSpdAccuracy);
+        seconds = seconds > 0 ? seconds : 0;
+      }
+      update = seconds !== null || !!QR.cooldown.seconds;
+      QR.cooldown.seconds = seconds;
+      if (update) {
+        QR.status();
+      }
+      if (seconds === 0 && QR.cooldown.auto && !QR.req) {
+        return QR.submit();
+      }
+    }
+  };
+
+  QR.persona = {
+    pwd: '',
+    always: {},
+    init: function() {
+      QR.persona.getPassword();
+      return $.get('QR.personas', Conf['QR.personas'], function(_arg) {
+        var arr, item, personas, type, types, _i, _len, _ref;
+
+        personas = _arg['QR.personas'];
+        types = {
+          name: [],
+          email: [],
+          sub: []
+        };
+        _ref = personas.split('\n');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          item = _ref[_i];
+          QR.persona.parseItem(item.trim(), types);
+        }
+        for (type in types) {
+          arr = types[type];
+          QR.persona.loadPersonas(type, arr);
+        }
+      });
+    },
+    parseItem: function(item, types) {
+      var boards, match, type, val, _ref, _ref1, _ref2;
+
+      if (item[0] === '#') {
+        return;
+      }
+      if (!(match = item.match(/(name|email|subject|password):"(.*)"/i))) {
+        return;
+      }
+      _ref = match, match = _ref[0], type = _ref[1], val = _ref[2];
+      item = item.replace(match, '');
+      boards = ((_ref1 = item.match(/boards:([^;]+)/i)) != null ? _ref1[1].toLowerCase() : void 0) || 'global';
+      if (boards !== 'global' && (_ref2 = g.BOARD.ID, __indexOf.call(boards.split(','), _ref2) < 0)) {
+        return;
+      }
+      if (type === 'password') {
+        QR.persona.pwd = val;
+        return;
+      }
+      if (type === 'subject') {
+        type = 'sub';
+      }
+      if (/always/i.test(item)) {
+        QR.persona.always[type] = val;
+      }
+      if (__indexOf.call(types[type], val) < 0) {
+        return types[type].push(val);
+      }
+    },
+    loadPersonas: function(type, arr) {
+      var list, val, _i, _len;
+
+      list = $("#list-" + type, QR.nodes.el);
+      for (_i = 0, _len = arr.length; _i < _len; _i++) {
+        val = arr[_i];
+        if (val) {
+          $.add(list, $.el('option', {
+            textContent: val
+          }));
+        }
+      }
+    },
+    getPassword: function() {
+      var input, m;
+
+      if (!QR.persona.pwd) {
+        QR.persona.pwd = (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : (input = $.id('postPassword')) ? input.value : $.id('delPassword').value;
+      }
+      return QR.persona.pwd;
+    },
+    get: function(cb) {
+      return $.get('QR.persona', {}, function(_arg) {
+        var persona;
+
+        persona = _arg['QR.persona'];
+        return cb(persona);
+      });
+    },
+    set: function(post) {
+      return $.get('QR.persona', {}, function(_arg) {
+        var persona;
+
+        persona = _arg['QR.persona'];
+        persona = {
+          name: post.name,
+          email: /^sage$/.test(post.email) ? persona.email : post.email,
+          sub: Conf['Remember Subject'] ? post.sub : void 0,
+          flag: post.flag
+        };
+        return $.set('QR.persona', persona);
+      });
+    }
+  };
+
+  QR.post = (function() {
+    function _Class(select) {
+      this.select = __bind(this.select, this);
+      var el, event, prev, _i, _len, _ref,
+        _this = this;
+
+      el = $.el('a', {
+        className: 'qr-preview',
+        draggable: true,
+        href: 'javascript:;',
+        innerHTML: '<a class="remove fa fa-times-circle" title=Remove></a><label hidden><input type=checkbox> Spoiler</label><span></span>'
+      });
+      this.nodes = {
+        el: el,
+        rm: el.firstChild,
+        label: $('label', el),
+        spoiler: $('input', el),
+        span: el.lastChild
+      };
+      $.on(el, 'click', this.select);
+      $.on(this.nodes.rm, 'click', function(e) {
+        e.stopPropagation();
+        return _this.rm();
+      });
+      $.on(this.nodes.label, 'click', function(e) {
+        return e.stopPropagation();
+      });
+      $.on(this.nodes.spoiler, 'change', function(e) {
+        _this.spoiler = e.target.checked;
+        if (_this === QR.selected) {
+          return QR.nodes.spoiler.checked = _this.spoiler;
+        }
+      });
+      $.add(QR.nodes.dumpList, el);
+      _ref = ['dragStart', 'dragEnter', 'dragLeave', 'dragOver', 'dragEnd', 'drop'];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        event = _ref[_i];
+        $.on(el, event.toLowerCase(), this[event]);
+      }
+      this.thread = g.VIEW === 'thread' ? g.THREADID : 'new';
+      prev = QR.posts[QR.posts.length - 1];
+      QR.posts.push(this);
+      this.nodes.spoiler.checked = this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
+      QR.persona.get(function(persona) {
+        _this.name = 'name' in QR.persona.always ? QR.persona.always.name : prev ? prev.name : persona.name;
+        _this.email = 'email' in QR.persona.always ? QR.persona.always.email : prev && !/^sage$/.test(prev.email) ? prev.email : persona.email;
+        _this.sub = 'sub' in QR.persona.always ? QR.persona.always.sub : Conf['Remember Subject'] ? prev ? prev.sub : persona.sub : '';
+        if (QR.nodes.flag) {
+          _this.flag = prev ? prev.flag : persona.flag;
+        }
+        if (QR.selected === _this) {
+          return _this.load();
+        }
+      });
+      if (select) {
+        this.select();
+      }
+      this.unlock();
+    }
+
+    _Class.prototype.rm = function() {
+      var index;
+
+      this["delete"]();
+      index = QR.posts.indexOf(this);
+      if (QR.posts.length === 1) {
+        new QR.post(true);
+        $.rmClass(QR.nodes.el, 'dump');
+      } else if (this === QR.selected) {
+        (QR.posts[index - 1] || QR.posts[index + 1]).select();
+      }
+      QR.posts.splice(index, 1);
+      return QR.status();
+    };
+
+    _Class.prototype["delete"] = function() {
+      $.rm(this.nodes.el);
+      return URL.revokeObjectURL(this.URL);
+    };
+
+    _Class.prototype.lock = function(lock) {
+      var name, node, _i, _len, _ref;
+
+      if (lock == null) {
+        lock = true;
+      }
+      this.isLocked = lock;
+      if (this !== QR.selected) {
+        return;
+      }
+      _ref = ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler', 'flag'];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        name = _ref[_i];
+        if (node = QR.nodes[name]) {
+          node.disabled = lock;
+        }
+      }
+      this.nodes.rm.style.visibility = lock ? 'hidden' : '';
+      (lock ? $.off : $.on)(QR.nodes.filename.previousElementSibling, 'click', QR.openFileInput);
+      this.nodes.spoiler.disabled = lock;
+      return this.nodes.el.draggable = !lock;
+    };
+
+    _Class.prototype.unlock = function() {
+      return this.lock(false);
+    };
+
+    _Class.prototype.select = function() {
+      var rectEl, rectList;
+
+      if (QR.selected) {
+        QR.selected.nodes.el.id = null;
+        QR.selected.forceSave();
+      }
+      QR.selected = this;
+      this.lock(this.isLocked);
+      this.nodes.el.id = 'selected';
+      rectEl = this.nodes.el.getBoundingClientRect();
+      rectList = this.nodes.el.parentNode.getBoundingClientRect();
+      this.nodes.el.parentNode.scrollLeft += rectEl.left + rectEl.width / 2 - rectList.left - rectList.width / 2;
+      this.load();
+      return $.event('QRPostSelection', this);
+    };
+
+    _Class.prototype.load = function() {
+      var name, node, _i, _len, _ref;
+
+      _ref = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag'];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        name = _ref[_i];
+        if (!(node = QR.nodes[name])) {
+          continue;
+        }
+        node.value = this[name] || node.dataset["default"] || null;
+      }
+      this.showFileData();
+      return QR.characterCount();
+    };
+
+    _Class.prototype.save = function(input) {
+      var name, _ref;
+
+      if (input.type === 'checkbox') {
+        this.spoiler = input.checked;
+        return;
+      }
+      name = input.dataset.name;
+      this[name] = input.value || input.dataset["default"] || null;
+      switch (name) {
+        case 'thread':
+          return QR.status();
+        case 'com':
+          this.nodes.span.textContent = this.com;
+          QR.characterCount();
+          if (QR.cooldown.auto && this === QR.posts[0] && (0 < (_ref = QR.cooldown.seconds) && _ref <= 5)) {
+            return QR.cooldown.auto = false;
+          }
+          break;
+        case 'filename':
+          if (!this.file) {
+            return;
+          }
+          this.file.newName = this.filename.replace(/[/\\]/g, '-');
+          if (!/\.(jpe?g|png|gif|pdf|swf)$/i.test(this.filename)) {
+            this.file.newName += '.jpg';
+          }
+          return this.updateFilename();
+      }
+    };
+
+    _Class.prototype.forceSave = function() {
+      var name, node, _i, _len, _ref;
+
+      if (this !== QR.selected) {
+        return;
+      }
+      _ref = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler', 'flag'];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        name = _ref[_i];
+        if (!(node = QR.nodes[name])) {
+          continue;
+        }
+        this.save(node);
+      }
+    };
+
+    _Class.prototype.setFile = function(file) {
+      this.file = file;
+      this.filename = file.name;
+      this.filesize = $.bytesToString(file.size);
+      if (QR.spoiler) {
+        this.nodes.label.hidden = false;
+      }
+      URL.revokeObjectURL(this.URL);
+      if (this === QR.selected) {
+        this.showFileData();
+      }
+      if (!/^image/.test(file.type)) {
+        this.nodes.el.style.backgroundImage = null;
+        return;
+      }
+      return this.setThumbnail();
+    };
+
+    _Class.prototype.setThumbnail = function() {
+      var fileURL, img,
+        _this = this;
+
+      img = $.el('img');
+      img.onload = function() {
+        var cv, height, s, width;
+
+        s = 90 * 2 * window.devicePixelRatio;
+        if (_this.file.type === 'image/gif') {
+          s *= 3;
+        }
+        height = img.height, width = img.width;
+        if (height < s || width < s) {
+          _this.URL = fileURL;
+          _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
+          return;
+        }
+        if (height <= width) {
+          width = s / height * width;
+          height = s;
+        } else {
+          height = s / width * height;
+          width = s;
+        }
+        cv = $.el('canvas');
+        cv.height = img.height = height;
+        cv.width = img.width = width;
+        cv.getContext('2d').drawImage(img, 0, 0, width, height);
+        URL.revokeObjectURL(fileURL);
+        return cv.toBlob(function(blob) {
+          _this.URL = URL.createObjectURL(blob);
+          return _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
+        });
+      };
+      fileURL = URL.createObjectURL(this.file);
+      return img.src = fileURL;
+    };
+
+    _Class.prototype.rmFile = function() {
+      if (this.isLocked) {
+        return;
+      }
+      delete this.file;
+      delete this.filename;
+      delete this.filesize;
+      this.nodes.el.title = null;
+      QR.nodes.fileContainer.title = '';
+      this.nodes.el.style.backgroundImage = null;
+      if (QR.spoiler) {
+        this.nodes.label.hidden = true;
+      }
+      this.showFileData();
+      return URL.revokeObjectURL(this.URL);
+    };
+
+    _Class.prototype.updateFilename = function() {
+      var long;
+
+      long = "" + this.filename + " (" + this.filesize + ")\nCtrl+click to edit filename. Shift+click to clear.";
+      this.nodes.el.title = long;
+      if (this !== QR.selected) {
+        return;
+      }
+      return QR.nodes.fileContainer.title = long;
+    };
+
+    _Class.prototype.showFileData = function() {
+      if (this.file) {
+        this.updateFilename();
+        QR.nodes.filename.value = this.filename;
+        QR.nodes.spoiler.checked = this.spoiler;
+        return $.addClass(QR.nodes.fileSubmit, 'has-file');
+      } else {
+        return $.rmClass(QR.nodes.fileSubmit, 'has-file');
+      }
+    };
+
+    _Class.prototype.pasteText = function(file) {
+      var reader,
+        _this = this;
+
+      reader = new FileReader();
+      reader.onload = function(e) {
+        var text;
+
+        text = e.target.result;
+        if (_this.com) {
+          _this.com += "\n" + text;
+        } else {
+          _this.com = text;
+        }
+        if (QR.selected === _this) {
+          QR.nodes.com.value = _this.com;
+        }
+        return _this.nodes.span.textContent = _this.com;
+      };
+      return reader.readAsText(file);
+    };
+
+    _Class.prototype.dragStart = function(e) {
+      e.dataTransfer.setDragImage(this, e.layerX, e.layerY);
+      return $.addClass(this, 'drag');
+    };
+
+    _Class.prototype.dragEnd = function() {
+      return $.rmClass(this, 'drag');
+    };
+
+    _Class.prototype.dragEnter = function() {
+      return $.addClass(this, 'over');
+    };
+
+    _Class.prototype.dragLeave = function() {
+      return $.rmClass(this, 'over');
+    };
+
+    _Class.prototype.dragOver = function(e) {
+      e.preventDefault();
+      return e.dataTransfer.dropEffect = 'move';
+    };
+
+    _Class.prototype.drop = function() {
+      var el, index, newIndex, oldIndex, post;
+
+      $.rmClass(this, 'over');
+      if (!this.draggable) {
+        return;
+      }
+      el = $('.drag', this.parentNode);
+      index = function(el) {
+        return __slice.call(el.parentNode.children).indexOf(el);
+      };
+      oldIndex = index(el);
+      newIndex = index(this);
+      (oldIndex < newIndex ? $.after : $.before)(this, el);
+      post = QR.posts.splice(oldIndex, 1)[0];
+      QR.posts.splice(newIndex, 0, post);
+      return QR.status();
+    };
+
+    return _Class;
+
+  })();
 
   AutoGIF = {
     init: function() {
@@ -8299,6 +7809,532 @@
     }
   };
 
+  Linkify = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Linkify']) {
+        return;
+      }
+      this.regString = /((https?|mailto|git|magnet|ftp|irc):([a-z\d%\/])|[-a-z\d]+[.](aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2})(\/|(?!.))|[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i;
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
+      }
+      if (Conf['Title Link']) {
+        $.sync('CachedTitles', Linkify.titleSync);
+      }
+      return Post.callbacks.push({
+        name: 'Linkify',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var data, el, end, endNode, i, index, items, length, link, links, node, result, saved, snapshot, space, test, word, _i, _len, _ref;
+
+      if (this.isClone) {
+        if (Conf['Embedding']) {
+          i = 0;
+          items = $$('.embed', this.nodes.comment);
+          while (el = items[i++]) {
+            $.on(el, 'click', Linkify.cb.toggle);
+            if ($.hasClass(el, 'embedded')) {
+              Linkify.cb.toggle.call(el);
+            }
+          }
+        }
+        return;
+      }
+      test = /[^\s'"]+/g;
+      space = /[\s'"]/;
+      snapshot = $.X('.//br|.//text()', this.nodes.comment);
+      i = 0;
+      links = [];
+      while (node = snapshot.snapshotItem(i++)) {
+        data = node.data;
+        if (node.parentElement.nodeName === "A" || !data) {
+          continue;
+        }
+        while (result = test.exec(data)) {
+          index = result.index;
+          endNode = node;
+          word = result[0];
+          if ((length = index + word.length) === data.length) {
+            test.lastIndex = 0;
+            while ((saved = snapshot.snapshotItem(i++))) {
+              if (saved.nodeName === 'BR') {
+                break;
+              }
+              endNode = saved;
+              data = saved.data;
+              word += data;
+              length = data.length;
+              if (end = space.exec(data)) {
+                test.lastIndex = length = end.index;
+                i--;
+                break;
+              }
+            }
+          }
+          if (Linkify.regString.exec(word)) {
+            links.push(Linkify.makeRange(node, endNode, index, length));
+          }
+          if (!(test.lastIndex && node === endNode)) {
+            break;
+          }
+        }
+      }
+      _ref = links.reverse();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        this.nodes.links.push(Linkify.makeLink(link, this));
+        link.detach();
+      }
+      if (!(Conf['Embedding'] || Conf['Link Title'])) {
+        return;
+      }
+      links = this.nodes.links;
+      i = 0;
+      while (link = links[i++]) {
+        if (data = Linkify.services(link)) {
+          if (Conf['Embedding']) {
+            Linkify.embed(data);
+          }
+          if (Conf['Link Title']) {
+            Linkify.title(data);
+          }
+        }
+      }
+    },
+    makeRange: function(startNode, endNode, startOffset, endOffset) {
+      var range;
+
+      range = document.createRange();
+      range.setStart(startNode, startOffset);
+      range.setEnd(endNode, endOffset);
+      return range;
+    },
+    makeLink: function(range) {
+      var a, char, i, text;
+
+      text = range.toString();
+      i = 0;
+      while (/[(\[{<>]/.test(text.charAt(i))) {
+        i++;
+      }
+      if (i) {
+        text = text.slice(i);
+        while (range.startOffset + i >= range.startContainer.data.length) {
+          i--;
+        }
+        if (i) {
+          range.setStart(range.startContainer, range.startOffset + i);
+        }
+      }
+      i = 0;
+      while (/[)\]}>.,]/.test(char = text.charAt(text.length - (1 + i)))) {
+        if (!(/[.,]/.test(char) || (text.match(/[()\[\]{}<>]/g)).length % 2)) {
+          break;
+        }
+        i++;
+      }
+      if (i) {
+        text = text.slice(0, -i);
+        while (range.endOffset - i < 0) {
+          i--;
+        }
+        if (i) {
+          range.setEnd(range.endContainer, range.endOffset - i);
+        }
+      }
+      if (!/(https?|mailto|git|magnet|ftp|irc):/.test(text)) {
+        text = (/@/.test(text) ? 'mailto:' : 'http://') + text;
+      }
+      a = $.el('a', {
+        className: 'linkify',
+        rel: 'nofollow noreferrer',
+        target: '_blank',
+        href: text
+      });
+      $.add(a, range.extractContents());
+      range.insertNode(a);
+      return a;
+    },
+    services: function(link) {
+      var href, key, match, type, _ref;
+
+      href = link.href;
+      _ref = Linkify.types;
+      for (key in _ref) {
+        type = _ref[key];
+        if (!(match = type.regExp.exec(href))) {
+          continue;
+        }
+        return [key, match[1], match[2], link];
+      }
+    },
+    embed: function(data) {
+      var embed, href, key, link, name, options, uid, value, _ref;
+
+      key = data[0], uid = data[1], options = data[2], link = data[3];
+      href = link.href;
+      embed = $.el('a', {
+        className: 'embedder',
+        href: 'javascript:;',
+        textContent: '(embed)'
+      });
+      _ref = {
+        key: key,
+        href: href,
+        uid: uid,
+        options: options
+      };
+      for (name in _ref) {
+        value = _ref[name];
+        embed.dataset[name] = value;
+      }
+      embed.dataset.nodedata = link.innerHTML;
+      $.addClass(link, "" + embed.dataset.key);
+      $.on(embed, 'click', Linkify.cb.toggle);
+      $.after(link, [$.tn(' '), embed]);
+      if (Conf['Auto-embed']) {
+        Linkify.cb.toggle.call(embed);
+      }
+      data.push(embed);
+    },
+    title: function(data) {
+      var embed, err, key, link, options, service, title, titles, uid;
+
+      key = data[0], uid = data[1], options = data[2], link = data[3], embed = data[4];
+      if (!(service = Linkify.types[key].title)) {
+        return;
+      }
+      titles = Conf['CachedTitles'];
+      if (title = titles[uid]) {
+        if (link) {
+          link.textContent = title[0];
+        }
+        if (Conf['Embedding']) {
+          return embed.dataset.title = title[0];
+        }
+      } else {
+        try {
+          $.cache(service.api(uid), function() {
+            return title = Linkify.cb.title(this, data);
+          });
+        } catch (_error) {
+          err = _error;
+          if (link) {
+            link.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
+          }
+          return;
+        }
+        if (title) {
+          titles[uid] = [title, Date.now()];
+          return $.set('CachedTitles', titles);
+        }
+      }
+    },
+    titleSync: function(value) {
+      return Conf['CachedTitles'] = value;
+    },
+    cb: {
+      toggle: function() {
+        var string, _ref;
+
+        _ref = $.hasClass(this, "embedded") ? ['unembed', '(embed)'] : ['embed', '(unembed)'], string = _ref[0], this.textContent = _ref[1];
+        $.replace(this.previousElementSibling, Linkify.cb[string](this));
+        return $.toggleClass(this, 'embedded');
+      },
+      embed: function(a) {
+        var el, style, type;
+
+        el = (type = Linkify.types[a.dataset.key]).el(a);
+        el.style.cssText = (style = type.style) ? style : "border: 0; width: 640px; height: 390px";
+        return el;
+      },
+      unembed: function(a) {
+        var el;
+
+        el = $.el('a', {
+          rel: 'nofollow noreferrer',
+          target: 'blank',
+          className: 'linkify',
+          href: a.dataset.href,
+          innerHTML: a.dataset.title || a.dataset.nodedata
+        });
+        $.addClass(el, a.dataset.key);
+        return el;
+      },
+      title: function(response, data) {
+        var embed, key, link, options, service, text, uid;
+
+        key = data[0], uid = data[1], options = data[2], link = data[3], embed = data[4];
+        service = Linkify.types[key].title;
+        switch (response.status) {
+          case 200:
+          case 304:
+            text = "" + (service.text(JSON.parse(response.responseText)));
+            if (Conf['Embedding']) {
+              embed.dataset.title = text;
+            }
+            break;
+          case 404:
+            text = "[" + key + "] Not Found";
+            break;
+          case 403:
+            text = "[" + key + "] Forbidden or Private";
+            break;
+          default:
+            text = "[" + key + "] " + this.status + "'d";
+        }
+        if (link) {
+          return link.textContent = text;
+        }
+      }
+    },
+    types: {
+      audio: {
+        regExp: /(.*\.(mp3|ogg|wav))$/,
+        el: function(a) {
+          return $.el('audio', {
+            controls: 'controls',
+            preload: 'auto',
+            src: a.dataset.uid
+          });
+        }
+      },
+      gist: {
+        regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/,
+        el: function(a) {
+          var div;
+
+          return div = $.el('iframe', {
+            src: "http://www.purplegene.com/script?url=https://gist.github.com/" + a.dataset.uid + ".js"
+          });
+        },
+        title: {
+          api: function(uid) {
+            return "https://api.github.com/gists/" + uid;
+          },
+          text: function(_arg) {
+            var file, files;
+
+            files = _arg.files;
+            for (file in files) {
+              if (files.hasOwnProperty(file)) {
+                return file;
+              }
+            }
+          }
+        }
+      },
+      image: {
+        regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/,
+        style: 'border: 0; width: auto; height: auto;',
+        el: function(a) {
+          return $.el('div', {
+            innerHTML: "<a target=_blank href='" + a.dataset.href + "'><img src='" + a.dataset.href + "'></a>"
+          });
+        }
+      },
+      InstallGentoo: {
+        regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/,
+        el: function(a) {
+          return $.el('iframe', {
+            src: "http://paste.installgentoo.com/view/embed/" + a.dataset.uid
+          });
+        }
+      },
+      LiveLeak: {
+        regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
+        el: function(a) {
+          var el;
+
+          el = $.el('iframe', {
+            width: "640",
+            height: "360",
+            src: "http://www.liveleak.com/ll_embed?i=" + a.dataset.uid,
+            frameborder: "0"
+          });
+          el.setAttribute("allowfullscreen", "true");
+          return el;
+        }
+      },
+      MediaCrush: {
+        regExp: /.*(?:mediacru.sh\/)([0-9a-z_]+)/i,
+        style: 'border: 0;',
+        el: function(a) {
+          var el;
+
+          el = $.el('div');
+          $.cache("https://mediacru.sh/" + a.dataset.uid + ".json", function() {
+            var embed, file, files, status, type, _i, _j, _len, _len1, _ref;
+
+            status = this.status;
+            if (status !== 200 && status !== 304) {
+              return div.innerHTML = "ERROR " + status;
+            }
+            files = JSON.parse(this.response).files;
+            _ref = ['video/mp4', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'image/svg', 'audio/mpeg'];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              type = _ref[_i];
+              for (_j = 0, _len1 = files.length; _j < _len1; _j++) {
+                file = files[_j];
+                if (file.type === type) {
+                  embed = file;
+                  break;
+                }
+              }
+              if (embed) {
+                break;
+              }
+            }
+            if (!embed) {
+              return div.innerHTML = "ERROR: Not a valid filetype";
+            }
+            return el.innerHTML = (function() {
+              switch (embed.type) {
+                case 'video/mp4':
+                case 'video/ogv':
+                  return "<video autoplay loop>\n  <source src=\"https://mediacru.sh/" + a.dataset.uid + ".mp4\" type=\"video/mp4;\">\n  <source src=\"https://mediacru.sh/" + a.dataset.uid + ".ogv\" type=\"video/ogg; codecs='theora, vorbis'\">\n</video>";
+                case 'image/png':
+                case 'image/gif':
+                case 'image/jpeg':
+                  return "<a target=_blank href='" + a.dataset.href + "'><img src='https://mediacru.sh/" + file.file + "'></a>";
+                case 'image/svg':
+                case 'image/svg+xml':
+                  return "<embed src='https://mediacru.sh/" + file.file + "' type='image/svg+xml' />";
+                case 'audio/mpeg':
+                  return "<audio controls><source src='https://mediacru.sh/" + file.file + "'></audio>";
+                default:
+                  return "ERROR: No valid filetype.";
+              }
+            })();
+          });
+          return el;
+        }
+      },
+      pastebin: {
+        regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/,
+        el: function(a) {
+          var div;
+
+          return div = $.el('iframe', {
+            src: "http://pastebin.com/embed_iframe.php?i=" + a.dataset.uid
+          });
+        }
+      },
+      SoundCloud: {
+        regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
+        style: 'height: auto; width: 500px; display: inline-block;',
+        el: function(a) {
+          var div;
+
+          div = $.el('div', {
+            className: "soundcloud",
+            name: "soundcloud"
+          });
+          $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + a.dataset.uid, {
+            onloadend: function() {
+              return div.innerHTML = JSON.parse(this.responseText).html;
+            }
+          }, false);
+          return div;
+        },
+        title: {
+          api: function(uid) {
+            return "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + uid;
+          },
+          text: function(_) {
+            return _.title;
+          }
+        }
+      },
+      StrawPoll: {
+        regExp: /strawpoll\.me\/(?:embed_\d+\/)?(\d+)/,
+        style: 'border: 0; width: 600px; height: 406px;',
+        el: function(a) {
+          return $.el('iframe', {
+            src: "http://strawpoll.me/embed_1/" + a.dataset.uid
+          });
+        }
+      },
+      TwitchTV: {
+        regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/,
+        style: "border: none; width: 640px; height: 360px;",
+        el: function(a) {
+          var channel, chapter, result, _;
+
+          if (result = /(\w+)\/(?:[a-z]\/)?(\d+)/i.exec(a.dataset.uid)) {
+            _ = result[0], channel = result[1], chapter = result[2];
+            return $.el('object', {
+              data: 'http://www.twitch.tv/widgets/archive_embed_player.swf',
+              innerHTML: "<param name='allowFullScreen' value='true' />\n<param name='flashvars' value='channel=" + channel + "&start_volume=25&auto_play=false" + (chapter ? "&chapter_id=" + chapter : "") + "' />"
+            });
+          } else {
+            channel = (/(\w+)/.exec(a.dataset.uid))[0];
+            return $.el('object', {
+              data: "http://www.twitch.tv/widgets/live_embed_player.swf?channel=" + channel,
+              innerHTML: "<param  name=\"allowFullScreen\" value=\"true\" />\n<param  name=\"movie\" value=\"http://www.twitch.tv/widgets/live_embed_player.swf\" />\n<param  name=\"flashvars\" value=\"hostname=www.twitch.tv&channel=" + channel + "&auto_play=true&start_volume=25\" />"
+            });
+          }
+        }
+      },
+      Vocaroo: {
+        regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
+        style: 'border: 0; width: 150px; height: 45px;',
+        el: function(a) {
+          return $.el('object', {
+            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (a.dataset.uid.replace(/^i\//, '')) + "&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+          });
+        }
+      },
+      Vimeo: {
+        regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
+        el: function(a) {
+          return $.el('iframe', {
+            src: "//player.vimeo.com/video/" + a.dataset.uid + "?wmode=opaque"
+          });
+        },
+        title: {
+          api: function(uid) {
+            return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + uid;
+          },
+          text: function(_) {
+            return _.title;
+          }
+        }
+      },
+      Vine: {
+        regExp: /.*(?:vine.co\/)([^#\&\?]*).*/,
+        style: 'border: none; width: 500px; height: 500px;',
+        el: function(a) {
+          return $.el('iframe', {
+            src: "https://vine.co/" + a.dataset.uid + "/card"
+          });
+        }
+      },
+      YouTube: {
+        regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/,
+        el: function(a) {
+          var el;
+
+          el = $.el('iframe', {
+            src: "//www.youtube.com/embed/" + a.dataset.uid + (a.dataset.option ? '#' + a.dataset.option : '') + "?wmode=opaque"
+          });
+          el.setAttribute("allowfullscreen", "true");
+          return el;
+        },
+        title: {
+          api: function(uid) {
+            return "https://gdata.youtube.com/feeds/api/videos/" + uid + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
+          },
+          text: function(data) {
+            return data.entry.title.$t;
+          }
+        }
+      }
+    }
+  };
+
   ArchiveLink = {
     init: function() {
       var div, entry, type, _i, _len, _ref;
@@ -8559,24 +8595,25 @@
     node: function() {
       if (this.isClone) {
         return $.on($('.menu-button', this.nodes.info), 'click', Menu.toggle);
-      } else {
-        return $.add(this.nodes.info, [$.tn('\u00A0'), Menu.makeButton()]);
       }
+      return $.add(this.nodes.info, Menu.makeButton());
     },
     makeButton: (function() {
-      var a;
+      var frag;
 
-      a = $.el('a', {
-        className: 'menu-button brackets-wrap',
-        innerHTML: '<i></i>',
-        href: 'javascript:;'
-      });
+      frag = $.nodes([
+        $.tn(' '), $.el('a', {
+          className: 'menu-button',
+          innerHTML: '[<i></i>]',
+          href: 'javascript:;'
+        })
+      ]);
       return function() {
-        var button;
+        var clone;
 
-        button = a.cloneNode(true);
-        $.on(button, 'click', Menu.toggle);
-        return button;
+        clone = frag.cloneNode(true);
+        $.on(clone.lastElementChild, 'click', Menu.toggle);
+        return clone;
       };
     })(),
     toggle: function(e) {
@@ -12769,7 +12806,7 @@
       });
     },
     initReady: function() {
-      var err, errors, href, passLink, postRoot, posts, styleSelector, thread, threadRoot, _i, _len, _ref, _ref1;
+      var err, errors, href, passLink, post, postRoot, posts, styleSelector, thread, threadRoot, _i, _len, _ref, _ref1;
 
       if ((_ref = d.title) === '4chan - Temporarily Offline' || _ref === '4chan - 404 Not Found') {
         if (Conf['404 Redirect'] && g.VIEW === 'thread') {
@@ -12790,7 +12827,9 @@
         for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
           postRoot = _ref1[_i];
           try {
-            posts.push(new Post(postRoot, thread, g.BOARD));
+            posts.push(post = new Post(postRoot, thread, g.BOARD, {
+              isOriginalMarkup: true
+            }));
           } catch (_error) {
             err = _error;
             if (!errors) {
