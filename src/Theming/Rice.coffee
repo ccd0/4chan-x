@@ -98,7 +98,7 @@ Rice =
     $.addClass select, 'riced'
     div = $.el 'div',
       className: 'selectrice'
-      innerHTML: "<div>#{select.options[select.selectedIndex].textContent or null}</div>"
+      innerHTML: "<div>#{select.options[select.selectedIndex or 0]?.textContent or null}</div>"
     $.on div, "click", Rice.cb.select
 
     $.after select, div
