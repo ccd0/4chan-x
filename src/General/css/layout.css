@@ -172,7 +172,7 @@ th {
   cursor: pointer;
 }
 /* Symbols */
-.drop-marker {
+.menu-button i {
   vertical-align: middle;
   display: inline-block;
   margin: 2px 2px 3px;

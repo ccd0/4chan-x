@@ -35,7 +35,7 @@ Gallery =
       innerHTML: """
 <div class=gal-viewport>
   <span class=gal-buttons>
-    <a class="menu-button" href="javascript:;"><i class=drop-marker></i></a>
+    <a class="menu-button" href="javascript:;"><i></i></a>
     <a href=javascript:; class='gal-close fa'>\uf00d</a>
   </span>
   <a class=gal-name target="_blank"></a>

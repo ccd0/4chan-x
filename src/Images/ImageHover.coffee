@@ -23,7 +23,7 @@ ImageHover =
       asapTest: -> el.naturalHeight
     $.on el, 'error', ImageHover.error
   error: ->
-    return unless @ in doc
+    return unless doc.contains @
     post = g.posts[@dataset.fullID]
 
     src = @src.split '/'

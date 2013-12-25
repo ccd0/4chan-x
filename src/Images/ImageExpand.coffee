@@ -46,7 +46,7 @@ ImageExpand =
       for ID, post of g.posts
         for post in [post].concat post.clones
           {file} = post
-          continue unless file and file.isImage and post.nodes.root in doc
+          continue unless file and file.isImage and doc.contains post.nodes.root
           if ImageExpand.on and
             (!Conf['Expand spoilers'] and file.isSpoiler or
             Conf['Expand from here'] and Header.getTopOf(file.thumb) < 0)

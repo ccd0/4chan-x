@@ -21,7 +21,7 @@ ThreadHiding =
       continue unless thread.isHidden
       unless thread.stub
         nodes[i + 1].hidden = true
-      else unless thread.stub in root
+      else unless root.contains thread.stub
         # When we come back to a page, the stub is already there.
         ThreadHiding.makeStub thread, root
     return
@@ -164,7 +164,7 @@ ThreadHiding =
     thread.stub = $.el 'div',
       className: 'stub'
     if Conf['Menu']
-      $.add thread.stub, [a, $.tn(' '), Menu.makeButton()]
+      $.add thread.stub, [a, Menu.makeButton()]
     else
       $.add thread.stub, a
     $.prepend root, thread.stub
