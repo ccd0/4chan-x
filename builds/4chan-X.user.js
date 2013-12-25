@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.44 - 2013-12-24
+* 4chan X - Version 1.2.44 - 2013-12-25
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -3564,9 +3564,7 @@
       }
       $.on(root, 'mousemove', o.hover);
       o.workaround = function(e) {
-        var _ref;
-
-        if (_ref = e.target, __indexOf.call(root, _ref) < 0) {
+        if (!root.contains(e.target)) {
           return o.hoverend();
         }
       };
@@ -4322,7 +4320,7 @@
       return $.prepend(this.OP.nodes.root, ThreadHiding.makeButton(this, 'hide'));
     },
     onIndexBuild: function(_arg) {
-      var i, nodes, root, thread, _i, _len, _ref;
+      var i, nodes, root, thread, _i, _len;
 
       nodes = _arg.detail;
       for (i = _i = 0, _len = nodes.length; _i < _len; i = _i += 2) {
@@ -4333,7 +4331,7 @@
         }
         if (!thread.stub) {
           nodes[i + 1].hidden = true;
-        } else if (_ref = thread.stub, __indexOf.call(root, _ref) < 0) {
+        } else if (!root.contains(thread.stub)) {
           ThreadHiding.makeStub(thread, root);
         }
       }
@@ -7853,7 +7851,7 @@
         return ImageExpand.toggle(Get.postFromNode(this));
       },
       toggleAll: function() {
-        var ID, file, func, post, _i, _len, _ref, _ref1, _ref2;
+        var ID, file, func, post, _i, _len, _ref, _ref1;
 
         $.event('CloseMenu');
         if (ImageExpand.on = $.hasClass(ImageExpand.EAI, 'expand-all-shortcut')) {
@@ -7872,7 +7870,7 @@
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             post = _ref1[_i];
             file = post.file;
-            if (!(file && file.isImage && (_ref2 = post.nodes.root, __indexOf.call(doc, _ref2) >= 0))) {
+            if (!(file && file.isImage && doc.contains(post.nodes.root))) {
               continue;
             }
             if (ImageExpand.on && (!Conf['Expand spoilers'] && file.isSpoiler || Conf['Expand from here'] && Header.getTopOf(file.thumb) < 0)) {
@@ -8116,7 +8114,7 @@
       var URL, post, src, timeoutID,
         _this = this;
 
-      if (__indexOf.call(doc, this) < 0) {
+      if (!doc.contains(this)) {
         return;
       }
       post = g.posts[this.dataset.fullID];
