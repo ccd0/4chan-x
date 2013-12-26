@@ -51,7 +51,15 @@ PostHiding =
             return false
           PostHiding.menu.post = post
           true
-        subEntries: [{el: apply}, {el: thisPost}, {el: replies}, {el: makeStub}]
+        subEntries: [
+            el: apply
+          ,
+            el: thisPost
+          ,
+            el: replies
+          ,
+            el: makeStub
+        ]
 
       # Show
       div = $.el 'div',
@@ -85,7 +93,13 @@ PostHiding =
           thisPost.firstChild.checked = post.isHidden
           replies.firstChild.checked  = if data?.hideRecursively? then data.hideRecursively else Conf['Recursive Hiding']
           true
-        subEntries: [{el: apply}, {el: thisPost}, {el: replies}]
+        subEntries: [
+            el: apply
+          ,
+            el: thisPost
+          ,
+            el: replies
+        ]
 
       $.event 'AddMenuEntry',
         type: 'post'
