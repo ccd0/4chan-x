@@ -12510,13 +12510,14 @@
       });
     },
     ready: function() {
-      var banner, child, children, i, title;
+      var banner, child, children, i, nodes, title;
 
       banner = $(".boardBanner");
       title = $.el("div", {
         id: "boardTitle"
       });
       children = banner.children;
+      nodes = [];
       i = 0;
       while (child = children[i++]) {
         if (i === 1) {
@@ -12525,11 +12526,12 @@
           $.on(child, 'click', Banner.cb.toggle);
           continue;
         }
+        nodes.push(child);
         if (Conf['Custom Board Titles']) {
           Banner.custom(child).title = "Ctrl+click to edit board " + (i === 3 ? 'sub' : '') + "title";
         }
       }
-      $.add(title, [children[1], children[2]]);
+      $.add(title, nodes);
       $.after(banner, title);
     },
     cb: {

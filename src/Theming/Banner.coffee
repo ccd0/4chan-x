@@ -8,6 +8,7 @@ Banner =
     title = $.el "div",
       id: "boardTitle"
     {children} = banner
+    nodes = []
 
     i = 0
     while child = children[i++]
@@ -19,13 +20,15 @@ Banner =
 
         continue
 
+      nodes.push child
+
       if Conf['Custom Board Titles']
         Banner.custom(child).title = "Ctrl+click to edit board #{if i is 3
           'sub'
         else
           ''}title"
 
-    $.add title, [children[1], children[2]]
+    $.add title, nodes
     $.after banner, title
     return
 
