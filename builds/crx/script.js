@@ -1924,17 +1924,15 @@
       return Header.previousOffset = offsetY;
     },
     setBarPosition: function(bottom) {
+      var args;
+
       Header.barPositionToggler.checked = bottom;
       $.event('CloseMenu');
-      if (bottom) {
-        $.addClass(doc, 'bottom-header');
-        $.rmClass(doc, 'top-header');
-        return Header.bar.parentNode.className = 'bottom';
-      } else {
-        $.addClass(doc, 'top-header');
-        $.rmClass(doc, 'bottom-header');
-        return Header.bar.parentNode.className = 'top';
-      }
+      args = bottom ? ['bottom-header', 'top-header', 'bottom', 'after'] : ['top-header', 'bottom-header', 'top', 'add'];
+      $.addClass(doc, args[0]);
+      $.rmClass(doc, args[1]);
+      Header.bar.parentNode.className = args[2];
+      return $[args[3]](Header.bar, Header.notify);
     },
     toggleBarPosition: function() {
       $.cb.checked.call(this);
