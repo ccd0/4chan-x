@@ -1,8 +1,12 @@
 Style =
   init: ->
     theme = Themes[Conf['theme']] or Themes['Yotsuba B']
-    Style.svg = $.el 'div',
-      id: 'svg_filters'
+    Style.svgs = { 
+<% if (type === 'crx') { %>
+      el: $.el 'div',
+        id: 'svg_filters'
+<% } %>
+    }
 
     items = [
       ['layoutCSS',    Style.layout,       'layout']
@@ -36,7 +40,9 @@ Style =
     $.addClass doc, 'appchan-x'
     $.addClass doc, g.VIEW
 
-    $.add d.body, Style.svg
+    <% if (type === 'crx') { %>
+    $.add d.body, Style.svgs.el
+    <% } %>
 
     for title, cat of Config.style
       for name, setting of cat
@@ -92,6 +98,8 @@ Style =
         /\.typeset/.test node.textContent
       
     return
+  
+  generateFilter: (id, values) -> """<%= grunt.file.read('src/General/html/Features/Filters.svg').replace(/>\s+</g, '><') %>"""
 
   matrix: ->
     colors = []
@@ -136,13 +144,27 @@ Style =
     """<%= grunt.file.read('src/General/css/dynamic.css').replace(/\s+/g, ' ').trim() %>"""
 
   theme: (theme) ->
-    bgColor = new Style.color(Style.colorToHex(backgroundC = theme["Background Color"]) or 'aaaaaa')
-    replybg = new Style.color Style.colorToHex theme["Reply Background"]
+    bgColor  = new Style.color(Style.colorToHex(backgroundC = theme["Background Color"]) or 'aaaaaa')
+    replybg  = new Style.color Style.colorToHex theme["Reply Background"]
     replyRGB = "rgb(#{replybg.shiftRGB parseInt(Conf['Silhouette Contrast'], 10), true})"
 
     Style.lightTheme = bgColor.isLight()
+    
+    svgs = [
+      ['captcha-filter', "values='#{Style.filter Style.matrix theme["Text"], theme["Input Background"]} 0 0 0 1 0'"]
+      ['mascot-filter',  "values='#{Style.silhouette Style.matrix replyRGB} 0 0 0 1 0'"]
+      ['grayscale',      'id="color" type="saturate" values="0"']
+      ['icons-filter',   "values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0'"]
+    ]
+    
+    for svg, i in svgs
+      <% if (type === 'crx') { %>
+      svgs[i] <% } else { %>
+      Style.svgs[svg[0].replace /\-/, ""] <% } %> = Style.generateFilter svg[0], svg[1]
 
-    Style.svg.innerHTML = """<%= grunt.file.read('src/General/html/Features/Filters.svg').replace(/>\s+</g, '><') %>"""
+    <% if (type === 'crx') { %>
+    Style.svgs.el.innerHTML = svgs.join ''
+    <% } %>
 
     """<%= grunt.file.read('src/General/css/theme.css').replace(/\s+/g, ' ').trim() %>""" + <%= grunt.file.read('src/General/css/themeoptions.css').replace(/\s+/g, ' ').trim() %>
 

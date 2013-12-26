@@ -53,7 +53,14 @@ html {
   border-color: #{theme["Reply Border"]};
 }
 .captcha-img img {
-  <%= filter %>: url("#captcha-filter");
+  <%= filter %>: url('<% if (type === 'userscript') { %>data:image/svg+xml,#{Style.svgs.captchafilter.replace /(\'|\")/g, '%22'}<% } %>#captcha-filter');
+}
+.silhouettize-mascots #mascot img,
+.silhouette img {
+  <%= filter %>: url('<% if (type === 'userscript') { %>data:image/svg+xml,#{Style.svgs.mascotfilter.replace /(\'|\")/g, '%22'}<% } %>#mascot-filter');
+}
+.grayscale-mascots #mascot {
+  <%= filter %>: url('<% if (type === 'userscript') { %>data:image/svg+xml,#{Style.svgs.grayscale.replace /(\'|\")/g, '%22'}<% } %>#grayscale');
 }
 #boardTitle {
   text-shadow:
@@ -343,7 +350,7 @@ a .name {
 }
 .a-icon,
 #shortcuts .fa {
-  #{unless Style.lightTheme then "<%= filter %>: url(\"#icons-filter\");" else ""}
+  #{unless Style.lightTheme then "<%= filter %>: url('<% if (type === 'userscript') { %>data:image/svg+xml,#{Style.svgs.iconsfilter.replace /(\'|\")/g, '%22'}<% } %>#icons-filter');" else ""}
 }
 .alternate-post-colors #threads > .thread:nth-of-type(2n+1),
 .alternate-post-colors .replyContainer:nth-of-type(2n+1) .post {

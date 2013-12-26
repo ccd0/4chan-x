@@ -1866,12 +1866,6 @@ body > .center {
   bottom: auto !important;
   top: 17px;
 }
-.grayscale-mascots #mascot {
-  <%= filter %>: url('#grayscale');
-}
-.silhouettize-mascots #mascot img {
-  <%= filter %>: url('#mascot-filter');
-}
 /* Options */
 #overlay {
   position: fixed;
@@ -2115,9 +2109,6 @@ article li {
 }
 .mascot img {
   max-width: 200px;
-}
-.silhouette img {
-  <%= filter %>: url('#mascot-filter');
 }
 .export-button,
 .mascotname,

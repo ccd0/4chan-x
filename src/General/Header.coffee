@@ -115,7 +115,7 @@ Header =
     $.prepend d.body, shortcuts
 
     $.add boardList, fullBoardList
-    $.add Header.bar, [boardList, Header.noticesRoot, Header.toggle]
+    $.add Header.bar, [boardList, Header.toggle]
 
     Header.setCustomNav Conf['Custom Board Navigation']
     Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
@@ -265,7 +265,7 @@ Header =
     $.addClass doc, args[0]
     $.rmClass  doc, args[1]
     Header.bar.parentNode.className = args[2]
-    $[args[3]] Header.bar, Header.notify
+    $[args[3]] Header.bar, Header.noticesRoot
 
   toggleBarPosition: ->
     $.cb.checked.call @
