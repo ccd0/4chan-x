@@ -178,14 +178,14 @@ Style =
       $.add slideNav, $.id('boardNavDesktopFoot')
       Header.addShortcut slideNav, true
 
-    # Announcements
-    if Conf['Announcements'] is 'slideout'
-      if (psa = $.id 'globalMessage') and !psa.hidden
-        psaIcon = $.el 'i',
-          id: 'so-psa'
-          innerHTML: '<i class=a-icon></a>'
-        $.add psaIcon, psa
-        Header.addShortcut psaIcon, true
+      # Announcements
+      if Conf['Announcements'] is 'slideout'
+        if (psa = $.id 'globalMessage') and !psa.hidden
+          psaIcon = $.el 'i',
+            id: 'so-psa'
+            innerHTML: '<i class=a-icon></a>'
+          $.add psaIcon, psa
+          Header.addShortcut psaIcon, true
 
     if g.VIEW is 'thread'
       el = $('body > div.navLinks > a')
