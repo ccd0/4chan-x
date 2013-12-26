@@ -158,11 +158,11 @@ Style =
 
     # Announcements
     if Conf['Announcements'] is 'slideout'
-      if (psa = $.id '#globalMessage') and !psa.hidden
+      if (psa = $.id 'globalMessage') and !psa.hidden
         psaIcon = $.el 'i',
           id: 'so-psa'
           innerHTML: '<i class=a-icon></a>'
-        $.add psa, psaIcon
+        $.add psaIcon, psa
         Header.addShortcut psaIcon, true
 
     if g.VIEW is 'thread'

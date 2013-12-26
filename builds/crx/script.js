@@ -13702,12 +13702,12 @@
         return Header.addShortcut(slideNav, true);
       });
       if (Conf['Announcements'] === 'slideout') {
-        if ((psa = $.id('#globalMessage')) && !psa.hidden) {
+        if ((psa = $.id('globalMessage')) && !psa.hidden) {
           psaIcon = $.el('i', {
             id: 'so-psa',
             innerHTML: '<i class=a-icon></a>'
           });
-          $.add(psa, psaIcon);
+          $.add(psaIcon, psa);
           Header.addShortcut(psaIcon, true);
         }
       }
