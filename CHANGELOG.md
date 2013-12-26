@@ -1,3 +1,12 @@
+### v2.7.2 
+*2013-12-25*
+
+**MayhemYDG**:
+- Performance improvements.
+
+**Zixaphir**:
+- Moar bugfixes.
+
 ### v2.7.1 
 *2013-12-24*
 
