@@ -1,3 +1,9 @@
+### v2.7.3 
+*2013-12-26*
+
+**Zixaphir**:
+- If I had realized that people actually used the catalog, I would have pushed a new stable last night. :/
+
 ### v2.7.2 
 *2013-12-25*
 
