@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         4chan X
 // @version      1.2.44
-// @minGMVer     1.12
-// @minFFVer     22
+// @minGMVer     1.13
+// @minFFVer     26
 // @namespace    4chan-X
 // @description  Cross-browser userscript for maximum lurking on 4chan.
 // @license      MIT; https://github.com/seaweedchan/4chan-x/blob/master/LICENSE 

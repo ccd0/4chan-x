@@ -2,8 +2,8 @@
 // ==UserScript==
 // @name         4chan X
 // @version      1.2.44
-// @minGMVer     1.12
-// @minFFVer     22
+// @minGMVer     1.13
+// @minFFVer     26
 // @namespace    4chan-X
 // @description  Cross-browser userscript for maximum lurking on 4chan.
 // @license      MIT; https://github.com/seaweedchan/4chan-x/blob/master/LICENSE 
@@ -12392,7 +12392,7 @@
         return;
       }
       GMver = GM_info.version.split('.');
-      _ref2 = "1.12".split('.');
+      _ref2 = "1.13".split('.');
       for (i = _j = 0, _len1 = _ref2.length; _j < _len1; i = ++_j) {
         v = _ref2[i];
         if (v < GMver[i]) {
@@ -12401,7 +12401,7 @@
         if (v === GMver[i]) {
           continue;
         }
-        new Notice('warning', "Your version of Greasemonkey is outdated (v" + GM_info.version + " instead of v1.12 minimum) and 4chan X may not operate correctly.", 30);
+        new Notice('warning', "Your version of Greasemonkey is outdated (v" + GM_info.version + " instead of v1.13 minimum) and 4chan X may not operate correctly.", 30);
         break;
       }
       try {
