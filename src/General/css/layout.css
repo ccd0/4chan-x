@@ -2262,7 +2262,7 @@ article li {
   background: rgba(0,0,0,.5);
   border-left: 1px solid #222;
 }
-.hide-thumbnails .gal-thumbnails {
+.gal-hide-thumbnails .gal-thumbnails {
   display: none;
 }
 .gal-thumb img {
