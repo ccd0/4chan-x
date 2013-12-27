@@ -10617,21 +10617,25 @@
     },
     node: function() {
       if (this.isClone) {
-        return $.on($('.menu-button', this.nodes.info), 'click', Menu.toggle);
+        $.on($('.menu-button', this.nodes.info), 'click', Menu.toggle);
+        return;
       }
       return $.add(this.nodes.info, Menu.makeButton());
     },
     makeButton: (function() {
       var frag;
-      frag = $.nodes([
-        $.tn(' '), $.el('a', {
-          className: 'menu-button brackets-wrap',
-          innerHTML: '<i></i>',
-          href: 'javascript:;'
-        })
-      ]);
+      frag = null;
       return function() {
         var clone;
+        if (frag == null) {
+          frag = $.nodes([
+            $.tn(' '), $.el('a', {
+              className: 'menu-button brackets-wrap',
+              innerHTML: '<i></i>',
+              href: 'javascript:;'
+            })
+          ]);
+        }
         clone = frag.cloneNode(true);
         $.on(clone.lastElementChild, 'click', Menu.toggle);
         return clone;
