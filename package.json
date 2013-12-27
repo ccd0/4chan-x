@@ -20,9 +20,9 @@
       "userjs": "appchan-x.user.js"
     },
     "min": {
-      "chrome": "29",
-      "firefox": "22",
-      "greasemonkey": "1.12"
+      "chrome": "31",
+      "firefox": "26",
+      "greasemonkey": "1.13"
     }
   },
   "devDependencies": {

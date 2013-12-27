@@ -2,8 +2,8 @@
 // ==UserScript==
 // @name         appchan x
 // @version      2.7.3
-// @minGMVer     1.12
-// @minFFVer     22
+// @minGMVer     1.13
+// @minFFVer     26
 // @namespace    zixaphir
 // @description  The most comprehensive 4chan userscript.
 // @license      MIT; https://github.com/zixaphir/appchan-x/blob/master/LICENSE 
@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.7.3 - 2013-12-26
+* appchan x - Version 2.7.3 - 2013-12-27
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -119,7 +119,6 @@
 
   Array.prototype.indexOf = function(val) {
     var i;
-
     i = this.length;
     while (i--) {
       if (this[i] === val) {
@@ -2731,7 +2730,6 @@
 
   $.extend = function(obj, prop) {
     var key, val;
-
     for (key in prop) {
       val = prop[key];
       if (prop.hasOwnProperty(key)) {
@@ -2748,7 +2746,6 @@
 
   $.ready = function(fc) {
     var cb;
-
     if (d.readyState !== 'loading') {
       $.queueTask(fc);
       return;
@@ -2762,7 +2759,6 @@
 
   $.formData = function(form) {
     var fd, key, val;
-
     if (form instanceof HTMLFormElement) {
       return new FormData(form);
     }
@@ -2782,7 +2778,6 @@
 
   $.extend = function(object, properties) {
     var key, val;
-
     for (key in properties) {
       val = properties[key];
       object[key] = val;
@@ -2791,11 +2786,9 @@
 
   $.ajax = (function() {
     var lastModified;
-
     lastModified = {};
     return function(url, options, extra) {
       var form, r, sync, type, upCallbacks, whenModified;
-
       if (extra == null) {
         extra = {};
       }
@@ -2820,11 +2813,9 @@
 
   $.cache = (function() {
     var reqs;
-
     reqs = {};
     return function(url, cb, options) {
       var err, req, rm;
-
       if (req = reqs[url]) {
         if (req.readyState === 4) {
           cb.call(req, req.evt);
@@ -2844,7 +2835,6 @@
       }
       $.on(req, 'load', function(e) {
         var _i, _len, _ref;
-
         _ref = this.callbacks;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           cb = _ref[_i];
@@ -2880,7 +2870,6 @@
 
   $.addStyle = function(css, id) {
     var style;
-
     style = $.el('style', {
       id: id,
       textContent: css
@@ -2927,7 +2916,6 @@
     } else {
       return function(el) {
         var _ref;
-
         return (_ref = el.parentNode) != null ? _ref.removeChild(el) : void 0;
       };
     }
@@ -2935,7 +2923,6 @@
 
   $.rmAll = function(root) {
     var node, _i, _len, _ref;
-
     _ref = __slice.call(root.childNodes);
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       node = _ref[_i];
@@ -2953,7 +2940,6 @@
 
   $.nodes = function(nodes) {
     var frag, node, _i, _len;
-
     if (!(nodes instanceof Array)) {
       return nodes;
     }
@@ -2987,7 +2973,6 @@
 
   $.el = function(tag, properties) {
     var el;
-
     el = d.createElement(tag);
     if (properties) {
       $.extend(el, properties);
@@ -2997,7 +2982,6 @@
 
   $.on = function(el, events, handler) {
     var event, _i, _len, _ref;
-
     _ref = events.split(' ');
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       event = _ref[_i];
@@ -3007,7 +2991,6 @@
 
   $.off = function(el, events, handler) {
     var event, _i, _len, _ref;
-
     _ref = events.split(' ');
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       event = _ref[_i];
@@ -3029,7 +3012,6 @@
 
   $.debounce = function(wait, fn) {
     var args, exec, lastCall, that, timeout;
-
     lastCall = 0;
     timeout = null;
     that = null;
@@ -3051,11 +3033,9 @@
 
   $.queueTask = (function() {
     var execTask, taskChannel, taskQueue;
-
     taskQueue = [];
     execTask = function() {
       var args, func, task;
-
       task = taskQueue.shift();
       func = task[0];
       args = Array.prototype.slice.call(task, 1);
@@ -3078,7 +3058,6 @@
 
   $.globalEval = function(code) {
     var script;
-
     script = $.el('script', {
       textContent: code
     });
@@ -3088,7 +3067,6 @@
 
   $.bytesToString = function(size) {
     var unit;
-
     unit = 0;
     while (size >= 1024) {
       size /= 1024;
@@ -3104,7 +3082,6 @@
 
   $.item = function(key, val) {
     var item;
-
     item = {};
     item[key] = val;
     return item;
@@ -3115,7 +3092,6 @@
   $.sync = (function() {
     $.on(window, 'storage', function(_arg) {
       var cb, key, newValue;
-
       key = _arg.key, newValue = _arg.newValue;
       if (cb = $.syncing[key]) {
         return cb(JSON.parse(newValue), key);
@@ -3128,7 +3104,6 @@
 
   $["delete"] = function(keys) {
     var key, _i, _len;
-
     if (!(keys instanceof Array)) {
       keys = [keys];
     }
@@ -3142,7 +3117,6 @@
 
   $.get = function(key, val, cb) {
     var items;
-
     if (typeof cb === 'function') {
       items = $.item(key, val);
     } else {
@@ -3161,7 +3135,6 @@
 
   $.set = (function() {
     var set;
-
     set = function(key, val) {
       key = g.NAMESPACE + key;
       val = JSON.stringify(val);
@@ -3172,7 +3145,6 @@
     };
     return function(keys, val) {
       var key;
-
       if (typeof keys === 'string') {
         set(keys, val);
         return;
@@ -3186,7 +3158,6 @@
 
   $.remove = function(array, value) {
     var i;
-
     i = array.indexOf(value);
     if (i > -1) {
       array.splice(i, 1);
@@ -3240,7 +3211,6 @@
 
     Thread.prototype.setPage = function(pageNum) {
       var icon, key, _i, _len, _ref;
-
       icon = $('.page-num', this.OP.nodes.post);
       _ref = ['title', 'textContent'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3251,7 +3221,6 @@
 
     Thread.prototype.setStatus = function(type, status) {
       var icon, name, root, typeLC;
-
       name = "is" + type;
       if (this[name] === status) {
         return;
@@ -3282,7 +3251,6 @@
 
     Thread.prototype.collect = function() {
       var post, postID, _i, _len, _ref;
-
       _ref = this.posts;
       for (post = _i = 0, _len = _ref.length; _i < _len; post = ++_i) {
         postID = _ref[post];
@@ -3305,7 +3273,6 @@
 
     function Post(root, thread, board, that) {
       var capcode, date, email, flag, info, name, post, subject, tripcode, uniqueID;
-
       this.thread = thread;
       this.board = board;
       if (that == null) {
@@ -3384,7 +3351,6 @@
 
     Post.prototype.parseComment = function() {
       var bq, i, node, nodes, text;
-
       this.nodes.comment.normalize();
       bq = this.nodes.comment.cloneNode(true);
       nodes = $$('.abbr, .exif, b', bq);
@@ -3403,7 +3369,6 @@
 
     Post.prototype.parseQuotes = function() {
       var quotelink, _i, _len, _ref;
-
       this.quotes = [];
       _ref = $$('.quotelink', this.nodes.comment);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3414,7 +3379,6 @@
 
     Post.prototype.parseQuote = function(quotelink) {
       var fullID, match;
-
       if (!(match = quotelink.href.match(/boards\.4chan\.org\/([^\/]+)\/res\/\d+#p(\d+)$/))) {
         return;
       }
@@ -3430,7 +3394,6 @@
 
     Post.prototype.parseFile = function(that) {
       var anchor, fileEl, fileText, nameNode, size, thumb, unit;
-
       if (!((fileEl = $('.file', this.nodes.post)) && (thumb = $('img[data-md5]', fileEl)))) {
         return;
       }
@@ -3459,7 +3422,6 @@
 
     Post.prototype.cleanup = function(root) {
       var node, _i, _j, _len, _len1, _ref, _ref1;
-
       _ref = $$('.mobile', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         node = _ref[_i];
@@ -3474,7 +3436,6 @@
 
     Post.prototype.kill = function(file, now) {
       var clone, quotelink, strong, _i, _j, _len, _len1, _ref, _ref1;
-
       now || (now = new Date());
       if (file) {
         if (this.file.isDead) {
@@ -3523,7 +3484,6 @@
 
     Post.prototype.resurrect = function() {
       var clone, quotelink, strong, _i, _j, _len, _len1, _ref, _ref1;
-
       delete this.isDead;
       delete this.timeOfDeath;
       $.rmClass(this.nodes.root, 'deleted-post');
@@ -3564,7 +3524,6 @@
 
     Post.prototype.rmClone = function(index) {
       var clone, _i, _len, _ref;
-
       this.clones.splice(index, 1);
       _ref = this.clones.slice(index);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3582,7 +3541,6 @@
 
     function Clone(origin, context) {
       var file, info, inline, inlined, key, nodes, post, root, val, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
-
       this.origin = origin;
       this.context = context;
       _ref = ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply'];
@@ -3669,7 +3627,6 @@
     function DataBoard(key, sync, dontClean) {
       var init,
         _this = this;
-
       this.key = key;
       this.onSync = __bind(this.onSync, this);
       this.data = Conf[key];
@@ -3693,7 +3650,6 @@
 
     DataBoard.prototype["delete"] = function(_arg) {
       var boardID, postID, threadID;
-
       boardID = _arg.boardID, threadID = _arg.threadID, postID = _arg.postID;
       if (postID) {
         delete this.data.boards[boardID][threadID][postID];
@@ -3714,7 +3670,6 @@
 
     DataBoard.prototype.deleteIfEmpty = function(_arg) {
       var boardID, threadID;
-
       boardID = _arg.boardID, threadID = _arg.threadID;
       if (threadID) {
         if (!Object.keys(this.data.boards[boardID][threadID]).length) {
@@ -3730,7 +3685,6 @@
 
     DataBoard.prototype.set = function(_arg) {
       var boardID, postID, threadID, val, _base, _base1, _base2;
-
       boardID = _arg.boardID, threadID = _arg.threadID, postID = _arg.postID, val = _arg.val;
       if (postID !== void 0) {
         ((_base = ((_base1 = this.data.boards)[boardID] || (_base1[boardID] = {})))[threadID] || (_base[threadID] = {}))[postID] = val;
@@ -3744,7 +3698,6 @@
 
     DataBoard.prototype.get = function(_arg) {
       var ID, board, boardID, defaultValue, postID, thread, threadID, val, _i, _len;
-
       boardID = _arg.boardID, threadID = _arg.threadID, postID = _arg.postID, defaultValue = _arg.defaultValue;
       if (board = this.data.boards[boardID]) {
         if (!threadID) {
@@ -3768,7 +3721,6 @@
 
     DataBoard.prototype.clean = function() {
       var boardID, now, val, _ref;
-
       _ref = this.data.boards;
       for (boardID in _ref) {
         val = _ref[boardID];
@@ -3788,10 +3740,8 @@
 
     DataBoard.prototype.ajaxClean = function(boardID) {
       var _this = this;
-
       return $.cache("//a.4cdn.org/" + boardID + "/threads.json", function(e) {
         var board, page, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
-
         if (e.target.status !== 200) {
           if (e.target.status === 404) {
             _this["delete"](boardID);
@@ -3896,10 +3846,8 @@
     },
     toBlob: function() {
       var _base;
-
       return (_base = HTMLCanvasElement.prototype).toBlob || (_base.toBlob = function(cb) {
         var data, i, l, ui8a, _i;
-
         data = atob(this.toDataURL().slice(22));
         l = data.length;
         ui8a = new Uint8Array(l);
@@ -3937,7 +3885,6 @@
     init: function() {
       var barFixedToggler, barPositionToggler, customNavToggler, editCustomNav, headerToggler, menuButton, scrollHeaderToggler,
         _this = this;
-
       this.menu = new UI.Menu('header');
       menuButton = $.el('span', {
         className: 'menu-button a-icon',
@@ -4043,7 +3990,6 @@
     }),
     setBoardList: function() {
       var a, boardList, btn, fourchannav, fullBoardList, shortcuts;
-
       fourchannav = $.id('boardNavDesktop');
       if (a = $("a[href*='/" + g.BOARD + "/']", fourchannav)) {
         a.className = 'current';
@@ -4070,7 +4016,6 @@
     },
     generateBoardList: function(text) {
       var as, list, nodes;
-
       list = $('#custom-board-list', Header.bar);
       $.rmAll(list);
       if (!text) {
@@ -4079,7 +4024,6 @@
       as = $$('#full-board-list a[title]', Header.bar);
       nodes = text.match(/[\w@]+((-(all|title|replace|full|index|catalog|url:"[^"]+[^"]"|text:"[^"]+")|\,"[^"]+[^"]"))*|[^\w@]+/g).map(function(t) {
         var a, board, m, _i, _len;
-
         if (/^[^\w@]/.test(t)) {
           return $.tn(t);
         }
@@ -4130,7 +4074,6 @@
     },
     toggleBoardList: function() {
       var bar, custom, full, showBoardList;
-
       bar = Header.bar;
       custom = $('#custom-board-list', bar);
       full = $('#full-board-list', bar);
@@ -4162,7 +4105,6 @@
     },
     toggleBarVisibility: function() {
       var hide, message;
-
       hide = this.nodeName === 'INPUT' ? this.checked : !$.hasClass(Header.bar, 'autohide');
       this.checked = hide;
       $.set('Header auto-hide', Conf['Header auto-hide'] = hide);
@@ -4184,14 +4126,12 @@
     },
     toggleHideBarOnScroll: function(e) {
       var hide;
-
       hide = this.checked;
       $.set('Header auto-hide on scroll', hide);
       return Header.setHideBarOnScroll(hide);
     },
     hideBarOnScroll: function() {
       var offsetY;
-
       offsetY = window.pageYOffset;
       if (offsetY > (Header.previousOffset || 0)) {
         $.addClass(Header.bar, 'autohide');
@@ -4204,7 +4144,6 @@
     },
     setBarPosition: function(bottom) {
       var args;
-
       Header.barPositionToggler.checked = bottom;
       $.event('CloseMenu');
       args = bottom ? ['bottom-header', 'top-header', 'bottom', 'after'] : ['top-header', 'bottom-header', 'top', 'add'];
@@ -4219,7 +4158,6 @@
     },
     setCustomNav: function(show) {
       var btn, cust, full, _ref;
-
       Header.customNavToggler.checked = show;
       cust = $('#custom-board-list', Header.bar);
       full = $('#full-board-list', Header.bar);
@@ -4232,14 +4170,12 @@
     },
     editCustomNav: function() {
       var settings;
-
       Settings.open('Advanced');
       settings = $.id('fourchanx-settings');
       return $('input[name=boardnav]', settings).focus();
     },
     hashScroll: function() {
       var hash, post;
-
       hash = this.location.hash.slice(1);
       if (!(/^p\d+$/.test(hash) && (post = $.id(hash)))) {
         return;
@@ -4251,7 +4187,6 @@
     },
     scrollTo: function(root, down, needed) {
       var x;
-
       if (down) {
         x = Header.getBottomOf(root);
         if (!(needed && x >= 0)) {
@@ -4269,7 +4204,6 @@
     },
     getTopOf: function(root) {
       var headRect, top;
-
       top = root.getBoundingClientRect().top;
       if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
         headRect = Header.toggle.getBoundingClientRect();
@@ -4279,7 +4213,6 @@
     },
     getBottomOf: function(root) {
       var bottom, clientHeight, headRect;
-
       clientHeight = doc.clientHeight;
       bottom = clientHeight - root.getBoundingClientRect().bottom;
       if (Conf['Bottom Header']) {
@@ -4297,7 +4230,6 @@
     },
     createNotification: function(e) {
       var cb, content, lifetime, notice, type, _ref;
-
       _ref = e.detail, type = _ref.type, content = _ref.content, lifetime = _ref.lifetime, cb = _ref.cb;
       notice = new Notice(type, content, lifetime);
       if (cb) {
@@ -4307,7 +4239,6 @@
     areNotificationsEnabled: false,
     enableDesktopNotifications: function() {
       var authorize, disable, el, notice, _ref;
-
       if (!(window.Notification && Conf['Desktop Notifications'])) {
         return;
       }
@@ -4342,7 +4273,6 @@
   Index = {
     init: function() {
       var anchorEntry, input, label, modeEntry, name, refNavEntry, repliesEntry, sortEntry, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
-
       if (g.VIEW !== 'index' || g.BOARD.ID === 'f') {
         return;
       }
@@ -4478,7 +4408,6 @@
         return $('.board', doc) || d.readyState !== 'loading';
       }), function() {
         var board, navLink, _l, _len3, _ref3;
-
         board = $('.board');
         $.replace(board, Index.root);
         d.implementation.createDocument(null, null, null).appendChild(board);
@@ -4512,7 +4441,6 @@
       },
       popstate: function(e) {
         var pageNum;
-
         pageNum = Index.getCurrentPage();
         if (Index.currentPage !== pageNum) {
           return Index.pageLoad(pageNum);
@@ -4520,7 +4448,6 @@
       },
       pageNav: function(e) {
         var a;
-
         if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
           return;
         }
@@ -4585,7 +4512,6 @@
     },
     buildPagelist: function() {
       var a, i, maxPageNum, nodes, pagesRoot, _i;
-
       pagesRoot = $('.pages', Index.pagelist);
       maxPageNum = Index.getMaxPageNum();
       if (pagesRoot.childElementCount !== maxPageNum + 1) {
@@ -4604,7 +4530,6 @@
     },
     setPage: function() {
       var a, href, maxPageNum, next, pageNum, pagesRoot, prev, strong;
-
       pageNum = Index.getCurrentPage();
       maxPageNum = Index.getMaxPageNum();
       pagesRoot = $('.pages', Index.pagelist);
@@ -4630,7 +4555,6 @@
     },
     update: function(pageNum) {
       var now, onload, _ref, _ref1;
-
       if (!navigator.onLine) {
         return;
       }
@@ -4669,7 +4593,6 @@
     },
     load: function(e, pageNum) {
       var err, notice, req, timeEl;
-
       $.rmClass(Index.button, 'fa-spin');
       req = Index.req, notice = Index.notice;
       delete Index.req;
@@ -4721,7 +4644,6 @@
     },
     parseThreadList: function(pages) {
       var thread, threadID, _ref, _ref1;
-
       Index.pagesNum = pages.length;
       Index.threadsNumPerPage = pages[0].threads.length;
       Index.liveThreadData = pages.reduce((function(arr, next) {
@@ -4740,7 +4662,6 @@
     },
     buildThreads: function() {
       var err, errors, i, posts, thread, threadData, threadRoot, threads, _i, _len, _ref;
-
       Index.nodes = [];
       threads = [];
       posts = [];
@@ -4783,7 +4704,6 @@
     },
     buildReplies: function(threadRoots) {
       var data, err, errors, i, lastReplies, node, nodes, post, posts, thread, threadRoot, _i, _j, _len, _len1;
-
       posts = [];
       for (_i = 0, _len = threadRoots.length; _i < _len; _i += 2) {
         threadRoot = threadRoots[_i];
@@ -4822,7 +4742,6 @@
     },
     sort: function() {
       var i, sortedThreadIDs, threadID, _i, _len;
-
       switch (Conf['Index Sort']) {
         case 'bump':
           sortedThreadIDs = Index.liveThreadIDs;
@@ -4884,7 +4803,6 @@
     },
     sortOnTop: function(match) {
       var i, offset, threadRoot, _i, _len, _ref, _ref1;
-
       offset = 0;
       _ref = Index.sortedNodes;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = _i += 2) {
@@ -4896,7 +4814,6 @@
     },
     buildIndex: function() {
       var nodes, nodesPerPage, pageNum;
-
       if (Conf['Index Mode'] === 'paged') {
         pageNum = Index.getCurrentPage();
         nodesPerPage = Index.threadsNumPerPage * 2;
@@ -4919,7 +4836,6 @@
     },
     onSearchInput: function() {
       var pageNum;
-
       if (Index.isSearching = !!Index.searchInput.value.trim()) {
         if (!Index.searchInput.dataset.searching) {
           Index.searchInput.dataset.searching = 1;
@@ -4947,7 +4863,6 @@
     },
     querySearch: function(query) {
       var keywords;
-
       if (!(keywords = query.toLowerCase().match(/\S+/g))) {
         return;
       }
@@ -4955,7 +4870,6 @@
     },
     search: function(keywords) {
       var found, i, threadRoot, _i, _len, _ref;
-
       found = [];
       _ref = Index.sortedNodes;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = _i += 2) {
@@ -4968,7 +4882,6 @@
     },
     searchMatch: function(thread, keywords) {
       var file, info, key, keyword, text, _i, _j, _len, _len1, _ref, _ref1;
-
       _ref = thread.OP, info = _ref.info, file = _ref.file;
       text = [];
       _ref1 = ['comment', 'subject', 'name', 'tripcode', 'email'];
@@ -4998,7 +4911,6 @@
     spoilerRange: {},
     shortFilename: function(filename, isReply) {
       var threshold;
-
       threshold = isReply ? 30 : 40;
       if (filename.length - 4 > threshold) {
         return "" + filename.slice(0, threshold - 5) + "(...)." + filename.slice(-3);
@@ -5008,7 +4920,6 @@
     },
     thumbRotate: (function() {
       var n;
-
       n = 0;
       return function() {
         return n = (n + 1) % 3;
@@ -5016,7 +4927,6 @@
     })(),
     postFromObject: function(data, boardID) {
       var o;
-
       o = {
         postID: data.no,
         threadID: data.resto || data.no,
@@ -5060,7 +4970,6 @@
       */
 
       var a, boardID, capcode, capcodeClass, capcodeIcon, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, gifIcon, href, imgSrc, isClosed, isOP, isSticky, name, pageIcon, pageNum, postID, quote, replyLink, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
-
       postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
       isOP = postID === threadID;
       staticPath = Build.staticPath, gifIcon = Build.gifIcon;
@@ -5154,7 +5063,6 @@
     },
     summary: function(boardID, threadID, posts, files) {
       var text;
-
       text = [];
       text.push("" + posts + " post" + (posts > 1 ? 's' : ''));
       if (files) {
@@ -5169,7 +5077,6 @@
     },
     thread: function(board, data) {
       var OP, files, nodes, posts, root, _ref;
-
       Build.spoilerRange[board] = data.custom_spoiler;
       if ((OP = board.posts[data.no]) && (root = OP.nodes.root.parentNode)) {
         $.rmAll(root);
@@ -5196,7 +5103,6 @@
   Get = {
     threadExcerpt: function(thread) {
       var OP, excerpt, _ref;
-
       OP = thread.OP;
       excerpt = ((_ref = OP.info.subject) != null ? _ref.trim() : void 0) || OP.info.comment.replace(/\n+/g, ' // ') || Conf['Anonymize'] && 'Anonymous' || $('.nameBlock', OP.nodes.info).textContent.trim();
       if (excerpt.length > 70) {
@@ -5212,7 +5118,6 @@
     },
     postFromRoot: function(root) {
       var boardID, index, link, post, postID;
-
       link = $('a[title="Highlight this post"]', root);
       boardID = link.pathname.split('/')[1];
       postID = link.hash.slice(2);
@@ -5232,7 +5137,6 @@
     },
     postDataFromLink: function(link) {
       var boardID, path, postID, threadID, _ref;
-
       if (link.hostname === 'boards.4chan.org') {
         path = link.pathname.split('/');
         boardID = path[1];
@@ -5250,7 +5154,6 @@
     },
     allQuotelinksLinkingTo: function(post) {
       var ID, quote, quotedPost, quotelinks, quoterPost, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
-
       quotelinks = [];
       _ref = g.posts;
       for (ID in _ref) {
@@ -5279,14 +5182,12 @@
       }
       return quotelinks.filter(function(quotelink) {
         var boardID, postID, _ref5;
-
         _ref5 = Get.postDataFromLink(quotelink), boardID = _ref5.boardID, postID = _ref5.postID;
         return boardID === post.board.ID && postID === post.ID;
       });
     },
     postClone: function(boardID, threadID, postID, root, context) {
       var post, url;
-
       if (post = g.posts["" + boardID + "." + postID]) {
         Get.insert(post, root, context);
         return;
@@ -5309,7 +5210,6 @@
     },
     insert: function(post, root, context) {
       var clone, nodes;
-
       if (!root.parentNode) {
         return;
       }
@@ -5323,7 +5223,6 @@
     },
     fetchedPost: function(req, boardID, threadID, postID, root, context) {
       var board, post, posts, status, thread, url, _i, _len;
-
       if (post = g.posts["" + boardID + "." + postID]) {
         Get.insert(post, root, context);
         return;
@@ -5377,7 +5276,6 @@
     },
     archivedPost: function(req, boardID, postID, root, context) {
       var board, bq, comment, data, o, post, thread, threadID, _ref;
-
       if (post = g.posts["" + boardID + "." + postID]) {
         Get.insert(post, root, context);
         return;
@@ -5474,10 +5372,8 @@
 
   UI = (function() {
     var Menu, dialog, drag, dragend, dragstart, hover, hoverend, hoverstart, touchend, touchmove;
-
     dialog = function(id, position, html) {
       var el, move;
-
       el = $.el('div', {
         className: 'dialog',
         innerHTML: html,
@@ -5509,7 +5405,6 @@
 
       Menu.prototype.makeMenu = function() {
         var menu;
-
         menu = $.el('div', {
           className: 'dialog',
           id: 'menu',
@@ -5524,7 +5419,6 @@
 
       Menu.prototype.toggle = function(e, button, data) {
         var previousButton;
-
         e.preventDefault();
         e.stopPropagation();
         if (currentMenu) {
@@ -5542,7 +5436,6 @@
 
       Menu.prototype.open = function(button, data) {
         var bLeft, bRect, bTop, bottom, cHeight, cWidth, entry, left, mRect, menu, right, style, top, _i, _len, _ref, _ref1, _ref2;
-
         menu = this.makeMenu();
         currentMenu = menu;
         lastToggledButton = button;
@@ -5582,7 +5475,6 @@
 
       Menu.prototype.insertEntry = function(entry, parent, data) {
         var subEntry, submenu, _i, _len, _ref;
-
         if (typeof entry.open === 'function') {
           if (!entry.open(data)) {
             return;
@@ -5616,7 +5508,6 @@
 
       Menu.prototype.findNextEntry = function(entry, direction) {
         var entries;
-
         entries = __slice.call(entry.parentNode.children);
         entries.sort(function(first, second) {
           return first.style.order - second.style.order;
@@ -5626,7 +5517,6 @@
 
       Menu.prototype.keybinds = function(e) {
         var entry, next, nextPrev, subEntry, submenu;
-
         entry = $('.focused', currentMenu);
         while (subEntry = $('.focused', entry)) {
           entry = subEntry;
@@ -5672,7 +5562,6 @@
 
       Menu.prototype.focus = function(entry) {
         var bottom, cHeight, cWidth, eRect, focused, left, right, sRect, style, submenu, top, _i, _len, _ref, _ref1, _ref2;
-
         while (focused = $.x('parent::*/child::*[contains(@class,"focused")]', entry)) {
           $.rmClass(focused, 'focused');
         }
@@ -5700,7 +5589,6 @@
 
       Menu.prototype.addEntry = function(e) {
         var entry;
-
         entry = e.detail;
         if (entry.type !== this.type) {
           return;
@@ -5711,7 +5599,6 @@
 
       Menu.prototype.parseEntry = function(entry) {
         var el, subEntries, subEntry, _i, _len;
-
         el = entry.el, subEntries = entry.subEntries;
         $.addClass(el, 'entry');
         $.on(el, 'focus mouseover', (function(e) {
@@ -5734,7 +5621,6 @@
     })();
     dragstart = function(e) {
       var el, isTouching, o, rect, screenHeight, screenWidth, _ref;
-
       if (e.type === 'mousedown' && e.button !== 0) {
         return;
       }
@@ -5773,7 +5659,6 @@
     };
     touchmove = function(e) {
       var touch, _i, _len, _ref;
-
       _ref = e.changedTouches;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         touch = _ref[_i];
@@ -5785,7 +5670,6 @@
     };
     drag = function(e) {
       var bottom, clientX, clientY, left, right, style, top;
-
       clientX = e.clientX, clientY = e.clientY;
       left = clientX - this.dx;
       left = left < 10 ? 0 : this.width - left < 10 ? null : left / this.screenWidth * 100 + '%';
@@ -5801,7 +5685,6 @@
     };
     touchend = function(e) {
       var touch, _i, _len, _ref;
-
       _ref = e.changedTouches;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         touch = _ref[_i];
@@ -5823,7 +5706,6 @@
     };
     hoverstart = function(_arg) {
       var asapTest, cb, close, el, endEvents, latestEvent, o, root;
-
       root = _arg.root, el = _arg.el, latestEvent = _arg.latestEvent, endEvents = _arg.endEvents, asapTest = _arg.asapTest, cb = _arg.cb, close = _arg.close;
       o = {
         root: root,
@@ -5859,7 +5741,6 @@
     };
     hover = function(e) {
       var clientX, clientY, height, left, right, style, top, _ref;
-
       this.latestEvent = e;
       height = this.el.offsetHeight;
       clientX = e.clientX, clientY = e.clientY;
@@ -5903,7 +5784,6 @@
     },
     node: function() {
       var email, name, tripcode, _ref;
-
       if (this.info.capcode || this.isClone) {
         return;
       }
@@ -5926,7 +5806,6 @@
     filters: {},
     init: function() {
       var boards, err, filter, hl, key, op, regexp, stub, top, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
-
       if (g.VIEW === 'catalog' || !Conf['Filter']) {
         return;
       }
@@ -5963,7 +5842,6 @@
           op = ((_ref3 = filter.match(/[^t]op:(yes|no|only)/)) != null ? _ref3[1] : void 0) || 'yes';
           stub = (function() {
             var _ref4;
-
             switch ((_ref4 = filter.match(/stub:(yes|no)/)) != null ? _ref4[1] : void 0) {
               case 'yes':
                 return true;
@@ -5994,7 +5872,6 @@
     },
     createFilter: function(regexp, op, stub, hl, top) {
       var settings, test;
-
       test = typeof regexp === 'string' ? function(value) {
         return regexp === value;
       } : function(value) {
@@ -6018,7 +5895,6 @@
     },
     node: function() {
       var filter, key, result, value, _i, _len, _ref;
-
       if (this.isClone) {
         return;
       }
@@ -6125,7 +6001,6 @@
     menu: {
       init: function() {
         var div, entry, type, _i, _len, _ref;
-
         if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Filter']) {
           return;
         }
@@ -6151,7 +6026,6 @@
       },
       createSubEntry: function(text, type) {
         var el;
-
         el = $.el('a', {
           href: 'javascript:;',
           textContent: text
@@ -6162,7 +6036,6 @@
           el: el,
           open: function(post) {
             var value;
-
             value = Filter[type](post);
             return value !== false;
           }
@@ -6170,7 +6043,6 @@
       },
       makeFilter: function() {
         var re, type, value;
-
         type = this.dataset.type;
         value = Filter[type](Filter.menu.post);
         re = type === 'uniqueID' || type === 'MD5' ? value : value.replace(/\/|\\|\^|\$|\n|\.|\(|\)|\{|\}|\[|\]|\?|\*|\+|\|/g, function(c) {
@@ -6185,7 +6057,6 @@
         re = type === 'uniqueID' || type === 'MD5' ? "/" + re + "/" : "/^" + re + "$/";
         return $.get(type, Conf[type], function(item) {
           var save, section, select, ta, tl;
-
           save = item[type];
           save = save ? "" + save + "\n" + re : re;
           $.set(type, save);
@@ -6219,7 +6090,6 @@
     },
     node: function() {
       var data;
-
       if (!this.isReply || this.isClone) {
         return;
       }
@@ -6243,7 +6113,6 @@
     menu: {
       init: function() {
         var apply, div, hideStubLink, makeStub, replies, thisPost;
-
         if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Reply Hiding Link']) {
           return;
         }
@@ -6314,7 +6183,6 @@
           order: 20,
           open: function(post) {
             var data;
-
             if (!post.isReply || post.isClone || !post.isHidden) {
               return false;
             }
@@ -6346,7 +6214,6 @@
           order: 15,
           open: function(post) {
             var data;
-
             if (!post.isReply || post.isClone || !post.isHidden) {
               return false;
             }
@@ -6363,7 +6230,6 @@
       },
       hide: function() {
         var makeStub, parent, post, replies, thisPost;
-
         parent = this.parentNode;
         thisPost = $('input[name=thisPost]', parent).checked;
         replies = $('input[name=replies]', parent).checked;
@@ -6382,7 +6248,6 @@
       },
       show: function() {
         var data, parent, post, replies, thisPost;
-
         parent = this.parentNode;
         thisPost = $('input[name=thisPost]', parent).checked;
         replies = $('input[name=replies]', parent).checked;
@@ -6406,7 +6271,6 @@
       },
       hideStub: function() {
         var post;
-
         post = PostHiding.menu.post;
         post.nodes.root.hidden = true;
         $.event('CloseMenu');
@@ -6414,7 +6278,6 @@
     },
     makeButton: function(post, type) {
       var a, span;
-
       span = $.el('span', {
         className: "brackets-wrap",
         textContent: "\u00A0" + (type === 'hide' ? '-' : '+') + "\u00A0"
@@ -6429,7 +6292,6 @@
     },
     saveHiddenState: function(post, isHiding, thisPost, makeStub, hideRecursively) {
       var data;
-
       data = {
         boardID: post.board.ID,
         threadID: post.thread.ID,
@@ -6448,14 +6310,12 @@
     },
     toggle: function() {
       var post;
-
       post = Get.postFromNode(this);
       PostHiding[(post.isHidden ? 'show' : 'hide')](post);
       return PostHiding.saveHiddenState(post, post.isHidden);
     },
     hide: function(post, makeStub, hideRecursively) {
       var a, postInfo, quotelink, _i, _len, _ref;
-
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
       }
@@ -6493,7 +6353,6 @@
     },
     show: function(post, showRecursively) {
       var quotelink, _i, _len, _ref;
-
       if (showRecursively == null) {
         showRecursively = Conf['Recursive Hiding'];
       }
@@ -6529,7 +6388,6 @@
     },
     node: function() {
       var i, obj, quote, recursive, _i, _j, _len, _len1, _ref, _ref1;
-
       if (this.isClone) {
         return;
       }
@@ -6547,7 +6405,6 @@
     },
     add: function() {
       var args, obj, post, recursive, _base, _name;
-
       recursive = arguments[0], post = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
       obj = (_base = Recursive.recursives)[_name = post.fullID] || (_base[_name] = {
         recursives: [],
@@ -6558,7 +6415,6 @@
     },
     rm: function(recursive, post) {
       var i, obj, rec, _i, _len, _ref;
-
       if (!(obj = Recursive.recursives[post.fullID])) {
         return;
       }
@@ -6573,7 +6429,6 @@
     },
     apply: function() {
       var ID, args, fullID, post, recursive, _ref;
-
       recursive = arguments[0], post = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
       fullID = post.fullID;
       _ref = g.posts;
@@ -6601,7 +6456,6 @@
     },
     node: function() {
       var data;
-
       if (data = ThreadHiding.db.get({
         boardID: this.board.ID,
         threadID: this.ID
@@ -6615,7 +6469,6 @@
     },
     onIndexBuild: function(_arg) {
       var i, nodes, root, thread, _i, _len;
-
       nodes = _arg.detail;
       for (i = _i = 0, _len = nodes.length; _i < _len; i = _i += 2) {
         root = nodes[i];
@@ -6632,7 +6485,6 @@
     },
     syncCatalog: function() {
       var hiddenThreads, hiddenThreadsOnCatalog, threadID;
-
       hiddenThreads = ThreadHiding.db.get({
         boardID: g.BOARD.ID,
         defaultValue: {}
@@ -6659,7 +6511,6 @@
     cleanCatalog: function(hiddenThreadsOnCatalog) {
       return $.cache("//a.4cdn.org/" + g.BOARD + "/threads.json", function() {
         var page, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
-
         if (this.status !== 200) {
           return;
         }
@@ -6685,7 +6536,6 @@
     menu: {
       init: function() {
         var apply, div, hideStubLink, makeStub;
-
         if (g.VIEW !== 'index' || !Conf['Menu'] || !Conf['Thread Hiding Link']) {
           return;
         }
@@ -6707,7 +6557,6 @@
           order: 20,
           open: function(_arg) {
             var isReply, thread;
-
             thread = _arg.thread, isReply = _arg.isReply;
             if (isReply || thread.isHidden) {
               return false;
@@ -6735,7 +6584,6 @@
           order: 20,
           open: function(_arg) {
             var isReply, thread;
-
             thread = _arg.thread, isReply = _arg.isReply;
             if (isReply || !thread.isHidden) {
               return false;
@@ -6755,7 +6603,6 @@
           order: 15,
           open: function(_arg) {
             var isReply, thread;
-
             thread = _arg.thread, isReply = _arg.isReply;
             if (isReply || !thread.isHidden) {
               return false;
@@ -6766,7 +6613,6 @@
       },
       hide: function() {
         var makeStub, thread;
-
         makeStub = $('input', this.parentNode).checked;
         thread = ThreadHiding.menu.thread;
         ThreadHiding.hide(thread, makeStub);
@@ -6775,7 +6621,6 @@
       },
       show: function() {
         var thread;
-
         thread = ThreadHiding.menu.thread;
         ThreadHiding.show(thread);
         ThreadHiding.saveHiddenState(thread);
@@ -6783,7 +6628,6 @@
       },
       hideStub: function() {
         var thread;
-
         thread = ThreadHiding.menu.thread;
         ThreadHiding.hide(thread, false);
         $.event('CloseMenu');
@@ -6791,7 +6635,6 @@
     },
     makeButton: function(thread, type) {
       var a;
-
       a = $.el('a', {
         className: "" + type + "-thread-button",
         innerHTML: "<span class=brackets-wrap>&nbsp;" + (type === 'hide' ? '-' : '+') + "&nbsp;</span>",
@@ -6803,7 +6646,6 @@
     },
     makeStub: function(thread, root) {
       var a, numReplies, opInfo, summary;
-
       numReplies = $$('.thread > .replyContainer', root).length;
       if (summary = $('.summary', root)) {
         numReplies += +summary.textContent.match(/\d+/);
@@ -6823,7 +6665,6 @@
     },
     saveHiddenState: function(thread, makeStub) {
       var hiddenThreadsOnCatalog;
-
       hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD)) || {};
       if (thread.isHidden) {
         ThreadHiding.db.set({
@@ -6856,7 +6697,6 @@
     },
     hide: function(thread, makeStub) {
       var threadRoot;
-
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
       }
@@ -6872,7 +6712,6 @@
     },
     show: function(thread) {
       var threadRoot;
-
       if (thread.stub) {
         $.rm(thread.stub);
         delete thread.stub;
@@ -6885,7 +6724,6 @@
   QuoteBacklink = {
     init: function() {
       var format;
-
       if (g.VIEW === 'catalog' || !Conf['Quote Backlinks']) {
         return;
       }
@@ -6903,7 +6741,6 @@
     },
     firstNode: function() {
       var a, clone, container, containers, frag, link, post, quote, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
-
       if (this.isClone || !this.quotes.length) {
         return;
       }
@@ -6942,7 +6779,6 @@
     },
     secondNode: function() {
       var container;
-
       if (this.isClone && (this.origin.isReply || Conf['OP Backlinks'])) {
         this.nodes.backlinkContainer = $('.container', this.nodes.info);
         return;
@@ -6959,7 +6795,6 @@
     },
     getContainer: function(id) {
       var _base;
-
       return (_base = this.containers)[id] || (_base[id] = $.el('span', {
         className: 'container'
       }));
@@ -6982,7 +6817,6 @@
     },
     node: function() {
       var board, boardID, quotelink, thread, threadID, _i, _len, _ref, _ref1, _ref2;
-
       if (this.isClone && this.thread === this.context.thread) {
         return;
       }
@@ -7012,7 +6846,6 @@
       if (Conf['Quote Hash Navigation']) {
         this.node = function() {
           var link, _i, _len, _ref;
-
           _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             link = _ref[_i];
@@ -7025,7 +6858,6 @@
       } else {
         this.node = function() {
           var link, _i, _len, _ref;
-
           _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             link = _ref[_i];
@@ -7052,7 +6884,6 @@
     },
     toggle: function(e) {
       var boardID, context, postID, threadID, _ref;
-
       if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
         return;
       }
@@ -7078,7 +6909,6 @@
     },
     add: function(quotelink, boardID, threadID, postID, context) {
       var inline, isBacklink, post, qroot, root;
-
       isBacklink = $.hasClass(quotelink, 'backlink');
       inline = $.el('div', {
         id: "i" + postID,
@@ -7103,7 +6933,6 @@
     },
     rm: function(quotelink, boardID, threadID, postID, context) {
       var el, inlined, isBacklink, post, qroot, root, _ref;
-
       isBacklink = $.hasClass(quotelink, 'backlink');
       root = QuoteInline.findRoot(quotelink, isBacklink);
       root = $.x("following-sibling::div[@id='i" + postID + "'][1]", root);
@@ -7145,7 +6974,6 @@
     },
     node: function() {
       var boardID, fullID, i, postID, quotelink, quotelinks, quotes, _ref, _ref1;
-
       if (this.isClone && this.thread === this.context.thread) {
         return;
       }
@@ -7188,7 +7016,6 @@
     },
     node: function() {
       var link, _i, _len, _ref;
-
       _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
@@ -7197,7 +7024,6 @@
     },
     mouseover: function(e) {
       var boardID, clone, origin, post, postID, posts, qp, quote, quoterID, threadID, _i, _j, _len, _len1, _ref, _ref1;
-
       if ($.hasClass(this, 'inlined')) {
         return;
       }
@@ -7241,7 +7067,6 @@
     },
     mouseout: function() {
       var clone, post, root, _i, _len, _ref;
-
       if (!(root = this.el.firstElementChild)) {
         return;
       }
@@ -7271,7 +7096,6 @@
     },
     node: function() {
       var boardID, postID, quotelink, _i, _len, _ref, _ref1, _ref2;
-
       if (this.isClone) {
         return;
       }
@@ -7294,7 +7118,6 @@
   QuoteThreading = {
     init: function() {
       var input;
-
       if (!(Conf['Quote Threading'] && g.VIEW === 'thread')) {
         return;
       }
@@ -7317,7 +7140,6 @@
     },
     setup: function() {
       var ID, post, posts;
-
       $.off(d, '4chanXInitFinished', QuoteThreading.setup);
       posts = g.posts;
       for (ID in posts) {
@@ -7330,7 +7152,6 @@
     },
     node: function() {
       var ID, fullID, keys, len, post, posts, qid, quote, quotes, uniq, _i, _len;
-
       if (this.isClone || !QuoteThreading.enabled || this.thread.OP === this) {
         return;
       }
@@ -7360,7 +7181,6 @@
     },
     nodeinsert: function() {
       var bottom, height, qpost, qroot, threadContainer, top, _ref;
-
       qpost = g.posts[this.threaded];
       delete this.threaded;
       delete this.cb;
@@ -7389,7 +7209,6 @@
     },
     toggle: function() {
       var container, containers, node, post, replies, reply, thread, _i, _j, _k, _len, _len1, _len2, _ref;
-
       thread = $('.thread');
       replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
       QuoteThreading.enabled = this.checked;
@@ -7406,7 +7225,6 @@
       } else {
         replies.sort(function(a, b) {
           var aID, bID;
-
           aID = Number(a.id.slice(2));
           bID = Number(b.id.slice(2));
           return aID - bID;
@@ -7427,7 +7245,6 @@
     },
     kb: function() {
       var control;
-
       control = $.id('threadingControl');
       return control.click();
     }
@@ -7455,7 +7272,6 @@
     },
     node: function() {
       var quotelink, _i, _len, _ref;
-
       if (this.isClone) {
         return;
       }
@@ -7479,7 +7295,6 @@
     cb: {
       seek: function(type) {
         var highlight, post, posts, result, str;
-
         if (!Conf['Mark Quotes of You']) {
           return;
         }
@@ -7535,7 +7350,6 @@
     },
     node: function() {
       var deadlink, _i, _len, _ref;
-
       _ref = $$('.deadlink', this.nodes.comment);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         deadlink = _ref[_i];
@@ -7550,7 +7364,6 @@
     },
     parseDeadlink: function(deadlink) {
       var a, boardID, m, post, postID, quote, quoteID, redirect, _ref;
-
       if ($.hasClass(deadlink.parentNode, 'prettyprint')) {
         Quotify.fixDeadlink(deadlink);
         return;
@@ -7620,7 +7433,6 @@
     },
     fixDeadlink: function(deadlink) {
       var el, green;
-
       if (!(el = deadlink.previousSibling) || el.nodeName === 'BR') {
         green = $.el('span', {
           className: 'quote'
@@ -7651,7 +7463,6 @@
     },
     node: function() {
       var data, el, end, endNode, i, index, items, length, link, links, node, result, saved, snapshot, space, test, word, _i, _len, _ref;
-
       if (this.isClone) {
         if (Conf['Embedding']) {
           i = 0;
@@ -7728,7 +7539,6 @@
     },
     makeRange: function(startNode, endNode, startOffset, endOffset) {
       var range;
-
       range = document.createRange();
       range.setStart(startNode, startOffset);
       range.setEnd(endNode, endOffset);
@@ -7736,7 +7546,6 @@
     },
     makeLink: function(range) {
       var a, i, t, text;
-
       text = range.toString();
       i = 0;
       while (/[(\[{<>]/.test(text.charAt(i))) {
@@ -7782,7 +7591,6 @@
     },
     services: function(link) {
       var href, key, match, type, _ref;
-
       href = link.href;
       _ref = Linkify.types;
       for (key in _ref) {
@@ -7795,7 +7603,6 @@
     },
     embed: function(data) {
       var embed, href, key, link, name, options, uid, value, _ref;
-
       key = data[0], uid = data[1], options = data[2], link = data[3];
       href = link.href;
       embed = $.el('a', {
@@ -7824,7 +7631,6 @@
     },
     title: function(data) {
       var embed, err, key, link, options, service, title, titles, uid;
-
       key = data[0], uid = data[1], options = data[2], link = data[3], embed = data[4];
       if (!(service = Linkify.types[key].title)) {
         return;
@@ -7861,21 +7667,18 @@
     cb: {
       toggle: function() {
         var string, _ref;
-
         _ref = $.hasClass(this, "embedded") ? ['unembed', '(embed)'] : ['embed', '(unembed)'], string = _ref[0], this.textContent = _ref[1];
         $.replace(this.previousElementSibling, Linkify.cb[string](this));
         return $.toggleClass(this, 'embedded');
       },
       embed: function(a) {
         var el, style, type;
-
         el = (type = Linkify.types[a.dataset.key]).el(a);
         el.style.cssText = (style = type.style) ? style : "border: 0; width: 640px; height: 390px";
         return el;
       },
       unembed: function(a) {
         var el;
-
         el = $.el('a', {
           rel: 'nofollow noreferrer',
           target: 'blank',
@@ -7888,7 +7691,6 @@
       },
       title: function(response, data) {
         var embed, key, link, options, service, text, uid;
-
         key = data[0], uid = data[1], options = data[2], link = data[3], embed = data[4];
         service = Linkify.types[key].title;
         switch (response.status) {
@@ -7928,7 +7730,6 @@
         regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/,
         el: function(a) {
           var div;
-
           return div = $.el('iframe', {
             src: "http://www.purplegene.com/script?url=https://gist.github.com/" + a.dataset.uid + ".js"
           });
@@ -7939,7 +7740,6 @@
           },
           text: function(_arg) {
             var file, files;
-
             files = _arg.files;
             for (file in files) {
               if (files.hasOwnProperty(file)) {
@@ -7970,7 +7770,6 @@
         regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
         el: function(a) {
           var el;
-
           el = $.el('iframe', {
             width: "640",
             height: "360",
@@ -7986,11 +7785,9 @@
         style: 'border: 0;',
         el: function(a) {
           var el;
-
           el = $.el('div');
           $.cache("https://mediacru.sh/" + a.dataset.uid + ".json", function() {
             var embed, file, files, status, type, _i, _j, _len, _len1, _ref;
-
             status = this.status;
             if (status !== 200 && status !== 304) {
               return div.innerHTML = "ERROR " + status;
@@ -8039,7 +7836,6 @@
         regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/,
         el: function(a) {
           var div;
-
           return div = $.el('iframe', {
             src: "http://pastebin.com/embed_iframe.php?i=" + a.dataset.uid
           });
@@ -8050,7 +7846,6 @@
         style: 'height: auto; width: 500px; display: inline-block;',
         el: function(a) {
           var div;
-
           div = $.el('div', {
             className: "soundcloud",
             name: "soundcloud"
@@ -8085,7 +7880,6 @@
         style: "border: none; width: 640px; height: 360px;",
         el: function(a) {
           var channel, chapter, result, _;
-
           if (result = /(\w+)\/(?:[a-z]\/)?(\d+)/i.exec(a.dataset.uid)) {
             _ = result[0], channel = result[1], chapter = result[2];
             return $.el('object', {
@@ -8139,7 +7933,6 @@
         regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/,
         el: function(a) {
           var el;
-
           el = $.el('iframe', {
             src: "//www.youtube.com/embed/" + a.dataset.uid + (a.dataset.option ? '#' + a.dataset.option : '') + "?wmode=opaque"
           });
@@ -8161,7 +7954,6 @@
   QR = {
     init: function() {
       var con, sc;
-
       this.db = new DataBoard('yourPosts');
       this.posts = [];
       $.ready(this.initReady);
@@ -8222,13 +8014,11 @@
       }
       $.on(d, 'QRGetSelectedPost', function(_arg) {
         var cb;
-
         cb = _arg.detail;
         return cb(QR.selected);
       });
       $.on(d, 'QRAddPreSubmitHook', function(_arg) {
         var cb;
-
         cb = _arg.detail;
         return QR.preSubmitHooks.push(cb);
       });
@@ -8262,7 +8052,6 @@
     },
     open: function() {
       var err;
-
       if (QR.nodes) {
         QR.nodes.el.hidden = false;
         return QR.unhide();
@@ -8281,7 +8070,6 @@
     },
     close: function() {
       var post, _i, _len, _ref;
-
       if (QR.req) {
         QR.abort();
         return;
@@ -8336,7 +8124,6 @@
     },
     error: function(err) {
       var el;
-
       QR.open();
       if (typeof err === 'string') {
         el = $.tn(err);
@@ -8363,7 +8150,6 @@
     },
     notify: function(el) {
       var notice, notif;
-
       notice = new Notice('warning', el);
       if (!(Header.areNotificationsEnabled && d.hidden)) {
         return QR.notifications.push(notice);
@@ -8380,7 +8166,6 @@
     notifications: [],
     cleanNotifications: function() {
       var notification, _i, _len, _ref;
-
       _ref = QR.notifications;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         notification = _ref[_i];
@@ -8390,7 +8175,6 @@
     },
     status: function() {
       var disabled, status, thread, value;
-
       if (!QR.nodes) {
         return;
       }
@@ -8407,7 +8191,6 @@
     },
     quote: function(e) {
       var caretPos, com, index, post, range, s, sel, text, thread, _ref;
-
       if (e != null) {
         e.preventDefault();
       }
@@ -8444,7 +8227,6 @@
     },
     characterCount: function() {
       var count, counter;
-
       counter = QR.nodes.charCount;
       count = QR.nodes.com.textLength;
       counter.textContent = count;
@@ -8453,7 +8235,6 @@
     },
     drag: function(e) {
       var toggle;
-
       toggle = e.type === 'dragstart' ? $.off : $.on;
       toggle(d, 'dragover', QR.dragOver);
       return toggle(d, 'drop', QR.dropFile);
@@ -8472,7 +8253,6 @@
     },
     paste: function(e) {
       var blob, files, item, _i, _len, _ref;
-
       files = [];
       _ref = e.clipboardData.items;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -8496,7 +8276,6 @@
     },
     handleFiles: function(files) {
       var file, isSingle, max, _i, _len;
-
       if (this !== QR) {
         files = __slice.call(this.files);
         this.value = null;
@@ -8517,7 +8296,6 @@
     },
     handleFile: function(file, isSingle, max) {
       var post, _ref;
-
       if (file.size > max) {
         QR.error("" + file.name + ": File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(max)) + ").");
         return;
@@ -8543,7 +8321,6 @@
     },
     openFileInput: function(e) {
       var _ref;
-
       e.stopPropagation();
       if (e.shiftKey && e.type === 'click') {
         return QR.selected.rmFile();
@@ -8561,7 +8338,6 @@
     },
     generatePostableThreadsList: function() {
       var list, options, thread, val;
-
       if (!QR.nodes) {
         return;
       }
@@ -8584,7 +8360,6 @@
     },
     dialog: function() {
       var check, dialog, elm, event, flagSelector, i, items, key, mimeTypes, name, node, nodes, save, value, _ref;
-
       QR.nodes = nodes = {
         el: dialog = UI.dialog('qr', 'top:0;right:0;', "<div id=qrtab class=move><input type=checkbox id=autohide title=Auto-hide><div id=qr-thread-select><select data-name=thread title='Create a new thread / Reply'><option value=new>New thread</option></select></div><a href=javascript:; class='close fa' title=Close>\uf00d</a></div><form><div class=persona><input name=name  data-name=name  list=\"list-name\" placeholder=Name    class=field size=1 tabindex=10><input name=email data-name=email list=\"list-email\" placeholder=E-mail  class=field size=1 tabindex=20><input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1 tabindex=30> </div><div class=textarea><textarea data-name=com placeholder=Comment class=field tabindex=40></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=60><span id=qr-no-file>No selected file</span><input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\"><span id=qr-extras-container><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70></label><span class=description>Spoiler</span><a id=dump-button title='Dump list'>+</a><span class=description>Dump</span><a id=qr-filerm href=javascript:; title='Remove file' class=fa>\uf00d</a><span class=description>Remove File</span></span></span><input type=submit tabindex=80></div><input type=file multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist>")
       };
@@ -8730,7 +8505,6 @@
     },
     tripcodeHider: function() {
       var check;
-
       check = /^.*##?.+/.test(this.value);
       if (check && !this.className.match("\\btripped\\b")) {
         return $.addClass(this, 'tripped');
@@ -8741,7 +8515,6 @@
     preSubmitHooks: [],
     submit: function(e) {
       var challenge, err, extra, filetag, formData, hook, options, post, response, textOnly, thread, threadID, _i, _len, _ref, _ref1;
-
       if (e != null) {
         e.preventDefault();
       }
@@ -8856,7 +8629,6 @@
     },
     response: function() {
       var URL, ban, board, captchasCount, err, h1, isReply, m, notif, post, postID, postsCount, req, resDoc, threadID, _, _ref, _ref1;
-
       req = QR.req;
       delete QR.req;
       post = QR.posts[0];
@@ -8974,7 +8746,6 @@
     },
     mouseover: function(e) {
       var mouseover;
-
       mouseover = $.el('div', {
         id: 'mouseover',
         className: 'dialog'
@@ -9009,7 +8780,6 @@
     ready: function() {
       var imgContainer, input, setLifetime,
         _this = this;
-
       setLifetime = function(e) {
         return _this.lifetime = e.detail;
       };
@@ -9046,7 +8816,6 @@
       });
       $.get('captchas', [], function(_arg) {
         var captchas;
-
         captchas = _arg.captchas;
         return _this.sync(captchas);
       });
@@ -9063,7 +8832,6 @@
     },
     getOne: function() {
       var captcha, challenge, response;
-
       this.clear();
       if (captcha = this.captchas.shift()) {
         challenge = captcha.challenge, response = captcha.response;
@@ -9088,7 +8856,6 @@
     },
     save: function() {
       var response;
-
       if (!(response = this.nodes.input.value.trim())) {
         return;
       }
@@ -9103,7 +8870,6 @@
     },
     clear: function() {
       var captcha, i, now, _i, _len, _ref;
-
       now = Date.now();
       _ref = this.captchas;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
@@ -9121,7 +8887,6 @@
     },
     load: function() {
       var challenge;
-
       if (!this.nodes.challenge.firstChild) {
         return;
       }
@@ -9134,7 +8899,6 @@
     },
     count: function() {
       var count;
-
       count = this.captchas.length;
       this.nodes.input.placeholder = (function() {
         switch (count) {
@@ -9170,7 +8934,6 @@
     init: function() {
       var key, setTimers, type,
         _this = this;
-
       if (!Conf['Cooldown']) {
         return;
       }
@@ -9204,7 +8967,6 @@
     },
     sync: function(cooldowns) {
       var id;
-
       for (id in cooldowns) {
         QR.cooldown.cooldowns[id] = cooldowns[id];
       }
@@ -9212,7 +8974,6 @@
     },
     set: function(data) {
       var cooldown, delay, isReply, post, req, start, threadID, upSpd;
-
       if (!Conf['Cooldown']) {
         return;
       }
@@ -9247,7 +9008,6 @@
     },
     count: function() {
       var cooldown, cooldowns, elapsed, hasFile, isReply, maxTimer, now, post, seconds, start, type, types, upSpd, upSpdAccuracy, update, _ref;
-
       if (!Object.keys(QR.cooldown.cooldowns).length) {
         $["delete"]("" + g.BOARD + ".cooldown");
         delete QR.cooldown.isCounting;
@@ -9312,7 +9072,6 @@
       QR.persona.getPassword();
       return $.get('QR.personas', Conf['QR.personas'], function(_arg) {
         var arr, item, personas, type, types, _i, _len, _ref;
-
         personas = _arg['QR.personas'];
         types = {
           name: [],
@@ -9332,7 +9091,6 @@
     },
     parseItem: function(item, types) {
       var boards, match, type, val, _ref, _ref1, _ref2;
-
       if (item[0] === '#') {
         return;
       }
@@ -9361,7 +9119,6 @@
     },
     loadPersonas: function(type, arr) {
       var list, val, _i, _len;
-
       list = $("#list-" + type, QR.nodes.el);
       for (_i = 0, _len = arr.length; _i < _len; _i++) {
         val = arr[_i];
@@ -9374,7 +9131,6 @@
     },
     getPassword: function() {
       var input, m;
-
       if (!QR.persona.pwd) {
         QR.persona.pwd = (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : (input = $.id('postPassword')) ? input.value : $.id('delPassword').value;
       }
@@ -9383,7 +9139,6 @@
     get: function(cb) {
       return $.get('QR.persona', {}, function(_arg) {
         var persona;
-
         persona = _arg['QR.persona'];
         return cb(persona);
       });
@@ -9391,7 +9146,6 @@
     set: function(post) {
       return $.get('QR.persona', {}, function(_arg) {
         var persona;
-
         persona = _arg['QR.persona'];
         persona = {
           name: post.name,
@@ -9409,7 +9163,6 @@
       this.select = __bind(this.select, this);
       var el, elm, event, prev, _i, _j, _len, _len1, _ref, _ref1,
         _this = this;
-
       el = $.el('a', {
         className: 'qr-preview',
         draggable: true,
@@ -9472,7 +9225,6 @@
 
     _Class.prototype.rm = function() {
       var index;
-
       this["delete"]();
       index = QR.posts.indexOf(this);
       if (QR.posts.length === 1) {
@@ -9492,7 +9244,6 @@
 
     _Class.prototype.lock = function(lock) {
       var name, node, _i, _len, _ref;
-
       if (lock == null) {
         lock = true;
       }
@@ -9519,7 +9270,6 @@
 
     _Class.prototype.select = function() {
       var rectEl, rectList;
-
       if (QR.selected) {
         QR.selected.nodes.el.id = null;
         QR.selected.forceSave();
@@ -9536,7 +9286,6 @@
 
     _Class.prototype.load = function() {
       var name, node, _i, _len, _ref;
-
       _ref = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         name = _ref[_i];
@@ -9552,7 +9301,6 @@
 
     _Class.prototype.save = function(input) {
       var name, _ref;
-
       if (input.type === 'checkbox') {
         this.spoiler = input.checked;
         return;
@@ -9583,7 +9331,6 @@
 
     _Class.prototype.forceSave = function() {
       var name, node, _i, _len, _ref;
-
       if (this !== QR.selected) {
         return;
       }
@@ -9618,11 +9365,9 @@
     _Class.prototype.setThumbnail = function() {
       var fileURL, img,
         _this = this;
-
       img = $.el('img');
       img.onload = function() {
         var cv, height, s, width;
-
         s = 90 * 2 * window.devicePixelRatio;
         if (_this.file.type === 'image/gif') {
           s *= 3;
@@ -9673,7 +9418,6 @@
 
     _Class.prototype.updateFilename = function() {
       var title;
-
       title = "" + this.filename + " (" + this.filesize + ")\nCtrl+click to edit filename. Shift+click to clear.";
       this.nodes.el.title = title;
       if (this !== QR.selected) {
@@ -9696,11 +9440,9 @@
     _Class.prototype.pasteText = function(file) {
       var reader,
         _this = this;
-
       reader = new FileReader();
       reader.onload = function(e) {
         var text;
-
         text = e.target.result;
         if (_this.com) {
           _this.com += "\n" + text;
@@ -9739,7 +9481,6 @@
 
     _Class.prototype.drop = function() {
       var el, index, newIndex, oldIndex, post;
-
       $.rmClass(this, 'over');
       if (!this.draggable) {
         return;
@@ -9763,7 +9504,6 @@
   AutoGIF = {
     init: function() {
       var _ref;
-
       if (g.VIEW === 'catalog' || !Conf['Auto-GIF'] || ((_ref = g.BOARD.ID) === 'gif' || _ref === 'wsg')) {
         return;
       }
@@ -9774,7 +9514,6 @@
     },
     node: function() {
       var URL, gif, style, thumb, _ref, _ref1;
-
       if (this.isClone || this.isHidden || this.thread.isHidden || !((_ref = this.file) != null ? _ref.isImage : void 0)) {
         return;
       }
@@ -9797,7 +9536,6 @@
   FappeTyme = {
     init: function() {
       var el, lc, type, _i, _len, _ref;
-
       if (!(Conf['Fappe Tyme'] || Conf['Werk Tyme']) || g.VIEW === 'catalog' || g.BOARD === 'f') {
         return;
       }
@@ -9853,7 +9591,6 @@
   Gallery = {
     init: function() {
       var el;
-
       if (g.VIEW === 'catalog' || g.BOARD === 'f' || !Conf['Gallery']) {
         return;
       }
@@ -9873,7 +9610,6 @@
     },
     node: function() {
       var _ref;
-
       if (!((_ref = this.file) != null ? _ref.isImage : void 0)) {
         return;
       }
@@ -9887,7 +9623,6 @@
     },
     build: function(image) {
       var cb, createSubEntry, dialog, el, file, files, i, key, menuButton, name, nodes, value, _ref;
-
       Gallery.images = [];
       nodes = Gallery.nodes = {};
       nodes.el = dialog = $.el('div', {
@@ -9947,7 +9682,6 @@
     },
     generateThumb: function(file) {
       var dupe, post, thumb, title;
-
       post = Get.postFromNode(file);
       title = ($('.fileText a', file)).textContent;
       thumb = post.file.thumb.parentNode.cloneNode(true);
@@ -9966,7 +9700,6 @@
     cb: {
       keybinds: function(e) {
         var cb, key;
-
         if (!(key = Keybinds.keyCode(e))) {
           return;
         }
@@ -9992,7 +9725,6 @@
       },
       open: function(e) {
         var el, img, name, nodes, rect, top;
-
         if (e) {
           e.preventDefault();
         }
@@ -10035,7 +9767,6 @@
       },
       error: function(img, thumb) {
         var URL, post, revived, src;
-
         post = Get.postFromLink($.el('a', {
           href: img.dataset.post
         }));
@@ -10066,7 +9797,6 @@
         return $.ajax("//api.4chan.org/" + post.board + "/res/" + post.thread + ".json", {
           onload: function() {
             var i, postObj;
-
             if (this.status !== 200) {
               return;
             }
@@ -10113,7 +9843,6 @@
     menu: {
       init: function() {
         var createSubEntry, el, name, subEntries;
-
         if (g.VIEW === 'catalog' || !Conf['Gallery']) {
           return;
         }
@@ -10135,7 +9864,6 @@
       },
       createSubEntry: function(name) {
         var input, label;
-
         label = $.el('label', {
           innerHTML: "<input type=checkbox name='" + name + "'> " + name
         });
@@ -10173,7 +9901,6 @@
     },
     node: function() {
       var thumb, _ref;
-
       if (!((_ref = this.file) != null ? _ref.isImage : void 0)) {
         return;
       }
@@ -10198,7 +9925,6 @@
       },
       toggleAll: function() {
         var ID, file, func, post, _i, _len, _ref, _ref1;
-
         $.event('CloseMenu');
         if (ImageExpand.on = $.hasClass(ImageExpand.EAI, 'expand-all-shortcut')) {
           ImageExpand.EAI.className = 'contract-all-shortcut a-icon';
@@ -10232,7 +9958,6 @@
     },
     toggle: function(post) {
       var headRect, left, root, thumb, top, x, y, _ref;
-
       thumb = post.file.thumb;
       if (!(post.file.isExpanded || $.hasClass(thumb, 'expanding'))) {
         ImageExpand.expand(post);
@@ -10241,7 +9966,6 @@
       root = post.nodes.root;
       _ref = (Conf['Advance on contract'] ? (function() {
         var next;
-
         next = root;
         while (next = $.x("following::div[contains(@class,'postContainer')][1]", next)) {
           if ($('.stub', next) || next.offsetHeight === 0) {
@@ -10273,7 +9997,6 @@
     },
     expand: function(post, src) {
       var img, thumb;
-
       thumb = post.file.thumb;
       if (post.isHidden || post.file.isExpanded || $.hasClass(thumb, 'expanding')) {
         return;
@@ -10301,7 +10024,6 @@
     },
     completeExpand: function(post) {
       var bottom, thumb;
-
       thumb = post.file.thumb;
       if (!$.hasClass(thumb, 'expanding')) {
         return;
@@ -10324,7 +10046,6 @@
     },
     error: function() {
       var URL, post, src, timeoutID;
-
       post = Get.postFromNode(this);
       $.rm(this);
       delete post.file.fullImage;
@@ -10350,7 +10071,6 @@
       return $.ajax("//a.4cdn.org/" + post.board + "/res/" + post.thread + ".json", {
         onload: function() {
           var postObj, _i, _len, _ref;
-
           if (this.status !== 200) {
             return;
           }
@@ -10374,7 +10094,6 @@
     menu: {
       init: function() {
         var conf, createSubEntry, el, name, subEntries, _ref;
-
         if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
           return;
         }
@@ -10398,7 +10117,6 @@
       },
       createSubEntry: function(name, desc) {
         var input, label;
-
         label = $.el('label', {
           innerHTML: "<input type=checkbox name='" + name + "'> " + name,
           title: desc
@@ -10429,7 +10147,6 @@
     },
     node: function() {
       var _ref;
-
       if (!((_ref = this.file) != null ? _ref.isImage : void 0)) {
         return;
       }
@@ -10437,7 +10154,6 @@
     },
     mouseover: function(e) {
       var el, post;
-
       post = Get.postFromNode(this);
       el = $.el('img', {
         id: 'ihover',
@@ -10459,7 +10175,6 @@
     error: function() {
       var URL, post, src, timeoutID,
         _this = this;
-
       if (!doc.contains(this)) {
         return;
       }
@@ -10484,7 +10199,6 @@
       return $.ajax("//a.4cdn.org/" + post.board + "/res/" + post.thread + ".json", {
         onload: function() {
           var postObj, _i, _len, _ref;
-
           if (this.status !== 200) {
             return;
           }
@@ -10510,7 +10224,6 @@
   ImageLoader = {
     init: function() {
       var prefetch;
-
       if (g.VIEW === 'catalog') {
         return;
       }
@@ -10537,7 +10250,6 @@
     },
     node: function() {
       var URL, img, string, style, thumb, type, _ref, _ref1;
-
       if (this.isClone || this.isHidden || this.thread.isHidden || !((_ref = this.file) != null ? _ref.isImage : void 0)) {
         return;
       }
@@ -10559,7 +10271,6 @@
     },
     toggle: function() {
       var enabled, id, post, _ref;
-
       enabled = Conf['prefetch'] = this.checked;
       if (enabled) {
         _ref = g.threads["" + g.BOARD.ID + "." + g.THREADID].posts;
@@ -10582,7 +10293,6 @@
     },
     node: function() {
       var thumb, _ref;
-
       if (this.isClone || !((_ref = this.file) != null ? _ref.isSpoiler : void 0)) {
         return;
       }
@@ -10595,7 +10305,6 @@
   Sauce = {
     init: function() {
       var err, link, links, _i, _len, _ref;
-
       if (g.VIEW === 'catalog' || !Conf['Sauce']) {
         return;
       }
@@ -10625,7 +10334,6 @@
     },
     createSauceLink: function(link) {
       var m, text;
-
       link = link.replace(/(%(T?URL|MD5|board)|\$[1-4])/ig, function(parameter) {
         switch (parameter) {
           case '%TURL':
@@ -10650,7 +10358,6 @@
     },
     node: function() {
       var link, nodes, _i, _len, _ref;
-
       if (this.isClone || !this.file) {
         return;
       }
@@ -10667,7 +10374,6 @@
   ArchiveLink = {
     init: function() {
       var div, entry, type, _i, _len, _ref;
-
       if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Archive Link']) {
         return;
       }
@@ -10680,7 +10386,6 @@
         order: 90,
         open: function(_arg) {
           var ID, board, thread;
-
           ID = _arg.ID, thread = _arg.thread, board = _arg.board;
           return !!Redirect.to('thread', {
             postID: ID,
@@ -10699,14 +10404,12 @@
     },
     createSubEntry: function(text, type) {
       var el, open;
-
       el = $.el('a', {
         textContent: text,
         target: '_blank'
       });
       open = type === 'post' ? function(_arg) {
         var ID, board, thread;
-
         ID = _arg.ID, thread = _arg.thread, board = _arg.board;
         el.href = Redirect.to('thread', {
           postID: ID,
@@ -10716,7 +10419,6 @@
         return true;
       } : function(post) {
         var value;
-
         value = Filter[type](post);
         if (!value) {
           return false;
@@ -10739,7 +10441,6 @@
   DeleteLink = {
     init: function() {
       var div, fileEl, fileEntry, postEl, postEntry;
-
       if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Delete Link']) {
         return;
       }
@@ -10767,7 +10468,6 @@
         el: fileEl,
         open: function(_arg) {
           var file;
-
           file = _arg.file;
           if (!file || file.isDead) {
             return false;
@@ -10783,7 +10483,6 @@
         order: 40,
         open: function(post) {
           var node;
-
           if (post.isDead) {
             return false;
           }
@@ -10798,7 +10497,6 @@
     },
     "delete": function() {
       var fileOnly, form, link, post;
-
       post = DeleteLink.post;
       if (DeleteLink.cooldown.counting === post) {
         return;
@@ -10828,7 +10526,6 @@
     },
     load: function(link, post, fileOnly, resDoc) {
       var msg, s;
-
       if (resDoc.title === '4chan - Banned') {
         s = 'Banned!';
       } else if (msg = resDoc.getElementById('errmsg')) {
@@ -10849,7 +10546,6 @@
     cooldown: {
       start: function(post, node) {
         var length, seconds, _ref;
-
         if (!((_ref = QR.db) != null ? _ref.get({
           boardID: post.board.ID,
           threadID: post.thread.ID,
@@ -10883,7 +10579,6 @@
   DownloadLink = {
     init: function() {
       var a;
-
       if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Download Link']) {
         return;
       }
@@ -10897,7 +10592,6 @@
         order: 100,
         open: function(_arg) {
           var file;
-
           file = _arg.file;
           if (!file) {
             return false;
@@ -10929,7 +10623,6 @@
     },
     makeButton: (function() {
       var frag;
-
       frag = $.nodes([
         $.tn(' '), $.el('a', {
           className: 'menu-button brackets-wrap',
@@ -10939,7 +10632,6 @@
       ]);
       return function() {
         var clone;
-
         clone = frag.cloneNode(true);
         $.on(clone.lastElementChild, 'click', Menu.toggle);
         return clone;
@@ -10953,7 +10645,6 @@
   ReportLink = {
     init: function() {
       var a;
-
       if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Report Link']) {
         return;
       }
@@ -10975,7 +10666,6 @@
     },
     report: function() {
       var id, post, set, url;
-
       post = ReportLink.post;
       url = "//sys.4chan.org/" + post.board + "/imgboard.php?mode=report&no=" + post;
       id = Date.now();
@@ -10988,7 +10678,6 @@
     init: function() {
       return $.ready(function() {
         var href;
-
         Favicon.el = $('link[rel="shortcut icon"]', d.head);
         Favicon.el.type = 'image/x-icon';
         href = Favicon.el.href;
@@ -10999,7 +10688,6 @@
     },
     "switch": function() {
       var f, funreadDeadY, t, _ref;
-
       t = 'data:image/png;base64,';
       f = Favicon;
       _ref = (function() {
@@ -11047,7 +10735,6 @@
     init: function() {
       var sc,
         _this = this;
-
       if (g.VIEW !== 'thread' || !Conf['Thread Stats']) {
         return;
       }
@@ -11076,7 +10763,6 @@
     },
     node: function() {
       var ID, fileCount, post, postCount, _ref;
-
       postCount = 0;
       fileCount = 0;
       _ref = this.posts;
@@ -11094,7 +10780,6 @@
     },
     onUpdate: function(e) {
       var fileCount, postCount, _ref;
-
       if (e.detail[404]) {
         return;
       }
@@ -11103,7 +10788,6 @@
     },
     update: function(postCount, fileCount) {
       var fileCountEl, postCountEl, thread;
-
       thread = ThreadStats.thread, postCountEl = ThreadStats.postCountEl, fileCountEl = ThreadStats.fileCountEl;
       postCountEl.textContent = postCount;
       fileCountEl.textContent = fileCount;
@@ -11128,7 +10812,6 @@
     },
     onThreadsLoad: function() {
       var page, pages, thread, _i, _j, _len, _len1, _ref;
-
       if (!(Conf["Page Count in Stats"] && this.status === 200)) {
         return;
       }
@@ -11152,7 +10835,6 @@
     init: function() {
       var checked, conf, el, input, name, sc, settings, subEntries, _ref,
         _this = this;
-
       if (g.VIEW !== 'thread' || !Conf['Thread Updater']) {
         return;
       }
@@ -11294,7 +10976,6 @@
       },
       interval: function() {
         var val;
-
         val = parseInt(this.value, 10);
         if (val < 1) {
           val = 1;
@@ -11304,7 +10985,6 @@
       },
       load: function(e) {
         var klass, req, text, _ref;
-
         req = ThreadUpdater.req;
         switch (req.status) {
           case 200:
@@ -11336,7 +11016,6 @@
     },
     setInterval: function() {
       var cur, i, j, limit;
-
       i = ThreadUpdater.interval + 1;
       if (Conf['Optional Increase']) {
         cur = ThreadUpdater.outdateCount || 1;
@@ -11352,14 +11031,12 @@
     },
     intervalShortcut: function() {
       var settings;
-
       Settings.open('Advanced');
       settings = $.id('fourchanx-settings');
       return $('input[name=Interval]', settings).focus();
     },
     set: function(name, text, klass) {
       var el, node;
-
       el = ThreadUpdater[name];
       if (node = el.firstChild) {
         node.data = text;
@@ -11378,7 +11055,6 @@
     },
     timeout: function() {
       var n;
-
       ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
       if (!(n = --ThreadUpdater.seconds)) {
         return ThreadUpdater.update();
@@ -11391,7 +11067,6 @@
     },
     update: function() {
       var url, _ref;
-
       if (!navigator.onLine) {
         return;
       }
@@ -11413,7 +11088,6 @@
     },
     updateThreadStatus: function(type, status) {
       var change, hasChanged;
-
       if (!(hasChanged = ThreadUpdater.thread["is" + type] !== status)) {
         return;
       }
@@ -11423,7 +11097,6 @@
     },
     parse: function(postObjects) {
       var ID, OP, count, deletedFiles, deletedPosts, files, index, key, node, num, post, postObject, posts, root, scroll, _i, _len, _ref;
-
       OP = postObjects[0];
       Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler;
       ThreadUpdater.updateThreadStatus('Sticky', !!OP.sticky);
@@ -11509,7 +11182,6 @@
         }
         $.queueTask(function() {
           var length, threadID;
-
           threadID = ThreadUpdater.thread.ID;
           length = $$('.thread > .postContainer', ThreadUpdater.root).length;
           return Fourchan.parseThread(threadID, length - count, length);
@@ -11530,7 +11202,6 @@
   ThreadWatcher = {
     init: function() {
       var now;
-
       if (!Conf['Thread Watcher']) {
         return;
       }
@@ -11563,7 +11234,6 @@
     },
     node: function() {
       var toggler;
-
       toggler = $.el('img', {
         className: 'watch-thread-link'
       });
@@ -11572,7 +11242,6 @@
     },
     ready: function() {
       var el;
-
       $.off(d, '4chanXInitFinished', ThreadWatcher.ready);
       if (!Main.isThisPageLegit()) {
         return;
@@ -11593,7 +11262,6 @@
       }
       return $.get('AutoWatch', 0, function(_arg) {
         var AutoWatch, thread;
-
         AutoWatch = _arg.AutoWatch;
         if (!(thread = g.BOARD.threads[AutoWatch])) {
           return;
@@ -11605,7 +11273,6 @@
     cb: {
       openAll: function() {
         var a, _i, _len, _ref;
-
         if ($.hasClass(this, 'disabled')) {
           return;
         }
@@ -11624,7 +11291,6 @@
       },
       pruneDeads: function() {
         var boardID, data, threadID, _i, _len, _ref, _ref1;
-
         if ($.hasClass(this, 'disabled')) {
           return;
         }
@@ -11648,13 +11314,11 @@
       },
       rm: function() {
         var boardID, threadID, _ref;
-
         _ref = this.parentNode.dataset.fullID.split('.'), boardID = _ref[0], threadID = _ref[1];
         return ThreadWatcher.rm(boardID, +threadID);
       },
       post: function(e) {
         var board, postID, threadID, _ref;
-
         _ref = e.detail, board = _ref.board, postID = _ref.postID, threadID = _ref.threadID;
         if (postID === threadID) {
           if (Conf['Auto Watch']) {
@@ -11666,7 +11330,6 @@
       },
       onIndexRefresh: function() {
         var boardID, data, db, threadID, _ref;
-
         db = ThreadWatcher.db;
         boardID = g.BOARD.ID;
         _ref = db.data.boards[boardID];
@@ -11692,7 +11355,6 @@
       },
       onThreadRefresh: function(e) {
         var thread;
-
         thread = e.detail.thread;
         if (!(e.detail[404] && ThreadWatcher.db.get({
           boardID: thread.board.ID,
@@ -11709,7 +11371,6 @@
     },
     fetchAllStatus: function() {
       var thread, threads, _i, _len;
-
       if (!(threads = ThreadWatcher.getAll()).length) {
         return;
       }
@@ -11721,7 +11382,6 @@
     },
     fetchStatus: function(_arg) {
       var boardID, data, fetchCount, threadID;
-
       boardID = _arg.boardID, threadID = _arg.threadID, data = _arg.data;
       if (data.isDead) {
         return;
@@ -11731,7 +11391,6 @@
       return $.ajax("//a.4cdn.org/" + boardID + "/res/" + threadID + ".json", {
         onloadend: function() {
           var status;
-
           fetchCount.fetched++;
           if (fetchCount.fetched === fetchCount.fetching) {
             fetchCount.fetched = 0;
@@ -11765,7 +11424,6 @@
     },
     getAll: function() {
       var all, boardID, data, threadID, threads, _ref;
-
       all = [];
       _ref = ThreadWatcher.db.data.boards;
       for (boardID in _ref) {
@@ -11786,7 +11444,6 @@
     },
     makeLine: function(boardID, threadID, data) {
       var div, fullID, href, link, x;
-
       x = $.el('a', {
         className: 'fa',
         href: 'javascript:;',
@@ -11818,7 +11475,6 @@
     },
     refresh: function() {
       var boardID, data, helper, list, nodes, refresher, thread, threadID, toggler, watched, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
-
       nodes = [];
       _ref = ThreadWatcher.getAll();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -11848,7 +11504,6 @@
     },
     toggle: function(thread) {
       var boardID, threadID;
-
       boardID = thread.board.ID;
       threadID = thread.ID;
       if (ThreadWatcher.db.get({
@@ -11862,7 +11517,6 @@
     },
     add: function(thread) {
       var boardID, data, threadID;
-
       data = {};
       boardID = thread.board.ID;
       threadID = thread.ID;
@@ -11893,7 +11547,6 @@
     },
     convert: function(oldFormat) {
       var boardID, data, newFormat, threadID, threads;
-
       newFormat = {};
       for (boardID in oldFormat) {
         threads = oldFormat[boardID];
@@ -11910,7 +11563,6 @@
       refreshers: [],
       init: function() {
         var menu;
-
         if (!Conf['Thread Watcher']) {
           return;
         }
@@ -11923,7 +11575,6 @@
       },
       addHeaderMenuEntry: function() {
         var entryEl;
-
         if (g.VIEW !== 'thread') {
           return;
         }
@@ -11940,7 +11591,6 @@
         });
         return this.refreshers.push(function() {
           var addClass, rmClass, text, _ref;
-
           _ref = $('.current', ThreadWatcher.list) ? ['unwatch-thread', 'watch-thread', 'Unwatch thread'] : ['watch-thread', 'unwatch-thread', 'Watch thread'], addClass = _ref[0], rmClass = _ref[1], text = _ref[2];
           $.addClass(entryEl, addClass);
           $.rmClass(entryEl, rmClass);
@@ -11949,7 +11599,6 @@
       },
       addMenuEntries: function() {
         var cb, conf, entries, entry, name, refresh, subEntries, _i, _len, _ref, _ref1;
-
         entries = [];
         entries.push({
           cb: ThreadWatcher.cb.openAll,
@@ -12018,7 +11667,6 @@
       },
       createSubEntry: function(name, desc) {
         var entry, input;
-
         entry = {
           type: 'thread watcher',
           el: $.el('label', {
@@ -12070,7 +11718,6 @@
     },
     ready: function() {
       var ID, post, posts, _ref;
-
       $.off(d, '4chanXInitFinished', Unread.ready);
       posts = [];
       _ref = Unread.thread.posts;
@@ -12085,7 +11732,6 @@
     },
     scroll: function() {
       var down, hash, post, posts, root;
-
       if (!Conf['Scroll to Last Read Post']) {
         return;
       }
@@ -12114,7 +11760,6 @@
     },
     sync: function() {
       var lastReadPost;
-
       lastReadPost = Unread.db.get({
         boardID: Unread.thread.board.ID,
         threadID: Unread.thread.ID,
@@ -12133,7 +11778,6 @@
     },
     addPosts: function(posts) {
       var ID, data, post, _i, _len, _ref;
-
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
         post = posts[_i];
         ID = post.ID;
@@ -12161,7 +11805,6 @@
     },
     addPostQuotingYou: function(post) {
       var quotelink, _i, _len, _ref;
-
       if (!QR.db) {
         return;
       }
@@ -12178,7 +11821,6 @@
     },
     openNotification: function(post) {
       var name, notif;
-
       if (!Header.areNotificationsEnabled) {
         return;
       }
@@ -12206,7 +11848,6 @@
     },
     readSinglePost: function(post) {
       var i;
-
       if ((i = Unread.posts.indexOf(post)) === -1) {
         return;
       }
@@ -12222,7 +11863,6 @@
     },
     readArray: function(arr) {
       var i, post, _i, _len;
-
       for (i = _i = 0, _len = arr.length; _i < _len; i = ++_i) {
         post = arr[i];
         if (post.ID > Unread.lastReadPost) {
@@ -12233,7 +11873,6 @@
     },
     read: $.debounce(50, function(e) {
       var ID, height, i, post, posts;
-
       if (d.hidden || !Unread.posts.length) {
         return;
       }
@@ -12286,7 +11925,6 @@
     }),
     setLine: function(force) {
       var post;
-
       if (!(d.hidden || force === true)) {
         return;
       }
@@ -12299,7 +11937,6 @@
     },
     update: function() {
       var count;
-
       count = Unread.posts.length;
       if (Conf['Unread Count']) {
         d.title = "" + (Conf['Quoted Title'] && Unread.postsQuotingYou.length ? '(!) ' : '') + (count || !Conf['Hide Unread Count at (0)'] ? "(" + count + ") " : '') + (g.DEAD ? "/" + g.BOARD + "/ - 404" : "" + Unread.title);
@@ -12320,7 +11957,6 @@
     },
     init: function() {
       var archive, boardID, boards, data, id, name, type, _i, _len, _ref, _ref1, _ref2;
-
       _ref = Conf['selectedArchives'];
       for (boardID in _ref) {
         data = _ref[boardID];
@@ -12445,7 +12081,6 @@
     },
     to: function(dest, data) {
       var archive;
-
       archive = (dest === 'search' ? Redirect.data.thread : Redirect.data[dest])[data.boardID];
       if (!archive) {
         return '';
@@ -12454,7 +12089,6 @@
     },
     protocol: function(archive) {
       var protocol;
-
       protocol = location.protocol;
       if (!archive[protocol.slice(0, -1)]) {
         protocol = protocol === 'https:' ? 'http:' : 'https:';
@@ -12463,7 +12097,6 @@
     },
     thread: function(archive, _arg) {
       var boardID, path, postID, threadID;
-
       boardID = _arg.boardID, threadID = _arg.threadID, postID = _arg.postID;
       path = threadID ? "" + boardID + "/thread/" + threadID : "" + boardID + "/post/" + postID;
       if (archive.software === 'foolfuuka') {
@@ -12476,7 +12109,6 @@
     },
     post: function(archive, _arg) {
       var URL, boardID, postID;
-
       boardID = _arg.boardID, postID = _arg.postID;
       URL = new String("" + (Redirect.protocol(archive)) + archive.domain + "/_/api/chan/post/?board=" + boardID + "&num=" + postID);
       URL.archive = archive;
@@ -12484,13 +12116,11 @@
     },
     file: function(archive, _arg) {
       var boardID, filename;
-
       boardID = _arg.boardID, filename = _arg.filename;
       return "" + (Redirect.protocol(archive)) + archive.domain + "/" + boardID + "/full_image/" + filename;
     },
     search: function(archive, _arg) {
       var boardID, path, type, value;
-
       boardID = _arg.boardID, type = _arg.type, value = _arg.value;
       type = type === 'name' ? 'username' : type === 'MD5' ? 'image' : type;
       value = encodeURIComponent(value);
@@ -12511,7 +12141,6 @@
     },
     ready: function() {
       var banner, child, children, i, nodes, title;
-
       banner = $(".boardBanner");
       title = $.el("div", {
         id: "boardTitle"
@@ -12537,7 +12166,6 @@
     cb: {
       toggle: (function() {
         var types;
-
         types = {
           jpg: 227,
           png: 270,
@@ -12545,7 +12173,6 @@
         };
         return function() {
           var num, type;
-
           type = Object.keys(types)[Math.floor(3 * Math.random())];
           num = Math.floor(types[type] * Math.random());
           return this.src = "//static.4chan.org/image/title/" + num + "." + type;
@@ -12565,7 +12192,6 @@
       },
       focus: function() {
         var items, string, string2;
-
         this.textContent = this.innerHTML;
         string = "" + g.BOARD + "." + this.className;
         string2 = "" + string + ".orig";
@@ -12588,7 +12214,6 @@
     },
     custom: function(child) {
       var cachedTest, string;
-
       cachedTest = child.innerHTML;
       string = "" + g.BOARD + "." + child.className;
       $.on(child, 'click keydown focus blur', function(e) {
@@ -12596,7 +12221,6 @@
       });
       $.get(string, cachedTest, function(item) {
         var string2, title;
-
         if (!(title = item[string])) {
           return;
         }
@@ -12623,7 +12247,6 @@
     },
     css: function() {
       var category, css, icon, key, name, pony, _ref;
-
       css = [];
       _ref = Emoji.icons;
       for (key in _ref) {
@@ -12696,7 +12319,6 @@
     },
     ready: function() {
       var child, el, _i, _len, _ref;
-
       if (el = $("#globalMessage", d.body)) {
         _ref = el.children;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -12731,7 +12353,6 @@
     },
     getRelMousePos: function(e) {
       var x, y;
-
       e || (e = window.event);
       x = 0;
       y = 0;
@@ -12749,7 +12370,6 @@
     },
     color: function(target) {
       var HSV_RGB, RGB_HSV, THIS, abortBlur, blurTarget, blurValue, drawPicker, holdPad, holdSld, isPickerOwner, leavePad, leaveSld, leaveStyle, leaveValue, redrawPad, redrawSld, removePicker, setPad, setSld, styleElement, valueElement;
-
       this.hsv = [0, 0, 1];
       this.rgb = [1, 1, 1];
       this.valueElement = this.styleElement = target;
@@ -12776,7 +12396,6 @@
       };
       this.exportColor = function(flags) {
         var value;
-
         if (!(flags & leaveValue) && valueElement) {
           value = '#' + this.toString();
           valueElement.value = value;
@@ -12803,7 +12422,6 @@
       };
       this.fromRGB = function(r, g, b, flags) {
         var hsv;
-
         r = r != null ? $.minmax(r, 0.0, 1.0) : this.rgb[0];
         g = g != null ? $.minmax(g, 0.0, 1.0) : this.rgb[1];
         b = b != null ? $.minmax(b, 0.0, 1.0) : this.rgb[2];
@@ -12820,7 +12438,6 @@
       };
       this.fromString = function(number, flags) {
         var m, val;
-
         m = number.match(/^\W*([0-9A-F]{3}([0-9A-F]{3})?)\W*$/i);
         if (!m) {
           return false;
@@ -12838,7 +12455,6 @@
       };
       RGB_HSV = function(r, g, b) {
         var h, m, n, v;
-
         n = (n = r < g ? r : g) < b ? n : b;
         v = (v = r > g ? r : g) > b ? v : b;
         m = v - n;
@@ -12850,7 +12466,6 @@
       };
       HSV_RGB = function(h, s, v) {
         var f, i, m, n;
-
         if (h == null) {
           return [v, v, v];
         }
@@ -12880,7 +12495,6 @@
       };
       drawPicker = function(x, y) {
         var box, boxB, btn, btnS, elements, item, p, pad, padB, padM, sld, sldB, sldM, _i, _len;
-
         if (!(p = JSColor.picker)) {
           elements = ['box', 'boxB', 'pad', 'padB', 'padM', 'sld', 'sldB', 'sldM', 'btn'];
           p = {};
@@ -12953,7 +12567,6 @@
       };
       redrawPad = function() {
         var rgb;
-
         JSColor.picker.padM.style.backgroundPosition = "" + (4 + Math.round((THIS.hsv[0] / 6) * 180)) + "px " + (4 + Math.round((1 - THIS.hsv[1]) * 100)) + "px";
         rgb = HSV_RGB(THIS.hsv[0], THIS.hsv[1], 1);
         JSColor.picker.sld.style.backgroundColor = "rgb(" + (rgb[0] * 100) + "%, " + (rgb[1] * 100) + "%, " + (rgb[2] * 100) + "%)";
@@ -12976,7 +12589,6 @@
       };
       setPad = function(e) {
         var mpos, x, y;
-
         mpos = JSColor.getRelMousePos(e);
         x = mpos.x - 11;
         y = mpos.y - 11;
@@ -12984,7 +12596,6 @@
       };
       setSld = function(e) {
         var mpos, y;
-
         mpos = JSColor.getRelMousePos(e);
         y = mpos.y - 9;
         return THIS.fromHSV(null, null, 1 - y / 100, leavePad);
@@ -13028,7 +12639,6 @@
   MascotTools = {
     init: function() {
       var _this = this;
-
       if (!Conf['Mascots'] || (g.VIEW === 'catalog' && Conf['Hide Mascots on Catalog'])) {
         return;
       }
@@ -13049,7 +12659,6 @@
     }),
     change: function(mascot) {
       var el, img;
-
       if (Conf['Mascot Position'] === 'default') {
         $.rmClass(doc, 'mascot-position-above-post-form');
         $.rmClass(doc, 'mascot-position-bottom');
@@ -13067,7 +12676,6 @@
     error: function() {
       var ctx, el,
         _this = this;
-
       if (MascotTools.imageError) {
         this.src = MascotTools.imageError;
       }
@@ -13087,7 +12695,6 @@
     },
     toggle: function() {
       var el, enabled, i, len, mascot, name, string;
-
       string = g.MASCOTSTRING;
       enabled = Conf[string];
       if (!(len = enabled.length)) {
@@ -13107,7 +12714,6 @@
     categories: ['Anime', 'Ponies', 'Questionable', 'Silhouette', 'Western'],
     dialog: function(key) {
       var container, dialog, div, fileInput, input, item, layout, name, option, optionHTML, setting, value, _i, _len, _ref;
-
       Conf['editMode'] = 'mascot';
       if (Mascots[key]) {
         editMascot = JSON.parse(JSON.stringify(Mascots[key]));
@@ -13231,7 +12837,6 @@
     },
     input: function(item, name) {
       var value;
-
       value = editMascot[name];
       editMascot[name] = value;
       return $.el("div", {
@@ -13242,7 +12847,6 @@
     uploadImage: function() {
       var file, fileURL, img,
         _this = this;
-
       if (!(this.files && (file = this.files[0]))) {
         return;
       }
@@ -13252,7 +12856,6 @@
       img = $.el('img');
       img.onload = function() {
         var cv, height, s, width;
-
         s = 400;
         width = img.width, height = img.height;
         if (width <= s) {
@@ -13268,7 +12871,6 @@
         URL.revokeObjectURL(fileURL);
         return cv.toBlob(function(blob) {
           var fileURL;
-
           MascotTools.URL = fileURL = URL.createObjectURL(MascotTools.file = blob);
           MascotTools.setImage(fileURL);
           return _this.previousElementSibling.value = fileURL;
@@ -13279,7 +12881,6 @@
     },
     setImage: function(fileURL) {
       var reader;
-
       reader = new FileReader();
       reader.onload = function() {
         return editMascot.image = reader.result;
@@ -13288,7 +12889,6 @@
     },
     save: function(mascot) {
       var image, name;
-
       name = mascot.name, image = mascot.image;
       if ((name == null) || name === "") {
         alert("Please name your mascot.");
@@ -13316,7 +12916,6 @@
       delete Mascots[name].name;
       return $.get("userMascots", {}, function(_arg) {
         var type, userMascots, _i, _len, _ref;
-
         userMascots = _arg.userMascots;
         userMascots[name] = Mascots[name];
         $.set('userMascots', userMascots);
@@ -13347,12 +12946,10 @@
     },
     importMascot: function() {
       var file, reader;
-
       file = this.files[0];
       reader = new FileReader();
       reader.onload = function(e) {
         var err, imported, name;
-
         try {
           imported = JSON.parse(e.target.result);
         } catch (_error) {
@@ -13373,7 +12970,6 @@
         Mascots[name] = imported;
         $.get("userMascots", {}, function(_arg) {
           var userMascots;
-
           userMascots = _arg.userMascots;
           userMascots[name] = Mascots[name];
           return $.set('userMascots', userMascots);
@@ -13386,7 +12982,6 @@
     },
     reposition: function() {
       var mascot;
-
       mascot = Mascots[Conf['mascot']];
       return Style.mascot.textContent = "#mascot img {\nheight: " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height, 10) + 'px' : 'auto') + ";\nwidth: " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width, 10) + 'px' : 'auto') + ";\n}\n#mascot {\nmargin: " + (mascot.vOffset || 0) + "px " + (mascot.hOffset || 0) + "px;\n}\n.sidebar-large #mascot {\nleft: " + (mascot.center ? 25 : 0) + "px;\nright: " + (mascot.center ? 25 : 0) + "px;\n}\n.mascot-position-above-post-form.post-form-style-fixed #mascot {\ntransform: translateY(-" + (QR.nodes ? QR.nodes.el.getBoundingClientRect().height : 0) + "px);\n}";
     }
@@ -13410,7 +13005,6 @@
       },
       option: function(e) {
         var container, select;
-
         e.stopPropagation();
         e.preventDefault();
         select = Rice.input;
@@ -13422,7 +13016,6 @@
       },
       select: function(e) {
         var clientHeight, li, nodes, option, rect, select, style, ul, _i, _len, _ref;
-
         e.stopPropagation();
         e.preventDefault();
         ul = Rice.ul;
@@ -13460,7 +13053,6 @@
     },
     cleanup: function() {
       var child, _i, _len, _ref;
-
       $.off(d, 'click scroll blur resize', Rice.cleanup);
       _ref = __slice.call(Rice.ul.children);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -13470,7 +13062,6 @@
     },
     nodes: function(root) {
       var checkboxes, checkrice, input, select, selectrice, selects, _i, _j, _len, _len1;
-
       root || (root = d.body);
       checkboxes = $$('[type=checkbox]:not(.riced)', root);
       checkrice = Rice.checkbox;
@@ -13490,7 +13081,6 @@
     },
     checkbox: function(input) {
       var div;
-
       if ($.hasClass(input, 'riced')) {
         return;
       }
@@ -13504,7 +13094,6 @@
     },
     select: function(select) {
       var div, _ref;
-
       $.addClass(select, 'riced');
       div = $.el('div', {
         className: 'selectrice',
@@ -13518,7 +13107,6 @@
   Style = {
     init: function() {
       var i, item, items, theme;
-
       theme = Themes[Conf['theme']] || Themes['Yotsuba B'];
       Style.svgs = {};
       items = [['layoutCSS', Style.layout, 'layout'], ['themeCSS', Style.theme(theme), 'theme'], ['emojiCSS', Emoji.css(), 'emoji'], ['dynamicCSS', Style.dynamic(), 'dynamic'], ['paddingSheet', "", 'padding'], ['mascot', "", 'mascotSheet']];
@@ -13538,7 +13126,6 @@
     },
     asapInit: function() {
       var cat, hyphenated, name, setting, title, _ref;
-
       $.addClass(doc, 'gecko');
       $.addClass(doc, 'fourchan-x');
       $.addClass(doc, 'appchan-x');
@@ -13566,7 +13153,6 @@
     },
     pages: function(name, text) {
       var action, el, elA;
-
       el = $(".pagelist > ." + name);
       elA = $.el('a', {
         textContent: text
@@ -13581,7 +13167,6 @@
     },
     readyInit: function() {
       var exLink;
-
       Style.padding();
       Style.iconPositions();
       if (exLink = $("#navtopright .exlinksOptionsLink", d.body)) {
@@ -13592,7 +13177,6 @@
     },
     observe: function() {
       var onMutationObserver;
-
       Style.observer = new MutationObserver(onMutationObserver = Style.wrapper);
       return Style.observer.observe(d.head, {
         childList: true,
@@ -13601,7 +13185,6 @@
     },
     wrapper: function() {
       var first;
-
       first = {
         addedNodes: d.head.children
       };
@@ -13612,7 +13195,6 @@
     },
     remStyle: function(_arg) {
       var addedNodes, href, i, node, _ref;
-
       addedNodes = _arg.addedNodes;
       i = addedNodes.length;
       while (i--) {
@@ -13627,7 +13209,6 @@
     },
     matrix: function() {
       var arg, color, colors, hex, i, rgb, val, _i, _len;
-
       colors = [];
       rgb = ['r', 'g', 'b'];
       for (_i = 0, _len = arguments.length; _i < _len; _i++) {
@@ -13644,20 +13225,17 @@
     },
     filter: function(_arg) {
       var bg, fg;
-
       fg = _arg[0], bg = _arg[1];
       return "" + bg.r + " " + (-fg.r) + " 0 0 " + fg.r + " " + bg.g + " " + (-fg.g) + " 0 0 " + fg.g + " " + bg.b + " " + (-fg.b) + " 0 0 " + fg.b;
     },
     silhouette: function(_arg) {
       var fg;
-
       fg = _arg[0];
       return "0 0 0 0 " + fg.r + " 0 0 0 0 " + fg.g + " 0 0 0 0 " + fg.b;
     },
     layout: "/* Cleanup */ #absbot, #boardNavDesktop, #delPassword, #delform > hr:last-of-type, #navbotright, #postForm, #search-label, #search-label-bottom, #styleSwitcher, #togglePostForm, .boardBanner > div, .mobile, .next form, .next span, .postingMode, .prev form, .prev span, .riced, .sideArrows, .stylechanger, body > br, body > div[style^=\"text-align\"], body > hr { display: none; } /* Empties */ #qr .warning:empty, #qr-thread-select:empty { display: none; } /* File Name Trunctuate / /p/ exif */ .exif, .file-info:hover .fntrunc, .file-info:not(:hover) .fnfull { display: none; } /* Unnecessary */ #qp input, #qp .rice, .inline .rice { display: none !important; } /* Hidden Content */ .forwarded, .hidden, .hidden_thread ~ div, .hidden_thread ~ a, .replyContainer .stub ~ div, .replyContainer .stub ~ a, .stub + div, .thread > .stub:first-child ~ .postContainer, .thread > .stub:first-child ~ .summary, [hidden] { display: none !important; } /* Hidden UI */ #navtopright, #svg_filters, .cataloglink, .navLinks { z-index: 7; position: fixed; top: 100%; left: 100%; } /* Hide last horizontal rule, keep clear functionality. */ .board > hr:last-of-type { visibility: hidden; } /* Fappe Tyme */ .fappeTyme .thread > .noFile, .fappeTyme .threadContainer > .noFile { display: none; } /* Werk Tyme */ .werkTyme .post .file { display: none; } /* Defaults */ a { text-decoration: none; outline: none; } .underline-links a { text-decoration: underline; } body, html { min-height: 100%; -moz-box-sizing: border-box; } body { outline: none; min-height: 100%; } .sidebar-hide body { margin: 0 2px; } .sidebar-minimal body { margin: 0 20px; } .sidebar-normal body { margin: 0 252px } .sidebar-large body { margin: 0 303px; } .sidebar-location-right body { margin-left: 2px; } .sidebar-location-left body { margin-right: 2px; } body.unscroll { overflow: hidden; } .fourchan-ss-sidebar body::before { content: ''; position: fixed; top: 0; bottom: 0; -moz-box-sizing: border-box; display: block; z-index: 0; } .fourchan-ss-sidebar.sidebar-large body::before { width: 306px; } .fourchan-ss-sidebar.sidebar-normal body::before { width: 255px; } .fourchan-ss-sidebar.sidebar-minimal body::before { width: 23px; } .sidebar-location-right body::before { right: 0; } .sidebar-location-left body::before { left: 0; } .fourchan-ss-sidebar.sidebar-location-right body { padding-right: 2px; } .fourchan-ss-sidebar.sidebar-location-left body { padding-left: 2px; } hr { clear: both; border: 0; padding: 0; margin: 0 0 1px; } .hide-horizontal-rules hr { visibility: hidden; } th { text-align: left; } .center { text-align: center; } .ad-plea { text-align: center; font-size: .8em; } .dead-thread, .disabled { opacity: 0.4; } .pointer { cursor: pointer; } /* Symbols */ .menu-button i { vertical-align: middle; display: inline-block; margin: 2px 2px 3px; border-top: .5em solid; border-right: .3em solid transparent; border-left: .3em solid transparent; } .brackets-wrap::before { content: \" [\"; } .brackets-wrap::after { content: \"] \"; } /* Thread / Reply Nav */ #navPrev, #navNext { display: inline-block; border-right: 6px solid transparent; border-left: 6px solid transparent; opacity: 0.5; margin: 2px 1px; width: 0; height: 0; } #navPrev { border-bottom: 11px solid rgb(130,130,130); } #navNext { border-top: 11px solid rgb(130,130,130); } /* Header */ #header-bar { z-index: 6; border-width: 1px; padding: 1px 2px; border-style: solid; } .pagination-sticky-top .pagelist, .pagination-sticky-bottom .pagelist, #header-bar { left: 2px; right: 2px; } .navigation-alignment-center #header-bar { text-align: center; } .navigation-alignment-right #header-bar { text-align: right; } .sidebar-location-left.sidebar-large:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist, .sidebar-location-left.sidebar-large #header-bar { left: 303px; } .sidebar-location-left.sidebar-normal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist, .sidebar-location-left.sidebar-normal #header-bar { left: 252px; } .sidebar-location-left.sidebar-minimal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist, .sidebar-location-left.sidebar-minimal:not(.fourchan-ss-navigation) #header-bar { left: 20px; } .sidebar-location-right.sidebar-large:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist, .sidebar-location-right.sidebar-large #header-bar { right: 303px; } .sidebar-location-right.sidebar-normal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist, .sidebar-location-right.sidebar-normal #header-bar { right: 252px; } .sidebar-location-right.sidebar-minimal:not(.pagination-on-side):not(.fourchan-ss-navigation) .pagelist, .sidebar-location-right.sidebar-minimal:not(.fourchan-ss-navigation) #header-bar { right: 20px; } .fourchan-ss-navigation .pagelist, .fourchan-ss-navigation #header-bar { left: 0; right: 0; border-left: 0; border-right: 0; border-radius: 0 !important; } .hide-navigation-decorations #board-list { font-size: 0; color: transparent; word-spacing: 2px; } .fixed #header-bar.autohide { z-index: 24; } .fixed #header-bar { position: fixed; } .top-header #header-bar { top: 0; border-top-width: 0; } .rounded-edges.top-header #header-bar { border-radius: 0 0 3px 3px; } .fixed.bottom-header #header-bar { bottom: 0; border-bottom-width: 0; } .rounded-edges.bottom-header #header-bar { border-radius: 3px 3px 0 0; } .hide #header-bar { position: fixed; top: 110%; bottom: auto; } /* Header Autohide */ .fixed #header-bar.autohide:not(:hover) { box-shadow: none; transition: all .8s .6s cubic-bezier(.55, .055, .675, .19); } .fixed.top-header #header-bar.autohide:not(:hover) { margin-bottom: -1em; transform: translateY(-100%); } .fixed.bottom-header #header-bar.autohide:not(:hover) { transform: translateY(100%); } #scroll-marker { left: 0; right: 0; height: 10px; position: absolute; } #header-bar #scroll-marker { display: none; } .fixed #header-bar #scroll-marker { display: block; } .fixed.top-header header-bar #scroll-marker { top: 100%; } .fixed.bottom-header #header-bar #scroll-marker { bottom: 100%; } /* Notifications */ #notifications { position: fixed; top: 0; text-align: center; right: 0; left: 0; transition: all .8s .6s cubic-bezier(.55, .055, .675, .19); } .fixed.top-header #header-bar #notifications { position: absolute; top: 100%; } .notification { font-weight: 700; text-shadow: 0 1px 2px rgba(0, 0, 0, .5); box-shadow: 0 1px 2px rgba(0, 0, 0, .15); border-radius: 2px; margin: 1px auto; width: 500px; max-width: 100%; position: relative; transition: all .25s ease-in-out; } .notification.error { background-color: hsla(0, 100%, 38%, .9); } .notification.warning { background-color: hsla(36, 100%, 38%, .9); } .notification.info { background-color: hsla(200, 100%, 38%, .9); } .notification.success { background-color: hsla(104, 100%, 38%, .9); } .notification, .notification a { color: #fff !important; } .notification > .close { top: 0; padding: 2px; right: 4px; position: absolute; color: #fff; } .message { -moz-box-sizing: border-box; padding: 6px 20px; max-height: 200px; width: 100%; overflow: auto; } /* Shortcuts */ #shortcuts { position: fixed; display: flex; top: 0; z-index: 16; flex-direction: row; max-height: 1.3em; overflow: visible; } .shortcut { margin: 0 1px; } .icon-orientation-vertical #a-icons .shortcut { margin: 0; } #a-icons, #a-stats { order: 0; display: flex; } #a-icons { order: 10; } .sidebar-location-right #shortcuts { right: 0; } .sidebar-location-left #shortcuts { left: 0; } .sidebar-location-right .shortcut { align-self: flex-end; } .icon-orientation-vertical #a-icons { flex-direction: column; height: 200px; } .icon-orientation-horizontal #a-stats, .icon-orientation-horizontal #a-icons, .sidebar-location-left #shortcuts { flex-direction: row-reverse; } .icon-orientation-horizontal.sidebar-location-left #a-stats, .icon-orientation-horizontal.sidebar-location-left #a-icons { flex-direction: row; } #thread-stats { order: 0; } #updater { order: 10; } #main-menu { order: 0; } #qr-shortcut { order: 10; } #img-controls { order: 20; } #appchan-gal { order: 25; } #fappeTyme { order: 30; } #werkTyme { order: 35; } #so-nav { order: 40; } #so-watcher { order: 50; } #so-psa { order: 60; } #navPrev { order: 70; } #navNext { order: 80; } #catalog { order: 90; } #returnIcon { order: 100; } .icon-orientation-horizontal #so-psa #globalMessage, .icon-orientation-horizontal #so-watcher #thread-watcher, .icon-orientation-horizontal #so-nav #boardNavDesktopFoot { top: 15px !important; } .icon-orientation-vertical #so-psa, .icon-orientation-vertical #so-watcher, .icon-orientation-vertical #so-nav { position: relative; } .icon-orientation-vertical #so-psa #globalMessage, .icon-orientation-vertical #so-watcher #thread-watcher, .icon-orientation-vertical #so-nav #boardNavDesktopFoot { top: 0 !important; position: absolute !important; z-index: -1; } .sidebar-location-right.icon-orientation-vertical #so-psa #globalMessage, .sidebar-location-right.icon-orientation-vertical #so-watcher #thread-watcher, .sidebar-location-right.icon-orientation-vertical #so-nav #boardNavDesktopFoot { padding-right: 17px; } .sidebar-location-left.icon-orientation-vertical #so-psa #globalMessage, .sidebar-location-left.icon-orientation-vertical #so-watcher #thread-watcher, .sidebar-location-left.icon-orientation-vertical #so-nav #boardNavDesktopFoot { padding-left: 17px; } .a-icon, #shortcuts .fa { display: inline-block; width: 15px; height: 15px; content: \"\"; opacity: 0.5; cursor: pointer; } .invisible-icons .a-icon, .invisible-icons #shortcuts .fa { opacity: 0; } #so-nav, #so-watcher, #so-psa { line-height: 0; } .shortcut > div { line-height: normal; } #main-menu { background-position: 0 0; } #returnIcon { background-position: 0 -15px; } #so-watcher .a-icon { background-position: 0 -30px; } #so-psa .a-icon { background-position: 0 -45px; } #so-nav .a-icon { background-position: 0 -60px; } #img-controls { background-position: 0 -90px; } #catalog { background-position: 0 -120px; } #fappeTyme { background-position: 0 -135px; } #navPrev:hover, #navNext:hover, .a-icon:hover, #shortcuts .fa:hover { opacity: 1 !important; } /* Updater / Thread Stats */ .float #thread-stats, .float #updater { position: fixed; z-index: 25; } #update-status.new::after { content: ', '; } /* Pagination */ .pagelist { border-style: solid; border-width: 1px; z-index: 6; } .pagination-alignment-center .pagelist { text-align: center; } .pagination-alignment-right .pagelist { text-align: right; } .pagination-sticky-top .pagelist { position: fixed; top: 0; border-top-width: 0; } .pagination-sticky-bottom .pagelist { position: fixed; bottom: 0; border-bottom-width: 0; } .pagination-top .pagelist { position: static; border-top-width: 0; } .pagination-bottom .pagelist { position: static; } .pagination-top.rounded-edges .pagelist, .pagination-sticky-top.rounded-edges .pagelist { border-radius: 0 0 3px 3px; } .pagination-bottom.rounded-edges .pagelist, .pagination-sticky-bottom.rounded-edges .pagelist { border-radius: 3px 3px 0 0; } .pagination-hide .pagelist { display: none; } .pagination-on-side .pagelist { position: fixed; padding: 0; top: auto; bottom: 0.5em; margin: 0; background: none transparent !important; border: 0 none !important; text-align: right; } .pagination-on-side.post-form-style-fixed.show-post-form-header .pagelist { bottom: 23.1em; } .pagination-on-side.post-form-style-fixed .pagelist { bottom: 21.6em; } .sidebar-location-left.pagination-on-side .pagelist { transform: rotate(-90deg); transform-origin: bottom left; } .sidebar-location-right.pagination-on-side .pagelist { transform: rotate(90deg); transform-origin: bottom right; } .sidebar-location-right.sidebar-large.pagination-on-side .pagelist { left: auto; right: 301px; } .sidebar-location-left.sidebar-large.pagination-on-side .pagelist { right: auto; left: 301px; } .sidebar-location-right.sidebar-normal.pagination-on-side .pagelist { left: auto; right: 246px; } .sidebar-location-left.sidebar-normal.pagination-on-side .pagelist { right: auto; left: 246px; } .sidebar-location-right.sidebar-minimal.pagination-on-side .pagelist { left: auto; right: 246px; } .sidebar-location-left.sidebar-minimal.pagination-on-side .pagelist { right: auto; left: 18px; } .hide-navigation-decorations .pagelist { font-size: 0; color: transparent; word-spacing: 0; } .pagelist input, .pagelist div { vertical-align: middle; } .hide-navigation-decorations .pages a { margin: 0 1px; } .next, .pages, .prev { display: inline-block; margin: 0 3px; } /* Icons */ .icons-4chan-ss .a-icon { background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAACWCAMAAAA2YSLzAAAAPFBMVEVkZGRlZWVjY2NmZmZnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dZxmG7AAAAE3RSTlMFFQ0AJD8eQFRqf5CgssDM4+73gHqZRAAAA0pJREFUSMetVlmy5CgMZDMGxK7737Ulgcu8ejMREzHtD7sShJRaKWV/Psq3iz7QGwTF2BZ01hp3N6yasctZJANiN5ZlItDLtNkQDGNeMLU7EqmCbUwhkhZbwsIuNbyWPX7dIyHOrDYOc8SOiEUJjojN0EsWlCXRrq2qvJCsIjic2OcFrwrOpdmTimqVyWG7ZkrWy97p7z/hACd2FUetBcQDpTN+nuKsGng881L5xOz/VQ88xL/eQkyZT3axp+4dUMwvH0Pnhn6wSyR+8IdR4f43/v8XX1BHjXpjwy5RdEcQ7DiuzlBUsFD+GeIFEy6W0pKXoSZOiUz5tf99nvTDD/1sP9VRPvb/un86lT57SVqwSk8KR+L6kgTOlcZslRQe5WmJRKovETW7Anb+HzxUW4Xgnv11fuuj82aKXHz1Tzztx9v4VA9+/6le26B+3VhTC9RMPIr0qx4zaWNsnFRO0s8FWgEIFIRiVUAIlJGciqMmCwpQWyI/OplXA1RrXG1YI2svTQ3ufhWjNlKFqtXFI7Yg+zAXRcBZ+HygJuVHd0ys35bVn6QojLL5cZeVvPht/mVu/r/8s7GMXsLjv2s71GZhgjnEwsEVXogiSl/pl7LWra0IQgO3poTsieoYd4dhWfJlGWqyQf6sLxWt3/MRa4Im04ixeSdAWnxvqCX6tObVmzpZOPOZvrBNJF8gmGciBChsV+YdRYwnAvNpS4AnYFBm0KA2a35Unh+efxjercaLfV7wW0rtUTNl2j715al/9VtfutF+NZ/+aZSa+py/GCpRyvr17EsVLbRhmN++BBY/ik5/+YPK6bKnf2T8fh7P+uEYn0D3E4L3i6QHmvc3+k+8PN6Mb1w52tje6LbAi+M0FT4YneqVbpVDPnL2Xqx7m3tf9ENXHba9H/a/+X3z/+XfCnOo+Zy/o4SgY5Z6iq0nb+9Mc4JxL5f1qYs+xhTP/uiX/cMe4+hDHAfGnmGe+Ev+G88vnG7Ie20wHiUt/S1Kv+6BCM/9fkEfz73/9HNufQ4ZKdzvnwtS/LXltRcJB/yJ23H/mo89nPFa85Li3XOYu435LwTXKVWwO+cnlWFTB47L/AdfR//KI2bvF8sAb0c/M+1+YE3/oS77B8N+UUVHraV6AAAAAElFTkSuQmCC\"); } .icons-oneechan .a-icon { background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAACWCAMAAAA2YSLzAAAAPFBMVEVoaGhqampeXl5sbGxsbGxra2tsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGxsbGzXmsRLAAAAE3RSTlMAEAYnHBg2QExbcYaWqM++2+z4BMdvAwAAAtVJREFUSMfFVgmu3CAMhYRPAmb3/e9aL5Bl2kptVbXWSOSBsY15NmOMMZs1KnNExC+ezgV4MBtNMIw58+qX2REtQwiifdC6hwlNQBGfUlBzc+KYkP3IxH5hNvicCPXrMfEVi3ts2WrzaiN6jie2OI2GXbBfXiA/XPyexPpEHrHdyDV8YAt6vEYCVpJ3S7rXAZKkkfbnuR8Uk/32xsac6Y01La2ZfyIh1VrX9Rnfu5ygd6/XeQAGFxACkopDb3mkeXug48x5FCKhNzW+1j2t8/5EEwHTIfPm6G3aP37o/w/ir3QZ2V/xY0spdSxWL7MrLU7slmnDSY0UrH6CBJ/wFI3TNGECCDY9G4xmrpDkZvQMJ4q31EzLQuhipr7ag8ueFa+hUQy2d43nnPGg7NopHTUVyYlWpE+lUT4qfhDCnLpzB8oXLLJb4leptD/JblswOaZd0gRkDV0cJi69NNOUaclRpG6S1NPdRVPLjI3VSjWV8+FmaARknTxqfipl0tGR1DXvd0h251Ww/ZlaNQoaX3bqUS+IK6ZX4hysvuQinS+6n9638/6BbK4RLi6R11O8rPS4OnO66KHtw6yK96BWrg5QxDGcVzcoB8cYb/dE1zPO6C+pHxN0Ttw/JtJrx55+oV9Jq+ScF22IfBWDD+sHfTnBmKlpS99hPGSC4SBsi+dP3p0PjVBVedMdO3WoG57cAEbYVNkRHFROIzjYuGjoM7LOaEQKbtQjkuo5hCSMmezaNq3Gl6TE5J3ZLMu26SjpPJZo4h/9FJhT4JQJzjFXD7x54fBgzO9RvDH9Vl5vHIetcGHct1apLh/6gU3c2PYy5rrYh7a1NP29/H/G9xn/d+f7FNVcw9/H/9sf8ymXPnqdDd7Wx3OpzWRJuP8+iMTFe7wZq48Tce7QciNetUzku+pT/t4UHK/iIq2yPR/8y/315M/rWl1A/sM83phVh6+aeZY39OLNN4Y0P2GdHOWPAAAAAElFTkSuQmCC\"); } /* Banner & Board Title */ .boardBanner { line-height: 0; } .faded-4chan-banner .boardBanner { opacity: 0.5; transition: opacity 0.3s ease-in-out .5s; } .faded-4chan-banner .boardBanner:hover { opacity: 1; transition: opacity 0.3s ease-in; } /* From 4chan SS / OneeChan */  .fourchan-banner-reflection .boardBanner::after { background-image: -moz-element(#Banner); bottom: -100%; content: ''; left: 0; mask: url(\"data:image/svg+xml,<svg version='1.1' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient gradientUnits='objectBoundingBox' id='gradient' x2='0' y2='1'><stop stop-offset='0'/><stop stop-color='white' offset='1'/></linearGradient><mask id='mask' maskUnits='objectBoundingBox' maskContentUnits='objectBoundingBox' x='0' y='0' width='100%' height='100%'> <rect fill='url(%23gradient)' width='1' height='1' /></mask></defs></svg>#mask\"); opacity: 0.3; position: absolute; right: 0; top: 100%; -moz-transform: scaleY(-1); z-index: -1; }  .fourchan-banner-at-sidebar-top .boardBanner, .fourchan-banner-at-sidebar-bottom .boardBanner, .fourchan-banner-at-sidebar-bottom .boardBanner { position: fixed; } .fourchan-banner-at-sidebar-top .boardBanner { top: 16px; } .fourchan-banner-at-sidebar-bottom .boardBanner { bottom: 270px; } .fourchan-banner-under-post-form .boardBanner { bottom: 130px; } .board-title-at-sidebar-top.sidebar-location-right #boardTitle, .board-title-at-sidebar-bottom.sidebar-location-right #boardTitle, .board-title-under-post-form.sidebar-location-right #boardTitle, .fourchan-banner-at-sidebar-top.sidebar-location-right .boardBanner, .fourchan-banner-at-sidebar-bottom.sidebar-location-right .boardBanner, .fourchan-banner-under-post-form.sidebar-location-right .boardBanner { right: 2px; } .board-title-at-sidebar-top.sidebar-location-left #boardTitle, .board-title-at-sidebar-bottom.sidebar-location-left #boardTitle, .board-title-under-post-form.sidebar-location-left #boardTitle, .fourchan-banner-at-sidebar-top.sidebar-location-left .boardBanner, .fourchan-banner-at-sidebar-bottom.sidebar-location-left .boardBanner, .fourchan-banner-under-post-form.sidebar-location-left .boardBanner { left: 2px; } .board-title-at-sidebar-top #boardTitle, .board-title-at-sidebar-bottom #boardTitle, .board-title-under-post-form #boardTitle, .fourchan-banner-at-sidebar-top .boardBanner img, .fourchan-banner-at-sidebar-bottom .boardBanner img, .fourchan-banner-under-post-form .boardBanner img { width: 248px; } .board-title-at-sidebar-top.sidebar-large #boardTitle, .board-title-at-sidebar-bottom.sidebar-large #boardTitle, .board-title-under-post-form.sidebar-large #boardTitle, .fourchan-banner-at-sidebar-top.sidebar-large .boardBanner img, .fourchan-banner-at-sidebar-bottom.sidebar-large .boardBanner img, .fourchan-banner-under-post-form.sidebar-large .boardBanner img { width: 299px; } .fourchan-banner-at-top .boardBanner { position: relative; display: table; margin: 12px auto; text-align: center; } :root:not(.board-subtitle) .boardSubtitle, .board-title-hide #boardTitle, .fourchan-banner-hide .boardBanner { display: none; } #boardTitle { text-align: center; z-index: 4; } .board-title-at-sidebar-top #boardTitle, .board-title-at-sidebar-bottom #boardTitle, .board-title-under-post-form #boardTitle { position: fixed; } .board-title-at-sidebar-top.fourchan-banner-at-sidebar-top.sidebar-large #boardTitle { top: 121px; } .board-title-at-sidebar-top.fourchan-banner-at-sidebar-top #boardTitle { top: 104px; } .board-title-at-sidebar-top #boardTitle { top: 40px; } .board-title-at-sidebar-bottom #boardTitle { bottom: 280px; } .board-title-under-post-form #boardTitle { bottom: 140px; } /* Hover UI */ .move { cursor: pointer; } #ihover { position: fixed; max-height: 97%; max-width: 75%; z-index: 22; } #qp { position: fixed; z-index: 22; } #qp .postMessage::after { clear: both; display: block; content: \"\"; } #qp .full-image { max-height: 300px; max-width: 500px; } #menu { position: fixed; outline: none; z-index: 27; } /* Image Expansion */ .fit-width .full-image { max-width: 100%; } .gecko.fit-width .full-image { width: 100%; } .fit-height .full-image { max-height: 95vh; } .images-overlap-post-form .full-image { position: relative; z-index: 21; } /* Delete Buttons */ .hide-delete-ui .deleteform, .hide-delete-ui .post:not(#exlinks-options) .rice { display: none; } .deleteform { position: fixed; z-index: 18; width: 0; bottom: 0; right: 0; border-width: 1px 0 0 1px; border-style: solid; font-size: 0; color: transparent; } .deleteform:hover { width: auto; } .deleteform::before { z-index: 18; border-width: 1px 0 0 1px; border-style: solid; content: '\uf00d'; font-family: FontAwesome; font-weight: normal; font-style: normal; text-decoration: inherit; -webkit-font-smoothing: antialiased; font-size:14px !important; display: block; position: fixed; bottom: 0; right: 0; -moz-box-sizing: border-box; height: 1.6em; width: 1.4em; text-align: center; } .deleteform:hover::before { display: none; } .deleteform input { margin: 0 1px 0 0; } /* Slideout Navigation */ #boardNavDesktopFoot { position: fixed; text-align: center; font-size: 0; color: transparent; overflow-x: hidden; overflow-y: auto; -moz-box-sizing: border-box; width: 248px; } .sidebar-large #boardNavDesktopFoot { width: 299px; } .sidebar-location-right #boardNavDesktopFoot { right: 2px; } .sidebar-location-left #boardNavDesktopFoot { left: 2px; } #so-nav:hover #boardNavDesktopFoot { display: block; } #boardNavDesktopFoot { display: none; padding: 2px; } .slideout-navigation-hide #so-nav { display: none; } .slideout-navigation-compact #boardNavDesktopFoot { word-spacing: 1px; } .slideout-navigation-list #boardNavDesktopFoot a { display: block; } .slideout-navigation-list #boardNavDesktopFoot { max-height: 400px; } .slideout-navigation-list #boardNavDesktopFoot a::after { content: ' - ' attr(title); } .slideout-navigation-list #boardNavDesktopFoot a[href*='//boards.4chan.org/']::after, .slideout-navigation-list #boardNavDesktopFoot a[href*='//rs.4chan.org/']::after { content: '/ - ' attr(title); } .slideout-navigation-list #boardNavDesktopFoot a[href*='//boards.4chan.org/']::before, .slideout-navigation-list #boardNavDesktopFoot a[href*='//rs.4chan.org/']::before { content: '/'; } .slideout-navigation-hide #boardNavDesktopFoot { display: none; } /* Watcher */ #thread-watcher { position: fixed; z-index: 14; padding: 2px; } #thread-watcher { width: 200px; } #thread-watcher:not(:hover) { max-height: 200px; overflow: hidden; } .rounded-edges #thread-watcher { border-radius: 3px; } #watched-threads > div { max-height: 1.3em; overflow: hidden; } .slideout-watcher #thread-watcher { -moz-box-sizing: border-box; width: 248px; } .slideout-watcher.sidebar-large #boardNavDesktopFoot { width: 299px; } .slideout-watcher.sidebar-location-right #thread-watcher { left: auto !important; right: 2px !important; } .slideout-watcher.sidebar-location-left #thread-watcher { right: auto !important; left: 2px !important; } .slideout-watcher #thread-watcher .move { cursor: default; } .slideout-watcher.underline-links #thread-watcher .move { text-decoration: underline; } .slideout-watcher #thread-watcher > div { overflow: hidden; } .slideout-watcher #so-watcher:hover #thread-watcher { display: block; } .slideout-watcher #thread-watcher { display: none; overflow-y: auto; } .watch-thread-link { padding-top: 18px; width: 18px; height: 0px; display: inline-block; background-repeat: no-repeat; opacity: 0.2; position: relative; top: 1px; } .watch-thread-link.watched { opacity: 1; } /* Announcements */ #globalMessage { text-align: center; } .rounded-edges #globalMessage { border-radius: 3px; } .announcements-slideout #globalMessage { position: fixed; padding: 2px; width: 248px; } .announcements-slideout.sidebar-location-right #globalMessage { left: auto; right: 2px; } .announcements-slideout.sidebar-location-left #globalMessage { right: auto; left: 2px; } .announcements-slideout.sidebar-large #globalMessage { width: 299px; } .announcements-slideout #globalMessage h3 { margin: 0; } .announcements-slideout #globalMessage { -moz-box-sizing: border-box; display: none; } .announcements-slideout #so-psa:hover #globalMessage { display: block; } .announcements-hide #globalMessage { display: none !important; } /* Threads */ #threads, .rounded-edges .board > .thread { border-radius: 4px; } /* Thread Clearfix */ .thread > .threadContainer:last-of-type::after { display: block; content: ' '; clear: both; } /* Posts */ .expanding { opacity: .5; } .fileText:hover .fntrunc, .fileText:not(:hover) .fnfull, .expanded-image > .post > .file > .fileThumb > img[data-md5], .post > .file > .fileThumb > .full-image { display: none; } .expanded-image > .post > .file > .fileThumb > .full-image { display: block; } .thread > .replyContainer:last-of-type .post { margin-bottom: 0; } .menu-button { position: relative; } .stub .menu-button, .post .menu-button, .hide-thread-button, .show-thread-button span, .hide-reply-button, .show-reply-button span { float: right; } .post .menu-button, .hide-thread-button, .hide-reply-button { margin: 0 3px; opacity: 0; transition: opacity .3s ease-out 0s; } .post:hover .hide-reply-button, .post:hover .menu-button, .post:hover .hide-thread-button, .hidden_thread .hide-thread-button, .hidden_thread .menu-button, .inline .hide-reply-button, .inline .menu-button { opacity: 1; } .hidden_thread { text-align: right; } .color-user-ids .posteruid .hand { padding: .1em .3em; border-radius: 1em; font-size: 80%; } .postInfo { padding: 3px 3px 0; } .postInfo > span { vertical-align: bottom; } .bolds .subject, .bolds .name { font-weight: 600; } .italics .postertrip { font-style: italic; } .underline-links .replylink { text-decoration: underline; } .reply .fileText { padding: 0 3px; } .fileThumb { float: left; margin: 3px 20px; outline: none; } .reply.post { -moz-box-sizing: border-box; display: inline-block; } .replyContainer { display: flex; } .fit-width-replies .reply.post { flex: 1 0; } .fit-width-replies .expanded-image .reply.post, .fit-width-replies .hasInline .reply.post { width: 100%; } .indent-replies #unread-line, .indent-replies .thread > .replyContainer, .indent-replies .threadContainer > .replyContainer { margin-left: 2em; } .rounded-edges .post { border-radius: 3px; } .spoiler, s { text-decoration: none; } /* Emoji */ a.useremail:last-of-type { vertical-align: top; } .op-background .op.post .postMessage::after, .force-reply-break .op.post .postMessage::after { display: block; content: ' '; clear: both; } /* OP */ .watch-thread-link { vertical-align: bottom; } .op-background .op.post { -moz-box-sizing: border-box; } /* Summary */ .force-reply-break .summary { clear: both; } /* Inlined */ .inline { margin: 2px 8px 2px 2px; } .post .inline { margin: 2px; } .inline .replyContainer { display: inline-block; } /* Quotes */ .inlined { opacity: .5; } .underline-links .quotelink { text-decoration: underline; } .filtered, .quotelink.filtered { text-decoration: line-through !important; } .inline + .hashlink { display: none; } /* Quote Threading */ .threadContainer { padding-left: 2em; border-left: 1px solid; } .indent-replies .threadContainer { margin-left: 2em; padding-left: 0; } .threadOP { clear: both; } /* Backlinks */ .underline-links .forwardlink, .underline-links .backlink { text-decoration: underline; } .backlink.dead { text-decoration: none; } .filtered-backlinks .filtered.backlink { display: none; } .backlinks-position-lower-left .container, .backlinks-position-lower-right .container { max-width: 100%; padding: 0 5px; } .backlinks-position-lower-left .reply.quoted, .backlinks-position-lower-right .reply.quoted { position: relative; padding-bottom: 1.7em; } .backlinks-position-lower-left .inline .reply.quoted, .backlinks-position-lower-right .inline .reply.quoted, .backlinks-position-lower-right #qp .reply.quoted, .backlinks-position-lower-left #qp .reply.quoted { position: static; padding-bottom: 0; } .backlinks-position-lower-right .reply .container, .backlinks-position-lower-left .reply .container { position: absolute; bottom: 0; padding: 0 5px; } .backlinks-position-lower-left .reply .container { left: 0; } .backlinks-position-lower-right .reply .container { right: 0; } .backlinks-position-lower-right .container::before, .backlinks-position-lower-left .reply .container::before { content: 'REPLIES: '; } .container:empty { display: none; } .backlinks-position-lower-left #qp .container, .backlinks-position-lower-left .inline .container, .backlinks-position-lower-right .inline .container, .backlinks-position-lower-right #qp .container { position: static; max-width: 100%; } .backlinks-position-lower-left #qp .container::before, .backlinks-position-lower-left .inline .container::before, .backlinks-position-lower-right #qp .container::before, .backlinks-position-lower-right .inline .container::before { content: ''; } .backlinks-position-lower-right .inline .container { float: none; } /* Fixes text spoilers */ .remove-spoilers.indicate-spoilers .spoiler::before, .remove-spoilers.indicate-spoilers s::before { content: '[spoiler]'; } .remove-spoilers.indicate-spoilers .spoiler::after, .remove-spoilers.indicate-spoilers s::after { content: '[/spoiler]'; } :root:not(.remove-spoilers) .spoiler:not(:hover) *, :root:not(.remove-spoilers) s:not(:hover) * { color: rgb(0,0,0) !important; text-shadow: none !important; } :root:not(.remove-spoilers) spoiler:not(:hover), :root:not(.remove-spoilers) s:not(:hover) { background-color: rgb(0,0,0); color: rgb(0,0,0) !important; text-shadow: none !important; } /* Code */ .prettyprint { -moz-box-sizing: border-box; font-family: monospace; display: inline-block; margin: 0 auto .1em 0; vertical-align: middle; white-space: pre-wrap; border-radius: 2px; overflow-x: auto; padding: 3px; max-width: 100%; } /* Menu */ .entry { border-bottom: 1px solid rgba(0,0,0,.25); cursor: pointer; display: block; outline: none; padding: 3px 1em 3px 7px; position: relative; text-decoration: none; white-space: nowrap; } .entry:last-child { border-bottom: 0; } .has-submenu::after { content: \"\"; border-left: .5em solid; border-top: .3em solid transparent; border-bottom: .3em solid transparent; display: inline-block; margin: .3em; position: absolute; right: 0; } .submenu { display: none; position: absolute; top: -1px; } .focused > .submenu { display: block; } /* Stubs */ .fit-width-replies .stub { display: block; text-align: right; clear: both; } /* Element Replacing: */ /* Checkboxes */ .rice { cursor: pointer; width: 9px; height: 9px; margin: 2px 3px 3px; display: inline-block; vertical-align: bottom; } input[type=checkbox]:checked + .rice { position: relative; } input[type=checkbox]:checked + .rice::after { content: \"\"; display: block; width: 4px; height: 10px; border-width: 0 3px 3px 0; border-style: solid; transform: rotate(45deg); position: absolute; left: 2px; bottom: -1px; } .rounded-edges .rice { border-radius: 2px;} } .circle-checkboxes .rice { border-radius: 6px;} } input:checked + .rice { background-attachment: scroll; background-repeat: no-repeat; background-position: bottom right; } /* Selects */ .selectrice { position: relative; cursor: default; overflow: hidden; text-align: left; } #settings .selectrice { display: inline-block; } .selectrice::after { content: \"\"; border-right: .25em solid transparent; border-left: .25em solid transparent; position: absolute; right: .4em; top: .5em; } .selectrice::before { content: \"\"; height: 1.6em; position: absolute; right: 1.3em; top: 0; } /* Select Dropdown */ #selectrice { padding: 0; margin: 0; position: fixed; max-height: 120px; overflow-y: auto; overflow-x: hidden; z-index: 32; } #selectrice:empty { display: none; } /* Post Form Shortcut */ .qr-shortcut.on-page { font-size: 250%; } /* Post Form */ #qr { z-index: 20; position: fixed; background: none; border: none; padding: 1px; min-width: 248px; background: transparent; border: 1px solid transparent; } .sidebar-large #qr { min-width: 299px; } .rounded-edges #qr, .rounded-edges #qrtab { border-radius: 3px 3px 0 0; } .post-form-style-fixed #qr { top: auto !important; } .sidebar-location-left:not(.post-form-style-float) #qr { left: 0 !important; right: auto !important; } .sidebar-location-right:not(.post-form-style-float) #qr { right: 0 !important; left: auto !important; } :root:not(.post-form-style-float) #qr { bottom: 0 !important; } .fourchan-ss-navigation.fixed.bottom-header:not(.post-form-style-float) #qr, .fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-float) #qr { bottom: 1.5em !important; } .post-form-style-slideout #qr { top: auto !important; } .post-form-style-slideout.sidebar-location-left #qr { transform: translateX(-93%); } .post-form-style-slideout.sidebar-location-right #qr { transform: translateX(93%); } .post-form-style-slideout #qr:hover, .post-form-style-slideout #qr.has-focus, .post-form-style-slideout #qr.dump { transform: translate(0); } .post-form-style-tabbed-slideout #qr { top: auto !important; } .post-form-style-tabbed-slideout.sidebar-location-left #qr { transform: translateX(-100%); } .post-form-style-tabbed-slideout.sidebar-location-right #qr { transform: translateX(100%); } .post-form-style-tabbed-slideout #qr:hover, .post-form-style-tabbed-slideout #qr.has-focus, .post-form-style-tabbed-slideout #qr.dump { transform: translateX(0); } .post-form-style-tabbed-slideout #qrtab { position: absolute; top: 0; width: 120px; text-align: center; border-width: 1px 1px 0 1px; cursor: default; } .post-form-style-tabbed-slideout.sidebar-location-left #qrtab { transform: rotate(90deg); transform-origin: bottom right; left: 100%; } .post-form-style-tabbed-slideout.sidebar-location-right #qrtab { transform: rotate(-90deg); transform-origin: bottom right; right: 100%; } .post-form-style-tabbed-slideout #qr:hover #qrtab, .post-form-style-tabbed-slideout #qr.has-focus #qrtab, .post-form-style-tabbed-slideout #qr.dump #qrtab { opacity: 0 !important; } .post-form-style-slideout #qrtab input, .post-form-style-slideout #qrtab .rice, .post-form-style-tabbed-slideout #qrtab input, .post-form-style-tabbed-slideout #qrtab .close, .post-form-style-tabbed-slideout #qrtab .rice, .post-form-style-tabbed-slideout #qrtab span { display: none; } .post-form-style-tabbed-slideout #qrtab .selectrice { text-align: center; } .transparent-post-form #qr { opacity: 0.2; transition: opacity .3s ease-in-out 1s; } .transparent-post-form #qr:hover, .transparent-post-form #qr.has-focus, .transparent-post-form #qr.dump { opacity: 1; transition: opacity .3s linear; } :root:not(.show-post-form-header):not(.post-form-style-float):not(.post-form-style-tabbed-slideout) #qrtab, .post-form-style-float .autohide:not(:hover):not(.has-focus) form, .show-post-form-header.post-form-style-fixed .autohide:not(:hover):not(.has-focus) form { display: none !important; } :root:not(.post-form-style-tabbed-slideout) #qrtab { margin-bottom: 1px; } #qr.autohide:not(:hover):not(.has-focus) #qrtab { margin-bottom: 0; } .post-form-slideout-transitions.post-form-style-slideout #qr, .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr { transition: transform .3s ease-in-out 1s; } .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr.dump, .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr:hover, .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr.has-focus, .post-form-slideout-transitions.post-form-style-slideout #qr.dump, .post-form-slideout-transitions.post-form-style-slideout #qr:hover, .post-form-slideout-transitions.post-form-style-slideout #qr.has-focus { transition: transform .3s linear; } .post-form-slideout-transitions #qrtab { transition: opacity .3s ease-in-out 1s; } .post-form-slideout-transitions #qr:hover #qrtab { transition: opacity .3s linear; } #qr .close { float: right; padding: 0 3px; } #qr .warning { min-height: 1.6em; vertical-align: middle; padding: 0 1px; border-width: 1px; border-style: solid; } .persona { display: flex; flex-direction: column; align-items: stretch; } .compact-post-form-inputs .persona { flex-direction: row; } #qr textarea.field { height: 11.6em; min-height: 6em; } #qr.has-captcha textarea.field { height: 6em; } .compact-post-form-inputs .persona input.field { flex: 1 1; margin: 0 0 0 1px; } .compact-post-form-inputs .persona input:focus { flex: 3 1; } .compact-post-form-inputs .persona input.field:first-child { margin: 0; } .compact-post-form-inputs #qr textarea.field { height: 14.9em; min-height: 9em; } .compact-post-form-inputs #qr.has-captcha textarea.field { height: 9em; } .tripcode-hider .tripped:not(:hover):not(:focus) { color: transparent !important; } .textarea-resize-horizontal #qr textarea { resize: horizontal; } .textarea-resize-vertical #qr textarea { resize: vertical; } .textarea-resize-both #qr textarea { resize: both; } .textarea-resize-none #qr textarea { resize: none; } .captcha-img { margin: 1px 0 0; text-align: center; line-height: 0; } .captcha-img img { width: 246px; } .captcha-img, .captcha-img img { height: 4em; } .captcha-input { width: 100%; margin: 1px 0 0; } .field, .selectrice, button, input:not([type=radio]) { -moz-box-sizing: border-box; height: 1.6em; margin: 1px 0 0; vertical-align: bottom; padding: 0 1px; outline: none; transition: color .25s, border-color .25s, flex .25s; } .selectrice { padding-right: 1.6em; } #qr textarea { min-width: 100%; } #file-n-submit { display: flex } #qr [type='submit'] { width: 60px; } [type='file'] { position: absolute; opacity: 0; z-index: -1; } /* Fake File Input */ #qr-filename, #qr-filerm, .has-file #qr-no-file { display: none; } #qr-no-file, .has-file #qr-filename { display: block; } #qr-filename { border: medium none; vertical-align: top; padding: 0; margin: 0; height: auto; background: transparent none; overflow: hidden; text-overflow: ellipsis; width: 88%; } #qr-filename:not(.edit) { pointer-events: none; } .has-file #qr-filerm { display: inline-block; } #qr-extras-container { position: absolute; right: 0; top: 0; z-index: 2; } #qr-extras-container > label, #qr-extras-container > a { cursor: pointer; margin-right: 3px; } #qr-filename-container { -moz-box-sizing: border-box; display: inline-block; position: relative; margin-right: 1px; flex: 1 1; overflow: hidden; padding: 2px 1px 0; } /* Thread Select */ #qr-thread-select, #qr-thread-select .selectrice div { display: inline; } #qr-thread-select .selectrice { cursor: pointer; display: inline-block; width: 120px; border: none; background: none transparent; padding: 0; margin: 0; height: auto; } #qr-thread-select .selectrice::before, #qr-thread-select .selectrice::after { display: none; } /* Dumping UI */ .dump #dump-list-container { display: block; } #dump-list-container { display: none; position: relative; overflow-y: hidden; margin-top: 1px; } #dump-list { overflow-x: auto; overflow-y: hidden; white-space: nowrap; width: 248px; max-width: 100%; min-width: 100%; } #dump-list:hover { overflow-x: auto; } .qr-preview { -moz-box-sizing: border-box; counter-increment: thumbnails; cursor: move; display: inline-block; height: 90px; width: 90px; padding: 2px; opacity: .5; overflow: hidden; position: relative; text-shadow: 0 1px 1px #000; transition: opacity .25s ease-in-out; vertical-align: top; } .qr-preview:hover, .qr-preview:focus { opacity: .9; } .qr-preview::before { content: counter(thumbnails); color: #fff; position: absolute; top: 3px; right: 3px; text-shadow: 0 0 3px #000, 0 0 8px #000; } .qr-preview#selected { opacity: 1; } .qr-preview.drag { box-shadow: 0 0 10px rgba(0,0,0,.5); } .qr-preview.over { border-color: #fff; } .qr-preview > span { color: #fff; } .remove { background: none; color: #e00; font-weight: 700; padding: 3px; } a:only-of-type > .remove { display: none; } .remove:hover::after { content: \" Remove\"; } .qr-preview > label { background: rgba(0,0,0,.5); color: #fff; right: 0; bottom: 0; left: 0; position: absolute; text-align: center; } .qr-preview > label > input { margin: 0; } #add-post { cursor: pointer; font-size: 2em; position: absolute; top: 50%; right: 10px; transform: translateY(-50%); } /* Ads */ .fade-ads .topad img, .fade-ads .bottomad img { opacity: 0.3; transition: opacity .3s linear; } .fade-ads .topad img:hover, .fade-ads .bottomad img:hover { opacity: 1; } .hide-ads .bottomad + hr, .hide-ads .topad, .hide-ads .bottomad, .hide-ads .ad-plea { display: none; } .shrink-ads .topad a img, .shrink-ads .bottomad a img { width: 500px; height: auto; } /* Possibly temporary. Non-classed Ad Pleas only appear to be showing up in threads now? */ .mobile + .mobile + .center, body > .center { display: none; } .ad-plea-middle, .middlead { display: none; } /* Mascot Positions */ #mascot { display: none; position: fixed; z-index: -1; bottom: 0; left: 0; right: 0; line-height: 0; } .click-to-toggle #mascot { cursor: pointer; } .mascot-position-above-post-form.post-form-style-fixed:not(.post-form-decorations) #mascot img { margin-bottom: -2px; } .mascots #mascot { display: block; } .sidebar-location-right.mascot-location-sidebar #mascot, .sidebar-location-left.mascot-location-opposite #mascot { left: auto; } .sidebar-location-left.mascot-location-sidebar #mascot, .sidebar-location-right.mascot-location-opposite #mascot { right: auto; } .sidebar-location-left.mascot-location-sidebar #mascot img, .sidebar-location-right.mascot-location-opposite #mascot img { transform: scaleX(-1); } .fourchan-ss-navigation.bottom-header.fixed #mascot, .fourchan-ss-navigation.index.pagination-sticky-bottom #mascot { bottom: 1.5em } .mascots-overlap-posts #mascot { z-index: 3; } .mascot-position-middle #mascot { bottom: 50% !important; transform: translateY(50%); } .mascot-position-top #mascot { bottom: auto !important; top: 17px; } /* Options */ #overlay { position: fixed; z-index: 30; top: 0; right: 0; left: 0; bottom: 0; background: rgba(0,0,0,.5); } #appchanx-settings { width: auto; left: 15%; right: 15%; top: 15%; bottom: 15%; position: fixed; z-index: 31; padding: .3em; } .rounded-edges #appchanx-settings, .rounded-edges #appchanx-settings fieldset, .rounded-edges .mascots-container, .rounded-edges .section-container, .rounded-edges .sections-list > a { border-radius: 3px; } .description { display: none; } #appchanx-settings h3, .section-keybinds, .section-mascots, .section-script, .style { text-align: center; } .section-keybinds table, .section-script fieldset, .section-style fieldset { text-align: left; } .section-keybinds table { margin: auto; } #appchanx-settings fieldset { padding: 5px 0; vertical-align: top; border: 0; margin: 0 3px 6px; display: inline-block; } .single-column-mode #appchanx-settings fieldset { display: block; margin: 0 auto 6px; } #appchanx-settings .section-advanced fieldset { display: block; margin: 0 auto 6px; } .section-advanced .archive-cell { min-width: 200px; } .section-advanced .selectrice { display: inline-block; clear: both; } .section-container { overflow: auto; position: absolute; top: 1.7em; right: 5px; bottom: 5px; left: 5px; padding: 5px; } .sections-list { padding: 0 3px; float: left; } .sections-list > a { cursor: pointer; position: relative; padding: 0 4px; z-index: 1; height: 1.4em; display: inline-block; border-width: 1px 1px 0 1px; border-color: transparent; border-style: solid; } .sections-list > a.tab-selected { border-style: solid; } .credits { float: right; } #appchanx-settings h3 { margin: 0; } .section-script fieldset > div, .section-style fieldset > div, .section-advanced fieldset > div { overflow: visible; padding: 0 5px 0 7px; } #appchanx-settings tr:nth-of-type(2n+1), .section-script fieldset > div:nth-of-type(2n+1), .section-advanced fieldset > div:nth-of-type(2n+1), .section-style fieldset > div:nth-of-type(2n+1), .section-keybinds tr:nth-of-type(2n+1), #selectrice li:nth-of-type(2n+1) { background-color: rgba(0, 0, 0, 0.05); } article li { margin: 10px 0 10px 2em; } #appchanx-settings .option { width: 50%; display: inline-block; vertical-align: bottom; } .option input { width: 100%; } .optionlabel { padding-left: 18px; } .rice + .optionlabel { padding-left: 0; } .section-script fieldset, .styleoption { text-align: left; } .section-style fieldset { width: 370px; } .section-script fieldset { width: 200px; } #mascotcontent, #themecontent, .suboptions { overflow: auto; position: absolute; top: 0; right: 0; bottom: 1.7em; left: 0; } #mascotcontent, #themecontent { padding: 5px; } #themecontent { top: 1.8em; } .mAlign { height: 250px; vertical-align: bottom; display: table-cell; line-height: 0; } #save, .stylesettings { position: absolute; right: 10px; bottom: 0; } .section-style .suboptions { bottom: 0; } .section-container textarea { font-family: monospace; min-height: 150px; resize: vertical; width: 100%; } /* Hover Functionality */ #mouseover { z-index: 33; position: fixed; max-width: 70%; } #mouseover:empty { display: none; } /* Mascot Tab */ #mascot_hide { padding: 3px; position: absolute; top: 2px; right: 18px; } #mascot_hide .rice { float: left; } #mascot_hide > div { height: 0; text-align: right; overflow: hidden; } #mascot_hide:hover > div { height: auto; } #mascot_hide label { width: 100%; display: block; clear: both; text-decoration: none; } .mascots-container { padding: 0; text-align: center; } .mascot, .mascotcontainer { overflow: hidden; } .mascot { position: relative; border: none; margin: 5px; padding: 0; width: 200px; display: inline-block; background-color: transparent; } .mascotcontainer { height: 250px; border: 0; margin: 0; max-height: 250px; cursor: pointer; bottom: 0; border-width: 0 1px 1px; border-style: solid; border-color: transparent; overflow: hidden; } .mascot img { max-width: 200px; } .export-button, .mascotname, #mascot-options { -moz-box-sizing: border-box; padding: 0; width: 100%; } #mascot-options { opacity: 0; transition: opacity .3s linear; } .mascot:hover #mascot-options { opacity: 1; } #mascot-options { position: absolute; bottom: 0; right: 0; left: 0; } .export-button { position: absolute; bottom: 1.7em; right: 0; left: 0; text-align: center; } #mascot-options a { display: inline-block; width: 33%; } #upload { position: absolute; width: 100px; left: 50%; margin-left: -50px; text-align: center; bottom: 0; } #mascots_batch { position: absolute; left: 10px; bottom: 0; } /* Themes Tab */ #themes h1 { position: absolute; right: 300px; bottom: 10px; margin: 0; transition: all .2s ease-in-out; opacity: 0; } #themes .selectedtheme h1 { right: 11px; opacity: 1; } #addthemes { position: absolute; left: 10px; bottom: 0; } .theme { margin: 1em; } /* Theme Editor */ #themeConf { position: fixed; top: 0; bottom: 0; width: 296px; z-index: 10; } .sidebar-location-right #themeConf { right: 2px; left: auto; } .sidebar-location-right #themeConf { left: 2px; right: auto; } #themebar input { width: 30%; } .option .color { width: 10%; border-left: none !important; color: transparent !important; } .option .colorfield { width: 90%; } .themevar textarea { min-width: 100%; max-width: 100%; height: 20em; resize: vertical; } /* Mascot Editor */ #mascotConf { position: fixed; height: 17em; bottom: 0; left: 50%; width: 500px; margin-left: -250px; overflow: auto; z-index: 10; } #mascotConf .option, #mascotConf .optionlabel { -moz-box-sizing: border-box; width: 50%; display: inline-block; vertical-align: middle; } #mascotConf .option input { width: 100%; } #close { position: absolute; left: 10px; bottom: 0; } /* Gallery */ #a-gallery { position: fixed; top: 0; bottom: 0; left: 0; right: 0; z-index: 26; display: flex; flex-direction: row; background: rgba(0,0,0,0.7); } .gal-viewport { display: flex; align-items: stretch; flex-direction: row; flex: 1 1 auto; } .gal-thumbnails { flex: 0 0 150px; overflow-y: auto; display: flex; flex-direction: column; align-items: stretch; text-align: center; background: rgba(0,0,0,.5); border-left: 1px solid #222; } .hide-thumbnails .gal-thumbnails { display: none; } .gal-thumb img { max-width: 125px; max-height: 125px; height: auto; width: auto; } .gal-thumb { flex: 0 0 auto; padding: 3px; line-height: 0; transition: background .2s linear; } .gal-highlight { background: rgba(0, 190, 255,.8); } .gal-prev { order: 0; border-right: 1px solid #222; } .gal-next { order: 2; border-left: 1px solid #222; } .gal-prev, .gal-next { flex: 0 0 20px; position: relative; cursor: pointer; opacity: 0.7; background-color: rgba(0, 0, 0, 0.3); } .gal-prev:hover, .gal-next:hover { opacity: 1; } .gal-prev::after, .gal-next::after { position: absolute; top: 48.6%; transform: translateY(-50%) display: inline-block; border-top: 11px solid transparent; border-bottom: 11px solid transparent; content: \"\"; } .gal-prev::after { border-right: 12px solid #fff; right: 5px; } .gal-next::after { border-left: 12px solid #fff; right: 3px; } .gal-image { order: 1; flex: 1 0 auto; display: flex; align-items: flex-start; justify-content: space-around; overflow: auto; /* Flex > Non-Flex child max-width and overflow fix (Firefox only?) */ width: 1%; } .gal-image a { margin: auto; line-height: 0; } .gal-fit-width .gal-image img { max-width: 100%; } .gal-fit-height .gal-image img { max-height: 95vh; max-height: calc(100vh - 25px); } .gal-buttons { font-size: 2em; margin-right: 10px; top: 5px; color: #ffffff; text-shadow: 0px 0px 1px #000; } .gal-buttons, .gal-name, .gal-count { position: fixed; right: 178px; } .hide-thumbnails .gal-buttons, .hide-thumbnails .gal-count, .hide-thumbnails .gal-name { right: 28px; } .gal-name { bottom: 5px; background: rgba(0,0,0,0.6) !important; border-radius: 3px; padding: 1px 5px 2px 5px; text-decoration: none !important; color: #fff !important; } .gal-name:hover, .gal-close:hover { color: rgb(95, 95, 101) !important; } .gal-count { bottom: 26px; background: rgba(0,0,0,0.6) !important; border-radius: 3px; padding: 1px 5px 2px 5px; color: #fff !important; } /* Catalog */ #content .navLinks, #info .navLinks, .btn-wrap { display: block; } .navLinks > .btn-wrap:not(:first-of-type)::before { content: ' - '; } .button { cursor: pointer; } #content .btn-wrap, #info .btn-wrap { display: inline-block; } #post-preview, #quote-preview { position: absolute; z-index: 22; } .rounded-edges #post-preview { border-radius: 3px; } #settings, #threads, #info .navLinks, #content .navLinks { text-align: center; } #threads .thread { vertical-align: top; display: inline-block; word-wrap: break-word; overflow: hidden; margin: 1px; padding: 5px 0 3px; text-align: center; } .extended-small .thread, .small .thread { width: 165px; max-height: 320px; } .small .teaser, .large .teaser { display: none; } .extended-large .thread, .large .thread { width: 270px; max-height: 410px; } .extended-small .thumb, .small .thumb { max-width: 150px; max-height: 150px; } .panel { position: fixed; top: 50% !important; left: 50%; transform: translate(-50%, -50%); padding: 5px; } .icon::after { display: inline-block; float: right; width: 1em; cursor: pointer; } .helpIcon::after { content: '?'; } .closeIcon::after { content: '\uf00d'; font-family: FontAwesome; font-weight: normal; font-style: normal; text-decoration: inherit; -webkit-font-smoothing: antialiased; font-size:14px !important; } /* Front Page */ #logo { text-align: center; } #doc { -moz-box-sizing: border-box; margin: 10px auto; width: 1006px; padding: 2px; position: relative; } .rounded-edges #doc, .rounded-edges #doc div { border-radius: 3px; } #boards .boxcontent { vertical-align: top; text-align: center; } #filter-container, #options-container { top: 4px; right: 8px; position: absolute; } #filtermenu, #optionsmenu { top: 100% !important; left: auto !important; right: 0 !important; } #boards .column { -moz-box-sizing: border-box; display: inline-block; width: 180px; text-align: left; vertical-align: top; } .bd ul, .boxcontent ul { vertical-align: top; padding: 0; margin: 0; } .right-box .boxcontent ul { padding: 0 10px; } .yuimenuitem, .boxcontent ul > li { list-style-type: none; } .boxbar { position: relative; } #doc h3, .boxbar h2 { margin: 0; } #doc h3 { text-decoration: none !important; } .underline-links #doc h3 { text-decoration: underline !important; } #ft, .box-outer { margin: 2px 0 0; overflow: hidden; } #ft, .boxbar, .boxcontent { padding: 0 8px; } .yui-module { position: absolute; } .yuimenuitem::before { content: \" [ ] \"; font-family: monospace; } .yuimenuitem-checked::before { content: \" [x] \" } .yui-g { overflow: hidden; } .yui-u { display: inline-block; vertical-align: top; width: 499px; float: right; } .yui-u.first { float: left; } #recent-images .boxcontent { text-align: center; } #ft { text-align: center; } #ft ul { padding: 0; } #ft li { list-style-type: none; display: inline-block; width: 100px; } #preview-tooltip-nws, #preview-tooltip-ws, #ft .fill, .clear-bug { display: none; } /* ExLinks */ #exlinks-options-content { padding: 5px; } /*! * Font Awesome 3.2.1 * the iconic font designed for Bootstrap * ------------------------------------------------------------------------------ * The full suite of pictographic icons, examples, and documentation can be * found at http://fontawesome.io. Stay up to date on Twitter at * http://twitter.com/fontawesome. * * License * ------------------------------------------------------------------------------ * - The Font Awesome font is licensed under SIL OFL 1.1 - * http://scripts.sil.org/OFL * - Font Awesome CSS, LESS, and SASS files are licensed under MIT License - * http://opensource.org/licenses/mit-license.html * - Font Awesome documentation licensed under CC BY 3.0 - * http://creativecommons.org/licenses/by/3.0/ * - Attribution is no longer required in Font Awesome 3.0, but much appreciated: * \"Font Awesome by Dave Gandy - http://fontawesome.io\" * * Author - Dave Gandy * ------------------------------------------------------------------------------ * Email: dave@fontawesome.io * Twitter: http://twitter.com/davegandy * Work: Lead Product Designer @ Kyruus - http://kyruus.com */ @font-face{font-family: 'FontAwesome';src: url('data:application/font-woff;base64,d09GRgABAAAAAK2QAA4AAAABOwwAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABGRlRNAAABRAAAABwAAAAcZi+PV0dERUYAAAFgAAAAHwAAACABwwAET1MvMgAAAYAAAAA+AAAAYIsCehVjbWFwAAABwAAAASQAAAJy0Wu8A2dhc3AAAALkAAAACAAAAAgAAAAQZ2x5ZgAAAuwAAJmaAAEY9H87ZapoZWFkAACciAAAADEAAAA2A9wdq2hoZWEAAJy8AAAAHwAAACQNggfraG10eAAAnNwAAAHJAAAGSBTsDgdsb2NhAACeqAAAAwcAAAMuqThigG1heHAAAKGwAAAAHwAAACAB7AIcbmFtZQAAodAAAAFlAAACuDv6ZZ5wb3N0AACjOAAACk0AABFdUI+v+ndlYmYAAK2IAAAABgAAAAa52FJ3AAAAAQAAAADMPaLPAAAAAMtUgjAAAAAAzp1qV3jaY2BkYGDgA2IJBhBgYmBkYGScCiRZwDwGAAq9AMkAeNpjYGZ9wjiBgZWBhaWHxZiBgaENQjMVM0SB+ThBQWVRMYMDg8JXBjaG/0A+GwOjMpBiRFKiwMAIAANpCRUAAHjazZG7SgNhEIXn31zUIPnHa2KUZbMPoD5BWLAPW9hYGLewlJAnCHmCkMY2pNQmiAiSzspSfIFcQLCUM0W8RM3vxhVBwUYsPDBnOHD4ihkiilE0a6RCJ3UQJvWe48oPt08eJYjJoRYdU5vO6NJJORvOXt51bTcYENKwUUARJZRRRR1NtHGKK/Rwh7GkxZZ1KUhRSlKWqtSlOSRjQvKEePRBpC9EAiMPDz4CVFBDAy2c4ALXGABCwuLIpnjiSyAVqUljQjQ3Zt/smh2zbbYGqf5t/7w37I66HSfHq5zjLGd4mZd4kRd4nueYOcYWKyZt9Fi/6hf9rEf6ST/qB30/exhd42+lkvSJVVZo1vdC9Ir/oKlkZjqxMkPZHxvxX3HfAOwveKYAAQAB//8AD3javL0JfFTl1TB+z3O3mTv73FmSyWQy+2SBJGS2AFmGsJME2QQExIiiCC6gIIrbKIjiLiqltmrUqqWrXezXavGd2mpXfW1rV/33i221/V6ttbY/WyFz+c7z3JnJJCSiff/vB5l7n309z/Occ55zzuUIt53jeLuED07muGzIEeIdIccIFLTcdjK8XQwe2y5xxzj6D7iqfzOo/8wTnPSomOfq0eOSwRHq8LikSCgcT2WSIQfE06keSIY6AiA92lK8GXK+eNw3mqdPyBVvbok2esW8tzEqLohgdJGLp+L4x3PkipaIt85gqGN1Yh0c1tGCHofLSsKtJNVDkh1ehzjem8pkIZPs8EjcvC3nrzt/yzx8Tb9gTXG8Nx7gc2Z7Y6cYPD7csbTF7W5Zei6+EqT2L8XZ1QH89xuSCnBCJ0dYG/LYBpkLYdftXJD+ALsaTgA+onFid2aiQcHjdOMweIS89oF2h/YByHApLw+kMlHtyNdeu1M7fvSSS46CCAEQj15yNayJEUwAsp5Yy6cG4rD66rEUlxzVjt/52te0IzE6O9yJvMyJHOfjurlBjos5JFmQraQFRwAS8Vg84XB5cKwzji7SyuMcSG6X1+MNCLNJRw+fzWR7IOvQJyftoNODA5UPxrR/PJjMXdQO0H5RLvmg9o9YULWIBYsKomQ2HMtZ1Hu+87I0K5xtdQG4WrPhWdLL38mcmd/YdyzXt3Fjn1jo2xjkuWjgpX0t7TNmtLfseykQLXIWVRUaidPoMCiiavnszsOPiTN8Macz5pshPna45e6h4wWaW6Bl6HNM+5bn/Bwn4JC2CmlsYUeAeHt4nFA6pvz9KWfxLiUy0NWmjfRcf8myaHTZJdf3jGhvFO/OO8k6Q/Ssc++Y+9q/WhbnotHc4pZ/vfb/vVH8rF72F3HuRriwDqMqFkfnLSbiEwE0q1IwzcbUTIdXFXFMfNp9q8HtUt1ar9aLE+omq7V7azvh/dfVLvV1eL+Tv9Lj0x7UzLLFXW9++21zvVuywj9gU507ZlwM329q0mYuNtIlQip1Gyn0GiFmwqnlY2K5HVM3Q9gBHdq6o0e1ddCxGPbAlfB91q6mqZtFXNDUA9dqN/Rov9LWf//7vFJuZseHtJK2ESEbx76BSyBUlSAk1SPS8e+gKysgcnYpGLdngmL+4JWjh648KLuDmQWbu419K2/cf+PKPmP35gWZoFvWCq9rz73+OvTsveLWW69Ib9517llzG1vSLfjXOPesc3dt5v+kx7/OcSa6pmRarw1rbuN6udO4s7hLuOu4O7mHuC9znJhOxVsgLNWDyzMbEKxP4QdHKs6gvrQMYGL8x0x/qvomLibIx31sZ5viIXBxX5GjHh6fo9xYjFiVU8tXpzpVmbgMP2ALScKFlKtEwf2TOYs+wgrW6FMYCz8+5uSrk2j3n6LAp4+xukW2iAUK8FL1fNLdetwI1cKEETtFPM8NpDQuNTCQIuw55ubzU8UQjm6jAymgT/KTKs/oT6aK4dhiZfvPybDIgVtvVTforXJM8MP/sH9ifYTrbNQKjZ2djZCjzzE3yVf7ivmp4z56ymo3BJmTPuDXFWdxzMlPGnrKBFWFIQhNOhf/v8/CRx9VEWNGWRiPYce5qeOq3f/mWI0bCjy7ruSs0k3CVzkP+vDMkKVwG0A81Qt4Shjx0QDSTf7itJv9y/w3a4f8fuqAOLmL+vn3lrEo/82wlfr9fu035G70YrkXn3hHdAoHuQjHRV02kMIJI9Cy46mscXz5HpdsBNHJStZ+q/1WLwni6CrVBvFS6b/F0A+N9VdK0fEZfb+I4Nk4T5/hFv1BpyWiz81s3Jbx0eGpBzyIoIR5cVNhXgKnWkZUC6ItI4iCjDnH4WP96anwMTJyUk7qfLMKSXtqa/8USFp1n2ycl2s/CWo/WvuLBVoryX28VrP2fuSWls59iS63Ji5NMSMiCUFsTTrlzGY8Xo8kW7H1DAPAgy/RCog/ej1OumfrOzTFs/e8pP1R+4H2x5f2PHyw5YKGoK1507bltxx9+egty7dtarYFG7Y2H3y4mB/YMoB/JP9pmnLPS+D/9Deg76KgtaX5guCSX165BZNjri1X/nJJ8ILmFmvwIu1ZsqTINmjCNmj8J1ZwxLF9gYtVwEUHkphD99P2TeaHU/k5p7VgdbIH5D+ee6jscF6qMSfk8PlekbkJdcOlo/Rl5WkQvHeMeUTqGZsPRmNcjP5UPCy5PB0UgnB9yjgjLpyRCK5RScb/tNW4XBMyBaR4gqKOiN9jUCvQwcAFnC2HJnEVZxD/Zz3EBe3NImqNlAFFq60gY1AA4e7QK4cOvUIO2c3fUl2RRYqx7i6P2XrLtDa7Ra7/ndUN/hlNtys2q+nahGywLXLWWf+XxW43PW2tbZyrGH13eyyW8YnvMNos5uujLLHPhomJh9ZwCC76ndlD/JlYx1qzT4ndYbzQa7u5w++wfNPu3mY0XZpRLGaTe31tx4w64rawtK2tM5ebzYoleqeyrTqxsjtpsOqJ2/3Ezc6OEi6rw8hsbi53vo6HVM+yeAq/ivSvK0Dp1h6AEI5uSJJFBmkVhCVSXtNZRt/iGLIzxGllc4oPmMKdH81bbTyf423W4hAU2mVF+64i85c4rUMb+0YRnxpioJNeYFtKT5iltgWQtjr5YBUYWadwFwP810cHEOYdMWHJLiMhxvsweHRg5ZW7VvLfZLU/EUulYk849fXvwwE7T+Q5la1/1jXseAn/ShvBk0VAi7CTIUFhjVLXCEql/djt8OKmgviplj+BOBfiqqSX9ML/7jFYeIuhOFAcMJsthh4DUch/BtcG/8GWxqsKIUEtSBFbiujCCAgAv9XiZM4SI5HJnOJ/GIAYlyh1BrLG5/vJd2nftC3foHwARv+KdH0YcHbx3EqW2hqCUDyBK2EiNulFsM4LnDbU2KlxJA9XKGbt++Z6etAfZ4csyTcO+aHT38hjEAxr+XozzDQr2pbRPI0W8Sxv9Gs/8A/pdbO16cK9e9oYZqvvOyWw4eytELSCPQDBDGcnuJvi1o47O4+bhL4jjOjgMHzwmPbrYwcPHoPGY3DpS9pD2kbtoZdegrPhETibH9EqcENhoahhqoOlHOSs6qQvvcTmsQPxpaW4PToQ2jlI861AyRSZd0s6neOKIHWTwGBK7ci8hNROGDcGoJAbppsLS0Z3jggbNo+wpgZclqctLqgBp/kfZid5v7WYszjBhcHauxjuAqelmGv1wcOGqAtWYogNQx7HJDZMAitdUQM87CN+AdjJpBUEs92O9KZqAcoasJzA5+JMj+BS/apF3zct6Dz+dk+ZjpAoEmjjYlw3YiilvbD8VsfNtNfT0UtXH3hkisdAPEtZTzoMuB2hDlHnKkGcvR7vbDzGkDT46U2zPj3rZngZweMZR4OWc2acWq7B4WgGJM2AEl9c8+MpPRf9g+AY3ndzJ/4RR1O9llNVKNQ3JaDA6KZcFazUcFGGA7gq7aqAituRxO2iBCw9YI8LVfAiDCnad0w1Jq1gMxg8BbZw8O8nFZg5ePAkqCFDZrP2HaMRcnbVxeDGqg07SUcVpB09CXQmaau+x+mboc6WoJggTN3WjVUtVKAXmw05288+tKn3urRhtskNOa1mM/QajVrBDh98SFMJgwmKAljoyodQKyT4EI+HV8gbio1BQ1bVd2Ov6uFPQBfw8Eqx6xV8QddZkCNDcd8x3Khq31HSPj7nSyvv1JIcr/DwrmYnZlJ4RAswzuTve7pJY204XFv8dXfVGNm4OsohoXg4O3RphRkcmymWvTAcLI7YHHZ7MBhqIMEPXfTksSVOrWA0qDGSj6lOVSv8+MNWPVTalKzsRYl4L8QjYStBnC3ZQc/7Dnqwy5JQQTKTHQKe/YjacRRSmx2Ohlvu/WEZ+dr9ymLZbjUdMILhIu1HXxhD1e4BddsNCOEip+V88cZE4JYDJRRvy1kKMd5iqFX23U1TQif4X9pzyebrcRFV4zNRbiFbBYQLhaOIsIxt0Uh54DHbUUFOygs7xbpSwXO6wcmFWNvxrP4T5LQt2jsHtb9uu15N0enClaceWPj1s/f/eYGpGcHRotbS/mEodq8U+H2LOgfuB/UguLbdgNlgRCTaP7SvXXze9apeRDylHuhbdMOljnO9Kq/S7BhyywE9wCKDGQaxa2qcgqJhSn4BBxMw0vQp/BPp0vQp/OoErpV6EhdKJwSmeggYP8o8PCMzJndjomPMQznB43i9MFQp7u+TuIp///DoJM/co7Q+YbCaCczWuKDz2BvoGk/T3d5dfapTWhDPX0oJenA5U5SVz5WJ7iAYYDsYgo2dPFfYeujQVm2kqB/zGF34Jhi0f32z0EnhMleiIxxclsFlZcPD7S6jY4MUq24lkbDOm6XrnOLMiDInGUMUa8+xDuX6t/aLhdq6X93ffc2GWxcXtHcddl+8wT3r7W9te/raeEfmujNXWnxxkVsUP26lHRfeiy9K9/fvKoq1ddad01LTDhrjPvJm0Gutv2LWbLU51Rwv37MwOrKfttBGEPF3j8dR6/GHCyKdIrjVELergR7nFdSsDGNIIxDsVYnAlPJdrm95Dqwdw0YXXh6eV/+k9ivtq9qvnqyfF7584Vjc2gOeb7m69o9ACgYgNbKf3PL4vTNCK7cFx5DP4MIu81mb7gXp05/Wjt276Sxz18LgGFIa3LYyNOPexz8BNS/u2fOi9me9X0GeE0YQ52T7Fh6LFdjFg8bD41mtal/TjrF9WIJBXKrC8HG6wmEQQyiaOaivQQovQSHPypo+eWmcPpGUmc2nWnl2peCdtA7In75AsfniNeFwDf3FfTZlwSQVa87De/1irM5d765tnddai++6mFjHQBf3u2/hnC1k7VnMbfs4bcIjtRTK7mmQ3mbE28Q4pPAQEJ12kqAEeSXFR+4RnP652yzmunii07Vk5colrs5E3Gex3Aaf035uQTBNyA1ya/SqW265KtqKThb5848+ClntJa04W4z7Eq56W+bRbz6asdW7Egj9s7+hpbTr1mNM1CtYhFrferBDB9jX+2rR641ikvWcmRH5FObpPaQJd1aV8+KJ24Anfhuec3StuiNpFX8h/AGjVSjyjz90QCkcabd0xBFxhNzJNOhJHJDHf3weSS9KdtAfz9HnCa6YF/J5Gq3l2buI/0X80SCeo9lGAa6DUj4aS/IaC6d8ZgwkLCENpj+O3Q2Wz4aT+5HgWkp9mU3548mII6n+N369+C8Y3NjQ8AD+9fRc29DQy/4e6O3Fv2vZ38be3qMbN9Jkvb1i/tj14nX/1o/Oi36m3ye+xfbo+ioeRQkjQgpijPjyQAE3x/6twuUxzZ1IpWPFdDw9kILhdD5OfhwTTDSyX8ulY5orFiM/ieXTMJwaSMeLmUQZN71P3laqK32q2kQ9FMlA3BNpXCT5EVoBeRYcbQ3AL2M0Lp8e+QjtS7FAfwNmwsrIj+Jpvdk8pyDOcyW2eRV3LrcTIRZpEiulu3A5Z1O4duPZHsKWcZw+JzowSvLKrEulfLLkZcc8ouEJjygxdy9k4mOkXJVfOr/Ro/1FvWzO6ObBO/01HgnwTCRmt+SdZuBFwvt5d7MAsiBEBbVNAAMhVo9kcFhUVyjhh7iFfLBkmUd7J7rwzNFP1ZlMSs0V/KfqMwaYJpP48b8IZisZstQKbnQUh9Gx5aQQITxz0ejluTXbls7tElqthjrJ5KpT4tviSqPBFJai28PGVtESEX274oaI0eDyGcyxUKLWAxJv3L5k9PLd8232ugUNPv5VT8QWqKAtWqHi1O9zPyGW7oqhwxsAd+nApowKfOpggee1cJvXHUokQmpte0RbqC2Mtul+t1fMGy2d4WP/DHdaDEH4rLY2RP2iEf3G8l6el/S9yIw0fxfHNembCeP7hMqgmHWUWNY6hhYpH88lsKT4N6P0AHefUfwN07sWIa8ToqplRMddRizqjtMQjyHDjUP+w/7G3Gk7gKN7TmfjcFGnPXPakEUdptjMMJLQw6ftIEHKnDjsH2o8we0oyQboNHOIa8IeUDEMxKNLyMAYAlVhV5X40HZ+8TtHjrxzhB+hKNOxPH2OJNXNacKlN6vJ4vlj/GR+6AhNShYf2jrK0vH4vHnGwoUzbj6eh4ocwxhvmY6fkVuOs8QjSULZkRDJMlw/q8JsQCLNO+6/2yUjFRMJ2wi9f8hmUm0khhPLpBg6AqAniMkS+cXnFj88aK0PdqWLtW7imXWG2+X/C9T0p00vnu9OzPQlapo8Fk9bW6cEy7afOXRa5w9mCXs7zWapbYPWU9/vdfgGeXfCDaRPe6N9Of9TrQcIkLMO7juunSab7DZ7imwhr7i14HvZ826ctXXuihkGVZDcCSRXDQZiItNDfotiDjgu/SOZ89Ocq8HsNgkS7w84FJfBWqGr2VmmcjFuM8fFPIzKwc0iTnsou2XVxdMwGoJ+7KINXFAanUyapyc8+98G0yHbQZFPxOzYOAUowMmMI4wDIun/2yCOA9MykNv7uVi8adbKZU8sqQOetPR9+aunr/p8aimRAYp/JNO9g60OwUhEARQwOZOBVQIIcPV00SlCk2vJ2vNb0jOnT2vO9fqu/sq6DfXujr4li29YsfP5Vb8M2YIrFi245NK+jcGgctcXtfds5EX5hoe29/dbpoX2PLCpZXTzRiNvVutq+vLwN+DuXeMRDGaemFZKFgCos/jq29ounbNgZ5trZtMFW28YOL0nuygarbEJArHwXEkGRKDregnHufVx6AU12yOke/k0HYusiCNGAViSq//zNiKxgaGesM4PZ8PhEBYPNNab6zrNBqfVJNfbPYam8/2KCt2JcN+9oQVABFnKZnIxs9koTPN0x1vMhM9lowGQZOIUa5xGVb32haYbl1x7OqiqK5a7Fcy5acvTjW54oPemjrhHIuR8K8HRVNV6j2q22xpmTot/f5v2wwffmi67bJIo1tc3KEB4wULALJfXxTHs4wXcjRynenFSe8Eb8noyvaTD64cGkOmUInbHACCMnZGlBnCo9BzQF4E+6xG2UvAdTyfSJahJ8PGMjjlS2tlK6HVBPOFI4yZg0y/36NaEm1SvfrFHeT3LM67/uEG97FcQC1v9stxso5MlJOpr6w02A7FY5YU3t4RDCqE8FPOMRhLstAVcIm91XTy46PG1d7d7CLhn3eoy8gYiYkZBMsQvbrnUbnH6TFKdPM0svRxyuq51zcKfM7RsWbVHvK5OxFIJ2A0GAN8D6XNnBVUb33J6zWCG2ARCxLMTh7Wva5+8pzVRKyt2waBMF3H2FINV8Ag+Y8geN7sjhb/BF3p2bPAIIkh1JmP7eSHVV+eAptXHScz3iA//YgJXdo2W9qb9jC+xhdtXmQPxlHOQ/khz4EjYE5NNAWV1SPTowLXbpl+wIgmHNG7GW5oCeBZ6ppiD87/UtHGqOVjxiem15TmQRELYDHT8xVqZAfH1Uterh+MjjX1qkqG3iGNDfwAap4HRYqJD71eqhv7Y3yedcOrhdP7uON4Ju8X779zly1zc9wGTSpFKEjTHmRSLyJi4cd8x5pO4UhxLKeCzMCbUct4pnP+P2q2LRvL5UruZTyxLBTEf+R9ot+Nj+se3u3q0q8f63x7p/ydtPrX7Y7b5Q3iCE2+pHafwTwY3HxZ/qr4Dp1oYCj3FQ8L4Y8wjIpJ9jJsqZir3SKU0uGwy5+jfK05h0tDJs7E7/5PGVOd30/uUlC7tC/9NyKAcU6tRGzEaIWi0WlQR/R+wHkqsKcfZU8hNdI+l4UeoyAbN7qePU/esupOT9rF0x6Dzjagkzn+3j0O0g4wDacUmikc+bhfJS35agi6Wgi7N+DG6qPMzmexyA5s/dnaW+1Qm4usBGDdL5hIWc51Tu+jI7mJu95Eju0lh9xG4x1lntiQoM6rZIapwz+PlmCO7H4ODquio0G2yzkO2cgGulY4kpYMyHUi+pQEHsop1jhXHvRPY5yS/fXj79mFh+7E85IYJYgsfsH5IdCTuqZa2FOw04fZiQcsVWFII4uCxARMwS/A4Y5kLhZJsJNIDb4nbOAmpyVqkCbhQNiG7k25IIQYBSOMgZoskPrbPAYgqAGU3I4oG29a/tT5PLvcocvH3Mj5JQM7A8GhBGxLfij2uDT0ezaTjb8Uw1bY8P+yhqRQPTfUjbWi0AMNkJB17HIYfi8f/K1HCPwVdxsQ7nqNiBco7iTMGO68Lg8ChkHavvXdRr027JwTT4LMwjS/JcHAXLRg9ForHQ7y04KJXYJr2yjj5FZVKp4fZndi4i3DuXnqnxd874fZrSMjpN13kbyffUer3ApxY4NyMz5tKtPKIlclWnpKGno5MjN7JU+Yoj7RBB9JHvNdDOBfUe/yyEBZkP0KWq39rP+G0V7S12ivLpR1nXOw3dqSSBv/FZ+yQlkM+GoKWUNZrt3uzoRYIRdP9/U+9omG/Xrn7BuOjt/7mzEA4HDjzN7c+arxOX6/Sv7CfEsLYTK6HW4St0meTi+NcerKgjgdtijDaqBBF9cUNLk2KBPJsymWccCZrx1+x8/DOIcIFHdojjqADNi4/snuUQTmf683YeN48w+r0ekYZGPIIYsacrXEIgsUhbUTYsEEb2eBf5j/shyEspnOIFCrlFP/zWb2U3UdqZbsDi5EkXeBkY9+1FizFTl7URopYFPFvgOAGP5ayrDL+7D6+hVs3UaZ3RkeJBqUSB1U9o6iw16Pq96TdEAnKkuphq55K9vfI9CaHSSFhl8V8uYvcCYvqG+xUpO3l3jn9Prvq/ouWZ6t/WDt62e7pvNcg2BXFM7M5Irsjs5decstTW4dxy/CpuJOTiFYs91O11Im+sFDu5S9VxVJjNxjhNS2P+0VzYe8B7UmvCRHs8PlD+zpnrBpatnLOrISHbTCYJFXu+3U4121MQtEx2bQyMuCkiaU7marf+4+XphzrbmVGFQsvjZ9TxSJJrj+N/qymr0ZbUVNzMb5BJjfh6+IaslF7bvxUKqQylRpOpcIb4BXMWwNfYhlqtA8wKy2kpMNzApcozufc0jnDWFqUTVUWVGAsLEqplE9Zujkz3ldZHIDJQlHqBT243E9wagpxVESFmJM+EDFCpJU5VeDYhQSNpk76wGig0cCR+z9eenV8bVV8A6qDlGH8LioONEGmy+3IZPmfqz6fWpxlFKqk8o3iZarZdyznM6vkBaNSXFfGuRHjXmcyVOmmtEwsf4pqWKJMVqrUdnKd5AXVd1LNs6ZoAiY2+4qzWFv2lPhqtZO0JVWpeaVes0GkT1WltYmGSWvD0R0rnvX1avE6cR/VzjAiwUq7xdbolmMve0Mhr9juJWcXAxaXTyz4XBZ0Rblxsou20gk/7lAVJ6odcSUNA6ZtMJqv9om5MaqnmgKKl2G3XM9JtUjjKKZx5YzllfSx81a65i31UGa9leTpdOjIC3TocGDo8OHQ0ZHDDpvpmJrIC8yBI4cPs4+8oBgr5Zfh5KTyvY7xV7O0qslqNIhVaiGGqWtHx+NjA0QeV4zVjRm3Jsa3ZWIjKrVX1zu+xgkVsfnGGiQQJYSTOo5T9U2BzQZUzQitxzoGYxT2xBeqpoVMLw+xr/imLnMV953Apz6e6RPfEEzijxFj4sTSPlQSR2fclDB5s7gzFiO3xbbF+mMxzQdvxtCxLUZu1R/Mo/m0uvhWdOpl7jrxlNCPZXrLclltTOvKSJ+9ejeE/hiWuzU2EIvBm5ovFhuIXhjFWkghlSjuwlLp9Q+8CW/Qd388jmHj1wC9r+SoNlEk5NBVhtyOkK43lAw5dOWhtANPinHSQgXadTb+J9g4gO5hgmi5ieJCuVLMyXmg5WTZqSr5pVK7yq05uQ1VukeT1lqifVsmkUMs19PC7mpTbUAZ3m1UkscGjK9P8dwGkNnTk+zoBS97jm/DNepTT6nqOrXORx2+OnSeHAJ7J7QNHvyw5KUQeGnKsfEyuTLaWkTHEb1kbfXSVlI5yar2iYJzPQK0tuX3+FzvdMJWWgVpcI5OlOMM+51Ys3bB77Fqpx8JmkMqTbdkQhuq5ctmcQsQc56op5ZqBZ0FSVujC6LQGwArlFPgOZztEaITRE4rMurcJY+v+Xve5t0nm+3GdCicau9vbO+9gEW2hILhWQ21kJ/Q+uGKMDv50tpDK35R4zxXMs+rqUmF4q0e/665URqtdqtO94y2Jd0TgWGsT5QGm1Xuk2MM9BgjugKE/IQuj5Mw5JzWobIA7ZAuHY3uqg6Skxo/jIEcjUWHVmAvJ3/HcCnE+Z2J7R2Dgzama1TRPWmFRIX3YgU5SREh6g+At6KW0gM6fwbjK2kxX6WMHshW0mI+LEP44kV0IV0UfPhCtpwufDg4MQAui/vujL31MPM+/FbsTho/IYBwU+WuBMC0qbOXAsbLgUaY1DynKxrJukZQLy6IlH5nUKJSbLhyXZmp5B4XH1R8yoED+Dio0Lcywf/ih0lCwg8nz1Tx1364OPTJstrGKiy8AUqHyJRCm/do6+jy/q2qnofve0DF53nqng8V3vw55lEhzlKyLDTvsY/Yzhs5I+dkusmpBDD5MpHJcSJQYcN0nZyShpAYXFO0Hhi+5IcHV4/Wkr/f9BiS02Jwz4vaH7QfaH+gQla4JXRC/Ytk78P7i7Yz1hz88bfJe+sPjt77CPRqL2i/ZxKdAZgF9dRFz8PciTS2oR9HqqSrpJ+tjL+W1hls7MwFhmDNSRVzEIvH+6nYAz0Lya2YKo6HoPYqHo9zSD6f7td+i+flADuYqXDELfH4kvhWTNCv4yVpsVCqT+dxMZ0zqPCq9IlilKFYiBV3JVLJBJYPsWIuNWdOihS0V7H+eCodxxOe5DIxdiRjBRDrT2PtEMfa2akc0XGIvNQv5qjWPpQ7VsF+Ksd/qUKpH0uiWla/ZUWxjmBR5NZINkMRCpL+kLbQtpbxlqewznxZ37w8mKVuVXCw0thipbSXaXziSDHcIj6QyqcGIE7Hrx/xjnRMR3Qor4diOr/FsR4YoHMRp+jIGO5ZoPBeoumo/LZVxEPMVdJ3byUJgn11hpKOMt2mUUpqZNOnPrljU09EFB02u1k22/jr0o+QH44gtUU4HqkzjZJfwJkbMqfvGt6cnSdFjDaXw+jDk7L+8e/vh3soJoKpuHHnaZveEq9nDEsvLz8mF9cGZYVDur3ozLe/K9rX71J14V2s/i4YwEV/Ke+lbu3r1K0oMHBXSWIX/uJj6StCwDQ9Jl/MZH9pBkzvYxlS8ZLMoOXE7eLfxcv09k3VjqnazeTsJmnIFO0muUkbQu6ZtNkV+xqirhNZWo8VYK2skAoAUcqK6uoOMX1RqudC1ViYB4YbO/ngZKEsfakugnXxOi01gV9Myz3OxGqFQqmkslKqToNSOopqDQXAhgdfYkzPTpR0VaHpeAb24tnnFSvtjWWo9pkki+KPWut8Od/5rdr7DNK191vPR39dKyjo1KNA0ReBUorS3oc3MfhijP6k9iJT3U5+EsMvxvj77y/HQJJpg79Yiak+DyitMp1JjTrLO/5EnX9eTSVoAOKoqh5C2vQtu7zlk686LQWLy4UPJ3EqivU1q6I4XNZvWVVxIh5y/K/PWlWX5VmLS4XzyEVmyWCQzMV7FJutfMeF7cpxFs6DVPMSiiU50iG3w13C+5LsFtnliaYY8pzs0PXUqnXQdEqLWVthp3NSN7/S4eGHtULUX/BHtc7vXutrwZkjv+5sbPFd81wjPIl4lK4DpWNT3zxz794zt3Xn893bqAu+aXV+vRNeKRS0aZ21dXX85ocbOpd14l/Dw8MUDSvDlK7huPfpvYOPPTaIL6fOL2M0sJvdYtCGC0yER5fcyFIdBNwTJU7nBQLVV4hQ8yVUElZXNKWSsQTRWfyjBihERHK+oL32hz24vGrcdRtdB0D+ho/EXa3aW6/+cuTeW2wHvfa2lp76QLPLQQw837Okx0+Maz7x7EXZr3/tq/cllIQrnKhJ9AbtfDwVP+fITe4aXHM1G9Wrt4B01qYR7bmLLmwTl+QGch5fvWCVLHJkMDNLFeYpyfRlP3tod9Rp442JmJJweI0b9u3UbcGIlB9qo9oX4sSbFhfbdBNexugUcQf3JgICvVMauy87wc04bWjotBlzBVh324F1Wd3Xx+u+4Yq0vKAu3XfmykWL1ieH8gBNq3Ze/4VN5ZCNN5RCSrgEHXeByrSHmGGeeAJ3fZ0vLskeBHY2FzrDnEkNc3QWghxuedkMvr1S/vAb3bqgV/cbh2+Eu+EVuLv4lN91zdf8jf49q138ha7btETxPS1xm8t1G/yGWOE3t5Hc27u2XPktqqL8rSu37Hr7xb//ncxs9H/tGpff71q9R/vZvMib2lvgeSMyL/IGeLT/eoPp8Q7LVAbcyNVy3dxc7nSE/GwrsKY6J7YzRttZ4rJiCir1TFsc6mBarJTXryIthFQ7Y0MLeFJHs/FEFhFt0rJ0zSbsyxPkwFgv4Ca4QNuwdYbiNO+xT7vzb2tdrk/CC2A5Y31GcYq+aCDE22MP3gA1Bii4EgsOabt+t+QVuODKy57oPevLM394e29hG+2nppGLx7r5V5l8u2g+eoZ9ARbbP+fXBxoGGt4Cu+Nsu1l1qkTR2m99owPen75vQTi3/AvP7nO+8+2vXbY999Wz9Lmz4/70LoOnEIWo2Cn3JB48ckWqFOilh1B1Z4u7ksX0mslS2pUsPBeJOWaHj3Hh2Y5YhOccXQu6HsaNSbXSB+yDH5tlk0m2alnFYuGfPJbv7a0Ph+upuHBDNFo6ky4UL6R6hrh920Atc70TRmAc8BagagZUAYltQ0bQ3V4Rl7w4NC038PCw6MjLZoG3Sdr/0Ypp0TJktBKb8eioiYCCbok8B7wmWHliylvt5JPDAwVxKFUYeLi4SLUOScBbYFQrPuewDhmJafSobLeYzzZCGnjwGux2U94iPjQ8kKMn2Qn9ruJk2euy1PVp3GUc5y1JjscmvKHaX2HelPbjqnTZCXGxCVoqJXIvVGW7wJOHoDYCQ5DTCtrwRDcZYe48ffIcDdHd2vCY6g6mqYQDKy04Fgn5gdQxpjGf39iX69sI+gtD9HqDOZYtl4PgKJYPBf2NoSQIQSZlS40djH6RJaEZClXBg8eZgRURn0P0mmFIfw6U6Bhcz+IIUjFZbgfVIZRbhSpxhfJddjcgUdMqJTLZgJAM6aoL4KxEhvAowCVsrZZ0wIMgk+2RKqnJ/V2DnkAy2T9thKnTHhMlo1ag99rBrZ3rUgMdfalZdbNLSajWdVm9kCY5wbUv7WquCbbWN83tXnPmFfP0MiYElnMJDRuemp5d1FTPWAyjVj8tBdcXAC9bveHW7sSZX2fxVO9R+w6/u5wg0NXb2nNR37orlq1OhljmcSF68rF7GNwOKWqKCAmuKEnEPSyeSMczcXoGillqjqEHqOKezL2rnfuPBf0vaMdmzHHUCbwICjETud3dVBMwPfDUHe/CwDf+AZ/mW7XPaL/5vOHLc60G4nGCYBdsvJUY0t7O1kWNZ4B06Ia/fGHz58fT/EmmOex2MayofJLh/hPgO3r4ysl2Sq7+89rD2iLt4ed1TZG2rhWtza0rutp0LzV4pOmW30rGkMZ8pJD/ofbsU09B3w91FmNqIO4RBA8lhCif+LyxpNXZynxibpfUL/SzG+0SjWecQNpVKDuf5isTdTp1Cru2UiYuvKHVIS1HKSydlmPlprFcE7trOYmOM1aTb7ToMfLtTXhTp9z4nE7VkVvLlJvOo05U7lXlPJ7ZMarlpdvdauW7oBvGad7qdgdCTBqgfEGX1m/o9C4ywyK8H0l/eocnclSPz2CSBYK0hQ1yapcKOVvcVyA5u3FYJnmbVnDNcmkFGlYs0DCq81fOgWteUCSH5IJhGEaUywF5j0fLO2qoEJqpYIJDNQ4t7/UCC4K8uWA0jWXRhqr4SXlR1+GeTW3M6FIYQulNtRZlMUDcLrliMZBCepaP6KYDOwKCl4ljMO0N/sfs9eNg7fG3QRZr+MPMjiCSnZ4Y+cpPdNa3vdZmEmQQvuKLp5nuhv7HFzSuJsbvketrFHs7Faf3WZPzBD6LTouzwROT41X6dq6T75XqGe8jv2/D8dyGffs2AD7J8IZ9/HCR+fkCfQb3jc3pGib33axDjX5Ol9XtqbQS1dQAOTW+fHlNg/Zky6f6jhfC6QZYhi4hF05rR0YLG1/q1r4sQqniIP4WNUS0ncmFvkBDBG7DN8waPmuRtlMSHEJVYyhvhyMFicnccAyIJl7xjl3okgIuugnXt1XXr8JvU3T9Vt3OClzlMlbfyyAnc3xBr6t8pzzxBnn8ffGkBY7dBk+4/S3d9pZsfMjVemINOi0fcoz/fbieLMHdl+THflQKbEzUZ5xdNarqBXnCUQ2OE0zXC/KjSL8dHxZ06SmGq79YLfAzjhfSzuXYqZhB/FZHbr2IxtJXPIGIrpduLIiv0hfl/yEllMictNlynXPm1c6Z371hzVXi9b8/rX59W/rcxfUei8+9bd7Ou301935p+/du2zwDae7mI7tHmdwUX9h9hH+w1tg4GLf0XbWmXpV3nt3ReWk31JL+XVaD0LsC1vEbF+7+1JFVTuN0IGO5joxrv8q4EdkI23XSjG0fcSfZGE9oZJ33hYbOi798eN/evSDBvdUNIVtfvWhG4tW7bt/7avFGchW8X12bXGXbh+JrVFOulespUZBV1ECmLM0VSoc4ezwo2T1B6uZDCG5ytSkA3YAc0qhUiMTZ2Wh9j8k0jR6itkyFfMlO4ejrVLMPuzn6vVzxainfnz7Gpfv70xI+yVf9zo19FEdo7DQwsafR5/LQAD2v08wCyWuFy2/J54+zDCJ9sjFbJN3D6N+FJfkqOs2MjGfKHh5K/zLl4oTsLTHmdEm/lDNasnSZLauFBgQ+t314u9rUvGx76c1/d5PDmAi38EOv+Zc2N/qLZz959NEXn4WO4Udf3AvnDPGt4eAmh0WRlq06Yyb/5PD27cuam9TtpbfGOTYF8ZDBzI3NS/3kob0vPjoMHc+++OjRJ7UHhvgWPDkdmxRpcMW6vvJas+FaexdnyIHzch13lDteJTem9w975qi4quwVuT/EYNHHN1dUZawImMxRSQY/nsBNhtbDssepuBEVP2JlUVVtL+45WL5eArbK8d/JzOcZFPGHBrYM4NmiP7W81fgpkzvcKcve3apJuSzWaDLL3qdNTvCGmy6XLSblLlnpsXvNhxVrJannCpo03FKd1GCmSc1dNq8Jk5L8fWZnUthDDANWl8tlHTCQPULSab7vPosjKQg9naWIZJMkXCEkHZb7Pm76kkmmEwy5RwAW0iWHdte3FBVqIk3tcxXFLAd2y+tU84VtNTblk4r7DNlwY51RsS71TIvXgMNUSWoymg2By+V1TuuFreOS2gc87WEvcRRHbrPb6mp31Ar8wo1uQtwbF/ICeutsdoyo99IIEg2eiVELm8gCGuett/Hv/ju5Knsww7FjjB9llxiWzcwa4WSnEMPuERjrgd6v4MKUEe0ISBTSmBaHFAnSFRtFqMS1S80dfVt75j9Wr7v6/mgHb1IJEgNE5CUQo/Z6t3L1Hd+G+XAtzCddd1ytuOvtUREkqneJyVzmjuj9V69brf3th7MCD0Pjzmv2e68/xN+q/dfbB+xrG41I0fKyJAkyT8VC3LHGmkU/233r2wcOFA9c8dNFNY0xd1wCjBQkSeatdpCNjWvt+4R1qza8u3+wf+EvK/g80wHs4i4as5oD9CBMZei9f4XCQlQAe0pJV+xXD+CBQ1lvuCJdbGWwn9RC6CCN7ad0UVKKjNrhwwRU9Fo3rSM8vrRDGx7KDflqYk2erBCvnRZtStiDQUusvs3bLv5875UFMRBxpl22YEt+hjGOWO4Xbo+eOfTMVTs92gjdP8EZ3TxrRo033pJIrtq/oP3JLYd12zsknxyc9ePZmzb6Lr+xxTtP7AimI1FnMS/JNoODLH7CF7AvXhLsmF/b7YAN0TOWhKKDc92ezYO3Pjy9pbE/TfLp/pq9/enaK/c1x+bcsuvMcw5zZTt9uqxqN7V/XbWjJdhcU0WqjM6Ika2iPmAiVb4jXrqPx9NUJ5ciVeVdjkmlUlNhldMHgYbuYLK7MqKV4WoJ2lxpZyQgblqT3/tzsd3bVh+zBIP2RFN0Wm1cyHqaYjU+HE8Y6liaP7zlyfZIZP+qZCLcaKpR22dvjmrvsDELenbmn71g+21fhC4+bpwh6LqiGhfZAI7u2vkdwSWL7QHf6SsWE4fBJkvFvDMaSQc7xHnelhsv923cNPvHswY7zj98zpmXz5s/JxbatHK1u2Nwb40+ao3Tpj14QBzc7HHPHYyGluh2lPkco/MR2zrJajGfm2iVWBw59vzJZoer1yXV4Z1Jbz5beUb901EMW3k8MpG8ypZw1Qm2oKV8y9yhDVuu2LyoxtnjrFm0+YotG4bmtjxD5pN5386/UbzbOYWdaP4Ly69e3GpPDs71ezz+uYNJe+viq5d/9pniy6Tt25+lxqKdk5mRHpOBDeI+0khxuZjLYyXVeIa7FFDCNmeRAF+5hask02/dSJ6AaLNoTAKUWscqeSnuCNSiuENSBH5YLY5QIUdmLx0K9CouOCQE3T6LLvSuWphnY1+R4qeCbCIdKZoFEwdLdhqCiDAXR8q6zLo9AmpPK81x2aQjgrseO7H1mwaKLIflZDri4dHNDmH3ROzuL3/60/uwYOfihTNh9iKy+E8Hr7h5MfkTz/9JtnVN2wmvVGN7e8g3fpmaNy+VnD9/9Am44/4Hd23uK94G++LOyIwHyGXVuB/jpzO7LyYqrw86KuFguARtAG+l5swSPKOiMklHiT6kRKMDd6ARxO7wjyCtqq1MEocZ6sQB7UJf/IFzKuYjU+c8QIaBiYsw22ral5CYrTc76uCNuO+q5wmn26fUuOcrNBzdRxOT2TCu120UVysRVCxJTnaXOCbuS1gDirmKbDMz8UaFWp8s7tSvFMltT6q6GCQZ0gplIV+WsCzgy4xK8iuowCTLx24WaT56xTlmJ8tL4XQKGDRW+pSKI5ZT0oSIhJoJRTz1II8wGQjCZUd2U2V8BrPAeqKNlGC2FIaY/v2TgyIki7kqyCUFHXINOlhXeAZUrt7CLaZ3GGmkID2xdMgl48nkdumnF7DLpPI86PcubEumNlFKzKp0FWUNP1pygjsqfPcEt+T2o/mVt7+4ozkdr++e27/LaR3FKdnVP7e7Pp5u3vHi7Ss7GyGILaPs02BjJ7n9kZ8OLf3s+0M/faT+sy/lF9618zQx0xQeTGaWrJ+vW8mZv35JJjkYbsqIp+28a2G+sVPni3bq+mAVfQgr5+ECuPamc0nudtw/pEScyscnPLKEjkTJ661605crIqVTSWqvC4NLUgutlD2X6BHoEZWII6YdD8utOC5eXMsB3kvHJ0xtw7Th6g4ARZbxx/cCFQJgC2nMUNQtBrPFaDCbO4xGg9NoTIsGhecVxS8pRhl/ewQbnhr2LrvD7phFgoLdzr9wZPeI3eFRUjPXnz2n6bTYdP/WRPzMF860py+tnxY7rSl39vqZjUZ3e98crzrb5XLbJTPiuS2KYulZNJca4/B4RsoL/5tGs8mAv7RZlnyi3CaLoizyYpOsmETJaNpllgSPINpNxGIivGKo4Qn/FbptEIPb8dezp0s1mdP2nn7l6et3GBtranw+U3C6ccd6DLhhWaZGiiLW2tIUbBR4o9Uqikqn1xtvs4AgxG/gPV6+QuSW7TwUGJ+KrfcPtzXIjIJmsnT49Lt5PYpaXyux66ayNvh59zndwHWf44bPM4ODzVRwk0ptnuCoITYoODNOKDTEpzA42LloUWcnGWosL8dGxEYLqqrlApXzVDyBsDaDO5eep1R5OZ0qWRegJzUVKKKrh7iZOAhdQvSymN3KOrMuohsl0tOyjPo1rC5tqKfFbAzGEA2+zmoyKwZFEYzqUlfXn2e3nD+388Ccoetm1HpqPDVn1858feZT51//i93520Y/dfWPZv6+E8MWb/bURhfnVy+9/7k9XX+apQ64li9RiCAYid1JXph2a13AP93nXe+JOcHY7q3xZGYs/j9/vb5xuMm7Zlq9pyE6/VfguvUx7Znj2Wn19ZcsrlnrbXy46ZJfvPSNObO7l7Yrm1d513kVh0PxSI0PjJeloDqDzGICpbsZlsbRvUIoGVtitnARu6DcSDo+1AneAK+b+qJOQjU9xLzL5N68cUNdMtewzLhpMK/99bT2CB8wOeVkZ0ftmjqr7IyY4kEbX2+dOXemIrth4HsHSNhaZ3R2dnS5rPXNQu3MBeoCiYfGujW1HZ1J2WkK8JH208CRH9xkXNaQS9Zt2LjZbXLxEqabWSs011tdXR2dTmOdNUwOfG8A3LKCZVvreVswboo45fJ5VbF5y51KwU0YGtMz2fi7MVWU3UdErnzG0LjhsQj9jNZtrki6/UUHZL2gfqjxlfwoB0+ccQY8YZ7SCgt3PA6HTj9d2yqu+3B7LGO8qPn0tpjqgOEORw20UdS7lSSqJAioU0RkhlmvRhqH8wZEZnzjZJYa4Rem06Lfozhnddpl1ezhz7kzSyyS3DSjSXHxfI2vzquY2tOt80TRIjtJF8z8jNTubKqN2mfe40Z0vhrlgTUm0dDir+ddypw+WbKQ7J3n8B6zKluaoi02xeMXpemtM4KCx33PTHu0tsnZLn1G+34XccoWUZzXmuZnjue/AZXlklaJ+od2GMeCWEHQKVJ6D66/usHjZXfnHsFbsgdG+YwZadXcs2DgU7/UfvYF7W+vR1pef/KCxxtC/pbm7ffMW9q3dNqVsP4Fw9H9tw1dNBS74Exhy6b5Vv8NWvGd/3XR3cIt5JqzRZP3K7uEOD/tjpVr++/7mhKP7j96nnvmZb1KWb+A58R3OTeFBj5CLeM4dPNzVOyMuOEEQOAP2uc/97kvPP+HOxJtbol/Rfvj6A/4TvB//hvPaH+0hCNBVs4TbF5X0DXKydREwr97vOGpyVEuWlBwSpz26p/rav/dc8pX92ft1bKwJskf1y4ZFGucP//3T53zeGeNOAh3H/+pLkrEjbPxFxtnoTpO+avJ8XZ7KEbDBTF13If7/6FXDg2NfWwAMVtme4cvlHUAqG2eQmdjlfXDb1HTPBUb6vpeUVuyR8ZNsBGUdNMGUOuLiF9TPQW6mWTT1J5ayC2N0P1BZ41bVCmvWizqB/gcAi4PWO7GvjEuOAaPjFjU45xqIUPFYYtKzabldVkVsfwtpe4qDV2PziSk2zPjClIOIEK1xylWYggXHYszM3v0usIu2U5UZ/1NtVHi0Z55ozbkdvjEYYjuuPQmYiEup/9OXwzMX9X+oF3zq9qIy+njQYL//fQzvwRdi1d73u9yh2rfgPkeEq29qd7psNx06Q7ttUfqXK5I7a9gL9R/1QKx2juR2LD88pmntVBJD5Qr3XE1cE0Ue+Am3HN5J35jJlQ2wwyTWq0V7G19bW190MZeD1UrFB/vED79gFBjHX3PWiMIX9FH2v68Y0OWt2Y3OJ63w9l9ejb69y6MWc6Cv8DvLQ6HpXhticzM1XaQjem+vnTxkQ62t+5ltHgrl2LQQCkr/HExK+4tVsDjzwr0vMxkK1bPgxRoeAcnOgQpT3kRAyntLG3XrD4h7pKcM9ri9Y99oVWertbximMPq3MEvgYvpgby2uXaLXAln2d809QArA+pG7clQnOSs5sCszrqmr3Xd12+akdmYx+1NZofSI1G+ae1nzVp7zVX+DZUvsOEO08WEbgUw1fClCaAUJyk7UGHi4h0aNlnCugAZ5z0RNJte7pdMh5Zdie/zD779OD5i4u7RednHivmHxNj2IMcriwtlxp49rnCZw2dyzoNny0892Tw9Nl2++Lzof0peFEDrF/Tkk+lBugiG0g9DL8B6bHnXE6VrjXV6XruMe2YVpIDJoiTaeI1jJbxIgjb2JOK1ctM7llmZtXps5exG+mT2jyizwZmC4o+vR79aWN2Z2Rx6JaAYm78dtrcUN/0dLvSZJYbXDfd5G9uUtqfbqpvMKe/3WhWArdMSNVUf9NN9U3j05D8hGzEQ7OZmsayNfvHF92kmBtuvTVgUsalqXybjK7pNLdlIu+RCfZRFRa5dBNAuWm4x1XzHsv8NKnEfCxp1ZZP6x6R4mqCfkMSqnAexceXdhQLgWjgjIU1fTWWxkULA/MXBoOLnn1++dESxxH6Eeo+ccERIcS4jjce/czsEssxqHhr3HXWGjInYmkMt/XGr3nUA5dXMx5dM9MrW+Z23zrNnVu+vHZmMZ/LVTMcB9IXHO6ZqXMb58/W2WZG1eG3+fklWfeKnlxk/555XYe5qvHJ4i5xGVKASYeOt+h2vloFdsuFGCj7ahtuFRR78Ur0cpCRuz0wgR5h6Hov6LcWOs6eDOnnP5WJ8wYkhuIMBYOROV2N9YQXyaJGaw2oTo/bsPAMHLFioWPpQAr6dU6kcPaaVS88C1t0qqU/rY3M/syz193xJEA3HxKOXPCJw1vgcs+j18R728KNlsgcUmOtc9d4FQim+/MkX9PRHOJ5iSzPeRDDDsW93XNbVqZnugaTqYEKK7ImePqKXC5eGt0iDtbs+Z+6TRw4z+Oe2XP4gvMPd83bsz+S61nhzi7hcRAdqrG/wqtlfG0GW0J5JKjphFYIsztV2aHfFDqY2V7dZhz7z44yxtiWqk65VrFEAWT07wYyhoLHy7CnMgn3+LipTp0EDQShIU+nvTj5tJ8/Bhzr9M8adlXD5FSAu/ojQGgFnLnq8UlxXZSXTfXF2OU745fQ/1ZBByKSdDDCL+2guKMHVxz1kYoVCNybJHY/wu4lqXpoyVAtk8Kq0uqk1FAuV2TTbhQnm/TWmWNzni9RxKW5zsyhc51ZcuVNE+aarZ/Z80kOIXFRCXANwhRgG9Ghlu9mQ1ucp4NqQP5wUC0B9niaooFhQUwvkhodZCqAsuRqAKBfFqAhE/QkqUyyphxV1fX0mwGH1jud62ErOtFxFN6nmpmTaU4e1RUGaXpMqh3CXOg4+uG6lKxtXIp+9InqJGKjKrqbrImejixkqzX/RJGVrTdGUxhG+H6pqbB1PVgmNm1zhrW+1BjfWEMxtTalvmSpXQldVxL0pvRCRbuVfZQhOl5v8qSeVyoD68RWncda65yiL8VTtauNDVdFSFNX6HR5gTVrnE0Sqs85Sc+dbFRObte5Y7M8CQxwJz5MH80EvyY1E/QPrCB39JTsPnrjlB3RC1I84ZJTcSlRJmwplRtnxuRkpIrkTDyRZFEy0kBuDz0haJSEu52VUDNz9EyR6Y+m7oE0vbaLeJj8PR67nkzCw1JI3rgVaA1hWmSGFsiwPQ81XCd5ZEpjUkIrztiSVGRF1gvxZj3eOL1ER9osEWamKAMk65EzDEOh7fJkcUuRvfiWSswVQI8cliKMn5LN6AasOwJYEYuNUMMtlOtCn3Rnop+gyupxlKD1ZDNpKZFqJZTZy/LSUZLcYXpp2cPHGW+Lyk5SWrgHWCh4mFBBxIPtyqbiWU+WVY67Hm1nDyDylUpjBv1WM9GRDSNunqFZsTb2yqTYhGQiNICOEX3H+QwTQ09k6CTwUkS28l7KcKPUqRzHBFaBurAlAYbx4UC78G+iJgk/j9gkIoog2a3xsIN4eb6GJ2YTSEYrURQJiI0Az4uSQQZewsOVN/E2uyIZeVkEm4s3pPAtg8Uv8D5elGUCkijwJlWQjV5JjNaGJEk284Q3glnmIzbRIhgVVbTyRrNR5M02gwIOuwGMosHA+xW1Tq6TRDApFmKViEXBGkXRwMtBRahxiIIAvGDlW9slSbSTsEG0SjJ2SCaCzWqwSwfPkEWB8IpRghaV8BawAy/L2DrCOyyWELbcaRYEs4F4AXjga3kggkR8NoqVEAPm4hWri0h2g9EjiRIhFrOLF+sMitkh2vxyVCWiSSaiT8SELoO1wSnyhAhGIgEgru8ReQuOEwGjRExmVQZ6RR6WLSq9fDcLhDYehxHkFskmi0Ss4WtFHnsmKsRkkA1A/9lkRQGrQ3BLsgA43EZZFEWjWZbEBl4mvOAhDp53WhQ7bzbyDmLzOI6+dDev8k4JZKOdJ4pgkmQ6VQTcNtFsNEkiwcUk8jajVbAQnDuiEoGX1Toi2O1wkqKQ9jw4QDGDbJAkg0o8gGDhAbsFQYrg0BtreNEkIniLikIAcFwJiJIAgl0SjAYiGgXJqPKSVZQdFoNdMLglItAxEj22WtFgtFiMIlhtvOSlE2szCzaxBsdSoUoOTqzAiCPkRbirBZvBCmYbjplslDFQEQDnVXAJYq1g5EEgsgEHFIfb5sMmGMEqi3ajwEuSWeKtOJLL7pAB7NgFE/gdAs6ZFacRggkBzNN5vtEAxGSUxIgk+Y24mdE8xNVcK4hugcfaZLfdQ6Q6l2KISrJFUggOuoB9DQuqASxOEy85JUE01BC+3hYCI8KN7BQMNbyRIBQjBCCuYLeYsQUqbzPwPBEMzXYl5LATG0/taQoIjbxRMlnAIdY5eYFH8OVFq9KILodJNhiNBt6pGkE0CKrdiDWZeDsxKwaDLEsER1U0gEkgFuwBrjQgiiSO3hD9JNaDyIKZttaA00whjccKcFkRSUQorpVw5ZqIkRfs2Ble6bA0OGptHkGuMzAtBfcJt3Qto5vcVIqxjOUbS5qxVG40gGDORAw4O8e+QeGSRbdX/wyFjlqRzxVXU4njrfE4OZL4BHnN2/bW7bpSzqzrptnt2qvfEe+9ymhzlO4V/ojJYxcyWecjmz4BtyXm7n9CZyKFAqaw6cjINn79QhdX/S1OXdayDk/X2Ui9hNIhKP9O8Q3XiX6Bo6i/lhe4UfpRLmpC/yNZZmTm+fFvNFdmc1EzFG9O5aH0t4j091Uix3iUHrlido4q/rJvRHWIVzkaNJVZmzvBqZpKP/4kcs3Cb5rqNbXoY4bmONUHb8Jf6psSY3Yp2cxROcU29p2SqjEIucs2oCLuEPv+wMTrSEK/HMAJpW+q0Gtr+lH0oRNY9gfcxj4Y0ll2MNS3UeTyRU4L6uyTYdq1YRwCqgCS79uoGwPfWG0TZyHHGQllFbjHvghkZCdQmdGUoco5cvnjRboNKxsGJfTxoBlZrMhrD8A5d2Gnyx8Kukt7QHvgLjpApY8A3QXnYIDqM5sb6X0USwPnYCb2Ba2CL84scvF/mDxfIDEhFzXIRXPRFKxuloLWLaq6HCLH7Js7uBncTG4Ot5Jbz7jilECx69yELCJCMPnXq0vcuPJXrJkJBybfwwRuMS8ppSDLHzl//4rtV0v9V8ye2ycK4z93rfQt23/z/mV9Sulz16O6nTx+dUmalA9tX7H//EeWi31zZ1/RL12tCwsShMLlS+Hs5hZvrP7WonWKT2OLHUwWT2sofSG7+NDS5VeJu26tj3lbmmEriyzri90lbRff5ULcXO6CktUSJIUDAiPbkBQbM7CSgbIBlnJYtixOw3szJW0JfZ9JlHTxS0pclM/iZS7xSf/L/sbmAB80qXJno63WZ27gQ/6X6poa/ff4i3P8L/kbE/X3+P0v1zVNTMVfd/o9K6+4cuVLK9euXb3nilUvr5rgh1wjlh7kG8y+Wltjp6ya0N3c6P/POt9BP/kzOvx1B/0JTFTXMD5R8fV3Vx5cefp/rrziqtVr12LJ470lm5OUz1zH7v8QLri0zgjk6Iew9CtNOQBy/vWHjhdwu7xjJ4FprzwIMHvB0NZDTdd/FvIPvY576L5XM37bKzDtyTt6Dm3t7w38FOmNy3DNWZiee4had2dQl9Ul6kvSKS30GAhBIu2IONziPzvnbz2e3zq/E/6ZK5u6ivty2tvau+QH2ruu/NozrrvuDL4W7iwJce2Yp62ELzbE4E5tR0zfdqAkyyhzS7kN3FbuCm4/d9uYrX8RGI+R7XEMObeWljrD2ZNMkJXJNIbZt2PY1S7DtqlQbWnSKYMxo5uol9jXjvgeZroHy6I+avUEC6El4x/mSoBbZibp0Z2ltfI68wwuhON+XgzkLXaHtbj0YoOAOPGmlfvuvnn1OpO8acW+gyvnGS179liM81Ye3Ldikyw2tZx+4O59KzfJmNJwMfmq1WG35AMi7z++obVj+YZzlyT0V+vyjtbEknM36C+wDoWsp/l4q4h40q+GyAjumMPUvL1V8PFD+eK/vkJMRD8kfdqlrmjEnkOUb2+fADPaB29Pr1q66qqBO9KrGizGxYuNloZV6TsGZl+YOG1V6o7B9hkg9MFeg5yzR6KuW5r3JWdH6aM4O7mvOcoeZHiWKeoytPl4O6JF8H+CJJfTlu8YMhBBsAs+rZCDw7fwgn7vop8bDVyYi3FJ+kWJcfcupROyrCXidmSSMoSMEFLpIVL6NGcqU/FIw+UboOII/RIE0E9BUP3+eV157RfQUmTP70GXxiwEEK6R/7XuFCqq/RAsfXMCM2MZ2jcbf6H9gnxe+4X2Geiiujz0axXANQ6N/kvI6z7G1xZO7BOvFq9mVpldZa0o3YJGSaC9pOUApS8cjPndE9KLVz+466ZzR/+547WHHryMnKl02y1K8ZHTztt6cIA39K7IreotPuML18dr4X6lx25WtPN6L12xtpvMP/cTux48lzdc9umHfrej+Ihitncr5KzBQ1svGBj9Z++q3IpeMr8mXh+s087DuB4F7u9eu+JSLGzTOHk4qis9X/+2B5OBY9+NGdOvdyTLLK+JuqDiJN8aBfohII7P512K9iel3abfwOVxuHkcbi1fpaGLYcfY7RzPhr/G38g+SpS3zlCgVnGVFeyPc7rFBsJV3eaoo0NVXyf9s3/o1Hbxqq+phaHx18z6fRy7xypp0nxcS9vj7e5N5a6ypv3mZE52xhdkag9Bv09LcFmK0ZQ1x5zlW8IJtXNThJ9s5ZndE+p/4rvVN2vH8pMEVrtfZtngLt3g73DFsDH/h4kh8Pcqq8d0WG1Mx/OfXABX/ADu2hdyV+N2wFZBVl8dcqKHZNNhKcI+YIXnkeoOMaarfmeS6GGXwZSZm0yfbBg8lE6mKLYpyYls0nHKQbjmouVb+2bOmFnfcoHPMCOq2ufYt8LgWckuoh2S2vr62uprWyOn15w1a/G581bMh+vE/9LHwWnVB0r7yjYghuaFN28V366OqR6tVcs29K2dXu/PGTqVuU1OIOnDay8zLyG5h6LO5KpUyzRvbd2s2cmZKxd2rGzN1nZp39HHzOpU+cvPOafpkUazIzZwnXahdk0lYsK48lX6Qmn6fRWYIBAY05VJMrqRVqq9YQOqfMIOtsrlAB+q+oIKw36YAgjFm9NZXerHW7K5RiWpJKYw/AGT/IPv+r3t+28EoWNX3yWKySqaV1k70mv3XDpvbl/fL+ZvmRV7Gz4lN3nbY4uWLV521aXLb5tpM1C68TxbwCZGprf0zF6c6x+c3rY8TPJj39zLRaafvf6p/HWqORpfdlWXsw5pyvs618+etXbx3Lk9rlZ/zQkukb5kc3ZGpLXd6fY22s0Gq+XC9kA8No2El8QNM2NRt6fO19U9b9Xi+iq+6Dn01kmNt+mGaVmfOrKy1y3pA+Jxl77Go/dW73GrPmQ2QNDyerJjn5uh6T2qZ2zk9E9e4IaTiE+0L9geM/CWuq7UvvDqFTsDnQEgXbku1QJglaZHuteesWVNZ0u7I+pwyzakudVwy7lWsurFgSuQ1p+eWCzZeINVctt88SX92y46+MSu3V3dHrujVlzttI59Pl0MEbIWBJlHGt+aMxprrZdbEtIb2p+vXjo71OZ3hqL+zlmLP33apntWz57rjgDhVyu8hcQtco0ZTJLNJzeaVO2m71400Dpn1sxgqLWtf2D3sgdg8Nu10WM3lOfGyXFKRWZjoo3/O7mHdMsN1X13TPDD/7B/Yn0n6zyW7egxKeIq9/gYjZs67qOnrHZTcpfJHohUtKxiWxDuqDi1MSdvnSz0lAmqCoOl1V8Wpftw3YlPlexCqEy/sIVa2kDCF6JlK6Al+6IxL90pegGmeAuPQ2yb9ippdh475sw4X3A6RYm+j/1406ZAAH9w9fe+19WFP/53pZDigyUH/wzL+4sMzYtZMzSv84W7WWRgkzbK8nV9r7ixFEICJQfjPeQq+L+dq+EGq27ZqW1mSuJV1FgcLqsQj+giEOyJCJhO+CEi08NTw0zMTIVu8p6Jv2s/gfyDFuN3jaIuDg8DBtUaMid4SpRSSjbHJ8whq2pAwh0Eo2p5Qe2tG477BKRkdPl5gsgi5rcUv8S8QmGUs3mtRh6ACkvQHwBvtHpt1LaoIeNpqwtjIb6Crsg/hsMsqdhDoBsRJe2pSg4zFsRTfVn9EqL09UsdpaTfzkuXdEW9vOSldhPo7Y5Eb+J+esm22apxumtr95XPbtn9+zsu+MZ161uWDQYMxEwkR/KnRz5x5MC27iVWQ8yb6ehZXXuOQ3hJK1vxXM74tMEzF4a/kph54N1Dl/7g2llD1+yfu+XBoDkot0teV/e6T/zmM3s/986a7siuMxr+b3PvAR9HcfeN78y262X3mu6k0/VTPVk63Z26TsWW5Sp3GxtZ2MaWC7hjg9thG4xNMwaMabEgEIoxEMCUJya5JJCQ0HkgpEAinhBeILSQh1CsW/9nZq+p2CbP/33fz/uxddt3Z2ZnZ371+61p3zCnu1rqnbB6Idj+0euyFyhXtyl5cn+mdgKqHMxWTqZyOlvlMrhPDAmmTpXPsSorzCubTvxtwrYnV/Wf2HFe+fSpWjOjYjljzav33XzfvlVNuHKWSHXzHNsSm/EpfBnJS0CS4GXzPY8E60Dwv2bfeWl3fd+2K9qX3+FiVboKo1VsmX/4rbsvv/+TeU2ezfOKq9vWz5pYLS1ZdpssPVL5uSVWpNeEqRVYtuExLg1O1bE6lYDjia8ZlVyUjRPpXB45UxdPMgxhQsWx+8FwDEdGZY1lhMXTjYRw+COVtHfxrQ7beRf3x1xGrtpYKfqMBSql9KePb1nxoCtg/mTeBeFF8XHWFee3r2px0W88sEWqCFZ0TO2oCLW3hSLVnEGpZvftkyYfeGvK3Ttx6U9TOOmbStQH3OsXVrZ5dJDxaDxGT4HPHQST+Gngx5ewzQUd4PiyS2tn9fdX9R2YufNKZ8q15YHu2e3ru8fXNDp98cYJmw7dEOJUrE4Vn7p458MPbOnDEULkzhk+Cnm+KKQq0Ry8Fs0RtSEFFkPw28ZE3S2Qrk2HLOCQ4yjt5r04vY4cZ/GM6yathukN5JjsdIh2LIqkP9xEEdxE9BqlqsDoEyuN1ZzRHe1fNzvatXFnvHF1b2yru3l1+/nLrePii8IXzNsDTuzb1zUt1N4eckfi8Yj7miPSfzdeuq23ye9K3H3TlDjDqWCJ8+a3fnp1L7Mm00pd5qDbV4CaR+NhoM5X19vUubrZWRDppe9s2rdz5oG+qv7+WbWXwtbplXfPn7RxQmOrz14TqmnuWlo/cNkeU9X4izqaJ8XPr7bCWe0aq8GhYJ+76Zp3i02Z++NWy9pXMW6EBrVYBdGSCZ0rb43ipCUfEoM9IYhaoQbpW0Z5dMNpQGZ37ajZDnO8JjbcNLVMi22uZVN3Ht45tUxewLJVh08l8JjEJA5/HLB/S6wxPAY9TvSB5P4ev0ka/OCag9unTdt+UF5IZZDCF0jkl47nuI0CafwDBul+lDaTdUMwFlAxGEqU4hhRNC4SYif6PLIugqRYm8ElRyo1Rcfla2X+czmZAIOkDBEchCTGQUgCEkciyoH/8rVxKgExhog2yzachlvAVo/cg5h4/n3EDMd0AsaZvDLLYIdWAOOkzPKzcDpPpvCB9HOH5+oUUVTYTeJE/Zgjc7TcMQD7UgmRvSiVgH0ynXhWFmASpwa0oovpO5UYAaGAZdckI+PjOUa2qjCinYa3cWBEs/0xryXGaEPyHPS4c767YTdKX0tT6TKe493RI5+by022Y4TknNZusTJWJ2yEJC7AH8XwZhSvY8ohSV7wEQ93mtJKdiJU1INV++q7LgkDEL6kq/5BMLG+fEm3dNUiVVt5c9SKRJdoc3mbaqH0oKfl4llT2WTbYrph6AMS6W+vDvxraVlVdXVV2bY/B8Hc6QfD0qk4X1XkEwRfURUf/9RWdmPrtP5e8s4fRWP9GpJHWJ5G3LDIYcs4tpJ4O0gsFsY7FwxVwG32kpRNcL70JFgMVsyGM5et+NEy5nrpqRlzW+eY1dJTSCUC3dBU1rWi9dhr9PVDbvovoKZ7yZLuSRdcMPRu6gUorNwyPuwMp94G14Mvxo076BpXV/zX4VwAtURewKndvmAAQwmEsUUSD63yyMqPcIFgEELGwlGXvSK9f8dD0m8v4oFiv0pv4Lvf3NL/7IEZMw4827/kiQn787wWu1cD8cY7QOErdKH0gvT+K5fdsFdVoDighKrF/ej019BVXe0H8rwal1+49rJXUBlLTpu5v7O/x7hY7mHAujjZ1cnh5GE2va+FIanVrDXdhUIcHvXZtF1Nx5D0FTaI8XkzeLV/968mXMQ3B8pPUzt1JTpoZgyMgi6kHWq7YNeWFEr9hUqlRe2knQGVwagyciao04FFY50Kjoxx6k5AlWML3mp/xL/G7wfYa1gO0LN00MShkwyqALpAbVEqiRVRi26ldqCbKtDNzRA9Bj1r9KmoVGOcuvM0VY7qEqSyeCBybDVmtMVen8m5PO2soCtGQwBnxJNYGMyv7BtxRiZaEBh42SdmrJXBlAUgYwsBtbz4+kLOURPiL2zqNZh6bjtgMlTAJeRISgYfgunzrr5W9H53pVe8FiNugTVgyhfXARlpCKYpo4+CnfZKncMu7WanNk09UNIztWmDTj7jRbLYLJ+XlE79uajoXcA9iW9y3RfSE5lxQcYFs+D5j0JCLJILMWw+H5UR831RQ4DJAYZhKIPhiGEEyHqK1C/d+fr1u+c5bKEj28rrxze/BJa+/jqYkYcjxupto4DEvgB3gA/BHUzi6k/2r3txUk3fwhmtawKc4upPgPDJr3PgYmbjGNhiD4PgsWM5+wwaE9HYtiy/Ftk61AbwWzgLIgM4OxYDEo3pBdIr0r/uXNV3gddTWBGZNvlWoLrzztQPMAbDyXMgNbAN3wuh4Tom0f/Y8plH6upmm8Rila7/sZce+3D/J+eAbTj1zbkRG7ZtfR2ND+A0RW9HY5hb9lHLzpmYyMqOm3RiABolaD/65OnNgjr1vraIURmNzPPSKkYhaAX2N4zNACaKdvYYuEbBiPRvTbZT2wogW2igSy4Ear2NrtcJBUaFSqpeAvN5SuYMtxUjhdBtDo8kjB5zH3Fqe4cTfZQjcTSNdMhTdSVy6mKfRBFr9ZhbU2qhvE0SHEv6IEYXLKnLT3tMJjNnj7FVOyWZuRbvTU6pTdblZJMk0vSnUwvSclEm/B+j8BijNbIFFquUXMZNhiPtwIhNMpnJOAdRCs8a2F0GzAEPT25HJ468diRQG5i2bJq7hXaLWrWmen5D59Zy3syojYKaMfPlW67aQjYFI9nc2tkwv1qj1oqgkjoN5vz0GqAdvNcNUlRZRRkOi34udbL/yJF+LMLUTJtWAzvVAa2oCoUmNal8nNHI+VRNk/LXQyGVqGXhU8B4Vc+Nfz0A4RtLIFyChVIm63NSUDYkQcWQbuaW/UzuUYYkdzYnvHk4gQvxbNBIssU+CSmBmSRTxNILk6gOFCiX3oJUzhFVV8KgNbMezwUJ7OYAA8CVxbNNXYTOn5Mi73xAdmFgt5NWj+aDvqxcSXhrDFQJtYj4bUmauuxXxcmYaErH+WUm4rm0hqPEFhAz4ei/LM4G1ppJohh5c5k/HGsfIaoDhIOiXVxTi8tVs3TywPi1+w7sWzu+U1WqSmjf1ybQsjOxorKxiakqKKjUtoZMPb09plCrtrKgoIppaqxcseCGp3761A0LaGKVDtWgu7mm1E7cPr2ycvr2iRdOV1eob73hhlvRYvqFt6+vnrKxpjDqdzj8tUVWW6imora2oiZksxbV4n3RwpqNU6rX37702Pq2tvXHyPgv4+PaST4OMeHn/GYy5yUJJTHkYWcGconvMsSa9rsBUavRSD9XKkGc0Fr2YeJGgoT53QBBIu6TkS5BH6oF+q9C52F2yDhGsRShOwNoSczuWdjKDG4h4VGKkFzj8px3LOPnw2SG7Fl87iwl6AbJjQcxcWYfJs5crIIZT/w1l2BP/B2AbuxavOpw6e77YJ9OAH3EBzZA2DoHULUWa94k/vnd78Sc2jdBxcMHWw6vmtJS/ProMgZJULeMd5GNUQ6nESbOWEb8GNQKd6nyCnuWMg7ocE3Q+RqNTpBIG4M+Ufr0DIUcxhPPU/Opvpy3i83GsdAx9JUS0AMZ5ABnerpiqAPgrzeDjBYkw9Gw7UCwFsenOpls0IvsBmcCckiL2t/Q32lpmLBuYF1XfcFeMGFvwarDrrqeOteU/ilkOb4RAEal6Oxv8KulZDrE5Y/Evb/j0gMHLu3ceXjjQn1t54umZc0969b1NC8zvdhS3N9f3BI/vGpBURn+uMuKFmD8jdxW5xaPqq24tkzUL9x4eCf9+3SwSzaHXW6LqTlJL4bUH6OJcfkwqUqaDpW4xMgXgd6lKyrnKRB7mfz2cEqyWT5CJImabEpHV70McX3POwE7pzI2eXFKgLv4JFCcLHbjdW+TUcXZA+/cg3fVd6HWoeWAjHjLErO0+eh77x3da/r9QQLR4fQhKU6QLiaWzUMC2vA5IeYyO/h7016y82rzkhbUNGleUtnnjLVZvxw3xuYg3JHuFM6GiaVx3sOZaDFpgCBNMgNDVEIOD4PU3kVxtJNJYAC6vYtotH4KyVtyVNjgUHLRXpbaK8uS6Xy5yhHZct87R46OnzM17lzpcLI8GE/L8x7ydkkFgVvu6KiTlo/gg+US63ri8Z5vv+Cpw6tOUasO8/H3jsb3LsKom9jwcpQeN7BOSqSS6NGMEvUjF24jOIjZw3IY7ZVUuywB8NkMW7kbkW5ikfFbhq+z2TO9+bywXfWEkKC+Kx+iAWf1UGQ/GhpO7sWhh2wylUCfwtBXuOPTavRxQBm2to8EJw6MXP+WcHlANGLTrr0nA3KOLpvh0iuhqtLYvMMcuZGRjt3szO7GLK5BMEZ8AiZSShG/TAaJJrM+hOZcMr/jiMytKo30a00RntVPyRnECRyjUFdYAvqyrrAvs2upQzSFp3kpUaQB9RqV1D+UyItPeIFM7KY8zPzRfrNHqJ9Rr1J/oT5HEpEeFINK0DyaMzsyYpsdse0fgyP7bMf9/49df67zR9YXv3FjJrJ0FFYTRjPNil05jHAqt346b50+w/7T/xfPh2fYP7zMIHEqgetGgLOofOb5wWxN/zm64nn7Uv8cY+c//w+eKP3zrCX77kYMSDooC2R5oc/YoniWb+Yp6k/UV//3v5L/SS/NDlV5/bUAZDgOvJHhkVXNIGwejakfdmc1kv8jvfv79r7TWLNFI5uMFwwyh/LKk0jfL9M3QRyNjph7J/6/rY+eo0cN3cgkXHgIdp1KkH5FJ+WC9vVlg8jk9crc5wPIFdIgnn/iWQ517GduopYO9zQTeNeMeCaS15dlrPBmaCvM2bdZk4auGuaMDhBPdFT2Q2enWGJGk14EiR/oFL/kIUvJqN9I+iZufRmvP7OK+TGTGd80+W7s4q/EuH1A9sqkTXJIY4X8LzWq1HEZDNw16j54FYawOyfjpcbxqwP2OLobic0PZHAzZKz8IFWNvsVuOWP0nFX/XlIe0YbGqGJKlv4SRLJhkqeSAznpz4V2goGxa/PZWYXCDPYIwZ7HngdOC3ivLFKX05Gw0ct7g5Ew+heMxCJe9C8WtqK9kUYoxzWDsJVlrBY+AaT3pIHBuPSn8bj5+wbi8YFkn8uVSCYTLldfEm8TQWc88Mcx2wVrBzDuQv+QXqVTusDAoCvpUtgSNgVaDoIBlxJrdnFXg5fGMlw8HWvDoV5IvA1YbDW7IzHSnsGYO+a28kYM3j05wqCJIZE4+l7cBQZddNIVx7klp6nIZCmeTCbfOwri8UQi6RoaHMbTitlWchStI2I8ZegTgo84CjmIxCxKVI4zF2bYWvNjLZOyLwrTbmR8UnhAkHDEA/0fI+IwR5Tr+/DHjlUuKSmXLSk/Sy5VfGTJZALZuFy64RfAhpE44JXUVPqfTBhJcaVYQ9WDnJsxzcfLjLUTblTVqOwqKaRSgTfQSo1KJW0B+8GBMXcfJ2tkD/qRT9kibVGNvVvmckPl+s9MuahcHI8yQ7mOyjXGTjgLP1y+7370BHJT8AYq11i74VS5rGRrP9ifLnFINfZuXK6p1LVMmJk1rL2UeUFGmPVkjJ1M+Fy1Hrb701FFxc8Hl4y5m5LLdRyVa2N+e41gpxfG2onKdcbqjrEbHh/9ctEZuGBj7MZjEepfcCN5j7hUGXbnXG9CHSl99rB+Q386dmOR8Q31DTgre8/v3QnO9LbJPacCLROmZ8n3/DdeILjoTO8E37MS3XNjrpzfs/HpyjM0Z9qvLMuNVTKe6mgeBJMzq23XtoBI3hiCTYfDeBBSgy6XTNDucqUGs5wILprIFEMkDnoqDrfzz2jW4jFE19QTyIXe5cV06El2Ph7bhnsOvCAPrw6XFYuAaZkxzNbUohHQFAYD2YC+9lMDopYhjz+VxIbNARmSaoBeZzAMGAyAktFFZXRcui9nsBaHZhHjcx+apbKx74ws61jRzJ6Vc/znYo9IY1r8KN0CWlpurBx+3nJiHBiULcRDuAT0y8OCEhm5AMQmYpUj78/0dEiaoBGMpDcArxGwJ+o0kuooUkf0m8RNMADGTamVKNmyUDtlsYwJRZpAtt/TU10u1xA5gcG/+fOPmjDppNlxW4DsbMwyS9+UJcI9dGgUFS4zkEeU++xYuBbpOd1NrBq5+rTARpAhV85Sn+VTDI19Ak2t65ESPeuwy57MZvFVh+tKBnvW0YkzHIBxvHtdD0xiVz+Z+g6vQsKvfPoY+6kxy62DeWoOkvXIPJ1PjXT2E2hqVMHW9YAELvcZDjDJVHxkiQEp8Rn2U3kYtElKSRmpgqwnvY1YmtNG02x25BmWvhHbmVxJ8MWcxqbZs5saISv7yf/eu7e3dy9zcfui9vZFKbji0IoVh2BMhmc7SBgkj5D+OrR19uyts6W/yRJ6O76oN/UKvqidXoAvWtFH8iqGPiSsk+By0nuHx3yo5RjRTK/kRiKupOM28zrfMI5cYKIxXEQa7BSHIbLlw+OnzMawS0Sj4S5ar+E1Br2RZb0tS9bfevsSTIwrUSLWGdEHDn9zdwQM/Ej6K++xK40mvdLLdcYuHNg8J1qswfnI5DT8g9FepYuuzGLOUuQ7q6bm45FfBzwhUEuY/PLWrTJqlicYSMcHYko0WjTxOsbrCTHBjGdLtntjszhxf8FEQfPs5gL8A2/Nrj5z4JLS27oe6jpSfsmB+JJDV868f+aVh5bEB5sD+278+eFF0xL3HbhqlbvlKkd4zT2rb7z7pr0r71kddlwF+ntmd3bOHv6zfev9ZrXafP/W+XsmV+p0lZP3AMWr26eua/IqObG0ZVnbttc+PTpz/qbl02d7XTOnLd80b8bA8O/Iit9CepzDX8lZR1uZgQmp3ql4zn2MiWlHkTINQnIsnoVHhB+OZGmSuTI3s5grM4izv0CtDMiHWpiA+4Ko3x0ZWTCkqLI5Nqf8chGPt9XCfRU5lSxZaJf+KESYeMmiAhAQTl2NbaMyDiMuNKAqDrL1IekP5Yc6TiWz5UaaXDJ6nkUPz/eWF0s32wzeimKw2vLEQK4qx0BjZPwPWxqkmyPjc5VZNFAdIvMYm8d5Xkj5qFrCOERcoAECpeJEY1CsBTjBSIBCyhCCLh00OCEa6YV8IvSL/b+VfutX2OwFVYqCfffvK1CMq7FJKjkWRubWApOXH/tUGvr02HK0BMynxz4YSeb+8qU33XQpugG6Tc/SpT12m6EKvJpHzpWS8GXLc7dBw/OI73bsulkIJKHsr8cRE/hz+TfqprDVjEvXqqrAblPgukqxf69u4YIqQ6ZaCnQbVFWo/J/WTU3yEsqxlz4TR4i72PevUiJgTxH9EibsUuDfq4ns1AMn/q3Cp+U6tJCzKTq+n0WEGRGf5TNQXk/Qy8nwFu4aOi7okoIuoRPkbI7MKoynK5NeSG++mTz0zqHkm9KboOJNOvEmSI66Bq+uINVJR2i9Kc2X3kwkQAW4H2CmdH3WDoLHYi+SwRqpLmoWtZhaTW2h9hBL6w+px4n/BdUJDQeoHrG89WDeOjoHvTe0jmrhP/M559x/pnU2f92YXY/gbXEMNi6QMPQZ0P+EYdCA/qe3GMowhAREus+Qyh4nCzD2ZmYpUent3BLddh2+4Fs0rU6OfEtwQDEaKFhHzvgi7zf1xahd0hgb6QWQF+n/0gA5z4BzazEF2xB5EI1/ZRE6nrbNWagyai6WzjKxPbyR5BoQ3AMwwgWY9vRlMv9woCiTRcaIkbDVTDYcGtwTD+yf2brs/t7jH3x1MnbB0lissKJ+66mLvEXECVbkRX2LTXpV/B9vmT+hMD5hXcNy6avFesFgcBV75117T/e6X6wLhC87aVEWFxeDv8P+ha7q2K7UA+v1/gKHzkKv9zYYT+lwh2W+NDZgp/TmFBsUWGaTV+d2Fs5vUCpEP/zAazKXNwdaYuI6DWsQTDivKVN3FvXgMqqGmkBtwN8hx5ujIvlF68EIGiqVqDnMpFJWM6oXOojqarb8/2oWOn7ixZcff+jNt+mP/n6zSWTrtDViyF7hrbBY7eLyE6tFU1n11uMP7K9033Tqof9RW0Fb0nDhM33g0ecVlzy7Vqp7elPlIKekCzkbL3JqhqH/3BBRcieNkH92oeK5MvDZ/6whsS0JySXEXuDDeWGj7AUW00gXLOwey4CgYioF3RDxjtJ41Cod22oiVeZlFeI+XHn6Rn4W8yl5fj2SjPhR5jSLSYlmdEyYhkECMPT1mMWEK8eyrqngeOlqxqpp0WoZsFlegdeOWYH9Y1ueGPd3X6GLjYxVy6rllVT/2JXLxbb/hDJjvCBgzkDv4AphTE4CxmfS0WmACgGH2404yYyegERZgs4ji9tFpUFpoyhyWk95pJBTmDi6AJbfHH/rruHngNtPPgB+NQEjx6RlbxzIPV7agCP5pzbcsmNHncYIFHZw8N6u6dpTI86Tviv8+XFZVoWnj3M72UFKRZWgOlSitqeNVpYOKoFI8Gn9hAMJMyBFMQESksBF1gmYuwGQ7mh3Hm0ELU0a8JV081zWYjVapVapFS0s7FzpJpdQCf71nqmo0Pwe+FelADu+q1U1gfah5uL7wdJ2EJF+IGncfs0nn2j8bsyd5IrxmDqpVKrv5mNZbOEEiRGmcsD7bg8GswMyrgd7aSphLGFVFkcqafGqBBNLaQ0OQc8zPzxFeSHrtcC4o6JEBRO8qCvNYiujsQSi0aSOoPwrgVv2+GXdeu50XISs2OaIrmOo92G7HQlaqYSzUgn0d5xJZFwTQwPDPBX0rH+h/qJUfk0cOejUP6K/vjxvBt2X59H4WqlEZ/9r6LiQyTljZKxhzBY5OWc3EUbEfOPYIZkzpggQg5ecOJUZ58x47ENiMRtJ7wAuoqXK/+HTsspaWwEHO/clZlXUIpW0tiK9iC6LtU0pCxrJpo1cwjxNFhPJb1/tggLpvV2B8pKW8faCBbVYUUe76NrcuqS3FxsL/GVN09M7M/o6tt3pKDsVQHr6+dRKajOSRNJvOW1qtJisclArCVgJ5AmMbDbJIIiRw9CogKP3Y5h8BfBZJCAr4AN5XMYAaZ25W4C8W7PYIpl9KHjqNKXSatRKJaDw6xuQuZcG8zJ9WSgD/EiPmc2fA6NjpuPGwkLpM8FrBj2zU7d8Ln2eBgsCAtonPZrGAwLTzPC6vNukvpRvDW45Talt2QcC5WmK9AVAFuG8ZONBcv7AVgwCBKabvYL0mQPI0EFA/NyMHjUX9gpASMMJSZ99YUZFmnsJuUD6sXmlTCNF5d3y3mEPk8eEPvShDBFbZpMclTPM241HNF3+XhKsnoa+JvMpiAluHICatCGJxkZ+QFNxsKsiWBpDW3rz7mmNNec3t5V7J2oFjfYeLasYAON67t49E9gyF9jgxGhvY5PDYp1dYCz2i5WzbvQ6GqrK4kUF5xkUO1ROLVC19N+S0bch/qadmFsrH9lDpv/NTGZm/N3SI2e4hGz3Ddjj8QzlNlpJyLw1MtBaFtYDJNLOsFQywCwnziQ5sRdSS9CPM8tPMuIhIi3r1EE6kM5Rz7+9sxAE8WYQFAI/9sb6gWsQH8Q/DJciJ9IE8A2PWhQrsaspD8YN8Zu9GL3AiyGR3JGwSHsjbgLoEI62QrfZS4vA7CYBwUzmDQVlthuSaxOO0Jd/c9SmoGmlSn+7JCWef2Y/MF0NzWgPrSi4BoAdT78EP05JNFM77bxptY2l4ZDOstLun7Xy4quqJ8+fEqM/vO++oTKlxmyyfXcf8ALD/e8zAaVGqSl7/37pK+n38L5XHIVCfFVHa6jFHagOqh2L/EVtW5bW9TY2lDe5e+T+xmJsZ3o3qtOE71Mn9sx1or9nnT5JSQw9vE49ay6+avzSZZOYc1TpD684KsHoGrWv7GjoDPaQ+gCkb+1iZfw8yo/jzi3Y9EJ6QIDMXdg6mgA9KUp6lPtKry4YSgQaUlSg1YDWabROo3WCG8hEPJMLh6iKUg9aMmgp2/jeIeNnv4z5RdDAMT6u2cProIxmnc2lJvTj8txZBTxBT8SIMT+wcIsTsjMJ2IQyCRPImLHFEGOHyMRASClYML20u7LTf7ELWNSeXf2h5tneUu+aGbMvcfqdIX/P4sNKv1ILIITFfvrw4h5/CO2/ZE7PGnTW7Ob4h1WAZYHNW1Fpqa/uKZ+5EDw5Ax/aHjwSZJGooYrU+zsru0unL1g4s7ynut5SWeG1QQZCABhqxKXpktRHnCOelpbFmAThswuT74/izVnSdRI0HqDw10is65QrvY5nAReZBVwWJiH94Q8EVjFtYwDUH6Q/YJMBAY1EK6epk9I3J3HMLB1PvCs9Y9srB0futYGud+UhQsajJKg/yyVq78mTeyH+xRGxSJbZSGJUO/Bsjm6YLY4SyJHvPGr0vEKOqkCQz8dwsJj8QAZ1B/oLcVoFs1K65eTeWLTvgjXPkPKOqs+OiyU00s9UqZg3yFK6LHXjyb3L74XTL1yxVq5ABDqlWxJ7T4p94XRF7MOqqu2UVOhKO74FXqI74Bpeko1tlvmTPHIsA/ouRaNJxxLSyyy2OhOX4lt6/57sWLp/086IQVOoMUR2btq/tEMOaoFxmDh1feukp+lHU9TcB/Zsn9lt5zmOt3fP3L7ngbnyQJjLO0/jXXjxeGh1G93+EREOo7dHZPmkhbvsGmpRNJl8hz6/HGQNTeXWMWHHd4RxMdHbjln05AXagyS2JHARUBAi0+WtTztF3FAszv4h7Hny7xTSbjSRcweRrDclFxPuT8NU+kM4PUnmoMqUOxbBufXpzxrnkmWDmt3ooJ/A30A5Gpz+kUahYWgprtadptbeIE92O5a6Gtd1NZsYY4lBazVqWLGubWVdQe/eXh0I6dQgSTPoKlZ+531S0qDkQR8U1Mutj24cIlMT7Vr1gHNtVeMkt8LLa2psKtfktvFCWQWulbtYLcA+wCtx3XynXZzse6zMY6A1YYmV5nhWRiRC6kV2DZc/FvVhB9MAEU6B7ZbHZmwwQZ2U4JUadVzLzpH+l/QJzemUcaNmUGUA2/p6ToLZgNWZGFlKBYlvpZsf7+mTrjCoBhklfmkmUDAHKOOiCSR00LRhxk+uE7P8RK/LOgag3WI0iDoLWrrRH+0meN3c6/dIjz2mLXTUPfCS9NhL0n/h31uZoQt/3NhUBk+lWDpe53IPddHP4D/QNaO7+2fDY13wgEP5Y9FapFVlsPc5kkGS796hr10uitLLICyKy7EW1yCK4FdiLbxyhCXzWnwUhNF5tSK+okE+Gb59Rrx4+fno0cE0wL5VmQazz38+fBk9Tr4dui0ISy+TgtATRj4flwoXTS7my+g8fMW5ng9i0UyGigzprxzxfObavNqIuUqCkQ0A5BYYWVjw9mhc+jHagDS/MtMQI99B5ah6yS9hpDn5U9III18Y3DJGG8RJvoeR9LAY6lkYYscrsuGIX3QHgZtm/cwqw9A1VXCZ5fnntI9YwCoGrKhJbddLdWwikfpp6hf0sUdSH78fiVwjfbwMLIWuE+Ct75bcfTfpv5rTce6/05h4biUU3TyL7iu6Y24gsu9J/xp6JzWhC5QWgR+BDzpPTWxgngmcmoiGtxelr4AaLLvxrrvALFD6s3RbGXiZg2RO3rcqj0NVgEOtFByFq+sE1jxVOU/pNIcznmxjC4hlwHfppDwqLTcpGK3q/C3SeqlWWr/lfKWOUZjQiNlnUSj0yzq+ulkWrhsmHH7z8IQGeePmrzqW6RUKC+jTCcwHZGwaGpAGLAqoPP/6++67/nwllA+aRMOyhTtMcB+R1n/o2TwBRzxO2Oz5IdmRutS0Y+Eyg2gS5O+fyA3eURxhOGYTdZq0ohORGXsZV46UzJWWDNJ0ZTk3GME2jhM+smdwyfHTpeRwH5as1xNpJYfcG3BxBouLMlDpvzP5QWRIXmBJ5yuBCyRi9Ccm/4fO4QiBH8sQvBeAlvfw9XB29tKK1M5zenOIDQWJ7Ak6gw82SkNkzxUvnagrIe2UxFGeY6/TrszamD/ZuBaQwykbVQ7jObbzyzHWD8iVAfx+rNV8bCCeclAR7GnNxrdgAk7iGyKcD4DIHgEYAj7MSkH2WxhBPjCatxHKYcHgQa309Ic6k1F72ztqIGgTWhPYxS7/8UfSe7fplCpB+xJY9DpPDqjUoDg/+lHOwvd8CCZqgQkdF4D6ndu0RpP2NlD80Y+Xs0ClInv516V7XtIKKiX98siYyJzfzjGC0YMM5YRsiOgSo1gfHsNhVMVul8tgMOpHMQGkbhEmCSAuCqI/lfCLCiV6l9HTEe5F9rdElkPvUsnmZgs8SMtm4ChqWz6YkYCJ9ctqMSFFoSn1nPQcWAlXoQEZc6mkDqNxe5UQpa8e2uxf7d9Zt26gboffT1+NNnbgjZ1+pkl6LoWxY/FVtfhsfFUtvh5eP7TJjy4aWIfOW+2nD/jRRWhjh3/1sHaRdf2RacZjxKvKQbF0YswIVdmkMDwilR7Gd1o1hkXhHLFb2Cg5RKw8tIxMlwvaSuTzocLBrI1eqiF0qfKZ9O58alQ0TqIS0d+xu6hCHEtdDnLg6zji25ujBqa/E0qSOO/KrFBoBpQGEE+WCEY7iAst6JU76Hv92EoqmPRJNUz4/cUgYbFICReZy5AcjJ5B4d4mZuw16XBBTIVodBMJMerCIV7JEp9DSqKbSkm7ET1SSurUA1qlkqVE3dBdk1wSui9IFAf8MKFO6kzicFnAlycLgGBOFhj1GR6Hy9Oze+V/psUBLBMtz3+Ln8LlaVkAnSOffJtIX5n/PnPjPodGdnP6nVp5HHhOIBFI+ylpI0iTM+lHx8HddKS2rg+8oTNK7xq1OiPwGqVT0CUNpgbpxKLCwiOFPYWL4MAwttaHjtT21YH/0OJLdFp8SSoOXQB9m9Ig7FuErjhSWLio70zffQGOoU3HVvJccYYBKQZkA8KYkdkuAnef+lhuCGg5KDg02uCIbt8HkBIRLC3C55GWQ+eJrBGW5ZckVw4/zm9WZgadIuDRsbKJIhYNQkxuLG+NLA/9KehDL2XAGSzZ8os9F9S5Vfep9DxnoStWhe6/pkSjscPAsOZ6HJ2PRoI+7CIZCLYu7rvswqYTf9HQShtYsqW2aqDMyMLksMbKjf8QvVmBchIfCjACI5q8QTq6cBitFiQwYCAhUbQrL4xwVJAhSCYSYHrqv05TSCN/lwQiymfDxSOm5Bz3EkapqkxjbMgfDWqGkSPFyFZiLhWsUlJsF6WkVTDiRMgj6VhOLU3gD/KbiD7fWyzFHQ6QLPZ6U65hgZ8jxq8RZZKHi/Qgce4yGUtSiRKjYEWzRLsI4tbNZy4T+KHX6y0GSYdDihdLf/z+ZSKxyLLPN2oF5yxTHN/fKz/rT/n+zxGd+668pjTitk19QpORmFxBv5JfJiJ/0v9EZepDI5LVwumBjvd6qGBWpA7EsqtRirB4I6GbuEhZDNwhC+GooJxVXsWGZoILxbRiByP9mpfWqFlGK9oc6AWIH0t3ty7GDdQO6Q5cqCUd4ILB5YvUSo4upy1ahtGbChzFup0v1IA3DUoVbWMdko2mwYt6JCHYoKCWdox7cZfgKy40GxhWq9X87ajGjGlnOJZlGQjYd0Xteq1YP07QbdAJbwDKip6vPYpdsoBmaBom1mk0ug12f6dGo1+n1m/eTzPoQgBZnk/r4/QQao/WXOTscEu+jMyCnX84RQvzh5EQHHcGHNmYseTQQ6jJO3WCqL1gMa7p4q9/9sxhpCKsUGq1Krasr3JOP6gmyWKvgh8IurvRi7xeugGfeRh1sV2ido9O+MuxP+9QFKh2qQFUsoW+3ilvC7o9WlG64oQM0gyo2tMU/QbSH5bI/OtZERNHLrZisCbrOBlyGNtb6WBIgZ1zWVsT5u5OVyPNjonhgOg3fn1U0O3Tiu3bejoLWKN+BW/QK+H63X7/jG1Of09tNFg5raq9NFRgfO5OUbtPJ9Sv7mgSOKNmhkKv09LWWMu8ssVbjWX+yaGqSF1fbLzfDhbf+q79EdwajygrKsM29Kx9KgjVcKldMXd6YY2n1Go2CF5HRWl946TSA685n8Cw149yHneZgRNMh/SAVtGCt8g6t9NeEXR4RcFkrQq0tM1Pv7Pd6J21ZGRwHeAtaabjIBXMBgjHsgJMICOHh90ZLdFixd6Z3YLufuubD94HfDqVwvxLg1J6BeNzrNt7l0WaQ2xqd9b/5w24aDT5/j6qMh5D2mDZcp1w8AnTY9JtBkHQgLUvKbW7tOLcmYIOHVgvaq/A56LV5lkCASJEogbhWafc3jQxQRpaJNvdZJGjBiNGI/VVJOtoXA1nupk51+FMHFz4EOoUJA8RuOTl76SfKRQq4Rei6m3Rryrlf6Yw/8yoUiqkX79N+tyfgUdeoqqASYJuhVacI+j6tSJsNxgMgjQvMM823wjuEQ06Y+pZUduvE+aI2hU6QXpSK8o+L1bWO+qIro47PuZ+yS9ZtjPmPp3smjyqMeLuVThzaxVYm3pBegh8SwyWvKi9L+OWzviqoeMFesUL26U4uEva+d+XjAxeQztuRmXfrBPy+JQUlAZJOwVotL0Y9QzRK1pM1tqoGHNb3eGgF+9ASpC8Q9YRadJjaC8tM2HT2dLmxkM6817c4rClhaezBgce++fhjKOTAQCbvNI7LnDX1d4J4Oi0u2egPWvd0tsEj/yte3jbURv/o9fvQ0u1EQ68huvziPs6vLhoAatSGfbb2fPAigt4204bvwRcdD5r329QqdiFa/EpN3geR2PGHFCO1GcGM5Y9lEgkUkiVlt5CG2jX8UTChXpp6ojNBvvRr04F+4msLVuWwXy9VmOTjoB+m/yr0eql+9MnYP227jTFfIjaMUxNJDhBFkzkomN4szfiCZq9Rg/6jGJICjKGA14jDkq01sQiYXM0jH6cNF0bYjwEOLSmhcMbaGpAGy0cc71w8+ZNWj48bdOumbf1lN0mTBRfKF5bozBwKu2UtW/G3bfNLLlt+mX9za87K7qa5tdMVygaAp3VbaFqp9hV4Guq6S5v49lGT3tFY8An0IknpxQevrprzYQqC3P6FBiiToOnwuAQAMWd9wAw9DX8aogvbrwgdaevzleg4aD0MKBZjcHuCYFv3GG3VcUBIL2MpgeFzlocyvMjGOWcyGEZ0mhy9rsxYhMSN7PgDZjjo0iiZ9aAuhqaGhrMYDNgtKYESOlrpBdqZFktizlRjb+bc2KZn+nZZ4aZAGOXaiCrZgFdbvXiMxQVldVzmuJ2cBiN3Ue1UzNRO4QxhZGXR5MMkDGRMmqRPJkQbYnFhFzRVoCpFnBEC2ZbAEioMOMTIyJmUgh6+TBeimGRue/HEzWYso9JfaGSfo6jHqQktrAlSVwKDmHpTD0N1muUmNxNI3y4Fcak6zm9Wqc0f/OGNDi56p9Vk6X3Jnxw9wdM/x+rDIwJeDSnnBlAJoNoYvtwXb8bEK746DxoFJRKGtAb/7Yg9ZlCUEMIt9CXr1p18OCqVfBwapXs08mvdy2utz9Xb/aM9QYjakaftR2+R73vHFY78YytkK32f41Va2koVz1m16gmUCG5agsaxj1pDDOsb9VT3RjPzX+WVzzcEkD/m9twcOwqM658iwFW4ROkTyfIhiQTQiTJxmmKbKDfvrFqnQdR/+U5VuVpLFN/fa7+I2vpP8urH2EZOcc2M6wCkmvs1oADI+o8rDVy7eTKVmXDWE0BNpy7AUifZ19J9/kOHN3rJ8574pE/c5/3m3Q0YaWIyfJlzIv5E9OY6vgDwOADaO7HgRSYN4Vtn99Y29LdWTMh9YMzVPoze13P5vEtIZsQ1Bv8gdkXGqB5RsWqKw9etO0ep1R+H4C8QmiZmdz2l9ZVkzZMic4dq86xli0Xzaw2KPj1PKPdPM9aeP2FKw89C6s2bACP8jbWoNEKDXOfSW2gRtU9RiKbc3U/+zg3onri2Zrje9T9tfz6/fIsDcGkK3/qwbFqPzSymmx4zPbIYDjG0/bVRZm3LgdijLTnsRjxz8JbCOcZx2OcZEDohYk7mMADYmhUKKPrmk2YvAzy2GxEBewOv99hDwwE7BLx3QKXPcAMxPR0yGjUB5UN8St8U4ztd8ybus1rD/gKbP3VnW7BrlTy6kKTaA91V7n1SiCKAq1TMMA8bQPxxqB7Qkc2GQP9zm2tcE1prmuu968bPwUWO+zlAPjt8PICP4Qb4vPcQpO/LFjRZBLNxTUlTU5bYEqFh7OZdBuoLL97nOSLOdKYiNmXN1Iz91vMRMuFVhzcQqCFMUkxlOmW002C26ORxlxv5I83nakhVsbA+mnS3xmFjhYEE1Dq3VXdIbtoKlTzSqVdcHdW99sKfAG7d9vUeXe0G6f4rog3KIN6ozFE05mWSP1NbgPSHo80z5+2QWeycf6SqQGbs6mkptgsmpoqgmX+JsE9L74BQn8BvNzuB6Dc7iiGU8av89ejhpviwojwGRuFkviHyqlm1BrLqF3UNdQPqMeoXxCZBUe5Y+tXGMOc+ZEgiP5FWPSXds6F02Z5I5uO/UGnYLEQWw/MpgybDRoQSUBrEfCaTejs2mgt5l7CCRc1oJbQ57ldBCk0DUTpIv0Mie180EuAKc1hTMhKYrCQxCQb5DCIhjFdDm+6HKMMc7cUGQ0GY9HT7e2p53smTQM/7gj63UquHQCdyQJaeU2p193R4fKVavhTkNY4IrVFZlPRcof5Co+NA9Ll8Tg0i6r28qukT6RPr6poU5lMqrby/TCwvxytp7TnTQ5HpilcvFc9CbjNRdVhh9nsCFcXmU90dBBo6Q5Oje4Ovs433Hx0Z41h0HDMEw5/OEFaAO6bsFO6oaSy0BAAHulLG9QXA9vaQ7XmslIf+PSukjLzk8oinUUoCTgaL290BAKFDVPawnagMavpujvC4TtqU/SPZ1U0sno921gx7/ijs8ub8HpT+Wy6EZT88pfWRdYVsd9s3d1QFAgUNZCFowlskP5WbIA2YJD+5BcclUAx3DaLvg40Xv4NjZe5/rGQWkrtoPZTt1OPEP0bIwaid80ioae2xh/G2LbGsHuM15J5eRHUOyLk5fkjXtJhmkF41IuNYSYeD9qsIUy9POciXQTDd6Ne4SI9BIRpdHcMZBwWM31P7me47/nH6KH0i0GrxWINgpnnnTfUsFp6YeUy4FqwwOkQaLBAoQmNi4LjSmO0pnzBgspxUaMSzFyIhrXQ445gR2ewsCg4fiJSQGBqYO5c+KpdN7/h6ZT96YYFWjtab3wKfkDWh+zLL12mq/IXruoCTxb6x3cECgsDHeP9hWD6wkhNSKtYCGjB4QS+/+ywgEpLZyjUebi3N/Vr8Jl0ZZmZdoE10qXVNn9z7/Pd9rroH1Irx8VijlnasMo3ft6K6f5w2D/9OFpEHA4l/Ys3xo9/Y0Jq3sebGns4s5nraVz3GV7nTSYerTM6ab30D6CfdGDFbOnbCY/MQFcHeh7pwTeZKWljLX5bGByQbnBDSznYIcdGYn7ff1EiztwHnKwZx8SaYEYRxtZec8bYAqIA74RzVF87Ap+bTaoUAHdp1Err5yV2+rdqdeoL0KNWqSyfl9mk4wIEBcF/WOgLBWlSyIM5BNAr1OsrwTKDeeg8kLrVZNRXwotd9HWVOT4EPDaJhLcOI45iOw72DJhpzoqjq2KA7AEWQLaiQYDEcOsop8pOc/HTgoJX7HhOqVQYnikW6Rhv/IlTlC5EarTJ9bTAK5TSELhV8adhxmcavOtRa4y/B9KPdDqtj56h8aaCUHJ7keIM3gHwPw1XjcaboWSccYITQQ13WwKfSSb5lPsy5twAud6MwVGdElXscbsNepMOUtAJ9XrDqq4/D+38c9dqg04P09v07vT2wklGEDcJQiCVCAgKFYgfTq65t617maKgQLGsu+3eNcM3KRmHikuyB4jfE7MtF6NPmzEDc5CPIH0e/Y+ZlRqkTH8mPShZ2ArJgnRl641gLgBgXmoGmCsJ0sNsCMyUrNIDYB74SHpYEuhm6VXpr6BVen+N9CfC/e5f0wcKMTOb9D7ze+mv0mtAJ30p/UP6OSiid0o/l74E4wgePcXuJPF0+mxpvDgil40AI292BzFZpNuoBbxfZNEf4JWQB36Rp+mBVDP9BDh1kxdcSg8M/R4mtanWmfBYMDXnt/CCqamj4AS4bru0HrZfevOl+24Bt4CFqQ4vKs9g6jBcNb/tcBt446lDT4HPpSO7QT94OfXUHDjxo1SXHT6T52MxpzHiKDSS4KBVTBeOxh9vWi6gspJjLj1TjvmLjZSmZu4zJd7Z/bz0oelar52pLPBJ759I7DpxYlcCvF5S9HBRCfl5eNOMUwdmbNo0g7lkxqaL4VWtnTvf2g70yc7W1Fa71wse/+aRR755BN54b2FpaeG96KJPc6dvyvte9AT7YmR8STibHZrJ6CBUR3IPBrdtf3T79kfho2SR4TGSe/bQ/Xhf+n/+dwnRrIB5wEU3G1aCcMw9LLSJ+o10MYz2ShEp0tsPVeDUSDSBQ9Irg/Dx1NQBUD1WDm8Pezn7QySn4wzEDsyCBCxcEOfiRNHHEsLfEfpk0OcjIknMxyLpEwcaIylMJPkChPsoEGwFSIxwAk7kCDaBH+1m8BHMCxHzsThWgq5SbI4EiwoDvu7YWt2vlrROppkbFy287H3TxIpq6V3p0/JQXHAuijW9/05rZNFchV5b4Zv76vMrQl0z46YCFyf8BcYGzZzhhH0OW1HuHpJu++aQ3qxleaj0mu1KushT53PuOAm2gdLbmwwA3ts6xWWcOdMoaBqNqzdUFF46fmFCoTgCL3N4lYqqal7lsRd6lXxRoULhHRLsF3Z0m8ZV0UaFyRPx9j1nUN50E+epo5++T7I5awuNOwOOdZqiUketsuaFbQ9NtFc6nXp1SPDPC00xtRD+T/ldKcgo2oB0XcJuHSBUxNEYSfkm6ewibh8s1WKhHkm6Ym00EEQDlR4QDkPcsFHMGcByvNzWThrtZ7AOIIwSuHpm+spBeXD2JMX8vatoGKuccP2Tpo5gxe0PVAQ6zNqQx/mrN9y+mjo1q79L6r9bw9r1VXd++7jHqd+nNJav+730j729gfIwo7D4OKDgBO3KxwF9wlZczIwDJcO8X7eVhyymlYI12tx+sWZRR/V8U/FM0GC2c6zJxPEFJtHGI4Gd5QtSNB8sYFat4jS31c1whJaKbavgryOWmLvVofHoTeOcndf81sfWmjzqHlPhQq0pYAZqUDNifAfUtHSeFI7fChMqLVOa4tE8jLXRGyGcY+DKP6Hp/CadNljTsXnj8ilT+1bOmNbUYLY8uDAeDwbZhLT9H9IlV/n81uIpX44zio6CmnA0uho6/uCMxqZOGwPDzB9JPyVCWKq8Ml+kOWw05ag1R/kSl86fG/YXqdRAkD67R11UVD2uc5fRWFbe3DKto6UefJzfpLtO1FmNhc6lIHgCeM+rry8rsf5QWjOtvMznN5l0WoYd1Sb06ThMoa6GEW4sY6vQ8CuDVrpbpdWppDu1CqUpja2HlCSDlFCpQMIgigyx/Z/KxGZQMMUm8T3T8R9Z+OBYOr8KprL3MRu0oBffHSzVMqJ4igRCM4MBA0A3lxKGNK8ToHmKTpF7ZhDgM/jvVhl4gqdwCUYUCg4Of8YSHalBmmeK5pLpe8r+3eHI8ZhRJomLMKJUcA9qih/oFPlVQA2UjWtfj9ozQDIG090KC8deDw0jaekWv2eiYcncoSDDuSoT4FlNFnZ9cPblieqFc9uaZ8wIH7n5xvXrHpq4st9TuWR515be2trp3rYD0ntFztZo1N9BT570KKDRzN22Y8dzLpfbgzbYL98/dNDp9HjafPGOcO/67b9iLmuePLk1Kqi5m9esLqUNNKPJ52Oj0ZyultmS/UbCZJRewgdTc/EflxjajEOkoJDa3Asr4f9KXQQjqS1Dn+2AN9MXD30A7yS8kgSjld1JYhYLkeQ3FekcFFUTJfMWk16y8uwmd3IZ9pEkIzZj9ZIo80Hia8NJijhKHUeEFuNwAJxkzZMvJP2B1FjAuy6r1WUBJ10Wi8s6dKqsqXFuUxMzPV45uWlu04Gm8rImMCkUhw+vTgwtTazp4jVafuLiNxdP5LUaHhzGx5vKypuYIiu+j/z/1aYyaWZ5U1M5eLisSUwtD8X/irf+Kv/GQ/A2cHPs+c2bn4/t0fKcZm9Z2V4Nx2tTN2euKm9sRPOrGrXFt4RvQk95AA9MwAeqQRf4nGCReDGdUY2VC/CoUiCARUuew+N6C90EAkhgbqEDtdhYAYLYLIEOYrmTzICBaNp8gQd/NBvEkDqOdnNWkzeEujEmrOcw/w8exXiSSGStsXAk8ZNMvTSeE2g8VQCZ3wPNHgF5pkDTKk7C0GELCRZ/kTBrxWdY8Cn4PegBJ0u85GInNEfRxIOmcnQxyYHHNyN+0CiemsItSL7H5TFbrDU8h1RNXCNGnsGCtUgU4MjQZ2oFtVhF9OqQeoIeacE3qIkCJ8SFAQTUhCawP7yODsoNge+Pm4AI4hFSQHQ3J82b8D1xAbGVi9i+AvggsXqhWsfkWTNMYGD49LkW/BCa3Ba1EG7U9I3T7exk4S1qJcOK7CJGr7IpaOl2hmFpmuc5xsgACAGk58QYJN4iMVcJVJO8Nvc8tzpYrAdqpVnQaoHOU2BhGJM6qG/kFJylwF+oUgtI1jAWWAyrBaAsLaCBp9BRBIHSyKs4Rs0bATDZjCYALEpFEGhZlc6icliqYrDM4WKVapZWakzdygp7QVQFgKGgzBjwuB0WLYQcp+a1dOH0qMVcZqGBs0grWKcrIOAUZhcDOYZlfCG2hDHdrzTQxU5FmS4UZLQcoE2q0NYrKqxqDUSP5My0FUIjtOh9oGNa6i5azSkhraJpNQ1+CJVGjlWyHKR1ZYJS/YRKQ+t4CHWMoo7V0nqlkqUhUEGGUegUwKCDMZMF8jar3x5QBBYXGpcHBKvK46yYK04xVXT5woVF98TFuK/cxqo8AKDhW6Wba3TazBFX2KPUClDDMsBD0x7T5V7bsjZreTktmFSXjuusVDNo4BOcvMJvCZgu1mkYWNsTbIus8tWPZ5HssDS2QI9EELXK4Yh6BIeg1EFLQDCYRFXdeSWNzd2Rceqgy+2mdUCntxsczIVABByqCtDTai0nzQQKI8sqVBAYVLQCv24o3SbY9AUOQ5HKw5ez4y42mVrv3lQCmcrLQsGmYkEDWmY6fRZzm0dBOwGoqQV0e4Go55k46ywxK2nFTr2SZvj6dgDqi/UVxZBWK0GRaHGCMh+j12msQGdnFVa9GkAj0CiNSh2HSkJzxYzIIKmUYfRWADQGUa9klJBlGY7mga7JrlG3FCtpvqB1XGcRd3+9sFxhMxe3FhaKgG27UONirPuU+lAJrW+sDtk6FQYFZJV8rUE/MaDgQgUd1iIgbnKZVy6wC36Xmi4z2iFUskBv+oWCpxlaxfEAGmIMEAbVRgUAHACMg2Y/gZwC6oFWyzFalqNRswHmuxc0BVaLxWjSCow4yWHgBWWRBXVj9JIKXQUANGlRt9YY1dZ5asM4v0+pYVSCx9PtNrG0Vl/G2TQWtb5TZ1RyBQrOpaO5itq2oPGntZM8SpvBUoQZvpdHO03X16771Xnbys2gyFF2tHPxlvUrG1+bV91VAqHHjxpdIWqKWL9udmzCjrYu1l3tLUDVKlCrJ3VpisNOh1qfw4FLUDrKhWTrEFVDtVBzcWSOP0B7seMcc2vRgSDjxjO0VaYIRiMJGiZcbIDHIxzw8FEWz+1ogxEDQXwVGUtaQI2TsUaHReGXLYHQEL1p51Ve/dMf7202u6TfSIfB/J6aGw9sC/gZYcXW7QeSLhCi33nj1/NK19409A80ocPpz3wzZfqejeMv62rSv08fAkpTx+Qd4wtEqKR9Uyd0NkXKnarLRuhmPnwlZ54677qp6sPwxuqW83nd9vcWLLi9t1OnBezv3rq37ctbPm8q/vyDyX+jLwLghnvEB9+0j482mSXPh48BTUG8vrswUsZZUfeikcbAwhfGwi1Mt18L1Yt1khBdBTBzbbiGkLam2YkhziktBoRvnpDdZnwWLVAmnEJ/PkzQFpPN9xi1jbEIGLONuTnYMH9qdb+zsEzQHyzvLPFV2Kvq1z3U15lY2xGYNLfp0HkWV09beEZ1WU1RTfi/H+i+cm07WP3e0d39U7uvl049u9bQk94ALN4Af6iZFa2wqW08bzDYjVNtbo8tXhlbECpuXdvdvLDJr/NZdKaSYNhVWelqqly0xz9h88Gj7/UY1j4L2Ou7p/bvljekU3gj2wYMke2bZIyUDEKJVYmnsgy0gKUYhEkgrAnNu8RNVY2VgDRGSTFAP+yLqRO1t0RSJyIRODlyOAKU0oaTZfWNpVvLysBhp58rbArC1TCye6tOlwoYTQwUNNJKne5SbYVuCLboyyCVvRb9RKSvpfUny0ovLWlsKMOMh0wpXE1HDsPmrfoyfSqgB1ADjujLdFv1+iHYqh9mfyDxxv5REY7nwP/Efl8iI4PBtEc0uzUQsH9HXB4s+k0yxJ86RBGCckg8pcRfSutyJwWyvH8sxQ4ShEbZyxOkvWbRQuJ/hpGS1MbEiJdOM5ORnGnU7JlcGRz8ES76a+XXyoA92R4aCLUn7QHl15V/LQqX1BkA1b0CJFZ0A8og9e35jz17/gMMltSVgzl7pQv1gj0gfYGpgYEhYBf04Pa90rHyupIiG0isXi0lbHQfvmCPXFYGl9VPIljTwq33DEu5zbJYZlRdT128fVE7+UPr63pgomedNEhKQ8clmROub2gdKclr0ji8pA9KBA8PDPSsWwdezpUjY/9y47j1FmwiyDC4QSRGWay+fEMPC3oNxqKqkrnNNl9To8/WPLc0VGQ0MPNHDCofgz9YJvUV25GEUlJS6AH24r5JluvGGBcqkD7xJnsa9aNubEMl5GRoEKhpAX40lOD8sKCf5CazJJzWH8Chj1iujPlJbC0bI6TzBO+GJQGsVgubXHj7Wx+/dftCeQHWMgbpHa1eJ73zhMqlekJ6R6fXSu8YGFb5xBNKljEAHzoIfE8oPcongA8dBL70QajO3QYtInq2T3rFoFJxvd9otd/0ciqVAdT0sXqj5ptvtAZ0FNTIRzUa+aj0Cjpq0H7zjSat6/2U3UUJqIdSfjyW4aGMgzKRtc9PGFgJ/2TUR0RjDIWBA26J5M18Fq17UvrtE/2/Ob382Ke7D6JJMtArXTF4B6ZT3fg8EG6tMAruuQsPfXfTJReXFuv4j1Btok8m722SHn5796fHlm/75Yv/vOwVUHjHrcD60g4OlpYWT3t1403fHQoLxboSGQeMS6Z9xuXpyD9i9HSPin8flRMSz0OdgMvzv2B05DtyhMOcTz+SofKoIYKIQbyc4Ec5vAqCd+E6PcD1sUmqnZpIMtjKkcKLR0LcDXQMdkl6QrAqQzPYCtKECI3AGMTfRzFB00mD6QA3TsDn+gL2wY7XRFGICr9iTfH2JeMS4Qu7G3X6p0yFNlGkjb9tkGExjouBWvE4PeW4WBsQjw/apQmpxE+A6ifwvNrAsS2vi7WiKD7PGkpddgyk5ggGtbpXzQYhYvrrhgFcsYB8oXwb6Y+QuuInP0Ef+OnTFOB3MF3UlSTWjpN1N2u4GCIJACLljuUCaEakkUxgNRGCCC+H6xiikWJFUGaQpIJnRvzrpGtiLQxBXSAqFu4rSI8xEeQUbK0D2K6HdBEkg0CrH+kt/A7rcVvpNI2x2BjHcsK1NUgRUZQFTlO2uMnk7Klvs9Eqm6gHPMMI3o1dh9efbytQedf0X9vE0Yy+DAgaC8saFKZavaEoWl5SqIWcoFSxUMdzBU1awWiO/MfMiMmBZHokx3NGnULwlLX4m6oYJIlDzqQCrmANR38T/8AVWVZcWmJuRoXYcx6rDzgLGNak0Zjnjq9SANbmHV+uL+BYkWZK2zpsNlXJdQOAu9ZgYTkRyZgMrTbXrC4sappfXcgCha+hv7ukXavxKKFFVNsh0LDGYndD7YKAusVTVayEjL18YUv/pSo9TQP0H7J6pcyN+yD3NTuZUpFRr4qaQ62kdqEvMqsHYx5csoqUTmsGHxM1qz8EfEh/wx9jLOrzI10XjYw4L1VAm1gJdOLAMOz4Rp8uUSihE6QBNqNIp5QVST/ZR3YFsUIrq+Xwh9i9Os1sETpnbFIotboi3ujUOU9U/tfa1TOqql5ftXYx0gwHpNOH/iL9SaccAODQX4AfBCYd/LmUkj6Q/vut3VcnHgALJrVVMpxOz3FX/y5UWQlZnUpTv6hz0+wCUVFuRQUzzW+1lTGs3dYE5swLB5U1Ubui0NfS8tC8wnGa4sJtXw55Juh1drdnvMtxu9bBsmptsY5V9y7v83meWXz+IkfRiaa+myborJ8ekhfXdV6/p7+lY8tTazYCJvHAlZPiN+g0qBvAxubWjVqdGvWohpVwce+2OvR0VIbWPi16uq2U1U7vS2102IUax8wnOsdHBK64roqzT873B26glJSI+dEJnyvSrzFrvQnymITYBww8GiyNFkZgLjr2/HPHDvzS4/2ldHvqpRP3AR8TOfFS6nHgu8/T2zvvm4MHv2GbJceQdMHSt4HtJ2D871Jl0odvLwVHh8DfnL+TfpLGRqbYyziKWo3tLTQWUTmKJwgZaDzWQexKAOjziuJ1Fq+zxSAaCbFI22d0SLVBQxS2h+jwp8zhVfYy1/ze/qW905sMxvXS0ddEu108DsqX+yb2zl8yd5Z7wwv7NrQWROy8patz8cy58Upuwq4lc5vDbgvLaBSOrrpaXSDcfVGTj+VMgoJHepGuKjp/8eWdMNg8bc7sKY1Go7WGs03u2bLpOvDjnk3NLlrnLFCp3pe+BfZAAXjrpE5QaCsm7ZxVZfJOm1KxZwDQkDYW1U3aOKHQKJY2trZW6w2XdXOm8ZPWrb+2s6C757z5syZE9Xp2oZ23tkYaiqF12q6ZzU4BfT/0jVfx1sZQAFYj0cWM5Je/sxSJwjaR3CQiZQE53h2Y3Ub85zdnGIuYv2+cUS8NpT6fsZH53amyzN/GGfS0GRuBo33OFumfQLtlTjuYcJo6DSain2s6OmZv2ZInaxYgaak6nVszJm2n5QyJUUwiTdyZIZWUiTsfOFuSFLxuDP7OY2dLlhrmx06XdTj7aD75qHDGsmKOTlzAHPUoZu4cOGthB9NFBK2YCVRmIJVOn7W0o2R42U6aKyY4V9YSFbCbjHLKltGE80/PktyVxPFLmnTKlSYw9KvvkUvFo2+/OJfDLpwBUT+dsl52Nlz9dGY6cJ0VXj/N93g+ksvNVBRnURKRDEtkMSueXakwFkytZDSiZdCtGCHTxN4F0W1240wpkT69vEF67Sd3SF/f/vqDxssOAf6ZnW9tho6G05TWUGL8XCqx+ek+qNDNjbb39nf6wX3SSgP4dYnxfXD+S4//+XagvOMEKGvZE/3LFc9I3+5+174hwXvBu24brTbYw6297eMv4KW/JBJeqX6Ybt1I0H+iwQC2LETTUobsG8VWTWwXNWPTJTZkQtmDhO3H6N8orx7zgcFfu884rqOl3tDTwbNV5YUV5dYipZq2qjVVjvoJ0XtLDKLG3FFtVKPRwujzmcuay2d79mzp3z/ca0fvmVPVZqLFsticaj40pXbhNLMrZJvRtsJ0udcfVyBJ6qZCXuGDtBUWCaUxbejaQ+Gldo3ZPHXgahAGgWEeKJDlm+jEGh5kZJUuGwzUCiL565lUKCQCFSEZkjVnVoxRKn2QSTwrnfzZgE54m+ZUSq31o8xS0KGdYIvebpW2pBcnAUP2wuTPpJPPCjq4tB1wKkPCqug6P7v2HdZQT2xiTXjr0vMzK1KBFph+iqNyc/nX3jTqszmd6iNXJjuoZT1q3zMnG48acUycSxTpPjkPpO+cGdqjzid3OlvGNvX/ASpLC2oAAHjaY2BkYGBgYWBoiitKj+e3+crAzc4AAufmZoXD6P///zOwN7CBuBwMTCAKADeFC1wAAAB42mNgZGBgY/h3l4GBveE/ELA3MABFkAFjHwCpXQd9AHjahVSxTgMxDPVdLhcJONGFhS4VYmBoF6CI8X4Ato5IiA9ASIiBThFfxkexl+eefXHSVj3pyRfHTuxnOy7SB+GrV0TV74BAu3BAa2QNVBGgAcS+d5CrQfKe9a/+tvKFfVuzx/8Mz7qY7wHf0L+rTas+NNhDd+llDd9btdkH9muGs3u2c7Ie707nsO7Ea5zGpjH3h2OQWBpK0uYbct3a29jNfltThTiXwNeh3Pagl3OWjJD0nY8jd2vLjc95n/iiFtl50eQxcNnbnNuCB3M/uWh4SDUZ87ZSY/Vpf+4sR5oLZWfWWcyHEOlC8vZF7SciP6GvxKYpewk4z+KONA3KexFjI7WsI/W18Ka6pogV/zfZ3MUhhrJngsnfG06D4cynuUr1iSlGnLUAOtTgiYHYFsC41juamOZ+nMVZwXtMtS65D2mvl/nrsF6Ib40Ya+VE5CvzBLzB3zNgX7USC+w7nU/8O8jrffUWXs509lVX5X36oHrc6xjH5svU7t79QDpqvM4R0aMn6dlIVwzot2gV5j0DptyDpq96H3fzkHuf5Q12DOFT51ntTttinrx5h2A/F8l1mIW42dg3FbYXe2ZlnFXttfL7B4LlZboAAAB42mNgYBAjA8oxBDBMYrjC6MRYwLiOiYHJhlmFuYnFg+Ucyy9WG9ZlrH/YQtiOsKex/+EI4ZjE8YDTg3MF5z+uIK4JXLe4dbhn8bjwVPCc4jXjjeFdwufCt4JfjN+Hf5lAhECXwCNBLcFVQi5C24QrRCxEpoh8EPUSXSLmJ3ZA3Eg8TXyT+DcJFYkAiRmSApJ9kj+kEqQmSF2TZpNWkg6TLpFeIv1KRkrGR6ZMZonMB1kV2TrZA3Jack3yTPIZ8nvk/ymYKeQprFB4pKimWKZ4TPGPkoRSgdIeZTXlGcqPVCxUDqgKqKapKajtUfujnqDeo75HQ0ujSWOZxhtNJc0IzTVaPFpOWsu0+XTydJ7oVumJ6FnpTdL7oO+g36H/zMDFYI1hneEjoxyjB8ZCxkHGZ0ykTOxM9ph8M7UwnWPGYBZmtsZcyXyTRYDFA8say1NWYlZJVhts99nx2eXYTbN7YB9kf8Mhx2GWwxXHTU4SThVOj5wZnF2c17lEubxzneZW5HbF3cV9k4ecxzpPN89Fngc873n+8ZLy8vFq8JrntcdbxDvGe52Pl88JXy3ffb4//DL83vi7+Z8IkAjICtgX6BK4KfBdkFFQVtCJYKOQM2EcYZPCfoX7hFeEH4kQiIiJWBHxJdIhMitySuS+yBdRBlF1UXuiWaLNoidFv4sJiymJ2RFrFlsR+wgE4wLi9sXLxNclJCTcS2xKPJSkldSTdCuZJTki+VjKtJR3qQapKann0szS0tI+pDukb0p/leGXsSeTJ9MqsypzV+afLJusnKxJ2TzZLtnLsl/l6OTMyrmQq5Ybkbsg91IeU55D3rS8W/k6+Xn5OwqYCnwKrhTqFK4rYivKKNpWHFV8rYSpJKLkSqlf6bkyv7Iz5V7lFypCKlOqYqoWVf2p9qmeVH2vxqomr2ZBrUvtmzq1urK6BXWn6r7Uy9WX1c9rUGn61DypRaSlquVIq1RrXOu8NpG2lLYV7ULtNzpWdTzprOrc0MXWFdO1outZt0P3th6JnipMCAC81yjfAHjaY2BkYGCcxiTJIMIAAkxAzAiEDAwOYD4DABaYAQwAeNp1kM9OwkAQxr8V/EOMngzx2BjjwQO21RM3RFETBIIEvRak0ih/0lYUH8MH8ODBB/GkN48+gc/h1+lWwGg2u/Obmd1vZgfACp6RgkpnANjcMStk6cU8h1Uca05hA03NaWzhXvM8NvGkeYFvXzUvUv1T8xLW1YPmDNbUo+ZlbKsXzW/Iqg/N7zDVF85wgjIMVDFEB31SCQPakFSGh7ZEA54GLOS4k3wBd4wG9Hq0de4r3OIGDnzeqaKCBhUK2EeeXoOxQ1ygRq6L95eK8UunSc9n1pPbBvbYgcltk22Shd1/lGpU6FAj7tzn6YqWwZsDObuSKdIbYsyMx7pd+Xf0pk1Kqrq0/tQb92dCIeMOLhntSb/XjDmMhqLX4j8mKn3aUE804B9KohqpzHZ+QIWR1Dki9ak+lr5C9pnHDldS35l5l5NK56TWVIeWTOxU91ChHdFGk4xyJhUtcp5ztCYz/QZramjSAAAAeNptVwWU5MYRnV/DtHBmZqa93Vs485mZmWRBz0g3klonWDJTwBzHcZiZmZmZHGZmcJgTp7qlWXjJvt3uqlJDdfWvX70lKumfx5dLV5X+zw8eUU2JSmVQ6f7SPaW7S/eVHkQZFVRRQx0NNNFCGx10MYLR0r2lh0oPYAzj2IDtsD12wI7YCTtjF+yK3bA79sCe2At7Yx/si/2wPw7AgTgIB+MQHIrDcDiOwJE4ChPYiElMYROmMYNZzGEzjsYxOBbH4XicgBOxBSfhZJyCU3EaTscZOBNn4Wycg3NxHs7HBbgQF+FiXIJLcRkuxxW4ElfhalyDa3EdDFwPExZsOBDooQ8XHrZiAB8BQkhE2FYaKT1W6iJGghQZ5rGARSxhGTfgRtyEm3ELbsVtuB134E7chSfgiXgSnoy7cQ/uxX24Hw/gQTwFD+GpeBhPwyN4Op6BZ+JZeDaeg+fieXg+XoAX4kV4MV6Cl+JleDlegVfiVXg1XoPX4nV4Pd6AN+JNeDPegrfibXg73oF34l14N96D9+J9eD8+gA/iQ/gwPoKP4mP4OD6BT+JT+DQ+g8/ic/g8voAv4lF8CV/GV/BVfA1fxzfwTXwL38Z38F18D9/HD/BD/Ag/xk/wU/wMP8cv8Ev8Cr/Gb/BbPIbf4ff4A/6IP+HP+Av+ir/h7/gH/ol/4d/4Dx6nEoGIylShKtWoTg1qUova1KEujdAojdE4baDtaHvagXaknUr70s60C+1Ku9HutAftSXvR3rQP7Uv70f50AB1IB9HBdAgdSofR4XQEHUlH0QRtpEmaok00TTM0S3O0mY6mY+hYOo6OpxPoRNpCJ9HJdAqdSqfR6XQGnUln0dl0Dp1L59H5dAFdSBfRxXQJXUqX0eV0BV1JV9HVdA1dS9eRQdeTSVbpUbLJIUE96pNLHm2lAfkUUEiSItpGMSWUUkbztECLtETLdAPdSDfRzXQL3Uq30e10B91Jd5UermehNzGxZUL1kxMTw35j0U8W/VTRbyr66aKfKfrZop8r+s1FvyXvJ0/L+2ndn8r7VPu+mSTVIEs8u5YIM7bdhgjnhS8jUXVZTytJasYt1RgiiNKlSpaIuNLz/KCRuoZvxn1BqVtXspekJAe1WARyXtSXpQwML2zoXmZpWfZ6tcTrh6ZftmW/msZm4lZcGYgGryYM008rqReISixNp+PIhdBnQZkbQ6WWRaqreqElF9uRby4ZthfbvuA9I2Gm9Vj0YpG4DeWKXtCX9qDS881+iw/jRK4MRdKal34WCIP9aRei2qBZyFlU2xbb0hF1y9R9OTX7Ff5LKpaUg4ZqAjMeVKPYC9OabQYiNis9Gab83XdqXmr6nt1OxWJquMLru2lLywuek7ot/tYPDV/00k4u2iJMRdzOlVgN7+by1ixJvd5SRZ2l7YUOj8vnFbIeO9IzbaGiZsx7jpD1yLPTLBa1SIS257cCMzKUryKumY5akCPMfgrHS6uJa8aiaruCI6QurJukIjIs0x4smLHT7ZkcwqHWGAoVFfRqZDIIGBgyqvdkrOwdPXyo6JUKpSq2Cjvt8D7zscxP3h0q+gjNyM8SQwGjFXhhIbZzEGm5Lge6727LBIeE5ymt6YU9mU9L7FiIMHFl2i2m5aho8sRcallmOBTNOJYL2o92LmovGrmcRcV3jQgdIoUjdifxloXRy3y/U8hJYPr+mFi0fTMwV9yq9L0ew06YPc6RWDTEEgONb6OpBNuXiehwVEIv7OvhVY5nKBq26YvQMeNabIaODOq2DAK+41pg9kORtobxyqKVOCr/GO7pghBpl48eRWpJmxO202MUijjfrF0oyoXRwvF5Eace7zhe6K6MvWWGr+k3GfGG7apF0gUvZVzmgVcgU7DXWidHvMGbx7I8EEsVzuakUbicdFM3C6yEfVWBGy005a7Sm5pIXNPvtTW75JxSV+syRXR9LxwwOPNQ1qMscflYXc4eETNtGOqzphAvrPHmkbvU7nu8g5XjIGcHtU3VZxxwcFW+tzXE841Ghsmbqy09IN+sOHBjeNZavnItCxWHtBlinDQqwE45TpKy63BSMBo4eGHFEr7ftlVYexzYVLRcvsYC3VpUaKtrKYtyiwrIeI5IYxWRG9ZZ9AKj60xZtH6SWoY5XFqithBzzrvV1EwGSY0ZlQ/TtGJP9GwzES2F3DxPqv1YZlFFxbLKGMmcmiVMZoiynaV8lRFHxYw0fryokpjzoqXiY1gM1AEjTsaMJ8p8kj4zRuwNROrygn23mTEvxbysYB8sX1QZvJ7NNJ/ZgyZfI/vD6TuyIumwj/Wl7PNpVjigvcZQ5TsUSy2OuUj1SRu5yEmaCzqJc1HHivOGKTxMKomMGWrc5HmiJU6eYWXTRWWItQr7LRkwfca/wyXJknzH7QLOamRnCG1dUZjjU8ZrKphbG4ztmO/eZEZkzmv5ygmDYWE1mBf4nvtiRIfYGFawTq7mSK2rUmoETpvnpq5MOPiikWReqm6soUCldqzZXKiE4AojmZVVpdTlRB3ByjyfT9Bv8ORI1Z2mGfDuZmiLWiCcgZe2e8ol3mWrYNcF1wE3p6neRE+MOzKzFJRCFXGNv3WWHH/rTIy/dbo6V2t1fnvNxMZwRmt1aN0RyYDLRs03I9VpoKSdQFrqXDobOwW+Nd5a2zKZFkvnYn7PfNow5MPkY6tc/f2lVkEFHJixtRSoaWgNDSq9JRYjlYX57fIFRvm4ahKwI9Uep1ZYDoRb7zPXRabTYJrTuGiot4QaOaIFTS2MZqfBMebqZfoV9WJoaod4mD+6wncFATGZ5MVC52/FZhZrqimqXA4U2TAqK8bk7Ob2msrSTjLOSE5fL2JYZ1Yu8bC5qU6ULS+r2HnCFlxA1YIqjCOroqEfXq4nfGdkWGhyb8ZViTIYTYyhzEtcjmjMZCdU4Vm0HSaootokw0fLhnWWgqDWmhRBrdU1Qblp4E9X7CSZqjE2mTJbOasWIGZm4uq4HePdixIvWVOQxldsw6JVMaYmppr66afWr7GR/R1ZfTnocp1TvjY2fMFJr2CYCxqx+Xf9jNC0rlPCmNo42cpLvq4InPac1qqy5QBZRQpDV42eLYssLvetqJwlTtkL4/LWaKkcZ1Z5EC+UrdRWz2TRXMnZMc1DlgJG5JoWZ6QxNbl5w4o1ZTq1slQkO/6vSR2rOzRrDh5fp2luMqamNqlmurPE1TSzioMUSmWRr7m5OHx6rIxRwaw7DBZ+VDOl80tvSF78xmK9H5tBrcdv2kFcNh2mjo2zG0csL7UyFfriGpgJ/bidd9o06kveaLVKddfoWbT2q8LV2Bo9T/EFfubKhaTOaRpLz6lyYmSL7KZnqdqSDJYiLmoyi5NtGd8YPwcYKrLWY1r2RUU1qoCnXlROMnW1MzN19c+NNy/KVtan+UF1QXiW5H8cQv7lAbOTI/rsxvDwyrZph9ylYc3185qjPs2MODJd80HZ5jrz/BTnV6n2iS1zE928smmDIZVpUjVTqlF3NTetmhnVzKpmTjWb/wsmC9pGAAAAAAFSd7nXAAA=') format('woff');font-weight:normal;font-style:normal;}.fa{font-family:FontAwesome;font-weight:normal;font-style:normal;text-decoration:inherit;-webkit-font-smoothing:antialiased;speak:none;font-size:14px !important;}#shortcuts .fa {color:rgb(130,130,130) !important;}.fa-spin{-webkit-animation:spin 2s infinite linear;-moz-animation:spin 2s infinite linear;-o-animation:spin 2s infinite linear;animation:spin 2s infinite linear}@-moz-keyframes spin{0%{-moz-transform:rotate(0deg)}100%{-moz-transform:rotate(359deg)}}@-webkit-keyframes spin{0%{-webkit-transform:rotate(0deg)}100%{-webkit-transform:rotate(359deg)}}@-o-keyframes spin{0%{-o-transform:rotate(0deg)}100%{-o-transform:rotate(359deg)}}@-ms-keyframes spin{0%{-ms-transform:rotate(0deg)}100%{-ms-transform:rotate(359deg)}}@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(359deg)}}",
     dynamic: function() {
       var editSpace, sidebarLocation;
-
       sidebarLocation = Conf["Sidebar Location"] === "left" ? ["left", "right"] : ["right", "left"];
       if (Conf['editMode'] === "theme") {
         editSpace = {};
@@ -13673,7 +13251,6 @@
     },
     theme: function(theme) {
       var background, backgroundC, bgColor, i, replyRGB, replybg, svg, svgs, _i, _len;
-
       bgColor = new Style.color(Style.colorToHex(backgroundC = theme["Background Color"]) || 'aaaaaa');
       replybg = new Style.color(Style.colorToHex(theme["Reply Background"]));
       replyRGB = "rgb(" + (replybg.shiftRGB(parseInt(Conf['Silhouette Contrast'], 10), true)) + ")";
@@ -13687,7 +13264,6 @@
     },
     iconPositions: function() {
       var el, exec, slideNav;
-
       slideNav = $.el('span', {
         id: 'so-nav',
         innerHTML: '<i class=a-icon></a>'
@@ -13701,7 +13277,6 @@
       };
       $.asap(exec, function() {
         var psa, psaIcon;
-
         $.add(slideNav, $.id('boardNavDesktopFoot'));
         Header.addShortcut(slideNav, true);
         if (Conf['Announcements'] === 'slideout') {
@@ -13725,7 +13300,6 @@
     },
     padding: function() {
       var navHeight, pageHeight, _ref;
-
       navHeight = Header.bar.offsetHeight;
       pageHeight = (_ref = $('.pagelist', d.body)) != null ? _ref.offsetHeight : void 0;
       return Style.paddingSheet.textContent = ("body { padding-bottom: 15px; padding-top: 15px; } .fourchan-ss-navigation.fixed.top-header:not(.autohide) body::before { top: " + navHeight + "px; } .fourchan-ss-navigation.fixed.bottom-header:not(.autohide) body::before { bottom: " + navHeight + "px; } .top-header:not(.autohide) body { padding-top: " + (navHeight + 1) + "px; } .bottom-header:not(.autohide) body { padding-bottom: " + (navHeight + 1) + "px; } ") + (pageHeight ? ".fourchan-ss-navigation.index.pagination-sticky-top body::before, .fourchan-ss-navigation.index.pagination-top body::before { top: " + pageHeight + "px; } .fourchan-ss-navigation.index.pagination-sticky-bottom body::before, .fourchan-ss-navigation.index.pagination-bottom body::before { bottom: " + pageHeight + "px; } .index.pagination-sticky-top body, .index.pagination-top body { padding-top: " + (pageHeight + 1) + "px; } .index.pagination-sticky-bottom body, .index.pagination-bottom body { padding-bottom: " + (pageHeight + 1) + "px; }" : '');
@@ -13740,13 +13314,11 @@
       this.rgb = this.private_rgb.join(",");
       this.isLight = function() {
         var rgb;
-
         rgb = this.private_rgb;
         return (rgb[0] + rgb[1] + rgb[2]) >= 400;
       };
       this.shiftRGB = function(shift, smart) {
         var minmax, rgb;
-
         minmax = function(base) {
           return Math.min(Math.max(base, 0), 255);
         };
@@ -13758,7 +13330,6 @@
     },
     colorToHex: function(color) {
       var digits, hex;
-
       if (color.substr(0, 1) === '#') {
         return color.slice(1, color.length);
       }
@@ -13782,7 +13353,6 @@
   ThemeTools = {
     init: function(key) {
       var colorInput, div, fileInput, header, input, item, layout, theme, themeContent, _i, _j, _len, _len1, _ref;
-
       Conf['editMode'] = "theme";
       theme = Themes[key];
       if (theme) {
@@ -13880,7 +13450,6 @@
     },
     apply: function() {
       var depth, i, len, toggle1, toggle2;
-
       depth = 0;
       toggle1 = false;
       toggle2 = false;
@@ -13915,12 +13484,10 @@
     },
     uploadImage: function(evt, el) {
       var file, reader;
-
       file = evt.target.files[0];
       reader = new FileReader();
       reader.onload = function(evt) {
         var val;
-
         val = "url(\"" + evt.target.result + "\")";
         el.previousSibling.value = val;
         editTheme["Background Image"] = val;
@@ -13930,12 +13497,10 @@
     },
     importtheme: function(evt) {
       var file, reader;
-
       file = evt.target.files[0];
       reader = new FileReader();
       reader.onload = function(e) {
         var bgColor, bgRPA, blinkColor, brderColor, color, err, imported, inputColor, inputbColor, jlinkColor, linkColor, linkHColor, mainColor, name, nameColor, quoteColor, sageColor, textColor, timeColor, titleColor, tripColor;
-
         try {
           imported = JSON.parse(e.target.result);
           if (!imported) {
@@ -14036,7 +13601,6 @@
         }
         return $.get("userThemes", {}, function(_arg) {
           var userThemes;
-
           userThemes = _arg.userThemes;
           userThemes[name] = Themes[name];
           $.set('userThemes', userThemes);
@@ -14051,7 +13615,6 @@
     },
     save: function(theme) {
       var name;
-
       name = theme["Theme"];
       if (Themes[name] && !Themes[name]["Deleted"]) {
         if (confirm("A theme with this name already exists. Would you like to over-write?")) {
@@ -14064,7 +13627,6 @@
       delete Themes[name]["Theme"];
       return $.get("userThemes", {}, function(_arg) {
         var userThemes;
-
         userThemes = _arg.userThemes;
         userThemes[name] = Themes[name];
         $.set('userThemes', userThemes);
@@ -14090,7 +13652,6 @@
     },
     setup: function() {
       var btn, entry, psa;
-
       $.off(d, '4chanXInitFinished', PSAHiding.setup);
       if (!(psa = $.id('globalMessage'))) {
         return;
@@ -14119,7 +13680,6 @@
       $.on(btn, 'click', PSAHiding.toggle);
       $.get('hiddenPSA', 0, function(_arg) {
         var hiddenPSA;
-
         hiddenPSA = _arg.hiddenPSA;
         PSAHiding.sync(hiddenPSA);
         $.prepend(psa, btn);
@@ -14129,7 +13689,6 @@
     },
     toggle: function(e) {
       var UTC;
-
       if ($.hasClass(this, 'hide-announcement')) {
         UTC = +$.id('globalMessage').dataset.utc;
         $.set('hiddenPSA', UTC);
@@ -14141,7 +13700,6 @@
     },
     sync: function(UTC) {
       var hr, psa;
-
       psa = $.id('globalMessage');
       psa.hidden = PSAHiding.btn.hidden = UTC && UTC >= +psa.dataset.utc ? true : false;
       if ((hr = psa.nextElementSibling) && hr.nodeName === 'HR') {
@@ -14153,7 +13711,6 @@
   CatalogLinks = {
     init: function() {
       var el, input;
-
       $.ready(this.ready);
       if (!Conf['Catalog Links']) {
         return;
@@ -14182,7 +13739,6 @@
     },
     set: function(useCatalog) {
       var a, board, generateURL, path, _i, _len, _ref, _ref1;
-
       path = useCatalog ? 'catalog' : '';
       generateURL = useCatalog && Conf['External Catalog'] ? CatalogLinks.external : function(board) {
         return a.href = "/" + board + "/" + path;
@@ -14261,7 +13817,6 @@
     },
     ready: function() {
       var catalogLink;
-
       if (catalogLink = $('.pages.cataloglink a', d.body) || $('[href=".././catalog"]', d.body)) {
         catalogLink.textContent = '';
         catalogLink.className = 'a-icon';
@@ -14307,7 +13862,6 @@
     },
     node: function() {
       var dicestats, roll, _ref;
-
       if (this.isClone || !(dicestats = (_ref = this.info.email) != null ? _ref.match(/dice[+\s](\d+)d(\d+)/) : void 0)) {
         return;
       }
@@ -14334,7 +13888,6 @@
     },
     node: function() {
       var a;
-
       if (a = $('.abbr > a:not([onclick])', this.nodes.comment)) {
         return $.on(a, 'click', ExpandComment.cb);
       }
@@ -14346,7 +13899,6 @@
     },
     expand: function(post) {
       var a;
-
       if (post.nodes.longComment && !post.nodes.longComment.parentNode) {
         $.replace(post.nodes.shortComment, post.nodes.longComment);
         post.nodes.comment = post.nodes.longComment;
@@ -14362,7 +13914,6 @@
     },
     contract: function(post) {
       var a;
-
       if (!post.nodes.shortComment) {
         return;
       }
@@ -14373,7 +13924,6 @@
     },
     parse: function(req, a, post) {
       var callback, clone, comment, href, postObj, posts, quote, spoilerRange, status, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
-
       status = req.status;
       if (status !== 200 && status !== 304) {
         a.textContent = "Error " + req.statusText + " (" + status + ")";
@@ -14428,7 +13978,6 @@
     },
     setButton: function(thread) {
       var a;
-
       if (!(a = $.x('following-sibling::a[contains(@class,"summary")][1]', thread.OP.nodes.root))) {
         return;
       }
@@ -14437,7 +13986,6 @@
     },
     onIndexRefresh: function() {
       var status, thread, threadID, _ref, _ref1, _ref2;
-
       _ref = ExpandThread.statuses;
       for (threadID in _ref) {
         status = _ref[threadID];
@@ -14464,7 +14012,6 @@
     },
     toggle: function(thread) {
       var a, threadRoot;
-
       threadRoot = thread.OP.nodes.root.parentNode;
       if (!(a = $('.summary', threadRoot))) {
         return;
@@ -14477,7 +14024,6 @@
     },
     expand: function(thread, a, threadRoot) {
       var status;
-
       ExpandThread.statuses[thread] = status = {};
       a.textContent = ExpandThread.text.apply(ExpandThread, ['...'].concat(__slice.call(a.textContent.match(/\d+/g))));
       return status.req = $.cache("//a.4cdn.org/" + thread.board + "/res/" + thread + ".json", function() {
@@ -14487,7 +14033,6 @@
     },
     contract: function(thread, a, threadRoot) {
       var filesCount, inlined, num, postsCount, replies, reply, status, _i, _len;
-
       status = ExpandThread.statuses[thread];
       delete ExpandThread.statuses[thread];
       if (status.req) {
@@ -14535,7 +14080,6 @@
     },
     parse: function(req, thread, a) {
       var data, filesCount, post, postData, posts, postsCount, postsRoot, root, _i, _len, _ref;
-
       if ((_ref = req.status) !== 200 && _ref !== 304) {
         a.textContent = "Error " + req.statusText + " (" + req.status + ")";
         return;
@@ -14589,7 +14133,6 @@
     },
     createFunc: function(format) {
       var code;
-
       code = format.replace(/%(.)/g, function(s, c) {
         if (c in FileInfo.formatters) {
           return "' + FileInfo.formatters." + c + ".call(post) + '";
@@ -14601,7 +14144,6 @@
     },
     convertUnit: function(size, unit) {
       var i;
-
       if (unit === 'B') {
         return "" + (size.toFixed()) + " Bytes";
       }
@@ -14632,7 +14174,6 @@
       },
       n: function() {
         var fullname, shortname;
-
         fullname = this.file.name;
         shortname = Build.shortFilename(this.file.name, this.isReply);
         if (fullname === shortname) {
@@ -14676,7 +14217,6 @@
   Fourchan = {
     init: function() {
       var board;
-
       if (g.VIEW === 'catalog') {
         return;
       }
@@ -14698,7 +14238,6 @@
     },
     code: function() {
       var apply, pre, _i, _len, _ref;
-
       if (this.isClone) {
         return;
       }
@@ -14741,7 +14280,6 @@
     },
     node: function() {
       var rgb, span, style, uid;
-
       if (this.isClone || !(uid = this.info.uniqueID)) {
         return;
       }
@@ -14758,7 +14296,6 @@
     },
     compute: function(uid) {
       var hash, rgb;
-
       if (IDColor.ids[uid]) {
         return IDColor.ids[uid];
       }
@@ -14769,7 +14306,6 @@
     },
     hash: function(uid) {
       var i, msg;
-
       msg = 0;
       i = 0;
       while (i < 8) {
@@ -14794,7 +14330,6 @@
     },
     scroll: $.debounce(100, function() {
       var url;
-
       if (InfiniScroll.isFetching || ((d.body.scrollTop || doc.scrollTop) <= doc.scrollHeight - (300 + window.innerHeight))) {
         return;
       }
@@ -14815,7 +14350,6 @@
     }),
     parse: function(response) {
       var botPostForm, el, nodes, omitted_images, omitted_posts, op, post, postlink, posts, replylink, thread, threadID, threadNodes, threads, _i, _j, _len, _len1, _ref;
-
       threads = InfiniScroll.parsePages(response);
       threadNodes = [];
       nodes = [];
@@ -14874,7 +14408,6 @@
     },
     parsePages: function(response) {
       var newThreads, number, page, pages, thread, threads, _i, _len;
-
       pages = JSON.parse(response);
       newThreads = [];
       for (number in pages) {
@@ -14898,7 +14431,6 @@
     },
     features: function(threadNodes) {
       var err, errors, post, posts, thread, threadRoot, threads, _i, _j, _len, _len1, _ref;
-
       posts = [];
       threads = [];
       for (_i = 0, _len = threadNodes.length; _i < _len; _i++) {
@@ -14930,7 +14462,6 @@
     },
     notice: (function() {
       var notify, reset;
-
       notify = false;
       reset = function() {
         return notify = false;
@@ -14960,7 +14491,6 @@
   Keybinds = {
     init: function() {
       var hotkey, init;
-
       if (g.VIEW === 'catalog' || !Conf['Keybinds']) {
         return;
       }
@@ -14969,7 +14499,6 @@
       }
       init = function() {
         var node, _i, _len, _ref;
-
         $.off(d, '4chanXInitFinished', init);
         $.on(d, 'keydown', Keybinds.keydown);
         _ref = $$('[accesskey]');
@@ -14985,7 +14514,6 @@
     },
     keydown: function(e) {
       var key, notification, notifications, op, target, thread, threadRoot, _i, _len, _ref;
-
       if (!(key = Keybinds.keyCode(e))) {
         return;
       }
@@ -15185,7 +14713,6 @@
     },
     keyCode: function(e) {
       var kc, key;
-
       key = (function() {
         switch (kc = e.keyCode) {
           case 8:
@@ -15241,7 +14768,6 @@
     },
     tags: function(tag, ta) {
       var range, selEnd, selStart, value;
-
       value = ta.value;
       selStart = ta.selectionStart;
       selEnd = ta.selectionEnd;
@@ -15255,13 +14781,11 @@
     },
     sage: function() {
       var isSage;
-
       isSage = /sage/i.test(QR.nodes.email.value);
       return QR.nodes.email.value = isSage ? "" : "sage";
     },
     img: function(thread, all) {
       var post;
-
       if (all) {
         return ImageExpand.cb.toggleAll();
       } else {
@@ -15271,7 +14795,6 @@
     },
     open: function(thread, tab) {
       var url;
-
       if (g.VIEW !== 'index') {
         return;
       }
@@ -15284,7 +14807,6 @@
     },
     hl: function(delta, thread) {
       var axis, height, next, postEl, replies, reply, root, _i, _len;
-
       postEl = $('.reply.highlight', thread);
       if (!delta) {
         if (postEl) {
@@ -15327,7 +14849,6 @@
   Nav = {
     init: function() {
       var next, prev;
-
       switch (g.VIEW) {
         case 'index':
           if (!Conf['Index Navigation']) {
@@ -15371,7 +14892,6 @@
     },
     getThread: function() {
       var thread, threadRoot, _i, _len, _ref;
-
       _ref = $$('.thread');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         threadRoot = _ref[_i];
@@ -15387,7 +14907,6 @@
     },
     scroll: function(delta) {
       var axis, next, thread, top;
-
       thread = Nav.getThread();
       axis = delta === +1 ? 'following' : 'preceding';
       if (next = $.x("" + axis + "-sibling::div[contains(@class,'thread') and not(@hidden)][1]", thread)) {
@@ -15430,7 +14949,6 @@
     },
     node: function() {
       var dateEl;
-
       if (this.isClone) {
         return;
       }
@@ -15440,7 +14958,6 @@
     },
     relative: function(diff, now, date) {
       var days, months, number, rounded, unit, years;
-
       unit = (number = diff / $.DAY) >= 1 ? (years = now.getYear() - date.getYear(), months = now.getMonth() - date.getMonth(), days = now.getDate() - date.getDate(), years > 1 ? (number = years - (months < 0 || months === 0 && days < 0), 'year') : years === 1 && (months > 0 || months === 0 && days >= 0) ? (number = years, 'year') : (months = (months + 12) % 12) > 1 ? (number = months - (days < 0), 'month') : months === 1 && days >= 0 ? (number = months, 'month') : 'day') : (number = diff / $.HOUR) >= 1 ? 'hour' : (number = diff / $.MINUTE) >= 1 ? 'minute' : (number = Math.max(0, diff) / $.SECOND, 'second');
       rounded = Math.round(number);
       if (rounded !== 1) {
@@ -15451,7 +14968,6 @@
     stale: [],
     flush: function() {
       var data, now, _i, _len, _ref;
-
       if (d.hidden) {
         return;
       }
@@ -15467,7 +14983,6 @@
     },
     update: function(data, now) {
       var date, diff, isPost, relative, singlePost, _i, _len, _ref;
-
       isPost = data instanceof Post;
       date = isPost ? data.info.date : new Date(+data.dataset.utc);
       now || (now = new Date());
@@ -15486,7 +15001,6 @@
     },
     setOwnTimeout: function(diff, data) {
       var delay;
-
       delay = diff < $.MINUTE ? $.SECOND - (diff + $.SECOND / 2) % $.SECOND : diff < $.HOUR ? $.MINUTE - (diff + $.MINUTE / 2) % $.MINUTE : diff < $.DAY ? $.HOUR - (diff + $.HOUR / 2) % $.HOUR : $.DAY - (diff + $.DAY / 2) % $.DAY;
       return setTimeout(RelativeDates.markStale, delay, data);
     },
@@ -15524,7 +15038,6 @@
     },
     node: function(post) {
       var spoiler, spoilers, _i, _len;
-
       spoilers = $$('s', this.nodes.comment);
       for (_i = 0, _len = spoilers.length; _i < _len; _i++) {
         spoiler = spoilers[_i];
@@ -15544,7 +15057,6 @@
     },
     ready: function() {
       var field;
-
       field = $.id('recaptcha_response_field');
       $.on(field, 'keydown', function(e) {
         if (e.keyCode === 8 && !field.value) {
@@ -15553,7 +15065,6 @@
       });
       return $.on($('form'), 'submit', function(e) {
         var response;
-
         e.preventDefault();
         response = field.value.trim();
         if (!/\s/.test(response)) {
@@ -15583,7 +15094,6 @@
     },
     createFunc: function(format) {
       var code;
-
       code = format.replace(/%([A-Za-z])/g, function(s, c) {
         if (c in Time.formatters) {
           return "' + Time.formatters." + c + ".call(date) + '";
@@ -15668,7 +15178,6 @@
   Settings = {
     init: function() {
       var addSection, check, el, key, settings, value, _ref;
-
       el = $.el('a', {
         className: 'settings-link',
         href: 'javascript:;',
@@ -15682,7 +15191,6 @@
       });
       $.get('previousversion', null, function(item) {
         var changelog, curr, prev, previous;
-
         if (previous = item['previousversion']) {
           if (previous === g.VERSION) {
             return;
@@ -15738,7 +15246,6 @@
     },
     open: function(openSection) {
       var dialog, link, links, overlay, section, sectionToOpen, _i, _len, _ref;
-
       if (Conf['editMode'] === "theme") {
         if (confirm("Opening the options dialog will close and discard any theme changes made with the theme editor.")) {
           ThemeTools.close();
@@ -15800,7 +15307,6 @@
     sections: [],
     addSection: function(title, open) {
       var hyphenatedTitle, _ref;
-
       if (typeof title !== 'string') {
         _ref = title.detail, title = _ref.title, open = _ref.open;
       }
@@ -15813,7 +15319,6 @@
     },
     openSection: function(mode) {
       var section, selected;
-
       if (selected = $('.tab-selected', Settings.dialog)) {
         $.rmClass(selected, 'tab-selected');
       }
@@ -15827,7 +15332,6 @@
     },
     main: function(section) {
       var arr, button, description, div, fs, hiddenNum, input, inputs, items, key, obj, _ref;
-
       items = {};
       inputs = {};
       _ref = Config.main;
@@ -15854,7 +15358,6 @@
       }
       $.get(items, function(items) {
         var val;
-
         for (key in items) {
           val = items[key];
           inputs[key].checked = val;
@@ -15869,7 +15372,6 @@
         boards: {}
       }, function(item) {
         var ID, board, thread, _ref1;
-
         _ref1 = item.hiddenThreads.boards;
         for (ID in _ref1) {
           board = _ref1[ID];
@@ -15884,7 +15386,6 @@
         boards: {}
       }, function(item) {
         var ID, board, post, thread, _ref1;
-
         _ref1 = item.hiddenPosts.boards;
         for (ID in _ref1) {
           board = _ref1[ID];
@@ -15904,7 +15405,6 @@
           boards: {}
         }, function(item) {
           var boardID;
-
           for (boardID in item.hiddenThreads.boards) {
             localStorage.removeItem("4chan-hide-t-" + boardID);
           }
@@ -15915,7 +15415,6 @@
     },
     "export": function(now, data) {
       var a, db, span, _i, _len, _ref;
-
       if (typeof now !== 'number') {
         now = Date.now();
         data = {
@@ -15952,7 +15451,6 @@
     },
     onImport: function() {
       var file, output, reader;
-
       if (!(file = this.files[0])) {
         return;
       }
@@ -15964,7 +15462,6 @@
       reader = new FileReader();
       reader.onload = function(e) {
         var data, err;
-
         try {
           data = JSON.parse(e.target.result);
           Settings.loadSettings(data);
@@ -15990,7 +15487,6 @@
     },
     convertSettings: function(data, map) {
       var newKey, prevKey;
-
       for (prevKey in map) {
         newKey = map[prevKey];
         if (newKey) {
@@ -16002,7 +15498,6 @@
     },
     filter: function(section) {
       var select;
-
       section.innerHTML = "<select name=filter><option value=guide>Guide</option><option value=name>Name</option><option value=uniqueID>Unique ID</option><option value=tripcode>Tripcode</option><option value=capcode>Capcode</option><option value=email>E-mail</option><option value=subject>Subject</option><option value=comment>Comment</option><option value=flag>Flag</option><option value=filename>Filename</option><option value=dimensions>Image dimensions</option><option value=filesize>Filesize</option><option value=MD5>Image MD5</option></select><div></div>";
       select = $('select', section);
       $.on(select, 'change', Settings.selectFilter);
@@ -16010,7 +15505,6 @@
     },
     selectFilter: function() {
       var div, name, ta;
-
       div = this.nextElementSibling;
       if ((name = this.value) !== 'guide') {
         $.rmAll(div);
@@ -16030,7 +15524,6 @@
     },
     sauce: function(section) {
       var ta;
-
       section.innerHTML = "<div class=warning " + (Conf['Sauce'] ? 'hidden' : '') + "><code>Sauce</code> is disabled.</div><div>Lines starting with a <code>#</code> will be ignored.</div><div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div><ul>These parameters will be replaced by their corresponding values:<li><code>%TURL</code>: Thumbnail URL.</li><li><code>%URL</code>: Full image URL.</li><li><code>%MD5</code>: MD5 hash.</li><li><code>%board</code>: Current board.</li></ul><textarea name=sauces class=field spellcheck=false></textarea>";
       ta = $('textarea', section);
       $.get('sauces', Conf['sauces'], function(item) {
@@ -16053,7 +15546,6 @@
     },
     advanced: function(section) {
       var archive, boardID, boardOptions, boardSelect, boards, data, event, input, inputs, item, items, name, row, rows, ta, table, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4;
-
       section.innerHTML = "<fieldset><legend>Archiver</legend><div class=\"warning\" " + (Conf['404 Redirect'] ? 'hidden' : '') + "><code>404 Redirect</code> is disabled.</div><div><select id='archive-board-select'></select></div><table id='archive-table'><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><span class=note>Disabled selections indicate that only one archive is available for that board and redirection type.</span></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea name=boardnav class=field spellcheck=false></textarea></div><span class=note>New lines will be converted into spaces.</span><br><br><div class=note>In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:\"Install Gentoo\"</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>External link: <code>external-text:\"Google\",\"http://www.google.com\"</code></div><div>Combinations are possible: <code>g-index-text:\"Technology Index\"</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=note><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div><div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div></fieldset><fieldset><legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div><div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div></fieldset><fieldset><legend>Quick Reply Personas <span class=\"warning\" " + (Conf['Quick Reply'] ? 'hidden' : '') + ">is disabled.</span></legend><textarea class=personafield name=\"QR.personas\" class=\"field\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input's auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>email</code>, <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>email:\"sage\"</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>email:\"sage\";always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>email:\"sage\";boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=warning " + (Conf['Unread Favicon'] ? 'hidden' : '') + ">is disabled.</span></legend><div><select name=favicon><option value=ferongr>ferongr</option><option value=xat->xat-</option><option value=Mayhem>Mayhem</option><option value=4chanJS>4chanJS</option><option value=Original>Original</option></select><span id=favicon-preview></span></div></fieldset><fieldset><legend>Thread Updater <span class=warning " + (Conf['Thread Updater'] ? 'hidden' : '') + ">is disabled.</span></legend><div>Interval: <input type=number name=Interval class=field min=1 value=" + Conf['Interval'] + "></div></fieldset><fieldset><legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend><div><button id=apply-css>Apply CSS</button><textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea></div></fieldset>";
       items = {};
       inputs = {};
@@ -16073,7 +15565,6 @@
       $.on(ta, 'change', $.cb.value);
       $.get(items, function(items) {
         var key, val;
-
         for (key in items) {
           val = items[key];
           input = inputs[key];
@@ -16142,7 +15633,6 @@
       });
       $.get('selectedArchives', Conf['selectedArchives'], function(_arg) {
         var option, selectedArchives, type;
-
         selectedArchives = _arg.selectedArchives;
         for (boardID in selectedArchives) {
           data = selectedArchives[boardID];
@@ -16157,7 +15647,6 @@
     },
     addArchiveCell: function(boardID, data, type) {
       var archive, i, length, options, select, td;
-
       length = data[type].length;
       td = $.el('td', {
         className: 'archive-cell'
@@ -16187,10 +15676,8 @@
     },
     saveSelectedArchive: function() {
       var _this = this;
-
       return $.get('selectedArchives', Conf['selectedArchives'], function(_arg) {
         var selectedArchives, _name;
-
         selectedArchives = _arg.selectedArchives;
         (selectedArchives[_name = _this.dataset.boardid] || (selectedArchives[_name] = {}))[_this.dataset.type] = _this.value;
         return $.set('selectedArchives', selectedArchives);
@@ -16201,7 +15688,6 @@
     },
     time: function() {
       var funk;
-
       funk = Time.createFunc(this.value);
       return this.nextElementSibling.textContent = funk(Time, new Date());
     },
@@ -16210,7 +15696,6 @@
     },
     fileInfo: function() {
       var data, funk;
-
       data = {
         isReply: true,
         file: {
@@ -16246,7 +15731,6 @@
     },
     keybinds: function(section) {
       var arr, input, inputs, items, key, tbody, tr, _ref;
-
       section.innerHTML = "<div class=warning " + (Conf['Keybinds'] ? 'hidden' : '') + "><code>Keybinds</code> are disabled.</div><div>Allowed keys: <kbd>a-z</kbd>, <kbd>0-9</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>, <kbd>Meta</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>, <kbd>Up</kbd>, <kbd>Down</kbd>, <kbd>Right</kbd>, <kbd>Left</kbd>.</div><div>Press <kbd>Backspace</kbd> to disable a keybind.</div><table><tbody><tr><th>Actions</th><th>Keybinds</th></tr></tbody></table>";
       tbody = $('tbody', section);
       items = {};
@@ -16268,7 +15752,6 @@
       }
       return $.get(items, function(items) {
         var val;
-
         for (key in items) {
           val = items[key];
           inputs[key].value = val;
@@ -16277,7 +15760,6 @@
     },
     keybind: function(e) {
       var key;
-
       if (e.keyCode === 9) {
         return;
       }
@@ -16291,7 +15773,6 @@
     },
     style: function(section) {
       var arr, description, div, fs, html, input, inputs, items, key, name, nodes, obj, type, value, _i, _len, _ref;
-
       nodes = $.frag();
       items = {};
       inputs = {};
@@ -16334,7 +15815,6 @@
       }
       return $.get(items, function(items) {
         var cb, val;
-
         cb = Settings.cb.style;
         for (key in items) {
           val = items[key];
@@ -16356,7 +15836,6 @@
     },
     themes: function(section, mode) {
       var a, cb, div, keys, mouseout, mouseover, name, parentdiv, suboptions, theme, _i, _j, _k, _len, _len1, _len2, _ref;
-
       if (typeof mode !== 'string') {
         mode = 'default';
       }
@@ -16416,7 +15895,6 @@
         $.on($("#importbutton", div), 'change', ThemeTools.importtheme);
         $.on($('#tUndelete', div), 'click', function() {
           var themes;
-
           $.rm($.id("themeContainer"));
           themes = {
             open: Settings.themes,
@@ -16445,7 +15923,6 @@
         });
         $.on($('a', div), 'click', function() {
           var themes;
-
           themes = {
             open: Settings.themes,
             hyphenatedTitle: 'themes'
@@ -16460,7 +15937,6 @@
     },
     mouseover: function(e) {
       var mouseover;
-
       mouseover = $.el('div', {
         id: 'mouseover',
         className: 'dialog'
@@ -16480,7 +15956,6 @@
     },
     mascots: function(section, mode) {
       var addoptions, batchmascots, categories, cb, container, div, keys, mascot, mascotEl, mascotHide, mascotoptions, menu, name, node, option, suboptions, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1;
-
       categories = {};
       cb = Settings.cb.mascot;
       if (typeof mode !== 'string') {
@@ -16549,7 +16024,6 @@
         });
         $.on($('#clear', batchmascots), 'click', function() {
           var enabledMascots, _k, _len2;
-
           enabledMascots = JSON.parse(JSON.stringify(Conf[g.MASCOTSTRING]));
           for (_k = 0, _len2 = enabledMascots.length; _k < _len2; _k++) {
             name = enabledMascots[_k];
@@ -16559,7 +16033,6 @@
         });
         $.on($('#selectAll', batchmascots), 'click', function() {
           var _ref1;
-
           for (name in Mascots) {
             mascot = Mascots[name];
             if (!((_ref1 = mascot.category, __indexOf.call(Conf["Hidden Categories"], _ref1) >= 0) || __indexOf.call(Conf[g.MASCOTSTRING], name) >= 0 || __indexOf.call(Conf["Deleted Mascots"], name) >= 0)) {
@@ -16581,7 +16054,6 @@
         });
         $.on($('#undelete', batchmascots), 'click', function() {
           var mascots;
-
           if (!(Conf["Deleted Mascots"].length > 0)) {
             alert("No mascots have been deleted.");
             return;
@@ -16617,7 +16089,6 @@
         });
         $.on($('#return', batchmascots), 'click', function() {
           var mascots;
-
           mascots = {
             open: Settings.mascots,
             hyphenatedTitle: 'mascots'
@@ -16636,7 +16107,6 @@
       style: {
         checked: function() {
           var hyphenated;
-
           $.cb.checked.call(this);
           hyphenated = this.name.toLowerCase().replace(/^4/, 'four').replace(/\s+/g, '-');
           return (this.checked ? $.addClass : $.rmClass)(doc, hyphenated);
@@ -16647,7 +16117,6 @@
         },
         select: function() {
           var hyphenated, option, _i, _len, _ref;
-
           $.cb.value.call(this);
           _ref = this.options;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -16660,7 +16129,6 @@
       mascot: {
         category: function() {
           var cb, i, name, setting, type, _i, _len, _ref;
-
           if ($.id(this.name).hidden = this.checked) {
             Conf["Hidden Categories"].push(this.name);
             _ref = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
@@ -16699,7 +16167,6 @@
         },
         "delete": function(e) {
           var name, type, _i, _len, _ref;
-
           e.stopPropagation();
           name = this.parentElement.parentElement.id;
           if (confirm("Are you sure you want to delete \"" + name + "\"?")) {
@@ -16719,7 +16186,6 @@
         },
         "export": function(e) {
           var a, data, name;
-
           e.stopPropagation();
           name = this.parentElement.parentElement.id;
           data = Mascots[name];
@@ -16745,7 +16211,6 @@
         },
         select: function() {
           var string;
-
           string = g.MASCOTSTRING;
           if ($.remove(Conf[string], this.id)) {
             if (Conf['mascot'] === this.id) {
@@ -16764,7 +16229,6 @@
       theme: {
         select: function() {
           var currentTheme;
-
           if (currentTheme = $.id(Conf['theme'])) {
             $.rmClass(currentTheme, 'selectedtheme');
           }
@@ -16785,7 +16249,6 @@
         },
         "export": function(e) {
           var a, data;
-
           e.preventDefault();
           e.stopPropagation();
           data = Themes[this.name];
@@ -16804,7 +16267,6 @@
         "delete": function(e) {
           var container, settheme,
             _this = this;
-
           e.preventDefault();
           e.stopPropagation();
           container = $.id(this.name);
@@ -16823,7 +16285,6 @@
             Themes[this.name]["Deleted"] = true;
             return $.get("userThemes", {}, function(_arg) {
               var userThemes;
-
               userThemes = _arg.userThemes;
               userThemes[_this.name] = Themes[_this.name];
               $.set('userThemes', userThemes);
@@ -16833,12 +16294,10 @@
         },
         restore: function() {
           var _this = this;
-
           if (confirm("Are you sure you want to restore \"" + this.id + "\"?")) {
             Themes[this.id]["Deleted"] = false;
             return $.get("userThemes", {}, function(_arg) {
               var userThemes;
-
               userThemes = _arg.userThemes;
               userThemes[_this.id] = Themes[_this.id];
               $.set('userThemes', userThemes);
@@ -16853,10 +16312,8 @@
   Main = {
     init: function() {
       var db, flatten, _i, _len, _ref;
-
       flatten = function(parent, obj) {
         var key, val;
-
         if (obj instanceof Array) {
           Conf[parent] = obj[0];
         } else if (typeof obj === 'object') {
@@ -16900,7 +16357,6 @@
     },
     initFeatures: function() {
       var init, pathname, _ref, _ref1;
-
       pathname = location.pathname.split('/');
       g.BOARD = new Board(pathname[1]);
       g.VIEW = (function() {
@@ -16946,7 +16402,6 @@
         case 'i.4cdn.org':
           $.ready(function() {
             var URL, _ref2;
-
             if (Conf['404 Redirect'] && ((_ref2 = d.title) === '4chan - Temporarily Offline' || _ref2 === '4chan - 404 Not Found')) {
               Redirect.init();
               pathname = location.pathname.split('/');
@@ -16963,7 +16418,6 @@
       }
       init = function(features) {
         var err, module, name;
-
         for (name in features) {
           module = features[name];
           try {
@@ -17048,7 +16502,6 @@
     },
     initReady: function() {
       var GMver, err, errors, href, i, passLink, post, postRoot, posts, styleSelector, thread, threadRoot, v, _i, _j, _len, _len1, _ref, _ref1, _ref2;
-
       if ((_ref = d.title) === '4chan - Temporarily Offline' || _ref === '4chan - 404 Not Found') {
         if (Conf['404 Redirect'] && g.VIEW === 'thread') {
           href = Redirect.to('thread', {
@@ -17101,7 +16554,7 @@
         return;
       }
       GMver = GM_info.version.split('.');
-      _ref2 = "1.12".split('.');
+      _ref2 = "1.13".split('.');
       for (i = _j = 0, _len1 = _ref2.length; _j < _len1; i = ++_j) {
         v = _ref2[i];
         if (v < GMver[i]) {
@@ -17110,7 +16563,7 @@
         if (v === GMver[i]) {
           continue;
         }
-        new Notice('warning', "Your version of Greasemonkey is outdated (v" + GM_info.version + " instead of v1.12 minimum) and appchan x may not operate correctly.", 30);
+        new Notice('warning', "Your version of Greasemonkey is outdated (v" + GM_info.version + " instead of v1.13 minimum) and appchan x may not operate correctly.", 30);
         break;
       }
       try {
@@ -17123,7 +16576,6 @@
     },
     callbackNodes: function(klass, nodes) {
       var callback, err, errors, i, len, node, _i, _len, _ref;
-
       len = nodes.length;
       _ref = klass.callbacks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -17151,12 +16603,10 @@
     },
     callbackNodesDB: function(klass, nodes, cb) {
       var errors, func, i, len, node, queue, softTask;
-
       queue = [];
       errors = null;
       func = function(node) {
         var callback, err, _i, _len, _ref;
-
         _ref = klass.callbacks;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           callback = _ref[_i];
@@ -17184,7 +16634,6 @@
       };
       softTask = function() {
         var node;
-
         node = queue.shift();
         func(node);
         if (!queue.length) {
@@ -17206,7 +16655,6 @@
     },
     addCallback: function(e) {
       var Klass, obj;
-
       obj = e.detail;
       if (typeof obj.callback.name !== 'string') {
         throw new Error("Invalid callback name: " + obj.callback.name);
@@ -17226,7 +16674,6 @@
     },
     handleErrors: function(errors) {
       var div, error, logs, _i, _len;
-
       if (!(errors instanceof Array)) {
         error = errors;
       } else if (errors.length === 1) {
@@ -17241,7 +16688,6 @@
       });
       $.on(div.lastElementChild, 'click', function() {
         var _ref;
-
         return _ref = this.textContent === 'show' ? ['hide', false] : ['show', true], this.textContent = _ref[0], logs.hidden = _ref[1], _ref;
       });
       logs = $.el('div', {
@@ -17255,7 +16701,6 @@
     },
     parseError: function(data) {
       var error, message;
-
       c.error(data.message, data.error.stack);
       message = $.el('div', {
         textContent: data.message
@@ -17267,7 +16712,6 @@
     },
     isThisPageLegit: function() {
       var _ref;
-
       if (!('thisPageIsLegit' in Main)) {
         Main.thisPageIsLegit = location.hostname === 'boards.4chan.org' && !$('link[href*="favicon-status.ico"]', d.head) && ((_ref = d.title) !== '4chan - Temporarily Offline' && _ref !== '4chan - Error' && _ref !== '504 Gateway Time-out');
       }

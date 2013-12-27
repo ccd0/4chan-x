@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         appchan x
 // @version      2.7.3
-// @minGMVer     1.12
-// @minFFVer     22
+// @minGMVer     1.13
+// @minFFVer     26
 // @namespace    zixaphir
 // @description  The most comprehensive 4chan userscript.
 // @license      MIT; https://github.com/zixaphir/appchan-x/blob/master/LICENSE 

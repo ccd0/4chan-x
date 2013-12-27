@@ -52,12 +52,17 @@ Header =
         textContent: 'Header'
       order: 107
       subEntries: [
-        {el: barFixedToggler}
-        {el: headerToggler}
-        {el: scrollHeaderToggler}
-        {el: barPositionToggler}
-        {el: customNavToggler}
-        {el: editCustomNav}
+          el: barFixedToggler
+        ,
+          el: headerToggler
+        ,
+          el: scrollHeaderToggler
+        ,
+          el: barPositionToggler
+        ,
+          el: customNavToggler
+        ,
+          el: editCustomNav
       ]
 
     $.on window, 'load hashchange', Header.hashScroll
