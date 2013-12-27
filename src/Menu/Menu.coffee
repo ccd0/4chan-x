@@ -8,18 +8,22 @@ Menu =
       cb:   @node
 
   node: ->
-    return $.on $('.menu-button', @nodes.info), 'click', Menu.toggle if @isClone
+    if @isClone
+      $.on $('.menu-button', @nodes.info), 'click', Menu.toggle
+      return
     $.add @nodes.info, Menu.makeButton()
 
   makeButton: do ->
-    frag = $.nodes [
-      $.tn(' ')
-      $.el 'a',
-        className: 'menu-button'
-        innerHTML: '[<i></i>]'
-        href:      'javascript:;'
-    ]
+    frag = null
     ->
+      unless frag?
+        frag = $.nodes [
+          $.tn(' ')
+          $.el 'a',
+            className: 'menu-button'
+            innerHTML: '[<i></i>]'
+            href:      'javascript:;'
+          ]
       clone = frag.cloneNode true
       $.on clone.lastElementChild, 'click', Menu.toggle
       clone
