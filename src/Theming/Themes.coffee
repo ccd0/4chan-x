@@ -140,7 +140,7 @@ ThemeTools =
 
           colorInput = $.el 'input',
             className: 'color'
-            value: "##{(new Style.color input.value).hex}"
+            value: "##{(new Style.color input.value).hex()}"
 
           JSColor.bind colorInput
 
@@ -190,7 +190,7 @@ ThemeTools =
       return alert "Syntax error on #{@name}."
 
     if @className is "colorfield"
-      @nextSibling.value = (new Style.color @value).hex
+      @nextSibling.value = (new Style.color @value).hex()
       @nextSibling.color.importColor()
 
     editTheme[@name] = @value
@@ -246,7 +246,7 @@ ThemeTools =
         else
           ['no-repeat', 'bottom', 'left', 'fixed']
 
-        color = Style.color
+        {color} = Style
 
         bgColor     = new color imported.bgColor
         mainColor   = new color imported.mainColor
@@ -272,46 +272,46 @@ ThemeTools =
           'Background Attachment':        "#{bgRPA[3] or ''}"
           'Background Position':          "#{bgRPA[1] or ''} #{bgRPA[2] or ''}"
           'Background Repeat':            "#{bgRPA[0] or ''}"
-          'Background Color':             "rgb(#{bgColor.rgb})"
-          'Dialog Background':            "rgba(#{mainColor.rgb},.98)"
-          'Dialog Border':                "rgb(#{brderColor.rgb})"
+          'Background Color':             "rgb(#{bgColor.rgb()})"
+          'Dialog Background':            "rgba(#{mainColor.rgb()},.98)"
+          'Dialog Border':                "rgb(#{brderColor.rgb()})"
           'Thread Wrapper Background':    "rgba(0,0,0,0)"
           'Thread Wrapper Border':        "rgba(0,0,0,0)"
-          'Reply Background':             "rgba(#{mainColor.rgb},#{imported.replyOp})"
-          'Reply Border':                 "rgb(#{brderColor.rgb})"
+          'Reply Background':             "rgba(#{mainColor.rgb()},#{imported.replyOp})"
+          'Reply Border':                 "rgb(#{brderColor.rgb()})"
           'Highlighted Reply Background': "rgba(#{mainColor.shiftRGB(4, true)},#{imported.replyOp})"
-          'Highlighted Reply Border':     "rgb(#{linkColor.rgb})"
-          'Backlinked Reply Outline':     "rgb(#{linkColor.rgb})"
-          'Checkbox Background':          "rgba(#{inputColor.rgb},#{imported.replyOp})"
-          'Checkbox Border':              "rgb(#{inputbColor.rgb})"
-          'Input Background':             "rgba(#{inputColor.rgb},#{imported.replyOp})"
-          'Input Border':                 "rgb(#{inputbColor.rgb})"
-          'Hovered Input Background':     "rgba(#{inputColor.hover},#{imported.replyOp})"
-          'Hovered Input Border':         "rgb(#{inputbColor.rgb})"
-          'Focused Input Background':     "rgba(#{inputColor.hover},#{imported.replyOp})"
-          'Focused Input Border':         "rgb(#{inputbColor.rgb})"
-          'Buttons Background':           "rgba(#{inputColor.rgb},#{imported.replyOp})"
-          'Buttons Border':               "rgb(#{inputbColor.rgb})"
-          'Navigation Background':        "rgba(#{bgColor.rgb},0.8)"
-          'Navigation Border':            "rgb(#{mainColor.rgb})"
-          'Quotelinks':                   "rgb(#{linkColor.rgb})"
-          'Links':                        "rgb(#{linkColor.rgb})"
-          'Hovered Links':                "rgb(#{linkHColor.rgb})"
-          'Navigation Links':             "rgb(#{textColor.rgb})"
-          'Hovered Navigation Links':     "rgb(#{linkHColor.rgb})"
-          'Subjects':                     "rgb(#{titleColor.rgb})"
-          'Names':                        "rgb(#{nameColor.rgb})"
-          'Sage':                         "rgb(#{sageColor.rgb})"
-          'Tripcodes':                    "rgb(#{tripColor.rgb})"
-          'Emails':                       "rgb(#{linkColor.rgb})"
-          'Post Numbers':                 "rgb(#{linkColor.rgb})"
-          'Text':                         "rgb(#{textColor.rgb})"
-          'Backlinks':                    "rgb(#{linkColor.rgb})"
-          'Greentext':                    "rgb(#{quoteColor.rgb})"
-          'Board Title':                  "rgb(#{textColor.rgb})"
-          'Timestamps':                   "rgb(#{timeColor.rgb})"
-          'Inputs':                       "rgb(#{textColor.rgb})"
-          'Warnings':                     "rgb(#{sageColor.rgb})"
+          'Highlighted Reply Border':     "rgb(#{linkColor.rgb()})"
+          'Backlinked Reply Outline':     "rgb(#{linkColor.rgb()})"
+          'Checkbox Background':          "rgba(#{inputColor.rgb()},#{imported.replyOp})"
+          'Checkbox Border':              "rgb(#{inputbColor.rgb()})"
+          'Input Background':             "rgba(#{inputColor.rgb()},#{imported.replyOp})"
+          'Input Border':                 "rgb(#{inputbColor.rgb()})"
+          'Hovered Input Background':     "rgba(#{inputColor.hover()},#{imported.replyOp})"
+          'Hovered Input Border':         "rgb(#{inputbColor.rgb()})"
+          'Focused Input Background':     "rgba(#{inputColor.hover()},#{imported.replyOp})"
+          'Focused Input Border':         "rgb(#{inputbColor.rgb()})"
+          'Buttons Background':           "rgba(#{inputColor.rgb()},#{imported.replyOp})"
+          'Buttons Border':               "rgb(#{inputbColor.rgb()})"
+          'Navigation Background':        "rgba(#{bgColor.rgb()},0.8)"
+          'Navigation Border':            "rgb(#{mainColor.rgb()})"
+          'Quotelinks':                   "rgb(#{linkColor.rgb()})"
+          'Links':                        "rgb(#{linkColor.rgb()})"
+          'Hovered Links':                "rgb(#{linkHColor.rgb()})"
+          'Navigation Links':             "rgb(#{textColor.rgb()})"
+          'Hovered Navigation Links':     "rgb(#{linkHColor.rgb()})"
+          'Subjects':                     "rgb(#{titleColor.rgb()})"
+          'Names':                        "rgb(#{nameColor.rgb()})"
+          'Sage':                         "rgb(#{sageColor.rgb()})"
+          'Tripcodes':                    "rgb(#{tripColor.rgb()})"
+          'Emails':                       "rgb(#{linkColor.rgb()})"
+          'Post Numbers':                 "rgb(#{linkColor.rgb()})"
+          'Text':                         "rgb(#{textColor.rgb()})"
+          'Backlinks':                    "rgb(#{linkColor.rgb()})"
+          'Greentext':                    "rgb(#{quoteColor.rgb()})"
+          'Board Title':                  "rgb(#{textColor.rgb()})"
+          'Timestamps':                   "rgb(#{timeColor.rgb()})"
+          'Inputs':                       "rgb(#{textColor.rgb()})"
+          'Warnings':                     "rgb(#{sageColor.rgb()})"
           'Shadow Color':                 "rbga(0,0,0,0.1)"
           'Custom CSS':                   """<%= grunt.file.read('src/General/css/theme.import.css') %> #{imported.customCSS or ''}"""
       

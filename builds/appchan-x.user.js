@@ -12689,7 +12689,7 @@
       });
       ctx = el.getContext('2d');
       ctx.font = "50px " + Conf['Font'];
-      ctx.fillStyle = (new Style.color((Themes[Conf['theme']] || Themes['Yotsuba B'])['Text'])).hex;
+      ctx.fillStyle = (new Style.color((Themes[Conf['theme']] || Themes['Yotsuba B'])['Text'])).hex();
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText("Mascot 404", 124, 50);
@@ -13376,12 +13376,27 @@
       function _Class(value) {
         this.value = value;
         this.raw = colorToHex(value);
-        this.hex = "#" + this.raw;
-        this.private_rgb = calc_rgb(value);
-        this.isLight = isLight(this.private_rgb);
-        this.rgb = this.private_rgb.join(",");
-        this.hover = this.shiftRGB(16, true);
       }
+
+      _Class.prototype.hex = function() {
+        return "#" + this.raw;
+      };
+
+      _Class.prototype.private_rgb = function() {
+        return calc_rgb(this.raw);
+      };
+
+      _Class.prototype.isLight = function() {
+        return isLight(this.private_rgb());
+      };
+
+      _Class.prototype.rgb = function() {
+        return this.private_rgb().join("");
+      };
+
+      _Class.prototype.hover = function() {
+        return this.shiftRGB(16, true);
+      };
 
       _Class.prototype.shiftRGB = function(shift, smart) {
         var color, rgb;
@@ -13479,7 +13494,7 @@
             input.className = "colorfield";
             colorInput = $.el('input', {
               className: 'color',
-              value: "#" + (new Style.color(input.value)).hex
+              value: "#" + ((new Style.color(input.value)).hex())
             });
             JSColor.bind(colorInput);
             $.after(input, colorInput);
@@ -13534,7 +13549,7 @@
         return alert("Syntax error on " + this.name + ".");
       }
       if (this.className === "colorfield") {
-        this.nextSibling.value = (new Style.color(this.value)).hex;
+        this.nextSibling.value = (new Style.color(this.value)).hex();
         this.nextSibling.color.importColor();
       }
       editTheme[this.name] = this.value;
@@ -13611,46 +13626,46 @@
             'Background Attachment': "" + (bgRPA[3] || ''),
             'Background Position': "" + (bgRPA[1] || '') + " " + (bgRPA[2] || ''),
             'Background Repeat': "" + (bgRPA[0] || ''),
-            'Background Color': "rgb(" + bgColor.rgb + ")",
-            'Dialog Background': "rgba(" + mainColor.rgb + ",.98)",
-            'Dialog Border': "rgb(" + brderColor.rgb + ")",
+            'Background Color': "rgb(" + (bgColor.rgb()) + ")",
+            'Dialog Background': "rgba(" + (mainColor.rgb()) + ",.98)",
+            'Dialog Border': "rgb(" + (brderColor.rgb()) + ")",
             'Thread Wrapper Background': "rgba(0,0,0,0)",
             'Thread Wrapper Border': "rgba(0,0,0,0)",
-            'Reply Background': "rgba(" + mainColor.rgb + "," + imported.replyOp + ")",
-            'Reply Border': "rgb(" + brderColor.rgb + ")",
+            'Reply Background': "rgba(" + (mainColor.rgb()) + "," + imported.replyOp + ")",
+            'Reply Border': "rgb(" + (brderColor.rgb()) + ")",
             'Highlighted Reply Background': "rgba(" + (mainColor.shiftRGB(4, true)) + "," + imported.replyOp + ")",
-            'Highlighted Reply Border': "rgb(" + linkColor.rgb + ")",
-            'Backlinked Reply Outline': "rgb(" + linkColor.rgb + ")",
-            'Checkbox Background': "rgba(" + inputColor.rgb + "," + imported.replyOp + ")",
-            'Checkbox Border': "rgb(" + inputbColor.rgb + ")",
-            'Input Background': "rgba(" + inputColor.rgb + "," + imported.replyOp + ")",
-            'Input Border': "rgb(" + inputbColor.rgb + ")",
-            'Hovered Input Background': "rgba(" + inputColor.hover + "," + imported.replyOp + ")",
-            'Hovered Input Border': "rgb(" + inputbColor.rgb + ")",
-            'Focused Input Background': "rgba(" + inputColor.hover + "," + imported.replyOp + ")",
-            'Focused Input Border': "rgb(" + inputbColor.rgb + ")",
-            'Buttons Background': "rgba(" + inputColor.rgb + "," + imported.replyOp + ")",
-            'Buttons Border': "rgb(" + inputbColor.rgb + ")",
-            'Navigation Background': "rgba(" + bgColor.rgb + ",0.8)",
-            'Navigation Border': "rgb(" + mainColor.rgb + ")",
-            'Quotelinks': "rgb(" + linkColor.rgb + ")",
-            'Links': "rgb(" + linkColor.rgb + ")",
-            'Hovered Links': "rgb(" + linkHColor.rgb + ")",
-            'Navigation Links': "rgb(" + textColor.rgb + ")",
-            'Hovered Navigation Links': "rgb(" + linkHColor.rgb + ")",
-            'Subjects': "rgb(" + titleColor.rgb + ")",
-            'Names': "rgb(" + nameColor.rgb + ")",
-            'Sage': "rgb(" + sageColor.rgb + ")",
-            'Tripcodes': "rgb(" + tripColor.rgb + ")",
-            'Emails': "rgb(" + linkColor.rgb + ")",
-            'Post Numbers': "rgb(" + linkColor.rgb + ")",
-            'Text': "rgb(" + textColor.rgb + ")",
-            'Backlinks': "rgb(" + linkColor.rgb + ")",
-            'Greentext': "rgb(" + quoteColor.rgb + ")",
-            'Board Title': "rgb(" + textColor.rgb + ")",
-            'Timestamps': "rgb(" + timeColor.rgb + ")",
-            'Inputs': "rgb(" + textColor.rgb + ")",
-            'Warnings': "rgb(" + sageColor.rgb + ")",
+            'Highlighted Reply Border': "rgb(" + (linkColor.rgb()) + ")",
+            'Backlinked Reply Outline': "rgb(" + (linkColor.rgb()) + ")",
+            'Checkbox Background': "rgba(" + (inputColor.rgb()) + "," + imported.replyOp + ")",
+            'Checkbox Border': "rgb(" + (inputbColor.rgb()) + ")",
+            'Input Background': "rgba(" + (inputColor.rgb()) + "," + imported.replyOp + ")",
+            'Input Border': "rgb(" + (inputbColor.rgb()) + ")",
+            'Hovered Input Background': "rgba(" + (inputColor.hover()) + "," + imported.replyOp + ")",
+            'Hovered Input Border': "rgb(" + (inputbColor.rgb()) + ")",
+            'Focused Input Background': "rgba(" + (inputColor.hover()) + "," + imported.replyOp + ")",
+            'Focused Input Border': "rgb(" + (inputbColor.rgb()) + ")",
+            'Buttons Background': "rgba(" + (inputColor.rgb()) + "," + imported.replyOp + ")",
+            'Buttons Border': "rgb(" + (inputbColor.rgb()) + ")",
+            'Navigation Background': "rgba(" + (bgColor.rgb()) + ",0.8)",
+            'Navigation Border': "rgb(" + (mainColor.rgb()) + ")",
+            'Quotelinks': "rgb(" + (linkColor.rgb()) + ")",
+            'Links': "rgb(" + (linkColor.rgb()) + ")",
+            'Hovered Links': "rgb(" + (linkHColor.rgb()) + ")",
+            'Navigation Links': "rgb(" + (textColor.rgb()) + ")",
+            'Hovered Navigation Links': "rgb(" + (linkHColor.rgb()) + ")",
+            'Subjects': "rgb(" + (titleColor.rgb()) + ")",
+            'Names': "rgb(" + (nameColor.rgb()) + ")",
+            'Sage': "rgb(" + (sageColor.rgb()) + ")",
+            'Tripcodes': "rgb(" + (tripColor.rgb()) + ")",
+            'Emails': "rgb(" + (linkColor.rgb()) + ")",
+            'Post Numbers': "rgb(" + (linkColor.rgb()) + ")",
+            'Text': "rgb(" + (textColor.rgb()) + ")",
+            'Backlinks': "rgb(" + (linkColor.rgb()) + ")",
+            'Greentext': "rgb(" + (quoteColor.rgb()) + ")",
+            'Board Title': "rgb(" + (textColor.rgb()) + ")",
+            'Timestamps': "rgb(" + (timeColor.rgb()) + ")",
+            'Inputs': "rgb(" + (textColor.rgb()) + ")",
+            'Warnings': "rgb(" + (sageColor.rgb()) + ")",
             'Shadow Color': "rbga(0,0,0,0.1)",
             'Custom CSS': ".board {\npadding: 1px 2px;\n}\n.rice {\nbox-shadow:rgba(" + mainColor.shiftRGB(32) + (",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n " + (imported.customCSS || ''))
           };

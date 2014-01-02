@@ -149,7 +149,7 @@ Style =
     """<%= grunt.file.read('src/General/css/dynamic.css').replace(/\s+/g, ' ').trim() %>"""
 
   theme: (theme) ->
-    bgColor  = new Style.color(backgroundC = theme["Background Color"])
+    bgColor  = new Style.color backgroundC = theme["Background Color"]
     replybg  = new Style.color theme["Reply Background"]
     replyRGB = "rgb(#{replybg.shiftRGB parseInt(Conf['Silhouette Contrast'], 10), true})"
 
@@ -256,11 +256,12 @@ Style =
 
     constructor: (@value) ->
       @raw         = colorToHex value
-      @hex         = "#" + @raw
-      @private_rgb = calc_rgb value
-      @isLight     = isLight @private_rgb
-      @rgb         = @private_rgb.join ","
-      @hover       = @shiftRGB 16, true
+
+    hex:         -> "#" + @raw
+    private_rgb: -> calc_rgb @raw
+    isLight:     -> isLight @private_rgb()
+    rgb:         -> @private_rgb().join ""
+    hover:       -> @shiftRGB 16, true
 
     shiftRGB: (shift, smart) ->
       rgb = [@private_rgb...]
