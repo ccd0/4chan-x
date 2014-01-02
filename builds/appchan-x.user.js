@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.7.4 - 2013-12-27
+* appchan x - Version 2.7.4 - 2014-01-02
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -31,11 +31,11 @@
 * http://zixaphir.github.io/appchan-x/ 
 * 4chan x Copyright © 2009-2011 James Campos <james.r.campos@gmail.com>
 * https://github.com/aeosynth/4chan-x
-* 4chan x Copyright © 2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
+* 4chan x Copyright © 2012-2014 Nicolas Stepien <stepien.nicolas@gmail.com>
 * https://4chan-x.just-believe.in/
-* 4chan x Copyright © 2013-2013 Jordan Bates <saudrapsmann@gmail.com>
+* 4chan x Copyright © 2013-2014 Jordan Bates <saudrapsmann@gmail.com>
 * http://seaweedchan.github.io/4chan-x/
-* 4chan x Copyright © 2012-2013 ihavenoface
+* 4chan x Copyright © 2012-2014 ihavenoface
 * http://ihavenoface.github.io/4chan-x/
 * 4chan SS Copyright © 2011-2013 Ahodesuka
 * https://github.com/ahodesuka/4chan-Style-Script/ 
@@ -13198,14 +13198,23 @@
       }
     },
     remStyle: function(_arg) {
-      var addedNodes, href, i, node, _ref;
+      var addedNodes, href, i, id, node, nodeName, rel, textContent, _ref;
       addedNodes = _arg.addedNodes;
       i = addedNodes.length;
       while (i--) {
-        node = addedNodes[i];
-        if (!(node.nodeName === 'STYLE' && node.id || ((_ref = node.nodeName) !== 'LINK' && _ref !== 'STYLE') || node.rel && (!/stylesheet/.test(node.rel) || /flags.*\.css$/.test(href = node.href) || href.slice(0, 4) === 'data') || /\.typeset/.test(node.textContent))) {
-          $.rm(node);
+        _ref = node = addedNodes[i], nodeName = _ref.nodeName, rel = _ref.rel, id = _ref.id, href = _ref.href, textContent = _ref.textContent;
+        if (nodeName === 'STYLE') {
+          if (id || /\.typeset/.test(textContent)) {
+            continue;
+          }
+        } else if (nodeName === 'LINK') {
+          if (rel && (!/stylesheet/.test(rel) || /flags.*\.css$/.test(href) || href.slice(0, 4) === 'data')) {
+            continue;
+          }
+        } else {
+          continue;
         }
+        $.rm(node);
       }
     },
     generateFilter: function(id, values) {

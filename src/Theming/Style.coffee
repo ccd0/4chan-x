@@ -90,12 +90,16 @@ Style =
   remStyle: ({addedNodes}) ->
     i = addedNodes.length
     while i--
-      node = addedNodes[i]
+      {nodeName, rel, id, href, textContent} = node = addedNodes[i]
 
-      $.rm node unless node.nodeName is 'STYLE' and node.id or
-        node.nodeName not in ['LINK', 'STYLE'] or
-        node.rel and ((!/stylesheet/.test(node.rel) or /flags.*\.css$/.test(href = node.href) or href[..3] is 'data')) or
-        /\.typeset/.test node.textContent
+      if nodeName is 'STYLE'
+        continue if id or /\.typeset/.test textContent
+      else if nodeName is 'LINK'
+        continue if rel and (!/stylesheet/.test(rel) or /flags.*\.css$/.test(href) or href[..3] is 'data')
+      else
+        continue
+
+      $.rm node 
       
     return
   
