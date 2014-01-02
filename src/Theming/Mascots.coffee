@@ -41,7 +41,7 @@ MascotTools =
 
     $.replace img, el
 
-    Style.mascot.textContent = """<%= grunt.file.read('src/General/css/mascot.css') %>"""
+    Style.sheets.mascots.textContent = """<%= grunt.file.read('src/General/css/mascot.css') %>"""
 
   error: ->
     @src = MascotTools.imageError if MascotTools.imageError

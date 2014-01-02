@@ -1,6 +1,6 @@
 Style =
+  sheets: {}
   init: ->
-    theme = Themes[Conf['theme']] or Themes['Yotsuba B']
     Style.svgs = { 
 <% if (type === 'crx') { %>
       el: $.el 'div',
@@ -8,18 +8,19 @@ Style =
 <% } %>
     }
 
+    theme = Themes[Conf['theme']] or Themes['Yotsuba B']
     items = [
-      ['layoutCSS',    Style.layout,       'layout']
-      ['themeCSS',     Style.theme(theme), 'theme']
-      ['emojiCSS',     Emoji.css(),        'emoji']
-      ['dynamicCSS',   Style.dynamic(),    'dynamic']
-      ['paddingSheet', "",                 'padding']
-      ['mascot',       "",                 'mascotSheet']
+      ['layout',   Style.layout]
+      ['theme',    Style.theme theme]
+      ['emoji',    Emoji.css()]
+      ['dynamic',  Style.dynamic()]
+      ['padding',  ""]
+      ['mascots',  ""]
     ]
 
     i = 0
     while item = items[i++]
-      Style[item[0]] = $.addStyle item[1], item[2]
+      Style.sheets[item[0]] = $.addStyle item[1], item[0]
 
     # Non-customizable
     $.addStyle JSColor.css(), 'jsColor'
@@ -29,7 +30,7 @@ Style =
     $.asap (-> d.body), @asapInit
     $.on window, "resize", Style.padding
     $.ready @readyInit
-
+  
   asapInit: ->
     <% if (type === 'crx') { %>
     $.addClass doc, 'blink'
@@ -51,21 +52,21 @@ Style =
         $.addClass doc, hyphenated
 
     if g.VIEW is 'index'
+      pages = (name, text) ->
+        el = $ ".pagelist > .#{name}"
+        elA = $.el 'a',
+          textContent: text
+
+        if (action = el.firstElementChild).nodeName is 'FORM'
+          elA.href = 'javascript:;'
+          $.on elA, 'click', ->
+            action.firstElementChild.click()
+
+        $.add el, elA
+
       $.asap (-> $ '.mPagelist'), ->
-        Style.pages 'prev', '<'
-        Style.pages 'next', '>'
-
-  pages: (name, text) ->
-    el = $ ".pagelist > .#{name}"
-    elA = $.el 'a',
-      textContent: text
-
-    if (action = el.firstElementChild).nodeName is 'FORM'
-      elA.href = 'javascript:;'
-      $.on elA, 'click', ->
-        action.firstElementChild.click()
-
-    $.add el, elA
+        pages 'prev', '<'
+        pages 'next', '>'
 
   readyInit: ->
     Style.padding()
@@ -201,7 +202,7 @@ Style =
   padding: ->
     navHeight  = Header.bar.offsetHeight
     pageHeight = ($ '.pagelist', d.body)?.offsetHeight
-    Style.paddingSheet.textContent  = """<%= grunt.file.read('src/General/css/padding.nav.css').replace(/\s+/g, ' ').trim() %> """ +
+    Style.sheets.padding.textContent  = """<%= grunt.file.read('src/General/css/padding.nav.css').replace(/\s+/g, ' ').trim() %> """ +
       if pageHeight
         """<%= grunt.file.read('src/General/css/padding.pages.css').replace(/\s+/g, ' ').trim() %>"""
       else ''

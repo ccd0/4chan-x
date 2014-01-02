@@ -159,7 +159,7 @@ ThemeTools =
 
     $.on $('textarea', div), 'blur', ->
       editTheme["Custom CSS"] = @value
-      Style.themeCSS.textContent  = Style.theme editTheme
+      Style.sheets.theme.textContent  = Style.theme editTheme
 
     $.add themeContent, div
 
@@ -169,7 +169,7 @@ ThemeTools =
     $.on  $('#close > a', ThemeTools.dialog), 'click', ThemeTools.close
 
     $.add d.body, ThemeTools.dialog
-    Style.themeCSS.textContent  = Style.theme editTheme
+    Style.sheets.theme.textContent  = Style.theme editTheme
 
   apply: ->
     depth = 0
@@ -194,7 +194,7 @@ ThemeTools =
       @nextSibling.color.importColor()
 
     editTheme[@name] = @value
-    Style.themeCSS.textContent = Style.theme editTheme
+    Style.sheets.theme.textContent = Style.theme editTheme
 
   uploadImage: (evt, el) ->
     file = evt.target.files[0]
@@ -205,7 +205,7 @@ ThemeTools =
 
       el.previousSibling.value = val
       editTheme["Background Image"] = val
-      Style.themeCSS.textContent  = Style.theme editTheme
+      Style.sheets.theme.textContent  = Style.theme editTheme
 
     reader.readAsDataURL file
 
@@ -347,6 +347,6 @@ ThemeTools =
 
   close: ->
     Conf['editMode'] = false
-    Style.themeCSS.textContent = Style.theme Themes[Conf['theme']]
+    Style.sheets.theme.textContent = Style.theme Themes[Conf['theme']]
     $.rm $.id 'themeConf'
     Settings.open 'Themes'

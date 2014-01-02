@@ -12406,7 +12406,7 @@
           valueElement.previousSibling.value = value;
           editTheme[valueElement.previousSibling.name] = value;
           setTimeout(function() {
-            return Style.themeCSS.textContent = Style.theme(editTheme);
+            return Style.sheets.theme.textContent = Style.theme(editTheme);
           });
         }
         if (!(flags & leaveStyle) && styleElement) {
@@ -12675,7 +12675,7 @@
       el.src = mascot.image;
       $.off(img = this.el.firstElementChild, 'error', MascotTools.error);
       $.replace(img, el);
-      return Style.mascot.textContent = "#mascot img {\nheight: " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height, 10) + 'px' : 'auto') + ";\nwidth: " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width, 10) + 'px' : 'auto') + ";\n}\n#mascot {\nmargin: " + (mascot.vOffset || 0) + "px " + (mascot.hOffset || 0) + "px;\n}\n.sidebar-large #mascot {\nleft: " + (mascot.center ? 25 : 0) + "px;\nright: " + (mascot.center ? 25 : 0) + "px;\n}\n.mascot-position-above-post-form.post-form-style-fixed #mascot {\ntransform: translateY(-" + (QR.nodes ? QR.nodes.el.getBoundingClientRect().height : 0) + "px);\n}";
+      return Style.sheets.mascots.textContent = "#mascot img {\nheight: " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height, 10) + 'px' : 'auto') + ";\nwidth: " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width, 10) + 'px' : 'auto') + ";\n}\n#mascot {\nmargin: " + (mascot.vOffset || 0) + "px " + (mascot.hOffset || 0) + "px;\n}\n.sidebar-large #mascot {\nleft: " + (mascot.center ? 25 : 0) + "px;\nright: " + (mascot.center ? 25 : 0) + "px;\n}\n.mascot-position-above-post-form.post-form-style-fixed #mascot {\ntransform: translateY(-" + (QR.nodes ? QR.nodes.el.getBoundingClientRect().height : 0) + "px);\n}";
     },
     error: function() {
       var ctx, el,
@@ -13109,14 +13109,15 @@
   };
 
   Style = {
+    sheets: {},
     init: function() {
       var i, item, items, theme;
-      theme = Themes[Conf['theme']] || Themes['Yotsuba B'];
       Style.svgs = {};
-      items = [['layoutCSS', Style.layout, 'layout'], ['themeCSS', Style.theme(theme), 'theme'], ['emojiCSS', Emoji.css(), 'emoji'], ['dynamicCSS', Style.dynamic(), 'dynamic'], ['paddingSheet', "", 'padding'], ['mascot', "", 'mascotSheet']];
+      theme = Themes[Conf['theme']] || Themes['Yotsuba B'];
+      items = [['layout', Style.layout], ['theme', Style.theme(theme)], ['emoji', Emoji.css()], ['dynamic', Style.dynamic()], ['padding', ""], ['mascots', ""]];
       i = 0;
       while (item = items[i++]) {
-        Style[item[0]] = $.addStyle(item[1], item[2]);
+        Style.sheets[item[0]] = $.addStyle(item[1], item[0]);
       }
       $.addStyle(JSColor.css(), 'jsColor');
       $.asap((function() {
@@ -13129,7 +13130,7 @@
       return $.ready(this.readyInit);
     },
     asapInit: function() {
-      var cat, hyphenated, name, setting, title, _ref;
+      var cat, hyphenated, name, pages, setting, title, _ref;
       $.addClass(doc, 'gecko');
       $.addClass(doc, 'fourchan-x');
       $.addClass(doc, 'appchan-x');
@@ -13147,27 +13148,27 @@
         }
       }
       if (g.VIEW === 'index') {
+        pages = function(name, text) {
+          var action, el, elA;
+          el = $(".pagelist > ." + name);
+          elA = $.el('a', {
+            textContent: text
+          });
+          if ((action = el.firstElementChild).nodeName === 'FORM') {
+            elA.href = 'javascript:;';
+            $.on(elA, 'click', function() {
+              return action.firstElementChild.click();
+            });
+          }
+          return $.add(el, elA);
+        };
         return $.asap((function() {
           return $('.mPagelist');
         }), function() {
-          Style.pages('prev', '<');
-          return Style.pages('next', '>');
+          pages('prev', '<');
+          return pages('next', '>');
         });
       }
-    },
-    pages: function(name, text) {
-      var action, el, elA;
-      el = $(".pagelist > ." + name);
-      elA = $.el('a', {
-        textContent: text
-      });
-      if ((action = el.firstElementChild).nodeName === 'FORM') {
-        elA.href = 'javascript:;';
-        $.on(elA, 'click', function() {
-          return action.firstElementChild.click();
-        });
-      }
-      return $.add(el, elA);
     },
     readyInit: function() {
       var exLink;
@@ -13315,7 +13316,7 @@
       var navHeight, pageHeight, _ref;
       navHeight = Header.bar.offsetHeight;
       pageHeight = (_ref = $('.pagelist', d.body)) != null ? _ref.offsetHeight : void 0;
-      return Style.paddingSheet.textContent = ("body { padding-bottom: 15px; padding-top: 15px; } .fourchan-ss-navigation.fixed.top-header:not(.autohide) body::before { top: " + navHeight + "px; } .fourchan-ss-navigation.fixed.bottom-header:not(.autohide) body::before { bottom: " + navHeight + "px; } .top-header:not(.autohide) body { padding-top: " + (navHeight + 1) + "px; } .bottom-header:not(.autohide) body { padding-bottom: " + (navHeight + 1) + "px; } ") + (pageHeight ? ".fourchan-ss-navigation.index.pagination-sticky-top body::before, .fourchan-ss-navigation.index.pagination-top body::before { top: " + pageHeight + "px; } .fourchan-ss-navigation.index.pagination-sticky-bottom body::before, .fourchan-ss-navigation.index.pagination-bottom body::before { bottom: " + pageHeight + "px; } .index.pagination-sticky-top body, .index.pagination-top body { padding-top: " + (pageHeight + 1) + "px; } .index.pagination-sticky-bottom body, .index.pagination-bottom body { padding-bottom: " + (pageHeight + 1) + "px; }" : '');
+      return Style.sheets.padding.textContent = ("body { padding-bottom: 15px; padding-top: 15px; } .fourchan-ss-navigation.fixed.top-header:not(.autohide) body::before { top: " + navHeight + "px; } .fourchan-ss-navigation.fixed.bottom-header:not(.autohide) body::before { bottom: " + navHeight + "px; } .top-header:not(.autohide) body { padding-top: " + (navHeight + 1) + "px; } .bottom-header:not(.autohide) body { padding-bottom: " + (navHeight + 1) + "px; } ") + (pageHeight ? ".fourchan-ss-navigation.index.pagination-sticky-top body::before, .fourchan-ss-navigation.index.pagination-top body::before { top: " + pageHeight + "px; } .fourchan-ss-navigation.index.pagination-sticky-bottom body::before, .fourchan-ss-navigation.index.pagination-bottom body::before { bottom: " + pageHeight + "px; } .index.pagination-sticky-top body, .index.pagination-top body { padding-top: " + (pageHeight + 1) + "px; } .index.pagination-sticky-bottom body, .index.pagination-bottom body { padding-bottom: " + (pageHeight + 1) + "px; }" : '');
     },
     color: function(hex) {
       this.hex = "#" + hex;
@@ -13451,7 +13452,7 @@
       });
       $.on($('textarea', div), 'blur', function() {
         editTheme["Custom CSS"] = this.value;
-        return Style.themeCSS.textContent = Style.theme(editTheme);
+        return Style.sheets.theme.textContent = Style.theme(editTheme);
       });
       $.add(themeContent, div);
       $.on($('#save > a', ThemeTools.dialog), 'click', function() {
@@ -13459,7 +13460,7 @@
       });
       $.on($('#close > a', ThemeTools.dialog), 'click', ThemeTools.close);
       $.add(d.body, ThemeTools.dialog);
-      return Style.themeCSS.textContent = Style.theme(editTheme);
+      return Style.sheets.theme.textContent = Style.theme(editTheme);
     },
     apply: function() {
       var depth, i, len, toggle1, toggle2;
@@ -13493,7 +13494,7 @@
         this.nextSibling.color.importColor();
       }
       editTheme[this.name] = this.value;
-      return Style.themeCSS.textContent = Style.theme(editTheme);
+      return Style.sheets.theme.textContent = Style.theme(editTheme);
     },
     uploadImage: function(evt, el) {
       var file, reader;
@@ -13504,7 +13505,7 @@
         val = "url(\"" + evt.target.result + "\")";
         el.previousSibling.value = val;
         editTheme["Background Image"] = val;
-        return Style.themeCSS.textContent = Style.theme(editTheme);
+        return Style.sheets.theme.textContent = Style.theme(editTheme);
       };
       return reader.readAsDataURL(file);
     },
@@ -13649,7 +13650,7 @@
     },
     close: function() {
       Conf['editMode'] = false;
-      Style.themeCSS.textContent = Style.theme(Themes[Conf['theme']]);
+      Style.sheets.theme.textContent = Style.theme(Themes[Conf['theme']]);
       $.rm($.id('themeConf'));
       return Settings.open('Themes');
     }
@@ -16126,7 +16127,7 @@
         },
         value: function() {
           $.cb.value.call(this);
-          return Style.dynamicCSS.textContent = Style.dynamic();
+          return Style.sheets.dynamicCSS.textContent = Style.dynamic();
         },
         select: function() {
           var hyphenated, option, _i, _len, _ref;
@@ -16252,7 +16253,7 @@
           }
           Conf['theme'] = this.id;
           $.addClass(this, 'selectedtheme');
-          return Style.themeCSS.textContent = Style.theme(Themes[this.id]);
+          return Style.sheets.theme.textContent = Style.theme(Themes[this.id]);
         },
         edit: function(e) {
           e.preventDefault();

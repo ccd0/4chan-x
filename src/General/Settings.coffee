@@ -783,7 +783,7 @@ Settings =
 
       value: ->
         $.cb.value.call @
-        Style.dynamicCSS.textContent = Style.dynamic()
+        Style.sheets.dynamicCSS.textContent = Style.dynamic()
 
       select: ->
         $.cb.value.call @
@@ -888,7 +888,7 @@ Settings =
           $.set "theme", @id
         Conf['theme'] = @id
         $.addClass @, 'selectedtheme'
-        Style.themeCSS.textContent = Style.theme Themes[@id]
+        Style.sheets.theme.textContent = Style.theme Themes[@id]
 
       edit: (e) ->
         e.preventDefault()
