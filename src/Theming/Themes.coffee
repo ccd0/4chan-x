@@ -140,7 +140,7 @@ ThemeTools =
 
           colorInput = $.el 'input',
             className: 'color'
-            value: "##{Style.colorToHex(input.value) or 'aaaaaa'}"
+            value: "##{(new Style.color input.value).hex}"
 
           JSColor.bind colorInput
 
@@ -190,7 +190,7 @@ ThemeTools =
       return alert "Syntax error on #{@name}."
 
     if @className is "colorfield"
-      @nextSibling.value = '#' + (Style.colorToHex(@value) or 'aaaaaa')
+      @nextSibling.value = (new Style.color @value).hex
       @nextSibling.color.importColor()
 
     editTheme[@name] = @value

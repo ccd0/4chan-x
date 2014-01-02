@@ -110,7 +110,7 @@ Style =
     colors = []
     rgb    = ['r', 'g', 'b']
     for arg in arguments
-      hex = Style.colorToHex(arg) or "ffffff"
+      hex = (new Style.color arg).raw
       color = {}
       i     = 0
       while val = rgb[i]
@@ -149,11 +149,11 @@ Style =
     """<%= grunt.file.read('src/General/css/dynamic.css').replace(/\s+/g, ' ').trim() %>"""
 
   theme: (theme) ->
-    bgColor  = new Style.color(Style.colorToHex(backgroundC = theme["Background Color"]) or 'aaaaaa')
-    replybg  = new Style.color Style.colorToHex theme["Reply Background"]
+    bgColor  = new Style.color(backgroundC = theme["Background Color"])
+    replybg  = new Style.color theme["Reply Background"]
     replyRGB = "rgb(#{replybg.shiftRGB parseInt(Conf['Silhouette Contrast'], 10), true})"
 
-    Style.lightTheme = bgColor.isLight()
+    Style.lightTheme = bgColor.isLight
     
     svgs = [
       ['captcha-filter', "values='#{Style.filter Style.matrix theme["Text"], theme["Input Background"]} 0 0 0 1 0'"]
@@ -207,63 +207,66 @@ Style =
         """<%= grunt.file.read('src/General/css/padding.pages.css').replace(/\s+/g, ' ').trim() %>"""
       else ''
 
-  color: (hex) ->
-    @hex = "#" + hex
+  color: class
+    minmax = (base) -> if base < 0 then 0 else if base > 255 then 255 else base
 
-    @calc_rgb = (hex) ->
-      hex = parseInt hex, 16
-      [ # 0xRRGGBB to [R, G, B]
+    calc_rgb = (value) ->
+      hex = parseInt value, 16
+      return [ # 0xRRGGBB to [R, G, B]
         (hex >> 16) & 0xFF
         (hex >> 8) & 0xFF
         hex & 0xFF
       ]
 
-    @private_rgb = @calc_rgb(hex)
+    colorToHex = (color) ->
+      if color.substr(0, 1) is '#'
+        if color.length isnt 4
+          return color[1..]
+        else 
+          r = color.substr(1, 1)
+          g = color.substr(2, 1)
+          b = color.substr(3, 1)
+          return [r,r,g,g,b,b].join ""
 
-    @rgb = @private_rgb.join ","
+      if /[0-9a-f]{3}/i.test color
+        return color if /[0-9a-f]{6}/i.test color
 
-    @isLight = ->
-      rgb = @private_rgb
-      return (rgb[0] + rgb[1] + rgb[2]) >= 400
+        r = color.substr(0, 1)
+        g = color.substr(1, 1)
+        b = color.substr(2, 1)
+        return [r,r,g,g,b,b].join ""
 
-    @shiftRGB = (shift, smart) ->
-      minmax = (base) ->
-        Math.min Math.max(base, 0), 255
-      rgb = @private_rgb.slice 0
+      if digits = color.match /(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/
+        # [R, G, B] to 0xRRGGBB
+        hex = (
+          (parseInt(digits[2], 10) << 16) |
+          (parseInt(digits[3], 10) << 8)  |
+          (parseInt(digits[4], 10))
+        ).toString 16
+
+        while hex.length < 6
+          hex = "0#{hex}"
+        return hex
+
+      else
+        "000000"
+
+    isLight = (rgb) ->
+      (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125
+
+    constructor: (@value) ->
+      @raw         = colorToHex value
+      @hex         = "#" + @raw
+      @private_rgb = calc_rgb value
+      @isLight     = isLight @private_rgb
+      @rgb         = @private_rgb.join ","
+      @hover       = @shiftRGB 16, true
+
+    shiftRGB: (shift, smart) ->
+      rgb = [@private_rgb...]
       shift = if smart
-        (
-          if @isLight rgb
-            -1
-          else
-            1
-        ) * Math.abs shift
+        (if @isLight then -1 else 1) * Math.abs shift
       else
         shift
 
-      return [
-        minmax rgb[0] + shift
-        minmax rgb[1] + shift
-        minmax rgb[2] + shift
-      ].join ","
-
-    @hover = @shiftRGB 16, true
-
-  colorToHex: (color) ->
-    if color.substr(0, 1) is '#'
-      return color.slice 1, color.length
-
-    if digits = color.match /(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/
-      # [R, G, B] to 0xRRGGBB
-      hex = (
-        (parseInt(digits[2], 10) << 16) |
-        (parseInt(digits[3], 10) << 8)  |
-        (parseInt(digits[4], 10))
-      ).toString 16
-
-      while hex.length < 6
-        hex = "0#{hex}"
-
-      hex
-
-    else
-      false
+      return (minmax color + shift for color in rgb).join ","

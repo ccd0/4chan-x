@@ -12694,7 +12694,7 @@
       });
       ctx = el.getContext('2d');
       ctx.font = "50px " + Conf['Font'];
-      ctx.fillStyle = "#" + Style.colorToHex((Themes[Conf['theme']] || Themes['Yotsuba B'])['Text']);
+      ctx.fillStyle = (new Style.color((Themes[Conf['theme']] || Themes['Yotsuba B'])['Text'])).hex;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText("Mascot 404", 124, 50);
@@ -13237,7 +13237,7 @@
       rgb = ['r', 'g', 'b'];
       for (_i = 0, _len = arguments.length; _i < _len; _i++) {
         arg = arguments[_i];
-        hex = Style.colorToHex(arg) || "ffffff";
+        hex = (new Style.color(arg)).raw;
         color = {};
         i = 0;
         while (val = rgb[i]) {
@@ -13275,17 +13275,17 @@
     },
     theme: function(theme) {
       var background, backgroundC, bgColor, i, replyRGB, replybg, svg, svgs, _i, _len;
-      bgColor = new Style.color(Style.colorToHex(backgroundC = theme["Background Color"]) || 'aaaaaa');
-      replybg = new Style.color(Style.colorToHex(theme["Reply Background"]));
+      bgColor = new Style.color(backgroundC = theme["Background Color"]);
+      replybg = new Style.color(theme["Reply Background"]);
       replyRGB = "rgb(" + (replybg.shiftRGB(parseInt(Conf['Silhouette Contrast'], 10), true)) + ")";
-      Style.lightTheme = bgColor.isLight();
+      Style.lightTheme = bgColor.isLight;
       svgs = [['captcha-filter', "values='" + (Style.filter(Style.matrix(theme["Text"], theme["Input Background"]))) + " 0 0 0 1 0'"], ['mascot-filter', "values='" + (Style.silhouette(Style.matrix(replyRGB))) + " 0 0 0 1 0'"], ['grayscale', 'id="color" type="saturate" values="0"'], ['icons-filter', "values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0'"]];
       for (i = _i = 0, _len = svgs.length; _i < _len; i = ++_i) {
         svg = svgs[i];
         svgs[i] = Style.generateFilter(svg[0], svg[1]);
       }
       Style.svgs.el.innerHTML = svgs.join('');
-      return (".hide_thread_button span > span, .hide_reply_button span > span { background-color: " + theme["Links"] + "; } #mascot_hide label { border-bottom: 1px solid " + theme["Reply Border"] + "; } #content .thumb { box-shadow: 0 0 5px " + theme["Reply Border"] + "; } .export-button, .mascotname, #mascot-options { background: " + theme["Dialog Background"] + "; border: 1px solid " + theme["Buttons Border"] + "; } .highlight-you .opContainer.quotesYou, .highlight-own .opContainer.yourPost, .opContainer.filter-highlight { box-shadow: inset 5px 0 " + theme["Backlinked Reply Outline"] + "; } .highlight-you .quotesYou > .reply, .highlight-own .yourPost > .reply, .filter-highlight > .reply { box-shadow: -5px 0 " + theme["Backlinked Reply Outline"] + "; } hr { border-bottom: 1px solid " + theme["Reply Border"] + "; } hr#unread-line { border-bottom: 1px solid " + theme["Reply Background"] + "; visibility: visible; } .threadContainer { border-color: " + theme["Reply Border"] + " !important; } html { background: " + (backgroundC || '') + "; background-image: " + (theme["Background Image"] || '') + "; background-repeat: " + (theme["Background Repeat"] || '') + "; background-attachment: " + (theme["Background Attachment"] || '') + "; background-position: " + (theme["Background Position"] || '') + "; } .panel, .section-container, #exlinks-options-content, #themecontent { background: " + backgroundC + "; border: 1px solid " + theme["Reply Border"] + "; } .sections-list > a.tab-selected { background: " + backgroundC + "; border-color: " + theme["Reply Border"] + "; } .captcha-img img { -webkit-filter: url('#captcha-filter'); } .silhouettize-mascots #mascot img, .silhouette img { -webkit-filter: url('#mascot-filter'); } .grayscale-mascots #mascot { -webkit-filter: url('#grayscale'); } #boardTitle { text-shadow: 1px 1px " + backgroundC + ", -1px -1px " + backgroundC + ", 1px -1px " + backgroundC + ", -1px 1px " + backgroundC + "; } .sidebar-glow #boardTitle { text-shadow: 1px 1px 1px " + backgroundC + ", -1px -1px 1px " + backgroundC + ", 1px -1px 1px " + backgroundC + ", -1px 1px 1px " + backgroundC + ", 0 2px 4px rgba(0,0,0,.6), 0 0 10px rgba(0,0,0,.6); } #exlinks-options, #appchanx-settings, #qrtab, input[type=\"submit\"], input[value=\"Report\"], span[style=\"left: 5px; position: absolute;\"] a { background: " + theme["Buttons Background"] + "; border: 1px solid " + theme["Buttons Border"] + "; } .enabled .mascotcontainer { background: " + theme["Buttons Background"] + "; border-color: " + theme["Buttons Border"] + "; } #dump, #qr-filename-container, #appchanx-settings input, .captcha-img, .dump #dump, .qr-preview, .selectrice, button, input, textarea { background: " + theme["Input Background"] + "; border: 1px solid " + theme["Input Border"] + "; } .has-file #qr-extras-container { background: " + theme["Input Background"] + "; } #dump:hover, #qr-filename-container:hover, .selectrice:hover, #selectrice li:hover, #selectrice li:nth-of-type(2n+1):hover, input:hover, textarea:hover { background: " + theme["Hovered Input Background"] + "; border-color: " + theme["Hovered Input Border"] + "; } .has-file #qr-filename-container:hover #qr-extras-container { background: " + theme["Hovered Input Background"] + "; } #dump:active, #dump:focus, #selectrice li:focus, .selectrice:focus, #qr-filename-container:active, #qr-filename-container:focus, input:focus, textarea:focus, textarea.field:focus { background: " + theme["Focused Input Background"] + "; border-color: " + theme["Focused Input Border"] + "; color: " + theme["Inputs"] + "; } .has-file #qr-filename-container:active #qr-extras-container, .has-file #qr-filename-container:focus #qr-extras-container { background: " + theme["Focused Input Background"] + "; } #ft, #mouseover, #post-preview, #qp .post, #threads > .thread, #xupdater, .box-outer, .reply.post { border-width: 1px; border-style: solid; border-color: " + theme["Reply Border"] + "; background: " + theme["Reply Background"] + "; } .exblock.reply, .reply.post.highlight, .reply.post:target { background: " + theme["Highlighted Reply Background"] + "; border: 1px solid " + theme["Highlighted Reply Border"] + "; } #header-bar, .pagelist { background: " + theme["Navigation Background"] + "; border-color: " + theme["Navigation Border"] + "; } #doc, #threads, .board > .thread { background: " + theme["Thread Wrapper Background"] + "; border: 1px solid " + theme["Thread Wrapper Border"] + "; } #boardNavDesktopFoot, #mascot_hide, #menu, #selectrice, #themeConf, #thread-watcher, #thread-watcher:hover, .announcements-slideout #globalMessage, .dialog, .post-form-style-float #qr, .post-form-decorations #qr, .submenu { background: " + theme["Dialog Background"] + "; border: 1px solid " + theme["Dialog Border"] + "; } #qp.dialog { border: none; } .watch-thread-link { background-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='" + (theme["Post Numbers"].replace('#', '%23')) + "' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\"); } .deleteform::before, .deleteform, #qr .warning { background: " + theme["Input Background"] + "; border-color: " + theme["Input Border"] + "; } .disabledwarning, .warning { color: " + theme["Warnings"] + "; } #charCount { color: " + (Style.lightTheme ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)") + "; } .postNum a { color: " + theme["Post Numbers"] + "; } .subject { color: " + theme["Subjects"] + " !important; } .dateTime, .post-ago { color: " + theme["Timestamps"] + " !important; } #fs_status a, #header-bar .shortcut > span, #updater #update-status:not(.new)::after, #showQR, .abbr, .boxbar, .boxcontent, .deleteform::before, .pages strong, .pln, .reply, .reply.highlight, .summary, body, button, span[style=\"left: 5px; position: absolute;\"] a, input, textarea { color: " + theme["Text"] + "; } #exlinks-options-content > table, #appchanx-settings fieldset, #selectrice { border-bottom: 1px solid " + theme["Reply Border"] + "; box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px; } .quote + .spoiler:hover, .quote { color: " + theme["Greentext"] + "; } .forwardlink { border-bottom: 1px dashed " + theme["Backlinks"] + "; } .container::before { color: " + theme["Timestamps"] + "; } .quote-shadows #menu, .quote-shadows #post-preview, .quote-shadows #qp .opContainer, .quote-shadows #qp .replyContainer, .quote-shadows .submenu { box-shadow: 5px 5px 5px " + theme['Shadow Color'] + "; } .rice { background: " + theme["Checkbox Background"] + "; border: 1px solid " + theme["Checkbox Border"] + "; } .selectrice::before { border-left: 1px solid " + theme["Input Border"] + "; } .selectrice::after { border-top: .45em solid " + theme["Inputs"] + "; } .bd { background: " + theme["Buttons Background"] + "; border: 1px solid " + theme["Buttons Border"] + "; } .pages a, #header-bar a { color: " + theme["Navigation Links"] + "; } input[type=checkbox]:checked + .rice::after { border-color: " + theme["Inputs"] + "; } #addReply, #dump, .button, .entry, .replylink, a { color: " + theme["Links"] + "; } .backlink { color: " + theme["Backlinks"] + "; } .qiQuote, .quotelink { color: " + theme["Quotelinks"] + "; } #addReply:hover, #dump:hover, .entry:hover, .replylink:hover, .qiQuote:hover, .quotelink:hover, a .name:hover, a .postertrip:hover, a:hover { color: " + theme["Hovered Links"] + "; } #header-bar a:hover, #boardTitle a:hover { color: " + theme["Hovered Navigation Links"] + "; } #boardTitle { color: " + theme["Board Title"] + "; } .name, .post-author { color: " + theme["Names"] + " !important; } .post-tripcode, .postertrip, .trip { color: " + theme["Tripcodes"] + " !important; } a .postertrip, a .name { color: " + theme["Emails"] + "; } .post.reply.qphl, .post.op.qphl { border-color: " + theme["Backlinked Reply Outline"] + "; background: " + theme["Highlighted Reply Background"] + "; } .quote-shadows .inline .post { box-shadow: 5px 5px 5px " + theme['Shadow Color'] + "; } .placeholder, #qr input::placeholder, #qr textarea::placeholder { color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important; } #qr input:placeholder, #qr textarea:placeholder, .placeholder { color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important; } #appchanx-settings fieldset, .boxcontent dd, .selectrice ul { border-color: " + (Style.lightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)") + "; } #appchanx-settings li, #selectrice li:not(:first-of-type) { border-top: 1px solid " + (Style.lightTheme ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.025)") + "; } .a-icon, #shortcuts .fa { " + (!Style.lightTheme ? "-webkit-filter: url('#icons-filter');" : "") + " } .alternate-post-colors #threads > .thread:nth-of-type(2n+1), .alternate-post-colors .replyContainer:nth-of-type(2n+1) .post { background-image: linear-gradient(" + (replybg ? "rgba(" + (replybg.shiftRGB(-4, false)) + ",0.8), rgba(" + (replybg.shiftRGB(-4, false)) + ",0.8)" : Style.lightTheme ? "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" : "rgba(255,255,255,0.02), rgba(255,255,255,0.02)") + "); } .color-reply-headings .boxbar, .color-reply-headings .postInfo { background: " + (replybg ? "rgba(" + (replybg.shiftRGB(-12, false)) + ",0.8)" : "rgba(0,0,0,0.1)") + "; border-bottom: 1px solid " + theme["Reply Border"] + " } .color-file-info .file { background: " + (replybg ? "rgba(" + (replybg.shiftRGB(-8, false)) + ",0.8)" : "rgba(0,0,0,0.1)") + "; border-bottom: 1px solid " + theme["Reply Border"] + " border-top: 1px solid " + theme["Reply Border"] + " } .color-reply.headings.color-file-info { border-top: none; } .op-background .op.post { background: " + theme["Reply Background"] + "; border: 1px solid " + theme["Reply Border"] + "; } .op-background .op.post:target .op-background .op.post.highlight { background: " + theme["Highlighted Reply Background"] + "; border: 1px solid " + theme["Highlighted Reply Border"] + "; } .fourchan-banner-at-sidebar-top.icon-orientation-vertical body::after { background: " + backgroundC + "; } .fourchan-banner-at-sidebar-top.icon-orientation-vertical.fourchan-ss-sidebar body::after, .fourchan-banner-at-sidebar-top.fourchan-ss-sidebar body::before { background: rgba(" + ((background = new Style.color(Style.colorToHex(theme["Reply Background"]))) ? background.shiftRGB(-18) : void 0) + ", 0.8); } .fourchan-ss-sidebar.sidebar-location-right body::before { border-left: 2px solid " + backgroundC + "; box-shadow: inset 1px 0 0 " + theme["Reply Border"] + ", -1px 0 0 " + theme["Reply Border"] + "; } .fourchan-ss-sidebar.sidebar-location-left body::before { border-right: 2px solid " + backgroundC + "; box-shadow: 1px 0 0 " + theme["Reply Border"] + ", inset -1px 0 0 " + theme["Reply Border"] + "; } .sage-highlighting-text.sage-highlight-position-before a.useremail[href*=\"sage\"]:last-of-type::before, .sage-highlighting-text.sage-highlight-position-before a.useremail[href*=\"Sage\"]:last-of-type::before, .sage-highlighting-text.sage-highlight-position-before a.useremail[href*=\"SAGE\"]:last-of-type::before, .sage-highlighting-text.sage-highlight-position-after a.useremail[href*=\"sage\"]:last-of-type::after, .sage-highlighting-text.sage-highlight-position-after a.useremail[href*=\"Sage\"]:last-of-type::after, .sage-highlighting-text.sage-highlight-position-after a.useremail[href*=\"SAGE\"]:last-of-type::after { content: \" (sage) \"; color: " + theme["Sage"] + "; } .quote-shadows #qr { box-shadow: 5px 5px 5px " + theme['Shadow Color'] + "; } " + (theme["Custom CSS"].replace(/\s+/g, ' ').trim())) + ("" + (Style.lightTheme ? " .prettyprint { background-color: #e7e7e7; border: 1px solid #dcdcdc; } .com { color: #dd0000; } .str, .atv { color: #7fa61b; } .pun { color: #61663a; } .tag { color: #117743; } .kwd { color: #5a6F9e; } .typ, .atn { color: #9474bd; } .lit { color: #368c72; } " : " .prettyprint { background-color: rgba(0,0,0,.1); border: 1px solid rgba(0,0,0,0.5); } .tag { color: #96562c; } .pun { color: #5b6f2a; } .com { color: #a34443; } .str, .atv { color: #8ba446; } .kwd { color: #987d3e; } .typ, .atn { color: #897399; } .lit { color: #558773; } "));
+      return (".hide_thread_button span > span, .hide_reply_button span > span { background-color: " + theme["Links"] + "; } #mascot_hide label { border-bottom: 1px solid " + theme["Reply Border"] + "; } #content .thumb { box-shadow: 0 0 5px " + theme["Reply Border"] + "; } .export-button, .mascotname, #mascot-options { background: " + theme["Dialog Background"] + "; border: 1px solid " + theme["Buttons Border"] + "; } .highlight-you .opContainer.quotesYou, .highlight-own .opContainer.yourPost, .opContainer.filter-highlight { box-shadow: inset 5px 0 " + theme["Backlinked Reply Outline"] + "; } .highlight-you .quotesYou > .reply, .highlight-own .yourPost > .reply, .filter-highlight > .reply { box-shadow: -5px 0 " + theme["Backlinked Reply Outline"] + "; } hr { border-bottom: 1px solid " + theme["Reply Border"] + "; } hr#unread-line { border-bottom: 1px solid " + theme["Reply Background"] + "; visibility: visible; } .threadContainer { border-color: " + theme["Reply Border"] + " !important; } html { background: " + (backgroundC || '') + "; background-image: " + (theme["Background Image"] || '') + "; background-repeat: " + (theme["Background Repeat"] || '') + "; background-attachment: " + (theme["Background Attachment"] || '') + "; background-position: " + (theme["Background Position"] || '') + "; } .panel, .section-container, #exlinks-options-content, #themecontent { background: " + backgroundC + "; border: 1px solid " + theme["Reply Border"] + "; } .sections-list > a.tab-selected { background: " + backgroundC + "; border-color: " + theme["Reply Border"] + "; } .captcha-img img { -webkit-filter: url('#captcha-filter'); } .silhouettize-mascots #mascot img, .silhouette img { -webkit-filter: url('#mascot-filter'); } .grayscale-mascots #mascot { -webkit-filter: url('#grayscale'); } #boardTitle { text-shadow: 1px 1px " + backgroundC + ", -1px -1px " + backgroundC + ", 1px -1px " + backgroundC + ", -1px 1px " + backgroundC + "; } .sidebar-glow #boardTitle { text-shadow: 1px 1px 1px " + backgroundC + ", -1px -1px 1px " + backgroundC + ", 1px -1px 1px " + backgroundC + ", -1px 1px 1px " + backgroundC + ", 0 2px 4px rgba(0,0,0,.6), 0 0 10px rgba(0,0,0,.6); } #exlinks-options, #appchanx-settings, #qrtab, input[type=\"submit\"], input[value=\"Report\"], span[style=\"left: 5px; position: absolute;\"] a { background: " + theme["Buttons Background"] + "; border: 1px solid " + theme["Buttons Border"] + "; } .enabled .mascotcontainer { background: " + theme["Buttons Background"] + "; border-color: " + theme["Buttons Border"] + "; } #dump, #qr-filename-container, #appchanx-settings input, .captcha-img, .dump #dump, .qr-preview, .selectrice, button, input, textarea { background: " + theme["Input Background"] + "; border: 1px solid " + theme["Input Border"] + "; } .has-file #qr-extras-container { background: " + theme["Input Background"] + "; } #dump:hover, #qr-filename-container:hover, .selectrice:hover, #selectrice li:hover, #selectrice li:nth-of-type(2n+1):hover, input:hover, textarea:hover { background: " + theme["Hovered Input Background"] + "; border-color: " + theme["Hovered Input Border"] + "; } .has-file #qr-filename-container:hover #qr-extras-container { background: " + theme["Hovered Input Background"] + "; } #dump:active, #dump:focus, #selectrice li:focus, .selectrice:focus, #qr-filename-container:active, #qr-filename-container:focus, input:focus, textarea:focus, textarea.field:focus { background: " + theme["Focused Input Background"] + "; border-color: " + theme["Focused Input Border"] + "; color: " + theme["Inputs"] + "; } .has-file #qr-filename-container:active #qr-extras-container, .has-file #qr-filename-container:focus #qr-extras-container { background: " + theme["Focused Input Background"] + "; } #ft, #mouseover, #post-preview, #qp .post, #threads > .thread, #xupdater, .box-outer, .reply.post { border-width: 1px; border-style: solid; border-color: " + theme["Reply Border"] + "; background: " + theme["Reply Background"] + "; } .exblock.reply, .reply.post.highlight, .reply.post:target { background: " + theme["Highlighted Reply Background"] + "; border: 1px solid " + theme["Highlighted Reply Border"] + "; } #header-bar, .pagelist { background: " + theme["Navigation Background"] + "; border-color: " + theme["Navigation Border"] + "; } #doc, #threads, .board > .thread { background: " + theme["Thread Wrapper Background"] + "; border: 1px solid " + theme["Thread Wrapper Border"] + "; } #boardNavDesktopFoot, #mascot_hide, #menu, #selectrice, #themeConf, #thread-watcher, #thread-watcher:hover, .announcements-slideout #globalMessage, .dialog, .post-form-style-float #qr, .post-form-decorations #qr, .submenu { background: " + theme["Dialog Background"] + "; border: 1px solid " + theme["Dialog Border"] + "; } #qp.dialog { border: none; } .watch-thread-link { background-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='" + (theme["Post Numbers"].replace('#', '%23')) + "' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\"); } .deleteform::before, .deleteform, #qr .warning { background: " + theme["Input Background"] + "; border-color: " + theme["Input Border"] + "; } .disabledwarning, .warning { color: " + theme["Warnings"] + "; } #charCount { color: " + (Style.lightTheme ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)") + "; } .postNum a { color: " + theme["Post Numbers"] + "; } .subject { color: " + theme["Subjects"] + " !important; } .dateTime, .post-ago { color: " + theme["Timestamps"] + " !important; } #fs_status a, #header-bar .shortcut > span, #updater #update-status:not(.new)::after, #showQR, .abbr, .boxbar, .boxcontent, .deleteform::before, .pages strong, .pln, .reply, .reply.highlight, .summary, body, button, span[style=\"left: 5px; position: absolute;\"] a, input, textarea { color: " + theme["Text"] + "; } #exlinks-options-content > table, #appchanx-settings fieldset, #selectrice { border-bottom: 1px solid " + theme["Reply Border"] + "; box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px; } .quote + .spoiler:hover, .quote { color: " + theme["Greentext"] + "; } .forwardlink { border-bottom: 1px dashed " + theme["Backlinks"] + "; } .container::before { color: " + theme["Timestamps"] + "; } .quote-shadows #menu, .quote-shadows #post-preview, .quote-shadows #qp .opContainer, .quote-shadows #qp .replyContainer, .quote-shadows .submenu { box-shadow: 5px 5px 5px " + theme['Shadow Color'] + "; } .rice { background: " + theme["Checkbox Background"] + "; border: 1px solid " + theme["Checkbox Border"] + "; } .selectrice::before { border-left: 1px solid " + theme["Input Border"] + "; } .selectrice::after { border-top: .45em solid " + theme["Inputs"] + "; } .bd { background: " + theme["Buttons Background"] + "; border: 1px solid " + theme["Buttons Border"] + "; } .pages a, #header-bar a { color: " + theme["Navigation Links"] + "; } input[type=checkbox]:checked + .rice::after { border-color: " + theme["Inputs"] + "; } #addReply, #dump, .button, .entry, .replylink, a { color: " + theme["Links"] + "; } .backlink { color: " + theme["Backlinks"] + "; } .qiQuote, .quotelink { color: " + theme["Quotelinks"] + "; } #addReply:hover, #dump:hover, .entry:hover, .replylink:hover, .qiQuote:hover, .quotelink:hover, a .name:hover, a .postertrip:hover, a:hover { color: " + theme["Hovered Links"] + "; } #header-bar a:hover, #boardTitle a:hover { color: " + theme["Hovered Navigation Links"] + "; } #boardTitle { color: " + theme["Board Title"] + "; } .name, .post-author { color: " + theme["Names"] + " !important; } .post-tripcode, .postertrip, .trip { color: " + theme["Tripcodes"] + " !important; } a .postertrip, a .name { color: " + theme["Emails"] + "; } .post.reply.qphl, .post.op.qphl { border-color: " + theme["Backlinked Reply Outline"] + "; background: " + theme["Highlighted Reply Background"] + "; } .quote-shadows .inline .post { box-shadow: 5px 5px 5px " + theme['Shadow Color'] + "; } .placeholder, #qr input::placeholder, #qr textarea::placeholder { color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important; } #qr input:placeholder, #qr textarea:placeholder, .placeholder { color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important; } #appchanx-settings fieldset, .boxcontent dd, .selectrice ul { border-color: " + (Style.lightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)") + "; } #appchanx-settings li, #selectrice li:not(:first-of-type) { border-top: 1px solid " + (Style.lightTheme ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.025)") + "; } .a-icon, #shortcuts .fa { " + (!Style.lightTheme ? "-webkit-filter: url('#icons-filter');" : "") + " } .alternate-post-colors #threads > .thread:nth-of-type(2n+1), .alternate-post-colors .replyContainer:nth-of-type(2n+1) .post { background-image: linear-gradient(" + (replybg ? "rgba(" + (replybg.shiftRGB(-4, false)) + ",0.8), rgba(" + (replybg.shiftRGB(-4, false)) + ",0.8)" : Style.lightTheme ? "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" : "rgba(255,255,255,0.02), rgba(255,255,255,0.02)") + "); } .color-reply-headings .boxbar, .color-reply-headings .postInfo { background: " + (replybg ? "rgba(" + (replybg.shiftRGB(-12, false)) + ",0.8)" : "rgba(0,0,0,0.1)") + "; border-bottom: 1px solid " + theme["Reply Border"] + " } .color-file-info .file { background: " + (replybg ? "rgba(" + (replybg.shiftRGB(-8, false)) + ",0.8)" : "rgba(0,0,0,0.1)") + "; border-bottom: 1px solid " + theme["Reply Border"] + " border-top: 1px solid " + theme["Reply Border"] + " } .color-reply.headings.color-file-info { border-top: none; } .op-background .op.post { background: " + theme["Reply Background"] + "; border: 1px solid " + theme["Reply Border"] + "; } .op-background .op.post:target .op-background .op.post.highlight { background: " + theme["Highlighted Reply Background"] + "; border: 1px solid " + theme["Highlighted Reply Border"] + "; } .fourchan-banner-at-sidebar-top.icon-orientation-vertical body::after { background: " + backgroundC + "; } .fourchan-banner-at-sidebar-top.icon-orientation-vertical.fourchan-ss-sidebar body::after, .fourchan-banner-at-sidebar-top.fourchan-ss-sidebar body::before { background: rgba(" + ((background = new Style.color(theme["Reply Background"])) ? background.shiftRGB(-18) : void 0) + ", 0.8); } .fourchan-ss-sidebar.sidebar-location-right body::before { border-left: 2px solid " + backgroundC + "; box-shadow: inset 1px 0 0 " + theme["Reply Border"] + ", -1px 0 0 " + theme["Reply Border"] + "; } .fourchan-ss-sidebar.sidebar-location-left body::before { border-right: 2px solid " + backgroundC + "; box-shadow: 1px 0 0 " + theme["Reply Border"] + ", inset -1px 0 0 " + theme["Reply Border"] + "; } .sage-highlighting-text.sage-highlight-position-before a.useremail[href*=\"sage\"]:last-of-type::before, .sage-highlighting-text.sage-highlight-position-before a.useremail[href*=\"Sage\"]:last-of-type::before, .sage-highlighting-text.sage-highlight-position-before a.useremail[href*=\"SAGE\"]:last-of-type::before, .sage-highlighting-text.sage-highlight-position-after a.useremail[href*=\"sage\"]:last-of-type::after, .sage-highlighting-text.sage-highlight-position-after a.useremail[href*=\"Sage\"]:last-of-type::after, .sage-highlighting-text.sage-highlight-position-after a.useremail[href*=\"SAGE\"]:last-of-type::after { content: \" (sage) \"; color: " + theme["Sage"] + "; } .quote-shadows #qr { box-shadow: 5px 5px 5px " + theme['Shadow Color'] + "; } " + (theme["Custom CSS"].replace(/\s+/g, ' ').trim())) + ("" + (Style.lightTheme ? " .prettyprint { background-color: #e7e7e7; border: 1px solid #dcdcdc; } .com { color: #dd0000; } .str, .atv { color: #7fa61b; } .pun { color: #61663a; } .tag { color: #117743; } .kwd { color: #5a6F9e; } .typ, .atn { color: #9474bd; } .lit { color: #368c72; } " : " .prettyprint { background-color: rgba(0,0,0,.1); border: 1px solid rgba(0,0,0,0.5); } .tag { color: #96562c; } .pun { color: #5b6f2a; } .com { color: #a34443; } .str, .atv { color: #8ba446; } .kwd { color: #987d3e; } .typ, .atn { color: #897399; } .lit { color: #558773; } "));
     },
     iconPositions: function() {
       var el, exec, slideNav;
@@ -13329,45 +13329,89 @@
       pageHeight = (_ref = $('.pagelist', d.body)) != null ? _ref.offsetHeight : void 0;
       return Style.sheets.padding.textContent = ("body { padding-bottom: 15px; padding-top: 15px; } .fourchan-ss-navigation.fixed.top-header:not(.autohide) body::before { top: " + navHeight + "px; } .fourchan-ss-navigation.fixed.bottom-header:not(.autohide) body::before { bottom: " + navHeight + "px; } .top-header:not(.autohide) body { padding-top: " + (navHeight + 1) + "px; } .bottom-header:not(.autohide) body { padding-bottom: " + (navHeight + 1) + "px; } ") + (pageHeight ? ".fourchan-ss-navigation.index.pagination-sticky-top body::before, .fourchan-ss-navigation.index.pagination-top body::before { top: " + pageHeight + "px; } .fourchan-ss-navigation.index.pagination-sticky-bottom body::before, .fourchan-ss-navigation.index.pagination-bottom body::before { bottom: " + pageHeight + "px; } .index.pagination-sticky-top body, .index.pagination-top body { padding-top: " + (pageHeight + 1) + "px; } .index.pagination-sticky-bottom body, .index.pagination-bottom body { padding-bottom: " + (pageHeight + 1) + "px; }" : '');
     },
-    color: function(hex) {
-      this.hex = "#" + hex;
-      this.calc_rgb = function(hex) {
-        hex = parseInt(hex, 16);
+    color: (function() {
+      var calc_rgb, colorToHex, isLight, minmax;
+
+      minmax = function(base) {
+        if (base < 0) {
+          return 0;
+        } else if (base > 255) {
+          return 255;
+        } else {
+          return base;
+        }
+      };
+
+      calc_rgb = function(value) {
+        var hex;
+        hex = parseInt(value, 16);
         return [(hex >> 16) & 0xFF, (hex >> 8) & 0xFF, hex & 0xFF];
       };
-      this.private_rgb = this.calc_rgb(hex);
-      this.rgb = this.private_rgb.join(",");
-      this.isLight = function() {
-        var rgb;
-        rgb = this.private_rgb;
-        return (rgb[0] + rgb[1] + rgb[2]) >= 400;
-      };
-      this.shiftRGB = function(shift, smart) {
-        var minmax, rgb;
-        minmax = function(base) {
-          return Math.min(Math.max(base, 0), 255);
-        };
-        rgb = this.private_rgb.slice(0);
-        shift = smart ? (this.isLight(rgb) ? -1 : 1) * Math.abs(shift) : shift;
-        return [minmax(rgb[0] + shift), minmax(rgb[1] + shift), minmax(rgb[2] + shift)].join(",");
-      };
-      return this.hover = this.shiftRGB(16, true);
-    },
-    colorToHex: function(color) {
-      var digits, hex;
-      if (color.substr(0, 1) === '#') {
-        return color.slice(1, color.length);
-      }
-      if (digits = color.match(/(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/)) {
-        hex = ((parseInt(digits[2], 10) << 16) | (parseInt(digits[3], 10) << 8) | (parseInt(digits[4], 10))).toString(16);
-        while (hex.length < 6) {
-          hex = "0" + hex;
+
+      colorToHex = function(color) {
+        var b, digits, hex, r;
+        if (color.substr(0, 1) === '#') {
+          if (color.length !== 4) {
+            return color.slice(1);
+          } else {
+            r = color.substr(1, 1);
+            g = color.substr(2, 1);
+            b = color.substr(3, 1);
+            return [r, r, g, g, b, b].join("");
+          }
         }
-        return hex;
-      } else {
-        return false;
+        if (/[0-9a-f]{3}/i.test(color)) {
+          if (/[0-9a-f]{6}/i.test(color)) {
+            return color;
+          }
+          r = color.substr(0, 1);
+          g = color.substr(1, 1);
+          b = color.substr(2, 1);
+          return [r, r, g, g, b, b].join("");
+        }
+        if (digits = color.match(/(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/)) {
+          hex = ((parseInt(digits[2], 10) << 16) | (parseInt(digits[3], 10) << 8) | (parseInt(digits[4], 10))).toString(16);
+          while (hex.length < 6) {
+            hex = "0" + hex;
+          }
+          return hex;
+        } else {
+          return "000000";
+        }
+      };
+
+      isLight = function(rgb) {
+        return (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125;
+      };
+
+      function _Class(value) {
+        this.value = value;
+        this.raw = colorToHex(value);
+        this.hex = "#" + this.raw;
+        this.private_rgb = calc_rgb(value);
+        this.isLight = isLight(this.private_rgb);
+        this.rgb = this.private_rgb.join(",");
+        this.hover = this.shiftRGB(16, true);
       }
-    }
+
+      _Class.prototype.shiftRGB = function(shift, smart) {
+        var color, rgb;
+        rgb = __slice.call(this.private_rgb);
+        shift = smart ? (this.isLight ? -1 : 1) * Math.abs(shift) : shift;
+        return ((function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = rgb.length; _i < _len; _i++) {
+            color = rgb[_i];
+            _results.push(minmax(color + shift));
+          }
+          return _results;
+        })()).join(",");
+      };
+
+      return _Class;
+
+    })()
   };
 
   /*
@@ -13446,7 +13490,7 @@
             input.className = "colorfield";
             colorInput = $.el('input', {
               className: 'color',
-              value: "#" + (Style.colorToHex(input.value) || 'aaaaaa')
+              value: "#" + (new Style.color(input.value)).hex
             });
             JSColor.bind(colorInput);
             $.after(input, colorInput);
@@ -13501,7 +13545,7 @@
         return alert("Syntax error on " + this.name + ".");
       }
       if (this.className === "colorfield") {
-        this.nextSibling.value = '#' + (Style.colorToHex(this.value) || 'aaaaaa');
+        this.nextSibling.value = (new Style.color(this.value)).hex;
         this.nextSibling.color.importColor();
       }
       editTheme[this.name] = this.value;
