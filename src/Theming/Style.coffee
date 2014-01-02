@@ -153,7 +153,7 @@ Style =
     replybg  = new Style.color theme["Reply Background"]
     replyRGB = "rgb(#{replybg.shiftRGB parseInt(Conf['Silhouette Contrast'], 10), true})"
 
-    Style.lightTheme = bgColor.isLight
+    Style.lightTheme = bgColor.isLight()
     
     svgs = [
       ['captcha-filter', "values='#{Style.filter Style.matrix theme["Text"], theme["Input Background"]} 0 0 0 1 0'"]
@@ -251,17 +251,16 @@ Style =
       else
         "000000"
 
-    isLight = (rgb) ->
-      (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125
-
     constructor: (@value) ->
       @raw         = colorToHex value
 
     hex:         -> "#" + @raw
     private_rgb: -> calc_rgb @raw
-    isLight:     -> isLight @private_rgb()
     rgb:         -> @private_rgb().join ""
     hover:       -> @shiftRGB 16, true
+    isLight:     -> 
+      rgb = @private_rgb
+      (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125
 
     shiftRGB: (shift, smart) ->
       rgb = [@private_rgb...]

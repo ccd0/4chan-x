@@ -13268,7 +13268,7 @@
       bgColor = new Style.color(backgroundC = theme["Background Color"]);
       replybg = new Style.color(theme["Reply Background"]);
       replyRGB = "rgb(" + (replybg.shiftRGB(parseInt(Conf['Silhouette Contrast'], 10), true)) + ")";
-      Style.lightTheme = bgColor.isLight;
+      Style.lightTheme = bgColor.isLight();
       svgs = [['captcha-filter', "values='" + (Style.filter(Style.matrix(theme["Text"], theme["Input Background"]))) + " 0 0 0 1 0'"], ['mascot-filter', "values='" + (Style.silhouette(Style.matrix(replyRGB))) + " 0 0 0 1 0'"], ['grayscale', 'id="color" type="saturate" values="0"'], ['icons-filter', "values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0'"]];
       for (i = _i = 0, _len = svgs.length; _i < _len; i = ++_i) {
         svg = svgs[i];
@@ -13319,7 +13319,7 @@
       return Style.sheets.padding.textContent = ("body { padding-bottom: 15px; padding-top: 15px; } .fourchan-ss-navigation.fixed.top-header:not(.autohide) body::before { top: " + navHeight + "px; } .fourchan-ss-navigation.fixed.bottom-header:not(.autohide) body::before { bottom: " + navHeight + "px; } .top-header:not(.autohide) body { padding-top: " + (navHeight + 1) + "px; } .bottom-header:not(.autohide) body { padding-bottom: " + (navHeight + 1) + "px; } ") + (pageHeight ? ".fourchan-ss-navigation.index.pagination-sticky-top body::before, .fourchan-ss-navigation.index.pagination-top body::before { top: " + pageHeight + "px; } .fourchan-ss-navigation.index.pagination-sticky-bottom body::before, .fourchan-ss-navigation.index.pagination-bottom body::before { bottom: " + pageHeight + "px; } .index.pagination-sticky-top body, .index.pagination-top body { padding-top: " + (pageHeight + 1) + "px; } .index.pagination-sticky-bottom body, .index.pagination-bottom body { padding-bottom: " + (pageHeight + 1) + "px; }" : '');
     },
     color: (function() {
-      var calc_rgb, colorToHex, isLight, minmax;
+      var calc_rgb, colorToHex, minmax;
 
       minmax = function(base) {
         if (base < 0) {
@@ -13369,10 +13369,6 @@
         }
       };
 
-      isLight = function(rgb) {
-        return (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125;
-      };
-
       function _Class(value) {
         this.value = value;
         this.raw = colorToHex(value);
@@ -13386,16 +13382,18 @@
         return calc_rgb(this.raw);
       };
 
-      _Class.prototype.isLight = function() {
-        return isLight(this.private_rgb());
-      };
-
       _Class.prototype.rgb = function() {
         return this.private_rgb().join("");
       };
 
       _Class.prototype.hover = function() {
         return this.shiftRGB(16, true);
+      };
+
+      _Class.prototype.isLight = function() {
+        var rgb;
+        rgb = this.private_rgb;
+        return (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125;
       };
 
       _Class.prototype.shiftRGB = function(shift, smart) {
