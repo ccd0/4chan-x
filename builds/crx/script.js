@@ -12722,7 +12722,7 @@
     },
     categories: ['Anime', 'Ponies', 'Questionable', 'Silhouette', 'Western'],
     dialog: function(key) {
-      var container, dialog, div, fileInput, input, item, layout, name, option, optionHTML, setting, value, _i, _len, _ref;
+      var container, dialog, div, fileInput, fileRice, imageFn, input, item, layout, name, nameFn, option, optionHTML, saveCheck, saveVal, setting, updateMascot, value, _i, _len, _ref;
       Conf['editMode'] = 'mascot';
       if (Mascots[key]) {
         editMascot = JSON.parse(JSON.stringify(Mascots[key]));
@@ -12748,6 +12748,38 @@
         innerHTML: "<div id=mascotcontent><center>\nPROTIP: Shift-Click the Mascot Image field to upload your own images!\n<br><a href='https://github.com/zixaphir/appchan-x/issues/126#issuecomment-14365049'>This may have some caveats.</a></center></div><div id=save><a href='javascript:;'>Save Mascot</a></div><div id=close><a href='javascript:;'>Close</a></div>"
       });
       container = $("#mascotcontent", dialog);
+      fileRice = function(e) {
+        if (e.shiftKey) {
+          return this.nextSibling.click();
+        }
+      };
+      updateMascot = function() {
+        return MascotTools.change(editMascot);
+      };
+      saveVal = function() {
+        editMascot[this.name] = this.value;
+        return updateMascot();
+      };
+      imageFn = function() {
+        if (MascotTools.URL === this.value) {
+          return MascotTools.change(editMascot);
+        } else if (MascotTools.URL) {
+          URL.revokeObjectURL(MascotTools.URL);
+          delete MascotTools.URL;
+        }
+        return saveVal.call(this);
+      };
+      nameFn = function() {
+        this.value = this.value.replace(/[^a-z-_0-9]/ig, "_");
+        if ((this.value !== "") && !/^[a-z]/i.test(this.value)) {
+          return alert("Mascot names must start with a letter.");
+        }
+        return saveVal.call(this);
+      };
+      saveCheck = function() {
+        editMascot[this.name] = this.checked ? true : false;
+        return updateMascot();
+      };
       for (name in layout) {
         item = layout[name];
         value = editMascot[name] || (editMascot[name] = item[1]);
@@ -12757,53 +12789,27 @@
             input = $('input', div);
             switch (name) {
               case 'image':
-                $.on(input, 'blur', function() {
-                  if (MascotTools.URL === this.value) {
-                    return MascotTools.change(editMascot);
-                  } else if (MascotTools.URL) {
-                    URL.revokeObjectURL(MascotTools.URL);
-                    delete MascotTools.URL;
-                  }
-                  editMascot[this.name] = this.value;
-                  return MascotTools.change(editMascot);
-                });
+                $.on(input, 'blur', imageFn);
                 fileInput = $.el('input', {
                   type: "file",
                   accept: "image/*",
                   title: "imagefile",
                   hidden: "hidden"
                 });
-                $.on(input, 'click', function(e) {
-                  if (e.shiftKey) {
-                    return this.nextSibling.click();
-                  }
-                });
+                $.on(input, 'click', FileRice);
                 $.on(fileInput, 'change', MascotTools.uploadImage);
                 $.after(input, fileInput);
                 break;
               case 'name':
-                $.on(input, 'blur', function() {
-                  this.value = this.value.replace(/[^a-z-_0-9]/ig, "_");
-                  if ((this.value !== "") && !/^[a-z]/i.test(this.value)) {
-                    return alert("Mascot names must start with a letter.");
-                  }
-                  editMascot[this.name] = this.value;
-                  return MascotTools.change(editMascot);
-                });
+                $.on(input, 'blur', nameFn);
                 break;
               default:
-                $.on(input, 'blur', function() {
-                  editMascot[this.name] = this.value;
-                  return MascotTools.change(editMascot);
-                });
+                $.on(input, 'blur', saveVal);
             }
             break;
           case "number":
             div = this.input(item, name);
-            $.on($('input', div), 'blur', function() {
-              editMascot[this.name] = parseInt(this.value);
-              return MascotTools.change(editMascot);
-            });
+            $.on($('input', div), 'blur', saveVal);
             break;
           case "select":
             optionHTML = "<div class=optionlabel>" + item[0] + "</div><div class=option><select name='" + name + "' value='" + value + "'><br>";
@@ -12819,20 +12825,14 @@
             });
             setting = $("select", div);
             setting.value = value;
-            $.on($('select', div), 'change', function() {
-              editMascot[this.name] = this.value;
-              return MascotTools.change(editMascot);
-            });
+            $.on($('select', div), 'change', saveVal);
             break;
           case "checkbox":
             div = $.el("div", {
               className: "mascotvar",
               innerHTML: "<label><input type=" + item[2] + " class=field name='" + name + "' " + (value ? 'checked' : void 0) + ">" + item[0] + "</label>"
             });
-            $.on($('input', div), 'click', function() {
-              editMascot[this.name] = this.checked ? true : false;
-              return MascotTools.change(editMascot);
-            });
+            $.on($('input', div), 'click', saveCheck);
         }
         $.add(container, div);
       }

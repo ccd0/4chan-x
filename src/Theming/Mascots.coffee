@@ -83,7 +83,7 @@ MascotTools =
   dialog: (key) ->
     Conf['editMode'] = 'mascot'
     if Mascots[key]
-      editMascot = JSON.parse(JSON.stringify(Mascots[key]))
+      editMascot = JSON.parse JSON.stringify Mascots[key]
     else
       editMascot = {}
     editMascot.name = key or ''
@@ -147,6 +147,35 @@ MascotTools =
       innerHTML: """<%= grunt.file.read('src/General/html/Features/MascotDialog.html').replace(/>\s+</g, '><').trim() %>"""
 
     container = $ "#mascotcontent", dialog
+    
+    fileRice = (e) ->
+      if e.shiftKey
+        @nextSibling.click()
+    
+    updateMascot = ->
+      MascotTools.change editMascot
+    
+    saveVal = ->
+      editMascot[@name] = @value
+      updateMascot()
+
+    imageFn = ->
+      if MascotTools.URL is @value
+        return MascotTools.change editMascot
+      else if MascotTools.URL
+        URL.revokeObjectURL MascotTools.URL
+        delete MascotTools.URL
+      saveVal.call @
+    
+    nameFn = ->
+      @value = @value.replace /[^a-z-_0-9]/ig, "_"
+      if (@value isnt "") and !/^[a-z]/i.test @value
+        return alert "Mascot names must start with a letter."
+      saveVal.call @
+    
+    saveCheck = ->
+      editMascot[@name] = if @checked then true else false
+      updateMascot()
 
     for name, item of layout
       value = editMascot[name] or= item[1]
@@ -159,14 +188,7 @@ MascotTools =
 
           switch name
             when 'image'
-              $.on input, 'blur', ->
-                if MascotTools.URL is @value
-                  return MascotTools.change editMascot
-                else if MascotTools.URL
-                  URL.revokeObjectURL MascotTools.URL
-                  delete MascotTools.URL
-                editMascot[@name] = @value
-                MascotTools.change editMascot
+              $.on input, 'blur', imageFn
 
               fileInput = $.el 'input',
                 type:     "file"
@@ -174,32 +196,21 @@ MascotTools =
                 title:    "imagefile"
                 hidden:   "hidden"
 
-              $.on input, 'click', (e) ->
-                if e.shiftKey
-                  @nextSibling.click()
+              $.on input, 'click', FileRice
 
               $.on fileInput, 'change', MascotTools.uploadImage
 
               $.after input, fileInput
 
             when 'name'
-              $.on input, 'blur', ->
-                @value = @value.replace /[^a-z-_0-9]/ig, "_"
-                if (@value isnt "") and !/^[a-z]/i.test @value
-                  return alert "Mascot names must start with a letter."
-                editMascot[@name] = @value
-                MascotTools.change editMascot
+              $.on input, 'blur', nameFn
 
             else
-              $.on input, 'blur', ->
-                editMascot[@name] = @value
-                MascotTools.change editMascot
+              $.on input, 'blur', saveVal
 
         when "number"
           div = @input item, name
-          $.on $('input', div), 'blur', ->
-            editMascot[@name] = parseInt @value
-            MascotTools.change editMascot
+          $.on $('input', div), 'blur', saveVal
 
         when "select"
           optionHTML = "<div class=optionlabel>#{item[0]}</div><div class=option><select name='#{name}' value='#{value}'><br>"
@@ -212,17 +223,13 @@ MascotTools =
           setting = $ "select", div
           setting.value = value
 
-          $.on $('select', div), 'change', ->
-            editMascot[@name] = @value
-            MascotTools.change editMascot
+          $.on $('select', div), 'change', saveVal
 
         when "checkbox"
           div = $.el "div",
             className: "mascotvar"
             innerHTML: "<label><input type=#{item[2]} class=field name='#{name}' #{if value then 'checked'}>#{item[0]}</label>"
-          $.on $('input', div), 'click', ->
-            editMascot[@name] = if @checked then true else false
-            MascotTools.change editMascot
+          $.on $('input', div), 'click', saveCheck
 
       $.add container, div
 
