@@ -13370,7 +13370,6 @@
       };
 
       function _Class(value) {
-        this.value = value;
         this.raw = colorToHex(value);
       }
 

@@ -251,7 +251,7 @@ Style =
       else
         "000000"
 
-    constructor: (@value) ->
+    constructor: (value) ->
       @raw         = colorToHex value
 
     hex:         -> "#" + @raw
