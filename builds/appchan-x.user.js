@@ -13319,7 +13319,7 @@
       return Style.sheets.padding.textContent = ("body { padding-bottom: 15px; padding-top: 15px; } .fourchan-ss-navigation.fixed.top-header:not(.autohide) body::before { top: " + navHeight + "px; } .fourchan-ss-navigation.fixed.bottom-header:not(.autohide) body::before { bottom: " + navHeight + "px; } .top-header:not(.autohide) body { padding-top: " + (navHeight + 1) + "px; } .bottom-header:not(.autohide) body { padding-bottom: " + (navHeight + 1) + "px; } ") + (pageHeight ? ".fourchan-ss-navigation.index.pagination-sticky-top body::before, .fourchan-ss-navigation.index.pagination-top body::before { top: " + pageHeight + "px; } .fourchan-ss-navigation.index.pagination-sticky-bottom body::before, .fourchan-ss-navigation.index.pagination-bottom body::before { bottom: " + pageHeight + "px; } .index.pagination-sticky-top body, .index.pagination-top body { padding-top: " + (pageHeight + 1) + "px; } .index.pagination-sticky-bottom body, .index.pagination-bottom body { padding-bottom: " + (pageHeight + 1) + "px; }" : '');
     },
     color: (function() {
-      var calc_rgb, colorToHex, minmax;
+      var calcRGB, colorToHex, minmax;
 
       minmax = function(base) {
         if (base < 0) {
@@ -13331,7 +13331,7 @@
         }
       };
 
-      calc_rgb = function(value) {
+      calcRGB = function(value) {
         var hex;
         hex = parseInt(value, 16);
         return [(hex >> 16) & 0xFF, (hex >> 8) & 0xFF, hex & 0xFF];
@@ -13377,12 +13377,12 @@
         return "#" + this.raw;
       };
 
-      _Class.prototype.private_rgb = function() {
+      _Class.prototype.privateRGB = function() {
         return calc_rgb(this.raw);
       };
 
       _Class.prototype.rgb = function() {
-        return this.private_rgb().join("");
+        return this.privateRGB().join("");
       };
 
       _Class.prototype.hover = function() {
@@ -13390,24 +13390,24 @@
       };
 
       _Class.prototype.isLight = function() {
-        var rgb;
-        rgb = this.private_rgb;
-        return (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125;
+        return (this.privateRGB[0] * 0.299 + this.privateRGB[1] * 0.587 + this.privateRGB[2] * 0.114) > 125;
       };
 
       _Class.prototype.shiftRGB = function(shift, smart) {
-        var color, rgb;
-        rgb = __slice.call(this.private_rgb);
-        shift = smart ? (this.isLight ? -1 : 1) * Math.abs(shift) : shift;
+        var color;
+        if (smart) {
+          shift = (this.isLight ? -1 : 1) * Math.abs(shift);
+        }
         return ((function() {
-          var _i, _len, _results;
+          var _i, _len, _ref, _results;
+          _ref = this.privateRGB;
           _results = [];
-          for (_i = 0, _len = rgb.length; _i < _len; _i++) {
-            color = rgb[_i];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            color = _ref[_i];
             _results.push(minmax(color + shift));
           }
           return _results;
-        })()).join(",");
+        }).call(this)).join(",");
       };
 
       return _Class;

@@ -210,7 +210,7 @@ Style =
   color: class
     minmax = (base) -> if base < 0 then 0 else if base > 255 then 255 else base
 
-    calc_rgb = (value) ->
+    calcRGB = (value) ->
       hex = parseInt value, 16
       return [ # 0xRRGGBB to [R, G, B]
         (hex >> 16) & 0xFF
@@ -254,19 +254,12 @@ Style =
     constructor: (value) ->
       @raw         = colorToHex value
 
-    hex:         -> "#" + @raw
-    private_rgb: -> calc_rgb @raw
-    rgb:         -> @private_rgb().join ""
-    hover:       -> @shiftRGB 16, true
-    isLight:     -> 
-      rgb = @private_rgb
-      (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125
+    hex:        -> "#" + @raw
+    privateRGB: -> calc_rgb @raw
+    rgb:        -> @privateRGB().join ""
+    hover:      -> @shiftRGB 16, true
+    isLight:    -> (@privateRGB[0] * 0.299 + @privateRGB[1] * 0.587 + @privateRGB[2] * 0.114) > 125
 
     shiftRGB: (shift, smart) ->
-      rgb = [@private_rgb...]
-      shift = if smart
-        (if @isLight then -1 else 1) * Math.abs shift
-      else
-        shift
-
-      return (minmax color + shift for color in rgb).join ","
+      shift = (if @isLight then -1 else 1) * Math.abs shift if smart
+      return (minmax color + shift for color in @privateRGB).join ","
