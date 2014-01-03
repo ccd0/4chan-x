@@ -13699,20 +13699,17 @@
     };
 
     Color.prototype.shiftRGB = function(shift, smart) {
-      var color;
+      var color, rgb, _i, _len, _ref;
       if (smart) {
-        shift = (this.isLight ? -1 : 1) * Math.abs(shift);
+        shift = (this.isLight() ? -1 : 1) * Math.abs(shift);
       }
-      return ((function() {
-        var _i, _len, _ref, _results;
-        _ref = this.privateRGB;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          color = _ref[_i];
-          _results.push(minmax(color + shift));
-        }
-        return _results;
-      }).call(this)).join(",");
+      rgb = [];
+      _ref = this.privateRGB;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        color = _ref[_i];
+        rgb.push(minmax(color + shift));
+      }
+      return rgb.join("");
     };
 
     return Color;

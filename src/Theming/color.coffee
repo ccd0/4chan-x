@@ -52,5 +52,7 @@ class Color
   isLight:    -> (@privateRGB[0] * 0.299 + @privateRGB[1] * 0.587 + @privateRGB[2] * 0.114) > 125
 
   shiftRGB: (shift, smart) ->
-    shift = (if @isLight then -1 else 1) * Math.abs shift if smart
-    return (minmax color + shift for color in @privateRGB).join ","
+    shift = (if @isLight() then -1 else 1) * Math.abs shift if smart
+    rgb   = []
+    rgb.push minmax color + shift for color in @privateRGB
+    rgb.join ""
