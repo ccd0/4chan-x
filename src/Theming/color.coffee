@@ -37,9 +37,9 @@ class Color
   constructor: (value) ->
     @raw = colorToHex value
 
-  hex:        -> "#" + @raw
-  rgb:        -> @privateRGB().join ""
-  hover:      -> @shiftRGB 16, true
+  hex:   -> "#" + @raw
+  rgb:   -> @privateRGB().join ""
+  hover: -> @shiftRGB 16, true
 
   isLight:    ->
     rgb = @privateRGB()
