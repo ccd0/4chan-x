@@ -1,5 +1,5 @@
 ###
-  Style.color adapted from 4chan Style Script
+  Color adapted from 4chan Style Script
 ###
 
 ThemeTools =
@@ -140,7 +140,7 @@ ThemeTools =
 
           colorInput = $.el 'input',
             className: 'color'
-            value: "##{(new Style.color input.value).hex()}"
+            value: "##{(new Color input.value).hex()}"
 
           JSColor.bind colorInput
 
@@ -190,7 +190,7 @@ ThemeTools =
       return alert "Syntax error on #{@name}."
 
     if @className is "colorfield"
-      @nextSibling.value = (new Style.color @value).hex()
+      @nextSibling.value = (new Color @value).hex()
       @nextSibling.color.importColor()
 
     editTheme[@name] = @value

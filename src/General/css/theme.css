@@ -383,7 +383,7 @@ a .name {
 }
 .fourchan-banner-at-sidebar-top.icon-orientation-vertical.fourchan-ss-sidebar body::after,
 .fourchan-banner-at-sidebar-top.fourchan-ss-sidebar body::before {
-  background: rgba(#{if background = new Style.color theme["Reply Background"] then background.shiftRGB -18}, 0.8);
+  background: rgba(#{if background = new Color theme["Reply Background"] then background.shiftRGB -18}, 0.8);
 }
 .fourchan-ss-sidebar.sidebar-location-right body::before {
   border-left: 2px solid #{backgroundC};
