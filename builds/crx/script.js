@@ -13715,7 +13715,7 @@
         shift = (this.isLight() ? -1 : 1) * Math.abs(shift);
       }
       rgb = [];
-      _ref = this.privateRGB;
+      _ref = this.privateRGB();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         color = _ref[_i];
         rgb.push(minmax(color + shift));
