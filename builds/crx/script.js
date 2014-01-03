@@ -13629,7 +13629,7 @@
   };
 
   Color = (function() {
-    var calcRGB, colorToHex, minmax, shortToLong;
+    var colorToHex, minmax, shortToLong;
 
     minmax = function(base) {
       if (base < 0) {
@@ -13639,12 +13639,6 @@
       } else {
         return base;
       }
-    };
-
-    calcRGB = function(value) {
-      var hex;
-      hex = parseInt(value, 16);
-      return [(hex >> 16) & 0xFF, (hex >> 8) & 0xFF, hex & 0xFF];
     };
 
     shortToLong = function(hex) {
@@ -13693,10 +13687,6 @@
       return "#" + this.raw;
     };
 
-    Color.prototype.privateRGB = function() {
-      return calc_rgb(this.raw);
-    };
-
     Color.prototype.rgb = function() {
       return this.privateRGB().join("");
     };
@@ -13706,7 +13696,15 @@
     };
 
     Color.prototype.isLight = function() {
-      return (this.privateRGB[0] * 0.299 + this.privateRGB[1] * 0.587 + this.privateRGB[2] * 0.114) > 125;
+      var rgb;
+      rgb = this.privateRGB();
+      return (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125;
+    };
+
+    Color.prototype.privateRGB = function() {
+      var hex;
+      hex = parseInt(this.raw, 16);
+      return [(hex >> 16) & 0xFF, (hex >> 8) & 0xFF, hex & 0xFF];
     };
 
     Color.prototype.shiftRGB = function(shift, smart) {

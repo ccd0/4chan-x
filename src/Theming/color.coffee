@@ -1,14 +1,6 @@
 class Color
   minmax = (base) -> if base < 0 then 0 else if base > 255 then 255 else base
 
-  calcRGB = (value) ->
-    hex = parseInt value, 16
-    return [ # 0xRRGGBB to [R, G, B]
-      (hex >> 16) & 0xFF
-      (hex >> 8) & 0xFF
-      hex & 0xFF
-    ]
-
   shortToLong = (hex) ->
     longHex = []
     i = 0
@@ -43,13 +35,24 @@ class Color
       "000000"
 
   constructor: (value) ->
-    @raw         = colorToHex value
+    @raw = colorToHex value
 
   hex:        -> "#" + @raw
-  privateRGB: -> calc_rgb @raw
   rgb:        -> @privateRGB().join ""
   hover:      -> @shiftRGB 16, true
-  isLight:    -> (@privateRGB[0] * 0.299 + @privateRGB[1] * 0.587 + @privateRGB[2] * 0.114) > 125
+
+  isLight:    ->
+    rgb = @privateRGB()
+    (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125
+
+  privateRGB: ->
+    hex = parseInt @raw, 16
+    return [
+      # 0xRRGGBB to [R, G, B]
+      (hex >> 16) & 0xFF
+      (hex >> 8) & 0xFF
+      hex & 0xFF
+    ]
 
   shiftRGB: (shift, smart) ->
     shift = (if @isLight() then -1 else 1) * Math.abs shift if smart
