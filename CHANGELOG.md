@@ -1,3 +1,6 @@
+### v2.7.5 
+*2014-01-04*
+
 ### v2.7.4 
 *2013-12-27*
 
@@ -18,6 +21,9 @@
 
 **Zixaphir**:
 - Moar bugfixes.
+
+**Zixaphir**:
+- Bug fixes and optimizations
 
 ### v2.7.1 
 *2013-12-24*
