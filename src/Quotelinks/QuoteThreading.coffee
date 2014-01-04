@@ -36,6 +36,8 @@ QuoteThreading =
 
   node: ->
     return if @isClone or not QuoteThreading.enabled or @thread.OP is @
+    
+    {replies} = Unread
 
     {quotes, ID, fullID} = @
     {posts} = g
@@ -68,7 +70,7 @@ QuoteThreading =
       {bottom, top} = qpost.nodes.root.getBoundingClientRect()
 
       # Post is unread or is fully visible.
-      return false unless qpost in Unread.posts or ((bottom < height) and (top > 0))
+      return false unless Unread.posts[qpost.ID] or ((bottom < height) and (top > 0))
 
     qroot = qpost.nodes.root
     unless $.hasClass qroot, 'threadOP'
@@ -83,6 +85,7 @@ QuoteThreading =
     return true
 
   toggle: ->
+    Unread.replies = new RandomAccessList
     thread  = $ '.thread'
     replies = $$ '.thread > .replyContainer, .threadContainer > .replyContainer', thread
     QuoteThreading.enabled = @checked

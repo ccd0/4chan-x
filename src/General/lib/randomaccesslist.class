@@ -1,0 +1,58 @@
+class RandomAccessList
+  constructor: ->
+    @first  = null
+    @last   = null
+    @length = 0
+
+  push: (item) ->
+    {ID} = item
+    {last} = @
+    $.extend item, 
+      prev: last
+      next: null
+    @[ID] = item
+    @last = if last
+      last.next = item
+    else
+      @first = item
+    @length++
+
+  after: (root, item) ->
+    return if item.prev is root
+
+    @rmi item
+
+    {next} = root
+
+    next.prev = root.next = item
+    item.prev = root
+    item.next = next
+
+  shift: ->
+    @rm @first.ID
+  
+  splice: (start, end) ->
+    return unless @[end]
+    cur = if start is 0 then @first else @[start]
+    while cur isnt @[end]
+      return unless {next} = cur
+      @rm cur
+      cur = next
+
+  rm: (ID) ->
+    item = @[ID]
+    return unless item
+    delete @[ID]
+    @length--
+    @rmi item
+
+  rmi: (item) ->
+    {prev, next} = item
+    if prev
+      prev.next = next
+    else
+      @first = next
+    if next
+      next.prev = prev
+    else
+      @last = prev

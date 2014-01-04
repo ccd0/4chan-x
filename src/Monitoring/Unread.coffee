@@ -5,7 +5,7 @@ Unread =
     @db = new DataBoard 'lastReadPosts', @sync
     @hr = $.el 'hr',
       id: 'unread-line'
-    @posts = []
+    @posts = new RandomAccessList
     @postsQuotingYou = []
 
     Thread.callbacks.push
@@ -36,7 +36,7 @@ Unread =
     return unless Conf['Scroll to Last Read Post']
     # Let the header's onload callback handle it.
     return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
-    if post = Unread.posts[0]
+    if post = Unread.posts.first
       # Scroll to a non-hidden, non-OP post that's before the first unread post.
       while root = $.x 'preceding-sibling::div[contains(@class,"replyContainer")][1]', post.nodes.root
         break unless (post = Get.postFromRoot root).isHidden
@@ -60,6 +60,13 @@ Unread =
     return unless Unread.lastReadPost < lastReadPost
     Unread.lastReadPost = lastReadPost
     Unread.readArray Unread.posts
+
+    post = Unread.posts.first
+    while post
+      break if post.ID > Unread.lastReadPost
+      post = post.next
+    Unread.posts.splice 0, i
+    
     Unread.readArray Unread.postsQuotingYou
     Unread.setLine() if Conf['Unread Line']
     Unread.update()
@@ -114,9 +121,10 @@ Unread =
       Unread.addPosts e.detail.newPosts
 
   readSinglePost: (post) ->
-    return if (i = Unread.posts.indexOf post) is -1
-    Unread.posts.splice i, 1
-    if i is 0
+    {ID} = post
+    return unless Unread.posts[ID]
+    Unread.posts.splice ID post.next.ID
+    if post is Unread.posts.first
       Unread.lastReadPost = post.ID
       Unread.saveLastReadPost()
     if (i = Unread.postsQuotingYou.indexOf post) isnt -1
@@ -132,27 +140,22 @@ Unread =
     return if d.hidden or !Unread.posts.length
     height  = doc.clientHeight
     {posts} = Unread
-    i = 0
 
-    while post = posts[i]
+    post = posts.first
+
+    while post
       if Header.getBottomOf(post.nodes.root) > -1 # post is not completely read
         {ID} = post
         if Conf['Mark Quotes of You']
           if post.info.yours
             QuoteYou.lastRead = post.nodes.root
-        if Conf['Quote Threading']
-          posts.splice i, 1
-          continue
+        post = post.next
       else
-        unless Conf['Quote Threading']
-          break
-      i++
-    
-    if i and !Conf['Quote Threading']
-      posts.splice 0, i
+        break
 
     return unless ID
 
+    posts.splice 0, ID
     Unread.lastReadPost = ID if Unread.lastReadPost < ID or !Unread.lastReadPost
     Unread.saveLastReadPost()
     Unread.readArray Unread.postsQuotingYou

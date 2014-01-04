@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.44 - 2013-12-27
+* 4chan X - Version 1.2.44 - 2014-01-04
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -31,11 +31,11 @@
 * http://zixaphir.github.io/appchan-x/ 
 * 4chan x Copyright © 2009-2011 James Campos <james.r.campos@gmail.com>
 * https://github.com/aeosynth/4chan-x
-* 4chan x Copyright © 2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
+* 4chan x Copyright © 2012-2014 Nicolas Stepien <stepien.nicolas@gmail.com>
 * https://4chan-x.just-believe.in/
-* 4chan x Copyright © 2013-2013 Jordan Bates <saudrapsmann@gmail.com>
+* 4chan x Copyright © 2013-2014 Jordan Bates <saudrapsmann@gmail.com>
 * http://seaweedchan.github.io/4chan-x/
-* 4chan x Copyright © 2012-2013 ihavenoface
+* 4chan x Copyright © 2012-2014 ihavenoface
 * http://ihavenoface.github.io/4chan-x/
 * 4chan SS Copyright © 2011-2013 Ahodesuka
 * https://github.com/ahodesuka/4chan-Style-Script/ 
@@ -104,7 +104,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Gallery, Get, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, InfiniScroll, Keybinds, Linkify, Main, Menu, Nav, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Gallery, Get, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, InfiniScroll, Keybinds, Linkify, Main, Menu, Nav, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
@@ -1455,6 +1455,87 @@
     };
 
     return Notice;
+
+  })();
+
+  RandomAccessList = (function() {
+    function RandomAccessList() {
+      this.first = null;
+      this.last = null;
+      this.length = 0;
+    }
+
+    RandomAccessList.prototype.push = function(item) {
+      var ID, last;
+      ID = item.ID;
+      last = this.last;
+      $.extend(item, {
+        prev: last,
+        next: null
+      });
+      this[ID] = item;
+      this.last = last ? last.next = item : this.first = item;
+      return this.length++;
+    };
+
+    RandomAccessList.prototype.after = function(root, item) {
+      var next;
+      if (item.prev === root) {
+        return;
+      }
+      this.rmi(item);
+      next = root.next;
+      next.prev = root.next = item;
+      item.prev = root;
+      return item.next = next;
+    };
+
+    RandomAccessList.prototype.shift = function() {
+      return this.rm(this.first.ID);
+    };
+
+    RandomAccessList.prototype.splice = function(start, end) {
+      var cur, next;
+      if (!this[end]) {
+        return;
+      }
+      cur = start === 0 ? this.first : this[start];
+      while (cur !== this[end]) {
+        if (!(next = cur.next, cur)) {
+          return;
+        }
+        this.rm(cur);
+        cur = next;
+      }
+    };
+
+    RandomAccessList.prototype.rm = function(ID) {
+      var item;
+      item = this[ID];
+      if (!item) {
+        return;
+      }
+      delete this[ID];
+      this.length--;
+      return this.rmi(item);
+    };
+
+    RandomAccessList.prototype.rmi = function(item) {
+      var next, prev;
+      prev = item.prev, next = item.next;
+      if (prev) {
+        prev.next = next;
+      } else {
+        this.first = next;
+      }
+      if (next) {
+        return next.prev = prev;
+      } else {
+        return this.last = prev;
+      }
+    };
+
+    return RandomAccessList;
 
   })();
 
@@ -4868,10 +4949,11 @@
       return QuoteThreading.hasRun = true;
     },
     node: function() {
-      var ID, fullID, keys, len, post, posts, qid, quote, quotes, uniq, _i, _len;
+      var ID, fullID, keys, len, post, posts, qid, quote, quotes, replies, uniq, _i, _len;
       if (this.isClone || !QuoteThreading.enabled || this.thread.OP === this) {
         return;
       }
+      replies = Unread.replies;
       quotes = this.quotes, ID = this.ID, fullID = this.fullID;
       posts = g.posts;
       if (!(post = posts[fullID]) || post.isHidden) {
@@ -4907,7 +4989,7 @@
       if (QuoteThreading.hasRun) {
         height = doc.clientHeight;
         _ref = qpost.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
-        if (!(__indexOf.call(Unread.posts, qpost) >= 0 || ((bottom < height) && (top > 0)))) {
+        if (!(Unread.posts[qpost.ID] || ((bottom < height) && (top > 0)))) {
           return false;
         }
       }
@@ -4926,6 +5008,7 @@
     },
     toggle: function() {
       var container, containers, node, post, replies, reply, thread, _i, _j, _k, _len, _len1, _len2, _ref;
+      Unread.replies = new RandomAccessList;
       thread = $('.thread');
       replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
       QuoteThreading.enabled = this.checked;
@@ -9393,7 +9476,7 @@
       this.hr = $.el('hr', {
         id: 'unread-line'
       });
-      this.posts = [];
+      this.posts = new RandomAccessList;
       this.postsQuotingYou = [];
       return Thread.callbacks.push({
         name: 'Unread',
@@ -9437,7 +9520,7 @@
       if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
         return;
       }
-      if (post = Unread.posts[0]) {
+      if (post = Unread.posts.first) {
         while (root = $.x('preceding-sibling::div[contains(@class,"replyContainer")][1]', post.nodes.root)) {
           if (!(post = Get.postFromRoot(root)).isHidden) {
             break;
@@ -9458,7 +9541,7 @@
       });
     },
     sync: function() {
-      var lastReadPost;
+      var lastReadPost, post;
       lastReadPost = Unread.db.get({
         boardID: Unread.thread.board.ID,
         threadID: Unread.thread.ID,
@@ -9469,6 +9552,14 @@
       }
       Unread.lastReadPost = lastReadPost;
       Unread.readArray(Unread.posts);
+      post = Unread.posts.first;
+      while (post) {
+        if (post.ID > Unread.lastReadPost) {
+          break;
+        }
+        post = post.next;
+      }
+      Unread.posts.splice(0, i);
       Unread.readArray(Unread.postsQuotingYou);
       if (Conf['Unread Line']) {
         Unread.setLine();
@@ -9546,12 +9637,13 @@
       }
     },
     readSinglePost: function(post) {
-      var i;
-      if ((i = Unread.posts.indexOf(post)) === -1) {
+      var ID, i;
+      ID = post.ID;
+      if (!Unread.posts[ID]) {
         return;
       }
-      Unread.posts.splice(i, 1);
-      if (i === 0) {
+      Unread.posts.splice(ID(post.next.ID));
+      if (post === Unread.posts.first) {
         Unread.lastReadPost = post.ID;
         Unread.saveLastReadPost();
       }
@@ -9571,14 +9663,14 @@
       return arr.splice(0, i);
     },
     read: $.debounce(50, function(e) {
-      var ID, height, i, post, posts;
+      var ID, height, post, posts;
       if (d.hidden || !Unread.posts.length) {
         return;
       }
       height = doc.clientHeight;
       posts = Unread.posts;
-      i = 0;
-      while (post = posts[i]) {
+      post = posts.first;
+      while (post) {
         if (Header.getBottomOf(post.nodes.root) > -1) {
           ID = post.ID;
           if (Conf['Mark Quotes of You']) {
@@ -9586,23 +9678,15 @@
               QuoteYou.lastRead = post.nodes.root;
             }
           }
-          if (Conf['Quote Threading']) {
-            posts.splice(i, 1);
-            continue;
-          }
+          post = post.next;
         } else {
-          if (!Conf['Quote Threading']) {
-            break;
-          }
+          break;
         }
-        i++;
-      }
-      if (i && !Conf['Quote Threading']) {
-        posts.splice(0, i);
       }
       if (!ID) {
         return;
       }
+      posts.splice(0, ID);
       if (Unread.lastReadPost < ID || !Unread.lastReadPost) {
         Unread.lastReadPost = ID;
       }
