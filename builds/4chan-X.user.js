@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.44 - 2013-12-27
+* 4chan X - Version 1.2.44 - 2014-01-04
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -31,11 +31,11 @@
 * http://zixaphir.github.io/appchan-x/ 
 * 4chan x Copyright © 2009-2011 James Campos <james.r.campos@gmail.com>
 * https://github.com/aeosynth/4chan-x
-* 4chan x Copyright © 2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
+* 4chan x Copyright © 2012-2014 Nicolas Stepien <stepien.nicolas@gmail.com>
 * https://4chan-x.just-believe.in/
-* 4chan x Copyright © 2013-2013 Jordan Bates <saudrapsmann@gmail.com>
+* 4chan x Copyright © 2013-2014 Jordan Bates <saudrapsmann@gmail.com>
 * http://seaweedchan.github.io/4chan-x/
-* 4chan x Copyright © 2012-2013 ihavenoface
+* 4chan x Copyright © 2012-2014 ihavenoface
 * http://ihavenoface.github.io/4chan-x/
 * 4chan SS Copyright © 2011-2013 Ahodesuka
 * https://github.com/ahodesuka/4chan-Style-Script/ 
