@@ -329,38 +329,28 @@ $.get = (key, val, cb) ->
     chrome.storage.sync.get  syncItems,  done
 
 $.set = do ->
-  items =
-    sync: {}
-    local: {}
-  timeout = {}
+  items = {}
+  localItems = {}
 
-  setArea = (area) ->
-    return if timeout[area]
-    chrome.storage[area].set items[area], ->
-      if chrome.runtime.lastError
-        c.error chrome.runtime.lastError.message
-        timeout[area] = setTimeout setArea, $.MINUTE, area
-        return
-      items[area] = {}
-      delete timeout[area]
-
-  setAll = $.debounce $.SECOND, ->
+  set = $.debounce $.SECOND, ->
     for key in $.localKeys
-      if key of items.sync
-        items.local[key] = items.sync[key]
-        delete items.sync[key]
+      if key of items
+        (localItems or= {})[key] = items[key]
+        delete items[key]
     try
-      setArea 'local'
-      setArea 'sync'
+      chrome.storage.local.set localItems
+      chrome.storage.sync.set items
+      items = {}
+      localItems = {}
     catch err
       c.error err.stack
 
   (key, val) ->
     if typeof key is 'string'
-      items.sync[key] = val
+      items[key] = val
     else
-      $.extend items.sync, key
-    setAll()
+      $.extend items, key
+    set()
 
 <% } else { %>
 
