@@ -13063,14 +13063,12 @@
       var fn;
       root || (root = d.body);
       fn = function(items, type) {
-        var func, item, _i, _len, _results;
+        var func, item, _i, _len;
         func = Rice[type];
-        _results = [];
         for (_i = 0, _len = items.length; _i < _len; _i++) {
           item = items[_i];
-          _results.push(func(item));
+          func(item);
         }
-        return _results;
       };
       fn($$('[type=checkbox]:not(.riced)', root), 'checkbox');
       return fn($$('select:not(.riced)', root), 'select');

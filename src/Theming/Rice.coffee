@@ -68,6 +68,7 @@ Rice =
     fn = (items, type) ->
       func = Rice[type]
       func item for item in items
+      return
 
     fn $$('[type=checkbox]:not(.riced)', root), 'checkbox'
     fn $$('select:not(.riced)', root), 'select'
