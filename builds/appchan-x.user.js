@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.7.4 - 2014-01-02
+* appchan x - Version 2.7.4 - 2014-01-04
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -13642,7 +13642,7 @@
     };
 
     colorToHex = function(color) {
-      var digits, hex;
+      var digits, hex, len;
       if (color.substr(0, 1) === '#') {
         if (color.length !== 4) {
           return color.slice(1);
@@ -13650,11 +13650,14 @@
           return shortToLong(color.substr(1, 3));
         }
       }
-      if (/[0-9a-f]{3}/i.test(color)) {
-        if (color.length === 6) {
-          return color;
-        } else {
-          return shortToLong(color);
+      len = color.length;
+      if (len === 3 || len === 6) {
+        if (/[0-9a-f]{3}/i.test(color)) {
+          if (color.length === 6) {
+            return color;
+          } else {
+            return shortToLong(color);
+          }
         }
       }
       if (digits = color.match(/(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/)) {

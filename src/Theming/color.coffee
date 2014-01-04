@@ -16,8 +16,10 @@ class Color
       else
         return shortToLong color.substr(1, 3)
 
-    if /[0-9a-f]{3}/i.test color
-      return if color.length is 6 then color else shortToLong color
+    len = color.length
+    if len in [3, 6]
+      if /[0-9a-f]{3}/i.test color
+        return if color.length is 6 then color else shortToLong color
 
     if digits = color.match /(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/
       # [R, G, B] to 0xRRGGBB
