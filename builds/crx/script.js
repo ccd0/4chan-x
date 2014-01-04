@@ -13019,12 +13019,12 @@
         select = Rice.input;
         container = select.nextElementSibling;
         container.firstChild.textContent = this.textContent;
-        select.value = this.getAttribute('data-value');
+        select.value = this.dataset.value;
         $.event('change', null, select);
         return Rice.cleanup();
       },
       select: function(e) {
-        var clientHeight, li, nodes, option, rect, select, style, ul, _i, _len, _ref;
+        var bottom, clientHeight, left, li, nodes, option, select, style, top, ul, width, _i, _len, _ref, _ref1;
         e.stopPropagation();
         e.preventDefault();
         ul = Rice.ul;
@@ -13037,19 +13037,19 @@
         if (ul.children.length > 0) {
           return Rice.cleanup();
         }
-        rect = this.getBoundingClientRect();
+        _ref = this.getBoundingClientRect(), width = _ref.width, left = _ref.left, bottom = _ref.bottom, top = _ref.top;
         clientHeight = d.documentElement.clientHeight;
         style = ul.style;
-        style.cssText = ("width: " + rect.width + "px; left: " + rect.left + "px;") + (clientHeight - rect.bottom < 200 ? "bottom: " + (clientHeight - rect.top) + "px" : "top: " + rect.bottom + "px");
+        style.cssText = ("width: " + width + "px; left: " + left + "px;") + (clientHeight - bottom < 200 ? "bottom: " + (clientHeight - top) + "px" : "top: " + bottom + "px");
         Rice.input = select = this.previousSibling;
         nodes = [];
-        _ref = select.options;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          option = _ref[_i];
+        _ref1 = select.options;
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          option = _ref1[_i];
           li = $.el('li', {
             textContent: option.textContent
           });
-          li.setAttribute('data-value', option.value);
+          li.dataset.value = option.value;
           $.on(li, 'click', Rice.cb.option);
           nodes.push(li);
         }
@@ -13061,29 +13061,24 @@
       }
     },
     cleanup: function() {
-      var child, _i, _len, _ref;
       $.off(d, 'click scroll blur resize', Rice.cleanup);
-      _ref = __slice.call(Rice.ul.children);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        child = _ref[_i];
-        $.rm(child);
-      }
+      $.rmAll(Rice.ul);
     },
     nodes: function(root) {
-      var checkboxes, checkrice, input, select, selectrice, selects, _i, _j, _len, _len1;
+      var fn;
       root || (root = d.body);
-      checkboxes = $$('[type=checkbox]:not(.riced)', root);
-      checkrice = Rice.checkbox;
-      for (_i = 0, _len = checkboxes.length; _i < _len; _i++) {
-        input = checkboxes[_i];
-        checkrice(input);
-      }
-      selects = $$('select:not(.riced)', root);
-      selectrice = Rice.select;
-      for (_j = 0, _len1 = selects.length; _j < _len1; _j++) {
-        select = selects[_j];
-        selectrice(select);
-      }
+      fn = function(items, type) {
+        var func, item, _i, _len, _results;
+        func = Rice[type];
+        _results = [];
+        for (_i = 0, _len = items.length; _i < _len; _i++) {
+          item = items[_i];
+          _results.push(func(item));
+        }
+        return _results;
+      };
+      fn($$('[type=checkbox]:not(.riced)', root), 'checkbox');
+      return fn($$('select:not(.riced)', root), 'select');
     },
     node: function() {
       return Rice.checkbox($('.postInfo input', this.nodes.post));
@@ -13102,11 +13097,11 @@
       return $.on(div, 'click', Rice.cb.check);
     },
     select: function(select) {
-      var div, _ref;
+      var div;
       $.addClass(select, 'riced');
       div = $.el('div', {
         className: 'selectrice',
-        innerHTML: "<div>" + (((_ref = select.options[select.selectedIndex || 0]) != null ? _ref.textContent : void 0) || null) + "</div>"
+        innerHTML: "<div>" + (select.options[select.selectedIndex || '0'].textContent || '') + "</div>"
       });
       $.on(div, "click", Rice.cb.select);
       return $.after(select, div);
