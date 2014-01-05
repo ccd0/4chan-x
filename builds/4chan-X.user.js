@@ -9546,19 +9546,14 @@
         return;
       }
       Unread.lastReadPost = lastReadPost;
-      Unread.readArray(Unread.posts);
       post = Unread.posts.first;
       while (post) {
-        if (post.ID > Unread.lastReadPost) {
-          break;
-        }
-        ID = post.ID;
-        if (!post.next) {
+        if ((ID = post.ID, post) > Unread.lastReadPost) {
           break;
         }
         post = post.next;
+        Unread.posts.rm(ID);
       }
-      Unread.posts.splice(0, ID);
       Unread.readArray(Unread.postsQuotingYou);
       if (Conf['Unread Line']) {
         Unread.setLine();
@@ -9647,7 +9642,7 @@
       if (!Unread.posts[ID]) {
         return;
       }
-      Unread.posts.splice(ID(post.next.ID));
+      Unread.posts.rm(ID);
       if (post === Unread.posts.first) {
         Unread.lastReadPost = ID;
         Unread.saveLastReadPost();
@@ -9684,6 +9679,7 @@
             }
           }
           post = post.next;
+          posts.rm(ID);
         } else {
           break;
         }
@@ -9691,7 +9687,6 @@
       if (!ID) {
         return;
       }
-      posts.splice(0, ID);
       if (Unread.lastReadPost < ID || !Unread.lastReadPost) {
         Unread.lastReadPost = ID;
       }
