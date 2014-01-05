@@ -46,11 +46,9 @@ Unread =
       # Scroll to the last read post.
       posts  = Object.keys Unread.thread.posts
       {root} = Unread.thread.posts[posts[posts.length - 1]].nodes
-    # Prevent the browser to scroll back to
-    # the previous scroll location on page load.
-    $.on window, 'load', ->
-      # Scroll to the target unless we scrolled past it.
-      Header.scrollTo root, down if Header.getBottomOf(root) < 0
+    
+    # Scroll to the target unless we scrolled past it.
+    Header.scrollTo root, down if Header.getBottomOf(root) < 0
 
   sync: ->
     lastReadPost = Unread.db.get
