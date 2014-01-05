@@ -772,39 +772,24 @@
   };
 
   $.set = (function() {
-    var items, setAll, setArea, timeout;
-    items = {
-      sync: {},
-      local: {}
-    };
-    timeout = {};
-    setArea = function(area) {
-      if (timeout[area]) {
-        return;
-      }
-      return chrome.storage[area].set(items[area], function() {
-        if (chrome.runtime.lastError) {
-          c.error(chrome.runtime.lastError.message);
-          timeout[area] = setTimeout(setArea, $.MINUTE, area);
-          return;
-        }
-        items[area] = {};
-        return delete timeout[area];
-      });
-    };
-    setAll = $.debounce($.SECOND, function() {
+    var items, localItems, set;
+    items = {};
+    localItems = {};
+    set = $.debounce($.SECOND, function() {
       var err, key, _i, _len, _ref;
       _ref = $.localKeys;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         key = _ref[_i];
-        if (key in items.sync) {
-          items.local[key] = items.sync[key];
-          delete items.sync[key];
+        if (key in items) {
+          (localItems || (localItems = {}))[key] = items[key];
+          delete items[key];
         }
       }
       try {
-        setArea('local');
-        return setArea('sync');
+        chrome.storage.local.set(localItems);
+        chrome.storage.sync.set(items);
+        items = {};
+        return localItems = {};
       } catch (_error) {
         err = _error;
         return c.error(err.stack);
@@ -812,11 +797,11 @@
     });
     return function(key, val) {
       if (typeof key === 'string') {
-        items.sync[key] = val;
+        items[key] = val;
       } else {
-        $.extend(items.sync, key);
+        $.extend(items, key);
       }
-      return setAll();
+      return set();
     };
   })();
 
@@ -9532,11 +9517,9 @@
         posts = Object.keys(Unread.thread.posts);
         root = Unread.thread.posts[posts[posts.length - 1]].nodes.root;
       }
-      return $.on(window, 'load', function() {
-        if (Header.getBottomOf(root) < 0) {
-          return Header.scrollTo(root, down);
-        }
-      });
+      if (Header.getBottomOf(root) < 0) {
+        return Header.scrollTo(root, down);
+      }
     },
     sync: function() {
       var lastReadPost, post;
