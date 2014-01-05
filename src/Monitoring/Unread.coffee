@@ -56,15 +56,12 @@ Unread =
       defaultValue: 0
     return unless Unread.lastReadPost < lastReadPost
     Unread.lastReadPost = lastReadPost
-    Unread.readArray Unread.posts
 
     post = Unread.posts.first
     while post
-      break if post.ID > Unread.lastReadPost
-      {ID} = post
-      break unless post.next
+      break if ({ID} = post) > Unread.lastReadPost
       post = post.next
-    Unread.posts.splice 0, ID
+      Unread.posts.rm ID
 
     Unread.readArray Unread.postsQuotingYou
     Unread.setLine() if Conf['Unread Line']
@@ -125,7 +122,7 @@ Unread =
   readSinglePost: (post) ->
     {ID} = post
     return unless Unread.posts[ID]
-    Unread.posts.splice ID post.next.ID
+    Unread.posts.rm ID
     if post is Unread.posts.first
       Unread.lastReadPost = ID
       Unread.saveLastReadPost()
@@ -152,12 +149,12 @@ Unread =
           if post.info.yours
             QuoteYou.lastRead = post.nodes.root
         post = post.next
+        posts.rm ID
       else
         break
 
     return unless ID
 
-    posts.splice 0, ID
     Unread.lastReadPost = ID if Unread.lastReadPost < ID or !Unread.lastReadPost
     Unread.saveLastReadPost()
     Unread.readArray Unread.postsQuotingYou

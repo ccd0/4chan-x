@@ -19,14 +19,13 @@ class RandomAccessList
     @rmi item
 
     {next} = root
-
     next.prev = root.next = item
     item.prev = root
     item.next = next
 
   shift: ->
     @rm @first.ID
-  
+
   splice: (start, end) ->
     return unless @[end]
     cur = if start is 0 then @first else @[start]
