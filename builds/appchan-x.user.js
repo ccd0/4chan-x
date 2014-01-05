@@ -11756,11 +11756,9 @@
         posts = Object.keys(Unread.thread.posts);
         root = Unread.thread.posts[posts[posts.length - 1]].nodes.root;
       }
-      return $.on(window, 'load', function() {
-        if (Header.getBottomOf(root) < 0) {
-          return Header.scrollTo(root, down);
-        }
-      });
+      if (Header.getBottomOf(root) < 0) {
+        return Header.scrollTo(root, down);
+      }
     },
     sync: function() {
       var lastReadPost;
