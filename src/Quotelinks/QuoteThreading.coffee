@@ -36,7 +36,7 @@ QuoteThreading =
 
   node: ->
     return if @isClone or not QuoteThreading.enabled or @thread.OP is @
-    
+
     {replies} = Unread
 
     {quotes, ID, fullID} = @
@@ -58,30 +58,33 @@ QuoteThreading =
     @cb       = QuoteThreading.nodeinsert
 
   nodeinsert: ->
-    qpost   = g.posts[@threaded]
+    post   = g.posts[@threaded]
 
     delete @threaded
     delete @cb
 
-    return false if @thread.OP is qpost
+    return false if @thread.OP is post
 
     if QuoteThreading.hasRun
       height  = doc.clientHeight
-      {bottom, top} = qpost.nodes.root.getBoundingClientRect()
+      {bottom, top} = post.nodes.root.getBoundingClientRect()
 
       # Post is unread or is fully visible.
-      return false unless Unread.posts[qpost.ID] or ((bottom < height) and (top > 0))
+      return false unless Unread.posts[post.ID] or ((bottom < height) and (top > 0))
 
-    qroot = qpost.nodes.root
-    unless $.hasClass qroot, 'threadOP'
-      $.addClass qroot, 'threadOP'
+    root = post.nodes.root
+    unless $.hasClass root, 'threadOP'
+      $.addClass root, 'threadOP'
       threadContainer = $.el 'div',
         className: 'threadContainer'
-      $.after qroot, threadContainer
+      $.after root, threadContainer
     else
-      threadContainer = qroot.nextSibling
+      threadContainer = root.nextSibling
 
     $.add threadContainer, @nodes.root
+
+    Unread.posts.after post.ID, @
+
     return true
 
   toggle: ->

@@ -4980,31 +4980,32 @@
       return this.cb = QuoteThreading.nodeinsert;
     },
     nodeinsert: function() {
-      var bottom, height, qpost, qroot, threadContainer, top, _ref;
-      qpost = g.posts[this.threaded];
+      var bottom, height, post, root, threadContainer, top, _ref;
+      post = g.posts[this.threaded];
       delete this.threaded;
       delete this.cb;
-      if (this.thread.OP === qpost) {
+      if (this.thread.OP === post) {
         return false;
       }
       if (QuoteThreading.hasRun) {
         height = doc.clientHeight;
-        _ref = qpost.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
-        if (!(Unread.posts[qpost.ID] || ((bottom < height) && (top > 0)))) {
+        _ref = post.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
+        if (!(Unread.posts[post.ID] || ((bottom < height) && (top > 0)))) {
           return false;
         }
       }
-      qroot = qpost.nodes.root;
-      if (!$.hasClass(qroot, 'threadOP')) {
-        $.addClass(qroot, 'threadOP');
+      root = post.nodes.root;
+      if (!$.hasClass(root, 'threadOP')) {
+        $.addClass(root, 'threadOP');
         threadContainer = $.el('div', {
           className: 'threadContainer'
         });
-        $.after(qroot, threadContainer);
+        $.after(root, threadContainer);
       } else {
-        threadContainer = qroot.nextSibling;
+        threadContainer = root.nextSibling;
       }
       $.add(threadContainer, this.nodes.root);
+      Unread.posts.after(post.ID, this);
       return true;
     },
     toggle: function() {
