@@ -1486,9 +1486,27 @@
       }
       this.rmi(item);
       next = root.next;
-      next.prev = root.next = item;
-      item.prev = root;
-      return item.next = next;
+      next.prev = item;
+      item.next = next;
+      root.next = item;
+      return item.prev = root;
+    };
+
+    RandomAccessList.prototype.prepend = function(item) {
+      var ID, first;
+      ID = item.ID;
+      if (!this[ID]) {
+        this.push(item);
+      }
+      first = this.first;
+      if (this !== first) {
+        item.next = first;
+      }
+      if (first) {
+        first.prev = item;
+      }
+      this.first = item;
+      return delete item.prev;
     };
 
     RandomAccessList.prototype.shift = function() {
@@ -1537,6 +1555,19 @@
       } else {
         return this.last = prev;
       }
+    };
+
+    RandomAccessList.prototype.closest = function(ID) {
+      var item, prev;
+      item = this.first;
+      while (item) {
+        if (item.ID > ID) {
+          prev = item.prev.prev;
+          break;
+        }
+        item = item.next;
+      }
+      return (prev ? prev.ID : -1);
     };
 
     return RandomAccessList;
@@ -4931,7 +4962,9 @@
         el: this.controls,
         order: 98
       });
-      $.on(d, '4chanXInitFinished', this.setup);
+      if (!Conf['Unread Count']) {
+        $.on(d, '4chanXInitFinished', QuoteThreading.setup);
+      }
       return Post.callbacks.push({
         name: 'Quote Threading',
         cb: this.node
@@ -4980,17 +5013,18 @@
       return this.cb = QuoteThreading.nodeinsert;
     },
     nodeinsert: function() {
-      var bottom, height, post, root, threadContainer, top, _ref;
+      var ID, bottom, height, post, posts, root, threadContainer, top, _ref;
       post = g.posts[this.threaded];
-      delete this.threaded;
-      delete this.cb;
+      posts = Unread.posts;
+      this.threaded;
+      this.cb;
       if (this.thread.OP === post) {
         return false;
       }
       if (QuoteThreading.hasRun) {
         height = doc.clientHeight;
         _ref = post.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
-        if (!(Unread.posts[post.ID] || ((bottom < height) && (top > 0)))) {
+        if (!(posts[post.ID] || ((bottom < height) && (top > 0)))) {
           return false;
         }
       }
@@ -5005,12 +5039,24 @@
         threadContainer = root.nextSibling;
       }
       $.add(threadContainer, this.nodes.root);
-      Unread.posts.after(post.ID, this);
+      if (!posts[this.ID]) {
+        posts.push(this);
+      }
+      if (posts[post.ID]) {
+        posts.after(post, this);
+      } else {
+        if ((ID = posts.closest(ID)) !== -1) {
+          posts.after(posts[ID], this);
+        } else {
+          posts.prepend(this);
+        }
+      }
       return true;
     },
     toggle: function() {
       var container, containers, node, post, replies, reply, thread, _i, _j, _k, _len, _len1, _len2, _ref;
-      Unread.replies = new RandomAccessList;
+      Unread.posts = new RandomAccessList;
+      Unread.ready();
       thread = $('.thread');
       replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
       QuoteThreading.enabled = this.checked;
@@ -5018,9 +5064,14 @@
         QuoteThreading.hasRun = false;
         for (_i = 0, _len = replies.length; _i < _len; _i++) {
           reply = replies[_i];
-          QuoteThreading.node.call(node = Get.postFromRoot(reply));
+          node = Get.postFromRoot(reply);
           if (node.cb) {
-            node.cb();
+            node.cb.call(node);
+          } else {
+            QuoteThreading.node.call(node);
+            if (node.cb) {
+              node.cb.call(node);
+            }
           }
         }
         QuoteThreading.hasRun = true;
@@ -5048,7 +5099,8 @@
     kb: function() {
       var control;
       control = $.id('threadingControl');
-      return control.click();
+      control.checked = !control.checked;
+      return QuoteThreading.toggle.call(control);
     }
   };
 
@@ -9460,6 +9512,22 @@
       });
       this.posts = new RandomAccessList;
       this.postsQuotingYou = [];
+      this.qr = QR.db ? function(_arg) {
+        var ID, board, data, thread;
+        board = _arg.board, thread = _arg.thread, ID = _arg.ID;
+        data = {
+          boardID: board.ID,
+          threadID: thread.ID,
+          postID: ID
+        };
+        if (QR.db.get(data)) {
+          return true;
+        } else {
+          return false;
+        }
+      } : function() {
+        return false;
+      };
       return Thread.callbacks.push({
         name: 'Unread',
         cb: this.node
@@ -9492,6 +9560,9 @@
         }
       }
       Unread.addPosts(posts);
+      if (Conf['Quote Threading']) {
+        QuoteThreading.setup();
+      }
       if (Conf['Scroll to Last Read Post']) {
         return Unread.scroll();
       }
@@ -9545,30 +9616,16 @@
       return Unread.update();
     },
     addPosts: function(posts) {
-      var ID, db, post, _i, _len, _ref;
-      db = QR.db ? function(_arg) {
-        var ID, board, data, thread;
-        board = _arg.board, thread = _arg.thread, ID = _arg.ID;
-        data = {
-          boardID: board.ID,
-          threadID: thread.ID,
-          postID: ID
-        };
-        if (QR.db.get(data)) {
-          return true;
-        } else {
-          return false;
-        }
-      } : function() {
-        return false;
-      };
+      var ID, post, _i, _len, _ref;
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
         post = posts[_i];
         ID = post.ID;
-        if (ID <= Unread.lastReadPost || post.isHidden || db(post)) {
+        if (ID <= Unread.lastReadPost || post.isHidden || Unread.qr(post)) {
           continue;
         }
-        Unread.posts.push(post);
+        if (!(post.prev || post.next)) {
+          Unread.posts.push(post);
+        }
         Unread.addPostQuotingYou(post);
       }
       if (Conf['Unread Line']) {
@@ -9646,25 +9703,24 @@
       }
       return arr.splice(0, i);
     },
-    read: $.debounce(50, function(e) {
+    read: function(e) {
       var ID, height, post, posts;
       if (d.hidden || !Unread.posts.length) {
         return;
       }
       height = doc.clientHeight;
       posts = Unread.posts;
-      post = posts.first;
-      while (post) {
-        if (Header.getBottomOf(post.nodes.root) > -1) {
-          ID = post.ID;
-          if (Conf['Mark Quotes of You']) {
-            if (post.info.yours) {
-              QuoteYou.lastRead = post.nodes.root;
-            }
-          }
-          post = post.next;
-          posts.rm(ID);
-        } else {
+      while (post = posts.first) {
+        if (!(Header.getBottomOf(post.nodes.root) > -1)) {
+          break;
+        }
+        ID = post.ID;
+        if (Conf['Mark Quotes of You'] && post.info.yours) {
+          QuoteYou.lastRead = post.nodes.root;
+        }
+        posts.rm(ID);
+        if (post === posts.first) {
+          c.log(posts);
           break;
         }
       }
@@ -9679,7 +9735,7 @@
       if (e) {
         return Unread.update();
       }
-    }),
+    },
     saveLastReadPost: $.debounce(2 * $.SECOND, function() {
       if (Unread.thread.isDead) {
         return;

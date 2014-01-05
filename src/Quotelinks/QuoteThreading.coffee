@@ -18,7 +18,7 @@ QuoteThreading =
       el:    @controls
       order: 98
 
-    $.on d, '4chanXInitFinished', @setup
+    $.on d, '4chanXInitFinished', QuoteThreading.setup unless Conf['Unread Count']
 
     Post.callbacks.push
       name: 'Quote Threading'
@@ -28,9 +28,7 @@ QuoteThreading =
     $.off d, '4chanXInitFinished', QuoteThreading.setup
     {posts} = g
 
-    for ID, post of posts
-      if post.cb
-        post.cb.call post
+    post.cb.call post for ID, post of posts when post.cb
 
     QuoteThreading.hasRun = true
 
@@ -58,10 +56,11 @@ QuoteThreading =
     @cb       = QuoteThreading.nodeinsert
 
   nodeinsert: ->
-    post   = g.posts[@threaded]
+    post    = g.posts[@threaded]
+    {posts} = Unread
 
-    delete @threaded
-    delete @cb
+    @threaded
+    @cb
 
     return false if @thread.OP is post
 
@@ -70,7 +69,7 @@ QuoteThreading =
       {bottom, top} = post.nodes.root.getBoundingClientRect()
 
       # Post is unread or is fully visible.
-      return false unless Unread.posts[post.ID] or ((bottom < height) and (top > 0))
+      return false unless posts[post.ID] or ((bottom < height) and (top > 0))
 
     root = post.nodes.root
     unless $.hasClass root, 'threadOP'
@@ -83,20 +82,34 @@ QuoteThreading =
 
     $.add threadContainer, @nodes.root
 
-    Unread.posts.after post.ID, @
+    posts.push @ unless posts[@ID]
 
+    if posts[post.ID]
+      posts.after post, @
+    else
+      if (ID = posts.closest ID) isnt -1
+        posts.after posts[ID], @
+      else
+        posts.prepend @
+    
     return true
 
   toggle: ->
-    Unread.replies = new RandomAccessList
+    Unread.posts = new RandomAccessList
+    Unread.ready()
+
     thread  = $ '.thread'
     replies = $$ '.thread > .replyContainer, .threadContainer > .replyContainer', thread
     QuoteThreading.enabled = @checked
     if @checked
       QuoteThreading.hasRun = false
       for reply in replies
-        QuoteThreading.node.call node = Get.postFromRoot reply
-        node.cb() if node.cb
+        node = Get.postFromRoot reply
+        if node.cb
+          node.cb.call node
+        else
+          QuoteThreading.node.call node
+          node.cb.call node if node.cb
       QuoteThreading.hasRun = true
     else
       replies.sort (a, b) ->
@@ -111,4 +124,5 @@ QuoteThreading =
 
   kb: ->
     control = $.id 'threadingControl'
-    control.click()
+    control.checked = not control.checked
+    QuoteThreading.toggle.call control

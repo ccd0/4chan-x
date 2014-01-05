@@ -7,6 +7,16 @@ Unread =
       id: 'unread-line'
     @posts = new RandomAccessList
     @postsQuotingYou = []
+    
+    @qr = if QR.db
+      ({board, thread, ID}) ->
+        data =
+          boardID:  board.ID
+          threadID: thread.ID
+          postID:   ID
+        return if QR.db.get data then true else false
+    else ->
+      return false
 
     Thread.callbacks.push
       name: 'Unread'
@@ -30,6 +40,7 @@ Unread =
     for ID, post of Unread.thread.posts
       posts.push post if post.isReply
     Unread.addPosts posts
+    QuoteThreading.setup() if Conf['Quote Threading']
     Unread.scroll() if Conf['Scroll to Last Read Post']
 
   scroll: ->
@@ -68,20 +79,10 @@ Unread =
     Unread.update()
 
   addPosts: (posts) ->
-    db = if QR.db
-      ({board, thread, ID}) ->
-        data =
-          boardID:  board.ID
-          threadID: thread.ID
-          postID:   ID
-        return if QR.db.get data then true else false
-    else ->
-      return false
-        
     for post in posts
       {ID} = post
-      continue if ID <= Unread.lastReadPost or post.isHidden or db post
-      Unread.posts.push post
+      continue if ID <= Unread.lastReadPost or post.isHidden or Unread.qr post
+      Unread.posts.push post unless post.prev or post.next
       Unread.addPostQuotingYou post
     if Conf['Unread Line']
       # Force line on visible threads if there were no unread posts previously.
@@ -135,22 +136,21 @@ Unread =
       break if post.ID > Unread.lastReadPost
     arr.splice 0, i
 
-  read: $.debounce 50, (e) ->
+  read: (e) ->
     return if d.hidden or !Unread.posts.length
     height  = doc.clientHeight
+
     {posts} = Unread
+    while post = posts.first
+      break unless Header.getBottomOf(post.nodes.root) > -1 # post is not completely read
 
-    post = posts.first
-
-    while post
-      if Header.getBottomOf(post.nodes.root) > -1 # post is not completely read
-        {ID} = post
-        if Conf['Mark Quotes of You']
-          if post.info.yours
-            QuoteYou.lastRead = post.nodes.root
-        post = post.next
-        posts.rm ID
-      else
+      {ID} = post
+      if Conf['Mark Quotes of You'] and post.info.yours
+        QuoteYou.lastRead = post.nodes.root
+      posts.rm ID
+      
+      if post is posts.first
+        c.log posts
         break
 
     return unless ID

@@ -1,6 +1,5 @@
 Main =
   init: ->
-
     # flatten Config into Conf
     # and get saved or default values
     flatten = (parent, obj) ->
