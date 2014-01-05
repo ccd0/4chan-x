@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.44 - 2014-01-04
+* 4chan X - Version 1.2.44 - 2014-01-05
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -9510,13 +9510,12 @@
         }
       }
       Unread.addPosts(posts);
-      return Unread.scroll();
+      if (Conf['Scroll to Last Read Post']) {
+        return Unread.scroll();
+      }
     },
     scroll: function() {
       var down, hash, post, posts, root;
-      if (!Conf['Scroll to Last Read Post']) {
-        return;
-      }
       if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
         return;
       }
@@ -9539,7 +9538,7 @@
       }
     },
     sync: function() {
-      var lastReadPost, post;
+      var ID, lastReadPost, post;
       lastReadPost = Unread.db.get({
         boardID: Unread.thread.board.ID,
         threadID: Unread.thread.ID,
@@ -9555,9 +9554,13 @@
         if (post.ID > Unread.lastReadPost) {
           break;
         }
+        ID = post.ID;
+        if (!post.next) {
+          break;
+        }
         post = post.next;
       }
-      Unread.posts.splice(0, i);
+      Unread.posts.splice(0, ID);
       Unread.readArray(Unread.postsQuotingYou);
       if (Conf['Unread Line']) {
         Unread.setLine();
@@ -9565,28 +9568,34 @@
       return Unread.update();
     },
     addPosts: function(posts) {
-      var ID, data, post, _i, _len, _ref;
+      var ID, db, post, _i, _len, _ref;
+      db = QR.db ? function(_arg) {
+        var ID, board, data, thread;
+        board = _arg.board, thread = _arg.thread, ID = _arg.ID;
+        data = {
+          boardID: board.ID,
+          threadID: thread.ID,
+          postID: ID
+        };
+        if (QR.db.get(data)) {
+          return true;
+        } else {
+          return false;
+        }
+      } : function() {
+        return false;
+      };
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
         post = posts[_i];
         ID = post.ID;
-        if (ID <= Unread.lastReadPost || post.isHidden) {
+        if (ID <= Unread.lastReadPost || post.isHidden || db(post)) {
           continue;
-        }
-        if (QR.db) {
-          data = {
-            boardID: post.board.ID,
-            threadID: post.thread.ID,
-            postID: post.ID
-          };
-          if (QR.db.get(data)) {
-            continue;
-          }
         }
         Unread.posts.push(post);
         Unread.addPostQuotingYou(post);
       }
       if (Conf['Unread Line']) {
-        Unread.setLine((_ref = Unread.posts[0], __indexOf.call(posts, _ref) >= 0));
+        Unread.setLine((_ref = Unread.posts.first, __indexOf.call(posts, _ref) >= 0));
       }
       Unread.read();
       return Unread.update();
@@ -9642,7 +9651,7 @@
       }
       Unread.posts.splice(ID(post.next.ID));
       if (post === Unread.posts.first) {
-        Unread.lastReadPost = post.ID;
+        Unread.lastReadPost = ID;
         Unread.saveLastReadPost();
       }
       if ((i = Unread.postsQuotingYou.indexOf(post)) !== -1) {
@@ -9709,7 +9718,7 @@
       if (!(d.hidden || force === true)) {
         return;
       }
-      if (!(post = Unread.posts[0])) {
+      if (!(post = Unread.posts.first)) {
         return $.rm(Unread.hr);
       }
       if ($.x('preceding-sibling::div[contains(@class,"replyContainer")]', post.nodes.root)) {

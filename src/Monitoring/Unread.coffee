@@ -30,10 +30,9 @@ Unread =
     for ID, post of Unread.thread.posts
       posts.push post if post.isReply
     Unread.addPosts posts
-    Unread.scroll()
+    Unread.scroll() if Conf['Scroll to Last Read Post']
 
   scroll: ->
-    return unless Conf['Scroll to Last Read Post']
     # Let the header's onload callback handle it.
     return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
     if post = Unread.posts.first
@@ -46,7 +45,7 @@ Unread =
       # Scroll to the last read post.
       posts  = Object.keys Unread.thread.posts
       {root} = Unread.thread.posts[posts[posts.length - 1]].nodes
-    
+
     # Scroll to the target unless we scrolled past it.
     Header.scrollTo root, down if Header.getBottomOf(root) < 0
 
@@ -62,29 +61,34 @@ Unread =
     post = Unread.posts.first
     while post
       break if post.ID > Unread.lastReadPost
+      {ID} = post
+      break unless post.next
       post = post.next
-    Unread.posts.splice 0, i
-    
+    Unread.posts.splice 0, ID
+
     Unread.readArray Unread.postsQuotingYou
     Unread.setLine() if Conf['Unread Line']
     Unread.update()
 
   addPosts: (posts) ->
+    db = if QR.db
+      ({board, thread, ID}) ->
+        data =
+          boardID:  board.ID
+          threadID: thread.ID
+          postID:   ID
+        return if QR.db.get data then true else false
+    else ->
+      return false
+        
     for post in posts
       {ID} = post
-      if ID <= Unread.lastReadPost or post.isHidden
-        continue
-      if QR.db
-        data =
-          boardID:  post.board.ID
-          threadID: post.thread.ID
-          postID:   post.ID
-        continue if QR.db.get data
+      continue if ID <= Unread.lastReadPost or post.isHidden or db post
       Unread.posts.push post
       Unread.addPostQuotingYou post
     if Conf['Unread Line']
       # Force line on visible threads if there were no unread posts previously.
-      Unread.setLine Unread.posts[0] in posts
+      Unread.setLine Unread.posts.first in posts
     Unread.read()
     Unread.update()
 
@@ -123,7 +127,7 @@ Unread =
     return unless Unread.posts[ID]
     Unread.posts.splice ID post.next.ID
     if post is Unread.posts.first
-      Unread.lastReadPost = post.ID
+      Unread.lastReadPost = ID
       Unread.saveLastReadPost()
     if (i = Unread.postsQuotingYou.indexOf post) isnt -1
       Unread.postsQuotingYou.splice i, 1
@@ -168,7 +172,7 @@ Unread =
 
   setLine: (force) ->
     return unless d.hidden or force is true
-    return $.rm Unread.hr unless post = Unread.posts[0]
+    return $.rm Unread.hr unless post = Unread.posts.first
     if $.x 'preceding-sibling::div[contains(@class,"replyContainer")]', post.nodes.root # not the first reply
       $.before post.nodes.root, Unread.hr
 
@@ -176,7 +180,7 @@ Unread =
     count = Unread.posts.length
 
     if Conf['Unread Count']
-      d.title = "#{if Conf['Quoted Title'] and Unread.postsQuotingYou.length then '(!) ' else ''}#{if count or !Conf['Hide Unread Count at (0)'] then "(#{count}) " else ''}#{if g.DEAD then "/#{g.BOARD}/ - 404" else "#{Unread.title}"}" 
+      d.title = "#{if Conf['Quoted Title'] and Unread.postsQuotingYou.length then '(!) ' else ''}#{if count or !Conf['Hide Unread Count at (0)'] then "(#{count}) " else ''}#{if g.DEAD then "/#{g.BOARD}/ - 404" else "#{Unread.title}"}"
       <% if (type === 'crx') { %>
       # XXX Chrome bug where it doesn't always update the tab title.
       # crbug.com/124381
