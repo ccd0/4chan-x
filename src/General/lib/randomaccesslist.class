@@ -34,9 +34,10 @@ class RandomAccessList
   splice: (start, end) ->
     return unless @[end]
     cur = if start is 0 then @first else @[start]
-    while cur isnt @[end]
-      return unless {next} = cur
-      @rm cur
+    while cur
+      {next} = cur
+      @rm cur.ID
+      return if not next or cur.ID is end
       cur = next
 
   rm: (ID) ->
@@ -45,6 +46,8 @@ class RandomAccessList
     delete @[ID]
     @length--
     @rmi item
+    delete item.next
+    delete item.previous
 
   rmi: (item) ->
     {prev, next} = item

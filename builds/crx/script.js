@@ -1506,11 +1506,12 @@
         return;
       }
       cur = start === 0 ? this.first : this[start];
-      while (cur !== this[end]) {
-        if (!(next = cur.next, cur)) {
+      while (cur) {
+        next = cur.next;
+        this.rm(cur.ID);
+        if (!next || cur.ID === end) {
           return;
         }
-        this.rm(cur);
         cur = next;
       }
     };
@@ -1523,7 +1524,9 @@
       }
       delete this[ID];
       this.length--;
-      return this.rmi(item);
+      this.rmi(item);
+      delete item.next;
+      return delete item.previous;
     };
 
     RandomAccessList.prototype.rmi = function(item) {
