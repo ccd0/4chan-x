@@ -7,7 +7,7 @@ Unread =
       id: 'unread-line'
     @posts = new RandomAccessList
     @postsQuotingYou = []
-    
+
     @qr = if QR.db
       ({board, thread, ID}) ->
         data =
@@ -37,8 +37,7 @@ Unread =
   ready: ->
     $.off d, '4chanXInitFinished', Unread.ready
     posts = []
-    for ID, post of Unread.thread.posts
-      posts.push post if post.isReply
+    posts.push post for ID, post of Unread.thread.posts when post.isReply
     Unread.addPosts posts
     QuoteThreading.setup() if Conf['Quote Threading']
     Unread.scroll() if Conf['Scroll to Last Read Post']
@@ -148,7 +147,7 @@ Unread =
       if Conf['Mark Quotes of You'] and post.info.yours
         QuoteYou.lastRead = post.nodes.root
       posts.rm ID
-      
+
       if post is posts.first
         c.log posts
         break

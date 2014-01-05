@@ -1486,9 +1486,8 @@
       }
       this.rmi(item);
       next = root.next;
-      next.prev = item;
+      root.next = next.prev = item;
       item.next = next;
-      root.next = item;
       return item.prev = root;
     };
 
@@ -1499,12 +1498,11 @@
         this.push(item);
       }
       first = this.first;
-      if (this !== first) {
-        item.next = first;
+      if (item === first) {
+        return;
       }
-      if (first) {
-        first.prev = item;
-      }
+      item.next = first;
+      first.prev = item;
       this.first = item;
       return delete item.prev;
     };
@@ -1539,7 +1537,7 @@
       this.length--;
       this.rmi(item);
       delete item.next;
-      return delete item.previous;
+      return delete item.prev;
     };
 
     RandomAccessList.prototype.rmi = function(item) {
@@ -4971,11 +4969,11 @@
       });
     },
     setup: function() {
-      var ID, post, posts;
+      var ID, post, _ref;
       $.off(d, '4chanXInitFinished', QuoteThreading.setup);
-      posts = g.posts;
-      for (ID in posts) {
-        post = posts[ID];
+      _ref = g.posts;
+      for (ID in _ref) {
+        post = _ref[ID];
         if (post.cb) {
           post.cb.call(post);
         }
@@ -4983,48 +4981,42 @@
       return QuoteThreading.hasRun = true;
     },
     node: function() {
-      var ID, fullID, keys, len, post, posts, qid, quote, quotes, replies, uniq, _i, _len;
+      var ID, fullID, keys, len, post, posts, quote, quotes, _i, _len;
       if (this.isClone || !QuoteThreading.enabled || this.thread.OP === this) {
         return;
       }
-      replies = Unread.replies;
       quotes = this.quotes, ID = this.ID, fullID = this.fullID;
       posts = g.posts;
       if (!(post = posts[fullID]) || post.isHidden) {
         return;
       }
-      uniq = {};
+      keys = [];
       len = ("" + g.BOARD).length + 1;
       for (_i = 0, _len = quotes.length; _i < _len; _i++) {
         quote = quotes[_i];
-        qid = quote;
-        if (!(qid.slice(len) < ID)) {
-          continue;
-        }
-        if (qid in posts) {
-          uniq[qid.slice(len)] = true;
+        if (quote.slice(len) < ID) {
+          if (quote in posts) {
+            keys.push(quote);
+          }
         }
       }
-      keys = Object.keys(uniq);
       if (keys.length !== 1) {
         return;
       }
-      this.threaded = "" + g.BOARD + "." + keys[0];
+      this.threaded = keys[0];
       return this.cb = QuoteThreading.nodeinsert;
     },
     nodeinsert: function() {
       var ID, bottom, height, post, posts, root, threadContainer, top, _ref;
       post = g.posts[this.threaded];
       posts = Unread.posts;
-      this.threaded;
-      this.cb;
       if (this.thread.OP === post) {
         return false;
       }
       if (QuoteThreading.hasRun) {
         height = doc.clientHeight;
         _ref = post.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
-        if (!(posts[post.ID] || ((bottom < height) && (top > 0)))) {
+        if (!((posts != null ? posts[post.ID] : void 0) || ((bottom < height) && (top > 0)))) {
           return false;
         }
       }
@@ -5039,6 +5031,9 @@
         threadContainer = root.nextSibling;
       }
       $.add(threadContainer, this.nodes.root);
+      if (!Conf['Unread Count'] || this.ID < Unread.lastReadPost) {
+        return true;
+      }
       if (!posts[this.ID]) {
         posts.push(this);
       }
@@ -5055,8 +5050,10 @@
     },
     toggle: function() {
       var container, containers, node, post, replies, reply, thread, _i, _j, _k, _len, _len1, _len2, _ref;
-      Unread.posts = new RandomAccessList;
-      Unread.ready();
+      if (Conf['Unread Count']) {
+        Unread.posts = new RandomAccessList;
+        Unread.ready();
+      }
       thread = $('.thread');
       replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
       QuoteThreading.enabled = this.checked;
@@ -5094,7 +5091,9 @@
           $.rmClass(post, 'threadOP');
         }
       }
-      return Unread.update(true);
+      if (Conf['Unread Count']) {
+        return Unread.read();
+      }
     },
     kb: function() {
       var control;

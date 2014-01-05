@@ -19,17 +19,17 @@ class RandomAccessList
     @rmi item
 
     {next} = root
-    next.prev = item
+    root.next = next.prev = item
     item.next = next
-    root.next = item
     item.prev = root
   
   prepend: (item) ->
     {ID} = item
     @push item unless @[ID]
     {first} = @
-    item.next = first unless @ is first
-    first.prev = item if first
+    return if item is first
+    item.next = first
+    first.prev = item
     @first = item
     delete item.prev
 
@@ -52,7 +52,7 @@ class RandomAccessList
     @length--
     @rmi item
     delete item.next
-    delete item.previous
+    delete item.prev
 
   rmi: (item) ->
     {prev, next} = item

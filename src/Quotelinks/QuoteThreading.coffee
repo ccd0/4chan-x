@@ -26,41 +26,31 @@ QuoteThreading =
 
   setup: ->
     $.off d, '4chanXInitFinished', QuoteThreading.setup
-    {posts} = g
 
-    post.cb.call post for ID, post of posts when post.cb
+    post.cb.call post for ID, post of g.posts when post.cb
 
     QuoteThreading.hasRun = true
 
   node: ->
     return if @isClone or not QuoteThreading.enabled or @thread.OP is @
 
-    {replies} = Unread
-
     {quotes, ID, fullID} = @
     {posts} = g
     return if !(post = posts[fullID]) or post.isHidden # Filtered
 
-    uniq = {}
+    keys = []
     len = "#{g.BOARD}".length + 1
-    for quote in quotes
-      qid = quote
-      continue unless qid[len..] < ID
-      if qid of posts
-        uniq[qid[len..]] = true
+    for quote in quotes when quote[len..] < ID
+      keys.push quote if quote of posts
 
-    keys = Object.keys uniq
     return unless keys.length is 1
 
-    @threaded = "#{g.BOARD}.#{keys[0]}"
+    @threaded = keys[0]
     @cb       = QuoteThreading.nodeinsert
 
   nodeinsert: ->
     post    = g.posts[@threaded]
     {posts} = Unread
-
-    @threaded
-    @cb
 
     return false if @thread.OP is post
 
@@ -69,7 +59,7 @@ QuoteThreading =
       {bottom, top} = post.nodes.root.getBoundingClientRect()
 
       # Post is unread or is fully visible.
-      return false unless posts[post.ID] or ((bottom < height) and (top > 0))
+      return false unless posts?[post.ID] or ((bottom < height) and (top > 0))
 
     root = post.nodes.root
     unless $.hasClass root, 'threadOP'
@@ -82,6 +72,8 @@ QuoteThreading =
 
     $.add threadContainer, @nodes.root
 
+    return true if not Conf['Unread Count'] or @ID < Unread.lastReadPost
+
     posts.push @ unless posts[@ID]
 
     if posts[post.ID]
@@ -91,12 +83,13 @@ QuoteThreading =
         posts.after posts[ID], @
       else
         posts.prepend @
-    
+
     return true
 
   toggle: ->
-    Unread.posts = new RandomAccessList
-    Unread.ready()
+    if Conf['Unread Count']
+      Unread.posts = new RandomAccessList
+      Unread.ready()
 
     thread  = $ '.thread'
     replies = $$ '.thread > .replyContainer, .threadContainer > .replyContainer', thread
@@ -120,7 +113,7 @@ QuoteThreading =
       containers = $$ '.threadContainer', thread
       $.rm container for container in containers
       $.rmClass post, 'threadOP' for post in $$ '.threadOP'
-    Unread.update true
+    Unread.read() if Conf['Unread Count']
 
   kb: ->
     control = $.id 'threadingControl'
