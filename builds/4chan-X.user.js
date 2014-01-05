@@ -1460,8 +1460,6 @@
 
   RandomAccessList = (function() {
     function RandomAccessList() {
-      this.first = null;
-      this.last = null;
       this.length = 0;
     }
 
@@ -1469,10 +1467,7 @@
       var ID, last;
       ID = item.ID;
       last = this.last;
-      $.extend(item, {
-        prev: last,
-        next: null
-      });
+      item.prev = last;
       this[ID] = item;
       this.last = last ? last.next = item : this.first = item;
       return this.length++;

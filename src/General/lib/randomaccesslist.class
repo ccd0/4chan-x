@@ -1,15 +1,11 @@
 class RandomAccessList
   constructor: ->
-    @first  = null
-    @last   = null
     @length = 0
 
   push: (item) ->
     {ID} = item
     {last} = @
-    $.extend item, 
-      prev: last
-      next: null
+    item.prev = last
     @[ID] = item
     @last = if last
       last.next = item
