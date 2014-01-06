@@ -11,14 +11,14 @@ QuoteThreading =
       innerHTML: '<label><input id=threadingControl type=checkbox checked> Threading</label>'
 
     input = $ 'input', @controls
-    $.on input, 'change', QuoteThreading.toggle
+    $.on input, 'change', @toggle
 
     $.event 'AddMenuEntry',
       type:  'header'
       el:    @controls
       order: 98
 
-    $.on d, '4chanXInitFinished', @setup
+    $.on d, '4chanXInitFinished', @setup unless Conf['Unread Count']
 
     Post.callbacks.push
       name: 'Quote Threading'
@@ -26,83 +26,91 @@ QuoteThreading =
 
   setup: ->
     $.off d, '4chanXInitFinished', QuoteThreading.setup
-    {posts} = g
 
-    for ID, post of posts
-      if post.cb
-        post.cb.call post
-
+    post.cb() for ID, post of g.posts when post.cb
     QuoteThreading.hasRun = true
 
   node: ->
-    return if @isClone or not QuoteThreading.enabled or @thread.OP is @
-
-    {quotes, ID, fullID} = @
     {posts} = g
-    return if !(post = posts[fullID]) or post.isHidden # Filtered
+    return if @isClone or not QuoteThreading.enabled
+    Unread.posts.push @ if Conf['Unread Count']
 
-    uniq = {}
-    len = "#{g.BOARD}".length + 1
-    for quote in quotes
-      qid = quote
-      continue unless qid[len..] < ID
-      if qid of posts
-        uniq[qid[len..]] = true
+    return if @thread.OP is @ or !(post = posts[@fullID]) or post.isHidden # Filtered
 
-    keys = Object.keys uniq
+    keys = []
+    len = g.BOARD.ID.length + 1
+    keys.push quote for quote in @quotes when (quote[len..] < @ID) and quote of posts
+
     return unless keys.length is 1
 
-    @threaded = "#{g.BOARD}.#{keys[0]}"
+    @threaded = keys[0]
     @cb       = QuoteThreading.nodeinsert
 
   nodeinsert: ->
-    qpost   = g.posts[@threaded]
+    post    = g.posts[@threaded]
+    {posts} = Unread
 
-    delete @threaded
-    delete @cb
-
-    return false if @thread.OP is qpost
+    return false if @thread.OP is post
 
     if QuoteThreading.hasRun
       height  = doc.clientHeight
-      {bottom, top} = qpost.nodes.root.getBoundingClientRect()
+      {bottom, top} = post.nodes.root.getBoundingClientRect()
 
       # Post is unread or is fully visible.
-      return false unless qpost in Unread.posts or ((bottom < height) and (top > 0))
+      return false unless posts?[post.ID] or ((bottom < height) and (top > 0))
 
-    qroot = qpost.nodes.root
-    unless $.hasClass qroot, 'threadOP'
-      $.addClass qroot, 'threadOP'
+    {root} = post.nodes
+    unless $.hasClass root, 'threadOP'
+      $.addClass root, 'threadOP'
       threadContainer = $.el 'div',
         className: 'threadContainer'
-      $.after qroot, threadContainer
+      $.after root, threadContainer
     else
-      threadContainer = qroot.nextSibling
+      threadContainer = root.nextSibling
+      post = Get.postFromRoot $.x 'descendant::div[contains(@class,"postContainer")][last()]', threadContainer
 
     $.add threadContainer, @nodes.root
+
+    return true unless Conf['Unread Count']
+
+    if posts[post.ID]
+      posts.after post, @
+      return true
+
+    if (ID = posts.closest post.ID) isnt -1
+      posts.after posts[ID], @
+    else
+      posts.prepend @
+
     return true
 
   toggle: ->
+    if Conf['Unread Count']
+      Unread.posts = new RandomAccessList
+      Unread.ready()
+
     thread  = $ '.thread'
     replies = $$ '.thread > .replyContainer, .threadContainer > .replyContainer', thread
-    QuoteThreading.enabled = @checked
-    if @checked
+
+    if QuoteThreading.enabled = @checked
       QuoteThreading.hasRun = false
       for reply in replies
-        QuoteThreading.node.call node = Get.postFromRoot reply
-        node.cb() if node.cb
+        post = Get.postFromRoot reply
+        # QuoteThreading calculates whether or not posts should be threaded based on content
+        # and then threads them based on thread context, so regardless of whether or not it
+        # actually threads them all eligible posts WILL have a cb. Magic.
+        post.cb() if post.cb
       QuoteThreading.hasRun = true
+
     else
-      replies.sort (a, b) ->
-        aID = Number a.id[2..]
-        bID = Number b.id[2..]
-        aID - bID
+      replies.sort (a, b) -> Number(a.id[2..]) - Number(b.id[2..])
       $.add thread, replies
       containers = $$ '.threadContainer', thread
       $.rm container for container in containers
       $.rmClass post, 'threadOP' for post in $$ '.threadOP'
-    Unread.update true
+    Unread.read() if Conf['Unread Count']
 
   kb: ->
     control = $.id 'threadingControl'
-    control.click()
+    control.checked = not control.checked
+    QuoteThreading.toggle.call control

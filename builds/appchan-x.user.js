@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.7.5 - 2014-01-04
+* appchan x - Version 2.7.5 - 2014-01-06
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -110,7 +110,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, CatalogLinks, Clone, Color, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, InfiniScroll, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, CatalogLinks, Clone, Color, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, InfiniScroll, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
@@ -3825,6 +3825,99 @@
 
   })();
 
+  RandomAccessList = (function() {
+    function RandomAccessList() {
+      this.length = 0;
+    }
+
+    RandomAccessList.prototype.push = function(item) {
+      var ID, last;
+      ID = item.ID;
+      if (this[ID]) {
+        return;
+      }
+      last = this.last;
+      item.prev = last;
+      this[ID] = item;
+      this.last = last ? last.next = item : this.first = item;
+      return this.length++;
+    };
+
+    RandomAccessList.prototype.after = function(root, item) {
+      var next;
+      if (item.prev === root) {
+        return;
+      }
+      this.rmi(item);
+      next = root.next;
+      root.next = item;
+      item.prev = root;
+      item.next = next;
+      return next.prev = item;
+    };
+
+    RandomAccessList.prototype.prepend = function(item) {
+      var first;
+      first = this.first;
+      if (item === first || !this[item.ID]) {
+        return;
+      }
+      this.rmi(item);
+      item.next = first;
+      first.prev = item;
+      this.first = item;
+      return delete item.prev;
+    };
+
+    RandomAccessList.prototype.shift = function() {
+      return this.rm(this.first.ID);
+    };
+
+    RandomAccessList.prototype.rm = function(ID) {
+      var item;
+      item = this[ID];
+      if (!item) {
+        return;
+      }
+      delete this[ID];
+      this.length--;
+      this.rmi(item);
+      delete item.next;
+      return delete item.prev;
+    };
+
+    RandomAccessList.prototype.rmi = function(item) {
+      var next, prev;
+      prev = item.prev, next = item.next;
+      if (prev) {
+        prev.next = next;
+      } else {
+        this.first = next;
+      }
+      if (next) {
+        return next.prev = prev;
+      } else {
+        return this.last = prev;
+      }
+    };
+
+    RandomAccessList.prototype.closest = function(ID) {
+      var item, prev;
+      item = this.first;
+      while (item) {
+        if (item.ID > ID) {
+          prev = item.prev;
+          break;
+        }
+        item = item.next;
+      }
+      return (prev ? prev.ID : -1);
+    };
+
+    return RandomAccessList;
+
+  })();
+
   Polyfill = {
     init: function() {},
     notificationPermission: function() {
@@ -7126,108 +7219,120 @@
         innerHTML: '<label><input id=threadingControl type=checkbox checked> Threading</label>'
       });
       input = $('input', this.controls);
-      $.on(input, 'change', QuoteThreading.toggle);
+      $.on(input, 'change', this.toggle);
       $.event('AddMenuEntry', {
         type: 'header',
         el: this.controls,
         order: 98
       });
-      $.on(d, '4chanXInitFinished', this.setup);
+      if (!Conf['Unread Count']) {
+        $.on(d, '4chanXInitFinished', this.setup);
+      }
       return Post.callbacks.push({
         name: 'Quote Threading',
         cb: this.node
       });
     },
     setup: function() {
-      var ID, post, posts;
+      var ID, post, _ref;
       $.off(d, '4chanXInitFinished', QuoteThreading.setup);
-      posts = g.posts;
-      for (ID in posts) {
-        post = posts[ID];
+      _ref = g.posts;
+      for (ID in _ref) {
+        post = _ref[ID];
         if (post.cb) {
-          post.cb.call(post);
+          post.cb();
         }
       }
       return QuoteThreading.hasRun = true;
     },
     node: function() {
-      var ID, fullID, keys, len, post, posts, qid, quote, quotes, uniq, _i, _len;
-      if (this.isClone || !QuoteThreading.enabled || this.thread.OP === this) {
-        return;
-      }
-      quotes = this.quotes, ID = this.ID, fullID = this.fullID;
+      var keys, len, post, posts, quote, _i, _len, _ref;
       posts = g.posts;
-      if (!(post = posts[fullID]) || post.isHidden) {
+      if (this.isClone || !QuoteThreading.enabled) {
         return;
       }
-      uniq = {};
-      len = ("" + g.BOARD).length + 1;
-      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
-        quote = quotes[_i];
-        qid = quote;
-        if (!(qid.slice(len) < ID)) {
-          continue;
-        }
-        if (qid in posts) {
-          uniq[qid.slice(len)] = true;
+      if (Conf['Unread Count']) {
+        Unread.posts.push(this);
+      }
+      if (this.thread.OP === this || !(post = posts[this.fullID]) || post.isHidden) {
+        return;
+      }
+      keys = [];
+      len = g.BOARD.ID.length + 1;
+      _ref = this.quotes;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        if ((quote.slice(len) < this.ID) && quote in posts) {
+          keys.push(quote);
         }
       }
-      keys = Object.keys(uniq);
       if (keys.length !== 1) {
         return;
       }
-      this.threaded = "" + g.BOARD + "." + keys[0];
+      this.threaded = keys[0];
       return this.cb = QuoteThreading.nodeinsert;
     },
     nodeinsert: function() {
-      var bottom, height, qpost, qroot, threadContainer, top, _ref;
-      qpost = g.posts[this.threaded];
-      delete this.threaded;
-      delete this.cb;
-      if (this.thread.OP === qpost) {
+      var ID, bottom, height, post, posts, root, threadContainer, top, _ref;
+      post = g.posts[this.threaded];
+      posts = Unread.posts;
+      if (this.thread.OP === post) {
         return false;
       }
       if (QuoteThreading.hasRun) {
         height = doc.clientHeight;
-        _ref = qpost.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
-        if (!(__indexOf.call(Unread.posts, qpost) >= 0 || ((bottom < height) && (top > 0)))) {
+        _ref = post.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
+        if (!((posts != null ? posts[post.ID] : void 0) || ((bottom < height) && (top > 0)))) {
           return false;
         }
       }
-      qroot = qpost.nodes.root;
-      if (!$.hasClass(qroot, 'threadOP')) {
-        $.addClass(qroot, 'threadOP');
+      root = post.nodes.root;
+      if (!$.hasClass(root, 'threadOP')) {
+        $.addClass(root, 'threadOP');
         threadContainer = $.el('div', {
           className: 'threadContainer'
         });
-        $.after(qroot, threadContainer);
+        $.after(root, threadContainer);
       } else {
-        threadContainer = qroot.nextSibling;
+        threadContainer = root.nextSibling;
+        post = Get.postFromRoot($.x('descendant::div[contains(@class,"postContainer")][last()]', threadContainer));
       }
       $.add(threadContainer, this.nodes.root);
+      if (!Conf['Unread Count']) {
+        return true;
+      }
+      if (posts[post.ID]) {
+        posts.after(post, this);
+        return true;
+      }
+      if ((ID = posts.closest(post.ID)) !== -1) {
+        posts.after(posts[ID], this);
+      } else {
+        posts.prepend(this);
+      }
       return true;
     },
     toggle: function() {
-      var container, containers, node, post, replies, reply, thread, _i, _j, _k, _len, _len1, _len2, _ref;
+      var container, containers, post, replies, reply, thread, _i, _j, _k, _len, _len1, _len2, _ref;
+      if (Conf['Unread Count']) {
+        Unread.posts = new RandomAccessList;
+        Unread.ready();
+      }
       thread = $('.thread');
       replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
-      QuoteThreading.enabled = this.checked;
-      if (this.checked) {
+      if (QuoteThreading.enabled = this.checked) {
         QuoteThreading.hasRun = false;
         for (_i = 0, _len = replies.length; _i < _len; _i++) {
           reply = replies[_i];
-          QuoteThreading.node.call(node = Get.postFromRoot(reply));
-          if (node.cb) {
-            node.cb();
+          post = Get.postFromRoot(reply);
+          if (post.cb) {
+            post.cb();
           }
         }
         QuoteThreading.hasRun = true;
       } else {
         replies.sort(function(a, b) {
-          var aID, bID;
-          aID = Number(a.id.slice(2));
-          bID = Number(b.id.slice(2));
-          return aID - bID;
+          return Number(a.id.slice(2)) - Number(b.id.slice(2));
         });
         $.add(thread, replies);
         containers = $$('.threadContainer', thread);
@@ -7241,12 +7346,15 @@
           $.rmClass(post, 'threadOP');
         }
       }
-      return Unread.update(true);
+      if (Conf['Unread Count']) {
+        return Unread.read();
+      }
     },
     kb: function() {
       var control;
       control = $.id('threadingControl');
-      return control.click();
+      control.checked = !control.checked;
+      return QuoteThreading.toggle.call(control);
     }
   };
 
@@ -11168,7 +11276,7 @@
           }
           root = post.nodes.root;
           if (post.cb) {
-            if (!post.cb.call(post)) {
+            if (!post.cb()) {
               $.add(ThreadUpdater.root, root);
             }
           } else {
@@ -11698,8 +11806,19 @@
       this.hr = $.el('hr', {
         id: 'unread-line'
       });
-      this.posts = [];
+      this.posts = new RandomAccessList;
       this.postsQuotingYou = [];
+      this.qr = QR.db ? function(post) {
+        var data;
+        data = {
+          boardID: post.board.ID,
+          threadID: post.thread.ID,
+          postID: post.ID
+        };
+        return (QR.db.get(data) ? true : false);
+      } : function() {
+        return false;
+      };
       return Thread.callbacks.push({
         name: 'Unread',
         cb: this.node
@@ -11732,17 +11851,19 @@
         }
       }
       Unread.addPosts(posts);
-      return Unread.scroll();
+      if (Conf['Quote Threading']) {
+        QuoteThreading.setup();
+      }
+      if (Conf['Scroll to Last Read Post']) {
+        return Unread.scroll();
+      }
     },
     scroll: function() {
       var down, hash, post, posts, root;
-      if (!Conf['Scroll to Last Read Post']) {
-        return;
-      }
       if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
         return;
       }
-      if (post = Unread.posts[0]) {
+      if (post = Unread.posts.first) {
         while (root = $.x('preceding-sibling::div[contains(@class,"replyContainer")][1]', post.nodes.root)) {
           if (!(post = Get.postFromRoot(root)).isHidden) {
             break;
@@ -11761,7 +11882,7 @@
       }
     },
     sync: function() {
-      var lastReadPost;
+      var ID, lastReadPost, post;
       lastReadPost = Unread.db.get({
         boardID: Unread.thread.board.ID,
         threadID: Unread.thread.ID,
@@ -11771,7 +11892,14 @@
         return;
       }
       Unread.lastReadPost = lastReadPost;
-      Unread.readArray(Unread.posts);
+      post = Unread.posts.first;
+      while (post) {
+        if ((ID = post.ID, post) > Unread.lastReadPost) {
+          break;
+        }
+        post = post.next;
+        Unread.posts.rm(ID);
+      }
       Unread.readArray(Unread.postsQuotingYou);
       if (Conf['Unread Line']) {
         Unread.setLine();
@@ -11779,28 +11907,20 @@
       return Unread.update();
     },
     addPosts: function(posts) {
-      var ID, data, post, _i, _len, _ref;
+      var ID, post, _i, _len, _ref;
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
         post = posts[_i];
         ID = post.ID;
-        if (ID <= Unread.lastReadPost || post.isHidden) {
+        if (ID <= Unread.lastReadPost || post.isHidden || Unread.qr(post)) {
           continue;
         }
-        if (QR.db) {
-          data = {
-            boardID: post.board.ID,
-            threadID: post.thread.ID,
-            postID: post.ID
-          };
-          if (QR.db.get(data)) {
-            continue;
-          }
+        if (!(post.prev || post.next)) {
+          Unread.posts.push(post);
         }
-        Unread.posts.push(post);
         Unread.addPostQuotingYou(post);
       }
       if (Conf['Unread Line']) {
-        Unread.setLine((_ref = Unread.posts[0], __indexOf.call(posts, _ref) >= 0));
+        Unread.setLine((_ref = Unread.posts.first, __indexOf.call(posts, _ref) >= 0));
       }
       Unread.read();
       return Unread.update();
@@ -11849,15 +11969,16 @@
       }
     },
     readSinglePost: function(post) {
-      var i;
-      if ((i = Unread.posts.indexOf(post)) === -1) {
+      var ID, i;
+      ID = post.ID;
+      if (!Unread.posts[ID]) {
         return;
       }
-      Unread.posts.splice(i, 1);
-      if (i === 0) {
-        Unread.lastReadPost = post.ID;
+      if (post === Unread.posts.first) {
+        Unread.lastReadPost = ID;
         Unread.saveLastReadPost();
       }
+      Unread.posts.rm(ID);
       if ((i = Unread.postsQuotingYou.indexOf(post)) !== -1) {
         Unread.postsQuotingYou.splice(i, 1);
       }
@@ -11873,35 +11994,22 @@
       }
       return arr.splice(0, i);
     },
-    read: $.debounce(50, function(e) {
-      var ID, height, i, post, posts;
+    read: $.debounce(100, function(e) {
+      var ID, height, post, posts;
       if (d.hidden || !Unread.posts.length) {
         return;
       }
       height = doc.clientHeight;
       posts = Unread.posts;
-      i = 0;
-      while (post = posts[i]) {
-        if (Header.getBottomOf(post.nodes.root) > -1) {
-          ID = post.ID;
-          if (Conf['Mark Quotes of You']) {
-            if (post.info.yours) {
-              QuoteYou.lastRead = post.nodes.root;
-            }
-          }
-          if (Conf['Quote Threading']) {
-            posts.splice(i, 1);
-            continue;
-          }
-        } else {
-          if (!Conf['Quote Threading']) {
-            break;
-          }
+      while (post = posts.first) {
+        if (!(Header.getBottomOf(post.nodes.root) > -1)) {
+          break;
         }
-        i++;
-      }
-      if (i && !Conf['Quote Threading']) {
-        posts.splice(0, i);
+        ID = post.ID;
+        posts.rm(ID);
+        if (Conf['Mark Quotes of You'] && post.info.yours) {
+          QuoteYou.lastRead = post.nodes.root;
+        }
       }
       if (!ID) {
         return;
@@ -11930,7 +12038,7 @@
       if (!(d.hidden || force === true)) {
         return;
       }
-      if (!(post = Unread.posts[0])) {
+      if (!(post = Unread.posts.first)) {
         return $.rm(Unread.hr);
       }
       if ($.x('preceding-sibling::div[contains(@class,"replyContainer")]', post.nodes.root)) {
