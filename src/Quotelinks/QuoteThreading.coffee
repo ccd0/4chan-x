@@ -28,7 +28,6 @@ QuoteThreading =
     $.off d, '4chanXInitFinished', QuoteThreading.setup
 
     post.cb() for ID, post of g.posts when post.cb
-
     QuoteThreading.hasRun = true
 
   node: ->
@@ -92,22 +91,19 @@ QuoteThreading =
 
     thread  = $ '.thread'
     replies = $$ '.thread > .replyContainer, .threadContainer > .replyContainer', thread
-    QuoteThreading.enabled = @checked
-    if @checked
+
+    if QuoteThreading.enabled = @checked
       QuoteThreading.hasRun = false
       for reply in replies
-        node = Get.postFromRoot reply
-        if node.cb
-          node.cb()
-        else
-          QuoteThreading.node.call node
-          node.cb() if node.cb
+        post = Get.postFromRoot reply
+        # QuoteThreading calculates whether or not posts should be threaded based on content
+        # and then threads them based on thread context, so regardless of whether or not it
+        # actually threads them all eligible posts WILL have a cb. Magic.
+        post.cb() if post.cb
       QuoteThreading.hasRun = true
+
     else
-      replies.sort (a, b) ->
-        aID = Number a.id[2..]
-        bID = Number b.id[2..]
-        aID - bID
+      replies.sort (a, b) -> Number(a.id[2..]) - Number(b.id[2..])
       $.add thread, replies
       containers = $$ '.threadContainer', thread
       $.rm container for container in containers

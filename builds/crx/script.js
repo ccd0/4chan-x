@@ -5033,35 +5033,26 @@
       return true;
     },
     toggle: function() {
-      var container, containers, node, post, replies, reply, thread, _i, _j, _k, _len, _len1, _len2, _ref;
+      var container, containers, post, replies, reply, thread, _i, _j, _k, _len, _len1, _len2, _ref;
       if (Conf['Unread Count']) {
         Unread.posts = new RandomAccessList;
         Unread.ready();
       }
       thread = $('.thread');
       replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
-      QuoteThreading.enabled = this.checked;
-      if (this.checked) {
+      if (QuoteThreading.enabled = this.checked) {
         QuoteThreading.hasRun = false;
         for (_i = 0, _len = replies.length; _i < _len; _i++) {
           reply = replies[_i];
-          node = Get.postFromRoot(reply);
-          if (node.cb) {
-            node.cb();
-          } else {
-            QuoteThreading.node.call(node);
-            if (node.cb) {
-              node.cb();
-            }
+          post = Get.postFromRoot(reply);
+          if (post.cb) {
+            post.cb();
           }
         }
         QuoteThreading.hasRun = true;
       } else {
         replies.sort(function(a, b) {
-          var aID, bID;
-          aID = Number(a.id.slice(2));
-          bID = Number(b.id.slice(2));
-          return aID - bID;
+          return Number(a.id.slice(2)) - Number(b.id.slice(2));
         });
         $.add(thread, replies);
         containers = $$('.threadContainer', thread);
