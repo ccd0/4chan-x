@@ -5047,11 +5047,11 @@
           reply = replies[_i];
           node = Get.postFromRoot(reply);
           if (node.cb) {
-            node.cb.call(node);
+            node.cb();
           } else {
             QuoteThreading.node.call(node);
             if (node.cb) {
-              node.cb.call(node);
+              node.cb();
             }
           }
         }
@@ -8955,7 +8955,7 @@
           }
           root = post.nodes.root;
           if (post.cb) {
-            if (!post.cb.call(post)) {
+            if (!post.cb()) {
               $.add(ThreadUpdater.root, root);
             }
           } else {

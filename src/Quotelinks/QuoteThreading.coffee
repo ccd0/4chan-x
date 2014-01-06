@@ -98,10 +98,10 @@ QuoteThreading =
       for reply in replies
         node = Get.postFromRoot reply
         if node.cb
-          node.cb.call node
+          node.cb()
         else
           QuoteThreading.node.call node
-          node.cb.call node if node.cb
+          node.cb() if node.cb
       QuoteThreading.hasRun = true
     else
       replies.sort (a, b) ->

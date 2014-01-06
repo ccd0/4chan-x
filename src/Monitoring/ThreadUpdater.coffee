@@ -295,7 +295,7 @@ ThreadUpdater =
         continue unless posts.hasOwnProperty key
         root = post.nodes.root
         if post.cb
-          unless post.cb.call post
+          unless post.cb()
             $.add ThreadUpdater.root, root
         else
           $.add ThreadUpdater.root, root
