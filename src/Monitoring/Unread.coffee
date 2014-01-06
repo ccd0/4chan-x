@@ -135,7 +135,7 @@ Unread =
       break if post.ID > Unread.lastReadPost
     arr.splice 0, i
 
-  read: (e) ->
+  read: $.debounce 100, (e) ->
     return if d.hidden or !Unread.posts.length
     height  = doc.clientHeight
 

@@ -9677,7 +9677,7 @@
       }
       return arr.splice(0, i);
     },
-    read: function(e) {
+    read: $.debounce(100, function(e) {
       var ID, height, post, posts;
       if (d.hidden || !Unread.posts.length) {
         return;
@@ -9705,7 +9705,7 @@
       if (e) {
         return Unread.update();
       }
-    },
+    }),
     saveLastReadPost: $.debounce(2 * $.SECOND, function() {
       if (Unread.thread.isDead) {
         return;
