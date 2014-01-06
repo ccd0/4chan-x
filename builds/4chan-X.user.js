@@ -9503,13 +9503,12 @@
       });
       this.posts = new RandomAccessList;
       this.postsQuotingYou = [];
-      this.qr = QR.db ? function(_arg) {
-        var ID, board, data, thread;
-        board = _arg.board, thread = _arg.thread, ID = _arg.ID;
+      this.qr = QR.db ? function(post) {
+        var data;
         data = {
-          boardID: board.ID,
-          threadID: thread.ID,
-          postID: ID
+          boardID: post.board.ID,
+          threadID: post.thread.ID,
+          postID: post.ID
         };
         return (QR.db.get(data) ? true : false);
       } : function() {

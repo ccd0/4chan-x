@@ -9,11 +9,11 @@ Unread =
     @postsQuotingYou = []
 
     @qr = if QR.db
-      ({board, thread, ID}) ->
+      (post) ->
         data =
-          boardID:  board.ID
-          threadID: thread.ID
-          postID:   ID
+          boardID:  post.board.ID
+          threadID: post.thread.ID
+          postID:   post.ID
         return (if QR.db.get data then true else false)
     else ->
       return false
