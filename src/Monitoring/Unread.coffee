@@ -14,7 +14,7 @@ Unread =
           boardID:  board.ID
           threadID: thread.ID
           postID:   ID
-        return if QR.db.get data then true else false
+        return (if QR.db.get data then true else false)
     else ->
       return false
 
@@ -158,7 +158,7 @@ Unread =
   saveLastReadPost: $.debounce 2 * $.SECOND, ->
     return if Unread.thread.isDead
     Unread.db.set
-      boardID: Unread.thread.board.ID
+      boardID:  Unread.thread.board.ID
       threadID: Unread.thread.ID
       val:      Unread.lastReadPost
 

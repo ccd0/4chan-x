@@ -9511,11 +9511,7 @@
           threadID: thread.ID,
           postID: ID
         };
-        if (QR.db.get(data)) {
-          return true;
-        } else {
-          return false;
-        }
+        return (QR.db.get(data) ? true : false);
       } : function() {
         return false;
       };
