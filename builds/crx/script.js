@@ -9698,13 +9698,9 @@
           break;
         }
         ID = post.ID;
+        posts.rm(ID);
         if (Conf['Mark Quotes of You'] && post.info.yours) {
           QuoteYou.lastRead = post.nodes.root;
-        }
-        posts.rm(ID);
-        if (post === posts.first) {
-          c.log(posts);
-          break;
         }
       }
       if (!ID) {

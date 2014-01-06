@@ -142,15 +142,11 @@ Unread =
     {posts} = Unread
     while post = posts.first
       break unless Header.getBottomOf(post.nodes.root) > -1 # post is not completely read
-
       {ID} = post
-      if Conf['Mark Quotes of You'] and post.info.yours
-        QuoteYou.lastRead = post.nodes.root
       posts.rm ID
 
-      if post is posts.first
-        c.log posts
-        break
+      if Conf['Mark Quotes of You'] and post.info.yours
+        QuoteYou.lastRead = post.nodes.root
 
     return unless ID
 
