@@ -11,14 +11,14 @@ QuoteThreading =
       innerHTML: '<label><input id=threadingControl type=checkbox checked> Threading</label>'
 
     input = $ 'input', @controls
-    $.on input, 'change', QuoteThreading.toggle
+    $.on input, 'change', @toggle
 
     $.event 'AddMenuEntry',
       type:  'header'
       el:    @controls
       order: 98
 
-    $.on d, '4chanXInitFinished', QuoteThreading.setup unless Conf['Unread Count']
+    $.on d, '4chanXInitFinished', @setup unless Conf['Unread Count']
 
     Post.callbacks.push
       name: 'Quote Threading'
@@ -32,23 +32,17 @@ QuoteThreading =
     QuoteThreading.hasRun = true
 
   node: ->
+    {posts} = g
     return if @isClone or not QuoteThreading.enabled
     Unread.posts.push @ if Conf['Unread Count']
 
-    return if @thread.OP is @
-
-    {quotes, ID, fullID} = @
-    {posts} = g
-    return if !(post = posts[fullID]) or post.isHidden # Filtered
+    return if @thread.OP is @ or !(post = posts[@fullID]) or post.isHidden # Filtered
 
     keys = []
-    len = "#{g.BOARD}".length + 1
-    for quote in quotes when quote[len..] < ID
-      keys.push quote if quote of posts
+    len = g.BOARD.ID.length + 1
+    keys.push quote for quote in @quotes when (quote[len..] < @ID) and quote of posts
 
-    unless keys.length is 1
-      Unread.posts.push @ if Conf['Unread Count']
-      return
+    return unless keys.length is 1
 
     @threaded = keys[0]
     @cb       = QuoteThreading.nodeinsert

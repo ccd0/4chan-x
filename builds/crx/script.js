@@ -4939,14 +4939,14 @@
         innerHTML: '<label><input id=threadingControl type=checkbox checked> Threading</label>'
       });
       input = $('input', this.controls);
-      $.on(input, 'change', QuoteThreading.toggle);
+      $.on(input, 'change', this.toggle);
       $.event('AddMenuEntry', {
         type: 'header',
         el: this.controls,
         order: 98
       });
       if (!Conf['Unread Count']) {
-        $.on(d, '4chanXInitFinished', QuoteThreading.setup);
+        $.on(d, '4chanXInitFinished', this.setup);
       }
       return Post.callbacks.push({
         name: 'Quote Threading',
@@ -4966,35 +4966,27 @@
       return QuoteThreading.hasRun = true;
     },
     node: function() {
-      var ID, fullID, keys, len, post, posts, quote, quotes, _i, _len;
+      var keys, len, post, posts, quote, _i, _len, _ref;
+      posts = g.posts;
       if (this.isClone || !QuoteThreading.enabled) {
         return;
       }
       if (Conf['Unread Count']) {
         Unread.posts.push(this);
       }
-      if (this.thread.OP === this) {
-        return;
-      }
-      quotes = this.quotes, ID = this.ID, fullID = this.fullID;
-      posts = g.posts;
-      if (!(post = posts[fullID]) || post.isHidden) {
+      if (this.thread.OP === this || !(post = posts[this.fullID]) || post.isHidden) {
         return;
       }
       keys = [];
-      len = ("" + g.BOARD).length + 1;
-      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
-        quote = quotes[_i];
-        if (quote.slice(len) < ID) {
-          if (quote in posts) {
-            keys.push(quote);
-          }
+      len = g.BOARD.ID.length + 1;
+      _ref = this.quotes;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        if ((quote.slice(len) < this.ID) && quote in posts) {
+          keys.push(quote);
         }
       }
       if (keys.length !== 1) {
-        if (Conf['Unread Count']) {
-          Unread.posts.push(this);
-        }
         return;
       }
       this.threaded = keys[0];
