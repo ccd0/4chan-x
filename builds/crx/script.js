@@ -4960,7 +4960,7 @@
       for (ID in _ref) {
         post = _ref[ID];
         if (post.cb) {
-          post.cb.call(post);
+          post.cb();
         }
       }
       return QuoteThreading.hasRun = true;

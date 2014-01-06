@@ -27,7 +27,7 @@ QuoteThreading =
   setup: ->
     $.off d, '4chanXInitFinished', QuoteThreading.setup
 
-    post.cb.call post for ID, post of g.posts when post.cb
+    post.cb() for ID, post of g.posts when post.cb
 
     QuoteThreading.hasRun = true
 
