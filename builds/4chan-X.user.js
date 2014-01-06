@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.44 - 2014-01-05
+* 4chan X - Version 1.2.44 - 2014-01-06
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -1466,6 +1466,9 @@
     RandomAccessList.prototype.push = function(item) {
       var ID, last;
       ID = item.ID;
+      if (this[ID]) {
+        return;
+      }
       last = this.last;
       item.prev = last;
       this[ID] = item;
@@ -5026,7 +5029,7 @@
         $.after(root, threadContainer);
       } else {
         threadContainer = root.nextSibling;
-        post = Get.postFromRoot($.x('child::div[contains(@class,"postContainer")][last()]', threadContainer));
+        post = Get.postFromRoot($.x('descendant::div[contains(@class,"postContainer")][last()]', threadContainer));
       }
       $.add(threadContainer, this.nodes.root);
       if (!Conf['Unread Count'] || this.ID < Unread.lastReadPost) {
@@ -5038,12 +5041,12 @@
       }
       if (posts[post.ID]) {
         posts.after(post, this);
+        return true;
+      }
+      if ((ID = posts.closest(post.ID)) !== -1) {
+        posts.after(posts[ID], this);
       } else {
-        if ((ID = posts.closest(post.ID)) !== -1) {
-          posts.after(posts[ID], this);
-        } else {
-          posts.prepend(this);
-        }
+        posts.prepend(this);
       }
       return true;
     },

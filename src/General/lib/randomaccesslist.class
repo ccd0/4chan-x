@@ -4,6 +4,7 @@ class RandomAccessList
 
   push: (item) ->
     {ID} = item
+    return if @[ID]
     {last} = @
     item.prev = last
     @[ID] = item

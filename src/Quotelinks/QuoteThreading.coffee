@@ -72,7 +72,7 @@ QuoteThreading =
         posts.push @ if Conf['Unread Count']
         return false
 
-    root = post.nodes.root
+    {root} = post.nodes
     unless $.hasClass root, 'threadOP'
       $.addClass root, 'threadOP'
       threadContainer = $.el 'div',
@@ -80,7 +80,7 @@ QuoteThreading =
       $.after root, threadContainer
     else
       threadContainer = root.nextSibling
-      post = Get.postFromRoot $.x 'child::div[contains(@class,"postContainer")][last()]', threadContainer
+      post = Get.postFromRoot $.x 'descendant::div[contains(@class,"postContainer")][last()]', threadContainer
 
     $.add threadContainer, @nodes.root
 
@@ -92,11 +92,12 @@ QuoteThreading =
 
     if posts[post.ID]
       posts.after post, @
+      return true
+
+    if (ID = posts.closest post.ID) isnt -1
+      posts.after posts[ID], @
     else
-      if (ID = posts.closest post.ID) isnt -1
-        posts.after posts[ID], @
-      else
-        posts.prepend @
+      posts.prepend @
 
     return true
 
