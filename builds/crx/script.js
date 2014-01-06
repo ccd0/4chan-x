@@ -4970,18 +4970,15 @@
       if (this.isClone || !QuoteThreading.enabled) {
         return;
       }
+      if (Conf['Unread Count']) {
+        Unread.posts.push(this);
+      }
       if (this.thread.OP === this) {
-        if (Conf['Unread Count']) {
-          Unread.posts.push(this);
-        }
         return;
       }
       quotes = this.quotes, ID = this.ID, fullID = this.fullID;
       posts = g.posts;
       if (!(post = posts[fullID]) || post.isHidden) {
-        if (Conf['Unread Count']) {
-          Unread.posts.push(this);
-        }
         return;
       }
       keys = [];
@@ -5008,18 +5005,12 @@
       post = g.posts[this.threaded];
       posts = Unread.posts;
       if (this.thread.OP === post) {
-        if (Conf['Unread Count']) {
-          posts.push(this);
-        }
         return false;
       }
       if (QuoteThreading.hasRun) {
         height = doc.clientHeight;
         _ref = post.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
         if (!((posts != null ? posts[post.ID] : void 0) || ((bottom < height) && (top > 0)))) {
-          if (Conf['Unread Count']) {
-            posts.push(this);
-          }
           return false;
         }
       }
@@ -5035,12 +5026,8 @@
         post = Get.postFromRoot($.x('descendant::div[contains(@class,"postContainer")][last()]', threadContainer));
       }
       $.add(threadContainer, this.nodes.root);
-      if (!Conf['Unread Count'] || this.ID < Unread.lastReadPost) {
-        this.prev = true;
+      if (!Conf['Unread Count']) {
         return true;
-      }
-      if (!posts[this.ID]) {
-        posts.push(this);
       }
       if (posts[post.ID]) {
         posts.after(post, this);

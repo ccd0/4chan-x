@@ -33,15 +33,13 @@ QuoteThreading =
 
   node: ->
     return if @isClone or not QuoteThreading.enabled
-    if @thread.OP is @
-      Unread.posts.push @ if Conf['Unread Count']
-      return
+    Unread.posts.push @ if Conf['Unread Count']
+
+    return if @thread.OP is @
 
     {quotes, ID, fullID} = @
     {posts} = g
-    if !(post = posts[fullID]) or post.isHidden # Filtered
-      Unread.posts.push @ if Conf['Unread Count']
-      return
+    return if !(post = posts[fullID]) or post.isHidden # Filtered
 
     keys = []
     len = "#{g.BOARD}".length + 1
@@ -59,18 +57,14 @@ QuoteThreading =
     post    = g.posts[@threaded]
     {posts} = Unread
 
-    if @thread.OP is post
-      posts.push @ if Conf['Unread Count']
-      return false
+    return false if @thread.OP is post
 
     if QuoteThreading.hasRun
       height  = doc.clientHeight
       {bottom, top} = post.nodes.root.getBoundingClientRect()
 
       # Post is unread or is fully visible.
-      unless posts?[post.ID] or ((bottom < height) and (top > 0))
-        posts.push @ if Conf['Unread Count']
-        return false
+      return false unless posts?[post.ID] or ((bottom < height) and (top > 0))
 
     {root} = post.nodes
     unless $.hasClass root, 'threadOP'
@@ -84,11 +78,7 @@ QuoteThreading =
 
     $.add threadContainer, @nodes.root
 
-    if not Conf['Unread Count'] or @ID < Unread.lastReadPost
-      @prev = true # Force Unread Count to ignore this post
-      return true
-
-    posts.push @ unless posts[@ID]
+    return true unless Conf['Unread Count']
 
     if posts[post.ID]
       posts.after post, @
