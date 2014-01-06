@@ -19,31 +19,22 @@ class RandomAccessList
     @rmi item
 
     {next} = root
-    root.next = next.prev = item
-    item.next = next
+    root.next = item
     item.prev = root
+    item.next = next
+    next.prev = item
   
   prepend: (item) ->
-    {ID} = item
-    @push item unless @[ID]
     {first} = @
-    return if item is first
-    item.next = first
+    return if item is first or not @[item.ID]
+    @rmi item
+    item.next  = first
     first.prev = item
     @first = item
     delete item.prev
 
   shift: ->
     @rm @first.ID
-
-  splice: (start, end) ->
-    return unless @[end]
-    cur = if start is 0 then @first else @[start]
-    while cur
-      {next} = cur
-      @rm cur.ID
-      return if not next or cur.ID is end
-      cur = next
 
   rm: (ID) ->
     item = @[ID]
@@ -69,7 +60,7 @@ class RandomAccessList
     item = @first
     while item
       if item.ID > ID
-        {prev} = item.prev
+        {prev} = item
         break
       item = item.next
     return (if prev then prev.ID else -1)

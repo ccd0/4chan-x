@@ -32,18 +32,25 @@ QuoteThreading =
     QuoteThreading.hasRun = true
 
   node: ->
-    return if @isClone or not QuoteThreading.enabled or @thread.OP is @
+    return if @isClone or not QuoteThreading.enabled
+    if @thread.OP is @
+      Unread.posts.push @ if Conf['Unread Count']
+      return
 
     {quotes, ID, fullID} = @
     {posts} = g
-    return if !(post = posts[fullID]) or post.isHidden # Filtered
+    if !(post = posts[fullID]) or post.isHidden # Filtered
+      Unread.posts.push @ if Conf['Unread Count']
+      return
 
     keys = []
     len = "#{g.BOARD}".length + 1
     for quote in quotes when quote[len..] < ID
       keys.push quote if quote of posts
 
-    return unless keys.length is 1
+    unless keys.length is 1
+      Unread.posts.push @ if Conf['Unread Count']
+      return
 
     @threaded = keys[0]
     @cb       = QuoteThreading.nodeinsert
@@ -52,14 +59,18 @@ QuoteThreading =
     post    = g.posts[@threaded]
     {posts} = Unread
 
-    return false if @thread.OP is post
+    if @thread.OP is post
+      posts.push @ if Conf['Unread Count']
+      return false
 
     if QuoteThreading.hasRun
       height  = doc.clientHeight
       {bottom, top} = post.nodes.root.getBoundingClientRect()
 
       # Post is unread or is fully visible.
-      return false unless posts?[post.ID] or ((bottom < height) and (top > 0))
+      unless posts?[post.ID] or ((bottom < height) and (top > 0))
+        posts.push @ if Conf['Unread Count']
+        return false
 
     root = post.nodes.root
     unless $.hasClass root, 'threadOP'
@@ -69,17 +80,20 @@ QuoteThreading =
       $.after root, threadContainer
     else
       threadContainer = root.nextSibling
+      post = Get.postFromRoot $.x 'child::div[contains(@class,"postContainer")][last()]', threadContainer
 
     $.add threadContainer, @nodes.root
 
-    return true if not Conf['Unread Count'] or @ID < Unread.lastReadPost
+    if not Conf['Unread Count'] or @ID < Unread.lastReadPost
+      @prev = true # Force Unread Count to ignore this post
+      return true
 
     posts.push @ unless posts[@ID]
 
     if posts[post.ID]
       posts.after post, @
     else
-      if (ID = posts.closest ID) isnt -1
+      if (ID = posts.closest post.ID) isnt -1
         posts.after posts[ID], @
       else
         posts.prepend @

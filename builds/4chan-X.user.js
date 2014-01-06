@@ -1480,21 +1480,19 @@
       }
       this.rmi(item);
       next = root.next;
-      root.next = next.prev = item;
+      root.next = item;
+      item.prev = root;
       item.next = next;
-      return item.prev = root;
+      return next.prev = item;
     };
 
     RandomAccessList.prototype.prepend = function(item) {
-      var ID, first;
-      ID = item.ID;
-      if (!this[ID]) {
-        this.push(item);
-      }
+      var first;
       first = this.first;
-      if (item === first) {
+      if (item === first || !this[item.ID]) {
         return;
       }
+      this.rmi(item);
       item.next = first;
       first.prev = item;
       this.first = item;
@@ -1503,22 +1501,6 @@
 
     RandomAccessList.prototype.shift = function() {
       return this.rm(this.first.ID);
-    };
-
-    RandomAccessList.prototype.splice = function(start, end) {
-      var cur, next;
-      if (!this[end]) {
-        return;
-      }
-      cur = start === 0 ? this.first : this[start];
-      while (cur) {
-        next = cur.next;
-        this.rm(cur.ID);
-        if (!next || cur.ID === end) {
-          return;
-        }
-        cur = next;
-      }
     };
 
     RandomAccessList.prototype.rm = function(ID) {
@@ -1554,7 +1536,7 @@
       item = this.first;
       while (item) {
         if (item.ID > ID) {
-          prev = item.prev.prev;
+          prev = item.prev;
           break;
         }
         item = item.next;
@@ -4979,12 +4961,21 @@
     },
     node: function() {
       var ID, fullID, keys, len, post, posts, quote, quotes, _i, _len;
-      if (this.isClone || !QuoteThreading.enabled || this.thread.OP === this) {
+      if (this.isClone || !QuoteThreading.enabled) {
+        return;
+      }
+      if (this.thread.OP === this) {
+        if (Conf['Unread Count']) {
+          Unread.posts.push(this);
+        }
         return;
       }
       quotes = this.quotes, ID = this.ID, fullID = this.fullID;
       posts = g.posts;
       if (!(post = posts[fullID]) || post.isHidden) {
+        if (Conf['Unread Count']) {
+          Unread.posts.push(this);
+        }
         return;
       }
       keys = [];
@@ -4998,6 +4989,9 @@
         }
       }
       if (keys.length !== 1) {
+        if (Conf['Unread Count']) {
+          Unread.posts.push(this);
+        }
         return;
       }
       this.threaded = keys[0];
@@ -5008,12 +5002,18 @@
       post = g.posts[this.threaded];
       posts = Unread.posts;
       if (this.thread.OP === post) {
+        if (Conf['Unread Count']) {
+          posts.push(this);
+        }
         return false;
       }
       if (QuoteThreading.hasRun) {
         height = doc.clientHeight;
         _ref = post.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
         if (!((posts != null ? posts[post.ID] : void 0) || ((bottom < height) && (top > 0)))) {
+          if (Conf['Unread Count']) {
+            posts.push(this);
+          }
           return false;
         }
       }
@@ -5026,9 +5026,11 @@
         $.after(root, threadContainer);
       } else {
         threadContainer = root.nextSibling;
+        post = Get.postFromRoot($.x('child::div[contains(@class,"postContainer")][last()]', threadContainer));
       }
       $.add(threadContainer, this.nodes.root);
       if (!Conf['Unread Count'] || this.ID < Unread.lastReadPost) {
+        this.prev = true;
         return true;
       }
       if (!posts[this.ID]) {
@@ -5037,7 +5039,7 @@
       if (posts[post.ID]) {
         posts.after(post, this);
       } else {
-        if ((ID = posts.closest(ID)) !== -1) {
+        if ((ID = posts.closest(post.ID)) !== -1) {
           posts.after(posts[ID], this);
         } else {
           posts.prepend(this);
@@ -9699,11 +9701,11 @@
       if (!Unread.posts[ID]) {
         return;
       }
-      Unread.posts.rm(ID);
       if (post === Unread.posts.first) {
         Unread.lastReadPost = ID;
         Unread.saveLastReadPost();
       }
+      Unread.posts.rm(ID);
       if ((i = Unread.postsQuotingYou.indexOf(post)) !== -1) {
         Unread.postsQuotingYou.splice(i, 1);
       }

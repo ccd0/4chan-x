@@ -122,10 +122,10 @@ Unread =
   readSinglePost: (post) ->
     {ID} = post
     return unless Unread.posts[ID]
-    Unread.posts.rm ID
     if post is Unread.posts.first
       Unread.lastReadPost = ID
       Unread.saveLastReadPost()
+    Unread.posts.rm ID
     if (i = Unread.postsQuotingYou.indexOf post) isnt -1
       Unread.postsQuotingYou.splice i, 1
     Unread.update()
