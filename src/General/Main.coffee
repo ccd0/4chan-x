@@ -228,45 +228,25 @@ Main =
     catch err
       new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to operate properly.', 30
 
-    $.event '4chanXInitFinished'
-
   callbackNodes: (klass, nodes) ->
     # get the nodes' length only once
     len = nodes.length
-    for callback in klass.callbacks
-      # c.profile callback.name
-      i = 0
-      while i < len
-        node = nodes[i++]
-        try
-          callback.cb.call node
-        catch err
-          errors = [] unless errors
-          errors.push
-            message: "\"#{callback.name}\" crashed on #{klass.name} No.#{node} (/#{node.board}/)."
-            error: err
-      # c.profileEnd callback.name
-    Main.handleErrors errors if errors
+    while node = nodes[i++]
+      klass.callback.execute node
+    return
 
   callbackNodesDB: (klass, nodes, cb) ->
     queue = []
     errors = null
 
     func = (node) ->
-      for callback in klass.callbacks
-        try
-          callback.cb.call node
-        catch err
-          errors = [] unless errors
-          errors.push
-            message: "\"#{callback.name}\" crashed on #{klass.name} No.#{node} (/#{node.board}/)."
-            error: err
+      klass.callback.execute node
+
       # finish
       unless queue.length
-        Main.handleErrors errors if errors
         cb() if cb
 
-    softTask =  ->
+    softTask = ->
       node = queue.shift()
       func node
       return unless queue.length

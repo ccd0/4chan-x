@@ -82,7 +82,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Gallery, Get, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, InfiniScroll, Keybinds, Linkify, Main, Menu, Nav, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, Callbacks, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Gallery, Get, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, InfiniScroll, Keybinds, Linkify, Main, Menu, Nav, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
@@ -812,6 +812,56 @@
     return __slice.call(root.querySelectorAll(selector));
   };
 
+  Callbacks = (function() {
+    function Callbacks() {}
+
+    Callbacks.prototype.push = function(_arg) {
+      var cb, name;
+      name = _arg.name, cb = _arg.cb;
+      return this.name = cb;
+    };
+
+    Callbacks.prototype.clean = function() {
+      var name;
+      for (name in this) {
+        if (this.hasOwnProperty(name)) {
+          this.rm(name);
+        }
+      }
+    };
+
+    Callbacks.prototype.rm = function(name) {
+      return delete this.name;
+    };
+
+    Callbacks.prototype.execute = function(target) {
+      var cb, err, errors, name;
+      for (name in this) {
+        cb = this[name];
+        if (this.hasOwnProperty(name)) {
+          try {
+            cb.call(target);
+          } catch (_error) {
+            err = _error;
+            if (!errors) {
+              errors = [];
+            }
+            errors.push({
+              message: ['"', name, '" crashed on node No.', node, ' (', node.board, ').'].join(''),
+              error: err
+            });
+          }
+        }
+      }
+      if (errors) {
+        return Main.handleErrors(errors);
+      }
+    };
+
+    return Callbacks;
+
+  })();
+
   Board = (function() {
     Board.prototype.toString = function() {
       return this.ID;
@@ -829,7 +879,7 @@
   })();
 
   Thread = (function() {
-    Thread.callbacks = [];
+    Thread.callbacks = new Callbacks();
 
     Thread.prototype.toString = function() {
       return this.ID;
@@ -903,7 +953,7 @@
   })();
 
   Post = (function() {
-    Post.callbacks = [];
+    Post.callbacks = new Callbacks();
 
     Post.prototype.toString = function() {
       return this.ID;
@@ -12488,38 +12538,17 @@
         return;
       }
       try {
-        localStorage.getItem('4chan-settings');
+        return localStorage.getItem('4chan-settings');
       } catch (_error) {
         err = _error;
-        new Notice('warning', 'Cookies need to be enabled on 4chan for 4chan X to operate properly.', 30);
+        return new Notice('warning', 'Cookies need to be enabled on 4chan for 4chan X to operate properly.', 30);
       }
-      return $.event('4chanXInitFinished');
     },
     callbackNodes: function(klass, nodes) {
-      var callback, err, errors, i, len, node, _i, _len, _ref;
+      var len, node;
       len = nodes.length;
-      _ref = klass.callbacks;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        callback = _ref[_i];
-        i = 0;
-        while (i < len) {
-          node = nodes[i++];
-          try {
-            callback.cb.call(node);
-          } catch (_error) {
-            err = _error;
-            if (!errors) {
-              errors = [];
-            }
-            errors.push({
-              message: "\"" + callback.name + "\" crashed on " + klass.name + " No." + node + " (/" + node.board + "/).",
-              error: err
-            });
-          }
-        }
-      }
-      if (errors) {
-        return Main.handleErrors(errors);
+      while (node = nodes[i++]) {
+        klass.callback.execute(node);
       }
     },
     callbackNodesDB: function(klass, nodes, cb) {
@@ -12527,27 +12556,8 @@
       queue = [];
       errors = null;
       func = function(node) {
-        var callback, err, _i, _len, _ref;
-        _ref = klass.callbacks;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          callback = _ref[_i];
-          try {
-            callback.cb.call(node);
-          } catch (_error) {
-            err = _error;
-            if (!errors) {
-              errors = [];
-            }
-            errors.push({
-              message: "\"" + callback.name + "\" crashed on " + klass.name + " No." + node + " (/" + node.board + "/).",
-              error: err
-            });
-          }
-        }
+        klass.callback.execute(node);
         if (!queue.length) {
-          if (errors) {
-            Main.handleErrors(errors);
-          }
           if (cb) {
             return cb();
           }
