@@ -1534,19 +1534,6 @@
       }
     };
 
-    RandomAccessList.prototype.closest = function(ID) {
-      var item, prev;
-      item = this.first;
-      while (item) {
-        if (item.ID > ID) {
-          prev = item.prev;
-          break;
-        }
-        item = item.next;
-      }
-      return (prev ? prev.ID : -1);
-    };
-
     return RandomAccessList;
 
   })();
@@ -4951,16 +4938,18 @@
       });
     },
     setup: function() {
-      var ID, post, _ref;
       $.off(d, '4chanXInitFinished', QuoteThreading.setup);
+      return QuoteThreading.force();
+    },
+    force: function() {
+      var ID, post, _ref;
       _ref = g.posts;
       for (ID in _ref) {
         post = _ref[ID];
         if (post.cb) {
-          post.cb();
+          post.cb(true);
         }
       }
-      return QuoteThreading.hasRun = true;
     },
     node: function() {
       var keys, len, post, posts, quote, _i, _len, _ref;
@@ -4989,82 +4978,85 @@
       this.threaded = keys[0];
       return this.cb = QuoteThreading.nodeinsert;
     },
-    nodeinsert: function() {
-      var ID, bottom, height, post, posts, root, threadContainer, top, _ref;
+    nodeinsert: function(force) {
+      var bottom, height, post, posts, root, threadContainer, top, _ref;
       post = g.posts[this.threaded];
       posts = Unread.posts;
+      root = post.nodes.root;
       if (this.thread.OP === post) {
         return false;
       }
-      if (QuoteThreading.hasRun) {
+      if (!force) {
         height = doc.clientHeight;
-        _ref = post.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
-        if (!((posts != null ? posts[post.ID] : void 0) || ((bottom < height) && (top > 0)))) {
+        _ref = root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
+        if (!((Conf['Unread Count'] && posts[post.ID]) || ((bottom < height) && (top > 0)))) {
           return false;
         }
       }
-      root = post.nodes.root;
-      if (!$.hasClass(root, 'threadOP')) {
-        $.addClass(root, 'threadOP');
+      if ($.hasClass(root, 'threadOP')) {
+        threadContainer = root.nextElementSibling;
+        post = Get.postFromRoot($.x('descendant::div[contains(@class,"postContainer")][last()]', threadContainer));
+        $.add(threadContainer, this.nodes.root);
+      } else {
         threadContainer = $.el('div', {
           className: 'threadContainer'
         });
+        $.add(threadContainer, this.nodes.root);
         $.after(root, threadContainer);
-      } else {
-        threadContainer = root.nextSibling;
-        post = Get.postFromRoot($.x('descendant::div[contains(@class,"postContainer")][last()]', threadContainer));
+        $.addClass(root, 'threadOP');
       }
-      $.add(threadContainer, this.nodes.root);
       if (!Conf['Unread Count']) {
         return true;
       }
       if (posts[post.ID]) {
         posts.after(post, this);
-        return true;
-      }
-      if ((ID = posts.closest(post.ID)) !== -1) {
-        posts.after(posts[ID], this);
       } else {
         posts.prepend(this);
       }
       return true;
     },
     toggle: function() {
-      var container, containers, post, replies, reply, thread, _i, _j, _k, _len, _len1, _len2, _ref;
-      if (Conf['Unread Count']) {
-        Unread.posts = new RandomAccessList;
-        Unread.ready();
-      }
-      thread = $('.thread');
-      replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
+      var ID, container, containers, post, posts, thread, _i, _j, _len, _len1, _ref, _results;
       if (QuoteThreading.enabled = this.checked) {
-        QuoteThreading.hasRun = false;
-        for (_i = 0, _len = replies.length; _i < _len; _i++) {
-          reply = replies[_i];
-          post = Get.postFromRoot(reply);
-          if (post.cb) {
-            post.cb();
-          }
-        }
-        QuoteThreading.hasRun = true;
+        return QuoteThreading.force();
       } else {
-        replies.sort(function(a, b) {
-          return Number(a.id.slice(2)) - Number(b.id.slice(2));
+        thread = $('.thread');
+        posts = (function() {
+          var _ref, _results;
+          _ref = g.posts;
+          _results = [];
+          for (ID in _ref) {
+            post = _ref[ID];
+            if (!(post === post.thread.OP || post.isClone)) {
+              _results.push(post);
+            }
+          }
+          return _results;
+        })();
+        posts.sort(function(a, b) {
+          return a.ID - b.ID;
         });
-        $.add(thread, replies);
+        $.add(thread, (function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = posts.length; _i < _len; _i++) {
+            post = posts[_i];
+            _results.push(post.nodes.root);
+          }
+          return _results;
+        })());
         containers = $$('.threadContainer', thread);
-        for (_j = 0, _len1 = containers.length; _j < _len1; _j++) {
-          container = containers[_j];
+        for (_i = 0, _len = containers.length; _i < _len; _i++) {
+          container = containers[_i];
           $.rm(container);
         }
         _ref = $$('.threadOP');
-        for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
-          post = _ref[_k];
-          $.rmClass(post, 'threadOP');
+        _results = [];
+        for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+          post = _ref[_j];
+          _results.push($.rmClass(post, 'threadOP'));
         }
-      }
-      if (Conf['Unread Count']) {
-        return Unread.read();
+        return _results;
       }
     },
     kb: function() {
@@ -9547,7 +9539,7 @@
       }
       Unread.addPosts(posts);
       if (Conf['Quote Threading']) {
-        QuoteThreading.setup();
+        QuoteThreading.force();
       }
       if (Conf['Scroll to Last Read Post']) {
         return Unread.scroll();
@@ -12259,41 +12251,7 @@
 
   Main = {
     init: function() {
-      var db, flatten, _i, _len, _ref;
-      flatten = function(parent, obj) {
-        var key, val;
-        if (obj instanceof Array) {
-          Conf[parent] = obj[0];
-        } else if (typeof obj === 'object') {
-          for (key in obj) {
-            val = obj[key];
-            flatten(key, val);
-          }
-        } else {
-          Conf[parent] = obj;
-        }
-      };
-      flatten(null, Config);
-      _ref = DataBoard.keys;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        db = _ref[_i];
-        Conf[db] = {
-          boards: {}
-        };
-      }
-      Conf['selectedArchives'] = {};
-      Conf['CachedTitles'] = [];
-      $.get(Conf, function(items) {
-        $.extend(Conf, items);
-        return Main.initFeatures();
-      });
-      $.on(d, '4chanMainInit', Main.initStyle);
-      return $.asap((function() {
-        return d.head && $('link[rel="shortcut icon"]', d.head) || d.readyState !== 'loading';
-      }), Main.initStyle);
-    },
-    initFeatures: function() {
-      var init, pathname, _ref;
+      var db, flatten, pathname, _i, _len, _ref, _ref1;
       pathname = location.pathname.split('/');
       g.BOARD = new Board(pathname[1]);
       if ((_ref = g.BOARD.ID) === 'z' || _ref === 'fk') {
@@ -12312,6 +12270,40 @@
       if (g.VIEW === 'thread') {
         g.THREADID = +pathname[3];
       }
+      flatten = function(parent, obj) {
+        var key, val;
+        if (obj instanceof Array) {
+          Conf[parent] = obj[0];
+        } else if (typeof obj === 'object') {
+          for (key in obj) {
+            val = obj[key];
+            flatten(key, val);
+          }
+        } else {
+          Conf[parent] = obj;
+        }
+      };
+      flatten(null, Config);
+      _ref1 = DataBoard.keys;
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        db = _ref1[_i];
+        Conf[db] = {
+          boards: {}
+        };
+      }
+      Conf['selectedArchives'] = {};
+      Conf['CachedTitles'] = [];
+      $.get(Conf, function(items) {
+        $.extend(Conf, items);
+        return Main.initFeatures();
+      });
+      $.on(d, '4chanMainInit', Main.initStyle);
+      return $.asap((function() {
+        return d.head && $('link[rel="shortcut icon"]', d.head) || d.readyState !== 'loading';
+      }), Main.initStyle);
+    },
+    initFeatures: function() {
+      var init;
       switch (location.hostname) {
         case 'a.4cdn.org':
           return;
@@ -12320,8 +12312,8 @@
           return;
         case 'i.4cdn.org':
           $.ready(function() {
-            var URL, _ref1;
-            if (Conf['404 Redirect'] && ((_ref1 = d.title) === '4chan - Temporarily Offline' || _ref1 === '4chan - 404 Not Found')) {
+            var URL, pathname, _ref;
+            if (Conf['404 Redirect'] && ((_ref = d.title) === '4chan - Temporarily Offline' || _ref === '4chan - 404 Not Found')) {
               Redirect.init();
               pathname = location.pathname.split('/');
               URL = Redirect.to('file', {

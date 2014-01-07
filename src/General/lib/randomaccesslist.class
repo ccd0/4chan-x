@@ -56,12 +56,3 @@ class RandomAccessList
       next.prev = prev
     else
       @last = prev
-
-  closest: (ID) ->
-    item = @first
-    while item
-      if item.ID > ID
-        {prev} = item
-        break
-      item = item.next
-    return (if prev then prev.ID else -1)
