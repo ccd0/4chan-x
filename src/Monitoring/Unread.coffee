@@ -8,16 +8,6 @@ Unread =
     @posts = new RandomAccessList
     @postsQuotingYou = []
 
-    @qr = if QR.db
-      (post) ->
-        data =
-          boardID:  post.board.ID
-          threadID: post.thread.ID
-          postID:   post.ID
-        return (if QR.db.get data then true else false)
-    else ->
-      return false
-
     Thread.callbacks.push
       name: 'Unread'
       cb:   @node
@@ -80,7 +70,11 @@ Unread =
   addPosts: (posts) ->
     for post in posts
       {ID} = post
-      continue if ID <= Unread.lastReadPost or post.isHidden or Unread.qr post
+      continue if ID <= Unread.lastReadPost or post.isHidden or QR.db.get {
+        boardID:  post.board.ID
+        threadID: post.thread.ID
+        postID:   post.ID
+      }
       Unread.posts.push post unless post.prev or post.next
       Unread.addPostQuotingYou post
     if Conf['Unread Line']
