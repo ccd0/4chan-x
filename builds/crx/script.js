@@ -7804,14 +7804,18 @@
       }
     },
     setInterval: function() {
-      var cur, i, j;
-      i = ThreadUpdater.interval;
-      j = (cur = ThreadUpdater.outdateCount < 10) ? cur : 10;
-      if (!d.hidden) {
-        j = j < 7 ? j : 7;
+      var cur, i, j, limit;
+      i = ThreadUpdater.interval + 1;
+      if (Conf['Optional Increase']) {
+        cur = ThreadUpdater.outdateCount || 1;
+        limit = d.hidden ? 7 : 10;
+        j = cur <= limit ? cur : limit;
+        cur = (Math.floor(i * 0.1) || 1) * j * j;
+        ThreadUpdater.seconds = cur > i ? cur <= 300 ? cur : 300 : i;
+      } else {
+        ThreadUpdater.seconds = i;
       }
-      ThreadUpdater.seconds = Conf['Optional Increase'] ? (cur = [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j] > i) ? cur : i : i;
-      ThreadUpdater.set('timer', ThreadUpdater.seconds++);
+      ThreadUpdater.set('timer', ThreadUpdater.seconds);
       return ThreadUpdater.count(true);
     },
     intervalShortcut: function() {
