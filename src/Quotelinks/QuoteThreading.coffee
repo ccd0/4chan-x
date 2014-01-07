@@ -26,9 +26,11 @@ QuoteThreading =
 
   setup: ->
     $.off d, '4chanXInitFinished', QuoteThreading.setup
+    QuoteThreading.force()
 
-    post.cb() for ID, post of g.posts when post.cb
-    QuoteThreading.hasRun = true
+  force: ->
+    post.cb true for ID, post of g.posts when post.cb
+    return
 
   node: ->
     {posts} = g
@@ -46,69 +48,61 @@ QuoteThreading =
     @threaded = keys[0]
     @cb       = QuoteThreading.nodeinsert
 
-  nodeinsert: ->
-    post    = g.posts[@threaded]
-    {posts} = Unread
+  nodeinsert: (force) ->
+    post = g.posts[@threaded]
 
     return false if @thread.OP is post
 
-    if QuoteThreading.hasRun
+    {posts} = Unread
+    {root}  = post.nodes
+
+    unless force
       height  = doc.clientHeight
-      {bottom, top} = post.nodes.root.getBoundingClientRect()
+      {bottom, top} = root.getBoundingClientRect()
 
       # Post is unread or is fully visible.
-      return false unless posts?[post.ID] or ((bottom < height) and (top > 0))
+      return false unless (Conf['Unread Count'] and posts[post.ID]) or ((bottom < height) and (top > 0))
 
-    {root} = post.nodes
-    unless $.hasClass root, 'threadOP'
-      $.addClass root, 'threadOP'
+    if $.hasClass root, 'threadOP'
+      threadContainer = root.nextElementSibling
+      post = Get.postFromRoot $.x 'descendant::div[contains(@class,"postContainer")][last()]', threadContainer
+      $.add threadContainer, @nodes.root
+
+    else
       threadContainer = $.el 'div',
         className: 'threadContainer'
+      $.add threadContainer, @nodes.root
       $.after root, threadContainer
-    else
-      threadContainer = root.nextSibling
-      post = Get.postFromRoot $.x 'descendant::div[contains(@class,"postContainer")][last()]', threadContainer
-
-    $.add threadContainer, @nodes.root
+      $.addClass root, 'threadOP'
 
     return true unless Conf['Unread Count']
 
     if posts[post.ID]
       posts.after post, @
-      return true
 
-    if (ID = posts.closest post.ID) isnt -1
-      posts.after posts[ID], @
     else
       posts.prepend @
 
     return true
 
   toggle: ->
-    if Conf['Unread Count']
-      Unread.posts = new RandomAccessList
-      Unread.ready()
-
-    thread  = $ '.thread'
-    replies = $$ '.thread > .replyContainer, .threadContainer > .replyContainer', thread
-
     if QuoteThreading.enabled = @checked
-      QuoteThreading.hasRun = false
-      for reply in replies
-        post = Get.postFromRoot reply
-        # QuoteThreading calculates whether or not posts should be threaded based on content
-        # and then threads them based on thread context, so regardless of whether or not it
-        # actually threads them all eligible posts WILL have a cb. Magic.
-        post.cb() if post.cb
-      QuoteThreading.hasRun = true
+      QuoteThreading.force()
 
     else
-      replies.sort (a, b) -> Number(a.id[2..]) - Number(b.id[2..])
-      $.add thread, replies
+      thread = $('.thread')
+      posts = []
+      nodes = []
+
+      posts.push post for ID, post of g.posts when not (post is post.thread.OP or post.isClone)
+      posts.sort (a, b) -> a.ID - b.ID
+
+      nodes.push post.nodes.root for post in posts
+      $.add thread, nodes
+
       containers = $$ '.threadContainer', thread
       $.rm container for container in containers
       $.rmClass post, 'threadOP' for post in $$ '.threadOP'
-    Unread.read() if Conf['Unread Count']
 
   kb: ->
     control = $.id 'threadingControl'

@@ -39,7 +39,7 @@ Unread =
     posts = []
     posts.push post for ID, post of Unread.thread.posts when post.isReply
     Unread.addPosts posts
-    QuoteThreading.setup() if Conf['Quote Threading']
+    QuoteThreading.force() if Conf['Quote Threading']
     Unread.scroll() if Conf['Scroll to Last Read Post']
 
   scroll: ->

@@ -1,5 +1,19 @@
 Main =
   init: ->
+    pathname = location.pathname.split '/'
+    g.BOARD  = new Board pathname[1]
+    return if g.BOARD.ID in ['z', 'fk']
+    g.VIEW   =
+      switch pathname[2]
+        when 'res'
+          'thread'
+        when 'catalog'
+          'catalog'
+        else
+          'index'
+    if g.VIEW is 'thread'
+      g.THREADID = +pathname[3]
+
     # flatten Config into Conf
     # and get saved or default values
     flatten = (parent, obj) ->
@@ -36,20 +50,6 @@ Main =
       Main.initFeatures()
 
   initFeatures: ->
-
-    pathname = location.pathname.split '/'
-    g.BOARD  = new Board pathname[1]
-    g.VIEW   =
-      switch pathname[2]
-        when 'res'
-          'thread'
-        when 'catalog'
-          'catalog'
-        else
-          'index'
-    if g.VIEW is 'thread'
-      g.THREADID = +pathname[3]
-
     # Check if the current board we're on is SFW or not, so we can handle options that need to know that.
     g.TYPE = 
       if g.BOARD.ID in ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'pol', 'r', 'r9k', 'rs', 's', 's4s', 'soc', 't', 'u', 'y']
