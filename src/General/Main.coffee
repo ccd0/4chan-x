@@ -238,7 +238,7 @@ Main =
   callbackNodesDB: (klass, nodes, cb) ->
     errors = null
     len    = 0
-    i = 0
+    i      = 0
 
     {callbacks} = klass
 
