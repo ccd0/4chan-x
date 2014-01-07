@@ -49,11 +49,12 @@ QuoteThreading =
     @cb       = QuoteThreading.nodeinsert
 
   nodeinsert: (force) ->
-    post    = g.posts[@threaded]
-    {posts} = Unread
-    {root} = post.nodes
+    post = g.posts[@threaded]
 
     return false if @thread.OP is post
+
+    {posts} = Unread
+    {root}  = post.nodes
 
     unless force
       height  = doc.clientHeight

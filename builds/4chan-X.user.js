@@ -4981,11 +4981,11 @@
     nodeinsert: function(force) {
       var bottom, height, post, posts, root, threadContainer, top, _ref;
       post = g.posts[this.threaded];
-      posts = Unread.posts;
-      root = post.nodes.root;
       if (this.thread.OP === post) {
         return false;
       }
+      posts = Unread.posts;
+      root = post.nodes.root;
       if (!force) {
         height = doc.clientHeight;
         _ref = root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
