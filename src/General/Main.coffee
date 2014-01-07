@@ -56,81 +56,18 @@ Main =
             location.replace URL if URL
         return
 
-    init = (features) ->
-      for name, module of features
-        # c.time "#{name} initialization"
-        try
-          module.init()
-        catch err
-          Main.handleErrors
-            message: "\"#{name}\" initialization crashed."
-            error: err
-        # finally
-        #   c.timeEnd "#{name} initialization"
-      return
-
     # c.time 'All initializations'
-    init
-      'Polyfill':                  Polyfill
-      'Redirect':                  Redirect
-      'Header':                    Header
-      'Catalog Links':             CatalogLinks
-      'Settings':                  Settings
-      'Index Generator':           Index
-      'Announcement Hiding':       PSAHiding
-      'Fourchan thingies':         Fourchan
-      'Emoji':                     Emoji
-      'Color User IDs':            IDColor
-      'Custom CSS':                CustomCSS
-      'Linkify':                   Linkify
-      'Reveal Spoilers':           RemoveSpoilers
-      'Resurrect Quotes':          Quotify
-      'Filter':                    Filter
-      'Thread Hiding Buttons':     ThreadHiding
-      'Reply Hiding Buttons':      PostHiding
-      'Recursive':                 Recursive
-      'Strike-through Quotes':     QuoteStrikeThrough
-      'Quick Reply':               QR
-      'Menu':                      Menu
-      'Report Link':               ReportLink
-      'Thread Hiding (Menu)':      ThreadHiding.menu
-      'Reply Hiding (Menu)':       PostHiding.menu
-      'Delete Link':               DeleteLink
-      'Filter (Menu)':             Filter.menu
-      'Download Link':             DownloadLink
-      'Archive Link':              ArchiveLink
-      'Quote Inlining':            QuoteInline
-      'Quote Previewing':          QuotePreview
-      'Quote Backlinks':           QuoteBacklink
-      'Mark Quotes of You':        QuoteYou
-      'Mark OP Quotes':            QuoteOP
-      'Mark Cross-thread Quotes':  QuoteCT
-      'Anonymize':                 Anonymize
-      'Time Formatting':           Time
-      'Relative Post Dates':       RelativeDates
-      'File Info Formatting':      FileInfo
-      'Fappe Tyme':                FappeTyme
-      'Gallery':                   Gallery
-      'Gallery (menu)':            Gallery.menu
-      'Sauce':                     Sauce
-      'Image Expansion':           ImageExpand
-      'Image Expansion (Menu)':    ImageExpand.menu
-      'Reveal Spoiler Thumbnails': RevealSpoilers
-      'Image Loading':             ImageLoader
-      'Image Hover':               ImageHover
-      'Thread Expansion':          ExpandThread
-      'Thread Excerpt':            ThreadExcerpt
-      'Favicon':                   Favicon
-      'Unread':                    Unread
-      'Quote Threading':           QuoteThreading
-      'Thread Stats':              ThreadStats
-      'Thread Updater':            ThreadUpdater
-      'Thread Watcher':            ThreadWatcher
-      'Thread Watcher (Menu)':     ThreadWatcher.menu
-      'Index Navigation':          Nav
-      'Keybinds':                  Keybinds
-      'Show Dice Roll':            Dice
-      'Banner':                    Banner
+    for name, module of Main.features
+      # c.time "#{name} initialization"
+      try
+        module.init()
+      catch err
+        Main.handleErrors
+          message: "\"#{name}\" initialization crashed."
+          error: err
+      # finally
+      #   c.timeEnd "#{name} initialization"
+    return
     # c.timeEnd 'All initializations'
 
     $.on d, 'AddCallback', Main.addCallback
@@ -254,6 +191,7 @@ Main =
     len = nodes.length
     softTask()
 
+
   addCallback: (e) ->
     obj = e.detail
     unless typeof obj.callback.name is 'string'
@@ -318,5 +256,108 @@ Main =
   <%= grunt.file.read('src/General/css/tomorrow.css').replace(/\s+/g, ' ').trim() %>
   <%= grunt.file.read('src/General/css/photon.css').replace(/\s+/g, ' ').trim() %>
   """
+    
+  features: 
+    'Polyfill':                  Polyfill
+    'Emoji':                     Emoji
+    'Style':                     Style
+    'Mascots':                   MascotTools
+    'Rice':                      Rice
+    'Banner':                    Banner
+    'Announcements':             GlobalMessage
+    'Archive Redirection':       Redirect
+    'Header':                    Header
+    'Catalog Links':             CatalogLinks
+    'Settings':                  Settings
+    'Index Generator':           Index
+    'Announcement Hiding':       PSAHiding
+    'Fourchan thingies':         Fourchan
+    'Color User IDs':            IDColor
+    'Custom CSS':                CustomCSS
+    'Linkify':                   Linkify
+    'Reveal Spoilers':           RemoveSpoilers
+    'Resurrect Quotes':          Quotify
+    'Filter':                    Filter
+    'Thread Hiding Buttons':     ThreadHiding
+    'Reply Hiding Buttons':      PostHiding
+    'Recursive':                 Recursive
+    'Strike-through Quotes':     QuoteStrikeThrough
+    'Quick Reply':               QR
+    'Menu':                      Menu
+    'Report Link':               ReportLink
+    'Thread Hiding (Menu)':      ThreadHiding.menu
+    'Reply Hiding (Menu)':       PostHiding.menu
+    'Delete Link':               DeleteLink
+    'Filter (Menu)':             Filter.menu
+    'Download Link':             DownloadLink
+    'Archive Link':              ArchiveLink
+    'Quote Inlining':            QuoteInline
+    'Quote Previewing':          QuotePreview
+    'Quote Backlinks':           QuoteBacklink
+    'Mark Quotes of You':        QuoteYou
+    'Mark OP Quotes':            QuoteOP
+    'Mark Cross-thread Quotes':  QuoteCT
+    'Anonymize':                 Anonymize
+    'Time Formatting':           Time
+    'Relative Post Dates':       RelativeDates
+    'File Info Formatting':      FileInfo
+    'Fappe Tyme':                FappeTyme
+    'Gallery':                   Gallery
+    'Gallery (menu)':            Gallery.menu
+    'Sauce':                     Sauce
+    'Image Expansion':           ImageExpand
+    'Image Expansion (Menu)':    ImageExpand.menu
+    'Reveal Spoiler Thumbnails': RevealSpoilers
+    'Image Loading':             ImageLoader
+    'Image Hover':               ImageHover
+    'Thread Expansion':          ExpandThread
+    'Thread Excerpt':            ThreadExcerpt
+    'Favicon':                   Favicon
+    'Unread':                    Unread
+    'Quote Threading':           QuoteThreading
+    'Thread Updater':            ThreadUpdater
+    'Thread Stats':              ThreadStats
+    'Thread Watcher':            ThreadWatcher
+    'Thread Watcher (Menu)':     ThreadWatcher.menu
+    'Index Navigation':          Nav
+    'Keybinds':                  Keybinds
+    'Show Dice Roll':            Dice
+    
+  clean: ->
+    delete g.posts[id]   for id of g.posts
+    delete g.threads[id] for id of g.threads
+
+  disconnect: ->
+    # Disconnect active features that _can_ be disconnected
+    feature.disconnect() for name, feature of Main.features when feature.disconnect
+
+    # Clean Post and Thread callbacks
+    Post.callbacks.clear()
+    Thread.callbacks.clear()
+
+    # Clean the board, as we'll be dumping shit here
+    $.rmAll $ '.board'
+
+  navigate: (context) ->
+    # Lets have a good idea of what we should we should be expecting for this kind of feature
+    {boardID, view, threadID} = context
+
+    # Moving from thread to thread or index to index.
+    if view is g.VIEW
+      Main.refresh context
+
+    else
+      Main.disconnect()
+
+  refresh: (context) ->
+    {boardID, view, threadID} = context
+
+    if view is 'thread'
+      # Refresh thread features
+      Main.features[name].thread() for name of Main.features
+    else
+      # Refresh index features
+      Main.features[name].index()  for name of Main.features
+      
 
 Main.init()
