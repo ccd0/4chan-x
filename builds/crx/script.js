@@ -8765,7 +8765,7 @@
       });
     },
     disconnect: function() {
-      var el, entry, input, _i, _len, _ref;
+      var el, entry, input, name, _i, _j, _len, _len1, _ref, _ref1;
       if (Conf['Updater and Stats in Header']) {
         Header.rmShortcut(this.dialog);
       } else {
@@ -8785,11 +8785,11 @@
       }
       $.off(this.settings, 'click', this.intervalShortcut);
       $.event('rmMenuEntry', this.entry);
-      delete this.checkPostCount;
-      delete this.timer;
-      delete this.status;
-      delete this.isUpdating;
-      delete this.entry;
+      _ref1 = ['checkPostCount', 'timer', 'status', 'isUpdating', 'entry', 'dialog', 'thread', 'root', 'lastPost', 'outdateCount', 'online'];
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        name = _ref1[_j];
+        delete this[name];
+      }
       return Thread.callbacks.rm('Thread Updater');
     },
     node: function() {

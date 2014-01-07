@@ -82,11 +82,7 @@ ThreadUpdater =
 
     $.event 'rmMenuEntry', @entry
 
-    delete @checkPostCount
-    delete @timer
-    delete @status
-    delete @isUpdating
-    delete @entry
+    delete @[name] for name in ['checkPostCount', 'timer', 'status', 'isUpdating', 'entry', 'dialog', 'thread', 'root', 'lastPost', 'outdateCount', 'online']
 
     Thread.callbacks.rm 'Thread Updater'
 
