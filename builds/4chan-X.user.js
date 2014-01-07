@@ -11191,10 +11191,7 @@
         $.extend(Conf, items);
         return Main.initFeatures();
       });
-      $.on(d, '4chanMainInit', Main.initStyle);
-      return $.asap((function() {
-        return d.head && $('link[rel="shortcut icon"]', d.head) || d.readyState !== 'loading';
-      }), Main.initStyle);
+      return $.on(d, '4chanMainInit', Main.initStyle);
     },
     initFeatures: function() {
       var init, pathname, _ref;

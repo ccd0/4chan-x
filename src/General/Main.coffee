@@ -22,8 +22,6 @@ Main =
       Main.initFeatures()
 
     $.on d, '4chanMainInit', Main.initStyle
-    $.asap (-> d.head and $('link[rel="shortcut icon"]', d.head) or d.readyState isnt 'loading'),
-      Main.initStyle
 
   initFeatures: ->
 
