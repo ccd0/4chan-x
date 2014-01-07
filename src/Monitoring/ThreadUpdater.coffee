@@ -1,7 +1,10 @@
 ThreadUpdater =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
+    
+    ThreadUpdater.connect.call @
 
+  connect: ->
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
         innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>"
@@ -22,10 +25,10 @@ ThreadUpdater =
     @status = $ '#update-status', sc
     @isUpdating = Conf['Auto Update']
 
-    $.on @timer,  'click', ThreadUpdater.update
-    $.on @status, 'click', ThreadUpdater.update
+    $.on @timer,  'click', @update
+    $.on @status, 'click', @update
 
-    subEntries = []
+    @subEntries = []
     for name, conf of Config.updater.checkbox
       checked = if Conf[name] then 'checked' else ''
       el = $.el 'label',
@@ -34,20 +37,20 @@ ThreadUpdater =
       input = el.firstElementChild
       $.on input, 'change', $.cb.checked
       if input.name is 'Scroll BG'
-        $.on input, 'change', ThreadUpdater.cb.scrollBG
-        ThreadUpdater.cb.scrollBG()
+        $.on input, 'change', @cb.scrollBG
+        @cb.scrollBG()
       else if input.name is 'Auto Update'
-        $.on input, 'change', ThreadUpdater.cb.update
+        $.on input, 'change', @cb.update
       subEntries.push el: el
 
-    settings = $.el 'span',
+    @settings = $.el 'span',
       innerHTML: '<a href=javascript:;>Interval</a>'
 
-    $.on settings, 'click', @intervalShortcut
+    $.on @settings, 'click', @intervalShortcut
 
     subEntries.push el: settings
 
-    $.event 'AddMenuEntry',
+    $.event 'AddMenuEntry', @entry =
       type: 'header'
       el: $.el 'span',
         textContent: 'Updater'
@@ -57,6 +60,35 @@ ThreadUpdater =
     Thread.callbacks.push
       name: 'Thread Updater'
       cb:   @node
+  
+  disconnect: ->
+    if Conf['Updater and Stats in Header']
+      Header.rmShortcut @dialog
+    else 
+      $.rmClass doc, 'float'
+      $.rm @dialog
+
+    $.off @timer,  'click', @update
+    $.off @status, 'click', @update
+
+    for entry in @entry.subEntries
+      {el} = entry
+      input = el.firstElementChild
+      $.off input, 'change', $.cb.checked
+      $.off input, 'change', @cb.scrollBG
+      $.off input, 'change', @cb.update
+
+    $.off @settings, 'click', @intervalShortcut
+
+    $.event 'rmMenuEntry', @entry
+
+    delete @checkPostCount
+    delete @timer
+    delete @status
+    delete @isUpdating
+    delete @entry
+
+    Thread.callbacks.rm 'Thread Updater'
 
   node: ->
     ThreadUpdater.thread       = @

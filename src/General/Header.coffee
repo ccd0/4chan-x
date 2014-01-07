@@ -408,6 +408,8 @@ Header =
     $.add shortcut, el
     $.prepend Header.shortcuts, shortcut
 
+  rmShortcut: (el) ->
+    $.rm el.parentElement
 
   menuToggle: (e) ->
     Header.menu.toggle e, @, g

@@ -2,7 +2,7 @@ Unread =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Favicon'] and !Conf['Desktop Notifications']
 
-    Unread.connect()
+    Unread.connect.call this
   
   connect: ->
     @db = new DataBoard 'lastReadPosts', @sync
@@ -21,12 +21,12 @@ Unread =
     Unread.db.disconnect()
     $.rm hr, parent if parent = (hr = Unread.hr).parentElement
 
-    delete Unread[name] for name in ['db', 'hr', 'posts', 'postsQuotingYou', 'thread', 'title', 'lastReadPost']
+    delete @[name] for name in ['db', 'hr', 'posts', 'postsQuotingYou', 'thread', 'title', 'lastReadPost']
 
-    $.off d, '4chanXInitFinished',      Unread.ready
-    $.off d, 'ThreadUpdate',            Unread.onUpdate
-    $.off d, 'scroll visibilitychange', Unread.read
-    $.off d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
+    $.off d, '4chanXInitFinished',      @ready
+    $.off d, 'ThreadUpdate',            @onUpdate
+    $.off d, 'scroll visibilitychange', @read
+    $.off d, 'visibilitychange',        @setLine if Conf['Unread Line']
 
     Thread.callbacks.rm 'Unread'
 
