@@ -12578,18 +12578,19 @@
       }
     },
     callbackNodesDB: function(klass, nodes, cb) {
-      var callbacks, errors, len, softTask;
+      var callbacks, errors, i, len, softTask;
       errors = null;
       len = 0;
+      i = 0;
       callbacks = klass.callbacks;
       softTask = function() {
         var node;
-        node = nodes.shift();
+        node = nodes[i++];
         callbacks.execute(node);
-        if (!--len && cb) {
+        if (len === i && cb) {
           return cb();
         }
-        if (!(len % 7)) {
+        if (!(i % 7)) {
           return setTimeout(softTask, 0);
         } else {
           return softTask();

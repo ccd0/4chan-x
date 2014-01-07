@@ -238,14 +238,15 @@ Main =
   callbackNodesDB: (klass, nodes, cb) ->
     errors = null
     len    = 0
+    i = 0
 
     {callbacks} = klass
 
     softTask = ->
-      node = nodes.shift()
+      node = nodes[i++]
       callbacks.execute node
-      return cb() if not --len and cb
-      unless len % 7
+      return cb() if len is i and cb
+      unless i % 7
         setTimeout softTask, 0
       else
         softTask()
