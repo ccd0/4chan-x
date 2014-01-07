@@ -1,3 +1,4 @@
+<%= grunt.file.read('src/General/lib/callbacks.class') %>
 <%= grunt.file.read('src/General/lib/board.class') %>
 <%= grunt.file.read('src/General/lib/thread.class') %>
 <%= grunt.file.read('src/General/lib/post.class') %>

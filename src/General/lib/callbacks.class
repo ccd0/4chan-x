@@ -1,0 +1,20 @@
+class Callbacks
+  push: ({name, cb}) -> @[name] = cb
+
+  clean: -> 
+    @rm name for name of @ when @hasOwnProperty name
+    return
+
+  rm: (name) -> delete @[name]
+
+  execute: (node) ->
+    for name of @ when @hasOwnProperty name
+      try
+        @[name].call node
+      catch err
+        errors = [] unless errors
+        errors.push
+          message: ['"', name, '" crashed on node No.', node, ' (', node.board, ').'].join('')
+          error: err
+
+    Main.handleErrors errors if errors

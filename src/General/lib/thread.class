@@ -1,5 +1,5 @@
 class Thread
-  @callbacks = []
+  @callbacks = new Callbacks()
   toString: -> @ID
 
   constructor: (@ID, @board) ->
