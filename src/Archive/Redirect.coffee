@@ -51,8 +51,8 @@ Redirect =
       http:  true
       https: true
       software: "foolfuuka"
-      boards: ["hr", "tg", "tv", "x"]
-      files:  ["hr", "tg", "tv", "x"]
+      boards: ["hr", "pol", "s4s", "tg", "tv", "x"]
+      files:  ["hr", "pol", "s4s", "tg", "tv", "x"]
 
     "Nyafuu":
       domain: "archive.nyafuu.org"
@@ -61,14 +61,6 @@ Redirect =
       software: "foolfuuka"
       boards: ["c", "w", "wg"]
       files:  ["c", "w", "wg"]
-
-    "fap archive":
-      domain: "fuuka.worldathleticproject.org"
-      http:  true
-      https: true
-      software: "foolfuuka"
-      boards: ["adv", "b", "cm", "d", "e", "h", "hc", "lgbt", "pol", "r", "s", "s4s", "soc", "trv", "u", "y"]
-      files:  ["b", "cm", "d", "e", "h", "hc", "pol", "r", "s", "s4s", "soc", "u", "y"] 
 
     "Install Gentoo":
       domain: "archive.installgentoo.net"
@@ -91,7 +83,7 @@ Redirect =
       http: true
       software: "fuuka"
       boards: ["an", "fit", "k", "mlp", "r9k", "toy"]
-      files:  ["an", "k", "toy"]
+      files:  ["an", "fit", "k", "r9k", "toy"]
 
     "warosu":
       domain: "fuuka.warosu.org"
@@ -107,8 +99,8 @@ Redirect =
       https: true
       withCredentials: true
       software: "foolfuuka"
-      boards: ["a", "co", "d", "gd", "h", "jp", "m", "mlp", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
-      files:  ["a", "d", "gd", "h", "jp", "m", "tg", "u", "vg", "vp", "vr", "wsg"]
+      boards: ["a", "co", "gd", "jp", "m", "s4s", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
+      files:  ["a", "gd", "jp", "m", "s4s", "tg", "u", "vg", "vp", "vr", "wsg"]
 
   to: (dest, data) ->
     archive = (if dest is 'search' then Redirect.data.thread else Redirect.data[dest])[data.boardID]
