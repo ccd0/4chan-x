@@ -1,16 +1,16 @@
 class Callbacks
-  push: ({name, cb}) -> @name = cb
+  push: ({name, cb}) -> @[name] = cb
 
   clean: -> 
     @rm name for name of @ when @hasOwnProperty name
     return
 
-  rm: (name) -> delete @name
+  rm: (name) -> delete @[name]
 
-  execute: (target) ->
-    for name, cb of @ when @hasOwnProperty name
+  execute: (node) ->
+    for name of @ when @hasOwnProperty name
       try
-        cb.call target
+        @[name].call node
       catch err
         errors = [] unless errors
         errors.push

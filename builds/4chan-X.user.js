@@ -813,7 +813,7 @@
     Callbacks.prototype.push = function(_arg) {
       var cb, name;
       name = _arg.name, cb = _arg.cb;
-      return this.name = cb;
+      return this[name] = cb;
     };
 
     Callbacks.prototype.clean = function() {
@@ -826,16 +826,15 @@
     };
 
     Callbacks.prototype.rm = function(name) {
-      return delete this.name;
+      return delete this[name];
     };
 
-    Callbacks.prototype.execute = function(target) {
-      var cb, err, errors, name;
+    Callbacks.prototype.execute = function(node) {
+      var err, errors, name;
       for (name in this) {
-        cb = this[name];
         if (this.hasOwnProperty(name)) {
           try {
-            cb.call(target);
+            this[name].call(node);
           } catch (_error) {
             err = _error;
             if (!errors) {
@@ -12571,43 +12570,32 @@
       }
     },
     callbackNodes: function(klass, nodes) {
-      var len, node;
-      len = nodes.length;
+      var cb, i, node;
+      i = 0;
+      cb = klass.callbacks;
       while (node = nodes[i++]) {
-        klass.callback.execute(node);
+        cb.execute(node);
       }
     },
     callbackNodesDB: function(klass, nodes, cb) {
-      var errors, func, i, len, node, queue, softTask;
-      queue = [];
+      var callbacks, errors, len, softTask;
       errors = null;
-      func = function(node) {
-        klass.callback.execute(node);
-        if (!queue.length) {
-          if (cb) {
-            return cb();
-          }
-        }
-      };
+      len = 0;
+      callbacks = klass.callbacks;
       softTask = function() {
         var node;
-        node = queue.shift();
-        func(node);
-        if (!queue.length) {
-          return;
+        node = nodes.shift();
+        callbacks.execute(node);
+        if (!--len && cb) {
+          return cb();
         }
-        if (!(queue.length % 7)) {
+        if (!(len % 7)) {
           return setTimeout(softTask, 0);
         } else {
           return softTask();
         }
       };
       len = nodes.length;
-      i = 0;
-      while (i < len) {
-        node = nodes[i++];
-        queue.push(node);
-      }
       return softTask();
     },
     addCallback: function(e) {

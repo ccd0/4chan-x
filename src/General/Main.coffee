@@ -229,40 +229,28 @@ Main =
       new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to operate properly.', 30
 
   callbackNodes: (klass, nodes) ->
-    # get the nodes' length only once
-    len = nodes.length
+    i = 0
+    cb = klass.callbacks
     while node = nodes[i++]
-      klass.callback.execute node
+      cb.execute node
     return
 
   callbackNodesDB: (klass, nodes, cb) ->
-    queue = []
     errors = null
+    len    = 0
 
-    func = (node) ->
-      klass.callback.execute node
-
-      # finish
-      unless queue.length
-        cb() if cb
+    {callbacks} = klass
 
     softTask = ->
-      node = queue.shift()
-      func node
-      return unless queue.length
-      unless queue.length % 7
+      node = nodes.shift()
+      callbacks.execute node
+      return cb() if not --len and cb
+      unless len % 7
         setTimeout softTask, 0
       else
         softTask()
 
-    # get the nodes' length only once
-    len    = nodes.length
-    i      = 0
-
-    while i < len
-      node = nodes[i++]
-      queue.push node
-
+    len = nodes.length
     softTask()
 
   addCallback: (e) ->
