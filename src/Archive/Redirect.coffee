@@ -1,114 +1,119 @@
 Redirect =
-  data:
-    thread: {}
-    post:   {}
-    file:   {}
 
   init: ->
+    o =
+      thread: {}
+      post:   {}
+      file:   {}
+
+    {archives} = Redirect
+
     for boardID, data of Conf['selectedArchives']
-      for type, id of data
-        if archive = Redirect.archives[id]
-          boards = archive[type] or archive['boards']
-          continue unless boardID in boards
-          Redirect.data[type][boardID] = archive
-    for name, archive of Redirect.archives
+      for type, id of data when (archive = archives[id]) and boardID in (archive[type] or archive['boards'])
+        o[type][boardID] = archive.data
+
+    for name, archive of archives
       for boardID in archive.boards
-        unless boardID of Redirect.data.thread
-          Redirect.data.thread[boardID] = archive
-        unless boardID of Redirect.data.post or archive.software isnt 'foolfuuka'
-          Redirect.data.post[boardID] = archive
-        unless boardID of Redirect.data.file or boardID not in archive.files
-          Redirect.data.file[boardID] = archive
-    return
+        {data} = archive
+        unless boardID of o.thread
+          o.thread[boardID] = data
+        unless boardID of o.post or archive.software isnt 'foolfuuka'
+          o.post[boardID] = data
+        unless boardID of o.file or boardID not in archive.files
+          o.file[boardID] = data
+    
+    Redirect.data = o
 
   archives:
     "Foolz":
-      domain: "archive.foolz.us"
-      http:  false
-      https: true
-      software: "foolfuuka"
       boards: ["a", "co", "gd", "jp", "m", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"]
       files:  ["a", "gd", "jp", "m", "tg", "vg", "vp", "vr", "wsg"]
+      data:
+        domain: "archive.foolz.us"
+        http:  false
+        https: true
+        software: "foolfuuka"
 
     "NSFW Foolz":
-      domain: "nsfw.foolz.us"
-      http:  false
-      https: true
-      software: "foolfuuka"
       boards: ["u"]
       files:  ["u"]
+      data:
+        domain: "nsfw.foolz.us"
+        http:  false
+        https: true
+        software: "foolfuuka"
 
     "The Dark Cave":
-      domain: "archive.thedarkcave.org"
-      http:  true
-      https: true
-      software: "foolfuuka"
       boards: ["c", "int", "out", "po"]
       files:  ["c", "po"]
+      data:
+        domain: "archive.thedarkcave.org"
+        http:  true
+        https: true
+        software: "foolfuuka"
 
     "4plebs":
-      domain: "archive.4plebs.org"
-      http:  true
-      https: true
-      software: "foolfuuka"
       boards: ["hr", "pol", "s4s", "tg", "tv", "x"]
       files:  ["hr", "pol", "s4s", "tg", "tv", "x"]
+      data:
+        domain: "archive.4plebs.org"
+        http:  true
+        https: true
+        software: "foolfuuka"
 
     "Nyafuu":
-      domain: "archive.nyafuu.org"
-      http:  true
-      https: true
-      software: "foolfuuka"
       boards: ["c", "w", "wg"]
       files:  ["c", "w", "wg"]
+      data:
+        domain: "archive.nyafuu.org"
+        http:  true
+        https: true
+        software: "foolfuuka"
 
     "Install Gentoo":
-      domain: "archive.installgentoo.net"
-      http:  false
-      https: true
-      software: "fuuka"
       boards: ["diy", "g", "sci"]
       files:  []
+      data:
+        domain: "archive.installgentoo.net"
+        http:  false
+        https: true
+        software: "fuuka"
 
     "Rebecca Black Tech":
-      domain: "rbt.asia"
-      http:  true
-      https: true
-      software: "fuuka"
       boards: ["cgl", "g", "mu", "w"]
       files:  ["cgl", "g", "mu", "w"]
+      data:
+        domain: "rbt.asia"
+        http:  true
+        https: true
+        software: "fuuka"
 
     "Heinessen":
-      domain: "archive.heinessen.com"
-      http: true
-      software: "fuuka"
       boards: ["an", "fit", "k", "mlp", "r9k", "toy"]
       files:  ["an", "fit", "k", "r9k", "toy"]
+      data:
+        domain: "archive.heinessen.com"
+        http: true
+        software: "fuuka"
 
     "warosu":
-      domain: "fuuka.warosu.org"
-      http:  true
-      https: true
-      software: "fuuka"
       boards: ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"]
       files:  ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"]
-
-    "Bui's Archive":
-      domain: "archive.bui.pm"
-      http:  true
-      https: true
-      software: "foolfuuka"
-      boards: ["b"]
-      files:  ["b"]
+      data:
+        domain: "fuuka.warosu.org"
+        http:  true
+        https: true
+        software: "fuuka"
 
     "Foolz Beta":
-      domain: "beta.foolz.us"
-      http:  true
-      https: true
-      withCredentials: true
-      software: "foolfuuka"
       boards: ["a", "co", "d", "gd", "h", "jp", "m", "mlp", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
       files:  ["a", "d", "gd", "h", "jp", "m", "tg", "u", "vg", "vp", "vr", "wsg"]
+      data:
+        domain: "beta.foolz.us"
+        http:  true
+        https: true
+        withCredentials: true
+        software: "foolfuuka"
 
   to: (dest, data) ->
     archive = (if dest is 'search' then Redirect.data.thread else Redirect.data[dest])[data.boardID]
