@@ -4036,7 +4036,7 @@
       $.on(d, 'CreateNotification', this.createNotification);
       this.enableDesktopNotifications();
       this.addShortcut(menuButton, true);
-      return $.asap((function() {
+      $.asap((function() {
         return d.body;
       }), function() {
         if (!Main.isThisPageLegit()) {
@@ -4048,6 +4048,13 @@
         $.prepend(d.body, _this.bar);
         $.add(d.body, Header.hover);
         return _this.setBarPosition(Conf['Bottom Header']);
+      });
+      return $.ready(function() {
+        var a;
+        if (a = $("a[href*='/" + g.BOARD + "/']", $.id('boardNavDesktopFoot'))) {
+          a.className = 'current';
+          return $.on(a, 'click', Index.cb.link);
+        }
       });
     },
     bar: $.el('div', {
@@ -4071,13 +4078,14 @@
     setBoardList: function() {
       var a, boardList, btn, fourchannav, fullBoardList, shortcuts;
       fourchannav = $.id('boardNavDesktop');
-      if (a = $("a[href*='/" + g.BOARD + "/']", fourchannav)) {
-        a.className = 'current';
-      }
       boardList = $.el('span', {
         id: 'board-list',
         innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> " + fourchannav.innerHTML + "</span>"
       });
+      if (a = $("a[href*='/" + g.BOARD + "/']", boardList)) {
+        a.className = 'current';
+        $.on(a, 'click', Index.cb.link);
+      }
       fullBoardList = $('#full-board-list', boardList);
       btn = $('.hide-board-list-button', fullBoardList);
       $.on(btn, 'click', Header.toggleBoardList);
@@ -4103,7 +4111,7 @@
       }
       as = $$('#full-board-list a[title]', Header.bar);
       nodes = text.match(/[\w@]+((-(all|title|replace|full|index|catalog|url:"[^"]+[^"]"|text:"[^"]+")|\,"[^"]+[^"]"))*|[^\w@]+/g).map(function(t) {
-        var a, board, m, _i, _len;
+        var a, board, current, m, _i, _len;
         if (/^[^\w@]/.test(t)) {
           return $.tn(t);
         }
@@ -4129,7 +4137,11 @@
           a = as[_i];
           if (a.textContent === board) {
             a = a.cloneNode(true);
-            a.textContent = /-title/.test(t) || /-replace/.test(t) && $.hasClass(a, 'current') ? a.title : /-full/.test(t) ? "/" + board + "/ - " + a.title : (m = t.match(/-text:"(.+)"/)) ? m[1] : a.textContent;
+            current = $.hasClass(a, 'current');
+            if (current) {
+              $.on(a, 'click', Index.cb.link);
+            }
+            a.textContent = /-title/.test(t) || /-replace/.test(t) && current ? a.title : /-full/.test(t) ? "/" + board + "/ - " + a.title : (m = t.match(/-text:"(.+)"/)) ? m[1] : a.textContent;
             if (m = t.match(/-(index|catalog)/)) {
               a.dataset.only = m[1];
               a.href = "//boards.4chan.org/" + board + "/";
@@ -4546,6 +4558,13 @@
         }
         e.preventDefault();
         return Index.userPageNav(+a.pathname.split('/')[2]);
+      },
+      link: function(e) {
+        if (g.VIEW !== 'index' || /catalog/.test(this.href)) {
+          return;
+        }
+        e.preventDefault();
+        return Index.update();
       }
     },
     scrollToIndex: function() {

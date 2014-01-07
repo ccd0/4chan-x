@@ -127,6 +127,10 @@ Index =
       return if a.textContent is 'Catalog'
       e.preventDefault()
       Index.userPageNav +a.pathname.split('/')[2]
+    link: (e) ->
+      return if g.VIEW isnt 'index' or /catalog/.test @href
+      e.preventDefault()
+      Index.update()
 
   scrollToIndex: ->
     Header.scrollToIfNeeded Index.root
