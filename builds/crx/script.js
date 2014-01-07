@@ -1721,6 +1721,7 @@
         _this.footer = $.id('boardNavDesktopFoot');
         if (a = $("a[href*='/" + g.BOARD + "/']", $.id('boardNavDesktopFoot'))) {
           a.className = 'current';
+          $.on(a, 'click', Index.cb.link);
         }
         cs = $.el('a', {
           id: 'settingsWindowLink',
@@ -1755,6 +1756,7 @@
       fourchannav = $.id('boardNavDesktop');
       if (a = $("a[href*='/" + g.BOARD + "/']", fourchannav)) {
         a.className = 'current';
+        $.on(a, 'click', Index.cb.link);
       }
       boardList = $.el('span', {
         id: 'board-list',
@@ -2269,6 +2271,13 @@
         }
         e.preventDefault();
         return Index.userPageNav(+a.pathname.split('/')[2]);
+      },
+      link: function(e) {
+        if (g.VIEW !== 'index' || /catalog/.test(this.href)) {
+          return;
+        }
+        e.preventDefault();
+        return Index.update();
       }
     },
     scrollToIndex: function() {

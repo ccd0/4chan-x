@@ -104,6 +104,7 @@ Header =
       @footer = $.id 'boardNavDesktopFoot'
       if a = $ "a[href*='/#{g.BOARD}/']", $.id 'boardNavDesktopFoot'
         a.className = 'current'
+        $.on a, 'click', Index.cb.link
 
       cs = $.el 'a',
         id: 'settingsWindowLink'
@@ -136,6 +137,7 @@ Header =
     fourchannav = $.id 'boardNavDesktop'
     if a = $ "a[href*='/#{g.BOARD}/']", fourchannav
       a.className = 'current'
+      $.on a, 'click', Index.cb.link
     boardList = $.el 'span',
       id: 'board-list'
       innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> #{fourchannav.innerHTML}</span>"
