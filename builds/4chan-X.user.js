@@ -9486,17 +9486,6 @@
       });
       this.posts = new RandomAccessList;
       this.postsQuotingYou = [];
-      this.qr = QR.db ? function(post) {
-        var data;
-        data = {
-          boardID: post.board.ID,
-          threadID: post.thread.ID,
-          postID: post.ID
-        };
-        return (QR.db.get(data) ? true : false);
-      } : function() {
-        return false;
-      };
       return Thread.callbacks.push({
         name: 'Unread',
         cb: this.node
@@ -9589,7 +9578,11 @@
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
         post = posts[_i];
         ID = post.ID;
-        if (ID <= Unread.lastReadPost || post.isHidden || Unread.qr(post)) {
+        if (ID <= Unread.lastReadPost || post.isHidden || QR.db.get({
+          boardID: post.board.ID,
+          threadID: post.thread.ID,
+          postID: post.ID
+        })) {
           continue;
         }
         if (!(post.prev || post.next)) {
