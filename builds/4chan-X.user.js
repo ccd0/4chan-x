@@ -5016,44 +5016,37 @@
       return true;
     },
     toggle: function() {
-      var ID, container, containers, post, posts, thread, _i, _j, _len, _len1, _ref, _results;
+      var ID, container, containers, nodes, post, posts, thread, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _results;
       if (QuoteThreading.enabled = this.checked) {
         return QuoteThreading.force();
       } else {
         thread = $('.thread');
-        posts = (function() {
-          var _ref, _results;
-          _ref = g.posts;
-          _results = [];
-          for (ID in _ref) {
-            post = _ref[ID];
-            if (!(post === post.thread.OP || post.isClone)) {
-              _results.push(post);
-            }
+        posts = [];
+        nodes = [];
+        _ref = g.posts;
+        for (ID in _ref) {
+          post = _ref[ID];
+          if (!(post === post.thread.OP || post.isClone)) {
+            posts.push(post);
           }
-          return _results;
-        })();
+        }
         posts.sort(function(a, b) {
           return a.ID - b.ID;
         });
-        $.add(thread, (function() {
-          var _i, _len, _results;
-          _results = [];
-          for (_i = 0, _len = posts.length; _i < _len; _i++) {
-            post = posts[_i];
-            _results.push(post.nodes.root);
-          }
-          return _results;
-        })());
+        for (_i = 0, _len = posts.length; _i < _len; _i++) {
+          post = posts[_i];
+          nodes.push(post.nodes.root);
+        }
+        $.add(thread, nodes);
         containers = $$('.threadContainer', thread);
-        for (_i = 0, _len = containers.length; _i < _len; _i++) {
-          container = containers[_i];
+        for (_j = 0, _len1 = containers.length; _j < _len1; _j++) {
+          container = containers[_j];
           $.rm(container);
         }
-        _ref = $$('.threadOP');
+        _ref1 = $$('.threadOP');
         _results = [];
-        for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-          post = _ref[_j];
+        for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+          post = _ref1[_k];
           _results.push($.rmClass(post, 'threadOP'));
         }
         return _results;

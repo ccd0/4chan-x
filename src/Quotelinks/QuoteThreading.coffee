@@ -91,9 +91,15 @@ QuoteThreading =
 
     else
       thread = $('.thread')
-      posts = (post for ID, post of g.posts when not (post is post.thread.OP or post.isClone))
+      posts = []
+      nodes = []
+
+      posts.push post for ID, post of g.posts when not (post is post.thread.OP or post.isClone)
       posts.sort (a, b) -> a.ID - b.ID
-      $.add thread, (post.nodes.root for post in posts)
+
+      nodes.push post.nodes.root for post in posts
+      $.add thread, nodes
+
       containers = $$ '.threadContainer', thread
       $.rm container for container in containers
       $.rmClass post, 'threadOP' for post in $$ '.threadOP'
