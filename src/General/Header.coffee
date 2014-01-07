@@ -135,12 +135,12 @@ Header =
 
   setBoardList: ->
     fourchannav = $.id 'boardNavDesktop'
-    if a = $ "a[href*='/#{g.BOARD}/']", fourchannav
-      a.className = 'current'
-      $.on a, 'click', Index.cb.link
     boardList = $.el 'span',
       id: 'board-list'
       innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> #{fourchannav.innerHTML}</span>"
+    if a = $ "a[href*='/#{g.BOARD}/']", boardList
+      a.className = 'current'
+      $.on a, 'click', Index.cb.link
     fullBoardList = $ '#full-board-list', boardList
     btn = $ '.hide-board-list-button', fullBoardList
     $.on btn, 'click', Header.toggleBoardList
@@ -184,7 +184,11 @@ Header =
         if a.textContent is board
           a = a.cloneNode true
 
-          a.textContent = if /-title/.test(t) or /-replace/.test(t) and $.hasClass a, 'current'
+          current = $.hasClass a, 'current'
+          if current
+            $.on a, 'click', Index.cb.link
+
+          a.textContent = if /-title/.test(t) or /-replace/.test(t) and current
             a.title
           else if /-full/.test t
             "/#{board}/ - #{a.title}"
