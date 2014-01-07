@@ -1,25 +1,27 @@
 Redirect =
-  data:
-    thread: {}
-    post:   {}
-    file:   {}
 
   init: ->
+    o =
+      thread: {}
+      post:   {}
+      file:   {}
+
+    {archives} = Redirect
+
     for boardID, data of Conf['selectedArchives']
-      for type, id of data
-        if archive = Redirect.archives[id]
-          boards = archive[type] or archive['boards']
-          continue unless boardID in boards
-          Redirect.data[type][boardID] = archive
-    for name, archive of Redirect.archives
+      for type, id of data when (archive = archives[id]) and boardID in (archive[type] or archive['boards'])
+        o[type][boardID] = archive
+
+    for name, archive of archives
       for boardID in archive.boards
-        unless boardID of Redirect.data.thread
-          Redirect.data.thread[boardID] = archive
-        unless boardID of Redirect.data.post or archive.software isnt 'foolfuuka'
-          Redirect.data.post[boardID] = archive
-        unless boardID of Redirect.data.file or boardID not in archive.files
-          Redirect.data.file[boardID] = archive
-    return
+        unless boardID of o.thread
+          o.thread[boardID] = archive
+        unless boardID of o.post or archive.software isnt 'foolfuuka'
+          o.post[boardID] = archive
+        unless boardID of o.file or boardID not in archive.files
+          o.file[boardID] = archive
+    
+    Redirect.data = o
 
   archives:
     "Foolz":

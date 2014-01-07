@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.44 - 2014-01-06
+* 4chan X - Version 1.2.44 - 2014-01-07
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -9755,44 +9755,41 @@
   };
 
   Redirect = {
-    data: {
-      thread: {},
-      post: {},
-      file: {}
-    },
     init: function() {
-      var archive, boardID, boards, data, id, name, type, _i, _len, _ref, _ref1, _ref2;
+      var archive, archives, boardID, data, id, name, o, type, _i, _len, _ref, _ref1;
+      o = {
+        thread: {},
+        post: {},
+        file: {}
+      };
+      archives = Redirect.archives;
       _ref = Conf['selectedArchives'];
       for (boardID in _ref) {
         data = _ref[boardID];
         for (type in data) {
           id = data[type];
-          if (archive = Redirect.archives[id]) {
-            boards = archive[type] || archive['boards'];
-            if (__indexOf.call(boards, boardID) < 0) {
-              continue;
-            }
-            Redirect.data[type][boardID] = archive;
+          if ((archive = archives[id]) && __indexOf.call(archive[type] || archive['boards'], boardID) >= 0) {
+            o[type][boardID] = archive;
           }
         }
       }
-      _ref1 = Redirect.archives;
-      for (name in _ref1) {
-        archive = _ref1[name];
-        _ref2 = archive.boards;
-        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-          boardID = _ref2[_i];
-          if (!(boardID in Redirect.data.thread)) {
-            Redirect.data.thread[boardID] = archive;
+      for (name in archives) {
+        archive = archives[name];
+        _ref1 = archive.boards;
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          boardID = _ref1[_i];
+          if (!(boardID in o.thread)) {
+            o.thread[boardID] = archive;
           }
-          if (!(boardID in Redirect.data.post || archive.software !== 'foolfuuka')) {
-            Redirect.data.post[boardID] = archive;
+          if (!(boardID in o.post || archive.software !== 'foolfuuka')) {
+            o.post[boardID] = archive;
           }
-          if (!(boardID in Redirect.data.file || __indexOf.call(archive.files, boardID) < 0)) {
-            Redirect.data.file[boardID] = archive;
+          if (!(boardID in o.file || __indexOf.call(archive.files, boardID) < 0)) {
+            o.file[boardID] = archive;
           }
         }
       }
+      return Redirect.data = o;
     },
     archives: {
       "Foolz": {
