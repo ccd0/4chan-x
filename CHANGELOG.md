@@ -1,3 +1,14 @@
+### v1.2.45 
+*2014-01-07*
+
+**seaweedchan**:
+- Remove moot's plea to remove ad-blocker
+- Hopefully fix NSFW themes and 404 image redirecting
+- Update archive list
+
+**Zixaphir**:
+- Fix optional increase for thread updater
+
 ### v1.2.44 
 *2013-12-06*
 
