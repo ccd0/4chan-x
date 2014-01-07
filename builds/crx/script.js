@@ -5019,9 +5019,9 @@
       return true;
     },
     toggle: function() {
-      var ID, container, containers, nodes, post, posts, thread, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _results;
+      var ID, container, containers, nodes, post, posts, thread, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
       if (QuoteThreading.enabled = this.checked) {
-        return QuoteThreading.force();
+        QuoteThreading.force();
       } else {
         thread = $('.thread');
         posts = [];
@@ -5047,12 +5047,10 @@
           $.rm(container);
         }
         _ref1 = $$('.threadOP');
-        _results = [];
         for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
           post = _ref1[_k];
-          _results.push($.rmClass(post, 'threadOP'));
+          $.rmClass(post, 'threadOP');
         }
-        return _results;
       }
     },
     kb: function() {

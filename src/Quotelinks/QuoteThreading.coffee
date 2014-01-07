@@ -103,6 +103,8 @@ QuoteThreading =
       containers = $$ '.threadContainer', thread
       $.rm container for container in containers
       $.rmClass post, 'threadOP' for post in $$ '.threadOP'
+    
+    return
 
   kb: ->
     control = $.id 'threadingControl'
