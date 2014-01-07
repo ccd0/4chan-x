@@ -11870,7 +11870,7 @@
         if (ID <= Unread.lastReadPost || post.isHidden || QR.db.get({
           boardID: post.board.ID,
           threadID: post.thread.ID,
-          postID: post.ID
+          postID: ID
         })) {
           continue;
         }
