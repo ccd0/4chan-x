@@ -101,8 +101,8 @@ Header =
       @
 
     $.ready =>
-      @footer = $.id 'boardNavDesktopFoot'
-      if a = $ "a[href*='/#{g.BOARD}/']", $.id 'boardNavDesktopFoot'
+      @footer = footer = $.id 'boardNavDesktopFoot'
+      if a = $ "a[href*='/#{g.BOARD}/']", footer
         a.className = 'current'
         $.on a, 'click', Index.cb.link
 

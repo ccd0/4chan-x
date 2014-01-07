@@ -1707,9 +1707,9 @@
         return _this;
       });
       $.ready(function() {
-        var a, cs;
-        _this.footer = $.id('boardNavDesktopFoot');
-        if (a = $("a[href*='/" + g.BOARD + "/']", $.id('boardNavDesktopFoot'))) {
+        var a, cs, footer;
+        _this.footer = footer = $.id('boardNavDesktopFoot');
+        if (a = $("a[href*='/" + g.BOARD + "/']", footer)) {
           a.className = 'current';
           $.on(a, 'click', Index.cb.link);
         }
