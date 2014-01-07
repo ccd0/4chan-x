@@ -90,3 +90,7 @@ class DataBoard
   onSync: (data) =>
     @data = data or boards: {}
     @sync?()
+
+  disconnect: ->
+    $.desync @key
+    delete @[key] for key in @ when @hasOwnKey key

@@ -268,6 +268,7 @@ $.item = (key, val) ->
   item
 
 $.syncing = {}
+
 <% if (type === 'crx') { %>
 $.sync = do ->
   chrome.storage.onChanged.addListener (changes) ->
@@ -276,6 +277,8 @@ $.sync = do ->
         cb changes[key].newValue, key
     return
   (key, cb) -> $.syncing[key] = cb
+
+$.desync = (key) -> delete $.syncing[key]
 
 $.localKeys = [
   # filters
@@ -360,6 +363,8 @@ $.sync = do ->
     if cb = $.syncing[key]
       cb JSON.parse(newValue), key
   (key, cb) -> $.syncing[g.NAMESPACE + key] = cb
+
+$.desync = (key) -> delete $.syncing[g.NAMESPACE + key]
 
 $.delete = (keys) ->
   unless keys instanceof Array

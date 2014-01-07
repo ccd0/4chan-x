@@ -727,6 +727,10 @@
     };
   })();
 
+  $.desync = function(key) {
+    return delete $.syncing[key];
+  };
+
   $.localKeys = ['name', 'uniqueID', 'tripcode', 'capcode', 'email', 'subject', 'comment', 'flag', 'filename', 'dimensions', 'filesize', 'MD5', 'usercss'];
 
   $["delete"] = function(keys) {
@@ -1462,6 +1466,19 @@
         boards: {}
       };
       return typeof this.sync === "function" ? this.sync() : void 0;
+    };
+
+    DataBoard.prototype.disconnect = function() {
+      var key, _i, _len, _results;
+      $.desync(this.key);
+      _results = [];
+      for (_i = 0, _len = this.length; _i < _len; _i++) {
+        key = this[_i];
+        if (this.hasOwnKey(key)) {
+          _results.push(delete this[key]);
+        }
+      }
+      return _results;
     };
 
     return DataBoard;
@@ -9525,6 +9542,9 @@
       if (g.VIEW !== 'thread' || !Conf['Unread Count'] && !Conf['Unread Favicon'] && !Conf['Desktop Notifications']) {
         return;
       }
+      return Unread.connect();
+    },
+    connect: function() {
       this.db = new DataBoard('lastReadPosts', this.sync);
       this.hr = $.el('hr', {
         id: 'unread-line'
@@ -9535,6 +9555,28 @@
         name: 'Unread',
         cb: this.node
       });
+    },
+    disconnect: function() {
+      var hr, name, parent, _i, _len, _ref;
+      if (!Unread.db) {
+        return;
+      }
+      Unread.db.disconnect();
+      if (parent = (hr = Unread.hr).parentElement) {
+        $.rm(hr, parent);
+      }
+      _ref = ['db', 'hr', 'posts', 'postsQuotingYou', 'thread', 'title', 'lastReadPost'];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        name = _ref[_i];
+        delete Unread[name];
+      }
+      $.off(d, '4chanXInitFinished', Unread.ready);
+      $.off(d, 'ThreadUpdate', Unread.onUpdate);
+      $.off(d, 'scroll visibilitychange', Unread.read);
+      if (Conf['Unread Line']) {
+        $.off(d, 'visibilitychange', Unread.setLine);
+      }
+      return Thread.callbacks.rm('Unread');
     },
     node: function() {
       Unread.thread = this;
