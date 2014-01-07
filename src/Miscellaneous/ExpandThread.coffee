@@ -38,7 +38,7 @@ ExpandThread =
         thread.isExpanded = 'loading'
         [posts, files] = a.textContent.match /\d+/g
         a.textContent  = ExpandThread.text '...', posts, files
-        $.cache "//api.4chan.org/#{thread.board}/res/#{thread}.json", ->
+        $.cache "//a.4cdn.org/#{thread.board}/res/#{thread}.json", ->
           ExpandThread.parse @, thread, a
 
       when 'loading'

@@ -9,10 +9,11 @@
     "buildsPath": "builds/",
     "mainBranch": "master",
     "matches": [
-      "*://api.4chan.org/*",
       "*://boards.4chan.org/*",
-      "*://images.4chan.org/*",
-      "*://sys.4chan.org/*"
+      "*://sys.4chan.org/*",
+      "*://a.4cdn.org/*",
+      "*://i.4cdn.org/*"
+
     ],
     "files": {
       "metajs": "4chan-X.meta.js",

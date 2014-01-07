@@ -42,12 +42,12 @@ Main =
       g.THREADID = +pathname[3]
 
     switch location.hostname
-      when 'api.4chan.org'
+      when 'a.4cdn.org'
         return
       when 'sys.4chan.org'
         Report.init()
         return
-      when 'images.4chan.org'
+      when 'i.4cdn.org'
         $.ready ->
           if Conf['404 Redirect'] and ['4chan - Temporarily Offline', '4chan - 404 Not Found'].contains d.title
             Redirect.init()
