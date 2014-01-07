@@ -9769,7 +9769,7 @@
         for (type in data) {
           id = data[type];
           if ((archive = archives[id]) && __indexOf.call(archive[type] || archive['boards'], boardID) >= 0) {
-            o[type][boardID] = archive;
+            o[type][boardID] = archive.data;
           }
         }
       }
@@ -9778,14 +9778,15 @@
         _ref1 = archive.boards;
         for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
           boardID = _ref1[_i];
+          data = archive.data;
           if (!(boardID in o.thread)) {
-            o.thread[boardID] = archive;
+            o.thread[boardID] = data;
           }
           if (!(boardID in o.post || archive.software !== 'foolfuuka')) {
-            o.post[boardID] = archive;
+            o.post[boardID] = data;
           }
           if (!(boardID in o.file || __indexOf.call(archive.files, boardID) < 0)) {
-            o.file[boardID] = archive;
+            o.file[boardID] = data;
           }
         }
       }
@@ -9793,92 +9794,104 @@
     },
     archives: {
       "Foolz": {
-        domain: "archive.foolz.us",
-        http: false,
-        https: true,
-        software: "foolfuuka",
         boards: ["a", "co", "gd", "jp", "m", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
-        files: ["a", "gd", "jp", "m", "tg", "vg", "vp", "vr", "wsg"]
+        files: ["a", "gd", "jp", "m", "tg", "vg", "vp", "vr", "wsg"],
+        data: {
+          domain: "archive.foolz.us",
+          http: false,
+          https: true,
+          software: "foolfuuka"
+        }
       },
       "NSFW Foolz": {
-        domain: "nsfw.foolz.us",
-        http: false,
-        https: true,
-        software: "foolfuuka",
         boards: ["u"],
-        files: ["u"]
+        files: ["u"],
+        data: {
+          domain: "nsfw.foolz.us",
+          http: false,
+          https: true,
+          software: "foolfuuka"
+        }
       },
       "The Dark Cave": {
-        domain: "archive.thedarkcave.org",
-        http: true,
-        https: true,
-        software: "foolfuuka",
         boards: ["c", "int", "out", "po"],
-        files: ["c", "po"]
+        files: ["c", "po"],
+        data: {
+          domain: "archive.thedarkcave.org",
+          http: true,
+          https: true,
+          software: "foolfuuka"
+        }
       },
       "4plebs": {
-        domain: "archive.4plebs.org",
-        http: true,
-        https: true,
-        software: "foolfuuka",
         boards: ["hr", "pol", "s4s", "tg", "tv", "x"],
-        files: ["hr", "pol", "s4s", "tg", "tv", "x"]
+        files: ["hr", "pol", "s4s", "tg", "tv", "x"],
+        data: {
+          domain: "archive.4plebs.org",
+          http: true,
+          https: true,
+          software: "foolfuuka"
+        }
       },
       "Nyafuu": {
-        domain: "archive.nyafuu.org",
-        http: true,
-        https: true,
-        software: "foolfuuka",
         boards: ["c", "w", "wg"],
-        files: ["c", "w", "wg"]
+        files: ["c", "w", "wg"],
+        data: {
+          domain: "archive.nyafuu.org",
+          http: true,
+          https: true,
+          software: "foolfuuka"
+        }
       },
       "Install Gentoo": {
-        domain: "archive.installgentoo.net",
-        http: false,
-        https: true,
-        software: "fuuka",
         boards: ["diy", "g", "sci"],
-        files: []
+        files: [],
+        data: {
+          domain: "archive.installgentoo.net",
+          http: false,
+          https: true,
+          software: "fuuka"
+        }
       },
       "Rebecca Black Tech": {
-        domain: "rbt.asia",
-        http: true,
-        https: true,
-        software: "fuuka",
         boards: ["cgl", "g", "mu", "w"],
-        files: ["cgl", "g", "mu", "w"]
+        files: ["cgl", "g", "mu", "w"],
+        data: {
+          domain: "rbt.asia",
+          http: true,
+          https: true,
+          software: "fuuka"
+        }
       },
       "Heinessen": {
-        domain: "archive.heinessen.com",
-        http: true,
-        software: "fuuka",
         boards: ["an", "fit", "k", "mlp", "r9k", "toy"],
-        files: ["an", "fit", "k", "r9k", "toy"]
+        files: ["an", "fit", "k", "r9k", "toy"],
+        data: {
+          domain: "archive.heinessen.com",
+          http: true,
+          software: "fuuka"
+        }
       },
       "warosu": {
-        domain: "fuuka.warosu.org",
-        http: true,
-        https: true,
-        software: "fuuka",
         boards: ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"],
-        files: ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"]
-      },
-      "Bui's Archive": {
-        domain: "archive.bui.pm",
-        http: true,
-        https: true,
-        software: "foolfuuka",
-        boards: ["b"],
-        files: ["b"]
+        files: ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"],
+        data: {
+          domain: "fuuka.warosu.org",
+          http: true,
+          https: true,
+          software: "fuuka"
+        }
       },
       "Foolz Beta": {
-        domain: "beta.foolz.us",
-        http: true,
-        https: true,
-        withCredentials: true,
-        software: "foolfuuka",
         boards: ["a", "co", "d", "gd", "h", "jp", "m", "mlp", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
-        files: ["a", "d", "gd", "h", "jp", "m", "tg", "u", "vg", "vp", "vr", "wsg"]
+        files: ["a", "d", "gd", "h", "jp", "m", "tg", "u", "vg", "vp", "vr", "wsg"],
+        data: {
+          domain: "beta.foolz.us",
+          http: true,
+          https: true,
+          withCredentials: true,
+          software: "foolfuuka"
+        }
       }
     },
     to: function(dest, data) {
