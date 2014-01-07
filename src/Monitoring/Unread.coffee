@@ -73,7 +73,7 @@ Unread =
       continue if ID <= Unread.lastReadPost or post.isHidden or QR.db.get {
         boardID:  post.board.ID
         threadID: post.thread.ID
-        postID:   post.ID
+        postID:   ID
       }
       Unread.posts.push post unless post.prev or post.next
       Unread.addPostQuotingYou post
