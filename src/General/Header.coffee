@@ -102,9 +102,9 @@ Header =
 
     $.ready =>
       @footer = footer = $.id 'boardNavDesktopFoot'
+      $.on a, 'click', Main.navigate
       if a = $ "a[href*='/#{g.BOARD}/']", footer
         a.className = 'current'
-        $.on a, 'click', Index.cb.link
 
       cs = $.el 'a',
         id: 'settingsWindowLink'
@@ -138,9 +138,10 @@ Header =
     boardList = $.el 'span',
       id: 'board-list'
       innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> #{fourchannav.innerHTML}</span>"
-    if a = $ "a[href*='/#{g.BOARD}/']", boardList
-      a.className = 'current'
-      $.on a, 'click', Index.cb.link
+    for a in $$ 'a', boardList
+      $.on a, 'click', Main.navigate
+      if a.pathname.split('/')[0] is g.BOARD.ID
+        a.className = 'current'
     fullBoardList = $ '#full-board-list', boardList
     btn = $ '.hide-board-list-button', fullBoardList
     $.on btn, 'click', Header.toggleBoardList
@@ -184,11 +185,9 @@ Header =
         if a.textContent is board
           a = a.cloneNode true
 
-          current = $.hasClass a, 'current'
-          if current
-            $.on a, 'click', Index.cb.link
+          $.on a, 'click', Main.navigate
 
-          a.textContent = if /-title/.test(t) or /-replace/.test(t) and current
+          a.textContent = if /-title/.test(t) or /-replace/.test(t) and $.hasClass a, 'current'
             a.title
           else if /-full/.test t
             "/#{board}/ - #{a.title}"
@@ -379,6 +378,7 @@ Header =
     return if (Get.postFromRoot post).isHidden
 
     Header.scrollTo post
+
   scrollTo: (root, down, needed) ->
     if down
       x = Header.getBottomOf root
@@ -386,14 +386,17 @@ Header =
     else
       x = Header.getTopOf root
       window.scrollBy 0,  x unless needed and x >= 0
+
   scrollToIfNeeded: (root, down) ->
     Header.scrollTo root, down, true
+
   getTopOf: (root) ->
     {top} = root.getBoundingClientRect()
     if Conf['Fixed Header'] and not Conf['Bottom Header']
       headRect = Header.toggle.getBoundingClientRect()
       top     -= headRect.top + headRect.height
     top
+
   getBottomOf: (root) ->
     {clientHeight} = doc
     bottom = clientHeight - root.getBoundingClientRect().bottom

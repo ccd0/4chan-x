@@ -1785,9 +1785,9 @@
       $.ready(function() {
         var a, cs, footer;
         _this.footer = footer = $.id('boardNavDesktopFoot');
+        $.on(a, 'click', Main.navigate);
         if (a = $("a[href*='/" + g.BOARD + "/']", footer)) {
           a.className = 'current';
-          $.on(a, 'click', Index.cb.link);
         }
         cs = $.el('a', {
           id: 'settingsWindowLink',
@@ -1818,15 +1818,19 @@
       id: 'scroll-marker'
     }),
     setBoardList: function() {
-      var a, boardList, btn, fourchannav, fullBoardList;
+      var a, boardList, btn, fourchannav, fullBoardList, _i, _len, _ref;
       fourchannav = $.id('boardNavDesktop');
       boardList = $.el('span', {
         id: 'board-list',
         innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> " + fourchannav.innerHTML + "</span>"
       });
-      if (a = $("a[href*='/" + g.BOARD + "/']", boardList)) {
-        a.className = 'current';
-        $.on(a, 'click', Index.cb.link);
+      _ref = $$('a', boardList);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        a = _ref[_i];
+        $.on(a, 'click', Main.navigate);
+        if (a.pathname.split('/')[0] === g.BOARD.ID) {
+          a.className = 'current';
+        }
       }
       fullBoardList = $('#full-board-list', boardList);
       btn = $('.hide-board-list-button', fullBoardList);
@@ -1848,7 +1852,7 @@
       }
       as = $$('#full-board-list a[title]', Header.bar);
       nodes = text.match(/[\w@]+((-(all|title|replace|full|index|catalog|url:"[^"]+[^"]"|text:"[^"]+")|\,"[^"]+[^"]"))*|[^\w@]+/g).map(function(t) {
-        var a, board, current, m, _i, _len;
+        var a, board, m, _i, _len;
         if (/^[^\w@]/.test(t)) {
           return $.tn(t);
         }
@@ -1874,11 +1878,8 @@
           a = as[_i];
           if (a.textContent === board) {
             a = a.cloneNode(true);
-            current = $.hasClass(a, 'current');
-            if (current) {
-              $.on(a, 'click', Index.cb.link);
-            }
-            a.textContent = /-title/.test(t) || /-replace/.test(t) && current ? a.title : /-full/.test(t) ? "/" + board + "/ - " + a.title : (m = t.match(/-text:"(.+)"/)) ? m[1] : a.textContent;
+            $.on(a, 'click', Main.navigate);
+            a.textContent = /-title/.test(t) || /-replace/.test(t) && $.hasClass(a, 'current') ? a.title : /-full/.test(t) ? "/" + board + "/ - " + a.title : (m = t.match(/-text:"(.+)"/)) ? m[1] : a.textContent;
             if (m = t.match(/-(index|catalog)/)) {
               a.dataset.only = m[1];
               a.href = "//boards.4chan.org/" + board + "/";
@@ -12726,13 +12727,18 @@
       'Banner': Banner
     },
     clean: function() {
-      var id, _results;
-      for (id in g.posts) {
-        delete g.posts[id];
+      var id, posts, threads, _results;
+      posts = g.posts, threads = g.threads;
+      for (id in posts) {
+        if (posts.hasOwnProperty(id)) {
+          delete posts[id];
+        }
       }
       _results = [];
-      for (id in g.threads) {
-        _results.push(delete g.threads[id]);
+      for (id in threads) {
+        if (threads.hasOwnProperty(id)) {
+          _results.push(delete threads[id]);
+        }
       }
       return _results;
     },
@@ -12749,14 +12755,81 @@
       Thread.callbacks.clear();
       return $.rmAll($('.board'));
     },
-    navigate: function(context) {
-      var boardID, threadID, view;
-      boardID = context.boardID, view = context.view, threadID = context.threadID;
+    navigate: function(e) {
+      var boardID, threadID, view, _, _ref;
+      if (this.hostname !== 'boards.4chan.org') {
+        return;
+      }
+      _ref = this.pathname.split('/'), _ = _ref[0], boardID = _ref[1], view = _ref[2], threadID = _ref[3];
+      if (view === 'catalog') {
+        return;
+      }
+      e.preventDefault();
+      if (threadID) {
+        view = 'thread';
+      } else {
+        view = view || 'index';
+      }
+      Main.clean();
       if (view === g.VIEW) {
-        return Main.refresh(context);
+        if (view === 'index') {
+          if (boardID === g.BOARD.ID) {
+            return Index.update();
+          }
+          Main.clean();
+          Main.updateBoard(boardID);
+          return Index.update();
+        } else {
+          return Main.refresh(context);
+        }
       } else {
         return Main.disconnect();
       }
+    },
+    updateBoard: function(boardID) {
+      var onload, req;
+      g.BOARD = new Board(boardID);
+      req = null;
+      onload = function(e) {
+        var board, err, o, _i, _len, _ref;
+        if (e.type === 'abort') {
+          req.onloadend = null;
+          return;
+        }
+        try {
+          if (req.status !== 200) {
+            return;
+          }
+          o = JSON.parse(req.response);
+          _ref = o.boards;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            board = _ref[_i];
+            if (board.board === boardID) {
+              break;
+            }
+          }
+          return Main.updateTitle(board);
+        } catch (_error) {
+          err = _error;
+          return Main.handleErrors([
+            {
+              message: "Index Failure.",
+              error: err
+            }
+          ]);
+        }
+      };
+      return req = $.ajax('//a.4cdn.org/boards.json', {
+        onabort: onload,
+        onloadend: onload
+      });
+    },
+    updateTitle: function(board) {
+      var subtitle;
+      if (subtitle = $('.boardSubtitle')) {
+        $.rm(subtitle);
+      }
+      return $('.boardTitle').innerHTML = "/" + board.board + "/ - " + board.title;
     },
     refresh: function(context) {
       var boardID, name, threadID, view, _results, _results1;

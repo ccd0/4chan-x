@@ -320,8 +320,9 @@ Main =
     'Banner': Banner
     
   clean: ->
-    delete g.posts[id]   for id of g.posts
-    delete g.threads[id] for id of g.threads
+    {posts, threads} = g
+    delete posts[id]   for id of posts   when posts.hasOwnProperty   id
+    delete threads[id] for id of threads when threads.hasOwnProperty id
 
   disconnect: ->
     # Disconnect active features that _can_ be disconnected
@@ -334,16 +335,68 @@ Main =
     # Clean the board, as we'll be dumping shit here
     $.rmAll $ '.board'
 
-  navigate: (context) ->
+  navigate: (e) ->
+    return unless @hostname is 'boards.4chan.org'
     # Lets have a good idea of what we should we should be expecting for this kind of feature
-    {boardID, view, threadID} = context
+    [_, boardID, view, threadID] = @pathname.split '/'
+
+    return if view is 'catalog'
+    e.preventDefault()
+
+    if threadID
+      view = 'thread'
+    else
+      view = view or 'index'
+    Main.clean()
 
     # Moving from thread to thread or index to index.
     if view is g.VIEW
-      Main.refresh context
+      if view is 'index'
+        if boardID is g.BOARD.ID
+          return Index.update()
+        Main.clean()
+        Main.updateBoard boardID
+        Index.update()
+        
+      else
+        Main.refresh context
 
     else
       Main.disconnect()
+
+  updateBoard: (boardID) ->
+    g.BOARD = new Board boardID
+
+    req = null
+
+    onload = (e) ->
+      if e.type is 'abort'
+        req.onloadend = null
+        return
+
+      try
+        return unless req.status is 200
+
+        o = JSON.parse req.response
+        for board in o.boards
+          if board.board is boardID
+            break
+
+        Main.updateTitle board
+
+      catch err
+        Main.handleErrors [
+          message: "Index Failure."
+          error: err
+        ]
+
+    req = $.ajax '//a.4cdn.org/boards.json',
+      onabort:   onload
+      onloadend: onload
+
+  updateTitle: (board) ->
+    $.rm subtitle if subtitle = $ '.boardSubtitle'
+    $('.boardTitle').innerHTML = "/#{board.board}/ - #{board.title}"
 
   refresh: (context) ->
     {boardID, view, threadID} = context
@@ -354,6 +407,5 @@ Main =
     else
       # Refresh index features
       Main.features[name].index()  for name of Main.features
-      
 
 Main.init()
