@@ -102,7 +102,7 @@ Header =
 
     $.ready =>
       @footer = footer = $.id 'boardNavDesktopFoot'
-      $.on a, 'click', Main.navigate
+      $.on a, 'click', Main.navigate for a in $$ 'a', footer
       if a = $ "a[href*='/#{g.BOARD}/']", footer
         a.className = 'current'
 
@@ -140,7 +140,7 @@ Header =
       innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> #{fourchannav.innerHTML}</span>"
     for a in $$ 'a', boardList
       $.on a, 'click', Main.navigate
-      if a.pathname.split('/')[0] is g.BOARD.ID
+      if a.pathname.split('/')[1] is g.BOARD.ID
         a.className = 'current'
     fullBoardList = $ '#full-board-list', boardList
     btn = $ '.hide-board-list-button', fullBoardList

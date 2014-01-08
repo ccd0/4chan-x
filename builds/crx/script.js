@@ -1783,9 +1783,13 @@
         return _this;
       });
       $.ready(function() {
-        var a, cs, footer;
+        var a, cs, footer, _i, _len, _ref;
         _this.footer = footer = $.id('boardNavDesktopFoot');
-        $.on(a, 'click', Main.navigate);
+        _ref = $$('a', footer);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          a = _ref[_i];
+          $.on(a, 'click', Main.navigate);
+        }
         if (a = $("a[href*='/" + g.BOARD + "/']", footer)) {
           a.className = 'current';
         }
@@ -1828,7 +1832,7 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
         $.on(a, 'click', Main.navigate);
-        if (a.pathname.split('/')[0] === g.BOARD.ID) {
+        if (a.pathname.split('/')[1] === g.BOARD.ID) {
           a.className = 'current';
         }
       }
