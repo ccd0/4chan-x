@@ -13,7 +13,7 @@ QuoteThreading =
     input = $ 'input', @controls
     $.on input, 'change', @toggle
 
-    $.event 'AddMenuEntry',
+    $.event 'AddMenuEntry', @entry =
       type:  'header'
       el:    @controls
       order: 98
@@ -23,6 +23,18 @@ QuoteThreading =
     Post.callbacks.push
       name: 'Quote Threading'
       cb:   @node
+      
+  disconnect: ->
+    input = $ 'input', @controls
+    $.off input, 'change', @toggle
+    
+    $.event 'rmMenuEntry', @entry
+    
+    delete @enabled
+    delete @controls
+    delete @entry
+    
+    Post.callbacks.rm 'Quote Threading'
 
   setup: ->
     $.off d, '4chanXInitFinished', QuoteThreading.setup

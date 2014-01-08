@@ -322,12 +322,26 @@ Main =
     delete threads[id] for id of threads when threads.hasOwnProperty id
 
   disconnect: ->
-    # Disconnect active features that _can_ be disconnected
-    feature.disconnect() for name, feature of Main.features when feature.disconnect
+    if g.VIEW is 'thread'
+      features =
+        'Thread Updater':  ThreadUpdater
+        'Unread Count':    Unread
+        'Quote Threading': QuoteThreading
+
+    for name, feature of features
+      try
+        feature.disconnect.call feature
+      catch err
+        errors = [] unless errors
+        errors.push
+          message: "Failed to disconnect feature #{name}."
+          error:   err
+
+      Main.handleErrors errors if errors
 
     # Clean Post and Thread callbacks
-    Post.callbacks.clear()
-    Thread.callbacks.clear()
+    # Post.callbacks.clear()
+    # Thread.callbacks.clear()
 
     # Clean the board, as we'll be dumping shit here
     $.rmAll $ '.board'
@@ -348,17 +362,25 @@ Main =
     # Moving from thread to thread or index to index.
     if view is g.VIEW
       if view is 'index'
-        if boardID is g.BOARD.ID
-          return Index.update()
-        Main.clean()
-        Main.updateBoard boardID
+        unless boardID is g.BOARD.ID
+          Main.clean()
+          Main.updateBoard boardID
+
         Index.update()
         
       else
         Main.refresh {boardID, view, threadID}
 
     else
-      Main.disconnect()
+      g.VIEW = view
+      if view is 'index'
+        Main.disconnect()
+        Main.clean()
+        Main.updateBoard() unless boardID is g.BOARD.ID
+        Index.connect.call Index
+
+      else
+        Main.refresh {boardID, view, threadID}
 
   updateBoard: (boardID) ->
     g.BOARD = new Board boardID

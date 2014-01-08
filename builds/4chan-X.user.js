@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.45 - 2014-01-07
+* 4chan X - Version 1.2.45 - 2014-01-08
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -2146,7 +2146,7 @@
   Index = {
     init: function() {
       var anchorEntry, input, label, modeEntry, name, refNavEntry, repliesEntry, sortEntry, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
-      if (g.VIEW !== 'index' || g.BOARD.ID === 'f') {
+      if (g.BOARD.ID === 'f') {
         return;
       }
       this.button = $.el('a', {
@@ -2257,6 +2257,12 @@
         order: 90,
         subEntries: [repliesEntry, anchorEntry, refNavEntry, modeEntry, sortEntry]
       });
+      if (g.VIEW !== 'index') {
+        return;
+      }
+      return this.connect.call(this);
+    },
+    connect: function() {
       $.addClass(doc, 'index-loading');
       this.update();
       this.root = $.el('div', {
@@ -2280,13 +2286,13 @@
       return $.asap((function() {
         return $('.board', doc) || d.readyState !== 'loading';
       }), function() {
-        var board, navLink, _l, _len3, _ref3;
+        var board, navLink, _i, _len, _ref;
         board = $('.board');
         $.replace(board, Index.root);
         d.implementation.createDocument(null, null, null).appendChild(board);
-        _ref3 = $$('.navLinks');
-        for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
-          navLink = _ref3[_l];
+        _ref = $$('.navLinks');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          navLink = _ref[_i];
           $.rm(navLink);
         }
         $.after($.x('child::form/preceding-sibling::hr[1]'), Index.navLinks);
@@ -2294,7 +2300,12 @@
         return $.asap((function() {
           return $('.pagelist') || d.readyState !== 'loading';
         }), function() {
-          return $.replace($('.pagelist'), Index.pagelist);
+          var pagelist;
+          if (pagelist = $('.pagelist')) {
+            return $.replace(pagelist, Index.pagelist);
+          } else {
+            return $.after($.id('delform'), Index.pagelist);
+          }
         });
       });
     },
@@ -2444,19 +2455,14 @@
       if ((_ref1 = Index.notice) != null) {
         _ref1.close();
       }
-      if (d.readyState !== 'loading') {
-        Index.notice = new Notice('info', 'Refreshing index...');
-      } else {
-        now = Date.now();
-        $.ready(function() {
-          return setTimeout((function() {
-            if (!(Index.req && !Index.notice)) {
-              return;
-            }
+      now = Date.now();
+      $.ready(function() {
+        return setTimeout((function() {
+          if (Index.req && !Index.notice) {
             return Index.notice = new Notice('info', 'Refreshing index...');
-          }), 5 * $.SECOND - (Date.now() - now));
-        });
-      }
+          }
+        }), 5 * $.SECOND - (Date.now() - now));
+      });
       if (typeof pageNum !== 'number') {
         pageNum = null;
       }
@@ -5023,7 +5029,7 @@
       });
       input = $('input', this.controls);
       $.on(input, 'change', this.toggle);
-      $.event('AddMenuEntry', {
+      $.event('AddMenuEntry', this.entry = {
         type: 'header',
         el: this.controls,
         order: 98
@@ -5035,6 +5041,16 @@
         name: 'Quote Threading',
         cb: this.node
       });
+    },
+    disconnect: function() {
+      var input;
+      input = $('input', this.controls);
+      $.off(input, 'change', this.toggle);
+      $.event('rmMenuEntry', this.entry);
+      delete this.enabled;
+      delete this.controls;
+      delete this.entry;
+      return Post.callbacks.rm('Quote Threading');
     },
     setup: function() {
       $.off(d, '4chanXInitFinished', QuoteThreading.setup);
@@ -12777,16 +12793,32 @@
       return _results;
     },
     disconnect: function() {
-      var feature, name, _ref;
-      _ref = Main.features;
-      for (name in _ref) {
-        feature = _ref[name];
-        if (feature.disconnect) {
-          feature.disconnect();
+      var err, errors, feature, features, name;
+      if (g.VIEW === 'thread') {
+        features = {
+          'Thread Updater': ThreadUpdater,
+          'Unread Count': Unread,
+          'Quote Threading': QuoteThreading
+        };
+      }
+      for (name in features) {
+        feature = features[name];
+        try {
+          feature.disconnect.call(feature);
+        } catch (_error) {
+          err = _error;
+          if (!errors) {
+            errors = [];
+          }
+          errors.push({
+            message: "Failed to disconnect feature " + name + ".",
+            error: err
+          });
+        }
+        if (errors) {
+          Main.handleErrors(errors);
         }
       }
-      Post.callbacks.clear();
-      Thread.callbacks.clear();
       return $.rmAll($('.board'));
     },
     navigate: function(e) {
@@ -12806,11 +12838,10 @@
       }
       if (view === g.VIEW) {
         if (view === 'index') {
-          if (boardID === g.BOARD.ID) {
-            return Index.update();
+          if (boardID !== g.BOARD.ID) {
+            Main.clean();
+            Main.updateBoard(boardID);
           }
-          Main.clean();
-          Main.updateBoard(boardID);
           return Index.update();
         } else {
           return Main.refresh({
@@ -12820,7 +12851,21 @@
           });
         }
       } else {
-        return Main.disconnect();
+        g.VIEW = view;
+        if (view === 'index') {
+          Main.disconnect();
+          Main.clean();
+          if (boardID !== g.BOARD.ID) {
+            Main.updateBoard();
+          }
+          return Index.connect.call(Index);
+        } else {
+          return Main.refresh({
+            boardID: boardID,
+            view: view,
+            threadID: threadID
+          });
+        }
       }
     },
     updateBoard: function(boardID) {

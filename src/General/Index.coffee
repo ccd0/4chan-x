@@ -1,6 +1,6 @@
 Index =
   init: ->
-    return if g.VIEW isnt 'index' or g.BOARD.ID is 'f'
+    return if g.BOARD.ID is 'f'
 
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'
@@ -66,6 +66,11 @@ Index =
       order: 90
       subEntries: [repliesEntry, anchorEntry, refNavEntry, modeEntry, sortEntry]
 
+    return if g.VIEW isnt 'index'
+    
+    @connect.call @
+
+  connect: ->
     $.addClass doc, 'index-loading'
     @update()
     @root = $.el 'div', className: 'board'
@@ -99,7 +104,10 @@ Index =
       $.after $.x('child::form/preceding-sibling::hr[1]'), Index.navLinks
       $.rmClass doc, 'index-loading'
       $.asap (-> $('.pagelist') or d.readyState isnt 'loading'), ->
-        $.replace $('.pagelist'), Index.pagelist
+        if pagelist = $('.pagelist')
+          $.replace pagelist, Index.pagelist
+        else
+          $.after $.id('delform'), Index.pagelist
 
   cb:
     mode: ->
@@ -202,17 +210,16 @@ Index =
     return unless navigator.onLine
     Index.req?.abort()
     Index.notice?.close()
-    if d.readyState isnt 'loading'
-      Index.notice = new Notice 'info', 'Refreshing index...'
-    else
-      # Delay the notice on initial page load
-      # and only display it for slow connections.
-      now = Date.now()
-      $.ready ->
-        setTimeout (->
-          return unless Index.req and !Index.notice
+
+    # Delay the notice on initial page load
+    # and only display it for slow connections.
+    now = Date.now()
+    $.ready ->
+      setTimeout (->
+        if Index.req and !Index.notice
           Index.notice = new Notice 'info', 'Refreshing index...'
-        ), 5 * $.SECOND - (Date.now() - now)
+      ), 5 * $.SECOND - (Date.now() - now)
+
     pageNum = null if typeof pageNum isnt 'number' # event
     onload = (e) -> Index.load e, pageNum
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
