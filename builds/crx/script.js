@@ -825,6 +825,9 @@
     Callbacks.prototype.push = function(_arg) {
       var cb, name;
       name = _arg.name, cb = _arg.cb;
+      if (this[name]) {
+        this.rm(name);
+      }
       this[name] = cb;
       return this.keys.push(name);
     };

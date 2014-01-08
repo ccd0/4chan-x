@@ -3,6 +3,8 @@ class Callbacks
     @keys = []
 
   push: ({name, cb}) ->
+    @rm name if @[name]
+
     @[name] = cb
     @keys.push name
 
