@@ -352,7 +352,7 @@ Main =
     g.VIEW = view
 
   navigate: (e) ->
-    return unless @hostname is 'boards.4chan.org'
+    return if @hostname isnt 'boards.4chan.org'
     # Lets have a good idea of what we should we should be expecting for this kind of feature
     path = @pathname.split '/'
     path.shift() if path[0] is ''
@@ -368,31 +368,26 @@ Main =
     else
       view or 'index' # path is "/boardID/". See the problem?
 
-    # Moving from thread to thread or index to index.
-    if view is g.VIEW
-      if view is 'index'
-        unless boardID is g.BOARD.ID
-          Main.clean()
-          Main.updateBoard boardID
+    if view isnt g.VIEW
+      Main.clean()
+      Main.disconnect view
 
+    if view is 'index'
+      Main.updateBoard boardID unless boardID is g.BOARD.ID
+
+      if Index.root
+        Index.connect.call Index
+      else
         Index.update()
 
-      else
-        Main.refresh {boardID, view, threadID}
-
+    # Moving from thread to thread or index to index.
     else
-      if view is 'index'
-        Main.disconnect view
-        Main.clean()
-        Main.updateBoard boardID unless boardID is g.BOARD.ID
-        Index.connect.call Index
-
-      else
-        Main.refresh {boardID, view, threadID}
+      c.error 'How?'
+      Main.refresh {boardID, view, threadID}
 
     Header.setBoardList()
 
-  popstate: ->
+  popstate: -> <% if (type === 'crx') { %> Main.popstate = -> <% } %> # blink/webkit throw a popstate on page load. Not what we want.
     a = $.el 'a',
       href: window.location
       id:   'popState'
@@ -430,13 +425,11 @@ Main =
     $('.boardTitle').innerHTML = d.title = "/#{board.board}/ - #{board.title}"
 
   refresh: (context) ->
+    return
     {boardID, view, threadID} = context
 
-    if view is 'thread'
-      # Refresh thread features
-      Main.features[name].thread() for name of Main.features
-    else
-      # Refresh index features
-      Main.features[name].index()  for name of Main.features
+    # Refresh features
+    feature.refresh() for [name, feature] in Main.features when feature.refresh
+    return
 
 Main.init()

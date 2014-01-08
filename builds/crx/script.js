@@ -2027,7 +2027,7 @@
       $.addClass(doc, args[0]);
       $.rmClass(doc, args[1]);
       Header.bar.parentNode.className = args[2];
-      return $[args[3]](Header.bar, Header.notify);
+      return $[args[3]](Header.bar, Header.noticesRoot);
     },
     toggleBarPosition: function() {
       $.cb.checked.call(this);
@@ -2387,7 +2387,7 @@
       return Header.scrollToIfNeeded(Index.root);
     },
     getCurrentPage: function() {
-      return +window.location.pathname.split('/')[2] || 0;
+      return +window.location.pathname.split('/')[2];
     },
     userPageNav: function(pageNum) {
       if (Conf['Refreshed Navigation'] && Conf['Index Mode'] === 'paged') {
@@ -2520,7 +2520,7 @@
         }
       } catch (_error) {
         err = _error;
-        c.error('Index failure:', err.stack);
+        c.error('Index failure:', err);
         if (notice) {
           notice.setType('error');
           notice.el.lastElementChild.textContent = 'Index refresh failed.';
@@ -12765,45 +12765,38 @@
         history.pushState(null, '', this.pathname);
       }
       view = threadID ? 'thread' : view || 'index';
-      if (view === g.VIEW) {
-        if (view === 'index') {
-          if (boardID !== g.BOARD.ID) {
-            Main.clean();
-            Main.updateBoard(boardID);
-          }
-          Index.update();
-        } else {
-          Main.refresh({
-            boardID: boardID,
-            view: view,
-            threadID: threadID
-          });
+      if (view !== g.VIEW) {
+        Main.clean();
+        Main.disconnect(view);
+      }
+      if (view === 'index') {
+        if (boardID !== g.BOARD.ID) {
+          Main.updateBoard(boardID);
         }
-      } else {
-        if (view === 'index') {
-          Main.disconnect(view);
-          Main.clean();
-          if (boardID !== g.BOARD.ID) {
-            Main.updateBoard(boardID);
-          }
+        if (Index.root) {
           Index.connect.call(Index);
         } else {
-          Main.refresh({
-            boardID: boardID,
-            view: view,
-            threadID: threadID
-          });
+          Index.update();
         }
+      } else {
+        c.error('How?');
+        Main.refresh({
+          boardID: boardID,
+          view: view,
+          threadID: threadID
+        });
       }
       return Header.setBoardList();
     },
     popstate: function() {
-      var a;
-      a = $.el('a', {
-        href: window.location,
-        id: 'popState'
-      });
-      return Main.navigate.call(a);
+      return Main.popstate = function() {
+        var a;
+        a = $.el('a', {
+          href: window.location,
+          id: 'popState'
+        });
+        return Main.navigate.call(a);
+      };
     },
     updateBoard: function(boardID) {
       var onload, req;
@@ -12849,20 +12842,15 @@
       return $('.boardTitle').innerHTML = d.title = "/" + board.board + "/ - " + board.title;
     },
     refresh: function(context) {
-      var boardID, name, threadID, view, _results, _results1;
+      var boardID, feature, name, threadID, view, _i, _len, _ref, _ref1;
+      return;
       boardID = context.boardID, view = context.view, threadID = context.threadID;
-      if (view === 'thread') {
-        _results = [];
-        for (name in Main.features) {
-          _results.push(Main.features[name].thread());
+      _ref = Main.features;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        _ref1 = _ref[_i], name = _ref1[0], feature = _ref1[1];
+        if (feature.refresh) {
+          feature.refresh();
         }
-        return _results;
-      } else {
-        _results1 = [];
-        for (name in Main.features) {
-          _results1.push(Main.features[name].index());
-        }
-        return _results1;
       }
     }
   };

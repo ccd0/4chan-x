@@ -144,7 +144,7 @@ Index =
     Header.scrollToIfNeeded Index.root
 
   getCurrentPage: ->
-    +window.location.pathname.split('/')[2] or 0
+    +window.location.pathname.split('/')[2]
   userPageNav: (pageNum) ->
     if Conf['Refreshed Navigation'] and Conf['Index Mode'] is 'paged'
       Index.update pageNum
@@ -245,7 +245,7 @@ Index =
       else if req.status is 304 and pageNum?
         Index.pageNav pageNum
     catch err
-      c.error 'Index failure:', err.stack
+      c.error 'Index failure:', err
       # network error or non-JSON content for example.
       if notice
         notice.setType 'error'
