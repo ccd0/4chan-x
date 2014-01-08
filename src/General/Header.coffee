@@ -134,6 +134,7 @@ Header =
     id: 'scroll-marker'
 
   setBoardList: ->
+    $.rmAll Header.bar if Header.bar.children.length
     fourchannav = $.id 'boardNavDesktop'
     boardList = $.el 'span',
       id: 'board-list'

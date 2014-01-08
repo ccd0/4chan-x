@@ -55,10 +55,10 @@ Main =
         return
 
     # c.time 'All initializations'
-    for name, module of Main.features
+    for [name, feature] in Main.features
       # c.time "#{name} initialization"
       try
-        module.init()
+        feature.init()
       catch err
         Main.handleErrors
           message: "\"#{name}\" initialization crashed."
@@ -188,7 +188,6 @@ Main =
     len = nodes.length
     softTask()
 
-
   addCallback: (e) ->
     obj = e.detail
     unless typeof obj.callback.name is 'string'
@@ -254,81 +253,86 @@ Main =
   <%= grunt.file.read('src/General/css/photon.css').replace(/\s+/g, ' ').trim() %>
   """
     
-  features:
-    'Polyfill': Polyfill
-    'Redirect': Redirect
-    'Header': Header
-    'Catalog Links': CatalogLinks
-    'Settings': Settings
-    'Index Generator': Index
-    'Announcement Hiding': PSAHiding
-    'Fourchan thingies': Fourchan
-    'Emoji': Emoji
-    'Color User IDs': IDColor
-    'Custom CSS': CustomCSS
-    'Linkify': Linkify
-    'Reveal Spoilers': RemoveSpoilers
-    'Resurrect Quotes': Quotify
-    'Filter': Filter
-    'Thread Hiding Buttons': ThreadHiding
-    'Reply Hiding Buttons': PostHiding
-    'Recursive': Recursive
-    'Strike-through Quotes': QuoteStrikeThrough
-    'Quick Reply': QR
-    'Menu': Menu
-    'Report Link': ReportLink
-    'Thread Hiding (Menu)': ThreadHiding.menu
-    'Reply Hiding (Menu)': PostHiding.menu
-    'Delete Link': DeleteLink
-    'Filter (Menu)': Filter.menu
-    'Download Link': DownloadLink
-    'Archive Link': ArchiveLink
-    'Quote Inlining': QuoteInline
-    'Quote Previewing': QuotePreview
-    'Quote Backlinks': QuoteBacklink
-    'Mark Quotes of You': QuoteYou
-    'Mark OP Quotes': QuoteOP
-    'Mark Cross-thread Quotes': QuoteCT
-    'Anonymize': Anonymize
-    'Time Formatting': Time
-    'Relative Post Dates': RelativeDates
-    'File Info Formatting': FileInfo
-    'Fappe Tyme': FappeTyme
-    'Gallery': Gallery
-    'Gallery (menu)': Gallery.menu
-    'Sauce': Sauce
-    'Image Expansion': ImageExpand
-    'Image Expansion (Menu)': ImageExpand.menu
-    'Reveal Spoiler Thumbnails': RevealSpoilers
-    'Image Loading': ImageLoader
-    'Image Hover': ImageHover
-    'Thread Expansion': ExpandThread
-    'Thread Excerpt': ThreadExcerpt
-    'Favicon': Favicon
-    'Unread': Unread
-    'Quote Threading': QuoteThreading
-    'Thread Stats': ThreadStats
-    'Thread Updater': ThreadUpdater
-    'Thread Watcher': ThreadWatcher
-    'Thread Watcher (Menu)': ThreadWatcher.menu
-    'Index Navigation': Nav
-    'Keybinds': Keybinds
-    'Show Dice Roll': Dice
-    'Banner': Banner
+  features: [
+    ['Polyfill',                  Polyfill]
+    ['Redirect',                  Redirect]
+    ['Header',                    Header]
+    ['Catalog Links',             CatalogLinks]
+    ['Settings',                  Settings]
+    ['Index Generator',           Index]
+    ['Announcement Hiding',       PSAHiding]
+    ['Fourchan thingies',         Fourchan]
+    ['Emoji',                     Emoji]
+    ['Color User IDs',            IDColor]
+    ['Custom CSS',                CustomCSS]
+    ['Linkify',                   Linkify]
+    ['Reveal Spoilers',           RemoveSpoilers]
+    ['Resurrect Quotes',          Quotify]
+    ['Filter',                    Filter]
+    ['Thread Hiding Buttons',     ThreadHiding]
+    ['Reply Hiding Buttons',      PostHiding]
+    ['Recursive',                 Recursive]
+    ['Strike-through Quotes',     QuoteStrikeThrough]
+    ['Quick Reply',               QR]
+    ['Menu',                      Menu]
+    ['Report Link',               ReportLink]
+    ['Thread Hiding (Menu)',      ThreadHiding.menu]
+    ['Reply Hiding (Menu)',       PostHiding.menu]
+    ['Delete Link',               DeleteLink]
+    ['Filter (Menu)',             Filter.menu]
+    ['Download Link',             DownloadLink]
+    ['Archive Link',              ArchiveLink]
+    ['Quote Inlining',            QuoteInline]
+    ['Quote Previewing',          QuotePreview]
+    ['Quote Backlinks',           QuoteBacklink]
+    ['Mark Quotes of You',        QuoteYou]
+    ['Mark OP Quotes',            QuoteOP]
+    ['Mark Cross-thread Quotes',  QuoteCT]
+    ['Anonymize',                 Anonymize]
+    ['Time Formatting',           Time]
+    ['Relative Post Dates',       RelativeDates]
+    ['File Info Formatting',      FileInfo]
+    ['Fappe Tyme',                FappeTyme]
+    ['Gallery',                   Gallery]
+    ['Gallery (menu)',            Gallery.menu]
+    ['Sauce',                     Sauce]
+    ['Image Expansion',           ImageExpand]
+    ['Image Expansion (Menu)',    ImageExpand.menu]
+    ['Reveal Spoiler Thumbnails', RevealSpoilers]
+    ['Image Loading',             ImageLoader]
+    ['Image Hover',               ImageHover]
+    ['Thread Expansion',          ExpandThread]
+    ['Thread Excerpt',            ThreadExcerpt]
+    ['Favicon',                   Favicon]
+    ['Unread',                    Unread]
+    ['Quote Threading',           QuoteThreading]
+    ['Thread Stats',              ThreadStats]
+    ['Thread Updater',            ThreadUpdater]
+    ['Thread Watcher',            ThreadWatcher]
+    ['Thread Watcher (Menu)',     ThreadWatcher.menu]
+    ['Index Navigation',          Nav]
+    ['Keybinds',                  Keybinds]
+    ['Show Dice Roll',            Dice]
+    ['Banner',                    Banner]
+  ]
     
   clean: ->
     {posts, threads} = g
     delete posts[id]   for id of posts   when posts.hasOwnProperty   id
     delete threads[id] for id of threads when threads.hasOwnProperty id
+    
+    g.threads = threads
+    g.posts   = posts
 
-  disconnect: ->
+  disconnect: (view) ->
     if g.VIEW is 'thread'
-      features =
-        'Thread Updater':  ThreadUpdater
-        'Unread Count':    Unread
-        'Quote Threading': QuoteThreading
+      features = [
+        ['Thread Updater',  ThreadUpdater]
+        ['Unread Count',    Unread]
+        ['Quote Threading', QuoteThreading]
+      ]
 
-    for name, feature of features
+    for [name, feature] in features
       try
         feature.disconnect.call feature
       catch err
@@ -344,20 +348,26 @@ Main =
     # Thread.callbacks.clear()
 
     # Clean the board, as we'll be dumping shit here
-    $.rmAll $ '.board'
+    # $.rmAll $ '.board'
+    
+    g.VIEW = view
 
   navigate: (e) ->
     return unless @hostname is 'boards.4chan.org'
     # Lets have a good idea of what we should we should be expecting for this kind of feature
-    [_, boardID, view, threadID] = @pathname.split '/'
+    path = @pathname.split '/'
+    path.shift() if path[0] is ''
+    [boardID, view, threadID] = path
 
     return if view is 'catalog'
+    
     e.preventDefault()
+    history.pushState null, '', @pathname
 
-    if threadID
-      view = 'thread'
+    view = if threadID
+      'thread'
     else
-      view = view or 'index'
+      view or 'index' # path is "/boardID/". See the problem?
 
     # Moving from thread to thread or index to index.
     if view is g.VIEW
@@ -372,15 +382,16 @@ Main =
         Main.refresh {boardID, view, threadID}
 
     else
-      g.VIEW = view
       if view is 'index'
-        Main.disconnect()
+        Main.disconnect view
         Main.clean()
-        Main.updateBoard() unless boardID is g.BOARD.ID
+        Main.updateBoard boardID unless boardID is g.BOARD.ID
         Index.connect.call Index
 
       else
         Main.refresh {boardID, view, threadID}
+    
+    Header.setBoardList()
 
   updateBoard: (boardID) ->
     g.BOARD = new Board boardID

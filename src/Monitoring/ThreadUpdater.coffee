@@ -64,7 +64,7 @@ ThreadUpdater =
   disconnect: ->
     if Conf['Updater and Stats in Header']
       Header.rmShortcut @dialog
-    else 
+    else
       $.rmClass doc, 'float'
       $.rm @dialog
 
