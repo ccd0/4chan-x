@@ -12836,24 +12836,22 @@
       g.BOARD = new Board(boardID);
       req = null;
       onload = function(e) {
-        var board, err, o, _i, _len, _ref;
+        var board, err, _i, _len, _ref;
         if (e.type === 'abort') {
           req.onloadend = null;
           return;
         }
+        if (req.status !== 200) {
+          return;
+        }
         try {
-          if (req.status !== 200) {
-            return;
-          }
-          o = JSON.parse(req.response);
-          _ref = o.boards;
+          _ref = JSON.parse(req.response).boards;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             board = _ref[_i];
             if (board.board === boardID) {
-              break;
+              return Main.updateTitle(board);
             }
           }
-          return Main.updateTitle(board);
         } catch (_error) {
           err = _error;
           return Main.handleErrors([

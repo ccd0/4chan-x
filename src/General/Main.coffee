@@ -409,15 +409,11 @@ Main =
         req.onloadend = null
         return
 
+      return unless req.status is 200
+
       try
-        return unless req.status is 200
-
-        o = JSON.parse req.response
-        for board in o.boards
-          if board.board is boardID
-            break
-
-        Main.updateTitle board
+        for board in JSON.parse(req.response).boards
+          return Main.updateTitle board if board.board is boardID
 
       catch err
         Main.handleErrors [
