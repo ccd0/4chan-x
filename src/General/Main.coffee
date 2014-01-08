@@ -252,7 +252,7 @@ Main =
   <%= grunt.file.read('src/General/css/tomorrow.css').replace(/\s+/g, ' ').trim() %>
   <%= grunt.file.read('src/General/css/photon.css').replace(/\s+/g, ' ').trim() %>
   """
-    
+
   features: [
     ['Polyfill',                  Polyfill]
     ['Redirect',                  Redirect]
@@ -315,14 +315,11 @@ Main =
     ['Show Dice Roll',            Dice]
     ['Banner',                    Banner]
   ]
-    
+
   clean: ->
     {posts, threads} = g
     delete posts[id]   for id of posts   when posts.hasOwnProperty   id
     delete threads[id] for id of threads when threads.hasOwnProperty id
-    
-    g.threads = threads
-    g.posts   = posts
 
   disconnect: (view) ->
     if g.VIEW is 'thread'
@@ -349,7 +346,7 @@ Main =
 
     # Clean the board, as we'll be dumping shit here
     # $.rmAll $ '.board'
-    
+
     g.VIEW = view
 
   navigate: (e) ->
@@ -360,7 +357,7 @@ Main =
     [boardID, view, threadID] = path
 
     return if view is 'catalog'
-    
+
     e.preventDefault()
     history.pushState null, '', @pathname
 
@@ -377,7 +374,7 @@ Main =
           Main.updateBoard boardID
 
         Index.update()
-        
+
       else
         Main.refresh {boardID, view, threadID}
 
@@ -390,7 +387,7 @@ Main =
 
       else
         Main.refresh {boardID, view, threadID}
-    
+
     Header.setBoardList()
 
   updateBoard: (boardID) ->

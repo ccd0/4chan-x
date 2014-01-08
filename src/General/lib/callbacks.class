@@ -1,20 +1,28 @@
 class Callbacks
-  push: ({name, cb}) -> @[name] = cb
+  constructor: (@type) ->
+    @keys = []
 
-  clean: -> 
-    @rm name for name of @ when @hasOwnProperty name
+  push: ({name, cb}) ->
+    @[name] = cb
+    @keys.push name
+
+  clean: ->
+    @rm name for name in @keys
     return
 
-  rm: (name) -> delete @[name]
+  rm: (name) ->
+    return unless @[name]
+    delete @[name]
+    @keys.splice @keys.indexOf(name), 1 # Didn't I make this structure to avoid this? ;__;
 
   execute: (node) ->
-    for name of @ when @hasOwnProperty name
+    for name in @keys
       try
         @[name].call node
       catch err
         errors = [] unless errors
         errors.push
-          message: ['"', name, '" crashed on node No.', node, ' (', node.board, ').'].join('')
+          message: ['"', name, '" crashed on node ', @type, ' No.', node, ' (', node.board, ').'].join('')
           error: err
 
     Main.handleErrors errors if errors
