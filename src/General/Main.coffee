@@ -118,6 +118,16 @@ Main =
     # Something might have gone wrong!
     Main.initStyle()
 
+    if styleSelector = $.id 'styleSelector'
+      passLink = $.el 'a',
+        textContent: '4chan Pass'
+        href: 'javascript:;'
+      $.on passLink, 'click', ->
+        window.open '//sys.4chan.org/auth',
+          'This will steal your data.'
+          'left=0,top=0,width=500,height=255,toolbar=0,resizable=0'
+      $.before styleSelector.previousSibling, [$.tn '['; passLink, $.tn ']\u00A0\u00A0']
+
     Main.initThread threadRoot if g.VIEW is 'thread' and threadRoot = $ '.thread'
 
     <% if (type === 'userscript') { %>
@@ -151,16 +161,6 @@ Main =
     Main.callbackNodes Thread, [thread]
     Main.callbackNodesDB Post, posts, ->
       $.event '4chanXInitFinished'
-
-    if styleSelector = $.id 'styleSelector'
-      passLink = $.el 'a',
-        textContent: '4chan Pass'
-        href: 'javascript:;'
-      $.on passLink, 'click', ->
-        window.open '//sys.4chan.org/auth',
-          'This will steal your data.'
-          'left=0,top=0,width=500,height=255,toolbar=0,resizable=0'
-      $.before styleSelector.previousSibling, [$.tn '['; passLink, $.tn ']\u00A0\u00A0']
 
   callbackNodes: (klass, nodes) ->
     i = 0

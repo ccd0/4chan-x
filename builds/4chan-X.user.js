@@ -12523,7 +12523,7 @@
       });
     },
     initReady: function() {
-      var GMver, err, href, i, threadRoot, v, _i, _len, _ref, _ref1;
+      var GMver, err, href, i, passLink, styleSelector, threadRoot, v, _i, _len, _ref, _ref1;
       if ((_ref = d.title) === '4chan - Temporarily Offline' || _ref === '4chan - 404 Not Found') {
         if (Conf['404 Redirect'] && g.VIEW === 'thread') {
           href = Redirect.to('thread', {
@@ -12536,6 +12536,16 @@
         return;
       }
       Main.initStyle();
+      if (styleSelector = $.id('styleSelector')) {
+        passLink = $.el('a', {
+          textContent: '4chan Pass',
+          href: 'javascript:;'
+        });
+        $.on(passLink, 'click', function() {
+          return window.open('//sys.4chan.org/auth', 'This will steal your data.', 'left=0,top=0,width=500,height=255,toolbar=0,resizable=0');
+        });
+        $.before(styleSelector.previousSibling, [$.tn('['), passLink, $.tn(']\u00A0\u00A0')]);
+      }
       if (g.VIEW === 'thread' && (threadRoot = $('.thread'))) {
         Main.initThread(threadRoot);
       }
@@ -12560,7 +12570,7 @@
       }
     },
     initThread: function(threadRoot) {
-      var err, errors, passLink, post, postRoot, posts, styleSelector, thread, _i, _len, _ref;
+      var err, errors, post, postRoot, posts, thread, _i, _len, _ref;
       thread = new Thread(+threadRoot.id.slice(1), g.BOARD);
       posts = [];
       _ref = $$('.thread > .postContainer', threadRoot);
@@ -12585,19 +12595,9 @@
         Main.handleErrors(errors);
       }
       Main.callbackNodes(Thread, [thread]);
-      Main.callbackNodesDB(Post, posts, function() {
+      return Main.callbackNodesDB(Post, posts, function() {
         return $.event('4chanXInitFinished');
       });
-      if (styleSelector = $.id('styleSelector')) {
-        passLink = $.el('a', {
-          textContent: '4chan Pass',
-          href: 'javascript:;'
-        });
-        $.on(passLink, 'click', function() {
-          return window.open('//sys.4chan.org/auth', 'This will steal your data.', 'left=0,top=0,width=500,height=255,toolbar=0,resizable=0');
-        });
-        return $.before(styleSelector.previousSibling, [$.tn('['), passLink, $.tn(']\u00A0\u00A0')]);
-      }
     },
     callbackNodes: function(klass, nodes) {
       var cb, i, node;
