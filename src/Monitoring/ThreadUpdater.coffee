@@ -48,7 +48,7 @@ ThreadUpdater =
 
     $.on @settings, 'click', @intervalShortcut
 
-    subEntries.push el: settings
+    subEntries.push el: @settings
 
     $.event 'AddMenuEntry', @entry =
       type: 'header'
@@ -78,9 +78,15 @@ ThreadUpdater =
       $.off input, 'change', @cb.scrollBG
       $.off input, 'change', @cb.update
 
-    $.off @settings, 'click', @intervalShortcut
+    $.off @settings, 'click',         @intervalShortcut
+    $.off window, 'online offline',   @cb.online
+    $.off d,      'QRPostSuccessful', @cb.checkpost
+    $.off d,      'visibilitychange', @cb.visibility
 
     $.event 'rmMenuEntry', @entry
+
+    @set 'timer', null
+    @set 'status', 'Offline', 'warning'
 
     delete @[name] for name in ['checkPostCount', 'timer', 'status', 'isUpdating', 'entry', 'dialog', 'thread', 'root', 'lastPost', 'outdateCount', 'online']
 

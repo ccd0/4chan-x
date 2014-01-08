@@ -8767,7 +8767,7 @@
       });
       $.on(this.settings, 'click', this.intervalShortcut);
       subEntries.push({
-        el: settings
+        el: this.settings
       });
       $.event('AddMenuEntry', this.entry = {
         type: 'header',
@@ -8802,7 +8802,12 @@
         $.off(input, 'change', this.cb.update);
       }
       $.off(this.settings, 'click', this.intervalShortcut);
+      $.off(window, 'online offline', this.cb.online);
+      $.off(d, 'QRPostSuccessful', this.cb.checkpost);
+      $.off(d, 'visibilitychange', this.cb.visibility);
       $.event('rmMenuEntry', this.entry);
+      this.set('timer', null);
+      this.set('status', 'Offline', 'warning');
       _ref1 = ['checkPostCount', 'timer', 'status', 'isUpdating', 'entry', 'dialog', 'thread', 'root', 'lastPost', 'outdateCount', 'online'];
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         name = _ref1[_j];
