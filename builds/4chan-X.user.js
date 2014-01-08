@@ -12523,7 +12523,7 @@
       });
     },
     initReady: function() {
-      var GMver, err, errors, href, i, passLink, post, postRoot, posts, styleSelector, thread, threadRoot, v, _i, _j, _len, _len1, _ref, _ref1, _ref2;
+      var GMver, err, href, i, threadRoot, v, _i, _len, _ref, _ref1;
       if ((_ref = d.title) === '4chan - Temporarily Offline' || _ref === '4chan - 404 Not Found') {
         if (Conf['404 Redirect'] && g.VIEW === 'thread') {
           href = Redirect.to('thread', {
@@ -12537,49 +12537,12 @@
       }
       Main.initStyle();
       if (g.VIEW === 'thread' && (threadRoot = $('.thread'))) {
-        thread = new Thread(+threadRoot.id.slice(1), g.BOARD);
-        posts = [];
-        _ref1 = $$('.thread > .postContainer', threadRoot);
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          postRoot = _ref1[_i];
-          try {
-            posts.push(post = new Post(postRoot, thread, g.BOARD, {
-              isOriginalMarkup: true
-            }));
-          } catch (_error) {
-            err = _error;
-            if (!errors) {
-              errors = [];
-            }
-            errors.push({
-              message: "Parsing of Post No." + (postRoot.id.match(/\d+/)) + " failed. Post will be skipped.",
-              error: err
-            });
-          }
-        }
-        if (errors) {
-          Main.handleErrors(errors);
-        }
-        Main.callbackNodes(Thread, [thread]);
-        Main.callbackNodesDB(Post, posts, function() {
-          return $.event('4chanXInitFinished');
-        });
-        if (styleSelector = $.id('styleSelector')) {
-          passLink = $.el('a', {
-            textContent: '4chan Pass',
-            href: 'javascript:;'
-          });
-          $.on(passLink, 'click', function() {
-            return window.open('//sys.4chan.org/auth', 'This will steal your data.', 'left=0,top=0,width=500,height=255,toolbar=0,resizable=0');
-          });
-          $.before(styleSelector.previousSibling, [$.tn('['), passLink, $.tn(']\u00A0\u00A0')]);
-        }
-        return;
+        Main.initThread(threadRoot);
       }
       GMver = GM_info.version.split('.');
-      _ref2 = "1.13".split('.');
-      for (i = _j = 0, _len1 = _ref2.length; _j < _len1; i = ++_j) {
-        v = _ref2[i];
+      _ref1 = "1.13".split('.');
+      for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
+        v = _ref1[i];
         if (v < GMver[i]) {
           break;
         }
@@ -12594,6 +12557,46 @@
       } catch (_error) {
         err = _error;
         return new Notice('warning', 'Cookies need to be enabled on 4chan for 4chan X to operate properly.', 30);
+      }
+    },
+    initThread: function(threadRoot) {
+      var err, errors, passLink, post, postRoot, posts, styleSelector, thread, _i, _len, _ref;
+      thread = new Thread(+threadRoot.id.slice(1), g.BOARD);
+      posts = [];
+      _ref = $$('.thread > .postContainer', threadRoot);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        postRoot = _ref[_i];
+        try {
+          posts.push(post = new Post(postRoot, thread, g.BOARD, {
+            isOriginalMarkup: true
+          }));
+        } catch (_error) {
+          err = _error;
+          if (!errors) {
+            errors = [];
+          }
+          errors.push({
+            message: "Parsing of Post No." + (postRoot.id.match(/\d+/)) + " failed. Post will be skipped.",
+            error: err
+          });
+        }
+      }
+      if (errors) {
+        Main.handleErrors(errors);
+      }
+      Main.callbackNodes(Thread, [thread]);
+      Main.callbackNodesDB(Post, posts, function() {
+        return $.event('4chanXInitFinished');
+      });
+      if (styleSelector = $.id('styleSelector')) {
+        passLink = $.el('a', {
+          textContent: '4chan Pass',
+          href: 'javascript:;'
+        });
+        $.on(passLink, 'click', function() {
+          return window.open('//sys.4chan.org/auth', 'This will steal your data.', 'left=0,top=0,width=500,height=255,toolbar=0,resizable=0');
+        });
+        return $.before(styleSelector.previousSibling, [$.tn('['), passLink, $.tn(']\u00A0\u00A0')]);
       }
     },
     callbackNodes: function(klass, nodes) {
