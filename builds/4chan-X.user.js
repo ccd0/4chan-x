@@ -12597,11 +12597,12 @@
         break;
       }
       try {
-        return localStorage.getItem('4chan-settings');
+        localStorage.getItem('4chan-settings');
       } catch (_error) {
         err = _error;
-        return new Notice('warning', 'Cookies need to be enabled on 4chan for 4chan X to operate properly.', 30);
+        new Notice('warning', 'Cookies need to be enabled on 4chan for 4chan X to operate properly.', 30);
       }
+      return $.on(window, 'popstate', Main.popstate);
     },
     initThread: function(threadRoot) {
       var err, errors, post, postRoot, posts, thread, _i, _len, _ref;
@@ -12783,8 +12784,12 @@
       if (view === 'catalog') {
         return;
       }
-      e.preventDefault();
-      history.pushState(null, '', this.pathname);
+      if (e) {
+        e.preventDefault();
+      }
+      if (this.id !== 'popState') {
+        history.pushState(null, '', this.pathname);
+      }
       view = threadID ? 'thread' : view || 'index';
       if (view === g.VIEW) {
         if (view === 'index') {
@@ -12817,6 +12822,14 @@
         }
       }
       return Header.setBoardList();
+    },
+    popstate: function() {
+      var a;
+      a = $.el('a', {
+        href: window.location,
+        id: 'popState'
+      });
+      return Main.navigate.call(a);
     },
     updateBoard: function(boardID) {
       var onload, req;

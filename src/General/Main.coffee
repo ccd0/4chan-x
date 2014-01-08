@@ -144,6 +144,8 @@ Main =
     catch err
       new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to operate properly.', 30
 
+    $.on window, 'popstate', Main.popstate
+
   initThread: (threadRoot) ->
     thread = new Thread +threadRoot.id[1..], g.BOARD
     posts  = []
@@ -358,8 +360,8 @@ Main =
 
     return if view is 'catalog'
 
-    e.preventDefault()
-    history.pushState null, '', @pathname
+    e.preventDefault() if e
+    history.pushState null, '', @pathname unless @id is 'popState'
 
     view = if threadID
       'thread'
@@ -389,6 +391,13 @@ Main =
         Main.refresh {boardID, view, threadID}
 
     Header.setBoardList()
+
+  popstate: ->
+    a = $.el 'a',
+      href: window.location
+      id:   'popState'
+
+    Main.navigate.call a
 
   updateBoard: (boardID) ->
     g.BOARD = new Board boardID
