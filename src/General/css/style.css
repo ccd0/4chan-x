@@ -73,6 +73,9 @@ a {
 [hidden] {
   display: none !important;
 }
+div.center:not(.ad-cnt) {
+  display: none !important;
+}
 
 /* fixed, z-index */
 #overlay,

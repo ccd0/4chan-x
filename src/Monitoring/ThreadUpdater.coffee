@@ -28,7 +28,7 @@ ThreadUpdater =
     $.on @timer,  'click', @update
     $.on @status, 'click', @update
 
-    @subEntries = []
+    subEntries = []
     for name, conf of Config.updater.checkbox
       checked = if Conf[name] then 'checked' else ''
       el = $.el 'label',
