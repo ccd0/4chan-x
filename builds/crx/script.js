@@ -12767,7 +12767,6 @@
       } else {
         view = view || 'index';
       }
-      Main.clean();
       if (view === g.VIEW) {
         if (view === 'index') {
           if (boardID === g.BOARD.ID) {
@@ -12777,7 +12776,11 @@
           Main.updateBoard(boardID);
           return Index.update();
         } else {
-          return Main.refresh(context);
+          return Main.refresh({
+            boardID: boardID,
+            view: view,
+            threadID: threadID
+          });
         }
       } else {
         return Main.disconnect();
@@ -12826,7 +12829,7 @@
       if (subtitle = $('.boardSubtitle')) {
         $.rm(subtitle);
       }
-      return $('.boardTitle').innerHTML = "/" + board.board + "/ - " + board.title;
+      return $('.boardTitle').innerHTML = d.title = "/" + board.board + "/ - " + board.title;
     },
     refresh: function(context) {
       var boardID, name, threadID, view, _results, _results1;

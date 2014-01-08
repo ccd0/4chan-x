@@ -345,7 +345,6 @@ Main =
       view = 'thread'
     else
       view = view or 'index'
-    Main.clean()
 
     # Moving from thread to thread or index to index.
     if view is g.VIEW
@@ -357,7 +356,7 @@ Main =
         Index.update()
         
       else
-        Main.refresh context
+        Main.refresh {boardID, view, threadID}
 
     else
       Main.disconnect()
@@ -394,7 +393,7 @@ Main =
 
   updateTitle: (board) ->
     $.rm subtitle if subtitle = $ '.boardSubtitle'
-    $('.boardTitle').innerHTML = "/#{board.board}/ - #{board.title}"
+    $('.boardTitle').innerHTML = d.title = "/#{board.board}/ - #{board.title}"
 
   refresh: (context) ->
     {boardID, view, threadID} = context
