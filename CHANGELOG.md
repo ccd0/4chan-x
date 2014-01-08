@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 **MayhemYDG**:
 - **New option**: `Auto-hide header on scroll`.
 - Added support for `4cdn.org`.
@@ -42,6 +43,18 @@
 
 **Zixaphir**:
 - FappeTyme and WerkTyme now persist across sessions.
+=======
+### v1.2.45 
+*2014-01-07*
+
+**seaweedchan**:
+- Remove moot's plea to remove ad-blocker
+- Hopefully fix NSFW themes and 404 image redirecting
+- Update archive list
+
+**Zixaphir**:
+- Fix optional increase for thread updater
+>>>>>>> 08ae1daee8d4a2dfa272b00a62f78aa56092dfd4
 
 ### v1.2.44 
 *2013-12-06*
