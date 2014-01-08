@@ -2255,7 +2255,7 @@
           textContent: 'Index Navigation'
         }),
         order: 90,
-        subEntries: [modeEntry, sortEntry, repliesEntry, anchorEntry, refNavEntry]
+        subEntries: [repliesEntry, anchorEntry, refNavEntry, modeEntry, sortEntry]
       });
       $.addClass(doc, 'index-loading');
       this.update();
