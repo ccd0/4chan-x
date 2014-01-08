@@ -65,7 +65,6 @@ Main =
           error: err
       # finally
       #   c.timeEnd "#{name} initialization"
-    return
     # c.timeEnd 'All initializations'
 
     $.on d, 'AddCallback', Main.addCallback

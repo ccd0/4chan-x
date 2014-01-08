@@ -12477,7 +12477,6 @@
           });
         }
       }
-      return;
       $.on(d, 'AddCallback', Main.addCallback);
       return $.ready(Main.initReady);
     },
