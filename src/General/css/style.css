@@ -1327,28 +1327,3 @@ a:only-of-type > .remove {
     vertical-align: -1px;
   }
 }
-
-
-/* Font Awesome */
-:root.shortcut-icons .fa::before {
-  display:inline-block;
-  font-size:13px;
-  visibility:visible
-}
-:root.shortcut-icons #shortcuts .fa::before {
-  font-size:15px!important;
-  margin-top:-3px!important;
-  position:relative;
-  top:1px
-}
-:root.shortcut-icons .fa {
-  font-size:0;
-  visibility:hidden
-}
-:root.shortcut-icons .shortcut.brackets-wrap::after,
-:root.shortcut-icons .shortcut.brackets-wrap::before {
-  display:none
-}
-:root.shortcut-icons a .fa {
-  display:inline
-}
