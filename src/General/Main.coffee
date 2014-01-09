@@ -325,10 +325,15 @@ Main =
 
   clean: ->
     {posts, threads} = g
+    
+    # Garbage collection
     delete posts[id]   for id of posts   when posts.hasOwnProperty   id
     delete threads[id] for id of threads when threads.hasOwnProperty id
 
-  disconnect: (view) ->
+    # Delete nodes
+    $.rmAll $ '.board'
+
+  disconnect: ->
     if g.VIEW is 'thread'
       features = [
         ['Thread Updater',  ThreadUpdater]
@@ -351,11 +356,6 @@ Main =
     # Post.callbacks.clear()
     # Thread.callbacks.clear()
 
-    # Clean the board, as we'll be dumping shit here
-    # $.rmAll $ '.board'
-
-    g.VIEW = view
-
   navigate: (e) ->
     return if @hostname isnt 'boards.4chan.org'
     # Lets have a good idea of what we should we should be expecting for this kind of feature
@@ -374,14 +374,15 @@ Main =
       view or 'index' # path is "/boardID/". See the problem?
 
     if view isnt g.VIEW
+      Main.disconnect()
       Main.clean()
-      Main.disconnect view
+      g.VIEW = view
 
     if view is 'index'
       Main.updateBoard boardID unless boardID is g.BOARD.ID
 
       if Index.root
-        Index.connect.call Index
+        Index.connect()
       else
         Index.update()
 

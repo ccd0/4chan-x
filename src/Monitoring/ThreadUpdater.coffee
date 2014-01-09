@@ -62,14 +62,10 @@ ThreadUpdater =
       cb:   @node
   
   disconnect: ->
-    if Conf['Updater and Stats in Header']
-      Header.rmShortcut @dialog
-    else
-      $.rmClass doc, 'float'
-      $.rm @dialog
-
     $.off @timer,  'click', @update
     $.off @status, 'click', @update
+    
+    clearTimeout @timeoutID if @timeoutID
 
     for entry in @entry.subEntries
       {el} = entry
@@ -83,12 +79,18 @@ ThreadUpdater =
     $.off d,      'QRPostSuccessful', @cb.checkpost
     $.off d,      'visibilitychange', @cb.visibility
 
+    @set 'timer', null
+    @set 'status', 'Offline'
+
     $.event 'rmMenuEntry', @entry
 
-    @set 'timer', null
-    @set 'status', 'Offline', 'warning'
+    if Conf['Updater and Stats in Header']
+      Header.rmShortcut @dialog
+    else
+      $.rmClass doc, 'float'
+      $.rm @dialog
 
-    delete @[name] for name in ['checkPostCount', 'timer', 'status', 'isUpdating', 'entry', 'dialog', 'thread', 'root', 'lastPost', 'outdateCount', 'online']
+    delete @[name] for name in ['checkPostCount', 'timer', 'status', 'isUpdating', 'entry', 'dialog', 'thread', 'root', 'lastPost', 'outdateCount', 'online', 'seconds', 'timeoutID']
 
     Thread.callbacks.rm 'Thread Updater'
 
