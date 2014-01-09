@@ -264,7 +264,7 @@
       'Centered links': false,
       'Header catalog links': false,
       'Bottom Board List': true,
-      'Shortcut Icons': false,
+      'Shortcut Icons': true,
       'Custom Board Navigation': true
     },
     boardnav: "[ toggle-all ]\na-replace\nc-replace\ng-replace\nk-replace\nv-replace\nvg-replace\nvr-replace\nck-replace\nco-replace\nfit-replace\njp-replace\nmu-replace\nsp-replace\ntv-replace\nvp-replace\n[external-text:\"FAQ\",\"https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions\"]",
