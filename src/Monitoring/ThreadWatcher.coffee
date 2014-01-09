@@ -6,7 +6,7 @@ ThreadWatcher =
       id:   'watcher-link'
       textContent: 'Watcher'
       href: 'javascript:;'
-      className: 'disabled fa fa-eye-open'
+      className: 'disabled fa fa-eye'
 
     @db     = new DataBoard 'watchedThreads', @refresh, true
     @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', <%= importHTML('Monitoring/ThreadWatcher') %>
