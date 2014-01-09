@@ -2450,13 +2450,12 @@
       return $.add(strong, a);
     },
     update: function(pageNum) {
-      var board, now, onload, _ref, _ref1;
+      var now, onload, _ref, _ref1;
       if (!navigator.onLine) {
         return;
       }
-      if (d.readyState !== 'loading' && Index.root.parentElement) {
-        board = $('.board');
-        $.replace(board, Index.root);
+      if (!(d.readyState === 'loading' || Index.root.parentElement)) {
+        $.replace($('.board', Index.root));
       }
       if ((_ref = Index.req) != null) {
         _ref.abort();
