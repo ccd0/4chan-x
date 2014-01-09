@@ -2420,7 +2420,7 @@
       return $.add(strong, a);
     },
     update: function(pageNum) {
-      var now, onload, _ref, _ref1;
+      var onload, _ref, _ref1;
       if (!navigator.onLine) {
         return;
       }
@@ -2429,18 +2429,6 @@
       }
       if ((_ref1 = Index.notice) != null) {
         _ref1.close();
-      }
-      if (d.readyState !== 'loading') {
-
-      } else {
-        now = Date.now();
-        $.ready(function() {
-          return setTimeout((function() {
-            if (!(Index.req && !Index.notice)) {
-
-            }
-          }), 5 * $.SECOND - (Date.now() - now));
-        });
       }
       if (typeof pageNum !== 'number') {
         pageNum = null;

@@ -203,15 +203,6 @@ Index =
     return unless navigator.onLine
     Index.req?.abort()
     Index.notice?.close()
-    if d.readyState isnt 'loading'
-    else
-      # Delay the notice on initial page load
-      # and only display it for slow connections.
-      now = Date.now()
-      $.ready ->
-        setTimeout (->
-          return unless Index.req and !Index.notice
-        ), 5 * $.SECOND - (Date.now() - now)
     pageNum = null if typeof pageNum isnt 'number' # event
     onload = (e) -> Index.load e, pageNum
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
