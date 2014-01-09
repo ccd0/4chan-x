@@ -12464,7 +12464,7 @@
       });
     },
     initReady: function() {
-      var err, errors, href, passLink, post, postRoot, posts, styleSelector, thread, threadRoot, _i, _len, _ref, _ref1;
+      var err, href, passLink, styleSelector, _ref;
       if ((_ref = d.title) === '4chan - Temporarily Offline' || _ref === '4chan - 404 Not Found') {
         if (Conf['404 Redirect'] && g.VIEW === 'thread') {
           href = Redirect.to('thread', {
@@ -12477,53 +12477,60 @@
         return;
       }
       Main.initStyle();
-      if (g.VIEW === 'thread' && (threadRoot = $('.thread'))) {
-        thread = new Thread(+threadRoot.id.slice(1), g.BOARD);
-        posts = [];
-        _ref1 = $$('.thread > .postContainer', threadRoot);
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          postRoot = _ref1[_i];
-          try {
-            posts.push(post = new Post(postRoot, thread, g.BOARD, {
-              isOriginalMarkup: true
-            }));
-          } catch (_error) {
-            err = _error;
-            if (!errors) {
-              errors = [];
-            }
-            errors.push({
-              message: "Parsing of Post No." + (postRoot.id.match(/\d+/)) + " failed. Post will be skipped.",
-              error: err
-            });
-          }
-        }
-        if (errors) {
-          Main.handleErrors(errors);
-        }
-        Main.callbackNodes(Thread, [thread]);
-        Main.callbackNodesDB(Post, posts, function() {
-          return $.event('4chanXInitFinished');
+      if (g.VIEW === 'thread') {
+        Main.initThread();
+      } else {
+        $.event('4chanXInitFinished');
+      }
+      if (styleSelector = $.id('styleSelector')) {
+        passLink = $.el('a', {
+          textContent: '4chan Pass',
+          href: 'javascript:;'
         });
-        if (styleSelector = $.id('styleSelector')) {
-          passLink = $.el('a', {
-            textContent: '4chan Pass',
-            href: 'javascript:;'
-          });
-          $.on(passLink, 'click', function() {
-            return window.open('//sys.4chan.org/auth', 'This will steal your data.', 'left=0,top=0,width=500,height=255,toolbar=0,resizable=0');
-          });
-          $.before(styleSelector.previousSibling, [$.tn('['), passLink, $.tn(']\u00A0\u00A0')]);
-        }
-        return;
+        $.on(passLink, 'click', function() {
+          return window.open('//sys.4chan.org/auth', 'This will steal your data.', 'left=0,top=0,width=500,height=255,toolbar=0,resizable=0');
+        });
+        $.before(styleSelector.previousSibling, [$.tn('['), passLink, $.tn(']\u00A0\u00A0')]);
       }
       try {
-        localStorage.getItem('4chan-settings');
+        return localStorage.getItem('4chan-settings');
       } catch (_error) {
         err = _error;
-        new Notice('warning', 'Cookies need to be enabled on 4chan for 4chan X to operate properly.', 30);
+        return new Notice('warning', 'Cookies need to be enabled on 4chan for 4chan X to operate properly.', 30);
       }
-      return $.event('4chanXInitFinished');
+    },
+    initThread: function() {
+      var err, errors, postRoot, posts, thread, threadRoot, _i, _len, _ref;
+      if (!(threadRoot = $('.thread'))) {
+        return;
+      }
+      thread = new Thread(+threadRoot.id.slice(1), g.BOARD);
+      posts = [];
+      _ref = $$('.thread > .postContainer', threadRoot);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        postRoot = _ref[_i];
+        try {
+          posts.push(new Post(postRoot, thread, g.BOARD, {
+            isOriginalMarkup: true
+          }));
+        } catch (_error) {
+          err = _error;
+          if (!errors) {
+            errors = [];
+          }
+          errors.push({
+            message: "Parsing of Post No." + (postRoot.id.match(/\d+/)) + " failed. Post will be skipped.",
+            error: err
+          });
+        }
+      }
+      if (errors) {
+        Main.handleErrors(errors);
+      }
+      Main.callbackNodes(Thread, [thread]);
+      return Main.callbackNodesDB(Post, posts, function() {
+        return $.event('4chanXInitFinished');
+      });
     },
     callbackNodes: function(klass, nodes) {
       var cb, i, node;

@@ -182,42 +182,26 @@ Main =
     # Something might have gone wrong!
     Main.initStyle()
 
-    if g.VIEW is 'thread' and threadRoot = $ '.thread'
-      thread = new Thread +threadRoot.id[1..], g.BOARD
-      posts  = []
-      for postRoot in $$ '.thread > .postContainer', threadRoot
-        try
-          posts.push post = new Post postRoot, thread, g.BOARD, {isOriginalMarkup: true}
-        catch err
-          # Skip posts that we failed to parse.
-          errors = [] unless errors
-          errors.push
-            message: "Parsing of Post No.#{postRoot.id.match /\d+/} failed. Post will be skipped."
-            error: err
-      Main.handleErrors errors if errors
+    if g.VIEW is 'thread'
+      Main.initThread() 
+    else
+      $.event '4chanXInitFinished'
 
-      Main.callbackNodes Thread, [thread]
-      Main.callbackNodesDB Post, posts, ->
-        $.event '4chanXInitFinished'
-
-      if styleSelector = $.id 'styleSelector'
-        passLink = $.el 'a',
-          textContent: '4chan Pass'
-          href: 'javascript:;'
-        $.on passLink, 'click', ->
-          window.open '//sys.4chan.org/auth',
-            'This will steal your data.'
-            'left=0,top=0,width=500,height=255,toolbar=0,resizable=0'
-        $.before styleSelector.previousSibling, [$.tn '['; passLink, $.tn ']\u00A0\u00A0']
-
-      return
+    if styleSelector = $.id 'styleSelector'
+      passLink = $.el 'a',
+        textContent: '4chan Pass'
+        href: 'javascript:;'
+      $.on passLink, 'click', ->
+        window.open '//sys.4chan.org/auth',
+          'This will steal your data.'
+          'left=0,top=0,width=500,height=255,toolbar=0,resizable=0'
+      $.before styleSelector.previousSibling, [$.tn '['; passLink, $.tn ']\u00A0\u00A0']
 
     <% if (type === 'userscript') { %>
     GMver = GM_info.version.split '.'
     for v, i in "<%= meta.min.greasemonkey %>".split '.'
-      break if v < GMver[i]
       continue if v is GMver[i]
-      new Notice 'warning', "Your version of Greasemonkey is outdated (v#{GM_info.version} instead of v<%= meta.min.greasemonkey %> minimum) and <%= meta.name %> may not operate correctly.", 30
+      (v < GMver[i]) or new Notice 'warning', "Your version of Greasemonkey is outdated (v#{GM_info.version} instead of v<%= meta.min.greasemonkey %> minimum) and <%= meta.name %> may not operate correctly.", 30
       break
     <% } %>
 
@@ -226,7 +210,24 @@ Main =
     catch err
       new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to operate properly.', 30
 
-    $.event '4chanXInitFinished'
+  initThread: ->
+    return unless threadRoot = $ '.thread'
+    thread = new Thread +threadRoot.id[1..], g.BOARD
+    posts  = []
+    for postRoot in $$ '.thread > .postContainer', threadRoot
+      try
+        posts.push new Post postRoot, thread, g.BOARD, {isOriginalMarkup: true}
+      catch err
+        # Skip posts that we failed to parse.
+        errors = [] unless errors
+        errors.push
+          message: "Parsing of Post No.#{postRoot.id.match /\d+/} failed. Post will be skipped."
+          error: err
+    Main.handleErrors errors if errors
+
+    Main.callbackNodes Thread, [thread]
+    Main.callbackNodesDB Post, posts, ->
+      $.event '4chanXInitFinished'
 
   callbackNodes: (klass, nodes) ->
     i = 0
