@@ -66,13 +66,7 @@ Index =
       order: 98
       subEntries: [repliesEntry, anchorEntry, refNavEntry, modeEntry, sortEntry]
 
-    return if g.VIEW isnt 'index'
-    
-    @connect.call @
-
-  connect: ->
     $.addClass doc, 'index-loading'
-    @update()
     @root = $.el 'div', className: 'board'
     @pagelist = $.el 'div',
       className: 'pagelist'
@@ -83,31 +77,34 @@ Index =
       innerHTML: <%= importHTML('Features/Index-navlinks') %>
     @searchInput = $ '#index-search', @navLinks
     @currentPage = @getCurrentPage()
-    $.on window, 'popstate', @cb.popstate
+
     $.on @pagelist, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
-    $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
-      board = $ '.board'
-      $.replace board, Index.root
-      # Hacks:
-      # - When removing an element from the document during page load,
-      #   its ancestors will still be correctly created inside of it.
-      # - Creating loadable elements inside of an origin-less document
-      #   will not download them.
-      # - Combine the two and you get a download canceller!
-      #   Does not work on Firefox unfortunately. bugzil.la/939713
-      d.implementation.createDocument(null, null, null).appendChild board
 
-      for navLink in $$ '.navLinks'
-        $.rm navLink
+    @update() if g.VIEW is 'index'
+    $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
+      if g.VIEW is 'index'
+        board = $ '.board'
+        $.replace board, Index.root
+        # Hacks:
+        # - When removing an element from the document during page load,
+        #   its ancestors will still be correctly created inside of it.
+        # - Creating loadable elements inside of an origin-less document
+        #   will not download them.
+        # - Combine the two and you get a download canceller!
+        #   Does not work on Firefox unfortunately. bugzil.la/939713
+        d.implementation.createDocument(null, null, null).appendChild board
+
+      $.rm navLink for navLink in $$ '.navLinks'
       $.after $.x('child::form/preceding-sibling::hr[1]'), Index.navLinks
       $.rmClass doc, 'index-loading'
-      $.asap (-> $('.pagelist') or d.readyState isnt 'loading'), ->
-        if pagelist = $('.pagelist')
-          $.replace pagelist, Index.pagelist
-        else
-          $.after $.id('delform'), Index.pagelist
+
+    $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
+      if pagelist = $('.pagelist')
+        $.replace pagelist, Index.pagelist
+      else
+        $.after $.id('delform'), Index.pagelist
 
   cb:
     mode: ->
@@ -120,9 +117,6 @@ Index =
       Index.buildThreads()
       Index.sort()
       Index.buildIndex()
-    popstate: (e) ->
-      pageNum = Index.getCurrentPage()
-      Index.pageLoad pageNum if Index.currentPage isnt pageNum
     pageNav: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       switch e.target.nodeName
@@ -209,6 +203,9 @@ Index =
 
   update: (pageNum) ->
     return unless navigator.onLine
+    unless Index.root.parentElement
+      board = $ '.board'
+      $.replace board, Index.root
     Index.req?.abort()
     Index.notice?.close()
 

@@ -327,8 +327,10 @@ Main =
     {posts, threads} = g
     
     # Garbage collection
-    delete posts[id]   for id of posts   when posts.hasOwnProperty   id
-    delete threads[id] for id of threads when threads.hasOwnProperty id
+    g.posts         = {}
+    g.threads       = {}
+    g.BOARD.posts   = {}
+    g.BOARD.threads = {}
 
     # Delete nodes
     $.rmAll $ '.board'
@@ -351,10 +353,8 @@ Main =
           error:   err
 
       Main.handleErrors errors if errors
-
-    # Clean Post and Thread callbacks
-    # Post.callbacks.clear()
-    # Thread.callbacks.clear()
+    
+    return
 
   navigate: (e) ->
     return if @hostname isnt 'boards.4chan.org'
@@ -380,13 +380,9 @@ Main =
 
     if view is 'index'
       Main.updateBoard boardID unless boardID is g.BOARD.ID
+      Index.update()
 
-      if Index.root
-        Index.connect()
-      else
-        Index.update()
-
-    # Moving from thread to thread or index to index.
+    # Moving from index to thread or thread to thread
     else
       c.error 'How?'
       Main.refresh {boardID, view, threadID}
