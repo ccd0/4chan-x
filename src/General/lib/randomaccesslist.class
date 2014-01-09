@@ -1,0 +1,58 @@
+class RandomAccessList
+  constructor: ->
+    @length = 0
+
+  push: (item) ->
+    {ID} = item
+    return if @[ID]
+    {last} = @
+    item.prev = last
+    @[ID] = item
+    @last = if last
+      last.next = item
+    else
+      @first = item
+    @length++
+
+  after: (root, item) ->
+    return if item.prev is root
+
+    @rmi item
+
+    {next} = root
+    root.next = item
+    item.prev = root
+    item.next = next
+    next.prev = item
+  
+  prepend: (item) ->
+    {first} = @
+    return if item is first or not @[item.ID]
+    @rmi item
+    item.next  = first
+    first.prev = item
+    @first = item
+    delete item.prev
+
+  shift: ->
+    @rm @first.ID
+
+  rm: (ID) ->
+    item = @[ID]
+    return unless item
+    delete @[ID]
+    @length--
+    @rmi item
+    delete item.next
+    delete item.prev
+
+  rmi: (item) ->
+    {prev, next} = item
+    if prev
+      prev.next = next
+    else
+      @first = next
+    if next
+      next.prev = prev
+    else
+      @last = prev

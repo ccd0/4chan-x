@@ -6,8 +6,9 @@ Fourchan =
     if board is 'g'
       $.globalEval """
         window.addEventListener('prettyprint', function(e) {
-          var pre = e.detail;
-          pre.innerHTML = prettyPrintOne(pre.innerHTML);
+          window.dispatchEvent(new CustomEvent('prettyprint:cb', {
+            detail: prettyPrintOne(e.detail)
+          }));
         }, false);
       """
       Post.callbacks.push
@@ -32,9 +33,11 @@ Fourchan =
         cb:   @math
   code: ->
     return if @isClone
+    apply = (e) -> pre.innerHTML = e.detail
+    $.on window, 'prettyprint:cb', apply
     for pre in $$ '.prettyprint:not(.prettyprinted)', @nodes.comment
-      $.event 'prettyprint', pre, window
-      $.addClass pre, 'prettyprinted'
+      $.event 'prettyprint', pre.innerHTML, window
+    $.off window, 'prettyprint:cb', apply
     return
   math: ->
     return if @isClone or !$ '.math', @nodes.comment

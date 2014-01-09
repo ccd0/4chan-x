@@ -51,7 +51,15 @@ PostHiding =
             return false
           PostHiding.menu.post = post
           true
-        subEntries: [{el: apply}, {el: thisPost}, {el: replies}, {el: makeStub}]
+        subEntries: [
+            el: apply
+          ,
+            el: thisPost
+          ,
+            el: replies
+          ,
+            el: makeStub
+        ]
 
       # Show
       div = $.el 'div',
@@ -85,7 +93,13 @@ PostHiding =
           thisPost.firstChild.checked = post.isHidden
           replies.firstChild.checked  = if data?.hideRecursively? then data.hideRecursively else Conf['Recursive Hiding']
           true
-        subEntries: [{el: apply}, {el: thisPost}, {el: replies}]
+        subEntries: [
+            el: apply
+          ,
+            el: thisPost
+          ,
+            el: replies
+        ]
 
       $.event 'AddMenuEntry',
         type: 'post'
@@ -136,10 +150,13 @@ PostHiding =
       return
 
   makeButton: (post, type) ->
+    span = $.el 'span',
+      className:   "brackets-wrap"
+      textContent: "\u00A0#{if type is 'hide' then '-' else '+'}\u00A0"
     a = $.el 'a',
       className: "#{type}-reply-button"
-      innerHTML: "<span class=brackets-wrap>&nbsp;#{if type is 'hide' then '-' else '+'}&nbsp;</span>"
       href:      'javascript:;'
+    $.add a, span
     $.on a, 'click', PostHiding.toggle
     a
 
@@ -186,10 +203,9 @@ PostHiding =
     $.add a, $.tn " #{postInfo}"
     post.nodes.stub = $.el 'div',
       className: 'stub'
-    $.add post.nodes.stub, if Conf['Menu']
-      [a, $.tn(' '), button = Menu.makeButton post]
-    else
-      a
+    $.add post.nodes.stub, a
+    if Conf['Menu']
+      $.add post.nodes.stub, Menu.makeButton()
     $.prepend post.nodes.root, post.nodes.stub
 
   show: (post, showRecursively=Conf['Recursive Hiding']) ->

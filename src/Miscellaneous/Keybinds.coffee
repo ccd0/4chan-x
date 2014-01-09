@@ -2,20 +2,25 @@ Keybinds =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Keybinds']
 
+    for hotkey of Conf.hotkeys
+      $.sync hotkey, Keybinds.sync
+
     init = ->
       $.off d, '4chanXInitFinished', init
-      $.on d, 'keydown',  Keybinds.keydown
+      $.on d, 'keydown', Keybinds.keydown
       for node in $$ '[accesskey]'
         node.removeAttribute 'accesskey'
       return
     $.on d, '4chanXInitFinished', init
 
+  sync: (key, hotkey) ->
+    Conf[hotkey] = key
+
   keydown: (e) ->
     return unless key = Keybinds.keyCode e
     {target} = e
-    if ['INPUT', 'TEXTAREA'].contains target.nodeName
-      return unless /(Esc|Alt|Ctrl|Meta)/.test key
-
+    if target.nodeName in ['INPUT', 'TEXTAREA']
+      return unless /(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test key
     threadRoot = Nav.getThread()
     if op = $ '.op', threadRoot
       thread = Get.postFromNode(op).thread
@@ -59,11 +64,15 @@ Keybinds =
         Keybinds.sage() if QR.nodes
       when Conf['Submit QR']
         QR.submit() if QR.nodes and !QR.status()
-      # Thread related
+      # Index/Thread related
+      when Conf['Update']
+        switch g.VIEW
+          when 'thread'
+            ThreadUpdater.update()
+          when 'index'
+            Index.update()
       when Conf['Watch']
         ThreadWatcher.toggle thread
-      when Conf['Update']
-        ThreadUpdater.update()
       # Images
       when Conf['Expand image']
         Keybinds.img threadRoot
@@ -72,22 +81,25 @@ Keybinds =
       when Conf['Open Gallery']
         Gallery.cb.toggle()
       when Conf['fappeTyme']
-        FappeTyme.cb.fappe()
+        FappeTyme.cb.toggle.call {name: 'fappe'}
       when Conf['werkTyme']
-        FappeTyme.cb.werk()
+        FappeTyme.cb.toggle.call {name: 'werk'}
       # Board Navigation
       when Conf['Front page']
-        window.location = "/#{g.BOARD}/0#delform"
+        if g.VIEW is 'index'
+          Index.userPageNav 0
+        else
+          window.location = "/#{g.BOARD}/"
       when Conf['Open front page']
-        $.open "/#{g.BOARD}/#delform"
+        $.open "/#{g.BOARD}/"
       when Conf['Next page']
-        return if g.VIEW is 'thread'
-        if form = $ '.next form'
-          window.location = form.action
+        return unless g.VIEW is 'index' and Conf['Index Mode'] is 'paged'
+        $('.next button', Index.pagelist).click()
       when Conf['Previous page']
-        return if g.VIEW is 'thread'
-        if form = $ '.prev form'
-          window.location = form.action
+        return unless g.VIEW is 'index' and Conf['Index Mode'] is 'paged'
+        $('.prev button', Index.pagelist).click()
+      when Conf['Search form']
+        Index.searchInput.focus()
       when Conf['Open catalog']
         if Conf['External Catalog']
           window.location = CatalogLinks.external(g.BOARD.ID)
@@ -114,7 +126,7 @@ Keybinds =
       when Conf['Deselect reply']
         Keybinds.hl  0, threadRoot
       when Conf['Hide']
-        ThreadHiding.toggle thread if g.VIEW is 'index'
+        ThreadHiding.toggle thread if ThreadHiding.db
       when Conf['Previous Post Quoting You']
         QuoteYou.cb.seek 'preceding'
       when Conf['Next Post Quoting You']
@@ -200,43 +212,31 @@ Keybinds =
       location.href = url
 
   hl: (delta, thread) ->
+    postEl = $ '.reply.highlight', thread
+
     unless delta
-      if postEl = $ '.reply.highlight', thread
-        $.rmClass postEl, 'highlight'
+      $.rmClass postEl, 'highlight' if postEl
       return
-    if Conf['Fixed Header'] and Conf['Bottom header']
-      topMargin = 0
-    else
-      headRect  = Header.bar.getBoundingClientRect()
-      topMargin = headRect.top + headRect.height
-    if postEl = $ '.reply.highlight', thread
-      $.rmClass postEl, 'highlight'
-      rect = postEl.getBoundingClientRect()
-      if rect.bottom >= topMargin and rect.top <= doc.clientHeight # We're at least partially visible
+
+    if postEl
+      {height} = postEl.getBoundingClientRect()
+      if Header.getTopOf(postEl) >= -height and Header.getBottomOf(postEl) >= -height # We're at least partially visible
         root = postEl.parentNode
-        axe = if delta is +1
+        axis = if delta is +1
           'following'
         else
           'preceding'
-        next = $.x "#{axe}-sibling::div[contains(@class,'replyContainer')][1]/child::div[contains(@class,'reply')]", root
-        unless next
-          @focus postEl
-          return
-        return unless g.VIEW is 'thread' or $.x('ancestor::div[parent::div[@class="board"]]', next) is thread
-        rect = next.getBoundingClientRect()
-        if rect.top < 0 or rect.bottom > doc.clientHeight
-          if delta is -1
-            window.scrollBy 0, rect.top - topMargin
-          else
-            next.scrollIntoView false
+        return unless next = $.x "#{axis}-sibling::div[contains(@class,'replyContainer') and not(@hidden) and not(child::div[@class='stub'])][1]/child::div[contains(@class,'reply')]", root
+        Header.scrollToIfNeeded next, delta is +1
         @focus next
+        $.rmClass postEl, 'highlight'
         return
+      $.rmClass postEl, 'highlight'
 
     replies = $$ '.reply', thread
     replies.reverse() if delta is -1
     for reply in replies
-      rect = reply.getBoundingClientRect()
-      if delta is +1 and rect.top >= topMargin or delta is -1 and rect.bottom <= doc.clientHeight
+      if delta is +1 and Header.getTopOf(reply) > 0 or delta is -1 and Header.getBottomOf(reply) > 0
         @focus reply
         return
 

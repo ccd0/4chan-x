@@ -1,31 +1,17 @@
-String::capitalize = ->
-  @charAt(0).toUpperCase() + @slice(1);
-
-String::contains = (string) ->
-  @indexOf(string) > -1
-
-Array::contains = (object) ->
-  @indexOf(object) > -1
-
-Array::indexOf = (object) ->
-  i = @length
-  while i--
-    return i if @[i] is object
-  return i
-
 # loosely follows the jquery api:
 # http://api.jquery.com/
 # not chainable
 $ = (selector, root=d.body) ->
   root.querySelector selector
 
-$.extend = (object, properties) ->
-  for key, val of properties
-    continue unless properties.hasOwnProperty key
-    object[key] = val
+$.extend = (obj, prop) ->
+  obj[key] = val for key, val of prop when prop.hasOwnProperty key
   return
 
-$.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)))
+$.DAY = 24 * 
+  $.HOUR = 60 * 
+    $.MINUTE = 60 * 
+      $.SECOND = 1000
 
 $.id = (id) ->
   d.getElementById id
@@ -66,7 +52,7 @@ $.ajax = do ->
     type or= form and 'post' or 'get'
     r.open type, url, !sync
     if whenModified
-      r.setRequestHeader 'If-Modified-Since', lastModified[url] or '0'
+      r.setRequestHeader 'If-Modified-Since', lastModified[url] if url of lastModified
       $.on r, 'load', -> lastModified[url] = r.getResponseHeader 'Last-Modified'
     $.extend r, options
     $.extend r.upload, upCallbacks
@@ -137,7 +123,7 @@ $.toggleClass = (el, className) ->
   el.classList.toggle className
 
 $.hasClass = (el, className) ->
-  el.classList.contains className
+  className in el.classList
 
 $.rm = do ->
   if 'remove' of Element::
@@ -147,7 +133,7 @@ $.rm = do ->
 
 $.rmAll = (root) ->
   # jsperf.com/emptify-element
-  while node = root.firstChild
+  for node in [root.childNodes...]
     # HTMLSelectElement.remove !== Element.remove
     root.removeChild node
   return
@@ -287,7 +273,7 @@ $.sync = do ->
   chrome.storage.onChanged.addListener (changes) ->
     for key of changes
       if cb = $.syncing[key]
-        cb changes[key].newValue
+        cb changes[key].newValue, key
     return
   (key, cb) -> $.syncing[key] = cb
 
@@ -330,9 +316,8 @@ $.get = (key, val, cb) ->
 
   count = 0
   done  = (item) ->
-    {lastError} = chrome.runtime
-    if lastError
-      c.error lastError, lastError.message or 'No message.'
+    if chrome.runtime.lastError
+      c.error chrome.runtime.lastError.message
     $.extend items, item
     cb items unless --count
 
@@ -368,11 +353,12 @@ $.set = do ->
     set()
 
 <% } else { %>
+
 # http://wiki.greasespot.net/Main_Page
 $.sync = do ->
-  $.on window, 'storage', (e) ->
-    if cb = $.syncing[e.key]
-      cb JSON.parse e.newValue
+  $.on window, 'storage', ({key, newValue}) ->
+    if cb = $.syncing[key]
+      cb JSON.parse(newValue), key
   (key, cb) -> $.syncing[g.NAMESPACE + key] = cb
 
 $.delete = (keys) ->

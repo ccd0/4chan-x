@@ -6,12 +6,10 @@ ThreadWatcher =
       id:   'watcher-link'
       textContent: 'Watcher'
       href: 'javascript:;'
-      className: 'disabled fourchanx-icon icon-eye-open'
+      className: 'disabled fa fa-eye-open'
 
     @db     = new DataBoard 'watchedThreads', @refresh, true
-    @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', """
-    <%= grunt.file.read('src/General/html/Monitoring/ThreadWatcher.html').replace(/>\s+</g, '><').trim() %>
-    """
+    @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', <%= importHTML('Monitoring/ThreadWatcher') %>
     @status = $ '#watcher-status', @dialog
     @list   = @dialog.lastElementChild
 
@@ -19,7 +17,13 @@ ThreadWatcher =
     $.on d, 'ThreadUpdate',       @cb.threadUpdate if g.VIEW is 'thread'
     $.on sc, 'click', @toggleWatcher
     $.on $('.move>.close', ThreadWatcher.dialog), 'click', @toggleWatcher
+
     $.on d, '4chanXInitFinished', @ready
+    switch g.VIEW
+      when 'index'
+        $.on d, 'IndexRefresh', @cb.onIndexRefresh
+      when 'thread'
+        $.on d, 'ThreadUpdate', @cb.onThreadRefresh
 
     if Conf['Toggleable Thread Watcher']
       Header.addShortcut sc
@@ -89,7 +93,17 @@ ThreadWatcher =
           $.set 'AutoWatch', threadID
       else if Conf['Auto Watch Reply']
         ThreadWatcher.add board.threads[threadID]
-    threadUpdate: (e) ->
+    onIndexRefresh: ->
+      {db}    = ThreadWatcher
+      boardID = g.BOARD.ID
+      for threadID, data of db.data.boards[boardID] when not data.isDead and threadID not of g.BOARD.threads
+        if Conf['Auto Prune']
+          ThreadWatcher.db.delete {boardID, threadID}
+        else
+          data.isDead = true
+          ThreadWatcher.db.set {boardID, threadID, val: data}
+      ThreadWatcher.refresh()
+    onThreadRefresh: (e) ->
       {thread} = e.detail
       return unless e.detail[404] and ThreadWatcher.db.get {boardID: thread.board.ID, threadID: thread.ID}
       # Update 404 status.
@@ -120,7 +134,7 @@ ThreadWatcher =
         ThreadWatcher.status.textContent = status
         return if @status isnt 404
         if Conf['Auto Prune']
-          ThreadWatcher.rm boardID, threadID
+          ThreadWatcher.db.delete {boardID, threadID}
         else
           data.isDead = true
           ThreadWatcher.db.set {boardID, threadID, val: data}
@@ -139,7 +153,7 @@ ThreadWatcher =
 
   makeLine: (boardID, threadID, data) ->
     x = $.el 'a',
-      textContent: '×'
+      className: 'fa fa-times'
       href: 'javascript:;'
     $.on x, 'click', ThreadWatcher.cb.rm
 
@@ -281,6 +295,7 @@ ThreadWatcher =
         $.on entry.el, 'click', cb if cb
         @refreshers.push refresh.bind entry if refresh
         $.event 'AddMenuEntry', entry
+      return
     createSubEntry: (name, desc) ->
       entry =
         type: 'thread watcher'

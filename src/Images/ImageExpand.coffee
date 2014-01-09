@@ -3,12 +3,12 @@ ImageExpand =
     return if g.VIEW is 'catalog' or !Conf['Image Expansion']
 
     @EAI = $.el 'a',
-      className: 'expand-all-shortcut fourchanx-icon icon-resize-full'
+      className: 'expand-all-shortcut fa fa-expand'
       textContent: 'EAI' 
       title: 'Expand All Images'
       href: 'javascript:;'
     $.on @EAI, 'click', ImageExpand.cb.toggleAll
-    Header.addShortcut @EAI, 2
+    Header.addShortcut @EAI, 3
 
     Post.callbacks.push
       name: 'Image Expansion'
@@ -33,11 +33,11 @@ ImageExpand =
     toggleAll: ->
       $.event 'CloseMenu'
       if ImageExpand.on = $.hasClass ImageExpand.EAI, 'expand-all-shortcut'
-        ImageExpand.EAI.className = 'contract-all-shortcut fourchanx-icon icon-resize-small'
+        ImageExpand.EAI.className = 'contract-all-shortcut fa fa-compress'
         ImageExpand.EAI.title     = 'Contract All Images'
         func = ImageExpand.expand
       else
-        ImageExpand.EAI.className = 'expand-all-shortcut fourchanx-icon icon-resize-full'
+        ImageExpand.EAI.className = 'expand-all-shortcut fa fa-expand'
         ImageExpand.EAI.title     = 'Expand All Images'
         func = ImageExpand.contract
       for ID, post of g.posts
@@ -46,7 +46,7 @@ ImageExpand =
           continue unless file and file.isImage and doc.contains post.nodes.root
           if ImageExpand.on and
             (!Conf['Expand spoilers'] and file.isSpoiler or
-            Conf['Expand from here'] and file.thumb.getBoundingClientRect().top < 0)
+            Conf['Expand from here'] and Header.getTopOf(file.thumb) < 0)
               continue
           $.queueTask func, post
       return
@@ -62,7 +62,7 @@ ImageExpand =
     # Scroll back to the thumbnail when contracting the image
     # to avoid being left miles away from the relevant post.
     {root} = post.nodes
-    rect = (if Conf['Advance on contract'] then do ->
+    {top, left} = (if Conf['Advance on contract'] then do ->
       next = root
       while next = $.x "following::div[contains(@class,'postContainer')][1]", next
         continue if $('.stub', next) or next.offsetHeight is 0
@@ -72,13 +72,13 @@ ImageExpand =
       root
     ).getBoundingClientRect()
 
-    if rect.top < 0
-      y = rect.top
+    if top < 0
+      y = top
       if Conf['Fixed Header'] and not Conf['Bottom Header']
         headRect = Header.bar.getBoundingClientRect()
         y -= headRect.top + headRect.height
 
-    if rect.left < 0
+    if left < 0
       x = -window.scrollX
     window.scrollBy x, y if x or y
     ImageExpand.contract post
@@ -116,13 +116,12 @@ ImageExpand =
       $.addClass post.nodes.root, 'expanded-image'
       $.rmClass  post.file.thumb, 'expanding'
       return
-    prev = post.nodes.root.getBoundingClientRect()
+    {bottom} = post.nodes.root.getBoundingClientRect()
     $.queueTask ->
       $.addClass post.nodes.root, 'expanded-image'
       $.rmClass  post.file.thumb, 'expanding'
-      return unless prev.top + prev.height <= 0
-      curr = post.nodes.root.getBoundingClientRect()
-      window.scrollBy 0, curr.height - prev.height + curr.top - prev.top
+      return unless bottom <= 0
+      window.scrollBy 0, post.nodes.root.getBoundingClientRect().bottom - bottom
 
   error: ->
     post = Get.postFromNode @

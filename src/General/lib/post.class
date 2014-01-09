@@ -1,11 +1,12 @@
 class Post
-  @callbacks = []
+  @callbacks = new Callbacks()
   toString: -> @ID
 
   constructor: (root, @thread, @board, that={}) ->
     @ID     = +root.id[2..]
     @fullID = "#{@board}.#{@ID}"
 
+    @cleanup root if that.isOriginalMarkup
     post = $ '.post',     root
     info = $ '.postInfo', post
     @nodes =
@@ -55,7 +56,7 @@ class Post
 
     @parseComment()
     @parseQuotes()
-    @parseFile(that)
+    @parseFile that
 
     @clones = []
     g.posts[@fullID] = thread.posts[@] = board.posts[@] = @
@@ -111,7 +112,7 @@ class Post
 
     # ES6 Set when?
     fullID = "#{match[1]}.#{match[2]}"
-    @quotes.push fullID unless @quotes.contains fullID
+    @quotes.push fullID unless fullID in @quotes
 
   parseFile: (that) ->
     return unless (fileEl = $ '.file', @nodes.post) and thumb = $ 'img[data-md5]', fileEl
@@ -148,6 +149,13 @@ class Post
     <% } %>
     if @file.isImage = /(jpg|png|gif)$/i.test @file.name
       @file.dimensions = fileText.textContent.match(/\d+x\d+/)[0]
+
+  cleanup: (root) ->
+    for node in $$ '.mobile', root
+      $.rm node
+    for node in $$ '.desktop', root
+      $.rmClass node, 'desktop'
+    return
 
   kill: (file, now) ->
     now or= new Date()
@@ -202,6 +210,12 @@ class Post
         quotelink.textContent = quotelink.textContent.replace '\u00A0(Dead)', ''
         $.rmClass quotelink, 'deadlink'
     return
+
+  collect: ->
+    @kill()
+    delete g.posts[@fullID]
+    delete @thread.posts[@]
+    delete @board.posts[@]
 
   addClone: (context) ->
     new Clone @, context

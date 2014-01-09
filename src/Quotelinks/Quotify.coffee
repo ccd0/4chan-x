@@ -69,19 +69,16 @@ Quotify =
         $.addClass a, 'quotelink'
         $.extend a.dataset, {boardID, postID}
 
-    unless @quotes.contains quoteID
-      @quotes.push quoteID
+    @quotes.push quoteID unless quoteID in @quotes
 
-    unless a
-      deadlink.textContent = "#{quote}\u00A0(Dead)"
-      return
+    return deadlink.textContent = "#{quote}\u00A0(Dead)" unless a
 
     $.replace deadlink, a
     if $.hasClass a, 'quotelink'
       @nodes.quotelinks.push a
 
   fixDeadlink: (deadlink) ->
-    if !(el = deadlink.previousSibling) or el.nodeName is 'BR'
+    if not (el = deadlink.previousSibling) or el.nodeName is 'BR'
       green = $.el 'span',
         className: 'quote'
       $.before deadlink, green

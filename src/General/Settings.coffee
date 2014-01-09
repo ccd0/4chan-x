@@ -2,7 +2,7 @@ Settings =
   init: ->
     # 4chan X settings link
     link = $.el 'a',
-      className:   'settings-link fourchanx-icon icon-wrench'
+      className:   'settings-link fa fa-wrench'
       textContent: 'Settings'
       href:        'javascript:;'
     $.on link, 'click', Settings.open
@@ -41,9 +41,7 @@ Settings =
     return if Settings.dialog
     $.event 'CloseMenu'
 
-    html = """
-    <%= grunt.file.read('src/General/html/Settings/Settings.html').replace(/>\s+</g, '><').trim() %>
-    """
+    html = <%= importHTML('Settings/Settings') %>
 
     Settings.overlay = overlay = $.el 'div',
       id: 'overlay'
@@ -124,7 +122,7 @@ Settings =
       return
 
     div = $.el 'div',
-      innerHTML: "<button></button><span class=description>: Clear manually-hidden threads and posts on all boards. Refresh the page to apply."
+      innerHTML: "<button></button><span class=description>: Clear manually-hidden threads and posts on all boards. Reload the page to apply."
     button = $ 'button', div
     hiddenNum = 0
     $.get 'hiddenThreads', boards: {}, (item) ->
@@ -187,7 +185,7 @@ Settings =
       try
         data = JSON.parse e.target.result
         Settings.loadSettings data
-        if confirm 'Import successful. Refresh now?'
+        if confirm 'Import successful. Reload now?'
           window.location.reload()
       catch err
         output.textContent = 'Import failed due to an error.'
@@ -274,12 +272,11 @@ Settings =
     data
 
   filter: (section) ->
-    section.innerHTML = """
-    <%= grunt.file.read('src/General/html/Settings/Filter-select.html').replace(/>\s+</g, '><').trim() %>
-    """
+    section.innerHTML = <%= importHTML('Settings/Filter-select') %>
     select = $ 'select', section
     $.on select, 'change', Settings.selectFilter
     Settings.selectFilter.call select
+
   selectFilter: ->
     div = @nextElementSibling
     if (name = @value) isnt 'guide'
@@ -293,30 +290,24 @@ Settings =
       $.on ta, 'change', $.cb.value
       $.add div, ta
       return
-    div.innerHTML = """
-    <%= grunt.file.read('src/General/html/Settings/Filter-guide.html').replace(/>\s+</g, '><').trim() %>
-    """
+    div.innerHTML = <%= importHTML('Settings/Filter-guide') %>
 
   sauce: (section) ->
-    section.innerHTML = """
-    <%= grunt.file.read('src/General/html/Settings/Sauce.html').replace(/>\s+</g, '><').trim() %>
-    """
+    section.innerHTML = <%= importHTML('Settings/Sauce') %>
     ta = $ 'textarea', section
     $.get 'sauces', Conf['sauces'], (item) ->
       ta.value = item['sauces']
     $.on ta, 'change', $.cb.value
 
   advanced: (section) ->
-    section.innerHTML = """
-    <%= grunt.file.read('src/General/html/Settings/Advanced.html').replace(/>\s+</g, '><').trim() %>
-    """
-    items  = {}
+    section.innerHTML = <%= importHTML('Settings/Advanced') %>
+    items = {}
     inputs = {}
     for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'sageEmoji', 'emojiPos', 'usercss']
       input = $ "[name=#{name}]", section
       items[name]  = Conf[name]
       inputs[name] = input
-      event = if ['favicon', 'usercss', 'sageEmoji', 'emojiPos'].contains name
+      event = if name in ['favicon', 'usercss', 'sageEmoji', 'emojiPos']
         'change'
       else
         'input'
@@ -330,7 +321,7 @@ Settings =
 
     $.get items, (items) ->
       for key, val of items
-        continue if ['emojiPos'].contains key
+        continue if key is 'emojiPos'
         input = inputs[key]
         input.value = val
         continue if key is 'usercss'
@@ -351,7 +342,7 @@ Settings =
           file:   []
         data.thread.push name
         data.post.push   name if archive.software is 'foolfuuka'
-        data.file.push   name if archive.files.contains boardID
+        data.file.push   name if boardID in archive.files
 
     rows = []
     boardOptions = []
@@ -460,10 +451,10 @@ Settings =
     $.cb.checked.call @
   usercss: ->
     CustomCSS.update()
+
   keybinds: (section) ->
-    section.innerHTML = """
-    <%= grunt.file.read('src/General/html/Settings/Keybinds.html').replace(/>\s+</g, '><').trim() %>
-    """
+    section.innerHTML = <%= importHTML('Settings/Keybinds') %>
+
     tbody  = $ 'tbody', section
     items  = {}
     inputs = {}

@@ -12,7 +12,7 @@
   font-size: 9pt;
   color: #89A;
 }
-:root.yotsuba-b #header-bar a, :root.yotsuba-b #notifications a {
+:root.yotsuba #board-list a, :root.yotsuba #shortcuts a {
   color: #34345C;
 }
 

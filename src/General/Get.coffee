@@ -45,7 +45,7 @@ Get =
     #   if it did quote this post,
     #   get all their backlinks.
     for ID, quoterPost of g.posts
-      if quoterPost.quotes.contains post.fullID
+      if post.fullID in quoterPost.quotes
         for quoterPost in [quoterPost].concat quoterPost.clones
           quotelinks.push.apply quotelinks, quoterPost.nodes.quotelinks
     # Second:
@@ -98,7 +98,7 @@ Get =
       return
 
     {status} = req
-    unless [200, 304].contains status
+    unless status in [200, 304]
       # The thread can die by the time we check a quote.
       if url = Redirect.to 'post', {boardID, postID}
         $.cache url,
@@ -170,8 +170,8 @@ Get =
     threadID = +data.thread_num
     o =
       # id
-      postID:   "#{postID}"
-      threadID: "#{threadID}"
+      postID:   postID
+      threadID: threadID
       boardID:  boardID
       # info
       name:     data.name_processed
@@ -207,8 +207,7 @@ Get =
       new Board boardID
     thread = g.threads["#{boardID}.#{threadID}"] or
       new Thread threadID, board
-    post = new Post Build.post(o, true), thread, board,
-      isArchived: true
+    post = new Post Build.post(o, true), thread, board, {isArchived: true}
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
   parseMarkup: (text) ->

@@ -1,4 +1,6 @@
 Build =
+  staticPath: '//s.4cdn.org/image/'
+  gifIcon: if window.devicePixelRatio >= 2 then '@2x.gif' else '.gif'
   spoilerRange: {}
   shortFilename: (filename, isReply) ->
     # FILENAME SHORTENING SCIENCE:
@@ -9,6 +11,9 @@ Build =
       "#{filename[...threshold - 5]}(...).#{filename[-3..]}"
     else
       filename
+  thumbRotate: do ->
+    n = 0
+    -> n = (n + 1) % 3
   postFromObject: (data, boardID) ->
     o =
       # id
@@ -43,7 +48,7 @@ Build =
         width:     data.w
         MD5:       data.md5
         size:      data.fsize
-        turl:      "//t.4cdn.org/#{boardID}/thumb/#{data.tim}s.jpg"
+        turl:      "//#{Build.thumbRotate()}.t.4cdn.org/#{boardID}/thumb/#{data.tim}s.jpg"
         theight:   data.tn_h
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
@@ -62,8 +67,12 @@ Build =
       file
     } = o
     isOP = postID is threadID
+    {staticPath, gifIcon} = Build
 
-    staticPath = '//s.4cdn.org/image/'
+    tripcode = if tripcode
+      " <span class=postertrip>#{tripcode}</span>"
+    else
+      ''
 
     if email
       emailStart = '<a href="mailto:' + email + '" class="useremail">'
@@ -72,7 +81,29 @@ Build =
       emailStart = ''
       emailEnd   = ''
 
-    subject = " <span class=subject>#{subject or ''}</span> "
+    switch capcode
+      when 'admin', 'admin_highlight'
+        capcodeClass = " capcodeAdmin"
+        capcodeStart = " <strong class='capcode hand id_admin'" +
+          "title='Highlight posts by the Administrator'>## Admin</strong>"
+        capcodeIcon  = " <img src='#{staticPath}adminicon#{gifIcon}' " +
+          "title='This user is the 4chan Administrator.' class=identityIcon>"
+      when 'mod'
+        capcodeClass = " capcodeMod"
+        capcodeStart = " <strong class='capcode hand id_mod' " +
+          "title='Highlight posts by Moderators'>## Mod</strong>"
+        capcodeIcon  = " <img src='#{staticPath}modicon#{gifIcon}' " +
+          "title='This user is a 4chan Moderator.' class=identityIcon>"
+      when 'developer'
+        capcodeClass = " capcodeDeveloper"
+        capcodeStart = " <strong class='capcode hand id_developer' " +
+          "title='Highlight posts by Developers'>## Developer</strong>"
+        capcodeIcon  = " <img src='#{staticPath}developericon#{gifIcon}' " +
+          "title='This user is a 4chan Developer.' class=identityIcon>"
+      else
+        capcodeClass = ''
+        capcodeStart = ''
+        capcodeIcon  = ''
 
     userID =
       if !capcode and uniqueID
@@ -80,33 +111,6 @@ Build =
           "<span class=hand title='Highlight posts by this ID'>#{uniqueID}</span>)</span> "
       else
         ''
-
-    switch capcode
-      when 'admin', 'admin_highlight'
-        capcodeClass = " capcodeAdmin"
-        capcodeStart = " <strong class='capcode hand id_admin'" +
-          "title='Highlight posts by the Administrator'>## Admin</strong>"
-        capcode      = " <img src='#{staticPath}adminicon.gif' " +
-          "alt='This user is the 4chan Administrator.' " +
-          "title='This user is the 4chan Administrator.' class=identityIcon>"
-      when 'mod'
-        capcodeClass = " capcodeMod"
-        capcodeStart = " <strong class='capcode hand id_mod' " +
-          "title='Highlight posts by Moderators'>## Mod</strong>"
-        capcode      = " <img src='#{staticPath}modicon.gif' " +
-          "alt='This user is a 4chan Moderator.' " +
-          "title='This user is a 4chan Moderator.' class=identityIcon>"
-      when 'developer'
-        capcodeClass = " capcodeDeveloper"
-        capcodeStart = " <strong class='capcode hand id_developer' " +
-          "title='Highlight posts by Developers'>## Developer</strong>"
-        capcode      = " <img src='#{staticPath}developericon.gif' " +
-          "alt='This user is a 4chan Developer.' " +
-          "title='This user is a 4chan Developer.' class=identityIcon>"
-      else
-        capcodeClass = ''
-        capcodeStart = ''
-        capcode      = ''
 
     flag = unless flagCode
       ''
@@ -117,21 +121,15 @@ Build =
 
     if file?.isDeleted
       fileHTML = if isOP
-        "<div class=file id=f#{postID}><div class=fileInfo></div><span class=fileThumb>" +
-          "<img src='#{staticPath}filedeleted.gif' alt='File deleted.' class=fileDeletedRes>" +
+        "<div class=file id=f#{postID}><span class=fileThumb>" +
+          "<img src='#{staticPath}filedeleted#{gifIcon}' alt='File deleted.' class=fileDeleted>" +
         "</span></div>"
       else
         "<div class=file id=f#{postID}><span class=fileThumb>" +
-          "<img src='#{staticPath}filedeleted-res.gif' alt='File deleted.' class=fileDeletedRes>" +
+          "<img src='#{staticPath}filedeleted-res#{gifIcon}' alt='File deleted.' class=fileDeletedRes>" +
         "</span></div>"
     else if file
-      ext = file.name[-3..]
-      if !file.twidth and !file.theight and ext is 'gif' # wtf ?
-        file.twidth  = file.width
-        file.theight = file.height
-
-      fileSize = $.bytesToString file.size
-
+      fileSize  = $.bytesToString file.size
       fileThumb = file.turl
       if file.isSpoiler
         fileSize = "Spoiler Image, #{fileSize}"
@@ -150,20 +148,17 @@ Build =
           "<img src='#{fileThumb}' alt='#{fileSize}' data-md5=#{file.MD5} style='height: #{file.theight}px; width: #{file.twidth}px;'>" +
         "</a>"
 
-      # Ha ha, filenames!
       # html -> text, translate WebKit's %22s into "s
       a = $.el 'a', innerHTML: file.name
       filename = a.textContent.replace /%22/g, '"'
-
       # shorten filename, get html
       a.textContent = Build.shortFilename filename
       shortFilename = a.innerHTML
-
       # get html
       a.textContent = filename
       filename      = a.innerHTML.replace /'/g, '&apos;'
 
-      fileDims = if ext is 'pdf' then 'PDF' else "#{file.width}x#{file.height}"
+      fileDims = if file.name[-3..] is 'pdf' then 'PDF' else "#{file.width}x#{file.height}"
       fileInfo = "<div class=fileText id=fT#{postID}#{if file.isSpoiler then " title='#{filename}'" else ''}>File: <a href='#{file.url}' target=_blank>#{file.timestamp}</a>" +
         "-(#{fileSize}, #{fileDims}#{
           if file.isSpoiler
@@ -176,19 +171,21 @@ Build =
     else
       fileHTML = ''
 
-    tripcode = if tripcode
-      " <span class=postertrip>#{tripcode}</span>"
-    else
-      ''
-
     sticky = if isSticky
-      " <img src=#{staticPath}sticky.gif alt=Sticky title=Sticky class=stickyIcon>"
+      " <img src=#{staticPath}sticky#{gifIcon} alt=Sticky title=Sticky class=stickyIcon>"
     else
       ''
     closed = if isClosed
-      " <img src=#{staticPath}closed.gif alt=Closed title=Closed class=closedIcon>"
+      " <img src=#{staticPath}closed#{gifIcon} alt=Closed title=Closed class=closedIcon>"
     else
       ''
+
+    if isOP and g.VIEW is 'index'
+      pageNum   = Math.floor Index.liveThreadIDs.indexOf(postID) / Index.threadsNumPerPage
+      pageIcon  = " <span class=page-num title='This thread is on page #{pageNum} in the original index.'>[#{pageNum}]</span>"
+      replyLink = " &nbsp; <span>[<a href='/#{boardID}/res/#{threadID}' class=replylink>Reply</a>]</span>"
+    else
+      pageIcon = replyLink = ''
 
     container = $.el 'div',
       id: "pc#{postID}"
@@ -201,3 +198,34 @@ Build =
       quote.href = "/#{boardID}/res/#{href}" # Fix pathnames
 
     container
+
+  summary: (boardID, threadID, posts, files) ->
+    text = []
+    text.push "#{posts} post#{if posts > 1 then 's' else ''}"
+    text.push "and #{files} image repl#{if files > 1 then 'ies' else 'y'}" if files
+    text.push 'omitted.'
+    $.el 'a',
+      className: 'summary'
+      textContent: text.join ' '
+      href: "/#{boardID}/res/#{threadID}"
+  thread: (board, data) ->
+    Build.spoilerRange[board] = data.custom_spoiler
+
+    if (OP = board.posts[data.no]) and root = OP.nodes.root.parentNode
+      $.rmAll root
+    else
+      root = $.el 'div',
+        className: 'thread'
+        id: "t#{data.no}"
+
+    nodes = [if OP then OP.nodes.root else Build.postFromObject data, board.ID]
+    if data.omitted_posts or !Conf['Show Replies'] and data.replies
+      [posts, files] = if Conf['Show Replies']
+        [data.omitted_posts, data.omitted_images]
+      else
+        # XXX data.images is not accurate.
+        [data.replies, data.omitted_images + data.last_replies.filter((data) -> !!data.ext).length]
+      nodes.push Build.summary board.ID, data.no, posts, files
+
+    $.add root, nodes
+    root
