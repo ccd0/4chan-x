@@ -1,3 +1,54 @@
+**MayhemYDG**:
+- **New option**: `Auto-hide header on scroll`.
+- Added support for `4cdn.org`.
+- Index navigation improvements:
+ - Searching in the index is now possible and will show matched OPs by:
+ <ul>
+  <li> comment
+  <li> subject
+  <li> filename
+  <li> name
+  <li> tripcode
+  <li> e-mail
+ </ul>
+ - The page number on which threads are will now be displayed in OPs, to easily identify where threads are located when:
+ <ul>
+  <li> searching through the index.
+  <li> using different index modes and sorting types.
+  <li> threads highlighted by the filter are moved to the top and move other threads down.
+ </ul>
+ - The elapsed time since the last index refresh is now indicated at the top of the index.
+ - New setting: `Show replies`, enabled by default. Disable it to only show OPs in the index.
+ - New setting: `Anchor Hidden Threads`, enabled by default. Hidden threads will be moved at the end of the index to fill the first pages.
+ - New setting: `Refreshed Navigation`, disabled by default. When enabled, navigating through pages will refresh the index.
+ - The last index refresh timer will now indicate the last time the index changed from 4chan's side, instead of the last time you refreshed the index.
+ - You can now refresh the index page you are on with the refresh shortcut in the header bar or the same keybind for refreshing threads.
+ - You can now switch between paged and all-threads index modes via the "Index Navigation" header sub-menu (note that this replaces infinite scrolling):<br>
+  ![index navigation](src/General/img/changelog/1.2.46.png)
+ - Threads in the index can now be sorted by:
+ <ul>
+  <li> Bump order
+  <li> Last reply
+  <li> Creation date
+  <li> Reply count
+  <li> File count
+ </ul>
+ - Navigating across index pages is now instantaneous.
+ - The index refreshing notification will now only appear on initial page load with slow connections.
+- Added a keybind to open the catalog search field on index pages.
+- Minor cooldown fix:
+ - You cannot post an image reply immediately after a non-image reply anymore.
+- Various minor fixes
+
+**seaweedchan**:
+- Various fixes and improvements for the JSONified index
+- Removed index refresh notifications
+
+**Zixaphir**:
+- FappeTyme and WerkTyme now persist across sessions.
+- Various fixes and improvements for the JSONified index
+
+
 ### v1.2.45 
 *2014-01-07*
 
