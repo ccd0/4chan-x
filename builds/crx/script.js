@@ -9779,9 +9779,14 @@
         record = _ref[boardID];
         for (type in record) {
           id = record[type];
-          if ((archive = archives[id]) && __indexOf.call((type === 'file' ? archive['file'] : archive['boards']), boardID) >= 0) {
-            o[type][boardID] = archive.data;
+          if (!((archive = archives[id]))) {
+            continue;
           }
+          boards = type === 'file' ? archive.file : archive.boards;
+          if (__indexOf.call(boards, boardID) < 0) {
+            continue;
+          }
+          o[type][boardID] = archive.data;
         }
       }
       for (name in archives) {
