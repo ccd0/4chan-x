@@ -369,7 +369,6 @@ Index =
     $.event 'IndexBuild', nodes
     $.add Index.root, nodes
 
-
   isSearching: false
   clearSearch: ->
     Index.searchInput.value = null
