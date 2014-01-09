@@ -15,6 +15,12 @@
 :root.burichan #header-bar a, :root.burichan #header-bar #notifications a {
   color: #34345C;
 }
+:root.burichan #custom-board-list .current {
+  border-bottom: 1px solid #2F4DC6;
+}
+:root.burichan #custom-board-list .current:hover {
+  border-bottom-color: #ff0000;
+}
 
 /* Settings */
 :root.burichan #fourchanx-settings fieldset {

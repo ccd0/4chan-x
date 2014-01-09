@@ -515,7 +515,7 @@ http://iqdb.org/?url=%TURL
     'Centered links':             false
     'Header catalog links':       false
     'Bottom Board List':          true
-    'Shortcut Icons':             false
+    'Shortcut Icons':             true
     'Custom Board Navigation':    true
 
   boardnav: """

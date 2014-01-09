@@ -12,6 +12,12 @@
 :root.tomorrow #header-bar a, :root.tomorrow #notifications a {
   color: #81A2BE;
 }
+:root.tomorrow #custom-board-list a.current {
+  border-bottom: 1px solid #537ca0;
+}
+:root.tomorrow #custom-board-list .current:hover {
+  border-bottom-color: #5F89AC;
+}
 
 /* Settings */
 :root.tomorrow #fourchanx-settings fieldset {

@@ -63,8 +63,8 @@ Index =
       type: 'header'
       el: $.el 'span',
         textContent: 'Index Navigation'
-      order: 90
-      subEntries: [modeEntry, sortEntry, repliesEntry, anchorEntry, refNavEntry]
+      order: 98
+      subEntries: [repliesEntry, anchorEntry, refNavEntry, modeEntry, sortEntry]
 
     $.addClass doc, 'index-loading'
     @update()
@@ -130,6 +130,7 @@ Index =
     link: (e) ->
       return if g.VIEW isnt 'index' or /catalog/.test @href
       e.preventDefault()
+      history.pushState null, '', @pathname
       Index.update()
 
   scrollToIndex: ->
@@ -202,17 +203,6 @@ Index =
     return unless navigator.onLine
     Index.req?.abort()
     Index.notice?.close()
-    if d.readyState isnt 'loading'
-      Index.notice = new Notice 'info', 'Refreshing index...'
-    else
-      # Delay the notice on initial page load
-      # and only display it for slow connections.
-      now = Date.now()
-      $.ready ->
-        setTimeout (->
-          return unless Index.req and !Index.notice
-          Index.notice = new Notice 'info', 'Refreshing index...'
-        ), 5 * $.SECOND - (Date.now() - now)
     pageNum = null if typeof pageNum isnt 'number' # event
     onload = (e) -> Index.load e, pageNum
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
@@ -247,11 +237,6 @@ Index =
       else
         new Notice 'error', 'Index refresh failed.', 2
       return
-
-    if notice
-      notice.setType 'success'
-      notice.el.lastElementChild.textContent = 'Index refreshed!'
-      setTimeout notice.close, $.SECOND
 
     timeEl = $ '#index-last-refresh', Index.navLinks
     timeEl.dataset.utc = Date.parse req.getResponseHeader 'Last-Modified'
@@ -370,6 +355,7 @@ Index =
     else
       nodes = Index.sortedNodes
     $.rmAll Index.root
+    $.rmAll Header.hover
     Index.buildReplies nodes if Conf['Show Replies']
     $.event 'IndexBuild', nodes
     $.add Index.root, nodes

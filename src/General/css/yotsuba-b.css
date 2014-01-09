@@ -12,8 +12,14 @@
   font-size: 9pt;
   color: #89A;
 }
-:root.yotsuba-b #header-bar a, :root.yotsuba-b #notifications a {
+:root.yotsuba-b #board-list a, :root.yotsuba-b #shortcuts a {
   color: #34345C;
+}
+:root.yotsuba-b #custom-board-list .current {
+  border-bottom: 1px solid #2F4DC6;
+}
+:root.yotsuba-b #custom-board-list .current:hover {
+  border-bottom-color: #ff0000;
 }
 
 /* Settings */

@@ -1,9 +1,15 @@
 /* General */
 .dialog {
-  box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
   border: 1px solid;
   display: block;
   padding: 0;
+}
+.dialog:not(#qr):not(#thread-watcher):not(#header-bar) {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
+}
+#qr, 
+#thread-watcher {
+  box-shadow: -1px 2px 2px rgba(0, 0, 0, 0.25);
 }
 .captcha-img,
 .field {
@@ -76,6 +82,9 @@ a {
 div.center:not(.ad-cnt) {
   display: none !important;
 }
+.page-num {
+  margin-right: -8px;
+}
 
 /* fixed, z-index */
 #overlay,
@@ -141,6 +150,11 @@ div.center:not(.ad-cnt) {
 #header-bar {
   border-width: 0;
   transition: all .1s .05s ease-in-out;
+  box-shadow: -5px 1px 10px rgba(0, 0, 0, 0.20);
+  opacity: 0.98;
+}
+#custom-board-list .current {
+  padding: 1px 1px 4px 1px;
 }
 :root.centered-links #shortcuts {
   width: 300px;
@@ -148,6 +162,9 @@ div.center:not(.ad-cnt) {
 }
 :root.centered-links #header-bar {
   text-align: center;
+}
+#board-list {
+  font-size: 13px;
 }
 :root.centered-links #custom-board-list {
   position: relative;
@@ -203,6 +220,8 @@ div.center:not(.ad-cnt) {
 }
 #header-bar a:not(.entry):not(.close) {
   text-decoration: none;
+}
+#header-bar a:not(.entry):not(.close):not(.current) {
   padding: 1px;
 }
 #header-bar input {
@@ -288,9 +307,12 @@ div.center:not(.ad-cnt) {
 }
 .notification > .close {
   padding: 7px;
-  top: 0;
+  top: 0px;
   right: 5px;
   position: absolute;
+}
+.notification > .fa-times::before {
+  font-size: 11px !important;
 }
 .message {
   -moz-box-sizing: border-box;
@@ -452,7 +474,7 @@ div.center:not(.ad-cnt) {
 }
 #index-search-clear {
   color: gray;
-  margin-left: -1.25em;
+  margin-left: -1em;
 }
 <% if (type === 'crx') { %>
 /* ``::-webkit-*'' selectors break selector lists on Firefox. */
@@ -706,7 +728,20 @@ a.hide-announcement {
 .hide-thread-button,
 .hide-reply-button {
   float: left;
-  margin-right: 2px;
+  margin-right: 4px;
+  padding: 2px;
+}
+.hide-thread-button:not(:hover),
+.hide-reply-button:not(:hover) {
+  opacity: 0.4;
+}
+.threadContainer .hide-reply-button {
+  margin-left: 2px !important;
+  position: relative;
+  left: 1px;
+}
+.hide-thread-button {
+  margin-top: -1px;
 }
 .stub ~ * {
   display: none !important;
@@ -1025,6 +1060,14 @@ a:only-of-type > .remove {
   display: inline-block;
   margin: 2px;
   vertical-align: middle;
+}
+.reply .menu-button, 
+.op .menu-button,
+#thread-watcher .menu-button {
+  margin-left: -5px !important;
+}
+.menu-button + .container:not(:empty) {
+  margin-left: -5px !important;
 }
 #menu {
   position: fixed;

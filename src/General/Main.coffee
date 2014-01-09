@@ -226,6 +226,8 @@ Main =
     catch err
       new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to operate properly.', 30
 
+    $.event '4chanXInitFinished'
+
   callbackNodes: (klass, nodes) ->
     i = 0
     cb = klass.callbacks

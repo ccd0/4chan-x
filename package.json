@@ -13,7 +13,6 @@
       "*://sys.4chan.org/*",
       "*://a.4cdn.org/*",
       "*://i.4cdn.org/*"
-
     ],
     "files": {
       "metajs": "4chan-X.meta.js",

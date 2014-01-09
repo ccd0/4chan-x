@@ -146,7 +146,7 @@ ThreadHiding =
   makeButton: (thread, type) ->
     a = $.el 'a',
       className: "#{type}-thread-button"
-      innerHTML: "<span class=brackets-wrap>&nbsp;#{if type is 'hide' then '-' else '+'}&nbsp;</span>"
+      innerHTML: "<span class='fa fa-#{if type is 'hide' then 'minus' else 'plus'}-square'></span>"
       href:      'javascript:;'
     a.dataset.fullID = thread.fullID
     $.on a, 'click', ThreadHiding.toggle

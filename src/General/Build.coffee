@@ -182,7 +182,7 @@ Build =
 
     if isOP and g.VIEW is 'index'
       pageNum   = Math.floor Index.liveThreadIDs.indexOf(postID) / Index.threadsNumPerPage
-      pageIcon  = " <span class=page-num title='This thread is on page #{pageNum} in the original index.'>Page #{pageNum}</span>"
+      pageIcon  = " <span class=page-num title='This thread is on page #{pageNum} in the original index.'>[#{pageNum}]</span>"
       replyLink = " &nbsp; <span>[<a href='/#{boardID}/res/#{threadID}' class=replylink>Reply</a>]</span>"
     else
       pageIcon = replyLink = ''
