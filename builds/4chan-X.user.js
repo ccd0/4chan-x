@@ -12573,7 +12573,7 @@
         var node;
         node = nodes[i++];
         cbs.execute(node);
-        return i % 7;
+        return i % 25;
       };
       softTask = function() {
         while (fn()) {

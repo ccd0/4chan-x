@@ -245,7 +245,7 @@ Main =
     fn = ->
       node = nodes[i++]
       cbs.execute node
-      i % 7
+      i % 25
 
     softTask = ->
       while fn()
