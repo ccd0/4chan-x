@@ -356,6 +356,11 @@ Main =
     
     return
 
+  updateContext: (view) ->
+    $.rmClass doc, g.VIEW
+    $.addClass doc, view
+    g.VIEW = view
+
   navigate: (e) ->
     return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org'
 
@@ -376,7 +381,7 @@ Main =
     if view isnt g.VIEW
       Main.disconnect()
       Main.clean()
-      g.VIEW = view
+      Main.updateContext view
 
     if view is 'index'
       Main.updateBoard boardID unless boardID is g.BOARD.ID

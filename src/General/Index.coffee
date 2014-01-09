@@ -204,7 +204,7 @@ Index =
   update: (pageNum) ->
     return unless navigator.onLine
     unless d.readyState is 'loading' or Index.root.parentElement
-      $.replace $ '.board', Index.root
+      $.replace $('.board'), Index.root
     Index.req?.abort()
     Index.notice?.close()
 

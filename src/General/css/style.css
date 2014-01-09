@@ -486,7 +486,17 @@ div.center:not(.ad-cnt) {
 .summary {
   text-decoration: none;
 }
-
+.thread #index-last-refresh,
+.thread #index-search-clear,
+.thread #index-search {
+  display: none;
+}
+#index-last-refresh::before {
+  content: '[';
+}
+#index-last-refresh::after  {
+  content: ']';
+}
 
 /* Announcement Hiding */
 :root.hide-announcement #globalMessage {
