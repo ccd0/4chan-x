@@ -130,6 +130,7 @@ Index =
     link: (e) ->
       return if g.VIEW isnt 'index' or /catalog/.test @href
       e.preventDefault()
+      history.pushState null, '', @pathname
       Index.update()
 
   scrollToIndex: ->
@@ -363,9 +364,11 @@ Index =
     else
       nodes = Index.sortedNodes
     $.rmAll Index.root
+    $.rmAll Header.hover
     Index.buildReplies nodes if Conf['Show Replies']
     $.event 'IndexBuild', nodes
     $.add Index.root, nodes
+
 
   isSearching: false
   clearSearch: ->

@@ -2330,6 +2330,7 @@
           return;
         }
         e.preventDefault();
+        history.pushState(null, '', this.pathname);
         return Index.update();
       }
     },
@@ -2681,6 +2682,7 @@
         nodes = Index.sortedNodes;
       }
       $.rmAll(Index.root);
+      $.rmAll(Header.hover);
       if (Conf['Show Replies']) {
         Index.buildReplies(nodes);
       }
