@@ -1032,6 +1032,14 @@ a:only-of-type > .remove {
   margin: 2px;
   vertical-align: middle;
 }
+.reply .menu-button, 
+.op .menu-button,
+#thread-watcher .menu-button {
+  margin-left: -5px !important;
+}
+.menu-button + .container:not(:empty) {
+  margin-left: -5px !important;
+}
 #menu {
   position: fixed;
   outline: none;
