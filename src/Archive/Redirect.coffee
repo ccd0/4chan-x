@@ -12,8 +12,7 @@ Redirect =
       for type, id of record when (archive = archives[id]) and boardID in (if type is 'file' then archive['file'] else archive['boards'])
         o[type][boardID] = archive.data
 
-    for name, archive of archives
-      {data, boards, files} = archive
+    for name, {data, boards, files} of archives
       {software} = data
       for boardID in boards
         o.thread[boardID] = data unless boardID of o.thread

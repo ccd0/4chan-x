@@ -9778,7 +9778,7 @@
 
   Redirect = {
     init: function() {
-      var archive, archives, boardID, boards, data, files, id, name, o, record, software, type, _i, _len, _ref;
+      var archive, archives, boardID, boards, data, files, id, name, o, record, software, type, _i, _len, _ref, _ref1;
       o = {
         thread: {},
         post: {},
@@ -9796,8 +9796,7 @@
         }
       }
       for (name in archives) {
-        archive = archives[name];
-        data = archive.data, boards = archive.boards, files = archive.files;
+        _ref1 = archives[name], data = _ref1.data, boards = _ref1.boards, files = _ref1.files;
         software = data.software;
         for (_i = 0, _len = boards.length; _i < _len; _i++) {
           boardID = boards[_i];
