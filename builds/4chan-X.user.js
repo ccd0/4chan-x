@@ -12768,7 +12768,7 @@
     },
     navigate: function(e) {
       var boardID, path, threadID, view;
-      if (this.hostname !== 'boards.4chan.org') {
+      if (this.hostname !== 'boards.4chan.org' || /rs\.4chan\.org/.test(window.location)) {
         return;
       }
       path = this.pathname.split('/');
@@ -12776,7 +12776,7 @@
         path.shift();
       }
       boardID = path[0], view = path[1], threadID = path[2];
-      if (view === 'catalog' || boardID === 'f') {
+      if (view === 'catalog' || ('f' === boardID || 'f' === g.BOARD.ID)) {
         return;
       }
       if (e) {

@@ -357,13 +357,13 @@ Main =
     return
 
   navigate: (e) ->
-    return if @hostname isnt 'boards.4chan.org'
-    # Lets have a good idea of what we should we should be expecting for this kind of feature
+    return if @hostname isnt 'boards.4chan.org' or /rs\.4chan\.org/.test window.location
+
     path = @pathname.split '/'
     path.shift() if path[0] is ''
     [boardID, view, threadID] = path
 
-    return if view is 'catalog' or boardID is 'f'
+    return if view is 'catalog' or 'f' in [boardID, g.BOARD.ID]
 
     e.preventDefault() if e
     history.pushState null, '', @pathname unless @id is 'popState'
