@@ -12518,11 +12518,12 @@
         return;
       }
       try {
-        return localStorage.getItem('4chan-settings');
+        localStorage.getItem('4chan-settings');
       } catch (_error) {
         err = _error;
-        return new Notice('warning', 'Cookies need to be enabled on 4chan for 4chan X to operate properly.', 30);
+        new Notice('warning', 'Cookies need to be enabled on 4chan for 4chan X to operate properly.', 30);
       }
+      return $.event('4chanXInitFinished');
     },
     callbackNodes: function(klass, nodes) {
       var cb, i, node;
