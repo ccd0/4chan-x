@@ -12776,7 +12776,7 @@
         path.shift();
       }
       boardID = path[0], view = path[1], threadID = path[2];
-      if (view === 'catalog') {
+      if (view === 'catalog' || boardID === 'f') {
         return;
       }
       if (e) {

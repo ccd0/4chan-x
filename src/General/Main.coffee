@@ -363,7 +363,7 @@ Main =
     path.shift() if path[0] is ''
     [boardID, view, threadID] = path
 
-    return if view is 'catalog'
+    return if view is 'catalog' or boardID is 'f'
 
     e.preventDefault() if e
     history.pushState null, '', @pathname unless @id is 'popState'
