@@ -2239,8 +2239,8 @@
         el: $.el('span', {
           textContent: 'Index Navigation'
         }),
-        order: 90,
-        subEntries: [modeEntry, sortEntry, repliesEntry, anchorEntry, refNavEntry]
+        order: 98,
+        subEntries: [repliesEntry, anchorEntry, refNavEntry, modeEntry, sortEntry]
       });
       $.addClass(doc, 'index-loading');
       this.update();
@@ -2430,15 +2430,14 @@
         _ref1.close();
       }
       if (d.readyState !== 'loading') {
-        Index.notice = new Notice('info', 'Refreshing index...');
+
       } else {
         now = Date.now();
         $.ready(function() {
           return setTimeout((function() {
             if (!(Index.req && !Index.notice)) {
-              return;
+
             }
-            return Index.notice = new Notice('info', 'Refreshing index...');
           }), 5 * $.SECOND - (Date.now() - now));
         });
       }
@@ -2484,11 +2483,6 @@
           new Notice('error', 'Index refresh failed.', 2);
         }
         return;
-      }
-      if (notice) {
-        notice.setType('success');
-        notice.el.lastElementChild.textContent = 'Index refreshed!';
-        setTimeout(notice.close, $.SECOND);
       }
       timeEl = $('#index-last-refresh', Index.navLinks);
       timeEl.dataset.utc = Date.parse(req.getResponseHeader('Last-Modified'));
