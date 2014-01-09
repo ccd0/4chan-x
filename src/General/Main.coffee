@@ -128,14 +128,16 @@ Main =
           'left=0,top=0,width=500,height=255,toolbar=0,resizable=0'
       $.before styleSelector.previousSibling, [$.tn '['; passLink, $.tn ']\u00A0\u00A0']
 
-    Main.initThread threadRoot if g.VIEW is 'thread' and threadRoot = $ '.thread'
+    if g.VIEW is 'thread'
+      Main.initThread() 
+    else
+      $.event '4chanXInitFinished'
 
     <% if (type === 'userscript') { %>
     GMver = GM_info.version.split '.'
     for v, i in "<%= meta.min.greasemonkey %>".split '.'
-      break if v < GMver[i]
       continue if v is GMver[i]
-      new Notice 'warning', "Your version of Greasemonkey is outdated (v#{GM_info.version} instead of v<%= meta.min.greasemonkey %> minimum) and <%= meta.name %> may not operate correctly.", 30
+      (v < GMver[i]) or new Notice 'warning', "Your version of Greasemonkey is outdated (v#{GM_info.version} instead of v<%= meta.min.greasemonkey %> minimum) and <%= meta.name %> may not operate correctly.", 30
       break
     <% } %>
 
@@ -146,12 +148,13 @@ Main =
 
     $.on window, 'popstate', Main.popstate
 
-  initThread: (threadRoot) ->
+  initThread: ->
+    return unless threadRoot = $ '.thread'
     thread = new Thread +threadRoot.id[1..], g.BOARD
     posts  = []
     for postRoot in $$ '.thread > .postContainer', threadRoot
       try
-        posts.push post = new Post postRoot, thread, g.BOARD, {isOriginalMarkup: true}
+        posts.push new Post postRoot, thread, g.BOARD, {isOriginalMarkup: true}
       catch err
         # Skip posts that we failed to parse.
         errors = [] unless errors
@@ -176,16 +179,18 @@ Main =
     len    = 0
     i      = 0
 
-    {callbacks} = klass
+    cbs = klass.callbacks
+    fn = ->
+      node = nodes[i++]
+      cbs.execute node
+      i % 25
 
     softTask = ->
-      node = nodes[i++]
-      callbacks.execute node
-      return cb() if len is i and cb
-      unless i % 7
-        setTimeout softTask, 0
-      else
-        softTask()
+      while fn()
+        if len is i
+          cb() if cb
+          return
+      setTimeout softTask, 0 
 
     len = nodes.length
     softTask()

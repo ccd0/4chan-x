@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 5682df5a2a366e5c5f4362395574179a2de68bb9
 **MayhemYDG**:
 - **New option**: `Auto-hide header on scroll`.
 - Added support for `4cdn.org`.
@@ -24,8 +27,8 @@
  - New setting: `Refreshed Navigation`, disabled by default. When enabled, navigating through pages will refresh the index.
  - The last index refresh timer will now indicate the last time the index changed from 4chan's side, instead of the last time you refreshed the index.
  - You can now refresh the index page you are on with the refresh shortcut in the header bar or the same keybind for refreshing threads.
- - You can now switch between paged and all-threads index modes via the "Index Navigation" header sub-menu:<br>
-  ![index navigation](img/changelog/3.12.0/0.png)
+ - You can now switch between paged and all-threads index modes via the "Index Navigation" header sub-menu (note that this replaces infinite scrolling):<br>
+  ![index navigation](src/General/img/changelog/1.2.46.png)
  - Threads in the index can now be sorted by:
  <ul>
   <li> Bump order
@@ -41,9 +44,19 @@
  - You cannot post an image reply immediately after a non-image reply anymore.
 - Various minor fixes
 
+**seaweedchan**:
+- Various fixes and improvements for the JSONified index
+- Removed index refresh notifications
+
 **Zixaphir**:
 - FappeTyme and WerkTyme now persist across sessions.
+<<<<<<< HEAD
 =======
+=======
+- Various fixes and improvements for the JSONified index
+
+
+>>>>>>> 5682df5a2a366e5c5f4362395574179a2de68bb9
 ### v1.2.45 
 *2014-01-07*
 
@@ -54,7 +67,10 @@
 
 **Zixaphir**:
 - Fix optional increase for thread updater
+<<<<<<< HEAD
 >>>>>>> 08ae1daee8d4a2dfa272b00a62f78aa56092dfd4
+=======
+>>>>>>> 5682df5a2a366e5c5f4362395574179a2de68bb9
 
 ### v1.2.44 
 *2013-12-06*

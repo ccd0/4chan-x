@@ -15,6 +15,12 @@
 :root.photon #header-bar a, :root.photon #notifications a {
   color: #FF6600;
 }
+:root.photon #custom-board-list a.current {
+  border-bottom: 1px solid #004A99;
+}
+:root.photon #custom-board-list .current:hover {
+  border-bottom-color: #FF3300;
+}
 
 /* Settings */
 :root.photon #fourchanx-settings fieldset {

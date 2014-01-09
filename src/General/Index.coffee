@@ -63,7 +63,7 @@ Index =
       type: 'header'
       el: $.el 'span',
         textContent: 'Index Navigation'
-      order: 90
+      order: 98
       subEntries: [repliesEntry, anchorEntry, refNavEntry, modeEntry, sortEntry]
 
     return if g.VIEW isnt 'index'
@@ -138,6 +138,7 @@ Index =
     link: (e) ->
       return if g.VIEW isnt 'index' or /catalog/.test @href
       e.preventDefault()
+      history.pushState null, '', @pathname
       Index.update()
 
   scrollToIndex: ->
@@ -211,14 +212,13 @@ Index =
     Index.req?.abort()
     Index.notice?.close()
 
-    # Delay the notice on initial page load
-    # and only display it for slow connections.
+    # This notice only displays if Index Refresh is taking too long
     now = Date.now()
     $.ready ->
       setTimeout (->
         if Index.req and !Index.notice
           Index.notice = new Notice 'info', 'Refreshing index...'
-      ), 5 * $.SECOND - (Date.now() - now)
+      ), 3 * $.SECOND - (Date.now() - now)
 
     pageNum = null if typeof pageNum isnt 'number' # event
     onload = (e) -> Index.load e, pageNum
@@ -254,11 +254,6 @@ Index =
       else
         new Notice 'error', 'Index refresh failed.', 2
       return
-
-    if notice
-      notice.setType 'success'
-      notice.el.lastElementChild.textContent = 'Index refreshed!'
-      setTimeout notice.close, $.SECOND
 
     timeEl = $ '#index-last-refresh', Index.navLinks
     timeEl.dataset.utc = Date.parse req.getResponseHeader 'Last-Modified'
@@ -377,6 +372,7 @@ Index =
     else
       nodes = Index.sortedNodes
     $.rmAll Index.root
+    $.rmAll Header.hover
     Index.buildReplies nodes if Conf['Show Replies']
     $.event 'IndexBuild', nodes
     $.add Index.root, nodes

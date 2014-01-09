@@ -21,7 +21,7 @@ Menu =
           $.tn(' ')
           $.el 'a',
             className: 'menu-button'
-            innerHTML: '[<i></i>]'
+            innerHTML: '<i class="fa fa-angle-down"></i>'
             href:      'javascript:;'
           ]
       clone = frag.cloneNode true
