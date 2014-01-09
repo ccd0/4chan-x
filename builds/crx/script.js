@@ -2464,7 +2464,7 @@
       if (!navigator.onLine) {
         return;
       }
-      if (!Index.root.parentElement) {
+      if (d.readyState !== 'loading' && Index.root.parentElement) {
         board = $('.board');
         $.replace(board, Index.root);
       }
