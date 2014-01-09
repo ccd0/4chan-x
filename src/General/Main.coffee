@@ -357,7 +357,7 @@ Main =
     return
 
   navigate: (e) ->
-    return if @hostname isnt 'boards.4chan.org' or /rs\.4chan\.org/.test window.location
+    return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org'
 
     path = @pathname.split '/'
     path.shift() if path[0] is ''

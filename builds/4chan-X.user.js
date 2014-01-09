@@ -12768,7 +12768,7 @@
     },
     navigate: function(e) {
       var boardID, path, threadID, view;
-      if (this.hostname !== 'boards.4chan.org' || /rs\.4chan\.org/.test(window.location)) {
+      if (this.hostname !== 'boards.4chan.org' || window.location.hostname === 'rs.4chan.org') {
         return;
       }
       path = this.pathname.split('/');
