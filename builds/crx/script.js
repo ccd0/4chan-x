@@ -8663,6 +8663,24 @@
       ThreadStats.update(postCount, fileCount);
       return $.on(d, 'ThreadUpdate', ThreadStats.onUpdate);
     },
+    disconnect: function() {
+      if (!Conf['Thread Stats']) {
+        return;
+      }
+      if (Conf['Updater and Stats in Header']) {
+        Header.rmShortcut(this.dialog);
+      } else {
+        $.rm(d.body, sc);
+      }
+      clearTimeout(this.timeout);
+      delete this.timeout;
+      delete this.thread;
+      delete this.postCountEl;
+      delete this.fileCountEl;
+      delete this.pageCountEl;
+      Thread.callbacks.rm('Thread Stats');
+      return $.off(d, 'ThreadUpdate', ThreadStats.onUpdate);
+    },
     onUpdate: function(e) {
       var fileCount, postCount, _ref;
       if (e.detail[404]) {
@@ -8688,7 +8706,7 @@
         $.addClass(ThreadStats.pageCountEl, 'warning');
         return;
       }
-      setTimeout(ThreadStats.fetchPage, 2 * $.MINUTE);
+      ThreadStats.timeout = setTimeout(ThreadStats.fetchPage, 2 * $.MINUTE);
       return $.ajax("//a.4cdn.org/" + ThreadStats.thread.board + "/threads.json", {
         onload: ThreadStats.onThreadsLoad
       }, {
@@ -8706,11 +8724,12 @@
         _ref = page.threads;
         for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
           thread = _ref[_j];
-          if (thread.no === ThreadStats.thread.ID) {
-            ThreadStats.pageCountEl.textContent = page.page;
-            (page.page === pages.length - 1 ? $.addClass : $.rmClass)(ThreadStats.pageCountEl, 'warning');
-            return;
+          if (!(thread.no === ThreadStats.thread.ID)) {
+            continue;
           }
+          ThreadStats.pageCountEl.textContent = page.page;
+          (page.page === pages.length - 1 ? $.addClass : $.rmClass)(ThreadStats.pageCountEl, 'warning');
+          return;
         }
       }
     }
@@ -12722,7 +12741,7 @@
     disconnect: function() {
       var err, errors, feature, features, name, _i, _len, _ref;
       if (g.VIEW === 'thread') {
-        features = [['Thread Updater', ThreadUpdater], ['Unread Count', Unread], ['Quote Threading', QuoteThreading]];
+        features = [['Thread Updater', ThreadUpdater], ['Unread Count', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats]];
       }
       for (_i = 0, _len = features.length; _i < _len; _i++) {
         _ref = features[_i], name = _ref[0], feature = _ref[1];

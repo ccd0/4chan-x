@@ -341,6 +341,7 @@ Main =
         ['Thread Updater',  ThreadUpdater]
         ['Unread Count',    Unread]
         ['Quote Threading', QuoteThreading]
+        ['Thread Stats',    ThreadStats]
       ]
 
     for [name, feature] in features
