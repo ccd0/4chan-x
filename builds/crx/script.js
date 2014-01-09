@@ -9767,7 +9767,7 @@
 
   Redirect = {
     init: function() {
-      var archive, archives, boardID, data, id, name, o, type, _i, _len, _ref, _ref1;
+      var archive, archives, boardID, boards, data, files, id, name, o, record, software, type, _i, _len, _ref;
       o = {
         thread: {},
         post: {},
@@ -9776,31 +9776,32 @@
       archives = Redirect.archives;
       _ref = Conf['selectedArchives'];
       for (boardID in _ref) {
-        data = _ref[boardID];
-        for (type in data) {
-          id = data[type];
-          if ((archive = archives[id]) && __indexOf.call(archive[type] || archive['boards'], boardID) >= 0) {
+        record = _ref[boardID];
+        for (type in record) {
+          id = record[type];
+          if ((archive = archives[id]) && __indexOf.call((type === 'file' ? archive['file'] : archive['boards']), boardID) >= 0) {
             o[type][boardID] = archive.data;
           }
         }
       }
       for (name in archives) {
         archive = archives[name];
-        _ref1 = archive.boards;
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          boardID = _ref1[_i];
-          data = archive.data;
+        data = archive.data, boards = archive.boards, files = archive.files;
+        software = data.software;
+        for (_i = 0, _len = boards.length; _i < _len; _i++) {
+          boardID = boards[_i];
           if (!(boardID in o.thread)) {
             o.thread[boardID] = data;
           }
-          if (!(boardID in o.post || archive.software !== 'foolfuuka')) {
+          if (!(boardID in o.post || software !== 'foolfuuka')) {
             o.post[boardID] = data;
           }
-          if (!(boardID in o.file || __indexOf.call(archive.files, boardID) < 0)) {
+          if (!(boardID in o.file || __indexOf.call(files, boardID) < 0)) {
             o.file[boardID] = data;
           }
         }
       }
+      console.log(o);
       return Redirect.data = o;
     },
     archives: {
