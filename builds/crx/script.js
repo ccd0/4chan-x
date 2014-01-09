@@ -9020,7 +9020,7 @@
         id: 'watcher-link',
         textContent: 'Watcher',
         href: 'javascript:;',
-        className: 'disabled fa fa-eye-open'
+        className: 'disabled fa fa-eye'
       });
       this.db = new DataBoard('watchedThreads', this.refresh, true);
       this.dialog = UI.dialog('thread-watcher', 'top: 50px; left: 0px;', "<div class=\"move\">Thread Watcher <span id=\"watcher-status\"></span><a class=\"menu-button\" href=\"javascript:;\"><i class=\"fa fa-angle-down\"></i></a><a class=close href=javascript:;>×</a></span></div><div id=\"watched-threads\"></div>");
