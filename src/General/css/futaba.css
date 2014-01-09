@@ -15,6 +15,12 @@
 :root.futaba #header-bar a, :root.futaba #notifications a {
   color: #800000;
 }
+:root.futaba #custom-board-list a.current {
+  border-bottom: 1px solid #b20000;
+}
+:root.futaba #custom-board-list .current:hover {
+  border-bottom-color: #ff0000;
+}
 
 /* Settings */
 :root.futaba #fourchanx-settings fieldset {
