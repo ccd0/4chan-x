@@ -728,7 +728,20 @@ a.hide-announcement {
 .hide-thread-button,
 .hide-reply-button {
   float: left;
-  margin-right: 2px;
+  margin-right: 4px;
+  padding: 2px;
+}
+.hide-thread-button:not(:hover),
+.hide-reply-button:not(:hover) {
+  opacity: 0.4;
+}
+.threadContainer .hide-reply-button {
+  margin-left: 2px !important;
+  position: relative;
+  left: 1px;
+}
+.hide-thread-button {
+  margin-top: -1px;
 }
 .stub ~ * {
   display: none !important;
