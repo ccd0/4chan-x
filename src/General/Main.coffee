@@ -241,16 +241,18 @@ Main =
     len    = 0
     i      = 0
 
-    {callbacks} = klass
+    cbs = klass.callbacks
+    fn = ->
+      node = nodes[i++]
+      cbs.execute node
+      i % 7
 
     softTask = ->
-      node = nodes[i++]
-      callbacks.execute node
-      return cb() if len is i and cb
-      unless i % 7
-        setTimeout softTask, 0
-      else
-        softTask()
+      while fn()
+        if len is i
+          cb() if cb
+          return
+      setTimeout softTask, 0 
 
     len = nodes.length
     softTask()

@@ -12564,23 +12564,27 @@
       }
     },
     callbackNodesDB: function(klass, nodes, cb) {
-      var callbacks, errors, i, len, softTask;
+      var cbs, errors, fn, i, len, softTask;
       errors = null;
       len = 0;
       i = 0;
-      callbacks = klass.callbacks;
-      softTask = function() {
+      cbs = klass.callbacks;
+      fn = function() {
         var node;
         node = nodes[i++];
-        callbacks.execute(node);
-        if (len === i && cb) {
-          return cb();
+        cbs.execute(node);
+        return i % 7;
+      };
+      softTask = function() {
+        while (fn()) {
+          if (len === i) {
+            if (cb) {
+              cb();
+            }
+            return;
+          }
         }
-        if (!(i % 7)) {
-          return setTimeout(softTask, 0);
-        } else {
-          return softTask();
-        }
+        return setTimeout(softTask, 0);
       };
       len = nodes.length;
       return softTask();
