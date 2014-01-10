@@ -47,6 +47,13 @@
 :root.futaba .qr-preview {
   background-color: rgba(0, 0, 0, .15);
 }
+:root.futaba .qr-link {
+  border-color: rgb(225, 209, 199) rgb(225, 209, 199) rgb(210, 194, 184);
+  background: linear-gradient(#FFEFE5, #F0E0D6) repeat scroll 0% 0% transparent;
+}
+:root.futaba .qr-link:hover {
+  background: #F0E0D6;
+}
 
 /* Menu */
 :root.futaba #menu {

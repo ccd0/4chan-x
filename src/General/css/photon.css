@@ -47,6 +47,13 @@
 :root.photon .qr-preview {
   background-color: rgba(0, 0, 0, .15);
 }
+:root.photon .qr-link {
+  border-color: rgb(206, 206, 206) rgb(206, 206, 206) rgb(191, 191, 191);
+  background: linear-gradient(#ECECEC, #DDD) repeat scroll 0% 0% transparent;
+}
+:root.photon .qr-link:hover {
+  background: #DDDDDD;
+}
 
 /* Menu */
 :root.photon #menu {

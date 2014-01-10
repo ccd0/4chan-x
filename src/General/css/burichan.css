@@ -47,6 +47,13 @@
 :root.burichan .qr-preview {
   background-color: rgba(0, 0, 0, .15);
 }
+:root.burichan .qr-link {
+  border-color: rgb(199, 203, 225) rgb(199, 203, 225) rgb(184, 188, 210);
+  background: linear-gradient(#E5E9FF, #D6DAF0) repeat scroll 0% 0% transparent;
+}
+:root.burichan .qr-link:hover {
+  background: #D9DDF3;
+}
 
 /* Menu */
 :root.burichan #menu {
