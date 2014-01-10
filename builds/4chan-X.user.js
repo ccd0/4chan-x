@@ -11928,7 +11928,9 @@
         Navigate.reconnect();
       }
       if (view === 'index') {
-        if (boardID !== g.BOARD.ID) {
+        if (boardID === g.BOARD.ID) {
+          d.title = $('.boardTitle').textContent;
+        } else {
           Navigate.updateBoard(boardID);
         }
         return Index.update();
@@ -12049,26 +12051,27 @@
           }
         } catch (_error) {
           err = _error;
-          Main.handleErrors([
+          return Main.handleErrors([
             {
               message: "Navigation failed to update board name.",
               error: err
             }
           ]);
         }
-        return Header.setBoardList();
       };
+      Header.setBoardList();
       return req = $.ajax('//a.4cdn.org/boards.json', {
         onabort: onload,
         onloadend: onload
       });
     },
-    updateTitle: function(board) {
-      var subtitle;
+    updateTitle: function(_arg) {
+      var board, subtitle, title;
+      board = _arg.board, title = _arg.title;
       if (subtitle = $('.boardSubtitle')) {
         $.rm(subtitle);
       }
-      return $('.boardTitle').innerHTML = d.title = "/" + board.board + "/ - " + board.title;
+      return $('.boardTitle').textContent = d.title = "/" + board + "/ - " + title;
     },
     refresh: function(context) {
       var boardID, feature, name, threadID, view, _i, _len, _ref, _ref1;

@@ -109,7 +109,10 @@ Navigate =
       Navigate.reconnect()
 
     if view is 'index'
-      Navigate.updateBoard boardID unless boardID is g.BOARD.ID
+      if boardID is g.BOARD.ID
+        d.title = $('.boardTitle').textContent
+      else
+        Navigate.updateBoard boardID
       Index.update()
 
     # Moving from index to thread or thread to thread
@@ -219,15 +222,15 @@ Navigate =
           error: err
         ]
 
-      Header.setBoardList()
+    Header.setBoardList()
 
     req = $.ajax '//a.4cdn.org/boards.json',
       onabort:   onload
       onloadend: onload
 
-  updateTitle: (board) ->
+  updateTitle: ({board, title}) ->
     $.rm subtitle if subtitle = $ '.boardSubtitle'
-    $('.boardTitle').innerHTML = d.title = "/#{board.board}/ - #{board.title}"
+    $('.boardTitle').textContent = d.title = "/#{board}/ - #{title}"
 
   refresh: (context) ->
     return
