@@ -137,17 +137,17 @@ Navigate =
       return unless board
       Navigate.updateTitle board
       [style, type] = if board.ws_board then [
-        (d.cookie.match(/ws\_style\=[^;]+/) or ['Yotsuba B New'])[0]
+        (d.cookie.match(/ws\_style\=([^;]+)/) or ['', 'Yotsuba B New'])[1]
         'ws_style'
       ] else [
-        (d.cookie.match(/nws\_style\=[^;]+/) or ['Yotsuba New'])[0]
+        (d.cookie.match(/nws\_style\=([^;]+)/) or ['', 'Yotsuba New'])[1]
         'nws_style'
       ]
       
       $.globalEval "var style_group = '#{type}'"
 
-      mainStyleSheet = $ 'link[title=switch]', d.head
-      newStyleSheet  = $ "link[rel='alternate stylesheet'][title='#{style}']", d.head
+      mainStyleSheet = $ 'link[title=switch]',     d.head
+      newStyleSheet  = $ "link[title='#{style}']", d.head
 
       mainStyleSheet.href  = newStyleSheet.href
 

@@ -11983,10 +11983,10 @@
           return;
         }
         Navigate.updateTitle(board);
-        _ref = board.ws_board ? [(d.cookie.match(/ws\_style\=[^;]+/) || ['Yotsuba B New'])[0], 'ws_style'] : [(d.cookie.match(/nws\_style\=[^;]+/) || ['Yotsuba New'])[0], 'nws_style'], style = _ref[0], type = _ref[1];
+        _ref = board.ws_board ? [(d.cookie.match(/ws\_style\=([^;]+)/) || ['', 'Yotsuba B New'])[1], 'ws_style'] : [(d.cookie.match(/nws\_style\=([^;]+)/) || ['', 'Yotsuba New'])[1], 'nws_style'], style = _ref[0], type = _ref[1];
         $.globalEval("var style_group = '" + type + "'");
         mainStyleSheet = $('link[title=switch]', d.head);
-        newStyleSheet = $("link[rel='alternate stylesheet'][title='" + style + "']", d.head);
+        newStyleSheet = $("link[title='" + style + "']", d.head);
         mainStyleSheet.href = newStyleSheet.href;
         return Main.initStyle();
       };
