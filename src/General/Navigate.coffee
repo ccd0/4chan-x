@@ -195,6 +195,7 @@ Navigate =
   load: (e) ->
     $.rmClass Index.button, 'fa-spin'
     {req, notice} = Navigate
+    notice?.close()
     delete Navigate.req
     delete Navigate.notice
 
@@ -236,6 +237,10 @@ Navigate =
           error: err
 
     makePost $('.opContainer', threadRoot)
+
+    {subject, comment} = posts[0].info
+    title = "/#{g.BOARD.ID}/ - #{subject or comment}"
+    title = title[...100] if title.length > 100
 
     for obj in data
       post = Build.postFromObject obj, board

@@ -12046,6 +12046,9 @@
       var err, notice, req;
       $.rmClass(Index.button, 'fa-spin');
       req = Navigate.req, notice = Navigate.notice;
+      if (notice != null) {
+        notice.close();
+      }
       delete Navigate.req;
       delete Navigate.notice;
       if (e.type === 'abort') {
@@ -12070,7 +12073,7 @@
       }
     },
     parse: function(data) {
-      var OP, board, errors, makePost, obj, post, posts, thread, threadRoot, _i, _len;
+      var OP, board, comment, errors, makePost, obj, post, posts, subject, thread, threadRoot, title, _i, _len, _ref;
       board = g.BOARD;
       Navigate.threadRoot = threadRoot = Build.thread(board, OP = data.shift(), true);
       thread = new Thread(OP.no, board);
@@ -12092,6 +12095,11 @@
         }
       };
       makePost($('.opContainer', threadRoot));
+      _ref = posts[0].info, subject = _ref.subject, comment = _ref.comment;
+      title = "/" + g.BOARD.ID + "/ - " + (subject || comment);
+      if (title.length > 100) {
+        title = title.slice(0, 100);
+      }
       for (_i = 0, _len = data.length; _i < _len; _i++) {
         obj = data[_i];
         post = Build.postFromObject(obj, board);
