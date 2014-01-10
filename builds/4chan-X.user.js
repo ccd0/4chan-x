@@ -5047,7 +5047,7 @@
         order: 98
       });
       if (!Conf['Unread Count']) {
-        $.on(d, '4chanXInitFinished', this.setup);
+        $.on(d, '4chanXInitFinished', this.ready);
       }
       return Post.callbacks.push({
         name: 'Quote Threading',
@@ -5064,8 +5064,8 @@
       delete this.entry;
       return Post.callbacks.disconnect('Quote Threading');
     },
-    setup: function() {
-      $.off(d, '4chanXInitFinished', QuoteThreading.setup);
+    ready: function() {
+      $.off(d, '4chanXInitFinished', QuoteThreading.ready);
       return QuoteThreading.force();
     },
     force: function() {
@@ -10606,11 +10606,11 @@
   };
 
   ExpandThread = {
+    statuses: {},
     init: function() {
-      if (g.VIEW !== 'index' || !Conf['Thread Expansion']) {
+      if (g.VIEW === 'thread' || !Conf['Thread Expansion']) {
         return;
       }
-      this.statuses = {};
       return $.on(d, 'IndexRefresh', this.onIndexRefresh);
     },
     setButton: function(thread) {
@@ -10621,8 +10621,8 @@
       a.textContent = ExpandThread.text.apply(ExpandThread, ['+'].concat(__slice.call(a.textContent.match(/\d+/g))));
       return $.on(a, 'click', ExpandThread.cbToggle);
     },
-    onIndexRefresh: function() {
-      var status, thread, threadID, _ref, _ref1, _ref2;
+    disconnect: function(refresh) {
+      var status, threadID, _ref, _ref1;
       _ref = ExpandThread.statuses;
       for (threadID in _ref) {
         status = _ref[threadID];
@@ -10631,9 +10631,16 @@
         }
         delete ExpandThread.statuses[threadID];
       }
-      _ref2 = g.BOARD.threads;
-      for (threadID in _ref2) {
-        thread = _ref2[threadID];
+      if (!refresh) {
+        return $.off(d, 'IndexRefresh', this.onIndexRefresh);
+      }
+    },
+    onIndexRefresh: function() {
+      var thread, threadID, _ref;
+      ExpandThread.disconnect(true);
+      _ref = g.BOARD.threads;
+      for (threadID in _ref) {
+        thread = _ref[threadID];
         ExpandThread.setButton(thread);
       }
     },
@@ -11850,7 +11857,7 @@
       g.BOARD.threads = {};
       return $.rmAll($('.board'));
     },
-    threadFeatures: [['Unread Count', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater]],
+    threadFeatures: [['Unread Count', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Expansion', ExpandThread]],
     disconnect: function() {
       var err, errors, feature, features, name, _i, _len, _ref;
       features = g.VIEW === 'thread' ? Navigate.threadFeatures : [];
@@ -11890,143 +11897,48 @@
             error: err
           });
         }
-        if (errors) {
-          Main.handleErrors(errors);
-        }
+      }
+      if (errors) {
+        Main.handleErrors(errors);
       }
     },
-    updateContext: function(view) {
-      $.rmClass(doc, g.VIEW);
-      $.addClass(doc, view);
-      return g.VIEW = view;
-    },
-    navigate: function(e) {
-      var boardID, hash, onload, path, threadID, view;
-      if (this.hostname !== 'boards.4chan.org' || window.location.hostname === 'rs.4chan.org') {
-        return;
-      }
-      path = this.pathname.split('/');
-      hash = this.hash;
-      if (path[0] === '') {
-        path.shift();
-      }
-      boardID = path[0], view = path[1], threadID = path[2];
-      if (view === 'catalog' || ('f' === boardID || 'f' === g.BOARD.ID)) {
-        return;
-      }
-      if (e) {
-        e.preventDefault();
-      }
-      if (this.id !== 'popState') {
-        history.pushState(null, '', this.pathname);
-      }
-      view = threadID ? 'thread' : view || 'index';
-      if (view !== g.VIEW) {
-        Navigate.disconnect();
-        Navigate.clean();
-        Navigate.updateContext(view);
-        Navigate.reconnect();
-      }
-      if (view === 'index') {
-        if (boardID === g.BOARD.ID) {
-          d.title = $('.boardTitle').textContent;
-        } else {
-          Navigate.updateBoard(boardID);
-        }
-        return Index.update();
-      } else {
-        onload = function(e) {
-          return Navigate.load(e, hash);
-        };
-        return Navigate.req = $.ajax("//a.4cdn.org/" + boardID + "/res/" + threadID + ".json", {
-          onabort: onload,
-          onloadend: onload
-        });
-      }
-    },
-    load: function(e) {
-      var err, notice, req;
-      $.rmClass(Index.button, 'fa-spin');
-      req = Navigate.req, notice = Navigate.notice;
-      delete Navigate.req;
-      delete Navigate.notice;
-      if (e.type === 'abort') {
-        req.onloadend = null;
-        return;
-      }
-      try {
-        if (req.status === 200) {
-          Navigate.parse(JSON.parse(req.response).posts);
-          $.on(d, '4chanXInitFinished', Navigate.finish);
-          return $.event('4chanXInitFinished');
-        }
-      } catch (_error) {
-        err = _error;
-        console.error('Navigate failure:');
-        console.log(err);
-        if (notice) {
-          notice.setType('error');
-          notice.el.lastElementChild.textContent = 'Navigation Failed.';
-          setTimeout(notice.close, 2 * $.SECOND);
-        } else {
-          new Notice('error', 'Navigation Failed.', 2);
-        }
-      }
-    },
-    finish: function() {
-      $.off(d, '4chanXInitFinished', Navigate.finish);
-      Navigate.buildThread();
-      return Header.scrollToIfNeeded($('.board'));
-    },
-    parse: function(data) {
-      var OP, board, errors, makePost, nodes, obj, post, posts, thread, threadRoot, _i, _len;
-      board = g.BOARD;
-      threadRoot = Build.thread(board, OP = data.shift(), true);
-      thread = new Thread(OP.no, board);
-      nodes = [threadRoot];
-      posts = [];
-      errors = null;
-      makePost = function(postNode) {
-        var err;
+    ready: function() {
+      var condition, err, errors, feature, features, name, _i, _len, _ref;
+      features = [['Unread Count', Unread, Conf['Unread Count']], ['Quote Threading', QuoteThreading, Conf['Quote Threading'] && !Conf['Unread Count']]];
+      for (_i = 0, _len = features.length; _i < _len; _i++) {
+        _ref = features[_i], name = _ref[0], feature = _ref[1], condition = _ref[2];
         try {
-          return posts.push(new Post(postNode, thread, board));
+          if (condition) {
+            feature.ready();
+          }
         } catch (_error) {
           err = _error;
           if (!errors) {
             errors = [];
           }
-          return errors.push({
-            message: "Parsing of Post No." + thread.ID + " failed. Post will be skipped.",
+          errors.push({
+            message: "Failed to reconnect feature " + name + ".",
             error: err
           });
         }
-      };
-      makePost($('.opContainer', threadRoot));
-      for (_i = 0, _len = data.length; _i < _len; _i++) {
-        obj = data[_i];
-        nodes.push(post = Build.postFromObject(obj, board));
-        makePost(post);
       }
       if (errors) {
         Main.handleErrors(errors);
       }
-      $.nodes(Navigate.nodes = nodes);
-      Main.callbackNodes(Thread, [thread]);
-      return Main.callbackNodes(Post, posts);
+      return QR.generatePostableThreadsList();
     },
-    buildThread: function() {
-      var board;
-      board = $('.board');
-      $.rmAll(board);
-      return $.add(board, Navigate.nodes);
-    },
-    popstate: function() {
-      var a;
-      a = $.el('a', {
-        href: window.location,
-        id: 'popState'
-      });
-      return Navigate.navigate.call(a);
+    updateContext: function(view) {
+      $.rmClass(doc, g.VIEW);
+      $.addClass(doc, view);
+      g.VIEW = view;
+      switch (view) {
+        case 'index':
+          $.off(d, 'ThreadUpdate', QR.statusCheck);
+          return $.on(d, 'indexRefresh', QR.generatePostableThreadsList);
+        case 'thread':
+          $.on(d, 'ThreadUpdate', QR.statusCheck);
+          return $.off(d, 'IndexRefresh', QR.generatePostableThreadsList);
+      }
     },
     updateBoard: function(boardID) {
       var onload, req;
@@ -12072,6 +11984,135 @@
         $.rm(subtitle);
       }
       return $('.boardTitle').textContent = d.title = "/" + board + "/ - " + title;
+    },
+    navigate: function(e) {
+      var boardID, hash, onload, path, threadID, view;
+      if (this.hostname !== 'boards.4chan.org' || window.location.hostname === 'rs.4chan.org') {
+        return;
+      }
+      path = this.pathname.split('/');
+      hash = this.hash;
+      if (path[0] === '') {
+        path.shift();
+      }
+      boardID = path[0], view = path[1], threadID = path[2];
+      if (view === 'catalog' || ('f' === boardID || 'f' === g.BOARD.ID)) {
+        return;
+      }
+      if (e) {
+        e.preventDefault();
+      }
+      if (this.id !== 'popState') {
+        history.pushState(null, '', this.pathname);
+      }
+      view = threadID ? 'thread' : view || 'index';
+      if (view !== g.VIEW) {
+        Navigate.disconnect();
+        Navigate.clean();
+        Navigate.updateContext(view);
+        Navigate.reconnect();
+      }
+      if (view === 'index') {
+        if (boardID === g.BOARD.ID) {
+          d.title = $('.boardTitle').textContent;
+        } else {
+          Navigate.updateBoard(boardID);
+        }
+        return Index.update();
+      } else {
+        onload = function(e) {
+          return Navigate.load(e, hash);
+        };
+        Navigate.req = $.ajax("//a.4cdn.org/" + boardID + "/res/" + threadID + ".json", {
+          onabort: onload,
+          onloadend: onload
+        });
+        return setTimeout((function() {
+          if (Navigate.req && !Navigate.notice) {
+            return Navigate.notice = new Notice('info', 'Loading thread...');
+          }
+        }), 3 * $.SECOND);
+      }
+    },
+    load: function(e) {
+      var err, notice, req;
+      $.rmClass(Index.button, 'fa-spin');
+      req = Navigate.req, notice = Navigate.notice;
+      delete Navigate.req;
+      delete Navigate.notice;
+      if (e.type === 'abort') {
+        req.onloadend = null;
+        return;
+      }
+      try {
+        if (req.status === 200) {
+          return Navigate.parse(JSON.parse(req.response).posts);
+        }
+      } catch (_error) {
+        err = _error;
+        console.error('Navigate failure:');
+        console.log(err);
+        if (notice) {
+          notice.setType('error');
+          notice.el.lastElementChild.textContent = 'Navigation Failed.';
+          setTimeout(notice.close, 2 * $.SECOND);
+        } else {
+          new Notice('error', 'Navigation Failed.', 2);
+        }
+      }
+    },
+    parse: function(data) {
+      var OP, board, errors, makePost, nodes, obj, post, posts, thread, threadRoot, _i, _len;
+      board = g.BOARD;
+      threadRoot = Build.thread(board, OP = data.shift(), true);
+      thread = new Thread(OP.no, board);
+      nodes = [threadRoot];
+      posts = [];
+      errors = null;
+      makePost = function(postNode) {
+        var err;
+        try {
+          return posts.push(new Post(postNode, thread, board));
+        } catch (_error) {
+          err = _error;
+          if (!errors) {
+            errors = [];
+          }
+          return errors.push({
+            message: "Parsing of Post No." + thread.ID + " failed. Post will be skipped.",
+            error: err
+          });
+        }
+      };
+      makePost($('.opContainer', threadRoot));
+      for (_i = 0, _len = data.length; _i < _len; _i++) {
+        obj = data[_i];
+        nodes.push(post = Build.postFromObject(obj, board));
+        makePost(post);
+      }
+      if (errors) {
+        Main.handleErrors(errors);
+      }
+      $.nodes(Navigate.nodes = nodes);
+      Main.callbackNodes(Thread, [thread]);
+      Main.callbackNodes(Post, posts);
+      Navigate.ready();
+      Navigate.buildThread();
+      return Header.scrollToIfNeeded($('.board'));
+    },
+    buildThread: function() {
+      var board;
+      board = $('.board');
+      $.rmAll(board);
+      return $.add(board, Navigate.nodes);
+    },
+    popstate: function() {
+      var a;
+      a = $.el('a', {
+        href: window.location,
+        id: 'popState'
+      });
+      return Navigate.navigate.call(a);
     },
     refresh: function(context) {
       var boardID, feature, name, threadID, view, _i, _len, _ref, _ref1;

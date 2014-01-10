@@ -1,18 +1,23 @@
 ExpandThread =
+  statuses: {}
   init: ->
-    return if g.VIEW isnt 'index' or !Conf['Thread Expansion']
-    @statuses = {}
+    return if g.VIEW is 'thread' or !Conf['Thread Expansion']
     $.on d, 'IndexRefresh', @onIndexRefresh
 
   setButton: (thread) ->
     return unless a = $.x 'following-sibling::a[contains(@class,"summary")][1]', thread.OP.nodes.root
     a.textContent = ExpandThread.text '+', a.textContent.match(/\d+/g)...
     $.on a, 'click', ExpandThread.cbToggle
-
-  onIndexRefresh: ->
+  
+  disconnect: (refresh) ->
     for threadID, status of ExpandThread.statuses
       status.req?.abort()
       delete ExpandThread.statuses[threadID]
+
+    $.off d, 'IndexRefresh', @onIndexRefresh unless refresh
+
+  onIndexRefresh: ->
+    ExpandThread.disconnect true
     for threadID, thread of g.BOARD.threads
       ExpandThread.setButton thread
     return

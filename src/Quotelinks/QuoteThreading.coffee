@@ -18,7 +18,7 @@ QuoteThreading =
       el:    @controls
       order: 98
 
-    $.on d, '4chanXInitFinished', @setup unless Conf['Unread Count']
+    $.on d, '4chanXInitFinished', @ready unless Conf['Unread Count']
 
     Post.callbacks.push
       name: 'Quote Threading'
@@ -36,8 +36,8 @@ QuoteThreading =
 
     Post.callbacks.disconnect 'Quote Threading'
 
-  setup: ->
-    $.off d, '4chanXInitFinished', QuoteThreading.setup
+  ready: ->
+    $.off d, '4chanXInitFinished', QuoteThreading.ready
     QuoteThreading.force()
 
   force: ->

@@ -35,10 +35,11 @@ Navigate =
     $.rmAll $ '.board'
 
   threadFeatures: [
-    ['Unread Count',    Unread]
-    ['Quote Threading', QuoteThreading]
-    ['Thread Stats',    ThreadStats]
-    ['Thread Updater',  ThreadUpdater]
+    ['Unread Count',     Unread]
+    ['Quote Threading',  QuoteThreading]
+    ['Thread Stats',     ThreadStats]
+    ['Thread Updater',   ThreadUpdater]
+    ['Thread Expansion', ExpandThread]
   ]
 
   disconnect: ->
@@ -75,14 +76,72 @@ Navigate =
           message: "Failed to reconnect feature #{name}."
           error:   err
 
-      Main.handleErrors errors if errors
+    Main.handleErrors errors if errors
 
     return
+
+  ready: ->
+    features = [
+      ['Unread Count',    Unread,         Conf['Unread Count']]
+      ['Quote Threading', QuoteThreading, Conf['Quote Threading'] and not Conf['Unread Count']]
+    ]
+    
+    for [name, feature, condition] in features
+      try
+        feature.ready() if condition
+      catch err
+        errors = [] unless errors
+        errors.push
+          message: "Failed to reconnect feature #{name}."
+          error:   err
+
+    Main.handleErrors errors if errors
+    QR.generatePostableThreadsList()
 
   updateContext: (view) ->
     $.rmClass doc, g.VIEW
     $.addClass doc, view
     g.VIEW = view
+
+    switch view
+      when 'index'
+        $.off d, 'ThreadUpdate', QR.statusCheck
+        $.on  d, 'indexRefresh', QR.generatePostableThreadsList
+      when 'thread'
+        $.on  d, 'ThreadUpdate', QR.statusCheck
+        $.off d, 'IndexRefresh', QR.generatePostableThreadsList
+
+  updateBoard: (boardID) ->
+    g.BOARD = new Board boardID
+
+    req = null
+
+    onload = (e) ->
+      if e.type is 'abort'
+        req.onloadend = null
+        return
+
+      return unless req.status is 200
+
+      try
+        for board in JSON.parse(req.response).boards
+          return Navigate.updateTitle board if board.board is boardID
+
+      catch err
+        Main.handleErrors [
+          message: "Navigation failed to update board name."
+          error: err
+        ]
+
+    Header.setBoardList()
+
+    req = $.ajax '//a.4cdn.org/boards.json',
+      onabort:   onload
+      onloadend: onload
+
+  updateTitle: ({board, title}) ->
+    $.rm subtitle if subtitle = $ '.boardSubtitle'
+    $('.boardTitle').textContent = d.title = "/#{board}/ - #{title}"
 
   navigate: (e) ->
     return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org'
@@ -122,6 +181,11 @@ Navigate =
         onabort:   onload
         onloadend: onload
 
+      setTimeout (->
+        if Navigate.req and !Navigate.notice
+          Navigate.notice = new Notice 'info', 'Loading thread...'
+      ), 3 * $.SECOND
+
       # Navigate.refresh {boardID, view, threadID}
 
   load: (e) ->
@@ -137,8 +201,6 @@ Navigate =
     try
       if req.status is 200
         Navigate.parse JSON.parse(req.response).posts
-        $.on d, '4chanXInitFinished', Navigate.finish
-        $.event '4chanXInitFinished'
     catch err
       console.error 'Navigate failure:'
       console.log err
@@ -150,11 +212,6 @@ Navigate =
       else
         new Notice 'error', 'Navigation Failed.', 2
       return
-  
-  finish: ->
-    $.off d, '4chanXInitFinished', Navigate.finish
-    Navigate.buildThread()
-    Header.scrollToIfNeeded $ '.board'
 
   parse: (data) ->
     board = g.BOARD
@@ -188,6 +245,11 @@ Navigate =
     Main.callbackNodes Thread, [thread]
     Main.callbackNodes Post,   posts
 
+    Navigate.ready()
+
+    Navigate.buildThread()
+    Header.scrollToIfNeeded $ '.board'
+
   buildThread: ->
     board = $ '.board'
     $.rmAll board
@@ -199,38 +261,6 @@ Navigate =
       id:   'popState'
 
     Navigate.navigate.call a
-
-  updateBoard: (boardID) ->
-    g.BOARD = new Board boardID
-
-    req = null
-
-    onload = (e) ->
-      if e.type is 'abort'
-        req.onloadend = null
-        return
-
-      return unless req.status is 200
-
-      try
-        for board in JSON.parse(req.response).boards
-          return Navigate.updateTitle board if board.board is boardID
-
-      catch err
-        Main.handleErrors [
-          message: "Navigation failed to update board name."
-          error: err
-        ]
-
-    Header.setBoardList()
-
-    req = $.ajax '//a.4cdn.org/boards.json',
-      onabort:   onload
-      onloadend: onload
-
-  updateTitle: ({board, title}) ->
-    $.rm subtitle if subtitle = $ '.boardSubtitle'
-    $('.boardTitle').textContent = d.title = "/#{board}/ - #{title}"
 
   refresh: (context) ->
     return
