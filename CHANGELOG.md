@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 5682df5a2a366e5c5f4362395574179a2de68bb9
 **MayhemYDG**:
 - **New option**: `Auto-hide header on scroll`.
 - Added support for `4cdn.org`.
@@ -50,13 +46,8 @@
 
 **Zixaphir**:
 - FappeTyme and WerkTyme now persist across sessions.
-<<<<<<< HEAD
-=======
-=======
 - Various fixes and improvements for the JSONified index
 
-
->>>>>>> 5682df5a2a366e5c5f4362395574179a2de68bb9
 ### v1.2.45 
 *2014-01-07*
 
@@ -67,10 +58,6 @@
 
 **Zixaphir**:
 - Fix optional increase for thread updater
-<<<<<<< HEAD
->>>>>>> 08ae1daee8d4a2dfa272b00a62f78aa56092dfd4
-=======
->>>>>>> 5682df5a2a366e5c5f4362395574179a2de68bb9
 
 ### v1.2.44 
 *2013-12-06*
