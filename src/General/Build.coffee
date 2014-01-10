@@ -233,5 +233,4 @@ Build =
       nodes.push Build.summary board.ID, data.no, posts, files
     nodes
 
-  fullThread: (board, data) ->
-    [Build.postFromObject data, board.ID]
+  fullThread: (board, data) -> Build.postFromObject data, board.ID

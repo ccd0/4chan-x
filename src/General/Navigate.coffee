@@ -217,10 +217,9 @@ Navigate =
 
   parse: (data) ->
     board = g.BOARD
-    threadRoot = Build.thread board, OP = data.shift(), true
+    Navigate.threadRoot = threadRoot = Build.thread board, OP = data.shift(), true
     thread = new Thread OP.no, board
 
-    nodes  = [threadRoot]
     posts  = []
     errors = null
 
@@ -237,13 +236,12 @@ Navigate =
     makePost $('.opContainer', threadRoot)
 
     for obj in data
-      nodes.push post = Build.postFromObject obj, board
+      post = Build.postFromObject obj, board
       makePost post
+      $.add threadRoot, post
 
     Main.handleErrors errors if errors
 
-    # Add the thread to a container to make sure all features work.
-    $.nodes Navigate.nodes = nodes
     Main.callbackNodes Thread, [thread]
     Main.callbackNodes Post,   posts
 
@@ -255,7 +253,7 @@ Navigate =
   buildThread: ->
     board = $ '.board'
     $.rmAll board
-    $.add board, Navigate.nodes
+    $.add board, Navigate.threadRoot
 
   popstate: -> <% if (type === 'crx') { %> Navigate.popstate = -> <% } %> # blink/webkit throw a popstate on page load. Not what we want.
     a = $.el 'a',

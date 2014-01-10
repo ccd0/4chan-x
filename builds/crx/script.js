@@ -3004,7 +3004,7 @@
       return nodes;
     },
     fullThread: function(board, data) {
-      return [Build.postFromObject(data, board.ID)];
+      return Build.postFromObject(data, board.ID);
     }
   };
 
@@ -12055,11 +12055,10 @@
       }
     },
     parse: function(data) {
-      var OP, board, errors, makePost, nodes, obj, post, posts, thread, threadRoot, _i, _len;
+      var OP, board, errors, makePost, obj, post, posts, thread, threadRoot, _i, _len;
       board = g.BOARD;
-      threadRoot = Build.thread(board, OP = data.shift(), true);
+      Navigate.threadRoot = threadRoot = Build.thread(board, OP = data.shift(), true);
       thread = new Thread(OP.no, board);
-      nodes = [threadRoot];
       posts = [];
       errors = null;
       makePost = function(postNode) {
@@ -12080,13 +12079,13 @@
       makePost($('.opContainer', threadRoot));
       for (_i = 0, _len = data.length; _i < _len; _i++) {
         obj = data[_i];
-        nodes.push(post = Build.postFromObject(obj, board));
+        post = Build.postFromObject(obj, board);
         makePost(post);
+        $.add(threadRoot, post);
       }
       if (errors) {
         Main.handleErrors(errors);
       }
-      $.nodes(Navigate.nodes = nodes);
       Main.callbackNodes(Thread, [thread]);
       Main.callbackNodes(Post, posts);
       Navigate.ready();
@@ -12097,7 +12096,7 @@
       var board;
       board = $('.board');
       $.rmAll(board);
-      return $.add(board, Navigate.nodes);
+      return $.add(board, Navigate.threadRoot);
     },
     popstate: function() {
       return Navigate.popstate = function() {
