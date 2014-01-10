@@ -1,10 +1,7 @@
 ThreadUpdater =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
-    
-    ThreadUpdater.connect.call @
 
-  connect: ->
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
         innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>"

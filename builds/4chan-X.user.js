@@ -821,21 +821,12 @@
       var cb, name;
       name = _arg.name, cb = _arg.cb;
       if (this[name]) {
-        this[name].connect();
+        this.connect(name);
       }
       if (!this[name]) {
         this.keys.push(name);
       }
       return this[name] = cb;
-    };
-
-    Callbacks.prototype.clean = function() {
-      var name, _i, _len, _ref;
-      _ref = this.keys;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        name = _ref[_i];
-        this.rm(name);
-      }
     };
 
     Callbacks.prototype.connect = function(name) {
@@ -1571,7 +1562,9 @@
       root.next = item;
       item.prev = root;
       item.next = next;
-      return next.prev = item;
+      if (next) {
+        return next.prev = item;
+      }
     };
 
     RandomAccessList.prototype.prepend = function(item) {
@@ -8769,14 +8762,11 @@
 
   ThreadUpdater = {
     init: function() {
+      var checked, conf, el, input, name, sc, subEntries, _ref,
+        _this = this;
       if (g.VIEW !== 'thread' || !Conf['Thread Updater']) {
         return;
       }
-      return ThreadUpdater.connect.call(this);
-    },
-    connect: function() {
-      var checked, conf, el, input, name, sc, subEntries, _ref,
-        _this = this;
       if (Conf['Updater and Stats in Header']) {
         this.dialog = sc = $.el('span', {
           innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>",
@@ -9672,9 +9662,6 @@
       if (g.VIEW !== 'thread' || !Conf['Unread Count'] && !Conf['Unread Favicon'] && !Conf['Desktop Notifications']) {
         return;
       }
-      return Unread.connect.call(this);
-    },
-    connect: function() {
       this.db = new DataBoard('lastReadPosts', this.sync);
       this.hr = $.el('hr', {
         id: 'unread-line'
@@ -11863,13 +11850,14 @@
       g.BOARD.threads = {};
       return $.rmAll($('.board'));
     },
+    threadFeatures: [['Unread Count', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater]],
     disconnect: function() {
       var err, errors, feature, features, name, _i, _len, _ref;
-      features = g.VIEW === 'thread' ? [['Thread Updater', ThreadUpdater], ['Unread Count', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats]] : [];
+      features = g.VIEW === 'thread' ? Navigate.threadFeatures : [];
       for (_i = 0, _len = features.length; _i < _len; _i++) {
         _ref = features[_i], name = _ref[0], feature = _ref[1];
         try {
-          feature.disconnect.call(feature);
+          feature.disconnect();
         } catch (_error) {
           err = _error;
           if (!errors) {
@@ -11877,6 +11865,28 @@
           }
           errors.push({
             message: "Failed to disconnect feature " + name + ".",
+            error: err
+          });
+        }
+        if (errors) {
+          Main.handleErrors(errors);
+        }
+      }
+    },
+    reconnect: function() {
+      var err, errors, feature, features, name, _i, _len, _ref;
+      features = g.VIEW === 'thread' ? Navigate.threadFeatures : [];
+      for (_i = 0, _len = features.length; _i < _len; _i++) {
+        _ref = features[_i], name = _ref[0], feature = _ref[1];
+        try {
+          feature.init();
+        } catch (_error) {
+          err = _error;
+          if (!errors) {
+            errors = [];
+          }
+          errors.push({
+            message: "Failed to reconnect feature " + name + ".",
             error: err
           });
         }
@@ -11915,6 +11925,7 @@
         Navigate.disconnect();
         Navigate.clean();
         Navigate.updateContext(view);
+        Navigate.reconnect();
       }
       if (view === 'index') {
         if (boardID !== g.BOARD.ID) {
@@ -11944,6 +11955,8 @@
       try {
         if (req.status === 200) {
           Navigate.parse(JSON.parse(req.response).posts);
+          $.on(d, '4chanXInitFinished', Navigate.finish);
+          return $.event('4chanXInitFinished');
         }
       } catch (_error) {
         err = _error;
@@ -11956,8 +11969,10 @@
         } else {
           new Notice('error', 'Navigation Failed.', 2);
         }
-        return;
       }
+    },
+    finish: function() {
+      $.off(d, '4chanXInitFinished', Navigate.finish);
       Navigate.buildThread();
       return Header.scrollToIfNeeded($('.board'));
     },

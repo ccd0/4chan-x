@@ -34,24 +34,45 @@ Navigate =
     # Delete nodes
     $.rmAll $ '.board'
 
+  threadFeatures: [
+    ['Unread Count',    Unread]
+    ['Quote Threading', QuoteThreading]
+    ['Thread Stats',    ThreadStats]
+    ['Thread Updater',  ThreadUpdater]
+  ]
+
   disconnect: ->
     features = if g.VIEW is 'thread'
-      [
-        ['Thread Updater',  ThreadUpdater]
-        ['Unread Count',    Unread]
-        ['Quote Threading', QuoteThreading]
-        ['Thread Stats',    ThreadStats]
-      ]
+      Navigate.threadFeatures
     else
       []
 
     for [name, feature] in features
       try
-        feature.disconnect.call feature
+        feature.disconnect()
       catch err
         errors = [] unless errors
         errors.push
           message: "Failed to disconnect feature #{name}."
+          error:   err
+
+      Main.handleErrors errors if errors
+
+    return
+
+  reconnect: ->
+    features = if g.VIEW is 'thread'
+      Navigate.threadFeatures
+    else
+      []
+
+    for [name, feature] in features
+      try
+        feature.init()
+      catch err
+        errors = [] unless errors
+        errors.push
+          message: "Failed to reconnect feature #{name}."
           error:   err
 
       Main.handleErrors errors if errors
@@ -85,6 +106,7 @@ Navigate =
       Navigate.disconnect()
       Navigate.clean()
       Navigate.updateContext view
+      Navigate.reconnect()
 
     if view is 'index'
       Navigate.updateBoard boardID unless boardID is g.BOARD.ID
@@ -112,6 +134,8 @@ Navigate =
     try
       if req.status is 200
         Navigate.parse JSON.parse(req.response).posts
+        $.on d, '4chanXInitFinished', Navigate.finish
+        $.event '4chanXInitFinished'
     catch err
       console.error 'Navigate failure:'
       console.log err
@@ -123,9 +147,10 @@ Navigate =
       else
         new Notice 'error', 'Navigation Failed.', 2
       return
-
+  
+  finish: ->
+    $.off d, '4chanXInitFinished', Navigate.finish
     Navigate.buildThread()
-
     Header.scrollToIfNeeded $ '.board'
 
   parse: (data) ->

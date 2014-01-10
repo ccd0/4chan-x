@@ -23,17 +23,17 @@ QuoteThreading =
     Post.callbacks.push
       name: 'Quote Threading'
       cb:   @node
-      
+
   disconnect: ->
     input = $ 'input', @controls
     $.off input, 'change', @toggle
-    
+
     $.event 'rmMenuEntry', @entry
-    
+
     delete @enabled
     delete @controls
     delete @entry
-    
+
     Post.callbacks.disconnect 'Quote Threading'
 
   setup: ->
@@ -115,7 +115,7 @@ QuoteThreading =
       containers = $$ '.threadContainer', thread
       $.rm container for container in containers
       $.rmClass post, 'threadOP' for post in $$ '.threadOP'
-    
+
     return
 
   kb: ->

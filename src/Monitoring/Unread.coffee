@@ -2,9 +2,6 @@ Unread =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Favicon'] and !Conf['Desktop Notifications']
 
-    Unread.connect.call this
-  
-  connect: ->
     @db = new DataBoard 'lastReadPosts', @sync
     @hr = $.el 'hr',
       id: 'unread-line'
