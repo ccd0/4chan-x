@@ -1778,7 +1778,7 @@
         }
         $.asap((function() {
           return $.id('boardNavMobile') || d.readyState !== 'loading';
-        }), Header.initReady);
+        }), Header.setBoardList);
         $.prepend(d.body, _this.bar);
         $.add(d.body, Header.hover);
         _this.setBarPosition(Conf['Bottom Header']);
@@ -1824,20 +1824,15 @@
       id: 'scroll-marker'
     }),
     initReady: function() {
-      Header.cache();
       Header.setBoardList();
       return Header.addNav();
     },
-    cache: function() {
-      var fourchannav;
-      fourchannav = $.id('boardNavDesktop');
-      return Header.navCache = "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> " + fourchannav.innerHTML + "</span>";
-    },
     setBoardList: function() {
-      var a, boardList, btn, fullBoardList, _i, _len, _ref;
-      boardList = $.el('span', {
+      var a, boardList, btn, fourchannav, fullBoardList, _i, _len, _ref;
+      fourchannav = $.id('boardNavDesktop');
+      Header.boardList = boardList = $.el('span', {
         id: 'board-list',
-        innerHTML: Header.navCache
+        innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> " + fourchannav.innerHTML + "</span>"
       });
       _ref = $$('a', boardList);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1852,15 +1847,9 @@
       $.on(btn, 'click', Header.toggleBoardList);
       $.rm($('#navtopright', fullBoardList));
       $.add(boardList, fullBoardList);
-      if (Header.boardList) {
-        $.replace(Header.boardList, boardList);
-      }
-      Header.boardList = boardList;
-      return Header.generateBoardList(Conf['boardnav'].replace(/(\r\n|\n|\r)/g, ' '));
-    },
-    addNav: function() {
       $.add(Header.bar, [Header.boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]);
       Header.setCustomNav(Conf['Custom Board Navigation']);
+      Header.generateBoardList(Conf['boardnav'].replace(/(\r\n|\n|\r)/g, ' '));
       $.sync('Custom Board Navigation', Header.setCustomNav);
       return $.sync('boardnav', Header.generateBoardList);
     },
@@ -11957,7 +11946,7 @@
       }
     },
     updateBoard: function(boardID) {
-      var onload, req;
+      var fullBoardList, onload, req;
       g.BOARD = new Board(boardID);
       req = null;
       onload = function(e) {
@@ -11987,7 +11976,10 @@
           ]);
         }
       };
-      Header.setBoardList();
+      fullBoardList = $('#full-board-list', Header.boardList);
+      $.rmClass($('.current', fullBoardList), 'current');
+      $.addClass($("a[href*='" + boardID + "']", fullBoardList), 'current');
+      Header.generateBoardList(Conf['boardnav'].replace(/(\r\n|\n|\r)/g, ' '));
       return req = $.ajax('//a.4cdn.org/boards.json', {
         onabort: onload,
         onloadend: onload

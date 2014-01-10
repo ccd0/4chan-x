@@ -133,7 +133,10 @@ Navigate =
           error: err
         ]
 
-    Header.setBoardList()
+    fullBoardList   = $ '#full-board-list', Header.boardList
+    $.rmClass $('.current', fullBoardList), 'current'
+    $.addClass $("a[href*='#{boardID}']", fullBoardList), 'current'
+    Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
 
     req = $.ajax '//a.4cdn.org/boards.json',
       onabort:   onload
