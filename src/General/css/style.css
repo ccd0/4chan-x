@@ -505,8 +505,15 @@ div.center:not(.ad-cnt) {
 :root.hide-announcement #globalMessage {
   display: none;
 }
-a.hide-announcement {
-  float: left;
+span.hide-announcement {
+  font-size: 11px;
+  position: relative;
+  bottom: 5px;
+}
+.globalMessage, h2, h3 {
+  color: inherit !important;
+  font-size: 13px;
+  font-weight: 100;
 }
 
 /* Unread */
@@ -1160,6 +1167,9 @@ a:only-of-type > .remove {
 .boardTitle[contenteditable="true"],
 .boardSubtitle[contenteditable="true"] {
   cursor: text !important;
+}
+div.boardTitle {
+  font-weight: 400 !important;
 }
 /* Link Title Favicons */
 .linkify.YouTube {
