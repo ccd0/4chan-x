@@ -27,7 +27,8 @@
  @font-face{font-family:FontAwesome;src:url('data:application/font-woff;base64,<%= grunt.file.read('node_modules/font-awesome/fonts/fontawesome-webfont.woff', {encoding: 'base64'}) %>') format('woff');font-weight:400;font-style:normal}.fa::before{font-family:FontAwesome;font-weight:400;font-style:normal;-webkit-font-smoothing:antialiased;*margin-right:.3em;text-decoration:inherit;display:none;speak:none}
 
  :root.shortcut-icons .fa::before, 
- .menu-button .fa::before, 
+ .menu-button .fa::before,
+ .hide-announcement .fa::before, 
  .hide-reply-button .fa::before,
  .hide-thread-button .fa::before {display:inline-block;font-size:13px;visibility:visible}
  :root.shortcut-icons #shortcuts .fa::before{font-size:15px!important;margin-top:-3px!important;position:relative;top:1px}
@@ -35,6 +36,7 @@
  :root.shortcut-icons .shortcut.brackets-wrap::after,:root.shortcut-icons .shortcut.brackets-wrap::before{display:none}
  :root.shortcut-icons a .fa, 
  .menu-button .fa,
+ .hide-announcement .fa,
  .hide-reply-button .fa,
  .hide-thread-button .fa {display:inline}
 
