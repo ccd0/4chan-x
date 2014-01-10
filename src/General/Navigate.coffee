@@ -105,9 +105,11 @@ Navigate =
 
     switch view
       when 'index'
+        QR.link.textContent = 'Start a Thread'
         $.off d, 'ThreadUpdate', QR.statusCheck
         $.on  d, 'indexRefresh', QR.generatePostableThreadsList
       when 'thread'
+        QR.link.textContent = 'Reply to Thread'
         $.on  d, 'ThreadUpdate', QR.statusCheck
         $.off d, 'IndexRefresh', QR.generatePostableThreadsList
 

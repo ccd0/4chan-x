@@ -45,6 +45,8 @@ QR =
     link = $.el 'h1',
       innerHTML: "<a href=javascript:; class='qr-link'>#{if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'}</a>"
       className: "qr-link-container"
+    
+    QR.link = link.firstElementChild
     $.on link.firstChild, 'click', ->
 
       $.event 'CloseMenu'
@@ -70,11 +72,13 @@ QR =
       when 'index'
         $.on d, 'IndexRefresh', QR.generatePostableThreadsList
       when 'thread'
-        $.on d, 'ThreadUpdate', ->
-          if g.DEAD
-            QR.abort()
-          else
-            QR.status()
+        $.on d, 'ThreadUpdate', QR.statusCheck
+
+  statusCheck: ->
+    if g.DEAD
+      QR.abort()
+    else
+      QR.status()
 
   node: ->
     $.on $('a[title="Quote this post"]', @nodes.info), 'click', QR.quote
