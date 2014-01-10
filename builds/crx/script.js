@@ -2975,8 +2975,8 @@
         href: "/" + boardID + "/res/" + threadID
       });
     },
-    thread: function(board, data) {
-      var OP, files, nodes, posts, root, _ref;
+    thread: function(board, data, full) {
+      var OP, root;
       Build.spoilerRange[board] = data.custom_spoiler;
       if ((OP = board.posts[data.no]) && (root = OP.nodes.root.parentNode)) {
         $.rmAll(root);
@@ -2986,6 +2986,11 @@
           id: "t" + data.no
         });
       }
+      $.add(root, Build[full ? 'fullThread' : 'excerptThread'](board, data, OP));
+      return root;
+    },
+    excerptThread: function(board, data, OP) {
+      var files, nodes, posts, _ref;
       nodes = [OP ? OP.nodes.root : Build.postFromObject(data, board.ID)];
       if (data.omitted_posts || !Conf['Show Replies'] && data.replies) {
         _ref = Conf['Show Replies'] ? [data.omitted_posts, data.omitted_images] : [
@@ -2995,8 +3000,10 @@
         ], posts = _ref[0], files = _ref[1];
         nodes.push(Build.summary(board.ID, data.no, posts, files));
       }
-      $.add(root, nodes);
-      return root;
+      return nodes;
+    },
+    fullThread: function(board, data) {
+      return [Build.postFromObject(data, board.ID)];
     }
   };
 
