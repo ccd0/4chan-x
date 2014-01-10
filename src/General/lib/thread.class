@@ -10,7 +10,7 @@ class Thread
     @postLimit = false
     @fileLimit = false
 
-    g.threads[@fullID] = board.threads[@ID] = @
+    g.threads[@fullID] = board.threads[@] = @
 
   setPage: (pageNum) ->
     icon = $ '.page-num', @OP.nodes.post

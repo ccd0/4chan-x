@@ -129,8 +129,9 @@ Navigate =
     Header.scrollToIfNeeded $ '.board'
 
   parse: (data) ->
-    threadRoot = Build.thread g.BOARD, data.shift(), true
-    thread = new Thread threadRoot, g.BOARD
+    board = g.BOARD
+    threadRoot = Build.thread board, OP = data.shift(), true
+    thread = new Thread OP.no, board
 
     nodes  = [threadRoot]
     posts  = []
@@ -138,7 +139,7 @@ Navigate =
 
     makePost = (postNode) ->
       try
-        posts.push new Post postNode, thread, g.BOARD
+        posts.push new Post postNode, thread, board
       catch err
         # Skip posts that we failed to parse.
         errors = [] unless errors
@@ -149,7 +150,7 @@ Navigate =
     makePost $('.opContainer', threadRoot)
 
     for obj in data
-      posts.push post = Build.postFromObject obj
+      nodes.push post = Build.postFromObject obj, board
       makePost post
 
     Main.handleErrors errors if errors

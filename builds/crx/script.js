@@ -870,7 +870,7 @@
             errors = [];
           }
           errors.push({
-            message: ['"', name, '" crashed on node ', this.type, ' No.', node, ' (', node.board, ').'].join(''),
+            message: ['"', name, '" crashed on node ', this.type, ' No.', node.ID, ' (', node.board, ').'].join(''),
             error: err
           });
         }
@@ -916,7 +916,7 @@
       this.isClosed = false;
       this.postLimit = false;
       this.fileLimit = false;
-      g.threads[this.fullID] = board.threads[this.ID] = this;
+      g.threads[this.fullID] = board.threads[this] = this;
     }
 
     Thread.prototype.setPage = function(pageNum) {
@@ -11951,16 +11951,17 @@
       return Header.scrollToIfNeeded($('.board'));
     },
     parse: function(data) {
-      var errors, makePost, nodes, obj, post, posts, thread, threadRoot, _i, _len;
-      threadRoot = Build.thread(g.BOARD, data.shift(), true);
-      thread = new Thread(threadRoot, g.BOARD);
+      var OP, board, errors, makePost, nodes, obj, post, posts, thread, threadRoot, _i, _len;
+      board = g.BOARD;
+      threadRoot = Build.thread(board, OP = data.shift(), true);
+      thread = new Thread(OP.no, board);
       nodes = [threadRoot];
       posts = [];
       errors = null;
       makePost = function(postNode) {
         var err;
         try {
-          return posts.push(new Post(postNode, thread, g.BOARD));
+          return posts.push(new Post(postNode, thread, board));
         } catch (_error) {
           err = _error;
           if (!errors) {
@@ -11975,7 +11976,7 @@
       makePost($('.opContainer', threadRoot));
       for (_i = 0, _len = data.length; _i < _len; _i++) {
         obj = data[_i];
-        posts.push(post = Build.postFromObject(obj));
+        nodes.push(post = Build.postFromObject(obj, board));
         makePost(post);
       }
       if (errors) {

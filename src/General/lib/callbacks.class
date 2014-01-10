@@ -21,7 +21,7 @@ class Callbacks
       catch err
         errors = [] unless errors
         errors.push
-          message: ['"', name, '" crashed on node ', @type, ' No.', node, ' (', node.board, ').'].join('')
+          message: ['"', name, '" crashed on node ', @type, ' No.', node.ID, ' (', node.board, ').'].join('')
           error: err
 
     Main.handleErrors errors if errors
