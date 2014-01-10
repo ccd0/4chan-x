@@ -81,12 +81,10 @@ Navigate =
     return
 
   ready: ->
-    features = [
+    for [name, feature, condition] in [
       ['Unread Count',    Unread,         Conf['Unread Count']]
       ['Quote Threading', QuoteThreading, Conf['Quote Threading'] and not Conf['Unread Count']]
     ]
-    
-    for [name, feature, condition] in features
       try
         feature.ready() if condition
       catch err
@@ -146,7 +144,8 @@ Navigate =
     $('.boardTitle').textContent = d.title = "/#{board}/ - #{title}"
 
   navigate: (e) ->
-    return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org'
+    return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org' or
+      (e and (e.shiftKey or (e.type is 'click' and e.button isnt 0))) # Not simply a left click
 
     path = @pathname.split '/'
     hash = @hash

@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.2.45 - 2014-01-09
+* 4chan X - Version 1.2.45 - 2014-01-10
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -1778,7 +1778,7 @@
         }
         $.asap((function() {
           return $.id('boardNavMobile') || d.readyState !== 'loading';
-        }), Header.setBoardList);
+        }), Header.initReady);
         $.prepend(d.body, _this.bar);
         $.add(d.body, Header.hover);
         _this.setBarPosition(Conf['Bottom Header']);
@@ -1823,15 +1823,21 @@
     toggle: $.el('div', {
       id: 'scroll-marker'
     }),
-    setBoardList: function() {
-      var a, boardList, btn, fourchannav, fullBoardList, _i, _len, _ref;
-      if (Header.bar.children.length) {
-        $.rmAll(Header.bar);
-      }
+    initReady: function() {
+      Header.cache();
+      Header.setBoardList();
+      return Header.addNav();
+    },
+    cache: function() {
+      var fourchannav;
       fourchannav = $.id('boardNavDesktop');
+      return Header.navCache = "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> " + fourchannav.innerHTML + "</span>";
+    },
+    setBoardList: function() {
+      var a, boardList, btn, fullBoardList, _i, _len, _ref;
       boardList = $.el('span', {
         id: 'board-list',
-        innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> " + fourchannav.innerHTML + "</span>"
+        innerHTML: Header.navCache
       });
       _ref = $$('a', boardList);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1846,20 +1852,26 @@
       $.on(btn, 'click', Header.toggleBoardList);
       $.rm($('#navtopright', fullBoardList));
       $.add(boardList, fullBoardList);
-      $.add(Header.bar, [boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]);
+      if (Header.boardList) {
+        $.replace(Header.boardList, boardList);
+      }
+      Header.boardList = boardList;
+      return Header.generateBoardList(Conf['boardnav'].replace(/(\r\n|\n|\r)/g, ' '));
+    },
+    addNav: function() {
+      $.add(Header.bar, [Header.boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]);
       Header.setCustomNav(Conf['Custom Board Navigation']);
-      Header.generateBoardList(Conf['boardnav'].replace(/(\r\n|\n|\r)/g, ' '));
       $.sync('Custom Board Navigation', Header.setCustomNav);
       return $.sync('boardnav', Header.generateBoardList);
     },
     generateBoardList: function(text) {
       var as, list, nodes;
-      list = $('#custom-board-list', Header.bar);
+      list = $('#custom-board-list', Header.boardList);
       $.rmAll(list);
       if (!text) {
         return;
       }
-      as = $$('#full-board-list a[title]', Header.bar);
+      as = $$('#full-board-list a[title]', Header.boardList);
       nodes = text.match(/[\w@]+((-(all|title|replace|full|index|catalog|url:"[^"]+[^"]"|text:"[^"]+")|\,"[^"]+[^"]"))*|[^\w@]+/g).map(function(t) {
         var a, board, m, _i, _len;
         if (/^[^\w@]/.test(t)) {
@@ -11905,10 +11917,10 @@
       }
     },
     ready: function() {
-      var condition, err, errors, feature, features, name, _i, _len, _ref;
-      features = [['Unread Count', Unread, Conf['Unread Count']], ['Quote Threading', QuoteThreading, Conf['Quote Threading'] && !Conf['Unread Count']]];
-      for (_i = 0, _len = features.length; _i < _len; _i++) {
-        _ref = features[_i], name = _ref[0], feature = _ref[1], condition = _ref[2];
+      var condition, err, errors, feature, name, _i, _len, _ref, _ref1;
+      _ref = [['Unread Count', Unread, Conf['Unread Count']], ['Quote Threading', QuoteThreading, Conf['Quote Threading'] && !Conf['Unread Count']]];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        _ref1 = _ref[_i], name = _ref1[0], feature = _ref1[1], condition = _ref1[2];
         try {
           if (condition) {
             feature.ready();
@@ -11991,7 +12003,7 @@
     },
     navigate: function(e) {
       var boardID, hash, onload, path, threadID, view;
-      if (this.hostname !== 'boards.4chan.org' || window.location.hostname === 'rs.4chan.org') {
+      if (this.hostname !== 'boards.4chan.org' || window.location.hostname === 'rs.4chan.org' || (e && (e.shiftKey || (e.type === 'click' && e.button !== 0)))) {
         return;
       }
       path = this.pathname.split('/');

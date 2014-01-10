@@ -94,7 +94,7 @@ Header =
       return unless Main.isThisPageLegit()
       # Wait for #boardNavMobile instead of #boardNavDesktop,
       # it might be incomplete otherwise.
-      $.asap (-> $.id('boardNavMobile') or d.readyState isnt 'loading'), Header.setBoardList
+      $.asap (-> $.id('boardNavMobile') or d.readyState isnt 'loading'), Header.initReady
       $.prepend d.body, @bar
       $.add d.body, Header.hover
       @setBarPosition Conf['Bottom Header']
@@ -133,12 +133,19 @@ Header =
   toggle: $.el 'div',
     id: 'scroll-marker'
 
-  setBoardList: ->
-    $.rmAll Header.bar if Header.bar.children.length
+  initReady: ->
+    Header.cache()
+    Header.setBoardList()
+    Header.addNav()
+
+  cache: ->
     fourchannav = $.id 'boardNavDesktop'
+    Header.navCache = "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> #{fourchannav.innerHTML}</span>"
+
+  setBoardList: ->
     boardList = $.el 'span',
       id: 'board-list'
-      innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> #{fourchannav.innerHTML}</span>"
+      innerHTML: Header.navCache
     for a in $$ 'a', boardList
       $.on a, 'click', Navigate.navigate
       if a.pathname.split('/')[1] is g.BOARD.ID
@@ -149,19 +156,24 @@ Header =
 
     $.rm $ '#navtopright', fullBoardList
     $.add boardList, fullBoardList
-    $.add Header.bar, [boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]
+    
+    $.replace Header.boardList, boardList if Header.boardList
+    Header.boardList = boardList
 
-    Header.setCustomNav Conf['Custom Board Navigation']
     Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
+
+  addNav: ->
+    $.add Header.bar, [Header.boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]
+    Header.setCustomNav Conf['Custom Board Navigation']
 
     $.sync 'Custom Board Navigation', Header.setCustomNav
     $.sync 'boardnav', Header.generateBoardList
 
   generateBoardList: (text) ->
-    list = $ '#custom-board-list', Header.bar
+    list = $ '#custom-board-list', Header.boardList
     $.rmAll list
     return unless text
-    as = $$ '#full-board-list a[title]', Header.bar
+    as = $$ '#full-board-list a[title]', Header.boardList
     nodes = text.match(/[\w@]+((-(all|title|replace|full|index|catalog|url:"[^"]+[^"]"|text:"[^"]+")|\,"[^"]+[^"]"))*|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
