@@ -11950,7 +11950,7 @@
       g.BOARD = new Board(boardID);
       req = null;
       onload = function(e) {
-        var board, err, _i, _len, _ref;
+        var board, mainStyleSheet, newStyleSheet, style, type, _ref;
         if (e.type === 'abort') {
           req.onloadend = null;
           return;
@@ -11958,23 +11958,37 @@
         if (req.status !== 200) {
           return;
         }
-        try {
-          _ref = JSON.parse(req.response).boards;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            board = _ref[_i];
-            if (board.board === boardID) {
-              return Navigate.updateTitle(board);
+        board = (function() {
+          var err, _i, _len, _ref;
+          try {
+            _ref = JSON.parse(req.response).boards;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              board = _ref[_i];
+              if (board.board === boardID) {
+                return board;
+              }
             }
+          } catch (_error) {
+            err = _error;
+            Main.handleErrors([
+              {
+                message: "Navigation failed to update board name.",
+                error: err
+              }
+            ]);
+            return false;
           }
-        } catch (_error) {
-          err = _error;
-          return Main.handleErrors([
-            {
-              message: "Navigation failed to update board name.",
-              error: err
-            }
-          ]);
+        })();
+        if (!board) {
+          return;
         }
+        Navigate.updateTitle(board);
+        _ref = board.ws_board ? [(d.cookie.match(/ws\_style\=[^;]+/) || ['Yotsuba B New'])[0], 'ws_style'] : [(d.cookie.match(/nws\_style\=[^;]+/) || ['Yotsuba New'])[0], 'nws_style'], style = _ref[0], type = _ref[1];
+        $.globalEval("var style_group = '" + type + "'");
+        mainStyleSheet = $('link[title=switch]', d.head);
+        newStyleSheet = $("link[rel='alternate stylesheet'][title='" + style + "']", d.head);
+        mainStyleSheet.href = newStyleSheet.href;
+        return Main.initStyle();
       };
       fullBoardList = $('#full-board-list', Header.boardList);
       $.rmClass($('.current', fullBoardList), 'current');

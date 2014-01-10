@@ -123,15 +123,35 @@ Navigate =
 
       return unless req.status is 200
 
-      try
+      board = do -> try
         for board in JSON.parse(req.response).boards
-          return Navigate.updateTitle board if board.board is boardID
+          return board if board.board is boardID
 
       catch err
         Main.handleErrors [
           message: "Navigation failed to update board name."
           error: err
         ]
+        return false
+      
+      return unless board
+      Navigate.updateTitle board
+      [style, type] = if board.ws_board then [
+        (d.cookie.match(/ws\_style\=[^;]+/) or ['Yotsuba B New'])[0]
+        'ws_style'
+      ] else [
+        (d.cookie.match(/nws\_style\=[^;]+/) or ['Yotsuba New'])[0]
+        'nws_style'
+      ]
+      
+      $.globalEval "var style_group = '#{type}'"
+
+      mainStyleSheet = $ 'link[title=switch]', d.head
+      newStyleSheet  = $ "link[rel='alternate stylesheet'][title='#{style}']", d.head
+
+      mainStyleSheet.href  = newStyleSheet.href
+
+      Main.initStyle()
 
     fullBoardList   = $ '#full-board-list', Header.boardList
     $.rmClass $('.current', fullBoardList), 'current'
