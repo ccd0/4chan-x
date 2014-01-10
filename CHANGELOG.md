@@ -1,3 +1,6 @@
+## v1.3.0 
+*2014-01-10*
+
 **MayhemYDG**:
 - **New option**: `Auto-hide header on scroll`.
 - Added support for `4cdn.org`.
@@ -43,6 +46,7 @@
 **seaweedchan**:
 - Various fixes and improvements for the JSONified index
 - Removed index refresh notifications
+- Various style tweaks
 
 **Zixaphir**:
 - FappeTyme and WerkTyme now persist across sessions.
