@@ -16,10 +16,10 @@
   color: #34345C;
 }
 :root.burichan #custom-board-list .current {
-  border-bottom: 1px solid #2F4DC6;
+  border-bottom: 1px solid rgba(30, 30, 255, 0.2);
 }
 :root.burichan #custom-board-list .current:hover {
-  border-bottom-color: #ff0000;
+  border-bottom-color: rgba(255,0,0,0.2);
 }
 
 /* Settings */
@@ -50,7 +50,6 @@
   color: #000000;
 }
 :root.burichan .entry {
-  border-bottom: 1px solid #B7C5D9;
   font-size: 12pt;
 }
 :root.burichan .focused.entry {

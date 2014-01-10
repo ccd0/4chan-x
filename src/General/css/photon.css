@@ -16,10 +16,10 @@
   color: #FF6600;
 }
 :root.photon #custom-board-list a.current {
-  border-bottom: 1px solid #004A99;
+  border-bottom: 1px solid rgba(0,74,153,0.2);
 }
 :root.photon #custom-board-list .current:hover {
-  border-bottom-color: #FF3300;
+  border-bottom-color: rgba(255,51,0,0.2);
 }
 
 /* Settings */
@@ -50,7 +50,6 @@
   color: #333;
 }
 :root.photon .entry {
-  border-bottom: 1px solid #CCC;
   font-size: 10pt;
 }
 :root.photon .focused.entry {

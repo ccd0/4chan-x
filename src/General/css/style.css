@@ -2,7 +2,6 @@
 .dialog {
   border: 1px solid;
   display: block;
-  padding: 0;
 }
 .dialog:not(#qr):not(#thread-watcher):not(#header-bar) {
   box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
@@ -1073,12 +1072,16 @@ a:only-of-type > .remove {
   position: fixed;
   outline: none;
 }
+#menu, .submenu {
+  border-radius: 3px;
+  padding-top: 1px;
+  padding-bottom: 3px;
+}
 .entry {
-  border-bottom: 1px solid rgba(0,0,0,.25);
   cursor: pointer;
   display: block;
   outline: none;
-  padding: 3px 7px;
+  padding: 2px 10px;
   position: relative;
   text-decoration: none;
   white-space: nowrap;
@@ -1087,8 +1090,11 @@ a:only-of-type > .remove {
 .left>.entry.has-submenu {
   padding-right: 17px !important;
 }
-.entry:last-child {
-  border-bottom: 0;
+.entry input[type="checkbox"], 
+.entry input[type="radio"] {
+  margin: 0px;
+  position: relative;
+  top: 2px;
 }
 .has-submenu::after {
   content: "";
@@ -1109,6 +1115,8 @@ a:only-of-type > .remove {
   position: absolute;
   left: 100%;
   top: -1px;
+  margin-left: 0px;
+  margin-top: -2px;
 }
 .focused > .submenu {
   display: block;

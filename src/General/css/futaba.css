@@ -16,10 +16,10 @@
   color: #800000;
 }
 :root.futaba #custom-board-list a.current {
-  border-bottom: 1px solid #b20000;
+  border-bottom: 1px solid rgba(178,0,0,0.2);
 }
 :root.futaba #custom-board-list .current:hover {
-  border-bottom-color: #ff0000;
+  border-bottom-color: rgba(255,0,0,0.2);
 }
 
 /* Settings */
@@ -50,7 +50,6 @@
   color: #800000;
 }
 :root.futaba .entry {
-  border-bottom: 1px solid #D9BFB7;
   font-size: 12pt;
 }
 :root.futaba .focused.entry {
