@@ -150,7 +150,6 @@ div.center:not(.ad-cnt) {
   border-width: 0;
   transition: all .1s .05s ease-in-out;
   box-shadow: -5px 1px 10px rgba(0, 0, 0, 0.20);
-  opacity: 0.98;
 }
 #custom-board-list .current {
   padding: 1px 1px 4px 1px;

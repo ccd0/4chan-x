@@ -8,6 +8,9 @@
 }
 
 /* Header */
+:root.photon #header-bar.dialog {
+  background-color: rgba(221,221,221,0.98);
+}
 :root.photon #header-bar, :root.photon #notifications {
   font-size: 9pt;
   color: #333;

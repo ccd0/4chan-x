@@ -8,6 +8,9 @@
 }
 
 /* Header */
+:root.yotsuba #header-bar.dialog {
+  background-color: rgba(240,224,214,0.98);
+}
 :root.yotsuba #header-bar, :root.yotsuba #notifications {
   font-size: 9pt;
   color: #B86;

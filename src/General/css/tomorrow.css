@@ -5,6 +5,9 @@
 }
 
 /* Header */
+:root.tomorrow #header-bar.dialog {
+  background-color: rgba(40,42,46,0.9);
+}
 :root.tomorrow #header-bar, :root.tomorrow #notifications {
   font-size: 9pt;
   color: #C5C8C6;
