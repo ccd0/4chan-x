@@ -884,6 +884,10 @@ input.field.tripped:not(:hover):not(:focus) {
 :root.webkit #qr [type='submit'] {
   height: 24px;
 }
+#qr label input[type="checkbox"] {
+  position: relative;
+  top: 2px;
+}
 /* Fake File Input */
 input#qr-filename {
   border: none !important;
@@ -1094,6 +1098,19 @@ a:only-of-type > .remove {
 .op .menu-button,
 #thread-watcher .menu-button {
   margin-left: -5px !important;
+  position: relative;
+}
+.op .menu-button,
+#thread-watcher .menu-button {
+  top: 1px;
+}
+:root.blink .reply .menu-button {
+  position: relative;
+  top: 2px;
+}
+:root.blink .op .menu-button,
+:root.blink #thread-watcher .menu-button {
+  top: 3px;
 }
 .menu-button + .container:not(:empty) {
   margin-left: -5px !important;
