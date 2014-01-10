@@ -28,7 +28,7 @@ Unread =
     $.off d, 'scroll visibilitychange', @read
     $.off d, 'visibilitychange',        @setLine if Conf['Unread Line']
 
-    Thread.callbacks.rm 'Unread'
+    Thread.callbacks.disconnect 'Unread'
 
   node: ->
     Unread.thread = @

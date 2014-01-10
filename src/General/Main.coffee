@@ -146,8 +146,6 @@ Main =
     catch err
       new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to operate properly.', 30
 
-    $.on window, 'popstate', Main.popstate
-
   initThread: ->
     return unless threadRoot = $ '.thread'
     thread = new Thread +threadRoot.id[1..], g.BOARD
@@ -321,123 +319,7 @@ Main =
     ['Keybinds',                  Keybinds]
     ['Show Dice Roll',            Dice]
     ['Banner',                    Banner]
+    ['Navigate',                  Navigate]
   ]
-
-  clean: ->
-    {posts, threads} = g
-    
-    # Garbage collection
-    g.posts         = {}
-    g.threads       = {}
-    g.BOARD.posts   = {}
-    g.BOARD.threads = {}
-
-    # Delete nodes
-    $.rmAll $ '.board'
-
-  disconnect: ->
-    if g.VIEW is 'thread'
-      features = [
-        ['Thread Updater',  ThreadUpdater]
-        ['Unread Count',    Unread]
-        ['Quote Threading', QuoteThreading]
-        ['Thread Stats',    ThreadStats]
-      ]
-
-    for [name, feature] in features
-      try
-        feature.disconnect.call feature
-      catch err
-        errors = [] unless errors
-        errors.push
-          message: "Failed to disconnect feature #{name}."
-          error:   err
-
-      Main.handleErrors errors if errors
-    
-    return
-
-  updateContext: (view) ->
-    $.rmClass doc, g.VIEW
-    $.addClass doc, view
-    g.VIEW = view
-
-  navigate: (e) ->
-    return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org'
-
-    path = @pathname.split '/'
-    path.shift() if path[0] is ''
-    [boardID, view, threadID] = path
-
-    return if view is 'catalog' or 'f' in [boardID, g.BOARD.ID]
-
-    e.preventDefault() if e
-    history.pushState null, '', @pathname unless @id is 'popState'
-
-    view = if threadID
-      'thread'
-    else
-      view or 'index' # path is "/boardID/". See the problem?
-
-    if view isnt g.VIEW
-      Main.disconnect()
-      Main.clean()
-      Main.updateContext view
-
-    if view is 'index'
-      Main.updateBoard boardID unless boardID is g.BOARD.ID
-      Index.update()
-
-    # Moving from index to thread or thread to thread
-    else
-      c.error 'How?'
-      Main.refresh {boardID, view, threadID}
-
-    Header.setBoardList()
-
-  popstate: -> <% if (type === 'crx') { %> Main.popstate = -> <% } %> # blink/webkit throw a popstate on page load. Not what we want.
-    a = $.el 'a',
-      href: window.location
-      id:   'popState'
-
-    Main.navigate.call a
-
-  updateBoard: (boardID) ->
-    g.BOARD = new Board boardID
-
-    req = null
-
-    onload = (e) ->
-      if e.type is 'abort'
-        req.onloadend = null
-        return
-
-      return unless req.status is 200
-
-      try
-        for board in JSON.parse(req.response).boards
-          return Main.updateTitle board if board.board is boardID
-
-      catch err
-        Main.handleErrors [
-          message: "Index Failure."
-          error: err
-        ]
-
-    req = $.ajax '//a.4cdn.org/boards.json',
-      onabort:   onload
-      onloadend: onload
-
-  updateTitle: (board) ->
-    $.rm subtitle if subtitle = $ '.boardSubtitle'
-    $('.boardTitle').innerHTML = d.title = "/#{board.board}/ - #{board.title}"
-
-  refresh: (context) ->
-    return
-    {boardID, view, threadID} = context
-
-    # Refresh features
-    feature.refresh() for [name, feature] in Main.features when feature.refresh
-    return
 
 Main.init()

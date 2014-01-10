@@ -92,7 +92,7 @@ ThreadUpdater =
 
     delete @[name] for name in ['checkPostCount', 'timer', 'status', 'isUpdating', 'entry', 'dialog', 'thread', 'root', 'lastPost', 'outdateCount', 'online', 'seconds', 'timeoutID']
 
-    Thread.callbacks.rm 'Thread Updater'
+    Thread.callbacks.disconnect 'Thread Updater'
 
   node: ->
     ThreadUpdater.thread       = @

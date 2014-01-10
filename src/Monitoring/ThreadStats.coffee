@@ -50,7 +50,7 @@ ThreadStats =
     delete @fileCountEl
     delete @pageCountEl
 
-    Thread.callbacks.rm 'Thread Stats'
+    Thread.callbacks.disconnect 'Thread Stats'
     $.off d, 'ThreadUpdate', ThreadStats.onUpdate
 
   onUpdate: (e) ->

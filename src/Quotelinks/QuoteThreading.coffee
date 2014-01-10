@@ -34,7 +34,7 @@ QuoteThreading =
     delete @controls
     delete @entry
     
-    Post.callbacks.rm 'Quote Threading'
+    Post.callbacks.disconnect 'Quote Threading'
 
   setup: ->
     $.off d, '4chanXInitFinished', QuoteThreading.setup

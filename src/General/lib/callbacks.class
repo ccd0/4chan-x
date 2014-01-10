@@ -3,24 +3,21 @@ class Callbacks
     @keys = []
 
   push: ({name, cb}) ->
-    @rm name if @[name]
-
+    @[name].connect() if @[name]
+    @keys.push name unless @[name]
     @[name] = cb
-    @keys.push name
 
   clean: ->
     @rm name for name in @keys
     return
 
-  rm: (name) ->
-    return unless @[name]
-    delete @[name]
-    @keys.splice @keys.indexOf(name), 1 # Didn't I make this structure to avoid this? ;__;
+  connect:    (name) -> delete @[name].disconnected if @[name]
+  disconnect: (name) -> @[name].disconnected = true if @[name]
 
   execute: (node) ->
     for name in @keys
       try
-        @[name].call node
+        @[name].call node unless @[name].disconnected
       catch err
         errors = [] unless errors
         errors.push
