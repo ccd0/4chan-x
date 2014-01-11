@@ -3013,11 +3013,11 @@
     threadExcerpt: function(thread) {
       var OP, excerpt, _ref;
       OP = thread.OP;
-      excerpt = ((_ref = OP.info.subject) != null ? _ref.trim() : void 0) || OP.info.comment.replace(/\n+/g, ' // ') || Conf['Anonymize'] && 'Anonymous' || $('.nameBlock', OP.nodes.info).textContent.trim();
-      if (excerpt.length > 70) {
-        excerpt = "" + excerpt.slice(0, 67) + "...";
+      excerpt = ("/" + thread.board + "/ - ") + (((_ref = OP.info.subject) != null ? _ref.trim() : void 0) || OP.info.comment.replace(/\n+/g, ' // ') || Conf['Anonymize'] && 'Anonymous' || $('.nameBlock', OP.nodes.info).textContent.trim());
+      if (excerpt.length > 73) {
+        return "" + excerpt.slice(0, 70) + "...";
       }
-      return "/" + thread.board + "/ - " + excerpt;
+      return excerpt;
     },
     threadFromRoot: function(root) {
       return g.threads["" + g.BOARD + "." + root.id.slice(1)];
