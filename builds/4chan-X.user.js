@@ -2249,6 +2249,7 @@
       this.searchInput = $('#index-search', this.navLinks);
       this.currentPage = this.getCurrentPage();
       $.on(window, 'popstate', this.cb.popstate);
+      $.on(d, 'scroll', Index.scroll);
       $.on(this.pagelist, 'click', this.cb.pageNav);
       $.on(this.searchInput, 'input', this.onSearchInput);
       $.on($('#index-search-clear', this.navLinks), 'click', this.clearSearch);
@@ -2273,6 +2274,39 @@
         });
       });
     },
+    scroll: $.debounce(100, function() {
+      var nodes, nodesPerPage, pageNum;
+      if (Conf['Index Mode'] !== 'paged' || ((d.body.scrollTop || doc.scrollTop) <= doc.scrollHeight - (300 + window.innerHeight))) {
+        return;
+      }
+      pageNum = Index.getCurrentPage() + 1;
+      if (pageNum >= Index.pagesNum) {
+        return Index.endNotice();
+      }
+      nodesPerPage = Index.threadsNumPerPage * 2;
+      history.pushState(null, '', "/" + g.BOARD + "/" + pageNum);
+      nodes = Index.sortedNodes.slice(nodesPerPage * pageNum, nodesPerPage * (pageNum + 1));
+      if (Conf['Show Replies']) {
+        Index.buildReplies(nodes);
+      }
+      $.add(Index.root, nodes);
+      return Index.setPage();
+    }),
+    endNotice: (function() {
+      var notify, reset;
+      notify = false;
+      reset = function() {
+        return notify = false;
+      };
+      return function() {
+        if (notify) {
+          return;
+        }
+        notify = true;
+        new Notice('info', "Last page reached.", 2);
+        return setTimeout(reset, 3 * $.SECOND);
+      };
+    })(),
     cb: {
       mode: function() {
         Index.togglePagelist();
