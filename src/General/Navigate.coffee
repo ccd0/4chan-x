@@ -281,7 +281,7 @@ Navigate =
   buildThread: ->
     board = $ '.board'
     $.rmAll board
-    $.add board, Navigate.threadRoot
+    $.add board, [Navigate.threadRoot, $.el 'hr']
 
     if Conf['Unread Count']
       Navigate.ready 'Unread Count', Unread.ready, not Conf['Quote Threading']

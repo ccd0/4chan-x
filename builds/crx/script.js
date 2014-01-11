@@ -835,7 +835,7 @@
     };
 
     Callbacks.prototype.connect = function(name) {
-      if (this[name]) {
+      if (this[name].disconnected) {
         return delete this[name].disconnected;
       }
     };
@@ -12217,7 +12217,7 @@
       var board;
       board = $('.board');
       $.rmAll(board);
-      $.add(board, Navigate.threadRoot);
+      $.add(board, [Navigate.threadRoot, $.el('hr')]);
       if (Conf['Unread Count']) {
         Navigate.ready('Unread Count', Unread.ready, !Conf['Quote Threading']);
         Unread.read();

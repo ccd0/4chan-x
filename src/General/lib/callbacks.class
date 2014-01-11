@@ -7,7 +7,7 @@ class Callbacks
     @keys.push name unless @[name]
     @[name] = cb
 
-  connect:    (name) -> delete @[name].disconnected if @[name]
+  connect:    (name) -> delete @[name].disconnected if @[name].disconnected
   disconnect: (name) -> @[name].disconnected = true if @[name]
 
   execute: (node) ->
