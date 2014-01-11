@@ -12173,14 +12173,15 @@
       }
     },
     popstate: function() {
-      return Navigate.popstate = function() {
+      $.off(window, 'popstate', Navigate.popstate);
+      return $.on(window, 'popstate', Navigate.popstate = function() {
         var a;
         a = $.el('a', {
           href: window.location,
           id: 'popState'
         });
         return Navigate.navigate.call(a);
-      };
+      });
     },
     refresh: function(context) {
       var boardID, feature, name, threadID, view, _i, _len, _ref, _ref1;

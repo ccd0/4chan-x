@@ -290,12 +290,16 @@ Navigate =
       Unread.read()
       Unread.update()
 
-  popstate: -> <% if (type === 'crx') { %> Navigate.popstate = -> <% } %> # blink/webkit throw a popstate on page load. Not what we want.
-    a = $.el 'a',
-      href: window.location
-      id:   'popState'
+  popstate: -> <% if (type === 'crx') { %>
+    $.off window, 'popstate', Navigate.popstate
+    $.on  window, 'popstate', Navigate.popstate = ->
+<% } %> # blink/webkit throw a popstate on page load. Not what we want.
 
-    Navigate.navigate.call a
+      a = $.el 'a',
+        href: window.location
+        id:   'popState'
+
+      Navigate.navigate.call a
 
   refresh: (context) ->
     return
