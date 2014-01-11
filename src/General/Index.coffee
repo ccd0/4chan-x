@@ -78,6 +78,7 @@ Index =
     @searchInput = $ '#index-search', @navLinks
     @currentPage = @getCurrentPage()
 
+    $.on d, 'scroll', Index.scroll
     $.on @pagelist, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
@@ -105,6 +106,26 @@ Index =
         $.replace pagelist, Index.pagelist
       else
         $.after $.id('delform'), Index.pagelist
+
+  scroll: $.debounce 100, ->
+    return if Conf['Index Mode'] isnt 'paged' or ((d.body.scrollTop or doc.scrollTop) <= doc.scrollHeight - (300 + window.innerHeight))
+    pageNum = Index.getCurrentPage() + 1
+    return Index.endNotice() if pageNum >= Index.pagesNum
+    nodesPerPage = Index.threadsNumPerPage * 2
+    history.pushState null, '', "/#{g.BOARD}/#{pageNum}"
+    nodes = Index.sortedNodes[nodesPerPage * pageNum ... nodesPerPage * (pageNum + 1)]
+    Index.buildReplies nodes if Conf['Show Replies']
+    $.add Index.root, nodes
+    Index.setPage()
+    
+  endNotice: do ->
+    notify = false
+    reset = -> notify = false
+    return ->
+      return if notify
+      notify = true
+      new Notice 'info', "Last page reached.", 2
+      setTimeout reset, 3 * $.SECOND
 
   cb:
     mode: ->
