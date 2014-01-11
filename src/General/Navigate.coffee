@@ -12,13 +12,13 @@ Navigate =
       cb:   @post
 
   thread: ->
-    return if g.VIEW is 'thread' # The reply link only exist in index view
+    return if g.VIEW is 'thread' # The reply link only exists in index view
     replyLink = $ 'a.replylink', @OP.nodes.info
     $.on replyLink, 'click', Navigate.navigate
 
   post: ->
     # We don't need to reload the thread inside the thread
-    return if g.VIEW is 'thread' and not @isClone
+    return if g.VIEW is 'thread' and @thread.ID is g.THREADID
     postLink = $ 'a[title="Highlight this post"]', @nodes.info
     $.on postLink, 'click', Navigate.navigate
 

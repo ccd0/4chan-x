@@ -11838,7 +11838,7 @@
     },
     post: function() {
       var postLink;
-      if (g.VIEW === 'thread' && !this.isClone) {
+      if (g.VIEW === 'thread' && this.thread.ID === g.THREADID) {
         return;
       }
       postLink = $('a[title="Highlight this post"]', this.nodes.info);
