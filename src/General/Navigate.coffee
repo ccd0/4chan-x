@@ -294,7 +294,7 @@ Navigate =
     $.add board, Navigate.threadRoot
 
     if Conf['Unread Count']
-      Navigate.ready 'Unread Count', Unread.ready, Conf['Unread Count']
+      Navigate.ready 'Unread Count', Unread.ready, not Conf['Quote Threading']
       Unread.read()
       Unread.update()
 

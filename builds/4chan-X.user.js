@@ -12207,7 +12207,7 @@
       $.rmAll(board);
       $.add(board, Navigate.threadRoot);
       if (Conf['Unread Count']) {
-        Navigate.ready('Unread Count', Unread.ready, Conf['Unread Count']);
+        Navigate.ready('Unread Count', Unread.ready, !Conf['Quote Threading']);
         Unread.read();
         return Unread.update();
       }
