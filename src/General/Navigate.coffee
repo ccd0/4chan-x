@@ -274,7 +274,6 @@ Navigate =
     Navigate.ready()
 
     Navigate.buildThread()
-    Header.scrollToIfNeeded $ '.board'
 
   buildThread: ->
     board = $ '.board'

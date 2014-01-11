@@ -12120,8 +12120,7 @@
       Main.callbackNodes(Thread, [thread]);
       Main.callbackNodes(Post, posts);
       Navigate.ready();
-      Navigate.buildThread();
-      return Header.scrollToIfNeeded($('.board'));
+      return Navigate.buildThread();
     },
     buildThread: function() {
       var board;
