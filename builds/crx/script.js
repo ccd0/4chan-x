@@ -11864,7 +11864,11 @@
       if (g.VIEW === 'catalog' || g.BOARD.ID === 'f') {
         return;
       }
-      $.on(window, 'popstate', Navigate.popstate);
+      ({
+        ready: function() {
+          return $.on(window, 'popstate', Navigate.popstate);
+        }
+      });
       Thread.callbacks.push({
         name: 'Navigate',
         cb: this.thread
@@ -12194,15 +12198,12 @@
       }
     },
     popstate: function() {
-      $.off(window, 'popstate', Navigate.popstate);
-      return $.on(window, 'popstate', Navigate.popstate = function() {
-        var a;
-        a = $.el('a', {
-          href: window.location,
-          id: 'popState'
-        });
-        return Navigate.navigate.call(a);
+      var a;
+      a = $.el('a', {
+        href: window.location,
+        id: 'popState'
       });
+      return Navigate.navigate.call(a);
     }
   };
 

@@ -1,7 +1,10 @@
 Navigate =
   init: ->
     return if g.VIEW is 'catalog' or g.BOARD.ID is 'f'
-    $.on window, 'popstate', Navigate.popstate
+    
+    # blink/webkit throw a popstate on page load. Not what we want.
+    ready: ->
+      $.on window, 'popstate', Navigate.popstate
 
     Thread.callbacks.push
       name: 'Navigate'
@@ -295,13 +298,9 @@ Navigate =
       Unread.read()
       Unread.update()
 
-  popstate: -> <% if (type === 'crx') { %>
-    $.off window, 'popstate', Navigate.popstate
-    $.on  window, 'popstate', Navigate.popstate = ->
-<% } %> # blink/webkit throw a popstate on page load. Not what we want.
+  popstate: -> 
+    a = $.el 'a',
+      href: window.location
+      id:   'popState'
 
-      a = $.el 'a',
-        href: window.location
-        id:   'popState'
-
-      Navigate.navigate.call a
+    Navigate.navigate.call a
