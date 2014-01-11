@@ -9998,7 +9998,7 @@
           o[type][boardID] = archive.data;
         }
       }
-      _ref3 = Redirect(archives);
+      _ref3 = Redirect.archives;
       for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
         _ref4 = _ref3[_j], data = _ref4.data, boards = _ref4.boards, files = _ref4.files;
         software = data.software;

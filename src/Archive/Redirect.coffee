@@ -16,7 +16,7 @@ Redirect =
         continue unless boardID in boards
         o[type][boardID] = archive.data
 
-    for {data, boards, files} in Redirect archives
+    for {data, boards, files} in Redirect.archives
       {software} = data
       for boardID in boards
         o.thread[boardID] = data unless boardID of o.thread
