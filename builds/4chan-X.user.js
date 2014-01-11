@@ -2501,7 +2501,7 @@
       }
       now = Date.now();
       $.ready(function() {
-        return setTimeout((function() {
+        return Index.nTimeout = setTimeout((function() {
           if (Index.req && !Index.notice) {
             return Index.notice = new Notice('info', 'Refreshing index...', 2);
           }
@@ -2522,9 +2522,13 @@
       return $.addClass(Index.button, 'fa-spin');
     },
     load: function(e, pageNum) {
-      var err, notice, req, timeEl;
+      var err, nTimeout, notice, req, timeEl;
       $.rmClass(Index.button, 'fa-spin');
-      req = Index.req, notice = Index.notice;
+      req = Index.req, notice = Index.notice, nTimeout = Index.nTimeout;
+      if (nTimeout) {
+        clearTimeout(nTimeout);
+      }
+      delete Index.nTimeout;
       delete Index.req;
       delete Index.notice;
       if (e.type === 'abort') {

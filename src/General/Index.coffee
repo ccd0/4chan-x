@@ -236,7 +236,7 @@ Index =
     # This notice only displays if Index Refresh is taking too long
     now = Date.now()
     $.ready ->
-      setTimeout (->
+      Index.nTimeout = setTimeout (->
         if Index.req and !Index.notice
           Index.notice = new Notice 'info', 'Refreshing index...', 2
       ), 3 * $.SECOND - (Date.now() - now)
@@ -252,7 +252,9 @@ Index =
 
   load: (e, pageNum) ->
     $.rmClass Index.button, 'fa-spin'
-    {req, notice} = Index
+    {req, notice, nTimeout} = Index
+    clearTimeout nTimeout if nTimeout
+    delete Index.nTimeout
     delete Index.req
     delete Index.notice
 
