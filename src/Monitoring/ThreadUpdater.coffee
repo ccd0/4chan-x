@@ -59,6 +59,7 @@ ThreadUpdater =
       cb:   @node
   
   disconnect: ->
+    return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
     $.off @timer,  'click', @update
     $.off @status, 'click', @update
     

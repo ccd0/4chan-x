@@ -37,7 +37,7 @@ Navigate =
     # Delete nodes
     $.rmAll $ '.board'
 
-  threadFeatures: [
+  features: [
     ['Thread Excerpt',   ThreadExcerpt]
     ['Unread Count',     Unread]
     ['Quote Threading',  QuoteThreading]
@@ -47,12 +47,7 @@ Navigate =
   ]
 
   disconnect: ->
-    features = if g.VIEW is 'thread'
-      Navigate.threadFeatures
-    else
-      []
-
-    for [name, feature] in features
+    for [name, feature] in Navigate.features
       try
         feature.disconnect()
       catch err
@@ -66,12 +61,7 @@ Navigate =
     return
 
   reconnect: ->
-    features = if g.VIEW is 'thread'
-      Navigate.threadFeatures
-    else
-      []
-
-    for [name, feature] in features
+    for [name, feature] in Navigate.features
       try
         feature.init()
       catch err

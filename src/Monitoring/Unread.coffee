@@ -13,7 +13,7 @@ Unread =
       cb:   @node
 
   disconnect: ->
-    return unless Unread.db
+    return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Favicon'] and !Conf['Desktop Notifications']
 
     Unread.db.disconnect()
     $.rm hr if {hr} = Unread

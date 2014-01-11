@@ -10,6 +10,7 @@ ExpandThread =
     $.on a, 'click', ExpandThread.cbToggle
   
   disconnect: (refresh) ->
+    return if g.VIEW is 'thread' or !Conf['Thread Expansion']
     for threadID, status of ExpandThread.statuses
       status.req?.abort()
       delete ExpandThread.statuses[threadID]

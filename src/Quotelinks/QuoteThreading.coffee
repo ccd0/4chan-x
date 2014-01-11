@@ -25,6 +25,7 @@ QuoteThreading =
       cb:   @node
 
   disconnect: ->
+    return unless Conf['Quote Threading'] and g.VIEW is 'thread'
     input = $ 'input', @controls
     $.off input, 'change', @toggle
 

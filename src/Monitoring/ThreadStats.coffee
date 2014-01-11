@@ -35,7 +35,7 @@ ThreadStats =
     $.on d, 'ThreadUpdate', ThreadStats.onUpdate
 
   disconnect: ->
-    return unless Conf['Thread Stats']
+    return if g.VIEW isnt 'thread' or !Conf['Thread Stats']
 
     if Conf['Updater and Stats in Header']
       Header.rmShortcut @dialog

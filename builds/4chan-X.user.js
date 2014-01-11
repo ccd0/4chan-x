@@ -5095,6 +5095,9 @@
     },
     disconnect: function() {
       var input;
+      if (!(Conf['Quote Threading'] && g.VIEW === 'thread')) {
+        return;
+      }
       input = $('input', this.controls);
       $.off(input, 'change', this.toggle);
       $.event('rmMenuEntry', this.entry);
@@ -8681,6 +8684,9 @@
       return d.title = Get.threadExcerpt(this);
     },
     disconnect: function() {
+      if (g.VIEW !== 'thread' || !Conf['Thread Excerpt']) {
+        return;
+      }
       return Thread.callbacks.disconnect('Thread Excerpt');
     }
   };
@@ -8733,7 +8739,7 @@
       return $.on(d, 'ThreadUpdate', ThreadStats.onUpdate);
     },
     disconnect: function() {
-      if (!Conf['Thread Stats']) {
+      if (g.VIEW !== 'thread' || !Conf['Thread Stats']) {
         return;
       }
       if (Conf['Updater and Stats in Header']) {
@@ -8876,6 +8882,9 @@
     },
     disconnect: function() {
       var el, entry, input, name, _i, _j, _len, _len1, _ref, _ref1;
+      if (g.VIEW !== 'thread' || !Conf['Thread Updater']) {
+        return;
+      }
       $.off(this.timer, 'click', this.update);
       $.off(this.status, 'click', this.update);
       if (this.timeoutID) {
@@ -9719,7 +9728,7 @@
     },
     disconnect: function() {
       var hr, name, _i, _len, _ref;
-      if (!Unread.db) {
+      if (g.VIEW !== 'thread' || !Conf['Unread Count'] && !Conf['Unread Favicon'] && !Conf['Desktop Notifications']) {
         return;
       }
       Unread.db.disconnect();
@@ -10680,6 +10689,9 @@
     },
     disconnect: function(refresh) {
       var status, threadID, _ref, _ref1;
+      if (g.VIEW === 'thread' || !Conf['Thread Expansion']) {
+        return;
+      }
       _ref = ExpandThread.statuses;
       for (threadID in _ref) {
         status = _ref[threadID];
@@ -11918,12 +11930,12 @@
       g.BOARD.threads = {};
       return $.rmAll($('.board'));
     },
-    threadFeatures: [['Thread Excerpt', ThreadExcerpt], ['Unread Count', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Expansion', ExpandThread]],
+    features: [['Thread Excerpt', ThreadExcerpt], ['Unread Count', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Expansion', ExpandThread]],
     disconnect: function() {
-      var err, errors, feature, features, name, _i, _len, _ref;
-      features = g.VIEW === 'thread' ? Navigate.threadFeatures : [];
-      for (_i = 0, _len = features.length; _i < _len; _i++) {
-        _ref = features[_i], name = _ref[0], feature = _ref[1];
+      var err, errors, feature, name, _i, _len, _ref, _ref1;
+      _ref = Navigate.features;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        _ref1 = _ref[_i], name = _ref1[0], feature = _ref1[1];
         try {
           feature.disconnect();
         } catch (_error) {
@@ -11942,10 +11954,10 @@
       }
     },
     reconnect: function() {
-      var err, errors, feature, features, name, _i, _len, _ref;
-      features = g.VIEW === 'thread' ? Navigate.threadFeatures : [];
-      for (_i = 0, _len = features.length; _i < _len; _i++) {
-        _ref = features[_i], name = _ref[0], feature = _ref[1];
+      var err, errors, feature, name, _i, _len, _ref, _ref1;
+      _ref = Navigate.features;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        _ref1 = _ref[_i], name = _ref1[0], feature = _ref1[1];
         try {
           feature.init();
         } catch (_error) {
