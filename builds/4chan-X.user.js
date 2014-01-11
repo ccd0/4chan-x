@@ -13108,11 +13108,11 @@
       cbs = klass.callbacks;
       fn = function() {
         var node;
-        if (!(node = nodes[i++])) {
+        if (!(node = nodes[i])) {
           return false;
         }
         cbs.execute(node);
-        return i % 25;
+        return ++i % 25;
       };
       softTask = function() {
         while (fn()) {

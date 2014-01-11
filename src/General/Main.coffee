@@ -182,9 +182,9 @@ Main =
 
     cbs = klass.callbacks
     fn = ->
-      return false unless node = nodes[i++]
+      return false unless node = nodes[i]
       cbs.execute node
-      i % 25
+      ++i % 25
 
     softTask = ->
       while fn()
