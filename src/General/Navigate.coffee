@@ -94,12 +94,10 @@ Navigate =
     switch view
       when 'index'
         delete g.THREADID
-        QR.link.textContent = 'Start a Thread'
         $.off d, 'ThreadUpdate', QR.statusCheck
         $.on  d, 'IndexRefresh', QR.generatePostableThreadsList
       when 'thread'
         g.THREADID = +window.location.pathname.split('/')[3]
-        QR.link.textContent = 'Reply to Thread'
         $.on  d, 'ThreadUpdate', QR.statusCheck
         $.off d, 'IndexRefresh', QR.generatePostableThreadsList
 

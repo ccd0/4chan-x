@@ -119,24 +119,6 @@ Main =
         location.replace href or "/#{g.BOARD}/"
       return
 
-    if g.VIEW is 'thread' and threadRoot = $ '.thread'
-      thread = new Thread +threadRoot.id[1..], g.BOARD
-      posts  = []
-      for postRoot in $$ '.thread > .postContainer', threadRoot
-        try
-          posts.push post = new Post postRoot, thread, g.BOARD, {isOriginalMarkup: true}
-        catch err
-          # Skip posts that we failed to parse.
-          errors = [] unless errors
-          errors.push
-            message: "Parsing of Post No.#{postRoot.id.match /\d+/} failed. Post will be skipped."
-            error: err
-      Main.handleErrors errors if errors
-
-      Main.callbackNodes Thread, [thread]
-      Main.callbackNodesDB Post, posts, ->
-        $.event '4chanXInitFinished'
-
     if styleSelector = $.id 'styleSelector'
       passLink = $.el 'a',
         textContent: '4chan Pass'

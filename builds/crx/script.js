@@ -15748,12 +15748,10 @@
       switch (view) {
         case 'index':
           delete g.THREADID;
-          QR.link.textContent = 'Start a Thread';
           $.off(d, 'ThreadUpdate', QR.statusCheck);
           return $.on(d, 'IndexRefresh', QR.generatePostableThreadsList);
         case 'thread':
           g.THREADID = +window.location.pathname.split('/')[3];
-          QR.link.textContent = 'Reply to Thread';
           $.on(d, 'ThreadUpdate', QR.statusCheck);
           return $.off(d, 'IndexRefresh', QR.generatePostableThreadsList);
       }
@@ -17233,7 +17231,7 @@
       return $.ready(Main.initReady);
     },
     initReady: function() {
-      var err, errors, href, passLink, post, postRoot, posts, styleSelector, thread, threadRoot, _i, _len, _ref, _ref1;
+      var err, href, passLink, styleSelector, _ref;
       if ((_ref = d.title) === '4chan - Temporarily Offline' || _ref === '4chan - 404 Not Found') {
         if (Conf['404 Redirect'] && g.VIEW === 'thread') {
           href = Redirect.to('thread', {
@@ -17244,35 +17242,6 @@
           location.replace(href || ("/" + g.BOARD + "/"));
         }
         return;
-      }
-      if (g.VIEW === 'thread' && (threadRoot = $('.thread'))) {
-        thread = new Thread(+threadRoot.id.slice(1), g.BOARD);
-        posts = [];
-        _ref1 = $$('.thread > .postContainer', threadRoot);
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          postRoot = _ref1[_i];
-          try {
-            posts.push(post = new Post(postRoot, thread, g.BOARD, {
-              isOriginalMarkup: true
-            }));
-          } catch (_error) {
-            err = _error;
-            if (!errors) {
-              errors = [];
-            }
-            errors.push({
-              message: "Parsing of Post No." + (postRoot.id.match(/\d+/)) + " failed. Post will be skipped.",
-              error: err
-            });
-          }
-        }
-        if (errors) {
-          Main.handleErrors(errors);
-        }
-        Main.callbackNodes(Thread, [thread]);
-        Main.callbackNodesDB(Post, posts, function() {
-          return $.event('4chanXInitFinished');
-        });
       }
       if (styleSelector = $.id('styleSelector')) {
         passLink = $.el('a', {
