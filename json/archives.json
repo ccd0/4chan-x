@@ -44,6 +44,15 @@
   "boards": ["c", "w", "wg"],
   "files": ["c", "w", "wg"]
 }, {
+  "uid": 5,
+  "name": "Love is Over",
+  "domain": "loveisover.me",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["d", "i"],
+  "files": ["d", "i"]
+}, {
   "uid": 7,
   "name": "Install Gentoo",
   "domain": "archive.installgentoo.net",
