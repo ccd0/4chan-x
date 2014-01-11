@@ -13078,8 +13078,7 @@
       }
     },
     callbackNodesDB: function(klass, nodes, cb) {
-      var cbs, errors, fn, i, softTask;
-      errors = null;
+      var cbs, fn, i, softTask;
       i = 0;
       cbs = klass.callbacks;
       fn = function() {

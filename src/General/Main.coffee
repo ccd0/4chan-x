@@ -176,11 +176,9 @@ Main =
     return
 
   callbackNodesDB: (klass, nodes, cb) ->
-    errors = null
-    i      = 0
-
+    i   = 0
     cbs = klass.callbacks
-    fn = ->
+    fn  = ->
       return false unless node = nodes[i]
       cbs.execute node
       ++i % 25
