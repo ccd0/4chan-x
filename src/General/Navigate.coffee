@@ -185,10 +185,11 @@ Navigate =
     e.preventDefault() if e
     history.pushState null, '', @pathname unless @id is 'popState'
 
-    view = if threadID
-      'thread'
+    if threadID
+      view = 'thread'
     else
-      view or 'index' # path is "/boardID/". See the problem?
+      pageNum = view
+      view = 'index' # path is "/boardID/". See the problem?
 
     if view isnt g.VIEW
       Navigate.disconnect()
@@ -201,7 +202,11 @@ Navigate =
         d.title = $('.boardTitle').textContent
       else
         Navigate.updateBoard boardID
-      Index.update()
+
+      if Conf['Index Mode'] is 'paged' and pageNum
+        Index.update pageNum
+      else
+        Index.update()
 
     # Moving from index to thread or thread to thread
     else

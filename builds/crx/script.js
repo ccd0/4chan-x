@@ -12037,7 +12037,7 @@
       return $('.boardTitle').textContent = d.title = "/" + board + "/ - " + title;
     },
     navigate: function(e) {
-      var boardID, hash, onload, path, threadID, view;
+      var boardID, hash, onload, pageNum, path, threadID, view;
       if (this.hostname !== 'boards.4chan.org' || window.location.hostname === 'rs.4chan.org' || (e && (e.shiftKey || (e.type === 'click' && e.button !== 0)))) {
         return;
       }
@@ -12057,7 +12057,12 @@
       if (this.id !== 'popState') {
         history.pushState(null, '', this.pathname);
       }
-      view = threadID ? 'thread' : view || 'index';
+      if (threadID) {
+        view = 'thread';
+      } else {
+        pageNum = view;
+        view = 'index';
+      }
       if (view !== g.VIEW) {
         Navigate.disconnect();
         Navigate.clean();
@@ -12070,7 +12075,11 @@
         } else {
           Navigate.updateBoard(boardID);
         }
-        return Index.update();
+        if (Conf['Index Mode'] === 'paged' && pageNum) {
+          return Index.update(pageNum);
+        } else {
+          return Index.update();
+        }
       } else {
         onload = function(e) {
           return Navigate.load(e, hash);
