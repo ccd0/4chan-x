@@ -2522,7 +2522,7 @@
       return $.addClass(Index.button, 'fa-spin');
     },
     load: function(e, pageNum) {
-      var err, nTimeout, notice, req, timeEl;
+      var err, nTimeout, notice, req, timeEl, _ref;
       $.rmClass(Index.button, 'fa-spin');
       req = Index.req, notice = Index.notice, nTimeout = Index.nTimeout;
       if (nTimeout) {
@@ -2534,6 +2534,17 @@
       if (e.type === 'abort') {
         req.onloadend = null;
         notice.close();
+        return;
+      }
+      if ((_ref = req.status) !== 200 && _ref !== 304) {
+        err = "Index refresh failed. Error " + req.statusText + " (" + req.status + ")";
+        if (notice) {
+          notice.setType('warning');
+          notice.el.lastElementChild.textContent = err;
+          setTimeout(notice.close, $.SECOND);
+        } else {
+          new Notice('warning', err, 1);
+        }
         return;
       }
       try {
@@ -2548,9 +2559,9 @@
         if (notice) {
           notice.setType('error');
           notice.el.lastElementChild.textContent = 'Index refresh failed.';
-          setTimeout(notice.close, 2 * $.SECOND);
+          setTimeout(notice.close, $.SECOND);
         } else {
-          new Notice('error', 'Index refresh failed.', 2);
+          new Notice('error', 'Index refresh failed.', 1);
         }
         return;
       }
@@ -10074,8 +10085,8 @@
         }
       }, {
         name: "4plebs",
-        boards: ["hr", "pol", "s4s", "tg", "tv", "x"],
-        files: ["hr", "pol", "s4s", "tg", "tv", "x"],
+        boards: ["hr", "o", "pol", "s4s", "tg", "tv", "x"],
+        files: ["hr", "o", "pol", "s4s", "tg", "tv", "x"],
         data: {
           domain: "archive.4plebs.org",
           http: true,

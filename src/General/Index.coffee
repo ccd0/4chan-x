@@ -263,6 +263,16 @@ Index =
       notice.close()
       return
 
+    if req.status not in [200, 304]
+      err = "Index refresh failed. Error #{req.statusText} (#{req.status})"
+      if notice
+        notice.setType 'warning'
+        notice.el.lastElementChild.textContent = err
+        setTimeout notice.close, $.SECOND
+      else
+        new Notice 'warning', err, 1
+      return
+
     try
       if req.status is 200
         Index.parse JSON.parse(req.response), pageNum
@@ -274,9 +284,9 @@ Index =
       if notice
         notice.setType 'error'
         notice.el.lastElementChild.textContent = 'Index refresh failed.'
-        setTimeout notice.close, 2 * $.SECOND
+        setTimeout notice.close, $.SECOND
       else
-        new Notice 'error', 'Index refresh failed.', 2
+        new Notice 'error', 'Index refresh failed.', 1
       return
 
     timeEl = $ '#index-last-refresh', Index.navLinks
