@@ -4,7 +4,7 @@ Index =
 
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'
-      title: 'Refresh Index'
+      title: 'Refresh'
       href: 'javascript:;'
       textContent: 'Refresh Index'
     $.on @button, 'click', @update
@@ -203,6 +203,9 @@ Index =
 
   update: (pageNum) ->
     return unless navigator.onLine
+    if g.VIEW is 'thread'
+      return ThreadUpdater.update() if Conf['Thread Updater']
+      return
     unless d.readyState is 'loading' or Index.root.parentElement
       $.replace $('.board'), Index.root
     Index.req?.abort()

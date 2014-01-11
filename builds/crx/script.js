@@ -2170,7 +2170,7 @@
       }
       this.button = $.el('a', {
         className: 'index-refresh-shortcut fa fa-refresh',
-        title: 'Refresh Index',
+        title: 'Refresh',
         href: 'javascript:;',
         textContent: 'Refresh Index'
       });
@@ -2457,6 +2457,12 @@
     update: function(pageNum) {
       var now, onload, _ref, _ref1;
       if (!navigator.onLine) {
+        return;
+      }
+      if (g.VIEW === 'thread') {
+        if (Conf['Thread Updater']) {
+          return ThreadUpdater.update();
+        }
         return;
       }
       if (!(d.readyState === 'loading' || Index.root.parentElement)) {
