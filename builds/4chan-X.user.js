@@ -4708,7 +4708,7 @@
       });
     },
     firstNode: function() {
-      var a, clone, container, containers, frag, link, post, quote, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+      var a, clone, container, containers, link, nodes, post, quote, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
       if (this.isClone || !this.quotes.length) {
         return;
       }
@@ -4730,17 +4730,17 @@
         }
         for (_k = 0, _len2 = containers.length; _k < _len2; _k++) {
           container = containers[_k];
-          frag = [$.tn(' '), link = a.cloneNode(true)];
+          nodes = [$.tn(' '), link = a.cloneNode(true)];
           if (Conf['Quote Previewing']) {
             $.on(link, 'mouseover', QuotePreview.mouseover);
           }
           if (Conf['Quote Inlining']) {
             $.on(link, 'click', QuoteInline.toggle);
             if (Conf['Quote Hash Navigation']) {
-              frag.push.apply(frag, QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
+              nodes.push(QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
             }
           }
-          $.add(container, frag);
+          $.add(container, nodes);
         }
       }
     },
