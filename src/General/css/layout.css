@@ -176,9 +176,6 @@ th {
   vertical-align: middle;
   display: inline-block;
   margin: 2px 2px 3px;
-  border-top: .5em solid;
-  border-right: .3em solid transparent;
-  border-left: .3em solid transparent;
 }
 .brackets-wrap::before {
   content: " [";

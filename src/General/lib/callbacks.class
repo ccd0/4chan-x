@@ -1,20 +1,23 @@
 class Callbacks
-  push: ({name, cb}) -> @[name] = cb
+  constructor: (@type) ->
+    @keys = []
 
-  clean: -> 
-    @rm name for name of @ when @hasOwnProperty name
-    return
+  push: ({name, cb}) ->
+    @connect name if @[name]
+    @keys.push name unless @[name]
+    @[name] = cb
 
-  rm: (name) -> delete @[name]
+  connect:    (name) -> delete @[name].disconnected if @[name].disconnected
+  disconnect: (name) -> @[name].disconnected = true if @[name]
 
   execute: (node) ->
-    for name of @ when @hasOwnProperty name
+    for name in @keys
       try
-        @[name].call node
+        @[name].call node unless @[name].disconnected
       catch err
         errors = [] unless errors
         errors.push
-          message: ['"', name, '" crashed on node No.', node, ' (', node.board, ').'].join('')
+          message: ['"', name, '" crashed on node ', @type, ' No.', node.ID, ' (', node.board, ').'].join('')
           error: err
 
     Main.handleErrors errors if errors

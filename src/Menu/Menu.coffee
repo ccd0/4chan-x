@@ -20,8 +20,8 @@ Menu =
         frag = $.nodes [
           $.tn(' ')
           $.el 'a',
-            className: 'menu-button brackets-wrap'
-            innerHTML: '<i></i>'
+            className: 'menu-button'
+            innerHTML: '<i class=fa>\uf107</i>'
             href:      'javascript:;'
         ]
       clone = frag.cloneNode true

@@ -1,6 +1,6 @@
 Index =
   init: ->
-    return if g.VIEW isnt 'index' or g.BOARD.ID is 'f'
+    return if g.BOARD.ID is 'f'
 
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa'
@@ -63,11 +63,10 @@ Index =
       type: 'header'
       el: $.el 'span',
         textContent: 'Index Navigation'
-      order: 90
-      subEntries: [modeEntry, sortEntry, repliesEntry, anchorEntry, refNavEntry]
+      order: 98
+      subEntries: [repliesEntry, anchorEntry, refNavEntry, modeEntry, sortEntry]
 
     $.addClass doc, 'index-loading'
-    @update()
     @root = $.el 'div', className: 'board'
     @pagelist = $.el 'div',
       className: 'pagelist'
@@ -78,28 +77,56 @@ Index =
       innerHTML: <%= importHTML('Features/Index-navlinks') %>
     @searchInput = $ '#index-search', @navLinks
     @currentPage = @getCurrentPage()
-    $.on window, 'popstate', @cb.popstate
+
+    $.on d, 'scroll', Index.scroll
     $.on @pagelist, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
-    $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
-      board = $ '.board'
-      $.replace board, Index.root
-      # Hacks:
-      # - When removing an element from the document during page load,
-      #   its ancestors will still be correctly created inside of it.
-      # - Creating loadable elements inside of an origin-less document
-      #   will not download them.
-      # - Combine the two and you get a download canceller!
-      #   Does not work on Firefox unfortunately. bugzil.la/939713
-      d.implementation.createDocument(null, null, null).appendChild board
+    $.on $('#returnlink', @navLinks), 'click', Navigate.navigate
 
-      for navLink in $$ '.navLinks'
-        $.rm navLink
+    @update() if g.VIEW is 'index'
+    $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
+      if g.VIEW is 'index'
+        board = $ '.board'
+        $.replace board, Index.root
+        # Hacks:
+        # - When removing an element from the document during page load,
+        #   its ancestors will still be correctly created inside of it.
+        # - Creating loadable elements inside of an origin-less document
+        #   will not download them.
+        # - Combine the two and you get a download canceller!
+        #   Does not work on Firefox unfortunately. bugzil.la/939713
+        d.implementation.createDocument(null, null, null).appendChild board
+
+      $.rm navLink for navLink in $$ '.navLinks'
       $.after $.x('child::form/preceding-sibling::hr[1]'), Index.navLinks
       $.rmClass doc, 'index-loading'
-      $.asap (-> $('.pagelist') or d.readyState isnt 'loading'), ->
-        $.replace $('.pagelist'), Index.pagelist
+
+    $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
+      if pagelist = $('.pagelist')
+        $.replace pagelist, Index.pagelist
+      else
+        $.after $.id('delform'), Index.pagelist
+
+  scroll: $.debounce 100, ->
+    return if Index.req or Conf['Index Mode'] isnt 'paged' or (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
+    pageNum = Index.getCurrentPage() + 1
+    return Index.endNotice() if pageNum >= Index.pagesNum
+    nodesPerPage = Index.threadsNumPerPage * 2
+    history.pushState null, '', "/#{g.BOARD}/#{pageNum}"
+    nodes = Index.sortedNodes[nodesPerPage * pageNum ... nodesPerPage * (pageNum + 1)]
+    Index.buildReplies nodes if Conf['Show Replies']
+    $.add Index.root, nodes
+    Index.setPage()
+    
+  endNotice: do ->
+    notify = false
+    reset = -> notify = false
+    return ->
+      return if notify
+      notify = true
+      new Notice 'info', "Last page reached.", 2
+      setTimeout reset, 3 * $.SECOND
 
   cb:
     mode: ->
@@ -112,9 +139,6 @@ Index =
       Index.buildThreads()
       Index.sort()
       Index.buildIndex()
-    popstate: (e) ->
-      pageNum = Index.getCurrentPage()
-      Index.pageLoad pageNum if Index.currentPage isnt pageNum
     pageNav: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       switch e.target.nodeName
@@ -130,6 +154,7 @@ Index =
     link: (e) ->
       return if g.VIEW isnt 'index' or /catalog/.test @href
       e.preventDefault()
+      history.pushState null, '', @pathname
       Index.update()
 
   scrollToIndex: ->
@@ -200,19 +225,22 @@ Index =
 
   update: (pageNum) ->
     return unless navigator.onLine
+    if g.VIEW is 'thread'
+      return ThreadUpdater.update() if Conf['Thread Updater']
+      return
+    unless d.readyState is 'loading' or Index.root.parentElement
+      $.replace $('.board'), Index.root
     Index.req?.abort()
     Index.notice?.close()
-    if d.readyState isnt 'loading'
-      Index.notice = new Notice 'info', 'Refreshing index...'
-    else
-      # Delay the notice on initial page load
-      # and only display it for slow connections.
-      now = Date.now()
-      $.ready ->
-        setTimeout (->
-          return unless Index.req and !Index.notice
-          Index.notice = new Notice 'info', 'Refreshing index...'
-        ), 5 * $.SECOND - (Date.now() - now)
+
+    # This notice only displays if Index Refresh is taking too long
+    now = Date.now()
+    $.ready ->
+      Index.nTimeout = setTimeout (->
+        if Index.req and !Index.notice
+          Index.notice = new Notice 'info', 'Refreshing index...', 2
+      ), 3 * $.SECOND - (Date.now() - now)
+
     pageNum = null if typeof pageNum isnt 'number' # event
     onload = (e) -> Index.load e, pageNum
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
@@ -221,9 +249,12 @@ Index =
     ,
       whenModified: true
     $.addClass Index.button, 'fa-spin'
+
   load: (e, pageNum) ->
     $.rmClass Index.button, 'fa-spin'
-    {req, notice} = Index
+    {req, notice, nTimeout} = Index
+    clearTimeout nTimeout if nTimeout
+    delete Index.nTimeout
     delete Index.req
     delete Index.notice
 
@@ -232,31 +263,37 @@ Index =
       notice.close()
       return
 
+    if req.status not in [200, 304]
+      err = "Index refresh failed. Error #{req.statusText} (#{req.status})"
+      if notice
+        notice.setType 'warning'
+        notice.el.lastElementChild.textContent = err
+        setTimeout notice.close, $.SECOND
+      else
+        new Notice 'warning', err, 1
+      return
+
     try
       if req.status is 200
         Index.parse JSON.parse(req.response), pageNum
       else if req.status is 304 and pageNum?
         Index.pageNav pageNum
     catch err
-      c.error 'Index failure:', err.stack
+      c.error 'Index failure:', err
       # network error or non-JSON content for example.
       if notice
         notice.setType 'error'
         notice.el.lastElementChild.textContent = 'Index refresh failed.'
-        setTimeout notice.close, 2 * $.SECOND
+        setTimeout notice.close, $.SECOND
       else
-        new Notice 'error', 'Index refresh failed.', 2
+        new Notice 'error', 'Index refresh failed.', 1
       return
-
-    if notice
-      notice.setType 'success'
-      notice.el.lastElementChild.textContent = 'Index refreshed!'
-      setTimeout notice.close, $.SECOND
 
     timeEl = $ '#index-last-refresh', Index.navLinks
     timeEl.dataset.utc = Date.parse req.getResponseHeader 'Last-Modified'
     RelativeDates.update timeEl
     Index.scrollToIndex()
+
   parse: (pages, pageNum) ->
     Index.parseThreadList pages
     Index.buildThreads()
@@ -267,6 +304,7 @@ Index =
       return
     Index.buildIndex()
     Index.setPage()
+
   parseThreadList: (pages) ->
     Index.pagesNum          = pages.length
     Index.threadsNumPerPage = pages[0].threads.length
@@ -275,6 +313,7 @@ Index =
     for threadID, thread of g.BOARD.threads when thread.ID not in Index.liveThreadIDs
       thread.collect()
     return
+
   buildThreads: ->
     Index.nodes = []
     threads     = []
@@ -305,6 +344,7 @@ Index =
     Main.callbackNodes Thread, threads
     Main.callbackNodes Post,   posts
     $.event 'IndexRefresh'
+
   buildReplies: (threadRoots) ->
     posts = []
     for threadRoot in threadRoots by 2
@@ -329,6 +369,7 @@ Index =
 
     Main.handleErrors errors if errors
     Main.callbackNodes Post, posts
+
   sort: ->
     switch Conf['Index Sort']
       when 'bump'
@@ -357,11 +398,13 @@ Index =
     Index.sortOnTop((thread) -> thread.isOnTop) if Conf['Filter']
     # Non-hidden threads
     Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
+
   sortOnTop: (match) ->
     offset = 0
     for threadRoot, i in Index.sortedNodes by 2 when match Get.threadFromRoot threadRoot
       Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
     return
+
   buildIndex: ->
     if Conf['Index Mode'] is 'paged'
       pageNum = Index.getCurrentPage()
@@ -370,15 +413,18 @@ Index =
     else
       nodes = Index.sortedNodes
     $.rmAll Index.root
+    $.rmAll Header.hover
     Index.buildReplies nodes if Conf['Show Replies']
-    $.event 'IndexBuild', nodes
     $.add Index.root, nodes
+    $.event 'IndexBuild', nodes
 
   isSearching: false
+
   clearSearch: ->
     Index.searchInput.value = null
     Index.onSearchInput()
     Index.searchInput.focus()
+
   onSearchInput: ->
     if Index.isSearching = !!Index.searchInput.value.trim()
       unless Index.searchInput.dataset.searching
@@ -405,15 +451,18 @@ Index =
       Index.setPage()
     else
       Index.pageNav pageNum
+
   querySearch: (query) ->
     return unless keywords = query.toLowerCase().match /\S+/g
     Index.search keywords
+
   search: (keywords) ->
     found = []
     for threadRoot, i in Index.sortedNodes by 2
       if Index.searchMatch Get.threadFromRoot(threadRoot), keywords
         found.push Index.sortedNodes[i], Index.sortedNodes[i + 1]
     found
+
   searchMatch: (thread, keywords) ->
     {info, file} = thread.OP
     text = []

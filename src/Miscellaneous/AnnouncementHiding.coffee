@@ -22,9 +22,9 @@ PSAHiding =
     $.event 'AddMenuEntry', entry
     $.on entry.el, 'click', PSAHiding.toggle
 
-    PSAHiding.btn = btn = $.el 'a',
-      innerHTML: '<span class=brackets-wrap>&nbsp;-&nbsp;</span>'
-      title:     'Hide announcement.'
+    PSAHiding.btn = btn = $.el 'span',
+      innerHTML: '[<a href=javascript:;>Dismiss</a>]'
+      title:     'Mark announcement as read and hide.'
       className: 'hide-announcement' 
       href: 'javascript:;'
       textContent: '[ - ]'
@@ -33,7 +33,7 @@ PSAHiding =
 
     $.get 'hiddenPSA', 0, ({hiddenPSA}) ->
       PSAHiding.sync hiddenPSA
-      $.prepend psa, btn
+      $.add psa, btn
       $.rmClass doc, 'hide-announcement'
 
     $.sync 'hiddenPSA', PSAHiding.sync

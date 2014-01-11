@@ -1,13 +1,13 @@
 Get =
   threadExcerpt: (thread) ->
     {OP} = thread
-    excerpt = OP.info.subject?.trim() or
+    excerpt = "/#{thread.board}/ - " + (
+      OP.info.subject?.trim() or
       OP.info.comment.replace(/\n+/g, ' // ') or
       Conf['Anonymize'] and 'Anonymous' or
-      $('.nameBlock', OP.nodes.info).textContent.trim()
-    if excerpt.length > 70
-      excerpt = "#{excerpt[...67]}..." 
-    "/#{thread.board}/ - #{excerpt}"
+      $('.nameBlock', OP.nodes.info).textContent.trim())
+    return "#{excerpt[...70]}..." if excerpt.length > 73
+    excerpt
   threadFromRoot: (root) ->
     g.threads["#{g.BOARD}.#{root.id[1..]}"]
   threadFromNode: (node) ->

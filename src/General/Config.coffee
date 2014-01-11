@@ -841,8 +841,7 @@ http://iqdb.org/?url=%TURL
     'Bottom Header':              false
     'Header catalog links':       false
     'Bottom Board List':          true
-    'Shortcut Icons':             false
-    'Custom Board Navigation': true
+    'Custom Board Navigation':    true
 
   boardnav: """
 [ toggle-all ]

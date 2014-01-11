@@ -64,11 +64,13 @@ QR =
       when 'index'
         $.on d, 'IndexRefresh', QR.generatePostableThreadsList
       when 'thread'
-        $.on d, 'ThreadUpdate', ->
-          if g.DEAD
-            QR.abort()
-          else
-            QR.status()
+        $.on d, 'ThreadUpdate', QR.statusCheck
+
+  statusCheck: ->
+    if g.DEAD
+      QR.abort()
+    else
+      QR.status()
 
   node: ->
     $.on $('a[title="Quote this post"]', @nodes.info), 'click', QR.quote
@@ -675,8 +677,6 @@ QR =
       val: true
 
     ThreadUpdater.postID = postID
-
-
 
     # Post/upload confirmed as successful.
     $.event 'QRPostSuccessful', {

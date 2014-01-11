@@ -1,6 +1,6 @@
 ThreadWatcher =
   init: ->
-    return unless Conf['Thread Watcher']
+    return if !Conf['Thread Watcher']
 
     @db     = new DataBoard 'watchedThreads', @refresh, true
     @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', """<%=

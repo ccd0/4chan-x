@@ -8,6 +8,7 @@ Quotify =
     Post.callbacks.push
       name: 'Resurrect Quotes'
       cb:   @node
+
   node: ->
     for deadlink in $$ '.deadlink', @nodes.comment
       if @isClone

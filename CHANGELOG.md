@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ### v2.7.5 
 *2014-01-04*
 
@@ -55,6 +56,10 @@
 
 ## v2.6.0 
 *2013-11-27*
+=======
+## v1.3.0 
+*2014-01-10*
+>>>>>>> json
 
 **MayhemYDG**:
 - **New option**: `Auto-hide header on scroll`.
@@ -81,8 +86,8 @@
  - New setting: `Refreshed Navigation`, disabled by default. When enabled, navigating through pages will refresh the index.
  - The last index refresh timer will now indicate the last time the index changed from 4chan's side, instead of the last time you refreshed the index.
  - You can now refresh the index page you are on with the refresh shortcut in the header bar or the same keybind for refreshing threads.
- - You can now switch between paged and all-threads index modes via the "Index Navigation" header sub-menu:<br>
-  ![index navigation](img/changelog/3.12.0/0.png)
+ - You can now switch between paged and all-threads index modes via the "Index Navigation" header sub-menu (note that this replaces infinite scrolling):<br>
+  ![index navigation](src/General/img/changelog/1.2.46.png)
  - Threads in the index can now be sorted by:
  <ul>
   <li> Bump order
@@ -98,10 +103,42 @@
  - You cannot post an image reply immediately after a non-image reply anymore.
 - Various minor fixes
 
+<<<<<<< HEAD
 ### v2.5.1 
 *2013-10-20*
 **Zixaphir**:
 - Infinite Scrolling Bugfix (chrome)
+=======
+**seaweedchan**:
+- Various fixes and improvements for the JSONified index
+- Removed index refresh notifications
+- Various style tweaks
+
+**Zixaphir**:
+- FappeTyme and WerkTyme now persist across sessions.
+- Various fixes and improvements for the JSONified index
+
+### v1.2.45 
+*2014-01-07*
+
+**seaweedchan**:
+- Remove moot's plea to remove ad-blocker
+- Hopefully fix NSFW themes and 404 image redirecting
+- Update archive list
+
+**Zixaphir**:
+- Fix optional increase for thread updater
+
+### v1.2.44 
+*2013-12-06*
+
+**MayhemYDG**:
+- Cooldown fix (You can no longer post an image reply immediately after a text reply)
+- Fix for 4chan markup change that caused a lot of errors
+
+**seaweedchan**:
+- Fix catalog links option
+>>>>>>> json
 
 ### v2.4.1 
 *2013-10-13*

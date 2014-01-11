@@ -81,10 +81,9 @@ Header =
       @setBarPosition Conf['Bottom Header']
 
     $.ready =>
-      if a = $ "a[href*='/#{g.BOARD}/']", $.id 'boardNavDesktopFoot'
+      if a = $ "a[href*='/#{g.BOARD}/']", footer = $.id 'boardNavDesktopFoot'
         a.className = 'current'
-        $.on a, 'click', Index.cb.link
-
+        $.on a, 'click', Navigate.navigate for a in $$ 'a', footer
 
   bar: $.el 'div',
     id: 'header-bar'
@@ -104,14 +103,19 @@ Header =
   toggle: $.el 'div',
     id: 'scroll-marker'
 
+  initReady: ->
+    Header.setBoardList()
+    Header.addNav()
+
   setBoardList: ->
     fourchannav = $.id 'boardNavDesktop'
-    boardList = $.el 'span',
+    Header.boardList = boardList = $.el 'span',
       id: 'board-list'
       innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> #{fourchannav.innerHTML}</span>"
-    if a = $ "a[href*='/#{g.BOARD}/']", boardList
-      a.className = 'current'
-      $.on a, 'click', Index.cb.link
+    for a in $$ 'a', boardList
+      $.on a, 'click', Navigate.navigate
+      if a.pathname.split('/')[1] is g.BOARD.ID
+        a.className = 'current'
     fullBoardList = $ '#full-board-list', boardList
     btn = $ '.hide-board-list-button', fullBoardList
     $.on btn, 'click', Header.toggleBoardList
@@ -126,7 +130,7 @@ Header =
     $.prepend d.body, shortcuts
 
     $.add boardList, fullBoardList
-    $.add Header.bar, [boardList, Header.toggle]
+    $.add Header.bar, [Header.boardList, Header.toggle]
 
     Header.setCustomNav Conf['Custom Board Navigation']
     Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
@@ -135,10 +139,10 @@ Header =
     $.sync 'boardnav', Header.generateBoardList
 
   generateBoardList: (text) ->
-    list = $ '#custom-board-list', Header.bar
+    list = $ '#custom-board-list', Header.boardList
     $.rmAll list
     return unless text
-    as = $$ '#full-board-list a[title]', Header.bar
+    as = $$ '#full-board-list a[title]', Header.boardList
     nodes = text.match(/[\w@]+((-(all|title|replace|full|index|catalog|url:"[^"]+[^"]"|text:"[^"]+")|\,"[^"]+[^"]"))*|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
@@ -163,11 +167,9 @@ Header =
         if a.textContent is board
           a = a.cloneNode true
 
-          current = $.hasClass a, 'current'
-          if current
-            $.on a, 'click', Index.cb.link
+          $.on a, 'click', Navigate.navigate
 
-          a.textContent = if /-title/.test(t) or /-replace/.test(t) and current
+          a.textContent = if /-title/.test(t) or /-replace/.test(t) and $.hasClass a, 'current'
             a.title
           else if /-full/.test t
             "/#{board}/ - #{a.title}"
@@ -311,6 +313,7 @@ Header =
     return if (Get.postFromRoot post).isHidden
 
     Header.scrollTo post
+
   scrollTo: (root, down, needed) ->
     if down
       x = Header.getBottomOf root
@@ -318,14 +321,17 @@ Header =
     else
       x = Header.getTopOf root
       window.scrollBy 0,  x unless needed and x >= 0
+
   scrollToIfNeeded: (root, down) ->
     Header.scrollTo root, down, true
+
   getTopOf: (root) ->
     {top} = root.getBoundingClientRect()
     if Conf['Fixed Header'] and not Conf['Bottom Header']
       headRect = Header.toggle.getBoundingClientRect()
       top     -= headRect.top + headRect.height
     top
+
   getBottomOf: (root) ->
     {clientHeight} = doc
     bottom = clientHeight - root.getBoundingClientRect().bottom
@@ -339,6 +345,8 @@ Header =
     
     $.add Header[if icon then 'icons' else 'stats'], el
 
+  rmShortcut: (el) ->
+    $.rm el.parentElement
 
   menuToggle: (e) ->
     Header.menu.toggle e, @, g

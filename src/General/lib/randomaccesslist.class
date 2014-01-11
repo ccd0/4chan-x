@@ -23,7 +23,7 @@ class RandomAccessList
     root.next = item
     item.prev = root
     item.next = next
-    next.prev = item
+    next.prev = item if next
   
   prepend: (item) ->
     {first} = @

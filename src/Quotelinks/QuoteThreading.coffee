@@ -13,19 +13,32 @@ QuoteThreading =
     input = $ 'input', @controls
     $.on input, 'change', @toggle
 
-    $.event 'AddMenuEntry',
+    $.event 'AddMenuEntry', @entry =
       type:  'header'
       el:    @controls
       order: 98
 
-    $.on d, '4chanXInitFinished', @setup unless Conf['Unread Count']
+    $.on d, '4chanXInitFinished', @ready unless Conf['Unread Count']
 
     Post.callbacks.push
       name: 'Quote Threading'
       cb:   @node
 
-  setup: ->
-    $.off d, '4chanXInitFinished', QuoteThreading.setup
+  disconnect: ->
+    return unless Conf['Quote Threading'] and g.VIEW is 'thread'
+    input = $ 'input', @controls
+    $.off input, 'change', @toggle
+
+    $.event 'rmMenuEntry', @entry
+
+    delete @enabled
+    delete @controls
+    delete @entry
+
+    Post.callbacks.disconnect 'Quote Threading'
+
+  ready: ->
+    $.off d, '4chanXInitFinished', QuoteThreading.ready
     QuoteThreading.force()
 
   force: ->
@@ -103,7 +116,7 @@ QuoteThreading =
       containers = $$ '.threadContainer', thread
       $.rm container for container in containers
       $.rmClass post, 'threadOP' for post in $$ '.threadOP'
-    
+
     return
 
   kb: ->
