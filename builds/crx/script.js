@@ -7028,7 +7028,7 @@
           if (Conf['Quote Inlining']) {
             $.on(link, 'click', QuoteInline.toggle);
             if (Conf['Quote Hash Navigation']) {
-              nodes.push(QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
+              nodes.push.apply(nodes, QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
             }
           }
           $.add(container, nodes);
