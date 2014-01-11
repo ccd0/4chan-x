@@ -1473,16 +1473,9 @@
     };
 
     DataBoard.prototype.disconnect = function() {
-      var key, _i, _len, _results;
       $.desync(this.key);
-      _results = [];
-      for (_i = 0, _len = this.length; _i < _len; _i++) {
-        key = this[_i];
-        if (this.hasOwnKey(key)) {
-          _results.push(delete this[key]);
-        }
-      }
-      return _results;
+      delete this.sync;
+      return delete this.data;
     };
 
     return DataBoard;
@@ -9680,13 +9673,13 @@
       });
     },
     disconnect: function() {
-      var hr, name, parent, _i, _len, _ref;
+      var hr, name, _i, _len, _ref;
       if (!Unread.db) {
         return;
       }
       Unread.db.disconnect();
-      if (parent = (hr = Unread.hr).parentElement) {
-        $.rm(hr, parent);
+      if (hr = Unread.hr, Unread) {
+        $.rm(hr);
       }
       _ref = ['db', 'hr', 'posts', 'postsQuotingYou', 'thread', 'title', 'lastReadPost'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -9727,7 +9720,9 @@
           posts.push(post);
         }
       }
-      Unread.addPosts(posts);
+      if (!Conf['Quote Threading']) {
+        Unread.addPosts(posts);
+      }
       if (Conf['Quote Threading']) {
         QuoteThreading.force();
       }
@@ -12132,7 +12127,11 @@
       var board;
       board = $('.board');
       $.rmAll(board);
-      return $.add(board, Navigate.threadRoot);
+      $.add(board, Navigate.threadRoot);
+      if (Conf['Unread Count']) {
+        Unread.read();
+        return Unread.update();
+      }
     },
     popstate: function() {
       var a;

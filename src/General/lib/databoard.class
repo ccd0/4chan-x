@@ -13,8 +13,7 @@ class DataBoard
       @sync = sync
     $.on d, '4chanXInitFinished', init
 
-  save: ->
-    $.set @key, @data
+  save: -> $.set @key, @data
 
   delete: ({boardID, threadID, postID}) ->
     if postID
@@ -93,4 +92,5 @@ class DataBoard
 
   disconnect: ->
     $.desync @key
-    delete @[key] for key in @ when @hasOwnKey key
+    delete @sync
+    delete @data

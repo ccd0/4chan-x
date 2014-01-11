@@ -280,6 +280,9 @@ Navigate =
     board = $ '.board'
     $.rmAll board
     $.add board, Navigate.threadRoot
+    if Conf['Unread Count']
+      Unread.read()
+      Unread.update()
 
   popstate: -> <% if (type === 'crx') { %> Navigate.popstate = -> <% } %> # blink/webkit throw a popstate on page load. Not what we want.
     a = $.el 'a',

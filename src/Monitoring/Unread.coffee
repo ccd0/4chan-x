@@ -16,7 +16,7 @@ Unread =
     return unless Unread.db
 
     Unread.db.disconnect()
-    $.rm hr, parent if parent = (hr = Unread.hr).parentElement
+    $.rm hr if {hr} = Unread
 
     delete @[name] for name in ['db', 'hr', 'posts', 'postsQuotingYou', 'thread', 'title', 'lastReadPost']
 
@@ -43,7 +43,7 @@ Unread =
     $.off d, '4chanXInitFinished', Unread.ready
     posts = []
     posts.push post for ID, post of Unread.thread.posts when post.isReply
-    Unread.addPosts posts
+    Unread.addPosts posts unless Conf['Quote Threading']
     QuoteThreading.force() if Conf['Quote Threading']
     Unread.scroll() if Conf['Scroll to Last Read Post']
 
