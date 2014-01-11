@@ -12030,7 +12030,9 @@
           return;
         }
         Navigate.updateTitle(board);
-        sfw = !!board.ws_board;
+        if (Favicon.sfw === (sfw = !!board.ws_board)) {
+          return;
+        }
         findStyle = function(_arg) {
           var base, style, type;
           type = _arg[0], base = _arg[1];

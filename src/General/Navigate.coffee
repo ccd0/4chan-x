@@ -135,7 +135,9 @@ Navigate =
       
       return unless board
       Navigate.updateTitle board
-      sfw = !!board.ws_board
+
+      return if Favicon.sfw is sfw = !!board.ws_board # Board SFW status hasn't changed
+
       findStyle = ([type, base]) ->
         style = d.cookie.match new RegExp "#{type}\_style\=([^;]+)"
         return [(if style then style[1] else base), "#{type}_style"]
