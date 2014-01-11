@@ -12037,7 +12037,7 @@
           style = d.cookie.match(new RegExp("" + type + "\_style\=([^;]+)"));
           return [(style ? style[1] : base), "" + type + "_style"];
         };
-        style = findStyle(sfw ? [ws, 'Yotsuba B New'] : [nws, 'Yotsuba New']);
+        style = findStyle(sfw ? ['ws', 'Yotsuba B New'] : ['nws', 'Yotsuba New']);
         $.globalEval("var style_group = '" + style[1] + "'");
         mainStyleSheet = $('link[title=switch]', d.head);
         newStyleSheet = $("link[title='" + style[0] + "']", d.head);

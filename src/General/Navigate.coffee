@@ -141,9 +141,9 @@ Navigate =
         return [(if style then style[1] else base), "#{type}_style"]
 
       style = findStyle if sfw
-        [ws,  'Yotsuba B New']
+        ['ws',  'Yotsuba B New']
       else
-        [nws, 'Yotsuba New']
+        ['nws', 'Yotsuba New']
       
       $.globalEval "var style_group = '#{style[1]}'"
 
