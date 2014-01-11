@@ -5,5 +5,5 @@ ThreadExcerpt =
     Thread.callbacks.push
       name: 'Thread Excerpt'
       cb:   @node
-  node: ->
-    d.title = Get.threadExcerpt @
+  node: -> d.title = Get.threadExcerpt @
+  disconnect: -> Thread.callbacks.disconnect 'Thread Excerpt'

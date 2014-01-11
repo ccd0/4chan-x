@@ -35,6 +35,7 @@ Navigate =
     $.rmAll $ '.board'
 
   threadFeatures: [
+    ['Thread Excerpt',   ThreadExcerpt]
     ['Unread Count',     Unread]
     ['Quote Threading',  QuoteThreading]
     ['Thread Stats',     ThreadStats]
@@ -170,6 +171,8 @@ Navigate =
     return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org' or
       (e and (e.shiftKey or (e.type is 'click' and e.button isnt 0))) # Not simply a left click
 
+    $.addClass Index.button, 'fa-spin'
+
     path = @pathname.split '/'
     hash = @hash
     path.shift() if path[0] is ''
@@ -257,10 +260,6 @@ Navigate =
           error: err
 
     makePost $('.opContainer', threadRoot)
-
-    {subject, comment} = posts[0].info
-    title = "/#{g.BOARD.ID}/ - #{subject or comment}"
-    title = title[...100] if title.length > 100
 
     for obj in data
       post = Build.postFromObject obj, board
