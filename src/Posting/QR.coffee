@@ -655,8 +655,6 @@ QR =
 
     ThreadUpdater.postID = postID
 
-
-
     # Post/upload confirmed as successful.
     $.event 'QRPostSuccessful', {
       board: g.BOARD

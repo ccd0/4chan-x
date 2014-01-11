@@ -11963,10 +11963,12 @@
       g.VIEW = view;
       switch (view) {
         case 'index':
+          delete g.THREADID;
           QR.link.textContent = 'Start a Thread';
           $.off(d, 'ThreadUpdate', QR.statusCheck);
-          return $.on(d, 'indexRefresh', QR.generatePostableThreadsList);
+          return $.on(d, 'IndexRefresh', QR.generatePostableThreadsList);
         case 'thread':
+          g.THREADID = +window.location.pathname.split('/')[3];
           QR.link.textContent = 'Reply to Thread';
           $.on(d, 'ThreadUpdate', QR.statusCheck);
           return $.off(d, 'IndexRefresh', QR.generatePostableThreadsList);
