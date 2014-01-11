@@ -224,6 +224,7 @@ Index =
     ,
       whenModified: true
     $.addClass Index.button, 'fa-spin'
+
   load: (e, pageNum) ->
     $.rmClass Index.button, 'fa-spin'
     {req, notice} = Index
@@ -255,6 +256,7 @@ Index =
     timeEl.dataset.utc = Date.parse req.getResponseHeader 'Last-Modified'
     RelativeDates.update timeEl
     Index.scrollToIndex()
+
   parse: (pages, pageNum) ->
     Index.parseThreadList pages
     Index.buildThreads()
@@ -265,6 +267,7 @@ Index =
       return
     Index.buildIndex()
     Index.setPage()
+
   parseThreadList: (pages) ->
     Index.pagesNum          = pages.length
     Index.threadsNumPerPage = pages[0].threads.length
@@ -273,6 +276,7 @@ Index =
     for threadID, thread of g.BOARD.threads when thread.ID not in Index.liveThreadIDs
       thread.collect()
     return
+
   buildThreads: ->
     Index.nodes = []
     threads     = []
@@ -303,6 +307,7 @@ Index =
     Main.callbackNodes Thread, threads
     Main.callbackNodes Post,   posts
     $.event 'IndexRefresh'
+
   buildReplies: (threadRoots) ->
     posts = []
     for threadRoot in threadRoots by 2
@@ -327,6 +332,7 @@ Index =
 
     Main.handleErrors errors if errors
     Main.callbackNodes Post, posts
+
   sort: ->
     switch Conf['Index Sort']
       when 'bump'
@@ -355,11 +361,13 @@ Index =
     Index.sortOnTop((thread) -> thread.isOnTop) if Conf['Filter']
     # Non-hidden threads
     Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
+
   sortOnTop: (match) ->
     offset = 0
     for threadRoot, i in Index.sortedNodes by 2 when match Get.threadFromRoot threadRoot
       Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
     return
+
   buildIndex: ->
     if Conf['Index Mode'] is 'paged'
       pageNum = Index.getCurrentPage()
@@ -370,14 +378,16 @@ Index =
     $.rmAll Index.root
     $.rmAll Header.hover
     Index.buildReplies nodes if Conf['Show Replies']
-    $.event 'IndexBuild', nodes
     $.add Index.root, nodes
+    $.event 'IndexBuild', nodes
 
   isSearching: false
+
   clearSearch: ->
     Index.searchInput.value = null
     Index.onSearchInput()
     Index.searchInput.focus()
+
   onSearchInput: ->
     if Index.isSearching = !!Index.searchInput.value.trim()
       unless Index.searchInput.dataset.searching
@@ -404,15 +414,18 @@ Index =
       Index.setPage()
     else
       Index.pageNav pageNum
+
   querySearch: (query) ->
     return unless keywords = query.toLowerCase().match /\S+/g
     Index.search keywords
+
   search: (keywords) ->
     found = []
     for threadRoot, i in Index.sortedNodes by 2
       if Index.searchMatch Get.threadFromRoot(threadRoot), keywords
         found.push Index.sortedNodes[i], Index.sortedNodes[i + 1]
     found
+
   searchMatch: (thread, keywords) ->
     {info, file} = thread.OP
     text = []

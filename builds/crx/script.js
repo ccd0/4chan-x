@@ -2720,8 +2720,8 @@
       if (Conf['Show Replies']) {
         Index.buildReplies(nodes);
       }
-      $.event('IndexBuild', nodes);
-      return $.add(Index.root, nodes);
+      $.add(Index.root, nodes);
+      return $.event('IndexBuild', nodes);
     },
     isSearching: false,
     clearSearch: function() {
