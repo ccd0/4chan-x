@@ -11932,28 +11932,23 @@
         Main.handleErrors(errors);
       }
     },
-    ready: function() {
-      var condition, err, errors, feature, name, _i, _len, _ref, _ref1;
-      _ref = [['Unread Count', Unread, Conf['Unread Count']], ['Quote Threading', QuoteThreading, Conf['Quote Threading'] && !Conf['Unread Count']]];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        _ref1 = _ref[_i], name = _ref1[0], feature = _ref1[1], condition = _ref1[2];
-        try {
-          if (condition) {
-            feature.ready();
-          }
-        } catch (_error) {
-          err = _error;
-          if (!errors) {
-            errors = [];
-          }
-          errors.push({
-            message: "Failed to reconnect feature " + name + ".",
-            error: err
-          });
+    ready: function(name, feature, condition) {
+      var err, error;
+      try {
+        if (condition) {
+          feature();
         }
+      } catch (_error) {
+        err = _error;
+        error = [
+          {
+            message: "Quote Threading Failed.",
+            error: err
+          }
+        ];
       }
-      if (errors) {
-        Main.handleErrors(errors);
+      if (error) {
+        Main.handleErrors(error);
       }
       return QR.generatePostableThreadsList();
     },
@@ -12159,7 +12154,7 @@
       }
       Main.callbackNodes(Thread, [thread]);
       Main.callbackNodes(Post, posts);
-      Navigate.ready();
+      Navigate.ready('Quote Threading', QuoteThreading.force, Conf['Quote Threading']);
       return Navigate.buildThread();
     },
     buildThread: function() {
@@ -12168,6 +12163,7 @@
       $.rmAll(board);
       $.add(board, Navigate.threadRoot);
       if (Conf['Unread Count']) {
+        Navigate.ready('Unread Count', Unread.ready, Conf['Unread Count']);
         Unread.read();
         return Unread.update();
       }
@@ -12182,18 +12178,6 @@
         });
         return Navigate.navigate.call(a);
       });
-    },
-    refresh: function(context) {
-      var boardID, feature, name, threadID, view, _i, _len, _ref, _ref1;
-      return;
-      boardID = context.boardID, view = context.view, threadID = context.threadID;
-      _ref = Main.features;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        _ref1 = _ref[_i], name = _ref1[0], feature = _ref1[1];
-        if (feature.refresh) {
-          feature.refresh();
-        }
-      }
     }
   };
 

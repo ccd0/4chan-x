@@ -81,20 +81,16 @@ Navigate =
 
     return
 
-  ready: ->
-    for [name, feature, condition] in [
-      ['Unread Count',    Unread,         Conf['Unread Count']]
-      ['Quote Threading', QuoteThreading, Conf['Quote Threading'] and not Conf['Unread Count']]
-    ]
-      try
-        feature.ready() if condition
-      catch err
-        errors = [] unless errors
-        errors.push
-          message: "Failed to reconnect feature #{name}."
-          error:   err
+  ready: (name, feature, condition) ->
+    try
+      feature() if condition
+    catch err
+      error = [
+        message: "Quote Threading Failed."
+        error:   err
+      ]
 
-    Main.handleErrors errors if errors
+    Main.handleErrors error if error
     QR.generatePostableThreadsList()
 
   updateContext: (view) ->
@@ -220,8 +216,6 @@ Navigate =
           Navigate.notice = new Notice 'info', 'Loading thread...'
       ), 3 * $.SECOND
 
-      # Navigate.refresh {boardID, view, threadID}
-
   load: (e) ->
     $.rmClass Index.button, 'fa-spin'
     {req, notice} = Navigate
@@ -278,7 +272,7 @@ Navigate =
     Main.callbackNodes Thread, [thread]
     Main.callbackNodes Post,   posts
 
-    Navigate.ready()
+    Navigate.ready 'Quote Threading', QuoteThreading.force, Conf['Quote Threading']
 
     Navigate.buildThread()
 
@@ -286,7 +280,9 @@ Navigate =
     board = $ '.board'
     $.rmAll board
     $.add board, Navigate.threadRoot
+
     if Conf['Unread Count']
+      Navigate.ready 'Unread Count', Unread.ready, Conf['Unread Count']
       Unread.read()
       Unread.update()
 
@@ -300,11 +296,3 @@ Navigate =
         id:   'popState'
 
       Navigate.navigate.call a
-
-  refresh: (context) ->
-    return
-    {boardID, view, threadID} = context
-
-    # Refresh features
-    feature.refresh() for [name, feature] in Main.features when feature.refresh
-    return
