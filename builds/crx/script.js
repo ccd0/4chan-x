@@ -12019,7 +12019,7 @@
           return;
         }
         Navigate.updateTitle(board);
-        if (Favicon.sfw === (sfw = !!board.ws_board)) {
+        if (Favicon.SFW === (sfw = !!board.ws_board)) {
           return;
         }
         findStyle = function(_arg) {
