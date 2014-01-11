@@ -84,7 +84,10 @@ Main =
     $.addClass doc, 'seaweedchan'
     $.addClass doc, g.VIEW
     $.addStyle Main.css
+   
+    Main.setClass()
 
+  setClass: ->
     if g.VIEW is 'catalog'
       $.addClass doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace /_+/g, '-'
       return

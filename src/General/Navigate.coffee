@@ -151,7 +151,7 @@ Navigate =
 
       mainStyleSheet.href  = newStyleSheet.href
 
-      Main.initStyle()
+      Main.setClass()
 
     fullBoardList   = $ '#full-board-list', Header.boardList
     $.rmClass $('.current', fullBoardList), 'current'

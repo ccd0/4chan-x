@@ -11988,7 +11988,7 @@
         mainStyleSheet = $('link[title=switch]', d.head);
         newStyleSheet = $("link[title='" + style + "']", d.head);
         mainStyleSheet.href = newStyleSheet.href;
-        return Main.initStyle();
+        return Main.setClass();
       };
       fullBoardList = $('#full-board-list', Header.boardList);
       $.rmClass($('.current', fullBoardList), 'current');
@@ -12880,7 +12880,7 @@
       return $.ready(Main.initReady);
     },
     initStyle: function() {
-      var mainStyleSheet, setStyle, style, styleSheets, _ref;
+      var _ref;
       $.off(d, '4chanMainInit', Main.initStyle);
       if (!Main.isThisPageLegit() || $.hasClass(doc, 'fourchan-x')) {
         return;
@@ -12893,6 +12893,10 @@
       $.addClass(doc, 'seaweedchan');
       $.addClass(doc, g.VIEW);
       $.addStyle(Main.css);
+      return Main.setClass();
+    },
+    setClass: function() {
+      var mainStyleSheet, setStyle, style, styleSheets;
       if (g.VIEW === 'catalog') {
         $.addClass(doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace(/_+/g, '-'));
         return;
