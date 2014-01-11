@@ -9978,16 +9978,25 @@
 
   Redirect = {
     init: function() {
-      var archive, archives, boardID, boards, data, files, id, name, o, record, software, type, _i, _len, _ref, _ref1;
+      var archive, archives, boardID, boards, data, files, id, name, o, record, software, type, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
       o = {
         thread: {},
         post: {},
         file: {}
       };
-      archives = Redirect.archives;
-      _ref = Conf['selectedArchives'];
-      for (boardID in _ref) {
-        record = _ref[boardID];
+      archives = {};
+      _ref = Redirect.archives;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        _ref1 = _ref[_i], name = _ref1.name, boards = _ref1.boards, files = _ref1.files, data = _ref1.data;
+        archives[name] = {
+          boards: boards,
+          files: files,
+          data: data
+        };
+      }
+      _ref2 = Conf['selectedArchives'];
+      for (boardID in _ref2) {
+        record = _ref2[boardID];
         for (type in record) {
           id = record[type];
           if (!((archive = archives[id]))) {
@@ -10000,11 +10009,12 @@
           o[type][boardID] = archive.data;
         }
       }
-      for (name in archives) {
-        _ref1 = archives[name], data = _ref1.data, boards = _ref1.boards, files = _ref1.files;
+      _ref3 = Redirect(archives);
+      for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
+        _ref4 = _ref3[_j], data = _ref4.data, boards = _ref4.boards, files = _ref4.files;
         software = data.software;
-        for (_i = 0, _len = boards.length; _i < _len; _i++) {
-          boardID = boards[_i];
+        for (_k = 0, _len2 = boards.length; _k < _len2; _k++) {
+          boardID = boards[_k];
           if (!(boardID in o.thread)) {
             o.thread[boardID] = data;
           }
@@ -10018,8 +10028,9 @@
       }
       return Redirect.data = o;
     },
-    archives: {
-      "Foolz": {
+    archives: [
+      {
+        name: "Foolz",
         boards: ["a", "co", "gd", "jp", "m", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
         files: ["a", "gd", "jp", "m", "tg", "vg", "vp", "vr", "wsg"],
         data: {
@@ -10028,8 +10039,8 @@
           https: true,
           software: "foolfuuka"
         }
-      },
-      "NSFW Foolz": {
+      }, {
+        name: "NSFW Foolz",
         boards: ["u"],
         files: ["u"],
         data: {
@@ -10038,8 +10049,8 @@
           https: true,
           software: "foolfuuka"
         }
-      },
-      "The Dark Cave": {
+      }, {
+        name: "The Dark Cave",
         boards: ["c", "int", "out", "po"],
         files: ["c", "po"],
         data: {
@@ -10048,8 +10059,8 @@
           https: true,
           software: "foolfuuka"
         }
-      },
-      "4plebs": {
+      }, {
+        name: "4plebs",
         boards: ["hr", "pol", "s4s", "tg", "tv", "x"],
         files: ["hr", "pol", "s4s", "tg", "tv", "x"],
         data: {
@@ -10058,8 +10069,8 @@
           https: true,
           software: "foolfuuka"
         }
-      },
-      "Nyafuu": {
+      }, {
+        name: "Nyafuu",
         boards: ["c", "w", "wg"],
         files: ["c", "w", "wg"],
         data: {
@@ -10068,8 +10079,8 @@
           https: true,
           software: "foolfuuka"
         }
-      },
-      "Install Gentoo": {
+      }, {
+        name: "Install Gentoo",
         boards: ["diy", "g", "sci"],
         files: [],
         data: {
@@ -10078,8 +10089,8 @@
           https: true,
           software: "fuuka"
         }
-      },
-      "Rebecca Black Tech": {
+      }, {
+        name: "Rebecca Black Tech",
         boards: ["cgl", "g", "mu", "w"],
         files: ["cgl", "g", "mu", "w"],
         data: {
@@ -10088,8 +10099,8 @@
           https: true,
           software: "fuuka"
         }
-      },
-      "Heinessen": {
+      }, {
+        name: "Heinessen",
         boards: ["an", "fit", "k", "mlp", "r9k", "toy"],
         files: ["an", "fit", "k", "r9k", "toy"],
         data: {
@@ -10097,8 +10108,8 @@
           http: true,
           software: "fuuka"
         }
-      },
-      "warosu": {
+      }, {
+        name: "warosu",
         boards: ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"],
         files: ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"],
         data: {
@@ -10107,8 +10118,8 @@
           https: true,
           software: "fuuka"
         }
-      },
-      "Foolz Beta": {
+      }, {
+        name: "Foolz Beta",
         boards: ["a", "co", "d", "gd", "h", "jp", "m", "mlp", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
         files: ["a", "d", "gd", "h", "jp", "m", "tg", "u", "vg", "vp", "vr", "wsg"],
         data: {
@@ -10119,7 +10130,7 @@
           software: "foolfuuka"
         }
       }
-    },
+    ],
     to: function(dest, data) {
       var archive;
       archive = (dest === 'search' ? Redirect.data.thread : Redirect.data[dest])[data.boardID];

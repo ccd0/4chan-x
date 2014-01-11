@@ -6,7 +6,9 @@ Redirect =
       post:   {}
       file:   {}
 
-    {archives} = Redirect
+    archives = {}
+    for {name, boards, files, data} in Redirect.archives
+      archives[name] = {boards, files, data}
 
     for boardID, record of Conf['selectedArchives']
       for type, id of record when (archive = archives[id])
@@ -14,7 +16,7 @@ Redirect =
         continue unless boardID in boards
         o[type][boardID] = archive.data
 
-    for name, {data, boards, files} of archives
+    for {data, boards, files} in Redirect archives
       {software} = data
       for boardID in boards
         o.thread[boardID] = data unless boardID of o.thread
@@ -23,8 +25,8 @@ Redirect =
 
     Redirect.data = o
 
-  archives:
-    "Foolz":
+  archives: [
+      name:   "Foolz"
       boards: ["a", "co", "gd", "jp", "m", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"]
       files:  ["a", "gd", "jp", "m", "tg", "vg", "vp", "vr", "wsg"]
       data:
@@ -32,8 +34,8 @@ Redirect =
         http:  false
         https: true
         software: "foolfuuka"
-
-    "NSFW Foolz":
+    ,
+      name:   "NSFW Foolz"
       boards: ["u"]
       files:  ["u"]
       data:
@@ -41,8 +43,8 @@ Redirect =
         http:  false
         https: true
         software: "foolfuuka"
-
-    "The Dark Cave":
+    ,
+      name:   "The Dark Cave"
       boards: ["c", "int", "out", "po"]
       files:  ["c", "po"]
       data:
@@ -50,8 +52,8 @@ Redirect =
         http:  true
         https: true
         software: "foolfuuka"
-
-    "4plebs":
+    ,
+      name:   "4plebs"
       boards: ["hr", "pol", "s4s", "tg", "tv", "x"]
       files:  ["hr", "pol", "s4s", "tg", "tv", "x"]
       data:
@@ -59,8 +61,8 @@ Redirect =
         http:  true
         https: true
         software: "foolfuuka"
-
-    "Nyafuu":
+    ,
+      name:   "Nyafuu"
       boards: ["c", "w", "wg"]
       files:  ["c", "w", "wg"]
       data:
@@ -68,8 +70,8 @@ Redirect =
         http:  true
         https: true
         software: "foolfuuka"
-
-    "Install Gentoo":
+    ,
+      name:   "Install Gentoo"
       boards: ["diy", "g", "sci"]
       files:  []
       data:
@@ -77,8 +79,8 @@ Redirect =
         http:  false
         https: true
         software: "fuuka"
-
-    "Rebecca Black Tech":
+    ,
+      name:   "Rebecca Black Tech"
       boards: ["cgl", "g", "mu", "w"]
       files:  ["cgl", "g", "mu", "w"]
       data:
@@ -86,16 +88,16 @@ Redirect =
         http:  true
         https: true
         software: "fuuka"
-
-    "Heinessen":
+    ,
+      name:   "Heinessen"
       boards: ["an", "fit", "k", "mlp", "r9k", "toy"]
       files:  ["an", "fit", "k", "r9k", "toy"]
       data:
         domain: "archive.heinessen.com"
         http: true
         software: "fuuka"
-
-    "warosu":
+    ,
+      name:   "warosu"
       boards: ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"]
       files:  ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"]
       data:
@@ -103,8 +105,8 @@ Redirect =
         http:  true
         https: true
         software: "fuuka"
-
-    "Foolz Beta":
+    ,
+      name:   "Foolz Beta"
       boards: ["a", "co", "d", "gd", "h", "jp", "m", "mlp", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
       files:  ["a", "d", "gd", "h", "jp", "m", "tg", "u", "vg", "vp", "vr", "wsg"]
       data:
@@ -113,6 +115,7 @@ Redirect =
         https: true
         withCredentials: true
         software: "foolfuuka"
+  ]
 
   to: (dest, data) ->
     archive = (if dest is 'search' then Redirect.data.thread else Redirect.data[dest])[data.boardID]
