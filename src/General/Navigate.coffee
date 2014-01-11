@@ -140,15 +140,15 @@ Navigate =
         style = d.cookie.match new RegExp "#{type}\_style\=([^;]+)"
         return [(if style then style[1] else base), "#{type}_style"]
 
-      [style, type] = findStyle if sfw
+      style = findStyle if sfw
         [ws,  'Yotsuba B New']
       else
         [nws, 'Yotsuba New']
       
-      $.globalEval "var style_group = '#{type}'"
+      $.globalEval "var style_group = '#{style[1]}'"
 
-      mainStyleSheet = $ 'link[title=switch]',     d.head
-      newStyleSheet  = $ "link[title='#{style}']", d.head
+      mainStyleSheet = $ 'link[title=switch]',        d.head
+      newStyleSheet  = $ "link[title='#{style[0]}']", d.head
 
       Favicon.SFW = sfw
       Favicon.el.href = "//s.4cdn.org/image/favicon#{if sfw then '-ws' else ''}.ico"

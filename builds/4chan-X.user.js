@@ -11997,7 +11997,7 @@
       g.BOARD = new Board(boardID);
       req = null;
       onload = function(e) {
-        var board, findStyle, mainStyleSheet, newStyleSheet, sfw, style, type, _ref;
+        var board, findStyle, mainStyleSheet, newStyleSheet, sfw, style;
         if (e.type === 'abort') {
           req.onloadend = null;
           return;
@@ -12037,10 +12037,10 @@
           style = d.cookie.match(new RegExp("" + type + "\_style\=([^;]+)"));
           return [(style ? style[1] : base), "" + type + "_style"];
         };
-        _ref = findStyle(sfw ? [ws, 'Yotsuba B New'] : [nws, 'Yotsuba New']), style = _ref[0], type = _ref[1];
-        $.globalEval("var style_group = '" + type + "'");
+        style = findStyle(sfw ? [ws, 'Yotsuba B New'] : [nws, 'Yotsuba New']);
+        $.globalEval("var style_group = '" + style[1] + "'");
         mainStyleSheet = $('link[title=switch]', d.head);
-        newStyleSheet = $("link[title='" + style + "']", d.head);
+        newStyleSheet = $("link[title='" + style[0] + "']", d.head);
         Favicon.SFW = sfw;
         Favicon.el.href = "//s.4cdn.org/image/favicon" + (sfw ? '-ws' : '') + ".ico";
         $.add(d.head, Favicon.el);
