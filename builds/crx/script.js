@@ -2328,7 +2328,7 @@
     },
     scroll: $.debounce(100, function() {
       var nodes, nodesPerPage, pageNum;
-      if (Conf['Index Mode'] !== 'paged' || ((d.body.scrollTop || doc.scrollTop) <= doc.scrollHeight - (300 + window.innerHeight))) {
+      if (Conf['Index Mode'] !== 'paged' || ((d.body.scrollTop || doc.scrollTop) <= doc.scrollHeight - (300 + window.innerHeight)) || g.VIEW === 'thread') {
         return;
       }
       pageNum = Index.getCurrentPage() + 1;
