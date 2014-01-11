@@ -2513,7 +2513,7 @@
       $.ready(function() {
         return setTimeout((function() {
           if (Index.req && !Index.notice) {
-            return Index.notice = new Notice('info', 'Refreshing index...');
+            return Index.notice = new Notice('info', 'Refreshing index...', 2);
           }
         }), 3 * $.SECOND - (Date.now() - now));
       });

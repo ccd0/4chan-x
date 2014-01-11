@@ -238,7 +238,7 @@ Index =
     $.ready ->
       setTimeout (->
         if Index.req and !Index.notice
-          Index.notice = new Notice 'info', 'Refreshing index...'
+          Index.notice = new Notice 'info', 'Refreshing index...', 2
       ), 3 * $.SECOND - (Date.now() - now)
 
     pageNum = null if typeof pageNum isnt 'number' # event
