@@ -12031,12 +12031,13 @@
         }
         Navigate.updateTitle(board);
         sfw = !!board.ws_board;
-        findStyle = function(regex, base) {
-          var style;
-          style = d.cookie.match(regex);
-          return (style ? style[1] : base);
+        findStyle = function(_arg) {
+          var base, style, type;
+          type = _arg[0], base = _arg[1];
+          style = d.cookie.match(new RegExp("" + type + "\_style\=([^;]+)"));
+          return [(style ? style[1] : base), "" + type + "_style"];
         };
-        _ref = sfw ? [findStyle(/ws\_style\=([^;]+)/, 'Yotsuba B New'), 'ws_style'] : [findStyle(/nws\_style\=([^;]+)/, 'Yotsuba New'), 'nws_style'], style = _ref[0], type = _ref[1];
+        _ref = findStyle(sfw ? [ws, 'Yotsuba B New'] : [nws, 'Yotsuba New']), style = _ref[0], type = _ref[1];
         $.globalEval("var style_group = '" + type + "'");
         mainStyleSheet = $('link[title=switch]', d.head);
         newStyleSheet = $("link[title='" + style + "']", d.head);

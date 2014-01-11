@@ -136,17 +136,14 @@ Navigate =
       return unless board
       Navigate.updateTitle board
       sfw = !!board.ws_board
-      findStyle = (regex, base) ->
-        style = d.cookie.match regex
-        return (if style then style[1] else base)
+      findStyle = ([type, base]) ->
+        style = d.cookie.match new RegExp "#{type}\_style\=([^;]+)"
+        return [(if style then style[1] else base), "#{type}_style"]
 
-      [style, type] = if sfw then [
-        findStyle /ws\_style\=([^;]+)/, 'Yotsuba B New'
-        'ws_style'
-      ] else [
-        findStyle /nws\_style\=([^;]+)/, 'Yotsuba New'
-        'nws_style'
-      ]
+      [style, type] = findStyle if sfw
+        [ws,  'Yotsuba B New']
+      else
+        [nws, 'Yotsuba New']
       
       $.globalEval "var style_group = '#{type}'"
 
