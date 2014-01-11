@@ -177,7 +177,6 @@ Main =
 
   callbackNodesDB: (klass, nodes, cb) ->
     errors = null
-    len    = 0
     i      = 0
 
     cbs = klass.callbacks
@@ -189,12 +188,11 @@ Main =
     softTask = ->
       while fn()
         continue
-      if len is i
+      unless nodes[i]
         cb() if cb
         return
       setTimeout softTask, 0 
 
-    len = nodes.length
     softTask()
 
   addCallback: (e) ->

@@ -13101,9 +13101,8 @@
       }
     },
     callbackNodesDB: function(klass, nodes, cb) {
-      var cbs, errors, fn, i, len, softTask;
+      var cbs, errors, fn, i, softTask;
       errors = null;
-      len = 0;
       i = 0;
       cbs = klass.callbacks;
       fn = function() {
@@ -13118,7 +13117,7 @@
         while (fn()) {
           continue;
         }
-        if (len === i) {
+        if (!nodes[i]) {
           if (cb) {
             cb();
           }
@@ -13126,7 +13125,6 @@
         }
         return setTimeout(softTask, 0);
       };
-      len = nodes.length;
       return softTask();
     },
     addCallback: function(e) {
