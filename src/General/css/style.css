@@ -2,7 +2,6 @@
 .dialog {
   border: 1px solid;
   display: block;
-  padding: 0;
 }
 .dialog:not(#qr):not(#thread-watcher):not(#header-bar) {
   box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
@@ -66,6 +65,21 @@ a {
 .painted {
   border-radius: 3px;
   padding: 0px 2px;
+}
+body>hr, .ad-plea-bottom + hr {
+  display: none;
+}
+.board > hr:last-of-type {
+  border-top-color: transparent !important;
+}
+div.navLinks {
+  margin-bottom: -10px !important;
+}
+.ad-plea {
+  display: none;
+}
+.ad-cnt {
+  margin: 10px !important;
 }
 
 /* 4chan style fixes */
@@ -151,7 +165,6 @@ div.center:not(.ad-cnt) {
   border-width: 0;
   transition: all .1s .05s ease-in-out;
   box-shadow: -5px 1px 10px rgba(0, 0, 0, 0.20);
-  opacity: 0.98;
 }
 #custom-board-list .current {
   padding: 1px 1px 4px 1px;
@@ -502,8 +515,15 @@ div.center:not(.ad-cnt) {
 :root.hide-announcement #globalMessage {
   display: none;
 }
-a.hide-announcement {
-  float: left;
+span.hide-announcement {
+  font-size: 11px;
+  position: relative;
+  bottom: 5px;
+}
+.globalMessage, h2, h3 {
+  color: inherit !important;
+  font-size: 13px;
+  font-weight: 100;
 }
 
 /* Unread */
@@ -803,6 +823,15 @@ a.hide-announcement {
 .qr-link-container {
   text-align: center;
 }
+.qr-link {
+  border-radius: 3px;
+  padding: 6px 10px 5px;
+  font-weight: bold;
+  vertical-align: middle;
+  border-style: solid;
+  border-width: 1px;
+  font-size: 10pt;
+}
 .persona {
   width: 248px;
   max-width: 100%;
@@ -864,6 +893,10 @@ input.field.tripped:not(:hover):not(:focus) {
 }
 :root.webkit #qr [type='submit'] {
   height: 24px;
+}
+#qr label input[type="checkbox"] {
+  position: relative;
+  top: 2px;
 }
 /* Fake File Input */
 input#qr-filename {
@@ -1075,6 +1108,19 @@ a:only-of-type > .remove {
 .op .menu-button,
 #thread-watcher .menu-button {
   margin-left: -5px !important;
+  position: relative;
+}
+.op .menu-button,
+#thread-watcher .menu-button {
+  top: 1px;
+}
+:root.blink .reply .menu-button {
+  position: relative;
+  top: 2px;
+}
+:root.blink .op .menu-button,
+:root.blink #thread-watcher .menu-button {
+  top: 3px;
 }
 .menu-button + .container:not(:empty) {
   margin-left: -5px !important;
@@ -1083,12 +1129,16 @@ a:only-of-type > .remove {
   position: fixed;
   outline: none;
 }
+#menu, .submenu {
+  border-radius: 3px;
+  padding-top: 1px;
+  padding-bottom: 3px;
+}
 .entry {
-  border-bottom: 1px solid rgba(0,0,0,.25);
   cursor: pointer;
   display: block;
   outline: none;
-  padding: 3px 7px;
+  padding: 2px 10px;
   position: relative;
   text-decoration: none;
   white-space: nowrap;
@@ -1097,8 +1147,11 @@ a:only-of-type > .remove {
 .left>.entry.has-submenu {
   padding-right: 17px !important;
 }
-.entry:last-child {
-  border-bottom: 0;
+.entry input[type="checkbox"], 
+.entry input[type="radio"] {
+  margin: 0px;
+  position: relative;
+  top: 2px;
 }
 .has-submenu::after {
   content: "";
@@ -1119,6 +1172,8 @@ a:only-of-type > .remove {
   position: absolute;
   left: 100%;
   top: -1px;
+  margin-left: 0px;
+  margin-top: -2px;
 }
 .focused > .submenu {
   display: block;
@@ -1139,6 +1194,9 @@ a:only-of-type > .remove {
 .boardTitle[contenteditable="true"],
 .boardSubtitle[contenteditable="true"] {
   cursor: text !important;
+}
+div.boardTitle {
+  font-weight: 400 !important;
 }
 /* Link Title Favicons */
 .linkify.YouTube {

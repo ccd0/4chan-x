@@ -8,6 +8,9 @@
 }
 
 /* Header */
+:root.futaba #header-bar.dialog {
+  background-color: rgba(240,224,214,0.98);
+}
 :root.futaba #header-bar, :root.futaba #notifications {
   font-size: 11pt;
   color: #B86;
@@ -16,10 +19,10 @@
   color: #800000;
 }
 :root.futaba #custom-board-list a.current {
-  border-bottom: 1px solid #b20000;
+  border-bottom: 1px solid rgba(178,0,0,0.2);
 }
 :root.futaba #custom-board-list .current:hover {
-  border-bottom-color: #ff0000;
+  border-bottom-color: rgba(255,0,0,0.2);
 }
 
 /* Settings */
@@ -44,13 +47,19 @@
 :root.futaba .qr-preview {
   background-color: rgba(0, 0, 0, .15);
 }
+:root.futaba .qr-link {
+  border-color: rgb(225, 209, 199) rgb(225, 209, 199) rgb(210, 194, 184);
+  background: linear-gradient(#FFEFE5, #F0E0D6) repeat scroll 0% 0% transparent;
+}
+:root.futaba .qr-link:hover {
+  background: #F0E0D6;
+}
 
 /* Menu */
 :root.futaba #menu {
   color: #800000;
 }
 :root.futaba .entry {
-  border-bottom: 1px solid #D9BFB7;
   font-size: 12pt;
 }
 :root.futaba .focused.entry {
