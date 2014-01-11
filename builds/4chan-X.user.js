@@ -11997,7 +11997,7 @@
       g.BOARD = new Board(boardID);
       req = null;
       onload = function(e) {
-        var board, mainStyleSheet, newStyleSheet, style, type, _ref;
+        var board, findStyle, mainStyleSheet, newStyleSheet, sfw, style, type, _ref;
         if (e.type === 'abort') {
           req.onloadend = null;
           return;
@@ -12030,10 +12030,20 @@
           return;
         }
         Navigate.updateTitle(board);
-        _ref = board.ws_board ? [(d.cookie.match(/ws\_style\=([^;]+)/) || ['', 'Yotsuba B New'])[1], 'ws_style'] : [(d.cookie.match(/nws\_style\=([^;]+)/) || ['', 'Yotsuba New'])[1], 'nws_style'], style = _ref[0], type = _ref[1];
+        sfw = !!board.ws_board;
+        findStyle = function(regex, base) {
+          var style;
+          style = d.cookie.match(regex);
+          return (style ? style[1] : base);
+        };
+        _ref = sfw ? [findStyle(/ws\_style\=([^;]+)/, 'Yotsuba B New'), 'ws_style'] : [findStyle(/nws\_style\=([^;]+)/, 'Yotsuba New'), 'nws_style'], style = _ref[0], type = _ref[1];
         $.globalEval("var style_group = '" + type + "'");
         mainStyleSheet = $('link[title=switch]', d.head);
         newStyleSheet = $("link[title='" + style + "']", d.head);
+        Favicon.SFW = sfw;
+        Favicon.el.href = "//s.4cdn.org/image/favicon" + (sfw ? '-ws' : '') + ".ico";
+        $.add(d.head, Favicon.el);
+        Favicon["switch"]();
         mainStyleSheet.href = newStyleSheet.href;
         return Main.setClass();
       };

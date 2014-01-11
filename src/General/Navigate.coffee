@@ -135,11 +135,16 @@ Navigate =
       
       return unless board
       Navigate.updateTitle board
-      [style, type] = if board.ws_board then [
-        (d.cookie.match(/ws\_style\=([^;]+)/) or ['', 'Yotsuba B New'])[1]
+      sfw = !!board.ws_board
+      findStyle = (regex, base) ->
+        style = d.cookie.match regex
+        return (if style then style[1] else base)
+
+      [style, type] = if sfw then [
+        findStyle /ws\_style\=([^;]+)/, 'Yotsuba B New'
         'ws_style'
       ] else [
-        (d.cookie.match(/nws\_style\=([^;]+)/) or ['', 'Yotsuba New'])[1]
+        findStyle /nws\_style\=([^;]+)/, 'Yotsuba New'
         'nws_style'
       ]
       
@@ -148,7 +153,12 @@ Navigate =
       mainStyleSheet = $ 'link[title=switch]',     d.head
       newStyleSheet  = $ "link[title='#{style}']", d.head
 
-      mainStyleSheet.href  = newStyleSheet.href
+      Favicon.SFW = sfw
+      Favicon.el.href = "//s.4cdn.org/image/favicon#{if sfw then '-ws' else ''}.ico"
+      $.add d.head, Favicon.el # Changing the href alone doesn't update the icon on Firefox
+      Favicon.switch()
+
+      mainStyleSheet.href = newStyleSheet.href
 
       Main.setClass()
 
