@@ -82,6 +82,7 @@ Index =
     $.on @pagelist, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
+    $.on $('#returnlink', @navLinks), 'click', Navigate.navigate
 
     @update() if g.VIEW is 'index'
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->

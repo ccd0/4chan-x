@@ -499,14 +499,20 @@ div.center:not(.ad-cnt) {
 .summary {
   text-decoration: none;
 }
+.index #returnlink,
+.index #bottomlink,
 .thread #index-last-refresh,
 .thread #index-search-clear,
 .thread #index-search {
   display: none;
 }
+#returnlink::before,
+#bottomlink::before,
 #index-last-refresh::before {
   content: '[';
 }
+#returnlink::after,
+#bottomlink::after,
 #index-last-refresh::after  {
   content: ']';
 }
