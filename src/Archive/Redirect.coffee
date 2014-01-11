@@ -52,8 +52,8 @@ Redirect =
         software: "foolfuuka"
 
     "4plebs":
-      boards: ["hr", "pol", "s4s", "tg", "tv", "x"]
-      files:  ["hr", "pol", "s4s", "tg", "tv", "x"]
+      boards: ["hr", "o", "pol", "s4s", "tg", "tv", "x"]
+      files:  ["hr", "o", "pol", "s4s", "tg", "tv", "x"]
       data:
         domain: "archive.4plebs.org"
         http:  true
