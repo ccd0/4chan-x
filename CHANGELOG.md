@@ -1,6 +1,10 @@
-## v2.8.0 
-*2014-01-11*
+**seaweeedchan**:
+- Turn infinite scrolling into new index mode
 
+**Zixaphir**:
+- Fix an issue where changing the current archive would crash the redirect features.
+
+*2014-01-11*
 
 **seaweedchan**:
 - Various fixes and improvements for the JSONified index

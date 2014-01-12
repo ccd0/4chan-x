@@ -18,10 +18,10 @@
 :root.futaba #header-bar a, :root.futaba #notifications a {
   color: #800000;
 }
-:root.futaba #custom-board-list a.current {
+:root.futaba.fixed #custom-board-list a.current {
   border-bottom: 1px solid rgba(178,0,0,0.2);
 }
-:root.futaba #custom-board-list .current:hover {
+:root.futaba.fixed #custom-board-list .current:hover {
   border-bottom-color: rgba(255,0,0,0.2);
 }
 
