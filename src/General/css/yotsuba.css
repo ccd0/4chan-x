@@ -18,10 +18,10 @@
 :root.yotsuba #board-list a, :root.yotsuba #shortcuts a  {
   color: #800000;
 }
-:root.yotsuba #custom-board-list a.current {
+:root.yotsuba.fixed #custom-board-list a.current {
   border-bottom: 1px solid rgba(178,0,0,0.2);
 }
-:root.yotsuba #custom-board-list .current:hover {
+:root.yotsuba.fixed #custom-board-list .current:hover {
   border-bottom-color: rgba(255,0,0,0.2);
 }
 

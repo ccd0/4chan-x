@@ -15,10 +15,10 @@
 :root.tomorrow #header-bar a, :root.tomorrow #notifications a {
   color: #81A2BE;
 }
-:root.tomorrow #custom-board-list a.current {
+:root.tomorrow.fixed #custom-board-list a.current {
   border-bottom: 1px solid rgba(83,124,160,0.4);
 }
-:root.tomorrow #custom-board-list .current:hover {
+:root.tomorrow.fixed #custom-board-list .current:hover {
   border-bottom-color: rgba(95,137,172,0.4);
 }
 

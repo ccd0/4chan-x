@@ -14,6 +14,7 @@ Index =
       el: $.el 'span', textContent: 'Index mode'
       subEntries: [
         { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="paged"> Paged' }
+        { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="infinite"> Infinite scrolling' }
         { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="all pages"> All threads' }
       ]
     for label in modeEntry.subEntries
@@ -109,7 +110,7 @@ Index =
         $.after $.id('delform'), Index.pagelist
 
   scroll: $.debounce 100, ->
-    return if Index.req or Conf['Index Mode'] isnt 'paged' or (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
+    return if Index.req or Conf['Index Mode'] isnt 'infinite' or ((d.body.scrollTop or doc.scrollTop) <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
     pageNum = Index.getCurrentPage() + 1
     return Index.endNotice() if pageNum >= Index.pagesNum
     nodesPerPage = Index.threadsNumPerPage * 2
@@ -163,7 +164,7 @@ Index =
   getCurrentPage: ->
     +window.location.pathname.split('/')[2]
   userPageNav: (pageNum) ->
-    if Conf['Refreshed Navigation'] and Conf['Index Mode'] is 'paged'
+    if Conf['Refreshed Navigation'] and Conf['Index Mode'] isnt 'all pages'
       Index.update pageNum
     else
       Index.pageNav pageNum
@@ -173,7 +174,7 @@ Index =
     Index.pageLoad pageNum
   pageLoad: (pageNum) ->
     Index.currentPage = pageNum
-    return if Conf['Index Mode'] isnt 'paged'
+    return if Conf['Index Mode'] is 'all pages'
     Index.buildIndex()
     Index.setPage()
     Index.scrollToIndex()
@@ -186,7 +187,7 @@ Index =
   getMaxPageNum: ->
     Math.max 0, Index.getPagesNum() - 1
   togglePagelist: ->
-    Index.pagelist.hidden = Conf['Index Mode'] isnt 'paged'
+    Index.pagelist.hidden = Conf['Index Mode'] is 'all pages'
   buildPagelist: ->
     pagesRoot = $ '.pages', Index.pagelist
     maxPageNum = Index.getMaxPageNum()
@@ -406,7 +407,7 @@ Index =
     return
 
   buildIndex: ->
-    if Conf['Index Mode'] is 'paged'
+    if Conf['Index Mode'] isnt 'all pages'
       pageNum = Index.getCurrentPage()
       nodesPerPage = Index.threadsNumPerPage * 2
       nodes = Index.sortedNodes[nodesPerPage * pageNum ... nodesPerPage * (pageNum + 1)]
@@ -444,7 +445,7 @@ Index =
       <% } %>
     Index.sort()
     # Go to the last available page if we were past the limit.
-    pageNum = Math.min pageNum, Index.getMaxPageNum() if Conf['Index Mode'] is 'paged'
+    pageNum = Math.min pageNum, Index.getMaxPageNum() if Conf['Index Mode'] isnt 'all pages'
     Index.buildPagelist()
     if Index.currentPage is pageNum
       Index.buildIndex()
