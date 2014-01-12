@@ -10002,7 +10002,7 @@
 
   Redirect = {
     init: function() {
-      var archive, archives, boardID, boards, data, files, id, name, o, record, software, type, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
+      var archive, archives, boardID, boards, data, files, id, name, o, record, software, type, _i, _j, _len, _len1, _ref, _ref1, _ref2;
       o = {
         thread: {},
         post: {},
@@ -10017,6 +10017,19 @@
           files: files,
           data: data
         };
+        software = data.software;
+        for (_j = 0, _len1 = boards.length; _j < _len1; _j++) {
+          boardID = boards[_j];
+          if (!(boardID in o.thread)) {
+            o.thread[boardID] = data;
+          }
+          if (!(boardID in o.post || software !== 'foolfuuka')) {
+            o.post[boardID] = data;
+          }
+          if (!(boardID in o.file || __indexOf.call(files, boardID) < 0)) {
+            o.file[boardID] = data;
+          }
+        }
       }
       _ref2 = Conf['selectedArchives'];
       for (boardID in _ref2) {
@@ -10031,23 +10044,6 @@
             continue;
           }
           o[type][boardID] = archive.data;
-        }
-      }
-      _ref3 = Redirect.archives;
-      for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
-        _ref4 = _ref3[_j], data = _ref4.data, boards = _ref4.boards, files = _ref4.files;
-        software = data.software;
-        for (_k = 0, _len2 = boards.length; _k < _len2; _k++) {
-          boardID = boards[_k];
-          if (!(boardID in o.thread)) {
-            o.thread[boardID] = data;
-          }
-          if (!(boardID in o.post || software !== 'foolfuuka')) {
-            o.post[boardID] = data;
-          }
-          if (!(boardID in o.file || __indexOf.call(files, boardID) < 0)) {
-            o.file[boardID] = data;
-          }
         }
       }
       return Redirect.data = o;
