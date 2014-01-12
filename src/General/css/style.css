@@ -164,6 +164,8 @@ div.center:not(.ad-cnt) {
 #header-bar {
   border-width: 0;
   transition: all .1s .05s ease-in-out;
+}
+:root.fixed #header-bar {
   box-shadow: -5px 1px 10px rgba(0, 0, 0, 0.20);
 }
 #custom-board-list .current {

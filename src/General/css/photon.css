@@ -18,10 +18,10 @@
 :root.photon #header-bar a, :root.photon #notifications a {
   color: #FF6600;
 }
-:root.photon #custom-board-list a.current {
+:root.photon.fixed #custom-board-list a.current {
   border-bottom: 1px solid rgba(0,74,153,0.2);
 }
-:root.photon #custom-board-list .current:hover {
+:root.photon.fixed #custom-board-list .current:hover {
   border-bottom-color: rgba(255,51,0,0.2);
 }
 
