@@ -1,6 +1,16 @@
-<<<<<<< HEAD
-### v2.7.5 
-*2014-01-04*
+## v2.8.0 
+*2014-01-11*
+
+
+**seaweedchan**:
+- Various fixes and improvements for the JSONified index
+- Removed unnecessary index refresh notifications
+- Various style tweaks
+
+**Zixaphir**:
+- Various fixes and improvements for the JSONified index
+- We now use JSON for navigating between boards and threads. This should result in various bandwidth and performance improvements. Probably.
+- Users are now subjected to whatever terrible code went into that previous feature. :3
 
 ### v2.7.4 
 *2013-12-27*
@@ -56,10 +66,6 @@
 
 ## v2.6.0 
 *2013-11-27*
-=======
-## v1.3.0 
-*2014-01-10*
->>>>>>> json
 
 **MayhemYDG**:
 - **New option**: `Auto-hide header on scroll`.
@@ -103,42 +109,10 @@
  - You cannot post an image reply immediately after a non-image reply anymore.
 - Various minor fixes
 
-<<<<<<< HEAD
 ### v2.5.1 
 *2013-10-20*
 **Zixaphir**:
 - Infinite Scrolling Bugfix (chrome)
-=======
-**seaweedchan**:
-- Various fixes and improvements for the JSONified index
-- Removed index refresh notifications
-- Various style tweaks
-
-**Zixaphir**:
-- FappeTyme and WerkTyme now persist across sessions.
-- Various fixes and improvements for the JSONified index
-
-### v1.2.45 
-*2014-01-07*
-
-**seaweedchan**:
-- Remove moot's plea to remove ad-blocker
-- Hopefully fix NSFW themes and 404 image redirecting
-- Update archive list
-
-**Zixaphir**:
-- Fix optional increase for thread updater
-
-### v1.2.44 
-*2013-12-06*
-
-**MayhemYDG**:
-- Cooldown fix (You can no longer post an image reply immediately after a text reply)
-- Fix for 4chan markup change that caused a lot of errors
-
-**seaweedchan**:
-- Fix catalog links option
->>>>>>> json
 
 ### v2.4.1 
 *2013-10-13*
