@@ -13,7 +13,7 @@ QR.captcha =
     imgContainer = $.el 'div',
       className: 'captcha-img'
       title: 'Reload reCAPTCHA'
-      innerHTML: '<img>'
+      innerHTML: '<div><img></div>'
     input = $.el 'input',
       className:    'captcha-input field'
       title:        'Verification'
@@ -22,7 +22,7 @@ QR.captcha =
       tabIndex:     45
     @nodes =
       challenge: $.id 'recaptcha_challenge_field_holder'
-      img:       imgContainer.firstChild
+      img:       $ 'img', imgContainer
       input:     input
 
     new MutationObserver(@load.bind @).observe @nodes.challenge,

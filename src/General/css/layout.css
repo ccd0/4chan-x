@@ -1586,10 +1586,11 @@ input:checked + .rice {
 .textarea-resize-none #qr textarea {
   resize: none;
 }
-.captcha-img {
+.captcha-img div {
   margin: 1px 0 0;
   text-align: center;
   line-height: 0;
+  background-color: #fff;
 }
 .captcha-img img {
   width: 246px;

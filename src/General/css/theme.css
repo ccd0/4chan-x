@@ -52,7 +52,7 @@ html {
   background: #{backgroundC};
   border-color: #{theme["Reply Border"]};
 }
-.captcha-img img {
+.captcha-filter .captcha-img div {
   <%= filter %>: url('<% if (type === 'userscript') { %>data:image/svg+xml,#{Style.svgs.captchafilter.replace /(\'|\")/g, '%22'}<% } %>#captcha-filter');
 }
 .silhouettize-mascots #mascot img,
