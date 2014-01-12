@@ -17,7 +17,7 @@ Redirect =
 
     for boardID, record of Conf['selectedArchives']
       for type, id of record when (archive = archives[id])
-        boards = if type is 'file' then archive.file else archive.boards
+        boards = if type is 'file' then archive.files else archive.boards
         continue unless boardID in boards
         o[type][boardID] = archive.data
 
