@@ -83,17 +83,25 @@
 
 <fieldset>
   <legend>Unread Favicon <span class=warning #{if Conf['Unread Favicon'] then 'hidden' else ''}>is disabled.</span></legend>
-  <div>
-    <select name=favicon>
-      <option value=ferongr>ferongr</option>
-      <option value=xat->xat-</option>
-      <option value=Mayhem>Mayhem</option>
-      <option value=4chanJS>4chanJS</option>
-      <option value=Original>Original</option>
-    </select>
-    <span id=favicon-preview></span>
-  </div>
+  <select name=favicon>
+    <option value=ferongr>ferongr</option>
+    <option value=xat->xat-</option>
+    <option value=Mayhem>Mayhem</option>
+    <option value=4chanJS>4chanJS</option>
+    <option value=Original>Original</option>
+  </select>
+  <span id=favicon-preview></span>
 </fieldset>
+
+<fieldset>
+  <legend>Emoji <span class=warning #{if Conf['Emoji'] then 'hidden' else ''}>is disabled.</span></legend>
+  <div>
+    Sage Icon: <select name=sageEmoji>
+      <option value="4chan SS">4chan SS</option>
+      <option value="appchan">appchan</option>
+    </select>
+    <span class=sage-icon-preview></span>
+  </div>
 
 <fieldset>
   <legend>Thread Updater <span class=warning #{if Conf['Thread Updater'] then 'hidden' else ''}>is disabled.</span></legend>
