@@ -12145,11 +12145,7 @@
         } else {
           Navigate.updateBoard(boardID);
         }
-        if (Conf['Index Mode'] === 'paged' && pageNum) {
-          return Index.update(pageNum);
-        } else {
-          return Index.update();
-        }
+        return Index.update(pageNum);
       } else {
         onload = function(e) {
           return Navigate.load(e);

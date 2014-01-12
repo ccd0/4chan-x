@@ -214,10 +214,7 @@ Navigate =
       else
         Navigate.updateBoard boardID
 
-      if Conf['Index Mode'] is 'paged' and pageNum
-        Index.update pageNum
-      else
-        Index.update()
+      Index.update pageNum
 
     # Moving from index to thread or thread to thread
     else
