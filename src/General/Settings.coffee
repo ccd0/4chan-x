@@ -309,20 +309,20 @@ Settings =
     $.on $('input[name="Custom CSS"]', section), 'change', Settings.togglecss
     $.on $.id('apply-css'), 'click', Settings.usercss
 
-    boards = {}
-    for name, archive of Redirect.archives
-      for boardID in archive.boards
-        data = boards[boardID] or=
+    archBoards = {}
+    for {name, boards, files, data} in Redirect.archives
+      for boardID in boards
+        o = archBoards[boardID] or=
           thread: []
           post:   []
           file:   []
-        data.thread.push name
-        data.post.push   name if archive.software is 'foolfuuka'
-        data.file.push   name if boardID in archive.files
+        o.thread.push name
+        o.post.push   name if data.software is 'foolfuuka'
+        o.file.push   name if boardID in files
 
     rows = []
     boardOptions = []
-    for boardID in Object.keys(boards).sort() # Alphabetical order
+    for boardID in Object.keys(archBoards).sort() # Alphabetical order
       row = $.el 'tr',
         className: "board-#{boardID}"
       row.hidden = boardID isnt g.BOARD.ID
@@ -332,8 +332,8 @@ Settings =
         value:       "board-#{boardID}"
         selected:    boardID is g.BOARD.ID
 
-      data = boards[boardID]
-      $.add row, Settings.addArchiveCell boardID, data, item for item in ['thread', 'post', 'file']
+      o = archBoards[boardID]
+      $.add row, Settings.addArchiveCell boardID, o, item for item in ['thread', 'post', 'file']
       rows.push row
 
     $.add $('tbody', section), rows
