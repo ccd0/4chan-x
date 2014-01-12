@@ -93,10 +93,10 @@ Keybinds =
       when Conf['Open front page']
         $.open "/#{g.BOARD}/"
       when Conf['Next page']
-        return unless g.VIEW is 'index' and Conf['Index Mode'] is 'paged'
+        return unless g.VIEW is 'index' and Conf['Index Mode'] isnt 'all pages'
         $('.next button', Index.pagelist).click()
       when Conf['Previous page']
-        return unless g.VIEW is 'index' and Conf['Index Mode'] is 'paged'
+        return unless g.VIEW is 'index' and Conf['Index Mode'] isnt 'all pages'
         $('.prev button', Index.pagelist).click()
       when Conf['Search form']
         Index.searchInput.focus()
