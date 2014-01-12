@@ -365,5 +365,6 @@ MascotTools =
     reader.readAsText file
 
   reposition: ->
+    return unless Style.mascot
     mascot = Mascots[Conf['mascot']]
     Style.mascot.textContent = """<%= grunt.file.read('src/General/css/mascot.css') %>"""
