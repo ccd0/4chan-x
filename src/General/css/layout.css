@@ -1290,14 +1290,11 @@ a.useremail:last-of-type {
   border-bottom: 0;
 }
 .has-submenu::after {
-  content: "";
-  border-left: .5em solid;
-  border-top: .3em solid transparent;
-  border-bottom: .3em solid transparent;
+  content: "\uf141";
   display: inline-block;
   margin: .3em;
   position: absolute;
-  right: 0;
+  right: .2em;
 }
 .submenu {
   display: none;
