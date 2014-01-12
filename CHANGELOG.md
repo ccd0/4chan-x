@@ -1,3 +1,14 @@
+### v1.3.1 
+*2014-01-12*
+
+**seaweeedchan**:
+- Turn infinite scrolling into new index mode
+- Fix style issues with non-fixed header
+
+**Zixaphir**:
+- Add old infinite scrolling functionality
+- Fix Redirect errors
+
 ## v1.3.0 
 *2014-01-10*
 
