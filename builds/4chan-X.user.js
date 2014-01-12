@@ -2143,6 +2143,10 @@
             })
           }, {
             el: $.el('label', {
+              innerHTML: '<input type=radio name="Index Mode" value="infinite"> Infinite scrolling'
+            })
+          }, {
+            el: $.el('label', {
               innerHTML: '<input type=radio name="Index Mode" value="all pages"> All threads'
             })
           }
@@ -2276,7 +2280,7 @@
     },
     scroll: $.debounce(100, function() {
       var nodes, nodesPerPage, pageNum;
-      if (Conf['Index Mode'] !== 'paged' || ((d.body.scrollTop || doc.scrollTop) <= doc.scrollHeight - (300 + window.innerHeight))) {
+      if (Index.req || Conf['Index Mode'] !== 'infinite' || ((d.body.scrollTop || doc.scrollTop) <= doc.scrollHeight - (300 + window.innerHeight))) {
         return;
       }
       pageNum = Index.getCurrentPage() + 1;
@@ -2365,7 +2369,7 @@
       return +window.location.pathname.split('/')[2];
     },
     userPageNav: function(pageNum) {
-      if (Conf['Refreshed Navigation'] && Conf['Index Mode'] === 'paged') {
+      if (Conf['Refreshed Navigation'] && Conf['Index Mode'] !== 'all pages') {
         return Index.update(pageNum);
       } else {
         return Index.pageNav(pageNum);
@@ -2380,7 +2384,7 @@
     },
     pageLoad: function(pageNum) {
       Index.currentPage = pageNum;
-      if (Conf['Index Mode'] !== 'paged') {
+      if (Conf['Index Mode'] === 'all pages') {
         return;
       }
       Index.buildIndex();
@@ -2398,7 +2402,7 @@
       return Math.max(0, Index.getPagesNum() - 1);
     },
     togglePagelist: function() {
-      return Index.pagelist.hidden = Conf['Index Mode'] !== 'paged';
+      return Index.pagelist.hidden = Conf['Index Mode'] === 'all pages';
     },
     buildPagelist: function() {
       var a, i, maxPageNum, nodes, pagesRoot, _i;
@@ -2686,7 +2690,7 @@
     },
     buildIndex: function() {
       var nodes, nodesPerPage, pageNum;
-      if (Conf['Index Mode'] === 'paged') {
+      if (Conf['Index Mode'] !== 'all pages') {
         pageNum = Index.getCurrentPage();
         nodesPerPage = Index.threadsNumPerPage * 2;
         nodes = Index.sortedNodes.slice(nodesPerPage * pageNum, nodesPerPage * (pageNum + 1));
@@ -2723,7 +2727,7 @@
         Index.searchInput.removeAttribute('data-searching');
       }
       Index.sort();
-      if (Conf['Index Mode'] === 'paged') {
+      if (Conf['Index Mode'] !== 'all pages') {
         pageNum = Math.min(pageNum, Index.getMaxPageNum());
       }
       Index.buildPagelist();
@@ -11150,13 +11154,13 @@
           $.open("/" + g.BOARD + "/");
           break;
         case Conf['Next page']:
-          if (!(g.VIEW === 'index' && Conf['Index Mode'] === 'paged')) {
+          if (!(g.VIEW === 'index' && Conf['Index Mode'] !== 'all pages')) {
             return;
           }
           $('.next button', Index.pagelist).click();
           break;
         case Conf['Previous page']:
-          if (!(g.VIEW === 'index' && Conf['Index Mode'] === 'paged')) {
+          if (!(g.VIEW === 'index' && Conf['Index Mode'] !== 'all pages')) {
             return;
           }
           $('.prev button', Index.pagelist).click();
