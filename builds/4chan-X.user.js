@@ -11920,7 +11920,7 @@
       return $.on(replyLink, 'click', Navigate.navigate);
     },
     post: function() {
-      var hashlink, postlink, _i, _len, _ref, _results;
+      var hashlink, postlink, _i, _len, _ref;
       if (g.VIEW === 'thread' && this.thread.ID === g.THREADID) {
         return;
       }
@@ -11930,12 +11930,10 @@
         return;
       }
       _ref = $$('.hashlink', this.nodes.comment);
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         hashlink = _ref[_i];
-        _results.push($.on(hashlink, 'click', Navigate.navigate));
+        $.on(hashlink, 'click', Navigate.navigate);
       }
-      return _results;
     },
     clean: function() {
       var posts, threads;

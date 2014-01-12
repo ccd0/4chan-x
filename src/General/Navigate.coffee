@@ -2,7 +2,7 @@ Navigate =
   path: window.location.pathname
   init: ->
     return if g.VIEW is 'catalog' or g.BOARD.ID is 'f'
-    
+
     # blink/webkit throw a popstate on page load. Not what we want.
     $.ready ->
       $.on window, 'popstate', Navigate.popstate
@@ -30,6 +30,8 @@ Navigate =
 
     for hashlink in $$ '.hashlink', @nodes.comment
       $.on hashlink, 'click', Navigate.navigate
+
+    return
 
   clean: ->
     {posts, threads} = g
@@ -133,7 +135,7 @@ Navigate =
           error: err
         ]
         return false
-      
+
       return unless board
       Navigate.updateTitle board
 
@@ -147,7 +149,7 @@ Navigate =
         ['ws',  'Yotsuba B New']
       else
         ['nws', 'Yotsuba New']
-      
+
       $.globalEval "var style_group = '#{style[1]}'"
 
       mainStyleSheet = $ 'link[title=switch]',        d.head
