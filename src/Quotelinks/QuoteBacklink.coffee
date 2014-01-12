@@ -10,12 +10,12 @@ QuoteBacklink =
   # Second callback adds relevant containers into posts.
   # This is is so that fetched posts can get their backlinks,
   # and that as much backlinks are appended in the background as possible.
+  containers: {}
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Quote Backlinks']
 
     format = Conf['backlink'].replace /%id/g, "' + id + '"
     @funk  = Function 'id', "return '#{format}'"
-    @containers = {}
     Post.callbacks.push
       name: 'Quote Backlinking Part 1'
       cb:   @firstNode

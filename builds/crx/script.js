@@ -4693,6 +4693,7 @@
   };
 
   QuoteBacklink = {
+    containers: {},
     init: function() {
       var format;
       if (g.VIEW === 'catalog' || !Conf['Quote Backlinks']) {
@@ -4700,7 +4701,6 @@
       }
       format = Conf['backlink'].replace(/%id/g, "' + id + '");
       this.funk = Function('id', "return '" + format + "'");
-      this.containers = {};
       Post.callbacks.push({
         name: 'Quote Backlinking Part 1',
         cb: this.firstNode
@@ -11924,6 +11924,7 @@
       g.threads = {};
       g.BOARD.posts = {};
       g.BOARD.threads = {};
+      QuoteBacklink.containers = {};
       return $.rmAll($('.board'));
     },
     features: [['Thread Excerpt', ThreadExcerpt], ['Unread Count', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Expansion', ExpandThread]],
