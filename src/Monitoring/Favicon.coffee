@@ -1,12 +1,11 @@
 Favicon =
   init: ->
-    $.ready ->
-      Favicon.el      = $ 'link[rel="shortcut icon"]', d.head
-      Favicon.el.type = 'image/x-icon'
-      {href}          = Favicon.el
-      Favicon.SFW     = /ws\.ico$/.test href
-      Favicon.default = href
-      Favicon.switch()
+    Favicon.el      = $ 'link[rel="shortcut icon"]', d.head
+    Favicon.el.type = 'image/x-icon'
+    {href}          = Favicon.el
+    Favicon.SFW     = /ws\.ico$/.test href
+    Favicon.default = href
+    Favicon.switch()
 
   switch: ->
     switch Conf['favicon']
