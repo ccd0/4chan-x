@@ -9,19 +9,17 @@ Redirect =
     archives = {}
     for {name, boards, files, data} in Redirect.archives
       archives[name] = {boards, files, data}
+      {software} = data
+      for boardID in boards
+        o.thread[boardID] = data unless boardID of o.thread
+        o.post[boardID]   = data unless boardID of o.post   or software isnt 'foolfuuka'
+        o.file[boardID]   = data unless boardID of o.file   or boardID  not in files
 
     for boardID, record of Conf['selectedArchives']
       for type, id of record when (archive = archives[id])
         boards = if type is 'file' then archive.file else archive.boards
         continue unless boardID in boards
         o[type][boardID] = archive.data
-
-    for {data, boards, files} in Redirect.archives
-      {software} = data
-      for boardID in boards
-        o.thread[boardID] = data unless boardID of o.thread
-        o.post[boardID]   = data unless boardID of o.post   or software isnt 'foolfuuka'
-        o.file[boardID]   = data unless boardID of o.file   or boardID  not in files
 
     Redirect.data = o
 

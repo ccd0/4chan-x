@@ -34,6 +34,8 @@ Navigate =
     g.BOARD.posts   = {}
     g.BOARD.threads = {}
 
+    QuoteBacklink.containers = {}
+
     # Delete nodes
     $.rmAll $ '.board'
 
