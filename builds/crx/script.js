@@ -15629,14 +15629,13 @@
   };
 
   Navigate = {
+    path: window.location.pathname,
     init: function() {
       if (g.VIEW === 'catalog' || g.BOARD.ID === 'f') {
         return;
       }
-      ({
-        ready: function() {
-          return $.on(window, 'popstate', Navigate.popstate);
-        }
+      $.ready(function() {
+        return $.on(window, 'popstate', Navigate.popstate);
       });
       Thread.callbacks.push({
         name: 'Navigate',
@@ -15656,12 +15655,20 @@
       return $.on(replyLink, 'click', Navigate.navigate);
     },
     post: function() {
-      var postLink;
+      var hashlink, postlink, _i, _len, _ref;
       if (g.VIEW === 'thread' && this.thread.ID === g.THREADID) {
         return;
       }
-      postLink = $('a[title="Highlight this post"]', this.nodes.info);
-      return $.on(postLink, 'click', Navigate.navigate);
+      postlink = $('a[title="Highlight this post"]', this.nodes.info);
+      $.on(postlink, 'click', Navigate.navigate);
+      if (!Conf['Quote Hash Navigation']) {
+        return;
+      }
+      _ref = $$('.hashlink', this.nodes.comment);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        hashlink = _ref[_i];
+        $.on(hashlink, 'click', Navigate.navigate);
+      }
     },
     clean: function() {
       var posts, threads;
@@ -15829,13 +15836,12 @@
       return $('.boardTitle').textContent = d.title = "/" + board + "/ - " + title;
     },
     navigate: function(e) {
-      var boardID, hash, onload, pageNum, path, threadID, view;
+      var boardID, onload, pageNum, path, threadID, view;
       if (this.hostname !== 'boards.4chan.org' || window.location.hostname === 'rs.4chan.org' || (e && (e.shiftKey || (e.type === 'click' && e.button !== 0)))) {
         return;
       }
       $.addClass(Index.button, 'fa-spin');
       path = this.pathname.split('/');
-      hash = this.hash;
       if (path[0] === '') {
         path.shift();
       }
@@ -15843,12 +15849,17 @@
       if (view === 'catalog' || ('f' === boardID || 'f' === g.BOARD.ID)) {
         return;
       }
+      path = this.pathname;
+      if (this.hash) {
+        path += this.hash;
+      }
       if (e) {
         e.preventDefault();
       }
       if (this.id !== 'popState') {
-        history.pushState(null, '', this.pathname);
+        history.pushState(null, '', path);
       }
+      Navigate.path = this.pathname;
       if (threadID) {
         view = 'thread';
       } else {
@@ -15867,14 +15878,10 @@
         } else {
           Navigate.updateBoard(boardID);
         }
-        if (Conf['Index Mode'] === 'paged' && pageNum) {
-          return Index.update(pageNum);
-        } else {
-          return Index.update();
-        }
+        return Index.update(pageNum);
       } else {
         onload = function(e) {
-          return Navigate.load(e, hash);
+          return Navigate.load(e);
         };
         Navigate.req = $.ajax("//a.4cdn.org/" + boardID + "/res/" + threadID + ".json", {
           onabort: onload,
@@ -15952,7 +15959,8 @@
       Main.callbackNodes(Thread, [thread]);
       Main.callbackNodes(Post, posts);
       Navigate.ready('Quote Threading', QuoteThreading.force, Conf['Quote Threading']);
-      return Navigate.buildThread();
+      Navigate.buildThread();
+      return Header.hashScroll.call(window);
     },
     buildThread: function() {
       var board;
@@ -15967,6 +15975,9 @@
     },
     popstate: function() {
       var a;
+      if (window.location.pathname === Navigate.path) {
+        return;
+      }
       a = $.el('a', {
         href: window.location,
         id: 'popState'

@@ -1,9 +1,10 @@
 Navigate =
+  path: window.location.pathname
   init: ->
     return if g.VIEW is 'catalog' or g.BOARD.ID is 'f'
-    
+
     # blink/webkit throw a popstate on page load. Not what we want.
-    ready: ->
+    $.ready ->
       $.on window, 'popstate', Navigate.popstate
 
     Thread.callbacks.push
@@ -22,8 +23,15 @@ Navigate =
   post: ->
     # We don't need to reload the thread inside the thread
     return if g.VIEW is 'thread' and @thread.ID is g.THREADID
-    postLink = $ 'a[title="Highlight this post"]', @nodes.info
-    $.on postLink, 'click', Navigate.navigate
+    postlink = $ 'a[title="Highlight this post"]', @nodes.info
+    $.on postlink, 'click', Navigate.navigate
+
+    return unless Conf['Quote Hash Navigation']
+
+    for hashlink in $$ '.hashlink', @nodes.comment
+      $.on hashlink, 'click', Navigate.navigate
+
+    return
 
   clean: ->
     {posts, threads} = g
@@ -125,7 +133,7 @@ Navigate =
           error: err
         ]
         return false
-      
+
       return unless board
       Navigate.updateTitle board
 
@@ -139,7 +147,7 @@ Navigate =
         ['ws',  'Yotsuba B New']
       else
         ['nws', 'Yotsuba New']
-      
+
       $.globalEval "var style_group = '#{style[1]}'"
 
       mainStyleSheet = $ 'link[title=switch]',        d.head
@@ -174,14 +182,17 @@ Navigate =
     $.addClass Index.button, 'fa-spin'
 
     path = @pathname.split '/'
-    hash = @hash
     path.shift() if path[0] is ''
     [boardID, view, threadID] = path
 
     return if view is 'catalog' or 'f' in [boardID, g.BOARD.ID]
 
+    path = @pathname
+    path += @hash if @hash
+
     e.preventDefault() if e
-    history.pushState null, '', @pathname unless @id is 'popState'
+    history.pushState null, '', path unless @id is 'popState'
+    Navigate.path = @pathname
 
     if threadID
       view = 'thread'
@@ -201,14 +212,11 @@ Navigate =
       else
         Navigate.updateBoard boardID
 
-      if Conf['Index Mode'] is 'paged' and pageNum
-        Index.update pageNum
-      else
-        Index.update()
+      Index.update pageNum
 
     # Moving from index to thread or thread to thread
     else
-      onload = (e) -> Navigate.load e, hash
+      onload = (e) -> Navigate.load e
       Navigate.req = $.ajax "//a.4cdn.org/#{boardID}/res/#{threadID}.json",
         onabort:   onload
         onloadend: onload
@@ -277,6 +285,7 @@ Navigate =
     Navigate.ready 'Quote Threading', QuoteThreading.force, Conf['Quote Threading']
 
     Navigate.buildThread()
+    Header.hashScroll.call window
 
   buildThread: ->
     board = $ '.board'
@@ -288,7 +297,8 @@ Navigate =
       Unread.read()
       Unread.update()
 
-  popstate: -> 
+  popstate: ->
+    return if window.location.pathname is Navigate.path
     a = $.el 'a',
       href: window.location
       id:   'popState'
