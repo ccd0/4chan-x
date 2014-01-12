@@ -13465,11 +13465,11 @@
       return $.on(div, 'click', Rice.cb.check);
     },
     select: function(select) {
-      var div;
+      var div, _ref;
       $.addClass(select, 'riced');
       div = $.el('div', {
         className: 'selectrice',
-        innerHTML: "<div>" + (select.options[select.selectedIndex || '0'].textContent || '') + "</div>"
+        innerHTML: "<div>" + (((_ref = select.options[select.selectedIndex || '0']) != null ? _ref.textContent : void 0) || '') + "</div>"
       });
       $.on(div, "click", Rice.cb.select);
       return $.after(select, div);
