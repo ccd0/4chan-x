@@ -48,11 +48,12 @@ Main =
 
   initFeatures: ->
     # Check if the current board we're on is SFW or not, so we can handle options that need to know that.
-    g.TYPE = 
-      if g.BOARD.ID in ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'pol', 'r', 'r9k', 'rs', 's', 's4s', 'soc', 't', 'u', 'y']
-        'nsfw'
-      else
-        'sfw'
+    Favicon.el      = $ 'link[rel="shortcut icon"]', d.head
+    Favicon.el.type = 'image/x-icon'
+    {href}          = Favicon.el
+    Favicon.SFW     = /ws\.ico$/.test href
+    Favicon.default = href
+    g.TYPE = if Favicon.SFW then 'sfw' else 'nsfw'
 
     $.extend Themes,  Conf["userThemes"]
     $.extend Mascots, Conf["userMascots"]

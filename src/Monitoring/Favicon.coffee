@@ -1,13 +1,5 @@
 Favicon =
   init: ->
-    Favicon.el      = $ 'link[rel="shortcut icon"]', d.head
-    Favicon.el.type = 'image/x-icon'
-    {href}          = Favicon.el
-    Favicon.SFW     = /ws\.ico$/.test href
-    Favicon.default = href
-    Favicon.switch()
-
-  switch: ->
     t = 'data:image/png;base64,'
     f = Favicon
     [f.unreadDead, funreadDeadY, f.unreadSFW, f.unreadSFWY, f.unreadNSFW, f.unreadNSFWY] = switch Conf['favicon']

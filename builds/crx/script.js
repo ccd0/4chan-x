@@ -10949,15 +10949,6 @@
 
   Favicon = {
     init: function() {
-      var href;
-      Favicon.el = $('link[rel="shortcut icon"]', d.head);
-      Favicon.el.type = 'image/x-icon';
-      href = Favicon.el.href;
-      Favicon.SFW = /ws\.ico$/.test(href);
-      Favicon["default"] = href;
-      return Favicon["switch"]();
-    },
-    "switch": function() {
       var f, funreadDeadY, t, _ref;
       t = 'data:image/png;base64,';
       f = Favicon;
@@ -16527,7 +16518,7 @@
       return this.nextElementSibling.innerHTML = funk(FileInfo, data);
     },
     favicon: function() {
-      Favicon["switch"]();
+      Favicon.init();
       if (g.VIEW === 'thread' && Conf['Unread Favicon']) {
         Unread.update();
       }
@@ -17177,8 +17168,13 @@
       });
     },
     initFeatures: function() {
-      var err, feature, name, _i, _len, _ref, _ref1, _ref2, _ref3;
-      g.TYPE = (_ref = g.BOARD.ID) === 'b' || _ref === 'd' || _ref === 'e' || _ref === 'gif' || _ref === 'h' || _ref === 'hc' || _ref === 'hm' || _ref === 'hr' || _ref === 'pol' || _ref === 'r' || _ref === 'r9k' || _ref === 'rs' || _ref === 's' || _ref === 's4s' || _ref === 'soc' || _ref === 't' || _ref === 'u' || _ref === 'y' ? 'nsfw' : 'sfw';
+      var err, feature, href, name, _i, _len, _ref, _ref1, _ref2;
+      Favicon.el = $('link[rel="shortcut icon"]', d.head);
+      Favicon.el.type = 'image/x-icon';
+      href = Favicon.el.href;
+      Favicon.SFW = /ws\.ico$/.test(href);
+      Favicon["default"] = href;
+      g.TYPE = Favicon.SFW ? 'sfw' : 'nsfw';
       $.extend(Themes, Conf["userThemes"]);
       $.extend(Mascots, Conf["userMascots"]);
       if (Conf["NSFW/SFW Mascots"]) {
@@ -17189,7 +17185,7 @@
       if (Conf["NSFW/SFW Themes"]) {
         Conf["theme"] = Conf["theme_" + g.TYPE];
       }
-      if ((_ref1 = g.BOARD.ID) === 'z' || _ref1 === 'fk') {
+      if ((_ref = g.BOARD.ID) === 'z' || _ref === 'fk') {
         return Style.init();
       }
       switch (location.hostname) {
@@ -17207,8 +17203,8 @@
           return;
         case 'i.4cdn.org':
           $.ready(function() {
-            var URL, pathname, _ref2;
-            if (Conf['404 Redirect'] && ((_ref2 = d.title) === '4chan - Temporarily Offline' || _ref2 === '4chan - 404 Not Found')) {
+            var URL, pathname, _ref1;
+            if (Conf['404 Redirect'] && ((_ref1 = d.title) === '4chan - Temporarily Offline' || _ref1 === '4chan - 404 Not Found')) {
               Redirect.init();
               pathname = location.pathname.split('/');
               URL = Redirect.to('file', {
@@ -17222,9 +17218,9 @@
           });
           return;
       }
-      _ref2 = Main.features;
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        _ref3 = _ref2[_i], name = _ref3[0], feature = _ref3[1];
+      _ref1 = Main.features;
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        _ref2 = _ref1[_i], name = _ref2[0], feature = _ref2[1];
         try {
           feature.init();
         } catch (_error) {

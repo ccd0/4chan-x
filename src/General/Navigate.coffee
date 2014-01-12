@@ -156,7 +156,7 @@ Navigate =
       Favicon.SFW = sfw
       Favicon.el.href = "//s.4cdn.org/image/favicon#{if sfw then '-ws' else ''}.ico"
       $.add d.head, Favicon.el # Changing the href alone doesn't update the icon on Firefox
-      Favicon.switch()
+      Favicon.init()
 
       mainStyleSheet.href = newStyleSheet.href
 

@@ -411,7 +411,7 @@ Settings =
     @nextElementSibling.innerHTML = funk FileInfo, data
 
   favicon: ->
-    Favicon.switch()
+    Favicon.init()
     Unread.update() if g.VIEW is 'thread' and Conf['Unread Favicon']
     $.id('favicon-preview').innerHTML = """
       <img src=#{Favicon.default}>
