@@ -17186,12 +17186,6 @@
         'CachedTitles': {}
       });
       return $.get(Conf, function(items) {
-        if (items.userMascots instanceof Array) {
-          $.set('userMascots', items.userMascots = {});
-        }
-        if (items.userThemes instanceof Array) {
-          $.set('userThemes', items.userThemes = {});
-        }
         $.extend(Conf, items);
         return Main.initFeatures();
       });

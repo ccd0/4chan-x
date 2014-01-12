@@ -43,9 +43,6 @@ Main =
       'CachedTitles':         {}
 
     $.get Conf, (items) ->
-      # TempFix for accidental declaration as an array. Remove by 2.4.?
-      $.set 'userMascots', items.userMascots = {} if items.userMascots instanceof Array
-      $.set 'userThemes',  items.userThemes  = {} if items.userThemes  instanceof Array
       $.extend Conf, items
       Main.initFeatures()
 
