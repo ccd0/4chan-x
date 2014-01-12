@@ -13160,7 +13160,7 @@
                   title: "imagefile",
                   hidden: "hidden"
                 });
-                $.on(input, 'click', FileRice);
+                $.on(input, 'click', fileRice);
                 $.on(fileInput, 'change', MascotTools.uploadImage);
                 $.after(input, fileInput);
                 break;
