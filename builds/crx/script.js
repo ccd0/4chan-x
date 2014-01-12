@@ -11887,10 +11887,8 @@
       if (g.VIEW === 'catalog' || g.BOARD.ID === 'f') {
         return;
       }
-      ({
-        ready: function() {
-          return $.on(window, 'popstate', Navigate.popstate);
-        }
+      $.ready(function() {
+        return $.on(window, 'popstate', Navigate.popstate);
       });
       Thread.callbacks.push({
         name: 'Navigate',

@@ -3,7 +3,7 @@ Navigate =
     return if g.VIEW is 'catalog' or g.BOARD.ID is 'f'
     
     # blink/webkit throw a popstate on page load. Not what we want.
-    ready: ->
+    $.ready ->
       $.on window, 'popstate', Navigate.popstate
 
     Thread.callbacks.push
