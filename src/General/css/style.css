@@ -90,6 +90,7 @@ div.navLinks {
 .reply > .file > .fileText {
   margin: 0 20px;
 }
+.inlined + .hashlink,
 [hidden] {
   display: none !important;
 }
