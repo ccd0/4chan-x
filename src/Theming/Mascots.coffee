@@ -32,24 +32,26 @@ MascotTools =
       'rmClass'
     ] doc, 'silhouettize-mascots'
 
-    el = $.el 'img'
-    $.on el, 'error', MascotTools.error
+    el  = $.el 'img' # new mascot
+    img = @el.firstElementChild # old mascot, if any
 
-    el.src = mascot.image
+    unless mascot.image is ''
+      $.on el, 'error', MascotTools.error
+      el.src = mascot.image
 
-    $.off img = @el.firstElementChild, 'error', MascotTools.error
-
+    $.off img, 'error', MascotTools.error
     $.replace img, el
 
     Style.sheets.mascots.textContent = """<%= grunt.file.read('src/General/css/mascot.css') %>"""
 
   error: ->
+    return unless @src
     @src = MascotTools.imageError if MascotTools.imageError
     el = $.el 'canvas',
       width:  248
       height: 100
     ctx = el.getContext('2d')
-    ctx.font         = "50px #{Conf['Font']}"
+    ctx.font         = "40px #{Conf['Font']}"
     ctx.fillStyle    = (new Color (Themes[Conf['theme']] or Themes['Yotsuba B'])['Text']).hex()
     ctx.textAlign    = 'center'
     ctx.textBaseline = 'middle'
@@ -60,7 +62,7 @@ MascotTools =
   toggle: ->
     string  = g.MASCOTSTRING
     enabled = Conf[string]
-    return unless len = enabled.length
+    return MascotTools.change {image: ''} unless len = enabled.length
 
     Conf['mascot'] = name = enabled[i = Math.floor(Math.random() * len)]
 

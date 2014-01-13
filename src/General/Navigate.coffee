@@ -139,28 +139,20 @@ Navigate =
 
       return if Favicon.SFW is sfw = !!board.ws_board # Board SFW status hasn't changed
 
-      findStyle = ([type, base]) ->
-        style = d.cookie.match new RegExp "#{type}\_style\=([^;]+)"
-        return [(if style then style[1] else base), "#{type}_style"]
+      g.TYPE = if sfw then 'sfw' else 'nsfw'
+      if Conf["NSFW/SFW Mascots"]
+        g.MASCOTSTRING = "Enabled Mascots #{g.TYPE}"
+        MascotTools.toggle()
 
-      style = findStyle if sfw
-        ['ws',  'Yotsuba B New']
-      else
-        ['nws', 'Yotsuba New']
-
-      $.globalEval "var style_group = '#{style[1]}'"
-
-      mainStyleSheet = $ 'link[title=switch]',        d.head
-      newStyleSheet  = $ "link[title='#{style[0]}']", d.head
+      if Conf["NSFW/SFW Themes"]
+        Conf["theme"] = Conf["theme_#{g.TYPE}"] or if sfw then 'Yotsuba B' else 'Yotsuba'
+        theme = Themes[Conf['theme']] or Themes[if sfw then 'Yotsuba B' else 'Yotsuba']
+        Style.setTheme theme
 
       Favicon.SFW = sfw
       Favicon.el.href = "//s.4cdn.org/image/favicon#{if sfw then '-ws' else ''}.ico"
       $.add d.head, Favicon.el # Changing the href alone doesn't update the icon on Firefox
       Favicon.init()
-
-      mainStyleSheet.href = newStyleSheet.href
-
-      Main.setClass()
 
     fullBoardList   = $ '#full-board-list', Header.boardList
     $.rmClass $('.current', fullBoardList), 'current'

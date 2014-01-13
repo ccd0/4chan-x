@@ -778,6 +778,7 @@ Settings =
     style:
       checked: ->
         $.cb.checked.call @
+        return if @name in ['NSFW/SFW Themes', 'NSFW/SFW Mascots']
         hyphenated = @name.toLowerCase().replace(/^4/, 'four').replace /\s+/g, '-'
         (if @checked then $.addClass else $.rmClass) doc, hyphenated
 
@@ -888,7 +889,7 @@ Settings =
           $.set "theme", @id
         Conf['theme'] = @id
         $.addClass @, 'selectedtheme'
-        Style.sheets.theme.textContent = Style.theme Themes[@id]
+        Style.setTheme Themes[@id]
 
       edit: (e) ->
         e.preventDefault()

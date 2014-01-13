@@ -580,6 +580,7 @@ th {
 .pagination-sticky-bottom.rounded-edges .pagelist {
   border-radius: 3px 3px 0 0;
 }
+.thread .pagelist,
 .pagination-hide .pagelist {
   display: none;
 }

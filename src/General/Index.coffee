@@ -142,13 +142,8 @@ Index =
       Index.buildIndex()
     pageNav: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
-      switch e.target.nodeName
-        when 'BUTTON'
-          a = e.target.parentNode
-        when 'A'
-          a = e.target
-        else
-          return
+      return unless e.target.nodeName is 'A'
+      a = e.target
       return if a.textContent is 'Catalog'
       e.preventDefault()
       Index.userPageNav +a.pathname.split('/')[2]

@@ -194,7 +194,7 @@ ThemeTools =
       @nextSibling.color.importColor()
 
     editTheme[@name] = @value
-    Style.sheets.theme.textContent = Style.theme editTheme
+    Style.setTheme editTheme
 
   uploadImage: (evt, el) ->
     file = evt.target.files[0]
@@ -347,6 +347,6 @@ ThemeTools =
 
   close: ->
     Conf['editMode'] = false
-    Style.sheets.theme.textContent = Style.theme Themes[Conf['theme']]
+    Style.setTheme Themes[Conf['theme']]
     $.rm $.id 'themeConf'
     Settings.open 'Themes'

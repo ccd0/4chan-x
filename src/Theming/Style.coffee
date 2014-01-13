@@ -47,26 +47,11 @@ Style =
 
     for title, cat of Config.style
       for name, setting of cat
-        continue if !Conf[name] or setting[2] is 'text'
+        continue if !Conf[name] or setting[2] is 'text' or name in ['NSFW/SFW Themes', 'NSFW/SFW Mascots']
         hyphenated = "#{name}#{if setting[2] then " #{Conf[name]}" else ""}".toLowerCase().replace(/^4/, 'four').replace /\s+/g, '-'
         $.addClass doc, hyphenated
 
-    if g.VIEW is 'index'
-      pages = (name, text) ->
-        el = $ ".pagelist > .#{name}"
-        elA = $.el 'a',
-          textContent: text
-
-        if (action = el.firstElementChild).nodeName is 'FORM'
-          elA.href = 'javascript:;'
-          $.on elA, 'click', ->
-            action.firstElementChild.click()
-
-        $.add el, elA
-
-      $.asap (-> $ '.mPagelist'), ->
-        pages 'prev', '<'
-        pages 'next', '>'
+    return
 
   readyInit: ->
     Style.padding()
@@ -147,6 +132,8 @@ Style =
         right:  0
 
     """<%= grunt.file.read('src/General/css/dynamic.css').replace(/\s+/g, ' ').trim() %>"""
+  
+  setTheme: (theme) -> Style.sheets.theme.textContent  = Style.theme theme
 
   theme: (theme) ->
     bgColor  = new Color backgroundC = theme["Background Color"]
