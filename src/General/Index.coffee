@@ -1,6 +1,6 @@
 Index =
   init: ->
-    return if g.BOARD.ID is 'f'
+    return if g.BOARD.ID is 'f' or g.VIEW is 'catalog'
 
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'
@@ -83,7 +83,10 @@ Index =
     $.on @pagelist, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
-    $.on $('#returnlink', @navLinks), 'click', Navigate.navigate
+    $.on $('#returnlink', @navLinks),  'click', Navigate.navigate
+    $.on $('#cataloglink', @navLinks), 'click', ->
+      window.location = "//boards.4chan.org/#{g.BOARD}/catalog"
+      
 
     @update() if g.VIEW is 'index'
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
