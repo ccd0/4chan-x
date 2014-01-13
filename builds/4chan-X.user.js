@@ -3108,36 +3108,34 @@
       };
     },
     allQuotelinksLinkingTo: function(post) {
-      var ID, handleClones, qLconcat, quote, quotedPost, quotelinks, quoterPost, _i, _len, _ref, _ref1, _ref2;
+      var ID, handleQuotes, qLconcat, quote, quotedPost, quotelinks, quoterPost, _i, _len, _ref, _ref1, _ref2;
       quotelinks = [];
       qLconcat = function(links) {
         return quotelinks = quotelinks.concat(links);
       };
-      handleClones = function(clones) {
-        var clone, _i, _len;
-        for (_i = 0, _len = clones.length; _i < _len; _i++) {
-          clone = clones[_i];
+      handleQuotes = function(post) {
+        var clone, _i, _len, _ref;
+        qLconcat(post.nodes.quotelinks);
+        _ref = post.clones;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          clone = _ref[_i];
           qLconcat(clone.nodes.quotelinks);
         }
       };
       _ref = g.posts;
       for (ID in _ref) {
         quoterPost = _ref[ID];
-        if (!(_ref1 = post.fullID, __indexOf.call(quoterPost.quotes, _ref1) >= 0)) {
-          continue;
+        if (_ref1 = post.fullID, __indexOf.call(quoterPost.quotes, _ref1) >= 0) {
+          handleQuotes(quoterPost);
         }
-        qLconcat(quoterPost.nodes.quotelinks);
-        handleClones(quoterPost.clones);
       }
       if (Conf['Quote Backlinks']) {
         _ref2 = post.quotes;
         for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
           quote = _ref2[_i];
-          if (!(quotedPost = g.posts[quote])) {
-            continue;
+          if (quotedPost = g.posts[quote]) {
+            handleQuotes(quotedPost);
           }
-          qLconcat(quotedPost.nodes.quotelinks);
-          handleClones(quotedPost.clones);
         }
       }
       return quotelinks.filter(function(quotelink) {
