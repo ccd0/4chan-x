@@ -3121,7 +3121,7 @@
       var ID, handleQuotes, qLconcat, quote, quotedPost, quotelinks, quoterPost, _i, _len, _ref, _ref1, _ref2;
       quotelinks = [];
       qLconcat = function(links) {
-        return quotelinks = quotelinks.concat(links);
+        return quotelinks.push.apply(quotelinks, links);
       };
       handleQuotes = function(post) {
         var clone, _i, _len, _ref;
