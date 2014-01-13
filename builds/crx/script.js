@@ -4587,7 +4587,7 @@
       });
       this.navLinks = $.el('div', {
         className: 'navLinks',
-        innerHTML: "<a href=.././ id=returnlink>Return</a> [<a href=./catalog>Catalog</a>] <a href=\"#bottom\" id=bottomlink>Bottom</a> <time id=\"index-last-refresh\" title=\"Last index refresh\">...</time> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" class=\"fa\" href=\"javascript:;\">\uf057</a>"
+        innerHTML: "<a href=.././ id=returnlink>Return</a> [<a href=javascript:; id=cataloglink>Catalog</a>] <a href=\"#bottom\" id=bottomlink>Bottom</a> <time id=\"index-last-refresh\" title=\"Last index refresh\">...</time> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" class=\"fa\" href=\"javascript:;\">\uf057</a>"
       });
       this.searchInput = $('#index-search', this.navLinks);
       this.currentPage = this.getCurrentPage();
