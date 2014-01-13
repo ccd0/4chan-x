@@ -59,8 +59,7 @@ Get =
     #   and their clones,
     #   get all of their backlinks.
     if Conf['Quote Backlinks']
-      for quote in post.quotes
-        continue unless quotedPost = g.posts[quote]
+      for quote in post.quotes when quotedPost = g.posts[quote]
         qLconcat quotedPost.nodes.quotelinks
         handleClones quotedPost.clones
     # Third:
