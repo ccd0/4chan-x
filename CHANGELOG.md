@@ -10,6 +10,7 @@
 - Some more FontAwesome icons.
 - Fix a bug causing appchan to [incorrectly] report that QR Personas were disabled. They cannot be disabled.
 - The SFW status of boards is no longer hard-coded and therefore will require no changes when boards are added or removed.
+- Removed and forced the `Force Reply Break` on Chrome. Disabling it didn't work and broke the page layout.
 
 ### v2.8.0
 *2014-01-11*
