@@ -1,8 +1,15 @@
 **seaweeedchan**:
-- Turn infinite scrolling into new index mode
+- Convert infinite scrolling into an Index Mode, rather than being forced
 
 **Zixaphir**:
 - Fix an issue where changing the current archive would crash the redirect features.
+- Themes and Mascots will now switch when navigating between NSFW and SFW boards if those options are in use.
+- Pagination will now properly hide while in thread view.
+- The captcha filter is now [finally] optional.
+- Some more FontAwesome icons.
+- Fix a bug causing appchan to [incorrectly] report that QR Personas were disabled. They cannot be disabled.
+- The SFW status of boards is no longer hard-coded and therefore will require no changes when boards are added or removed.
+
 
 *2014-01-11*
 
@@ -15,6 +22,7 @@
 - Various fixes and improvements for the JSONified index
 - We now use JSON for navigating between boards and threads. This should result in various bandwidth and performance improvements. Probably.
 - Users are now subjected to whatever terrible code went into that previous feature. :3
+- Infinite Scrolling restored.
 
 ### v2.7.4 
 *2013-12-27*
