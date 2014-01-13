@@ -4572,7 +4572,7 @@
       this.pagelist = $.el('div', {
         className: 'pagelist',
         hidden: true,
-        innerHTML: "<div class=\"prev\"><a><</a></div><div class=\"pages\"></div><div class=\"next\"><a>></a></div><div class=\"pages cataloglink\"><a href=\"./catalog\">Catalog</a></div>"
+        innerHTML: "<div class=\"prev\"><a>&lt;</a></div><div class=\"pages\"></div><div class=\"next\"><a>&gt;</a></div><div class=\"pages cataloglink\"><a href=\"./catalog\">Catalog</a></div>"
       });
       this.navLinks = $.el('div', {
         className: 'navLinks',
