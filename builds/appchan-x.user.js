@@ -13501,6 +13501,9 @@
       $.asap((function() {
         return d.body;
       }), this.asapInit);
+      $.asap((function() {
+        return Header.bar.parentElement;
+      }), Style.padding);
       $.on(window, "resize", Style.padding);
       return $.ready(this.readyInit);
     },
@@ -13525,7 +13528,6 @@
     },
     readyInit: function() {
       var exLink;
-      Style.padding();
       Style.iconPositions();
       if (exLink = $("#navtopright .exlinksOptionsLink", d.body)) {
         return $.on(exLink, "click", function() {

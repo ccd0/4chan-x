@@ -28,6 +28,7 @@ Style =
     $.asap (-> d.head), Style.observe
 
     $.asap (-> d.body), @asapInit
+    $.asap (-> Header.bar.parentElement), Style.padding
     $.on window, "resize", Style.padding
     $.ready @readyInit
   
@@ -54,7 +55,6 @@ Style =
     return
 
   readyInit: ->
-    Style.padding()
     Style.iconPositions()
     if exLink = $ "#navtopright .exlinksOptionsLink", d.body
       $.on exLink, "click", ->
