@@ -89,15 +89,17 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  Array.prototype.indexOf = function(val) {
-    var i;
-    i = this.length;
-    while (i--) {
+  Array.prototype.indexOf = function(val, i) {
+    var len;
+    i || (i = 0);
+    len = this.length;
+    while (i < len) {
       if (this[i] === val) {
         return i;
       }
+      i++;
     }
-    return i;
+    return -1;
   };
 
   __indexOf = [].indexOf;
