@@ -1168,12 +1168,6 @@ s {
 a.useremail:last-of-type {
   vertical-align: top;
 }
-.op-background .op.post .postMessage::after,
-.force-reply-break .op.post .postMessage::after {
-  display: block;
-  content: ' ';
-  clear: both;
-}
 /* OP */
 .watch-thread-link {
   vertical-align: bottom;
@@ -1181,8 +1175,16 @@ a.useremail:last-of-type {
 .op-background .op.post {
   <%= sizing %>: border-box;
 }
+<% if (type === 'userscript') { %>
+/* Force Reply Break */
+.op-background .op.post .postMessage::after,
+.force-reply-break <% } %>.op.post .postMessage::after {
+  display: block;
+  content: ' ';
+  clear: both;
+}
 /* Summary */
-.force-reply-break .summary {
+<% if (type === 'userscript') { %>.force-reply-break <% } %>.summary {
   clear: both;
 }
 /* Inlined */

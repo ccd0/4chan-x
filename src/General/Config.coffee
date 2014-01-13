@@ -491,10 +491,12 @@ Config =
         true
         'Hide backlinks to filtered posts.'
       ]
+      <% if (type === 'userscript') { %>
       'Force Reply Break': [
         false
         'Force replies to occupy their own line and not be adjacent to the OP image.'
       ]
+      <% } %>
       'Fit Width Replies': [
         true
         'Replies fit the entire width of the page.'
