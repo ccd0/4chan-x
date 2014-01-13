@@ -17160,7 +17160,7 @@
         $.extend(Conf, items);
         return $.asap((function() {
           return Favicon.el = $('link[rel="shortcut icon"]', d.head);
-        }), Main.initFeatures());
+        }), Main.initFeatures);
       });
     },
     initFeatures: function() {

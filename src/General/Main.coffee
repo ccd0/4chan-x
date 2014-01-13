@@ -44,7 +44,7 @@ Main =
 
     $.get Conf, (items) ->
       $.extend Conf, items
-      $.asap (-> Favicon.el = $ 'link[rel="shortcut icon"]', d.head), Main.initFeatures()
+      $.asap (-> Favicon.el = $ 'link[rel="shortcut icon"]', d.head), Main.initFeatures
 
   initFeatures: ->
     # Check if the current board we're on is SFW or not, so we can handle options that need to know that.
