@@ -141,12 +141,12 @@ Navigate =
 
       g.TYPE = if sfw then 'sfw' else 'nsfw'
       if Conf["NSFW/SFW Mascots"]
-        g.MASCOTSTRING = "Enabled Mascots #{g.TYPE}"
+        Main.setMascotString()
         MascotTools.toggle()
 
       if Conf["NSFW/SFW Themes"]
-        Conf["theme"] = Conf["theme_#{g.TYPE}"] or if sfw then 'Yotsuba B' else 'Yotsuba'
-        theme = Themes[Conf['theme']] or Themes[if sfw then 'Yotsuba B' else 'Yotsuba']
+        Main.setThemeString()
+        theme = Themes[Conf[g.STYLESTRING] or if sfw then 'Yotsuba B' else 'Yotsuba'] or Themes[Conf[g.STYLESTRING] = if sfw then 'Yotsuba B' else 'Yotsuba']
         Style.setTheme theme
 
       Favicon.SFW = sfw

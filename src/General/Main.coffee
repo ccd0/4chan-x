@@ -58,15 +58,10 @@ Main =
     $.extend Themes,  Conf["userThemes"]
     $.extend Mascots, Conf["userMascots"]
 
-    if Conf["NSFW/SFW Mascots"]
-      g.MASCOTSTRING = "Enabled Mascots #{g.TYPE}"
-    else
-      g.MASCOTSTRING = "Enabled Mascots"
-
-    if Conf["NSFW/SFW Themes"]
-      Conf["theme"] = Conf["theme_#{g.TYPE}"]
-
     return if g.BOARD.ID in ['z', 'fk'] then Style.init()
+    
+    Main.setThemeString()
+    Main.setMascotString()
 
     switch location.hostname
       when '4chan.org', 'www.4chan.org'
@@ -310,5 +305,17 @@ Main =
     ['Show Dice Roll',            Dice]
     ['Navigate',                  Navigate]
   ]
+
+  setMascotString: ->
+    type = "Enabled Mascots"
+    if Conf["NSFW/SFW Mascots"]
+      type += " #{g.TYPE}"
+    g.MASCOTSTRING = type
+
+  setThemeString: ->
+    type = "theme"
+    if Conf["NSFW/SFW Themes"]
+      type += "_#{g.TYPE}"
+    g.STYLESTRING = type
 
 Main.init()

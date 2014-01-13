@@ -15784,12 +15784,12 @@
         }
         g.TYPE = sfw ? 'sfw' : 'nsfw';
         if (Conf["NSFW/SFW Mascots"]) {
-          g.MASCOTSTRING = "Enabled Mascots " + g.TYPE;
+          Main.setMascotString();
           MascotTools.toggle();
         }
         if (Conf["NSFW/SFW Themes"]) {
-          Conf["theme"] = Conf["theme_" + g.TYPE] || (sfw ? 'Yotsuba B' : 'Yotsuba');
-          theme = Themes[Conf['theme']] || Themes[sfw ? 'Yotsuba B' : 'Yotsuba'];
+          Main.setThemeString();
+          theme = Themes[Conf[g.STYLESTRING] || (sfw ? 'Yotsuba B' : 'Yotsuba')] || Themes[Conf[g.STYLESTRING] = sfw ? 'Yotsuba B' : 'Yotsuba'];
           Style.setTheme(theme);
         }
         Favicon.SFW = sfw;
@@ -17015,16 +17015,11 @@
       },
       theme: {
         select: function() {
-          var currentTheme;
-          if (currentTheme = $.id(Conf['theme'])) {
-            $.rmClass(currentTheme, 'selectedtheme');
+          var current;
+          if (current = $.id(Conf[g.STYLESTRING])) {
+            $.rmClass(current, 'selectedtheme');
           }
-          if (Conf["NSFW/SFW Themes"]) {
-            $.set("theme_" + g.TYPE, this.id);
-          } else {
-            $.set("theme", this.id);
-          }
-          Conf['theme'] = this.id;
+          $.set(g.STYLESTRING, Conf[g.STYLESTRING] = this.id);
           $.addClass(this, 'selectedtheme');
           return Style.setTheme(Themes[this.id]);
         },
@@ -17161,17 +17156,11 @@
       g.TYPE = Favicon.SFW ? 'sfw' : 'nsfw';
       $.extend(Themes, Conf["userThemes"]);
       $.extend(Mascots, Conf["userMascots"]);
-      if (Conf["NSFW/SFW Mascots"]) {
-        g.MASCOTSTRING = "Enabled Mascots " + g.TYPE;
-      } else {
-        g.MASCOTSTRING = "Enabled Mascots";
-      }
-      if (Conf["NSFW/SFW Themes"]) {
-        Conf["theme"] = Conf["theme_" + g.TYPE];
-      }
       if ((_ref = g.BOARD.ID) === 'z' || _ref === 'fk') {
         return Style.init();
       }
+      Main.setThemeString();
+      Main.setMascotString();
       switch (location.hostname) {
         case '4chan.org':
         case 'www.4chan.org':
@@ -17384,7 +17373,23 @@
       }
       return Main.thisPageIsLegit;
     },
-    features: [['Polyfill', Polyfill], ['Emoji', Emoji], ['Style', Style], ['Mascots', MascotTools], ['Rice', Rice], ['Banner', Banner], ['Announcements', GlobalMessage], ['Archive Redirection', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Color User IDs', IDColor], ['Custom CSS', CustomCSS], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply', QR], ['Menu', Menu], ['Report Link', ReportLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Thread Expansion', ExpandThread], ['Thread Excerpt', ThreadExcerpt], ['Favicon', Favicon], ['Unread', Unread], ['Quote Threading', QuoteThreading], ['Thread Updater', ThreadUpdater], ['Thread Stats', ThreadStats], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Show Dice Roll', Dice], ['Navigate', Navigate]]
+    features: [['Polyfill', Polyfill], ['Emoji', Emoji], ['Style', Style], ['Mascots', MascotTools], ['Rice', Rice], ['Banner', Banner], ['Announcements', GlobalMessage], ['Archive Redirection', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Color User IDs', IDColor], ['Custom CSS', CustomCSS], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply', QR], ['Menu', Menu], ['Report Link', ReportLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Thread Expansion', ExpandThread], ['Thread Excerpt', ThreadExcerpt], ['Favicon', Favicon], ['Unread', Unread], ['Quote Threading', QuoteThreading], ['Thread Updater', ThreadUpdater], ['Thread Stats', ThreadStats], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Show Dice Roll', Dice], ['Navigate', Navigate]],
+    setMascotString: function() {
+      var type;
+      type = "Enabled Mascots";
+      if (Conf["NSFW/SFW Mascots"]) {
+        type += " " + g.TYPE;
+      }
+      return g.MASCOTSTRING = type;
+    },
+    setThemeString: function() {
+      var type;
+      type = "theme";
+      if (Conf["NSFW/SFW Themes"]) {
+        type += "_" + g.TYPE;
+      }
+      return g.STYLESTRING = type;
+    }
   };
 
   Main.init();

@@ -880,14 +880,10 @@ Settings =
 
     theme:
       select: ->
-        if currentTheme = $.id(Conf['theme'])
-          $.rmClass currentTheme, 'selectedtheme'
+        if current = $.id(Conf[g.STYLESTRING])
+          $.rmClass current, 'selectedtheme'
 
-        if Conf["NSFW/SFW Themes"]
-          $.set "theme_#{g.TYPE}", @id
-        else
-          $.set "theme", @id
-        Conf['theme'] = @id
+        $.set g.STYLESTRING, Conf[g.STYLESTRING] = @id
         $.addClass @, 'selectedtheme'
         Style.setTheme Themes[@id]
 
