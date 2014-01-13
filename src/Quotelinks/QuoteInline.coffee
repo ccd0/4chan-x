@@ -26,13 +26,10 @@ QuoteInline =
     return
 
   qiQuote: (link, hidden) ->
-    [
-      $.tn(' ')
-      $.el 'a',
-        className: "hashlink#{if hidden then ' filtered' else ''}"
-        textContent: '#'
-        href: link.href
-    ]
+    $.el 'a',
+      className: "hashlink#{if hidden then ' filtered' else ''}"
+      textContent: '#'
+      href: link.href
 
   toggle: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
