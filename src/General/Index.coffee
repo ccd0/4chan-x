@@ -110,7 +110,7 @@ Index =
         $.after $.id('delform'), Index.pagelist
 
   scroll: $.debounce 100, ->
-    return if Index.req or Conf['Index Mode'] isnt 'infinite' or ((d.body.scrollTop or doc.scrollTop) <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
+    return if Index.req or Conf['Index Mode'] isnt 'infinite' or (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
     pageNum = Index.getCurrentPage() + 1
     return Index.endNotice() if pageNum >= Index.pagesNum
     nodesPerPage = Index.threadsNumPerPage * 2
