@@ -14,18 +14,13 @@ Menu =
     $.add @nodes.info, Menu.makeButton()
 
   makeButton: do ->
-    frag = null
+    a = $.el 'a',
+      className: 'menu-button'
+      innerHTML: '<i class=fa>\uf107</i>'
+      href:      'javascript:;'
     ->
-      unless frag?
-        frag = $.nodes [
-          $.tn(' ')
-          $.el 'a',
-            className: 'menu-button'
-            innerHTML: '<i class=fa>\uf107</i>'
-            href:      'javascript:;'
-        ]
-      clone = frag.cloneNode true
-      $.on clone.lastElementChild, 'click', Menu.toggle
+      clone = a.cloneNode true
+      $.on clone, 'click', Menu.toggle
       clone
 
   toggle: (e) ->

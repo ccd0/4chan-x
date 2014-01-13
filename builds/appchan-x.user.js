@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.8.0 - 2014-01-12
+* appchan x - Version 2.8.0 - 2014-01-13
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -117,15 +117,17 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  Array.prototype.indexOf = function(val) {
-    var i;
-    i = this.length;
-    while (i--) {
+  Array.prototype.indexOf = function(val, i) {
+    var len;
+    i || (i = 0);
+    len = this.length;
+    while (i < len) {
       if (this[i] === val) {
         return i;
       }
+      i++;
     }
-    return i;
+    return -1;
   };
 
   __indexOf = [].indexOf;
@@ -4576,7 +4578,7 @@
       });
       this.navLinks = $.el('div', {
         className: 'navLinks',
-        innerHTML: "<a href=.././ id=returnlink>Return</a> [<a href=javascript:; id=cataloglink>Catalog</a>] <a href=\"#bottom\" id=bottomlink>Bottom</a> <time id=\"index-last-refresh\" title=\"Last index refresh\">...</time> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" class=\"fa\" href=\"javascript:;\">\uf057</a>"
+        innerHTML: "<span class=brackets-wrap id=returnlink><a href=.././>Return</a></span> <span class=brackets-wrap id=cataloglink><a href=javascript:;>Catalog</a></span> <span class=brackets-wrap id=bottomlink><a href=\"#bottom\">Bottom</a></span> <span class=brackets-wrap id=\"index-last-refresh\"><time title=\"Last index refresh\">...</time></span> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" class=\"fa\" href=\"javascript:;\">\uf057</a>"
       });
       this.searchInput = $('#index-search', this.navLinks);
       this.currentPage = this.getCurrentPage();
@@ -4584,8 +4586,8 @@
       $.on(this.pagelist, 'click', this.cb.pageNav);
       $.on(this.searchInput, 'input', this.onSearchInput);
       $.on($('#index-search-clear', this.navLinks), 'click', this.clearSearch);
-      $.on($('#returnlink', this.navLinks), 'click', Navigate.navigate);
-      $.on($('#cataloglink', this.navLinks), 'click', function() {
+      $.on($('#returnlink a', this.navLinks), 'click', Navigate.navigate);
+      $.on($('#cataloglink a', this.navLinks), 'click', function() {
         return window.location = "//boards.4chan.org/" + g.BOARD + "/catalog";
       });
       if (g.VIEW === 'index') {
@@ -4861,7 +4863,7 @@
         }
         return;
       }
-      timeEl = $('#index-last-refresh', Index.navLinks);
+      timeEl = $('#index-last-refresh time', Index.navLinks);
       timeEl.dataset.utc = Date.parse(req.getResponseHeader('Last-Modified'));
       RelativeDates.update(timeEl);
       return Index.scrollToIndex();
@@ -5397,36 +5399,36 @@
       };
     },
     allQuotelinksLinkingTo: function(post) {
-      var ID, quote, quotedPost, quotelinks, quoterPost, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
+      var ID, handleQuotes, quote, quotedPost, quotelinks, quoterPost, _i, _len, _ref, _ref1, _ref2;
       quotelinks = [];
+      handleQuotes = function(post, type) {
+        var clone, _i, _len, _ref;
+        quotelinks.push.apply(quotelinks, post.nodes[type]);
+        _ref = post.clones;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          clone = _ref[_i];
+          quotelinks.push.apply(quotelinks, clone.nodes[type]);
+        }
+      };
       _ref = g.posts;
       for (ID in _ref) {
         quoterPost = _ref[ID];
         if (_ref1 = post.fullID, __indexOf.call(quoterPost.quotes, _ref1) >= 0) {
-          _ref2 = [quoterPost].concat(quoterPost.clones);
-          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-            quoterPost = _ref2[_i];
-            quotelinks.push.apply(quotelinks, quoterPost.nodes.quotelinks);
-          }
+          handleQuotes(quoterPost, 'quotelinks');
         }
       }
       if (Conf['Quote Backlinks']) {
-        _ref3 = post.quotes;
-        for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
-          quote = _ref3[_j];
-          if (!(quotedPost = g.posts[quote])) {
-            continue;
-          }
-          _ref4 = [quotedPost].concat(quotedPost.clones);
-          for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
-            quotedPost = _ref4[_k];
-            quotelinks.push.apply(quotelinks, __slice.call(quotedPost.nodes.backlinks));
+        _ref2 = post.quotes;
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          quote = _ref2[_i];
+          if (quotedPost = g.posts[quote]) {
+            handleQuotes(quotedPost, 'backlinks');
           }
         }
       }
       return quotelinks.filter(function(quotelink) {
-        var boardID, postID, _ref5;
-        _ref5 = Get.postDataFromLink(quotelink), boardID = _ref5.boardID, postID = _ref5.postID;
+        var boardID, postID, _ref3;
+        _ref3 = Get.postDataFromLink(quotelink), boardID = _ref3.boardID, postID = _ref3.postID;
         return boardID === post.board.ID && postID === post.ID;
       });
     },
@@ -7100,28 +7102,14 @@
       if (g.VIEW === 'catalog' || !Conf['Quote Inlining']) {
         return;
       }
-      if (Conf['Quote Hash Navigation']) {
-        this.node = function() {
-          var link, _i, _len, _ref;
-          _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            link = _ref[_i];
-            if (!this.isClone) {
-              $.after(link, QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
-            }
-            $.on(link, 'click', QuoteInline.toggle);
-          }
-        };
-      } else {
-        this.node = function() {
-          var link, _i, _len, _ref;
-          _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            link = _ref[_i];
-            $.on(link, 'click', QuoteInline.toggle);
-          }
-        };
-      }
+      this.process = Conf['Quote Hash Navigation'] ? function(link, clone) {
+        if (!clone) {
+          $.after(link, QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
+        }
+        return $.on(link, 'click', QuoteInline.toggle);
+      } : function(link) {
+        return $.on(link, 'click', QuoteInline.toggle);
+      };
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
@@ -7130,14 +7118,27 @@
         cb: this.node
       });
     },
+    node: function() {
+      var isClone, link, process, _i, _j, _len, _len1, _ref, _ref1;
+      process = QuoteInline.process;
+      isClone = this.isClone;
+      _ref = this.nodes.quotelinks;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        process(link, isClone);
+      }
+      _ref1 = this.nodes.backlinks;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        link = _ref1[_j];
+        process(link, isClone);
+      }
+    },
     qiQuote: function(link, hidden) {
-      return [
-        $.tn(' '), $.el('a', {
-          className: hidden ? 'hashlink filtered' : 'hashlink',
-          textContent: '#',
-          href: link.href
-        })
-      ];
+      return $.el('a', {
+        className: "hashlink" + (hidden ? ' filtered' : ''),
+        textContent: '#',
+        href: link.href
+      });
     },
     toggle: function(e) {
       var boardID, context, postID, threadID, _ref;
@@ -10905,21 +10906,16 @@
       return $.add(this.nodes.info, Menu.makeButton());
     },
     makeButton: (function() {
-      var frag;
-      frag = null;
+      var a;
+      a = $.el('a', {
+        className: 'menu-button',
+        innerHTML: '<i class=fa>\uf107</i>',
+        href: 'javascript:;'
+      });
       return function() {
         var clone;
-        if (frag == null) {
-          frag = $.nodes([
-            $.tn(' '), $.el('a', {
-              className: 'menu-button',
-              innerHTML: '<i class=fa>\uf107</i>',
-              href: 'javascript:;'
-            })
-          ]);
-        }
-        clone = frag.cloneNode(true);
-        $.on(clone.lastElementChild, 'click', Menu.toggle);
+        clone = a.cloneNode(true);
+        $.on(clone, 'click', Menu.toggle);
         return clone;
       };
     })(),

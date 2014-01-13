@@ -1,5 +1,6 @@
 **seaweeedchan**:
 - Convert infinite scrolling into an Index Mode, rather than being forced
+- Fix Menu errors on older Firefox versions, such as the ESR
 
 **Zixaphir**:
 - Fix an issue where changing the current archive would crash the redirect features.

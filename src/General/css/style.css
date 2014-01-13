@@ -90,6 +90,11 @@ div.navLinks {
 .reply > .file > .fileText {
   margin: 0 20px;
 }
+.hashlink::before {
+  content: ' ';
+  visibility: hidden;
+}
+.inline + .hashlink,
 [hidden] {
   display: none !important;
 }
@@ -273,11 +278,11 @@ div.center:not(.ad-cnt) {
   font-weight: bold;
 }
 /* 4chan X link brackets */
-.brackets-wrap::after {
-  content: "]";
-}
 .brackets-wrap::before {
   content: "[";
+}
+.brackets-wrap::after {
+  content: "]";
 }
 /* Notifications */
 #notifications {
@@ -507,16 +512,6 @@ div.center:not(.ad-cnt) {
 .thread #index-search-clear,
 .thread #index-search {
   display: none;
-}
-#returnlink::before,
-#bottomlink::before,
-#index-last-refresh::before {
-  content: '[';
-}
-#returnlink::after,
-#bottomlink::after,
-#index-last-refresh::after  {
-  content: ']';
 }
 
 /* Announcement Hiding */
@@ -1115,7 +1110,7 @@ a:only-of-type > .remove {
 .reply .menu-button, 
 .op .menu-button,
 #thread-watcher .menu-button {
-  margin-left: -5px !important;
+  margin-left: -1px !important;
   position: relative;
 }
 .op .menu-button,
