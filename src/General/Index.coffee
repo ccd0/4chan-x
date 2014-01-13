@@ -84,8 +84,7 @@ Index =
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
     $.on $('#returnlink', @navLinks),  'click', Navigate.navigate
-    $.on $('#cataloglink', @navLinks), 'click', ->
-      window.location = "//boards.4chan.org/#{g.BOARD}/catalog"
+    $.on $('#cataloglink', @navLinks), 'click', -> window.location = "//boards.4chan.org/#{g.BOARD}/catalog"
       
 
     @update() if g.VIEW is 'index'

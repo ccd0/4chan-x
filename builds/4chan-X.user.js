@@ -2281,7 +2281,7 @@
       });
       this.navLinks = $.el('div', {
         className: 'navLinks',
-        innerHTML: "<a href=.././ id=returnlink>Return</a> [<a href=./catalog id=cataloglink>Catalog</a>] <a href=\"#bottom\" id=bottomlink>Bottom</a> <time id=\"index-last-refresh\" title=\"Last index refresh\">...</time> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" href=\"javascript:;\" title=\"Clear search\">×</a>"
+        innerHTML: "<a href=.././ id=returnlink>Return</a> [<a href=javascript:; id=cataloglink>Catalog</a>] <a href=\"#bottom\" id=bottomlink>Bottom</a> <time id=\"index-last-refresh\" title=\"Last index refresh\">...</time> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" href=\"javascript:;\" title=\"Clear search\">×</a>"
       });
       this.searchInput = $('#index-search', this.navLinks);
       this.currentPage = this.getCurrentPage();
@@ -8632,8 +8632,12 @@
 
   Favicon = {
     init: function() {
+      return $.asap((function() {
+        return Favicon.el = $('link[rel="shortcut icon"]', d.head);
+      }), Favicon.initAsap);
+    },
+    initAsap: function() {
       var href;
-      Favicon.el = $('link[rel="shortcut icon"]', d.head);
       Favicon.el.type = 'image/x-icon';
       href = Favicon.el.href;
       Favicon.SFW = /ws\.ico$/.test(href);
