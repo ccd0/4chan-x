@@ -4450,7 +4450,7 @@
   Index = {
     init: function() {
       var anchorEntry, input, label, modeEntry, name, refNavEntry, repliesEntry, sortEntry, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
-      if (g.BOARD.ID === 'f') {
+      if (g.BOARD.ID === 'f' || g.VIEW === 'catalog') {
         return;
       }
       this.button = $.el('a', {
@@ -4585,6 +4585,9 @@
       $.on(this.searchInput, 'input', this.onSearchInput);
       $.on($('#index-search-clear', this.navLinks), 'click', this.clearSearch);
       $.on($('#returnlink', this.navLinks), 'click', Navigate.navigate);
+      $.on($('#cataloglink', this.navLinks), 'click', function() {
+        return window.location = "//boards.4chan.org/" + g.BOARD + "/catalog";
+      });
       if (g.VIEW === 'index') {
         this.update();
       }
@@ -15832,12 +15835,12 @@
       if (view === 'catalog' || ('f' === boardID || 'f' === g.BOARD.ID)) {
         return;
       }
+      if (e) {
+        e.preventDefault();
+      }
       path = this.pathname;
       if (this.hash) {
         path += this.hash;
-      }
-      if (e) {
-        e.preventDefault();
       }
       if (this.id !== 'popState') {
         history.pushState(null, '', path);

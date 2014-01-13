@@ -4,8 +4,7 @@ Navigate =
     return if g.VIEW is 'catalog' or g.BOARD.ID is 'f'
 
     # blink/webkit throw a popstate on page load. Not what we want.
-    $.ready ->
-      $.on window, 'popstate', Navigate.popstate
+    $.ready -> $.on window, 'popstate', Navigate.popstate
 
     Thread.callbacks.push
       name: 'Navigate'
@@ -27,10 +26,8 @@ Navigate =
     $.on postlink, 'click', Navigate.navigate
 
     return unless Conf['Quote Hash Navigation']
-
     for hashlink in $$ '.hashlink', @nodes.comment
       $.on hashlink, 'click', Navigate.navigate
-
     return
 
   clean: ->
@@ -79,9 +76,7 @@ Navigate =
         errors.push
           message: "Failed to reconnect feature #{name}."
           error:   err
-
     Main.handleErrors errors if errors
-
     return
 
   ready: (name, feature, condition) ->
@@ -92,7 +87,6 @@ Navigate =
         message: "Quote Threading Failed."
         error:   err
       ]
-
     Main.handleErrors error if error
     QR.generatePostableThreadsList()
 
@@ -178,11 +172,11 @@ Navigate =
     [boardID, view, threadID] = path
 
     return if view is 'catalog' or 'f' in [boardID, g.BOARD.ID]
+    e.preventDefault() if e
 
     path = @pathname
     path += @hash if @hash
 
-    e.preventDefault() if e
     history.pushState null, '', path unless @id is 'popState'
     Navigate.path = @pathname
 
