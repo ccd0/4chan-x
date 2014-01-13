@@ -57,8 +57,7 @@ body > hr {
 /* Hidden UI */
 #navtopright,
 #svg_filters,
-.cataloglink,
-.navLinks {
+.cataloglink {
   z-index: 7;
   position: fixed;
   top: 100%;
@@ -76,6 +75,48 @@ body > hr {
 /* Werk Tyme */
 .werkTyme .post .file {
   display: none;
+}
+/* Index Features */
+:root.index-loading .navLinks,
+:root.index-loading .board,
+:root.index-loading .pagelist {
+  display: none;
+}
+#index-search {
+  padding-right: 1.5em;
+  width: 100px;
+  transition: color .25s, border-color .25s, width .25s;
+}
+#index-search:focus,
+#index-search[data-searching] {
+  width: 200px;
+}
+#index-search-clear {
+  margin-left: -1em;
+}
+<% if (type === 'crx') { %>
+/* ``::-webkit-*'' selectors break selector lists on Firefox. */
+#index-search::-webkit-search-cancel-button,
+<% } %>
+#index-search:not([data-searching]) + #index-search-clear {
+  display: none;
+}
+.index #returnlink,
+.index #bottomlink,
+.thread #index-last-refresh,
+.thread #index-search-clear,
+.thread #index-search {
+  display: none;
+}
+#returnlink::before,
+#bottomlink::before,
+#index-last-refresh::before {
+  content: '[';
+}
+#returnlink::after,
+#bottomlink::after,
+#index-last-refresh::after  {
+  content: ']';
 }
 /* Defaults */
 a {
