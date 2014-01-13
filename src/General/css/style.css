@@ -273,11 +273,11 @@ div.center:not(.ad-cnt) {
   font-weight: bold;
 }
 /* 4chan X link brackets */
-.brackets-wrap::after {
-  content: "]";
-}
 .brackets-wrap::before {
   content: "[";
+}
+.brackets-wrap::after {
+  content: "]";
 }
 /* Notifications */
 #notifications {
@@ -507,16 +507,6 @@ div.center:not(.ad-cnt) {
 .thread #index-search-clear,
 .thread #index-search {
   display: none;
-}
-#returnlink::before,
-#bottomlink::before,
-#index-last-refresh::before {
-  content: '[';
-}
-#returnlink::after,
-#bottomlink::after,
-#index-last-refresh::after  {
-  content: ']';
 }
 
 /* Announcement Hiding */

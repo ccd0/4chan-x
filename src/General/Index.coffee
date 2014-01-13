@@ -83,9 +83,8 @@ Index =
     $.on @pagelist, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
-    $.on $('#returnlink', @navLinks),  'click', Navigate.navigate
-    $.on $('#cataloglink', @navLinks), 'click', -> window.location = "//boards.4chan.org/#{g.BOARD}/catalog"
-      
+    $.on $('#returnlink a',  @navLinks), 'click', Navigate.navigate
+    $.on $('#cataloglink a', @navLinks), 'click', -> window.location = "//boards.4chan.org/#{g.BOARD}/catalog"
 
     @update() if g.VIEW is 'index'
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
@@ -292,7 +291,7 @@ Index =
         new Notice 'error', 'Index refresh failed.', 1
       return
 
-    timeEl = $ '#index-last-refresh', Index.navLinks
+    timeEl = $ '#index-last-refresh time', Index.navLinks
     timeEl.dataset.utc = Date.parse req.getResponseHeader 'Last-Modified'
     RelativeDates.update timeEl
     Index.scrollToIndex()
