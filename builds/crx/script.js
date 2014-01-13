@@ -2333,7 +2333,7 @@
     },
     scroll: $.debounce(100, function() {
       var nodes, nodesPerPage, pageNum;
-      if (Index.req || Conf['Index Mode'] !== 'infinite' || ((d.body.scrollTop || doc.scrollTop) <= doc.scrollHeight - (300 + window.innerHeight)) || g.VIEW === 'thread') {
+      if (Index.req || Conf['Index Mode'] !== 'infinite' || (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight)) || g.VIEW === 'thread') {
         return;
       }
       pageNum = Index.getCurrentPage() + 1;
