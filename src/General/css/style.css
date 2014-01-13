@@ -1099,7 +1099,7 @@ a:only-of-type > .remove {
 .reply .menu-button, 
 .op .menu-button,
 #thread-watcher .menu-button {
-  margin-left: -5px !important;
+  margin-left: -1px !important;
   position: relative;
 }
 .op .menu-button,
