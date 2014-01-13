@@ -40,23 +40,22 @@ Get =
   allQuotelinksLinkingTo: (post) ->
     # Get quotelinks & backlinks linking to the given post.
     quotelinks = []
-    handleQuotes = (post) ->
-      quotelinks.push post.nodes.quotelinks...
-      for clone in post.clones
-        quotelinks.push clone.nodes.quotelinks...
+    handleQuotes = (post, type) ->
+      quotelinks.push post.nodes[type]...
+      quotelinks.push clone.nodes[type]... for clone in post.clones
       return
     # First:
     #   In every posts,
     #   if it did quote this post,
     #   get all their backlinks.
-    handleQuotes quoterPost for ID, quoterPost of g.posts when post.fullID in quoterPost.quotes
+    handleQuotes quoterPost, 'quotelinks' for ID, quoterPost of g.posts when post.fullID in quoterPost.quotes
     # Second:
     #   If we have quote backlinks:
     #   in all posts this post quoted
     #   and their clones,
     #   get all of their backlinks.
     if Conf['Quote Backlinks']
-      handleQuotes quotedPost for quote in post.quotes when quotedPost = g.posts[quote]
+      handleQuotes quotedPost, 'backlinks' for quote in post.quotes when quotedPost = g.posts[quote]
     # Third:
     #   Filter out irrelevant quotelinks.
     quotelinks.filter (quotelink) ->

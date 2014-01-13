@@ -3110,20 +3110,20 @@
     allQuotelinksLinkingTo: function(post) {
       var ID, handleQuotes, quote, quotedPost, quotelinks, quoterPost, _i, _len, _ref, _ref1, _ref2;
       quotelinks = [];
-      handleQuotes = function(post) {
+      handleQuotes = function(post, type) {
         var clone, _i, _len, _ref;
-        quotelinks.push.apply(quotelinks, post.nodes.quotelinks);
+        quotelinks.push.apply(quotelinks, post.nodes[type]);
         _ref = post.clones;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           clone = _ref[_i];
-          quotelinks.push.apply(quotelinks, clone.nodes.quotelinks);
+          quotelinks.push.apply(quotelinks, clone.nodes[type]);
         }
       };
       _ref = g.posts;
       for (ID in _ref) {
         quoterPost = _ref[ID];
         if (_ref1 = post.fullID, __indexOf.call(quoterPost.quotes, _ref1) >= 0) {
-          handleQuotes(quoterPost);
+          handleQuotes(quoterPost, 'quotelinks');
         }
       }
       if (Conf['Quote Backlinks']) {
@@ -3131,7 +3131,7 @@
         for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
           quote = _ref2[_i];
           if (quotedPost = g.posts[quote]) {
-            handleQuotes(quotedPost);
+            handleQuotes(quotedPost, 'backlinks');
           }
         }
       }
