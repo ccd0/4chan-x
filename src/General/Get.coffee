@@ -44,10 +44,14 @@ Get =
     #   In every posts,
     #   if it did quote this post,
     #   get all their backlinks.
-    for ID, quoterPost of g.posts
-      if post.fullID in quoterPost.quotes
-        for quoterPost in [quoterPost].concat quoterPost.clones
-          quotelinks.push.apply quotelinks, quoterPost.nodes.quotelinks
+    qLconcat = (links) ->
+      quotelinks = quotelinks.concat links
+    handleClones = (clones) ->
+      for clone in clones
+        qLconcat clone.nodes.quotelinks
+    for ID, quoterPost of g.posts when post.fullID in quoterPost.quotes
+      qLconcat quoterPost.nodes.quotelinks
+      handleClones quoterPost.clones
     # Second:
     #   If we have quote backlinks:
     #   in all posts this post quoted
@@ -56,8 +60,8 @@ Get =
     if Conf['Quote Backlinks']
       for quote in post.quotes
         continue unless quotedPost = g.posts[quote]
-        for quotedPost in [quotedPost].concat quotedPost.clones
-          quotelinks.push.apply quotelinks, [quotedPost.nodes.backlinks...]
+        qLconcat quotedPost.nodes.quotelinks
+        handleClones quotedPost.clones
     # Third:
     #   Filter out irrelevant quotelinks.
     quotelinks.filter (quotelink) ->

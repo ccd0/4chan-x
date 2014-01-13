@@ -3118,36 +3118,43 @@
       };
     },
     allQuotelinksLinkingTo: function(post) {
-      var ID, quote, quotedPost, quotelinks, quoterPost, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
+      var ID, handleClones, qLconcat, quote, quotedPost, quotelinks, quoterPost, _i, _len, _ref, _ref1, _ref2;
       quotelinks = [];
+      qLconcat = function(links) {
+        return quotelinks = quotelinks.concat(links);
+      };
+      handleClones = function(clones) {
+        var clone, _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = clones.length; _i < _len; _i++) {
+          clone = clones[_i];
+          _results.push(qLconcat(clone.nodes.quotelinks));
+        }
+        return _results;
+      };
       _ref = g.posts;
       for (ID in _ref) {
         quoterPost = _ref[ID];
-        if (_ref1 = post.fullID, __indexOf.call(quoterPost.quotes, _ref1) >= 0) {
-          _ref2 = [quoterPost].concat(quoterPost.clones);
-          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-            quoterPost = _ref2[_i];
-            quotelinks.push.apply(quotelinks, quoterPost.nodes.quotelinks);
-          }
+        if (!(_ref1 = post.fullID, __indexOf.call(quoterPost.quotes, _ref1) >= 0)) {
+          continue;
         }
+        qLconcat(quoterPost.nodes.quotelinks);
+        handleClones(quoterPost.clones);
       }
       if (Conf['Quote Backlinks']) {
-        _ref3 = post.quotes;
-        for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
-          quote = _ref3[_j];
+        _ref2 = post.quotes;
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          quote = _ref2[_i];
           if (!(quotedPost = g.posts[quote])) {
             continue;
           }
-          _ref4 = [quotedPost].concat(quotedPost.clones);
-          for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
-            quotedPost = _ref4[_k];
-            quotelinks.push.apply(quotelinks, __slice.call(quotedPost.nodes.backlinks));
-          }
+          qLconcat(quotedPost.nodes.quotelinks);
+          handleClones(quotedPost.clones);
         }
       }
       return quotelinks.filter(function(quotelink) {
-        var boardID, postID, _ref5;
-        _ref5 = Get.postDataFromLink(quotelink), boardID = _ref5.boardID, postID = _ref5.postID;
+        var boardID, postID, _ref3;
+        _ref3 = Get.postDataFromLink(quotelink), boardID = _ref3.boardID, postID = _ref3.postID;
         return boardID === post.board.ID && postID === post.ID;
       });
     },
