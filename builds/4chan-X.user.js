@@ -4848,7 +4848,7 @@
     qiQuote: function(link, hidden) {
       return [
         $.tn(' '), $.el('a', {
-          className: hidden ? 'hashlink filtered' : 'hashlink',
+          className: "hashlink" + (hidden ? ' filtered' : ''),
           textContent: '#',
           href: link.href
         })

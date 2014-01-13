@@ -11,7 +11,6 @@ QuoteInline =
       (link) ->
         $.on link, 'click', QuoteInline.toggle
 
-
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
@@ -30,7 +29,7 @@ QuoteInline =
     [
       $.tn(' ')
       $.el 'a',
-        className: if hidden then 'hashlink filtered' else 'hashlink'
+        className: "hashlink#{if hidden then ' filtered' else ''}"
         textContent: '#'
         href: link.href
     ]
