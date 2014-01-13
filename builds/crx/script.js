@@ -3118,18 +3118,15 @@
       };
     },
     allQuotelinksLinkingTo: function(post) {
-      var ID, handleQuotes, qLconcat, quote, quotedPost, quotelinks, quoterPost, _i, _len, _ref, _ref1, _ref2;
+      var ID, handleQuotes, quote, quotedPost, quotelinks, quoterPost, _i, _len, _ref, _ref1, _ref2;
       quotelinks = [];
-      qLconcat = function(links) {
-        return quotelinks.push.apply(quotelinks, links);
-      };
       handleQuotes = function(post) {
         var clone, _i, _len, _ref;
-        qLconcat(post.nodes.quotelinks);
+        quotelinks.push.apply(quotelinks, post.nodes.quotelinks);
         _ref = post.clones;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           clone = _ref[_i];
-          qLconcat(clone.nodes.quotelinks);
+          quotelinks.push.apply(quotelinks, clone.nodes.quotelinks);
         }
       };
       _ref = g.posts;

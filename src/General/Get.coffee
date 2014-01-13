@@ -40,12 +40,10 @@ Get =
   allQuotelinksLinkingTo: (post) ->
     # Get quotelinks & backlinks linking to the given post.
     quotelinks = []
-    qLconcat = (links) ->
-      quotelinks.push links...
     handleQuotes = (post) ->
-      qLconcat post.nodes.quotelinks
+      quotelinks.push post.nodes.quotelinks...
       for clone in post.clones
-        qLconcat clone.nodes.quotelinks
+        quotelinks.push clone.nodes.quotelinks...
       return
     # First:
     #   In every posts,
