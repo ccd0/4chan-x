@@ -49,6 +49,7 @@ Get =
     handleClones = (clones) ->
       for clone in clones
         qLconcat clone.nodes.quotelinks
+      return
     for ID, quoterPost of g.posts when post.fullID in quoterPost.quotes
       qLconcat quoterPost.nodes.quotelinks
       handleClones quoterPost.clones

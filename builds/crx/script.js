@@ -3124,13 +3124,11 @@
         return quotelinks = quotelinks.concat(links);
       };
       handleClones = function(clones) {
-        var clone, _i, _len, _results;
-        _results = [];
+        var clone, _i, _len;
         for (_i = 0, _len = clones.length; _i < _len; _i++) {
           clone = clones[_i];
-          _results.push(qLconcat(clone.nodes.quotelinks));
+          qLconcat(clone.nodes.quotelinks);
         }
-        return _results;
       };
       _ref = g.posts;
       for (ID in _ref) {
