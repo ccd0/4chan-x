@@ -10,7 +10,7 @@
 - Fix a bug causing appchan to [incorrectly] report that QR Personas were disabled. They cannot be disabled.
 - The SFW status of boards is no longer hard-coded and therefore will require no changes when boards are added or removed.
 
-
+### v2.8.0
 *2014-01-11*
 
 **seaweedchan**:
