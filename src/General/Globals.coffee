@@ -1151,9 +1151,14 @@ a.pointer{
   padding-top:10px;
   clear:none;
 }
-  #delform .file + blockquote{
-  margin-top:-16px !important;
-  padding-left:150px !important;
+#delform blockquote::after {
+  content: ' ';
+  clear: both;
+}
+#delform .file + blockquote {
+  margin-top: -1.4em !important;
+  padding-top: 1.4em !important;
+  padding-left:165px !important;
 }
 .file {
   margin-top: 2px;
