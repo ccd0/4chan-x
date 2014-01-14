@@ -113,6 +113,7 @@
   Config = {
     main: {
       'Miscellaneous': {
+        'JSON Navigation': [true, 'Use JSON for loading the Board Index and Threads. Also allows searching and sorting the board index and infinite scolling.'],
         'Catalog Links': [true, 'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'],
         'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
         'Announcement Hiding': [true, 'Add button to hide 4chan announcements.'],
@@ -4129,6 +4130,8 @@
         var a, footer, _i, _len, _ref, _results;
         if (a = $("a[href*='/" + g.BOARD + "/']", footer = $.id('boardNavDesktopFoot'))) {
           a.className = 'current';
+        }
+        if (Conf['JSON Navigation']) {
           _ref = $$('a', footer);
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -4171,7 +4174,9 @@
       _ref = $$('a', boardList);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
-        $.on(a, 'click', Navigate.navigate);
+        if (Conf['JSON Navigation']) {
+          $.on(a, 'click', Navigate.navigate);
+        }
         if (a.pathname.split('/')[1] === g.BOARD.ID) {
           a.className = 'current';
         }
@@ -4227,7 +4232,9 @@
           a = as[_i];
           if (a.textContent === board) {
             a = a.cloneNode(true);
-            $.on(a, 'click', Navigate.navigate);
+            if (Conf['JSON Navigation']) {
+              $.on(a, 'click', Navigate.navigate);
+            }
             a.textContent = /-title/.test(t) || /-replace/.test(t) && $.hasClass(a, 'current') ? a.title : /-full/.test(t) ? "/" + board + "/ - " + a.title : (m = t.match(/-text:"(.+)"/)) ? m[1] : a.textContent;
             if (m = t.match(/-(index|catalog)/)) {
               a.dataset.only = m[1];
@@ -4455,7 +4462,7 @@
   Index = {
     init: function() {
       var anchorEntry, input, label, modeEntry, name, refNavEntry, repliesEntry, sortEntry, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
-      if (g.BOARD.ID === 'f' || g.VIEW === 'catalog') {
+      if (g.BOARD.ID === 'f' || g.VIEW === 'catalog' || !Conf['JSON Navigation']) {
         return;
       }
       this.button = $.el('a', {
@@ -4629,18 +4636,20 @@
       if (Index.req || Conf['Index Mode'] !== 'infinite' || (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight)) || g.VIEW === 'thread') {
         return;
       }
-      pageNum = Index.getCurrentPage() + 1;
+      if (Index.pageNum == null) {
+        Index.pageNum = Index.getCurrentPage();
+      }
+      pageNum = Index.pageNum++;
       if (pageNum >= Index.pagesNum) {
         return Index.endNotice();
       }
       nodesPerPage = Index.threadsNumPerPage * 2;
-      history.pushState(null, '', "/" + g.BOARD + "/" + pageNum);
       nodes = Index.sortedNodes.slice(nodesPerPage * pageNum, nodesPerPage * (pageNum + 1));
       if (Conf['Show Replies']) {
         Index.buildReplies(nodes);
       }
       $.add(Index.root, nodes);
-      return Index.setPage();
+      return Index.setPage(pageNum);
     }),
     endNotice: (function() {
       var notify, reset;
@@ -4685,14 +4694,6 @@
         }
         e.preventDefault();
         return Index.userPageNav(+a.pathname.split('/')[2]);
-      },
-      link: function(e) {
-        if (g.VIEW !== 'index' || /catalog/.test(this.href)) {
-          return;
-        }
-        e.preventDefault();
-        history.pushState(null, '', this.pathname);
-        return Index.update();
       }
     },
     scrollToIndex: function() {
@@ -4755,9 +4756,9 @@
       }
       return Index.togglePagelist();
     },
-    setPage: function() {
-      var a, href, maxPageNum, next, pageNum, pagesRoot, prev, strong;
-      pageNum = Index.getCurrentPage();
+    setPage: function(pageNum) {
+      var a, href, maxPageNum, next, pagesRoot, prev, strong;
+      pageNum || (pageNum = Index.getCurrentPage());
       maxPageNum = Index.getMaxPageNum();
       pagesRoot = $('.pages', Index.pagelist);
       prev = pagesRoot.previousSibling.firstChild;
@@ -4794,6 +4795,7 @@
       if (!(d.readyState === 'loading' || Index.root.parentElement)) {
         $.replace($('.board'), Index.root);
       }
+      delete Index.pageNum;
       if ((_ref = Index.req) != null) {
         _ref.abort();
       }
@@ -15609,7 +15611,7 @@
   Navigate = {
     path: window.location.pathname,
     init: function() {
-      if (g.VIEW === 'catalog' || g.BOARD.ID === 'f') {
+      if (g.VIEW === 'catalog' || g.BOARD.ID === 'f' || !Conf['JSON Navigation']) {
         return;
       }
       $.ready(function() {
@@ -15828,6 +15830,7 @@
       if (e) {
         e.preventDefault();
       }
+      delete Index.pageNum;
       path = this.pathname;
       if (this.hash) {
         path += this.hash;
