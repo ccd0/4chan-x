@@ -3397,13 +3397,6 @@
         this.nodes.date = date;
         this.info.date = new Date(date.dataset.utc * 1000);
       }
-      if (Conf['Quick Reply']) {
-        this.info.yours = QR.db.get({
-          boardID: this.board,
-          threadID: this.thread,
-          postID: this.ID
-        });
-      }
       this.parseComment();
       this.parseQuotes();
       this.parseFile(that);
@@ -7557,7 +7550,11 @@
       if (this.isClone) {
         return;
       }
-      if (this.info.yours) {
+      if (QR.db.get({
+        boardID: this.board.ID,
+        threadID: this.thread.ID,
+        postID: this.ID
+      })) {
         $.addClass(this.nodes.root, 'yourPost');
       }
       if (!this.quotes.length) {
