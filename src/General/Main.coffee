@@ -36,7 +36,7 @@ Main =
       'Enabled Mascots sfw':  []
       'Enabled Mascots nsfw': []
       'Deleted Mascots':      []
-      'Hidden Categories':    ["Questionable"]
+      'Hidden Categories':    ["Custom", "Questionable"]
       'userThemes':           {}
       'userMascots':          {}
       'selectedArchives':     {}

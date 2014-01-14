@@ -13089,7 +13089,7 @@
       }
       return MascotTools.change(mascot);
     },
-    categories: ['Anime', 'Ponies', 'Questionable', 'Silhouette', 'Western'],
+    categories: ['Custom', 'Anime', 'Ponies', 'Questionable', 'Silhouette', 'Western'],
     dialog: function(key) {
       var container, dialog, div, fileInput, fileRice, imageFn, input, item, layout, name, nameFn, option, optionHTML, saveCheck, saveVal, setting, updateMascot, value, _i, _len, _ref;
       Conf['editMode'] = 'mascot';
@@ -17162,7 +17162,7 @@
         'Enabled Mascots sfw': [],
         'Enabled Mascots nsfw': [],
         'Deleted Mascots': [],
-        'Hidden Categories': ["Questionable"],
+        'Hidden Categories': ["Custom", "Questionable"],
         'userThemes': {},
         'userMascots': {},
         'selectedArchives': {},

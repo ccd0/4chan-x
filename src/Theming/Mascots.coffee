@@ -75,6 +75,7 @@ MascotTools =
     MascotTools.change mascot
 
   categories: [
+    'Custom'
     'Anime'
     'Ponies'
     'Questionable'
