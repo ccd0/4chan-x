@@ -371,7 +371,7 @@ MascotTools =
     if Mascots[name] and not $.remove Conf["Deleted Mascots"], name
       return unless confirm "The mascot #{name} already exists? Would you like to overwrite it?"
 
-    Mascots[name] = imported
+    Mascots[name] = mascot
 
     $.get "userMascots", {}, ({userMascots}) ->
       userMascots[name] = Mascots[name]

@@ -13354,7 +13354,7 @@
           return;
         }
       }
-      Mascots[name] = imported;
+      Mascots[name] = mascot;
       return $.get("userMascots", {}, function(_arg) {
         var userMascots;
         userMascots = _arg.userMascots;
@@ -16850,9 +16850,7 @@
         $.on($("#importMascot", batchmascots), 'click', function() {
           return this.nextSibling.click();
         });
-        $.on($("#importMascotButton", batchmascots), 'change', function(e) {
-          return MascotTools.importMascot(e);
-        });
+        $.on($("#importMascotButton", batchmascots), 'change', MascotTools.importMascot);
         $.on($('#undelete', batchmascots), 'click', function() {
           var mascots;
           if (!(Conf["Deleted Mascots"].length > 0)) {

@@ -727,8 +727,7 @@ Settings =
       $.on $("#importMascot", batchmascots), 'click', ->
         @nextSibling.click()
 
-      $.on $("#importMascotButton", batchmascots), 'change', (e) ->
-        MascotTools.importMascot e
+      $.on $("#importMascotButton", batchmascots), 'change', MascotTools.importMascot
 
       $.on $('#undelete', batchmascots), 'click', ->
         unless Conf["Deleted Mascots"].length > 0
