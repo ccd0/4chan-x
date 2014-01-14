@@ -42,7 +42,7 @@ MascotTools =
     $.off img, 'error', MascotTools.error
     $.replace img, el
 
-    MascotTools.position()
+    MascotTools.position mascot
 
   error: ->
     return unless @src
@@ -62,7 +62,7 @@ MascotTools =
   toggle: ->
     string  = g.MASCOTSTRING
     enabled = Conf[string]
-    return MascotTools.change {image: '', height: 0, width: 0} unless len = enabled.length
+    return MascotTools.change {image: ''} unless len = enabled.length
 
     Conf['mascot'] = name = enabled[i = Math.floor(Math.random() * len)]
 
@@ -366,7 +366,7 @@ MascotTools =
 
     reader.readAsText file
 
-  position: ->
+  position: (mascot) ->
     return unless Style.sheets.mascots
-    mascot = Mascots[Conf['mascot']]
+    mascot.image? or mascot = Mascots[Conf['mascot']] or {} # event
     Style.sheets.mascots.textContent = """<%= grunt.file.read('src/General/css/mascot.css') %>"""

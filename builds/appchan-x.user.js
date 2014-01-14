@@ -13044,7 +13044,7 @@
       }
       $.off(img, 'error', MascotTools.error);
       $.replace(img, el);
-      return MascotTools.position();
+      return MascotTools.position(mascot);
     },
     error: function() {
       var ctx, el,
@@ -13075,9 +13075,7 @@
       enabled = Conf[string];
       if (!(len = enabled.length)) {
         return MascotTools.change({
-          image: '',
-          height: 0,
-          width: 0
+          image: ''
         });
       }
       Conf['mascot'] = name = enabled[i = Math.floor(Math.random() * len)];
@@ -13360,12 +13358,11 @@
       };
       return reader.readAsText(file);
     },
-    position: function() {
-      var mascot;
+    position: function(mascot) {
       if (!Style.sheets.mascots) {
         return;
       }
-      mascot = Mascots[Conf['mascot']];
+      (mascot.image != null) || (mascot = Mascots[Conf['mascot']] || {});
       return Style.sheets.mascots.textContent = "#mascot img {\nheight: " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height, 10) + 'px' : 'auto') + ";\nwidth: " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width, 10) + 'px' : 'auto') + ";\n}\n#mascot {\nmargin: " + (mascot.vOffset || 0) + "px " + (mascot.hOffset || 0) + "px;\n}\n.sidebar-large #mascot {\nleft: " + (mascot.center ? 25 : 0) + "px;\nright: " + (mascot.center ? 25 : 0) + "px;\n}\n.mascot-position-above-post-form.post-form-style-fixed #mascot {\ntransform: translateY(-" + (QR.nodes ? QR.nodes.el.getBoundingClientRect().height : 0) + "px);\n}";
     }
   };
