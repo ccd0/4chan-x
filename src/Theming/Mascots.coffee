@@ -346,13 +346,12 @@ MascotTools =
 
       if name = mascots["Mascot"]
         MascotTools.parse mascot
-      else
+        message = "#{name} successfully imported!"
+      else if mascots.length
         MascotTools.parse mascot for mascot in mascots
-
-      message = if mascots.length
-        "Mascots imported!"
+        message = "Mascots imported!"
       else
-        "#{name} successfully imported!"
+        return new Notice 'warning', "Failed to import mascot. Is file a properly formatted JSON file?", 5
 
       new Notice 'info', message, 10
 

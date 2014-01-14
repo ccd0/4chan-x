@@ -13326,13 +13326,16 @@
         }
         if (name = mascots["Mascot"]) {
           MascotTools.parse(mascot);
-        } else {
+          message = "" + name + " successfully imported!";
+        } else if (mascots.length) {
           for (_i = 0, _len = mascots.length; _i < _len; _i++) {
             mascot = mascots[_i];
             MascotTools.parse(mascot);
           }
+          message = "Mascots imported!";
+        } else {
+          return new Notice('warning', "Failed to import mascot. Is file a properly formatted JSON file?", 5);
         }
-        message = mascots.length ? "Mascots imported!" : "" + name + " successfully imported!";
         new Notice('info', message, 10);
         $.rm($("#mascotContainer", d.body));
         return Settings.open('Mascots');
