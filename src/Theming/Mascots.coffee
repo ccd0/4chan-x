@@ -5,7 +5,7 @@ MascotTools =
     if Conf['Click to Toggle']
       $.on @el, 'mousedown', MascotTools.click
 
-    $.on doc, 'QRDialogCreation', MascotTools.reposition
+    $.on doc, 'QRDialogCreation', MascotTools.position
 
     $.asap (-> d.body), =>
       $.add d.body, @el
@@ -42,7 +42,7 @@ MascotTools =
     $.off img, 'error', MascotTools.error
     $.replace img, el
 
-    Style.sheets.mascots.textContent = """<%= grunt.file.read('src/General/css/mascot.css') %>"""
+    MascotTools.position()
 
   error: ->
     return unless @src
@@ -366,7 +366,7 @@ MascotTools =
 
     reader.readAsText file
 
-  reposition: ->
-    return unless Style.mascot
+  position: ->
+    return unless Style.sheets.mascots
     mascot = Mascots[Conf['mascot']]
-    Style.mascot.textContent = """<%= grunt.file.read('src/General/css/mascot.css') %>"""
+    Style.sheets.mascots.textContent = """<%= grunt.file.read('src/General/css/mascot.css') %>"""
