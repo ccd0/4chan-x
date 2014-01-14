@@ -13051,7 +13051,7 @@
       });
       ctx = el.getContext('2d');
       ctx.font = "40px " + Conf['Font'];
-      ctx.fillStyle = (new Color((Themes[Conf['theme']] || Themes['Yotsuba B'])['Text'])).hex();
+      ctx.fillStyle = (new Color((Themes[Conf[g.THEMESTRING]] || Themes[g.TYPE === 'sfw' ? 'Yotsuba B' : 'Yotsuba'])['Text'])).hex();
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText("Mascot 404", 124, 50);
@@ -13477,7 +13477,7 @@
           id: 'svg_filters'
         })
       };
-      theme = Themes[Conf['theme']] || Themes['Yotsuba B'];
+      theme = Themes[Conf[g.THEMESTRING]] || Themes['Yotsuba B'];
       items = [['layout', Style.layout], ['theme', Style.theme(theme)], ['emoji', Emoji.css()], ['dynamic', Style.dynamic()], ['padding', ""], ['mascots', ""]];
       i = 0;
       while (item = items[i++]) {
@@ -15789,7 +15789,7 @@
         }
         if (Conf["NSFW/SFW Themes"]) {
           Main.setThemeString();
-          theme = Themes[Conf[g.STYLESTRING] || (sfw ? 'Yotsuba B' : 'Yotsuba')] || Themes[Conf[g.STYLESTRING] = sfw ? 'Yotsuba B' : 'Yotsuba'];
+          theme = Themes[Conf[g.THEMESTRING] || (sfw ? 'Yotsuba B' : 'Yotsuba')] || Themes[Conf[g.THEMESTRING] = sfw ? 'Yotsuba B' : 'Yotsuba'];
           Style.setTheme(theme);
         }
         Favicon.SFW = sfw;
@@ -16650,7 +16650,7 @@
             continue;
           }
           div = $.el('div', {
-            className: "theme " + (name === Conf['theme'] ? 'selectedtheme' : ''),
+            className: "theme " + (name === Conf[g.THEMESTRING] ? 'selectedtheme' : ''),
             id: name,
             innerHTML: "<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% ; box-shadow: none ; background:" + theme['Reply Background'] + ";border:1px solid " + theme['Reply Border'] + ";color:" + theme['Text'] + "'><div><div style='cursor: pointer; width: 9px; height: 9px; margin: 2px 3px; display: inline-block; vertical-align: bottom; background: " + theme['Checkbox Background'] + "; border: 1px solid " + theme['Checkbox Border'] + ";'></div><span style='color:" + theme['Subjects'] + "; font-weight: 600 '>\n    " + name + "\n  </span><span style='color:" + theme['Names'] + "; font-weight: 600 '>\n    " + theme['Author'] + "\n  </span><span style='color:" + theme['Sage'] + "'>\n    (SAGE)\n  </span><span style='color:" + theme['Tripcodes'] + "'>\n    " + theme['Author Tripcode'] + "\n  </span><time style='color:" + theme['Timestamps'] + "'>\n    20XX.01.01 12:00\n  </time><a data-color='" + theme['Post Numbers'] + "' data-hover='" + theme['Hovered Links'] + "'>\n    No.27583594\n  </a><a data-color='" + theme['Backlinks'] + "' data-hover='" + theme['Hovered Links'] + "' name='" + name + "' class=edit>\n    &gt;&gt;edit\n  </a><a data-color='" + theme['Backlinks'] + "' data-hover='" + theme['Hovered Links'] + "' name='" + name + "' class=export>\n    &gt;&gt;export\n  </a><a data-color='" + theme['Backlinks'] + "' data-hover='" + theme['Hovered Links'] + "' name='" + name + "' class=delete>\n    &gt;&gt;delete\n  </a></div><blockquote style='margin: 0; padding: 12px 40px 12px 38px'><a data-color='" + theme['Quotelinks'] + "' data-hover='" + theme['Hovered Links'] + "'  style='text-shadow: none;'>\n    &gt;&gt;27582902\n  </a><br>\n  Post content is right here.\n</blockquote><h1 style='color: " + theme['Text'] + "'>\n  Selected\n</h1></div>"
           });
@@ -17016,10 +17016,10 @@
       theme: {
         select: function() {
           var current;
-          if (current = $.id(Conf[g.STYLESTRING])) {
+          if (current = $.id(Conf[g.THEMESTRING])) {
             $.rmClass(current, 'selectedtheme');
           }
-          $.set(g.STYLESTRING, Conf[g.STYLESTRING] = this.id);
+          $.set(g.THEMESTRING, Conf[g.THEMESTRING] = this.id);
           $.addClass(this, 'selectedtheme');
           return Style.setTheme(Themes[this.id]);
         },
@@ -17054,11 +17054,11 @@
             return;
           }
           if (confirm("Are you sure you want to delete \"" + this.name + "\"?")) {
-            if (this.name === Conf['theme']) {
+            if (this.name === Conf[g.THEMESTRING]) {
               if (settheme = container.previousSibling || container.nextSibling) {
-                Conf['theme'] = settheme.id;
+                Conf[g.THEMESTRING] = settheme.id;
                 $.addClass(settheme, 'selectedtheme');
-                $.set('theme', Conf['theme']);
+                $.set(g.THEMESTRING, Conf[g.THEMESTRING]);
               }
             }
             Themes[this.name]["Deleted"] = true;
@@ -17389,7 +17389,7 @@
       if (Conf["NSFW/SFW Themes"]) {
         type += "_" + g.TYPE;
       }
-      return g.STYLESTRING = type;
+      return g.THEMESTRING = type;
     }
   };
 

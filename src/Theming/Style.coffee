@@ -8,7 +8,7 @@ Style =
 <% } %>
     }
 
-    theme = Themes[Conf['theme']] or Themes['Yotsuba B']
+    theme = Themes[Conf[g.THEMESTRING]] or Themes['Yotsuba B']
     items = [
       ['layout',   Style.layout]
       ['theme',    Style.theme theme]

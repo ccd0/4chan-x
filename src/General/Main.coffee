@@ -316,6 +316,6 @@ Main =
     type = "theme"
     if Conf["NSFW/SFW Themes"]
       type += "_#{g.TYPE}"
-    g.STYLESTRING = type
+    g.THEMESTRING = type
 
 Main.init()

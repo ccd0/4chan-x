@@ -52,7 +52,7 @@ MascotTools =
       height: 100
     ctx = el.getContext('2d')
     ctx.font         = "40px #{Conf['Font']}"
-    ctx.fillStyle    = (new Color (Themes[Conf['theme']] or Themes['Yotsuba B'])['Text']).hex()
+    ctx.fillStyle    = (new Color (Themes[Conf[g.THEMESTRING]] or Themes[if g.TYPE is 'sfw' then 'Yotsuba B' else 'Yotsuba'])['Text']).hex()
     ctx.textAlign    = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText "Mascot 404", 124, 50

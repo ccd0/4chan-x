@@ -549,7 +549,7 @@ Settings =
         continue if theme["Deleted"]
 
         div = $.el 'div',
-          className: "theme #{if name is Conf['theme'] then 'selectedtheme' else ''}"
+          className: "theme #{if name is Conf[g.THEMESTRING] then 'selectedtheme' else ''}"
           id:        name
           innerHTML: """<%= grunt.file.read('src/General/html/Settings/Theme.html').replace(/>\s+</g, '><').trim() %>"""
 
@@ -880,10 +880,10 @@ Settings =
 
     theme:
       select: ->
-        if current = $.id(Conf[g.STYLESTRING])
+        if current = $.id(Conf[g.THEMESTRING])
           $.rmClass current, 'selectedtheme'
 
-        $.set g.STYLESTRING, Conf[g.STYLESTRING] = @id
+        $.set g.THEMESTRING, Conf[g.THEMESTRING] = @id
         $.addClass @, 'selectedtheme'
         Style.setTheme Themes[@id]
 
@@ -923,11 +923,11 @@ Settings =
           return
 
         if confirm "Are you sure you want to delete \"#{@name}\"?"
-          if @name is Conf['theme']
+          if @name is Conf[g.THEMESTRING]
             if settheme = container.previousSibling or container.nextSibling
-              Conf['theme'] = settheme.id
+              Conf[g.THEMESTRING] = settheme.id
               $.addClass settheme, 'selectedtheme'
-              $.set 'theme', Conf['theme']
+              $.set g.THEMESTRING, Conf[g.THEMESTRING]
           Themes[@name]["Deleted"] = true
 
           $.get "userThemes", {}, ({userThemes}) =>

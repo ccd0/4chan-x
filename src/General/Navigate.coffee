@@ -140,7 +140,7 @@ Navigate =
 
       if Conf["NSFW/SFW Themes"]
         Main.setThemeString()
-        theme = Themes[Conf[g.STYLESTRING] or if sfw then 'Yotsuba B' else 'Yotsuba'] or Themes[Conf[g.STYLESTRING] = if sfw then 'Yotsuba B' else 'Yotsuba']
+        theme = Themes[Conf[g.THEMESTRING] or if sfw then 'Yotsuba B' else 'Yotsuba'] or Themes[Conf[g.THEMESTRING] = if sfw then 'Yotsuba B' else 'Yotsuba']
         Style.setTheme theme
 
       Favicon.SFW = sfw
