@@ -13064,7 +13064,9 @@
       enabled = Conf[string];
       if (!(len = enabled.length)) {
         return MascotTools.change({
-          image: ''
+          image: '',
+          height: 0,
+          width: 0
         });
       }
       Conf['mascot'] = name = enabled[i = Math.floor(Math.random() * len)];
@@ -17231,7 +17233,7 @@
         });
         $.before(styleSelector.previousSibling, [$.tn('['), passLink, $.tn(']\u00A0\u00A0')]);
       }
-      if (g.VIEW === 'thread') {
+      if (g.VIEW === 'thread' || !Conf['JSON Navigation']) {
         Main.initThread();
       } else {
         $.event('4chanXInitFinished');

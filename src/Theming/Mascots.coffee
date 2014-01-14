@@ -62,7 +62,7 @@ MascotTools =
   toggle: ->
     string  = g.MASCOTSTRING
     enabled = Conf[string]
-    return MascotTools.change {image: ''} unless len = enabled.length
+    return MascotTools.change {image: '', height: 0, width: 0} unless len = enabled.length
 
     Conf['mascot'] = name = enabled[i = Math.floor(Math.random() * len)]
 

@@ -122,7 +122,7 @@ Main =
           'left=0,top=0,width=500,height=255,toolbar=0,resizable=0'
       $.before styleSelector.previousSibling, [$.tn '['; passLink, $.tn ']\u00A0\u00A0']
 
-    if g.VIEW is 'thread'
+    if g.VIEW is 'thread' or !Conf['JSON Navigation']
       Main.initThread()
     else
       $.event '4chanXInitFinished'
