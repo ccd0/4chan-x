@@ -25,17 +25,6 @@ Mascots =
     category:   'Anime'
     image:      '//i.minus.com/irFbpefCFt1cT.png'
     center:     true
-  'Akiyama_Mio_sitting':
-    category:   'Questionable'
-    image:      '//i.minus.com/ibnnAPmolhTfE7.png'
-  'Anime_Girl_in_Bondage':
-    category:   'Questionable'
-    image:      '//i.minus.com/ibbfIrZEoNLmiU.png'
-    center:     true
-  'Anime_Girl_in_Bondage_2':
-    category:   'Questionable'
-    image:      '//i.minus.com/iGRED5sHh4RMs.png'
-    center:     true
   'Applejack':
     category:   'Ponies'
     image:      '//i.minus.com/inZ8jSVsEhfnC.png'
@@ -56,10 +45,6 @@ Mascots =
     category:   'Anime'
     image:      '//i.minus.com/ibiiInQGLGnYNj.png'
     center:     true
-  'Asuka_Langley_Soryu_5':
-    category:   'Questionable'
-    image:      '//i.minus.com/iJq4VXY1Gw8ZE.png'
-    center:     true
   'Asuka_Langley_Soryu_6':
     category:   'Anime'
     image:      '//i.minus.com/ibzbnBcaEtoqck.png'
@@ -68,24 +53,13 @@ Mascots =
     category:   'Anime'
     image:      '//i.minus.com/ib0ft5OmqRZx2r.png'
     center:     true
-  'Ayase_Yue':
-    category:   'Questionable'
-    image:      '//i.minus.com/ign5fGOZWTx5o.png'
   'Ayase':
     category:   'Anime'
     image:      '//i.minus.com/ibmArq5Wb4Po4v.png'
     center:     true
-  'Ayase_2':
-    category:   'Questionable'
-    image:      '//i.minus.com/ibjUbDLSU5pwhK.png'
-    center:     true
   'BLACK_ROCK_SHOOTER':
     category:   'Anime'
     image:      '//i.minus.com/ibMe9MrTMdvAT.png'
-    center:     true
-  'Blue_Rose':
-    category:   'Questionable'
-    image:      '//i.minus.com/ibiq1joMemfzeM.png'
     center:     true
   'Brioche_d_Arquien':
     category:   'Anime'
@@ -95,17 +69,9 @@ Mascots =
     category:   'Anime'
     image:      '//i.minus.com/iwndO4Pn6SO0X.png'
     center:     true
-  'CC2':
-    category:   'Questionable'
-    image:      '//i.minus.com/iVT3TjJ7lBRpl.png'
-    center:     true
   'Chie':
     category:   'Anime'
     image:      '//i.minus.com/ib0HI16h9FSjSp.png'
-    center:     true
-  'Cirno':
-    category:   'Questionable'
-    image:      '//i.minus.com/ibffjW5v0zrSGa.png'
     center:     true
   'Cirno_2':
     category:   'Anime'
@@ -130,9 +96,6 @@ Mascots =
     category:   'Anime'
     image:      '//i.minus.com/ibsk5mMYVR5zuA.png'
     center:     true
-  'Erio_Touwa':
-    category:   'Questionable'
-    image:      '//i.minus.com/in8bF152Y9qVB.png'
   'Evangeline_AK_McDowell':
     category:   'Anime'
     image:      '//i.minus.com/ibuq7a8zWKi2gl.png'
@@ -162,9 +125,6 @@ Mascots =
   'Gasai_Yuno':
     category:   'Anime'
     image:      '//i.minus.com/iEQsK6K85jX2n.png'
-  'Gasai_Yuno_2':
-    category:   'Questionable'
-    image:      '//i.minus.com/ifyPk7Yeo1JA7.png'
   'George_Costanza':
     category:   'Western'
     image:      '//i.minus.com/iFWdpFGfzLs6v.png'
@@ -175,13 +135,6 @@ Mascots =
   'Hasekura_Youko':
     category:   'Anime'
     image:      '//i.minus.com/iqBTFZf5UhLpR.png'
-    center:     true
-  'Hatsune_Miku':
-    category:   'Questionable'
-    image:      '//i.minus.com/iHuUwYVywpp3Z.png'
-  'Hatsune_Miku_2':
-    category:   'Questionable'
-    image:      '//i.minus.com/iclhgYeHDD77I.png'
     center:     true
   'Hatsune_Miku_3':
     category:   'Anime'
@@ -194,14 +147,6 @@ Mascots =
   'Hatsune_Miku_5':
     category:   'Anime'
     image:      '//i.minus.com/i9Evu9dyvok4G.png'
-    center:     true
-  'Hatsune_Miku_6':
-    category:   'Questionable'
-    image:      '//i.minus.com/iQzx9fPFgPUNl.png'
-    center:     true
-  'Hatsune_Miku_7':
-    category:   'Questionable'
-    image:      '//i.minus.com/iDScshaEZqUuy.png'
     center:     true
   'Hirasawa_Yui':
     category:   'Anime'
@@ -219,12 +164,6 @@ Mascots =
     image:      '//i.minus.com/ibyT9dlTe1HN5P.png'
     silhouette: true
     width:      205
-  'Horo_3':
-    category:   'Questionable'
-    image:      '//i.minus.com/ibyT9dlTe1HN5P.png'
-  'Horo_4':
-    category:   'Questionable'
-    image:      '//i.minus.com/ibbMKiznORGJ00.png'
   'Ika_Musume':
     category:   'Anime'
     image:      '//i.minus.com/ibqVu5GNfKx5bC.png'
@@ -233,16 +172,6 @@ Mascots =
     category:   'Anime'
     image:      '//i.minus.com/ibhnEiE8HabEqC.png'
     center:     true
-  'Ika_Musume_3':
-    category:   'Questionable'
-    image:      '//i.minus.com/iby8LyjXffukaI.png'
-    center:     true
-  'Inori':
-    category:   'Questionable'
-    image:      '//i.minus.com/ibpHKNPxcFqRxs.png'
-  'Inori_2':
-    category:   'Questionable'
-    image:      '//i.minus.com/ibzM531DBaHYXD.png'
   'Iwakura_Lain':
     category:   'Anime'
     image:      '//i.minus.com/iBXRRT19scoHf.png'
@@ -254,10 +183,6 @@ Mascots =
   'KOn_Girls':
     category:   'Anime'
     image:      '//i.minus.com/ibndVLiH09uINs.png'
-    center:     true
-  'Kagamine_Rin':
-    category:   'Questionable'
-    image:      '//i.minus.com/iVPKJeDXKPKeV.png'
     center:     true
   'Kagamine_Rin_2':
     category:   'Anime'
@@ -281,17 +206,9 @@ Mascots =
     category:   'Anime'
     image:      '//i.minus.com/iVmsLKa4zLwZR.png'
     center:     true
-  'Kinomoto_Sakura_2':
-    category:   'Questionable'
-    image:      '//i.minus.com/ibklztjz3Ua747.png'
-    center:     true
   'Kirisame_Marisa':
     category:   'Anime'
     image:      '//i.minus.com/ibikDZH5CZ0V30.png'
-  'Kirino_Kosaka_and_Ruri_Goko':
-    category:   'Questionable'
-    image:      '//i.minus.com/isIzggtfUo4ql.png'
-    center:     true
   'Koiwai_Yotsuba':
     category:   'Anime'
     image:      '//i.minus.com/iKFKyVVBato2N.png'
@@ -300,10 +217,6 @@ Mascots =
     category:   'Anime'
     image:      '//i.minus.com/ieVyNMSjXpBs2.png'
     center:     true
-  'Konjiki_no_Yami':
-    category:   'Questionable'
-    image:      '//i.minus.com/imy7iv5fuym8b.png'
-    position:   'bottom'
   'Kotobuki_Tsumugi':
     category:   'Anime'
     image:      '//i.minus.com/i6doAUnM6jMAY.png'
@@ -324,10 +237,6 @@ Mascots =
   'Kyubee_2':
     category:   'Anime'
     image:      '//i.minus.com/iGlKiDZvM3xi8.png'
-    center:     true
-  'Leonmitchelli':
-    category:   'Questionable'
-    image:      '//i.minus.com/ibgUFGlOpedfbs.png'
     center:     true
   'Li_Syaoran':
     category:   'Anime'
@@ -396,25 +305,15 @@ Mascots =
     category:   'Anime'
     image:      '//i.minus.com/ibndIkldw4njbD.png'
     center:     true
-  'Nagato_Yuki_4':
-    category:   'Questionable'
-    image:      '//i.minus.com/i92tUr90OVZGD.png'
-    center:     true
   'Nagato_Yuki_5':
     category:   'Silhouette'
     width:      202
     image:      '//i.minus.com/iFQQPEaC3aEV7.png'
     silhouette: true
     center:     true
-  'Nagato_Yuki_7':
-    category:   'Questionable'
-    image:      '//i.minus.com/iFQQPEaC3aEV7.png'
   'Nakano_Azusa':
     category:   'Anime'
     image:      '//i.minus.com/iiptfoMlr4v1k.png'
-  'Nodoka_Miyazaki':
-    category:   'Questionable'
-    image:      '//i.minus.com/iDX5mImKBzrXK.png'
   'Nichijou':
     category:   'Anime'
     image:      '//i.minus.com/iE8lbZ5f3OT2B.png'
@@ -452,14 +351,6 @@ Mascots =
     category:   'Anime'
     image:      '//i.minus.com/ibdwMaIPwdscao.png'
     center:     true
-  'Pixie':
-    category:   'Questionable'
-    image:      '//i.minus.com/ipRzX1YsTyhgZ.png'
-    center:     true
-  'Railgun':
-    category:   'Questionable'
-    image:      '//i.minus.com/iysolfmvz6WKs.png'
-    center:     true
   'Railgun_2':
     category:   'Anime'
     image:      '//i.minus.com/iNhpDDO0GSTeM.png'
@@ -493,13 +384,6 @@ Mascots =
     category:   'Anime'
     image:      '//i.minus.com/iecVz4p2SuqK4.png'
     position:   'bottom'
-  'Saber':
-    category:   'Questionable'
-    image:      '//i.minus.com/i62cv3csQaqgk.png'
-    center:     true
-  'Sakurazaki_Setsuna':
-    category:   'Questionable'
-    image:      '//i.minus.com/iHS6559NMU1tS.png'
   'Samus_Aran':
     category:   'Anime'
     image:      '//i.minus.com/iWG1GFJ89A05p.png'
@@ -507,10 +391,6 @@ Mascots =
   'Samus_Aran_2':
     category:   'Anime'
     image:      '//i.minus.com/ibl4efsNtHpkXg.png'
-  'Seraphim':
-    category:   'Questionable'
-    image:      '//i.minus.com/ivHaKIFHRpPFP.png'
-    center:     true
   'Shana':
     category:   'Anime'
     image:      '//i.minus.com/ib2cTJMF0cYIde.png'
@@ -555,19 +435,9 @@ Mascots =
     category:   'Western'
     image:      '//i.minus.com/iQL2bwpDfOgk.png'
     center:     true
-  'Teletha_Tessa_Testarossa':
-    category:   'Questionable'
-    image:      '//i.minus.com/iQKrg7Pq7Y6Ed.png'
-  'Rukia_Nia_and_Asa':
-    category:   'Questionable'
-    image:      '//i.minus.com/icECBJR5D5U4S.png'
   'Tewi_Inaba':
     category:   'Anime'
     image:      '//i.minus.com/ib2k9lwQIkmb66.png'
-  'Tifa':
-    category:   'Questionable'
-    image:      '//i.minus.com/inDzKQ0Wck4ef.png'
-    center:     true
   'Tomozo_Kaoru':
     category:   'Anime'
     image:      '//i.minus.com/islUcBaPRYAgv.png'
@@ -575,14 +445,6 @@ Mascots =
   'Twilight_Sparkle':
     category:   'Ponies'
     image:      '//i.minus.com/ibnMYVTZEykrKU.png'
-    center:     true
-  'Udine':
-    category:   'Questionable'
-    image:      '//i.minus.com/iiycujRmhn6QK.png'
-    position:   'bottom'
-  'Wanwan':
-    category:   'Questionable'
-    image:      '//i.minus.com/iTdBWYMCXULLT.png'
     center:     true
   'White_Curious':
     category:   'Anime'
@@ -598,9 +460,6 @@ Mascots =
     category:   'Anime'
     image:      '//i.minus.com/izkTpyjr1XlLR.png'
     center:     true
-  'Yoko_Littner':
-    category:   'Questionable'
-    image:      '//i.minus.com/i0mtOEsBC9GlY.png'
   'Yoko_Littner_2':
     category:   'Anime'
     image:      '//i.minus.com/i7aUDY4h9uB1T.png'
