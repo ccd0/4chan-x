@@ -1,6 +1,6 @@
 Index =
   init: ->
-    return if g.BOARD.ID is 'f' or g.VIEW is 'catalog'
+    return if g.BOARD.ID is 'f' or g.VIEW is 'catalog' or !Conf['JSON Navigation']
 
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'

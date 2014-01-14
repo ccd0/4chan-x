@@ -107,6 +107,7 @@
   Config = {
     main: {
       'Miscellaneous': {
+        'JSON Navigation': [true, 'Use JSON for loading the Board Index and Threads. Also allows searching and sorting the board index and infinite scolling.'],
         'Catalog Links': [true, 'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'],
         'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
         'QR Shortcut': [false, 'Adds a small [QR] link in the header.'],
@@ -1785,10 +1786,12 @@
       $.ready(function() {
         var a, cs, footer, _i, _len, _ref;
         _this.footer = footer = $.id('boardNavDesktopFoot');
-        _ref = $$('a', footer);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          a = _ref[_i];
-          $.on(a, 'click', Navigate.navigate);
+        if (Conf['JSON Navigation']) {
+          _ref = $$('a', footer);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            a = _ref[_i];
+            $.on(a, 'click', Navigate.navigate);
+          }
         }
         if (a = $("a[href*='/" + g.BOARD + "/']", footer)) {
           a.className = 'current';
@@ -1835,7 +1838,9 @@
       _ref = $$('a', boardList);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
-        $.on(a, 'click', Navigate.navigate);
+        if (Conf['JSON Navigation']) {
+          $.on(a, 'click', Navigate.navigate);
+        }
         if (a.pathname.split('/')[1] === g.BOARD.ID) {
           a.className = 'current';
         }
@@ -1886,7 +1891,9 @@
           a = as[_i];
           if (a.textContent === board) {
             a = a.cloneNode(true);
-            $.on(a, 'click', Navigate.navigate);
+            if (Conf['JSON Navigation']) {
+              $.on(a, 'click', Navigate.navigate);
+            }
             a.textContent = /-title/.test(t) || /-replace/.test(t) && $.hasClass(a, 'current') ? a.title : /-full/.test(t) ? "/" + board + "/ - " + a.title : (m = t.match(/-text:"(.+)"/)) ? m[1] : a.textContent;
             if (m = t.match(/-(index|catalog)/)) {
               a.dataset.only = m[1];
@@ -2160,7 +2167,7 @@
   Index = {
     init: function() {
       var anchorEntry, input, label, modeEntry, name, refNavEntry, repliesEntry, sortEntry, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
-      if (g.BOARD.ID === 'f' || g.VIEW === 'catalog') {
+      if (g.BOARD.ID === 'f' || g.VIEW === 'catalog' || !Conf['JSON Navigation']) {
         return;
       }
       this.button = $.el('a', {
@@ -11866,7 +11873,7 @@
   Navigate = {
     path: window.location.pathname,
     init: function() {
-      if (g.VIEW === 'catalog' || g.BOARD.ID === 'f') {
+      if (g.VIEW === 'catalog' || g.BOARD.ID === 'f' || !Conf['JSON Navigation']) {
         return;
       }
       $.ready(function() {

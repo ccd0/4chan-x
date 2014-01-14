@@ -1,6 +1,10 @@
 Config =
   main:
     'Miscellaneous':
+      'JSON Navigation' : [
+        true
+        'Use JSON for loading the Board Index and Threads. Also allows searching and sorting the board index and infinite scolling.'
+      ]
       'Catalog Links': [
         true
         'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'

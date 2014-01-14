@@ -102,7 +102,8 @@ Header =
 
     $.ready =>
       @footer = footer = $.id 'boardNavDesktopFoot'
-      $.on a, 'click', Navigate.navigate for a in $$ 'a', footer
+      if Conf['JSON Navigation']
+        $.on a, 'click', Navigate.navigate for a in $$ 'a', footer
       if a = $ "a[href*='/#{g.BOARD}/']", footer
         a.className = 'current'
 
@@ -143,7 +144,8 @@ Header =
       id: 'board-list'
       innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> #{fourchannav.innerHTML}</span>"
     for a in $$ 'a', boardList
-      $.on a, 'click', Navigate.navigate
+      if Conf['JSON Navigation']
+        $.on a, 'click', Navigate.navigate
       if a.pathname.split('/')[1] is g.BOARD.ID
         a.className = 'current'
     fullBoardList = $ '#full-board-list', boardList
@@ -189,7 +191,8 @@ Header =
         if a.textContent is board
           a = a.cloneNode true
 
-          $.on a, 'click', Navigate.navigate
+          if Conf['JSON Navigation']
+            $.on a, 'click', Navigate.navigate
 
           a.textContent = if /-title/.test(t) or /-replace/.test(t) and $.hasClass a, 'current'
             a.title
