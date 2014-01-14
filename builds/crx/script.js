@@ -17246,37 +17246,40 @@
       }
     },
     initThread: function() {
-      var err, errors, postRoot, posts, thread, threadRoot, _i, _len, _ref;
-      if (!(threadRoot = $('.thread'))) {
-        return;
-      }
-      thread = new Thread(+threadRoot.id.slice(1), g.BOARD);
-      posts = [];
-      _ref = $$('.thread > .postContainer', threadRoot);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        postRoot = _ref[_i];
-        try {
-          posts.push(new Post(postRoot, thread, g.BOARD, {
-            isOriginalMarkup: true
-          }));
-        } catch (_error) {
-          err = _error;
-          if (!errors) {
-            errors = [];
+      var board, err, errors, postRoot, posts, thread, threadRoot, threads, _i, _j, _len, _len1, _ref, _ref1;
+      if (board = $('.board')) {
+        threads = [];
+        posts = [];
+        _ref = $$('.board > .thread', board);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          threadRoot = _ref[_i];
+          thread = new Thread(+threadRoot.id.slice(1), g.BOARD);
+          threads.push(thread);
+          _ref1 = $$('.thread > .postContainer', threadRoot);
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            postRoot = _ref1[_j];
+            try {
+              posts.push(new Post(postRoot, thread, g.BOARD));
+            } catch (_error) {
+              err = _error;
+              if (!errors) {
+                errors = [];
+              }
+              errors.push({
+                message: "Parsing of Post No." + (postRoot.id.match(/\d+/)) + " failed. Post will be skipped.",
+                error: err
+              });
+            }
           }
-          errors.push({
-            message: "Parsing of Post No." + (postRoot.id.match(/\d+/)) + " failed. Post will be skipped.",
-            error: err
-          });
         }
+        if (errors) {
+          Main.handleErrors(errors);
+        }
+        Main.callbackNodes(Thread, threads);
+        return Main.callbackNodesDB(Post, posts, function() {
+          return $.event('4chanXInitFinished');
+        });
       }
-      if (errors) {
-        Main.handleErrors(errors);
-      }
-      Main.callbackNodes(Thread, [thread]);
-      return Main.callbackNodesDB(Post, posts, function() {
-        return $.event('4chanXInitFinished');
-      });
     },
     callbackNodes: function(klass, nodes) {
       var cb, i, node;
