@@ -1,3 +1,6 @@
+### v2.8.2 
+*2014-01-13*
+
 **Zixaphir**:
 - Infinite Scrolling no longer dynamically changes the URL.
 - JSON Navigation and Index features are now optional.
