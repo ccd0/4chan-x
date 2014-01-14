@@ -339,32 +339,43 @@ MascotTools =
 
     reader.onload = (e) ->
       try
-        imported = JSON.parse e.target.result
+        mascots = JSON.parse e.target.result
       catch err
         alert err
         return
 
-      unless (imported["Mascot"])
-        alert "Mascot file is invalid."
+      if name = mascots["Mascot"]
+        MascotTools.parse mascot
+      else
+        MascotTools.parse mascot for mascot in mascots
 
-      name = imported["Mascot"]
-      delete imported["Mascot"]
+      message = if len = mascots.length
+        "Mascots imported!"
+      else
+        "#{name} successfully imported!"
 
-      if Mascots[name] and not $.remove Conf["Deleted Mascots"], name
-        unless confirm "A mascot with this name already exists. Would you like to over-write?"
-          return
+      new Notice 'info', message, 10
 
-      Mascots[name] = imported
-
-      $.get "userMascots", {}, ({userMascots}) ->
-        userMascots[name] = Mascots[name]
-        $.set 'userMascots', userMascots
-
-      alert "Mascot \"#{name}\" imported!"
       $.rm $ "#mascotContainer", d.body
       Settings.open 'Mascots'
 
     reader.readAsText file
+
+  parse: (mascot) ->
+    unless name = mascot["Mascot"]
+      new Notice 'warning', "Failed to import a mascot. Mascot has no name.", 5
+      return
+
+    delete mascot["Mascot"]
+
+    if Mascots[name] and not $.remove Conf["Deleted Mascots"], name
+      return unless confirm "The mascot #{name} already exists? Would you like to overwrite it?"
+
+    Mascots[name] = imported
+
+    $.get "userMascots", {}, ({userMascots}) ->
+      userMascots[name] = Mascots[name]
+      $.set 'userMascots', userMascots
 
   position: (mascot) ->
     return unless Style.sheets.mascots

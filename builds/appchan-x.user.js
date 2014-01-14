@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.8.4 - 2014-01-13
+* appchan x - Version 2.8.4 - 2014-01-14
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -13327,36 +13327,48 @@
       file = this.files[0];
       reader = new FileReader();
       reader.onload = function(e) {
-        var err, imported, name;
+        var err, len, mascot, mascots, message, name, _i, _len;
         try {
-          imported = JSON.parse(e.target.result);
+          mascots = JSON.parse(e.target.result);
         } catch (_error) {
           err = _error;
           alert(err);
           return;
         }
-        if (!imported["Mascot"]) {
-          alert("Mascot file is invalid.");
-        }
-        name = imported["Mascot"];
-        delete imported["Mascot"];
-        if (Mascots[name] && !$.remove(Conf["Deleted Mascots"], name)) {
-          if (!confirm("A mascot with this name already exists. Would you like to over-write?")) {
-            return;
+        if (name = mascots["Mascot"]) {
+          MascotTools.parse(mascot);
+        } else {
+          for (_i = 0, _len = mascots.length; _i < _len; _i++) {
+            mascot = mascots[_i];
+            MascotTools.parse(mascot);
           }
         }
-        Mascots[name] = imported;
-        $.get("userMascots", {}, function(_arg) {
-          var userMascots;
-          userMascots = _arg.userMascots;
-          userMascots[name] = Mascots[name];
-          return $.set('userMascots', userMascots);
-        });
-        alert("Mascot \"" + name + "\" imported!");
+        message = (len = mascots.length) ? "Mascots imported!" : "" + name + " successfully imported!";
+        new Notice('info', message, 10);
         $.rm($("#mascotContainer", d.body));
         return Settings.open('Mascots');
       };
       return reader.readAsText(file);
+    },
+    parse: function(mascot) {
+      var name;
+      if (!(name = mascot["Mascot"])) {
+        new Notice('warning', "Failed to import a mascot. Mascot has no name.", 5);
+        return;
+      }
+      delete mascot["Mascot"];
+      if (Mascots[name] && !$.remove(Conf["Deleted Mascots"], name)) {
+        if (!confirm("The mascot " + name + " already exists? Would you like to overwrite it?")) {
+          return;
+        }
+      }
+      Mascots[name] = imported;
+      return $.get("userMascots", {}, function(_arg) {
+        var userMascots;
+        userMascots = _arg.userMascots;
+        userMascots[name] = Mascots[name];
+        return $.set('userMascots', userMascots);
+      });
     },
     position: function(mascot) {
       if (!Style.sheets.mascots) {
