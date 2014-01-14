@@ -1,8 +1,17 @@
+**Zixaphir**:
+- Reimplemented mascot importing.
+- The "Questionable" mascot category has been emptied. All of the mascots within it can be reimported from https://raw.github.com/zixaphir/appchan-x/master/questionable.json
+- Added a category for custom mascots.
+
 ### v2.8.4 
 *2014-01-13*
 
+bugfix
+
 ### v2.8.3 
 *2014-01-13*
+
+bugfix
 
 ### v2.8.2 
 *2014-01-13*
