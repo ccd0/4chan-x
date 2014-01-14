@@ -13327,7 +13327,7 @@
       file = this.files[0];
       reader = new FileReader();
       reader.onload = function(e) {
-        var err, len, mascot, mascots, message, name, _i, _len;
+        var err, mascot, mascots, message, name, _i, _len;
         try {
           mascots = JSON.parse(e.target.result);
         } catch (_error) {
@@ -13343,7 +13343,7 @@
             MascotTools.parse(mascot);
           }
         }
-        message = (len = mascots.length) ? "Mascots imported!" : "" + name + " successfully imported!";
+        message = mascots.length ? "Mascots imported!" : "" + name + " successfully imported!";
         new Notice('info', message, 10);
         $.rm($("#mascotContainer", d.body));
         return Settings.open('Mascots');

@@ -349,7 +349,7 @@ MascotTools =
       else
         MascotTools.parse mascot for mascot in mascots
 
-      message = if len = mascots.length
+      message = if mascots.length
         "Mascots imported!"
       else
         "#{name} successfully imported!"
