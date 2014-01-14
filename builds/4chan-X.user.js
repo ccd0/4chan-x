@@ -2324,18 +2324,20 @@
       if (Index.req || Conf['Index Mode'] !== 'infinite' || (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight)) || g.VIEW === 'thread') {
         return;
       }
-      pageNum = Index.getCurrentPage() + 1;
+      if (Index.pageNum == null) {
+        Index.pageNum = Index.getCurrentPage();
+      }
+      pageNum = Index.pageNum++;
       if (pageNum >= Index.pagesNum) {
         return Index.endNotice();
       }
       nodesPerPage = Index.threadsNumPerPage * 2;
-      history.pushState(null, '', "/" + g.BOARD + "/" + pageNum);
       nodes = Index.sortedNodes.slice(nodesPerPage * pageNum, nodesPerPage * (pageNum + 1));
       if (Conf['Show Replies']) {
         Index.buildReplies(nodes);
       }
       $.add(Index.root, nodes);
-      return Index.setPage();
+      return Index.setPage(pageNum);
     }),
     endNotice: (function() {
       var notify, reset;
@@ -2386,14 +2388,6 @@
         }
         e.preventDefault();
         return Index.userPageNav(+a.pathname.split('/')[2]);
-      },
-      link: function(e) {
-        if (g.VIEW !== 'index' || /catalog/.test(this.href)) {
-          return;
-        }
-        e.preventDefault();
-        history.pushState(null, '', this.pathname);
-        return Index.update();
       }
     },
     scrollToIndex: function() {
@@ -2456,9 +2450,9 @@
       }
       return Index.togglePagelist();
     },
-    setPage: function() {
-      var a, href, maxPageNum, next, pageNum, pagesRoot, prev, strong;
-      pageNum = Index.getCurrentPage();
+    setPage: function(pageNum) {
+      var a, href, maxPageNum, next, pagesRoot, prev, strong;
+      pageNum || (pageNum = Index.getCurrentPage());
       maxPageNum = Index.getMaxPageNum();
       pagesRoot = $('.pages', Index.pagelist);
       prev = pagesRoot.previousSibling.firstChild;
@@ -2495,6 +2489,7 @@
       if (!(d.readyState === 'loading' || Index.root.parentElement)) {
         $.replace($('.board'), Index.root);
       }
+      delete Index.pageNum;
       if ((_ref = Index.req) != null) {
         _ref.abort();
       }
@@ -12105,6 +12100,7 @@
       if (e) {
         e.preventDefault();
       }
+      delete Index.pageNum;
       path = this.pathname;
       if (this.hash) {
         path += this.hash;

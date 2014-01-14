@@ -112,14 +112,14 @@ Index =
 
   scroll: $.debounce 100, ->
     return if Index.req or Conf['Index Mode'] isnt 'infinite' or (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
-    pageNum = Index.getCurrentPage() + 1
+    Index.pageNum = Index.getCurrentPage() unless Index.pageNum? # Avoid having to pushState to keep track of the current page
+    pageNum = Index.pageNum++
     return Index.endNotice() if pageNum >= Index.pagesNum
     nodesPerPage = Index.threadsNumPerPage * 2
-    history.pushState null, '', "/#{g.BOARD}/#{pageNum}"
     nodes = Index.sortedNodes[nodesPerPage * pageNum ... nodesPerPage * (pageNum + 1)]
     Index.buildReplies nodes if Conf['Show Replies']
     $.add Index.root, nodes
-    Index.setPage()
+    Index.setPage pageNum
     
   endNotice: do ->
     notify = false
@@ -153,11 +153,6 @@ Index =
       return if a.textContent is 'Catalog'
       e.preventDefault()
       Index.userPageNav +a.pathname.split('/')[2]
-    link: (e) ->
-      return if g.VIEW isnt 'index' or /catalog/.test @href
-      e.preventDefault()
-      history.pushState null, '', @pathname
-      Index.update()
 
   scrollToIndex: ->
     Header.scrollToIfNeeded Index.root
@@ -202,8 +197,8 @@ Index =
       $.rmAll pagesRoot
       $.add pagesRoot, nodes
     Index.togglePagelist()
-  setPage: ->
-    pageNum    = Index.getCurrentPage()
+  setPage: (pageNum) ->
+    pageNum  or= Index.getCurrentPage()
     maxPageNum = Index.getMaxPageNum()
     pagesRoot  = $ '.pages', Index.pagelist
     # Previous/Next buttons
@@ -232,6 +227,7 @@ Index =
       return
     unless d.readyState is 'loading' or Index.root.parentElement
       $.replace $('.board'), Index.root
+    delete Index.pageNum
     Index.req?.abort()
     Index.notice?.close()
 

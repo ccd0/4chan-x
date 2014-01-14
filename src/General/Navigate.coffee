@@ -184,6 +184,8 @@ Navigate =
     return if view is 'catalog' or 'f' in [boardID, g.BOARD.ID]
     e.preventDefault() if e
 
+    delete Index.pageNum
+
     path = @pathname
     path += @hash if @hash
 
