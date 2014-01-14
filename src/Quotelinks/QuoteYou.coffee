@@ -20,7 +20,7 @@ QuoteYou =
   node: ->
     return if @isClone
 
-    if @info.yours
+    if QR.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
       $.addClass @nodes.root, 'yourPost'
 
     # Stop there if there's no quotes in that post.
