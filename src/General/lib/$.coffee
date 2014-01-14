@@ -404,13 +404,11 @@ $.set = do ->
     return
 <% } %>
 
-$.remove = (array, value) ->
-  i = array.indexOf value
-  if i > -1
-    array.splice i, 1
-    true
-  else
-    false
+$.remove = (arr, value) ->
+  i = arr.indexOf value
+  return false if i is -1
+  arr.splice i, 1
+  true
 
 $$ = (selector, root=d.body) ->
   [root.querySelectorAll(selector)...]

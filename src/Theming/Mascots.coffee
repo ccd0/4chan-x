@@ -337,9 +337,8 @@ MascotTools =
   importMascot: ->
     file = @files[0]
     reader = new FileReader()
-    len = Conf["Deleted Mascots"].length
 
-    reader.onload = ->
+    reader.onload = (e) ->
       try
         mascots = JSON.parse e.target.result
       catch err
@@ -347,25 +346,29 @@ MascotTools =
         return
 
       $.get "userMascots", {}, ({userMascots}) ->
-        if name = mascots["Mascot"]
-          MascotTools.parse mascots, userMascots
-          message = "#{name} successfully imported!"
-        else if mascots.length
-          MascotTools.parse mascot, userMascots for mascot in mascots
-          message = "Mascots imported!"
-        else
-          return new Notice 'warning', "Failed to import mascot. Is file a properly formatted JSON file?", 5
-
-      $.set 'userMascots',     userMascots
-      $.set 'Deleted Mascots', Conf['Deleted Mascots'] unless len is Conf["Deleted Mascots"].length
-
-      new Notice 'info', message, 10
-
-      Settings.openSection.call
-        open:            Settings.mascots
-        hyphenatedTitle: 'mascots'
+        MascotTools.load mascots, userMascots
 
     reader.readAsText file
+
+  load: (mascots, userMascots) ->
+    len = Conf["Deleted Mascots"].length
+    if name = mascots["Mascot"]
+      MascotTools.parse mascots, userMascots
+      message = "#{name} successfully imported!"
+    else if mascots.length
+      MascotTools.parse mascot, userMascots for mascot in mascots
+      message = "Mascots imported!"
+    else
+      return new Notice 'warning', "Failed to import mascot. Is file a properly formatted JSON file?", 5
+
+    $.set 'userMascots',     userMascots
+    $.set 'Deleted Mascots', Conf['Deleted Mascots'] unless len is Conf["Deleted Mascots"].length
+
+    new Notice 'info', message, 10
+
+    Settings.openSection.call
+      open:            Settings.mascots
+      hyphenatedTitle: 'mascots'
 
   parse: (mascot, userMascots) ->
     unless name = mascot["Mascot"]

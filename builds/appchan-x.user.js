@@ -2983,15 +2983,14 @@
     };
   })();
 
-  $.remove = function(array, value) {
+  $.remove = function(arr, value) {
     var i;
-    i = array.indexOf(value);
-    if (i > -1) {
-      array.splice(i, 1);
-      return true;
-    } else {
+    i = arr.indexOf(value);
+    if (i === -1) {
       return false;
     }
+    arr.splice(i, 1);
+    return true;
   };
 
   $$ = function(selector, root) {
@@ -13143,11 +13142,10 @@
       return Settings.open("Mascots");
     },
     importMascot: function() {
-      var file, len, reader;
+      var file, reader;
       file = this.files[0];
       reader = new FileReader();
-      len = Conf["Deleted Mascots"].length;
-      reader.onload = function() {
+      reader.onload = function(e) {
         var err, mascots;
         try {
           mascots = JSON.parse(e.target.result);
@@ -13156,33 +13154,38 @@
           alert(err);
           return;
         }
-        $.get("userMascots", {}, function(_arg) {
-          var mascot, message, name, userMascots, _i, _len;
+        return $.get("userMascots", {}, function(_arg) {
+          var userMascots;
           userMascots = _arg.userMascots;
-          if (name = mascots["Mascot"]) {
-            MascotTools.parse(mascots, userMascots);
-            return message = "" + name + " successfully imported!";
-          } else if (mascots.length) {
-            for (_i = 0, _len = mascots.length; _i < _len; _i++) {
-              mascot = mascots[_i];
-              MascotTools.parse(mascot, userMascots);
-            }
-            return message = "Mascots imported!";
-          } else {
-            return new Notice('warning', "Failed to import mascot. Is file a properly formatted JSON file?", 5);
-          }
-        });
-        $.set('userMascots', userMascots);
-        if (len !== Conf["Deleted Mascots"].length) {
-          $.set('Deleted Mascots', Conf['Deleted Mascots']);
-        }
-        new Notice('info', message, 10);
-        return Settings.openSection.call({
-          open: Settings.mascots,
-          hyphenatedTitle: 'mascots'
+          return MascotTools.load(mascots, userMascots);
         });
       };
       return reader.readAsText(file);
+    },
+    load: function(mascots, userMascots) {
+      var len, mascot, message, name, _i, _len;
+      len = Conf["Deleted Mascots"].length;
+      if (name = mascots["Mascot"]) {
+        MascotTools.parse(mascots, userMascots);
+        message = "" + name + " successfully imported!";
+      } else if (mascots.length) {
+        for (_i = 0, _len = mascots.length; _i < _len; _i++) {
+          mascot = mascots[_i];
+          MascotTools.parse(mascot, userMascots);
+        }
+        message = "Mascots imported!";
+      } else {
+        return new Notice('warning', "Failed to import mascot. Is file a properly formatted JSON file?", 5);
+      }
+      $.set('userMascots', userMascots);
+      if (len !== Conf["Deleted Mascots"].length) {
+        $.set('Deleted Mascots', Conf['Deleted Mascots']);
+      }
+      new Notice('info', message, 10);
+      return Settings.openSection.call({
+        open: Settings.mascots,
+        hyphenatedTitle: 'mascots'
+      });
     },
     parse: function(mascot, userMascots) {
       var name;
