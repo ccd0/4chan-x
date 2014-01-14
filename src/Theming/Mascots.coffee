@@ -337,30 +337,37 @@ MascotTools =
   importMascot: ->
     file = @files[0]
     reader = new FileReader()
+    len = Conf["Deleted Mascots"].length
 
-    reader.onload = (e) ->
+    reader.onload = ->
       try
         mascots = JSON.parse e.target.result
       catch err
         alert err
         return
 
-      if name = mascots["Mascot"]
-        MascotTools.parse mascots
-        message = "#{name} successfully imported!"
-      else if mascots.length
-        MascotTools.parse mascot for mascot in mascots
-        message = "Mascots imported!"
-      else
-        return new Notice 'warning', "Failed to import mascot. Is file a properly formatted JSON file?", 5
+      $.get "userMascots", {}, ({userMascots}) ->
+        if name = mascots["Mascot"]
+          MascotTools.parse mascots, userMascots
+          message = "#{name} successfully imported!"
+        else if mascots.length
+          MascotTools.parse mascot, userMascots for mascot in mascots
+          message = "Mascots imported!"
+        else
+          return new Notice 'warning', "Failed to import mascot. Is file a properly formatted JSON file?", 5
+
+      $.set 'userMascots',     userMascots
+      $.set 'Deleted Mascots', Conf['Deleted Mascots'] unless len is Conf["Deleted Mascots"].length
 
       new Notice 'info', message, 10
 
-      Settings.open 'Mascots'
+      Settings.openSection.call
+        open:            Settings.mascots
+        hyphenatedTitle: 'mascots'
 
     reader.readAsText file
 
-  parse: (mascot) ->
+  parse: (mascot, userMascots) ->
     unless name = mascot["Mascot"]
       new Notice 'warning', "Failed to import a mascot. Mascot has no name.", 5
       return
@@ -370,11 +377,7 @@ MascotTools =
     if Mascots[name] and not $.remove Conf["Deleted Mascots"], name
       return unless confirm "The mascot #{name} already exists? Would you like to overwrite it?"
 
-    Mascots[name] = mascot
-
-    $.get "userMascots", {}, ({userMascots}) ->
-      userMascots[name] = Mascots[name]
-      $.set 'userMascots', userMascots
+    userMascots[name] = Mascots[name] = mascot
 
   position: (mascot) ->
     return unless Style.sheets.mascots
