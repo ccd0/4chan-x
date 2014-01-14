@@ -352,35 +352,48 @@ MascotTools =
 
   load: (mascots, userMascots) ->
     len = Conf["Deleted Mascots"].length
+    imported = []
     if name = mascots["Mascot"]
-      MascotTools.parse mascots, userMascots
-      message = "#{name} successfully imported!"
+      MascotTools.parse mascots, userMascots, imported
     else if mascots.length
-      MascotTools.parse mascot, userMascots for mascot in mascots
-      message = "Mascots imported!"
+      MascotTools.parse mascot, userMascots, imported for mascot in mascots
     else
       return new Notice 'warning', "Failed to import mascot. Is file a properly formatted JSON file?", 5
 
+    [message, type] = if name and ilen = imported.length
+      ["#{name} successfully imported!", 'info']
+    else if ilen
+      ["#{ilen} mascots successfully imported!", 'info']
+    else
+      ["Failed to import any mascots. ;__;", 'info']
+      
     $.set 'userMascots',     userMascots
     $.set 'Deleted Mascots', Conf['Deleted Mascots'] unless len is Conf["Deleted Mascots"].length
 
-    new Notice 'info', message, 10
+    new Notice type, message, 10
 
     Settings.openSection.call
       open:            Settings.mascots
       hyphenatedTitle: 'mascots'
 
-  parse: (mascot, userMascots) ->
-    unless name = mascot["Mascot"]
-      new Notice 'warning', "Failed to import a mascot. Mascot has no name.", 5
-      return
+  parse: (mascot, userMascots, imported) ->
+    unless name = mascot["Mascot"] and image = mascot.image
+      message = "Failed to import a mascot. File file has no #{if name
+        'image'
+      else if image
+        'name'
+      else
+        'name nor image'}."
+
+      return new Notice 'warning', message, 5
+      
 
     delete mascot["Mascot"]
 
     if Mascots[name] and not $.remove Conf["Deleted Mascots"], name
       return unless confirm "The mascot #{name} already exists? Would you like to overwrite it?"
 
-    userMascots[name] = Mascots[name] = mascot
+    imported.push userMascots[name] = Mascots[name] = mascot
 
   position: (mascot) ->
     return unless Style.sheets.mascots

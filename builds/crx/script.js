@@ -13152,35 +13152,35 @@
       return reader.readAsText(file);
     },
     load: function(mascots, userMascots) {
-      var len, mascot, message, name, _i, _len;
+      var ilen, imported, len, mascot, message, name, type, _i, _len, _ref;
       len = Conf["Deleted Mascots"].length;
+      imported = [];
       if (name = mascots["Mascot"]) {
-        MascotTools.parse(mascots, userMascots);
-        message = "" + name + " successfully imported!";
+        MascotTools.parse(mascots, userMascots, imported);
       } else if (mascots.length) {
         for (_i = 0, _len = mascots.length; _i < _len; _i++) {
           mascot = mascots[_i];
-          MascotTools.parse(mascot, userMascots);
+          MascotTools.parse(mascot, userMascots, imported);
         }
-        message = "Mascots imported!";
       } else {
         return new Notice('warning', "Failed to import mascot. Is file a properly formatted JSON file?", 5);
       }
+      _ref = name && (ilen = imported.length) ? ["" + name + " successfully imported!", 'info'] : ilen ? ["" + ilen + " mascots successfully imported!", 'info'] : ["Failed to import any mascots. ;__;", 'info'], message = _ref[0], type = _ref[1];
       $.set('userMascots', userMascots);
       if (len !== Conf["Deleted Mascots"].length) {
         $.set('Deleted Mascots', Conf['Deleted Mascots']);
       }
-      new Notice('info', message, 10);
+      new Notice(type, message, 10);
       return Settings.openSection.call({
         open: Settings.mascots,
         hyphenatedTitle: 'mascots'
       });
     },
-    parse: function(mascot, userMascots) {
-      var name;
-      if (!(name = mascot["Mascot"])) {
-        new Notice('warning', "Failed to import a mascot. Mascot has no name.", 5);
-        return;
+    parse: function(mascot, userMascots, imported) {
+      var image, message, name;
+      if (!(name = mascot["Mascot"] && (image = mascot.image))) {
+        message = "Failed to import a mascot. File file has no " + (name ? 'image' : image ? 'name' : 'name nor image') + ".";
+        return new Notice('warning', message, 5);
       }
       delete mascot["Mascot"];
       if (Mascots[name] && !$.remove(Conf["Deleted Mascots"], name)) {
@@ -13188,7 +13188,7 @@
           return;
         }
       }
-      return userMascots[name] = Mascots[name] = mascot;
+      return imported.push(userMascots[name] = Mascots[name] = mascot);
     },
     position: function(mascot) {
       if (!Style.sheets.mascots) {
