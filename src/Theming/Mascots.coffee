@@ -346,7 +346,7 @@ MascotTools =
         return
 
       if name = mascots["Mascot"]
-        MascotTools.parse mascot
+        MascotTools.parse mascots
         message = "#{name} successfully imported!"
       else if mascots.length
         MascotTools.parse mascot for mascot in mascots
@@ -356,7 +356,6 @@ MascotTools =
 
       new Notice 'info', message, 10
 
-      $.rm $ "#mascotContainer", d.body
       Settings.open 'Mascots'
 
     reader.readAsText file
