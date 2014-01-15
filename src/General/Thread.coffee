@@ -44,7 +44,7 @@ class Thread
     @timeOfDeath = Date.now()
 
   collect: ->
-    for postID, post in @posts
+    for postID, post of @posts
       post.collect()
     delete g.threads[@fullID]
     delete @board.threads[@]
