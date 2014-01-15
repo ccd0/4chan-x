@@ -34,10 +34,7 @@ Navigate =
     {posts, threads} = g
 
     # Garbage collection
-    g.posts         = {}
-    g.threads       = {}
-    g.BOARD.posts   = {}
-    g.BOARD.threads = {}
+    thread.collect() for id, thread of g.threads
 
     QuoteBacklink.containers = {}
 

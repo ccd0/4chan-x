@@ -131,7 +131,7 @@ Main =
           'left=0,top=0,width=500,height=255,toolbar=0,resizable=0'
       $.before styleSelector.previousSibling, [$.tn '['; passLink, $.tn ']\u00A0\u00A0']
 
-    if g.VIEW is 'thread'
+    unless Conf['JSON Navigation'] and g.VIEW is 'index'
       Main.initThread() 
     else
       $.event '4chanXInitFinished'
@@ -150,23 +150,28 @@ Main =
       new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to operate properly.', 30
 
   initThread: ->
-    return unless threadRoot = $ '.thread'
-    thread = new Thread +threadRoot.id[1..], g.BOARD
-    posts  = []
-    for postRoot in $$ '.thread > .postContainer', threadRoot
-      try
-        posts.push new Post postRoot, thread, g.BOARD, {isOriginalMarkup: true}
-      catch err
-        # Skip posts that we failed to parse.
-        errors = [] unless errors
-        errors.push
-          message: "Parsing of Post No.#{postRoot.id.match /\d+/} failed. Post will be skipped."
-          error: err
-    Main.handleErrors errors if errors
+    if board = $ '.board'
+      threads = []
+      posts   = []
 
-    Main.callbackNodes Thread, [thread]
-    Main.callbackNodesDB Post, posts, ->
-      $.event '4chanXInitFinished'
+      for threadRoot in $$ '.board > .thread', board
+        thread = new Thread +threadRoot.id[1..], g.BOARD
+        threads.push thread
+        for postRoot in $$ '.thread > .postContainer', threadRoot
+          try
+            posts.push new Post postRoot, thread, g.BOARD
+          catch err
+            # Skip posts that we failed to parse.
+            unless errors
+              errors = []
+            errors.push
+              message: "Parsing of Post No.#{postRoot.id.match(/\d+/)} failed. Post will be skipped."
+              error: err
+      Main.handleErrors errors if errors
+
+      Main.callbackNodes Thread, threads
+      Main.callbackNodesDB Post, posts, ->
+        $.event '4chanXInitFinished'
 
   callbackNodes: (klass, nodes) ->
     i = 0
