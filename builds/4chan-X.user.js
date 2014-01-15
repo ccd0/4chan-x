@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.3.2 - 2014-01-14
+* 4chan X - Version 1.3.2 - 2014-01-15
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -804,16 +804,6 @@
       }
     };
   })();
-
-  $.remove = function(arr, value) {
-    var i;
-    i = arr.indexOf(value);
-    if (i === -1) {
-      return false;
-    }
-    arr.splice(i, 1);
-    return true;
-  };
 
   $$ = function(selector, root) {
     if (root == null) {
@@ -1624,9 +1614,13 @@
     };
 
     SimpleDict.prototype.rm = function(key) {
+      var i;
       key = "" + key;
-      if ($.remove(this.keys, key)) {
-        return delete this[key];
+      if ((i = this.keys.indexOf(key)) !== -1) {
+        this.keys.splice(i, 1);
+        if ($.remove(this.keys, key)) {
+          return delete this[key];
+        }
       }
     };
 
