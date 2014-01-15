@@ -326,7 +326,7 @@ QR =
     return unless QR.nodes
     list    = QR.nodes.thread
     options = [list.firstChild]
-    for thread of g.BOARD.threads
+    for thread in g.BOARD.threads.keys
       options.push $.el 'option',
         value: thread
         textContent: "Thread No.#{thread}"

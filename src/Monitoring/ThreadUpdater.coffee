@@ -290,7 +290,9 @@ ThreadUpdater =
     deletedFiles = []
 
     # Check for deleted posts/files.
-    for ID, post of ThreadUpdater.thread.posts
+    {posts} = ThreadUpdater.thread
+    for ID in posts.keys
+      post = posts[ID]
       # XXX tmp fix for 4chan's racing condition
       # giving us false-positive dead posts.
       # continue if post.isDead

@@ -277,7 +277,7 @@ Index =
       else if req.status is 304 and pageNum?
         Index.pageNav pageNum
     catch err
-      c.error 'Index failure:', err
+      c.error "Index failure: #{err.message}", err.stack
       # network error or non-JSON content for example.
       if notice
         notice.setType 'error'
@@ -308,8 +308,8 @@ Index =
     Index.threadsNumPerPage = pages[0].threads.length
     Index.liveThreadData    = pages.reduce ((arr, next) -> arr.concat next.threads), []
     Index.liveThreadIDs     = Index.liveThreadData.map (data) -> data.no
-    for threadID, thread of g.BOARD.threads when thread.ID not in Index.liveThreadIDs
-      thread.collect()
+    g.BOARD.threads.forEach (thread) ->
+      thread.collect() unless thread.ID in Index.liveThreadIDs
     return
 
   buildThreads: ->
@@ -317,23 +317,23 @@ Index =
     threads     = []
     posts       = []
     for threadData, i in Index.liveThreadData
-      threadRoot = Build.thread g.BOARD, threadData
-      Index.nodes.push threadRoot, $.el 'hr'
-      if thread = g.BOARD.threads[threadData.no]
-        thread.setPage Math.floor i / Index.threadsNumPerPage
-        thread.setStatus 'Sticky', !!threadData.sticky
-        thread.setStatus 'Closed', !!threadData.closed
-      else
-        thread = new Thread threadData.no, g.BOARD
-        threads.push thread
-      continue if thread.ID of thread.posts
       try
+        threadRoot = Build.thread g.BOARD, threadData
+        if thread = g.BOARD.threads[threadData.no]
+          thread.setPage Math.floor i / Index.threadsNumPerPage
+          thread.setStatus 'Sticky', !!threadData.sticky
+          thread.setStatus 'Closed', !!threadData.closed
+        else
+          thread = new Thread threadData.no, g.BOARD
+          threads.push thread
+        Index.nodes.push threadRoot, $.el 'hr'
+        continue if thread.ID of thread.posts
         posts.push new Post $('.opContainer', threadRoot), thread, g.BOARD
       catch err
         # Skip posts that we failed to parse.
         errors = [] unless errors
         errors.push
-          message: "Parsing of Post No.#{thread} failed. Post will be skipped."
+          message: "Parsing of Thread No.#{thread} failed. Thread will be skipped."
           error: err
     Main.handleErrors errors if errors
 

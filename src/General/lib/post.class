@@ -54,7 +54,7 @@ class Post
     @parseFile that
 
     @clones = []
-    g.posts[@fullID] = thread.posts[@] = board.posts[@] = @
+    g.posts.push @fullID, thread.posts.push @, board.posts.push @, @
     @kill() if that.isArchived
 
   parseComment: ->
@@ -208,9 +208,9 @@ class Post
 
   collect: ->
     @kill()
-    delete g.posts[@fullID]
-    delete @thread.posts[@]
-    delete @board.posts[@]
+    g.posts.rm @fullID
+    @thread.posts.rm @
+    @board.posts.rm @
 
   addClone: (context) ->
     new Clone @, context

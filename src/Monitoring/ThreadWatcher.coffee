@@ -96,7 +96,7 @@ ThreadWatcher =
     onIndexRefresh: ->
       {db}    = ThreadWatcher
       boardID = g.BOARD.ID
-      for threadID, data of db.data.boards[boardID] when not data.isDead and threadID not of g.BOARD.threads
+      for threadID, data of db.data.boards[boardID] when not data.isDead and threadID not in g.BOARD.threads.keys
         if Conf['Auto Prune']
           ThreadWatcher.db.delete {boardID, threadID}
         else
@@ -180,7 +180,9 @@ ThreadWatcher =
     $.rmAll list
     $.add list, nodes
 
-    for threadID, thread of g.BOARD.threads
+    {threads} = g.BOARD
+    for threadID in threads.keys
+      thread = threads[threadID]
       toggler = $ '.watch-thread-link', thread.OP.nodes.post
       watched = ThreadWatcher.db.get {boardID: thread.board.ID, threadID}
       helper = if watched then ['addClass', 'Unwatch'] else ['rmClass', 'Watch']

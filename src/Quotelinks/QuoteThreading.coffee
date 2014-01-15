@@ -42,8 +42,8 @@ QuoteThreading =
     QuoteThreading.force()
 
   force: ->
-    post.cb true for ID, post of g.posts when post.cb
-    return
+    g.posts.forEach (post) ->
+      post.cb true if post.cb
 
   node: ->
     {posts} = g
@@ -106,8 +106,10 @@ QuoteThreading =
       thread = $('.thread')
       posts = []
       nodes = []
+      
+      g.posts.forEach (post) ->
+        posts.push post unless post is post.thread.OP or post.isClone
 
-      posts.push post for ID, post of g.posts when not (post is post.thread.OP or post.isClone)
       posts.sort (a, b) -> a.ID - b.ID
 
       nodes.push post.nodes.root for post in posts

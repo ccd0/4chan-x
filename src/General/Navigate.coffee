@@ -34,7 +34,7 @@ Navigate =
     {posts, threads} = g
 
     # Garbage collection
-    thread.collect() for id, thread of g.threads
+    g.threads.forEach (thread) -> thread.collect()
 
     QuoteBacklink.containers = {}
 

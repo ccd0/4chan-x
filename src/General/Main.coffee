@@ -1,5 +1,8 @@
 Main =
   init: ->
+    g.threads = new SimpleDict
+    g.posts   = new SimpleDict
+
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
     return if g.BOARD.ID in ['z', 'fk']

@@ -1,0 +1,14 @@
+class SimpleDict
+  constructor: ->
+    @keys = []
+
+  push: (key, data) ->
+    key = "#{key}"
+    @keys.push key unless @[key]
+    @[key] = data
+
+  rm: (key) ->
+    key = "#{key}"
+    delete @[key] if $.remove @keys, key
+
+  forEach: (fn) -> fn @[key] for key in [@keys...]

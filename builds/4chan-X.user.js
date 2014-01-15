@@ -104,7 +104,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, Callbacks, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Gallery, Get, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, InfiniScroll, Keybinds, Linkify, Main, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, Callbacks, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Gallery, Get, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, InfiniScroll, Keybinds, Linkify, Main, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, SimpleDict, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
@@ -363,9 +363,7 @@
   g = {
     VERSION: '1.3.2',
     NAMESPACE: '4chan X.',
-    boards: {},
-    threads: {},
-    posts: {}
+    boards: {}
   };
 
   $ = function(selector, root) {
@@ -807,6 +805,16 @@
     };
   })();
 
+  $.remove = function(arr, value) {
+    var i;
+    i = arr.indexOf(value);
+    if (i === -1) {
+      return false;
+    }
+    arr.splice(i, 1);
+    return true;
+  };
+
   $$ = function(selector, root) {
     if (root == null) {
       root = d.body;
@@ -880,8 +888,8 @@
 
     function Board(ID) {
       this.ID = ID;
-      this.threads = {};
-      this.posts = {};
+      this.threads = new SimpleDict;
+      this.posts = new SimpleDict;
       g.boards[this] = this;
     }
 
@@ -900,12 +908,12 @@
       this.ID = ID;
       this.board = board;
       this.fullID = "" + this.board + "." + this.ID;
-      this.posts = {};
+      this.posts = new SimpleDict;
       this.isSticky = false;
       this.isClosed = false;
       this.postLimit = false;
       this.fileLimit = false;
-      g.threads[this.fullID] = board.threads[this] = this;
+      g.threads.push(this.fullID, board.threads.push(this, this));
     }
 
     Thread.prototype.setPage = function(pageNum) {
@@ -949,14 +957,11 @@
     };
 
     Thread.prototype.collect = function() {
-      var post, postID, _ref;
-      _ref = this.posts;
-      for (postID in _ref) {
-        post = _ref[postID];
-        post.collect();
-      }
-      delete g.threads[this.fullID];
-      return delete this.board.threads[this];
+      this.posts.forEach(function(post) {
+        return post.collect();
+      });
+      g.threads.rm(this.fullID);
+      return this.board.threads.rm(this);
     };
 
     return Thread;
@@ -1035,7 +1040,7 @@
       this.parseQuotes();
       this.parseFile(that);
       this.clones = [];
-      g.posts[this.fullID] = thread.posts[this] = board.posts[this] = this;
+      g.posts.push(this.fullID, thread.posts.push(this, board.posts.push(this, this)));
       if (that.isArchived) {
         this.kill();
       }
@@ -1205,9 +1210,9 @@
 
     Post.prototype.collect = function() {
       this.kill();
-      delete g.posts[this.fullID];
-      delete this.thread.posts[this];
-      return delete this.board.posts[this];
+      g.posts.rm(this.fullID);
+      this.thread.posts.rm(this);
+      return this.board.posts.rm(this);
     };
 
     Post.prototype.addClone = function(context) {
@@ -1602,6 +1607,41 @@
     };
 
     return RandomAccessList;
+
+  })();
+
+  SimpleDict = (function() {
+    function SimpleDict() {
+      this.keys = [];
+    }
+
+    SimpleDict.prototype.push = function(key, data) {
+      key = "" + key;
+      if (!this[key]) {
+        this.keys.push(key);
+      }
+      return this[key] = data;
+    };
+
+    SimpleDict.prototype.rm = function(key) {
+      key = "" + key;
+      if ($.remove(this.keys, key)) {
+        return delete this[key];
+      }
+    };
+
+    SimpleDict.prototype.forEach = function(fn) {
+      var key, _i, _len, _ref, _results;
+      _ref = __slice.call(this.keys);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        key = _ref[_i];
+        _results.push(fn(this[key]));
+      }
+      return _results;
+    };
+
+    return SimpleDict;
 
   })();
 
@@ -2559,7 +2599,7 @@
         }
       } catch (_error) {
         err = _error;
-        c.error('Index failure:', err);
+        c.error("Index failure: " + err.message, err.stack);
         if (notice) {
           notice.setType('error');
           notice.el.lastElementChild.textContent = 'Index refresh failed.';
@@ -2587,7 +2627,6 @@
       return Index.setPage();
     },
     parseThreadList: function(pages) {
-      var thread, threadID, _ref, _ref1;
       Index.pagesNum = pages.length;
       Index.threadsNumPerPage = pages[0].threads.length;
       Index.liveThreadData = pages.reduce((function(arr, next) {
@@ -2596,13 +2635,12 @@
       Index.liveThreadIDs = Index.liveThreadData.map(function(data) {
         return data.no;
       });
-      _ref = g.BOARD.threads;
-      for (threadID in _ref) {
-        thread = _ref[threadID];
-        if (_ref1 = thread.ID, __indexOf.call(Index.liveThreadIDs, _ref1) < 0) {
-          thread.collect();
+      g.BOARD.threads.forEach(function(thread) {
+        var _ref;
+        if (_ref = thread.ID, __indexOf.call(Index.liveThreadIDs, _ref) < 0) {
+          return thread.collect();
         }
-      }
+      });
     },
     buildThreads: function() {
       var err, errors, i, posts, thread, threadData, threadRoot, threads, _i, _len, _ref;
@@ -2612,20 +2650,20 @@
       _ref = Index.liveThreadData;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         threadData = _ref[i];
-        threadRoot = Build.thread(g.BOARD, threadData);
-        Index.nodes.push(threadRoot, $.el('hr'));
-        if (thread = g.BOARD.threads[threadData.no]) {
-          thread.setPage(Math.floor(i / Index.threadsNumPerPage));
-          thread.setStatus('Sticky', !!threadData.sticky);
-          thread.setStatus('Closed', !!threadData.closed);
-        } else {
-          thread = new Thread(threadData.no, g.BOARD);
-          threads.push(thread);
-        }
-        if (thread.ID in thread.posts) {
-          continue;
-        }
         try {
+          threadRoot = Build.thread(g.BOARD, threadData);
+          if (thread = g.BOARD.threads[threadData.no]) {
+            thread.setPage(Math.floor(i / Index.threadsNumPerPage));
+            thread.setStatus('Sticky', !!threadData.sticky);
+            thread.setStatus('Closed', !!threadData.closed);
+          } else {
+            thread = new Thread(threadData.no, g.BOARD);
+            threads.push(thread);
+          }
+          Index.nodes.push(threadRoot, $.el('hr'));
+          if (thread.ID in thread.posts) {
+            continue;
+          }
           posts.push(new Post($('.opContainer', threadRoot), thread, g.BOARD));
         } catch (_error) {
           err = _error;
@@ -2633,7 +2671,7 @@
             errors = [];
           }
           errors.push({
-            message: "Parsing of Post No." + thread + " failed. Post will be skipped.",
+            message: "Parsing of Thread No." + thread + " failed. Thread will be skipped.",
             error: err
           });
         }
@@ -3105,36 +3143,38 @@
       };
     },
     allQuotelinksLinkingTo: function(post) {
-      var ID, handleQuotes, quote, quotedPost, quotelinks, quoterPost, _i, _len, _ref, _ref1, _ref2;
+      var fullID, handleQuotes, posts, qPost, quote, quotelinks, _i, _len, _ref;
       quotelinks = [];
-      handleQuotes = function(post, type) {
+      posts = g.posts;
+      fullID = {
+        post: post
+      };
+      handleQuotes = function(qPost, type) {
         var clone, _i, _len, _ref;
-        quotelinks.push.apply(quotelinks, post.nodes[type]);
-        _ref = post.clones;
+        quotelinks.push.apply(quotelinks, qPost.nodes[type]);
+        _ref = qPost.clones;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           clone = _ref[_i];
           quotelinks.push.apply(quotelinks, clone.nodes[type]);
         }
       };
-      _ref = g.posts;
-      for (ID in _ref) {
-        quoterPost = _ref[ID];
-        if (_ref1 = post.fullID, __indexOf.call(quoterPost.quotes, _ref1) >= 0) {
-          handleQuotes(quoterPost, 'quotelinks');
+      posts.forEach(function(qPost) {
+        if (__indexOf.call(qPost.quotes, fullID) >= 0) {
+          return handleQuotes(qPost, 'quotelinks');
         }
-      }
+      });
       if (Conf['Quote Backlinks']) {
-        _ref2 = post.quotes;
-        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-          quote = _ref2[_i];
-          if (quotedPost = g.posts[quote]) {
-            handleQuotes(quotedPost, 'backlinks');
+        _ref = post.quotes;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          quote = _ref[_i];
+          if (qPost = posts[quote]) {
+            handleQuotes(qPost, 'backlinks');
           }
         }
       }
       return quotelinks.filter(function(quotelink) {
-        var boardID, postID, _ref3;
-        _ref3 = Get.postDataFromLink(quotelink), boardID = _ref3.boardID, postID = _ref3.postID;
+        var boardID, postID, _ref1;
+        _ref1 = Get.postDataFromLink(quotelink), boardID = _ref1.boardID, postID = _ref1.postID;
         return boardID === post.board.ID && postID === post.ID;
       });
     },
@@ -4400,16 +4440,14 @@
       }
     },
     apply: function() {
-      var ID, args, fullID, post, recursive, _ref;
+      var args, fullID, post, recursive;
       recursive = arguments[0], post = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
       fullID = post.fullID;
-      _ref = g.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
+      return g.posts.forEach(function(post) {
         if (__indexOf.call(post.quotes, fullID) >= 0) {
-          recursive.apply(null, [post].concat(__slice.call(args)));
+          return recursive.apply(null, [post].concat(__slice.call(args)));
         }
-      }
+      });
     }
   };
 
@@ -5125,14 +5163,11 @@
       return QuoteThreading.force();
     },
     force: function() {
-      var ID, post, _ref;
-      _ref = g.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
+      return g.posts.forEach(function(post) {
         if (post.cb) {
-          post.cb(true);
+          return post.cb(true);
         }
-      }
+      });
     },
     node: function() {
       var keys, len, post, posts, quote, _i, _len, _ref;
@@ -5199,20 +5234,18 @@
       return true;
     },
     toggle: function() {
-      var ID, container, containers, nodes, post, posts, thread, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+      var container, containers, nodes, post, posts, thread, _i, _j, _k, _len, _len1, _len2, _ref;
       if (QuoteThreading.enabled = this.checked) {
         QuoteThreading.force();
       } else {
         thread = $('.thread');
         posts = [];
         nodes = [];
-        _ref = g.posts;
-        for (ID in _ref) {
-          post = _ref[ID];
+        g.posts.forEach(function(post) {
           if (!(post === post.thread.OP || post.isClone)) {
-            posts.push(post);
+            return posts.push(post);
           }
-        }
+        });
         posts.sort(function(a, b) {
           return a.ID - b.ID;
         });
@@ -5226,9 +5259,9 @@
           container = containers[_j];
           $.rm(container);
         }
-        _ref1 = $$('.threadOP');
-        for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-          post = _ref1[_k];
+        _ref = $$('.threadOP');
+        for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
+          post = _ref[_k];
           $.rmClass(post, 'threadOP');
         }
       }
@@ -5836,13 +5869,15 @@
       return QR.nodes.fileInput.click();
     },
     generatePostableThreadsList: function() {
-      var list, options, thread, val;
+      var list, options, thread, val, _i, _len, _ref;
       if (!QR.nodes) {
         return;
       }
       list = QR.nodes.thread;
       options = [list.firstChild];
-      for (thread in g.BOARD.threads) {
+      _ref = g.BOARD.threads.keys;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        thread = _ref[_i];
         options.push($.el('option', {
           value: thread,
           textContent: "Thread No." + thread
@@ -7371,8 +7406,19 @@
         return ImageExpand.toggle(Get.postFromNode(this));
       },
       toggleAll: function() {
-        var ID, file, func, post, _i, _len, _ref, _ref1;
+        var func;
         $.event('CloseMenu');
+        func = function(post) {
+          var file;
+          file = post.file;
+          if (!(file && file.isImage && doc.contains(post.nodes.root))) {
+            return;
+          }
+          if (ImageExpand.on && (!Conf['Expand spoilers'] && file.isSpoiler || Conf['Expand from here'] && Header.getTopOf(file.thumb) < 0)) {
+            return;
+          }
+          return $.queueTask(func, post);
+        };
         if (ImageExpand.on = $.hasClass(ImageExpand.EAI, 'expand-all-shortcut')) {
           ImageExpand.EAI.className = 'contract-all-shortcut fa fa-compress';
           ImageExpand.EAI.title = 'Contract All Images';
@@ -7382,22 +7428,15 @@
           ImageExpand.EAI.title = 'Expand All Images';
           func = ImageExpand.contract;
         }
-        _ref = g.posts;
-        for (ID in _ref) {
-          post = _ref[ID];
-          _ref1 = [post].concat(post.clones);
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            post = _ref1[_i];
-            file = post.file;
-            if (!(file && file.isImage && doc.contains(post.nodes.root))) {
-              continue;
-            }
-            if (ImageExpand.on && (!Conf['Expand spoilers'] && file.isSpoiler || Conf['Expand from here'] && Header.getTopOf(file.thumb) < 0)) {
-              continue;
-            }
-            $.queueTask(func, post);
+        return g.posts.forEach(function(post) {
+          var _i, _len, _ref;
+          func(post);
+          _ref = post.clones;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            post = _ref[_i];
+            func(post);
           }
-        }
+        });
       },
       setFitness: function() {
         return (this.checked ? $.addClass : $.rmClass)(doc, this.name.toLowerCase().replace(/\s+/g, '-'));
@@ -7681,6 +7720,10 @@
         name: 'Image Replace',
         cb: this.node
       });
+      Thread.callbacks.push({
+        name: 'Image Replace',
+        cb: this.thread
+      });
       if (!(Conf['Image Prefetching'] && g.VIEW === 'thread')) {
         return;
       }
@@ -7694,6 +7737,9 @@
         el: prefetch,
         order: 104
       });
+    },
+    thread: function() {
+      return ImageLoader.thread = this;
     },
     node: function() {
       var URL, img, string, style, thumb, type, _ref, _ref1;
@@ -7717,14 +7763,10 @@
       return img.src = URL;
     },
     toggle: function() {
-      var enabled, id, post, _ref;
+      var enabled;
       enabled = Conf['prefetch'] = this.checked;
       if (enabled) {
-        _ref = g.threads["" + g.BOARD.ID + "." + g.THREADID].posts;
-        for (id in _ref) {
-          post = _ref[id];
-          ImageLoader.node.call(post);
-        }
+        ImageLoader.thread.posts.forEach(ImageLoader.node.call);
       }
     }
   };
@@ -8721,17 +8763,15 @@
       });
     },
     node: function() {
-      var ID, fileCount, post, postCount, _ref;
+      var fileCount, postCount;
       postCount = 0;
       fileCount = 0;
-      _ref = this.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
+      this.posts.forEach(function(post) {
         postCount++;
         if (post.file) {
-          fileCount++;
+          return fileCount++;
         }
-      }
+      });
       ThreadStats.thread = this;
       ThreadStats.fetchPage();
       ThreadStats.update(postCount, fileCount);
@@ -9112,7 +9152,7 @@
       return new Notice('info', "The thread is " + change + ".", 30);
     },
     parse: function(postObjects) {
-      var ID, OP, count, deletedFiles, deletedPosts, files, index, key, node, num, post, postObject, posts, root, scroll, _i, _len, _ref;
+      var ID, OP, count, deletedFiles, deletedPosts, files, index, key, node, num, post, postObject, posts, root, scroll, _i, _j, _len, _len1, _ref;
       OP = postObjects[0];
       Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler;
       ThreadUpdater.updateThreadStatus('Sticky', !!OP.sticky);
@@ -9139,9 +9179,11 @@
       }
       deletedPosts = [];
       deletedFiles = [];
-      _ref = ThreadUpdater.thread.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
+      posts = ThreadUpdater.thread.posts;
+      _ref = posts.keys;
+      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+        ID = _ref[_j];
+        post = posts[ID];
         ID = +ID;
         if (__indexOf.call(index, ID) < 0) {
           post.kill();
@@ -9360,7 +9402,7 @@
         _ref = db.data.boards[boardID];
         for (threadID in _ref) {
           data = _ref[threadID];
-          if (!data.isDead && !(threadID in g.BOARD.threads)) {
+          if (!data.isDead && __indexOf.call(g.BOARD.threads.keys, threadID) < 0) {
             if (Conf['Auto Prune']) {
               ThreadWatcher.db["delete"]({
                 boardID: boardID,
@@ -9498,7 +9540,7 @@
       return div;
     },
     refresh: function() {
-      var boardID, data, helper, list, nodes, refresher, thread, threadID, toggler, watched, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+      var boardID, data, helper, list, nodes, refresher, thread, threadID, threads, toggler, watched, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
       nodes = [];
       _ref = ThreadWatcher.getAll();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -9508,9 +9550,11 @@
       list = ThreadWatcher.list;
       $.rmAll(list);
       $.add(list, nodes);
-      _ref2 = g.BOARD.threads;
-      for (threadID in _ref2) {
-        thread = _ref2[threadID];
+      threads = g.BOARD.threads;
+      _ref2 = threads.keys;
+      for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+        threadID = _ref2[_j];
+        thread = threads[threadID];
         toggler = $('.watch-thread-link', thread.OP.nodes.post);
         watched = ThreadWatcher.db.get({
           boardID: thread.board.ID,
@@ -9521,8 +9565,8 @@
         toggler.title = "" + helper[1] + " Thread";
       }
       _ref3 = ThreadWatcher.menu.refreshers;
-      for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
-        refresher = _ref3[_j];
+      for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
+        refresher = _ref3[_k];
         refresher();
       }
     },
@@ -9763,16 +9807,14 @@
       }
     },
     ready: function() {
-      var ID, post, posts, _ref;
+      var posts;
       $.off(d, '4chanXInitFinished', Unread.ready);
       posts = [];
-      _ref = Unread.thread.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
+      Unread.thread.posts.forEach(function(post) {
         if (post.isReply) {
-          posts.push(post);
+          return posts.push(post);
         }
-      }
+      });
       if (!Conf['Quote Threading']) {
         Unread.addPosts(posts);
       }
@@ -9784,7 +9826,7 @@
       }
     },
     scroll: function() {
-      var down, hash, post, posts, root;
+      var down, hash, keys, post, posts, root;
       if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
         return;
       }
@@ -9799,8 +9841,9 @@
         }
         down = true;
       } else {
-        posts = Object.keys(Unread.thread.posts);
-        root = Unread.thread.posts[posts[posts.length - 1]].nodes.root;
+        posts = Unread.thread.posts;
+        keys = posts.keys;
+        root = posts[keys[keys.length - 1]].nodes.root;
       }
       if (Header.getBottomOf(root) < 0) {
         return Header.scrollTo(root, down);
@@ -10700,13 +10743,10 @@
       }
     },
     onIndexRefresh: function() {
-      var thread, threadID, _ref;
       ExpandThread.disconnect(true);
-      _ref = g.BOARD.threads;
-      for (threadID in _ref) {
-        thread = _ref[threadID];
-        ExpandThread.setButton(thread);
-      }
+      return g.BOARD.threads.forEach(function(thread) {
+        return ExpandThread.setButton(thread);
+      });
     },
     text: function(status, posts, files) {
       return ("" + status + " " + posts + " post" + (posts > 1 ? 's' : '')) + (+files ? " and " + files + " image repl" + (files > 1 ? 'ies' : 'y') : "") + (" " + (status === '-' ? 'shown' : 'omitted') + ".");
@@ -11924,13 +11964,11 @@
       }
     },
     clean: function() {
-      var id, posts, thread, threads, _ref;
+      var posts, threads;
       posts = g.posts, threads = g.threads;
-      _ref = g.threads;
-      for (id in _ref) {
-        thread = _ref[id];
-        thread.collect();
-      }
+      g.threads.forEach(function(thread) {
+        return thread.collect();
+      });
       QuoteBacklink.containers = {};
       return $.rmAll($('.board'));
     },
@@ -12876,6 +12914,8 @@
   Main = {
     init: function() {
       var db, flatten, pathname, _i, _len, _ref, _ref1;
+      g.threads = new SimpleDict;
+      g.posts = new SimpleDict;
       pathname = location.pathname.split('/');
       g.BOARD = new Board(pathname[1]);
       if ((_ref = g.BOARD.ID) === 'z' || _ref === 'fk') {

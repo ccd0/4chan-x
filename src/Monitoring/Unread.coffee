@@ -42,7 +42,7 @@ Unread =
   ready: ->
     $.off d, '4chanXInitFinished', Unread.ready
     posts = []
-    posts.push post for ID, post of Unread.thread.posts when post.isReply
+    Unread.thread.posts.forEach (post) -> posts.push post if post.isReply
     Unread.addPosts posts unless Conf['Quote Threading']
     QuoteThreading.force() if Conf['Quote Threading']
     Unread.scroll() if Conf['Scroll to Last Read Post']
@@ -58,8 +58,9 @@ Unread =
       down = true
     else
       # Scroll to the last read post.
-      posts  = Object.keys Unread.thread.posts
-      {root} = Unread.thread.posts[posts[posts.length - 1]].nodes
+      {posts} = Unread.thread
+      {keys}  = posts
+      {root}  = posts[keys[keys.length - 1]].nodes
 
     # Scroll to the target unless we scrolled past it.
     Header.scrollTo root, down if Header.getBottomOf(root) < 0
