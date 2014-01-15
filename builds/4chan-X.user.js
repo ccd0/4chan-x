@@ -9402,7 +9402,7 @@
         _ref = db.data.boards[boardID];
         for (threadID in _ref) {
           data = _ref[threadID];
-          if (!data.isDead && __indexOf.call(g.BOARD.threads.keys, threadID) < 0) {
+          if (!data.isDead && !(threadID in g.BOARD.threads)) {
             if (Conf['Auto Prune']) {
               ThreadWatcher.db["delete"]({
                 boardID: boardID,

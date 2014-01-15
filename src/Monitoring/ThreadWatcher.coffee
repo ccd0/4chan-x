@@ -96,7 +96,7 @@ ThreadWatcher =
     onIndexRefresh: ->
       {db}    = ThreadWatcher
       boardID = g.BOARD.ID
-      for threadID, data of db.data.boards[boardID] when not data.isDead and threadID not in g.BOARD.threads.keys
+      for threadID, data of db.data.boards[boardID] when not data.isDead and threadID not of g.BOARD.threads
         if Conf['Auto Prune']
           ThreadWatcher.db.delete {boardID, threadID}
         else
