@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.3.2 - 2014-01-15
+* 4chan X - Version 1.3.2 - 2014-01-16
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -12123,7 +12123,7 @@
       if (subtitle = $('.boardSubtitle')) {
         $.rm(subtitle);
       }
-      return $('.boardTitle').textContent = d.title = "" + board + " - " + title;
+      return $('.boardTitle').textContent = d.title = "/" + board + "/ - " + title;
     },
     navigate: function(e) {
       var boardID, load, pageNum, path, threadID, view;

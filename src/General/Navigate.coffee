@@ -170,7 +170,7 @@ Navigate =
 
   updateTitle: ({board, title}) ->
     $.rm subtitle if subtitle = $ '.boardSubtitle'
-    $('.boardTitle').textContent = d.title = "#{board} - #{title}"
+    $('.boardTitle').textContent = d.title = "/#{board}/ - #{title}"
 
   navigate: (e) ->
     return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org' or
