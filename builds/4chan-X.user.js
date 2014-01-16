@@ -9218,7 +9218,7 @@
       return new Notice('info', "The thread is " + change + ".", 30);
     },
     parse: function(postObjects) {
-      var ID, OP, count, deletedFiles, deletedPosts, files, index, key, node, num, post, postObject, posts, root, scroll, _i, _j, _len, _len1, _ref;
+      var OP, count, deletedFiles, deletedPosts, files, index, node, num, post, postObject, posts, root, scroll, _i, _j, _len, _len1;
       OP = postObjects[0];
       Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler;
       ThreadUpdater.updateThreadStatus('Sticky', !!OP.sticky);
@@ -9245,12 +9245,9 @@
       }
       deletedPosts = [];
       deletedFiles = [];
-      posts = ThreadUpdater.thread.posts;
-      _ref = posts.keys;
-      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-        ID = _ref[_j];
-        post = posts[ID];
-        ID = +ID;
+      ThreadUpdater.thread.posts.forEach(function(post) {
+        var ID;
+        ID = +post.ID;
         if (__indexOf.call(index, ID) < 0) {
           post.kill();
           deletedPosts.push(post);
@@ -9261,9 +9258,9 @@
           deletedFiles.push(post);
         }
         if (ThreadUpdater.postID && ThreadUpdater.postID === ID) {
-          ThreadUpdater.foundPost = true;
+          return ThreadUpdater.foundPost = true;
         }
-      }
+      });
       if (!count) {
         ThreadUpdater.set('status', null, null);
         ThreadUpdater.outdateCount++;
@@ -9281,11 +9278,8 @@
         ThreadUpdater.lastPost = posts[count - 1].ID;
         Main.callbackNodes(Post, posts);
         scroll = Conf['Auto Scroll'] && ThreadUpdater.scrollBG() && ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25;
-        for (key in posts) {
-          post = posts[key];
-          if (!posts.hasOwnProperty(key)) {
-            continue;
-          }
+        for (_j = 0, _len1 = posts.length; _j < _len1; _j++) {
+          post = posts[_j];
           root = post.nodes.root;
           if (post.cb) {
             if (!post.cb()) {
