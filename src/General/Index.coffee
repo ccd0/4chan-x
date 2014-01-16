@@ -375,25 +375,25 @@ Index =
     Main.callbackNodes Post, posts
 
   sort: ->
+    {liveThreadIDs, liveThreadData} = Index
     sortedThreadIDs = {
       lastreply:
-        [Index.liveThreadData...].sort((a, b) ->
-          a = a.last_replies[a.last_replies.length - 1] if 'last_replies' of a
-          b = b.last_replies[b.last_replies.length - 1] if 'last_replies' of b
+        [liveThreadData...].sort((a, b) ->
+          a = num[num.length - 1] if (num = a.last_replies)
+          b = num[num.length - 1] if (num = b.last_replies)
           b.no - a.no
-        ).map (data) -> data.no
-      bump:       Index.liveThreadIDs
-      birth:      [Index.liveThreadIDs... ].sort (a, b) -> b - a
-      replycount: [Index.liveThreadData...].sort((a, b) -> b.replies - a.replies).map (data) -> data.no
-      filecount:  [Index.liveThreadData...].sort((a, b) -> b.images  - a.images ).map (data) -> data.no
+        ).map (post) -> post.no
+      bump:       liveThreadIDs
+      birth:      [liveThreadIDs... ].sort (a, b) -> b - a
+      replycount: [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
+      filecount:  [liveThreadData...].sort((a, b) -> b.images  - a.images ).map (post) -> post.no
     }[Conf['Index Sort']]
-    Index.sortedNodes = new RandomAccessList
+    Index.sortedNodes = sortedNodes = new RandomAccessList
     {nodes} = Index
     for threadID in sortedThreadIDs
-      Index.sortedNodes.push nodes[Index.liveThreadIDs.indexOf(threadID)]
+      sortedNodes.push nodes[Index.liveThreadIDs.indexOf(threadID)]
     if Index.isSearching and nodes = Index.querySearch(Index.searchInput.value)
-      Index.sortedNodes = new RandomAccessList
-      Index.sortedNodes.push node for node in nodes
+      Index.sortedNodes = new RandomAccessList nodes
     items = [
       # Sticky threads
       fn:  (thread) -> thread.isSticky
@@ -414,10 +414,10 @@ Index =
   sortOnTop: (match) ->
     offset = 0
     {sortedNodes} = Index
-    threadRoot = Index.sortedNodes.first
+    threadRoot = sortedNodes.first
     while threadRoot
       if match Get.threadFromRoot threadRoot.data
-        target = Index.sortedNodes.first
+        target = sortedNodes.first
         j = 0
         while j++ < offset
           target = target.next
@@ -431,11 +431,9 @@ Index =
     if Conf['Index Mode'] isnt 'all pages'
       nodes = Index.buildSinglePage Index.getCurrentPage()
     else
-      nodes = []
-      target = Index.sortedNodes.first
-      while target
+      nodes = [(target = Index.sortedNodes.first).data]
+      while target = target.next
         nodes.push target.data
-        target = target.next
     $.rmAll Index.root
     $.rmAll Header.hover
     Index.buildReplies nodes if Conf['Show Replies']
@@ -446,11 +444,10 @@ Index =
     nodesPerPage = Index.threadsNumPerPage
     offset = nodesPerPage * pageNum
     end    = offset + nodesPerPage
-    target = Index.sortedNodes.first
-    i = 0
-    while i <= end
-      if offset <= i++
-        nodes.push target.data
+    target = Index.sortedNodes.order()[offset]
+    Index.sortedNodes
+    while (offset++ <= end) and target
+      nodes.push target.data
       target = target.next
     nodes
 
@@ -501,7 +498,7 @@ Index =
     Index.search keywords
 
   search: (keywords) -> 
-    found = []
+    found  = []
     target = Index.sortedNodes.first
     while target
       {data} = target

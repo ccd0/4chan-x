@@ -1,6 +1,7 @@
 class RandomAccessList
-  constructor: ->
+  constructor: (items) ->
     @length = 0
+    @push item for item in items if items
 
   push: (data) ->
     {ID} = data
@@ -52,6 +53,11 @@ class RandomAccessList
 
   shift: ->
     @rm @first.ID
+  
+  order: ->
+    order = [item = @first]
+    order.push item while item = item.next
+    order
 
   rm: (ID) ->
     item = @[ID]

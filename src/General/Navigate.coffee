@@ -83,7 +83,7 @@ Navigate =
       feature() if condition
     catch err
       error = [
-        message: "Quote Threading Failed."
+        message: "#{name} Failed."
         error:   err
       ]
     Main.handleErrors error if error
@@ -284,7 +284,8 @@ Navigate =
     Main.callbackNodes Thread, [thread]
     Main.callbackNodes Post,   posts
 
-    Navigate.ready 'Quote Threading', QuoteThreading.force, Conf['Quote Threading']
+    Navigate.ready 'Quote Threading', QuoteThreading.force, Conf['Quote Threading'] and not Conf['Unread Count']
+    Navigate.ready 'Unread Count', Unread.ready, Conf['Unread Count']
 
     Navigate.buildThread()
     Header.hashScroll.call window
@@ -295,7 +296,6 @@ Navigate =
     $.add board, [Navigate.threadRoot, $.el 'hr']
 
     if Conf['Unread Count']
-      Navigate.ready 'Unread Count', Unread.ready, not Conf['Quote Threading']
       Unread.read()
       Unread.update()
 

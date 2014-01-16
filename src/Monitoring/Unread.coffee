@@ -52,7 +52,7 @@ Unread =
     return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
     if post = Unread.posts.first
       # Scroll to a non-hidden, non-OP post that's before the first unread post.
-      while root = $.x 'preceding-sibling::div[contains(@class,"replyContainer")][1]', post.nodes.root
+      while root = $.x 'preceding-sibling::div[contains(@class,"replyContainer")][1]', post.data.nodes.root
         break unless (post = Get.postFromRoot root).isHidden
       return unless root
       down = true
@@ -95,7 +95,7 @@ Unread =
       Unread.addPostQuotingYou post
     if Conf['Unread Line']
       # Force line on visible threads if there were no unread posts previously.
-      Unread.setLine Unread.posts.first.data in posts
+      Unread.setLine Unread.posts.first?.data in posts
     Unread.read()
     Unread.update()
 
@@ -131,11 +131,12 @@ Unread =
 
   readSinglePost: (post) ->
     {ID} = post
-    return unless Unread.posts[ID]
-    if post is Unread.posts.first
+    {posts} = Unread
+    return unless posts[ID]
+    if post is posts.first
       Unread.lastReadPost = ID
       Unread.saveLastReadPost()
-    Unread.posts.rm ID
+    posts.rm ID
     if (i = Unread.postsQuotingYou.indexOf post) isnt -1
       Unread.postsQuotingYou.splice i, 1
     Unread.update()
@@ -151,8 +152,8 @@ Unread =
 
     {posts} = Unread
     while post = posts.first
+      break unless Header.getBottomOf(post.data.nodes.root) > -1 # post is not completely read
       {ID, data} = post
-      break unless Header.getBottomOf(data.nodes.root) > -1 # post is not completely read
       posts.rm ID
 
       if Conf['Mark Quotes of You'] and QR.db.get {
@@ -179,8 +180,8 @@ Unread =
   setLine: (force) ->
     return unless d.hidden or force is true
     return $.rm Unread.hr unless post = Unread.posts.first
-    if $.x 'preceding-sibling::div[contains(@class,"replyContainer")]', post.nodes.root # not the first reply
-      $.before post.nodes.root, Unread.hr
+    if $.x 'preceding-sibling::div[contains(@class,"replyContainer")]', post.data.nodes.root # not the first reply
+      $.before post.data.nodes.root, Unread.hr
 
   update: <% if (type === 'crx') { %>(dontrepeat) <% } %>->
     count = Unread.posts.length
