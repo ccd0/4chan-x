@@ -2202,6 +2202,7 @@
       if (g.BOARD.ID === 'f' || g.VIEW === 'catalog' || !Conf['JSON Navigation']) {
         return;
       }
+      this.board = "" + g.BOARD;
       this.button = $.el('a', {
         className: 'index-refresh-shortcut fa fa-refresh',
         title: 'Refresh',
@@ -2595,7 +2596,8 @@
       }
       Navigate.title();
       try {
-        if (req.status === 200) {
+        if (req.status === 200 || Index.board !== ("" + g.BOARD)) {
+          Index.board = "" + g.BOARD;
           Index.parse(JSON.parse(req.response), pageNum);
         } else if (req.status === 304 && (pageNum != null)) {
           Index.pageNav(pageNum);

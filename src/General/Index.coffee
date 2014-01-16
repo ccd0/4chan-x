@@ -2,6 +2,8 @@ Index =
   init: ->
     return if g.BOARD.ID is 'f' or g.VIEW is 'catalog' or !Conf['JSON Navigation']
 
+    @board = "#{g.BOARD}"
+
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'
       title: 'Refresh'
@@ -274,7 +276,8 @@ Index =
     Navigate.title()
 
     try
-      if req.status is 200
+      if req.status is 200 or Index.board isnt "#{g.BOARD}"
+        Index.board = "#{g.BOARD}"
         Index.parse JSON.parse(req.response), pageNum
       else if req.status is 304 and pageNum?
         Index.pageNav pageNum
