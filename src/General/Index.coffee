@@ -271,6 +271,8 @@ Index =
         new Notice 'warning', err, 1
       return
 
+    Navigate.title()
+
     try
       if req.status is 200
         Index.parse JSON.parse(req.response), pageNum

@@ -1,11 +1,13 @@
 Navigate =
-  path: window.location.pathname
+  path:  window.location.pathname
   init: ->
     return if g.VIEW is 'catalog' or g.BOARD.ID is 'f' or !Conf['JSON Navigation']
 
     # blink/webkit throw a popstate on page load. Not what we want.
     $.ready -> $.on window, 'popstate', Navigate.popstate
 
+    @title = -> return
+    
     Thread.callbacks.push
       name: 'Navigate'
       cb:   @thread
@@ -105,9 +107,12 @@ Navigate =
         $.off d, 'IndexRefresh', QR.generatePostableThreadsList
 
   updateBoard: (boardID) ->
-    g.BOARD = new Board boardID
-
     req = null
+
+    fullBoardList   = $ '#full-board-list', Header.boardList
+    $.rmClass $('.current', fullBoardList), 'current'
+    $.addClass $("a[href*='/#{boardID}/']", fullBoardList), 'current'
+    Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
 
     onload = (e) ->
       if e.type is 'abort'
@@ -116,9 +121,10 @@ Navigate =
 
       return unless req.status is 200
 
-      board = do -> try
-        for board in JSON.parse(req.response).boards
-          return board if board.board is boardID
+      try
+        for aboard in JSON.parse(req.response).boards when aboard.board is boardID
+          board = aboard
+          break
 
       catch err
         Main.handleErrors [
@@ -129,44 +135,42 @@ Navigate =
 
       return unless board
       Navigate.updateTitle board
-
-      return if Favicon.SFW is sfw = !!board.ws_board # Board SFW status hasn't changed
-
-      findStyle = ([type, base]) ->
-        style = d.cookie.match new RegExp "#{type}\_style\=([^;]+)"
-        return [(if style then style[1] else base), "#{type}_style"]
-
-      style = findStyle if sfw
-        ['ws',  'Yotsuba B New']
-      else
-        ['nws', 'Yotsuba New']
-
-      $.globalEval "var style_group = '#{style[1]}'"
-
-      mainStyleSheet = $ 'link[title=switch]',        d.head
-      newStyleSheet  = $ "link[title='#{style[0]}']", d.head
-
-      Favicon.SFW = sfw
-      Favicon.el.href = "//s.4cdn.org/image/favicon#{if sfw then '-ws' else ''}.ico"
-      $.add d.head, Favicon.el # Changing the href alone doesn't update the icon on Firefox
-      Favicon.switch()
-
-      mainStyleSheet.href = newStyleSheet.href
-
-      Main.setClass()
-
-    fullBoardList   = $ '#full-board-list', Header.boardList
-    $.rmClass $('.current', fullBoardList), 'current'
-    $.addClass $("a[href*='/#{boardID}/']", fullBoardList), 'current'
-    Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
+      Navigate.updateFavicon !!board.ws_board
 
     req = $.ajax '//a.4cdn.org/boards.json',
       onabort:   onload
       onloadend: onload
 
+  updateFavicon: (sfw) ->
+    # TODO: think of a better name for this. Changes style, too.
+    Favicon.el.href = "//s.4cdn.org/image/favicon#{if sfw then '-ws' else ''}.ico"
+    $.add d.head, Favicon.el # Changing the href alone doesn't update the icon on Firefox
+
+    return if Favicon.SFW is sfw # Board SFW status hasn't changed
+
+    Favicon.SFW = sfw
+    Favicon.update()
+    findStyle = (type, base) ->
+      style = d.cookie.match new RegExp "#{type}\_style\=([^;]+)"
+      return ["#{type}_style", (if style then style[1] else base)]
+
+    style = findStyle.apply null, if sfw
+      ['ws',  'Yotsuba B New']
+    else
+      ['nws', 'Yotsuba New']
+
+    $.globalEval "var style_group = '#{style[0]}'"
+
+    mainStyleSheet = $ 'link[title=switch]',        d.head
+    newStyleSheet  = $ "link[title='#{style[1]}']", d.head
+
+    mainStyleSheet.href = newStyleSheet.href
+
+    Main.setClass()
+
   updateTitle: ({board, title}) ->
     $.rm subtitle if subtitle = $ '.boardSubtitle'
-    $('.boardTitle').textContent = d.title = "/#{board}/ - #{title}"
+    $('.boardTitle').textContent = d.title = "#{board} = #{title}"
 
   navigate: (e) ->
     return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org' or
@@ -180,6 +184,7 @@ Navigate =
 
     return if view is 'catalog' or 'f' in [boardID, g.BOARD.ID]
     e.preventDefault() if e
+    Navigate.title = -> return
 
     delete Index.pageNum
 
@@ -203,18 +208,20 @@ Navigate =
 
     if view is 'index'
       if boardID is g.BOARD.ID
-        d.title = $('.boardTitle').textContent
+        Navigate.title = -> d.title = $('.boardTitle').textContent
       else
-        Navigate.updateBoard boardID
+        g.BOARD = new Board boardID
+        Navigate.title = -> Navigate.updateBoard boardID
 
       Index.update pageNum
 
     # Moving from index to thread or thread to thread
     else
-      onload = (e) -> Navigate.load e
+      Navigate.updateFavicon Favicon.SFW
+      {load} = Navigate
       Navigate.req = $.ajax "//a.4cdn.org/#{boardID}/res/#{threadID}.json",
-        onabort:   onload
-        onloadend: onload
+        onabort:   load
+        onloadend: load
 
       setTimeout (->
         if Navigate.req and !Navigate.notice
@@ -228,13 +235,15 @@ Navigate =
     delete Navigate.req
     delete Navigate.notice
 
-    if e.type is 'abort'
+    if e.type is 'abort' or req.status isnt 200
       req.onloadend = null
+      new Notice 'warning', "Failed to load thread.#{if req.status then " #{req.status}" else ''}"
       return
 
+    Navigate.title()
+
     try
-      if req.status is 200
-        Navigate.parse JSON.parse(req.response).posts
+      Navigate.parse JSON.parse(req.response).posts
     catch err
       console.error 'Navigate failure:'
       console.log err
