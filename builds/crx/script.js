@@ -9938,7 +9938,7 @@
         if (!(post.prev || post.next)) {
           Unread.posts.push(post);
         }
-        Unread.addPostQuotingYou(post.data);
+        Unread.addPostQuotingYou(post);
       }
       if (Conf['Unread Line']) {
         Unread.setLine((_ref = Unread.posts.first.data, __indexOf.call(posts, _ref) >= 0));
@@ -10016,20 +10016,24 @@
       return arr.splice(0, i);
     },
     read: $.debounce(100, function(e) {
-      var ID, height, post, posts;
+      var ID, data, height, post, posts;
       if (d.hidden || !Unread.posts.length) {
         return;
       }
       height = doc.clientHeight;
       posts = Unread.posts;
       while (post = posts.first) {
-        if (!(Header.getBottomOf(post.data.nodes.root) > -1)) {
+        ID = post.ID, data = post.data;
+        if (!(Header.getBottomOf(data.nodes.root) > -1)) {
           break;
         }
-        ID = post.ID;
         posts.rm(ID);
-        if (Conf['Mark Quotes of You'] && post.info.yours) {
-          QuoteYou.lastRead = post.data.nodes.root;
+        if (Conf['Mark Quotes of You'] && QR.db.get({
+          boardID: data.board.ID,
+          threadID: data.thread.ID,
+          postID: ID
+        })) {
+          QuoteYou.lastRead = data.nodes.root;
         }
       }
       if (!ID) {

@@ -92,7 +92,7 @@ Unread =
         postID:   ID
       }
       Unread.posts.push post unless post.prev or post.next
-      Unread.addPostQuotingYou post.data
+      Unread.addPostQuotingYou post
     if Conf['Unread Line']
       # Force line on visible threads if there were no unread posts previously.
       Unread.setLine Unread.posts.first.data in posts
@@ -151,12 +151,16 @@ Unread =
 
     {posts} = Unread
     while post = posts.first
-      break unless Header.getBottomOf(post.data.nodes.root) > -1 # post is not completely read
-      {ID} = post
+      {ID, data} = post
+      break unless Header.getBottomOf(data.nodes.root) > -1 # post is not completely read
       posts.rm ID
 
-      if Conf['Mark Quotes of You'] and post.info.yours
-        QuoteYou.lastRead = post.data.nodes.root
+      if Conf['Mark Quotes of You'] and QR.db.get {
+        boardID:  data.board.ID
+        threadID: data.thread.ID
+        postID:   ID
+      }
+        QuoteYou.lastRead = data.nodes.root
 
     return unless ID
 
