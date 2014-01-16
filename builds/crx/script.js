@@ -2370,7 +2370,7 @@
       });
     },
     scroll: $.debounce(100, function() {
-      var nodes, nodesPerPage, pageNum;
+      var nodes, nodesPerPage, offset, pageNum;
       if (Index.req || Conf['Index Mode'] !== 'infinite' || (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight)) || g.VIEW === 'thread') {
         return;
       }
@@ -2381,12 +2381,13 @@
       if (pageNum >= Index.pagesNum) {
         return Index.endNotice();
       }
-      nodesPerPage = Index.threadsNumPerPage * 2;
-      nodes = Index.sortedNodes.slice(nodesPerPage * pageNum, nodesPerPage * (pageNum + 1));
+      nodesPerPage = Index.threadsNumPerPage;
+      offset = nodesPerPage * pageNum;
+      nodes = Index.sortedNodes.slice(offset, offset + nodesPerPage);
       if (Conf['Show Replies']) {
         Index.buildReplies(nodes);
       }
-      $.add(Index.root, nodes);
+      Index.buildStructure(nodes);
       return Index.setPage(pageNum);
     }),
     endNotice: (function() {
@@ -2665,7 +2666,7 @@
             thread = new Thread(threadData.no, g.BOARD);
             threads.push(thread);
           }
-          Index.nodes.push(threadRoot, $.el('hr'));
+          Index.nodes.push(threadRoot);
           if (thread.ID in thread.posts) {
             continue;
           }
@@ -2692,7 +2693,7 @@
     buildReplies: function(threadRoots) {
       var data, err, errors, i, lastReplies, node, nodes, post, posts, thread, threadRoot, _i, _j, _len, _len1;
       posts = [];
-      for (_i = 0, _len = threadRoots.length; _i < _len; _i += 2) {
+      for (_i = 0, _len = threadRoots.length; _i < _len; _i++) {
         threadRoot = threadRoots[_i];
         thread = Get.threadFromRoot(threadRoot);
         i = Index.liveThreadIDs.indexOf(thread.ID);
@@ -2728,7 +2729,7 @@
       return Main.callbackNodes(Post, posts);
     },
     sort: function() {
-      var cnd, fn, i, item, items, sortOnTop, sortedThreadIDs, threadID, _i, _len;
+      var cnd, fn, i, item, items, nodes, sortedThreadIDs, threadID, _i, _len;
       sortedThreadIDs = {
         lastreply: __slice.call(Index.liveThreadData).sort(function(a, b) {
           if ('last_replies' in a) {
@@ -2757,15 +2758,14 @@
         })
       }[Conf['Index Sort']];
       Index.sortedNodes = [];
+      nodes = Index.nodes;
       for (_i = 0, _len = sortedThreadIDs.length; _i < _len; _i++) {
         threadID = sortedThreadIDs[_i];
-        i = Index.liveThreadIDs.indexOf(threadID) * 2;
-        Index.sortedNodes.push(Index.nodes[i], Index.nodes[i + 1]);
+        Index.sortedNodes.push(nodes[Index.liveThreadIDs.indexOf(threadID)]);
       }
-      if (Index.isSearching) {
-        Index.sortedNodes = Index.querySearch(Index.searchInput.value) || Index.sortedNodes;
+      if (Index.isSearching && (nodes = Index.querySearch(Index.searchInput.value))) {
+        Index.sortedNodes = nodes;
       }
-      sortOnTop = Index.sortOnTop;
       items = [
         {
           fn: function(thread) {
@@ -2787,28 +2787,30 @@
       i = 0;
       while (item = items[i++]) {
         fn = item.fn, cnd = item.cnd;
-        if (fn) {
-          sortOnTop(fn);
+        if (cnd) {
+          Index.sortOnTop(fn);
         }
       }
     },
     sortOnTop: function(match) {
-      var i, offset, threadRoot, _i, _len, _ref, _ref1;
+      var i, offset, threadRoot, _i, _len, _ref;
       offset = 0;
+      i = 0;
       _ref = Index.sortedNodes;
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = _i += 2) {
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         threadRoot = _ref[i];
         if (match(Get.threadFromRoot(threadRoot))) {
-          (_ref1 = Index.sortedNodes).splice.apply(_ref1, [offset++ * 2, 0].concat(__slice.call(Index.sortedNodes.splice(i, 2))));
+          Index.sortedNodes.splice(offset++, 0, Index.sortedNodes.splice(i, 1)[0]);
         }
       }
     },
     buildIndex: function() {
-      var nodes, nodesPerPage, pageNum;
+      var nodes, nodesPerPage, offset, pageNum;
       if (Conf['Index Mode'] !== 'all pages') {
         pageNum = Index.getCurrentPage();
-        nodesPerPage = Index.threadsNumPerPage * 2;
-        nodes = Index.sortedNodes.slice(nodesPerPage * pageNum, nodesPerPage * (pageNum + 1));
+        nodesPerPage = Index.threadsNumPerPage;
+        offset = nodesPerPage * pageNum;
+        nodes = Index.sortedNodes.slice(offset, offset + nodesPerPage);
       } else {
         nodes = Index.sortedNodes;
       }
@@ -2817,8 +2819,22 @@
       if (Conf['Show Replies']) {
         Index.buildReplies(nodes);
       }
-      $.add(Index.root, nodes);
-      return $.event('IndexBuild', nodes);
+      return Index.buildStructure(nodes);
+    },
+    buildStructure: function(nodes) {
+      var hr, i, node, result, _i, _len, _ref;
+      result = $.frag();
+      i = 0;
+      while (node = nodes[i++]) {
+        $.add(result, [node, $.el('hr')]);
+      }
+      $.add(Index.root, result);
+      _ref = $$('hr + hr', Index.root);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        hr = _ref[_i];
+        $.rm(hr);
+      }
+      return $.event('IndexBuild', result);
     },
     isSearching: false,
     clearSearch: function() {
@@ -2861,16 +2877,16 @@
       return Index.search(keywords);
     },
     search: function(keywords) {
-      var found, i, threadRoot, _i, _len, _ref;
-      found = [];
+      var threadRoot, _i, _len, _ref, _results;
       _ref = Index.sortedNodes;
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = _i += 2) {
-        threadRoot = _ref[i];
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        threadRoot = _ref[_i];
         if (Index.searchMatch(Get.threadFromRoot(threadRoot), keywords)) {
-          found.push(Index.sortedNodes[i], Index.sortedNodes[i + 1]);
+          _results.push(threadRoot);
         }
       }
-      return found;
+      return _results;
     },
     searchMatch: function(thread, keywords) {
       var file, info, key, keyword, text, _i, _j, _len, _len1, _ref, _ref1;
