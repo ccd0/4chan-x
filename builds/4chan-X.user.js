@@ -9973,9 +9973,6 @@
     },
     addPostQuotingYou: function(post) {
       var quotelink, _i, _len, _ref;
-      if (!QR.db) {
-        return;
-      }
       _ref = post.nodes.quotelinks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quotelink = _ref[_i];

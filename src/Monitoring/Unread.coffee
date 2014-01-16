@@ -100,7 +100,6 @@ Unread =
     Unread.update()
 
   addPostQuotingYou: (post) ->
-    return unless QR.db
     for quotelink in post.nodes.quotelinks when QR.db.get Get.postDataFromLink quotelink
       Unread.postsQuotingYou.push post
       Unread.openNotification post
