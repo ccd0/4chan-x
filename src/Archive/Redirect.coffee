@@ -61,8 +61,8 @@ Redirect =
         software: "foolfuuka"
     ,
       name:   "Nyafuu"
-      boards: ["c", "w", "wg"]
-      files:  ["c", "w", "wg"]
+      boards: ["c", "e", "w", "wg"]
+      files:  ["c", "e", "w", "wg"]
       data:
         domain: "archive.nyafuu.org"
         http:  true
@@ -112,6 +112,15 @@ Redirect =
         http:  true
         https: true
         withCredentials: true
+        software: "foolfuuka"
+    ,
+      name:   "Love is Over"
+      boards: ["d", "i"],
+      files:  ["d", "i"]
+      data:
+        domain: "loveisover.me"
+        http:  true
+        https: true
         software: "foolfuuka"
   ]
 
