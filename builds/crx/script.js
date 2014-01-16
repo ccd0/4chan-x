@@ -12112,7 +12112,7 @@
       if (subtitle = $('.boardSubtitle')) {
         $.rm(subtitle);
       }
-      return $('.boardTitle').textContent = d.title = "" + board + " = " + title;
+      return $('.boardTitle').textContent = d.title = "" + board + " - " + title;
     },
     navigate: function(e) {
       var boardID, load, pageNum, path, threadID, view;
@@ -12193,7 +12193,6 @@
         new Notice('warning', "Failed to load thread." + (req.status ? " " + req.status : ''));
         return;
       }
-      Navigate.title();
       try {
         return Navigate.parse(JSON.parse(req.response).posts);
       } catch (_error) {
