@@ -2795,7 +2795,6 @@
     sortOnTop: function(match) {
       var i, offset, threadRoot, _i, _len, _ref;
       offset = 0;
-      i = 0;
       _ref = Index.sortedNodes;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         threadRoot = _ref[i];

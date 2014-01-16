@@ -415,10 +415,8 @@ Index =
 
   sortOnTop: (match) ->
     offset = 0
-    i = 0
-    for threadRoot, i in Index.sortedNodes
-      if match Get.threadFromRoot threadRoot
-        Index.sortedNodes.splice offset++, 0, Index.sortedNodes.splice(i, 1)[0]
+    for threadRoot, i in Index.sortedNodes when match Get.threadFromRoot threadRoot
+      Index.sortedNodes.splice offset++, 0, Index.sortedNodes.splice(i, 1)[0]
     return
 
   buildIndex: ->
