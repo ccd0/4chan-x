@@ -2718,43 +2718,34 @@
       return Main.callbackNodes(Post, posts);
     },
     sort: function() {
-      var i, sortedThreadIDs, threadID, _i, _len;
-      switch (Conf['Index Sort']) {
-        case 'bump':
-          sortedThreadIDs = Index.liveThreadIDs;
-          break;
-        case 'lastreply':
-          sortedThreadIDs = __slice.call(Index.liveThreadData).sort(function(a, b) {
-            if ('last_replies' in a) {
-              a = a.last_replies[a.last_replies.length - 1];
-            }
-            if ('last_replies' in b) {
-              b = b.last_replies[b.last_replies.length - 1];
-            }
-            return b.no - a.no;
-          }).map(function(data) {
-            return data.no;
-          });
-          break;
-        case 'birth':
-          sortedThreadIDs = __slice.call(Index.liveThreadIDs).sort(function(a, b) {
-            return b - a;
-          });
-          break;
-        case 'replycount':
-          sortedThreadIDs = __slice.call(Index.liveThreadData).sort(function(a, b) {
-            return b.replies - a.replies;
-          }).map(function(data) {
-            return data.no;
-          });
-          break;
-        case 'filecount':
-          sortedThreadIDs = __slice.call(Index.liveThreadData).sort(function(a, b) {
-            return b.images - a.images;
-          }).map(function(data) {
-            return data.no;
-          });
-      }
+      var cnd, fn, i, item, items, sortOnTop, sortedThreadIDs, threadID, _i, _len;
+      sortedThreadIDs = {
+        lastreply: __slice.call(Index.liveThreadData).sort(function(a, b) {
+          if ('last_replies' in a) {
+            a = a.last_replies[a.last_replies.length - 1];
+          }
+          if ('last_replies' in b) {
+            b = b.last_replies[b.last_replies.length - 1];
+          }
+          return b.no - a.no;
+        }).map(function(data) {
+          return data.no;
+        }),
+        bump: Index.liveThreadIDs,
+        birth: __slice.call(Index.liveThreadIDs).sort(function(a, b) {
+          return b - a;
+        }),
+        replycount: __slice.call(Index.liveThreadData).sort(function(a, b) {
+          return b.replies - a.replies;
+        }).map(function(data) {
+          return data.no;
+        }),
+        filecount: __slice.call(Index.liveThreadData).sort(function(a, b) {
+          return b.images - a.images;
+        }).map(function(data) {
+          return data.no;
+        })
+      }[Conf['Index Sort']];
       Index.sortedNodes = [];
       for (_i = 0, _len = sortedThreadIDs.length; _i < _len; _i++) {
         threadID = sortedThreadIDs[_i];
@@ -2764,18 +2755,31 @@
       if (Index.isSearching) {
         Index.sortedNodes = Index.querySearch(Index.searchInput.value) || Index.sortedNodes;
       }
-      Index.sortOnTop(function(thread) {
-        return thread.isSticky;
-      });
-      if (Conf['Filter']) {
-        Index.sortOnTop(function(thread) {
-          return thread.isOnTop;
-        });
-      }
-      if (Conf['Anchor Hidden Threads']) {
-        return Index.sortOnTop(function(thread) {
-          return !thread.isHidden;
-        });
+      sortOnTop = Index.sortOnTop;
+      items = [
+        {
+          fn: function(thread) {
+            return thread.isSticky;
+          },
+          cnd: true
+        }, {
+          fn: function(thread) {
+            return thread.isOnTop;
+          },
+          cnd: Conf['Filter']
+        }, {
+          fn: function(thread) {
+            return !thread.isHidden;
+          },
+          cnd: Conf['Anchor Hidden Threads']
+        }
+      ];
+      i = 0;
+      while (item = items[i++]) {
+        fn = item.fn, cnd = item.cnd;
+        if (fn) {
+          sortOnTop(fn);
+        }
       }
     },
     sortOnTop: function(match) {

@@ -374,21 +374,18 @@ Index =
     Main.callbackNodes Post, posts
 
   sort: ->
-    switch Conf['Index Sort']
-      when 'bump'
-        sortedThreadIDs = Index.liveThreadIDs
-      when 'lastreply'
-        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) ->
+    sortedThreadIDs = {
+      lastreply:
+        [Index.liveThreadData...].sort((a, b) ->
           a = a.last_replies[a.last_replies.length - 1] if 'last_replies' of a
           b = b.last_replies[b.last_replies.length - 1] if 'last_replies' of b
           b.no - a.no
         ).map (data) -> data.no
-      when 'birth'
-        sortedThreadIDs = [Index.liveThreadIDs...].sort (a, b) -> b - a
-      when 'replycount'
-        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.replies - a.replies).map (data) -> data.no
-      when 'filecount'
-        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.images - a.images).map (data) -> data.no
+      bump:       Index.liveThreadIDs
+      birth:      [Index.liveThreadIDs...].sort (a, b) -> b - a
+      replycount: [Index.liveThreadData...].sort((a, b) -> b.replies - a.replies).map (data) -> data.no
+      filecount:  [Index.liveThreadData...].sort((a, b) -> b.images - a.images).map (data) -> data.no
+    }[Conf['Index Sort']]
     Index.sortedNodes = []
     for threadID in sortedThreadIDs
       i = Index.liveThreadIDs.indexOf(threadID) * 2
@@ -396,11 +393,22 @@ Index =
     if Index.isSearching
       Index.sortedNodes = Index.querySearch(Index.searchInput.value) or Index.sortedNodes
     # Sticky threads
-    Index.sortOnTop (thread) -> thread.isSticky
-    # Highlighted threads
-    Index.sortOnTop((thread) -> thread.isOnTop) if Conf['Filter']
-    # Non-hidden threads
-    Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
+    {sortOnTop} = Index
+    items = [
+      fn:  (thread) -> thread.isSticky
+      cnd: true
+    , # Highlighted threads
+      fn:  (thread) -> thread.isOnTop
+      cnd: Conf['Filter']
+    , # Non-hidden threads
+      fn:  (thread) -> !thread.isHidden
+      cnd: Conf['Anchor Hidden Threads']
+    ]
+    i = 0
+    while item = items[i++]
+      {fn, cnd} = item
+      sortOnTop fn if fn
+    return
 
   sortOnTop: (match) ->
     offset = 0
