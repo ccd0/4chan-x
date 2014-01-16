@@ -119,11 +119,8 @@ Index =
     pageNum = Index.pageNum++
     return Index.endNotice() if pageNum >= Index.pagesNum
 
-    nodesPerPage = Index.threadsNumPerPage
-    offset = nodesPerPage * pageNum
-    nodes = Index.sortedNodes[offset ... offset + nodesPerPage]
-
-    Index.buildReplies nodes if Conf['Show Replies']
+    nodes = Index.buildSinglePage pageNum
+    Index.buildReplies   nodes if Conf['Show Replies']
     Index.buildStructure nodes
     Index.setPage pageNum
     
@@ -390,12 +387,13 @@ Index =
       replycount: [Index.liveThreadData...].sort((a, b) -> b.replies - a.replies).map (data) -> data.no
       filecount:  [Index.liveThreadData...].sort((a, b) -> b.images  - a.images ).map (data) -> data.no
     }[Conf['Index Sort']]
-    Index.sortedNodes = []
+    Index.sortedNodes = new RandomAccessList
     {nodes} = Index
     for threadID in sortedThreadIDs
       Index.sortedNodes.push nodes[Index.liveThreadIDs.indexOf(threadID)]
     if Index.isSearching and nodes = Index.querySearch(Index.searchInput.value)
-      Index.sortedNodes = nodes
+      Index.sortedNodes = new RandomAccessList
+      Index.sortedNodes.push node for node in nodes
     items = [
       # Sticky threads
       fn:  (thread) -> thread.isSticky
@@ -415,22 +413,46 @@ Index =
 
   sortOnTop: (match) ->
     offset = 0
-    for threadRoot, i in Index.sortedNodes when match Get.threadFromRoot threadRoot
-      Index.sortedNodes.splice offset++, 0, Index.sortedNodes.splice(i, 1)[0]
+    {sortedNodes} = Index
+    threadRoot = Index.sortedNodes.first
+    while threadRoot
+      if match Get.threadFromRoot threadRoot.data
+        target = Index.sortedNodes.first
+        j = 0
+        while j++ < offset
+          target = target.next
+        unless threadRoot is target
+          offset++
+          sortedNodes.before target, threadRoot
+      threadRoot = threadRoot.next
     return
 
   buildIndex: ->
     if Conf['Index Mode'] isnt 'all pages'
-      pageNum = Index.getCurrentPage()
-      nodesPerPage = Index.threadsNumPerPage
-      offset = nodesPerPage * pageNum
-      nodes = Index.sortedNodes[offset ... offset + nodesPerPage]
+      nodes = Index.buildSinglePage Index.getCurrentPage()
     else
-      nodes = Index.sortedNodes
+      nodes = []
+      target = Index.sortedNodes.first
+      while target
+        nodes.push target.data
+        target = target.next
     $.rmAll Index.root
     $.rmAll Header.hover
     Index.buildReplies nodes if Conf['Show Replies']
     Index.buildStructure nodes
+
+  buildSinglePage: (pageNum) ->
+    nodes = []
+    nodesPerPage = Index.threadsNumPerPage
+    offset = nodesPerPage * pageNum
+    end    = offset + nodesPerPage
+    target = Index.sortedNodes.first
+    i = 0
+    while i <= end
+      if offset <= i++
+        nodes.push target.data
+      target = target.next
+    nodes
 
   buildStructure: (nodes) ->
     result = $.frag()
@@ -478,7 +500,15 @@ Index =
     return unless keywords = query.toLowerCase().match /\S+/g
     Index.search keywords
 
-  search: (keywords) -> threadRoot for threadRoot in Index.sortedNodes when Index.searchMatch Get.threadFromRoot(threadRoot), keywords
+  search: (keywords) -> 
+    found = []
+    target = Index.sortedNodes.first
+    while target
+      {data} = target
+      if Index.searchMatch Get.threadFromRoot(data), keywords
+        found.push data
+      target = target.next
+    found
 
   searchMatch: (thread, keywords) ->
     {info, file} = thread.OP

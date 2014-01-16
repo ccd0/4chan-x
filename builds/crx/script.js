@@ -1529,17 +1529,38 @@
       this.length = 0;
     }
 
-    RandomAccessList.prototype.push = function(item) {
-      var ID, last;
-      ID = item.ID;
+    RandomAccessList.prototype.push = function(data) {
+      var ID, item, last;
+      ID = data.ID;
+      ID || (ID = data.id);
       if (this[ID]) {
         return;
       }
       last = this.last;
+      this[ID] = item = {
+        prev: last,
+        next: null,
+        data: data,
+        ID: ID
+      };
       item.prev = last;
-      this[ID] = item;
       this.last = last ? last.next = item : this.first = item;
       return this.length++;
+    };
+
+    RandomAccessList.prototype.before = function(root, item) {
+      var prev;
+      if (item.next === root) {
+        return;
+      }
+      this.rmi(item);
+      prev = root.prev;
+      root.prev = item;
+      item.next = root;
+      item.prev = prev;
+      if (prev) {
+        return prev.next = item;
+      }
     };
 
     RandomAccessList.prototype.after = function(root, item) {
@@ -2370,7 +2391,7 @@
       });
     },
     scroll: $.debounce(100, function() {
-      var nodes, nodesPerPage, offset, pageNum;
+      var nodes, pageNum;
       if (Index.req || Conf['Index Mode'] !== 'infinite' || (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight)) || g.VIEW === 'thread') {
         return;
       }
@@ -2381,9 +2402,7 @@
       if (pageNum >= Index.pagesNum) {
         return Index.endNotice();
       }
-      nodesPerPage = Index.threadsNumPerPage;
-      offset = nodesPerPage * pageNum;
-      nodes = Index.sortedNodes.slice(offset, offset + nodesPerPage);
+      nodes = Index.buildSinglePage(pageNum);
       if (Conf['Show Replies']) {
         Index.buildReplies(nodes);
       }
@@ -2729,7 +2748,7 @@
       return Main.callbackNodes(Post, posts);
     },
     sort: function() {
-      var cnd, fn, i, item, items, nodes, sortedThreadIDs, threadID, _i, _len;
+      var cnd, fn, i, item, items, node, nodes, sortedThreadIDs, threadID, _i, _j, _len, _len1;
       sortedThreadIDs = {
         lastreply: __slice.call(Index.liveThreadData).sort(function(a, b) {
           if ('last_replies' in a) {
@@ -2757,14 +2776,18 @@
           return data.no;
         })
       }[Conf['Index Sort']];
-      Index.sortedNodes = [];
+      Index.sortedNodes = new RandomAccessList;
       nodes = Index.nodes;
       for (_i = 0, _len = sortedThreadIDs.length; _i < _len; _i++) {
         threadID = sortedThreadIDs[_i];
         Index.sortedNodes.push(nodes[Index.liveThreadIDs.indexOf(threadID)]);
       }
       if (Index.isSearching && (nodes = Index.querySearch(Index.searchInput.value))) {
-        Index.sortedNodes = nodes;
+        Index.sortedNodes = new RandomAccessList;
+        for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
+          node = nodes[_j];
+          Index.sortedNodes.push(node);
+        }
       }
       items = [
         {
@@ -2793,25 +2816,36 @@
       }
     },
     sortOnTop: function(match) {
-      var i, offset, threadRoot, _i, _len, _ref;
+      var j, offset, sortedNodes, target, threadRoot;
       offset = 0;
-      _ref = Index.sortedNodes;
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        threadRoot = _ref[i];
-        if (match(Get.threadFromRoot(threadRoot))) {
-          Index.sortedNodes.splice(offset++, 0, Index.sortedNodes.splice(i, 1)[0]);
+      sortedNodes = Index.sortedNodes;
+      threadRoot = Index.sortedNodes.first;
+      while (threadRoot) {
+        if (match(Get.threadFromRoot(threadRoot.data))) {
+          target = Index.sortedNodes.first;
+          j = 0;
+          while (j++ < offset) {
+            target = target.next;
+          }
+          if (threadRoot !== target) {
+            offset++;
+            sortedNodes.before(target, threadRoot);
+          }
         }
+        threadRoot = threadRoot.next;
       }
     },
     buildIndex: function() {
-      var nodes, nodesPerPage, offset, pageNum;
+      var nodes, target;
       if (Conf['Index Mode'] !== 'all pages') {
-        pageNum = Index.getCurrentPage();
-        nodesPerPage = Index.threadsNumPerPage;
-        offset = nodesPerPage * pageNum;
-        nodes = Index.sortedNodes.slice(offset, offset + nodesPerPage);
+        nodes = Index.buildSinglePage(Index.getCurrentPage());
       } else {
-        nodes = Index.sortedNodes;
+        nodes = [];
+        target = Index.sortedNodes.first;
+        while (target) {
+          nodes.push(target.data);
+          target = target.next;
+        }
       }
       $.rmAll(Index.root);
       $.rmAll(Header.hover);
@@ -2819,6 +2853,22 @@
         Index.buildReplies(nodes);
       }
       return Index.buildStructure(nodes);
+    },
+    buildSinglePage: function(pageNum) {
+      var end, i, nodes, nodesPerPage, offset, target;
+      nodes = [];
+      nodesPerPage = Index.threadsNumPerPage;
+      offset = nodesPerPage * pageNum;
+      end = offset + nodesPerPage;
+      target = Index.sortedNodes.first;
+      i = 0;
+      while (i <= end) {
+        if (offset <= i++) {
+          nodes.push(target.data);
+        }
+        target = target.next;
+      }
+      return nodes;
     },
     buildStructure: function(nodes) {
       var hr, i, node, result, _i, _len, _ref;
@@ -2876,16 +2926,17 @@
       return Index.search(keywords);
     },
     search: function(keywords) {
-      var threadRoot, _i, _len, _ref, _results;
-      _ref = Index.sortedNodes;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        threadRoot = _ref[_i];
-        if (Index.searchMatch(Get.threadFromRoot(threadRoot), keywords)) {
-          _results.push(threadRoot);
+      var data, found, target;
+      found = [];
+      target = Index.sortedNodes.first;
+      while (target) {
+        data = target.data;
+        if (Index.searchMatch(Get.threadFromRoot(data), keywords)) {
+          found.push(data);
         }
+        target = target.next;
       }
-      return _results;
+      return found;
     },
     searchMatch: function(thread, keywords) {
       var file, info, key, keyword, text, _i, _j, _len, _len1, _ref, _ref1;
@@ -9887,10 +9938,10 @@
         if (!(post.prev || post.next)) {
           Unread.posts.push(post);
         }
-        Unread.addPostQuotingYou(post);
+        Unread.addPostQuotingYou(post.data);
       }
       if (Conf['Unread Line']) {
-        Unread.setLine((_ref = Unread.posts.first, __indexOf.call(posts, _ref) >= 0));
+        Unread.setLine((_ref = Unread.posts.first.data, __indexOf.call(posts, _ref) >= 0));
       }
       Unread.read();
       return Unread.update();
@@ -9972,13 +10023,13 @@
       height = doc.clientHeight;
       posts = Unread.posts;
       while (post = posts.first) {
-        if (!(Header.getBottomOf(post.nodes.root) > -1)) {
+        if (!(Header.getBottomOf(post.data.nodes.root) > -1)) {
           break;
         }
         ID = post.ID;
         posts.rm(ID);
         if (Conf['Mark Quotes of You'] && post.info.yours) {
-          QuoteYou.lastRead = post.nodes.root;
+          QuoteYou.lastRead = post.data.nodes.root;
         }
       }
       if (!ID) {
