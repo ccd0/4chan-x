@@ -247,7 +247,7 @@ Index =
       onabort:   onload
       onloadend: onload
     ,
-      whenModified: true
+      whenModified: Index.board is "#{g.BOARD}"
     $.addClass Index.button, 'fa-spin'
 
   load: (e, pageNum) ->
@@ -274,10 +274,10 @@ Index =
       return
 
     Navigate.title()
+    Index.board = "#{g.BOARD}"
 
     try
-      if req.status is 200 or Index.board isnt "#{g.BOARD}"
-        Index.board = "#{g.BOARD}"
+      if req.status is 200
         Index.parse JSON.parse(req.response), pageNum
       else if req.status is 304 and pageNum?
         Index.pageNav pageNum
