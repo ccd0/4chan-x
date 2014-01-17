@@ -35,6 +35,14 @@ ImageExpand =
       ImageExpand.toggle Get.postFromNode @
     toggleAll: ->
       $.event 'CloseMenu'
+      func = (post) ->
+        {file} = post
+        return unless file and file.isImage and doc.contains post.nodes.root
+        if ImageExpand.on and
+          (!Conf['Expand spoilers'] and file.isSpoiler or
+          Conf['Expand from here'] and Header.getTopOf(file.thumb) < 0)
+            return
+        $.queueTask func, post
       if ImageExpand.on = $.hasClass ImageExpand.EAI, 'expand-all-shortcut'
         ImageExpand.EAI.className = 'contract-all-shortcut a-icon'
         ImageExpand.EAI.title     = 'Contract All Images'
@@ -43,16 +51,10 @@ ImageExpand =
         ImageExpand.EAI.className = 'expand-all-shortcut a-icon'
         ImageExpand.EAI.title     = 'Expand All Images'
         func = ImageExpand.contract
-      for ID, post of g.posts
-        for post in [post].concat post.clones
-          {file} = post
-          continue unless file and file.isImage and doc.contains post.nodes.root
-          if ImageExpand.on and
-            (!Conf['Expand spoilers'] and file.isSpoiler or
-            Conf['Expand from here'] and Header.getTopOf(file.thumb) < 0)
-              continue
-          $.queueTask func, post
-      return
+      g.posts.forEach (post) ->
+        func post
+        func post for post in post.clones
+        return
     setFitness: ->
       (if @checked then $.addClass else $.rmClass) doc, @name.toLowerCase().replace /\s+/g, '-'
 

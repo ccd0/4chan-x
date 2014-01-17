@@ -32,7 +32,6 @@ Recursive =
 
   apply: (recursive, post, args...) ->
     {fullID} = post
-    for ID, post of g.posts
+    g.posts.forEach (post) ->
       if fullID in post.quotes
         recursive post, args...
-    return

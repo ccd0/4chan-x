@@ -4,13 +4,13 @@ class Thread
 
   constructor: (@ID, @board) ->
     @fullID    = "#{@board}.#{@ID}"
-    @posts     = {}
+    @posts     = new SimpleDict
     @isSticky  = false
     @isClosed  = false
     @postLimit = false
     @fileLimit = false
 
-    g.threads[@fullID] = board.threads[@] = @
+    g.threads.push @fullID, board.threads.push @, @
 
   setPage: (pageNum) ->
     icon = $ '.page-num', @OP.nodes.post
@@ -44,7 +44,6 @@ class Thread
     @timeOfDeath = Date.now()
 
   collect: ->
-    for postID, post in @posts
-      post.collect()
-    delete g.threads[@fullID]
-    delete @board.threads[@]
+    @posts.forEach (post) -> post.collect()
+    g.threads.rm @fullID
+    @board.threads.rm @

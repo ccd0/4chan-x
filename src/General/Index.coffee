@@ -2,6 +2,8 @@ Index =
   init: ->
     return if g.BOARD.ID is 'f' or g.VIEW is 'catalog' or !Conf['JSON Navigation']
 
+    @board = "#{g.BOARD}"
+
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa'
       title: 'Refresh Index'
@@ -113,12 +115,13 @@ Index =
   scroll: $.debounce 100, ->
     return if Index.req or Conf['Index Mode'] isnt 'infinite' or (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
     Index.pageNum = Index.getCurrentPage() unless Index.pageNum? # Avoid having to pushState to keep track of the current page
+
     pageNum = Index.pageNum++
     return Index.endNotice() if pageNum >= Index.pagesNum
-    nodesPerPage = Index.threadsNumPerPage * 2
-    nodes = Index.sortedNodes[nodesPerPage * pageNum ... nodesPerPage * (pageNum + 1)]
-    Index.buildReplies nodes if Conf['Show Replies']
-    $.add Index.root, nodes
+
+    nodes = Index.buildSinglePage pageNum
+    Index.buildReplies   nodes if Conf['Show Replies']
+    Index.buildStructure nodes
     Index.setPage pageNum
     
   endNotice: do ->
@@ -240,7 +243,7 @@ Index =
       onabort:   onload
       onloadend: onload
     ,
-      whenModified: true
+      whenModified: Index.board is "#{g.BOARD}"
     $.addClass Index.button, 'fa-spin'
 
   load: (e, pageNum) ->
@@ -266,13 +269,16 @@ Index =
         new Notice 'warning', err, 1
       return
 
+    Navigate.title()
+    Index.board = "#{g.BOARD}"
+
     try
       if req.status is 200
         Index.parse JSON.parse(req.response), pageNum
       else if req.status is 304 and pageNum?
         Index.pageNav pageNum
     catch err
-      c.error 'Index failure:', err
+      c.error "Index failure: #{err.message}", err.stack
       # network error or non-JSON content for example.
       if notice
         notice.setType 'error'
@@ -303,8 +309,8 @@ Index =
     Index.threadsNumPerPage = pages[0].threads.length
     Index.liveThreadData    = pages.reduce ((arr, next) -> arr.concat next.threads), []
     Index.liveThreadIDs     = Index.liveThreadData.map (data) -> data.no
-    for threadID, thread of g.BOARD.threads when thread.ID not in Index.liveThreadIDs
-      thread.collect()
+    g.BOARD.threads.forEach (thread) ->
+      thread.collect() unless thread.ID in Index.liveThreadIDs
     return
 
   buildThreads: ->
@@ -312,23 +318,23 @@ Index =
     threads     = []
     posts       = []
     for threadData, i in Index.liveThreadData
-      threadRoot = Build.thread g.BOARD, threadData
-      Index.nodes.push threadRoot, $.el 'hr'
-      if thread = g.BOARD.threads[threadData.no]
-        thread.setPage Math.floor i / Index.threadsNumPerPage
-        thread.setStatus 'Sticky', !!threadData.sticky
-        thread.setStatus 'Closed', !!threadData.closed
-      else
-        thread = new Thread threadData.no, g.BOARD
-        threads.push thread
-      continue if thread.ID of thread.posts
       try
+        threadRoot = Build.thread g.BOARD, threadData
+        if thread = g.BOARD.threads[threadData.no]
+          thread.setPage Math.floor i / Index.threadsNumPerPage
+          thread.setStatus 'Sticky', !!threadData.sticky
+          thread.setStatus 'Closed', !!threadData.closed
+        else
+          thread = new Thread threadData.no, g.BOARD
+          threads.push thread
+        Index.nodes.push threadRoot
+        continue if thread.ID of thread.posts
         posts.push new Post $('.opContainer', threadRoot), thread, g.BOARD
       catch err
         # Skip posts that we failed to parse.
         errors = [] unless errors
         errors.push
-          message: "Parsing of Post No.#{thread} failed. Post will be skipped."
+          message: "Parsing of Thread No.#{thread} failed. Thread will be skipped."
           error: err
     Main.handleErrors errors if errors
 
@@ -340,7 +346,7 @@ Index =
 
   buildReplies: (threadRoots) ->
     posts = []
-    for threadRoot in threadRoots by 2
+    for threadRoot in threadRoots
       thread = Get.threadFromRoot threadRoot
       i = Index.liveThreadIDs.indexOf thread.ID
       continue unless lastReplies = Index.liveThreadData[i].last_replies
@@ -364,52 +370,89 @@ Index =
     Main.callbackNodes Post, posts
 
   sort: ->
-    switch Conf['Index Sort']
-      when 'bump'
-        sortedThreadIDs = Index.liveThreadIDs
-      when 'lastreply'
-        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) ->
-          a = a.last_replies[a.last_replies.length - 1] if 'last_replies' of a
-          b = b.last_replies[b.last_replies.length - 1] if 'last_replies' of b
+    {liveThreadIDs, liveThreadData} = Index
+    sortedThreadIDs = {
+      lastreply:
+        [liveThreadData...].sort((a, b) ->
+          a = num[num.length - 1] if (num = a.last_replies)
+          b = num[num.length - 1] if (num = b.last_replies)
           b.no - a.no
-        ).map (data) -> data.no
-      when 'birth'
-        sortedThreadIDs = [Index.liveThreadIDs...].sort (a, b) -> b - a
-      when 'replycount'
-        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.replies - a.replies).map (data) -> data.no
-      when 'filecount'
-        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.images - a.images).map (data) -> data.no
-    Index.sortedNodes = []
+        ).map (post) -> post.no
+      bump:       liveThreadIDs
+      birth:      [liveThreadIDs... ].sort (a, b) -> b - a
+      replycount: [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
+      filecount:  [liveThreadData...].sort((a, b) -> b.images  - a.images ).map (post) -> post.no
+    }[Conf['Index Sort']]
+    Index.sortedNodes = sortedNodes = new RandomAccessList
+    {nodes} = Index
     for threadID in sortedThreadIDs
-      i = Index.liveThreadIDs.indexOf(threadID) * 2
-      Index.sortedNodes.push Index.nodes[i], Index.nodes[i + 1]
-    if Index.isSearching
-      Index.sortedNodes = Index.querySearch(Index.searchInput.value) or Index.sortedNodes
-    # Sticky threads
-    Index.sortOnTop (thread) -> thread.isSticky
-    # Highlighted threads
-    Index.sortOnTop((thread) -> thread.isOnTop) if Conf['Filter']
-    # Non-hidden threads
-    Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
+      sortedNodes.push nodes[Index.liveThreadIDs.indexOf(threadID)]
+    if Index.isSearching and nodes = Index.querySearch(Index.searchInput.value)
+      Index.sortedNodes = new RandomAccessList nodes
+    items = [
+      # Sticky threads
+      fn:  (thread) -> thread.isSticky
+      cnd: true
+    , # Highlighted threads
+      fn:  (thread) -> thread.isOnTop
+      cnd: Conf['Filter']
+    , # Non-hidden threads
+      fn:  (thread) -> !thread.isHidden
+      cnd: Conf['Anchor Hidden Threads']
+    ]
+    i = 0
+    while item = items[i++]
+      {fn, cnd} = item
+      Index.sortOnTop fn if cnd
+    return
 
   sortOnTop: (match) ->
     offset = 0
-    for threadRoot, i in Index.sortedNodes by 2 when match Get.threadFromRoot threadRoot
-      Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
+    {sortedNodes} = Index
+    threadRoot = sortedNodes.first
+    while threadRoot
+      if match Get.threadFromRoot threadRoot.data
+        target = sortedNodes.first
+        j = 0
+        while j++ < offset
+          target = target.next
+        unless threadRoot is target
+          offset++
+          sortedNodes.before target, threadRoot
+      threadRoot = threadRoot.next
     return
 
   buildIndex: ->
     if Conf['Index Mode'] isnt 'all pages'
-      pageNum = Index.getCurrentPage()
-      nodesPerPage = Index.threadsNumPerPage * 2
-      nodes = Index.sortedNodes[nodesPerPage * pageNum ... nodesPerPage * (pageNum + 1)]
+      nodes = Index.buildSinglePage Index.getCurrentPage()
     else
-      nodes = Index.sortedNodes
+      nodes = [(target = Index.sortedNodes.first).data]
+      while target = target.next
+        nodes.push target.data
     $.rmAll Index.root
     $.rmAll Header.hover
     Index.buildReplies nodes if Conf['Show Replies']
-    $.add Index.root, nodes
-    $.event 'IndexBuild', nodes
+    Index.buildStructure nodes
+
+  buildSinglePage: (pageNum) ->
+    nodes = []
+    nodesPerPage = Index.threadsNumPerPage
+    offset = nodesPerPage * pageNum
+    end    = offset + nodesPerPage
+    target = Index.sortedNodes.order()[offset]
+    Index.sortedNodes
+    while (offset++ <= end) and target
+      nodes.push target.data
+      target = target.next
+    nodes
+
+  buildStructure: (nodes) ->
+    result = $.frag()
+    i = 0
+    $.add result, [node, $.el 'hr'] while node = nodes[i++]
+    $.add Index.root, result
+    $.rm hr for hr in $$ 'hr + hr', Index.root # Temp fix until I figure out where I fucked up
+    $.event 'IndexBuild', result
 
   isSearching: false
 
@@ -449,11 +492,14 @@ Index =
     return unless keywords = query.toLowerCase().match /\S+/g
     Index.search keywords
 
-  search: (keywords) ->
-    found = []
-    for threadRoot, i in Index.sortedNodes by 2
-      if Index.searchMatch Get.threadFromRoot(threadRoot), keywords
-        found.push Index.sortedNodes[i], Index.sortedNodes[i + 1]
+  search: (keywords) -> 
+    found  = []
+    target = Index.sortedNodes.first
+    while target
+      {data} = target
+      if Index.searchMatch Get.threadFromRoot(data), keywords
+        found.push data
+      target = target.next
     found
 
   searchMatch: (thread, keywords) ->

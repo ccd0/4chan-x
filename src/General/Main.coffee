@@ -1,5 +1,8 @@
 Main =
   init: ->
+    g.threads = new SimpleDict
+    g.posts   = new SimpleDict
+
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
     return if g.BOARD.ID in ['z', 'fk']
@@ -122,7 +125,7 @@ Main =
           'left=0,top=0,width=500,height=255,toolbar=0,resizable=0'
       $.before styleSelector.previousSibling, [$.tn '['; passLink, $.tn ']\u00A0\u00A0']
 
-    if g.VIEW is 'thread' or !Conf['JSON Navigation']
+    unless Conf['JSON Navigation'] and g.VIEW is 'index'
       Main.initThread()
     else
       $.event '4chanXInitFinished'

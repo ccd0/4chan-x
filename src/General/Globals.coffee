@@ -9,10 +9,7 @@ doc  = d.documentElement
 g    =
   VERSION:   '<%= version %>'
   NAMESPACE: '<%= meta.name.replace(' ', '_') %>.'
-  TYPE:      'sfw'
   boards:    {}
-  threads:   {}
-  posts:     {}
 
 Mascots =
   'Akiyama_Mio':

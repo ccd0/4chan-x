@@ -110,7 +110,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, Callbacks, CatalogLinks, Clone, Color, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, InfiniScroll, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, Callbacks, CatalogLinks, Clone, Color, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, InfiniScroll, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
@@ -466,10 +466,7 @@
   g = {
     VERSION: '2.8.5',
     NAMESPACE: 'appchan_x.',
-    TYPE: 'sfw',
-    boards: {},
-    threads: {},
-    posts: {}
+    boards: {}
   };
 
   Mascots = {
@@ -3066,8 +3063,8 @@
 
     function Board(ID) {
       this.ID = ID;
-      this.threads = {};
-      this.posts = {};
+      this.threads = new SimpleDict;
+      this.posts = new SimpleDict;
       g.boards[this] = this;
     }
 
@@ -3086,12 +3083,12 @@
       this.ID = ID;
       this.board = board;
       this.fullID = "" + this.board + "." + this.ID;
-      this.posts = {};
+      this.posts = new SimpleDict;
       this.isSticky = false;
       this.isClosed = false;
       this.postLimit = false;
       this.fileLimit = false;
-      g.threads[this.fullID] = board.threads[this] = this;
+      g.threads.push(this.fullID, board.threads.push(this, this));
     }
 
     Thread.prototype.setPage = function(pageNum) {
@@ -3135,14 +3132,11 @@
     };
 
     Thread.prototype.collect = function() {
-      var post, postID, _i, _len, _ref;
-      _ref = this.posts;
-      for (post = _i = 0, _len = _ref.length; _i < _len; post = ++_i) {
-        postID = _ref[post];
-        post.collect();
-      }
-      delete g.threads[this.fullID];
-      return delete this.board.threads[this];
+      this.posts.forEach(function(post) {
+        return post.collect();
+      });
+      g.threads.rm(this.fullID);
+      return this.board.threads.rm(this);
     };
 
     return Thread;
@@ -3221,7 +3215,7 @@
       this.parseQuotes();
       this.parseFile(that);
       this.clones = [];
-      g.posts[this.fullID] = thread.posts[this] = board.posts[this] = this;
+      g.posts.push(this.fullID, thread.posts.push(this, board.posts.push(this, this)));
       if (that.isArchived) {
         this.kill();
       }
@@ -3391,9 +3385,9 @@
 
     Post.prototype.collect = function() {
       this.kill();
-      delete g.posts[this.fullID];
-      delete this.thread.posts[this];
-      return delete this.board.posts[this];
+      g.posts.rm(this.fullID);
+      this.thread.posts.rm(this);
+      return this.board.posts.rm(this);
     };
 
     Post.prototype.addClone = function(context) {
@@ -3710,21 +3704,49 @@
   })();
 
   RandomAccessList = (function() {
-    function RandomAccessList() {
+    function RandomAccessList(items) {
+      var item, _i, _len;
       this.length = 0;
+      if (items) {
+        for (_i = 0, _len = items.length; _i < _len; _i++) {
+          item = items[_i];
+          this.push(item);
+        }
+      }
     }
 
-    RandomAccessList.prototype.push = function(item) {
-      var ID, last;
-      ID = item.ID;
+    RandomAccessList.prototype.push = function(data) {
+      var ID, item, last;
+      ID = data.ID;
+      ID || (ID = data.id);
       if (this[ID]) {
         return;
       }
       last = this.last;
+      this[ID] = item = {
+        prev: last,
+        next: null,
+        data: data,
+        ID: ID
+      };
       item.prev = last;
-      this[ID] = item;
       this.last = last ? last.next = item : this.first = item;
       return this.length++;
+    };
+
+    RandomAccessList.prototype.before = function(root, item) {
+      var prev;
+      if (item.next === root) {
+        return;
+      }
+      this.rmi(item);
+      prev = root.prev;
+      root.prev = item;
+      item.next = root;
+      item.prev = prev;
+      if (prev) {
+        return prev.next = item;
+      }
     };
 
     RandomAccessList.prototype.after = function(root, item) {
@@ -3759,6 +3781,15 @@
       return this.rm(this.first.ID);
     };
 
+    RandomAccessList.prototype.order = function() {
+      var item, order;
+      order = [item = this.first];
+      while (item = item.next) {
+        order.push(item);
+      }
+      return order;
+    };
+
     RandomAccessList.prototype.rm = function(ID) {
       var item;
       item = this[ID];
@@ -3788,6 +3819,43 @@
     };
 
     return RandomAccessList;
+
+  })();
+
+  SimpleDict = (function() {
+    function SimpleDict() {
+      this.keys = [];
+    }
+
+    SimpleDict.prototype.push = function(key, data) {
+      key = "" + key;
+      if (!this[key]) {
+        this.keys.push(key);
+      }
+      return this[key] = data;
+    };
+
+    SimpleDict.prototype.rm = function(key) {
+      var i;
+      key = "" + key;
+      if ((i = this.keys.indexOf(key)) !== -1) {
+        this.keys.splice(i, 1);
+        return delete this[key];
+      }
+    };
+
+    SimpleDict.prototype.forEach = function(fn) {
+      var key, _i, _len, _ref, _results;
+      _ref = __slice.call(this.keys);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        key = _ref[_i];
+        _results.push(fn(this[key]));
+      }
+      return _results;
+    };
+
+    return SimpleDict;
 
   })();
 
@@ -4274,6 +4342,7 @@
       if (g.BOARD.ID === 'f' || g.VIEW === 'catalog' || !Conf['JSON Navigation']) {
         return;
       }
+      this.board = "" + g.BOARD;
       this.button = $.el('a', {
         className: 'index-refresh-shortcut fa',
         title: 'Refresh Index',
@@ -4441,7 +4510,7 @@
       });
     },
     scroll: $.debounce(100, function() {
-      var nodes, nodesPerPage, pageNum;
+      var nodes, pageNum;
       if (Index.req || Conf['Index Mode'] !== 'infinite' || (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight)) || g.VIEW === 'thread') {
         return;
       }
@@ -4452,12 +4521,11 @@
       if (pageNum >= Index.pagesNum) {
         return Index.endNotice();
       }
-      nodesPerPage = Index.threadsNumPerPage * 2;
-      nodes = Index.sortedNodes.slice(nodesPerPage * pageNum, nodesPerPage * (pageNum + 1));
+      nodes = Index.buildSinglePage(pageNum);
       if (Conf['Show Replies']) {
         Index.buildReplies(nodes);
       }
-      $.add(Index.root, nodes);
+      Index.buildStructure(nodes);
       return Index.setPage(pageNum);
     }),
     endNotice: (function() {
@@ -4629,7 +4697,7 @@
         onabort: onload,
         onloadend: onload
       }, {
-        whenModified: true
+        whenModified: Index.board === ("" + g.BOARD)
       });
       return $.addClass(Index.button, 'fa-spin');
     },
@@ -4659,6 +4727,8 @@
         }
         return;
       }
+      Navigate.title();
+      Index.board = "" + g.BOARD;
       try {
         if (req.status === 200) {
           Index.parse(JSON.parse(req.response), pageNum);
@@ -4667,7 +4737,7 @@
         }
       } catch (_error) {
         err = _error;
-        c.error('Index failure:', err);
+        c.error("Index failure: " + err.message, err.stack);
         if (notice) {
           notice.setType('error');
           notice.el.lastElementChild.textContent = 'Index refresh failed.';
@@ -4695,7 +4765,6 @@
       return Index.setPage();
     },
     parseThreadList: function(pages) {
-      var thread, threadID, _ref, _ref1;
       Index.pagesNum = pages.length;
       Index.threadsNumPerPage = pages[0].threads.length;
       Index.liveThreadData = pages.reduce((function(arr, next) {
@@ -4704,13 +4773,12 @@
       Index.liveThreadIDs = Index.liveThreadData.map(function(data) {
         return data.no;
       });
-      _ref = g.BOARD.threads;
-      for (threadID in _ref) {
-        thread = _ref[threadID];
-        if (_ref1 = thread.ID, __indexOf.call(Index.liveThreadIDs, _ref1) < 0) {
-          thread.collect();
+      g.BOARD.threads.forEach(function(thread) {
+        var _ref;
+        if (_ref = thread.ID, __indexOf.call(Index.liveThreadIDs, _ref) < 0) {
+          return thread.collect();
         }
-      }
+      });
     },
     buildThreads: function() {
       var err, errors, i, posts, thread, threadData, threadRoot, threads, _i, _len, _ref;
@@ -4720,20 +4788,20 @@
       _ref = Index.liveThreadData;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         threadData = _ref[i];
-        threadRoot = Build.thread(g.BOARD, threadData);
-        Index.nodes.push(threadRoot, $.el('hr'));
-        if (thread = g.BOARD.threads[threadData.no]) {
-          thread.setPage(Math.floor(i / Index.threadsNumPerPage));
-          thread.setStatus('Sticky', !!threadData.sticky);
-          thread.setStatus('Closed', !!threadData.closed);
-        } else {
-          thread = new Thread(threadData.no, g.BOARD);
-          threads.push(thread);
-        }
-        if (thread.ID in thread.posts) {
-          continue;
-        }
         try {
+          threadRoot = Build.thread(g.BOARD, threadData);
+          if (thread = g.BOARD.threads[threadData.no]) {
+            thread.setPage(Math.floor(i / Index.threadsNumPerPage));
+            thread.setStatus('Sticky', !!threadData.sticky);
+            thread.setStatus('Closed', !!threadData.closed);
+          } else {
+            thread = new Thread(threadData.no, g.BOARD);
+            threads.push(thread);
+          }
+          Index.nodes.push(threadRoot);
+          if (thread.ID in thread.posts) {
+            continue;
+          }
           posts.push(new Post($('.opContainer', threadRoot), thread, g.BOARD));
         } catch (_error) {
           err = _error;
@@ -4741,7 +4809,7 @@
             errors = [];
           }
           errors.push({
-            message: "Parsing of Post No." + thread + " failed. Post will be skipped.",
+            message: "Parsing of Thread No." + thread + " failed. Thread will be skipped.",
             error: err
           });
         }
@@ -4757,7 +4825,7 @@
     buildReplies: function(threadRoots) {
       var data, err, errors, i, lastReplies, node, nodes, post, posts, thread, threadRoot, _i, _j, _len, _len1;
       posts = [];
-      for (_i = 0, _len = threadRoots.length; _i < _len; _i += 2) {
+      for (_i = 0, _len = threadRoots.length; _i < _len; _i++) {
         threadRoot = threadRoots[_i];
         thread = Get.threadFromRoot(threadRoot);
         i = Index.liveThreadIDs.indexOf(thread.ID);
@@ -4793,93 +4861,136 @@
       return Main.callbackNodes(Post, posts);
     },
     sort: function() {
-      var i, sortedThreadIDs, threadID, _i, _len;
-      switch (Conf['Index Sort']) {
-        case 'bump':
-          sortedThreadIDs = Index.liveThreadIDs;
-          break;
-        case 'lastreply':
-          sortedThreadIDs = __slice.call(Index.liveThreadData).sort(function(a, b) {
-            if ('last_replies' in a) {
-              a = a.last_replies[a.last_replies.length - 1];
-            }
-            if ('last_replies' in b) {
-              b = b.last_replies[b.last_replies.length - 1];
-            }
-            return b.no - a.no;
-          }).map(function(data) {
-            return data.no;
-          });
-          break;
-        case 'birth':
-          sortedThreadIDs = __slice.call(Index.liveThreadIDs).sort(function(a, b) {
-            return b - a;
-          });
-          break;
-        case 'replycount':
-          sortedThreadIDs = __slice.call(Index.liveThreadData).sort(function(a, b) {
-            return b.replies - a.replies;
-          }).map(function(data) {
-            return data.no;
-          });
-          break;
-        case 'filecount':
-          sortedThreadIDs = __slice.call(Index.liveThreadData).sort(function(a, b) {
-            return b.images - a.images;
-          }).map(function(data) {
-            return data.no;
-          });
-      }
-      Index.sortedNodes = [];
+      var cnd, fn, i, item, items, liveThreadData, liveThreadIDs, nodes, sortedNodes, sortedThreadIDs, threadID, _i, _len;
+      liveThreadIDs = Index.liveThreadIDs, liveThreadData = Index.liveThreadData;
+      sortedThreadIDs = {
+        lastreply: __slice.call(liveThreadData).sort(function(a, b) {
+          var num;
+          if ((num = a.last_replies)) {
+            a = num[num.length - 1];
+          }
+          if ((num = b.last_replies)) {
+            b = num[num.length - 1];
+          }
+          return b.no - a.no;
+        }).map(function(post) {
+          return post.no;
+        }),
+        bump: liveThreadIDs,
+        birth: __slice.call(liveThreadIDs).sort(function(a, b) {
+          return b - a;
+        }),
+        replycount: __slice.call(liveThreadData).sort(function(a, b) {
+          return b.replies - a.replies;
+        }).map(function(post) {
+          return post.no;
+        }),
+        filecount: __slice.call(liveThreadData).sort(function(a, b) {
+          return b.images - a.images;
+        }).map(function(post) {
+          return post.no;
+        })
+      }[Conf['Index Sort']];
+      Index.sortedNodes = sortedNodes = new RandomAccessList;
+      nodes = Index.nodes;
       for (_i = 0, _len = sortedThreadIDs.length; _i < _len; _i++) {
         threadID = sortedThreadIDs[_i];
-        i = Index.liveThreadIDs.indexOf(threadID) * 2;
-        Index.sortedNodes.push(Index.nodes[i], Index.nodes[i + 1]);
+        sortedNodes.push(nodes[Index.liveThreadIDs.indexOf(threadID)]);
       }
-      if (Index.isSearching) {
-        Index.sortedNodes = Index.querySearch(Index.searchInput.value) || Index.sortedNodes;
+      if (Index.isSearching && (nodes = Index.querySearch(Index.searchInput.value))) {
+        Index.sortedNodes = new RandomAccessList(nodes);
       }
-      Index.sortOnTop(function(thread) {
-        return thread.isSticky;
-      });
-      if (Conf['Filter']) {
-        Index.sortOnTop(function(thread) {
-          return thread.isOnTop;
-        });
-      }
-      if (Conf['Anchor Hidden Threads']) {
-        return Index.sortOnTop(function(thread) {
-          return !thread.isHidden;
-        });
-      }
-    },
-    sortOnTop: function(match) {
-      var i, offset, threadRoot, _i, _len, _ref, _ref1;
-      offset = 0;
-      _ref = Index.sortedNodes;
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = _i += 2) {
-        threadRoot = _ref[i];
-        if (match(Get.threadFromRoot(threadRoot))) {
-          (_ref1 = Index.sortedNodes).splice.apply(_ref1, [offset++ * 2, 0].concat(__slice.call(Index.sortedNodes.splice(i, 2))));
+      items = [
+        {
+          fn: function(thread) {
+            return thread.isSticky;
+          },
+          cnd: true
+        }, {
+          fn: function(thread) {
+            return thread.isOnTop;
+          },
+          cnd: Conf['Filter']
+        }, {
+          fn: function(thread) {
+            return !thread.isHidden;
+          },
+          cnd: Conf['Anchor Hidden Threads']
+        }
+      ];
+      i = 0;
+      while (item = items[i++]) {
+        fn = item.fn, cnd = item.cnd;
+        if (cnd) {
+          Index.sortOnTop(fn);
         }
       }
     },
+    sortOnTop: function(match) {
+      var j, offset, sortedNodes, target, threadRoot;
+      offset = 0;
+      sortedNodes = Index.sortedNodes;
+      threadRoot = sortedNodes.first;
+      while (threadRoot) {
+        if (match(Get.threadFromRoot(threadRoot.data))) {
+          target = sortedNodes.first;
+          j = 0;
+          while (j++ < offset) {
+            target = target.next;
+          }
+          if (threadRoot !== target) {
+            offset++;
+            sortedNodes.before(target, threadRoot);
+          }
+        }
+        threadRoot = threadRoot.next;
+      }
+    },
     buildIndex: function() {
-      var nodes, nodesPerPage, pageNum;
+      var nodes, target;
       if (Conf['Index Mode'] !== 'all pages') {
-        pageNum = Index.getCurrentPage();
-        nodesPerPage = Index.threadsNumPerPage * 2;
-        nodes = Index.sortedNodes.slice(nodesPerPage * pageNum, nodesPerPage * (pageNum + 1));
+        nodes = Index.buildSinglePage(Index.getCurrentPage());
       } else {
-        nodes = Index.sortedNodes;
+        nodes = [(target = Index.sortedNodes.first).data];
+        while (target = target.next) {
+          nodes.push(target.data);
+        }
       }
       $.rmAll(Index.root);
       $.rmAll(Header.hover);
       if (Conf['Show Replies']) {
         Index.buildReplies(nodes);
       }
-      $.add(Index.root, nodes);
-      return $.event('IndexBuild', nodes);
+      return Index.buildStructure(nodes);
+    },
+    buildSinglePage: function(pageNum) {
+      var end, nodes, nodesPerPage, offset, target;
+      nodes = [];
+      nodesPerPage = Index.threadsNumPerPage;
+      offset = nodesPerPage * pageNum;
+      end = offset + nodesPerPage;
+      target = Index.sortedNodes.order()[offset];
+      Index.sortedNodes;
+      while ((offset++ <= end) && target) {
+        nodes.push(target.data);
+        target = target.next;
+      }
+      return nodes;
+    },
+    buildStructure: function(nodes) {
+      var hr, i, node, result, _i, _len, _ref;
+      result = $.frag();
+      i = 0;
+      while (node = nodes[i++]) {
+        $.add(result, [node, $.el('hr')]);
+      }
+      $.add(Index.root, result);
+      _ref = $$('hr + hr', Index.root);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        hr = _ref[_i];
+        $.rm(hr);
+      }
+      return $.event('IndexBuild', result);
     },
     isSearching: false,
     clearSearch: function() {
@@ -4922,14 +5033,15 @@
       return Index.search(keywords);
     },
     search: function(keywords) {
-      var found, i, threadRoot, _i, _len, _ref;
+      var data, found, target;
       found = [];
-      _ref = Index.sortedNodes;
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = _i += 2) {
-        threadRoot = _ref[i];
-        if (Index.searchMatch(Get.threadFromRoot(threadRoot), keywords)) {
-          found.push(Index.sortedNodes[i], Index.sortedNodes[i + 1]);
+      target = Index.sortedNodes.first;
+      while (target) {
+        data = target.data;
+        if (Index.searchMatch(Get.threadFromRoot(data), keywords)) {
+          found.push(data);
         }
+        target = target.next;
       }
       return found;
     },
@@ -5213,36 +5325,38 @@
       };
     },
     allQuotelinksLinkingTo: function(post) {
-      var ID, handleQuotes, quote, quotedPost, quotelinks, quoterPost, _i, _len, _ref, _ref1, _ref2;
+      var fullID, handleQuotes, posts, qPost, quote, quotelinks, _i, _len, _ref;
       quotelinks = [];
-      handleQuotes = function(post, type) {
+      posts = g.posts;
+      fullID = {
+        post: post
+      };
+      handleQuotes = function(qPost, type) {
         var clone, _i, _len, _ref;
-        quotelinks.push.apply(quotelinks, post.nodes[type]);
-        _ref = post.clones;
+        quotelinks.push.apply(quotelinks, qPost.nodes[type]);
+        _ref = qPost.clones;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           clone = _ref[_i];
           quotelinks.push.apply(quotelinks, clone.nodes[type]);
         }
       };
-      _ref = g.posts;
-      for (ID in _ref) {
-        quoterPost = _ref[ID];
-        if (_ref1 = post.fullID, __indexOf.call(quoterPost.quotes, _ref1) >= 0) {
-          handleQuotes(quoterPost, 'quotelinks');
+      posts.forEach(function(qPost) {
+        if (__indexOf.call(qPost.quotes, fullID) >= 0) {
+          return handleQuotes(qPost, 'quotelinks');
         }
-      }
+      });
       if (Conf['Quote Backlinks']) {
-        _ref2 = post.quotes;
-        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-          quote = _ref2[_i];
-          if (quotedPost = g.posts[quote]) {
-            handleQuotes(quotedPost, 'backlinks');
+        _ref = post.quotes;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          quote = _ref[_i];
+          if (qPost = posts[quote]) {
+            handleQuotes(qPost, 'backlinks');
           }
         }
       }
       return quotelinks.filter(function(quotelink) {
-        var boardID, postID, _ref3;
-        _ref3 = Get.postDataFromLink(quotelink), boardID = _ref3.boardID, postID = _ref3.postID;
+        var boardID, postID, _ref1;
+        _ref1 = Get.postDataFromLink(quotelink), boardID = _ref1.boardID, postID = _ref1.postID;
         return boardID === post.board.ID && postID === post.ID;
       });
     },
@@ -6500,16 +6614,14 @@
       }
     },
     apply: function() {
-      var ID, args, fullID, post, recursive, _ref;
+      var args, fullID, post, recursive;
       recursive = arguments[0], post = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
       fullID = post.fullID;
-      _ref = g.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
+      return g.posts.forEach(function(post) {
         if (__indexOf.call(post.quotes, fullID) >= 0) {
-          recursive.apply(null, [post].concat(__slice.call(args)));
+          return recursive.apply(null, [post].concat(__slice.call(args)));
         }
-      }
+      });
     }
   };
 
@@ -7229,17 +7341,18 @@
       return QuoteThreading.force();
     },
     force: function() {
-      var ID, post, _ref;
-      _ref = g.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
+      g.posts.forEach(function(post) {
         if (post.cb) {
-          post.cb(true);
+          return post.cb(true);
         }
+      });
+      if (Conf['Unread Count'] && Unread.thread.OP.nodes.root.parentElement.parentElement) {
+        Unread.read();
+        return Unread.update();
       }
     },
     node: function() {
-      var keys, len, post, posts, quote, _i, _len, _ref;
+      var keys, len, posts, quote, _i, _len, _ref;
       posts = g.posts;
       if (this.isClone || !QuoteThreading.enabled) {
         return;
@@ -7247,7 +7360,7 @@
       if (Conf['Unread Count']) {
         Unread.posts.push(this);
       }
-      if (this.thread.OP === this || !(post = posts[this.fullID]) || post.isHidden) {
+      if (this.thread.OP === this || this.isHidden) {
         return;
       }
       keys = [];
@@ -7295,28 +7408,26 @@
       if (!Conf['Unread Count']) {
         return true;
       }
-      if (posts[post.ID]) {
-        posts.after(post, this);
+      if (post = posts[post.ID]) {
+        posts.after(post, posts[this.ID]);
       } else {
-        posts.prepend(this);
+        posts.prepend(posts[this.ID]);
       }
       return true;
     },
     toggle: function() {
-      var ID, container, containers, nodes, post, posts, thread, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+      var container, containers, nodes, post, posts, thread, _i, _j, _k, _len, _len1, _len2, _ref;
       if (QuoteThreading.enabled = this.checked) {
         QuoteThreading.force();
       } else {
         thread = $('.thread');
         posts = [];
         nodes = [];
-        _ref = g.posts;
-        for (ID in _ref) {
-          post = _ref[ID];
+        g.posts.forEach(function(post) {
           if (!(post === post.thread.OP || post.isClone)) {
-            posts.push(post);
+            return posts.push(post);
           }
-        }
+        });
         posts.sort(function(a, b) {
           return a.ID - b.ID;
         });
@@ -7330,9 +7441,9 @@
           container = containers[_j];
           $.rm(container);
         }
-        _ref1 = $$('.threadOP');
-        for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-          post = _ref1[_k];
+        _ref = $$('.threadOP');
+        for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
+          post = _ref[_k];
           $.rmClass(post, 'threadOP');
         }
       }
@@ -8437,13 +8548,15 @@
       return QR.nodes.fileInput.click();
     },
     generatePostableThreadsList: function() {
-      var list, options, thread, val;
+      var list, options, thread, val, _i, _len, _ref;
       if (!QR.nodes) {
         return;
       }
       list = QR.nodes.thread;
       options = [list.firstChild];
-      for (thread in g.BOARD.threads) {
+      _ref = g.BOARD.threads.keys;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        thread = _ref[_i];
         options.push($.el('option', {
           value: thread,
           textContent: "Thread No." + thread
@@ -10024,8 +10137,19 @@
         return ImageExpand.toggle(Get.postFromNode(this));
       },
       toggleAll: function() {
-        var ID, file, func, post, _i, _len, _ref, _ref1;
+        var func;
         $.event('CloseMenu');
+        func = function(post) {
+          var file;
+          file = post.file;
+          if (!(file && file.isImage && doc.contains(post.nodes.root))) {
+            return;
+          }
+          if (ImageExpand.on && (!Conf['Expand spoilers'] && file.isSpoiler || Conf['Expand from here'] && Header.getTopOf(file.thumb) < 0)) {
+            return;
+          }
+          return $.queueTask(func, post);
+        };
         if (ImageExpand.on = $.hasClass(ImageExpand.EAI, 'expand-all-shortcut')) {
           ImageExpand.EAI.className = 'contract-all-shortcut a-icon';
           ImageExpand.EAI.title = 'Contract All Images';
@@ -10035,22 +10159,15 @@
           ImageExpand.EAI.title = 'Expand All Images';
           func = ImageExpand.contract;
         }
-        _ref = g.posts;
-        for (ID in _ref) {
-          post = _ref[ID];
-          _ref1 = [post].concat(post.clones);
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            post = _ref1[_i];
-            file = post.file;
-            if (!(file && file.isImage && doc.contains(post.nodes.root))) {
-              continue;
-            }
-            if (ImageExpand.on && (!Conf['Expand spoilers'] && file.isSpoiler || Conf['Expand from here'] && Header.getTopOf(file.thumb) < 0)) {
-              continue;
-            }
-            $.queueTask(func, post);
+        return g.posts.forEach(function(post) {
+          var _i, _len, _ref;
+          func(post);
+          _ref = post.clones;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            post = _ref[_i];
+            func(post);
           }
-        }
+        });
       },
       setFitness: function() {
         return (this.checked ? $.addClass : $.rmClass)(doc, this.name.toLowerCase().replace(/\s+/g, '-'));
@@ -10334,6 +10451,10 @@
         name: 'Image Replace',
         cb: this.node
       });
+      Thread.callbacks.push({
+        name: 'Image Replace',
+        cb: this.thread
+      });
       if (!(Conf['Image Prefetching'] && g.VIEW === 'thread')) {
         return;
       }
@@ -10347,6 +10468,9 @@
         el: prefetch,
         order: 104
       });
+    },
+    thread: function() {
+      return ImageLoader.thread = this;
     },
     node: function() {
       var URL, img, string, style, thumb, type, _ref, _ref1;
@@ -10370,14 +10494,10 @@
       return img.src = URL;
     },
     toggle: function() {
-      var enabled, id, post, _ref;
+      var enabled;
       enabled = Conf['prefetch'] = this.checked;
       if (enabled) {
-        _ref = g.threads["" + g.BOARD.ID + "." + g.THREADID].posts;
-        for (id in _ref) {
-          post = _ref[id];
-          ImageLoader.node.call(post);
-        }
+        ImageLoader.thread.posts.forEach(ImageLoader.node.call);
       }
     }
   };
@@ -10775,29 +10895,30 @@
 
   Favicon = {
     init: function() {
-      var f, funreadDeadY, t, _ref;
-      t = 'data:image/png;base64,';
+      var f, funreadDeadY, i, items, t;
+      items = {
+        ferongr: ['iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAFVBMVEX///9zBQC/AADpDAP/gID/q6voCwJJTwpOAAAAAXRSTlMAQObYZgAAAGJJREFUeF5Fi7ENg0AQBCfa/AFdDh2gdwPIogMK2E2+/xLslwOvdqRJhv+GQQPUCtJM7svankLrq/I+TY5e6Ueh1jyBMX7AFJi9vwfyVO4CbbO6jNYpp9GyVPbdkFhVgAQ2H0NOE5jk9DT8AAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAxUlEQVR42q1TOwrCQBB9s0FRtJI0WoqFtSLYegoP4gVSeJsUHsHSI3iFeIqRXXgwrhlXwYHHhLwPTB7B36abBCV+0pA4DUBQUNZYQptGtW3jtoKyxgoe0yrBCoyZfL/5ioQ3URZOXW9I341l3oo+NXEZiW4CEuIzvPECopED4OaZ3RNmeAm4u+a8Jr5f17VyVoL8fr8qcltzwlyyj2iqcgPOQ9ExkHAITgD75bYBe0A5S4H/P9htuWMF3QXoQpwaKeT+lnsC6JE5I6aq6fEAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAFVBMVEX///8AcH4AtswA2PJ55fKi6fIA1/FtpPADAAAAAXRSTlMAQObYZgAAAGJJREFUeF5Fi7ENg0AQBCfa/AFdDh2gdwPIogMK2E2+/xLslwOvdqRJhv+GQQPUCtJM7svankLrq/I+TY5e6Ueh1jyBMX7AFJi9vwfyVO4CbbO6jNYpp9GyVPbdkFhVgAQ2H0NOE5jk9DT8AAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAxElEQVQ4y2NgoBq4/vE/HJOsBiRQUIfA2AzBqQYqUfn00/9FLz+BaQxDCKqBmX7jExijKEDSDJPHrnnbGQhGV4RmOFwdVkNwhQMheYwQxhaIi7b9Z9A3gWAQm2BUoQOgRhgA8o7j1ozLC4LCyAZcx6kZI5qg4kLKqggDFFWxJySsUQVzlb4pwgAJaTRvokcVNgOqOv8zcHBCsL07DgNg8YsczzA5MxtUL+DMD8g0slxI/H8GQ/P/DJKyeKIRpglXZsIiBwBhP5O+VbI/JgAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAFVBMVEX///8oeQBJ3ABV/wHM/7Lu/+ZU/gAqUP3dAAAAAXRSTlMAQObYZgAAAGJJREFUeF5Fi7ENg0AQBCfa/AFdDh2gdwPIogMK2E2+/xLslwOvdqRJhv+GQQPUCtJM7svankLrq/I+TY5e6Ueh1jyBMX7AFJi9vwfyVO4CbbO6jNYpp9GyVPbdkFhVgAQ2H0NOE5jk9DT8AAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAx0lEQVQ4y2NgoBYI+cfwH4ZJVgMS0KhEYGyG4FQDkzjzf9P/d/+fgWl0QwiqgSkI/c8IxsgKkDXD5LFq9rwDweiK0A2HqcNqCK5wICSPEcLYAtH+AMN/IXMIBrEJRie6OEgjDAC5x3FqxuUFNiEUA67j1IweTTBxBQ1puAG86jgSEraogskJWSBcwCGF5k30qMJmgMFEhv/MXBAs5oLDAFj8IsczTE7UEeECbhU8+QGZRpaTi2b4L2zF8J9TGk80wjThykzY5AAW/2O1C2mIbgAAAABJRU5ErkJggg=='],
+        'xat-': ['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'],
+        Mayhem: ['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'],
+        '4chanJS': ['iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAD/AABnZ2f///8nFk05AAAAAXRSTlMAQObYZgAAAEFJREFUeNqNjgEKACAMAjvX/98cAkkxgmSgO8Bt/Ai4ApJ6KKhzF3OiEMDASrGB/QWgPEHsUpN+Ng9xAETMYhDrWmeHAMcmvycWAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAD/AAD///9nZ2f77Y6hAAAAAXRSTlMAQObYZgAAAEBJREFUeF6NjQEKACAMAnfW/98cAxFiBIngOsTqR8B1IGkeG9p5i7XabgAGZNigXgA8aoCUxvzWAIcBItGiSEwdccYA3BuRAWkAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAAul8NnZ2f////82iC9AAAAAXRSTlMAQObYZgAAAEFJREFUeNqNjgEKACAMAjvX/98cAkkxgmSgO8Bt/Ai4ApJ6KKhzF3OiEMDASrGB/QWgPEHsUpN+Ng9xAETMYhDrWmeHAMcmvycWAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAAul8P///9nZ2cgIeMlAAAAAXRSTlMAQObYZgAAAEBJREFUeF6NjQEKACAMAnfW/98cAxFiBIngOsTqR8B1IGkeG9p5i7XabgAGZNigXgA8aoCUxvzWAIcBItGiSEwdccYA3BuRAWkAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAElBMVEUBAAAAAABmzDNlyjJnZ2f///+6o7dfAAAAAXRSTlMAQObYZgAAAERJREFUeF6NjkEKADEIA51o///lJZfQxUsHITogWi8AvwZJuxmYa25xDooBLEwOWFTYAsYVhdorLZt9Ng9xCUTCUCQ2H3F4ANrZ2WNiAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAElBMVEUBAAAAAABmzDP///9lyjJnZ2cIHys9AAAAAXRSTlMAQObYZgAAAENJREFUeF6NjUEKwEAMAjNm9/9fLkEslFwqgjoEUn8EfAqSdrkwzj6ieyyTkQEVGWRvANfO1iEX620AjgBEwqR4Y+sBeGAA6d+vQ4IAAAAASUVORK5CYII='],
+        Original: ['iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX/////AAD///8AAABBZmS3AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAhElEQVR42q1RwQnAMAjMu5M4guAKXa4j5dUROo5tipSDcrFChUONd0di2m/hEGVOHDyIPufgwAFASDkpoSzmBrkJ2UMyR9LsJ3rvrqo3Rt1YMIMhhNnOxLMnoMFBxHyJAr2IOBFzA8U+6pLBdmEJTA0aMVjpDd6Loks0s5HZNwYx8tfZCZ0kll7ORffZAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX///8ul8P///8AAACaqgkzAAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAALVBMVEUAAAAAAAAAAAAAAAABBQcHFx4KISoNLToaVW4oKCgul8M4ODg7OzvBwcH///8uS/CdAAAAA3RSTlMAx9dmesIgAAAAV0lEQVR42m2NWw6AIBAD1eILZO5/XI0UAgm7H9tOsu0yGWAQSOoFijHOxOANGqm/LczpOaXs4gISrPZ+gc2+hO5w2xdwgOjBFUIF+sEJrhUl9JFr+badFwR+BfqlmGUJAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX///9mzDP///8AAACT0n1lAAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAALVBMVEUAAAAAAAAAAAAAAAAECAIQIAgWLAsePA8oKCg4ODg6dB07OztmzDPBwcH///+rsf3XAAAAA3RSTlMAx9dmesIgAAAAV0lEQVR42m2NWw6AIBAD1eIDhbn/cTVSCCTsfmw7ybbLZIBBIKkXKKU0E4M3aKT+tjCn5xiziwuIsNr7BTb7ErrDZV/AAaIHdwgV6AcnuFaU0Eeu5dt2XiUyBjCQ2bIrAAAAAElFTkSuQmCC']
+      }[Conf['favicon']];
       f = Favicon;
-      _ref = (function() {
-        switch (Conf['favicon']) {
-          case 'ferongr':
-            return [t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAFVBMVEX///9zBQC/AADpDAP/gID/q6voCwJJTwpOAAAAAXRSTlMAQObYZgAAAGJJREFUeF5Fi7ENg0AQBCfa/AFdDh2gdwPIogMK2E2+/xLslwOvdqRJhv+GQQPUCtJM7svankLrq/I+TY5e6Ueh1jyBMX7AFJi9vwfyVO4CbbO6jNYpp9GyVPbdkFhVgAQ2H0NOE5jk9DT8AAAAAElFTkSuQmCC', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAxUlEQVR42q1TOwrCQBB9s0FRtJI0WoqFtSLYegoP4gVSeJsUHsHSI3iFeIqRXXgwrhlXwYHHhLwPTB7B36abBCV+0pA4DUBQUNZYQptGtW3jtoKyxgoe0yrBCoyZfL/5ioQ3URZOXW9I341l3oo+NXEZiW4CEuIzvPECopED4OaZ3RNmeAm4u+a8Jr5f17VyVoL8fr8qcltzwlyyj2iqcgPOQ9ExkHAITgD75bYBe0A5S4H/P9htuWMF3QXoQpwaKeT+lnsC6JE5I6aq6fEAAAAASUVORK5CYII=', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAFVBMVEX///8AcH4AtswA2PJ55fKi6fIA1/FtpPADAAAAAXRSTlMAQObYZgAAAGJJREFUeF5Fi7ENg0AQBCfa/AFdDh2gdwPIogMK2E2+/xLslwOvdqRJhv+GQQPUCtJM7svankLrq/I+TY5e6Ueh1jyBMX7AFJi9vwfyVO4CbbO6jNYpp9GyVPbdkFhVgAQ2H0NOE5jk9DT8AAAAAElFTkSuQmCC', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAxElEQVQ4y2NgoBq4/vE/HJOsBiRQUIfA2AzBqQYqUfn00/9FLz+BaQxDCKqBmX7jExijKEDSDJPHrnnbGQhGV4RmOFwdVkNwhQMheYwQxhaIi7b9Z9A3gWAQm2BUoQOgRhgA8o7j1ozLC4LCyAZcx6kZI5qg4kLKqggDFFWxJySsUQVzlb4pwgAJaTRvokcVNgOqOv8zcHBCsL07DgNg8YsczzA5MxtUL+DMD8g0slxI/H8GQ/P/DJKyeKIRpglXZsIiBwBhP5O+VbI/JgAAAABJRU5ErkJggg==', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAFVBMVEX///8oeQBJ3ABV/wHM/7Lu/+ZU/gAqUP3dAAAAAXRSTlMAQObYZgAAAGJJREFUeF5Fi7ENg0AQBCfa/AFdDh2gdwPIogMK2E2+/xLslwOvdqRJhv+GQQPUCtJM7svankLrq/I+TY5e6Ueh1jyBMX7AFJi9vwfyVO4CbbO6jNYpp9GyVPbdkFhVgAQ2H0NOE5jk9DT8AAAAAElFTkSuQmCC', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAx0lEQVQ4y2NgoBYI+cfwH4ZJVgMS0KhEYGyG4FQDkzjzf9P/d/+fgWl0QwiqgSkI/c8IxsgKkDXD5LFq9rwDweiK0A2HqcNqCK5wICSPEcLYAtH+AMN/IXMIBrEJRie6OEgjDAC5x3FqxuUFNiEUA67j1IweTTBxBQ1puAG86jgSEraogskJWSBcwCGF5k30qMJmgMFEhv/MXBAs5oLDAFj8IsczTE7UEeECbhU8+QGZRpaTi2b4L2zF8J9TGk80wjThykzY5AAW/2O1C2mIbgAAAABJRU5ErkJggg=='];
-          case 'xat-':
-            return [t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAPFBMVEX9AAD8AAD/AAD+AADAExKKXl2CfHqLkZFub2yfaF3bZ2PzZGL/zs//iYr/AAASAAAGAAAAAAAAAAAAAADpOCseAAAADHRSTlP9MAcAATVYeprJ5O/MbzqoAAAAXklEQVQY03VPQQ7AIAgz8QAG4dL//3VVcVk2Vw4tDVQp9YVyMACIEkIxDEQEGjHFnBjCbPU5EXBfnBns6WRG1Wbuvbtb0z9jr6Qh2KGQenp2/+xpsFQnrePAuulz7QUTuwm5NnwmIAAAAABJRU5ErkJggg==', t + 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAMAAACuAq9NAAAAY1BMVEUBAAACAQELCQkPDQwgFBMzKilOSEdva2iEgoCReHOadXClamDIaWbxcG7+hIX+mpv+m5z+oqP+tLX+zc7//f3+9PT97Oz23t750NDbra3zwL87LCwAAAAGAABHAADPAAD/AABkWeLDAAAAHHRSTlO5/fTv8Na2n42lsMvi8v3+/v749OaITDsDAQABSG2w8gAAAGdJREFUCNdNjtEKgDAIRYVGCmsyqCe7q/3/V2azQfpwPehVyQCIMIt4YYTeO7LHKMiGlDIkuh2qofR6obUqhtc4F637XreU1h+m41gcJX/DHyJWXYHzkCMm+hd3a4GezLNr8PQA4bQHEXEQFRJP5NAAAAAASUVORK5CYII=', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAPFBMVEUAAAAAAAAAAAAAAABFRUdsa2yRjop4dXVpZ2tdcI9dfKdBirUzlMBHpdxSquRisfOs2/99xv8umMMAAABljCUFAAAAEHRSTlN7FwUAQVt6kZ2/zej59vTv0aAplgAAAGNJREFUGNNtj1EOwCAIQ5eYIPCD0vvfdYi6LJvy0fICNVzl864DAECVuVKYAeDuEFVJkxPDmM1+TTh6n7oy0FvrWBmF1aIPYspnUGWvSE1A2KGgcvp2AtU3iGJOmcch6pHftTekXQrRd6slMAAAAABJRU5ErkJggg==', t + 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAMAAACuAq9NAAAAY1BMVEUAAAAAAAAAAAAAAAAREBAWFRY1NDROTE1iYGFzdXp4eoCAgYVlc4mHjZiYoa6zvcqy1/Pg8v+e1f+b1P6X0f2DyP5jsu49msgymcctkLomc5QbPU0SIiwNFxwumMMAAAAAAADALpU1AAAAHnRSTlPNLgcBAAABBxhdc4WznarD8P7+/v3+8/z9/vz2+PUOYDHSAAAAZElEQVQI102OsQ6AMAhEMWGDpTbUQUvu/79ShDYRhuMFDiAGIKIqEgUT3B0akQVxyhgp1XWYldLnhfXTkF5WHdZb69cz9YdPazNQdA0vRK2ahftQDGNjfHHXZjgSV5cRGQHCwS8j7A9loVSnzwAAAABJRU5ErkJggg==', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAPFBMVEUAAAAAAAAAAAAAAAAfJSBLUU1ydHR8fn6Ri5Frbm9dn19jvEFt30tv5VB082KR/33Z/9Gq/5tmzDMAAADw+5ntAAAAEHRSTlP++ywHAAE2Wnuayez19O/+EzXeOQAAAF9JREFUGNN1TzESwCAIc3AABxDy/78WFXu91oYhIYcRSn2hHAwAxAEKMQy4O1pgijkxhMjqc8KhujgzoGaKzKjcRK13U2n8Z+wnaRB2KKievt2bPY0o5knrOETd9Ln2AuDLCz1j8HTeAAAAAElFTkSuQmCC', t + 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAMAAACuAq9NAAAAY1BMVEUPGgsCBAIBAQEBAQAAAQAAAAABAQEFBQQQEw85SDdVa1GhzJm967TZ+NLP+sbM+8S6/a3k/9+s/pyr/puX/oSd15KIuoGBj39tfm1qj2RepFlu2VRkwzZlyTNatC5myzMAAAAOPREWAAAAHnRSTlP4/fz331IPBQIBAAECOly37/7+/v7XwpWktNDy+f7X56yoAAAAZElEQVQI102NwQ7AIAhDMdku3JwkIiaz//+VQ9FkcCgvpUAMoKpX9YEJYww0s7YG4iW9Lwl3QCSUZhZSHsHKslqXknPpRPpDypkmtr0cWBGntnseOeKgGd6UAr1Vj8vw9sKFmz+fERAp5vutHwAAAABJRU5ErkJggg=='];
-          case 'Mayhem':
-            return [t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABFklEQVR4AZ2R4WqEMBCEFy1yiJQQ14gcIhIuFBFR+qPQ93+v66QMksrlTwMfkZ2ZZbMKTgVqYIDl3YAbeCM31lJP/Zul4MAEPJjBQGNDLGsz8PQ6aqLAP5PTdd1WlmU09mSKtdTDRgrkzspJPKq6RxMahfj9yhOzQEZwZAwfzrk1ox3MXibIN8hO4MAjeV72CemJGWblnRsOYOdoGw0jebB20BPAwKzUQPlrFhrXFw1Wagu9yuzZwINzVAZCURRL+gRr7Wd8Vtqg4Th/lsUmewyk9WQ/A7NiwJz5VV/GmO+MNjMrFvh/NPDMigHTaeJN09a27ZHRJmalBg54CgfvAGYSLpoHjlmpuAwFdzDy7oGS/qIpM9UPFGg1b1kUlssAAAAASUVORK5CYII=', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABR0lEQVR4AYWSQWq0QBCFCw0SRIK0PQ4hiIhEZBhEySLyewUPEMgqR/JIXiDhzz7kKKYePIZajEzDRxfV9dWU3SO6IiVWUsVxT5R75Y4gTmwNnUh4kCulUiuV8sjChDjmKtaUcHgmHsnNrMPh0IVhiMIjKZGzNXDoyhMzF7C89z2KtFGD+FoNXEUKZdgpaPM8P++cDXTtBDca7EyQK8+bXTufYBccuvLAG26UnqN1LCgI4g/lm7zTgSux4vk0J8rnKw3+m1//pBPbBrVyGZVNmiAITviEtm3t+D+2QcJx7GUxlN4594K4ZY75Xzh0JVWqnad6TdP0H+LRNBjHcYNDV5xS32qwaC4my7Lwn6guu5QoomgbdFmWDYhnM8E8zxscuhLzPWtKA/dGqUizrityX9M0YX+DQ1ciXobnP6vgfmTOM7Znnk70B58pPaEvx+epAAAAAElFTkSuQmCC', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA/ElEQVR4AZ3RUWqEMBSF4ftQZAhSREQJIiIXpQwi+tSldkFdWPsLhyEE0ocKH2Fyzg1mNJ4KAQ1arTUeeJMH6qwTUJmCHjMcC6KKtbSIylzdXpl18J/k4fdTpUFmPLOOa9bGe+P4+n5RYYfLXuiMsAlXofBxK2QXpvwN/jqg+AY91vR+pStk+apZe0fEhhMXDhUmWXEoO9WNmrWAzvRPq7jnB2jvUGfWTEgPcJzZFTbZk/0Tnh5QI+af6lVGvq/Do2atwVL4VJ+3QrZo1lr4Pw5wzVqDWaV7SUvHrZDNmrWAHq7g0rphkS3LXDMBVqFGhxGT1gGdDFnWaab6BRmXRvbxDmYiAAAAAElFTkSuQmCC', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABQElEQVR4AY2SQUrEQBBFS9CMNFEkhAQdYmiCIUgcZlYGc4VsBcGVF/AuWXme4F7RtXiVWF9+Y9MYtOHRTdX/NZWaEj2RYpQTJeEdK4fKPuA7DjSGXiQkU0qlUqxySmFMEsYsNSU8zEmK4OwdEbmkKCclYoGmolfWCGyenh1O0EJE2gXNWpFC2S0IGrCQ29EbdPCPAmEHmXIxByf8hDAPD71yzAnXypatbSgoAN8Pyju5h4deMUrqJk1z+0uBN+/XX+gxfoFK2QafUJO2aRq//Q+/QIx2wr+Kwq0rusrP/QKf9MTCtbQLf9U1wNvYnz3qug45S68kSvVXgbPbx3nvYPXNOI7cRPWySukK+DcGCvA+urqZ3RmGAbmSXjFK5rpwW8nhWVJP04TYa9/3uO/goVciDiPlZhW8c8ZAHuRSeqIv32FK/GYGL8YAAAAASUVORK5CYII=', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA/ElEQVR4AZ3RUWqEMBSF4ftQZAihDCKKiAQJShERQx+6o662e2p/4TCEQF468BEm95yLovFr4PBEq9PjgTd5wBcZp6559AiIWDAq6KXV3aJMUMfDOsTf7Mf/XaFBAvYiE9W16b74/vl8UeBAlKOSmWAzUiXwcavMkrrFE9QXVJ+gx5q9XvUVivmqrr1jxIYLCacCs6y6S8psGNU1hw4Bu4JHuUB3pzJBHZcviLiKV9jkyO4vxHyBx1h+qlcY5b2Wj+raE0vlU33dKrNFXWsR/7EgqmtPBIXuIw+dt8osqGsOPaIGSeeGRbZiFtVxsAYeHSbMOgd0MhSzTp3mD4RaQX4aW3NMAAAAAElFTkSuQmCC', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABP0lEQVR4AYWS0UqFQBCGhziImNRBRImDmUgiIaF0kWSP4AMEXXXTE/QiPpL3UdR19Crb/PAvLEtyFj5mmfn/cdxd0RUokbJXEsZYCZUd4D72NBG8wkKmlEqtVMoFhTFJmKuoKelBTVIkjbNE5IainJTIeZqaXjkg8fp+Z7GCjiLQbWgOihTKsCFowUZtoNef4HgDf4JMuTbe8n/Br8NDr5zxhBul52i3FBQE+xflmzzTA69ESmpPmubunwZfztc/6IncBrXSe7/QkK5tW3f8H7dBjHH8q6Kwt033V6Hb4JeeWPgsq42rugfYZ92psWscRwMPvZIo9bEGD2+F2YUnBizLwpeoXnYpbQM34kAB9peP58aueZ4NPPRKxPusaRoYG6UizbquyH1O04T4RA+8EvAwUr6sgjFnDuReLaUn+ANygUa7+9SCWgAAAABJRU5ErkJggg=='];
-          case '4chanJS':
-            return [t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAD/AABnZ2f///8nFk05AAAAAXRSTlMAQObYZgAAAEFJREFUeNqNjgEKACAMAjvX/98cAkkxgmSgO8Bt/Ai4ApJ6KKhzF3OiEMDASrGB/QWgPEHsUpN+Ng9xAETMYhDrWmeHAMcmvycWAAAAAElFTkSuQmCC', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAD/AAD///9nZ2f77Y6hAAAAAXRSTlMAQObYZgAAAEBJREFUeF6NjQEKACAMAnfW/98cAxFiBIngOsTqR8B1IGkeG9p5i7XabgAGZNigXgA8aoCUxvzWAIcBItGiSEwdccYA3BuRAWkAAAAASUVORK5CYII=', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAAul8NnZ2f////82iC9AAAAAXRSTlMAQObYZgAAAEFJREFUeNqNjgEKACAMAjvX/98cAkkxgmSgO8Bt/Ai4ApJ6KKhzF3OiEMDASrGB/QWgPEHsUpN+Ng9xAETMYhDrWmeHAMcmvycWAAAAAElFTkSuQmCC', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAAul8P///9nZ2cgIeMlAAAAAXRSTlMAQObYZgAAAEBJREFUeF6NjQEKACAMAnfW/98cAxFiBIngOsTqR8B1IGkeG9p5i7XabgAGZNigXgA8aoCUxvzWAIcBItGiSEwdccYA3BuRAWkAAAAASUVORK5CYII=', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAElBMVEUBAAAAAABmzDNlyjJnZ2f///+6o7dfAAAAAXRSTlMAQObYZgAAAERJREFUeF6NjkEKADEIA51o///lJZfQxUsHITogWi8AvwZJuxmYa25xDooBLEwOWFTYAsYVhdorLZt9Ng9xCUTCUCQ2H3F4ANrZ2WNiAAAAAElFTkSuQmCC', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAElBMVEUBAAAAAABmzDP///9lyjJnZ2cIHys9AAAAAXRSTlMAQObYZgAAAENJREFUeF6NjUEKwEAMAjNm9/9fLkEslFwqgjoEUn8EfAqSdrkwzj6ieyyTkQEVGWRvANfO1iEX620AjgBEwqR4Y+sBeGAA6d+vQ4IAAAAASUVORK5CYII='];
-          case 'Original':
-            return [t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX/////AAD///8AAABBZmS3AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAhElEQVR42q1RwQnAMAjMu5M4guAKXa4j5dUROo5tipSDcrFChUONd0di2m/hEGVOHDyIPufgwAFASDkpoSzmBrkJ2UMyR9LsJ3rvrqo3Rt1YMIMhhNnOxLMnoMFBxHyJAr2IOBFzA8U+6pLBdmEJTA0aMVjpDd6Loks0s5HZNwYx8tfZCZ0kll7ORffZAAAAAElFTkSuQmCC', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX///8ul8P///8AAACaqgkzAAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAALVBMVEUAAAAAAAAAAAAAAAABBQcHFx4KISoNLToaVW4oKCgul8M4ODg7OzvBwcH///8uS/CdAAAAA3RSTlMAx9dmesIgAAAAV0lEQVR42m2NWw6AIBAD1eILZO5/XI0UAgm7H9tOsu0yGWAQSOoFijHOxOANGqm/LczpOaXs4gISrPZ+gc2+hO5w2xdwgOjBFUIF+sEJrhUl9JFr+badFwR+BfqlmGUJAAAAAElFTkSuQmCC', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX///9mzDP///8AAACT0n1lAAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=', t + 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAALVBMVEUAAAAAAAAAAAAAAAAECAIQIAgWLAsePA8oKCg4ODg6dB07OztmzDPBwcH///+rsf3XAAAAA3RSTlMAx9dmesIgAAAAV0lEQVR42m2NWw6AIBAD1eIDhbn/cTVSCCTsfmw7ybbLZIBBIKkXKKU0E4M3aKT+tjCn5xiziwuIsNr7BTb7ErrDZV/AAaIHdwgV6AcnuFaU0Eeu5dt2XiUyBjCQ2bIrAAAAAElFTkSuQmCC'];
-        }
-      })(), f.unreadDead = _ref[0], funreadDeadY = _ref[1], f.unreadSFW = _ref[2], f.unreadSFWY = _ref[3], f.unreadNSFW = _ref[4], f.unreadNSFWY = _ref[5];
-      if (Favicon.SFW) {
-        Favicon.unread = Favicon.unreadSFW;
-        return Favicon.unreadY = Favicon.unreadSFWY;
+      t = 'data:image/png;base64,';
+      i = 0;
+      while (items[i]) {
+        items[i] = t + items[i++];
+      }
+      f.unreadDead = items[0], funreadDeadY = items[1], f.unreadSFW = items[2], f.unreadSFWY = items[3], f.unreadNSFW = items[4], f.unreadNSFWY = items[5];
+      return f.update();
+    },
+    update: function() {
+      if (this.SFW) {
+        this.unread = this.unreadSFW;
+        return this.unreadY = this.unreadSFWY;
       } else {
-        Favicon.unread = Favicon.unreadNSFW;
-        return Favicon.unreadY = Favicon.unreadNSFWY;
+        this.unread = this.unreadNSFW;
+        return this.unreadY = this.unreadNSFWY;
       }
     },
     dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
@@ -10856,17 +10977,15 @@
       });
     },
     node: function() {
-      var ID, fileCount, post, postCount, _ref;
+      var fileCount, postCount;
       postCount = 0;
       fileCount = 0;
-      _ref = this.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
+      this.posts.forEach(function(post) {
         postCount++;
         if (post.file) {
-          fileCount++;
+          return fileCount++;
         }
-      }
+      });
       ThreadStats.thread = this;
       ThreadStats.fetchPage();
       ThreadStats.update(postCount, fileCount);
@@ -11248,7 +11367,7 @@
       return new Notice('info', "The thread is " + change + ".", 30);
     },
     parse: function(postObjects) {
-      var ID, OP, count, deletedFiles, deletedPosts, files, index, key, node, num, post, postObject, posts, root, scroll, _i, _len, _ref;
+      var OP, count, deletedFiles, deletedPosts, files, index, node, num, post, postObject, posts, root, scroll, _i, _j, _len, _len1;
       OP = postObjects[0];
       Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler;
       ThreadUpdater.updateThreadStatus('Sticky', !!OP.sticky);
@@ -11275,10 +11394,9 @@
       }
       deletedPosts = [];
       deletedFiles = [];
-      _ref = ThreadUpdater.thread.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
-        ID = +ID;
+      ThreadUpdater.thread.posts.forEach(function(post) {
+        var ID;
+        ID = +post.ID;
         if (__indexOf.call(index, ID) < 0) {
           post.kill();
           deletedPosts.push(post);
@@ -11289,9 +11407,9 @@
           deletedFiles.push(post);
         }
         if (ThreadUpdater.postID && ThreadUpdater.postID === ID) {
-          ThreadUpdater.foundPost = true;
+          return ThreadUpdater.foundPost = true;
         }
-      }
+      });
       if (!count) {
         ThreadUpdater.set('status', null, null);
         ThreadUpdater.outdateCount++;
@@ -11309,11 +11427,8 @@
         ThreadUpdater.lastPost = posts[count - 1].ID;
         Main.callbackNodes(Post, posts);
         scroll = Conf['Auto Scroll'] && ThreadUpdater.scrollBG() && ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25;
-        for (key in posts) {
-          post = posts[key];
-          if (!posts.hasOwnProperty(key)) {
-            continue;
-          }
+        for (_j = 0, _len1 = posts.length; _j < _len1; _j++) {
+          post = posts[_j];
           root = post.nodes.root;
           if (post.cb) {
             if (!post.cb()) {
@@ -11626,7 +11741,7 @@
       return div;
     },
     refresh: function() {
-      var boardID, data, helper, list, nodes, refresher, thread, threadID, toggler, watched, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+      var boardID, data, helper, list, nodes, refresher, thread, threadID, threads, toggler, watched, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
       nodes = [];
       _ref = ThreadWatcher.getAll();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -11636,9 +11751,11 @@
       list = ThreadWatcher.list;
       $.rmAll(list);
       $.add(list, nodes);
-      _ref2 = g.BOARD.threads;
-      for (threadID in _ref2) {
-        thread = _ref2[threadID];
+      threads = g.BOARD.threads;
+      _ref2 = threads.keys;
+      for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+        threadID = _ref2[_j];
+        thread = threads[threadID];
         toggler = $('.watch-thread-link', thread.OP.nodes.post);
         watched = ThreadWatcher.db.get({
           boardID: thread.board.ID,
@@ -11649,8 +11766,8 @@
         toggler.title = "" + helper[1] + " Thread";
       }
       _ref3 = ThreadWatcher.menu.refreshers;
-      for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
-        refresher = _ref3[_j];
+      for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
+        refresher = _ref3[_k];
         refresher();
       }
     },
@@ -11891,16 +12008,14 @@
       }
     },
     ready: function() {
-      var ID, post, posts, _ref;
+      var posts;
       $.off(d, '4chanXInitFinished', Unread.ready);
       posts = [];
-      _ref = Unread.thread.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
+      Unread.thread.posts.forEach(function(post) {
         if (post.isReply) {
-          posts.push(post);
+          return posts.push(post);
         }
-      }
+      });
       if (!Conf['Quote Threading']) {
         Unread.addPosts(posts);
       }
@@ -11912,12 +12027,12 @@
       }
     },
     scroll: function() {
-      var down, hash, post, posts, root;
+      var down, hash, keys, post, posts, root;
       if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
         return;
       }
       if (post = Unread.posts.first) {
-        while (root = $.x('preceding-sibling::div[contains(@class,"replyContainer")][1]', post.nodes.root)) {
+        while (root = $.x('preceding-sibling::div[contains(@class,"replyContainer")][1]', post.data.nodes.root)) {
           if (!(post = Get.postFromRoot(root)).isHidden) {
             break;
           }
@@ -11927,8 +12042,9 @@
         }
         down = true;
       } else {
-        posts = Object.keys(Unread.thread.posts);
-        root = Unread.thread.posts[posts[posts.length - 1]].nodes.root;
+        posts = Unread.thread.posts;
+        keys = posts.keys;
+        root = posts[keys[keys.length - 1]].nodes.root;
       }
       if (Header.getBottomOf(root) < 0) {
         return Header.scrollTo(root, down);
@@ -11960,7 +12076,7 @@
       return Unread.update();
     },
     addPosts: function(posts) {
-      var ID, post, _i, _len, _ref;
+      var ID, post, _i, _len, _ref, _ref1;
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
         post = posts[_i];
         ID = post.ID;
@@ -11977,16 +12093,13 @@
         Unread.addPostQuotingYou(post);
       }
       if (Conf['Unread Line']) {
-        Unread.setLine((_ref = Unread.posts.first, __indexOf.call(posts, _ref) >= 0));
+        Unread.setLine((_ref = (_ref1 = Unread.posts.first) != null ? _ref1.data : void 0, __indexOf.call(posts, _ref) >= 0));
       }
       Unread.read();
       return Unread.update();
     },
     addPostQuotingYou: function(post) {
       var quotelink, _i, _len, _ref;
-      if (!QR.db) {
-        return;
-      }
       _ref = post.nodes.quotelinks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quotelink = _ref[_i];
@@ -12026,16 +12139,17 @@
       }
     },
     readSinglePost: function(post) {
-      var ID, i;
+      var ID, i, posts;
       ID = post.ID;
-      if (!Unread.posts[ID]) {
+      posts = Unread.posts;
+      if (!posts[ID]) {
         return;
       }
-      if (post === Unread.posts.first) {
+      if (post === posts.first) {
         Unread.lastReadPost = ID;
         Unread.saveLastReadPost();
       }
-      Unread.posts.rm(ID);
+      posts.rm(ID);
       if ((i = Unread.postsQuotingYou.indexOf(post)) !== -1) {
         Unread.postsQuotingYou.splice(i, 1);
       }
@@ -12052,20 +12166,24 @@
       return arr.splice(0, i);
     },
     read: $.debounce(100, function(e) {
-      var ID, height, post, posts;
+      var ID, data, height, post, posts;
       if (d.hidden || !Unread.posts.length) {
         return;
       }
       height = doc.clientHeight;
       posts = Unread.posts;
       while (post = posts.first) {
-        if (!(Header.getBottomOf(post.nodes.root) > -1)) {
+        if (!(Header.getBottomOf(post.data.nodes.root) > -1)) {
           break;
         }
-        ID = post.ID;
+        ID = post.ID, data = post.data;
         posts.rm(ID);
-        if (Conf['Mark Quotes of You'] && post.info.yours) {
-          QuoteYou.lastRead = post.nodes.root;
+        if (Conf['Mark Quotes of You'] && QR.db.get({
+          boardID: data.board.ID,
+          threadID: data.thread.ID,
+          postID: ID
+        })) {
+          QuoteYou.lastRead = data.nodes.root;
         }
       }
       if (!ID) {
@@ -12098,8 +12216,8 @@
       if (!(post = Unread.posts.first)) {
         return $.rm(Unread.hr);
       }
-      if ($.x('preceding-sibling::div[contains(@class,"replyContainer")]', post.nodes.root)) {
-        return $.before(post.nodes.root, Unread.hr);
+      if ($.x('preceding-sibling::div[contains(@class,"replyContainer")]', post.data.nodes.root)) {
+        return $.before(post.data.nodes.root, Unread.hr);
       }
     },
     update: function() {
@@ -12207,8 +12325,8 @@
         }
       }, {
         name: "Nyafuu",
-        boards: ["c", "w", "wg"],
-        files: ["c", "w", "wg"],
+        boards: ["c", "e", "w", "wg"],
+        files: ["c", "e", "w", "wg"],
         data: {
           domain: "archive.nyafuu.org",
           http: true,
@@ -12263,6 +12381,16 @@
           http: true,
           https: true,
           withCredentials: true,
+          software: "foolfuuka"
+        }
+      }, {
+        name: "Love is Over",
+        boards: ["d", "i"],
+        files: ["d", "i"],
+        data: {
+          domain: "loveisover.me",
+          http: true,
+          https: true,
           software: "foolfuuka"
         }
       }
@@ -14271,13 +14399,10 @@
       }
     },
     onIndexRefresh: function() {
-      var thread, threadID, _ref;
       ExpandThread.disconnect(true);
-      _ref = g.BOARD.threads;
-      for (threadID in _ref) {
-        thread = _ref[threadID];
-        ExpandThread.setButton(thread);
-      }
+      return g.BOARD.threads.forEach(function(thread) {
+        return ExpandThread.setButton(thread);
+      });
     },
     text: function(status, posts, files) {
       return ("" + status + " " + posts + " post" + (posts > 1 ? 's' : '')) + (+files ? " and " + files + " image repl" + (files > 1 ? 'ies' : 'y') : "") + (" " + (status === '-' ? 'shown' : 'omitted') + ".");
@@ -15463,6 +15588,7 @@
       $.ready(function() {
         return $.on(window, 'popstate', Navigate.popstate);
       });
+      this.title = function() {};
       Thread.callbacks.push({
         name: 'Navigate',
         cb: this.thread
@@ -15499,10 +15625,9 @@
     clean: function() {
       var posts, threads;
       posts = g.posts, threads = g.threads;
-      g.posts = {};
-      g.threads = {};
-      g.BOARD.posts = {};
-      g.BOARD.threads = {};
+      g.threads.forEach(function(thread) {
+        return thread.collect();
+      });
       QuoteBacklink.containers = {};
       return $.rmAll($('.board'));
     },
@@ -15561,7 +15686,7 @@
         err = _error;
         error = [
           {
-            message: "Quote Threading Failed.",
+            message: "" + name + " Failed.",
             error: err
           }
         ];
@@ -15588,10 +15713,13 @@
     },
     updateBoard: function(boardID) {
       var fullBoardList, onload, req;
-      g.BOARD = new Board(boardID);
       req = null;
+      fullBoardList = $('#full-board-list', Header.boardList);
+      $.rmClass($('.current', fullBoardList), 'current');
+      $.addClass($("a[href*='/" + boardID + "/']", fullBoardList), 'current');
+      Header.generateBoardList(Conf['boardnav'].replace(/(\r\n|\n|\r)/g, ' '));
       onload = function(e) {
-        var board, sfw, theme;
+        var aboard, board, err, _i, _len, _ref;
         if (e.type === 'abort') {
           req.onloadend = null;
           return;
@@ -15599,57 +15727,58 @@
         if (req.status !== 200) {
           return;
         }
-        board = (function() {
-          var err, _i, _len, _ref;
-          try {
-            _ref = JSON.parse(req.response).boards;
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              board = _ref[_i];
-              if (board.board === boardID) {
-                return board;
-              }
+        try {
+          _ref = JSON.parse(req.response).boards;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            aboard = _ref[_i];
+            if (!(aboard.board === boardID)) {
+              continue;
             }
-          } catch (_error) {
-            err = _error;
-            Main.handleErrors([
-              {
-                message: "Navigation failed to update board name.",
-                error: err
-              }
-            ]);
-            return false;
+            board = aboard;
+            break;
           }
-        })();
+        } catch (_error) {
+          err = _error;
+          Main.handleErrors([
+            {
+              message: "Navigation failed to update board name.",
+              error: err
+            }
+          ]);
+          return false;
+        }
         if (!board) {
           return;
         }
         Navigate.updateTitle(board);
-        if (Favicon.SFW === (sfw = !!board.ws_board)) {
-          return;
-        }
-        g.TYPE = sfw ? 'sfw' : 'nsfw';
-        if (Conf["NSFW/SFW Mascots"]) {
-          Main.setMascotString();
-          MascotTools.toggle();
-        }
-        if (Conf["NSFW/SFW Themes"]) {
-          Main.setThemeString();
-          theme = Themes[Conf[g.THEMESTRING] || (sfw ? 'Yotsuba B' : 'Yotsuba')] || Themes[Conf[g.THEMESTRING] = sfw ? 'Yotsuba B' : 'Yotsuba'];
-          Style.setTheme(theme);
-        }
-        Favicon.SFW = sfw;
-        Favicon.el.href = "//s.4cdn.org/image/favicon" + (sfw ? '-ws' : '') + ".ico";
-        $.add(d.head, Favicon.el);
-        return Favicon.init();
+        return Navigate.updateFavicon(!!board.ws_board);
       };
-      fullBoardList = $('#full-board-list', Header.boardList);
-      $.rmClass($('.current', fullBoardList), 'current');
-      $.addClass($("a[href*='/" + boardID + "/']", fullBoardList), 'current');
-      Header.generateBoardList(Conf['boardnav'].replace(/(\r\n|\n|\r)/g, ' '));
       return req = $.ajax('//a.4cdn.org/boards.json', {
         onabort: onload,
         onloadend: onload
       });
+    },
+    updateFavicon: function(sfw) {
+      var theme;
+      Favicon.el.href = "//s.4cdn.org/image/favicon" + (sfw ? '-ws' : '') + ".ico";
+      $.add(d.head, Favicon.el);
+      if (Favicon.SFW === sfw) {
+        return;
+      }
+      Favicon.SFW = sfw;
+      Favicon.update();
+      g.TYPE = sfw ? 'sfw' : 'nsfw';
+      if (Conf["NSFW/SFW Mascots"]) {
+        Main.setMascotString();
+        MascotTools.toggle();
+      }
+      if (Conf["NSFW/SFW Themes"]) {
+        Main.setThemeString();
+        theme = Themes[Conf[g.THEMESTRING] || (sfw ? 'Yotsuba B' : 'Yotsuba')] || Themes[Conf[g.THEMESTRING] = sfw ? 'Yotsuba B' : 'Yotsuba'];
+        Style.setTheme(theme);
+      }
+      mainStyleSheet.href = newStyleSheet.href;
+      return Main.setClass();
     },
     updateTitle: function(_arg) {
       var board, subtitle, title;
@@ -15660,7 +15789,7 @@
       return $('.boardTitle').textContent = d.title = "/" + board + "/ - " + title;
     },
     navigate: function(e) {
-      var boardID, onload, pageNum, path, threadID, view;
+      var boardID, load, pageNum, path, threadID, view;
       if (this.hostname !== 'boards.4chan.org' || window.location.hostname === 'rs.4chan.org' || (e && (e.shiftKey || (e.type === 'click' && e.button !== 0)))) {
         return;
       }
@@ -15676,6 +15805,7 @@
       if (e) {
         e.preventDefault();
       }
+      Navigate.title = function() {};
       delete Index.pageNum;
       path = this.pathname;
       if (this.hash) {
@@ -15699,18 +15829,22 @@
       }
       if (view === 'index') {
         if (boardID === g.BOARD.ID) {
-          d.title = $('.boardTitle').textContent;
+          Navigate.title = function() {
+            return d.title = $('.boardTitle').textContent;
+          };
         } else {
-          Navigate.updateBoard(boardID);
+          g.BOARD = new Board(boardID);
+          Navigate.title = function() {
+            return Navigate.updateBoard(boardID);
+          };
         }
         return Index.update(pageNum);
       } else {
-        onload = function(e) {
-          return Navigate.load(e);
-        };
+        Navigate.updateFavicon(Favicon.SFW);
+        load = Navigate.load;
         Navigate.req = $.ajax("//a.4cdn.org/" + boardID + "/res/" + threadID + ".json", {
-          onabort: onload,
-          onloadend: onload
+          onabort: load,
+          onloadend: load
         });
         return setTimeout((function() {
           if (Navigate.req && !Navigate.notice) {
@@ -15728,14 +15862,13 @@
       }
       delete Navigate.req;
       delete Navigate.notice;
-      if (e.type === 'abort') {
+      if (e.type === 'abort' || req.status !== 200) {
         req.onloadend = null;
+        new Notice('warning', "Failed to load thread." + (req.status ? " " + req.status : ''));
         return;
       }
       try {
-        if (req.status === 200) {
-          return Navigate.parse(JSON.parse(req.response).posts);
-        }
+        return Navigate.parse(JSON.parse(req.response).posts);
       } catch (_error) {
         err = _error;
         console.error('Navigate failure:');
@@ -15783,7 +15916,8 @@
       }
       Main.callbackNodes(Thread, [thread]);
       Main.callbackNodes(Post, posts);
-      Navigate.ready('Quote Threading', QuoteThreading.force, Conf['Quote Threading']);
+      Navigate.ready('Quote Threading', QuoteThreading.force, Conf['Quote Threading'] && !Conf['Unread Count']);
+      Navigate.ready('Unread Count', Unread.ready, Conf['Unread Count']);
       Navigate.buildThread();
       return Header.hashScroll.call(window);
     },
@@ -15793,7 +15927,6 @@
       $.rmAll(board);
       $.add(board, [Navigate.threadRoot, $.el('hr')]);
       if (Conf['Unread Count']) {
-        Navigate.ready('Unread Count', Unread.ready, !Conf['Quote Threading']);
         Unread.read();
         return Unread.update();
       }
@@ -16943,6 +17076,8 @@
   Main = {
     init: function() {
       var db, flatten, pathname, _i, _len, _ref, _ref1;
+      g.threads = new SimpleDict;
+      g.posts = new SimpleDict;
       pathname = location.pathname.split('/');
       g.BOARD = new Board(pathname[1]);
       if ((_ref = g.BOARD.ID) === 'z' || _ref === 'fk') {
@@ -17083,7 +17218,7 @@
         });
         $.before(styleSelector.previousSibling, [$.tn('['), passLink, $.tn(']\u00A0\u00A0')]);
       }
-      if (g.VIEW === 'thread' || !Conf['JSON Navigation']) {
+      if (!(Conf['JSON Navigation'] && g.VIEW === 'index')) {
         Main.initThread();
       } else {
         $.event('4chanXInitFinished');

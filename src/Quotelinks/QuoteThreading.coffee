@@ -42,15 +42,19 @@ QuoteThreading =
     QuoteThreading.force()
 
   force: ->
-    post.cb true for ID, post of g.posts when post.cb
-    return
+    g.posts.forEach (post) ->
+      post.cb true if post.cb
+
+    if Conf['Unread Count'] and Unread.thread.OP.nodes.root.parentElement.parentElement
+      Unread.read()
+      Unread.update()
 
   node: ->
     {posts} = g
     return if @isClone or not QuoteThreading.enabled
-    Unread.posts.push @ if Conf['Unread Count']
 
-    return if @thread.OP is @ or !(post = posts[@fullID]) or post.isHidden # Filtered
+    Unread.posts.push @ if Conf['Unread Count']
+    return if @thread.OP is @ or @isHidden # Filtered
 
     keys = []
     len = g.BOARD.ID.length + 1
@@ -90,11 +94,11 @@ QuoteThreading =
 
     return true unless Conf['Unread Count']
 
-    if posts[post.ID]
-      posts.after post, @
+    if post = posts[post.ID]
+      posts.after post, posts[@ID]
 
     else
-      posts.prepend @
+      posts.prepend posts[@ID]
 
     return true
 
@@ -106,8 +110,10 @@ QuoteThreading =
       thread = $('.thread')
       posts = []
       nodes = []
+      
+      g.posts.forEach (post) ->
+        posts.push post unless post is post.thread.OP or post.isClone
 
-      posts.push post for ID, post of g.posts when not (post is post.thread.OP or post.isClone)
       posts.sort (a, b) -> a.ID - b.ID
 
       nodes.push post.nodes.root for post in posts

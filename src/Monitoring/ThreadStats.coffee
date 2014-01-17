@@ -26,7 +26,7 @@ ThreadStats =
   node: ->
     postCount = 0
     fileCount = 0
-    for ID, post of @posts
+    @posts.forEach (post) ->
       postCount++
       fileCount++ if post.file
     ThreadStats.thread = @

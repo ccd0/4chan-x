@@ -19,9 +19,8 @@ ExpandThread =
 
   onIndexRefresh: ->
     ExpandThread.disconnect true
-    for threadID, thread of g.BOARD.threads
+    g.BOARD.threads.forEach (thread) ->
       ExpandThread.setButton thread
-    return
 
   text: (status, posts, files) ->
     "#{status} #{posts} post#{if posts > 1 then 's' else ''}" +

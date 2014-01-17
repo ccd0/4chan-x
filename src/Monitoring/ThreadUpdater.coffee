@@ -291,11 +291,11 @@ ThreadUpdater =
     deletedFiles = []
 
     # Check for deleted posts/files.
-    for ID, post of ThreadUpdater.thread.posts
+    ThreadUpdater.thread.posts.forEach (post) ->
       # XXX tmp fix for 4chan's racing condition
       # giving us false-positive dead posts.
       # continue if post.isDead
-      ID = +ID
+      ID = +post.ID
 
       unless ID in index
         post.kill()
@@ -306,6 +306,7 @@ ThreadUpdater =
         post.kill true
         deletedFiles.push post
 
+      # Fetching your own posts after posting
       if ThreadUpdater.postID and ThreadUpdater.postID is ID
         ThreadUpdater.foundPost = true
 
@@ -326,8 +327,7 @@ ThreadUpdater =
       scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and
         ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
 
-      for key, post of posts
-        continue unless posts.hasOwnProperty key
+      for post in posts
         root = post.nodes.root
         if post.cb
           unless post.cb()

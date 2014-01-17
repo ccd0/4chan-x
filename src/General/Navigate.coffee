@@ -1,11 +1,13 @@
 Navigate =
-  path: window.location.pathname
+  path:  window.location.pathname
   init: ->
     return if g.VIEW is 'catalog' or g.BOARD.ID is 'f' or !Conf['JSON Navigation']
 
     # blink/webkit throw a popstate on page load. Not what we want.
     $.ready -> $.on window, 'popstate', Navigate.popstate
 
+    @title = -> return
+    
     Thread.callbacks.push
       name: 'Navigate'
       cb:   @thread
@@ -34,10 +36,7 @@ Navigate =
     {posts, threads} = g
 
     # Garbage collection
-    g.posts         = {}
-    g.threads       = {}
-    g.BOARD.posts   = {}
-    g.BOARD.threads = {}
+    g.threads.forEach (thread) -> thread.collect()
 
     QuoteBacklink.containers = {}
 
@@ -84,7 +83,7 @@ Navigate =
       feature() if condition
     catch err
       error = [
-        message: "Quote Threading Failed."
+        message: "#{name} Failed."
         error:   err
       ]
     Main.handleErrors error if error
@@ -106,9 +105,12 @@ Navigate =
         $.off d, 'IndexRefresh', QR.generatePostableThreadsList
 
   updateBoard: (boardID) ->
-    g.BOARD = new Board boardID
-
     req = null
+
+    fullBoardList   = $ '#full-board-list', Header.boardList
+    $.rmClass $('.current', fullBoardList), 'current'
+    $.addClass $("a[href*='/#{boardID}/']", fullBoardList), 'current'
+    Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
 
     onload = (e) ->
       if e.type is 'abort'
@@ -117,9 +119,10 @@ Navigate =
 
       return unless req.status is 200
 
-      board = do -> try
-        for board in JSON.parse(req.response).boards
-          return board if board.board is boardID
+      try
+        for aboard in JSON.parse(req.response).boards when aboard.board is boardID
+          board = aboard
+          break
 
       catch err
         Main.handleErrors [
@@ -130,32 +133,35 @@ Navigate =
 
       return unless board
       Navigate.updateTitle board
-
-      return if Favicon.SFW is sfw = !!board.ws_board # Board SFW status hasn't changed
-
-      g.TYPE = if sfw then 'sfw' else 'nsfw'
-      if Conf["NSFW/SFW Mascots"]
-        Main.setMascotString()
-        MascotTools.toggle()
-
-      if Conf["NSFW/SFW Themes"]
-        Main.setThemeString()
-        theme = Themes[Conf[g.THEMESTRING] or if sfw then 'Yotsuba B' else 'Yotsuba'] or Themes[Conf[g.THEMESTRING] = if sfw then 'Yotsuba B' else 'Yotsuba']
-        Style.setTheme theme
-
-      Favicon.SFW = sfw
-      Favicon.el.href = "//s.4cdn.org/image/favicon#{if sfw then '-ws' else ''}.ico"
-      $.add d.head, Favicon.el # Changing the href alone doesn't update the icon on Firefox
-      Favicon.init()
-
-    fullBoardList   = $ '#full-board-list', Header.boardList
-    $.rmClass $('.current', fullBoardList), 'current'
-    $.addClass $("a[href*='/#{boardID}/']", fullBoardList), 'current'
-    Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
+      Navigate.updateFavicon !!board.ws_board
 
     req = $.ajax '//a.4cdn.org/boards.json',
       onabort:   onload
       onloadend: onload
+
+  updateFavicon: (sfw) ->
+    # TODO: think of a better name for this. Changes style, too.
+    Favicon.el.href = "//s.4cdn.org/image/favicon#{if sfw then '-ws' else ''}.ico"
+    $.add d.head, Favicon.el # Changing the href alone doesn't update the icon on Firefox
+
+    return if Favicon.SFW is sfw # Board SFW status hasn't changed
+
+    Favicon.SFW = sfw
+    Favicon.update()
+    
+    g.TYPE = if sfw then 'sfw' else 'nsfw'
+    if Conf["NSFW/SFW Mascots"]
+      Main.setMascotString()
+      MascotTools.toggle()
+
+    if Conf["NSFW/SFW Themes"]
+      Main.setThemeString()
+      theme = Themes[Conf[g.THEMESTRING] or if sfw then 'Yotsuba B' else 'Yotsuba'] or Themes[Conf[g.THEMESTRING] = if sfw then 'Yotsuba B' else 'Yotsuba']
+      Style.setTheme theme
+
+    mainStyleSheet.href = newStyleSheet.href
+
+    Main.setClass()
 
   updateTitle: ({board, title}) ->
     $.rm subtitle if subtitle = $ '.boardSubtitle'
@@ -173,6 +179,7 @@ Navigate =
 
     return if view is 'catalog' or 'f' in [boardID, g.BOARD.ID]
     e.preventDefault() if e
+    Navigate.title = -> return
 
     delete Index.pageNum
 
@@ -196,18 +203,20 @@ Navigate =
 
     if view is 'index'
       if boardID is g.BOARD.ID
-        d.title = $('.boardTitle').textContent
+        Navigate.title = -> d.title = $('.boardTitle').textContent
       else
-        Navigate.updateBoard boardID
+        g.BOARD = new Board boardID
+        Navigate.title = -> Navigate.updateBoard boardID
 
       Index.update pageNum
 
     # Moving from index to thread or thread to thread
     else
-      onload = (e) -> Navigate.load e
+      Navigate.updateFavicon Favicon.SFW
+      {load} = Navigate
       Navigate.req = $.ajax "//a.4cdn.org/#{boardID}/res/#{threadID}.json",
-        onabort:   onload
-        onloadend: onload
+        onabort:   load
+        onloadend: load
 
       setTimeout (->
         if Navigate.req and !Navigate.notice
@@ -221,13 +230,13 @@ Navigate =
     delete Navigate.req
     delete Navigate.notice
 
-    if e.type is 'abort'
+    if e.type is 'abort' or req.status isnt 200
       req.onloadend = null
+      new Notice 'warning', "Failed to load thread.#{if req.status then " #{req.status}" else ''}"
       return
 
     try
-      if req.status is 200
-        Navigate.parse JSON.parse(req.response).posts
+      Navigate.parse JSON.parse(req.response).posts
     catch err
       console.error 'Navigate failure:'
       console.log err
@@ -270,7 +279,8 @@ Navigate =
     Main.callbackNodes Thread, [thread]
     Main.callbackNodes Post,   posts
 
-    Navigate.ready 'Quote Threading', QuoteThreading.force, Conf['Quote Threading']
+    Navigate.ready 'Quote Threading', QuoteThreading.force, Conf['Quote Threading'] and not Conf['Unread Count']
+    Navigate.ready 'Unread Count', Unread.ready, Conf['Unread Count']
 
     Navigate.buildThread()
     Header.hashScroll.call window
@@ -281,7 +291,6 @@ Navigate =
     $.add board, [Navigate.threadRoot, $.el 'hr']
 
     if Conf['Unread Count']
-      Navigate.ready 'Unread Count', Unread.ready, not Conf['Quote Threading']
       Unread.read()
       Unread.update()
 
