@@ -338,10 +338,10 @@ UI = do ->
 
   hover = (e) ->
     @latestEvent = e
-    height = @el.offsetHeight
+    height = @el.offsetHeight + 25
     {clientX, clientY} = e
 
-    top = clientY + (if close then 0 else -120)
+    top = clientY + (if @close then 0 else -95)
     top = if @clientHeight <= height or top <= 0
       0
     else if top + height >= @clientHeight
@@ -349,15 +349,14 @@ UI = do ->
     else
       top
 
-    [left, right] = if close or clientX <= @clientWidth - 400
+    [left, right] = if @close or clientX <= @clientWidth - 400
       [clientX + (if @close then 15 else 45) + 'px', null]
     else
       [null, @clientWidth - clientX + 45 + 'px']
 
-    {style} = @
-    style.top   = top + 'px'
-    style.left  = left
-    style.right = right
+    @style.top   = top + 'px'
+    @style.left  = left
+    @style.right = right
 
   hoverend = (e) ->
     return if e.type is 'keydown' and e.keyCode isnt 13 or e.target.nodeName is "TEXTAREA"
@@ -370,7 +369,6 @@ UI = do ->
     $.off doc,   'mousemove', @workaround
     <% } %>
     @cb.call @ if @cb
-
 
   return {
     dialog: dialog

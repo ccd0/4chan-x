@@ -818,8 +818,8 @@ th {
 }
 #ihover {
   position: fixed;
-  max-height: 97%;
-  max-width: 75%;
+  max-height: 94vh;
+  max-width: 75vw;
   z-index: 22;
 }
 #qp {
