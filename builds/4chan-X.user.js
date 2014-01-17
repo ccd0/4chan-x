@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.3.2 - 2014-01-16
+* 4chan X - Version 1.3.2 - 2014-01-17
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -10198,8 +10198,8 @@
         }
       }, {
         name: "Nyafuu",
-        boards: ["c", "w", "wg"],
-        files: ["c", "w", "wg"],
+        boards: ["c", "e", "w", "wg"],
+        files: ["c", "e", "w", "wg"],
         data: {
           domain: "archive.nyafuu.org",
           http: true,
@@ -10254,6 +10254,16 @@
           http: true,
           https: true,
           withCredentials: true,
+          software: "foolfuuka"
+        }
+      }, {
+        name: "Love is Over",
+        boards: ["d", "i"],
+        files: ["d", "i"],
+        data: {
+          domain: "loveisover.me",
+          http: true,
+          https: true,
           software: "foolfuuka"
         }
       }
