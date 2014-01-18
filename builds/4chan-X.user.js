@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.3.2 - 2014-01-17
+* 4chan X - Version 1.3.2 - 2014-01-18
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -1164,7 +1164,7 @@
         if (!(!$.hasClass(quotelink, 'deadlink'))) {
           continue;
         }
-        $.add(quotelink, $.tn('\u00A0(Dead)'));
+        quotelink.textContent = quotelink.textContent + '\u00A0(Dead)';
         $.addClass(quotelink, 'deadlink');
       }
     };
@@ -4854,7 +4854,7 @@
           if (Conf['Quote Inlining']) {
             $.on(link, 'click', QuoteInline.toggle);
             if (Conf['Quote Hash Navigation']) {
-              nodes.push.apply(nodes, QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
+              nodes.push(QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
             }
           }
           $.add(container, nodes);
@@ -5632,12 +5632,14 @@
       $.on(d, 'dragover', QR.dragOver);
       $.on(d, 'drop', QR.dropFile);
       $.on(d, 'dragstart dragend', QR.drag);
-      switch (g.VIEW) {
-        case 'index':
+      return {
+        index: function() {
           return $.on(d, 'IndexRefresh', QR.generatePostableThreadsList);
-        case 'thread':
+        },
+        thread: function() {
           return $.on(d, 'ThreadUpdate', QR.statusCheck);
-      }
+        }
+      }[g.VIEW]();
     },
     statusCheck: function() {
       if (g.DEAD) {
@@ -5972,7 +5974,7 @@
       return list.value = g.VIEW === 'thread' ? g.THREADID : 'new';
     },
     dialog: function() {
-      var check, dialog, elm, event, flagSelector, i, items, key, mimeTypes, name, node, nodes, save, value, _ref;
+      var check, dialog, elm, event, i, items, key, mimeTypes, name, node, nodes, save, value, _ref;
       QR.nodes = nodes = {
         el: dialog = UI.dialog('qr', 'top:0;right:0;', "<div class=move><label><input type=checkbox id=autohide title=Auto-hide>Quick Reply</label><a href=javascript:; class=close title=Close>×</a><select data-name=thread title='Create a new thread / Reply'><option value=new>New thread</option></select></div><form><div class=persona><input name=name  data-name=name  list=\"list-name\" placeholder=Name    class=field size=1 tabindex=10><input name=email data-name=email list=\"list-email\" placeholder=E-mail  class=field size=1 tabindex=20><input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1 tabindex=30> </div><div class=textarea><textarea data-name=com placeholder=Comment class=field tabindex=40></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=60><span id=qr-no-file>No selected file</span><input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\"><span id=qr-extras-container><a id=qr-filerm href=javascript:; title='Remove file'>×</a><a id=dump-button title='Dump list'>+</a></span></span><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70></label><input type=submit tabindex=80></div><input type=file multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist> ")
       };
@@ -6030,12 +6032,7 @@
         nodes.flashTag.dataset["default"] = '4';
         $.add(nodes.form, nodes.flashTag);
       }
-      if (flagSelector = $('.flagSelector')) {
-        nodes.flag = flagSelector.cloneNode(true);
-        nodes.flag.dataset.name = 'flag';
-        nodes.flag.dataset["default"] = '0';
-        $.add(nodes.form, nodes.flag);
-      }
+      QR.flagsInput();
       $.on(nodes.filename.parentNode, 'click keydown', QR.openFileInput);
       items = $$('*', QR.nodes.el);
       i = 0;
@@ -6095,6 +6092,40 @@
       QR.captcha.init();
       $.add(d.body, dialog);
       return $.event('QRDialogCreation', null, dialog);
+    },
+    flags: function() {
+      var flag, fn, select, _i, _len, _ref;
+      fn = function(val) {
+        return $.el('option', {
+          value: val[0],
+          textContent: val[1]
+        });
+      };
+      select = $.el('select', {
+        name: 'flag',
+        className: 'flagSelector'
+      });
+      _ref = [['0', 'None'], ['US', 'American'], ['KP', 'Best Korean'], ['BL', 'Black Nationalist'], ['CM', 'Communist'], ['CF', 'Confederate'], ['RE', 'Conservative'], ['EU', 'European'], ['GY', 'Gay'], ['PC', 'Hippie'], ['IL', 'Israeli'], ['DM', 'Liberal'], ['RP', 'Libertarian'], ['MF', 'Muslim'], ['NZ', 'Nazi'], ['OB', 'Obama'], ['PR', 'Pirate'], ['RB', 'Rebel'], ['TP', 'Tea Partier'], ['TX', 'Texan'], ['TR', 'Tree Hugger'], ['WP', 'White Supremacist']];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        flag = _ref[_i];
+        $.add(select, fn(flag));
+      }
+      return select;
+    },
+    flagsInput: function() {
+      var flag, nodes;
+      nodes = QR.nodes;
+      if (nodes.flagSelector) {
+        $.rm(nodes.flagSelector);
+        delete nodes.flagSelector;
+      }
+      if (g.BOARD.ID === 'pol') {
+        flag = QR.flags();
+        flag.dataset.name = 'flag';
+        flag.dataset["default"] = '0';
+        nodes.flag = flag;
+        return $.add(nodes.form, flag);
+      }
     },
     preSubmitHooks: [],
     submit: function(e) {
@@ -12125,21 +12156,34 @@
       return QR.generatePostableThreadsList();
     },
     updateContext: function(view) {
+      var oldView;
+      if (view === g.VIEW) {
+        return;
+      }
       $.rmClass(doc, g.VIEW);
       $.addClass(doc, view);
+      oldView = g.VIEW;
       g.VIEW = view;
-      switch (view) {
-        case 'index':
+      return {
+        index: function() {
+          if (oldView === g.VIEW) {
+            return;
+          }
           delete g.THREADID;
           QR.link.textContent = 'Start a Thread';
           $.off(d, 'ThreadUpdate', QR.statusCheck);
           return $.on(d, 'IndexRefresh', QR.generatePostableThreadsList);
-        case 'thread':
+        },
+        thread: function() {
           g.THREADID = +window.location.pathname.split('/')[3];
+          if (oldView === g.VIEW) {
+            return;
+          }
           QR.link.textContent = 'Reply to Thread';
           $.on(d, 'ThreadUpdate', QR.statusCheck);
           return $.off(d, 'IndexRefresh', QR.generatePostableThreadsList);
-      }
+        }
+      }[g.VIEW]();
     },
     updateBoard: function(boardID) {
       var fullBoardList, onload, req;
@@ -12148,6 +12192,7 @@
       $.rmClass($('.current', fullBoardList), 'current');
       $.addClass($("a[href*='/" + boardID + "/']", fullBoardList), 'current');
       Header.generateBoardList(Conf['boardnav'].replace(/(\r\n|\n|\r)/g, ' '));
+      QR.flagsInput();
       onload = function(e) {
         var aboard, board, err, _i, _len, _ref;
         if (e.type === 'abort') {
@@ -12250,23 +12295,25 @@
         pageNum = view;
         view = 'index';
       }
-      if (view !== g.VIEW) {
+      Navigate.updateContext(view);
+      if (!(view === g.VIEW && boardID === g.BOARD.ID)) {
         Navigate.disconnect();
         Navigate.clean();
-        Navigate.updateContext(view);
         Navigate.reconnect();
       }
-      if (view === 'index') {
-        if (boardID === g.BOARD.ID) {
-          Navigate.title = function() {
+      if (boardID === g.BOARD.ID) {
+        Navigate.title = function() {
+          if (view === 'index') {
             return d.title = $('.boardTitle').textContent;
-          };
-        } else {
-          g.BOARD = new Board(boardID);
-          Navigate.title = function() {
-            return Navigate.updateBoard(boardID);
-          };
-        }
+          }
+        };
+      } else {
+        g.BOARD = new Board(boardID);
+        Navigate.title = function() {
+          return Navigate.updateBoard(boardID);
+        };
+      }
+      if (view === 'index') {
         return Index.update(pageNum);
       } else {
         Navigate.updateFavicon(Favicon.SFW);
@@ -12296,6 +12343,7 @@
         new Notice('warning', "Failed to load thread." + (req.status ? " " + req.status : ''));
         return;
       }
+      Navigate.title();
       try {
         return Navigate.parse(JSON.parse(req.response).posts);
       } catch (_error) {

@@ -90,21 +90,26 @@ Navigate =
     QR.generatePostableThreadsList()
 
   updateContext: (view) ->
+    return if view is g.VIEW
+
     $.rmClass doc, g.VIEW
     $.addClass doc, view
+    oldView = g.VIEW
     g.VIEW = view
-
-    switch view
-      when 'index'
+    {
+      index: ->
+        return if oldView is g.VIEW
         delete g.THREADID
         QR.link.textContent = 'Start a Thread'
         $.off d, 'ThreadUpdate', QR.statusCheck
         $.on  d, 'IndexRefresh', QR.generatePostableThreadsList
-      when 'thread'
+      thread: ->
         g.THREADID = +window.location.pathname.split('/')[3]
+        return if oldView is g.VIEW
         QR.link.textContent = 'Reply to Thread'
         $.on  d, 'ThreadUpdate', QR.statusCheck
         $.off d, 'IndexRefresh', QR.generatePostableThreadsList
+    }[g.VIEW]()
 
   updateBoard: (boardID) ->
     req = null
@@ -113,6 +118,8 @@ Navigate =
     $.rmClass $('.current', fullBoardList), 'current'
     $.addClass $("a[href*='/#{boardID}/']", fullBoardList), 'current'
     Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
+
+    QR.flagsInput()
 
     onload = (e) ->
       if e.type is 'abort'
@@ -200,19 +207,20 @@ Navigate =
       pageNum = view
       view = 'index' # path is "/boardID/". See the problem?
 
-    if view isnt g.VIEW
+    Navigate.updateContext view
+
+    unless view is g.VIEW and boardID is g.BOARD.ID # We've navigated somewhere we weren't before!
       Navigate.disconnect()
       Navigate.clean()
-      Navigate.updateContext view
       Navigate.reconnect()
 
-    if view is 'index'
-      if boardID is g.BOARD.ID
-        Navigate.title = -> d.title = $('.boardTitle').textContent
-      else
-        g.BOARD = new Board boardID
-        Navigate.title = -> Navigate.updateBoard boardID
+    if boardID is g.BOARD.ID
+      Navigate.title = -> d.title = $('.boardTitle').textContent if view is 'index'
+    else
+      g.BOARD = new Board boardID
+      Navigate.title = -> Navigate.updateBoard boardID
 
+    if view is 'index'
       Index.update pageNum
 
     # Moving from index to thread or thread to thread
@@ -239,6 +247,8 @@ Navigate =
       req.onloadend = null
       new Notice 'warning', "Failed to load thread.#{if req.status then " #{req.status}" else ''}"
       return
+
+    Navigate.title()
 
     try
       Navigate.parse JSON.parse(req.response).posts
