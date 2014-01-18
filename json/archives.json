@@ -98,6 +98,15 @@
   "boards": ["soc"],
   "files": ["soc"]
 }, {
+  "uid": 16,
+  "name": "maware",
+  "domain": "archive.mawa.re",
+  "http": true,
+  "https": false,
+  "software": "foolfuuka",
+  "boards": ["t"],
+  "files": ["t"]
+}, {
   "uid": 13,
   "name": "Foolz Beta",
   "domain": "beta.foolz.us",
