@@ -383,20 +383,17 @@ Settings =
   archives: (section) ->
     section.innerHTML = <%= importHTML('General/Settings-section-Archives') %>
 
-    showLastUpdateTime = (time) ->
-      $('time', section).textContent = new Date(time).toLocaleString()
-
     button = $ 'button', section
     $.on button, 'click', ->
       $.delete 'lastarchivecheck'
       button.textContent = '...'
       button.disabled = true
-      Redirect.update (time) ->
+      Redirect.update ->
         button.textContent = 'Updated'
-        showLastUpdateTime time
+        Settings.addArchivesTable section
 
-    $.get 'lastarchivecheck', 0, ({lastarchivecheck}) -> showLastUpdateTime lastarchivecheck
-
+    Settings.addArchivesTable section
+  addArchivesTable: (section) ->
     boards = {}
     for archive in Conf['archives']
       for boardID in archive.boards
@@ -423,13 +420,18 @@ Settings =
       Settings.addArchiveCell row, boardID, data, 'thread'
       Settings.addArchiveCell row, boardID, data, 'post'
       Settings.addArchiveCell row, boardID, data, 'file'
-    $.add $('tbody', section), rows
-    $.get 'selectedArchives', Conf['selectedArchives'], ({selectedArchives}) ->
+    tbody = $ 'tbody', section
+    $.rmAll tbody
+    $.add tbody, rows
+    $.get {
+      lastarchivecheck: 0
+      selectedArchives: Conf['selectedArchives']
+    }, ({lastarchivecheck, selectedArchives}) ->
       for boardID, data of selectedArchives
         for type, uid of data
           if option = $ "select[data-board-i-d='#{boardID}'][data-type='#{type}'] > option[value='#{uid}']", section
             option.selected = true
-      return
+      $('time', section).textContent = new Date(lastarchivecheck).toLocaleString()
   addArchiveCell: (row, boardID, data, type) ->
     options = []
     for archive in data[type]

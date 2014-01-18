@@ -33,12 +33,12 @@ Redirect =
       # The list is also updated when 4chan X gets updated.
       return if lastarchivecheck > now - 2 * $.DAY
       $.ajax '<%= meta.page %>json/archives.json', onload: ->
-        return unless @status is 200
-        Conf['archives'] = JSON.parse @response
-        $.set
-          lastarchivecheck: now
-          archives: Conf['archives']
-        cb? now
+        if @status is 200
+          Conf['archives'] = JSON.parse @response
+          $.set
+            lastarchivecheck: now
+            archives: Conf['archives']
+        cb?()
 
   to: (dest, data) ->
     archive = (if dest is 'search' then Redirect.data.thread else Redirect.data[dest])[data.boardID]
