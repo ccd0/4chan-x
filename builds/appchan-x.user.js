@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.8.5 - 2014-01-17
+* appchan x - Version 2.8.5 - 2014-01-18
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -13368,8 +13368,7 @@
         var bottom, clientHeight, left, li, nodes, option, select, style, top, ul, width, _i, _len, _ref, _ref1;
         e.stopPropagation();
         e.preventDefault();
-        ul = Rice.ul;
-        if (!ul) {
+        if (!(ul = Rice.ul, Rice)) {
           Rice.ul = ul = $.el('ul', {
             id: "selectrice"
           });

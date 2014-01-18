@@ -27,9 +27,7 @@ Rice =
       e.stopPropagation()
       e.preventDefault()
 
-      {ul} = Rice
-
-      unless ul
+      unless {ul} = Rice
         Rice.ul = ul = $.el 'ul', id: "selectrice"
         $.add d.body, ul
 
