@@ -349,13 +349,12 @@ Index =
     Main.callbackNodes Post,   posts
     $.event 'IndexRefresh'
 
-  buildReplies: (threads) ->
-    posts  = []
-    errors = null
-    threads.forEach (thread) ->
-      threadRoot = thread.OP.nodes.root.parentElement
+  buildReplies: (threadRoots) ->
+    posts = []
+    for threadRoot in threadRoots
+      thread = Get.threadFromRoot threadRoot
       i = Index.liveThreadIDs.indexOf thread.ID
-      return unless lastReplies = Index.liveThreadData[i].last_replies
+      continue unless lastReplies = Index.liveThreadData[i].last_replies
       nodes = []
       for data in lastReplies
         if post = thread.posts[data.no]
@@ -437,7 +436,7 @@ Index =
         nodes.push target.data
     $.rmAll Index.root
     $.rmAll Header.hover
-    Index.buildReplies g.BOARD.threads if Conf['Show Replies']
+    Index.buildReplies nodes if Conf['Show Replies']
     Index.buildStructure nodes
 
   buildSinglePage: (pageNum) ->
