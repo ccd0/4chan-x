@@ -12145,11 +12145,19 @@
       return QR.generatePostableThreadsList();
     },
     updateContext: function(view) {
+      var oldView;
+      if (view === g.VIEW) {
+        return;
+      }
       $.rmClass(doc, g.VIEW);
       $.addClass(doc, view);
+      oldView = g.VIEW;
       g.VIEW = view;
       return {
         index: function() {
+          if (oldView === g.VIEW) {
+            return;
+          }
           delete g.THREADID;
           QR.link.textContent = 'Start a Thread';
           $.off(d, 'ThreadUpdate', QR.statusCheck);
@@ -12157,6 +12165,9 @@
         },
         thread: function() {
           g.THREADID = +window.location.pathname.split('/')[3];
+          if (oldView === g.VIEW) {
+            return;
+          }
           QR.link.textContent = 'Reply to Thread';
           $.on(d, 'ThreadUpdate', QR.statusCheck);
           return $.off(d, 'IndexRefresh', QR.generatePostableThreadsList);
@@ -12204,15 +12215,15 @@
           return;
         }
         Navigate.updateTitle(board);
-        return Navigate.updateFavicon(!!board.ws_board);
+        return Navigate.updateSFW(!!board.ws_board);
       };
       return req = $.ajax('//a.4cdn.org/boards.json', {
         onabort: onload,
         onloadend: onload
       });
     },
-    updateFavicon: function(sfw) {
-      var findStyle, mainStyleSheet, newStyleSheet, style;
+    updateSFW: function(sfw) {
+      var findStyle, style;
       Favicon.el.href = "//s.4cdn.org/image/favicon" + (sfw ? '-ws' : '') + ".ico";
       $.add(d.head, Favicon.el);
       if (Favicon.SFW === sfw) {
@@ -12222,14 +12233,12 @@
       Favicon.update();
       findStyle = function(type, base) {
         var style;
-        style = d.cookie.match(new RegExp("" + type + "\_style\=([^;]+)"));
+        style = d.cookie.match(new RegExp("\b" + type + "\_style\=([^;]+);\b"));
         return ["" + type + "_style", (style ? style[1] : base)];
       };
-      style = findStyle.apply(null, sfw ? ['ws', 'Yotsuba B New'] : ['nws', 'Yotsuba New']);
+      style = findStyle.apply(null, (sfw ? ['ws', 'Yotsuba B New'] : ['nws', 'Yotsuba New']));
       $.globalEval("var style_group = '" + style[0] + "'");
-      mainStyleSheet = $('link[title=switch]', d.head);
-      newStyleSheet = $("link[title='" + style[1] + "']", d.head);
-      mainStyleSheet.href = newStyleSheet.href;
+      $('link[title=switch]', d.head).href = $("link[title='" + style[1] + "']", d.head).href;
       return Main.setClass();
     },
     updateTitle: function(_arg) {
@@ -12273,26 +12282,28 @@
         pageNum = view;
         view = 'index';
       }
-      if (view !== g.VIEW) {
+      Navigate.updateContext(view);
+      if (!(view === g.VIEW && boardID === g.BOARD.ID)) {
         Navigate.disconnect();
         Navigate.clean();
-        Navigate.updateContext(view);
         Navigate.reconnect();
       }
-      if (view === 'index') {
-        if (boardID === g.BOARD.ID) {
-          Navigate.title = function() {
+      if (boardID === g.BOARD.ID) {
+        Navigate.title = function() {
+          if (view === 'index') {
             return d.title = $('.boardTitle').textContent;
-          };
-        } else {
-          g.BOARD = new Board(boardID);
-          Navigate.title = function() {
-            return Navigate.updateBoard(boardID);
-          };
-        }
+          }
+        };
+      } else {
+        g.BOARD = new Board(boardID);
+        Navigate.title = function() {
+          return Navigate.updateBoard(boardID);
+        };
+      }
+      if (view === 'index') {
         return Index.update(pageNum);
       } else {
-        Navigate.updateFavicon(Favicon.SFW);
+        Navigate.updateSFW(Favicon.SFW);
         load = Navigate.load;
         Navigate.req = $.ajax("//a.4cdn.org/" + boardID + "/res/" + threadID + ".json", {
           onabort: load,
@@ -12319,6 +12330,7 @@
         new Notice('warning', "Failed to load thread." + (req.status ? " " + req.status : ''));
         return;
       }
+      Navigate.title();
       try {
         return Navigate.parse(JSON.parse(req.response).posts);
       } catch (_error) {

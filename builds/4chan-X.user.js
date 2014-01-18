@@ -12226,15 +12226,15 @@
           return;
         }
         Navigate.updateTitle(board);
-        return Navigate.updateFavicon(!!board.ws_board);
+        return Navigate.updateSFW(!!board.ws_board);
       };
       return req = $.ajax('//a.4cdn.org/boards.json', {
         onabort: onload,
         onloadend: onload
       });
     },
-    updateFavicon: function(sfw) {
-      var findStyle, mainStyleSheet, newStyleSheet, style;
+    updateSFW: function(sfw) {
+      var findStyle, style;
       Favicon.el.href = "//s.4cdn.org/image/favicon" + (sfw ? '-ws' : '') + ".ico";
       $.add(d.head, Favicon.el);
       if (Favicon.SFW === sfw) {
@@ -12244,14 +12244,12 @@
       Favicon.update();
       findStyle = function(type, base) {
         var style;
-        style = d.cookie.match(new RegExp("" + type + "\_style\=([^;]+)"));
+        style = d.cookie.match(new RegExp("\b" + type + "\_style\=([^;]+);\b"));
         return ["" + type + "_style", (style ? style[1] : base)];
       };
-      style = findStyle.apply(null, sfw ? ['ws', 'Yotsuba B New'] : ['nws', 'Yotsuba New']);
+      style = findStyle.apply(null, (sfw ? ['ws', 'Yotsuba B New'] : ['nws', 'Yotsuba New']));
       $.globalEval("var style_group = '" + style[0] + "'");
-      mainStyleSheet = $('link[title=switch]', d.head);
-      newStyleSheet = $("link[title='" + style[1] + "']", d.head);
-      mainStyleSheet.href = newStyleSheet.href;
+      $('link[title=switch]', d.head).href = $("link[title='" + style[1] + "']", d.head).href;
       return Main.setClass();
     },
     updateTitle: function(_arg) {
@@ -12316,7 +12314,7 @@
       if (view === 'index') {
         return Index.update(pageNum);
       } else {
-        Navigate.updateFavicon(Favicon.SFW);
+        Navigate.updateSFW(Favicon.SFW);
         load = Navigate.load;
         Navigate.req = $.ajax("//a.4cdn.org/" + boardID + "/res/" + threadID + ".json", {
           onabort: load,

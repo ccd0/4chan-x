@@ -142,13 +142,13 @@ Navigate =
 
       return unless board
       Navigate.updateTitle board
-      Navigate.updateFavicon !!board.ws_board
+      Navigate.updateSFW !!board.ws_board
 
     req = $.ajax '//a.4cdn.org/boards.json',
       onabort:   onload
       onloadend: onload
 
-  updateFavicon: (sfw) ->
+  updateSFW: (sfw) ->
     # TODO: think of a better name for this. Changes style, too.
     Favicon.el.href = "//s.4cdn.org/image/favicon#{if sfw then '-ws' else ''}.ico"
     $.add d.head, Favicon.el # Changing the href alone doesn't update the icon on Firefox
@@ -158,20 +158,17 @@ Navigate =
     Favicon.SFW = sfw
     Favicon.update()
     findStyle = (type, base) ->
-      style = d.cookie.match new RegExp "#{type}\_style\=([^;]+)"
+      style = d.cookie.match new RegExp "\b#{type}\_style\=([^;]+);\b"
       return ["#{type}_style", (if style then style[1] else base)]
 
-    style = findStyle.apply null, if sfw
+    style = findStyle (if sfw
       ['ws',  'Yotsuba B New']
     else
-      ['nws', 'Yotsuba New']
+      ['nws', 'Yotsuba New'])...
 
     $.globalEval "var style_group = '#{style[0]}'"
 
-    mainStyleSheet = $ 'link[title=switch]',        d.head
-    newStyleSheet  = $ "link[title='#{style[1]}']", d.head
-
-    mainStyleSheet.href = newStyleSheet.href
+    $('link[title=switch]', d.head).href = $("link[title='#{style[1]}']", d.head).href
 
     Main.setClass()
 
@@ -225,7 +222,7 @@ Navigate =
 
     # Moving from index to thread or thread to thread
     else
-      Navigate.updateFavicon Favicon.SFW
+      Navigate.updateSFW Favicon.SFW
       {load} = Navigate
       Navigate.req = $.ajax "//a.4cdn.org/#{boardID}/res/#{threadID}.json",
         onabort:   load
