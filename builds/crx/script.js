@@ -12282,9 +12282,11 @@
         pageNum = view;
         view = 'index';
       }
-      Navigate.updateContext(view);
-      if (!(view === g.VIEW && boardID === g.BOARD.ID)) {
+      if (view === g.VIEW && boardID === g.BOARD.ID) {
+        Navigate.updateContext(view);
+      } else {
         Navigate.disconnect();
+        Navigate.updateContext(view);
         Navigate.clean();
         Navigate.reconnect();
       }
