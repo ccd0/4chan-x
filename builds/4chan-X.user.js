@@ -2715,19 +2715,20 @@
       Main.callbackNodes(Post, posts);
       return $.event('IndexRefresh');
     },
-    buildReplies: function(threadRoots) {
-      var data, err, errors, i, lastReplies, node, nodes, post, posts, thread, threadRoot, _i, _j, _len, _len1;
+    buildReplies: function(threads) {
+      var errors, posts;
       posts = [];
-      for (_i = 0, _len = threadRoots.length; _i < _len; _i++) {
-        threadRoot = threadRoots[_i];
-        thread = Get.threadFromRoot(threadRoot);
+      errors = null;
+      threads.forEach(function(thread) {
+        var data, err, i, lastReplies, node, nodes, post, threadRoot, _i, _len;
+        threadRoot = thread.OP.nodes.root.parentElement;
         i = Index.liveThreadIDs.indexOf(thread.ID);
         if (!(lastReplies = Index.liveThreadData[i].last_replies)) {
-          continue;
+          return;
         }
         nodes = [];
-        for (_j = 0, _len1 = lastReplies.length; _j < _len1; _j++) {
-          data = lastReplies[_j];
+        for (_i = 0, _len = lastReplies.length; _i < _len; _i++) {
+          data = lastReplies[_i];
           if (post = thread.posts[data.no]) {
             nodes.push(post.nodes.root);
             continue;
@@ -2746,8 +2747,8 @@
             });
           }
         }
-        $.add(threadRoot, nodes);
-      }
+        return $.add(threadRoot, nodes);
+      });
       if (errors) {
         Main.handleErrors(errors);
       }
@@ -2852,7 +2853,7 @@
       $.rmAll(Index.root);
       $.rmAll(Header.hover);
       if (Conf['Show Replies']) {
-        Index.buildReplies(nodes);
+        Index.buildReplies(g.BOARD.threads);
       }
       return Index.buildStructure(nodes);
     },
@@ -12293,9 +12294,11 @@
         pageNum = view;
         view = 'index';
       }
-      Navigate.updateContext(view);
-      if (!(view === g.VIEW && boardID === g.BOARD.ID)) {
+      if (view === g.VIEW && boardID === g.BOARD.ID) {
+        Navigate.updateContext(view);
+      } else {
         Navigate.disconnect();
+        Navigate.updateContext(view);
         Navigate.clean();
         Navigate.reconnect();
       }

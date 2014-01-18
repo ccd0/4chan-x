@@ -204,10 +204,11 @@ Navigate =
       pageNum = view
       view = 'index' # path is "/boardID/". See the problem?
 
-    Navigate.updateContext view
-
-    unless view is g.VIEW and boardID is g.BOARD.ID # We've navigated somewhere we weren't before!
+    if view is g.VIEW and boardID is g.BOARD.ID
+      Navigate.updateContext view
+    else # We've navigated somewhere we weren't before!
       Navigate.disconnect()
+      Navigate.updateContext view
       Navigate.clean()
       Navigate.reconnect()
 
