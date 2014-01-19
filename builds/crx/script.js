@@ -6297,7 +6297,7 @@
       if (!Conf['Reply Hiding Buttons']) {
         return;
       }
-      return $.add($('.postInfo', this.nodes.post), PostHiding.makeButton(this, 'hide'));
+      return $.add($('.postInfo', this.nodes.post), PostHiding.makeButton('hide'));
     },
     menu: {
       init: function() {
@@ -6465,18 +6465,16 @@
         $.event('CloseMenu');
       }
     },
-    makeButton: function(post, type) {
-      var a, span;
-      span = $.el('span', {
-        className: "fa",
-        textContent: "" + (type === 'hide' ? '\uf068' : '\uf067')
-      });
+    makeButton: function(type, noEvent) {
+      var a;
       a = $.el('a', {
         className: "" + type + "-reply-button",
-        href: 'javascript:;'
+        href: 'javascript:;',
+        innerHTML: "<span class=fa>" + (type === 'hide' ? '\uf068' : '\uf067') + "</span>"
       });
-      $.add(a, span);
-      $.on(a, 'click', PostHiding.toggle);
+      if (!noEvent) {
+        $.on(a, 'click', PostHiding.toggle);
+      }
       return a;
     },
     saveHiddenState: function(post, isHiding, thisPost, makeStub, hideRecursively) {
@@ -6528,7 +6526,7 @@
         post.nodes.root.hidden = true;
         return;
       }
-      a = PostHiding.makeButton(post, 'show');
+      a = PostHiding.makeButton('show');
       postInfo = Conf['Anonymize'] ? 'Anonymous' : $('.nameBlock', post.nodes.info).textContent;
       $.add(a, $.tn(" " + postInfo));
       post.nodes.stub = $.el('div', {
@@ -6822,11 +6820,8 @@
     },
     makeButton: function(thread, type) {
       var a;
-      a = $.el('a', {
-        className: "" + type + "-thread-button",
-        innerHTML: "<span class=fa>" + (type === 'hide' ? '\uf068' : '\uf067') + "</span>",
-        href: 'javascript:;'
-      });
+      a = PostHiding.makeButton(type, true);
+      a.className = "" + type + "-thread-button";
       a.dataset.fullID = thread.fullID;
       $.on(a, 'click', ThreadHiding.toggle);
       return a;

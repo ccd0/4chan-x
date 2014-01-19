@@ -19,7 +19,7 @@ PostHiding =
         Recursive.apply PostHiding.hide, @, data.makeStub, true
         Recursive.add   PostHiding.hide, @, data.makeStub, true
     return unless Conf['Reply Hiding Buttons']
-    $.add $('.postInfo', @nodes.post), PostHiding.makeButton @, 'hide'
+    $.add $('.postInfo', @nodes.post), PostHiding.makeButton 'hide'
 
   menu:
     init: ->
@@ -151,15 +151,12 @@ PostHiding =
       $.event 'CloseMenu'
       return
 
-  makeButton: (post, type) ->
-    span = $.el 'span',
-      className:   "fa"
-      textContent: "#{if type is 'hide' then '\uf068' else '\uf067'}"
+  makeButton: (type, noEvent) ->
     a = $.el 'a',
       className: "#{type}-reply-button"
       href:      'javascript:;'
-    $.add a, span
-    $.on a, 'click', PostHiding.toggle
+      innerHTML: "<span class=fa>#{if type is 'hide' then '\uf068' else '\uf067'}</span>"
+    $.on a, 'click', PostHiding.toggle unless noEvent
     a
 
   saveHiddenState: (post, isHiding, thisPost, makeStub, hideRecursively) ->
@@ -196,7 +193,7 @@ PostHiding =
       post.nodes.root.hidden = true
       return
 
-    a = PostHiding.makeButton post, 'show'
+    a = PostHiding.makeButton 'show'
     postInfo =
       if Conf['Anonymize']
         'Anonymous'

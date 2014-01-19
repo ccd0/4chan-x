@@ -144,13 +144,12 @@ ThreadHiding =
       return
 
   makeButton: (thread, type) ->
-    a = $.el 'a',
-      className: "#{type}-thread-button"
-      innerHTML: "<span class=fa>#{if type is 'hide' then '\uf068' else '\uf067'}</span>"
-      href:      'javascript:;'
+    a = PostHiding.makeButton type, true
+    a.className = "#{type}-thread-button"
     a.dataset.fullID = thread.fullID
-    $.on a, 'click', ThreadHiding.toggle
+    $.on  a, 'click', ThreadHiding.toggle
     a
+
   makeStub: (thread, root) ->
     numReplies  = $$('.thread > .replyContainer', root).length
     numReplies += +summary.textContent.match /\d+/ if summary = $ '.summary', root
