@@ -146,7 +146,7 @@ Style =
       ['captcha-filter', "values='#{Style.filter Style.matrix theme["Text"], theme["Input Background"]} 0 0 0 1 0'"]
       ['mascot-filter',  "values='#{Style.silhouette Style.matrix replyRGB} 0 0 0 1 0'"]
       ['grayscale',      'id="color" type="saturate" values="0"']
-      ['icons-filter',   "values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0'"]
+      ['icons-filter',   "values='-.6 0 0 0 1 0 -.6 0 0 1 0 0 -.6 0 1 0 0 0 1 0'"]
     ]
     
     for svg, i in svgs

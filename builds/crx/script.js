@@ -13615,7 +13615,7 @@
       replybg = new Color(theme["Reply Background"]);
       replyRGB = "rgb(" + (replybg.shiftRGB(parseInt(Conf['Silhouette Contrast'], 10), true)) + ")";
       Style.lightTheme = bgColor.isLight();
-      svgs = [['captcha-filter', "values='" + (Style.filter(Style.matrix(theme["Text"], theme["Input Background"]))) + " 0 0 0 1 0'"], ['mascot-filter', "values='" + (Style.silhouette(Style.matrix(replyRGB))) + " 0 0 0 1 0'"], ['grayscale', 'id="color" type="saturate" values="0"'], ['icons-filter', "values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0'"]];
+      svgs = [['captcha-filter', "values='" + (Style.filter(Style.matrix(theme["Text"], theme["Input Background"]))) + " 0 0 0 1 0'"], ['mascot-filter', "values='" + (Style.silhouette(Style.matrix(replyRGB))) + " 0 0 0 1 0'"], ['grayscale', 'id="color" type="saturate" values="0"'], ['icons-filter', "values='-.6 0 0 0 1 0 -.6 0 0 1 0 0 -.6 0 1 0 0 0 1 0'"]];
       for (i = _i = 0, _len = svgs.length; _i < _len; i = ++_i) {
         svg = svgs[i];
         svgs[i] = Style.generateFilter(svg[0], svg[1]);
