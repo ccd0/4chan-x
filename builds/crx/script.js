@@ -6468,8 +6468,8 @@
     makeButton: function(post, type) {
       var a, span;
       span = $.el('span', {
-        className: "fa fa-" + (type === 'hide' ? 'minus' : 'plus') + "-square-o",
-        textContent: ""
+        className: "fa",
+        textContent: "" + (type === 'hide' ? '\uf068' : '\uf067')
       });
       a = $.el('a', {
         className: "" + type + "-reply-button",
@@ -6824,7 +6824,7 @@
       var a;
       a = $.el('a', {
         className: "" + type + "-thread-button",
-        innerHTML: "<span class='fa fa-" + (type === 'hide' ? 'minus' : 'plus') + "-square'></span>",
+        innerHTML: "<span class=fa>" + (type === 'hide' ? '\uf068' : '\uf067') + "</span>",
         href: 'javascript:;'
       });
       a.dataset.fullID = thread.fullID;

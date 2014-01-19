@@ -153,8 +153,8 @@ PostHiding =
 
   makeButton: (post, type) ->
     span = $.el 'span',
-      className:   "fa fa-#{if type is 'hide' then 'minus' else 'plus'}-square-o"
-      textContent: ""
+      className:   "fa"
+      textContent: "#{if type is 'hide' then '\uf068' else '\uf067'}"
     a = $.el 'a',
       className: "#{type}-reply-button"
       href:      'javascript:;'
