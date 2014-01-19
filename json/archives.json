@@ -83,7 +83,7 @@
   "uid": 10,
   "name": "warosu",
   "domain": "fuuka.warosu.org",
-  "http": true,
+  "http": false,
   "https": true,
   "software": "fuuka",
   "boards": ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"],
