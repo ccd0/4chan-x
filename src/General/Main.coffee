@@ -214,7 +214,7 @@ Main =
         new Notice 'info', el, 15
       else
         Settings.open()
-      $.set previousversion, g.VERSION
+      $.set 'previousversion', g.VERSION
 
   callbackNodes: (klass, nodes) ->
     # get the nodes' length only once
