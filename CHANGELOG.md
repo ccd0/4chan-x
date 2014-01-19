@@ -1,3 +1,9 @@
+### v2.8.6 
+*2014-01-19*
+
+**Zixaphir**:
+- General improvements all across our current JSON Navigation implementations.
+
 ### v2.8.5 
 *2014-01-14*
 
