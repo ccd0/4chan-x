@@ -15814,9 +15814,8 @@
       if (Conf["NSFW/SFW Themes"]) {
         Main.setThemeString();
         theme = Themes[Conf[g.THEMESTRING] || (sfw ? 'Yotsuba B' : 'Yotsuba')] || Themes[Conf[g.THEMESTRING] = sfw ? 'Yotsuba B' : 'Yotsuba'];
-        Style.setTheme(theme);
+        return Style.setTheme(theme);
       }
-      return Main.setClass();
     },
     updateTitle: function(_arg) {
       var board, subtitle, title;

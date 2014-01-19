@@ -166,8 +166,6 @@ Navigate =
       theme = Themes[Conf[g.THEMESTRING] or if sfw then 'Yotsuba B' else 'Yotsuba'] or Themes[Conf[g.THEMESTRING] = if sfw then 'Yotsuba B' else 'Yotsuba']
       Style.setTheme theme
 
-    Main.setClass()
-
   updateTitle: ({board, title}) ->
     $.rm subtitle if subtitle = $ '.boardSubtitle'
     $('.boardTitle').textContent = d.title = "/#{board}/ - #{title}"
