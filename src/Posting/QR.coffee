@@ -590,13 +590,15 @@ QR =
       responseType: 'document'
       withCredentials: true
       onload: QR.response
-      onerror: ->
-        # Connection error, or
-        # www.4chan.org/banned
+      onerror: (err, url, line) ->
+        # Connection error, or www.4chan.org/banned
         delete QR.req
         post.unlock()
         QR.cooldown.auto = false
         QR.status()
+        console.log err
+        console.log url
+        console.log line
         QR.error $.el 'span',
           innerHTML: """
           4chan X encountered an error while posting. 
