@@ -411,9 +411,10 @@ th {
   position: fixed;
   display: <%= flex %>;
   top: 0;
+  padding: 1px;
   z-index: 16;
   <%= flex %>-direction: row;
-  max-height: 1.3em;
+  max-height: 1.4em;
   overflow: visible;
 }
 .shortcut {
@@ -737,7 +738,7 @@ th {
   position: fixed;
 }
 .fourchan-banner-at-sidebar-top .boardBanner {
-  top: 16px;
+  top: 18px;
 }
 .fourchan-banner-at-sidebar-bottom .boardBanner {
   bottom: 270px;
