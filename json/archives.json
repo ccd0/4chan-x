@@ -107,6 +107,15 @@
   "boards": ["t"],
   "files": ["t"]
 }, {
+  "uid": 17,
+  "name": "installgentoo.com",
+  "domain": "chan.installgentoo.com",
+  "http": true,
+  "https": false,
+  "software": "foolfuuka",
+  "boards": ["g", "t"],
+  "files": ["g", "t"]
+}, {
   "uid": 13,
   "name": "Foolz Beta",
   "domain": "beta.foolz.us",
