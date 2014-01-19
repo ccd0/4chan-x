@@ -328,7 +328,7 @@ QR =
     for thread in g.BOARD.threads.keys
       options.push $.el 'option',
         value: thread
-        textContent: "Thread No.#{thread}"
+        textContent: "No.#{thread}"
     val = list.value
     $.rmAll list
     $.add list, options
@@ -339,6 +339,8 @@ QR =
       g.THREADID
     else
       'new'
+    list.nextElementSibling.firstChild.textContent = list.options[list.selectedIndex].textContent if $.hasClass list, 'riced'
+    
 
   dialog: ->
     QR.nodes = nodes =

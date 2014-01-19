@@ -1,11 +1,52 @@
 Rice =
+  ul: $.el 'ul', id: "selectrice"
   init: ->
-    $.ready ->
-      Rice.nodes d.body
+    $.ready @initReady
 
     Post.callbacks.push
       name: 'Rice Checkboxes'
       cb:   @node
+
+  initReady: ->
+    Rice.nodes d.body
+    $.add d.body, Rice.ul
+
+  node: ->
+    Rice.checkbox $ '.postInfo input', @nodes.post
+
+  nodes: (root) ->
+    root or= d.body
+    {process} = Rice
+    process $$('[type=checkbox]:not(.riced)', root), 'checkbox'
+    process $$('select:not(.riced)', root), 'select'
+
+  process: (items, type) ->
+    fn = Rice[type]
+    fn item for item in items
+    return
+
+  cleanup: ->
+    $.off d, 'click scroll blur resize', Rice.cleanup
+    $.rmAll Rice.ul
+    return
+
+  checkbox: (input) ->
+    return if $.hasClass input, 'riced'
+    $.addClass input, 'riced'
+    div = $.el 'div', className: 'rice'
+    div.check = input
+    $.after input, div
+    $.on div, 'click', Rice.cb.check
+
+  select: (select) ->
+    div = $.el 'div',
+      className: 'selectrice'
+      innerHTML: "<div>#{select.options[select.selectedIndex or '0']?.textContent or ''}</div>"
+    $.on div, 'click',   Rice.cb.select
+    $.on div, 'keydown', Rice.cb.keybind
+
+    $.after    select, div
+    $.addClass select, 'riced'
 
   cb:
     check: (e)->
@@ -16,10 +57,13 @@ Rice =
     option: (e) ->
       e.stopPropagation()
       e.preventDefault()
-      select = Rice.input
+
+      select    = Rice.input
       container = select.nextElementSibling
+
       container.firstChild.textContent = @textContent
       select.value = @dataset.value
+
       $.event 'change', null, select
       Rice.cleanup()
 
@@ -27,9 +71,7 @@ Rice =
       e.stopPropagation()
       e.preventDefault()
 
-      unless {ul} = Rice
-        Rice.ul = ul = $.el 'ul', id: "selectrice"
-        $.add d.body, ul
+      {ul} = Rice
 
       if ul.children.length > 0
         return Rice.cleanup()
@@ -54,39 +96,3 @@ Rice =
         e.stopPropagation()
 
       $.on d, 'click scroll blur resize', Rice.cleanup
-
-  cleanup: ->
-    $.off d, 'click scroll blur resize', Rice.cleanup
-    $.rmAll Rice.ul
-    return
-
-  nodes: (root) ->
-    root or= d.body
-
-    fn = (items, type) ->
-      func = Rice[type]
-      func item for item in items
-      return
-
-    fn $$('[type=checkbox]:not(.riced)', root), 'checkbox'
-    fn $$('select:not(.riced)', root), 'select'
-
-  node: ->
-    Rice.checkbox $ '.postInfo input', @nodes.post
-
-  checkbox: (input) ->
-    return if $.hasClass input, 'riced'
-    $.addClass input, 'riced'
-    div = $.el 'div', className: 'rice'
-    div.check = input
-    $.after input, div
-    $.on div, 'click', Rice.cb.check
-
-  select: (select) ->
-    $.addClass select, 'riced'
-    div = $.el 'div',
-      className: 'selectrice'
-      innerHTML: "<div>#{select.options[select.selectedIndex or '0']?.textContent or ''}</div>"
-    $.on div, "click", Rice.cb.select
-
-    $.after select, div
