@@ -6231,7 +6231,7 @@
           }
         }
       };
-      QR.req = $.ajax("//sys.4chan.org/" + g.BOARD + "/post", options, extra);
+      QR.req = $.ajax("https://sys.4chan.org/" + g.BOARD + "/post", options, extra);
       QR.req.uploadStartTime = Date.now();
       QR.req.progress = '...';
       return QR.status();

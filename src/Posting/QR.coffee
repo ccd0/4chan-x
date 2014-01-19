@@ -618,7 +618,7 @@ QR =
           QR.req.progress = "#{Math.round e.loaded / e.total * 100}%"
           QR.status()
 
-    QR.req = $.ajax "//sys.4chan.org/#{g.BOARD}/post", options, extra
+    QR.req = $.ajax "https://sys.4chan.org/#{g.BOARD}/post", options, extra
     # Starting to upload might take some time.
     # Provide some feedback that we're starting to submit.
     QR.req.uploadStartTime = Date.now()
