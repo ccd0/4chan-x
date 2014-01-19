@@ -1211,6 +1211,9 @@ a.useremail:last-of-type {
 .inline + .hashlink {
   display: none;
 }
+.hashlink::before {
+  content: '\\00a0';
+}
 /* Quote Threading */
 .threadContainer {
   padding-left: 2em;
