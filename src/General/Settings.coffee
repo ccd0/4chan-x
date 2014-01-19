@@ -23,23 +23,6 @@ Settings =
       order: 110
       open: -> Conf['Enable 4chan\'s Extension']
 
-    $.get 'previousversion', null, (item) ->
-      if previous = item['previousversion']
-        return if previous is g.VERSION
-        changelog = '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
-        el = $.el 'span',
-          innerHTML: "<%= meta.name %> has been updated to <a href='#{changelog}' target=_blank>version #{g.VERSION}</a>."
-        new Notice 'info', el, 30
-      else
-        $.on d, '4chanXInitFinished', Settings.open
-      # The archive list will always be updated with 4chan X updates.
-      Conf['archives'] = Redirect.archives
-      now = Date.now()
-      $.set
-        archives: Conf['archives']
-        lastarchivecheck: now
-        previousversion: g.VERSION
-
     Settings.addSection 'Main',     Settings.main
     Settings.addSection 'Filter',   Settings.filter
     Settings.addSection 'QR',       Settings.qr
@@ -57,7 +40,6 @@ Settings =
     localStorage.setItem '4chan-settings', JSON.stringify settings
 
   open: (openSection) ->
-    $.off d, '4chanXInitFinished', Settings.open
     return if Settings.dialog
     $.event 'CloseMenu'
 

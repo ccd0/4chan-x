@@ -205,6 +205,17 @@ Main =
 
     $.event '4chanXInitFinished'
 
+    $.get 'previousversion', null, ({previousversion}) ->
+      return if previousversion is g.VERSION
+      if previousversion
+        changelog = '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
+        el = $.el 'span',
+          innerHTML: "<%= meta.name %> has been updated to <a href='#{changelog}' target=_blank>version #{g.VERSION}</a>."
+        new Notice 'info', el, 15
+      else
+        Settings.open()
+      $.set previousversion, g.VERSION
+
   callbackNodes: (klass, nodes) ->
     # get the nodes' length only once
     len = nodes.length
