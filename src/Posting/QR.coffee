@@ -60,11 +60,12 @@ QR =
     $.on d, 'dragover',           QR.dragOver
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
-    switch g.VIEW
-      when 'index'
+    {
+      index: ->
         $.on d, 'IndexRefresh', QR.generatePostableThreadsList
-      when 'thread'
+      thread: ->
         $.on d, 'ThreadUpdate', QR.statusCheck
+    }[g.VIEW]()
 
   statusCheck: ->
     if g.DEAD
@@ -407,11 +408,8 @@ QR =
         """
       nodes.flashTag.dataset.default = '4'
       $.add nodes.form, nodes.flashTag
-    if flagSelector = $ '.flagSelector'
-      nodes.flag = flagSelector.cloneNode true
-      nodes.flag.dataset.name    = 'flag'
-      nodes.flag.dataset.default = '0'
-      $.add nodes.form, nodes.flag
+
+    QR.flagsInput()
 
     $.on nodes.filename.parentNode, 'click keydown', QR.openFileInput
 
@@ -486,6 +484,54 @@ QR =
     check = /^.*##?.+/.test @value
     if check and !@.className.match "\\btripped\\b" then $.addClass @, 'tripped'
     else if !check and @.className.match "\\btripped\\b" then $.rmClass @, 'tripped'
+
+  flags: ->
+    fn = (val) -> $.el 'option', 
+      value: val[0]
+      textContent: val[1]
+    select = $.el 'select',
+      name:      'flag'
+      className: 'flagSelector'
+
+    $.add select, fn flag for flag in [
+      ['0',  'None']
+      ['US', 'American']
+      ['KP', 'Best Korean']
+      ['BL', 'Black Nationalist']
+      ['CM', 'Communist']
+      ['CF', 'Confederate']
+      ['RE', 'Conservative']
+      ['EU', 'European']
+      ['GY', 'Gay']
+      ['PC', 'Hippie']
+      ['IL', 'Israeli']
+      ['DM', 'Liberal']
+      ['RP', 'Libertarian']
+      ['MF', 'Muslim']
+      ['NZ', 'Nazi']
+      ['OB', 'Obama']
+      ['PR', 'Pirate']
+      ['RB', 'Rebel']
+      ['TP', 'Tea Partier']
+      ['TX', 'Texan']
+      ['TR', 'Tree Hugger']
+      ['WP', 'White Supremacist']
+    ]
+
+    select
+
+  flagsInput: ->
+    {nodes} = QR
+    if nodes.flagSelector
+      $.rm nodes.flagSelector
+      delete nodes.flagSelector
+
+    if g.BOARD.ID is 'pol'
+      flag = QR.flags()
+      flag.dataset.name    = 'flag'
+      flag.dataset.default = '0'
+      nodes.flag = flag
+      $.add nodes.form, flag
 
   preSubmitHooks: []
 

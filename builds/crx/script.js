@@ -3355,7 +3355,7 @@
         if (!(!$.hasClass(quotelink, 'deadlink'))) {
           continue;
         }
-        $.add(quotelink, $.tn('\u00A0(Dead)'));
+        quotelink.textContent = quotelink.textContent + '\u00A0(Dead)';
         $.addClass(quotelink, 'deadlink');
       }
     };
@@ -6957,7 +6957,7 @@
           if (Conf['Quote Inlining']) {
             $.on(link, 'click', QuoteInline.toggle);
             if (Conf['Quote Hash Navigation']) {
-              nodes.push.apply(nodes, QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
+              nodes.push(QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
             }
           }
           $.add(container, nodes);
@@ -8239,12 +8239,14 @@
       $.on(d, 'dragover', QR.dragOver);
       $.on(d, 'drop', QR.dropFile);
       $.on(d, 'dragstart dragend', QR.drag);
-      switch (g.VIEW) {
-        case 'index':
+      return {
+        index: function() {
           return $.on(d, 'IndexRefresh', QR.generatePostableThreadsList);
-        case 'thread':
+        },
+        thread: function() {
           return $.on(d, 'ThreadUpdate', QR.statusCheck);
-      }
+        }
+      }[g.VIEW]();
     },
     statusCheck: function() {
       if (g.DEAD) {
@@ -8580,7 +8582,7 @@
       return list.value = g.VIEW === 'thread' ? g.THREADID : 'new';
     },
     dialog: function() {
-      var check, dialog, event, flagSelector, i, items, key, mimeTypes, name, node, nodes, save, value, _ref;
+      var check, dialog, event, i, items, key, mimeTypes, name, node, nodes, save, value, _ref;
       QR.nodes = nodes = {
         el: dialog = UI.dialog('qr', 'top:0;right:0;', "<div id=qrtab class=move><input type=checkbox id=autohide title=Auto-hide><div id=qr-thread-select><select data-name=thread title='Create a new thread / Reply'><option value=new>New thread</option></select></div><a href=javascript:; class='close fa' title=Close>\uf00d</a></div><form><div class=persona><input name=name  data-name=name  list=\"list-name\" placeholder=Name    class=field size=1 tabindex=10><input name=email data-name=email list=\"list-email\" placeholder=E-mail  class=field size=1 tabindex=20><input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1 tabindex=30> </div><div class=textarea><textarea data-name=com placeholder=Comment class=field tabindex=40></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=60><span id=qr-no-file>No selected file</span><input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\"><span id=qr-extras-container><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70></label><span class=description>Spoiler</span><a id=dump-button title='Dump list'>+</a><span class=description>Dump</span><a id=qr-filerm href=javascript:; title='Remove file' class=fa>\uf00d</a><span class=description>Remove File</span></span></span><input type=submit tabindex=80></div><input type=file multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist>")
       };
@@ -8642,12 +8644,7 @@
         nodes.flashTag.dataset["default"] = '4';
         $.add(nodes.form, nodes.flashTag);
       }
-      if (flagSelector = $('.flagSelector')) {
-        nodes.flag = flagSelector.cloneNode(true);
-        nodes.flag.dataset.name = 'flag';
-        nodes.flag.dataset["default"] = '0';
-        $.add(nodes.form, nodes.flag);
-      }
+      QR.flagsInput();
       $.on(nodes.filename.parentNode, 'click keydown', QR.openFileInput);
       $.on(dialog, 'focusin', QR.focusin);
       $.on(dialog, 'focusout', QR.focusout);
@@ -8714,6 +8711,40 @@
         return $.addClass(this, 'tripped');
       } else if (!check && this.className.match("\\btripped\\b")) {
         return $.rmClass(this, 'tripped');
+      }
+    },
+    flags: function() {
+      var flag, fn, select, _i, _len, _ref;
+      fn = function(val) {
+        return $.el('option', {
+          value: val[0],
+          textContent: val[1]
+        });
+      };
+      select = $.el('select', {
+        name: 'flag',
+        className: 'flagSelector'
+      });
+      _ref = [['0', 'None'], ['US', 'American'], ['KP', 'Best Korean'], ['BL', 'Black Nationalist'], ['CM', 'Communist'], ['CF', 'Confederate'], ['RE', 'Conservative'], ['EU', 'European'], ['GY', 'Gay'], ['PC', 'Hippie'], ['IL', 'Israeli'], ['DM', 'Liberal'], ['RP', 'Libertarian'], ['MF', 'Muslim'], ['NZ', 'Nazi'], ['OB', 'Obama'], ['PR', 'Pirate'], ['RB', 'Rebel'], ['TP', 'Tea Partier'], ['TX', 'Texan'], ['TR', 'Tree Hugger'], ['WP', 'White Supremacist']];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        flag = _ref[_i];
+        $.add(select, fn(flag));
+      }
+      return select;
+    },
+    flagsInput: function() {
+      var flag, nodes;
+      nodes = QR.nodes;
+      if (nodes.flagSelector) {
+        $.rm(nodes.flagSelector);
+        delete nodes.flagSelector;
+      }
+      if (g.BOARD.ID === 'pol') {
+        flag = QR.flags();
+        flag.dataset.name = 'flag';
+        flag.dataset["default"] = '0';
+        nodes.flag = flag;
+        return $.add(nodes.form, flag);
       }
     },
     preSubmitHooks: [],
@@ -15691,19 +15722,32 @@
       return QR.generatePostableThreadsList();
     },
     updateContext: function(view) {
+      var oldView;
+      if (view === g.VIEW) {
+        return;
+      }
       $.rmClass(doc, g.VIEW);
       $.addClass(doc, view);
+      oldView = g.VIEW;
       g.VIEW = view;
-      switch (view) {
-        case 'index':
+      return {
+        index: function() {
+          if (oldView === g.VIEW) {
+            return;
+          }
           delete g.THREADID;
           $.off(d, 'ThreadUpdate', QR.statusCheck);
           return $.on(d, 'IndexRefresh', QR.generatePostableThreadsList);
-        case 'thread':
+        },
+        thread: function() {
           g.THREADID = +window.location.pathname.split('/')[3];
+          if (oldView === g.VIEW) {
+            return;
+          }
           $.on(d, 'ThreadUpdate', QR.statusCheck);
           return $.off(d, 'IndexRefresh', QR.generatePostableThreadsList);
-      }
+        }
+      }[g.VIEW]();
     },
     updateBoard: function(boardID) {
       var fullBoardList, onload, req;
@@ -15712,6 +15756,7 @@
       $.rmClass($('.current', fullBoardList), 'current');
       $.addClass($("a[href*='/" + boardID + "/']", fullBoardList), 'current');
       Header.generateBoardList(Conf['boardnav'].replace(/(\r\n|\n|\r)/g, ' '));
+      QR.flagsInput();
       onload = function(e) {
         var aboard, board, err, _i, _len, _ref;
         if (e.type === 'abort') {
@@ -15745,14 +15790,14 @@
           return;
         }
         Navigate.updateTitle(board);
-        return Navigate.updateFavicon(!!board.ws_board);
+        return Navigate.updateSFW(!!board.ws_board);
       };
       return req = $.ajax('//a.4cdn.org/boards.json', {
         onabort: onload,
         onloadend: onload
       });
     },
-    updateFavicon: function(sfw) {
+    updateSFW: function(sfw) {
       var theme;
       Favicon.el.href = "//s.4cdn.org/image/favicon" + (sfw ? '-ws' : '') + ".ico";
       $.add(d.head, Favicon.el);
@@ -15771,7 +15816,6 @@
         theme = Themes[Conf[g.THEMESTRING] || (sfw ? 'Yotsuba B' : 'Yotsuba')] || Themes[Conf[g.THEMESTRING] = sfw ? 'Yotsuba B' : 'Yotsuba'];
         Style.setTheme(theme);
       }
-      mainStyleSheet.href = newStyleSheet.href;
       return Main.setClass();
     },
     updateTitle: function(_arg) {
@@ -15815,26 +15859,30 @@
         pageNum = view;
         view = 'index';
       }
-      if (view !== g.VIEW) {
-        Navigate.disconnect();
-        Navigate.clean();
+      if (view === g.VIEW && boardID === g.BOARD.ID) {
         Navigate.updateContext(view);
+      } else {
+        Navigate.disconnect();
+        Navigate.updateContext(view);
+        Navigate.clean();
         Navigate.reconnect();
       }
-      if (view === 'index') {
-        if (boardID === g.BOARD.ID) {
-          Navigate.title = function() {
+      if (boardID === g.BOARD.ID) {
+        Navigate.title = function() {
+          if (view === 'index') {
             return d.title = $('.boardTitle').textContent;
-          };
-        } else {
-          g.BOARD = new Board(boardID);
-          Navigate.title = function() {
-            return Navigate.updateBoard(boardID);
-          };
-        }
+          }
+        };
+      } else {
+        g.BOARD = new Board(boardID);
+        Navigate.title = function() {
+          return Navigate.updateBoard(boardID);
+        };
+      }
+      if (view === 'index') {
         return Index.update(pageNum);
       } else {
-        Navigate.updateFavicon(Favicon.SFW);
+        Navigate.updateSFW(Favicon.SFW);
         load = Navigate.load;
         Navigate.req = $.ajax("//a.4cdn.org/" + boardID + "/res/" + threadID + ".json", {
           onabort: load,
@@ -15861,6 +15909,7 @@
         new Notice('warning', "Failed to load thread." + (req.status ? " " + req.status : ''));
         return;
       }
+      Navigate.title();
       try {
         return Navigate.parse(JSON.parse(req.response).posts);
       } catch (_error) {

@@ -42,7 +42,7 @@ QuoteBacklink =
           $.on link, 'mouseover', QuotePreview.mouseover
         if Conf['Quote Inlining']
           $.on link, 'click', QuoteInline.toggle
-          nodes.push.apply nodes, QuoteInline.qiQuote link, $.hasClass link, 'filtered' if Conf['Quote Hash Navigation']
+          nodes.push QuoteInline.qiQuote link, $.hasClass link, 'filtered' if Conf['Quote Hash Navigation']
         $.add container, nodes
     return
   secondNode: ->
