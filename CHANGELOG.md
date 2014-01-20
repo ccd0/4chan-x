@@ -1,3 +1,5 @@
+- Stability update.
+
 ## 3.15.0 - *2013-12-13*
 
 - More index navigation improvements:
