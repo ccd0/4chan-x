@@ -435,6 +435,8 @@ Settings =
   saveSelectedArchive: ->
     $.get 'selectedArchives', Conf['selectedArchives'], ({selectedArchives}) =>
       (selectedArchives[@dataset.boardID] or= {})[@dataset.type] = +@value
+      Conf['selectedArchives'] = selectedArchives
+      Redirect.selectArchives()
       $.set 'selectedArchives', selectedArchives
 
   keybinds: (section) ->
