@@ -393,6 +393,7 @@ Index =
       else
         pageNum = Index.getCurrentPage()
     else
+      return unless Index.searchInput.dataset.searching
       pageNum = Index.pageBeforeSearch
       delete Index.pageBeforeSearch
       <% if (type === 'userscript') { %>
