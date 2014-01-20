@@ -5,7 +5,7 @@ Redirect =
     @update()
 
   selectArchives: ->
-    data =
+    Redirect.data =
       thread: {}
       post:   {}
       file:   {}
@@ -18,17 +18,17 @@ Redirect =
             archive.files
           else
             archive.boards
-          data[type][boardID] = archive if boardID in arr
+          Redirect.data[type][boardID] = archive if boardID in arr
           break
     for archive in Conf['archives']
       for boardID in archive.boards
-        unless boardID of data.thread
-          data.thread[boardID] = archive
-        unless boardID of data.post or archive.software isnt 'foolfuuka'
-          data.post[boardID] = archive
-        unless boardID of data.file or boardID not in archive.files
-          data.file[boardID] = archive
-    Redirect.data = data
+        unless boardID of Redirect.data.thread
+          Redirect.data.thread[boardID] = archive
+        unless boardID of Redirect.data.post or archive.software isnt 'foolfuuka'
+          Redirect.data.post[boardID] = archive
+        unless boardID of Redirect.data.file or boardID not in archive.files
+          Redirect.data.file[boardID] = archive
+    return
   update: (cb) ->
     $.get 'lastarchivecheck', 0, ({lastarchivecheck}) ->
       now = Date.now()
