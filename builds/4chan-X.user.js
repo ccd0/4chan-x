@@ -3408,32 +3408,19 @@
       return Get.insert(post, root, context);
     },
     parseMarkup: function(text) {
-      switch (text) {
-        case '\n':
-          return '<br>';
-        case '[b]':
-          return '<b>';
-        case '[/b]':
-          return '</b>';
-        case '[spoiler]':
-          return '<s>';
-        case '[/spoiler]':
-          return '</s>';
-        case '[code]':
-          return '<pre class=prettyprint>';
-        case '[/code]':
-          return '</pre>';
-        case '[moot]':
-          return '<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">';
-        case '[/moot]':
-          return '</div>';
-        case '[banned]':
-          return '<strong style="color: red;">';
-        case '[/banned]':
-          return '</strong>';
-        default:
-          return text.replace(':lit', '');
-      }
+      return {
+        '\n': '<br>',
+        '[b]': '<b>',
+        '[/b]': '</b>',
+        '[spoiler]': '<s>',
+        '[/spoiler]': '</s>',
+        '[code]': '<pre class=prettyprint>',
+        '[/code]': '</pre>',
+        '[moot]': '<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">',
+        '[/moot]': '</div>',
+        '[banned]': '<strong style="color: red;">',
+        '[/banned]': '</strong>'
+      }[text] || text.replace(':lit', '');
     }
   };
 
