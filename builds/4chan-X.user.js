@@ -22,7 +22,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.3.2 - 2014-01-19
+* 4chan X - Version 1.3.2 - 2014-01-21
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -7506,9 +7506,9 @@
         return ImageExpand.toggle(Get.postFromNode(this));
       },
       toggleAll: function() {
-        var func;
+        var func, toggle;
         $.event('CloseMenu');
-        func = function(post) {
+        toggle = function(post) {
           var file;
           file = post.file;
           if (!(file && file.isImage && doc.contains(post.nodes.root))) {
@@ -7530,11 +7530,11 @@
         }
         return g.posts.forEach(function(post) {
           var _i, _len, _ref;
-          func(post);
+          toggle(post);
           _ref = post.clones;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             post = _ref[_i];
-            func(post);
+            toggle(post);
           }
         });
       },
