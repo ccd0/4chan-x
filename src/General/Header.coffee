@@ -200,11 +200,9 @@ Header =
   hideBarOnScroll: ->
     offsetY = window.pageYOffset
     if offsetY > (Header.previousOffset or 0)
-      $.addClass Header.bar, 'autohide'
-      $.addClass Header.bar, 'scroll'
+      $.addClass Header.bar, 'autohide', 'scroll'
     else
-      $.rmClass Header.bar, 'autohide'
-      $.rmClass Header.bar, 'scroll'
+      $.rmClass Header.bar,  'autohide', 'scroll'
     Header.previousOffset = offsetY
 
   setBarPosition: (bottom) ->

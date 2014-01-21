@@ -2,16 +2,14 @@ PSAHiding =
   init: ->
     return if !Conf['Announcement Hiding']
 
-    $.addClass doc, 'hide-announcement'
-    $.addClass doc, 'hide-announcement-enabled'
+    $.addClass doc, 'hide-announcement', 'hide-announcement-enabled'
 
     $.on d, '4chanXInitFinished', @setup
   setup: ->
     $.off d, '4chanXInitFinished', PSAHiding.setup
 
     unless psa = $.id 'globalMessage'
-      $.rmClass doc, 'hide-announcement'
-      $.rmClass doc, 'hide-announcement-enabled'
+      $.rmClass doc, 'hide-announcement', 'hide-announcement-enabled'
       return
 
     entry =

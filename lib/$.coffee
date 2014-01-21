@@ -93,10 +93,10 @@ $.addStyle = (css) ->
 $.x = (path, root=d.body) ->
   # XPathResult.ANY_UNORDERED_NODE_TYPE === 8
   d.evaluate(path, root, null, 8, null).singleNodeValue
-$.addClass = (el, className) ->
-  el.classList.add className
-$.rmClass = (el, className) ->
-  el.classList.remove className
+$.addClass = (el, className...) ->
+  el.classList.add className...
+$.rmClass = (el, className...) ->
+  el.classList.remove className...
 $.hasClass = (el, className) ->
   el.classList.contains className
 $.rm = do ->

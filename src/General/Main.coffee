@@ -128,12 +128,7 @@ Main =
     return if !Main.isThisPageLegit() or $.hasClass doc, 'fourchan-x'
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
-    <% if (type === 'crx') { %>
-    $.addClass doc, 'blink'
-    <% } else { %>
-    $.addClass doc, 'gecko'
-    <% } %>
-    $.addClass doc, 'fourchan-x'
+    $.addClass doc, 'fourchan-x', '<% if (type === 'crx') { %>blink<% } else { %>gecko<% } %>'
     $.addStyle Main.css
 
     if g.VIEW is 'catalog'
