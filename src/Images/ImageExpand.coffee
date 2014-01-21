@@ -33,9 +33,10 @@ ImageExpand =
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       e.preventDefault()
       ImageExpand.toggle Get.postFromNode @
+
     toggleAll: ->
       $.event 'CloseMenu'
-      func = (post) ->
+      toggle = (post) ->
         {file} = post
         return unless file and file.isImage and doc.contains post.nodes.root
         if ImageExpand.on and
@@ -43,6 +44,7 @@ ImageExpand =
           Conf['Expand from here'] and Header.getTopOf(file.thumb) < 0)
             return
         $.queueTask func, post
+
       if ImageExpand.on = $.hasClass ImageExpand.EAI, 'expand-all-shortcut'
         ImageExpand.EAI.className = 'contract-all-shortcut a-icon'
         ImageExpand.EAI.title     = 'Contract All Images'
@@ -51,10 +53,12 @@ ImageExpand =
         ImageExpand.EAI.className = 'expand-all-shortcut a-icon'
         ImageExpand.EAI.title     = 'Expand All Images'
         func = ImageExpand.contract
+
       g.posts.forEach (post) ->
-        func post
-        func post for post in post.clones
+        toggle post
+        toggle post for post in post.clones
         return
+
     setFitness: ->
       (if @checked then $.addClass else $.rmClass) doc, @name.toLowerCase().replace /\s+/g, '-'
 
