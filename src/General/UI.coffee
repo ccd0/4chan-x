@@ -140,6 +140,7 @@ UI = do ->
       e.stopPropagation()
 
     onFocus: (e) =>
+      e.stopPropagation()
       @focus e.target
     focus: (entry) ->
       while focused = $.x 'parent::*/child::*[contains(@class,"focused")]', entry
@@ -176,7 +177,7 @@ UI = do ->
     parseEntry: (entry) ->
       {el, subEntries} = entry
       $.addClass el, 'entry'
-      $.on el, 'focus mouseenter', @onFocus
+      $.on el, 'focus mouseover', @onFocus
       el.style.order = entry.order or 100
       return unless subEntries
       $.addClass el, 'has-submenu'
