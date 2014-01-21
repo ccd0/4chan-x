@@ -16,8 +16,8 @@
     ],
     "min": {
       "chrome": "29",
-      "firefox": "22",
-      "greasemonkey": "1.12"
+      "firefox": "26",
+      "greasemonkey": "1.14"
     }
   },
   "devDependencies": {
