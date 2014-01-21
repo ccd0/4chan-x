@@ -190,6 +190,11 @@ Main =
       alert '4chan X v2 detected: Disable it or v3 will break.'
 
     <% if (type === 'userscript') { %>
+    test = $.el 'span'
+    test.classList.add 'a', 'b'
+    if test.className isnt 'a b'
+      new Notice 'warning', "Your version of Firefox is outdated (v<%= meta.min.firefox %> minimum) and <%= meta.name %> may not operate correctly.", 30
+
     GMver = GM_info.version.split '.'
     for v, i in "<%= meta.min.greasemonkey %>".split '.'
       break if v < GMver[i]
