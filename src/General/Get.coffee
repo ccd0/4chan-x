@@ -76,6 +76,7 @@ Get =
       $.cache url,
         -> Get.archivedPost @, boardID, postID, root, context
       ,
+        responseType: 'json'
         withCredentials: url.archive.withCredentials
   insert: (post, root, context) ->
     # Stop here if the container has been removed while loading.
