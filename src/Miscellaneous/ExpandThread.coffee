@@ -74,12 +74,13 @@ ExpandThread =
       a.textContent = "Error #{req.statusText} (#{req.status})"
       return
 
-    Build.spoilerRange[thread.board] = req.response.posts.shift().custom_spoiler
+    Build.spoilerRange[thread.board] = req.response.posts[0].custom_spoiler
 
     posts      = []
     postsRoot  = []
     filesCount = 0
     for postData in req.response.posts
+      continue if postData.no is thread.ID
       if post = thread.posts[postData.no]
         filesCount++ if 'file' of post
         postsRoot.push post.nodes.root
