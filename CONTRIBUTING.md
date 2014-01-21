@@ -2,7 +2,9 @@
 
 Reporting bugs:
 
-1. Make sure both your **browser** and **4chan X** are up to date.
+1. Make sure both your **browser** and **4chan X** are up to date.<br>
+   Only **Chrome**, **Firefox** and **Opera** are supported.<br>
+   **SRWare Iron**, **Firefox ESR**, **Pale Moon**, **Waterfox**, and other derivatives are not supported, use them at your own risk.
 2. Look at the list of [known problems and solutions](https://github.com/MayhemYDG/4chan-x/wiki/FAQ#known-problems).
 3. Disable your other extensions & scripts to identify conflicts.
 4. If your issue persists, open a [new issue](https://github.com/MayhemYDG/4chan-x/issues) with the following information:
