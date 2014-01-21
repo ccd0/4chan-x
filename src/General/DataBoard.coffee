@@ -75,7 +75,7 @@ class DataBoard
         return
       board   = @data.boards[boardID]
       threads = {}
-      for page in JSON.parse e.target.response
+      for page in e.target.response
         for thread in page.threads
           if thread.no of board
             threads[thread.no] = board[thread.no]

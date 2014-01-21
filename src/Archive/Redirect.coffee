@@ -37,7 +37,7 @@ Redirect =
       return if lastarchivecheck > now - 2 * $.DAY
       $.ajax '<%= meta.page %>json/archives.json', onload: ->
         if @status is 200
-          Conf['archives'] = JSON.parse @response
+          Conf['archives'] = @response
           Redirect.selectArchives()
           $.set
             lastarchivecheck: now

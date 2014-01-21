@@ -239,7 +239,7 @@ Index =
 
     try
       if req.status is 200
-        Index.parse JSON.parse(req.response), pageNum
+        Index.parse req.response, pageNum
       else if req.status is 304 and pageNum?
         Index.pageNav pageNum
     catch err

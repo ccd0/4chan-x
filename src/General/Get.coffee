@@ -114,7 +114,7 @@ Get =
             "Error #{req.statusText} (#{req.status})."
       return
 
-    posts = JSON.parse(req.response).posts
+    {posts} = req.response
     Build.spoilerRange[boardID] = posts[0].custom_spoiler
     for post in posts
       break if post.no is postID # we found it!
@@ -145,7 +145,7 @@ Get =
       Get.insert post, root, context
       return
 
-    data = JSON.parse req.response
+    data = req.response
     if data.error
       $.addClass root, 'warning'
       root.textContent = data.error

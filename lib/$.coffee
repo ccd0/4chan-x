@@ -47,6 +47,8 @@ $.ajax = do ->
     if whenModified
       r.setRequestHeader 'If-Modified-Since', lastModified[url] if url of lastModified
       $.on r, 'load', -> lastModified[url] = r.getResponseHeader 'Last-Modified'
+    if /\.json$/.test url
+      r.responseType = 'json'
     $.extend r, options
     $.extend r.upload, upCallbacks
     r.send form

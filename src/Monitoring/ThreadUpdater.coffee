@@ -98,7 +98,7 @@ ThreadUpdater =
       switch req.status
         when 200
           g.DEAD = false
-          ThreadUpdater.parse JSON.parse(req.response).posts
+          ThreadUpdater.parse req.response.posts
           ThreadUpdater.setInterval()
         when 404
           g.DEAD = true
