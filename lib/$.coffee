@@ -269,7 +269,7 @@ $.set = do ->
   timeout = {}
 
   setArea = (area) ->
-    return if timeout[area]
+    return if !Object.keys(items[area]).length or timeout[area]
     chrome.storage[area].set items[area], ->
       if chrome.runtime.lastError
         c.error chrome.runtime.lastError.message
