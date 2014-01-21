@@ -279,9 +279,21 @@ Header =
   scrollTo: (root, down, needed) ->
     if down
       x = Header.getBottomOf root
+      if Conf['Header auto-hide on scroll'] and Conf['Bottom header']
+        {height} = Header.bar.getBoundingClientRect()
+        if x <= 0
+          x += height if !Header.isHidden()
+        else
+          x -= height if  Header.isHidden()
       window.scrollBy 0, -x unless needed and x >= 0
     else
       x = Header.getTopOf root
+      if Conf['Header auto-hide on scroll'] and !Conf['Bottom header']
+        {height} = Header.bar.getBoundingClientRect()
+        if x >= 0
+          x += height if !Header.isHidden()
+        else
+          x -= height if  Header.isHidden()
       window.scrollBy 0,  x unless needed and x >= 0
   scrollToIfNeeded: (root, down) ->
     Header.scrollTo root, down, true
@@ -298,6 +310,12 @@ Header =
       headRect = Header.toggle.getBoundingClientRect()
       bottom  -= clientHeight - headRect.bottom + headRect.height
     bottom
+  isHidden: ->
+    {top} = Header.bar.getBoundingClientRect()
+    if Conf['Bottom header']
+      top is doc.clientHeight
+    else
+      top < 0
 
   addShortcut: (el, index) ->
     shortcut = $.el 'span',
