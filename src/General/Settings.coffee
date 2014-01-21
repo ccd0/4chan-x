@@ -122,22 +122,18 @@ Settings =
     div = $.el 'div',
       innerHTML: "<button></button><span class=description>: Clear manually-hidden threads and posts on all boards. Reload the page to apply."
     button = $ 'button', div
-    hiddenNum = 0
-    $.get 'hiddenThreads', boards: {}, (item) ->
-      for ID, board of item.hiddenThreads.boards
+    $.get {hiddenThreads: {}, hiddenPosts: {}}, ({hiddenThreads, hiddenPosts}) ->
+      hiddenNum = 0
+      for ID, board of hiddenThreads.boards
+        hiddenNum += Object.keys(board).length
+      for ID, board of hiddenPosts.boards
         for ID, thread of board
-          hiddenNum++
-      button.textContent = "Hidden: #{hiddenNum}"
-    $.get 'hiddenPosts', boards: {}, (item) ->
-      for ID, board of item.hiddenPosts.boards
-        for ID, thread of board
-          for ID, post of thread
-            hiddenNum++
+          hiddenNum += Object.keys(thread).length
       button.textContent = "Hidden: #{hiddenNum}"
     $.on button, 'click', ->
       @textContent = 'Hidden: 0'
-      $.get 'hiddenThreads', boards: {}, (item) ->
-        for boardID of item.hiddenThreads.boards
+      $.get 'hiddenThreads', {}, ({hiddenThreads}) ->
+        for boardID of hiddenThreads.boards
           localStorage.removeItem "4chan-hide-t-#{boardID}"
         $.delete ['hiddenThreads', 'hiddenPosts']
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
