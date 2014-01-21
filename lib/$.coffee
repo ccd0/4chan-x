@@ -271,13 +271,16 @@ $.set = do ->
   timeout = {}
 
   setArea = (area) ->
-    return if !Object.keys(items[area]).length or timeout[area]
-    chrome.storage[area].set items[area], ->
+    data = items[area]
+    return if !Object.keys(data).length or timeout[area]
+    items[area] = {}
+    chrome.storage[area].set data, ->
       if chrome.runtime.lastError
         c.error chrome.runtime.lastError.message
+        for key, val of data when key not of items[area]
+          items[area][key] = val
         timeout[area] = setTimeout setArea, $.MINUTE, area
         return
-      items[area] = {}
       delete timeout[area]
 
   setAll = $.debounce $.SECOND, ->
