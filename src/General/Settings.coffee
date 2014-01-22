@@ -96,6 +96,7 @@ Settings =
     section.innerHTML = <%= importHTML('General/Settings-section-Main') %>
     $.on $('.export', section), 'click',  Settings.export
     $.on $('.import', section), 'click',  Settings.import
+    $.on $('.reset',  section), 'click',  Settings.reset
     $.on $('input',   section), 'change', Settings.onImport
 
     items  = {}
@@ -154,7 +155,7 @@ Settings =
     <% } %>
     a.click()
   import: ->
-    @nextElementSibling.click()
+    $('input', @parentNode).click()
   onImport: ->
     return unless file = @files[0]
     output = @parentNode.nextElementSibling
@@ -174,6 +175,11 @@ Settings =
   loadSettings: (data) ->
     version = data.version.split '.'
     if version[0] is '2'
+      convertSettings = (data, map) ->
+        for prevKey, newKey of map
+          data.Conf[newKey] = data.Conf[prevKey] if newKey
+          delete data.Conf[prevKey]
+        data
       data = Settings.convertSettings data,
         # General confs
         'Disable 4chan\'s extension': ''
@@ -243,11 +249,9 @@ Settings =
       data.Conf['watchedThreads'] = boards: ThreadWatcher.convert data.Conf['WatchedThreads']
       delete data.Conf['WatchedThreads']
     $.set data.Conf
-  convertSettings: (data, map) ->
-    for prevKey, newKey of map
-      data.Conf[newKey] = data.Conf[prevKey] if newKey
-      delete data.Conf[prevKey]
-    data
+  reset: ->
+    if confirm 'Your current settings will be entirely wiped, are you sure?'
+      $.clear -> window.location.reload() if confirm 'Reset successful. Reload now?'
 
   filter: (section) ->
     section.innerHTML = <%= importHTML('General/Settings-section-Filter') %>

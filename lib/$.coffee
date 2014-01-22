@@ -300,6 +300,15 @@ $.set = do ->
     else
       $.extend items.sync, key
     setAll()
+$.clear = (cb) ->
+  count = 2
+  done  = ->
+    if chrome.runtime.lastError
+      c.error chrome.runtime.lastError.message
+      return
+    cb?() unless --count
+  chrome.storage.local.clear done
+  chrome.storage.sync.clear  done
 <% } else { %>
 # http://wiki.greasespot.net/Main_Page
 $.sync = do ->
@@ -341,4 +350,7 @@ $.set = do ->
     for key, val of keys
       set key, val
     return
+$.clear = (cb) ->
+  $.delete GM_listValues().map (key) -> key.replace g.NAMESPACE, ''
+  cb?()
 <% } %>
