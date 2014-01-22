@@ -305,17 +305,15 @@ Header =
 
   toggleHideBarOnScroll: (e) ->
     hide = @checked
-    $.set 'Header auto-hide on scroll', hide
+    $.cb.checked.call @
     Header.setHideBarOnScroll hide
 
   hideBarOnScroll: ->
     offsetY = window.pageYOffset
     if offsetY > (Header.previousOffset or 0)
-      $.addClass Header.bar, 'autohide'
-      $.addClass Header.bar, 'scroll'
+      $.addClass Header.bar, 'autohide', 'scroll'
     else
-      $.rmClass Header.bar, 'autohide'
-      $.rmClass Header.bar, 'scroll'
+      $.rmClass Header.bar,  'autohide', 'scroll'
     Header.previousOffset = offsetY
 
   setBarPosition: (bottom) ->
@@ -389,9 +387,21 @@ Header =
   scrollTo: (root, down, needed) ->
     if down
       x = Header.getBottomOf root
+      if Conf['Header auto-hide on scroll'] and Conf['Bottom header']
+        {height} = Header.bar.getBoundingClientRect()
+        if x <= 0
+          x += height if !Header.isHidden()
+        else
+          x -= height if  Header.isHidden()
       window.scrollBy 0, -x unless needed and x >= 0
     else
       x = Header.getTopOf root
+      if Conf['Header auto-hide on scroll'] and !Conf['Bottom header']
+        {height} = Header.bar.getBoundingClientRect()
+        if x >= 0
+          x += height if !Header.isHidden()
+        else
+          x -= height if  Header.isHidden()
       window.scrollBy 0,  x unless needed and x >= 0
 
   scrollToIfNeeded: (root, down) ->
@@ -411,6 +421,12 @@ Header =
       headRect = Header.toggle.getBoundingClientRect()
       bottom  -= clientHeight - headRect.bottom + headRect.height
     bottom
+  isHidden: ->
+    {top} = Header.bar.getBoundingClientRect()
+    if Conf['Bottom header']
+      top is doc.clientHeight
+    else
+      top < 0
 
   addShortcut: (el) ->
     shortcut = $.el 'span',

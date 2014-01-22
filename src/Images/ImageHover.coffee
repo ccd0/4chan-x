@@ -38,10 +38,19 @@ ImageHover =
         return
 
     timeoutID = setTimeout (=> @src = post.file.URL + '?' + Date.now()), 3000
+    <% if (type === 'crx') { %>
+    $.ajax @src,
+      onloadend: ->
+        return if @status isnt 404
+        clearTimeout timeoutID
+        post.kill true
+    ,
+      type: 'head'
+    <% } else { %>
     # XXX CORS for i.4cdn.org WHEN?
     $.ajax "//a.4cdn.org/#{post.board}/res/#{post.thread}.json", onload: ->
       return if @status isnt 200
-      for postObj in JSON.parse(@response).posts
+      for postObj in @response.posts
         break if postObj.no is post.ID
       if postObj.no isnt post.ID
         clearTimeout timeoutID
@@ -49,3 +58,4 @@ ImageHover =
       else if postObj.filedeleted
         clearTimeout timeoutID
         post.kill true
+    <% } %>

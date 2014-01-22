@@ -249,7 +249,7 @@ Navigate =
     Navigate.title()
 
     try
-      Navigate.parse JSON.parse(req.response).posts
+      Navigate.parse req.response.posts
     catch err
       console.error 'Navigate failure:'
       console.log err

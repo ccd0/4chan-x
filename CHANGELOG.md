@@ -1,5 +1,7 @@
-### v1.3.2 
-*2014-01-12*
+**MayhemYDG**:
+- Added a `Reset Settings` button in the settings.
+- More stability update.
+- Stability update.
 
 **seaweedchan**:
 - Fix Menu errors on older Firefox versions, such as the ESR

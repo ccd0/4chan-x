@@ -77,13 +77,13 @@ ExpandThread =
       a.textContent = "Error #{req.statusText} (#{req.status})"
       return
 
-    data = JSON.parse(req.response).posts
-    Build.spoilerRange[thread.board] = data.shift().custom_spoiler
+    Build.spoilerRange[thread.board] = req.response.posts[0].custom_spoiler
 
     posts      = []
     postsRoot  = []
     filesCount = 0
-    for postData in data
+    for postData in req.response.posts
+      continue if postData.no is thread.ID
       if post = thread.posts[postData.no]
         filesCount++ if 'file' of post
         postsRoot.push post.nodes.root

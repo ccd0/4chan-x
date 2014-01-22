@@ -1,5 +1,4 @@
 Redirect =
-
   init: ->
     o =
       thread: {}
@@ -52,8 +51,8 @@ Redirect =
         software: "foolfuuka"
     ,
       name:   "4plebs"
-      boards: ["hr", "o", "pol", "s4s", "tg", "tv", "x"]
-      files:  ["hr", "o", "pol", "s4s", "tg", "tv", "x"]
+      boards: ["adv", "hr", "o", "pol", "s4s", "tg", "tv", "x"]
+      files:  ["adv", "hr", "o", "pol", "s4s", "tg", "tv", "x"]
       data:
         domain: "archive.4plebs.org"
         http:  true
@@ -65,6 +64,15 @@ Redirect =
       files:  ["c", "e", "w", "wg"]
       data:
         domain: "archive.nyafuu.org"
+        http:  true
+        https: true
+        software: "foolfuuka"
+    ,
+      name:   "Love is Over"
+      boards: ["d", "i"],
+      files:  ["d", "i"]
+      data:
+        domain: "loveisover.me"
         http:  true
         https: true
         software: "foolfuuka"
@@ -82,7 +90,7 @@ Redirect =
       boards: ["cgl", "g", "mu", "w"]
       files:  ["cgl", "g", "mu", "w"]
       data:
-        domain: "rbt.asia"
+        domain: "archive.rebeccablacktech.com"
         http:  true
         https: true
         software: "fuuka"
@@ -100,9 +108,33 @@ Redirect =
       files:  ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"]
       data:
         domain: "fuuka.warosu.org"
-        http:  true
         https: true
         software: "fuuka"
+    ,
+      name:   "fgts"
+      boards: ["soc"]
+      files:  ["soc"]
+      data:
+        domain: "fgts.eu"
+        http:  true
+        https: true
+        software: "foolfuuka"
+    ,
+      name: "maware"
+      boards: ["t"]
+      files:  ["t"]
+      data:
+        domain: "archive.mawa.re"
+        http:  true
+        software: "foolfuuka"
+    ,
+      name: "installgentoo.com"
+      boards: ["g", "t"]
+      files:  ["g", "t"]
+      data:
+        domain: "chan.installgentoo.com"
+        http: true
+        software: "foolfuuka"
     ,
       name:   "Foolz Beta"
       boards: ["a", "co", "d", "gd", "h", "jp", "m", "mlp", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
@@ -112,15 +144,6 @@ Redirect =
         http:  true
         https: true
         withCredentials: true
-        software: "foolfuuka"
-    ,
-      name:   "Love is Over"
-      boards: ["d", "i"],
-      files:  ["d", "i"]
-      data:
-        domain: "loveisover.me"
-        http:  true
-        https: true
         software: "foolfuuka"
   ]
 

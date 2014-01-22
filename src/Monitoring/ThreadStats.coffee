@@ -77,9 +77,8 @@ ThreadStats =
 
   onThreadsLoad: ->
     return unless Conf["Page Count in Stats"] and @status is 200
-    pages = JSON.parse @response
-    for page in pages
+    for page in @response
       for thread in page.threads when thread.no is ThreadStats.thread.ID
         ThreadStats.pageCountEl.textContent = page.page
-        (if page.page is pages.length - 1 then $.addClass else $.rmClass) ThreadStats.pageCountEl, 'warning'
+        (if page.page is @response.length - 1 then $.addClass else $.rmClass) ThreadStats.pageCountEl, 'warning'
         return

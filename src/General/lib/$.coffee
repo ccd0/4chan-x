@@ -54,6 +54,8 @@ $.ajax = do ->
     if whenModified
       r.setRequestHeader 'If-Modified-Since', lastModified[url] if url of lastModified
       $.on r, 'load', -> lastModified[url] = r.getResponseHeader 'Last-Modified'
+    if /\.json$/.test url
+      r.responseType = 'json'
     $.extend r, options
     $.extend r.upload, upCallbacks
     r.send form
@@ -113,11 +115,11 @@ $.X = (path, root) ->
   # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE === 7
   d.evaluate path, root, null, 7, null
 
-$.addClass = (el, className) ->
-  el.classList.add className
+$.addClass = (el, className...) ->
+  el.classList.add className...
 
-$.rmClass = (el, className) ->
-  el.classList.remove className
+$.rmClass = (el, className...) ->
+  el.classList.remove className...
 
 $.toggleClass = (el, className) ->
   el.classList.toggle className
@@ -332,29 +334,50 @@ $.get = (key, val, cb) ->
     chrome.storage.sync.get  syncItems,  done
 
 $.set = do ->
-  items = {}
-  localItems = {}
+  items =
+    sync: {}
+    local: {}
+  timeout = {}
 
-  set = $.debounce $.SECOND, ->
+  setArea = (area) ->
+    data = items[area]
+    return if !Object.keys(data).length or timeout[area]
+    items[area] = {}
+    chrome.storage[area].set data, ->
+      if chrome.runtime.lastError
+        c.error chrome.runtime.lastError.message
+        for key, val of data when key not of items[area]
+          items[area][key] = val
+        timeout[area] = setTimeout setArea, $.MINUTE, area
+        return
+      delete timeout[area]
+
+  setAll = $.debounce $.SECOND, ->
     for key in $.localKeys
-      if key of items
-        (localItems or= {})[key] = items[key]
-        delete items[key]
+      if key of items.sync
+        items.local[key] = items.sync[key]
+        delete items.sync[key]
     try
-      chrome.storage.local.set localItems
-      chrome.storage.sync.set items
-      items = {}
-      localItems = {}
+      setArea 'local'
+      setArea 'sync'
     catch err
       c.error err.stack
 
   (key, val) ->
     if typeof key is 'string'
-      items[key] = val
+      items.sync[key] = val
     else
-      $.extend items, key
-    set()
-
+      $.extend items.sync, key
+    setAll()
+$.clear = (cb) ->
+  count = 2
+  done = ->
+    if chrome.runtime.lastError
+      c.error chrome.runtime.lastError.message
+      return
+    cb?() unless --count
+  chrome.storage.local.clear done
+  chrome.storage.sync.clear done
 <% } else { %>
 
 # http://wiki.greasespot.net/Main_Page
@@ -402,6 +425,9 @@ $.set = do ->
     for key, val of keys
       set key, val
     return
+$.clear = (cb) ->
+  $.delete GM_listValues().map (key) -> key.replace g.NAMESPACE, ''
+  cb?()
 <% } %>
 
 $$ = (selector, root=d.body) ->

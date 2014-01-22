@@ -1,10 +1,9 @@
 PSAHiding =
   init: ->
     return if !Conf['Announcement Hiding']
-
     $.addClass doc, 'hide-announcement'
-
     $.on d, '4chanXInitFinished', @setup
+
   setup: ->
     $.off d, '4chanXInitFinished', PSAHiding.setup
 

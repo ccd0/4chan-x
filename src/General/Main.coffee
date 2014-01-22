@@ -78,16 +78,9 @@ Main =
     return if !Main.isThisPageLegit() or $.hasClass doc, 'fourchan-x'
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
-    <% if (type === 'crx') { %>
-    $.addClass doc, 'blink'
-    <% } else { %>
-    $.addClass doc, 'gecko'
-    <% } %>
-    $.addClass doc, 'fourchan-x'
-    $.addClass doc, 'seaweedchan'
-    $.addClass doc, g.VIEW
+    $.addClass doc, 'fourchan-x', 'seaweedchan', g.VIEW, '<% if (type === 'crx') { %>blink<% } else { %>gecko<% } %>'
     $.addStyle Main.css
-   
+
     Main.setClass()
 
   setClass: ->
@@ -124,6 +117,7 @@ Main =
     # Something might have gone wrong!
     Main.initStyle()
 
+    # 4chan Pass Link
     if styleSelector = $.id 'styleSelector'
       passLink = $.el 'a',
         textContent: '4chan Pass'
@@ -134,12 +128,18 @@ Main =
           'left=0,top=0,width=500,height=255,toolbar=0,resizable=0'
       $.before styleSelector.previousSibling, [$.tn '['; passLink, $.tn ']\u00A0\u00A0']
 
+    # Parse HTML or skip it and start building from JSON.
     unless Conf['JSON Navigation'] and g.VIEW is 'index'
       Main.initThread() 
     else
       $.event '4chanXInitFinished'
 
     <% if (type === 'userscript') { %>
+    test = $.el 'span'
+    test.classList.add 'a', 'b'
+    if test.className isnt 'a b'
+      new Notice 'warning', "Your version of Firefox is outdated (v<%= meta.min.firefox %> minimum) and <%= meta.name %> may not operate correctly.", 30
+
     GMver = GM_info.version.split '.'
     for v, i in "<%= meta.min.greasemonkey %>".split '.'
       continue if v is GMver[i]
@@ -175,6 +175,17 @@ Main =
       Main.callbackNodes Thread, threads
       Main.callbackNodesDB Post, posts, ->
         $.event '4chanXInitFinished'
+
+    $.get 'previousversion', null, ({previousversion}) ->
+      return if previousversion is g.VERSION
+      if previousversion
+        changelog = '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
+        el = $.el 'span',
+          innerHTML: "<%= meta.name %> has been updated to <a href='#{changelog}' target=_blank>version #{g.VERSION}</a>."
+        new Notice 'info', el, 15
+      else
+        Settings.open()
+      $.set 'previousversion', g.VERSION
 
   callbackNodes: (klass, nodes) ->
     i = 0
