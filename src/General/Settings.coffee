@@ -137,35 +137,22 @@ Settings =
           localStorage.removeItem "4chan-hide-t-#{boardID}"
         $.delete ['hiddenThreads', 'hiddenPosts']
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
-  export: (now, data) ->
-    unless typeof now is 'number'
-      now  = Date.now()
-      data =
-        version: g.VERSION
-        date: now
-      for db in DataBoard.keys
-        Conf[db] = boards: {}
-      # Make sure to export the most recent data.
-      $.get Conf, (Conf) ->
-        # XXX don't export archives.
-        delete Conf['archives']
-        data.Conf = Conf
-        Settings.export now, data
-      return
+  export: ->
+    # Make sure to export the most recent data.
+    $.get Conf, (Conf) ->
+      # XXX don't export archives.
+      delete Conf['archives']
+      Settings.downloadExport {version: g.VERSION, date: Date.now(), Conf}
+  downloadExport: (data) ->
     a = $.el 'a',
-      className: 'warning'
-      textContent: 'Save me!'
-      download: "<%= meta.name %> v#{g.VERSION}-#{now}.json"
+      download: "<%= meta.name %> v#{g.VERSION}-#{data.date}.json"
       href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data, null, 2}"
-      target: '_blank'
     <% if (type === 'userscript') { %>
-    # XXX Firefox won't let us download automatically.
     p = $ '.imp-exp-result', Settings.dialog
     $.rmAll p
     $.add p, a
-    <% } else { %>
-    a.click()
     <% } %>
+    a.click()
   import: ->
     @nextElementSibling.click()
   onImport: ->
@@ -177,8 +164,7 @@ Settings =
     reader = new FileReader()
     reader.onload = (e) ->
       try
-        data = JSON.parse e.target.result
-        Settings.loadSettings data
+        Settings.loadSettings JSON.parse e.target.result
         if confirm 'Import successful. Reload now?'
           window.location.reload()
       catch err
