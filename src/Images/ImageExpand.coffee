@@ -132,6 +132,15 @@ ImageExpand =
         return
 
     timeoutID = setTimeout ImageExpand.expand, 10000, post
+    <% if (type === 'crx') { %>
+    $.ajax @src,
+      onloadend: ->
+        return if @status isnt 404
+        clearTimeout timeoutID
+        post.kill true
+    ,
+      type: 'head'
+    <% } else { %>
     # XXX CORS for i.4cdn.org WHEN?
     $.ajax "//a.4cdn.org/#{post.board}/res/#{post.thread}.json", onload: ->
       return if @status isnt 200
@@ -143,6 +152,7 @@ ImageExpand =
       else if postObj.filedeleted
         clearTimeout timeoutID
         post.kill true
+    <% } %>
 
   menu:
     init: ->
