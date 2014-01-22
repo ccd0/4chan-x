@@ -1198,7 +1198,7 @@ a:only-of-type > .remove {
   left: 0px;
   width: 200px;
 }
-.export, .import {
+.export, .import, .reset {
   cursor: pointer;
   text-decoration: none !important;
 }
