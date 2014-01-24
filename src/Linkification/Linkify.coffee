@@ -241,7 +241,7 @@ Linkify =
       service = Linkify.types[key].title
       switch response.status
         when 200, 304
-          text = "#{service.text JSON.parse response.responseText}"
+          text = "#{service.text response.response}"
           if Conf['Embedding']
             embed.dataset.title = text
         when 404
@@ -304,7 +304,7 @@ Linkify =
         $.cache "https://mediacru.sh/#{a.dataset.uid}.json", ->
           {status} = @
           return div.innerHTML = "ERROR #{status}" unless status in [200, 304]
-          {files} = JSON.parse @response
+          {files} = @response
           for type in ['video/mp4', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'image/svg', 'audio/mpeg']
             for file in files
               if file.type is type
