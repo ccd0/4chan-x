@@ -133,12 +133,8 @@ $.rm = do ->
   else
     (el) -> el.parentNode?.removeChild el
 
-$.rmAll = (root) ->
-  # jsperf.com/emptify-element
-  for node in [root.childNodes...]
-    # HTMLSelectElement.remove !== Element.remove
-    root.removeChild node
-  return
+# jsperf.com/emptify-element/9
+$.rmAll = (root) -> root.textContent = ''
 
 $.tn = (s) ->
   d.createTextNode s

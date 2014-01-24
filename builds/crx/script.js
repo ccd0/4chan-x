@@ -552,12 +552,7 @@
   })();
 
   $.rmAll = function(root) {
-    var node, _i, _len, _ref;
-    _ref = __slice.call(root.childNodes);
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      node = _ref[_i];
-      root.removeChild(node);
-    }
+    return root.textContent = '';
   };
 
   $.tn = function(s) {
@@ -12155,13 +12150,11 @@
       }
     },
     clean: function() {
-      var board;
       g.threads.forEach(function(thread) {
         return thread.collect();
       });
       QuoteBacklink.containers = {};
-      board = $('.board');
-      return $.replace(board, board.cloneNode(false));
+      return $.rmAll($('.board'));
     },
     features: [['Thread Excerpt', ThreadExcerpt], ['Unread Count', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Expansion', ExpandThread]],
     disconnect: function() {

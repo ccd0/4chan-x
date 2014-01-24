@@ -37,8 +37,7 @@ Navigate =
     g.threads.forEach (thread) -> thread.collect()
     QuoteBacklink.containers = {}
 
-    board = $('.board')
-    $.replace board, board.cloneNode false
+    $.rmAll $('.board')
 
   features: [
     ['Thread Excerpt',   ThreadExcerpt]
