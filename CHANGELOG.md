@@ -1,3 +1,4 @@
+- Added `Original filename` variable to Sauce panel.
 - Added a `Reset Settings` button in the settings.
 
 ### 3.15.2 - *2014-01-22*
