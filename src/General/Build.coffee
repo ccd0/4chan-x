@@ -312,25 +312,33 @@ Build =
   fullThread: (board, data) -> Build.postFromObject data, board.ID
 
   threadCatalog: (thread) ->
+    {staticPath, gifIcon} = Build
     for data in Index.liveThreadData
       break if data.no is thread.ID
 
     if data.spoiler and !Conf['Reveal Spoiler Thumbnails']
-      src = "#{Build.staticPath}spoiler"
+      src = "#{staticPath}spoiler"
       if spoilerRange = Build.spoilerRange[thread.board]
         # Randomize the spoiler image.
         src += "-#{thread.board}" + Math.floor 1 + spoilerRange * Math.random()
       src += '.png'
-      imgWidth = imgHeight = 100
+      imgClass = 'spoiler-file'
     else if data.filedeleted
-      src = "#{Build.staticPath}filedeleted-res#{Build.gifIcon}"
-      imgWidth  = 127
-      imgHeight = 13
-    else
+      src = "#{staticPath}filedeleted-res#{gifIcon}"
+      imgClass = 'deleted-file'
+    else if thread.OP.file
       src = thread.OP.file.thumbURL
       max = Math.max data.tn_w, data.tn_h
       imgWidth  = data.tn_w * 150 / max
       imgHeight = data.tn_h * 150 / max
+    else
+      src = "#{staticPath}nofile.png"
+      imgClass = 'no-file'
+
+    thumb = if imgClass
+      <%= html('<img src="${src}" class="thumb ${imgClass}">') %>
+    else
+      <%= html('<img src="${src}" class="thumb" width="${imgWidth}" height="${imgHeight}">') %>
 
     postCount = data.replies + 1
     fileCount = data.images  + !!data.ext
@@ -345,7 +353,8 @@ Build =
       className: 'catalog-thread'
     $.extend root, <%= html(
       '<a href="/${thread.board}/thread/${thread.ID}" target="_blank">' +
-        '<img src="${src}" class="thumb" width="${imgWidth}" height="${imgHeight}">' +
+        '&{thumb}' +
+        '<div class="thread-icons"></div>' +
       '</a>' +
       '<div class="thread-stats" title="Post count / File count / Page count">' +
         '<span class="post-count">${postCount}</span> / <span class="file-count">${fileCount}</span> / <span class="page-count">${pageCount}</span>' +
@@ -353,6 +362,17 @@ Build =
       '&{subject}' +
       '<div class="comment">&{thread.OP.nodes.comment}</div>'
     ) %>
+
+    if thread.isSticky
+      $.add $('.thread-icons', root), $.el 'img',
+        src: "#{staticPath}sticky#{gifIcon}"
+        className: 'stickyIcon'
+        title: 'Sticky'
+    if thread.isClosed
+      $.add $('.thread-icons', root), $.el 'img',
+        src: "#{staticPath}closed#{gifIcon}"
+        className: 'closedIcon'
+        title: 'Closed'
 
     if data.bumplimit
       $.addClass $('.post-count', root), 'warning'
