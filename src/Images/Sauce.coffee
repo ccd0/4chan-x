@@ -15,7 +15,7 @@ Sauce =
       name: 'Sauce'
       cb:   @node
   createSauceLink: (link) ->
-    link = link.replace /%(T?URL|MD5|board|NAME)/g, (parameter) ->
+    link = link.replace /%(T?URL|MD5|board|name)/g, (parameter) ->
       switch parameter
         when '%TURL'
           "' + encodeURIComponent(post.file.thumbURL) + '"
@@ -25,7 +25,7 @@ Sauce =
           "' + encodeURIComponent(post.file.MD5) + '"
         when '%board'
           "' + encodeURIComponent(post.board) + '"
-        when '%NAME'
+        when '%name'
           "' + encodeURIComponent(post.file.name) + '"
         else
           parameter
