@@ -18,6 +18,7 @@ Index =
         { el: $.el 'label', <%= html('<input type="radio" name="Index Mode" value="paged"> Paged') %> }
         { el: $.el 'label', <%= html('<input type="radio" name="Index Mode" value="infinite"> Infinite scrolling') %> }
         { el: $.el 'label', <%= html('<input type="radio" name="Index Mode" value="all pages"> All threads') %> }
+        { el: $.el 'label', <%= html('<input type="radio" name="Index Mode" value="catalog"> Catalog') %> }
       ]
     for label in modeEntry.subEntries
       input = label.el.firstChild
@@ -63,6 +64,7 @@ Index =
 
     $.addClass doc, 'index-loading'
     @root = $.el 'div', className: 'board'
+    Index.cb.rootClass()
     @pagelist = $.el 'div',
       className: 'pagelist'
       hidden: true
@@ -130,7 +132,10 @@ Index =
       setTimeout reset, 3 * $.SECOND
 
   cb:
+    rootClass: ->
+      (if Conf['Index Mode'] is 'catalog' then $.addClass else $.rmClass) Index.root, 'catalog-mode'
     mode: ->
+      Index.cb.rootClass()
       Index.togglePagelist()
       Index.buildIndex()
     sort: ->
@@ -410,14 +415,23 @@ Index =
     Index.sortedNodes = topNodes.concat(bottomNodes)
 
   buildIndex: ->
-    if Conf['Index Mode'] isnt 'all pages'
-      nodes = Index.buildSinglePage Index.getCurrentPage()
-    else
-      nodes = Index.sortedNodes
+    switch Conf['Index Mode']
+      when 'all pages'
+        nodes = Index.sortedNodes
+      when 'catalog'
+        nodes = Index.sortedNodes
+          .map((threadRoot) -> Get.threadFromRoot threadRoot)
+          .filter((thread) -> !thread.isHidden)
+          .map (thread) -> thread.getCatalogView()
+      else
+        nodes = Index.buildSinglePage Index.getCurrentPage()
     $.rmAll Index.root
     $.rmAll Header.hover
-    Index.buildReplies nodes if Conf['Show Replies']
-    Index.buildStructure nodes
+    if Conf['Index Mode'] is 'catalog'
+      $.add Index.root, nodes
+    else
+      Index.buildReplies nodes if Conf['Show Replies']
+      Index.buildStructure nodes
 
   buildSinglePage: (pageNum) ->
     nodesPerPage = Index.threadsNumPerPage
