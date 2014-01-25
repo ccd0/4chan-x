@@ -39,6 +39,10 @@ class Thread
       $ '[title="Quote this post"]', @OP.nodes.info
     $.after root, [$.tn(' '), icon]
 
+  getCatalogView: ->
+    return @catalogView if @catalogView
+    @catalogView = Build.threadCatalog @
+
   kill: ->
     @isDead = true
     @timeOfDeath = Date.now()

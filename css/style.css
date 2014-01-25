@@ -401,6 +401,34 @@ a[href="javascript:;"] {
 .summary {
   text-decoration: none;
 }
+.catalog-mode {
+  text-align: center;
+}
+.catalog-thread {
+  display: inline-block;
+  vertical-align: top;
+  padding-top: 5px;
+  width: 165px;
+  max-height: 320px;
+  overflow: hidden;
+  word-break: break-word;
+}
+.thumb {
+  max-width: 150px;
+  max-height: 150px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, .25);
+}
+.thread-stats {
+  cursor: help;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: .8;
+  margin-top: 1px;
+  float: none;
+}
+.catalog-thread .subject {
+  font-weight: 700;
+}
 
 /* Announcement Hiding */
 :root.hide-announcement #globalMessage,

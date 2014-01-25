@@ -14,6 +14,7 @@ Index =
       subEntries: [
         { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="paged"> Paged' }
         { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="all pages"> All threads' }
+        { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="catalog"> Catalog' }
       ]
     for label in modeEntry.subEntries
       input = label.el.firstChild
@@ -68,6 +69,7 @@ Index =
     $.addClass doc, 'index-loading'
     @update()
     @root = $.el 'div', className: 'board'
+    Index.cb.rootClass()
     @pagelist = $.el 'div',
       className: 'pagelist'
       hidden: true
@@ -101,7 +103,10 @@ Index =
         $.replace $('.pagelist'), Index.pagelist
 
   cb:
+    rootClass: ->
+      (if Conf['Index Mode'] is 'catalog' then $.addClass else $.rmClass) Index.root, 'catalog-mode'
     mode: ->
+      Index.cb.rootClass()
       Index.togglePagelist()
       Index.buildIndex()
     sort: ->
@@ -368,14 +373,21 @@ Index =
       Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
     return
   buildIndex: ->
-    if Conf['Index Mode'] is 'paged'
-      pageNum = Index.getCurrentPage()
-      nodesPerPage = Index.threadsNumPerPage * 2
-      nodes = Index.sortedNodes[nodesPerPage * pageNum ... nodesPerPage * (pageNum + 1)]
-    else
-      nodes = Index.sortedNodes
+    switch Conf['Index Mode']
+      when 'paged'
+        pageNum = Index.getCurrentPage()
+        nodesPerPage = Index.threadsNumPerPage * 2
+        nodes = Index.sortedNodes[nodesPerPage * pageNum ... nodesPerPage * (pageNum + 1)]
+      when 'catalog'
+        nodes = Index.sortedNodes
+          .filter((n, i) -> !(i % 2))
+          .map((threadRoot) -> Get.threadFromRoot threadRoot)
+          .filter((thread) -> !thread.isHidden)
+          .map (thread) -> thread.getCatalogView()
+      else
+        nodes = Index.sortedNodes
     $.rmAll Index.root
-    Index.buildReplies nodes if Conf['Show Replies']
+    Index.buildReplies nodes if Conf['Show Replies'] and Conf['Index Mode'] isnt 'catalog'
     $.event 'IndexBuild', nodes
     $.add Index.root, nodes
 

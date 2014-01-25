@@ -254,9 +254,49 @@ Build =
       [posts, files] = if Conf['Show Replies']
         [data.omitted_posts, data.omitted_images]
       else
-        # XXX data.images is not accurate.
-        [data.replies, data.omitted_images + data.last_replies.filter((data) -> !!data.ext).length]
+        [data.replies, data.images]
       nodes.push Build.summary board.ID, data.no, posts, files
 
     $.add root, nodes
+    root
+  threadCatalog: (thread) ->
+    for data in Index.liveThreadData
+      break if data.no is thread.ID
+
+    if data.spoiler and !Conf['Reveal Spoilers']
+      src = "#{Build.staticPath}spoiler"
+      if spoilerRange = Build.spoilerRange[thread.board]
+        # Randomize the spoiler image.
+        src += "-#{thread.board}" + Math.floor 1 + spoilerRange * Math.random()
+      src += '.png'
+      imgWidth = imgHeight = 100
+    else if data.filedeleted
+      src = "#{Build.staticPath}filedeleted-res#{Build.gifIcon}"
+      imgWidth  = 127
+      imgHeight = 13
+    else
+      src = thread.OP.file.thumbURL
+      max = Math.max data.tn_w, data.tn_h
+      imgWidth  = data.tn_w * 150 / max
+      imgHeight = data.tn_h * 150 / max
+
+    postCount = data.replies + 1
+    fileCount = data.images  + !!data.ext
+    pageCount = Math.floor Index.liveThreadIDs.indexOf(thread.ID) / Index.threadsNumPerPage
+
+    subject = if thread.OP.info.subject
+      "<div class='subject'>#{thread.OP.info.subject}</div>"
+    else
+      ''
+    comment = thread.OP.nodes.comment.innerHTML.replace /(<br>){2,}/g, '<br>'
+
+    root = $.el 'div',
+      className: 'catalog-thread'
+      innerHTML: <%= importHTML('General/Thread-catalog-view') %>
+
+    if data.bumplimit
+      $.addClass $('.post-count', root), 'warning'
+    if data.imagelimit
+      $.addClass $('.file-count', root), 'warning'
+
     root
