@@ -239,6 +239,8 @@ Settings =
             '%MD5'
           when '$4'
             '%board'
+          when '$5'
+            '%FNAME'
           else
             c
       for key, val of Config.hotkeys when key of data.Conf
