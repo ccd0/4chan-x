@@ -260,25 +260,28 @@ Build =
     $.add root, nodes
     root
   threadCatalog: (thread) ->
+    {staticPath, gifIcon} = Build
     for data in Index.liveThreadData
       break if data.no is thread.ID
 
     if data.spoiler and !Conf['Reveal Spoilers']
-      src = "#{Build.staticPath}spoiler"
+      src = "#{staticPath}spoiler"
       if spoilerRange = Build.spoilerRange[thread.board]
         # Randomize the spoiler image.
         src += "-#{thread.board}" + Math.floor 1 + spoilerRange * Math.random()
       src += '.png'
-      imgWidth = imgHeight = 100
+      imgClass = 'spoiler-file'
     else if data.filedeleted
-      src = "#{Build.staticPath}filedeleted-res#{Build.gifIcon}"
-      imgWidth  = 127
-      imgHeight = 13
-    else
+      src = "#{staticPath}filedeleted-res#{gifIcon}"
+      imgClass = 'deleted-file'
+    else if thread.OP.file
       src = thread.OP.file.thumbURL
       max = Math.max data.tn_w, data.tn_h
       imgWidth  = data.tn_w * 150 / max
       imgHeight = data.tn_h * 150 / max
+    else
+      src = "#{staticPath}nofile.png"
+      imgClass = 'no-file'
 
     postCount = data.replies + 1
     fileCount = data.images  + !!data.ext
@@ -293,6 +296,17 @@ Build =
     root = $.el 'div',
       className: 'catalog-thread'
       innerHTML: <%= importHTML('General/Thread-catalog-view') %>
+
+    if thread.isSticky
+      $.add $('.thread-icons', root), $.el 'img',
+        src: "#{staticPath}sticky#{gifIcon}"
+        className: 'stickyIcon'
+        title: 'Sticky'
+    if thread.isClosed
+      $.add $('.thread-icons', root), $.el 'img',
+        src: "#{staticPath}closed#{gifIcon}"
+        className: 'closedIcon'
+        title: 'Closed'
 
     if data.bumplimit
       $.addClass $('.post-count', root), 'warning'

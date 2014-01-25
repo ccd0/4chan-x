@@ -1,5 +1,6 @@
 <a href="/#{thread.board}/res/#{thread.ID}" target="_blank">
-  <img src="#{src}" class="thumb" width="#{imgWidth}" height="#{imgHeight}">
+  <img src="#{src}" class="thumb #{imgClass or ''}" #{if imgWidth then "width='#{imgWidth}'"} #{if imgHeight then "height='#{imgHeight}'"}>
+  <div class="thread-icons"></div>
 </a>
 <div class="thread-stats" title="Post count / File count / Page count">
   <span class="post-count">#{postCount}</span> / <span class="file-count">#{fileCount}</span> / <span class="page-count">#{pageCount}</span>

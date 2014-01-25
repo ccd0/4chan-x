@@ -413,10 +413,33 @@ a[href="javascript:;"] {
   overflow: hidden;
   word-break: break-word;
 }
+.catalog-thread > a {
+  display: inline-block;
+  position: relative;
+}
 .thumb {
   max-width: 150px;
   max-height: 150px;
   box-shadow: 0 0 5px rgba(0, 0, 0, .25);
+}
+.thunb.spoiler-file {
+  width: 100px;
+  height: 100px;
+}
+.thumb.deleted-file {
+  width: 127px;
+  height: 13px;
+  padding: 20px 11px;
+}
+.thumb.no-file {
+  width: 77px;
+  height: 13px;
+  padding: 20px 36px;
+}
+.thread-icons {
+  position: absolute;
+  top: 1px;
+  right: 1px;
 }
 .thread-stats {
   cursor: help;
