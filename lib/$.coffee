@@ -99,16 +99,12 @@ $.rmClass = (el, className...) ->
   el.classList.remove className...
 $.hasClass = (el, className) ->
   el.classList.contains className
-$.rm = do ->
-  if 'remove' of Element.prototype
-    (el) -> el.remove()
-  else
-    (el) -> el.parentNode?.removeChild el
+$.rm = (el) ->
+  el.remove()
 $.rmAll = (root) ->
   # jsperf.com/emptify-element
   for node in [root.childNodes...]
-    # HTMLSelectElement.remove !== Element.remove
-    root.removeChild node
+    node.remove()
   return
 $.tn = (s) ->
   d.createTextNode s
