@@ -17,6 +17,11 @@ class Thread
     for key in ['title', 'textContent']
       icon[key] = icon[key].replace /\d+/, pageNum
     $('.page-count', @catalogView).textContent = pageNum if @catalogView
+  setCount: (type, count, reachedLimit) ->
+    return unless @catalogView
+    el = $ ".#{type}-count", @catalogView
+    el.textContent = count
+    (if reachedLimit then $.addClass else $.rmClass) el, 'warning'
   setStatus: (type, status) ->
     name = "is#{type}"
     return if @[name] is status

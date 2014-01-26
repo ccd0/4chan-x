@@ -294,6 +294,8 @@ Index =
       Index.nodes.push threadRoot, $.el 'hr'
       if thread = g.BOARD.threads[threadData.no]
         thread.setPage Math.floor i / Index.threadsNumPerPage
+        thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
+        thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
         thread.setStatus 'Sticky', !!threadData.sticky
         thread.setStatus 'Closed', !!threadData.closed
       else
