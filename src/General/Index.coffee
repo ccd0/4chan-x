@@ -1,5 +1,15 @@
 Index =
   init: ->
+    if g.VIEW is 'catalog'
+      $.ready ->
+        span = $.el 'a',
+          href: '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
+          textContent: 'Support for the official catalog to be removed'
+          title: '<%= meta.name %> now has a "catalog" Index mode.'
+          className: 'btn-wrap warning'
+          target: '_blank'
+        $.add $.id('info'), span
+
     return if g.VIEW isnt 'index' or g.BOARD.ID is 'f'
 
     @button = $.el 'a',
