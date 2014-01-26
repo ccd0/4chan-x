@@ -653,6 +653,15 @@ span.hide-announcement {
   text-decoration: none;
   border-bottom: 1px dashed;
 }
+@supports (text-decoration-style: dashed) or (-moz-text-decoration-style: dashed) {
+  .quotelink.forwardlink,
+  .backlink.forwardlink {
+    text-decoration: underline;
+    -moz-text-decoration-style: dashed;
+    text-decoration-style: dashed;
+    border-bottom: none;
+  }
+}
 .filtered {
   text-decoration: underline line-through;
 }
@@ -1189,7 +1198,7 @@ a:only-of-type > .remove {
   left: 0px;
   width: 200px;
 }
-.export, .import {
+.export, .import, .reset {
   cursor: pointer;
   text-decoration: none !important;
 }

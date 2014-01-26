@@ -5,45 +5,21 @@ Settings =
       className:   'settings-link'
       href:        'javascript:;'
       textContent: 'Settings'
-    $.on el, 'click', Settings.open
+    $.on el, 'click', @open
 
     $.event 'AddMenuEntry',
       type: 'header'
       el: el
       order: 1
 
-    $.get 'previousversion', null, (item) ->
-      if previous = item['previousversion']
-        return if previous is g.VERSION
-        # Avoid conflicts between sync'd newer versions
-        # and out of date extension on this device.
-        prev = previous.match(/\d+/g).map Number
-        curr = g.VERSION.match(/\d+/g).map Number
-        return unless prev[0] <= curr[0] and prev[1] <= curr[1] and prev[2] <= curr[2]
+    @addSection 'Main',     @main
+    @addSection 'Filter',   @filter
+    @addSection 'Sauce',    @sauce
+    @addSection 'Advanced', @advanced
+    @addSection 'Keybinds', @keybinds
 
-        changelog = '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
-        el = $.el 'span',
-          innerHTML: "<%= meta.name %> has been updated to <a href='#{changelog}' target=_blank>version #{g.VERSION}</a>."
-        if Conf['Show Updated Notifications']
-          new Notice 'info', el, 30
-      else
-        $.on d, '4chanXInitFinished', Settings.open
-      $.set 'previousversion', g.VERSION
-
-    {addSection} = Settings
-    addSection value, Settings[key] for key, value of {
-      'style':    'Style'
-      'themes':   'Themes'
-      'mascots':  'Mascots'
-      'main':     'Script'
-      'filter':   'Filter'
-      'sauce':    'Sauce'
-      'advanced': 'Advanced'
-      'keybinds': 'Keybinds'
-    }
-
-    $.on d, 'AddSettingsSection', Settings.addSection
-    $.on d, 'OpenSettings',       (e) -> Settings.open e.detail
+    $.on d, 'AddSettingsSection',   @addSection
+    $.on d, 'OpenSettings',         (e) => @open e.detail
 
     settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
     unless settings.disableAll
@@ -79,7 +55,9 @@ Settings =
 
     $.on $('.export', dialog), 'click',  Settings.export
     $.on $('.import', dialog), 'click',  Settings.import
+    $.on $('.reset',  dialog), 'click',  Settings.reset
     $.on $('input',   dialog), 'change', Settings.onImport
+
 
     links = []
     for section in Settings.sections
@@ -153,58 +131,41 @@ Settings =
     div = $.el 'div',
       innerHTML: "<button></button><span class=description>: Clear manually-hidden threads and posts on all boards. Reload the page to apply."
     button = $ 'button', div
-    hiddenNum = 0
-    $.get 'hiddenThreads', boards: {}, (item) ->
-      for ID, board of item.hiddenThreads.boards
+    $.get {hiddenThreads: {}, hiddenPosts: {}}, ({hiddenThreads, hiddenPosts}) ->
+      hiddenNum = 0
+      for ID, board of hiddenThreads.boards
+        hiddenNum += Object.keys(board).length
+      for ID, board of hiddenPosts.boards
         for ID, thread of board
-          hiddenNum++
-      button.textContent = "Hidden: #{hiddenNum}"
-    $.get 'hiddenPosts', boards: {}, (item) ->
-      for ID, board of item.hiddenPosts.boards
-        for ID, thread of board
-          for ID, post of thread
-            hiddenNum++
+          hiddenNum += Object.keys(thread).length
       button.textContent = "Hidden: #{hiddenNum}"
     $.on button, 'click', ->
       @textContent = 'Hidden: 0'
-      $.get 'hiddenThreads', boards: {}, (item) ->
-        for boardID of item.hiddenThreads.boards
+      $.get 'hiddenThreads', {}, ({hiddenThreads}) ->
+        for boardID of hiddenThreads.boards
           localStorage.removeItem "4chan-hide-t-#{boardID}"
         $.delete ['hiddenThreads', 'hiddenPosts']
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
 
-  export: (now, data) ->
-    unless typeof now is 'number'
-      now  = Date.now()
-      data =
-        version: g.VERSION
-        date: now
-      for db in DataBoard.keys
-        Conf[db] = boards: {}
-      # Make sure to export the most recent data.
-      $.get Conf, (Conf) ->
-        # XXX don't export archives.
-        delete Conf['archives']
-        data.Conf = Conf
-        Settings.export now, data
-      return
-    a = $.el 'a',
-      className: 'warning'
-      textContent: 'Save me!'
-      download: "<%= meta.name %> v#{g.VERSION}-#{now}.json"
-      href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data, null, 2}"
-      target: '_blank'
-    <% if (type !== 'userscript') { %>
-    a.click()
-    <% } else { %>
-    # XXX Firefox won't let us download automatically.
-    span = $ '.imp-exp-result', Settings.dialog
-    $.rmAll span
-    $.add span, a
-    <% } %>
+  export: ->
+    # Make sure to export the most recent data.
+    $.get Conf, (Conf) ->
+      # XXX don't export archives.
+      delete Conf['archives']
+      Settings.downloadExport {version: g.VERSION, date: Date.now(), Conf}
 
+  downloadExport: (data) ->
+    a = $.el 'a',
+      download: "<%= meta.name %> v#{g.VERSION}-#{data.date}.json"
+      href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data, null, 2}"
+    <% if (type === 'userscript') { %>
+    p = $ '.imp-exp-result', Settings.dialog
+    $.rmAll p
+    $.add p, a
+    <% } %>
+    a.click()
   import: ->
-    @nextElementSibling.click()
+    $('input', @parentNode).click()
 
   onImport: ->
     return unless file = @files[0]
@@ -215,8 +176,7 @@ Settings =
     reader = new FileReader()
     reader.onload = (e) ->
       try
-        data = JSON.parse e.target.result
-        Settings.loadSettings data
+        Settings.loadSettings JSON.parse e.target.result
         if confirm 'Import successful. Reload now?'
           window.location.reload()
       catch err
@@ -230,11 +190,9 @@ Settings =
       delete data.Conf['WatchedThreads']
     $.set data.Conf
 
-  convertSettings: (data, map) ->
-    for prevKey, newKey of map
-      data.Conf[newKey] = data.Conf[prevKey] if newKey
-      delete data.Conf[prevKey]
-    data
+  reset: ->
+    if confirm 'Your current settings will be entirely wiped, are you sure?'
+      $.clear -> window.location.reload() if confirm 'Reset successful. Reload now?'
 
   filter: (section) ->
     section.innerHTML = <%= importHTML('Settings/Filter-select') %>

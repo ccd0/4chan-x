@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         appchan x
 // @version      2.8.7
-// @minGMVer     1.13
+// @minGMVer     1.14
 // @minFFVer     26
 // @namespace    zixaphir
 // @description  The most comprehensive 4chan userscript.
@@ -13,6 +13,7 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue
+// @grant        GM_listValues
 // @grant        GM_openInTab
 // @run-at       document-start
 // @updateURL 	 https://github.com/zixaphir/appchan-x/raw/stable/builds/appchan-x.meta.js

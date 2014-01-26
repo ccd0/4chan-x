@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name         appchan x
 // @version      2.8.7
-// @minGMVer     1.13
+// @minGMVer     1.14
 // @minFFVer     26
 // @namespace    zixaphir
 // @description  The most comprehensive 4chan userscript.
@@ -14,6 +14,7 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue
+// @grant        GM_listValues
 // @grant        GM_openInTab
 // @run-at       document-start
 // @updateURL 	 https://github.com/zixaphir/appchan-x/raw/stable/builds/appchan-x.meta.js
@@ -22,7 +23,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.8.7 - 2014-01-21
+* appchan x - Version 2.8.7 - 2014-01-26
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -111,8 +112,8 @@
 
 (function() {
   var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, Callbacks, CatalogLinks, Clone, Color, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, InfiniScroll, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __slice = [].slice,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -2624,6 +2625,9 @@
           return lastModified[url] = r.getResponseHeader('Last-Modified');
         });
       }
+      if (/\.json$/.test(url)) {
+        r.responseType = 'json';
+      }
       $.extend(r, options);
       $.extend(r.upload, upCallbacks);
       r.send(form);
@@ -2712,12 +2716,16 @@
     return d.evaluate(path, root, null, 7, null);
   };
 
-  $.addClass = function(el, className) {
-    return el.classList.add(className);
+  $.addClass = function() {
+    var className, el, _ref;
+    el = arguments[0], className = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+    return (_ref = el.classList).add.apply(_ref, className);
   };
 
-  $.rmClass = function(el, className) {
-    return el.classList.remove(className);
+  $.rmClass = function() {
+    var className, el, _ref;
+    el = arguments[0], className = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+    return (_ref = el.classList).remove.apply(_ref, className);
   };
 
   $.toggleClass = function(el, className) {
@@ -2742,12 +2750,7 @@
   })();
 
   $.rmAll = function(root) {
-    var node, _i, _len, _ref;
-    _ref = __slice.call(root.childNodes);
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      node = _ref[_i];
-      root.removeChild(node);
-    }
+    return root.textContent = '';
   };
 
   $.tn = function(s) {
@@ -2979,6 +2982,13 @@
       }
     };
   })();
+
+  $.clear = function(cb) {
+    $["delete"](GM_listValues().map(function(key) {
+      return key.replace(g.NAMESPACE, '');
+    }));
+    return typeof cb === "function" ? cb() : void 0;
+  };
 
   $.remove = function(arr, value) {
     var i;
@@ -3622,7 +3632,7 @@
         }
         board = _this.data.boards[boardID];
         threads = {};
-        _ref = JSON.parse(e.target.response);
+        _ref = e.target.response;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           page = _ref[_i];
           _ref1 = page.threads;
@@ -4190,18 +4200,16 @@
     toggleHideBarOnScroll: function(e) {
       var hide;
       hide = this.checked;
-      $.set('Header auto-hide on scroll', hide);
+      $.cb.checked.call(this);
       return Header.setHideBarOnScroll(hide);
     },
     hideBarOnScroll: function() {
       var offsetY;
       offsetY = window.pageYOffset;
       if (offsetY > (Header.previousOffset || 0)) {
-        $.addClass(Header.bar, 'autohide');
-        $.addClass(Header.bar, 'scroll');
+        $.addClass(Header.bar, 'autohide', 'scroll');
       } else {
-        $.rmClass(Header.bar, 'autohide');
-        $.rmClass(Header.bar, 'scroll');
+        $.rmClass(Header.bar, 'autohide', 'scroll');
       }
       return Header.previousOffset = offsetY;
     },
@@ -4249,14 +4257,38 @@
       return Header.scrollTo(post);
     },
     scrollTo: function(root, down, needed) {
-      var x;
+      var height, x;
       if (down) {
         x = Header.getBottomOf(root);
+        if (Conf['Header auto-hide on scroll'] && Conf['Bottom header']) {
+          height = Header.bar.getBoundingClientRect().height;
+          if (x <= 0) {
+            if (!Header.isHidden()) {
+              x += height;
+            }
+          } else {
+            if (Header.isHidden()) {
+              x -= height;
+            }
+          }
+        }
         if (!(needed && x >= 0)) {
           return window.scrollBy(0, -x);
         }
       } else {
         x = Header.getTopOf(root);
+        if (Conf['Header auto-hide on scroll'] && !Conf['Bottom header']) {
+          height = Header.bar.getBoundingClientRect().height;
+          if (x >= 0) {
+            if (!Header.isHidden()) {
+              x += height;
+            }
+          } else {
+            if (Header.isHidden()) {
+              x -= height;
+            }
+          }
+        }
         if (!(needed && x >= 0)) {
           return window.scrollBy(0, x);
         }
@@ -4283,6 +4315,15 @@
         bottom -= clientHeight - headRect.bottom + headRect.height;
       }
       return bottom;
+    },
+    isHidden: function() {
+      var top;
+      top = Header.bar.getBoundingClientRect().top;
+      if (Conf['Bottom header']) {
+        return top === doc.clientHeight;
+      } else {
+        return top < 0;
+      }
     },
     addShortcut: function(el, icon) {
       $.addClass(el, 'shortcut');
@@ -4731,7 +4772,7 @@
       Index.board = "" + g.BOARD;
       try {
         if (req.status === 200) {
-          Index.parse(JSON.parse(req.response), pageNum);
+          Index.parse(req.response, pageNum);
         } else if (req.status === 304 && (pageNum != null)) {
           Index.pageNav(pageNum);
         }
@@ -5009,6 +5050,9 @@
           pageNum = Index.getCurrentPage();
         }
       } else {
+        if (!Index.searchInput.dataset.searching) {
+          return;
+        }
         pageNum = Index.pageBeforeSearch;
         delete Index.pageBeforeSearch;
         Index.searchInput.removeAttribute('data-searching');
@@ -5378,6 +5422,7 @@
         return $.cache(url, function() {
           return Get.archivedPost(this, boardID, postID, root, context);
         }, {
+          responseType: 'json',
           withCredentials: url.archive.withCredentials
         });
       }
@@ -5418,7 +5463,7 @@
         }
         return;
       }
-      posts = JSON.parse(req.response).posts;
+      posts = req.response.posts;
       Build.spoilerRange[boardID] = posts[0].custom_spoiler;
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
         post = posts[_i];
@@ -5454,7 +5499,7 @@
         Get.insert(post, root, context);
         return;
       }
-      data = JSON.parse(req.response);
+      data = req.response;
       if (data.error) {
         $.addClass(root, 'warning');
         root.textContent = data.error;
@@ -5559,6 +5604,7 @@
         this.type = type;
         this.rmEntry = __bind(this.rmEntry, this);
         this.addEntry = __bind(this.addEntry, this);
+        this.onFocus = __bind(this.onFocus, this);
         this.keybinds = __bind(this.keybinds, this);
         this.close = __bind(this.close, this);
         $.on(d, 'AddMenuEntry', this.addEntry);
@@ -5723,6 +5769,11 @@
         return e.stopPropagation();
       };
 
+      Menu.prototype.onFocus = function(e) {
+        e.stopPropagation();
+        return this.focus(e.target);
+      };
+
       Menu.prototype.focus = function(entry) {
         var bottom, cHeight, cWidth, eRect, focused, left, right, sRect, style, submenu, top, _i, _len, _ref, _ref1, _ref2;
         while (focused = $.x('parent::*/child::*[contains(@class,"focused")]', entry)) {
@@ -5774,10 +5825,7 @@
         var el, subEntries, subEntry, _i, _len;
         el = entry.el, subEntries = entry.subEntries;
         $.addClass(el, 'entry');
-        $.on(el, 'focus mouseover', (function(e) {
-          e.stopPropagation();
-          return this.focus(el);
-        }).bind(this));
+        $.on(el, 'focus mouseover', this.onFocus);
         el.style.order = entry.order || 100;
         if (!subEntries) {
           return;
@@ -6684,7 +6732,7 @@
           return;
         }
         threads = {};
-        _ref = JSON.parse(this.response);
+        _ref = this.response;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           page = _ref[_i];
           _ref1 = page.threads;
@@ -7888,7 +7936,7 @@
         switch (response.status) {
           case 200:
           case 304:
-            text = "" + (service.text(JSON.parse(response.responseText)));
+            text = "" + (service.text(response.response));
             if (Conf['Embedding']) {
               embed.dataset.title = text;
             }
@@ -7984,7 +8032,7 @@
             if (status !== 200 && status !== 304) {
               return div.innerHTML = "ERROR " + status;
             }
-            files = JSON.parse(this.response).files;
+            files = this.response.files;
             _ref = ['video/mp4', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'image/svg', 'audio/mpeg'];
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               type = _ref[_i];
@@ -8889,7 +8937,7 @@
           QR.cooldown.set({
             delay: 2
           });
-        } else if (err.textContent && (m = err.textContent.match(/wait\s(\d+)\ssecond/i))) {
+        } else if (err.textContent && (m = err.textContent.match(/wait\s+(\d+)\s+second/i))) {
           QR.cooldown.auto = QR.captcha.isEnabled ? !!QR.captcha.captchas.length : true;
           QR.cooldown.set({
             delay: m[1]
@@ -10028,12 +10076,13 @@
         }
         return $.ajax("//api.4chan.org/" + post.board + "/res/" + post.thread + ".json", {
           onload: function() {
-            var i, postObj;
+            var i, postObj, posts;
             if (this.status !== 200) {
               return;
             }
             i = 0;
-            while (postObj = JSON.parse(this.response).posts[i++]) {
+            posts = this.response.posts;
+            while (postObj = posts[i++]) {
               if (postObj.no === post.ID) {
                 break;
               }
@@ -10310,7 +10359,7 @@
           if (this.status !== 200) {
             return;
           }
-          _ref = JSON.parse(this.response).posts;
+          _ref = this.response.posts;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             postObj = _ref[_i];
             if (postObj.no === post.ID) {
@@ -10438,7 +10487,7 @@
           if (this.status !== 200) {
             return;
           }
-          _ref = JSON.parse(this.response).posts;
+          _ref = this.response.posts;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             postObj = _ref[_i];
             if (postObj.no === post.ID) {
@@ -11061,21 +11110,21 @@
       });
     },
     onThreadsLoad: function() {
-      var page, pages, thread, _i, _j, _len, _len1, _ref;
+      var page, thread, _i, _j, _len, _len1, _ref, _ref1;
       if (!(Conf["Page Count in Stats"] && this.status === 200)) {
         return;
       }
-      pages = JSON.parse(this.response);
-      for (_i = 0, _len = pages.length; _i < _len; _i++) {
-        page = pages[_i];
-        _ref = page.threads;
-        for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-          thread = _ref[_j];
+      _ref = this.response;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        page = _ref[_i];
+        _ref1 = page.threads;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          thread = _ref1[_j];
           if (!(thread.no === ThreadStats.thread.ID)) {
             continue;
           }
           ThreadStats.pageCountEl.textContent = page.page;
-          (page.page === pages.length - 1 ? $.addClass : $.rmClass)(ThreadStats.pageCountEl, 'warning');
+          (page.page === this.response.length - 1 ? $.addClass : $.rmClass)(ThreadStats.pageCountEl, 'warning');
           return;
         }
       }
@@ -11279,7 +11328,7 @@
         switch (req.status) {
           case 200:
             g.DEAD = false;
-            ThreadUpdater.parse(JSON.parse(req.response).posts);
+            ThreadUpdater.parse(req.response.posts);
             ThreadUpdater.setInterval();
             break;
           case 404:
@@ -12334,8 +12383,8 @@
         }
       }, {
         name: "4plebs",
-        boards: ["hr", "o", "pol", "s4s", "tg", "tv", "x"],
-        files: ["hr", "o", "pol", "s4s", "tg", "tv", "x"],
+        boards: ["adv", "hr", "o", "pol", "s4s", "tg", "tv", "x"],
+        files: ["adv", "hr", "o", "pol", "s4s", "tg", "tv", "x"],
         data: {
           domain: "archive.4plebs.org",
           http: true,
@@ -12348,6 +12397,16 @@
         files: ["c", "e", "w", "wg"],
         data: {
           domain: "archive.nyafuu.org",
+          http: true,
+          https: true,
+          software: "foolfuuka"
+        }
+      }, {
+        name: "Love is Over",
+        boards: ["d", "i"],
+        files: ["d", "i"],
+        data: {
+          domain: "loveisover.me",
           http: true,
           https: true,
           software: "foolfuuka"
@@ -12367,7 +12426,7 @@
         boards: ["cgl", "g", "mu", "w"],
         files: ["cgl", "g", "mu", "w"],
         data: {
-          domain: "rbt.asia",
+          domain: "archive.rebeccablacktech.com",
           http: true,
           https: true,
           software: "fuuka"
@@ -12387,9 +12446,36 @@
         files: ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"],
         data: {
           domain: "fuuka.warosu.org",
-          http: true,
           https: true,
           software: "fuuka"
+        }
+      }, {
+        name: "fgts",
+        boards: ["soc"],
+        files: ["soc"],
+        data: {
+          domain: "fgts.eu",
+          http: true,
+          https: true,
+          software: "foolfuuka"
+        }
+      }, {
+        name: "maware",
+        boards: ["t"],
+        files: ["t"],
+        data: {
+          domain: "archive.mawa.re",
+          http: true,
+          software: "foolfuuka"
+        }
+      }, {
+        name: "installgentoo.com",
+        boards: ["g", "t"],
+        files: ["g", "t"],
+        data: {
+          domain: "chan.installgentoo.com",
+          http: true,
+          software: "foolfuuka"
         }
       }, {
         name: "Foolz Beta",
@@ -12400,16 +12486,6 @@
           http: true,
           https: true,
           withCredentials: true,
-          software: "foolfuuka"
-        }
-      }, {
-        name: "Love is Over",
-        boards: ["d", "i"],
-        files: ["d", "i"],
-        data: {
-          domain: "loveisover.me",
-          http: true,
-          https: true,
           software: "foolfuuka"
         }
       }
@@ -14503,18 +14579,21 @@
       return a.textContent = ExpandThread.text('+', postsCount, filesCount);
     },
     parse: function(req, thread, a) {
-      var data, filesCount, post, postData, posts, postsCount, postsRoot, root, _i, _len, _ref;
+      var filesCount, post, postData, posts, postsCount, postsRoot, root, _i, _len, _ref, _ref1;
       if ((_ref = req.status) !== 200 && _ref !== 304) {
         a.textContent = "Error " + req.statusText + " (" + req.status + ")";
         return;
       }
-      data = JSON.parse(req.response).posts;
-      Build.spoilerRange[thread.board] = data.shift().custom_spoiler;
+      Build.spoilerRange[thread.board] = req.response.posts[0].custom_spoiler;
       posts = [];
       postsRoot = [];
       filesCount = 0;
-      for (_i = 0, _len = data.length; _i < _len; _i++) {
-        postData = data[_i];
+      _ref1 = req.response.posts;
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        postData = _ref1[_i];
+        if (postData.no === thread.ID) {
+          continue;
+        }
         if (post = thread.posts[postData.no]) {
           if ('file' in post) {
             filesCount++;
@@ -15643,8 +15722,6 @@
       }
     },
     clean: function() {
-      var posts, threads;
-      posts = g.posts, threads = g.threads;
       g.threads.forEach(function(thread) {
         return thread.collect();
       });
@@ -15746,7 +15823,6 @@
     },
     updateBoard: function(boardID) {
       var fullBoardList, onload, req;
-      req = null;
       fullBoardList = $('#full-board-list', Header.boardList);
       $.rmClass($('.current', fullBoardList), 'current');
       $.addClass($("a[href*='/" + boardID + "/']", fullBoardList), 'current');
@@ -15762,7 +15838,7 @@
           return;
         }
         try {
-          _ref = JSON.parse(req.response).boards;
+          _ref = req.response.boards;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             aboard = _ref[_i];
             if (!(aboard.board === boardID)) {
@@ -15905,7 +15981,7 @@
       }
       Navigate.title();
       try {
-        return Navigate.parse(JSON.parse(req.response).posts);
+        return Navigate.parse(req.response.posts);
       } catch (_error) {
         err = _error;
         console.error('Navigate failure:');
@@ -15983,59 +16059,27 @@
 
   Settings = {
     init: function() {
-      var addSection, check, el, key, settings, value, _ref;
+      var check, el, settings,
+        _this = this;
       el = $.el('a', {
         className: 'settings-link',
         href: 'javascript:;',
         textContent: 'Settings'
       });
-      $.on(el, 'click', Settings.open);
+      $.on(el, 'click', this.open);
       $.event('AddMenuEntry', {
         type: 'header',
         el: el,
         order: 1
       });
-      $.get('previousversion', null, function(item) {
-        var changelog, curr, prev, previous;
-        if (previous = item['previousversion']) {
-          if (previous === g.VERSION) {
-            return;
-          }
-          prev = previous.match(/\d+/g).map(Number);
-          curr = g.VERSION.match(/\d+/g).map(Number);
-          if (!(prev[0] <= curr[0] && prev[1] <= curr[1] && prev[2] <= curr[2])) {
-            return;
-          }
-          changelog = 'https://github.com/zixaphir/appchan-x/blob/master/CHANGELOG.md';
-          el = $.el('span', {
-            innerHTML: "appchan x has been updated to <a href='" + changelog + "' target=_blank>version " + g.VERSION + "</a>."
-          });
-          if (Conf['Show Updated Notifications']) {
-            new Notice('info', el, 30);
-          }
-        } else {
-          $.on(d, '4chanXInitFinished', Settings.open);
-        }
-        return $.set('previousversion', g.VERSION);
-      });
-      addSection = Settings.addSection;
-      _ref = {
-        'style': 'Style',
-        'themes': 'Themes',
-        'mascots': 'Mascots',
-        'main': 'Script',
-        'filter': 'Filter',
-        'sauce': 'Sauce',
-        'advanced': 'Advanced',
-        'keybinds': 'Keybinds'
-      };
-      for (key in _ref) {
-        value = _ref[key];
-        addSection(value, Settings[key]);
-      }
-      $.on(d, 'AddSettingsSection', Settings.addSection);
+      this.addSection('Main', this.main);
+      this.addSection('Filter', this.filter);
+      this.addSection('Sauce', this.sauce);
+      this.addSection('Advanced', this.advanced);
+      this.addSection('Keybinds', this.keybinds);
+      $.on(d, 'AddSettingsSection', this.addSection);
       $.on(d, 'OpenSettings', function(e) {
-        return Settings.open(e.detail);
+        return _this.open(e.detail);
       });
       settings = JSON.parse(localStorage.getItem('4chan-settings')) || {};
       if (!settings.disableAll) {
@@ -16071,13 +16115,14 @@
       Settings.dialog = dialog = $.el('div', {
         id: 'appchanx-settings',
         "class": 'dialog',
-        innerHTML: "<nav><div class=sections-list></div><span class='imp-exp-result warning'></span><div class=credits><a class=export>Export</a> |<a class=import>Import</a> |<input type=file style='display: none;'><a href='http://zixaphir.github.com/appchan-x/' target=_blank>appchan x</a> |<a href='https://github.com/zixaphir/appchan-x/blob/master/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |<a href='https://github.com/zixaphir/appchan-x/blob/master/README.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |<a href=javascript:; class='close fa' title=Close>\uf00d</a></div></nav><hr><div class=section-container><section></section></div>"
+        innerHTML: "<nav><div class=sections-list></div><span class='imp-exp-result warning'></span><div class=credits><a class=export>Export</a>&nbsp|&nbsp<a class=import>Import</a>&nbsp|&nbsp<a class=reset>Reset Settings</a>&nbsp|&nbsp<input type=file hidden><a href='http://zixaphir.github.com/appchan-x/' target=_blank>appchan x</a> |<a href='https://github.com/zixaphir/appchan-x/blob/master/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |<a href='https://github.com/zixaphir/appchan-x/blob/master/README.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |<a href=javascript:; class='close fa' title=Close>\uf00d</a></div></nav><hr><div class=section-container><section></section></div>"
       });
       Settings.overlay = overlay = $.el('div', {
         id: 'overlay'
       });
       $.on($('.export', dialog), 'click', Settings["export"]);
       $.on($('.import', dialog), 'click', Settings["import"]);
+      $.on($('.reset', dialog), 'click', Settings.reset);
       $.on($('input', dialog), 'change', Settings.onImport);
       links = [];
       _ref = Settings.sections;
@@ -16137,7 +16182,7 @@
       return $.event('OpenSettings', null, section);
     },
     main: function(section) {
-      var arr, button, description, div, fs, hiddenNum, input, inputs, items, key, obj, _ref;
+      var arr, button, description, div, fs, input, inputs, items, key, obj, _ref;
       items = {};
       inputs = {};
       _ref = Config.main;
@@ -16173,45 +16218,34 @@
         innerHTML: "<button></button><span class=description>: Clear manually-hidden threads and posts on all boards. Reload the page to apply."
       });
       button = $('button', div);
-      hiddenNum = 0;
-      $.get('hiddenThreads', {
-        boards: {}
-      }, function(item) {
-        var ID, board, thread, _ref1;
-        _ref1 = item.hiddenThreads.boards;
+      $.get({
+        hiddenThreads: {},
+        hiddenPosts: {}
+      }, function(_arg) {
+        var ID, board, hiddenNum, hiddenPosts, hiddenThreads, thread, _ref1, _ref2;
+        hiddenThreads = _arg.hiddenThreads, hiddenPosts = _arg.hiddenPosts;
+        hiddenNum = 0;
+        _ref1 = hiddenThreads.boards;
         for (ID in _ref1) {
           board = _ref1[ID];
-          for (ID in board) {
-            thread = board[ID];
-            hiddenNum++;
-          }
+          hiddenNum += Object.keys(board).length;
         }
-        return button.textContent = "Hidden: " + hiddenNum;
-      });
-      $.get('hiddenPosts', {
-        boards: {}
-      }, function(item) {
-        var ID, board, post, thread, _ref1;
-        _ref1 = item.hiddenPosts.boards;
-        for (ID in _ref1) {
-          board = _ref1[ID];
+        _ref2 = hiddenPosts.boards;
+        for (ID in _ref2) {
+          board = _ref2[ID];
           for (ID in board) {
             thread = board[ID];
-            for (ID in thread) {
-              post = thread[ID];
-              hiddenNum++;
-            }
+            hiddenNum += Object.keys(thread).length;
           }
         }
         return button.textContent = "Hidden: " + hiddenNum;
       });
       $.on(button, 'click', function() {
         this.textContent = 'Hidden: 0';
-        return $.get('hiddenThreads', {
-          boards: {}
-        }, function(item) {
-          var boardID;
-          for (boardID in item.hiddenThreads.boards) {
+        return $.get('hiddenThreads', {}, function(_arg) {
+          var boardID, hiddenThreads;
+          hiddenThreads = _arg.hiddenThreads;
+          for (boardID in hiddenThreads.boards) {
             localStorage.removeItem("4chan-hide-t-" + boardID);
           }
           return $["delete"](['hiddenThreads', 'hiddenPosts']);
@@ -16219,41 +16253,29 @@
       });
       return $.after($('input[name="Stubs"]', section).parentNode.parentNode, div);
     },
-    "export": function(now, data) {
-      var a, db, span, _i, _len, _ref;
-      if (typeof now !== 'number') {
-        now = Date.now();
-        data = {
+    "export": function() {
+      return $.get(Conf, function(Conf) {
+        delete Conf['archives'];
+        return Settings.downloadExport({
           version: g.VERSION,
-          date: now
-        };
-        _ref = DataBoard.keys;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          db = _ref[_i];
-          Conf[db] = {
-            boards: {}
-          };
-        }
-        $.get(Conf, function(Conf) {
-          delete Conf['archives'];
-          data.Conf = Conf;
-          return Settings["export"](now, data);
+          date: Date.now(),
+          Conf: Conf
         });
-        return;
-      }
-      a = $.el('a', {
-        className: 'warning',
-        textContent: 'Save me!',
-        download: "appchan x v" + g.VERSION + "-" + now + ".json",
-        href: "data:application/json;base64," + (btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))))),
-        target: '_blank'
       });
-      span = $('.imp-exp-result', Settings.dialog);
-      $.rmAll(span);
-      return $.add(span, a);
+    },
+    downloadExport: function(data) {
+      var a, p;
+      a = $.el('a', {
+        download: "appchan x v" + g.VERSION + "-" + data.date + ".json",
+        href: "data:application/json;base64," + (btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))))
+      });
+      p = $('.imp-exp-result', Settings.dialog);
+      $.rmAll(p);
+      $.add(p, a);
+      return a.click();
     },
     "import": function() {
-      return this.nextElementSibling.click();
+      return $('input', this.parentNode).click();
     },
     onImport: function() {
       var file, output, reader;
@@ -16267,10 +16289,9 @@
       }
       reader = new FileReader();
       reader.onload = function(e) {
-        var data, err;
+        var err;
         try {
-          data = JSON.parse(e.target.result);
-          Settings.loadSettings(data);
+          Settings.loadSettings(JSON.parse(e.target.result));
           if (confirm('Import successful. Reload now?')) {
             return window.location.reload();
           }
@@ -16291,16 +16312,14 @@
       }
       return $.set(data.Conf);
     },
-    convertSettings: function(data, map) {
-      var newKey, prevKey;
-      for (prevKey in map) {
-        newKey = map[prevKey];
-        if (newKey) {
-          data.Conf[newKey] = data.Conf[prevKey];
-        }
-        delete data.Conf[prevKey];
+    reset: function() {
+      if (confirm('Your current settings will be entirely wiped, are you sure?')) {
+        return $.clear(function() {
+          if (confirm('Reset successful. Reload now?')) {
+            return window.location.reload();
+          }
+        });
       }
-      return data;
     },
     filter: function(section) {
       var select;
@@ -17233,7 +17252,7 @@
       return $.ready(Main.initReady);
     },
     initReady: function() {
-      var GMver, err, href, i, passLink, styleSelector, v, _i, _len, _ref, _ref1;
+      var GMver, err, href, i, passLink, styleSelector, test, v, _i, _len, _ref, _ref1;
       if ((_ref = d.title) === '4chan - Temporarily Offline' || _ref === '4chan - 404 Not Found') {
         if (Conf['404 Redirect'] && g.VIEW === 'thread') {
           href = Redirect.to('thread', {
@@ -17260,14 +17279,19 @@
       } else {
         $.event('4chanXInitFinished');
       }
+      test = $.el('span');
+      test.classList.add('a', 'b');
+      if (test.className !== 'a b') {
+        new Notice('warning', "Your version of Firefox is outdated (v26 minimum) and appchan x may not operate correctly.", 30);
+      }
       GMver = GM_info.version.split('.');
-      _ref1 = "1.13".split('.');
+      _ref1 = "1.14".split('.');
       for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
         v = _ref1[i];
         if (v === GMver[i]) {
           continue;
         }
-        (v < GMver[i]) || new Notice('warning', "Your version of Greasemonkey is outdated (v" + GM_info.version + " instead of v1.13 minimum) and appchan x may not operate correctly.", 30);
+        (v < GMver[i]) || new Notice('warning', "Your version of Greasemonkey is outdated (v" + GM_info.version + " instead of v1.14 minimum) and appchan x may not operate correctly.", 30);
         break;
       }
       try {
@@ -17308,10 +17332,27 @@
           Main.handleErrors(errors);
         }
         Main.callbackNodes(Thread, threads);
-        return Main.callbackNodesDB(Post, posts, function() {
+        Main.callbackNodesDB(Post, posts, function() {
           return $.event('4chanXInitFinished');
         });
       }
+      return $.get('previousversion', null, function(_arg) {
+        var changelog, el, previousversion;
+        previousversion = _arg.previousversion;
+        if (previousversion === g.VERSION) {
+          return;
+        }
+        if (previousversion) {
+          changelog = 'https://github.com/zixaphir/appchan-x/blob/master/CHANGELOG.md';
+          el = $.el('span', {
+            innerHTML: "appchan x has been updated to <a href='" + changelog + "' target=_blank>version " + g.VERSION + "</a>."
+          });
+          new Notice('info', el, 15);
+        } else {
+          Settings.open();
+        }
+        return $.set('previousversion', g.VERSION);
+      });
     },
     callbackNodes: function(klass, nodes) {
       var cb, i, node;

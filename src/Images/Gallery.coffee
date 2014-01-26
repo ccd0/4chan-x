@@ -203,7 +203,8 @@ Gallery =
       $.ajax "//api.4chan.org/#{post.board}/res/#{post.thread}.json", onload: ->
         return if @status isnt 200
         i = 0
-        while postObj = JSON.parse(@response).posts[i++]
+        {posts} = @response
+        while postObj = posts[i++]
           break if postObj.no is post.ID
         unless postObj.no
           return post.kill()

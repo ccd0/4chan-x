@@ -33,15 +33,11 @@ Navigate =
     return
 
   clean: ->
-    {posts, threads} = g
-
     # Garbage collection
     g.threads.forEach (thread) -> thread.collect()
-
     QuoteBacklink.containers = {}
 
-    # Delete nodes
-    $.rmAll $ '.board'
+    $.rmAll $('.board')
 
   features: [
     ['Thread Excerpt',   ThreadExcerpt]
@@ -110,8 +106,6 @@ Navigate =
     }[g.VIEW]()
 
   updateBoard: (boardID) ->
-    req = null
-
     fullBoardList   = $ '#full-board-list', Header.boardList
     $.rmClass $('.current', fullBoardList), 'current'
     $.addClass $("a[href*='/#{boardID}/']", fullBoardList), 'current'
@@ -127,7 +121,7 @@ Navigate =
       return unless req.status is 200
 
       try
-        for aboard in JSON.parse(req.response).boards when aboard.board is boardID
+        for aboard in req.response.boards when aboard.board is boardID
           board = aboard
           break
 
@@ -243,7 +237,7 @@ Navigate =
     Navigate.title()
 
     try
-      Navigate.parse JSON.parse(req.response).posts
+      Navigate.parse req.response.posts
     catch err
       console.error 'Navigate failure:'
       console.log err

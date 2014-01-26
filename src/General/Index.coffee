@@ -274,7 +274,7 @@ Index =
 
     try
       if req.status is 200
-        Index.parse JSON.parse(req.response), pageNum
+        Index.parse req.response, pageNum
       else if req.status is 304 and pageNum?
         Index.pageNav pageNum
     catch err
@@ -470,6 +470,7 @@ Index =
       else
         pageNum = Index.getCurrentPage()
     else
+      return unless Index.searchInput.dataset.searching
       pageNum = Index.pageBeforeSearch
       delete Index.pageBeforeSearch
       <% if (type === 'userscript') { %>
