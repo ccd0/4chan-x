@@ -297,6 +297,8 @@ Build =
       className: 'catalog-thread'
       innerHTML: <%= importHTML('General/Thread-catalog-view') %>
 
+    $.addClass root, thread.highlight if thread.highlight
+
     if thread.isSticky
       $.add $('.thread-icons', root), $.el 'img',
         src: "#{staticPath}sticky#{gifIcon}"

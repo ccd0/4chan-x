@@ -110,6 +110,7 @@ Filter =
 
         # Highlight
         $.addClass @nodes.root, result.class
+        @thread.highlight = result.class
         if !@isReply and result.top
           @thread.isOnTop = true
 

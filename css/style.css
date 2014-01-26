@@ -420,6 +420,7 @@ a[href="javascript:;"] {
 .thumb {
   max-width: 150px;
   max-height: 150px;
+  border-radius: 2px;
   box-shadow: 0 0 5px rgba(0, 0, 0, .25);
 }
 .thunb.spoiler-file {
@@ -647,6 +648,9 @@ a.hide-announcement {
 }
 .filter-highlight > .reply {
   box-shadow: -5px 0 rgba(255, 0, 0, .5);
+}
+.filter-highlight .thumb {
+  border: 2px solid rgba(255, 0, 0, .5);
 }
 
 /* Thread & Reply Hiding */
