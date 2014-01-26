@@ -390,8 +390,8 @@ Index =
         nodes = Index.sortedNodes
     $.rmAll Index.root
     Index.buildReplies nodes if Conf['Show Replies'] and Conf['Index Mode'] isnt 'catalog'
-    $.event 'IndexBuild', nodes
     $.add Index.root, nodes
+    $.event 'IndexBuild', nodes
 
   isSearching: false
   clearSearch: ->
