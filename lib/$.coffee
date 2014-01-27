@@ -102,10 +102,8 @@ $.hasClass = (el, className) ->
 $.rm = (el) ->
   el.remove()
 $.rmAll = (root) ->
-  # jsperf.com/emptify-element
-  for node in [root.childNodes...]
-    node.remove()
-  return
+  # https://gist.github.com/MayhemYDG/8646194
+  root.textContent = null
 $.tn = (s) ->
   d.createTextNode s
 $.nodes = (nodes) ->
