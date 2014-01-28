@@ -53,6 +53,17 @@ class Thread
   getCatalogView: ->
     return @catalogView if @catalogView
     @catalogView = Build.threadCatalog @
+    $.on $('.thumb', @catalogView), 'click', @onCatalogViewClick
+    @catalogView
+  onCatalogViewClick: (e) =>
+    return if e.button isnt 0
+    if e.shiftKey
+      $.rm @catalogView
+      ThreadHiding.hide @
+      ThreadHiding.saveHiddenState @
+    else
+      return
+    e.preventDefault()
 
   kill: ->
     @isDead = true

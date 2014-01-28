@@ -1,6 +1,6 @@
 ThreadHiding =
   init: ->
-    return if g.VIEW isnt 'index' or !Conf['Thread Hiding'] and !Conf['Thread Hiding Link']
+    return if g.VIEW isnt 'index'
 
     @db = new DataBoard 'hiddenThreads'
     @syncCatalog()
