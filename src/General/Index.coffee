@@ -4,6 +4,11 @@ Index =
 
     @board = "#{g.BOARD}"
 
+    @db = new DataBoard 'pinnedThreads'
+    Thread.callbacks.push
+      name: 'Thread Pinning'
+      cb:   @node
+
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'
       title: 'Refresh'
@@ -130,6 +135,24 @@ Index =
       notify = true
       new Notice 'info', "Last page reached.", 2
       setTimeout reset, 3 * $.SECOND
+
+  node: ->
+    return unless data = Index.db.get {boardID: @board.ID, threadID: @ID}
+    @pin() if data.isPinned
+  togglePin: (thread) ->
+    if thread.isPinned
+      thread.unpin()
+      Index.db.delete
+        boardID:  thread.board.ID
+        threadID: thread.ID
+    else
+      thread.pin()
+      Index.db.set
+        boardID:  thread.board.ID
+        threadID: thread.ID
+        val: isPinned: thread.isPinned
+    Index.sort()
+    Index.buildIndex()
 
   cb:
     rootClass: ->

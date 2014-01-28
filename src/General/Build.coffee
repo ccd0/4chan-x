@@ -363,6 +363,7 @@ Build =
       '<div class="comment">&{thread.OP.nodes.comment}</div>'
     ) %>
 
+    $.addClass root, 'pinned' if thread.isPinned
     $.addClass root, thread.OP.highlights... if thread.OP.highlights
 
     if thread.isSticky
