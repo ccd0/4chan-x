@@ -166,7 +166,7 @@ Navigate =
 
   navigate: (e) ->
     return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org' or
-      (e and (e.shiftKey or (e.type is 'click' and e.button isnt 0))) # Not simply a left click
+      (e and (e.shiftKey or e.ctrlKey or (e.type is 'click' and e.button isnt 0))) # Not simply a left click
 
     $.addClass Index.button, 'fa-spin'
 

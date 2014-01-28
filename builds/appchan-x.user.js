@@ -15881,7 +15881,7 @@
     },
     navigate: function(e) {
       var boardID, load, pageNum, path, threadID, view;
-      if (this.hostname !== 'boards.4chan.org' || window.location.hostname === 'rs.4chan.org' || (e && (e.shiftKey || (e.type === 'click' && e.button !== 0)))) {
+      if (this.hostname !== 'boards.4chan.org' || window.location.hostname === 'rs.4chan.org' || (e && (e.shiftKey || e.ctrlKey || (e.type === 'click' && e.button !== 0)))) {
         return;
       }
       $.addClass(Index.button, 'fa-spin');
