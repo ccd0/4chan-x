@@ -127,14 +127,12 @@ $.toggleClass = (el, className) ->
 $.hasClass = (el, className) ->
   className in el.classList
 
-$.rm = do ->
-  if 'remove' of Element::
-    (el) -> el.remove()
-  else
-    (el) -> el.parentNode?.removeChild el
+$.rm = (el) ->
+  el.remove()
 
-# jsperf.com/emptify-element/9
-$.rmAll = (root) -> root.textContent = ''
+$.rmAll = (root) ->
+  # https://gist.github.com/MayhemYDG/8646194
+  root.textContent = null
 
 $.tn = (s) ->
   d.createTextNode s

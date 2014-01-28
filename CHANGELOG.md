@@ -1,12 +1,14 @@
-<<<<<<< HEAD
-### v2.8.7 
-*2014-01-19*
-=======
+
 **MayhemYDG**:
 - Added a `Reset Settings` button in the settings.
 - More stability update.
 - Stability update.
->>>>>>> v3
+
+**ParrotParrot**:
+- Added `Original filename` variable to Sauce panel.
+
+### v2.8.7 
+*2014-01-19*
 
 **Zixaphir**:
 - Fix posting.
