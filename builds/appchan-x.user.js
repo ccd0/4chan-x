@@ -4507,9 +4507,6 @@
       $.on(this.searchInput, 'input', this.onSearchInput);
       $.on($('#index-search-clear', this.navLinks), 'click', this.clearSearch);
       $.on($('#returnlink a', this.navLinks), 'click', Navigate.navigate);
-      $.on($('#cataloglink a', this.navLinks), 'click', function() {
-        return window.location = "//boards.4chan.org/" + g.BOARD + "/catalog";
-      });
       if (g.VIEW === 'index') {
         this.update();
       }
@@ -8768,9 +8765,9 @@
     flagsInput: function() {
       var flag, nodes;
       nodes = QR.nodes;
-      if (nodes.flagSelector) {
-        $.rm(nodes.flagSelector);
-        delete nodes.flagSelector;
+      if (nodes.flag) {
+        $.rm(nodes.flag);
+        delete nodes.flag;
       }
       if (g.BOARD.ID === 'pol') {
         flag = QR.flags();
@@ -15668,7 +15665,8 @@
         return;
       }
       $.ready(function() {
-        return $.on(window, 'popstate', Navigate.popstate);
+        $.on(window, 'popstate', Navigate.popstate);
+        return $.id('catalog').href = $.id('cataloglink').href = "//boards.4chan.org/" + g.BOARD + "/catalog";
       });
       this.title = function() {};
       Thread.callbacks.push({
@@ -15874,6 +15872,7 @@
     updateTitle: function(_arg) {
       var board, subtitle, title;
       board = _arg.board, title = _arg.title;
+      $.id('catalog').href = $.id('cataloglink').href = "//boards.4chan.org/" + g.BOARD + "/catalog";
       if (subtitle = $('.boardSubtitle')) {
         $.rm(subtitle);
       }

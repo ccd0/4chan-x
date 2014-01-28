@@ -86,7 +86,6 @@ Index =
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
     $.on $('#returnlink a',  @navLinks), 'click', Navigate.navigate
-    $.on $('#cataloglink a', @navLinks), 'click', -> window.location = "//boards.4chan.org/#{g.BOARD}/catalog"
 
     @update() if g.VIEW is 'index'
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->

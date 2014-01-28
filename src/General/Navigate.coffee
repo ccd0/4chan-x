@@ -3,8 +3,12 @@ Navigate =
   init: ->
     return if g.VIEW is 'catalog' or g.BOARD.ID is 'f' or !Conf['JSON Navigation']
 
-    # blink/webkit throw a popstate on page load. Not what we want.
-    $.ready -> $.on window, 'popstate', Navigate.popstate
+    $.ready -> 
+      # blink/webkit throw a popstate on page load. Not what we want.
+      $.on window, 'popstate', Navigate.popstate
+
+      # Prevent having to update the catalog links whenever we open threads.
+      $.id('catalog').href = $.id('cataloglink').href = "//boards.4chan.org/#{g.BOARD}/catalog"
 
     @title = -> return
     
@@ -161,6 +165,7 @@ Navigate =
       Style.setTheme theme
 
   updateTitle: ({board, title}) ->
+    $.id('catalog').href = $.id('cataloglink').href = "//boards.4chan.org/#{g.BOARD}/catalog"
     $.rm subtitle if subtitle = $ '.boardSubtitle'
     $('.boardTitle').textContent = d.title = "/#{board}/ - #{title}"
 

@@ -524,9 +524,9 @@ QR =
 
   flagsInput: ->
     {nodes} = QR
-    if nodes.flagSelector
-      $.rm nodes.flagSelector
-      delete nodes.flagSelector
+    if nodes.flag
+      $.rm nodes.flag
+      delete nodes.flag
 
     if g.BOARD.ID is 'pol'
       flag = QR.flags()
