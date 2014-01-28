@@ -649,6 +649,7 @@ a.hide-announcement {
 .filter-highlight > .reply {
   box-shadow: -5px 0 rgba(255, 0, 0, .5);
 }
+.pinned .thumb,
 .filter-highlight .thumb {
   border: 2px solid rgba(255, 0, 0, .5);
 }

@@ -61,9 +61,17 @@ class Thread
       $.rm @catalogView
       ThreadHiding.hide @
       ThreadHiding.saveHiddenState @
+    else if e.altKey
+      Index.togglePin @
     else
       return
     e.preventDefault()
+  pin: ->
+    @isOnTop = @isPinned = true
+    $.addClass @catalogView, 'pinned' if @catalogView
+  unpin: ->
+    @isOnTop = @isPinned = false
+    $.rmClass  @catalogView, 'pinned' if @catalogView
 
   kill: ->
     @isDead = true

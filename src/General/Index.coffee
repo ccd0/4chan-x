@@ -12,6 +12,11 @@ Index =
 
     return if g.VIEW isnt 'index' or g.BOARD.ID is 'f'
 
+    @db = new DataBoard 'pinnedThreads'
+    Thread.callbacks.push
+      name: 'Thread Pinning'
+      cb:   @node
+
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'
       title: 'Refresh Index'
@@ -111,6 +116,24 @@ Index =
       $.rmClass doc, 'index-loading'
       $.asap (-> $('.pagelist') or d.readyState isnt 'loading'), ->
         $.replace $('.pagelist'), Index.pagelist
+
+  node: ->
+    return unless data = Index.db.get {boardID: @board.ID, threadID: @ID}
+    @pin() if data.isPinned
+  togglePin: (thread) ->
+    if thread.isPinned
+      thread.unpin()
+      Index.db.delete
+        boardID:  thread.board.ID
+        threadID: thread.ID
+    else
+      thread.pin()
+      Index.db.set
+        boardID:  thread.board.ID
+        threadID: thread.ID
+        val: isPinned: thread.isPinned
+    Index.sort()
+    Index.buildIndex()
 
   cb:
     rootClass: ->

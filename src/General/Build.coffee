@@ -297,6 +297,7 @@ Build =
       className: 'catalog-thread'
       innerHTML: <%= importHTML('General/Thread-catalog-view') %>
 
+    $.addClass root, 'pinned' if thread.isPinned
     $.addClass root, thread.OP.highlights... if thread.OP.highlights
 
     if thread.isSticky
