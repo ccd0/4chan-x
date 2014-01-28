@@ -12,11 +12,17 @@ Settings =
       el: el
       order: 1
 
-    @addSection 'Main',     @main
-    @addSection 'Filter',   @filter
-    @addSection 'Sauce',    @sauce
-    @addSection 'Advanced', @advanced
-    @addSection 'Keybinds', @keybinds
+    {addSection} = @
+    addSection arr[1], Settings[arr[0]] for arr in [
+      ['style',    'Style']
+      ['themes',   'Themes']
+      ['mascots',  'Mascots']
+      ['main',     'Script']
+      ['filter',   'Filter']
+      ['sauce',    'Sauce']
+      ['advanced', 'Advanced']
+      ['keybinds', 'Keybinds']
+    ]
 
     $.on d, 'AddSettingsSection',   @addSection
     $.on d, 'OpenSettings',         (e) => @open e.detail

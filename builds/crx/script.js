@@ -16047,7 +16047,7 @@
 
   Settings = {
     init: function() {
-      var check, el, settings,
+      var addSection, arr, check, el, settings, _i, _len, _ref,
         _this = this;
       el = $.el('a', {
         className: 'settings-link',
@@ -16060,11 +16060,12 @@
         el: el,
         order: 1
       });
-      this.addSection('Main', this.main);
-      this.addSection('Filter', this.filter);
-      this.addSection('Sauce', this.sauce);
-      this.addSection('Advanced', this.advanced);
-      this.addSection('Keybinds', this.keybinds);
+      addSection = this.addSection;
+      _ref = [['style', 'Style'], ['themes', 'Themes'], ['mascots', 'Mascots'], ['main', 'Script'], ['filter', 'Filter'], ['sauce', 'Sauce'], ['advanced', 'Advanced'], ['keybinds', 'Keybinds']];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        arr = _ref[_i];
+        addSection(arr[1], Settings[arr[0]]);
+      }
       $.on(d, 'AddSettingsSection', this.addSection);
       $.on(d, 'OpenSettings', function(e) {
         return _this.open(e.detail);
