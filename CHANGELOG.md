@@ -3,6 +3,9 @@
 - More stability update.
 - Stability update.
 
+**ParrotParrot**:
+- Added `Original filename` variable to Sauce panel.
+
 **seaweedchan**:
 - Fix Menu errors on older Firefox versions, such as the ESR
 
