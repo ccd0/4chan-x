@@ -209,6 +209,7 @@ th {
 .disabled {
   opacity: 0.4;
 }
+nav a,
 .pointer {
   cursor: pointer;
 }
