@@ -16099,7 +16099,7 @@
       Settings.dialog = dialog = $.el('div', {
         id: 'appchanx-settings',
         "class": 'dialog',
-        innerHTML: "<nav><div class=sections-list></div><span class='imp-exp-result warning'></span><div class=credits><a class=export>Export</a>&nbsp|&nbsp<a class=import>Import</a>&nbsp|&nbsp<a class=reset>Reset Settings</a>&nbsp|&nbsp<input type=file hidden><a href='http://zixaphir.github.com/appchan-x/' target=_blank>appchan x</a> |<a href='https://github.com/zixaphir/appchan-x/blob/master/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |<a href='https://github.com/zixaphir/appchan-x/blob/master/README.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |<a href=javascript:; class='close fa' title=Close>\uf00d</a></div></nav><hr><div class=section-container><section></section></div>"
+        innerHTML: "<nav><div class=sections-list></div><span class='imp-exp-result warning'></span><div class=credits><a class=export>Export</a>&nbsp|&nbsp<a class=import>Import</a>&nbsp|&nbsp<a class=reset>Reset Settings</a>&nbsp|&nbsp<input type=file hidden><a href='http://zixaphir.github.com/appchan-x/' target=_blank>appchan x</a>&nbsp|&nbsp<a href='https://github.com/zixaphir/appchan-x/blob/master/CHANGELOG.md' target=_blank>" + g.VERSION + "</a>&nbsp|&nbsp<a href='https://github.com/zixaphir/appchan-x/blob/master/README.md#reporting-bugs-and-suggestions' target=_blank>Issues</a>&nbsp|&nbsp<a href=javascript:; class='close fa' title=Close>\uf00d</a></div></nav><hr><div class=section-container><section></section></div>"
       });
       Settings.overlay = overlay = $.el('div', {
         id: 'overlay'
