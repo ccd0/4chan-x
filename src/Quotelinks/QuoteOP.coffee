@@ -1,6 +1,6 @@
 QuoteOP =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Mark OP Quotes']
+    return if !Conf['Mark OP Quotes']
 
     # \u00A0 is nbsp
     @text = '\u00A0(OP)'

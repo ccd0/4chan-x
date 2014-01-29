@@ -149,7 +149,6 @@ Config =
     'Header auto-hide':           false
     'Header auto-hide on scroll': false
     'Bottom header':              false
-    'Header catalog links':       false
     'Top Board List':             false
     'Bottom Board List':          false
     'Custom Board Navigation':    true

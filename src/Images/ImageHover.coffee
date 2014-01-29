@@ -1,6 +1,6 @@
 ImageHover =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Image Hover']
+    return if !Conf['Image Hover']
 
     Post.callbacks.push
       name: 'Image Hover'

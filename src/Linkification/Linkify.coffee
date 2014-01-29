@@ -1,6 +1,6 @@
 Linkify =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Linkify']
+    return if !Conf['Linkify']
 
     # gruber revised + magnet support
     # http://df4.us/fv9

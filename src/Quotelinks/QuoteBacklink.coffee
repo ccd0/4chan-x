@@ -11,7 +11,7 @@ QuoteBacklink =
   # This is is so that fetched posts can get their backlinks,
   # and that as much backlinks are appended in the background as possible.
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Quote Backlinks']
+    return if !Conf['Quote Backlinks']
 
     format = Conf['backlink'].replace /%id/g, "' + id + '"
     @funk  = Function 'id', "return '#{format}'"

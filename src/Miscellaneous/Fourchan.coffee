@@ -1,7 +1,5 @@
 Fourchan =
   init: ->
-    return if g.VIEW is 'catalog'
-
     board = g.BOARD.ID
     if board is 'g'
       $.globalEval """

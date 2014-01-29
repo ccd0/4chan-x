@@ -1,6 +1,6 @@
 QuoteStrikeThrough =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Reply Hiding'] and !Conf['Reply Hiding Link'] and !Conf['Filter']
+    return if !Conf['Reply Hiding'] and !Conf['Reply Hiding Link'] and !Conf['Filter']
 
     Post.callbacks.push
       name: 'Strike-through Quotes'

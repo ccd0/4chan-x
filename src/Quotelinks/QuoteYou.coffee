@@ -1,6 +1,6 @@
 QuoteYou =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Mark Quotes of You'] or !Conf['Quick Reply']
+    return if !Conf['Mark Quotes of You'] or !Conf['Quick Reply']
 
     # \u00A0 is nbsp
     @text = '\u00A0(You)'
