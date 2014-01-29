@@ -259,10 +259,9 @@ Build =
 
     $.add root, nodes
     root
-  threadCatalog: (thread) ->
+  catalogThread: (thread) ->
     {staticPath, gifIcon} = Build
-    for data in Index.liveThreadData
-      break if data.no is thread.ID
+    data = Index.liveThreadData[Index.liveThreadIDs.indexOf thread.ID]
 
     if data.spoiler and !Conf['Reveal Spoilers']
       src = "#{staticPath}spoiler"
@@ -297,6 +296,7 @@ Build =
       className: 'catalog-thread'
       innerHTML: <%= importHTML('General/Thread-catalog-view') %>
 
+    root.dataset.fullID = thread.fullID
     $.addClass root, 'pinned' if thread.isPinned
     $.addClass root, thread.OP.highlights... if thread.OP.highlights
 

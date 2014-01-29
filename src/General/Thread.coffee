@@ -10,16 +10,19 @@ class Thread
     @postLimit = false
     @fileLimit = false
 
+    @OP = null
+    @catalogView = null
+
     g.threads[@fullID] = board.threads[@] = @
 
   setPage: (pageNum) ->
     icon = $ '.page-num', @OP.nodes.post
     for key in ['title', 'textContent']
       icon[key] = icon[key].replace /\d+/, pageNum
-    $('.page-count', @catalogView).textContent = pageNum if @catalogView
+    @catalogView.nodes.pageCount.textContent = pageNum if @catalogView
   setCount: (type, count, reachedLimit) ->
     return unless @catalogView
-    el = $ ".#{type}-count", @catalogView
+    el = @catalogView.nodes["#{type}Count"]
     el.textContent = count
     (if reachedLimit then $.addClass else $.rmClass) el, 'warning'
   setStatus: (type, status) ->
@@ -50,28 +53,12 @@ class Thread
     root = $ '.thread-icons', @catalogView
     (if type is 'Sticky' and @isClosed then $.prepend else $.add) root, icon.cloneNode()
 
-  getCatalogView: ->
-    return @catalogView if @catalogView
-    @catalogView = Build.threadCatalog @
-    $.on $('.thumb', @catalogView), 'click', @onCatalogViewClick
-    @catalogView
-  onCatalogViewClick: (e) =>
-    return if e.button isnt 0
-    if e.shiftKey
-      $.rm @catalogView
-      ThreadHiding.hide @
-      ThreadHiding.saveHiddenState @
-    else if e.altKey
-      Index.togglePin @
-    else
-      return
-    e.preventDefault()
   pin: ->
     @isOnTop = @isPinned = true
-    $.addClass @catalogView, 'pinned' if @catalogView
+    $.addClass @catalogView.nodes.root, 'pinned' if @catalogView
   unpin: ->
     @isOnTop = @isPinned = false
-    $.rmClass  @catalogView, 'pinned' if @catalogView
+    $.rmClass  @catalogView.nodes.root, 'pinned' if @catalogView
 
   kill: ->
     @isDead = true
