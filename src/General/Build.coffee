@@ -300,6 +300,9 @@ Build =
     $.addClass root, 'pinned' if thread.isPinned
     $.addClass root, thread.OP.highlights... if thread.OP.highlights
 
+    for quotelink in $$ '.quotelink', root.lastElementChild
+      $.replace quotelink, [quotelink.childNodes...]
+
     if thread.isSticky
       $.add $('.thread-icons', root), $.el 'img',
         src: "#{staticPath}sticky#{gifIcon}"
