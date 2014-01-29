@@ -7,7 +7,10 @@ Index =
     @db = new DataBoard 'pinnedThreads'
     Thread.callbacks.push
       name: 'Thread Pinning'
-      cb:   @node
+      cb:   @threadNode
+    CatalogThread.callbacks.push
+      name: 'Catalog Features'
+      cb:   @catalogNode
 
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'
@@ -136,9 +139,24 @@ Index =
       new Notice 'info', "Last page reached.", 2
       setTimeout reset, 3 * $.SECOND
 
-  node: ->
+  threadNode: ->
     return unless data = Index.db.get {boardID: @board.ID, threadID: @ID}
     @pin() if data.isPinned
+  catalogNode: ->
+    $.on @nodes.thumb, 'click', Index.onClick
+  onClick: (e) ->
+    return if e.button isnt 0
+    root   = @parentNode.parentNode
+    thread = g.threads[root.dataset.fullID]
+    if e.shiftKey
+      $.rm root
+      ThreadHiding.hide thread
+      ThreadHiding.saveHiddenState thread
+    else if e.altKey
+      Index.togglePin thread
+    else
+      return
+    e.preventDefault()
   togglePin: (thread) ->
     if thread.isPinned
       thread.unpin()
@@ -395,6 +413,16 @@ Index =
     Main.handleErrors errors if errors
     Main.callbackNodes Post, posts
 
+  buildCatalogViews: ->
+    threads = Index.sortedNodes
+      .map((threadRoot) -> Get.threadFromRoot threadRoot)
+      .filter (thread) -> !thread.isHidden
+    catalogThreads = []
+    for thread in threads when !thread.catalogView
+      catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
+    Main.callbackNodes CatalogThread, catalogThreads
+    threads.map (thread) -> thread.catalogView.nodes.root
+
   sort: ->
     {liveThreadIDs, liveThreadData} = Index
     sortedThreadIDs = {
@@ -444,10 +472,7 @@ Index =
       when 'all pages'
         nodes = Index.sortedNodes
       when 'catalog'
-        nodes = Index.sortedNodes
-          .map((threadRoot) -> Get.threadFromRoot threadRoot)
-          .filter((thread) -> !thread.isHidden)
-          .map (thread) -> thread.getCatalogView()
+        nodes = Index.buildCatalogViews()
       else
         nodes = Index.buildSinglePage Index.getCurrentPage()
     $.rmAll Index.root

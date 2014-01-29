@@ -311,10 +311,9 @@ Build =
 
   fullThread: (board, data) -> Build.postFromObject data, board.ID
 
-  threadCatalog: (thread) ->
+  catalogThread: (thread) ->
     {staticPath, gifIcon} = Build
-    for data in Index.liveThreadData
-      break if data.no is thread.ID
+    data = Index.liveThreadData[Index.liveThreadIDs.indexOf thread.ID]
 
     if data.spoiler and !Conf['Reveal Spoiler Thumbnails']
       src = "#{staticPath}spoiler"
@@ -363,6 +362,7 @@ Build =
       '<div class="comment">&{thread.OP.nodes.comment}</div>'
     ) %>
 
+    root.dataset.fullID = thread.fullID
     $.addClass root, 'pinned' if thread.isPinned
     $.addClass root, thread.OP.highlights... if thread.OP.highlights
 
