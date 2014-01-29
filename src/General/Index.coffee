@@ -1,6 +1,10 @@
 Index =
   init: ->
-    return if g.VIEW isnt 'index' or g.BOARD.ID is 'f'
+    if g.VIEW isnt 'index'
+      @rmCatalogLinks()
+      return
+    return if g.BOARD.ID is 'f'
+
 
     @db = new DataBoard 'pinnedThreads'
     Thread.callbacks.push
@@ -142,6 +146,13 @@ Index =
         val: isPinned: thread.isPinned
     Index.sort()
     Index.buildIndex()
+  rmCatalogLinks: ->
+    $.addClass doc, 'removing-catalog-links'
+    $.ready ->
+      for el in $$ '.navLinks a[href$=catalog]'
+        $.rm el.previousSibling
+        $.rm el
+      $.rmClass doc, 'removing-catalog-links'
 
   cb:
     rootClass: ->
