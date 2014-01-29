@@ -146,6 +146,15 @@ Index =
         val: isPinned: thread.isPinned
     Index.sort()
     Index.buildIndex()
+  addCatalogSwitch: ->
+    a = $.el 'a',
+      href: 'javascript:;'
+      textContent: 'Switch to <%= meta.name %>\'s catalog'
+      className: 'btn-wrap'
+    $.on a, 'click', ->
+      $.set 'Index Mode', 'catalog'
+      window.location = './'
+    $.add $.id('info'), a
   rmCatalogLinks: ->
     $.addClass doc, 'removing-catalog-links'
     $.ready ->
