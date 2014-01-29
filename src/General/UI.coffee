@@ -191,7 +191,7 @@ UI = do ->
     # prevent text selection
     e.preventDefault()
     if isTouching = e.type is 'touchstart'
-      e = e.changedTouches[e.changedTouches.length - 1]
+      [..., e] = e.changedTouches
     # distance from pointer to el edge is constant; calculate it here.
     el = $.x 'ancestor::div[contains(@class,"dialog")][1]', @
     rect = el.getBoundingClientRect()

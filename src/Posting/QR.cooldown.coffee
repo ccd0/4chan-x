@@ -76,7 +76,7 @@ QR.cooldown =
       if isReply is cooldown.isReply
         # Only cooldowns relevant to this post can set the seconds variable:
         #   reply cooldown with a reply, thread cooldown with a thread
-        elapsed = Math.floor (now - start) / $.SECOND
+        elapsed = (now - start) // $.SECOND
         continue if elapsed < 0 # clock changed since then?
         type = unless isReply
           'thread'
@@ -91,7 +91,7 @@ QR.cooldown =
         seconds = Math.max seconds, types[type] - elapsed
 
     if seconds and Conf['Cooldown Prediction'] and hasFile and upSpd
-      seconds -= Math.floor post.file.size / upSpd * upSpdAccuracy
+      seconds -= post.file.size // (upSpd * upSpdAccuracy)
       seconds  = Math.max seconds, 0
     # Update the status when we change posting type.
     # Don't get stuck at some random number.
