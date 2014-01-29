@@ -110,18 +110,18 @@ Build =
     flag = unless flagCode
       ''
     else if boardID is 'pol'
-      " <img src='#{staticPath}country/troll/#{flagCode.toLowerCase()}.gif' alt=#{flagCode} title='#{flagName}' class=countryFlag>"
+      " <img src='#{staticPath}country/troll/#{flagCode.toLowerCase()}.gif' title='#{flagName}' class=countryFlag>"
     else
       " <span title='#{flagName}' class='flag flag-#{flagCode.toLowerCase()}'></span>"
 
     if file?.isDeleted
       fileHTML = if isOP
         "<div class=file id=f#{postID}><span class=fileThumb>" +
-          "<img src='#{staticPath}filedeleted#{gifIcon}' alt='File deleted.' class=fileDeleted>" +
+          "<img src='#{staticPath}filedeleted#{gifIcon}' class=fileDeleted>" +
         "</span></div>"
       else
         "<div class=file id=f#{postID}><span class=fileThumb>" +
-          "<img src='#{staticPath}filedeleted-res#{gifIcon}' alt='File deleted.' class=fileDeletedRes>" +
+          "<img src='#{staticPath}filedeleted-res#{gifIcon}' class=fileDeletedRes>" +
         "</span></div>"
     else if file
       fileSize  = $.bytesToString file.size
@@ -167,11 +167,11 @@ Build =
       fileHTML = ''
 
     sticky = if isSticky
-      " <img src=#{staticPath}sticky#{gifIcon} alt=Sticky title=Sticky class=stickyIcon>"
+      " <img src=#{staticPath}sticky#{gifIcon} title=Sticky class=stickyIcon>"
     else
       ''
     closed = if isClosed
-      " <img src=#{staticPath}closed#{gifIcon} alt=Closed title=Closed class=closedIcon>"
+      " <img src=#{staticPath}closed#{gifIcon} title=Closed class=closedIcon>"
     else
       ''
 

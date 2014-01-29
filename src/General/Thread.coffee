@@ -38,7 +38,6 @@ class Thread
 
     icon = $.el 'img',
       src: "#{Build.staticPath}#{typeLC}#{Build.gifIcon}"
-      alt:   type
       title: type
       className: "#{typeLC}Icon"
     root = if type is 'Closed' and @isSticky
