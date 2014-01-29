@@ -6,6 +6,7 @@
   <li> Filter (hiding, highlighting)
   <li> Thread Hiding
   <li> Linkify
+  <li> Auto-GIF
   <li> Image Hover
  </ul>
  - Support for the official catalog will be removed in the future, once the catalog mode for the index is deemed satisfactory.

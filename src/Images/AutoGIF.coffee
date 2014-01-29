@@ -5,6 +5,9 @@ AutoGIF =
     Post.callbacks.push
       name: 'Auto-GIF'
       cb:   @node
+    CatalogThread.callbacks.push
+      name: 'Auto-GIF'
+      cb:   @catalogNode
   node: ->
     return if @isClone or @isHidden or @thread.isHidden or !@file?.isImage
     {thumb, URL} = @file
@@ -13,8 +16,17 @@ AutoGIF =
       # Revealed spoilers do not have height/width set, this fixes auto-gifs dimensions.
       {style} = thumb
       style.maxHeight = style.maxWidth = if @isReply then '125px' else '250px'
+    AutoGIF.replaceThumbnail thumb, URL
+  catalogNode: ->
+    {OP} = @thread
+    return unless OP.file?.isImage
+    {URL} = OP.file
+    return unless /gif$/.test URL
+    AutoGIF.replaceThumbnail @nodes.thumb, URL
+  replaceThumbnail: (thumb, URL) ->
     gif = $.el 'img'
     $.on gif, 'load', ->
       # Replace the thumbnail once the GIF has finished loading.
       thumb.src = URL
     gif.src = URL
+
