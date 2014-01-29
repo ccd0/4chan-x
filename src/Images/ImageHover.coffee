@@ -5,11 +5,20 @@ ImageHover =
     Post.callbacks.push
       name: 'Image Hover'
       cb:   @node
+    CatalogThread.callbacks.push
+      name: 'Image Hover'
+      cb:   @catalogNode
   node: ->
     return unless @file?.isImage
     $.on @file.thumb, 'mouseover', ImageHover.mouseover
+  catalogNode: ->
+    return unless @thread.OP.file?.isImage
+    $.on @nodes.thumb, 'mouseover', ImageHover.mouseover
   mouseover: (e) ->
-    post = Get.postFromNode @
+    post = if $.hasClass @, 'thumb'
+      g.posts[@parentNode.parentNode.dataset.fullID]
+    else
+      Get.postFromNode @
     el = $.el 'img',
       id: 'ihover'
       src: post.file.URL

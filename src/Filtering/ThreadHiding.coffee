@@ -1,10 +1,10 @@
 ThreadHiding =
   init: ->
-    return if g.VIEW isnt 'index' or !Conf['Thread Hiding'] and !Conf['Thread Hiding Link']
+    return if g.VIEW isnt 'index'
 
     @db = new DataBoard 'hiddenThreads'
     @syncCatalog()
-    $.on d, 'IndexBuild', @onIndexBuild
+    $.on d, 'IndexRefresh', @onIndexRefresh
     Thread.callbacks.push
       name: 'Thread Hiding'
       cb:   @node
@@ -15,8 +15,8 @@ ThreadHiding =
     return unless Conf['Thread Hiding']
     $.prepend @OP.nodes.root, ThreadHiding.makeButton @, 'hide'
 
-  onIndexBuild: ({detail: nodes}) ->
-    for root, i in nodes by 2
+  onIndexRefresh: ->
+    for root, i in Index.nodes by 2
       thread = Get.threadFromRoot root
       continue unless thread.isHidden
       unless thread.stub

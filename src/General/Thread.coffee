@@ -10,13 +10,21 @@ class Thread
     @postLimit = false
     @fileLimit = false
 
+    @OP = null
+    @catalogView = null
+
     g.threads[@fullID] = board.threads[@] = @
 
   setPage: (pageNum) ->
     icon = $ '.page-num', @OP.nodes.post
     for key in ['title', 'textContent']
       icon[key] = icon[key].replace /\d+/, pageNum
-    return
+    @catalogView.nodes.pageCount.textContent = pageNum if @catalogView
+  setCount: (type, count, reachedLimit) ->
+    return unless @catalogView
+    el = @catalogView.nodes["#{type}Count"]
+    el.textContent = count
+    (if reachedLimit then $.addClass else $.rmClass) el, 'warning'
   setStatus: (type, status) ->
     name = "is#{type}"
     return if @[name] is status
@@ -25,19 +33,32 @@ class Thread
     typeLC = type.toLowerCase()
     unless status
       $.rm $ ".#{typeLC}Icon", @OP.nodes.info
+      $.rm $ ".#{typeLC}Icon", @catalogView if @catalogView
       return
+
     icon = $.el 'img',
-      src: "//s.4cdn.org/image/#{typeLC}#{if window.devicePixelRatio >= 2 then '@2x' else ''}.gif"
+      src: "#{Build.staticPath}#{typeLC}#{Build.gifIcon}"
       alt:   type
       title: type
       className: "#{typeLC}Icon"
     root = if type is 'Closed' and @isSticky
       $ '.stickyIcon', @OP.nodes.info
     else if g.VIEW is 'index'
-      $ '.page-num',  @OP.nodes.info
+      $ '.page-num', @OP.nodes.info
     else
       $ '[title="Quote this post"]', @OP.nodes.info
     $.after root, [$.tn(' '), icon]
+
+    return unless @catalogView
+    root = $ '.thread-icons', @catalogView
+    (if type is 'Sticky' and @isClosed then $.prepend else $.add) root, icon.cloneNode()
+
+  pin: ->
+    @isOnTop = @isPinned = true
+    $.addClass @catalogView.nodes.root, 'pinned' if @catalogView
+  unpin: ->
+    @isOnTop = @isPinned = false
+    $.rmClass  @catalogView.nodes.root, 'pinned' if @catalogView
 
   kill: ->
     @isDead = true

@@ -1,6 +1,24 @@
 Index =
   init: ->
+    if g.VIEW is 'catalog'
+      $.ready ->
+        span = $.el 'a',
+          href: '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
+          textContent: 'Support for the official catalog to be removed'
+          title: '<%= meta.name %> now has a "catalog" Index mode.'
+          className: 'btn-wrap warning'
+          target: '_blank'
+        $.add $.id('info'), span
+
     return if g.VIEW isnt 'index' or g.BOARD.ID is 'f'
+
+    @db = new DataBoard 'pinnedThreads'
+    Thread.callbacks.push
+      name: 'Thread Pinning'
+      cb:   @threadNode
+    CatalogThread.callbacks.push
+      name: 'Catalog Features'
+      cb:   @catalogNode
 
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'
@@ -14,6 +32,7 @@ Index =
       subEntries: [
         { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="paged"> Paged' }
         { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="all pages"> All threads' }
+        { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="catalog"> Catalog' }
       ]
     for label in modeEntry.subEntries
       input = label.el.firstChild
@@ -68,6 +87,7 @@ Index =
     $.addClass doc, 'index-loading'
     @update()
     @root = $.el 'div', className: 'board'
+    Index.cb.rootClass()
     @pagelist = $.el 'div',
       className: 'pagelist'
       hidden: true
@@ -100,8 +120,44 @@ Index =
       $.asap (-> $('.pagelist') or d.readyState isnt 'loading'), ->
         $.replace $('.pagelist'), Index.pagelist
 
+  threadNode: ->
+    return unless data = Index.db.get {boardID: @board.ID, threadID: @ID}
+    @pin() if data.isPinned
+  catalogNode: ->
+    $.on @nodes.thumb, 'click', Index.onClick
+  onClick: (e) ->
+    return if e.button isnt 0
+    root   = @parentNode.parentNode
+    thread = g.threads[root.dataset.fullID]
+    if e.shiftKey
+      $.rm root
+      ThreadHiding.hide thread
+      ThreadHiding.saveHiddenState thread
+    else if e.altKey
+      Index.togglePin thread
+    else
+      return
+    e.preventDefault()
+  togglePin: (thread) ->
+    if thread.isPinned
+      thread.unpin()
+      Index.db.delete
+        boardID:  thread.board.ID
+        threadID: thread.ID
+    else
+      thread.pin()
+      Index.db.set
+        boardID:  thread.board.ID
+        threadID: thread.ID
+        val: isPinned: thread.isPinned
+    Index.sort()
+    Index.buildIndex()
+
   cb:
+    rootClass: ->
+      (if Conf['Index Mode'] is 'catalog' then $.addClass else $.rmClass) Index.root, 'catalog-mode'
     mode: ->
+      Index.cb.rootClass()
       Index.togglePagelist()
       Index.buildIndex()
     sort: ->
@@ -289,6 +345,8 @@ Index =
       Index.nodes.push threadRoot, $.el 'hr'
       if thread = g.BOARD.threads[threadData.no]
         thread.setPage Math.floor i / Index.threadsNumPerPage
+        thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
+        thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
         thread.setStatus 'Sticky', !!threadData.sticky
         thread.setStatus 'Closed', !!threadData.closed
       else
@@ -334,6 +392,16 @@ Index =
 
     Main.handleErrors errors if errors
     Main.callbackNodes Post, posts
+  buildCatalogViews: ->
+    threads = Index.sortedNodes
+      .filter((n, i) -> !(i % 2))
+      .map((threadRoot) -> Get.threadFromRoot threadRoot)
+      .filter (thread) -> !thread.isHidden
+    catalogThreads = []
+    for thread in threads when !thread.catalogView
+      catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
+    Main.callbackNodes CatalogThread, catalogThreads
+    threads.map (thread) -> thread.catalogView.nodes.root
   sort: ->
     switch Conf['Index Sort']
       when 'bump'
@@ -368,16 +436,19 @@ Index =
       Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
     return
   buildIndex: ->
-    if Conf['Index Mode'] is 'paged'
-      pageNum = Index.getCurrentPage()
-      nodesPerPage = Index.threadsNumPerPage * 2
-      nodes = Index.sortedNodes[nodesPerPage * pageNum ... nodesPerPage * (pageNum + 1)]
-    else
-      nodes = Index.sortedNodes
+    switch Conf['Index Mode']
+      when 'paged'
+        pageNum = Index.getCurrentPage()
+        nodesPerPage = Index.threadsNumPerPage * 2
+        nodes = Index.sortedNodes[nodesPerPage * pageNum ... nodesPerPage * (pageNum + 1)]
+      when 'catalog'
+        nodes = Index.buildCatalogViews()
+      else
+        nodes = Index.sortedNodes
     $.rmAll Index.root
-    Index.buildReplies nodes if Conf['Show Replies']
-    $.event 'IndexBuild', nodes
+    Index.buildReplies nodes if Conf['Show Replies'] and Conf['Index Mode'] isnt 'catalog'
     $.add Index.root, nodes
+    $.event 'IndexBuild', nodes
 
   isSearching: false
   clearSearch: ->

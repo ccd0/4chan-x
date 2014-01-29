@@ -254,9 +254,69 @@ Build =
       [posts, files] = if Conf['Show Replies']
         [data.omitted_posts, data.omitted_images]
       else
-        # XXX data.images is not accurate.
-        [data.replies, data.omitted_images + data.last_replies.filter((data) -> !!data.ext).length]
+        [data.replies, data.images]
       nodes.push Build.summary board.ID, data.no, posts, files
 
     $.add root, nodes
+    root
+  catalogThread: (thread) ->
+    {staticPath, gifIcon} = Build
+    data = Index.liveThreadData[Index.liveThreadIDs.indexOf thread.ID]
+
+    if data.spoiler and !Conf['Reveal Spoilers']
+      src = "#{staticPath}spoiler"
+      if spoilerRange = Build.spoilerRange[thread.board]
+        # Randomize the spoiler image.
+        src += "-#{thread.board}" + Math.floor 1 + spoilerRange * Math.random()
+      src += '.png'
+      imgClass = 'spoiler-file'
+    else if data.filedeleted
+      src = "#{staticPath}filedeleted-res#{gifIcon}"
+      imgClass = 'deleted-file'
+    else if thread.OP.file
+      src = thread.OP.file.thumbURL
+      max = Math.max data.tn_w, data.tn_h
+      imgWidth  = data.tn_w * 150 / max
+      imgHeight = data.tn_h * 150 / max
+    else
+      src = "#{staticPath}nofile.png"
+      imgClass = 'no-file'
+
+    postCount = data.replies + 1
+    fileCount = data.images  + !!data.ext
+    pageCount = Math.floor Index.liveThreadIDs.indexOf(thread.ID) / Index.threadsNumPerPage
+
+    subject = if thread.OP.info.subject
+      "<div class='subject'>#{thread.OP.info.subject}</div>"
+    else
+      ''
+    comment = thread.OP.nodes.comment.innerHTML.replace /(<br>){2,}/g, '<br>'
+
+    root = $.el 'div',
+      className: 'catalog-thread'
+      innerHTML: <%= importHTML('General/Thread-catalog-view') %>
+
+    root.dataset.fullID = thread.fullID
+    $.addClass root, 'pinned' if thread.isPinned
+    $.addClass root, thread.OP.highlights... if thread.OP.highlights
+
+    for quotelink in $$ '.quotelink', root.lastElementChild
+      $.replace quotelink, [quotelink.childNodes...]
+
+    if thread.isSticky
+      $.add $('.thread-icons', root), $.el 'img',
+        src: "#{staticPath}sticky#{gifIcon}"
+        className: 'stickyIcon'
+        title: 'Sticky'
+    if thread.isClosed
+      $.add $('.thread-icons', root), $.el 'img',
+        src: "#{staticPath}closed#{gifIcon}"
+        className: 'closedIcon'
+        title: 'Closed'
+
+    if data.bumplimit
+      $.addClass $('.post-count', root), 'warning'
+    if data.imagelimit
+      $.addClass $('.file-count', root), 'warning'
+
     root

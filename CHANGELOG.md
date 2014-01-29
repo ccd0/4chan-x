@@ -1,3 +1,15 @@
+- More index navigation improvements:
+ - New index mode: `catalog`
+ - When in catalog mode, use `Shift+Click` to hide, and `Alt+Click` to pin threads.
+ - Existing features affect the catalog mode such as:
+ <ul>
+  <li> Filter (hiding, highlighting)
+  <li> Thread Hiding
+  <li> Linkify
+  <li> Auto-GIF
+  <li> Image Hover
+ </ul>
+ - Support for the official catalog will be removed in the future, once the catalog mode for the index is deemed satisfactory.
 - Added `Original filename` variable to Sauce panel.
 - Added a `Reset Settings` button in the settings.
 
