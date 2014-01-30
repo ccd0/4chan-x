@@ -1,3 +1,5 @@
+## 3.16.0 - *2014-01-30*
+
 - More index navigation improvements:
  - New index mode: `catalog`<br>
   ![catalog mode](img/changelog/3.16.0/0.png)
