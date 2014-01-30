@@ -1,3 +1,5 @@
+### v2.8.8 
+*2014-01-30*
 
 **MayhemYDG**:
 - Added a `Reset Settings` button in the settings.
@@ -6,6 +8,9 @@
 
 **ParrotParrot**:
 - Added `Original filename` variable to Sauce panel.
+
+**Zixaphir**:
+- Bugfixes
 
 ### v2.8.7 
 *2014-01-19*
