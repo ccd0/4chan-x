@@ -33,7 +33,7 @@ class Thread
     typeLC = type.toLowerCase()
     unless status
       $.rm $ ".#{typeLC}Icon", @OP.nodes.info
-      $.rm $ ".#{typeLC}Icon", @catalogView if @catalogView
+      $.rm $ ".#{typeLC}Icon", @catalogView.nodes.icons if @catalogView
       return
 
     icon = $.el 'img',
@@ -49,8 +49,7 @@ class Thread
     $.after root, [$.tn(' '), icon]
 
     return unless @catalogView
-    root = $ '.thread-icons', @catalogView
-    (if type is 'Sticky' and @isClosed then $.prepend else $.add) root, icon.cloneNode()
+    (if type is 'Sticky' and @isClosed then $.prepend else $.add) @catalogView.nodes.icons, icon.cloneNode()
 
   pin: ->
     @isOnTop = @isPinned = true
