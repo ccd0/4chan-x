@@ -353,7 +353,7 @@ Index =
       threadRoot = Build.thread g.BOARD, threadData
       Index.nodes.push threadRoot, $.el 'hr'
       if thread = g.BOARD.threads[threadData.no]
-        thread.setPage Math.floor i / Index.threadsNumPerPage
+        thread.setPage i // Index.threadsNumPerPage
         thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
         thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
         thread.setStatus 'Sticky', !!threadData.sticky
@@ -403,8 +403,8 @@ Index =
     Main.callbackNodes Post, posts
   buildCatalogViews: ->
     threads = Index.sortedNodes
-      .filter((n, i) -> !(i % 2))
-      .map((threadRoot) -> Get.threadFromRoot threadRoot)
+      .filter (n, i) -> !(i % 2)
+      .map (threadRoot) -> Get.threadFromRoot threadRoot
       .filter (thread) -> !thread.isHidden
     catalogThreads = []
     for thread in threads when !thread.catalogView
@@ -417,8 +417,8 @@ Index =
         sortedThreadIDs = Index.liveThreadIDs
       when 'lastreply'
         sortedThreadIDs = [Index.liveThreadData...].sort((a, b) ->
-          a = a.last_replies[a.last_replies.length - 1] if 'last_replies' of a
-          b = b.last_replies[b.last_replies.length - 1] if 'last_replies' of b
+          [..., a] = a.last_replies if 'last_replies' of a
+          [..., b] = b.last_replies if 'last_replies' of b
           b.no - a.no
         ).map (data) -> data.no
       when 'birth'

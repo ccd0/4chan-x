@@ -35,7 +35,7 @@ QR.post = class
     else
       'new'
 
-    prev = QR.posts[QR.posts.length - 1]
+    [..., prev] = QR.posts
     QR.posts.push @
     @nodes.spoiler.checked = @spoiler = if prev and Conf['Remember Spoiler']
       prev.spoiler

@@ -1,5 +1,8 @@
+## 3.16.0 - *2014-01-30*
+
 - More index navigation improvements:
- - New index mode: `catalog`
+ - New index mode: `catalog`<br>
+  ![catalog mode](img/changelog/3.16.0/0.png)
  - When in catalog mode, use `Shift+Click` to hide, and `Alt+Click` to pin threads.
  - Existing features affect the catalog mode such as:
  <ul>
