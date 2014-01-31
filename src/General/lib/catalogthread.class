@@ -7,8 +7,9 @@ class CatalogThread
     @board = @thread.board
     @nodes =
       root: root
-      thumb:     $ '.thumb',      root
-      postCount: $ '.post-count', root
-      fileCount: $ '.file-count', root
-      pageCount: $ '.page-count', root
+      thumb:     $ '.thumb',        root
+      icons:     $ '.thread-icons', root
+      postCount: $ '.post-count',   root
+      fileCount: $ '.file-count',   root
+      pageCount: $ '.page-count',   root
     @thread.catalogView = @
