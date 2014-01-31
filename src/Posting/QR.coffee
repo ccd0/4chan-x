@@ -50,14 +50,13 @@ QR =
           else
             QR.status()
 
-    QR.persist() if Conf['Persistent QR']
+    return unless Conf['Persistent QR']
+    QR.open()
+    QR.hide() if Conf['Auto-Hide QR'] or g.VIEW is 'catalog' or g.VIEW is 'index' and Conf['Index Mode'] is 'catalog'
 
   node: ->
     $.on $('a[title="Quote this post"]', @nodes.info), 'click', QR.quote
 
-  persist: ->
-    QR.open()
-    QR.hide() if Conf['Auto-Hide QR'] or g.VIEW is 'catalog'
   open: ->
     if QR.nodes
       QR.nodes.el.hidden = false
