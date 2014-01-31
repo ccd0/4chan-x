@@ -267,7 +267,6 @@ $.set = do ->
   setArea = (area) ->
     data = items[area]
     return if !Object.keys(data).length or timeout[area]
-    items[area] = {}
     chrome.storage[area].set data, ->
       if chrome.runtime.lastError
         c.error chrome.runtime.lastError.message
@@ -276,23 +275,20 @@ $.set = do ->
         timeout[area] = setTimeout setArea, $.MINUTE, area
         return
       delete timeout[area]
+    items[area] = {}
 
-  setAll = $.debounce $.SECOND, ->
-    for key in $.localKeys
-      if key of items.sync
-        items.local[key] = items.sync[key]
-        delete items.sync[key]
-    try
-      setArea 'local'
-      setArea 'sync'
-    catch err
-      c.error err.stack
+  setAll = $.debounce 5 * $.SECOND, ->
+    setArea 'local'
+    setArea 'sync'
 
   (key, val) ->
     if typeof key is 'string'
       items.sync[key] = val
     else
       $.extend items.sync, key
+    for key in $.localKeys when key of items.sync
+      items.local[key] = items.sync[key]
+      delete items.sync[key]
     setAll()
 $.clear = (cb) ->
   count = 2
