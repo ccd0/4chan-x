@@ -52,7 +52,7 @@ QR.cooldown =
 
   count: ->
     unless Object.keys(QR.cooldown.cooldowns).length
-      $.delete "#{g.BOARD}.cooldown"
+      $.delete "cooldown.#{g.BOARD}"
       delete QR.cooldown.isCounting
       delete QR.cooldown.seconds
       QR.status()
