@@ -71,7 +71,7 @@ class DataBoard
   ajaxClean: (boardID) ->
     $.cache "//a.4cdn.org/#{boardID}/threads.json", (e) =>
       if e.target.status isnt 200
-        @delete boardID if e.target.status is 404
+        @delete {boardID} if e.target.status is 404
         return
       board   = @data.boards[boardID]
       threads = {}
