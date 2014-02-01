@@ -1,7 +1,7 @@
 ### 3.16.1 - *2014-02-01*
 
 - More index navigation improvements:
- - The index will now display how threads are hidden.
+ - The index will now display how many threads are hidden.
  - When in catalog mode, you can toggle between hidden/non-hidden threads.
 - Fixed a bug which prevented QR cooldowns from being pruned from storage.
  - On Chrome, the storage could reach the quota and prevent 4chan X from saving data like QR name/mail or auto-watch for example.
