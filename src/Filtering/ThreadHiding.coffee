@@ -24,29 +24,7 @@ ThreadHiding =
       else unless root.contains thread.stub
         # When we come back to a page, the stub is already there.
         ThreadHiding.makeStub thread, root
-    ThreadHiding.updateToggle()
-  updateToggle: ->
-    hiddenCount = 0
-    for threadID, thread of g.BOARD.threads when thread.isHidden
-      hiddenCount++ if thread.ID in Index.liveThreadIDs
-    unless hiddenCount
-      ThreadHiding.removeToggle()
-      return
-    unless ThreadHiding.toggler
-      ThreadHiding.addToggle()
-    $('#hidden-count', Index.navLinks).textContent = if hiddenCount is 1
-      '1 hidden thread'
-    else
-      "#{hiddenCount} hidden threads"
-  addToggle: ->
-    ThreadHiding.toggler = $.el 'span',
-      id: 'hidden-label'
-      innerHTML: ' &mdash; <span id="hidden-count"></span>'
-    $.add Index.navLinks, ThreadHiding.toggler
-  removeToggle: ->
-    return unless ThreadHiding.toggler
-    $.rm ThreadHiding.toggler
-    delete ThreadHiding.toggler
+    return
 
   syncCatalog: ->
     # Sync hidden threads from the catalog into the index.
@@ -179,7 +157,7 @@ ThreadHiding =
     return if thread.isHidden
     threadRoot = thread.OP.nodes.root.parentNode
     thread.isHidden = true
-    ThreadHiding.updateToggle()
+    Index.updateHideToggle()
 
     unless makeStub
       threadRoot.hidden = threadRoot.nextElementSibling.hidden = true # <hr>
@@ -194,4 +172,4 @@ ThreadHiding =
     threadRoot = thread.OP.nodes.root.parentNode
     threadRoot.nextElementSibling.hidden =
       threadRoot.hidden = thread.isHidden = false
-    ThreadHiding.updateToggle()
+    Index.updateHideToggle()
