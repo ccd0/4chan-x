@@ -15,8 +15,7 @@ QR.cooldown =
       QR.cooldown.start()
     $.sync key, QR.cooldown.sync
   start: ->
-    return unless Conf['Cooldown']
-    return if QR.cooldown.isCounting
+    return if QR.cooldown.isCounting or !Object.keys(QR.cooldown.cooldowns).length
     QR.cooldown.isCounting = true
     QR.cooldown.count()
 
@@ -69,6 +68,7 @@ QR.cooldown =
     {types, cooldowns, upSpd, upSpdAccuracy} = QR.cooldown
 
     for start, cooldown of cooldowns
+      start = +start
       if 'delay' of cooldown
         if cooldown.delay
           seconds = Math.max seconds, cooldown.delay--
@@ -80,8 +80,10 @@ QR.cooldown =
       if isReply is cooldown.isReply
         # Only cooldowns relevant to this post can set the seconds variable:
         #   reply cooldown with a reply, thread cooldown with a thread
-        elapsed = Math.floor (now - start) / $.SECOND
-        continue if elapsed < 0 # clock changed since then?
+        elapsed = (now - start) // $.SECOND
+        if elapsed < 0 # clock changed since then?
+          QR.cooldown.unset start
+          continue
         type = unless isReply
           'thread'
         else if hasFile
