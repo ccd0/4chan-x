@@ -87,7 +87,6 @@ Index =
     $.addClass doc, 'index-loading'
     @update()
     @root = $.el 'div', className: 'board'
-    Index.cb.rootClass()
     @pagelist = $.el 'div',
       className: 'pagelist'
       hidden: true
@@ -102,6 +101,8 @@ Index =
     $.on @pagelist, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
+    $.on $('#hidden-toggle a',    @navLinks), 'click', @cb.toggleHiddenThreads
+    @cb.toggleCatalogMode()
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
       board = $ '.board'
       $.replace board, Index.root
@@ -155,10 +156,22 @@ Index =
     Index.buildIndex()
 
   cb:
-    rootClass: ->
-      (if Conf['Index Mode'] is 'catalog' then $.addClass else $.rmClass) Index.root, 'catalog-mode'
+    toggleCatalogMode: ->
+      if Conf['Index Mode'] is 'catalog'
+        $.addClass Index.root, 'catalog-mode'
+        $('#hidden-toggle', Index.navLinks).hidden = false
+      else
+        $.rmClass Index.root, 'catalog-mode'
+        $('#hidden-toggle', Index.navLinks).hidden = true
+    toggleHiddenThreads: ->
+      @textContent = if Index.showHiddenThreads = !Index.showHiddenThreads
+        'Hide'
+      else
+        'Show'
+      Index.sort()
+      Index.buildIndex()
     mode: ->
-      Index.cb.rootClass()
+      Index.cb.toggleCatalogMode()
       Index.togglePagelist()
       Index.buildIndex()
     sort: ->
@@ -411,7 +424,7 @@ Index =
     threads = Index.sortedNodes
       .filter (n, i) -> !(i % 2)
       .map (threadRoot) -> Get.threadFromRoot threadRoot
-      .filter (thread) -> !thread.isHidden
+      .filter (thread) -> !thread.isHidden isnt Index.showHiddenThreads
     catalogThreads = []
     for thread in threads when !thread.catalogView
       catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
