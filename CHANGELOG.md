@@ -1,3 +1,5 @@
+### 3.16.1 - *2014-02-01*
+
 - More index navigation improvements:
  - The index will now display how threads are hidden.
  - When in catalog mode, you can toggle between hidden/non-hidden threads.
