@@ -267,6 +267,29 @@ Index =
     $.before a, strong
     $.add strong, a
 
+  updateHideToggle: ->
+    hiddenCount = 0
+    for threadID, thread of g.BOARD.threads when thread.isHidden
+      hiddenCount++ if thread.ID in Index.liveThreadIDs
+    unless hiddenCount
+      Index.removeHideToggle()
+      return
+    unless Index.toggler
+      Index.addHideToggle()
+    $('#hidden-count', Index.navLinks).textContent = if hiddenCount is 1
+      '1 hidden thread'
+    else
+      "#{hiddenCount} hidden threads"
+  addHideToggle: ->
+    Index.toggler = $.el 'span',
+      id: 'hidden-label'
+      innerHTML: ' &mdash; <span id="hidden-count"></span>'
+    $.add Index.navLinks, Index.toggler
+  removeHideToggle: ->
+    return unless Index.toggler
+    $.rm Index.toggler
+    delete Index.toggler
+
   update: (pageNum, forceReparse) ->
     return unless navigator.onLine
     delete Index.pageNum
@@ -386,6 +409,7 @@ Index =
     $.nodes Index.nodes
     Main.callbackNodes Thread, threads
     Main.callbackNodes Post,   posts
+    Index.updateHideToggle()
     $.event 'IndexRefresh'
 
   buildReplies: (threadRoots) ->
