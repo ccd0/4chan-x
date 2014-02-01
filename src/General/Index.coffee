@@ -83,6 +83,7 @@ Index =
     $('.returnlink a',  @navLinks).href = "//boards.4chan.org/#{g.BOARD}/"
     $('.cataloglink a', @navLinks).href = "//boards.4chan.org/#{g.BOARD}/catalog"
     @searchInput = $ '#index-search', @navLinks
+    @hideLabel   = $ '#hidden-label', @navLinks
     @currentPage = @getCurrentPage()
     $.on window, 'popstate', @cb.popstate
 
@@ -267,28 +268,18 @@ Index =
     $.before a, strong
     $.add strong, a
 
-  updateHideToggle: ->
+  updateHideLabel: ->
     hiddenCount = 0
     for threadID, thread of g.BOARD.threads when thread.isHidden
       hiddenCount++ if thread.ID in Index.liveThreadIDs
     unless hiddenCount
-      Index.removeHideToggle()
+      Index.hideLabel.hidden = true
       return
-    unless Index.toggler
-      Index.addHideToggle()
+    Index.hideLabel.hidden = false
     $('#hidden-count', Index.navLinks).textContent = if hiddenCount is 1
       '1 hidden thread'
     else
       "#{hiddenCount} hidden threads"
-  addHideToggle: ->
-    Index.toggler = $.el 'span',
-      id: 'hidden-label'
-      innerHTML: ' &mdash; <span id="hidden-count"></span>'
-    $.add Index.navLinks, Index.toggler
-  removeHideToggle: ->
-    return unless Index.toggler
-    $.rm Index.toggler
-    delete Index.toggler
 
   update: (pageNum, forceReparse) ->
     return unless navigator.onLine
@@ -409,7 +400,7 @@ Index =
     $.nodes Index.nodes
     Main.callbackNodes Thread, threads
     Main.callbackNodes Post,   posts
-    Index.updateHideToggle()
+    Index.updateHideLabel()
     $.event 'IndexRefresh'
 
   buildReplies: (threadRoots) ->

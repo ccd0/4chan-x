@@ -188,7 +188,7 @@ ThreadHiding =
     return if thread.isHidden
     threadRoot = thread.OP.nodes.root.parentNode
     thread.isHidden = true
-    Index.updateHideToggle()
+    Index.updateHideLabel()
 
     return threadRoot.hidden = true unless makeStub
 
@@ -200,4 +200,4 @@ ThreadHiding =
       delete thread.stub
     threadRoot = thread.OP.nodes.root.parentNode
     threadRoot.hidden = thread.isHidden = false
-    Index.updateHideToggle()
+    Index.updateHideLabel()
