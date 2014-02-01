@@ -132,14 +132,20 @@ Index =
     root   = @parentNode.parentNode
     thread = g.threads[root.dataset.fullID]
     if e.shiftKey
-      $.rm root
-      ThreadHiding.hide thread
-      ThreadHiding.saveHiddenState thread
+      Index.toggleHide thread, root
     else if e.altKey
       Index.togglePin thread
     else
       return
     e.preventDefault()
+  toggleHide: (thread, root) ->
+    $.rm root
+    if Index.showHiddenThreads
+      ThreadHiding.show thread
+    else
+      ThreadHiding.hide thread
+    return unless ThreadHiding.db.get {boardID: thread.board.ID, threadID: thread.ID}
+    ThreadHiding.saveHiddenState thread
   togglePin: (thread) ->
     if thread.isPinned
       thread.unpin()
@@ -164,7 +170,7 @@ Index =
         $.rmClass Index.root, 'catalog-mode'
         $('#hidden-toggle', Index.navLinks).hidden = true
     toggleHiddenThreads: ->
-      @textContent = if Index.showHiddenThreads = !Index.showHiddenThreads
+      $('#hidden-toggle a', Index.navLinks).textContent = if Index.showHiddenThreads = !Index.showHiddenThreads
         'Hide'
       else
         'Show'
@@ -269,6 +275,7 @@ Index =
       hiddenCount++ if thread.ID in Index.liveThreadIDs
     unless hiddenCount
       Index.hideLabel.hidden = true
+      Index.cb.toggleHiddenThreads() if Index.showHiddenThreads
       return
     Index.hideLabel.hidden = false
     $('#hidden-count', Index.navLinks).textContent = if hiddenCount is 1
