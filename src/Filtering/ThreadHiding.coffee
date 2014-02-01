@@ -157,7 +157,7 @@ ThreadHiding =
     return if thread.isHidden
     threadRoot = thread.OP.nodes.root.parentNode
     thread.isHidden = true
-    Index.updateHideToggle()
+    Index.updateHideLabel()
 
     unless makeStub
       threadRoot.hidden = threadRoot.nextElementSibling.hidden = true # <hr>
@@ -172,4 +172,4 @@ ThreadHiding =
     threadRoot = thread.OP.nodes.root.parentNode
     threadRoot.nextElementSibling.hidden =
       threadRoot.hidden = thread.isHidden = false
-    Index.updateHideToggle()
+    Index.updateHideLabel()
