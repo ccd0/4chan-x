@@ -540,6 +540,12 @@ hr ~ div.center:not(.ad-cnt) {
   top: 1px;
   right: 1px;
 }
+.catalog-thread > a:not(:hover) .menu-button {
+  display: none;
+}
+.thread-icons > .menu-button > i {
+  font-size: 14px;
+}
 .thread-stats {
   flex-shrink: 0;
   cursor: help;
