@@ -1,4 +1,5 @@
 Index =
+  showHiddenThreads: false
   init: ->
     if g.VIEW is 'catalog'
       $.ready ->
@@ -142,9 +143,10 @@ Index =
     $.rm root
     if Index.showHiddenThreads
       ThreadHiding.show thread
+      return unless ThreadHiding.db.get {boardID: thread.board.ID, threadID: thread.ID}
+      # Don't save when un-hiding filtered threads.
     else
       ThreadHiding.hide thread
-    return unless ThreadHiding.db.get {boardID: thread.board.ID, threadID: thread.ID}
     ThreadHiding.saveHiddenState thread
   togglePin: (thread) ->
     if thread.isPinned
