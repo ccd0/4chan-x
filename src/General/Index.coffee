@@ -1,4 +1,5 @@
 Index =
+  showHiddenThreads: false
   init: ->
     return if g.BOARD.ID is 'f' or g.VIEW isnt 'index' or !Conf['JSON Navigation']
 
@@ -161,9 +162,10 @@ Index =
     $.rm root
     if Index.showHiddenThreads
       ThreadHiding.show thread
+      return unless ThreadHiding.db.get {boardID: thread.board.ID, threadID: thread.ID}
+      # Don't save when un-hiding filtered threads.
     else
       ThreadHiding.hide thread
-    return unless ThreadHiding.db.get {boardID: thread.board.ID, threadID: thread.ID}
     ThreadHiding.saveHiddenState thread
   togglePin: (thread) ->
     if thread.isPinned
