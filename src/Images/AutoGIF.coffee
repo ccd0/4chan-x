@@ -22,11 +22,14 @@ AutoGIF =
     return unless OP.file?.isImage
     {URL} = OP.file
     return unless /gif$/.test URL
-    AutoGIF.replaceThumbnail @nodes.thumb, URL
-  replaceThumbnail: (thumb, URL) ->
+    AutoGIF.replaceThumbnail @nodes.thumb, URL, true
+  replaceThumbnail: (thumb, URL, isCatalog) ->
     gif = $.el 'img'
     $.on gif, 'load', ->
       # Replace the thumbnail once the GIF has finished loading.
-      thumb.src = URL
+      if isCatalog
+        thumb.style.backgroundImage = "url(#{URL})"
+      else
+        thumb.src = URL
     gif.src = URL
 

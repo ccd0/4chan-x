@@ -13,7 +13,7 @@ Menu =
       name: 'Menu'
       cb:   @node
     CatalogThread.callbacks.push
-      name: 'Image Hover'
+      name: 'Menu'
       cb:   @catalogNode
 
   node: ->

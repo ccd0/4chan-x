@@ -263,25 +263,6 @@ Build =
     {staticPath, gifIcon} = Build
     data = Index.liveThreadData[Index.liveThreadIDs.indexOf thread.ID]
 
-    if data.spoiler and !Conf['Reveal Spoilers']
-      src = "#{staticPath}spoiler"
-      if spoilerRange = Build.spoilerRange[thread.board]
-        # Randomize the spoiler image.
-        src += "-#{thread.board}" + Math.floor 1 + spoilerRange * Math.random()
-      src += '.png'
-      imgClass = 'spoiler-file'
-    else if data.filedeleted
-      src = "#{staticPath}filedeleted-res#{gifIcon}"
-      imgClass = 'deleted-file'
-    else if thread.OP.file
-      src = thread.OP.file.thumbURL
-      max = Math.max data.tn_w, data.tn_h
-      imgWidth  = data.tn_w * 150 / max
-      imgHeight = data.tn_h * 150 / max
-    else
-      src = "#{staticPath}nofile.png"
-      imgClass = 'no-file'
-
     postCount = data.replies + 1
     fileCount = data.images  + !!data.ext
     pageCount = Index.liveThreadIDs.indexOf(thread.ID) // Index.threadsNumPerPage
@@ -299,6 +280,27 @@ Build =
     root.dataset.fullID = thread.fullID
     $.addClass root, 'pinned' if thread.isPinned
     $.addClass root, thread.OP.highlights... if thread.OP.highlights
+
+    thumb = root.firstElementChild
+    if data.spoiler and !Conf['Reveal Spoilers']
+      src = "#{staticPath}spoiler"
+      if spoilerRange = Build.spoilerRange[thread.board]
+        # Randomize the spoiler image.
+        src += "-#{thread.board}" + Math.floor 1 + spoilerRange * Math.random()
+      src += '.png'
+      $.addClass thumb, 'spoiler-file'
+    else if data.filedeleted
+      src = "#{staticPath}filedeleted-res#{gifIcon}"
+      $.addClass thumb, 'deleted-file'
+    else if thread.OP.file
+      src = thread.OP.file.thumbURL
+      max = Math.max data.tn_w, data.tn_h
+      thumb.style.width  = data.tn_w * 150 / max + 'px'
+      thumb.style.height = data.tn_h * 150 / max + 'px'
+    else
+      src = "#{staticPath}nofile.png"
+      $.addClass thumb, 'no-file'
+    thumb.style.backgroundImage = "url(#{src})"
 
     for quotelink in $$ '.quotelink', root.lastElementChild
       $.replace quotelink, [quotelink.childNodes...]

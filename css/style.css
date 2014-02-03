@@ -415,26 +415,28 @@ a[href="javascript:;"] {
   max-height: 320px;
   word-break: break-word;
 }
-.catalog-thread > a {
+.thumb {
   flex-shrink: 0;
   position: relative;
-}
-.thumb {
-  max-width: 150px;
-  max-height: 150px;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
   border-radius: 2px;
   box-shadow: 0 0 5px rgba(0, 0, 0, .25);
 }
-.thunb.spoiler-file {
+.thumb.spoiler-file {
+  background-size: 100px;
   width: 100px;
   height: 100px;
 }
 .thumb.deleted-file {
+  background-size: 127px 13px;
   width: 127px;
   height: 13px;
   padding: 20px 11px;
 }
 .thumb.no-file {
+  background-size: 77px 13px;
   width: 77px;
   height: 13px;
   padding: 20px 36px;
@@ -444,7 +446,7 @@ a[href="javascript:;"] {
   top: 1px;
   right: 1px;
 }
-.catalog-thread > a:not(:hover) .menu-button {
+.thumb:not(:hover) .menu-button > i {
   display: none;
 }
 .thread-icons > .menu-button > i {
@@ -455,10 +457,9 @@ a[href="javascript:;"] {
   cursor: help;
   font-size: 10px;
   font-weight: 700;
-  line-height: .8;
-  margin-top: 1px;
+  margin-top: 2px;
 }
-.catalog-thread .subject {
+.catalog-thread > .subject {
   flex-shrink: 0;
   font-weight: 700;
   line-height: 1;
@@ -466,7 +467,7 @@ a[href="javascript:;"] {
 }
 .catalog-thread > .comment {
   flex-shrink: 1;
-  max-width: 100%;
+  align-self: stretch;
   overflow: hidden;
   text-align: center;
 }

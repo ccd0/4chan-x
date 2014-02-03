@@ -16,7 +16,7 @@ ImageHover =
     $.on @nodes.thumb, 'mouseover', ImageHover.mouseover
   mouseover: (e) ->
     post = if $.hasClass @, 'thumb'
-      g.posts[@parentNode.parentNode.dataset.fullID]
+      g.posts[@parentNode.dataset.fullID]
     else
       Get.postFromNode @
     el = $.el 'img',
