@@ -22,7 +22,7 @@ Menu =
     $.add @nodes.info, Menu.makeButton()
 
   catalogNode: ->
-    $.add @nodes.icons, Menu.makeButton()
+    $.add @nodes.thumb.parentNode, Menu.makeButton()
 
   makeButton: ->
     clone = Menu.button.cloneNode true
@@ -33,6 +33,6 @@ Menu =
     try
       post = Get.postFromNode @
     catch
-      fullID = @parentNode.parentNode.parentNode.dataset.fullID
+      fullID = @parentNode.parentNode.dataset.fullID
       post = g.threads[fullID].OP
     Menu.menu.toggle e, @, post

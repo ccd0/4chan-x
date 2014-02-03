@@ -535,15 +535,21 @@ hr ~ div.center:not(.ad-cnt) {
   height: 13px;
   padding: 20px 36px;
 }
-.thread-icons {
+.thread-icons > img {
+  width: 1em;
+  height: 1em;
+  margin: 0;
+  vertical-align: text-top;
+}
+.catalog-thread > a:not(:hover) > .menu-button > i {
+  display: none;
+}
+.catalog-thread > a > .menu-button {
   position: absolute;
   top: 1px;
   right: 1px;
 }
-.catalog-thread > a:not(:hover) .menu-button {
-  display: none;
-}
-.thread-icons > .menu-button > i {
+.catalog-thread > a > .menu-button > i {
   font-size: 14px;
 }
 .thread-stats {

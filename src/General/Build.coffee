@@ -353,10 +353,10 @@ Build =
     $.extend root, <%= html(
       '<a href="/${thread.board}/thread/${thread.ID}" target="_blank">' +
         '&{thumb}' +
-        '<div class="thread-icons"></div>' +
       '</a>' +
       '<div class="thread-stats" title="Post count / File count / Page count">' +
         '<span class="post-count">${postCount}</span> / <span class="file-count">${fileCount}</span> / <span class="page-count">${pageCount}</span>' +
+        '<span class="thread-icons"></span>' +
       '</div>' +
       '&{subject}' +
       '<div class="comment">&{thread.OP.nodes.comment}</div>'
