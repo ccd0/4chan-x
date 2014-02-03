@@ -304,6 +304,8 @@ Build =
 
     for quotelink in $$ '.quotelink', root.lastElementChild
       $.replace quotelink, [quotelink.childNodes...]
+    for pp in $$ '.prettyprint', root.lastElementChild
+      $.replace pp, $.tn pp.textContent
 
     if thread.isSticky
       $.add $('.thread-icons', root), $.el 'img',
