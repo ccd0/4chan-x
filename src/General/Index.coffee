@@ -130,7 +130,7 @@ Index =
     $.on @nodes.thumb, 'click', Index.onClick
   onClick: (e) ->
     return if e.button isnt 0
-    root   = @parentNode.parentNode
+    root   = @parentNode
     thread = g.threads[root.dataset.fullID]
     if e.shiftKey
       Index.toggleHide thread, root
