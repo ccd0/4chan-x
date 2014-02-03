@@ -466,6 +466,7 @@ a[href="javascript:;"] {
 }
 .catalog-thread > .comment {
   flex-shrink: 1;
+  max-width: 100%;
   overflow: hidden;
   text-align: center;
 }
