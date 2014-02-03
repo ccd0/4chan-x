@@ -411,7 +411,7 @@ a[href="javascript:;"] {
   flex-direction: column;
   align-items: center;
   width: 165px;
-  margin-bottom: 5px;
+  margin: 0 2px 5px;
   max-height: 320px;
   word-break: break-word;
 }
