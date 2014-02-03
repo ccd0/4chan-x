@@ -441,15 +441,21 @@ a[href="javascript:;"] {
   height: 13px;
   padding: 20px 36px;
 }
-.thread-icons {
+.thread-icons > img {
+  width: 1em;
+  height: 1em;
+  margin: 0;
+  vertical-align: text-top;
+}
+.thumb:not(:hover) > .menu-button > i {
+  display: none;
+}
+.thumb > .menu-button {
   position: absolute;
   top: 1px;
   right: 1px;
 }
-.thumb:not(:hover) .menu-button > i {
-  display: none;
-}
-.thread-icons > .menu-button > i {
+.thumb > .menu-button > i {
   font-size: 14px;
 }
 .thread-stats {

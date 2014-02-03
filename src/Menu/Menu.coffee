@@ -27,7 +27,7 @@ Menu =
       innerHTML: '<i class="fa fa-bars"></i>'
       href: 'javascript:;'
     $.on menuButton, 'click', Menu.toggle
-    $.add @nodes.icons, menuButton
+    $.add @nodes.thumb, menuButton
 
   makeButton: ->
     clone = Menu.frag.cloneNode true
@@ -39,7 +39,7 @@ Menu =
       # Posts, inlined posts, hidden replies.
       post = Get.postFromNode @
     catch
-      post = if fullID = @parentNode.parentNode.parentNode.dataset.fullID
+      post = if fullID = @parentNode.parentNode.dataset.fullID
         g.threads[fullID].OP
       else
         # Hidden threads.
