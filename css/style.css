@@ -448,7 +448,7 @@ a[href="javascript:;"] {
   vertical-align: text-top;
 }
 .thumb:not(:hover) > .menu-button > i {
-  display: none;
+  visibility: hidden;
 }
 .thumb > .menu-button {
   position: absolute;
@@ -457,6 +457,10 @@ a[href="javascript:;"] {
 }
 .thumb > .menu-button > i {
   font-size: 14px;
+  text-shadow: 1px  1px 0 #FFF,
+              -1px  1px 0 #FFF,
+              -1px -1px 0 #FFF,
+               1px -1px 0 #FFF;
 }
 .thread-stats {
   flex-shrink: 0;
