@@ -1,3 +1,8 @@
+- More index navigation improvements:
+ - Threads in catalog mode have the usual menu.
+ - When in catalog mode, the menu now also allows to pin/unpin threads.
+- Minor bug fixes.
+
 ### 3.16.1 - *2014-02-01*
 
 - More index navigation improvements:
