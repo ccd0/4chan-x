@@ -447,8 +447,8 @@ a[href="javascript:;"] {
   margin: 0;
   vertical-align: text-top;
 }
-.thumb:not(:hover) > .menu-button > i {
-  visibility: hidden;
+.thumb:not(:hover) > .menu-button:not(.open) > i {
+  display: none;
 }
 .thumb > .menu-button {
   position: absolute;

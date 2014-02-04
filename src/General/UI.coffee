@@ -47,6 +47,7 @@ UI = do ->
       menu = @makeMenu()
       currentMenu       = menu
       lastToggledButton = button
+      $.addClass button, 'open'
 
       for entry in @entries
         @insertEntry entry, menu, data
@@ -99,6 +100,7 @@ UI = do ->
 
     close: =>
       $.rm currentMenu
+      $.rmClass lastToggledButton, 'open'
       currentMenu       = null
       lastToggledButton = null
       $.off d, 'click CloseMenu', @close
