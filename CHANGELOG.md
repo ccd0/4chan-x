@@ -1,3 +1,5 @@
+- Firefox release only: fix catalog layout alignment.
+
 ### 3.16.3 - *2014-02-04*
 
 - Firefox release only: fix catalog layout.

@@ -413,6 +413,7 @@ a[href="javascript:;"] {
   margin: 0 2px 5px;
   max-height: 320px;
   word-break: break-word;
+  vertical-align: top;
 }
 .thumb {
   flex-shrink: 0;
