@@ -278,6 +278,9 @@ do ->
       if chrome.runtime.lastError
         c.error chrome.runtime.lastError.message
         for key, val of data when key not of items[area]
+          if area is 'sync' and chrome.storage.sync.QUOTA_BYTES_PER_ITEM < JSON.stringify(val).length + key.length
+            c.error chrome.runtime.lastError.message, key, val
+            continue
           items[area][key] = val
         timeout[area] = setTimeout setArea, $.MINUTE, area
         return
