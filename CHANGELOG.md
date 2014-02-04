@@ -1,3 +1,5 @@
+- Firefox release only: fix catalog layout.
+
 ### 3.16.2 - *2014-02-04*
 
 - More index navigation improvements:

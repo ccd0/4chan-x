@@ -402,12 +402,11 @@ a[href="javascript:;"] {
   text-decoration: none;
 }
 .catalog-mode {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  text-align: center;
 }
 .catalog-thread {
-  display: flex;
+  display: inline-flex;
+  text-align: left;
   flex-direction: column;
   align-items: center;
   width: 165px;
