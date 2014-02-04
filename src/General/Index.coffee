@@ -122,6 +122,43 @@ Index =
       $.rmClass doc, 'index-loading'
       $.asap (-> $('.pagelist') or d.readyState isnt 'loading'), ->
         $.replace $('.pagelist'), Index.pagelist
+  menu:
+    init: ->
+      return if g.VIEW isnt 'index' or !Conf['Menu'] or g.BOARD.ID is 'f'
+
+      $.event 'AddMenuEntry',
+        type: 'post'
+        el: $.el 'a', href: 'javascript:;'
+        order: 5
+        open: ({thread}) ->
+          return false if Conf['Index Mode'] isnt 'catalog'
+          @el.textContent = if thread.isHidden
+            'Show thread'
+          else
+            'Hide thread'
+          $.off @el, 'click', @cb if @cb
+          @cb = ->
+            $.event 'CloseMenu'
+            Index.toggleHide thread
+          $.on @el, 'click', @cb
+          true
+
+      $.event 'AddMenuEntry',
+        type: 'post'
+        el: $.el 'a', href: 'javascript:;'
+        order: 6
+        open: ({thread}) ->
+          return false if Conf['Index Mode'] isnt 'catalog'
+          @el.textContent = if thread.isPinned
+            'Unpin thread'
+          else
+            'Pin thread'
+          $.off @el, 'click', @cb if @cb
+          @cb = ->
+            $.event 'CloseMenu'
+            Index.togglePin thread
+          $.on @el, 'click', @cb
+          true
 
   threadNode: ->
     return unless data = Index.db.get {boardID: @board.ID, threadID: @ID}
@@ -130,17 +167,16 @@ Index =
     $.on @nodes.thumb, 'click', Index.onClick
   onClick: (e) ->
     return if e.button isnt 0
-    root   = @parentNode
-    thread = g.threads[root.dataset.fullID]
+    thread = g.threads[@parentNode.dataset.fullID]
     if e.shiftKey
-      Index.toggleHide thread, root
+      Index.toggleHide thread
     else if e.altKey
       Index.togglePin thread
     else
       return
     e.preventDefault()
-  toggleHide: (thread, root) ->
-    $.rm root
+  toggleHide: (thread) ->
+    $.rm thread.catalogView.nodes.root
     if Index.showHiddenThreads
       ThreadHiding.show thread
       return unless ThreadHiding.db.get {boardID: thread.board.ID, threadID: thread.ID}
@@ -464,7 +500,7 @@ Index =
     # Sticky threads
     Index.sortOnTop (thread) -> thread.isSticky
     # Highlighted threads
-    Index.sortOnTop((thread) -> thread.isOnTop) if Conf['Filter']
+    Index.sortOnTop (thread) -> thread.isOnTop
     # Non-hidden threads
     Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
   sortOnTop: (match) ->

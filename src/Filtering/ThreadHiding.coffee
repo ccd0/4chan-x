@@ -91,7 +91,7 @@ ThreadHiding =
         el: div
         order: 20
         open: ({thread, isReply}) ->
-          if isReply or thread.isHidden
+          if isReply or thread.isHidden or Conf['Index Mode'] is 'catalog'
             return false
           ThreadHiding.menu.thread = thread
           true

@@ -82,6 +82,7 @@ Main =
     initFeature 'Strike-through Quotes',    QuoteStrikeThrough
     initFeature 'Quick Reply',              QR
     initFeature 'Menu',                     Menu
+    initFeature 'Index Generator (Menu)',   Index.menu
     initFeature 'Report Link',              ReportLink
     initFeature 'Thread Hiding (Menu)',     ThreadHiding.menu
     initFeature 'Reply Hiding (Menu)',      PostHiding.menu
