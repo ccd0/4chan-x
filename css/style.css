@@ -452,15 +452,16 @@ a[href="javascript:;"] {
 }
 .thumb > .menu-button {
   position: absolute;
-  top: 1px;
-  right: 1px;
+  top: 0;
+  right: 0;
 }
 .thumb > .menu-button > i {
+  width: 1em;
+  height: 1em;
+  padding: 1px;
+  border-radius: 0 2px 0 2px;
   font-size: 14px;
-  text-shadow: 1px  1px 0 #FFF,
-              -1px  1px 0 #FFF,
-              -1px -1px 0 #FFF,
-               1px -1px 0 #FFF;
+  text-align: center;
 }
 .thread-stats {
   flex-shrink: 0;
