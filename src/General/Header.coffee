@@ -208,9 +208,8 @@ Header =
             a.href = CatalogLinks[m[1]] board
             $.addClass a, 'catalog' if m[1] is 'catalog'
 
-          if /-archive/.test t
-            a.href = Redirect.to 'board',
-              boardID: board
+          if /-archive/.test(t) and href = Redirect.to 'board', {boardID: board}
+            a.href = href
 
           $.addClass a, 'navSmall' if board is '@'
           return a

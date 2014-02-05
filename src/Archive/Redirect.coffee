@@ -27,7 +27,7 @@ Redirect =
   archives: `<%= JSON.stringify(grunt.file.readJSON('src/Archive/archives.json')) %>`
 
   to: (dest, data) ->
-    archive = (if dest is 'search' or 'board' then Redirect.data.thread else Redirect.data[dest])[data.boardID]
+    archive = (if dest in ['search', 'board'] then Redirect.data.thread else Redirect.data[dest])[data.boardID]
     return '' unless archive
     Redirect[dest] archive, data
 
