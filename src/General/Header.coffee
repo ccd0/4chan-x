@@ -113,7 +113,7 @@ Header =
     $.rmAll list
     return unless text
     as = $$ '#full-board-list a[title]', Header.bar
-    nodes = text.match(/[\w@]+(-(all|title|replace|full|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
+    nodes = text.match(/[\w@]+(-(all|title|replace|full|archive|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
       if /^toggle-all/.test t
@@ -139,6 +139,9 @@ Header =
             m[1]
           else
             a.textContent
+
+          if /-archive/.test(t) and href = Redirect.to 'board', {boardID: board}
+            a.href = href
 
           $.addClass a, 'navSmall' if board is '@'
           return a
