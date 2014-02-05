@@ -327,10 +327,6 @@ Config =
         true
         'Indicate the remaining time before posting again.'
       ]
-      'Cooldown Prediction': [
-        true
-        'Decrease the cooldown time by taking into account upload speed. Disable it if it\'s inaccurate for you.'
-      ]
       'Posting Success Notifications': [
         true
         'Show notifications on successful post creation or file uploading.'
