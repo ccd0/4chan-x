@@ -158,7 +158,7 @@ Index =
   rmCatalogLinks: ->
     $.addClass doc, 'removing-catalog-links'
     $.ready ->
-      for el in $$ '.navLinks a[href$=catalog]'
+      for el in $$ '.navLinks.desktop a[href$=catalog]'
         $.rm el.previousSibling
         $.rm el
       $.rmClass doc, 'removing-catalog-links'
