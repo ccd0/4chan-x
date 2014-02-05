@@ -485,7 +485,10 @@ hr ~ div.center:not(.ad-cnt) {
 }
 #index-search-clear {
   color: gray;
-  margin-left: -1em;
+  display: inline-block;
+  position: relative;
+  left: -1em;
+  width: 0;
 }
 <% if (type === 'crx') { %>
 /* ``::-webkit-*'' selectors break selector lists on Firefox. */
