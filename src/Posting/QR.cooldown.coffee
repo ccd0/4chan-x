@@ -7,8 +7,6 @@ QR.cooldown =
     $.off window, 'cooldown:timers', setTimers
     for type of QR.cooldown.types
       QR.cooldown.types[type] = +QR.cooldown.types[type]
-    QR.cooldown.upSpd = 0
-    QR.cooldown.upSpdAccuracy = .5
     key = "cooldown.#{g.BOARD}"
     $.get key, {}, (item) ->
       QR.cooldown.cooldowns = item[key]
@@ -31,10 +29,6 @@ QR.cooldown =
     if delay
       cooldown = {delay}
     else
-      if post.file
-        upSpd = post.file.size / ((start - req.uploadStartTime) / $.SECOND)
-        QR.cooldown.upSpdAccuracy = ((upSpd > QR.cooldown.upSpd * .9) + QR.cooldown.upSpdAccuracy) / 2
-        QR.cooldown.upSpd = upSpd
       cooldown = {isReply, threadID}
     QR.cooldown.cooldowns[start] = cooldown
     $.set "cooldown.#{g.BOARD}", QR.cooldown.cooldowns
@@ -61,7 +55,7 @@ QR.cooldown =
     isReply = post.thread isnt 'new'
     hasFile = !!post.file
     seconds = null
-    {types, cooldowns, upSpd, upSpdAccuracy} = QR.cooldown
+    {types, cooldowns} = QR.cooldown
 
     for start, cooldown of cooldowns
       start = +start
@@ -92,9 +86,6 @@ QR.cooldown =
         type   += '_intra' if isReply and +post.thread is cooldown.threadID
         seconds = Math.max seconds, types[type] - elapsed
 
-    if seconds and Conf['Cooldown Prediction'] and hasFile and upSpd
-      seconds -= post.file.size // (upSpd * upSpdAccuracy)
-      seconds  = Math.max seconds, 0
     # Update the status when we change posting type.
     # Don't get stuck at some random number.
     # Don't interfere with progress status updates.
