@@ -1,3 +1,5 @@
+- Added a setting to configure the number of threads per page for the paged mode of the index.
+
 ### 3.16.4 - *2014-02-04*
 
 - Firefox release only: fix catalog layout alignment.

@@ -271,7 +271,7 @@ Build =
       "<div class='subject'>#{thread.OP.info.subject}</div>"
     else
       ''
-    comment = thread.OP.nodes.comment.innerHTML.replace /(<br>){2,}/g, '<br>'
+    comment = thread.OP.nodes.comment.innerHTML.replace /(<br>\s*){2,}/g, '<br>'
 
     root = $.el 'div',
       className: 'catalog-thread'

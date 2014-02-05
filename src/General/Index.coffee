@@ -56,6 +56,16 @@ Index =
       $.on input, 'change', $.cb.value
       $.on input, 'change', @cb.sort
 
+    threadNumEntry =
+      el: $.el 'span', textContent: 'Threads per page'
+      subEntries: [
+        { el: $.el 'label', innerHTML: '<input type=number name="Threads per Page">', title: 'Use 0 for default value' }
+      ]
+    threadsNumInput = threadNumEntry.subEntries[0].el.firstChild
+    threadsNumInput.value = Conf['Threads per Page']
+    $.on threadsNumInput, 'change', $.cb.value
+    $.on threadsNumInput, 'change', @cb.threadsNum
+
     repliesEntry =
       el: $.el 'label',
         innerHTML: '<input type=checkbox name="Show Replies"> Show replies'
@@ -83,7 +93,7 @@ Index =
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 90
-      subEntries: [modeEntry, sortEntry, repliesEntry, anchorEntry, refNavEntry]
+      subEntries: [modeEntry, sortEntry, threadNumEntry, repliesEntry, anchorEntry, refNavEntry]
 
     $.addClass doc, 'index-loading'
     @update()
@@ -222,6 +232,10 @@ Index =
     sort: ->
       Index.sort()
       Index.buildIndex()
+    threadsNum: ->
+      return unless Conf['Index Mode'] is 'paged'
+      Index.buildPagelist()
+      Index.buildIndex()
     replies: ->
       Index.buildThreads()
       Index.sort()
@@ -263,11 +277,17 @@ Index =
     Index.setPage()
     Index.scrollToIndex()
 
-  getPagesNum: ->
-    if Index.isSearching
-      Math.ceil (Index.sortedNodes.length / 2) / Index.threadsNumPerPage
+  getThreadsNumPerPage: ->
+    if Conf['Threads per Page'] > 0
+      +Conf['Threads per Page']
     else
-      Index.pagesNum
+      Index.threadsNumPerPage
+  getPagesNum: ->
+    numThreads = if Index.isSearching
+      Index.sortedNodes.length / 2
+    else
+      Index.liveThreadIDs.length
+    Math.ceil numThreads / Index.getThreadsNumPerPage()
   getMaxPageNum: ->
     Math.max 0, Index.getPagesNum() - 1
   togglePagelist: ->
@@ -402,7 +422,6 @@ Index =
     Index.buildIndex()
     Index.setPage()
   parseThreadList: (pages) ->
-    Index.pagesNum          = pages.length
     Index.threadsNumPerPage = pages[0].threads.length
     Index.liveThreadData    = pages.reduce ((arr, next) -> arr.concat next.threads), []
     Index.liveThreadIDs     = Index.liveThreadData.map (data) -> data.no
@@ -513,7 +532,7 @@ Index =
     switch Conf['Index Mode']
       when 'paged'
         pageNum = Index.getCurrentPage()
-        nodesPerPage = Index.threadsNumPerPage * 2
+        nodesPerPage = Index.getThreadsNumPerPage() * 2
         nodes = Index.sortedNodes[nodesPerPage * pageNum ... nodesPerPage * (pageNum + 1)]
       when 'catalog'
         nodes = Index.buildCatalogViews()
