@@ -170,7 +170,7 @@ Header =
     $.rmAll list
     return unless text
     as = $$ '#full-board-list a[title]', Header.boardList
-    nodes = text.match(/[\w@]+((-(all|title|replace|full|index|catalog|url:"[^"]+[^"]"|text:"[^"]+")|\,"[^"]+[^"]"))*|[^\w@]+/g).map (t) ->
+    nodes = text.match(/[\w@]+((-(all|title|replace|full|index|catalog|archive|url:"[^"]+[^"]"|text:"[^"]+")|\,"[^"]+[^"]"))*|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
       if /^toggle-all/.test t
@@ -207,6 +207,10 @@ Header =
             a.dataset.only = m[1]
             a.href = CatalogLinks[m[1]] board
             $.addClass a, 'catalog' if m[1] is 'catalog'
+
+          if /-archive/.test t
+            a.href = Redirect.to 'board',
+              boardID: board
 
           $.addClass a, 'navSmall' if board is '@'
           return a
