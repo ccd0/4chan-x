@@ -254,11 +254,3 @@ ThreadUpdater =
         window.scrollTo 0, d.body.clientHeight
       else
         Header.scrollTo nodes[0]
-
-    # Enable 4chan features.
-    threadID = ThreadUpdater.thread.ID
-    {length} = $$ '.thread > .postContainer', ThreadUpdater.root
-    if Conf['Enable 4chan\'s Extension']
-      $.globalEval "Parser.parseThread(#{threadID}, #{-count})"
-    else
-      Fourchan.parseThread threadID, length - count, length

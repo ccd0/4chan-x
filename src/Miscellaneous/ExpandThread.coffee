@@ -92,12 +92,4 @@ ExpandThread =
       postsRoot.push root
     Main.callbackNodes Post, posts
     $.after a, postsRoot
-
-    postsCount    = postsRoot.length
-    a.textContent = ExpandThread.text '-', postsCount, filesCount
-
-    # Enable 4chan features.
-    if Conf['Enable 4chan\'s Extension']
-      $.globalEval "Parser.parseThread(#{thread}, 1, #{postsCount})"
-    else
-      Fourchan.parseThread thread.ID, 1, postsCount
+    a.textContent = ExpandThread.text '-', postsRoot.length, filesCount
