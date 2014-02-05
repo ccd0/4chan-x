@@ -1,6 +1,6 @@
 IDColor =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Color User IDs']
+    return if !Conf['Color User IDs']
     @ids = {}
 
     Post.callbacks.push

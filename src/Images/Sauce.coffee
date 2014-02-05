@@ -1,6 +1,6 @@
 Sauce =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Sauce']
+    return if !Conf['Sauce']
 
     links = []
     for link in Conf['sauces'].split '\n'

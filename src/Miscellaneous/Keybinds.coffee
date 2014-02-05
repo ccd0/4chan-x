@@ -1,6 +1,6 @@
 Keybinds =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Keybinds']
+    return if !Conf['Keybinds']
 
     for hotkey of Conf.hotkeys
       $.sync hotkey, Keybinds.sync

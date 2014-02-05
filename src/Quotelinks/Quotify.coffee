@@ -1,6 +1,6 @@
 Quotify =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Resurrect Quotes']
+    return if !Conf['Resurrect Quotes']
 
     Post.callbacks.push
       name: 'Resurrect Quotes'

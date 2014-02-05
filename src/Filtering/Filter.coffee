@@ -1,7 +1,7 @@
 Filter =
   filters: {}
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Filter']
+    return if !Conf['Filter']
 
     for key of Config.filter
       @filters[key] = []
@@ -166,7 +166,7 @@ Filter =
 
   menu:
     init: ->
-      return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Filter']
+      return if !Conf['Menu'] or !Conf['Filter']
 
       div = $.el 'div',
         textContent: 'Filter'

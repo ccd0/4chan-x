@@ -1,6 +1,6 @@
 QuoteCT =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Mark Cross-thread Quotes']
+    return if !Conf['Mark Cross-thread Quotes']
 
     # \u00A0 is nbsp
     @text = '\u00A0(Cross-thread)'

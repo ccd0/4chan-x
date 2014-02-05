@@ -52,7 +52,7 @@ QR =
 
     return unless Conf['Persistent QR']
     QR.open()
-    QR.hide() if Conf['Auto-Hide QR'] or g.VIEW is 'catalog' or g.VIEW is 'index' and Conf['Index Mode'] is 'catalog'
+    QR.hide() if Conf['Auto-Hide QR'] or g.VIEW is 'index' and Conf['Index Mode'] is 'catalog'
 
   node: ->
     if QR.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}

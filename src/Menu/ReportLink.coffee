@@ -1,6 +1,6 @@
 ReportLink =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Report Link']
+    return if !Conf['Menu'] or !Conf['Report Link']
 
     a = $.el 'a',
       className: 'report-link'

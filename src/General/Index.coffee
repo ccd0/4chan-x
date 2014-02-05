@@ -1,17 +1,11 @@
 Index =
   showHiddenThreads: false
   init: ->
-    if g.VIEW is 'catalog'
-      $.ready ->
-        span = $.el 'a',
-          href: '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
-          textContent: 'Support for the official catalog to be removed'
-          title: '<%= meta.name %> now has a "catalog" Index mode.'
-          className: 'btn-wrap warning'
-          target: '_blank'
-        $.add $.id('info'), span
+    if g.VIEW isnt 'index'
+      @rmCatalogLinks()
+      return
+    return if g.BOARD.ID is 'f'
 
-    return if g.VIEW isnt 'index' or g.BOARD.ID is 'f'
 
     @db = new DataBoard 'pinnedThreads'
     Thread.callbacks.push
@@ -208,6 +202,22 @@ Index =
         val: isPinned: thread.isPinned
     Index.sort()
     Index.buildIndex()
+  addCatalogSwitch: ->
+    a = $.el 'a',
+      href: 'javascript:;'
+      textContent: 'Switch to <%= meta.name %>\'s catalog'
+      className: 'btn-wrap'
+    $.on a, 'click', ->
+      $.set 'Index Mode', 'catalog'
+      window.location = './'
+    $.add $.id('info'), a
+  rmCatalogLinks: ->
+    $.addClass doc, 'removing-catalog-links'
+    $.ready ->
+      for el in $$ '.navLinks.desktop a[href$=catalog]'
+        $.rm el.previousSibling
+        $.rm el
+      $.rmClass doc, 'removing-catalog-links'
 
   cb:
     toggleCatalogMode: ->
@@ -252,7 +262,6 @@ Index =
           a = e.target
         else
           return
-      return if a.textContent is 'Catalog'
       e.preventDefault()
       Index.userPageNav +a.pathname.split('/')[2]
 
