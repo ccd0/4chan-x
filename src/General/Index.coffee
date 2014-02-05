@@ -133,7 +133,7 @@ Index =
         open: ({thread}) ->
           return false if Conf['Index Mode'] isnt 'catalog'
           @el.textContent = if thread.isHidden
-            'Show thread'
+            'Unhide thread'
           else
             'Hide thread'
           $.off @el, 'click', @cb if @cb
