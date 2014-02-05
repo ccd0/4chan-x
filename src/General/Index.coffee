@@ -218,6 +218,7 @@ Index =
       Index.cb.toggleCatalogMode()
       Index.togglePagelist()
       Index.buildIndex()
+      QR.hide() if QR.nodes and Conf['Index Mode'] is 'catalog'
     sort: ->
       Index.sort()
       Index.buildIndex()
