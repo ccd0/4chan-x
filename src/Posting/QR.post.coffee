@@ -153,7 +153,10 @@ QR.post = class
     @filesize = $.bytesToString file.size
     @nodes.label.hidden = false if QR.spoiler
     URL.revokeObjectURL @URL
-    @showFileData() if @ is QR.selected
+    if @ is QR.selected
+      @showFileData()
+    else
+      @updateFilename()
     unless /^image/.test file.type
       @nodes.el.style.backgroundImage = null
       return
