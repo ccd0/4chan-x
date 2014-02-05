@@ -140,9 +140,8 @@ Header =
           else
             a.textContent
 
-          if /-archive/.test t
-            a.href = Redirect.to 'board',
-              boardID: board
+          if /-archive/.test(t) and href = Redirect.to 'board', {boardID: board}
+            a.href = href
 
           $.addClass a, 'navSmall' if board is '@'
           return a
