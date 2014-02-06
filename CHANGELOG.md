@@ -1,5 +1,6 @@
 - Added `Archive link` to the Custom Board Navigation Rice
 - Added a setting to configure the number of threads per page for the paged mode of the index.
+- Dropped support for the official catalog.
 
 ### 3.16.4 - *2014-02-04*
 
