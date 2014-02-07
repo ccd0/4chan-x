@@ -224,7 +224,7 @@ Index =
       $.on el, 'click', ->
         switch @textContent
           when 'Return'
-            $.set 'Index Mode', 'paged'
+            $.set 'Index Mode', Conf['Previous Index Mode']
           when 'Catalog'
             $.set 'Index Mode', 'catalog'
     return
@@ -250,7 +250,11 @@ Index =
       Index.cb.toggleCatalogMode()
       Index.togglePagelist()
       Index.buildIndex()
-      QR.hide() if QR.nodes and Conf['Index Mode'] is 'catalog'
+      mode = Conf['Index Mode']
+      if mode not in ['catalog', Conf['Previous Index Mode']]
+        Conf['Previous Index Mode'] = mode
+        $.set 'Previous Index Mode', mode
+      QR.hide() if QR.nodes and mode is 'catalog'
     sort: ->
       Index.sort()
       Index.buildIndex()
@@ -279,7 +283,7 @@ Index =
         when 'Catalog'
           mode = 'catalog'
         when 'Return'
-          mode = 'paged'
+          mode = Conf['Previous Index Mode']
       if mode
         $.set 'Index Mode', mode
         Conf['Index Mode'] = mode

@@ -140,6 +140,7 @@ Config =
   'Custom CSS': false
   Index:
     'Index Mode': 'paged'
+    'Previous Index Mode': 'paged'
     'Index Sort': 'bump'
     'Threads per Page': 0
     'Show Replies': true
