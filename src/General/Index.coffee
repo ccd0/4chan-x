@@ -233,6 +233,10 @@ Index =
       Index.cb.toggleCatalogMode()
       Index.togglePagelist()
       Index.buildIndex()
+      mode = Conf['Index Mode']
+      if mode not in ['catalog', Conf['Previous Index Mode']]
+        Conf['Previous Index Mode'] = mode
+        $.set 'Previous Index Mode', mode
     sort: ->
       Index.sort()
       Index.buildIndex()
