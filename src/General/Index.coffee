@@ -2,7 +2,7 @@ Index =
   showHiddenThreads: false
   init: ->
     if g.VIEW isnt 'index'
-      @rmCatalogLinks()
+      $.ready @setupNavLinks
       return
     return if g.BOARD.ID is 'f'
 
@@ -29,9 +29,13 @@ Index =
         { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="all pages"> All threads' }
         { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="catalog"> Catalog' }
       ]
+      open: ->
+        for label in @subEntries
+          input = label.el.firstChild
+          input.checked = Conf['Index Mode'] is input.value
+        true
     for label in modeEntry.subEntries
       input = label.el.firstChild
-      input.checked = Conf['Index Mode'] is input.value
       $.on input, 'change', $.cb.value
       $.on input, 'change', @cb.mode
 
@@ -99,11 +103,13 @@ Index =
     @navLinks = $.el 'div',
       className: 'navLinks'
       innerHTML: <%= importHTML('General/Index-navlinks') %>
+    @indexModeToggle = $ '#index-mode-toggle', @navLinks
     @searchInput = $ '#index-search', @navLinks
     @hideLabel   = $ '#hidden-label', @navLinks
     @currentPage = @getCurrentPage()
     $.on window, 'popstate', @cb.popstate
     $.on @pagelist, 'click', @cb.pageNav
+    $.on @indexModeToggle, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
     $.on $('#hidden-toggle a',    @navLinks), 'click', @cb.toggleHiddenThreads
@@ -211,20 +217,26 @@ Index =
       $.set 'Index Mode', 'catalog'
       window.location = './'
     $.add $.id('info'), a
-  rmCatalogLinks: ->
-    $.addClass doc, 'removing-catalog-links'
-    $.ready ->
-      for el in $$ '.navLinks.desktop a[href$=catalog]'
-        $.rm el.previousSibling
-        $.rm el
-      $.rmClass doc, 'removing-catalog-links'
+  setupNavLinks: ->
+    for el in $$ '.navLinks.desktop > a'
+      if el.getAttribute('href') is '.././catalog'
+        el.href = '.././'
+      $.on el, 'click', ->
+        switch @textContent
+          when 'Return'
+            $.set 'Index Mode', 'paged'
+          when 'Catalog'
+            $.set 'Index Mode', 'catalog'
+    return
 
   cb:
     toggleCatalogMode: ->
       if Conf['Index Mode'] is 'catalog'
+        Index.indexModeToggle.textContent = 'Return'
         $.addClass Index.root, 'catalog-mode'
         $('#hidden-toggle', Index.navLinks).hidden = false
       else
+        Index.indexModeToggle.textContent = 'Catalog'
         $.rmClass Index.root, 'catalog-mode'
         $('#hidden-toggle', Index.navLinks).hidden = true
     toggleHiddenThreads: ->
@@ -263,6 +275,16 @@ Index =
         else
           return
       e.preventDefault()
+      switch a.textContent
+        when 'Catalog'
+          mode = 'catalog'
+        when 'Return'
+          mode = 'paged'
+      if mode
+        $.set 'Index Mode', mode
+        Conf['Index Mode'] = mode
+        Index.cb.mode()
+        Index.scrollToIndex()
       Index.userPageNav +a.pathname.split('/')[2]
 
   scrollToIndex: ->
