@@ -57,7 +57,7 @@ Index =
     threadNumEntry =
       el: $.el 'span', textContent: 'Threads per page'
       subEntries: [
-        { el: $.el 'label', innerHTML: '<input type=number name="Threads per Page">', title: 'Use 0 for default value' }
+        { el: $.el 'label', innerHTML: '<input type=number min=0 name="Threads per Page">', title: 'Use 0 for default value' }
       ]
     threadsNumInput = threadNumEntry.subEntries[0].el.firstChild
     threadsNumInput.value = Conf['Threads per Page']
@@ -101,7 +101,7 @@ Index =
       hidden: true
       innerHTML: <%= importHTML('General/Index-pagelist') %>
     @navLinks = $.el 'div',
-      className: 'navLinks'
+      id: 'nav-links'
       innerHTML: <%= importHTML('General/Index-navlinks') %>
     @indexModeToggle = $ '#index-mode-toggle', @navLinks
     @searchInput = $ '#index-search', @navLinks
@@ -128,7 +128,7 @@ Index =
 
       for navLink in $$ '.navLinks'
         $.rm navLink
-      $.after $.x('child::form/preceding-sibling::hr[1]'), Index.navLinks
+      $.before $.id('delform'), [Index.navLinks, $.x 'child::form/preceding-sibling::hr[1]']
       $.rmClass doc, 'index-loading'
       $.asap (-> $('.pagelist') or d.readyState isnt 'loading'), ->
         $.replace $('.pagelist'), Index.pagelist
@@ -288,7 +288,7 @@ Index =
       Index.userPageNav +a.pathname.split('/')[2]
 
   scrollToIndex: ->
-    Header.scrollToIfNeeded Index.root
+    Header.scrollToIfNeeded Index.navLinks
 
   getCurrentPage: ->
     +window.location.pathname.split('/')[2]
