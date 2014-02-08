@@ -214,12 +214,11 @@ Header =
             a.href = CatalogLinks[m[1]] boardID
             $.addClass a, 'catalog' if m[1] is 'catalog'
 
-          if /-archive/.test(t)
+          if /-archive/.test t
             if href = Redirect.to 'board', {boardID}
               a.href = href
             else
-              $.addClass a, 'inactive'
-              a.removeAttribute 'href'
+              return $.tn a.textContent
 
           $.addClass a, 'navSmall' if boardID is '@'
           return a

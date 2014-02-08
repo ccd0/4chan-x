@@ -235,9 +235,6 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 .fixed.bottom-header #header-bar #scroll-marker {
   bottom: 100%;
 }
-#header-bar a.inactive {
-  color: inherit !important;
-}
 #header-bar a:not(.entry):not(.close) {
   text-decoration: none;
   padding: 1px;
