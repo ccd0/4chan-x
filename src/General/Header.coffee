@@ -140,12 +140,11 @@ Header =
           else
             a.textContent
 
-          if /-archive/.test(t)
+          if /-archive/.test t
             if href = Redirect.to 'board', {boardID}
               a.href = href
             else
-              $.addClass a, 'inactive'
-              a.removeAttribute 'href'
+              return $.tn a.textContent
 
           $.addClass a, 'navSmall' if boardID is '@'
           return a
