@@ -123,27 +123,27 @@ Header =
           href: 'javascript:;'
         $.on a, 'click', Header.toggleBoardList
         return a
-      board = if /^current/.test t
+      boardID = if /^current/.test t
         g.BOARD.ID
       else
         t.match(/^[^-]+/)[0]
       for a in as
-        if a.textContent is board
+        if a.textContent is boardID
           a = a.cloneNode true
 
           a.textContent = if /-title/.test(t) or /-replace/.test(t) and $.hasClass a, 'current'
             a.title
           else if /-full/.test t
-            "/#{board}/ - #{a.title}"
+            "/#{boardID}/ - #{a.title}"
           else if m = t.match /-text:"(.+)"/
             m[1]
           else
             a.textContent
 
-          if /-archive/.test(t) and href = Redirect.to 'board', {boardID: board}
+          if /-archive/.test(t) and href = Redirect.to 'board', {boardID}
             a.href = href
 
-          $.addClass a, 'navSmall' if board is '@'
+          $.addClass a, 'navSmall' if boardID is '@'
           return a
       $.tn t
     $.add list, nodes
