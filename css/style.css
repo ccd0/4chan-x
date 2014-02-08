@@ -177,6 +177,9 @@ a[href="javascript:;"] {
 #header.bottom #header-bar.autohide #toggle-header-bar {
   cursor: n-resize;
 }
+#header-bar a.inactive {
+  color: inherit !important;
+}
 #header-bar a:not(.entry) {
   text-decoration: none;
   padding: 1px;
