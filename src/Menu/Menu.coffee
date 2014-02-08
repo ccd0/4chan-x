@@ -4,7 +4,7 @@ Menu =
 
     a = $.el 'a',
       className: 'menu-button'
-      innerHTML: '[<i></i>]'
+      innerHTML: '<i class="fa fa-bars"></i>'
       href:      'javascript:;'
     @frag = $.nodes [$.tn(' '), a]
 
@@ -22,12 +22,7 @@ Menu =
       return
     $.add @nodes.info, Menu.makeButton()
   catalogNode: ->
-    menuButton = $.el 'a',
-      className: 'menu-button'
-      innerHTML: '<i class="fa fa-bars"></i>'
-      href: 'javascript:;'
-    $.on menuButton, 'click', Menu.toggle
-    $.add @nodes.thumb, menuButton
+    $.add @nodes.thumb, Menu.makeButton()
 
   makeButton: ->
     clone = Menu.frag.cloneNode true

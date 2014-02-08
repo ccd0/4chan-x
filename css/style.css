@@ -978,14 +978,6 @@ a.remove {
 .menu-button {
   position: relative;
 }
-.menu-button i:not(.fa-bars) {
-  border-top:   6px solid;
-  border-right: 4px solid transparent;
-  border-left:  4px solid transparent;
-  display: inline-block;
-  margin: 2px;
-  vertical-align: middle;
-}
 @media screen and (resolution: 1dppx) {
   .fa-bars {
     font-size: 14px;
