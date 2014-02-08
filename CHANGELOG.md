@@ -2,6 +2,8 @@
  - This merges `Mark Quotes of You`, `Mark OP Quotes` and `Mark Cross-thread Quotes` into one feature.
  - Backlinks now also get these markers.
  - Multiple markers are now more compact, for example `>>123 (You/OP)` instead of `>>123 (You) (OP)`.
+- New setting: `Image Hover in Catalog`
+ - Like `Image Hover`, but for the catalog only.
 
 ### 3.16.5 - *2014-02-07*
 

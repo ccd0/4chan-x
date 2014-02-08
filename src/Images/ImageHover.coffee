@@ -1,13 +1,13 @@
 ImageHover =
   init: ->
-    return if !Conf['Image Hover']
-
-    Post.callbacks.push
-      name: 'Image Hover'
-      cb:   @node
-    CatalogThread.callbacks.push
-      name: 'Image Hover'
-      cb:   @catalogNode
+    if Conf['Image Hover']
+      Post.callbacks.push
+        name: 'Image Hover'
+        cb:   @node
+    if Conf['Image Hover in Catalog']
+      CatalogThread.callbacks.push
+        name: 'Image Hover'
+        cb:   @catalogNode
   node: ->
     return unless @file?.isImage
     $.on @file.thumb, 'mouseover', ImageHover.mouseover
