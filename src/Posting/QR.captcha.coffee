@@ -32,6 +32,7 @@ QR.captcha =
 
     @setupObserver = new MutationObserver @afterSetup
     @setupObserver.observe container, childList: true
+    @afterSetup() # reCAPTCHA might have loaded before the QR.
   setup: ->
     $.globalEval 'loadRecaptcha()'
   afterSetup: ->
