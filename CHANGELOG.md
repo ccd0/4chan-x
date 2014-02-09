@@ -1,3 +1,4 @@
+- Fixed captcha loading in the QR.
 - New setting: `Quote Markers`, enabled by default
  - This merges `Mark Quotes of You`, `Mark OP Quotes` and `Mark Cross-thread Quotes` into one feature.
  - Backlinks now also get these markers.
