@@ -3,7 +3,7 @@
 * 4chan X - Version 1.3.3 - 2014-02-09
 *
 * Licensed under the MIT license.
-* https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
+* https://github.com/Spittie/4chan-x/blob/master/LICENSE
 *
 * Appchan X Copyright © 2013-2013 Zixaphir <zixaphirmoxphar@gmail.com>
 * http://zixaphir.github.io/appchan-x/ 
@@ -6123,7 +6123,8 @@
         title: 'Verification',
         placeholder: 'Focus to load reCAPTCHA',
         autocomplete: 'off',
-        spellcheck: false
+        spellcheck: false,
+        tabIndex: 55
       });
       this.nodes = {
         img: imgContainer.firstChild,
@@ -9903,7 +9904,7 @@
           software: "foolfuuka"
         }
       },
-      "Install Gentoo": {
+      "Install Gentoo (.net)": {
         boards: ["diy", "g", "sci"],
         files: [],
         data: {
@@ -9911,6 +9912,16 @@
           http: false,
           https: true,
           software: "fuuka"
+        }
+      },
+      "Install Gentoo (.com)": {
+        boards: ["t", "g"],
+        files: ["t", "g"],
+        data: {
+          domain: "archive.installgentoo.com/",
+          http: true,
+          https: true,
+          software: "foolfuuka"
         }
       },
       "Rebecca Black Tech": {
@@ -11702,7 +11713,7 @@
           if (previous === g.VERSION) {
             return;
           }
-          changelog = 'https://github.com/seaweedchan/4chan-x/blob/master/CHANGELOG.md';
+          changelog = 'https://github.com/Spittie/4chan-x/blob/master/CHANGELOG.md';
           el = $.el('span', {
             innerHTML: "4chan X has been updated to <a href='" + changelog + "' target=_blank>version " + g.VERSION + "</a>."
           });
@@ -11737,7 +11748,7 @@
         return;
       }
       $.event('CloseMenu');
-      html = "<nav><div class=sections-list></div><p class='imp-exp-result warning'></p><div class=credits><a class=export>Export</a> |<a class=import>Import</a> |<input type=file style='display: none;'><a href='http://seaweedchan.github.io/4chan-x/' target=_blank>4chan X</a> |<a href='https://github.com/seaweedchan/4chan-x/blob/master/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |<a href='https://github.com/seaweedchan/4chan-x/blob/master/README.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |<a href=javascript:; class=close title=Close>×</a></div></nav><div class=section-container><section></section></div>";
+      html = "<nav><div class=sections-list></div><p class='imp-exp-result warning'></p><div class=credits><a class=export>Export</a> |<a class=import>Import</a> |<input type=file style='display: none;'><a href='http://seaweedchan.github.io/4chan-x/' target=_blank>4chan X</a> |<a href='https://github.com/Spittie/4chan-x/blob/master/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |<a href='https://github.com/Spittie/4chan-x/blob/master/README.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |<a href=javascript:; class=close title=Close>×</a></div></nav><div class=section-container><section></section></div>";
       Settings.overlay = overlay = $.el('div', {
         id: 'overlay'
       });

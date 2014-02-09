@@ -15,9 +15,10 @@ QR.captcha =
       placeholder: 'Focus to load reCAPTCHA'
       autocomplete: 'off'
       spellcheck: false
+      tabIndex: 55
     @nodes =
-      img:   imgContainer.firstChild
-      input: input
+      img:       imgContainer.firstChild
+      input:     input
 
     $.on input, 'focus', @setup
 
@@ -29,7 +30,7 @@ QR.captcha =
 
     $.addClass QR.nodes.el, 'has-captcha'
     $.after QR.nodes.com.parentNode, [imgContainer, input]
-
+    
     @setupObserver = new MutationObserver @afterSetup
     @setupObserver.observe container, childList: true
   setup: ->
@@ -40,15 +41,15 @@ QR.captcha =
     delete QR.captcha.setupObserver
 
     setLifetime = (e) -> QR.captcha.lifetime = e.detail
-    $.on  window, 'captcha:timeout', setLifetime
+    $.on window, 'captcha:timeout', setLifetime
     $.globalEval 'window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))'
     $.off window, 'captcha:timeout', setLifetime
 
     {img, input} = QR.captcha.nodes
     img.parentNode.hidden = false
-    $.off input,         'focus',  QR.captcha.setup
-    $.on input,          'keydown', QR.captcha.keydown.bind QR.captcha
-    $.on img.parentNode, 'click',   QR.captcha.reload.bind  QR.captcha
+    $.off input, 'focus', QR.captcha.setup
+    $.on input, 'keydown', QR.captcha.keydown.bind QR.captcha
+    $.on img.parentNode, 'click', QR.captcha.reload.bind QR.captcha
 
     $.get 'captchas', [], ({captchas}) ->
       QR.captcha.sync captchas
@@ -58,9 +59,11 @@ QR.captcha =
     new MutationObserver(QR.captcha.load.bind QR.captcha).observe challenge,
       childList: true
     QR.captcha.load()
+
   sync: (captchas) ->
     QR.captcha.captchas = captchas
     QR.captcha.count()
+
   getOne: ->
     @clear()
     if captcha = @captchas.shift()
@@ -76,6 +79,7 @@ QR.captcha =
       # If there's only one word, duplicate it.
       response = "#{response} #{response}" unless /\s/.test response
     {challenge, response}
+
   save: ->
     return unless response = @nodes.input.value.trim()
     @captchas.push
@@ -85,6 +89,7 @@ QR.captcha =
     @count()
     @reload()
     $.set 'captchas', @captchas
+
   clear: ->
     return unless @captchas.length
     now = Date.now()
@@ -94,6 +99,7 @@ QR.captcha =
     @captchas = @captchas[i..]
     @count()
     $.set 'captchas', @captchas
+
   load: ->
     return unless @nodes.challenge.firstChild
     # -1 minute to give upload some time.
@@ -103,6 +109,7 @@ QR.captcha =
     @nodes.img.src = "//www.google.com/recaptcha/api/image?c=#{challenge}"
     @nodes.input.value = null
     @clear()
+
   count: ->
     count = @captchas.length
     @nodes.input.placeholder = switch count
@@ -113,11 +120,13 @@ QR.captcha =
       else
         "Verification (#{count} cached captchas)"
     @nodes.input.alt = count # For XTRM RICE.
+
   reload: (focus) ->
     # the 't' argument prevents the input from being focused
     $.globalEval 'Recaptcha.reload("t")'
     # Focus if we meant to.
     @nodes.input.focus() if focus
+
   keydown: (e) ->
     if e.keyCode is 8 and not @nodes.input.value
       @reload()

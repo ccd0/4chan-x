@@ -1,3 +1,10 @@
+### v1.3.3
+**MayhemYDG**
+- Fix new captcha (Firefox only)
+
+**Spittie**
+- Add archive.installgentoo.com
+
 ### v1.3.2 
 *2014-01-12*
 

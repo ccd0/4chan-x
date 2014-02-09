@@ -4,7 +4,7 @@
   "description": "Cross-browser userscript for maximum lurking on 4chan.",
   "meta": {
     "name": "4chan X",
-    "repo": "https://github.com/seaweedchan/4chan-x/",
+    "repo": "https://github.com/Spittie/4chan-x/",
     "page": "http://seaweedchan.github.io/4chan-x/",
     "buildsPath": "builds/",
     "mainBranch": "master",
