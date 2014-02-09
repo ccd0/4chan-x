@@ -1,11 +1,18 @@
 Personal fork of Seaweed's 4chan X.
+
 Don't expect new features, I don't know Javascript, Coffeescript or all this stuff.
+
 Don't expect any bug fix.
+
 Don't expect any support.
+
 
 Actually, don't expect anything.
 
+
 Works with Firefox only.
+
+##[Install](https://github.com/Spittie/4chan-x/raw/master/builds/4chan-X.user.js)
 
 ## Forking
 
