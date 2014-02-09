@@ -1,3 +1,5 @@
+## 3.17.0 - *2014-02-09*
+
 - Fixed captcha loading in the QR.
 - New setting: `Quote Markers`, enabled by default
  - This merges `Mark Quotes of You`, `Mark OP Quotes` and `Mark Cross-thread Quotes` into one feature.
