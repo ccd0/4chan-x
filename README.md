@@ -6,13 +6,11 @@ Don't expect any bug fix.
 
 Don't expect any support.
 
-
 Actually, don't expect anything.
 
-
-Works with Firefox only.
-
 ##[Install](https://github.com/Spittie/4chan-x/raw/master/builds/4chan-X.user.js)
+
+## If you have any problems, try resetting your 4chan X settings before calling me a faggot (but feel free to do so)
 
 ## Forking
 
