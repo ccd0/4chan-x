@@ -453,7 +453,7 @@ a[href="javascript:;"] {
   margin: 0;
   vertical-align: text-top;
 }
-.thumb:not(:hover) > .menu-button:not(.open) > i {
+.thumb:not(:hover):not(:focus) > .menu-button:not(.open):not(:focus) > i {
   display: none;
 }
 .thumb > .menu-button {
