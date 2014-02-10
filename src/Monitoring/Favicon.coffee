@@ -9,6 +9,10 @@ Favicon =
       Favicon.switch()
 
   switch: ->
+    if Favicon.SFW
+        Favicon.default = 'https://s.4cdn.org/image/favicon-ws.ico'
+    else
+        Favicon.default = 'https://s.4cdn.org/image/favicon.ico'
     switch Conf['favicon']
       when 'ferongr'
         Favicon.unreadDead  = 'data:image/gif;base64,<%= grunt.file.read("src/General/img/favicons/ferongr/unreadDead.gif",   {encoding: "base64"}) %>'
@@ -38,6 +42,17 @@ Favicon =
         Favicon.unreadSFWY  = 'data:image/png;base64,<%= grunt.file.read("src/General/img/favicons/Original/unreadSFWY.png",  {encoding: "base64"}) %>'
         Favicon.unreadNSFW  = 'data:image/gif;base64,<%= grunt.file.read("src/General/img/favicons/Original/unreadNSFW.gif",  {encoding: "base64"}) %>'
         Favicon.unreadNSFWY = 'data:image/png;base64,<%= grunt.file.read("src/General/img/favicons/Original/unreadNSFWY.png", {encoding: "base64"}) %>'
+      when 'Metro'
+        Favicon.unreadDead  = 'data:image/gif;base64,<%= grunt.file.read("src/General/img/favicons/Metro/unreadDead.png",  {encoding: "base64"}) %>'
+        Favicon.unreadDeadY = 'data:image/png;base64,<%= grunt.file.read("src/General/img/favicons/Metro/unreadDeadY.png", {encoding: "base64"}) %>'
+        Favicon.unreadSFW   = 'data:image/gif;base64,<%= grunt.file.read("src/General/img/favicons/Metro/unreadSFW.png",   {encoding: "base64"}) %>'
+        Favicon.unreadSFWY  = 'data:image/png;base64,<%= grunt.file.read("src/General/img/favicons/Metro/unreadSFWY.png",  {encoding: "base64"}) %>'
+        Favicon.unreadNSFW  = 'data:image/gif;base64,<%= grunt.file.read("src/General/img/favicons/Metro/unreadNSFW.png",  {encoding: "base64"}) %>'
+        Favicon.unreadNSFWY = 'data:image/png;base64,<%= grunt.file.read("src/General/img/favicons/Metro/unreadNSFWY.png", {encoding: "base64"}) %>'
+        if Favicon.SFW 
+            Favicon.default = 'data:image/png;base64,<%= grunt.file.read("src/General/img/favicons/Metro/readSFW.png", {encoding: "base64"}) %>'
+        else 
+            Favicon.default = 'data:image/png;base64,<%= grunt.file.read("src/General/img/favicons/Metro/readNSFW.png", {encoding: "base64"}) %>'
     if Favicon.SFW
       Favicon.unread  = Favicon.unreadSFW
       Favicon.unreadY = Favicon.unreadSFWY
