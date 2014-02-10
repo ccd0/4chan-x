@@ -8,7 +8,8 @@ Don't expect any support.
 
 Actually, don't expect anything.
 
-##[Install](https://github.com/Spittie/4chan-x/raw/master/builds/4chan-X.user.js)
+##[Install](https://github.com/Spittie/4chan-x/raw/master/builds/4chan-X.user.js) (Firefox)
+##[Install](https://github.com/Spittie/4chan-x/raw/master/builds/crx.crx) (Chrom*)
 
 ## If you have any problems, try resetting your 4chan X settings before calling me a faggot (but feel free to do so)
 
