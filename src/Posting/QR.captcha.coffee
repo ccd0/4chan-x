@@ -4,6 +4,8 @@ QR.captcha =
     container = $.id 'captchaContainer'
     return unless @isEnabled = !!container
 
+    $.globalEval 'loadRecaptcha()' if Conf['Auto-load captcha']
+
     imgContainer = $.el 'div',
       className: 'captcha-img'
       title: 'Reload reCAPTCHA'

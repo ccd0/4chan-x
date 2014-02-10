@@ -189,7 +189,8 @@
         'Cooldown': [true, 'Indicate the remaining time before posting again.'],
         'Cooldown Prediction': [true, 'Decrease the cooldown time by taking into account upload speed. Disable it if it\'s inaccurate for you.'],
         'Posting Success Notifications': [true, 'Show notifications on successful post creation or file uploading.'],
-        'Captcha Warning Notifications': [true, 'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.']
+        'Captcha Warning Notifications': [true, 'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.'],
+        'Auto-load captcha': [false, 'Automatically load the captcha when you open a thread']
       },
       'Quote Links': {
         'Quote Backlinks': [true, 'Add quote backlinks.'],
@@ -6115,6 +6116,9 @@
       container = $.id('captchaContainer');
       if (!(this.isEnabled = !!container)) {
         return;
+      }
+      if (Conf['Auto-load captcha']) {
+        $.globalEval('loadRecaptcha()');
       }
       imgContainer = $.el('div', {
         className: 'captcha-img',
