@@ -273,7 +273,7 @@ do ->
   timeout = {}
   setArea = (area) ->
     data = items[area]
-    return if !Object.keys(data).length or timeout[area]
+    return if !Object.keys(data).length or timeout[area] > Date.now()
     chrome.storage[area].set data, ->
       if chrome.runtime.lastError
         c.error chrome.runtime.lastError.message
@@ -282,7 +282,8 @@ do ->
             c.error chrome.runtime.lastError.message, key, val
             continue
           items[area][key] = val
-        timeout[area] = setTimeout setArea, $.MINUTE, area
+        setTimeout setArea, $.MINUTE, area
+        timeout[area] = Date.now() + $.MINUTE
         return
       delete timeout[area]
     items[area] = {}
