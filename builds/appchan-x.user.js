@@ -23,7 +23,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.8.8 - 2014-01-30
+* appchan x - Version 2.8.8 - 2014-02-09
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -8327,15 +8327,10 @@
       return QR.status();
     },
     focusin: function() {
-      return $.addClass(QR.nodes.el, 'has-focus');
+      return $.addClass(QR.nodes.el, 'focus');
     },
     focusout: function() {
-      return $.queueTask(function() {
-        if ($.x('ancestor::div[@id="qr"]', d.activeElement)) {
-          return;
-        }
-        return $.rmClass(QR.nodes.el, 'has-focus');
-      });
+      return $.rmClass(QR.nodes.el, 'focus');
     },
     hide: function() {
       d.activeElement.blur();
@@ -8665,8 +8660,6 @@
         $.on(elm, 'blur', QR.focusout);
         $.on(elm, 'focus', QR.focusin);
       }
-      $.on(dialog, 'focusin', QR.focusin);
-      $.on(dialog, 'focusout', QR.focusout);
       $.on(nodes.autohide, 'change', QR.toggleHide);
       $.on(nodes.close, 'click', QR.close);
       $.on(nodes.dumpButton, 'click', function() {
@@ -9035,64 +9028,74 @@
 
   QR.captcha = {
     init: function() {
+      var container, imgContainer, input;
       if (d.cookie.indexOf('pass_enabled=1') >= 0) {
         return;
       }
-      if (!(this.isEnabled = !!$.id('captchaFormPart'))) {
+      container = $.id('captchaContainer');
+      if (!(this.isEnabled = !!container)) {
         return;
       }
-      return $.asap((function() {
-        return $.id('recaptcha_challenge_field_holder');
-      }), this.ready.bind(this));
-    },
-    ready: function() {
-      var imgContainer, input, setLifetime,
-        _this = this;
-      setLifetime = function(e) {
-        return _this.lifetime = e.detail;
-      };
-      $.on(window, 'captcha:timeout', setLifetime);
-      $.globalEval('window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))');
-      $.off(window, 'captcha:timeout', setLifetime);
       imgContainer = $.el('div', {
         className: 'captcha-img',
         title: 'Reload reCAPTCHA',
-        innerHTML: '<div><img></div>'
+        innerHTML: '<img>',
+        hidden: true
       });
       input = $.el('input', {
         className: 'captcha-input field',
         title: 'Verification',
+        placeholder: 'Focus to load reCAPTCHA',
         autocomplete: 'off',
-        spellcheck: false,
-        tabIndex: 45
+        spellcheck: false
       });
       this.nodes = {
-        challenge: $.id('recaptcha_challenge_field_holder'),
-        img: $('img', imgContainer),
+        img: imgContainer.firstChild,
         input: input
       };
-      new MutationObserver(this.load.bind(this)).observe(this.nodes.challenge, {
-        childList: true
-      });
-      $.on(imgContainer, 'click', this.reload.bind(this));
-      $.on(input, 'keydown', this.keydown.bind(this));
-      $.on(input, 'focus', function() {
-        return $.addClass(QR.nodes.el, 'focus');
-      });
-      $.on(input, 'blur', function() {
-        return $.rmClass(QR.nodes.el, 'focus');
-      });
-      $.get('captchas', [], function(_arg) {
-        var captchas;
-        captchas = _arg.captchas;
-        return _this.sync(captchas);
-      });
-      $.sync('captchas', this.sync);
-      this.reload();
+      $.on(input, 'focus', this.setup);
       $.on(input, 'blur', QR.focusout);
       $.on(input, 'focus', QR.focusin);
       $.addClass(QR.nodes.el, 'has-captcha');
-      return $.after(QR.nodes.com.parentElement, [imgContainer, input]);
+      $.after(QR.nodes.com.parentNode, [imgContainer, input]);
+      this.setupObserver = new MutationObserver(this.afterSetup);
+      this.setupObserver.observe(container, {
+        childList: true
+      });
+      return this.afterSetup();
+    },
+    setup: function() {
+      return $.globalEval('loadRecaptcha()');
+    },
+    afterSetup: function() {
+      var challenge, img, input, setLifetime, _ref;
+      if (!(challenge = $.id('recaptcha_challenge_field_holder'))) {
+        return;
+      }
+      QR.captcha.setupObserver.disconnect();
+      delete QR.captcha.setupObserver;
+      setLifetime = function(e) {
+        return QR.captcha.lifetime = e.detail;
+      };
+      $.on(window, 'captcha:timeout', setLifetime);
+      $.globalEval('window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))');
+      $.off(window, 'captcha:timeout', setLifetime);
+      _ref = QR.captcha.nodes, img = _ref.img, input = _ref.input;
+      img.parentNode.hidden = false;
+      $.off(input, 'focus', QR.captcha.setup);
+      $.on(input, 'keydown', QR.captcha.keydown.bind(QR.captcha));
+      $.on(img.parentNode, 'click', QR.captcha.reload.bind(QR.captcha));
+      $.get('captchas', [], function(_arg) {
+        var captchas;
+        captchas = _arg.captchas;
+        return QR.captcha.sync(captchas);
+      });
+      $.sync('captchas', QR.captcha.sync);
+      QR.captcha.nodes.challenge = challenge;
+      new MutationObserver(QR.captcha.load.bind(QR.captcha)).observe(challenge, {
+        childList: true
+      });
+      return QR.captcha.load();
     },
     sync: function(captchas) {
       QR.captcha.captchas = captchas;

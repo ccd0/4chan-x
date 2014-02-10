@@ -1,53 +1,63 @@
 QR.captcha =
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
-    return unless @isEnabled = !!$.id 'captchaFormPart'
-    $.asap (-> $.id 'recaptcha_challenge_field_holder'), @ready.bind @
-
-  ready: ->
-    setLifetime = (e) => @lifetime = e.detail
-    $.on  window, 'captcha:timeout', setLifetime
-    $.globalEval 'window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))'
-    $.off window, 'captcha:timeout', setLifetime
+    container = $.id 'captchaContainer'
+    return unless @isEnabled = !!container
 
     imgContainer = $.el 'div',
       className: 'captcha-img'
       title: 'Reload reCAPTCHA'
-      innerHTML: '<div><img></div>'
+      innerHTML: '<img>'
+      hidden: true
     input = $.el 'input',
-      className:    'captcha-input field'
-      title:        'Verification'
+      className: 'captcha-input field'
+      title: 'Verification'
+      placeholder: 'Focus to load reCAPTCHA'
       autocomplete: 'off'
-      spellcheck:   false
-      tabIndex:     45
+      spellcheck: false
     @nodes =
-      challenge: $.id 'recaptcha_challenge_field_holder'
-      img:       $ 'img', imgContainer
-      input:     input
+      img:   imgContainer.firstChild
+      input: input
 
-    new MutationObserver(@load.bind @).observe @nodes.challenge,
-      childList: true
+    $.on input, 'focus', @setup
 
-    $.on imgContainer, 'click',   @reload.bind @
-    $.on input,        'keydown', @keydown.bind @
-    $.on input,        'focus',   -> $.addClass QR.nodes.el, 'focus'
-    $.on input,        'blur',    -> $.rmClass  QR.nodes.el, 'focus'
-
-    $.get 'captchas', [], ({captchas}) =>
-      @sync captchas
-
-    $.sync 'captchas', @sync
-    # start with an uncached captcha
-    @reload()
-
-    <% if (type === 'userscript') { %>
-    # XXX Firefox lacks focusin/focusout support.
     $.on input, 'blur',  QR.focusout
     $.on input, 'focus', QR.focusin
-    <% } %>
 
     $.addClass QR.nodes.el, 'has-captcha'
-    $.after QR.nodes.com.parentElement, [imgContainer, input]
+    $.after QR.nodes.com.parentNode, [imgContainer, input]
+
+    @setupObserver = new MutationObserver @afterSetup
+    @setupObserver.observe container, childList: true
+    @afterSetup() # reCAPTCHA might have loaded before the QR.
+
+  setup: ->
+    $.globalEval 'loadRecaptcha()'
+
+  afterSetup: ->
+    return unless challenge = $.id 'recaptcha_challenge_field_holder'
+    QR.captcha.setupObserver.disconnect()
+    delete QR.captcha.setupObserver
+
+    setLifetime = (e) -> QR.captcha.lifetime = e.detail
+    $.on  window, 'captcha:timeout', setLifetime
+    $.globalEval 'window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))'
+    $.off window, 'captcha:timeout', setLifetime
+
+    {img, input} = QR.captcha.nodes
+    img.parentNode.hidden = false
+    $.off input,         'focus',  QR.captcha.setup
+    $.on input,          'keydown', QR.captcha.keydown.bind QR.captcha
+    $.on img.parentNode, 'click',   QR.captcha.reload.bind  QR.captcha
+
+    $.get 'captchas', [], ({captchas}) ->
+      QR.captcha.sync captchas
+    $.sync 'captchas', QR.captcha.sync
+
+    QR.captcha.nodes.challenge = challenge
+    new MutationObserver(QR.captcha.load.bind QR.captcha).observe challenge,
+      childList: true
+    QR.captcha.load()
 
   sync: (captchas) ->
     QR.captcha.captchas = captchas
