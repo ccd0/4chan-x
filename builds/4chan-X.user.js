@@ -229,7 +229,7 @@
         'Highlight Own Posts': [false, 'Highlights own posts if Mark Quotes of You is enabled.'],
         'Mark OP Quotes': [true, 'Add \'(OP)\' to OP quotes.'],
         'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.'],
-        'Quote Threading': [true, 'Thread conversations']
+        'Quote Threading': [false, 'Thread conversations']
       }
     },
     imageExpansion: {
@@ -5005,7 +5005,7 @@
       }
       this.enabled = true;
       this.controls = $.el('span', {
-        innerHTML: '<label><input id=threadingControl type=checkbox checked> Threading</label>'
+        innerHTML: '<label><input id=threadingControl type=checkbox unchecked> Threading</label>'
       });
       input = $('input', this.controls);
       $.on(input, 'change', this.toggle);
