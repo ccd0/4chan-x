@@ -1980,7 +1980,8 @@
       args = bottom ? ['bottom-header', 'top-header', 'bottom', 'after'] : ['top-header', 'bottom-header', 'top', 'add'];
       $.addClass(doc, args[0]);
       $.rmClass(doc, args[1]);
-      return Header.bar.parentNode.className = args[2];
+      Header.bar.parentNode.className = args[2];
+      return $[args[3]](Header.bar, Header.noticesRoot);
     },
     toggleBarPosition: function() {
       $.cb.checked.call(this);
@@ -5486,15 +5487,10 @@
       return QR.status();
     },
     focusin: function() {
-      return $.addClass(QR.nodes.el, 'has-focus');
+      return $.addClass(QR.nodes.el, 'focus');
     },
     focusout: function() {
-      return $.queueTask(function() {
-        if ($.x('ancestor::div[@id="qr"]', d.activeElement)) {
-          return;
-        }
-        return $.rmClass(QR.nodes.el, 'has-focus');
-      });
+      return $.rmClass(QR.nodes.el, 'focus');
     },
     hide: function() {
       d.activeElement.blur();
@@ -5823,8 +5819,6 @@
         $.on(elm, 'blur', QR.focusout);
         $.on(elm, 'focus', QR.focusin);
       }
-      $.on(dialog, 'focusin', QR.focusin);
-      $.on(dialog, 'focusout', QR.focusout);
       $.on(nodes.autohide, 'change', QR.toggleHide);
       $.on(nodes.close, 'click', QR.close);
       $.on(nodes.dumpButton, 'click', function() {
@@ -6139,12 +6133,6 @@
         input: input
       };
       $.on(input, 'focus', this.setup);
-      $.on(input, 'focus', function() {
-        return $.addClass(QR.nodes.el, 'focus');
-      });
-      $.on(input, 'blur', function() {
-        return $.rmClass(QR.nodes.el, 'focus');
-      });
       $.on(input, 'blur', QR.focusout);
       $.on(input, 'focus', QR.focusin);
       $.addClass(QR.nodes.el, 'has-captcha');

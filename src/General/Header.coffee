@@ -330,7 +330,7 @@ Header =
     $.addClass doc, args[0]
     $.rmClass  doc, args[1]
     Header.bar.parentNode.className = args[2] 
-    #$[args[3]] Header.bar, Header.notify ##Fix chrome?
+    $[args[3]] Header.bar, Header.noticesRoot
 
   toggleBarPosition: ->
     $.cb.checked.call @

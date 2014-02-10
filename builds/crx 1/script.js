@@ -1990,8 +1990,7 @@
       args = bottom ? ['bottom-header', 'top-header', 'bottom', 'after'] : ['top-header', 'bottom-header', 'top', 'add'];
       $.addClass(doc, args[0]);
       $.rmClass(doc, args[1]);
-      Header.bar.parentNode.className = args[2];
-      return $[args[3]](Header.bar, Header.noticesRoot);
+      return Header.bar.parentNode.className = args[2];
     },
     toggleBarPosition: function() {
       $.cb.checked.call(this);
@@ -5491,10 +5490,10 @@
       return QR.status();
     },
     focusin: function() {
-      return $.addClass(QR.nodes.el, 'focus');
+      return $.addClass(QR.nodes.el, 'has-focus');
     },
     focusout: function() {
-      return $.rmClass(QR.nodes.el, 'focus');
+      return $.rmClass(QR.nodes.el, 'has-focus');
     },
     hide: function() {
       d.activeElement.blur();
@@ -5761,7 +5760,7 @@
       return list.value = g.VIEW === 'thread' ? g.THREADID : 'new';
     },
     dialog: function() {
-      var check, dialog, elm, event, flagSelector, i, items, key, mimeTypes, name, node, nodes, save, value, _ref;
+      var check, dialog, event, flagSelector, i, items, key, mimeTypes, name, node, nodes, save, value, _ref;
       QR.nodes = nodes = {
         el: dialog = UI.dialog('qr', 'top:0;right:0;', "<div class=move><label><input type=checkbox id=autohide title=Auto-hide>Quick Reply</label><a href=javascript:; class=close title=Close>×</a><select data-name=thread title='Create a new thread / Reply'><option value=new>New thread</option></select></div><form><div class=persona><input name=name  data-name=name  list=\"list-name\" placeholder=Name    class=field size=1 tabindex=10><input name=email data-name=email list=\"list-email\" placeholder=E-mail  class=field size=1 tabindex=20><input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1 tabindex=30> </div><div class=textarea><textarea data-name=com placeholder=Comment class=field tabindex=40></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=60><span id=qr-no-file>No selected file</span><input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\"><span id=qr-extras-container><a id=qr-filerm href=javascript:; title='Remove file'>×</a><a id=dump-button title='Dump list'>+</a></span></span><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70></label><input type=submit tabindex=80></div><input type=file multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist> ")
       };
@@ -5826,12 +5825,8 @@
         $.add(nodes.form, nodes.flag);
       }
       $.on(nodes.filename.parentNode, 'click keydown', QR.openFileInput);
-      items = $$('*', QR.nodes.el);
-      i = 0;
-      while (elm = items[i++]) {
-        $.on(elm, 'blur', QR.focusout);
-        $.on(elm, 'focus', QR.focusin);
-      }
+      $.on(dialog, 'focusin', QR.focusin);
+      $.on(dialog, 'focusout', QR.focusout);
       $.on(nodes.autohide, 'change', QR.toggleHide);
       $.on(nodes.close, 'click', QR.close);
       $.on(nodes.dumpButton, 'click', function() {
@@ -6135,8 +6130,12 @@
         input: input
       };
       $.on(input, 'focus', this.setup);
-      $.on(input, 'blur', QR.focusout);
-      $.on(input, 'focus', QR.focusin);
+      $.on(input, 'focus', function() {
+        return $.addClass(QR.nodes.el, 'focus');
+      });
+      $.on(input, 'blur', function() {
+        return $.rmClass(QR.nodes.el, 'focus');
+      });
       $.addClass(QR.nodes.el, 'has-captcha');
       $.after(QR.nodes.com.parentNode, [imgContainer, input]);
       this.setupObserver = new MutationObserver(this.afterSetup);

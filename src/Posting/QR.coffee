@@ -114,15 +114,9 @@ QR =
     QR.cooldown.auto = false
     QR.status()
   focusin: ->
-    $.addClass QR.nodes.el, 'has-focus'
+    $.addClass QR.nodes.el, 'focus'
   focusout: ->
-    <% if (type === 'crx') { %>
-    $.rmClass QR.nodes.el, 'has-focus'
-    <% } else { %>
-    $.queueTask ->
-      return if $.x 'ancestor::div[@id="qr"]', d.activeElement
-      $.rmClass QR.nodes.el, 'has-focus'
-    <% } %>
+    $.rmClass QR.nodes.el, 'focus'
   hide: ->
     d.activeElement.blur()
     $.addClass QR.nodes.el, 'autohide'
@@ -409,16 +403,11 @@ QR =
 
     $.on nodes.filename.parentNode, 'click keydown', QR.openFileInput
 
-    <% if (type === 'userscript') { %>
-    # XXX Firefox lacks focusin/focusout support.
     items = $$ '*', QR.nodes.el
     i = 0
     while elm = items[i++]
       $.on elm, 'blur',  QR.focusout
       $.on elm, 'focus', QR.focusin
-    <% } %>
-    $.on dialog, 'focusin',  QR.focusin
-    $.on dialog, 'focusout', QR.focusout
 
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
