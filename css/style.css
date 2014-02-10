@@ -378,6 +378,10 @@ a[href="javascript:;"] {
 :root.index-loading .pagelist {
   display: none;
 }
+#nav-links {
+  display: flex;
+  align-items: baseline;
+}
 #index-search {
   padding-right: 1.5em;
   width: 100px;

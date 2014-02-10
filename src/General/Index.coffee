@@ -6,7 +6,6 @@ Index =
       return
     return if g.BOARD.ID is 'f'
 
-
     @db = new DataBoard 'pinnedThreads'
     Thread.callbacks.push
       name: 'Thread Pinning'
@@ -21,38 +20,6 @@ Index =
       href: 'javascript:;'
     $.on @button, 'click', @update
     Header.addShortcut @button, 1
-
-    modeEntry =
-      el: $.el 'span', textContent: 'Index mode'
-      subEntries: [
-        { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="paged"> Paged' }
-        { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="all pages"> All threads' }
-        { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="catalog"> Catalog' }
-      ]
-      open: ->
-        for label in @subEntries
-          input = label.el.firstChild
-          input.checked = Conf['Index Mode'] is input.value
-        true
-    for label in modeEntry.subEntries
-      input = label.el.firstChild
-      $.on input, 'change', $.cb.value
-      $.on input, 'change', @cb.mode
-
-    sortEntry =
-      el: $.el 'span', textContent: 'Sort by'
-      subEntries: [
-        { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="bump"> Bump order' }
-        { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="lastreply"> Last reply' }
-        { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="birth"> Creation date' }
-        { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="replycount"> Reply count' }
-        { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="filecount"> File count' }
-      ]
-    for label in sortEntry.subEntries
-      input = label.el.firstChild
-      input.checked = Conf['Index Sort'] is input.value
-      $.on input, 'change', $.cb.value
-      $.on input, 'change', @cb.sort
 
     threadNumEntry =
       el: $.el 'span', textContent: 'Threads per page'
@@ -91,28 +58,35 @@ Index =
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 90
-      subEntries: [modeEntry, sortEntry, threadNumEntry, repliesEntry, anchorEntry, refNavEntry]
+      subEntries: [threadNumEntry, repliesEntry, anchorEntry, refNavEntry]
 
     $.addClass doc, 'index-loading'
     @update()
+
+    @navLinks = $.el 'div',
+      id: 'nav-links'
+      innerHTML: <%= importHTML('General/Index-navlinks') %>
+    @searchInput = $ '#index-search', @navLinks
+    @hideLabel   = $ '#hidden-label', @navLinks
+    @selectMode  = $ '#index-mode',   @navLinks
+    @selectSort  = $ '#index-sort',   @navLinks
+    $.on @searchInput, 'input', @onSearchInput
+    $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
+    $.on $('#hidden-toggle a',    @navLinks), 'click', @cb.toggleHiddenThreads
+    for select in [@selectMode, @selectSort]
+      select.value = Conf[select.name]
+      $.on select, 'change', $.cb.value
+    $.on @selectMode, 'change', @cb.mode
+    $.on @selectSort, 'change', @cb.sort
+
     @root = $.el 'div', className: 'board'
     @pagelist = $.el 'div',
       className: 'pagelist'
       hidden: true
       innerHTML: <%= importHTML('General/Index-pagelist') %>
-    @navLinks = $.el 'div',
-      id: 'nav-links'
-      innerHTML: <%= importHTML('General/Index-navlinks') %>
-    @indexModeToggle = $ '#index-mode-toggle', @navLinks
-    @searchInput = $ '#index-search', @navLinks
-    @hideLabel   = $ '#hidden-label', @navLinks
     @currentPage = @getCurrentPage()
     $.on window, 'popstate', @cb.popstate
     $.on @pagelist, 'click', @cb.pageNav
-    $.on @indexModeToggle, 'click', @cb.pageNav
-    $.on @searchInput, 'input', @onSearchInput
-    $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
-    $.on $('#hidden-toggle a',    @navLinks), 'click', @cb.toggleHiddenThreads
     @cb.toggleCatalogMode()
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
       board = $ '.board'
@@ -232,11 +206,9 @@ Index =
   cb:
     toggleCatalogMode: ->
       if Conf['Index Mode'] is 'catalog'
-        Index.indexModeToggle.textContent = 'Return'
         $.addClass Index.root, 'catalog-mode'
         $('#hidden-toggle', Index.navLinks).hidden = false
       else
-        Index.indexModeToggle.textContent = 'Catalog'
         $.rmClass Index.root, 'catalog-mode'
         $('#hidden-toggle', Index.navLinks).hidden = true
     toggleHiddenThreads: ->
@@ -279,14 +251,10 @@ Index =
         else
           return
       e.preventDefault()
-      switch a.textContent
-        when 'Catalog'
-          mode = 'catalog'
-        when 'Return'
-          mode = Conf['Previous Index Mode']
-      if mode
-        $.set 'Index Mode', mode
-        Conf['Index Mode'] = mode
+      if a.textContent is 'Catalog'
+        $.set 'Index Mode', 'catalog'
+        Conf['Index Mode'] = 'catalog'
+        Index.selectMode.value = 'catalog'
         Index.cb.mode()
         Index.scrollToIndex()
       Index.userPageNav +a.pathname.split('/')[2]
