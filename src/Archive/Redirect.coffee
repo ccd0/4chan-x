@@ -114,6 +114,24 @@ Redirect =
         https: true
         software: "fuuka"
 
+    "fgst":
+      boards: ["r", "soc"],
+      files:  ["r", "soc"]
+      data:
+        domain: "fgst.eu"
+        http:  true
+        https: true
+        software: "foolfuuka"
+
+    "maware":
+      boards: ["t"],
+      files:  ["t"]
+      data:
+        domain: "archive.mawa.re"
+        http:  true
+        https: false
+        software: "foolfuuka"
+
     "Foolz Beta":
       boards: ["a", "co", "d", "gd", "h", "jp", "m", "mlp", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
       files:  ["a", "d", "gd", "h", "jp", "m", "tg", "u", "vg", "vp", "vr", "wsg"]
