@@ -351,7 +351,7 @@ Build =
     root = $.el 'div',
       className: 'catalog-thread'
     $.extend root, <%= html(
-      '<a href="/${thread.board}/thread/${thread.ID}" target="_blank">' +
+      '<a href="/${thread.board}/thread/${thread.ID}">' +
         '&{thumb}' +
       '</a>' +
       '<div class="thread-stats" title="Post count / File count / Page count">' +
