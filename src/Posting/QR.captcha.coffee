@@ -87,7 +87,7 @@ QR.captcha =
     @reload()
     $.set 'captchas', @captchas
   clear: ->
-    return unless @captchas.length
+    return unless @captchas # not loaded yet.
     now = Date.now()
     for captcha, i in @captchas
       break if captcha.timeout > now
@@ -105,7 +105,7 @@ QR.captcha =
     @nodes.input.value = null
     @clear()
   count: ->
-    count = @captchas.length
+    count = if @captchas then @captchas.length else 0
     @nodes.input.placeholder = switch count
       when 0
         'Verification (Shift + Enter to cache)'
