@@ -21,6 +21,8 @@ QR.captcha =
       input:     input
 
     $.on input, 'focus', @setup
+    $.on input, 'focus', -> $.addClass QR.nodes.el, 'focus'
+    $.on input, 'blur', -> $.rmClass QR.nodes.el, 'focus'
 
     <% if (type === 'userscript') { %>
     # XXX Firefox lacks focusin/focusout support.

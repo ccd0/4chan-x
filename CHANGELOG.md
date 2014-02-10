@@ -1,5 +1,14 @@
+### v1.3.4 
+*2014-02-10*
+
+**Spittie**
+- Fix Chrome (Maybe? Hopefully I haven't fucked everything)
+- Add fgst.eu
+- Add mawa.re
+
 ### v1.3.3 
 *2014-02-09*
+
 **MayhemYDG**
 - Fix new captcha
 
