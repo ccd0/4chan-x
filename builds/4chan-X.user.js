@@ -9894,8 +9894,8 @@
         }
       },
       "4plebs": {
-        boards: ["hr", "pol", "s4s", "tg", "tv", "x"],
-        files: ["hr", "pol", "s4s", "tg", "tv", "x"],
+        boards: ["adv", "hr", "o", "pol", "s4s", "tg", "tv", "x"],
+        files: ["adv", "hr", "o", "pol", "s4s", "tg", "tv", "x"],
         data: {
           domain: "archive.4plebs.org",
           http: true,
@@ -9904,10 +9904,20 @@
         }
       },
       "Nyafuu": {
-        boards: ["c", "w", "wg"],
-        files: ["c", "w", "wg"],
+        boards: ["c", "e", "w", "wg"],
+        files: ["c", "e", "w", "wg"],
         data: {
           domain: "archive.nyafuu.org",
+          http: true,
+          https: true,
+          software: "foolfuuka"
+        }
+      },
+      "Love is Over": {
+        boards: ["d", "i"],
+        files: ["d", "i"],
+        data: {
+          domain: "loveisover.me",
           http: true,
           https: true,
           software: "foolfuuka"
@@ -9983,8 +9993,8 @@
         }
       },
       "Foolz Beta": {
-        boards: ["a", "co", "d", "gd", "h", "jp", "m", "mlp", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
-        files: ["a", "d", "gd", "h", "jp", "m", "tg", "u", "vg", "vp", "vr", "wsg"],
+        boards: ["a", "co", "gd", "jp", "m", "s4s", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
+        files: ["a", "gd", "jp", "m", "s4s", "tg", "u", "vg", "vp", "vr", "wsg"],
         data: {
           domain: "beta.foolz.us",
           http: true,
