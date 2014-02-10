@@ -1,3 +1,11 @@
+### v1.3.5 
+*2014-02-10*
+
+**Spittie**
+- Fix Chrome (aka copy from Appchan)
+- Add option to load the captcha when you open a thread
+- Add OpenSUSE emoji
+
 ### v1.3.4 
 *2014-02-10*
 
