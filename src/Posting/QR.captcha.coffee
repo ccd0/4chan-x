@@ -15,6 +15,7 @@ QR.captcha =
       placeholder: 'Focus to load reCAPTCHA'
       autocomplete: 'off'
       spellcheck: false
+      tabindex: 55
     @nodes =
       img:   imgContainer.firstChild
       input: input
