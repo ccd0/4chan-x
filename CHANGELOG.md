@@ -1,3 +1,6 @@
+- `Index Mode` and `Index Sort` have been moved out of the header's menu into index page.
+- Minor captcha fixes.
+
 ## 3.17.0 - *2014-02-09*
 
 - Fixed captcha loading in the QR.
