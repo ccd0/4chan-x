@@ -14,6 +14,7 @@
 // @grant        GM_setValue
 // @grant        GM_deleteValue
 // @grant        GM_openInTab
+// @grant        GM_xmlhttpRequest
 // @run-at       document-start
 // @updateURL 	 https://github.com/Spittie/4chan-x/raw/stable/builds/4chan-X.meta.js
 // @downloadURL  https://github.com/Spittie/4chan-x/raw/stable/builds/4chan-X.user.js

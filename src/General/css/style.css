@@ -873,7 +873,7 @@ input.field.tripped:not(:hover):not(:focus) {
   min-height: 59px;
   min-width: 302px;
 }
-.captcha-input {
+.captcha-input{
   width: 100%;
   margin: 1px 0 0;
 }
@@ -950,7 +950,7 @@ input#qr-filename:not(.edit) {
   right: 0px;
 }
 #qr-filerm {
-  margin-right: 2px;
+  margin-right: 3px;
   z-index: 2;
 }
 #file-n-submit {

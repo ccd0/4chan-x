@@ -104,6 +104,7 @@ QR =
     QR.cleanNotifications()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
+    $.rmClass QR.nodes.el, 'url'
     unless Conf['Captcha Warning Notifications']
       $.rmClass QR.captcha.nodes.input, 'error' if QR.captcha.isEnabled
     if Conf['QR Shortcut']
@@ -269,23 +270,46 @@ QR =
     $.addClass QR.nodes.el, 'dump'
 
   handleUrl:  ->
-    url = prompt("insert url")
+    <% if (type === 'crx') { %>
+    url = prompt("Insert an url:")
+    return if url == null
+    
     xhr = new XMLHttpRequest();
     xhr.open('GET', url, true)
     xhr.responseType = 'blob'
     
     xhr.onload = (e) ->
       if this.readyState == this.DONE && xhr.status == 200
-        urlBlob = new Blob([this.response], {type: 'image/jpeg'})
+        urlBlob = new Blob([this.response], {type : this.getResponseHeader('content-type')})
+        console.log(urlBlob.type)
+        return if urlBlob.type == null
+        unless urlBlob.type in QR.mimeTypes
+          QR.error "Unsupported file type."
         QR.handleFiles([urlBlob])
-        null
+        return
+      else
+        QR.error "Can't load image."
+        return
         
     xhr.onerror = (e) ->
-      console.log("error" + e)
-      null
+      QR.error "Can't load image."
+      return
     
     xhr.send()
-    null
+    return
+    <% } %>
+    <% if (type === 'currently-not-working-userscript') { %>
+    GM_xmlhttpRequest {
+      method: "GET",
+      url: url,
+      responseType: 'blob',
+      onload: (xhr) ->
+        urlBlob = new Blob([xhr.response], {type: 'image/png'})
+        QR.handleFiles([urlBlob])
+        return
+    }
+    return
+    <% } %>
   
 
   handleFiles: (files) ->

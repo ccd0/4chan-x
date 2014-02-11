@@ -157,7 +157,7 @@ QR.post = class
     return
 
   setFile: (@file) ->
-    @filename = file.name
+    @filename = file.name || "File from url"
     @filesize = $.bytesToString file.size
     @nodes.label.hidden = false if QR.spoiler
     URL.revokeObjectURL @URL
