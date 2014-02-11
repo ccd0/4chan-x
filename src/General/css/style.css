@@ -502,7 +502,7 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 .summary {
   text-decoration: none;
 }
-.catalog-mode {
+.catalog-mode .board {
   text-align: center;
 }
 .catalog-thread {
