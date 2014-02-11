@@ -1,3 +1,5 @@
+- Added `Image Size` setting for the catalog.
+
 ### 3.17.1 - *2014-02-10*
 
 - `Index Mode` and `Index Sort` have been moved out of the header's menu into the index page.

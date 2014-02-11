@@ -141,6 +141,7 @@ Config =
     'Index Mode': 'paged'
     'Previous Index Mode': 'paged'
     'Index Sort': 'bump'
+    'Index Size': 'small'
     'Threads per Page': 0
     'Show Replies': true
     'Anchor Hidden Threads': true

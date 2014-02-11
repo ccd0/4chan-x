@@ -415,11 +415,17 @@ a[href="javascript:;"] {
   text-align: left;
   flex-direction: column;
   align-items: center;
-  width: 165px;
   margin: 0 2px 5px;
-  max-height: 320px;
   word-break: break-word;
   vertical-align: top;
+}
+.catalog-small .catalog-thread {
+  width: 165px;
+  max-height: 320px;
+}
+.catalog-large .catalog-thread {
+  width: 270px;
+  max-height: 410px;
 }
 .thumb {
   flex-shrink: 0;

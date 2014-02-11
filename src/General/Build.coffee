@@ -294,9 +294,8 @@ Build =
       $.addClass thumb, 'deleted-file'
     else if thread.OP.file
       src = thread.OP.file.thumbURL
-      max = Math.max data.tn_w, data.tn_h
-      thumb.style.width  = data.tn_w * 150 / max + 'px'
-      thumb.style.height = data.tn_h * 150 / max + 'px'
+      thumb.dataset.width  = data.tn_w
+      thumb.dataset.height = data.tn_h
     else
       src = "#{staticPath}nofile.png"
       $.addClass thumb, 'no-file'

@@ -70,14 +70,16 @@ Index =
     @hideLabel   = $ '#hidden-label', @navLinks
     @selectMode  = $ '#index-mode',   @navLinks
     @selectSort  = $ '#index-sort',   @navLinks
+    @selectSize  = $ '#index-size',   @navLinks
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
     $.on $('#hidden-toggle a',    @navLinks), 'click', @cb.toggleHiddenThreads
-    for select in [@selectMode, @selectSort]
+    for select in [@selectMode, @selectSort, @selectSize]
       select.value = Conf[select.name]
       $.on select, 'change', $.cb.value
     $.on @selectMode, 'change', @cb.mode
     $.on @selectSort, 'change', @cb.sort
+    $.on @selectSize, 'change', @cb.size
 
     @root = $.el 'div', className: 'board'
     @pagelist = $.el 'div',
@@ -87,7 +89,10 @@ Index =
     @currentPage = @getCurrentPage()
     $.on window, 'popstate', @cb.popstate
     $.on @pagelist, 'click', @cb.pageNav
+
     @cb.toggleCatalogMode()
+    @cb.size()
+
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
       board = $ '.board'
       $.replace board, Index.root
@@ -230,6 +235,17 @@ Index =
     sort: ->
       Index.sort()
       Index.buildIndex()
+    size: (e) ->
+      if Conf['Index Mode'] isnt 'catalog'
+        $.rmClass Index.root, 'catalog-small'
+        $.rmClass Index.root, 'catalog-large'
+      else if Conf['Index Size'] is 'small'
+        $.addClass Index.root, 'catalog-small'
+        $.rmClass Index.root,  'catalog-large'
+      else
+        $.addClass Index.root, 'catalog-large'
+        $.rmClass Index.root,  'catalog-small'
+      Index.buildIndex() if e
     threadsNum: ->
       return unless Conf['Index Mode'] is 'paged'
       Index.buildPagelist()
@@ -498,6 +514,17 @@ Index =
       catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
     Main.callbackNodes CatalogThread, catalogThreads
     threads.map (thread) -> thread.catalogView.nodes.root
+  sizeCatalogViews: (nodes) ->
+    # XXX When browsers support CSS3 attr(), use it instead.
+    size = if Conf['Index Size'] is 'small' then 150 else 250
+    for node in nodes
+      thumb = $ '.thumb', node
+      {width, height} = thumb.dataset
+      continue unless width
+      ratio = size / Math.max width, height
+      thumb.style.width  = width  * ratio + 'px'
+      thumb.style.height = height * ratio + 'px'
+    return
   sort: ->
     switch Conf['Index Sort']
       when 'bump'
@@ -539,6 +566,7 @@ Index =
         nodes = Index.sortedNodes[nodesPerPage * pageNum ... nodesPerPage * (pageNum + 1)]
       when 'catalog'
         nodes = Index.buildCatalogViews()
+        Index.sizeCatalogViews nodes
       else
         nodes = Index.sortedNodes
     $.rmAll Index.root
