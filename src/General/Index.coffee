@@ -211,11 +211,9 @@ Index =
   cb:
     toggleCatalogMode: ->
       if Conf['Index Mode'] is 'catalog'
-        $.addClass Index.root, 'catalog-mode'
-        $('#hidden-toggle', Index.navLinks).hidden = false
+        $.addClass doc, 'catalog-mode'
       else
-        $.rmClass Index.root, 'catalog-mode'
-        $('#hidden-toggle', Index.navLinks).hidden = true
+        $.rmClass doc, 'catalog-mode'
     toggleHiddenThreads: ->
       $('#hidden-toggle a', Index.navLinks).textContent = if Index.showHiddenThreads = !Index.showHiddenThreads
         'Hide'

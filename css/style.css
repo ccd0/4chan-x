@@ -375,7 +375,9 @@ a[href="javascript:;"] {
 /* Index */
 :root.index-loading .navLinks,
 :root.index-loading .board,
-:root.index-loading .pagelist {
+:root.index-loading .pagelist,
+:root:not(.catalog-mode) #hidden-toggle,
+:root:not(.catalog-mode) #index-size {
   display: none;
 }
 #nav-links {
