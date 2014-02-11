@@ -48,7 +48,7 @@ ImageHover =
 
     timeoutID = setTimeout (=> @src = post.file.URL + '?' + Date.now()), 3000
     <% if (type === 'crx') { %>
-    $.ajax @src,
+    $.ajax post.file.URL,
       onloadend: ->
         return if @status isnt 404
         clearTimeout timeoutID

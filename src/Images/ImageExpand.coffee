@@ -133,7 +133,7 @@ ImageExpand =
 
     timeoutID = setTimeout ImageExpand.expand, 10000, post
     <% if (type === 'crx') { %>
-    $.ajax @src,
+    $.ajax post.file.URL,
       onloadend: ->
         return if @status isnt 404
         clearTimeout timeoutID
