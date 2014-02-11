@@ -409,7 +409,7 @@ a[href="javascript:;"] {
 .summary {
   text-decoration: none;
 }
-.catalog-mode {
+.catalog-mode .board {
   text-align: center;
 }
 .catalog-thread {
