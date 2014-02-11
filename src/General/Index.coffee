@@ -181,6 +181,12 @@ Index =
     else
       ThreadHiding.hide thread
     ThreadHiding.saveHiddenState thread
+  cycleSortType: ->
+    types = [Index.selectSort.options...].filter (option) -> !option.disabled
+    for type, i in types
+      break if type.selected
+    types[(i + 1) % types.length].selected = true
+    $.event 'change', null, Index.selectSort
 
   cb:
     toggleHiddenThreads: ->

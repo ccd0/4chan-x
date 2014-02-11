@@ -131,6 +131,9 @@ Keybinds =
         searchInput.focus()
       when Conf['Open catalog']
         window.location = CatalogLinks.catalog()
+      when Conf['Cycle sort type']
+        return unless Conf['JSON Navigation']
+        Index.cycleSortType()
       # Thread Navigation
       when Conf['Next thread']
         return if g.VIEW isnt 'index' or !threadRoot

@@ -727,6 +727,10 @@ vp-replace
       'Ctrl+Alt+s'
       'Focus the search field on the board index.'
     ]
+    'Cycle sort type': [
+      'Ctrl+x'
+      'Cycle through index sort types.'
+    ]
     # Thread Navigation
     'Next thread': [
       'Ctrl+Down'
