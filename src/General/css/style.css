@@ -783,6 +783,7 @@ span.hide-announcement {
 }
 #qr select,
 #dump-button,
+#url-button,
 .remove,
 .captcha-img {
   cursor: pointer;
@@ -830,6 +831,14 @@ span.hide-announcement {
   min-width: 100%;
 }
 #dump-button {
+  width: 10%;
+  margin: 0;
+  margin-right: 4px;
+  font: 13px sans-serif;
+  padding: 1px 0px 2px;
+  opacity: 0.6;
+}
+#url-button {
   width: 10%;
   margin: 0;
   margin-right: 4px;

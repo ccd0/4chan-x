@@ -17,6 +17,8 @@
   "homepage_url": "http://seaweedchan.github.io/4chan-x/",
   "minimum_chrome_version": "31",
   "permissions": [
-    "storage"
+    "storage",
+    "http://*/",
+    "https://*/"
   ]
 }

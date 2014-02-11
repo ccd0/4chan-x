@@ -268,6 +268,26 @@ QR =
     QR.handleFiles files
     $.addClass QR.nodes.el, 'dump'
 
+  handleUrl:  ->
+    url = prompt("insert url")
+    xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true)
+    xhr.responseType = 'blob'
+    
+    xhr.onload = (e) ->
+      if this.readyState == this.DONE && xhr.status == 200
+        urlBlob = new Blob([this.response], {type: 'image/jpeg'})
+        QR.handleFiles([urlBlob])
+        null
+        
+    xhr.onerror = (e) ->
+      console.log("error" + e)
+      null
+    
+    xhr.send()
+    null
+  
+
   handleFiles: (files) ->
     if @ isnt QR # file input
       files  = [@files...]
@@ -343,6 +363,7 @@ QR =
       close:      '.close'
       form:       'form'
       dumpButton: '#dump-button'
+      urlButton:  '#url-button'
       name:       '[data-name=name]'
       email:      '[data-name=email]'
       sub:        '[data-name=sub]'
@@ -412,6 +433,7 @@ QR =
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
     $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'
+    $.on nodes.urlButton,  'click',  QR.handleUrl
     $.on nodes.addPost,    'click',  -> new QR.post true
     $.on nodes.form,       'submit', QR.submit
     $.on nodes.fileRM,     'click', -> QR.selected.rmFile()

@@ -111,7 +111,7 @@ QR.captcha =
     @clear()
 
   count: ->
-    count = @captchas.length
+    count = if @captchas then @captchas.length else 0
     @nodes.input.placeholder = switch count
       when 0
         'Verification (Shift + Enter to cache)'
