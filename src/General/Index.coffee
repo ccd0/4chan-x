@@ -91,7 +91,6 @@ Index =
     $.on @pagelist, 'click', @cb.pageNav
 
     @cb.toggleCatalogMode()
-    @cb.size()
 
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
       board = $ '.board'
@@ -214,6 +213,7 @@ Index =
         $.addClass doc, 'catalog-mode'
       else
         $.rmClass doc, 'catalog-mode'
+      Index.cb.size()
     toggleHiddenThreads: ->
       $('#hidden-toggle a', Index.navLinks).textContent = if Index.showHiddenThreads = !Index.showHiddenThreads
         'Hide'
