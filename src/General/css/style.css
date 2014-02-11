@@ -471,7 +471,9 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 /* Index */
 :root.index-loading .navLinks,
 :root.index-loading .board,
-:root.index-loading .pagelist {
+:root.index-loading .pagelist,
+:root:not(.catalog-mode) #hidden-toggle,
+:root:not(.catalog-mode) #index-size {
   display: none;
 }
 #index-search {
