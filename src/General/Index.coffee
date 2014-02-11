@@ -235,7 +235,11 @@ Index =
       if mode not in ['catalog', Conf['Previous Index Mode']]
         Conf['Previous Index Mode'] = mode
         $.set 'Previous Index Mode', mode
-      QR.hide() if QR.nodes and mode is 'catalog'
+      return unless QR.nodes
+      if mode is 'catalog'
+        QR.hide()
+      else
+        QR.unhide()
     sort: ->
       Index.sort()
       Index.buildIndex()
@@ -534,11 +538,11 @@ Index =
       when 'bump'
         sortedThreadIDs = Index.liveThreadIDs
       when 'lastreply'
-        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) ->
+        sortedThreadIDs = [Index.liveThreadData...].sort (a, b) ->
           [..., a] = a.last_replies if 'last_replies' of a
           [..., b] = b.last_replies if 'last_replies' of b
           b.no - a.no
-        ).map (data) -> data.no
+        .map (data) -> data.no
       when 'birth'
         sortedThreadIDs = [Index.liveThreadIDs...].sort (a, b) -> b - a
       when 'replycount'
