@@ -104,7 +104,6 @@ QR =
     QR.cleanNotifications()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
-    $.rmClass QR.nodes.el, 'url'
     unless Conf['Captcha Warning Notifications']
       $.rmClass QR.captcha.nodes.input, 'error' if QR.captcha.isEnabled
     if Conf['QR Shortcut']
