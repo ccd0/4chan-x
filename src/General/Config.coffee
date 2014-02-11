@@ -571,6 +571,7 @@ http://iqdb.org/?url=%TURL
     'Index Mode': 'paged'
     'Previous Index Mode': 'paged'
     'Index Sort': 'bump'
+    'Index Size': 'small'
     'Show Replies': true
     'Anchor Hidden Threads': true
     'Refreshed Navigation': false

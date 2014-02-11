@@ -316,9 +316,6 @@ Build =
       imgClass = 'deleted-file'
     else if thread.OP.file
       src = thread.OP.file.thumbURL
-      max = Math.max data.tn_w, data.tn_h
-      imgWidth  = data.tn_w * 150 / max
-      imgHeight = data.tn_h * 150 / max
     else
       src = "#{staticPath}nofile.png"
       imgClass = 'no-file'
@@ -326,7 +323,7 @@ Build =
     thumb = if imgClass
       <%= html('<img src="${src}" class="catalog-thumb ${imgClass}">') %>
     else
-      <%= html('<img src="${src}" class="catalog-thumb" width="${imgWidth}" height="${imgHeight}">') %>
+      <%= html('<img src="${src}" class="catalog-thumb" data-width="${data.tn_w}" data-height="${data.tn_h}">') %>
 
     postCount = data.replies + 1
     fileCount = data.images  + !!data.ext

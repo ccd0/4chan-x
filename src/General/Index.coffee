@@ -63,6 +63,7 @@ Index =
 
     $.addClass doc, 'index-loading', "#{Conf['Index Mode'].replace /\ /g, '-'}-mode"
     @root     = $.el 'div', className: 'board'
+    @cb.size()
     @pagelist = $.el 'div', className: 'pagelist'
     $.extend @pagelist, <%= importHTML('Features/Index-pagelist') %>
     $('.cataloglink a', @pagelist).href = CatalogLinks.catalog()
@@ -73,6 +74,7 @@ Index =
     @searchInput = $ '#index-search', @navLinks
     @hideLabel   = $ '#hidden-label', @navLinks
     @selectSort  = $ '#index-sort',   @navLinks
+    @selectSize  = $ '#index-size',   @navLinks
     @currentPage = @getCurrentPage()
     $.on window, 'popstate', @cb.popstate
 
@@ -82,9 +84,11 @@ Index =
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
     $.on $('#hidden-toggle a',    @navLinks), 'click', @cb.toggleHiddenThreads
     $.on $('.returnlink a',       @navLinks), 'click', @cb.frontPage unless Conf['Use 4chan X Catalog']
-    @selectSort.value = Conf[@selectSort.name]
-    $.on @selectSort, 'change', $.cb.value
+    for select in [@selectSort, @selectSize]
+      select.value = Conf[select.name]
+      $.on select, 'change', $.cb.value
     $.on @selectSort, 'change', @cb.sort
+    $.on @selectSize, 'change', @cb.size
 
     @update()
     $.asap (-> $('.board > .thread > .postContainer', doc) or d.readyState isnt 'loading'), ->
@@ -200,6 +204,17 @@ Index =
     sort: ->
       Index.sort()
       Index.buildIndex()
+    size: (e) ->
+      if Conf['Index Mode'] isnt 'catalog'
+        $.rmClass Index.root, 'catalog-small'
+        $.rmClass Index.root, 'catalog-large'
+      else if Conf['Index Size'] is 'small'
+        $.addClass Index.root, 'catalog-small'
+        $.rmClass Index.root,  'catalog-large'
+      else
+        $.addClass Index.root, 'catalog-large'
+        $.rmClass Index.root,  'catalog-small'
+      Index.buildIndex() if e
     replies: ->
       Index.buildThreads()
       Index.sort()
@@ -287,6 +302,7 @@ Index =
   applyMode: ->
     for mode in ['paged', 'infinite', 'all pages', 'catalog']
       $[if mode is Conf['Index Mode'] then 'addClass' else 'rmClass'] doc, "#{mode.replace /\ /g, '-'}-mode"
+    Index.cb.size()
     Index.showHiddenThreads = false
     $('#hidden-toggle a', Index.navLinks).textContent = 'Show'
 
@@ -501,6 +517,18 @@ Index =
     Main.callbackNodes CatalogThread, catalogThreads
     threads.map (thread) -> thread.catalogView.nodes.root
 
+  sizeCatalogViews: (nodes) ->
+    # XXX When browsers support CSS3 attr(), use it instead.
+    size = if Conf['Index Size'] is 'small' then 150 else 250
+    for node in nodes
+      thumb = $ '.catalog-thumb', node
+      {width, height} = thumb.dataset
+      continue unless width
+      ratio = size / Math.max width, height
+      thumb.style.width  = width  * ratio + 'px'
+      thumb.style.height = height * ratio + 'px'
+    return
+
   sort: ->
     {liveThreadIDs, liveThreadData} = Index
     sortedThreadIDs = {
@@ -541,6 +569,7 @@ Index =
         nodes = Index.sortedNodes
       when 'catalog'
         nodes = Index.buildCatalogViews()
+        Index.sizeCatalogViews nodes
       else
         nodes = Index.buildSinglePage Index.getCurrentPage()
     $.rmAll Index.root
