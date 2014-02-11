@@ -186,6 +186,12 @@ Index =
         val: isPinned: thread.isPinned
     Index.sort()
     Index.buildIndex()
+  cycleSortType: ->
+    types = [Index.selectSort.options...].filter (option) -> !option.disabled
+    for type, i in types
+      break if type.selected
+    types[(i + 1) % types.length].selected = true
+    $.event 'change', null, Index.selectSort
   addCatalogSwitch: ->
     a = $.el 'a',
       href: 'javascript:;'

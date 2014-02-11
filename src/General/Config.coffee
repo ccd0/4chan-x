@@ -188,6 +188,7 @@ Config =
     'Next page':          ['Right',      'Jump to the next page.']
     'Previous page':      ['Left',       'Jump to the previous page.']
     'Search form':        ['Ctrl+Alt+s', 'Focus the search field on the board index.']
+    'Cycle sort type':    ['Ctrl+x',     'Cycle through index sort types.']
     # Thread Navigation
     'Next thread':        ['Down',       'See next thread.']
     'Previous thread':    ['Up',         'See previous thread.']

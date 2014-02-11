@@ -88,6 +88,8 @@ Keybinds =
         $('.prev button', Index.pagelist).click()
       when Conf['Search form']
         Index.searchInput.focus()
+      when Conf['Cycle sort type']
+        Index.cycleSortType()
       # Thread Navigation
       when Conf['Next thread']
         return if g.VIEW isnt 'index'
