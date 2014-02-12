@@ -777,28 +777,23 @@ a.hide-announcement {
 :root.gecko #dump-button {
   padding: 0;
 }
-#qr:not(.dump) #dump-list-container {
+#qr:not(.dump) #dump-list,
+#qr:not(.dump) #add-post {
   display: none;
 }
-#dump-list-container {
-  height: 100px;
-  position: relative;
+#dump-list {
+  counter-reset: qrpreviews;
+  width: 0;
+  min-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
 }
-#dump-list {
-  counter-reset: qrpreviews;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  overflow: hidden;
-  position: absolute;
-  white-space: nowrap;
-}
 #dump-list:hover {
-  bottom: -12px;
+  padding-bottom: 12px;
+  margin-bottom: -12px;
   overflow-x: auto;
   z-index: 1;
 }
@@ -875,13 +870,11 @@ a.remove {
   vertical-align: bottom;
 }
 #add-post {
+  align-self: flex-end;
   font-size: 20px;
-  height: 20px;
-  width: 20px;
+  width: 1em;
+  margin-top: -1em;
   text-align: center;
-  position: absolute;
-  right: 0;
-  bottom: 0;
   z-index: 1;
 }
 #qr textarea {
