@@ -1,5 +1,6 @@
 - Added `Image Size` setting for the catalog.
 - Added a keybind to cycle through index sort types, `Ctrl+x` by default.
+- Added keybindings for index modes, `Ctrl+{1,2,3}` by default.
 
 ### 3.17.1 - *2014-02-10*
 
