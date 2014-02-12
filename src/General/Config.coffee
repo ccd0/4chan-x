@@ -189,8 +189,8 @@ Config =
     'Previous page':      ['Left',       'Jump to the previous page.']
     'Search form':        ['Ctrl+Alt+s', 'Focus the search field on the board index.']
     'Paged mode':         ['Ctrl+1',     'Sets the index mode to paged.']
-    'Catalog mode':       ['Ctrl+2',     'Sets the index mode to catalog.']
-    'All pages mode':     ['Ctrl+3',     'Sets the index mode to all threads.']
+    'All pages mode':     ['Ctrl+2',     'Sets the index mode to all threads.']
+    'Catalog mode':       ['Ctrl+3',     'Sets the index mode to catalog.']
     'Cycle sort type':    ['Ctrl+x',     'Cycle through index sort types.']
     # Thread Navigation
     'Next thread':        ['Down',       'See next thread.']
