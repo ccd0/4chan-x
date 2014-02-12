@@ -269,18 +269,15 @@ QR =
     $.addClass QR.nodes.el, 'dump'
 
   handleUrl:  ->
-    <% if (type === 'crx') { %>
     url = prompt("Insert an url:")
     return if url == null
-    
+    <% if (type === 'crx') { %>
     xhr = new XMLHttpRequest();
     xhr.open('GET', url, true)
     xhr.responseType = 'blob'
-    
     xhr.onload = (e) ->
       if this.readyState == this.DONE && xhr.status == 200
         urlBlob = new Blob([this.response], {type : this.getResponseHeader('content-type')})
-        console.log(urlBlob.type)
         return if urlBlob.type == null
         unless urlBlob.type in QR.mimeTypes
           QR.error "Unsupported file type."
@@ -289,23 +286,43 @@ QR =
       else
         QR.error "Can't load image."
         return
-        
+
     xhr.onerror = (e) ->
       QR.error "Can't load image."
       return
-    
+
     xhr.send()
     return
     <% } %>
-    <% if (type === 'currently-not-working-userscript') { %>
+
+    <% if (type === 'userscript') { %>
     GM_xmlhttpRequest {
       method: "GET",
       url: url,
-      responseType: 'blob',
+      overrideMimeType: "text/plain; charset=x-user-defined",
       onload: (xhr) ->
-        urlBlob = new Blob([xhr.response], {type: 'image/png'})
+        r = xhr.responseText
+        data = new Uint8Array(r.length)
+        i = 0
+        while i < r.length
+          data[i] = r.charCodeAt(i)
+          i++
+        #QUALITY coding at work
+        header = xhr.responseHeaders
+        start = header.indexOf("Content-Type: ") + 14
+        end = header.substr(start, header.length).indexOf("\n") - 1
+        mime = header.substr(start, end)
+        return if mime is null
+
+        urlBlob = new Blob([data], {type: mime})
+        unless urlBlob.type in QR.mimeTypes
+          QR.error "Unsupported file type."
+
         QR.handleFiles([urlBlob])
         return
+
+        onerror: (xhr) ->
+          QR.error "Can't load image."
     }
     return
     <% } %>

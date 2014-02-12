@@ -23,7 +23,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.3.5 - 2014-02-11
+* 4chan X - Version 1.3.5 - 2014-02-12
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -5471,7 +5471,6 @@
       QR.cleanNotifications();
       d.activeElement.blur();
       $.rmClass(QR.nodes.el, 'dump');
-      $.rmClass(QR.nodes.el, 'url');
       if (!Conf['Captcha Warning Notifications']) {
         if (QR.captcha.isEnabled) {
           $.rmClass(QR.captcha.nodes.input, 'error');
@@ -5664,7 +5663,48 @@
       QR.handleFiles(files);
       return $.addClass(QR.nodes.el, 'dump');
     },
-    handleUrl: function() {},
+    handleUrl: function() {
+      var url;
+      url = prompt("Insert an url:");
+      if (url === null) {
+        return;
+      }
+      GM_xmlhttpRequest({
+        method: "GET",
+        url: url,
+        overrideMimeType: "text/plain; charset=x-user-defined",
+        onload: function(xhr) {
+          var data, end, header, i, mime, r, start, urlBlob, _ref;
+          r = xhr.responseText;
+          data = new Uint8Array(r.length);
+          i = 0;
+          while (i < r.length) {
+            data[i] = r.charCodeAt(i);
+            i++;
+          }
+          header = xhr.responseHeaders;
+          start = header.indexOf("Content-Type: ") + 14;
+          end = header.substr(start, header.length).indexOf("\n") - 1;
+          mime = header.substr(start, end);
+          if (mime === null) {
+            return;
+          }
+          urlBlob = new Blob([data], {
+            type: mime
+          });
+          if (_ref = urlBlob.type, __indexOf.call(QR.mimeTypes, _ref) < 0) {
+            QR.error("Unsupported file type.");
+          }
+          QR.handleFiles([urlBlob]);
+          return;
+          return {
+            onerror: function(xhr) {
+              return QR.error("Can't load image.");
+            }
+          };
+        }
+      });
+    },
     handleFiles: function(files) {
       var file, isSingle, max, _i, _len;
       if (this !== QR) {
