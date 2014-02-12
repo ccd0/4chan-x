@@ -270,15 +270,15 @@ QR =
 
   handleUrl:  ->
     url = prompt("Insert an url:")
-    return if url == null
+    return if url is null
     <% if (type === 'crx') { %>
     xhr = new XMLHttpRequest();
     xhr.open('GET', url, true)
     xhr.responseType = 'blob'
     xhr.onload = (e) ->
       if @readyState is @DONE && xhr.status is 200
-        urlBlob = new Blob([this.response], {type : this.getResponseHeader('content-type')})
-        return if urlBlob.type == null
+        urlBlob = new Blob([@response], {type : @getResponseHeader('content-type')})
+        return if urlBlob.type is null
         unless urlBlob.type in QR.mimeTypes
           QR.error "Unsupported file type."
         urlBlob.name = url.substr(url.lastIndexOf('/')+1, url.length)
@@ -328,7 +328,6 @@ QR =
     }
     return
     <% } %>
-  
 
   handleFiles: (files) ->
     if @ isnt QR # file input
