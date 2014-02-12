@@ -925,23 +925,11 @@ a.remove {
   height: 57px;
   width: 300px;
 }
-#file-n-submit-container {
-  position: relative;
-}
 #file-n-submit {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
   display: flex;
   align-items: center;
 }
-#file-n-submit-container input[type='file'] {
-  /* Keep it to set an appropriate height to the container. */
-  visibility: hidden;
-}
-#file-n-submit-container input {
+#file-n-submit input {
   margin: 0;
 }
 #file-n-submit input[type='submit'] {
@@ -958,8 +946,9 @@ a.remove {
 #qr-no-file,
 #qr-filename,
 #qr-filesize,
+#qr-filerm,
 #qr-file-spoiler {
-  margin: 0 2px !important;
+  margin: 0 1px !important;
 }
 #qr-no-file {
   cursor: default;
@@ -970,17 +959,19 @@ a.remove {
   -moz-appearance: none;
   appearance: none;
   background: none;
-  border: none !important;
+  border: none;
   color: inherit;
   font: inherit;
   flex: 1;
+  width: 0;
+  padding: 0;
   text-overflow: ellipsis;
 }
 #qr-filesize {
   font-size: .8em;
 }
 #qr-filesize::before {
-  content: " (";
+  content: "(";
 }
 #qr-filesize::after {
   content: ")";
