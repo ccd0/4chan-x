@@ -187,8 +187,7 @@ Index =
     Index.sort()
     Index.buildIndex()
   setIndexMode: (mode) ->
-    [opt] = [Index.selectMode.options...].filter (option) -> option.value is mode
-    opt.selected = true
+    Index.selectMode.value = mode
     $.event 'change', null, Index.selectMode
   cycleSortType: ->
     types = [Index.selectSort.options...].filter (option) -> !option.disabled
