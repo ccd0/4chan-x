@@ -186,6 +186,10 @@ Index =
         val: isPinned: thread.isPinned
     Index.sort()
     Index.buildIndex()
+  setIndexMode: (mode) ->
+    [opt] = [Index.selectMode.options...].filter (option) -> option.value is mode
+    opt.selected = true
+    $.event 'change', null, Index.selectMode
   cycleSortType: ->
     types = [Index.selectSort.options...].filter (option) -> !option.disabled
     for type, i in types
