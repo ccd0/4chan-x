@@ -288,16 +288,8 @@ a[href="javascript:;"] {
 .tab-selected {
   font-weight: 700;
 }
-.section-container {
+#fourchanx-settings > section {
   flex: 1;
-  position: relative;
-}
-.section-container > section {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
   overflow: auto;
 }
 .section-sauce ul,
