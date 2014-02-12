@@ -276,11 +276,12 @@ QR =
     xhr.open('GET', url, true)
     xhr.responseType = 'blob'
     xhr.onload = (e) ->
-      if this.readyState == this.DONE && xhr.status == 200
+      if @readyState is @DONE && xhr.status is 200
         urlBlob = new Blob([this.response], {type : this.getResponseHeader('content-type')})
         return if urlBlob.type == null
         unless urlBlob.type in QR.mimeTypes
           QR.error "Unsupported file type."
+        urlBlob.name = url.substr(url.lastIndexOf('/')+1, url.length)
         QR.handleFiles([urlBlob])
         return
       else
@@ -318,6 +319,7 @@ QR =
         unless urlBlob.type in QR.mimeTypes
           QR.error "Unsupported file type."
 
+        urlBlob.name = url.substr(url.lastIndexOf('/')+1, url.length)
         QR.handleFiles([urlBlob])
         return
 

@@ -5695,6 +5695,7 @@
           if (_ref = urlBlob.type, __indexOf.call(QR.mimeTypes, _ref) < 0) {
             QR.error("Unsupported file type.");
           }
+          urlBlob.name = url.substr(url.lastIndexOf('/') + 1, url.length);
           QR.handleFiles([urlBlob]);
           return;
           return {
