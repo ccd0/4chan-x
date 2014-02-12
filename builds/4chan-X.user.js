@@ -8163,6 +8163,15 @@
           });
         }
       },
+      gfycat: {
+        regExp: /.*gfycat.com\/(?:iframe\/)?(\S*)/,
+        el: function(a) {
+          var div;
+          return div = $.el('iframe', {
+            src: "http://gfycat.com/iframe/" + a.dataset.uid
+          });
+        }
+      },
       SoundCloud: {
         regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
         style: 'height: auto; width: 500px; display: inline-block;',
