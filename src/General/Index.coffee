@@ -159,6 +159,8 @@ Index =
     @pin() if data.isPinned
   catalogNode: ->
     $.on @nodes.thumb, 'click', Index.onClick
+    return if Conf['Image Hover in Catalog']
+    $.on @nodes.thumb, 'mouseover', Index.onOver
   onClick: (e) ->
     return if e.button isnt 0
     thread = g.threads[@parentNode.dataset.fullID]
@@ -169,6 +171,28 @@ Index =
     else
       return
     e.preventDefault()
+  onOver: (e) ->
+    # 4chan's less than stellar CSS forces us to include a .post and .postInfo
+    # in order to have proper styling for the .nameBlock's content.
+    {nodes} = g.threads[@parentNode.dataset.fullID].OP
+    el = $.el 'div',
+      innerHTML: '<div class=post><div class=postInfo>'
+      className: 'thread-info'
+      hidden: true
+    $.add el.firstElementChild.firstElementChild, [
+      $('.nameBlock', nodes.info).cloneNode true
+      $.tn ' '
+      nodes.date.cloneNode true
+    ]
+    $.add d.body, el
+    UI.hover
+      root: @
+      el: el
+      latestEvent: e
+      endEvents: 'mouseout'
+      offsetX: 15
+      offsetY: -20
+    setTimeout (-> el.hidden = false if el.parentNode), .25 * $.SECOND
   toggleHide: (thread) ->
     $.rm thread.catalogView.nodes.root
     if Index.showHiddenThreads

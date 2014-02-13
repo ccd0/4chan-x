@@ -273,7 +273,7 @@ UI = do ->
       $.off d, 'mouseup',   @up
     $.set "#{@id}.position", @style.cssText
 
-  hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb}) ->
+  hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb, offsetX, offsetY}) ->
     o = {
       root
       el
@@ -283,14 +283,17 @@ UI = do ->
       latestEvent
       clientHeight: doc.clientHeight
       clientWidth:  doc.clientWidth
+      offsetX: offsetX or 45
+      offsetY: offsetY or -120
     }
     o.hover    = hover.bind    o
     o.hoverend = hoverend.bind o
 
-    $.asap ->
-      !el.parentNode or asapTest()
-    , ->
-      o.hover o.latestEvent if el.parentNode
+    if asapTest
+      $.asap ->
+        !el.parentNode or asapTest()
+      , ->
+        o.hover o.latestEvent if el.parentNode
 
     $.on root, endEvents,   o.hoverend
     $.on root, 'mousemove', o.hover
@@ -304,7 +307,7 @@ UI = do ->
     height = @el.offsetHeight
     {clientX, clientY} = e
 
-    top = clientY - 120
+    top = clientY + @offsetY
     top = if @clientHeight <= height or top <= 0
       0
     else if top + height >= @clientHeight
@@ -313,9 +316,9 @@ UI = do ->
       top
 
     [left, right] = if clientX <= @clientWidth / 2
-      [clientX + 45 + 'px', null]
+      [clientX + @offsetX + 'px', null]
     else
-      [null, @clientWidth - clientX + 45 + 'px']
+      [null, @clientWidth - clientX + @offsetX + 'px']
 
     {style} = @
     style.top   = top + 'px'
