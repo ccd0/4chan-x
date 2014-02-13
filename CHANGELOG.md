@@ -3,7 +3,7 @@
 
 **Spittie**
 - Upload images directly from urls
- ![Upload from url](src/General/img/changelog/1.3.6.png)
+ ![Upload from url](src/General/img/changelog/1.3.6.gif)
 - Add gfycat.com embedding
 - Replace some icons with fontawesome
 - Add Metro favicons (lel)
