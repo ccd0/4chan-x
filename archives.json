@@ -5,8 +5,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["a", "co", "gd", "jp", "m", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "gd", "jp", "m", "tg", "vg", "vp", "vr", "wsg"]
+  "boards": ["a", "biz", "co", "gd", "jp", "m", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
+  "files": ["a", "biz", "gd", "jp", "m", "tg", "vg", "vp", "vr", "wsg"]
 }, {
   "uid": 1,
   "name": "NSFW Foolz",
@@ -123,6 +123,6 @@
   "https": true,
   "withCredentials": true,
   "software": "foolfuuka",
-  "boards": ["a", "co", "gd", "jp", "m", "s4s", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "gd", "jp", "m", "s4s", "tg", "u", "vg", "vp", "vr", "wsg"]
+  "boards": ["a", "biz", "co", "gd", "jp", "m", "s4s", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
+  "files": ["a", "biz", "gd", "jp", "m", "s4s", "tg", "u", "vg", "vp", "vr", "wsg"]
 }]
