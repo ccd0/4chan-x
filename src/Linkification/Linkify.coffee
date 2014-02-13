@@ -334,6 +334,12 @@ Linkify =
         div = $.el 'iframe',
           src: "http://pastebin.com/embed_iframe.php?i=#{a.dataset.uid}"
 
+    gfycat:
+      regExp: /.*gfycat.com\/(?:iframe\/)?(\S*)/
+      el: (a) ->
+        div = $.el 'iframe',
+          src: "http://gfycat.com/iframe/#{a.dataset.uid}"
+
     SoundCloud:
       regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
       style: 'height: auto; width: 500px; display: inline-block;'
