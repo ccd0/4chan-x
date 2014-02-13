@@ -267,6 +267,13 @@ QR =
     QR.open()
     QR.handleFiles files
     $.addClass QR.nodes.el, 'dump'
+    
+  handleBlob: (blob) ->
+    return if blob.type is null
+      QR.error "Unsupported file type."
+    return unless blob.type in QR.mimeTypes
+      QR.error "Unsupported file type."
+    QR.handleFiles([blob])
 
   handleUrl:  ->
     url = prompt("Insert an url:")
@@ -278,11 +285,8 @@ QR =
     xhr.onload = (e) ->
       if @readyState is @DONE && xhr.status is 200
         urlBlob = new Blob([@response], {type : @getResponseHeader('content-type')})
-        return if urlBlob.type is null
-        unless urlBlob.type in QR.mimeTypes
-          QR.error "Unsupported file type."
         urlBlob.name = url.substr(url.lastIndexOf('/')+1, url.length)
-        QR.handleFiles([urlBlob])
+        QR.handleBlob(urlBlob)
         return
       else
         QR.error "Can't load image."
@@ -316,11 +320,9 @@ QR =
         return if mime is null
 
         urlBlob = new Blob([data], {type: mime})
-        unless urlBlob.type in QR.mimeTypes
-          QR.error "Unsupported file type."
 
         urlBlob.name = url.substr(url.lastIndexOf('/')+1, url.length)
-        QR.handleFiles([urlBlob])
+        QR.handleBlob(urlBlob)
         return
 
         onerror: (xhr) ->

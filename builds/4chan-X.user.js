@@ -23,7 +23,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.3.5 - 2014-02-12
+* 4chan X - Version 1.3.5 - 2014-02-13
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -5663,6 +5663,16 @@
       QR.handleFiles(files);
       return $.addClass(QR.nodes.el, 'dump');
     },
+    handleBlob: function(blob) {
+      var _ref;
+      if (blob.type === null) {
+        return QR.error("Unsupported file type.");
+      }
+      if (_ref = blob.type, __indexOf.call(QR.mimeTypes, _ref) < 0) {
+        return QR.error("Unsupported file type.");
+      }
+      return QR.handleFiles([blob]);
+    },
     handleUrl: function() {
       var url;
       url = prompt("Insert an url:");
@@ -5674,7 +5684,7 @@
         url: url,
         overrideMimeType: "text/plain; charset=x-user-defined",
         onload: function(xhr) {
-          var data, end, header, i, mime, r, start, urlBlob, _ref;
+          var data, end, header, i, mime, r, start, urlBlob;
           r = xhr.responseText;
           data = new Uint8Array(r.length);
           i = 0;
@@ -5692,11 +5702,8 @@
           urlBlob = new Blob([data], {
             type: mime
           });
-          if (_ref = urlBlob.type, __indexOf.call(QR.mimeTypes, _ref) < 0) {
-            QR.error("Unsupported file type.");
-          }
           urlBlob.name = url.substr(url.lastIndexOf('/') + 1, url.length);
-          QR.handleFiles([urlBlob]);
+          QR.handleBlob(urlBlob);
           return;
           return {
             onerror: function(xhr) {
@@ -6176,7 +6183,7 @@
         placeholder: 'Focus to load reCAPTCHA',
         autocomplete: 'off',
         spellcheck: false,
-        tabIndex: 55
+        tabIndex: 45
       });
       this.nodes = {
         img: imgContainer.firstChild,
