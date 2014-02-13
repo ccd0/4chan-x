@@ -143,6 +143,7 @@ Config =
     'Index Sort': 'bump'
     'Index Size': 'small'
     'Threads per Page': 0
+    'Open threads in a new tab': false
     'Show Replies': true
     'Anchor Hidden Threads': true
     'Refreshed Navigation': false

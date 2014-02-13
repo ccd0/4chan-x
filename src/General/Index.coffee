@@ -31,6 +31,10 @@ Index =
     $.on threadsNumInput, 'change', $.cb.value
     $.on threadsNumInput, 'change', @cb.threadsNum
 
+    targetEntry =
+      el: $.el 'label',
+        innerHTML: '<input type=checkbox name="Open threads in a new tab"> Open threads in a new tab'
+        title: 'Catalog-only setting.'
     repliesEntry =
       el: $.el 'label',
         innerHTML: '<input type=checkbox name="Show Replies"> Show replies'
@@ -42,12 +46,14 @@ Index =
       el: $.el 'label',
         innerHTML: '<input type=checkbox name="Refreshed Navigation"> Refreshed navigation'
         title: 'Refresh index when navigating through pages.'
-    for label in [repliesEntry, anchorEntry, refNavEntry]
+    for label in [targetEntry, repliesEntry, anchorEntry, refNavEntry]
       input = label.el.firstChild
       {name} = input
       input.checked = Conf[name]
       $.on input, 'change', $.cb.checked
       switch name
+        when 'Open threads in a new tab'
+          $.on input, 'change', @cb.target
         when 'Show Replies'
           $.on input, 'change', @cb.replies
         when 'Anchor Hidden Threads'
@@ -58,7 +64,7 @@ Index =
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 90
-      subEntries: [threadNumEntry, repliesEntry, anchorEntry, refNavEntry]
+      subEntries: [threadNumEntry, targetEntry, repliesEntry, anchorEntry, refNavEntry]
 
     $.addClass doc, 'index-loading'
     @update()
@@ -261,6 +267,14 @@ Index =
       return unless Conf['Index Mode'] is 'paged'
       Index.buildPagelist()
       Index.buildIndex()
+    target: ->
+      for threadID, thread of g.BOARD.threads when thread.catalogView
+        {thumb} = thread.catalogView.nodes
+        if Conf['Open threads in a new tab']
+          thumb.target = '_blank'
+        else
+          thumb.removeAttribute 'target'
+      return
     replies: ->
       Index.buildThreads()
       Index.sort()
@@ -529,7 +543,7 @@ Index =
     # XXX When browsers support CSS3 attr(), use it instead.
     size = if Conf['Index Size'] is 'small' then 150 else 250
     for node in nodes
-      thumb = $ '.thumb', node
+      thumb = node.firstElementChild
       {width, height} = thumb.dataset
       continue unless width
       ratio = size / Math.max width, height

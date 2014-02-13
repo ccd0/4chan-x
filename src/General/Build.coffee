@@ -300,6 +300,8 @@ Build =
       src = "#{staticPath}nofile.png"
       $.addClass thumb, 'no-file'
     thumb.style.backgroundImage = "url(#{src})"
+    if Conf['Open threads in a new tab']
+      thumb.target = '_blank'
 
     for quotelink in $$ '.quotelink', root.lastElementChild
       $.replace quotelink, [quotelink.childNodes...]
