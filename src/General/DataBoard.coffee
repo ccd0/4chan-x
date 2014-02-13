@@ -58,15 +58,14 @@ class DataBoard
     val or defaultValue
 
   clean: ->
-    for boardID, val of @data.boards
-      @deleteIfEmpty {boardID}
-
     now = Date.now()
-    if (@data.lastChecked or 0) < now - 2 * $.HOUR
-      @data.lastChecked = now
-      for boardID of @data.boards
-        @ajaxClean boardID
+    return if (@data.lastChecked or 0) > now - 2 * $.HOUR
 
+    for boardID of @data.boards
+      @deleteIfEmpty {boardID}
+      @ajaxClean boardID if boardID of @data.boards
+
+    @data.lastChecked = now
     @save()
   ajaxClean: (boardID) ->
     $.cache "//a.4cdn.org/#{boardID}/threads.json", (e) =>
@@ -76,12 +75,14 @@ class DataBoard
       board   = @data.boards[boardID]
       threads = {}
       for page in e.target.response
-        for thread in page.threads
-          if thread.no of board
-            threads[thread.no] = board[thread.no]
-      @data.boards[boardID] = threads
-      @deleteIfEmpty {boardID}
-      @save()
+        for thread in page.threads when thread.no of board
+          threads[thread.no] = board[thread.no]
+      count = Object.keys(threads).length
+      return if count is Object.keys(board).length # Nothing changed.
+      if count
+        @set {boardID, val: threads}
+      else
+        @delete {boardID}
 
   onSync: (data) =>
     @data = data or boards: {}

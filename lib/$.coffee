@@ -288,8 +288,7 @@ do ->
       delete timeout[area]
     items[area] = {}
 
-  setAll = $.debounce $.SECOND, ->
-    setArea 'local'
+  setSync = $.debounce $.SECOND, ->
     setArea 'sync'
 
   $.set = (key, val) ->
@@ -300,7 +299,8 @@ do ->
     for key in $.localKeys when key of items.sync
       items.local[key] = items.sync[key]
       delete items.sync[key]
-    setAll()
+    setArea 'local'
+    setSync()
 
   $.clear = (cb) ->
     items.local = {}

@@ -139,7 +139,7 @@ Unread =
     Unread.readArray Unread.postsQuotingYou
     Unread.update() if e
 
-  saveLastReadPost: ->
+  saveLastReadPost: <% if (type === 'crx') { %>$.debounce 5 * $.SECOND,<% } %> ->
     return if Unread.thread.isDead
     Unread.db.set
       boardID:  Unread.thread.board.ID

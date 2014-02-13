@@ -787,6 +787,7 @@ a.hide-announcement {
   min-width: 100%;
   overflow: hidden;
   white-space: nowrap;
+  position: relative;
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
