@@ -312,7 +312,7 @@ UI = do ->
     else
       top
 
-    [left, right] = if clientX <= @clientWidth - 400
+    [left, right] = if clientX <= @clientWidth / 2
       [clientX + 45 + 'px', null]
     else
       [null, @clientWidth - clientX + 45 + 'px']
