@@ -60,7 +60,7 @@ Linkify =
           # Replace already-linkified links,
           # f.e.: https://boards.4chan.org/b/%
           $.replace parent, anchor
-        Linkify.cleanLink anchor, link if Conf['Clean Links']
+        Linkify.cleanLink anchor, link
         walker.currentNode = anchor.lastChild
       else
         walker.previousNode()

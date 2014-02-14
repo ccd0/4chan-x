@@ -6,6 +6,7 @@ Config =
       'Announcement Hiding':          [true,  'Add button to hide 4chan announcements.']
       '404 Redirect':                 [true,  'Redirect dead threads and images.']
       'Keybinds':                     [true,  'Bind actions to keyboard shortcuts.']
+      'Linkify':                      [true,  'Convert text links into hyperlinks.']
       'Time Formatting':              [true,  'Localize and format timestamps.']
       'Relative Post Dates':          [false, 'Display dates like "3 minutes ago". Tooltip shows the timestamp.']
       'File Info Formatting':         [true,  'Reformat the file information.']
@@ -27,9 +28,6 @@ Config =
       'Image Hover in Catalog':       [false, 'Show a floating expanded image on hover in the catalog.']
       'Sauce':                        [true,  'Add sauce links to images.']
       'Reveal Spoilers':              [false, 'Reveal spoiler thumbnails.']
-    'Linkification':
-      'Linkify':                      [true,  'Convert text links into hyperlinks.']
-      'Clean Links':                  [true,  'Remove spoiler and code tags commonly used to bypass blocked links.']
     'Menu':
       'Menu':                         [true,  'Add a drop-down menu to posts.']
       'Report Link':                  [true,  'Add a report link to the menu.']
