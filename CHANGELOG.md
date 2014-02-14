@@ -1,5 +1,7 @@
 - Added `Image Size` setting for the catalog.
 - Added `Open threads in a new tab` setting for the catalog.
+- Added `board-mode:"type"` and `board-sort:"type"` parameters to custom board navigation.
+- Added OP name/date tooltip in the catalog.
 - Added a keybind to cycle through index sort types, `Ctrl+x` by default.
 - Added keybindings for index modes, `Ctrl+{1,2,3}` by default.
 

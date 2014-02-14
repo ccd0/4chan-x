@@ -95,6 +95,7 @@ Index =
     @currentPage = @getCurrentPage()
     $.on window, 'popstate', @cb.popstate
     $.on @pagelist, 'click', @cb.pageNav
+    $.on $('#custom-board-list', Header.bar), 'click', @cb.headerNav
 
     @cb.toggleCatalogMode()
 
@@ -260,10 +261,10 @@ Index =
         'Show'
       Index.sort()
       Index.buildIndex()
-    mode: ->
+    mode: (e) ->
       Index.cb.toggleCatalogMode()
       Index.togglePagelist()
-      Index.buildIndex()
+      Index.buildIndex() if e
       mode = Conf['Index Mode']
       if mode not in ['catalog', Conf['Previous Index Mode']]
         Conf['Previous Index Mode'] = mode
@@ -273,9 +274,9 @@ Index =
         QR.hide()
       else
         QR.unhide()
-    sort: ->
+    sort: (e) ->
       Index.sort()
-      Index.buildIndex()
+      Index.buildIndex() if e
     size: (e) ->
       if Conf['Index Mode'] isnt 'catalog'
         $.rmClass Index.root, 'catalog-small'
@@ -316,13 +317,36 @@ Index =
         else
           return
       e.preventDefault()
-      if a.textContent is 'Catalog'
-        $.set 'Index Mode', 'catalog'
-        Conf['Index Mode'] = 'catalog'
-        Index.selectMode.value = 'catalog'
-        Index.cb.mode()
-        Index.scrollToIndex()
+      return if Index.cb.indexNav a, true
       Index.userPageNav +a.pathname.split('/')[2]
+    headerNav: (e) ->
+      a = e.target
+      return if e.button isnt 0 or a.nodeName isnt 'A' or a.hostname isnt 'boards.4chan.org'
+      # Save settings
+      onSameBoard = a.pathname.split('/')[1] is g.BOARD.ID
+      Index.cb.indexNav a, onSameBoard
+      # Do nav if this isn't a simple click, or different board.
+      return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or !onSameBoard
+      e.preventDefault()
+    indexNav: (a, onSameBoard) ->
+      {indexMode, indexSort} = a.dataset
+      if indexMode
+        $.set 'Index Mode', indexMode
+        Conf['Index Mode'] = indexMode
+        if g.VIEW is 'index' and onSameBoard
+          Index.selectMode.value = indexMode
+          Index.cb.mode()
+      if indexSort
+        $.set 'Index Sort', indexSort
+        Conf['Index Sort'] = indexSort
+        if g.VIEW is 'index' and onSameBoard
+          Index.selectSort.value = indexSort
+          Index.cb.sort()
+      if g.VIEW is 'index' and onSameBoard and (indexMode or indexSort)
+        Index.buildIndex()
+        Index.scrollToIndex()
+        return true
+      false
 
   scrollToIndex: ->
     Header.scrollToIfNeeded Index.navLinks

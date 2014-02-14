@@ -112,10 +112,12 @@ Header =
     list = $ '#custom-board-list', Header.bar
     $.rmAll list
     return unless text
-    as = $$ '#full-board-list a[title]', Header.bar
-    nodes = text.match(/[\w@]+(-(all|title|replace|full|archive|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
+    as = $$ '.boardList a[title]', Header.bar
+    re = /[\w@]+(-(all|title|replace|full|archive|(mode|sort|text):"[^"]+"))*|[^\w@]+/g
+    nodes = text.match(re).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
+
       if /^toggle-all/.test t
         a = $.el 'a',
           className: 'show-board-list-button'
@@ -123,32 +125,47 @@ Header =
           href: 'javascript:;'
         $.on a, 'click', Header.toggleBoardList
         return a
-      boardID = if /^current/.test t
-        g.BOARD.ID
+
+      boardID = t.split('-')[0]
+      boardID = g.BOARD.ID if boardID is 'current'
+      for a in as when a.textContent is boardID
+        a = a.cloneNode()
+        break
+      return $.tn boardID if a.parentNode # Not a clone.
+
+      if /-archive/.test t
+        if href = Redirect.to 'board', {boardID}
+          a.href = href
+        else
+          return a.firstChild # Its text node.
+
+      a.textContent = if /-title/.test(t) or /-replace/.test(t) and boardID is g.BOARD.ID
+        a.title
+      else if /-full/.test t
+        "/#{boardID}/ - #{a.title}"
+      else if m = t.match /-text:"([^"]+)"/
+        m[1]
       else
-        t.match(/^[^-]+/)[0]
-      for a in as
-        if a.textContent is boardID
-          a = a.cloneNode true
+        boardID
 
-          a.textContent = if /-title/.test(t) or /-replace/.test(t) and $.hasClass a, 'current'
-            a.title
-          else if /-full/.test t
-            "/#{boardID}/ - #{a.title}"
-          else if m = t.match /-text:"(.+)"/
-            m[1]
-          else
-            a.textContent
+      if m = t.match /-mode:"([^"]+)"/
+        type = m[1].toLowerCase()
+        a.dataset.indexMode = switch type
+          when 'all threads' then 'all pages'
+          when 'paged', 'catalog' then type
+          else 'paged'
+      if m = t.match /-sort:"([^"]+)"/
+        type = m[1].toLowerCase()
+        a.dataset.indexSort = switch type
+          when 'bump order'    then 'bump'
+          when 'last reply'    then 'lastreply'
+          when 'creation date' then 'birth'
+          when 'reply count'   then 'replycount'
+          when 'file count'    then 'filecount'
+          else 'bump'
 
-          if /-archive/.test t
-            if href = Redirect.to 'board', {boardID}
-              a.href = href
-            else
-              return $.tn a.textContent
-
-          $.addClass a, 'navSmall' if boardID is '@'
-          return a
-      $.tn t
+      $.addClass a, 'navSmall' if boardID is '@'
+      a
     $.add list, nodes
 
   toggleBoardList: ->
