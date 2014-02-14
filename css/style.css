@@ -1056,8 +1056,10 @@ a.remove {
   margin: 0;
 }
 
-/* colored uid */
-
+/* Other */
+.linkified {
+  word-break: break-all;
+}
 .posteruid.painted  {
   padding: 0 5px;
   border-radius: 1em;

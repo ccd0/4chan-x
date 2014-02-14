@@ -65,6 +65,7 @@ Linkify =
       else
         walker.previousNode()
     range.detach()
+    @nodes.comment.normalize()
 
   find: (link, walker) ->
     # Walk through the nodes until we find the entire link.
@@ -134,6 +135,8 @@ Linkify =
 
   cleanLink: (anchor, link) ->
     {length} = link
+    for node in $$ 'wbr', anchor
+      $.rm node
     for node in $$ 's, .prettyprint', anchor
       $.replace node, [node.childNodes...] if length > node.textContent.length
     return
