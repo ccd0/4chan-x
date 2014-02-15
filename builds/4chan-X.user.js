@@ -23,7 +23,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.3.6 - 2014-02-13
+* 4chan X - Version 1.3.6 - 2014-02-15
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -8095,6 +8095,14 @@
           });
         }
       },
+      Twitter: {
+        regExp: /.*twitter.com\/(.+\/status\/\d+)/,
+        el: function(a) {
+          return $.el('iframe', {
+            src: "https://twitframe.com/show?url=https://twitter.com/" + a.dataset.uid
+          });
+        }
+      },
       LiveLeak: {
         regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
         el: function(a) {
@@ -9944,8 +9952,8 @@
     },
     archives: {
       "Foolz": {
-        boards: ["a", "co", "gd", "jp", "m", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
-        files: ["a", "gd", "jp", "m", "tg", "vg", "vp", "vr", "wsg"],
+        boards: ["a", "biz", "co", "gd", "jp", "m", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
+        files: ["a", "biz", "gd", "jp", "m", "tg", "vg", "vp", "vr", "wsg"],
         data: {
           domain: "archive.foolz.us",
           http: false,

@@ -284,6 +284,12 @@ Linkify =
       el: (a) ->
         $.el 'iframe',
           src: "http://paste.installgentoo.com/view/embed/#{a.dataset.uid}"
+          
+    Twitter:
+      regExp: /.*twitter.com\/(.+\/status\/\d+)/
+      el: (a) -> 
+        $.el 'iframe',
+          src: "https://twitframe.com/show?url=https://twitter.com/#{a.dataset.uid}"
 
     LiveLeak:
       regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
