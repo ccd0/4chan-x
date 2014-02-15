@@ -27,8 +27,8 @@ QuoteBacklink =
     for quoteID in @quotes
       (QuoteBacklink.map[quoteID] or= []).push @fullID
       continue unless (post = g.posts[quoteID]) and container = post?.nodes.backlinkContainer
-      for container in [container].concat post.clones.map((clone) -> clone.nodes.backlinkContainer)
-        $.add container, QuoteBacklink.buildBacklink @
+      for post in [post].concat post.clones
+        $.add post.nodes.backlinkContainer, QuoteBacklink.buildBacklink post, @
     return
   secondNode: ->
     # Don't backlink the OP.
@@ -41,19 +41,19 @@ QuoteBacklink =
     if @fullID of QuoteBacklink.map
       for quoteID in QuoteBacklink.map[@fullID]
         if post = g.posts[quoteID] # Post hasn't been collected since.
-          $.add container, QuoteBacklink.buildBacklink post
+          $.add container, QuoteBacklink.buildBacklink @, post
     $.add @nodes.info, container
-  buildBacklink: (post) ->
+  buildBacklink: (quoted, quoter) ->
     frag = QuoteBacklink.frag.cloneNode true
     a = frag.lastElementChild
-    a.href = "/#{post.board}/res/#{post.thread}#p#{post}"
-    a.textContent = text = QuoteBacklink.funk post.ID
-    if post.isDead
+    a.href = "/#{quoter.board}/res/#{quoter.thread}#p#{quoter}"
+    a.textContent = text = QuoteBacklink.funk quoter.ID
+    if quoter.isDead
       $.addClass a, 'deadlink'
-    if post.isHidden
+    if quoter.isHidden
       $.addClass a, 'filtered'
     if Conf['Quote Markers']
-      QuoteMarkers.parseQuotelink post, a, false, text
+      QuoteMarkers.parseQuotelink quoted, a, false, text
     if Conf['Quote Previewing']
       $.on a, 'mouseover', QuotePreview.mouseover
     if Conf['Quote Inlining']
