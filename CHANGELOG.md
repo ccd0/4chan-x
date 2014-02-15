@@ -1,3 +1,5 @@
+## 3.18.0 - *2014-02-15*
+
 - Added `Image Size` setting for the catalog.
 - Added `Open threads in a new tab` setting for the catalog.
 - Added `board-mode:"type"` and `board-sort:"type"` parameters to custom board navigation.
