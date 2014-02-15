@@ -1,3 +1,11 @@
+### v1.3.7 
+*2014-02-15*
+
+**Spittie**
+- Add Twitter embedding
+- Add .xpi for Firefox Mobile
+- Add /biz/
+
 ### v1.3.6 
 *2014-02-13*
 
