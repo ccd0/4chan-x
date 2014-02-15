@@ -133,12 +133,6 @@ Header =
         break
       return $.tn boardID if a.parentNode # Not a clone.
 
-      if /-archive/.test t
-        if href = Redirect.to 'board', {boardID}
-          a.href = href
-        else
-          return a.firstChild # Its text node.
-
       a.textContent = if /-title/.test(t) or /-replace/.test(t) and boardID is g.BOARD.ID
         a.title
       else if /-full/.test t
@@ -147,6 +141,12 @@ Header =
         m[1]
       else
         boardID
+
+      if /-archive/.test t
+        if href = Redirect.to 'board', {boardID}
+          a.href = href
+        else
+          return a.firstChild # Its text node.
 
       if m = t.match /-mode:"([^"]+)"/
         type = m[1].toLowerCase()
