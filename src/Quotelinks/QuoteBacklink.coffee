@@ -35,6 +35,9 @@ QuoteBacklink =
     return unless @isReply or Conf['OP Backlinks']
     if @isClone
       @nodes.backlinkContainer = $ '.backlink-container', @nodes.info
+      return unless Conf['Quote Markers']
+      for backlink in @nodes.backlinks
+        QuoteMarkers.parseQuotelink @, backlink, true, QuoteBacklink.funk Get.postDataFromLink(backlink).postID
       return
     @nodes.backlinkContainer = container = $.el 'span',
       className: 'backlink-container'
