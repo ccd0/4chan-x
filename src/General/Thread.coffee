@@ -16,7 +16,7 @@ class Thread
     g.threads[@fullID] = board.threads[@] = @
 
   setPage: (pageNum) ->
-    icon = $ '.page-num', @OP.nodes.post
+    icon = $ '.page-num', @OP.nodes.info
     for key in ['title', 'textContent']
       icon[key] = icon[key].replace /\d+/, pageNum
     @catalogView.nodes.pageCount.textContent = pageNum if @catalogView

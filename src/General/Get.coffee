@@ -233,5 +233,6 @@ Get =
     thread = g.threads["#{boardID}.#{threadID}"] or
       new Thread threadID, board
     post = new Post Build.post(o, true), thread, board, {isArchived: true}
+    $('.page-num', post.nodes.info).hidden = true
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
