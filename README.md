@@ -1,15 +1,8 @@
 Personal fork of Seaweed's 4chan X.
 
-Don't expect new features, I don't know Javascript, Coffeescript or all this stuff.
-
-Don't expect any bug fix.
-
-Don't expect any support.
-
-Actually, don't expect anything.
-
 ##[Install](https://github.com/Spittie/4chan-x/raw/master/builds/4chan-X.user.js) (Firefox)
 ##[Install](https://github.com/Spittie/4chan-x/raw/master/builds/crx.crx) (Chrom*)
+##[Install](https://github.com/Spittie/4chan-x/raw/master/builds/xpi/4chanx.xpi) (Firefox Mobile)
 
 ## If you have any problems, try resetting your 4chan X settings before calling me a faggot (but feel free to do so)
 
