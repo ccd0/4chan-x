@@ -6,11 +6,11 @@ QuoteMarkers =
       name: 'Quote Markers'
       cb:   @node
   node: ->
-    {board, thread} = if @isClone then @context else @
     for quotelink in @nodes.quotelinks
-      QuoteMarkers.parseQuotelink board, thread, @, quotelink, !!@isClone
+      QuoteMarkers.parseQuotelink @, quotelink, !!@isClone
     return
-  parseQuotelink: (board, thread, post, quotelink, mayReset, customText) ->
+  parseQuotelink: (post, quotelink, mayReset, customText) ->
+    {board, thread} = if post.isClone then post.context else post
     markers = []
     {boardID, threadID, postID} = Get.postDataFromLink quotelink
 

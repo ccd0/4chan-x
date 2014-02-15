@@ -53,7 +53,7 @@ QuoteBacklink =
     if post.isHidden
       $.addClass a, 'filtered'
     if Conf['Quote Markers']
-      QuoteMarkers.parseQuotelink post.board, post.thread, post, a, false, text
+      QuoteMarkers.parseQuotelink post, a, false, text
     if Conf['Quote Previewing']
       $.on a, 'mouseover', QuotePreview.mouseover
     if Conf['Quote Inlining']

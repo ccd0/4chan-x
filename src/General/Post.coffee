@@ -179,9 +179,7 @@ class Post
     for quotelink in Get.allQuotelinksLinkingTo @ when not $.hasClass quotelink, 'deadlink'
       $.addClass quotelink, 'deadlink'
       continue unless Conf['Quote Markers']
-      post = Get.postFromNode quotelink
-      {board, thread} = if post.isClone then post.context else post
-      QuoteMarkers.parseQuotelink board, thread, post, quotelink, true
+      QuoteMarkers.parseQuotelink Get.postFromNode(quotelink), quotelink, true
     return
   # XXX tmp fix for 4chan's racing condition
   # giving us false-positive dead posts.
@@ -203,9 +201,7 @@ class Post
     for quotelink in Get.allQuotelinksLinkingTo @ when $.hasClass quotelink, 'deadlink'
       $.rmClass quotelink, 'deadlink'
       continue unless Conf['Quote Markers']
-      post = Get.postFromNode quotelink
-      {board, thread} = if post.isClone then post.context else post
-      QuoteMarkers.parseQuotelink board, thread, post, quotelink, true
+      QuoteMarkers.parseQuotelink Get.postFromNode(quotelink), quotelink, true
     return
 
   collect: ->
