@@ -1069,12 +1069,6 @@ nav a,
 .expanding {
   opacity: .5;
 }
-.fileText:hover .fntrunc,
-.fileText:not(:hover) .fnfull,
-.expanded-image > .post > .file > .fileThumb > img[data-md5],
-.post > .file > .fileThumb > .full-image {
-  display: none;
-}
 .expanded-image > .post > .file > .fileThumb > .full-image {
   display: block;
 }
