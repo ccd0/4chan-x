@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 **MayhemYDG**:
 - Added a `Reset Settings` button in the settings.
 - More stability update.
@@ -6,7 +5,7 @@
 
 **ParrotParrot**:
 - Added `Original filename` variable to Sauce panel.
-=======
+
 ### v1.3.7 
 *2014-02-15*
 
@@ -53,7 +52,6 @@
 
 ### v1.3.2 
 *2014-01-12*
->>>>>>> 7a7d0ec6860866e71e728aa9b41b1994fe1b5950
 
 **seaweedchan**:
 - Fix Menu errors on older Firefox versions, such as the ESR
