@@ -7,16 +7,19 @@ QR.captcha =
     imgContainer = $.el 'div',
       className: 'captcha-img'
       title: 'Reload reCAPTCHA'
-      innerHTML: '<img>'
+      innerHTML: '<div><img></div>'
       hidden: true
+
     input = $.el 'input',
       className: 'captcha-input field'
       title: 'Verification'
       placeholder: 'Focus to load reCAPTCHA'
       autocomplete: 'off'
       spellcheck: false
+      tabIndex: 45
+
     @nodes =
-      img:   imgContainer.firstChild
+      img:   $ 'img', imgContainer
       input: input
 
     $.on input, 'focus', @setup
@@ -26,13 +29,14 @@ QR.captcha =
 
     $.addClass QR.nodes.el, 'has-captcha'
     $.after QR.nodes.com.parentNode, [imgContainer, input]
-
+    
     @setupObserver = new MutationObserver @afterSetup
     @setupObserver.observe container, childList: true
+
+    @setup() if Conf['Auto-load captcha']
     @afterSetup() # reCAPTCHA might have loaded before the QR.
 
-  setup: ->
-    $.globalEval 'loadRecaptcha()'
+  setup: -> $.globalEval 'loadRecaptcha()'
 
   afterSetup: ->
     return unless challenge = $.id 'recaptcha_challenge_field_holder'
@@ -45,7 +49,7 @@ QR.captcha =
     $.off window, 'captcha:timeout', setLifetime
 
     {img, input} = QR.captcha.nodes
-    img.parentNode.hidden = false
+    img.parentNode.parentNode.hidden = false
     $.off input,         'focus',  QR.captcha.setup
     $.on input,          'keydown', QR.captcha.keydown.bind QR.captcha
     $.on img.parentNode, 'click',   QR.captcha.reload.bind  QR.captcha
@@ -90,6 +94,7 @@ QR.captcha =
     $.set 'captchas', @captchas
 
   clear: ->
+    return unless @captchas.length
     now = Date.now()
     for captcha, i in @captchas
       break if captcha.timeout > now
@@ -109,7 +114,7 @@ QR.captcha =
     @clear()
 
   count: ->
-    count = @captchas.length
+    count = if @captchas then @captchas.length else 0
     @nodes.input.placeholder = switch count
       when 0
         'Verification (Shift + Enter to cache)'

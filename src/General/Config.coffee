@@ -295,6 +295,10 @@ Config =
         false
         'Position of the QR\'s Dump List.'
       ]
+      'Auto-load captcha': [
+        false
+        'Automatically load the captcha when you open a thread'
+      ]
 
     'Quote Links':
       'Quote Backlinks': [

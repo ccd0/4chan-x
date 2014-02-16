@@ -1,16 +1,16 @@
 ## Reporting bugs and suggestions
 
-Reporting bugs:
+Reporting bugs: (note that some of these links refer to Mayhem's 4chan X repo to avoid duplication of information resources. Bugs MUST be filed on [our issue tracker](https://github.com/zixaphir/appchan-x/issues), not Mayhem's)
 
-1. Make sure both your **browser** and **4chan X** are up to date.<br>
+1. Make sure both your **browser** and **Appchan X** are up to date.<br>
    Only **Chrome**, **Firefox** and **Opera** are supported.<br>
-   **SRWare Iron**, **Firefox ESR**, **Pale Moon**, **Waterfox**, and other derivatives are not supported, use them at your own risk.
+   **SRWare Iron**, **Firefox ESR**, **Pale Moon**, **Waterfox**, and other derivatives are not supported, use them at your own risk. This means that issue reports made with these browsers will be ignored unless you're able to duplicate it on a supported browser.
 2. Look at the list of [known problems and solutions](https://github.com/MayhemYDG/4chan-x/wiki/FAQ#known-problems).
 3. Disable your other extensions & scripts to identify conflicts.
-4. If your issue persists, open a [new issue](https://github.com/MayhemYDG/4chan-x/issues) with the following information:
+4. If your issue persists, open a [new issue](https://github.com/zixaphir/appchan-x/issues) with the following information:
   1. Precise steps to reproduce the problem, with the expected and actual results.
   2. [Console errors](https://github.com/MayhemYDG/4chan-x/wiki/FAQ#console-errors), if any.
-  3. 4chan X version, browser variant, browser version, and Greasemonkey version if you are using it.
+  3. Appchan X version, browser variant, browser version, and Greasemonkey version if you are using it.
   4. Your exported settings. If your settings contains sensible information (e.g. personas), edit the text file manually.
 
 Respect these guidelines:
@@ -25,9 +25,9 @@ Respect these guidelines:
 
 - Install [node.js](http://nodejs.org/).
 - Install [Grunt's CLI](http://gruntjs.com/) with `npm install -g grunt-cli`.
-- Clone 4chan X.
+- Clone Appchan X.
 - `cd` into it.
-- Install/Update 4chan X dependencies with `npm install`.
+- Install/Update Appchan X dependencies with `npm install`.
 
 ### Build
 
@@ -39,7 +39,7 @@ Respect these guidelines:
 - Update the version with `grunt patch`, `grunt minor` or `grunt major`.
 - Release with `grunt release`.
 
-Note: this is only used to release new 4chan X versions, and is **not** needed or wanted in pull requests.
+Note: this is only used to release new versions, and is **not** needed or wanted in pull requests.
 
 ### Contribute
 

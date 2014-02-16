@@ -24,8 +24,8 @@ Redirect =
 
   archives: [
       name:   "Foolz"
-      boards: ["a", "co", "gd", "jp", "m", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"]
-      files:  ["a", "gd", "jp", "m", "tg", "vg", "vp", "vr", "wsg"]
+      boards: ["a", "biz","co", "gd", "jp", "m", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"]
+      files:  ["a", "biz","gd", "jp", "m", "tg", "vg", "vp", "vr", "wsg"]
       data:
         domain: "archive.foolz.us"
         http:  false
@@ -69,7 +69,7 @@ Redirect =
         software: "foolfuuka"
     ,
       name:   "Love is Over"
-      boards: ["d", "i"],
+      boards: ["d", "i"]
       files:  ["d", "i"]
       data:
         domain: "loveisover.me"
@@ -112,15 +112,15 @@ Redirect =
         software: "fuuka"
     ,
       name:   "fgts"
-      boards: ["soc"]
-      files:  ["soc"]
+      boards: ["r", "soc"]
+      files:  ["r", "soc"]
       data:
-        domain: "fgts.eu"
+        domain: "fgst.eu"
         http:  true
         https: true
         software: "foolfuuka"
     ,
-      name: "maware"
+      name:   "maware"
       boards: ["t"]
       files:  ["t"]
       data:
@@ -137,8 +137,8 @@ Redirect =
         software: "foolfuuka"
     ,
       name:   "Foolz Beta"
-      boards: ["a", "co", "d", "gd", "h", "jp", "m", "mlp", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
-      files:  ["a", "d", "gd", "h", "jp", "m", "tg", "u", "vg", "vp", "vr", "wsg"]
+      boards: ["a", "co", "gd", "jp", "m", "s4s", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
+      files:  ["a", "gd", "jp", "m", "s4s", "tg", "u", "vg", "vp", "vr", "wsg"]
       data:
         domain: "beta.foolz.us"
         http:  true

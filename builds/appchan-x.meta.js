@@ -15,6 +15,7 @@
 // @grant        GM_deleteValue
 // @grant        GM_listValues
 // @grant        GM_openInTab
+// @grant        GM_xmlhttpRequest
 // @run-at       document-start
 // @updateURL 	 https://github.com/zixaphir/appchan-x/raw/stable/builds/appchan-x.meta.js
 // @downloadURL  https://github.com/zixaphir/appchan-x/raw/stable/builds/appchan-x.user.js

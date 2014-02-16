@@ -1,5 +1,20 @@
-### v2.8.9 
-*2014-02-09*
+**Spittie**
+- Add Twitter embedding
+- Add .xpi for Firefox Mobile
+- Add /biz/
+- Add gfycat.com embedding
+- Replace some icons with fontawesome
+- Add Metro favicons (lel)
+- Fix Chrome (aka copy from Appchan)
+- Add option to load the captcha when you open a thread
+- Add OpenSUSE emoji
+- Fix Chrome (Maybe? Hopefully I haven't fucked everything)
+- Add fgst.eu
+- Add mawa.re
+- Fix new captcha
+- Add archive.installgentoo.com
+- Upload images directly from urls
+![Upload from url](src/General/img/changelog/1.3.6.gif)
 
 ### v2.8.8 
 *2014-01-30*

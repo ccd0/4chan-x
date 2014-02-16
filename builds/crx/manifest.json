@@ -17,6 +17,8 @@
   "homepage_url": "http://zixaphir.github.com/appchan-x/",
   "minimum_chrome_version": "31",
   "permissions": [
-    "storage"
+    "storage",
+    "http://*/",
+    "https://*/"
   ]
 }

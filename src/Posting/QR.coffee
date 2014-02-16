@@ -112,11 +112,8 @@ QR =
     QR.cooldown.auto = false
     QR.status()
 
-  focusin: ->
-    $.addClass QR.nodes.el, 'focus'
-
-  focusout: ->
-    $.rmClass QR.nodes.el, 'focus'
+  focusin: ->  $.addClass QR.nodes.el, 'focus'
+  focusout: -> $.rmClass  QR.nodes.el, 'focus'
 
   hide: ->
     d.activeElement.blur()
@@ -271,6 +268,69 @@ QR =
     QR.open()
     QR.handleFiles files
     $.addClass QR.nodes.el, 'dump'
+    
+  handleBlob: (blob) ->
+    return if blob.type is null
+      QR.error "Unsupported file type."
+    return unless blob.type in QR.mimeTypes
+      QR.error "Unsupported file type."
+    QR.handleFiles([blob])
+
+  handleUrl:  ->
+    url = prompt("Insert an url:")
+    return if url is null
+    <% if (type === 'crx') { %>
+    xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true)
+    xhr.responseType = 'blob'
+    xhr.onload = (e) ->
+      if @readyState is @DONE && xhr.status is 200
+        urlBlob = new Blob([@response], {type : @getResponseHeader('content-type')})
+        urlBlob.name = url.substr(url.lastIndexOf('/')+1, url.length)
+        QR.handleBlob(urlBlob)
+        return
+      else
+        QR.error "Can't load image."
+        return
+
+    xhr.onerror = (e) ->
+      QR.error "Can't load image."
+      return
+
+    xhr.send()
+    return
+    <% } %>
+
+    <% if (type === 'userscript') { %>
+    GM_xmlhttpRequest {
+      method: "GET",
+      url: url,
+      overrideMimeType: "text/plain; charset=x-user-defined",
+      onload: (xhr) ->
+        r = xhr.responseText
+        data = new Uint8Array(r.length)
+        i = 0
+        while i < r.length
+          data[i] = r.charCodeAt(i)
+          i++
+        #QUALITY coding at work
+        header = xhr.responseHeaders
+        start = header.indexOf("Content-Type: ") + 14
+        end = header.substr(start, header.length).indexOf("\n") - 1
+        mime = header.substr(start, end)
+        return if mime is null
+
+        urlBlob = new Blob([data], {type: mime})
+
+        urlBlob.name = url.substr(url.lastIndexOf('/')+1, url.length)
+        QR.handleBlob(urlBlob)
+        return
+
+        onerror: (xhr) ->
+          QR.error "Can't load image."
+    }
+    return
+    <% } %>
 
   handleFiles: (files) ->
     if @ isnt QR # file input
@@ -349,6 +409,7 @@ QR =
       close:         '.close'
       form:          'form'
       dumpButton:    '#dump-button'
+      urlButton:     '#url-button'
       name:          '[data-name=name]'
       email:         '[data-name=email]'
       sub:           '[data-name=sub]'
@@ -419,6 +480,7 @@ QR =
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
     $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'
+    $.on nodes.urlButton,  'click',  QR.handleUrl
     $.on nodes.addPost,    'click',  -> new QR.post true
     $.on nodes.form,       'submit', QR.submit
     $.on nodes.filename,   'blur',   -> $.rmClass @, 'edit'
