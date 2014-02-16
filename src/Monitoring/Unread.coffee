@@ -41,9 +41,10 @@ Unread =
 
   ready: ->
     $.off d, '4chanXInitFinished', Unread.ready
-    posts = []
-    Unread.thread.posts.forEach (post) -> posts.push post if post.isReply
-    Unread.addPosts posts unless Conf['Quote Threading']
+    unless Conf['Quote Threading']
+      posts = []
+      Unread.thread.posts.forEach (post) -> posts.push post if post.isReply
+      Unread.addPosts posts
     QuoteThreading.force() if Conf['Quote Threading']
     Unread.scroll() if Conf['Scroll to Last Read Post']
 
@@ -91,7 +92,7 @@ Unread =
         threadID: post.thread.ID
         postID:   ID
       }
-      Unread.posts.push post unless post.prev or post.next
+      Unread.posts.push post
       Unread.addPostQuotingYou post
     if Conf['Unread Line']
       # Force line on visible threads if there were no unread posts previously.
@@ -125,8 +126,11 @@ Unread =
   onUpdate: (e) ->
     if e.detail[404]
       Unread.update()
-    else
+    else if !Conf['Quote Threading']
       Unread.addPosts e.detail.newPosts
+    else
+      Unread.read()
+      Unread.update()
 
   readSinglePost: (post) ->
     {ID} = post

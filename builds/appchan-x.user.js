@@ -12142,13 +12142,13 @@
     ready: function() {
       var posts;
       $.off(d, '4chanXInitFinished', Unread.ready);
-      posts = [];
-      Unread.thread.posts.forEach(function(post) {
-        if (post.isReply) {
-          return posts.push(post);
-        }
-      });
       if (!Conf['Quote Threading']) {
+        posts = [];
+        Unread.thread.posts.forEach(function(post) {
+          if (post.isReply) {
+            return posts.push(post);
+          }
+        });
         Unread.addPosts(posts);
       }
       if (Conf['Quote Threading']) {
@@ -12219,9 +12219,7 @@
         })) {
           continue;
         }
-        if (!(post.prev || post.next)) {
-          Unread.posts.push(post);
-        }
+        Unread.posts.push(post);
         Unread.addPostQuotingYou(post);
       }
       if (Conf['Unread Line']) {
@@ -12266,8 +12264,11 @@
     onUpdate: function(e) {
       if (e.detail[404]) {
         return Unread.update();
-      } else {
+      } else if (!Conf['Quote Threading']) {
         return Unread.addPosts(e.detail.newPosts);
+      } else {
+        Unread.read();
+        return Unread.update();
       }
     },
     readSinglePost: function(post) {
@@ -15860,11 +15861,11 @@
     },
     updateContext: function(view) {
       var oldView;
-      if (view === g.VIEW) {
-        return;
+      g.DEAD = false;
+      if (view !== g.VIEW) {
+        $.rmClass(doc, g.VIEW);
+        $.addClass(doc, view);
       }
-      $.rmClass(doc, g.VIEW);
-      $.addClass(doc, view);
       oldView = g.VIEW;
       g.VIEW = view;
       return {
@@ -16096,7 +16097,6 @@
       Main.callbackNodes(Thread, [thread]);
       Main.callbackNodes(Post, posts);
       Navigate.ready('Quote Threading', QuoteThreading.force, Conf['Quote Threading'] && !Conf['Unread Count']);
-      Navigate.ready('Unread Count', Unread.ready, Conf['Unread Count']);
       Navigate.buildThread();
       return Header.hashScroll.call(window);
     },
@@ -16106,8 +16106,7 @@
       $.rmAll(board);
       $.add(board, [Navigate.threadRoot, $.el('hr')]);
       if (Conf['Unread Count']) {
-        Unread.read();
-        return Unread.update();
+        return Navigate.ready('Unread Count', Unread.ready, Conf['Unread Count']);
       }
     },
     popstate: function() {
