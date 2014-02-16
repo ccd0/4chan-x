@@ -10323,7 +10323,6 @@
           domain: "archive.thedarkcave.org",
           http: true,
           https: true,
-          software: "foolfuuka",
           software: "foolfuuka"
         }
       }, {
@@ -10359,6 +10358,7 @@
       }, {
         name: "Install Gentoo",
         boards: ["diy", "g", "sci"],
+        files: [],
         data: {
           domain: "archive.installgentoo.net",
           http: false,
@@ -10402,7 +10402,8 @@
           http: true,
           https: true,
           software: "foolfuuka"
-        },
+        }
+      }, {
         name: "maware",
         boards: ["t"],
         files: ["t"],
