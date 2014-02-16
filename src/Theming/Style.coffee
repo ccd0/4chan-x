@@ -25,7 +25,7 @@ Style =
     # Non-customizable
     $.addStyle JSColor.css(), 'jsColor'
 
-    $.asap (-> d.head), Style.observe
+    $.asap (-> d.head), Style.remStyle
 
     $.asap (-> d.body), @asapInit
     $.asap (-> Header.bar.parentElement), Style.padding
@@ -60,34 +60,11 @@ Style =
       $.on exLink, "click", ->
         setTimeout Rice.nodes, 100
 
-  observe: ->
-    Style.observer = new MutationObserver onMutationObserver = Style.wrapper
-    Style.observer.observe d.head,
-      childList: true
-      subtree: true
-
-  wrapper: ->
-    first = {addedNodes: d.head.children}
-    Style.remStyle first
-
-    if d.readyState is 'complete'
-      Style.observer.disconnect()
-
-  remStyle: ({addedNodes}) ->
-    i = addedNodes.length
-    while i--
-      {nodeName, rel, id, href, textContent} = node = addedNodes[i]
-
-      if nodeName is 'STYLE'
-        continue if id or /\.typeset/.test textContent
-      else if nodeName is 'LINK'
-        continue if rel and (!/stylesheet/.test(rel) or /flags.*\.css$/.test(href) or href[..3] is 'data')
-      else
-        continue
-
-      $.rm node 
-      
-    return
+  remStyle: ->
+    $('[title="switch"]', d.head)?.disabled = true
+    $('[href="//s.4cdn.org/css/yotsubluemobile.540.css"]', d.head)?.disabled = true
+    $.id('base-css')?.disabled = true
+    $.id('mobile-css')?.disabled = true
   
   generateFilter: (id, values) -> """<%= grunt.file.read('src/General/html/Features/Filters.svg').replace(/>\s+</g, '><') %>"""
 

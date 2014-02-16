@@ -13624,7 +13624,7 @@
       $.addStyle(JSColor.css(), 'jsColor');
       $.asap((function() {
         return d.head;
-      }), Style.observe);
+      }), Style.remStyle);
       $.asap((function() {
         return d.body;
       }), this.asapInit);
@@ -13663,43 +13663,18 @@
         });
       }
     },
-    observe: function() {
-      var onMutationObserver;
-      Style.observer = new MutationObserver(onMutationObserver = Style.wrapper);
-      return Style.observer.observe(d.head, {
-        childList: true,
-        subtree: true
-      });
-    },
-    wrapper: function() {
-      var first;
-      first = {
-        addedNodes: d.head.children
-      };
-      Style.remStyle(first);
-      if (d.readyState === 'complete') {
-        return Style.observer.disconnect();
+    remStyle: function() {
+      var _ref, _ref1, _ref2, _ref3;
+      if ((_ref = $('[title="switch"]', d.head)) != null) {
+        _ref.disabled = true;
       }
-    },
-    remStyle: function(_arg) {
-      var addedNodes, href, i, id, node, nodeName, rel, textContent, _ref;
-      addedNodes = _arg.addedNodes;
-      i = addedNodes.length;
-      while (i--) {
-        _ref = node = addedNodes[i], nodeName = _ref.nodeName, rel = _ref.rel, id = _ref.id, href = _ref.href, textContent = _ref.textContent;
-        if (nodeName === 'STYLE') {
-          if (id || /\.typeset/.test(textContent)) {
-            continue;
-          }
-        } else if (nodeName === 'LINK') {
-          if (rel && (!/stylesheet/.test(rel) || /flags.*\.css$/.test(href) || href.slice(0, 4) === 'data')) {
-            continue;
-          }
-        } else {
-          continue;
-        }
-        $.rm(node);
+      if ((_ref1 = $('[href="//s.4cdn.org/css/yotsubluemobile.540.css"]', d.head)) != null) {
+        _ref1.disabled = true;
       }
+      if ((_ref2 = $.id('base-css')) != null) {
+        _ref2.disabled = true;
+      }
+      return (_ref3 = $.id('mobile-css')) != null ? _ref3.disabled = true : void 0;
     },
     generateFilter: function(id, values) {
       return "<svg xmlns='http://www.w3.org/2000/svg' height='0' color-interpolation-filters='sRGB'><filter id='" + id + "'><feColorMatrix " + values + " /></filter></svg>";
