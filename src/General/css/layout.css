@@ -1292,12 +1292,12 @@ a.useremail:last-of-type {
   float: none;
 }
 /* Fixes text spoilers */
-.remove-spoilers.indicate-spoilers .spoiler::before,
-.remove-spoilers.indicate-spoilers s::before {
+.remove-spoilers.reveal-spoilers .spoiler::before,
+.remove-spoilers.reveal-spoilers s::before {
   content: '[spoiler]';
 }
-.remove-spoilers.indicate-spoilers .spoiler::after,
-.remove-spoilers.indicate-spoilers s::after {
+.remove-spoilers.reveal-spoilers .spoiler::after,
+.remove-spoilers.reveal-spoilers s::after {
   content: '[/spoiler]';
 }
 :root:not(.remove-spoilers) .spoiler:not(:hover) *,
