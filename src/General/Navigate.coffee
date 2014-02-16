@@ -86,10 +86,12 @@ Navigate =
     QR.generatePostableThreadsList()
 
   updateContext: (view) ->
-    return if view is g.VIEW
+    g.DEAD = false
 
-    $.rmClass doc, g.VIEW
-    $.addClass doc, view
+    unless view is g.VIEW
+      $.rmClass doc, g.VIEW
+      $.addClass doc, view
+
     oldView = g.VIEW
     g.VIEW = view
     {
@@ -287,7 +289,6 @@ Navigate =
     Main.callbackNodes Post,   posts
 
     Navigate.ready 'Quote Threading', QuoteThreading.force, Conf['Quote Threading'] and not Conf['Unread Count']
-    Navigate.ready 'Unread Count', Unread.ready, Conf['Unread Count']
 
     Navigate.buildThread()
     Header.hashScroll.call window
@@ -298,8 +299,7 @@ Navigate =
     $.add board, [Navigate.threadRoot, $.el 'hr']
 
     if Conf['Unread Count']
-      Unread.read()
-      Unread.update()
+      Navigate.ready 'Unread Count', Unread.ready, Conf['Unread Count']
 
   popstate: ->
     return if window.location.pathname is Navigate.path
