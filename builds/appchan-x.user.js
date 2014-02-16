@@ -7877,6 +7877,8 @@
         try {
           $.cache(service.api(uid), function() {
             return title = Linkify.cb.title(this, data);
+          }, {
+            responseType: 'json'
           });
         } catch (_error) {
           err = _error;
