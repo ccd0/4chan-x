@@ -13662,17 +13662,14 @@
       }
     },
     remStyle: function() {
-      var _ref, _ref1, _ref2, _ref3;
-      if ((_ref = $('[title="switch"]', d.head)) != null) {
-        _ref.disabled = true;
+      var item, _i, _len, _ref;
+      _ref = [$('[title="switch"]', d.head), $('[href="//s.4cdn.org/css/yotsubluemobile.540.css"]', d.head), $.id('base-css'), $.id('mobile-css')];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        item = _ref[_i];
+        if (item) {
+          item.disabled = true;
+        }
       }
-      if ((_ref1 = $('[href="//s.4cdn.org/css/yotsubluemobile.540.css"]', d.head)) != null) {
-        _ref1.disabled = true;
-      }
-      if ((_ref2 = $.id('base-css')) != null) {
-        _ref2.disabled = true;
-      }
-      return (_ref3 = $.id('mobile-css')) != null ? _ref3.disabled = true : void 0;
     },
     generateFilter: function(id, values) {
       return "<svg xmlns='http://www.w3.org/2000/svg' height='0' color-interpolation-filters='sRGB'><filter id='" + id + "'><feColorMatrix " + values + " /></filter></svg>";

@@ -61,11 +61,15 @@ Style =
         setTimeout Rice.nodes, 100
 
   remStyle: ->
-    $('[title="switch"]', d.head)?.disabled = true
-    $('[href="//s.4cdn.org/css/yotsubluemobile.540.css"]', d.head)?.disabled = true
-    $.id('base-css')?.disabled = true
-    $.id('mobile-css')?.disabled = true
-  
+    for item in [
+      $('[title="switch"]', d.head)
+      $('[href="//s.4cdn.org/css/yotsubluemobile.540.css"]', d.head)
+      $.id('base-css')
+      $.id('mobile-css')
+    ]
+      item.disabled = true if item
+    return
+
   generateFilter: (id, values) -> """<%= grunt.file.read('src/General/html/Features/Filters.svg').replace(/>\s+</g, '><') %>"""
 
   matrix: ->
