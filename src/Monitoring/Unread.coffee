@@ -128,6 +128,9 @@ Unread =
       Unread.update()
     else if !Conf['Quote Threading']
       Unread.addPosts e.detail.newPosts
+    else
+      Unread.read()
+      Unread.update()
 
   readSinglePost: (post) ->
     {ID} = post

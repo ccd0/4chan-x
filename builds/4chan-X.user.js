@@ -10148,6 +10148,9 @@
         return Unread.update();
       } else if (!Conf['Quote Threading']) {
         return Unread.addPosts(e.detail.newPosts);
+      } else {
+        Unread.read();
+        return Unread.update();
       }
     },
     readSinglePost: function(post) {
