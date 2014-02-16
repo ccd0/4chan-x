@@ -472,6 +472,10 @@ Config =
         true
         'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.'
       ]
+      'Hide Navlinks': [
+        false
+        'Hides the UI at the top of the page that allows you to navigate between pages, like "Return", "Catalog", "Bottom".'
+      ]
 
     Posts:
       'Alternate Post Colors': [

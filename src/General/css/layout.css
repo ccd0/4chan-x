@@ -2427,6 +2427,9 @@ article li {
 .btn-wrap {
   display: block;
 }
+.hide-navlinks body > .navLinks {
+  display: none;
+}
 .navLinks > .btn-wrap:not(:first-of-type)::before {
   content: ' - ';
 }
