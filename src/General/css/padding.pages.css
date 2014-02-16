@@ -12,5 +12,5 @@
 }
 .index.pagination-sticky-bottom body,
 .index.pagination-bottom body {
-  padding-bottom: #{pageHeight + 1}px;
+  padding-bottom: #{pageHeight + 15}px;
 }

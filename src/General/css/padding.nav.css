@@ -12,5 +12,5 @@ body {
   padding-top: #{navHeight + 1}px;
 }
 .bottom-header:not(.autohide) body {
-  padding-bottom: #{navHeight + 1}px;
+  padding-bottom: #{navHeight + 15}px;
 }

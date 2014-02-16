@@ -4336,7 +4336,7 @@
       top = root.getBoundingClientRect().top;
       if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
         headRect = Header.toggle.getBoundingClientRect();
-        top -= headRect.top + headRect.height;
+        top -= headRect.top + headRect.height - 10;
       }
       return top;
     },
@@ -4346,7 +4346,7 @@
       bottom = clientHeight - root.getBoundingClientRect().bottom;
       if (Conf['Bottom Header']) {
         headRect = Header.toggle.getBoundingClientRect();
-        bottom -= clientHeight - headRect.bottom + headRect.height;
+        bottom -= clientHeight - headRect.bottom + headRect.height - 10;
       }
       return bottom;
     },
@@ -13801,8 +13801,8 @@
     padding: function() {
       var navHeight, pageHeight, _ref;
       navHeight = Header.bar.offsetHeight;
-      pageHeight = (_ref = $('.pagelist', d.body)) != null ? _ref.offsetHeight : void 0;
-      return Style.sheets.padding.textContent = ("body { padding-bottom: 15px; padding-top: 15px; } .fourchan-ss-navigation.fixed.top-header:not(.autohide) body::before { top: " + navHeight + "px; } .fourchan-ss-navigation.fixed.bottom-header:not(.autohide) body::before { bottom: " + navHeight + "px; } .top-header:not(.autohide) body { padding-top: " + (navHeight + 1) + "px; } .bottom-header:not(.autohide) body { padding-bottom: " + (navHeight + 1) + "px; } ") + (pageHeight ? ".fourchan-ss-navigation.index.pagination-sticky-top body::before, .fourchan-ss-navigation.index.pagination-top body::before { top: " + pageHeight + "px; } .fourchan-ss-navigation.index.pagination-sticky-bottom body::before, .fourchan-ss-navigation.index.pagination-bottom body::before { bottom: " + pageHeight + "px; } .index.pagination-sticky-top body, .index.pagination-top body { padding-top: " + (pageHeight + 1) + "px; } .index.pagination-sticky-bottom body, .index.pagination-bottom body { padding-bottom: " + (pageHeight + 1) + "px; }" : '');
+      pageHeight = ((_ref = $('.pagelist', d.body)) != null ? _ref.offsetHeight : void 0) || 15;
+      return Style.sheets.padding.textContent = ("body { padding-bottom: 15px; padding-top: 15px; } .fourchan-ss-navigation.fixed.top-header:not(.autohide) body::before { top: " + navHeight + "px; } .fourchan-ss-navigation.fixed.bottom-header:not(.autohide) body::before { bottom: " + navHeight + "px; } .top-header:not(.autohide) body { padding-top: " + (navHeight + 1) + "px; } .bottom-header:not(.autohide) body { padding-bottom: " + (navHeight + 15) + "px; } ") + (pageHeight ? ".fourchan-ss-navigation.index.pagination-sticky-top body::before, .fourchan-ss-navigation.index.pagination-top body::before { top: " + pageHeight + "px; } .fourchan-ss-navigation.index.pagination-sticky-bottom body::before, .fourchan-ss-navigation.index.pagination-bottom body::before { bottom: " + pageHeight + "px; } .index.pagination-sticky-top body, .index.pagination-top body { padding-top: " + (pageHeight + 1) + "px; } .index.pagination-sticky-bottom body, .index.pagination-bottom body { padding-bottom: " + (pageHeight + 15) + "px; }" : '');
     }
   };
 

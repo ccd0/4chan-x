@@ -188,7 +188,7 @@ Style =
 
   padding: ->
     navHeight  = Header.bar.offsetHeight
-    pageHeight = ($ '.pagelist', d.body)?.offsetHeight
+    pageHeight = ($ '.pagelist', d.body)?.offsetHeight or 15
     Style.sheets.padding.textContent  = """<%= grunt.file.read('src/General/css/padding.nav.css').replace(/\s+/g, ' ').trim() %> """ +
       if pageHeight
         """<%= grunt.file.read('src/General/css/padding.pages.css').replace(/\s+/g, ' ').trim() %>"""

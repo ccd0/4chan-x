@@ -342,7 +342,7 @@ Header =
     {top} = root.getBoundingClientRect()
     if Conf['Fixed Header'] and not Conf['Bottom Header']
       headRect = Header.toggle.getBoundingClientRect()
-      top     -= headRect.top + headRect.height
+      top     -= headRect.top + headRect.height - 10
     top
 
   getBottomOf: (root) ->
@@ -350,8 +350,9 @@ Header =
     bottom = clientHeight - root.getBoundingClientRect().bottom
     if Conf['Bottom Header']
       headRect = Header.toggle.getBoundingClientRect()
-      bottom  -= clientHeight - headRect.bottom + headRect.height
+      bottom  -= clientHeight - headRect.bottom + headRect.height - 10
     bottom
+
   isHidden: ->
     {top} = Header.bar.getBoundingClientRect()
     if Conf['Bottom header']
