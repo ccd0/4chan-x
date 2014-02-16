@@ -9992,7 +9992,7 @@
       nodes = Gallery.nodes = {};
       nodes.el = dialog = $.el('div', {
         id: 'a-gallery',
-        innerHTML: "<div class=gal-viewport>\n  <span class=gal-buttons>\n    <a class=\"menu-button\" href=\"javascript:;\"><i></i></a>\n    <a href=javascript:; class='gal-close fa'>\uf00d</a>\n  </span>\n  <a class=gal-name target=\"_blank\"></a>\n  <span class=gal-count>\n    <span class='count'></span> / <span class='total'></span>\n  </span>\n  <div class=gal-prev></div>\n  <div class=gal-image>\n    <a href=javascript:;><img></a>\n  </div>\n  <div class=gal-next></div>\n</div>\n<div class=gal-thumbnails></div>"
+        innerHTML: "<div class=gal-viewport>\n  <span class=gal-buttons>\n    <a class=\"menu-button\" href=\"javascript:;\"><i class=\"fa\">\uf107</i></a>\n    <a href=javascript:; class='gal-close fa'>\uf00d</a>\n  </span>\n  <a class=gal-name target=\"_blank\"></a>\n  <span class=gal-count>\n    <span class='count'></span> / <span class='total'></span>\n  </span>\n  <div class=gal-prev></div>\n  <div class=gal-image>\n    <a href=javascript:;><img></a>\n  </div>\n  <div class=gal-next></div>\n</div>\n<div class=gal-thumbnails></div>"
       });
       _ref = {
         frame: '.gal-image',
