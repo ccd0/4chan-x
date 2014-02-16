@@ -243,21 +243,23 @@ Build =
     Build.spoilerRange[board] = data.custom_spoiler
 
     if (OP = board.posts[data.no]) and root = OP.nodes.root.parentNode
-      $.rmAll root
+      for node in $$ '.thread > :not(.stub):not(.opContainer)', root
+        $.rm node
+      if OP.thread.stub and stub = OP.thread.stub.firstElementChild.lastChild
+        stub.textContent = stub.textContent.replace /\d+ rep\w+/, "#{data.replies} repl#{if data.replies is 1 then 'y' else 'ies'}"
     else
       root = $.el 'div',
         className: 'thread'
         id: "t#{data.no}"
+      $.add root, Build.postFromObject data, board.ID
 
-    nodes = [if OP then OP.nodes.root else Build.postFromObject data, board.ID]
     if data.omitted_posts or !Conf['Show Replies'] and data.replies
       [posts, files] = if Conf['Show Replies']
         [data.omitted_posts, data.omitted_images]
       else
         [data.replies, data.images]
-      nodes.push Build.summary board.ID, data.no, posts, files
+      $.add root, Build.summary board.ID, data.no, posts, files
 
-    $.add root, nodes
     root
   catalogThread: (thread) ->
     {staticPath, gifIcon} = Build

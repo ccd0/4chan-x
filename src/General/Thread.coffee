@@ -77,7 +77,7 @@ class Thread
     opInfo = if Conf['Anonymize']
       'Anonymous'
     else
-      $('.nameBlock', @OP.nodes.info).textContent
+      $('.nameBlock', @OP.nodes.info).textContent.trim()
 
     a = PostHiding.makeButton false
     $.add a, $.tn " #{opInfo} (#{numReplies} repl#{if numReplies is 1 then 'y' else 'ies'})"

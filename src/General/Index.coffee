@@ -521,7 +521,7 @@ Index =
     posts       = []
     for threadData, i in Index.liveThreadData
       threadRoot = Build.thread g.BOARD, threadData
-      Index.nodes.push threadRoot, $.el 'hr'
+      Index.nodes.push threadRoot
       if thread = g.BOARD.threads[threadData.no]
         thread.setPage i // Index.threadsNumPerPage
         thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
@@ -542,15 +542,18 @@ Index =
           error: err
     Main.handleErrors errors if errors
 
-    # Add the threads and <hr>s in a container to make sure all features work.
-    $.nodes Index.nodes
     Main.callbackNodes Thread, threads
     Main.callbackNodes Post,   posts
     Index.updateHideLabel()
     $.event 'IndexRefresh'
+  buildHRs: (threadRoots) ->
+    for i in [0...threadRoots.length] by 1
+      threadRoots.splice (i * 2) + 1, 0, $.el 'hr'
+    return
   buildReplies: (threadRoots) ->
+    return unless Conf['Show Replies']
     posts = []
-    for threadRoot in threadRoots by 2
+    for threadRoot in threadRoots
       thread = Get.threadFromRoot threadRoot
       i = Index.liveThreadIDs.indexOf thread.ID
       continue unless lastReplies = Index.liveThreadData[i].last_replies
@@ -574,7 +577,6 @@ Index =
     Main.callbackNodes Post, posts
   buildCatalogViews: ->
     threads = Index.sortedNodes
-      .filter (n, i) -> !(i % 2)
       .map (threadRoot) -> Get.threadFromRoot threadRoot
       .filter (thread) -> !thread.isHidden isnt Index.showHiddenThreads
     catalogThreads = []
@@ -609,10 +611,8 @@ Index =
         sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.replies - a.replies).map (data) -> data.no
       when 'filecount'
         sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.images - a.images).map (data) -> data.no
-    Index.sortedNodes = []
-    for threadID in sortedThreadIDs
-      i = Index.liveThreadIDs.indexOf(threadID) * 2
-      Index.sortedNodes.push Index.nodes[i], Index.nodes[i + 1]
+    Index.sortedNodes = sortedThreadIDs.map (threadID) ->
+      Index.nodes[Index.liveThreadIDs.indexOf threadID]
     if Index.isSearching
       Index.sortedNodes = Index.querySearch(Index.searchInput.value) or Index.sortedNodes
     # Sticky threads
@@ -623,22 +623,25 @@ Index =
     Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
   sortOnTop: (match) ->
     offset = 0
-    for threadRoot, i in Index.sortedNodes by 2 when match Get.threadFromRoot threadRoot
-      Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
+    for threadRoot, i in Index.sortedNodes when match Get.threadFromRoot threadRoot
+      Index.sortedNodes.splice offset++, 0, Index.sortedNodes.splice(i, 1)[0]
     return
   buildIndex: ->
     switch Conf['Index Mode']
       when 'paged'
         pageNum = Index.getCurrentPage()
-        nodesPerPage = Index.getThreadsNumPerPage() * 2
-        nodes = Index.sortedNodes[nodesPerPage * pageNum ... nodesPerPage * (pageNum + 1)]
+        threadsPerPage = Index.getThreadsNumPerPage()
+        nodes = Index.sortedNodes[threadsPerPage * pageNum ... threadsPerPage * (pageNum + 1)]
+        Index.buildReplies nodes
+        Index.buildHRs nodes
       when 'catalog'
         nodes = Index.buildCatalogViews()
         Index.sizeCatalogViews nodes
       else
-        nodes = Index.sortedNodes
+        nodes = [Index.sortedNodes...]
+        Index.buildReplies nodes
+        Index.buildHRs nodes
     $.rmAll Index.root
-    Index.buildReplies nodes if Conf['Show Replies'] and Conf['Index Mode'] isnt 'catalog'
     $.add Index.root, nodes
     $.event 'IndexBuild', nodes
 
@@ -678,11 +681,8 @@ Index =
     return unless keywords = query.toLowerCase().match /\S+/g
     Index.search keywords
   search: (keywords) ->
-    found = []
-    for threadRoot, i in Index.sortedNodes by 2
-      if Index.searchMatch Get.threadFromRoot(threadRoot), keywords
-        found.push Index.sortedNodes[i], Index.sortedNodes[i + 1]
-    found
+    Index.sortedNodes.filter (threadRoot) ->
+      Index.searchMatch Get.threadFromRoot(threadRoot), keywords
   searchMatch: (thread, keywords) ->
     {info, file} = thread.OP
     text = []

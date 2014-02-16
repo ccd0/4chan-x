@@ -173,7 +173,7 @@ class Post
     postInfo = if Conf['Anonymize']
       'Anonymous'
     else
-      $('.nameBlock', @nodes.info).textContent
+      $('.nameBlock', @nodes.info).textContent.trim()
     $.add a, $.tn " #{postInfo}"
     @nodes.stub = $.el 'div',
       className: 'stub'
