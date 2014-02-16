@@ -1483,7 +1483,7 @@ input:checked + .rice {
   <%= transform %>: translateX(93%);
 }
 .post-form-style-slideout #qr:hover,
-.post-form-style-slideout #qr.has-focus,
+.post-form-style-slideout #qr.focus,
 .post-form-style-slideout #qr.dump {
   <%= transform %>: translate(0);
 }
@@ -1497,7 +1497,7 @@ input:checked + .rice {
   <%= transform %>: translateX(100%);
 }
 .post-form-style-tabbed-slideout #qr:hover,
-.post-form-style-tabbed-slideout #qr.has-focus,
+.post-form-style-tabbed-slideout #qr.focus,
 .post-form-style-tabbed-slideout #qr.dump {
   <%= transform %>: translateX(0);
 }
@@ -1520,7 +1520,7 @@ input:checked + .rice {
   right: 100%;
 }
 .post-form-style-tabbed-slideout #qr:hover #qrtab,
-.post-form-style-tabbed-slideout #qr.has-focus #qrtab,
+.post-form-style-tabbed-slideout #qr.focus #qrtab,
 .post-form-style-tabbed-slideout #qr.dump #qrtab {
   opacity: 0 !important;
 }
@@ -1540,20 +1540,20 @@ input:checked + .rice {
   transition: opacity .3s ease-in-out 1s;
 }
 .transparent-post-form #qr:hover,
-.transparent-post-form #qr.has-focus,
+.transparent-post-form #qr.focus,
 .transparent-post-form #qr.dump {
   opacity: 1;
   transition: opacity .3s linear;
 }
 :root:not(.show-post-form-header):not(.post-form-style-float):not(.post-form-style-tabbed-slideout) #qrtab,
-.post-form-style-float .autohide:not(:hover):not(.has-focus) form,
-.show-post-form-header.post-form-style-fixed .autohide:not(:hover):not(.has-focus) form {
+.post-form-style-float .autohide:not(:hover):not(.focus) form,
+.show-post-form-header.post-form-style-fixed .autohide:not(:hover):not(.focus) form {
   display: none !important;
 }
 :root:not(.post-form-style-tabbed-slideout) #qrtab {
   margin-bottom: 1px;
 }
-#qr.autohide:not(:hover):not(.has-focus) #qrtab {
+#qr.autohide:not(:hover):not(.focus) #qrtab {
   margin-bottom: 0;
 }
 .post-form-slideout-transitions.post-form-style-slideout #qr,
@@ -1562,10 +1562,10 @@ input:checked + .rice {
 }
 .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr.dump,
 .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr:hover,
-.post-form-slideout-transitions.post-form-style-tabbed-slideout #qr.has-focus,
+.post-form-slideout-transitions.post-form-style-tabbed-slideout #qr.focus,
 .post-form-slideout-transitions.post-form-style-slideout #qr.dump,
 .post-form-slideout-transitions.post-form-style-slideout #qr:hover,
-.post-form-slideout-transitions.post-form-style-slideout #qr.has-focus {
+.post-form-slideout-transitions.post-form-style-slideout #qr.focus {
   transition: <%= transform %> .3s linear;
 }
 .post-form-slideout-transitions #qrtab {
