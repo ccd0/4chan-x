@@ -1,4 +1,7 @@
-**Spittie**
+### v2.8.10 
+*2014-02-16*
+
+**Spittie**:
 - Add Twitter embedding
 - Add .xpi for Firefox Mobile
 - Add /biz/
@@ -15,6 +18,9 @@
 - Add archive.installgentoo.com
 - Upload images directly from urls
 ![Upload from url](src/General/img/changelog/1.3.6.gif)
+
+**Zixaphir**:
+- Bugfixes.
 
 ### v2.8.8 
 *2014-01-30*
