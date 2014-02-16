@@ -317,6 +317,10 @@ Config =
         true
         'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.'
       ]
+      'Auto-load captcha': [
+        false
+        'Automatically load the captcha when you open a thread'
+      ]
 
     'Quote Links':
       'Quote Backlinks': [

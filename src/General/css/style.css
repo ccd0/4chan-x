@@ -803,6 +803,7 @@ span.hide-announcement {
 }
 #qr select,
 #dump-button,
+#url-button,
 .remove,
 .captcha-img {
   cursor: pointer;
@@ -857,6 +858,14 @@ span.hide-announcement {
   padding: 1px 0px 2px;
   opacity: 0.6;
 }
+#url-button {
+  width: 10%;
+  margin: 0;
+  margin-right: 4px;
+  font: 13px sans-serif;
+  padding: 1px 0px 2px;
+  opacity: 0.6;
+}
 .persona .field:not(#dump) {
   width: 95px;
   min-width: 33.3%;
@@ -884,7 +893,7 @@ input.field.tripped:not(:hover):not(:focus) {
   min-height: 59px;
   min-width: 302px;
 }
-.captcha-input {
+.captcha-input{
   width: 100%;
   margin: 1px 0 0;
 }
@@ -961,7 +970,7 @@ input#qr-filename:not(.edit) {
   right: 0px;
 }
 #qr-filerm {
-  margin-right: 2px;
+  margin-right: 3px;
   z-index: 2;
 }
 #file-n-submit {

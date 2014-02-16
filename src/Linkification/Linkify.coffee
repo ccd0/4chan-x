@@ -284,6 +284,12 @@ Linkify =
       el: (a) ->
         $.el 'iframe',
           src: "http://paste.installgentoo.com/view/embed/#{a.dataset.uid}"
+          
+    Twitter:
+      regExp: /.*twitter.com\/(.+\/status\/\d+)/
+      el: (a) -> 
+        $.el 'iframe',
+          src: "https://twitframe.com/show?url=https://twitter.com/#{a.dataset.uid}"
 
     LiveLeak:
       regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
@@ -333,6 +339,12 @@ Linkify =
       el: (a) ->
         div = $.el 'iframe',
           src: "http://pastebin.com/embed_iframe.php?i=#{a.dataset.uid}"
+
+    gfycat:
+      regExp: /.*gfycat.com\/(?:iframe\/)?(\S*)/
+      el: (a) ->
+        div = $.el 'iframe',
+          src: "http://gfycat.com/iframe/#{a.dataset.uid}"
 
     SoundCloud:
       regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 **MayhemYDG**:
 - Added a `Reset Settings` button in the settings.
 - More stability update.
@@ -5,6 +6,54 @@
 
 **ParrotParrot**:
 - Added `Original filename` variable to Sauce panel.
+=======
+### v1.3.7 
+*2014-02-15*
+
+**Spittie**
+- Add Twitter embedding
+- Add .xpi for Firefox Mobile
+- Add /biz/
+
+### v1.3.6 
+*2014-02-13*
+
+**Spittie**
+- Upload images directly from urls
+ 
+![Upload from url](src/General/img/changelog/1.3.6.gif)
+- Add gfycat.com embedding
+- Replace some icons with fontawesome
+- Add Metro favicons (lel)
+
+### v1.3.5 
+*2014-02-10*
+
+**Spittie**
+- Fix Chrome (aka copy from Appchan)
+- Add option to load the captcha when you open a thread
+- Add OpenSUSE emoji
+
+### v1.3.4 
+*2014-02-10*
+
+**Spittie**
+- Fix Chrome (Maybe? Hopefully I haven't fucked everything)
+- Add fgst.eu
+- Add mawa.re
+
+### v1.3.3 
+*2014-02-09*
+
+**MayhemYDG**
+- Fix new captcha
+
+**Spittie**
+- Add archive.installgentoo.com
+
+### v1.3.2 
+*2014-01-12*
+>>>>>>> 7a7d0ec6860866e71e728aa9b41b1994fe1b5950
 
 **seaweedchan**:
 - Fix Menu errors on older Firefox versions, such as the ESR

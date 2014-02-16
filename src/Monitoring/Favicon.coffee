@@ -51,6 +51,14 @@ Favicon =
         '<%= grunt.file.read("src/General/img/favicons/Original/unreadNSFW.png",  {encoding: "base64"}) %>'
         '<%= grunt.file.read("src/General/img/favicons/Original/unreadNSFWY.png", {encoding: "base64"}) %>'
       ]
+      'Metro': [
+        '<%= grunt.file.read("src/General/img/favicons/Metro/unreadDead.png",     {encoding: "base64"}) %>'
+        '<%= grunt.file.read("src/General/img/favicons/Metro/unreadDeadY.png",    {encoding: "base64"}) %>'
+        '<%= grunt.file.read("src/General/img/favicons/Metro/unreadSFW.png",      {encoding: "base64"}) %>'
+        '<%= grunt.file.read("src/General/img/favicons/Metro/unreadSFWY.png",     {encoding: "base64"}) %>'
+        '<%= grunt.file.read("src/General/img/favicons/Metro/unreadNSFW.png",     {encoding: "base64"}) %>'
+        '<%= grunt.file.read("src/General/img/favicons/Metro/unreadNSFWY.png",    {encoding: "base64"}) %>'
+      ]
     }[Conf['favicon']]
 
     f = Favicon
@@ -58,9 +66,10 @@ Favicon =
     i = 0
     while items[i]
       items[i] = t + items[i++]
+
     [f.unreadDead, funreadDeadY, f.unreadSFW, f.unreadSFWY, f.unreadNSFW, f.unreadNSFWY] = items
     f.update()
-  
+
   update: ->
     if @SFW
       @unread  = @unreadSFW

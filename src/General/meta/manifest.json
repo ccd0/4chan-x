@@ -17,6 +17,8 @@
   "homepage_url": "<%= meta.page %>",
   "minimum_chrome_version": "<%= meta.min.chrome %>",
   "permissions": [
-    "storage"
+    "storage",
+    "http://*/",
+    "https://*/"
   ]
 }
