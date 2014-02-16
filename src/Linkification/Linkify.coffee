@@ -189,8 +189,10 @@ Linkify =
         embed.dataset.title = title[0]
     else
       try
-        $.cache service.api(uid), ->
-          title = Linkify.cb.title @, data
+        $.cache service.api(uid), 
+          -> title = Linkify.cb.title @, data
+        ,
+          responseType: 'json'
       catch err
         if link
           link.innerHTML = "[#{key}] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>"
