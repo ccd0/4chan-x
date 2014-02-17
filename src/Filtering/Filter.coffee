@@ -100,7 +100,7 @@ Filter =
         @highlight "Highlighted by filtering the #{key}: #{obj.match}", obj.class, obj.top
 
   stringTest: (string, value) ->
-    regexp is value
+    string is value
   regexpTest: (regexp, value) ->
     regexp.test value
   test: ({test, match, op}, value, isReply) ->
