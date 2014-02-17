@@ -9888,7 +9888,7 @@
   FappeTyme = {
     init: function() {
       var el, lc, type, _i, _len, _ref;
-      if (!(Conf['Fappe Tyme'] || Conf['Werk Tyme']) || g.VIEW === 'catalog' || g.BOARD === 'f') {
+      if (!(Conf['Fappe Tyme'] || Conf['Werk Tyme']) || g.VIEW === 'catalog' || g.BOARD.ID === 'f') {
         return;
       }
       _ref = ["Fappe", "Werk"];
