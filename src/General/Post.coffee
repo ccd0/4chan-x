@@ -52,6 +52,8 @@ class Post
     @parseQuotes()
     @parseFile that
 
+    @labels     = []
+    @highlights = []
     @isDead   = false
     @isHidden = false
 
@@ -106,7 +108,7 @@ class Post
 
     # ES6 Set when?
     fullID = "#{match[1]}.#{match[2]}"
-    @quotes.push fullID if @quotes.indexOf(fullID) is -1
+    @quotes.push fullID unless fullID in @quotes
 
   parseFile: (that) ->
     return unless (fileEl = $ '.file', @nodes.post) and thumb = $ 'img[data-md5]', fileEl
@@ -151,7 +153,8 @@ class Post
       $.rmClass node, 'desktop'
     return
 
-  hide: (makeStub=Conf['Stubs'], hideRecursively=Conf['Recursive Hiding']) ->
+  hide: (label, makeStub=Conf['Stubs'], hideRecursively=Conf['Recursive Hiding']) ->
+    @labels.push label unless label in @labels
     return if @isHidden
     @isHidden = true
     if !@isReply
@@ -159,8 +162,9 @@ class Post
       return
 
     if hideRecursively
-      Recursive.apply 'hide', @, makeStub, true
-      Recursive.add   'hide', @, makeStub, true
+      label = "Recursively hidden for quoting No.#{@}"
+      Recursive.apply 'hide', @, label, makeStub, true
+      Recursive.add   'hide', @, label, makeStub, true
 
     for quotelink in Get.allQuotelinksLinkingTo @
       $.addClass quotelink, 'filtered'
@@ -183,6 +187,9 @@ class Post
   show: (showRecursively=Conf['Recursive Hiding']) ->
     return if !@isHidden
     @isHidden = false
+    @labels = @labels.filter (label) ->
+      # This is lame.
+      !/^(Manually hidden|Recursively hidden|Hidden by)/.test label
     if !@isReply
       @thread.show()
       return
@@ -199,6 +206,13 @@ class Post
       delete @nodes.stub
     else
       @nodes.root.hidden = false
+  highlight: (label, highlight, top) ->
+    @labels.push label
+    unless highlight in @highlights
+      @highlights.push highlight
+      $.addClass @nodes.root, highlight
+    if !@isReply and top
+      @thread.isOnTop = true
 
   kill: (file) ->
     if file

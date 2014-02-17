@@ -90,6 +90,7 @@ Main =
     initFeature 'Delete Link',              DeleteLink
     initFeature 'Filter (Menu)',            Filter.menu
     initFeature 'Download Link',            DownloadLink
+    initFeature 'Labels list',              Labels
     initFeature 'Archive Link',             ArchiveLink
     initFeature 'Quote Inlining',           QuoteInline
     initFeature 'Quote Previewing',         QuotePreview

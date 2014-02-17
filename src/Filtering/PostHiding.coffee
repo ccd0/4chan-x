@@ -28,10 +28,11 @@ PostHiding =
 
     if data = PostHiding.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
       if data.thisPost is false
-        Recursive.apply 'hide', @, data.makeStub, true
-        Recursive.add   'hide', @, data.makeStub, true
+        label = "Recursively hidden for quoting No.#{@}"
+        Recursive.apply 'hide', @, label, data.makeStub, true
+        Recursive.add   'hide', @, label, data.makeStub, true
       else
-        @hide data.makeStub, data.hideRecursively
+        @hide 'Manually hidden', data.makeStub, data.hideRecursively
 
     return unless Conf['Post Hiding']
     a = PostHiding.makeButton true
@@ -54,7 +55,7 @@ PostHiding =
     if post.isHidden
       post.show()
     else
-      post.hide()
+      post.hide 'Manually hidden'
     PostHiding.saveHiddenState post
 
   saveHiddenState: (post, val) ->
@@ -137,13 +138,14 @@ PostHiding =
       thisPost = $('input[name=thisPost]', parent).checked if post.isReply
       replies  = $('input[name=replies]',  parent).checked if post.isReply
       makeStub = $('input[name=makeStub]', parent).checked
+      label    = 'Manually hidden'
       if !post.isReply
-        post.hide makeStub
+        post.hide label, makeStub
       else if thisPost
-        post.hide makeStub, replies
+        post.hide label, makeStub, replies
       else if replies
-        Recursive.apply 'hide', post, makeStub, true
-        Recursive.add   'hide', post, makeStub, true
+        Recursive.apply 'hide', post, label, makeStub, true
+        Recursive.add   'hide', post, label, makeStub, true
       else
         return
       val = if post.isReply

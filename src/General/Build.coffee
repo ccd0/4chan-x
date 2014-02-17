@@ -281,7 +281,7 @@ Build =
 
     root.dataset.fullID = thread.fullID
     $.addClass root, 'pinned' if thread.isPinned
-    $.addClass root, thread.OP.highlights... if thread.OP.highlights
+    $.addClass root, thread.OP.highlights... if thread.OP.highlights.length
 
     thumb = root.firstElementChild
     if data.spoiler and !Conf['Reveal Spoilers']

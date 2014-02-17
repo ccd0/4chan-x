@@ -1,6 +1,6 @@
-- Post hiding rewrite:
- - `Thread Hiding` and `Reply Hiding` settings are merged into one: `Post Hiding`.
- - `Thread Hiding Link` and `Reply Hiding Link` settings are merged into one: `Post Hiding Link`.
+- The posts' menu now has a label entry listing the reasons why a post got hidden or highlighted.
+- `Thread Hiding` and `Reply Hiding` settings are merged into one: `Post Hiding`.
+- `Thread Hiding Link` and `Reply Hiding Link` settings are merged into one: `Post Hiding Link`.
 
 ### 3.18.1 - *2014-02-20*
 
