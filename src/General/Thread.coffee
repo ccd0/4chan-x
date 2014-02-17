@@ -5,6 +5,10 @@ class Thread
   constructor: (@ID, @board) ->
     @fullID    = "#{@board}.#{@ID}"
     @posts     = {}
+    @isDead    = false
+    @isHidden  = false
+    @isOnTop   = false
+    @isPinned  = false
     @isSticky  = false
     @isClosed  = false
     @postLimit = false
@@ -52,15 +56,14 @@ class Thread
     (if type is 'Sticky' and @isClosed then $.prepend else $.add) @catalogView.nodes.icons, icon.cloneNode()
 
   pin: ->
-    @isOnTop = @isPinned = true
+    @isPinned = true
     $.addClass @catalogView.nodes.root, 'pinned' if @catalogView
   unpin: ->
-    @isOnTop = @isPinned = false
+    @isPinned = false
     $.rmClass  @catalogView.nodes.root, 'pinned' if @catalogView
 
   kill: ->
     @isDead = true
-    @timeOfDeath = Date.now()
 
   collect: ->
     for postID, post of @posts

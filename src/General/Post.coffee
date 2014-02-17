@@ -52,6 +52,9 @@ class Post
     @parseQuotes()
     @parseFile that
 
+    @isDead   = false
+    @isHidden = false
+
     @clones = []
     g.posts[@fullID] = thread.posts[@] = board.posts[@] = @
     @kill() if that.isArchived
@@ -62,7 +65,6 @@ class Post
     # Get the comment's text.
     # <br> -> \n
     # Remove:
-    #   'Comment too long'...
     #   EXIF data. (/p/)
     #   Rolls. (/tg/)
     #   Preceding and following new lines.
@@ -149,17 +151,14 @@ class Post
       $.rmClass node, 'desktop'
     return
 
-  kill: (file, now) ->
-    now or= new Date()
+  kill: (file) ->
     if file
       return if @file.isDead
       @file.isDead = true
-      @file.timeOfDeath = now
       $.addClass @nodes.root, 'deleted-file'
     else
       return if @isDead
       @isDead = true
-      @timeOfDeath = now
       $.addClass @nodes.root, 'deleted-post'
 
     unless strong = $ 'strong.warning', @nodes.info
@@ -171,7 +170,7 @@ class Post
 
     return if @isClone
     for clone in @clones
-      clone.kill file, now
+      clone.kill file
 
     return if file
     # Get quotelinks/backlinks to this post
@@ -185,7 +184,6 @@ class Post
   # giving us false-positive dead posts.
   resurrect: ->
     delete @isDead
-    delete @timeOfDeath
     $.rmClass @nodes.root, 'deleted-post'
     strong = $ 'strong.warning', @nodes.info
     # no false-positive files
