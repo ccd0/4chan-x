@@ -39,6 +39,7 @@ Emoji =
       'Fedora':     '<%= grunt.file.read("src/General/img/emoji/fedora.png",     {encoding: "base64"}) %>'
       'FreeBSD':    '<%= grunt.file.read("src/General/img/emoji/freebsd.png",    {encoding: "base64"}) %>'
       'Gentoo':     '<%= grunt.file.read("src/General/img/emoji/gentoo.png",     {encoding: "base64"}) %>'
+      'OpenSUSE': '<%= grunt.file.read("src/General/img/emoji/opensuse.png",     {encoding: "base64"}) %>'
       'Mint':       '<%= grunt.file.read("src/General/img/emoji/mint.png",       {encoding: "base64"}) %>'
       'Osx':        '<%= grunt.file.read("src/General/img/emoji/osx.png",        {encoding: "base64"}) %>'
       'Rhel':       '<%= grunt.file.read("src/General/img/emoji/rhel.png",       {encoding: "base64"}) %>'
