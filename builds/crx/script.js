@@ -5714,7 +5714,7 @@
       xhr.responseType = 'blob';
       xhr.onload = function(e) {
         if (this.readyState === this.DONE && xhr.status === 200) {
-          QR.handleBlob(urlBlob, this.getResponseHeaders('Content-Type'), url);
+          QR.handleBlob(this.response, this.getResponseHeader('Content-Type'), url);
         } else {
           QR.error("Can't load image.");
         }
