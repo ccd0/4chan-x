@@ -179,8 +179,8 @@ Index =
           true
 
   threadNode: ->
-    return unless data = Index.db.get {boardID: @board.ID, threadID: @ID}
-    @pin() if data.isPinned
+    return unless Index.db.get {boardID: @board.ID, threadID: @ID}
+    @pin()
   catalogNode: ->
     $.on @nodes.thumb, 'click', Index.onClick
   onClick: (e) ->
@@ -203,17 +203,16 @@ Index =
       ThreadHiding.hide thread
     ThreadHiding.saveHiddenState thread
   togglePin: (thread) ->
+    data =
+      boardID:  thread.board.ID
+      threadID: thread.ID
     if thread.isPinned
       thread.unpin()
-      Index.db.delete
-        boardID:  thread.board.ID
-        threadID: thread.ID
+      Index.db.delete data
     else
       thread.pin()
-      Index.db.set
-        boardID:  thread.board.ID
-        threadID: thread.ID
-        val: isPinned: thread.isPinned
+      data.val = true
+      Index.db.set data
     Index.sort()
     Index.buildIndex()
 
@@ -516,7 +515,7 @@ Index =
     # Sticky threads
     Index.sortOnTop (thread) -> thread.isSticky
     # Highlighted threads
-    Index.sortOnTop (thread) -> thread.isOnTop
+    Index.sortOnTop (thread) -> thread.isOnTop or thread.isPinned
     # Non-hidden threads
     Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
 
