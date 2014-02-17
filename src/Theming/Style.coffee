@@ -22,6 +22,12 @@ Style =
     while item = items[i++]
       Style.sheets[item[0]] = $.addStyle item[1], item[0]
 
+    if g.BOARD.ID is 'f'
+      $.ready ->
+        $.globalEval 'SWFEmbed.init()'
+        badLink = $ '.navLinks'
+        badLink.parentNode.removeChild(badLink)
+
     # Non-customizable
     $.addStyle JSColor.css(), 'jsColor'
 

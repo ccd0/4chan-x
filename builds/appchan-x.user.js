@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.8.11 - 2014-02-16
+* appchan x - Version 2.8.11 - 2014-02-17
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -13619,6 +13619,14 @@
       i = 0;
       while (item = items[i++]) {
         Style.sheets[item[0]] = $.addStyle(item[1], item[0]);
+      }
+      if (g.BOARD.ID === 'f') {
+        $.ready(function() {
+          var badLink;
+          $.globalEval('SWFEmbed.init()');
+          badLink = $('.navLinks');
+          return badLink.parentNode.removeChild(badLink);
+        });
       }
       $.addStyle(JSColor.css(), 'jsColor');
       $.asap((function() {
