@@ -23,7 +23,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.3.7 - 2014-02-15
+* 4chan X - Version 1.3.7 - 2014-02-17
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -5663,8 +5663,26 @@
       QR.handleFiles(files);
       return $.addClass(QR.nodes.el, 'dump');
     },
-    handleBlob: function(blob) {
-      var _ref;
+    handleBlob: function(urlBlob, header, url) {
+      var blob, end, endnl, endsc, mime, name, name_end, name_start, start, _ref;
+      name = url.substr(url.lastIndexOf('/') + 1, url.length);
+      start = header.indexOf("Content-Type: ") + 14;
+      endsc = header.substr(start, header.length).indexOf(";");
+      endnl = header.substr(start, header.length).indexOf("\n") - 1;
+      end = endnl;
+      if (endsc !== -1 && endsc < endnl) {
+        end = endsc;
+      }
+      mime = header.substr(start, end);
+      blob = new Blob([urlBlob], {
+        type: mime
+      });
+      blob.name = url.substr(url.lastIndexOf('/') + 1, url.length);
+      name_start = header.indexOf('name="') + 6;
+      if (name_start - 6 !== -1) {
+        name_end = header.substr(name_start, header.length).indexOf('"');
+        blob.name = header.substr(name_start, name_end);
+      }
       if (blob.type === null) {
         return QR.error("Unsupported file type.");
       }
@@ -5684,7 +5702,7 @@
         url: url,
         overrideMimeType: "text/plain; charset=x-user-defined",
         onload: function(xhr) {
-          var data, end, header, i, mime, r, start, urlBlob;
+          var data, i, r;
           r = xhr.responseText;
           data = new Uint8Array(r.length);
           i = 0;
@@ -5692,18 +5710,7 @@
             data[i] = r.charCodeAt(i);
             i++;
           }
-          header = xhr.responseHeaders;
-          start = header.indexOf("Content-Type: ") + 14;
-          end = header.substr(start, header.length).indexOf("\n") - 1;
-          mime = header.substr(start, end);
-          if (mime === null) {
-            return;
-          }
-          urlBlob = new Blob([data], {
-            type: mime
-          });
-          urlBlob.name = url.substr(url.lastIndexOf('/') + 1, url.length);
-          QR.handleBlob(urlBlob);
+          QR.handleBlob(data, xhr.responseHeaders, url);
           return;
           return {
             onerror: function(xhr) {
