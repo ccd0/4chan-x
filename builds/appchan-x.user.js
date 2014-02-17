@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.8.11 - 2014-02-16
+* appchan x - Version 2.8.11 - 2014-02-17
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -13622,9 +13622,6 @@
       }
       $.addStyle(JSColor.css(), 'jsColor');
       $.asap((function() {
-        return d.head;
-      }), Style.remStyle);
-      $.asap((function() {
         return d.body;
       }), this.asapInit);
       $.asap((function() {
@@ -13639,6 +13636,7 @@
       $.addClass(doc, 'fourchan-x');
       $.addClass(doc, 'appchan-x');
       $.addClass(doc, g.VIEW);
+      Style.remStyle();
       _ref = Config.style;
       for (title in _ref) {
         cat = _ref[title];

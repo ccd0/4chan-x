@@ -25,8 +25,6 @@ Style =
     # Non-customizable
     $.addStyle JSColor.css(), 'jsColor'
 
-    $.asap (-> d.head), Style.remStyle
-
     $.asap (-> d.body), @asapInit
     $.asap (-> Header.bar.parentElement), Style.padding
     $.on window, "resize", Style.padding
@@ -45,6 +43,8 @@ Style =
     <% if (type === 'crx') { %>
     $.add d.body, Style.svgs.el
     <% } %>
+
+    Style.remStyle()
 
     for title, cat of Config.style
       for name, setting of cat
