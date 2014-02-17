@@ -268,7 +268,23 @@ QR =
     QR.handleFiles files
     $.addClass QR.nodes.el, 'dump'
     
-  handleBlob: (blob) ->
+  handleBlob: (urlBlob, header, url) ->
+    name = url.substr(url.lastIndexOf('/')+1, url.length)
+    #QUALITY coding at work
+    start = header.indexOf("Content-Type: ") + 14
+    endsc = header.substr(start, header.length).indexOf(";")
+    endnl = header.substr(start, header.length).indexOf("\n") - 1
+    end = endnl
+    if (endsc != -1 and endsc < endnl)
+      end = endsc
+    mime = header.substr(start, end)
+    blob = new Blob([urlBlob], {type: mime})
+    blob.name = url.substr(url.lastIndexOf('/')+1, url.length)
+    name_start = header.indexOf('name="') + 6
+    if (name_start - 6 != -1)
+      name_end = header.substr(name_start, header.length).indexOf('"')
+      blob.name = header.substr(name_start, name_end)
+
     return if blob.type is null
       QR.error "Unsupported file type."
     return unless blob.type in QR.mimeTypes
@@ -284,9 +300,7 @@ QR =
     xhr.responseType = 'blob'
     xhr.onload = (e) ->
       if @readyState is @DONE && xhr.status is 200
-        urlBlob = new Blob([@response], {type : @getResponseHeader('content-type')})
-        urlBlob.name = url.substr(url.lastIndexOf('/')+1, url.length)
-        QR.handleBlob(urlBlob)
+        QR.handleBlob(@response, @getResponseHeader('Content-Type'), url)
         return
       else
         QR.error "Can't load image."
@@ -312,17 +326,8 @@ QR =
         while i < r.length
           data[i] = r.charCodeAt(i)
           i++
-        #QUALITY coding at work
-        header = xhr.responseHeaders
-        start = header.indexOf("Content-Type: ") + 14
-        end = header.substr(start, header.length).indexOf("\n") - 1
-        mime = header.substr(start, end)
-        return if mime is null
 
-        urlBlob = new Blob([data], {type: mime})
-
-        urlBlob.name = url.substr(url.lastIndexOf('/')+1, url.length)
-        QR.handleBlob(urlBlob)
+        QR.handleBlob(data, xhr.responseHeaders, url)
         return
 
         onerror: (xhr) ->
