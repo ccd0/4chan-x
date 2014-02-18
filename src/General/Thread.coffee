@@ -67,6 +67,7 @@ class Thread
     @isHidden = true
     root = @OP.nodes.root.parentNode
     Index.updateHideLabel()
+    $.rm @catalogView.nodes.root if @catalogView
 
     unless makeStub
       root.hidden = true
@@ -94,6 +95,7 @@ class Thread
       delete @stub
     @OP.nodes.root.parentNode.hidden = false
     Index.updateHideLabel()
+    $.rm @catalogView.nodes.root if @catalogView
 
   kill: ->
     @isDead = true

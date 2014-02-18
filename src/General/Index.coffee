@@ -134,7 +134,7 @@ Index =
           $.off @el, 'click', @cb if @cb
           @cb = ->
             $.event 'CloseMenu'
-            Index.toggleHide post
+            PostHiding.toggle post
           $.on @el, 'click', @cb
           true
 
@@ -166,7 +166,7 @@ Index =
     return if e.button isnt 0
     thread = g.threads[@parentNode.dataset.fullID]
     if e.shiftKey
-      Index.toggleHide thread.OP
+      PostHiding.toggle thread.OP
     else if e.altKey
       Index.togglePin thread
     else
@@ -194,9 +194,6 @@ Index =
       offsetX: 15
       offsetY: -20
     setTimeout (-> el.hidden = false if el.parentNode), .25 * $.SECOND
-  toggleHide: (post) ->
-    $.rm post.thread.catalogView.nodes.root
-    PostHiding.toggle post
   togglePin: (thread) ->
     data =
       boardID:  thread.board.ID
