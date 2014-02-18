@@ -707,9 +707,14 @@ a.hide-announcement {
 }
 
 /* Post Hiding */
+.hide-post-button,
+.show-post-button {
+  font-size: 14px;
+}
 .hide-post-button {
   float: left;
   margin-right: 3px;
+  margin-bottom: -1em; /* Prevent the floating effect from affecting the thumbnail too */
 }
 .thread[hidden] + hr,
 .stub ~ * {
