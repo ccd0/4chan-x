@@ -445,6 +445,9 @@ nav a,
   <%= flex %>-direction: column;
   height: 200px;
 }
+.icon-orientation-horizontal #a-stats {
+  height: 1em;
+}
 .icon-orientation-horizontal #a-stats,
 .icon-orientation-horizontal #a-icons,
 .sidebar-location-left #shortcuts {
