@@ -153,6 +153,12 @@ class Post
       $.rmClass node, 'desktop'
     return
 
+  getNameBlock: ->
+    if Conf['Anonymize']
+      'Anonymous'
+    else
+      $('.nameBlock', @nodes.info).textContent.trim()
+
   hide: (label, makeStub=Conf['Stubs'], hideRecursively=Conf['Recursive Hiding']) ->
     @labels.push label unless label in @labels
     return if @isHidden
@@ -174,11 +180,7 @@ class Post
       return
 
     a = PostHiding.makeButton false
-    postInfo = if Conf['Anonymize']
-      'Anonymous'
-    else
-      $('.nameBlock', @nodes.info).textContent.trim()
-    $.add a, $.tn " #{postInfo}"
+    $.add a, $.tn " #{@getNameBlock()}"
     @nodes.stub = $.el 'div',
       className: 'stub'
     $.add @nodes.stub, a

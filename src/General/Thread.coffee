@@ -73,18 +73,13 @@ class Thread
       root.hidden = true
       return
 
-    numReplies  = $$('.thread > .replyContainer', root).length # Don't count clones.
-    numReplies += +summary.textContent.match /\d+/ if summary = $ '.summary', root
-    opInfo = if Conf['Anonymize']
-      'Anonymous'
-    else
-      $('.nameBlock', @OP.nodes.info).textContent.trim()
-
-    a = PostHiding.makeButton false
-    $.add a, $.tn " #{opInfo} (#{numReplies} repl#{if numReplies is 1 then 'y' else 'ies'})"
     @stub = $.el 'div',
       className: 'stub'
-    $.add @stub, a
+    {replies} = Index.liveThreadData[Index.liveThreadIDs.indexOf @ID]
+    $.add @stub, [
+      PostHiding.makeButton false
+      $.tn " #{@OP.getNameBlock()} (#{replies} repl#{if replies is 1 then 'y' else 'ies'})"
+    ]
     $.add @stub, Menu.makeButton() if Conf['Menu']
     $.prepend root, @stub
   show: ->
