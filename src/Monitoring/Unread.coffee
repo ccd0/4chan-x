@@ -92,11 +92,7 @@ Unread =
       return
   openNotification: (post) ->
     return unless Header.areNotificationsEnabled
-    name = if Conf['Anonymize']
-      'Anonymous'
-    else
-      $('.nameBlock', post.nodes.info).textContent.trim()
-    notif = new Notification "#{name} replied to you",
+    notif = new Notification "#{post.getNameBlock()} replied to you",
       body: post.info.comment
       icon: Favicon.logo
     notif.onclick = ->
