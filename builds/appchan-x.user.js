@@ -13622,10 +13622,22 @@
       }
       if (g.BOARD.ID === 'f') {
         $.ready(function() {
-          var badLink;
+          var badLink, sauceLink, swfName;
           $.globalEval('SWFEmbed.init()');
-          badLink = $('.navLinks');
-          return badLink.parentNode.removeChild(badLink);
+          if (g.VIEW === 'thread') {
+            sauceLink = d.createElement('a');
+            swfName = $('.fileText > a');
+            badLink = $('.navLinks');
+            i = 0;
+            while (i < 3) {
+              badLink.removeChild(badLink.firstChild);
+              i++;
+            }
+            sauceLink.textContent = 'Check Sauce on SWFCHAN';
+            sauceLink.href = 'http://eye.swfchan.com/search/?q=' + swfName.textContent;
+            badLink.appendChild(sauceLink);
+            return badLink.removeChild(badLink.firstChild.nextSibling);
+          }
         });
       }
       $.addStyle(JSColor.css(), 'jsColor');

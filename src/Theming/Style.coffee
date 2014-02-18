@@ -25,8 +25,18 @@ Style =
     if g.BOARD.ID is 'f'
       $.ready ->
         $.globalEval 'SWFEmbed.init()'
-        badLink = $ '.navLinks'
-        badLink.parentNode.removeChild(badLink)
+        if g.VIEW is 'thread'
+          sauceLink = d.createElement 'a'
+          swfName = $ '.fileText > a'
+          badLink = $ '.navLinks'
+          i = 0
+          while i < 3
+            badLink.removeChild badLink.firstChild
+            i++
+          sauceLink.textContent = 'Check Sauce on SWFCHAN'
+          sauceLink.href = 'http://eye.swfchan.com/search/?q=' + swfName.textContent
+          badLink.appendChild(sauceLink)
+          badLink.removeChild badLink.firstChild.nextSibling
 
     # Non-customizable
     $.addStyle JSColor.css(), 'jsColor'
