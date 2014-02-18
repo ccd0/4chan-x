@@ -5,8 +5,6 @@ Nav =
         return unless Conf['Index Navigation']
       when 'thread'
         return unless Conf['Reply Navigation']
-      else # catalog
-        return
 
     span = $.el 'span',
       id: 'navlinks'

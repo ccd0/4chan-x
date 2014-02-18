@@ -47,6 +47,7 @@ UI = do ->
       menu = @makeMenu()
       currentMenu       = menu
       lastToggledButton = button
+      $.addClass button, 'open'
 
       for entry in @entries
         @insertEntry entry, menu, data
@@ -99,6 +100,7 @@ UI = do ->
 
     close: =>
       $.rm currentMenu
+      $.rmClass lastToggledButton, 'open'
       currentMenu       = null
       lastToggledButton = null
       $.off d, 'click CloseMenu', @close
@@ -191,7 +193,7 @@ UI = do ->
     # prevent text selection
     e.preventDefault()
     if isTouching = e.type is 'touchstart'
-      e = e.changedTouches[e.changedTouches.length - 1]
+      [..., e] = e.changedTouches
     # distance from pointer to el edge is constant; calculate it here.
     el = $.x 'ancestor::div[contains(@class,"dialog")][1]', @
     rect = el.getBoundingClientRect()
@@ -271,7 +273,7 @@ UI = do ->
       $.off d, 'mouseup',   @up
     $.set "#{@id}.position", @style.cssText
 
-  hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb}) ->
+  hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb, offsetX, offsetY}) ->
     o = {
       root
       el
@@ -281,14 +283,17 @@ UI = do ->
       latestEvent
       clientHeight: doc.clientHeight
       clientWidth:  doc.clientWidth
+      offsetX: offsetX or 45
+      offsetY: offsetY or -120
     }
     o.hover    = hover.bind    o
     o.hoverend = hoverend.bind o
 
-    $.asap ->
-      !el.parentNode or asapTest()
-    , ->
-      o.hover o.latestEvent if el.parentNode
+    if asapTest
+      $.asap ->
+        !el.parentNode or asapTest()
+      , ->
+        o.hover o.latestEvent if el.parentNode
 
     $.on root, endEvents,   o.hoverend
     $.on root, 'mousemove', o.hover
@@ -302,7 +307,7 @@ UI = do ->
     height = @el.offsetHeight
     {clientX, clientY} = e
 
-    top = clientY - 120
+    top = clientY + @offsetY
     top = if @clientHeight <= height or top <= 0
       0
     else if top + height >= @clientHeight
@@ -310,10 +315,10 @@ UI = do ->
     else
       top
 
-    [left, right] = if clientX <= @clientWidth - 400
-      [clientX + 45 + 'px', null]
+    [left, right] = if clientX <= @clientWidth / 2
+      [clientX + @offsetX + 'px', null]
     else
-      [null, @clientWidth - clientX + 45 + 'px']
+      [null, @clientWidth - clientX + @offsetX + 'px']
 
     {style} = @
     style.top   = top + 'px'

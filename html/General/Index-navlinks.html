@@ -1,4 +1,25 @@
-[<a href="./catalog">Catalog</a>]&nbsp;
-[<time id="index-last-refresh" title="Last index refresh">...</time>]&nbsp;
 <input type="search" id="index-search" class="field" placeholder="Search">
 <a id="index-search-clear" class="fa fa-times-circle" href="javascript:;"></a>
+&nbsp;
+<time id="index-last-refresh" title="Last index refresh">...</time>
+<span id="hidden-label" hidden>&nbsp;&mdash; <span id="hidden-count"></span> <span id="hidden-toggle">[<a href="javascript:;">Show</a>]</span></span>
+<span style="flex:1"></span>
+<select id="index-mode" name="Index Mode">
+  <option disabled>Index Mode</option>
+  <option value="paged">Paged</option>
+  <option value="all pages">All threads</option>
+  <option value="catalog">Catalog</option>
+</select>
+<select id="index-sort" name="Index Sort">
+  <option disabled>Index Sort</option>
+  <option value="bump">Bump order</option>
+  <option value="lastreply">Last reply</option>
+  <option value="birth">Creation date</option>
+  <option value="replycount">Reply count</option>
+  <option value="filecount">File count</option>
+</select>
+<select id="index-size" name="Index Size">
+  <option disabled>Image Size</option>
+  <option value="small">Small</option>
+  <option value="large">Large</option>
+</select>

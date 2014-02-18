@@ -6,6 +6,7 @@ Config =
       'Announcement Hiding':          [true,  'Add button to hide 4chan announcements.']
       '404 Redirect':                 [true,  'Redirect dead threads and images.']
       'Keybinds':                     [true,  'Bind actions to keyboard shortcuts.']
+      'Linkify':                      [true,  'Convert text links into hyperlinks.']
       'Time Formatting':              [true,  'Localize and format timestamps.']
       'Relative Post Dates':          [false, 'Display dates like "3 minutes ago". Tooltip shows the timestamp.']
       'File Info Formatting':         [true,  'Reformat the file information.']
@@ -24,11 +25,9 @@ Config =
       'Auto-GIF':                     [false, 'Animate GIF thumbnails (disabled on /gif/, /wsg/).']
       'Image Expansion':              [true,  'Expand images inline.']
       'Image Hover':                  [false, 'Show a floating expanded image on hover.']
+      'Image Hover in Catalog':       [false, 'Show a floating expanded image on hover in the catalog.']
       'Sauce':                        [true,  'Add sauce links to images.']
       'Reveal Spoilers':              [false, 'Reveal spoiler thumbnails.']
-    'Linkification':
-      'Linkify':                      [true,  'Convert text links into hyperlinks.']
-      'Clean Links':                  [true,  'Remove spoiler and code tags commonly used to bypass blocked links.']
     'Menu':
       'Menu':                         [true,  'Add a drop-down menu to posts.']
       'Report Link':                  [true,  'Add a report link to the menu.']
@@ -62,7 +61,6 @@ Config =
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
       'Hide Original Post Form':      [true,  'Hide the normal post form.']
       'Cooldown':                     [true,  'Indicate the remaining time before posting again.']
-      'Cooldown Prediction':          [true,  'Decrease the cooldown time by taking into account upload speed. Disable it if it\'s inaccurate for you.']
       <% if (type === 'crx') { %>
       'Tab to Choose Files First':    [false, 'Tab to the file input before the submit button.']
       <% } %>
@@ -74,9 +72,7 @@ Config =
       'Quote Previewing':             [true,  'Show quoted post on hover.']
       'Quote Highlighting':           [true,  'Highlight the previewed post.']
       'Resurrect Quotes':             [true,  'Link dead quotes to the archives.']
-      'Mark Quotes of You':           [true,  'Add \'(You)\' to quotes linking to your posts.']
-      'Mark OP Quotes':               [true,  'Add \'(OP)\' to OP quotes.']
-      'Mark Cross-thread Quotes':     [true,  'Add \'(Cross-thread)\' to cross-threads quotes.']
+      'Quote Markers':                [true,  'Add "(You)", "(OP)", "(Cross-thread)", "(Dead)" markers to quote links.']
   imageExpansion:
     'Fit width':        [true,  '']
     'Fit height':       [false, '']
@@ -141,7 +137,11 @@ Config =
   'Custom CSS': false
   Index:
     'Index Mode': 'paged'
+    'Previous Index Mode': 'paged'
     'Index Sort': 'bump'
+    'Index Size': 'small'
+    'Threads per Page': 0
+    'Open threads in a new tab': false
     'Show Replies': true
     'Anchor Hidden Threads': true
     'Refreshed Navigation': false
@@ -149,7 +149,6 @@ Config =
     'Header auto-hide':           false
     'Header auto-hide on scroll': false
     'Bottom header':              false
-    'Header catalog links':       false
     'Top Board List':             false
     'Bottom Board List':          false
     'Custom Board Navigation':    true
@@ -188,6 +187,10 @@ Config =
     'Next page':          ['Right',      'Jump to the next page.']
     'Previous page':      ['Left',       'Jump to the previous page.']
     'Search form':        ['Ctrl+Alt+s', 'Focus the search field on the board index.']
+    'Paged mode':         ['Ctrl+1',     'Sets the index mode to paged.']
+    'All pages mode':     ['Ctrl+2',     'Sets the index mode to all threads.']
+    'Catalog mode':       ['Ctrl+3',     'Sets the index mode to catalog.']
+    'Cycle sort type':    ['Ctrl+x',     'Cycle through index sort types.']
     # Thread Navigation
     'Next thread':        ['Down',       'See next thread.']
     'Previous thread':    ['Up',         'See previous thread.']

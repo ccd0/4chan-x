@@ -1,6 +1,6 @@
 QuotePreview =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Quote Previewing']
+    return if !Conf['Quote Previewing']
 
     Post.callbacks.push
       name: 'Quote Previewing'

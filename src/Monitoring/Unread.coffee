@@ -139,7 +139,7 @@ Unread =
     Unread.readArray Unread.postsQuotingYou
     Unread.update() if e
 
-  saveLastReadPost: ->
+  saveLastReadPost: <% if (type === 'crx') { %>$.debounce 5 * $.SECOND,<% } %> ->
     return if Unread.thread.isDead
     Unread.db.set
       boardID:  Unread.thread.board.ID
@@ -158,7 +158,7 @@ Unread =
     count = Unread.posts.length
 
     if Conf['Unread Count']
-      d.title = "#{if count or !Conf['Hide Unread Count at (0)'] then "(#{count}) " else ''}#{if g.DEAD then "/#{g.BOARD}/ - 404" else "#{Unread.title}"}"
+      d.title = "#{if count or !Conf['Hide Unread Count at (0)'] then "(#{count}) " else ''}#{if g.DEAD then Unread.title.replace '-', '- 404 -' else Unread.title}"
 
     return unless Conf['Unread Tab Icon']
 

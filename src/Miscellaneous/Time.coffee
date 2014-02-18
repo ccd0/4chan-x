@@ -1,6 +1,6 @@
 Time =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Time Formatting']
+    return if !Conf['Time Formatting']
 
     @funk = @createFunc Conf['time']
     Post.callbacks.push

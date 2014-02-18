@@ -1,38 +1,25 @@
 QR.captcha =
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
-    return unless @isEnabled = !!$.id 'captchaFormPart'
-    $.asap (-> $.id 'recaptcha_challenge_field_holder'), @ready.bind @
-  ready: ->
-    setLifetime = (e) => @lifetime = e.detail
-    $.on  window, 'captcha:timeout', setLifetime
-    $.globalEval 'window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))'
-    $.off window, 'captcha:timeout', setLifetime
+    container = $.id 'captchaContainer'
+    return unless @isEnabled = !!container
 
     imgContainer = $.el 'div',
       className: 'captcha-img'
       title: 'Reload reCAPTCHA'
       innerHTML: '<img>'
+      hidden: true
     input = $.el 'input',
       className: 'captcha-input field'
       title: 'Verification'
+      placeholder: 'Focus to load reCAPTCHA'
       autocomplete: 'off'
       spellcheck: false
     @nodes =
-      challenge: $.id 'recaptcha_challenge_field_holder'
-      img:       imgContainer.firstChild
-      input:     input
+      img:   imgContainer.firstChild
+      input: input
 
-    new MutationObserver(@load.bind @).observe @nodes.challenge,
-      childList: true
-
-    $.on imgContainer, 'click',   @reload.bind @
-    $.on input,        'keydown', @keydown.bind @
-    $.get 'captchas', [], ({captchas}) =>
-      @sync captchas
-    $.sync 'captchas', @sync
-    # start with an uncached captcha
-    @reload()
+    $.on input, 'focus', @setup
 
     <% if (type === 'userscript') { %>
     # XXX Firefox lacks focusin/focusout support.
@@ -42,6 +29,36 @@ QR.captcha =
 
     $.addClass QR.nodes.el, 'has-captcha'
     $.after QR.nodes.com.parentNode, [imgContainer, input]
+
+    @setupObserver = new MutationObserver @afterSetup
+    @setupObserver.observe container, childList: true
+    @afterSetup() # reCAPTCHA might have loaded before the QR.
+  setup: ->
+    $.globalEval 'loadRecaptcha()'
+  afterSetup: ->
+    return unless challenge = $.id 'recaptcha_challenge_field_holder'
+    QR.captcha.setupObserver.disconnect()
+    delete QR.captcha.setupObserver
+
+    setLifetime = (e) -> QR.captcha.lifetime = e.detail
+    $.on  window, 'captcha:timeout', setLifetime
+    $.globalEval 'window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))'
+    $.off window, 'captcha:timeout', setLifetime
+
+    {img, input} = QR.captcha.nodes
+    img.parentNode.hidden = false
+    $.off input,         'focus',  QR.captcha.setup
+    $.on input,          'keydown', QR.captcha.keydown.bind QR.captcha
+    $.on img.parentNode, 'click',   QR.captcha.reload.bind  QR.captcha
+
+    $.get 'captchas', [], ({captchas}) ->
+      QR.captcha.sync captchas
+    $.sync 'captchas', QR.captcha.sync
+
+    QR.captcha.nodes.challenge = challenge
+    new MutationObserver(QR.captcha.load.bind QR.captcha).observe challenge,
+      childList: true
+    QR.captcha.load()
   sync: (captchas) ->
     QR.captcha.captchas = captchas
     QR.captcha.count()
@@ -70,6 +87,7 @@ QR.captcha =
     @reload()
     $.set 'captchas', @captchas
   clear: ->
+    return unless @captchas # not loaded yet.
     now = Date.now()
     for captcha, i in @captchas
       break if captcha.timeout > now
@@ -87,7 +105,7 @@ QR.captcha =
     @nodes.input.value = null
     @clear()
   count: ->
-    count = @captchas.length
+    count = if @captchas then @captchas.length else 0
     @nodes.input.placeholder = switch count
       when 0
         'Verification (Shift + Enter to cache)'

@@ -56,3 +56,6 @@
 :root.tomorrow .focused.entry {
   background: rgba(0, 0, 0, .33);
 }
+:root.tomorrow .thumb > .menu-button > i {
+  background: #1D1F21;
+}

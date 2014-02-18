@@ -3,19 +3,19 @@ QuoteBacklink =
   #  - previous, same, and following posts.
   #  - existing and yet-to-exist posts.
   #  - newly fetched posts.
-  #  - in copies.
+  #  - clones.
   # XXX what about order for fetched posts?
   #
-  # First callback creates backlinks and add them to relevant containers.
-  # Second callback adds relevant containers into posts.
-  # This is is so that fetched posts can get their backlinks,
-  # and that as much backlinks are appended in the background as possible.
+  # First callback creates a map of quoted -> [quoters],
+  # and append backlinks to posts that already have containers.
+  # Second callback creates, fill and append containers.
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Quote Backlinks']
+    return if !Conf['Quote Backlinks']
 
     format = Conf['backlink'].replace /%id/g, "' + id + '"
     @funk  = Function 'id', "return '#{format}'"
-    @containers = {}
+    @frag  = $.nodes [$.tn(' '), $.el 'a', className: 'backlink']
+    @map   = {}
     Post.callbacks.push
       name: 'Quote Backlinking Part 1'
       cb:   @firstNode
@@ -23,35 +23,42 @@ QuoteBacklink =
       name: 'Quote Backlinking Part 2'
       cb:   @secondNode
   firstNode: ->
-    return if @isClone or !@quotes.length
-    a = $.el 'a',
-      href: "/#{@board}/res/#{@thread}#p#{@}"
-      className: if @isHidden then 'filtered backlink' else 'backlink'
-      textContent: QuoteBacklink.funk @ID
-    for quote in @quotes
-      containers = [QuoteBacklink.getContainer quote]
-      if (post = g.posts[quote]) and post.nodes.backlinkContainer
-        # Don't add OP clones when OP Backlinks is disabled,
-        # as the clones won't have the backlink containers.
-        for clone in post.clones
-          containers.push clone.nodes.backlinkContainer
-      for container in containers
-        link = a.cloneNode true
-        if Conf['Quote Previewing']
-          $.on link, 'mouseover', QuotePreview.mouseover
-        if Conf['Quote Inlining']
-          $.on link, 'click', QuoteInline.toggle
-        $.add container, [$.tn(' '), link]
+    return if @isClone
+    for quoteID in @quotes
+      (QuoteBacklink.map[quoteID] or= []).push @fullID
+      continue unless (post = g.posts[quoteID]) and container = post?.nodes.backlinkContainer
+      for post in [post].concat post.clones
+        $.add post.nodes.backlinkContainer, QuoteBacklink.buildBacklink post, @
     return
   secondNode: ->
-    if @isClone and (@origin.isReply or Conf['OP Backlinks'])
-      @nodes.backlinkContainer = $ '.container', @nodes.info
-      return
     # Don't backlink the OP.
     return unless @isReply or Conf['OP Backlinks']
-    container = QuoteBacklink.getContainer @fullID
-    @nodes.backlinkContainer = container
+    if @isClone
+      @nodes.backlinkContainer = $ '.backlink-container', @nodes.info
+      return unless Conf['Quote Markers']
+      for backlink in @nodes.backlinks
+        QuoteMarkers.parseQuotelink @, backlink, true, QuoteBacklink.funk Get.postDataFromLink(backlink).postID
+      return
+    @nodes.backlinkContainer = container = $.el 'span',
+      className: 'backlink-container'
+    if @fullID of QuoteBacklink.map
+      for quoteID in QuoteBacklink.map[@fullID]
+        if post = g.posts[quoteID] # Post hasn't been collected since.
+          $.add container, QuoteBacklink.buildBacklink @, post
     $.add @nodes.info, container
-  getContainer: (id) ->
-    @containers[id] or=
-      $.el 'span', className: 'container'
+  buildBacklink: (quoted, quoter) ->
+    frag = QuoteBacklink.frag.cloneNode true
+    a = frag.lastElementChild
+    a.href = "/#{quoter.board}/res/#{quoter.thread}#p#{quoter}"
+    a.textContent = text = QuoteBacklink.funk quoter.ID
+    if quoter.isDead
+      $.addClass a, 'deadlink'
+    if quoter.isHidden
+      $.addClass a, 'filtered'
+    if Conf['Quote Markers']
+      QuoteMarkers.parseQuotelink quoted, a, false, text
+    if Conf['Quote Previewing']
+      $.on a, 'mouseover', QuotePreview.mouseover
+    if Conf['Quote Inlining']
+      $.on a, 'click', QuoteInline.toggle
+    frag

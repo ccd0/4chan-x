@@ -11,6 +11,9 @@ Main =
           'catalog'
         else
           'index'
+    if g.VIEW is 'catalog'
+      $.ready Index.addCatalogSwitch
+      return
     if g.VIEW is 'thread'
       g.THREADID = +pathname[3]
 
@@ -82,6 +85,7 @@ Main =
     initFeature 'Strike-through Quotes',    QuoteStrikeThrough
     initFeature 'Quick Reply',              QR
     initFeature 'Menu',                     Menu
+    initFeature 'Index Generator (Menu)',   Index.menu
     initFeature 'Report Link',              ReportLink
     initFeature 'Thread Hiding (Menu)',     ThreadHiding.menu
     initFeature 'Reply Hiding (Menu)',      PostHiding.menu
@@ -92,9 +96,7 @@ Main =
     initFeature 'Quote Inlining',           QuoteInline
     initFeature 'Quote Previewing',         QuotePreview
     initFeature 'Quote Backlinks',          QuoteBacklink
-    initFeature 'Mark Quotes of You',       QuoteYou
-    initFeature 'Mark OP Quotes',           QuoteOP
-    initFeature 'Mark Cross-thread Quotes', QuoteCT
+    initFeature 'Quote Markers',            QuoteMarkers
     initFeature 'Anonymize',                Anonymize
     initFeature 'Color User IDs',           IDColor
     initFeature 'Time Formatting',          Time
@@ -130,10 +132,6 @@ Main =
     $('link[href*=mobile]', d.head)?.disabled = true
     $.addClass doc, 'fourchan-x', '<% if (type === 'crx') { %>blink<% } else { %>gecko<% } %>'
     $.addStyle Main.css
-
-    if g.VIEW is 'catalog'
-      $.addClass doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace /_+/g, '-'
-      return
 
     style          = 'yotsuba-b'
     mainStyleSheet = $ 'link[title=switch]', d.head

@@ -25,8 +25,6 @@ Header =
       innerHTML: '<input type=checkbox name="Header auto-hide on scroll"> Auto-hide header on scroll'
     barPositionToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Bottom header"> Bottom header'
-    catalogToggler = $.el 'label',
-      innerHTML: '<input type=checkbox name="Header catalog links"> Use catalog board links'
     topBoardToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Top Board List"> Top original board list'
     botBoardToggler = $.el 'label',
@@ -40,7 +38,6 @@ Header =
     @headerToggler       = headerToggler.firstElementChild
     @scrollHeaderToggler = scrollHeaderToggler.firstElementChild
     @barPositionToggler  = barPositionToggler.firstElementChild
-    @catalogToggler      = catalogToggler.firstElementChild
     @topBoardToggler     = topBoardToggler.firstElementChild
     @botBoardToggler     = botBoardToggler.firstElementChild
     @customNavToggler    = customNavToggler.firstElementChild
@@ -48,7 +45,6 @@ Header =
     $.on @headerToggler,       'change', @toggleBarVisibility
     $.on @scrollHeaderToggler, 'change', @toggleHideBarOnScroll
     $.on @barPositionToggler,  'change', @toggleBarPosition
-    $.on @catalogToggler,      'change', @toggleCatalogLinks
     $.on @topBoardToggler,     'change', @toggleOriginalBoardList
     $.on @botBoardToggler,     'change', @toggleOriginalBoardList
     $.on @customNavToggler,    'change', @toggleCustomNav
@@ -74,7 +70,6 @@ Header =
         {el: headerToggler}
         {el: scrollHeaderToggler}
         {el: barPositionToggler}
-        {el: catalogToggler}
         {el: topBoardToggler}
         {el: botBoardToggler}
         {el: customNavToggler}
@@ -91,9 +86,6 @@ Header =
     $.ready ->
       if a = $ "a[href*='/#{g.BOARD}/']", $.id 'boardNavDesktopFoot'
         a.className = 'current'
-
-      Header.setCatalogLinks Conf['Header catalog links']
-      $.sync 'Header catalog links', Header.setCatalogLinks
 
     @enableDesktopNotifications()
 
@@ -120,10 +112,12 @@ Header =
     list = $ '#custom-board-list', Header.bar
     $.rmAll list
     return unless text
-    as = $$ '#full-board-list a[title]', Header.bar
-    nodes = text.match(/[\w@]+(-(all|title|replace|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
+    as = $$ '.boardList a[title]', Header.bar
+    re = /[\w@]+(-(all|title|replace|full|archive|(mode|sort|text):"[^"]+"))*|[^\w@]+/g
+    nodes = text.match(re).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
+
       if /^toggle-all/.test t
         a = $.el 'a',
           className: 'show-board-list-button'
@@ -131,31 +125,47 @@ Header =
           href: 'javascript:;'
         $.on a, 'click', Header.toggleBoardList
         return a
-      board = if /^current/.test t
-        g.BOARD.ID
+
+      boardID = t.split('-')[0]
+      boardID = g.BOARD.ID if boardID is 'current'
+      for a in as when a.textContent is boardID
+        a = a.cloneNode()
+        break
+      return $.tn boardID if a.parentNode # Not a clone.
+
+      a.textContent = if /-title/.test(t) or /-replace/.test(t) and boardID is g.BOARD.ID
+        a.title
+      else if /-full/.test t
+        "/#{boardID}/ - #{a.title}"
+      else if m = t.match /-text:"([^"]+)"/
+        m[1]
       else
-        t.match(/^[^-]+/)[0]
-      for a in as
-        if a.textContent is board
-          a = a.cloneNode true
+        boardID
 
-          a.textContent = if /-title/.test(t) or /-replace/.test(t) and $.hasClass a, 'current'
-            a.title
-          else if /-full/.test t
-            "/#{board}/ - #{a.title}"
-          else if m = t.match /-text:"(.+)"/
-            m[1]
-          else
-            a.textContent
+      if /-archive/.test t
+        if href = Redirect.to 'board', {boardID}
+          a.href = href
+        else
+          return a.firstChild # Its text node.
 
-          if m = t.match /-(index|catalog)/
-            a.dataset.only = m[1]
-            a.href = "//boards.4chan.org/#{board}/"
-            a.href += 'catalog' if m[1] is 'catalog'
+      if m = t.match /-mode:"([^"]+)"/
+        type = m[1].toLowerCase()
+        a.dataset.indexMode = switch type
+          when 'all threads' then 'all pages'
+          when 'paged', 'catalog' then type
+          else 'paged'
+      if m = t.match /-sort:"([^"]+)"/
+        type = m[1].toLowerCase()
+        a.dataset.indexSort = switch type
+          when 'bump order'    then 'bump'
+          when 'last reply'    then 'lastreply'
+          when 'creation date' then 'birth'
+          when 'reply count'   then 'replycount'
+          when 'file count'    then 'filecount'
+          else 'bump'
 
-          $.addClass a, 'navSmall' if board is '@'
-          return a
-      $.tn t
+      $.addClass a, 'navSmall' if boardID is '@'
+      a
     $.add list, nodes
 
   toggleBoardList: ->
@@ -218,21 +228,6 @@ Header =
   toggleBarPosition: ->
     $.cb.checked.call @
     Header.setBarPosition @checked
-
-  setCatalogLinks: (useCatalog) ->
-    Header.catalogToggler.checked = useCatalog
-    as = $$ [
-      '#board-list a'
-      '#boardNavDesktop a'
-      '#boardNavDesktopFoot a'
-    ].join ', '
-    path = if useCatalog then 'catalog' else ''
-    for a in as when a.hostname is 'boards.4chan.org' and not a.dataset.only
-      a.pathname = "/#{a.pathname.split('/')[1]}/#{path}"
-    return
-  toggleCatalogLinks: ->
-    $.cb.checked.call @
-    Header.setCatalogLinks @checked
 
   setTopBoardList: (show) ->
     Header.topBoardToggler.checked = show

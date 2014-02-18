@@ -7,16 +7,13 @@ QR.cooldown =
     $.off window, 'cooldown:timers', setTimers
     for type of QR.cooldown.types
       QR.cooldown.types[type] = +QR.cooldown.types[type]
-    QR.cooldown.upSpd = 0
-    QR.cooldown.upSpdAccuracy = .5
     key = "cooldown.#{g.BOARD}"
     $.get key, {}, (item) ->
       QR.cooldown.cooldowns = item[key]
       QR.cooldown.start()
     $.sync key, QR.cooldown.sync
   start: ->
-    return unless Conf['Cooldown']
-    return if QR.cooldown.isCounting
+    return if QR.cooldown.isCounting or !Object.keys(QR.cooldown.cooldowns).length
     QR.cooldown.isCounting = true
     QR.cooldown.count()
   sync: (cooldowns) ->
@@ -32,10 +29,6 @@ QR.cooldown =
     if delay
       cooldown = {delay}
     else
-      if post.file
-        upSpd = post.file.size / ((start - req.uploadStartTime) / $.SECOND)
-        QR.cooldown.upSpdAccuracy = ((upSpd > QR.cooldown.upSpd * .9) + QR.cooldown.upSpdAccuracy) / 2
-        QR.cooldown.upSpd = upSpd
       cooldown = {isReply, threadID}
     QR.cooldown.cooldowns[start] = cooldown
     $.set "cooldown.#{g.BOARD}", QR.cooldown.cooldowns
@@ -48,7 +41,7 @@ QR.cooldown =
       $.delete "cooldown.#{g.BOARD}"
   count: ->
     unless Object.keys(QR.cooldown.cooldowns).length
-      $.delete "#{g.BOARD}.cooldown"
+      $.delete "cooldown.#{g.BOARD}"
       delete QR.cooldown.isCounting
       delete QR.cooldown.seconds
       QR.status()
@@ -62,9 +55,10 @@ QR.cooldown =
     isReply = post.thread isnt 'new'
     hasFile = !!post.file
     seconds = null
-    {types, cooldowns, upSpd, upSpdAccuracy} = QR.cooldown
+    {types, cooldowns} = QR.cooldown
 
     for start, cooldown of cooldowns
+      start = +start
       if 'delay' of cooldown
         if cooldown.delay
           seconds = Math.max seconds, cooldown.delay--
@@ -76,8 +70,10 @@ QR.cooldown =
       if isReply is cooldown.isReply
         # Only cooldowns relevant to this post can set the seconds variable:
         #   reply cooldown with a reply, thread cooldown with a thread
-        elapsed = Math.floor (now - start) / $.SECOND
-        continue if elapsed < 0 # clock changed since then?
+        elapsed = (now - start) // $.SECOND
+        if elapsed < 0 # clock changed since then?
+          QR.cooldown.unset start
+          continue
         type = unless isReply
           'thread'
         else if hasFile
@@ -90,9 +86,6 @@ QR.cooldown =
         type   += '_intra' if isReply and +post.thread is cooldown.threadID
         seconds = Math.max seconds, types[type] - elapsed
 
-    if seconds and Conf['Cooldown Prediction'] and hasFile and upSpd
-      seconds -= Math.floor post.file.size / upSpd * upSpdAccuracy
-      seconds  = Math.max seconds, 0
     # Update the status when we change posting type.
     # Don't get stuck at some random number.
     # Don't interfere with progress status updates.

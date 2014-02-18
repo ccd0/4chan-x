@@ -188,7 +188,7 @@ Get =
 
     comment = bq.innerHTML
       # greentext
-      .replace(/(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class=quote>$2</span>$3')
+      .replace /(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class=quote>$2</span>$3'
       # quotes
       .replace /((&gt;){2}(&gt;\/[a-z\d]+\/)?\d+)/g, '<span class=deadlink>$1</span>'
 
@@ -233,5 +233,6 @@ Get =
     thread = g.threads["#{boardID}.#{threadID}"] or
       new Thread threadID, board
     post = new Post Build.post(o, true), thread, board, {isArchived: true}
+    $('.page-num', post.nodes.info).hidden = true
     Main.callbackNodes Post, [post]
     Get.insert post, root, context

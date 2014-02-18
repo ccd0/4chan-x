@@ -9,29 +9,25 @@
 <form>
   <div class="persona">
     <input type="button" id="dump-button" title="Dump list" value="+">
-    <input data-name="name"  list="list-name"  placeholder="Name"    class="field" size="1">
-    <input data-name="email" list="list-email" placeholder="E-mail"  class="field" size="1">
-    <input data-name="sub"   list="list-sub"   placeholder="Subject" class="field" size="1">
+    <input data-name="name"  name="name"  list="list-name"  placeholder="Name"    class="field">
+    <input data-name="email" name="email" list="list-email" placeholder="E-mail"  class="field">
+    <input data-name="sub"   name="sub"   list="list-sub"   placeholder="Subject" class="field">
   </div>
-  <div id="dump-list-container">
-    <div id="dump-list"></div>
-    <a href="javascript:;" id="add-post" class="fa fa-plus" title="Add a post"></a>
-  </div>
+  <div id="dump-list"></div>
+  <a href="javascript:;" id="add-post" class="fa fa-plus" title="Add a post"></a>
   <div class="textarea">
     <textarea data-name="com" placeholder="Comment" class="field"></textarea>
     <span id="char-count"></span>
   </div>
-  <div id="file-n-submit-container">
-    <input type="file" multiple>
-    <div id="file-n-submit">
-      <input type="submit">
-      <input type="button" id="qr-file-button" value="Choose files">
-      <span id="qr-no-file">No selected file</span>
-      <input id="qr-filename" data-name="filename" spellcheck="false">
-      <span id="qr-filesize"></span>
-      <a href="javascript:;" id="qr-filerm" class="fa fa-times-circle" title="Remove file"></a>
-      <input type="checkbox" id="qr-file-spoiler" title="Spoiler image">
-    </div>
+  <div id="file-n-submit">
+    <input type="file" hidden multiple>
+    <input type="submit">
+    <input type="button" id="qr-file-button" value="Choose files">
+    <span id="qr-no-file">No selected file</span>
+    <input id="qr-filename" data-name="filename" spellcheck="false">
+    <span id="qr-filesize"></span>
+    <a href="javascript:;" id="qr-filerm" class="fa fa-times-circle" title="Remove file"></a>
+    <input type="checkbox" id="qr-file-spoiler" title="Spoiler image">
   </div>
 </form>
 <datalist id="list-name"></datalist>

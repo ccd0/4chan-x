@@ -288,16 +288,8 @@ a[href="javascript:;"] {
 .tab-selected {
   font-weight: 700;
 }
-.section-container {
+#fourchanx-settings > section {
   flex: 1;
-  position: relative;
-}
-.section-container > section {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
   overflow: auto;
 }
 .section-sauce ul,
@@ -375,8 +367,14 @@ a[href="javascript:;"] {
 /* Index */
 :root.index-loading .navLinks,
 :root.index-loading .board,
-:root.index-loading .pagelist {
+:root.index-loading .pagelist,
+:root:not(.catalog-mode) #hidden-toggle,
+:root:not(.catalog-mode) #index-size {
   display: none;
+}
+#nav-links {
+  display: flex;
+  align-items: baseline;
 }
 #index-search {
   padding-right: 1.5em;
@@ -389,7 +387,9 @@ a[href="javascript:;"] {
 }
 #index-search-clear {
   color: gray;
-  margin-left: -1.25em;
+  position: relative;
+  left: -1.25em;
+  width: 0;
 }
 <% if (type === 'crx') { %>
 /* ``::-webkit-*'' selectors break selector lists on Firefox. */
@@ -400,6 +400,110 @@ a[href="javascript:;"] {
 }
 .summary {
   text-decoration: none;
+}
+.catalog-mode .board {
+  text-align: center;
+}
+.catalog-thread {
+  display: inline-flex;
+  text-align: left;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 2px 5px;
+  word-break: break-word;
+  vertical-align: top;
+}
+.catalog-small .catalog-thread {
+  width: 165px;
+  max-height: 320px;
+}
+.catalog-large .catalog-thread {
+  width: 270px;
+  max-height: 410px;
+}
+.thumb {
+  flex-shrink: 0;
+  position: relative;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 2px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, .25);
+}
+.thumb:not(.deleted-file):not(.no-file) {
+  min-width: 30px;
+  min-height: 30px;
+}
+.thumb.spoiler-file {
+  background-size: 100px;
+  width: 100px;
+  height: 100px;
+}
+.thumb.deleted-file {
+  background-size: 127px 13px;
+  width: 127px;
+  height: 13px;
+  padding: 20px 11px;
+}
+.thumb.no-file {
+  background-size: 77px 13px;
+  width: 77px;
+  height: 13px;
+  padding: 20px 36px;
+}
+.thread-icons > img {
+  width: 1em;
+  height: 1em;
+  margin: 0;
+  vertical-align: text-top;
+}
+.thumb:not(:hover):not(:focus) > .menu-button:not(.open):not(:focus) > i {
+  display: none;
+}
+.thumb > .menu-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.thumb > .menu-button > i {
+  width: 1em;
+  height: 1em;
+  padding: 1px;
+  border-radius: 0 2px 0 2px;
+  font-size: 14px;
+  text-align: center;
+<% if (type === 'userscript') { %>
+  line-height: normal;
+<% } %>
+}
+.thread-stats {
+  flex-shrink: 0;
+  cursor: help;
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+.catalog-thread > .subject {
+  flex-shrink: 0;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+.catalog-thread > .comment {
+  flex-shrink: 1;
+  align-self: stretch;
+  overflow: hidden;
+  text-align: center;
+}
+.thread-info {
+  position: fixed;
+  background-color: inherit;
+  padding: 2px;
+  border-radius: 2px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, .25);
+}
+.thread-info .post {
+  margin: 0;
 }
 
 /* Announcement Hiding */
@@ -428,7 +532,7 @@ a.hide-announcement {
 #updater > div:last-child {
   text-align: center;
 }
-#updater input[type=number] {
+#updater input[type="number"] {
   width: 4em;
 }
 #updater:not(:hover) > div:not(.move) {
@@ -597,6 +701,10 @@ a.hide-announcement {
 .filter-highlight > .reply {
   box-shadow: -5px 0 rgba(255, 0, 0, .5);
 }
+.pinned .thumb,
+.filter-highlight .thumb {
+  border: 2px solid rgba(255, 0, 0, .5);
+}
 
 /* Thread & Reply Hiding */
 .hide-thread-button,
@@ -655,6 +763,7 @@ a.hide-announcement {
 }
 .persona .field {
   flex: 1;
+  width: 0;
 }
 .persona .field:hover,
 .persona .field:focus {
@@ -679,28 +788,24 @@ a.hide-announcement {
 :root.gecko #dump-button {
   padding: 0;
 }
-#qr:not(.dump) #dump-list-container {
+#qr:not(.dump) #dump-list,
+#qr:not(.dump) #add-post {
   display: none;
 }
-#dump-list-container {
-  height: 100px;
+#dump-list {
+  counter-reset: qrpreviews;
+  width: 0;
+  min-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
   position: relative;
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
 }
-#dump-list {
-  counter-reset: qrpreviews;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  overflow: hidden;
-  position: absolute;
-  white-space: nowrap;
-}
 #dump-list:hover {
-  bottom: -12px;
+  padding-bottom: 12px;
+  margin-bottom: -12px;
   overflow-x: auto;
   z-index: 1;
 }
@@ -777,13 +882,11 @@ a.remove {
   vertical-align: bottom;
 }
 #add-post {
+  align-self: flex-end;
   font-size: 20px;
-  height: 20px;
-  width: 20px;
+  width: 1em;
+  margin-top: -1em;
   text-align: center;
-  position: absolute;
-  right: 0;
-  bottom: 0;
   z-index: 1;
 }
 #qr textarea {
@@ -819,23 +922,11 @@ a.remove {
   height: 57px;
   width: 300px;
 }
-#file-n-submit-container {
-  position: relative;
-}
 #file-n-submit {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
   display: flex;
   align-items: center;
 }
-#file-n-submit-container input[type='file'] {
-  /* Keep it to set an appropriate height to the container. */
-  visibility: hidden;
-}
-#file-n-submit-container input {
+#file-n-submit input {
   margin: 0;
 }
 #file-n-submit input[type='submit'] {
@@ -852,8 +943,9 @@ a.remove {
 #qr-no-file,
 #qr-filename,
 #qr-filesize,
+#qr-filerm,
 #qr-file-spoiler {
-  margin: 0 2px !important;
+  margin: 0 1px !important;
 }
 #qr-no-file {
   cursor: default;
@@ -864,17 +956,19 @@ a.remove {
   -moz-appearance: none;
   appearance: none;
   background: none;
-  border: none !important;
+  border: none;
   color: inherit;
   font: inherit;
   flex: 1;
+  width: 0;
+  padding: 0;
   text-overflow: ellipsis;
 }
 #qr-filesize {
   font-size: .8em;
 }
 #qr-filesize::before {
-  content: " (";
+  content: "(";
 }
 #qr-filesize::after {
   content: ")";
@@ -883,14 +977,6 @@ a.remove {
 /* Menu */
 .menu-button {
   position: relative;
-}
-.menu-button i:not(.fa-bars) {
-  border-top:   6px solid;
-  border-right: 4px solid transparent;
-  border-left:  4px solid transparent;
-  display: inline-block;
-  margin: 2px;
-  vertical-align: middle;
 }
 @media screen and (resolution: 1dppx) {
   .fa-bars {
@@ -970,8 +1056,10 @@ a.remove {
   margin: 0;
 }
 
-/* colored uid */
-
+/* Other */
+.linkified {
+  word-break: break-all;
+}
 .posteruid.painted  {
   padding: 0 5px;
   border-radius: 1em;

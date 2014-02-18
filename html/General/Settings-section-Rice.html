@@ -3,13 +3,14 @@
   <div><input name="boardnav" class="field" spellcheck="false"></div>
   <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div>
   <div>Board link: <code>board</code></div>
+  <div>Archive link: <code>board-archive</code></div>
   <div>Title link: <code>board-title</code></div>
   <div>Board link (Replace with title when on that board): <code>board-replace</code></div>
   <div>Full text link: <code>board-full</code></div>
   <div>Custom text link: <code>board-text:"VIP Board"</code></div>
-  <div>Index-only link: <code>board-index</code></div>
-  <div>Catalog-only link: <code>board-catalog</code></div>
-  <div>Combinations are possible: <code>board-index-text:"VIP Index"</code></div>
+  <div>Index mode: <code>board-mode:"type"</code> where type is <code>paged</code>, <code>all threads</code> or <code>catalog</code></div>
+  <div>Index sort: <code>board-sort:"type"</code> where type is <code>bump order</code>, <code>last reply</code>, <code>creation date</code>, <code>reply count</code> or <code>file count</code></div>
+  <div>Combinations are possible: <code>board-text:"VIP Catalog"-mode:"catalog"-sort:"creation date"</code></div>
   <div>Full board list toggle: <code>toggle-all</code></div>
 </fieldset>
 
@@ -32,7 +33,7 @@
 
 <fieldset>
   <legend>File Info Formatting <span class="warning" #{if Conf['File Info Formatting'] then 'hidden' else ''}>is disabled.</span></legend>
-  <div><input name="fileInfo" class="field" spellcheck="false">: <span class="fileText file-info-preview"></span></div>
+  <div><input name="fileInfo" class="field" spellcheck="false">: <span class="file-info file-info-preview"></span></div>
   <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>
   <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>
   <div>Spoiler indicator: <code>%p</code></div>

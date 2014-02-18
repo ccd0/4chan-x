@@ -1,6 +1,6 @@
 DeleteLink =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Delete Link']
+    return if !Conf['Menu'] or !Conf['Delete Link']
 
     div = $.el 'div',
       className: 'delete-link'

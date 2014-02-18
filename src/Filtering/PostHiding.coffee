@@ -1,6 +1,6 @@
 PostHiding =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Reply Hiding'] and !Conf['Reply Hiding Link']
+    return if !Conf['Reply Hiding'] and !Conf['Reply Hiding Link']
 
     @db = new DataBoard 'hiddenPosts'
     Post.callbacks.push
@@ -20,7 +20,7 @@ PostHiding =
 
   menu:
     init: ->
-      return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Reply Hiding Link']
+      return if !Conf['Menu'] or !Conf['Reply Hiding Link']
 
       # Hide
       div = $.el 'div',

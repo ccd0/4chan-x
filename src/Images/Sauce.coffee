@@ -1,6 +1,6 @@
 Sauce =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Sauce']
+    return if !Conf['Sauce']
 
     links = []
     for link in Conf['sauces'].split '\n'
@@ -15,7 +15,7 @@ Sauce =
       name: 'Sauce'
       cb:   @node
   createSauceLink: (link) ->
-    link = link.replace /%(T?URL|MD5|board)/g, (parameter) ->
+    link = link.replace /%(T?URL|MD5|board|name)/g, (parameter) ->
       switch parameter
         when '%TURL'
           "' + encodeURIComponent(post.file.thumbURL) + '"
@@ -25,6 +25,8 @@ Sauce =
           "' + encodeURIComponent(post.file.MD5) + '"
         when '%board'
           "' + encodeURIComponent(post.board) + '"
+        when '%name'
+          "' + encodeURIComponent(post.file.name) + '"
         else
           parameter
     text = if m = link.match(/;text:(.+)$/) then m[1] else link.match(/(\w+)\.\w+\//)[1]

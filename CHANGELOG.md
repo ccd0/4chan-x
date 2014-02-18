@@ -1,3 +1,72 @@
+## 3.18.0 - *2014-02-15*
+
+- Added `Image Size` setting for the catalog.
+- Added `Open threads in a new tab` setting for the catalog.
+- Added `board-mode:"type"` and `board-sort:"type"` parameters to custom board navigation.
+- Added OP name/date tooltip in the catalog.
+- Added a keybind to cycle through index sort types, `Ctrl+x` by default.
+- Added keybindings for index modes, `Ctrl+{1,2,3}` by default.
+
+### 3.17.1 - *2014-02-10*
+
+- `Index Mode` and `Index Sort` have been moved out of the header's menu into the index page.
+- Minor captcha fixes.
+
+## 3.17.0 - *2014-02-09*
+
+- Fixed captcha loading in the QR.
+- New setting: `Quote Markers`, enabled by default
+ - This merges `Mark Quotes of You`, `Mark OP Quotes` and `Mark Cross-thread Quotes` into one feature.
+ - Backlinks now also get these markers.
+ - Multiple markers are now more compact, for example `>>123 (You/OP)` instead of `>>123 (You) (OP)`.
+- New setting: `Image Hover in Catalog`
+ - Like `Image Hover`, but for the catalog only.
+
+### 3.16.5 - *2014-02-07*
+
+- Added `Archive link` to the Custom Board Navigation Rice
+- Added a setting to configure the number of threads per page for the paged mode of the index.
+- Dropped support for the official catalog.
+
+### 3.16.4 - *2014-02-04*
+
+- Firefox release only: fix catalog layout alignment.
+
+### 3.16.3 - *2014-02-04*
+
+- Firefox release only: fix catalog layout.
+
+### 3.16.2 - *2014-02-04*
+
+- More index navigation improvements:
+ - Threads in catalog mode have the usual menu.
+ - When in catalog mode, the menu now also allows to pin/unpin threads.
+- Minor bug fixes.
+
+### 3.16.1 - *2014-02-01*
+
+- More index navigation improvements:
+ - The index will now display how many threads are hidden.
+ - When in catalog mode, you can toggle between hidden/non-hidden threads.
+- Fixed a bug which prevented QR cooldowns from being pruned from storage.
+ - On Chrome, the storage could reach the quota and prevent 4chan X from saving data like QR name/mail or auto-watch for example.
+
+## 3.16.0 - *2014-01-30*
+
+- More index navigation improvements:
+ - New index mode: `catalog`<br>
+  ![catalog mode](img/changelog/3.16.0/0.png)
+ - When in catalog mode, use `Shift+Click` to hide, and `Alt+Click` to pin threads.
+ - Existing features affect the catalog mode such as:
+ <ul>
+  <li> Filter (hiding, highlighting)
+  <li> Thread Hiding
+  <li> Linkify
+  <li> Auto-GIF
+  <li> Image Hover
+ </ul>
+ - Support for the official catalog will be removed in the future, once the catalog mode for the index is deemed satisfactory.
+- Added `Original filename` variable to Sauce panel.
 - Added a `Reset Settings` button in the settings.
 
 ### 3.15.2 - *2014-01-22*

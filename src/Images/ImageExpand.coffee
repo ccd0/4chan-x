@@ -1,6 +1,6 @@
 ImageExpand =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Image Expansion']
+    return if !Conf['Image Expansion']
 
     @EAI = $.el 'a',
       className: 'expand-all-shortcut fa fa-expand'
@@ -133,7 +133,7 @@ ImageExpand =
 
     timeoutID = setTimeout ImageExpand.expand, 10000, post
     <% if (type === 'crx') { %>
-    $.ajax @src,
+    $.ajax post.file.URL,
       onloadend: ->
         return if @status isnt 404
         clearTimeout timeoutID
@@ -156,7 +156,7 @@ ImageExpand =
 
   menu:
     init: ->
-      return if g.VIEW is 'catalog' or !Conf['Image Expansion']
+      return if !Conf['Image Expansion']
 
       el = $.el 'span',
         textContent: 'Image Expansion'

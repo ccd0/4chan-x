@@ -1,6 +1,6 @@
 Keybinds =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Keybinds']
+    return if !Conf['Keybinds']
 
     for hotkey of Conf.hotkeys
       $.sync hotkey, Keybinds.sync
@@ -88,6 +88,17 @@ Keybinds =
         $('.prev button', Index.pagelist).click()
       when Conf['Search form']
         Index.searchInput.focus()
+      when Conf['Paged mode']
+        return unless g.VIEW is 'index' and Conf['Index Mode'] isnt 'paged'
+        Index.setIndexMode 'paged'
+      when Conf['All pages mode']
+        return unless g.VIEW is 'index' and Conf['Index Mode'] isnt 'all pages'
+        Index.setIndexMode 'all pages'
+      when Conf['Catalog mode']
+        return unless g.VIEW is 'index' and Conf['Index Mode'] isnt 'catalog'
+        Index.setIndexMode 'catalog'
+      when Conf['Cycle sort type']
+        Index.cycleSortType()
       # Thread Navigation
       when Conf['Next thread']
         return if g.VIEW isnt 'index'

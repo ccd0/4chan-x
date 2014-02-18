@@ -56,3 +56,6 @@
 :root.yotsuba .focused.entry {
   background: rgba(255, 255, 255, .33);
 }
+:root.yotsuba .thumb > .menu-button > i {
+  background: #FFE;
+}
