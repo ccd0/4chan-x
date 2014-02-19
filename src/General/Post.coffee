@@ -163,8 +163,10 @@ class Post
     @labels.push label unless label in @labels
     return if @isHidden
     @isHidden = true
+    for quotelink in Get.allQuotelinksLinkingTo @
+      $.addClass quotelink, 'filtered'
     if !@isReply
-      @thread.hide makeStub
+      @thread.hide()
       return
 
     if hideRecursively
@@ -172,18 +174,18 @@ class Post
       Recursive.apply 'hide', @, label, makeStub, true
       Recursive.add   'hide', @, label, makeStub, true
 
-    for quotelink in Get.allQuotelinksLinkingTo @
-      $.addClass quotelink, 'filtered'
-
     unless makeStub
       @nodes.root.hidden = true
       return
 
-    a = PostHiding.makeButton false
-    $.add a, $.tn " #{@getNameBlock()}"
+    @nodes.post.hidden = true
+    @nodes.post.previousElementSibling.hidden = true
     @nodes.stub = $.el 'div',
       className: 'stub'
-    $.add @nodes.stub, a
+    $.add @nodes.stub, [
+      PostHiding.makeButton false
+      $.tn " #{@getNameBlock()}"
+    ]
     $.add @nodes.stub, Menu.makeButton() if Conf['Menu']
     $.prepend @nodes.root, @nodes.stub
   show: (showRecursively=Conf['Recursive Hiding']) ->
@@ -192,6 +194,8 @@ class Post
     @labels = @labels.filter (label) ->
       # This is lame.
       !/^(Manually hidden|Recursively hidden|Hidden by)/.test label
+    for quotelink in Get.allQuotelinksLinkingTo @
+      $.rmClass quotelink, 'filtered'
     if !@isReply
       @thread.show()
       return
@@ -200,14 +204,13 @@ class Post
       Recursive.apply 'show', @, true
       Recursive.rm    'hide', @
 
-    for quotelink in Get.allQuotelinksLinkingTo @
-      $.rmClass quotelink, 'filtered'
-
-    if @nodes.stub
-      $.rm @nodes.stub
-      delete @nodes.stub
-    else
+    unless @nodes.stub
       @nodes.root.hidden = false
+      return
+    @nodes.post.hidden = false
+    @nodes.post.previousElementSibling.hidden = false
+    $.rm @nodes.stub
+    delete @nodes.stub
   highlight: (label, highlight, top) ->
     @labels.push label
     unless highlight in @highlights

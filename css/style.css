@@ -368,7 +368,6 @@ a[href="javascript:;"] {
 :root.index-loading .navLinks,
 :root.index-loading .board,
 :root.index-loading .pagelist,
-:root:not(.catalog-mode) #hidden-toggle,
 :root:not(.catalog-mode) #index-size {
   display: none;
 }
@@ -710,15 +709,12 @@ a.hide-announcement {
 .hide-post-button,
 .show-post-button {
   font-size: 14px;
+  line-height: 12px; /* Prevent the floating effect from affecting the thumbnail too */
 }
+.opContainer > .show-post-button,
 .hide-post-button {
   float: left;
   margin-right: 3px;
-  margin-bottom: -1em; /* Prevent the floating effect from affecting the thumbnail too */
-}
-.thread[hidden] + hr,
-.stub ~ * {
-  display: none !important;
 }
 .stub input {
   display: inline-block;

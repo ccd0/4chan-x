@@ -6,7 +6,8 @@ Labels =
       type: 'post'
       el: $.el 'div', textContent: 'Labels'
       order: 60
-      open: ({labels}, addSubEntry) ->
+      open: (post, addSubEntry) ->
+        {labels} = post.origin or post
         return false unless labels.length
         @subEntries.length = 0
         for label in labels

@@ -18,7 +18,7 @@ Config =
       'Anonymize':                    [false, 'Make everyone Anonymous.']
       'Filter':                       [true,  'Self-moderation placebo.']
       'Post Hiding':                  [true,  'Add buttons to hide threads and replies.']
-      'Stubs':                        [true,  'Show stubs of hidden threads / replies.']
+      'Stubs':                        [true,  'Show stubs of hidden threads and replies.']
       'Recursive Hiding':             [true,  'Hide replies of hidden posts, recursively.']
     'Images':
       'Auto-GIF':                     [false, 'Animate GIF thumbnails (disabled on /gif/, /wsg/).']
@@ -141,7 +141,6 @@ Config =
     'Threads per Page': 0
     'Open threads in a new tab': false
     'Show Replies': true
-    'Anchor Hidden Threads': true
     'Refreshed Navigation': false
   Header:
     'Header auto-hide':           false

@@ -38,15 +38,11 @@ Index =
     repliesEntry =
       el: $.el 'label',
         innerHTML: '<input type=checkbox name="Show Replies"> Show replies'
-    anchorEntry =
-      el: $.el 'label',
-        innerHTML: '<input type=checkbox name="Anchor Hidden Threads"> Anchor hidden threads'
-        title: 'Move hidden threads at the end of the index.'
     refNavEntry =
       el: $.el 'label',
         innerHTML: '<input type=checkbox name="Refreshed Navigation"> Refreshed navigation'
         title: 'Refresh index when navigating through pages.'
-    for label in [targetEntry, repliesEntry, anchorEntry, refNavEntry]
+    for label in [targetEntry, repliesEntry, refNavEntry]
       input = label.el.firstChild
       {name} = input
       input.checked = Conf[name]
@@ -56,15 +52,13 @@ Index =
           $.on input, 'change', @cb.target
         when 'Show Replies'
           $.on input, 'change', @cb.replies
-        when 'Anchor Hidden Threads'
-          $.on input, 'change', @cb.sort
 
     $.event 'AddMenuEntry',
       type: 'header'
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 90
-      subEntries: [threadNumEntry, targetEntry, repliesEntry, anchorEntry, refNavEntry]
+      subEntries: [threadNumEntry, targetEntry, repliesEntry, refNavEntry]
 
     $.addClass doc, 'index-loading'
     @update()
@@ -124,24 +118,7 @@ Index =
       $.event 'AddMenuEntry',
         type: 'post'
         el: $.el 'a', href: 'javascript:;'
-        order: 5
-        open: (post) ->
-          return false if Conf['Index Mode'] isnt 'catalog'
-          @el.textContent = if post.isHidden
-            'Unhide thread'
-          else
-            'Hide thread'
-          $.off @el, 'click', @cb if @cb
-          @cb = ->
-            $.event 'CloseMenu'
-            PostHiding.toggle post
-          $.on @el, 'click', @cb
-          true
-
-      $.event 'AddMenuEntry',
-        type: 'post'
-        el: $.el 'a', href: 'javascript:;'
-        order: 6
+        order: 19
         open: ({thread}) ->
           return false if Conf['Index Mode'] isnt 'catalog'
           @el.textContent = if thread.isPinned
@@ -573,9 +550,7 @@ Index =
     Main.handleErrors errors if errors
     Main.callbackNodes Post, posts
   buildCatalogViews: ->
-    threads = Index.sortedNodes
-      .map (threadRoot) -> Get.threadFromRoot threadRoot
-      .filter (thread) -> !thread.isHidden isnt Index.showHiddenThreads
+    threads = Index.sortedNodes.map (threadRoot) -> Get.threadFromRoot threadRoot
     catalogThreads = []
     for thread in threads when !thread.catalogView
       catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
@@ -608,16 +583,15 @@ Index =
         sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.replies - a.replies).map (data) -> data.no
       when 'filecount'
         sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.images - a.images).map (data) -> data.no
-    Index.sortedNodes = sortedThreadIDs.map (threadID) ->
-      Index.nodes[Index.liveThreadIDs.indexOf threadID]
+    Index.sortedNodes = sortedThreadIDs
+      .map (threadID) -> Index.nodes[Index.liveThreadIDs.indexOf threadID]
+      .filter (threadRoot) -> Get.threadFromRoot(threadRoot).isHidden is Index.showHiddenThreads
     if Index.isSearching
       Index.sortedNodes = Index.querySearch(Index.searchInput.value) or Index.sortedNodes
     # Sticky threads
     Index.sortOnTop (thread) -> thread.isSticky
     # Highlighted threads
     Index.sortOnTop (thread) -> thread.isOnTop or thread.isPinned
-    # Non-hidden threads
-    Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
   sortOnTop: (match) ->
     offset = 0
     for threadRoot, i in Index.sortedNodes when match Get.threadFromRoot threadRoot
