@@ -163,16 +163,18 @@ class Post
     @labels.push label unless label in @labels
     return if @isHidden
     @isHidden = true
+
     for quotelink in Get.allQuotelinksLinkingTo @
       $.addClass quotelink, 'filtered'
-    if !@isReply
-      @thread.hide()
-      return
 
     if hideRecursively
       label = "Recursively hidden for quoting No.#{@}"
       Recursive.apply 'hide', @, label, makeStub, true
       Recursive.add   'hide', @, label, makeStub, true
+
+    if !@isReply
+      @thread.hide()
+      return
 
     unless makeStub
       @nodes.root.hidden = true
@@ -194,15 +196,17 @@ class Post
     @labels = @labels.filter (label) ->
       # This is lame.
       !/^(Manually hidden|Recursively hidden|Hidden by)/.test label
+
     for quotelink in Get.allQuotelinksLinkingTo @
       $.rmClass quotelink, 'filtered'
-    if !@isReply
-      @thread.show()
-      return
 
     if showRecursively
       Recursive.apply 'show', @, true
       Recursive.rm    'hide', @
+
+    if !@isReply
+      @thread.show()
+      return
 
     unless @nodes.stub
       @nodes.root.hidden = false
