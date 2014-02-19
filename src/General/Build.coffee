@@ -243,10 +243,8 @@ Build =
     Build.spoilerRange[board] = data.custom_spoiler
 
     if (OP = board.posts[data.no]) and root = OP.nodes.root.parentNode
-      for node in $$ '.thread > :not(.stub):not(.opContainer)', root
-        $.rm node
-      if OP.thread.stub and stub = OP.thread.stub.firstElementChild.lastChild
-        stub.textContent = stub.textContent.replace /\d+ rep\w+/, "#{data.replies} repl#{if data.replies is 1 then 'y' else 'ies'}"
+      $.rmAll root
+      $.add root, OP.nodes.root
     else
       root = $.el 'div',
         className: 'thread'

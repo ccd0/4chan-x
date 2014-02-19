@@ -18,7 +18,7 @@ Config =
       'Anonymize':                    [false, 'Make everyone Anonymous.']
       'Filter':                       [true,  'Self-moderation placebo.']
       'Post Hiding':                  [true,  'Add buttons to hide threads and replies.']
-      'Stubs':                        [true,  'Show stubs of hidden threads and replies.']
+      'Stubs':                        [true,  'Show stubs of hidden posts.']
       'Recursive Hiding':             [true,  'Hide replies of hidden posts, recursively.']
     'Images':
       'Auto-GIF':                     [false, 'Animate GIF thumbnails (disabled on /gif/, /wsg/).']

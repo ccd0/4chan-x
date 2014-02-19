@@ -43,7 +43,7 @@ ImageExpand =
         for post in [post].concat post.clones
           {file} = post
           continue unless file and file.isImage and doc.contains post.nodes.root
-          if ImageExpand.on and
+          if ImageExpand.on and !post.isHidden and
             (!Conf['Expand spoilers'] and file.isSpoiler or
             Conf['Expand from here'] and Header.getTopOf(file.thumb) < 0)
               continue
@@ -76,7 +76,7 @@ ImageExpand =
   expand: (post, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
     {thumb} = post.file
-    return if post.isHidden or post.file.isExpanded or $.hasClass thumb, 'expanding'
+    return if post.file.isExpanded or $.hasClass thumb, 'expanding'
     $.addClass thumb, 'expanding'
     if post.file.fullImage
       # Expand already-loaded/ing picture.
