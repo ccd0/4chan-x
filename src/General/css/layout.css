@@ -10,7 +10,6 @@
 #styleSwitcher,
 #togglePostForm,
 .boardBanner > div,
-.mobile,
 .next form,
 .next span,
 .postingMode,
@@ -38,7 +37,8 @@ body > hr {
 /* Unnecessary */
 #qp input,
 #qp .rice,
-.inline .rice {
+.inline .rice,
+.mobile {
   display: none !important;
 }
 /* Hidden Content */
@@ -1117,8 +1117,9 @@ nav a,
   border-radius: 1em;
   font-size: 80%;
 }
-.postInfo {
+div.post div.postInfo {
   padding: 3px 3px 0;
+  display: block !important;
 }
 .postInfo > span {
   vertical-align: bottom;
