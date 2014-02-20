@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.3.8
-// @minGMVer     1.13
+// @version      1.3.9
+// @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
 // @description  Cross-browser userscript for maximum lurking on 4chan.
