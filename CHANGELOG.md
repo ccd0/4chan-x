@@ -1,3 +1,9 @@
+### v1.3.10 
+*2014-02-20*
+
+**Spittie**
+- I keep breaking and fixing stuff. But mostly breaking.
+
 ### v1.3.9 
 *2014-02-20*
 
