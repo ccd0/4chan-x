@@ -71,6 +71,8 @@ QR =
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
     {
+      catalog: ->
+        $.on d, 'IndexRefresh', QR.generatePostableThreadsList
       index: ->
         $.on d, 'IndexRefresh', QR.generatePostableThreadsList
       thread: ->
