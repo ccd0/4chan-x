@@ -1,3 +1,5 @@
+- Fix the QR breaking after a change with 4chan.
+
 ## 3.18.0 - *2014-02-15*
 
 - Added `Image Size` setting for the catalog.
