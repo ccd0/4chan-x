@@ -90,6 +90,11 @@ div.navLinks {
 .reply > .file > .fileText {
   margin: 0 20px;
 }
+.hashlink::before {
+  content: ' ';
+  visibility: hidden;
+}
+.inline + .hashlink,
 [hidden] {
   display: none !important;
 }
@@ -273,11 +278,11 @@ div.center:not(.ad-cnt) {
   font-weight: bold;
 }
 /* 4chan X link brackets */
-.brackets-wrap::after {
-  content: "]";
-}
 .brackets-wrap::before {
   content: "[";
+}
+.brackets-wrap::after {
+  content: "]";
 }
 /* Notifications */
 #notifications {
@@ -501,7 +506,13 @@ div.center:not(.ad-cnt) {
 .summary {
   text-decoration: none;
 }
-
+.index #returnlink,
+.index #bottomlink,
+.thread #index-last-refresh,
+.thread #index-search-clear,
+.thread #index-search {
+  display: none;
+}
 
 /* Announcement Hiding */
 :root.hide-announcement #globalMessage {
@@ -642,6 +653,15 @@ span.hide-announcement {
   text-decoration: none;
   border-bottom: 1px dashed;
 }
+@supports (text-decoration-style: dashed) or (-moz-text-decoration-style: dashed) {
+  .quotelink.forwardlink,
+  .backlink.forwardlink {
+    text-decoration: underline;
+    -moz-text-decoration-style: dashed;
+    text-decoration-style: dashed;
+    border-bottom: none;
+  }
+}
 .filtered {
   text-decoration: underline line-through;
 }
@@ -777,7 +797,7 @@ span.hide-announcement {
 :root.hide-original-post-form .postingMode,
 :root.hide-original-post-form #togglePostForm,
 #qr.autohide:not(.has-focus):not(:hover) > form,
-.postingMode ~ #qr select[data-name=thread],
+.thread #qr select[data-name=thread],
 #file-n-submit:not(.has-file) #qr-filerm {
   display: none;
 }
@@ -1187,7 +1207,7 @@ a:only-of-type > .remove {
   left: 0px;
   width: 200px;
 }
-.export, .import {
+.export, .import, .reset {
   cursor: pointer;
   text-decoration: none !important;
 }

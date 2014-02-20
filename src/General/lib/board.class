@@ -2,7 +2,7 @@ class Board
   toString: -> @ID
 
   constructor: (@ID) ->
-    @threads = {}
-    @posts   = {}
+    @threads = new SimpleDict
+    @posts   = new SimpleDict
 
     g.boards[@] = @

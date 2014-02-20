@@ -1,10 +1,12 @@
 Index =
   init: ->
-    return if g.VIEW isnt 'index' or g.BOARD.ID is 'f'
+    return if g.BOARD.ID is 'f' or g.VIEW is 'catalog' or !Conf['JSON Navigation']
+
+    @board = "#{g.BOARD}"
 
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'
-      title: 'Refresh Index'
+      title: 'Refresh'
       href: 'javascript:;'
       textContent: 'Refresh Index'
     $.on @button, 'click', @update
@@ -68,7 +70,6 @@ Index =
       subEntries: [repliesEntry, anchorEntry, refNavEntry, modeEntry, sortEntry]
 
     $.addClass doc, 'index-loading'
-    @update()
     @root = $.el 'div', className: 'board'
     @pagelist = $.el 'div',
       className: 'pagelist'
@@ -79,40 +80,49 @@ Index =
       innerHTML: <%= importHTML('Features/Index-navlinks') %>
     @searchInput = $ '#index-search', @navLinks
     @currentPage = @getCurrentPage()
-    $.on window, 'popstate', @cb.popstate
+
     $.on d, 'scroll', Index.scroll
     $.on @pagelist, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
-    $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
-      board = $ '.board'
-      $.replace board, Index.root
-      # Hacks:
-      # - When removing an element from the document during page load,
-      #   its ancestors will still be correctly created inside of it.
-      # - Creating loadable elements inside of an origin-less document
-      #   will not download them.
-      # - Combine the two and you get a download canceller!
-      #   Does not work on Firefox unfortunately. bugzil.la/939713
-      d.implementation.createDocument(null, null, null).appendChild board
+    $.on $('#returnlink a',  @navLinks), 'click', Navigate.navigate
+    $.on $('#cataloglink a', @navLinks), 'click', -> window.location = "//boards.4chan.org/#{g.BOARD}/catalog"
 
-      for navLink in $$ '.navLinks'
-        $.rm navLink
+    @update() if g.VIEW is 'index'
+    $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
+      if g.VIEW is 'index'
+        board = $ '.board'
+        $.replace board, Index.root
+        # Hacks:
+        # - When removing an element from the document during page load,
+        #   its ancestors will still be correctly created inside of it.
+        # - Creating loadable elements inside of an origin-less document
+        #   will not download them.
+        # - Combine the two and you get a download canceller!
+        #   Does not work on Firefox unfortunately. bugzil.la/939713
+        d.implementation.createDocument(null, null, null).appendChild board
+
+      $.rm navLink for navLink in $$ '.navLinks'
       $.after $.x('child::form/preceding-sibling::hr[1]'), Index.navLinks
       $.rmClass doc, 'index-loading'
-      $.asap (-> $('.pagelist') or d.readyState isnt 'loading'), ->
-        $.replace $('.pagelist'), Index.pagelist
+
+    $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
+      if pagelist = $('.pagelist')
+        $.replace pagelist, Index.pagelist
+      else
+        $.after $.id('delform'), Index.pagelist
 
   scroll: $.debounce 100, ->
-    return if Index.req or Conf['Index Mode'] isnt 'infinite' or ((d.body.scrollTop or doc.scrollTop) <= doc.scrollHeight - (300 + window.innerHeight))
-    pageNum = Index.getCurrentPage() + 1
+    return if Index.req or Conf['Index Mode'] isnt 'infinite' or (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
+    Index.pageNum = Index.getCurrentPage() unless Index.pageNum? # Avoid having to pushState to keep track of the current page
+
+    pageNum = Index.pageNum++
     return Index.endNotice() if pageNum >= Index.pagesNum
-    nodesPerPage = Index.threadsNumPerPage * 2
-    history.pushState null, '', "/#{g.BOARD}/#{pageNum}"
-    nodes = Index.sortedNodes[nodesPerPage * pageNum ... nodesPerPage * (pageNum + 1)]
-    Index.buildReplies nodes if Conf['Show Replies']
-    $.add Index.root, nodes
-    Index.setPage()
+
+    nodes = Index.buildSinglePage pageNum
+    Index.buildReplies   nodes if Conf['Show Replies']
+    Index.buildStructure nodes
+    Index.setPage pageNum
     
   endNotice: do ->
     notify = false
@@ -134,9 +144,6 @@ Index =
       Index.buildThreads()
       Index.sort()
       Index.buildIndex()
-    popstate: (e) ->
-      pageNum = Index.getCurrentPage()
-      Index.pageLoad pageNum if Index.currentPage isnt pageNum
     pageNav: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       switch e.target.nodeName
@@ -149,11 +156,6 @@ Index =
       return if a.textContent is 'Catalog'
       e.preventDefault()
       Index.userPageNav +a.pathname.split('/')[2]
-    link: (e) ->
-      return if g.VIEW isnt 'index' or /catalog/.test @href
-      e.preventDefault()
-      history.pushState null, '', @pathname
-      Index.update()
 
   scrollToIndex: ->
     Header.scrollToIfNeeded Index.root
@@ -198,8 +200,8 @@ Index =
       $.rmAll pagesRoot
       $.add pagesRoot, nodes
     Index.togglePagelist()
-  setPage: ->
-    pageNum    = Index.getCurrentPage()
+  setPage: (pageNum) ->
+    pageNum  or= Index.getCurrentPage()
     maxPageNum = Index.getMaxPageNum()
     pagesRoot  = $ '.pages', Index.pagelist
     # Previous/Next buttons
@@ -223,19 +225,37 @@ Index =
 
   update: (pageNum) ->
     return unless navigator.onLine
+    if g.VIEW is 'thread'
+      return ThreadUpdater.update() if Conf['Thread Updater']
+      return
+    unless d.readyState is 'loading' or Index.root.parentElement
+      $.replace $('.board'), Index.root
+    delete Index.pageNum
     Index.req?.abort()
     Index.notice?.close()
+
+    # This notice only displays if Index Refresh is taking too long
+    now = Date.now()
+    $.ready ->
+      Index.nTimeout = setTimeout (->
+        if Index.req and !Index.notice
+          Index.notice = new Notice 'info', 'Refreshing index...', 2
+      ), 3 * $.SECOND - (Date.now() - now)
+
     pageNum = null if typeof pageNum isnt 'number' # event
     onload = (e) -> Index.load e, pageNum
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
       onabort:   onload
       onloadend: onload
     ,
-      whenModified: true
+      whenModified: Index.board is "#{g.BOARD}"
     $.addClass Index.button, 'fa-spin'
+
   load: (e, pageNum) ->
     $.rmClass Index.button, 'fa-spin'
-    {req, notice} = Index
+    {req, notice, nTimeout} = Index
+    clearTimeout nTimeout if nTimeout
+    delete Index.nTimeout
     delete Index.req
     delete Index.notice
 
@@ -244,26 +264,40 @@ Index =
       notice.close()
       return
 
+    if req.status not in [200, 304]
+      err = "Index refresh failed. Error #{req.statusText} (#{req.status})"
+      if notice
+        notice.setType 'warning'
+        notice.el.lastElementChild.textContent = err
+        setTimeout notice.close, $.SECOND
+      else
+        new Notice 'warning', err, 1
+      return
+
+    Navigate.title()
+    Index.board = "#{g.BOARD}"
+
     try
       if req.status is 200
-        Index.parse JSON.parse(req.response), pageNum
+        Index.parse req.response, pageNum
       else if req.status is 304 and pageNum?
         Index.pageNav pageNum
     catch err
-      c.error 'Index failure:', err.stack
+      c.error "Index failure: #{err.message}", err.stack
       # network error or non-JSON content for example.
       if notice
         notice.setType 'error'
         notice.el.lastElementChild.textContent = 'Index refresh failed.'
-        setTimeout notice.close, 2 * $.SECOND
+        setTimeout notice.close, $.SECOND
       else
-        new Notice 'error', 'Index refresh failed.', 2
+        new Notice 'error', 'Index refresh failed.', 1
       return
 
-    timeEl = $ '#index-last-refresh', Index.navLinks
+    timeEl = $ '#index-last-refresh time', Index.navLinks
     timeEl.dataset.utc = Date.parse req.getResponseHeader 'Last-Modified'
     RelativeDates.update timeEl
     Index.scrollToIndex()
+
   parse: (pages, pageNum) ->
     Index.parseThreadList pages
     Index.buildThreads()
@@ -274,36 +308,38 @@ Index =
       return
     Index.buildIndex()
     Index.setPage()
+
   parseThreadList: (pages) ->
     Index.pagesNum          = pages.length
     Index.threadsNumPerPage = pages[0].threads.length
     Index.liveThreadData    = pages.reduce ((arr, next) -> arr.concat next.threads), []
     Index.liveThreadIDs     = Index.liveThreadData.map (data) -> data.no
-    for threadID, thread of g.BOARD.threads when thread.ID not in Index.liveThreadIDs
-      thread.collect()
+    g.BOARD.threads.forEach (thread) ->
+      thread.collect() unless thread.ID in Index.liveThreadIDs
     return
+
   buildThreads: ->
     Index.nodes = []
     threads     = []
     posts       = []
     for threadData, i in Index.liveThreadData
-      threadRoot = Build.thread g.BOARD, threadData
-      Index.nodes.push threadRoot, $.el 'hr'
-      if thread = g.BOARD.threads[threadData.no]
-        thread.setPage Math.floor i / Index.threadsNumPerPage
-        thread.setStatus 'Sticky', !!threadData.sticky
-        thread.setStatus 'Closed', !!threadData.closed
-      else
-        thread = new Thread threadData.no, g.BOARD
-        threads.push thread
-      continue if thread.ID of thread.posts
       try
+        threadRoot = Build.thread g.BOARD, threadData
+        if thread = g.BOARD.threads[threadData.no]
+          thread.setPage Math.floor i / Index.threadsNumPerPage
+          thread.setStatus 'Sticky', !!threadData.sticky
+          thread.setStatus 'Closed', !!threadData.closed
+        else
+          thread = new Thread threadData.no, g.BOARD
+          threads.push thread
+        Index.nodes.push threadRoot
+        continue if thread.ID of thread.posts
         posts.push new Post $('.opContainer', threadRoot), thread, g.BOARD
       catch err
         # Skip posts that we failed to parse.
         errors = [] unless errors
         errors.push
-          message: "Parsing of Post No.#{thread} failed. Post will be skipped."
+          message: "Parsing of Thread No.#{thread} failed. Thread will be skipped."
           error: err
     Main.handleErrors errors if errors
 
@@ -312,9 +348,10 @@ Index =
     Main.callbackNodes Thread, threads
     Main.callbackNodes Post,   posts
     $.event 'IndexRefresh'
+
   buildReplies: (threadRoots) ->
     posts = []
-    for threadRoot in threadRoots by 2
+    for threadRoot in threadRoots
       thread = Get.threadFromRoot threadRoot
       i = Index.liveThreadIDs.indexOf thread.ID
       continue unless lastReplies = Index.liveThreadData[i].last_replies
@@ -336,57 +373,99 @@ Index =
 
     Main.handleErrors errors if errors
     Main.callbackNodes Post, posts
+
   sort: ->
-    switch Conf['Index Sort']
-      when 'bump'
-        sortedThreadIDs = Index.liveThreadIDs
-      when 'lastreply'
-        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) ->
-          a = a.last_replies[a.last_replies.length - 1] if 'last_replies' of a
-          b = b.last_replies[b.last_replies.length - 1] if 'last_replies' of b
+    {liveThreadIDs, liveThreadData} = Index
+    sortedThreadIDs = {
+      lastreply:
+        [liveThreadData...].sort((a, b) ->
+          a = num[num.length - 1] if (num = a.last_replies)
+          b = num[num.length - 1] if (num = b.last_replies)
           b.no - a.no
-        ).map (data) -> data.no
-      when 'birth'
-        sortedThreadIDs = [Index.liveThreadIDs...].sort (a, b) -> b - a
-      when 'replycount'
-        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.replies - a.replies).map (data) -> data.no
-      when 'filecount'
-        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.images - a.images).map (data) -> data.no
-    Index.sortedNodes = []
+        ).map (post) -> post.no
+      bump:       liveThreadIDs
+      birth:      [liveThreadIDs... ].sort (a, b) -> b - a
+      replycount: [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
+      filecount:  [liveThreadData...].sort((a, b) -> b.images  - a.images ).map (post) -> post.no
+    }[Conf['Index Sort']]
+    Index.sortedNodes = sortedNodes = new RandomAccessList
+    {nodes} = Index
     for threadID in sortedThreadIDs
-      i = Index.liveThreadIDs.indexOf(threadID) * 2
-      Index.sortedNodes.push Index.nodes[i], Index.nodes[i + 1]
-    if Index.isSearching
-      Index.sortedNodes = Index.querySearch(Index.searchInput.value) or Index.sortedNodes
-    # Sticky threads
-    Index.sortOnTop (thread) -> thread.isSticky
-    # Highlighted threads
-    Index.sortOnTop((thread) -> thread.isOnTop) if Conf['Filter']
-    # Non-hidden threads
-    Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
+      sortedNodes.push nodes[Index.liveThreadIDs.indexOf(threadID)]
+    if Index.isSearching and nodes = Index.querySearch(Index.searchInput.value)
+      Index.sortedNodes = new RandomAccessList nodes
+    items = [
+      # Sticky threads
+      fn:  (thread) -> thread.isSticky
+      cnd: true
+    , # Highlighted threads
+      fn:  (thread) -> thread.isOnTop
+      cnd: Conf['Filter']
+    , # Non-hidden threads
+      fn:  (thread) -> !thread.isHidden
+      cnd: Conf['Anchor Hidden Threads']
+    ]
+    i = 0
+    while item = items[i++]
+      {fn, cnd} = item
+      Index.sortOnTop fn if cnd
+    return
+
   sortOnTop: (match) ->
     offset = 0
-    for threadRoot, i in Index.sortedNodes by 2 when match Get.threadFromRoot threadRoot
-      Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
+    {sortedNodes} = Index
+    threadRoot = sortedNodes.first
+    while threadRoot
+      if match Get.threadFromRoot threadRoot.data
+        target = sortedNodes.first
+        j = 0
+        while j++ < offset
+          target = target.next
+        unless threadRoot is target
+          offset++
+          sortedNodes.before target, threadRoot
+      threadRoot = threadRoot.next
     return
+
   buildIndex: ->
     if Conf['Index Mode'] isnt 'all pages'
-      pageNum = Index.getCurrentPage()
-      nodesPerPage = Index.threadsNumPerPage * 2
-      nodes = Index.sortedNodes[nodesPerPage * pageNum ... nodesPerPage * (pageNum + 1)]
+      nodes = Index.buildSinglePage Index.getCurrentPage()
     else
-      nodes = Index.sortedNodes
+      nodes = [(target = Index.sortedNodes.first).data]
+      while target = target.next
+        nodes.push target.data
     $.rmAll Index.root
     $.rmAll Header.hover
     Index.buildReplies nodes if Conf['Show Replies']
-    $.event 'IndexBuild', nodes
-    $.add Index.root, nodes
+    Index.buildStructure nodes
+
+  buildSinglePage: (pageNum) ->
+    nodes = []
+    nodesPerPage = Index.threadsNumPerPage
+    offset = nodesPerPage * pageNum
+    end    = offset + nodesPerPage
+    target = Index.sortedNodes.order()[offset]
+    Index.sortedNodes
+    while (offset++ <= end) and target
+      nodes.push target.data
+      target = target.next
+    nodes
+
+  buildStructure: (nodes) ->
+    result = $.frag()
+    i = 0
+    $.add result, [node, $.el 'hr'] while node = nodes[i++]
+    $.add Index.root, result
+    $.rm hr for hr in $$ 'hr + hr', Index.root # Temp fix until I figure out where I fucked up
+    $.event 'IndexBuild', result
 
   isSearching: false
+
   clearSearch: ->
     Index.searchInput.value = null
     Index.onSearchInput()
     Index.searchInput.focus()
+
   onSearchInput: ->
     if Index.isSearching = !!Index.searchInput.value.trim()
       unless Index.searchInput.dataset.searching
@@ -396,6 +475,7 @@ Index =
       else
         pageNum = Index.getCurrentPage()
     else
+      return unless Index.searchInput.dataset.searching
       pageNum = Index.pageBeforeSearch
       delete Index.pageBeforeSearch
       <% if (type === 'userscript') { %>
@@ -413,15 +493,21 @@ Index =
       Index.setPage()
     else
       Index.pageNav pageNum
+
   querySearch: (query) ->
     return unless keywords = query.toLowerCase().match /\S+/g
     Index.search keywords
-  search: (keywords) ->
-    found = []
-    for threadRoot, i in Index.sortedNodes by 2
-      if Index.searchMatch Get.threadFromRoot(threadRoot), keywords
-        found.push Index.sortedNodes[i], Index.sortedNodes[i + 1]
+
+  search: (keywords) -> 
+    found  = []
+    target = Index.sortedNodes.first
+    while target
+      {data} = target
+      if Index.searchMatch Get.threadFromRoot(data), keywords
+        found.push data
+      target = target.next
     found
+
   searchMatch: (thread, keywords) ->
     {info, file} = thread.OP
     text = []

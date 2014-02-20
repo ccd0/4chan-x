@@ -30,8 +30,18 @@ ImageExpand =
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       e.preventDefault()
       ImageExpand.toggle Get.postFromNode @
+
     toggleAll: ->
       $.event 'CloseMenu'
+      toggle = (post) ->
+        {file} = post
+        return unless file and file.isImage and doc.contains post.nodes.root
+        if ImageExpand.on and
+          (!Conf['Expand spoilers'] and file.isSpoiler or
+          Conf['Expand from here'] and Header.getTopOf(file.thumb) < 0)
+            return
+        $.queueTask func, post
+
       if ImageExpand.on = $.hasClass ImageExpand.EAI, 'expand-all-shortcut'
         ImageExpand.EAI.className = 'contract-all-shortcut fa fa-compress'
         ImageExpand.EAI.title     = 'Contract All Images'
@@ -40,16 +50,12 @@ ImageExpand =
         ImageExpand.EAI.className = 'expand-all-shortcut fa fa-expand'
         ImageExpand.EAI.title     = 'Expand All Images'
         func = ImageExpand.contract
-      for ID, post of g.posts
-        for post in [post].concat post.clones
-          {file} = post
-          continue unless file and file.isImage and doc.contains post.nodes.root
-          if ImageExpand.on and
-            (!Conf['Expand spoilers'] and file.isSpoiler or
-            Conf['Expand from here'] and Header.getTopOf(file.thumb) < 0)
-              continue
-          $.queueTask func, post
-      return
+
+      g.posts.forEach (post) ->
+        toggle post
+        toggle post for post in post.clones
+        return
+
     setFitness: ->
       (if @checked then $.addClass else $.rmClass) doc, @name.toLowerCase().replace /\s+/g, '-'
 
@@ -147,10 +153,19 @@ ImageExpand =
         return
 
     timeoutID = setTimeout ImageExpand.expand, 10000, post
+    <% if (type === 'crx') { %>
+    $.ajax @src,
+      onloadend: ->
+        return if @status isnt 404
+        clearTimeout timeoutID
+        post.kill true
+    ,
+      type: 'head'
+    <% } else { %>
     # XXX CORS for i.4cdn.org WHEN?
     $.ajax "//a.4cdn.org/#{post.board}/res/#{post.thread}.json", onload: ->
       return if @status isnt 200
-      for postObj in JSON.parse(@response).posts
+      for postObj in @response.posts
         break if postObj.no is post.ID
       if postObj.no isnt post.ID
         clearTimeout timeoutID
@@ -158,6 +173,7 @@ ImageExpand =
       else if postObj.filedeleted
         clearTimeout timeoutID
         post.kill true
+    <% } %>
 
   menu:
     init: ->

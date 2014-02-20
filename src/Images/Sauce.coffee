@@ -15,19 +15,17 @@ Sauce =
       name: 'Sauce'
       cb:   @node
   createSauceLink: (link) ->
-    link = link.replace /%(T?URL|MD5|board)/ig, (parameter) ->
-      switch parameter
-
-        when '%TURL'
-          "' + encodeURIComponent(post.file.thumbURL) + '"
-        when '%URL'
-          "' + encodeURIComponent(post.file.URL) + '"
-        when '%MD5'
-          "' + encodeURIComponent(post.file.MD5) + '"
-        when '%board'
-          "' + encodeURIComponent(post.board) + '"
-        else
-          parameter
+    link = link.replace /%(T?URL|MD5|board|name)/g, (parameter) ->
+      return (if type = {
+        '%TURL':  'post.file.thumbURL'
+        '%URL':   'post.file.URL'
+        '%MD5':   'post.file.MD5'
+        '%board': 'post.board'
+        '%name':  'post.file.name'
+      }[parameter]
+        "' + encodeURIComponent(#{type}) + '"
+      else
+        parameter)
     text = if m = link.match(/;text:(.+)$/) then m[1] else link.match(/(\w+)\.\w+\//)[1]
     link = link.replace /;text:.+$/, ''
     Function 'post', 'a', """

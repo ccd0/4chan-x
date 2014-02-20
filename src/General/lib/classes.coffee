@@ -6,3 +6,4 @@
 <%= grunt.file.read('src/General/lib/databoard.class') %>
 <%= grunt.file.read('src/General/lib/notice.class') %>
 <%= grunt.file.read('src/General/lib/randomaccesslist.class') %>
+<%= grunt.file.read('src/General/lib/simpledict.class') %>

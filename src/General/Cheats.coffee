@@ -1,9 +1,11 @@
 # I am bad at JavaScript and if you reuse this, so are you.
-Array::indexOf = (val) ->
-  i = @length
-  while i--
+Array::indexOf = (val, i) ->
+  i or= 0
+  len = @length
+  while i < len
     return i if @[i] is val
-  return i
+    i++
+  return -1
 
 # Update CoffeeScript's reference to [].indexOf
 # Reserved keywords are ignored in embedded javascript.

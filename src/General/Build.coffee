@@ -208,7 +208,8 @@ Build =
       className: 'summary'
       textContent: text.join ' '
       href: "/#{boardID}/res/#{threadID}"
-  thread: (board, data) ->
+
+  thread: (board, data, full) ->
     Build.spoilerRange[board] = data.custom_spoiler
 
     if (OP = board.posts[data.no]) and root = OP.nodes.root.parentNode
@@ -218,6 +219,10 @@ Build =
         className: 'thread'
         id: "t#{data.no}"
 
+    $.add root, Build[if full then 'fullThread' else 'excerptThread'] board, data, OP
+    root
+
+  excerptThread: (board, data, OP) ->
     nodes = [if OP then OP.nodes.root else Build.postFromObject data, board.ID]
     if data.omitted_posts or !Conf['Show Replies'] and data.replies
       [posts, files] = if Conf['Show Replies']
@@ -226,6 +231,6 @@ Build =
         # XXX data.images is not accurate.
         [data.replies, data.omitted_images + data.last_replies.filter((data) -> !!data.ext).length]
       nodes.push Build.summary board.ID, data.no, posts, files
+    nodes
 
-    $.add root, nodes
-    root
+  fullThread: (board, data) -> Build.postFromObject data, board.ID

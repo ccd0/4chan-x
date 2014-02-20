@@ -2,13 +2,14 @@
   <div class=sections-list></div>
   <p class='imp-exp-result warning'></p>
   <div class=credits>
-      <a class=export>Export</a> |
-      <a class=import>Import</a> |
-      <input type=file style='display: none;'>
+      <a class=export>Export</a>&nbsp|&nbsp
+      <a class=import>Import</a>&nbsp|&nbsp
+      <a class=reset>Reset Settings</a>&nbsp|&nbsp
+      <input type=file hidden>
     <a href='<%= meta.page %>' target=_blank><%= meta.name %></a> |
     <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md' target=_blank>#{g.VERSION}</a> |
     <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/README.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |
-    <a href=javascript:; class=close title=Close>×</a>
+    <a href=javascript:; class='close fa fa-times' title=Close></a>
   </div>
 </nav>
 <div class=section-container><section></section></div>

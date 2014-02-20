@@ -5,6 +5,4 @@ doc  = d.documentElement
 g    =
   VERSION:   '<%= version %>'
   NAMESPACE: '<%= meta.name %>.'
-  boards:  {}
-  threads: {}
-  posts:   {}
+  boards:    {}

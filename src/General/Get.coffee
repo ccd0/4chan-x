@@ -1,13 +1,13 @@
 Get =
   threadExcerpt: (thread) ->
     {OP} = thread
-    excerpt = OP.info.subject?.trim() or
+    excerpt = "/#{thread.board}/ - " + (
+      OP.info.subject?.trim() or
       OP.info.comment.replace(/\n+/g, ' // ') or
       Conf['Anonymize'] and 'Anonymous' or
-      $('.nameBlock', OP.nodes.info).textContent.trim()
-    if excerpt.length > 70
-      excerpt = "#{excerpt[...67]}..." 
-    "/#{thread.board}/ - #{excerpt}"
+      $('.nameBlock', OP.nodes.info).textContent.trim())
+    return "#{excerpt[...70]}..." if excerpt.length > 73
+    excerpt
   threadFromRoot: (root) ->
     g.threads["#{g.BOARD}.#{root.id[1..]}"]
   threadFromNode: (node) ->
@@ -40,24 +40,28 @@ Get =
   allQuotelinksLinkingTo: (post) ->
     # Get quotelinks & backlinks linking to the given post.
     quotelinks = []
+    {posts} = g
+    fullID = {post}
+    handleQuotes = (qPost, type) ->
+      quotelinks.push qPost.nodes[type]...
+      quotelinks.push clone.nodes[type]... for clone in qPost.clones
+      return
     # First:
     #   In every posts,
     #   if it did quote this post,
     #   get all their backlinks.
-    for ID, quoterPost of g.posts
-      if post.fullID in quoterPost.quotes
-        for quoterPost in [quoterPost].concat quoterPost.clones
-          quotelinks.push.apply quotelinks, quoterPost.nodes.quotelinks
+    posts.forEach (qPost) ->
+      if fullID in qPost.quotes
+        handleQuotes qPost, 'quotelinks' 
+
     # Second:
     #   If we have quote backlinks:
     #   in all posts this post quoted
     #   and their clones,
     #   get all of their backlinks.
     if Conf['Quote Backlinks']
-      for quote in post.quotes
-        continue unless quotedPost = g.posts[quote]
-        for quotedPost in [quotedPost].concat quotedPost.clones
-          quotelinks.push.apply quotelinks, [quotedPost.nodes.backlinks...]
+      handleQuotes qPost, 'backlinks' for quote in post.quotes when qPost = posts[quote]
+
     # Third:
     #   Filter out irrelevant quotelinks.
     quotelinks.filter (quotelink) ->
@@ -76,6 +80,7 @@ Get =
       $.cache url,
         -> Get.archivedPost @, boardID, postID, root, context
       ,
+        responseType: 'json'
         withCredentials: url.archive.withCredentials
   insert: (post, root, context) ->
     # Stop here if the container has been removed while loading.
@@ -114,7 +119,7 @@ Get =
             "Error #{req.statusText} (#{req.status})."
       return
 
-    posts = JSON.parse(req.response).posts
+    {posts} = req.response
     Build.spoilerRange[boardID] = posts[0].custom_spoiler
     for post in posts
       break if post.no is postID # we found it!
@@ -145,7 +150,7 @@ Get =
       Get.insert post, root, context
       return
 
-    data = JSON.parse req.response
+    data = req.response
     if data.error
       $.addClass root, 'warning'
       root.textContent = data.error
@@ -211,28 +216,16 @@ Get =
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
   parseMarkup: (text) ->
-    switch text
-      when '\n'
-        '<br>'
-      when '[b]'
-        '<b>'
-      when '[/b]'
-        '</b>'
-      when '[spoiler]'
-        '<s>'
-      when '[/spoiler]'
-        '</s>'
-      when '[code]'
-        '<pre class=prettyprint>'
-      when '[/code]'
-        '</pre>'
-      when '[moot]'
-        '<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">'
-      when '[/moot]'
-        '</div>'
-      when '[banned]'
-        '<strong style="color: red;">'
-      when '[/banned]'
-        '</strong>'
-      else
-        text.replace ':lit', ''
+    {
+      '\n':         '<br>'
+      '[b]':        '<b>'
+      '[/b]':       '</b>'
+      '[spoiler]':  '<s>'
+      '[/spoiler]': '</s>'
+      '[code]':     '<pre class=prettyprint>'
+      '[/code]':    '</pre>'
+      '[moot]':     '<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">'
+      '[/moot]':    '</div>'
+      '[banned]':   '<strong style="color: red;">'
+      '[/banned]':  '</strong>'
+    }[text] or text.replace ':lit', ''

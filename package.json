@@ -21,22 +21,22 @@
     "min": {
       "chrome": "31",
       "firefox": "26",
-      "greasemonkey": "1.13"
+      "greasemonkey": "1.14"
     }
   },
   "devDependencies": {
-    "font-awesome": "https://github.com/FortAwesome/Font-Awesome/archive/v4.0.3.tar.gz",
-    "grunt": "~0.4.1",
-    "grunt-bump": "~0.0.11",
-    "grunt-concurrent": "~0.4.0",
+    "font-awesome": "~4.0.3",
+    "grunt": "~0.4.2",
+    "grunt-bump": "~0.0.13",
+    "grunt-concurrent": "~0.4.3",
     "grunt-contrib-clean": "~0.5.0",
-    "grunt-contrib-coffee": "~0.8.0",
-    "grunt-contrib-compress": "~0.5.2",
+    "grunt-contrib-coffee": "~0.8.2",
+    "grunt-contrib-compress": "~0.6.0",
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-copy": "~0.5.0",
     "grunt-contrib-watch": "~0.5.3",
-    "grunt-shell": "~0.6.0",
-    "load-grunt-tasks": "~0.2.0"
+    "grunt-shell": "~0.6.4",
+    "load-grunt-tasks": "~0.2.1"
   },
   "repository": {
     "type": "git",

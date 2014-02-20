@@ -7,6 +7,10 @@ ImageLoader =
       name: 'Image Replace'
       cb:   @node
     
+    Thread.callbacks.push
+      name: 'Image Replace'
+      cb:   @thread
+    
     return unless Conf['Image Prefetching'] and g.VIEW is 'thread'
     
     prefetch = $.el 'label',
@@ -19,6 +23,9 @@ ImageLoader =
       type: 'header'
       el: prefetch
       order: 104
+  
+  thread: ->
+    ImageLoader.thread = @
 
   node: ->
     return if @isClone or @isHidden or @thread.isHidden or !@file?.isImage
@@ -38,5 +45,5 @@ ImageLoader =
   toggle: ->
     enabled = Conf['prefetch'] = @checked
     if enabled
-      ImageLoader.node.call post for id, post of g.threads["#{g.BOARD.ID}.#{g.THREADID}"].posts
+      ImageLoader.thread.posts.forEach ImageLoader.node.call
     return

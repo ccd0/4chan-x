@@ -13,31 +13,48 @@ QuoteThreading =
     input = $ 'input', @controls
     $.on input, 'change', @toggle
 
-    $.event 'AddMenuEntry',
+    $.event 'AddMenuEntry', @entry =
       type:  'header'
       el:    @controls
       order: 98
 
-    $.on d, '4chanXInitFinished', @setup unless Conf['Unread Count']
+    $.on d, '4chanXInitFinished', @ready unless Conf['Unread Count']
 
     Post.callbacks.push
       name: 'Quote Threading'
       cb:   @node
 
-  setup: ->
-    $.off d, '4chanXInitFinished', QuoteThreading.setup
+  disconnect: ->
+    return unless Conf['Quote Threading'] and g.VIEW is 'thread'
+    input = $ 'input', @controls
+    $.off input, 'change', @toggle
+
+    $.event 'rmMenuEntry', @entry
+
+    delete @enabled
+    delete @controls
+    delete @entry
+
+    Post.callbacks.disconnect 'Quote Threading'
+
+  ready: ->
+    $.off d, '4chanXInitFinished', QuoteThreading.ready
     QuoteThreading.force()
 
   force: ->
-    post.cb true for ID, post of g.posts when post.cb
-    return
+    g.posts.forEach (post) ->
+      post.cb true if post.cb
+
+    if Conf['Unread Count'] and Unread.thread.OP.nodes.root.parentElement.parentElement
+      Unread.read()
+      Unread.update()
 
   node: ->
     {posts} = g
     return if @isClone or not QuoteThreading.enabled
-    Unread.posts.push @ if Conf['Unread Count']
 
-    return if @thread.OP is @ or !(post = posts[@fullID]) or post.isHidden # Filtered
+    Unread.posts.push @ if Conf['Unread Count']
+    return if @thread.OP is @ or @isHidden # Filtered
 
     keys = []
     len = g.BOARD.ID.length + 1
@@ -77,11 +94,11 @@ QuoteThreading =
 
     return true unless Conf['Unread Count']
 
-    if posts[post.ID]
-      posts.after post, @
+    if post = posts[post.ID]
+      posts.after post, posts[@ID]
 
     else
-      posts.prepend @
+      posts.prepend posts[@ID]
 
     return true
 
@@ -93,8 +110,10 @@ QuoteThreading =
       thread = $('.thread')
       posts = []
       nodes = []
+      
+      g.posts.forEach (post) ->
+        posts.push post unless post is post.thread.OP or post.isClone
 
-      posts.push post for ID, post of g.posts when not (post is post.thread.OP or post.isClone)
       posts.sort (a, b) -> a.ID - b.ID
 
       nodes.push post.nodes.root for post in posts
@@ -103,7 +122,7 @@ QuoteThreading =
       containers = $$ '.threadContainer', thread
       $.rm container for container in containers
       $.rmClass post, 'threadOP' for post in $$ '.threadOP'
-    
+
     return
 
   kb: ->

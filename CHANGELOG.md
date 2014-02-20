@@ -11,6 +11,8 @@
 - Fix QR
 **Spittie**
 - Better url handling
+**ParrotParrot**:
+- Added `Original filename` variable to Sauce panel.
 
 ### v1.3.7 
 *2014-02-15*
