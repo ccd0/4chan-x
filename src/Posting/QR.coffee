@@ -1,4 +1,5 @@
 QR =
+  mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/x-shockwave-flash', '']
   init: ->
     return if !Conf['Quick Reply']
 
@@ -431,7 +432,6 @@ QR =
     }
     
     # Allow only this board's supported files.
-    mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/x-shockwave-flash', '']
     nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
 
     QR.spoiler = !!$ 'input[name=spoiler]'
