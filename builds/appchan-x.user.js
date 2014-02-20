@@ -8202,6 +8202,7 @@
   };
 
   QR = {
+    mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/x-shockwave-flash', ''],
     init: function() {
       var con, sc;
       this.db = new DataBoard('yourPosts');
@@ -8662,7 +8663,7 @@
       }
     },
     dialog: function() {
-      var check, dialog, elm, event, i, items, key, mimeTypes, name, node, nodes, save, value, _ref;
+      var dialog, elm, event, i, items, key, name, node, nodes, save, value, _ref;
       QR.nodes = nodes = {
         el: dialog = UI.dialog('qr', 'top:0;right:0;', "<div id=qrtab class=move><input type=checkbox id=autohide title=Auto-hide><div id=qr-thread-select><select data-name=thread title='Create a new thread / Reply'><option value=new>New thread</option></select></div><a href=javascript:; class='close fa' title=Close>\uf00d</a></div><form><div class=persona><input name=name  data-name=name  list=\"list-name\" placeholder=Name    class=field size=1 tabindex=10><input name=email data-name=email list=\"list-email\" placeholder=E-mail  class=field size=1 tabindex=20><input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1 tabindex=30> </div><div class=textarea><textarea data-name=com placeholder=Comment class=field tabindex=40></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=60><span id=qr-no-file>No selected file</span><input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\"><span id=qr-extras-container><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70></label><span class=description>Spoiler</span><a id=url-button><i class=\"fa\">\uf0c1</i></a><span class=description>Post from URL</span><a id=dump-button title='Dump list'>+</a><span class=description>Dump</span><a id=qr-filerm href=javascript:; title='Remove file' class=fa>\uf00d</a><span class=description>Remove File</span></span></span><input type=submit tabindex=80></div><input type=file multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist>")
       };
@@ -8696,16 +8697,6 @@
         value = _ref[key];
         nodes[key] = $(value, dialog);
       }
-      check = {
-        jpg: 'image/jpeg',
-        pdf: 'application/pdf',
-        swf: 'application/x-shockwave-flash'
-      };
-      mimeTypes = $('ul.rules > li').textContent.trim().match(/: (.+)/)[1].toLowerCase().replace(/\w+/g, function(type) {
-        return check[type] || ("image/" + type);
-      });
-      QR.mimeTypes = mimeTypes.split(', ');
-      QR.mimeTypes.push('');
       nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
       QR.spoiler = !!$('input[name=spoiler]');
       if (QR.spoiler) {
