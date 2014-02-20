@@ -1,3 +1,5 @@
+### 3.18.1 - *2014-02-20*
+
 - Fix the QR breaking after a change with 4chan.
 
 ## 3.18.0 - *2014-02-15*
