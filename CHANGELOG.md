@@ -1,3 +1,9 @@
+### v1.3.9 
+*2014-02-20*
+
+**Spittie**
+- Fix uploading (>me in charge of not being an idiot)
+
 ### v1.3.8 
 *2014-02-20*
 

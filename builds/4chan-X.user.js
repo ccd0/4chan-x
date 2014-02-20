@@ -5339,6 +5339,7 @@
   };
 
   QR = {
+    mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/x-shockwave-flash', ''],
     init: function() {
       var sc;
       if (!Conf['Quick Reply']) {
@@ -5841,9 +5842,6 @@
         value = _ref[key];
         nodes[key] = $(value, dialog);
       }
-      ({
-        mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/x-shockwave-flash', '']
-      });
       nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
       QR.spoiler = !!$('input[name=spoiler]');
       if (QR.spoiler) {
