@@ -1,3 +1,11 @@
+### v1.3.8 
+*2014-02-20*
+
+**MayhemYDG**
+- Fix QR
+**Spittie**
+- Better url handling
+
 ### v1.3.7 
 *2014-02-15*
 
