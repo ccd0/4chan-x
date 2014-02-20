@@ -1,4 +1,7 @@
 QR =
+  # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
+  mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/x-shockwave-flash', '']
+
   init: ->
     return if !Conf['Quick Reply']
 
@@ -430,18 +433,6 @@ QR =
       fileInput:  '[type=file]'
     }
 
-    check =
-      jpg: 'image/jpeg'
-      pdf: 'application/pdf'
-      swf: 'application/x-shockwave-flash'
-
-    # Allow only this board's supported files.
-    mimeTypes = $('ul.rules > li').textContent.trim().match(/: (.+)/)[1].toLowerCase().replace /\w+/g, (type) ->
-      check[type] or "image/#{type}"
-
-    QR.mimeTypes = mimeTypes.split ', '
-    # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
-    QR.mimeTypes.push ''
     nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
 
     QR.spoiler = !!$ 'input[name=spoiler]'
