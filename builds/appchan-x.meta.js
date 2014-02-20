@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         appchan x
-// @version      2.8.12
+// @version      2.8.13
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    zixaphir
