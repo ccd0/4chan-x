@@ -257,7 +257,6 @@ Index =
       Index.buildIndex() if e
     threadsNum: ->
       return unless Conf['Index Mode'] is 'paged'
-      Index.buildPagelist()
       Index.buildIndex()
     target: ->
       for threadID, thread of g.BOARD.threads when thread.catalogView
@@ -335,7 +334,6 @@ Index =
     Index.currentPage = pageNum
     return if Conf['Index Mode'] isnt 'paged'
     Index.buildIndex()
-    Index.setPage()
     Index.scrollToIndex()
 
   getThreadsNumPerPage: ->
@@ -344,11 +342,7 @@ Index =
     else
       Index.threadsNumPerPage
   getPagesNum: ->
-    numThreads = if Index.isSearching
-      Index.sortedNodes.length / 2
-    else
-      Index.liveThreadIDs.length
-    Math.ceil numThreads / Index.getThreadsNumPerPage()
+    Math.ceil Index.sortedNodes.length / Index.getThreadsNumPerPage()
   getMaxPageNum: ->
     Math.max 0, Index.getPagesNum() - 1
   togglePagelist: ->
@@ -476,12 +470,10 @@ Index =
     Index.parseThreadList pages
     Index.buildThreads()
     Index.sort()
-    Index.buildPagelist()
     if pageNum?
       Index.pageNav pageNum
       return
     Index.buildIndex()
-    Index.setPage()
   parseThreadList: (pages) ->
     Index.threadsNumPerPage = pages[0].threads.length
     Index.liveThreadData    = pages.reduce ((arr, next) -> arr.concat next.threads), []
@@ -601,10 +593,16 @@ Index =
     switch Conf['Index Mode']
       when 'paged'
         pageNum = Index.getCurrentPage()
+        if pageNum > Index.getMaxPageNum()
+          # Go to the last available page if we were past the limit.
+          Index.pageNav Index.getMaxPageNum()
+          return
         threadsPerPage = Index.getThreadsNumPerPage()
         nodes = Index.sortedNodes[threadsPerPage * pageNum ... threadsPerPage * (pageNum + 1)]
         Index.buildReplies nodes
         Index.buildHRs nodes
+        Index.buildPagelist()
+        Index.setPage()
       when 'catalog'
         nodes = Index.buildCatalogViews()
         Index.sizeCatalogViews nodes
@@ -640,14 +638,11 @@ Index =
       delete Index.searchInput.dataset.searching
       <% } %>
     Index.sort()
-    # Go to the last available page if we were past the limit.
-    pageNum = Math.min pageNum, Index.getMaxPageNum() if Conf['Index Mode'] is 'paged'
-    Index.buildPagelist()
-    if Index.currentPage is pageNum
-      Index.buildIndex()
-      Index.setPage()
-    else
+    if Conf['Index Mode'] is 'paged' and Index.currentPage isnt Math.min pageNum, Index.getMaxPageNum()
+      # Go to the last available page if we were past the limit.
       Index.pageNav pageNum
+    else
+      Index.buildIndex()
   querySearch: (query) ->
     return unless keywords = query.toLowerCase().match /\S+/g
     Index.search keywords
