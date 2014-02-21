@@ -322,30 +322,32 @@ Index =
       a = e.target
       return if e.button isnt 0 or a.nodeName isnt 'A' or a.hostname isnt 'boards.4chan.org'
       # Save settings
-      onSameBoard = a.pathname.split('/')[1] is g.BOARD.ID
-      Index.cb.indexNav a, onSameBoard
+      onSameIndex = g.VIEW is 'index' and a.pathname.split('/')[1] is g.BOARD.ID
+      needChange = Index.cb.indexNav a, onSameIndex
       # Do nav if this isn't a simple click, or different board.
-      return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or !onSameBoard
+      return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or !onSameIndex
       e.preventDefault()
-    indexNav: (a, onSameBoard) ->
+      Index.update() unless needChange
+    indexNav: (a, onSameIndex) ->
       {indexMode, indexSort} = a.dataset
-      if indexMode
+      if indexMode and Conf['Index Mode'] isnt indexMode
         $.set 'Index Mode', indexMode
         Conf['Index Mode'] = indexMode
-        if g.VIEW is 'index' and onSameBoard
+        if onSameIndex
           Index.selectMode.value = indexMode
           Index.cb.mode()
-      if indexSort
+          needChange = true
+      if indexSort and Conf['Index Sort'] isnt indexSort
         $.set 'Index Sort', indexSort
         Conf['Index Sort'] = indexSort
-        if g.VIEW is 'index' and onSameBoard
+        if onSameIndex
           Index.selectSort.value = indexSort
           Index.cb.sort()
-      if g.VIEW is 'index' and onSameBoard and (indexMode or indexSort)
+          needChange = true
+      if needChange
         Index.buildIndex()
         Index.scrollToIndex()
-        return true
-      false
+      needChange
 
   scrollToIndex: ->
     Header.scrollToIfNeeded Index.navLinks
