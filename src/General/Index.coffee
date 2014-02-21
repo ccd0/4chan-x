@@ -345,7 +345,7 @@ Index =
     else
       Index.threadsNumPerPage
   getPagesNum: ->
-    Math.ceil Index.sortedNodes.length / Index.getThreadsNumPerPage()
+    Math.ceil Index.sortedThreads.length / Index.getThreadsNumPerPage()
   getMaxPageNum: ->
     Math.max 0, Index.getPagesNum() - 1
   togglePagelist: ->
@@ -519,11 +519,10 @@ Index =
     for i in [0...threadRoots.length] by 1
       threadRoots.splice (i * 2) + 1, 0, $.el 'hr'
     return
-  buildReplies: (threadRoots) ->
+  buildReplies: (threads) ->
     return unless Conf['Show Replies']
     posts = []
-    for threadRoot in threadRoots
-      thread = Get.threadFromRoot threadRoot
+    for thread in threads
       i = Index.liveThreadIDs.indexOf thread.ID
       continue unless lastReplies = Index.liveThreadData[i].last_replies
       nodes = []
@@ -540,17 +539,16 @@ Index =
           errors.push
             message: "Parsing of Post No.#{data.no} failed. Post will be skipped."
             error: err
-      $.add threadRoot, nodes
+      $.add thread.OP.nodes.root.parentNode, nodes
 
     Main.handleErrors errors if errors
     Main.callbackNodes Post, posts
   buildCatalogViews: ->
-    threads = Index.sortedNodes.map (threadRoot) -> Get.threadFromRoot threadRoot
     catalogThreads = []
-    for thread in threads when !thread.catalogView
+    for thread in Index.sortedThreads when !thread.catalogView
       catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
     Main.callbackNodes CatalogThread, catalogThreads
-    threads.map (thread) -> thread.catalogView.nodes.root
+    Index.sortedThreads.map (thread) -> thread.catalogView.nodes.root
   sizeCatalogViews: (nodes) ->
     # XXX When browsers support CSS3 attr(), use it instead.
     size = if Conf['Index Size'] is 'small' then 150 else 250
@@ -578,19 +576,19 @@ Index =
         sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.replies - a.replies).map (data) -> data.no
       when 'filecount'
         sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.images - a.images).map (data) -> data.no
-    Index.sortedNodes = sortedThreadIDs
-      .map (threadID) -> Index.nodes[Index.liveThreadIDs.indexOf threadID]
-      .filter (threadRoot) -> Get.threadFromRoot(threadRoot).isHidden is Index.showHiddenThreads
+    Index.sortedThreads = sortedThreadIDs
+      .map (threadID) -> Get.threadFromRoot Index.nodes[Index.liveThreadIDs.indexOf threadID]
+      .filter (thread) -> thread.isHidden is Index.showHiddenThreads
     if Index.isSearching
-      Index.sortedNodes = Index.querySearch(Index.searchInput.value) or Index.sortedNodes
+      Index.sortedThreads = Index.querySearch(Index.searchInput.value) or Index.sortedThreads
     # Sticky threads
     Index.sortOnTop (thread) -> thread.isSticky
     # Highlighted threads
     Index.sortOnTop (thread) -> thread.isOnTop or thread.isPinned
   sortOnTop: (match) ->
     offset = 0
-    for threadRoot, i in Index.sortedNodes when match Get.threadFromRoot threadRoot
-      Index.sortedNodes.splice offset++, 0, Index.sortedNodes.splice(i, 1)[0]
+    for thread, i in Index.sortedThreads when match thread
+      Index.sortedThreads.splice offset++, 0, Index.sortedThreads.splice(i, 1)[0]
     return
   buildIndex: ->
     switch Conf['Index Mode']
@@ -601,8 +599,9 @@ Index =
           Index.pageNav Index.getMaxPageNum()
           return
         threadsPerPage = Index.getThreadsNumPerPage()
-        nodes = Index.sortedNodes[threadsPerPage * pageNum ... threadsPerPage * (pageNum + 1)]
-        Index.buildReplies nodes
+        threads = Index.sortedThreads[threadsPerPage * pageNum ... threadsPerPage * (pageNum + 1)]
+        nodes   = threads.map (thread) -> thread.OP.nodes.root.parentNode
+        Index.buildReplies threads
         Index.buildHRs nodes
         Index.buildPagelist()
         Index.setPage()
@@ -610,8 +609,8 @@ Index =
         nodes = Index.buildCatalogViews()
         Index.sizeCatalogViews nodes
       else
-        nodes = [Index.sortedNodes...]
-        Index.buildReplies nodes
+        nodes = Index.sortedThreads.map (thread) -> thread.OP.nodes.root.parentNode
+        Index.buildReplies Index.sortedThreads
         Index.buildHRs nodes
     $.rmAll Index.root
     $.add Index.root, nodes
@@ -650,8 +649,8 @@ Index =
     return unless keywords = query.toLowerCase().match /\S+/g
     Index.search keywords
   search: (keywords) ->
-    Index.sortedNodes.filter (threadRoot) ->
-      Index.searchMatch Get.threadFromRoot(threadRoot), keywords
+    Index.sortedThreads.filter (thread) ->
+      Index.searchMatch thread, keywords
   searchMatch: (thread, keywords) ->
     {info, file} = thread.OP
     text = []
