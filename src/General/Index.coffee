@@ -227,7 +227,10 @@ Index =
       else
         'Show'
       Index.sort()
-      Index.buildIndex()
+      if Conf['Index Mode'] is 'paged' and Index.getCurrentPage() > 0
+        Index.pageNav 0
+      else
+        Index.buildIndex()
     mode: (e) ->
       Index.cb.toggleCatalogMode()
       Index.togglePagelist()
