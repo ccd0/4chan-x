@@ -168,12 +168,28 @@ QR =
     e?.preventDefault()
     return unless QR.postingIsEnabled
 
-    sel   = d.getSelection()
-    post  = Get.postFromNode @
-    text  = ">>#{post}\n"
-    if (s = sel.toString().trim()) and post is Get.postFromNode sel.anchorNode
-      s = s.replace /\n/g, '\n>'
-      text += ">#{s}\n"
+    sel  = d.getSelection()
+    post = Get.postFromNode @
+    text = ">>#{post}\n"
+    if sel.toString().trim() and post is Get.postFromNode sel.anchorNode
+      range = sel.getRangeAt()
+      frag  = range.cloneContents()
+      ancestor = range.commonAncestorContainer
+      if ancestor.nodeName is '#text'
+        # Quoting the insides of a spoiler/code tag.
+        if $.x 'ancestor::s', ancestor
+          $.prepend frag, $.tn '[spoiler]'
+          $.add     frag, $.tn '[/spoiler]'
+        if $.x 'ancestor::pre[contains(@class,"prettyprint")]', ancestor
+          $.prepend frag, $.tn '[code]'
+          $.add     frag, $.tn '[/code]'
+      for node in $$ 'br', frag
+        $.replace node, $.tn '\n>'
+      for node in $$ 's', frag
+        $.replace node, [$.tn('[spoiler]'), node.childNodes..., $.tn '[/spoiler]']
+      for node in $$ '.prettyprint', frag
+        $.replace node, [$.tn('[code]'), node.childNodes..., $.tn '[/code]']
+      text += ">#{frag.textContent.trim()}\n"
 
     QR.open()
     if QR.selected.isLocked
