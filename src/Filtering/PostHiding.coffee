@@ -1,186 +1,168 @@
 PostHiding =
   init: ->
-    return if !Conf['Reply Hiding'] and !Conf['Reply Hiding Link']
-
     @db = new DataBoard 'hiddenPosts'
+    @hideButton = $.el 'a',
+      className: 'hide-post-button'
+      innerHTML: '<i class="fa fa-minus-square-o"></i>'
+      href: 'javascript:;'
+    @showButton = $.el 'a',
+      className: 'show-post-button'
+      innerHTML: '<i class="fa fa-plus-square-o"></i>'
+      href: 'javascript:;'
+
     Post.callbacks.push
-      name: 'Reply Hiding'
+      name: 'Post Hiding'
       cb:   @node
 
+    # XXX tmp conversion
+    $.get 'hiddenThreads', null, ({hiddenThreads}) ->
+      return unless hiddenThreads
+      for boardID, board of hiddenThreads.boards
+        for threadID, val of board
+          ((PostHiding.db.data.boards[boardID] or= {})[threadID] or= {})[threadID] = val
+      PostHiding.db.save()
+      $.delete 'hiddenThreads'
+
   node: ->
-    return if !@isReply or @isClone
+    return if !@isReply and g.VIEW isnt 'index' or @isClone
+
     if data = PostHiding.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
-      if data.thisPost
-        PostHiding.hide @, data.makeStub, data.hideRecursively
+      if data.thisPost is false
+        Recursive.apply 'hide', @, data.makeStub, true
+        Recursive.add   'hide', @, data.makeStub, true
       else
-        Recursive.apply PostHiding.hide, @, data.makeStub, true
-        Recursive.add PostHiding.hide, @, data.makeStub, true
-    return unless Conf['Reply Hiding']
-    $.replace $('.sideArrows', @nodes.root), PostHiding.makeButton @, 'hide'
+        @hide data.makeStub, data.hideRecursively
 
-  menu:
-    init: ->
-      return if !Conf['Menu'] or !Conf['Reply Hiding Link']
+    return unless Conf['Post Hiding']
+    a = PostHiding.makeButton true
+    if @isReply
+      $.replace $('.sideArrows', @nodes.root), a
+    else
+      $.prepend @nodes.root, a
 
-      # Hide
-      div = $.el 'div',
-        className: 'hide-reply-link'
-        textContent: 'Hide reply'
-
-      apply = $.el 'a',
-        textContent: 'Apply'
-        href: 'javascript:;'
-      $.on apply, 'click', PostHiding.menu.hide
-
-      thisPost = $.el 'label',
-        innerHTML: '<input type=checkbox name=thisPost checked> This post'
-      replies  = $.el 'label',
-        innerHTML: "<input type=checkbox name=replies  checked=#{Conf['Recursive Hiding']}> Hide replies"
-      makeStub = $.el 'label',
-        innerHTML: "<input type=checkbox name=makeStub checked=#{Conf['Stubs']}> Make stub"
-
-      $.event 'AddMenuEntry',
-        type: 'post'
-        el: div
-        order: 20
-        open: (post) ->
-          if !post.isReply or post.isClone or post.isHidden
-            return false
-          PostHiding.menu.post = post
-          true
-        subEntries: [{el: apply}, {el: thisPost}, {el: replies}, {el: makeStub}]
-
-      # Show
-      div = $.el 'div',
-        className: 'show-reply-link'
-        textContent: 'Show reply'
-
-      apply = $.el 'a',
-        textContent: 'Apply'
-        href: 'javascript:;'
-      $.on apply, 'click', PostHiding.menu.show
-
-      thisPost = $.el 'label',
-        innerHTML: '<input type=checkbox name=thisPost> This post'
-      replies  = $.el 'label',
-        innerHTML: "<input type=checkbox name=replies> Show replies"
-
-      $.event 'AddMenuEntry',
-        type: 'post'
-        el: div
-        order: 20
-        open: (post) ->
-          if !post.isReply or post.isClone or !post.isHidden
-            return false
-          unless data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
-            return false
-          PostHiding.menu.post = post
-          thisPost.firstChild.checked = post.isHidden
-          replies.firstChild.checked  = if data?.hideRecursively? then data.hideRecursively else Conf['Recursive Hiding']
-          true
-        subEntries: [{el: apply}, {el: thisPost}, {el: replies}]
-    hide: ->
-      parent   = @parentNode
-      thisPost = $('input[name=thisPost]', parent).checked
-      replies  = $('input[name=replies]',  parent).checked
-      makeStub = $('input[name=makeStub]', parent).checked
-      {post}   = PostHiding.menu
-      if thisPost
-        PostHiding.hide post, makeStub, replies
-      else if replies
-        Recursive.apply PostHiding.hide, post, makeStub, true
-        Recursive.add PostHiding.hide, post, makeStub, true
-      else
-        return
-      PostHiding.saveHiddenState post, true, thisPost, makeStub, replies
-      $.event 'CloseMenu'
-    show: ->
-      parent   = @parentNode
-      thisPost = $('input[name=thisPost]', parent).checked
-      replies  = $('input[name=replies]',  parent).checked
-      {post}   = PostHiding.menu
-      if thisPost
-        PostHiding.show post, replies
-      else if replies
-        Recursive.apply PostHiding.show, post, true
-        Recursive.rm PostHiding.hide, post, true
-      else
-        return
-      if data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
-        PostHiding.saveHiddenState post, !(thisPost and replies), !thisPost, data.makeStub, !replies
-      $.event 'CloseMenu'
-
-  makeButton: (post, type) ->
-    span = $.el 'span',
-      textContent: "[\u00A0#{if type is 'hide' then '-' else '+'}\u00A0]"
-    a = $.el 'a',
-      className: "#{type}-reply-button"
-      href:      'javascript:;'
-    $.add a, span
-    $.on a, 'click', PostHiding.toggle
+  makeButton: (hide) ->
+    a = (if hide then PostHiding.hideButton else PostHiding.showButton).cloneNode true
+    $.on a, 'click', PostHiding.onToggleClick
     a
 
-  saveHiddenState: (post, isHiding, thisPost, makeStub, hideRecursively) ->
+  onToggleClick: ->
+    PostHiding.toggle if $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
+      Get.postFromNode @
+    else
+      Get.threadFromNode(@).OP
+  toggle: (post) ->
+    if post.isHidden
+      post.show()
+    else
+      post.hide()
+    PostHiding.saveHiddenState post
+
+  saveHiddenState: (post, val) ->
     data =
       boardID:  post.board.ID
       threadID: post.thread.ID
       postID:   post.ID
-    if isHiding
-      data.val =
-        thisPost: thisPost isnt false # undefined -> true
-        makeStub: makeStub
-        hideRecursively: hideRecursively
+    if post.isHidden or val and !val.thisPost
+      data.val = val or {}
       PostHiding.db.set data
     else
       PostHiding.db.delete data
 
-  toggle: ->
-    post = Get.postFromNode @
-    if post.isHidden
-      PostHiding.show post
-    else
-      PostHiding.hide post
-    PostHiding.saveHiddenState post, post.isHidden
+  menu:
+    init: ->
+      return if !Conf['Menu'] or !Conf['Post Hiding Link']
 
-  hide: (post, makeStub=Conf['Stubs'], hideRecursively=Conf['Recursive Hiding']) ->
-    return if post.isHidden
-    post.isHidden = true
+      # Hide
+      apply =
+        el: $.el 'a', textContent: 'Apply', href: 'javascript:;'
+        open: (post) ->
+          $.off @el, 'click', @cb if @cb
+          @cb = -> PostHiding.menu.hide post
+          $.on  @el, 'click', @cb
+          true
+      thisPost =
+        el: $.el 'label', innerHTML: '<input type=checkbox name=thisPost checked> This post'
+        open: (post) -> post.isReply
+      replies  =
+        el: $.el 'label', innerHTML: "<input type=checkbox name=replies  checked=#{Conf['Recursive Hiding']}> Hide replies"
+        open: (post) -> post.isReply
+      makeStub =
+        el: $.el 'label', innerHTML: "<input type=checkbox name=makeStub checked=#{Conf['Stubs']}> Make stub"
 
-    if hideRecursively
-      Recursive.apply PostHiding.hide, post, makeStub, true
-      Recursive.add PostHiding.hide, post, makeStub, true
+      $.event 'AddMenuEntry',
+        type: 'post'
+        el: $.el 'div', className: 'hide-post-link'
+        order: 20
+        open: (post) ->
+          if !post.isReply and g.VIEW isnt 'index' or Conf['Index Mode'] is 'catalog' and g.VIEW is 'index' or post.isClone or post.isHidden
+            return false
+          @el.textContent = if post.isReply then 'Hide reply' else 'Hide thread'
+          true
+        subEntries: [apply, thisPost, replies, makeStub]
 
-    for quotelink in Get.allQuotelinksLinkingTo post
-      $.addClass quotelink, 'filtered'
+      # Show
+      apply =
+        el: $.el 'a', textContent: 'Apply', href: 'javascript:;'
+        open: (post) ->
+          $.off @el, 'click', @cb if @cb
+          @cb = -> PostHiding.menu.show post
+          $.on  @el, 'click', @cb
+          true
+      thisPost =
+        el: $.el 'label', innerHTML: '<input type=checkbox name=thisPost> This post'
+        open: (post) ->
+          @el.firstChild.checked = post.isHidden
+          true
+      replies  =
+        el: $.el 'label', innerHTML: "<input type=checkbox name=replies> Unhide replies"
+        open: (post) ->
+          data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
+          @el.firstChild.checked = if 'hideRecursively' of data then data.hideRecursively else Conf['Recursive Hiding']
+          true
 
-    unless makeStub
-      post.nodes.root.hidden = true
-      return
-
-    a = PostHiding.makeButton post, 'show'
-    postInfo =
-      if Conf['Anonymize']
-        'Anonymous'
+      $.event 'AddMenuEntry',
+        type: 'post'
+        el: $.el 'div', className: 'show-post-link'
+        order: 20
+        open: (post) ->
+          if !post.isReply or post.isClone or !post.isHidden
+            return false
+          unless PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
+            return false
+          @el.textContent = if post.isReply then 'Unhide reply' else 'Unhide thread'
+          true
+        subEntries: [apply, thisPost, replies]
+    hide: (post) ->
+      parent   = @parentNode
+      thisPost = $('input[name=thisPost]', parent).checked if post.isReply
+      replies  = $('input[name=replies]',  parent).checked if post.isReply
+      makeStub = $('input[name=makeStub]', parent).checked
+      if !post.isReply
+        post.hide makeStub
+      else if thisPost
+        post.hide makeStub, replies
+      else if replies
+        Recursive.apply 'hide', post, makeStub, true
+        Recursive.add   'hide', post, makeStub, true
       else
-        $('.nameBlock', post.nodes.info).textContent
-    $.add a, $.tn " #{postInfo}"
-    post.nodes.stub = $.el 'div',
-      className: 'stub'
-    $.add post.nodes.stub, a
-    if Conf['Menu']
-      $.add post.nodes.stub, Menu.makeButton()
-    $.prepend post.nodes.root, post.nodes.stub
-
-  show: (post, showRecursively=Conf['Recursive Hiding']) ->
-    if post.nodes.stub
-      $.rm post.nodes.stub
-      delete post.nodes.stub
-    else
-      post.nodes.root.hidden = false
-    post.isHidden = false
-    if showRecursively
-      Recursive.apply PostHiding.show, post, true
-      Recursive.rm PostHiding.hide, post
-    for quotelink in Get.allQuotelinksLinkingTo post
-      $.rmClass quotelink, 'filtered'
-    return
+        return
+      val = if post.isReply
+        {thisPost, hideRecursively: replies, makeStub}
+      else
+        {makeStub}
+      PostHiding.saveHiddenState post, val
+      $.event 'CloseMenu'
+    show: (post) ->
+      parent   = @parentNode
+      thisPost = $('input[name=thisPost]', parent).checked
+      replies  = $('input[name=replies]',  parent).checked
+      if thisPost
+        post.show replies
+      else if replies
+        Recursive.apply 'show', post, true
+        Recursive.rm    'hide', post, true
+      else
+        return
+      val = {thisPost: !thisPost, hideRecursively: !replies, makeStub: !!post.nodes.stub}
+      PostHiding.saveHiddenState post, val
+      $.event 'CloseMenu'

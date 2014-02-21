@@ -100,12 +100,8 @@ Filter =
 
         # Hide
         if result.hide
-          if @isReply
-            PostHiding.hide @, result.stub
-          else if g.VIEW is 'index'
-            ThreadHiding.hide @thread, result.stub
-          else
-            continue
+          continue unless @isReply or g.VIEW is 'index'
+          @hide result.stub
           return
 
         # Highlight

@@ -1,5 +1,5 @@
 class DataBoard
-  @keys = ['pinnedThreads', 'hiddenThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts', 'watchedThreads']
+  @keys = ['pinnedThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts', 'watchedThreads']
 
   constructor: (@key, sync, dontClean) ->
     @data = Conf[key]

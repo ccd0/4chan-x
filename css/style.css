@@ -706,12 +706,12 @@ a.hide-announcement {
   border: 2px solid rgba(255, 0, 0, .5);
 }
 
-/* Thread & Reply Hiding */
-.hide-thread-button,
-.hide-reply-button {
+/* Post Hiding */
+.hide-post-button {
   float: left;
-  margin-right: 2px;
+  margin-right: 3px;
 }
+.thread[hidden] + hr,
 .stub ~ * {
   display: none !important;
 }

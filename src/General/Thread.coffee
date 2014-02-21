@@ -62,6 +62,39 @@ class Thread
     @isPinned = false
     $.rmClass  @catalogView.nodes.root, 'pinned' if @catalogView
 
+  hide: (makeStub=Conf['Stubs']) ->
+    return if @isHidden
+    @isHidden = true
+    root = @OP.nodes.root.parentNode
+    Index.updateHideLabel()
+
+    unless makeStub
+      root.hidden = true
+      return
+
+    numReplies  = $$('.thread > .replyContainer', root).length # Don't count clones.
+    numReplies += +summary.textContent.match /\d+/ if summary = $ '.summary', root
+    opInfo = if Conf['Anonymize']
+      'Anonymous'
+    else
+      $('.nameBlock', @OP.nodes.info).textContent
+
+    a = PostHiding.makeButton false
+    $.add a, $.tn " #{opInfo} (#{numReplies} repl#{if numReplies is 1 then 'y' else 'ies'})"
+    @stub = $.el 'div',
+      className: 'stub'
+    $.add @stub, a
+    $.add @stub, Menu.makeButton() if Conf['Menu']
+    $.prepend root, @stub
+  show: ->
+    return if !@isHidden
+    @isHidden = false
+    if @stub
+      $.rm @stub
+      delete @stub
+    @OP.nodes.root.parentNode.hidden = false
+    Index.updateHideLabel()
+
   kill: ->
     @isDead = true
 

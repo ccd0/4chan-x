@@ -151,6 +151,55 @@ class Post
       $.rmClass node, 'desktop'
     return
 
+  hide: (makeStub=Conf['Stubs'], hideRecursively=Conf['Recursive Hiding']) ->
+    return if @isHidden
+    @isHidden = true
+    if !@isReply
+      @thread.hide makeStub
+      return
+
+    if hideRecursively
+      Recursive.apply 'hide', @, makeStub, true
+      Recursive.add   'hide', @, makeStub, true
+
+    for quotelink in Get.allQuotelinksLinkingTo @
+      $.addClass quotelink, 'filtered'
+
+    unless makeStub
+      @nodes.root.hidden = true
+      return
+
+    a = PostHiding.makeButton false
+    postInfo = if Conf['Anonymize']
+      'Anonymous'
+    else
+      $('.nameBlock', @nodes.info).textContent
+    $.add a, $.tn " #{postInfo}"
+    @nodes.stub = $.el 'div',
+      className: 'stub'
+    $.add @nodes.stub, a
+    $.add @nodes.stub, Menu.makeButton() if Conf['Menu']
+    $.prepend @nodes.root, @nodes.stub
+  show: (showRecursively=Conf['Recursive Hiding']) ->
+    return if !@isHidden
+    @isHidden = false
+    if !@isReply
+      @thread.show()
+      return
+
+    if showRecursively
+      Recursive.apply 'show', @, true
+      Recursive.rm    'hide', @
+
+    for quotelink in Get.allQuotelinksLinkingTo @
+      $.rmClass quotelink, 'filtered'
+
+    if @nodes.stub
+      $.rm @nodes.stub
+      delete @nodes.stub
+    else
+      @nodes.root.hidden = false
+
   kill: (file) ->
     if file
       return if @file.isDead

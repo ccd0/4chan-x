@@ -1,6 +1,6 @@
 QuoteStrikeThrough =
   init: ->
-    return if !Conf['Reply Hiding'] and !Conf['Reply Hiding Link'] and !Conf['Filter']
+    return if !Conf['Post Hiding'] and !Conf['Post Hiding Link'] and !Conf['Filter']
 
     Post.callbacks.push
       name: 'Strike-through Quotes'

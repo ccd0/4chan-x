@@ -1,3 +1,7 @@
+- Post hiding rewrite:
+ - `Thread Hiding` and `Reply Hiding` settings are merged into one: `Post Hiding`.
+ - `Thread Hiding Link` and `Reply Hiding Link` settings are merged into one: `Post Hiding Link`.
+
 ### 3.18.1 - *2014-02-20*
 
 - Fix the QR breaking after a change with 4chan.

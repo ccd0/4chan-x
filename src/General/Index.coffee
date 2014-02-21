@@ -125,16 +125,16 @@ Index =
         type: 'post'
         el: $.el 'a', href: 'javascript:;'
         order: 5
-        open: ({thread}) ->
+        open: (post) ->
           return false if Conf['Index Mode'] isnt 'catalog'
-          @el.textContent = if thread.isHidden
+          @el.textContent = if post.isHidden
             'Unhide thread'
           else
             'Hide thread'
           $.off @el, 'click', @cb if @cb
           @cb = ->
             $.event 'CloseMenu'
-            Index.toggleHide thread
+            Index.toggleHide post
           $.on @el, 'click', @cb
           true
 
@@ -166,7 +166,7 @@ Index =
     return if e.button isnt 0
     thread = g.threads[@parentNode.dataset.fullID]
     if e.shiftKey
-      Index.toggleHide thread
+      Index.toggleHide thread.OP
     else if e.altKey
       Index.togglePin thread
     else
@@ -194,15 +194,9 @@ Index =
       offsetX: 15
       offsetY: -20
     setTimeout (-> el.hidden = false if el.parentNode), .25 * $.SECOND
-  toggleHide: (thread) ->
-    $.rm thread.catalogView.nodes.root
-    if Index.showHiddenThreads
-      ThreadHiding.show thread
-      return unless ThreadHiding.db.get {boardID: thread.board.ID, threadID: thread.ID}
-      # Don't save when un-hiding filtered threads.
-    else
-      ThreadHiding.hide thread
-    ThreadHiding.saveHiddenState thread
+  toggleHide: (post) ->
+    $.rm post.thread.catalogView.nodes.root
+    PostHiding.toggle post
   togglePin: (thread) ->
     data =
       boardID:  thread.board.ID
@@ -430,7 +424,7 @@ Index =
       Index.cb.toggleHiddenThreads() if Index.showHiddenThreads
       return
     Index.hideLabel.hidden = false
-    $('#hidden-count', Index.navLinks).textContent = if hiddenCount is 1
+    $('#hidden-count', Index.hideLabel).textContent = if hiddenCount is 1
       '1 hidden thread'
     else
       "#{hiddenCount} hidden threads"
