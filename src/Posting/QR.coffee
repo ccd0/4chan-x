@@ -172,7 +172,7 @@ QR =
     post = Get.postFromNode @
     text = ">>#{post}\n"
     if sel.toString().trim() and post is Get.postFromNode sel.anchorNode
-      range = sel.getRangeAt()
+      range = sel.getRangeAt 0
       frag  = range.cloneContents()
       ancestor = range.commonAncestorContainer
       if ancestor.nodeName is '#text'
