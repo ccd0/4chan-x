@@ -1,3 +1,5 @@
+## 3.19.0 - *2014-02-22*
+
 - Thread and post hiding changes:
  - The posts' menu now has a label entry listing the reasons why a post got hidden or highlighted.
  - `Thread Hiding` and `Reply Hiding` settings are merged into one: `Post Hiding`.
