@@ -1,3 +1,13 @@
+- Thread and post hiding changes:
+ - The posts' menu now has a label entry listing the reasons why a post got hidden or highlighted.
+ - `Thread Hiding` and `Reply Hiding` settings are merged into one: `Post Hiding`.
+ - `Thread Hiding Link` and `Reply Hiding Link` settings are merged into one: `Post Hiding Link`.
+ - Hiding a thread removes it from the index in `Paged` or `All threads` modes.
+ <ul>
+  <li> Hidden threads can be seen by clicking the `[Show]` button the the top of the index.
+  <li> The `Anchor Hidden Threads` setting has been removed.
+ </ul>
+
 ### 3.18.1 - *2014-02-20*
 
 - Fix the QR breaking after a change with 4chan.

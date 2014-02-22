@@ -244,20 +244,20 @@ Build =
 
     if (OP = board.posts[data.no]) and root = OP.nodes.root.parentNode
       $.rmAll root
+      $.add root, OP.nodes.root
     else
       root = $.el 'div',
         className: 'thread'
         id: "t#{data.no}"
+      $.add root, Build.postFromObject data, board.ID
 
-    nodes = [if OP then OP.nodes.root else Build.postFromObject data, board.ID]
     if data.omitted_posts or !Conf['Show Replies'] and data.replies
       [posts, files] = if Conf['Show Replies']
         [data.omitted_posts, data.omitted_images]
       else
         [data.replies, data.images]
-      nodes.push Build.summary board.ID, data.no, posts, files
+      $.add root, Build.summary board.ID, data.no, posts, files
 
-    $.add root, nodes
     root
   catalogThread: (thread) ->
     {staticPath, gifIcon} = Build
@@ -279,7 +279,7 @@ Build =
 
     root.dataset.fullID = thread.fullID
     $.addClass root, 'pinned' if thread.isPinned
-    $.addClass root, thread.OP.highlights... if thread.OP.highlights
+    $.addClass root, thread.OP.highlights... if thread.OP.highlights.length
 
     thumb = root.firstElementChild
     if data.spoiler and !Conf['Reveal Spoilers']

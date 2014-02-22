@@ -368,7 +368,6 @@ a[href="javascript:;"] {
 :root.index-loading .navLinks,
 :root.index-loading .board,
 :root.index-loading .pagelist,
-:root:not(.catalog-mode) #hidden-toggle,
 :root:not(.catalog-mode) #index-size {
   display: none;
 }
@@ -706,14 +705,16 @@ a.hide-announcement {
   border: 2px solid rgba(255, 0, 0, .5);
 }
 
-/* Thread & Reply Hiding */
-.hide-thread-button,
-.hide-reply-button {
-  float: left;
-  margin-right: 2px;
+/* Post Hiding */
+.hide-post-button,
+.show-post-button {
+  font-size: 14px;
+  line-height: 12px; /* Prevent the floating effect from affecting the thumbnail too */
 }
-.stub ~ * {
-  display: none !important;
+.opContainer > .show-post-button,
+.hide-post-button {
+  float: left;
+  margin-right: 3px;
 }
 .stub input {
   display: inline-block;

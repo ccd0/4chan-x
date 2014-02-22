@@ -120,7 +120,7 @@ Keybinds =
       when Conf['Deselect reply']
         Keybinds.hl  0, threadRoot
       when Conf['Hide']
-        ThreadHiding.toggle thread if ThreadHiding.db
+        PostHiding.toggle thread.OP
       else
         return
     e.preventDefault()

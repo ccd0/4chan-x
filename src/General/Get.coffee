@@ -3,8 +3,7 @@ Get =
     {OP} = thread
     excerpt = OP.info.subject?.trim() or
       OP.info.comment.replace(/\n+/g, ' // ') or
-      Conf['Anonymize'] and 'Anonymous' or
-      $('.nameBlock', OP.nodes.info).textContent.trim()
+      OP.getNameBlock()
     if excerpt.length > 70
       excerpt = "#{excerpt[...67]}..."
     "/#{thread.board}/ - #{excerpt}"
@@ -233,6 +232,6 @@ Get =
     thread = g.threads["#{boardID}.#{threadID}"] or
       new Thread threadID, board
     post = new Post Build.post(o, true), thread, board, {isArchived: true}
-    $('.page-num', post.nodes.info).hidden = true
+    $('.page-num', post.nodes.info)?.hidden = true
     Main.callbackNodes Post, [post]
     Get.insert post, root, context

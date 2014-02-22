@@ -52,6 +52,8 @@ class Post
     @parseQuotes()
     @parseFile that
 
+    @labels     = []
+    @highlights = []
     @isDead   = false
     @isHidden = false
 
@@ -106,7 +108,7 @@ class Post
 
     # ES6 Set when?
     fullID = "#{match[1]}.#{match[2]}"
-    @quotes.push fullID if @quotes.indexOf(fullID) is -1
+    @quotes.push fullID unless fullID in @quotes
 
   parseFile: (that) ->
     return unless (fileEl = $ '.file', @nodes.post) and thumb = $ 'img[data-md5]', fileEl
@@ -150,6 +152,76 @@ class Post
     for node in $$ '.desktop', root
       $.rmClass node, 'desktop'
     return
+
+  getNameBlock: ->
+    if Conf['Anonymize']
+      'Anonymous'
+    else
+      $('.nameBlock', @nodes.info).textContent.trim()
+
+  hide: (label, makeStub=Conf['Stubs'], hideRecursively=Conf['Recursive Hiding']) ->
+    @labels.push label unless label in @labels
+    return if @isHidden
+    @isHidden = true
+
+    for quotelink in Get.allQuotelinksLinkingTo @
+      $.addClass quotelink, 'filtered'
+
+    if hideRecursively
+      label = "Recursively hidden for quoting No.#{@}"
+      Recursive.apply 'hide', @, label, makeStub, true
+      Recursive.add   'hide', @, label, makeStub, true
+
+    if !@isReply
+      @thread.hide()
+      return
+
+    unless makeStub
+      @nodes.root.hidden = true
+      return
+
+    @nodes.post.hidden = true
+    @nodes.post.previousElementSibling.hidden = true
+    @nodes.stub = $.el 'div',
+      className: 'stub'
+    $.add @nodes.stub, [
+      PostHiding.makeButton false
+      $.tn " #{@getNameBlock()}"
+    ]
+    $.add @nodes.stub, Menu.makeButton() if Conf['Menu']
+    $.prepend @nodes.root, @nodes.stub
+  show: (showRecursively=Conf['Recursive Hiding']) ->
+    return if !@isHidden
+    @isHidden = false
+    @labels = @labels.filter (label) ->
+      # This is lame.
+      !/^(Manually hidden|Recursively hidden|Hidden by)/.test label
+
+    for quotelink in Get.allQuotelinksLinkingTo @
+      $.rmClass quotelink, 'filtered'
+
+    if showRecursively
+      Recursive.apply 'show', @, true
+      Recursive.rm    'hide', @
+
+    if !@isReply
+      @thread.show()
+      return
+
+    unless @nodes.stub
+      @nodes.root.hidden = false
+      return
+    @nodes.post.hidden = false
+    @nodes.post.previousElementSibling.hidden = false
+    $.rm @nodes.stub
+    delete @nodes.stub
+  highlight: (label, highlight, top) ->
+    @labels.push label
+    unless highlight in @highlights
+      @highlights.push highlight
+      $.addClass @nodes.root, highlight
+    if !@isReply and top
+      @thread.isOnTop = true
 
   kill: (file) ->
     if file

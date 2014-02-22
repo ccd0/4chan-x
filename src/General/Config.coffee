@@ -17,10 +17,9 @@ Config =
     'Filtering':
       'Anonymize':                    [false, 'Make everyone Anonymous.']
       'Filter':                       [true,  'Self-moderation placebo.']
+      'Post Hiding':                  [true,  'Add buttons to hide threads and replies.']
+      'Stubs':                        [true,  'Show stubs of hidden posts.']
       'Recursive Hiding':             [true,  'Hide replies of hidden posts, recursively.']
-      'Thread Hiding':                [true,  'Add buttons to hide entire threads.']
-      'Reply Hiding':                 [true,  'Add buttons to hide single replies.']
-      'Stubs':                        [true,  'Show stubs of hidden threads / replies.']
     'Images':
       'Auto-GIF':                     [false, 'Animate GIF thumbnails (disabled on /gif/, /wsg/).']
       'Image Expansion':              [true,  'Expand images inline.']
@@ -31,8 +30,7 @@ Config =
     'Menu':
       'Menu':                         [true,  'Add a drop-down menu to posts.']
       'Report Link':                  [true,  'Add a report link to the menu.']
-      'Thread Hiding Link':           [true,  'Add a link to hide entire threads.']
-      'Reply Hiding Link':            [true,  'Add a link to hide single replies.']
+      'Post Hiding Link':             [true,  'Add a link to hide threads and replies.']
       'Delete Link':                  [true,  'Add post and image deletion links to the menu.']
       <% if (type === 'crx') { %>
       'Download Link':                [true,  'Add a download with original filename link to the menu.']
@@ -143,7 +141,6 @@ Config =
     'Threads per Page': 0
     'Open threads in a new tab': false
     'Show Replies': true
-    'Anchor Hidden Threads': true
     'Refreshed Navigation': false
   Header:
     'Header auto-hide':           false

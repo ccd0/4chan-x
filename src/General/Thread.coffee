@@ -62,6 +62,17 @@ class Thread
     @isPinned = false
     $.rmClass  @catalogView.nodes.root, 'pinned' if @catalogView
 
+  hide: ->
+    return if @isHidden
+    @isHidden = true
+    if button = $ '.hide-post-button', @OP.nodes.root
+      $.replace button, PostHiding.makeButton false
+  show: ->
+    return if !@isHidden
+    @isHidden = false
+    if button = $ '.show-post-button', @OP.nodes.root
+      $.replace button, PostHiding.makeButton true
+
   kill: ->
     @isDead = true
 

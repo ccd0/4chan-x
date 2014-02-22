@@ -84,7 +84,9 @@ UI = do ->
 
     insertEntry: (entry, parent, data) ->
       if typeof entry.open is 'function'
-        return unless entry.open data
+        return unless entry.open data, (subEntry) =>
+          @parseEntry subEntry
+          entry.subEntries.push subEntry
       $.add parent, entry.el
 
       return unless entry.subEntries

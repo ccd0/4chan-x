@@ -38,15 +38,11 @@ Index =
     repliesEntry =
       el: $.el 'label',
         innerHTML: '<input type=checkbox name="Show Replies"> Show replies'
-    anchorEntry =
-      el: $.el 'label',
-        innerHTML: '<input type=checkbox name="Anchor Hidden Threads"> Anchor hidden threads'
-        title: 'Move hidden threads at the end of the index.'
     refNavEntry =
       el: $.el 'label',
         innerHTML: '<input type=checkbox name="Refreshed Navigation"> Refreshed navigation'
         title: 'Refresh index when navigating through pages.'
-    for label in [targetEntry, repliesEntry, anchorEntry, refNavEntry]
+    for label in [targetEntry, repliesEntry, refNavEntry]
       input = label.el.firstChild
       {name} = input
       input.checked = Conf[name]
@@ -56,15 +52,13 @@ Index =
           $.on input, 'change', @cb.target
         when 'Show Replies'
           $.on input, 'change', @cb.replies
-        when 'Anchor Hidden Threads'
-          $.on input, 'change', @cb.sort
 
     $.event 'AddMenuEntry',
       type: 'header'
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 90
-      subEntries: [threadNumEntry, targetEntry, repliesEntry, anchorEntry, refNavEntry]
+      subEntries: [threadNumEntry, targetEntry, repliesEntry, refNavEntry]
 
     $.addClass doc, 'index-loading'
     @update()
@@ -124,24 +118,7 @@ Index =
       $.event 'AddMenuEntry',
         type: 'post'
         el: $.el 'a', href: 'javascript:;'
-        order: 5
-        open: ({thread}) ->
-          return false if Conf['Index Mode'] isnt 'catalog'
-          @el.textContent = if thread.isHidden
-            'Unhide thread'
-          else
-            'Hide thread'
-          $.off @el, 'click', @cb if @cb
-          @cb = ->
-            $.event 'CloseMenu'
-            Index.toggleHide thread
-          $.on @el, 'click', @cb
-          true
-
-      $.event 'AddMenuEntry',
-        type: 'post'
-        el: $.el 'a', href: 'javascript:;'
-        order: 6
+        order: 19
         open: ({thread}) ->
           return false if Conf['Index Mode'] isnt 'catalog'
           @el.textContent = if thread.isPinned
@@ -166,7 +143,7 @@ Index =
     return if e.button isnt 0
     thread = g.threads[@parentNode.dataset.fullID]
     if e.shiftKey
-      Index.toggleHide thread
+      PostHiding.toggle thread.OP
     else if e.altKey
       Index.togglePin thread
     else
@@ -194,15 +171,6 @@ Index =
       offsetX: 15
       offsetY: -20
     setTimeout (-> el.hidden = false if el.parentNode), .25 * $.SECOND
-  toggleHide: (thread) ->
-    $.rm thread.catalogView.nodes.root
-    if Index.showHiddenThreads
-      ThreadHiding.show thread
-      return unless ThreadHiding.db.get {boardID: thread.board.ID, threadID: thread.ID}
-      # Don't save when un-hiding filtered threads.
-    else
-      ThreadHiding.hide thread
-    ThreadHiding.saveHiddenState thread
   togglePin: (thread) ->
     data =
       boardID:  thread.board.ID
@@ -259,7 +227,10 @@ Index =
       else
         'Show'
       Index.sort()
-      Index.buildIndex()
+      if Conf['Index Mode'] is 'paged' and Index.getCurrentPage() > 0
+        Index.pageNav 0
+      else
+        Index.buildIndex()
     mode: (e) ->
       Index.cb.toggleCatalogMode()
       Index.togglePagelist()
@@ -289,7 +260,6 @@ Index =
       Index.buildIndex() if e
     threadsNum: ->
       return unless Conf['Index Mode'] is 'paged'
-      Index.buildPagelist()
       Index.buildIndex()
     target: ->
       for threadID, thread of g.BOARD.threads when thread.catalogView
@@ -367,7 +337,6 @@ Index =
     Index.currentPage = pageNum
     return if Conf['Index Mode'] isnt 'paged'
     Index.buildIndex()
-    Index.setPage()
     Index.scrollToIndex()
 
   getThreadsNumPerPage: ->
@@ -376,11 +345,7 @@ Index =
     else
       Index.threadsNumPerPage
   getPagesNum: ->
-    numThreads = if Index.isSearching
-      Index.sortedNodes.length / 2
-    else
-      Index.liveThreadIDs.length
-    Math.ceil numThreads / Index.getThreadsNumPerPage()
+    Math.ceil Index.sortedThreads.length / Index.getThreadsNumPerPage()
   getMaxPageNum: ->
     Math.max 0, Index.getPagesNum() - 1
   togglePagelist: ->
@@ -430,7 +395,7 @@ Index =
       Index.cb.toggleHiddenThreads() if Index.showHiddenThreads
       return
     Index.hideLabel.hidden = false
-    $('#hidden-count', Index.navLinks).textContent = if hiddenCount is 1
+    $('#hidden-count', Index.hideLabel).textContent = if hiddenCount is 1
       '1 hidden thread'
     else
       "#{hiddenCount} hidden threads"
@@ -508,12 +473,10 @@ Index =
     Index.parseThreadList pages
     Index.buildThreads()
     Index.sort()
-    Index.buildPagelist()
     if pageNum?
       Index.pageNav pageNum
       return
     Index.buildIndex()
-    Index.setPage()
   parseThreadList: (pages) ->
     Index.threadsNumPerPage = pages[0].threads.length
     Index.liveThreadData    = pages.reduce ((arr, next) -> arr.concat next.threads), []
@@ -527,7 +490,7 @@ Index =
     posts       = []
     for threadData, i in Index.liveThreadData
       threadRoot = Build.thread g.BOARD, threadData
-      Index.nodes.push threadRoot, $.el 'hr'
+      Index.nodes.push threadRoot
       if thread = g.BOARD.threads[threadData.no]
         thread.setPage i // Index.threadsNumPerPage
         thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
@@ -548,16 +511,18 @@ Index =
           error: err
     Main.handleErrors errors if errors
 
-    # Add the threads and <hr>s in a container to make sure all features work.
-    $.nodes Index.nodes
     Main.callbackNodes Thread, threads
     Main.callbackNodes Post,   posts
     Index.updateHideLabel()
     $.event 'IndexRefresh'
-  buildReplies: (threadRoots) ->
+  buildHRs: (threadRoots) ->
+    for i in [0...threadRoots.length] by 1
+      threadRoots.splice (i * 2) + 1, 0, $.el 'hr'
+    return
+  buildReplies: (threads) ->
+    return unless Conf['Show Replies']
     posts = []
-    for threadRoot in threadRoots by 2
-      thread = Get.threadFromRoot threadRoot
+    for thread in threads
       i = Index.liveThreadIDs.indexOf thread.ID
       continue unless lastReplies = Index.liveThreadData[i].last_replies
       nodes = []
@@ -574,20 +539,16 @@ Index =
           errors.push
             message: "Parsing of Post No.#{data.no} failed. Post will be skipped."
             error: err
-      $.add threadRoot, nodes
+      $.add thread.OP.nodes.root.parentNode, nodes
 
     Main.handleErrors errors if errors
     Main.callbackNodes Post, posts
   buildCatalogViews: ->
-    threads = Index.sortedNodes
-      .filter (n, i) -> !(i % 2)
-      .map (threadRoot) -> Get.threadFromRoot threadRoot
-      .filter (thread) -> !thread.isHidden isnt Index.showHiddenThreads
     catalogThreads = []
-    for thread in threads when !thread.catalogView
+    for thread in Index.sortedThreads when !thread.catalogView
       catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
     Main.callbackNodes CatalogThread, catalogThreads
-    threads.map (thread) -> thread.catalogView.nodes.root
+    Index.sortedThreads.map (thread) -> thread.catalogView.nodes.root
   sizeCatalogViews: (nodes) ->
     # XXX When browsers support CSS3 attr(), use it instead.
     size = if Conf['Index Size'] is 'small' then 150 else 250
@@ -615,36 +576,43 @@ Index =
         sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.replies - a.replies).map (data) -> data.no
       when 'filecount'
         sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.images - a.images).map (data) -> data.no
-    Index.sortedNodes = []
-    for threadID in sortedThreadIDs
-      i = Index.liveThreadIDs.indexOf(threadID) * 2
-      Index.sortedNodes.push Index.nodes[i], Index.nodes[i + 1]
+    Index.sortedThreads = sortedThreadIDs
+      .map (threadID) -> Get.threadFromRoot Index.nodes[Index.liveThreadIDs.indexOf threadID]
+      .filter (thread) -> thread.isHidden is Index.showHiddenThreads
     if Index.isSearching
-      Index.sortedNodes = Index.querySearch(Index.searchInput.value) or Index.sortedNodes
+      Index.sortedThreads = Index.querySearch(Index.searchInput.value) or Index.sortedThreads
     # Sticky threads
     Index.sortOnTop (thread) -> thread.isSticky
     # Highlighted threads
     Index.sortOnTop (thread) -> thread.isOnTop or thread.isPinned
-    # Non-hidden threads
-    Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
   sortOnTop: (match) ->
     offset = 0
-    for threadRoot, i in Index.sortedNodes by 2 when match Get.threadFromRoot threadRoot
-      Index.sortedNodes.splice offset++ * 2, 0, Index.sortedNodes.splice(i, 2)...
+    for thread, i in Index.sortedThreads when match thread
+      Index.sortedThreads.splice offset++, 0, Index.sortedThreads.splice(i, 1)[0]
     return
   buildIndex: ->
     switch Conf['Index Mode']
       when 'paged'
         pageNum = Index.getCurrentPage()
-        nodesPerPage = Index.getThreadsNumPerPage() * 2
-        nodes = Index.sortedNodes[nodesPerPage * pageNum ... nodesPerPage * (pageNum + 1)]
+        if pageNum > Index.getMaxPageNum()
+          # Go to the last available page if we were past the limit.
+          Index.pageNav Index.getMaxPageNum()
+          return
+        threadsPerPage = Index.getThreadsNumPerPage()
+        threads = Index.sortedThreads[threadsPerPage * pageNum ... threadsPerPage * (pageNum + 1)]
+        nodes   = threads.map (thread) -> thread.OP.nodes.root.parentNode
+        Index.buildReplies threads
+        Index.buildHRs nodes
+        Index.buildPagelist()
+        Index.setPage()
       when 'catalog'
         nodes = Index.buildCatalogViews()
         Index.sizeCatalogViews nodes
       else
-        nodes = Index.sortedNodes
+        nodes = Index.sortedThreads.map (thread) -> thread.OP.nodes.root.parentNode
+        Index.buildReplies Index.sortedThreads
+        Index.buildHRs nodes
     $.rmAll Index.root
-    Index.buildReplies nodes if Conf['Show Replies'] and Conf['Index Mode'] isnt 'catalog'
     $.add Index.root, nodes
     $.event 'IndexBuild', nodes
 
@@ -672,23 +640,17 @@ Index =
       delete Index.searchInput.dataset.searching
       <% } %>
     Index.sort()
-    # Go to the last available page if we were past the limit.
-    pageNum = Math.min pageNum, Index.getMaxPageNum() if Conf['Index Mode'] is 'paged'
-    Index.buildPagelist()
-    if Index.currentPage is pageNum
-      Index.buildIndex()
-      Index.setPage()
-    else
+    if Conf['Index Mode'] is 'paged' and Index.currentPage isnt Math.min pageNum, Index.getMaxPageNum()
+      # Go to the last available page if we were past the limit.
       Index.pageNav pageNum
+    else
+      Index.buildIndex()
   querySearch: (query) ->
     return unless keywords = query.toLowerCase().match /\S+/g
     Index.search keywords
   search: (keywords) ->
-    found = []
-    for threadRoot, i in Index.sortedNodes by 2
-      if Index.searchMatch Get.threadFromRoot(threadRoot), keywords
-        found.push Index.sortedNodes[i], Index.sortedNodes[i + 1]
-    found
+    Index.sortedThreads.filter (thread) ->
+      Index.searchMatch thread, keywords
   searchMatch: (thread, keywords) ->
     {info, file} = thread.OP
     text = []

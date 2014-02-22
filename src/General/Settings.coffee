@@ -123,18 +123,16 @@ Settings =
     div = $.el 'div',
       innerHTML: "<button></button><span class=description>: Clear manually-hidden threads and posts on all boards. Reload the page to apply."
     button = $ 'button', div
-    $.get {hiddenThreads: {}, hiddenPosts: {}}, ({hiddenThreads, hiddenPosts}) ->
+    $.get 'hiddenPosts', {}, ({hiddenPosts}) ->
       hiddenNum = 0
-      for ID, board of hiddenThreads.boards
-        hiddenNum += Object.keys(board).length
       for ID, board of hiddenPosts.boards
         for ID, thread of board
           hiddenNum += Object.keys(thread).length
       button.textContent = "Hidden: #{hiddenNum}"
     $.on button, 'click', ->
       @textContent = 'Hidden: 0'
-      $.delete ['hiddenThreads', 'hiddenPosts']
-    $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
+      $.delete 'hiddenPosts'
+    $.after $('input[name="Recursive Hiding"]', section).parentNode.parentNode, div
   export: ->
     # Make sure to export the most recent data.
     $.get Conf, (Conf) ->
