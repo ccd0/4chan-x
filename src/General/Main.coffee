@@ -339,6 +339,7 @@ Main =
     ['Show Dice Roll',            Dice]
     ['Banner',                    Banner]
     ['Navigate',                  Navigate]
+    ['Flash Features',            Flash]
   ]
 
 Main.init()
