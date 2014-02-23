@@ -83,7 +83,7 @@ Get =
     clone = post.addClone context
     Main.callbackNodes Clone, [clone]
 
-    # Get rid of the side arrows.
+    # Get rid of the side arrows/stubs.
     {nodes} = clone
     $.rmAll nodes.root
     $.add nodes.root, nodes.post
