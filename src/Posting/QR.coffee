@@ -78,6 +78,10 @@ QR =
         $.on d, 'ThreadUpdate', QR.statusCheck
     }[g.VIEW]()
 
+    return unless Conf['Persistent QR']
+    QR.open()
+    QR.hide() if Conf['Auto-Hide QR'] or g.VIEW is 'index' and Conf['Index Mode'] is 'catalog'
+
   statusCheck: ->
     if g.DEAD
       QR.abort()
@@ -85,6 +89,8 @@ QR =
       QR.status()
 
   node: ->
+    if QR.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
+      $.addClass @nodes.root, 'your-post'
     $.on $('a[title="Quote this post"]', @nodes.info), 'click', QR.quote
 
   persist: ->
@@ -210,12 +216,28 @@ QR =
     e?.preventDefault()
     return unless QR.postingIsEnabled
 
-    sel   = d.getSelection()
-    post  = Get.postFromNode @
-    text  = ">>#{post}\n"
-    if (s = sel.toString().trim()) and post is Get.postFromNode sel.anchorNode
-      s = s.replace /\n/g, '\n>'
-      text += ">#{s}\n"
+    sel  = d.getSelection()
+    post = Get.postFromNode @
+    text = ">>#{post}\n"
+    if sel.toString().trim() and post is Get.postFromNode sel.anchorNode
+      range = sel.getRangeAt 0
+      frag  = range.cloneContents()
+      ancestor = range.commonAncestorContainer
+      if ancestor.nodeName is '#text'
+        # Quoting the insides of a spoiler/code tag.
+        if $.x 'ancestor::s', ancestor
+          $.prepend frag, $.tn '[spoiler]'
+          $.add     frag, $.tn '[/spoiler]'
+        if $.x 'ancestor::pre[contains(@class,"prettyprint")]', ancestor
+          $.prepend frag, $.tn '[code]'
+          $.add     frag, $.tn '[/code]'
+      for node in $$ 'br', frag
+        $.replace node, $.tn '\n>'
+      for node in $$ 's', frag
+        $.replace node, [$.tn('[spoiler]'), node.childNodes..., $.tn '[/spoiler]']
+      for node in $$ '.prettyprint', frag
+        $.replace node, [$.tn('[code]'), node.childNodes..., $.tn '[/code]']
+      text += ">#{frag.textContent.trim()}\n"
 
     QR.open()
     if QR.selected.isLocked
@@ -411,32 +433,32 @@ QR =
     QR.nodes = nodes =
       el: dialog = UI.dialog 'qr', 'top:0;right:0;', <%= importHTML('Features/QuickReply') %>
 
-    nodes[key] = $ value, dialog for key, value of {
-      move:       '.move'
-      autohide:   '#autohide'
-      thread:     'select'
-      threadPar:  '#qr-thread-select'
-      close:      '.close'
-      form:       'form'
-      dumpButton: '#dump-button'
-      urlButton:  '#url-button'
-      name:       '[data-name=name]'
-      email:      '[data-name=email]'
-      sub:        '[data-name=sub]'
-      com:        '[data-name=com]'
-      dumpList:   '#dump-list'
-      addPost:    '#add-post'
-      charCount:  '#char-count'
-      fileSubmit: '#file-n-submit'
-      filename:   '#qr-filename'
-      fileContainer: '#qr-filename-container'
-      fileRM:     '#qr-filerm'
-      fileExtras: '#qr-extras-container'
-      spoiler:    '#qr-file-spoiler'
-      spoilerPar: '#qr-spoiler-label'
-      status:     '[type=submit]'
-      fileInput:  '[type=file]'
-    }
+    nodes[val[0]] = $ val[1], dialog for val in [
+      ['move',       '.move']
+      ['autohide',   '#autohide']
+      ['thread',     'select']
+      ['threadPar',  '#qr-thread-select']
+      ['close',      '.close']
+      ['form',       'form']
+      ['dumpButton', '#dump-button']
+      ['urlButton',  '#url-button']
+      ['name',       '[data-name=name]']
+      ['email',      '[data-name=email]']
+      ['sub',        '[data-name=sub]']
+      ['com',        '[data-name=com]']
+      ['dumpList',   '#dump-list']
+      ['addPost',    '#add-post']
+      ['charCount',  '#char-count']
+      ['fileSubmit', '#file-n-submit']
+      ['filesize',   '#qr-filesize']
+      ['filename',   '#qr-filename']
+      ['fileContainer', '#qr-filename-container']
+      ['fileRM',     '#qr-filerm']
+      ['fileExtras', '#qr-extras-container']
+      ['spoiler',    '#qr-file-spoiler']
+      ['status',     '[type=submit]']
+      ['fileInput',  '[type=file]']
+    ]
 
     nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
 

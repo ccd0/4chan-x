@@ -4,10 +4,11 @@ Get =
     excerpt = "/#{thread.board}/ - " + (
       OP.info.subject?.trim() or
       OP.info.comment.replace(/\n+/g, ' // ') or
-      Conf['Anonymize'] and 'Anonymous' or
-      $('.nameBlock', OP.nodes.info).textContent.trim())
-    return "#{excerpt[...70]}..." if excerpt.length > 73
-    excerpt
+      OP.getNameBlock()
+    )
+    if excerpt.length > 73
+      excerpt = "#{excerpt[...70]}..."
+    "/#{thread.board}/ - #{excerpt}"
   threadFromRoot: (root) ->
     g.threads["#{g.BOARD}.#{root.id[1..]}"]
   threadFromNode: (node) ->
@@ -88,7 +89,7 @@ Get =
     clone = post.addClone context
     Main.callbackNodes Clone, [clone]
 
-    # Get rid of the side arrows.
+    # Get rid of the side arrows/stubs.
     {nodes} = clone
     $.rmAll nodes.root
     $.add nodes.root, nodes.post
@@ -168,7 +169,7 @@ Get =
 
     comment = bq.innerHTML
       # greentext
-      .replace(/(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class=quote>$2</span>$3')
+      .replace /(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class=quote>$2</span>$3'
       # quotes
       .replace /((&gt;){2}(&gt;\/[a-z\d]+\/)?\d+)/g, '<span class=deadlink>$1</span>'
 
@@ -213,6 +214,7 @@ Get =
     thread = g.threads["#{boardID}.#{threadID}"] or
       new Thread threadID, board
     post = new Post Build.post(o, true), thread, board, {isArchived: true}
+    $('.page-num', post.nodes.info)?.hidden = true
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
   parseMarkup: (text) ->

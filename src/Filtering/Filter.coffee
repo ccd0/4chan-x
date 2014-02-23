@@ -1,7 +1,7 @@
 Filter =
   filters: {}
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Filter']
+    return if !Conf['Filter']
 
     unless Conf['Filtered Backlinks']
       $.addClass doc, 'hide-backlinks'
@@ -60,7 +60,18 @@ Filter =
           top = filter.match(/top:(yes|no)/)?[1] or 'yes'
           top = top is 'yes' # Turn it into a boolean
 
-        @filters[key].push @createFilter regexp, op, stub, hl, top
+        @filters[key].push {
+          hide:  !hl
+          op:    op
+          stub:  stub
+          class: hl
+          top:   top
+          match: regexp
+          test: if typeof regexp is 'string'
+            Filter.stringTest # MD5 checking
+          else
+            Filter.regexpTest
+        }
 
       # Only execute filter types that contain valid filters.
       unless @filters[key].length
@@ -71,25 +82,6 @@ Filter =
       name: 'Filter'
       cb:   @node
 
-  createFilter: (regexp, op, stub, hl, top) ->
-    test =
-      if typeof regexp is 'string'
-        # MD5 checking
-        (value) -> regexp is value
-      else
-        (value) -> regexp.test value
-    settings =
-      hide:  !hl
-      stub:  stub
-      class: hl
-      top:   top
-    (value, isReply) ->
-      if isReply and op is 'only' or !isReply and op is 'no'
-        return false
-      unless test value
-        return false
-      settings
-
   node: ->
     return if @isClone
     for key of Filter.filters
@@ -97,25 +89,29 @@ Filter =
       # Continue if there's nothing to filter (no tripcode for example).
       continue if value is false
 
-      for filter in Filter.filters[key]
-        unless result = filter value, @isReply
+      for obj in Filter.filters[key]
+        unless Filter.test obj, value, @isReply
           continue
 
         # Hide
-        if result.hide
-          if @isReply
-            PostHiding.hide @, result.stub
-          else if g.VIEW is 'index'
-            ThreadHiding.hide @thread, result.stub
-          else
-            continue
+        if obj.hide
+          continue unless @isReply or g.VIEW is 'index'
+          @hide "Hidden by filtering the #{key}: #{obj.match}", obj.stub
           return
 
         # Highlight
-        $.addClass @nodes.root, result.class
-        if !@isReply and result.top
-          @thread.isOnTop = true
+        @highlight "Highlighted by filtering the #{key}: #{obj.match}", obj.class, obj.top
 
+  stringTest: (string, value) ->
+    string is value
+  regexpTest: (regexp, value) ->
+    regexp.test value
+  test: ({test, match, op}, value, isReply) ->
+    if isReply and op is 'only' or !isReply and op is 'no'
+      return false
+    unless test match, value
+      return false
+    true
   name: (post) ->
     if 'name' of post.info
       return post.info.name
@@ -167,7 +163,7 @@ Filter =
 
   menu:
     init: ->
-      return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Filter']
+      return if !Conf['Menu'] or !Conf['Filter']
 
       div = $.el 'div',
         textContent: 'Filter'

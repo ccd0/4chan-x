@@ -111,21 +111,16 @@ Settings =
     div = $.el 'div',
       innerHTML: "<button></button><span class=description>: Clear manually-hidden threads and posts on all boards. Reload the page to apply."
     button = $ 'button', div
-    $.get {hiddenThreads: {}, hiddenPosts: {}}, ({hiddenThreads, hiddenPosts}) ->
+    $.get 'hiddenPosts', {}, ({hiddenPosts}) ->
       hiddenNum = 0
-      for ID, board of hiddenThreads.boards
-        hiddenNum += Object.keys(board).length
       for ID, board of hiddenPosts.boards
         for ID, thread of board
           hiddenNum += Object.keys(thread).length
       button.textContent = "Hidden: #{hiddenNum}"
     $.on button, 'click', ->
       @textContent = 'Hidden: 0'
-      $.get 'hiddenThreads', {}, ({hiddenThreads}) ->
-        for boardID of hiddenThreads.boards
-          localStorage.removeItem "4chan-hide-t-#{boardID}"
-        $.delete ['hiddenThreads', 'hiddenPosts']
-    $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
+      $.delete 'hiddenPosts'
+    $.after $('input[name="Recursive Hiding"]', section).parentNode.parentNode, div
   export: ->
     # Make sure to export the most recent data.
     $.get Conf, (Conf) ->
@@ -183,10 +178,8 @@ Settings =
         'Remember QR size': ''
         'Quote Inline': 'Quote Inlining'
         'Quote Preview': 'Quote Previewing'
-        'Indicate OP quote': 'Mark OP Quotes'
-        'Indicate Cross-thread Quotes': 'Mark Cross-thread Quotes'
-        'Reply Hiding': 'Reply Hiding Buttons'
-        'Thread Hiding': 'Thread Hiding Buttons'
+        'Indicate OP quote': ''
+        'Indicate Cross-thread Quotes': ''
         # filter
         'uniqueid': 'uniqueID'
         'mod': 'capcode'

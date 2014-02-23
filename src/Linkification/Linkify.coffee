@@ -149,7 +149,6 @@ Linkify =
     for key, type of Linkify.types
       continue unless match = type.regExp.exec href
       return [key, match[1], match[2], link]
-
     return
 
   embed: (data) ->

@@ -19,8 +19,8 @@ QR.captcha =
       spellcheck: false
       tabIndex: 45
     @nodes =
-      img:       imgContainer.firstChild
-      input:     input
+      img:   imgContainer.firstChild
+      input: input
 
     $.on input, 'focus', @setup
 
@@ -29,27 +29,29 @@ QR.captcha =
 
     $.addClass QR.nodes.el, 'has-captcha'
     $.after QR.nodes.com.parentNode, [imgContainer, input]
-    
+
     @setupObserver = new MutationObserver @afterSetup
     @setupObserver.observe container, childList: true
     @afterSetup() # reCAPTCHA might have loaded before the QR.
+
   setup: ->
     $.globalEval 'loadRecaptcha()'
+
   afterSetup: ->
     return unless challenge = $.id 'recaptcha_challenge_field_holder'
     QR.captcha.setupObserver.disconnect()
     delete QR.captcha.setupObserver
 
     setLifetime = (e) -> QR.captcha.lifetime = e.detail
-    $.on window, 'captcha:timeout', setLifetime
+    $.on  window, 'captcha:timeout', setLifetime
     $.globalEval 'window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))'
     $.off window, 'captcha:timeout', setLifetime
 
     {img, input} = QR.captcha.nodes
     img.parentNode.hidden = false
-    $.off input, 'focus', QR.captcha.setup
-    $.on input, 'keydown', QR.captcha.keydown.bind QR.captcha
-    $.on img.parentNode, 'click', QR.captcha.reload.bind QR.captcha
+    $.off input,         'focus',   QR.captcha.setup
+    $.on input,          'keydown', QR.captcha.keydown.bind QR.captcha
+    $.on img.parentNode, 'click',   QR.captcha.reload.bind QR.captcha
 
     $.get 'captchas', [], ({captchas}) ->
       QR.captcha.sync captchas
@@ -91,7 +93,8 @@ QR.captcha =
     $.set 'captchas', @captchas
 
   clear: ->
-    return unless @captchas.length
+    return unless @captchas # not loaded yet.
+
     now = Date.now()
     for captcha, i in @captchas
       break if captcha.timeout > now

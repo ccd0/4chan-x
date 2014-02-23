@@ -121,13 +121,9 @@ Config =
         true
         'Hide replies of hidden posts, recursively.'
       ]
-      'Thread Hiding Buttons': [
+      'Post Hiding': [
         false
-        'Add buttons to hide entire threads.'
-      ]
-      'Reply Hiding Buttons': [
-        false
-        'Add buttons to hide single replies.'
+        'Add buttons to hide posts.'
       ]
       'Filtered Backlinks': [
         true
@@ -146,6 +142,10 @@ Config =
       'Image Hover': [
         true
         'Show full image on mouseover.'
+      ]
+      'Image Hover in Catalog': [
+        false
+        'Show a floating expanded image on hover in the catalog.'
       ]
       'Gallery': [
         true
@@ -305,10 +305,6 @@ Config =
         true
         'Indicate the remaining time before posting again.'
       ]
-      'Cooldown Prediction': [
-        true
-        'Decrease the cooldown time by taking into account upload speed. Disable it if it\'s inaccurate for you.'
-      ]
       'Posting Success Notifications': [
         true
         'Show notifications on successful post creation or file uploading.'
@@ -355,10 +351,6 @@ Config =
         true
         'Link dead quotes to the archives.'
       ]
-      'Mark Quotes of You': [
-        true
-        'Add \'(You)\' to quotes linking to your posts.'
-      ]
       'Quoted Title': [
         false
         'Change the page title to reflect you\'ve been quoted.'
@@ -369,21 +361,16 @@ Config =
       ]
       'Highlight Own Posts': [
         false
-        'Highlights own posts if Mark Quotes of You is enabled.'
-      ]
-      'Mark OP Quotes': [
-        true
-        'Add \'(OP)\' to OP quotes.'
-      ]
-      'Mark Cross-thread Quotes': [
-        true
-        'Add \'(Cross-thread)\' to cross-threads quotes.'
+        'Highlights own posts if Quote Markers are enabled.'
       ]
       'Quote Threading': [
         true
         'Thread conversations'
       ]
-
+      'Quote Markers': [
+        true
+        'Add "(You)", "(OP)", "(Cross-thread)", "(Dead)" markers to quote links.'
+      ]
   imageExpansion:
     'Fit width': [
       false
@@ -438,65 +425,65 @@ Config =
 
   filter:
     name: """
-# Filter any namefags:
-#/^(?!Anonymous$)/
-"""
+      # Filter any namefags:
+      #/^(?!Anonymous$)/
+    """
 
     uniqueID: """
-# Filter a specific ID:
-#/Txhvk1Tl/
-"""
+      # Filter a specific ID:
+      #/Txhvk1Tl/
+    """
 
     tripcode: """
-# Filter any tripfag
-#/^!/
-"""
+      # Filter any tripfag
+      #/^!/
+    """
 
     capcode: """
-# Set a custom class for mods:
-#/Mod$/;highlight:mod;op:yes
-# Set a custom class for moot:
-#/Admin$/;highlight:moot;op:yes
-"""
+      # Set a custom class for mods:
+      #/Mod$/;highlight:mod;op:yes
+      # Set a custom class for moot:
+      #/Admin$/;highlight:moot;op:yes
+    """
 
     email: ""
 
     subject: """
-# Filter Generals on /v/:
-#/general/i;boards:v;op:only
-"""
+      # Filter Generals on /v/:
+      #/general/i;boards:v;op:only
+    """
 
     comment: """
-# Filter Stallman copypasta on /g/:
-#/what you\'re refer+ing to as linux/i;boards:g
-"""
+      # Filter Stallman copypasta on /g/:
+      #/what you\'re refer+ing to as linux/i;boards:g
+    """
 
     flag: ''
     filename: ''
     dimensions: """
-# Highlight potential wallpapers:
-#/1920x1080/;op:yes;highlight;top:no;boards:w,wg
-"""
+      # Highlight potential wallpapers:
+      #/1920x1080/;op:yes;highlight;top:no;boards:w,wg
+    """
 
     filesize: ''
 
     MD5: ''
 
   sauces: """
-https://www.google.com/searchbyimage?image_url=%TURL
-http://iqdb.org/?url=%TURL
-#//tineye.com/search?url=%TURL
-#http://saucenao.com/search.php?url=%TURL
-#http://3d.iqdb.org/?url=%TURL
-#http://regex.info/exif.cgi?imgurl=%URL
-# uploaders:
-#http://imgur.com/upload?url=%URL;text:Upload to imgur
-#http://ompldr.org/upload?url1=%URL;text:Upload to ompldr
-# "View Same" in archives:
-#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz
-#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/
-#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/
-"""
+    https://www.google.com/searchbyimage?image_url=%TURL
+    http://iqdb.org/?url=%TURL
+    #//tineye.com/search?url=%TURL
+    #http://saucenao.com/search.php?url=%TURL
+    #http://3d.iqdb.org/?url=%TURL
+    #http://regex.info/exif.cgi?imgurl=%URL
+    # uploaders:
+    #http://imgur.com/upload?url=%URL;text:Upload to imgur
+    #http://ompldr.org/upload?url1=%URL;text:Upload to ompldr
+    # "View Same" in archives:
+    #//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz
+    #//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/
+    #//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/
+  """
 
   FappeT:
     fappe: false
@@ -510,9 +497,12 @@ http://iqdb.org/?url=%TURL
 
   Index:
     'Index Mode': 'paged'
+    'Previous Index Mode': 'paged'
     'Index Sort': 'bump'
+    'Index Size': 'small'
+    'Threads per Page': 0
+    'Open threads in a new tab': false
     'Show Replies': true
-    'Anchor Hidden Threads': true
     'Refreshed Navigation': false
 
   Header:
@@ -549,7 +539,7 @@ vp-replace
   QR:
     'QR.personas': """
       #email:"sage";boards:jp;always
-      """
+    """
 
   time: '%m/%d/%y(%a)%H:%M:%S'
 
@@ -658,13 +648,25 @@ vp-replace
       'Shift+Left'
       'Jump to the previous page.'
     ]
-    'Open catalog': [
-      'Shift+c'
-      'Open the catalog of the current board'
-    ]
     'Search form': [
       'Ctrl+Alt+s'
       'Focus the search field on the board index.'
+    ]
+    'Paged mode': [
+      'Ctrl+1'
+      'Sets the index mode to paged.'
+    ]
+    'All pages mode': [
+      'Ctrl+2'
+      'Sets the index mode to all threads.'
+    ]
+    'Catalog mode': [
+      'Ctrl+3'
+      'Sets the index mode to catalog.'
+    ]
+    'Cycle sort type': [
+      'Ctrl+x'
+      'Cycle through index sort types.'
     ]
     # Thread Navigation
     'Next thread': [

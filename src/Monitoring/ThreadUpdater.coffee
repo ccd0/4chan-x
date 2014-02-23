@@ -309,6 +309,16 @@ ThreadUpdater =
       if ThreadUpdater.postID and ThreadUpdater.postID is ID
         ThreadUpdater.foundPost = true
 
+    sendEvent = ->
+      $.event 'ThreadUpdate',
+        404: false
+        thread: ThreadUpdater.thread
+        newPosts: posts
+        deletedPosts: deletedPosts
+        deletedFiles: deletedFiles
+        postCount: OP.replies + 1
+        fileCount: OP.images + (!!ThreadUpdater.thread.OP.file and !ThreadUpdater.thread.OP.file.isDead)
+
     unless count
       ThreadUpdater.set 'status', null, null
       ThreadUpdater.outdateCount++
@@ -320,37 +330,29 @@ ThreadUpdater =
           ThreadUpdater.audio = $.el 'audio', src: ThreadUpdater.beep
         ThreadUpdater.audio.play()
 
-      ThreadUpdater.lastPost = posts[count - 1].ID
-      Main.callbackNodes Post, posts
+    ThreadUpdater.set 'status', "+#{count}", 'new'
+    ThreadUpdater.outdateCount = 0
+    if Conf['Beep'] and d.hidden and Unread.posts and !Unread.posts.length
+      unless ThreadUpdater.audio
+        ThreadUpdater.audio = $.el 'audio', src: ThreadUpdater.beep
+      ThreadUpdater.audio.play()
 
-      scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and
-        ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
+    ThreadUpdater.lastPost = posts[count - 1].ID
+    Main.callbackNodes Post, posts
 
-      for post in posts
-        root = post.nodes.root
-        if post.cb
-          unless post.cb()
-            $.add ThreadUpdater.root, root
-        else
+    scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and Header.getBottomOf(ThreadUpdater.root) > -25
+
+    for post in posts
+      {root} = post.nodes
+      if post.cb
+        unless post.cb()
           $.add ThreadUpdater.root, root
+      else
+        $.add ThreadUpdater.root, root
 
-      if scroll
-        if Conf['Bottom Scroll']
-          window.scrollTo 0, d.body.clientHeight
-        else
-          Header.scrollTo root if root
-
-      $.queueTask ->
-        # Enable 4chan features.
-        threadID = ThreadUpdater.thread.ID
-        {length} = $$ '.thread > .postContainer', ThreadUpdater.root
-        Fourchan.parseThread threadID, length - count, length
-
-    $.event 'ThreadUpdate',
-      404: false
-      thread: ThreadUpdater.thread
-      newPosts: posts
-      deletedPosts: deletedPosts
-      deletedFiles: deletedFiles
-      postCount: OP.replies + 1
-      fileCount: OP.images + (!!ThreadUpdater.thread.OP.file and !ThreadUpdater.thread.OP.file.isDead)
+    sendEvent()
+    if scroll
+      if Conf['Bottom Scroll']
+        window.scrollTo 0, d.body.clientHeight
+      else
+        Header.scrollTo nodes[0]

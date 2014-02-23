@@ -1,6 +1,6 @@
 DownloadLink =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Download Link']
+    return if !Conf['Menu'] or !Conf['Download Link']
 
     a = $.el 'a',
       className: 'download-link'

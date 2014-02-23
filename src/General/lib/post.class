@@ -53,6 +53,11 @@ class Post
     @parseQuotes()
     @parseFile that
 
+    @labels     = []
+    @highlights = []
+    @isDead   = false
+    @isHidden = false
+
     @clones = []
     g.posts.push @fullID, thread.posts.push @, board.posts.push @, @
     @kill() if that.isArchived
@@ -63,7 +68,6 @@ class Post
     # Get the comment's text.
     # <br> -> \n
     # Remove:
-    #   'Comment too long'...
     #   EXIF data. (/p/)
     #   Rolls. (/tg/)
     #   Preceding and following new lines.
@@ -152,17 +156,84 @@ class Post
       $.rmClass node, 'desktop'
     return
 
-  kill: (file, now) ->
-    now or= new Date()
+  getNameBlock: ->
+    if Conf['Anonymize']
+      'Anonymous'
+    else
+      $('.nameBlock', @nodes.info).textContent.trim()
+
+  hide: (label, makeStub=Conf['Stubs'], hideRecursively=Conf['Recursive Hiding']) ->
+    @labels.push label unless label in @labels
+    return if @isHidden
+    @isHidden = true
+
+    for quotelink in Get.allQuotelinksLinkingTo @
+      $.addClass quotelink, 'filtered'
+
+    if hideRecursively
+      label = "Recursively hidden for quoting No.#{@}"
+      Recursive.apply 'hide', @, label, makeStub, true
+      Recursive.add   'hide', @, label, makeStub, true
+
+    if !@isReply
+      @thread.hide()
+      return
+
+    unless makeStub
+      @nodes.root.hidden = true
+      return
+
+    @nodes.post.hidden = true
+    @nodes.post.previousElementSibling.hidden = true
+    @nodes.stub = $.el 'div',
+      className: 'stub'
+    $.add @nodes.stub, [
+      PostHiding.makeButton false
+      $.tn " #{@getNameBlock()}"
+    ]
+    $.add @nodes.stub, Menu.makeButton() if Conf['Menu']
+    $.prepend @nodes.root, @nodes.stub
+  show: (showRecursively=Conf['Recursive Hiding']) ->
+    return if !@isHidden
+    @isHidden = false
+    @labels = @labels.filter (label) ->
+      # This is lame.
+      !/^(Manually hidden|Recursively hidden|Hidden by)/.test label
+
+    for quotelink in Get.allQuotelinksLinkingTo @
+      $.rmClass quotelink, 'filtered'
+
+    if showRecursively
+      Recursive.apply 'show', @, true
+      Recursive.rm    'hide', @
+
+    if !@isReply
+      @thread.show()
+      return
+
+    unless @nodes.stub
+      @nodes.root.hidden = false
+      return
+    @nodes.post.hidden = false
+    @nodes.post.previousElementSibling.hidden = false
+    $.rm @nodes.stub
+    delete @nodes.stub
+  highlight: (label, highlight, top) ->
+    @labels.push label
+    unless highlight in @highlights
+      @highlights.push highlight
+      $.addClass @nodes.root, highlight
+    if !@isReply and top
+      @thread.isOnTop = true
+
+  kill: (file) ->
     if file
       return if @file.isDead
       @file.isDead = true
-      @file.timeOfDeath = now
       $.addClass @nodes.root, 'deleted-file'
     else
       return if @isDead
       @isDead = true
-      @timeOfDeath = now
       $.addClass @nodes.root, 'deleted-post'
 
     unless strong = $ 'strong.warning', @nodes.info
@@ -174,20 +245,20 @@ class Post
 
     return if @isClone
     for clone in @clones
-      clone.kill file, now
+      clone.kill file
 
     return if file
     # Get quotelinks/backlinks to this post
     # and paint them (Dead).
     for quotelink in Get.allQuotelinksLinkingTo @ when not $.hasClass quotelink, 'deadlink'
-      quotelink.textContent = quotelink.textContent + '\u00A0(Dead)'
       $.addClass quotelink, 'deadlink'
+      continue unless Conf['Quote Markers']
+      QuoteMarkers.parseQuotelink Get.postFromNode(quotelink), quotelink, true
     return
   # XXX tmp fix for 4chan's racing condition
   # giving us false-positive dead posts.
   resurrect: ->
     delete @isDead
-    delete @timeOfDeath
     $.rmClass @nodes.root, 'deleted-post'
     strong = $ 'strong.warning', @nodes.info
     # no false-positive files
@@ -200,10 +271,10 @@ class Post
     for clone in @clones
       clone.resurrect()
 
-    for quotelink in Get.allQuotelinksLinkingTo @
-      if $.hasClass quotelink, 'deadlink'
-        quotelink.textContent = quotelink.textContent.replace '\u00A0(Dead)', ''
-        $.rmClass quotelink, 'deadlink'
+    for quotelink in Get.allQuotelinksLinkingTo @ when $.hasClass quotelink, 'deadlink'
+      $.rmClass quotelink, 'deadlink'
+      continue unless Conf['Quote Markers']
+      QuoteMarkers.parseQuotelink Get.postFromNode(quotelink), quotelink, true
     return
 
   collect: ->

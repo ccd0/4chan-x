@@ -295,83 +295,91 @@ $.localKeys = [
 ]
 
 # https://developer.chrome.com/extensions/storage.html
-
-$.delete = (keys) ->
-  chrome.storage.sync.remove keys
-
-$.get = (key, val, cb) ->
-  if typeof cb is 'function'
-    items = $.item key, val
-  else
-    items = key
-    cb = val
-  localItems = null
-  syncItems  = null
-  for key, val of items
-    if key in $.localKeys
-      (localItems or= {})[key] = val
-    else
-      (syncItems  or= {})[key] = val
-
-  count = 0
-  done  = (item) ->
-    if chrome.runtime.lastError
-      c.error chrome.runtime.lastError.message
-    $.extend items, item
-    cb items unless --count
-
-  if localItems
-    count++
-    chrome.storage.local.get localItems, done
-  if syncItems
-    count++
-    chrome.storage.sync.get  syncItems,  done
-
-$.set = do ->
+do ->
   items =
-    sync: {}
     local: {}
-  timeout = {}
+    sync:  {}
 
+  $.delete = (keys) ->
+    if typeof keys is 'string'
+      keys = [keys]
+    for key in keys
+      delete items.local[key]
+      delete items.sync[key]
+    chrome.storage.sync.remove keys
+
+  $.get = (key, val, cb) ->
+    if typeof cb is 'function'
+      data = $.item key, val
+    else
+      data = key
+      cb = val
+
+    localItems = null
+    syncItems  = null
+    for key, val of data
+      if key in $.localKeys
+        (localItems or= {})[key] = val
+      else
+        (syncItems  or= {})[key] = val
+
+    count = 0
+    done  = (result) ->
+      if chrome.runtime.lastError
+        c.error chrome.runtime.lastError.message
+      $.extend data, result
+      cb data unless --count
+
+    if localItems
+      count++
+      chrome.storage.local.get localItems, done
+    if syncItems
+      count++
+      chrome.storage.sync.get  syncItems,  done
+
+  timeout = {}
   setArea = (area) ->
     data = items[area]
-    return if !Object.keys(data).length or timeout[area]
-    items[area] = {}
+    return if !Object.keys(data).length or timeout[area] > Date.now()
     chrome.storage[area].set data, ->
       if chrome.runtime.lastError
         c.error chrome.runtime.lastError.message
         for key, val of data when key not of items[area]
+          if area is 'sync' and chrome.storage.sync.QUOTA_BYTES_PER_ITEM < JSON.stringify(val).length + key.length
+            c.error chrome.runtime.lastError.message, key, val
+            continue
           items[area][key] = val
-        timeout[area] = setTimeout setArea, $.MINUTE, area
+        setTimeout setArea, $.MINUTE, area
+        timeout[area] = Date.now() + $.MINUTE
         return
       delete timeout[area]
+    items[area] = {}
 
-  setAll = $.debounce $.SECOND, ->
-    for key in $.localKeys
-      if key of items.sync
-        items.local[key] = items.sync[key]
-        delete items.sync[key]
-    try
-      setArea 'local'
-      setArea 'sync'
-    catch err
-      c.error err.stack
+  setSync = $.debounce $.SECOND, ->
+    setArea 'sync'
 
-  (key, val) ->
+  $.set = (key, val) ->
     if typeof key is 'string'
       items.sync[key] = val
     else
       $.extend items.sync, key
-    setAll()
-$.clear = (cb) ->
-  count = 2
-  done = ->
-    if chrome.runtime.lastError
-      c.error chrome.runtime.lastError.message
-      return
-    cb?() unless --count
-  chrome.storage.local.clear done
-  chrome.storage.sync.clear done
+    for key in $.localKeys when key of items.sync
+      items.local[key] = items.sync[key]
+      delete items.sync[key]
+    setArea 'local'
+    setSync()
+
+  $.clear = (cb) ->
+    items.local = {}
+    items.sync  = {}
+    count = 2
+    done  = ->
+      if chrome.runtime.lastError
+        c.error chrome.runtime.lastError.message
+        return
+      cb?() unless --count
+    chrome.storage.local.clear done
+    chrome.storage.sync.clear  done
 <% } else { %>
 
 # http://wiki.greasespot.net/Main_Page

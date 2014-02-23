@@ -22,7 +22,7 @@ class Clone extends Post
     for inlined in $$ '.inlined', post
       $.rmClass inlined, 'inlined'
 
-    root.hidden = false # post hiding
+    root.hidden = post.hidden = false # post hiding
     $.rmClass root, 'forwarded' # quote inlining
     $.rmClass post, 'highlight' # keybind navigation, ID highlighting
 

@@ -148,7 +148,7 @@ Redirect =
   ]
 
   to: (dest, data) ->
-    archive = (if dest is 'search' then Redirect.data.thread else Redirect.data[dest])[data.boardID]
+    archive = (if dest in ['search', 'board'] then Redirect.data.thread else Redirect.data[dest])[data.boardID]
     return '' unless archive
     Redirect[dest] archive, data
 
@@ -182,6 +182,9 @@ Redirect =
 
   file: (archive, {boardID, filename}) ->
     "#{Redirect.protocol archive}#{archive.domain}/#{boardID}/full_image/#{filename}"
+
+  board: (archive, {boardID}) ->
+    "#{Redirect.protocol archive}#{archive.domain}/#{boardID}/"
 
   search: (archive, {boardID, type, value}) ->
     type = if type is 'name'

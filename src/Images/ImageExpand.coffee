@@ -1,6 +1,6 @@
 ImageExpand =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Image Expansion']
+    return if !Conf['Image Expansion']
 
     @EAI = $.el 'a',
       className: 'expand-all-shortcut fa fa-expand'
@@ -33,14 +33,6 @@ ImageExpand =
 
     toggleAll: ->
       $.event 'CloseMenu'
-      toggle = (post) ->
-        {file} = post
-        return unless file and file.isImage and doc.contains post.nodes.root
-        if ImageExpand.on and
-          (!Conf['Expand spoilers'] and file.isSpoiler or
-          Conf['Expand from here'] and Header.getTopOf(file.thumb) < 0)
-            return
-        $.queueTask func, post
 
       if ImageExpand.on = $.hasClass ImageExpand.EAI, 'expand-all-shortcut'
         ImageExpand.EAI.className = 'contract-all-shortcut fa fa-compress'
@@ -52,8 +44,14 @@ ImageExpand =
         func = ImageExpand.contract
 
       g.posts.forEach (post) ->
-        toggle post
-        toggle post for post in post.clones
+        for post in [post].concat post.clones
+          {file} = post
+          return unless file and file.isImage and doc.contains post.nodes.root
+          if ImageExpand.on and
+            (!Conf['Expand spoilers'] and file.isSpoiler or
+            Conf['Expand from here'] and Header.getTopOf(file.thumb) < 0)
+              return
+          $.queueTask func, post
         return
 
     setFitness: ->
@@ -97,7 +95,7 @@ ImageExpand =
   expand: (post, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
     {thumb} = post.file
-    return if post.isHidden or post.file.isExpanded or $.hasClass thumb, 'expanding'
+    return if post.file.isExpanded or $.hasClass thumb, 'expanding'
     $.addClass thumb, 'expanding'
     if post.file.fullImage
       # Expand already-loaded/ing picture.
@@ -154,7 +152,7 @@ ImageExpand =
 
     timeoutID = setTimeout ImageExpand.expand, 10000, post
     <% if (type === 'crx') { %>
-    $.ajax @src,
+    $.ajax post.file.URL,
       onloadend: ->
         return if @status isnt 404
         clearTimeout timeoutID
@@ -177,7 +175,7 @@ ImageExpand =
 
   menu:
     init: ->
-      return if g.VIEW is 'catalog' or !Conf['Image Expansion']
+      return if !Conf['Image Expansion']
 
       el = $.el 'span',
         textContent: 'Image Expansion'

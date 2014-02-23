@@ -108,11 +108,7 @@ Unread =
 
   openNotification: (post) ->
     return unless Header.areNotificationsEnabled
-    name = if Conf['Anonymize']
-      'Anonymous'
-    else
-      $('.nameBlock', post.nodes.info).textContent.trim()
-    notif = new Notification "#{name} replied to you",
+    notif = new Notification "#{post.getNameBlock()} replied to you",
       body: post.info.comment
       icon: Favicon.logo
     notif.onclick = ->
@@ -173,7 +169,7 @@ Unread =
     Unread.readArray Unread.postsQuotingYou
     Unread.update() if e
 
-  saveLastReadPost: $.debounce 2 * $.SECOND, ->
+  saveLastReadPost: $.debounce 5 * $.SECOND, ->
     return if Unread.thread.isDead
     Unread.db.set
       boardID:  Unread.thread.board.ID
@@ -186,22 +182,11 @@ Unread =
     if $.x 'preceding-sibling::div[contains(@class,"replyContainer")]', post.data.nodes.root # not the first reply
       $.before post.data.nodes.root, Unread.hr
 
-  update: <% if (type === 'crx') { %>(dontrepeat) <% } %>->
+  update: ->
     count = Unread.posts.length
 
     if Conf['Unread Count']
-      d.title = "#{if Conf['Quoted Title'] and Unread.postsQuotingYou.length then '(!) ' else ''}#{if count or !Conf['Hide Unread Count at (0)'] then "(#{count}) " else ''}#{if g.DEAD then "/#{g.BOARD}/ - 404" else "#{Unread.title}"}"
-      <% if (type === 'crx') { %>
-      # XXX Chrome bug where it doesn't always update the tab title.
-      # crbug.com/124381
-      # Call it one second later,
-      # but don't display outdated unread count.
-      return if dontrepeat
-      setTimeout ->
-        d.title = ''
-        Unread.update true
-      , $.SECOND
-      <% } %>
+      d.title = "#{if count or !Conf['Hide Unread Count at (0)'] then "(#{count}) " else ''}#{if g.DEAD then Unread.title.replace '-', '- 404 -' else Unread.title}"
 
     return unless Conf['Unread Favicon']
 

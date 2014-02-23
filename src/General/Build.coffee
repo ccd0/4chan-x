@@ -115,18 +115,18 @@ Build =
     flag = unless flagCode
       ''
     else if boardID is 'pol'
-      " <img src='#{staticPath}country/troll/#{flagCode.toLowerCase()}.gif' alt=#{flagCode} title='#{flagName}' class=countryFlag>"
+      " <img src='#{staticPath}country/troll/#{flagCode.toLowerCase()}.gif' title='#{flagName}' class=countryFlag>"
     else
       " <span title='#{flagName}' class='flag flag-#{flagCode.toLowerCase()}'></span>"
 
     if file?.isDeleted
       fileHTML = if isOP
         "<div class=file id=f#{postID}><span class=fileThumb>" +
-          "<img src='#{staticPath}filedeleted#{gifIcon}' alt='File deleted.' class=fileDeleted>" +
+          "<img src='#{staticPath}filedeleted#{gifIcon}' class=fileDeleted>" +
         "</span></div>"
       else
         "<div class=file id=f#{postID}><span class=fileThumb>" +
-          "<img src='#{staticPath}filedeleted-res#{gifIcon}' alt='File deleted.' class=fileDeletedRes>" +
+          "<img src='#{staticPath}filedeleted-res#{gifIcon}' class=fileDeletedRes>" +
         "</span></div>"
     else if file
       fileSize  = $.bytesToString file.size
@@ -172,17 +172,17 @@ Build =
       fileHTML = ''
 
     sticky = if isSticky
-      " <img src=#{staticPath}sticky#{gifIcon} alt=Sticky title=Sticky class=stickyIcon>"
+      " <img src=#{staticPath}sticky#{gifIcon} title=Sticky class=stickyIcon>"
     else
       ''
     closed = if isClosed
-      " <img src=#{staticPath}closed#{gifIcon} alt=Closed title=Closed class=closedIcon>"
+      " <img src=#{staticPath}closed#{gifIcon} title=Closed class=closedIcon>"
     else
       ''
 
     if isOP and g.VIEW is 'index'
-      pageNum   = Math.floor Index.liveThreadIDs.indexOf(postID) / Index.threadsNumPerPage
-      pageIcon  = " <span class=page-num title='This thread is on page #{pageNum} in the original index.'>[#{pageNum}]</span>"
+      pageNum   = Index.liveThreadIDs.indexOf(postID) // Index.threadsNumPerPage
+      pageIcon  = " <span class=page-num title='This thread is on page #{pageNum} in the original index.'>Page #{pageNum}</span>"
       replyLink = " &nbsp; <span>[<a href='/#{boardID}/res/#{threadID}' class=replylink>Reply</a>]</span>"
     else
       pageIcon = replyLink = ''
@@ -214,10 +214,12 @@ Build =
 
     if (OP = board.posts[data.no]) and root = OP.nodes.root.parentNode
       $.rmAll root
+      $.add root, OP.nodes.root
     else
       root = $.el 'div',
         className: 'thread'
         id: "t#{data.no}"
+      $.add root, Build.postFromObject data, board.ID
 
     $.add root, Build[if full then 'fullThread' else 'excerptThread'] board, data, OP
     root
@@ -228,9 +230,75 @@ Build =
       [posts, files] = if Conf['Show Replies']
         [data.omitted_posts, data.omitted_images]
       else
-        # XXX data.images is not accurate.
-        [data.replies, data.omitted_images + data.last_replies.filter((data) -> !!data.ext).length]
+        [data.replies, data.images]
       nodes.push Build.summary board.ID, data.no, posts, files
     nodes
 
   fullThread: (board, data) -> Build.postFromObject data, board.ID
+
+  catalogThread: (thread) ->
+    {staticPath, gifIcon} = Build
+    data = Index.liveThreadData[Index.liveThreadIDs.indexOf thread.ID]
+
+    postCount = data.replies + 1
+    fileCount = data.images  + !!data.ext
+    pageCount = Index.liveThreadIDs.indexOf(thread.ID) // Index.threadsNumPerPage
+
+    subject = if thread.OP.info.subject
+      "<div class='subject'>#{thread.OP.info.subject}</div>"
+    else
+      ''
+    comment = thread.OP.nodes.comment.innerHTML.replace /(<br>\s*){2,}/g, '<br>'
+
+    root = $.el 'div',
+      className: 'catalog-thread'
+      innerHTML: <%= importHTML('Features/Thread-catalog-view') %>
+
+    root.dataset.fullID = thread.fullID
+    $.addClass root, 'pinned' if thread.isPinned
+    $.addClass root, thread.OP.highlights... if thread.OP.highlights.length
+
+    thumb = root.firstElementChild
+    if data.spoiler and !Conf['Reveal Spoilers']
+      src = "#{staticPath}spoiler"
+      if spoilerRange = Build.spoilerRange[thread.board]
+        # Randomize the spoiler image.
+        src += "-#{thread.board}" + Math.floor 1 + spoilerRange * Math.random()
+      src += '.png'
+      $.addClass thumb, 'spoiler-file'
+    else if data.filedeleted
+      src = "#{staticPath}filedeleted-res#{gifIcon}"
+      $.addClass thumb, 'deleted-file'
+    else if thread.OP.file
+      src = thread.OP.file.thumbURL
+      thumb.dataset.width  = data.tn_w
+      thumb.dataset.height = data.tn_h
+    else
+      src = "#{staticPath}nofile.png"
+      $.addClass thumb, 'no-file'
+    thumb.style.backgroundImage = "url(#{src})"
+    if Conf['Open threads in a new tab']
+      thumb.target = '_blank'
+
+    for quotelink in $$ '.quotelink', root.lastElementChild
+      $.replace quotelink, [quotelink.childNodes...]
+    for pp in $$ '.prettyprint', root.lastElementChild
+      $.replace pp, $.tn pp.textContent
+
+    if thread.isSticky
+      $.add $('.thread-icons', root), $.el 'img',
+        src: "#{staticPath}sticky#{gifIcon}"
+        className: 'stickyIcon'
+        title: 'Sticky'
+    if thread.isClosed
+      $.add $('.thread-icons', root), $.el 'img',
+        src: "#{staticPath}closed#{gifIcon}"
+        className: 'closedIcon'
+        title: 'Closed'
+
+    if data.bumplimit
+      $.addClass $('.post-count', root), 'warning'
+    if data.imagelimit
+      $.addClass $('.file-count', root), 'warning'
+
+    root

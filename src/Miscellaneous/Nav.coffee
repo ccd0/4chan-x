@@ -5,8 +5,6 @@ Nav =
         return unless Conf['Index Navigation']
       when 'thread'
         return unless Conf['Reply Navigation']
-      else # catalog
-        return
 
     span = $.el 'span',
       id: 'navlinks'
@@ -40,8 +38,6 @@ Nav =
 
   getThread: ->
     for threadRoot in $$ '.thread'
-      thread = Get.threadFromRoot threadRoot
-      continue if thread.isHidden and !thread.stub
       if Header.getTopOf(threadRoot) >= -threadRoot.getBoundingClientRect().height # not scrolled past
         return threadRoot
     return $ '.board'

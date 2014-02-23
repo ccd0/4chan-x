@@ -97,6 +97,4 @@ ExpandThread =
     $.after a, postsRoot
 
     postsCount    = postsRoot.length
-    a.textContent = ExpandThread.text '-', postsCount, filesCount
-
-    Fourchan.parseThread thread.ID, 1, postsCount
+    a.textContent = ExpandThread.text '-', postsRoot.length, filesCount
