@@ -409,4 +409,41 @@ a .name {
 .quote-shadows #qr {
   box-shadow: 5px 5px 5px #{theme['Shadow Color']};
 }
+/* /f/ */
+.mobile.center {
+  display:none!important;
+}
+.postblock {
+  color: #{theme["Text"]};
+  font-weight: bold;
+  font-size: 10pt;
+}
+tbody > tr:nth-of-type(2n+1){
+  background: #{theme["Reply Background"]} !important;
+}
+table.flashListing {
+  margin: auto !important;
+  border-spacing: 1px !important;
+}
+table.flashListing .highlightPost::after {
+  content: '●';
+  color: #{theme["Text"]};
+  position: relative;
+  left: 12px;
+  margin-left: -10px;
+}
+.flashListing > tbody {
+  background: url('/image/fade.png') repeat-x scroll center top #{backgroundC} !important;
+  padding-top: 200px;
+}
+.flashListing td {
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+  text-align: center !important;
+}
+#delform[action='https://sys.4chan.org/f/up.php'], #delform[action='https://sys.4chan.org/f/up.php'] .postblock {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
 #{theme["Custom CSS"].replace(/\s+/g, ' ').trim()}
