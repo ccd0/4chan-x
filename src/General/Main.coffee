@@ -329,6 +329,7 @@ Main =
     ['Keybinds',                  Keybinds]
     ['Show Dice Roll',            Dice]
     ['Navigate',                  Navigate]
+    ['Flash Features',            Flash]
   ]
 
   setMascotString: ->

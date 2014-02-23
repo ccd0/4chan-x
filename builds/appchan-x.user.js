@@ -112,7 +112,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, Callbacks, CatalogLinks, Clone, Color, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, InfiniScroll, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, Callbacks, CatalogLinks, Clone, Color, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, InfiniScroll, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -13612,26 +13612,6 @@
       while (item = items[i++]) {
         Style.sheets[item[0]] = $.addStyle(item[1], item[0]);
       }
-      if (g.BOARD.ID === 'f') {
-        $.ready(function() {
-          var badLink, sauceLink, swfName;
-          $.globalEval('SWFEmbed.init()');
-          if (g.VIEW === 'thread') {
-            sauceLink = d.createElement('a');
-            swfName = $('.fileText > a');
-            badLink = $('.navLinks');
-            i = 0;
-            while (i < 3) {
-              badLink.removeChild(badLink.firstChild);
-              i++;
-            }
-            sauceLink.textContent = 'Check Sauce on SWFCHAN';
-            sauceLink.href = 'http://eye.swfchan.com/search/?q=' + swfName.textContent;
-            badLink.appendChild(sauceLink);
-            return badLink.removeChild(badLink.firstChild.nextSibling);
-          }
-        });
-      }
       $.addStyle(JSColor.css(), 'jsColor');
       $.asap((function() {
         return d.body;
@@ -14762,6 +14742,29 @@
           return 'PDF';
         }
       }
+    }
+  };
+
+  Flash = {
+    init: function() {
+      if (g.BOARD.ID === 'f') {
+        return $.ready(Flash.initReady);
+      }
+    },
+    initReady: function() {
+      var nav, sauceLink, swfName;
+      $.globalEval('SWFEmbed.init()');
+      if (g.VIEW !== 'thread') {
+        return;
+      }
+      swfName = $('.fileText > a');
+      nav = $('.navLinks');
+      sauceLink = $.el('a', {
+        textContent: 'Check Sauce on SWFCHAN',
+        href: "http://eye.swfchan.com/search/?q=" + swfName.textContent
+      });
+      $.rmAll(nav);
+      return $.add(nav, [$.tn('['), sauceLink, $.tn(']')]);
     }
   };
 
@@ -17481,7 +17484,7 @@
       }
       return Main.thisPageIsLegit;
     },
-    features: [['Polyfill', Polyfill], ['Emoji', Emoji], ['Style', Style], ['Mascots', MascotTools], ['Rice', Rice], ['Banner', Banner], ['Announcements', GlobalMessage], ['Archive Redirection', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Color User IDs', IDColor], ['Custom CSS', CustomCSS], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply', QR], ['Menu', Menu], ['Report Link', ReportLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Thread Expansion', ExpandThread], ['Thread Excerpt', ThreadExcerpt], ['Favicon', Favicon], ['Unread', Unread], ['Quote Threading', QuoteThreading], ['Thread Updater', ThreadUpdater], ['Thread Stats', ThreadStats], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Show Dice Roll', Dice], ['Navigate', Navigate]],
+    features: [['Polyfill', Polyfill], ['Emoji', Emoji], ['Style', Style], ['Mascots', MascotTools], ['Rice', Rice], ['Banner', Banner], ['Announcements', GlobalMessage], ['Archive Redirection', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Color User IDs', IDColor], ['Custom CSS', CustomCSS], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply', QR], ['Menu', Menu], ['Report Link', ReportLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Thread Expansion', ExpandThread], ['Thread Excerpt', ThreadExcerpt], ['Favicon', Favicon], ['Unread', Unread], ['Quote Threading', QuoteThreading], ['Thread Updater', ThreadUpdater], ['Thread Stats', ThreadStats], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Show Dice Roll', Dice], ['Navigate', Navigate], ['Flash Features', Flash]],
     setMascotString: function() {
       var type;
       type = "Enabled Mascots";
