@@ -137,8 +137,8 @@ Redirect =
         software: "foolfuuka"
     ,
       name:   "Foolz Beta"
-      boards: ["a", "co", "gd", "jp", "m", "s4s", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
-      files:  ["a", "gd", "jp", "m", "s4s", "tg", "u", "vg", "vp", "vr", "wsg"]
+      boards: ["a", "biz", "co", "d", "gd", "jp", "m", "mlp", "s4s", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
+      files:  ["a", "biz", "d", "gd", "jp", "m", "s4s", "tg", "u", "vg", "vp", "vr", "wsg"]
       data:
         domain: "beta.foolz.us"
         http:  true

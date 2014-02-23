@@ -6,6 +6,27 @@
 **ParrotParrot**:
 - Added `Original filename` variable to Sauce panel.
 
+### v1.3.10 
+*2014-02-20*
+
+**Spittie**
+- I keep breaking and fixing stuff. But mostly breaking.
+
+### v1.3.9 
+*2014-02-20*
+
+**Spittie**
+- Fix uploading (>me in charge of not being an idiot)
+
+### v1.3.8 
+*2014-02-20*
+
+**MayhemYDG**
+- Fix QR
+
+**Spittie**
+- Better url handling
+
 ### v1.3.7 
 *2014-02-15*
 
