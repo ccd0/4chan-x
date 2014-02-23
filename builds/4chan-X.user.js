@@ -10776,7 +10776,7 @@
     },
     update: function() {
       if (!this.style) {
-        this.addStyle();
+        return this.addStyle();
       }
       return this.style.textContent = Conf['usercss'];
     }
