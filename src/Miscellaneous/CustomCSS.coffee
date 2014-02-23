@@ -4,7 +4,7 @@ CustomCSS =
     @addStyle()
 
   addStyle: ->
-    @style = $.addStyle Conf['usercss']
+    @style = $.addStyle Conf['usercss'], 'CustomCSS'
 
   rmStyle: ->
     if @style

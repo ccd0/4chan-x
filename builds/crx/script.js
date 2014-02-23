@@ -14358,7 +14358,7 @@
       return this.addStyle();
     },
     addStyle: function() {
-      return this.style = $.addStyle(Conf['usercss']);
+      return this.style = $.addStyle(Conf['usercss'], 'CustomCSS');
     },
     rmStyle: function() {
       if (this.style) {
