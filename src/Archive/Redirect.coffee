@@ -77,15 +77,6 @@ Redirect =
         https: true
         software: "foolfuuka"
     ,
-      name:   "Install Gentoo"
-      boards: ["diy", "g", "sci"]
-      files:  []
-      data:
-        domain: "archive.installgentoo.net"
-        http:  false
-        https: true
-        software: "fuuka"
-    ,
       name:   "Rebecca Black Tech"
       boards: ["cgl", "g", "mu", "w"]
       files:  ["cgl", "g", "mu", "w"]
