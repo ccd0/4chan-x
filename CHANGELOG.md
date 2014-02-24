@@ -1,3 +1,18 @@
+## v1.4.0 
+*2014-02-24*
+
+**ParrotParrot**:
+- Added `Original filename` variable to Sauce panel.
+
+**MayhemYDG**:
+
+- Added a Reset Settings button in the settings.
+- More stability update.
+- Stability update.
+
+**Zixaphir**:
+- Merge changes from Mayhem fork
+
 ### v1.3.9 
 *2014-02-20*
 
@@ -11,8 +26,6 @@
 - Fix QR
 **Spittie**
 - Better url handling
-**ParrotParrot**:
-- Added `Original filename` variable to Sauce panel.
 
 ### v1.3.7 
 *2014-02-15*
