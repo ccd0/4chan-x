@@ -24,9 +24,8 @@ PSAHiding =
     $.on entry.el, 'click', PSAHiding.toggle
 
     PSAHiding.btn = btn = $.el 'a',
-      innerHTML: '<i class="fa fa-minus-square-o"></i>'
+      className: 'hide-announcement fa fa-minus-square-o'
       title: 'Hide announcement.'
-      className: 'hide-announcement'
       href: 'javascript:;'
     $.on btn, 'click', PSAHiding.toggle
 

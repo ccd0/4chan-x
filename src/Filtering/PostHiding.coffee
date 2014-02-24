@@ -2,12 +2,10 @@ PostHiding =
   init: ->
     @db = new DataBoard 'hiddenPosts'
     @hideButton = $.el 'a',
-      className: 'hide-post-button'
-      innerHTML: '<i class="fa fa-minus-square-o"></i>'
+      className: 'hide-post-button fa fa-minus-square-o'
       href: 'javascript:;'
     @showButton = $.el 'a',
-      className: 'show-post-button'
-      innerHTML: '<i class="fa fa-plus-square-o"></i>'
+      className: 'show-post-button fa fa-plus-square-o'
       href: 'javascript:;'
 
     Post.callbacks.push
