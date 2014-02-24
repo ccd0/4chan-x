@@ -23,7 +23,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.3.10 - 2014-02-21
+* 4chan X - Version 1.3.10 - 2014-02-24
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -10014,16 +10014,6 @@
           http: true,
           https: true,
           software: "foolfuuka"
-        }
-      }, {
-        name: "Install Gentoo",
-        boards: ["diy", "g", "sci"],
-        files: [],
-        data: {
-          domain: "archive.installgentoo.net",
-          http: false,
-          https: true,
-          software: "fuuka"
         }
       }, {
         name: "Rebecca Black Tech",
