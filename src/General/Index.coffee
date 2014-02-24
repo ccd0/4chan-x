@@ -108,9 +108,9 @@ Index =
       for navLink in $$ '.navLinks'
         $.rm navLink
       $.before $.id('delform'), [Index.navLinks, $.x 'child::form/preceding-sibling::hr[1]']
-      $.rmClass doc, 'index-loading'
       $.asap (-> $('.pagelist') or d.readyState isnt 'loading'), ->
-        $.replace $('.pagelist'), Index.pagelist
+        $.replace pagelist, Index.pagelist if pagelist = $ '.pagelist'
+        $.rmClass doc, 'index-loading'
   menu:
     init: ->
       return if g.VIEW isnt 'index' or !Conf['Menu'] or g.BOARD.ID is 'f'
