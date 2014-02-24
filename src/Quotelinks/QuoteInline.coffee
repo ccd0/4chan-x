@@ -2,18 +2,14 @@ QuoteInline =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Quote Inlining']
 
-    if Conf['Quote Hash Navigation']
-      @node = ->
-        for link in @nodes.quotelinks.concat [@nodes.backlinks...]
-          $.after link, QuoteInline.qiQuote link, $.hasClass link, 'filtered' unless @isClone
-          $.on link, 'click', QuoteInline.toggle
-        return
+    @process = if Conf['Quote Hash Navigation']
+      (link, clone) ->
+        $.after link, QuoteInline.qiQuote link, $.hasClass link, 'filtered' unless clone
+        $.on link, 'click', QuoteInline.toggle
 
     else
-      @node = ->
-        for link in @nodes.quotelinks.concat [@nodes.backlinks...]
-          $.on link, 'click', QuoteInline.toggle
-        return
+      (link) ->
+        $.on link, 'click', QuoteInline.toggle
 
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
@@ -22,14 +18,18 @@ QuoteInline =
       name: 'Quote Inlining'
       cb:   @node
 
+  node: ->
+    {process} = QuoteInline
+    {isClone} = @
+    process link, isClone for link in @nodes.quotelinks
+    process link, isClone for link in @nodes.backlinks
+    return
+
   qiQuote: (link, hidden) ->
-    [
-      $.tn(' ')
-      $.el 'a',
-        className: if hidden then 'hashlink filtered' else 'hashlink'
-        textContent: '#'
-        href: link.href
-    ]
+    $.el 'a',
+      className: "hashlink#{if hidden then ' filtered' else ''}"
+      textContent: '#'
+      href: link.href
 
   toggle: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0

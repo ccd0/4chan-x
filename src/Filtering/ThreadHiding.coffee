@@ -58,7 +58,7 @@ ThreadHiding =
     $.cache "//a.4cdn.org/#{g.BOARD}/threads.json", ->
       return unless @status is 200
       threads = {}
-      for page in JSON.parse @response
+      for page in @response
         for thread in page.threads
           if thread.no of hiddenThreadsOnCatalog
             threads[thread.no] = hiddenThreadsOnCatalog[thread.no]

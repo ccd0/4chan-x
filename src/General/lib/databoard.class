@@ -13,8 +13,7 @@ class DataBoard
       @sync = sync
     $.on d, '4chanXInitFinished', init
 
-  save: ->
-    $.set @key, @data
+  save: -> $.set @key, @data
 
   delete: ({boardID, threadID, postID}) ->
     if postID
@@ -79,7 +78,7 @@ class DataBoard
         return
       board   = @data.boards[boardID]
       threads = {}
-      for page in JSON.parse e.target.response
+      for page in e.target.response
         for thread in page.threads
           if thread.no of board
             threads[thread.no] = board[thread.no]
@@ -90,3 +89,8 @@ class DataBoard
   onSync: (data) =>
     @data = data or boards: {}
     @sync?()
+
+  disconnect: ->
+    $.desync @key
+    delete @sync
+    delete @data

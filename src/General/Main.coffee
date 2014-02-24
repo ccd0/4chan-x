@@ -1,5 +1,8 @@
 Main =
   init: ->
+    g.threads = new SimpleDict
+    g.posts   = new SimpleDict
+
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
     return if g.BOARD.ID in ['z', 'fk']
@@ -54,81 +57,17 @@ Main =
             location.replace URL if URL
         return
 
-    init = (features) ->
-      for name, module of features
-        # c.time "#{name} initialization"
-        try
-          module.init()
-        catch err
-          Main.handleErrors
-            message: "\"#{name}\" initialization crashed."
-            error: err
-        # finally
-        #   c.timeEnd "#{name} initialization"
-      return
-
     # c.time 'All initializations'
-    init
-      'Polyfill':                  Polyfill
-      'Redirect':                  Redirect
-      'Header':                    Header
-      'Catalog Links':             CatalogLinks
-      'Settings':                  Settings
-      'Index Generator':           Index
-      'Announcement Hiding':       PSAHiding
-      'Fourchan thingies':         Fourchan
-      'Emoji':                     Emoji
-      'Color User IDs':            IDColor
-      'Custom CSS':                CustomCSS
-      'Linkify':                   Linkify
-      'Reveal Spoilers':           RemoveSpoilers
-      'Resurrect Quotes':          Quotify
-      'Filter':                    Filter
-      'Thread Hiding Buttons':     ThreadHiding
-      'Reply Hiding Buttons':      PostHiding
-      'Recursive':                 Recursive
-      'Strike-through Quotes':     QuoteStrikeThrough
-      'Quick Reply':               QR
-      'Menu':                      Menu
-      'Report Link':               ReportLink
-      'Thread Hiding (Menu)':      ThreadHiding.menu
-      'Reply Hiding (Menu)':       PostHiding.menu
-      'Delete Link':               DeleteLink
-      'Filter (Menu)':             Filter.menu
-      'Download Link':             DownloadLink
-      'Archive Link':              ArchiveLink
-      'Quote Inlining':            QuoteInline
-      'Quote Previewing':          QuotePreview
-      'Quote Backlinks':           QuoteBacklink
-      'Mark Quotes of You':        QuoteYou
-      'Mark OP Quotes':            QuoteOP
-      'Mark Cross-thread Quotes':  QuoteCT
-      'Anonymize':                 Anonymize
-      'Time Formatting':           Time
-      'Relative Post Dates':       RelativeDates
-      'File Info Formatting':      FileInfo
-      'Fappe Tyme':                FappeTyme
-      'Gallery':                   Gallery
-      'Gallery (menu)':            Gallery.menu
-      'Sauce':                     Sauce
-      'Image Expansion':           ImageExpand
-      'Image Expansion (Menu)':    ImageExpand.menu
-      'Reveal Spoiler Thumbnails': RevealSpoilers
-      'Image Loading':             ImageLoader
-      'Image Hover':               ImageHover
-      'Thread Expansion':          ExpandThread
-      'Thread Excerpt':            ThreadExcerpt
-      'Favicon':                   Favicon
-      'Unread':                    Unread
-      'Quote Threading':           QuoteThreading
-      'Thread Stats':              ThreadStats
-      'Thread Updater':            ThreadUpdater
-      'Thread Watcher':            ThreadWatcher
-      'Thread Watcher (Menu)':     ThreadWatcher.menu
-      'Index Navigation':          Nav
-      'Keybinds':                  Keybinds
-      'Show Dice Roll':            Dice
-      'Banner':                    Banner
+    for [name, feature] in Main.features
+      # c.time "#{name} initialization"
+      try
+        feature.init()
+      catch err
+        Main.handleErrors
+          message: "\"#{name}\" initialization crashed."
+          error: err
+      # finally
+      #   c.timeEnd "#{name} initialization"
     # c.timeEnd 'All initializations'
 
     $.on d, 'AddCallback', Main.addCallback
@@ -139,16 +78,12 @@ Main =
     return if !Main.isThisPageLegit() or $.hasClass doc, 'fourchan-x'
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
-    <% if (type === 'crx') { %>
-    $.addClass doc, 'blink'
-    <% } else { %>
-    $.addClass doc, 'gecko'
-    <% } %>
-    $.addClass doc, 'fourchan-x'
-    $.addClass doc, 'seaweedchan'
-    $.addClass doc, g.VIEW
+    $.addClass doc, 'fourchan-x', 'seaweedchan', g.VIEW, '<% if (type === 'crx') { %>blink<% } else { %>gecko<% } %>'
     $.addStyle Main.css
 
+    Main.setClass()
+
+  setClass: ->
     if g.VIEW is 'catalog'
       $.addClass doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace /_+/g, '-'
       return
@@ -182,11 +117,7 @@ Main =
     # Something might have gone wrong!
     Main.initStyle()
 
-    if g.VIEW is 'thread'
-      Main.initThread() 
-    else
-      $.event '4chanXInitFinished'
-
+    # 4chan Pass Link
     if styleSelector = $.id 'styleSelector'
       passLink = $.el 'a',
         textContent: '4chan Pass'
@@ -197,7 +128,18 @@ Main =
           'left=0,top=0,width=500,height=255,toolbar=0,resizable=0'
       $.before styleSelector.previousSibling, [$.tn '['; passLink, $.tn ']\u00A0\u00A0']
 
+    # Parse HTML or skip it and start building from JSON.
+    unless Conf['JSON Navigation'] and g.VIEW is 'index'
+      Main.initThread() 
+    else
+      $.event '4chanXInitFinished'
+
     <% if (type === 'userscript') { %>
+    test = $.el 'span'
+    test.classList.add 'a', 'b'
+    if test.className isnt 'a b'
+      new Notice 'warning', "Your version of Firefox is outdated (v<%= meta.min.firefox %> minimum) and <%= meta.name %> may not operate correctly.", 30
+
     GMver = GM_info.version.split '.'
     for v, i in "<%= meta.min.greasemonkey %>".split '.'
       continue if v is GMver[i]
@@ -211,23 +153,39 @@ Main =
       new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to operate properly.', 30
 
   initThread: ->
-    return unless threadRoot = $ '.thread'
-    thread = new Thread +threadRoot.id[1..], g.BOARD
-    posts  = []
-    for postRoot in $$ '.thread > .postContainer', threadRoot
-      try
-        posts.push new Post postRoot, thread, g.BOARD, {isOriginalMarkup: true}
-      catch err
-        # Skip posts that we failed to parse.
-        errors = [] unless errors
-        errors.push
-          message: "Parsing of Post No.#{postRoot.id.match /\d+/} failed. Post will be skipped."
-          error: err
-    Main.handleErrors errors if errors
+    if board = $ '.board'
+      threads = []
+      posts   = []
 
-    Main.callbackNodes Thread, [thread]
-    Main.callbackNodesDB Post, posts, ->
-      $.event '4chanXInitFinished'
+      for threadRoot in $$ '.board > .thread', board
+        thread = new Thread +threadRoot.id[1..], g.BOARD
+        threads.push thread
+        for postRoot in $$ '.thread > .postContainer', threadRoot
+          try
+            posts.push new Post postRoot, thread, g.BOARD
+          catch err
+            # Skip posts that we failed to parse.
+            unless errors
+              errors = []
+            errors.push
+              message: "Parsing of Post No.#{postRoot.id.match(/\d+/)} failed. Post will be skipped."
+              error: err
+      Main.handleErrors errors if errors
+
+      Main.callbackNodes Thread, threads
+      Main.callbackNodesDB Post, posts, ->
+        $.event '4chanXInitFinished'
+
+    $.get 'previousversion', null, ({previousversion}) ->
+      return if previousversion is g.VERSION
+      if previousversion
+        changelog = '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
+        el = $.el 'span',
+          innerHTML: "<%= meta.name %> has been updated to <a href='#{changelog}' target=_blank>version #{g.VERSION}</a>."
+        new Notice 'info', el, 15
+      else
+        Settings.open()
+      $.set 'previousversion', g.VERSION
 
   callbackNodes: (klass, nodes) ->
     i = 0
@@ -237,24 +195,21 @@ Main =
     return
 
   callbackNodesDB: (klass, nodes, cb) ->
-    errors = null
-    len    = 0
-    i      = 0
-
+    i   = 0
     cbs = klass.callbacks
-    fn = ->
-      node = nodes[i++]
+    fn  = ->
+      return false unless node = nodes[i]
       cbs.execute node
-      i % 25
+      ++i % 25
 
     softTask = ->
       while fn()
-        if len is i
-          cb() if cb
-          return
+        continue
+      unless nodes[i]
+        cb() if cb
+        return
       setTimeout softTask, 0 
 
-    len = nodes.length
     softTask()
 
   addCallback: (e) ->
@@ -321,5 +276,69 @@ Main =
   <%= grunt.file.read('src/General/css/tomorrow.css').replace(/\s+/g, ' ').trim() %>
   <%= grunt.file.read('src/General/css/photon.css').replace(/\s+/g, ' ').trim() %>
   """
+
+  features: [
+    ['Polyfill',                  Polyfill]
+    ['Redirect',                  Redirect]
+    ['Header',                    Header]
+    ['Catalog Links',             CatalogLinks]
+    ['Settings',                  Settings]
+    ['Index Generator',           Index]
+    ['Announcement Hiding',       PSAHiding]
+    ['Fourchan thingies',         Fourchan]
+    ['Emoji',                     Emoji]
+    ['Color User IDs',            IDColor]
+    ['Custom CSS',                CustomCSS]
+    ['Linkify',                   Linkify]
+    ['Reveal Spoilers',           RemoveSpoilers]
+    ['Resurrect Quotes',          Quotify]
+    ['Filter',                    Filter]
+    ['Thread Hiding Buttons',     ThreadHiding]
+    ['Reply Hiding Buttons',      PostHiding]
+    ['Recursive',                 Recursive]
+    ['Strike-through Quotes',     QuoteStrikeThrough]
+    ['Quick Reply',               QR]
+    ['Menu',                      Menu]
+    ['Report Link',               ReportLink]
+    ['Thread Hiding (Menu)',      ThreadHiding.menu]
+    ['Reply Hiding (Menu)',       PostHiding.menu]
+    ['Delete Link',               DeleteLink]
+    ['Filter (Menu)',             Filter.menu]
+    ['Download Link',             DownloadLink]
+    ['Archive Link',              ArchiveLink]
+    ['Quote Inlining',            QuoteInline]
+    ['Quote Previewing',          QuotePreview]
+    ['Quote Backlinks',           QuoteBacklink]
+    ['Mark Quotes of You',        QuoteYou]
+    ['Mark OP Quotes',            QuoteOP]
+    ['Mark Cross-thread Quotes',  QuoteCT]
+    ['Anonymize',                 Anonymize]
+    ['Time Formatting',           Time]
+    ['Relative Post Dates',       RelativeDates]
+    ['File Info Formatting',      FileInfo]
+    ['Fappe Tyme',                FappeTyme]
+    ['Gallery',                   Gallery]
+    ['Gallery (menu)',            Gallery.menu]
+    ['Sauce',                     Sauce]
+    ['Image Expansion',           ImageExpand]
+    ['Image Expansion (Menu)',    ImageExpand.menu]
+    ['Reveal Spoiler Thumbnails', RevealSpoilers]
+    ['Image Loading',             ImageLoader]
+    ['Image Hover',               ImageHover]
+    ['Thread Expansion',          ExpandThread]
+    ['Thread Excerpt',            ThreadExcerpt]
+    ['Favicon',                   Favicon]
+    ['Unread',                    Unread]
+    ['Quote Threading',           QuoteThreading]
+    ['Thread Stats',              ThreadStats]
+    ['Thread Updater',            ThreadUpdater]
+    ['Thread Watcher',            ThreadWatcher]
+    ['Thread Watcher (Menu)',     ThreadWatcher.menu]
+    ['Index Navigation',          Nav]
+    ['Keybinds',                  Keybinds]
+    ['Show Dice Roll',            Dice]
+    ['Banner',                    Banner]
+    ['Navigate',                  Navigate]
+  ]
 
 Main.init()

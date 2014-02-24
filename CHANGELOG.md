@@ -1,8 +1,17 @@
-### v1.3.10 
-*2014-02-20*
+## v1.4.0 
+*2014-02-24*
 
-**Spittie**
-- I keep breaking and fixing stuff. But mostly breaking.
+**ParrotParrot**:
+- Added `Original filename` variable to Sauce panel.
+
+**MayhemYDG**:
+
+- Added a Reset Settings button in the settings.
+- More stability update.
+- Stability update.
+
+**Zixaphir**:
+- Merge changes from Mayhem fork
 
 ### v1.3.9 
 *2014-02-20*

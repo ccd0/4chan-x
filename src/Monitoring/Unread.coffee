@@ -12,6 +12,21 @@ Unread =
       name: 'Unread'
       cb:   @node
 
+  disconnect: ->
+    return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Favicon'] and !Conf['Desktop Notifications']
+
+    Unread.db.disconnect()
+    $.rm hr if {hr} = Unread
+
+    delete @[name] for name in ['db', 'hr', 'posts', 'postsQuotingYou', 'thread', 'title', 'lastReadPost']
+
+    $.off d, '4chanXInitFinished',      @ready
+    $.off d, 'ThreadUpdate',            @onUpdate
+    $.off d, 'scroll visibilitychange', @read
+    $.off d, 'visibilitychange',        @setLine if Conf['Unread Line']
+
+    Thread.callbacks.disconnect 'Unread'
+
   node: ->
     Unread.thread = @
     Unread.title  = d.title
@@ -26,9 +41,10 @@ Unread =
 
   ready: ->
     $.off d, '4chanXInitFinished', Unread.ready
-    posts = []
-    posts.push post for ID, post of Unread.thread.posts when post.isReply
-    Unread.addPosts posts
+    unless Conf['Quote Threading']
+      posts = []
+      Unread.thread.posts.forEach (post) -> posts.push post if post.isReply
+      Unread.addPosts posts
     QuoteThreading.force() if Conf['Quote Threading']
     Unread.scroll() if Conf['Scroll to Last Read Post']
 
@@ -37,14 +53,15 @@ Unread =
     return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
     if post = Unread.posts.first
       # Scroll to a non-hidden, non-OP post that's before the first unread post.
-      while root = $.x 'preceding-sibling::div[contains(@class,"replyContainer")][1]', post.nodes.root
+      while root = $.x 'preceding-sibling::div[contains(@class,"replyContainer")][1]', post.data.nodes.root
         break unless (post = Get.postFromRoot root).isHidden
       return unless root
       down = true
     else
       # Scroll to the last read post.
-      posts  = Object.keys Unread.thread.posts
-      {root} = Unread.thread.posts[posts[posts.length - 1]].nodes
+      {posts} = Unread.thread
+      {keys}  = posts
+      {root}  = posts[keys[keys.length - 1]].nodes
 
     # Scroll to the target unless we scrolled past it.
     Header.scrollTo root, down if Header.getBottomOf(root) < 0
@@ -75,16 +92,15 @@ Unread =
         threadID: post.thread.ID
         postID:   ID
       }
-      Unread.posts.push post unless post.prev or post.next
+      Unread.posts.push post
       Unread.addPostQuotingYou post
     if Conf['Unread Line']
       # Force line on visible threads if there were no unread posts previously.
-      Unread.setLine Unread.posts.first in posts
+      Unread.setLine Unread.posts.first?.data in posts
     Unread.read()
     Unread.update()
 
   addPostQuotingYou: (post) ->
-    return unless QR.db
     for quotelink in post.nodes.quotelinks when QR.db.get Get.postDataFromLink quotelink
       Unread.postsQuotingYou.push post
       Unread.openNotification post
@@ -110,16 +126,20 @@ Unread =
   onUpdate: (e) ->
     if e.detail[404]
       Unread.update()
-    else
+    else if !Conf['Quote Threading']
       Unread.addPosts e.detail.newPosts
+    else
+      Unread.read()
+      Unread.update()
 
   readSinglePost: (post) ->
     {ID} = post
-    return unless Unread.posts[ID]
-    if post is Unread.posts.first
+    {posts} = Unread
+    return unless posts[ID]
+    if post is posts.first
       Unread.lastReadPost = ID
       Unread.saveLastReadPost()
-    Unread.posts.rm ID
+    posts.rm ID
     if (i = Unread.postsQuotingYou.indexOf post) isnt -1
       Unread.postsQuotingYou.splice i, 1
     Unread.update()
@@ -135,12 +155,16 @@ Unread =
 
     {posts} = Unread
     while post = posts.first
-      break unless Header.getBottomOf(post.nodes.root) > -1 # post is not completely read
-      {ID} = post
+      break unless Header.getBottomOf(post.data.nodes.root) > -1 # post is not completely read
+      {ID, data} = post
       posts.rm ID
 
-      if Conf['Mark Quotes of You'] and post.info.yours
-        QuoteYou.lastRead = post.nodes.root
+      if Conf['Mark Quotes of You'] and QR.db.get {
+        boardID:  data.board.ID
+        threadID: data.thread.ID
+        postID:   ID
+      }
+        QuoteYou.lastRead = data.nodes.root
 
     return unless ID
 
@@ -159,8 +183,8 @@ Unread =
   setLine: (force) ->
     return unless d.hidden or force is true
     return $.rm Unread.hr unless post = Unread.posts.first
-    if $.x 'preceding-sibling::div[contains(@class,"replyContainer")]', post.nodes.root # not the first reply
-      $.before post.nodes.root, Unread.hr
+    if $.x 'preceding-sibling::div[contains(@class,"replyContainer")]', post.data.nodes.root # not the first reply
+      $.before post.data.nodes.root, Unread.hr
 
   update: <% if (type === 'crx') { %>(dontrepeat) <% } %>->
     count = Unread.posts.length

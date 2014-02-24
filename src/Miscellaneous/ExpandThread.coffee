@@ -1,21 +1,26 @@
 ExpandThread =
+  statuses: {}
   init: ->
-    return if g.VIEW isnt 'index' or !Conf['Thread Expansion']
-    @statuses = {}
+    return if g.VIEW is 'thread' or !Conf['Thread Expansion']
     $.on d, 'IndexRefresh', @onIndexRefresh
 
   setButton: (thread) ->
     return unless a = $.x 'following-sibling::a[contains(@class,"summary")][1]', thread.OP.nodes.root
     a.textContent = ExpandThread.text '+', a.textContent.match(/\d+/g)...
     $.on a, 'click', ExpandThread.cbToggle
-
-  onIndexRefresh: ->
+  
+  disconnect: (refresh) ->
+    return if g.VIEW is 'thread' or !Conf['Thread Expansion']
     for threadID, status of ExpandThread.statuses
       status.req?.abort()
       delete ExpandThread.statuses[threadID]
-    for threadID, thread of g.BOARD.threads
+
+    $.off d, 'IndexRefresh', @onIndexRefresh unless refresh
+
+  onIndexRefresh: ->
+    ExpandThread.disconnect true
+    g.BOARD.threads.forEach (thread) ->
       ExpandThread.setButton thread
-    return
 
   text: (status, posts, files) ->
     "#{status} #{posts} post#{if posts > 1 then 's' else ''}" +
@@ -72,13 +77,13 @@ ExpandThread =
       a.textContent = "Error #{req.statusText} (#{req.status})"
       return
 
-    data = JSON.parse(req.response).posts
-    Build.spoilerRange[thread.board] = data.shift().custom_spoiler
+    Build.spoilerRange[thread.board] = req.response.posts[0].custom_spoiler
 
     posts      = []
     postsRoot  = []
     filesCount = 0
-    for postData in data
+    for postData in req.response.posts
+      continue if postData.no is thread.ID
       if post = thread.posts[postData.no]
         filesCount++ if 'file' of post
         postsRoot.push post.nodes.root

@@ -9,19 +9,6 @@ Settings =
 
     Header.addShortcut link
 
-    $.get 'previousversion', null, (item) ->
-      if previous = item['previousversion']
-        return if previous is g.VERSION
-
-        changelog = '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
-        el = $.el 'span',
-          innerHTML: "<%= meta.name %> has been updated to <a href='#{changelog}' target=_blank>version #{g.VERSION}</a>."
-        if Conf['Show Updated Notifications']
-          new Notice 'info', el, 30
-      else
-        $.on d, '4chanXInitFinished', Settings.open
-      $.set 'previousversion', g.VERSION
-
     Settings.addSection 'Main',     Settings.main
     Settings.addSection 'Filter',   Settings.filter
     Settings.addSection 'Sauce',    Settings.sauce
@@ -37,7 +24,6 @@ Settings =
     localStorage.setItem '4chan-settings', JSON.stringify settings
 
   open: (openSection) ->
-    $.off d, '4chanXInitFinished', Settings.open
     return if Settings.dialog
     $.event 'CloseMenu'
 
@@ -53,6 +39,7 @@ Settings =
 
     $.on $('.export', Settings.dialog), 'click',  Settings.export
     $.on $('.import', Settings.dialog), 'click',  Settings.import
+    $.on $('.reset',  Settings.dialog), 'click',  Settings.reset
     $.on $('input',   Settings.dialog), 'change', Settings.onImport
 
     links = []
@@ -124,56 +111,39 @@ Settings =
     div = $.el 'div',
       innerHTML: "<button></button><span class=description>: Clear manually-hidden threads and posts on all boards. Reload the page to apply."
     button = $ 'button', div
-    hiddenNum = 0
-    $.get 'hiddenThreads', boards: {}, (item) ->
-      for ID, board of item.hiddenThreads.boards
+    $.get {hiddenThreads: {}, hiddenPosts: {}}, ({hiddenThreads, hiddenPosts}) ->
+      hiddenNum = 0
+      for ID, board of hiddenThreads.boards
+        hiddenNum += Object.keys(board).length
+      for ID, board of hiddenPosts.boards
         for ID, thread of board
-          hiddenNum++
-      button.textContent = "Hidden: #{hiddenNum}"
-    $.get 'hiddenPosts', boards: {}, (item) ->
-      for ID, board of item.hiddenPosts.boards
-        for ID, thread of board
-          for ID, post of thread
-            hiddenNum++
+          hiddenNum += Object.keys(thread).length
       button.textContent = "Hidden: #{hiddenNum}"
     $.on button, 'click', ->
       @textContent = 'Hidden: 0'
-      $.get 'hiddenThreads', boards: {}, (item) ->
-        for boardID of item.hiddenThreads.boards
+      $.get 'hiddenThreads', {}, ({hiddenThreads}) ->
+        for boardID of hiddenThreads.boards
           localStorage.removeItem "4chan-hide-t-#{boardID}"
         $.delete ['hiddenThreads', 'hiddenPosts']
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
-  export: (now, data) ->
-    unless typeof now is 'number'
-      now  = Date.now()
-      data =
-        version: g.VERSION
-        date: now
-      for db in DataBoard.keys
-        Conf[db] = boards: {}
-      # Make sure to export the most recent data.
-      $.get Conf, (Conf) ->
-        # XXX don't export archives.
-        delete Conf['archives']
-        data.Conf = Conf
-        Settings.export now, data
-      return
+  export: ->
+    # Make sure to export the most recent data.
+    $.get Conf, (Conf) ->
+      # XXX don't export archives.
+      delete Conf['archives']
+      Settings.downloadExport {version: g.VERSION, date: Date.now(), Conf}
+  downloadExport: (data) ->
     a = $.el 'a',
-      className: 'warning'
-      textContent: 'Save me!'
-      download: "<%= meta.name %> v#{g.VERSION}-#{now}.json"
+      download: "<%= meta.name %> v#{g.VERSION}-#{data.date}.json"
       href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data, null, 2}"
-      target: '_blank'
     <% if (type === 'userscript') { %>
-    # XXX Firefox won't let us download automatically.
     p = $ '.imp-exp-result', Settings.dialog
     $.rmAll p
     $.add p, a
-    <% } else { %>
-    a.click()
     <% } %>
+    a.click()
   import: ->
-    @nextElementSibling.click()
+    $('input', @parentNode).click()
   onImport: ->
     return unless file = @files[0]
     output = $('.imp-exp-result')
@@ -183,8 +153,7 @@ Settings =
     reader = new FileReader()
     reader.onload = (e) ->
       try
-        data = JSON.parse e.target.result
-        Settings.loadSettings data
+        Settings.loadSettings JSON.parse e.target.result
         if confirm 'Import successful. Reload now?'
           window.location.reload()
       catch err
@@ -194,6 +163,11 @@ Settings =
   loadSettings: (data) ->
     version = data.version.split '.'
     if version[0] is '2'
+      convertSettings = (data, map) ->
+        for prevKey, newKey of map
+          data.Conf[newKey] = data.Conf[prevKey] if newKey
+          delete data.Conf[prevKey]
+        data
       data = Settings.convertSettings data,
         # General confs
         'Disable 4chan\'s extension': ''
@@ -265,11 +239,9 @@ Settings =
       data.Conf['watchedThreads'] = boards: ThreadWatcher.convert data.Conf['WatchedThreads']
       delete data.Conf['WatchedThreads']
     $.set data.Conf
-  convertSettings: (data, map) ->
-    for prevKey, newKey of map
-      data.Conf[newKey] = data.Conf[prevKey] if newKey
-      delete data.Conf[prevKey]
-    data
+  reset: ->
+    if confirm 'Your current settings will be entirely wiped, are you sure?'
+      $.clear -> window.location.reload() if confirm 'Reset successful. Reload now?'
 
   filter: (section) ->
     section.innerHTML = <%= importHTML('Settings/Filter-select') %>
@@ -333,20 +305,20 @@ Settings =
     $.on $('input[name="Custom CSS"]', section), 'change', Settings.togglecss
     $.on $.id('apply-css'), 'click', Settings.usercss
 
-    boards = {}
-    for name, archive of Redirect.archives
-      for boardID in archive.boards
-        data = boards[boardID] or=
+    archBoards = {}
+    for {name, boards, files, data} in Redirect.archives
+      for boardID in boards
+        o = archBoards[boardID] or=
           thread: []
           post:   []
           file:   []
-        data.thread.push name
-        data.post.push   name if archive.software is 'foolfuuka'
-        data.file.push   name if boardID in archive.files
+        o.thread.push name
+        o.post.push   name if data.software is 'foolfuuka'
+        o.file.push   name if boardID in files
 
     rows = []
     boardOptions = []
-    for boardID in Object.keys(boards).sort() # Alphabetical order
+    for boardID in Object.keys(archBoards).sort() # Alphabetical order
       row = $.el 'tr',
         className: "board-#{boardID}"
       row.hidden = boardID isnt g.BOARD.ID
@@ -356,8 +328,8 @@ Settings =
         value:       "board-#{boardID}"
         selected:    boardID is g.BOARD.ID
 
-      data = boards[boardID]
-      $.add row, Settings.addArchiveCell boardID, data, item for item in ['thread', 'post', 'file']
+      o = archBoards[boardID]
+      $.add row, Settings.addArchiveCell boardID, o, item for item in ['thread', 'post', 'file']
       rows.push row
 
     $.add $('tbody', section), rows

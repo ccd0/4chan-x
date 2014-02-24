@@ -1,5 +1,5 @@
 class Post
-  @callbacks = new Callbacks()
+  @callbacks = new Callbacks 'Post'
   toString: -> @ID
 
   constructor: (root, @thread, @board, that={}) ->
@@ -48,18 +48,13 @@ class Post
     if date           = $ '.dateTime',           info
       @nodes.date     = date
       @info.date      = new Date date.dataset.utc * 1000
-    if Conf['Quick Reply']
-      @info.yours     = QR.db.get
-        boardID:  @board
-        threadID: @thread
-        postID:   @ID
 
     @parseComment()
     @parseQuotes()
     @parseFile that
 
     @clones = []
-    g.posts[@fullID] = thread.posts[@] = board.posts[@] = @
+    g.posts.push @fullID, thread.posts.push @, board.posts.push @, @
     @kill() if that.isArchived
 
   parseComment: ->
@@ -185,7 +180,7 @@ class Post
     # Get quotelinks/backlinks to this post
     # and paint them (Dead).
     for quotelink in Get.allQuotelinksLinkingTo @ when not $.hasClass quotelink, 'deadlink'
-      $.add quotelink, $.tn '\u00A0(Dead)'
+      quotelink.textContent = quotelink.textContent + '\u00A0(Dead)'
       $.addClass quotelink, 'deadlink'
     return
   # XXX tmp fix for 4chan's racing condition
@@ -213,9 +208,9 @@ class Post
 
   collect: ->
     @kill()
-    delete g.posts[@fullID]
-    delete @thread.posts[@]
-    delete @board.posts[@]
+    g.posts.rm @fullID
+    @thread.posts.rm @
+    @board.posts.rm @
 
   addClone: (context) ->
     new Clone @, context

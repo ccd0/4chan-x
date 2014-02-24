@@ -1,5 +1,6 @@
 QR =
   mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/x-shockwave-flash', '']
+
   init: ->
     return if !Conf['Quick Reply']
 
@@ -46,6 +47,8 @@ QR =
     link = $.el 'h1',
       innerHTML: "<a href=javascript:; class='qr-link'>#{if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'}</a>"
       className: "qr-link-container"
+    
+    QR.link = link.firstElementChild
     $.on link.firstChild, 'click', ->
 
       $.event 'CloseMenu'
@@ -67,15 +70,20 @@ QR =
     $.on d, 'dragover',           QR.dragOver
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
-    switch g.VIEW
-      when 'index'
+    {
+      catalog: ->
+        QR.open() if Conf["Persistent QR"]
+      index: ->
         $.on d, 'IndexRefresh', QR.generatePostableThreadsList
-      when 'thread'
-        $.on d, 'ThreadUpdate', ->
-          if g.DEAD
-            QR.abort()
-          else
-            QR.status()
+      thread: ->
+        $.on d, 'ThreadUpdate', QR.statusCheck
+    }[g.VIEW]()
+
+  statusCheck: ->
+    if g.DEAD
+      QR.abort()
+    else
+      QR.status()
 
   node: ->
     $.on $('a[title="Quote this post"]', @nodes.info), 'click', QR.quote
@@ -385,7 +393,7 @@ QR =
     return unless QR.nodes
     list    = QR.nodes.thread
     options = [list.firstChild]
-    for thread of g.BOARD.threads
+    for thread in g.BOARD.threads.keys
       options.push $.el 'option',
         value: thread
         textContent: "Thread No.#{thread}"
@@ -430,8 +438,7 @@ QR =
       status:     '[type=submit]'
       fileInput:  '[type=file]'
     }
-    
-    # Allow only this board's supported files.
+
     nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
 
     QR.spoiler = !!$ 'input[name=spoiler]'
@@ -454,11 +461,8 @@ QR =
         """
       nodes.flashTag.dataset.default = '4'
       $.add nodes.form, nodes.flashTag
-    if flagSelector = $ '.flagSelector'
-      nodes.flag = flagSelector.cloneNode true
-      nodes.flag.dataset.name    = 'flag'
-      nodes.flag.dataset.default = '0'
-      $.add nodes.form, nodes.flag
+
+    QR.flagsInput()
 
     $.on nodes.filename.parentNode, 'click keydown', QR.openFileInput
 
@@ -508,6 +512,54 @@ QR =
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.
     $.event 'QRDialogCreation', null, dialog
+
+  flags: ->
+    fn = (val) -> $.el 'option', 
+      value: val[0]
+      textContent: val[1]
+    select = $.el 'select',
+      name:      'flag'
+      className: 'flagSelector'
+
+    $.add select, fn flag for flag in [
+      ['0',  'None']
+      ['US', 'American']
+      ['KP', 'Best Korean']
+      ['BL', 'Black Nationalist']
+      ['CM', 'Communist']
+      ['CF', 'Confederate']
+      ['RE', 'Conservative']
+      ['EU', 'European']
+      ['GY', 'Gay']
+      ['PC', 'Hippie']
+      ['IL', 'Israeli']
+      ['DM', 'Liberal']
+      ['RP', 'Libertarian']
+      ['MF', 'Muslim']
+      ['NZ', 'Nazi']
+      ['OB', 'Obama']
+      ['PR', 'Pirate']
+      ['RB', 'Rebel']
+      ['TP', 'Tea Partier']
+      ['TX', 'Texan']
+      ['TR', 'Tree Hugger']
+      ['WP', 'White Supremacist']
+    ]
+
+    select
+
+  flagsInput: ->
+    {nodes} = QR
+    if nodes.flagSelector
+      $.rm nodes.flagSelector
+      delete nodes.flagSelector
+
+    if g.BOARD.ID is 'pol'
+      flag = QR.flags()
+      flag.dataset.name    = 'flag'
+      flag.dataset.default = '0'
+      nodes.flag = flag
+      $.add nodes.form, flag
 
   preSubmitHooks: []
 
@@ -589,13 +641,15 @@ QR =
       responseType: 'document'
       withCredentials: true
       onload: QR.response
-      onerror: ->
-        # Connection error, or
-        # www.4chan.org/banned
+      onerror: (err, url, line) ->
+        # Connection error, or www.4chan.org/banned
         delete QR.req
         post.unlock()
         QR.cooldown.auto = false
         QR.status()
+        console.log err
+        console.log url
+        console.log line
         QR.error $.el 'span',
           innerHTML: """
           4chan X encountered an error while posting. 
@@ -615,7 +669,7 @@ QR =
           QR.req.progress = "#{Math.round e.loaded / e.total * 100}%"
           QR.status()
 
-    QR.req = $.ajax $.id('postForm').parentNode.action, options, extra
+    QR.req = $.ajax "https://sys.4chan.org/#{g.BOARD}/post", options, extra
     # Starting to upload might take some time.
     # Provide some feedback that we're starting to submit.
     QR.req.uploadStartTime = Date.now()
@@ -667,7 +721,7 @@ QR =
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
         QR.cooldown.set delay: 2
-      else if err.textContent and m = err.textContent.match /wait\s(\d+)\ssecond/i
+      else if err.textContent and m = err.textContent.match /wait\s+(\d+)\s+second/i
         QR.cooldown.auto = if QR.captcha.isEnabled
           !!QR.captcha.captchas.length
         else
@@ -699,8 +753,6 @@ QR =
       val: true
 
     ThreadUpdater.postID = postID
-
-
 
     # Post/upload confirmed as successful.
     $.event 'QRPostSuccessful', {

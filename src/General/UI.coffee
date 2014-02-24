@@ -24,6 +24,7 @@ UI = do ->
     constructor: (@type) ->
       # Doc here: https://github.com/MayhemYDG/4chan-x/wiki/Menu-API
       $.on d, 'AddMenuEntry', @addEntry
+      $.on d, 'rmMenuEntry', @rmEntry
       @entries = []
 
     makeMenu: ->
@@ -156,6 +157,9 @@ UI = do ->
       e.preventDefault()
       e.stopPropagation()
 
+    onFocus: (e) =>
+      e.stopPropagation()
+      @focus e.target
     focus: (entry) ->
       while focused = $.x 'parent::*/child::*[contains(@class,"focused")]', entry
         $.rmClass focused, 'focused'
@@ -189,13 +193,16 @@ UI = do ->
       @parseEntry entry
       @entries.push entry
 
+    rmEntry: (e) =>
+      entry = e.detail
+      return if entry.type isnt @type
+      index = @entries.indexOf entry
+      @entries.splice index, 1
+
     parseEntry: (entry) ->
       {el, subEntries} = entry
       $.addClass el, 'entry'
-      $.on el, 'focus mouseover', ((e) ->
-        e.stopPropagation()
-        @focus el
-      ).bind @
+      $.on el, 'focus mouseover', @onFocus
       el.style.order = entry.order or 100
       return unless subEntries
       $.addClass el, 'has-submenu'

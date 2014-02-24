@@ -22,8 +22,8 @@ ThreadUpdater =
     @status = $ '#update-status', sc
     @isUpdating = Conf['Auto Update']
 
-    $.on @timer,  'click', ThreadUpdater.update
-    $.on @status, 'click', ThreadUpdater.update
+    $.on @timer,  'click', @update
+    $.on @status, 'click', @update
 
     subEntries = []
     for name, conf of Config.updater.checkbox
@@ -34,20 +34,20 @@ ThreadUpdater =
       input = el.firstElementChild
       $.on input, 'change', $.cb.checked
       if input.name is 'Scroll BG'
-        $.on input, 'change', ThreadUpdater.cb.scrollBG
-        ThreadUpdater.cb.scrollBG()
+        $.on input, 'change', @cb.scrollBG
+        @cb.scrollBG()
       else if input.name is 'Auto Update'
-        $.on input, 'change', ThreadUpdater.cb.update
+        $.on input, 'change', @cb.update
       subEntries.push el: el
 
-    settings = $.el 'span',
+    @settings = $.el 'span',
       innerHTML: '<a href=javascript:;>Interval</a>'
 
-    $.on settings, 'click', @intervalShortcut
+    $.on @settings, 'click', @intervalShortcut
 
-    subEntries.push el: settings
+    subEntries.push el: @settings
 
-    $.event 'AddMenuEntry',
+    $.event 'AddMenuEntry', @entry =
       type: 'header'
       el: $.el 'span',
         textContent: 'Updater'
@@ -57,6 +57,40 @@ ThreadUpdater =
     Thread.callbacks.push
       name: 'Thread Updater'
       cb:   @node
+  
+  disconnect: ->
+    return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
+    $.off @timer,  'click', @update
+    $.off @status, 'click', @update
+    
+    clearTimeout @timeoutID if @timeoutID
+
+    for entry in @entry.subEntries
+      {el} = entry
+      input = el.firstElementChild
+      $.off input, 'change', $.cb.checked
+      $.off input, 'change', @cb.scrollBG
+      $.off input, 'change', @cb.update
+
+    $.off @settings, 'click',         @intervalShortcut
+    $.off window, 'online offline',   @cb.online
+    $.off d,      'QRPostSuccessful', @cb.checkpost
+    $.off d,      'visibilitychange', @cb.visibility
+
+    @set 'timer', null
+    @set 'status', 'Offline'
+
+    $.event 'rmMenuEntry', @entry
+
+    if Conf['Updater and Stats in Header']
+      Header.rmShortcut @dialog
+    else
+      $.rmClass doc, 'float'
+      $.rm @dialog
+
+    delete @[name] for name in ['checkPostCount', 'timer', 'status', 'isUpdating', 'entry', 'dialog', 'thread', 'root', 'lastPost', 'outdateCount', 'online', 'seconds', 'timeoutID']
+
+    Thread.callbacks.disconnect 'Thread Updater'
 
   node: ->
     ThreadUpdater.thread       = @
@@ -124,7 +158,7 @@ ThreadUpdater =
       switch req.status
         when 200
           g.DEAD = false
-          ThreadUpdater.parse JSON.parse(req.response).posts
+          ThreadUpdater.parse req.response.posts
           ThreadUpdater.setInterval()
         when 404
           g.DEAD = true
@@ -256,11 +290,11 @@ ThreadUpdater =
     deletedFiles = []
 
     # Check for deleted posts/files.
-    for ID, post of ThreadUpdater.thread.posts
+    ThreadUpdater.thread.posts.forEach (post) ->
       # XXX tmp fix for 4chan's racing condition
       # giving us false-positive dead posts.
       # continue if post.isDead
-      ID = +ID
+      ID = +post.ID
 
       unless ID in index
         post.kill()
@@ -271,6 +305,7 @@ ThreadUpdater =
         post.kill true
         deletedFiles.push post
 
+      # Fetching your own posts after posting
       if ThreadUpdater.postID and ThreadUpdater.postID is ID
         ThreadUpdater.foundPost = true
 
@@ -291,8 +326,7 @@ ThreadUpdater =
       scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and
         ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
 
-      for key, post of posts
-        continue unless posts.hasOwnProperty key
+      for post in posts
         root = post.nodes.root
         if post.cb
           unless post.cb()

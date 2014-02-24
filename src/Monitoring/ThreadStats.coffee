@@ -9,11 +9,11 @@ ThreadStats =
         title: 'Post Count / File Count' + (if Conf["Page Count in Stats"] then " / Page Count" else "")
       $.ready ->
         Header.addShortcut sc
-    else 
+    else
       @dialog = sc = UI.dialog 'thread-stats', 'bottom: 0px; right: 0px;',
         "<div class=move title='Post Count / File Count#{if Conf["Page Count in Stats"] then " / Page Count" else ""}'><span id=post-count>0</span> / <span id=file-count>0</span>#{if Conf["Page Count in Stats"] then " / <span id=page-count>0</span>" else ""}</div>"
-      $.ready => 
-        $.add d.body, sc    
+      $.ready =>
+        $.add d.body, sc
 
     @postCountEl = $ '#post-count', sc
     @fileCountEl = $ '#file-count', sc
@@ -26,13 +26,32 @@ ThreadStats =
   node: ->
     postCount = 0
     fileCount = 0
-    for ID, post of @posts
+    @posts.forEach (post) ->
       postCount++
       fileCount++ if post.file
     ThreadStats.thread = @
     ThreadStats.fetchPage()
     ThreadStats.update postCount, fileCount
     $.on d, 'ThreadUpdate', ThreadStats.onUpdate
+
+  disconnect: ->
+    return if g.VIEW isnt 'thread' or !Conf['Thread Stats']
+
+    if Conf['Updater and Stats in Header']
+      Header.rmShortcut @dialog
+    else
+      $.rm d.body, sc
+
+    clearTimeout @timeout # a possible race condition might be that this won't clear in time, but the resulting error will prevent issues anyways.
+
+    delete @timeout
+    delete @thread
+    delete @postCountEl
+    delete @fileCountEl
+    delete @pageCountEl
+
+    Thread.callbacks.disconnect 'Thread Stats'
+    $.off d, 'ThreadUpdate', ThreadStats.onUpdate
 
   onUpdate: (e) ->
     return if e.detail[404]
@@ -48,20 +67,18 @@ ThreadStats =
 
   fetchPage: ->
     return if !Conf["Page Count in Stats"]
-    if ThreadStats.thread.isDead 
+    if ThreadStats.thread.isDead
       ThreadStats.pageCountEl.textContent = 'Dead'
       $.addClass ThreadStats.pageCountEl, 'warning'
       return
-    setTimeout ThreadStats.fetchPage, 2 * $.MINUTE
+    ThreadStats.timeout = setTimeout ThreadStats.fetchPage, 2 * $.MINUTE
     $.ajax "//a.4cdn.org/#{ThreadStats.thread.board}/threads.json", onload: ThreadStats.onThreadsLoad,
       whenModified: true
 
   onThreadsLoad: ->
     return unless Conf["Page Count in Stats"] and @status is 200
-    pages = JSON.parse @response
-    for page in pages
-      for thread in page.threads
-        if thread.no is ThreadStats.thread.ID
-          ThreadStats.pageCountEl.textContent = page.page
-          (if page.page is pages.length - 1 then $.addClass else $.rmClass) ThreadStats.pageCountEl, 'warning'
-          return
+    for page in @response
+      for thread in page.threads when thread.no is ThreadStats.thread.ID
+        ThreadStats.pageCountEl.textContent = page.page
+        (if page.page is @response.length - 1 then $.addClass else $.rmClass) ThreadStats.pageCountEl, 'warning'
+        return

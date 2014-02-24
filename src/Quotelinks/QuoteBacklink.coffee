@@ -10,12 +10,12 @@ QuoteBacklink =
   # Second callback adds relevant containers into posts.
   # This is is so that fetched posts can get their backlinks,
   # and that as much backlinks are appended in the background as possible.
+  containers: {}
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Quote Backlinks']
 
     format = Conf['backlink'].replace /%id/g, "' + id + '"
     @funk  = Function 'id', "return '#{format}'"
-    @containers = {}
     Post.callbacks.push
       name: 'Quote Backlinking Part 1'
       cb:   @firstNode
@@ -36,13 +36,13 @@ QuoteBacklink =
         for clone in post.clones
           containers.push clone.nodes.backlinkContainer
       for container in containers
-        frag = [$.tn(' '), link = a.cloneNode true]
+        nodes = [$.tn(' '), link = a.cloneNode true]
         if Conf['Quote Previewing']
           $.on link, 'mouseover', QuotePreview.mouseover
         if Conf['Quote Inlining']
           $.on link, 'click', QuoteInline.toggle
-          frag.push.apply frag, QuoteInline.qiQuote link, $.hasClass link, 'filtered' if Conf['Quote Hash Navigation']
-        $.add container, frag
+          nodes.push QuoteInline.qiQuote link, $.hasClass link, 'filtered' if Conf['Quote Hash Navigation']
+        $.add container, nodes
     return
   secondNode: ->
     if @isClone and (@origin.isReply or Conf['OP Backlinks'])
