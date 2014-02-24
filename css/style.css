@@ -114,6 +114,7 @@ a[href="javascript:;"] {
 #header {
   right: 0;
   left: 0;
+  pointer-events: none;
 }
 #header.top {
   top: 0;
@@ -127,6 +128,7 @@ a[href="javascript:;"] {
   padding: 3px;
   position: relative;
   transition: all .1s .05s ease-in-out;
+  pointer-events: initial;
 }
 #header.top #header-bar {
   border-bottom-width: 1px;
@@ -195,6 +197,7 @@ a[href="javascript:;"] {
 #notifications {
   height: 0;
   text-align: center;
+  pointer-events: initial;
 }
 #header.bottom #notifications {
   position: fixed;
