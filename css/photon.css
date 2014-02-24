@@ -30,6 +30,12 @@
   background-color: rgba(255, 255, 255, .14);
 }
 
+/* Post Hiding */
+:root.photon .hide-post-button,
+:root.photon .show-post-button {
+  color: #333 !important;
+}
+
 /* QR */
 :root.photon #qr select {
   color: #F60;

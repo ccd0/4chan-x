@@ -30,6 +30,12 @@
   background-color: rgba(255, 255, 255, .14);
 }
 
+/* Post Hiding */
+:root.yotsuba .hide-post-button,
+:root.yotsuba .show-post-button {
+  color: #E0BFB7;
+}
+
 /* QR */
 :root.yotsuba #qr select {
   color: #00E;

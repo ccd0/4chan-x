@@ -30,6 +30,12 @@
   background-color: rgba(255, 255, 255, .14);
 }
 
+/* Post Hiding */
+:root.futaba .hide-post-button,
+:root.futaba .show-post-button {
+  color: #800000;
+}
+
 /* QR */
 :root.futaba #qr select {
   color: #00E;
