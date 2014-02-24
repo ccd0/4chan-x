@@ -72,7 +72,7 @@ QR =
     $.on d, 'dragstart dragend',  QR.drag
     {
       catalog: ->
-        $.on d, 'IndexRefresh', QR.generatePostableThreadsList
+        QR.open() if Conf["Persistent QR"]
       index: ->
         $.on d, 'IndexRefresh', QR.generatePostableThreadsList
       thread: ->

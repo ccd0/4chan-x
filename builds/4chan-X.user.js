@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.3.9 - 2014-02-20
+* 4chan X - Version 1.3.9 - 2014-02-24
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -5663,7 +5663,9 @@
       $.on(d, 'dragstart dragend', QR.drag);
       return {
         catalog: function() {
-          return $.on(d, 'IndexRefresh', QR.generatePostableThreadsList);
+          if (Conf["Persistent QR"]) {
+            return QR.open();
+          }
         },
         index: function() {
           return $.on(d, 'IndexRefresh', QR.generatePostableThreadsList);
