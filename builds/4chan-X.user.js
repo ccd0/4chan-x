@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.4.0 - 2014-02-24
+* 4chan X - Version 1.4.0 - 2014-02-25
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -12180,7 +12180,8 @@
         return;
       }
       $.ready(function() {
-        return $.on(window, 'popstate', Navigate.popstate);
+        $.on(window, 'popstate', Navigate.popstate);
+        return $.id('catalog').href = $.id('cataloglink').href = "//boards.4chan.org/" + g.BOARD + "/catalog";
       });
       this.title = function() {};
       Thread.callbacks.push({
@@ -12394,7 +12395,7 @@
     },
     navigate: function(e) {
       var boardID, load, pageNum, path, threadID, view;
-      if (this.hostname !== 'boards.4chan.org' || window.location.hostname === 'rs.4chan.org' || (e && (e.shiftKey || (e.type === 'click' && e.button !== 0)))) {
+      if (this.hostname !== 'boards.4chan.org' || window.location.hostname === 'rs.4chan.org' || (e && (e.shiftKey || e.ctrlKey || (e.type === 'click' && e.button !== 0)))) {
         return;
       }
       $.addClass(Index.button, 'fa-spin');

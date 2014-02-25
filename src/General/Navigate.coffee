@@ -3,8 +3,11 @@ Navigate =
   init: ->
     return if g.VIEW is 'catalog' or g.BOARD.ID is 'f' or !Conf['JSON Navigation']
 
-    # blink/webkit throw a popstate on page load. Not what we want.
-    $.ready -> $.on window, 'popstate', Navigate.popstate
+    $.ready -> 
+      # blink/webkit throw a popstate on page load. Not what we want.
+      $.on window, 'popstate', Navigate.popstate
+      # Prevent having to update the catalog links whenever we open threads.
+      $.id('catalog').href = $.id('cataloglink').href = "//boards.4chan.org/#{g.BOARD}/catalog"
 
     @title = -> return
     
@@ -174,7 +177,7 @@ Navigate =
 
   navigate: (e) ->
     return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org' or
-      (e and (e.shiftKey or (e.type is 'click' and e.button isnt 0))) # Not simply a left click
+      (e and (e.shiftKey or e.ctrlKey or (e.type is 'click' and e.button isnt 0))) # Not simply a left click
 
     $.addClass Index.button, 'fa-spin'
 
