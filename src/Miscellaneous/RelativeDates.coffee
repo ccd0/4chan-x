@@ -9,7 +9,7 @@ RelativeDates =
       when 'thread'
         return unless Conf['Relative Post Dates']
         @flush()
-        $.on d, 'visibilitychange ThreadUpdate', @flush if g.VIEW is 'thread'
+        $.on d, 'visibilitychange ThreadUpdate', @flush
       else
         return
 
