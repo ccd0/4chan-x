@@ -276,7 +276,7 @@ a[href="javascript:;"] {
 }
 #fourchanx-settings > nav {
   display: flex;
-  padding: 2px 2px 0;
+  padding: 2px 2px .5em;
 }
 #fourchanx-settings > nav a {
   text-decoration: underline;
