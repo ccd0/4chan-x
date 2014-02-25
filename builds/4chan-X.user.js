@@ -5664,7 +5664,10 @@
       return {
         catalog: function() {
           if (Conf["Persistent QR"]) {
-            return QR.open();
+            QR.open();
+          }
+          if (Conf['Auto Hide QR']) {
+            return QR.hide();
           }
         },
         index: function() {

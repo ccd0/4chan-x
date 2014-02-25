@@ -72,7 +72,8 @@ QR =
     $.on d, 'dragstart dragend',  QR.drag
     {
       catalog: ->
-        QR.open() if Conf["Persistent QR"]
+        QR.open() if Conf["Persistent QR"] 
+        QR.hide() if Conf['Auto Hide QR']
       index: ->
         $.on d, 'IndexRefresh', QR.generatePostableThreadsList
       thread: ->
