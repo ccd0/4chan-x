@@ -186,7 +186,7 @@ Index =
   getMaxPageNum: ->
     Math.max 0, Index.getPagesNum() - 1
   togglePagelist: ->
-    Index.pagelist.hidden = Conf['Index Mode'] is 'all pages'
+    Index.pagelist.hidden = Conf['Index Mode'] isnt 'paged'
   buildPagelist: ->
     pagesRoot = $ '.pages', Index.pagelist
     maxPageNum = Index.getMaxPageNum()

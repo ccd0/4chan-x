@@ -6,8 +6,6 @@ Navigate =
     $.ready -> 
       # blink/webkit throw a popstate on page load. Not what we want.
       $.on window, 'popstate', Navigate.popstate
-      # Prevent having to update the catalog links whenever we open threads.
-      $.id('catalog').href = $.id('cataloglink').href = "//boards.4chan.org/#{g.BOARD}/catalog"
 
     @title = -> return
     
