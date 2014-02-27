@@ -355,8 +355,24 @@ QR =
     isSingle = files.length is 1
     QR.cleanNotifications()
     for file in files
-      QR.handleFile file, isSingle, max
+      QR.checkDimensions file, isSingle, max
     $.addClass QR.nodes.el, 'dump' unless isSingle
+
+  checkDimensions: (file, isSingle, max) ->
+    img = new Image()
+    img.onload = =>
+      {height, width} = img
+      if g.BOARD.ID is 'hr'
+        return QR.error "#{file.name}: Image too large (image: #{img.height}x#{img.width}px, max: 10000x10000px" if height > 10000 or width > 10000
+      if g.BOARD.ID is 'hr'
+        return QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: 1000x1000px" if height < 1000 or width < 1000
+      if g.BOARD.ID is 'wg'
+        return QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: 480x600px" if height < 480 or width < 600
+      if g.BOARD.ID is 'w'
+        return QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: 480x600px" if height < 480 or width < 600
+      return QR.error "#{file.name}: Image too large (image: #{img.height}x#{img.width}px, max: 5000x5000px" if height > 5000 or width > 5000
+      QR.handleFile file, isSingle, max
+    img.src = URL.createObjectURL file
 
   handleFile: (file, isSingle, max) ->
     if file.size > max

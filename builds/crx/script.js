@@ -6024,11 +6024,45 @@
       QR.cleanNotifications();
       for (_i = 0, _len = files.length; _i < _len; _i++) {
         file = files[_i];
-        QR.handleFile(file, isSingle, max);
+        QR.checkDimensions(file, isSingle, max);
       }
       if (!isSingle) {
         return $.addClass(QR.nodes.el, 'dump');
       }
+    },
+    checkDimensions: function(file, isSingle, max) {
+      var img,
+        _this = this;
+      img = new Image();
+      img.onload = function() {
+        var height, width;
+        height = img.height, width = img.width;
+        if (g.BOARD.ID === 'hr') {
+          if (height > 10000 || width > 10000) {
+            return QR.error("" + file.name + ": Image too large (image: " + img.height + "x" + img.width + "px, max: 10000x10000px");
+          }
+        }
+        if (g.BOARD.ID === 'hr') {
+          if (height < 1000 || width < 1000) {
+            return QR.error("" + file.name + ": Image too small (image: " + img.height + "x" + img.width + "px, min: 1000x1000px");
+          }
+        }
+        if (g.BOARD.ID === 'wg') {
+          if (height < 480 || width < 600) {
+            return QR.error("" + file.name + ": Image too small (image: " + img.height + "x" + img.width + "px, min: 480x600px");
+          }
+        }
+        if (g.BOARD.ID === 'w') {
+          if (height < 480 || width < 600) {
+            return QR.error("" + file.name + ": Image too small (image: " + img.height + "x" + img.width + "px, min: 480x600px");
+          }
+        }
+        if (height > 5000 || width > 5000) {
+          return QR.error("" + file.name + ": Image too large (image: " + img.height + "x" + img.width + "px, max: 5000x5000px");
+        }
+        return QR.handleFile(file, isSingle, max);
+      };
+      return img.src = URL.createObjectURL(file);
     },
     handleFile: function(file, isSingle, max) {
       var post, _ref;
