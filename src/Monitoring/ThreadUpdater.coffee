@@ -26,9 +26,9 @@ ThreadUpdater =
       cb:   @node
 
   node: ->
-    ThreadUpdater.thread       = @
-    ThreadUpdater.root         = @OP.nodes.root.parentNode
-    ThreadUpdater.lastPost     = +ThreadUpdater.root.lastElementChild.id.match(/\d+/)[0]
+    ThreadUpdater.thread   = @
+    ThreadUpdater.root     = @OP.nodes.root.parentNode
+    ThreadUpdater.lastPost = +Object.keys(@posts).sort()[-1..][0]
 
     for input in $$ 'input', ThreadUpdater.dialog
       if input.type is 'checkbox'

@@ -60,7 +60,7 @@ ThreadWatcher =
       ThreadWatcher.refresh()
       $.event 'CloseMenu'
     toggle: ->
-      ThreadWatcher.toggle Get.postFromNode(@).thread
+      ThreadWatcher.toggle Get.threadFromNode @
     rm: ->
       [boardID, threadID] = @parentNode.dataset.fullID.split '.'
       ThreadWatcher.rm boardID, +threadID

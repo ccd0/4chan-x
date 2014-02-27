@@ -17,7 +17,7 @@ QuoteInline =
     if $.hasClass @, 'inlined'
       QuoteInline.rm @, boardID, threadID, postID, context
     else
-      return if $.x "ancestor::div[@id='p#{postID}']", @
+      return if $.x "ancestor::div[@id='pc#{postID}']", @
       QuoteInline.add @, boardID, threadID, postID, context
     @classList.toggle 'inlined'
 

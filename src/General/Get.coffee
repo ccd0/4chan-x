@@ -12,12 +12,8 @@ Get =
   threadFromNode: (node) ->
     Get.threadFromRoot $.x 'ancestor::div[@class="thread"]', node
   postFromRoot: (root) ->
-    link    = $ 'a[title="Highlight this post"]', root
-    boardID = link.pathname.split('/')[1]
-    postID  = link.hash[2..]
-    index   = root.dataset.clone
-    post    = g.posts["#{boardID}.#{postID}"]
-    if index then post.clones[index] else post
+    post = g.posts[root.dataset.fullID]
+    if index = root.dataset.clone then post.clones[index] else post
   postFromNode: (node) ->
     Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', node
   contextFromNode: (node) ->

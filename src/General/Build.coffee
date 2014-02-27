@@ -116,11 +116,11 @@ Build =
 
     if file?.isDeleted
       fileHTML = if isOP
-        "<div class=file id=f#{postID}><span class=fileThumb>" +
+        "<div class=file><span class=fileThumb>" +
           "<img src='#{staticPath}filedeleted#{gifIcon}' class=fileDeleted>" +
         "</span></div>"
       else
-        "<div class=file id=f#{postID}><span class=fileThumb>" +
+        "<div class=file><span class=fileThumb>" +
           "<img src='#{staticPath}filedeleted-res#{gifIcon}' class=fileDeletedRes>" +
         "</span></div>"
     else if file
@@ -154,7 +154,7 @@ Build =
       filename      = a.innerHTML.replace /'/g, '&apos;'
 
       fileDims = if file.name[-3..] is 'pdf' then 'PDF' else "#{file.width}x#{file.height}"
-      fileInfo = "<div class=fileText id=fT#{postID}#{if file.isSpoiler then " title='#{filename}'" else ''}>File: <a href='#{file.url}' target=_blank>#{file.timestamp}</a>" +
+      fileInfo = "<div class=fileText#{if file.isSpoiler then " title='#{filename}'" else ''}>File: <a href='#{file.url}' target=_blank>#{file.timestamp}</a>" +
         "-(#{fileSize}, #{fileDims}#{
           if file.isSpoiler
             ''
@@ -162,7 +162,7 @@ Build =
             ", <span#{if filename isnt shortFilename then " title='#{filename}'" else ''}>#{shortFilename}</span>"
         }" + ")</div>"
 
-      fileHTML = "<div class=file id=f#{postID}>#{fileInfo}#{imgSrc}</div>"
+      fileHTML = "<div class=file>#{fileInfo}#{imgSrc}</div>"
     else
       fileHTML = ''
 
@@ -186,7 +186,7 @@ Build =
       id: "pc#{postID}"
       className: "postContainer #{if isOP then 'op' else 'reply'}Container"
       innerHTML: \
-      (if isOP then '' else "<div class=sideArrows id=sa#{postID}>&gt;&gt;</div>") +
+      (if isOP then '' else "<div class=sideArrows>&gt;&gt;</div>") +
       "<div id=p#{postID} class='post #{if isOP then 'op' else 'reply'}#{
         if capcode is 'admin_highlight'
           ' highlightPost'
@@ -196,7 +196,7 @@ Build =
 
         (if isOP then fileHTML else '') +
 
-        "<div class='postInfo' id=pi#{postID}>" +
+        "<div class=postInfo>" +
           "<input type=checkbox name=#{postID} value=delete> " +
           "<span class=subject>#{subject or ''}</span> " +
           "<span class='nameBlock#{capcodeClass}'>" +
@@ -219,7 +219,7 @@ Build =
 
         (if isOP then '' else fileHTML) +
 
-        "<blockquote class=postMessage id=m#{postID}>#{comment or ''}</blockquote> " +
+        "<blockquote class=postMessage>#{comment or ''}</blockquote> " +
 
       '</div>'
 

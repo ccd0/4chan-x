@@ -6,9 +6,10 @@ class Post
     @ID     = +root.id[2..]
     @fullID = "#{@board}.#{@ID}"
 
-    @cleanup root if that.isOriginalMarkup
     post = $ '.post',     root
     info = $ '.postInfo', post
+    @cleanup root, post if that.isOriginalMarkup
+    root.dataset.fullID = @fullID
     @nodes =
       root: root
       post: post
@@ -146,9 +147,11 @@ class Post
     if @file.isImage = /(jpg|png|gif)$/i.test @file.name
       @file.dimensions = fileText.textContent.match(/\d+x\d+/)[0]
 
-  cleanup: (root) ->
+  cleanup: (root, post) ->
     for node in $$ '.mobile', root
       $.rm node
+    for node in $$ '[id]', post
+      node.removeAttribute 'id'
     for node in $$ '.desktop', root
       $.rmClass node, 'desktop'
     return
