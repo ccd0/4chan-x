@@ -6408,6 +6408,8 @@
         if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
           if (/mistyped/i.test(err.textContent)) {
             err = 'You seem to have mistyped the CAPTCHA.';
+          } else if (/expired/i.test(err.textContent)) {
+            err = 'This CAPTCHA is no longer valid because it has expired.';
           }
           QR.cooldown.auto = QR.captcha.isEnabled ? !!QR.captcha.captchas.length : err === 'Connection error with sys.4chan.org.' ? true : false;
           QR.cooldown.set({
