@@ -58,6 +58,11 @@ PostHiding =
     PostHiding.saveHiddenState post
     return if post.isReply
     Index.updateHideLabel()
+    if Conf['Index Mode'] is 'all pages' # ssllooooww
+      root = post.nodes.root.parentNode
+      $.rm root.nextElementSibling
+      $.rm root
+      return
     Index.sort()
     Index.buildIndex()
 
