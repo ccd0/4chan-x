@@ -363,7 +363,7 @@ QR =
     img.onload = =>
       {height, width} = img
       return QR.error "#{file.name}: Image too large (image: #{img.height}x#{img.width}px, max: #{QR.max_heigth}x#{QR.max_width}px)" if height > QR.max_heigth or width > QR.max_heigth
-      return QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, max: #{QR.min_heigth}x#{QR.min_width}px)" if height < QR.min_heigth or width < QR.min_heigth
+      return QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: #{QR.min_heigth}x#{QR.min_width}px)" if height < QR.min_heigth or width < QR.min_heigth
       QR.handleFile file, isSingle, max
     img.src = URL.createObjectURL file
 
