@@ -143,6 +143,9 @@ Header =
     Header.boardList = boardList = $.el 'span',
       id: 'board-list'
       innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> #{fourchannav.innerHTML}</span>"
+
+    $.on $('#custom-board-list', Header.boardList), 'click', Index.cb.headerNav if Conf['JSON Navigation']
+
     for a in $$ 'a', boardList
       if Conf['JSON Navigation']
         $.on a, 'click', Navigate.navigate

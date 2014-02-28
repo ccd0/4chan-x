@@ -483,6 +483,9 @@ div.center:not(.ad-cnt) {
 :root.index-loading .pagelist {
   display: none;
 }
+.index #returnlink {
+  display: none;
+}
 #index-search {
   padding-right: 1.5em;
   width: 100px;
@@ -506,12 +509,109 @@ div.center:not(.ad-cnt) {
 .summary {
   text-decoration: none;
 }
-.index #returnlink,
-.index #bottomlink,
-.thread #index-last-refresh,
-.thread #index-search-clear,
-.thread #index-search {
+.catalog-mode .board {
+  text-align: center;
+}
+.catalog-thread {
+  display: inline-flex;
+  text-align: left;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 2px 5px;
+  word-break: break-word;
+  vertical-align: top;
+}
+.catalog-small .catalog-thread {
+  width: 165px;
+  max-height: 320px;
+}
+.catalog-large .catalog-thread {
+  width: 270px;
+  max-height: 410px;
+}
+.thumb {
+  flex-shrink: 0;
+  position: relative;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 2px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, .25);
+}
+.thumb:not(.deleted-file):not(.no-file) {
+  min-width: 30px;
+  min-height: 30px;
+}
+.thumb.spoiler-file {
+  background-size: 100px;
+  width: 100px;
+  height: 100px;
+}
+.thumb.deleted-file {
+  background-size: 127px 13px;
+  width: 127px;
+  height: 13px;
+  padding: 20px 11px;
+}
+.thumb.no-file {
+  background-size: 77px 13px;
+  width: 77px;
+  height: 13px;
+  padding: 20px 36px;
+}
+.thread-icons > img {
+  width: 1em;
+  height: 1em;
+  margin: 0;
+  vertical-align: text-top;
+}
+.thumb:not(:hover):not(:focus) > .menu-button:not(.open):not(:focus) > i {
   display: none;
+}
+.thumb > .menu-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.thumb > .menu-button > i {
+  width: 1em;
+  height: 1em;
+  padding: 1px;
+  border-radius: 0 2px 0 2px;
+  font-size: 14px;
+  text-align: center;
+<% if (type === 'userscript') { %>
+  line-height: normal;
+<% } %>
+}
+.thread-stats {
+  flex-shrink: 0;
+  cursor: help;
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+.catalog-thread > .subject {
+  flex-shrink: 0;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+.catalog-thread > .comment {
+  flex-shrink: 1;
+  align-self: stretch;
+  overflow: hidden;
+  text-align: center;
+}
+.thread-info {
+  position: fixed;
+  background-color: inherit;
+  padding: 2px;
+  border-radius: 2px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, .25);
+}
+.thread-info .post {
+  margin: 0;
 }
 
 /* Announcement Hiding */
@@ -766,27 +866,16 @@ span.hide-announcement {
   color: white !important;
 }
 
-/* Thread & Reply Hiding */
-.hide-thread-button,
-.hide-reply-button {
+/* Post Hiding */
+.hide-post-button,
+.show-post-button {
+  font-size: 14px;
+  line-height: 12px; /* Prevent the floating effect from affecting the thumbnail too */
+}
+.opContainer > .show-post-button,
+.hide-post-button {
   float: left;
-  margin-right: 4px;
-  padding: 2px;
-}
-.hide-thread-button:not(:hover),
-.hide-reply-button:not(:hover) {
-  opacity: 0.4;
-}
-.threadContainer .hide-reply-button {
-  margin-left: 2px !important;
-  position: relative;
-  left: 1px;
-}
-.hide-thread-button {
-  margin-top: -1px;
-}
-.stub ~ * {
-  display: none !important;
+  margin-right: 3px;
 }
 .stub input {
   display: inline-block;

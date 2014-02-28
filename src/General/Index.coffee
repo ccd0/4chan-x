@@ -87,6 +87,16 @@ Index =
 
     $.addClass doc, 'index-loading'
 
+    @root = $.el 'div', className: 'board'
+    @pagelist = $.el 'div',
+      className: 'pagelist'
+      hidden: true
+      innerHTML: <%= importHTML('Features/Index-pagelist') %>
+
+    @navLinks = $.el 'div',
+      className: 'navLinks'
+      innerHTML: <%= importHTML('Features/Index-navlinks') %>
+
     @searchInput = $ '#index-search', @navLinks
     @hideLabel   = $ '#hidden-label', @navLinks
     @selectMode  = $ '#index-mode',   @navLinks
@@ -101,16 +111,6 @@ Index =
     $.on @selectMode, 'change', @cb.mode
     $.on @selectSort, 'change', @cb.sort
     $.on @selectSize, 'change', @cb.size
-
-    @root = $.el 'div', className: 'board'
-    @pagelist = $.el 'div',
-      className: 'pagelist'
-      hidden: true
-      innerHTML: <%= importHTML('Features/Index-pagelist') %>
-
-    @navLinks = $.el 'div',
-      className: 'navLinks'
-      innerHTML: <%= importHTML('Features/Index-navlinks') %>
 
     @searchInput = $ '#index-search', @navLinks
 
@@ -140,8 +140,6 @@ Index =
       $.after $.x('child::form/preceding-sibling::hr[1]'), Index.navLinks
       $.rmClass doc, 'index-loading'
 
-    $.on $('#custom-board-list', Header.bar), 'click', @cb.headerNav
-
     @cb.toggleCatalogMode()
 
     $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
@@ -152,16 +150,12 @@ Index =
 
   scroll: $.debounce 100, ->
     return if Index.req or Conf['Index Mode'] isnt 'infinite' or (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
-    Index.pageNum = Index.getCurrentPage() unless Index.pageNum? # Avoid having to pushState to keep track of the current page
+    Index.pageNum = (Index.pageNum or Index.getCurrentPage()) + 1 # Avoid having to pushState to keep track of the current page
 
-    pageNum = Index.pageNum++
-    return Index.endNotice() if pageNum >= Index.pagesNum
+    return Index.endNotice() if Index.pageNum >= Index.pagesNum
 
-    nodes = Index.buildSinglePage pageNum
-    Index.buildReplies   nodes if Conf['Show Replies']
-    Index.buildStructure nodes
-    Index.setPage pageNum
-    
+    Index.buildIndex true
+
   endNotice: do ->
     notify = false
     reset = -> notify = false
@@ -289,6 +283,7 @@ Index =
       else
         $.rmClass doc, 'catalog-mode'
       Index.cb.size()
+
     toggleHiddenThreads: ->
       $('#hidden-toggle a', Index.navLinks).textContent = if Index.showHiddenThreads = !Index.showHiddenThreads
         'Hide'
@@ -299,6 +294,7 @@ Index =
         Index.pageNav 0
       else
         Index.buildIndex()
+
     mode: (e) ->
       Index.cb.toggleCatalogMode()
       Index.togglePagelist()
@@ -312,9 +308,11 @@ Index =
         QR.hide()
       else
         QR.unhide()
+
     sort: (e) ->
       Index.sort()
       Index.buildIndex() if e
+
     size: (e) ->
       if Conf['Index Mode'] isnt 'catalog'
         $.rmClass Index.root, 'catalog-small'
@@ -326,9 +324,11 @@ Index =
         $.addClass Index.root, 'catalog-large'
         $.rmClass Index.root,  'catalog-small'
       Index.buildIndex() if e
+
     threadsNum: ->
       return unless Conf['Index Mode'] is 'paged'
       Index.buildIndex()
+
     target: ->
       for threadID, thread of g.BOARD.threads when thread.catalogView
         {thumb} = thread.catalogView.nodes
@@ -337,10 +337,12 @@ Index =
         else
           thumb.removeAttribute 'target'
       return
+
     replies: ->
       Index.buildThreads()
       Index.sort()
       Index.buildIndex()
+
     pageNav: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       switch e.target.nodeName
@@ -353,6 +355,7 @@ Index =
       e.preventDefault()
       return if Index.cb.indexNav a, true
       Index.userPageNav +a.pathname.split('/')[2]
+
     headerNav: (e) ->
       a = e.target
       return if e.button isnt 0 or a.nodeName isnt 'A' or a.hostname isnt 'boards.4chan.org'
@@ -363,6 +366,7 @@ Index =
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or !onSameIndex
       e.preventDefault()
       Index.update() unless needChange
+
     indexNav: (a, onSameIndex) ->
       {indexMode, indexSort} = a.dataset
       if indexMode and Conf['Index Mode'] isnt indexMode
@@ -388,12 +392,16 @@ Index =
     Header.scrollToIfNeeded Index.navLinks
 
   getCurrentPage: ->
+    if Conf['Index Mode'] is 'infinite' and Index.pageNum
+      return Index.pageNum
     +window.location.pathname.split('/')[2]
+
   userPageNav: (pageNum) ->
     if Conf['Refreshed Navigation'] and Conf['Index Mode'] isnt 'all pages'
       Index.update pageNum
     else
       Index.pageNav pageNum
+
   pageNav: (pageNum) ->
     return if Index.currentPage is pageNum
     history.pushState null, '', if pageNum is 0 then './' else pageNum
@@ -541,7 +549,7 @@ Index =
         new Notice 'error', 'Index refresh failed.', 1
       return
 
-    timeEl = $ '#index-last-refresh time', Index.navLinks
+    timeEl = $ 'time#index-last-refresh', Index.navLinks
     timeEl.dataset.utc = Date.parse req.getResponseHeader 'Last-Modified'
     RelativeDates.update timeEl
     Index.scrollToIndex()
@@ -679,7 +687,7 @@ Index =
       Index.sortedThreads.splice offset++, 0, Index.sortedThreads.splice(i, 1)[0]
     return
 
-  buildIndex: ->
+  buildIndex: (infinite) ->
     switch Conf['Index Mode']
       when 'paged', 'infinite'
         pageNum = Index.getCurrentPage()
@@ -687,7 +695,7 @@ Index =
           # Go to the last available page if we were past the limit.
           Index.pageNav Index.getMaxPageNum()
           return
-        
+        threadsPerPage = Index.getThreadsNumPerPage()
         threads = Index.sortedThreads[threadsPerPage * pageNum ... threadsPerPage * (pageNum + 1)]
         nodes   = threads.map (thread) -> thread.OP.nodes.root.parentNode
         Index.buildReplies threads
@@ -701,7 +709,7 @@ Index =
         nodes = Index.sortedThreads.map (thread) -> thread.OP.nodes.root.parentNode
         Index.buildReplies Index.sortedThreads
         nodes = Index.buildHRs nodes
-    $.rmAll Index.root
+    $.rmAll Index.root unless infinite
     $.add Index.root, nodes
     $.event 'IndexBuild', nodes
 

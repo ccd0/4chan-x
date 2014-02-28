@@ -52,6 +52,7 @@ PostHiding =
       Get.postFromNode @
     else
       Get.threadFromNode(@).OP
+
   toggle: (post) ->
     if post.isHidden
       post.show()
@@ -59,9 +60,14 @@ PostHiding =
       post.hide 'Manually hidden'
     PostHiding.saveHiddenState post
     return if post.isReply
-    Index.updateHideLabel()
-    Index.sort()
-    Index.buildIndex()
+
+    if Conf['JSON Navigation']
+      Index.updateHideLabel()
+      Index.sort()
+      Index.buildIndex()
+    else
+      # XXX Tempfix until I feel like writing out real functionality for thread hiding without JSON functions
+      $.rm post.nodes.root.parentElement
 
   saveHiddenState: (post, val) ->
     data =
