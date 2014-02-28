@@ -219,9 +219,8 @@ Build =
       root = $.el 'div',
         className: 'thread'
         id: "t#{data.no}"
-      $.add root, Build.postFromObject data, board.ID
+      $.add root, Build[if full then 'fullThread' else 'excerptThread'] board, data, OP
 
-    $.add root, Build[if full then 'fullThread' else 'excerptThread'] board, data, OP
     root
 
   excerptThread: (board, data, OP) ->

@@ -3733,9 +3733,8 @@
           className: 'thread',
           id: "t" + data.no
         });
-        $.add(root, Build.postFromObject(data, board.ID));
+        $.add(root, Build[full ? 'fullThread' : 'excerptThread'](board, data, OP));
       }
-      $.add(root, Build[full ? 'fullThread' : 'excerptThread'](board, data, OP));
       return root;
     },
     excerptThread: function(board, data, OP) {
