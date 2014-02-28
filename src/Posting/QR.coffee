@@ -362,15 +362,8 @@ QR =
     img = new Image()
     img.onload = =>
       {height, width} = img
-      if g.BOARD.ID is 'hr'
-        return QR.error "#{file.name}: Image too large (image: #{img.height}x#{img.width}px, max: 10000x10000px" if height > 10000 or width > 10000
-      if g.BOARD.ID is 'hr'
-        return QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: 1000x1000px" if height < 1000 or width < 1000
-      if g.BOARD.ID is 'wg'
-        return QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: 480x600px" if height < 480 or width < 600
-      if g.BOARD.ID is 'w'
-        return QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: 480x600px" if height < 480 or width < 600
-      return QR.error "#{file.name}: Image too large (image: #{img.height}x#{img.width}px, max: 5000x5000px" if height > 5000 or width > 5000
+      return QR.error "#{file.name}: Image too large (image: #{img.height}x#{img.width}px, max: #{QR.max_heigth}x#{QR.max_width}px)" if height > QR.max_heigth or width > QR.max_heigth
+      return QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, max: #{QR.min_heigth}x#{QR.min_width}px)" if height < QR.min_heigth or width < QR.min_heigth
       QR.handleFile file, isSingle, max
     img.src = URL.createObjectURL file
 
@@ -455,6 +448,24 @@ QR =
       status:     '[type=submit]'
       fileInput:  '[type=file]'
     }
+    
+    rules = $('ul.rules').textContent.trim()
+    try
+      QR.min_width = rules.match(/.+smaller than (\d+)x(\d+).+/)[1]
+    catch
+      QR.min_width = 1
+    try
+      QR.min_heigth = rules.match(/.+smaller than (\d+)x(\d+).+/)[2]
+    catch
+      QR.min_heigth = 1
+    try
+      QR.max_width = rules.match(/.+greater than (\d+)x(\d+).+/)[1]
+    catch
+      QR.max_width = 5000
+    try
+      QR.max_heigth = rules.match(/.+greater than (\d+)x(\d+).+/)[2]
+    catch
+      QR.max_heigth = 5000
 
     nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
 

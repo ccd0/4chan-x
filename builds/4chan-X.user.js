@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.4.0 - 2014-02-27
+* 4chan X - Version 1.4.0 - 2014-02-28
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -6001,28 +6001,11 @@
       img.onload = function() {
         var height, width;
         height = img.height, width = img.width;
-        if (g.BOARD.ID === 'hr') {
-          if (height > 10000 || width > 10000) {
-            return QR.error("" + file.name + ": Image too large (image: " + img.height + "x" + img.width + "px, max: 10000x10000px");
-          }
+        if (height > QR.max_heigth || width > QR.max_heigth) {
+          return QR.error("" + file.name + ": Image too large (image: " + img.height + "x" + img.width + "px, max: " + QR.max_heigth + "x" + QR.max_width + "px)");
         }
-        if (g.BOARD.ID === 'hr') {
-          if (height < 1000 || width < 1000) {
-            return QR.error("" + file.name + ": Image too small (image: " + img.height + "x" + img.width + "px, min: 1000x1000px");
-          }
-        }
-        if (g.BOARD.ID === 'wg') {
-          if (height < 480 || width < 600) {
-            return QR.error("" + file.name + ": Image too small (image: " + img.height + "x" + img.width + "px, min: 480x600px");
-          }
-        }
-        if (g.BOARD.ID === 'w') {
-          if (height < 480 || width < 600) {
-            return QR.error("" + file.name + ": Image too small (image: " + img.height + "x" + img.width + "px, min: 480x600px");
-          }
-        }
-        if (height > 5000 || width > 5000) {
-          return QR.error("" + file.name + ": Image too large (image: " + img.height + "x" + img.width + "px, max: 5000x5000px");
+        if (height < QR.min_heigth || width < QR.min_heigth) {
+          return QR.error("" + file.name + ": Image too small (image: " + img.height + "x" + img.width + "px, max: " + QR.min_heigth + "x" + QR.min_width + "px)");
         }
         return QR.handleFile(file, isSingle, max);
       };
@@ -6097,7 +6080,7 @@
       return list.value = g.VIEW === 'thread' ? g.THREADID : 'new';
     },
     dialog: function() {
-      var dialog, elm, event, i, items, key, name, node, nodes, save, value, _ref;
+      var dialog, elm, event, i, items, key, name, node, nodes, rules, save, value, _ref;
       QR.nodes = nodes = {
         el: dialog = UI.dialog('qr', 'top:0;right:0;', "<div class=move><label><input type=checkbox id=autohide title=Auto-hide>Quick Reply</label><a href=javascript:; class=close title=Close>×</a><select data-name=thread title='Create a new thread / Reply'><option value=new>New thread</option></select></div><form><div class=persona><input name=name  data-name=name  list=\"list-name\" placeholder=Name    class=field size=1 tabindex=10><input name=email data-name=email list=\"list-email\" placeholder=E-mail  class=field size=1 tabindex=20><input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1 tabindex=30> </div><div class=textarea><textarea data-name=com placeholder=Comment class=field tabindex=40></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=60><span id=qr-no-file>No selected file</span><input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\"><span id=qr-extras-container><a id=qr-filerm href=javascript:; title='Remove file'><i class=\"fa fa-times-circle\"></i></a><a id=url-button title='Post from url'><i class=\"fa fa-link\"></i></a><a id=dump-button title='Dump list'><i class=\"fa fa-plus-square\"></i></a></span></span><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70></label><input type=submit tabindex=80></div><input type=file multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist> ")
       };
@@ -6130,6 +6113,27 @@
       for (key in _ref) {
         value = _ref[key];
         nodes[key] = $(value, dialog);
+      }
+      rules = $('ul.rules').textContent.trim();
+      try {
+        QR.min_width = rules.match(/.+smaller than (\d+)x(\d+).+/)[1];
+      } catch (_error) {
+        QR.min_width = 1;
+      }
+      try {
+        QR.min_heigth = rules.match(/.+smaller than (\d+)x(\d+).+/)[2];
+      } catch (_error) {
+        QR.min_heigth = 1;
+      }
+      try {
+        QR.max_width = rules.match(/.+greater than (\d+)x(\d+).+/)[1];
+      } catch (_error) {
+        QR.max_width = 5000;
+      }
+      try {
+        QR.max_heigth = rules.match(/.+greater than (\d+)x(\d+).+/)[2];
+      } catch (_error) {
+        QR.max_heigth = 5000;
       }
       nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
       QR.spoiler = !!$('input[name=spoiler]');
