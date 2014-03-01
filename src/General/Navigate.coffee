@@ -166,7 +166,7 @@ Navigate =
 
   navigate: (e) ->
     return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org' or
-      (e and (e.shiftKey or (e.type is 'click' and e.button isnt 0))) # Not simply a left click
+      (e and (e.shiftKey or e.ctrlKey or (e.type is 'click' and e.button isnt 0))) # Not simply a left click
 
     $.addClass Index.button, 'fa-spin'
 
@@ -174,7 +174,7 @@ Navigate =
     path.shift() if path[0] is ''
     [boardID, view, threadID] = path
 
-    return if view is 'catalog' or 'f' in [boardID, g.BOARD.ID]
+    return if 'f' in [boardID, g.BOARD.ID]
     e.preventDefault() if e
     Navigate.title = -> return
 
@@ -191,6 +191,18 @@ Navigate =
     else
       pageNum = view
       view = 'index' # path is "/boardID/". See the problem?
+
+    {indexMode, indexSort} = @dataset
+    if indexMode and Conf['Index Mode'] isnt indexMode
+      $.set 'Index Mode', indexMode
+      Conf['Index Mode'] = indexMode
+      Index.selectMode.value = indexMode
+      Index.cb.mode()
+    if indexSort and Conf['Index Sort'] isnt indexSort
+      $.set 'Index Sort', indexSort
+      Conf['Index Sort'] = indexSort
+      Index.selectSort.value = indexSort
+      Index.cb.sort()
 
     if view is g.VIEW and boardID is g.BOARD.ID
       Navigate.updateContext view

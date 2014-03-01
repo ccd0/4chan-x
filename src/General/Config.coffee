@@ -49,6 +49,10 @@ Config =
         true
         'Add buttons to expand threads.'
       ]
+      'Comment Expansion': [
+        false
+        'Expand Comments that are too long to display on the index. Does not work with JSON Navigation.'
+      ]
       'Index Navigation': [
         false
         'Add buttons to navigate between threads.'

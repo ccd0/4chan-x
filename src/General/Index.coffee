@@ -303,11 +303,6 @@ Index =
       if mode not in ['catalog', Conf['Previous Index Mode']]
         Conf['Previous Index Mode'] = mode
         $.set 'Previous Index Mode', mode
-      return unless QR.nodes
-      if mode is 'catalog'
-        QR.hide()
-      else
-        QR.unhide()
 
     sort: (e) ->
       Index.sort()

@@ -321,6 +321,7 @@ Main =
     ['Image Loading',             ImageLoader]
     ['Image Hover',               ImageHover]
     ['Thread Expansion',          ExpandThread]
+    ['Comment Expansion',         ExpandComment]
     ['Thread Excerpt',            ThreadExcerpt]
     ['Favicon',                   Favicon]
     ['Unread',                    Unread]
