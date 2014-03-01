@@ -6020,30 +6020,28 @@
         return;
       }
       max = QR.nodes.fileInput.max;
-      dim.max_heigth = QR.max_heigth;
-      dim.max_width = QR.max_width;
       isSingle = files.length === 1;
       QR.cleanNotifications();
       for (_i = 0, _len = files.length; _i < _len; _i++) {
         file = files[_i];
-        QR.checkDimensions(file, isSingle, max, dim);
+        QR.checkDimensions(file, isSingle, max);
       }
       if (!isSingle) {
         return $.addClass(QR.nodes.el, 'dump');
       }
     },
-    checkDimensions: function(file, isSingle, max, d) {
+    checkDimensions: function(file, isSingle, max) {
       var img,
         _this = this;
       img = new Image();
       img.onload = function() {
         var height, width;
         height = img.height, width = img.width;
-        if (height > dim.max_heigth || width > dim.max_heigth) {
-          return QR.error("" + file.name + ": Image too large (image: " + img.height + "x" + img.width + "px, max: " + d.max_heigth + "x" + d.max_width + "px)");
+        if (height > QR.max_heigth || width > QR.max_heigth) {
+          return QR.error("" + file.name + ": Image too large (image: " + img.height + "x" + img.width + "px, max: " + QR.max_heigth + "x" + QR.max_width + "px)");
         }
-        if (height < dim.min_heigth || width < dim.min_heigth) {
-          return QR.error("" + file.name + ": Image too small (image: " + img.height + "x" + img.width + "px, min: " + d.min_heigth + "x" + d.min_width + "px)");
+        if (height < QR.min_heigth || width < QR.min_heigth) {
+          return QR.error("" + file.name + ": Image too small (image: " + img.height + "x" + img.width + "px, min: " + QR.min_heigth + "x" + QR.min_width + "px)");
         }
         return QR.handleFile(file, isSingle, max);
       };
@@ -6118,7 +6116,7 @@
       return list.value = g.VIEW === 'thread' ? g.THREADID : 'new';
     },
     dialog: function() {
-      var dialog, elm, event, i, items, key, max_heigth, max_width, min_heigth, min_width, name, node, nodes, rules, save, value, _ref;
+      var dialog, elm, event, i, items, key, max_heigth, max_width, min_heigth, min_width, name, node, nodes, rules, save, tmp_dim, value, _ref;
       QR.nodes = nodes = {
         el: dialog = UI.dialog('qr', 'top:0;right:0;', "<div class=move><label><input type=checkbox id=autohide title=Auto-hide>Quick Reply</label><a href=javascript:; class=close title=Close>×</a><select data-name=thread title='Create a new thread / Reply'><option value=new>New thread</option></select></div><form><div class=persona><input name=name  data-name=name  list=\"list-name\" placeholder=Name    class=field size=1 tabindex=10><input name=email data-name=email list=\"list-email\" placeholder=E-mail  class=field size=1 tabindex=20><input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1 tabindex=30> </div><div class=textarea><textarea data-name=com placeholder=Comment class=field tabindex=40></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=60><span id=qr-no-file>No selected file</span><input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\"><span id=qr-extras-container><a id=qr-filerm href=javascript:; title='Remove file'><i class=\"fa fa-times-circle\"></i></a><a id=url-button title='Post from url'><i class=\"fa fa-link\"></i></a><a id=dump-button title='Dump list'><i class=\"fa fa-plus-square\"></i></a></span></span><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70></label><input type=submit tabindex=80></div><input type=file multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist> ")
       };
@@ -6154,15 +6152,17 @@
       }
       rules = $('ul.rules').textContent.trim();
       try {
-        min_width = rules.match(/.+smaller than (\d+)x(\d+).+/)[1];
-        min_heigth = rules.match(/.+smaller than (\d+)x(\d+).+/)[2];
+        tmp_dim = rules.match(/.+smaller than (\d+)x(\d+).+/);
+        min_width = tmp_dim[1];
+        min_heigth = tmp_dim[2];
       } catch (_error) {
         min_width = 1;
         min_heigth = 1;
       }
       try {
-        max_width = rules.match(/.+greater than (\d+)x(\d+).+/)[1];
-        max_heigth = rules.match(/.+greater than (\d+)x(\d+).+/)[2];
+        tmp_dim = rules.match(/.+greater than (\d+)x(\d+).+/);
+        max_width = tmp_dim[1];
+        max_heigth = tmp_dim[2];
       } catch (_error) {
         QR.max_width = 5000;
         QR.max_heigth = 5000;
