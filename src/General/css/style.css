@@ -478,6 +478,7 @@ div.center:not(.ad-cnt) {
 }
 
 /* Index */
+:root.thread #index-menu,
 :root.index-loading .navLinks,
 :root.index-loading .board,
 :root.index-loading .pagelist {
