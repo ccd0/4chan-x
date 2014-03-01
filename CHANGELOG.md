@@ -57,9 +57,6 @@
 **ParrotParrot**:
 - Added `Original filename` variable to Sauce panel.
 
-**Zixaphir**:
-- Merge changes from Mayhem fork
-
 ### v1.3.9 
 *2014-02-20*
 
