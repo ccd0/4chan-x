@@ -211,15 +211,15 @@ Index =
     # in order to have proper styling for the .nameBlock's content.
     {nodes} = g.threads[@parentNode.dataset.fullID].OP
     el = $.el 'div',
-      innerHTML: '<div class=post><div class=postInfo>'
-      className: 'thread-info'
+      innerHTML: '<div class=post><div class=postInfo></div></div>'
+      className: 'thread-info dialog'
       hidden: true
     $.add el.firstElementChild.firstElementChild, [
       $('.nameBlock', nodes.info).cloneNode true
       $.tn ' '
       nodes.date.cloneNode true
     ]
-    $.add d.body, el
+    $.add Header.hover, el
     UI.hover
       root: @
       el: el

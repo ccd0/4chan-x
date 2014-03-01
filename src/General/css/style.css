@@ -605,7 +605,6 @@ div.center:not(.ad-cnt) {
 }
 .thread-info {
   position: fixed;
-  background-color: inherit;
   padding: 2px;
   border-radius: 2px;
   box-shadow: 0 0 5px rgba(0, 0, 0, .25);
