@@ -450,20 +450,13 @@ QR =
     }
     
     rules = $('ul.rules').textContent.trim()
+    QR.min_width = QR.min_heigth = 1
+    QR.max_width = QR.max_heigth = 5000
     try
-      tmp_dim = rules.match(/.+smaller than (\d+)x(\d+).+/)
-      min_width = tmp_dim[1]
-      min_heigth = tmp_dim[2]
+      [_, QR.min_width, QR.min_heigth] = rules.match(/.+smaller than (\d+)x(\d+).+/)
+      [_, QR.max_width, QR.max_heigth] = rules.match(/.+greater than (\d+)x(\d+).+/)
     catch
-      min_width = 1
-      min_heigth = 1
-    try
-      tmp_dim = rules.match(/.+greater than (\d+)x(\d+).+/)
-      max_width = tmp_dim[1]
-      max_heigth = tmp_dim[2]
-    catch
-      QR.max_width = 5000
-      QR.max_heigth = 5000
+      null
 
     nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
 

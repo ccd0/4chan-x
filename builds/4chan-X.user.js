@@ -6080,7 +6080,7 @@
       return list.value = g.VIEW === 'thread' ? g.THREADID : 'new';
     },
     dialog: function() {
-      var dialog, elm, event, i, items, key, max_heigth, max_width, min_heigth, min_width, name, node, nodes, rules, save, tmp_dim, value, _ref;
+      var dialog, elm, event, i, items, key, name, node, nodes, rules, save, value, _, _ref, _ref1, _ref2;
       QR.nodes = nodes = {
         el: dialog = UI.dialog('qr', 'top:0;right:0;', "<div class=move><label><input type=checkbox id=autohide title=Auto-hide>Quick Reply</label><a href=javascript:; class=close title=Close>×</a><select data-name=thread title='Create a new thread / Reply'><option value=new>New thread</option></select></div><form><div class=persona><input name=name  data-name=name  list=\"list-name\" placeholder=Name    class=field size=1 tabindex=10><input name=email data-name=email list=\"list-email\" placeholder=E-mail  class=field size=1 tabindex=20><input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1 tabindex=30> </div><div class=textarea><textarea data-name=com placeholder=Comment class=field tabindex=40></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=60><span id=qr-no-file>No selected file</span><input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\"><span id=qr-extras-container><a id=qr-filerm href=javascript:; title='Remove file'><i class=\"fa fa-times-circle\"></i></a><a id=url-button title='Post from url'><i class=\"fa fa-link\"></i></a><a id=dump-button title='Dump list'><i class=\"fa fa-plus-square\"></i></a></span></span><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70></label><input type=submit tabindex=80></div><input type=file multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist> ")
       };
@@ -6115,21 +6115,13 @@
         nodes[key] = $(value, dialog);
       }
       rules = $('ul.rules').textContent.trim();
+      QR.min_width = QR.min_heigth = 1;
+      QR.max_width = QR.max_heigth = 5000;
       try {
-        tmp_dim = rules.match(/.+smaller than (\d+)x(\d+).+/);
-        min_width = tmp_dim[1];
-        min_heigth = tmp_dim[2];
+        _ref1 = rules.match(/.+smaller than (\d+)x(\d+).+/), _ = _ref1[0], QR.min_width = _ref1[1], QR.min_heigth = _ref1[2];
+        _ref2 = rules.match(/.+greater than (\d+)x(\d+).+/), _ = _ref2[0], QR.max_width = _ref2[1], QR.max_heigth = _ref2[2];
       } catch (_error) {
-        min_width = 1;
-        min_heigth = 1;
-      }
-      try {
-        tmp_dim = rules.match(/.+greater than (\d+)x(\d+).+/);
-        max_width = tmp_dim[1];
-        max_heigth = tmp_dim[2];
-      } catch (_error) {
-        QR.max_width = 5000;
-        QR.max_heigth = 5000;
+        null;
       }
       nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
       QR.spoiler = !!$('input[name=spoiler]');
