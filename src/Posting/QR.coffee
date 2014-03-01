@@ -352,18 +352,20 @@ QR =
       @value = null
     return unless files.length
     max = QR.nodes.fileInput.max
+    dim.max_heigth = QR.max_heigth
+    dim.max_width = QR.max_width
     isSingle = files.length is 1
     QR.cleanNotifications()
     for file in files
-      QR.checkDimensions file, isSingle, max
+      QR.checkDimensions file, isSingle, max, dim
     $.addClass QR.nodes.el, 'dump' unless isSingle
 
-  checkDimensions: (file, isSingle, max) ->
+  checkDimensions: (file, isSingle, max, d) ->
     img = new Image()
     img.onload = =>
       {height, width} = img
-      return QR.error "#{file.name}: Image too large (image: #{img.height}x#{img.width}px, max: #{QR.max_heigth}x#{QR.max_width}px)" if height > QR.max_heigth or width > QR.max_heigth
-      return QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: #{QR.min_heigth}x#{QR.min_width}px)" if height < QR.min_heigth or width < QR.min_heigth
+      return QR.error "#{file.name}: Image too large (image: #{img.height}x#{img.width}px, max: #{d.max_heigth}x#{d.max_width}px)" if height > dim.max_heigth or width > dim.max_heigth
+      return QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: #{d.min_heigth}x#{d.min_width}px)" if height < dim.min_heigth or width < dim.min_heigth
       QR.handleFile file, isSingle, max
     img.src = URL.createObjectURL file
 
@@ -451,20 +453,16 @@ QR =
     
     rules = $('ul.rules').textContent.trim()
     try
-      QR.min_width = rules.match(/.+smaller than (\d+)x(\d+).+/)[1]
+      min_width = rules.match(/.+smaller than (\d+)x(\d+).+/)[1]
+      min_heigth = rules.match(/.+smaller than (\d+)x(\d+).+/)[2]
     catch
-      QR.min_width = 1
+      min_width = 1
+      min_heigth = 1
     try
-      QR.min_heigth = rules.match(/.+smaller than (\d+)x(\d+).+/)[2]
-    catch
-      QR.min_heigth = 1
-    try
-      QR.max_width = rules.match(/.+greater than (\d+)x(\d+).+/)[1]
+      max_width = rules.match(/.+greater than (\d+)x(\d+).+/)[1]
+      max_heigth = rules.match(/.+greater than (\d+)x(\d+).+/)[2]
     catch
       QR.max_width = 5000
-    try
-      QR.max_heigth = rules.match(/.+greater than (\d+)x(\d+).+/)[2]
-    catch
       QR.max_heigth = 5000
 
     nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value

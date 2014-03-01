@@ -95,7 +95,7 @@ Redirect =
         software: "fuuka"
     ,
       name:   "warosu"
-      boards: ["3", "biz", "cgl", "ck", "diy", "fa", "ic", "jp", "lit", "sci", "tg", "vr"]
+      boards: ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"]
       files:  ["3", "biz", "cgl", "ck", "diy", "fa", "ic", "jp", "lit", "sci", "tg", "vr"]
       data:
         domain: "fuuka.warosu.org"
