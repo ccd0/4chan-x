@@ -1,3 +1,13 @@
+### v1.4.1 
+*2014-03-01*
+
+**Spittie**
+- Check image dimension before uploading
+
+![Check image dimension](src/General/img/changelog/1.4.1.png)
+- Bug fixes
+- Update archives
+
 ## v1.4.0 
 *2014-02-24*
 

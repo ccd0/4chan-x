@@ -4,9 +4,9 @@ Personal fork of Seaweed's 4chan X.
 
 ##[Install](https://github.com/Spittie/4chan-x/raw/master/builds/4chan-X.user.js) (Firefox)
 ##[Install](https://github.com/Spittie/4chan-x/raw/master/builds/crx.crx) (Chrom*)
-##[Install](http://a.pomf.se/iazopu.xpi) (Firefox Mobile)
+##[Install](http://a.pomf.se/tkhuwm.xpi) (Firefox Mobile)
 
-## If you have any problems, try resetting your 4chan X settings before calling me a faggot (but feel free to do so)
+## If you have any problems, try resetting your 4chan X settings
 
 ## Forking
 
