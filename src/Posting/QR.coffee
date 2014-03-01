@@ -378,8 +378,17 @@ QR =
     isSingle = files.length is 1
     QR.cleanNotifications()
     for file in files
-      QR.handleFile file, isSingle, max
+      QR.checkDimensions file, isSingle, max
     $.addClass QR.nodes.el, 'dump' unless isSingle
+
+  checkDimensions: (file, isSingle, max) ->
+    img = new Image()
+    img.onload = =>
+      {height, width} = img
+      return QR.error "#{file.name}: Image too large (image: #{img.height}x#{img.width}px, max: #{QR.max_heigth}x#{QR.max_width}px)" if height > QR.max_heigth or width > QR.max_heigth
+      return QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: #{QR.min_heigth}x#{QR.min_width}px)" if height < QR.min_heigth or width < QR.min_heigth
+      QR.handleFile file, isSingle, max
+    img.src = URL.createObjectURL file
 
   handleFile: (file, isSingle, max) ->
     if file.size > max
@@ -462,6 +471,15 @@ QR =
       ['status',        '[type=submit]']
       ['fileInput',     '[type=file]']
     ]
+    
+    rules = $('ul.rules').textContent.trim()
+    QR.min_width = QR.min_heigth = 1
+    QR.max_width = QR.max_heigth = 5000
+    try
+      [_, QR.min_width, QR.min_heigth] = rules.match(/.+smaller than (\d+)x(\d+).+/)
+      [_, QR.max_width, QR.max_heigth] = rules.match(/.+greater than (\d+)x(\d+).+/)
+    catch
+      null
 
     nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
 

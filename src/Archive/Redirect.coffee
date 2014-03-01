@@ -24,8 +24,8 @@ Redirect =
 
   archives: [
       name:   "Foolz"
-      boards: ["a", "biz","co", "gd", "jp", "m", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"]
-      files:  ["a", "biz","gd", "jp", "m", "tg", "vg", "vp", "vr", "wsg"]
+      boards: ["a", "biz", "co", "diy", "gd", "jp", "m", "sci", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"]
+      files:  ["a", "biz", "diy", "gd", "jp", "m", "sci", "tg", "vg", "vp", "vr", "wsg"]
       data:
         domain: "archive.foolz.us"
         http:  false
@@ -95,8 +95,8 @@ Redirect =
         software: "fuuka"
     ,
       name:   "warosu"
-      boards: ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"]
-      files:  ["3", "cgl", "ck", "fa", "ic", "jp", "lit", "tg", "vr"]
+      boards: ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"]
+      files:  ["3", "biz", "cgl", "ck", "diy", "fa", "ic", "jp", "lit", "sci", "tg", "vr"]
       data:
         domain: "fuuka.warosu.org"
         https: true
@@ -119,7 +119,7 @@ Redirect =
         http:  true
         software: "foolfuuka"
     ,
-      name: "installgentoo.com"
+      name: "InstallGentoo"
       boards: ["g", "t"]
       files:  ["g", "t"]
       data:
@@ -128,8 +128,8 @@ Redirect =
         software: "foolfuuka"
     ,
       name:   "Foolz Beta"
-      boards: ["a", "biz", "co", "d", "gd", "jp", "m", "mlp", "s4s", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
-      files:  ["a", "biz", "d", "gd", "jp", "m", "s4s", "tg", "u", "vg", "vp", "vr", "wsg"]
+      boards: ["a", "biz", "co", "d", "diy", "gd", "jp", "m", "mlp", "s4s", "sci", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
+      files:  ["a", "biz", "d", "diy", "gd", "jp", "m", "s4s", "sci", "tg", "u", "vg", "vp", "vr", "wsg"]
       data:
         domain: "beta.foolz.us"
         http:  true
