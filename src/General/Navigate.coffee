@@ -8,7 +8,7 @@ Navigate =
       $.on window, 'popstate', Navigate.popstate
 
     @title = -> return
-    
+
     Thread.callbacks.push
       name: 'Navigate'
       cb:   @thread
@@ -118,15 +118,11 @@ Navigate =
 
     QR.flagsInput()
 
-    onload = (e) ->
-      if e.type is 'abort'
-        req.onloadend = null
-        return
-
-      return unless req.status is 200
+    $.cache '//a.4cdn.org/boards.json', ({target}) ->
+      return unless target.status is 200
 
       try
-        for aboard in req.response.boards when aboard.board is boardID
+        for aboard in target.response.boards when aboard.board is boardID
           board = aboard
           break
 
@@ -140,10 +136,6 @@ Navigate =
       return unless board
       Navigate.updateTitle board
       Navigate.updateSFW !!board.ws_board
-
-    req = $.ajax '//a.4cdn.org/boards.json',
-      onabort:   onload
-      onloadend: onload
 
   updateSFW: (sfw) ->
     # TODO: think of a better name for this. Changes style, too.
