@@ -121,11 +121,11 @@ Build =
 
     if file?.isDeleted
       fileHTML = if isOP
-        "<div class=file id=f#{postID}><span class=fileThumb>" +
+        "<div class=file><span class=fileThumb>" +
           "<img src='#{staticPath}filedeleted#{gifIcon}' class=fileDeleted>" +
         "</span></div>"
       else
-        "<div class=file id=f#{postID}><span class=fileThumb>" +
+        "<div class=file><span class=fileThumb>" +
           "<img src='#{staticPath}filedeleted-res#{gifIcon}' class=fileDeletedRes>" +
         "</span></div>"
     else if file
@@ -159,7 +159,7 @@ Build =
       filename      = a.innerHTML.replace /'/g, '&apos;'
 
       fileDims = if file.name[-3..] is 'pdf' then 'PDF' else "#{file.width}x#{file.height}"
-      fileInfo = "<div class=fileText id=fT#{postID}#{if file.isSpoiler then " title='#{filename}'" else ''}>File: <a href='#{file.url}' target=_blank>#{file.timestamp}</a>" +
+      fileInfo = "<div class=fileText#{if file.isSpoiler then " title='#{filename}'" else ''}>File: <a href='#{file.url}' target=_blank>#{file.timestamp}</a>" +
         "-(#{fileSize}, #{fileDims}#{
           if file.isSpoiler
             ''
@@ -167,7 +167,7 @@ Build =
             ", <span#{if filename isnt shortFilename then " title='#{filename}'" else ''}>#{shortFilename}</span>"
         }" + ")</div>"
 
-      fileHTML = "<div class=file id=f#{postID}>#{fileInfo}#{imgSrc}</div>"
+      fileHTML = "<div class=file>#{fileInfo}#{imgSrc}</div>"
     else
       fileHTML = ''
 

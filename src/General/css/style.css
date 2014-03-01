@@ -380,7 +380,7 @@ div.center:not(.ad-cnt) {
 }
 #fourchanx-settings > nav a.close {
   text-decoration: none;
-  padding: 0 2px;
+  padding: 2px 2px .5em;
 }
 .section-container {
   overflow: auto;
@@ -626,6 +626,10 @@ span.hide-announcement {
   color: inherit !important;
   font-size: 13px;
   font-weight: 100;
+}
+ a.hide-announcement {
+  float: left;
+  font-size: 14px;
 }
 
 /* Unread */

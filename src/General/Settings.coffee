@@ -126,34 +126,30 @@ Settings =
     $.get Conf, (Conf) ->
       # XXX don't export archives.
       delete Conf['archives']
-      Settings.downloadExport {version: g.VERSION, date: Date.now(), Conf}
-  downloadExport: (data) ->
+      Settings.downloadExport 'Settings', {version: g.VERSION, date: Date.now(), Conf}
+  downloadExport: (title, data) ->
     a = $.el 'a',
-      download: "<%= meta.name %> v#{g.VERSION}-#{data.date}.json"
+      download: "<%= meta.name %> v#{g.VERSION} #{title}.#{data.date}.json"
       href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data, null, 2}"
-    <% if (type === 'userscript') { %>
-    p = $ '.imp-exp-result', Settings.dialog
-    $.rmAll p
-    $.add p, a
-    <% } %>
+    <% if (type === 'userscript') { %>$.add d.body, a<% } %>
     a.click()
+    <% if (type === 'userscript') { %>$.rm a<% } %>
   import: ->
-    $('input', @parentNode).click()
+    $('input[type=file]', @parentNode).click()
   onImport: ->
     return unless file = @files[0]
-    output = $('.imp-exp-result')
-    unless confirm 'Your current settings will be entirely overwritten, are you sure?'
-      output.textContent = 'Import aborted.'
-      return
+    return unless confirm 'Your current settings will be entirely overwritten, are you sure?'
+
     reader = new FileReader()
     reader.onload = (e) ->
       try
         Settings.loadSettings JSON.parse e.target.result
-        if confirm 'Import successful. Reload now?'
-          window.location.reload()
       catch err
-        output.textContent = 'Import failed due to an error.'
+        alert 'Import failed due to an error.'
         c.error err.stack
+        return
+      if confirm 'Import successful. Reload now?'
+        window.location.reload()
     reader.readAsText file
   loadSettings: (data) ->
     version = data.version.split '.'
@@ -231,7 +227,7 @@ Settings =
     if data.Conf['WatchedThreads']
       data.Conf['watchedThreads'] = boards: ThreadWatcher.convert data.Conf['WatchedThreads']
       delete data.Conf['WatchedThreads']
-    $.set data.Conf
+    $.clear -> $.set data.Conf
   reset: ->
     if confirm 'Your current settings will be entirely wiped, are you sure?'
       $.clear -> window.location.reload() if confirm 'Reset successful. Reload now?'

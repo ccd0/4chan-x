@@ -40,6 +40,12 @@
   background-color: rgba(255, 255, 255, .14);
 }
 
+/* Post Hiding */
+:root.burichan .hide-post-button,
+:root.burichan .show-post-button {
+  color: #000;
+}
+
 /* QR */
 .burichan #dump-list::-webkit-scrollbar-thumb {
   background-color: #D6DAF0;

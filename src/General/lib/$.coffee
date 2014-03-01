@@ -303,10 +303,17 @@ do ->
   $.delete = (keys) ->
     if typeof keys is 'string'
       keys = [keys]
+    local = []
+    sync  = []
     for key in keys
-      delete items.local[key]
-      delete items.sync[key]
-    chrome.storage.sync.remove keys
+      if key in $.localKeys
+        local.push key
+        delete items.local[key]
+      else
+        sync.push key
+        delete items.sync[key]
+    chrome.storage.local.remove local
+    chrome.storage.sync.remove sync
 
   $.get = (key, val, cb) ->
     if typeof cb is 'function'

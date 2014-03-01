@@ -2,12 +2,10 @@ PostHiding =
   init: ->
     @db = new DataBoard 'hiddenPosts'
     @hideButton = $.el 'a',
-      className: 'hide-post-button'
-      innerHTML: '<i class="fa fa-minus-square-o"></i>'
+      className: 'hide-post-button fa fa-minus-square-o'
       href: 'javascript:;'
     @showButton = $.el 'a',
-      className: 'show-post-button'
-      innerHTML: '<i class="fa fa-plus-square-o"></i>'
+      className: 'show-post-button fa fa-plus-square-o'
       href: 'javascript:;'
 
     Post.callbacks.push
@@ -61,13 +59,14 @@ PostHiding =
     PostHiding.saveHiddenState post
     return if post.isReply
 
-    if Conf['JSON Navigation']
-      Index.updateHideLabel()
-      Index.sort()
-      Index.buildIndex()
-    else
-      # XXX Tempfix until I feel like writing out real functionality for thread hiding without JSON functions
-      $.rm post.nodes.root.parentElement
+    Index.updateHideLabel()
+    if Conf['Index Mode'] is 'all pages' or !Conf['JSON Navigation'] # ssllooooww
+      root = post.nodes.root.parentNode
+      $.rm root.nextElementSibling
+      $.rm root
+      return
+    Index.sort()
+    Index.buildIndex()
 
   saveHiddenState: (post, val) ->
     data =

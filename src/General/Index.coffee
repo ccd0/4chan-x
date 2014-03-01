@@ -138,7 +138,6 @@ Index =
 
       $.rm navLink for navLink in $$ '.navLinks'
       $.after $.x('child::form/preceding-sibling::hr[1]'), Index.navLinks
-      $.rmClass doc, 'index-loading'
 
     @cb.toggleCatalogMode()
 
@@ -147,6 +146,7 @@ Index =
         $.replace pagelist, Index.pagelist
       else
         $.after $.id('delform'), Index.pagelist
+      $.rmClass doc, 'index-loading'
 
   scroll: $.debounce 100, ->
     return if Index.req or Conf['Index Mode'] isnt 'infinite' or (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
@@ -566,12 +566,10 @@ Index =
       thread.collect() unless thread.ID in Index.liveThreadIDs
 
   buildThreads: ->
-    Index.nodes = []
-    threads     = []
-    posts       = []
+    threads = []
+    posts   = []
     for threadData, i in Index.liveThreadData
       threadRoot = Build.thread g.BOARD, threadData
-      Index.nodes.push threadRoot
       if thread = g.BOARD.threads[threadData.no]
         thread.setPage i // Index.threadsNumPerPage
         thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
@@ -665,7 +663,7 @@ Index =
       when 'filecount'
         sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.images - a.images).map (data) -> data.no
     Index.sortedThreads = sortedThreadIDs
-      .map (threadID) -> Get.threadFromRoot Index.nodes[Index.liveThreadIDs.indexOf threadID]
+      .map (threadID) -> g.BOARD.threads[threadID]
       .filter (thread) -> thread.isHidden is Index.showHiddenThreads
     if Index.isSearching
       Index.sortedThreads = Index.querySearch(Index.searchInput.value) or Index.sortedThreads

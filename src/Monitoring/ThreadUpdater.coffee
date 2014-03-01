@@ -93,10 +93,9 @@ ThreadUpdater =
     Thread.callbacks.disconnect 'Thread Updater'
 
   node: ->
-    ThreadUpdater.thread       = @
-    ThreadUpdater.root         = @OP.nodes.root.parentNode
-    ThreadUpdater.lastPost     = +ThreadUpdater.root.lastElementChild.id.match(/\d+/)[0]
-    ThreadUpdater.outdateCount = 0
+    ThreadUpdater.thread   = @
+    ThreadUpdater.root     = @OP.nodes.root.parentNode
+    ThreadUpdater.lastPost = +Object.keys(@posts).sort()[-1..][0]
 
     ThreadUpdater.cb.interval.call $.el 'input', value: Conf['Interval']
 

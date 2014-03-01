@@ -35,13 +35,4 @@ Menu =
       button
 
   toggle: (e) ->
-    try
-      # Posts, inlined posts, hidden replies.
-      post = Get.postFromNode @
-    catch
-      post = if fullID = @parentNode.parentNode.dataset.fullID
-        g.threads[fullID].OP
-      else
-        # Hidden threads.
-        Get.threadFromNode(@).OP
-    Menu.menu.toggle e, @, post
+    Menu.menu.toggle e, @, Get.postFromNode @
