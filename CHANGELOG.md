@@ -45,18 +45,20 @@
 - Added `Original filename` variable to Sauce panel.
 - Fixed a bug which prevented QR cooldowns from being pruned from storage.
  - On Chrome, the storage could reach the quota and prevent 4chan X from saving data like QR name/mail or auto-watch for example.
-- Added a `Reset Settings` button in the settings.
+
+## v1.4.0 
+*2014-02-24*
+
+**MayhemYDG**:
+- Added a Reset Settings button in the settings.
 - More stability update.
 - Stability update.
 
 **ParrotParrot**:
 - Added `Original filename` variable to Sauce panel.
 
-### v1.3.10 
-*2014-02-20*
-
-**Spittie**
-- I keep breaking and fixing stuff. But mostly breaking.
+**Zixaphir**:
+- Merge changes from Mayhem fork
 
 ### v1.3.9 
 *2014-02-20*

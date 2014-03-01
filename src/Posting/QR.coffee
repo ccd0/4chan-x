@@ -72,6 +72,9 @@ QR =
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
     {
+      catalog: ->
+        QR.open() if Conf["Persistent QR"] 
+        QR.hide() if Conf['Auto Hide QR']
       index: ->
         $.on d, 'IndexRefresh', QR.generatePostableThreadsList
       thread: ->
@@ -434,30 +437,30 @@ QR =
       el: dialog = UI.dialog 'qr', 'top:0;right:0;', <%= importHTML('Features/QuickReply') %>
 
     nodes[val[0]] = $ val[1], dialog for val in [
-      ['move',       '.move']
-      ['autohide',   '#autohide']
-      ['thread',     'select']
-      ['threadPar',  '#qr-thread-select']
-      ['close',      '.close']
-      ['form',       'form']
-      ['dumpButton', '#dump-button']
-      ['urlButton',  '#url-button']
-      ['name',       '[data-name=name]']
-      ['email',      '[data-name=email]']
-      ['sub',        '[data-name=sub]']
-      ['com',        '[data-name=com]']
-      ['dumpList',   '#dump-list']
-      ['addPost',    '#add-post']
-      ['charCount',  '#char-count']
-      ['fileSubmit', '#file-n-submit']
-      ['filesize',   '#qr-filesize']
-      ['filename',   '#qr-filename']
+      ['move',          '.move']
+      ['autohide',      '#autohide']
+      ['thread',        'select']
+      ['threadPar',     '#qr-thread-select']
+      ['close',         '.close']
+      ['form',          'form']
+      ['dumpButton',    '#dump-button']
+      ['urlButton',     '#url-button']
+      ['name',          '[data-name=name]']
+      ['email',         '[data-name=email]']
+      ['sub',           '[data-name=sub]']
+      ['com',           '[data-name=com]']
+      ['dumpList',      '#dump-list']
+      ['addPost',       '#add-post']
+      ['charCount',     '#char-count']
+      ['fileSubmit',    '#file-n-submit']
+      ['filesize',      '#qr-filesize']
+      ['filename',      '#qr-filename']
       ['fileContainer', '#qr-filename-container']
-      ['fileRM',     '#qr-filerm']
-      ['fileExtras', '#qr-extras-container']
-      ['spoiler',    '#qr-file-spoiler']
-      ['status',     '[type=submit]']
-      ['fileInput',  '[type=file]']
+      ['fileRM',        '#qr-filerm']
+      ['fileExtras',    '#qr-extras-container']
+      ['spoiler',       '#qr-file-spoiler']
+      ['status',        '[type=submit]']
+      ['fileInput',     '[type=file]']
     ]
 
     nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
@@ -730,6 +733,8 @@ QR =
         # Remove the obnoxious 4chan Pass ad.
         if /mistyped/i.test err.textContent
           err = 'You seem to have mistyped the CAPTCHA.'
+        else if /expired/i.test err.textContent
+          err = 'This CAPTCHA is no longer valid because it has expired.'
         # Enable auto-post if we have some cached captchas.
         QR.cooldown.auto = if QR.captcha.isEnabled
           !!QR.captcha.captchas.length

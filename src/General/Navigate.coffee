@@ -3,8 +3,9 @@ Navigate =
   init: ->
     return if g.VIEW is 'catalog' or g.BOARD.ID is 'f' or !Conf['JSON Navigation']
 
-    # blink/webkit throw a popstate on page load. Not what we want.
-    $.ready -> $.on window, 'popstate', Navigate.popstate
+    $.ready -> 
+      # blink/webkit throw a popstate on page load. Not what we want.
+      $.on window, 'popstate', Navigate.popstate
 
     @title = -> return
 
