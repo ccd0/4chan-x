@@ -95,7 +95,7 @@ ThreadUpdater =
   node: ->
     ThreadUpdater.thread   = @
     ThreadUpdater.root     = @OP.nodes.root.parentNode
-    ThreadUpdater.lastPost = +Object.keys(@posts).sort()[-1..][0]
+    ThreadUpdater.lastPost = +@posts.keys[@posts.keys.length - 1]
 
     ThreadUpdater.cb.interval.call $.el 'input', value: Conf['Interval']
 
@@ -321,13 +321,8 @@ ThreadUpdater =
     unless count
       ThreadUpdater.set 'status', null, null
       ThreadUpdater.outdateCount++
-    else
-      ThreadUpdater.set 'status', "+#{count}", 'new'
-      ThreadUpdater.outdateCount = 0
-      if Conf['Beep'] and d.hidden and Unread.posts and !Unread.posts.length
-        unless ThreadUpdater.audio
-          ThreadUpdater.audio = $.el 'audio', src: ThreadUpdater.beep
-        ThreadUpdater.audio.play()
+      sendEvent()
+      return
 
     ThreadUpdater.set 'status', "+#{count}", 'new'
     ThreadUpdater.outdateCount = 0

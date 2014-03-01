@@ -3,7 +3,7 @@ Navigate =
   init: ->
     return if g.VIEW is 'catalog' or g.BOARD.ID is 'f' or !Conf['JSON Navigation']
 
-    $.ready -> 
+    $.ready ->
       # blink/webkit throw a popstate on page load. Not what we want.
       $.on window, 'popstate', Navigate.popstate
 
@@ -38,7 +38,7 @@ Navigate =
     g.threads.forEach (thread) -> thread.collect()
     QuoteBacklink.containers = {}
 
-    $.rmAll $('.board')
+    $.rmAll $ '.board'
 
   features: [
     ['Thread Excerpt',   ThreadExcerpt]
@@ -102,12 +102,14 @@ Navigate =
         QR.link.textContent = 'Start a Thread'
         $.off d, 'ThreadUpdate', QR.statusCheck
         $.on  d, 'IndexRefresh', QR.generatePostableThreadsList
+        $.addClass doc, 'catalog-mode' if Conf['Index Mode'] is 'catalog'
       thread: ->
         g.THREADID = +window.location.pathname.split('/')[3]
         return if oldView is g.VIEW
         QR.link.textContent = 'Reply to Thread'
         $.on  d, 'ThreadUpdate', QR.statusCheck
         $.off d, 'IndexRefresh', QR.generatePostableThreadsList
+        $.rmClass doc, 'catalog-mode' if Conf['Index Mode'] is 'catalog'
     }[g.VIEW]()
 
   updateBoard: (boardID) ->
@@ -150,10 +152,10 @@ Navigate =
       style = d.cookie.match new RegExp "\b#{type}\_style\=([^;]+);\b"
       return ["#{type}_style", (if style then style[1] else base)]
 
-    style = findStyle (if sfw
-      ['ws',  'Yotsuba B New']
+    style = if sfw
+      findStyle 'ws',  'Yotsuba B New'
     else
-      ['nws', 'Yotsuba New'])...
+      findStyle 'nws', 'Yotsuba New'
 
     $.globalEval "var style_group = '#{style[0]}'"
 
@@ -166,20 +168,19 @@ Navigate =
     $('.boardTitle').textContent = d.title = "/#{board}/ - #{title}"
 
   navigate: (e) ->
-    return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org' or
-      (e and (e.shiftKey or e.ctrlKey or (e.type is 'click' and e.button isnt 0))) # Not simply a left click
+    return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org'
+    return if e and (e.shiftKey or e.ctrlKey or (e.type is 'click' and e.button isnt 0)) # Not simply a left click
 
     $.addClass Index.button, 'fa-spin'
 
-    path = @pathname.split '/'
-    path.shift() if path[0] is ''
-    [boardID, view, threadID] = path
+    [_, boardID, view, threadID] = @pathname.split '/'
 
     return if 'f' in [boardID, g.BOARD.ID]
     e.preventDefault() if e
     Navigate.title = -> return
 
     delete Index.pageNum
+    $.rmAll Header.hover
 
     path = @pathname
     path += @hash if @hash
@@ -195,18 +196,16 @@ Navigate =
 
     {indexMode, indexSort} = @dataset
     if indexMode and Conf['Index Mode'] isnt indexMode
-      $.set 'Index Mode', indexMode
-      Conf['Index Mode'] = indexMode
-      Index.selectMode.value = indexMode
+      $.set 'Index Mode', Conf['Index Mode'] = Index.selectMode.value = indexMode
       Index.cb.mode()
+
     if indexSort and Conf['Index Sort'] isnt indexSort
-      $.set 'Index Sort', indexSort
-      Conf['Index Sort'] = indexSort
-      Index.selectSort.value = indexSort
+      $.set 'Index Sort', Conf['Index Sort'] = Index.selectSort.value = indexSort
       Index.cb.sort()
 
     if view is g.VIEW and boardID is g.BOARD.ID
       Navigate.updateContext view
+
     else # We've navigated somewhere we weren't before!
       Navigate.disconnect()
       Navigate.updateContext view
@@ -220,20 +219,19 @@ Navigate =
       Navigate.title = -> Navigate.updateBoard boardID
 
     if view is 'index'
-      Index.update pageNum
-
+      return Index.update pageNum
+      
     # Moving from index to thread or thread to thread
-    else
-      Navigate.updateSFW Favicon.SFW
-      {load} = Navigate
-      Navigate.req = $.ajax "//a.4cdn.org/#{boardID}/res/#{threadID}.json",
-        onabort:   load
-        onloadend: load
+    Navigate.updateSFW Favicon.SFW
+    {load} = Navigate
+    Navigate.req = $.ajax "//a.4cdn.org/#{boardID}/res/#{threadID}.json",
+      onabort:   load
+      onloadend: load
 
-      setTimeout (->
-        if Navigate.req and !Navigate.notice
-          Navigate.notice = new Notice 'info', 'Loading thread...'
-      ), 3 * $.SECOND
+    setTimeout (->
+      if Navigate.req and !Navigate.notice
+        Navigate.notice = new Notice 'info', 'Loading thread...'
+    ), 3 * $.SECOND
 
   load: (e) ->
     $.rmClass Index.button, 'fa-spin'

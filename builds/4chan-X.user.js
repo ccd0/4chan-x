@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.4.0 - 2014-02-28
+* 4chan X - Version 1.4.0 - 2014-03-01
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -2783,7 +2783,7 @@
       } else if (e.altKey) {
         Index.togglePin(thread);
       } else {
-        return;
+        Navigate.navigate.call(this);
       }
       return e.preventDefault();
     },
@@ -9676,7 +9676,7 @@
     node: function() {
       ThreadUpdater.thread = this;
       ThreadUpdater.root = this.OP.nodes.root.parentNode;
-      ThreadUpdater.lastPost = +Object.keys(this.posts).sort().slice(-1)[0];
+      ThreadUpdater.lastPost = +this.posts.keys[this.posts.keys.length - 1];
       ThreadUpdater.cb.interval.call($.el('input', {
         value: Conf['Interval']
       }));
@@ -9923,17 +9923,8 @@
       if (!count) {
         ThreadUpdater.set('status', null, null);
         ThreadUpdater.outdateCount++;
-      } else {
-        ThreadUpdater.set('status', "+" + count, 'new');
-        ThreadUpdater.outdateCount = 0;
-        if (Conf['Beep'] && d.hidden && Unread.posts && !Unread.posts.length) {
-          if (!ThreadUpdater.audio) {
-            ThreadUpdater.audio = $.el('audio', {
-              src: ThreadUpdater.beep
-            });
-          }
-          ThreadUpdater.audio.play();
-        }
+        sendEvent();
+        return;
       }
       ThreadUpdater.set('status', "+" + count, 'new');
       ThreadUpdater.outdateCount = 0;
@@ -12818,7 +12809,10 @@
           delete g.THREADID;
           QR.link.textContent = 'Start a Thread';
           $.off(d, 'ThreadUpdate', QR.statusCheck);
-          return $.on(d, 'IndexRefresh', QR.generatePostableThreadsList);
+          $.on(d, 'IndexRefresh', QR.generatePostableThreadsList);
+          if (Conf['Index Mode'] === 'catalog') {
+            return $.addClass(doc, 'catalog-mode');
+          }
         },
         thread: function() {
           g.THREADID = +window.location.pathname.split('/')[3];
@@ -12827,7 +12821,10 @@
           }
           QR.link.textContent = 'Reply to Thread';
           $.on(d, 'ThreadUpdate', QR.statusCheck);
-          return $.off(d, 'IndexRefresh', QR.generatePostableThreadsList);
+          $.off(d, 'IndexRefresh', QR.generatePostableThreadsList);
+          if (Conf['Index Mode'] === 'catalog') {
+            return $.rmClass(doc, 'catalog-mode');
+          }
         }
       }[g.VIEW]();
     },
@@ -12885,7 +12882,7 @@
         style = d.cookie.match(new RegExp("\b" + type + "\_style\=([^;]+);\b"));
         return ["" + type + "_style", (style ? style[1] : base)];
       };
-      style = findStyle.apply(null, (sfw ? ['ws', 'Yotsuba B New'] : ['nws', 'Yotsuba New']));
+      style = sfw ? findStyle('ws', 'Yotsuba B New') : findStyle('nws', 'Yotsuba New');
       $.globalEval("var style_group = '" + style[0] + "'");
       $('link[title=switch]', d.head).href = $("link[title='" + style[1] + "']", d.head).href;
       return Main.setClass();
@@ -12899,16 +12896,15 @@
       return $('.boardTitle').textContent = d.title = "/" + board + "/ - " + title;
     },
     navigate: function(e) {
-      var boardID, indexMode, indexSort, load, pageNum, path, threadID, view, _ref;
-      if (this.hostname !== 'boards.4chan.org' || window.location.hostname === 'rs.4chan.org' || (e && (e.shiftKey || e.ctrlKey || (e.type === 'click' && e.button !== 0)))) {
+      var boardID, indexMode, indexSort, load, pageNum, path, threadID, view, _, _ref, _ref1;
+      if (this.hostname !== 'boards.4chan.org' || window.location.hostname === 'rs.4chan.org') {
+        return;
+      }
+      if (e && (e.shiftKey || e.ctrlKey || (e.type === 'click' && e.button !== 0))) {
         return;
       }
       $.addClass(Index.button, 'fa-spin');
-      path = this.pathname.split('/');
-      if (path[0] === '') {
-        path.shift();
-      }
-      boardID = path[0], view = path[1], threadID = path[2];
+      _ref = this.pathname.split('/'), _ = _ref[0], boardID = _ref[1], view = _ref[2], threadID = _ref[3];
       if ('f' === boardID || 'f' === g.BOARD.ID) {
         return;
       }
@@ -12917,6 +12913,7 @@
       }
       Navigate.title = function() {};
       delete Index.pageNum;
+      $.rmAll(Header.hover);
       path = this.pathname;
       if (this.hash) {
         path += this.hash;
@@ -12931,17 +12928,13 @@
         pageNum = view;
         view = 'index';
       }
-      _ref = this.dataset, indexMode = _ref.indexMode, indexSort = _ref.indexSort;
+      _ref1 = this.dataset, indexMode = _ref1.indexMode, indexSort = _ref1.indexSort;
       if (indexMode && Conf['Index Mode'] !== indexMode) {
-        $.set('Index Mode', indexMode);
-        Conf['Index Mode'] = indexMode;
-        Index.selectMode.value = indexMode;
+        $.set('Index Mode', Conf['Index Mode'] = Index.selectMode.value = indexMode);
         Index.cb.mode();
       }
       if (indexSort && Conf['Index Sort'] !== indexSort) {
-        $.set('Index Sort', indexSort);
-        Conf['Index Sort'] = indexSort;
-        Index.selectSort.value = indexSort;
+        $.set('Index Sort', Conf['Index Sort'] = Index.selectSort.value = indexSort);
         Index.cb.sort();
       }
       if (view === g.VIEW && boardID === g.BOARD.ID) {
@@ -12966,19 +12959,18 @@
       }
       if (view === 'index') {
         return Index.update(pageNum);
-      } else {
-        Navigate.updateSFW(Favicon.SFW);
-        load = Navigate.load;
-        Navigate.req = $.ajax("//a.4cdn.org/" + boardID + "/res/" + threadID + ".json", {
-          onabort: load,
-          onloadend: load
-        });
-        return setTimeout((function() {
-          if (Navigate.req && !Navigate.notice) {
-            return Navigate.notice = new Notice('info', 'Loading thread...');
-          }
-        }), 3 * $.SECOND);
       }
+      Navigate.updateSFW(Favicon.SFW);
+      load = Navigate.load;
+      Navigate.req = $.ajax("//a.4cdn.org/" + boardID + "/res/" + threadID + ".json", {
+        onabort: load,
+        onloadend: load
+      });
+      return setTimeout((function() {
+        if (Navigate.req && !Navigate.notice) {
+          return Navigate.notice = new Notice('info', 'Loading thread...');
+        }
+      }), 3 * $.SECOND);
     },
     load: function(e) {
       var err, notice, req;

@@ -203,7 +203,7 @@ Index =
     else if e.altKey
       Index.togglePin thread
     else
-      return
+      Navigate.navigate.call @
     e.preventDefault()
 
   onOver: (e) ->
