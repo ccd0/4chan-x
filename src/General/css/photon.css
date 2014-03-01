@@ -8,12 +8,21 @@
 }
 
 /* Header */
-:root.photon #header-bar {
+:root.photon #header-bar.dialog {
+  background-color: rgba(221,221,221,0.98);
+}
+:root.photon #header-bar, :root.photon #notifications {
   font-size: 9pt;
   color: #333;
 }
-:root.photon #header-bar a {
-  color: #F60;
+:root.photon #header-bar a, :root.photon #notifications a {
+  color: #FF6600;
+}
+:root.photon.fixed #custom-board-list a.current {
+  border-bottom: 1px solid rgba(0,74,153,0.2);
+}
+:root.photon.fixed #custom-board-list .current:hover {
+  border-bottom-color: rgba(255,51,0,0.2);
 }
 
 /* Settings */
@@ -31,18 +40,19 @@
 }
 
 /* QR */
-:root.photon #qr select {
-  color: #F60;
-}
-:root.photon #qr select:hover {
-  color: #FF3300;
-}
 .photon #dump-list::-webkit-scrollbar-thumb {
   background-color: #DDD;
   border-color: #CCC;
 }
 :root.photon .qr-preview {
   background-color: rgba(0, 0, 0, .15);
+}
+:root.photon .qr-link {
+  border-color: rgb(206, 206, 206) rgb(206, 206, 206) rgb(191, 191, 191);
+  background: linear-gradient(#ECECEC, #DDD) repeat scroll 0% 0% transparent;
+}
+:root.photon .qr-link:hover {
+  background: #DDDDDD;
 }
 
 /* Menu */
@@ -58,4 +68,15 @@
 }
 :root.photon .thumb > .menu-button > i {
   background: #EEE;
+}
+
+/* Watcher Favicon */
+:root.photon .watch-thread-link {
+  background-image: url("data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(51,51,51)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>");
+}
+
+/* Board Title */
+:root.photon div.boardTitle {
+  font-family: sans-serif !important;
+  text-shadow: 1px 1px 1px rgba(0,74,153,0.6);
 }

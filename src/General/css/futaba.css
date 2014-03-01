@@ -8,12 +8,21 @@
 }
 
 /* Header */
-:root.futaba #header-bar {
+:root.futaba #header-bar.dialog {
+  background-color: rgba(240,224,214,0.98);
+}
+:root.futaba #header-bar, :root.futaba #notifications {
   font-size: 11pt;
   color: #B86;
 }
-:root.futaba #header-bar a {
+:root.futaba #header-bar a, :root.futaba #notifications a {
   color: #800000;
+}
+:root.futaba.fixed #custom-board-list a.current {
+  border-bottom: 1px solid rgba(178,0,0,0.2);
+}
+:root.futaba.fixed #custom-board-list .current:hover {
+  border-bottom-color: rgba(255,0,0,0.2);
 }
 
 /* Settings */
@@ -30,13 +39,8 @@
   background-color: rgba(255, 255, 255, .14);
 }
 
+
 /* QR */
-:root.futaba #qr select {
-  color: #00E;
-}
-:root.futaba #qr select:hover {
-  color: red;
-}
 .futaba #dump-list::-webkit-scrollbar-thumb {
   background-color: #F0E0D6;
   border-color: #D9BFB7;
@@ -44,8 +48,15 @@
 :root.futaba .qr-preview {
   background-color: rgba(0, 0, 0, .15);
 }
+:root.futaba .qr-link {
+  border-color: rgb(225, 209, 199) rgb(225, 209, 199) rgb(210, 194, 184);
+  background: linear-gradient(#FFEFE5, #F0E0D6) repeat scroll 0% 0% transparent;
+}
+:root.futaba .qr-link:hover {
+  background: #F0E0D6;
+}
 
-/* Menu */
+ /* Menu */
 :root.futaba #menu {
   color: #800000;
 }
@@ -58,4 +69,10 @@
 }
 :root.futaba .thumb > .menu-button > i {
   background: #FFE;
+}
+
+/* Watcher Favicon */
+:root.futaba .watch-thread-link
+{
+  background-image: url("data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(128,0,0)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>");
 }

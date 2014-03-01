@@ -8,12 +8,21 @@
 }
 
 /* Header */
-:root.yotsuba-b #header-bar {
+:root.yotsuba #header-bar.dialog {
+  background-color: rgba(240,224,214,0.98);
+}
+:root.yotsuba #header-bar, :root.yotsuba #notifications {
   font-size: 9pt;
   color: #89A;
 }
-:root.yotsuba-b #header-bar a {
+:root.yotsuba #board-list a, :root.yotsuba #shortcuts a  {
   color: #34345C;
+}
+:root.yotsuba.fixed #custom-board-list a.current {
+  border-bottom: 1px solid rgba(178,0,0,0.2);
+}
+:root.yotsuba.fixed #custom-board-list .current:hover {
+  border-bottom-color: rgba(255,0,0,0.2);
 }
 
 /* Settings */
@@ -31,18 +40,18 @@
 }
 
 /* QR */
-:root.yotsuba-b #qr select {
-  color: #34345C;
-}
-:root.yotsuba-b #qr select:hover {
-  color: #DD0000;
-}
 .yotsuba-b #dump-list::-webkit-scrollbar-thumb {
   background-color: #D6DAF0;
   border-color: #B7C5D9;
 }
 :root.yotsuba-b .qr-preview {
   background-color: rgba(0, 0, 0, .15);
+}
+-:root.yotsuba.fixed #custom-board-list a.current {
+  border-bottom: 1px solid rgba(178,0,0,0.2);
+}
+:root.yotsuba.fixed #custom-board-list .current:hover {
+  border-bottom-color: rgba(255,0,0,0.2);
 }
 
 /* Menu */
@@ -58,4 +67,15 @@
 }
 :root.yotsuba-b .thumb > .menu-button > i {
   background: #EEF2FF;
+}
+
+/* Watcher Favicon */
+:root.yotsuba .watch-thread-link {
+  background-image: url("data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(128,0,0)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>");
+}
+
+/* Board Title */
+:root.yotsuba div.boardTitle {
+  font-family: sans-serif !important;
+  text-shadow: 1px 1px 1px rgba(100,0,0,0.6);
 }
