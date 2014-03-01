@@ -562,7 +562,6 @@ Index =
       Index.pageNav pageNum
       return
     Index.buildIndex()
-    Index.setPage()
 
   parseThreadList: (pages) ->
     Index.threadsNumPerPage = pages[0].threads.length
@@ -570,7 +569,6 @@ Index =
     Index.liveThreadIDs     = Index.liveThreadData.map (data) -> data.no
     g.BOARD.threads.forEach (thread) ->
       thread.collect() unless thread.ID in Index.liveThreadIDs
-    return
 
   buildThreads: ->
     Index.nodes = []

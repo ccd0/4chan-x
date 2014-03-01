@@ -3290,8 +3290,7 @@
         Index.pageNav(pageNum);
         return;
       }
-      Index.buildIndex();
-      return Index.setPage();
+      return Index.buildIndex();
     },
     parseThreadList: function(pages) {
       Index.threadsNumPerPage = pages[0].threads.length;
@@ -3301,7 +3300,7 @@
       Index.liveThreadIDs = Index.liveThreadData.map(function(data) {
         return data.no;
       });
-      g.BOARD.threads.forEach(function(thread) {
+      return g.BOARD.threads.forEach(function(thread) {
         var _ref;
         if (_ref = thread.ID, __indexOf.call(Index.liveThreadIDs, _ref) < 0) {
           return thread.collect();
@@ -12857,23 +12856,20 @@
       }[g.VIEW]();
     },
     updateBoard: function(boardID) {
-      var fullBoardList, onload, req;
+      var fullBoardList;
       fullBoardList = $('#full-board-list', Header.boardList);
       $.rmClass($('.current', fullBoardList), 'current');
       $.addClass($("a[href*='/" + boardID + "/']", fullBoardList), 'current');
       Header.generateBoardList(Conf['boardnav'].replace(/(\r\n|\n|\r)/g, ' '));
       QR.flagsInput();
-      onload = function(e) {
-        var aboard, board, err, _i, _len, _ref;
-        if (e.type === 'abort') {
-          req.onloadend = null;
-          return;
-        }
-        if (req.status !== 200) {
+      return $.cache('//a.4cdn.org/boards.json', function(_arg) {
+        var aboard, board, err, target, _i, _len, _ref;
+        target = _arg.target;
+        if (target.status !== 200) {
           return;
         }
         try {
-          _ref = req.response.boards;
+          _ref = target.response.boards;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             aboard = _ref[_i];
             if (!(aboard.board === boardID)) {
@@ -12897,10 +12893,6 @@
         }
         Navigate.updateTitle(board);
         return Navigate.updateSFW(!!board.ws_board);
-      };
-      return req = $.ajax('//a.4cdn.org/boards.json', {
-        onabort: onload,
-        onloadend: onload
       });
     },
     updateSFW: function(sfw) {
