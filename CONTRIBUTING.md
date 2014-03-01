@@ -1,7 +1,5 @@
 ## Reporting bugs and suggestions
 
-Reporting bugs:
-
 1. Make sure both your **browser** and **4chan X** are up to date.<br>
    Only **Chrome**, **Firefox** and **Opera** are supported.<br>
    **SRWare Iron**, **Firefox ESR**, **Pale Moon**, **Waterfox**, and other derivatives are not supported; use them at your own risk.
