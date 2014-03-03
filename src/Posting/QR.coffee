@@ -30,13 +30,14 @@ QR =
     if Conf['Hide Original Post Form']
       $.asap (-> doc), -> $.addClass doc, 'hide-original-post-form'
 
-    $.on '4chanXInitFinished', @initReady
+    $.on d, '4chanXInitFinished', @initReady
 
     Post.callbacks.push
       name: 'Quick Reply'
       cb:   @node
 
   initReady: ->
+    $.off d, '4chanXInitFinished', @initReady
     QR.postingIsEnabled = !!$.id 'postForm'
     return unless QR.postingIsEnabled
 

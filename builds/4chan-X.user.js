@@ -5843,7 +5843,7 @@
           return $.addClass(doc, 'hide-original-post-form');
         });
       }
-      $.on('4chanXInitFinished', this.initReady);
+      $.on(d, '4chanXInitFinished', this.initReady);
       return Post.callbacks.push({
         name: 'Quick Reply',
         cb: this.node
@@ -5851,6 +5851,7 @@
     },
     initReady: function() {
       var link;
+      $.off(d, '4chanXInitFinished', this.initReady);
       QR.postingIsEnabled = !!$.id('postForm');
       if (!QR.postingIsEnabled) {
         return;
