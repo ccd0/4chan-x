@@ -28,7 +28,7 @@ QR =
     if Conf['Hide Original Post Form']
       $.asap (-> doc), -> $.addClass doc, 'hide-original-post-form'
 
-    $.ready @initReady
+    $.on '4chanXInitFinished', @initReady
 
     if Conf['Persistent QR']
       unless g.BOARD.ID is 'f' and g.VIEW is 'index'
@@ -50,7 +50,6 @@ QR =
     
     QR.link = link.firstElementChild
     $.on link.firstChild, 'click', ->
-
       $.event 'CloseMenu'
       QR.open()
       QR.nodes.com.focus()
