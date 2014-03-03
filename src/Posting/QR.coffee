@@ -17,7 +17,6 @@ QR =
 
       $.on sc, 'click', ->
         if Conf['Persistent QR'] or !QR.nodes or QR.nodes.el.hidden
-          $.event 'CloseMenu'
           QR.open()
           QR.nodes.com.focus()
           $.rmClass @, 'disabled'
@@ -66,14 +65,12 @@ QR =
     $.on d, 'dragover',           QR.dragOver
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
-    {
-      index: ->
-        $.on d, 'IndexRefresh', QR.generatePostableThreadsList
-      thread: ->
-        $.on d, 'ThreadUpdate', QR.statusCheck
-    }[g.VIEW]()
 
-    return unless Conf['Persistent QR']
+    # We can thread update and index refresh without loading a new page, so...
+    $.on d, 'IndexRefresh', QR.generatePostableThreadsList
+    $.on d, 'ThreadUpdate', QR.statusCheck
+
+    return if !Conf['Persistent QR']
     QR.open()
     QR.hide() if Conf['Auto-Hide QR']
 

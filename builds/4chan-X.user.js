@@ -2517,10 +2517,14 @@
         return;
       }
       this.board = "" + g.BOARD;
-      if (g.VIEW !== 'index') {
-        $.ready(this.setupNavLinks);
-        return;
-      }
+      this.button = $.el('a', {
+        className: 'index-refresh-shortcut fa fa-refresh',
+        title: 'Refresh',
+        href: 'javascript:;',
+        textContent: 'Refresh Index'
+      });
+      $.on(this.button, 'click', this.update);
+      Header.addShortcut(this.button, 1);
       if (g.BOARD.ID === 'f') {
         return;
       }
@@ -2533,14 +2537,6 @@
         name: 'Catalog Features',
         cb: this.catalogNode
       });
-      this.button = $.el('a', {
-        className: 'index-refresh-shortcut fa fa-refresh',
-        title: 'Refresh',
-        href: 'javascript:;',
-        textContent: 'Refresh Index'
-      });
-      $.on(this.button, 'click', this.update);
-      Header.addShortcut(this.button, 1);
       modeEntry = {
         el: $.el('span', {
           textContent: 'Index mode'
@@ -2675,17 +2671,16 @@
         return $('.board', doc) || d.readyState !== 'loading';
       }), function() {
         var board, navLink, _l, _len3, _ref3;
-        if (g.VIEW === 'index') {
-          board = $('.board');
-          $.replace(board, Index.root);
-          d.implementation.createDocument(null, null, null).appendChild(board);
-        }
         _ref3 = $$('.navLinks');
         for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
           navLink = _ref3[_l];
           $.rm(navLink);
         }
-        return $.after($.x('child::form/preceding-sibling::hr[1]'), Index.navLinks);
+        $.after($.x('child::form/preceding-sibling::hr[1]'), Index.navLinks);
+        return g.VIEW !== 'index';
+        board = $('.board');
+        $.replace(board, Index.root);
+        return d.implementation.createDocument(null, null, null).appendChild(board);
       });
       this.cb.toggleCatalogMode();
       return $.asap((function() {
@@ -2757,6 +2752,9 @@
       }
     },
     threadNode: function() {
+      if (g.VIEW !== 'index') {
+        return;
+      }
       if (!Index.db.get({
         boardID: this.board.ID,
         threadID: this.ID
@@ -5825,7 +5823,6 @@
         });
         $.on(sc, 'click', function() {
           if (Conf['Persistent QR'] || !QR.nodes || QR.nodes.el.hidden) {
-            $.event('CloseMenu');
             QR.open();
             QR.nodes.com.focus();
             return $.rmClass(this, 'disabled');
@@ -5883,14 +5880,8 @@
       $.on(d, 'dragover', QR.dragOver);
       $.on(d, 'drop', QR.dropFile);
       $.on(d, 'dragstart dragend', QR.drag);
-      ({
-        index: function() {
-          return $.on(d, 'IndexRefresh', QR.generatePostableThreadsList);
-        },
-        thread: function() {
-          return $.on(d, 'ThreadUpdate', QR.statusCheck);
-        }
-      })[g.VIEW]();
+      $.on(d, 'IndexRefresh', QR.generatePostableThreadsList);
+      $.on(d, 'ThreadUpdate', QR.statusCheck);
       if (!Conf['Persistent QR']) {
         return;
       }
@@ -12636,45 +12627,35 @@
         ];
       }
       if (error) {
-        Main.handleErrors(error);
+        return Main.handleErrors(error);
       }
-      return QR.generatePostableThreadsList();
     },
     updateContext: function(view) {
-      var oldView;
       g.DEAD = false;
-      if (view !== g.VIEW) {
-        $.rmClass(doc, g.VIEW);
-        $.addClass(doc, view);
+      if (view === 'thread') {
+        g.THREADID = +window.location.pathname.split('/')[3];
       }
-      oldView = g.VIEW;
-      g.VIEW = view;
-      return {
+      if (view === g.VIEW) {
+        return;
+      }
+      $.rmClass(doc, g.VIEW);
+      $.addClass(doc, view);
+      ({
         index: function() {
-          if (oldView === g.VIEW) {
-            return;
-          }
           delete g.THREADID;
           QR.link.textContent = 'Start a Thread';
-          $.off(d, 'ThreadUpdate', QR.statusCheck);
-          $.on(d, 'IndexRefresh', QR.generatePostableThreadsList);
           if (Conf['Index Mode'] === 'catalog') {
             return $.addClass(doc, 'catalog-mode');
           }
         },
         thread: function() {
-          g.THREADID = +window.location.pathname.split('/')[3];
-          if (oldView === g.VIEW) {
-            return;
-          }
           QR.link.textContent = 'Reply to Thread';
-          $.on(d, 'ThreadUpdate', QR.statusCheck);
-          $.off(d, 'IndexRefresh', QR.generatePostableThreadsList);
           if (Conf['Index Mode'] === 'catalog') {
             return $.rmClass(doc, 'catalog-mode');
           }
         }
-      }[g.VIEW]();
+      })[view]();
+      return g.VIEW = view;
     },
     updateBoard: function(boardID) {
       var fullBoardList;
@@ -12718,7 +12699,7 @@
     },
     updateSFW: function(sfw) {
       var findStyle, style;
-      Favicon.el.href = "//s.4cdn.org/image/favicon" + (sfw ? '-ws' : '') + ".ico";
+      Favicon.el.href = Favicon["default"] = "//s.4cdn.org/image/favicon" + (sfw ? '-ws' : '') + ".ico";
       $.add(d.head, Favicon.el);
       if (Favicon.SFW === sfw) {
         return;
@@ -12805,10 +12786,10 @@
           return Navigate.updateBoard(boardID);
         };
       }
+      Navigate.updateSFW(Favicon.SFW);
       if (view === 'index') {
         return Index.update(pageNum);
       }
-      Navigate.updateSFW(Favicon.SFW);
       load = Navigate.load;
       Navigate.req = $.ajax("//a.4cdn.org/" + boardID + "/res/" + threadID + ".json", {
         onabort: load,
@@ -12886,6 +12867,7 @@
       Main.callbackNodes(Post, posts);
       Navigate.ready('Quote Threading', QuoteThreading.force, Conf['Quote Threading'] && !Conf['Unread Count']);
       Navigate.buildThread();
+      QR.generatePostableThreadsList();
       return Header.hashScroll.call(window);
     },
     buildThread: function() {

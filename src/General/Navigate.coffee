@@ -83,33 +83,28 @@ Navigate =
         error:   err
       ]
     Main.handleErrors error if error
-    QR.generatePostableThreadsList()
 
   updateContext: (view) ->
-    g.DEAD = false
+    g.DEAD     = false
+    g.THREADID = +window.location.pathname.split('/')[3] if view is 'thread'
 
-    unless view is g.VIEW
-      $.rmClass doc, g.VIEW
-      $.addClass doc, view
+    return if view is g.VIEW
 
-    oldView = g.VIEW
-    g.VIEW = view
+    $.rmClass  doc, g.VIEW
+    $.addClass doc, view
+
     {
       index: ->
-        return if oldView is g.VIEW
         delete g.THREADID
         QR.link.textContent = 'Start a Thread'
-        $.off d, 'ThreadUpdate', QR.statusCheck
-        $.on  d, 'IndexRefresh', QR.generatePostableThreadsList
         $.addClass doc, 'catalog-mode' if Conf['Index Mode'] is 'catalog'
+
       thread: ->
-        g.THREADID = +window.location.pathname.split('/')[3]
-        return if oldView is g.VIEW
         QR.link.textContent = 'Reply to Thread'
-        $.on  d, 'ThreadUpdate', QR.statusCheck
-        $.off d, 'IndexRefresh', QR.generatePostableThreadsList
         $.rmClass doc, 'catalog-mode' if Conf['Index Mode'] is 'catalog'
-    }[g.VIEW]()
+    }[view]()
+
+    g.VIEW = view
 
   updateBoard: (boardID) ->
     fullBoardList   = $ '#full-board-list', Header.boardList
@@ -139,14 +134,16 @@ Navigate =
       Navigate.updateSFW !!board.ws_board
 
   updateSFW: (sfw) ->
-    # TODO: think of a better name for this. Changes style, too.
-    Favicon.el.href = "//s.4cdn.org/image/favicon#{if sfw then '-ws' else ''}.ico"
-    $.add d.head, Favicon.el # Changing the href alone doesn't update the icon on Firefox
+    Favicon.el.href = Favicon.default = "//s.4cdn.org/image/favicon#{if sfw then '-ws' else ''}.ico"
+
+    # Changing the href alone doesn't update the icon on Firefox
+    $.add d.head, Favicon.el
 
     return if Favicon.SFW is sfw # Board SFW status hasn't changed
 
     Favicon.SFW = sfw
     Favicon.update()
+
     findStyle = (type, base) ->
       style = d.cookie.match new RegExp "\b#{type}\_style\=([^;]+);\b"
       return ["#{type}_style", (if style then style[1] else base)]
@@ -217,11 +214,12 @@ Navigate =
       g.BOARD = new Board boardID
       Navigate.title = -> Navigate.updateBoard boardID
 
+    Navigate.updateSFW Favicon.SFW
+
     if view is 'index'
       return Index.update pageNum
-      
+
     # Moving from index to thread or thread to thread
-    Navigate.updateSFW Favicon.SFW
     {load} = Navigate
     Navigate.req = $.ajax "//a.4cdn.org/#{boardID}/res/#{threadID}.json",
       onabort:   load
@@ -293,6 +291,7 @@ Navigate =
     Navigate.ready 'Quote Threading', QuoteThreading.force, Conf['Quote Threading'] and not Conf['Unread Count']
 
     Navigate.buildThread()
+    QR.generatePostableThreadsList()
     Header.hashScroll.call window
 
   buildThread: ->

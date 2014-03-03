@@ -5,9 +5,14 @@ Index =
 
     @board = "#{g.BOARD}"
 
-    if g.VIEW isnt 'index'
-      $.ready @setupNavLinks
-      return
+    @button = $.el 'a',
+      className: 'index-refresh-shortcut fa fa-refresh'
+      title: 'Refresh'
+      href: 'javascript:;'
+      textContent: 'Refresh Index'
+    $.on @button, 'click', @update
+    Header.addShortcut @button, 1
+
     return if g.BOARD.ID is 'f'
 
     @db = new DataBoard 'pinnedThreads'
@@ -18,14 +23,6 @@ Index =
     CatalogThread.callbacks.push
       name: 'Catalog Features'
       cb:   @catalogNode
-
-    @button = $.el 'a',
-      className: 'index-refresh-shortcut fa fa-refresh'
-      title: 'Refresh'
-      href: 'javascript:;'
-      textContent: 'Refresh Index'
-    $.on @button, 'click', @update
-    Header.addShortcut @button, 1
 
     modeEntry =
       el: $.el 'span', textContent: 'Index mode'
@@ -124,20 +121,21 @@ Index =
 
     @update() if g.VIEW is 'index'
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
-      if g.VIEW is 'index'
-        board = $ '.board'
-        $.replace board, Index.root
-        # Hacks:
-        # - When removing an element from the document during page load,
-        #   its ancestors will still be correctly created inside of it.
-        # - Creating loadable elements inside of an origin-less document
-        #   will not download them.
-        # - Combine the two and you get a download canceller!
-        #   Does not work on Firefox unfortunately. bugzil.la/939713
-        d.implementation.createDocument(null, null, null).appendChild board
-
       $.rm navLink for navLink in $$ '.navLinks'
       $.after $.x('child::form/preceding-sibling::hr[1]'), Index.navLinks
+    
+      return g.VIEW isnt 'index'
+      
+      board = $ '.board'
+      $.replace board, Index.root
+      # Hacks:
+      # - When removing an element from the document during page load,
+      #   its ancestors will still be correctly created inside of it.
+      # - Creating loadable elements inside of an origin-less document
+      #   will not download them.
+      # - Combine the two and you get a download canceller!
+      #   Does not work on Firefox unfortunately. bugzil.la/939713
+      d.implementation.createDocument(null, null, null).appendChild board
 
     @cb.toggleCatalogMode()
 
@@ -187,6 +185,7 @@ Index =
           true
 
   threadNode: ->
+    return if g.VIEW isnt 'index'
     return unless Index.db.get {boardID: @board.ID, threadID: @ID}
     @pin()
 
