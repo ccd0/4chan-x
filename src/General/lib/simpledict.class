@@ -13,4 +13,6 @@ class SimpleDict
       @keys.splice i, 1
       delete @[key]
 
-  forEach: (fn) -> fn @[key] for key in @keys
+  forEach: (fn) -> 
+    fn @[key] for key in [@keys...]
+    return

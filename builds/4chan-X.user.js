@@ -1877,14 +1877,12 @@
     };
 
     SimpleDict.prototype.forEach = function(fn) {
-      var key, _i, _len, _ref, _results;
-      _ref = this.keys;
-      _results = [];
+      var key, _i, _len, _ref;
+      _ref = __slice.call(this.keys);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         key = _ref[_i];
-        _results.push(fn(this[key]));
+        fn(this[key]);
       }
-      return _results;
     };
 
     return SimpleDict;
@@ -12734,6 +12732,9 @@
         return;
       }
       $.addClass(Index.button, 'fa-spin');
+      if (Index.isSearching) {
+        Index.clearSearch();
+      }
       _ref = this.pathname.split('/'), _ = _ref[0], boardID = _ref[1], view = _ref[2], threadID = _ref[3];
       if ('f' === boardID || 'f' === g.BOARD.ID) {
         return;

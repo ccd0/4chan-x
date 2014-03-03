@@ -157,6 +157,7 @@ Navigate =
     return if e and (e.shiftKey or e.ctrlKey or (e.type is 'click' and e.button isnt 0)) # Not simply a left click
 
     $.addClass Index.button, 'fa-spin'
+    Index.clearSearch() if Index.isSearching
 
     [_, boardID, view, threadID] = @pathname.split '/'
 
