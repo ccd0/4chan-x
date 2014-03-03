@@ -1933,7 +1933,7 @@
 
     SimpleDict.prototype.forEach = function(fn) {
       var key, _i, _len, _ref, _results;
-      _ref = __slice.call(this.keys);
+      _ref = this.keys;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         key = _ref[_i];
@@ -11318,17 +11318,26 @@
       if (g.VIEW === 'thread' || !Conf['Thread Expansion']) {
         return;
       }
-      return $.on(d, 'IndexRefresh', this.onIndexRefresh);
+      return $.on(d, (Conf['JSON Navigation'] ? 'IndexRefresh' : '4chanXInitFinished'), this.onIndexRefresh);
     },
     setButton: function(thread) {
-      var a;
-      if (!(a = $.x('following-sibling::a[contains(@class,"summary")][1]', thread.OP.nodes.root))) {
+      var a, summary;
+      if (!(summary = $.x('following-sibling::*[contains(@class,"summary")][1]', thread.OP.nodes.root))) {
         return;
       }
-      a.textContent = ExpandThread.text.apply(ExpandThread, ['+'].concat(__slice.call(a.textContent.match(/\d+/g))));
-      return $.on(a, 'click', ExpandThread.cbToggle);
+      a = $.el('a', {
+        textContent: ExpandThread.text.apply(ExpandThread, ['+'].concat(__slice.call(summary.textContent.match(/\d+/g)))),
+        href: "" + thread.board.ID + "/res/" + thread.ID,
+        className: 'summary'
+      });
+      $.on(a, 'click', ExpandThread.cbToggle);
+      return $.replace(summary, a);
     },
-    disconnect: function(refresh) {
+    disconnect: function() {
+      this.refresh();
+      return $.off(d, 'IndexRefresh', this.onIndexRefresh);
+    },
+    refresh: function(disconnect) {
       var status, threadID, _ref, _ref1;
       if (g.VIEW === 'thread' || !Conf['Thread Expansion']) {
         return;
@@ -11341,12 +11350,9 @@
         }
         delete ExpandThread.statuses[threadID];
       }
-      if (!refresh) {
-        return $.off(d, 'IndexRefresh', this.onIndexRefresh);
-      }
     },
     onIndexRefresh: function() {
-      ExpandThread.disconnect(true);
+      ExpandThread.refresh();
       return g.BOARD.threads.forEach(function(thread) {
         return ExpandThread.setButton(thread);
       });
