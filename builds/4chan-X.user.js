@@ -5843,7 +5843,7 @@
           return $.addClass(doc, 'hide-original-post-form');
         });
       }
-      $.ready(this.initReady);
+      $.on('4chanXInitFinished', this.initReady);
       return Post.callbacks.push({
         name: 'Quick Reply',
         cb: this.node
