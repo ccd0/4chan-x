@@ -3238,17 +3238,21 @@
       return Index.buildIndex();
     },
     parseThreadList: function(pages) {
-      var i, live, page;
+      var data, i, j, live, page, thread, threads;
       Index.threadsNumPerPage = pages[0].threads.length;
       live = [];
+      data = [];
       i = 0;
       while (page = pages[i++]) {
-        live = live.concat(page.threads);
+        j = 0;
+        threads = page.threads;
+        live = live.concat(threads);
+        while (thread = threads[j++]) {
+          data.push(thread.no);
+        }
       }
       Index.liveThreadData = live;
-      Index.liveThreadIDs = Index.liveThreadData.map(function(data) {
-        return data.no;
-      });
+      Index.liveThreadIDs = data;
       return g.BOARD.threads.forEach(function(thread) {
         var _ref;
         if (_ref = thread.ID, __indexOf.call(Index.liveThreadIDs, _ref) < 0) {
