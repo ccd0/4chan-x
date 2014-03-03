@@ -119,13 +119,16 @@ Index =
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
     $.on $('#returnlink a',  @navLinks), 'click', Navigate.navigate
 
-    @update() if g.VIEW is 'index'
+    if g.VIEW is 'index'
+      @update()
+      @cb.toggleCatalogMode()
+
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
       $.rm navLink for navLink in $$ '.navLinks'
       $.after $.x('child::form/preceding-sibling::hr[1]'), Index.navLinks
-    
-      return g.VIEW isnt 'index'
-      
+
+      return if g.VIEW isnt 'index'
+
       board = $ '.board'
       $.replace board, Index.root
       # Hacks:
@@ -136,8 +139,6 @@ Index =
       # - Combine the two and you get a download canceller!
       #   Does not work on Firefox unfortunately. bugzil.la/939713
       d.implementation.createDocument(null, null, null).appendChild board
-
-    @cb.toggleCatalogMode()
 
     $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
       if pagelist = $('.pagelist')

@@ -2666,6 +2666,7 @@
       $.on($('#returnlink a', this.navLinks), 'click', Navigate.navigate);
       if (g.VIEW === 'index') {
         this.update();
+        this.cb.toggleCatalogMode();
       }
       $.asap((function() {
         return $('.board', doc) || d.readyState !== 'loading';
@@ -2677,12 +2678,13 @@
           $.rm(navLink);
         }
         $.after($.x('child::form/preceding-sibling::hr[1]'), Index.navLinks);
-        return g.VIEW !== 'index';
+        if (g.VIEW !== 'index') {
+          return;
+        }
         board = $('.board');
         $.replace(board, Index.root);
         return d.implementation.createDocument(null, null, null).appendChild(board);
       });
-      this.cb.toggleCatalogMode();
       return $.asap((function() {
         return $('.pagelist', doc) || d.readyState !== 'loading';
       }), function() {
