@@ -12634,25 +12634,6 @@
         Main.handleErrors(errors);
       }
     },
-    ready: function(name, feature, condition) {
-      var err, error;
-      try {
-        if (condition) {
-          feature();
-        }
-      } catch (_error) {
-        err = _error;
-        error = [
-          {
-            message: "" + name + " Failed.",
-            error: err
-          }
-        ];
-      }
-      if (error) {
-        return Main.handleErrors(error);
-      }
-    },
     updateContext: function(view) {
       g.DEAD = false;
       if (view === 'thread') {
@@ -12787,9 +12768,7 @@
         $.set('Index Sort', Conf['Index Sort'] = Index.selectSort.value = indexSort);
         Index.cb.sort();
       }
-      if (view === g.VIEW && boardID === g.BOARD.ID) {
-        Navigate.updateContext(view);
-      } else {
+      if (!(view === 'index' && 'index' === g.VIEW && boardID === g.BOARD.ID)) {
         Navigate.disconnect();
         Navigate.updateContext(view);
         Navigate.clean();
@@ -12853,12 +12832,12 @@
       }
     },
     parse: function(data) {
-      var OP, board, errors, makePost, obj, post, posts, thread, threadRoot, _i, _len;
-      board = g.BOARD;
-      Navigate.threadRoot = threadRoot = Build.thread(board, OP = data.shift(), true);
-      thread = new Thread(OP.no, board);
+      var OP, board, errors, i, makePost, obj, post, posts, thread, threadRoot;
       posts = [];
       errors = null;
+      board = g.BOARD;
+      threadRoot = Build.thread(board, OP = data[0], true);
+      thread = new Thread(OP.no, board);
       makePost = function(postNode) {
         var err;
         try {
@@ -12869,35 +12848,33 @@
             errors = [];
           }
           return errors.push({
-            message: "Parsing of Post No." + thread.ID + " failed. Post will be skipped.",
+            message: "Parsing of Post No." + postNode.ID + " failed. Post will be skipped.",
             error: err
           });
         }
       };
       makePost($('.opContainer', threadRoot));
-      for (_i = 0, _len = data.length; _i < _len; _i++) {
-        obj = data[_i];
+      i = 0;
+      while (obj = data[++i]) {
         post = Build.postFromObject(obj, board);
         makePost(post);
         $.add(threadRoot, post);
       }
-      if (errors) {
-        Main.handleErrors(errors);
-      }
       Main.callbackNodes(Thread, [thread]);
       Main.callbackNodes(Post, posts);
-      Navigate.ready('Quote Threading', QuoteThreading.force, Conf['Quote Threading'] && !Conf['Unread Count']);
-      Navigate.buildThread();
-      QR.generatePostableThreadsList();
-      return Header.hashScroll.call(window);
-    },
-    buildThread: function() {
-      var board;
+      if (Conf['Quote Threading'] && !Conf['Unread Count']) {
+        QuoteThreading.force();
+      }
       board = $('.board');
       $.rmAll(board);
-      $.add(board, [Navigate.threadRoot, $.el('hr')]);
+      $.add(board, [threadRoot, $.el('hr')]);
       if (Conf['Unread Count']) {
-        return Navigate.ready('Unread Count', Unread.ready, Conf['Unread Count']);
+        Unread.ready();
+      }
+      QR.generatePostableThreadsList();
+      Header.hashScroll.call(window);
+      if (errors) {
+        return Main.handleErrors(errors);
       }
     },
     popstate: function() {
