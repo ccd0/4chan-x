@@ -274,6 +274,7 @@ Index =
       return
 
     Navigate.title()
+
     Index.board = "#{g.BOARD}"
 
     try

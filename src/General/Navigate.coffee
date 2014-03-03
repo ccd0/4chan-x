@@ -113,11 +113,10 @@ Navigate =
 
     QR.flagsInput()
 
-    $.cache '//a.4cdn.org/boards.json', ({target}) ->
-      return unless target.status is 200
-
+    $.cache '//a.4cdn.org/boards.json', ->
       try
-        for aboard in target.response.boards when aboard.board is boardID
+        return unless @status is 200
+        for aboard in @response.boards when aboard.board is boardID
           board = aboard
           break
 
@@ -126,7 +125,6 @@ Navigate =
           message: "Navigation failed to update board name."
           error: err
         ]
-        return false
 
       return unless board
       Navigate.updateTitle board
