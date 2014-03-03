@@ -86,8 +86,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["r", "soc"],
-  "files": ["r", "soc"]
+  "boards": ["cm", "hm", "r", "soc", "y"],
+  "files": ["cm", "hm", "r", "soc", "y"]
 }, {
   "uid": 16,
   "name": "maware",
