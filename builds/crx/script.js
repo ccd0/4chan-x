@@ -5441,18 +5441,23 @@
       });
     },
     node: function() {
-      var quotelink, _i, _len, _ref;
+      var parseQuotelink, quotelink, _i, _len, _ref;
+      parseQuotelink = QuoteMarkers.parseQuotelink;
       _ref = this.nodes.quotelinks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quotelink = _ref[_i];
-        QuoteMarkers.parseQuotelink(this, quotelink, !!this.isClone);
+        parseQuotelink(this, quotelink, !!this.isClone);
       }
     },
+    cache: {},
     parseQuotelink: function(post, quotelink, mayReset, customText) {
-      var board, boardID, markers, postID, text, thread, threadID, _ref, _ref1, _ref2;
+      var board, boardID, cache, markers, postID, text, thread, threadID, _ref, _ref1, _ref2;
       _ref = post.isClone ? post.context : post, board = _ref.board, thread = _ref.thread;
       markers = [];
       _ref1 = Get.postDataFromLink(quotelink), boardID = _ref1.boardID, threadID = _ref1.threadID, postID = _ref1.postID;
+      if (cache = QuoteMarkers.cache[postID]) {
+        quotelink.textContent = cache;
+      }
       if ((_ref2 = QR.db) != null ? _ref2.get({
         boardID: boardID,
         threadID: threadID,
@@ -5473,7 +5478,7 @@
       }
       text = customText ? customText : boardID === post.board.ID ? ">>" + postID : ">>>/" + boardID + "/" + postID;
       if (markers.length) {
-        return quotelink.textContent = "" + text + "\u00A0(" + (markers.join('/')) + ")";
+        return quotelink.textContent = "" + text + "\u00A0(" + (markers.join('|')) + ")";
       } else if (mayReset) {
         return quotelink.textContent = text;
       }

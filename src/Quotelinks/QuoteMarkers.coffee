@@ -5,14 +5,22 @@ QuoteMarkers =
     Post.callbacks.push
       name: 'Quote Markers'
       cb:   @node
+
   node: ->
+    {parseQuotelink} = QuoteMarkers
     for quotelink in @nodes.quotelinks
-      QuoteMarkers.parseQuotelink @, quotelink, !!@isClone
+      parseQuotelink @, quotelink, !!@isClone
     return
+  
+  cache: {}
+
   parseQuotelink: (post, quotelink, mayReset, customText) ->
     {board, thread} = if post.isClone then post.context else post
     markers = []
     {boardID, threadID, postID} = Get.postDataFromLink quotelink
+    
+    if cache = QuoteMarkers.cache[postID]
+      quotelink.textContent = cache
 
     if QR.db?.get {boardID, threadID, postID}
       markers.push 'You'
@@ -34,6 +42,6 @@ QuoteMarkers =
     else
       ">>>/#{boardID}/#{postID}"
     if markers.length
-      quotelink.textContent = "#{text}\u00A0(#{markers.join '/'})"
+      quotelink.textContent = "#{text}\u00A0(#{markers.join '|'})"
     else if mayReset
       quotelink.textContent = text
