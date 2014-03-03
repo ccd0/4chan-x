@@ -561,8 +561,14 @@ Index =
 
   parseThreadList: (pages) ->
     Index.threadsNumPerPage = pages[0].threads.length
-    Index.liveThreadData    = pages.reduce ((arr, next) -> arr.concat next.threads), []
-    Index.liveThreadIDs     = Index.liveThreadData.map (data) -> data.no
+
+    live = []
+    i    = 0
+    while page = pages[i++]
+      live = live.concat page.threads
+
+    Index.liveThreadData = live
+    Index.liveThreadIDs  = Index.liveThreadData.map (data) -> data.no
     g.BOARD.threads.forEach (thread) ->
       thread.collect() unless thread.ID in Index.liveThreadIDs
 

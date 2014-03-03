@@ -3297,10 +3297,14 @@
       return Index.buildIndex();
     },
     parseThreadList: function(pages) {
+      var i, live, page;
       Index.threadsNumPerPage = pages[0].threads.length;
-      Index.liveThreadData = pages.reduce((function(arr, next) {
-        return arr.concat(next.threads);
-      }), []);
+      live = [];
+      i = 0;
+      while (page = pages[i++]) {
+        live = live.concat(page.threads);
+      }
+      Index.liveThreadData = live;
       Index.liveThreadIDs = Index.liveThreadData.map(function(data) {
         return data.no;
       });
