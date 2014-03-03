@@ -103,8 +103,8 @@ Redirect =
         software: "fuuka"
     ,
       name:   "fgts"
-      boards: ["r", "soc"]
-      files:  ["r", "soc"]
+      boards: ["cm", "hm", "r", "soc", "y"]
+      files:  ["cm", "hm", "r", "soc", "y"]
       data:
         domain: "fgst.eu"
         http:  true

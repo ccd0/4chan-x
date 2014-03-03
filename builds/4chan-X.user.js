@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.4.1 - 2014-03-02
+* 4chan X - Version 1.4.1 - 2014-03-03
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -10714,8 +10714,8 @@
         }
       }, {
         name: "fgts",
-        boards: ["r", "soc"],
-        files: ["r", "soc"],
+        boards: ["cm", "hm", "r", "soc", "y"],
+        files: ["cm", "hm", "r", "soc", "y"],
         data: {
           domain: "fgst.eu",
           http: true,
