@@ -14,6 +14,7 @@ QR =
         textContent: 'QR' 
         title: 'Quick Reply'
         href: 'javascript:;'
+
       $.on sc, 'click', ->
         if Conf['Persistent QR'] or !QR.nodes or QR.nodes.el.hidden
           $.event 'CloseMenu'
@@ -30,12 +31,6 @@ QR =
       $.asap (-> doc), -> $.addClass doc, 'hide-original-post-form'
 
     $.ready @initReady
-
-    if Conf['Persistent QR']
-      unless g.BOARD.ID is 'f' and g.VIEW is 'index'
-        $.on d, '4chanXInitFinished', @persist
-      else
-        $.ready @persist
 
     Post.callbacks.push
       name: 'Quick Reply'
@@ -72,9 +67,6 @@ QR =
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
     {
-      catalog: ->
-        QR.open() if Conf["Persistent QR"] 
-        QR.hide() if Conf['Auto Hide QR']
       index: ->
         $.on d, 'IndexRefresh', QR.generatePostableThreadsList
       thread: ->
@@ -83,7 +75,7 @@ QR =
 
     return unless Conf['Persistent QR']
     QR.open()
-    QR.hide() if Conf['Auto-Hide QR'] or g.VIEW is 'index' and Conf['Index Mode'] is 'catalog'
+    QR.hide() if Conf['Auto-Hide QR']
 
   statusCheck: ->
     if g.DEAD
@@ -99,7 +91,7 @@ QR =
   persist: ->
     return unless QR.postingIsEnabled
     QR.open()
-    QR.hide() if Conf['Auto Hide QR'] or g.VIEW is 'catalog'
+    QR.hide() if Conf['Auto Hide QR']
 
   open: ->
     if QR.nodes
@@ -113,6 +105,7 @@ QR =
       Main.handleErrors
         message: 'Quick Reply dialog creation crashed.'
         error: err
+
   close: ->
     if QR.req
       QR.abort()
