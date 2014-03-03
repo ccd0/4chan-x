@@ -5449,15 +5449,11 @@
         parseQuotelink(this, quotelink, !!this.isClone);
       }
     },
-    cache: {},
     parseQuotelink: function(post, quotelink, mayReset, customText) {
-      var board, boardID, cache, markers, postID, text, thread, threadID, _ref, _ref1, _ref2;
+      var board, boardID, markers, postID, text, thread, threadID, _ref, _ref1, _ref2;
       _ref = post.isClone ? post.context : post, board = _ref.board, thread = _ref.thread;
       markers = [];
       _ref1 = Get.postDataFromLink(quotelink), boardID = _ref1.boardID, threadID = _ref1.threadID, postID = _ref1.postID;
-      if (cache = QuoteMarkers.cache[postID]) {
-        quotelink.textContent = cache;
-      }
       if ((_ref2 = QR.db) != null ? _ref2.get({
         boardID: boardID,
         threadID: threadID,

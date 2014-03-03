@@ -11,16 +11,11 @@ QuoteMarkers =
     for quotelink in @nodes.quotelinks
       parseQuotelink @, quotelink, !!@isClone
     return
-  
-  cache: {}
 
   parseQuotelink: (post, quotelink, mayReset, customText) ->
     {board, thread} = if post.isClone then post.context else post
     markers = []
     {boardID, threadID, postID} = Get.postDataFromLink quotelink
-    
-    if cache = QuoteMarkers.cache[postID]
-      quotelink.textContent = cache
 
     if QR.db?.get {boardID, threadID, postID}
       markers.push 'You'
