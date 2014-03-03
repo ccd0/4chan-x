@@ -30,7 +30,7 @@ QR =
     if Conf['Hide Original Post Form']
       $.asap (-> doc), -> $.addClass doc, 'hide-original-post-form'
 
-    $.ready @initReady
+    $.on '4chanXInitFinished', @initReady
 
     Post.callbacks.push
       name: 'Quick Reply'
@@ -46,7 +46,6 @@ QR =
     
     QR.link = link.firstElementChild
     $.on link.firstChild, 'click', ->
-
       $.event 'CloseMenu'
       QR.open()
       QR.nodes.com.focus()
