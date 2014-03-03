@@ -5185,21 +5185,25 @@
       });
     },
     firstNode: function() {
-      var container, post, quoteID, _base, _i, _j, _len, _len1, _ref, _ref1;
+      var addNodes, container, post, quoteID, _base, _i, _j, _len, _len1, _ref, _ref1;
       if (this.isClone) {
         return;
       }
+      addNodes = function(post, that) {
+        return $.add(post.nodes.backlinkContainer, QuoteBacklink.buildBacklink(post, that));
+      };
       _ref = this.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quoteID = _ref[_i];
         ((_base = QuoteBacklink.map)[quoteID] || (_base[quoteID] = [])).push(this.fullID);
-        if (!((post = g.posts[quoteID]) && (container = post != null ? post.nodes.backlinkContainer : void 0))) {
+        if (!(((post = g.posts[quoteID]) != null) && (container = post.nodes.backlinkContainer))) {
           continue;
         }
-        _ref1 = [post].concat(post.clones);
+        addNodes(post, this);
+        _ref1 = post.clones;
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           post = _ref1[_j];
-          $.add(post.nodes.backlinkContainer, QuoteBacklink.buildBacklink(post, this));
+          addNodes(post, this);
         }
       }
     },
@@ -12566,7 +12570,9 @@
       g.threads.forEach(function(thread) {
         return thread.collect();
       });
-      QuoteBacklink.containers = {};
+      if (Conf['Quote Backlinks']) {
+        QuoteBacklink.map = {};
+      }
       return $.rmAll($('.board'));
     },
     features: [['Thread Excerpt', ThreadExcerpt], ['Unread Count', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Expansion', ExpandThread]],

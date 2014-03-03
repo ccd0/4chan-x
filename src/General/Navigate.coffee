@@ -36,8 +36,7 @@ Navigate =
   clean: ->
     # Garbage collection
     g.threads.forEach (thread) -> thread.collect()
-    QuoteBacklink.containers = {}
-
+    QuoteBacklink.map = {} if Conf['Quote Backlinks'] # Containers can get pretty icky.
     $.rmAll $ '.board'
 
   features: [

@@ -16,20 +16,27 @@ QuoteBacklink =
     @funk  = Function 'id', "return '#{format}'"
     @frag  = $.nodes [$.tn(' '), $.el 'a', className: 'backlink']
     @map   = {}
+
     Post.callbacks.push
       name: 'Quote Backlinking Part 1'
       cb:   @firstNode
+
     Post.callbacks.push
       name: 'Quote Backlinking Part 2'
       cb:   @secondNode
+
   firstNode: ->
     return if @isClone
+    addNodes = (post, that) ->
+      $.add post.nodes.backlinkContainer, QuoteBacklink.buildBacklink post, that
     for quoteID in @quotes
       (QuoteBacklink.map[quoteID] or= []).push @fullID
-      continue unless (post = g.posts[quoteID]) and container = post?.nodes.backlinkContainer
-      for post in [post].concat post.clones
-        $.add post.nodes.backlinkContainer, QuoteBacklink.buildBacklink post, @
+      continue unless (post = g.posts[quoteID])? and container = post.nodes.backlinkContainer
+      addNodes post, @
+      for post in post.clones
+        addNodes post, @
     return
+
   secondNode: ->
     # Don't backlink the OP.
     return unless @isReply or Conf['OP Backlinks']
@@ -46,6 +53,7 @@ QuoteBacklink =
         if post = g.posts[quoteID] # Post hasn't been collected since.
           $.add container, QuoteBacklink.buildBacklink @, post
     $.add @nodes.info, container
+
   buildBacklink: (quoted, quoter) ->
     frag = QuoteBacklink.frag.cloneNode true
     a = frag.lastElementChild
