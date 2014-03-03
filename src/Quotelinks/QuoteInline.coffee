@@ -26,8 +26,10 @@ QuoteInline =
     return
 
   qiQuote: (link, hidden) ->
+    name = "hashlink"
+    name += "filtered" if hidden
     $.el 'a',
-      className: "hashlink#{if hidden then ' filtered' else ''}"
+      className: name
       textContent: '#'
       href: link.href
 

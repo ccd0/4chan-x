@@ -5352,8 +5352,13 @@
       }
     },
     qiQuote: function(link, hidden) {
+      var name;
+      name = "hashlink";
+      if (hidden) {
+        name += "filtered";
+      }
       return $.el('a', {
-        className: "hashlink" + (hidden ? ' filtered' : ''),
+        className: name,
         textContent: '#',
         href: link.href
       });
@@ -12558,20 +12563,22 @@
       return $.on(replyLink, 'click', Navigate.navigate);
     },
     post: function() {
-      var hashlink, postlink, _i, _len, _ref;
+      var boardID, hashlink, postID, postlink, threadID, _i, _len, _ref, _ref1;
+      if (Conf['Quote Hash Navigation']) {
+        _ref = $$('.hashlink', this.nodes.comment);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          hashlink = _ref[_i];
+          _ref1 = Get.postDataFromLink(hashlink), boardID = _ref1.boardID, threadID = _ref1.threadID, postID = _ref1.postID;
+          if (boardID !== g.BOARD.ID || (threadID !== g.THREADID)) {
+            $.on(hashlink, 'click', Navigate.navigate);
+          }
+        }
+      }
       if (g.VIEW === 'thread' && this.thread.ID === g.THREADID) {
         return;
       }
       postlink = $('a[title="Highlight this post"]', this.nodes.info);
-      $.on(postlink, 'click', Navigate.navigate);
-      if (!Conf['Quote Hash Navigation']) {
-        return;
-      }
-      _ref = $$('.hashlink', this.nodes.comment);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        hashlink = _ref[_i];
-        $.on(hashlink, 'click', Navigate.navigate);
-      }
+      return $.on(postlink, 'click', Navigate.navigate);
     },
     clean: function() {
       g.threads.forEach(function(thread) {
