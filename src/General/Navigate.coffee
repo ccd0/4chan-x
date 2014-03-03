@@ -76,16 +76,6 @@ Navigate =
     Main.handleErrors errors if errors
     return
 
-  ready: (name, feature, condition) ->
-    try
-      feature() if condition
-    catch err
-      error = [
-        message: "#{name} Failed."
-        error:   err
-      ]
-    Main.handleErrors error if error
-
   updateContext: (view) ->
     g.DEAD     = false
     g.THREADID = +window.location.pathname.split('/')[3] if view is 'thread'
@@ -188,10 +178,7 @@ Navigate =
       pageNum = +view or 1 # string to number, '' to 1
       view = 'index' # path is "/boardID/". See the problem?
 
-    if view is g.VIEW and boardID is g.BOARD.ID
-      Navigate.updateContext view
-
-    else # We've navigated somewhere we weren't before!
+    unless view is 'index' and 'index' is g.VIEW and boardID is g.BOARD.ID
       Navigate.disconnect()
       Navigate.updateContext view
       Navigate.clean()
@@ -248,12 +235,11 @@ Navigate =
       return
 
   parse: (data) ->
-    board = g.BOARD
-    Navigate.threadRoot = threadRoot = Build.thread board, OP = data.shift(), true
-    thread = new Thread OP.no, board
-
-    posts  = []
-    errors = null
+    posts      = []
+    errors     = null
+    board      = g.BOARD
+    threadRoot = Build.thread board, OP = data[0], true
+    thread     = new Thread OP.no, board
 
     makePost = (postNode) ->
       try
@@ -262,34 +248,32 @@ Navigate =
         # Skip posts that we failed to parse.
         errors = [] unless errors
         errors.push
-          message: "Parsing of Post No.#{thread.ID} failed. Post will be skipped."
+          message: "Parsing of Post No.#{postNode.ID} failed. Post will be skipped."
           error: err
 
     makePost $('.opContainer', threadRoot)
 
-    for obj in data
+    i = 0
+    while obj = data[++i]
       post = Build.postFromObject obj, board
       makePost post
       $.add threadRoot, post
 
-    Main.handleErrors errors if errors
-
     Main.callbackNodes Thread, [thread]
     Main.callbackNodes Post,   posts
 
-    Navigate.ready 'Quote Threading', QuoteThreading.force, Conf['Quote Threading'] and not Conf['Unread Count']
+    QuoteThreading.force() if Conf['Quote Threading'] and not Conf['Unread Count']
 
-    Navigate.buildThread()
+    board = $ '.board'
+    $.rmAll board
+    $.add board, [threadRoot, $.el 'hr']
+
+    Unread.ready() if Conf['Unread Count']
+
     QR.generatePostableThreadsList()
     Header.hashScroll.call window
 
-  buildThread: ->
-    board = $ '.board'
-    $.rmAll board
-    $.add board, [Navigate.threadRoot, $.el 'hr']
-
-    if Conf['Unread Count']
-      Navigate.ready 'Unread Count', Unread.ready, Conf['Unread Count']
+    Main.handleErrors errors if errors
 
   pushState: (path) ->
     history.pushState null, '', path
