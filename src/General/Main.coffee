@@ -84,7 +84,9 @@ Main =
     $('link[href*=mobile]', d.head)?.disabled = true
     $.addClass doc, 'fourchan-x', 'seaweedchan', g.VIEW, '<% if (type === 'crx') { %>blink<% } else { %>gecko<% } %>'
     $.addStyle Main.css
+    Main.setClass()
 
+  setClass: ->
     style          = 'yotsuba-b'
     mainStyleSheet = $ 'link[title=switch]', d.head
     styleSheets    = $$ 'link[rel="alternate stylesheet"]', d.head

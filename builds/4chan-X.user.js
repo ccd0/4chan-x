@@ -12666,14 +12666,13 @@
       $.addClass($("a[href*='/" + boardID + "/']", fullBoardList), 'current');
       Header.generateBoardList(Conf['boardnav'].replace(/(\r\n|\n|\r)/g, ' '));
       QR.flagsInput();
-      return $.cache('//a.4cdn.org/boards.json', function(_arg) {
-        var aboard, board, err, target, _i, _len, _ref;
-        target = _arg.target;
-        if (target.status !== 200) {
-          return;
-        }
+      return $.cache('//a.4cdn.org/boards.json', function() {
+        var aboard, board, err, _i, _len, _ref;
         try {
-          _ref = target.response.boards;
+          if (this.status !== 200) {
+            return;
+          }
+          _ref = this.response.boards;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             aboard = _ref[_i];
             if (!(aboard.board === boardID)) {
@@ -12690,7 +12689,6 @@
               error: err
             }
           ]);
-          return false;
         }
         if (!board) {
           return;
@@ -13573,7 +13571,7 @@
       return $.ready(Main.initReady);
     },
     initStyle: function() {
-      var mainStyleSheet, setStyle, style, styleSheets, _ref;
+      var _ref;
       $.off(d, '4chanMainInit', Main.initStyle);
       if (!Main.isThisPageLegit() || $.hasClass(doc, 'fourchan-x')) {
         return;
@@ -13583,6 +13581,10 @@
       }
       $.addClass(doc, 'fourchan-x', 'seaweedchan', g.VIEW, 'gecko');
       $.addStyle(Main.css);
+      return Main.setClass();
+    },
+    setClass: function() {
+      var mainStyleSheet, setStyle, style, styleSheets;
       style = 'yotsuba-b';
       mainStyleSheet = $('link[title=switch]', d.head);
       styleSheets = $$('link[rel="alternate stylesheet"]', d.head);
