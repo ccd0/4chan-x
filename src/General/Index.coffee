@@ -561,15 +561,16 @@ Index =
 
   parseThreadList: (pages) ->
     Index.threadsNumPerPage = pages[0].threads.length
+
     live = []
-    data = []
-    i = 0
+    i    = 0
     while page = pages[i++]
-      j = 0
-      {threads} = page
-      live = live.concat threads
-      while thread = threads[j++]
-        data.push thread.no
+      live = live.concat page.threads
+
+    data = []
+    i    = 0
+    while thread = live[i++]
+      data.push thread.no
 
     Index.liveThreadData    = live
     Index.liveThreadIDs     = data
