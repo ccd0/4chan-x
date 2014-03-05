@@ -2630,8 +2630,8 @@ article li {
   padding: 5px;
 }
 /* /f/ */
-[action*=/f/] .fileInfo {
-  padding-left: 5px;
+[action*='/f/'] .fileInfo {
+  padding-left: 5px !important;
 }
 .mobile.center {
   display:none!important;
