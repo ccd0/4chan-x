@@ -8,7 +8,6 @@ Flash =
 
     return unless g.VIEW is 'thread'
 
-    fileFix = $ '.fileInfo'
     swfName = $ '.fileText > a'
     nav     = $ '.navLinks'
     sauceLink = $.el 'a',
@@ -16,4 +15,3 @@ Flash =
       href:        "http://eye.swfchan.com/search/?q=#{swfName.textContent}"
     $.rmAll nav
     $.add nav, [$.tn('['), sauceLink, $.tn(']')]
-    fileFix.style.paddingLeft = '5px'
