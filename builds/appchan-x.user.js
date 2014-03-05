@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.8.13 - 2014-02-23
+* appchan x - Version 2.8.13 - 2014-03-05
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -14752,11 +14752,12 @@
       }
     },
     initReady: function() {
-      var nav, sauceLink, swfName;
+      var fileFix, nav, sauceLink, swfName;
       $.globalEval('SWFEmbed.init()');
       if (g.VIEW !== 'thread') {
         return;
       }
+      fileFix = $('.fileInfo');
       swfName = $('.fileText > a');
       nav = $('.navLinks');
       sauceLink = $.el('a', {
@@ -14764,7 +14765,8 @@
         href: "http://eye.swfchan.com/search/?q=" + swfName.textContent
       });
       $.rmAll(nav);
-      return $.add(nav, [$.tn('['), sauceLink, $.tn(']')]);
+      $.add(nav, [$.tn('['), sauceLink, $.tn(']')]);
+      return fileFix.style.paddingLeft = '5px';
     }
   };
 
