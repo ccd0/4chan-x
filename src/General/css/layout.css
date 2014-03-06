@@ -1302,6 +1302,10 @@ a.useremail:last-of-type {
 .remove-spoilers.reveal-spoilers s::after {
   content: '[/spoiler]';
 }
+:root:not(.remove-spoilers).reveal-spoilers .spoilers:not(:hover),
+:root:not(.remove-spoilers).reveal-spoilers s:not(:hover) {
+  color: white !important;
+}
 :root:not(.remove-spoilers) .spoiler:not(:hover) *,
 :root:not(.remove-spoilers) s:not(:hover) * {
   color: rgb(0,0,0) !important;
