@@ -6393,21 +6393,43 @@
       return list.value = g.VIEW === 'thread' ? g.THREADID : 'new';
     },
     dialog: function() {
-      var dialog, elm, event, i, items, name, node, nodes, rules, save, val, _, _i, _len, _ref, _ref1, _ref2;
+      var dialog, elm, event, i, items, name, node, nodes, rules, save, setNode, _, _ref, _ref1;
       QR.nodes = nodes = {
         el: dialog = UI.dialog('qr', 'top:0;right:0;', "<div class=move><label><input type=checkbox id=autohide title=Auto-hide>Quick Reply</label><a href=javascript:; class=close title=Close>×</a><select data-name=thread title='Create a new thread / Reply'><option value=new>New thread</option></select></div><form><div class=persona><input name=name  data-name=name  list=\"list-name\" placeholder=Name    class=field size=1 tabindex=10><input name=email data-name=email list=\"list-email\" placeholder=E-mail  class=field size=1 tabindex=20><input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1 tabindex=30> </div><div class=textarea><textarea data-name=com placeholder=Comment class=field tabindex=40></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=60><span id=qr-no-file>No selected file</span><input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\"><span id=qr-extras-container><a id=qr-filerm href=javascript:; title='Remove file'><i class=\"fa fa-times-circle\"></i></a><a id=url-button title='Post from url'><i class=\"fa fa-link\"></i></a><a id=dump-button title='Dump list'><i class=\"fa fa-plus-square\"></i></a></span></span><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70></label><input type=submit tabindex=80></div><input type=file multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist> ")
       };
-      _ref = [['move', '.move'], ['autohide', '#autohide'], ['thread', 'select'], ['threadPar', '#qr-thread-select'], ['close', '.close'], ['form', 'form'], ['dumpButton', '#dump-button'], ['urlButton', '#url-button'], ['name', '[data-name=name]'], ['email', '[data-name=email]'], ['sub', '[data-name=sub]'], ['com', '[data-name=com]'], ['dumpList', '#dump-list'], ['addPost', '#add-post'], ['charCount', '#char-count'], ['fileSubmit', '#file-n-submit'], ['filesize', '#qr-filesize'], ['filename', '#qr-filename'], ['fileContainer', '#qr-filename-container'], ['fileRM', '#qr-filerm'], ['fileExtras', '#qr-extras-container'], ['spoiler', '#qr-file-spoiler'], ['status', '[type=submit]'], ['fileInput', '[type=file]']];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        val = _ref[_i];
-        nodes[val[0]] = $(val[1], dialog);
-      }
+      setNode = function(query, name) {
+        return nodes[name] = $(query, dialog);
+      };
+      setNode('move', '.move');
+      setNode('autohide', '#autohide');
+      setNode('thread', 'select');
+      setNode('threadPar', '#qr-thread-select');
+      setNode('close', '.close');
+      setNode('form', 'form');
+      setNode('dumpButton', '#dump-button');
+      setNode('urlButton', '#url-button');
+      setNode('name', '[data-name=name]');
+      setNode('email', '[data-name=email]');
+      setNode('sub', '[data-name=sub]');
+      setNode('com', '[data-name=com]');
+      setNode('dumpList', '#dump-list');
+      setNode('addPost', '#add-post');
+      setNode('charCount', '#char-count');
+      setNode('fileSubmit', '#file-n-submit');
+      setNode('filesize', '#qr-filesize');
+      setNode('filename', '#qr-filename');
+      setNode('fileContainer', '#qr-filename-container');
+      setNode('fileRM', '#qr-filerm');
+      setNode('fileExtras', '#qr-extras-container');
+      setNode('spoiler', '#qr-file-spoiler');
+      setNode('status', '[type=submit]');
+      setNode('fileInput', '[type=file]');
       rules = $('ul.rules').textContent.trim();
       QR.min_width = QR.min_heigth = 1;
       QR.max_width = QR.max_heigth = 5000;
       try {
-        _ref1 = rules.match(/.+smaller than (\d+)x(\d+).+/), _ = _ref1[0], QR.min_width = _ref1[1], QR.min_heigth = _ref1[2];
-        _ref2 = rules.match(/.+greater than (\d+)x(\d+).+/), _ = _ref2[0], QR.max_width = _ref2[1], QR.max_heigth = _ref2[2];
+        _ref = rules.match(/.+smaller than (\d+)x(\d+).+/), _ = _ref[0], QR.min_width = _ref[1], QR.min_heigth = _ref[2];
+        _ref1 = rules.match(/.+greater than (\d+)x(\d+).+/), _ = _ref1[0], QR.max_width = _ref1[1], QR.max_heigth = _ref1[2];
       } catch (_error) {
         null;
       }
