@@ -2633,26 +2633,22 @@ article li {
 [action*='/f/'] .fileInfo {
   padding-left: 5px !important;
 }
-.name-col{
+[action*='/f/'] .subject, .name-col {
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   word-wrap: break-word;
 }
-[action*='/f/'] .subject {
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  word-wrap: break-word;
+div.navLinks.sauce {
+  margin-top: 5px !important;
 }
 .mobile.center {
   display:none!important;
 }
 table.flashListing {
   border-spacing: 1px !important;
-  padding-left: 5px !important;
+  margin: 5px auto !important;
 }
 .flashListing td {
   padding: 2px !important;

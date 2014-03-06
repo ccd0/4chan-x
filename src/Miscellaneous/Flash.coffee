@@ -13,5 +13,6 @@ Flash =
     sauceLink = $.el 'a',
       textContent: 'Check Sauce on SWFCHAN'
       href:        "http://eye.swfchan.com/search/?q=#{swfName.textContent}"
+    $.addClass nav, 'sauce'
     $.rmAll nav
     $.add nav, [$.tn('['), sauceLink, $.tn(']')]
