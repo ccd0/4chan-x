@@ -459,32 +459,33 @@ QR =
     QR.nodes = nodes =
       el: dialog = UI.dialog 'qr', 'top:0;right:0;', <%= importHTML('Features/QuickReply') %>
 
-    nodes[key] = $ value, dialog for key, value of {
-      move:       '.move'
-      autohide:   '#autohide'
-      thread:     'select'
-      threadPar:  '#qr-thread-select'
-      close:      '.close'
-      form:       'form'
-      dumpButton: '#dump-button'
-      urlButton:  '#url-button'
-      name:       '[data-name=name]'
-      email:      '[data-name=email]'
-      sub:        '[data-name=sub]'
-      com:        '[data-name=com]'
-      dumpList:   '#dump-list'
-      addPost:    '#add-post'
-      charCount:  '#char-count'
-      fileSubmit: '#file-n-submit'
-      filename:   '#qr-filename'
-      fileContainer: '#qr-filename-container'
-      fileRM:     '#qr-filerm'
-      fileExtras: '#qr-extras-container'
-      spoiler:    '#qr-file-spoiler'
-      spoilerPar: '#qr-spoiler-label'
-      status:     '[type=submit]'
-      fileInput:  '[type=file]'
-    }
+    setNode = (query, name) ->
+      nodes[name] = $ query, dialog
+
+    setNode 'move',          '.move'
+    setNode 'autohide',      '#autohide'
+    setNode 'thread',        'select'
+    setNode 'threadPar',     '#qr-thread-select'
+    setNode 'close',         '.close'
+    setNode 'form',          'form'
+    setNode 'dumpButton',    '#dump-button'
+    setNode 'urlButton',     '#url-button'
+    setNode 'name',          '[data-name=name]'
+    setNode 'email',         '[data-name=email]'
+    setNode 'sub',           '[data-name=sub]'
+    setNode 'com',           '[data-name=com]'
+    setNode 'dumpList',      '#dump-list'
+    setNode 'addPost',       '#add-post'
+    setNode 'charCount',     '#char-count'
+    setNode 'fileSubmit',    '#file-n-submit'
+    setNode 'filename',      '#qr-filename'
+    setNode 'fileContainer', '#qr-filename-container'
+    setNode 'fileRM',        '#qr-filerm'
+    setNode 'fileExtras',    '#qr-extras-container'
+    setNode 'spoiler',       '#qr-file-spoiler'
+    setNode 'spoilerPar',    '#qr-spoiler-label'
+    setNode 'status',        '[type=submit]'
+    setNode 'fileInput',     '[type=file]'
     
     rules = $('ul.rules').textContent.trim()
     QR.min_width = QR.min_height = 1
