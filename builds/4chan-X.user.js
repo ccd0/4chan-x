@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.4.1 - 2014-03-03
+* 4chan X - Version 1.4.1 - 2014-03-06
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -12539,9 +12539,14 @@
         return;
       }
       $.ready(function() {
-        return $.on(window, 'popstate', Navigate.popstate);
+        $.on(window, 'popstate', Navigate.popstate);
+        Navigate.makeBreadCrumb(window.location, g.VIEW, g.BOARD.ID, g.THREADID);
+        return $.add(Index.navLinks, Navigate.el);
       });
       this.title = function() {};
+      this.el = $.el('div', {
+        id: 'breadCrumb'
+      });
       Thread.callbacks.push({
         name: 'Navigate',
         cb: this.thread
@@ -12731,6 +12736,10 @@
       if (e && (e.shiftKey || e.ctrlKey || (e.type === 'click' && e.button !== 0))) {
         return;
       }
+      if (this.pathname === Navigate.path) {
+        e.preventDefault();
+        return;
+      }
       $.addClass(Index.button, 'fa-spin');
       if (Index.isSearching) {
         Index.clearSearch();
@@ -12745,6 +12754,12 @@
       Navigate.title = function() {};
       delete Index.pageNum;
       $.rmAll(Header.hover);
+      if (threadID) {
+        view = 'thread';
+      } else {
+        pageNum = view;
+        view = 'index';
+      }
       path = this.pathname;
       if (this.hash) {
         path += this.hash;
@@ -12753,12 +12768,7 @@
         history.pushState(null, '', path);
       }
       Navigate.path = this.pathname;
-      if (threadID) {
-        view = 'thread';
-      } else {
-        pageNum = view;
-        view = 'index';
-      }
+      Navigate.makeBreadCrumb(this.href, view, boardID, threadID);
       _ref1 = this.dataset, indexMode = _ref1.indexMode, indexSort = _ref1.indexSort;
       if (indexMode && Conf['Index Mode'] !== indexMode) {
         $.set('Index Mode', Conf['Index Mode'] = Index.selectMode.value = indexMode);
@@ -12831,6 +12841,19 @@
         }
       }
     },
+    makeBreadCrumb: function(href, view, boardID, threadID) {
+      var breadCrumb, el;
+      breadCrumb = $.el('span', {
+        className: 'crumb',
+        innerHTML: "<a href=" + href + ">/" + boardID + "/ - " + (view.charAt(0).toUpperCase()) + (view.slice(1)) + (threadID ? " No." + threadID : '') + "</a> &gt; "
+      });
+      $.on(breadCrumb.firstElementChild, 'click', Navigate.navigate);
+      el = Navigate.el;
+      $.add(el, breadCrumb);
+      if (el.children.length > 5) {
+        return $.rm(el.firstChild);
+      }
+    },
     parse: function(data) {
       var OP, board, errors, i, makePost, obj, post, posts, thread, threadRoot;
       posts = [];
@@ -12879,9 +12902,6 @@
     },
     popstate: function() {
       var a;
-      if (window.location.pathname === Navigate.path) {
-        return;
-      }
       a = $.el('a', {
         href: window.location,
         id: 'popState'

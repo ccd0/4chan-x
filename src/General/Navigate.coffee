@@ -6,8 +6,13 @@ Navigate =
     $.ready ->
       # blink/webkit throw a popstate on page load. Not what we want.
       $.on window, 'popstate', Navigate.popstate
+      Navigate.makeBreadCrumb window.location, g.VIEW, g.BOARD.ID, g.THREADID
+      $.add Index.navLinks, Navigate.el
 
     @title = -> return
+    
+    @el = $.el 'div',
+      id: 'breadCrumb'
 
     Thread.callbacks.push
       name: 'Navigate'
@@ -155,6 +160,9 @@ Navigate =
   navigate: (e) ->
     return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org'
     return if e and (e.shiftKey or e.ctrlKey or (e.type is 'click' and e.button isnt 0)) # Not simply a left click
+    if @pathname is Navigate.path
+      e.preventDefault()
+      return
 
     $.addClass Index.button, 'fa-spin'
     Index.clearSearch() if Index.isSearching
@@ -168,17 +176,19 @@ Navigate =
     delete Index.pageNum
     $.rmAll Header.hover
 
+    if threadID
+      view = 'thread'
+    else
+      pageNum = view
+      view = 'index' # path is "/boardID/". See the problem?
+
     path = @pathname
     path += @hash if @hash
 
     history.pushState null, '', path unless @id is 'popState'
     Navigate.path = @pathname
 
-    if threadID
-      view = 'thread'
-    else
-      pageNum = view
-      view = 'index' # path is "/boardID/". See the problem?
+    Navigate.makeBreadCrumb @href, view, boardID, threadID
 
     {indexMode, indexSort} = @dataset
     if indexMode and Conf['Index Mode'] isnt indexMode
@@ -245,6 +255,17 @@ Navigate =
         new Notice 'error', 'Navigation Failed.', 2
       return
 
+  makeBreadCrumb: (href, view, boardID, threadID) ->
+    breadCrumb = $.el 'span',
+      className: 'crumb'
+      innerHTML: "<a href=#{href}>/#{boardID}/ - #{view.charAt(0).toUpperCase()}#{view.slice 1}#{if threadID then " No.#{threadID}" else ''}</a> &gt; "
+
+    $.on breadCrumb.firstElementChild, 'click', Navigate.navigate
+
+    {el} = Navigate
+    $.add el, breadCrumb
+    $.rm el.firstChild if el.children.length > 5
+
   parse: (data) ->
     posts      = []
     errors     = null
@@ -287,7 +308,6 @@ Navigate =
     Main.handleErrors errors if errors
 
   popstate: ->
-    return if window.location.pathname is Navigate.path
     a = $.el 'a',
       href: window.location
       id:   'popState'
