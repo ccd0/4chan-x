@@ -154,6 +154,9 @@ Navigate =
   navigate: (e) ->
     return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org'
     return if e and (e.shiftKey or e.ctrlKey or (e.type is 'click' and e.button isnt 0)) # Not simply a left click
+    if @pathname is Navigate.path
+      e.preventDefault()
+      return
 
     $.addClass Index.button, 'fa-spin'
     Index.clearSearch() if Index.isSearching
@@ -167,17 +170,17 @@ Navigate =
     delete Index.pageNum
     $.rmAll Header.hover
 
-    path = @pathname
-    path += @hash if @hash
-
-    history.pushState null, '', path unless @id is 'popState'
-    Navigate.path = @pathname
-
     if threadID
       view = 'thread'
     else
       pageNum = +view or 1 # string to number, '' to 1
       view = 'index' # path is "/boardID/". See the problem?
+
+    path = @pathname
+    path += @hash if @hash
+
+    history.pushState null, '', path unless @id is 'popState'
+    Navigate.path = @pathname
 
     unless view is 'index' and 'index' is g.VIEW and boardID is g.BOARD.ID
       Navigate.disconnect()
@@ -281,7 +284,6 @@ Navigate =
     Navigate.path = window.location.pathname
 
   popstate: ->
-    return if window.location.pathname is Navigate.path
     a = $.el 'a',
       href: window.location
       id:   'popState'
