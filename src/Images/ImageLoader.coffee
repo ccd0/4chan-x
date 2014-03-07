@@ -1,6 +1,5 @@
 ImageLoader =
   init: ->
-    return if g.VIEW is 'catalog'
     return unless Conf["Image Prefetching"] or Conf["Replace JPG"] or Conf["Replace PNG"] or Conf["Replace GIF"]
 
     Post.callbacks.push

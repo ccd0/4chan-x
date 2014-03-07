@@ -1,7 +1,5 @@
 Fourchan =
   init: ->
-    return if g.VIEW is 'catalog'
-
     board = g.BOARD.ID
     if board is 'g'
       $.globalEval """
@@ -42,10 +40,3 @@ Fourchan =
   math: ->
     return if @isClone or !$ '.math', @nodes.comment
     $.event 'jsmath', @nodes.post, window
-  parseThread: (threadID, offset, limit) ->
-    # Fix /sci/
-    # Fix /g/
-    $.event '4chanParsingDone',
-      threadId: threadID
-      offset: offset
-      limit: limit

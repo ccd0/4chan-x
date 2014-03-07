@@ -1,6 +1,6 @@
 ExpandComment =
   init: ->
-    return if g.VIEW isnt 'index' or !Conf['Comment Expansion']
+    return if g.VIEW isnt 'index' or !Conf['Comment Expansion'] or Conf['JSON Navigation']
 
     @callbacks.push Fourchan.code if g.BOARD.ID is 'g'
     @callbacks.push Fourchan.math if g.BOARD.ID is 'sci'

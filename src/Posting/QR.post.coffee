@@ -35,7 +35,7 @@ QR.post = class
     else
       'new'
 
-    prev = QR.posts[QR.posts.length - 1]
+    [..., prev] = QR.posts
     QR.posts.push @
     @nodes.spoiler.checked = @spoiler = if prev and Conf['Remember Spoiler']
       prev.spoiler
@@ -165,7 +165,10 @@ QR.post = class
     @filesize = $.bytesToString file.size
     @nodes.label.hidden = false if QR.spoiler
     URL.revokeObjectURL @URL
-    @showFileData() if @ is QR.selected
+    if @ is QR.selected
+      @showFileData()
+    else
+      @updateFilename()
     unless /^image/.test file.type
       @nodes.el.style.backgroundImage = null
       return

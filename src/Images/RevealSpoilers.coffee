@@ -1,6 +1,6 @@
 RevealSpoilers =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Reveal Spoiler Thumbnails']
+    return if !Conf['Reveal Spoilers']
 
     Post.callbacks.push
       cb:   @node

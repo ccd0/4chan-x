@@ -14,6 +14,9 @@ Main =
           'catalog'
         else
           'index'
+    if g.VIEW is 'catalog'
+      $.ready Index.addCatalogSwitch
+      return
     if g.VIEW is 'thread'
       g.THREADID = +pathname[3]
 
@@ -90,7 +93,7 @@ Main =
         return
 
     # c.time 'All initializations'
-    for [name, feature] in Main.features
+    init = (name, feature) ->
       # c.time "#{name} initialization"
       try
         feature.init()
@@ -100,7 +103,73 @@ Main =
           error: err
       # finally
       #   c.timeEnd "#{name} initialization"
+
     # c.timeEnd 'All initializations'
+
+    init 'Emoji',                     Emoji
+    init 'Style',                     Style
+    init 'Mascots',                   MascotTools
+    init 'Rice',                      Rice
+    init 'Announcements',             GlobalMessage
+    init 'Polyfill',                  Polyfill
+    init 'Redirect',                  Redirect
+    init 'Header',                    Header
+    init 'Catalog Links',             CatalogLinks
+    init 'Settings',                  Settings
+    init 'Index Generator',           Index
+    init 'Announcement Hiding',       PSAHiding
+    init 'Fourchan thingies',         Fourchan
+    init 'Emoji',                     Emoji
+    init 'Color User IDs',            IDColor
+    init 'Custom CSS',                CustomCSS
+    init 'Linkify',                   Linkify
+    init 'Reveal Spoilers',           RemoveSpoilers
+    init 'Resurrect Quotes',          Quotify
+    init 'Filter',                    Filter
+    init 'Reply Hiding Buttons',      PostHiding
+    init 'Recursive',                 Recursive
+    init 'Strike-through Quotes',     QuoteStrikeThrough
+    init 'Quick Reply',               QR
+    init 'Menu',                      Menu
+    init 'Report Link',               ReportLink
+    init 'Reply Hiding (Menu)',       PostHiding.menu
+    init 'Delete Link',               DeleteLink
+    init 'Filter (Menu)',             Filter.menu
+    init 'Download Link',             DownloadLink
+    init 'Archive Link',              ArchiveLink
+    init 'Quote Inlining',            QuoteInline
+    init 'Quote Previewing',          QuotePreview
+    init 'Quote Backlinks',           QuoteBacklink
+    init 'Quote Markers',             QuoteMarkers
+    init 'Anonymize',                 Anonymize
+    init 'Time Formatting',           Time
+    init 'Relative Post Dates',       RelativeDates
+    init 'File Info Formatting',      FileInfo
+    init 'Fappe Tyme',                FappeTyme
+    init 'Gallery',                   Gallery
+    init 'Gallery (menu)',            Gallery.menu
+    init 'Sauce',                     Sauce
+    init 'Image Expansion',           ImageExpand
+    init 'Image Expansion (Menu)',    ImageExpand.menu
+    init 'Reveal Spoiler Thumbnails', RevealSpoilers
+    init 'Image Loading',             ImageLoader
+    init 'Image Hover',               ImageHover
+    init 'Thread Expansion',          ExpandThread
+    init 'Comment Expansion',         ExpandComment
+    init 'Thread Excerpt',            ThreadExcerpt
+    init 'Favicon',                   Favicon
+    init 'Unread',                    Unread
+    init 'Quote Threading',           QuoteThreading
+    init 'Thread Stats',              ThreadStats
+    init 'Thread Updater',            ThreadUpdater
+    init 'Thread Watcher',            ThreadWatcher
+    init 'Thread Watcher (Menu)',     ThreadWatcher.menu
+    init 'Index Navigation',          Nav
+    init 'Keybinds',                  Keybinds
+    init 'Show Dice Roll',            Dice
+    init 'Banner',                    Banner
+    init 'Navigate',                  Navigate
+    init 'Flash Features',            Flash
 
     $.on d, 'AddCallback', Main.addCallback
     $.ready Main.initReady
@@ -262,75 +331,6 @@ Main =
         !$('link[href*="favicon-status.ico"]', d.head) and
         d.title not in ['4chan - Temporarily Offline', '4chan - Error', '504 Gateway Time-out']
     Main.thisPageIsLegit
-
-  features: [
-    ['Polyfill',                  Polyfill]
-    ['Emoji',                     Emoji]
-    ['Style',                     Style]
-    ['Mascots',                   MascotTools]
-    ['Rice',                      Rice]
-    ['Banner',                    Banner]
-    ['Announcements',             GlobalMessage]
-    ['Archive Redirection',       Redirect]
-    ['Header',                    Header]
-    ['Catalog Links',             CatalogLinks]
-    ['Settings',                  Settings]
-    ['Index Generator',           Index]
-    ['Announcement Hiding',       PSAHiding]
-    ['Fourchan thingies',         Fourchan]
-    ['Color User IDs',            IDColor]
-    ['Custom CSS',                CustomCSS]
-    ['Linkify',                   Linkify]
-    ['Reveal Spoilers',           RemoveSpoilers]
-    ['Resurrect Quotes',          Quotify]
-    ['Filter',                    Filter]
-    ['Thread Hiding Buttons',     ThreadHiding]
-    ['Reply Hiding Buttons',      PostHiding]
-    ['Recursive',                 Recursive]
-    ['Strike-through Quotes',     QuoteStrikeThrough]
-    ['Quick Reply',               QR]
-    ['Menu',                      Menu]
-    ['Report Link',               ReportLink]
-    ['Thread Hiding (Menu)',      ThreadHiding.menu]
-    ['Reply Hiding (Menu)',       PostHiding.menu]
-    ['Delete Link',               DeleteLink]
-    ['Filter (Menu)',             Filter.menu]
-    ['Download Link',             DownloadLink]
-    ['Archive Link',              ArchiveLink]
-    ['Quote Inlining',            QuoteInline]
-    ['Quote Previewing',          QuotePreview]
-    ['Quote Backlinks',           QuoteBacklink]
-    ['Mark Quotes of You',        QuoteYou]
-    ['Mark OP Quotes',            QuoteOP]
-    ['Mark Cross-thread Quotes',  QuoteCT]
-    ['Anonymize',                 Anonymize]
-    ['Time Formatting',           Time]
-    ['Relative Post Dates',       RelativeDates]
-    ['File Info Formatting',      FileInfo]
-    ['Fappe Tyme',                FappeTyme]
-    ['Gallery',                   Gallery]
-    ['Gallery (menu)',            Gallery.menu]
-    ['Sauce',                     Sauce]
-    ['Image Expansion',           ImageExpand]
-    ['Image Expansion (Menu)',    ImageExpand.menu]
-    ['Reveal Spoiler Thumbnails', RevealSpoilers]
-    ['Image Loading',             ImageLoader]
-    ['Image Hover',               ImageHover]
-    ['Thread Expansion',          ExpandThread]
-    ['Thread Excerpt',            ThreadExcerpt]
-    ['Favicon',                   Favicon]
-    ['Unread',                    Unread]
-    ['Quote Threading',           QuoteThreading]
-    ['Thread Updater',            ThreadUpdater]
-    ['Thread Stats',              ThreadStats]
-    ['Thread Watcher',            ThreadWatcher]
-    ['Thread Watcher (Menu)',     ThreadWatcher.menu]
-    ['Index Navigation',          Nav]
-    ['Keybinds',                  Keybinds]
-    ['Show Dice Roll',            Dice]
-    ['Navigate',                  Navigate]
-    ['Flash Features',            Flash]
-  ]
 
   setMascotString: ->
     type = "Enabled Mascots"

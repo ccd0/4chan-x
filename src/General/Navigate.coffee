@@ -3,15 +3,17 @@ Navigate =
   init: ->
     return if g.VIEW is 'catalog' or g.BOARD.ID is 'f' or !Conf['JSON Navigation']
 
-    $.ready -> 
+    $.ready ->
       # blink/webkit throw a popstate on page load. Not what we want.
       $.on window, 'popstate', Navigate.popstate
-
-      # Prevent having to update the catalog links whenever we open threads.
-      $.id('catalog').href = $.id('cataloglink').href = "//boards.4chan.org/#{g.BOARD}/catalog"
+      Navigate.makeBreadCrumb window.location, g.VIEW, g.BOARD.ID, g.THREADID
+      $.add Index.navLinks, Navigate.el
 
     @title = -> return
     
+    @el = $.el 'div',
+      id: 'breadCrumb'
+
     Thread.callbacks.push
       name: 'Navigate'
       cb:   @thread
@@ -25,23 +27,23 @@ Navigate =
     replyLink = $ 'a.replylink', @OP.nodes.info
     $.on replyLink, 'click', Navigate.navigate
 
-  post: ->
+  post: -> # Allows us to navigate via JSON from thread to thread by hashes and quote highlights.
+    if Conf['Quote Hash Navigation']
+      for hashlink in $$ '.hashlink', @nodes.comment
+        {boardID, threadID, postID} = Get.postDataFromLink hashlink
+        if boardID isnt g.BOARD.ID or (threadID isnt g.THREADID)
+          $.on hashlink, 'click', Navigate.navigate
+
     # We don't need to reload the thread inside the thread
     return if g.VIEW is 'thread' and @thread.ID is g.THREADID
     postlink = $ 'a[title="Highlight this post"]', @nodes.info
     $.on postlink, 'click', Navigate.navigate
 
-    return unless Conf['Quote Hash Navigation']
-    for hashlink in $$ '.hashlink', @nodes.comment
-      $.on hashlink, 'click', Navigate.navigate
-    return
-
   clean: ->
     # Garbage collection
     g.threads.forEach (thread) -> thread.collect()
-    QuoteBacklink.containers = {}
-
-    $.rmAll $('.board')
+    QuoteBacklink.map = {} if Conf['Quote Backlinks'] # Containers can get pretty icky.
+    $.rmAll $ '.board'
 
   features: [
     ['Thread Excerpt',   ThreadExcerpt]
@@ -78,38 +80,25 @@ Navigate =
     Main.handleErrors errors if errors
     return
 
-  ready: (name, feature, condition) ->
-    try
-      feature() if condition
-    catch err
-      error = [
-        message: "#{name} Failed."
-        error:   err
-      ]
-    Main.handleErrors error if error
-    QR.generatePostableThreadsList()
-
   updateContext: (view) ->
-    g.DEAD = false
+    g.DEAD     = false
+    g.THREADID = +window.location.pathname.split('/')[3] if view is 'thread'
 
-    unless view is g.VIEW
-      $.rmClass doc, g.VIEW
-      $.addClass doc, view
+    return if view is g.VIEW
 
-    oldView = g.VIEW
-    g.VIEW = view
+    $.rmClass  doc, g.VIEW
+    $.addClass doc, view
+
     {
       index: ->
-        return if oldView is g.VIEW
         delete g.THREADID
-        $.off d, 'ThreadUpdate', QR.statusCheck
-        $.on  d, 'IndexRefresh', QR.generatePostableThreadsList
+        $.addClass doc, 'catalog-mode' if Conf['Index Mode'] is 'catalog'
+
       thread: ->
-        g.THREADID = +window.location.pathname.split('/')[3]
-        return if oldView is g.VIEW
-        $.on  d, 'ThreadUpdate', QR.statusCheck
-        $.off d, 'IndexRefresh', QR.generatePostableThreadsList
-    }[g.VIEW]()
+        $.rmClass doc, 'catalog-mode' if Conf['Index Mode'] is 'catalog'
+    }[view]()
+
+    g.VIEW = view
 
   updateBoard: (boardID) ->
     fullBoardList   = $ '#full-board-list', Header.boardList
@@ -119,15 +108,10 @@ Navigate =
 
     QR.flagsInput()
 
-    onload = (e) ->
-      if e.type is 'abort'
-        req.onloadend = null
-        return
-
-      return unless req.status is 200
-
+    $.cache '//a.4cdn.org/boards.json', ->
       try
-        for aboard in req.response.boards when aboard.board is boardID
+        return unless @status is 200
+        for aboard in @response.boards when aboard.board is boardID
           board = aboard
           break
 
@@ -136,20 +120,16 @@ Navigate =
           message: "Navigation failed to update board name."
           error: err
         ]
-        return false
 
       return unless board
       Navigate.updateTitle board
       Navigate.updateSFW !!board.ws_board
 
-    req = $.ajax '//a.4cdn.org/boards.json',
-      onabort:   onload
-      onloadend: onload
-
   updateSFW: (sfw) ->
-    # TODO: think of a better name for this. Changes style, too.
-    Favicon.el.href = "//s.4cdn.org/image/favicon#{if sfw then '-ws' else ''}.ico"
-    $.add d.head, Favicon.el # Changing the href alone doesn't update the icon on Firefox
+    Favicon.el.href = Favicon.default = "//s.4cdn.org/image/favicon#{if sfw then '-ws' else ''}.ico"
+
+    # Changing the href alone doesn't update the icon on Firefox
+    $.add d.head, Favicon.el
 
     return if Favicon.SFW is sfw # Board SFW status hasn't changed
 
@@ -163,7 +143,7 @@ Navigate =
 
     if Conf["NSFW/SFW Themes"]
       Main.setThemeString()
-      theme = Themes[Conf[g.THEMESTRING] or if sfw then 'Yotsuba B' else 'Yotsuba'] or Themes[Conf[g.THEMESTRING] = if sfw then 'Yotsuba B' else 'Yotsuba']
+      theme = Themes[Conf[g.THEMESTRING] or if sfw then 'Yotsuba B' else 'Yotsuba']
       Style.setTheme theme
 
   updateTitle: ({board, title}) ->
@@ -172,26 +152,23 @@ Navigate =
     $('.boardTitle').textContent = d.title = "/#{board}/ - #{title}"
 
   navigate: (e) ->
-    return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org' or
-      (e and (e.shiftKey or e.ctrlKey or (e.type is 'click' and e.button isnt 0))) # Not simply a left click
+    return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org'
+    return if e and (e.shiftKey or e.ctrlKey or (e.type is 'click' and e.button isnt 0)) # Not simply a left click
+    if @pathname is Navigate.path
+      e.preventDefault()
+      return
 
     $.addClass Index.button, 'fa-spin'
+    Index.clearSearch() if Index.isSearching
 
-    path = @pathname.split '/'
-    path.shift() if path[0] is ''
-    [boardID, view, threadID] = path
+    [_, boardID, view, threadID] = @pathname.split '/'
 
-    return if view is 'catalog' or 'f' in [boardID, g.BOARD.ID]
+    return if 'f' in [boardID, g.BOARD.ID]
     e.preventDefault() if e
     Navigate.title = -> return
 
     delete Index.pageNum
-
-    path = @pathname
-    path += @hash if @hash
-
-    history.pushState null, '', path unless @id is 'popState'
-    Navigate.path = @pathname
+    $.rmAll Header.hover
 
     if threadID
       view = 'thread'
@@ -199,9 +176,24 @@ Navigate =
       pageNum = view
       view = 'index' # path is "/boardID/". See the problem?
 
-    if view is g.VIEW and boardID is g.BOARD.ID
-      Navigate.updateContext view
-    else # We've navigated somewhere we weren't before!
+    path = @pathname
+    path += @hash if @hash
+
+    history.pushState null, '', path unless @id is 'popState'
+    Navigate.path = @pathname
+
+    Navigate.makeBreadCrumb @href, view, boardID, threadID
+
+    {indexMode, indexSort} = @dataset
+    if indexMode and Conf['Index Mode'] isnt indexMode
+      $.set 'Index Mode', Conf['Index Mode'] = Index.selectMode.value = indexMode
+      Index.cb.mode()
+
+    if indexSort and Conf['Index Sort'] isnt indexSort
+      $.set 'Index Sort', Conf['Index Sort'] = Index.selectSort.value = indexSort
+      Index.cb.sort()
+
+    unless view is 'index' and 'index' is g.VIEW and boardID is g.BOARD.ID
       Navigate.disconnect()
       Navigate.updateContext view
       Navigate.clean()
@@ -213,21 +205,21 @@ Navigate =
       g.BOARD = new Board boardID
       Navigate.title = -> Navigate.updateBoard boardID
 
+    Navigate.updateSFW Favicon.SFW
+
     if view is 'index'
-      Index.update pageNum
+      return Index.update pageNum
 
     # Moving from index to thread or thread to thread
-    else
-      Navigate.updateSFW Favicon.SFW
-      {load} = Navigate
-      Navigate.req = $.ajax "//a.4cdn.org/#{boardID}/res/#{threadID}.json",
-        onabort:   load
-        onloadend: load
+    {load} = Navigate
+    Navigate.req = $.ajax "//a.4cdn.org/#{boardID}/res/#{threadID}.json",
+      onabort:   load
+      onloadend: load
 
-      setTimeout (->
-        if Navigate.req and !Navigate.notice
-          Navigate.notice = new Notice 'info', 'Loading thread...'
-      ), 3 * $.SECOND
+    setTimeout (->
+      if Navigate.req and !Navigate.notice
+        Navigate.notice = new Notice 'info', 'Loading thread...'
+    ), 3 * $.SECOND
 
   load: (e) ->
     $.rmClass Index.button, 'fa-spin'
@@ -257,13 +249,23 @@ Navigate =
         new Notice 'error', 'Navigation Failed.', 2
       return
 
-  parse: (data) ->
-    board = g.BOARD
-    Navigate.threadRoot = threadRoot = Build.thread board, OP = data.shift(), true
-    thread = new Thread OP.no, board
+  makeBreadCrumb: (href, view, boardID, threadID) ->
+    breadCrumb = $.el 'span',
+      className: 'crumb'
+      innerHTML: "<a href=#{href}>/#{boardID}/ - #{view.charAt(0).toUpperCase()}#{view.slice 1}#{if threadID then " No.#{threadID}" else ''}</a> &gt; "
 
-    posts  = []
-    errors = null
+    $.on breadCrumb.firstElementChild, 'click', Navigate.navigate
+
+    {el} = Navigate
+    $.add el, breadCrumb
+    $.rm el.firstChild if el.children.length > 5
+
+  parse: (data) ->
+    posts      = []
+    errors     = null
+    board      = g.BOARD
+    threadRoot = Build.thread board, OP = data[0], true
+    thread     = new Thread OP.no, board
 
     makePost = (postNode) ->
       try
@@ -272,36 +274,34 @@ Navigate =
         # Skip posts that we failed to parse.
         errors = [] unless errors
         errors.push
-          message: "Parsing of Post No.#{thread.ID} failed. Post will be skipped."
+          message: "Parsing of Post No.#{postNode.ID} failed. Post will be skipped."
           error: err
 
     makePost $('.opContainer', threadRoot)
 
-    for obj in data
+    i = 0
+    while obj = data[++i]
       post = Build.postFromObject obj, board
       makePost post
       $.add threadRoot, post
 
-    Main.handleErrors errors if errors
-
     Main.callbackNodes Thread, [thread]
     Main.callbackNodes Post,   posts
 
-    Navigate.ready 'Quote Threading', QuoteThreading.force, Conf['Quote Threading'] and not Conf['Unread Count']
+    QuoteThreading.force() if Conf['Quote Threading'] and not Conf['Unread Count']
 
-    Navigate.buildThread()
-    Header.hashScroll.call window
-
-  buildThread: ->
     board = $ '.board'
     $.rmAll board
-    $.add board, [Navigate.threadRoot, $.el 'hr']
+    $.add board, [threadRoot, $.el 'hr']
 
-    if Conf['Unread Count']
-      Navigate.ready 'Unread Count', Unread.ready, Conf['Unread Count']
+    Unread.ready() if Conf['Unread Count']
+
+    QR.generatePostableThreadsList()
+    Header.hashScroll.call window
+
+    Main.handleErrors errors if errors
 
   popstate: ->
-    return if window.location.pathname is Navigate.path
     a = $.el 'a',
       href: window.location
       id:   'popState'

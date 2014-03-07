@@ -75,7 +75,7 @@ ThreadWatcher =
       ThreadWatcher.refresh()
       $.event 'CloseMenu'
     toggle: ->
-      ThreadWatcher.toggle Get.postFromNode(@).thread
+      ThreadWatcher.toggle Get.threadFromNode @
     rm: ->
       [boardID, threadID] = @parentNode.dataset.fullID.split '.'
       ThreadWatcher.rm boardID, +threadID
@@ -87,9 +87,8 @@ ThreadWatcher =
       else if Conf['Auto Watch Reply']
         ThreadWatcher.add board.threads[threadID]
     onIndexRefresh: ->
-      {db}    = ThreadWatcher
       boardID = g.BOARD.ID
-      for threadID, data of db.data.boards[boardID] when not data.isDead and threadID not of g.BOARD.threads
+      for threadID, data of ThreadWatcher.db.data.boards[boardID] when not data.isDead and threadID not of g.BOARD.threads
         if Conf['Auto Prune']
           ThreadWatcher.db.delete {boardID, threadID}
         else

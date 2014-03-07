@@ -1,24 +1,6 @@
 Linkify =
   init: ->
-    return if g.VIEW is 'catalog' or not Conf['Linkify']
-
-    @regString = ///(
-      # http, magnet, ftp, etc
-      (https?|mailto|git|magnet|ftp|irc):(
-        [a-z\d%/]
-      )
-      |
-      # This should account for virtually all links posted without http:
-      [-a-z\d]+[.](
-        aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2}
-      )(/|(?!.))
-      |
-      # IPv4 Addresses
-      [\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}
-      |
-      # E-mails
-      [-\w\d.@]+@[a-z\d.-]+\.[a-z\d]
-    )///i
+    return if !Conf['Linkify']
 
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
@@ -94,6 +76,24 @@ Linkify =
 
     return
 
+  regString: ///(
+    # http, magnet, ftp, etc
+    (https?|mailto|git|magnet|ftp|irc):(
+      [a-z\d%/]
+    )
+    |
+    # This should account for virtually all links posted without http:
+    [-a-z\d]+[.](
+      aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2}
+    )(/|(?!.))
+    |
+    # IPv4 Addresses
+    [\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}
+    |
+    # E-mails
+    [-\w\d.@]+@[a-z\d.-]+\.[a-z\d]
+  )///i
+
   makeRange: (startNode, endNode, startOffset, endOffset) ->
     range = document.createRange()
     range.setStart startNode, startOffset
@@ -149,7 +149,6 @@ Linkify =
     for key, type of Linkify.types
       continue unless match = type.regExp.exec href
       return [key, match[1], match[2], link]
-
     return
 
   embed: (data) ->

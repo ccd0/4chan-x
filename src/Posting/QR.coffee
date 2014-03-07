@@ -6,13 +6,7 @@ QR =
     @db = new DataBoard 'yourPosts'
     @posts = []
 
-    $.ready @initReady
-
-    if Conf['Persistent QR']
-      unless g.BOARD.ID is 'f' and g.VIEW is 'index'
-        $.on d, '4chanXInitFinished', @persist
-      else
-        $.ready @persist
+    $.on d, '4chanXInitFinished', @initReady
 
     Post.callbacks.push
       name: 'Quick Reply'
@@ -48,6 +42,7 @@ QR =
         $.before $.id('postForm'), con
 
   initReady: ->
+    $.off d, '4chanXInitFinished', @initReady
     QR.postingIsEnabled = !!$.id 'postForm'
     unless QR.postingIsEnabled
       return
@@ -63,12 +58,14 @@ QR =
     $.on d, 'dragover',           QR.dragOver
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
-    {
-      index: ->
-        $.on d, 'IndexRefresh', QR.generatePostableThreadsList
-      thread: ->
-        $.on d, 'ThreadUpdate', QR.statusCheck
-    }[g.VIEW]()
+
+    # We can thread update and index refresh without loading a new page, so...
+    $.on d, 'IndexRefresh', QR.generatePostableThreadsList
+    $.on d, 'ThreadUpdate', QR.statusCheck
+
+    return if !Conf['Persistent QR']
+    QR.open()
+    QR.hide() if Conf['Auto-Hide QR']
 
   statusCheck: ->
     if g.DEAD
@@ -77,25 +74,27 @@ QR =
       QR.status()
 
   node: ->
+    if QR.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
+      $.addClass @nodes.root, 'your-post'
     $.on $('a[title="Quote this post"]', @nodes.info), 'click', QR.quote
 
   persist: ->
     return unless QR.postingIsEnabled
     QR.open()
-    QR.hide() if Conf['Auto Hide QR'] or g.VIEW is 'catalog'
+    QR.hide() if Conf['Auto Hide QR']
 
   open: ->
     if QR.nodes
       QR.nodes.el.hidden = false
       QR.unhide()
-    else
-      try
-        QR.dialog()
-      catch err
-        delete QR.nodes
-        Main.handleErrors
-          message: 'Quick Reply dialog creation crashed.'
-          error: err
+      return
+    try
+      QR.dialog()
+    catch err
+      delete QR.nodes
+      Main.handleErrors
+        message: 'Quick Reply dialog creation crashed.'
+        error: err
 
   close: ->
     if QR.req
@@ -206,12 +205,28 @@ QR =
     e?.preventDefault()
     return unless QR.postingIsEnabled
 
-    sel   = d.getSelection()
-    post  = Get.postFromNode @
-    text  = ">>#{post}\n"
-    if (s = sel.toString().trim()) and post is Get.postFromNode sel.anchorNode
-      s = s.replace /\n/g, '\n>'
-      text += ">#{s}\n"
+    sel  = d.getSelection()
+    post = Get.postFromNode @
+    text = ">>#{post}\n"
+    if sel.toString().trim() and post is Get.postFromNode sel.anchorNode
+      range = sel.getRangeAt 0
+      frag  = range.cloneContents()
+      ancestor = range.commonAncestorContainer
+      if ancestor.nodeName is '#text'
+        # Quoting the insides of a spoiler/code tag.
+        if $.x 'ancestor::s', ancestor
+          $.prepend frag, $.tn '[spoiler]'
+          $.add     frag, $.tn '[/spoiler]'
+        if $.x 'ancestor::pre[contains(@class,"prettyprint")]', ancestor
+          $.prepend frag, $.tn '[code]'
+          $.add     frag, $.tn '[/code]'
+      for node in $$ 'br', frag
+        $.replace node, $.tn '\n>'
+      for node in $$ 's', frag
+        $.replace node, [$.tn('[spoiler]'), node.childNodes..., $.tn '[/spoiler]']
+      for node in $$ '.prettyprint', frag
+        $.replace node, [$.tn('[code]'), node.childNodes..., $.tn '[/code]']
+      text += ">#{frag.textContent.trim()}\n"
 
     QR.open()
     if QR.selected.isLocked
@@ -272,7 +287,23 @@ QR =
     QR.handleFiles files
     $.addClass QR.nodes.el, 'dump'
     
-  handleBlob: (blob) ->
+  handleBlob: (urlBlob, header, url) ->
+    name = url.substr(url.lastIndexOf('/')+1, url.length)
+    #QUALITY coding at work
+    start = header.indexOf("Content-Type: ") + 14
+    endsc = header.substr(start, header.length).indexOf(";")
+    endnl = header.substr(start, header.length).indexOf("\n") - 1
+    end = endnl
+    if (endsc != -1 and endsc < endnl)
+      end = endsc
+    mime = header.substr(start, end)
+    blob = new Blob([urlBlob], {type: mime})
+    blob.name = url.substr(url.lastIndexOf('/')+1, url.length)
+    name_start = header.indexOf('name="') + 6
+    if (name_start - 6 != -1)
+      name_end = header.substr(name_start, header.length).indexOf('"')
+      blob.name = header.substr(name_start, name_end)
+
     return if blob.type is null
       QR.error "Unsupported file type."
     return unless blob.type in QR.mimeTypes
@@ -288,9 +319,7 @@ QR =
     xhr.responseType = 'blob'
     xhr.onload = (e) ->
       if @readyState is @DONE && xhr.status is 200
-        urlBlob = new Blob([@response], {type : @getResponseHeader('content-type')})
-        urlBlob.name = url.substr(url.lastIndexOf('/')+1, url.length)
-        QR.handleBlob(urlBlob)
+        QR.handleBlob(@response, @getResponseHeader('Content-Type'), url)
         return
       else
         QR.error "Can't load image."
@@ -316,17 +345,8 @@ QR =
         while i < r.length
           data[i] = r.charCodeAt(i)
           i++
-        #QUALITY coding at work
-        header = xhr.responseHeaders
-        start = header.indexOf("Content-Type: ") + 14
-        end = header.substr(start, header.length).indexOf("\n") - 1
-        mime = header.substr(start, end)
-        return if mime is null
 
-        urlBlob = new Blob([data], {type: mime})
-
-        urlBlob.name = url.substr(url.lastIndexOf('/')+1, url.length)
-        QR.handleBlob(urlBlob)
+        QR.handleBlob(data, xhr.responseHeaders, url)
         return
 
         onerror: (xhr) ->
@@ -344,8 +364,17 @@ QR =
     isSingle = files.length is 1
     QR.cleanNotifications()
     for file in files
-      QR.handleFile file, isSingle, max
+      QR.checkDimensions file, isSingle, max
     $.addClass QR.nodes.el, 'dump' unless isSingle
+
+  checkDimensions: (file, isSingle, max) ->
+    img = new Image()
+    img.onload = =>
+      {height, width} = img
+      return QR.error "#{file.name}: Image too large (image: #{img.height}x#{img.width}px, max: #{QR.max_heigth}x#{QR.max_width}px)" if height > QR.max_heigth or width > QR.max_heigth
+      return QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: #{QR.min_heigth}x#{QR.min_width}px)" if height < QR.min_heigth or width < QR.min_heigth
+      QR.handleFile file, isSingle, max
+    img.src = URL.createObjectURL file
 
   handleFile: (file, isSingle, max) ->
     if file.size > max
@@ -404,32 +433,43 @@ QR =
     QR.nodes = nodes =
       el: dialog = UI.dialog 'qr', 'top:0;right:0;', <%= importHTML('Features/QuickReply') %>
 
-    nodes[key] = $ value, dialog for key, value of {
-      move:          '.move'
-      autohide:      '#autohide'
-      thread:        'select'
-      threadPar:     '#qr-thread-select'
-      close:         '.close'
-      form:          'form'
-      dumpButton:    '#dump-button'
-      urlButton:     '#url-button'
-      name:          '[data-name=name]'
-      email:         '[data-name=email]'
-      sub:           '[data-name=sub]'
-      com:           '[data-name=com]'
-      dumpList:      '#dump-list'
-      addPost:       '#add-post'
-      charCount:     '#char-count'
-      fileSubmit:    '#file-n-submit'
-      filename:      '#qr-filename'
-      fileContainer: '#qr-filename-container'
-      fileRM:        '#qr-filerm'
-      fileExtras:    '#qr-extras-container'
-      spoiler:       '#qr-file-spoiler'
-      spoilerPar:    '#qr-spoiler-label'
-      status:        '[type=submit]'
-      fileInput:     '[type=file]'
-    }
+    setNode = (query, name) ->
+      nodes[name] = $ query, dialog
+
+    setNode 'move',          '.move'
+    setNode 'autohide',      '#autohide'
+    setNode 'thread',        'select'
+    setNode 'threadPar',     '#qr-thread-select'
+    setNode 'close',         '.close'
+    setNode 'form',          'form'
+    setNode 'dumpButton',    '#dump-button'
+    setNode 'urlButton',     '#url-button'
+    setNode 'name',          '[data-name=name]'
+    setNode 'email',         '[data-name=email]'
+    setNode 'sub',           '[data-name=sub]'
+    setNode 'com',           '[data-name=com]'
+    setNode 'dumpList',      '#dump-list'
+    setNode 'addPost',       '#add-post'
+    setNode 'charCount',     '#char-count'
+    setNode 'fileSubmit',    '#file-n-submit'
+    setNode 'filesize',      '#qr-filesize'
+    setNode 'filename',      '#qr-filename'
+    setNode 'fileContainer', '#qr-filename-container'
+    setNode 'fileRM',        '#qr-filerm'
+    setNode 'fileExtras',    '#qr-extras-container'
+    setNode 'spoiler',       '#qr-file-spoiler'
+    setNode 'spoilerPar',    '#qr-spoiler-label'
+    setNode 'status',        '[type=submit]'
+    setNode 'fileInput',     '[type=file]'
+    
+    rules = $('ul.rules').textContent.trim()
+    QR.min_width = QR.min_heigth = 1
+    QR.max_width = QR.max_heigth = 5000
+    try
+      [_, QR.min_width, QR.min_heigth] = rules.match(/.+smaller than (\d+)x(\d+).+/)
+      [_, QR.max_width, QR.max_heigth] = rules.match(/.+greater than (\d+)x(\d+).+/)
+    catch
+      null
 
     nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
 
@@ -657,15 +697,12 @@ QR =
       responseType: 'document'
       withCredentials: true
       onload: QR.response
-      onerror: (err, url, line) ->
+      onerror: ->
         # Connection error, or www.4chan.org/banned
         delete QR.req
         post.unlock()
         QR.cooldown.auto = false
         QR.status()
-        console.log err
-        console.log url
-        console.log line
         QR.error $.el 'span',
           innerHTML: """
           Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.
@@ -725,6 +762,8 @@ QR =
         # Remove the obnoxious 4chan Pass ad.
         if /mistyped/i.test err.textContent
           err = 'You seem to have mistyped the CAPTCHA.'
+        else if /expired/i.test err.textContent
+          err = 'This CAPTCHA is no longer valid because it has expired.'
         # Enable auto-post if we have some cached captchas.
         QR.cooldown.auto = if QR.captcha.isEnabled
           !!QR.captcha.captchas.length

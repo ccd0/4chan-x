@@ -2,23 +2,30 @@ ExpandThread =
   statuses: {}
   init: ->
     return if g.VIEW is 'thread' or !Conf['Thread Expansion']
-    $.on d, 'IndexRefresh', @onIndexRefresh
+    $.on d, (if Conf['JSON Navigation'] then 'IndexRefresh' else '4chanXInitFinished'), @onIndexRefresh
 
   setButton: (thread) ->
-    return unless a = $.x 'following-sibling::a[contains(@class,"summary")][1]', thread.OP.nodes.root
-    a.textContent = ExpandThread.text '+', a.textContent.match(/\d+/g)...
+    return unless summary = $.x 'following-sibling::*[contains(@class,"summary")][1]', thread.OP.nodes.root
+    a = $.el 'a',
+      textContent: ExpandThread.text '+', summary.textContent.match(/\d+/g)...
+      href:        "#{thread.board.ID}/res/#{thread.ID}"
+      className:   'summary'
     $.on a, 'click', ExpandThread.cbToggle
-  
-  disconnect: (refresh) ->
+    $.replace summary, a
+
+  disconnect: ->
+    @refresh()
+    $.off d, 'IndexRefresh', @onIndexRefresh
+
+  refresh: (disconnect) ->
     return if g.VIEW is 'thread' or !Conf['Thread Expansion']
     for threadID, status of ExpandThread.statuses
       status.req?.abort()
       delete ExpandThread.statuses[threadID]
-
-    $.off d, 'IndexRefresh', @onIndexRefresh unless refresh
+    return
 
   onIndexRefresh: ->
-    ExpandThread.disconnect true
+    ExpandThread.refresh()
     g.BOARD.threads.forEach (thread) ->
       ExpandThread.setButton thread
 
@@ -97,6 +104,4 @@ ExpandThread =
     $.after a, postsRoot
 
     postsCount    = postsRoot.length
-    a.textContent = ExpandThread.text '-', postsCount, filesCount
-
-    Fourchan.parseThread thread.ID, 1, postsCount
+    a.textContent = ExpandThread.text '-', postsRoot.length, filesCount

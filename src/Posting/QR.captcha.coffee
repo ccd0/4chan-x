@@ -19,7 +19,7 @@ QR.captcha =
       tabIndex: 45
 
     @nodes =
-      img:   $ 'img', imgContainer
+      img:   imgContainer.firstChild
       input: input
 
     $.on input, 'focus', @setup
@@ -29,14 +29,15 @@ QR.captcha =
 
     $.addClass QR.nodes.el, 'has-captcha'
     $.after QR.nodes.com.parentNode, [imgContainer, input]
-    
+
     @setupObserver = new MutationObserver @afterSetup
     @setupObserver.observe container, childList: true
 
     @setup() if Conf['Auto-load captcha']
     @afterSetup() # reCAPTCHA might have loaded before the QR.
 
-  setup: -> $.globalEval 'loadRecaptcha()'
+  setup: ->
+    $.globalEval 'loadRecaptcha()'
 
   afterSetup: ->
     return unless challenge = $.id 'recaptcha_challenge_field_holder'
@@ -94,7 +95,8 @@ QR.captcha =
     $.set 'captchas', @captchas
 
   clear: ->
-    return unless @captchas.length
+    return unless @captchas # not loaded yet.
+
     now = Date.now()
     for captcha, i in @captchas
       break if captcha.timeout > now

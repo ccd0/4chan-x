@@ -77,9 +77,11 @@ body > hr {
   display: none;
 }
 /* Index Features */
+:root.thread #index-menu,
 :root.index-loading .navLinks,
 :root.index-loading .board,
-:root.index-loading .pagelist {
+:root.index-loading .pagelist,
+.index #returnlink {
   display: none;
 }
 #index-search {
@@ -117,6 +119,110 @@ body > hr {
 #bottomlink::after,
 #index-last-refresh::after  {
   content: ']';
+}
+
+.catalog-mode .board {
+  text-align: center;
+}
+.catalog-thread {
+  display: inline-flex;
+  text-align: left;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 2px 5px;
+  word-break: break-word;
+  vertical-align: top;
+}
+.catalog-small .catalog-thread {
+  width: 165px;
+  max-height: 320px;
+}
+.catalog-large .catalog-thread {
+  width: 270px;
+  max-height: 410px;
+}
+.thumb {
+  flex-shrink: 0;
+  position: relative;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 2px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, .25);
+}
+.thumb:not(.deleted-file):not(.no-file) {
+  min-width: 30px;
+  min-height: 30px;
+}
+.thumb.spoiler-file {
+  background-size: 100px;
+  width: 100px;
+  height: 100px;
+}
+.thumb.deleted-file {
+  background-size: 127px 13px;
+  width: 127px;
+  height: 13px;
+  padding: 20px 11px;
+}
+.thumb.no-file {
+  background-size: 77px 13px;
+  width: 77px;
+  height: 13px;
+  padding: 20px 36px;
+}
+.thread-icons > img {
+  width: 1em;
+  height: 1em;
+  margin: 0;
+  vertical-align: text-top;
+}
+.thumb:not(:hover):not(:focus) > .menu-button:not(.open):not(:focus) > i {
+  display: none;
+}
+.thumb > .menu-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.thumb > .menu-button > i {
+  width: 1em;
+  height: 1em;
+  padding: 1px;
+  border-radius: 0 2px 0 2px;
+  font-size: 14px;
+  text-align: center;
+<% if (type === 'userscript') { %>
+  line-height: normal;
+<% } %>
+}
+.thread-stats {
+  flex-shrink: 0;
+  cursor: help;
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+.catalog-thread > .subject {
+  flex-shrink: 0;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+.catalog-thread > .comment {
+  flex-shrink: 1;
+  align-self: stretch;
+  overflow: hidden;
+  text-align: center;
+}
+.thread-info {
+  position: fixed;
+  padding: 2px;
+  border-radius: 2px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, .25);
+}
+.thread-info .post {
+  margin: 0;
 }
 /* Defaults */
 a {
@@ -1085,32 +1191,22 @@ nav a,
 .menu-button {
   position: relative;
 }
-.stub .menu-button,
 .post .menu-button,
-.hide-thread-button,
-.show-thread-button span,
-.hide-reply-button,
-.show-reply-button span {
+.hide-post-button,
+.show-post-button span {
   float: right;
 }
 .post .menu-button,
-.hide-thread-button,
-.hide-reply-button {
+.hide-post-button {
   margin: 0 3px;
   opacity: 0;
   transition: opacity .3s ease-out 0s;
 }
-.post:hover .hide-reply-button,
+.post:hover .hide-post-button,
 .post:hover .menu-button,
-.post:hover .hide-thread-button,
-.hidden_thread .hide-thread-button,
-.hidden_thread .menu-button,
-.inline .hide-reply-button,
+.inline .hide-post-button,
 .inline .menu-button {
   opacity: 1;
-}
-.hidden_thread {
-  text-align: right;
 }
 .color-user-ids .posteruid .hand {
   padding: .1em .3em;

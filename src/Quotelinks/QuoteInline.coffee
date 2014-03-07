@@ -1,6 +1,6 @@
 QuoteInline =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Quote Inlining']
+    return if !Conf['Quote Inlining']
 
     @process = if Conf['Quote Hash Navigation']
       (link, clone) ->
@@ -26,8 +26,10 @@ QuoteInline =
     return
 
   qiQuote: (link, hidden) ->
+    name = "hashlink"
+    name += "filtered" if hidden
     $.el 'a',
-      className: "hashlink#{if hidden then ' filtered' else ''}"
+      className: name
       textContent: '#'
       href: link.href
 
@@ -39,7 +41,7 @@ QuoteInline =
     if $.hasClass @, 'inlined'
       QuoteInline.rm @, boardID, threadID, postID, context
     else
-      return if $.x "ancestor::div[@id='p#{postID}']", @
+      return if $.x "ancestor::div[@id='pc#{postID}']", @
       QuoteInline.add @, boardID, threadID, postID, context
     @classList.toggle 'inlined'
 
