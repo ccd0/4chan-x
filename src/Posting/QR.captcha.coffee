@@ -19,7 +19,7 @@ QR.captcha =
       tabIndex: 45
 
     @nodes =
-      img:   imgContainer.firstChild
+      img:   imgContainer.firstChild.firstChild
       input: input
 
     $.on input, 'focus', @setup

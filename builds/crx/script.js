@@ -9841,7 +9841,7 @@
         tabIndex: 45
       });
       this.nodes = {
-        img: imgContainer.firstChild,
+        img: imgContainer.firstChild.firstChild,
         input: input
       };
       $.on(input, 'focus', this.setup);
