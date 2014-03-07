@@ -1,7 +1,7 @@
 Navigate =
   path:  window.location.pathname
   init: ->
-    return if g.VIEW is 'catalog' or g.BOARD.ID is 'f' or !Conf['JSON Navigation']
+    return if g.BOARD.ID is 'f' or !Conf['JSON Navigation']
 
     $.ready ->
       # blink/webkit throw a popstate on page load. Not what we want.
@@ -147,7 +147,6 @@ Navigate =
       Style.setTheme theme
 
   updateTitle: ({board, title}) ->
-    $.id('catalog').href = $.id('cataloglink').href = "//boards.4chan.org/#{g.BOARD}/catalog"
     $.rm subtitle if subtitle = $ '.boardSubtitle'
     $('.boardTitle').textContent = d.title = "/#{board}/ - #{title}"
 

@@ -605,9 +605,6 @@ nav a,
 #navNext {
   <%= order %>: 80;
 }
-#catalog {
-  <%= order %>: 90;
-}
 #returnIcon {
   <%= order %>: 100;
 }
@@ -676,9 +673,6 @@ nav a,
 }
 #img-controls {
   background-position: 0 -90px;
-}
-#catalog {
-  background-position: 0 -120px;
 }
 #fappeTyme {
   background-position: 0 -135px;

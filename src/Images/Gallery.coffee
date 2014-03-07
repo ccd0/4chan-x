@@ -1,6 +1,6 @@
 Gallery =
   init: ->
-    return if g.VIEW is 'catalog' or g.BOARD is 'f' or !Conf['Gallery']
+    return if g.BOARD is 'f' or !Conf['Gallery']
 
     el = $.el 'a',
       href: 'javascript:;'
@@ -229,7 +229,7 @@ Gallery =
 
   menu:
     init: ->
-      return if g.VIEW is 'catalog' or !Conf['Gallery']
+      return if !Conf['Gallery']
 
       el = $.el 'span',
         textContent: 'Gallery'
