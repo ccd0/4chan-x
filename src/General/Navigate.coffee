@@ -1,7 +1,7 @@
 Navigate =
   path:  window.location.pathname
   init: ->
-    return if g.VIEW is 'catalog' or g.BOARD.ID is 'f' or !Conf['JSON Navigation']
+    return if g.BOARD.ID is 'f' or !Conf['JSON Navigation']
 
     $.ready ->
       # blink/webkit throw a popstate on page load. Not what we want.

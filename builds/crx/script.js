@@ -7576,7 +7576,7 @@
   FappeTyme = {
     init: function() {
       var el, input, lc, type, _i, _len, _ref;
-      if (!(Conf['Fappe Tyme'] || Conf['Werk Tyme']) || g.VIEW === 'catalog' || g.BOARD === 'f') {
+      if (!(Conf['Fappe Tyme'] || Conf['Werk Tyme']) || g.BOARD === 'f') {
         return;
       }
       _ref = ["Fappe", "Werk"];
@@ -7628,7 +7628,7 @@
   Gallery = {
     init: function() {
       var el;
-      if (g.VIEW === 'catalog' || g.BOARD === 'f' || !Conf['Gallery']) {
+      if (g.BOARD === 'f' || !Conf['Gallery']) {
         return;
       }
       el = $.el('a', {
@@ -7881,7 +7881,7 @@
     menu: {
       init: function() {
         var createSubEntry, el, name, subEntries;
-        if (g.VIEW === 'catalog' || !Conf['Gallery']) {
+        if (!Conf['Gallery']) {
           return;
         }
         el = $.el('span', {
@@ -12572,7 +12572,7 @@
   Navigate = {
     path: window.location.pathname,
     init: function() {
-      if (g.VIEW === 'catalog' || g.BOARD.ID === 'f' || !Conf['JSON Navigation']) {
+      if (g.BOARD.ID === 'f' || !Conf['JSON Navigation']) {
         return;
       }
       $.ready(function() {
