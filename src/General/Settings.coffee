@@ -11,18 +11,6 @@ Settings =
       el: link
       order: 111
 
-    # 4chan settings link
-    link = $.el 'a',
-      className:   'fourchan-settings-link'
-      textContent: '4chan Settings'
-      href:        'javascript:;'
-    $.on link, 'click', -> $.id('settingsWindowLink').click()
-    $.event 'AddMenuEntry',
-      type: 'header'
-      el: link
-      order: 110
-      open: -> Conf['Enable 4chan\'s Extension']
-
     Settings.addSection 'Main',     Settings.main
     Settings.addSection 'Filter',   Settings.filter
     Settings.addSection 'QR',       Settings.qr
@@ -33,7 +21,6 @@ Settings =
     $.on d, 'AddSettingsSection',   Settings.addSection
     $.on d, 'OpenSettings',         (e) -> Settings.open e.detail
 
-    return if Conf['Enable 4chan\'s Extension']
     settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
     return if settings.disableAll
     settings.disableAll = true
