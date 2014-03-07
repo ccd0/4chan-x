@@ -4,8 +4,9 @@ QuoteInline =
 
     @process = if Conf['Quote Hash Navigation']
       (link, clone) ->
-        $.after link, QuoteInline.qiQuote link, $.hasClass link, 'filtered' unless clone
         $.on link, 'click', QuoteInline.toggle
+        return if clone
+        QuoteInline.qiQuote link, $.hasClass link, 'filtered'
 
     else
       (link) ->
@@ -28,7 +29,7 @@ QuoteInline =
   qiQuote: (link, hidden) ->
     name = "hashlink"
     name += "filtered" if hidden
-    $.el 'a',
+    $.after link, $.el 'a',
       className: name
       textContent: '#'
       href: link.href

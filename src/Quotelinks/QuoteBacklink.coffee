@@ -69,4 +69,6 @@ QuoteBacklink =
       $.on a, 'mouseover', QuotePreview.mouseover
     if Conf['Quote Inlining']
       $.on a, 'click', QuoteInline.toggle
+      if Conf['Quote Hash Navigation']
+        QuoteInline.qiQuote a, quoter.isHidden
     frag
