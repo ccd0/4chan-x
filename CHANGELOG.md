@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 **MayhemYDG**:
 - Thread and post hiding changes:
  - The posts' menu now has a label entry listing the reasons why a post got hidden or highlighted.
@@ -46,7 +46,15 @@
 - Added `Original filename` variable to Sauce panel.
 - Fixed a bug which prevented QR cooldowns from being pruned from storage.
  - On Chrome, the storage could reach the quota and prevent 4chan X from saving data like QR name/mail or auto-watch for example.
-=======
+
+**Vampiricwulf**
+- Flash embedding and other Flash features.
+
+**Zixaphir**
+- Added a nifty bread-crumb for the JSON Navigation.
+- Many spiffy performance, state awareness, and sanity improvements to JSON Navigation.
+
+
 ### v1.4.1 
 *2014-03-01*
 
@@ -56,7 +64,6 @@
 ![Check image dimension](src/General/img/changelog/1.4.1.png)
 - Bug fixes
 - Update archives
->>>>>>> e8992deab7cecb6e54095bb760613c1cb06b88ca
 
 ## v1.4.0 
 *2014-02-24*
