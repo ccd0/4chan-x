@@ -1,4 +1,3 @@
-
 **MayhemYDG**:
 - Thread and post hiding changes:
  - The posts' menu now has a label entry listing the reasons why a post got hidden or highlighted.
@@ -53,40 +52,26 @@
 **Spittie**
 - Check image dimension before uploading
 
+**Vampiricwulf**
+- Flash embedding and other Flash features.
+
+**Zixaphir**
+- Added a nifty bread-crumb for the JSON Navigation.
+- Many spiffy performance, state awareness, and sanity improvements to JSON Navigation.
+- Bugfixes.
+
 ![Check image dimension](src/General/img/changelog/1.4.1.png)
 - Bug fixes
 - Update archives
 
-### v2.8.12 
-*2014-02-17*
-
 ### v2.8.11 
 *2014-02-16*
-
-<<<<<<< HEAD
-### v2.8.10 
-*2014-02-16*
-=======
-### v1.3.9 
-*2014-02-20*
-
-**Spittie**
-- Fix uploading (>me in charge of not being an idiot)
-
-### v1.3.8 
-*2014-02-20*
 
 **MayhemYDG**
 - Fix QR
 
 **Spittie**
 - Better url handling
-
-### v1.3.7 
-*2014-02-15*
->>>>>>> v3
-
-**Spittie**:
 - Add Twitter embedding
 - Add .xpi for Firefox Mobile
 - Add /biz/
