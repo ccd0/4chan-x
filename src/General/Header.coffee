@@ -168,7 +168,7 @@ Header =
     $.rmAll list
     return unless text
     as = $$ '#full-board-list a[title]', Header.boardList
-    re = /[\w@]+(-(all|title|replace|full|archive|(mode|sort|text|url):"[^"]+"))*|[^\w@]+/g
+    re = /[\w@]+(-(all|title|replace|full|archive|(mode|sort|text|url):"[^"]+"(\,"[^"]+[^"]")?))*|[^\w@]+/g
     nodes = text.match(re).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t

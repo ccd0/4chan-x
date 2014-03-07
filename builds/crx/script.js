@@ -2200,7 +2200,7 @@
         return;
       }
       as = $$('#full-board-list a[title]', Header.boardList);
-      re = /[\w@]+(-(all|title|replace|full|archive|(mode|sort|text|url):"[^"]+"))*|[^\w@]+/g;
+      re = /[\w@]+(-(all|title|replace|full|archive|(mode|sort|text|url):"[^"]+"(\,"[^"]+[^"]")?))*|[^\w@]+/g;
       nodes = text.match(re).map(function(t) {
         var a, board, boardID, href, m, type, _i, _len;
         if (/^[^\w@]/.test(t)) {
