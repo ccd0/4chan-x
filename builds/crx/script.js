@@ -7702,6 +7702,9 @@
       }
       if (Conf['Quote Inlining']) {
         $.on(a, 'click', QuoteInline.toggle);
+        if (Conf['Quote Hash Navigation']) {
+          QuoteInline.qiQuote(a, quoter.isHidden);
+        }
       }
       return frag;
     }
@@ -7713,10 +7716,11 @@
         return;
       }
       this.process = Conf['Quote Hash Navigation'] ? function(link, clone) {
-        if (!clone) {
-          $.after(link, QuoteInline.qiQuote(link, $.hasClass(link, 'filtered')));
+        $.on(link, 'click', QuoteInline.toggle);
+        if (clone) {
+          return;
         }
-        return $.on(link, 'click', QuoteInline.toggle);
+        return QuoteInline.qiQuote(link, $.hasClass(link, 'filtered'));
       } : function(link) {
         return $.on(link, 'click', QuoteInline.toggle);
       };
@@ -7749,11 +7753,11 @@
       if (hidden) {
         name += "filtered";
       }
-      return $.el('a', {
+      return $.after(link, $.el('a', {
         className: name,
         textContent: '#',
         href: link.href
-      });
+      }));
     },
     toggle: function(e) {
       var boardID, context, postID, threadID, _ref;
