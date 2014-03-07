@@ -84,6 +84,10 @@ body > hr {
 .index #returnlink {
   display: none;
 }
+#index-menu .selectrice {
+  width: 110px;
+  display: inline-block;
+}
 #index-search {
   padding-right: 1.5em;
   width: 100px;
@@ -120,7 +124,6 @@ body > hr {
 #index-last-refresh::after  {
   content: ']';
 }
-
 .catalog-mode .board {
   text-align: center;
 }

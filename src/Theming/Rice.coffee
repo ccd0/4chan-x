@@ -57,6 +57,8 @@ Rice =
     option: (e) ->
       e.stopPropagation()
       e.preventDefault()
+      
+      return if @dataset.disabled
 
       select    = Rice.input
       container = select.nextElementSibling
@@ -87,6 +89,8 @@ Rice =
       for option in select.options
         li = $.el 'li', textContent: option.textContent
         li.dataset.value = option.value
+        if option.disabled
+          li.dataset.disabled = true
         $.on li, 'click', Rice.cb.option
         nodes.push li
 
