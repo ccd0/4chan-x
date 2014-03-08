@@ -1,7 +1,7 @@
 Style =
   sheets: {}
   init: ->
-    Style.svgs = { 
+    Style.svgs = {
 <% if (type === 'crx') { %>
       el: $.el 'div',
         id: 'svg_filters'
@@ -29,7 +29,7 @@ Style =
     $.asap (-> Header.bar.parentElement), Style.padding
     $.on window, "resize", Style.padding
     $.ready @readyInit
-  
+
   asapInit: ->
     <% if (type === 'crx') { %>
     $.addClass doc, 'blink'
@@ -113,7 +113,7 @@ Style =
         right:  0
 
     """<%= grunt.file.read('src/General/css/dynamic.css').replace(/\s+/g, ' ').trim() %>"""
-  
+
   setTheme: (theme) -> Style.sheets.theme.textContent  = Style.theme theme
 
   theme: (theme) ->
@@ -122,14 +122,14 @@ Style =
     replyRGB = "rgb(#{replybg.shiftRGB parseInt(Conf['Silhouette Contrast'], 10), true})"
 
     Style.lightTheme = bgColor.isLight()
-    
+
     svgs = [
       ['captcha-filter', "values='#{Style.filter Style.matrix theme["Text"], theme["Input Background"]} 0 0 0 1 0'"]
       ['mascot-filter',  "values='#{Style.silhouette Style.matrix replyRGB} 0 0 0 1 0'"]
       ['grayscale',      'id="color" type="saturate" values="0"']
       ['icons-filter',   "values='-.6 0 0 0 1 0 -.6 0 0 1 0 0 -.6 0 1 0 0 0 1 0'"]
     ]
-    
+
     for svg, i in svgs
       <% if (type === 'crx') { %>
       svgs[i] <% } else { %>
@@ -146,19 +146,17 @@ Style =
     slideNav = $.el 'span',
       id: 'so-nav'
       innerHTML: '<i class=a-icon></a>'
-    exec = -> if g.VIEW is 'catalog' then $ '#threads .thread' else true
-    $.asap exec, -> 
-      $.add slideNav, $.id('boardNavDesktopFoot')
-      Header.addShortcut slideNav, true
+    $.add slideNav, $.id('boardNavDesktopFoot')
+    Header.addShortcut slideNav, true
 
-      # Announcements
-      if Conf['Announcements'] is 'slideout'
-        if (psa = $.id 'globalMessage') and !psa.hidden
-          psaIcon = $.el 'i',
-            id: 'so-psa'
-            innerHTML: '<i class=a-icon></a>'
-          $.add psaIcon, psa
-          Header.addShortcut psaIcon, true
+    # Announcements
+    if Conf['Announcements'] is 'slideout'
+      if (psa = $.id 'globalMessage') and !psa.hidden
+        psaIcon = $.el 'i',
+          id: 'so-psa'
+          innerHTML: '<i class=a-icon></a>'
+        $.add psaIcon, psa
+        Header.addShortcut psaIcon, true
 
     if g.VIEW is 'thread'
       el = $('body > div.navLinks > a')

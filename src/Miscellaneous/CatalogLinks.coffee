@@ -1,6 +1,5 @@
 CatalogLinks =
   init: ->
-    $.ready @ready 
     return unless Conf['Catalog Links']
     CatalogLinks.el = el = $.el 'label',
       id:           'toggleCatalog'
@@ -52,10 +51,3 @@ CatalogLinks =
         "http://4index.gropes.us/#{board}"
       else
         "/#{board}/catalog"
-
-  ready: ->
-    if catalogLink = ($('.pages.cataloglink a', d.body) or $ '[href=".././catalog"]', d.body)
-      catalogLink.textContent = ''
-      catalogLink.className = 'a-icon'
-      Header.addShortcut catalogLink, true
-      catalogLink.id = 'catalog'

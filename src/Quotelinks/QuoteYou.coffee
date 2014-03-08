@@ -1,6 +1,6 @@
 QuoteYou =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Mark Quotes of You']
+    return if !Conf['Mark Quotes of You']
 
     if Conf['Highlight Own Posts']
       $.addClass doc, 'highlight-own'
@@ -27,9 +27,9 @@ QuoteYou =
     return unless @quotes.length
 
     for quotelink in @nodes.quotelinks when QR.db.get Get.postDataFromLink quotelink
-        $.add quotelink, $.tn QuoteYou.text
-        $.addClass quotelink, 'you'
-        $.addClass @nodes.root, 'quotesYou'
+      $.add quotelink, $.tn QuoteYou.text
+      $.addClass quotelink, 'you'
+      $.addClass @nodes.root, 'quotesYou'
     return
 
   cb:

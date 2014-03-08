@@ -1,57 +1,57 @@
 """#{if Style.lightTheme then "
 .prettyprint {
-  background-color: #e7e7e7;
-  border: 1px solid #dcdcdc;
+  background-color: #e7e7e7 !important;
+  border: 1px solid #dcdcdc !important;
 }
 .com {
-  color: #dd0000;
+  color: #dd0000 !important;
 }
 .str,
 .atv {
-  color: #7fa61b;
+  color: #7fa61b !important;
 }
 .pun {
-  color: #61663a;
+  color: #61663a !important;
 }
 .tag {
-  color: #117743;
+  color: #117743 !important;
 }
 .kwd {
-  color: #5a6F9e;
+  color: #5a6F9e !important;
 }
 .typ,
 .atn {
-  color: #9474bd;
+  color: #9474bd !important;
 }
 .lit {
-  color: #368c72;
+  color: #368c72 !important;
 }
 " else "
 .prettyprint {
-  background-color: rgba(0,0,0,.1);
-  border: 1px solid rgba(0,0,0,0.5);
+  background-color: rgba(0,0,0,.1) !important;
+  border: 1px solid rgba(0,0,0,0.5) !important;
 }
 .tag {
-  color: #96562c;
+  color: #96562c !important;
 }
 .pun {
-  color: #5b6f2a;
+  color: #5b6f2a !important;
 }
 .com {
-  color: #a34443;
+  color: #a34443 !important;
 }
 .str,
 .atv {
-  color: #8ba446;
+  color: #8ba446 !important;
 }
 .kwd {
-  color: #987d3e;
+  color: #987d3e !important;
 }
 .typ,
 .atn {
-  color: #897399;
+  color: #897399 !important;
 }
 .lit {
-  color: #558773;
+  color: #558773 !important;
 }
 "}"""
