@@ -13550,7 +13550,7 @@
         }
       })();
       if (g.VIEW === 'catalog') {
-        return $.ready(Index.catalogSwitch);
+        return Index.catalogSwitch();
       }
       if (g.VIEW === 'thread') {
         g.THREADID = +pathname[3];
