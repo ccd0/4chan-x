@@ -16309,7 +16309,7 @@
         index: function() {
           delete g.THREADID;
           if (Conf['Index Mode'] === 'catalog') {
-            return $.addClass(doc, 'catalog-mode');
+            return Index.cb.toggleCatalogMode();
           }
         },
         thread: function() {

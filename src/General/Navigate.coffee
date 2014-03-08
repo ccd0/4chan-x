@@ -92,7 +92,7 @@ Navigate =
     {
       index: ->
         delete g.THREADID
-        $.addClass doc, 'catalog-mode' if Conf['Index Mode'] is 'catalog'
+        Index.cb.toggleCatalogMode() if Conf['Index Mode'] is 'catalog'
 
       thread: ->
         $.rmClass doc, 'catalog-mode' if Conf['Index Mode'] is 'catalog'
