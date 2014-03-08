@@ -335,8 +335,6 @@ ThreadUpdater =
     ThreadUpdater.lastPost = posts[count - 1].ID
     Main.callbackNodes Post, posts
 
-    scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and Header.getBottomOf(ThreadUpdater.root) > -25
-
     for post in posts
       {root} = post.nodes
       if post.cb
@@ -346,8 +344,8 @@ ThreadUpdater =
         $.add ThreadUpdater.root, root
 
     sendEvent()
-    if scroll
+    if Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and Header.getBottomOf(ThreadUpdater.root) > -25
       if Conf['Bottom Scroll']
         window.scrollTo 0, d.body.clientHeight
       else
-        Header.scrollTo nodes[0]
+        Header.scrollTo posts.nodes[0]
