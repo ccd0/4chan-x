@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.4.1 - 2014-03-07
+* 4chan X - Version 1.4.1 - 2014-03-08
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -2639,6 +2639,7 @@
         innerHTML: "<span class=brackets-wrap id=returnlink><a href=.././>Return</a></span> <span class=brackets-wrap id=bottomlink><a href=\"#bottom\">Bottom</a></span> <span id=\"index-menu\"><input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" class=\"fa fa-times-circle\" href=\"javascript:;\"></a>&nbsp;<time id=\"index-last-refresh\" title=\"Last index refresh\">...</time><span id=\"hidden-label\" hidden>&nbsp;&mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span><select id=\"index-mode\" name=\"Index Mode\"><option disabled>Index Mode</option><option value=\"paged\">Paged</option><option value=\"infinite\">Infinite Scrolling</option><option value=\"all pages\">All threads</option><option value=\"catalog\">Catalog</option></select><select id=\"index-sort\" name=\"Index Sort\"><option disabled>Index Sort</option><option value=\"bump\">Bump order</option><option value=\"lastreply\">Last reply</option><option value=\"birth\">Creation date</option><option value=\"replycount\">Reply count</option><option value=\"filecount\">File count</option></select><select id=\"index-size\" name=\"Index Size\"><option disabled>Image Size</option><option value=\"small\">Small</option><option value=\"large\">Large</option></select></span>"
       });
       this.searchInput = $('#index-search', this.navLinks);
+      this.searchTest();
       this.hideLabel = $('#hidden-label', this.navLinks);
       this.selectMode = $('#index-mode', this.navLinks);
       this.selectSort = $('#index-sort', this.navLinks);
@@ -2655,12 +2656,9 @@
       $.on(this.selectMode, 'change', this.cb.mode);
       $.on(this.selectSort, 'change', this.cb.sort);
       $.on(this.selectSize, 'change', this.cb.size);
-      this.searchInput = $('#index-search', this.navLinks);
       this.currentPage = this.getCurrentPage();
       $.on(d, 'scroll', Index.scroll);
       $.on(this.pagelist, 'click', this.cb.pageNav);
-      $.on(this.searchInput, 'input', this.onSearchInput);
-      $.on($('#index-search-clear', this.navLinks), 'click', this.clearSearch);
       $.on($('#returnlink a', this.navLinks), 'click', Navigate.navigate);
       if (g.VIEW === 'index') {
         this.update();
@@ -2844,18 +2842,22 @@
       types[(i + 1) % types.length].selected = true;
       return $.event('change', null, Index.selectSort);
     },
-    addCatalogSwitch: function() {
-      var a;
-      a = $.el('a', {
-        href: 'javascript:;',
-        textContent: 'Switch to 4chan X\'s catalog',
-        className: 'btn-wrap'
-      });
-      $.on(a, 'click', function() {
-        $.set('Index Mode', 'catalog');
-        return window.location = './';
-      });
-      return $.add($.id('info'), a);
+    catalogSwitch: function() {
+      var hash;
+      $.set('Index Mode', 'catalog');
+      hash = window.location.hash;
+      return window.location = './' + hash;
+    },
+    searchTest: function() {
+      var hash, match;
+      if (!(hash = window.location.hash)) {
+        return;
+      }
+      if (!(match = hash.match(/s=([\w]+)/))) {
+        return;
+      }
+      this.searchInput.value = match[1];
+      return $.on(d, '4chanXInitFinished', this.onSearchInput);
     },
     setupNavLinks: function() {
       var el, _i, _len, _ref;
@@ -3105,7 +3107,9 @@
       } else {
         strong = $.el('strong');
       }
-      a = pagesRoot.children[pageNum];
+      if (!(a = pagesRoot.children[pageNum])) {
+        return;
+      }
       $.before(a, strong);
       return $.add(strong, a);
     },
@@ -12763,15 +12767,15 @@
         return;
       }
       $.addClass(Index.button, 'fa-spin');
-      if (Index.isSearching) {
-        Index.clearSearch();
-      }
       _ref = this.pathname.split('/'), _ = _ref[0], boardID = _ref[1], view = _ref[2], threadID = _ref[3];
       if ('f' === boardID || 'f' === g.BOARD.ID) {
         return;
       }
       if (e) {
         e.preventDefault();
+      }
+      if (Index.isSearching) {
+        Index.clearSearch();
       }
       Navigate.title = function() {};
       delete Index.pageNum;
@@ -12783,7 +12787,7 @@
         view = 'index';
       }
       path = this.pathname;
-      if (this.hash) {
+      if (this.hash && view === 'thread') {
         path += this.hash;
       }
       if (this.id !== 'popState') {
@@ -13534,8 +13538,7 @@
         }
       })();
       if (g.VIEW === 'catalog') {
-        $.ready(Index.addCatalogSwitch);
-        return;
+        return $.ready(Index.catalogSwitch);
       }
       if (g.VIEW === 'thread') {
         g.THREADID = +pathname[3];

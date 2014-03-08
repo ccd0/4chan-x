@@ -95,6 +95,9 @@ Index =
       innerHTML: <%= importHTML('Features/Index-navlinks') %>
 
     @searchInput = $ '#index-search', @navLinks
+
+    @searchTest()
+
     @hideLabel   = $ '#hidden-label', @navLinks
     @selectMode  = $ '#index-mode',   @navLinks
     @selectSort  = $ '#index-sort',   @navLinks
@@ -109,14 +112,10 @@ Index =
     $.on @selectSort, 'change', @cb.sort
     $.on @selectSize, 'change', @cb.size
 
-    @searchInput = $ '#index-search', @navLinks
-
     @currentPage = @getCurrentPage()
 
     $.on d, 'scroll', Index.scroll
     $.on @pagelist, 'click', @cb.pageNav
-    $.on @searchInput, 'input', @onSearchInput
-    $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
     $.on $('#returnlink a',  @navLinks), 'click', Navigate.navigate
 
     if g.VIEW is 'index'
@@ -254,15 +253,16 @@ Index =
     types[(i + 1) % types.length].selected = true
     $.event 'change', null, Index.selectSort
 
-  addCatalogSwitch: ->
-    a = $.el 'a',
-      href: 'javascript:;'
-      textContent: 'Switch to <%= meta.name %>\'s catalog'
-      className: 'btn-wrap'
-    $.on a, 'click', ->
-      $.set 'Index Mode', 'catalog'
-      window.location = './'
-    $.add $.id('info'), a
+  catalogSwitch: ->
+    $.set 'Index Mode', 'catalog'
+    {hash} = window.location
+    window.location = './' + hash
+
+  searchTest: ->
+    return unless hash = window.location.hash
+    return unless match = hash.match /s=([\w]+)/
+    @searchInput.value = match[1]
+    $.on d, '4chanXInitFinished', @onSearchInput
 
   setupNavLinks: ->
     for el in $$ '.navLinks.desktop > a'
@@ -456,7 +456,7 @@ Index =
       $.replace strong, strong.firstChild
     else
       strong = $.el 'strong'
-    a = pagesRoot.children[pageNum]
+    return unless a = pagesRoot.children[pageNum] # If coming in from a Navigate.navigate, this could break.
     $.before a, strong
     $.add strong, a
 
