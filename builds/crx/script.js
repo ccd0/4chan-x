@@ -12691,7 +12691,7 @@
           delete g.THREADID;
           QR.link.textContent = 'Start a Thread';
           if (Conf['Index Mode'] === 'catalog') {
-            return $.addClass(doc, 'catalog-mode');
+            return Index.cb.toggleCatalogMode();
           }
         },
         thread: function() {

@@ -93,7 +93,7 @@ Navigate =
       index: ->
         delete g.THREADID
         QR.link.textContent = 'Start a Thread'
-        $.addClass doc, 'catalog-mode' if Conf['Index Mode'] is 'catalog'
+        Index.cb.toggleCatalogMode() if Conf['Index Mode'] is 'catalog'
 
       thread: ->
         QR.link.textContent = 'Reply to Thread'
