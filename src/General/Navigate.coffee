@@ -185,10 +185,10 @@ Navigate =
     path = @pathname
     path += @hash if @hash and view is 'thread'
 
+    Navigate.makeBreadCrumb @href, view, boardID, threadID
+
     history.pushState null, '', path unless @id is 'popState'
     Navigate.path = @pathname
-
-    Navigate.makeBreadCrumb @href, view, boardID, threadID
 
     {indexMode, indexSort} = @dataset
     if indexMode and Conf['Index Mode'] isnt indexMode
