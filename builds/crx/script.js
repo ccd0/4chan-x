@@ -6005,9 +6005,9 @@
     threadExcerpt: function(thread) {
       var OP, excerpt, _ref;
       OP = thread.OP;
-      excerpt = ("/" + thread.board + "/ - ") + (((_ref = OP.info.subject) != null ? _ref.trim() : void 0) || OP.info.comment.replace(/\n+/g, ' // ') || OP.getNameBlock());
-      if (excerpt.length > 73) {
-        excerpt = "" + excerpt.slice(0, 70) + "...";
+      excerpt = ((_ref = OP.info.subject) != null ? _ref.trim() : void 0) || OP.info.comment.replace(/\n+/g, ' // ') || OP.getNameBlock();
+      if (excerpt.length > 70) {
+        excerpt = "" + excerpt.slice(0, 67) + "...";
       }
       return "/" + thread.board + "/ - " + excerpt;
     },
