@@ -15,7 +15,7 @@ Main =
         else
           'index'
     if g.VIEW is 'catalog'
-      return $.ready Index.catalogSwitch
+      return Index.catalogSwitch()
     if g.VIEW is 'thread'
       g.THREADID = +pathname[3]
 
