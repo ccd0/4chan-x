@@ -1,13 +1,11 @@
 Get =
   threadExcerpt: (thread) ->
     {OP} = thread
-    excerpt = "/#{thread.board}/ - " + (
-      OP.info.subject?.trim() or
+    excerpt = OP.info.subject?.trim() or
       OP.info.comment.replace(/\n+/g, ' // ') or
       OP.getNameBlock()
-    )
-    if excerpt.length > 73
-      excerpt = "#{excerpt[...70]}..."
+    if excerpt.length > 70
+      excerpt = "#{excerpt[...67]}..."
     "/#{thread.board}/ - #{excerpt}"
   threadFromRoot: (root) ->
     g.threads["#{g.BOARD}.#{root.id[1..]}"]
