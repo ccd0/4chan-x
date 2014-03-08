@@ -12763,6 +12763,11 @@
         return;
       }
       if (this.pathname === Navigate.path) {
+        if (g.VIEW === 'thread') {
+          ThreadUpdater.update();
+        } else {
+          Index.update();
+        }
         e.preventDefault();
         return;
       }
