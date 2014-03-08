@@ -12804,11 +12804,11 @@
       if (this.hash && view === 'thread') {
         path += this.hash;
       }
+      Navigate.makeBreadCrumb(this.href, view, boardID, threadID);
       if (this.id !== 'popState') {
         history.pushState(null, '', path);
       }
       Navigate.path = this.pathname;
-      Navigate.makeBreadCrumb(this.href, view, boardID, threadID);
       _ref1 = this.dataset, indexMode = _ref1.indexMode, indexSort = _ref1.indexSort;
       if (indexMode && Conf['Index Mode'] !== indexMode) {
         $.set('Index Mode', Conf['Index Mode'] = Index.selectMode.value = indexMode);
