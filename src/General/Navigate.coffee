@@ -158,12 +158,12 @@ Navigate =
       return
 
     $.addClass Index.button, 'fa-spin'
-    Index.clearSearch() if Index.isSearching
 
     [_, boardID, view, threadID] = @pathname.split '/'
 
     return if 'f' in [boardID, g.BOARD.ID]
     e.preventDefault() if e
+    Index.clearSearch() if Index.isSearching
     Navigate.title = -> return
 
     delete Index.pageNum
@@ -176,7 +176,7 @@ Navigate =
       view = 'index' # path is "/boardID/". See the problem?
 
     path = @pathname
-    path += @hash if @hash
+    path += @hash if @hash and view is 'thread'
 
     history.pushState null, '', path unless @id is 'popState'
     Navigate.path = @pathname
