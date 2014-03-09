@@ -6,6 +6,7 @@
 // @namespace    zixaphir
 // @description  The most comprehensive 4chan userscript.
 // @license      MIT; https://github.com/zixaphir/appchan-x/blob/master/LICENSE 
+// @match        *://*.4chan.org/*
 // @match        *://boards.4chan.org/*
 // @match        *://sys.4chan.org/*
 // @match        *://a.4cdn.org/*

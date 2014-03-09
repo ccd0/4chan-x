@@ -70,7 +70,9 @@ Main =
 
     switch location.hostname
       when '4chan.org', 'www.4chan.org'
+        g.TYPE = 'sfw'
         g.VIEW = 'home'
+        Main.setThemeString()
         Style.init()
         return
       when 'a.4cdn.org'

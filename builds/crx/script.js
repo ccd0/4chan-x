@@ -14153,11 +14153,18 @@
       }
     },
     remStyle: function() {
-      var item, _i, _len, _ref;
-      _ref = [$('[title="switch"]', d.head), $('[href="//s.4cdn.org/css/yotsubluemobile.540.css"]', d.head), $.id('base-css'), $.id('mobile-css')];
+      var item, _i, _j, _len, _len1, _ref, _ref1;
+      _ref = ['[title="switch"]', '[href="//s.4cdn.org/css/yotsubluemobile.540.css"]', '#base-css', '#mobile-css'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         item = _ref[_i];
-        if (item) {
+        if (item = $(item, d.head)) {
+          item.disabled = true;
+        }
+      }
+      if (g.VIEW === 'home') {
+        _ref1 = $$('[rel="stylesheet"], style[type="text/css"]', d.head);
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          item = _ref1[_j];
           item.disabled = true;
         }
       }
@@ -17710,7 +17717,9 @@
       switch (location.hostname) {
         case '4chan.org':
         case 'www.4chan.org':
+          g.TYPE = 'sfw';
           g.VIEW = 'home';
+          Main.setThemeString();
           Style.init();
           return;
         case 'a.4cdn.org':

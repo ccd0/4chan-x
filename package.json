@@ -10,6 +10,7 @@
     "buildsPath": "builds/",
     "mainBranch": "master",
     "matches": [
+      "*://*.4chan.org/*",
       "*://boards.4chan.org/*",
       "*://sys.4chan.org/*",
       "*://a.4cdn.org/*",

@@ -62,12 +62,17 @@ Style =
 
   remStyle: ->
     for item in [
-      $('[title="switch"]', d.head)
-      $('[href="//s.4cdn.org/css/yotsubluemobile.540.css"]', d.head)
-      $.id('base-css')
-      $.id('mobile-css')
+      '[title="switch"]'
+      '[href="//s.4cdn.org/css/yotsubluemobile.540.css"]'
+      '#base-css'
+      '#mobile-css'
     ]
-      item.disabled = true if item
+      item.disabled = true if item = $ item, d.head
+
+    if g.VIEW is 'home'
+      for item in $$ '[rel="stylesheet"], style[type="text/css"]', d.head
+        item.disabled = true
+
     return
 
   generateFilter: (id, values) -> """<%= grunt.file.read('src/General/html/Features/Filters.svg').replace(/>\s+</g, '><') %>"""
