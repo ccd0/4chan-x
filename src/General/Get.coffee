@@ -17,7 +17,8 @@ Get =
   postFromNode: (node) ->
     Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', node
   contextFromNode: (node) ->
-    Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', node
+    snapshot = $.X 'ancestor::div[contains(@class,"postContainer")]', node
+    Get.postFromRoot snapshot.snapshotItem(snapshot.length - 1)
   postDataFromLink: (link) ->
     if link.hostname is 'boards.4chan.org'
       path     = link.pathname.split '/'

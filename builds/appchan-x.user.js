@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.0 - 2014-03-08
+* appchan x - Version 2.9.0 - 2014-03-09
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -5977,7 +5977,9 @@
       return Get.postFromRoot($.x('ancestor::div[contains(@class,"postContainer")][1]', node));
     },
     contextFromNode: function(node) {
-      return Get.postFromRoot($.x('ancestor::div[parent::div[@class="thread"]][1]', node));
+      var snapshot;
+      snapshot = $.X('ancestor::div[contains(@class,"postContainer")]', node);
+      return Get.postFromRoot(snapshot.snapshotItem(snapshot.length - 1));
     },
     postDataFromLink: function(link) {
       var boardID, path, postID, threadID, _ref;
@@ -7276,7 +7278,7 @@
       fullID = post.fullID;
       return g.posts.forEach(function(post) {
         if (__indexOf.call(post.quotes, fullID) >= 0) {
-          return recursive.apply(null, [post].concat(__slice.call(args)));
+          return post[recursive].apply(post, args);
         }
       });
     }
