@@ -188,8 +188,7 @@
       'Menu': {
         'Menu': [true, 'Add a drop-down menu to posts.'],
         'Report Link': [true, 'Add a report link to the menu.'],
-        'Thread Hiding Link': [true, 'Add a link to hide entire threads.'],
-        'Reply Hiding Link': [true, 'Add a link to hide single replies.'],
+        'Post Hiding Link': [true, 'Add a link to hide posts.'],
         'Delete Link': [true, 'Add post and image deletion links to the menu.'],
         'Archive Link': [true, 'Add an archive link to the menu.']
       },
@@ -423,10 +422,10 @@
       'Next page': ['Shift+Right', 'Jump to the next page.'],
       'Previous page': ['Shift+Left', 'Jump to the previous page.'],
       'Search form': ['Ctrl+Alt+s', 'Focus the search field on the board index.'],
-      'Paged mode': ['Ctrl+1', 'Sets the index mode to paged.'],
-      'All pages mode': ['Ctrl+2', 'Sets the index mode to all threads.'],
-      'Catalog mode': ['Ctrl+3', 'Sets the index mode to catalog.'],
-      'Cycle sort type': ['Ctrl+x', 'Cycle through index sort types.'],
+      'Paged mode': ['Alt+1', 'Sets the index mode to paged.'],
+      'All pages mode': ['Alt+2', 'Sets the index mode to all threads.'],
+      'Catalog mode': ['Alt+3', 'Sets the index mode to catalog.'],
+      'Cycle sort type': ['Alt+x', 'Cycle through index sort types.'],
       'Next thread': ['Shift+Down', 'See next thread.'],
       'Previous thread': ['Shift+Up', 'See previous thread.'],
       'Expand thread': ['Ctrl+e', 'Expand thread.'],
@@ -11696,12 +11695,10 @@
       } else {
         this.dialog = sc = UI.dialog('updater', 'bottom: 0px; left: 0px;', "<div class=move><span id=update-status></span><span id=update-timer title='Update now'></span></div>");
         $.addClass(doc, 'float');
-        $.ready((function(_this) {
-          return function() {
-            $.addClass(doc, 'float');
-            return $.add(d.body, sc);
-          };
-        })(this));
+        $.ready(function() {
+          $.addClass(doc, 'float');
+          return $.add(d.body, sc);
+        });
       }
       this.checkPostCount = 0;
       this.timer = $('#update-timer', sc);
@@ -12071,7 +12068,7 @@
         if (Conf['Bottom Scroll']) {
           return window.scrollTo(0, d.body.clientHeight);
         } else {
-          return Header.scrollTo(posts.nodes[0]);
+          return Header.scrollTo(posts[0].nodes.root);
         }
       }
     }
@@ -15702,6 +15699,9 @@
           Index.setIndexMode('catalog');
           break;
         case Conf['Cycle sort type']:
+          if (g.VIEW !== 'index') {
+            return;
+          }
           Index.cycleSortType();
           break;
         case Conf['Next thread']:

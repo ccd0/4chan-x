@@ -177,13 +177,9 @@ Config =
         true
         'Add a report link to the menu.'
       ]
-      'Thread Hiding Link': [
+      'Post Hiding Link': [
         true
-        'Add a link to hide entire threads.'
-      ]
-      'Reply Hiding Link': [
-        true
-        'Add a link to hide single replies.'
+        'Add a link to hide posts.'
       ]
       'Delete Link': [
         true
@@ -1005,19 +1001,19 @@ box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
       'Focus the search field on the board index.'
     ]
     'Paged mode': [
-      'Ctrl+1'
+      'Alt+1'
       'Sets the index mode to paged.'
     ]
     'All pages mode': [
-      'Ctrl+2'
+      'Alt+2'
       'Sets the index mode to all threads.'
     ]
     'Catalog mode': [
-      'Ctrl+3'
+      'Alt+3'
       'Sets the index mode to catalog.'
     ]
     'Cycle sort type': [
-      'Ctrl+x'
+      'Alt+x'
       'Cycle through index sort types.'
     ]
     # Thread Navigation
