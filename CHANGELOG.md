@@ -1,3 +1,9 @@
+### v2.9.1 
+*2014-03-09*
+
+**Zixaphir**:
+- Bugfixes for post hiding, thread updater, and keybinds.
+
 ## v2.9.0 
 *2014-03-08*
 
