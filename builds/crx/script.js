@@ -14627,7 +14627,7 @@
     };
 
     Color.prototype.rgb = function() {
-      return this.privateRGB().join("");
+      return this.privateRGB().join(",");
     };
 
     Color.prototype.hover = function() {
@@ -14657,7 +14657,7 @@
         color = _ref[_i];
         rgb.push(minmax(color + shift));
       }
-      return rgb.join("");
+      return rgb.join(",");
     };
 
     return Color;

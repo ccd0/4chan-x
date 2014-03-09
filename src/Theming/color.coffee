@@ -40,7 +40,7 @@ class Color
     @raw = colorToHex value
 
   hex:   -> "#" + @raw
-  rgb:   -> @privateRGB().join ""
+  rgb:   -> @privateRGB().join ","
   hover: -> @shiftRGB 16, true
 
   isLight:    ->
@@ -60,4 +60,4 @@ class Color
     shift = (if @isLight() then -1 else 1) * Math.abs shift if smart
     rgb   = []
     rgb.push minmax color + shift for color in @privateRGB()
-    rgb.join ""
+    rgb.join ","
