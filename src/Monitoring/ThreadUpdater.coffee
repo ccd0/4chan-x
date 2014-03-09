@@ -8,11 +8,11 @@ ThreadUpdater =
         id:        'updater'
       $.ready ->
         Header.addShortcut sc
-    else 
+    else
       @dialog = sc = UI.dialog 'updater', 'bottom: 0px; left: 0px;',
         "<div class=move></div><span id=update-status></span><span id=update-timer title='Update now'></span>"
       $.addClass doc, 'float'
-      $.ready => 
+      $.ready ->
         $.addClass doc, 'float'
         $.add d.body, sc
 
@@ -57,12 +57,12 @@ ThreadUpdater =
     Thread.callbacks.push
       name: 'Thread Updater'
       cb:   @node
-  
+
   disconnect: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
     $.off @timer,  'click', @update
     $.off @status, 'click', @update
-    
+
     clearTimeout @timeoutID if @timeoutID
 
     for entry in @entry.subEntries
@@ -182,7 +182,7 @@ ThreadUpdater =
 
   setInterval: ->
     i   = ThreadUpdater.interval + 1
-    
+
     if Conf['Optional Increase']
       # Lower the max refresh rate limit on visible tabs.
       cur   = ThreadUpdater.outdateCount or 1

@@ -9457,12 +9457,10 @@
       } else {
         this.dialog = sc = UI.dialog('updater', 'bottom: 0px; left: 0px;', "<div class=move></div><span id=update-status></span><span id=update-timer title='Update now'></span>");
         $.addClass(doc, 'float');
-        $.ready((function(_this) {
-          return function() {
-            $.addClass(doc, 'float');
-            return $.add(d.body, sc);
-          };
-        })(this));
+        $.ready(function() {
+          $.addClass(doc, 'float');
+          return $.add(d.body, sc);
+        });
       }
       this.checkPostCount = 0;
       this.timer = $('#update-timer', sc);
