@@ -4757,7 +4757,6 @@
         className: 'navLinks',
         innerHTML: "<span class=brackets-wrap id=returnlink><a href=.././>Return</a></span> <span class=brackets-wrap id=bottomlink><a href=\"#bottom\">Bottom</a></span> <span id=\"index-menu\"><input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" class=\"fa fa-times-circle\" href=\"javascript:;\"></a>&nbsp;<time id=\"index-last-refresh\" title=\"Last index refresh\">...</time><span id=\"hidden-label\" hidden>&nbsp;&mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span><select id=\"index-mode\" name=\"Index Mode\"><option disabled>Index Mode</option><option value=\"paged\">Paged</option><option value=\"infinite\">Infinite Scrolling</option><option value=\"all pages\">All threads</option><option value=\"catalog\">Catalog</option></select><select id=\"index-sort\" name=\"Index Sort\"><option disabled>Index Sort</option><option value=\"bump\">Bump order</option><option value=\"lastreply\">Last reply</option><option value=\"birth\">Creation date</option><option value=\"replycount\">Reply count</option><option value=\"filecount\">File count</option></select><select id=\"index-size\" name=\"Index Size\"><option disabled>Image Size</option><option value=\"small\">Small</option><option value=\"large\">Large</option></select></span>"
       });
-      Rice.nodes(this.navLinks);
       this.searchInput = $('#index-search', this.navLinks);
       this.searchTest();
       this.hideLabel = $('#hidden-label', this.navLinks);
@@ -4776,6 +4775,7 @@
       $.on(this.selectMode, 'change', this.cb.mode);
       $.on(this.selectSort, 'change', this.cb.sort);
       $.on(this.selectSize, 'change', this.cb.size);
+      Rice.nodes(this.navLinks);
       this.currentPage = this.getCurrentPage();
       $.on(d, 'scroll', Index.scroll);
       $.on(this.pagelist, 'click', this.cb.pageNav);

@@ -94,8 +94,6 @@ Index =
       className: 'navLinks'
       innerHTML: <%= importHTML('Features/Index-navlinks') %>
 
-    Rice.nodes @navLinks
-
     @searchInput = $ '#index-search', @navLinks
 
     @searchTest()
@@ -113,6 +111,8 @@ Index =
     $.on @selectMode, 'change', @cb.mode
     $.on @selectSort, 'change', @cb.sort
     $.on @selectSize, 'change', @cb.size
+
+    Rice.nodes @navLinks
 
     @currentPage = @getCurrentPage()
 
