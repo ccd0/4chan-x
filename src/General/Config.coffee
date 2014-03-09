@@ -653,19 +653,19 @@ vp-replace
       'Focus the search field on the board index.'
     ]
     'Paged mode': [
-      'Ctrl+1'
+      'Alt+1'
       'Sets the index mode to paged.'
     ]
     'All pages mode': [
-      'Ctrl+2'
+      'Alt+2'
       'Sets the index mode to all threads.'
     ]
     'Catalog mode': [
-      'Ctrl+3'
+      'Alt+3'
       'Sets the index mode to catalog.'
     ]
     'Cycle sort type': [
-      'Ctrl+x'
+      'Alt+x'
       'Cycle through index sort types.'
     ]
     # Thread Navigation

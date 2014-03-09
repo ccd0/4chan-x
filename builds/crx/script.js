@@ -305,10 +305,10 @@
       'Next page': ['Shift+Right', 'Jump to the next page.'],
       'Previous page': ['Shift+Left', 'Jump to the previous page.'],
       'Search form': ['Ctrl+Alt+s', 'Focus the search field on the board index.'],
-      'Paged mode': ['Ctrl+1', 'Sets the index mode to paged.'],
-      'All pages mode': ['Ctrl+2', 'Sets the index mode to all threads.'],
-      'Catalog mode': ['Ctrl+3', 'Sets the index mode to catalog.'],
-      'Cycle sort type': ['Ctrl+x', 'Cycle through index sort types.'],
+      'Paged mode': ['Alt+1', 'Sets the index mode to paged.'],
+      'All pages mode': ['Alt+2', 'Sets the index mode to all threads.'],
+      'Catalog mode': ['Alt+3', 'Sets the index mode to catalog.'],
+      'Cycle sort type': ['Alt+x', 'Cycle through index sort types.'],
       'Next thread': ['Shift+Down', 'See next thread.'],
       'Previous thread': ['Shift+Up', 'See previous thread.'],
       'Expand thread': ['Ctrl+e', 'Expand thread.'],
@@ -12067,6 +12067,9 @@
           Index.setIndexMode('catalog');
           break;
         case Conf['Cycle sort type']:
+          if (g.VIEW !== 'index') {
+            return;
+          }
           Index.cycleSortType();
           break;
         case Conf['Next thread']:

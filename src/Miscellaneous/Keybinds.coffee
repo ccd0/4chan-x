@@ -110,6 +110,7 @@ Keybinds =
         return unless g.VIEW is 'index' and Conf['Index Mode'] isnt 'catalog'
         Index.setIndexMode 'catalog'
       when Conf['Cycle sort type']
+        return unless g.VIEW is 'index'
         Index.cycleSortType()
       # Thread Navigation
       when Conf['Next thread']
