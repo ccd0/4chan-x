@@ -9212,7 +9212,7 @@
         return QR.selected.nodes.spoiler.click();
       });
       $.on(nodes.fileInput, 'change', QR.handleFiles);
-      items = ['spoilerPar', 'dumpButton', 'fileRM'];
+      items = ['spoilerPar', 'dumpButton', 'fileRM', 'urlButton'];
       i = 0;
       while (name = items[i++]) {
         $.on(nodes[name], 'mouseover', QR.mouseover);
@@ -9539,7 +9539,8 @@
         asapTest: function() {
           return true;
         },
-        close: true
+        offsetX: 15,
+        offsetY: -5
       });
     }
   };
@@ -17286,7 +17287,7 @@
           return true;
         },
         offsetX: 15,
-        offsetY: 0
+        offsetY: -5
       });
     },
     mascots: function(section, mode) {

@@ -521,7 +521,7 @@ QR =
     $.on nodes.fileInput,  'change', QR.handleFiles
 
     # mouseover descriptions
-    items = ['spoilerPar', 'dumpButton', 'fileRM']
+    items = ['spoilerPar', 'dumpButton', 'fileRM', 'urlButton']
     i = 0
     while name = items[i++]
       $.on nodes[name], 'mouseover', QR.mouseover
@@ -877,6 +877,7 @@ QR =
       latestEvent:  e
       endEvents:    'mouseout'
       asapTest: ->  true
-      close:        true
+      offsetX: 15
+      offsetY: -5
 
     return

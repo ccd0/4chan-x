@@ -593,7 +593,7 @@ Settings =
       endEvents:   'mouseout'
       asapTest: -> true
       offsetX: 15
-      offsetY: 0
+      offsetY: -5
 
     return
 
