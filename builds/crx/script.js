@@ -6989,12 +6989,14 @@
     init: function() {
       this.db = new DataBoard('hiddenPosts');
       this.hideButton = $.el('a', {
-        className: 'hide-post-button fa fa-minus-square-o',
-        href: 'javascript:;'
+        className: 'hide-post-button fa',
+        href: 'javascript:;',
+        textContent: '\uf147'
       });
       this.showButton = $.el('a', {
-        className: 'show-post-button fa fa-plus-square-o',
-        href: 'javascript:;'
+        className: 'show-post-button fa',
+        href: 'javascript:;',
+        textContext: '\uf196'
       });
       Post.callbacks.push({
         name: 'Post Hiding',
