@@ -1,3 +1,6 @@
+## v2.9.0 
+*2014-03-08*
+
 **MayhemYDG**:
 - Thread and post hiding changes:
  - The posts' menu now has a label entry listing the reasons why a post got hidden or highlighted.
