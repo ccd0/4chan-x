@@ -246,24 +246,22 @@ ThemeTools =
         else
           ['no-repeat', 'bottom', 'left', 'fixed']
 
-        {color} = Style
-
-        bgColor     = new color imported.bgColor
-        mainColor   = new color imported.mainColor
-        brderColor  = new color imported.brderColor
-        inputColor  = new color imported.inputColor
-        inputbColor = new color imported.inputbColor
-        blinkColor  = new color imported.blinkColor
-        jlinkColor  = new color imported.jlinkColor
-        linkColor   = new color imported.linkColor
-        linkHColor  = new color imported.linkHColor
-        nameColor   = new color imported.nameColor
-        quoteColor  = new color imported.quoteColor
-        sageColor   = new color imported.sageColor
-        textColor   = new color imported.textColor
-        titleColor  = new color imported.titleColor
-        tripColor   = new color imported.tripColor
-        timeColor   = new color imported.timeColor or imported.textColor
+        bgColor     = new Color imported.bgColor
+        mainColor   = new Color imported.mainColor
+        brderColor  = new Color imported.brderColor
+        inputColor  = new Color imported.inputColor
+        inputbColor = new Color imported.inputbColor
+        blinkColor  = new Color imported.blinkColor
+        jlinkColor  = new Color imported.jlinkColor
+        linkColor   = new Color imported.linkColor
+        linkHColor  = new Color imported.linkHColor
+        nameColor   = new Color imported.nameColor
+        quoteColor  = new Color imported.quoteColor
+        sageColor   = new Color imported.sageColor
+        textColor   = new Color imported.textColor
+        titleColor  = new Color imported.titleColor
+        tripColor   = new Color imported.tripColor
+        timeColor   = new Color imported.timeColor or imported.textColor
 
         Themes[name] =
           'Author':                       "Anonymous"

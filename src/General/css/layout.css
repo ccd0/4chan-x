@@ -541,6 +541,9 @@ nav a,
 #a-icons {
   <%= order %>: 10;
 }
+#a-stats {
+  height: 1.1em;
+}
 .sidebar-location-right #shortcuts {
   right: 0;
 }
