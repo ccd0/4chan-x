@@ -186,8 +186,7 @@
       'Menu': {
         'Menu': [true, 'Add a drop-down menu to posts.'],
         'Report Link': [true, 'Add a report link to the menu.'],
-        'Thread Hiding Link': [true, 'Add a link to hide entire threads.'],
-        'Reply Hiding Link': [true, 'Add a link to hide single replies.'],
+        'Post Hiding Link': [true, 'Add a link to hide posts.'],
         'Delete Link': [true, 'Add post and image deletion links to the menu.'],
         'Archive Link': [true, 'Add an archive link to the menu.']
       },

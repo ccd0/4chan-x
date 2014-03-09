@@ -197,13 +197,9 @@ Config =
         true
         'Add a report link to the menu.'
       ]
-      'Thread Hiding Link': [
+      'Post Hiding Link': [
         true
-        'Add a link to hide entire threads.'
-      ]
-      'Reply Hiding Link': [
-        true
-        'Add a link to hide single replies.'
+        'Add a link to hide posts.'
       ]
       'Delete Link': [
         true
