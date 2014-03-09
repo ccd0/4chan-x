@@ -94,6 +94,8 @@ Index =
       className: 'navLinks'
       innerHTML: <%= importHTML('Features/Index-navlinks') %>
 
+    Rice.nodes @navLinks
+
     @searchInput = $ '#index-search', @navLinks
 
     @searchTest()
