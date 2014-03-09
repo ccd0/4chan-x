@@ -524,7 +524,7 @@ nav a,
   padding: 1px;
   z-index: 16;
   <%= flex %>-direction: row;
-  max-height: 1.4em;
+  max-height: 1.1em;
   overflow: visible;
 }
 .shortcut {
