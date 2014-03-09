@@ -347,4 +347,4 @@ ThreadUpdater =
       if Conf['Bottom Scroll']
         window.scrollTo 0, d.body.clientHeight
       else
-        Header.scrollTo posts.nodes[0]
+        Header.scrollTo posts[0].nodes.root

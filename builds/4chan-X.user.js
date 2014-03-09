@@ -9832,7 +9832,7 @@
         if (Conf['Bottom Scroll']) {
           return window.scrollTo(0, d.body.clientHeight);
         } else {
-          return Header.scrollTo(posts.nodes[0]);
+          return Header.scrollTo(posts[0].nodes.root);
         }
       }
     }
