@@ -94,7 +94,7 @@ Header =
 
   stats: $.el 'span',
     id: 'a-stats'
-  
+
   icons: $.el 'span',
     id: 'a-icons'
 
@@ -124,12 +124,12 @@ Header =
     $.on btn, 'click', Header.toggleBoardList
 
     $.rm $ '#navtopright', fullBoardList
-    
+
     shortcuts = $.el 'span',
       id: 'shortcuts'
-    
+
     $.add shortcuts, [Header.stats, Header.icons]
-    
+
     $.prepend d.body, shortcuts
 
     $.add boardList, fullBoardList
@@ -383,11 +383,11 @@ Header =
 
   addShortcut: (el, icon) ->
     $.addClass el, 'shortcut'
-    
+
     $.add Header[if icon then 'icons' else 'stats'], el
 
-  rmShortcut: (el) ->
-    $.rm el.parentElement
+  rmShortcut: (el, icon) ->
+    $.rm if icon then el.parentElement else el
 
   menuToggle: (e) ->
     Header.menu.toggle e, @, g

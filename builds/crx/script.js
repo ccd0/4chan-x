@@ -4635,8 +4635,8 @@
       $.addClass(el, 'shortcut');
       return $.add(Header[icon ? 'icons' : 'stats'], el);
     },
-    rmShortcut: function(el) {
-      return $.rm(el.parentElement);
+    rmShortcut: function(el, icon) {
+      return $.rm(icon ? el.parentElement : el);
     },
     menuToggle: function(e) {
       return Header.menu.toggle(e, this, g);
