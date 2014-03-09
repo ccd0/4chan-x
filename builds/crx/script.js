@@ -5218,7 +5218,7 @@
       fullID = post.fullID;
       return g.posts.forEach(function(post) {
         if (__indexOf.call(post.quotes, fullID) >= 0) {
-          return recursive.apply(null, [post].concat(__slice.call(args)));
+          return post[recursive].apply(post, args);
         }
       });
     }
