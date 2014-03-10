@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.4.1 - 2014-03-09
+* 4chan X - Version 1.4.1 - 2014-03-10
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -2843,6 +2843,9 @@
     },
     catalogSwitch: function() {
       var hash;
+      if (!Conf['JSON Navigation']) {
+        return;
+      }
       $.set('Index Mode', 'catalog');
       hash = window.location.hash;
       return window.location = './' + hash;

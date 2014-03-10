@@ -254,6 +254,7 @@ Index =
     $.event 'change', null, Index.selectSort
 
   catalogSwitch: ->
+    return if !Conf['JSON Navigation']
     $.set 'Index Mode', 'catalog'
     {hash} = window.location
     window.location = './' + hash
