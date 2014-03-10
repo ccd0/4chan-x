@@ -484,7 +484,7 @@ div.center:not(.ad-cnt) {
 :root.index-loading .pagelist {
   display: none;
 }
-.index #returnlink {
+.index:not(.catalog-mode) #returnlink {
   display: none;
 }
 #index-search {

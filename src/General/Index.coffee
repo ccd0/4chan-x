@@ -116,7 +116,12 @@ Index =
 
     $.on d, 'scroll', Index.scroll
     $.on @pagelist, 'click', @cb.pageNav
-    $.on $('#returnlink a',  @navLinks), 'click', Navigate.navigate
+    $.on $('#returnlink a',  @navLinks), 'click', (e) ->
+      if g.VIEW is 'index'
+        Index.setIndexMode Conf['Previous Index Mode']
+        e.preventDefault()
+        return
+      Navigate.navigate.call @, e
 
     if g.VIEW is 'index'
       @update()
