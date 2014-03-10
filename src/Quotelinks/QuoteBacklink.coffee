@@ -42,7 +42,6 @@ QuoteBacklink =
     return unless @isReply or Conf['OP Backlinks']
     if @isClone
       @nodes.backlinkContainer = $ '.backlink-container', @nodes.info
-      return unless Conf['Quote Markers']
       for backlink in @nodes.backlinks
         QuoteMarkers.parseQuotelink @, backlink, true, QuoteBacklink.funk Get.postDataFromLink(backlink).postID
       return
@@ -64,8 +63,7 @@ QuoteBacklink =
       $.addClass a, 'deadlink'
     if quoter.isHidden
       $.addClass a, 'filtered'
-    if Conf['Quote Markers']
-      QuoteMarkers.parseQuotelink quoted, a, false, text
+    QuoteMarkers.parseQuotelink quoted, a, false, text
     if Conf['Quote Previewing']
       $.on a, 'mouseover', QuotePreview.mouseover
     if Conf['Quote Inlining']

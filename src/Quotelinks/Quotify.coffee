@@ -64,7 +64,7 @@ Quotify =
     @quotes.push quoteID unless quoteID in @quotes
 
     unless a
-      deadlink.textContent = "#{quote}\u00A0(Dead)" if Conf['Quote Markers']
+      deadlink.textContent = "#{quote}\u00A0(Dead)"
       return
 
     $.replace deadlink, a

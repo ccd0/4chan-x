@@ -255,7 +255,6 @@ class Post
     # and paint them (Dead).
     for quotelink in Get.allQuotelinksLinkingTo @ when not $.hasClass quotelink, 'deadlink'
       $.addClass quotelink, 'deadlink'
-      continue unless Conf['Quote Markers']
       QuoteMarkers.parseQuotelink Get.postFromNode(quotelink), quotelink, true
     return
   # XXX tmp fix for 4chan's racing condition
@@ -276,7 +275,6 @@ class Post
 
     for quotelink in Get.allQuotelinksLinkingTo @ when $.hasClass quotelink, 'deadlink'
       $.rmClass quotelink, 'deadlink'
-      continue unless Conf['Quote Markers']
       QuoteMarkers.parseQuotelink Get.postFromNode(quotelink), quotelink, true
     return
 

@@ -79,7 +79,7 @@ DeleteLink =
 
   cooldown:
     start: (post, node) ->
-      unless QR.db?.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
+      unless QR.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
         # Only start counting on our posts.
         delete DeleteLink.cooldown.counting
         return

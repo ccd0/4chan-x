@@ -15,12 +15,12 @@
   border: 1px solid #{theme["Buttons Border"]};
 }
 .highlight-you .opContainer.quotesYou,
-.highlight-own .opContainer.yourPost,
+.highlight-own .opContainer.your-post,
 .opContainer.filter-highlight {
   box-shadow: inset 5px 0 #{theme["Backlinked Reply Outline"]};
 }
 .highlight-you .quotesYou > .reply,
-.highlight-own .yourPost > .reply,
+.highlight-own .your-post > .reply,
 .filter-highlight > .reply {
   box-shadow: -5px 0 #{theme["Backlinked Reply Outline"]};
 }
