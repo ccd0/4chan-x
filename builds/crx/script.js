@@ -207,7 +207,9 @@
         'Highlight Posts Quoting You': [false, 'Highlights any posts that contain a quote to your post.'],
         'Highlight Own Posts': [false, 'Highlights own posts if Quote Markers are enabled.'],
         'Quote Threading': [true, 'Thread conversations'],
-        'Quote Markers': [true, 'Add "(You)", "(OP)", "(Cross-thread)", "(Dead)" markers to quote links.']
+        'Mark Quotes of You': [true, 'Add \'(You)\' to quotes linking to your posts.'],
+        'Mark OP Quotes': [true, 'Add \'(OP)\' to OP quotes.'],
+        'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.', 'Highlights own posts if Quote Markers are enabled.']
       }
     },
     imageExpansion: {
@@ -2719,7 +2721,7 @@
       $.on(this.pagelist, 'click', this.cb.pageNav);
       $.on($('#returnlink a', this.navLinks), 'click', function(e) {
         if (g.VIEW === 'index') {
-          setIndexMode(Conf['Previous Index Mode']);
+          Index.setIndexMode(Conf['Previous Index Mode']);
           e.preventDefault();
           return;
         }
@@ -5465,9 +5467,6 @@
 
   QuoteMarkers = {
     init: function() {
-      if (!Conf['Quote Markers']) {
-        return;
-      }
       return Post.callbacks.push({
         name: 'Quote Markers',
         cb: this.node
@@ -5487,18 +5486,18 @@
       _ref = post.isClone ? post.context : post, board = _ref.board, thread = _ref.thread;
       markers = [];
       _ref1 = Get.postDataFromLink(quotelink), boardID = _ref1.boardID, threadID = _ref1.threadID, postID = _ref1.postID;
-      if ((_ref2 = QR.db) != null ? _ref2.get({
+      if (Conf['Mark Quotes of You'] && ((_ref2 = QR.db) != null ? _ref2.get({
         boardID: boardID,
         threadID: threadID,
         postID: postID
-      }) : void 0) {
+      }) : void 0)) {
         markers.push('You');
       }
       if (board.ID === boardID) {
-        if (thread.ID === postID) {
+        if (Conf['Mark OP Quotes'] && thread.ID === postID) {
           markers.push('OP');
         }
-        if (threadID && threadID !== thread.ID) {
+        if (Conf['Mark Cross-thread Quotes'] && (threadID && threadID !== thread.ID)) {
           markers.push('Cross-thread');
         }
       }

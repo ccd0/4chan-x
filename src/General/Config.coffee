@@ -367,9 +367,18 @@ Config =
         true
         'Thread conversations'
       ]
-      'Quote Markers': [
+      'Mark Quotes of You': [
         true
-        'Add "(You)", "(OP)", "(Cross-thread)", "(Dead)" markers to quote links.'
+        'Add \'(You)\' to quotes linking to your posts.'
+      ]
+      'Mark OP Quotes': [
+        true
+        'Add \'(OP)\' to OP quotes.'
+      ]
+      'Mark Cross-thread Quotes': [
+        true
+        'Add \'(Cross-thread)\' to cross-threads quotes.'
+        'Highlights own posts if Quote Markers are enabled.'
       ]
   imageExpansion:
     'Fit width': [
