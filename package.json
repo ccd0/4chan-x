@@ -24,7 +24,7 @@
     "font-awesome": "~4.0.3",
     "grunt": "~0.4.2",
     "grunt-bump": "~0.0.13",
-    "grunt-concurrent": "~0.4.3",
+    "grunt-concurrent": "~0.5.0",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-coffee": "~0.10.0",
     "grunt-contrib-compress": "~0.7.0",
