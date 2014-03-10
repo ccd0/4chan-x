@@ -145,6 +145,7 @@ PostHiding =
         el: $.el 'a', href: 'javascript:;'
         order: 20
         open: (post) ->
+          return false if post.isReply
           @el.textContent = if post.isHidden
             'Unhide thread'
           else
