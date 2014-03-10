@@ -1,5 +1,11 @@
 QuoteMarkers =
   init: ->
+    if Conf['Highlight Own Posts']
+      $.addClass doc, 'highlight-own'
+
+    if Conf['Highlight Posts Quoting You']
+      $.addClass doc, 'highlight-you'
+
     Post.callbacks.push
       name: 'Quote Markers'
       cb:   @node
@@ -15,8 +21,9 @@ QuoteMarkers =
     markers = []
     {boardID, threadID, postID} = Get.postDataFromLink quotelink
 
-    if Conf['Mark Quotes of You'] and QR.db?.get {boardID, threadID, postID}
-      markers.push 'You'
+    if QR.db.get {boardID, threadID, postID}
+      markers.push 'You' if Conf['Mark Quotes of You']
+      $.addClass @nodes.root, 'quotesYou'
 
     if board.ID is boardID
       if Conf['Mark OP Quotes'] and thread.ID is postID
