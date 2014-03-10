@@ -1,3 +1,11 @@
+### v2.9.2 
+*2014-03-10*
+
+**Zixaphir**:
+- Bugfixes for Thread Updater Auto Scroll and Post Highlighting.
+- The catalog now works with JSON Navigation disabled.
+- Added a return button to the JSON Navigation that will switch you back to non-catalog view (requires NavLinks not to be hidden).
+
 ### v2.9.1 
 *2014-03-09*
 
