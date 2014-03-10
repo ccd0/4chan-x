@@ -1365,9 +1365,6 @@
           continue;
         }
         $.addClass(quotelink, 'deadlink');
-        if (!Conf['Quote Markers']) {
-          continue;
-        }
         QuoteMarkers.parseQuotelink(Get.postFromNode(quotelink), quotelink, true);
       }
     };
@@ -1397,9 +1394,6 @@
           continue;
         }
         $.rmClass(quotelink, 'deadlink');
-        if (!Conf['Quote Markers']) {
-          continue;
-        }
         QuoteMarkers.parseQuotelink(Get.postFromNode(quotelink), quotelink, true);
       }
     };
@@ -5236,9 +5230,6 @@
       }
       if (this.isClone) {
         this.nodes.backlinkContainer = $('.backlink-container', this.nodes.info);
-        if (!Conf['Quote Markers']) {
-          return;
-        }
         _ref = this.nodes.backlinks;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           backlink = _ref[_i];
@@ -5272,9 +5263,7 @@
       if (quoter.isHidden) {
         $.addClass(a, 'filtered');
       }
-      if (Conf['Quote Markers']) {
-        QuoteMarkers.parseQuotelink(quoted, a, false, text);
-      }
+      QuoteMarkers.parseQuotelink(quoted, a, false, text);
       if (Conf['Quote Previewing']) {
         $.on(a, 'mouseover', QuotePreview.mouseover);
       }
@@ -5812,9 +5801,7 @@
         this.quotes.push(quoteID);
       }
       if (!a) {
-        if (Conf['Quote Markers']) {
-          deadlink.textContent = "" + quote + "\u00A0(Dead)";
-        }
+        deadlink.textContent = "" + quote + "\u00A0(Dead)";
         return;
       }
       $.replace(deadlink, a);
