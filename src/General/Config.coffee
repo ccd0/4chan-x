@@ -2,7 +2,6 @@ Config =
   main:
     'Miscellaneous':
       'Desktop Notifications':        [true,  'Enables desktop notifications across various <%= meta.name %> features.']
-      'Announcement Hiding':          [true,  'Add button to hide 4chan announcements.']
       '404 Redirect':                 [true,  'Redirect dead threads and images.']
       'Keybinds':                     [true,  'Bind actions to keyboard shortcuts.']
       'Linkify':                      [true,  'Convert text links into hyperlinks.']
