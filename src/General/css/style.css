@@ -481,7 +481,8 @@ div.center:not(.ad-cnt) {
 :root.thread #index-menu,
 :root.index-loading .navLinks,
 :root.index-loading .board,
-:root.index-loading .pagelist {
+:root.index-loading .pagelist,
+:root.thread .pagelist {
   display: none;
 }
 .index:not(.catalog-mode) #returnlink {
