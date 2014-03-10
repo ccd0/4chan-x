@@ -5489,7 +5489,7 @@
         if (Conf['Mark Quotes of You']) {
           markers.push('You');
         }
-        $.addClass(this.nodes.root, 'quotesYou');
+        $.addClass(post.nodes.root, 'quotesYou');
       }
       if (board.ID === boardID) {
         if (Conf['Mark OP Quotes'] && thread.ID === postID) {

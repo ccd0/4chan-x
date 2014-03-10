@@ -23,7 +23,7 @@ QuoteMarkers =
 
     if QR.db.get {boardID, threadID, postID}
       markers.push 'You' if Conf['Mark Quotes of You']
-      $.addClass @nodes.root, 'quotesYou'
+      $.addClass post.nodes.root, 'quotesYou'
 
     if board.ID is boardID
       if Conf['Mark OP Quotes'] and thread.ID is postID
