@@ -23,14 +23,14 @@
   <div>Board link (Replace with title when on that board): <code>g-replace</code></div>
   <div>Full text link: <code>g-full</code></div>
   <div>Custom text link: <code>g-text:"Install Gentoo"</code></div>
-  <div>Index-only link: <code>g-index</code></div>
-  <div>Catalog-only link: <code>g-catalog</code></div>
   <div>External link: <code>external-text:"Google","http://www.google.com"</code></div>
-  <div>Combinations are possible: <code>g-index-text:"Technology Index"</code></div>
+  <div>Index mode: <code>g-mode:"type"</code> where type is <code>paged</code>, <code>all threads</code> or <code>catalog</code></div>
+  <div>Index sort: <code>g-sort:"type"</code> where type is <code>bump order</code>, <code>last reply</code>, <code>creation date</code>, <code>reply count</code> or <code>file count</code></div
+  <div>Combinations are possible: <code>g-text:"VIP Catalog"-mode:"catalog"-sort:"creation date"</code></div>
   <div>Full board list toggle: <code>toggle-all</code></div>
   <br>
   <div class=note>
-    <code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:"Piracy"]</code><br>
+    <code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h-mode:"catalog"-sort:"file count"] [t-text:"Piracy"]</code><br>
     will give you<br>
     <code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>
     if you are on /g/.
