@@ -5,7 +5,7 @@ Header =
       innerHTML: <%= importHTML('General/Header') %>
 
     @bar    = $ '#header-bar', headerEl
-    @toggle = $ '#toggle-header-bar', @bar
+    @toggle = $ '#header-bar-hitzone', @bar
     @noticesRoot = $ '#notifications', headerEl
 
     @menu = new UI.Menu 'header'
@@ -15,7 +15,6 @@ Header =
       href: 'javascript:;'
     $.on menuButton, 'click', @menuToggle
     @addShortcut menuButton, 0
-    $.on @toggle, 'mousedown', @toggleBarVisibility
     $.on window, 'load hashchange', Header.hashScroll
     $.on d, 'CreateNotification', @createNotification
 
@@ -178,22 +177,12 @@ Header =
 
   setBarVisibility: (hide) ->
     Header.headerToggler.checked = hide
-    $.event 'CloseMenu'
     (if hide then $.addClass else $.rmClass) Header.bar, 'autohide'
   toggleBarVisibility: (e) ->
-    return if e.type is 'mousedown' and e.button isnt 0 # not LMB
-    hide = if @nodeName is 'INPUT'
-      @checked
-    else
-      !$.hasClass Header.bar, 'autohide'
+    hide = @checked
     Conf['Header auto-hide'] = hide
     $.set 'Header auto-hide', hide
     Header.setBarVisibility hide
-    message = if hide
-      'The header bar will automatically hide itself.'
-    else
-      'The header bar will remain visible.'
-    new Notice 'info', message, 2
 
   setHideBarOnScroll: (hide) ->
     Header.scrollHeaderToggler.checked = hide

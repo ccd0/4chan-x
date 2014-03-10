@@ -1,3 +1,6 @@
+- Clicking on the border of the Header will not toggle `Header auto-hide` anymore.
+  You can still change the setting in the Header menu &rarr; Header.
+
 ## 3.19.0 - *2014-02-22*
 
 - Thread and post hiding changes:

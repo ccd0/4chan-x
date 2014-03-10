@@ -159,25 +159,17 @@ a[href="javascript:;"] {
   -webkit-transform: translateY(100%);
   transform: translateY(100%);
 }
-#toggle-header-bar {
+#header-bar-hitzone {
   left: 0;
   right: 0;
   height: 10px;
   position: absolute;
 }
-#header.top #toggle-header-bar {
-  cursor: n-resize;
+#header.top #header-bar-hitzone {
   bottom: -10px;
 }
-#header.bottom #toggle-header-bar {
-  cursor: s-resize;
+#header.bottom #header-bar-hitzone {
   top: -10px;
-}
-#header.top #header-bar.autohide #toggle-header-bar {
-  cursor: s-resize;
-}
-#header.bottom #header-bar.autohide #toggle-header-bar {
-  cursor: n-resize;
 }
 #header-bar a:not(.entry) {
   text-decoration: none;
