@@ -1,3 +1,6 @@
+### v2.9.3 
+*2014-03-11*
+
 **vampiricwulf**:
 - Fix Reveal Spoilers.
 
