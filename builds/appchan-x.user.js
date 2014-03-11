@@ -6950,7 +6950,7 @@
       this.showButton = $.el('a', {
         className: 'show-post-button fa',
         href: 'javascript:;',
-        textContext: '\uf196'
+        textContent: '\uf196'
       });
       Post.callbacks.push({
         name: 'Post Hiding',
