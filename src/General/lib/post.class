@@ -179,6 +179,8 @@ class Post
       Recursive.apply 'hide', @, label, makeStub, true
       Recursive.add   'hide', @, label, makeStub, true
 
+    PostHiding.saveHiddenState @, {thisPost: true, hideRecursively: hideRecursively, makeStub: makeStub}
+
     if !@isReply
       @thread.hide()
       return
@@ -210,6 +212,8 @@ class Post
     if showRecursively
       Recursive.apply 'show', @, true
       Recursive.rm    'hide', @
+
+    PostHiding.saveHiddenState @, {thisPost: true, hideRecursively: showRecursively, makeStub: !!@nodes.stub}
 
     if !@isReply
       @thread.show()
