@@ -5251,7 +5251,7 @@
       return $.add(this.nodes.info, container);
     },
     buildBacklink: function(quoted, quoter) {
-      var a, frag, text;
+      var a, frag, hash, text;
       frag = QuoteBacklink.frag.cloneNode(true);
       a = frag.lastElementChild;
       a.href = "/" + quoter.board + "/res/" + quoter.thread + "#p" + quoter;
@@ -5269,7 +5269,14 @@
       if (Conf['Quote Inlining']) {
         $.on(a, 'click', QuoteInline.toggle);
         if (Conf['Quote Hash Navigation']) {
-          QuoteInline.qiQuote(a, quoter.isHidden);
+          hash = QuoteInline.qiQuote(a, quoter.isHidden);
+        }
+      }
+      if (Conf['JSON Navigation']) {
+        if (hash) {
+          Navigate.singleQuoteLink(hash);
+        } else if (!Conf['Quote Inlining']) {
+          Navigate.singleQuoteLink(a);
         }
       }
       return frag;
@@ -12598,22 +12605,28 @@
       return $.on(replyLink, 'click', Navigate.navigate);
     },
     post: function() {
-      var boardID, hashlink, postID, postlink, threadID, _i, _len, _ref, _ref1;
-      if (Conf['Quote Hash Navigation']) {
-        _ref = $$('.hashlink', this.nodes.comment);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          hashlink = _ref[_i];
-          _ref1 = Get.postDataFromLink(hashlink), boardID = _ref1.boardID, threadID = _ref1.threadID, postID = _ref1.postID;
-          if (boardID !== g.BOARD.ID || (threadID !== g.THREADID)) {
-            $.on(hashlink, 'click', Navigate.navigate);
-          }
-        }
+      var linktype;
+      if (!(g.VIEW === 'thread' && this.thread.ID === g.THREADID)) {
+        $.on($('a[title="Highlight this post"]', this.nodes.info), 'click', Navigate.navigate);
       }
-      if (g.VIEW === 'thread' && this.thread.ID === g.THREADID) {
+      if (!(linktype = Conf['Quote Inlining'] && Conf['Quote Hash Navigation'] ? '.hashlink' : !Conf['Quote Inlining'] ? '.quotelink' : null)) {
         return;
       }
-      postlink = $('a[title="Highlight this post"]', this.nodes.info);
-      return $.on(postlink, 'click', Navigate.navigate);
+      return Navigate.quoteLink($$(linktype, this.nodes.comment));
+    },
+    quoteLink: function(links) {
+      var link, _i, _len;
+      for (_i = 0, _len = links.length; _i < _len; _i++) {
+        link = links[_i];
+        Navigate.singleQuoteLink(link);
+      }
+    },
+    singleQuoteLink: function(link) {
+      var boardID, threadID, _ref;
+      _ref = Get.postDataFromLink(link), boardID = _ref.boardID, threadID = _ref.threadID;
+      if (g.VIEW === 'index' || boardID !== g.BOARD.ID || threadID !== g.THREADID) {
+        return $.on(link, 'click', Navigate.navigate);
+      }
     },
     clean: function() {
       g.threads.forEach(function(thread) {
