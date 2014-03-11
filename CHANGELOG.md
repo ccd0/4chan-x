@@ -1,3 +1,14 @@
+**vampiricwulf**:
+- Fix Reveal Spoilers.
+
+**Zixaphir**:
+- JSON Navigation (Index, Catalog) performance improvements.
+- Fix Reveal Spoiler Thumbnails.
+- Fix post hide / hide show menu not working on Filtered posts.
+- Fix prev/next page keybinds.
+- Update Custom Navigation legend to reflect index mode changes.
+- JSON Navigation now works for backlinks (when Quote Inlining is disabled) and backlink hashlinks.
+
 ### v2.9.2 
 *2014-03-10*
 
