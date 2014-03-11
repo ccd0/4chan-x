@@ -3310,12 +3310,11 @@
       return $.event('IndexRefresh');
     },
     buildHRs: function(threadRoots) {
-      var node, nodes, _i, _len;
+      var i, node, nodes;
       nodes = [];
-      for (_i = 0, _len = threadRoots.length; _i < _len; _i++) {
-        node = threadRoots[_i];
-        nodes.push(node);
-        nodes.push($.el('hr'));
+      i = 0;
+      while (node = threadRoots[i++]) {
+        nodes.push(node, $.el('hr'));
       }
       return nodes;
     },
@@ -3360,7 +3359,7 @@
       return Main.callbackNodes(Post, posts);
     },
     buildCatalogViews: function() {
-      var catalogThreads, thread, _i, _len, _ref;
+      var catalogThreads, nodes, thread, _i, _j, _len, _len1, _ref, _ref1;
       catalogThreads = [];
       _ref = Index.sortedThreads;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3370,9 +3369,13 @@
         }
       }
       Main.callbackNodes(CatalogThread, catalogThreads);
-      return Index.sortedThreads.map(function(thread) {
-        return thread.catalogView.nodes.root;
-      });
+      nodes = [];
+      _ref1 = Index.sortedThreads;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        thread = _ref1[_j];
+        nodes.push(thread.catalogView.nodes.root);
+      }
+      return nodes;
     },
     sizeCatalogViews: function(nodes) {
       var height, node, ratio, size, thumb, width, _i, _len, _ref;
@@ -3390,13 +3393,16 @@
       }
     },
     sort: function() {
-      var sortedThreadIDs;
-      switch (Conf['Index Sort']) {
-        case 'bump':
-          sortedThreadIDs = Index.liveThreadIDs;
-          break;
-        case 'lastreply':
-          sortedThreadIDs = __slice.call(Index.liveThreadData).sort(function(a, b) {
+      var sortedThreadIDs, sortedThreads, threadID, _i, _len;
+      sortedThreads = [];
+      sortedThreadIDs = [];
+      ({
+        'bump': function() {
+          return sortedThreadIDs = Index.liveThreadIDs;
+        },
+        'lastreply': function() {
+          var data, liveData, _i, _len;
+          liveData = __slice.call(Index.liveThreadData).sort(function(a, b) {
             var _ref, _ref1;
             if ('last_replies' in a) {
               _ref = a.last_replies, a = _ref[_ref.length - 1];
@@ -3405,32 +3411,43 @@
               _ref1 = b.last_replies, b = _ref1[_ref1.length - 1];
             }
             return b.no - a.no;
-          }).map(function(data) {
-            return data.no;
           });
-          break;
-        case 'birth':
-          sortedThreadIDs = __slice.call(Index.liveThreadIDs).sort(function(a, b) {
+          for (_i = 0, _len = liveData.length; _i < _len; _i++) {
+            data = liveData[_i];
+            sortedThreadIDs.push(data.no);
+          }
+        },
+        'birth': function() {
+          return sortedThreadIDs = __slice.call(Index.liveThreadIDs).sort(function(a, b) {
             return b - a;
           });
-          break;
-        case 'replycount':
-          sortedThreadIDs = __slice.call(Index.liveThreadData).sort(function(a, b) {
+        },
+        'replycount': function() {
+          var data, liveData, _i, _len;
+          liveData = __slice.call(Index.liveThreadData).sort(function(a, b) {
             return b.replies - a.replies;
-          }).map(function(data) {
-            return data.no;
           });
-          break;
-        case 'filecount':
-          sortedThreadIDs = __slice.call(Index.liveThreadData).sort(function(a, b) {
+          for (_i = 0, _len = liveData.length; _i < _len; _i++) {
+            data = liveData[_i];
+            sortedThreadIDs.push(data.no);
+          }
+        },
+        'filecount': function() {
+          var data, liveData, _i, _len;
+          liveData = __slice.call(Index.liveThreadData).sort(function(a, b) {
             return b.images - a.images;
-          }).map(function(data) {
-            return data.no;
           });
+          for (_i = 0, _len = liveData.length; _i < _len; _i++) {
+            data = liveData[_i];
+            sortedThreadIDs.push(data.no);
+          }
+        }
+      })[Conf['Index Sort']]();
+      for (_i = 0, _len = sortedThreadIDs.length; _i < _len; _i++) {
+        threadID = sortedThreadIDs[_i];
+        sortedThreads.push(g.BOARD.threads[threadID]);
       }
-      Index.sortedThreads = sortedThreadIDs.map(function(threadID) {
-        return g.BOARD.threads[threadID];
-      }).filter(function(thread) {
+      Index.sortedThreads = sortedThreads.filter(function(thread) {
         return thread.isHidden === Index.showHiddenThreads;
       });
       if (Index.isSearching) {
@@ -3455,7 +3472,7 @@
       }
     },
     buildIndex: function(infinite) {
-      var nodes, pageNum, threads, threadsPerPage;
+      var nodes, pageNum, thread, threads, threadsPerPage, _i, _j, _len, _len1, _ref;
       switch (Conf['Index Mode']) {
         case 'paged':
         case 'infinite':
@@ -3466,9 +3483,11 @@
           }
           threadsPerPage = Index.getThreadsNumPerPage();
           threads = Index.sortedThreads.slice(threadsPerPage * pageNum, threadsPerPage * (pageNum + 1));
-          nodes = threads.map(function(thread) {
-            return thread.OP.nodes.root.parentNode;
-          });
+          nodes = [];
+          for (_i = 0, _len = threads.length; _i < _len; _i++) {
+            thread = threads[_i];
+            nodes.push(thread.OP.nodes.root.parentNode);
+          }
           Index.buildReplies(threads);
           nodes = Index.buildHRs(nodes);
           Index.buildPagelist();
@@ -3479,9 +3498,12 @@
           Index.sizeCatalogViews(nodes);
           break;
         default:
-          nodes = Index.sortedThreads.map(function(thread) {
-            return thread.OP.nodes.root.parentNode;
-          });
+          nodes = [];
+          _ref = Index.sortedThreads;
+          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+            thread = _ref[_j];
+            nodes.push(thread.OP.nodes.root.parentNode);
+          }
           Index.buildReplies(Index.sortedThreads);
           nodes = Index.buildHRs(nodes);
       }

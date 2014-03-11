@@ -616,9 +616,9 @@ Index =
 
   buildHRs: (threadRoots) ->
     nodes = []
-    for node in threadRoots
-      nodes.push node
-      nodes.push $.el 'hr'
+    i = 0
+    while node = threadRoots[i++]
+      nodes.push node, $.el 'hr'
     nodes
 
   buildReplies: (threads) ->
@@ -651,7 +651,9 @@ Index =
     for thread in Index.sortedThreads when !thread.catalogView
       catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
     Main.callbackNodes CatalogThread, catalogThreads
-    Index.sortedThreads.map (thread) -> thread.catalogView.nodes.root
+    nodes = []
+    nodes.push thread.catalogView.nodes.root for thread in Index.sortedThreads
+    return nodes
 
   sizeCatalogViews: (nodes) ->
     # XXX When browsers support CSS3 attr(), use it instead.
@@ -666,24 +668,32 @@ Index =
     return
 
   sort: ->
-    switch Conf['Index Sort']
-      when 'bump'
+    sortedThreads   = []
+    sortedThreadIDs = []
+
+    {
+      'bump': ->
         sortedThreadIDs = Index.liveThreadIDs
-      when 'lastreply'
-        sortedThreadIDs = [Index.liveThreadData...].sort (a, b) ->
+      'lastreply': ->
+        liveData = [Index.liveThreadData...].sort (a, b) ->
           [..., a] = a.last_replies if 'last_replies' of a
           [..., b] = b.last_replies if 'last_replies' of b
           b.no - a.no
-        .map (data) -> data.no
-      when 'birth'
+        sortedThreadIDs.push data.no for data in liveData
+        return
+      'birth': ->
         sortedThreadIDs = [Index.liveThreadIDs...].sort (a, b) -> b - a
-      when 'replycount'
-        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.replies - a.replies).map (data) -> data.no
-      when 'filecount'
-        sortedThreadIDs = [Index.liveThreadData...].sort((a, b) -> b.images - a.images).map (data) -> data.no
-    Index.sortedThreads = sortedThreadIDs
-      .map (threadID) -> g.BOARD.threads[threadID]
-      .filter (thread) -> thread.isHidden is Index.showHiddenThreads
+      'replycount': ->
+        liveData = [Index.liveThreadData...].sort((a, b) -> b.replies - a.replies)
+        sortedThreadIDs.push data.no for data in liveData
+        return
+      'filecount': ->
+        liveData = [Index.liveThreadData...].sort((a, b) -> b.images - a.images)
+        sortedThreadIDs.push data.no for data in liveData
+        return
+    }[Conf['Index Sort']]()
+    sortedThreads.push g.BOARD.threads[threadID] for threadID in sortedThreadIDs
+    Index.sortedThreads = sortedThreads.filter (thread) -> thread.isHidden is Index.showHiddenThreads
     if Index.isSearching
       Index.sortedThreads = Index.querySearch(Index.searchInput.value) or Index.sortedThreads
     # Sticky threads
@@ -707,7 +717,8 @@ Index =
           return
         threadsPerPage = Index.getThreadsNumPerPage()
         threads = Index.sortedThreads[threadsPerPage * pageNum ... threadsPerPage * (pageNum + 1)]
-        nodes   = threads.map (thread) -> thread.OP.nodes.root.parentNode
+        nodes = []
+        nodes.push thread.OP.nodes.root.parentNode for thread in threads
         Index.buildReplies threads
         nodes = Index.buildHRs nodes
         Index.buildPagelist()
@@ -716,7 +727,8 @@ Index =
         nodes = Index.buildCatalogViews()
         Index.sizeCatalogViews nodes
       else
-        nodes = Index.sortedThreads.map (thread) -> thread.OP.nodes.root.parentNode
+        nodes = []
+        nodes.push thread.OP.nodes.root.parentNode for thread in Index.sortedThreads
         Index.buildReplies Index.sortedThreads
         nodes = Index.buildHRs nodes
     $.rmAll Index.root unless infinite
