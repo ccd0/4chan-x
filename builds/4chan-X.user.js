@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.4.1 - 2014-03-10
+* 4chan X - Version 1.4.1 - 2014-03-11
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -1087,6 +1087,7 @@
         this.thread.OP = this;
         this.thread.isSticky = !!$('.stickyIcon', info);
         this.thread.isClosed = !!$('.closedIcon', info);
+        root.parentElement.dataset.fullID = this.fullID;
       }
       this.info = {};
       if (subject = $('.subject', info)) {
@@ -3844,7 +3845,7 @@
       return "/" + thread.board + "/ - " + excerpt;
     },
     threadFromRoot: function(root) {
-      return g.threads["" + g.BOARD + "." + root.id.slice(1)];
+      return g.threads[root.dataset.fullID];
     },
     threadFromNode: function(node) {
       return Get.threadFromRoot($.x('ancestor::div[@class="thread"]', node));
@@ -3862,9 +3863,7 @@
       return Get.postFromRoot($.x('ancestor::div[contains(@class,"postContainer")][1]', node));
     },
     contextFromNode: function(node) {
-      var snapshot;
-      snapshot = $.X('ancestor::div[contains(@class,"postContainer")]', node);
-      return Get.postFromRoot(snapshot.snapshotItem(snapshot.length - 1));
+      return Get.postFromRoot($.x('ancestor::div[@class="thread"]', node).firstElementChild);
     },
     postDataFromLink: function(link) {
       var boardID, path, postID, threadID, _ref;
