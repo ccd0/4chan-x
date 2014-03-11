@@ -252,17 +252,21 @@ Index =
     $.event 'change', null, Index.selectMode
 
   cycleSortType: ->
-    types = [Index.selectSort.options...].filter (option) -> !option.disabled
+    types = []
+    i = 0
+    while option = Index.selectSort.options[i++]
+      types.push option if !option.disabled
     for type, i in types
       break if type.selected
     types[(i + 1) % types.length].selected = true
     $.event 'change', null, Index.selectSort
 
   catalogSwitch: ->
-    return if !Conf['JSON Navigation']
-    $.set 'Index Mode', 'catalog'
-    {hash} = window.location
-    window.location = './' + hash
+    $.get 'JSON Navigation', true, (items) ->
+      return if !items['JSON Navigation']
+      $.set 'Index Mode', 'catalog'
+      {hash} = window.location
+      window.location = './' + hash
 
   searchTest: ->
     return unless hash = window.location.hash
@@ -331,13 +335,13 @@ Index =
       Index.buildIndex()
 
     target: ->
-      for threadID, thread of g.BOARD.threads when thread.catalogView
+      g.BOARD.threads.forEach (thread) ->
+        return if !thread.catalogView
         {thumb} = thread.catalogView.nodes
         if Conf['Open threads in a new tab']
           thumb.target = '_blank'
         else
           thumb.removeAttribute 'target'
-      return
 
     replies: ->
       Index.buildThreads()
@@ -652,7 +656,9 @@ Index =
       catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
     Main.callbackNodes CatalogThread, catalogThreads
     nodes = []
-    nodes.push thread.catalogView.nodes.root for thread in Index.sortedThreads
+    i = 0
+    while thread = Index.sortedThreads[i++]
+      nodes.push thread.catalogView.nodes.root
     return nodes
 
   sizeCatalogViews: (nodes) ->
@@ -679,21 +685,35 @@ Index =
           [..., a] = a.last_replies if 'last_replies' of a
           [..., b] = b.last_replies if 'last_replies' of b
           b.no - a.no
-        sortedThreadIDs.push data.no for data in liveData
+        i = 0
+        while data = liveData[i++]
+          sortedThreadIDs.push data.no
         return
       'birth': ->
         sortedThreadIDs = [Index.liveThreadIDs...].sort (a, b) -> b - a
       'replycount': ->
         liveData = [Index.liveThreadData...].sort((a, b) -> b.replies - a.replies)
-        sortedThreadIDs.push data.no for data in liveData
+        i = 0
+        while data = liveData[i++]
+          sortedThreadIDs.push data.no
         return
       'filecount': ->
         liveData = [Index.liveThreadData...].sort((a, b) -> b.images - a.images)
-        sortedThreadIDs.push data.no for data in liveData
+        i = 0
+        while data = liveData[i++]
+          sortedThreadIDs.push data.no
         return
     }[Conf['Index Sort']]()
-    sortedThreads.push g.BOARD.threads[threadID] for threadID in sortedThreadIDs
-    Index.sortedThreads = sortedThreads.filter (thread) -> thread.isHidden is Index.showHiddenThreads
+
+    i = 0
+    while threadID = sortedThreadIDs[i++]
+      sortedThreads.push g.BOARD.threads[threadID]
+
+    Index.sortedThreads = []
+    i = 0
+    while thread = sortedThreads[i++]
+      Index.sortedThreads.push thread if thread.isHidden is Index.showHiddenThreads
+
     if Index.isSearching
       Index.sortedThreads = Index.querySearch(Index.searchInput.value) or Index.sortedThreads
     # Sticky threads
@@ -773,8 +793,13 @@ Index =
     Index.search keywords
 
   search: (keywords) ->
-    Index.sortedThreads.filter (thread) ->
-      Index.searchMatch thread, keywords
+    filtered = []
+    i = 0
+    {sortedThreads} = Index
+    while thread = sortedThreads[i++]
+      filtered.push thread if Index.searchMatch thread, keywords
+    Index.sortedThreads = filtered
+    
 
   searchMatch: (thread, keywords) ->
     {info, file} = thread.OP

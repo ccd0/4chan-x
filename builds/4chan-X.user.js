@@ -2832,10 +2832,14 @@
       return $.event('change', null, Index.selectMode);
     },
     cycleSortType: function() {
-      var i, type, types, _i, _len;
-      types = __slice.call(Index.selectSort.options).filter(function(option) {
-        return !option.disabled;
-      });
+      var i, option, type, types, _i, _len;
+      types = [];
+      i = 0;
+      while (option = Index.selectSort.options[i++]) {
+        if (!option.disabled) {
+          types.push(option);
+        }
+      }
       for (i = _i = 0, _len = types.length; _i < _len; i = ++_i) {
         type = types[i];
         if (type.selected) {
@@ -2846,13 +2850,15 @@
       return $.event('change', null, Index.selectSort);
     },
     catalogSwitch: function() {
-      var hash;
-      if (!Conf['JSON Navigation']) {
-        return;
-      }
-      $.set('Index Mode', 'catalog');
-      hash = window.location.hash;
-      return window.location = './' + hash;
+      return $.get('JSON Navigation', true, function(items) {
+        var hash;
+        if (!items['JSON Navigation']) {
+          return;
+        }
+        $.set('Index Mode', 'catalog');
+        hash = window.location.hash;
+        return window.location = './' + hash;
+      });
     },
     searchTest: function() {
       var hash, match;
@@ -2942,20 +2948,18 @@
         return Index.buildIndex();
       },
       target: function() {
-        var thread, threadID, thumb, _ref;
-        _ref = g.BOARD.threads;
-        for (threadID in _ref) {
-          thread = _ref[threadID];
+        return g.BOARD.threads.forEach(function(thread) {
+          var thumb;
           if (!thread.catalogView) {
-            continue;
+            return;
           }
           thumb = thread.catalogView.nodes.thumb;
           if (Conf['Open threads in a new tab']) {
-            thumb.target = '_blank';
+            return thumb.target = '_blank';
           } else {
-            thumb.removeAttribute('target');
+            return thumb.removeAttribute('target');
           }
-        }
+        });
       },
       replies: function() {
         Index.buildThreads();
@@ -3359,7 +3363,7 @@
       return Main.callbackNodes(Post, posts);
     },
     buildCatalogViews: function() {
-      var catalogThreads, nodes, thread, _i, _j, _len, _len1, _ref, _ref1;
+      var catalogThreads, i, nodes, thread, _i, _len, _ref;
       catalogThreads = [];
       _ref = Index.sortedThreads;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3370,9 +3374,8 @@
       }
       Main.callbackNodes(CatalogThread, catalogThreads);
       nodes = [];
-      _ref1 = Index.sortedThreads;
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        thread = _ref1[_j];
+      i = 0;
+      while (thread = Index.sortedThreads[i++]) {
         nodes.push(thread.catalogView.nodes.root);
       }
       return nodes;
@@ -3393,7 +3396,7 @@
       }
     },
     sort: function() {
-      var sortedThreadIDs, sortedThreads, threadID, _i, _len;
+      var i, sortedThreadIDs, sortedThreads, thread, threadID;
       sortedThreads = [];
       sortedThreadIDs = [];
       ({
@@ -3401,7 +3404,7 @@
           return sortedThreadIDs = Index.liveThreadIDs;
         },
         'lastreply': function() {
-          var data, liveData, _i, _len;
+          var data, i, liveData;
           liveData = __slice.call(Index.liveThreadData).sort(function(a, b) {
             var _ref, _ref1;
             if ('last_replies' in a) {
@@ -3412,8 +3415,8 @@
             }
             return b.no - a.no;
           });
-          for (_i = 0, _len = liveData.length; _i < _len; _i++) {
-            data = liveData[_i];
+          i = 0;
+          while (data = liveData[i++]) {
             sortedThreadIDs.push(data.no);
           }
         },
@@ -3423,33 +3426,37 @@
           });
         },
         'replycount': function() {
-          var data, liveData, _i, _len;
+          var data, i, liveData;
           liveData = __slice.call(Index.liveThreadData).sort(function(a, b) {
             return b.replies - a.replies;
           });
-          for (_i = 0, _len = liveData.length; _i < _len; _i++) {
-            data = liveData[_i];
+          i = 0;
+          while (data = liveData[i++]) {
             sortedThreadIDs.push(data.no);
           }
         },
         'filecount': function() {
-          var data, liveData, _i, _len;
+          var data, i, liveData;
           liveData = __slice.call(Index.liveThreadData).sort(function(a, b) {
             return b.images - a.images;
           });
-          for (_i = 0, _len = liveData.length; _i < _len; _i++) {
-            data = liveData[_i];
+          i = 0;
+          while (data = liveData[i++]) {
             sortedThreadIDs.push(data.no);
           }
         }
       })[Conf['Index Sort']]();
-      for (_i = 0, _len = sortedThreadIDs.length; _i < _len; _i++) {
-        threadID = sortedThreadIDs[_i];
+      i = 0;
+      while (threadID = sortedThreadIDs[i++]) {
         sortedThreads.push(g.BOARD.threads[threadID]);
       }
-      Index.sortedThreads = sortedThreads.filter(function(thread) {
-        return thread.isHidden === Index.showHiddenThreads;
-      });
+      Index.sortedThreads = [];
+      i = 0;
+      while (thread = sortedThreads[i++]) {
+        if (thread.isHidden === Index.showHiddenThreads) {
+          Index.sortedThreads.push(thread);
+        }
+      }
       if (Index.isSearching) {
         Index.sortedThreads = Index.querySearch(Index.searchInput.value) || Index.sortedThreads;
       }
@@ -3553,9 +3560,16 @@
       return Index.search(keywords);
     },
     search: function(keywords) {
-      return Index.sortedThreads.filter(function(thread) {
-        return Index.searchMatch(thread, keywords);
-      });
+      var filtered, i, sortedThreads, thread;
+      filtered = [];
+      i = 0;
+      sortedThreads = Index.sortedThreads;
+      while (thread = sortedThreads[i++]) {
+        if (Index.searchMatch(thread, keywords)) {
+          filtered.push(thread);
+        }
+      }
+      return Index.sortedThreads = filtered;
     },
     searchMatch: function(thread, keywords) {
       var file, info, key, keyword, text, _i, _j, _len, _len1, _ref, _ref1;
