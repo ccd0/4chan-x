@@ -258,7 +258,7 @@ Build =
     $.addClass root, thread.OP.highlights... if thread.OP.highlights.length
 
     thumb = root.firstElementChild
-    if data.spoiler and !Conf['Reveal Spoilers']
+    if data.spoiler and !Conf['Reveal Spoiler Thumbnails']
       src = "#{staticPath}spoiler"
       if spoilerRange = Build.spoilerRange[thread.board]
         # Randomize the spoiler image.

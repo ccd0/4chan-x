@@ -1,6 +1,6 @@
 RevealSpoilers =
   init: ->
-    return if !Conf['Reveal Spoilers']
+    return if !Conf['Reveal Spoiler Thumbnails']
 
     Post.callbacks.push
       cb:   @node

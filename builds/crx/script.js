@@ -3873,7 +3873,7 @@
         $.addClass.apply($, [root].concat(__slice.call(thread.OP.highlights)));
       }
       thumb = root.firstElementChild;
-      if (data.spoiler && !Conf['Reveal Spoilers']) {
+      if (data.spoiler && !Conf['Reveal Spoiler Thumbnails']) {
         src = "" + staticPath + "spoiler";
         if (spoilerRange = Build.spoilerRange[thread.board]) {
           src += ("-" + thread.board) + Math.floor(1 + spoilerRange * Math.random());
@@ -8364,7 +8364,7 @@
 
   RevealSpoilers = {
     init: function() {
-      if (!Conf['Reveal Spoilers']) {
+      if (!Conf['Reveal Spoiler Thumbnails']) {
         return;
       }
       return Post.callbacks.push({
