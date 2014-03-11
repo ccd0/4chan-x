@@ -23,16 +23,29 @@ Navigate =
     $.on replyLink, 'click', Navigate.navigate
 
   post: -> # Allows us to navigate via JSON from thread to thread by hashes and quote highlights.
-    if Conf['Quote Hash Navigation']
-      for hashlink in $$ '.hashlink', @nodes.comment
-        {boardID, threadID, postID} = Get.postDataFromLink hashlink
-        if boardID isnt g.BOARD.ID or (threadID isnt g.THREADID)
-          $.on hashlink, 'click', Navigate.navigate
-
     # We don't need to reload the thread inside the thread
-    return if g.VIEW is 'thread' and @thread.ID is g.THREADID
-    postlink = $ 'a[title="Link to this post"]', @nodes.info
-    $.on postlink, 'click', Navigate.navigate
+    unless g.VIEW is 'thread' and @thread.ID is g.THREADID
+      $.on $('a[title="Link to this post"]', @nodes.info), 'click', Navigate.navigate
+
+    return unless (linktype = if Conf['Quote Inlining'] and Conf['Quote Hash Navigation']
+      '.hashlink'
+    else if !Conf['Quote Inlining']
+      '.quotelink'
+    else
+      null
+    )
+
+    Navigate.quoteLink $$ linktype, @nodes.comment
+
+  quoteLink: (links) ->
+    for link in links
+      Navigate.singleQuoteLink link
+    return
+
+  singleQuoteLink: (link) ->
+    {boardID, threadID} = Get.postDataFromLink link
+    if g.VIEW is 'index' or boardID isnt g.BOARD.ID or threadID isnt g.THREADID
+      $.on link, 'click', Navigate.navigate
 
   clean: ->
     # Garbage collection
