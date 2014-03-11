@@ -56,7 +56,6 @@ PostHiding =
       post.show()
     else
       post.hide 'Manually hidden'
-    PostHiding.saveHiddenState post
     return if post.isReply
 
     Index.updateHideLabel()
@@ -171,7 +170,7 @@ PostHiding =
         Recursive.add   'hide', post, label, makeStub, true
       else
         return
-      PostHiding.saveHiddenState post, {thisPost, hideRecursively: replies, makeStub}
+      PostHiding.saveHiddenState post, {thisPost: false, hideRecursively: replies, makeStub} unless thisPost
       $.event 'CloseMenu'
     show: (post) ->
       parent   = @parentNode
@@ -184,6 +183,5 @@ PostHiding =
         Recursive.rm    'hide', post, true
       else
         return
-      val = {thisPost: !thisPost, hideRecursively: !replies, makeStub: !!post.nodes.stub}
-      PostHiding.saveHiddenState post, val
+      PostHiding.saveHiddenState post, {thisPost: false, hideRecursively: !replies, makeStub: !!post.nodes.stub} unless thisPost
       $.event 'CloseMenu'

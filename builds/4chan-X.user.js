@@ -1259,6 +1259,11 @@
         Recursive.apply('hide', this, label, makeStub, true);
         Recursive.add('hide', this, label, makeStub, true);
       }
+      PostHiding.saveHiddenState(this, {
+        thisPost: true,
+        hideRecursively: hideRecursively,
+        makeStub: makeStub
+      });
       if (!this.isReply) {
         this.thread.hide();
         return;
@@ -1300,6 +1305,11 @@
         Recursive.apply('show', this, true);
         Recursive.rm('hide', this);
       }
+      PostHiding.saveHiddenState(this, {
+        thisPost: true,
+        hideRecursively: showRecursively,
+        makeStub: !!this.nodes.stub
+      });
       if (!this.isReply) {
         this.thread.show();
         return;
@@ -4942,7 +4952,6 @@
       } else {
         post.hide('Manually hidden');
       }
-      PostHiding.saveHiddenState(post);
       if (post.isReply) {
         return;
       }
@@ -5119,15 +5128,17 @@
         } else {
           return;
         }
-        PostHiding.saveHiddenState(post, {
-          thisPost: thisPost,
-          hideRecursively: replies,
-          makeStub: makeStub
-        });
+        if (!thisPost) {
+          PostHiding.saveHiddenState(post, {
+            thisPost: false,
+            hideRecursively: replies,
+            makeStub: makeStub
+          });
+        }
         return $.event('CloseMenu');
       },
       show: function(post) {
-        var parent, replies, thisPost, val;
+        var parent, replies, thisPost;
         parent = this.parentNode;
         thisPost = $('input[name=thisPost]', parent).checked;
         replies = $('input[name=replies]', parent).checked;
@@ -5139,12 +5150,13 @@
         } else {
           return;
         }
-        val = {
-          thisPost: !thisPost,
-          hideRecursively: !replies,
-          makeStub: !!post.nodes.stub
-        };
-        PostHiding.saveHiddenState(post, val);
+        if (!thisPost) {
+          PostHiding.saveHiddenState(post, {
+            thisPost: false,
+            hideRecursively: !replies,
+            makeStub: !!post.nodes.stub
+          });
+        }
         return $.event('CloseMenu');
       }
     }
