@@ -69,5 +69,10 @@ QuoteBacklink =
     if Conf['Quote Inlining']
       $.on a, 'click', QuoteInline.toggle
       if Conf['Quote Hash Navigation']
-        QuoteInline.qiQuote a, quoter.isHidden
+        hash = QuoteInline.qiQuote a, quoter.isHidden
+    if Conf['JSON Navigation']
+      if hash
+        Navigate.singleQuoteLink hash
+      else unless Conf['Quote Inlining']
+        Navigate.singleQuoteLink a
     frag

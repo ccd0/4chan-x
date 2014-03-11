@@ -3274,6 +3274,7 @@
         this.thread.OP = this;
         this.thread.isSticky = !!$('.stickyIcon', info);
         this.thread.isClosed = !!$('.closedIcon', info);
+        root.parentElement.dataset.fullID = this.fullID;
       }
       this.info = {};
       if (subject = $('.subject', info)) {
@@ -4951,10 +4952,14 @@
       return $.event('change', null, Index.selectMode);
     },
     cycleSortType: function() {
-      var i, type, types, _i, _len;
-      types = __slice.call(Index.selectSort.options).filter(function(option) {
-        return !option.disabled;
-      });
+      var i, option, type, types, _i, _len;
+      types = [];
+      i = 0;
+      while (option = Index.selectSort.options[i++]) {
+        if (!option.disabled) {
+          types.push(option);
+        }
+      }
       for (i = _i = 0, _len = types.length; _i < _len; i = ++_i) {
         type = types[i];
         if (type.selected) {
@@ -4965,13 +4970,15 @@
       return $.event('change', null, Index.selectSort);
     },
     catalogSwitch: function() {
-      var hash;
-      if (!Conf['JSON Navigation']) {
-        return;
-      }
-      $.set('Index Mode', 'catalog');
-      hash = window.location.hash;
-      return window.location = './' + hash;
+      return $.get('JSON Navigation', true, function(items) {
+        var hash;
+        if (!items['JSON Navigation']) {
+          return;
+        }
+        $.set('Index Mode', 'catalog');
+        hash = window.location.hash;
+        return window.location = './' + hash;
+      });
     },
     searchTest: function() {
       var hash, match;
@@ -5061,20 +5068,18 @@
         return Index.buildIndex();
       },
       target: function() {
-        var thread, threadID, thumb, _ref;
-        _ref = g.BOARD.threads;
-        for (threadID in _ref) {
-          thread = _ref[threadID];
+        return g.BOARD.threads.forEach(function(thread) {
+          var thumb;
           if (!thread.catalogView) {
-            continue;
+            return;
           }
           thumb = thread.catalogView.nodes.thumb;
           if (Conf['Open threads in a new tab']) {
-            thumb.target = '_blank';
+            return thumb.target = '_blank';
           } else {
-            thumb.removeAttribute('target');
+            return thumb.removeAttribute('target');
           }
-        }
+        });
       },
       replies: function() {
         Index.buildThreads();
@@ -5429,12 +5434,11 @@
       return $.event('IndexRefresh');
     },
     buildHRs: function(threadRoots) {
-      var node, nodes, _i, _len;
+      var i, node, nodes;
       nodes = [];
-      for (_i = 0, _len = threadRoots.length; _i < _len; _i++) {
-        node = threadRoots[_i];
-        nodes.push(node);
-        nodes.push($.el('hr'));
+      i = 0;
+      while (node = threadRoots[i++]) {
+        nodes.push(node, $.el('hr'));
       }
       return nodes;
     },
@@ -5479,7 +5483,7 @@
       return Main.callbackNodes(Post, posts);
     },
     buildCatalogViews: function() {
-      var catalogThreads, thread, _i, _len, _ref;
+      var catalogThreads, i, nodes, thread, _i, _len, _ref;
       catalogThreads = [];
       _ref = Index.sortedThreads;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -5489,9 +5493,12 @@
         }
       }
       Main.callbackNodes(CatalogThread, catalogThreads);
-      return Index.sortedThreads.map(function(thread) {
-        return thread.catalogView.nodes.root;
-      });
+      nodes = [];
+      i = 0;
+      while (thread = Index.sortedThreads[i++]) {
+        nodes.push(thread.catalogView.nodes.root);
+      }
+      return nodes;
     },
     sizeCatalogViews: function(nodes) {
       var height, node, ratio, size, thumb, width, _i, _len, _ref;
@@ -5509,13 +5516,16 @@
       }
     },
     sort: function() {
-      var sortedThreadIDs;
-      switch (Conf['Index Sort']) {
-        case 'bump':
-          sortedThreadIDs = Index.liveThreadIDs;
-          break;
-        case 'lastreply':
-          sortedThreadIDs = __slice.call(Index.liveThreadData).sort(function(a, b) {
+      var i, sortedThreadIDs, sortedThreads, thread, threadID;
+      sortedThreads = [];
+      sortedThreadIDs = [];
+      ({
+        'bump': function() {
+          return sortedThreadIDs = Index.liveThreadIDs;
+        },
+        'lastreply': function() {
+          var data, i, liveData;
+          liveData = __slice.call(Index.liveThreadData).sort(function(a, b) {
             var _ref, _ref1;
             if ('last_replies' in a) {
               _ref = a.last_replies, a = _ref[_ref.length - 1];
@@ -5524,34 +5534,49 @@
               _ref1 = b.last_replies, b = _ref1[_ref1.length - 1];
             }
             return b.no - a.no;
-          }).map(function(data) {
-            return data.no;
           });
-          break;
-        case 'birth':
-          sortedThreadIDs = __slice.call(Index.liveThreadIDs).sort(function(a, b) {
+          i = 0;
+          while (data = liveData[i++]) {
+            sortedThreadIDs.push(data.no);
+          }
+        },
+        'birth': function() {
+          return sortedThreadIDs = __slice.call(Index.liveThreadIDs).sort(function(a, b) {
             return b - a;
           });
-          break;
-        case 'replycount':
-          sortedThreadIDs = __slice.call(Index.liveThreadData).sort(function(a, b) {
+        },
+        'replycount': function() {
+          var data, i, liveData;
+          liveData = __slice.call(Index.liveThreadData).sort(function(a, b) {
             return b.replies - a.replies;
-          }).map(function(data) {
-            return data.no;
           });
-          break;
-        case 'filecount':
-          sortedThreadIDs = __slice.call(Index.liveThreadData).sort(function(a, b) {
+          i = 0;
+          while (data = liveData[i++]) {
+            sortedThreadIDs.push(data.no);
+          }
+        },
+        'filecount': function() {
+          var data, i, liveData;
+          liveData = __slice.call(Index.liveThreadData).sort(function(a, b) {
             return b.images - a.images;
-          }).map(function(data) {
-            return data.no;
           });
+          i = 0;
+          while (data = liveData[i++]) {
+            sortedThreadIDs.push(data.no);
+          }
+        }
+      })[Conf['Index Sort']]();
+      i = 0;
+      while (threadID = sortedThreadIDs[i++]) {
+        sortedThreads.push(g.BOARD.threads[threadID]);
       }
-      Index.sortedThreads = sortedThreadIDs.map(function(threadID) {
-        return g.BOARD.threads[threadID];
-      }).filter(function(thread) {
-        return thread.isHidden === Index.showHiddenThreads;
-      });
+      Index.sortedThreads = [];
+      i = 0;
+      while (thread = sortedThreads[i++]) {
+        if (thread.isHidden === Index.showHiddenThreads) {
+          Index.sortedThreads.push(thread);
+        }
+      }
       if (Index.isSearching) {
         Index.sortedThreads = Index.querySearch(Index.searchInput.value) || Index.sortedThreads;
       }
@@ -5574,7 +5599,7 @@
       }
     },
     buildIndex: function(infinite) {
-      var nodes, pageNum, threads, threadsPerPage;
+      var nodes, pageNum, thread, threads, threadsPerPage, _i, _j, _len, _len1, _ref;
       switch (Conf['Index Mode']) {
         case 'paged':
         case 'infinite':
@@ -5585,9 +5610,11 @@
           }
           threadsPerPage = Index.getThreadsNumPerPage();
           threads = Index.sortedThreads.slice(threadsPerPage * pageNum, threadsPerPage * (pageNum + 1));
-          nodes = threads.map(function(thread) {
-            return thread.OP.nodes.root.parentNode;
-          });
+          nodes = [];
+          for (_i = 0, _len = threads.length; _i < _len; _i++) {
+            thread = threads[_i];
+            nodes.push(thread.OP.nodes.root.parentNode);
+          }
           Index.buildReplies(threads);
           nodes = Index.buildHRs(nodes);
           Index.buildPagelist();
@@ -5598,9 +5625,12 @@
           Index.sizeCatalogViews(nodes);
           break;
         default:
-          nodes = Index.sortedThreads.map(function(thread) {
-            return thread.OP.nodes.root.parentNode;
-          });
+          nodes = [];
+          _ref = Index.sortedThreads;
+          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+            thread = _ref[_j];
+            nodes.push(thread.OP.nodes.root.parentNode);
+          }
           Index.buildReplies(Index.sortedThreads);
           nodes = Index.buildHRs(nodes);
       }
@@ -5650,9 +5680,16 @@
       return Index.search(keywords);
     },
     search: function(keywords) {
-      return Index.sortedThreads.filter(function(thread) {
-        return Index.searchMatch(thread, keywords);
-      });
+      var filtered, i, sortedThreads, thread;
+      filtered = [];
+      i = 0;
+      sortedThreads = Index.sortedThreads;
+      while (thread = sortedThreads[i++]) {
+        if (Index.searchMatch(thread, keywords)) {
+          filtered.push(thread);
+        }
+      }
+      return Index.sortedThreads = filtered;
     },
     searchMatch: function(thread, keywords) {
       var file, info, key, keyword, text, _i, _j, _len, _len1, _ref, _ref1;
@@ -5964,7 +6001,7 @@
       return "/" + thread.board + "/ - " + excerpt;
     },
     threadFromRoot: function(root) {
-      return g.threads["" + g.BOARD + "." + root.id.slice(1)];
+      return g.threads[root.dataset.fullID];
     },
     threadFromNode: function(node) {
       return Get.threadFromRoot($.x('ancestor::div[@class="thread"]', node));
@@ -5982,9 +6019,7 @@
       return Get.postFromRoot($.x('ancestor::div[contains(@class,"postContainer")][1]', node));
     },
     contextFromNode: function(node) {
-      var snapshot;
-      snapshot = $.X('ancestor::div[contains(@class,"postContainer")]', node);
-      return Get.postFromRoot(snapshot.snapshotItem(snapshot.length - 1));
+      return Get.postFromRoot($.x('ancestor::div[@class="thread"]', node).firstElementChild);
     },
     postDataFromLink: function(link) {
       var boardID, path, postID, threadID, _ref;
@@ -7366,7 +7401,7 @@
       return $.add(this.nodes.info, container);
     },
     buildBacklink: function(quoted, quoter) {
-      var a, frag, text;
+      var a, frag, hash, text;
       frag = QuoteBacklink.frag.cloneNode(true);
       a = frag.lastElementChild;
       a.href = "/" + quoter.board + "/res/" + quoter.thread + "#p" + quoter;
@@ -7384,7 +7419,14 @@
       if (Conf['Quote Inlining']) {
         $.on(a, 'click', QuoteInline.toggle);
         if (Conf['Quote Hash Navigation']) {
-          QuoteInline.qiQuote(a, quoter.isHidden);
+          hash = QuoteInline.qiQuote(a, quoter.isHidden);
+        }
+      }
+      if (Conf['JSON Navigation']) {
+        if (hash) {
+          Navigate.singleQuoteLink(hash);
+        } else if (!Conf['Quote Inlining']) {
+          Navigate.singleQuoteLink(a);
         }
       }
       return frag;
@@ -16223,22 +16265,28 @@
       return $.on(replyLink, 'click', Navigate.navigate);
     },
     post: function() {
-      var boardID, hashlink, postID, postlink, threadID, _i, _len, _ref, _ref1;
-      if (Conf['Quote Hash Navigation']) {
-        _ref = $$('.hashlink', this.nodes.comment);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          hashlink = _ref[_i];
-          _ref1 = Get.postDataFromLink(hashlink), boardID = _ref1.boardID, threadID = _ref1.threadID, postID = _ref1.postID;
-          if (boardID !== g.BOARD.ID || (threadID !== g.THREADID)) {
-            $.on(hashlink, 'click', Navigate.navigate);
-          }
-        }
+      var linktype;
+      if (!(g.VIEW === 'thread' && this.thread.ID === g.THREADID)) {
+        $.on($('a[title="Highlight this post"]', this.nodes.info), 'click', Navigate.navigate);
       }
-      if (g.VIEW === 'thread' && this.thread.ID === g.THREADID) {
+      if (!(linktype = Conf['Quote Inlining'] && Conf['Quote Hash Navigation'] ? '.hashlink' : !Conf['Quote Inlining'] ? '.quotelink' : null)) {
         return;
       }
-      postlink = $('a[title="Highlight this post"]', this.nodes.info);
-      return $.on(postlink, 'click', Navigate.navigate);
+      return Navigate.quoteLink($$(linktype, this.nodes.comment));
+    },
+    quoteLink: function(links) {
+      var link, _i, _len;
+      for (_i = 0, _len = links.length; _i < _len; _i++) {
+        link = links[_i];
+        Navigate.singleQuoteLink(link);
+      }
+    },
+    singleQuoteLink: function(link) {
+      var boardID, threadID, _ref;
+      _ref = Get.postDataFromLink(link), boardID = _ref.boardID, threadID = _ref.threadID;
+      if (g.VIEW === 'index' || boardID !== g.BOARD.ID || threadID !== g.THREADID) {
+        return $.on(link, 'click', Navigate.navigate);
+      }
     },
     clean: function() {
       g.threads.forEach(function(thread) {

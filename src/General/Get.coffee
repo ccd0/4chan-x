@@ -8,7 +8,7 @@ Get =
       excerpt = "#{excerpt[...67]}..."
     "/#{thread.board}/ - #{excerpt}"
   threadFromRoot: (root) ->
-    g.threads["#{g.BOARD}.#{root.id[1..]}"]
+    g.threads[root.dataset.fullID]
   threadFromNode: (node) ->
     Get.threadFromRoot $.x 'ancestor::div[@class="thread"]', node
   postFromRoot: (root) ->
@@ -17,8 +17,7 @@ Get =
   postFromNode: (node) ->
     Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', node
   contextFromNode: (node) ->
-    snapshot = $.X 'ancestor::div[contains(@class,"postContainer")]', node
-    Get.postFromRoot snapshot.snapshotItem(snapshot.length - 1)
+    Get.postFromRoot $.x('ancestor::div[@class="thread"]', node).firstElementChild
   postDataFromLink: (link) ->
     if link.hostname is 'boards.4chan.org'
       path     = link.pathname.split '/'
