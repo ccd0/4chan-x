@@ -30,4 +30,5 @@ Menu =
     clone
 
   toggle: (e) ->
-    Menu.menu.toggle e, @, Get.postFromNode @
+    fullID = $.x('ancestor::*[@data-full-i-d]', @).dataset.fullID
+    Menu.menu.toggle e, @, g.posts[fullID]
