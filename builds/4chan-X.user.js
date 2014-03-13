@@ -2706,8 +2706,8 @@
         return $.rmClass(doc, 'index-loading');
       });
     },
-    scroll: $.debounce(100, function() {
-      if (Index.req || Conf['Index Mode'] !== 'infinite' || (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight)) || g.VIEW === 'thread') {
+    scroll: $.debounce(500, function() {
+      if (Index.req || Conf['Index Mode'] !== 'infinite' || (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight)) || g.VIEW === 'thread') {
         return;
       }
       Index.pageNum = (Index.pageNum || Index.getCurrentPage()) + 1;

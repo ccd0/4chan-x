@@ -151,8 +151,8 @@ Index =
         $.after $.id('delform'), Index.pagelist
       $.rmClass doc, 'index-loading'
 
-  scroll: $.debounce 100, ->
-    return if Index.req or Conf['Index Mode'] isnt 'infinite' or (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
+  scroll: $.debounce 500, ->
+    return if Index.req or Conf['Index Mode'] isnt 'infinite' or (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
     Index.pageNum = (Index.pageNum or Index.getCurrentPage()) + 1 # Avoid having to pushState to keep track of the current page
 
     return Index.endNotice() if Index.pageNum >= Index.pagesNum
