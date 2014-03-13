@@ -3117,7 +3117,7 @@
       }
     },
     pageNav: function(pageNum) {
-      if (Index.currentPage === pageNum) {
+      if (Index.currentPage === pageNum && !Index.root.parentElement) {
         return;
       }
       history.pushState(null, '', pageNum === 0 ? './' : pageNum);
@@ -3215,7 +3215,7 @@
       return $('#hidden-count', Index.hideLabel).textContent = hiddenCount === 1 ? '1 hidden thread' : "" + hiddenCount + " hidden threads";
     },
     update: function(pageNum) {
-      var now, onload, _ref, _ref1;
+      var board, now, onload, sortedThreads, _ref, _ref1;
       if (!navigator.onLine) {
         return;
       }
@@ -3235,6 +3235,10 @@
       if ((_ref1 = Index.notice) != null) {
         _ref1.close();
       }
+      sortedThreads = Index.sortedThreads;
+      if (sortedThreads) {
+        board = sortedThreads[0].board.ID;
+      }
       now = Date.now();
       $.ready(function() {
         return Index.nTimeout = setTimeout((function() {
@@ -3249,11 +3253,11 @@
       onload = function(e) {
         return Index.load(e, pageNum);
       };
-      Index.req = $.ajax("//a.4cdn.org/" + g.BOARD + "/catalog.json", {
+      Index.req = $.ajax("//a.4cdn.org/" + g.BOARD.ID + "/catalog.json", {
         onabort: onload,
         onloadend: onload
       }, {
-        whenModified: Index.board === ("" + g.BOARD)
+        whenModified: board === g.BOARD.ID
       });
       return $.addClass(Index.button, 'fa-spin');
     },
@@ -3284,12 +3288,11 @@
         return;
       }
       Navigate.title();
-      Index.board = "" + g.BOARD;
       try {
         if (req.status === 200) {
           Index.parse(req.response, pageNum);
-        } else if (req.status === 304 && (pageNum != null)) {
-          Index.pageNav(pageNum);
+        } else if (req.status === 304) {
+          Index.pageNav(pageNum || 0);
         }
       } catch (_error) {
         err = _error;

@@ -412,7 +412,7 @@ Index =
       Index.pageNav pageNum
 
   pageNav: (pageNum) ->
-    return if Index.currentPage is pageNum
+    return if Index.currentPage is pageNum and not Index.root.parentElement
     history.pushState null, '', if pageNum is 0 then './' else pageNum
     Index.pageLoad pageNum
 
@@ -498,6 +498,10 @@ Index =
     delete Index.pageNum
     Index.req?.abort()
     Index.notice?.close()
+    
+    {sortedThreads} = Index
+    if sortedThreads
+      board = sortedThreads[0].board.ID
 
     # This notice only displays if Index Refresh is taking too long
     now = Date.now()
@@ -509,11 +513,11 @@ Index =
 
     pageNum = null if typeof pageNum isnt 'number' # event
     onload = (e) -> Index.load e, pageNum
-    Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
+    Index.req = $.ajax "//a.4cdn.org/#{g.BOARD.ID}/catalog.json",
       onabort:   onload
       onloadend: onload
     ,
-      whenModified: Index.board is "#{g.BOARD}"
+      whenModified: board is g.BOARD.ID
     $.addClass Index.button, 'fa-spin'
 
   load: (e, pageNum) ->
@@ -541,13 +545,11 @@ Index =
 
     Navigate.title()
 
-    Index.board = "#{g.BOARD}"
-
     try
       if req.status is 200
         Index.parse req.response, pageNum
-      else if req.status is 304 and pageNum?
-        Index.pageNav pageNum
+      else if req.status is 304
+        Index.pageNav pageNum or 0
     catch err
       c.error "Index failure: #{err.message}", err.stack
       # network error or non-JSON content for example.
