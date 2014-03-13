@@ -121,7 +121,7 @@ Index =
     $('.returnlink a',  Index.navLinks).href = $('.returnlink a',  Index.navLinksBot).href = "//boards.4chan.org/#{g.BOARD}/"
     $('.cataloglink a', Index.navLinks).href = $('.cataloglink a', Index.navLinksBot).href = "//boards.4chan.org/#{g.BOARD}/catalog"
 
-  scroll: $.debounce 500, ->
+  scroll: ->
     return if Index.req or Conf['Index Mode'] isnt 'infinite' or (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
     Index.pageNum = Index.getCurrentPage() unless Index.pageNum? # Avoid having to pushState to keep track of the current page
 
