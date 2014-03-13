@@ -96,7 +96,7 @@ Index =
 
     @searchInput = $ '#index-search', @navLinks
 
-    @searchTest()
+    @searchTest true
 
     @hideLabel   = $ '#hidden-label', @navLinks
     @selectMode  = $ '#index-mode',   @navLinks
@@ -268,11 +268,15 @@ Index =
       {hash} = window.location
       window.location = './' + hash
 
-  searchTest: ->
-    return unless hash = window.location.hash
-    return unless match = hash.match /s=([\w]+)/
+  searchTest: (init) ->
+    return false unless hash = window.location.hash
+    return false unless match = hash.match /s=([\w]+)/
     @searchInput.value = match[1]
-    $.on d, '4chanXInitFinished', @onSearchInput
+    if init
+      $.on d, '4chanXInitFinished', Index.onSearchInput
+    else
+      Index.onSearchInput()
+    return true
 
   setupNavLinks: ->
     for el in $$ '.navLinks.desktop > a'
@@ -621,26 +625,25 @@ Index =
     Index.updateHideLabel()
     $.event 'IndexRefresh'
 
-  buildReplies: (threads) ->
+  buildReplies: (thread) ->
     return unless Conf['Show Replies']
     posts = []
-    for thread in threads
-      i = Index.liveThreadIDs.indexOf thread.ID
-      continue unless lastReplies = Index.liveThreadData[i].last_replies
-      nodes = []
-      for data in lastReplies
-        if post = thread.posts[data.no]
-          nodes.push post.nodes.root
-          continue
-        nodes.push node = Build.postFromObject data, thread.board.ID
-        try
-          posts.push new Post node, thread, thread.board
-        catch err
-          # Skip posts that we failed to parse.
-          errors = [] unless errors
-          errors.push
-            message: "Parsing of Post No.#{data.no} failed. Post will be skipped."
-            error: err
+    i = Index.liveThreadIDs.indexOf thread.ID
+    return unless lastReplies = Index.liveThreadData[i].last_replies
+    nodes = []
+    for data in lastReplies
+      if post = thread.posts[data.no]
+        nodes.push post.nodes.root
+        continue
+      nodes.push node = Build.postFromObject data, thread.board.ID
+      try
+        posts.push new Post node, thread, thread.board
+      catch err
+        # Skip posts that we failed to parse.
+        errors = [] unless errors
+        errors.push
+          message: "Parsing of Post No.#{data.no} failed. Post will be skipped."
+          error: err
       $.add thread.OP.nodes.root.parentNode, nodes
 
     Main.handleErrors errors if errors
@@ -738,11 +741,11 @@ Index =
         threads = []
         i       = threadsPerPage * pageNum
         max     = i + threadsPerPage
-        while i < max
-          threads.push thread = sortedThreads[i++]
+        while i < max and thread = sortedThreads[i++]
+          threads.push thread
           nodes.push thread.OP.nodes.root.parentNode, $.el 'hr'
+          Index.buildReplies thread
 
-        Index.buildReplies threads
         Index.buildPagelist()
         Index.setPage()
 
@@ -755,7 +758,8 @@ Index =
         i     = 0
         while thread = sortedThreads[i++]
           nodes.push thread.OP.nodes.root.parentNode, $.el 'hr'
-        Index.buildReplies sortedThreads
+          Index.buildReplies thread
+
     $.rmAll Index.root unless infinite
     $.add Index.root, nodes
     $.event 'IndexBuild', nodes

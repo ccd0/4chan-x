@@ -478,6 +478,9 @@ div.center:not(.ad-cnt) {
 }
 
 /* Index */
+#index-menu {
+  display: flex;
+}
 :root.thread #index-menu,
 :root.index-loading .navLinks,
 :root.index-loading .board,
@@ -485,6 +488,7 @@ div.center:not(.ad-cnt) {
 :root.thread .pagelist {
   display: none;
 }
+:root:not(.catalog-mode) #index-size,
 .index:not(.catalog-mode) #returnlink {
   display: none;
 }
