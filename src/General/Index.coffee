@@ -477,7 +477,7 @@ Index =
   updateHideLabel: ->
     hiddenCount = 0
     for threadID, thread of g.BOARD.threads when thread.isHidden
-      hiddenCount++ if thread.ID in Index.liveThreadIDs
+      hiddenCount++ if thread.ID in Index.liveThreadData.keys
     unless hiddenCount
       Index.hideLabel.hidden = true
       Index.cb.toggleHiddenThreads() if Index.showHiddenThreads
@@ -576,28 +576,25 @@ Index =
   parseThreadList: (pages) ->
     Index.threadsNumPerPage = pages[0].threads.length
 
-    live = []
+    live = new SimpleDict()
     i    = 0
     while page = pages[i++]
-      live = live.concat page.threads
+      j = 0
+      {threads} = page
+      while thread = threads[j++]
+        live.push thread.no, thread
 
-    data = []
-    i    = 0
-    while thread = live[i++]
-      data.push thread.no
-
-    Index.liveThreadData    = live
-    Index.liveThreadIDs     = data
+    Index.liveThreadData = live
 
     g.BOARD.threads.forEach (thread) ->
-      thread.collect() unless thread.ID in Index.liveThreadIDs
+      thread.collect() unless thread.ID in Index.liveThreadData.keys
 
   buildThreads: ->
     threads = []
     posts   = []
-    i = 0
-    {liveThreadData} = Index
-    while threadData = liveThreadData[i]
+    errors  = null
+
+    Index.liveThreadData.forEach (threadData) ->
       threadRoot = Build.thread g.BOARD, threadData
       if thread = g.BOARD.threads[threadData.no]
         thread.setPage i // Index.threadsNumPerPage
@@ -605,31 +602,34 @@ Index =
         thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
         thread.setStatus 'Sticky', !!threadData.sticky
         thread.setStatus 'Closed', !!threadData.closed
+
       else
         thread = new Thread threadData.no, g.BOARD
         threads.push thread
-      i++
-      continue if thread.ID of thread.posts
+
+      return if thread.ID of thread.posts
+
       try
         posts.push new Post $('.opContainer', threadRoot), thread, g.BOARD
+
       catch err
         # Skip posts that we failed to parse.
         errors = [] unless errors
         errors.push
           message: "Parsing of Thread No.#{thread} failed. Thread will be skipped."
           error: err
-    Main.handleErrors errors if errors
 
+    Main.handleErrors  errors if errors
     Main.callbackNodes Thread, threads
     Main.callbackNodes Post,   posts
     Index.updateHideLabel()
+
     $.event 'IndexRefresh'
 
   buildReplies: (thread) ->
     return unless Conf['Show Replies']
     posts = []
-    i = Index.liveThreadIDs.indexOf thread.ID
-    return unless lastReplies = Index.liveThreadData[i].last_replies
+    return unless lastReplies = Index.liveThreadData[thread.ID].last_replies
     nodes = []
     for data in lastReplies
       if post = thread.posts[data.no]
@@ -676,11 +676,14 @@ Index =
     sortedThreads   = []
     sortedThreadIDs = []
 
+    liveData = []
+    Index.liveThreadData.forEach (data) -> liveData.push data
+
     {
       'bump': ->
-        sortedThreadIDs = Index.liveThreadIDs
+        sortedThreadIDs = Index.liveThreadData.keys
       'lastreply': ->
-        liveData = [Index.liveThreadData...].sort (a, b) ->
+        liveData.sort (a, b) ->
           [..., a] = a.last_replies if 'last_replies' of a
           [..., b] = b.last_replies if 'last_replies' of b
           b.no - a.no
@@ -689,15 +692,17 @@ Index =
           sortedThreadIDs.push data.no
         return
       'birth': ->
-        sortedThreadIDs = [Index.liveThreadIDs...].sort (a, b) -> b - a
+        sortedThreadIDs = [Index.liveThreadData.keys...].sort (a, b) -> b - a
       'replycount': ->
-        liveData = [Index.liveThreadData...].sort((a, b) -> b.replies - a.replies)
+        liveData.sort (a, b) -> b.replies - a.replies
         i = 0
         while data = liveData[i++]
           sortedThreadIDs.push data.no
         return
       'filecount': ->
-        liveData = [Index.liveThreadData...].sort((a, b) -> b.images - a.images)
+        liveData = []
+        Index.liveThreadData.forEach (data) -> liveData.push data
+        liveData.sort (a, b) -> b.images - a.images
         i = 0
         while data = liveData[i++]
           sortedThreadIDs.push data.no

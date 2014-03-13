@@ -3145,7 +3145,7 @@
       for (threadID in _ref) {
         thread = _ref[threadID];
         if (thread.isHidden) {
-          if (_ref1 = thread.ID, __indexOf.call(Index.liveThreadIDs, _ref1) >= 0) {
+          if (_ref1 = thread.ID, __indexOf.call(Index.liveThreadData.keys, _ref1) >= 0) {
             hiddenCount++;
           }
         }
@@ -3265,34 +3265,32 @@
       return Index.buildIndex();
     },
     parseThreadList: function(pages) {
-      var data, i, live, page, thread;
+      var i, j, live, page, thread, threads;
       Index.threadsNumPerPage = pages[0].threads.length;
-      live = [];
+      live = new SimpleDict();
       i = 0;
       while (page = pages[i++]) {
-        live = live.concat(page.threads);
-      }
-      data = [];
-      i = 0;
-      while (thread = live[i++]) {
-        data.push(thread.no);
+        j = 0;
+        threads = page.threads;
+        while (thread = threads[j++]) {
+          live.push(thread.no, thread);
+        }
       }
       Index.liveThreadData = live;
-      Index.liveThreadIDs = data;
       return g.BOARD.threads.forEach(function(thread) {
         var _ref;
-        if (_ref = thread.ID, __indexOf.call(Index.liveThreadIDs, _ref) < 0) {
+        if (_ref = thread.ID, __indexOf.call(Index.liveThreadData.keys, _ref) < 0) {
           return thread.collect();
         }
       });
     },
     buildThreads: function() {
-      var err, errors, i, liveThreadData, posts, thread, threadData, threadRoot, threads;
+      var errors, posts, threads;
       threads = [];
       posts = [];
-      i = 0;
-      liveThreadData = Index.liveThreadData;
-      while (threadData = liveThreadData[i]) {
+      errors = null;
+      Index.liveThreadData.forEach(function(threadData) {
+        var err, thread, threadRoot;
         threadRoot = Build.thread(g.BOARD, threadData);
         if (thread = g.BOARD.threads[threadData.no]) {
           thread.setPage(Math.floor(i / Index.threadsNumPerPage));
@@ -3304,23 +3302,22 @@
           thread = new Thread(threadData.no, g.BOARD);
           threads.push(thread);
         }
-        i++;
         if (thread.ID in thread.posts) {
-          continue;
+          return;
         }
         try {
-          posts.push(new Post($('.opContainer', threadRoot), thread, g.BOARD));
+          return posts.push(new Post($('.opContainer', threadRoot), thread, g.BOARD));
         } catch (_error) {
           err = _error;
           if (!errors) {
             errors = [];
           }
-          errors.push({
+          return errors.push({
             message: "Parsing of Thread No." + thread + " failed. Thread will be skipped.",
             error: err
           });
         }
-      }
+      });
       if (errors) {
         Main.handleErrors(errors);
       }
@@ -3330,13 +3327,12 @@
       return $.event('IndexRefresh');
     },
     buildReplies: function(thread) {
-      var data, err, errors, i, lastReplies, node, nodes, post, posts, _i, _len;
+      var data, err, errors, lastReplies, node, nodes, post, posts, _i, _len;
       if (!Conf['Show Replies']) {
         return;
       }
       posts = [];
-      i = Index.liveThreadIDs.indexOf(thread.ID);
-      if (!(lastReplies = Index.liveThreadData[i].last_replies)) {
+      if (!(lastReplies = Index.liveThreadData[thread.ID].last_replies)) {
         return;
       }
       nodes = [];
@@ -3400,16 +3396,20 @@
       }
     },
     sort: function() {
-      var i, sortedThreadIDs, sortedThreads, thread, threadID;
+      var i, liveData, sortedThreadIDs, sortedThreads, thread, threadID;
       sortedThreads = [];
       sortedThreadIDs = [];
+      liveData = [];
+      Index.liveThreadData.forEach(function(data) {
+        return liveData.push(data);
+      });
       ({
         'bump': function() {
-          return sortedThreadIDs = Index.liveThreadIDs;
+          return sortedThreadIDs = Index.liveThreadData.keys;
         },
         'lastreply': function() {
-          var data, i, liveData;
-          liveData = __slice.call(Index.liveThreadData).sort(function(a, b) {
+          var data, i;
+          liveData.sort(function(a, b) {
             var _ref, _ref1;
             if ('last_replies' in a) {
               _ref = a.last_replies, a = _ref[_ref.length - 1];
@@ -3425,13 +3425,13 @@
           }
         },
         'birth': function() {
-          return sortedThreadIDs = __slice.call(Index.liveThreadIDs).sort(function(a, b) {
+          return sortedThreadIDs = __slice.call(Index.liveThreadData.keys).sort(function(a, b) {
             return b - a;
           });
         },
         'replycount': function() {
-          var data, i, liveData;
-          liveData = __slice.call(Index.liveThreadData).sort(function(a, b) {
+          var data, i;
+          liveData.sort(function(a, b) {
             return b.replies - a.replies;
           });
           i = 0;
@@ -3440,8 +3440,12 @@
           }
         },
         'filecount': function() {
-          var data, i, liveData;
-          liveData = __slice.call(Index.liveThreadData).sort(function(a, b) {
+          var data, i;
+          liveData = [];
+          Index.liveThreadData.forEach(function(data) {
+            return liveData.push(data);
+          });
+          liveData.sort(function(a, b) {
             return b.images - a.images;
           });
           i = 0;
@@ -3734,7 +3738,7 @@
       sticky = isSticky ? " <img src=" + staticPath + "sticky" + gifIcon + " title=Sticky class=stickyIcon>" : '';
       closed = isClosed ? " <img src=" + staticPath + "closed" + gifIcon + " title=Closed class=closedIcon>" : '';
       if (isOP && g.VIEW === 'index') {
-        pageNum = Math.floor(Index.liveThreadIDs.indexOf(postID) / Index.threadsNumPerPage);
+        pageNum = Math.floor(Index.liveThreadData.keys.indexOf(postID) / Index.threadsNumPerPage);
         pageIcon = " <span class=page-num title='This thread is on page " + pageNum + " in the original index.'>Page " + pageNum + "</span>";
         replyLink = " &nbsp; <span>[<a href='/" + boardID + "/res/" + threadID + "' class=replylink>Reply</a>]</span>";
       } else {
@@ -3800,10 +3804,10 @@
     catalogThread: function(thread) {
       var comment, data, fileCount, gifIcon, pageCount, postCount, pp, quotelink, root, spoilerRange, src, staticPath, subject, thumb, _i, _j, _len, _len1, _ref, _ref1;
       staticPath = Build.staticPath, gifIcon = Build.gifIcon;
-      data = Index.liveThreadData[Index.liveThreadIDs.indexOf(thread.ID)];
+      data = Index.liveThreadData[thread.ID];
       postCount = data.replies + 1;
       fileCount = data.images + !!data.ext;
-      pageCount = Math.floor(Index.liveThreadIDs.indexOf(thread.ID) / Index.threadsNumPerPage);
+      pageCount = Math.floor(Index.liveThreadData.keys.indexOf(thread.ID) / Index.threadsNumPerPage);
       subject = thread.OP.info.subject ? "<div class='subject'>" + thread.OP.info.subject + "</div>" : '';
       comment = thread.OP.nodes.comment.innerHTML.replace(/(<br>\s*){2,}/g, '<br>');
       root = $.el('div', {
