@@ -591,7 +591,9 @@ Index =
   buildThreads: ->
     threads = []
     posts   = []
-    for threadData, i in Index.liveThreadData
+    i = 0
+    {liveThreadData} = Index
+    while threadData = liveThreadData[i]
       threadRoot = Build.thread g.BOARD, threadData
       if thread = g.BOARD.threads[threadData.no]
         thread.setPage i // Index.threadsNumPerPage
@@ -602,6 +604,7 @@ Index =
       else
         thread = new Thread threadData.no, g.BOARD
         threads.push thread
+      i++
       continue if thread.ID of thread.posts
       try
         posts.push new Post $('.opContainer', threadRoot), thread, g.BOARD
@@ -617,13 +620,6 @@ Index =
     Main.callbackNodes Post,   posts
     Index.updateHideLabel()
     $.event 'IndexRefresh'
-
-  buildHRs: (threadRoots) ->
-    nodes = []
-    i = 0
-    while node = threadRoots[i++]
-      nodes.push node, $.el 'hr'
-    nodes
 
   buildReplies: (threads) ->
     return unless Conf['Show Replies']
@@ -728,6 +724,7 @@ Index =
     return
 
   buildIndex: (infinite) ->
+    {sortedThreads} = Index
     switch Conf['Index Mode']
       when 'paged', 'infinite'
         pageNum = Index.getCurrentPage()
@@ -736,21 +733,29 @@ Index =
           Index.pageNav Index.getMaxPageNum()
           return
         threadsPerPage = Index.getThreadsNumPerPage()
-        threads = Index.sortedThreads[threadsPerPage * pageNum ... threadsPerPage * (pageNum + 1)]
-        nodes = []
-        nodes.push thread.OP.nodes.root.parentNode for thread in threads
+
+        nodes   = []
+        threads = []
+        i       = threadsPerPage * pageNum
+        max     = i + threadsPerPage
+        while i < max
+          threads.push thread = sortedThreads[i++]
+          nodes.push thread.OP.nodes.root.parentNode, $.el 'hr'
+
         Index.buildReplies threads
-        nodes = Index.buildHRs nodes
         Index.buildPagelist()
         Index.setPage()
+
       when 'catalog'
         nodes = Index.buildCatalogViews()
         Index.sizeCatalogViews nodes
+
       else
         nodes = []
-        nodes.push thread.OP.nodes.root.parentNode for thread in Index.sortedThreads
-        Index.buildReplies Index.sortedThreads
-        nodes = Index.buildHRs nodes
+        i     = 0
+        while thread = sortedThreads[i++]
+          nodes.push thread.OP.nodes.root.parentNode, $.el 'hr'
+        Index.buildReplies sortedThreads
     $.rmAll Index.root unless infinite
     $.add Index.root, nodes
     $.event 'IndexBuild', nodes
