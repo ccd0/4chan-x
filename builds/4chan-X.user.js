@@ -135,7 +135,6 @@
         'Catalog Links': [true, 'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'],
         'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
         'QR Shortcut': [false, 'Adds a small [QR] link in the header.'],
-        'Announcement Hiding': [true, 'Add button to hide 4chan announcements.'],
         'Desktop Notifications': [false, 'Enables desktop notifications across various 4chan X features.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
@@ -2295,18 +2294,14 @@
     },
     setBarVisibility: function(hide) {
       Header.headerToggler.checked = hide;
-      $.event('CloseMenu');
-      (hide ? $.addClass : $.rmClass)(Header.bar, 'autohide');
-      return (hide ? $.addClass : $.rmClass)(doc, 'autohide');
+      return (hide ? $.addClass : $.rmClass)(Header.bar, 'autohide');
     },
-    toggleBarVisibility: function() {
-      var hide, message;
-      hide = this.nodeName === 'INPUT' ? this.checked : !$.hasClass(Header.bar, 'autohide');
-      this.checked = hide;
-      $.set('Header auto-hide', Conf['Header auto-hide'] = hide);
-      Header.setBarVisibility(hide);
-      message = "The header bar will " + (hide ? 'automatically hide itself.' : 'remain visible.');
-      return new Notice('info', message, 2);
+    toggleBarVisibility: function(e) {
+      var hide;
+      hide = this.checked;
+      Conf['Header auto-hide'] = hide;
+      $.set('Header auto-hide', hide);
+      return Header.setBarVisibility(hide);
     },
     setHideBarOnScroll: function(hide) {
       Header.scrollHeaderToggler.checked = hide;
@@ -5098,6 +5093,9 @@
           }),
           order: 20,
           open: function(post) {
+            if (post.isReply) {
+              return false;
+            }
             this.el.textContent = post.isHidden ? 'Unhide thread' : 'Hide thread';
             if (this.cb) {
               $.off(this.el, 'click', this.cb);
@@ -9282,7 +9280,9 @@
       };
     })(),
     toggle: function(e) {
-      return Menu.menu.toggle(e, this, Get.postFromNode(this));
+      var fullID;
+      fullID = $.x('ancestor::*[@data-full-i-d]', this).dataset.fullID;
+      return Menu.menu.toggle(e, this, g.posts[fullID]);
     }
   };
 
@@ -10909,9 +10909,6 @@
 
   PSAHiding = {
     init: function() {
-      if (!Conf['Announcement Hiding']) {
-        return;
-      }
       $.addClass(doc, 'hide-announcement');
       return $.on(d, '4chanXInitFinished', this.setup);
     },

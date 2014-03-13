@@ -1,4 +1,3 @@
-
 **MayhemYDG**:
 - Thread and post hiding changes:
  - The posts' menu now has a label entry listing the reasons why a post got hidden or highlighted.
@@ -39,21 +38,27 @@
   <li> Filter (hiding, highlighting)
   <li> Thread Hiding
   <li> Linkify
-  <li> Auto-GIF
+  <li> Thumbnail Replacemenu
   <li> Image Hover
  </ul>
  - Support for the official catalog will be removed in the future, once the catalog mode for the index is deemed satisfactory.
 - Added `Original filename` variable to Sauce panel.
 - Fixed a bug which prevented QR cooldowns from being pruned from storage.
  - On Chrome, the storage could reach the quota and prevent 4chan X from saving data like QR name/mail or auto-watch for example.
+- Clicking on the border of the Header will not toggle `Header auto-hide` anymore.
+  You can still change the setting in the Header menu &rarr; Header.
+- Bugfixes
 
 **Vampiricwulf**
 - Flash embedding and other Flash features.
 
-**Zixaphir**
+**Zixaphir** 
+- Update Custom Navigation legend to reflect index mode changes.
+- JSON Navigation now works for backlinks (when Quote Inlining is disabled) and backlink hashlinks.
+- JSON Navigation (Index, Catalog) performance improvements.
 - Added a nifty bread-crumb for the JSON Navigation.
 - Many spiffy performance, state awareness, and sanity improvements to JSON Navigation.
-
+- Added a return button to the JSON Navigation that will switch you back to non-catalog view (requires NavLinks not to be hidden).
 
 ### v1.4.1 
 *2014-03-01*
