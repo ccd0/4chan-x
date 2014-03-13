@@ -2765,7 +2765,7 @@
         return $.rmClass(doc, 'index-loading');
       });
     },
-    scroll: $.debounce(500, function() {
+    scroll: function() {
       if (Index.req || Conf['Index Mode'] !== 'infinite' || (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight)) || g.VIEW === 'thread') {
         return;
       }
@@ -2774,7 +2774,7 @@
         return Index.endNotice();
       }
       return Index.buildIndex(true);
-    }),
+    },
     endNotice: (function() {
       var notify, reset;
       notify = false;
