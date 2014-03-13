@@ -9432,7 +9432,7 @@
       if (Conf['Updater and Stats in Header']) {
         Header.rmShortcut(this.dialog);
       } else {
-        $.rm(d.body, sc);
+        $.rm(this.dialog);
       }
       clearTimeout(this.timeout);
       delete this.timeout;
