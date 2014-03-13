@@ -26,6 +26,8 @@ Linkify =
 
       return
 
+    return unless Linkify.regString.test @info.comment
+
     test = /[^\s'"]+/g
     space = /[\s'"]/
 
