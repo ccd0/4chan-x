@@ -3795,7 +3795,7 @@
       sticky = isSticky ? " <img src=" + staticPath + "sticky" + gifIcon + " title=Sticky class=stickyIcon>" : '';
       closed = isClosed ? " <img src=" + staticPath + "closed" + gifIcon + " title=Closed class=closedIcon>" : '';
       if (isOP && g.VIEW === 'index') {
-        pageNum = Math.floor(Index.liveThreadData.keys.indexOf(postID) / Index.threadsNumPerPage);
+        pageNum = Math.floor(Index.liveThreadData.keys.indexOf("" + postID) / Index.threadsNumPerPage);
         pageIcon = " <span class=page-num title='This thread is on page " + pageNum + " in the original index.'>Page " + pageNum + "</span>";
         replyLink = " &nbsp; <span>[<a href='/" + boardID + "/res/" + threadID + "' class=replylink>Reply</a>]</span>";
       } else {
@@ -3864,7 +3864,7 @@
       data = Index.liveThreadData[thread.ID];
       postCount = data.replies + 1;
       fileCount = data.images + !!data.ext;
-      pageCount = Math.floor(Index.liveThreadData.keys.indexOf(thread.ID) / Index.threadsNumPerPage);
+      pageCount = Math.floor(Index.liveThreadData.keys.indexOf("" + thread.ID) / Index.threadsNumPerPage);
       subject = thread.OP.info.subject ? "<div class='subject'>" + thread.OP.info.subject + "</div>" : '';
       comment = thread.OP.nodes.comment.innerHTML.replace(/(<br>\s*){2,}/g, '<br>');
       root = $.el('div', {
