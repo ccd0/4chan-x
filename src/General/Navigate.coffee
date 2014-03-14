@@ -312,8 +312,8 @@ Navigate =
       makePost post
       $.add threadRoot, post
 
-    Main.callbackNodes Thread, [thread]
-    Main.callbackNodes Post,   posts
+    Thread.callbacks.execute [thread]
+    Post.callbacks.execute   posts
 
     QuoteThreading.force() if Conf['Quote Threading'] and not Conf['Unread Count']
 

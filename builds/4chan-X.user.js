@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.4.1 - 2014-03-13
+* 4chan X - Version 1.4.1 - 2014-03-14
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -849,24 +849,27 @@
       }
     };
 
-    Callbacks.prototype.execute = function(node) {
-      var err, errors, name, _i, _len, _ref;
-      _ref = this.keys;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        name = _ref[_i];
-        try {
-          if (!this[name].disconnected) {
-            this[name].call(node);
+    Callbacks.prototype.execute = function(nodes) {
+      var cb, err, errors, i, j, name, node;
+      i = 0;
+      while (name = this.keys[i++]) {
+        j = 0;
+        cb = this[name];
+        while (node = nodes[j++]) {
+          try {
+            if (!cb.disconnected) {
+              cb.call(node);
+            }
+          } catch (_error) {
+            err = _error;
+            if (!errors) {
+              errors = [];
+            }
+            errors.push({
+              message: ['"', name, '" crashed on node ', this.type, ' No.', node.ID, ' (', node.board, ').'].join(''),
+              error: err
+            });
           }
-        } catch (_error) {
-          err = _error;
-          if (!errors) {
-            errors = [];
-          }
-          errors.push({
-            message: ['"', name, '" crashed on node ', this.type, ' No.', node.ID, ' (', node.board, ').'].join(''),
-            error: err
-          });
         }
       }
       if (errors) {
@@ -3319,8 +3322,8 @@
       if (errors) {
         Main.handleErrors(errors);
       }
-      Main.callbackNodes(Thread, threads);
-      Main.callbackNodes(Post, posts);
+      Thread.callbacks.execute(threads);
+      Post.callbacks.execute(posts);
       Index.updateHideLabel();
       return $.event('IndexRefresh');
     },
@@ -3358,7 +3361,7 @@
       if (errors) {
         Main.handleErrors(errors);
       }
-      return Main.callbackNodes(Post, posts);
+      return Post.callbacks.execute(posts);
     },
     buildCatalogViews: function() {
       var catalogThreads, i, nodes, thread, _i, _len, _ref;
@@ -3370,7 +3373,7 @@
           catalogThreads.push(new CatalogThread(Build.catalogThread(thread), thread));
         }
       }
-      Main.callbackNodes(CatalogThread, catalogThreads);
+      CatalogThread.callbacks.execute(catalogThreads);
       nodes = [];
       i = 0;
       while (thread = Index.sortedThreads[i++]) {
@@ -3989,7 +3992,7 @@
         return;
       }
       clone = post.addClone(context);
-      Main.callbackNodes(Clone, [clone]);
+      Clone.callbacks.execute([clone]);
       nodes = clone.nodes;
       $.rmAll(nodes.root);
       $.add(nodes.root, nodes.post);
@@ -4046,7 +4049,7 @@
       board = g.boards[boardID] || new Board(boardID);
       thread = g.threads["" + boardID + "." + threadID] || new Thread(threadID, board);
       post = new Post(Build.postFromObject(post, boardID), thread, board);
-      Main.callbackNodes(Post, [post]);
+      Post.callbacks.execute([post]);
       return Get.insert(post, root, context);
     },
     archivedPost: function(req, boardID, postID, root, context) {
@@ -4115,7 +4118,7 @@
       if ((_ref1 = $('.page-num', post.nodes.info)) != null) {
         _ref1.hidden = true;
       }
-      Main.callbackNodes(Post, [post]);
+      Post.callbacks.execute([post]);
       return Get.insert(post, root, context);
     },
     parseMarkup: function(text) {
@@ -9878,7 +9881,7 @@
         ThreadUpdater.audio.play();
       }
       ThreadUpdater.lastPost = posts[count - 1].ID;
-      Main.callbackNodes(Post, posts);
+      Post.callbacks.execute(posts);
       scroll = Conf['Auto Scroll'] && ThreadUpdater.scrollBG() && Header.getBottomOf(ThreadUpdater.root) > -75;
       for (_j = 0, _len1 = posts.length; _j < _len1; _j++) {
         post = posts[_j];
@@ -11539,7 +11542,7 @@
         posts.push(post);
         postsRoot.push(root);
       }
-      Main.callbackNodes(Post, posts);
+      Post.callbacks.execute(posts);
       $.after(a, postsRoot);
       postsCount = postsRoot.length;
       return a.textContent = ExpandThread.text('-', postsRoot.length, filesCount);
@@ -12817,8 +12820,8 @@
         makePost(post);
         $.add(threadRoot, post);
       }
-      Main.callbackNodes(Thread, [thread]);
-      Main.callbackNodes(Post, posts);
+      Thread.callbacks.execute([thread]);
+      Post.callbacks.execute(posts);
       if (Conf['Quote Threading'] && !Conf['Unread Count']) {
         QuoteThreading.force();
       }
@@ -13699,10 +13702,9 @@
         if (errors) {
           Main.handleErrors(errors);
         }
-        Main.callbackNodes(Thread, threads);
-        Main.callbackNodesDB(Post, posts, function() {
-          return $.event('4chanXInitFinished');
-        });
+        Thread.callbacks.execute(threads);
+        Post.callbacks.execute(posts);
+        $.event('4chanXInitFinished');
       }
       return $.get('previousversion', null, function(_arg) {
         var changelog, el, previousversion;
@@ -13721,40 +13723,6 @@
         }
         return $.set('previousversion', g.VERSION);
       });
-    },
-    callbackNodes: function(klass, nodes) {
-      var cb, i, node;
-      i = 0;
-      cb = klass.callbacks;
-      while (node = nodes[i++]) {
-        cb.execute(node);
-      }
-    },
-    callbackNodesDB: function(klass, nodes, cb) {
-      var cbs, fn, i, softTask;
-      i = 0;
-      cbs = klass.callbacks;
-      fn = function() {
-        var node;
-        if (!(node = nodes[i])) {
-          return false;
-        }
-        cbs.execute(node);
-        return ++i % 25;
-      };
-      softTask = function() {
-        while (fn()) {
-          continue;
-        }
-        if (!nodes[i]) {
-          if (cb) {
-            cb();
-          }
-          return;
-        }
-        return setTimeout(softTask, 0);
-      };
-      return softTask();
     },
     addCallback: function(e) {
       var Klass, obj;

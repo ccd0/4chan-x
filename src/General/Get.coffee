@@ -81,7 +81,7 @@ Get =
     # Stop here if the container has been removed while loading.
     return unless root.parentNode
     clone = post.addClone context
-    Main.callbackNodes Clone, [clone]
+    Clone.callbacks.execute [clone]
 
     # Get rid of the side arrows/stubs.
     {nodes} = clone
@@ -136,7 +136,7 @@ Get =
     thread = g.threads["#{boardID}.#{threadID}"] or
       new Thread threadID, board
     post = new Post Build.postFromObject(post, boardID), thread, board
-    Main.callbackNodes Post, [post]
+    Post.callbacks.execute [post]
     Get.insert post, root, context
   archivedPost: (req, boardID, postID, root, context) ->
     # In case of multiple callbacks for the same request,
@@ -209,7 +209,7 @@ Get =
       new Thread threadID, board
     post = new Post Build.post(o, true), thread, board, {isArchived: true}
     $('.page-num', post.nodes.info)?.hidden = true
-    Main.callbackNodes Post, [post]
+    Post.callbacks.execute [post]
     Get.insert post, root, context
   parseMarkup: (text) ->
     {

@@ -622,8 +622,8 @@ Index =
           error: err
 
     Main.handleErrors  errors if errors
-    Main.callbackNodes Thread, threads
-    Main.callbackNodes Post,   posts
+    Thread.callbacks.execute threads
+    Post.callbacks.execute   posts
     Index.updateHideLabel()
 
     $.event 'IndexRefresh'
@@ -649,13 +649,13 @@ Index =
       $.add thread.OP.nodes.root.parentNode, nodes
 
     Main.handleErrors errors if errors
-    Main.callbackNodes Post, posts
+    Post.callbacks.execute posts
 
   buildCatalogViews: ->
     catalogThreads = []
     for thread in Index.sortedThreads when !thread.catalogView
       catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
-    Main.callbackNodes CatalogThread, catalogThreads
+    CatalogThread.callbacks.execute catalogThreads
     nodes = []
     i = 0
     while thread = Index.sortedThreads[i++]
