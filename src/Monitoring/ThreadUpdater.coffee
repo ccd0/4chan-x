@@ -333,7 +333,7 @@ ThreadUpdater =
       ThreadUpdater.audio.play()
 
     ThreadUpdater.lastPost = posts[count - 1].ID
-    Main.callbackNodes Post, posts
+    Post.callbacks.execute posts
 
     scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and Header.getBottomOf(ThreadUpdater.root) > -75
 

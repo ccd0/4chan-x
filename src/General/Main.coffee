@@ -239,9 +239,10 @@ Main =
               error: err
       Main.handleErrors errors if errors
 
-      Main.callbackNodes Thread, threads
-      Main.callbackNodesDB Post, posts, ->
-        $.event '4chanXInitFinished'
+      Thread.callbacks.execute threads
+      Post.callbacks.execute   posts
+
+      $.event '4chanXInitFinished'
 
     $.get 'previousversion', null, ({previousversion}) ->
       return if previousversion is g.VERSION
@@ -253,31 +254,6 @@ Main =
       else
         Settings.open()
       $.set 'previousversion', g.VERSION
-
-  callbackNodes: (klass, nodes) ->
-    i = 0
-    cb = klass.callbacks
-    while node = nodes[i++]
-      cb.execute node
-    return
-
-  callbackNodesDB: (klass, nodes, cb) ->
-    i   = 0
-    cbs = klass.callbacks
-    fn  = ->
-      return false unless node = nodes[i]
-      cbs.execute node
-      ++i % 25
-
-    softTask = ->
-      while fn()
-        continue
-      unless nodes[i]
-        cb() if cb
-        return
-      setTimeout softTask, 0 
-
-    softTask()
 
   addCallback: (e) ->
     obj = e.detail

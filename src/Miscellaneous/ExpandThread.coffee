@@ -100,7 +100,7 @@ ExpandThread =
       filesCount++ if 'file' of post
       posts.push post
       postsRoot.push root
-    Main.callbackNodes Post, posts
+    Post.callbacks.execute posts
     $.after a, postsRoot
 
     postsCount    = postsRoot.length
