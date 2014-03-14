@@ -11,7 +11,7 @@ Navigate =
 
     @title = -> return
 
-    @el = $.el 'div',
+    @el = $.el 'span',
       id: 'breadCrumb'
 
     Thread.callbacks.push
@@ -165,14 +165,16 @@ Navigate =
 
   navigate: (e) ->
     return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org'
-    return if e and (e.shiftKey or e.ctrlKey or (e.type is 'click' and e.button isnt 0)) # Not simply a left click
-
+    if e 
+      if e.shiftKey or e.ctrlKey or (e.type is 'click' and e.button isnt 0) # Not simply a left click
+        return 
 
     if @pathname is Navigate.path
       if g.VIEW is 'thread'
         ThreadUpdater.update()
       else
-        Index.update()
+        unless Index.searchTest()
+          Index.update()
       e.preventDefault()
       return
 

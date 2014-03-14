@@ -1,3 +1,9 @@
+**Mayhem**:
+- Bugfixes
+
+**Zixaphir**:
+- Bugfixes
+
 ### v2.9.3 
 *2014-03-11*
 
@@ -69,7 +75,7 @@
   <li> Filter (hiding, highlighting)
   <li> Thread Hiding
   <li> Linkify
-  <li> Auto-GIF
+  <li> Thumbnail Replacemenu
   <li> Image Hover
  </ul>
  - Support for the official catalog will be removed in the future, once the catalog mode for the index is deemed satisfactory.
@@ -86,7 +92,10 @@
 **Vampiricwulf**
 - Flash embedding and other Flash features.
 
-**Zixaphir**
+**Zixaphir** 
+- Update Custom Navigation legend to reflect index mode changes.
+- JSON Navigation now works for backlinks (when Quote Inlining is disabled) and backlink hashlinks.
+- JSON Navigation (Index, Catalog) performance improvements.
 - Added a nifty bread-crumb for the JSON Navigation.
 - Many spiffy performance, state awareness, and sanity improvements to JSON Navigation.
 - Bugfixes.

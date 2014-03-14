@@ -1,5 +1,6 @@
 Header =
   init: ->
+
     @menu = new UI.Menu 'header'
 
     menuButton = $.el 'span',
@@ -245,25 +246,13 @@ Header =
 
   setBarVisibility: (hide) ->
     Header.headerToggler.checked = hide
-    $.event 'CloseMenu'
     (if hide then $.addClass else $.rmClass) Header.bar, 'autohide'
-    (if hide then $.addClass else $.rmClass) doc, 'autohide'
 
-  toggleBarVisibility: ->
-    hide = if @nodeName is 'INPUT'
-      @checked
-    else
-      !$.hasClass Header.bar, 'autohide'
-    # set checked status if called from keybind
-    @checked = hide
-
-    $.set 'Header auto-hide', Conf['Header auto-hide'] = hide
+  toggleBarVisibility: (e) ->
+    hide = @checked
+    Conf['Header auto-hide'] = hide
+    $.set 'Header auto-hide', hide
     Header.setBarVisibility hide
-    message = "The header bar will #{if hide
-      'automatically hide itself.'
-    else
-      'remain visible.'}"
-    new Notice 'info', message, 2
 
   setHideBarOnScroll: (hide) ->
     Header.scrollHeaderToggler.checked = hide

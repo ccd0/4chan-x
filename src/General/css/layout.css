@@ -77,11 +77,19 @@ body > hr {
   display: none;
 }
 /* Index Features */
+#index-menu {
+  display: flex;
+}
 :root.thread #index-menu,
 :root.index-loading .navLinks,
 :root.index-loading .board,
 :root.index-loading .pagelist,
-.index #returnlink {
+:root.thread .pagelist {
+  display: none;
+}
+:root:not(.catalog-mode) #index-size,
+:root:not(.catalog-mode) #index-size + .selectrice,
+.index:not(.catalog-mode) #returnlink {
   display: none;
 }
 #index-menu .selectrice {
@@ -106,23 +114,6 @@ body > hr {
 <% } %>
 #index-search:not([data-searching]) + #index-search-clear {
   display: none;
-}
-.index #returnlink,
-.index #bottomlink,
-.thread #index-last-refresh,
-.thread #index-search-clear,
-.thread #index-search {
-  display: none;
-}
-#returnlink::before,
-#bottomlink::before,
-#index-last-refresh::before {
-  content: '[';
-}
-#returnlink::after,
-#bottomlink::after,
-#index-last-refresh::after  {
-  content: ']';
 }
 .catalog-mode .board {
   text-align: center;

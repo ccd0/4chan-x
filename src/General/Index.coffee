@@ -96,7 +96,7 @@ Index =
 
     @searchInput = $ '#index-search', @navLinks
 
-    @searchTest()
+    @searchTest true
 
     @hideLabel   = $ '#hidden-label', @navLinks
     @selectMode  = $ '#index-mode',   @navLinks
@@ -153,8 +153,8 @@ Index =
         $.after $.id('delform'), Index.pagelist
       $.rmClass doc, 'index-loading'
 
-  scroll: $.debounce 100, ->
-    return if Index.req or Conf['Index Mode'] isnt 'infinite' or (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
+  scroll: ->
+    return if Index.req or Conf['Index Mode'] isnt 'infinite' or (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
     Index.pageNum = (Index.pageNum or Index.getCurrentPage()) + 1 # Avoid having to pushState to keep track of the current page
 
     return Index.endNotice() if Index.pageNum >= Index.pagesNum
@@ -270,11 +270,15 @@ Index =
       {hash} = window.location
       window.location = './' + hash
 
-  searchTest: ->
-    return unless hash = window.location.hash
-    return unless match = hash.match /s=([\w]+)/
+  searchTest: (init) ->
+    return false unless hash = window.location.hash
+    return false unless match = hash.match /s=([\w]+)/
     @searchInput.value = match[1]
-    $.on d, '4chanXInitFinished', @onSearchInput
+    if init
+      $.on d, '4chanXInitFinished', Index.onSearchInput
+    else
+      Index.onSearchInput()
+    return true
 
   setupNavLinks: ->
     for el in $$ '.navLinks.desktop > a'
@@ -410,7 +414,7 @@ Index =
       Index.pageNav pageNum
 
   pageNav: (pageNum) ->
-    return if Index.currentPage is pageNum
+    return if Index.currentPage is pageNum and not Index.root.parentElement
     history.pushState null, '', if pageNum is 0 then './' else pageNum
     Index.pageLoad pageNum
 
@@ -475,7 +479,7 @@ Index =
   updateHideLabel: ->
     hiddenCount = 0
     for threadID, thread of g.BOARD.threads when thread.isHidden
-      hiddenCount++ if thread.ID in Index.liveThreadIDs
+      hiddenCount++ if thread.ID in Index.liveThreadData.keys
     unless hiddenCount
       Index.hideLabel.hidden = true
       Index.cb.toggleHiddenThreads() if Index.showHiddenThreads
@@ -496,6 +500,10 @@ Index =
     delete Index.pageNum
     Index.req?.abort()
     Index.notice?.close()
+    
+    {sortedThreads} = Index
+    if sortedThreads
+      board = sortedThreads[0].board.ID
 
     # This notice only displays if Index Refresh is taking too long
     now = Date.now()
@@ -507,11 +515,11 @@ Index =
 
     pageNum = null if typeof pageNum isnt 'number' # event
     onload = (e) -> Index.load e, pageNum
-    Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
+    Index.req = $.ajax "//a.4cdn.org/#{g.BOARD.ID}/catalog.json",
       onabort:   onload
       onloadend: onload
     ,
-      whenModified: Index.board is "#{g.BOARD}"
+      whenModified: board is g.BOARD.ID
     $.addClass Index.button, 'fa-spin'
 
   load: (e, pageNum) ->
@@ -539,13 +547,11 @@ Index =
 
     Navigate.title()
 
-    Index.board = "#{g.BOARD}"
-
     try
       if req.status is 200
         Index.parse req.response, pageNum
-      else if req.status is 304 and pageNum?
-        Index.pageNav pageNum
+      else if req.status is 304
+        Index.pageNav pageNum or 0
     catch err
       c.error "Index failure: #{err.message}", err.stack
       # network error or non-JSON content for example.
@@ -574,26 +580,25 @@ Index =
   parseThreadList: (pages) ->
     Index.threadsNumPerPage = pages[0].threads.length
 
-    live = []
+    live = new SimpleDict()
     i    = 0
     while page = pages[i++]
-      live = live.concat page.threads
+      j = 0
+      {threads} = page
+      while thread = threads[j++]
+        live.push thread.no, thread
 
-    data = []
-    i    = 0
-    while thread = live[i++]
-      data.push thread.no
-
-    Index.liveThreadData    = live
-    Index.liveThreadIDs     = data
+    Index.liveThreadData = live
 
     g.BOARD.threads.forEach (thread) ->
-      thread.collect() unless thread.ID in Index.liveThreadIDs
+      thread.collect() unless thread.ID in Index.liveThreadData.keys
 
   buildThreads: ->
     threads = []
     posts   = []
-    for threadData, i in Index.liveThreadData
+    errors  = null
+
+    Index.liveThreadData.forEach (threadData) ->
       threadRoot = Build.thread g.BOARD, threadData
       if thread = g.BOARD.threads[threadData.no]
         thread.setPage i // Index.threadsNumPerPage
@@ -601,52 +606,48 @@ Index =
         thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
         thread.setStatus 'Sticky', !!threadData.sticky
         thread.setStatus 'Closed', !!threadData.closed
+
       else
         thread = new Thread threadData.no, g.BOARD
         threads.push thread
-      continue if thread.ID of thread.posts
+
+      return if thread.ID of thread.posts
+
       try
         posts.push new Post $('.opContainer', threadRoot), thread, g.BOARD
+
       catch err
         # Skip posts that we failed to parse.
         errors = [] unless errors
         errors.push
           message: "Parsing of Thread No.#{thread} failed. Thread will be skipped."
           error: err
-    Main.handleErrors errors if errors
 
+    Main.handleErrors  errors if errors
     Main.callbackNodes Thread, threads
     Main.callbackNodes Post,   posts
     Index.updateHideLabel()
+
     $.event 'IndexRefresh'
 
-  buildHRs: (threadRoots) ->
-    nodes = []
-    i = 0
-    while node = threadRoots[i++]
-      nodes.push node, $.el 'hr'
-    nodes
-
-  buildReplies: (threads) ->
+  buildReplies: (thread) ->
     return unless Conf['Show Replies']
     posts = []
-    for thread in threads
-      i = Index.liveThreadIDs.indexOf thread.ID
-      continue unless lastReplies = Index.liveThreadData[i].last_replies
-      nodes = []
-      for data in lastReplies
-        if post = thread.posts[data.no]
-          nodes.push post.nodes.root
-          continue
-        nodes.push node = Build.postFromObject data, thread.board.ID
-        try
-          posts.push new Post node, thread, thread.board
-        catch err
-          # Skip posts that we failed to parse.
-          errors = [] unless errors
-          errors.push
-            message: "Parsing of Post No.#{data.no} failed. Post will be skipped."
-            error: err
+    return unless lastReplies = Index.liveThreadData[thread.ID].last_replies
+    nodes = []
+    for data in lastReplies
+      if post = thread.posts[data.no]
+        nodes.push post.nodes.root
+        continue
+      nodes.push node = Build.postFromObject data, thread.board.ID
+      try
+        posts.push new Post node, thread, thread.board
+      catch err
+        # Skip posts that we failed to parse.
+        errors = [] unless errors
+        errors.push
+          message: "Parsing of Post No.#{data.no} failed. Post will be skipped."
+          error: err
       $.add thread.OP.nodes.root.parentNode, nodes
 
     Main.handleErrors errors if errors
@@ -679,11 +680,14 @@ Index =
     sortedThreads   = []
     sortedThreadIDs = []
 
+    liveData = []
+    Index.liveThreadData.forEach (data) -> liveData.push data
+
     {
       'bump': ->
-        sortedThreadIDs = Index.liveThreadIDs
+        sortedThreadIDs = Index.liveThreadData.keys
       'lastreply': ->
-        liveData = [Index.liveThreadData...].sort (a, b) ->
+        liveData.sort (a, b) ->
           [..., a] = a.last_replies if 'last_replies' of a
           [..., b] = b.last_replies if 'last_replies' of b
           b.no - a.no
@@ -692,15 +696,17 @@ Index =
           sortedThreadIDs.push data.no
         return
       'birth': ->
-        sortedThreadIDs = [Index.liveThreadIDs...].sort (a, b) -> b - a
+        sortedThreadIDs = [Index.liveThreadData.keys...].sort (a, b) -> b - a
       'replycount': ->
-        liveData = [Index.liveThreadData...].sort((a, b) -> b.replies - a.replies)
+        liveData.sort (a, b) -> b.replies - a.replies
         i = 0
         while data = liveData[i++]
           sortedThreadIDs.push data.no
         return
       'filecount': ->
-        liveData = [Index.liveThreadData...].sort((a, b) -> b.images - a.images)
+        liveData = []
+        Index.liveThreadData.forEach (data) -> liveData.push data
+        liveData.sort (a, b) -> b.images - a.images
         i = 0
         while data = liveData[i++]
           sortedThreadIDs.push data.no
@@ -730,6 +736,7 @@ Index =
     return
 
   buildIndex: (infinite) ->
+    {sortedThreads} = Index
     switch Conf['Index Mode']
       when 'paged', 'infinite'
         pageNum = Index.getCurrentPage()
@@ -738,21 +745,30 @@ Index =
           Index.pageNav Index.getMaxPageNum()
           return
         threadsPerPage = Index.getThreadsNumPerPage()
-        threads = Index.sortedThreads[threadsPerPage * pageNum ... threadsPerPage * (pageNum + 1)]
-        nodes = []
-        nodes.push thread.OP.nodes.root.parentNode for thread in threads
-        Index.buildReplies threads
-        nodes = Index.buildHRs nodes
+
+        nodes   = []
+        threads = []
+        i       = threadsPerPage * pageNum
+        max     = i + threadsPerPage
+        while i < max and thread = sortedThreads[i++]
+          threads.push thread
+          nodes.push thread.OP.nodes.root.parentNode, $.el 'hr'
+          Index.buildReplies thread
+
         Index.buildPagelist()
         Index.setPage()
+
       when 'catalog'
         nodes = Index.buildCatalogViews()
         Index.sizeCatalogViews nodes
+
       else
         nodes = []
-        nodes.push thread.OP.nodes.root.parentNode for thread in Index.sortedThreads
-        Index.buildReplies Index.sortedThreads
-        nodes = Index.buildHRs nodes
+        i     = 0
+        while thread = sortedThreads[i++]
+          nodes.push thread.OP.nodes.root.parentNode, $.el 'hr'
+          Index.buildReplies thread
+
     $.rmAll Index.root unless infinite
     $.add Index.root, nodes
     $.event 'IndexBuild', nodes

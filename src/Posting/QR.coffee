@@ -606,6 +606,7 @@ QR =
 
   flagsInput: ->
     {nodes} = QR
+    return unless nodes
     if nodes.flag
       $.rm nodes.flag
       delete nodes.flag

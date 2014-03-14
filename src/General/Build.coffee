@@ -181,7 +181,7 @@ Build =
       ''
 
     if isOP and g.VIEW is 'index'
-      pageNum   = Index.liveThreadIDs.indexOf(postID) // Index.threadsNumPerPage
+      pageNum   = Index.liveThreadData.keys.indexOf("#{postID}") // Index.threadsNumPerPage
       pageIcon  = " <span class=page-num title='This thread is on page #{pageNum} in the original index.'>Page #{pageNum}</span>"
       replyLink = " &nbsp; <span>[<a href='/#{boardID}/res/#{threadID}' class=replylink>Reply</a>]</span>"
     else
@@ -237,11 +237,11 @@ Build =
 
   catalogThread: (thread) ->
     {staticPath, gifIcon} = Build
-    data = Index.liveThreadData[Index.liveThreadIDs.indexOf thread.ID]
+    data = Index.liveThreadData[thread.ID]
 
     postCount = data.replies + 1
     fileCount = data.images  + !!data.ext
-    pageCount = Index.liveThreadIDs.indexOf(thread.ID) // Index.threadsNumPerPage
+    pageCount = Index.liveThreadData.keys.indexOf("#{thread.ID}") // Index.threadsNumPerPage
 
     subject = if thread.OP.info.subject
       "<div class='subject'>#{thread.OP.info.subject}</div>"

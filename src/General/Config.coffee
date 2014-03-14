@@ -13,10 +13,6 @@ Config =
         false
         'Link to external catalog instead of the internal one.'
       ]
-      'Announcement Hiding': [
-        true
-        'Add button to hide 4chan announcements.'
-      ]
       'Desktop Notifications': [
         false
         'Enables desktop notifications across various <%= meta.name %> features.'
