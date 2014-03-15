@@ -503,7 +503,9 @@ div.center:not(.ad-cnt) {
 }
 #index-search-clear {
   color: gray;
-  margin-left: -1em;
+  position: relative;
+  left: -1.25em;
+  width: 0;
 }
 <% if (type === 'crx') { %>
 /* ``::-webkit-*'' selectors break selector lists on Firefox. */
