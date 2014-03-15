@@ -1,3 +1,9 @@
+### v2.9.5 
+*2014-03-15*
+
+**Zixaphir**:
+- Fix Reveal Spoiler Thumbnails (again).
+
 ### v2.9.4 
 *2014-03-14*
 
