@@ -23,7 +23,6 @@ class Post
       @thread.OP = @
       @thread.isSticky = !!$ '.stickyIcon', info
       @thread.isClosed = !!$ '.closedIcon', info
-      root.parentElement.dataset.fullID = @fullID
 
     @info = {}
     if subject        = $ '.subject',            info

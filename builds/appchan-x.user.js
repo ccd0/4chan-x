@@ -3276,7 +3276,6 @@
         this.thread.OP = this;
         this.thread.isSticky = !!$('.stickyIcon', info);
         this.thread.isClosed = !!$('.closedIcon', info);
-        root.parentElement.dataset.fullID = this.fullID;
       }
       this.info = {};
       if (subject = $('.subject', info)) {
@@ -6010,7 +6009,7 @@
       return "/" + thread.board + "/ - " + excerpt;
     },
     threadFromRoot: function(root) {
-      return g.threads[root.dataset.fullID];
+      return g.threads[$('.opcontainer', root).dataset.fullID];
     },
     threadFromNode: function(node) {
       return Get.threadFromRoot($.x('ancestor::div[@class="thread"]', node));
