@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.4 - 2014-03-14
+* appchan x - Version 2.9.4 - 2014-03-15
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -11163,6 +11163,7 @@
         return;
       }
       return Post.callbacks.push({
+        name: 'Reveal Spoiler Thumbnails',
         cb: this.node
       });
     },
