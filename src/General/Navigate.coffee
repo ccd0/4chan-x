@@ -118,6 +118,7 @@ Navigate =
     $.rmClass $('.current', fullBoardList), 'current'
     $.addClass $("a[href*='/#{boardID}/']", fullBoardList), 'current'
     Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
+    Index.catalogLink.href = "//boards.4chan.org/#{boardID}/"
 
     QR.flagsInput()
 
@@ -163,18 +164,37 @@ Navigate =
     $.rm subtitle if subtitle = $ '.boardSubtitle'
     $('.boardTitle').textContent = d.title = "/#{board}/ - #{title}"
 
+  setMode: (a) ->
+    {indexMode, indexSort} = a.dataset
+    result = false
+    if indexMode and Conf['Index Mode'] isnt indexMode
+      $.set 'Index Mode', Conf['Index Mode'] = Index.selectMode.value = indexMode
+      Index.cb.mode()
+      result = true
+
+    if indexSort and Conf['Index Sort'] isnt indexSort
+      $.set 'Index Sort', Conf['Index Sort'] = Index.selectSort.value = indexSort
+      Index.cb.sort()
+      result = true
+    
+    return result
+
   navigate: (e) ->
     return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org'
     if e 
       if e.shiftKey or e.ctrlKey or (e.type is 'click' and e.button isnt 0) # Not simply a left click
-        return 
+        Navigate.setMode @ unless e?.button is 2 # Right Click
+        return
 
     if @pathname is Navigate.path
       if g.VIEW is 'thread'
         ThreadUpdater.update()
       else
         unless Index.searchTest()
-          Index.update()
+          if Navigate.setMode @
+            Index.buildIndex()
+          else
+            Index.update()
       e.preventDefault()
       return
 
@@ -203,15 +223,8 @@ Navigate =
 
     history.pushState null, '', path unless @id is 'popState'
     Navigate.path = @pathname
-
-    {indexMode, indexSort} = @dataset
-    if indexMode and Conf['Index Mode'] isnt indexMode
-      $.set 'Index Mode', Conf['Index Mode'] = Index.selectMode.value = indexMode
-      Index.cb.mode()
-
-    if indexSort and Conf['Index Sort'] isnt indexSort
-      $.set 'Index Sort', Conf['Index Sort'] = Index.selectSort.value = indexSort
-      Index.cb.sort()
+    
+    Navigate.setMode @
 
     unless view is 'index' and 'index' is g.VIEW and boardID is g.BOARD.ID
       Navigate.disconnect()

@@ -89,7 +89,8 @@ body > hr {
 }
 :root:not(.catalog-mode) #index-size,
 :root:not(.catalog-mode) #index-size + .selectrice,
-.index:not(.catalog-mode) #returnlink {
+.index:not(.catalog-mode) #returnIcon,
+.index.catalog-mode #catalogIcon {
   display: none;
 }
 #index-menu .selectrice {
@@ -599,6 +600,9 @@ nav a,
 #navNext {
   <%= order %>: 80;
 }
+#catalogIcon {
+  <%= order %>: 90;
+}
 #returnIcon {
   <%= order %>: 100;
 }
@@ -667,6 +671,9 @@ nav a,
 }
 #img-controls {
   background-position: 0 -90px;
+}
+#catalogIcon {
+  background-position: 0 -120px;
 }
 #fappeTyme {
   background-position: 0 -135px;

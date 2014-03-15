@@ -118,12 +118,30 @@ Index =
 
     $.on d, 'scroll', Index.scroll
     $.on @pagelist, 'click', @cb.pageNav
-    $.on $('#returnlink a',  @navLinks), 'click', (e) ->
+
+    returnLink = $.el 'a',
+      id: 'returnIcon'
+      className: 'a-icon'
+      href: '.././'
+
+    @catalogLink = $.el 'a',
+      id: 'catalogIcon'
+      className: 'a-icon'
+      href: "//boards.4chan.org/#{g.BOARD.ID}/"
+    
+    @catalogLink.dataset.indexMode = 'catalog'
+
+    $.on returnLink, 'click', (e) ->
       if g.VIEW is 'index'
         Index.setIndexMode Conf['Previous Index Mode']
         e.preventDefault()
         return
       Navigate.navigate.call @, e
+
+    $.on @catalogLink, 'click', Navigate.navigate
+    
+    Header.addShortcut @catalogLink, true
+    Header.addShortcut returnLink,   true
 
     if g.VIEW is 'index'
       @update()
