@@ -1,8 +1,18 @@
+### v2.9.4 
+*2014-03-14*
+
 **Mayhem**:
-- Bugfixes
+- Bugfixes.
 
 **Zixaphir**:
-- Bugfixes
+- Restore catalog and return shortcut icons.
+- Added the ability to search from URL bar with #s=_searchterm_ (requires JSON Navigation).
+  - The vanilla 4chan search will also redirect to this if JSON Navigation is enabled.
+- Performance improvements to JSON Navigation and Linkify.
+- Bugfixes.
+  - Fixed an especially icky bug where the JSON Navigation would display a blank page on a 304 'Not-Modified' status.
+  - Hopefully this will resolve all "blank page" bugs with JSON Navigation that did not generate a user-visible error. (404 threads will still fail, for instance, but display an error)
+  - Fixed Infinite Scrolling in Chrome.
 
 ### v2.9.3 
 *2014-03-11*
