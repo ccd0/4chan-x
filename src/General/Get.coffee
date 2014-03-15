@@ -8,7 +8,7 @@ Get =
       excerpt = "#{excerpt[...67]}..."
     "/#{thread.board}/ - #{excerpt}"
   threadFromRoot: (root) ->
-    g.threads[$('.opcontainer', root).dataset.fullID]
+    g.threads[$('.opContainer', root).dataset.fullID]
   threadFromNode: (node) ->
     Get.threadFromRoot $.x 'ancestor::div[@class="thread"]', node
   postFromRoot: (root) ->

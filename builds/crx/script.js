@@ -3948,7 +3948,7 @@
       return "/" + thread.board + "/ - " + excerpt;
     },
     threadFromRoot: function(root) {
-      return g.threads[$('.opcontainer', root).dataset.fullID];
+      return g.threads[$('.opContainer', root).dataset.fullID];
     },
     threadFromNode: function(node) {
       return Get.threadFromRoot($.x('ancestor::div[@class="thread"]', node));
