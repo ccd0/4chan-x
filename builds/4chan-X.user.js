@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.4.1 - 2014-03-14
+* 4chan X - Version 1.4.1 - 2014-03-15
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -8369,6 +8369,7 @@
         return;
       }
       return Post.callbacks.push({
+        name: 'Reveal Spoiler Thumbnails',
         cb: this.node
       });
     },

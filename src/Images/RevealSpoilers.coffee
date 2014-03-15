@@ -3,6 +3,7 @@ RevealSpoilers =
     return if !Conf['Reveal Spoiler Thumbnails']
 
     Post.callbacks.push
+      name: 'Reveal Spoiler Thumbnails'
       cb:   @node
 
   node: ->
