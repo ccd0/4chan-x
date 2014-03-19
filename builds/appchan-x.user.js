@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.5 - 2014-03-15
+* appchan x - Version 2.9.5 - 2014-03-19
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -16508,7 +16508,9 @@
             }
           }
         }
-        e.preventDefault();
+        if (e != null) {
+          e.preventDefault();
+        }
         return;
       }
       $.addClass(Index.button, 'fa-spin');
@@ -17949,7 +17951,7 @@
         });
         $.before(styleSelector.previousSibling, [$.tn('['), passLink, $.tn(']\u00A0\u00A0')]);
       }
-      if (!(Conf['JSON Navigation'] && g.VIEW === 'index')) {
+      if (!Conf['JSON Navigation'] in g.VIEW === 'thread') {
         Main.initThread();
       } else {
         $.event('4chanXInitFinished');

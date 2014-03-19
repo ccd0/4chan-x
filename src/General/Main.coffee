@@ -196,7 +196,7 @@ Main =
       $.before styleSelector.previousSibling, [$.tn '['; passLink, $.tn ']\u00A0\u00A0']
 
     # Parse HTML or skip it and start building from JSON.
-    unless Conf['JSON Navigation'] and g.VIEW is 'index'
+    if !Conf['JSON Navigation'] of g.VIEW is 'thread'
       Main.initThread()
     else
       $.event '4chanXInitFinished'

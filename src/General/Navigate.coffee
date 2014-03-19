@@ -195,7 +195,7 @@ Navigate =
             Index.buildIndex()
           else
             Index.update()
-      e.preventDefault()
+      e?.preventDefault()
       return
 
     $.addClass Index.button, 'fa-spin'
