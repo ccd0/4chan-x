@@ -1,3 +1,10 @@
+### v2.9.6 
+*2014-03-19*
+
+**Zixaphir**:
+- Fix issues causing backlinks to be duplicated.
+- Old cached link titles will properly be pruned again.
+
 ### v2.9.5 
 *2014-03-15*
 
