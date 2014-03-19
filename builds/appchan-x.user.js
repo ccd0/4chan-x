@@ -8111,8 +8111,9 @@
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
-      if (Conf['Title Link']) {
+      if (Conf['Link Title']) {
         $.sync('CachedTitles', Linkify.titleSync);
+        this.clean();
       }
       return Post.callbacks.push({
         name: 'Linkify',
@@ -8327,6 +8328,26 @@
     },
     titleSync: function(value) {
       return Conf['CachedTitles'] = value;
+    },
+    clean: function() {
+      var age, name, pruned, uid, _ref, _ref1;
+      pruned = false;
+      c.log('cleaning');
+      c.log(Object.keys(Conf.CachedTitles).length);
+      _ref = Conf['CachedTitles'];
+      for (uid in _ref) {
+        _ref1 = _ref[uid], name = _ref1[0], age = _ref1[1];
+        if (!(age + $.DAY > Date.now())) {
+          continue;
+        }
+        pruned = true;
+        delete Conf['CachedTitles'][uid];
+      }
+      c.log(Object.keys(Conf.CachedTitles).length);
+      c.log('cleaned');
+      if (pruned) {
+        return $.set('CachedTitles', Conf['CachedTitles']);
+      }
     },
     cb: {
       toggle: function() {

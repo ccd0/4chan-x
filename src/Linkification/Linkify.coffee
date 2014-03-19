@@ -5,8 +5,9 @@ Linkify =
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
-    if Conf['Title Link']
+    if Conf['Link Title']
       $.sync 'CachedTitles', Linkify.titleSync
+      @clean()
 
     Post.callbacks.push
       name: 'Linkify'
@@ -190,7 +191,7 @@ Linkify =
         embed.dataset.title = title[0]
     else
       try
-        $.cache service.api(uid), 
+        $.cache service.api(uid),
           -> title = Linkify.cb.title @, data
         ,
           responseType: 'json'
@@ -204,6 +205,13 @@ Linkify =
 
   titleSync: (value) ->
     Conf['CachedTitles'] = value
+
+  clean: ->
+    pruned = false
+    for uid, [name, age] of Conf['CachedTitles'] when age + $.DAY > Date.now()
+      pruned = true
+      delete Conf['CachedTitles'][uid]
+    $.set 'CachedTitles', Conf['CachedTitles'] if pruned
 
   cb:
     toggle: ->
