@@ -8383,8 +8383,6 @@
     clean: function() {
       var age, name, pruned, uid, _ref, _ref1;
       pruned = false;
-      c.log('cleaning');
-      c.log(Object.keys(Conf.CachedTitles).length);
       _ref = Conf['CachedTitles'];
       for (uid in _ref) {
         _ref1 = _ref[uid], name = _ref1[0], age = _ref1[1];
@@ -8394,8 +8392,6 @@
         pruned = true;
         delete Conf['CachedTitles'][uid];
       }
-      c.log(Object.keys(Conf.CachedTitles).length);
-      c.log('cleaned');
       if (pruned) {
         return $.set('CachedTitles', Conf['CachedTitles']);
       }
@@ -16308,11 +16304,16 @@
   Navigate = {
     path: window.location.pathname,
     init: function() {
+      var popstateHack;
       if (g.BOARD.ID === 'f' || !Conf['JSON Navigation']) {
         return;
       }
+      popstateHack = function() {
+        $.off(window, 'popstate', popstateHack);
+        return $.on(window, 'popstate', Navigate.popstate);
+      };
+      $.on(window, 'popstate', popstateHack);
       $.ready(function() {
-        $.on(window, 'popstate', Navigate.popstate);
         Navigate.makeBreadCrumb(window.location, g.VIEW, g.BOARD.ID, g.THREADID);
         return $.add(Index.navLinks, Navigate.el);
       });
@@ -16579,7 +16580,7 @@
       }
       Navigate.makeBreadCrumb(this.href, view, boardID, threadID);
       if (this.id !== 'popState') {
-        history.pushState(null, '', path);
+        history.pushState('internal', '', path);
       }
       Navigate.path = this.pathname;
       Navigate.setMode(this);

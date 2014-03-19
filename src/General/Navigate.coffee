@@ -3,9 +3,18 @@ Navigate =
   init: ->
     return if g.BOARD.ID is 'f' or !Conf['JSON Navigation']
 
+    <% if (type === 'crx') { %>
+    # blink/webkit throw a popstate on page load. Not what we want.
+    popstateHack = -> 
+      $.off window, 'popstate', popstateHack
+      $.on  window, 'popstate', Navigate.popstate
+
+    $.on window, 'popstate', popstateHack
+    <% } else { %>
+    $.on  window, 'popstate', Navigate.popstate
+    <% } %>
+
     $.ready ->
-      # blink/webkit throw a popstate on page load. Not what we want.
-      $.on window, 'popstate', Navigate.popstate
       Navigate.makeBreadCrumb window.location, g.VIEW, g.BOARD.ID, g.THREADID
       $.add Index.navLinks, Navigate.el
 
@@ -221,7 +230,7 @@ Navigate =
 
     Navigate.makeBreadCrumb @href, view, boardID, threadID
 
-    history.pushState null, '', path unless @id is 'popState'
+    history.pushState 'internal', '', path unless @id is 'popState'
     Navigate.path = @pathname
     
     Navigate.setMode @
