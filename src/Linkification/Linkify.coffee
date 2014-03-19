@@ -190,7 +190,7 @@ Linkify =
         embed.dataset.title = title[0]
     else
       try
-        $.cache service.api(uid),
+        $.cache service.api(uid), 
           -> title = Linkify.cb.title @, data
         ,
           responseType: 'json'

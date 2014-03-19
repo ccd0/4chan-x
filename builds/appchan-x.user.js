@@ -17951,7 +17951,7 @@
         });
         $.before(styleSelector.previousSibling, [$.tn('['), passLink, $.tn(']\u00A0\u00A0')]);
       }
-      if (!Conf['JSON Navigation'] in g.VIEW === 'thread') {
+      if (!Conf['JSON Navigation'] || g.VIEW === 'thread') {
         Main.initThread();
       } else {
         $.event('4chanXInitFinished');
