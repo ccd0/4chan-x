@@ -276,6 +276,7 @@ $.sync = do ->
 
 $.desync = (key) -> delete $.syncing[key]
 
+# Chrome imposes a strict 4KB limit on synchronized extension data.
 $.localKeys = [
   # filters
   'name',
@@ -292,6 +293,7 @@ $.localKeys = [
   'MD5',
   # custom css
   'usercss'
+  # themes and mascots
   'userMascots'
   'userThemes'
 ]
