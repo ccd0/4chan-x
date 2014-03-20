@@ -5272,7 +5272,7 @@
       }
     },
     secondNode: function() {
-      var backlink, container, post, quoteID, _i, _j, _len, _len1, _ref, _ref1;
+      var backlink, container, map, post, quoteID, _i, _j, _len, _len1, _ref;
       if (!(this.isReply || Conf['OP Backlinks'])) {
         return;
       }
@@ -5288,10 +5288,9 @@
       this.nodes.backlinkContainer = container = $.el('span', {
         className: 'backlink-container'
       });
-      if (this.fullID in QuoteBacklink.map) {
-        _ref1 = QuoteBacklink.map[this.fullID];
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          quoteID = _ref1[_j];
+      if (map = QuoteBacklink.map[this.fullID]) {
+        for (_j = 0, _len1 = map.length; _j < _len1; _j++) {
+          quoteID = map[_j];
           if (post = g.posts[quoteID]) {
             $.add(container, QuoteBacklink.buildBacklink(this, post));
           }
