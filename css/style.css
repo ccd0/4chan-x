@@ -165,6 +165,9 @@ a[href="javascript:;"] {
   height: 10px;
   position: absolute;
 }
+#header-bar:not(.autohide) #header-bar-hitzone {
+  display: none;
+}
 #header.top #header-bar-hitzone {
   bottom: -10px;
 }

@@ -4,8 +4,8 @@ Header =
       id: 'header'
       innerHTML: <%= importHTML('General/Header') %>
 
-    @bar    = $ '#header-bar', headerEl
-    @toggle = $ '#header-bar-hitzone', @bar
+    @bar = $ '#header-bar', headerEl
+    @hitzone = $ '#header-bar-hitzone', @bar
     @noticesRoot = $ '#notifications', headerEl
 
     @menu = new UI.Menu 'header'
@@ -281,14 +281,14 @@ Header =
   getTopOf: (root) ->
     {top} = root.getBoundingClientRect()
     unless Conf['Bottom header']
-      headRect = Header.toggle.getBoundingClientRect()
+      headRect = (if $.hasClass Header.bar, 'autohide' then Header.hitzone else Header.bar).getBoundingClientRect()
       top     -= headRect.top + headRect.height
     top
   getBottomOf: (root) ->
     {clientHeight} = doc
     bottom = clientHeight - root.getBoundingClientRect().bottom
     if Conf['Bottom header']
-      headRect = Header.toggle.getBoundingClientRect()
+      headRect = (if $.hasClass Header.bar, 'autohide' then Header.hitzone else Header.bar).getBoundingClientRect()
       bottom  -= clientHeight - headRect.bottom + headRect.height
     bottom
   isHidden: ->
