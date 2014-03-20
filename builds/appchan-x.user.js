@@ -7400,7 +7400,7 @@
       }
     },
     secondNode: function() {
-      var backlink, container, post, quoteID, _i, _j, _len, _len1, _ref, _ref1;
+      var backlink, container, map, post, quoteID, _i, _j, _len, _len1, _ref;
       if (!(this.isReply || Conf['OP Backlinks'])) {
         return;
       }
@@ -7416,10 +7416,9 @@
       this.nodes.backlinkContainer = container = $.el('span', {
         className: 'backlink-container'
       });
-      if (this.fullID in QuoteBacklink.map) {
-        _ref1 = QuoteBacklink.map[this.fullID];
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          quoteID = _ref1[_j];
+      if (map = QuoteBacklink.map[this.fullID]) {
+        for (_j = 0, _len1 = map.length; _j < _len1; _j++) {
+          quoteID = map[_j];
           if (post = g.posts[quoteID]) {
             $.add(container, QuoteBacklink.buildBacklink(this, post));
           }
@@ -8111,10 +8110,6 @@
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
-      if (Conf['Link Title']) {
-        $.sync('CachedTitles', Linkify.titleSync);
-        this.clean();
-      }
       return Post.callbacks.push({
         name: 'Linkify',
         cb: this.node
@@ -8315,22 +8310,6 @@
             link.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
           }
         }
-      }
-    },
-    clean: function() {
-      var age, pruned, uid, _, _ref, _ref1;
-      pruned = false;
-      _ref = Conf['CachedTitles'];
-      for (uid in _ref) {
-        _ref1 = _ref[uid], _ = _ref1[0], age = _ref1[1];
-        if (!(age + $.DAY > Date.now())) {
-          continue;
-        }
-        pruned = true;
-        delete Conf['CachedTitles'][uid];
-      }
-      if (pruned) {
-        return $.set('CachedTitles', Conf['CachedTitles']);
       }
     },
     cb: {
@@ -16523,7 +16502,7 @@
       if ('f' === boardID || 'f' === g.BOARD.ID) {
         return;
       }
-      if (e) {
+      if (e != null) {
         e.preventDefault();
       }
       if (Index.isSearching) {
@@ -17958,9 +17937,8 @@
       }
       if (!Conf['JSON Navigation'] || g.VIEW === 'thread') {
         Main.initThread();
-      } else {
-        $.event('4chanXInitFinished');
       }
+      $.event('4chanXInitFinished');
       test = $.el('span');
       test.classList.add('a', 'b');
       if (test.className !== 'a b') {
@@ -18015,7 +17993,6 @@
         }
         Thread.callbacks.execute(threads);
         Post.callbacks.execute(posts);
-        $.event('4chanXInitFinished');
       }
       return $.get('previousversion', null, function(_arg) {
         var changelog, el, previousversion;

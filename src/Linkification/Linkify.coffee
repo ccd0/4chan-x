@@ -5,10 +5,6 @@ Linkify =
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
-    if Conf['Link Title']
-      $.sync 'CachedTitles', Linkify.titleSync
-      @clean()
-
     Post.callbacks.push
       name: 'Linkify'
       cb:   @node
@@ -184,13 +180,6 @@ Linkify =
         if link
           link.innerHTML = "[#{key}] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>"
         return
-
-  clean: ->
-    pruned = false
-    for uid, [_, age] of Conf['CachedTitles'] when age + $.DAY > Date.now()
-      pruned = true
-      delete Conf['CachedTitles'][uid]
-    $.set 'CachedTitles', Conf['CachedTitles'] if pruned
 
   cb:
     toggle: ->

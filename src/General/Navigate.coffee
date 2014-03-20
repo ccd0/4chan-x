@@ -190,7 +190,7 @@ Navigate =
 
   navigate: (e) ->
     return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org'
-    if e 
+    if e
       if e.shiftKey or e.ctrlKey or (e.type is 'click' and e.button isnt 0) # Not simply a left click
         Navigate.setMode @ unless e?.button is 2 # Right Click
         return
@@ -212,7 +212,7 @@ Navigate =
     [_, boardID, view, threadID] = @pathname.split '/'
 
     return if 'f' in [boardID, g.BOARD.ID]
-    e.preventDefault() if e
+    e?.preventDefault()
     Index.clearSearch() if Index.isSearching
     Navigate.title = -> return
 
@@ -232,7 +232,7 @@ Navigate =
 
     history.pushState 'internal', '', path unless @id is 'popState'
     Navigate.path = @pathname
-    
+
     Navigate.setMode @
 
     unless view is 'index' and 'index' is g.VIEW and boardID is g.BOARD.ID

@@ -47,10 +47,9 @@ QuoteBacklink =
       return
     @nodes.backlinkContainer = container = $.el 'span',
       className: 'backlink-container'
-    if @fullID of QuoteBacklink.map
-      for quoteID in QuoteBacklink.map[@fullID]
-        if post = g.posts[quoteID] # Post hasn't been collected since.
-          $.add container, QuoteBacklink.buildBacklink @, post
+    if map = QuoteBacklink.map[@fullID]
+      for quoteID in map when post = g.posts[quoteID] # Post hasn't been collected since.
+        $.add container, QuoteBacklink.buildBacklink @, post
     $.add @nodes.info, container
 
 

@@ -197,9 +197,9 @@ Main =
 
     # Parse HTML or skip it and start building from JSON.
     if !Conf['JSON Navigation'] or g.VIEW is 'thread'
-      Main.initThread()
-    else
-      $.event '4chanXInitFinished'
+      Main.initThread() 
+
+    $.event '4chanXInitFinished'
 
     <% if (type === 'userscript') { %>
     test = $.el 'span'
@@ -241,8 +241,6 @@ Main =
 
       Thread.callbacks.execute threads
       Post.callbacks.execute   posts
-
-      $.event '4chanXInitFinished'
 
     $.get 'previousversion', null, ({previousversion}) ->
       return if previousversion is g.VERSION
