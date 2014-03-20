@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.6 - 2014-03-19
+* appchan x - Version 2.9.6 - 2014-03-20
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -8120,20 +8120,21 @@
         cb: this.node
       });
     },
-    node: function() {
-      var data, el, end, endNode, i, index, items, length, link, links, node, result, saved, snapshot, space, test, word, _i, _len, _ref;
-      if (this.isClone) {
-        if (Conf['Embedding']) {
-          i = 0;
-          items = $$('.embedder', this.nodes.comment);
-          while (el = items[i++]) {
-            $.on(el, 'click', Linkify.cb.toggle);
-            if ($.hasClass(el, 'embedded')) {
-              Linkify.cb.toggle.call(el);
-            }
-          }
+    events: function(post) {
+      var el, i, items;
+      i = 0;
+      items = $$('.embedder', post.nodes.comment);
+      while (el = items[i++]) {
+        $.on(el, 'click', Linkify.cb.toggle);
+        if ($.hasClass(el, 'embedded')) {
+          Linkify.cb.toggle.call(el);
         }
-        return;
+      }
+    },
+    node: function() {
+      var data, end, endNode, i, index, length, link, links, node, result, saved, snapshot, space, test, word;
+      if (this.isClone) {
+        return (Conf['Embedding'] ? Linkify.events(this) : null);
       }
       if (!Linkify.regString.test(this.info.comment)) {
         return;
@@ -8145,7 +8146,7 @@
       links = [];
       while (node = snapshot.snapshotItem(i++)) {
         data = node.data;
-        if (node.parentElement.nodeName === "A" || !data) {
+        if (!data || node.parentElement.nodeName === "A") {
           continue;
         }
         while (result = test.exec(data)) {
@@ -8177,25 +8178,20 @@
           }
         }
       }
-      _ref = links.reverse();
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        link = _ref[_i];
-        this.nodes.links.push(Linkify.makeLink(link, this));
-        link.detach();
+      i = links.length;
+      while (i--) {
+        link = links[i];
+        Linkify.embedProcess(Linkify.makeLink(link, this));
       }
-      if (!(Conf['Embedding'] || Conf['Link Title'])) {
-        return;
-      }
-      links = this.nodes.links;
-      i = 0;
-      while (link = links[i++]) {
-        if (data = Linkify.services(link)) {
-          if (Conf['Embedding']) {
-            Linkify.embed(data);
-          }
-          if (Conf['Link Title']) {
-            Linkify.title(data);
-          }
+    },
+    embedProcess: function(link) {
+      var data;
+      if (data = Linkify.services(link)) {
+        if (Conf['Embedding']) {
+          Linkify.embed(data);
+        }
+        if (Conf['Link Title']) {
+          return Linkify.title(data);
         }
       }
     },
@@ -8250,6 +8246,7 @@
       });
       $.add(a, range.extractContents());
       range.insertNode(a);
+      range.detach();
       return a;
     },
     services: function(link) {
@@ -8258,10 +8255,9 @@
       _ref = Linkify.types;
       for (key in _ref) {
         type = _ref[key];
-        if (!(match = type.regExp.exec(href))) {
-          continue;
+        if (match = type.regExp.exec(href)) {
+          return [key, match[1], match[2], link];
         }
-        return [key, match[1], match[2], link];
       }
     },
     embed: function(data) {
@@ -8290,7 +8286,7 @@
       if (Conf['Auto-embed']) {
         Linkify.cb.toggle.call(embed);
       }
-      data.push(embed);
+      return data.push(embed);
     },
     title: function(data) {
       var embed, err, key, link, options, service, title, titles, uid;
@@ -8308,9 +8304,9 @@
         }
       } else {
         try {
-          $.cache(service.api(uid), function() {
-            return title = Linkify.cb.title(this, data);
-          }, {
+          return $.cache(service.api(uid), (function() {
+            return Linkify.cb.title(this, data);
+          }), {
             responseType: 'json'
           });
         } catch (_error) {
@@ -8318,23 +8314,15 @@
           if (link) {
             link.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
           }
-          return;
-        }
-        if (title) {
-          titles[uid] = [title, Date.now()];
-          return $.set('CachedTitles', titles);
         }
       }
     },
-    titleSync: function(value) {
-      return Conf['CachedTitles'] = value;
-    },
     clean: function() {
-      var age, name, pruned, uid, _ref, _ref1;
+      var age, pruned, uid, _, _ref, _ref1;
       pruned = false;
       _ref = Conf['CachedTitles'];
       for (uid in _ref) {
-        _ref1 = _ref[uid], name = _ref1[0], age = _ref1[1];
+        _ref1 = _ref[uid], _ = _ref1[0], age = _ref1[1];
         if (!(age + $.DAY > Date.now())) {
           continue;
         }
@@ -8370,26 +8358,26 @@
         $.addClass(el, a.dataset.key);
         return el;
       },
-      title: function(response, data) {
-        var embed, key, link, options, service, text, uid;
+      title: function(req, data) {
+        var embed, key, link, options, service, status, text, uid;
         key = data[0], uid = data[1], options = data[2], link = data[3], embed = data[4];
+        status = req.status;
         service = Linkify.types[key].title;
-        switch (response.status) {
-          case 200:
-          case 304:
-            text = "" + (service.text(response.response));
-            if (Conf['Embedding']) {
-              embed.dataset.title = text;
-            }
-            break;
-          case 404:
-            text = "[" + key + "] Not Found";
-            break;
-          case 403:
-            text = "[" + key + "] Forbidden or Private";
-            break;
-          default:
-            text = "[" + key + "] " + this.status + "'d";
+        text = "[" + key + "] " + ((function() {
+          switch (status) {
+            case 200:
+            case 304:
+              return service.text(req.response);
+            case 404:
+              return "Not Found";
+            case 403:
+              return "Forbidden or Private";
+            default:
+              return "" + status + "'d";
+          }
+        })());
+        if (Conf['Embedding'] && (status === 200 || status === 304)) {
+          embed.dataset.title = text;
         }
         if (link) {
           return link.textContent = text;

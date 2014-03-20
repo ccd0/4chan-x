@@ -13,28 +13,26 @@ Linkify =
       name: 'Linkify'
       cb:   @node
 
+  events: (post) ->
+    i = 0
+    items = $$ '.embedder', post.nodes.comment
+    while el = items[i++]
+      $.on el, 'click', Linkify.cb.toggle
+      Linkify.cb.toggle.call el if $.hasClass el, 'embedded'
+    return
+
   node: ->
-    if @isClone
-      if Conf['Embedding']
-        i = 0
-        items = $$ '.embedder', @nodes.comment
-        while el = items[i++]
-          $.on el, 'click', Linkify.cb.toggle
-          Linkify.cb.toggle.call el if $.hasClass el, 'embedded'
-
-      return
-
+    return (if Conf['Embedding'] then Linkify.events @ else null) if @isClone
     return unless Linkify.regString.test @info.comment
 
-    test = /[^\s'"]+/g
-    space = /[\s'"]/
-
+    test     = /[^\s'"]+/g
+    space    = /[\s'"]/
     snapshot = $.X './/br|.//text()', @nodes.comment
     i = 0
     links = []
     while node = snapshot.snapshotItem i++
       {data} = node
-      continue if node.parentElement.nodeName is "A" or not data
+      continue if !data or node.parentElement.nodeName is "A"
 
       while result = test.exec data
         {index} = result
@@ -59,41 +57,33 @@ Linkify =
               i--
               break
 
-        if Linkify.regString.exec word
-          links.push Linkify.makeRange node, endNode, index, length
+        links.push Linkify.makeRange node, endNode, index, length if Linkify.regString.exec word
 
         break unless test.lastIndex and node is endNode
 
-    for link in links.reverse()
-      @nodes.links.push Linkify.makeLink link, @
-      link.detach()
-
-    return unless Conf['Embedding'] or Conf['Link Title']
-
-    {links} = @nodes
-    i = 0
-    while link = links[i++]
-      if data = Linkify.services link
-        Linkify.embed data if Conf['Embedding']
-        Linkify.title data if Conf['Link Title']
-
+    i = links.length
+    while i--
+      link = links[i]
+      Linkify.embedProcess Linkify.makeLink link, @
     return
+
+  embedProcess: (link) ->
+    if data = Linkify.services link
+      Linkify.embed data if Conf['Embedding']
+      Linkify.title data if Conf['Link Title']
 
   regString: ///(
     # http, magnet, ftp, etc
     (https?|mailto|git|magnet|ftp|irc):(
       [a-z\d%/]
     )
-    |
-    # This should account for virtually all links posted without http:
+    | # This should account for virtually all links posted without http:
     [-a-z\d]+[.](
       aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2}
     )(/|(?!.))
-    |
-    # IPv4 Addresses
+    | # IPv4 Addresses
     [\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}
-    |
-    # E-mails
+    | # E-mails
     [-\w\d.@]+@[a-z\d.-]+\.[a-z\d]
   )///i
 
@@ -106,7 +96,7 @@ Linkify =
   makeLink: (range) ->
     text = range.toString()
 
-    # Clean leading brackets, >
+    # Clean start of range
     i = 0
     i++ while /[(\[{<>]/.test text.charAt i
 
@@ -116,7 +106,7 @@ Linkify =
 
       range.setStart range.startContainer, range.startOffset + i if i
 
-    # Clean hanging brackets, commas, periods
+    # Clean end of range
     i = 0
     while /[)\]}>.,]/.test t = text.charAt text.length - (1 + i)
       break unless /[.,]/.test(t) or (text.match /[()\[\]{}<>]/g).length % 2
@@ -129,6 +119,7 @@ Linkify =
       if i
         range.setEnd range.endContainer, range.endOffset - i
 
+    # Make our link 'valid' if it is formatted incorrectly.
     unless /(https?|mailto|git|magnet|ftp|irc):/.test text
       text = (
         if /@/.test text
@@ -142,15 +133,17 @@ Linkify =
       rel:       'nofollow noreferrer'
       target:    '_blank'
       href:      text
+
+    # Insert the range into the anchor, the anchor into the range's DOM location, and destroy the range.
     $.add a, range.extractContents()
     range.insertNode a
+    range.detach()
+
     a
 
   services: (link) ->
-    href = link.href
-
-    for key, type of Linkify.types
-      continue unless match = type.regExp.exec href
+    {href} = link
+    for key, type of Linkify.types when match = type.regExp.exec href
       return [key, match[1], match[2], link]
     return
 
@@ -162,9 +155,7 @@ Linkify =
       href:        'javascript:;'
       textContent: '(embed)'
 
-    for name, value of {key, href, uid, options}
-      embed.dataset[name] = value
-
+    embed.dataset[name]    = value for name, value of {key, href, uid, options}
     embed.dataset.nodedata = link.innerHTML
 
     $.addClass link, "#{embed.dataset.key}"
@@ -172,12 +163,9 @@ Linkify =
     $.on embed, 'click', Linkify.cb.toggle
     $.after link, [$.tn(' '), embed]
 
-    if Conf['Auto-embed']
-      Linkify.cb.toggle.call embed
+    Linkify.cb.toggle.call embed if Conf['Auto-embed']
 
     data.push embed
-
-    return
 
   title: (data) ->
     [key, uid, options, link, embed] = data
@@ -191,24 +179,15 @@ Linkify =
         embed.dataset.title = title[0]
     else
       try
-        $.cache service.api(uid),
-          -> title = Linkify.cb.title @, data
-        ,
-          responseType: 'json'
+        $.cache service.api(uid), (-> Linkify.cb.title @, data), responseType: 'json'
       catch err
         if link
           link.innerHTML = "[#{key}] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>"
         return
-      if title
-        titles[uid]  = [title, Date.now()]
-        $.set 'CachedTitles', titles
-
-  titleSync: (value) ->
-    Conf['CachedTitles'] = value
 
   clean: ->
     pruned = false
-    for uid, [name, age] of Conf['CachedTitles'] when age + $.DAY > Date.now()
+    for uid, [_, age] of Conf['CachedTitles'] when age + $.DAY > Date.now()
       pruned = true
       delete Conf['CachedTitles'][uid]
     $.set 'CachedTitles', Conf['CachedTitles'] if pruned
@@ -247,21 +226,24 @@ Linkify =
 
       return el
 
-    title: (response, data) ->
+    title: (req, data) ->
       [key, uid, options, link, embed] = data
+      {status} = req
       service = Linkify.types[key].title
-      switch response.status
+
+      text = "[#{key}] #{switch status
         when 200, 304
-          text = "#{service.text response.response}"
-          if Conf['Embedding']
-            embed.dataset.title = text
+          service.text req.response
         when 404
-          text = "[#{key}] Not Found"
+          "Not Found"
         when 403
-          text = "[#{key}] Forbidden or Private"
+          "Forbidden or Private"
         else
-          text = "[#{key}] #{@status}'d"
-      link.textContent = text if link
+          "#{status}'d"
+      }"
+
+      embed.dataset.title = text if Conf['Embedding'] and status in [200, 304]
+      link.textContent    = text if link
 
   types:
     audio:
