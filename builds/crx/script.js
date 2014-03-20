@@ -14320,7 +14320,7 @@
           Header.addShortcut(psaIcon, true);
         }
       }
-      if (g.VIEW === 'thread') {
+      if (!Conf['JSON Navigation'] && g.VIEW === 'thread') {
         el = $('body > div.navLinks > a');
         el.textContent = '';
         el.id = 'returnIcon';

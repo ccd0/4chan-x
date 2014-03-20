@@ -163,7 +163,7 @@ Style =
         $.add psaIcon, psa
         Header.addShortcut psaIcon, true
 
-    if g.VIEW is 'thread'
+    if !Conf['JSON Navigation'] and g.VIEW is 'thread'
       el = $('body > div.navLinks > a')
       el.textContent = ''
       el.id = 'returnIcon'
