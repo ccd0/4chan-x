@@ -1,3 +1,9 @@
+### v2.9.7 
+*2014-03-20*
+
+**Zixaphir**:
+- Fixed some issues with Chrome Storage and themes/mascots/link titles
+
 ### v2.9.6 
 *2014-03-19*
 
