@@ -292,6 +292,8 @@ $.localKeys = [
   'MD5',
   # custom css
   'usercss'
+  'userMascots'
+  'userThemes'
 ]
 
 # https://developer.chrome.com/extensions/storage.html

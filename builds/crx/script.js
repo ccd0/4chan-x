@@ -2906,7 +2906,7 @@
     return delete $.syncing[key];
   };
 
-  $.localKeys = ['name', 'uniqueID', 'tripcode', 'capcode', 'email', 'subject', 'comment', 'flag', 'filename', 'dimensions', 'filesize', 'MD5', 'usercss'];
+  $.localKeys = ['name', 'uniqueID', 'tripcode', 'capcode', 'email', 'subject', 'comment', 'flag', 'filename', 'dimensions', 'filesize', 'MD5', 'usercss', 'userMascots', 'userThemes'];
 
   (function() {
     var items, setArea, setSync, timeout;
