@@ -12640,13 +12640,32 @@
       }
       return $('.boardTitle').textContent = d.title = "/" + board + "/ - " + title;
     },
+    setMode: function(a) {
+      var indexMode, indexSort, result, _ref;
+      _ref = a.dataset, indexMode = _ref.indexMode, indexSort = _ref.indexSort;
+      result = false;
+      if (indexMode && Conf['Index Mode'] !== indexMode) {
+        $.set('Index Mode', Conf['Index Mode'] = Index.selectMode.value = indexMode);
+        Index.cb.mode();
+        result = true;
+      }
+      if (indexSort && Conf['Index Sort'] !== indexSort) {
+        $.set('Index Sort', Conf['Index Sort'] = Index.selectSort.value = indexSort);
+        Index.cb.sort();
+        result = true;
+      }
+      return result;
+    },
     navigate: function(e) {
-      var boardID, indexMode, indexSort, load, pageNum, path, threadID, view, _, _ref, _ref1;
+      var boardID, load, pageNum, path, threadID, view, _, _ref;
       if (this.hostname !== 'boards.4chan.org' || window.location.hostname === 'rs.4chan.org') {
         return;
       }
       if (e) {
         if (e.shiftKey || e.ctrlKey || (e.type === 'click' && e.button !== 0)) {
+          if ((e != null ? e.button : void 0) !== 2) {
+            Navigate.setMode(this);
+          }
           return;
         }
       }
@@ -12655,7 +12674,11 @@
           ThreadUpdater.update();
         } else {
           if (!Index.searchTest()) {
-            Index.update();
+            if (Navigate.setMode(this)) {
+              Index.buildIndex();
+            } else {
+              Index.update();
+            }
           }
         }
         if (e != null) {
@@ -12692,15 +12715,7 @@
         history.pushState(null, '', path);
       }
       Navigate.path = this.pathname;
-      _ref1 = this.dataset, indexMode = _ref1.indexMode, indexSort = _ref1.indexSort;
-      if (indexMode && Conf['Index Mode'] !== indexMode) {
-        $.set('Index Mode', Conf['Index Mode'] = Index.selectMode.value = indexMode);
-        Index.cb.mode();
-      }
-      if (indexSort && Conf['Index Sort'] !== indexSort) {
-        $.set('Index Sort', Conf['Index Sort'] = Index.selectSort.value = indexSort);
-        Index.cb.sort();
-      }
+      Navigate.setMode(this);
       if (!(view === 'index' && 'index' === g.VIEW && boardID === g.BOARD.ID)) {
         Navigate.disconnect();
         Navigate.updateContext(view);
