@@ -3,9 +3,16 @@ Navigate =
   init: ->
     return if g.VIEW is 'catalog' or g.BOARD.ID is 'f' or !Conf['JSON Navigation']
 
-    $.ready ->
-      # blink/webkit throw a popstate on page load. Not what we want.
-      $.on window, 'popstate', Navigate.popstate
+    <% if (type === 'crx') { %>
+    # blink/webkit throw a popstate on page load. Not what we want.
+    popstateHack = -> 
+      $.off window, 'popstate', popstateHack
+      $.on  window, 'popstate', Navigate.popstate
+
+    $.on window, 'popstate', popstateHack
+    <% } else { %>
+    $.on  window, 'popstate', Navigate.popstate
+    <% } %>
 
     @title = -> return
 
@@ -166,15 +173,15 @@ Navigate =
 
   navigate: (e) ->
     return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org'
-    return if e and (e.shiftKey or e.ctrlKey or (e.type is 'click' and e.button isnt 0)) # Not simply a left click
-
+    if e 
+      return if e.shiftKey or e.ctrlKey or (e.type is 'click' and e.button isnt 0) # Not simply a left click
 
     if @pathname is Navigate.path
       if g.VIEW is 'thread'
         ThreadUpdater.update()
       else
         Index.update()
-      e.preventDefault()
+      e?.preventDefault()
       return
 
     $.addClass Index.button, 'fa-spin'
@@ -183,7 +190,7 @@ Navigate =
     [_, boardID, view, threadID] = @pathname.split '/'
 
     return if view is 'catalog' or 'f' in [boardID, g.BOARD.ID]
-    e.preventDefault() if e
+    e?.preventDefault()
     Navigate.title = -> return
 
     delete Index.pageNum
