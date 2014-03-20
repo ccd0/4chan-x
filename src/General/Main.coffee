@@ -187,10 +187,10 @@ Main =
       $.before styleSelector.previousSibling, [$.tn '['; passLink, $.tn ']\u00A0\u00A0']
 
     # Parse HTML or skip it and start building from JSON.
-    unless Conf['JSON Navigation'] and g.VIEW is 'index'
+    if !Conf['JSON Navigation'] or g.VIEW is 'thread'
       Main.initThread() 
-    else
-      $.event '4chanXInitFinished'
+
+    $.event '4chanXInitFinished'
 
     <% if (type === 'userscript') { %>
     test = $.el 'span'
@@ -232,8 +232,6 @@ Main =
 
       Thread.callbacks.execute threads
       Post.callbacks.execute   posts
-
-      $.event '4chanXInitFinished'
 
     $.get 'previousversion', null, ({previousversion}) ->
       return if previousversion is g.VERSION
