@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.7 - 2014-03-20
+* appchan x - Version 2.9.7 - 2014-03-21
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -5497,37 +5497,32 @@
       return Post.callbacks.execute(posts);
     },
     buildCatalogViews: function() {
-      var catalogThreads, i, nodes, thread, _i, _len, _ref;
+      var catalogThreads, i, nodes, root, size, thread;
       catalogThreads = [];
-      _ref = Index.sortedThreads;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        thread = _ref[_i];
+      nodes = [];
+      i = 0;
+      size = Conf['Index Size'] === 'small' ? 150 : 250;
+      while (thread = Index.sortedThreads[i++]) {
         if (!thread.catalogView) {
           catalogThreads.push(new CatalogThread(Build.catalogThread(thread), thread));
         }
+        root = thread.catalogView.nodes.root;
+        Index.sizeSingleCatalogNode(root, size);
+        nodes.push(root);
       }
       CatalogThread.callbacks.execute(catalogThreads);
-      nodes = [];
-      i = 0;
-      while (thread = Index.sortedThreads[i++]) {
-        nodes.push(thread.catalogView.nodes.root);
-      }
       return nodes;
     },
-    sizeCatalogViews: function(nodes) {
-      var height, node, ratio, size, thumb, width, _i, _len, _ref;
-      size = Conf['Index Size'] === 'small' ? 150 : 250;
-      for (_i = 0, _len = nodes.length; _i < _len; _i++) {
-        node = nodes[_i];
-        thumb = node.firstElementChild;
-        _ref = thumb.dataset, width = _ref.width, height = _ref.height;
-        if (!width) {
-          continue;
-        }
-        ratio = size / Math.max(width, height);
-        thumb.style.width = width * ratio + 'px';
-        thumb.style.height = height * ratio + 'px';
+    sizeSingleCatalogNode: function(node, size) {
+      var height, ratio, thumb, width, _ref;
+      thumb = node.firstElementChild;
+      _ref = thumb.dataset, width = _ref.width, height = _ref.height;
+      if (!width) {
+        return;
       }
+      ratio = size / Math.max(width, height);
+      thumb.style.width = width * ratio + 'px';
+      return thumb.style.height = height * ratio + 'px';
     },
     sort: function() {
       var i, liveData, sortedThreadIDs, sortedThreads, thread, threadID;
@@ -5646,7 +5641,6 @@
           break;
         case 'catalog':
           nodes = Index.buildCatalogViews();
-          Index.sizeCatalogViews(nodes);
           break;
         default:
           nodes = [];

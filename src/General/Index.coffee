@@ -128,7 +128,7 @@ Index =
       id: 'catalogIcon'
       className: 'a-icon'
       href: "//boards.4chan.org/#{g.BOARD.ID}/"
-    
+
     @catalogLink.dataset.indexMode = 'catalog'
 
     $.on returnLink, 'click', (e) ->
@@ -139,7 +139,7 @@ Index =
       Navigate.navigate.call @, e
 
     $.on @catalogLink, 'click', Navigate.navigate
-    
+
     Header.addShortcut @catalogLink, true
     Header.addShortcut returnLink,   true
 
@@ -518,7 +518,7 @@ Index =
     delete Index.pageNum
     Index.req?.abort()
     Index.notice?.close()
-    
+
     {sortedThreads} = Index
     if sortedThreads
       board = sortedThreads[0].board.ID
@@ -673,26 +673,25 @@ Index =
 
   buildCatalogViews: ->
     catalogThreads = []
-    for thread in Index.sortedThreads when !thread.catalogView
-      catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
-    CatalogThread.callbacks.execute catalogThreads
     nodes = []
     i = 0
+    size = if Conf['Index Size'] is 'small' then 150 else 250
     while thread = Index.sortedThreads[i++]
-      nodes.push thread.catalogView.nodes.root
+      if !thread.catalogView
+        catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
+      {root} = thread.catalogView.nodes
+      Index.sizeSingleCatalogNode root, size
+      nodes.push root
+    CatalogThread.callbacks.execute catalogThreads
     return nodes
 
-  sizeCatalogViews: (nodes) ->
-    # XXX When browsers support CSS3 attr(), use it instead.
-    size = if Conf['Index Size'] is 'small' then 150 else 250
-    for node in nodes
-      thumb = node.firstElementChild
-      {width, height} = thumb.dataset
-      continue unless width
-      ratio = size / Math.max width, height
-      thumb.style.width  = width  * ratio + 'px'
-      thumb.style.height = height * ratio + 'px'
-    return
+  sizeSingleCatalogNode: (node, size) ->
+    thumb = node.firstElementChild
+    {width, height} = thumb.dataset
+    return unless width
+    ratio = size / Math.max width, height
+    thumb.style.width  = width  * ratio + 'px'
+    thumb.style.height = height * ratio + 'px'
 
   sort: ->
     sortedThreads   = []
@@ -778,7 +777,6 @@ Index =
 
       when 'catalog'
         nodes = Index.buildCatalogViews()
-        Index.sizeCatalogViews nodes
 
       else
         nodes = []
@@ -835,7 +833,7 @@ Index =
     while thread = sortedThreads[i++]
       filtered.push thread if Index.searchMatch thread, keywords
     Index.sortedThreads = filtered
-    
+
 
   searchMatch: (thread, keywords) ->
     {info, file} = thread.OP
