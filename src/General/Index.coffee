@@ -653,26 +653,25 @@ Index =
 
   buildCatalogViews: ->
     catalogThreads = []
-    for thread in Index.sortedThreads when !thread.catalogView
-      catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
-    CatalogThread.callbacks.execute catalogThreads
     nodes = []
     i = 0
+    size = if Conf['Index Size'] is 'small' then 150 else 250
     while thread = Index.sortedThreads[i++]
-      nodes.push thread.catalogView.nodes.root
+      if !thread.catalogView
+        catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
+      {root} = thread.catalogView.nodes
+      Index.sizeSingleCatalogNode root, size
+      nodes.push root
+    CatalogThread.callbacks.execute catalogThreads
     return nodes
 
-  sizeCatalogViews: (nodes) ->
-    # XXX When browsers support CSS3 attr(), use it instead.
-    size = if Conf['Index Size'] is 'small' then 150 else 250
-    for node in nodes
-      thumb = node.firstElementChild
-      {width, height} = thumb.dataset
-      continue unless width
-      ratio = size / Math.max width, height
-      thumb.style.width  = width  * ratio + 'px'
-      thumb.style.height = height * ratio + 'px'
-    return
+  sizeSingleCatalogNode: (node, size) ->
+    thumb = node.firstElementChild
+    {width, height} = thumb.dataset
+    return unless width
+    ratio = size / Math.max width, height
+    thumb.style.width  = width  * ratio + 'px'
+    thumb.style.height = height * ratio + 'px'
 
   sort: ->
     sortedThreads   = []
@@ -758,7 +757,6 @@ Index =
 
       when 'catalog'
         nodes = Index.buildCatalogViews()
-        Index.sizeCatalogViews nodes
 
       else
         nodes = []
