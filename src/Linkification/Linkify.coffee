@@ -119,7 +119,7 @@ Linkify =
         range.setEnd range.endContainer, range.endOffset - i
 
     # Make our link 'valid' if it is formatted incorrectly.
-    unless /(https?|mailto|git|magnet|ftp|irc):/.test text
+    unless /(mailto:|.+:\/\/)/.test text
       text = (
         if /@/.test text
           'mailto:'
