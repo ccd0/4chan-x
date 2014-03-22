@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.7 - 2014-03-21
+* appchan x - Version 2.9.7 - 2014-03-22
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -8224,7 +8224,7 @@
           range.setEnd(range.endContainer, range.endOffset - i);
         }
       }
-      if (!/(https?|mailto|git|magnet|ftp|irc):/.test(text)) {
+      if (!/(mailto:|.+:\/\/)/.test(text)) {
         text = (/@/.test(text) ? 'mailto:' : 'http://') + text;
       }
       a = $.el('a', {
