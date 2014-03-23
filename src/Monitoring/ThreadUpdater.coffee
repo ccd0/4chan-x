@@ -97,7 +97,9 @@ ThreadUpdater =
     ThreadUpdater.root     = @OP.nodes.root.parentNode
     ThreadUpdater.lastPost = +@posts.keys[@posts.keys.length - 1]
 
-    ThreadUpdater.cb.interval.call $.el 'input', value: Conf['Interval']
+    ThreadUpdater.cb.interval.call $.el 'input',
+      value: Conf['Interval']
+      name:  'Interval'
 
     $.on window, 'online offline',   ThreadUpdater.cb.online
     $.on d,      'QRPostSuccessful', ThreadUpdater.cb.checkpost
@@ -147,11 +149,11 @@ ThreadUpdater =
         -> true
       else
         -> not d.hidden
-    interval: ->
+    interval: (e) ->
       val = parseInt @value, 10
       if val < 1 then val = 1
       ThreadUpdater.interval = @value = val
-      $.cb.value.call @
+      $.cb.value.call @ if e
     load: (e) ->
       {req} = ThreadUpdater
       switch req.status

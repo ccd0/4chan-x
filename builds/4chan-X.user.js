@@ -9597,7 +9597,8 @@
       ThreadUpdater.root = this.OP.nodes.root.parentNode;
       ThreadUpdater.lastPost = +this.posts.keys[this.posts.keys.length - 1];
       ThreadUpdater.cb.interval.call($.el('input', {
-        value: Conf['Interval']
+        value: Conf['Interval'],
+        name: 'Interval'
       }));
       $.on(window, 'online offline', ThreadUpdater.cb.online);
       $.on(d, 'QRPostSuccessful', ThreadUpdater.cb.checkpost);
@@ -9663,14 +9664,16 @@
           return !d.hidden;
         };
       },
-      interval: function() {
+      interval: function(e) {
         var val;
         val = parseInt(this.value, 10);
         if (val < 1) {
           val = 1;
         }
         ThreadUpdater.interval = this.value = val;
-        return $.cb.value.call(this);
+        if (e) {
+          return $.cb.value.call(this);
+        }
       },
       load: function(e) {
         var klass, req, text, _ref;
