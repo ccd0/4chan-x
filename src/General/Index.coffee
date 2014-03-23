@@ -13,8 +13,6 @@ Index =
     $.on @button, 'click', @update
     Header.addShortcut @button, 1
 
-    return if g.BOARD.ID is 'f'
-
     @db = new DataBoard 'pinnedThreads'
     Thread.callbacks.push
       name: 'Thread Pinning'
