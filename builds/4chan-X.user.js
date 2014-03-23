@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.4.1 - 2014-03-22
+* 4chan X - Version 1.4.1 - 2014-03-23
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -2526,9 +2526,6 @@
       });
       $.on(this.button, 'click', this.update);
       Header.addShortcut(this.button, 1);
-      if (g.BOARD.ID === 'f') {
-        return;
-      }
       this.db = new DataBoard('pinnedThreads');
       Thread.callbacks.push({
         name: 'Thread Pinning',
