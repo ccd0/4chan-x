@@ -290,7 +290,6 @@ a {
   background-image: url("data:image/svg+xml,<svg viewBox='0 0 30 30' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(#{bLink.rgb()})' d='M12.981,9.073V6.817l-12.106,6.99l12.106,6.99v-2.422c3.285-0.002,9.052,0.28,9.052,2.269c0,2.78-6.023,4.263-6.023,4.263v2.132c0,0,13.53,0.463,13.53-9.823C29.54,9.134,17.952,8.831,12.981,9.073z'/></svg>");  font-size: 0px !important;
   padding: 12px 12px 1px 1px;
   opacity: 0.6;
-  vertical-align: super;
 }
 .qiQuote,
 .quotelink {

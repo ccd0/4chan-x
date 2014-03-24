@@ -1231,6 +1231,9 @@ div.post div.postInfo {
 .reply .fileText {
   padding: 0 3px;
 }
+.compact-file-text .fileText {
+  font-size: .9em;
+}
 .fileThumb {
   float: left;
   margin: 3px 20px;

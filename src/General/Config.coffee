@@ -536,6 +536,10 @@ Config =
         false
         'Replaces backlink text with a small, compact icon.'
       ]
+      'Compact File Text': [
+        false
+        'Shrink the font of the file text to be less obtrusive.'
+      ]
 
     Aesthetics:
       '4chan SS Navigation': [
