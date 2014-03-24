@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.7 - 2014-03-23
+* appchan x - Version 2.9.7 - 2014-03-24
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -113,7 +113,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, InfiniScroll, JSColor, Keybinds, Labels, Linkify, Main, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, InfiniScroll, JSColor, Keybinds, Labels, Linkify, Main, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -7631,6 +7631,50 @@
       } else if (mayReset) {
         return quotelink.textContent = text;
       }
+    },
+    cb: {
+      seek: function(type) {
+        var post;
+        if (Conf['Mark Quotes of You'] && (post = QuotesYou.cb.findPost(type))) {
+          return Quotesyou.cb.scroll(post);
+        }
+      },
+      findPost: function(type) {
+        var i, index, len, post, posts;
+        posts = $$('.quotesYou');
+        if (!QuoteMarkers.lastRead) {
+          if (!(post = QuoteMarkers.lastRead = posts[0])) {
+            new Notice('warning', 'No posts are currently quoting you, loser.', 20);
+            return;
+          }
+          if (!Get.postFromRoot(post).isHidden) {
+            return post;
+          }
+        } else {
+          post = QuoteMarkers.lastRead;
+        }
+        len = posts.length - 1;
+        index = i = posts.indexOf(post);
+        while (true) {
+          if (index === (i = i === 0 ? len : i === len ? 0 : type === 'prev' ? i - 1 : i + 1)) {
+            break;
+          }
+          post = posts[i];
+          if (!Get.postFromRoot(post).isHidden) {
+            return post;
+          }
+        }
+      },
+      scroll: function(post) {
+        var highlight;
+        if (highlight = $('.highlight')) {
+          $.rmClass(highlight, 'highlight');
+        }
+        QuoteMarkers.lastRead = post;
+        window.location.hash = "#" + post.id;
+        Header.scrollTo(post);
+        return $.addClass($('.post', post), 'highlight');
+      }
     }
   };
 
@@ -7903,95 +7947,6 @@
       control = $.id('threadingControl');
       control.checked = !control.checked;
       return QuoteThreading.toggle.call(control);
-    }
-  };
-
-  QuoteYou = {
-    init: function() {
-      if (!Conf['Mark Quotes of You']) {
-        return;
-      }
-      if (Conf['Highlight Own Posts']) {
-        $.addClass(doc, 'highlight-own');
-      }
-      if (Conf['Highlight Posts Quoting You']) {
-        $.addClass(doc, 'highlight-you');
-      }
-      if (Conf['Comment Expansion']) {
-        ExpandComment.callbacks.push(this.node);
-      }
-      this.text = '\u00A0(You)';
-      return Post.callbacks.push({
-        name: 'Mark Quotes of You',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var quotelink, _i, _len, _ref;
-      if (this.isClone) {
-        return;
-      }
-      if (QR.db.get({
-        boardID: this.board.ID,
-        threadID: this.thread.ID,
-        postID: this.ID
-      })) {
-        $.addClass(this.nodes.root, 'yourPost');
-      }
-      if (!this.quotes.length) {
-        return;
-      }
-      _ref = this.nodes.quotelinks;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quotelink = _ref[_i];
-        if (!(QR.db.get(Get.postDataFromLink(quotelink)))) {
-          continue;
-        }
-        $.add(quotelink, $.tn(QuoteYou.text));
-        $.addClass(quotelink, 'you');
-        $.addClass(this.nodes.root, 'quotesYou');
-      }
-    },
-    cb: {
-      seek: function(type) {
-        var highlight, post, posts, result, str;
-        if (!Conf['Mark Quotes of You']) {
-          return;
-        }
-        if (highlight = $('.highlight')) {
-          $.rmClass(highlight, 'highlight');
-        }
-        if (!QuoteYou.lastRead) {
-          if (!(post = QuoteYou.lastRead = $('.quotesYou'))) {
-            new Notice('warning', 'No posts are currently quoting you, loser.', 20);
-            return;
-          }
-          if (QuoteYou.cb.scroll(post)) {
-            return;
-          }
-        } else {
-          post = QuoteYou.lastRead;
-        }
-        str = "" + type + "::div[contains(@class,'quotesYou')]";
-        while (post = (result = $.X(str, post)).snapshotItem(type === 'preceding' ? result.snapshotLength - 1 : 0)) {
-          if (QuoteYou.cb.scroll(post)) {
-            return;
-          }
-        }
-        posts = $$('.quotesYou');
-        return QuoteYou.cb.scroll(posts[type === 'following' ? 0 : posts.length - 1]);
-      },
-      scroll: function(post) {
-        if (Get.postFromRoot(post).isHidden) {
-          return false;
-        } else {
-          QuoteYou.lastRead = post;
-          window.location = "#" + post.id;
-          Header.scrollToPost(post);
-          $.addClass($('.post', post), 'highlight');
-          return true;
-        }
-      }
     }
   };
 
@@ -15800,10 +15755,10 @@
           PostHiding.toggle(thread.OP);
           break;
         case Conf['Previous Post Quoting You']:
-          QuoteYou.cb.seek('preceding');
+          QuoteMarkers.cb.seek('preceding');
           break;
         case Conf['Next Post Quoting You']:
-          QuoteYou.cb.seek('following');
+          QuoteMarkers.cb.seek('following');
           break;
         default:
           return;

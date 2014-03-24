@@ -45,3 +45,43 @@ QuoteMarkers =
       quotelink.textContent = "#{text}\u00A0(#{markers.join '|'})"
     else if mayReset
       quotelink.textContent = text
+
+  cb:
+    seek: (type) ->
+      if Conf['Mark Quotes of You'] and post = QuotesYou.cb.findPost type
+        Quotesyou.cb.scroll post
+
+    findPost: (type) ->
+      posts = $$ '.quotesYou'
+      unless QuoteMarkers.lastRead
+        unless post = QuoteMarkers.lastRead = posts[0]
+          new Notice 'warning', 'No posts are currently quoting you, loser.', 20
+          return
+        unless Get.postFromRoot(post).isHidden
+          return post
+      else
+        post = QuoteMarkers.lastRead
+
+      len   = posts.length - 1
+      index = i = posts.indexOf post
+      while true
+        break if index is (
+          i = if i is 0
+            len
+          else if i is len
+            0
+          else if type is 'prev'
+            i - 1
+          else
+            i + 1
+        )
+        post = posts[i]
+        return post unless Get.postFromRoot(post).isHidden
+
+    scroll: (post) ->
+      $.rmClass highlight, 'highlight' if highlight = $ '.highlight'
+      QuoteMarkers.lastRead = post
+      window.location.hash = "##{post.id}"
+      Header.scrollTo post
+      $.addClass $('.post', post), 'highlight'
+
