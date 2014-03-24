@@ -79,7 +79,7 @@ Linkify =
     | # This should account for virtually all links posted without http:
     [-a-z\d]+[.](
       aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2}
-    )(/|(?!.))
+    )([:/]|(?!.))
     | # IPv4 Addresses
     [\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}
     | # E-mails
