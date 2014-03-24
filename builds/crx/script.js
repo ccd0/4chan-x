@@ -7688,8 +7688,8 @@
     cb: {
       seek: function(type) {
         var post;
-        if (Conf['Mark Quotes of You'] && (post = QuotesYou.cb.findPost(type))) {
-          return Quotesyou.cb.scroll(post);
+        if (Conf['Mark Quotes of You'] && (post = QuoteMarkers.cb.findPost(type))) {
+          return QuoteMarkers.cb.scroll(post);
         }
       },
       findPost: function(type) {
