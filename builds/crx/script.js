@@ -797,20 +797,22 @@
     };
     timeout = {};
     setArea = function(area) {
-      var data;
+      var data, keys;
       data = items[area];
-      if (!Object.keys(data).length || timeout[area] > Date.now()) {
+      keys = Object.keys(data);
+      if (!keys.length || timeout[area] > Date.now()) {
         return;
       }
       chrome.storage[area].set(data, function() {
-        var key, val;
+        var key, val, _i, _len;
         if (chrome.runtime.lastError) {
           c.error(chrome.runtime.lastError.message);
-          for (key in data) {
-            val = data[key];
-            if (!(!(key in items[area]))) {
+          for (_i = 0, _len = keys.length; _i < _len; _i++) {
+            key = keys[_i];
+            if (!(!items[area][key])) {
               continue;
             }
+            val = data[key];
             if (area === 'sync' && chrome.storage.sync.QUOTA_BYTES_PER_ITEM < JSON.stringify(val).length + key.length) {
               c.error(chrome.runtime.lastError.message, key, val);
               continue;
