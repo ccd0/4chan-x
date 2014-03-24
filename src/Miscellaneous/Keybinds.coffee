@@ -135,9 +135,9 @@ Keybinds =
       when Conf['Hide']
         PostHiding.toggle thread.OP
       when Conf['Previous Post Quoting You']
-        QuoteYou.cb.seek 'preceding'
+        QuoteMarkers.cb.seek 'preceding'
       when Conf['Next Post Quoting You']
-        QuoteYou.cb.seek 'following'
+        QuoteMarkers.cb.seek 'following'
       else
         return
     e.preventDefault()

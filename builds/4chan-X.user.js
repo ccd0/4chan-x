@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.4.1 - 2014-03-23
+* 4chan X - Version 1.4.1 - 2014-03-24
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -5500,6 +5500,50 @@
         return quotelink.textContent = "" + text + "\u00A0(" + (markers.join('|')) + ")";
       } else if (mayReset) {
         return quotelink.textContent = text;
+      }
+    },
+    cb: {
+      seek: function(type) {
+        var post;
+        if (Conf['Mark Quotes of You'] && (post = QuotesYou.cb.findPost(type))) {
+          return Quotesyou.cb.scroll(post);
+        }
+      },
+      findPost: function(type) {
+        var i, index, len, post, posts;
+        posts = $$('.quotesYou');
+        if (!QuoteMarkers.lastRead) {
+          if (!(post = QuoteMarkers.lastRead = posts[0])) {
+            new Notice('warning', 'No posts are currently quoting you, loser.', 20);
+            return;
+          }
+          if (!Get.postFromRoot(post).isHidden) {
+            return post;
+          }
+        } else {
+          post = QuoteMarkers.lastRead;
+        }
+        len = posts.length - 1;
+        index = i = posts.indexOf(post);
+        while (true) {
+          if (index === (i = i === 0 ? len : i === len ? 0 : type === 'prev' ? i - 1 : i + 1)) {
+            break;
+          }
+          post = posts[i];
+          if (!Get.postFromRoot(post).isHidden) {
+            return post;
+          }
+        }
+      },
+      scroll: function(post) {
+        var highlight;
+        if (highlight = $('.highlight')) {
+          $.rmClass(highlight, 'highlight');
+        }
+        QuoteMarkers.lastRead = post;
+        window.location.hash = "#" + post.id;
+        Header.scrollTo(post);
+        return $.addClass($('.post', post), 'highlight');
       }
     }
   };
@@ -11962,10 +12006,10 @@
           PostHiding.toggle(thread.OP);
           break;
         case Conf['Previous Post Quoting You']:
-          QuoteYou.cb.seek('preceding');
+          QuoteMarkers.cb.seek('preceding');
           break;
         case Conf['Next Post Quoting You']:
-          QuoteYou.cb.seek('following');
+          QuoteMarkers.cb.seek('following');
           break;
         default:
           return;
