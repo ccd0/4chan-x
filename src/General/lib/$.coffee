@@ -351,11 +351,13 @@ do ->
   timeout = {}
   setArea = (area) ->
     data = items[area]
-    return if !Object.keys(data).length or timeout[area] > Date.now()
+    keys = Object.keys data
+    return if !keys.length or timeout[area] > Date.now()
     chrome.storage[area].set data, ->
       if chrome.runtime.lastError
         c.error chrome.runtime.lastError.message
-        for key, val of data when key not of items[area]
+        for key in keys when !items[area][key]
+          val = data[key]
           if area is 'sync' and chrome.storage.sync.QUOTA_BYTES_PER_ITEM < JSON.stringify(val).length + key.length
             c.error chrome.runtime.lastError.message, key, val
             continue

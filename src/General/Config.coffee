@@ -532,6 +532,10 @@ Config =
         false
         'Hides lines between threads.'
       ]
+      'Backlink Icons': [
+        false
+        'Replaces backlink text with a small, compact icon.'
+      ]
 
     Aesthetics:
       '4chan SS Navigation': [

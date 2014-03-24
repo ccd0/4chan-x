@@ -124,6 +124,7 @@ Style =
   theme: (theme) ->
     bgColor  = new Color backgroundC = theme["Background Color"]
     replybg  = new Color theme["Reply Background"]
+    bLink    = new Color theme["Backlinks"]
     replyRGB = "rgb(#{replybg.shiftRGB parseInt(Conf['Silhouette Contrast'], 10), true})"
 
     Style.lightTheme = bgColor.isLight()

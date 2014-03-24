@@ -1212,7 +1212,7 @@ nav a,
   font-size: 80%;
 }
 div.post div.postInfo {
-  padding: 3px 3px 0;
+  padding: 1px 3px;
   display: block !important;
 }
 .postInfo > span {
@@ -1463,9 +1463,9 @@ a.useremail:last-of-type {
 /* Checkboxes */
 .rice {
   cursor: pointer;
-  width: 9px;
-  height: 9px;
-  margin: 2px 3px 3px;
+  width: .7em;
+  height: .7em;
+  margin: 2px 3px;
   display: inline-block;
   vertical-align: bottom;
 }
