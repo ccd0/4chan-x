@@ -48,8 +48,8 @@ QuoteMarkers =
 
   cb:
     seek: (type) ->
-      if Conf['Mark Quotes of You'] and post = QuotesYou.cb.findPost type
-        Quotesyou.cb.scroll post
+      if Conf['Mark Quotes of You'] and post = QuoteMarkers.cb.findPost type
+        QuoteMarkers.cb.scroll post
 
     findPost: (type) ->
       posts = $$ '.quotesYou'
