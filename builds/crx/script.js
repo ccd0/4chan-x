@@ -8538,7 +8538,7 @@
         }
       }
     },
-    regString: /((https?|mailto|git|magnet|ftp|irc):([a-z\d%\/])|[-a-z\d]+[.](aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2})(\/|(?!.))|[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i,
+    regString: /((https?|mailto|git|magnet|ftp|irc):([a-z\d%\/])|[-a-z\d]+[.](aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2})([:\/]|(?!.))|[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i,
     makeRange: function(startNode, endNode, startOffset, endOffset) {
       var range;
       range = document.createRange();
