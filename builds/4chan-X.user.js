@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.4.1 - 2014-03-01
+* 4chan X - Version 1.4.1 - 2014-03-24
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -8092,10 +8092,551 @@
 
   Linkify = {
     init: function() {
+      var type, _i, _len, _ref;
       if (g.VIEW === 'catalog' || !Conf['Linkify']) {
         return;
       }
       this.regString = /((https?|mailto|git|magnet|ftp|irc):([a-z\d%\/])|[-a-z\d]+[.](aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2})(\/|(?!.))|[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i;
+      this.types = {};
+      _ref = this.ordered_types;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        type = _ref[_i];
+        this.types[type.key] = type;
+      }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
+      }
+      if (Conf['Title Link']) {
+        $.sync('CachedTitles', Linkify.titleSync);
+      }
+      return Post.callbacks.push({
+        name: 'Linkify',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var data, el, end, endNode, i, index, items, length, link, links, node, result, saved, snapshot, space, test, word, _i, _len, _ref;
+      if (this.isClone) {
+        if (Conf['Embedding']) {
+          i = 0;
+          items = $$('.embed', this.nodes.comment);
+          while (el = items[i++]) {
+            $.on(el, 'click', Linkify.cb.toggle);
+            if ($.hasClass(el, 'embedded')) {
+              Linkify.cb.toggle.call(el);
+            }
+          }
+        }
+        return;
+      }
+      test = /[^\s'"]+/g;
+      space = /[\s'"]/;
+      snapshot = $.X('.//br|.//text()', this.nodes.comment);
+      i = 0;
+      links = [];
+      while (node = snapshot.snapshotItem(i++)) {
+        data = node.data;
+        if (node.parentElement.nodeName === "A" || !data) {
+          continue;
+        }
+        while (result = test.exec(data)) {
+          index = result.index;
+          endNode = node;
+          word = result[0];
+          if ((length = index + word.length) === data.length) {
+            test.lastIndex = 0;
+            while ((saved = snapshot.snapshotItem(i++))) {
+              if (saved.nodeName === 'BR') {
+                break;
+              }
+              endNode = saved;
+              data = saved.data;
+              word += data;
+              length = data.length;
+              if (end = space.exec(data)) {
+                test.lastIndex = length = end.index;
+                i--;
+                break;
+              }
+            }
+          }
+          if (Linkify.regString.exec(word)) {
+            links.push(Linkify.makeRange(node, endNode, index, length));
+          }
+          if (!(test.lastIndex && node === endNode)) {
+            break;
+          }
+        }
+      }
+      _ref = links.reverse();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        this.nodes.links.push(Linkify.makeLink(link, this));
+        link.detach();
+      }
+      if (!(Conf['Embedding'] || Conf['Link Title'])) {
+        return;
+      }
+      links = this.nodes.links;
+      i = 0;
+      while (link = links[i++]) {
+        if (data = Linkify.services(link)) {
+          if (Conf['Embedding']) {
+            Linkify.embed(data);
+          }
+          if (Conf['Link Title']) {
+            Linkify.title(data);
+          }
+        }
+      }
+    },
+    makeRange: function(startNode, endNode, startOffset, endOffset) {
+      var range;
+      range = document.createRange();
+      range.setStart(startNode, startOffset);
+      range.setEnd(endNode, endOffset);
+      return range;
+    },
+    makeLink: function(range) {
+      var a, char, i, text;
+      text = range.toString();
+      i = 0;
+      while (/[(\[{<>]/.test(text.charAt(i))) {
+        i++;
+      }
+      if (i) {
+        text = text.slice(i);
+        while (range.startOffset + i >= range.startContainer.data.length) {
+          i--;
+        }
+        if (i) {
+          range.setStart(range.startContainer, range.startOffset + i);
+        }
+      }
+      i = 0;
+      while (/[)\]}>.,]/.test(char = text.charAt(text.length - (1 + i)))) {
+        if (!(/[.,]/.test(char) || (text.match(/[()\[\]{}<>]/g)).length % 2)) {
+          break;
+        }
+        i++;
+      }
+      if (i) {
+        text = text.slice(0, -i);
+        while (range.endOffset - i < 0) {
+          i--;
+        }
+        if (i) {
+          range.setEnd(range.endContainer, range.endOffset - i);
+        }
+      }
+      if (!/(https?|mailto|git|magnet|ftp|irc):/.test(text)) {
+        text = (/@/.test(text) ? 'mailto:' : 'http://') + text;
+      }
+      a = $.el('a', {
+        className: 'linkify',
+        rel: 'nofollow noreferrer',
+        target: '_blank',
+        href: text
+      });
+      $.add(a, range.extractContents());
+      range.insertNode(a);
+      return a;
+    },
+    services: function(link) {
+      var href, match, type, _i, _len, _ref;
+      href = link.href;
+      _ref = Linkify.ordered_types;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        type = _ref[_i];
+        if (!(match = type.regExp.exec(href))) {
+          continue;
+        }
+        return [type.key, match[1], match[2], link];
+      }
+    },
+    embed: function(data) {
+      var embed, href, key, link, name, options, uid, value, _ref;
+      key = data[0], uid = data[1], options = data[2], link = data[3];
+      href = link.href;
+      embed = $.el('a', {
+        className: 'embedder',
+        href: 'javascript:;',
+        textContent: '(embed)'
+      });
+      _ref = {
+        key: key,
+        href: href,
+        uid: uid,
+        options: options
+      };
+      for (name in _ref) {
+        value = _ref[name];
+        embed.dataset[name] = value;
+      }
+      embed.dataset.nodedata = link.innerHTML;
+      $.addClass(link, "" + embed.dataset.key);
+      $.on(embed, 'click', Linkify.cb.toggle);
+      $.after(link, [$.tn(' '), embed]);
+      if (Conf['Auto-embed']) {
+        Linkify.cb.toggle.call(embed);
+      }
+      data.push(embed);
+    },
+    title: function(data) {
+      var embed, err, key, link, options, service, title, titles, uid;
+      key = data[0], uid = data[1], options = data[2], link = data[3], embed = data[4];
+      if (!(service = Linkify.types[key].title)) {
+        return;
+      }
+      titles = Conf['CachedTitles'];
+      if (title = titles[uid]) {
+        if (link) {
+          link.textContent = title[0];
+        }
+        if (Conf['Embedding']) {
+          return embed.dataset.title = title[0];
+        }
+      } else {
+        try {
+          $.cache(service.api(uid), function() {
+            return title = Linkify.cb.title(this, data);
+          }, {
+            responseType: 'json'
+          });
+        } catch (_error) {
+          err = _error;
+          if (link) {
+            link.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
+          }
+          return;
+        }
+        if (title) {
+          titles[uid] = [title, Date.now()];
+          return $.set('CachedTitles', titles);
+        }
+      }
+    },
+    titleSync: function(value) {
+      return Conf['CachedTitles'] = value;
+    },
+    cb: {
+      toggle: function() {
+        var string, _ref;
+        _ref = $.hasClass(this, "embedded") ? ['unembed', '(embed)'] : ['embed', '(unembed)'], string = _ref[0], this.textContent = _ref[1];
+        $.replace(this.previousElementSibling, Linkify.cb[string](this));
+        return $.toggleClass(this, 'embedded');
+      },
+      embed: function(a) {
+        var el, style, type;
+        el = (type = Linkify.types[a.dataset.key]).el(a);
+        el.style.cssText = (style = type.style) ? style : "border: 0; width: 640px; height: 390px";
+        return el;
+      },
+      unembed: function(a) {
+        var el;
+        el = $.el('a', {
+          rel: 'nofollow noreferrer',
+          target: 'blank',
+          className: 'linkify',
+          href: a.dataset.href,
+          innerHTML: a.dataset.title || a.dataset.nodedata
+        });
+        $.addClass(el, a.dataset.key);
+        return el;
+      },
+      title: function(response, data) {
+        var embed, key, link, options, service, text, uid;
+        key = data[0], uid = data[1], options = data[2], link = data[3], embed = data[4];
+        service = Linkify.types[key].title;
+        switch (response.status) {
+          case 200:
+          case 304:
+            text = "" + (service.text(response.response));
+            if (Conf['Embedding']) {
+              embed.dataset.title = text;
+            }
+            break;
+          case 404:
+            text = "[" + key + "] Not Found";
+            break;
+          case 403:
+            text = "[" + key + "] Forbidden or Private";
+            break;
+          default:
+            text = "[" + key + "] " + this.status + "'d";
+        }
+        if (link) {
+          return link.textContent = text;
+        }
+      }
+    },
+    ordered_types: [
+      {
+        key: 'audio',
+        regExp: /(.*\.(mp3|ogg|wav))$/,
+        el: function(a) {
+          return $.el('audio', {
+            controls: 'controls',
+            preload: 'auto',
+            src: a.dataset.uid
+          });
+        }
+      }, {
+        key: 'gist',
+        regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/,
+        el: function(a) {
+          var div;
+          return div = $.el('iframe', {
+            src: "http://www.purplegene.com/script?url=https://gist.github.com/" + a.dataset.uid + ".js"
+          });
+        },
+        title: {
+          api: function(uid) {
+            return "https://api.github.com/gists/" + uid;
+          },
+          text: function(_arg) {
+            var file, files;
+            files = _arg.files;
+            for (file in files) {
+              if (files.hasOwnProperty(file)) {
+                return file;
+              }
+            }
+          }
+        }
+      }, {
+        key: 'image',
+        regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/,
+        style: 'border: 0; width: auto; height: auto;',
+        el: function(a) {
+          return $.el('div', {
+            innerHTML: "<a target=_blank href='" + a.dataset.href + "'><img src='" + a.dataset.href + "'></a>"
+          });
+        }
+      }, {
+        key: 'InstallGentoo',
+        regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/,
+        el: function(a) {
+          return $.el('iframe', {
+            src: "http://paste.installgentoo.com/view/embed/" + a.dataset.uid
+          });
+        }
+      }, {
+        key: 'Twitter',
+        regExp: /.*twitter.com\/(.+\/status\/\d+)/,
+        el: function(a) {
+          return $.el('iframe', {
+            src: "https://twitframe.com/show?url=https://twitter.com/" + a.dataset.uid
+          });
+        }
+      }, {
+        key: 'LiveLeak',
+        regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
+        el: function(a) {
+          var el;
+          el = $.el('iframe', {
+            width: "640",
+            height: "360",
+            src: "http://www.liveleak.com/ll_embed?i=" + a.dataset.uid,
+            frameborder: "0"
+          });
+          el.setAttribute("allowfullscreen", "true");
+          return el;
+        }
+      }, {
+        key: 'MediaCrush',
+        regExp: /.*(?:mediacru.sh\/)([0-9a-z_]+)/i,
+        style: 'border: 0;',
+        el: function(a) {
+          var el;
+          el = $.el('div');
+          $.cache("https://mediacru.sh/" + a.dataset.uid + ".json", function() {
+            var embed, file, files, status, type, _i, _j, _len, _len1, _ref;
+            status = this.status;
+            if (status !== 200 && status !== 304) {
+              return div.innerHTML = "ERROR " + status;
+            }
+            files = this.response.files;
+            _ref = ['video/mp4', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'image/svg', 'audio/mpeg'];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              type = _ref[_i];
+              for (_j = 0, _len1 = files.length; _j < _len1; _j++) {
+                file = files[_j];
+                if (file.type === type) {
+                  embed = file;
+                  break;
+                }
+              }
+              if (embed) {
+                break;
+              }
+            }
+            if (!embed) {
+              return div.innerHTML = "ERROR: Not a valid filetype";
+            }
+            return el.innerHTML = (function() {
+              switch (embed.type) {
+                case 'video/mp4':
+                case 'video/ogv':
+                  return "<video autoplay loop>\n  <source src=\"https://mediacru.sh/" + a.dataset.uid + ".mp4\" type=\"video/mp4;\">\n  <source src=\"https://mediacru.sh/" + a.dataset.uid + ".ogv\" type=\"video/ogg; codecs='theora, vorbis'\">\n</video>";
+                case 'image/png':
+                case 'image/gif':
+                case 'image/jpeg':
+                  return "<a target=_blank href='" + a.dataset.href + "'><img src='https://mediacru.sh/" + file.file + "'></a>";
+                case 'image/svg':
+                case 'image/svg+xml':
+                  return "<embed src='https://mediacru.sh/" + file.file + "' type='image/svg+xml' />";
+                case 'audio/mpeg':
+                  return "<audio controls><source src='https://mediacru.sh/" + file.file + "'></audio>";
+                default:
+                  return "ERROR: No valid filetype.";
+              }
+            })();
+          });
+          return el;
+        }
+      }, {
+        key: 'pastebin',
+        regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/,
+        el: function(a) {
+          var div;
+          return div = $.el('iframe', {
+            src: "http://pastebin.com/embed_iframe.php?i=" + a.dataset.uid
+          });
+        }
+      }, {
+        key: 'gfycat',
+        regExp: /.*gfycat.com\/(?:iframe\/)?(\S*)/,
+        el: function(a) {
+          var div;
+          return div = $.el('iframe', {
+            src: "http://gfycat.com/iframe/" + a.dataset.uid
+          });
+        }
+      }, {
+        key: 'SoundCloud',
+        regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
+        style: 'height: auto; width: 500px; display: inline-block;',
+        el: function(a) {
+          var div;
+          div = $.el('div', {
+            className: "soundcloud",
+            name: "soundcloud"
+          });
+          $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + a.dataset.uid, {
+            onloadend: function() {
+              return div.innerHTML = JSON.parse(this.responseText).html;
+            }
+          }, false);
+          return div;
+        },
+        title: {
+          api: function(uid) {
+            return "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + uid;
+          },
+          text: function(_) {
+            return _.title;
+          }
+        }
+      }, {
+        key: 'StrawPoll',
+        regExp: /strawpoll\.me\/(?:embed_\d+\/)?(\d+)/,
+        style: 'border: 0; width: 600px; height: 406px;',
+        el: function(a) {
+          return $.el('iframe', {
+            src: "http://strawpoll.me/embed_1/" + a.dataset.uid
+          });
+        }
+      }, {
+        key: 'TwitchTV',
+        regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/,
+        style: "border: none; width: 640px; height: 360px;",
+        el: function(a) {
+          var channel, chapter, result, _;
+          if (result = /(\w+)\/(?:[a-z]\/)?(\d+)/i.exec(a.dataset.uid)) {
+            _ = result[0], channel = result[1], chapter = result[2];
+            return $.el('object', {
+              data: 'http://www.twitch.tv/widgets/archive_embed_player.swf',
+              innerHTML: "<param name='allowFullScreen' value='true' />\n<param name='flashvars' value='channel=" + channel + "&start_volume=25&auto_play=false" + (chapter ? "&chapter_id=" + chapter : "") + "' />"
+            });
+          } else {
+            channel = (/(\w+)/.exec(a.dataset.uid))[0];
+            return $.el('object', {
+              data: "http://www.twitch.tv/widgets/live_embed_player.swf?channel=" + channel,
+              innerHTML: "<param  name=\"allowFullScreen\" value=\"true\" />\n<param  name=\"movie\" value=\"http://www.twitch.tv/widgets/live_embed_player.swf\" />\n<param  name=\"flashvars\" value=\"hostname=www.twitch.tv&channel=" + channel + "&auto_play=true&start_volume=25\" />"
+            });
+          }
+        }
+      }, {
+        key: 'Vocaroo',
+        regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
+        style: 'border: 0; width: 150px; height: 45px;',
+        el: function(a) {
+          return $.el('object', {
+            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (a.dataset.uid.replace(/^i\//, '')) + "&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+          });
+        }
+      }, {
+        key: 'Vimeo',
+        regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
+        el: function(a) {
+          return $.el('iframe', {
+            src: "//player.vimeo.com/video/" + a.dataset.uid + "?wmode=opaque"
+          });
+        },
+        title: {
+          api: function(uid) {
+            return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + uid;
+          },
+          text: function(_) {
+            return _.title;
+          }
+        }
+      }, {
+        key: 'Vine',
+        regExp: /.*(?:vine.co\/)([^#\&\?]*).*/,
+        style: 'border: none; width: 500px; height: 500px;',
+        el: function(a) {
+          return $.el('iframe', {
+            src: "https://vine.co/" + a.dataset.uid + "/card"
+          });
+        }
+      }, {
+        key: 'YouTube',
+        regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/,
+        el: function(a) {
+          var el;
+          el = $.el('iframe', {
+            src: "//www.youtube.com/embed/" + a.dataset.uid + (a.dataset.option ? '#' + a.dataset.option : '') + "?wmode=opaque"
+          });
+          el.setAttribute("allowfullscreen", "true");
+          return el;
+        },
+        title: {
+          api: function(uid) {
+            return "https://gdata.youtube.com/feeds/api/videos/" + uid + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
+          },
+          text: function(data) {
+            return data.entry.title.$t;
+          }
+        }
+      }
+    ]
+  };
+
+  Linkify = {
+    init: function() {
+      var type, _i, _len, _ref;
+      if (g.VIEW === 'catalog' || !Conf['Linkify']) {
+        return;
+      }
+      this.regString = /((https?|mailto|git|magnet|ftp|irc):([a-z\d%\/])|[-a-z\d]+[.](aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2})(\/|(?!.))|[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i;
+      this.types = {};
+      _ref = this.ordered_types;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        type = _ref[_i];
+        this.types[type.key] = type;
+      }
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
@@ -8363,8 +8904,9 @@
         }
       }
     },
-    types: {
-      audio: {
+    ordered_types: [
+      {
+        key: 'audio',
         regExp: /(.*\.(mp3|ogg|wav))$/,
         el: function(a) {
           return $.el('audio', {
@@ -8373,8 +8915,8 @@
             src: a.dataset.uid
           });
         }
-      },
-      gist: {
+      }, {
+        key: 'gist',
         regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/,
         el: function(a) {
           var div;
@@ -8396,8 +8938,8 @@
             }
           }
         }
-      },
-      image: {
+      }, {
+        key: 'image',
         regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/,
         style: 'border: 0; width: auto; height: auto;',
         el: function(a) {
@@ -8405,24 +8947,24 @@
             innerHTML: "<a target=_blank href='" + a.dataset.href + "'><img src='" + a.dataset.href + "'></a>"
           });
         }
-      },
-      InstallGentoo: {
+      }, {
+        key: 'InstallGentoo',
         regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/,
         el: function(a) {
           return $.el('iframe', {
             src: "http://paste.installgentoo.com/view/embed/" + a.dataset.uid
           });
         }
-      },
-      Twitter: {
+      }, {
+        key: 'Twitter',
         regExp: /.*twitter.com\/(.+\/status\/\d+)/,
         el: function(a) {
           return $.el('iframe', {
             src: "https://twitframe.com/show?url=https://twitter.com/" + a.dataset.uid
           });
         }
-      },
-      LiveLeak: {
+      }, {
+        key: 'LiveLeak',
         regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
         el: function(a) {
           var el;
@@ -8435,8 +8977,8 @@
           el.setAttribute("allowfullscreen", "true");
           return el;
         }
-      },
-      MediaCrush: {
+      }, {
+        key: 'MediaCrush',
         regExp: /.*(?:mediacru.sh\/)([0-9a-z_]+)/i,
         style: 'border: 0;',
         el: function(a) {
@@ -8487,8 +9029,8 @@
           });
           return el;
         }
-      },
-      pastebin: {
+      }, {
+        key: 'pastebin',
         regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/,
         el: function(a) {
           var div;
@@ -8496,8 +9038,8 @@
             src: "http://pastebin.com/embed_iframe.php?i=" + a.dataset.uid
           });
         }
-      },
-      gfycat: {
+      }, {
+        key: 'gfycat',
         regExp: /.*gfycat.com\/(?:iframe\/)?(\S*)/,
         el: function(a) {
           var div;
@@ -8505,8 +9047,8 @@
             src: "http://gfycat.com/iframe/" + a.dataset.uid
           });
         }
-      },
-      SoundCloud: {
+      }, {
+        key: 'SoundCloud',
         regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
         style: 'height: auto; width: 500px; display: inline-block;',
         el: function(a) {
@@ -8530,8 +9072,8 @@
             return _.title;
           }
         }
-      },
-      StrawPoll: {
+      }, {
+        key: 'StrawPoll',
         regExp: /strawpoll\.me\/(?:embed_\d+\/)?(\d+)/,
         style: 'border: 0; width: 600px; height: 406px;',
         el: function(a) {
@@ -8539,8 +9081,8 @@
             src: "http://strawpoll.me/embed_1/" + a.dataset.uid
           });
         }
-      },
-      TwitchTV: {
+      }, {
+        key: 'TwitchTV',
         regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/,
         style: "border: none; width: 640px; height: 360px;",
         el: function(a) {
@@ -8559,8 +9101,8 @@
             });
           }
         }
-      },
-      Vocaroo: {
+      }, {
+        key: 'Vocaroo',
         regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
         style: 'border: 0; width: 150px; height: 45px;',
         el: function(a) {
@@ -8568,8 +9110,8 @@
             innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (a.dataset.uid.replace(/^i\//, '')) + "&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
           });
         }
-      },
-      Vimeo: {
+      }, {
+        key: 'Vimeo',
         regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
         el: function(a) {
           return $.el('iframe', {
@@ -8584,8 +9126,8 @@
             return _.title;
           }
         }
-      },
-      Vine: {
+      }, {
+        key: 'Vine',
         regExp: /.*(?:vine.co\/)([^#\&\?]*).*/,
         style: 'border: none; width: 500px; height: 500px;',
         el: function(a) {
@@ -8593,8 +9135,8 @@
             src: "https://vine.co/" + a.dataset.uid + "/card"
           });
         }
-      },
-      YouTube: {
+      }, {
+        key: 'YouTube',
         regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/,
         el: function(a) {
           var el;
@@ -8613,7 +9155,7 @@
           }
         }
       }
-    }
+    ]
   };
 
   ArchiveLink = {
