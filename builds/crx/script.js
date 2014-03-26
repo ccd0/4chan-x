@@ -3096,9 +3096,7 @@
     Callbacks.prototype.execute = function(nodes) {
       var cb, err, errors, i, j, name, node;
       i = 0;
-      c.time("Features");
       while (name = this.keys[i++]) {
-        c.time(name);
         j = 0;
         cb = this[name];
         while (node = nodes[j++]) {
@@ -3117,9 +3115,7 @@
             });
           }
         }
-        c.timeEnd(name);
       }
-      c.timeEnd("Features");
       if (errors) {
         return Main.handleErrors(errors);
       }
@@ -3872,15 +3868,12 @@
       var boardID, keys, now, _i, _len;
       now = Date.now();
       if ((this.data.lastChecked || 0) > now - 2 * $.HOUR) {
-        c.log('return now');
         return;
       }
       keys = Object.keys(this.data.boards);
       if (!keys.length) {
-        c.log('return empty');
         return;
       }
-      c.log('no return');
       for (_i = 0, _len = keys.length; _i < _len; _i++) {
         boardID = keys[_i];
         this.deleteIfEmpty({
@@ -5460,7 +5453,6 @@
       return Index.scrollToIndex();
     },
     parse: function(pages, pageNum) {
-      c.time("Generating Index");
       Index.parseThreadList(pages);
       Index.buildThreads();
       Index.sort();
@@ -5468,8 +5460,7 @@
         Index.pageNav(pageNum);
         return;
       }
-      Index.buildIndex();
-      c.timeEnd("Generating Index");
+      return Index.buildIndex();
     },
     parseThreadList: function(pages) {
       var i, j, live, page, thread, threads;
@@ -7723,7 +7714,7 @@
         len = posts.length - 1;
         index = i = posts.indexOf(post);
         while (true) {
-          if (index === (i = i === 0 ? len : i === len ? 0 : type === 'prev' ? i - 1 : i + 1)) {
+          if (index === (i = type === 'prev' ? i === 0 ? len : i - 1 : i === len ? 0 : i + 1)) {
             break;
           }
           post = posts[i];

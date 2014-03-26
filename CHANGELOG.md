@@ -1,23 +1,31 @@
-### v2.9.7 
+**Zixaphir**:
+- Rewrote "Scroll to post quoting you" functionality, solving several small issues with it.
+- Improved Linkifier link detection.
+- Fixed an issue with Thread Updater intervals not saving correctly.
+- Added Oneechan's Backlink Icons features.
+- Added an option to shrink file information text.
+- Small performance improvements.
+
+### v2.9.7
 *2014-03-20*
 
 **Zixaphir**:
 - Fixed some issues with Chrome Storage and themes/mascots/link titles
 
-### v2.9.6 
+### v2.9.6
 *2014-03-19*
 
 **Zixaphir**:
 - Fix issues causing backlinks to be duplicated.
 - Old cached link titles will properly be pruned again.
 
-### v2.9.5 
+### v2.9.5
 *2014-03-15*
 
 **Zixaphir**:
 - Fix Reveal Spoiler Thumbnails (again).
 
-### v2.9.4 
+### v2.9.4
 *2014-03-14*
 
 **Mayhem**:
@@ -33,7 +41,7 @@
   - Hopefully this will resolve all "blank page" bugs with JSON Navigation that did not generate a user-visible error. (404 threads will still fail, for instance, but display an error)
   - Fixed Infinite Scrolling in Chrome.
 
-### v2.9.3 
+### v2.9.3
 *2014-03-11*
 
 **vampiricwulf**:
@@ -47,7 +55,7 @@
 - Update Custom Navigation legend to reflect index mode changes.
 - JSON Navigation now works for backlinks (when Quote Inlining is disabled) and backlink hashlinks.
 
-### v2.9.2 
+### v2.9.2
 *2014-03-10*
 
 **Zixaphir**:
@@ -55,13 +63,13 @@
 - The catalog now works with JSON Navigation disabled.
 - Added a return button to the JSON Navigation that will switch you back to non-catalog view (requires NavLinks not to be hidden).
 
-### v2.9.1 
+### v2.9.1
 *2014-03-09*
 
 **Zixaphir**:
 - Bugfixes for post hiding, thread updater, and keybinds.
 
-## v2.9.0 
+## v2.9.0
 *2014-03-08*
 
 **MayhemYDG**:
@@ -121,7 +129,7 @@
 **Vampiricwulf**
 - Flash embedding and other Flash features.
 
-**Zixaphir** 
+**Zixaphir**
 - Update Custom Navigation legend to reflect index mode changes.
 - JSON Navigation now works for backlinks (when Quote Inlining is disabled) and backlink hashlinks.
 - JSON Navigation (Index, Catalog) performance improvements.
@@ -133,7 +141,7 @@
 - Bug fixes
 - Update archives
 
-### v2.8.11 
+### v2.8.11
 *2014-02-16*
 
 **MayhemYDG**
@@ -161,7 +169,7 @@
 **Zixaphir**:
 - Bugfixes.
 
-### v2.8.8 
+### v2.8.8
 *2014-01-30*
 
 **MayhemYDG**:
@@ -175,19 +183,19 @@
 **Zixaphir**:
 - Bugfixes
 
-### v2.8.7 
+### v2.8.7
 *2014-01-19*
 
 **Zixaphir**:
 - Fix posting.
 
-### v2.8.6 
+### v2.8.6
 *2014-01-19*
 
 **Zixaphir**:
 - General improvements all across our current JSON Navigation implementations.
 
-### v2.8.5 
+### v2.8.5
 *2014-01-14*
 
 **Zixaphir**:
@@ -195,17 +203,17 @@
 - The "Questionable" mascot category has been emptied. All of the mascots within it can be reimported from https://raw.github.com/zixaphir/appchan-x/master/questionable.json
 - Added a category for custom mascots.
 
-### v2.8.4 
+### v2.8.4
 *2014-01-13*
 
 bugfix
 
-### v2.8.3 
+### v2.8.3
 *2014-01-13*
 
 bugfix
 
-### v2.8.2 
+### v2.8.2
 *2014-01-13*
 
 **Zixaphir**:
@@ -213,7 +221,7 @@ bugfix
 - JSON Navigation and Index features are now optional.
 - Fixed several small issues with themes and mascots.
 
-### v2.8.1 
+### v2.8.1
 *2014-01-13*
 
 **seaweeedchan**:
@@ -244,19 +252,19 @@ bugfix
 - Users are now subjected to whatever terrible code went into that previous feature. :3
 - Infinite Scrolling restored.
 
-### v2.7.4 
+### v2.7.4
 *2013-12-27*
 
 **Zixaphir**:
 - Bugfixes.
 
-### v2.7.3 
+### v2.7.3
 *2013-12-26*
 
 **Zixaphir**:
 - If I had realized that people actually used the catalog, I would have pushed a new stable last night. :/
 
-### v2.7.2 
+### v2.7.2
 *2013-12-25*
 
 **MayhemYDG**:
@@ -268,13 +276,13 @@ bugfix
 **Zixaphir**:
 - Bug fixes and optimizations
 
-### v2.7.1 
+### v2.7.1
 *2013-12-24*
 
 **Zixaphir**:
 - Bug fixes and optimizations
 
-## v2.7.0 
+## v2.7.0
 *2013-12-16*
 
 **MayhemYDG**:
@@ -290,13 +298,13 @@ bugfix
 - FappeTyme and WerkTyme now persist across sessions.
 - Bugfixes everywhere.
 
-### v2.6.1 
+### v2.6.1
 *2013-11-27*
 
 **Zixaphir**:
 - Fix an incorrect classname resulting in icons not showing correctly.
 
-## v2.6.0 
+## v2.6.0
 *2013-11-27*
 
 **MayhemYDG**:
@@ -341,18 +349,18 @@ bugfix
  - You cannot post an image reply immediately after a non-image reply anymore.
 - Various minor fixes
 
-### v2.5.1 
+### v2.5.1
 *2013-10-20*
 **Zixaphir**:
 - Infinite Scrolling Bugfix (chrome)
 
-### v2.4.1 
+### v2.4.1
 *2013-10-13*
 
 **Zixaphir**:
 - Bugfixes
 
-## v2.4.0 
+## v2.4.0
 *2013-10-13*
 
 **MayhemYDG**:
@@ -382,13 +390,13 @@ bugfix
 - Fix an issue with "fit height" in the gallery on Chrome
 - Small thread updater fixes
 
-### v2.3.10 
+### v2.3.10
 *2013-08-31*
 
 **Zixaphir**:
 - Catalog bugfix
 
-### v2.3.9 
+### v2.3.9
 *2013-08-30*
 
 **MayhemYDG**:
@@ -402,12 +410,12 @@ bugfix
 - Add some css flex support
 - General bugfixes
 
-### v2.3.8 
+### v2.3.8
 *2013-08-25*
 
 - I accidentally z-index
 
-### v2.3.7 
+### v2.3.7
 *2013-08-25*
 
 **Zixaphir**:
@@ -419,10 +427,10 @@ bugfix
   * Now enabled by default (but won't be used as the default thumbnail option without disabling Image Expansion)
 - Bugfixes
 
-**seaweedchan**: 
+**seaweedchan**:
 - Gallery layout and aesthetics overhaul
 
-### v2.3.6 
+### v2.3.6
 *2013-08-21*
 
 **Zixaphir**:
@@ -435,13 +443,13 @@ bugfix
   * Works with Thread Updater to add new images to the Gallery while its open.
   * BLINK/WEBKIT ONLY: Clicking the file title will download the image with the original name.
 
-### v2.3.5 
+### v2.3.5
 *2013-08-19*
 
 **Zixaphir**:
 - Bugfixes on catalog, /sp/, and /int/
 
-### v2.3.4 
+### v2.3.4
 *2013-08-18*
 
 **MayhemYDG**:
@@ -465,7 +473,7 @@ bugfix
 **zixaphir**:
 - Bugfixes, mostly
 
-### v2.3.3 
+### v2.3.3
 *2013-08-16*
 
 **seaweedchan**:
@@ -519,7 +527,7 @@ bugfix
 - Minor optimizations.
 
 **seaweedchan**:
-- Fix issues with having two options called `Reveal Spoilers`. 
+- Fix issues with having two options called `Reveal Spoilers`.
 - Update archive.
 
 **Zixaphir**:
