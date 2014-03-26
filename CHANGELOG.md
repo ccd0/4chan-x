@@ -1,3 +1,6 @@
+### v2.9.8 
+*2014-03-26*
+
 **Zixaphir**:
 - Rewrote "Scroll to post quoting you" functionality, solving several small issues with it.
 - Improved Linkifier link detection.
