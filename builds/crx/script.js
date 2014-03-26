@@ -5585,7 +5585,7 @@
         len = posts.length - 1;
         index = i = posts.indexOf(post);
         while (true) {
-          if (index === (i = i === 0 ? len : i === len ? 0 : type === 'prev' ? i - 1 : i + 1)) {
+          if (index === (i = type === 'prev' ? i === 0 ? len : i - 1 : i === len ? 0 : i + 1)) {
             break;
           }
           post = posts[i];

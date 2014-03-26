@@ -57,8 +57,11 @@
 - JSON Navigation now works for backlinks (when Quote Inlining is disabled) and backlink hashlinks.
 - JSON Navigation (Index, Catalog) performance improvements.
 - Added a nifty bread-crumb for the JSON Navigation.
-- Many spiffy performance, state awareness, and sanity improvements to JSON Navigation.
 - Added a return button to the JSON Navigation that will switch you back to non-catalog view (requires NavLinks not to be hidden).
+- Rewrote "Scroll to post quoting you" functionality, solving several small issues with it.
+- Improved Linkifier link detection.
+- Fixed an issue with Thread Updater intervals not saving correctly.
+- Many spiffy performance, state awareness, and sanity improvements to JSON Navigation.
 
 ### v1.4.1 
 *2014-03-01*

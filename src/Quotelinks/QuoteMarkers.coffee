@@ -66,12 +66,13 @@ QuoteMarkers =
       index = i = posts.indexOf post
       while true
         break if index is (
-          i = if i is 0
-            len
+          i = if type is 'prev'
+            if i is 0
+              len
+            else
+              i - 1
           else if i is len
             0
-          else if type is 'prev'
-            i - 1
           else
             i + 1
         )
