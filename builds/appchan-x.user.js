@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.7 - 2014-03-24
+* appchan x - Version 2.9.7 - 2014-03-26
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -3809,12 +3809,17 @@
     };
 
     DataBoard.prototype.clean = function() {
-      var boardID, now;
+      var boardID, keys, now, _i, _len;
       now = Date.now();
       if ((this.data.lastChecked || 0) > now - 2 * $.HOUR) {
         return;
       }
-      for (boardID in this.data.boards) {
+      keys = Object.keys(this.data.boards);
+      if (!keys.length) {
+        return;
+      }
+      for (_i = 0, _len = keys.length; _i < _len; _i++) {
+        boardID = keys[_i];
         this.deleteIfEmpty({
           boardID: boardID
         });

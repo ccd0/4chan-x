@@ -64,7 +64,13 @@ class DataBoard
     now = Date.now()
     return if (@data.lastChecked or 0) > now - 2 * $.HOUR
 
-    for boardID of @data.boards
+    # Don't even bother writing unless we have data to write
+    keys = Object.keys @data.boards
+    return unless keys.length
+
+    # Since we generated the keys anyways, use them to avoid the slow ``Object::hasOwnProperty`` method
+    # Not that ``Object.keys`` is fast
+    for boardID in keys
       @deleteIfEmpty {boardID}
       @ajaxClean boardID if boardID of @data.boards
 
