@@ -1,3 +1,6 @@
+**MayhemYDG**:
+- Fix captcha not refreshing.
+
 ### v2.9.8 
 *2014-03-26*
 

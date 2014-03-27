@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.8 - 2014-03-26
+* appchan x - Version 2.9.8 - 2014-03-27
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -9594,7 +9594,9 @@
       $.sync('captchas', QR.captcha.sync);
       QR.captcha.nodes.challenge = challenge;
       new MutationObserver(QR.captcha.load.bind(QR.captcha)).observe(challenge, {
-        childList: true
+        childList: true,
+        subtree: true,
+        attributes: true
       });
       return QR.captcha.load();
     },
@@ -11489,7 +11491,7 @@
     })(),
     toggle: function(e) {
       var fullID;
-      fullID = $.x('ancestor::*[@data-full-i-d]', this).dataset.fullID;
+      fullID = $.x('ancestor::*[@data-full-i-d][1]', this).dataset.fullID;
       return Menu.menu.toggle(e, this, g.posts[fullID]);
     }
   };
@@ -12946,10 +12948,20 @@
         }
       }, {
         name: "4plebs",
-        boards: ["adv", "hr", "o", "pol", "s4s", "tg", "tv", "x"],
-        files: ["adv", "hr", "o", "pol", "s4s", "tg", "tv", "x"],
+        boards: ["adv", "hr", "o", "pol", "s4s", "tg", "trv", "tv", "x"],
+        files: ["adv", "hr", "o", "pol", "s4s", "tg", "trv", "tv", "x"],
         data: {
           domain: "archive.4plebs.org",
+          http: true,
+          https: true,
+          software: "foolfuuka"
+        }
+      }, {
+        name: "4plebs Flash Archive",
+        boards: ["f"],
+        files: ["f"],
+        data: {
+          domain: "flash.4plebs.org",
           http: true,
           https: true,
           software: "foolfuuka"
