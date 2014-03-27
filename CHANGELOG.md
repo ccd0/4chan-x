@@ -1,6 +1,8 @@
+- Fix captcha not refreshing.
+
 ### 3.19.3 - *2014-03-20*
 
-- Buf fixes.
+- Bug fixes.
 
 ### 3.19.2 - *2014-03-12*
 

@@ -58,6 +58,8 @@ QR.captcha =
     QR.captcha.nodes.challenge = challenge
     new MutationObserver(QR.captcha.load.bind QR.captcha).observe challenge,
       childList: true
+      subtree: true
+      attributes: true
     QR.captcha.load()
   sync: (captchas) ->
     QR.captcha.captchas = captchas
