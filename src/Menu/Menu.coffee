@@ -35,5 +35,5 @@ Menu =
       button
 
   toggle: (e) ->
-    fullID = $.x('ancestor::*[@data-full-i-d]', @).dataset.fullID
+    fullID = $.x('ancestor::*[@data-full-i-d][1]', @).dataset.fullID
     Menu.menu.toggle e, @, g.posts[fullID]

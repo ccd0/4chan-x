@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.4.1 - 2014-03-26
+* 4chan X - Version 1.4.1 - 2014-03-27
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -6906,7 +6906,9 @@
       $.sync('captchas', QR.captcha.sync);
       QR.captcha.nodes.challenge = challenge;
       new MutationObserver(QR.captcha.load.bind(QR.captcha)).observe(challenge, {
-        childList: true
+        childList: true,
+        subtree: true,
+        attributes: true
       });
       return QR.captcha.load();
     },
@@ -9311,7 +9313,7 @@
     })(),
     toggle: function(e) {
       var fullID;
-      fullID = $.x('ancestor::*[@data-full-i-d]', this).dataset.fullID;
+      fullID = $.x('ancestor::*[@data-full-i-d][1]', this).dataset.fullID;
       return Menu.menu.toggle(e, this, g.posts[fullID]);
     }
   };

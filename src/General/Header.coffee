@@ -1,6 +1,5 @@
 Header =
   init: ->
-
     @menu = new UI.Menu 'header'
 
     menuButton = $.el 'span',
