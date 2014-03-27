@@ -10806,10 +10806,20 @@
         }
       }, {
         name: "4plebs",
-        boards: ["adv", "hr", "o", "pol", "s4s", "tg", "tv", "x"],
-        files: ["adv", "hr", "o", "pol", "s4s", "tg", "tv", "x"],
+        boards: ["adv", "hr", "o", "pol", "s4s", "tg", "trv", "tv", "x"],
+        files: ["adv", "hr", "o", "pol", "s4s", "tg", "trv", "tv", "x"],
         data: {
           domain: "archive.4plebs.org",
+          http: true,
+          https: true,
+          software: "foolfuuka"
+        }
+      }, {
+        name: "4plebs Flash Archive",
+        boards: ["f"],
+        files: ["f"],
+        data: {
+          domain: "flash.4plebs.org",
           http: true,
           https: true,
           software: "foolfuuka"
