@@ -6542,7 +6542,9 @@
       $.sync('captchas', QR.captcha.sync);
       QR.captcha.nodes.challenge = challenge;
       new MutationObserver(QR.captcha.load.bind(QR.captcha)).observe(challenge, {
-        childList: true
+        childList: true,
+        subtree: true,
+        attributes: true
       });
       return QR.captcha.load();
     },
