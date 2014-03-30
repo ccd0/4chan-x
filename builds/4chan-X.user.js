@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.4.1 - 2014-03-27
+* 4chan X - Version 1.4.1 - 2014-03-30
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -12408,18 +12408,18 @@
       if (this.isClone) {
         return;
       }
-      return this.nodes.date.textContent = Time.funk(Time, this.info.date);
+      return this.nodes.date.textContent = Time.funk(this.info.date);
     },
     createFunc: function(format) {
       var code;
       code = format.replace(/%([A-Za-z])/g, function(s, c) {
         if (c in Time.formatters) {
-          return "' + Time.formatters." + c + ".call(date) + '";
+          return "' + this.formatters." + c + ".call(date) + '";
         } else {
           return s;
         }
       });
-      return Function('Time', 'date', "return '" + code + "'");
+      return Function('date', "return '" + code + "'");
     },
     day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],

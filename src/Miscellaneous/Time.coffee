@@ -8,14 +8,14 @@ Time =
       cb:   @node
   node: ->
     return if @isClone
-    @nodes.date.textContent = Time.funk Time, @info.date
+    @nodes.date.textContent = Time.funk @info.date
   createFunc: (format) ->
     code = format.replace /%([A-Za-z])/g, (s, c) ->
       if c of Time.formatters
-        "' + Time.formatters.#{c}.call(date) + '"
+        "' + this.formatters.#{c}.call(date) + '"
       else
         s
-    Function 'Time', 'date', "return '#{code}'"
+    Function 'date', "return '#{code}'"
   day: [
     'Sunday'
     'Monday'
