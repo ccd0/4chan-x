@@ -5,6 +5,17 @@ Linkify =
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
+    if Conf['Embedding'] or Conf['Link Title']
+      @embedProcess = Function 'link', 
+        "var data = this.services(link);
+        if (data) {
+        #{
+          (if Conf['Embedding'] then 'this.embed(data);\n' else '') +
+          if Conf['Title Link'] then 'this.title(data);' else ''
+        }
+        }
+        "
+
     Post.callbacks.push
       name: 'Linkify'
       cb:   @node
@@ -63,10 +74,7 @@ Linkify =
       Linkify.embedProcess Linkify.makeLink link, @
     return
 
-  embedProcess: (link) ->
-    if data = Linkify.services link
-      Linkify.embed data if Conf['Embedding']
-      Linkify.title data if Conf['Link Title']
+  embedProcess: -> return
 
   regString: ///(
     # http, magnet, ftp, etc

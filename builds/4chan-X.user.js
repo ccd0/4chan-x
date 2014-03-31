@@ -8494,6 +8494,9 @@
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
+      if (Conf['Embedding'] || Conf['Link Title']) {
+        this.embedProcess = Function('link', "var data = this.services(link); if (data) { " + ((Conf['Embedding'] ? 'this.embed(data);\n' : '') + (Conf['Title Link'] ? 'this.title(data);' : '')) + " }");
+      }
       return Post.callbacks.push({
         name: 'Linkify',
         cb: this.node
@@ -8563,17 +8566,7 @@
         Linkify.embedProcess(Linkify.makeLink(link, this));
       }
     },
-    embedProcess: function(link) {
-      var data;
-      if (data = Linkify.services(link)) {
-        if (Conf['Embedding']) {
-          Linkify.embed(data);
-        }
-        if (Conf['Link Title']) {
-          return Linkify.title(data);
-        }
-      }
-    },
+    embedProcess: function() {},
     regString: /((https?|mailto|git|magnet|ftp|irc):([a-z\d%\/])|[-a-z\d]+[.](aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2})([:\/]|(?!.))|[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i,
     makeRange: function(startNode, endNode, startOffset, endOffset) {
       var range;
