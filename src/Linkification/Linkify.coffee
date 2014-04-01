@@ -151,6 +151,7 @@ Linkify =
 
     for type in Linkify.ordered_types
       continue unless match = type.regExp.exec href
+      break if type.dummy
       return [type.key, match[1], match[2], link]
 
     return
@@ -433,6 +434,15 @@ Linkify =
       title:
         api: (uid) -> "https://gdata.youtube.com/feeds/api/videos/#{uid}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
         text: (data) -> data.entry.title.$t
+    ,
+      # dummy entries: not implemented yet but included to prevent them being wrongly embedded as a subsequent type
+      key: 'Loopvid'
+      regExp: /.*loopvid.appspot.com\/.*/
+      dummy: true
+    ,
+      key: 'MediaFire'
+      regExp: /.*mediafire.com\/.*/
+      dummy: true
     ,
       key: 'video'
       regExp: /(.*\.(ogv|webm|mp4))$/

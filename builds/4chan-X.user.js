@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.4.1 - 2014-03-25
+* 4chan X - Version 1.4.1 - 2014-03-31
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -8251,6 +8251,9 @@
         if (!(match = type.regExp.exec(href))) {
           continue;
         }
+        if (type.dummy) {
+          break;
+        }
         return [type.key, match[1], match[2], link];
       }
     },
@@ -8620,6 +8623,14 @@
             return data.entry.title.$t;
           }
         }
+      }, {
+        key: 'Loopvid',
+        regExp: /.*loopvid.appspot.com\/.*/,
+        dummy: true
+      }, {
+        key: 'MediaFire',
+        regExp: /.*mediafire.com\/.*/,
+        dummy: true
       }, {
         key: 'video',
         regExp: /(.*\.(ogv|webm|mp4))$/,
@@ -8795,6 +8806,9 @@
         if (!(match = type.regExp.exec(href))) {
           continue;
         }
+        if (type.dummy) {
+          return;
+        }
         return [type.key, match[1], match[2], link];
       }
     },
@@ -8916,6 +8930,16 @@
     },
     ordered_types: [
       {
+        key: 'audio',
+        regExp: /(.*\.(mp3|ogg|wav))$/,
+        el: function(a) {
+          return $.el('audio', {
+            controls: 'controls',
+            preload: 'auto',
+            src: a.dataset.uid
+          });
+        }
+      }, {
         key: 'gist',
         regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/,
         el: function(a) {
@@ -8937,16 +8961,6 @@
               }
             }
           }
-        }
-      }, {
-        key: 'audio',
-        regExp: /(.*\.(mp3|ogg|wav))$/,
-        el: function(a) {
-          return $.el('audio', {
-            controls: 'controls',
-            preload: 'auto',
-            src: a.dataset.uid
-          });
         }
       }, {
         key: 'image',
@@ -9164,6 +9178,14 @@
             return data.entry.title.$t;
           }
         }
+      }, {
+        key: 'Loopvid',
+        regExp: /.*loopvid.appspot.com\/.*/,
+        dummy: true
+      }, {
+        key: 'MediaFire',
+        regExp: /.*mediafire.com\/.*/,
+        dummy: true
       }, {
         key: 'video',
         regExp: /(.*\.(ogv|webm|mp4))$/,
