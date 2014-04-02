@@ -478,6 +478,9 @@ QR =
         # Connection error, or
         # www.4chan.org/banned
         delete QR.req
+        if QR.captcha.isEnabled
+          QR.captcha.destroy()
+          QR.captcha.setup()
         post.unlock()
         QR.cooldown.auto = false
         QR.status()
@@ -511,6 +514,7 @@ QR =
     {req} = QR
     delete QR.req
 
+    QR.captcha.destroy() if QR.captcha.isEnabled
     post = QR.posts[0]
     post.unlock()
 
@@ -540,23 +544,12 @@ QR =
         # Remove the obnoxious 4chan Pass ad.
         if /mistyped/i.test err.textContent
           err = 'You seem to have mistyped the CAPTCHA.'
-        # Enable auto-post if we have some cached captchas.
-        QR.cooldown.auto = if QR.captcha.isEnabled
-          !!QR.captcha.captchas.length
-        else if err is 'Connection error with sys.4chan.org.'
-          true
-        else
-          # Something must've gone terribly wrong if you get captcha errors without captchas.
-          # Don't auto-post indefinitely in that case.
-          false
+        QR.cooldown.auto = false
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
         QR.cooldown.set delay: 2
       else if err.textContent and m = err.textContent.match /wait\s+(\d+)\s+second/i
-        QR.cooldown.auto = if QR.captcha.isEnabled
-          !!QR.captcha.captchas.length
-        else
-          true
+        QR.cooldown.auto = !QR.captcha.isEnabled
         QR.cooldown.set delay: m[1]
       else # stop auto-posting
         QR.cooldown.auto = false
@@ -592,18 +585,6 @@ QR =
     # Enable auto-posting if we have stuff left to post, disable it otherwise.
     postsCount = QR.posts.length - 1
     QR.cooldown.auto = postsCount and isReply
-    if QR.cooldown.auto and QR.captcha.isEnabled and (captchasCount = QR.captcha.captchas.length) < 3 and captchasCount < postsCount
-      notif = new Notification 'Quick reply warning',
-        body: "You are running low on cached captchas. Cache count: #{captchasCount}."
-        icon: Favicon.logo
-      notif.onclick = ->
-        QR.open()
-        QR.captcha.nodes.input.focus()
-        window.focus()
-      notif.onshow = ->
-        setTimeout ->
-          notif.close()
-        , 7 * $.SECOND
 
     unless Conf['Persistent QR'] or QR.cooldown.auto
       QR.close()

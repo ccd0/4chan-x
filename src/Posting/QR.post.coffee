@@ -89,6 +89,8 @@ QR.post = class
     for name in ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler', 'flag']
       continue unless node = QR.nodes[name]
       node.disabled = lock
+    if QR.captcha.isEnabled
+      QR.captcha.nodes.input.disabled = lock
     @nodes.rm.style.visibility = if lock then 'hidden' else ''
     (if lock then $.off else $.on) QR.nodes.filename.previousElementSibling, 'click', QR.openFileInput
     @nodes.spoiler.disabled = lock
