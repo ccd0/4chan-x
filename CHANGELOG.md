@@ -1,3 +1,7 @@
+- Fix captcha submission:<br>
+  Captchas were reloaded the instant a post was submitted to 4chan. Unfortunately, a recent change to reCAPTCHA made it so reloading captchas invalidates the ones that loaded but not yet used. This is now fixed by only unloading the captcha, and only load new ones after the post is submitted.<br>
+  This also kills captcha caching, so the feature was removed.
+
 ### v1.4.1 
 *2014-03-01*
 
