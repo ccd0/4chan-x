@@ -20,6 +20,9 @@ Linkify =
       [-\w\d.@]+@[a-z\d.-]+\.[a-z\d]
     )///i
 
+    @types = {}
+    @types[type.key] = type for type in @ordered_types
+
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
@@ -146,9 +149,10 @@ Linkify =
   services: (link) ->
     href = link.href
 
-    for key, type of Linkify.types
+    for type in Linkify.ordered_types
       continue unless match = type.regExp.exec href
-      return [key, match[1], match[2], link]
+      break if type.dummy
+      return [type.key, match[1], match[2], link]
 
     return
 
@@ -254,16 +258,16 @@ Linkify =
           text = "[#{key}] #{@status}'d"
       link.textContent = text if link
 
-  types:
-    audio:
+  ordered_types: [
+      key: 'audio'
       regExp: /(.*\.(mp3|ogg|wav))$/
       el: (a) ->
         $.el 'audio',
           controls:    'controls'
           preload:     'auto'
           src:         a.dataset.uid
-
-    gist:
+    ,
+      key: 'gist'
       regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/
       el: (a) ->
         div = $.el 'iframe',
@@ -273,27 +277,27 @@ Linkify =
         api: (uid) -> "https://api.github.com/gists/#{uid}"
         text: ({files}) ->
           return file for file of files when files.hasOwnProperty file
-
-    image:
+    ,
+      key: 'image'
       regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/
       style: 'border: 0; width: auto; height: auto;'
       el: (a) ->
         $.el 'div',
           innerHTML: "<a target=_blank href='#{a.dataset.href}'><img src='#{a.dataset.href}'></a>"
-
-    InstallGentoo:
+    ,
+      key: 'InstallGentoo'
       regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/
       el: (a) ->
         $.el 'iframe',
           src: "http://paste.installgentoo.com/view/embed/#{a.dataset.uid}"
-          
-    Twitter:
+    ,
+      key: 'Twitter'
       regExp: /.*twitter.com\/(.+\/status\/\d+)/
       el: (a) -> 
         $.el 'iframe',
           src: "https://twitframe.com/show?url=https://twitter.com/#{a.dataset.uid}"
-
-    LiveLeak:
+    ,
+      key: 'LiveLeak'
       regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
       el: (a) ->
         el = $.el 'iframe',
@@ -303,8 +307,8 @@ Linkify =
           frameborder: "0"
         el.setAttribute "allowfullscreen", "true"
         el
-
-    MediaCrush:
+    ,
+      key: 'MediaCrush'
       regExp: /.*(?:mediacru.sh\/)([0-9a-z_]+)/i
       style: 'border: 0;'
       el: (a) ->
@@ -335,20 +339,20 @@ Linkify =
             else
               "ERROR: No valid filetype."
         el
-
-    pastebin:
+    ,
+      key: 'pastebin'
       regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/
       el: (a) ->
         div = $.el 'iframe',
           src: "http://pastebin.com/embed_iframe.php?i=#{a.dataset.uid}"
-
-    gfycat:
+    ,
+      key: 'gfycat'
       regExp: /.*gfycat.com\/(?:iframe\/)?(\S*)/
       el: (a) ->
         div = $.el 'iframe',
           src: "http://gfycat.com/iframe/#{a.dataset.uid}"
-
-    SoundCloud:
+    ,
+      key: 'SoundCloud'
       regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
       style: 'height: auto; width: 500px; display: inline-block;'
       el: (a) ->
@@ -364,15 +368,15 @@ Linkify =
       title:
         api: (uid) -> "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{uid}"
         text: (_) -> _.title
-
-    StrawPoll:
+    ,
+      key: 'StrawPoll'
       regExp: /strawpoll\.me\/(?:embed_\d+\/)?(\d+)/
       style: 'border: 0; width: 600px; height: 406px;'
       el: (a) ->
         $.el 'iframe',
           src: "http://strawpoll.me/embed_1/#{a.dataset.uid}"
-
-    TwitchTV:
+    ,
+      key: 'TwitchTV'
       regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/
       style: "border: none; width: 640px; height: 360px;"
       el: (a) ->
@@ -396,15 +400,15 @@ Linkify =
 <param  name="movie" value="http://www.twitch.tv/widgets/live_embed_player.swf" />
 <param  name="flashvars" value="hostname=www.twitch.tv&channel=#{channel}&auto_play=true&start_volume=25" />
 """
-
-    Vocaroo:
+    ,
+      key: 'Vocaroo'
       regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/
       style: 'border: 0; width: 150px; height: 45px;'
       el: (a) ->
         $.el 'object',
           innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=#{a.dataset.uid.replace /^i\//, ''}&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
-
-    Vimeo:
+    ,
+      key: 'Vimeo'
       regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
       el: (a) ->
         $.el 'iframe',
@@ -412,15 +416,15 @@ Linkify =
       title:
         api: (uid) -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{uid}"
         text: (_) -> _.title
-
-    Vine:
+    ,
+      key: 'Vine'
       regExp: /.*(?:vine.co\/)([^#\&\?]*).*/
       style: 'border: none; width: 500px; height: 500px;'
       el: (a) ->
         $.el 'iframe',
           src: "https://vine.co/#{a.dataset.uid}/card"
-
-    YouTube:
+    ,
+      key: 'YouTube'
       regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/
       el: (a) ->
         el = $.el 'iframe',
@@ -430,4 +434,22 @@ Linkify =
       title:
         api: (uid) -> "https://gdata.youtube.com/feeds/api/videos/#{uid}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
         text: (data) -> data.entry.title.$t
+    ,
+      # dummy entries: not implemented yet but included to prevent them being wrongly embedded as a subsequent type
+      key: 'Loopvid'
+      regExp: /.*loopvid.appspot.com\/.*/
+      dummy: true
+    ,
+      key: 'MediaFire'
+      regExp: /.*mediafire.com\/.*/
+      dummy: true
+    ,
+      key: 'video'
+      regExp: /(.*\.(ogv|webm|mp4))$/
+      el: (a) ->
+        $.el 'video',
+          controls:    'controls'
+          preload:     'auto'
+          src:         a.dataset.uid
+  ]
 
