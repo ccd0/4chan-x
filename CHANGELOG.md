@@ -1,3 +1,6 @@
+### v1.4.5 
+*2014-04-03*
+
 **ccd0**:
 - Add updater for Chrom* extension.
 
