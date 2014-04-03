@@ -587,9 +587,9 @@ QR =
   flagsInput: ->
     {nodes} = QR
     return unless nodes
-    if nodes.flagSelector
-      $.rm nodes.flagSelector
-      delete nodes.flagSelector
+    if nodes.flag
+      $.rm nodes.flag
+      delete nodes.flag
 
     if g.BOARD.ID is 'pol'
       flag = QR.flags()
@@ -690,7 +690,7 @@ QR =
         QR.error $.el 'span',
           innerHTML: """
           4chan X encountered an error while posting. 
-          [<a href="//4chan.org/banned" target=_blank>Banned?</a>] [<a href="https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean" target=_blank>More info</a>]
+          [<a href="//4chan.org/banned" target=_blank>Banned?</a>] [<a href="https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean" target=_blank>More info</a>]
           """
     extra =
       form: $.formData formData

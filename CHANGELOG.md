@@ -1,10 +1,6 @@
 **duckness**:
 - Merge changes from Mayhem fork
 
-**ccd0**:
-- Embedding for direct video links
-- Merge changes from Mayhem fork
-
 **MayhemYDG**:
 - Fix captcha submission:
   Captchas were reloaded the instant a post was submitted to 4chan. Unfortunately, a recent change to reCAPTCHA made it so reloading captchas invalidates the ones that loaded but not yet used. This is now fixed by only unloading the captcha, and only load new ones after the post is submitted.<br>
@@ -73,8 +69,36 @@
 - Fixed an issue with Thread Updater intervals not saving correctly.
 - Many spiffy performance, state awareness, and sanity improvements to JSON Navigation.
 
+### v1.4.5 
+*2014-04-03*
+
+**ccd0**:
+- Add updater for Chrom* extension.
+
+### v1.4.4 
+*2014-04-03*
+
+**ccd0**:
+- Fix flag selector not being removed from post form.
+
+### v1.4.3 
+*2014-04-03*
+
+**ccd0**:
+- Fix [navigation bug](https://github.com/ccd0/4chan-x/issues/14)
+
+### v1.4.2 
+*2014-04-02*
+
+**MayhemYDG**:
+- Fix captcha not refreshing.
+- Fix captcha submission:<br>
+  Captchas were reloaded the instant a post was submitted to 4chan. Unfortunately, a recent change to reCAPTCHA made it so reloading captchas invalidates the ones that loaded but not yet used. This is now fixed by only unloading the captcha, and only load new ones after the post is submitted.<br>
+  This also kills captcha caching, so the feature was removed.
+
 ### v1.4.1 
 *2014-03-01*
+
 **Spittie**
 - Check image dimension before uploading
 

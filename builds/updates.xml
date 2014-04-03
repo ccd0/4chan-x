@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
+  <app appid='4chan X'>
+    <updatecheck codebase='https://github.com/ccd0/4chan-x/raw/master/builds/crx.crx' version='1.4.5' />
+  </app>
+</gupdate>
+
