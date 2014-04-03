@@ -372,6 +372,7 @@ QR =
     $.addClass QR.nodes.el, 'dump' unless isSingle
 
   checkDimensions: (file, isSingle, max) ->
+    return QR.handleFile(file, isSingle, max) if file.type is 'application/x-shockwave-flash'
     img = new Image()
     img.onload = =>
       {height, width} = img
