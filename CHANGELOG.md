@@ -1,3 +1,9 @@
+### v1.4.7 
+*2014-04-03*
+
+**ccd0**:
+- Fix updating of Chrom* extension.
+
 ### v1.4.6 
 *2014-04-03*
 
