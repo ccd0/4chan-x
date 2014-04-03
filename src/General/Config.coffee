@@ -710,7 +710,7 @@ Config =
       'Post Form Style': [
         'tabbed slideout'
         'How the post form will sit on the page.'
-        ['fixed', 'slideout', 'tabbed slideout', 'float']
+        ['fixed', 'slideout', 'tabbed slideout', 'slideup', 'tabbed slideup', 'float']
       ]
       'Post Form Slideout Transitions' : [
         true
