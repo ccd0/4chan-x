@@ -1,8 +1,14 @@
 ### v1.4.4 
 *2014-04-03*
 
+**ccd0**:
+- Fix flag selector not being removed from post form.
+
 ### v1.4.3 
 *2014-04-03*
+
+**ccd0**:
+- Fix [navigation bug](https://github.com/ccd0/4chan-x/issues/14)
 
 ### v1.4.2 
 *2014-04-02*
@@ -20,6 +26,7 @@
 
 ### v1.4.1 
 *2014-03-01*
+
 **Spittie**
 - Check image dimension before uploading
 
