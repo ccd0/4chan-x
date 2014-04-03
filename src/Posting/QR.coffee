@@ -364,7 +364,10 @@ QR =
     isSingle = files.length is 1
     QR.cleanNotifications()
     for file in files
-      QR.checkDimensions file, isSingle, max
+      if file.type is 'application/x-shockwave-flash'
+        QR.handleFile(file, isSingle, max)
+      else
+        QR.checkDimensions file, isSingle, max
     $.addClass QR.nodes.el, 'dump' unless isSingle
 
   checkDimensions: (file, isSingle, max) ->
