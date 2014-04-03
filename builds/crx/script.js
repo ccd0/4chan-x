@@ -8124,7 +8124,7 @@
         ExpandComment.callbacks.push(this.node);
       }
       if (Conf['Embedding'] || Conf['Link Title']) {
-        this.embedProcess = Function('link', "var data = this.services(link); if (data) { " + ((Conf['Embedding'] ? 'this.embed(data);\n' : '') + (Conf['Title Link'] ? 'this.title(data);' : '')) + " }");
+        this.embedProcess = Function('link', "var data = this.services(link); if (data) { " + ((Conf['Embedding'] ? 'this.embed(data);\n' : '') + (Conf['Link Title'] ? 'this.title(data);' : '')) + " }");
       }
       return Post.callbacks.push({
         name: 'Linkify',
