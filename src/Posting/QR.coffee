@@ -550,14 +550,17 @@ QR =
     $.event 'QRDialogCreation', null, dialog
 
   flags: ->
-    fn = (val) -> $.el 'option', 
-      value: val[0]
-      textContent: val[1]
     select = $.el 'select',
       name:      'flag'
       className: 'flagSelector'
 
-    $.add select, fn flag for flag in [
+    fn = (val) -> 
+      el = $.el 'option', 
+        value: val[0]
+        textContent: val[1]
+      $.add select, el
+
+    fn flag for flag in [
       ['0',  'None']
       ['US', 'American']
       ['KP', 'Best Korean']

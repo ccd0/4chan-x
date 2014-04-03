@@ -6568,20 +6568,22 @@
     },
     flags: function() {
       var flag, fn, select, _i, _len, _ref;
-      fn = function(val) {
-        return $.el('option', {
-          value: val[0],
-          textContent: val[1]
-        });
-      };
       select = $.el('select', {
         name: 'flag',
         className: 'flagSelector'
       });
+      fn = function(val) {
+        var el;
+        el = $.el('option', {
+          value: val[0],
+          textContent: val[1]
+        });
+        return $.add(select, el);
+      };
       _ref = [['0', 'None'], ['US', 'American'], ['KP', 'Best Korean'], ['BL', 'Black Nationalist'], ['CM', 'Communist'], ['CF', 'Confederate'], ['RE', 'Conservative'], ['EU', 'European'], ['GY', 'Gay'], ['PC', 'Hippie'], ['IL', 'Israeli'], ['DM', 'Liberal'], ['RP', 'Libertarian'], ['MF', 'Muslim'], ['NZ', 'Nazi'], ['OB', 'Obama'], ['PR', 'Pirate'], ['RB', 'Rebel'], ['TP', 'Tea Partier'], ['TX', 'Texan'], ['TR', 'Tree Hugger'], ['WP', 'White Supremacist']];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         flag = _ref[_i];
-        $.add(select, fn(flag));
+        fn(flag);
       }
       return select;
     },
