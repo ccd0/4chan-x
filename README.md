@@ -1,6 +1,6 @@
-Personal fork of Seaweed's 4chan X.
+Personal fork of Spittie's 4chan X.
 
-#### [Why 4chan X needs to access data on every site?](https://github.com/Spittie/4chan-x/wiki/Why-4chan-X-needs-to-access-data-from-every-website%3F)
+#### [Why 4chan X needs to access data on every site?](https://github.com/ccd0/4chan-x/wiki/Why-4chan-X-needs-to-access-data-from-every-website%3F)
 
 ##[Install](../../raw/master/builds/4chan-X.user.js) (Firefox)
 ##[Install](../../raw/master/builds/crx.crx) (Chrom*)
