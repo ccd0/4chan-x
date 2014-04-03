@@ -1648,7 +1648,8 @@ input:checked + .rice {
   cursor: default;
 }
 .post-form-style-tabbed-slideup #qrtab {
-  top: -7% !important;
+  top: auto !important;
+  bottom: 100% !important;
 }
 .post-form-style-tabbed-slideout.sidebar-location-left #qrtab {
   <%= transform %>: rotate(90deg);
