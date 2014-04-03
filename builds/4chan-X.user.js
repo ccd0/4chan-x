@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.4.1 - 2014-04-02
+* 4chan X - Version 1.4.1 - 2014-04-03
 *
 * Licensed under the MIT license.
 * https://github.com/Spittie/4chan-x/blob/master/LICENSE
@@ -6220,6 +6220,9 @@
     flagsInput: function() {
       var flag, nodes;
       nodes = QR.nodes;
+      if (!nodes) {
+        return;
+      }
       if (nodes.flagSelector) {
         $.rm(nodes.flagSelector);
         delete nodes.flagSelector;
