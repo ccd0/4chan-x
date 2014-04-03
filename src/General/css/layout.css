@@ -1650,6 +1650,8 @@ input:checked + .rice {
 .post-form-style-tabbed-slideup #qrtab {
   top: auto !important;
   bottom: 100% !important;
+  right: 50%;
+  <%= transform %>: translateX(50%);
 }
 .post-form-style-tabbed-slideout.sidebar-location-left #qrtab {
   <%= transform %>: rotate(90deg);
