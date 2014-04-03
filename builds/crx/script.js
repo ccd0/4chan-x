@@ -6410,7 +6410,11 @@
       QR.cleanNotifications();
       for (_i = 0, _len = files.length; _i < _len; _i++) {
         file = files[_i];
-        QR.checkDimensions(file, isSingle, max);
+        if (file.type === 'application/x-shockwave-flash') {
+          QR.handleFile(file, isSingle, max);
+        } else {
+          QR.checkDimensions(file, isSingle, max);
+        }
       }
       if (!isSingle) {
         return $.addClass(QR.nodes.el, 'dump');
@@ -6418,9 +6422,6 @@
     },
     checkDimensions: function(file, isSingle, max) {
       var img;
-      if (file.type === 'application/x-shockwave-flash') {
-        return QR.handleFile(file, isSingle, max);
-      }
       img = new Image();
       img.onload = (function(_this) {
         return function() {
