@@ -2,9 +2,11 @@ Personal fork of Seaweed's 4chan X.
 
 #### [Why 4chan X needs to access data on every site?](https://github.com/Spittie/4chan-x/wiki/Why-4chan-X-needs-to-access-data-from-every-website%3F)
 
-##[Install](https://github.com/Spittie/4chan-x/raw/master/builds/4chan-X.user.js) (Firefox)
-##[Install](https://github.com/Spittie/4chan-x/raw/master/builds/crx.crx) (Chrom*)
+##[Install](../../raw/master/builds/4chan-X.user.js) (Firefox)
+##[Install](../../raw/master/builds/crx.crx) (Chrom*)
+<!---
 ##[Install](http://a.pomf.se/tkhuwm.xpi) (Firefox Mobile)
+-->
 
 ## If you have any problems, try resetting your 4chan X settings
 
