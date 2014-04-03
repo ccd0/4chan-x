@@ -1588,8 +1588,8 @@ input:checked + .rice {
 :root:not(.post-form-style-float) #qr {
   bottom: 0 !important;
 }
-.fourchan-ss-navigation.fixed.bottom-header:not(.post-form-style-float) #qr,
-.fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-float) #qr {
+.fourchan-ss-navigation.fixed.bottom-header:not(.post-form-style-float):not(.post-form-style-slideup):not(.post-form-style-tabbed-slideup) #qr,
+.fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-float):not(.post-form-style-slideup):not(.post-form-style-tabbed-slideup) #qr {
   bottom: 1.5em !important;
 }
 .post-form-style-slideup #qr,
@@ -1597,7 +1597,7 @@ input:checked + .rice {
   top: auto !important;
 }
 .post-form-style-slideup #qr {
-  <%= transform %>: translateY(100%);
+  <%= transform %>: translateY(93%);
 }
 .post-form-style-slideout.sidebar-location-left #qr {
   <%= transform %>: translateX(-93%);
@@ -1608,7 +1608,7 @@ input:checked + .rice {
 .post-form-style-slideup #qr:hover,
 .post-form-style-slideup #qr.focus,
 .post-form-style-slideup #qr.dump {
-  <%= transform %>: translateY(7%);
+  <%= transform %>: translateY(0);
 }
 .post-form-style-slideout #qr:hover,
 .post-form-style-slideout #qr.focus,
@@ -1620,7 +1620,7 @@ input:checked + .rice {
   top: auto !important;
 }
 .post-form-style-tabbed-slideup #qr {
-  <%= transform %>: translateY(107%);
+  <%= transform %>: translateY(100%);
 }
 .post-form-style-tabbed-slideout.sidebar-location-left #qr {
   <%= transform %>: translateX(-100%);
@@ -1631,7 +1631,7 @@ input:checked + .rice {
 .post-form-style-tabbed-slideup #qr:hover,
 .post-form-style-tabbed-slideup #qr.focus,
 .post-form-style-tabbed-slideup #qr.dump {
-  <%= transform %>: translateY(7%);
+  <%= transform %>: translateY(0);
 }
 .post-form-style-tabbed-slideout #qr:hover,
 .post-form-style-tabbed-slideout #qr.focus,
