@@ -1,7 +1,12 @@
+### v2.9.11 
+*2014-04-03*
+
 **ccd0**:
-- Add updater for Chrom* extension.
 - Fix flag selector not being removed from post form.
 - Fix [navigation bug](https://github.com/ccd0/4chan-x/issues/14)
+
+**Zixaphir**:
+- Fixed Link Titles.
 
 ### v2.9.10 
 *2014-04-02*
