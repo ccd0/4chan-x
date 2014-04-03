@@ -6223,9 +6223,9 @@
       if (!nodes) {
         return;
       }
-      if (nodes.flagSelector) {
-        $.rm(nodes.flagSelector);
-        delete nodes.flagSelector;
+      if (nodes.flag) {
+        $.rm(nodes.flag);
+        delete nodes.flag;
       }
       if (g.BOARD.ID === 'pol') {
         flag = QR.flags();
