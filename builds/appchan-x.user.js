@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.10 - 2014-04-02
+* appchan x - Version 2.9.10 - 2014-04-03
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -390,7 +390,7 @@
       'Bottom Board List': true,
       'Custom Board Navigation': true
     },
-    boardnav: "[ toggle-all ]\n[current-title]\n[external-text:\"FAQ\",\"https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions\"]",
+    boardnav: "[ toggle-all ]\n[current-title]\n[external-text:\"FAQ\",\"https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions\"]",
     QR: {
       'QR.personas': "#email:\"sage\";boards:jp;always"
     },
@@ -8057,8 +8057,15 @@
 
   Linkify = {
     init: function() {
+      var type, _i, _len, _ref;
       if (!Conf['Linkify']) {
         return;
+      }
+      this.types = {};
+      _ref = this.ordered_types;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        type = _ref[_i];
+        this.types[type.key] = type;
       }
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
@@ -8191,14 +8198,18 @@
       return a;
     },
     services: function(link) {
-      var href, key, match, type, _ref;
+      var href, match, type, _i, _len, _ref;
       href = link.href;
-      _ref = Linkify.types;
-      for (key in _ref) {
-        type = _ref[key];
-        if (match = type.regExp.exec(href)) {
-          return [key, match[1], match[2], link];
+      _ref = Linkify.ordered_types;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        type = _ref[_i];
+        if (!(match = type.regExp.exec(href))) {
+          continue;
         }
+        if (type.dummy) {
+          return;
+        }
+        return [type.key, match[1], match[2], link];
       }
     },
     embed: function(data) {
@@ -8309,8 +8320,9 @@
         }
       }
     },
-    types: {
-      audio: {
+    ordered_types: [
+      {
+        key: 'audio',
         regExp: /(.*\.(mp3|ogg|wav))$/,
         el: function(a) {
           return $.el('audio', {
@@ -8319,8 +8331,8 @@
             src: a.dataset.uid
           });
         }
-      },
-      gist: {
+      }, {
+        key: 'gist',
         regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/,
         el: function(a) {
           var div;
@@ -8342,8 +8354,8 @@
             }
           }
         }
-      },
-      image: {
+      }, {
+        key: 'image',
         regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/,
         style: 'border: 0; width: auto; height: auto;',
         el: function(a) {
@@ -8351,24 +8363,24 @@
             innerHTML: "<a target=_blank href='" + a.dataset.href + "'><img src='" + a.dataset.href + "'></a>"
           });
         }
-      },
-      InstallGentoo: {
+      }, {
+        key: 'InstallGentoo',
         regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/,
         el: function(a) {
           return $.el('iframe', {
             src: "http://paste.installgentoo.com/view/embed/" + a.dataset.uid
           });
         }
-      },
-      Twitter: {
+      }, {
+        key: 'Twitter',
         regExp: /.*twitter.com\/(.+\/status\/\d+)/,
         el: function(a) {
           return $.el('iframe', {
             src: "https://twitframe.com/show?url=https://twitter.com/" + a.dataset.uid
           });
         }
-      },
-      LiveLeak: {
+      }, {
+        key: 'LiveLeak',
         regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
         el: function(a) {
           var el;
@@ -8381,8 +8393,8 @@
           el.setAttribute("allowfullscreen", "true");
           return el;
         }
-      },
-      MediaCrush: {
+      }, {
+        key: 'MediaCrush',
         regExp: /.*(?:mediacru.sh\/)([0-9a-z_]+)/i,
         style: 'border: 0;',
         el: function(a) {
@@ -8433,8 +8445,8 @@
           });
           return el;
         }
-      },
-      pastebin: {
+      }, {
+        key: 'pastebin',
         regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/,
         el: function(a) {
           var div;
@@ -8442,8 +8454,8 @@
             src: "http://pastebin.com/embed_iframe.php?i=" + a.dataset.uid
           });
         }
-      },
-      gfycat: {
+      }, {
+        key: 'gfycat',
         regExp: /.*gfycat.com\/(?:iframe\/)?(\S*)/,
         el: function(a) {
           var div;
@@ -8451,8 +8463,8 @@
             src: "http://gfycat.com/iframe/" + a.dataset.uid
           });
         }
-      },
-      SoundCloud: {
+      }, {
+        key: 'SoundCloud',
         regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
         style: 'height: auto; width: 500px; display: inline-block;',
         el: function(a) {
@@ -8476,8 +8488,8 @@
             return _.title;
           }
         }
-      },
-      StrawPoll: {
+      }, {
+        key: 'StrawPoll',
         regExp: /strawpoll\.me\/(?:embed_\d+\/)?(\d+)/,
         style: 'border: 0; width: 600px; height: 406px;',
         el: function(a) {
@@ -8485,8 +8497,8 @@
             src: "http://strawpoll.me/embed_1/" + a.dataset.uid
           });
         }
-      },
-      TwitchTV: {
+      }, {
+        key: 'TwitchTV',
         regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/,
         style: "border: none; width: 640px; height: 360px;",
         el: function(a) {
@@ -8505,8 +8517,8 @@
             });
           }
         }
-      },
-      Vocaroo: {
+      }, {
+        key: 'Vocaroo',
         regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
         style: 'border: 0; width: 150px; height: 45px;',
         el: function(a) {
@@ -8514,8 +8526,8 @@
             innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (a.dataset.uid.replace(/^i\//, '')) + "&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
           });
         }
-      },
-      Vimeo: {
+      }, {
+        key: 'Vimeo',
         regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
         el: function(a) {
           return $.el('iframe', {
@@ -8530,8 +8542,8 @@
             return _.title;
           }
         }
-      },
-      Vine: {
+      }, {
+        key: 'Vine',
         regExp: /.*(?:vine.co\/)([^#\&\?]*).*/,
         style: 'border: none; width: 500px; height: 500px;',
         el: function(a) {
@@ -8539,8 +8551,8 @@
             src: "https://vine.co/" + a.dataset.uid + "/card"
           });
         }
-      },
-      YouTube: {
+      }, {
+        key: 'YouTube',
         regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/,
         el: function(a) {
           var el;
@@ -8558,8 +8570,26 @@
             return data.entry.title.$t;
           }
         }
+      }, {
+        key: 'Loopvid',
+        regExp: /.*loopvid.appspot.com\/.*/,
+        dummy: true
+      }, {
+        key: 'MediaFire',
+        regExp: /.*mediafire.com\/.*/,
+        dummy: true
+      }, {
+        key: 'video',
+        regExp: /(.*\.(ogv|webm|mp4))$/,
+        el: function(a) {
+          return $.el('video', {
+            controls: 'controls',
+            preload: 'auto',
+            src: a.dataset.uid
+          });
+        }
       }
-    }
+    ]
   };
 
   QR = {
@@ -9229,20 +9259,20 @@
     },
     flags: function() {
       var flag, fn, select, _i, _len, _ref;
-      fn = function(val) {
-        return $.el('option', {
-          value: val[0],
-          textContent: val[1]
-        });
-      };
       select = $.el('select', {
         name: 'flag',
         className: 'flagSelector'
       });
+      fn = function(val) {
+        return $.add(select, $.el('option', {
+          value: val[0],
+          textContent: val[1]
+        }));
+      };
       _ref = [['0', 'None'], ['US', 'American'], ['KP', 'Best Korean'], ['BL', 'Black Nationalist'], ['CM', 'Communist'], ['CF', 'Confederate'], ['RE', 'Conservative'], ['EU', 'European'], ['GY', 'Gay'], ['PC', 'Hippie'], ['IL', 'Israeli'], ['DM', 'Liberal'], ['RP', 'Libertarian'], ['MF', 'Muslim'], ['NZ', 'Nazi'], ['OB', 'Obama'], ['PR', 'Pirate'], ['RB', 'Rebel'], ['TP', 'Tea Partier'], ['TX', 'Texan'], ['TR', 'Tree Hugger'], ['WP', 'White Supremacist']];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         flag = _ref[_i];
-        $.add(select, fn(flag));
+        fn(flag);
       }
       return select;
     },
@@ -9411,6 +9441,8 @@
         if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
           if (/mistyped/i.test(err.textContent)) {
             err = 'You seem to have mistyped the CAPTCHA.';
+          } else if (/expired/i.test(err.textContent)) {
+            err = 'This CAPTCHA is no longer valid because it has expired.';
           }
           QR.cooldown.auto = false;
           QR.cooldown.set({

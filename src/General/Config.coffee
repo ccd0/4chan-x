@@ -865,10 +865,11 @@ Config =
     'Custom Board Navigation':    true
 
   boardnav: """
-[ toggle-all ]
-[current-title]
-[external-text:"FAQ","https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions"]
-"""
+    [ toggle-all ]
+    [current-title]
+    [external-text:"FAQ","https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions"]
+  """
+
 
   QR:
     'QR.personas': """

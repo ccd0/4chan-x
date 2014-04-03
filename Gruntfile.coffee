@@ -50,6 +50,7 @@ module.exports = (grunt) ->
       crx:
         files:
           'builds/crx/manifest.json': 'src/General/meta/manifest.json'
+          'builds/updates.xml': 'src/General/meta/updates.xml'
           'builds/crx/script.js': [
             'src/General/meta/botproc.js'
             'src/General/meta/banner.js'

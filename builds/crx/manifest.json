@@ -15,6 +15,7 @@
     "run_at": "document_start"
   }],
   "homepage_url": "http://zixaphir.github.com/appchan-x/",
+  "update_url": "https://github.com/zixaphir/appchan-x/raw/master/builds/updates.xml",
   "minimum_chrome_version": "32",
   "permissions": [
     "storage",

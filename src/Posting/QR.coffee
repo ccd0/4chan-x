@@ -573,14 +573,16 @@ QR =
     else if !check and @.className.match "\\btripped\\b" then $.rmClass @, 'tripped'
 
   flags: ->
-    fn = (val) -> $.el 'option', 
-      value: val[0]
-      textContent: val[1]
     select = $.el 'select',
       name:      'flag'
       className: 'flagSelector'
 
-    $.add select, fn flag for flag in [
+    fn = (val) -> 
+      $.add select, $.el 'option', 
+        value: val[0]
+        textContent: val[1]
+
+    fn flag for flag in [
       ['0',  'None']
       ['US', 'American']
       ['KP', 'Best Korean']
@@ -770,6 +772,8 @@ QR =
         # Remove the obnoxious 4chan Pass ad.
         if /mistyped/i.test err.textContent
           err = 'You seem to have mistyped the CAPTCHA.'
+        else if /expired/i.test err.textContent
+          err = 'This CAPTCHA is no longer valid because it has expired.'
         QR.cooldown.auto = false
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
