@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.9 - 2014-03-27
+* appchan x - Version 2.9.9 - 2014-04-02
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -8063,6 +8063,9 @@
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
+      if (Conf['Embedding'] || Conf['Link Title']) {
+        this.embedProcess = Function('link', "var data = this.services(link); if (data) { " + ((Conf['Embedding'] ? 'this.embed(data);\n' : '') + (Conf['Title Link'] ? 'this.title(data);' : '')) + " }");
+      }
       return Post.callbacks.push({
         name: 'Linkify',
         cb: this.node
@@ -8132,17 +8135,7 @@
         Linkify.embedProcess(Linkify.makeLink(link, this));
       }
     },
-    embedProcess: function(link) {
-      var data;
-      if (data = Linkify.services(link)) {
-        if (Conf['Embedding']) {
-          Linkify.embed(data);
-        }
-        if (Conf['Link Title']) {
-          return Linkify.title(data);
-        }
-      }
-    },
+    embedProcess: function() {},
     regString: /((https?|mailto|git|magnet|ftp|irc):([a-z\d%\/])|[-a-z\d]+[.](aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2})([:\/]|(?!.))|[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i,
     makeRange: function(startNode, endNode, startOffset, endOffset) {
       var range;
@@ -9354,6 +9347,10 @@
         onload: QR.response,
         onerror: function() {
           delete QR.req;
+          if (QR.captcha.isEnabled) {
+            QR.captcha.destroy();
+            QR.captcha.setup();
+          }
           post.unlock();
           QR.cooldown.auto = false;
           QR.status();
@@ -9383,9 +9380,12 @@
       return QR.status();
     },
     response: function() {
-      var URL, ban, board, captchasCount, err, h1, isReply, m, notif, post, postID, postsCount, req, resDoc, threadID, _, _ref, _ref1;
+      var URL, ban, board, err, h1, isReply, m, post, postID, postsCount, req, resDoc, threadID, _, _ref, _ref1;
       req = QR.req;
       delete QR.req;
+      if (QR.captcha.isEnabled) {
+        QR.captcha.destroy();
+      }
       post = QR.posts[0];
       post.unlock();
       resDoc = req.response;
@@ -9407,15 +9407,13 @@
         if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
           if (/mistyped/i.test(err.textContent)) {
             err = 'You seem to have mistyped the CAPTCHA.';
-          } else if (/expired/i.test(err.textContent)) {
-            err = 'This CAPTCHA is no longer valid because it has expired.';
           }
-          QR.cooldown.auto = QR.captcha.isEnabled ? !!QR.captcha.captchas.length : err === 'Connection error with sys.4chan.org.' ? true : false;
+          QR.cooldown.auto = false;
           QR.cooldown.set({
             delay: 2
           });
         } else if (err.textContent && (m = err.textContent.match(/wait\s+(\d+)\s+second/i))) {
-          QR.cooldown.auto = QR.captcha.isEnabled ? !!QR.captcha.captchas.length : true;
+          QR.cooldown.auto = !QR.captcha.isEnabled;
           QR.cooldown.set({
             delay: m[1]
           });
@@ -9454,22 +9452,6 @@
       });
       postsCount = QR.posts.length - 1;
       QR.cooldown.auto = postsCount && isReply;
-      if (QR.cooldown.auto && QR.captcha.isEnabled && (captchasCount = QR.captcha.captchas.length) < 3 && captchasCount < postsCount) {
-        notif = new Notification('Quick reply warning', {
-          body: "You are running low on cached captchas. Cache count: " + captchasCount + ".",
-          icon: Favicon.logo
-        });
-        notif.onclick = function() {
-          QR.open();
-          QR.captcha.nodes.input.focus();
-          return window.focus();
-        };
-        notif.onshow = function() {
-          return setTimeout(function() {
-            return notif.close();
-          }, 7 * $.SECOND);
-        };
-      }
       if (!(Conf['Persistent QR'] || QR.cooldown.auto)) {
         QR.close();
       } else {
@@ -9525,24 +9507,21 @@
 
   QR.captcha = {
     init: function() {
-      var container, imgContainer, input;
+      var imgContainer, input;
       if (d.cookie.indexOf('pass_enabled=1') >= 0) {
         return;
       }
-      container = $.id('captchaContainer');
-      if (!(this.isEnabled = !!container)) {
+      if (!(this.isEnabled = !!$.id('captchaContainer'))) {
         return;
       }
       imgContainer = $.el('div', {
         className: 'captcha-img',
         title: 'Reload reCAPTCHA',
-        innerHTML: '<div><img></div>',
-        hidden: true
+        innerHTML: '<div><img></div>'
       });
       input = $.el('input', {
         className: 'captcha-input field',
         title: 'Verification',
-        placeholder: 'Focus to load reCAPTCHA',
         autocomplete: 'off',
         spellcheck: false,
         tabIndex: 45
@@ -9551,47 +9530,41 @@
         img: imgContainer.firstChild.firstChild,
         input: input
       };
-      $.on(input, 'focus', this.setup);
       $.on(input, 'blur', QR.focusout);
       $.on(input, 'focus', QR.focusin);
       $.addClass(QR.nodes.el, 'has-captcha');
       $.after(QR.nodes.com.parentNode, [imgContainer, input]);
+      this.beforeSetup();
+      return this.afterSetup();
+    },
+    beforeSetup: function() {
+      var img, input, _ref;
+      _ref = this.nodes, img = _ref.img, input = _ref.input;
+      img.parentNode.parentNode.hidden = true;
+      input.value = '';
+      input.placeholder = 'Focus to load reCAPTCHA';
+      $.on(input, 'focus', this.setup);
       this.setupObserver = new MutationObserver(this.afterSetup);
-      this.setupObserver.observe(container, {
+      return this.setupObserver.observe($.id('captchaContainer'), {
         childList: true
       });
-      if (Conf['Auto-load captcha']) {
-        this.setup();
-      }
-      return this.afterSetup();
     },
     setup: function() {
       return $.globalEval('loadRecaptcha()');
     },
     afterSetup: function() {
-      var challenge, img, input, setLifetime, _ref;
+      var challenge, img, input, _ref;
       if (!(challenge = $.id('recaptcha_challenge_field_holder'))) {
         return;
       }
       QR.captcha.setupObserver.disconnect();
       delete QR.captcha.setupObserver;
-      setLifetime = function(e) {
-        return QR.captcha.lifetime = e.detail;
-      };
-      $.on(window, 'captcha:timeout', setLifetime);
-      $.globalEval('window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))');
-      $.off(window, 'captcha:timeout', setLifetime);
       _ref = QR.captcha.nodes, img = _ref.img, input = _ref.input;
       img.parentNode.parentNode.hidden = false;
+      input.placeholder = 'Verification';
       $.off(input, 'focus', QR.captcha.setup);
       $.on(input, 'keydown', QR.captcha.keydown.bind(QR.captcha));
       $.on(img.parentNode, 'click', QR.captcha.reload.bind(QR.captcha));
-      $.get('captchas', [], function(_arg) {
-        var captchas;
-        captchas = _arg.captchas;
-        return QR.captcha.sync(captchas);
-      });
-      $.sync('captchas', QR.captcha.sync);
       QR.captcha.nodes.challenge = challenge;
       new MutationObserver(QR.captcha.load.bind(QR.captcha)).observe(challenge, {
         childList: true,
@@ -9600,94 +9573,31 @@
       });
       return QR.captcha.load();
     },
-    sync: function(captchas) {
-      QR.captcha.captchas = captchas;
-      return QR.captcha.count();
+    destroy: function() {
+      $.globalEval('Recaptcha.destroy()');
+      return this.beforeSetup();
     },
     getOne: function() {
-      var captcha, challenge, response;
-      this.clear();
-      if (captcha = this.captchas.shift()) {
-        challenge = captcha.challenge, response = captcha.response;
-        this.count();
-        $.set('captchas', this.captchas);
-      } else {
-        challenge = this.nodes.img.alt;
-        if (response = this.nodes.input.value) {
-          this.reload();
-        }
-      }
-      if (response) {
-        response = response.trim();
-        if (!/\s/.test(response)) {
-          response += " " + response;
-        }
+      var challenge, response;
+      challenge = this.nodes.img.alt;
+      response = this.nodes.input.value.trim();
+      if (response && !/\s/.test(response)) {
+        response = "" + response + " " + response;
       }
       return {
         challenge: challenge,
         response: response
       };
     },
-    save: function() {
-      var response;
-      if (!(response = this.nodes.input.value.trim())) {
-        return;
-      }
-      this.captchas.push({
-        challenge: this.nodes.img.alt,
-        response: response,
-        timeout: this.timeout
-      });
-      this.count();
-      this.reload();
-      return $.set('captchas', this.captchas);
-    },
-    clear: function() {
-      var captcha, i, now, _i, _len, _ref;
-      if (!this.captchas) {
-        return;
-      }
-      now = Date.now();
-      _ref = this.captchas;
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        captcha = _ref[i];
-        if (captcha.timeout > now) {
-          break;
-        }
-      }
-      if (!i) {
-        return;
-      }
-      this.captchas = this.captchas.slice(i);
-      this.count();
-      return $.set('captchas', this.captchas);
-    },
     load: function() {
       var challenge;
       if (!this.nodes.challenge.firstChild) {
         return;
       }
-      this.timeout = Date.now() + this.lifetime * $.SECOND - $.MINUTE;
       challenge = this.nodes.challenge.firstChild.value;
       this.nodes.img.alt = challenge;
       this.nodes.img.src = "//www.google.com/recaptcha/api/image?c=" + challenge;
-      this.nodes.input.value = null;
-      return this.clear();
-    },
-    count: function() {
-      var count;
-      count = this.captchas ? this.captchas.length : 0;
-      this.nodes.input.placeholder = (function() {
-        switch (count) {
-          case 0:
-            return 'Verification (Shift + Enter to cache)';
-          case 1:
-            return 'Verification (1 cached captcha)';
-          default:
-            return "Verification (" + count + " cached captchas)";
-        }
-      })();
-      return this.nodes.input.alt = count;
+      return this.nodes.input.value = null;
     },
     reload: function(focus) {
       $.globalEval('Recaptcha.reload("t")');
@@ -9698,8 +9608,6 @@
     keydown: function(e) {
       if (e.keyCode === 8 && !this.nodes.input.value) {
         this.reload();
-      } else if (e.keyCode === 13 && e.shiftKey) {
-        this.save();
       } else {
         return;
       }
@@ -10030,6 +9938,9 @@
         if (node = QR.nodes[name]) {
           node.disabled = lock;
         }
+      }
+      if (QR.captcha.isEnabled) {
+        QR.captcha.nodes.input.disabled = lock;
       }
       this.nodes.rm.style.visibility = lock ? 'hidden' : '';
       (lock ? $.off : $.on)(QR.nodes.filename.previousElementSibling, 'click', QR.openFileInput);
@@ -16133,18 +16044,18 @@
       if (this.isClone) {
         return;
       }
-      return this.nodes.date.textContent = Time.funk(Time, this.info.date);
+      return this.nodes.date.textContent = Time.funk(this.info.date);
     },
     createFunc: function(format) {
       var code;
       code = format.replace(/%([A-Za-z])/g, function(s, c) {
         if (c in Time.formatters) {
-          return "' + Time.formatters." + c + ".call(date) + '";
+          return "' + this.formatters." + c + ".call(date) + '";
         } else {
           return s;
         }
       });
-      return Function('Time', 'date', "return '" + code + "'");
+      return Function('date', "return '" + code + "'");
     },
     day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
