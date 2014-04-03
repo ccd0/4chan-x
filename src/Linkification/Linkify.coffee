@@ -14,7 +14,7 @@ Linkify =
         if (data) {
         #{
           (if Conf['Embedding'] then 'this.embed(data);\n' else '') +
-          if Conf['Title Link'] then 'this.title(data);' else ''
+          if Conf['Link Title'] then 'this.title(data);'   else ''
         }
         }
         "
