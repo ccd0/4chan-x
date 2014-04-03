@@ -306,14 +306,14 @@ Settings =
     $.on $.id('apply-css'), 'click', Settings.usercss
 
     archBoards = {}
-    for {name, boards, files, data} in Redirect.archives
+    for {name, boards, files, software} in Redirect.archives
       for boardID in boards
         o = archBoards[boardID] or=
           thread: []
           post:   []
           file:   []
         o.thread.push name
-        o.post.push   name if data.software is 'foolfuuka'
+        o.post.push   name if software is 'foolfuuka'
         o.file.push   name if boardID in files
 
     rows = []
