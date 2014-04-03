@@ -1360,6 +1360,10 @@ div.boardTitle {
   background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/installgentoo.png",    {encoding: "base64"}) %>') center left no-repeat!important;
   padding-left: 18px;
 }
+.linkify.video {
+  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/video.png",    {encoding: "base64"}) %>') center left no-repeat!important;
+  padding-left: 18px;
+}
 
 /* Gallery */
 #a-gallery {

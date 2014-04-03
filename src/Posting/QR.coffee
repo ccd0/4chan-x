@@ -747,6 +747,8 @@ QR =
         # Remove the obnoxious 4chan Pass ad.
         if /mistyped/i.test err.textContent
           err = 'You seem to have mistyped the CAPTCHA.'
+        else if /expired/i.test err.textContent
+          err = 'This CAPTCHA is no longer valid because it has expired.'
         QR.cooldown.auto = false
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.

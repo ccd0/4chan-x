@@ -16,8 +16,8 @@ QR.captcha =
       spellcheck: false
       tabIndex: 45
     @nodes =
-      img:   imgContainer.firstChild
-      input: input
+      img:       imgContainer.firstChild
+      input:     input
 
     $.on input, 'blur',  QR.focusout
     $.on input, 'focus', QR.focusin
