@@ -582,10 +582,9 @@ QR =
       className: 'flagSelector'
 
     fn = (val) -> 
-      el = $.el 'option', 
+      $.add select, $.el 'option', 
         value: val[0]
         textContent: val[1]
-      $.add select, el
 
     fn flag for flag in [
       ['0',  'None']
