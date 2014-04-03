@@ -968,6 +968,22 @@ nav a,
 .hide-delete-ui .post:not(#exlinks-options) .rice {
   display: none;
 }
+.post-form-style-slideup .deleteform::before,
+.post-form-style-tabbed-slideup .deleteform::before,
+.post-form-style-slideup .deleteform:hover,
+.post-form-style-tabbed-slideup .deleteform:hover {
+  bottom: 0px !important;
+}
+.post-form-style-slideup .deleteform,
+.post-form-style-tabbed-slideup .deleteform {
+  bottom: -50px !important;
+}
+.post-form-style-slideup .deleteform::before,
+.post-form-style-tabbed-slideup .deleteform::before,
+.post-form-style-slideup .deleteform,
+.post-form-style-tabbed-slideup .deleteform {
+  right: 255px !important;
+}
 .deleteform {
   position: fixed;
   z-index: 18;
@@ -1572,12 +1588,16 @@ input:checked + .rice {
 :root:not(.post-form-style-float) #qr {
   bottom: 0 !important;
 }
-.fourchan-ss-navigation.fixed.bottom-header:not(.post-form-style-float) #qr,
-.fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-float) #qr {
+.fourchan-ss-navigation.fixed.bottom-header:not(.post-form-style-float):not(.post-form-style-slideup):not(.post-form-style-tabbed-slideup) #qr,
+.fourchan-ss-navigation.index.pagination-sticky-bottom:not(.post-form-style-float):not(.post-form-style-slideup):not(.post-form-style-tabbed-slideup) #qr {
   bottom: 1.5em !important;
 }
+.post-form-style-slideup #qr,
 .post-form-style-slideout #qr {
   top: auto !important;
+}
+.post-form-style-slideup #qr {
+  <%= transform %>: translateY(93%);
 }
 .post-form-style-slideout.sidebar-location-left #qr {
   <%= transform %>: translateX(-93%);
@@ -1585,13 +1605,22 @@ input:checked + .rice {
 .post-form-style-slideout.sidebar-location-right #qr {
   <%= transform %>: translateX(93%);
 }
+.post-form-style-slideup #qr:hover,
+.post-form-style-slideup #qr.focus,
+.post-form-style-slideup #qr.dump {
+  <%= transform %>: translateY(0);
+}
 .post-form-style-slideout #qr:hover,
 .post-form-style-slideout #qr.focus,
 .post-form-style-slideout #qr.dump {
   <%= transform %>: translate(0);
 }
+.post-form-style-tabbed-slideup #qr,
 .post-form-style-tabbed-slideout #qr {
   top: auto !important;
+}
+.post-form-style-tabbed-slideup #qr {
+  <%= transform %>: translateY(100%);
 }
 .post-form-style-tabbed-slideout.sidebar-location-left #qr {
   <%= transform %>: translateX(-100%);
@@ -1599,11 +1628,17 @@ input:checked + .rice {
 .post-form-style-tabbed-slideout.sidebar-location-right #qr {
   <%= transform %>: translateX(100%);
 }
+.post-form-style-tabbed-slideup #qr:hover,
+.post-form-style-tabbed-slideup #qr.focus,
+.post-form-style-tabbed-slideup #qr.dump {
+  <%= transform %>: translateY(0);
+}
 .post-form-style-tabbed-slideout #qr:hover,
 .post-form-style-tabbed-slideout #qr.focus,
 .post-form-style-tabbed-slideout #qr.dump {
   <%= transform %>: translateX(0);
 }
+.post-form-style-tabbed-slideup #qrtab,
 .post-form-style-tabbed-slideout #qrtab {
   position: absolute;
   top: 0;
@@ -1611,6 +1646,12 @@ input:checked + .rice {
   text-align: center;
   border-width: 1px 1px 0 1px;
   cursor: default;
+}
+.post-form-style-tabbed-slideup #qrtab {
+  top: auto !important;
+  bottom: 100% !important;
+  right: 50%;
+  <%= transform %>: translateX(50%);
 }
 .post-form-style-tabbed-slideout.sidebar-location-left #qrtab {
   <%= transform %>: rotate(90deg);
@@ -1622,11 +1663,20 @@ input:checked + .rice {
   <%= transform %>-origin: bottom right;
   right: 100%;
 }
+.post-form-style-tabbed-slideup #qr:hover #qrtab,
+.post-form-style-tabbed-slideup #qr.focus #qrtab,
+.post-form-style-tabbed-slideup #qr.dump #qrtab, 
 .post-form-style-tabbed-slideout #qr:hover #qrtab,
 .post-form-style-tabbed-slideout #qr.focus #qrtab,
 .post-form-style-tabbed-slideout #qr.dump #qrtab {
   opacity: 0 !important;
 }
+.post-form-style-slideup #qrtab input,
+.post-form-style-slideup #qrtab .rice,
+.post-form-style-tabbed-slideup #qrtab input,
+.post-form-style-tabbed-slideup #qrtab .close,
+.post-form-style-tabbed-slideup #qrtab .rice,
+.post-form-style-tabbed-slideup #qrtab span,
 .post-form-style-slideout #qrtab input,
 .post-form-style-slideout #qrtab .rice,
 .post-form-style-tabbed-slideout #qrtab input,
@@ -1635,6 +1685,7 @@ input:checked + .rice {
 .post-form-style-tabbed-slideout #qrtab span {
   display: none;
 }
+.post-form-style-tabbed-slideup #qrtab .selectrice,
 .post-form-style-tabbed-slideout #qrtab .selectrice {
   text-align: center;
 }
@@ -1648,7 +1699,7 @@ input:checked + .rice {
   opacity: 1;
   transition: opacity .3s linear;
 }
-:root:not(.show-post-form-header):not(.post-form-style-float):not(.post-form-style-tabbed-slideout) #qrtab,
+:root:not(.show-post-form-header):not(.post-form-style-float):not(.post-form-style-tabbed-slideout):not(.post-form-style-tabbed-slideup) #qrtab,
 .post-form-style-float .autohide:not(:hover):not(.focus) form,
 .show-post-form-header.post-form-style-fixed .autohide:not(:hover):not(.focus) form {
   display: none !important;
@@ -1659,10 +1710,18 @@ input:checked + .rice {
 #qr.autohide:not(:hover):not(.focus) #qrtab {
   margin-bottom: 0;
 }
+.post-form-slideout-transitions.post-form-style-slideup #qr,
+.post-form-slideout-transitions.post-form-style-tabbed-slideup #qr,
 .post-form-slideout-transitions.post-form-style-slideout #qr,
 .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr {
   transition: <%= transform %> .3s ease-in-out 1s;
 }
+.post-form-slideout-transitions.post-form-style-tabbed-slideup #qr.dump,
+.post-form-slideout-transitions.post-form-style-tabbed-slideup #qr:hover,
+.post-form-slideout-transitions.post-form-style-tabbed-slideup #qr.focus,
+.post-form-slideout-transitions.post-form-style-slideup #qr.dump,
+.post-form-slideout-transitions.post-form-style-slideup #qr:hover,
+.post-form-slideout-transitions.post-form-style-slideup #qr.focus, 
 .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr.dump,
 .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr:hover,
 .post-form-slideout-transitions.post-form-style-tabbed-slideout #qr.focus,
@@ -1670,6 +1729,12 @@ input:checked + .rice {
 .post-form-slideout-transitions.post-form-style-slideout #qr:hover,
 .post-form-slideout-transitions.post-form-style-slideout #qr.focus {
   transition: <%= transform %> .3s linear;
+}
+.post-form-slideout-transitions #qrtab {
+  transition: opacity .3s ease-in-out 1s;
+}
+.post-form-slideout-transitions #qr:hover #qrtab {
+  transition: opacity .3s linear;
 }
 .post-form-slideout-transitions #qrtab {
   transition: opacity .3s ease-in-out 1s;
