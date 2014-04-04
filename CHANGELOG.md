@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 **duckness**:
 - Merge changes from Mayhem fork
 
@@ -69,7 +68,7 @@
 - Improved Linkifier link detection.
 - Fixed an issue with Thread Updater intervals not saving correctly.
 - Many spiffy performance, state awareness, and sanity improvements to JSON Navigation.
-=======
+
 ## v1.5.0 
 *2014-04-04*
 
@@ -87,7 +86,6 @@
 
 **ccd0**:
 - Update archives with data from MayhemYDG fork.
->>>>>>> ccd0
 
 ### v1.4.5 
 *2014-04-03*
