@@ -2,8 +2,8 @@ Personal fork of Spittie's 4chan X.
 
 #### [Why 4chan X needs to access data on every site?](https://github.com/ccd0/4chan-x/wiki/Why-4chan-X-needs-to-access-data-from-every-website%3F)
 
-##[Install](../../raw/master/builds/4chan-X.user.js) (Firefox)
-##[Install](../../raw/master/builds/crx.crx) (Chrom*)
+##[Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) (Firefox)
+##[Install](https://ccd0.github.io/4chan-x/builds/crx.crx) (Chrom*)
 <!---
 ##[Install](http://a.pomf.se/tkhuwm.xpi) (Firefox Mobile)
 -->

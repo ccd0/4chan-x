@@ -15,7 +15,7 @@
     "run_at": "document_start"
   }],
   "homepage_url": "<%= meta.page %>",
-  "update_url": "<%= meta.repo %>raw/master/builds/updates.xml",
+  "update_url": "<%= meta.downloads %>updates.xml",
   "minimum_chrome_version": "<%= meta.min.chrome %>",
   "permissions": [
     "storage",

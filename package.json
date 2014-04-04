@@ -1,11 +1,13 @@
 {
   "name": "4chan-X",
-  "version": "1.4.5",
+  "version": "1.5.0",
   "description": "Cross-browser userscript for maximum lurking on 4chan.",
   "meta": {
     "name": "4chan X",
     "repo": "https://github.com/ccd0/4chan-x/",
     "page": "https://github.com/ccd0/4chan-x",
+    "downloads": "https://ccd0.github.io/4chan-x/builds/",
+    "appid": "lacclbnghgdicfifcamcmcnilckjamag",
     "buildsPath": "builds/",
     "mainBranch": "master",
     "matches": [
