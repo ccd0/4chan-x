@@ -366,7 +366,7 @@ UI = do ->
 
   hoverend = (e) ->
     return if e.type is 'keydown' and e.keyCode isnt 13 or e.target.nodeName is "TEXTAREA"
-    $.rm @el
+    $.rm @el if @el.parentNode is Header.hover
     $.off @root, @endEvents,  @hoverend
     $.off d,     'keydown',   @hoverend
     $.off @root, 'mousemove', @hover

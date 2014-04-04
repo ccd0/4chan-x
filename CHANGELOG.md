@@ -1,5 +1,8 @@
 **ccd0**:
 - Support expansion of .webm videos.
+- Support hover for .webm videos.
+- Add .webm to supported posting types.
+- Add option to enable/disable sound.
 - Update archives with data from MayhemYDG fork.
 
 ### v2.9.11 

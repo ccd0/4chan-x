@@ -147,7 +147,7 @@
       },
       'Images and Videos': {
         'Image Expansion': [true, 'Expand images / videos.'],
-        'Image Hover': [true, 'Show full image on mouseover.'],
+        'Image Hover': [true, 'Show full image / video on mouseover.'],
         'Image Hover in Catalog': [false, 'Show a floating expanded image on hover in the catalog.'],
         'Gallery': [true, 'Adds a simple and cute image gallery.'],
         'Sauce': [true, 'Add sauce links to images.'],
@@ -159,7 +159,8 @@
         'Fappe Tyme': [false, 'Hide posts without images when toggled. *hint* *hint*'],
         'Werk Tyme': [false, 'Hide all post images when toggled.'],
         'Autoplay': [true, 'Videos begin playing immediately when opened inline.'],
-        'Show Controls': [true, 'Show native seek and volume controls on videos. Contract videos when dragged to the left.']
+        'Show Controls': [true, 'Show native seek and volume controls on videos. Contract videos when dragged to the left.'],
+        'Allow Sound': [true, 'Allow sound in inline videos.']
       },
       'Menu': {
         'Menu': [true, 'Add a drop-down menu to posts.'],
@@ -6738,7 +6739,9 @@
       if (e.type === 'keydown' && e.keyCode !== 13 || e.target.nodeName === "TEXTAREA") {
         return;
       }
-      $.rm(this.el);
+      if (this.el.parentNode === Header.hover) {
+        $.rm(this.el);
+      }
       $.off(this.root, this.endEvents, this.hoverend);
       $.off(d, 'keydown', this.hoverend);
       $.off(this.root, 'mousemove', this.hover);
@@ -8650,7 +8653,7 @@
   };
 
   QR = {
-    mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/x-shockwave-flash', ''],
+    mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/x-shockwave-flash', 'video/webm', ''],
     init: function() {
       var con, sc;
       this.db = new DataBoard('yourPosts');
@@ -9085,21 +9088,25 @@
     },
     checkDimensions: function(file, isSingle, max) {
       var img;
-      img = new Image();
-      img.onload = (function(_this) {
-        return function() {
-          var height, width;
-          height = img.height, width = img.width;
-          if (height > QR.max_heigth || width > QR.max_heigth) {
-            return QR.error("" + file.name + ": Image too large (image: " + img.height + "x" + img.width + "px, max: " + QR.max_heigth + "x" + QR.max_width + "px)");
-          }
-          if (height < QR.min_heigth || width < QR.min_heigth) {
-            return QR.error("" + file.name + ": Image too small (image: " + img.height + "x" + img.width + "px, min: " + QR.min_heigth + "x" + QR.min_width + "px)");
-          }
-          return QR.handleFile(file, isSingle, max);
-        };
-      })(this);
-      return img.src = URL.createObjectURL(file);
+      if (/^image\//.test(file.type)) {
+        img = new Image();
+        img.onload = (function(_this) {
+          return function() {
+            var height, width;
+            height = img.height, width = img.width;
+            if (height > QR.max_heigth || width > QR.max_heigth) {
+              return QR.error("" + file.name + ": Image too large (image: " + img.height + "x" + img.width + "px, max: " + QR.max_heigth + "x" + QR.max_width + "px)");
+            }
+            if (height < QR.min_heigth || width < QR.min_heigth) {
+              return QR.error("" + file.name + ": Image too small (image: " + img.height + "x" + img.width + "px, min: " + QR.min_heigth + "x" + QR.min_width + "px)");
+            }
+            return QR.handleFile(file, isSingle, max);
+          };
+        })(this);
+        return img.src = URL.createObjectURL(file);
+      } else {
+        return QR.handleFile(file, isSingle, max);
+      }
     },
     handleFile: function(file, isSingle, max) {
       var post, _ref;
@@ -10084,7 +10091,7 @@
             return;
           }
           this.file.newName = this.filename.replace(/[/\\]/g, '-');
-          if (!/\.(jpe?g|png|gif|pdf|swf)$/i.test(this.filename)) {
+          if (!/\.(jpe?g|png|gif|pdf|swf|webm)$/i.test(this.filename)) {
             this.file.newName += '.jpg';
           }
           return this.updateFilename();
@@ -10803,9 +10810,12 @@
       }
       $.addClass(thumb, 'expanding');
       naturalHeight = isVideo ? 'videoHeight' : 'naturalHeight';
-      if (post.file.fullImage) {
+      if (img = post.file.fullImage) {
+        $.rmClass(img, 'ihover');
+        $.addClass(img, 'full-image');
+        img.controls = img.parentNode !== thumb.parentNode;
         $.asap((function() {
-          return post.file.fullImage[naturalHeight];
+          return img[naturalHeight];
         }), function() {
           return ImageExpand.completeExpand(post);
         });
@@ -10857,7 +10867,7 @@
       file = post.file;
       video = file.fullImage;
       file.videoControls = [];
-      video.muted = true;
+      video.muted = !Conf['Allow Sound'];
       if (video.controls) {
         contract = $.el('a', {
           textContent: 'contract',
@@ -10999,8 +11009,8 @@
       }
     },
     node: function() {
-      var _ref;
-      if (!((_ref = this.file) != null ? _ref.isImage : void 0)) {
+      var _ref, _ref1;
+      if (!(((_ref = this.file) != null ? _ref.isImage : void 0) || ((_ref1 = this.file) != null ? _ref1.isVideo : void 0))) {
         return;
       }
       return $.on(this.file.thumb, 'mouseover', ImageHover.mouseover);
@@ -11013,21 +11023,46 @@
       return $.on(this.nodes.thumb, 'mouseover', ImageHover.mouseover);
     },
     mouseover: function(e) {
-      var el, post;
+      var el, isVideo, naturalHeight, post, thumb;
       post = $.hasClass(this, 'thumb') ? g.posts[this.parentNode.dataset.fullID] : Get.postFromNode(this);
-      el = $.el('img', {
-        id: 'ihover',
-        src: post.file.URL
-      });
+      isVideo = post.file.isVideo;
+      if (post.file.fullImage) {
+        el = post.file.fullImage;
+        $.rmClass(el, 'full-image');
+        $.addClass(el, 'ihover');
+      } else {
+        el = $.el((isVideo ? 'video' : 'img'), {
+          className: 'ihover',
+          src: post.file.URL
+        });
+        post.file.fullImage = el;
+        thumb = post.file.thumb;
+        $.after((isVideo && Conf['Show Controls'] ? thumb.parentNode : thumb), el);
+      }
       el.dataset.fullID = post.fullID;
-      $.add(Header.hover, el);
+      if (isVideo) {
+        el.loop = true;
+        el.controls = false;
+        el.muted = !Conf['Allow Sound'];
+        if (Conf['Autoplay']) {
+          el.play();
+        }
+      }
+      naturalHeight = post.file.isVideo ? 'videoHeight' : 'naturalHeight';
       UI.hover({
         root: this,
         el: el,
         latestEvent: e,
         endEvents: 'mouseout click',
         asapTest: function() {
-          return el.naturalHeight;
+          return el[naturalHeight];
+        },
+        cb: function() {
+          if (isVideo) {
+            el.pause();
+          }
+          $.rmClass(el, 'ihover');
+          return $.addClass(el, 'full-image');
         }
       });
       return $.on(el, 'error', ImageHover.error);
