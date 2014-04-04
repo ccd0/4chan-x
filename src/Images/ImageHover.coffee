@@ -26,7 +26,7 @@ ImageHover =
     if isVideo
       el.loop = true
       el.controls = false
-      el.muted = true
+      el.muted = not Conf['Allow Sound']
       el.play() if Conf['Autoplay']
     naturalHeight = if post.file.isVideo then 'videoHeight' else 'naturalHeight'
     UI.hover

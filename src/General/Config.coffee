@@ -191,6 +191,10 @@ Config =
         true
         'Show native seek and volume controls on videos. Contract videos when dragged to the left.'
       ]
+      'Allow Sound': [
+        true
+        'Allow sound in inline videos.'
+      ]
 
     'Menu':
       'Menu': [

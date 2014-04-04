@@ -144,7 +144,7 @@ ImageExpand =
     {file} = post
     video = file.fullImage
     file.videoControls = []
-    video.muted = true
+    video.muted = not Conf['Allow Sound']
     if video.controls
       # contract link in file info
       contract = $.el 'a',

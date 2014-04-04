@@ -182,7 +182,8 @@
         'Fappe Tyme': [false, 'Hide posts without images. *hint* *hint*'],
         'Werk Tyme': [false, 'Hide all post images.'],
         'Autoplay': [true, 'Videos begin playing immediately when opened inline.'],
-        'Show Controls': [true, 'Show native seek and volume controls on videos. Contract videos when dragged to the left.']
+        'Show Controls': [true, 'Show native seek and volume controls on videos. Contract videos when dragged to the left.'],
+        'Allow Sound': [true, 'Allow sound in inline videos.']
       },
       'Menu': {
         'Menu': [true, 'Add a drop-down menu to posts.'],
@@ -7732,7 +7733,7 @@
       file = post.file;
       video = file.fullImage;
       file.videoControls = [];
-      video.muted = true;
+      video.muted = !Conf['Allow Sound'];
       if (video.controls) {
         contract = $.el('a', {
           textContent: 'contract',
@@ -7907,7 +7908,7 @@
       if (isVideo) {
         el.loop = true;
         el.controls = false;
-        el.muted = true;
+        el.muted = !Conf['Allow Sound'];
         if (Conf['Autoplay']) {
           el.play();
         }
