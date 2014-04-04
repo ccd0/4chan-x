@@ -5586,7 +5586,7 @@
   };
 
   QR = {
-    mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/x-shockwave-flash', ''],
+    mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/x-shockwave-flash', 'video/webm', ''],
     init: function() {
       var sc;
       if (!Conf['Quick Reply']) {
@@ -6003,19 +6003,23 @@
     checkDimensions: function(file, isSingle, max) {
       var img,
         _this = this;
-      img = new Image();
-      img.onload = function() {
-        var height, width;
-        height = img.height, width = img.width;
-        if (height > QR.max_heigth || width > QR.max_heigth) {
-          return QR.error("" + file.name + ": Image too large (image: " + img.height + "x" + img.width + "px, max: " + QR.max_heigth + "x" + QR.max_width + "px)");
-        }
-        if (height < QR.min_heigth || width < QR.min_heigth) {
-          return QR.error("" + file.name + ": Image too small (image: " + img.height + "x" + img.width + "px, min: " + QR.min_heigth + "x" + QR.min_width + "px)");
-        }
+      if (/^image\//.test(file.type)) {
+        img = new Image();
+        img.onload = function() {
+          var height, width;
+          height = img.height, width = img.width;
+          if (height > QR.max_heigth || width > QR.max_heigth) {
+            return QR.error("" + file.name + ": Image too large (image: " + img.height + "x" + img.width + "px, max: " + QR.max_heigth + "x" + QR.max_width + "px)");
+          }
+          if (height < QR.min_heigth || width < QR.min_heigth) {
+            return QR.error("" + file.name + ": Image too small (image: " + img.height + "x" + img.width + "px, min: " + QR.min_heigth + "x" + QR.min_width + "px)");
+          }
+          return QR.handleFile(file, isSingle, max);
+        };
+        return img.src = URL.createObjectURL(file);
+      } else {
         return QR.handleFile(file, isSingle, max);
-      };
-      return img.src = URL.createObjectURL(file);
+      }
     },
     handleFile: function(file, isSingle, max) {
       var post, _ref;
@@ -6978,7 +6982,7 @@
             return;
           }
           this.file.newName = this.filename.replace(/[/\\]/g, '-');
-          if (!/\.(jpe?g|png|gif|pdf|swf)$/i.test(this.filename)) {
+          if (!/\.(jpe?g|png|gif|pdf|swf|webm)$/i.test(this.filename)) {
             this.file.newName += '.jpg';
           }
           return this.updateFilename();
