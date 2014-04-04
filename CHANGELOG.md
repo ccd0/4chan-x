@@ -1,3 +1,9 @@
+## v1.5.0 
+*2014-04-04*
+
+**ccd0**:
+- Support expansion of .webm videos.
+
 ### v1.4.7 
 *2014-04-03*
 
