@@ -11171,7 +11171,7 @@
         return FileInfo.convertUnit(this.file.sizeInBytes, 'MB');
       },
       r: function() {
-        if (this.file.isImage) {
+        if (this.file.isImage || this.file.isVideo) {
           return this.file.dimensions;
         } else {
           return 'PDF';
