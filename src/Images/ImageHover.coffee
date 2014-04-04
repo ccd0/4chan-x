@@ -9,7 +9,7 @@ ImageHover =
         name: 'Image Hover'
         cb:   @catalogNode
   node: ->
-    return unless @file?.isImage
+    return unless @file?.isImage or @file?.isVideo
     $.on @file.thumb, 'mouseover', ImageHover.mouseover
   catalogNode: ->
     return unless @thread.OP.file?.isImage
@@ -19,17 +19,35 @@ ImageHover =
       g.posts[@parentNode.dataset.fullID]
     else
       Get.postFromNode @
-    el = $.el 'img',
-      id: 'ihover'
-      src: post.file.URL
+    {isVideo} = post.file
+    if post.file.fullImage
+      el = post.file.fullImage
+      $.rmClass el, 'full-image'
+      $.addClass el, 'ihover'
+    else
+      el = $.el (if isVideo then 'video' else 'img'),
+        className: 'ihover'
+        src: post.file.URL
+      post.file.fullImage = el
+      {thumb} = post.file
+      $.after (if isVideo and Conf['Show Controls'] then thumb.parentNode else thumb), el
     el.dataset.fullID = post.fullID
-    $.add Header.hover, el
+    if isVideo
+      el.loop = true
+      el.controls = false
+      el.muted = not Conf['Allow Sound']
+      el.play() if Conf['Autoplay']
+    naturalHeight = if post.file.isVideo then 'videoHeight' else 'naturalHeight'
     UI.hover
       root: @
       el: el
       latestEvent: e
       endEvents: 'mouseout click'
-      asapTest: -> el.naturalHeight
+      asapTest: -> el[naturalHeight]
+      cb: ->
+        el.pause() if isVideo
+        $.rmClass el, 'ihover'
+        $.addClass el, 'full-image'
     $.on el, 'error', ImageHover.error
   error: ->
     return unless doc.contains @

@@ -1,6 +1,6 @@
 QR =
   # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
-  mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/x-shockwave-flash', '']
+  mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/x-shockwave-flash', 'video/webm', '']
 
   init: ->
     return if !Conf['Quick Reply']
@@ -375,13 +375,16 @@ QR =
     $.addClass QR.nodes.el, 'dump' unless isSingle
 
   checkDimensions: (file, isSingle, max) ->
-    img = new Image()
-    img.onload = =>
-      {height, width} = img
-      return QR.error "#{file.name}: Image too large (image: #{img.height}x#{img.width}px, max: #{QR.max_heigth}x#{QR.max_width}px)" if height > QR.max_heigth or width > QR.max_heigth
-      return QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: #{QR.min_heigth}x#{QR.min_width}px)" if height < QR.min_heigth or width < QR.min_heigth
+    if /^image\//.test file.type
+      img = new Image()
+      img.onload = =>
+        {height, width} = img
+        return QR.error "#{file.name}: Image too large (image: #{img.height}x#{img.width}px, max: #{QR.max_heigth}x#{QR.max_width}px)" if height > QR.max_heigth or width > QR.max_heigth
+        return QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: #{QR.min_heigth}x#{QR.min_width}px)" if height < QR.min_heigth or width < QR.min_heigth
+        QR.handleFile file, isSingle, max
+      img.src = URL.createObjectURL file
+    else
       QR.handleFile file, isSingle, max
-    img.src = URL.createObjectURL file
 
   handleFile: (file, isSingle, max) ->
     if file.size > max

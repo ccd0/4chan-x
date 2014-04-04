@@ -108,7 +108,7 @@ div.center:not(.ad-cnt) {
 /* fixed, z-index */
 #overlay,
 #fourchanx-settings,
-#qp, #ihover,
+#qp, .ihover,
 #navlinks, .fixed #header-bar,
 :root.float #updater,
 :root.float #thread-stats,
@@ -124,7 +124,7 @@ div.center:not(.ad-cnt) {
 #notifications {
   z-index: 70;
 }
-#qp, #ihover {
+#qp, .ihover {
   z-index: 60;
 }
 #menu {
@@ -840,7 +840,7 @@ span.hide-announcement {
 :root.gecko.fit-width .full-image {
   width: 100%;
 }
-#ihover {
+.ihover {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   max-height: 100%;

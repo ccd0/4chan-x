@@ -141,7 +141,7 @@ Config =
       ]
       'Image Hover': [
         true
-        'Show full image on mouseover.'
+        'Show full image / video on mouseover.'
       ]
       'Image Hover in Catalog': [
         false
@@ -190,6 +190,10 @@ Config =
       'Show Controls': [
         true
         'Show native seek and volume controls on videos. Contract videos when dragged to the left.'
+      ]
+      'Allow Sound': [
+        true
+        'Allow sound in inline videos.'
       ]
 
     'Menu':
