@@ -103,9 +103,12 @@ ImageExpand =
     return if post.isHidden or post.file.isExpanded or $.hasClass thumb, 'expanding'
     $.addClass thumb, 'expanding'
     naturalHeight = if isVideo then 'videoHeight' else 'naturalHeight'
-    if post.file.fullImage
+    if img = post.file.fullImage
       # Expand already-loaded/ing picture.
-      $.asap (-> post.file.fullImage[naturalHeight]), ->
+      $.rmClass img, 'ihover'
+      $.addClass img, 'full-image'
+      img.controls = (img.parentNode isnt thumb.parentNode)
+      $.asap (-> img[naturalHeight]), ->
         ImageExpand.completeExpand post
       return
     post.file.fullImage = img = $.el (if isVideo then 'video' else 'img'),

@@ -145,7 +145,7 @@ Config =
       ]
       'Image Hover': [
         true
-        'Show full image on mouseover.'
+        'Show full image / video on mouseover.'
       ]
       'Gallery': [
         true
