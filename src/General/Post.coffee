@@ -113,7 +113,7 @@ class Post
 
   parseFile: (that) ->
     return unless (fileEl = $ '.file', @nodes.post) and thumb = $ 'img[data-md5]', fileEl
-    # Supports JPG/PNG/GIF/PDF.
+    # Supports JPG/PNG/GIF/WEBM/PDF.
     # Flash files are not supported.
     anchor   = thumb.parentNode
     fileText = fileEl.firstElementChild
@@ -144,7 +144,9 @@ class Post
     # http://www.whatwg.org/specs/web-apps/current-work/#multipart-form-data
     @file.name = @file.name.replace /%22/g, '"'
     <% } %>
-    if @file.isImage = /(jpg|png|gif)$/i.test @file.name
+    @file.isImage = /(jpg|png|gif)$/i.test @file.name
+    @file.isVideo = /webm$/i.test @file.name
+    if @file.isImage or @file.isVideo
       @file.dimensions = fileText.textContent.match(/\d+x\d+/)[0]
 
   cleanup: (root, post) ->

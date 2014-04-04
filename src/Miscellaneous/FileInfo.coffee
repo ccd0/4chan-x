@@ -47,4 +47,4 @@ FileInfo =
     B: -> FileInfo.convertUnit @file.sizeInBytes, 'B'
     K: -> FileInfo.convertUnit @file.sizeInBytes, 'KB'
     M: -> FileInfo.convertUnit @file.sizeInBytes, 'MB'
-    r: -> if @file.isImage then @file.dimensions else 'PDF'
+    r: -> @file.dimensions or 'PDF'

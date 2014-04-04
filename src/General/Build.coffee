@@ -7,8 +7,9 @@ Build =
     # OPs have a +10 characters threshold.
     # The file extension is not taken into account.
     threshold = if isReply then 30 else 40
-    if filename.length - 4 > threshold
-      "#{filename[...threshold - 5]}(...).#{filename[-3..]}"
+    ext = filename.match(/\.[^.]+$/)[0]
+    if filename.length - ext.length > threshold
+      "#{filename[...threshold - 5]}(...)#{ext}"
     else
       filename
   thumbRotate: do ->

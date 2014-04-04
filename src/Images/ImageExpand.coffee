@@ -13,7 +13,7 @@ ImageExpand =
       name: 'Image Expansion'
       cb:   @node
   node: ->
-    return unless @file?.isImage
+    return unless @file and (@file.isImage or @file.isVideo)
     {thumb} = @file
     $.on thumb.parentNode, 'click', ImageExpand.cb.toggle
     if @isClone and $.hasClass thumb, 'expanding'
@@ -42,7 +42,7 @@ ImageExpand =
       for ID, post of g.posts
         for post in [post].concat post.clones
           {file} = post
-          continue unless file and file.isImage and doc.contains post.nodes.root
+          continue unless file and (file.isImage or file.isVideo) and doc.contains post.nodes.root
           if ImageExpand.on and !post.isHidden and
             (!Conf['Expand spoilers'] and file.isSpoiler or
             Conf['Expand from here'] and Header.getTopOf(file.thumb) < 0)
@@ -72,6 +72,7 @@ ImageExpand =
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass post.file.thumb, 'expanding'
     post.file.isExpanded = false
+    post.file.fullImage.pause() if post.file.isVideo
 
   expand: (post, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
@@ -80,21 +81,29 @@ ImageExpand =
     $.addClass thumb, 'expanding'
     if post.file.fullImage
       # Expand already-loaded/ing picture.
-      $.asap (-> post.file.fullImage.naturalHeight), ->
+      $.asap (-> post.file.isVideo or post.file.fullImage.naturalHeight), ->
         ImageExpand.completeExpand post
       return
-    post.file.fullImage = img = $.el 'img',
-      className: 'full-image'
-      src: src or post.file.URL
-    $.on img, 'error', ImageExpand.error
-    $.asap (-> post.file.fullImage.naturalHeight), ->
+    file = if post.file.isImage
+      $.el 'img',
+        className: 'full-image'
+        src: src or post.file.URL
+    else
+      $.el 'video',
+        className: 'full-image'
+        src: src or post.file.URL
+        loop: true
+    post.file.fullImage = file
+    $.on file, 'error', ImageExpand.error
+    $.asap (-> post.file.isVideo or post.file.fullImage.naturalHeight), ->
       ImageExpand.completeExpand post
-    $.after thumb, img
+    $.after thumb, file
 
   completeExpand: (post) ->
     {thumb} = post.file
     return unless $.hasClass thumb, 'expanding' # contracted before the image loaded
     post.file.isExpanded = true
+    post.file.fullImage.play() if post.file.isVideo
     unless post.nodes.root.parentNode
       # Image might start/finish loading before the post is inserted.
       # Don't scroll when it's expanded in a QP for example.
