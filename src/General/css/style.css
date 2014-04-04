@@ -714,7 +714,7 @@ span.hide-announcement {
 .fileText:hover .fntrunc,
 .fileText:not(:hover) .fnfull,
 .expanded-image > .post > .file > .fileThumb > img[data-md5],
-:not(.expanded-image) > .post > .file > .fileThumb > .full-image {
+:not(.expanded-image) > .post > .file .full-image {
   display: none;
 }
 .expanding {
