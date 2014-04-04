@@ -1,3 +1,11 @@
+### v1.5.1 
+*2014-04-04*
+
+**ccd0**:
+- Support hover for .webm videos.
+- Add .webm to supported posting types.
+- Add option to enable/disable sound.
+
 ## v1.5.0 
 *2014-04-04*
 
