@@ -6,9 +6,9 @@ Redirect =
       file:   {}
 
     archives = {}
-    for {name, boards, files, data} in Redirect.archives
-      archives[name] = {boards, files, data}
-      {software} = data
+    for data in Redirect.archives
+      {name, boards, files, software} = data
+      archives[name] = data
       for boardID in boards
         o.thread[boardID] = data unless boardID of o.thread
         o.post[boardID]   = data unless boardID of o.post   or software isnt 'foolfuuka'
@@ -18,134 +18,11 @@ Redirect =
       for type, id of record when (archive = archives[id])
         boards = if type is 'file' then archive.files else archive.boards
         continue unless boardID in boards
-        o[type][boardID] = archive.data
+        o[type][boardID] = archive
 
     Redirect.data = o
 
-  archives: [
-      name:   "Foolz"
-      boards: ["a", "biz", "co", "diy", "gd", "jp", "m", "sci", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"]
-      files:  ["a", "biz", "diy", "gd", "jp", "m", "sci", "tg", "vg", "vp", "vr", "wsg"]
-      data:
-        domain: "archive.foolz.us"
-        http:  false
-        https: true
-        software: "foolfuuka"
-    ,
-      name:   "NSFW Foolz"
-      boards: ["u"]
-      files:  ["u"]
-      data:
-        domain: "nsfw.foolz.us"
-        http:  false
-        https: true
-        software: "foolfuuka"
-    ,
-      name:   "The Dark Cave"
-      boards: ["c", "int", "out", "po"]
-      files:  ["c", "po"]
-      data:
-        domain: "archive.thedarkcave.org"
-        http:  true
-        https: true
-        software: "foolfuuka"
-    ,
-      name:   "4plebs"
-      boards: ["adv", "hr", "o", "pol", "s4s", "tg", "trv", "tv", "x"]
-      files:  ["adv", "hr", "o", "pol", "s4s", "tg", "trv", "tv", "x"]
-      data:
-        domain: "archive.4plebs.org"
-        http:  true
-        https: true
-        software: "foolfuuka"
-    ,
-      name: "4plebs Flash Archive",
-      boards: ["f"]
-      files:  ["f"]
-      data:
-        domain: "flash.4plebs.org"
-        http: true
-        https: true
-        software: "foolfuuka"
-    ,
-      name:   "Nyafuu"
-      boards: ["c", "e", "w", "wg"]
-      files:  ["c", "e", "w", "wg"]
-      data:
-        domain: "archive.nyafuu.org"
-        http:  true
-        https: true
-        software: "foolfuuka"
-    ,
-      name:   "Love is Over"
-      boards: ["d", "i"]
-      files:  ["d", "i"]
-      data:
-        domain: "loveisover.me"
-        http:  true
-        https: true
-        software: "foolfuuka"
-    ,
-      name:   "Rebecca Black Tech"
-      boards: ["cgl", "g", "mu", "w"]
-      files:  ["cgl", "g", "mu", "w"]
-      data:
-        domain: "archive.rebeccablacktech.com"
-        http:  true
-        https: true
-        software: "fuuka"
-    ,
-      name:   "Heinessen"
-      boards: ["an", "fit", "k", "mlp", "r9k", "toy"]
-      files:  ["an", "fit", "k", "r9k", "toy"]
-      data:
-        domain: "archive.heinessen.com"
-        http: true
-        software: "fuuka"
-    ,
-      name:   "warosu"
-      boards: ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"]
-      files:  ["3", "biz", "cgl", "ck", "diy", "fa", "ic", "jp", "lit", "sci", "tg", "vr"]
-      data:
-        domain: "fuuka.warosu.org"
-        https: true
-        software: "fuuka"
-    ,
-      name:   "fgts"
-      boards: ["cm", "hm", "r", "soc", "y"]
-      files:  ["cm", "hm", "r", "soc", "y"]
-      data:
-        domain: "fgst.eu"
-        http:  true
-        https: true
-        software: "foolfuuka"
-    ,
-      name:   "maware"
-      boards: ["t"]
-      files:  ["t"]
-      data:
-        domain: "archive.mawa.re"
-        http:  true
-        software: "foolfuuka"
-    ,
-      name: "InstallGentoo"
-      boards: ["g", "t"]
-      files:  ["g", "t"]
-      data:
-        domain: "chan.installgentoo.com"
-        http: true
-        software: "foolfuuka"
-    ,
-      name:   "Foolz Beta"
-      boards: ["a", "biz", "co", "d", "diy", "gd", "jp", "m", "mlp", "s4s", "sci", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
-      files:  ["a", "biz", "d", "diy", "gd", "jp", "m", "s4s", "sci", "tg", "u", "vg", "vp", "vr", "wsg"]
-      data:
-        domain: "beta.foolz.us"
-        http:  true
-        https: true
-        withCredentials: true
-        software: "foolfuuka"
-  ]
+  archives: `<%= JSON.stringify(grunt.file.readJSON('src/Archive/archives.json')) %>`
 
   to: (dest, data) ->
     archive = (if dest in ['search', 'board'] then Redirect.data.thread else Redirect.data[dest])[data.boardID]

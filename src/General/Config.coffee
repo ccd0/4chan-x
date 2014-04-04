@@ -114,10 +114,10 @@ Config =
         'Show stubs of hidden threads / replies.'
       ]
 
-    'Images':
+    'Images and Videos':
       'Image Expansion': [
         true
-        'Expand images.'
+        'Expand images / videos.'
       ]
       'Image Hover': [
         true
@@ -162,6 +162,14 @@ Config =
       'Werk Tyme': [
         false
         'Hide all post images when toggled.'
+      ]
+      'Autoplay': [
+        true
+        'Videos begin playing immediately when opened inline.'
+      ]
+      'Show Controls': [
+        true
+        'Show native seek and volume controls on videos. Contract videos when dragged to the left.'
       ]
 
     'Menu':
