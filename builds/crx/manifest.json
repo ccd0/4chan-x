@@ -14,7 +14,7 @@
     "all_frames": true,
     "run_at": "document_start"
   }],
-  "homepage_url": "http://zixaphir.github.com/appchan-x/",=
+  "homepage_url": "http://zixaphir.github.com/appchan-x/",
   "minimum_chrome_version": "32",
   "permissions": [
     "storage",

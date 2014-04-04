@@ -14,7 +14,7 @@
     "all_frames": true,
     "run_at": "document_start"
   }],
-  "homepage_url": "<%= meta.page %>",=
+  "homepage_url": "<%= meta.page %>",
   "minimum_chrome_version": "<%= meta.min.chrome %>",
   "permissions": [
     "storage",
