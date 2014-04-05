@@ -1,3 +1,6 @@
+### v2.9.12 
+*2014-04-04*
+
 **ccd0**:
 - Support expansion of .webm videos.
 - Support hover for .webm videos.
