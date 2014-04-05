@@ -6469,7 +6469,7 @@
         return post.setFile(file);
       }
     },
-    openFileInput: function() {
+    openFileInput: function(e) {
       var _ref;
       e.stopPropagation();
       if (e.shiftKey && e.type === 'click') {

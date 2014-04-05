@@ -396,7 +396,7 @@ QR =
       post.pasteText file
     else
       post.setFile file
-  openFileInput: ->
+  openFileInput: (e) ->
     e.stopPropagation()
     if e.shiftKey and e.type is 'click'
       return QR.selected.rmFile()
