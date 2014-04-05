@@ -1193,10 +1193,12 @@ nav a,
   opacity: .5;
 }
 .expanded-image > .post > .file > .fileThumb > img[data-md5],
-.post > .file > .fileThumb > .full-image {
+.post > .file > .fileThumb > .full-image,
+.post > .file > .full-image  {
   display: none;
 }
-.expanded-image > .post > .file > .fileThumb > .full-image {
+.expanded-image > .post > .file > .fileThumb > .full-image,
+.expanded-image > .post > .file > .full-image {
   display: block;
 }
 .thread > .replyContainer:last-of-type .post {

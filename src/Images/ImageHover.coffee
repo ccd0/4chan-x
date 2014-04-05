@@ -20,17 +20,11 @@ ImageHover =
     else
       Get.postFromNode @
     {isVideo} = post.file
-    if post.file.fullImage
-      el = post.file.fullImage
-      $.rmClass el, 'full-image'
-      $.addClass el, 'ihover'
-    else
-      el = $.el (if isVideo then 'video' else 'img'),
-        className: 'ihover'
-        src: post.file.URL
-      post.file.fullImage = el
-      {thumb} = post.file
-      $.after (if isVideo and Conf['Show Controls'] then thumb.parentNode else thumb), el
+    el = $.el (if isVideo then 'video' else 'img'),
+      className: 'ihover'
+      src: post.file.URL
+    {thumb} = post.file
+    $.add Header.hover, el
     el.dataset.fullID = post.fullID
     if isVideo
       el.loop = true

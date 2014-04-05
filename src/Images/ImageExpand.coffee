@@ -105,7 +105,6 @@ ImageExpand =
     naturalHeight = if isVideo then 'videoHeight' else 'naturalHeight'
     if img = post.file.fullImage
       # Expand already-loaded/ing picture.
-      $.rmClass img, 'ihover'
       $.addClass img, 'full-image'
       img.controls = (img.parentNode isnt thumb.parentNode)
       $.asap (-> img[naturalHeight]), ->
