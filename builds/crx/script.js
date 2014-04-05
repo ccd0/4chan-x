@@ -10830,6 +10830,10 @@
       $.asap((function() {
         return post.file.fullImage[naturalHeight];
       }), function() {
+        if (isVideo) {
+          img.style.maxHeight = img[naturalHeight] + "px";
+          img.style.maxWidth = img['videoWidth'] + "px";
+        }
         return ImageExpand.completeExpand(post);
       });
       return $.after((img.controls ? thumb.parentNode : thumb), img);

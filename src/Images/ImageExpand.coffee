@@ -118,6 +118,10 @@ ImageExpand =
       img.controls = Conf['Show Controls']
     $.on img, 'error', ImageExpand.error
     $.asap (-> post.file.fullImage[naturalHeight]), ->
+      if isVideo
+        # XXX Firefox doesn't seem to size videos correctly?
+        img.style.maxHeight = img[naturalHeight] + "px"
+        img.style.maxWidth  = img['videoWidth']  + "px"
       ImageExpand.completeExpand post
     $.after (if img.controls then thumb.parentNode else thumb), img
 
