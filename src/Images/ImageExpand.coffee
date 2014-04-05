@@ -17,7 +17,7 @@ ImageExpand =
       cb: @node
 
   node: ->
-    return unless @file?.isImage or @file?.isVideo
+    return unless @file and (@file.isImage or @file.isVideo)
     {thumb} = @file
     $.on thumb.parentNode, 'click', ImageExpand.cb.toggle
     if @isClone and $.hasClass thumb, 'expanding'
@@ -49,7 +49,7 @@ ImageExpand =
         for post in [post].concat post.clones
           {file} = post
           return unless file and (file.isImage or file.isVideo) and doc.contains post.nodes.root
-          if ImageExpand.on and
+          if ImageExpand.on and !post.isHidden and
             (!Conf['Expand spoilers'] and file.isSpoiler or
             Conf['Expand from here'] and Header.getTopOf(file.thumb) < 0)
               return
@@ -90,10 +90,10 @@ ImageExpand =
     ImageExpand.contract post
 
   contract: (post) ->
-    post.file.fullImage?.pause() if post.file.isVideo
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass post.file.thumb, 'expanding'
     post.file.isExpanded = false
+    post.file.fullImage.pause() if post.file.isVideo
     post.file.videoControls?.map($.rm)
     delete post.file.videoControls
 
@@ -102,44 +102,41 @@ ImageExpand =
     {thumb, isVideo} = post.file
     return if post.isHidden or post.file.isExpanded or $.hasClass thumb, 'expanding'
     $.addClass thumb, 'expanding'
-    naturalHeight = if isVideo then 'videoHeight' else 'naturalHeight'
-    if img = post.file.fullImage
+    if post.file.fullImage
       # Expand already-loaded/ing picture.
-      $.addClass img, 'full-image'
-      img.controls = (img.parentNode isnt thumb.parentNode)
-      $.asap (-> img[naturalHeight]), ->
+      $.asap (-> post.file.isVideo or post.file.fullImage.naturalHeight), ->
         ImageExpand.completeExpand post
       return
-    post.file.fullImage = img = $.el (if isVideo then 'video' else 'img'),
-      className: 'full-image'
-      src: src or post.file.URL
+    file = 
+      $.el (if post.file.isImage then 'img' else 'video'),
+        className: 'full-image'
+        src: src or post.file.URL
+    post.file.fullImage = file
     if isVideo
-      img.loop = true
-      img.controls = Conf['Show Controls']
-    $.on img, 'error', ImageExpand.error
-    $.asap (-> post.file.fullImage[naturalHeight]), ->
+      file.loop     = true
+      file.controls = Conf['Show Controls']
+    $.on file, 'error', ImageExpand.error
+    $.asap (-> post.file.isVideo or post.file.fullImage.naturalHeight), ->
       if isVideo
         # XXX Firefox doesn't seem to size videos correctly?
         img.style.maxHeight = img[naturalHeight] + "px"
         img.style.maxWidth  = img['videoWidth']  + "px"
       ImageExpand.completeExpand post
-    $.after (if img.controls then thumb.parentNode else thumb), img
+    $.after (if file.controls then thumb.parentNode else thumb), file
 
   completeExpand: (post) ->
     {thumb} = post.file
     return unless $.hasClass thumb, 'expanding' # contracted before the image loaded
     post.file.isExpanded = true
     ImageExpand.setupVideo post if post.file.isVideo
+    $.addClass post.nodes.root, 'expanded-image'
+    $.rmClass  post.file.thumb, 'expanding'
     unless post.nodes.root.parentNode
       # Image might start/finish loading before the post is inserted.
       # Don't scroll when it's expanded in a QP for example.
-      $.addClass post.nodes.root, 'expanded-image'
-      $.rmClass  post.file.thumb, 'expanding'
       return
     {bottom} = post.nodes.root.getBoundingClientRect()
     $.queueTask ->
-      $.addClass post.nodes.root, 'expanded-image'
-      $.rmClass  post.file.thumb, 'expanding'
       return unless bottom <= 0
       window.scrollBy 0, post.nodes.root.getBoundingClientRect().bottom - bottom
 
@@ -159,9 +156,9 @@ ImageExpand =
       # drag left to contract
       file.mousedown = false
       $.on video, 'mousedown', (e) -> file.mousedown = true  if e.button is 0
-      $.on video, 'mouseup', (e) -> file.mousedown = false if e.button is 0
+      $.on video, 'mouseup',   (e) -> file.mousedown = false if e.button is 0
       $.on video, 'mouseover', (e) -> file.mousedown = false
-      $.on video, 'mouseout', (e) ->
+      $.on video, 'mouseout',  (e) ->
         if file.mousedown and e.clientX <= video.getBoundingClientRect().left
           ImageExpand.contract post
     if Conf['Autoplay']

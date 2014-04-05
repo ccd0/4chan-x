@@ -1,3 +1,6 @@
+**MayhemYDG**:
+- Some changes to webm code.
+
 ### v2.9.12 
 *2014-04-04*
 
@@ -20,6 +23,9 @@
 
 ### v2.9.10 
 *2014-04-02*
+
+**duckness**:
+- Merge changes from Mayhem fork
 
 **MayhemYDG**:
 - Fix captcha submission:
