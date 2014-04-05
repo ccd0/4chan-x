@@ -1,5 +1,11 @@
+### v2.9.13 
+*2014-04-05*
+
 **MayhemYDG**:
 - Some changes to webm code.
+
+**Zixaphir**:
+- Changes to captcha code to load a new captcha automatically while dumping.
 
 ### v2.9.12 
 *2014-04-04*
