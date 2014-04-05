@@ -9,45 +9,36 @@ ImageHover =
         name: 'Image Hover'
         cb:   @catalogNode
   node: ->
-    return unless @file?.isImage or @file?.isVideo
+    return unless @file and (@file.isImage or @file.isVideo)
     $.on @file.thumb, 'mouseover', ImageHover.mouseover
   catalogNode: ->
-    return unless @thread.OP.file?.isImage
+    return unless @thread.OP.file and (@thread.OP.file.isImage or @thread.OP.file.isVideo)
     $.on @nodes.thumb, 'mouseover', ImageHover.mouseover
   mouseover: (e) ->
     post = if $.hasClass @, 'thumb'
       g.posts[@parentNode.dataset.fullID]
     else
       Get.postFromNode @
-    {isVideo} = post.file
-    if post.file.fullImage
-      el = post.file.fullImage
-      $.rmClass el, 'full-image'
-      $.addClass el, 'ihover'
-    else
-      el = $.el (if isVideo then 'video' else 'img'),
-        className: 'ihover'
+    el = if post.file.isImage
+      $.el 'img',
+        id: 'ihover'
         src: post.file.URL
-      post.file.fullImage = el
-      {thumb} = post.file
-      $.after (if isVideo and Conf['Show Controls'] then thumb.parentNode else thumb), el
+    else
+      $.el 'video',
+        controls: false
+        id: 'ihover'
+        src: post.file.URL
+        autoplay: Conf['Autoplay']
+        muted: !Conf['Allow Sound']
+        loop: true
+    $.add Header.hover, el
     el.dataset.fullID = post.fullID
-    if isVideo
-      el.loop = true
-      el.controls = false
-      el.muted = not Conf['Allow Sound']
-      el.play() if Conf['Autoplay']
-    naturalHeight = if post.file.isVideo then 'videoHeight' else 'naturalHeight'
     UI.hover
       root: @
       el: el
       latestEvent: e
       endEvents: 'mouseout click'
-      asapTest: -> el[naturalHeight]
-      cb: ->
-        el.pause() if isVideo
-        $.rmClass el, 'ihover'
-        $.addClass el, 'full-image'
+      asapTest: -> post.file.isVideo or el.naturalHeight
     $.on el, 'error', ImageHover.error
   error: ->
     return unless doc.contains @

@@ -32,4 +32,3 @@ AutoGIF =
       else
         thumb.src = URL
     gif.src = URL
-

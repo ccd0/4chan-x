@@ -1,5 +1,13 @@
+<<<<<<< HEAD
 **duckness**:
 - Merge changes from Mayhem fork
+=======
+## 3.20.0 - *2014-04-05*
+
+- Add support for .webm files.
+
+### 3.19.5 - *2014-04-03*
+>>>>>>> mayhem
 
 **MayhemYDG**:
 - Fix captcha submission:

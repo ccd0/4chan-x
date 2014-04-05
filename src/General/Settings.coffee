@@ -388,6 +388,7 @@ Settings =
         sizeInBytes: 276 * 1024
         dimensions: '1280x720'
         isImage: true
+        isVideo: false
         isSpoiler: true
     funk = FileInfo.createFunc @value
     @nextElementSibling.innerHTML = funk FileInfo, data
