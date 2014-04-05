@@ -791,6 +791,9 @@ QR =
     unless Conf['Persistent QR'] or QR.cooldown.auto
       QR.close()
     else
+      if QR.posts.length > 1
+        QR.captcha.setup()
+        QR.captcha.afterSetup()
       post.rm()
 
     QR.cooldown.set {req, post, isReply, threadID}

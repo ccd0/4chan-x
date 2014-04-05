@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.5.1 - 2014-04-04
+* 4chan X - Version 1.5.1 - 2014-04-05
 *
 * Licensed under the MIT license.
 * https://github.com/ccd0/4chan-x/blob/master/LICENSE
@@ -6804,6 +6804,10 @@
       if (!(Conf['Persistent QR'] || QR.cooldown.auto)) {
         QR.close();
       } else {
+        if (QR.posts.length > 1) {
+          QR.captcha.setup();
+          QR.captcha.afterSetup();
+        }
         post.rm();
       }
       QR.cooldown.set({
