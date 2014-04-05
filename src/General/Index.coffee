@@ -448,7 +448,10 @@ Index =
       if req.status is 200
         Index.parse req.response, pageNum
       else if req.status is 304 and pageNum?
-        Index.pageNav pageNum
+        if Index.currentPage is pageNum
+          Index.buildIndex()
+        else
+          Index.pageNav pageNum
     catch err
       c.error 'Index failure:', err.stack
       # network error or non-JSON content for example.
@@ -473,7 +476,7 @@ Index =
     Index.parseThreadList pages
     Index.buildThreads()
     Index.sort()
-    if pageNum?
+    if pageNum? and Index.currentPage isnt pageNum
       Index.pageNav pageNum
       return
     Index.buildIndex()
