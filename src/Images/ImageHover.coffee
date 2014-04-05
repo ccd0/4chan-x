@@ -12,7 +12,7 @@ ImageHover =
     return unless @file and (@file.isImage or @file.isVideo)
     $.on @file.thumb, 'mouseover', ImageHover.mouseover
   catalogNode: ->
-    return unless @thread.OP.file and (@thread.OP.file.isImage @thread.OP.file.isVideo)
+    return unless @thread.OP.file and (@thread.OP.file.isImage or @thread.OP.file.isVideo)
     $.on @nodes.thumb, 'mouseover', ImageHover.mouseover
   mouseover: (e) ->
     post = if $.hasClass @, 'thumb'
