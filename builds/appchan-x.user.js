@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.12 - 2014-04-04
+* appchan x - Version 2.9.12 - 2014-04-05
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -9493,6 +9493,10 @@
       if (!(Conf['Persistent QR'] || QR.cooldown.auto)) {
         QR.close();
       } else {
+        if (QR.posts.length > 1) {
+          QR.captcha.setup();
+          QR.captcha.afterSetup();
+        }
         post.rm();
       }
       QR.cooldown.set({
