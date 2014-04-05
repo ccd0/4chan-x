@@ -90,7 +90,9 @@ ImageExpand =
     ImageExpand.contract post
 
   contract: (post) ->
-    post.file.fullImage?.pause() if post.file.isVideo
+    if post.file.isVideo and video = post.file.fullImage
+      video.pause()
+      TrashQueue.add video
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass post.file.thumb, 'expanding'
     post.file.isExpanded = false
@@ -105,6 +107,7 @@ ImageExpand =
     naturalHeight = if isVideo then 'videoHeight' else 'naturalHeight'
     if img = post.file.fullImage
       # Expand already-loaded/ing picture.
+      TrashQueue.remove img
       $.rmClass img, 'ihover'
       $.addClass img, 'full-image'
       img.controls = (img.parentNode isnt thumb.parentNode)

@@ -13,6 +13,7 @@ ImageHover =
     {isVideo} = post.file
     if post.file.fullImage
       el = post.file.fullImage
+      TrashQueue.remove el
       $.rmClass el, 'full-image'
       $.addClass el, 'ihover'
     else
@@ -36,7 +37,9 @@ ImageHover =
       endEvents: 'mouseout click'
       asapTest: -> el[naturalHeight]
       cb: ->
-        el.pause() if isVideo
+        if isVideo
+          el.pause()
+          TrashQueue.add el
         $.rmClass el, 'ihover'
         $.addClass el, 'full-image'
     $.on el, 'error', ImageHover.error
