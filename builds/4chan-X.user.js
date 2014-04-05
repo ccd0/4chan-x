@@ -5787,6 +5787,7 @@
       }
       if (QR.captcha.isEnabled && /captcha|verification/i.test(el.textContent)) {
         QR.captcha.nodes.input.focus();
+        QR.captcha.setup();
         if (Conf['Captcha Warning Notifications'] && !d.hidden) {
           QR.notify(el);
         } else {
