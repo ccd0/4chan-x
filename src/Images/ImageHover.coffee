@@ -40,8 +40,6 @@ ImageHover =
       asapTest: -> el[naturalHeight]
       cb: ->
         el.pause() if isVideo
-        $.rmClass el, 'ihover'
-        $.addClass el, 'full-image'
     $.on el, 'error', ImageHover.error
   error: ->
     return unless doc.contains @

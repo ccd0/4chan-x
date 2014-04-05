@@ -11022,10 +11022,8 @@
         },
         cb: function() {
           if (isVideo) {
-            el.pause();
+            return el.pause();
           }
-          $.rmClass(el, 'ihover');
-          return $.addClass(el, 'full-image');
         }
       });
       return $.on(el, 'error', ImageHover.error);
