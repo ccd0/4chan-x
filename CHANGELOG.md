@@ -1,3 +1,11 @@
+### v1.5.2 
+*2014-04-04*
+
+**Zixaphir**:
+- Fix file info bug.
+**ccd0**:
+- Fix memory issue.
+
 ### v1.5.1 
 *2014-04-04*
 
