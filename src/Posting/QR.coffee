@@ -139,6 +139,7 @@ QR =
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
       QR.captcha.nodes.input.focus()
+      QR.captcha.setup()
       if Conf['Captcha Warning Notifications'] and !d.hidden
         QR.notify el
       else
@@ -814,9 +815,6 @@ QR =
     unless Conf['Persistent QR'] or QR.cooldown.auto
       QR.close()
     else
-      if QR.posts.length > 1
-        QR.captcha.setup()
-        QR.captcha.afterSetup()
       post.rm()
 
     QR.cooldown.set {req, post, isReply, threadID}
