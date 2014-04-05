@@ -1,3 +1,6 @@
+**Zixaphir**:
+- Fix file input.
+
 ### v2.9.13 
 *2014-04-05*
 

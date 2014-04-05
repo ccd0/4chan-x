@@ -402,6 +402,7 @@ QR =
       return
     return if e.target.nodeName is 'INPUT' or (e.keyCode and e.keyCode not in [32, 13]) or e.ctrlKey
     e.preventDefault()
+    QR.nodes.fileInput.click()
 
   generatePostableThreadsList: ->
     return unless QR.nodes
