@@ -10800,7 +10800,8 @@
       $.addClass(thumb, 'expanding');
       if (post.file.fullImage) {
         $.asap((function() {
-          return post.file.isVideo || post.file.fullImage.naturalHeight;
+          var file;
+          return (file = post.file.fullImage) && (file.videoHeight || file.naturalHeight);
         }), function() {
           return ImageExpand.completeExpand(post);
         });
@@ -10817,11 +10818,11 @@
       }
       $.on(file, 'error', ImageExpand.error);
       $.asap((function() {
-        return post.file.isVideo || post.file.fullImage.naturalHeight;
+        return (file = post.file.fullImage) && (file.videoHeight || file.naturalHeight);
       }), function() {
         if (isVideo) {
-          img.style.maxHeight = img[naturalHeight] + "px";
-          img.style.maxWidth = img['videoWidth'] + "px";
+          file.style.maxHeight = file.videoHeight + "px";
+          file.style.maxWidth = file.videoWidth + "px";
         }
         return ImageExpand.completeExpand(post);
       });

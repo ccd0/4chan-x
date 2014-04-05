@@ -104,7 +104,7 @@ ImageExpand =
     $.addClass thumb, 'expanding'
     if post.file.fullImage
       # Expand already-loaded/ing picture.
-      $.asap (-> post.file.isVideo or post.file.fullImage.naturalHeight), ->
+      $.asap (-> (file = post.file.fullImage) and (file.videoHeight or file.naturalHeight)), ->
         ImageExpand.completeExpand post
       return
     file = 
@@ -116,11 +116,11 @@ ImageExpand =
       file.loop     = true
       file.controls = Conf['Show Controls']
     $.on file, 'error', ImageExpand.error
-    $.asap (-> post.file.isVideo or post.file.fullImage.naturalHeight), ->
+    $.asap (-> (file = post.file.fullImage) and (file.videoHeight or file.naturalHeight)), ->
       if isVideo
         # XXX Firefox doesn't seem to size videos correctly?
-        img.style.maxHeight = img[naturalHeight] + "px"
-        img.style.maxWidth  = img['videoWidth']  + "px"
+        file.style.maxHeight = file.videoHeight + "px"
+        file.style.maxWidth  = file.videoWidth  + "px"
       ImageExpand.completeExpand post
     $.after (if file.controls then thumb.parentNode else thumb), file
 
