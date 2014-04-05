@@ -6485,7 +6485,8 @@
       if (e.target.nodeName === 'INPUT' || (e.keyCode && ((_ref = e.keyCode) !== 32 && _ref !== 13)) || e.ctrlKey) {
         return;
       }
-      return e.preventDefault();
+      e.preventDefault();
+      return QR.nodes.fileInput.click();
     },
     generatePostableThreadsList: function() {
       var list, options, thread, val, _i, _len, _ref;
