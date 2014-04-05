@@ -546,7 +546,7 @@ QR =
         QR.cooldown.auto = false
       QR.status()
       QR.error err
-      QR.captcha.setup() if QR.captcha.isEnabled and QR.cooldown.auto
+      QR.captcha.setup() if QR.captcha.isEnabled
       return
 
     h1 = $ 'h1', resDoc

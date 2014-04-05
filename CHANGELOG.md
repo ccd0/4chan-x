@@ -1,3 +1,5 @@
+- Bug fixes.
+
 ## 3.20.0 - *2014-04-05*
 
 - Add support for .webm files.
