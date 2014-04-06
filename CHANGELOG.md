@@ -19,10 +19,8 @@
 - Added keybindings for index modes, `Ctrl+{1,2,3}` by default.
 - `Index Mode` and `Index Sort` have been moved out of the header's menu into the index page.
 - Minor captcha fixes.
-- New setting: `Quote Markers`, enabled by default
- - This merges `Mark Quotes of You`, `Mark OP Quotes` and `Mark Cross-thread Quotes` into one feature.
- - Backlinks now also get these markers.
- - Multiple markers are now more compact, for example `>>123 (You/OP)` instead of `>>123 (You) (OP)`.
+- Backlinks now also get quote markers.
+- Multiple markers are now more compact, for example `>>123 (You/OP)` instead of `>>123 (You) (OP)`.
 - New setting: `Image Hover in Catalog`
  - Like `Image Hover`, but for the catalog only.
 - Added `Archive link` to the Custom Board Navigation Rice
