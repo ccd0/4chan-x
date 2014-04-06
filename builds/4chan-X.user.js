@@ -3610,10 +3610,11 @@
     gifIcon: window.devicePixelRatio >= 2 ? '@2x.gif' : '.gif',
     spoilerRange: {},
     shortFilename: function(filename, isReply) {
-      var threshold;
+      var ext, threshold;
       threshold = isReply ? 30 : 40;
-      if (filename.length - 4 > threshold) {
-        return "" + filename.slice(0, threshold - 5) + "(...)." + filename.slice(-3);
+      ext = filename.match(/\.[^.]+$/)[0];
+      if (filename.length - ext.length > threshold) {
+        return "" + filename.slice(0, threshold - 5) + "(...)" + ext;
       } else {
         return filename;
       }
@@ -4780,7 +4781,9 @@
       return false;
     },
     dimensions: function(post) {
-      if (post.file && post.file.isImage) {
+      var file;
+      file = post.file;
+      if (file && (file.isImage || file.isVideo)) {
         return post.file.dimensions;
       }
       return false;
@@ -5933,7 +5936,6 @@
   };
 
   QR = {
-    mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/x-shockwave-flash', 'video/webm', ''],
     init: function() {
       var sc;
       if (!Conf['Quick Reply']) {
@@ -6121,6 +6123,7 @@
       }
       if (QR.captcha.isEnabled && /captcha|verification/i.test(el.textContent)) {
         QR.captcha.nodes.input.focus();
+        QR.captcha.setup();
         if (Conf['Captcha Warning Notifications'] && !d.hidden) {
           QR.notify(el);
         } else {
@@ -6394,21 +6397,9 @@
       }
     },
     handleFile: function(file, isSingle, max) {
-      var post, _ref;
+      var post;
       if (file.size > max) {
         QR.error("" + file.name + ": File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(max)) + ").");
-        return;
-      } else if (_ref = file.type, __indexOf.call(QR.mimeTypes, _ref) < 0) {
-        if (!/^text/.test(file.type)) {
-          QR.error("" + file.name + ": Unsupported file type.");
-          return;
-        }
-        if (isSingle) {
-          post = QR.selected;
-        } else if ((post = QR.posts[QR.posts.length - 1]).com) {
-          post = new QR.post();
-        }
-        post.pasteText(file);
         return;
       }
       if (isSingle) {
@@ -6416,7 +6407,11 @@
       } else if ((post = QR.posts[QR.posts.length - 1]).file) {
         post = new QR.post();
       }
-      return post.setFile(file);
+      if (/^text/.test(file.type)) {
+        return post.pasteText(file);
+      } else {
+        return post.setFile(file);
+      }
     },
     openFileInput: function(e) {
       var _ref;
@@ -7252,6 +7247,9 @@
         $.rmClass(QR.nodes.el, 'dump');
       } else if (this === QR.selected) {
         (QR.posts[index - 1] || QR.posts[index + 1]).select();
+        if (QR.captcha.isEnabled) {
+          QR.captcha.setup();
+        }
       }
       QR.posts.splice(index, 1);
       return QR.status();
@@ -7992,7 +7990,7 @@
             if (!(file && (file.isImage || file.isVideo) && doc.contains(post.nodes.root))) {
               return;
             }
-            if (ImageExpand.on && (!Conf['Expand spoilers'] && file.isSpoiler || Conf['Expand from here'] && Header.getTopOf(file.thumb) < 0)) {
+            if (ImageExpand.on && !post.isHidden && (!Conf['Expand spoilers'] && file.isSpoiler || Conf['Expand from here'] && Header.getTopOf(file.thumb) < 0)) {
               return;
             }
             $.queueTask(func, post);
@@ -11618,11 +11616,7 @@
         return FileInfo.convertUnit(this.file.sizeInBytes, 'MB');
       },
       r: function() {
-        if (this.file.isImage || this.file.isVideo) {
-          return this.file.dimensions;
-        } else {
-          return 'PDF';
-        }
+        return this.file.dimensions || 'PDF';
       }
     }
   };
@@ -13353,6 +13347,7 @@
           sizeInBytes: 276 * 1024,
           dimensions: '1280x720',
           isImage: true,
+          isVideo: false,
           isSpoiler: true
         }
       };

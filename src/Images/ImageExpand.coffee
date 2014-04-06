@@ -46,7 +46,7 @@ ImageExpand =
         for post in [post].concat post.clones
           {file} = post
           return unless file and (file.isImage or file.isVideo) and doc.contains post.nodes.root
-          if ImageExpand.on and
+          if ImageExpand.on and !post.isHidden and
             (!Conf['Expand spoilers'] and file.isSpoiler or
             Conf['Expand from here'] and Header.getTopOf(file.thumb) < 0)
               return

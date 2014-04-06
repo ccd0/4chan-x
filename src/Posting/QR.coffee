@@ -1,7 +1,4 @@
 QR =
-  # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
-  mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/x-shockwave-flash', 'video/webm', '']
-
   init: ->
     return if !Conf['Quick Reply']
 
@@ -147,6 +144,7 @@ QR =
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
       QR.captcha.nodes.input.focus()
+      QR.captcha.setup()
       if Conf['Captcha Warning Notifications'] and !d.hidden
         QR.notify el
       else
@@ -390,22 +388,14 @@ QR =
     if file.size > max
       QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
       return
-    else unless file.type in QR.mimeTypes
-      unless /^text/.test file.type
-        QR.error "#{file.name}: Unsupported file type."
-        return
-      if isSingle
-        post = QR.selected
-      else if (post = QR.posts[QR.posts.length - 1]).com
-        post = new QR.post()
-      post.pasteText file
-      return
     if isSingle
       post = QR.selected
     else if (post = QR.posts[QR.posts.length - 1]).file
       post = new QR.post()
-    post.setFile file
-
+    if /^text/.test file.type
+      post.pasteText file
+    else
+      post.setFile file
   openFileInput: (e) ->
     e.stopPropagation()
     if e.shiftKey and e.type is 'click'

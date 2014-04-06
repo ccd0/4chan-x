@@ -48,6 +48,7 @@
 - Clicking on the border of the Header will not toggle `Header auto-hide` anymore.
   You can still change the setting in the Header menu &rarr; Header.
 - Bugfixes
+- WebM support fixes.
 
 **Vampiricwulf**
 - Flash embedding and other Flash features.
@@ -62,6 +63,7 @@
 - Improved Linkifier link detection.
 - Fixed an issue with Thread Updater intervals not saving correctly.
 - Many spiffy performance, state awareness, and sanity improvements to JSON Navigation.
+- Reload captcha if there are posts in the queue.
 
 ### v1.5.2 
 *2014-04-04*

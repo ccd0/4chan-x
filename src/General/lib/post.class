@@ -116,7 +116,7 @@ class Post
 
   parseFile: (that) ->
     return unless (fileEl = $ '.file', @nodes.post) and thumb = $ 'img[data-md5]', fileEl
-    # Supports JPG/PNG/GIF/PDF.
+    # Supports JPG/PNG/GIF/WEBM/PDF.
     # Flash files are not supported.
     anchor   = thumb.parentNode
     fileText = fileEl.firstElementChild

@@ -80,6 +80,8 @@ QR.post = class
       $.rmClass QR.nodes.el, 'dump'
     else if @ is QR.selected
       (QR.posts[index-1] or QR.posts[index+1]).select()
+      if QR.captcha.isEnabled
+        QR.captcha.setup()
     QR.posts.splice index, 1
     QR.status()
   delete: ->
