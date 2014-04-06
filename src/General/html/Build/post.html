@@ -1,4 +1,4 @@
-"""#{if isOP then '' else "<div class=sideArrows id=sa#{postID}>&gt;&gt;</div>"}
+"""#{if isOP then '' else "<div class=sideArrows>&gt;&gt;</div>"}
 <div id=p#{postID} class='post #{if isOP then 'op' else 'reply'}#{
   if capcodeIcon is 'admin_highlight' then
     ' highlightPost'
@@ -8,7 +8,7 @@
 
   #{if isOP then fileHTML else ''}
 
-  <div class='postInfo' id=pi#{postID}>
+  <div class='postInfo'>
     <input type=checkbox name=#{postID} value=delete>
     #{' '}<span class=subject>#{subject or ''}</span>#{' '}
     <span class='nameBlock#{capcodeClass}'>
@@ -31,6 +31,6 @@
 
   #{if isOP then '' else fileHTML}
 
-  <blockquote class=postMessage id=m#{postID}>#{comment or ''}</blockquote>#{' '}
+  <blockquote class=postMessage>#{comment or ''}</blockquote>#{' '}
 
 </div>"""

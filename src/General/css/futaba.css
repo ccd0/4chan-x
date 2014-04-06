@@ -39,6 +39,12 @@
   background-color: rgba(255, 255, 255, .14);
 }
 
+/* Post Hiding */
+:root.futaba .hide-post-button,
+:root.futaba .show-post-button {
+  color: #800000;
+}
+
 /* QR */
 .futaba #dump-list::-webkit-scrollbar-thumb {
   background-color: #F0E0D6;
@@ -55,15 +61,19 @@
   background: #F0E0D6;
 }
 
-/* Menu */
+ /* Menu */
 :root.futaba #menu {
   color: #800000;
 }
 :root.futaba .entry {
+  border-bottom: 1px solid #D9BFB7;
   font-size: 12pt;
 }
 :root.futaba .focused.entry {
   background: rgba(255, 255, 255, .33);
+}
+:root.futaba .thumb > .menu-button > i {
+  background: #FFE;
 }
 
 /* Watcher Favicon */

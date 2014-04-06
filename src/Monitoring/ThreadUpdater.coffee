@@ -8,11 +8,11 @@ ThreadUpdater =
         id:        'updater'
       $.ready ->
         Header.addShortcut sc
-    else 
+    else
       @dialog = sc = UI.dialog 'updater', 'bottom: 0px; left: 0px;',
         "<div class=move></div><span id=update-status></span><span id=update-timer title='Update now'></span>"
       $.addClass doc, 'float'
-      $.ready => 
+      $.ready ->
         $.addClass doc, 'float'
         $.add d.body, sc
 
@@ -57,12 +57,12 @@ ThreadUpdater =
     Thread.callbacks.push
       name: 'Thread Updater'
       cb:   @node
-  
+
   disconnect: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
     $.off @timer,  'click', @update
     $.off @status, 'click', @update
-    
+
     clearTimeout @timeoutID if @timeoutID
 
     for entry in @entry.subEntries
@@ -93,12 +93,13 @@ ThreadUpdater =
     Thread.callbacks.disconnect 'Thread Updater'
 
   node: ->
-    ThreadUpdater.thread       = @
-    ThreadUpdater.root         = @OP.nodes.root.parentNode
-    ThreadUpdater.lastPost     = +ThreadUpdater.root.lastElementChild.id.match(/\d+/)[0]
-    ThreadUpdater.outdateCount = 0
+    ThreadUpdater.thread   = @
+    ThreadUpdater.root     = @OP.nodes.root.parentNode
+    ThreadUpdater.lastPost = +@posts.keys[@posts.keys.length - 1]
 
-    ThreadUpdater.cb.interval.call $.el 'input', value: Conf['Interval']
+    ThreadUpdater.cb.interval.call $.el 'input',
+      value: Conf['Interval']
+      name:  'Interval'
 
     $.on window, 'online offline',   ThreadUpdater.cb.online
     $.on d,      'QRPostSuccessful', ThreadUpdater.cb.checkpost
@@ -148,11 +149,11 @@ ThreadUpdater =
         -> true
       else
         -> not d.hidden
-    interval: ->
+    interval: (e) ->
       val = parseInt @value, 10
       if val < 1 then val = 1
       ThreadUpdater.interval = @value = val
-      $.cb.value.call @
+      $.cb.value.call @ if e
     load: (e) ->
       {req} = ThreadUpdater
       switch req.status
@@ -183,7 +184,7 @@ ThreadUpdater =
 
   setInterval: ->
     i   = ThreadUpdater.interval + 1
-    
+
     if Conf['Optional Increase']
       # Lower the max refresh rate limit on visible tabs.
       cur   = ThreadUpdater.outdateCount or 1
@@ -309,48 +310,45 @@ ThreadUpdater =
       if ThreadUpdater.postID and ThreadUpdater.postID is ID
         ThreadUpdater.foundPost = true
 
+    sendEvent = ->
+      $.event 'ThreadUpdate',
+        404: false
+        thread: ThreadUpdater.thread
+        newPosts: posts
+        deletedPosts: deletedPosts
+        deletedFiles: deletedFiles
+        postCount: OP.replies + 1
+        fileCount: OP.images + (!!ThreadUpdater.thread.OP.file and !ThreadUpdater.thread.OP.file.isDead)
+
     unless count
       ThreadUpdater.set 'status', null, null
       ThreadUpdater.outdateCount++
-    else
-      ThreadUpdater.set 'status', "+#{count}", 'new'
-      ThreadUpdater.outdateCount = 0
-      if Conf['Beep'] and d.hidden and Unread.posts and !Unread.posts.length
-        unless ThreadUpdater.audio
-          ThreadUpdater.audio = $.el 'audio', src: ThreadUpdater.beep
-        ThreadUpdater.audio.play()
+      sendEvent()
+      return
 
-      ThreadUpdater.lastPost = posts[count - 1].ID
-      Main.callbackNodes Post, posts
+    ThreadUpdater.set 'status', "+#{count}", 'new'
+    ThreadUpdater.outdateCount = 0
+    if Conf['Beep'] and d.hidden and Unread.posts and !Unread.posts.length
+      unless ThreadUpdater.audio
+        ThreadUpdater.audio = $.el 'audio', src: ThreadUpdater.beep
+      ThreadUpdater.audio.play()
 
-      scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and
-        ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
+    ThreadUpdater.lastPost = posts[count - 1].ID
+    Post.callbacks.execute posts
 
-      for post in posts
-        root = post.nodes.root
-        if post.cb
-          unless post.cb()
-            $.add ThreadUpdater.root, root
-        else
+    scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and Header.getBottomOf(ThreadUpdater.root) > -75
+
+    for post in posts
+      {root} = post.nodes
+      if post.cb
+        unless post.cb()
           $.add ThreadUpdater.root, root
+      else
+        $.add ThreadUpdater.root, root
 
-      if scroll
-        if Conf['Bottom Scroll']
-          window.scrollTo 0, d.body.clientHeight
-        else
-          Header.scrollTo root if root
-
-      $.queueTask ->
-        # Enable 4chan features.
-        threadID = ThreadUpdater.thread.ID
-        {length} = $$ '.thread > .postContainer', ThreadUpdater.root
-        Fourchan.parseThread threadID, length - count, length
-
-    $.event 'ThreadUpdate',
-      404: false
-      thread: ThreadUpdater.thread
-      newPosts: posts
-      deletedPosts: deletedPosts
-      deletedFiles: deletedFiles
-      postCount: OP.replies + 1
-      fileCount: OP.images + (!!ThreadUpdater.thread.OP.file and !ThreadUpdater.thread.OP.file.isDead)
+    sendEvent()
+    if scroll
+      if Conf['Bottom Scroll']
+        window.scrollTo 0, d.body.clientHeight
+      else
+        Header.scrollTo posts[0].nodes.root

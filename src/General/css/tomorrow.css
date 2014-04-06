@@ -3,6 +3,9 @@
   background-color: #282A2E;
   border-color: #111;
 }
+:root.tomorrow .field:focus {
+  border-color: #000;
+}
 
 /* Header */
 :root.tomorrow #header-bar.dialog {
@@ -36,6 +39,12 @@
   background-color: rgba(0, 0, 0, .14);
 }
 
+/* Post Hiding */
+:root.tomorrow .hide-post-button,
+:root.tomorrow .show-post-button {
+  color: #C5C8C6 !important;
+}
+
 /* QR */
 .tomorrow #dump-list::-webkit-scrollbar-thumb {
   background-color: #282A2E;
@@ -66,10 +75,14 @@
   color: #C5C8C6;
 }
 :root.tomorrow .entry {
+  border-bottom: 1px solid #111;
   font-size: 10pt;
 }
 :root.tomorrow .focused.entry {
   background: rgba(0, 0, 0, .33);
+}
+:root.tomorrow .thumb > .menu-button > i {
+  background: #1D1F21;
 }
 
 /* Watcher Favicon */

@@ -27,6 +27,7 @@ QR.captcha =
 
     @beforeSetup()
     @afterSetup() # reCAPTCHA might have loaded before the QR.
+
   beforeSetup: ->
     {img, input} = @nodes
     img.parentNode.hidden = true
@@ -35,8 +36,10 @@ QR.captcha =
     $.on input, 'focus', @setup
     @setupObserver = new MutationObserver @afterSetup
     @setupObserver.observe $.id('captchaContainer'), childList: true
+
   setup: ->
     $.globalEval 'loadRecaptcha()'
+
   afterSetup: ->
     return unless challenge = $.id 'recaptcha_challenge_field_holder'
     QR.captcha.setupObserver.disconnect()
@@ -45,9 +48,9 @@ QR.captcha =
     {img, input} = QR.captcha.nodes
     img.parentNode.hidden = false
     input.placeholder = 'Verification'
-    $.off input, 'focus', QR.captcha.setup
-    $.on input, 'keydown', QR.captcha.keydown.bind QR.captcha
-    $.on img.parentNode, 'click', QR.captcha.reload.bind QR.captcha
+    $.off input,         'focus',   QR.captcha.setup
+    $.on input,          'keydown', QR.captcha.keydown.bind QR.captcha
+    $.on img.parentNode, 'click',   QR.captcha.reload.bind QR.captcha
 
     QR.captcha.nodes.challenge = challenge
     new MutationObserver(QR.captcha.load.bind QR.captcha).observe challenge,
@@ -55,9 +58,11 @@ QR.captcha =
       subtree: true
       attributes: true
     QR.captcha.load()
+
   destroy: ->
     $.globalEval 'Recaptcha.destroy()'
     @beforeSetup()
+
   getOne: ->
     challenge = @nodes.img.alt
     response  = @nodes.input.value.trim()
@@ -66,6 +71,7 @@ QR.captcha =
       # If there's only one word, duplicate it.
       response = "#{response} #{response}"
     {challenge, response}
+
   load: ->
     return unless @nodes.challenge.firstChild
     # -1 minute to give upload some time.
@@ -73,6 +79,7 @@ QR.captcha =
     @nodes.img.alt = challenge
     @nodes.img.src = "//www.google.com/recaptcha/api/image?c=#{challenge}"
     @nodes.input.value = null
+
   reload: (focus) ->
     # the 't' argument prevents the input from being focused
     $.globalEval 'Recaptcha.reload("t")'

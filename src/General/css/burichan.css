@@ -12,10 +12,11 @@
   background-color: rgba(214,218,240,0.98);
 }
 :root.burichan #header-bar, :root.burichan #header-bar #notifications {
+:root.burichan #header-bar {
   font-size: 11pt;
   color: #89A;
 }
-:root.burichan #header-bar a, :root.burichan #header-bar #notifications a {
+:root.burichan #header-bar a, :root.burichan #notifications a {
   color: #34345C;
 }
 :root.burichan.fixed #custom-board-list .current {
@@ -39,6 +40,12 @@
   background-color: rgba(255, 255, 255, .14);
 }
 
+/* Post Hiding */
+:root.burichan .hide-post-button,
+:root.burichan .show-post-button {
+  color: #000;
+}
+
 /* QR */
 .burichan #dump-list::-webkit-scrollbar-thumb {
   background-color: #D6DAF0;
@@ -60,14 +67,18 @@
   color: #000000;
 }
 :root.burichan .entry {
+  border-bottom: 1px solid #B7C5D9;
   font-size: 12pt;
 }
 :root.burichan .focused.entry {
   background: rgba(255, 255, 255, .33);
 }
+:root.burichan .thumb > .menu-button > i {
+  background: #EEF2FF;
+}
+
 
 /* Watcher Favicon */
-:root.burichan .watch-thread-link
-{
+:root.burichan .watch-thread-link {
   background-image: url("data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(0,0,0)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>");
 }

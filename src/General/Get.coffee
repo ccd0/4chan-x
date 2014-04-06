@@ -1,28 +1,23 @@
 Get =
   threadExcerpt: (thread) ->
     {OP} = thread
-    excerpt = "/#{thread.board}/ - " + (
-      OP.info.subject?.trim() or
+    excerpt = OP.info.subject?.trim() or
       OP.info.comment.replace(/\n+/g, ' // ') or
-      Conf['Anonymize'] and 'Anonymous' or
-      $('.nameBlock', OP.nodes.info).textContent.trim())
-    return "#{excerpt[...70]}..." if excerpt.length > 73
-    excerpt
+      OP.getNameBlock()
+    if excerpt.length > 70
+      excerpt = "#{excerpt[...67]}..."
+    "/#{thread.board}/ - #{excerpt}"
   threadFromRoot: (root) ->
-    g.threads["#{g.BOARD}.#{root.id[1..]}"]
+    g.threads[$('.opContainer', root).dataset.fullID]
   threadFromNode: (node) ->
     Get.threadFromRoot $.x 'ancestor::div[@class="thread"]', node
   postFromRoot: (root) ->
-    link    = $ 'a[title="Highlight this post"]', root
-    boardID = link.pathname.split('/')[1]
-    postID  = link.hash[2..]
-    index   = root.dataset.clone
-    post    = g.posts["#{boardID}.#{postID}"]
-    if index then post.clones[index] else post
-  postFromNode: (root) ->
-    Get.postFromRoot $.x '(ancestor::div[contains(@class,"postContainer")][1]|following::div[contains(@class,"postContainer")][1])', root
+    post = g.posts[root.dataset.fullID]
+    if index = root.dataset.clone then post.clones[index] else post
+  postFromNode: (node) ->
+    Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', node
   contextFromNode: (node) ->
-    Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', node
+    Get.postFromRoot $.x('ancestor::div[@class="thread"]', node).firstElementChild
   postDataFromLink: (link) ->
     if link.hostname is 'boards.4chan.org'
       path     = link.pathname.split '/'
@@ -86,9 +81,9 @@ Get =
     # Stop here if the container has been removed while loading.
     return unless root.parentNode
     clone = post.addClone context
-    Main.callbackNodes Clone, [clone]
+    Clone.callbacks.execute [clone]
 
-    # Get rid of the side arrows.
+    # Get rid of the side arrows/stubs.
     {nodes} = clone
     $.rmAll nodes.root
     $.add nodes.root, nodes.post
@@ -141,7 +136,7 @@ Get =
     thread = g.threads["#{boardID}.#{threadID}"] or
       new Thread threadID, board
     post = new Post Build.postFromObject(post, boardID), thread, board
-    Main.callbackNodes Post, [post]
+    Post.callbacks.execute [post]
     Get.insert post, root, context
   archivedPost: (req, boardID, postID, root, context) ->
     # In case of multiple callbacks for the same request,
@@ -168,7 +163,7 @@ Get =
 
     comment = bq.innerHTML
       # greentext
-      .replace(/(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class=quote>$2</span>$3')
+      .replace /(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class=quote>$2</span>$3'
       # quotes
       .replace /((&gt;){2}(&gt;\/[a-z\d]+\/)?\d+)/g, '<span class=deadlink>$1</span>'
 
@@ -213,7 +208,8 @@ Get =
     thread = g.threads["#{boardID}.#{threadID}"] or
       new Thread threadID, board
     post = new Post Build.post(o, true), thread, board, {isArchived: true}
-    Main.callbackNodes Post, [post]
+    $('.page-num', post.nodes.info)?.hidden = true
+    Post.callbacks.execute [post]
     Get.insert post, root, context
   parseMarkup: (text) ->
     {

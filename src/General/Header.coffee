@@ -143,6 +143,7 @@ Header =
     Header.boardList = boardList = $.el 'span',
       id: 'board-list'
       innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> #{fourchannav.innerHTML}</span>"
+
     for a in $$ 'a', boardList
       if Conf['JSON Navigation']
         $.on a, 'click', Navigate.navigate
@@ -167,9 +168,11 @@ Header =
     $.rmAll list
     return unless text
     as = $$ '#full-board-list a[title]', Header.boardList
-    nodes = text.match(/[\w@]+((-(all|title|replace|full|index|catalog|url:"[^"]+[^"]"|text:"[^"]+")|\,"[^"]+[^"]"))*|[^\w@]+/g).map (t) ->
+    re = /[\w@]+(-(all|title|replace|full|archive|(mode|sort|text|url):"[^"]+"(\,"[^"]+[^"]")?))*|[^\w@]+/g
+    nodes = text.match(re).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
+
       if /^toggle-all/.test t
         a = $.el 'a',
           className: 'show-board-list-button'
@@ -177,45 +180,64 @@ Header =
           href: 'javascript:;'
         $.on a, 'click', Header.toggleBoardList
         return a
+
       if /^external/.test t
         a = $.el 'a',
           href: (t.match(/\,"(.+)"/) || [null, '+'])[1]
           textContent: (t.match(/-text:"(.+)"\,/) || [null, '+'])[1]
           className: 'external'
         return a
+
       board = if /^current/.test t
         g.BOARD.ID
       else
         t.match(/^[^-]+/)[0]
-      for a in as
-        if a.textContent is board
-          a = a.cloneNode true
 
-          if Conf['JSON Navigation']
-            $.on a, 'click', Navigate.navigate
+      boardID = t.split('-')[0]
+      boardID = g.BOARD.ID if boardID is 'current'
+      for a in as when a.textContent is boardID
+        a = a.cloneNode()
+        break
+      return $.tn boardID if a.parentNode # Not a clone.
 
-          a.textContent = if /-title/.test(t) or /-replace/.test(t) and $.hasClass a, 'current'
-            a.title
-          else if /-full/.test t
-            "/#{board}/ - #{a.title}"
-          else if m = t.match /-text:"(.+)"/
-            m[1]
-          else
-            a.textContent
+      if Conf['JSON Navigation']
+        $.on a, 'click', Navigate.navigate
 
-          if m = t.match /-(index|catalog)/
-            a.dataset.only = m[1]
-            a.href = "//boards.4chan.org/#{board}/"
-            if m[1] is 'catalog'
-              if Conf['External Catalog']
-                a.href = CatalogLinks.external board
-              else
-                a.href += 'catalog'
-              $.addClass a, 'catalog'
+      a.textContent = if /-title/.test(t) or /-replace/.test(t) and boardID is g.BOARD.ID
+        a.title
+      else if /-full/.test t
+        "/#{boardID}/ - #{a.title}"
+      else if m = t.match /-text:"([^"]+)"/
+        m[1]
+      else
+        boardID
 
-          $.addClass a, 'navSmall' if board is '@'
-          return a
-      $.tn t
+      if /-archive/.test t
+        if href = Redirect.to 'board', {boardID}
+          a.href = href
+        else
+          return a.firstChild # Its text node.
+
+      if m = t.match /-mode:"([^"]+)"/
+        type = m[1].toLowerCase()
+        a.dataset.indexMode = switch type
+          when 'all threads' then 'all pages'
+          when 'paged', 'catalog' then type
+          else 'paged'
+
+      if m = t.match /-sort:"([^"]+)"/
+        type = m[1].toLowerCase()
+        a.dataset.indexSort = switch type
+          when 'bump order'    then 'bump'
+          when 'last reply'    then 'lastreply'
+          when 'creation date' then 'birth'
+          when 'reply count'   then 'replycount'
+          when 'file count'    then 'filecount'
+          else 'bump'
+
+      $.addClass a, 'navSmall' if boardID is '@'
+      a
+
     $.add list, nodes
 
   toggleBoardList: ->
@@ -274,25 +296,13 @@ Header =
 
   setBarVisibility: (hide) ->
     Header.headerToggler.checked = hide
-    $.event 'CloseMenu'
     (if hide then $.addClass else $.rmClass) Header.bar, 'autohide'
-    (if hide then $.addClass else $.rmClass) doc, 'autohide'
 
-  toggleBarVisibility: ->
-    hide = if @nodeName is 'INPUT'
-      @checked
-    else
-      !$.hasClass Header.bar, 'autohide'
-    # set checked status if called from keybind
-    @checked = hide
-
-    $.set 'Header auto-hide', Conf['Header auto-hide'] = hide
+  toggleBarVisibility: (e) ->
+    hide = @checked
+    Conf['Header auto-hide'] = hide
+    $.set 'Header auto-hide', hide
     Header.setBarVisibility hide
-    message = "The header bar will #{if hide
-      'automatically hide itself.'
-    else
-      'remain visible.'}"
-    new Notice 'info', message, 2
 
   setHideBarOnScroll: (hide) ->
     Header.scrollHeaderToggler.checked = hide
@@ -348,15 +358,6 @@ Header =
     $.event 'CloseMenu'
     hide = if @nodeName is 'INPUT'
       @checked
-    else
-      !!Header.footer.hidden
-    Header.setFooterVisibility hide
-    $.set 'Bottom Board List', hide
-    message = if hide
-      'The bottom navigation will now be hidden.'
-    else
-      'The bottom navigation will remain visible.'
-    new Notice 'info', message, 2
 
   setCustomNav: (show) ->
     Header.customNavToggler.checked = show
@@ -380,8 +381,7 @@ Header =
   hashScroll: ->
     hash = @location.hash[1..]
     return unless /^p\d+$/.test(hash) and post = $.id hash
-    return if (Get.postFromRoot post).isHidden
-
+    return if (Get.postFromNode post).isHidden
     Header.scrollTo post
 
   scrollTo: (root, down, needed) ->

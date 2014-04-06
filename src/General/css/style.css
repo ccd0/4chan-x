@@ -380,7 +380,7 @@ div.center:not(.ad-cnt) {
 }
 #fourchanx-settings > nav a.close {
   text-decoration: none;
-  padding: 0 2px;
+  padding: 2px 2px .5em;
 }
 .section-container {
   overflow: auto;
@@ -478,9 +478,18 @@ div.center:not(.ad-cnt) {
 }
 
 /* Index */
+#index-menu {
+  display: flex;
+}
+:root.thread #index-menu,
 :root.index-loading .navLinks,
 :root.index-loading .board,
-:root.index-loading .pagelist {
+:root.index-loading .pagelist,
+:root.thread .pagelist {
+  display: none;
+}
+:root:not(.catalog-mode) #index-size,
+.index:not(.catalog-mode) #returnlink {
   display: none;
 }
 #index-search {
@@ -494,7 +503,9 @@ div.center:not(.ad-cnt) {
 }
 #index-search-clear {
   color: gray;
-  margin-left: -1em;
+  position: relative;
+  left: -1.25em;
+  width: 0;
 }
 <% if (type === 'crx') { %>
 /* ``::-webkit-*'' selectors break selector lists on Firefox. */
@@ -506,12 +517,108 @@ div.center:not(.ad-cnt) {
 .summary {
   text-decoration: none;
 }
-.index #returnlink,
-.index #bottomlink,
-.thread #index-last-refresh,
-.thread #index-search-clear,
-.thread #index-search {
+.catalog-mode .board {
+  text-align: center;
+}
+.catalog-thread {
+  display: inline-flex;
+  text-align: left;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 2px 5px;
+  word-break: break-word;
+  vertical-align: top;
+}
+.catalog-small .catalog-thread {
+  width: 165px;
+  max-height: 320px;
+}
+.catalog-large .catalog-thread {
+  width: 270px;
+  max-height: 410px;
+}
+.thumb {
+  flex-shrink: 0;
+  position: relative;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 2px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, .25);
+}
+.thumb:not(.deleted-file):not(.no-file) {
+  min-width: 30px;
+  min-height: 30px;
+}
+.thumb.spoiler-file {
+  background-size: 100px;
+  width: 100px;
+  height: 100px;
+}
+.thumb.deleted-file {
+  background-size: 127px 13px;
+  width: 127px;
+  height: 13px;
+  padding: 20px 11px;
+}
+.thumb.no-file {
+  background-size: 77px 13px;
+  width: 77px;
+  height: 13px;
+  padding: 20px 36px;
+}
+.thread-icons > img {
+  width: 1em;
+  height: 1em;
+  margin: 0;
+  vertical-align: text-top;
+}
+.thumb:not(:hover):not(:focus) > .menu-button:not(.open):not(:focus) > i {
   display: none;
+}
+.thumb > .menu-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.thumb > .menu-button > i {
+  width: 1em;
+  height: 1em;
+  padding: 1px;
+  border-radius: 0 2px 0 2px;
+  font-size: 14px;
+  text-align: center;
+<% if (type === 'userscript') { %>
+  line-height: normal;
+<% } %>
+}
+.thread-stats {
+  flex-shrink: 0;
+  cursor: help;
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+.catalog-thread > .subject {
+  flex-shrink: 0;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+.catalog-thread > .comment {
+  flex-shrink: 1;
+  align-self: stretch;
+  overflow: hidden;
+  text-align: center;
+}
+.thread-info {
+  position: fixed;
+  padding: 2px;
+  border-radius: 2px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, .25);
+}
+.thread-info .post {
+  margin: 0;
 }
 
 /* Announcement Hiding */
@@ -527,6 +634,10 @@ span.hide-announcement {
   color: inherit !important;
   font-size: 13px;
   font-weight: 100;
+}
+ a.hide-announcement {
+  float: left;
+  font-size: 14px;
 }
 
 /* Unread */
@@ -697,7 +808,7 @@ span.hide-announcement {
 .qphl {
   outline: 2px solid rgba(216, 94, 49, .7);
 }
-:root.highlight-own .yourPost > .reply,
+:root.highlight-own .your-post > .reply,
 :root.highlight-you .quotesYou > .reply {
   border-left: 2px solid rgba(221,0,0,.5);
 }
@@ -766,27 +877,16 @@ span.hide-announcement {
   color: white !important;
 }
 
-/* Thread & Reply Hiding */
-.hide-thread-button,
-.hide-reply-button {
+/* Post Hiding */
+.hide-post-button,
+.show-post-button {
+  font-size: 14px;
+  line-height: 12px; /* Prevent the floating effect from affecting the thumbnail too */
+}
+.opContainer > .show-post-button,
+.hide-post-button {
   float: left;
-  margin-right: 4px;
-  padding: 2px;
-}
-.hide-thread-button:not(:hover),
-.hide-reply-button:not(:hover) {
-  opacity: 0.4;
-}
-.threadContainer .hide-reply-button {
-  margin-left: 2px !important;
-  position: relative;
-  left: 1px;
-}
-.hide-thread-button {
-  margin-top: -1px;
-}
-.stub ~ * {
-  display: none !important;
+  margin-right: 3px;
 }
 .stub input {
   display: inline-block;
@@ -796,7 +896,7 @@ span.hide-announcement {
 :root.hide-original-post-form #postForm,
 :root.hide-original-post-form .postingMode,
 :root.hide-original-post-form #togglePostForm,
-#qr.autohide:not(.has-focus):not(:hover) > form,
+#qr.autohide:not(.focus):not(:hover) > form,
 .thread #qr select[data-name=thread],
 #file-n-submit:not(.has-file) #qr-filerm {
   display: none;

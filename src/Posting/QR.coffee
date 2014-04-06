@@ -1,4 +1,5 @@
 QR =
+  # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
   mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/x-shockwave-flash', 'video/webm', '']
 
   init: ->
@@ -13,9 +14,9 @@ QR =
         textContent: 'QR' 
         title: 'Quick Reply'
         href: 'javascript:;'
+
       $.on sc, 'click', ->
         if Conf['Persistent QR'] or !QR.nodes or QR.nodes.el.hidden
-          $.event 'CloseMenu'
           QR.open()
           QR.nodes.com.focus()
           $.rmClass @, 'disabled'
@@ -28,19 +29,14 @@ QR =
     if Conf['Hide Original Post Form']
       $.asap (-> doc), -> $.addClass doc, 'hide-original-post-form'
 
-    $.ready @initReady
-
-    if Conf['Persistent QR']
-      unless g.BOARD.ID is 'f' and g.VIEW is 'index'
-        $.on d, '4chanXInitFinished', @persist
-      else
-        $.ready @persist
+    $.on d, '4chanXInitFinished', @initReady
 
     Post.callbacks.push
       name: 'Quick Reply'
       cb:   @node
 
   initReady: ->
+    $.off d, '4chanXInitFinished', @initReady
     QR.postingIsEnabled = !!$.id 'postForm'
     return unless QR.postingIsEnabled
 
@@ -50,7 +46,6 @@ QR =
     
     QR.link = link.firstElementChild
     $.on link.firstChild, 'click', ->
-
       $.event 'CloseMenu'
       QR.open()
       QR.nodes.com.focus()
@@ -70,15 +65,14 @@ QR =
     $.on d, 'dragover',           QR.dragOver
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
-    {
-      catalog: ->
-        QR.open() if Conf["Persistent QR"] 
-        QR.hide() if Conf['Auto Hide QR']
-      index: ->
-        $.on d, 'IndexRefresh', QR.generatePostableThreadsList
-      thread: ->
-        $.on d, 'ThreadUpdate', QR.statusCheck
-    }[g.VIEW]()
+
+    # We can thread update and index refresh without loading a new page, so...
+    $.on d, 'IndexRefresh', QR.generatePostableThreadsList
+    $.on d, 'ThreadUpdate', QR.statusCheck
+
+    return if !Conf['Persistent QR']
+    QR.open()
+    QR.hide() if Conf['Auto-Hide QR']
 
   statusCheck: ->
     if g.DEAD
@@ -87,12 +81,14 @@ QR =
       QR.status()
 
   node: ->
+    if QR.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
+      $.addClass @nodes.root, 'your-post'
     $.on $('a[title="Quote this post"]', @nodes.info), 'click', QR.quote
 
   persist: ->
     return unless QR.postingIsEnabled
     QR.open()
-    QR.hide() if Conf['Auto Hide QR'] or g.VIEW is 'catalog'
+    QR.hide() if Conf['Auto Hide QR']
 
   open: ->
     if QR.nodes
@@ -106,6 +102,7 @@ QR =
       Main.handleErrors
         message: 'Quick Reply dialog creation crashed.'
         error: err
+
   close: ->
     if QR.req
       QR.abort()
@@ -212,12 +209,28 @@ QR =
     e?.preventDefault()
     return unless QR.postingIsEnabled
 
-    sel   = d.getSelection()
-    post  = Get.postFromNode @
-    text  = ">>#{post}\n"
-    if (s = sel.toString().trim()) and post is Get.postFromNode sel.anchorNode
-      s = s.replace /\n/g, '\n>'
-      text += ">#{s}\n"
+    sel  = d.getSelection()
+    post = Get.postFromNode @
+    text = ">>#{post}\n"
+    if sel.toString().trim() and post is Get.postFromNode sel.anchorNode
+      range = sel.getRangeAt 0
+      frag  = range.cloneContents()
+      ancestor = range.commonAncestorContainer
+      if ancestor.nodeName is '#text'
+        # Quoting the insides of a spoiler/code tag.
+        if $.x 'ancestor::s', ancestor
+          $.prepend frag, $.tn '[spoiler]'
+          $.add     frag, $.tn '[/spoiler]'
+        if $.x 'ancestor::pre[contains(@class,"prettyprint")]', ancestor
+          $.prepend frag, $.tn '[code]'
+          $.add     frag, $.tn '[/code]'
+      for node in $$ 'br', frag
+        $.replace node, $.tn '\n>'
+      for node in $$ 's', frag
+        $.replace node, [$.tn('[spoiler]'), node.childNodes..., $.tn '[/spoiler]']
+      for node in $$ '.prettyprint', frag
+        $.replace node, [$.tn('[code]'), node.childNodes..., $.tn '[/code]']
+      text += ">#{frag.textContent.trim()}\n"
 
     QR.open()
     if QR.selected.isLocked
@@ -355,7 +368,10 @@ QR =
     isSingle = files.length is 1
     QR.cleanNotifications()
     for file in files
-      QR.checkDimensions file, isSingle, max
+      if file.type is 'application/x-shockwave-flash'
+        QR.handleFile(file, isSingle, max)
+      else
+        QR.checkDimensions file, isSingle, max
     $.addClass QR.nodes.el, 'dump' unless isSingle
 
   checkDimensions: (file, isSingle, max) ->
@@ -425,32 +441,33 @@ QR =
     QR.nodes = nodes =
       el: dialog = UI.dialog 'qr', 'top:0;right:0;', <%= importHTML('Features/QuickReply') %>
 
-    nodes[key] = $ value, dialog for key, value of {
-      move:       '.move'
-      autohide:   '#autohide'
-      thread:     'select'
-      threadPar:  '#qr-thread-select'
-      close:      '.close'
-      form:       'form'
-      dumpButton: '#dump-button'
-      urlButton:  '#url-button'
-      name:       '[data-name=name]'
-      email:      '[data-name=email]'
-      sub:        '[data-name=sub]'
-      com:        '[data-name=com]'
-      dumpList:   '#dump-list'
-      addPost:    '#add-post'
-      charCount:  '#char-count'
-      fileSubmit: '#file-n-submit'
-      filename:   '#qr-filename'
-      fileContainer: '#qr-filename-container'
-      fileRM:     '#qr-filerm'
-      fileExtras: '#qr-extras-container'
-      spoiler:    '#qr-file-spoiler'
-      spoilerPar: '#qr-spoiler-label'
-      status:     '[type=submit]'
-      fileInput:  '[type=file]'
-    }
+    setNode = (name, query) ->
+      nodes[name] = $ query, dialog
+
+    setNode 'move',          '.move'
+    setNode 'autohide',      '#autohide'
+    setNode 'thread',        'select'
+    setNode 'threadPar',     '#qr-thread-select'
+    setNode 'close',         '.close'
+    setNode 'form',          'form'
+    setNode 'dumpButton',    '#dump-button'
+    setNode 'urlButton',     '#url-button'
+    setNode 'name',          '[data-name=name]'
+    setNode 'email',         '[data-name=email]'
+    setNode 'sub',           '[data-name=sub]'
+    setNode 'com',           '[data-name=com]'
+    setNode 'dumpList',      '#dump-list'
+    setNode 'addPost',       '#add-post'
+    setNode 'charCount',     '#char-count'
+    setNode 'fileSubmit',    '#file-n-submit'
+    setNode 'filesize',      '#qr-filesize'
+    setNode 'filename',      '#qr-filename'
+    setNode 'fileContainer', '#qr-filename-container'
+    setNode 'fileRM',        '#qr-filerm'
+    setNode 'fileExtras',    '#qr-extras-container'
+    setNode 'spoiler',       '#qr-file-spoiler'
+    setNode 'status',        '[type=submit]'
+    setNode 'fileInput',     '[type=file]'
     
     rules = $('ul.rules').textContent.trim()
     QR.min_width = QR.min_heigth = 1
@@ -536,14 +553,16 @@ QR =
     $.event 'QRDialogCreation', null, dialog
 
   flags: ->
-    fn = (val) -> $.el 'option', 
-      value: val[0]
-      textContent: val[1]
     select = $.el 'select',
       name:      'flag'
       className: 'flagSelector'
 
-    $.add select, fn flag for flag in [
+    fn = (val) -> 
+      $.add select, $.el 'option', 
+        value: val[0]
+        textContent: val[1]
+
+    fn flag for flag in [
       ['0',  'None']
       ['US', 'American']
       ['KP', 'Best Korean']
@@ -572,7 +591,7 @@ QR =
 
   flagsInput: ->
     {nodes} = QR
-    return if not nodes
+    return unless nodes
     if nodes.flag
       $.rm nodes.flag
       delete nodes.flag
@@ -664,7 +683,7 @@ QR =
       responseType: 'document'
       withCredentials: true
       onload: QR.response
-      onerror: (err, url, line) ->
+      onerror: ->
         # Connection error, or www.4chan.org/banned
         delete QR.req
         if QR.captcha.isEnabled
@@ -673,9 +692,6 @@ QR =
         post.unlock()
         QR.cooldown.auto = false
         QR.status()
-        console.log err
-        console.log url
-        console.log line
         QR.error $.el 'span',
           innerHTML: """
           4chan X encountered an error while posting. 

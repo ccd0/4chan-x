@@ -14,6 +14,8 @@ Main =
           'catalog'
         else
           'index'
+    if g.VIEW is 'catalog'
+      return Index.catalogSwitch()
     if g.VIEW is 'thread'
       g.THREADID = +pathname[3]
 
@@ -58,7 +60,7 @@ Main =
         return
 
     # c.time 'All initializations'
-    for [name, feature] in Main.features
+    init = (name, feature) ->
       # c.time "#{name} initialization"
       try
         feature.init()
@@ -68,7 +70,68 @@ Main =
           error: err
       # finally
       #   c.timeEnd "#{name} initialization"
+
     # c.timeEnd 'All initializations'
+
+    init 'Polyfill',                  Polyfill
+    init 'Redirect',                  Redirect
+    init 'Header',                    Header
+    init 'Catalog Links',             CatalogLinks
+    init 'Settings',                  Settings
+    init 'Index Generator',           Index
+    init 'Announcement Hiding',       PSAHiding
+    init 'Fourchan thingies',         Fourchan
+    init 'Emoji',                     Emoji
+    init 'Color User IDs',            IDColor
+    init 'Custom CSS',                CustomCSS
+    init 'Linkify',                   Linkify
+    init 'Reveal Spoilers',           RemoveSpoilers
+    init 'Resurrect Quotes',          Quotify
+    init 'Filter',                    Filter
+    init 'Reply Hiding Buttons',      PostHiding
+    init 'Recursive',                 Recursive
+    init 'Strike-through Quotes',     QuoteStrikeThrough
+    init 'Quick Reply',               QR
+    init 'Menu',                      Menu
+    init 'Report Link',               ReportLink
+    init 'Reply Hiding (Menu)',       PostHiding.menu
+    init 'Delete Link',               DeleteLink
+    init 'Filter (Menu)',             Filter.menu
+    init 'Download Link',             DownloadLink
+    init 'Archive Link',              ArchiveLink
+    init 'Quote Inlining',            QuoteInline
+    init 'Quote Previewing',          QuotePreview
+    init 'Quote Backlinks',           QuoteBacklink
+    init 'Quote Markers',             QuoteMarkers
+    init 'Anonymize',                 Anonymize
+    init 'Time Formatting',           Time
+    init 'Relative Post Dates',       RelativeDates
+    init 'File Info Formatting',      FileInfo
+    init 'Fappe Tyme',                FappeTyme
+    init 'Gallery',                   Gallery
+    init 'Gallery (menu)',            Gallery.menu
+    init 'Sauce',                     Sauce
+    init 'Image Expansion',           ImageExpand
+    init 'Image Expansion (Menu)',    ImageExpand.menu
+    init 'Reveal Spoiler Thumbnails', RevealSpoilers
+    init 'Image Loading',             ImageLoader
+    init 'Image Hover',               ImageHover
+    init 'Thread Expansion',          ExpandThread
+    init 'Comment Expansion',         ExpandComment
+    init 'Thread Excerpt',            ThreadExcerpt
+    init 'Favicon',                   Favicon
+    init 'Unread',                    Unread
+    init 'Quote Threading',           QuoteThreading
+    init 'Thread Stats',              ThreadStats
+    init 'Thread Updater',            ThreadUpdater
+    init 'Thread Watcher',            ThreadWatcher
+    init 'Thread Watcher (Menu)',     ThreadWatcher.menu
+    init 'Index Navigation',          Nav
+    init 'Keybinds',                  Keybinds
+    init 'Show Dice Roll',            Dice
+    init 'Banner',                    Banner
+    init 'Navigate',                  Navigate
+    init 'Flash Features',            Flash
 
     $.on d, 'AddCallback', Main.addCallback
     $.ready Main.initReady
@@ -80,14 +143,9 @@ Main =
     $('link[href*=mobile]', d.head)?.disabled = true
     $.addClass doc, 'fourchan-x', 'seaweedchan', g.VIEW, '<% if (type === 'crx') { %>blink<% } else { %>gecko<% } %>'
     $.addStyle Main.css
-
     Main.setClass()
 
   setClass: ->
-    if g.VIEW is 'catalog'
-      $.addClass doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace /_+/g, '-'
-      return
-
     style          = 'yotsuba-b'
     mainStyleSheet = $ 'link[title=switch]', d.head
     styleSheets    = $$ 'link[rel="alternate stylesheet"]', d.head
@@ -129,10 +187,10 @@ Main =
       $.before styleSelector.previousSibling, [$.tn '['; passLink, $.tn ']\u00A0\u00A0']
 
     # Parse HTML or skip it and start building from JSON.
-    unless Conf['JSON Navigation'] and g.VIEW is 'index'
+    if !Conf['JSON Navigation'] or g.VIEW is 'thread'
       Main.initThread() 
-    else
-      $.event '4chanXInitFinished'
+
+    $.event '4chanXInitFinished'
 
     <% if (type === 'userscript') { %>
     test = $.el 'span'
@@ -172,9 +230,8 @@ Main =
               error: err
       Main.handleErrors errors if errors
 
-      Main.callbackNodes Thread, threads
-      Main.callbackNodesDB Post, posts, ->
-        $.event '4chanXInitFinished'
+      Thread.callbacks.execute threads
+      Post.callbacks.execute   posts
 
     $.get 'previousversion', null, ({previousversion}) ->
       return if previousversion is g.VERSION
@@ -186,31 +243,6 @@ Main =
       else
         Settings.open()
       $.set 'previousversion', g.VERSION
-
-  callbackNodes: (klass, nodes) ->
-    i = 0
-    cb = klass.callbacks
-    while node = nodes[i++]
-      cb.execute node
-    return
-
-  callbackNodesDB: (klass, nodes, cb) ->
-    i   = 0
-    cbs = klass.callbacks
-    fn  = ->
-      return false unless node = nodes[i]
-      cbs.execute node
-      ++i % 25
-
-    softTask = ->
-      while fn()
-        continue
-      unless nodes[i]
-        cb() if cb
-        return
-      setTimeout softTask, 0 
-
-    softTask()
 
   addCallback: (e) ->
     obj = e.detail
@@ -276,69 +308,5 @@ Main =
   <%= grunt.file.read('src/General/css/tomorrow.css').replace(/\s+/g, ' ').trim() %>
   <%= grunt.file.read('src/General/css/photon.css').replace(/\s+/g, ' ').trim() %>
   """
-
-  features: [
-    ['Polyfill',                  Polyfill]
-    ['Redirect',                  Redirect]
-    ['Header',                    Header]
-    ['Catalog Links',             CatalogLinks]
-    ['Settings',                  Settings]
-    ['Index Generator',           Index]
-    ['Announcement Hiding',       PSAHiding]
-    ['Fourchan thingies',         Fourchan]
-    ['Emoji',                     Emoji]
-    ['Color User IDs',            IDColor]
-    ['Custom CSS',                CustomCSS]
-    ['Linkify',                   Linkify]
-    ['Reveal Spoilers',           RemoveSpoilers]
-    ['Resurrect Quotes',          Quotify]
-    ['Filter',                    Filter]
-    ['Thread Hiding Buttons',     ThreadHiding]
-    ['Reply Hiding Buttons',      PostHiding]
-    ['Recursive',                 Recursive]
-    ['Strike-through Quotes',     QuoteStrikeThrough]
-    ['Quick Reply',               QR]
-    ['Menu',                      Menu]
-    ['Report Link',               ReportLink]
-    ['Thread Hiding (Menu)',      ThreadHiding.menu]
-    ['Reply Hiding (Menu)',       PostHiding.menu]
-    ['Delete Link',               DeleteLink]
-    ['Filter (Menu)',             Filter.menu]
-    ['Download Link',             DownloadLink]
-    ['Archive Link',              ArchiveLink]
-    ['Quote Inlining',            QuoteInline]
-    ['Quote Previewing',          QuotePreview]
-    ['Quote Backlinks',           QuoteBacklink]
-    ['Mark Quotes of You',        QuoteYou]
-    ['Mark OP Quotes',            QuoteOP]
-    ['Mark Cross-thread Quotes',  QuoteCT]
-    ['Anonymize',                 Anonymize]
-    ['Time Formatting',           Time]
-    ['Relative Post Dates',       RelativeDates]
-    ['File Info Formatting',      FileInfo]
-    ['Fappe Tyme',                FappeTyme]
-    ['Gallery',                   Gallery]
-    ['Gallery (menu)',            Gallery.menu]
-    ['Sauce',                     Sauce]
-    ['Image Expansion',           ImageExpand]
-    ['Image Expansion (Menu)',    ImageExpand.menu]
-    ['Reveal Spoiler Thumbnails', RevealSpoilers]
-    ['Image Loading',             ImageLoader]
-    ['Image Hover',               ImageHover]
-    ['Thread Expansion',          ExpandThread]
-    ['Thread Excerpt',            ThreadExcerpt]
-    ['Favicon',                   Favicon]
-    ['Unread',                    Unread]
-    ['Quote Threading',           QuoteThreading]
-    ['Thread Stats',              ThreadStats]
-    ['Thread Updater',            ThreadUpdater]
-    ['Thread Watcher',            ThreadWatcher]
-    ['Thread Watcher (Menu)',     ThreadWatcher.menu]
-    ['Index Navigation',          Nav]
-    ['Keybinds',                  Keybinds]
-    ['Show Dice Roll',            Dice]
-    ['Banner',                    Banner]
-    ['Navigate',                  Navigate]
-  ]
 
 Main.init()

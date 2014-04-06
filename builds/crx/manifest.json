@@ -16,7 +16,7 @@
   }],
   "homepage_url": "https://github.com/ccd0/4chan-x",
   "update_url": "https://ccd0.github.io/4chan-x/builds/updates.xml",
-  "minimum_chrome_version": "31",
+  "minimum_chrome_version": "32",
   "permissions": [
     "storage",
     "http://*/",

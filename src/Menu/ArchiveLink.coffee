@@ -1,6 +1,6 @@
 ArchiveLink =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Archive Link']
+    return if !Conf['Menu'] or !Conf['Archive Link']
 
     div = $.el 'div',
       textContent: 'Archive'

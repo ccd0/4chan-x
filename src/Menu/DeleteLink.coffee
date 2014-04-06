@@ -1,6 +1,6 @@
 DeleteLink =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Delete Link']
+    return if !Conf['Menu'] or !Conf['Delete Link']
 
     div = $.el 'div',
       className: 'delete-link'
@@ -79,7 +79,7 @@ DeleteLink =
 
   cooldown:
     start: (post, node) ->
-      unless QR.db?.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
+      unless QR.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
         # Only start counting on our posts.
         delete DeleteLink.cooldown.counting
         return
