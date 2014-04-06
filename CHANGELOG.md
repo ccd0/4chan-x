@@ -65,6 +65,10 @@
 - Many spiffy performance, state awareness, and sanity improvements to JSON Navigation.
 - Reload captcha if there are posts in the queue.
 
+**ccd0**
+- In v1.5.1, image/video hover was changed to hide and re-use the images/videos to avoid crashes.
+  Fixing bugs caused by this change.
+
 ### v1.5.2 
 *2014-04-04*
 
