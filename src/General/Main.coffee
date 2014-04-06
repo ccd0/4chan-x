@@ -195,7 +195,7 @@ Main =
     <% if (type === 'userscript') { %>
     test = $.el 'span'
     test.classList.add 'a', 'b'
-    if test.className isnt 'a b'
+    if test.className isnt 'a b' and Conf['Show Support Message']
       new Notice 'warning', "Your version of Firefox is outdated (v<%= meta.min.firefox %> minimum) and <%= meta.name %> may not operate correctly.", 30
 
     GMver = GM_info.version.split '.'

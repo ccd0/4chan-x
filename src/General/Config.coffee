@@ -89,6 +89,10 @@ Config =
         false
         'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.'
       ]
+      'Show Support Message': [
+        true
+        'Warn if your browser is unsupported. 4chan X may not operate correctly on unsupported browser versions.'
+      ]
 
     'Linkification':
       'Linkify': [
