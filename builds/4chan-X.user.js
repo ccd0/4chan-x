@@ -7705,15 +7705,15 @@
         TrashQueue.remove(el);
       } else {
         el = post.file.fullImage = $.el((isVideo ? 'video' : 'img'), {
-          className: 'full-image',
-          src: src || post.file.URL
+          className: 'full-image'
         });
         if (isVideo) {
           el.loop = true;
         }
         $.on(el, 'error', ImageExpand.error);
+        el.src = src || post.file.URL;
       }
-      if (el.isVideo) {
+      if (isVideo) {
         el.controls = Conf['Show Controls'];
       }
       position = el.controls ? thumb.parentNode : thumb;
