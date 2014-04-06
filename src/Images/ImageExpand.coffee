@@ -115,8 +115,7 @@ ImageExpand =
       el.loop = true if isVideo
       $.on el, 'error', ImageExpand.error
       el.src = src or post.file.URL
-    el.controls = Conf['Show Controls'] if isVideo
-    position = if el.controls then thumb.parentNode else thumb
+    position = if isVideo and Conf['Show Controls'] then thumb.parentNode else thumb
     $.after position, el unless el is position.nextSibling
     $.asap (-> isVideo or el.naturalHeight), ->
       ImageExpand.completeExpand post
@@ -151,8 +150,9 @@ ImageExpand =
     {file} = post
     video = file.fullImage
     file.videoControls = []
-    video.muted = not Conf['Allow Sound']
-    if video.controls
+    video.muted = !Conf['Allow Sound']
+    video.controls = Conf['Show Controls']
+    if Conf['Show Controls']
       # contract link in file info
       contract = $.el 'a',
         textContent: 'contract'
@@ -165,8 +165,14 @@ ImageExpand =
       for eventName, cb of ImageExpand.videoCB
         $.on video, eventName, cb
     if Conf['Autoplay']
+      video.controls = false
       video.play()
-    else unless video.controls
+      # Hacky workaround for Firefox forever-loading bug
+      if Conf['Show Controls']
+        $.asap (-> (video.readyState >= 3 and video.currentTime <= Math.max 0.1, (video.duration - 0.5)) or !file.isExpanded), ->
+          video.controls = true if file.isExpanded
+        , 500
+    else unless Conf['Show Controls']
       play = $.el 'a',
         textContent: 'play'
         href: 'javascript:;'

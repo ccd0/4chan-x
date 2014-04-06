@@ -32,13 +32,12 @@ ImageHover =
       el.controls = false
       el.muted = not Conf['Allow Sound']
       el.play() if Conf['Autoplay']
-    naturalHeight = if post.file.isVideo then 'videoHeight' else 'naturalHeight'
     UI.hover
       root: @
       el: el
       latestEvent: e
       endEvents: 'mouseout click'
-      asapTest: -> el[naturalHeight]
+      asapTest: -> (isVideo or el.naturalHeight)
       noRemove: true
       cb: ->
         if isVideo

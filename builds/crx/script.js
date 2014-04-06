@@ -7732,10 +7732,7 @@
         $.on(el, 'error', ImageExpand.error);
         el.src = src || post.file.URL;
       }
-      if (isVideo) {
-        el.controls = Conf['Show Controls'];
-      }
-      position = el.controls ? thumb.parentNode : thumb;
+      position = isVideo && Conf['Show Controls'] ? thumb.parentNode : thumb;
       if (el !== position.nextSibling) {
         $.after(position, el);
       }
@@ -7796,7 +7793,8 @@
       video = file.fullImage;
       file.videoControls = [];
       video.muted = !Conf['Allow Sound'];
-      if (video.controls) {
+      video.controls = Conf['Show Controls'];
+      if (Conf['Show Controls']) {
         contract = $.el('a', {
           textContent: 'contract',
           href: 'javascript:;',
@@ -7814,8 +7812,18 @@
         }
       }
       if (Conf['Autoplay']) {
+        video.controls = false;
         video.play();
-      } else if (!video.controls) {
+        if (Conf['Show Controls']) {
+          $.asap((function() {
+            return (video.readyState >= 3 && video.currentTime <= Math.max(0.1, video.duration - 0.5)) || !file.isExpanded;
+          }), function() {
+            if (file.isExpanded) {
+              return video.controls = true;
+            }
+          }, 500);
+        }
+      } else if (!Conf['Show Controls']) {
         play = $.el('a', {
           textContent: 'play',
           href: 'javascript:;'
@@ -7926,7 +7934,7 @@
       return $.on(this.file.thumb, 'mouseover', ImageHover.mouseover);
     },
     mouseover: function(e) {
-      var el, isVideo, naturalHeight, position, post, thumb;
+      var el, isVideo, position, post, thumb;
       post = Get.postFromNode(this);
       isVideo = post.file.isVideo;
       if (post.file.fullImage) {
@@ -7960,14 +7968,13 @@
           el.play();
         }
       }
-      naturalHeight = post.file.isVideo ? 'videoHeight' : 'naturalHeight';
       UI.hover({
         root: this,
         el: el,
         latestEvent: e,
         endEvents: 'mouseout click',
         asapTest: function() {
-          return el[naturalHeight];
+          return isVideo || el.naturalHeight;
         },
         noRemove: true,
         cb: function() {
