@@ -308,7 +308,7 @@ UI = do ->
       $.off d, 'mouseup',   @up
     $.set "#{@id}.position", @style.cssText
 
-  hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb}) ->
+  hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb, noRemove}) ->
     o = {
       root
       el
@@ -318,6 +318,7 @@ UI = do ->
       latestEvent
       clientHeight: doc.clientHeight
       clientWidth:  doc.clientWidth
+      noRemove
     }
     o.hover    = hover.bind    o
     o.hoverend = hoverend.bind o
@@ -333,7 +334,7 @@ UI = do ->
     $.on root, 'mousemove', o.hover
     <% if (type === 'userscript') { %>
     # Workaround for https://github.com/MayhemYDG/4chan-x/issues/377
-    o.workaround = (e) -> o.hoverend() unless root.contains e.target
+    o.workaround = (e) -> o.hoverend(e) unless root.contains e.target
     $.on doc,  'mousemove', o.workaround
     <% } %>
 
@@ -362,7 +363,7 @@ UI = do ->
 
   hoverend = (e) ->
     return if e.type is 'keydown' and e.keyCode isnt 13 or e.target.nodeName is "TEXTAREA"
-    $.rm @el if @el.parentNode is Header.hover
+    $.rm @el unless @noRemove
     $.off @root, @endEvents,  @hoverend
     $.off d,     'keydown',   @hoverend
     $.off @root, 'mousemove', @hover

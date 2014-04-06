@@ -20,7 +20,10 @@ ImageHover =
         src: post.file.URL
       post.file.fullImage = el
       {thumb} = post.file
-      $.after (if isVideo and Conf['Show Controls'] then thumb.parentNode else thumb), el
+      if d.body.contains thumb
+        $.after (if isVideo and Conf['Show Controls'] then thumb.parentNode else thumb), el
+      else
+        $.add Header.hover, el
     el.id = 'ihover'
     el.dataset.fullID = post.fullID
     if isVideo
@@ -35,10 +38,11 @@ ImageHover =
       latestEvent: e
       endEvents: 'mouseout click'
       asapTest: -> el[naturalHeight]
+      noRemove: true
       cb: ->
         if isVideo
           el.pause()
-          TrashQueue.add el
+          TrashQueue.add el, post
         el.removeAttribute 'id'
     $.on el, 'error', ImageHover.error
   error: ->
