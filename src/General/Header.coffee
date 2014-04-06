@@ -297,6 +297,7 @@ Header =
   setBarVisibility: (hide) ->
     Header.headerToggler.checked = hide
     (if hide then $.addClass else $.rmClass) Header.bar, 'autohide'
+    (if hide then $.addClass else $.rmClass) doc, 'autohide'
 
   toggleBarVisibility: (e) ->
     hide = @checked
