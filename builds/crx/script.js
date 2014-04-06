@@ -6852,6 +6852,10 @@
       if (!(Conf['Persistent QR'] || QR.cooldown.auto)) {
         QR.close();
       } else {
+        if (QR.posts.length > 1) {
+          QR.captcha.setup();
+          QR.captcha.afterSetup();
+        }
         post.rm();
       }
       QR.cooldown.set({
@@ -7287,9 +7291,6 @@
         $.rmClass(QR.nodes.el, 'dump');
       } else if (this === QR.selected) {
         (QR.posts[index - 1] || QR.posts[index + 1]).select();
-        if (QR.captcha.isEnabled) {
-          QR.captcha.setup();
-        }
       }
       QR.posts.splice(index, 1);
       return QR.status();
