@@ -108,7 +108,7 @@ div.center:not(.ad-cnt) {
 /* fixed, z-index */
 #overlay,
 #fourchanx-settings,
-#qp, .ihover,
+#qp, #ihover,
 #navlinks, .fixed #header-bar,
 :root.float #updater,
 :root.float #thread-stats,
@@ -124,7 +124,7 @@ div.center:not(.ad-cnt) {
 #notifications {
   z-index: 70;
 }
-#qp, .ihover {
+#qp, #ihover {
   z-index: 60;
 }
 #menu {
@@ -825,19 +825,19 @@ span.hide-announcement {
 .fileText:hover .fntrunc,
 .fileText:not(:hover) .fnfull,
 .expanded-image > .post > .file > .fileThumb > img[data-md5],
-:not(.expanded-image) > .post > .file .full-image {
+:not(.expanded-image) > .post > .file .full-image:not(#ihover) {
   display: none;
 }
 .expanding {
   opacity: .5;
 }
-:root.fit-height .full-image {
+:root.fit-height .full-image:not(#ihover) {
   max-height: 100vh;
 }
-:root.fit-width .full-image {
+:root.fit-width .full-image:not(#ihover) {
   max-width: 100%;
 }
-.ihover {
+#ihover {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   max-height: 100%;

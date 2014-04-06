@@ -23,15 +23,14 @@ ImageHover =
     if post.file.fullImage
       el = post.file.fullImage
       TrashQueue.remove el
-      $.rmClass el, 'full-image'
-      $.addClass el, 'ihover'
     else
       el = $.el (if isVideo then 'video' else 'img'),
-        className: 'ihover'
+        className: 'full-image'
         src: post.file.URL
       post.file.fullImage = el
       {thumb} = post.file
       $.after (if isVideo and Conf['Show Controls'] then thumb.parentNode else thumb), el
+    el.id = 'ihover'
     el.dataset.fullID = post.fullID
     if isVideo
       el.loop = true
@@ -49,8 +48,7 @@ ImageHover =
         if isVideo
           el.pause()
           TrashQueue.add el
-        $.rmClass el, 'ihover'
-        $.addClass el, 'full-image'
+        el.removeAttribute 'id'
     $.on el, 'error', ImageHover.error
   error: ->
     return unless doc.contains @
