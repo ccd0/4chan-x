@@ -10822,7 +10822,7 @@
       var count;
       count = Unread.posts.length;
       if (Conf['Unread Count']) {
-        d.title = "" + (count || !Conf['Hide Unread Count at (0)'] ? "(" + count + ") " : '') + (g.DEAD ? Unread.title.replace('-', '- 404 -') : Unread.title);
+        d.title = "" + (Conf['Quoted Title'] && Unread.postsQuotingYou.length ? '(!) ' : '') + (count || !Conf['Hide Unread Count at (0)'] ? "(" + count + ") " : '') + (g.DEAD ? "/" + g.BOARD + "/ - 404" : "" + Unread.title);
       }
       if (!Conf['Unread Favicon']) {
         return;
