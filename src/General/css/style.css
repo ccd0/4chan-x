@@ -837,9 +837,6 @@ span.hide-announcement {
 :root.fit-width .full-image {
   max-width: 100%;
 }
-:root.gecko.fit-width .full-image {
-  width: 100%;
-}
 .ihover {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
