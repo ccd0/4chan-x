@@ -5,6 +5,9 @@
 - In v1.5.1, image/video hover was changed to hide and re-use the images/videos to avoid crashes.
   Fixing bugs caused by this change.
 
+**duckness**
+- Allow disabling upgrade nag message.
+
 ### v1.5.2 
 *2014-04-04*
 

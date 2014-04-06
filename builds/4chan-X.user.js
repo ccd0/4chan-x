@@ -152,7 +152,8 @@
         'Emoji': [false, 'Adds icons next to names for different emails'],
         'Color User IDs': [false, 'Assign unique colors to user IDs on boards that use them'],
         'Remove Spoilers': [false, 'Remove all spoilers in text.'],
-        'Reveal Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.']
+        'Reveal Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.'],
+        'Show Support Message': [true, 'Warn if your browser is unsupported. 4chan X may not operate correctly on unsupported browser versions.']
       },
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
@@ -13351,7 +13352,7 @@
       }
       test = $.el('span');
       test.classList.add('a', 'b');
-      if (test.className !== 'a b') {
+      if (test.className !== 'a b' && Conf['Show Support Message']) {
         new Notice('warning', "Your version of Firefox is outdated (v26 minimum) and 4chan X may not operate correctly.", 30);
       }
       GMver = GM_info.version.split('.');
