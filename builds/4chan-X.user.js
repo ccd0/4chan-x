@@ -7675,18 +7675,23 @@
       return ImageExpand.contract(post);
     },
     contract: function(post) {
-      var video, _ref;
+      var cb, eventName, video, _ref, _ref1;
       if (post.file.isVideo && (video = post.file.fullImage)) {
         video.pause();
+        _ref = ImageExpand.videoCB;
+        for (eventName in _ref) {
+          cb = _ref[eventName];
+          $.off(video, eventName, cb);
+        }
         TrashQueue.add(video);
+        if ((_ref1 = post.file.videoControls) != null) {
+          _ref1.map($.rm);
+        }
+        delete post.file.videoControls;
       }
       $.rmClass(post.nodes.root, 'expanded-image');
       $.rmClass(post.file.thumb, 'expanding');
-      post.file.isExpanded = false;
-      if ((_ref = post.file.videoControls) != null) {
-        _ref.map($.rm);
-      }
-      return delete post.file.videoControls;
+      return post.file.isExpanded = false;
     },
     expand: function(post, src) {
       var img, isVideo, naturalHeight, thumb, _ref;
@@ -7749,8 +7754,28 @@
         return window.scrollBy(0, post.nodes.root.getBoundingClientRect().bottom - bottom);
       });
     },
+    videoCB: {
+      mousedown: function(e) {
+        if (e.button === 0) {
+          return this.dataset.mousedown = 'true';
+        }
+      },
+      mouseup: function(e) {
+        if (e.button === 0) {
+          return this.dataset.mousedown = 'false';
+        }
+      },
+      mouseover: function(e) {
+        return this.dataset.mousedown = 'false';
+      },
+      mouseout: function(e) {
+        if (this.dataset.mousedown === 'true' && e.clientX <= this.getBoundingClientRect().left) {
+          return ImageExpand.contract(Get.postFromNode(this));
+        }
+      }
+    },
     setupVideo: function(post) {
-      var contract, file, play, video;
+      var cb, contract, eventName, file, play, video, _ref;
       file = post.file;
       video = file.fullImage;
       file.videoControls = [];
@@ -7765,25 +7790,12 @@
           return ImageExpand.contract(post);
         });
         file.videoControls.push($.tn('\u00A0'), contract);
-        file.mousedown = false;
-        $.on(video, 'mousedown', function(e) {
-          if (e.button === 0) {
-            return file.mousedown = true;
-          }
-        });
-        $.on(video, 'mouseup', function(e) {
-          if (e.button === 0) {
-            return file.mousedown = false;
-          }
-        });
-        $.on(video, 'mouseover', function(e) {
-          return file.mousedown = false;
-        });
-        $.on(video, 'mouseout', function(e) {
-          if (file.mousedown && e.clientX <= video.getBoundingClientRect().left) {
-            return ImageExpand.contract(post);
-          }
-        });
+        video.dataset.mousedown = 'false';
+        _ref = ImageExpand.videoCB;
+        for (eventName in _ref) {
+          cb = _ref[eventName];
+          $.on(video, eventName, cb);
+        }
       }
       if (Conf['Autoplay']) {
         video.play();
