@@ -1,3 +1,6 @@
+## v1.7.0 
+*2014-04-06*
+
 **Zixaphir** 
 - Reload captcha if there are posts in the queue.
 
