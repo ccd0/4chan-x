@@ -89,12 +89,14 @@ ImageExpand =
   contract: (post) ->
     if post.file.isVideo and video = post.file.fullImage
       video.pause()
+      for eventName, cb of ImageExpand.videoCB
+        $.off video, eventName, cb
       TrashQueue.add video
+      post.file.videoControls?.map($.rm)
+      delete post.file.videoControls
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass post.file.thumb, 'expanding'
     post.file.isExpanded = false
-    post.file.videoControls?.map($.rm)
-    delete post.file.videoControls
 
   expand: (post, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
@@ -140,6 +142,14 @@ ImageExpand =
       return unless bottom <= 0
       window.scrollBy 0, post.nodes.root.getBoundingClientRect().bottom - bottom
 
+  videoCB:
+    mousedown: (e) -> @dataset.mousedown = 'true' if e.button is 0
+    mouseup: (e) -> @dataset.mousedown = 'false' if e.button is 0
+    mouseover: (e) -> @dataset.mousedown = 'false'
+    mouseout: (e) ->
+      if @dataset.mousedown is 'true' and e.clientX <= @getBoundingClientRect().left
+        ImageExpand.contract (Get.postFromNode @)
+
   setupVideo: (post) ->
     {file} = post
     video = file.fullImage
@@ -154,13 +164,9 @@ ImageExpand =
       $.on contract, 'click', (e) -> ImageExpand.contract post
       file.videoControls.push $.tn('\u00A0'), contract
       # drag left to contract
-      file.mousedown = false
-      $.on video, 'mousedown', (e) -> file.mousedown = true  if e.button is 0
-      $.on video, 'mouseup', (e) -> file.mousedown = false if e.button is 0
-      $.on video, 'mouseover', (e) -> file.mousedown = false
-      $.on video, 'mouseout', (e) ->
-        if file.mousedown and e.clientX <= video.getBoundingClientRect().left
-          ImageExpand.contract post
+      video.dataset.mousedown = 'false'
+      for eventName, cb of ImageExpand.videoCB
+        $.on video, eventName, cb
     if Conf['Autoplay']
       video.play()
     else unless video.controls
