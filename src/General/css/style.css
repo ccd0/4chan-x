@@ -824,9 +824,14 @@ span.hide-announcement {
 /* File */
 .fileText:hover .fntrunc,
 .fileText:not(:hover) .fnfull,
-.expanded-image > .post > .file > .fileThumb > img[data-md5],
-:not(.expanded-image) > .post > .file .full-image:not(#ihover) {
+.expanded-image > .post > .file > .fileThumb > img[data-md5] {
   display: none;
+}
+.full-image:not(#ihover) {
+  display: none;
+}
+.expanded-image > .post > .file .full-image:not(#ihover) {
+  display: inline;
 }
 .expanding {
   opacity: .5;

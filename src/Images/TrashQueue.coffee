@@ -1,12 +1,12 @@
 TrashQueue =
   init: -> return
 
-  add: (video) ->
-    if video isnt @killNext and @killNext
-      post = Get.postFromNode @killNext
-      delete post?.file?.fullImage
+  add: (video, post) ->
+    if @killNext and video isnt @killNext
+      delete @killNextPost?.file?.fullImage
       $.rm @killNext
     @killNext = video
+    @killNextPost = post
 
   remove: (video) ->
     if video is @killNext

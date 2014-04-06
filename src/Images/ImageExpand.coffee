@@ -91,7 +91,7 @@ ImageExpand =
       video.pause()
       for eventName, cb of ImageExpand.videoCB
         $.off video, eventName, cb
-      TrashQueue.add video
+      TrashQueue.add video, post
       post.file.videoControls?.map($.rm)
       delete post.file.videoControls
     $.rmClass post.nodes.root, 'expanded-image'
