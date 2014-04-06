@@ -7695,38 +7695,36 @@
       return post.file.isExpanded = false;
     },
     expand: function(post, src) {
-      var el, isVideo, naturalHeight, thumb, _ref;
+      var el, isVideo, position, thumb, _ref;
       _ref = post.file, thumb = _ref.thumb, isVideo = _ref.isVideo;
       if (post.isHidden || post.file.isExpanded || $.hasClass(thumb, 'expanding')) {
         return;
       }
       $.addClass(thumb, 'expanding');
-      naturalHeight = isVideo ? 'videoHeight' : 'naturalHeight';
       if (el = post.file.fullImage) {
         TrashQueue.remove(el);
-        el.controls = el.parentNode !== thumb.parentNode;
-        $.asap((function() {
-          return el[naturalHeight];
-        }), function() {
-          return ImageExpand.completeExpand(post);
+      } else {
+        el = post.file.fullImage = $.el((isVideo ? 'video' : 'img'), {
+          className: 'full-image',
+          src: src || post.file.URL
         });
-        return;
+        if (isVideo) {
+          el.loop = true;
+        }
+        $.on(el, 'error', ImageExpand.error);
       }
-      post.file.fullImage = el = $.el((isVideo ? 'video' : 'img'), {
-        className: 'full-image',
-        src: src || post.file.URL
-      });
-      if (isVideo) {
-        el.loop = true;
+      if (el.isVideo) {
         el.controls = Conf['Show Controls'];
       }
-      $.on(el, 'error', ImageExpand.error);
-      $.asap((function() {
-        return post.file.fullImage[naturalHeight];
+      position = el.controls ? thumb.parentNode : thumb;
+      if (el !== position.nextSibling) {
+        $.after(position, el);
+      }
+      return $.asap((function() {
+        return isVideo || el.naturalHeight;
       }), function() {
         return ImageExpand.completeExpand(post);
       });
-      return $.after((el.controls ? thumb.parentNode : thumb), el);
     },
     completeExpand: function(post) {
       var bottom, thumb;
@@ -7920,7 +7918,7 @@
       return $.on(this.file.thumb, 'mouseover', ImageHover.mouseover);
     },
     mouseover: function(e) {
-      var el, isVideo, naturalHeight, post, thumb;
+      var el, isVideo, naturalHeight, position, post, thumb;
       post = Get.postFromNode(this);
       isVideo = post.file.isVideo;
       if (post.file.fullImage) {
@@ -7933,9 +7931,14 @@
         });
         post.file.fullImage = el;
         thumb = post.file.thumb;
-        if (d.body.contains(thumb)) {
-          $.after((isVideo && Conf['Show Controls'] ? thumb.parentNode : thumb), el);
-        } else {
+      }
+      if (d.body.contains(thumb)) {
+        position = isVideo && Conf['Show Controls'] ? thumb.parentNode : thumb;
+        if (el !== position.nextSibling) {
+          $.after(position, el);
+        }
+      } else {
+        if (el.parentNode !== Header.hover) {
           $.add(Header.hover, el);
         }
       }

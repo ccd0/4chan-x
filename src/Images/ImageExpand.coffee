@@ -106,24 +106,20 @@ ImageExpand =
     {thumb, isVideo} = post.file
     return if post.isHidden or post.file.isExpanded or $.hasClass thumb, 'expanding'
     $.addClass thumb, 'expanding'
-    naturalHeight = if isVideo then 'videoHeight' else 'naturalHeight'
     if el = post.file.fullImage
       # Expand already-loaded/ing picture.
       TrashQueue.remove el
-      el.controls = (el.parentNode isnt thumb.parentNode)
-      $.asap (-> el[naturalHeight]), ->
-        ImageExpand.completeExpand post
-      return
-    post.file.fullImage = el = $.el (if isVideo then 'video' else 'img'),
-      className: 'full-image'
-      src: src or post.file.URL
-    if isVideo
-      el.loop = true
-      el.controls = Conf['Show Controls']
-    $.on el, 'error', ImageExpand.error
-    $.asap (-> post.file.fullImage[naturalHeight]), ->
+    else
+      el = post.file.fullImage = $.el (if isVideo then 'video' else 'img'),
+        className: 'full-image'
+        src: src or post.file.URL
+      el.loop = true if isVideo
+      $.on el, 'error', ImageExpand.error
+    el.controls = Conf['Show Controls'] if el.isVideo
+    position = if el.controls then thumb.parentNode else thumb
+    $.after position, el unless el is position.nextSibling
+    $.asap (-> isVideo or el.naturalHeight), ->
       ImageExpand.completeExpand post
-    $.after (if el.controls then thumb.parentNode else thumb), el
 
   completeExpand: (post) ->
     {thumb} = post.file
