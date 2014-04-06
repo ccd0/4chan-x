@@ -1,3 +1,9 @@
+### v1.6.1 
+*2014-04-06*
+
+- Restore `Quoted Title` (had been removed in 1.6.0 but option left)
+- Fixed auto-hide permanently hiding the header
+
 ## v1.6.0 
 *2014-04-06*
 
