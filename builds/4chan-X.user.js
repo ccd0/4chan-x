@@ -11417,7 +11417,7 @@
       }
       a = $.el('a', {
         textContent: ExpandThread.text.apply(ExpandThread, ['+'].concat(__slice.call(summary.textContent.match(/\d+/g)))),
-        href: "" + thread.board.ID + "/res/" + thread.ID,
+        href: "res/" + thread.ID,
         className: 'summary'
       });
       $.on(a, 'click', ExpandThread.cbToggle);

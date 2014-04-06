@@ -8,7 +8,7 @@ ExpandThread =
     return unless summary = $.x 'following-sibling::*[contains(@class,"summary")][1]', thread.OP.nodes.root
     a = $.el 'a',
       textContent: ExpandThread.text '+', summary.textContent.match(/\d+/g)...
-      href:        "#{thread.board.ID}/res/#{thread.ID}"
+      href:        "res/#{thread.ID}"
       className:   'summary'
     $.on a, 'click', ExpandThread.cbToggle
     $.replace summary, a
