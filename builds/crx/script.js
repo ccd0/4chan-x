@@ -3301,10 +3301,15 @@
       }
       Navigate.title();
       try {
+        pageNum || (pageNum = 0);
         if (req.status === 200) {
           Index.parse(req.response, pageNum);
         } else if (req.status === 304) {
-          Index.pageNav(pageNum || 0);
+          if (Index.currentPage === pageNum) {
+            Index.buildIndex();
+          } else {
+            Index.pageNav(pageNum);
+          }
         }
       } catch (_error) {
         err = _error;
@@ -3327,7 +3332,7 @@
       Index.parseThreadList(pages);
       Index.buildThreads();
       Index.sort();
-      if (pageNum != null) {
+      if ((pageNum != null) && Index.currentPage !== pageNum) {
         Index.pageNav(pageNum);
         return;
       }
@@ -4077,6 +4082,7 @@
           $.cache(url, function() {
             return Get.archivedPost(this, boardID, postID, root, context);
           }, {
+            responseType: 'json',
             withCredentials: url.archive.withCredentials
           });
         } else {
@@ -6820,6 +6826,9 @@
         }
         QR.status();
         QR.error(err);
+        if (QR.captcha.isEnabled) {
+          QR.captcha.setup();
+        }
         return;
       }
       h1 = $('h1', resDoc);
@@ -6850,6 +6859,9 @@
       });
       postsCount = QR.posts.length - 1;
       QR.cooldown.auto = postsCount && isReply;
+      if (QR.captcha.isEnabled && QR.cooldown.auto) {
+        QR.captcha.setup();
+      }
       if (!(Conf['Persistent QR'] || QR.cooldown.auto)) {
         QR.close();
       } else {
@@ -8322,8 +8334,8 @@
       return $.on(this.file.thumb, 'mouseover', ImageHover.mouseover);
     },
     catalogNode: function() {
-      var _ref, _ref1;
-      if (!(((_ref = this.thread.OP.file) != null ? _ref.isImage : void 0) || ((_ref1 = this.thread.OP.file) != null ? _ref1.isVideo : void 0))) {
+      var file;
+      if (!((file = this.thread.OP.file) && (file.isImage || file.isVideo))) {
         return;
       }
       return $.on(this.nodes.thumb, 'mouseover', ImageHover.mouseover);

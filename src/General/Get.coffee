@@ -104,6 +104,7 @@ Get =
         $.cache url,
           -> Get.archivedPost @, boardID, postID, root, context
         ,
+          responseType: 'json'
           withCredentials: url.archive.withCredentials
       else
         $.addClass root, 'warning'
