@@ -451,6 +451,7 @@ Index =
 
   setPage: (pageNum) ->
     pageNum  or= Index.getCurrentPage()
+    Index.pageNum = pageNum
     maxPageNum = Index.getMaxPageNum()
     pagesRoot  = $ '.pages', Index.pagelist
     # Previous/Next buttons
@@ -739,6 +740,8 @@ Index =
     switch Conf['Index Mode']
       when 'paged', 'infinite'
         pageNum = Index.getCurrentPage()
+        if Index.isSearching
+          Index.setPage pageNum = 0
         if pageNum > Index.getMaxPageNum()
           # Go to the last available page if we were past the limit.
           Index.pageNav Index.getMaxPageNum()

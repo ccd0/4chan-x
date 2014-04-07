@@ -3180,6 +3180,7 @@
     setPage: function(pageNum) {
       var a, href, maxPageNum, next, pagesRoot, prev, strong;
       pageNum || (pageNum = Index.getCurrentPage());
+      Index.pageNum = pageNum;
       maxPageNum = Index.getMaxPageNum();
       pagesRoot = $('.pages', Index.pagelist);
       prev = pagesRoot.previousSibling.firstChild;
@@ -3562,6 +3563,9 @@
         case 'paged':
         case 'infinite':
           pageNum = Index.getCurrentPage();
+          if (Index.isSearching) {
+            Index.setPage(pageNum = 0);
+          }
           if (pageNum > Index.getMaxPageNum()) {
             Index.pageNav(Index.getMaxPageNum());
             return;
