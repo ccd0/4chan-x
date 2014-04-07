@@ -114,6 +114,8 @@ Navigate =
         QR.link.textContent = 'Reply to Thread'
     }[view]()
 
+    QR.status() # Re-enable the QR in the case of a 404'd thread or something.
+
     g.VIEW = view
 
   updateBoard: (boardID) ->
