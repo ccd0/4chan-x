@@ -43,13 +43,13 @@ ImageExpand =
         ImageExpand.EAI.className = 'expand-all-shortcut fa fa-expand'
         ImageExpand.EAI.title     = 'Expand All Images'
         func = ImageExpand.contract
-      for ID, post of g.posts
+      for ID, post of g.posts when post.file and (post.file.isImage or post.file.isVideo)
         for post in [post].concat post.clones
-          {file} = post
-          continue unless file and (file.isImage or file.isVideo) and doc.contains post.nodes.root
-          if ImageExpand.on and !post.isHidden and
-            (!Conf['Expand spoilers'] and file.isSpoiler or
-            Conf['Expand from here'] and Header.getTopOf(file.thumb) < 0)
+          if ImageExpand.on and (
+            post.isHidden or
+            !Conf['Expand spoilers'] and post.file.isSpoiler or
+            !doc.contains(post.nodes.root) or
+            Conf['Expand from here'] and Header.getTopOf(post.file.thumb) < 0)
               continue
           $.queueTask func, post
       return
