@@ -56,8 +56,9 @@ ImageExpand =
     playVideos: (e) ->
       for fullID, post of g.posts
         continue unless post.file and post.file.isVideo and post.file.isExpanded
-        play = !d.hidden and !post.isHidden and doc.contains(post.nodes.root) and Header.isNodeVisible post.nodes.root
-        if play then post.file.fullImage.play() else post.file.fullImage.pause()
+        for post in [post].concat post.clones
+          play = !d.hidden and !post.isHidden and doc.contains(post.nodes.root) and Header.isNodeVisible post.nodes.root
+          if play then post.file.fullImage.play() else post.file.fullImage.pause()
       return
     setFitness: ->
       (if @checked then $.addClass else $.rmClass) doc, @name.toLowerCase().replace /\s+/g, '-'
