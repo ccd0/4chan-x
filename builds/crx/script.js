@@ -7739,7 +7739,9 @@
       }
       return $.asap((function() {
         if (isVideo) {
-          return el.videoHeight || el.naturalHeight;
+          return el.videoHeight;
+        } else {
+          return el.naturalHeight;
         }
       }), function() {
         return ImageExpand.completeExpand(post);
