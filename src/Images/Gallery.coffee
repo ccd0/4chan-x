@@ -156,8 +156,8 @@ Gallery =
       if @dataset.isVideo  
         file.muted    = !Conf['Allow Sound']
         file.controls = Conf['Show Controls']
+        file.autoplay = Conf['Autoplay']
         file.loop     = true
-        file.autoplay = true
       
       $.extend  file.dataset,   @dataset
       $.replace nodes.current,  file

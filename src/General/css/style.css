@@ -824,6 +824,7 @@ span.hide-announcement {
 /* File */
 .fileText:hover .fntrunc,
 .fileText:not(:hover) .fnfull,
+.expanded-image > .post > .file > .fileThumb > video[data-md5],
 .expanded-image > .post > .file > .fileThumb > img[data-md5] {
   display: none;
 }
