@@ -21,8 +21,7 @@ ImageHover =
       post.file.fullImage = el
       {thumb} = post.file
     if d.body.contains thumb
-      position = if isVideo and Conf['Show Controls'] then thumb.parentNode else thumb
-      $.after position, el unless el is position.nextSibling
+      $.after thumb, el unless el is thumb.nextSibling
     else
       $.add Header.hover, el if el.parentNode isnt Header.hover
     el.id = 'ihover'

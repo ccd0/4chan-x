@@ -28,8 +28,10 @@ ImageExpand =
   cb:
     toggle: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+      post = Get.postFromNode @
+      return if post.file.isExpanded and post.file.fullImage?.controls
       e.preventDefault()
-      ImageExpand.toggle Get.postFromNode @
+      ImageExpand.toggle post
 
     toggleAll: ->
       $.event 'CloseMenu'
@@ -92,9 +94,11 @@ ImageExpand =
   contract: (post) ->
     if post.file.isVideo and video = post.file.fullImage
       video.pause()
+      TrashQueue.add video, post
+      post.file.thumb.parentNode.href = video.src
+      post.file.thumb.parentNode.target = '_blank'
       for eventName, cb of ImageExpand.videoCB
         $.off video, eventName, cb
-      TrashQueue.add video, post
       post.file.videoControls?.map($.rm)
       delete post.file.videoControls
     $.rmClass post.nodes.root, 'expanded-image'
@@ -115,8 +119,7 @@ ImageExpand =
       el.loop = true if isVideo
       $.on el, 'error', ImageExpand.error
       el.src = src or post.file.URL
-    position = if isVideo and Conf['Show Controls'] then thumb.parentNode else thumb
-    $.after position, el unless el is position.nextSibling
+    $.after thumb, el unless el is thumb.nextSibling
     $.asap (-> if isVideo then el.videoHeight else el.naturalHeight), ->
       ImageExpand.completeExpand post
 
@@ -150,6 +153,8 @@ ImageExpand =
     {file} = post
     video = file.fullImage
     file.videoControls = []
+    file.thumb.parentNode.removeAttribute 'href'
+    file.thumb.parentNode.removeAttribute 'target'
     video.muted = !Conf['Allow Sound']
     video.controls = Conf['Show Controls']
     if Conf['Show Controls']
