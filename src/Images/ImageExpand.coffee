@@ -157,6 +157,9 @@ ImageExpand =
     file.thumb.parentNode.removeAttribute 'target'
     video.muted = !Conf['Allow Sound']
     video.controls = Conf['Show Controls']
+    # drag left to contract
+    video.dataset.mousedown = 'false'
+    $.on video, eventName, cb for eventName, cb of ImageExpand.videoCB
     if Conf['Show Controls']
       # contract link in file info
       contract = $.el 'a',
@@ -165,10 +168,6 @@ ImageExpand =
         title: 'You can also contract the video by dragging it to the left.'
       $.on contract, 'click', (e) -> ImageExpand.contract post
       file.videoControls.push $.tn('\u00A0'), contract
-      # drag left to contract
-      video.dataset.mousedown = 'false'
-      for eventName, cb of ImageExpand.videoCB
-        $.on video, eventName, cb
     if Conf['Autoplay']
       video.controls = false
       video.play()

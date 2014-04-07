@@ -7807,6 +7807,12 @@
       file.thumb.parentNode.removeAttribute('target');
       video.muted = !Conf['Allow Sound'];
       video.controls = Conf['Show Controls'];
+      video.dataset.mousedown = 'false';
+      _ref = ImageExpand.videoCB;
+      for (eventName in _ref) {
+        cb = _ref[eventName];
+        $.on(video, eventName, cb);
+      }
       if (Conf['Show Controls']) {
         contract = $.el('a', {
           textContent: 'contract',
@@ -7817,12 +7823,6 @@
           return ImageExpand.contract(post);
         });
         file.videoControls.push($.tn('\u00A0'), contract);
-        video.dataset.mousedown = 'false';
-        _ref = ImageExpand.videoCB;
-        for (eventName in _ref) {
-          cb = _ref[eventName];
-          $.on(video, eventName, cb);
-        }
       }
       if (Conf['Autoplay']) {
         video.controls = false;
