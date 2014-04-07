@@ -7,8 +7,9 @@ ImageExpand =
       textContent: 'EAI' 
       title: 'Expand All Images'
       href: 'javascript:;'
-    $.on @EAI, 'click', ImageExpand.cb.toggleAll
+    $.on @EAI, 'click', @cb.toggleAll
     Header.addShortcut @EAI, 3
+    $.on d, 'scroll visibilitychange', @cb.playVideos
 
     Post.callbacks.push
       name: 'Image Expansion'
@@ -67,6 +68,13 @@ ImageExpand =
       g.posts.forEach (post) ->
         toggle post for post in [post, post.clones...]
         return
+
+    playVideos: (e) ->
+      for fullID, post of g.posts
+        continue unless post.file and post.file.isVideo and post.file.isExpanded
+        play = !d.hidden and !post.isHidden and doc.contains(post.nodes.root) and Header.isNodeVisible post.nodes.root
+        if play then post.file.fullImage.play() else post.file.fullImage.pause()
+      return
 
     setFitness: ->
       (if @checked then $.addClass else $.rmClass) doc, @name.toLowerCase().replace /\s+/g, '-'
@@ -156,7 +164,7 @@ ImageExpand =
       video = post.file.fullImage
       video.loop = true
       video.controls = Conf['Show Controls']
-      Video.start video if Conf['Autoplay'] and not disableAutoplay
+      Video.start video if Conf['Autoplay'] and not disableAutoplay and !d.hidden and Header.isNodeVisible post.nodes.root
 
   videoCB: do ->
     # dragging to the left contracts the video
