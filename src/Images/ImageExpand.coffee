@@ -6,8 +6,9 @@ ImageExpand =
       className: 'expand-all-shortcut fa fa-expand'
       title: 'Expand All Images'
       href: 'javascript:;'
-    $.on @EAI, 'click', ImageExpand.cb.toggleAll
+    $.on @EAI, 'click', @cb.toggleAll
     Header.addShortcut @EAI, 3
+    $.on d, 'scroll visibilitychange', @cb.playVideos
 
     Post.callbacks.push
       name: 'Image Expansion'
@@ -15,12 +16,16 @@ ImageExpand =
   node: ->
     return unless @file and (@file.isImage or @file.isVideo)
     $.on @file.thumb.parentNode, 'click', ImageExpand.cb.toggle
-    if @isClone and @file.isImage and @file.isExpanding
-      # If we clone a post where the image is still loading,
-      # make it loading in the clone too.
-      ImageExpand.contract @
-      ImageExpand.expand @
-      return
+    if @isClone
+      if @file.isImage and @file.isExpanding
+        # If we clone a post where the image is still loading,
+        # make it loading in the clone too.
+        ImageExpand.contract @
+        ImageExpand.expand @
+        return
+      if @file.isVideo and @file.isExpanded
+        @file.fullImage.play()
+        return
     if ImageExpand.on and !@isHidden and (Conf['Expand spoilers'] or !@file.isSpoiler)
       ImageExpand.expand @
   cb:
@@ -47,6 +52,12 @@ ImageExpand =
             Conf['Expand from here'] and Header.getTopOf(file.thumb) < 0)
               continue
           $.queueTask func, post
+      return
+    playVideos: (e) ->
+      for fullID, post of g.posts
+        continue unless post.file and post.file.isVideo and post.file.isExpanded
+        play = !d.hidden and !post.isHidden and doc.contains(post.nodes.root) and Header.isNodeVisible post.nodes.root
+        if play then post.file.fullImage.play() else post.file.fullImage.pause()
       return
     setFitness: ->
       (if @checked then $.addClass else $.rmClass) doc, @name.toLowerCase().replace /\s+/g, '-'
@@ -116,13 +127,13 @@ ImageExpand =
     return unless post.file.isExpanding # contracted before the image loaded
     delete post.file.isExpanding
     post.file.isExpanded = true
-    post.file.fullImage.play() if post.file.isVideo
     unless post.nodes.root.parentNode
       # Image might start/finish loading before the post is inserted.
       # Don't scroll when it's expanded in a QP for example.
       $.addClass post.nodes.root, 'expanded-image'
       $.rmClass  post.file.thumb, 'expanding'
       return
+    post.file.fullImage.play() if post.file.isVideo and !d.hidden and Header.isNodeVisible post.nodes.root
     {bottom} = post.nodes.root.getBoundingClientRect()
     $.queueTask ->
       $.addClass post.nodes.root, 'expanded-image'

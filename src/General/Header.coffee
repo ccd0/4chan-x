@@ -291,6 +291,9 @@ Header =
       headRect = (if $.hasClass Header.bar, 'autohide' then Header.hitzone else Header.bar).getBoundingClientRect()
       bottom  -= clientHeight - headRect.bottom + headRect.height
     bottom
+  isNodeVisible: (node) ->
+    {height} = node.getBoundingClientRect()
+    Header.getTopOf(node) + height >= 0 and Header.getBottomOf(node) + height >= 0
   isHidden: ->
     {top} = Header.bar.getBoundingClientRect()
     if Conf['Bottom header']
