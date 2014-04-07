@@ -6477,7 +6477,6 @@
       } else {
         if (QR.posts.length > 1) {
           QR.captcha.setup();
-          QR.captcha.afterSetup();
         }
         post.rm();
       }
