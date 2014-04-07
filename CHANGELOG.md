@@ -1,3 +1,9 @@
+### v1.7.2 
+*2014-04-07*
+
+**ccd0**
+- Restore thread expansion with JSON navigation disabled.
+
 ### v1.7.1 
 *2014-04-06*
 
