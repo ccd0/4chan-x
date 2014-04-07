@@ -1,3 +1,10 @@
+### v1.7.1 
+*2014-04-06*
+
+**ccd0**
+- Fix minimum width bug.
+- `JSON Navigation` is now disabled by default.
+
 ## v1.7.0 
 *2014-04-06*
 
