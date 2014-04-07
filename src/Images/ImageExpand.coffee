@@ -82,6 +82,7 @@ ImageExpand =
   contract: (post) ->
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass post.file.thumb, 'expanding'
+    delete post.file.isExpanding
     post.file.isExpanded = false
     post.file.fullImage.pause() if post.file.isVideo and post.file.fullImage
 
