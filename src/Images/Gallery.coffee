@@ -33,21 +33,21 @@ Gallery =
     nodes.el = dialog = $.el 'div',
       id: 'a-gallery'
       innerHTML: """
-<div class=gal-viewport>
-  <span class=gal-buttons>
-    <a class="menu-button" href="javascript:;"><i></i></a>
-    <a href=javascript:; class=gal-close>×</a>
-  </span>
-  <a class=gal-name target="_blank"></a>
-  <span class=gal-count><span class='count'></span> / <span class='total'></span></a></span>
-  <div class=gal-prev></div>
-  <div class=gal-image>
-    <a href=javascript:;><img></a>
-  </div>
-  <div class=gal-next></div>
-</div>
-<div class=gal-thumbnails></div>
-"""
+        <div class=gal-viewport>
+          <span class=gal-buttons>
+            <a class="menu-button" href="javascript:;"><i></i></a>
+            <a href=javascript:; class=gal-close>×</a>
+          </span>
+          <a class=gal-name target="_blank"></a>
+          <span class=gal-count><span class='count'></span> / <span class='total'></span></a></span>
+          <div class=gal-prev></div>
+          <div class=gal-image>
+            <a href=javascript:;><img></a>
+          </div>
+          <div class=gal-next></div>
+        </div>
+        <div class=gal-thumbnails></div>
+      """
 
     nodes[key] = $ value, dialog for key, value of {
       frame:   '.gal-image'
@@ -107,13 +107,14 @@ Gallery =
     post  = Get.postFromNode file
     title = ($ '.fileText a', file).textContent
     thumb = post.file.thumb.parentNode.cloneNode true
-    if double = $ 'img + img', thumb
+    if double = $ '* + *', thumb
       $.rm double
 
-    thumb.className = 'gal-thumb'
-    thumb.title = title
+    thumb.className    = 'gal-thumb'
+    thumb.title        = title
     thumb.dataset.id   = Gallery.images.length
     thumb.dataset.post = $('a[title="Highlight this post"]', post.nodes.info).href
+    thumb.dataset.isVideo = true if post.file.isVideo
     thumb.firstElementChild.style.cssText = ''
 
     $.on thumb, 'click', Gallery.cb.open
@@ -148,14 +149,20 @@ Gallery =
       $.rmClass  el, 'gal-highlight' if el = $ '.gal-highlight', Gallery.thumbs
       $.addClass @,  'gal-highlight'
 
-      img = $.el 'img',
+      file = $.el (if @dataset.isVideo then 'video' else 'img'),
         src:   name.href     = @href
         title: name.download = name.textContent = @title
 
-      $.extend  img.dataset,   @dataset
-      $.replace nodes.current, img
+      if @dataset.isVideo  
+        file.muted    = !Conf['Allow Sound']
+        file.controls = Conf['Show Controls']
+        file.loop     = true
+        file.autoplay = true
+      
+      $.extend  file.dataset,   @dataset
+      $.replace nodes.current,  file
       nodes.count.textContent = +@dataset.id + 1
-      nodes.current = img
+      nodes.current = file
       nodes.frame.scrollTop = 0
       nodes.next.focus()
 
@@ -168,8 +175,8 @@ Gallery =
 
       nodes.thumbs.scrollTop += top
       
-      $.on img, 'error', ->
-        Gallery.cb.error img, thumb
+      $.on file, 'error', ->
+        Gallery.cb.error file, thumb
 
     image: (e) ->
       e.preventDefault()

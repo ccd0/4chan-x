@@ -1471,18 +1471,13 @@ div.boardTitle {
   margin: auto;
   line-height: 0;
 }
+.gal-fit-width .gal-image video,
 .gal-fit-width .gal-image img {
   max-width: 100%;
 }
+.gal-fit-height .gal-image video,
 .gal-fit-height .gal-image img {
-  /*
-    Chrome doesn't support viewpoint units in calc()
-    http://bugs.chromium.org/168840
-    "It looks like the original author of viewport units in WebKit is not coming back to fix this stuff."
-    Well, fuck.
-  */
   max-height: 95vh;
-  max-height: calc(100vh - 25px);
 }
 .gal-buttons {
   font-size: 2em;
