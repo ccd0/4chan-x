@@ -303,12 +303,10 @@ QR =
     blob.name = url.substr(url.lastIndexOf('/')+1, url.length)
     name_start = header.indexOf('name="') + 6
     if (name_start - 6 != -1)
-      name_end = header.substr(name_start, header.length).indexOf('"')
+      name_end  = header.substr(name_start, header.length).indexOf('"')
       blob.name = header.substr(name_start, name_end)
 
     return if blob.type is null
-      QR.error "Unsupported file type."
-    return unless blob.type in QR.mimeTypes
       QR.error "Unsupported file type."
     QR.handleFiles([blob])
 

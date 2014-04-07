@@ -6366,7 +6366,7 @@
       return $.addClass(QR.nodes.el, 'dump');
     },
     handleBlob: function(urlBlob, header, url) {
-      var blob, end, endnl, endsc, mime, name, name_end, name_start, start, _ref;
+      var blob, end, endnl, endsc, mime, name, name_end, name_start, start;
       name = url.substr(url.lastIndexOf('/') + 1, url.length);
       start = header.indexOf("Content-Type: ") + 14;
       endsc = header.substr(start, header.length).indexOf(";");
@@ -6386,9 +6386,6 @@
         blob.name = header.substr(name_start, name_end);
       }
       if (blob.type === null) {
-        return QR.error("Unsupported file type.");
-      }
-      if (_ref = blob.type, __indexOf.call(QR.mimeTypes, _ref) < 0) {
         return QR.error("Unsupported file type.");
       }
       return QR.handleFiles([blob]);
