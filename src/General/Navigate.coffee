@@ -116,10 +116,12 @@ Navigate =
         delete g.THREADID
         QR.link.textContent = 'Start a Thread'
         Index.cb.toggleCatalogMode() if Conf['Index Mode'] is 'catalog'
+        QR.posts[0]?.thread = 'new'
 
       thread: ->
         QR.link.textContent = 'Reply to Thread'
         $.rmClass doc, 'catalog-mode' if Conf['Index Mode'] is 'catalog'
+        QR.posts[0]?.thread = g.THREADID
     }[view]()
 
     g.VIEW = view

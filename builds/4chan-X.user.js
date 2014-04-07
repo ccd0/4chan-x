@@ -12568,17 +12568,21 @@
       $.addClass(doc, view);
       ({
         index: function() {
+          var _ref;
           delete g.THREADID;
           QR.link.textContent = 'Start a Thread';
           if (Conf['Index Mode'] === 'catalog') {
-            return Index.cb.toggleCatalogMode();
+            Index.cb.toggleCatalogMode();
           }
+          return (_ref = QR.posts[0]) != null ? _ref.thread = 'new' : void 0;
         },
         thread: function() {
+          var _ref;
           QR.link.textContent = 'Reply to Thread';
           if (Conf['Index Mode'] === 'catalog') {
-            return $.rmClass(doc, 'catalog-mode');
+            $.rmClass(doc, 'catalog-mode');
           }
+          return (_ref = QR.posts[0]) != null ? _ref.thread = g.THREADID : void 0;
         }
       })[view]();
       return g.VIEW = view;
