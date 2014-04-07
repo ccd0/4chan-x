@@ -1358,7 +1358,8 @@
     DataBoard.keys = ['hiddenThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts', 'watchedThreads'];
 
     function DataBoard(key, sync, dontClean) {
-      var init;
+      var init,
+        _this = this;
       this.key = key;
       this.onSync = __bind(this.onSync, this);
       this.data = Conf[key];
@@ -1369,12 +1370,10 @@
       if (!sync) {
         return;
       }
-      init = (function(_this) {
-        return function() {
-          $.off(d, '4chanXInitFinished', init);
-          return _this.sync = sync;
-        };
-      })(this);
+      init = function() {
+        $.off(d, '4chanXInitFinished', init);
+        return _this.sync = sync;
+      };
       $.on(d, '4chanXInitFinished', init);
     }
 
@@ -1473,35 +1472,34 @@
     };
 
     DataBoard.prototype.ajaxClean = function(boardID) {
-      return $.cache("//a.4cdn.org/" + boardID + "/threads.json", (function(_this) {
-        return function(e) {
-          var board, page, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
-          if (e.target.status !== 200) {
-            if (e.target.status === 404) {
-              _this["delete"](boardID);
-            }
-            return;
+      var _this = this;
+      return $.cache("//a.4cdn.org/" + boardID + "/threads.json", function(e) {
+        var board, page, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
+        if (e.target.status !== 200) {
+          if (e.target.status === 404) {
+            _this["delete"](boardID);
           }
-          board = _this.data.boards[boardID];
-          threads = {};
-          _ref = e.target.response;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            page = _ref[_i];
-            _ref1 = page.threads;
-            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-              thread = _ref1[_j];
-              if (thread.no in board) {
-                threads[thread.no] = board[thread.no];
-              }
+          return;
+        }
+        board = _this.data.boards[boardID];
+        threads = {};
+        _ref = e.target.response;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          page = _ref[_i];
+          _ref1 = page.threads;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            thread = _ref1[_j];
+            if (thread.no in board) {
+              threads[thread.no] = board[thread.no];
             }
           }
-          _this.data.boards[boardID] = threads;
-          _this.deleteIfEmpty({
-            boardID: boardID
-          });
-          return _this.save();
-        };
-      })(this));
+        }
+        _this.data.boards[boardID] = threads;
+        _this.deleteIfEmpty({
+          boardID: boardID
+        });
+        return _this.save();
+      });
     };
 
     DataBoard.prototype.onSync = function(data) {
@@ -1784,7 +1782,8 @@
 
   Header = {
     init: function() {
-      var barFixedToggler, barPositionToggler, customNavToggler, editCustomNav, footerToggler, headerToggler, linkJustifyToggler, menuButton, scrollHeaderToggler, shortcutToggler;
+      var barFixedToggler, barPositionToggler, customNavToggler, editCustomNav, footerToggler, headerToggler, linkJustifyToggler, menuButton, scrollHeaderToggler, shortcutToggler,
+        _this = this;
       this.menu = new UI.Menu('header');
       menuButton = $.el('span', {
         className: 'menu-button',
@@ -1881,46 +1880,42 @@
       $.on(d, 'CreateNotification', this.createNotification);
       $.asap((function() {
         return d.body;
-      }), (function(_this) {
-        return function() {
-          if (!Main.isThisPageLegit()) {
-            return;
+      }), function() {
+        if (!Main.isThisPageLegit()) {
+          return;
+        }
+        $.asap((function() {
+          return $.id('boardNavMobile') || d.readyState !== 'loading';
+        }), Header.setBoardList);
+        $.prepend(d.body, _this.bar);
+        $.add(d.body, Header.hover);
+        _this.setBarPosition(Conf['Bottom Header']);
+        return _this;
+      });
+      $.ready(function() {
+        var a, cs, footer, _i, _len, _ref;
+        _this.footer = footer = $.id('boardNavDesktopFoot');
+        if (Conf['JSON Navigation']) {
+          _ref = $$('a', footer);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            a = _ref[_i];
+            $.on(a, 'click', Navigate.navigate);
           }
-          $.asap((function() {
-            return $.id('boardNavMobile') || d.readyState !== 'loading';
-          }), Header.setBoardList);
-          $.prepend(d.body, _this.bar);
-          $.add(d.body, Header.hover);
-          _this.setBarPosition(Conf['Bottom Header']);
-          return _this;
-        };
-      })(this));
-      $.ready((function(_this) {
-        return function() {
-          var a, cs, footer, _i, _len, _ref;
-          _this.footer = footer = $.id('boardNavDesktopFoot');
-          if (Conf['JSON Navigation']) {
-            _ref = $$('a', footer);
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              a = _ref[_i];
-              $.on(a, 'click', Navigate.navigate);
-            }
-          }
-          if (a = $("a[href*='/" + g.BOARD + "/']", footer)) {
-            a.className = 'current';
-          }
-          cs = $.el('a', {
-            id: 'settingsWindowLink',
-            href: 'javascript:;',
-            textContent: 'Catalog Settings'
-          });
-          if (g.VIEW === 'catalog') {
-            _this.addShortcut(cs);
-          }
-          Header.setFooterVisibility(Conf['Bottom Board List']);
-          return $.sync('Bottom Board List', Header.setFooterVisibility);
-        };
-      })(this));
+        }
+        if (a = $("a[href*='/" + g.BOARD + "/']", footer)) {
+          a.className = 'current';
+        }
+        cs = $.el('a', {
+          id: 'settingsWindowLink',
+          href: 'javascript:;',
+          textContent: 'Catalog Settings'
+        });
+        if (g.VIEW === 'catalog') {
+          _this.addShortcut(cs);
+        }
+        Header.setFooterVisibility(Conf['Bottom Board List']);
+        return $.sync('Bottom Board List', Header.setFooterVisibility);
+      });
       return this.enableDesktopNotifications();
     },
     bar: $.el('div', {
@@ -3057,10 +3052,11 @@
     gifIcon: window.devicePixelRatio >= 2 ? '@2x.gif' : '.gif',
     spoilerRange: {},
     shortFilename: function(filename, isReply) {
-      var threshold;
+      var ext, threshold;
       threshold = isReply ? 30 : 40;
-      if (filename.length - 4 > threshold) {
-        return "" + filename.slice(0, threshold - 5) + "(...)." + filename.slice(-3);
+      ext = filename.match(/\.?[^\.]*$/)[0];
+      if (filename.length - ext.length > threshold) {
+        return "" + filename.slice(0, threshold - 5) + "(...)." + ext;
       } else {
         return filename;
       }
@@ -3111,11 +3107,11 @@
       return Build.post(o);
     },
     post: function(o, isArchived) {
-
       /*
       This function contains code from 4chan-JS (https://github.com/4chan/4chan-JS).
       @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
-       */
+      */
+
       var a, boardID, capcode, capcodeClass, capcodeIcon, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, gifIcon, href, imgSrc, isClosed, isOP, isSticky, name, pageIcon, pageNum, postID, quote, replyLink, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
       postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
       isOP = postID === threadID;
@@ -5266,10 +5262,10 @@
     }
   };
 
-
   /*
     <3 aeosynth
-   */
+  */
+
 
   QuoteThreading = {
     init: function() {
@@ -6046,22 +6042,21 @@
       }
     },
     checkDimensions: function(file, isSingle, max) {
-      var img;
+      var img,
+        _this = this;
       if (/^image\//.test(file.type)) {
         img = new Image();
-        img.onload = (function(_this) {
-          return function() {
-            var height, width;
-            height = img.height, width = img.width;
-            if (height > QR.max_heigth || width > QR.max_heigth) {
-              return QR.error("" + file.name + ": Image too large (image: " + img.height + "x" + img.width + "px, max: " + QR.max_heigth + "x" + QR.max_width + "px)");
-            }
-            if (height < QR.min_heigth || width < QR.min_heigth) {
-              return QR.error("" + file.name + ": Image too small (image: " + img.height + "x" + img.width + "px, min: " + QR.min_heigth + "x" + QR.min_width + "px)");
-            }
-            return QR.handleFile(file, isSingle, max);
-          };
-        })(this);
+        img.onload = function() {
+          var height, width;
+          height = img.height, width = img.width;
+          if (height > QR.max_heigth || width > QR.max_heigth) {
+            return QR.error("" + file.name + ": Image too large (image: " + img.height + "x" + img.width + "px, max: " + QR.max_heigth + "x" + QR.max_width + "px)");
+          }
+          if (height < QR.min_heigth || width < QR.min_heigth) {
+            return QR.error("" + file.name + ": Image too small (image: " + img.height + "x" + img.width + "px, min: " + QR.min_heigth + "x" + QR.min_width + "px)");
+          }
+          return QR.handleFile(file, isSingle, max);
+        };
         return img.src = URL.createObjectURL(file);
       } else {
         return QR.handleFile(file, isSingle, max);
@@ -6629,15 +6624,14 @@
 
   QR.cooldown = {
     init: function() {
-      var key, setTimers, type;
+      var key, setTimers, type,
+        _this = this;
       if (!Conf['Cooldown']) {
         return;
       }
-      setTimers = (function(_this) {
-        return function(e) {
-          return QR.cooldown.types = e.detail;
-        };
-      })(this);
+      setTimers = function(e) {
+        return QR.cooldown.types = e.detail;
+      };
       $.on(window, 'cooldown:timers', setTimers);
       $.globalEval('window.dispatchEvent(new CustomEvent("cooldown:timers", {detail: cooldowns}))');
       $.off(window, 'cooldown:timers', setTimers);
@@ -6859,7 +6853,8 @@
   QR.post = (function() {
     function _Class(select) {
       this.select = __bind(this.select, this);
-      var el, event, prev, _i, _len, _ref;
+      var el, event, prev, _i, _len, _ref,
+        _this = this;
       el = $.el('a', {
         className: 'qr-preview',
         draggable: true,
@@ -6874,25 +6869,19 @@
         span: el.lastChild
       };
       $.on(el, 'click', this.select);
-      $.on(this.nodes.rm, 'click', (function(_this) {
-        return function(e) {
-          e.stopPropagation();
-          return _this.rm();
-        };
-      })(this));
-      $.on(this.nodes.label, 'click', (function(_this) {
-        return function(e) {
-          return e.stopPropagation();
-        };
-      })(this));
-      $.on(this.nodes.spoiler, 'change', (function(_this) {
-        return function(e) {
-          _this.spoiler = e.target.checked;
-          if (_this === QR.selected) {
-            return QR.nodes.spoiler.checked = _this.spoiler;
-          }
-        };
-      })(this));
+      $.on(this.nodes.rm, 'click', function(e) {
+        e.stopPropagation();
+        return _this.rm();
+      });
+      $.on(this.nodes.label, 'click', function(e) {
+        return e.stopPropagation();
+      });
+      $.on(this.nodes.spoiler, 'change', function(e) {
+        _this.spoiler = e.target.checked;
+        if (_this === QR.selected) {
+          return QR.nodes.spoiler.checked = _this.spoiler;
+        }
+      });
       $.add(QR.nodes.dumpList, el);
       _ref = ['dragStart', 'dragEnter', 'dragLeave', 'dragOver', 'dragEnd', 'drop'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -6903,19 +6892,17 @@
       prev = QR.posts[QR.posts.length - 1];
       QR.posts.push(this);
       this.nodes.spoiler.checked = this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
-      QR.persona.get((function(_this) {
-        return function(persona) {
-          _this.name = 'name' in QR.persona.always ? QR.persona.always.name : prev ? prev.name : persona.name;
-          _this.email = 'email' in QR.persona.always ? QR.persona.always.email : prev && !/^sage$/.test(prev.email) ? prev.email : persona.email;
-          _this.sub = 'sub' in QR.persona.always ? QR.persona.always.sub : Conf['Remember Subject'] ? prev ? prev.sub : persona.sub : '';
-          if (QR.nodes.flag) {
-            _this.flag = prev ? prev.flag : persona.flag;
-          }
-          if (QR.selected === _this) {
-            return _this.load();
-          }
-        };
-      })(this));
+      QR.persona.get(function(persona) {
+        _this.name = 'name' in QR.persona.always ? QR.persona.always.name : prev ? prev.name : persona.name;
+        _this.email = 'email' in QR.persona.always ? QR.persona.always.email : prev && !/^sage$/.test(prev.email) ? prev.email : persona.email;
+        _this.sub = 'sub' in QR.persona.always ? QR.persona.always.sub : Conf['Remember Subject'] ? prev ? prev.sub : persona.sub : '';
+        if (QR.nodes.flag) {
+          _this.flag = prev ? prev.flag : persona.flag;
+        }
+        if (QR.selected === _this) {
+          return _this.load();
+        }
+      });
       if (select) {
         this.select();
       }
@@ -7064,39 +7051,38 @@
     };
 
     _Class.prototype.setThumbnail = function() {
-      var fileURL, img;
+      var fileURL, img,
+        _this = this;
       img = $.el('img');
-      img.onload = (function(_this) {
-        return function() {
-          var cv, height, s, width;
-          s = 90 * 2 * window.devicePixelRatio;
-          if (_this.file.type === 'image/gif') {
-            s *= 3;
-          }
-          height = img.height, width = img.width;
-          if (height < s || width < s) {
-            _this.URL = fileURL;
-            _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
-            return;
-          }
-          if (height <= width) {
-            width = s / height * width;
-            height = s;
-          } else {
-            height = s / width * height;
-            width = s;
-          }
-          cv = $.el('canvas');
-          cv.height = img.height = height;
-          cv.width = img.width = width;
-          cv.getContext('2d').drawImage(img, 0, 0, width, height);
-          URL.revokeObjectURL(fileURL);
-          return cv.toBlob(function(blob) {
-            _this.URL = URL.createObjectURL(blob);
-            return _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
-          });
-        };
-      })(this);
+      img.onload = function() {
+        var cv, height, s, width;
+        s = 90 * 2 * window.devicePixelRatio;
+        if (_this.file.type === 'image/gif') {
+          s *= 3;
+        }
+        height = img.height, width = img.width;
+        if (height < s || width < s) {
+          _this.URL = fileURL;
+          _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
+          return;
+        }
+        if (height <= width) {
+          width = s / height * width;
+          height = s;
+        } else {
+          height = s / width * height;
+          width = s;
+        }
+        cv = $.el('canvas');
+        cv.height = img.height = height;
+        cv.width = img.width = width;
+        cv.getContext('2d').drawImage(img, 0, 0, width, height);
+        URL.revokeObjectURL(fileURL);
+        return cv.toBlob(function(blob) {
+          _this.URL = URL.createObjectURL(blob);
+          return _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
+        });
+      };
       fileURL = URL.createObjectURL(this.file);
       return img.src = fileURL;
     };
@@ -7140,23 +7126,22 @@
     };
 
     _Class.prototype.pasteText = function(file) {
-      var reader;
+      var reader,
+        _this = this;
       reader = new FileReader();
-      reader.onload = (function(_this) {
-        return function(e) {
-          var text;
-          text = e.target.result;
-          if (_this.com) {
-            _this.com += "\n" + text;
-          } else {
-            _this.com = text;
-          }
-          if (QR.selected === _this) {
-            QR.nodes.com.value = _this.com;
-          }
-          return _this.nodes.span.textContent = _this.com;
-        };
-      })(this);
+      reader.onload = function(e) {
+        var text;
+        text = e.target.result;
+        if (_this.com) {
+          _this.com += "\n" + text;
+        } else {
+          _this.com = text;
+        }
+        if (QR.selected === _this) {
+          QR.nodes.com.value = _this.com;
+        }
+        return _this.nodes.span.textContent = _this.com;
+      };
       return reader.readAsText(file);
     };
 
@@ -8004,7 +7989,8 @@
       return $.on(el, 'error', ImageHover.error);
     },
     error: function() {
-      var URL, post, src, timeoutID;
+      var URL, post, src, timeoutID,
+        _this = this;
       if (!doc.contains(this)) {
         return;
       }
@@ -8023,11 +8009,9 @@
           return;
         }
       }
-      timeoutID = setTimeout(((function(_this) {
-        return function() {
-          return _this.src = post.file.URL + '?' + Date.now();
-        };
-      })(this)), 3000);
+      timeoutID = setTimeout((function() {
+        return _this.src = post.file.URL + '?' + Date.now();
+      }), 3000);
       return $.ajax(this.src, {
         onloadend: function() {
           if (this.status !== 404) {
@@ -9137,7 +9121,8 @@
 
   ThreadStats = {
     init: function() {
-      var sc;
+      var sc,
+        _this = this;
       if (g.VIEW !== 'thread' || !Conf['Thread Stats']) {
         return;
       }
@@ -9152,11 +9137,9 @@
         });
       } else {
         this.dialog = sc = UI.dialog('thread-stats', 'bottom: 0px; right: 0px;', "<div class=move title='Post Count / File Count" + (Conf["Page Count in Stats"] ? " / Page Count" : "") + "'><span id=post-count>0</span> / <span id=file-count>0</span>" + (Conf["Page Count in Stats"] ? " / <span id=page-count>0</span>" : "") + "</div>");
-        $.ready((function(_this) {
-          return function() {
-            return $.add(d.body, sc);
-          };
-        })(this));
+        $.ready(function() {
+          return $.add(d.body, sc);
+        });
       }
       this.postCountEl = $('#post-count', sc);
       this.fileCountEl = $('#file-count', sc);
@@ -9255,7 +9238,8 @@
 
   ThreadUpdater = {
     init: function() {
-      var checked, conf, el, input, name, sc, subEntries, _ref;
+      var checked, conf, el, input, name, sc, subEntries, _ref,
+        _this = this;
       if (g.VIEW !== 'thread' || !Conf['Thread Updater']) {
         return;
       }
@@ -9270,12 +9254,10 @@
       } else {
         this.dialog = sc = UI.dialog('updater', 'bottom: 0px; left: 0px;', "<div class=move></div><span id=update-status></span><span id=update-timer title='Update now'></span>");
         $.addClass(doc, 'float');
-        $.ready((function(_this) {
-          return function() {
-            $.addClass(doc, 'float');
-            return $.add(d.body, sc);
-          };
-        })(this));
+        $.ready(function() {
+          $.addClass(doc, 'float');
+          return $.add(d.body, sc);
+        });
       }
       this.checkPostCount = 0;
       this.timer = $('#update-timer', sc);
@@ -9376,11 +9358,11 @@
       $.on(d, 'visibilitychange', ThreadUpdater.cb.visibility);
       return ThreadUpdater.cb.online();
     },
-
     /*
     http://freesound.org/people/pierrecartoons1979/sounds/90112/
     cc-by-nc-3.0
-     */
+    */
+
     beep: 'data:audio/wav;base64,UklGRjQDAABXQVZFZm10IBAAAAABAAEAgD4AAIA+AAABAAgAc21wbDwAAABBAAADAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkYXRhzAIAAGMms8em0tleMV4zIpLVo8nhfSlcPR102Ki+5JspVEkdVtKzs+K1NEhUIT7DwKrcy0g6WygsrM2k1NpiLl0zIY/WpMrjgCdbPhxw2Kq+5Z4qUkkdU9K1s+K5NkVTITzBwqnczko3WikrqM+l1NxlLF0zIIvXpsnjgydZPhxs2ay95aIrUEkdUdC3suK8N0NUIjq+xKrcz002WioppdGm091pK1w0IIjYp8jkhydXPxxq2K295aUrTkoeTs65suK+OUFUIzi7xqrb0VA0WSoootKm0t5tKlo1H4TYqMfkiydWQBxm16+85actTEseS8y7seHAPD9TIza5yKra01QyWSson9On0d5wKVk2H4DYqcfkjidUQB1j1rG75KsvSkseScu8seDCPz1TJDW2yara1FYxWSwnm9Sn0N9zKVg2H33ZqsXkkihSQR1g1bK65K0wSEsfR8i+seDEQTxUJTOzy6rY1VowWC0mmNWoz993KVc3H3rYq8TklSlRQh1d1LS647AyR0wgRMbAsN/GRDpTJTKwzKrX1l4vVy4lldWpzt97KVY4IXbUr8LZljVPRCxhw7W3z6ZISkw1VK+4sMWvXEhSPk6buay9sm5JVkZNiLWqtrJ+TldNTnquqbCwilZXU1BwpKirrpNgWFhTaZmnpquZbFlbVmWOpaOonHZcXlljhaGhpZ1+YWBdYn2cn6GdhmdhYGN3lp2enIttY2Jjco+bnJuOdGZlZXCImJqakHpoZ2Zug5WYmZJ/bGlobX6RlpeSg3BqaW16jZSVkoZ0bGtteImSk5KIeG5tbnaFkJKRinxxbm91gY2QkIt/c3BwdH6Kj4+LgnZxcXR8iI2OjIR5c3J0e4WLjYuFe3VzdHmCioyLhn52dHR5gIiKioeAeHV1eH+GiYqHgXp2dnh9hIiJh4J8eHd4fIKHiIeDfXl4eHyBhoeHhH96eHmA',
     cb: {
       online: function() {
@@ -13099,14 +13081,13 @@
       return td;
     },
     saveSelectedArchive: function() {
-      return $.get('selectedArchives', Conf['selectedArchives'], (function(_this) {
-        return function(_arg) {
-          var selectedArchives, _name;
-          selectedArchives = _arg.selectedArchives;
-          (selectedArchives[_name = _this.dataset.boardid] || (selectedArchives[_name] = {}))[_this.dataset.type] = _this.value;
-          return $.set('selectedArchives', selectedArchives);
-        };
-      })(this));
+      var _this = this;
+      return $.get('selectedArchives', Conf['selectedArchives'], function(_arg) {
+        var selectedArchives, _name;
+        selectedArchives = _arg.selectedArchives;
+        (selectedArchives[_name = _this.dataset.boardid] || (selectedArchives[_name] = {}))[_this.dataset.type] = _this.value;
+        return $.set('selectedArchives', selectedArchives);
+      });
     },
     boardnav: function() {
       return Header.generateBoardList(this.value);
