@@ -14,16 +14,15 @@ ImageExpand =
       cb:   @node
   node: ->
     return unless @file and (@file.isImage or @file.isVideo)
-    {thumb} = @file
-    $.on thumb.parentNode, 'click', ImageExpand.cb.toggle
+    $.on @file.thumb.parentNode, 'click', ImageExpand.cb.toggle
     if @isClone
-      if @file.isImage and $.hasClass thumb, 'expanding'
+      if @file.isImage and $.hasClass @file.thumb, 'expanding'
         # If we clone a post where the image is still loading,
         # make it loading in the clone too.
         ImageExpand.contract @
         ImageExpand.expand @
         return
-      if @file.isVideo and $.hasClass @nodes.root, 'expanded-image'
+      if @file.isVideo and @file.isExpanded
         @file.fullImage.play()
         return
     if ImageExpand.on and !@isHidden and (Conf['Expand spoilers'] or !@file.isSpoiler)
@@ -76,7 +75,7 @@ ImageExpand =
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass post.file.thumb, 'expanding'
     post.file.isExpanded = false
-    post.file.fullImage.pause() if post.file.isVideo
+    post.file.fullImage.pause() if post.file.isVideo and post.file.fullImage
 
   expand: (post, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
@@ -85,10 +84,9 @@ ImageExpand =
     $.addClass thumb, 'expanding'
     if post.file.fullImage
       # Expand already-loaded/ing picture.
-      $.asap (-> post.file.isVideo or post.file.fullImage.naturalHeight), ->
-        ImageExpand.completeExpand post
+      ImageExpand.waitExpand post
       return
-    file = if post.file.isImage
+    post.file.fullImage = file = if post.file.isImage
       $.el 'img',
         className: 'full-image'
         src: src or post.file.URL
@@ -97,11 +95,23 @@ ImageExpand =
         className: 'full-image'
         src: src or post.file.URL
         loop: true
-    post.file.fullImage = file
     $.on file, 'error', ImageExpand.error
-    $.asap (-> post.file.isVideo or post.file.fullImage.naturalHeight), ->
-      ImageExpand.completeExpand post
+    ImageExpand.waitExpand post
     $.after thumb, file
+
+  waitExpand: (post) ->
+    if post.file.isReady
+      ImageExpand.completeExpand post
+    else if post.file.isImage
+      $.asap (-> post.file.fullImage.naturalHeight), ->
+        post.file.isReady = true
+        ImageExpand.completeExpand post
+    else if post.file.isVideo
+      complete = ->
+        $.off post.file.fullImage, 'loadedmetadata', complete
+        post.file.isReady = true
+        ImageExpand.completeExpand post
+      $.on post.file.fullImage, 'loadedmetadata', complete
 
   completeExpand: (post) ->
     {thumb} = post.file
@@ -123,6 +133,7 @@ ImageExpand =
 
   error: ->
     post = Get.postFromNode @
+    post.file.isReady = false
     $.rm @
     delete post.file.fullImage
     # Images can error:
