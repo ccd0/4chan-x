@@ -12585,6 +12585,7 @@
           return (_ref = QR.posts[0]) != null ? _ref.thread = g.THREADID : void 0;
         }
       })[view]();
+      QR.status();
       return g.VIEW = view;
     },
     updateBoard: function(boardID) {

@@ -124,6 +124,8 @@ Navigate =
         QR.posts[0]?.thread = g.THREADID
     }[view]()
 
+    QR.status() # Re-enable the QR in the case of a 404'd thread or something.
+
     g.VIEW = view
 
   updateBoard: (boardID) ->
