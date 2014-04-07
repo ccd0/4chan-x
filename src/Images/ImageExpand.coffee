@@ -16,12 +16,16 @@ ImageExpand =
     return unless @file and (@file.isImage or @file.isVideo)
     {thumb} = @file
     $.on thumb.parentNode, 'click', ImageExpand.cb.toggle
-    if @isClone and $.hasClass thumb, 'expanding'
-      # If we clone a post where the image is still loading,
-      # make it loading in the clone too.
-      ImageExpand.contract @
-      ImageExpand.expand @
-      return
+    if @isClone
+      if @file.isImage and $.hasClass thumb, 'expanding'
+        # If we clone a post where the image is still loading,
+        # make it loading in the clone too.
+        ImageExpand.contract @
+        ImageExpand.expand @
+        return
+      if @file.isVideo and $.hasClass @nodes.root, 'expanded-image'
+        @file.fullImage.play()
+        return
     if ImageExpand.on and !@isHidden and (Conf['Expand spoilers'] or !@file.isSpoiler)
       ImageExpand.expand @
   cb:
