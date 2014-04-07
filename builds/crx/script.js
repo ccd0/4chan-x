@@ -8420,7 +8420,7 @@
       return ImageLoader.thread = this;
     },
     node: function() {
-      var URL, file, isImage, isVideo, match, replace, style, thumb, type, _ref, _ref1;
+      var URL, cb, file, isImage, isVideo, match, replace, style, thumb, type, _ref, _ref1;
       if (!this.file) {
         return;
       }
@@ -8453,8 +8453,9 @@
             $.on(file, 'mouseover', ImageHover.mouseover);
           }
         }
-        $.on(file, 'load loadedmetadata', (function(_this) {
+        cb = (function(_this) {
           return function() {
+            $.off(file, 'load loadedmetadata', cb);
             if (isVideo) {
               $.replace(thumb, file);
               _this.file.thumb = file;
@@ -8462,7 +8463,8 @@
             }
             return thumb.src = URL;
           };
-        })(this));
+        })(this);
+        $.on(file, 'load loadedmetadata', cb);
       }
       return file.src = URL;
     },

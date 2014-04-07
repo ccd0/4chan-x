@@ -50,13 +50,15 @@ ImageLoader =
         file.autoplay = Conf['Autoplay']
         if Conf['Image Hover']
           $.on file, 'mouseover', ImageHover.mouseover
-      $.on file, 'load loadedmetadata', =>
+      cb = =>
+        $.off file, 'load loadedmetadata', cb
         # Replace the thumbnail once the file has finished loading.
         if isVideo
           $.replace thumb, file
           @file.thumb = file # XXX expanding requires the post.file.thumb node.
           return
         thumb.src = URL
+      $.on file, 'load loadedmetadata', cb
     file.src = URL
 
   toggle: ->
