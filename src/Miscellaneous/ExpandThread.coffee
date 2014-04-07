@@ -2,11 +2,17 @@ ExpandThread =
   statuses: {}
   init: ->
     return if g.VIEW is 'thread' or !Conf['Thread Expansion']
-    $.on d, 'IndexRefresh', @onIndexRefresh
+    if Conf['JSON Navigation']
+      $.on d, 'IndexRefresh', @onIndexRefresh
+    else
+      Thread.callbacks.push
+        name: 'Expand Thread'
+        cb: -> ExpandThread.setButton @
 
   setButton: (thread) ->
-    return unless a = $.x 'following-sibling::a[contains(@class,"summary")][1]', thread.OP.nodes.root
+    return unless a = $.x 'following-sibling::*[contains(@class,"summary")][1]', thread.OP.nodes.root
     a.textContent = ExpandThread.text '+', a.textContent.match(/\d+/g)...
+    a.style.cursor = 'pointer'
     $.on a, 'click', ExpandThread.cbToggle
   
   disconnect: (refresh) ->

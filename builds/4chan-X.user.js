@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.7.1 - 2014-04-06
+* 4chan X - Version 1.7.1 - 2014-04-07
 *
 * Licensed under the MIT license.
 * https://github.com/ccd0/4chan-x/blob/master/LICENSE
@@ -10996,14 +10996,24 @@
       if (g.VIEW === 'thread' || !Conf['Thread Expansion']) {
         return;
       }
-      return $.on(d, 'IndexRefresh', this.onIndexRefresh);
+      if (Conf['JSON Navigation']) {
+        return $.on(d, 'IndexRefresh', this.onIndexRefresh);
+      } else {
+        return Thread.callbacks.push({
+          name: 'Expand Thread',
+          cb: function() {
+            return ExpandThread.setButton(this);
+          }
+        });
+      }
     },
     setButton: function(thread) {
       var a;
-      if (!(a = $.x('following-sibling::a[contains(@class,"summary")][1]', thread.OP.nodes.root))) {
+      if (!(a = $.x('following-sibling::*[contains(@class,"summary")][1]', thread.OP.nodes.root))) {
         return;
       }
       a.textContent = ExpandThread.text.apply(ExpandThread, ['+'].concat(__slice.call(a.textContent.match(/\d+/g))));
+      a.style.cursor = 'pointer';
       return $.on(a, 'click', ExpandThread.cbToggle);
     },
     disconnect: function(refresh) {
