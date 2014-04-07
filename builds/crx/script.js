@@ -1251,8 +1251,8 @@
       return this.board.posts.rm(this);
     };
 
-    Post.prototype.addClone = function(context) {
-      return new Clone(this, context);
+    Post.prototype.addClone = function(context, contractThumb) {
+      return new Clone(this, context, contractThumb);
     };
 
     Post.prototype.rmClone = function(index) {
@@ -1272,8 +1272,8 @@
   Clone = (function(_super) {
     __extends(Clone, _super);
 
-    function Clone(origin, context) {
-      var file, info, inline, inlined, key, nodes, post, root, val, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
+    function Clone(origin, context, contractThumb) {
+      var file, info, inline, inlined, key, nodes, post, root, val, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
       this.origin = origin;
       this.context = context;
       _ref = ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply'];
@@ -1282,7 +1282,7 @@
         this[key] = origin[key];
       }
       nodes = origin.nodes;
-      root = nodes.root.cloneNode(true);
+      root = contractThumb ? this.cloneWithoutVideo(nodes.root) : nodes.root.cloneNode(true);
       post = $('.post', root);
       info = $('.postInfo', post);
       this.nodes = {
@@ -1342,6 +1342,13 @@
         this.file.text = file.firstElementChild;
         this.file.thumb = $('img[data-md5]', file);
         this.file.fullImage = $('.full-image', file);
+        if (contractThumb) {
+          $.rmClass(this.nodes.root, 'expanded-image');
+          $.rmClass(this.file.thumb, 'expanding');
+        }
+        if ((_ref4 = this.file.fullImage) != null) {
+          _ref4.removeAttribute('id');
+        }
       }
       if (origin.isDead) {
         this.isDead = true;
@@ -1349,6 +1356,23 @@
       this.isClone = true;
       root.dataset.clone = origin.clones.push(this) - 1;
     }
+
+    Clone.prototype.cloneWithoutVideo = function(node) {
+      var child, clone, _i, _len, _ref;
+      if (node.tagName === 'VIDEO') {
+        return [];
+      } else if (node.nodeType === Node.ELEMENT_NODE && $('video', node)) {
+        clone = node.cloneNode(false);
+        _ref = node.childNodes;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          child = _ref[_i];
+          $.add(clone, this.cloneWithoutVideo(child));
+        }
+        return clone;
+      } else {
+        return node.cloneNode(true);
+      }
+    };
 
     return Clone;
 
@@ -3366,7 +3390,7 @@
       if (!root.parentNode) {
         return;
       }
-      clone = post.addClone(context);
+      clone = post.addClone(context, $.hasClass(root, 'dialog'));
       Main.callbackNodes(Clone, [clone]);
       nodes = clone.nodes;
       $.rmAll(nodes.root);

@@ -85,7 +85,7 @@ Get =
   insert: (post, root, context) ->
     # Stop here if the container has been removed while loading.
     return unless root.parentNode
-    clone = post.addClone context
+    clone = post.addClone context, ($.hasClass root, 'dialog')
     Main.callbackNodes Clone, [clone]
 
     # Get rid of the side arrows.

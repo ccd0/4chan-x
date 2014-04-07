@@ -1,11 +1,14 @@
 class Clone extends Post
-  constructor: (@origin, @context) ->
+  constructor: (@origin, @context, contractThumb) ->
     for key in ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply']
       # Copy or point to the origin's key value.
       @[key] = origin[key]
 
     {nodes} = origin
-    root = nodes.root.cloneNode true
+    root = if contractThumb
+      @cloneWithoutVideo nodes.root
+    else
+      nodes.root.cloneNode true
     post = $ '.post',     root
     info = $ '.postInfo', post
     @nodes =
@@ -56,6 +59,25 @@ class Clone extends Post
       @file.thumb = $ 'img[data-md5]', file
       @file.fullImage = $ '.full-image', file
 
+      # Contract thumbnails in quote preview
+      if contractThumb
+        $.rmClass @nodes.root, 'expanded-image'
+        $.rmClass @file.thumb, 'expanding'
+
+      # Remove any #ihover ID
+      @file.fullImage?.removeAttribute 'id'
+
     @isDead  = true if origin.isDead
     @isClone = true
     root.dataset.clone = origin.clones.push(@) - 1
+
+  cloneWithoutVideo: (node) ->
+    if node.tagName is 'VIDEO'
+      []
+    else if node.nodeType is Node.ELEMENT_NODE and $ 'video', node
+      clone = node.cloneNode false
+      $.add clone, @cloneWithoutVideo child for child in node.childNodes
+      clone
+    else
+      node.cloneNode true
+
