@@ -1,3 +1,5 @@
+### 3.20.3 - *2014-04-07*
+
 - Dramatically decreased CPU usage by pausing webm files not in the viewport.
 
 ### 3.20.2 - *2014-04-06*
