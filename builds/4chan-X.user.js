@@ -2715,8 +2715,8 @@
       if (Index.req || Conf['Index Mode'] !== 'infinite' || (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight)) || g.VIEW === 'thread') {
         return;
       }
-      Index.pageNum = (Index.pageNum || Index.getCurrentPage()) + 1;
-      if (Index.pageNum >= Index.pagesNum) {
+      Index.currentPage = (Index.currentPage || Index.getCurrentPage()) + 1;
+      if (Index.currentPage >= Index.pagesNum) {
         return Index.endNotice();
       }
       return Index.buildIndex(true);
@@ -3055,8 +3055,8 @@
       return Header.scrollToIfNeeded(Index.navLinks);
     },
     getCurrentPage: function() {
-      if (Conf['Index Mode'] === 'infinite' && Index.pageNum) {
-        return Index.pageNum;
+      if (Conf['Index Mode'] === 'infinite' && Index.currentPage) {
+        return Index.currentPage;
       }
       return +window.location.pathname.split('/')[2];
     },
@@ -3118,8 +3118,10 @@
     },
     setPage: function(pageNum) {
       var a, href, maxPageNum, next, pagesRoot, prev, strong;
-      pageNum || (pageNum = Index.getCurrentPage());
-      Index.pageNum = pageNum;
+      if (pageNum == null) {
+        pageNum = Index.getCurrentPage();
+      }
+      Index.currentPage = pageNum;
       maxPageNum = Index.getMaxPageNum();
       pagesRoot = $('.pages', Index.pagelist);
       prev = pagesRoot.previousSibling.firstChild;
@@ -3180,7 +3182,7 @@
       if (!(d.readyState === 'loading' || Index.root.parentElement)) {
         $.replace($('.board'), Index.root);
       }
-      delete Index.pageNum;
+      Index.currentPage = 0;
       if ((_ref = Index.req) != null) {
         _ref.abort();
       }
@@ -3498,19 +3500,12 @@
     buildIndex: function(infinite) {
       var i, max, nodes, pageNum, sortedThreads, thread, threads, threadsPerPage;
       sortedThreads = Index.sortedThreads;
+      nodes = [];
       switch (Conf['Index Mode']) {
         case 'paged':
         case 'infinite':
           pageNum = Index.getCurrentPage();
-          if (Index.isSearching) {
-            Index.setPage(pageNum = 0);
-          }
-          if (pageNum > Index.getMaxPageNum()) {
-            Index.pageNav(Index.getMaxPageNum());
-            return;
-          }
           threadsPerPage = Index.getThreadsNumPerPage();
-          nodes = [];
           threads = [];
           i = threadsPerPage * pageNum;
           max = i + threadsPerPage;
@@ -3526,7 +3521,6 @@
           nodes = Index.buildCatalogViews();
           break;
         default:
-          nodes = [];
           i = 0;
           while (thread = sortedThreads[i++]) {
             nodes.push(thread.OP.nodes.root.parentNode, $.el('hr'));
@@ -3551,9 +3545,11 @@
         if (!Index.searchInput.dataset.searching) {
           Index.searchInput.dataset.searching = 1;
           Index.pageBeforeSearch = Index.getCurrentPage();
-          pageNum = 0;
+          Index.setPage(pageNum = 0);
         } else {
-          pageNum = Index.getCurrentPage();
+          if (Conf['Index Mode'] !== 'infinite') {
+            pageNum = Index.getCurrentPage();
+          }
         }
       } else {
         if (!Index.searchInput.dataset.searching) {
