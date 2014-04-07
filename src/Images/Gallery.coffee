@@ -106,16 +106,18 @@ Gallery =
   generateThumb: (file) ->
     post  = Get.postFromNode file
     title = ($ '.fileText a', file).textContent
-    thumb = post.file.thumb.parentNode.cloneNode true
-    if double = $ 'img + img', thumb
-      $.rm double
+    thumb = $.el 'a',
+      className: 'gal-thumb'
+      href: post.file.URL
+      target: '_blank'
+      title = title
+      'data-id': Gallery.images.length
+      'data-post': $('a[title="Highlight this post"]', post.nodes.info).href
 
-    thumb.className = 'gal-thumb'
-    thumb.title = title
-    thumb.dataset.id   = Gallery.images.length
-    thumb.dataset.post = $('a[title="Highlight this post"]', post.nodes.info).href
-    thumb.firstElementChild.style.cssText = ''
-
+    thumbImg = post.file.thumb.cloneNode false
+    thumbImg.style.cssText = ''
+    $.add thumb, thumbImg
+ 
     $.on thumb, 'click', Gallery.cb.open
 
     Gallery.images.push thumb
