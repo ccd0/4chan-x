@@ -117,7 +117,7 @@ ImageExpand =
       el.src = src or post.file.URL
     position = if isVideo and Conf['Show Controls'] then thumb.parentNode else thumb
     $.after position, el unless el is position.nextSibling
-    $.asap (-> isVideo or el.naturalHeight), ->
+    $.asap (-> if isVideo then el.videoHeight or el.naturalHeight), ->
       ImageExpand.completeExpand post
 
   completeExpand: (post) ->

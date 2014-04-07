@@ -7719,7 +7719,9 @@
         $.after(position, el);
       }
       return $.asap((function() {
-        return isVideo || el.naturalHeight;
+        if (isVideo) {
+          return el.videoHeight || el.naturalHeight;
+        }
       }), function() {
         return ImageExpand.completeExpand(post);
       });
@@ -7967,7 +7969,9 @@
         latestEvent: e,
         endEvents: 'mouseout click',
         asapTest: function() {
-          return isVideo || el.naturalHeight;
+          if (isVideo) {
+            return el.videoHeight || el.naturalHeight;
+          }
         },
         noRemove: true,
         cb: function() {
