@@ -37,7 +37,7 @@ ImageHover =
       el: el
       latestEvent: e
       endEvents: 'mouseout click'
-      asapTest: -> (if isVideo then el.videoHeight or el.naturalHeight)
+      asapTest: -> (if isVideo then el.videoHeight else el.naturalHeight)
       noRemove: true
       cb: ->
         if isVideo
