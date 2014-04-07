@@ -223,7 +223,7 @@ div.center:not(.ad-cnt) {
   height: 10px;
   position: absolute;
 }
-:root #scroll-marker:not(.autohide) {
+:root #header-bar:not(.autohide) #scroll-marker {
   pointer-events: none;
 }
 #header-bar #scroll-marker {
