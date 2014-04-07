@@ -28,8 +28,10 @@ ImageExpand =
   cb:
     toggle: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+      post = Get.postFromNode @
+      return if post.file.isExpanded and post.file.fullImage?.controls
       e.preventDefault()
-      ImageExpand.toggle Get.postFromNode @
+      ImageExpand.toggle post
 
     toggleAll: ->
       $.event 'CloseMenu'
@@ -89,9 +91,11 @@ ImageExpand =
   contract: (post) ->
     if post.file.isVideo and video = post.file.fullImage
       video.pause()
+      TrashQueue.add video, post
+      post.file.thumb.parentNode.href = video.src
+      post.file.thumb.parentNode.target = '_blank'
       for eventName, cb of ImageExpand.videoCB
         $.off video, eventName, cb
-      TrashQueue.add video, post
       post.file.videoControls?.map($.rm)
       delete post.file.videoControls
     $.rmClass post.nodes.root, 'expanded-image'
@@ -112,8 +116,7 @@ ImageExpand =
       el.loop = true if isVideo
       $.on el, 'error', ImageExpand.error
       el.src = src or post.file.URL
-    position = if isVideo and Conf['Show Controls'] then thumb.parentNode else thumb
-    $.after position, el unless el is position.nextSibling
+    $.after thumb, el unless el is thumb.nextSibling
     $.asap (-> el.videoHeight or el.naturalHeight), ->
       ImageExpand.completeExpand post
 
@@ -147,8 +150,13 @@ ImageExpand =
     {file} = post
     video = file.fullImage
     file.videoControls = []
+    file.thumb.parentNode.removeAttribute 'href'
+    file.thumb.parentNode.removeAttribute 'target'
     video.muted = !Conf['Allow Sound']
     video.controls = Conf['Show Controls']
+    # drag left to contract
+    video.dataset.mousedown = 'false'
+    $.on video, eventName, cb for eventName, cb of ImageExpand.videoCB
     if Conf['Show Controls']
       # contract link in file info
       contract = $.el 'a',
@@ -157,10 +165,6 @@ ImageExpand =
         title: 'You can also contract the video by dragging it to the left.'
       $.on contract, 'click', (e) -> ImageExpand.contract post
       file.videoControls.push $.tn('\u00A0'), contract
-      # drag left to contract
-      video.dataset.mousedown = 'false'
-      for eventName, cb of ImageExpand.videoCB
-        $.on video, eventName, cb
     if Conf['Autoplay']
       video.controls = false
       video.play()

@@ -830,7 +830,7 @@ span.hide-announcement {
 .full-image:not(#ihover) {
   display: none;
 }
-.expanded-image > .post > .file .full-image:not(#ihover) {
+.expanded-image > .post > .file > .fileThumb > .full-image:not(#ihover) {
   display: inline;
 }
 .expanding {
@@ -841,6 +841,9 @@ span.hide-announcement {
 }
 :root.fit-width .full-image:not(#ihover) {
   max-width: 100%;
+}
+:root.gecko.fit-width .full-image:not(#ihover) {
+  width: 100%;
 }
 #ihover {
   -moz-box-sizing: border-box;
