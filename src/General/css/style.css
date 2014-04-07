@@ -711,6 +711,7 @@ span.hide-announcement {
 /* File */
 .fnswitch:hover > .fntrunc,
 .fnswitch:not(:hover) > .fnfull,
+.expanded-image > .post > .file > .fileThumb > video[data-md5],
 .expanded-image > .post > .file > .fileThumb > img[data-md5] {
   display: none;
 }
