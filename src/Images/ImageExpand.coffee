@@ -170,9 +170,9 @@ ImageExpand =
 
     # dragging to the left contracts the video
     mousedown: (e) -> @dataset.mousedown = 'true' if e.button is 0
-    mouseup: (e) -> @dataset.mousedown = 'false' if e.button is 0
+    mouseup:   (e) -> @dataset.mousedown = 'false' if e.button is 0
     mouseover: (e) -> @dataset.mousedown = 'false'
-    mouseout: (e) ->
+    mouseout:  (e) ->
       if @dataset.mousedown is 'true' and e.clientX <= @getBoundingClientRect().left
         ImageExpand.contract (Get.postFromNode @)
 
