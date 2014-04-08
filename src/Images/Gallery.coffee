@@ -106,16 +106,20 @@ Gallery =
   generateThumb: (file) ->
     post  = Get.postFromNode file
     title = ($ '.fileText a', file).textContent
-    thumb = post.file.thumb.parentNode.cloneNode true
-    if double = $ '* + *', thumb
-      $.rm double
 
-    thumb.className    = 'gal-thumb'
-    thumb.title        = title
-    thumb.dataset.id   = Gallery.images.length
-    thumb.dataset.post = $('a[title="Highlight this post"]', post.nodes.info).href
+    thumb = $.el 'a',
+      className: 'gal-thumb'
+      href: post.file.URL
+      target: '_blank'
+      title = title
+
+    thumb.dataset.id      = Gallery.images.length
+    thumb.dataset.post    = $('a[title="Highlight this post"]', post.nodes.info).href
     thumb.dataset.isVideo = true if post.file.isVideo
-    thumb.firstElementChild.style.cssText = ''
+
+    thumbImg = post.file.thumb.cloneNode false
+    thumbImg.style.cssText = ''
+    $.add thumb, thumbImg
 
     $.on thumb, 'click', Gallery.cb.open
 
@@ -153,12 +157,12 @@ Gallery =
         src:   name.href     = @href
         title: name.download = name.textContent = @title
 
-      if @dataset.isVideo  
+      if @dataset.isVideo
         file.muted    = !Conf['Allow Sound']
         file.controls = Conf['Show Controls']
         file.autoplay = Conf['Autoplay']
         file.loop     = true
-      
+
       $.extend  file.dataset,   @dataset
       $.replace nodes.current,  file
       nodes.count.textContent = +@dataset.id + 1
@@ -174,7 +178,7 @@ Gallery =
         return if top < 0
 
       nodes.thumbs.scrollTop += top
-      
+
       $.on file, 'error', ->
         Gallery.cb.error file, thumb
 

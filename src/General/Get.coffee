@@ -47,7 +47,7 @@ Get =
     #   get all their backlinks.
     posts.forEach (qPost) ->
       if fullID in qPost.quotes
-        handleQuotes qPost, 'quotelinks' 
+        handleQuotes qPost, 'quotelinks'
 
     # Second:
     #   If we have quote backlinks:
@@ -62,6 +62,7 @@ Get =
     quotelinks.filter (quotelink) ->
       {boardID, postID} = Get.postDataFromLink quotelink
       boardID is post.board.ID and postID is post.ID
+
   postClone: (boardID, threadID, postID, root, context) ->
     if post = g.posts["#{boardID}.#{postID}"]
       Get.insert post, root, context
@@ -80,7 +81,7 @@ Get =
   insert: (post, root, context) ->
     # Stop here if the container has been removed while loading.
     return unless root.parentNode
-    clone = post.addClone context
+    clone = post.addClone context, ($.hasClass root, 'dialog')
     Clone.callbacks.execute [clone]
 
     # Get rid of the side arrows/stubs.

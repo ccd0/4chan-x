@@ -290,8 +290,8 @@ class Post
     @thread.posts.rm @
     @board.posts.rm @
 
-  addClone: (context) ->
-    new Clone @, context
+  addClone: (context, contractThumb) ->
+    new Clone @, context, contractThumb
 
   rmClone: (index) ->
     @clones.splice index, 1

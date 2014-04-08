@@ -1424,8 +1424,8 @@
       return this.board.posts.rm(this);
     };
 
-    Post.prototype.addClone = function(context) {
-      return new Clone(this, context);
+    Post.prototype.addClone = function(context, contractThumb) {
+      return new Clone(this, context, contractThumb);
     };
 
     Post.prototype.rmClone = function(index) {
@@ -1445,8 +1445,8 @@
   Clone = (function(_super) {
     __extends(Clone, _super);
 
-    function Clone(origin, context) {
-      var file, info, inline, inlined, key, nodes, post, root, val, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
+    function Clone(origin, context, contractThumb) {
+      var file, info, inline, inlined, key, nodes, post, root, val, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
       this.origin = origin;
       this.context = context;
       _ref = ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply'];
@@ -1455,7 +1455,7 @@
         this[key] = origin[key];
       }
       nodes = origin.nodes;
-      root = nodes.root.cloneNode(true);
+      root = contractThumb ? this.cloneWithoutVideo(nodes.root) : nodes.root.cloneNode(true);
       post = $('.post', root);
       info = $('.postInfo', post);
       this.nodes = {
@@ -1515,6 +1515,17 @@
         this.file.text = file.firstElementChild;
         this.file.thumb = $('img[data-md5]', file);
         this.file.fullImage = $('.full-image', file);
+        if (contractThumb) {
+          $.rmClass(root, 'expanded-image');
+          $.rmClass(this.file.thumb, 'expanding');
+        }
+        this.file.isExpanded = $.hasClass(root, 'expanded-image');
+        if ((_ref4 = this.file.fullImage) != null) {
+          _ref4.removeAttribute('id');
+        }
+        if ((_ref5 = $('.video-controls', this.file.text)) != null) {
+          _ref5.remove();
+        }
       }
       if (origin.isDead) {
         this.isDead = true;
@@ -1522,6 +1533,23 @@
       this.isClone = true;
       root.dataset.clone = origin.clones.push(this) - 1;
     }
+
+    Clone.prototype.cloneWithoutVideo = function(node) {
+      var child, clone, _i, _len, _ref;
+      if (node.tagName === 'VIDEO') {
+        return [];
+      } else if (node.nodeType === Node.ELEMENT_NODE && $('video', node)) {
+        clone = node.cloneNode(false);
+        _ref = node.childNodes;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          child = _ref[_i];
+          $.add(clone, this.cloneWithoutVideo(child));
+        }
+        return clone;
+      } else {
+        return node.cloneNode(true);
+      }
+    };
 
     return Clone;
 
@@ -3999,7 +4027,7 @@
       if (!root.parentNode) {
         return;
       }
-      clone = post.addClone(context);
+      clone = post.addClone(context, $.hasClass(root, 'dialog'));
       Clone.callbacks.execute([clone]);
       nodes = clone.nodes;
       $.rmAll(nodes.root);
@@ -7682,21 +7710,22 @@
       return nodes.total.textContent = --i;
     },
     generateThumb: function(file) {
-      var double, post, thumb, title;
+      var post, thumb, thumbImg, title;
       post = Get.postFromNode(file);
       title = ($('.fileText a', file)).textContent;
-      thumb = post.file.thumb.parentNode.cloneNode(true);
-      if (double = $('* + *', thumb)) {
-        $.rm(double);
-      }
-      thumb.className = 'gal-thumb';
-      thumb.title = title;
+      thumb = $.el('a', {
+        className: 'gal-thumb',
+        href: post.file.URL,
+        target: '_blank'
+      }, title = title);
       thumb.dataset.id = Gallery.images.length;
       thumb.dataset.post = $('a[title="Highlight this post"]', post.nodes.info).href;
       if (post.file.isVideo) {
         thumb.dataset.isVideo = true;
       }
-      thumb.firstElementChild.style.cssText = '';
+      thumbImg = post.file.thumb.cloneNode(false);
+      thumbImg.style.cssText = '';
+      $.add(thumb, thumbImg);
       $.on(thumb, 'click', Gallery.cb.open);
       Gallery.images.push(thumb);
       return $.add(Gallery.nodes.thumbs, thumb);
@@ -7919,10 +7948,10 @@
       $.on(thumb.parentNode, 'click', ImageExpand.cb.toggle);
       if (this.isClone && $.hasClass(thumb, 'expanding')) {
         ImageExpand.contract(this);
-        ImageExpand.expand(this);
-        return;
-      }
-      if (ImageExpand.on && !this.isHidden && (Conf['Expand spoilers'] || !this.file.isSpoiler)) {
+        return ImageExpand.expand(this);
+      } else if (this.isClone && this.file.isExpanded && this.file.isVideo) {
+        return ImageExpand.setupVideoControls(this);
+      } else if (ImageExpand.on && !this.isHidden && (Conf['Expand spoilers'] || !this.file.isSpoiler)) {
         return ImageExpand.expand(this);
       }
     },
@@ -8006,7 +8035,7 @@
       return ImageExpand.contract(post);
     },
     contract: function(post) {
-      var cb, eventName, video, _ref, _ref1;
+      var cb, eventName, video, _ref;
       if (post.file.isVideo && (video = post.file.fullImage)) {
         video.pause();
         TrashQueue.add(video, post);
@@ -8017,9 +8046,7 @@
           cb = _ref[eventName];
           $.off(video, eventName, cb);
         }
-        if ((_ref1 = post.file.videoControls) != null) {
-          _ref1.map($.rm);
-        }
+        $.rm(post.file.videoControls);
         delete post.file.videoControls;
       }
       $.rmClass(post.nodes.root, 'expanded-image');
@@ -8060,26 +8087,36 @@
       if (!$.hasClass(thumb, 'expanding')) {
         return;
       }
-      post.file.isExpanded = true;
-      if (post.file.isVideo) {
-        ImageExpand.setupVideo(post);
-      }
       if (!post.nodes.root.parentNode) {
-        $.addClass(post.nodes.root, 'expanded-image');
-        $.rmClass(post.file.thumb, 'expanding');
+        ImageExpand.completeExpand2(post);
         return;
       }
       bottom = post.nodes.root.getBoundingClientRect().bottom;
       return $.queueTask(function() {
-        $.addClass(post.nodes.root, 'expanded-image');
-        $.rmClass(post.file.thumb, 'expanding');
+        ImageExpand.completeExpand2(post);
         if (!(bottom <= 0)) {
           return;
         }
         return window.scrollBy(0, post.nodes.root.getBoundingClientRect().bottom - bottom);
       });
     },
+    completeExpand2: function(post) {
+      var thumb;
+      thumb = post.file.thumb;
+      $.addClass(post.nodes.root, 'expanded-image');
+      $.rmClass(post.file.thumb, 'expanding');
+      post.file.isExpanded = true;
+      if (post.file.isVideo) {
+        return ImageExpand.setupVideo(post);
+      }
+    },
     videoCB: {
+      click: function(e) {
+        if (this.paused && !this.controls) {
+          this.play();
+          return e.stopPropagation();
+        }
+      },
       mousedown: function(e) {
         if (e.button === 0) {
           return this.dataset.mousedown = 'true';
@@ -8099,21 +8136,21 @@
         }
       }
     },
-    setupVideo: function(post) {
-      var cb, contract, eventName, file, play, video, _ref;
+    setupVideoControls: function(post) {
+      var cb, contract, eventName, file, video, _ref;
       file = post.file;
       video = file.fullImage;
-      file.videoControls = [];
       file.thumb.parentNode.removeAttribute('href');
       file.thumb.parentNode.removeAttribute('target');
-      video.muted = !Conf['Allow Sound'];
-      video.controls = Conf['Show Controls'];
       video.dataset.mousedown = 'false';
       _ref = ImageExpand.videoCB;
       for (eventName in _ref) {
         cb = _ref[eventName];
         $.on(video, eventName, cb);
       }
+      file.videoControls = $.el('span', {
+        className: 'video-controls'
+      });
       if (Conf['Show Controls']) {
         contract = $.el('a', {
           textContent: 'contract',
@@ -8123,13 +8160,22 @@
         $.on(contract, 'click', function(e) {
           return ImageExpand.contract(post);
         });
-        file.videoControls.push($.tn('\u00A0'), contract);
+        $.add(file.videoControls, [$.tn('\u00A0'), contract]);
       }
+      return $.add(file.text, file.videoControls);
+    },
+    setupVideo: function(post) {
+      var file, video;
+      ImageExpand.setupVideoControls(post);
+      file = post.file;
+      video = file.fullImage;
+      video.muted = !Conf['Allow Sound'];
+      video.controls = Conf['Show Controls'];
       if (Conf['Autoplay']) {
         video.controls = false;
         video.play();
         if (Conf['Show Controls']) {
-          $.asap((function() {
+          return $.asap((function() {
             return (video.readyState >= 3 && video.currentTime <= Math.max(0.1, video.duration - 0.5)) || !file.isExpanded;
           }), function() {
             if (file.isExpanded) {
@@ -8137,18 +8183,7 @@
             }
           }, 500);
         }
-      } else if (!Conf['Show Controls']) {
-        play = $.el('a', {
-          textContent: 'play',
-          href: 'javascript:;'
-        });
-        $.on(play, 'click', function(e) {
-          video[this.textContent]();
-          return this.textContent = this.textContent === 'play' ? 'pause' : 'play';
-        });
-        file.videoControls.push($.tn('\u00A0'), play);
       }
-      return $.add(file.text, file.videoControls);
     },
     error: function() {
       var URL, post, src, timeoutID;

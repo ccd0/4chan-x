@@ -22,8 +22,9 @@ ImageExpand =
       # make it loading in the clone too.
       ImageExpand.contract @
       ImageExpand.expand @
-      return
-    if ImageExpand.on and !@isHidden and (Conf['Expand spoilers'] or !@file.isSpoiler)
+    else if @isClone and @file.isExpanded and @file.isVideo
+      ImageExpand.setupVideoControls @
+    else if ImageExpand.on and !@isHidden and (Conf['Expand spoilers'] or !@file.isSpoiler)
       ImageExpand.expand @
   cb:
     toggle: (e) ->
@@ -96,7 +97,7 @@ ImageExpand =
       post.file.thumb.parentNode.target = '_blank'
       for eventName, cb of ImageExpand.videoCB
         $.off video, eventName, cb
-      post.file.videoControls?.map($.rm)
+      $.rm post.file.videoControls
       delete post.file.videoControls
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass post.file.thumb, 'expanding'
@@ -123,22 +124,31 @@ ImageExpand =
   completeExpand: (post) ->
     {thumb} = post.file
     return unless $.hasClass thumb, 'expanding' # contracted before the image loaded
-    post.file.isExpanded = true
-    ImageExpand.setupVideo post if post.file.isVideo
     unless post.nodes.root.parentNode
       # Image might start/finish loading before the post is inserted.
       # Don't scroll when it's expanded in a QP for example.
-      $.addClass post.nodes.root, 'expanded-image'
-      $.rmClass  post.file.thumb, 'expanding'
+      ImageExpand.completeExpand2 post
       return
     {bottom} = post.nodes.root.getBoundingClientRect()
     $.queueTask ->
-      $.addClass post.nodes.root, 'expanded-image'
-      $.rmClass  post.file.thumb, 'expanding'
+      ImageExpand.completeExpand2 post
       return unless bottom <= 0
       window.scrollBy 0, post.nodes.root.getBoundingClientRect().bottom - bottom
 
+  completeExpand2: (post) ->
+    {thumb} = post.file
+    $.addClass post.nodes.root, 'expanded-image'
+    $.rmClass  post.file.thumb, 'expanding'
+    post.file.isExpanded = true
+    ImageExpand.setupVideo post if post.file.isVideo
+
   videoCB:
+    click: (e) ->
+      if @paused and not @controls
+        @play()
+        e.stopPropagation()
+
+    # dragging to the left contracts the video
     mousedown: (e) -> @dataset.mousedown = 'true' if e.button is 0
     mouseup: (e) -> @dataset.mousedown = 'false' if e.button is 0
     mouseover: (e) -> @dataset.mousedown = 'false'
@@ -146,42 +156,44 @@ ImageExpand =
       if @dataset.mousedown is 'true' and e.clientX <= @getBoundingClientRect().left
         ImageExpand.contract (Get.postFromNode @)
 
-  setupVideo: (post) ->
+  setupVideoControls: (post) ->
     {file} = post
     video = file.fullImage
-    file.videoControls = []
+
+    # disable link to file so native controls can work
     file.thumb.parentNode.removeAttribute 'href'
     file.thumb.parentNode.removeAttribute 'target'
-    video.muted = !Conf['Allow Sound']
-    video.controls = Conf['Show Controls']
-    # drag left to contract
+
+    # setup callbacks on video element
     video.dataset.mousedown = 'false'
     $.on video, eventName, cb for eventName, cb of ImageExpand.videoCB
+
+    # setup controls in file info
+    file.videoControls = $.el 'span',
+      className: 'video-controls'
     if Conf['Show Controls']
-      # contract link in file info
       contract = $.el 'a',
         textContent: 'contract'
         href: 'javascript:;'
         title: 'You can also contract the video by dragging it to the left.'
       $.on contract, 'click', (e) -> ImageExpand.contract post
-      file.videoControls.push $.tn('\u00A0'), contract
+      $.add file.videoControls, [$.tn('\u00A0'), contract]
+    $.add file.text, file.videoControls
+
+  setupVideo: (post) ->
+    ImageExpand.setupVideoControls post
+    {file} = post
+    video = file.fullImage
+    video.muted = !Conf['Allow Sound']
+    video.controls = Conf['Show Controls']
     if Conf['Autoplay']
       video.controls = false
       video.play()
-      # Hacky workaround for Firefox forever-loading bug
+      # Hacky workaround for Firefox forever-loading bug for very short videos
       if Conf['Show Controls']
         $.asap (-> (video.readyState >= 3 and video.currentTime <= Math.max 0.1, (video.duration - 0.5)) or !file.isExpanded), ->
           video.controls = true if file.isExpanded
         , 500
-    else unless Conf['Show Controls']
-      play = $.el 'a',
-        textContent: 'play'
-        href: 'javascript:;'
-      $.on play, 'click', (e) ->
-        video[@textContent]()
-        @textContent = if @textContent is 'play' then 'pause' else 'play'
-      file.videoControls.push $.tn('\u00A0'), play
-    $.add file.text, file.videoControls
 
   error: ->
     post = Get.postFromNode @
