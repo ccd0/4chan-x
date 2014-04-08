@@ -1,3 +1,13 @@
+### v1.7.3 
+*2014-04-07*
+
+**ccd0**
+- Fix behavior of .webm videos expanded within inline quotes.
+- Contract thumbnails in quoted previews to avoid crashes caused by videos in quoted previews on some systems.
+- Change interface when both `Autoplay` and `Show Controls` are unchecked. In this mode, videos are now activated by clicking on them. The first click expands the video, the second click plays the video, and the third click contracts it.
+- Add item `Expand videos` in `Image Expansion` menu, which enables expansion of videos by `Expand All Images`. Disabled by default. Previously videos were expanded.
+- Disable autoplay for videos expanded by `Expand All Images`.
+
 ### v1.7.2 
 *2014-04-07*
 
@@ -38,13 +48,15 @@
 **ccd0**:
 - Support hover for .webm videos.
 - Add .webm to supported posting types.
-- Add option to enable/disable sound.
+- Add option `Allow Sound` to enable/disable sound. Enabled by default.
 
 ## v1.5.0 
 *2014-04-04*
 
 **ccd0**:
 - Support expansion of .webm videos.
+- New setting: `Autoplay`, enabled by default. Causes videos to play immediately when expanded.
+- New setting: `Show Controls`, enabled by default. Shows native controls on videos.
 
 ### v1.4.7 
 *2014-04-03*
