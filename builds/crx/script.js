@@ -12674,7 +12674,7 @@
         return;
       }
       $.event('CloseMenu');
-      html = "<nav><div class=sections-list></div><p class='imp-exp-result warning'></p><div class=credits><a class=export>Export</a>&nbsp|&nbsp<a class=import>Import</a>&nbsp|&nbsp<a class=reset>Reset Settings</a>&nbsp|&nbsp<input type=file hidden><a href='https://github.com/ccd0/4chan-x' target=_blank>4chan X</a>&nbsp|&nbsp<a href='https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md' target=_blank>" + g.VERSION + "</a>&nbsp|&nbsp<a href='https://github.com/ccd0/4chan-x/blob/master/README.md#reporting-bugs-and-suggestions' target=_blank>Issues</a>&nbsp|&nbsp<a href=javascript:; class='close fa fa-times' title=Close></a></div></nav><div class=section-container><section></section></div>";
+      html = "<nav><div class=sections-list></div><p class='imp-exp-result warning'></p><div class=credits><a class=export>Export</a>&nbsp|&nbsp<a class=import>Import</a>&nbsp|&nbsp<a class=reset>Reset Settings</a>&nbsp|&nbsp<input type=file hidden><a href='https://github.com/ccd0/4chan-x' target=_blank>4chan X</a>&nbsp|&nbsp<a href='https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md' target=_blank>" + g.VERSION + "</a>&nbsp|&nbsp<a href='https://github.com/ccd0/4chan-x/issues' target=_blank>Issues</a>&nbsp|&nbsp<a href=javascript:; class='close fa fa-times' title=Close></a></div></nav><div class=section-container><section></section></div>";
       Settings.overlay = overlay = $.el('div', {
         id: 'overlay'
       });
