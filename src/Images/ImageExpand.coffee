@@ -7,25 +7,31 @@ ImageExpand =
       textContent: 'EAI' 
       title: 'Expand All Images'
       href: 'javascript:;'
-    $.on @EAI, 'click', ImageExpand.cb.toggleAll
+    $.on @EAI, 'click', @cb.toggleAll
     Header.addShortcut @EAI, 3
+    $.on d, 'scroll visibilitychange', @cb.playVideos
 
     Post.callbacks.push
       name: 'Image Expansion'
       cb: @node
+
   node: ->
-    return unless @file?.isImage or @file?.isVideo
+    return unless @file and (@file.isImage or @file.isVideo)
     {thumb} = @file
     $.on thumb.parentNode, 'click', ImageExpand.cb.toggle
-    if @isClone and $.hasClass thumb, 'expanding'
-      # If we clone a post where the image is still loading,
-      # make it loading in the clone too.
-      ImageExpand.contract @
+    if @isClone
+      if @file.isImage and @file.isExpanding
+        # If we clone a post where the image is still loading,
+        # make it loading in the clone too.
+        ImageExpand.contract @
+        ImageExpand.expand @
+        return
+      if @file.isExpanded and @file.isVideo
+        ImageExpand.setupVideoControls @
+        return
+    if ImageExpand.on and !@isHidden and (Conf['Expand spoilers'] or !@file.isSpoiler)
       ImageExpand.expand @
-    else if @isClone and @file.isExpanded and @file.isVideo
-      ImageExpand.setupVideoControls @
-    else if ImageExpand.on and !@isHidden and (Conf['Expand spoilers'] or !@file.isSpoiler)
-      ImageExpand.expand @
+
   cb:
     toggle: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
@@ -49,19 +55,29 @@ ImageExpand =
         for post in [post].concat post.clones
           {file} = post
           return unless file and (file.isImage or file.isVideo) and doc.contains post.nodes.root
-          if ImageExpand.on and !post.isHidden and
-            (!Conf['Expand spoilers'] and file.isSpoiler or
-            Conf['Expand from here'] and Header.getTopOf(file.thumb) < 0)
+          if ImageExpand.on and (
+            post.isHidden or
+            !Conf['Expand spoilers'] and post.file.isSpoiler or
+            !doc.contains(post.nodes.root) or
+            Conf['Expand from here'] and Header.getTopOf(post.file.thumb) < 0)
               return
           $.queueTask func, post
         return
+
+    playVideos: (e) ->
+      for fullID, post of g.posts
+        continue unless post.file and post.file.isVideo and post.file.isExpanded
+        for post in [post].concat post.clones
+          play = !d.hidden and !post.isHidden and doc.contains(post.nodes.root) and Header.isNodeVisible post.nodes.root
+          if play then post.file.fullImage.play() else post.file.fullImage.pause()
+      return
 
     setFitness: ->
       (if @checked then $.addClass else $.rmClass) doc, @name.toLowerCase().replace /\s+/g, '-'
 
   toggle: (post) ->
     {thumb} = post.file
-    unless post.file.isExpanded or $.hasClass thumb, 'expanding'
+    unless post.file.isExpanded or post.file.isExpanding
       ImageExpand.expand post
       return
 
@@ -101,6 +117,7 @@ ImageExpand =
       delete post.file.videoControls
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass post.file.thumb, 'expanding'
+    delete post.file.isExpanding
     post.file.isExpanded = false
 
   expand: (post, src) ->
@@ -124,23 +141,26 @@ ImageExpand =
   completeExpand: (post) ->
     {thumb} = post.file
     return unless $.hasClass thumb, 'expanding' # contracted before the image loaded
+    delete post.file.isExpanding
+    post.file.isExpanded = true
+
+    complete = ->
+      $.addClass post.nodes.root, 'expanded-image'
+      $.rmClass  post.file.thumb, 'expanding'
+      ImageExpand.setupVideo post if post.file.isVideo
+
     unless post.nodes.root.parentNode
       # Image might start/finish loading before the post is inserted.
       # Don't scroll when it's expanded in a QP for example.
-      ImageExpand.completeExpand2 post
+      complete()
       return
+
+    post.file.fullImage.play() if post.file.isVideo and !d.hidden and Header.isNodeVisible post.nodes.root
     {bottom} = post.nodes.root.getBoundingClientRect()
     $.queueTask ->
-      ImageExpand.completeExpand2 post
+      complete()
       return unless bottom <= 0
       window.scrollBy 0, post.nodes.root.getBoundingClientRect().bottom - bottom
-
-  completeExpand2: (post) ->
-    {thumb} = post.file
-    $.addClass post.nodes.root, 'expanded-image'
-    $.rmClass  post.file.thumb, 'expanding'
-    post.file.isExpanded = true
-    ImageExpand.setupVideo post if post.file.isVideo
 
   videoCB:
     click: (e) ->
@@ -197,12 +217,13 @@ ImageExpand =
 
   error: ->
     post = Get.postFromNode @
+    post.file.isReady = false
     $.rm @
     delete post.file.fullImage
     # Images can error:
     #  - before the image started loading.
     #  - after the image started loading.
-    unless $.hasClass(post.file.thumb, 'expanding') or $.hasClass post.nodes.root, 'expanded-image'
+    unless post.file.isExpanding or post.file.isExpanded
       # Don't try to re-expend if it was already contracted.
       return
     ImageExpand.contract post

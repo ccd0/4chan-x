@@ -2546,6 +2546,11 @@
       }
       return bottom;
     },
+    isNodeVisible: function(node) {
+      var height;
+      height = node.getBoundingClientRect().height;
+      return Header.getTopOf(node) + height >= 0 && Header.getBottomOf(node) + height >= 0;
+    },
     isHidden: function() {
       var top;
       top = Header.bar.getBoundingClientRect().top;
@@ -7971,26 +7976,33 @@
         title: 'Expand All Images',
         href: 'javascript:;'
       });
-      $.on(this.EAI, 'click', ImageExpand.cb.toggleAll);
+      $.on(this.EAI, 'click', this.cb.toggleAll);
       Header.addShortcut(this.EAI, 3);
+      $.on(d, 'scroll visibilitychange', this.cb.playVideos);
       return Post.callbacks.push({
         name: 'Image Expansion',
         cb: this.node
       });
     },
     node: function() {
-      var thumb, _ref, _ref1;
-      if (!(((_ref = this.file) != null ? _ref.isImage : void 0) || ((_ref1 = this.file) != null ? _ref1.isVideo : void 0))) {
+      var thumb;
+      if (!(this.file && (this.file.isImage || this.file.isVideo))) {
         return;
       }
       thumb = this.file.thumb;
       $.on(thumb.parentNode, 'click', ImageExpand.cb.toggle);
-      if (this.isClone && $.hasClass(thumb, 'expanding')) {
-        ImageExpand.contract(this);
-        return ImageExpand.expand(this);
-      } else if (this.isClone && this.file.isExpanded && this.file.isVideo) {
-        return ImageExpand.setupVideoControls(this);
-      } else if (ImageExpand.on && !this.isHidden && (Conf['Expand spoilers'] || !this.file.isSpoiler)) {
+      if (this.isClone) {
+        if (this.file.isImage && this.file.isExpanding) {
+          ImageExpand.contract(this);
+          ImageExpand.expand(this);
+          return;
+        }
+        if (this.file.isExpanded && this.file.isVideo) {
+          ImageExpand.setupVideoControls(this);
+          return;
+        }
+      }
+      if (ImageExpand.on && !this.isHidden && (Conf['Expand spoilers'] || !this.file.isSpoiler)) {
         return ImageExpand.expand(this);
       }
     },
@@ -8028,12 +8040,32 @@
             if (!(file && (file.isImage || file.isVideo) && doc.contains(post.nodes.root))) {
               return;
             }
-            if (ImageExpand.on && !post.isHidden && (!Conf['Expand spoilers'] && file.isSpoiler || Conf['Expand from here'] && Header.getTopOf(file.thumb) < 0)) {
+            if (ImageExpand.on && (post.isHidden || !Conf['Expand spoilers'] && post.file.isSpoiler || !doc.contains(post.nodes.root) || Conf['Expand from here'] && Header.getTopOf(post.file.thumb) < 0)) {
               return;
             }
             $.queueTask(func, post);
           }
         });
+      },
+      playVideos: function(e) {
+        var fullID, play, post, _i, _len, _ref, _ref1;
+        _ref = g.posts;
+        for (fullID in _ref) {
+          post = _ref[fullID];
+          if (!(post.file && post.file.isVideo && post.file.isExpanded)) {
+            continue;
+          }
+          _ref1 = [post].concat(post.clones);
+          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+            post = _ref1[_i];
+            play = !d.hidden && !post.isHidden && doc.contains(post.nodes.root) && Header.isNodeVisible(post.nodes.root);
+            if (play) {
+              post.file.fullImage.play();
+            } else {
+              post.file.fullImage.pause();
+            }
+          }
+        }
       },
       setFitness: function() {
         return (this.checked ? $.addClass : $.rmClass)(doc, this.name.toLowerCase().replace(/\s+/g, '-'));
@@ -8042,7 +8074,7 @@
     toggle: function(post) {
       var headRect, left, root, thumb, top, x, y, _ref;
       thumb = post.file.thumb;
-      if (!(post.file.isExpanded || $.hasClass(thumb, 'expanding'))) {
+      if (!(post.file.isExpanded || post.file.isExpanding)) {
         ImageExpand.expand(post);
         return;
       }
@@ -8090,6 +8122,7 @@
       }
       $.rmClass(post.nodes.root, 'expanded-image');
       $.rmClass(post.file.thumb, 'expanding');
+      delete post.file.isExpanding;
       return post.file.isExpanded = false;
     },
     expand: function(post, src) {
@@ -8121,33 +8154,35 @@
       });
     },
     completeExpand: function(post) {
-      var bottom, thumb;
+      var bottom, complete, thumb;
       thumb = post.file.thumb;
       if (!$.hasClass(thumb, 'expanding')) {
         return;
       }
+      delete post.file.isExpanding;
+      post.file.isExpanded = true;
+      complete = function() {
+        $.addClass(post.nodes.root, 'expanded-image');
+        $.rmClass(post.file.thumb, 'expanding');
+        if (post.file.isVideo) {
+          return ImageExpand.setupVideo(post);
+        }
+      };
       if (!post.nodes.root.parentNode) {
-        ImageExpand.completeExpand2(post);
+        complete();
         return;
+      }
+      if (post.file.isVideo && !d.hidden && Header.isNodeVisible(post.nodes.root)) {
+        post.file.fullImage.play();
       }
       bottom = post.nodes.root.getBoundingClientRect().bottom;
       return $.queueTask(function() {
-        ImageExpand.completeExpand2(post);
+        complete();
         if (!(bottom <= 0)) {
           return;
         }
         return window.scrollBy(0, post.nodes.root.getBoundingClientRect().bottom - bottom);
       });
-    },
-    completeExpand2: function(post) {
-      var thumb;
-      thumb = post.file.thumb;
-      $.addClass(post.nodes.root, 'expanded-image');
-      $.rmClass(post.file.thumb, 'expanding');
-      post.file.isExpanded = true;
-      if (post.file.isVideo) {
-        return ImageExpand.setupVideo(post);
-      }
     },
     videoCB: {
       click: function(e) {
@@ -8227,9 +8262,10 @@
     error: function() {
       var URL, post, src, timeoutID;
       post = Get.postFromNode(this);
+      post.file.isReady = false;
       $.rm(this);
       delete post.file.fullImage;
-      if (!($.hasClass(post.file.thumb, 'expanding') || $.hasClass(post.nodes.root, 'expanded-image'))) {
+      if (!(post.file.isExpanding || post.file.isExpanded)) {
         return;
       }
       ImageExpand.contract(post);
