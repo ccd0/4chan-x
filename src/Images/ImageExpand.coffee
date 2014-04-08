@@ -28,7 +28,7 @@ ImageExpand =
       unless clone.origin.file.fullImage.paused
         $.queueTask -> ImageExpand.startVideo clone
     else if ImageExpand.on and !@isHidden and (Conf['Expand spoilers'] or !@file.isSpoiler)
-      ImageExpand.expand @
+      ImageExpand.expand @, null, true
   cb:
     toggle: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0

@@ -7633,7 +7633,7 @@
           });
         }
       } else if (ImageExpand.on && !this.isHidden && (Conf['Expand spoilers'] || !this.file.isSpoiler)) {
-        return ImageExpand.expand(this);
+        return ImageExpand.expand(this, null, true);
       }
     },
     cb: {
