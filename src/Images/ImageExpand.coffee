@@ -51,7 +51,7 @@ ImageExpand =
       if ImageExpand.on = $.hasClass ImageExpand.EAI, 'expand-all-shortcut'
         ImageExpand.EAI.className = 'contract-all-shortcut fa fa-compress'
         ImageExpand.EAI.title     = 'Contract All Images'
-        func = ImageExpand.expand
+        func = (post) -> ImageExpand.expand post, null, true
       else
         ImageExpand.EAI.className = 'expand-all-shortcut fa fa-expand'
         ImageExpand.EAI.title     = 'Expand All Images'
@@ -109,7 +109,7 @@ ImageExpand =
     $.rmClass post.file.thumb, 'expanding'
     post.file.isExpanded = false
 
-  expand: (post, src) ->
+  expand: (post, src, disableAutoplay) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
     {thumb, isVideo} = post.file
     return if post.isHidden or post.file.isExpanded or $.hasClass thumb, 'expanding'
@@ -125,9 +125,9 @@ ImageExpand =
       el.src = src or post.file.URL
     $.after thumb, el unless el is thumb.nextSibling
     $.asap (-> if isVideo then el.videoHeight else el.naturalHeight), ->
-      ImageExpand.completeExpand post
+      ImageExpand.completeExpand post, disableAutoplay
 
-  completeExpand: (post) ->
+  completeExpand: (post, disableAutoplay) ->
     {thumb} = post.file
     return unless $.hasClass thumb, 'expanding' # contracted before the image loaded
     unless post.nodes.root.parentNode
@@ -137,11 +137,11 @@ ImageExpand =
       return
     {bottom} = post.nodes.root.getBoundingClientRect()
     $.queueTask ->
-      ImageExpand.completeExpand2 post
+      ImageExpand.completeExpand2 post, disableAutoplay
       return unless bottom <= 0
       window.scrollBy 0, post.nodes.root.getBoundingClientRect().bottom - bottom
 
-  completeExpand2: (post) ->
+  completeExpand2: (post, disableAutoplay) ->
     {thumb} = post.file
     $.addClass post.nodes.root, 'expanded-image'
     $.rmClass  post.file.thumb, 'expanding'
@@ -150,7 +150,7 @@ ImageExpand =
       ImageExpand.setupVideoControls post
       post.file.fullImage.muted = !Conf['Allow Sound']
       post.file.fullImage.controls = Conf['Show Controls']
-      ImageExpand.startVideo post if Conf['Autoplay']
+      ImageExpand.startVideo post if Conf['Autoplay'] and not disableAutoplay
 
   videoCB:
     click: (e) ->

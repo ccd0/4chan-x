@@ -7647,7 +7647,9 @@
         if (ImageExpand.on = $.hasClass(ImageExpand.EAI, 'expand-all-shortcut')) {
           ImageExpand.EAI.className = 'contract-all-shortcut fa fa-compress';
           ImageExpand.EAI.title = 'Contract All Images';
-          func = ImageExpand.expand;
+          func = function(post) {
+            return ImageExpand.expand(post, null, true);
+          };
         } else {
           ImageExpand.EAI.className = 'expand-all-shortcut fa fa-expand';
           ImageExpand.EAI.title = 'Expand All Images';
@@ -7720,7 +7722,7 @@
       $.rmClass(post.file.thumb, 'expanding');
       return post.file.isExpanded = false;
     },
-    expand: function(post, src) {
+    expand: function(post, src, disableAutoplay) {
       var el, isVideo, thumb, _ref;
       _ref = post.file, thumb = _ref.thumb, isVideo = _ref.isVideo;
       if (post.isHidden || post.file.isExpanded || $.hasClass(thumb, 'expanding')) {
@@ -7749,10 +7751,10 @@
           return el.naturalHeight;
         }
       }), function() {
-        return ImageExpand.completeExpand(post);
+        return ImageExpand.completeExpand(post, disableAutoplay);
       });
     },
-    completeExpand: function(post) {
+    completeExpand: function(post, disableAutoplay) {
       var bottom, thumb;
       thumb = post.file.thumb;
       if (!$.hasClass(thumb, 'expanding')) {
@@ -7764,14 +7766,14 @@
       }
       bottom = post.nodes.root.getBoundingClientRect().bottom;
       return $.queueTask(function() {
-        ImageExpand.completeExpand2(post);
+        ImageExpand.completeExpand2(post, disableAutoplay);
         if (!(bottom <= 0)) {
           return;
         }
         return window.scrollBy(0, post.nodes.root.getBoundingClientRect().bottom - bottom);
       });
     },
-    completeExpand2: function(post) {
+    completeExpand2: function(post, disableAutoplay) {
       var thumb;
       thumb = post.file.thumb;
       $.addClass(post.nodes.root, 'expanded-image');
@@ -7781,7 +7783,7 @@
         ImageExpand.setupVideoControls(post);
         post.file.fullImage.muted = !Conf['Allow Sound'];
         post.file.fullImage.controls = Conf['Show Controls'];
-        if (Conf['Autoplay']) {
+        if (Conf['Autoplay'] && !disableAutoplay) {
           return ImageExpand.startVideo(post);
         }
       }
