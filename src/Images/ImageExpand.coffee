@@ -23,7 +23,10 @@ ImageExpand =
       ImageExpand.contract @
       ImageExpand.expand @
     else if @isClone and @file.isExpanded and @file.isVideo
-      ImageExpand.setupVideoControls @
+      clone = @
+      ImageExpand.setupVideoControls clone
+      unless clone.origin.file.fullImage.paused
+        $.queueTask -> ImageExpand.startVideo clone
     else if ImageExpand.on and !@isHidden and (Conf['Expand spoilers'] or !@file.isSpoiler)
       ImageExpand.expand @
   cb:
@@ -143,7 +146,11 @@ ImageExpand =
     $.addClass post.nodes.root, 'expanded-image'
     $.rmClass  post.file.thumb, 'expanding'
     post.file.isExpanded = true
-    ImageExpand.setupVideo post if post.file.isVideo
+    if post.file.isVideo
+      ImageExpand.setupVideoControls post
+      post.file.fullImage.muted = !Conf['Allow Sound']
+      post.file.fullImage.controls = Conf['Show Controls']
+      ImageExpand.startVideo post if Conf['Autoplay']
 
   videoCB:
     click: (e) ->
@@ -183,20 +190,17 @@ ImageExpand =
       $.add file.videoControls, [$.tn('\u00A0'), contract]
     $.add file.text, file.videoControls
 
-  setupVideo: (post) ->
-    ImageExpand.setupVideoControls post
+  startVideo: (post) ->
     {file} = post
     video = file.fullImage
-    video.muted = !Conf['Allow Sound']
-    video.controls = Conf['Show Controls']
-    if Conf['Autoplay']
-      video.controls = false
-      video.play()
-      # Hacky workaround for Firefox forever-loading bug for very short videos
-      if Conf['Show Controls']
-        $.asap (-> (video.readyState >= 3 and video.currentTime <= Math.max 0.1, (video.duration - 0.5)) or !file.isExpanded), ->
-          video.controls = true if file.isExpanded
-        , 500
+    {controls} = video
+    video.controls = false
+    video.play()
+    # Hacky workaround for Firefox forever-loading bug for very short videos
+    if controls
+      $.asap (-> (video.readyState >= 3 and video.currentTime <= Math.max 0.1, (video.duration - 0.5)) or !file.isExpanded), ->
+        video.controls = true if file.isExpanded
+      , 500
 
   error: ->
     post = Get.postFromNode @

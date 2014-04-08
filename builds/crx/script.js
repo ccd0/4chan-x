@@ -7615,7 +7615,7 @@
       });
     },
     node: function() {
-      var thumb, _ref, _ref1;
+      var clone, thumb, _ref, _ref1;
       if (!(((_ref = this.file) != null ? _ref.isImage : void 0) || ((_ref1 = this.file) != null ? _ref1.isVideo : void 0))) {
         return;
       }
@@ -7625,7 +7625,13 @@
         ImageExpand.contract(this);
         return ImageExpand.expand(this);
       } else if (this.isClone && this.file.isExpanded && this.file.isVideo) {
-        return ImageExpand.setupVideoControls(this);
+        clone = this;
+        ImageExpand.setupVideoControls(clone);
+        if (!clone.origin.file.fullImage.paused) {
+          return $.queueTask(function() {
+            return ImageExpand.startVideo(clone);
+          });
+        }
       } else if (ImageExpand.on && !this.isHidden && (Conf['Expand spoilers'] || !this.file.isSpoiler)) {
         return ImageExpand.expand(this);
       }
@@ -7791,7 +7797,12 @@
       $.rmClass(post.file.thumb, 'expanding');
       post.file.isExpanded = true;
       if (post.file.isVideo) {
-        return ImageExpand.setupVideo(post);
+        ImageExpand.setupVideoControls(post);
+        post.file.fullImage.muted = !Conf['Allow Sound'];
+        post.file.fullImage.controls = Conf['Show Controls'];
+        if (Conf['Autoplay']) {
+          return ImageExpand.startVideo(post);
+        }
       }
     },
     videoCB: {
@@ -7848,25 +7859,21 @@
       }
       return $.add(file.text, file.videoControls);
     },
-    setupVideo: function(post) {
-      var file, video;
-      ImageExpand.setupVideoControls(post);
+    startVideo: function(post) {
+      var controls, file, video;
       file = post.file;
       video = file.fullImage;
-      video.muted = !Conf['Allow Sound'];
-      video.controls = Conf['Show Controls'];
-      if (Conf['Autoplay']) {
-        video.controls = false;
-        video.play();
-        if (Conf['Show Controls']) {
-          return $.asap((function() {
-            return (video.readyState >= 3 && video.currentTime <= Math.max(0.1, video.duration - 0.5)) || !file.isExpanded;
-          }), function() {
-            if (file.isExpanded) {
-              return video.controls = true;
-            }
-          }, 500);
-        }
+      controls = video.controls;
+      video.controls = false;
+      video.play();
+      if (controls) {
+        return $.asap((function() {
+          return (video.readyState >= 3 && video.currentTime <= Math.max(0.1, video.duration - 0.5)) || !file.isExpanded;
+        }), function() {
+          if (file.isExpanded) {
+            return video.controls = true;
+          }
+        }, 500);
       }
     },
     error: function() {
