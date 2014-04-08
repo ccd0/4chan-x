@@ -17,16 +17,20 @@ ImageExpand =
     return unless @file?.isImage or @file?.isVideo
     {thumb} = @file
     $.on thumb.parentNode, 'click', ImageExpand.cb.toggle
-    if @isClone and $.hasClass thumb, 'expanding'
-      # If we clone a post where the image is still loading,
-      # make it loading in the clone too.
-      ImageExpand.contract @
-      ImageExpand.expand @
-    else if @isClone and @file.isExpanded and @file.isVideo
-      clone = @
-      ImageExpand.setupVideoControls clone
-      unless clone.origin.file.fullImage.paused
-        $.queueTask -> Video.start clone.file.fullImage
+    if @isClone 
+      if $.hasClass thumb, 'expanding'
+        # If we clone a post where the image is still loading,
+        # make it loading in the clone too.
+        ImageExpand.contract @
+        ImageExpand.expand @
+
+      else if @file.isExpanded and @file.isVideo
+        clone = @
+        ImageExpand.setupVideoControls clone
+        unless clone.origin.file.fullImage.paused
+          $.queueTask -> Video.start clone.file.fullImage
+
+      return
     else if ImageExpand.on and !@isHidden and
       (Conf['Expand spoilers'] or !@file.isSpoiler) and
       (Conf['Expand videos'] or !@file.isVideo)
@@ -129,8 +133,7 @@ ImageExpand =
       ImageExpand.completeExpand post, disableAutoplay
 
   completeExpand: (post, disableAutoplay) ->
-    {thumb} = post.file
-    return unless $.hasClass thumb, 'expanding' # contracted before the image loaded
+    return unless $.hasClass post.file.thumb, 'expanding' # contracted before the image loaded
     unless post.nodes.root.parentNode
       # Image might start/finish loading before the post is inserted.
       # Don't scroll when it's expanded in a QP for example.
@@ -143,7 +146,6 @@ ImageExpand =
       window.scrollBy 0, post.nodes.root.getBoundingClientRect().bottom - bottom
 
   completeExpand2: (post, disableAutoplay) ->
-    {thumb} = post.file
     $.addClass post.nodes.root, 'expanded-image'
     $.rmClass  post.file.thumb, 'expanding'
     post.file.isExpanded = true
@@ -151,19 +153,17 @@ ImageExpand =
       ImageExpand.setupVideoControls post
       Video.configure post.file.fullImage, disableAutoplay
 
-  videoCB:
-    click: (e) ->
-      if @paused and not @controls
-        @play()
-        e.stopPropagation()
-
+  videoCB: do ->
     # dragging to the left contracts the video
-    mousedown: (e) -> @dataset.mousedown = 'true' if e.button is 0
-    mouseup: (e) -> @dataset.mousedown = 'false' if e.button is 0
-    mouseover: (e) -> @dataset.mousedown = 'false'
-    mouseout: (e) ->
-      if @dataset.mousedown is 'true' and e.clientX <= @getBoundingClientRect().left
-        ImageExpand.contract (Get.postFromNode @)
+    mousedown = false
+    mouseover:     -> mousedown = false
+    mousedown: (e) -> mousedown = true  if e.button is 0
+    mouseup:   (e) -> mousedown = false if e.button is 0
+    mouseout:  (e) -> ImageExpand.contract (Get.postFromNode @) if mousedown and e.clientX <= @getBoundingClientRect().left
+    click:     (e) ->
+      if @paused and not @controls
+        e.stopPropagation()
+        @play()
 
   setupVideoControls: (post) ->
     {file} = post
