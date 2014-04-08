@@ -94,14 +94,12 @@ ImageExpand =
       ImageExpand.waitExpand post
       return
     post.file.fullImage = file = if post.file.isImage
-      $.el 'img',
-        className: 'full-image'
-        src: src or post.file.URL
+      $.el 'img'
     else
       $.el 'video',
-        className: 'full-image'
-        src: src or post.file.URL
         loop: true
+    file.className = 'full-image'
+    file.src = src or post.file.URL
     $.on file, 'error', ImageExpand.error
     ImageExpand.waitExpand post
     $.after post.file.thumb, file
@@ -113,18 +111,26 @@ ImageExpand =
       return
 
     $.addClass post.file.thumb, 'expanding'
+    file = post.file.fullImage
+
     if post.file.isImage
-      $.asap (-> post.file.fullImage.naturalHeight), ->
-        post.file.isReady = true
+      $.asap (-> file.naturalHeight), ->
         ImageExpand.completeExpand post
-    else if post.file.isVideo
-      complete = ->
-        $.off post.file.fullImage, 'loadedmetadata', complete
-        post.file.isReady = true
-        ImageExpand.completeExpand post
-      $.on post.file.fullImage, 'loadedmetadata', complete
+      return
+
+    # Expand the video when the first frame is available.
+    if file.readyState >= file.HAVE_CURRENT_DATA
+      ImageExpand.completeExpand post
+      return
+
+    file.load() # Don't wait for the browser to lazily preload.
+    complete = ->
+      $.off file, 'loadeddata', complete
+      ImageExpand.completeExpand post
+    $.on file, 'loadeddata', complete
 
   completeExpand: (post) ->
+    post.file.isReady = true
     {thumb} = post.file
     return unless post.file.isExpanding # contracted before the image loaded
     delete post.file.isExpanding
