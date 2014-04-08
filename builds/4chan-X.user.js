@@ -7606,7 +7606,7 @@
         ImageExpand.contract(this);
         return ImageExpand.expand(this);
       } else if (this.isClone && this.file.isExpanded && this.file.isVideo) {
-        return ImageExpand.setupVideo(this);
+        return ImageExpand.setupVideoControls(this);
       } else if (ImageExpand.on && !this.isHidden && (Conf['Expand spoilers'] || !this.file.isSpoiler)) {
         return ImageExpand.expand(this);
       }
@@ -7772,10 +7772,16 @@
       $.rmClass(post.file.thumb, 'expanding');
       post.file.isExpanded = true;
       if (post.file.isVideo) {
-        return ImageExpand.setupVideo(post, Conf['Autoplay']);
+        return ImageExpand.setupVideo(post);
       }
     },
     videoCB: {
+      click: function(e) {
+        if (this.paused && !this.controls) {
+          this.play();
+          return e.stopPropagation();
+        }
+      },
       mousedown: function(e) {
         if (e.button === 0) {
           return this.dataset.mousedown = 'true';
@@ -7795,23 +7801,21 @@
         }
       }
     },
-    setupVideo: function(post, play) {
+    setupVideoControls: function(post) {
       var cb, contract, eventName, file, video, _ref;
       file = post.file;
       video = file.fullImage;
-      file.videoControls = $.el('span', {
-        className: 'video-controls'
-      });
       file.thumb.parentNode.removeAttribute('href');
       file.thumb.parentNode.removeAttribute('target');
-      video.muted = !Conf['Allow Sound'];
-      video.controls = Conf['Show Controls'];
       video.dataset.mousedown = 'false';
       _ref = ImageExpand.videoCB;
       for (eventName in _ref) {
         cb = _ref[eventName];
         $.on(video, eventName, cb);
       }
+      file.videoControls = $.el('span', {
+        className: 'video-controls'
+      });
       if (Conf['Show Controls']) {
         contract = $.el('a', {
           textContent: 'contract',
@@ -7823,11 +7827,20 @@
         });
         $.add(file.videoControls, [$.tn('\u00A0'), contract]);
       }
-      if (play) {
+      return $.add(file.text, file.videoControls);
+    },
+    setupVideo: function(post) {
+      var file, video;
+      ImageExpand.setupVideoControls(post);
+      file = post.file;
+      video = file.fullImage;
+      video.muted = !Conf['Allow Sound'];
+      video.controls = Conf['Show Controls'];
+      if (Conf['Autoplay']) {
         video.controls = false;
         video.play();
         if (Conf['Show Controls']) {
-          $.asap((function() {
+          return $.asap((function() {
             return (video.readyState >= 3 && video.currentTime <= Math.max(0.1, video.duration - 0.5)) || !file.isExpanded;
           }), function() {
             if (file.isExpanded) {
@@ -7835,18 +7848,7 @@
             }
           }, 500);
         }
-      } else if (!Conf['Show Controls']) {
-        play = $.el('a', {
-          textContent: 'play',
-          href: 'javascript:;'
-        });
-        $.on(play, 'click', function(e) {
-          video[this.textContent]();
-          return this.textContent = this.textContent === 'play' ? 'pause' : 'play';
-        });
-        $.add(file.videoControls, [$.tn('\u00A0'), play]);
       }
-      return $.add(file.text, file.videoControls);
     },
     error: function() {
       var URL, post, src, timeoutID;
