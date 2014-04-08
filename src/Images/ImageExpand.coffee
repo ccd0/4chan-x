@@ -162,7 +162,7 @@ ImageExpand =
     mouseover:     -> mousedown = false
     mousedown: (e) -> mousedown = true  if e.button is 0
     mouseup:   (e) -> mousedown = false if e.button is 0
-    mouseout:  (e) -> ImageExpand.contract (Get.postFromNode @) if mousedown and e.clientX <= @getBoundingClientRect().left
+    mouseout:  (e) -> ImageExpand.contract(Get.postFromNode @) if mousedown and e.clientX <= @getBoundingClientRect().left
     click:     (e) ->
       if @paused and not @controls
         e.stopPropagation()
