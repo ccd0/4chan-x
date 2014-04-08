@@ -7991,16 +7991,18 @@
       }
       thumb = this.file.thumb;
       $.on(thumb.parentNode, 'click', ImageExpand.cb.toggle);
-      if (this.isClone && $.hasClass(thumb, 'expanding')) {
-        ImageExpand.contract(this);
-        return ImageExpand.expand(this);
-      } else if (this.isClone && this.file.isExpanded && this.file.isVideo) {
-        clone = this;
-        ImageExpand.setupVideoControls(clone);
-        if (!clone.origin.file.fullImage.paused) {
-          return $.queueTask(function() {
-            return ImageExpand.startVideo(clone);
-          });
+      if (this.isClone) {
+        if ($.hasClass(thumb, 'expanding')) {
+          ImageExpand.contract(this);
+          ImageExpand.expand(this);
+        } else if (this.file.isExpanded && this.file.isVideo) {
+          clone = this;
+          ImageExpand.setupVideoControls(clone);
+          if (!clone.origin.file.fullImage.paused) {
+            $.queueTask(function() {
+              return ImageExpand.startVideo(clone);
+            });
+          }
         }
       } else if (ImageExpand.on && !this.isHidden && (Conf['Expand spoilers'] || !this.file.isSpoiler) && (Conf['Expand videos'] || !this.file.isVideo)) {
         return ImageExpand.expand(this, null, true);
@@ -8143,9 +8145,8 @@
       });
     },
     completeExpand: function(post, disableAutoplay) {
-      var bottom, thumb;
-      thumb = post.file.thumb;
-      if (!$.hasClass(thumb, 'expanding')) {
+      var bottom;
+      if (!$.hasClass(post.file.thumb, 'expanding')) {
         return;
       }
       if (!post.nodes.root.parentNode) {
@@ -8162,8 +8163,6 @@
       });
     },
     completeExpand2: function(post, disableAutoplay) {
-      var thumb;
-      thumb = post.file.thumb;
       $.addClass(post.nodes.root, 'expanded-image');
       $.rmClass(post.file.thumb, 'expanding');
       post.file.isExpanded = true;
@@ -8176,32 +8175,36 @@
         }
       }
     },
-    videoCB: {
-      click: function(e) {
-        if (this.paused && !this.controls) {
-          this.play();
-          return e.stopPropagation();
+    videoCB: (function() {
+      var mousedown;
+      mousedown = false;
+      return {
+        mouseover: function() {
+          return mousedown = false;
+        },
+        mousedown: function(e) {
+          if (e.button === 0) {
+            return mousedown = true;
+          }
+        },
+        mouseup: function(e) {
+          if (e.button === 0) {
+            return mousedown = false;
+          }
+        },
+        mouseout: function(e) {
+          if (mousedown && e.clientX <= this.getBoundingClientRect().left) {
+            return ImageExpand.contract(Get.postFromNode(this));
+          }
+        },
+        click: function(e) {
+          if (this.paused && !this.controls) {
+            e.stopPropagation();
+            return this.play();
+          }
         }
-      },
-      mousedown: function(e) {
-        if (e.button === 0) {
-          return this.dataset.mousedown = 'true';
-        }
-      },
-      mouseup: function(e) {
-        if (e.button === 0) {
-          return this.dataset.mousedown = 'false';
-        }
-      },
-      mouseover: function(e) {
-        return this.dataset.mousedown = 'false';
-      },
-      mouseout: function(e) {
-        if (this.dataset.mousedown === 'true' && e.clientX <= this.getBoundingClientRect().left) {
-          return ImageExpand.contract(Get.postFromNode(this));
-        }
-      }
-    },
+      };
+    })(),
     setupVideoControls: function(post) {
       var cb, contract, eventName, file, video, _ref;
       file = post.file;
