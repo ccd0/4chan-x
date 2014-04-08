@@ -61,11 +61,15 @@ class Clone extends Post
 
       # Contract thumbnails in quote preview
       if contractThumb
-        $.rmClass @nodes.root, 'expanded-image'
+        $.rmClass root, 'expanded-image'
         $.rmClass @file.thumb, 'expanding'
+      @file.isExpanded = $.hasClass root, 'expanded-image'
 
       # Remove any #ihover ID
       @file.fullImage?.removeAttribute 'id'
+
+      # Remove video controls.
+      ($ '.video-controls', @file.text)?.remove()
 
     @isDead  = true if origin.isDead
     @isClone = true

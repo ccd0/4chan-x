@@ -1273,7 +1273,7 @@
     __extends(Clone, _super);
 
     function Clone(origin, context, contractThumb) {
-      var file, info, inline, inlined, key, nodes, post, root, val, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
+      var file, info, inline, inlined, key, nodes, post, root, val, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
       this.origin = origin;
       this.context = context;
       _ref = ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply'];
@@ -1343,11 +1343,15 @@
         this.file.thumb = $('img[data-md5]', file);
         this.file.fullImage = $('.full-image', file);
         if (contractThumb) {
-          $.rmClass(this.nodes.root, 'expanded-image');
+          $.rmClass(root, 'expanded-image');
           $.rmClass(this.file.thumb, 'expanding');
         }
+        this.file.isExpanded = $.hasClass(root, 'expanded-image');
         if ((_ref4 = this.file.fullImage) != null) {
           _ref4.removeAttribute('id');
+        }
+        if ((_ref5 = $('.video-controls', this.file.text)) != null) {
+          _ref5.remove();
         }
       }
       if (origin.isDead) {
@@ -7619,10 +7623,10 @@
       $.on(thumb.parentNode, 'click', ImageExpand.cb.toggle);
       if (this.isClone && $.hasClass(thumb, 'expanding')) {
         ImageExpand.contract(this);
-        ImageExpand.expand(this);
-        return;
-      }
-      if (ImageExpand.on && !this.isHidden && (Conf['Expand spoilers'] || !this.file.isSpoiler)) {
+        return ImageExpand.expand(this);
+      } else if (this.isClone && this.file.isExpanded && this.file.isVideo) {
+        return ImageExpand.setupVideo(this);
+      } else if (ImageExpand.on && !this.isHidden && (Conf['Expand spoilers'] || !this.file.isSpoiler)) {
         return ImageExpand.expand(this);
       }
     },
@@ -7711,7 +7715,7 @@
       return ImageExpand.contract(post);
     },
     contract: function(post) {
-      var cb, eventName, video, _ref, _ref1;
+      var cb, eventName, video, _ref;
       if (post.file.isVideo && (video = post.file.fullImage)) {
         video.pause();
         TrashQueue.add(video, post);
@@ -7722,9 +7726,7 @@
           cb = _ref[eventName];
           $.off(video, eventName, cb);
         }
-        if ((_ref1 = post.file.videoControls) != null) {
-          _ref1.map($.rm);
-        }
+        $.rm(post.file.videoControls);
         delete post.file.videoControls;
       }
       $.rmClass(post.nodes.root, 'expanded-image');
@@ -7769,24 +7771,28 @@
       if (!$.hasClass(thumb, 'expanding')) {
         return;
       }
-      post.file.isExpanded = true;
-      if (post.file.isVideo) {
-        ImageExpand.setupVideo(post);
-      }
       if (!post.nodes.root.parentNode) {
-        $.addClass(post.nodes.root, 'expanded-image');
-        $.rmClass(post.file.thumb, 'expanding');
+        ImageExpand.completeExpand2(post);
         return;
       }
       bottom = post.nodes.root.getBoundingClientRect().bottom;
       return $.queueTask(function() {
-        $.addClass(post.nodes.root, 'expanded-image');
-        $.rmClass(post.file.thumb, 'expanding');
+        ImageExpand.completeExpand2(post);
         if (!(bottom <= 0)) {
           return;
         }
         return window.scrollBy(0, post.nodes.root.getBoundingClientRect().bottom - bottom);
       });
+    },
+    completeExpand2: function(post) {
+      var thumb;
+      thumb = post.file.thumb;
+      $.addClass(post.nodes.root, 'expanded-image');
+      $.rmClass(post.file.thumb, 'expanding');
+      post.file.isExpanded = true;
+      if (post.file.isVideo) {
+        return ImageExpand.setupVideo(post, Conf['Autoplay']);
+      }
     },
     videoCB: {
       mousedown: function(e) {
@@ -7808,11 +7814,13 @@
         }
       }
     },
-    setupVideo: function(post) {
-      var cb, contract, eventName, file, play, video, _ref;
+    setupVideo: function(post, play) {
+      var cb, contract, eventName, file, video, _ref;
       file = post.file;
       video = file.fullImage;
-      file.videoControls = [];
+      file.videoControls = $.el('span', {
+        className: 'video-controls'
+      });
       file.thumb.parentNode.removeAttribute('href');
       file.thumb.parentNode.removeAttribute('target');
       video.muted = !Conf['Allow Sound'];
@@ -7832,9 +7840,9 @@
         $.on(contract, 'click', function(e) {
           return ImageExpand.contract(post);
         });
-        file.videoControls.push($.tn('\u00A0'), contract);
+        $.add(file.videoControls, [$.tn('\u00A0'), contract]);
       }
-      if (Conf['Autoplay']) {
+      if (play) {
         video.controls = false;
         video.play();
         if (Conf['Show Controls']) {
@@ -7855,7 +7863,7 @@
           video[this.textContent]();
           return this.textContent = this.textContent === 'play' ? 'pause' : 'play';
         });
-        file.videoControls.push($.tn('\u00A0'), play);
+        $.add(file.videoControls, [$.tn('\u00A0'), play]);
       }
       return $.add(file.text, file.videoControls);
     },
