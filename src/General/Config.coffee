@@ -413,6 +413,10 @@ Config =
       true
       'Expand all images along with spoilers.'
     ]
+    'Expand videos': [
+      false
+      'Expand all images also expands videos (no autoplay).'
+    ]
     'Expand from here': [
       false
       'Expand all images only from current position to thread end.'

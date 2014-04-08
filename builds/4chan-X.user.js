@@ -245,6 +245,7 @@
       'Fit width': [false, ''],
       'Fit height': [false, ''],
       'Expand spoilers': [true, 'Expand all images along with spoilers.'],
+      'Expand videos': [false, 'Expand all images also expands videos (no autoplay).'],
       'Expand from here': [false, 'Expand all images only from current position to thread end.'],
       'Advance on contract': [false, 'Advance to next post when contracting an expanded image.']
     },
@@ -7613,7 +7614,7 @@
             return ImageExpand.startVideo(clone);
           });
         }
-      } else if (ImageExpand.on && !this.isHidden && (Conf['Expand spoilers'] || !this.file.isSpoiler)) {
+      } else if (ImageExpand.on && !this.isHidden && (Conf['Expand spoilers'] || !this.file.isSpoiler) && (Conf['Expand videos'] || !this.file.isVideo)) {
         return ImageExpand.expand(this, null, true);
       }
     },
@@ -7639,7 +7640,7 @@
           if (!(file && (file.isImage || file.isVideo) && doc.contains(post.nodes.root))) {
             return;
           }
-          if (ImageExpand.on && (!Conf['Expand spoilers'] && file.isSpoiler || Conf['Expand from here'] && Header.getTopOf(file.thumb) < 0)) {
+          if (ImageExpand.on && (!Conf['Expand spoilers'] && file.isSpoiler || !Conf['Expand videos'] && file.isVideo || Conf['Expand from here'] && Header.getTopOf(file.thumb) < 0)) {
             return;
           }
           return $.queueTask(func, post);

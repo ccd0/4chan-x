@@ -27,8 +27,10 @@ ImageExpand =
       ImageExpand.setupVideoControls clone
       unless clone.origin.file.fullImage.paused
         $.queueTask -> ImageExpand.startVideo clone
-    else if ImageExpand.on and !@isHidden and (Conf['Expand spoilers'] or !@file.isSpoiler)
-      ImageExpand.expand @, null, true
+    else if ImageExpand.on and !@isHidden and
+      (Conf['Expand spoilers'] or !@file.isSpoiler) and
+      (Conf['Expand videos'] or !@file.isVideo)
+        ImageExpand.expand @, null, true
   cb:
     toggle: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
@@ -44,6 +46,7 @@ ImageExpand =
         return unless file and (file.isImage or file.isVideo) and doc.contains post.nodes.root
         if ImageExpand.on and
           (!Conf['Expand spoilers'] and file.isSpoiler or
+          !Conf['Expand videos'] and file.isVideo or
           Conf['Expand from here'] and Header.getTopOf(file.thumb) < 0)
             return
         $.queueTask func, post
