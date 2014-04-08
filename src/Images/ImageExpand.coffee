@@ -61,8 +61,7 @@ ImageExpand =
         func = ImageExpand.contract
 
       g.posts.forEach (post) ->
-        toggle post
-        toggle post for post in post.clones
+        toggle post for post in [post, post.clones...]
         return
 
     setFitness: ->

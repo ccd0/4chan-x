@@ -8007,8 +8007,7 @@
         }
         return g.posts.forEach(function(post) {
           var _i, _len, _ref;
-          toggle(post);
-          _ref = post.clones;
+          _ref = [post].concat(__slice.call(post.clones));
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             post = _ref[_i];
             toggle(post);
