@@ -5,6 +5,7 @@ ThreadWatcher =
     @shortcut = sc = $.el 'a',
       id:   'watcher-link'
       textContent: 'Watcher'
+      title: 'Thread Watcher'
       href: 'javascript:;'
       className: 'disabled fa fa-eye'
 
