@@ -124,7 +124,6 @@ ImageExpand =
       ImageExpand.completeExpand post
       return
 
-    file.load() # Don't wait for the browser to lazily preload.
     complete = ->
       $.off file, 'loadeddata', complete
       ImageExpand.completeExpand post
