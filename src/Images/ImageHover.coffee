@@ -20,15 +20,13 @@ ImageHover =
     else
       Get.postFromNode @
     el = if post.file.isImage
-      $.el 'img',
-        id: 'ihover'
-        src: post.file.URL
+      $.el 'img'
     else
       $.el 'video',
-        id: 'ihover'
-        src: post.file.URL
         autoplay: true
         loop: true
+    el.id = 'ihover'
+    el.src = post.file.URL
     el.dataset.fullID = post.fullID
     $.add d.body, el
     UI.hover
@@ -36,7 +34,10 @@ ImageHover =
       el: el
       latestEvent: e
       endEvents: 'mouseout click'
-      asapTest: -> post.file.isVideo or el.naturalHeight
+      asapTest: if post.file.isImage
+        -> el.naturalHeight
+      else
+        -> el.readyState >= el.HAVE_CURRENT_DATA
     $.on el, 'error', ImageHover.error
   error: ->
     return unless doc.contains @
