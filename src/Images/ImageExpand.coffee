@@ -17,6 +17,8 @@ ImageExpand =
     return unless @file and (@file.isImage or @file.isVideo)
     $.on @file.thumb.parentNode, 'click', ImageExpand.cb.toggle
     if @isClone
+      if @file.error
+        @file.error = $ '.warning', @file.thumb.parentNode
       if @file.isImage and @file.isExpanding
         # If we clone a post where the image is still loading,
         # make it loading in the clone too.
@@ -83,7 +85,7 @@ ImageExpand =
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass post.file.thumb, 'expanding'
     delete post.file.isExpanding
-    post.file.isExpanded = false
+    delete post.file.isExpanded
     post.file.fullImage.pause() if post.file.isVideo and post.file.fullImage
 
   expand: (post, src) ->
@@ -102,6 +104,9 @@ ImageExpand =
     file.src = src or post.file.URL
     $.on file, 'error', ImageExpand.error
     ImageExpand.waitExpand post
+    if post.file.error
+      $.rm post.file.error
+      delete post.file.error
     $.after post.file.thumb, file
 
   waitExpand: (post) ->
@@ -151,16 +156,28 @@ ImageExpand =
 
   error: ->
     post = Get.postFromNode @
-    post.file.isReady = false
     $.rm @
+    delete post.file.isReady
     delete post.file.fullImage
     # Images can error:
     #  - before the image started loading.
     #  - after the image started loading.
     unless post.file.isExpanding or post.file.isExpanded
-      # Don't try to re-expend if it was already contracted.
+      # Don't try to re-expand if it was already contracted.
       return
     ImageExpand.contract post
+
+    if @error and @error.code isnt @error.MEDIA_ERR_NETWORK # video
+      error = switch @error.code
+        when 1 then 'MEDIA_ERR_ABORTED'
+        when 3 then 'MEDIA_ERR_DECODE'
+        when 4 then 'MEDIA_ERR_SRC_NOT_SUPPORTED'
+        when 5 then 'MEDIA_ERR_ENCRYPTED'
+      post.file.error = $.el 'div',
+        textContent: "Playback error: #{error}"
+        className: 'warning'
+      $.after post.file.thumb, post.file.error
+      return
 
     src = @src.split '/'
     if src[2] is 'i.4cdn.org'
