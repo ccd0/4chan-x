@@ -1,3 +1,5 @@
+### 3.20.4 - *2014-04-09*
+
 - Better handling of webm playback errors.
 
 ### 3.20.3 - *2014-04-07*
