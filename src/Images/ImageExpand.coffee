@@ -19,14 +19,10 @@ ImageExpand =
     if @isClone
       if @file.error
         @file.error = $ '.warning', @file.thumb.parentNode
-      if @file.isImage and @file.isExpanding
-        # If we clone a post where the image is still loading,
-        # make it loading in the clone too.
+      else if @file.isExpanding or @file.isExpanded
+        # Re-expand to make sure everything works/loads fine.
         ImageExpand.contract @
         ImageExpand.expand @
-        return
-      if @file.isVideo and @file.isExpanded
-        @file.fullImage.play()
         return
     if ImageExpand.on and !@isHidden and (Conf['Expand spoilers'] or !@file.isSpoiler)
       ImageExpand.expand @
@@ -139,13 +135,16 @@ ImageExpand =
     delete post.file.isExpanding
     post.file.isReady = true
     post.file.isExpanded = true
+    if post.file.isVideo and !d.hidden and (post.isClone and !post.nodes.root.parentNode or Header.isNodeVisible post.nodes.root)
+      # Play the video if it's in a clone that hasn't been inserted yet,
+      # otherwise, check if it's in the viewport as usual.
+      post.file.fullImage.play()
     unless post.nodes.root.parentNode
       # Image might start/finish loading before the post is inserted.
       # Don't scroll when it's expanded in a QP for example.
       $.addClass post.nodes.root, 'expanded-image'
       $.rmClass  post.file.thumb, 'expanding'
       return
-    post.file.fullImage.play() if post.file.isVideo and !d.hidden and Header.isNodeVisible post.nodes.root
     {bottom} = post.nodes.root.getBoundingClientRect()
     $.queueTask ->
       $.addClass post.nodes.root, 'expanded-image'
