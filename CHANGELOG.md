@@ -1,3 +1,13 @@
+### v1.7.4 
+*2014-04-08*
+
+**Nebukazar**
+- `Quote Threading` disabled by default
+- Added missing titles to Header icons
+
+**ccd0**
+- Fix bug in gallery introduced in 1.7.3.
+
 ### v1.7.3 
 *2014-04-07*
 
