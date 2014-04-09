@@ -18,6 +18,8 @@ ImageExpand =
     {thumb} = @file
     $.on thumb.parentNode, 'click', ImageExpand.cb.toggle
     if @isClone 
+      if @file.error
+        @file.error = $ '.warning', @file.thumb.parentNode
       if $.hasClass thumb, 'expanding'
         # If we clone a post where the image is still loading,
         # make it loading in the clone too.
@@ -113,7 +115,7 @@ ImageExpand =
       delete post.file.videoControls
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass thumb, 'expanding'
-    post.file.isExpanded = false
+    delete post.file.isExpanded
 
   expand: (post, src, disableAutoplay) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
@@ -131,6 +133,9 @@ ImageExpand =
     $.after thumb, el unless el is thumb.nextSibling
     $.asap (-> el.videoHeight or el.naturalHeight), ->
       ImageExpand.completeExpand post, disableAutoplay
+    if post.file.error
+      $.rm post.file.error
+      delete post.file.error
 
   completeExpand: (post, disableAutoplay) ->
     return unless $.hasClass post.file.thumb, 'expanding' # contracted before the image loaded
@@ -196,9 +201,21 @@ ImageExpand =
     #  - before the image started loading.
     #  - after the image started loading.
     unless $.hasClass(post.file.thumb, 'expanding') or $.hasClass post.nodes.root, 'expanded-image'
-      # Don't try to re-expend if it was already contracted.
+      # Don't try to re-expand if it was already contracted.
       return
     ImageExpand.contract post
+
+    if @error and @error.code isnt @error.MEDIA_ERR_NETWORK # video
+      error = switch @error.code
+        when 1 then 'MEDIA_ERR_ABORTED'
+        when 3 then 'MEDIA_ERR_DECODE'
+        when 4 then 'MEDIA_ERR_SRC_NOT_SUPPORTED'
+        when 5 then 'MEDIA_ERR_ENCRYPTED'
+      post.file.error = $.el 'div',
+        textContent: "Playback error: #{error}"
+        className: 'warning'
+      $.after post.file.thumb, post.file.error
+      return
 
     src = @src.split '/'
     if src[2] is 'i.4cdn.org'
