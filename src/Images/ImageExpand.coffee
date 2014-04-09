@@ -119,7 +119,7 @@ ImageExpand =
     file = post.file.fullImage
 
     if post.file.isImage
-      $.asap (-> file.naturalHeight), ->
+      $.asap (-> if post.file.isExpanding then file.naturalHeight else true), ->
         ImageExpand.completeExpand post
       return
 
@@ -135,10 +135,9 @@ ImageExpand =
     $.on file, 'loadeddata', complete
 
   completeExpand: (post) ->
-    post.file.isReady = true
-    {thumb} = post.file
     return unless post.file.isExpanding # contracted before the image loaded
     delete post.file.isExpanding
+    post.file.isReady = true
     post.file.isExpanded = true
     unless post.nodes.root.parentNode
       # Image might start/finish loading before the post is inserted.

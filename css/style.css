@@ -677,6 +677,9 @@ a.hide-announcement {
 :root.gecko.fit-width .full-image {
   width: 100%;
 }
+.fileThumb > .warning {
+  clear: both;
+}
 #ihover {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
