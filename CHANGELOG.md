@@ -1,3 +1,9 @@
+### v1.7.5 
+*2014-04-09*
+**ccd0**
+- Add WebM support to gallery (currently no controls).
+- Add PDF support to gallery, disabled by default. Enable with `PDF in Gallery`.
+
 ### v1.7.4 
 *2014-04-08*
 
