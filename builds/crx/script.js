@@ -7400,11 +7400,11 @@
       thumb = $.el('a', {
         className: 'gal-thumb',
         href: post.file.URL,
-        target: '_blank'
-      }, title = title, {
-        'data-id': Gallery.images.length,
-        'data-post': $('a[title="Highlight this post"]', post.nodes.info).href
+        target: '_blank',
+        title: title
       });
+      thumb.dataset.id = Gallery.images.length;
+      thumb.dataset.post = $('a[title="Highlight this post"]', post.nodes.info).href;
       thumbImg = post.file.thumb.cloneNode(false);
       thumbImg.style.cssText = '';
       $.add(thumb, thumbImg);
