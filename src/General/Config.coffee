@@ -155,6 +155,10 @@ Config =
         true
         'Adds a simple and cute image gallery.' 
       ]
+      'PDF in Gallery': [
+        false
+        'Show PDF files in gallery.'
+      ]
       'Sauce': [
         true
         'Add sauce links to images.'

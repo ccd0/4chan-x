@@ -1364,20 +1364,26 @@ div.boardTitle {
   /* Flex > Non-Flex child max-width and overflow fix (Firefox only?) */
   width: 1%;
 }
-:root:not(.gal-fit-height) .gal-image {
+:root:not(.gal-fit-height):not(.gal-pdf) .gal-image {
   overflow-y: scroll !important;
 }
-:root:not(.gal-fit-width) .gal-image {
+:root:not(.gal-fit-width):not(.gal-pdf) .gal-image {
   overflow-x: scroll !important;
 }
 .gal-image a {
   margin: auto;
   line-height: 0;
 }
-.gal-fit-width .gal-image img {
+:root.gal-pdf .gal-image a {
+  width: 100%;
+  height: 100%;
+}
+.gal-fit-width .gal-image img,
+.gal-fit-width .gal-image video {
   max-width: 100%;
 }
-.gal-fit-height .gal-image img {
+.gal-fit-height .gal-image img,
+.gal-fit-height .gal-image video {
   /*
     Chrome doesn't support viewpoint units in calc()
     http://bugs.chromium.org/168840
@@ -1387,10 +1393,21 @@ div.boardTitle {
   max-height: 95vh;
   max-height: calc(100vh - 25px);
 }
+.gal-image iframe {
+  width: 100%;
+  height: 100%;
+}
 .gal-buttons {
   font-size: 2em;
-  margin-right: 10px;
+  margin-right: 3px;
+  padding-left: 7px;
+  padding-right: 7px;
   top: 5px;
+}
+:root.gal-pdf .gal-buttons {
+  top: 40px;
+  background: rgba(0,0,0,0.6) !important;
+  border-radius: 3px;
 }
 .gal-buttons i {
   vertical-align: baseline;
@@ -1411,12 +1428,12 @@ div.boardTitle {
 .gal-name,
 .gal-count {
   position: fixed;
-  right: 178px;
+  right: 195px;
 }
 .gal-hide-thumbnails .gal-buttons,
 .gal-hide-thumbnails .gal-count,
 .gal-hide-thumbnails .gal-name {
-  right: 28px;
+  right: 44px;
 }
 .gal-name {
   bottom: 6px;
@@ -1431,6 +1448,10 @@ div.boardTitle {
 .gal-buttons .menu-button:hover {
   color: rgb(95, 95, 101) !important;
 }
+:root.gal-pdf .gal-close:hover,
+:root.gal-pdf .gal-buttons .menu-button:hover {
+  color: rgb(204, 204, 204) !important;
+}
 .gal-count {
   bottom: 27px;
   background: rgba(0,0,0,0.6) !important;
@@ -1438,21 +1459,21 @@ div.boardTitle {
   padding: 1px 5px 2px 5px;
   color: #ffffff !important;
 }
-:root:not(.gal-fit-width) .gal-name {
+:root:not(.gal-fit-width):not(.gal-pdf) .gal-name {
   bottom: 23px !important;
 }
-:root:not(.gal-fit-width) .gal-count {
+:root:not(.gal-fit-width):not(.gal-pdf) .gal-count {
   bottom: 44px !important;
 }
-:root:not(.gal-fit-height):not(.gal-hide-thumbnails) .gal-buttons,
-:root:not(.gal-fit-height):not(.gal-hide-thumbnails) .gal-name,
-:root:not(.gal-fit-height):not(.gal-hide-thumbnails) .gal-count {
-  right: 195px !important;
+:root.gal-fit-height:not(.gal-pdf):not(.gal-hide-thumbnails) .gal-buttons,
+:root.gal-fit-height:not(.gal-pdf):not(.gal-hide-thumbnails) .gal-name,
+:root.gal-fit-height:not(.gal-pdf):not(.gal-hide-thumbnails) .gal-count {
+  right: 178px !important;
 }
-:root.gal-hide-thumbnails:not(.gal-fit-height) .gal-buttons,
-:root.gal-hide-thumbnails:not(.gal-fit-height) .gal-name,
-:root.gal-hide-thumbnails:not(.gal-fit-height) .gal-count {
-  right: 44px !important;
+:root.gal-hide-thumbnails:.gal-fit-height:not(.gal-pdf) .gal-buttons,
+:root.gal-hide-thumbnails:.gal-fit-height:not(.gal-pdf) .gal-name,
+:root.gal-hide-thumbnails:.gal-fit-height:not(.gal-pdf) .gal-count {
+  right: 28px !important;
 }
 @media screen and (resolution: 1dppx) {
  .fa-bars {

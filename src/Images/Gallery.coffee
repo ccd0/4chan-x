@@ -18,7 +18,7 @@ Gallery =
       cb: @node
 
   node: ->
-    return unless @file?.isImage
+    return unless @file
     if Gallery.nodes
       Gallery.generateThumb $ '.file', @nodes.root
       Gallery.nodes.total.textContent = Gallery.images.length
@@ -64,8 +64,7 @@ Gallery =
 
     {cb} = Gallery
     $.on nodes.frame,              'click', cb.blank
-    $.on nodes.current,            'click', cb.download
-    $.on nodes.next,               'click', cb.next
+    $.on nodes.next,               'click', cb.advance
     $.on ($ '.gal-prev',  dialog), 'click', cb.prev
     $.on ($ '.gal-next',  dialog), 'click', cb.next
     $.on ($ '.gal-close', dialog), 'click', cb.close
@@ -105,6 +104,7 @@ Gallery =
 
   generateThumb: (file) ->
     post  = Get.postFromNode file
+    return unless post.file and (post.file.isImage or post.file.isVideo or Conf['PDF in Gallery'])
     title = ($ '.fileText a', file).textContent
     thumb = $.el 'a',
       className: 'gal-thumb'
@@ -130,8 +130,10 @@ Gallery =
       cb = switch key
         when 'Esc', Conf['Open Gallery']
           Gallery.cb.close
-        when 'Right', 'Enter'
+        when 'Right'
           Gallery.cb.next
+        when 'Enter'
+          Gallery.cb.advance
         when 'Left', ''
           Gallery.cb.prev
 
@@ -150,11 +152,20 @@ Gallery =
       $.rmClass  el, 'gal-highlight' if el = $ '.gal-highlight', Gallery.thumbs
       $.addClass @,  'gal-highlight'
 
-      img = $.el 'img',
+      elType = 'img'
+      elType = 'video' if /\.webm$/.test(@href)
+      elType = 'iframe' if /\.pdf$/.test(@href)
+      (if elType is 'iframe' then $.addClass else $.rmClass) doc, 'gal-pdf'
+      img = $.el elType,
         src:   name.href     = @href
         title: name.download = name.textContent = @title
+      if elType is 'video'
+        img.loop = true
+        img.autoplay = Conf['Autoplay']
+        img.muted = !Conf['Allow Sound']
 
       $.extend  img.dataset,   @dataset
+      nodes.current.pause?()
       $.replace nodes.current, img
       nodes.count.textContent = +@dataset.id + 1
       nodes.current = img
@@ -183,18 +194,14 @@ Gallery =
       delete post.file.fullImage
 
       src = @src.split '/'
-      if src[2] is 'images.4chan.org'
+      if src[2] is 'i.4cdn.org'
         URL = Redirect.to 'file',
           boardID:  src[3]
           filename: src[5]
         if URL
           thumb.href = URL
           return unless Gallery.nodes.current is img
-          revived = $.el 'img',
-            src:   URL
-            title: img.title
-          $.extend revived.dataset, img.dataset
-          $.replace img, revived
+          img.src = URL
           return
         if g.DEAD or post.isDead or post.file.isDead
           return
@@ -213,10 +220,14 @@ Gallery =
 
     prev:   -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id - 1]
     next:   -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id + 1]
+    advance:-> if Gallery.nodes.current.paused then Gallery.nodes.current.play() else Gallery.cb.next()
+    pause:  -> if Gallery.nodes.current.nodeType is 'VIDEO'
+      if Gallery.nodes.current.paused then Gallery.nodes.current.play() else Gallery.nodes.current.pause()
     toggle: -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
     blank: (e) -> Gallery.cb.close() if e.target is @
 
     close: ->
+      Gallery.nodes.current.pause?()
       $.rm Gallery.nodes.el
       delete Gallery.nodes
       d.body.style.overflow = ''
