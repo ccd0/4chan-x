@@ -6,6 +6,7 @@ module.exports = (grunt) ->
   # Project configuration.
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
+
     concat:
       options: process: Object.create(null, data:
         get: ->
@@ -41,16 +42,14 @@ module.exports = (grunt) ->
           'src/General/Main.coffee'
         ]
         dest: 'tmp-<%= pkg.type %>/script.coffee'
-
       meta:
         files:
           'LICENSE':   'src/General/meta/banner.js'
-
       crx:
         files:
-          'builds/crx/manifest.json': 'src/General/meta/manifest.json'
-          'builds/updates.xml': 'src/General/meta/updates.xml'
-          'builds/crx/script.js': [
+          'testbuilds/crx/manifest.json': 'src/General/meta/manifest.json'
+          'testbuilds/updates.xml': 'src/General/meta/updates.xml'
+          'testbuilds/crx/script.js': [
             'src/General/meta/botproc.js'
             'src/General/meta/banner.js'
             'src/General/meta/usestrict.js'
@@ -58,20 +57,26 @@ module.exports = (grunt) ->
           ]
       userscript:
         files:
-          'builds/<%= pkg.name %>.meta.js': 'src/General/meta/metadata.js'
-          'builds/<%= pkg.name %>.user.js': [
+          'testbuilds/<%= pkg.name %>.meta.js': 'src/General/meta/metadata.js'
+          'testbuilds/<%= pkg.name %>.user.js': [
             'src/General/meta/botproc.js'
             'src/General/meta/metadata.js'
             'src/General/meta/banner.js'
             'src/General/meta/usestrict.js'
             'tmp-<%= pkg.type %>/script.js'
           ]
+
     copy:
       crx:
         src:  'src/General/img/*.png'
-        dest: 'builds/crx/'
+        dest: 'testbuilds/crx/'
         expand:  true
         flatten: true
+      builds:
+        cwd: 'testbuilds/'
+        src: '**'
+        dest: 'builds/'
+        expand: true
 
     coffee:
       script:
@@ -101,11 +106,16 @@ module.exports = (grunt) ->
         failOnError: true
       checkout:
         command: 'git checkout <%= pkg.meta.mainBranch %>'
+      pack:
+        command: 'chromium --pack-extension=testbuilds/crx --pack-extension-key=$HOME/.ssh/<%= pkg.name %>.pem'
       commit:
         command: """
           git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."
           git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."
           git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.version %>."
+          git checkout gh-pages
+          git merge --ff-only stable
+          git checkout -
         """
       push:
         command: 'git push origin --tags -f && git push origin --all'
@@ -124,15 +134,17 @@ module.exports = (grunt) ->
     compress:
       crx:
         options:
-          archive: 'builds/<%= pkg.name %>.zip'
+          archive: 'testbuilds/<%= pkg.name %>.zip'
           level: 9
           pretty: true
         expand:  true
         flatten: true
-        src: 'builds/crx/*'
+        src: 'testbuilds/crx/*'
         dest: '/'
+
     clean:
       builds: 'builds'
+      testbuilds: 'testbuilds'
       tmpcrx: 'tmp-crx'
       tmpuserscript: 'tmp-userscript'
 
@@ -185,10 +197,12 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'release', [
     'build'
-    'compress:crx'
+    'shell:pack'
+    'copy:builds'
     'shell:commit'
     'shell:push'
   ]
+
   grunt.registerTask 'patch', [
     'bump'
     'updcl:3'
