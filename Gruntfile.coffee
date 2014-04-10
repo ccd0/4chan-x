@@ -85,7 +85,6 @@ module.exports = (grunt) ->
 
     concurrent:
       build: [
-        'concat:meta'
         'build-crx'
         'build-userscript'
       ]
@@ -198,6 +197,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'release', [
     'build'
     'shell:pack'
+    'concat:meta'
     'copy:builds'
     'shell:commit'
     'shell:push'
