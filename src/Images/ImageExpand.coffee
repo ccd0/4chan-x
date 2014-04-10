@@ -26,7 +26,7 @@ ImageExpand =
       clone = @
       ImageExpand.setupVideoControls clone
       unless clone.origin.file.fullImage.paused
-        $.queueTask -> ImageExpand.startVideo clone
+        $.queueTask -> Video.start clone.file.fullImage
     else if ImageExpand.on and !@isHidden and
       (Conf['Expand spoilers'] or !@file.isSpoiler) and
       (Conf['Expand videos'] or !@file.isVideo)
@@ -123,7 +123,6 @@ ImageExpand =
     else
       el = post.file.fullImage = $.el (if isVideo then 'video' else 'img'),
         className: 'full-image'
-      el.loop = true if isVideo
       $.on el, 'error', ImageExpand.error
       el.src = src or post.file.URL
     $.after thumb, el unless el is thumb.nextSibling
@@ -151,9 +150,7 @@ ImageExpand =
     post.file.isExpanded = true
     if post.file.isVideo
       ImageExpand.setupVideoControls post
-      post.file.fullImage.muted = !Conf['Allow Sound']
-      post.file.fullImage.controls = Conf['Show Controls']
-      ImageExpand.startVideo post if Conf['Autoplay'] and not disableAutoplay
+      Video.configure post.file.fullImage, disableAutoplay
 
   videoCB:
     click: (e) ->
@@ -192,18 +189,6 @@ ImageExpand =
       $.on contract, 'click', (e) -> ImageExpand.contract post
       $.add file.videoControls, [$.tn('\u00A0'), contract]
     $.add file.text, file.videoControls
-
-  startVideo: (post) ->
-    {file} = post
-    video = file.fullImage
-    {controls} = video
-    video.controls = false
-    video.play()
-    # Hacky workaround for Firefox forever-loading bug for very short videos
-    if controls
-      $.asap (-> (video.readyState >= 3 and video.currentTime <= Math.max 0.1, (video.duration - 0.5)) or !file.isExpanded), ->
-        video.controls = true if file.isExpanded
-      , 500
 
   error: ->
     post = Get.postFromNode @
