@@ -1,3 +1,6 @@
+### v1.7.7 
+*2014-04-10*
+
 **fgts**
 - Update archive list.
 
