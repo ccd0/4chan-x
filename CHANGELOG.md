@@ -1,3 +1,6 @@
+**ccd0**
+- `Loop in New Tab` (enabled by default) causes videos opened in a separate tab to loop, and applies your settings for inline expanded videos to them.
+
 ### v1.7.5 
 *2014-04-09*
 **ccd0**
