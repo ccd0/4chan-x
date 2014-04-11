@@ -24,7 +24,7 @@ ImageHover =
       el.src = file.URL
       $.after file.thumb, el
     if isVideo
-      el.loop = true
+      el.loop     = true
       el.controls = false
       el.play() if Conf['Autoplay']
     UI.hover
