@@ -15,7 +15,7 @@ Gallery =
 
     Post.callbacks.push
       name: 'Gallery'
-      cb: @node
+      cb:   @node
 
   node: ->
     return unless @file
@@ -48,11 +48,11 @@ Gallery =
     nodes.menu = new UI.Menu 'gallery'
 
     {cb} = Gallery
-    $.on nodes.frame,              'click', cb.blank
-    $.on nodes.next,               'click', cb.advance
-    $.on ($ '.gal-prev',  dialog), 'click', cb.prev
-    $.on ($ '.gal-next',  dialog), 'click', cb.next
-    $.on ($ '.gal-close', dialog), 'click', cb.close
+    $.on nodes.frame,             'click', cb.blank
+    $.on nodes.next,              'click', cb.advance
+    $.on $('.gal-prev',  dialog), 'click', cb.prev
+    $.on $('.gal-next',  dialog), 'click', cb.next
+    $.on $('.gal-close', dialog), 'click', cb.close
 
     $.on menuButton, 'click', (e) ->
       nodes.menu.toggle e, @, g
@@ -67,12 +67,7 @@ Gallery =
 
     $.on  d, 'keydown', cb.keybinds
     $.off d, 'keydown', Keybinds.keydown
-
-    i = 0
-    files = $$ '.post .file'
-    while file = files[i++]
-      continue if $ '.fileDeletedRes, .fileDeleted', file
-      Gallery.generateThumb file
+    Gallery.generateThumb file for file, i in $$ '.post .file' when !$ '.fileDeletedRes, .fileDeleted', file
     $.add d.body, dialog
 
     nodes.thumbs.scrollTop = 0
@@ -139,20 +134,18 @@ Gallery =
       elType = 'img'
       elType = 'video' if /\.webm$/.test(@href)
       elType = 'iframe' if /\.pdf$/.test(@href)
-      (if elType is 'iframe' then $.addClass else $.rmClass) doc, 'gal-pdf'
+      $[if elType is 'iframe' then 'addClass' else 'rmClass'] nodes.el, 'gal-pdf'
       file = $.el elType,
         src:   name.href     = @href
         title: name.download = name.textContent = @title
-      if elType is 'video'
-        file.loop = true
-        file.autoplay = Conf['Autoplay']
 
       $.extend  file.dataset,   @dataset
       nodes.current.pause?()
       $.replace nodes.current,  file
+      Video.configure file if elType is 'video'
       nodes.count.textContent = +@dataset.id + 1
-      nodes.current = file
-      nodes.frame.scrollTop = 0
+      nodes.current           = file
+      nodes.frame.scrollTop   = 0
       nodes.next.focus()
 
       # Scroll
@@ -201,13 +194,15 @@ Gallery =
         if postObj.filedeleted
           post.kill true
 
-    prev:   -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id - 1]
-    next:   -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id + 1]
-    advance:-> if Gallery.nodes.current.paused then Gallery.nodes.current.play() else Gallery.cb.next()
-    pause:  -> if Gallery.nodes.current.nodeType is 'VIDEO'
-      if Gallery.nodes.current.paused then Gallery.nodes.current.play() else Gallery.nodes.current.pause()
-    toggle: -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
+    prev:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id - 1]
+    next:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id + 1]
+    advance:   -> if Gallery.nodes.current.paused then Gallery.nodes.current.play() else Gallery.cb.next()
+    toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
     blank: (e) -> Gallery.cb.close() if e.target is @
+
+    pause:     ->
+      {current} = Gallery.nodes
+      current[if current.paused then 'play' else 'pause']() if current.nodeType is 'VIDEO'
 
     close: ->
       Gallery.nodes.current.pause?()
