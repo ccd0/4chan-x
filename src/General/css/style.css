@@ -1498,7 +1498,7 @@ div.boardTitle {
   padding-right: 7px;
   top: 5px;
 }
-:root.gal-pdf .gal-buttons {
+.gal-pdf .gal-buttons {
   top: 40px;
   background: rgba(0,0,0,0.6) !important;
   border-radius: 3px;
