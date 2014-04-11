@@ -7868,13 +7868,6 @@
       next: function() {
         return Gallery.cb.open.call(Gallery.images[+Gallery.nodes.current.dataset.id + 1]);
       },
-      advance: function() {
-        if (Gallery.nodes.current.paused) {
-          return Gallery.nodes.current.play();
-        } else {
-          return Gallery.cb.next();
-        }
-      },
       toggle: function() {
         return (Gallery.nodes ? Gallery.cb.close : Gallery.build)();
       },
@@ -7882,6 +7875,15 @@
         if (e.target === this) {
           return Gallery.cb.close();
         }
+      },
+      advance: function() {
+        if (Gallery.nodes.current.controls) {
+          return;
+        }
+        if (Gallery.nodes.current.paused) {
+          return Gallery.nodes.current.play();
+        }
+        return Gallery.cb.next();
       },
       pause: function() {
         var current;

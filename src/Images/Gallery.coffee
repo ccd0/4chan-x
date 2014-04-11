@@ -214,11 +214,15 @@ Gallery =
 
     prev:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id - 1]
     next:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id + 1]
-    advance:   -> if Gallery.nodes.current.paused then Gallery.nodes.current.play() else Gallery.cb.next()
     toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
     blank: (e) -> Gallery.cb.close() if e.target is @
 
-    pause:     ->
+    advance: ->
+      if Gallery.nodes.current.controls then return
+      if Gallery.nodes.current.paused   then return Gallery.nodes.current.play()
+      Gallery.cb.next()
+    
+    pause: ->
       {current} = Gallery.nodes
       current[if current.paused then 'play' else 'pause']() if current.nodeType is 'VIDEO'
 
