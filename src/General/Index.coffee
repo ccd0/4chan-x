@@ -171,9 +171,9 @@ Index =
 
   scroll: ->
     return if Index.req or Conf['Index Mode'] isnt 'infinite' or (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
-    Index.pageNum = (Index.pageNum or Index.getCurrentPage()) + 1 # Avoid having to pushState to keep track of the current page
+    Index.currentPage = (Index.currentPage or Index.getCurrentPage()) + 1 # Avoid having to pushState to keep track of the current page
 
-    return Index.endNotice() if Index.pageNum >= Index.pagesNum
+    return Index.endNotice() if Index.currentPage >= Index.pagesNum
 
     Index.buildIndex true
 
@@ -419,8 +419,8 @@ Index =
     Header.scrollToIfNeeded Index.navLinks
 
   getCurrentPage: ->
-    if Conf['Index Mode'] is 'infinite' and Index.pageNum
-      return Index.pageNum
+    if Conf['Index Mode'] is 'infinite' and Index.currentPage
+      return Index.currentPage
     +window.location.pathname.split('/')[2]
 
   userPageNav: (pageNum) ->
@@ -469,8 +469,8 @@ Index =
       $.add pagesRoot, nodes
     Index.togglePagelist()
 
-  setPage: (pageNum) ->
-    pageNum  or= Index.getCurrentPage()
+  setPage: (pageNum = Index.getCurrentPage()) ->
+    Index.currentPage = pageNum
     maxPageNum = Index.getMaxPageNum()
     pagesRoot  = $ '.pages', Index.pagelist
     # Previous/Next buttons
@@ -513,7 +513,7 @@ Index =
       return
     unless d.readyState is 'loading' or Index.root.parentElement
       $.replace $('.board'), Index.root
-    delete Index.pageNum
+    Index.currentPage = 0
     Index.req?.abort()
     Index.notice?.close()
 
@@ -564,10 +564,14 @@ Index =
     Navigate.title()
 
     try
+      pageNum or= 0
       if req.status is 200
         Index.parse req.response, pageNum
       else if req.status is 304
-        Index.pageNav pageNum or 0
+        if Index.currentPage is pageNum
+          Index.buildIndex()
+        else
+          Index.pageNav pageNum
     catch err
       c.error "Index failure: #{err.message}", err.stack
       # network error or non-JSON content for example.
@@ -588,7 +592,7 @@ Index =
     Index.parseThreadList pages
     Index.buildThreads()
     Index.sort()
-    if pageNum?
+    if pageNum? and Index.currentPage isnt pageNum
       Index.pageNav pageNum
       return
     Index.buildIndex()
@@ -752,16 +756,12 @@ Index =
 
   buildIndex: (infinite) ->
     {sortedThreads} = Index
+    nodes = []
     switch Conf['Index Mode']
       when 'paged', 'infinite'
         pageNum = Index.getCurrentPage()
-        if pageNum > Index.getMaxPageNum()
-          # Go to the last available page if we were past the limit.
-          Index.pageNav Index.getMaxPageNum()
-          return
         threadsPerPage = Index.getThreadsNumPerPage()
 
-        nodes   = []
         threads = []
         i       = threadsPerPage * pageNum
         max     = i + threadsPerPage
@@ -777,8 +777,7 @@ Index =
         nodes = Index.buildCatalogViews()
 
       else
-        nodes = []
-        i     = 0
+        i = 0
         while thread = sortedThreads[i++]
           nodes.push thread.OP.nodes.root.parentNode, $.el 'hr'
           Index.buildReplies thread
@@ -799,9 +798,11 @@ Index =
       unless Index.searchInput.dataset.searching
         Index.searchInput.dataset.searching = 1
         Index.pageBeforeSearch = Index.getCurrentPage()
-        pageNum = 0
+        Index.setPage pageNum = 0
       else
-        pageNum = Index.getCurrentPage()
+        unless Conf['Index Mode'] is 'infinite'
+          pageNum = Index.getCurrentPage()
+        
     else
       return unless Index.searchInput.dataset.searching
       pageNum = Index.pageBeforeSearch
@@ -831,7 +832,6 @@ Index =
     while thread = sortedThreads[i++]
       filtered.push thread if Index.searchMatch thread, keywords
     Index.sortedThreads = filtered
-
 
   searchMatch: (thread, keywords) ->
     {info, file} = thread.OP

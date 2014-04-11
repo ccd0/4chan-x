@@ -1,17 +1,15 @@
 ImageLoader =
   init: ->
-    return unless Conf["Image Prefetching"] or Conf["Replace JPG"] or Conf["Replace PNG"] or Conf["Replace GIF"]
+    return unless Conf["Image Prefetching"] or Conf["Replace JPG"] or Conf["Replace PNG"] or Conf["Replace GIF"] or Conf["Replace WEBM"]
 
     Post.callbacks.push
       name: 'Image Replace'
       cb:   @node
-    
+
     Thread.callbacks.push
       name: 'Image Replace'
       cb:   @thread
-    
-    return unless Conf['Image Prefetching'] and g.VIEW is 'thread'
-    
+
     prefetch = $.el 'label',
       innerHTML: '<input type=checkbox name="prefetch"> Prefetch Images'
 
@@ -22,27 +20,49 @@ ImageLoader =
       type: 'header'
       el: prefetch
       order: 104
-  
+
   thread: ->
     ImageLoader.thread = @
 
   node: ->
-    return if @isClone or @isHidden or @thread.isHidden or !@file?.isImage
+    return unless @file
+    {isImage, isVideo} = @file
+    return if @isClone or @isHidden or @thread.isHidden or !(isImage or isVideo)
     {thumb, URL} = @file
-    return unless (Conf[string = "Replace #{if (type = (URL.match /\w{3}$/)[0].toUpperCase()) is 'PEG' then 'JPG' else type}"] and !/spoiler/.test thumb.src) or Conf['prefetch']
+    {style} = thumb
+    type = if (match = URL.match(/\.([^.]+)$/)[1].toUpperCase()) is 'JPEG' then 'JPG' else match
+    replace = "Replace #{type}"
+    return unless (Conf[replace] and !/spoiler/.test thumb.src) or (Conf['prefetch'] and g.VIEW is 'thread')
     if @file.isSpoiler
       # Revealed spoilers do not have height/width set, this fixes the image's dimensions.
-      {style} = thumb
       style.maxHeight = style.maxWidth = if @isReply then '125px' else '250px'
-    img = $.el 'img'
-    if Conf[string]
-      $.on img, 'load', ->
-        # Replace the thumbnail once the GIF has finished loading.
+    file = $.el if isImage then 'img' else 'video'
+    if Conf[replace]
+      if isVideo
+      
+        file.alt          = thumb.alt
+        file.dataset.md5  = thumb.dataset.md5
+        file.style.height = style.height
+        file.style.width  = style.width
+        file.style.maxHeight = style.maxHeight
+        file.style.maxWidth  = style.maxWidth
+        file.loop     = true
+        file.autoplay = Conf['Autoplay']
+        if Conf['Image Hover']
+          $.on file, 'mouseover', ImageHover.mouseover
+      cb = =>
+        $.off file, 'load loadedmetadata', cb
+        # Replace the thumbnail once the file has finished loading.
+        if isVideo
+          $.replace thumb, file
+          @file.thumb = file # XXX expanding requires the post.file.thumb node.
+          return
         thumb.src = URL
-    img.src = URL
+      $.on file, 'load loadedmetadata', cb
+    file.src = URL
 
   toggle: ->
     enabled = Conf['prefetch'] = @checked
     if enabled
-      ImageLoader.thread.posts.forEach ImageLoader.node.call
+      g.BOARD.posts.forEach ImageLoader.node.call
     return

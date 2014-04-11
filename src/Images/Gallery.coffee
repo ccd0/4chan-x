@@ -15,10 +15,10 @@ Gallery =
 
     Post.callbacks.push
       name: 'Gallery'
-      cb: @node
+      cb:   @node
 
   node: ->
-    return unless @file?.isImage
+    return unless @file
     if Gallery.nodes
       Gallery.generateThumb $ '.file', @nodes.root
       Gallery.nodes.total.textContent = Gallery.images.length
@@ -33,23 +33,23 @@ Gallery =
     nodes.el = dialog = $.el 'div',
       id: 'a-gallery'
       innerHTML: """
-<div class=gal-viewport>
-  <span class=gal-buttons>
-    <a class="menu-button" href="javascript:;"><i class="fa">\uf107</i></a>
-    <a href=javascript:; class='gal-close fa'>\uf00d</a>
-  </span>
-  <a class=gal-name target="_blank"></a>
-  <span class=gal-count>
-    <span class='count'></span> / <span class='total'></span>
-  </span>
-  <div class=gal-prev></div>
-  <div class=gal-image>
-    <a href=javascript:;><img></a>
-  </div>
-  <div class=gal-next></div>
-</div>
-<div class=gal-thumbnails></div>
-"""
+        <div class=gal-viewport>
+          <span class=gal-buttons>
+            <a class="menu-button" href="javascript:;"><i></i></a>
+            <a href=javascript:; class=gal-close>×</a>
+          </span>
+          <a class=gal-name target="_blank"></a>
+          <span class=gal-count>
+            <span class='count'></span> / <span class='total'></span>
+          </span>
+          <div class=gal-prev></div>
+          <div class=gal-image>
+            <a href=javascript:;><img></a>
+          </div>
+          <div class=gal-next></div>
+        </div>
+        <div class=gal-thumbnails></div>
+      """
 
     nodes[key] = $ value, dialog for key, value of {
       frame:   '.gal-image'
@@ -65,12 +65,11 @@ Gallery =
     nodes.menu = new UI.Menu 'gallery'
 
     {cb} = Gallery
-    $.on nodes.frame,              'click', cb.blank
-    $.on nodes.current,            'click', cb.download
-    $.on nodes.next,               'click', cb.next
-    $.on ($ '.gal-prev',  dialog), 'click', cb.prev
-    $.on ($ '.gal-next',  dialog), 'click', cb.next
-    $.on ($ '.gal-close', dialog), 'click', cb.close
+    $.on nodes.frame,             'click', cb.blank
+    $.on nodes.next,              'click', cb.advance
+    $.on $('.gal-prev',  dialog), 'click', cb.prev
+    $.on $('.gal-next',  dialog), 'click', cb.next
+    $.on $('.gal-close', dialog), 'click', cb.close
 
     $.on menuButton, 'click', (e) ->
       nodes.menu.toggle e, @, g
@@ -86,12 +85,7 @@ Gallery =
 
     $.on  d, 'keydown', cb.keybinds
     $.off d, 'keydown', Keybinds.keydown
-
-    i = 0
-    files = $$ '.post .file'
-    while file = files[i++]
-      continue if $ '.fileDeletedRes, .fileDeleted', file
-      Gallery.generateThumb file
+    Gallery.generateThumb file for file, i in $$ '.post .file' when !$ '.fileDeletedRes, .fileDeleted', file
     $.add d.body, dialog
 
     nodes.thumbs.scrollTop = 0
@@ -107,16 +101,22 @@ Gallery =
 
   generateThumb: (file) ->
     post  = Get.postFromNode file
+    return unless post.file and (post.file.isImage or post.file.isVideo or Conf['PDF in Gallery'])
     title = ($ '.fileText a', file).textContent
-    thumb = post.file.thumb.parentNode.cloneNode true
-    if dupe = $ 'img + img', thumb
-      $.rm dupe
 
-    thumb.className = 'gal-thumb'
-    thumb.title = title
-    thumb.dataset.id   = Gallery.images.length
-    thumb.dataset.post = $('a[title="Highlight this post"]', post.nodes.info).href
-    thumb.firstElementChild.style.cssText = ''
+    thumb = $.el 'a',
+      className: 'gal-thumb'
+      href:      post.file.URL
+      target:    '_blank'
+      title:     title
+
+    thumb.dataset.id      = Gallery.images.length
+    thumb.dataset.post    = $('a[title="Highlight this post"]', post.nodes.info).href
+    thumb.dataset.isVideo = true if post.file.isVideo
+
+    thumbImg = post.file.thumb.cloneNode false
+    thumbImg.style.cssText = ''
+    $.add thumb, thumbImg
 
     $.on thumb, 'click', Gallery.cb.open
 
@@ -130,8 +130,10 @@ Gallery =
       cb = switch key
         when 'Esc', Conf['Open Gallery']
           Gallery.cb.close
-        when 'Right', 'Enter'
+        when 'Right'
           Gallery.cb.next
+        when 'Enter'
+          Gallery.cb.advance
         when 'Left', ''
           Gallery.cb.prev
 
@@ -150,15 +152,20 @@ Gallery =
       $.rmClass  el, 'gal-highlight' if el = $ '.gal-highlight', nodes.thumbs
       $.addClass @,  'gal-highlight'
 
-      img = $.el 'img',
+      elType = if @dataset.isVideo then 'video' else if /\.pdf$/.test(@href) then 'iframe' else 'img'
+      $[if elType is 'iframe' then 'addClass' else 'rmClass'] nodes.el, 'gal-pdf'
+
+      file = $.el elType,
         src:   name.href     = @href
         title: name.download = name.textContent = @title
 
-      $.extend  img.dataset,   @dataset
-      $.replace nodes.current, img
+      $.extend  file.dataset,   @dataset
+      nodes.current.pause?()
+      $.replace nodes.current,  file
+      Video.configure file if @dataset.isVideo
       nodes.count.textContent = +@dataset.id + 1
-      nodes.current = img
-      nodes.frame.scrollTop = 0
+      nodes.current           = file
+      nodes.frame.scrollTop   = 0
       nodes.next.focus()
 
       # Scroll
@@ -169,9 +176,9 @@ Gallery =
         return if top < 0
 
       nodes.thumbs.scrollTop += top
-      
-      $.on img, 'error', ->
-        Gallery.cb.error img, thumb
+
+      $.on file, 'error', ->
+        Gallery.cb.error file, thumb
 
     image: (e) ->
       e.preventDefault()
@@ -183,24 +190,20 @@ Gallery =
       delete post.file.fullImage
 
       src = @src.split '/'
-      if src[2] is 'images.4chan.org'
+      if src[2] is 'i.4cdn.org'
         URL = Redirect.to 'file',
           boardID:  src[3]
           filename: src[5]
         if URL
           thumb.href = URL
           return unless Gallery.nodes.current is img
-          revived = $.el 'img',
-            src:   URL
-            title: img.title
-          $.extend revived.dataset, img.dataset
-          $.replace img, revived
+          img.src = URL
           return
         if g.DEAD or post.isDead or post.file.isDead
           return
 
       # XXX CORS for images.4chan.org WHEN?
-      $.ajax "//api.4chan.org/#{post.board}/res/#{post.thread}.json", onload: ->
+      $.ajax "//a.4cdn.org/#{post.board}/res/#{post.thread}.json", onload: ->
         return if @status isnt 200
         i = 0
         {posts} = @response
@@ -211,12 +214,22 @@ Gallery =
         if postObj.filedeleted
           post.kill true
 
-    prev:   -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id - 1]
-    next:   -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id + 1]
-    toggle: -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
+    prev:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id - 1]
+    next:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id + 1]
+    toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
     blank: (e) -> Gallery.cb.close() if e.target is @
 
+    advance: ->
+      if Gallery.nodes.current.controls then return
+      if Gallery.nodes.current.paused   then return Gallery.nodes.current.play()
+      Gallery.cb.next()
+    
+    pause: ->
+      {current} = Gallery.nodes
+      current[if current.paused then 'play' else 'pause']() if current.nodeType is 'VIDEO'
+
     close: ->
+      Gallery.nodes.current.pause?()
       $.rm Gallery.nodes.el
       delete Gallery.nodes
       d.body.style.overflow = ''

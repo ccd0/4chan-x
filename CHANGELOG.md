@@ -1,3 +1,26 @@
+
+**ccd0**
+- `Loop in New Tab` (enabled by default) causes videos opened in a separate tab to loop, and applies your settings for inline expanded videos to them.
+- Add WebM support to gallery (currently no controls).
+- Add PDF support to gallery, disabled by default. Enable with `PDF in Gallery`.
+- Fix behavior of .webm videos expanded within inline quotes.
+- Contract thumbnails in quoted previews to avoid crashes caused by videos in quoted previews on some systems.
+- Change interface when both `Autoplay` and `Show Controls` are unchecked. In this mode, videos are now activated by clicking on them. The first click expands the video, the second click plays the video, and the third click contracts it.
+- Add item `Expand videos` in `Image Expansion` menu, which enables expansion of videos by `Expand All Images`. Disabled by default. Previously videos were expanded.
+- Disable autoplay for videos expanded by `Expand All Images`.
+- Fix minimum width bug.
+
+**fgts**
+- Update archive list.
+
+**Nebukazar**
+- `Quote Threading` disabled by default
+- Added missing titles to Header icons
+
+**Zixaphir**:
+- WebM Thumbnail Replacement. Use at your own risk.
+- Bugfixes.
+
 ### v2.9.15 
 *2014-04-05*
 
@@ -187,8 +210,8 @@
 **Spittie**
 - Check image dimension before uploading
 
-**Vampiricwulf**
-- Flash embedding and other Flash features.
+## v1.7.0 
+*2014-04-06*
 
 **Zixaphir**
 - Update Custom Navigation legend to reflect index mode changes.

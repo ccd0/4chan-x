@@ -299,12 +299,10 @@ QR =
     blob.name = url.substr(url.lastIndexOf('/')+1, url.length)
     name_start = header.indexOf('name="') + 6
     if (name_start - 6 != -1)
-      name_end = header.substr(name_start, header.length).indexOf('"')
+      name_end  = header.substr(name_start, header.length).indexOf('"')
       blob.name = header.substr(name_start, name_end)
 
     return if blob.type is null
-      QR.error "Unsupported file type."
-    return unless blob.type in QR.mimeTypes
       QR.error "Unsupported file type."
     QR.handleFiles([blob])
 
@@ -778,6 +776,7 @@ QR =
         QR.cooldown.auto = false
       QR.status()
       QR.error err
+      QR.captcha.setup() if QR.captcha.isEnabled
       return
 
     h1 = $ 'h1', resDoc
@@ -812,10 +811,13 @@ QR =
     # Enable auto-posting if we have stuff left to post, disable it otherwise.
     postsCount = QR.posts.length - 1
     QR.cooldown.auto = postsCount and isReply
+    QR.captcha.setup() if QR.captcha.isEnabled and QR.cooldown.auto
 
     unless Conf['Persistent QR'] or QR.cooldown.auto
       QR.close()
     else
+      if QR.posts.length > 1
+        QR.captcha.setup()
       post.rm()
 
     QR.cooldown.set {req, post, isReply, threadID}

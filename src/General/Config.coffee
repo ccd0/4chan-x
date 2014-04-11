@@ -2,7 +2,7 @@ Config =
   main:
     'Miscellaneous':
       'JSON Navigation' : [
-        true
+        false
         'Use JSON for loading the Board Index and Threads. Also allows searching and sorting the board index and infinite scolling.'
       ]
       'Catalog Links': [
@@ -69,6 +69,10 @@ Config =
         false
         'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.'
       ]
+      'Show Support Message': [
+        true
+        'Warn if your browser is unsupported. 4chan X may not operate correctly on unsupported browser versions.'
+      ]
 
     'Linkification':
       'Linkify': [
@@ -131,6 +135,10 @@ Config =
         true
         'Adds a simple and cute image gallery.' 
       ]
+      'PDF in Gallery': [
+        false
+        'Show PDF files in gallery.'
+      ]
       'Sauce': [
         true
         'Add sauce links to images.'
@@ -141,15 +149,19 @@ Config =
       ]
       'Replace GIF': [
         false
-        'Replace thumbnail of gifs with its actual image.'
-      ]
-      'Replace PNG': [
-        false
-        'Replace pngs.'
+        'Replace gif thumbnails with the actual image.'
       ]
       'Replace JPG': [
         false
-        'Replace jpgs.'
+        'Replace jpg thumbnails with the actual image.'
+      ]
+      'Replace PNG': [
+        false
+        'Replace png thumbnails with the actual image.'
+      ]
+      'Replace WEBM': [
+        false
+        'Replace webm thumbnails with the actual webm video. Probably will degrade browser performance ;)'
       ]
       'Image Prefetching': [
         false
@@ -165,15 +177,19 @@ Config =
       ]
       'Autoplay': [
         true
-        'Videos begin playing immediately when opened inline.'
+        'Videos begin playing immediately when opened.'
       ]
       'Show Controls': [
         true
-        'Show native seek and volume controls on videos. Contract videos when dragged to the left.'
+        'Show controls on videos expanded inline. Turn this off if you want to contract videos by clicking on them.'
       ]
       'Allow Sound': [
         true
-        'Allow sound in inline videos.'
+        'Allow sound in videos.'
+      ]
+      'Loop in New Tab': [
+        true
+        'Loop videos opened in their own tabs, and apply settings for inline expanded videos to them.'
       ]
 
     'Menu':
@@ -366,6 +382,7 @@ Config =
         'Add \'(Cross-thread)\' to cross-threads quotes.'
         'Highlights own posts if Quote Markers are enabled.'
       ]
+
   imageExpansion:
     'Fit width': [
       false
@@ -378,6 +395,10 @@ Config =
     'Expand spoilers': [
       true
       'Expand all images along with spoilers.'
+    ]
+    'Expand videos': [
+      false
+      'Expand all images also expands videos (no autoplay).'
     ]
     'Expand from here': [
       false

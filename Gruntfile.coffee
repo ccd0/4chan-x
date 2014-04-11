@@ -44,8 +44,7 @@ module.exports = (grunt) ->
 
       meta:
         files:
-          'LICENSE':   'src/General/meta/banner.js',
-          'latest.js': 'src/General/meta/latest.js' 
+          'LICENSE':   'src/General/meta/banner.js'
 
       crx:
         files:

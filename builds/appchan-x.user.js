@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.15 - 2014-04-05
+* appchan x - Version 2.9.15 - 2014-04-11
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -113,7 +113,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, InfiniScroll, JSColor, Keybinds, Labels, Linkify, Main, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, InfiniScroll, JSColor, Keybinds, Labels, Linkify, Main, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, TrashQueue, UI, Unread, Video, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -138,7 +138,7 @@
   Config = {
     main: {
       'Miscellaneous': {
-        'JSON Navigation': [true, 'Use JSON for loading the Board Index and Threads. Also allows searching and sorting the board index and infinite scolling.'],
+        'JSON Navigation': [false, 'Use JSON for loading the Board Index and Threads. Also allows searching and sorting the board index and infinite scolling.'],
         'Catalog Links': [true, 'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'],
         'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
         'Desktop Notifications': [false, 'Enables desktop notifications across various appchan x features.'],
@@ -154,7 +154,8 @@
         'Show Dice Roll': [true, 'Show dice that were entered into the email field.'],
         'Color User IDs': [false, 'Assign unique colors to user IDs on boards that use them'],
         'Remove Spoilers': [false, 'Remove all spoilers in text.'],
-        'Reveal Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.']
+        'Reveal Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.'],
+        'Show Support Message': [true, 'Warn if your browser is unsupported. 4chan X may not operate correctly on unsupported browser versions.']
       },
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
@@ -175,17 +176,20 @@
         'Image Hover': [true, 'Show full image / video on mouseover.'],
         'Image Hover in Catalog': [false, 'Show a floating expanded image on hover in the catalog.'],
         'Gallery': [true, 'Adds a simple and cute image gallery.'],
+        'PDF in Gallery': [false, 'Show PDF files in gallery.'],
         'Sauce': [true, 'Add sauce links to images.'],
         'Reveal Spoiler Thumbnails': [false, 'Replace spoiler thumbnails with the original image.'],
-        'Replace GIF': [false, 'Replace thumbnail of gifs with its actual image.'],
-        'Replace PNG': [false, 'Replace pngs.'],
-        'Replace JPG': [false, 'Replace jpgs.'],
+        'Replace GIF': [false, 'Replace gif thumbnails with the actual image.'],
+        'Replace JPG': [false, 'Replace jpg thumbnails with the actual image.'],
+        'Replace PNG': [false, 'Replace png thumbnails with the actual image.'],
+        'Replace WEBM': [false, 'Replace webm thumbnails with the actual webm video. Probably will degrade browser performance ;)'],
         'Image Prefetching': [false, 'Preload images'],
         'Fappe Tyme': [false, 'Hide posts without images when toggled. *hint* *hint*'],
         'Werk Tyme': [false, 'Hide all post images when toggled.'],
-        'Autoplay': [true, 'Videos begin playing immediately when opened inline.'],
-        'Show Controls': [true, 'Show native seek and volume controls on videos. Contract videos when dragged to the left.'],
-        'Allow Sound': [true, 'Allow sound in inline videos.']
+        'Autoplay': [true, 'Videos begin playing immediately when opened.'],
+        'Show Controls': [true, 'Show controls on videos expanded inline. Turn this off if you want to contract videos by clicking on them.'],
+        'Allow Sound': [true, 'Allow sound in videos.'],
+        'Loop in New Tab': [true, 'Loop videos opened in their own tabs, and apply settings for inline expanded videos to them.']
       },
       'Menu': {
         'Menu': [true, 'Add a drop-down menu to posts.'],
@@ -244,6 +248,7 @@
       'Fit width': [false, ''],
       'Fit height': [false, ''],
       'Expand spoilers': [true, 'Expand all images along with spoilers.'],
+      'Expand videos': [false, 'Expand all images also expands videos (no autoplay).'],
       'Expand from here': [false, 'Expand all images only from current position to thread end.'],
       'Advance on contract': [false, 'Advance to next post when contracting an expanded image.']
     },
@@ -3611,8 +3616,8 @@
       return this.board.posts.rm(this);
     };
 
-    Post.prototype.addClone = function(context) {
-      return new Clone(this, context);
+    Post.prototype.addClone = function(context, contractThumb) {
+      return new Clone(this, context, contractThumb);
     };
 
     Post.prototype.rmClone = function(index) {
@@ -3632,8 +3637,8 @@
   Clone = (function(_super) {
     __extends(Clone, _super);
 
-    function Clone(origin, context) {
-      var file, info, inline, inlined, key, nodes, post, root, val, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
+    function Clone(origin, context, contractThumb) {
+      var file, info, inline, inlined, key, nodes, post, root, val, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
       this.origin = origin;
       this.context = context;
       _ref = ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply'];
@@ -3642,7 +3647,7 @@
         this[key] = origin[key];
       }
       nodes = origin.nodes;
-      root = nodes.root.cloneNode(true);
+      root = contractThumb ? this.cloneWithoutVideo(nodes.root) : nodes.root.cloneNode(true);
       post = $('.post', root);
       info = $('.postInfo', post);
       this.nodes = {
@@ -3702,6 +3707,17 @@
         this.file.text = file.firstElementChild;
         this.file.thumb = $('img[data-md5]', file);
         this.file.fullImage = $('.full-image', file);
+        if (contractThumb) {
+          $.rmClass(root, 'expanded-image');
+          $.rmClass(this.file.thumb, 'expanding');
+        }
+        this.file.isExpanded = $.hasClass(root, 'expanded-image');
+        if ((_ref4 = this.file.fullImage) != null) {
+          _ref4.removeAttribute('id');
+        }
+        if ((_ref5 = $('.video-controls', this.file.text)) != null) {
+          _ref5.remove();
+        }
       }
       if (origin.isDead) {
         this.isDead = true;
@@ -3709,6 +3725,23 @@
       this.isClone = true;
       root.dataset.clone = origin.clones.push(this) - 1;
     }
+
+    Clone.prototype.cloneWithoutVideo = function(node) {
+      var child, clone, _i, _len, _ref;
+      if (node.tagName === 'VIDEO') {
+        return [];
+      } else if (node.nodeType === Node.ELEMENT_NODE && $('video', node)) {
+        clone = node.cloneNode(false);
+        _ref = node.childNodes;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          child = _ref[_i];
+          $.add(clone, this.cloneWithoutVideo(child));
+        }
+        return clone;
+      } else {
+        return node.cloneNode(true);
+      }
+    };
 
     return Clone;
 
@@ -4580,6 +4613,11 @@
       }
       return bottom;
     },
+    isNodeVisible: function(node) {
+      var height;
+      height = node.getBoundingClientRect().height;
+      return Header.getTopOf(node) + height >= 0 && Header.getBottomOf(node) + height >= 0;
+    },
     isHidden: function() {
       var top;
       top = Header.bar.getBoundingClientRect().top;
@@ -4850,8 +4888,8 @@
       if (Index.req || Conf['Index Mode'] !== 'infinite' || (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight)) || g.VIEW === 'thread') {
         return;
       }
-      Index.pageNum = (Index.pageNum || Index.getCurrentPage()) + 1;
-      if (Index.pageNum >= Index.pagesNum) {
+      Index.currentPage = (Index.currentPage || Index.getCurrentPage()) + 1;
+      if (Index.currentPage >= Index.pagesNum) {
         return Index.endNotice();
       }
       return Index.buildIndex(true);
@@ -5190,8 +5228,8 @@
       return Header.scrollToIfNeeded(Index.navLinks);
     },
     getCurrentPage: function() {
-      if (Conf['Index Mode'] === 'infinite' && Index.pageNum) {
-        return Index.pageNum;
+      if (Conf['Index Mode'] === 'infinite' && Index.currentPage) {
+        return Index.currentPage;
       }
       return +window.location.pathname.split('/')[2];
     },
@@ -5253,7 +5291,10 @@
     },
     setPage: function(pageNum) {
       var a, href, maxPageNum, next, pagesRoot, prev, strong;
-      pageNum || (pageNum = Index.getCurrentPage());
+      if (pageNum == null) {
+        pageNum = Index.getCurrentPage();
+      }
+      Index.currentPage = pageNum;
       maxPageNum = Index.getMaxPageNum();
       pagesRoot = $('.pages', Index.pagelist);
       prev = pagesRoot.previousSibling.firstChild;
@@ -5314,7 +5355,7 @@
       if (!(d.readyState === 'loading' || Index.root.parentElement)) {
         $.replace($('.board'), Index.root);
       }
-      delete Index.pageNum;
+      Index.currentPage = 0;
       if ((_ref = Index.req) != null) {
         _ref.abort();
       }
@@ -5375,10 +5416,15 @@
       }
       Navigate.title();
       try {
+        pageNum || (pageNum = 0);
         if (req.status === 200) {
           Index.parse(req.response, pageNum);
         } else if (req.status === 304) {
-          Index.pageNav(pageNum || 0);
+          if (Index.currentPage === pageNum) {
+            Index.buildIndex();
+          } else {
+            Index.pageNav(pageNum);
+          }
         }
       } catch (_error) {
         err = _error;
@@ -5401,7 +5447,7 @@
       Index.parseThreadList(pages);
       Index.buildThreads();
       Index.sort();
-      if (pageNum != null) {
+      if ((pageNum != null) && Index.currentPage !== pageNum) {
         Index.pageNav(pageNum);
         return;
       }
@@ -5627,16 +5673,12 @@
     buildIndex: function(infinite) {
       var i, max, nodes, pageNum, sortedThreads, thread, threads, threadsPerPage;
       sortedThreads = Index.sortedThreads;
+      nodes = [];
       switch (Conf['Index Mode']) {
         case 'paged':
         case 'infinite':
           pageNum = Index.getCurrentPage();
-          if (pageNum > Index.getMaxPageNum()) {
-            Index.pageNav(Index.getMaxPageNum());
-            return;
-          }
           threadsPerPage = Index.getThreadsNumPerPage();
-          nodes = [];
           threads = [];
           i = threadsPerPage * pageNum;
           max = i + threadsPerPage;
@@ -5652,7 +5694,6 @@
           nodes = Index.buildCatalogViews();
           break;
         default:
-          nodes = [];
           i = 0;
           while (thread = sortedThreads[i++]) {
             nodes.push(thread.OP.nodes.root.parentNode, $.el('hr'));
@@ -5677,9 +5718,11 @@
         if (!Index.searchInput.dataset.searching) {
           Index.searchInput.dataset.searching = 1;
           Index.pageBeforeSearch = Index.getCurrentPage();
-          pageNum = 0;
+          Index.setPage(pageNum = 0);
         } else {
-          pageNum = Index.getCurrentPage();
+          if (Conf['Index Mode'] !== 'infinite') {
+            pageNum = Index.getCurrentPage();
+          }
         }
       } else {
         if (!Index.searchInput.dataset.searching) {
@@ -6128,7 +6171,7 @@
       if (!root.parentNode) {
         return;
       }
-      clone = post.addClone(context);
+      clone = post.addClone(context, $.hasClass(root, 'dialog'));
       Clone.callbacks.execute([clone]);
       nodes = clone.nodes;
       $.rmAll(nodes.root);
@@ -6151,6 +6194,7 @@
           $.cache(url, function() {
             return Get.archivedPost(this, boardID, postID, root, context);
           }, {
+            responseType: 'json',
             withCredentials: url.archive.withCredentials
           });
         } else {
@@ -6632,8 +6676,8 @@
       return $.set("" + this.id + ".position", this.style.cssText);
     };
     hoverstart = function(_arg) {
-      var asapTest, cb, el, endEvents, latestEvent, o, offsetX, offsetY, root;
-      root = _arg.root, el = _arg.el, latestEvent = _arg.latestEvent, endEvents = _arg.endEvents, asapTest = _arg.asapTest, cb = _arg.cb, offsetX = _arg.offsetX, offsetY = _arg.offsetY;
+      var asapTest, cb, el, endEvents, latestEvent, noRemove, o, offsetX, offsetY, root;
+      root = _arg.root, el = _arg.el, latestEvent = _arg.latestEvent, endEvents = _arg.endEvents, asapTest = _arg.asapTest, cb = _arg.cb, offsetX = _arg.offsetX, offsetY = _arg.offsetY, noRemove = _arg.noRemove;
       o = {
         root: root,
         el: el,
@@ -6645,7 +6689,8 @@
         clientHeight: doc.clientHeight,
         clientWidth: doc.clientWidth,
         offsetX: offsetX || 45,
-        offsetY: offsetY || -120
+        offsetY: offsetY || -120,
+        noRemove: noRemove
       };
       o.hover = hover.bind(o);
       o.hoverend = hoverend.bind(o);
@@ -6665,7 +6710,7 @@
       $.on(root, 'mousemove', o.hover);
       o.workaround = function(e) {
         if (!root.contains(e.target)) {
-          return o.hoverend();
+          return o.hoverend(e);
         }
       };
       return $.on(doc, 'mousemove', o.workaround);
@@ -8952,7 +8997,7 @@
       return $.addClass(QR.nodes.el, 'dump');
     },
     handleBlob: function(urlBlob, header, url) {
-      var blob, end, endnl, endsc, mime, name, name_end, name_start, start, _ref;
+      var blob, end, endnl, endsc, mime, name, name_end, name_start, start;
       name = url.substr(url.lastIndexOf('/') + 1, url.length);
       start = header.indexOf("Content-Type: ") + 14;
       endsc = header.substr(start, header.length).indexOf(";");
@@ -8972,9 +9017,6 @@
         blob.name = header.substr(name_start, name_end);
       }
       if (blob.type === null) {
-        return QR.error("Unsupported file type.");
-      }
-      if (_ref = blob.type, __indexOf.call(QR.mimeTypes, _ref) < 0) {
         return QR.error("Unsupported file type.");
       }
       return QR.handleFiles([blob]);
@@ -9462,6 +9504,9 @@
         }
         QR.status();
         QR.error(err);
+        if (QR.captcha.isEnabled) {
+          QR.captcha.setup();
+        }
         return;
       }
       h1 = $('h1', resDoc);
@@ -9492,9 +9537,15 @@
       });
       postsCount = QR.posts.length - 1;
       QR.cooldown.auto = postsCount && isReply;
+      if (QR.captcha.isEnabled && QR.cooldown.auto) {
+        QR.captcha.setup();
+      }
       if (!(Conf['Persistent QR'] || QR.cooldown.auto)) {
         QR.close();
       } else {
+        if (QR.posts.length > 1) {
+          QR.captcha.setup();
+        }
         post.rm();
       }
       QR.cooldown.set({
@@ -9953,9 +10004,6 @@
         $.rmClass(QR.nodes.el, 'dump');
       } else if (this === QR.selected) {
         (QR.posts[index - 1] || QR.posts[index + 1]).select();
-        if (QR.captcha.isEnabled) {
-          QR.captcha.setup();
-        }
       }
       QR.posts.splice(index, 1);
       return QR.status();
@@ -10232,62 +10280,6 @@
 
   })();
 
-  AutoGIF = {
-    init: function() {
-      var _ref;
-      if (!Conf['Auto-GIF'] || ((_ref = g.BOARD.ID) === 'gif' || _ref === 'wsg')) {
-        return;
-      }
-      Post.callbacks.push({
-        name: 'Auto-GIF',
-        cb: this.node
-      });
-      return CatalogThread.callbacks.push({
-        name: 'Auto-GIF',
-        cb: this.catalogNode
-      });
-    },
-    node: function() {
-      var URL, style, thumb, _ref, _ref1;
-      if (this.isClone || this.isHidden || this.thread.isHidden || !((_ref = this.file) != null ? _ref.isImage : void 0)) {
-        return;
-      }
-      _ref1 = this.file, thumb = _ref1.thumb, URL = _ref1.URL;
-      if (!(/gif$/.test(URL) && !/spoiler/.test(thumb.src))) {
-        return;
-      }
-      if (this.file.isSpoiler) {
-        style = thumb.style;
-        style.maxHeight = style.maxWidth = this.isReply ? '125px' : '250px';
-      }
-      return AutoGIF.replaceThumbnail(thumb, URL);
-    },
-    catalogNode: function() {
-      var OP, URL, _ref;
-      OP = this.thread.OP;
-      if (!((_ref = OP.file) != null ? _ref.isImage : void 0)) {
-        return;
-      }
-      URL = OP.file.URL;
-      if (!/gif$/.test(URL)) {
-        return;
-      }
-      return AutoGIF.replaceThumbnail(this.nodes.thumb, URL, true);
-    },
-    replaceThumbnail: function(thumb, URL, isBackground) {
-      var gif;
-      gif = $.el('img');
-      $.on(gif, 'load', function() {
-        if (isBackground) {
-          return thumb.style.backgroundImage = "url(" + URL + ")";
-        } else {
-          return thumb.src = URL;
-        }
-      });
-      return gif.src = URL;
-    }
-  };
-
   FappeTyme = {
     init: function() {
       var el, lc, type, _i, _len, _ref;
@@ -10364,8 +10356,7 @@
       });
     },
     node: function() {
-      var _ref;
-      if (!((_ref = this.file) != null ? _ref.isImage : void 0)) {
+      if (!this.file) {
         return;
       }
       if (Gallery.nodes) {
@@ -10377,12 +10368,12 @@
       }
     },
     build: function(image) {
-      var cb, createSubEntry, dialog, el, file, files, i, key, menuButton, name, nodes, value, _ref;
+      var cb, createSubEntry, dialog, el, file, i, key, menuButton, name, nodes, value, _i, _len, _ref, _ref1;
       Gallery.images = [];
       nodes = Gallery.nodes = {};
       nodes.el = dialog = $.el('div', {
         id: 'a-gallery',
-        innerHTML: "<div class=gal-viewport>\n  <span class=gal-buttons>\n    <a class=\"menu-button\" href=\"javascript:;\"><i class=\"fa\">\uf107</i></a>\n    <a href=javascript:; class='gal-close fa'>\uf00d</a>\n  </span>\n  <a class=gal-name target=\"_blank\"></a>\n  <span class=gal-count>\n    <span class='count'></span> / <span class='total'></span>\n  </span>\n  <div class=gal-prev></div>\n  <div class=gal-image>\n    <a href=javascript:;><img></a>\n  </div>\n  <div class=gal-next></div>\n</div>\n<div class=gal-thumbnails></div>"
+        innerHTML: "<div class=gal-viewport>\n  <span class=gal-buttons>\n    <a class=\"menu-button\" href=\"javascript:;\"><i></i></a>\n    <a href=javascript:; class=gal-close>×</a>\n  </span>\n  <a class=gal-name target=\"_blank\"></a>\n  <span class=gal-count>\n    <span class='count'></span> / <span class='total'></span>\n  </span>\n  <div class=gal-prev></div>\n  <div class=gal-image>\n    <a href=javascript:;><img></a>\n  </div>\n  <div class=gal-next></div>\n</div>\n<div class=gal-thumbnails></div>"
       });
       _ref = {
         frame: '.gal-image',
@@ -10401,8 +10392,7 @@
       nodes.menu = new UI.Menu('gallery');
       cb = Gallery.cb;
       $.on(nodes.frame, 'click', cb.blank);
-      $.on(nodes.current, 'click', cb.download);
-      $.on(nodes.next, 'click', cb.next);
+      $.on(nodes.next, 'click', cb.advance);
       $.on($('.gal-prev', dialog), 'click', cb.prev);
       $.on($('.gal-next', dialog), 'click', cb.next);
       $.on($('.gal-close', dialog), 'click', cb.close);
@@ -10420,13 +10410,12 @@
       }
       $.on(d, 'keydown', cb.keybinds);
       $.off(d, 'keydown', Keybinds.keydown);
-      i = 0;
-      files = $$('.post .file');
-      while (file = files[i++]) {
-        if ($('.fileDeletedRes, .fileDeleted', file)) {
-          continue;
+      _ref1 = $$('.post .file');
+      for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
+        file = _ref1[i];
+        if (!$('.fileDeletedRes, .fileDeleted', file)) {
+          Gallery.generateThumb(file);
         }
-        Gallery.generateThumb(file);
       }
       $.add(d.body, dialog);
       nodes.thumbs.scrollTop = 0;
@@ -10436,18 +10425,26 @@
       return nodes.total.textContent = --i;
     },
     generateThumb: function(file) {
-      var dupe, post, thumb, title;
+      var post, thumb, thumbImg, title;
       post = Get.postFromNode(file);
-      title = ($('.fileText a', file)).textContent;
-      thumb = post.file.thumb.parentNode.cloneNode(true);
-      if (dupe = $('img + img', thumb)) {
-        $.rm(dupe);
+      if (!(post.file && (post.file.isImage || post.file.isVideo || Conf['PDF in Gallery']))) {
+        return;
       }
-      thumb.className = 'gal-thumb';
-      thumb.title = title;
+      title = ($('.fileText a', file)).textContent;
+      thumb = $.el('a', {
+        className: 'gal-thumb',
+        href: post.file.URL,
+        target: '_blank',
+        title: title
+      });
       thumb.dataset.id = Gallery.images.length;
       thumb.dataset.post = $('a[title="Highlight this post"]', post.nodes.info).href;
-      thumb.firstElementChild.style.cssText = '';
+      if (post.file.isVideo) {
+        thumb.dataset.isVideo = true;
+      }
+      thumbImg = post.file.thumb.cloneNode(false);
+      thumbImg.style.cssText = '';
+      $.add(thumb, thumbImg);
       $.on(thumb, 'click', Gallery.cb.open);
       Gallery.images.push(thumb);
       return $.add(Gallery.nodes.thumbs, thumb);
@@ -10464,8 +10461,9 @@
             case Conf['Open Gallery']:
               return Gallery.cb.close;
             case 'Right':
-            case 'Enter':
               return Gallery.cb.next;
+            case 'Enter':
+              return Gallery.cb.advance;
             case 'Left':
             case '':
               return Gallery.cb.prev;
@@ -10479,7 +10477,7 @@
         return cb();
       },
       open: function(e) {
-        var el, img, name, nodes, rect, top;
+        var el, elType, file, name, nodes, rect, top, _base;
         if (e) {
           e.preventDefault();
         }
@@ -10492,14 +10490,22 @@
           $.rmClass(el, 'gal-highlight');
         }
         $.addClass(this, 'gal-highlight');
-        img = $.el('img', {
+        elType = this.dataset.isVideo ? 'video' : /\.pdf$/.test(this.href) ? 'iframe' : 'img';
+        $[elType === 'iframe' ? 'addClass' : 'rmClass'](nodes.el, 'gal-pdf');
+        file = $.el(elType, {
           src: name.href = this.href,
           title: name.download = name.textContent = this.title
         });
-        $.extend(img.dataset, this.dataset);
-        $.replace(nodes.current, img);
+        $.extend(file.dataset, this.dataset);
+        if (typeof (_base = nodes.current).pause === "function") {
+          _base.pause();
+        }
+        $.replace(nodes.current, file);
+        if (this.dataset.isVideo) {
+          Video.configure(file);
+        }
         nodes.count.textContent = +this.dataset.id + 1;
-        nodes.current = img;
+        nodes.current = file;
         nodes.frame.scrollTop = 0;
         nodes.next.focus();
         rect = this.getBoundingClientRect();
@@ -10511,8 +10517,8 @@
           }
         }
         nodes.thumbs.scrollTop += top;
-        return $.on(img, 'error', function() {
-          return Gallery.cb.error(img, thumb);
+        return $.on(file, 'error', function() {
+          return Gallery.cb.error(file, thumb);
         });
       },
       image: function(e) {
@@ -10521,13 +10527,13 @@
         return Gallery.build(this);
       },
       error: function(img, thumb) {
-        var URL, post, revived, src;
+        var URL, post, src;
         post = Get.postFromLink($.el('a', {
           href: img.dataset.post
         }));
         delete post.file.fullImage;
         src = this.src.split('/');
-        if (src[2] === 'images.4chan.org') {
+        if (src[2] === 'i.4cdn.org') {
           URL = Redirect.to('file', {
             boardID: src[3],
             filename: src[5]
@@ -10537,19 +10543,14 @@
             if (Gallery.nodes.current !== img) {
               return;
             }
-            revived = $.el('img', {
-              src: URL,
-              title: img.title
-            });
-            $.extend(revived.dataset, img.dataset);
-            $.replace(img, revived);
+            img.src = URL;
             return;
           }
           if (g.DEAD || post.isDead || post.file.isDead) {
             return;
           }
         }
-        return $.ajax("//api.4chan.org/" + post.board + "/res/" + post.thread + ".json", {
+        return $.ajax("//a.4cdn.org/" + post.board + "/res/" + post.thread + ".json", {
           onload: function() {
             var i, postObj, posts;
             if (this.status !== 200) {
@@ -10585,7 +10586,27 @@
           return Gallery.cb.close();
         }
       },
+      advance: function() {
+        if (Gallery.nodes.current.controls) {
+          return;
+        }
+        if (Gallery.nodes.current.paused) {
+          return Gallery.nodes.current.play();
+        }
+        return Gallery.cb.next();
+      },
+      pause: function() {
+        var current;
+        current = Gallery.nodes.current;
+        if (current.nodeType === 'VIDEO') {
+          return current[current.paused ? 'play' : 'pause']();
+        }
+      },
       close: function() {
+        var _base;
+        if (typeof (_base = Gallery.nodes.current).pause === "function") {
+          _base.pause();
+        }
         $.rm(Gallery.nodes.el);
         delete Gallery.nodes;
         d.body.style.overflow = '';
@@ -10639,7 +10660,7 @@
 
   ImageExpand = {
     init: function() {
-      if (!Conf['Image Expansion']) {
+      if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
         return;
       }
       this.EAI = $.el('a', {
@@ -10656,54 +10677,73 @@
       });
     },
     node: function() {
-      var thumb;
-      if (!(this.file && (this.file.isImage || this.file.isVideo))) {
+      var clone, thumb, _ref, _ref1;
+      if (!(((_ref = this.file) != null ? _ref.isImage : void 0) || ((_ref1 = this.file) != null ? _ref1.isVideo : void 0))) {
         return;
       }
       thumb = this.file.thumb;
       $.on(thumb.parentNode, 'click', ImageExpand.cb.toggle);
-      if (this.isClone && $.hasClass(thumb, 'expanding')) {
-        ImageExpand.contract(this);
-        ImageExpand.expand(this);
-        return;
-      }
-      if (ImageExpand.on && !this.isHidden && (Conf['Expand spoilers'] || !this.file.isSpoiler)) {
-        return ImageExpand.expand(this);
+      if (this.isClone) {
+        if ($.hasClass(thumb, 'expanding')) {
+          ImageExpand.contract(this);
+          ImageExpand.expand(this);
+        } else if (this.file.isExpanded && this.file.isVideo) {
+          clone = this;
+          ImageExpand.setupVideoControls(clone);
+          if (!clone.origin.file.fullImage.paused) {
+            $.queueTask(function() {
+              return Video.start(clone.file.fullImage);
+            });
+          }
+        }
+      } else if (ImageExpand.on && !this.isHidden && (Conf['Expand spoilers'] || !this.file.isSpoiler) && (Conf['Expand videos'] || !this.file.isVideo)) {
+        return ImageExpand.expand(this, null, true);
       }
     },
     cb: {
       toggle: function(e) {
+        var post, _ref;
         if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
           return;
         }
+        post = Get.postFromNode(this);
+        if (post.file.isExpanded && ((_ref = post.file.fullImage) != null ? _ref.controls : void 0)) {
+          return;
+        }
         e.preventDefault();
-        return ImageExpand.toggle(Get.postFromNode(this));
+        return ImageExpand.toggle(post);
       },
       toggleAll: function() {
-        var func;
+        var func, toggle;
         $.event('CloseMenu');
+        toggle = function(post) {
+          var file;
+          file = post.file;
+          if (!(file && (file.isImage || file.isVideo) && doc.contains(post.nodes.root))) {
+            return;
+          }
+          if (ImageExpand.on && (!Conf['Expand spoilers'] && file.isSpoiler || !Conf['Expand videos'] && file.isVideo || Conf['Expand from here'] && Header.getTopOf(file.thumb) < 0)) {
+            return;
+          }
+          return $.queueTask(func, post);
+        };
         if (ImageExpand.on = $.hasClass(ImageExpand.EAI, 'expand-all-shortcut')) {
           ImageExpand.EAI.className = 'contract-all-shortcut a-icon';
           ImageExpand.EAI.title = 'Contract All Images';
-          func = ImageExpand.expand;
+          func = function(post) {
+            return ImageExpand.expand(post, null, true);
+          };
         } else {
           ImageExpand.EAI.className = 'expand-all-shortcut a-icon';
           ImageExpand.EAI.title = 'Expand All Images';
           func = ImageExpand.contract;
         }
         return g.posts.forEach(function(post) {
-          var file, _i, _len, _ref;
-          _ref = [post].concat(post.clones);
+          var _i, _len, _ref;
+          _ref = [post].concat(__slice.call(post.clones));
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             post = _ref[_i];
-            file = post.file;
-            if (!(file && (file.isImage || file.isVideo) && doc.contains(post.nodes.root))) {
-              return;
-            }
-            if (ImageExpand.on && !post.isHidden && (!Conf['Expand spoilers'] && file.isSpoiler || Conf['Expand from here'] && Header.getTopOf(file.thumb) < 0)) {
-              return;
-            }
-            $.queueTask(func, post);
+            toggle(post);
           }
         });
       },
@@ -10712,9 +10752,8 @@
       }
     },
     toggle: function(post) {
-      var headRect, left, root, thumb, top, x, y, _ref;
-      thumb = post.file.thumb;
-      if (!(post.file.isExpanded || $.hasClass(thumb, 'expanding'))) {
+      var headRect, left, root, top, x, y, _ref;
+      if (!(post.file.isExpanded || $.hasClass(post.file.thumb, 'expanding'))) {
         ImageExpand.expand(post);
         return;
       }
@@ -10746,85 +10785,126 @@
       return ImageExpand.contract(post);
     },
     contract: function(post) {
-      var _ref;
+      var cb, eventName, thumb, video, _ref;
+      thumb = post.file.thumb;
+      if (post.file.isVideo && (video = post.file.fullImage)) {
+        video.pause();
+        TrashQueue.add(video, post);
+        thumb.parentNode.href = video.src;
+        thumb.parentNode.target = '_blank';
+        _ref = ImageExpand.videoCB;
+        for (eventName in _ref) {
+          cb = _ref[eventName];
+          $.off(video, eventName, cb);
+        }
+        $.rm(post.file.videoControls);
+        delete post.file.videoControls;
+      }
       $.rmClass(post.nodes.root, 'expanded-image');
-      $.rmClass(post.file.thumb, 'expanding');
-      post.file.isExpanded = false;
-      if (post.file.isVideo) {
-        post.file.fullImage.pause();
-      }
-      if ((_ref = post.file.videoControls) != null) {
-        _ref.map($.rm);
-      }
-      return delete post.file.videoControls;
+      $.rmClass(thumb, 'expanding');
+      return post.file.isExpanded = false;
     },
-    expand: function(post, src) {
-      var file, isVideo, thumb, _ref;
+    expand: function(post, src, disableAutoplay) {
+      var el, isVideo, thumb, _ref;
       _ref = post.file, thumb = _ref.thumb, isVideo = _ref.isVideo;
       if (post.isHidden || post.file.isExpanded || $.hasClass(thumb, 'expanding')) {
         return;
       }
       $.addClass(thumb, 'expanding');
-      if (post.file.fullImage) {
-        $.asap((function() {
-          var file;
-          return (file = post.file.fullImage) && (file.videoHeight || file.naturalHeight);
-        }), function() {
-          return ImageExpand.completeExpand(post);
+      if (el = post.file.fullImage) {
+        TrashQueue.remove(el);
+      } else {
+        el = post.file.fullImage = $.el((isVideo ? 'video' : 'img'), {
+          className: 'full-image'
         });
-        return;
-      }
-      file = $.el((post.file.isImage ? 'img' : 'video'), {
-        className: 'full-image',
-        src: src || post.file.URL
-      });
-      post.file.fullImage = file;
-      if (isVideo) {
-        file.loop = true;
-        file.controls = Conf['Show Controls'];
-      }
-      $.on(file, 'error', ImageExpand.error);
-      $.asap((function() {
-        return (file = post.file.fullImage) && (file.videoHeight || file.naturalHeight);
-      }), function() {
+        $.on(el, 'error', ImageExpand.error);
+        el.src = src || post.file.URL;
         if (isVideo) {
-          file.style.maxHeight = file.videoHeight + "px";
-          file.style.maxWidth = file.videoWidth + "px";
+          el.loop = true;
         }
-        return ImageExpand.completeExpand(post);
+      }
+      if (el !== thumb.nextSibling) {
+        $.after(thumb, el);
+      }
+      return $.asap((function() {
+        return el.videoHeight || el.naturalHeight;
+      }), function() {
+        return ImageExpand.completeExpand(post, disableAutoplay);
       });
-      return $.after((file.controls ? thumb.parentNode : thumb), file);
     },
-    completeExpand: function(post) {
-      var bottom, thumb;
-      thumb = post.file.thumb;
-      if (!$.hasClass(thumb, 'expanding')) {
+    completeExpand: function(post, disableAutoplay) {
+      var bottom;
+      if (!$.hasClass(post.file.thumb, 'expanding')) {
         return;
       }
-      post.file.isExpanded = true;
-      if (post.file.isVideo) {
-        ImageExpand.setupVideo(post);
-      }
-      $.addClass(post.nodes.root, 'expanded-image');
-      $.rmClass(post.file.thumb, 'expanding');
       if (!post.nodes.root.parentNode) {
+        ImageExpand.completeExpand2(post);
         return;
       }
       bottom = post.nodes.root.getBoundingClientRect().bottom;
       return $.queueTask(function() {
+        ImageExpand.completeExpand2(post, disableAutoplay);
         if (!(bottom <= 0)) {
           return;
         }
         return window.scrollBy(0, post.nodes.root.getBoundingClientRect().bottom - bottom);
       });
     },
-    setupVideo: function(post) {
-      var contract, file, play, video;
+    completeExpand2: function(post, disableAutoplay) {
+      $.addClass(post.nodes.root, 'expanded-image');
+      $.rmClass(post.file.thumb, 'expanding');
+      post.file.isExpanded = true;
+      if (post.file.isVideo) {
+        ImageExpand.setupVideoControls(post);
+        return Video.configure(post.file.fullImage, disableAutoplay);
+      }
+    },
+    videoCB: (function() {
+      var mousedown;
+      mousedown = false;
+      return {
+        mouseover: function() {
+          return mousedown = false;
+        },
+        mousedown: function(e) {
+          if (e.button === 0) {
+            return mousedown = true;
+          }
+        },
+        mouseup: function(e) {
+          if (e.button === 0) {
+            return mousedown = false;
+          }
+        },
+        mouseout: function(e) {
+          if (mousedown && e.clientX <= this.getBoundingClientRect().left) {
+            return ImageExpand.contract(Get.postFromNode(this));
+          }
+        },
+        click: function(e) {
+          if (this.paused && !this.controls) {
+            this.play();
+            return e.preventDefault();
+          }
+        }
+      };
+    })(),
+    setupVideoControls: function(post) {
+      var cb, contract, eventName, file, thumb, video, _ref;
       file = post.file;
+      thumb = file.thumb;
       video = file.fullImage;
-      file.videoControls = [];
-      video.muted = !Conf['Allow Sound'];
-      if (video.controls) {
+      file.thumb.parentNode.removeAttribute('href');
+      file.thumb.parentNode.removeAttribute('target');
+      _ref = ImageExpand.videoCB;
+      for (eventName in _ref) {
+        cb = _ref[eventName];
+        $.on(video, eventName, cb);
+      }
+      file.videoControls = $.el('span', {
+        className: 'video-controls'
+      });
+      if (Conf['Show Controls']) {
         contract = $.el('a', {
           textContent: 'contract',
           href: 'javascript:;',
@@ -10833,39 +10913,7 @@
         $.on(contract, 'click', function(e) {
           return ImageExpand.contract(post);
         });
-        file.videoControls.push($.tn('\u00A0'), contract);
-        file.mousedown = false;
-        $.on(video, 'mousedown', function(e) {
-          if (e.button === 0) {
-            return file.mousedown = true;
-          }
-        });
-        $.on(video, 'mouseup', function(e) {
-          if (e.button === 0) {
-            return file.mousedown = false;
-          }
-        });
-        $.on(video, 'mouseover', function(e) {
-          return file.mousedown = false;
-        });
-        $.on(video, 'mouseout', function(e) {
-          if (file.mousedown && e.clientX <= video.getBoundingClientRect().left) {
-            return ImageExpand.contract(post);
-          }
-        });
-      }
-      if (Conf['Autoplay']) {
-        video.play();
-      } else if (!video.controls) {
-        play = $.el('a', {
-          textContent: 'play',
-          href: 'javascript:;'
-        });
-        $.on(play, 'click', function(e) {
-          video[this.textContent]();
-          return this.textContent = this.textContent === 'play' ? 'pause' : 'play';
-        });
-        file.videoControls.push($.tn('\u00A0'), play);
+        $.add(file.videoControls, [$.tn('\u00A0'), contract]);
       }
       return $.add(file.text, file.videoControls);
     },
@@ -10919,7 +10967,7 @@
     menu: {
       init: function() {
         var conf, createSubEntry, el, name, subEntries, _ref;
-        if (!Conf['Image Expansion']) {
+        if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
           return;
         }
         el = $.el('span', {
@@ -10976,40 +11024,68 @@
       }
     },
     node: function() {
-      if (!(this.file && (this.file.isImage || this.file.isVideo))) {
+      var _ref, _ref1;
+      if (!(((_ref = this.file) != null ? _ref.isImage : void 0) || ((_ref1 = this.file) != null ? _ref1.isVideo : void 0))) {
         return;
       }
       return $.on(this.file.thumb, 'mouseover', ImageHover.mouseover);
     },
     catalogNode: function() {
-      if (!(this.thread.OP.file && (this.thread.OP.file.isImage || this.thread.OP.file.isVideo))) {
+      var file;
+      if (!((file = this.thread.OP.file) && (file.isImage || file.isVideo))) {
         return;
       }
       return $.on(this.nodes.thumb, 'mouseover', ImageHover.mouseover);
     },
     mouseover: function(e) {
-      var el, post;
+      var el, isVideo, post, thumb;
       post = $.hasClass(this, 'thumb') ? g.posts[this.parentNode.dataset.fullID] : Get.postFromNode(this);
-      el = post.file.isImage ? $.el('img', {
-        id: 'ihover',
-        src: post.file.URL
-      }) : $.el('video', {
-        controls: false,
-        id: 'ihover',
-        src: post.file.URL,
-        autoplay: Conf['Autoplay'],
-        muted: !Conf['Allow Sound'],
-        loop: true
-      });
-      $.add(Header.hover, el);
+      isVideo = post.file.isVideo;
+      if (post.file.fullImage) {
+        el = post.file.fullImage;
+        TrashQueue.remove(el);
+      } else {
+        el = $.el((isVideo ? 'video' : 'img'), {
+          className: 'full-image',
+          src: post.file.URL
+        });
+        post.file.fullImage = el;
+        thumb = post.file.thumb;
+      }
+      if (d.body.contains(thumb)) {
+        if (el !== thumb.nextSibling) {
+          $.after(thumb, el);
+        }
+      } else {
+        if (el.parentNode !== Header.hover) {
+          $.add(Header.hover, el);
+        }
+      }
+      el.id = 'ihover';
       el.dataset.fullID = post.fullID;
+      if (isVideo) {
+        el.loop = true;
+        el.controls = false;
+        el.muted = !Conf['Allow Sound'];
+        if (Conf['Autoplay']) {
+          el.play();
+        }
+      }
       UI.hover({
         root: this,
         el: el,
         latestEvent: e,
         endEvents: 'mouseout click',
         asapTest: function() {
-          return post.file.isVideo || el.naturalHeight;
+          return el.videoHeight || el.naturalHeight;
+        },
+        noRemove: true,
+        cb: function() {
+          if (isVideo) {
+            el.pause();
+            TrashQueue.add(el, post);
+          }
+          return el.removeAttribute('id');
         }
       });
       return $.on(el, 'error', ImageHover.error);
@@ -11067,7 +11143,7 @@
   ImageLoader = {
     init: function() {
       var prefetch;
-      if (!(Conf["Image Prefetching"] || Conf["Replace JPG"] || Conf["Replace PNG"] || Conf["Replace GIF"])) {
+      if (!(Conf["Image Prefetching"] || Conf["Replace JPG"] || Conf["Replace PNG"] || Conf["Replace GIF"] || Conf["Replace WEBM"])) {
         return;
       }
       Post.callbacks.push({
@@ -11078,9 +11154,6 @@
         name: 'Image Replace',
         cb: this.thread
       });
-      if (!(Conf['Image Prefetching'] && g.VIEW === 'thread')) {
-        return;
-      }
       prefetch = $.el('label', {
         innerHTML: '<input type=checkbox name="prefetch"> Prefetch Images'
       });
@@ -11096,31 +11169,59 @@
       return ImageLoader.thread = this;
     },
     node: function() {
-      var URL, img, string, style, thumb, type, _ref, _ref1;
-      if (this.isClone || this.isHidden || this.thread.isHidden || !((_ref = this.file) != null ? _ref.isImage : void 0)) {
+      var URL, cb, file, isImage, isVideo, match, replace, style, thumb, type, _ref, _ref1;
+      if (!this.file) {
+        return;
+      }
+      _ref = this.file, isImage = _ref.isImage, isVideo = _ref.isVideo;
+      if (this.isClone || this.isHidden || this.thread.isHidden || !(isImage || isVideo)) {
         return;
       }
       _ref1 = this.file, thumb = _ref1.thumb, URL = _ref1.URL;
-      if (!((Conf[string = "Replace " + ((type = (URL.match(/\w{3}$/))[0].toUpperCase()) === 'PEG' ? 'JPG' : type)] && !/spoiler/.test(thumb.src)) || Conf['prefetch'])) {
+      style = thumb.style;
+      type = (match = URL.match(/\.([^.]+)$/)[1].toUpperCase()) === 'JPEG' ? 'JPG' : match;
+      replace = "Replace " + type;
+      if (!((Conf[replace] && !/spoiler/.test(thumb.src)) || (Conf['prefetch'] && g.VIEW === 'thread'))) {
         return;
       }
       if (this.file.isSpoiler) {
-        style = thumb.style;
         style.maxHeight = style.maxWidth = this.isReply ? '125px' : '250px';
       }
-      img = $.el('img');
-      if (Conf[string]) {
-        $.on(img, 'load', function() {
-          return thumb.src = URL;
-        });
+      file = $.el(isImage ? 'img' : 'video');
+      if (Conf[replace]) {
+        if (isVideo) {
+          file.alt = thumb.alt;
+          file.dataset.md5 = thumb.dataset.md5;
+          file.style.height = style.height;
+          file.style.width = style.width;
+          file.style.maxHeight = style.maxHeight;
+          file.style.maxWidth = style.maxWidth;
+          file.loop = true;
+          file.autoplay = Conf['Autoplay'];
+          if (Conf['Image Hover']) {
+            $.on(file, 'mouseover', ImageHover.mouseover);
+          }
+        }
+        cb = (function(_this) {
+          return function() {
+            $.off(file, 'load loadedmetadata', cb);
+            if (isVideo) {
+              $.replace(thumb, file);
+              _this.file.thumb = file;
+              return;
+            }
+            return thumb.src = URL;
+          };
+        })(this);
+        $.on(file, 'load loadedmetadata', cb);
       }
-      return img.src = URL;
+      return file.src = URL;
     },
     toggle: function() {
       var enabled;
       enabled = Conf['prefetch'] = this.checked;
       if (enabled) {
-        ImageLoader.thread.posts.forEach(ImageLoader.node.call);
+        g.BOARD.posts.forEach(ImageLoader.node.call);
       }
     }
   };
@@ -11204,6 +11305,55 @@
         nodes.push($.tn('\u00A0'), link(this, Sauce.link.cloneNode(true)));
       }
       return $.add(this.file.text, nodes);
+    }
+  };
+
+  TrashQueue = {
+    init: function() {},
+    add: function(video, post) {
+      var _ref, _ref1;
+      if (this.killNext && video !== this.killNext) {
+        if ((_ref = this.killNextPost) != null) {
+          if ((_ref1 = _ref.file) != null) {
+            delete _ref1.fullImage;
+          }
+        }
+        $.rm(this.killNext);
+      }
+      this.killNext = video;
+      return this.killNextPost = post;
+    },
+    remove: function(video) {
+      if (video === this.killNext) {
+        return delete this.killNext;
+      }
+    }
+  };
+
+  Video = {
+    configure: function(video, disableAutoplay) {
+      video.loop = true;
+      video.muted = !Conf['Allow Sound'];
+      video.controls = Conf['Show Controls'];
+      video.autoplay = false;
+      if (Conf['Autoplay'] && !disableAutoplay) {
+        return Video.start(video);
+      } else {
+        return video.pause();
+      }
+    },
+    start: function(video) {
+      var controls;
+      controls = video.controls;
+      video.controls = false;
+      video.play();
+      if (controls) {
+        return $.asap((function() {
+          return (video.readyState >= 3 && video.currentTime <= Math.max(0.1, video.duration - 0.5)) || !d.contains(video);
+        }), function() {
+          return video.controls = true;
+        }, 500);
+      }
     }
   };
 
@@ -12940,7 +13090,7 @@
       }
       return Redirect.data = o;
     },
-    archives: [{"uid":0,"name":"Foolz","domain":"archive.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["a","biz","co","diy","gd","jp","m","sci","sp","tg","tv","v","vg","vp","vr","wsg"],"files":["a","biz","gd","diy","jp","m","sci","tg","vg","vp","vr","wsg"]},{"uid":1,"name":"NSFW Foolz","domain":"nsfw.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["u"],"files":["u"]},{"uid":2,"name":"The Dark Cave","domain":"archive.thedarkcave.org","http":true,"https":true,"software":"foolfuuka","boards":["c","int","out","po"],"files":["c","po"]},{"uid":3,"name":"4plebs Archive","domain":"archive.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["adv","hr","o","pol","s4s","tg","trv","tv","x"],"files":["adv","hr","o","pol","s4s","tg","trv","tv","x"]},{"uid":18,"name":"4plebs Flash Archive","domain":"flash.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["f"],"files":["f"]},{"uid":4,"name":"Nyafuu","domain":"archive.nyafuu.org","http":true,"https":true,"software":"foolfuuka","boards":["c","e","w","wg"],"files":["c","e","w","wg"]},{"uid":5,"name":"Love is Over","domain":"loveisover.me","http":true,"https":true,"software":"foolfuuka","boards":["d","i"],"files":["d","i"]},{"uid":8,"name":"Rebecca Black Tech","domain":"rbt.asia","http":true,"https":true,"software":"fuuka","boards":["cgl","g","mu","w"],"files":["cgl","g","mu","w"]},{"uid":9,"name":"Heinessen","domain":"archive.heinessen.com","http":true,"https":false,"software":"fuuka","boards":["an","fit","k","mlp","r9k","toy"],"files":["an","fit","k","r9k","toy"]},{"uid":10,"name":"warosu","domain":"fuuka.warosu.org","http":false,"https":true,"software":"fuuka","boards":["3","biz","cgl","ck","diy","fa","g","ic","jp","lit","sci","tg","vr"],"files":["3","biz","cgl","ck","diy","fa","ic","jp","lit","sci","tg","vr"]},{"uid":15,"name":"fgts","domain":"fgts.eu","http":true,"https":true,"software":"foolfuuka","boards":["cm","hm","r","soc","y"],"files":["cm","hm","r","soc","y"]},{"uid":16,"name":"maware","domain":"archive.mawa.re","http":true,"https":false,"software":"foolfuuka","boards":["t"],"files":["t"]},{"uid":17,"name":"installgentoo.com","domain":"chan.installgentoo.com","http":true,"https":false,"software":"foolfuuka","boards":["g","t"],"files":["g","t"]},{"uid":13,"name":"Foolz Beta","domain":"beta.foolz.us","http":true,"https":true,"withCredentials":true,"software":"foolfuuka","boards":["a","biz","co","d","diy","gd","jp","m","s4s","sci","sp","tg","tv","u","v","vg","vp","vr","wsg"],"files":["a","biz","d","diy","gd","jp","m","s4s","sci","tg","u","vg","vp","vr","wsg"]}],
+    archives: [{"uid":0,"name":"Foolz","domain":"archive.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["a","biz","co","diy","gd","jp","m","sci","sp","tg","tv","v","vg","vp","vr","wsg"],"files":["a","biz","gd","diy","jp","m","sci","tg","vg","vp","vr","wsg"]},{"uid":1,"name":"NSFW Foolz","domain":"nsfw.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["u"],"files":["u"]},{"uid":2,"name":"The Dark Cave","domain":"archive.thedarkcave.org","http":true,"https":true,"software":"foolfuuka","boards":["c","int","out","po"],"files":["c","po"]},{"uid":3,"name":"4plebs Archive","domain":"archive.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["adv","hr","o","pol","s4s","tg","trv","tv","x"],"files":["adv","hr","o","pol","s4s","tg","trv","tv","x"]},{"uid":18,"name":"4plebs Flash Archive","domain":"flash.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["f"],"files":["f"]},{"uid":4,"name":"Nyafuu","domain":"archive.nyafuu.org","http":true,"https":true,"software":"foolfuuka","boards":["c","e","w","wg"],"files":["c","e","w","wg"]},{"uid":5,"name":"Love is Over","domain":"loveisover.me","http":true,"https":true,"software":"foolfuuka","boards":["d","i"],"files":["d","i"]},{"uid":8,"name":"Rebecca Black Tech","domain":"rbt.asia","http":true,"https":true,"software":"fuuka","boards":["cgl","g","mu","w"],"files":["cgl","g","mu","w"]},{"uid":9,"name":"Heinessen","domain":"archive.heinessen.com","http":true,"https":false,"software":"fuuka","boards":["an","fit","k","mlp","r9k","toy"],"files":["an","fit","k","r9k","toy"]},{"uid":10,"name":"warosu","domain":"fuuka.warosu.org","http":false,"https":true,"software":"fuuka","boards":["3","biz","cgl","ck","diy","fa","g","ic","jp","lit","sci","tg","vr"],"files":["3","biz","cgl","ck","diy","fa","ic","jp","lit","sci","tg","vr"]},{"uid":15,"name":"fgts","domain":"fgts.eu","http":true,"https":true,"software":"foolfuuka","boards":["cm","h","hc","hm","r","s","soc","y"],"files":["cm","h","hc","hm","r","s","soc","y"]},{"uid":16,"name":"maware","domain":"archive.mawa.re","http":true,"https":false,"software":"foolfuuka","boards":["t"],"files":["t"]},{"uid":17,"name":"installgentoo.com","domain":"chan.installgentoo.com","http":true,"https":false,"software":"foolfuuka","boards":["g","t"],"files":["g","t"]},{"uid":13,"name":"Foolz Beta","domain":"beta.foolz.us","http":true,"https":true,"withCredentials":true,"software":"foolfuuka","boards":["a","biz","co","d","diy","gd","jp","m","s4s","sci","sp","tg","tv","u","v","vg","vp","vr","wsg"],"files":["a","biz","d","diy","gd","jp","m","s4s","sci","tg","u","vg","vp","vr","wsg"]}],
     to: function(dest, data) {
       var archive;
       archive = (dest === 'search' || dest === 'board' ? Redirect.data.thread : Redirect.data[dest])[data.boardID];
@@ -13094,8 +13244,8 @@
       "http": true,
       "https": true,
       "software": "foolfuuka",
-      "boards": ["cm", "hm", "r", "soc", "y"],
-      "files": ["cm", "hm", "r", "soc", "y"]
+      "boards": ["cm", "h", "hc", "hm", "r", "s", "soc", "y"],
+      "files": ["cm", "h", "hc", "hm", "r", "s", "soc", "y"]
     }, {
       "uid": 16,
       "name": "maware",
@@ -15027,7 +15177,7 @@
       }
       a = $.el('a', {
         textContent: ExpandThread.text.apply(ExpandThread, ['+'].concat(__slice.call(summary.textContent.match(/\d+/g)))),
-        href: "" + thread.board.ID + "/res/" + thread.ID,
+        href: "res/" + thread.ID,
         className: 'summary'
       });
       $.on(a, 'click', ExpandThread.cbToggle);
@@ -16353,17 +16503,22 @@
       $.addClass(doc, view);
       ({
         index: function() {
+          var _ref;
           delete g.THREADID;
           if (Conf['Index Mode'] === 'catalog') {
-            return Index.cb.toggleCatalogMode();
+            Index.cb.toggleCatalogMode();
           }
+          return (_ref = QR.posts[0]) != null ? _ref.thread = 'new' : void 0;
         },
         thread: function() {
+          var _ref;
           if (Conf['Index Mode'] === 'catalog') {
-            return $.rmClass(doc, 'catalog-mode');
+            $.rmClass(doc, 'catalog-mode');
           }
+          return (_ref = QR.posts[0]) != null ? _ref.thread = g.THREADID : void 0;
         }
       })[view]();
+      QR.status();
       return g.VIEW = view;
     },
     updateBoard: function(boardID) {
@@ -16646,6 +16801,7 @@
       var addSection, arr, check, el, settings, _i, _len, _ref;
       el = $.el('a', {
         className: 'settings-link',
+        title: 'Appchan X Settings',
         href: 'javascript:;',
         textContent: 'Settings'
       });
@@ -17771,7 +17927,7 @@
       });
     },
     initFeatures: function() {
-      var href, init, _ref;
+      var href, init, video, _ref;
       Favicon.el.type = 'image/x-icon';
       href = Favicon.el.href;
       Favicon.SFW = /ws\.ico$/.test(href);
@@ -17800,6 +17956,18 @@
           Report.init();
           return;
         case 'i.4cdn.org':
+          if (Conf['Loop in New Tab'] && (video = $('video'))) {
+            Video.configure(video);
+            $.on(video, 'click', function() {
+              if (!video.controls) {
+                if (video.paused) {
+                  return video.play();
+                } else {
+                  return video.pause();
+                }
+              }
+            });
+          }
           $.ready(function() {
             var URL, pathname, _ref1;
             if (Conf['404 Redirect'] && ((_ref1 = d.title) === '4chan - Temporarily Offline' || _ref1 === '4chan - 404 Not Found')) {
@@ -17924,7 +18092,7 @@
       $.event('4chanXInitFinished');
       test = $.el('span');
       test.classList.add('a', 'b');
-      if (test.className !== 'a b') {
+      if (test.className !== 'a b' && Conf['Show Support Message']) {
         new Notice('warning', "Your version of Firefox is outdated (v26 minimum) and appchan x may not operate correctly.", 30);
       }
       GMver = GM_info.version.split('.');

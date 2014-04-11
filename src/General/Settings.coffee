@@ -3,6 +3,7 @@ Settings =
     # Appchan X settings link
     el = $.el 'a',
       className:   'settings-link'
+      title:       'Appchan X Settings'
       href:        'javascript:;'
       textContent: 'Settings'
     $.on el, 'click', @open

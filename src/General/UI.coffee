@@ -309,7 +309,7 @@ UI = do ->
       $.off d, 'mouseup',   @up
     $.set "#{@id}.position", @style.cssText
 
-  hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb, offsetX, offsetY}) ->
+  hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb, offsetX, offsetY, noRemove}) ->
     o = {
       root
       el
@@ -322,6 +322,7 @@ UI = do ->
       clientWidth:  doc.clientWidth
       offsetX: offsetX or 45
       offsetY: offsetY or -120
+      noRemove
     }
     o.hover    = hover.bind    o
     o.hoverend = hoverend.bind o
@@ -338,7 +339,7 @@ UI = do ->
     $.on root, 'mousemove', o.hover
     <% if (type === 'userscript') { %>
     # Workaround for https://github.com/MayhemYDG/4chan-x/issues/377
-    o.workaround = (e) -> o.hoverend() unless root.contains e.target
+    o.workaround = (e) -> o.hoverend(e) unless root.contains e.target
     $.on doc,  'mousemove', o.workaround
     <% } %>
 
