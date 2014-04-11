@@ -50,8 +50,8 @@ ImageExpand =
         return unless file and (file.isImage or file.isVideo) and doc.contains post.nodes.root
         if ImageExpand.on and
           (!Conf['Expand spoilers'] and file.isSpoiler or
-          !Conf['Expand videos'] and file.isVideo or
-          Conf['Expand from here'] and Header.getTopOf(file.thumb) < 0)
+          !Conf['Expand videos']    and file.isVideo or
+          Conf['Expand from here']  and Header.getTopOf(file.thumb) < 0)
             return
         $.queueTask func, post
 
@@ -72,8 +72,7 @@ ImageExpand =
       (if @checked then $.addClass else $.rmClass) doc, @name.toLowerCase().replace /\s+/g, '-'
 
   toggle: (post) ->
-    {thumb} = post.file
-    unless post.file.isExpanded or $.hasClass thumb, 'expanding'
+    unless post.file.isExpanded or $.hasClass post.file.thumb, 'expanding'
       ImageExpand.expand post
       return
 
@@ -102,17 +101,18 @@ ImageExpand =
     ImageExpand.contract post
 
   contract: (post) ->
+    {thumb} = post.file
     if post.file.isVideo and video = post.file.fullImage
       video.pause()
       TrashQueue.add video, post
-      post.file.thumb.parentNode.href = video.src
-      post.file.thumb.parentNode.target = '_blank'
+      thumb.parentNode.href   = video.src
+      thumb.parentNode.target = '_blank'
       for eventName, cb of ImageExpand.videoCB
         $.off video, eventName, cb
-      $.rm post.file.videoControls
+      $.rm   post.file.videoControls
       delete post.file.videoControls
     $.rmClass post.nodes.root, 'expanded-image'
-    $.rmClass post.file.thumb, 'expanding'
+    $.rmClass thumb, 'expanding'
     post.file.isExpanded = false
 
   expand: (post, src, disableAutoplay) ->
@@ -126,11 +126,12 @@ ImageExpand =
     else
       el = post.file.fullImage = $.el (if isVideo then 'video' else 'img'),
         className: 'full-image'
-      el.loop = true if isVideo
       $.on el, 'error', ImageExpand.error
       el.src = src or post.file.URL
+      if isVideo
+        el.loop = true
     $.after thumb, el unless el is thumb.nextSibling
-    $.asap (-> if isVideo then el.videoHeight else el.naturalHeight), ->
+    $.asap (-> el.videoHeight or el.naturalHeight), ->
       ImageExpand.completeExpand post, disableAutoplay
 
   completeExpand: (post, disableAutoplay) ->
@@ -151,9 +152,9 @@ ImageExpand =
     $.rmClass  post.file.thumb, 'expanding'
     post.file.isExpanded = true
     if post.file.isVideo
-      ImageExpand.setupVideoControls post
       post.file.fullImage.muted    = !Conf['Allow Sound']
       post.file.fullImage.controls = Conf['Show Controls']
+      ImageExpand.setupVideoControls post
       ImageExpand.startVideo post if Conf['Autoplay'] and not disableAutoplay
 
   videoCB: do ->
@@ -165,19 +166,19 @@ ImageExpand =
     mouseout:  (e) -> ImageExpand.contract(Get.postFromNode @) if mousedown and e.clientX <= @getBoundingClientRect().left
     click:     (e) ->
       if @paused and not @controls
-        e.stopPropagation()
         @play()
+        e.preventDefault()
 
   setupVideoControls: (post) ->
-    {file} = post
-    video = file.fullImage
+    {file}  = post
+    {thumb} = file
+    video   = file.fullImage
 
     # disable link to file so native controls can work
     file.thumb.parentNode.removeAttribute 'href'
     file.thumb.parentNode.removeAttribute 'target'
 
     # setup callbacks on video element
-    video.dataset.mousedown = 'false'
     $.on video, eventName, cb for eventName, cb of ImageExpand.videoCB
 
     # setup controls in file info
@@ -193,8 +194,7 @@ ImageExpand =
     $.add file.text, file.videoControls
 
   startVideo: (post) ->
-    {file} = post
-    video = file.fullImage
+    video = (file = post.file).fullImage
     {controls} = video
     video.controls = false
     video.play()

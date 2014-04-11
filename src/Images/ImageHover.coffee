@@ -29,6 +29,7 @@ ImageHover =
         src: post.file.URL
       post.file.fullImage = el
       {thumb} = post.file
+      
     if d.body.contains thumb
       $.after thumb, el unless el is thumb.nextSibling
     else
@@ -36,9 +37,9 @@ ImageHover =
     el.id = 'ihover'
     el.dataset.fullID = post.fullID
     if isVideo
-      el.loop = true
+      el.loop     = true
       el.controls = false
-      el.muted = not Conf['Allow Sound']
+      el.muted    = not Conf['Allow Sound']
       el.play() if Conf['Autoplay']
     UI.hover
       root: @
