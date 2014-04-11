@@ -155,6 +155,10 @@ Config =
         true
         'Adds a simple and cute image gallery.' 
       ]
+      'PDF in Gallery': [
+        false
+        'Show PDF files in gallery.'
+      ]
       'Sauce': [
         true
         'Add sauce links to images.'
@@ -193,15 +197,19 @@ Config =
       ]
       'Autoplay': [
         true
-        'Videos begin playing immediately when opened inline.'
+        'Videos begin playing immediately when opened.'
       ]
       'Show Controls': [
         true
-        'Show native seek and volume controls on videos. Contract videos when dragged to the left.'
+        'Show controls on videos expanded inline. Turn this off if you want to contract videos by clicking on them.'
       ]
       'Allow Sound': [
         true
-        'Allow sound in inline videos.'
+        'Allow sound in videos.'
+      ]
+      'Loop in New Tab': [
+        true
+        'Loop videos opened in their own tabs, and apply settings for inline expanded videos to them.'
       ]
 
     'Menu':
@@ -380,7 +388,7 @@ Config =
         'Highlights own posts if Quote Markers are enabled.'
       ]
       'Quote Threading': [
-        true
+        false
         'Thread conversations'
       ]
       'Mark Quotes of You': [
@@ -396,6 +404,7 @@ Config =
         'Add \'(Cross-thread)\' to cross-threads quotes.'
         'Highlights own posts if Quote Markers are enabled.'
       ]
+
   imageExpansion:
     'Fit width': [
       false

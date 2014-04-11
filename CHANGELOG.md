@@ -1,5 +1,31 @@
-<<<<<<< HEAD
-=======
+### v1.7.7 
+*2014-04-10*
+
+**fgts**
+- Update archive list.
+
+### v1.7.6 
+*2014-04-10*
+
+**ccd0**
+- `Loop in New Tab` (enabled by default) causes videos opened in a separate tab to loop, and applies your settings for inline expanded videos to them.
+
+### v1.7.5 
+*2014-04-09*
+**ccd0**
+- Add WebM support to gallery (currently no controls).
+- Add PDF support to gallery, disabled by default. Enable with `PDF in Gallery`.
+
+### v1.7.4 
+*2014-04-08*
+
+**Nebukazar**
+- `Quote Threading` disabled by default
+- Added missing titles to Header icons
+
+**ccd0**
+- Fix bug in gallery introduced in 1.7.3.
+
 ### v1.7.3 
 *2014-04-07*
 
@@ -13,7 +39,6 @@
 ### v1.7.2 
 *2014-04-07*
 
->>>>>>> ccd0
 **ccd0**
 - Restore thread expansion with JSON navigation disabled.
 
