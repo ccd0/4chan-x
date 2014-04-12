@@ -1,3 +1,6 @@
+### v1.7.8 
+*2014-04-12*
+
 **ccd0**
 - Some keybind bugfixes.
 - Begin work toward compatibility with new URLs.
