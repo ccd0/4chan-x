@@ -98,7 +98,7 @@ class Post
     return unless match = quotelink.href.match ///
       boards\.4chan\.org/
       ([^/]+) # boardID
-      /res/\d+#p
+      /thread/\d+#p
       (\d+)   # postID
       $
     ///
@@ -131,7 +131,7 @@ class Post
     @file.thumbURL = if that.isArchived
       thumb.src
     else
-      "#{location.protocol}//t.4cdn.org/#{@board}/thumb/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
+      "#{location.protocol}//t.4cdn.org/#{@board}/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
     @file.name = if nameNode = $ 'span', fileText
       nameNode.title or nameNode.textContent
     else

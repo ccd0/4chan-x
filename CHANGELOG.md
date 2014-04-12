@@ -1,3 +1,5 @@
+- Update 4chan namespaces support.
+
 ### 3.20.4 - *2014-04-09*
 
 - Better handling of webm playback errors.

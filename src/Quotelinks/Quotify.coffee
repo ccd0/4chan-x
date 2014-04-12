@@ -40,7 +40,7 @@ Quotify =
       # Don't add 'deadlink' when quotifying in an archived post,
       # and we don't know if the post died yet.
       a = $.el 'a',
-        href: "/#{boardID}/res/#{post.thread}#p#{postID}"
+        href: "/#{boardID}/thread/#{post.thread}#p#{postID}"
         className: if post.isDead then 'quotelink deadlink' else 'quotelink'
         textContent: quote
       $.extend a.dataset, {boardID, threadID: post.thread.ID, postID}

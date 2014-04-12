@@ -5,10 +5,8 @@ Main =
     return if g.BOARD.ID in ['z', 'fk']
     g.VIEW   =
       switch pathname[2]
-        when 'res'
-          'thread'
-        when 'catalog'
-          'catalog'
+        when 'thread', 'catalog'
+          pathname[2]
         else
           'index'
     if g.VIEW is 'catalog'
