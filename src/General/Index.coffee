@@ -167,10 +167,8 @@ Index =
     if Conf['Refreshed Navigation'] and Conf['Index Mode'] isnt 'all pages'
       Index.update pageNum
     else
-      Index.pageNav pageNum
-  pageNav: (pageNum) ->
-    return if Index.currentPage is pageNum
-    Index.pageLoad pageNum
+      return if Index.currentPage is pageNum
+      Index.pageLoad pageNum
   pageLoad: (pageNum) ->
     Index.currentPage = pageNum
     return if Conf['Index Mode'] is 'all pages'
@@ -281,7 +279,7 @@ Index =
       if req.status is 200
         Index.parse req.response, pageNum
       else if req.status is 304 and pageNum?
-        Index.pageNav pageNum
+        Index.pageLoad pageNum
     catch err
       c.error "Index failure: #{err.message}", err.stack
       # network error or non-JSON content for example.
@@ -304,7 +302,7 @@ Index =
     Index.sort()
     Index.buildPagelist()
     if pageNum?
-      Index.pageNav pageNum
+      Index.pageLoad pageNum
       return
     Index.buildIndex()
     Index.setPage()
@@ -493,7 +491,7 @@ Index =
       Index.setPage()
     else
       Navigate.pushState if pageNum is 1 then './' else pageNum
-      Index.pageNav pageNum
+      Index.pageLoad pageNum
 
   querySearch: (query) ->
     return unless keywords = query.toLowerCase().match /\S+/g
