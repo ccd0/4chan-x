@@ -243,7 +243,7 @@ ThreadUpdater =
     else
       ThreadUpdater.set 'timer', 'Update'
     ThreadUpdater.req?.abort()
-    url = "//a.4cdn.org/#{ThreadUpdater.thread.board}/res/#{ThreadUpdater.thread}.json"
+    url = "//a.4cdn.org/#{ThreadUpdater.thread.board}/thread/#{ThreadUpdater.thread}.json"
     ThreadUpdater.req = $.ajax url, onloadend: ThreadUpdater.cb.load,
       whenModified: true
 

@@ -74,7 +74,7 @@ Get =
 
     root.textContent = "Loading post No.#{postID}..."
     if threadID
-      $.cache "//a.4cdn.org/#{boardID}/res/#{threadID}.json", ->
+      $.cache "//a.4cdn.org/#{boardID}/thread/#{threadID}.json", ->
         Get.fetchedPost @, boardID, threadID, postID, root, context
     else if url = Redirect.to 'post', {boardID, postID}
       $.cache url,

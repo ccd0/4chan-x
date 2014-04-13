@@ -222,7 +222,7 @@ Navigate =
     else
       Navigate.updateSFW Favicon.SFW
       {load} = Navigate
-      Navigate.req = $.ajax "//a.4cdn.org/#{boardID}/res/#{threadID}.json",
+      Navigate.req = $.ajax "//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
         onabort:   load
         onloadend: load
 
