@@ -96,7 +96,7 @@ class Post
     return unless match = quotelink.href.match ///
       boards\.4chan\.org/
       ([^/]+) # boardID
-      /res/\d+#p
+      /(?:res|thread)/\d+#p
       (\d+)   # postID
       $
     ///
