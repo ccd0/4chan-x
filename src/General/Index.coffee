@@ -163,13 +163,13 @@ Index =
   getCurrentPage: ->
     +window.location.pathname.split('/')[2] or 1
   userPageNav: (pageNum) ->
+    Navigate.pushState if pageNum is 1 then './' else pageNum
     if Conf['Refreshed Navigation'] and Conf['Index Mode'] isnt 'all pages'
       Index.update pageNum
     else
       Index.pageNav pageNum
   pageNav: (pageNum) ->
     return if Index.currentPage is pageNum
-    history.pushState null, '', if pageNum is 1 then './' else pageNum
     Index.pageLoad pageNum
   pageLoad: (pageNum) ->
     Index.currentPage = pageNum
@@ -492,6 +492,7 @@ Index =
       Index.buildIndex()
       Index.setPage()
     else
+      Navigate.pushState if pageNum is 1 then './' else pageNum
       Index.pageNav pageNum
 
   querySearch: (query) ->

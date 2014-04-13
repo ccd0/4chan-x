@@ -198,7 +198,7 @@ Navigate =
     if threadID
       view = 'thread'
     else
-      pageNum = view
+      pageNum = +view
       view = 'index' # path is "/boardID/". See the problem?
 
     if view is g.VIEW and boardID is g.BOARD.ID
@@ -301,6 +301,10 @@ Navigate =
 
     if Conf['Unread Count']
       Navigate.ready 'Unread Count', Unread.ready, Conf['Unread Count']
+
+  pushState: (path) ->
+    history.pushState null, '', path
+    Navigate.path = window.location.pathname
 
   popstate: ->
     return if window.location.pathname is Navigate.path

@@ -181,12 +181,16 @@ Build =
     else
       ''
 
-    if isOP and g.VIEW is 'index'
+    if isOP and g.VIEW is 'index' and Conf['JSON Navigation']
       pageNum   = Math.floor Index.liveThreadIDs.indexOf(postID) / Index.threadsNumPerPage
       pageIcon  = " <span class=page-num title='This thread is on page #{pageNum} in the original index.'>[#{pageNum}]</span>"
+    else
+      pageIcon = ''
+
+    if isOP and g.VIEW is 'index'
       replyLink = " &nbsp; <span>[<a href='/#{boardID}/res/#{threadID}' class=replylink>Reply</a>]</span>"
     else
-      pageIcon = replyLink = ''
+      replyLink = ''
 
     container = $.el 'div',
       id: "pc#{postID}"
