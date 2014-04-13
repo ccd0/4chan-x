@@ -12,15 +12,6 @@ PostHiding =
       name: 'Post Hiding'
       cb:   @node
 
-    # XXX tmp conversion
-    $.get 'hiddenThreads', null, ({hiddenThreads}) ->
-      return unless hiddenThreads
-      for boardID, board of hiddenThreads.boards
-        for threadID, val of board
-          ((PostHiding.db.data.boards[boardID] or= {})[threadID] or= {})[threadID] = val
-      PostHiding.db.save()
-      $.delete 'hiddenThreads'
-
   node: ->
     return if !@isReply and g.VIEW isnt 'index' or @isClone
 

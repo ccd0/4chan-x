@@ -113,8 +113,10 @@ ImageExpand =
       $.rm   post.file.videoControls
       delete post.file.videoControls
     $.rmClass post.nodes.root, 'expanded-image'
-    $.rmClass thumb, 'expanding'
-    post.file.isExpanded = false
+    $.rmClass post.file.thumb, 'expanding'
+    delete post.file.isExpanding
+    delete post.file.isExpanded
+    post.file.fullImage.pause() if post.file.isVideo and post.file.fullImage
 
   expand: (post, src, disableAutoplay) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
@@ -195,6 +197,7 @@ ImageExpand =
   error: ->
     post = Get.postFromNode @
     $.rm @
+    delete post.file.isReady
     delete post.file.fullImage
     # Images can error:
     #  - before the image started loading.
@@ -204,11 +207,23 @@ ImageExpand =
       return
     ImageExpand.contract post
 
+    if @error and @error.code isnt @error.MEDIA_ERR_NETWORK # video
+      error = switch @error.code
+        when 1 then 'MEDIA_ERR_ABORTED'
+        when 3 then 'MEDIA_ERR_DECODE'
+        when 4 then 'MEDIA_ERR_SRC_NOT_SUPPORTED'
+        when 5 then 'MEDIA_ERR_ENCRYPTED'
+      post.file.error = $.el 'div',
+        textContent: "Playback error: #{error}"
+        className: 'warning'
+      $.after post.file.thumb, post.file.error
+      return
+
     src = @src.split '/'
     if src[2] is 'i.4cdn.org'
       URL = Redirect.to 'file',
         boardID:  src[3]
-        filename: src[5]
+        filename: src[4].replace /\?.+$/, ''
       if URL
         setTimeout ImageExpand.expand, 10000, post, URL
         return
@@ -226,7 +241,7 @@ ImageExpand =
       type: 'head'
     <% } else { %>
     # XXX CORS for i.4cdn.org WHEN?
-    $.ajax "//a.4cdn.org/#{post.board}/res/#{post.thread}.json", onload: ->
+    $.ajax "//a.4cdn.org/#{post.board}/thread/#{post.thread}.json", onload: ->
       return if @status isnt 200
       for postObj in @response.posts
         break if postObj.no is post.ID

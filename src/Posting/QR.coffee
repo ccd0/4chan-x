@@ -223,7 +223,7 @@ QR =
           $.prepend frag, $.tn '[code]'
           $.add     frag, $.tn '[/code]'
       for node in $$ 'br', frag
-        $.replace node, $.tn '\n>'
+        $.replace node, $.tn '\n>' unless node is frag.lastElementChild
       for node in $$ 's', frag
         $.replace node, [$.tn('[spoiler]'), node.childNodes..., $.tn '[/spoiler]']
       for node in $$ '.prettyprint', frag
@@ -800,9 +800,9 @@ QR =
     QR.cooldown.set {req, post, isReply, threadID}
 
     URL = if threadID is postID # new thread
-      "/#{g.BOARD}/res/#{threadID}"
+      "/#{g.BOARD}/thread/#{threadID}"
     else if g.VIEW is 'index' and !QR.cooldown.auto and Conf['Open Post in New Tab'] # replying from the index
-      "/#{g.BOARD}/res/#{threadID}#p#{postID}"
+      "/#{g.BOARD}/thread/#{threadID}#p#{postID}"
     if URL
       if Conf['Open Post in New Tab']
         $.open URL
