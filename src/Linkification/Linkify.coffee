@@ -261,6 +261,7 @@ Linkify =
   ordered_types: [
       key: 'audio'
       regExp: /(.*\.(mp3|ogg|wav))$/
+      style: ''
       el: (a) ->
         $.el 'audio',
           controls:    true
@@ -448,6 +449,7 @@ Linkify =
     ,
       key: 'video'
       regExp: /(.*\.(ogv|webm|mp4))$/
+      style: 'border: 0; width: auto; height: auto;'
       el: (a) ->
         $.el 'video',
           controls:    'controls'
