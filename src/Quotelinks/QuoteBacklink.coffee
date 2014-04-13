@@ -25,7 +25,7 @@ QuoteBacklink =
   firstNode: ->
     return if @isClone or !@quotes.length
     a = $.el 'a',
-      href: "/#{@board}/res/#{@thread}#p#{@}"
+      href: "/#{@board}/thread/#{@thread}#p#{@}"
       className: if @isHidden then 'filtered backlink' else 'backlink'
       textContent: (QuoteBacklink.funk @ID) + (if Conf['Mark Quotes of You'] and @info.yours then '\u00A0(You)' else '')
     for quote in @quotes

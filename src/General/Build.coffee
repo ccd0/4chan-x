@@ -188,7 +188,7 @@ Build =
       pageIcon = ''
 
     if isOP and g.VIEW is 'index'
-      replyLink = " &nbsp; <span>[<a href='/#{boardID}/res/#{threadID}' class=replylink>Reply</a>]</span>"
+      replyLink = " &nbsp; <span>[<a href='/#{boardID}/thread/#{threadID}' class=replylink>Reply</a>]</span>"
     else
       replyLink = ''
 
@@ -200,7 +200,7 @@ Build =
     for quote in $$ '.quotelink', container
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote, or board link
-      quote.href = "/#{boardID}/res/#{href}" # Fix pathnames
+      quote.href = "/#{boardID}/thread/#{href}" # Fix pathnames
 
     container
 
@@ -212,7 +212,7 @@ Build =
     $.el 'a',
       className: 'summary'
       textContent: text.join ' '
-      href: "/#{boardID}/res/#{threadID}"
+      href: "/#{boardID}/thread/#{threadID}"
 
   thread: (board, data, full) ->
     Build.spoilerRange[board] = data.custom_spoiler

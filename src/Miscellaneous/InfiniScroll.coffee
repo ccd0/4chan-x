@@ -48,19 +48,19 @@ InfiniScroll =
       posts.push op
       
       replylink = $.el 'a',
-        href: "res/#{threadID}"
+        href: "thread/#{threadID}"
         className: 'replylink'
         textContent: 'Reply'
       
       postlink = $.el 'div',
         className: "postLink mobile"
-        innerHTML: """<a href="res/#{threadID}" class="button">View Thread</a>"""
+        innerHTML: """<a href="thread/#{threadID}" class="button">View Thread</a>"""
 
       if omitted_posts
         posts.push $.el 'span',
           className: 'summary desktop'
           innerHTML: """
-            #{omitted_posts} posts #{if omitted_images then "and " + omitted_images + " image replies"} omitted. Click <a class="replylink" href="res/#{threadID}">here</a> to view.
+            #{omitted_posts} posts #{if omitted_images then "and " + omitted_images + " image replies"} omitted. Click <a class="replylink" href="thread/#{threadID}">here</a> to view.
           """
 
         $.prepend postlink, $.el 'span',

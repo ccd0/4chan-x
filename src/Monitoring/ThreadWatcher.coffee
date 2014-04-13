@@ -161,7 +161,7 @@ ThreadWatcher =
     if data.isDead
       href = Redirect.to 'thread', {boardID, threadID}
     link = $.el 'a',
-      href: href or "/#{boardID}/res/#{threadID}"
+      href: href or "/#{boardID}/thread/#{threadID}"
       textContent: data.excerpt
       title: data.excerpt
 
