@@ -23,7 +23,7 @@ ExpandComment =
       return
     return unless a = $ '.abbr > a', post.nodes.comment
     a.textContent = "Post No.#{post} Loading..."
-    $.cache "//api.4chan.org#{a.pathname}.json", -> ExpandComment.parse @, a, post
+    $.cache "//a.4cdn.org#{a.pathname}.json", -> ExpandComment.parse @, a, post
   contract: (post) ->
     return unless post.nodes.shortComment
     a = $ '.abbr > a', post.nodes.shortComment

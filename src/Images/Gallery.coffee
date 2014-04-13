@@ -206,8 +206,8 @@ Gallery =
         if g.DEAD or post.isDead or post.file.isDead
           return
 
-      # XXX CORS for images.4chan.org WHEN?
-      $.ajax "//api.4chan.org/#{post.board}/res/#{post.thread}.json", onload: ->
+      # XXX CORS for i.4cdn.org WHEN?
+      $.ajax "//a.4cdn.org/#{post.board}/res/#{post.thread}.json", onload: ->
         return if @status isnt 200
         i = 0
         {posts} = @response
