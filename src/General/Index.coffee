@@ -195,7 +195,7 @@ Index =
       for i in [1..maxPageNum] by 1
         a = $.el 'a',
           textContent: i
-          href: if i then i else './'
+          href: if i is 1 then './' else i
         nodes.push $.tn('['), a, $.tn '] '
       $.rmAll pagesRoot
       $.add pagesRoot, nodes
@@ -219,7 +219,7 @@ Index =
       $.replace strong, strong.firstChild
     else
       strong = $.el 'strong'
-    a = pagesRoot.children[pageNum]
+    a = pagesRoot.children[pageNum - 1]
     $.before a, strong
     $.add strong, a
 
