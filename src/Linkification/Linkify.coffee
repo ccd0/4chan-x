@@ -263,7 +263,7 @@ Linkify =
       regExp: /(.*\.(mp3|ogg|wav))$/
       el: (a) ->
         $.el 'audio',
-          controls:    'controls'
+          controls:    true
           preload:     'auto'
           src:         a.dataset.uid
     ,
