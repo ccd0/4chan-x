@@ -42,14 +42,14 @@ Build =
         name:      data.filename + data.ext
         timestamp: "#{data.tim}#{data.ext}"
         url: if boardID is 'f'
-          "//i.4cdn.org/#{boardID}/src/#{data.filename}#{data.ext}"
+          "//i.4cdn.org/#{boardID}/#{data.filename}#{data.ext}"
         else
-          "//i.4cdn.org/#{boardID}/src/#{data.tim}#{data.ext}"
+          "//i.4cdn.org/#{boardID}/#{data.tim}#{data.ext}"
         height:    data.h
         width:     data.w
         MD5:       data.md5
         size:      data.fsize
-        turl:      "//#{Build.thumbRotate()}.t.4cdn.org/#{boardID}/thumb/#{data.tim}s.jpg"
+        turl:      "//#{Build.thumbRotate()}.t.4cdn.org/#{boardID}/#{data.tim}s.jpg"
         theight:   data.tn_h
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
