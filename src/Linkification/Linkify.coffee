@@ -222,8 +222,8 @@ Linkify =
       el = (type = Linkify.types[a.dataset.key]).el a
 
       # Set style values.
-      el.style.cssText = if style = type.style
-        style
+      el.style.cssText = if type.style?
+        type.style
       else
         "border: 0; width: 640px; height: 390px"
 
@@ -403,10 +403,12 @@ Linkify =
     ,
       key: 'Vocaroo'
       regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/
-      style: 'border: 0; width: 150px; height: 45px;'
+      style: ''
       el: (a) ->
-        $.el 'object',
-          innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=#{a.dataset.uid.replace /^i\//, ''}&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+        $.el 'audio',
+          controls: true
+          preload: 'auto'
+          src: "http://vocaroo.com/media_command.php?media=#{a.dataset.uid.replace /^i\//, ''}&command=download_ogg"
     ,
       key: 'Vimeo'
       regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
