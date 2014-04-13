@@ -8,7 +8,7 @@ Main =
     return if g.BOARD.ID in ['z', 'fk']
     g.VIEW   =
       switch pathname[2]
-        when 'res'
+        when 'res', 'thread'
           'thread'
         when 'catalog'
           'catalog'

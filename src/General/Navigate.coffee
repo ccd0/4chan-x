@@ -232,7 +232,7 @@ Navigate =
     if threadID
       view = 'thread'
     else
-      pageNum = view
+      pageNum = +view
       view = 'index' # path is "/boardID/". See the problem?
 
     path = @pathname
@@ -240,8 +240,7 @@ Navigate =
 
     Navigate.makeBreadCrumb @href, view, boardID, threadID
 
-    history.pushState null, '', path unless @id is 'popState'
-    Navigate.path = @pathname
+    Navigate.pushState path unless @id is 'popState'
 
     Navigate.setMode @
 
@@ -352,6 +351,10 @@ Navigate =
     Header.hashScroll.call window
 
     Main.handleErrors errors if errors
+
+  pushState: (path) ->
+    history.pushState null, '', path
+    Navigate.path = window.location.pathname
 
   popstate: ->
     a = $.el 'a',

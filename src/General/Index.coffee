@@ -404,6 +404,7 @@ Index =
     +window.location.pathname.split('/')[2]
 
   userPageNav: (pageNum) ->
+    Navigate.pushState if pageNum is 0 then './' else pageNum
     if Conf['Refreshed Navigation'] and Conf['Index Mode'] isnt 'all pages'
       Index.update pageNum
     else
@@ -411,7 +412,7 @@ Index =
 
   pageNav: (pageNum) ->
     return if Index.currentPage is pageNum and not Index.root.parentElement
-    history.pushState null, '', if pageNum is 0 then './' else pageNum
+    Navigate.pushState if pageNum is 0 then './' else pageNum
     Index.pageLoad pageNum
 
   pageLoad: (pageNum) ->
