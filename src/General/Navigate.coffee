@@ -198,7 +198,7 @@ Navigate =
     if threadID
       view = 'thread'
     else
-      pageNum = +view
+      pageNum = +view or 1 # string to number, '' to 1
       view = 'index' # path is "/boardID/". See the problem?
 
     if view is g.VIEW and boardID is g.BOARD.ID
