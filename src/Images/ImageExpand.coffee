@@ -206,7 +206,7 @@ ImageExpand =
     if src[2] is 'i.4cdn.org'
       URL = Redirect.to 'file',
         boardID:  src[3]
-        filename: src[5]
+        filename: src[src.length - 1]
       if URL
         setTimeout ImageExpand.expand, 10000, post, URL
         return

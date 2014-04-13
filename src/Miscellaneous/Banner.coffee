@@ -35,7 +35,7 @@ Banner =
       ->
         type = Object.keys(types)[Math.floor 3 * Math.random()]
         num = Math.floor types[type] * Math.random()
-        @src = "//static.4chan.org/image/title/#{num}.#{type}"
+        @src = "//s.4cdn.org/image/title/#{num}.#{type}"
       
     click: (e) ->
       if e.ctrlKey

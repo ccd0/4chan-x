@@ -39,7 +39,6 @@ Navigate =
     QuoteBacklink.containers = {}
 
     $.rmAll $('.board')
-    Index.pagelist.hidden = true
 
   features: [
     ['Thread Excerpt',   ThreadExcerpt]

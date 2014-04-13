@@ -480,7 +480,8 @@ div.center:not(.ad-cnt) {
 /* Index */
 :root.index-loading .navLinks,
 :root.index-loading .board,
-:root.index-loading .pagelist {
+:root.index-loading .pagelist,
+:root.thread .pagelist {
   display: none;
 }
 #index-search {
