@@ -197,7 +197,7 @@ Gallery =
       if src[2] is 'i.4cdn.org'
         URL = Redirect.to 'file',
           boardID:  src[3]
-          filename: src[5]
+          filename: src[src.length - 1]
         if URL
           thumb.href = URL
           return unless Gallery.nodes.current is img
