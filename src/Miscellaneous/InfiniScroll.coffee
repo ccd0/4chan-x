@@ -22,7 +22,7 @@ InfiniScroll =
     new Notice 'info', "Fetching next page.", 2
 
     InfiniScroll.isFetching = true
-    url = "//api.4chan.org/#{g.BOARD}/catalog.json"
+    url = "//a.4cdn.org/#{g.BOARD}/catalog.json"
     $.ajax url, onloadend: InfiniScroll.cb.load,
       whenModified: true
 

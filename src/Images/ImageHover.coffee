@@ -52,7 +52,7 @@ ImageHover =
     if src[2] is 'i.4cdn.org'
       URL = Redirect.to 'file',
         boardID:  src[3]
-        filename: src[5].replace /\?.+$/, ''
+        filename: src[src.length - 1].replace /\?.+$/, ''
       if URL
         @src = URL
         return
