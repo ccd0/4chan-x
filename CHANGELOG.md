@@ -1,3 +1,7 @@
+**ccd0**
+- Bugfixes in JSON navigation and embedding.
+- More work toward compatibility with new URLs.
+
 ### v1.7.8 
 *2014-04-12*
 
