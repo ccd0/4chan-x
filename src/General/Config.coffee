@@ -679,11 +679,11 @@ vp-replace
       'Open front page in a new tab.'
     ]
     'Next page': [
-      'Shift+Right'
+      'Ctrl+Right'
       'Jump to the next page.'
     ]
     'Previous page': [
-      'Shift+Left'
+      'Ctrl+Left'
       'Jump to the previous page.'
     ]
     'Open catalog': [
@@ -696,11 +696,11 @@ vp-replace
     ]
     # Thread Navigation
     'Next thread': [
-      'Shift+Down'
+      'Ctrl+Down'
       'See next thread.'
     ]
     'Previous thread': [
-      'Shift+Up'
+      'Ctrl+Up'
       'See previous thread.'
     ]
     'Expand thread': [
