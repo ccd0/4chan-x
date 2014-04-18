@@ -1,3 +1,6 @@
+### v1.7.10 
+*2014-04-17*
+
 **ccd0**
 - Change Shift+arrow default keybinds Ctrl+arrow to avoid conflict with text selection
 - Fix (You) in backlinks.
