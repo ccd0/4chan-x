@@ -535,11 +535,11 @@ Config =
       ]
       <% } %>
       'Fit Width Replies': [
-        true
+        false
         'Replies fit the entire width of the page.'
       ]
       'Indent Replies': [
-        false
+        true
         'Indent posts under the OP.'
       ]
       'Hide Delete UI': [
@@ -547,7 +547,7 @@ Config =
         'Hides vanilla report and delete functionality and UI. This does not affect Appchan\'s Menu functionality.'
       ]
       'Post Spacing': [
-        '2'
+        '3'
         'The amount of space between replies.'
         'text'
       ]
