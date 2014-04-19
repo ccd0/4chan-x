@@ -1,3 +1,6 @@
+**ccd0**
+- More fixes for new HTML.
+
 ### v1.7.12 
 *2014-04-19*
 
