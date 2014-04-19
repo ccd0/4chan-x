@@ -155,13 +155,9 @@ Build =
       filename      = a.innerHTML.replace /'/g, '&apos;'
 
       fileDims = if file.name[-3..] is 'pdf' then 'PDF' else "#{file.width}x#{file.height}"
-      fileInfo = "<div class=fileText#{if file.isSpoiler then " title='#{filename}'" else ''}>File: <a href='#{file.url}' target=_blank>#{file.timestamp}</a>" +
-        "-(#{fileSize}, #{fileDims}#{
-          if file.isSpoiler
-            ''
-          else
-            ", <span#{if filename isnt shortFilename then " title='#{filename}'" else ''}>#{shortFilename}</span>"
-        }" + ")</div>"
+      fileInfo = "<div class=fileText #{if file.isSpoiler then "title='#{filename}'" else ''}>File: " +
+        "<a href='#{file.url}' #{if filename isnt shortFilename and !file.isSpoiler then " title='#{filename}'" else ''} target=_blank>#{if file.isSpoiler then 'Spoiler Image' else shortFilename}</a>" +
+        " (#{fileSize}, #{fileDims})</div>"
 
       fileHTML = "<div class=file>#{fileInfo}#{imgSrc}</div>"
     else
