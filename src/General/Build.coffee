@@ -42,14 +42,14 @@ Build =
         name:      data.filename + data.ext
         timestamp: "#{data.tim}#{data.ext}"
         url: if boardID is 'f'
-          "//i.4cdn.org/#{boardID}/src/#{data.filename}#{data.ext}"
+          "//i.4cdn.org/#{boardID}/#{data.filename}#{data.ext}"
         else
-          "//i.4cdn.org/#{boardID}/src/#{data.tim}#{data.ext}"
+          "//i.4cdn.org/#{boardID}/#{data.tim}#{data.ext}"
         height:    data.h
         width:     data.w
         MD5:       data.md5
         size:      data.fsize
-        turl:      "//#{Build.thumbRotate()}.t.4cdn.org/#{boardID}/thumb/#{data.tim}s.jpg"
+        turl:      "//#{Build.thumbRotate()}.t.4cdn.org/#{boardID}/#{data.tim}s.jpg"
         theight:   data.tn_h
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
@@ -184,19 +184,55 @@ Build =
     if isOP and g.VIEW is 'index'
       pageNum   = Index.liveThreadData.keys.indexOf("#{postID}") // Index.threadsNumPerPage
       pageIcon  = " <span class=page-num title='This thread is on page #{pageNum} in the original index.'>Page #{pageNum}</span>"
-      replyLink = " &nbsp; <span>[<a href='/#{boardID}/res/#{threadID}' class=replylink>Reply</a>]</span>"
+      replyLink = " &nbsp; <span>[<a href='/#{boardID}/thread/#{threadID}' class=replylink>Reply</a>]</span>"
     else
       pageIcon = replyLink = ''
 
     container = $.el 'div',
       id: "pc#{postID}"
       className: "postContainer #{if isOP then 'op' else 'reply'}Container"
-      innerHTML: <%= grunt.file.read('src/General/html/Build/post.html').replace(/>\s+/g, '>').replace(/\s+</g, '<').replace(/\s+/g, ' ').trim() %>
+      innerHTML: \
+      (if isOP then '' else "<div class=sideArrows>&gt;&gt;</div>") +
+      "<div id=p#{postID} class='post #{if isOP then 'op' else 'reply'}#{
+        if capcode is 'admin_highlight'
+          ' highlightPost'
+        else
+          ''
+        }'>" +
+
+        (if isOP then fileHTML else '') +
+
+        "<div class=postInfo>" +
+          "<input type=checkbox name=#{postID} value=delete> " +
+          "<span class=subject>#{subject or ''}</span> " +
+          "<span class='nameBlock#{capcodeClass}'>" +
+            emailStart +
+              "<span class=name>#{name or ''}</span>" + tripcode +
+            capcodeStart + emailEnd + capcodeIcon + userID + flag +
+          ' </span> ' +
+          "<span class=dateTime data-utc=#{dateUTC}>#{date}</span> " +
+          "<span class='postNum'>" +
+            "<a href=#{"/#{boardID}/thread/#{threadID}#p#{postID}"} title='Highlight this post'>No.</a>" +
+            "<a href='#{
+              if g.VIEW is 'thread' and g.THREADID is threadID
+                "javascript:quote(#{postID})"
+              else
+                "/#{boardID}/thread/#{threadID}#q#{postID}"
+              }' title='Quote this post'>#{postID}</a>" +
+            pageIcon + sticky + closed + replyLink +
+          '</span>' +
+        '</div>' +
+
+        (if isOP then '' else fileHTML) +
+
+        "<blockquote class=postMessage>#{comment or ''}</blockquote> " +
+
+      '</div>'
 
     for quote in $$ '.quotelink', container
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote, or board link
-      quote.href = "/#{boardID}/res/#{href}" # Fix pathnames
+      quote.href = "/#{boardID}/thread/#{href}" # Fix pathnames
 
     container
 
@@ -208,7 +244,7 @@ Build =
     $.el 'a',
       className: 'summary'
       textContent: text.join ' '
-      href: "/#{boardID}/res/#{threadID}"
+      href: "/#{boardID}/thread/#{threadID}"
 
   thread: (board, data, full) ->
     Build.spoilerRange[board] = data.custom_spoiler

@@ -1029,11 +1029,11 @@ box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
     # Board Navigation
     'Front page': [
       '0'
-      'Jump to page 0.'
+      'Jump to front page.'
     ]
     'Open front page': [
       'Shift+0'
-      'Open page 0 in a new tab.'
+      'Open front page in a new tab.'
     ]
     'Next page': [
       'Shift+Right'

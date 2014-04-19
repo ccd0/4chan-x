@@ -74,7 +74,7 @@ Keybinds =
           when 'thread'
             ThreadUpdater.update()
           when 'index'
-            Index.update()
+            if Conf['JSON Navigation'] then Index.update()
       when Conf['Watch']
         ThreadWatcher.toggle thread
       # Images
@@ -90,20 +90,33 @@ Keybinds =
         FappeTyme.cb.toggle.call {name: 'werk'}
       # Board Navigation
       when Conf['Front page']
-        if g.VIEW is 'index'
+        if Conf['JSON Navigation'] and g.VIEW is 'index'
           Index.userPageNav 0
         else
           window.location = "/#{g.BOARD}/"
       when Conf['Open front page']
         $.open "/#{g.BOARD}/"
       when Conf['Next page']
-        return unless g.VIEW is 'index' and Conf['Index Mode'] isnt 'all pages'
-        $('.next button, .next a', Index.pagelist).click()
+        return unless g.VIEW is 'index'
+        if Conf['JSON Navigation']
+          if Conf['Index Mode'] isnt 'all pages'
+            $('.next button', Index.pagelist).click()
+        else
+          if form = $ '.next form'
+            window.location = form.action
       when Conf['Previous page']
-        return unless g.VIEW is 'index' and Conf['Index Mode'] isnt 'all pages'
-        $('.prev button, .prev a', Index.pagelist).click()
+        return unless g.VIEW is 'index'
+        if Conf['JSON Navigation']
+          if Conf['Index Mode'] isnt 'all pages'
+            $('.prev button', Index.pagelist).click()
+        else
+          if form = $ '.prev form'
+            window.location = form.action
       when Conf['Search form']
-        Index.searchInput.focus()
+        if Conf['JSON Navigation']
+          Index.searchInput.focus()
+        else
+          $.id('search-btn').click()
       when Conf['Paged mode']
         return unless g.VIEW is 'index' and Conf['Index Mode'] isnt 'paged'
         Index.setIndexMode 'paged'
@@ -116,6 +129,13 @@ Keybinds =
       when Conf['Cycle sort type']
         return unless g.VIEW is 'index'
         Index.cycleSortType()
+      when Conf['Open catalog']
+        if Conf['External Catalog']
+          window.location = CatalogLinks.external(g.BOARD.ID)
+        else
+          return window.location = "/#{g.BOARD}/catalog" unless Conf['JSON Navigation']
+          return unless g.VIEW is 'index' and Conf['Index Mode'] isnt 'catalog'
+          Index.setIndexMode 'catalog'
       # Thread Navigation
       when Conf['Next thread']
         return if g.VIEW isnt 'index'
@@ -219,7 +239,7 @@ Keybinds =
       
   open: (thread, tab) ->
     return if g.VIEW isnt 'index'
-    url = "/#{thread.board}/res/#{thread}"
+    url = "/#{thread.board}/thread/#{thread}"
     if tab
       $.open url
     else

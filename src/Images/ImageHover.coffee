@@ -25,7 +25,6 @@ ImageHover =
       TrashQueue.remove el
     else
       el = $.el (if isVideo then 'video' else 'img'),
-        className: 'full-image'
         src: post.file.URL
       post.file.fullImage = el
       {thumb} = post.file
@@ -46,8 +45,10 @@ ImageHover =
       el: el
       latestEvent: e
       endEvents: 'mouseout click'
-      asapTest: -> (el.videoHeight or el.naturalHeight)
-      noRemove: true
+      asapTest: if post.file.isImage
+        -> el.naturalHeight
+      else
+        -> el.readyState >= el.HAVE_CURRENT_DATA
       cb: ->
         if isVideo
           el.pause()
@@ -62,7 +63,7 @@ ImageHover =
     if src[2] is 'i.4cdn.org'
       URL = Redirect.to 'file',
         boardID:  src[3]
-        filename: src[5].replace /\?.+$/, ''
+        filename: src[4].replace /\?.+$/, ''
       if URL
         @src = URL
         return
@@ -80,7 +81,7 @@ ImageHover =
       type: 'head'
     <% } else { %>
     # XXX CORS for i.4cdn.org WHEN?
-    $.ajax "//a.4cdn.org/#{post.board}/res/#{post.thread}.json", onload: ->
+    $.ajax "//a.4cdn.org/#{post.board}/thread/#{post.thread}.json", onload: ->
       return if @status isnt 200
       for postObj in @response.posts
         break if postObj.no is post.ID
