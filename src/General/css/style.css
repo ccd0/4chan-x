@@ -78,9 +78,9 @@ hr {
 .board > hr:last-of-type {
   border-top-color: transparent !important;
 }
-div.navLinks {
+/*div.navLinks {
   margin-bottom: -10px !important;
-}
+}*/
 .ad-plea {
   display: none;
 }
