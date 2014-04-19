@@ -1,3 +1,7 @@
+### 3.20.6 - *2014-04-20*
+
+- Bug fixes.
+
 ### 3.20.5 - *2014-04-20*
 
 - Update 4chan namespaces support.
