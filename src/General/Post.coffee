@@ -132,7 +132,7 @@ class Post
       thumb.src
     else
       "#{location.protocol}//t.4cdn.org/#{@board}/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
-    @file.name = if nameNode = $ 'span', fileText
+    @file.name = if nameNode = $ 'a', fileText
       nameNode.title or nameNode.textContent
     else
       fileText.title
