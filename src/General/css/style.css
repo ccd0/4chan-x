@@ -72,7 +72,7 @@ a {
 hr {
   display: none;
 }
-.board hr {
+:root.index .board hr {
   display: block;
 }
 .board > hr:last-of-type {
