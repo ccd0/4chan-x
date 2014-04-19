@@ -52,7 +52,7 @@ ExpandComment =
     for quote in $$ '.quotelink', clone
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote, or board link
-      quote.href = "/#{post.board}/res/#{href}" # Fix pathnames
+      quote.href = "/#{post.board}/thread/#{href}" # Fix pathnames
     post.nodes.shortComment = comment
     $.replace comment, clone
     post.nodes.comment = post.nodes.longComment = clone

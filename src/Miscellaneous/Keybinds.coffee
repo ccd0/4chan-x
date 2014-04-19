@@ -217,7 +217,7 @@ Keybinds =
 
   open: (thread, tab) ->
     return if g.VIEW isnt 'index'
-    url = "/#{thread.board}/res/#{thread}"
+    url = "/#{thread.board}/thread/#{thread}"
     if tab
       $.open url
     else

@@ -129,7 +129,7 @@ class Post
     @file.thumbURL = if that.isArchived
       thumb.src
     else
-      "#{location.protocol}//t.4cdn.org/#{@board}/thumb/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
+      "#{location.protocol}//t.4cdn.org/#{@board}/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
     @file.isImage = /(jpg|png|gif)$/i.test @file.URL
     @file.isVideo = /webm$/i.test @file.URL
     if @file.isImage or @file.isVideo
