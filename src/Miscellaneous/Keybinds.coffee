@@ -87,7 +87,7 @@ Keybinds =
       # Board Navigation
       when Conf['Front page']
         if Conf['JSON Navigation'] and g.VIEW is 'index'
-          Index.userPageNav 0
+          Index.userPageNav 1
         else
           window.location = "/#{g.BOARD}/"
       when Conf['Open front page']

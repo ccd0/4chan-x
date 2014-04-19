@@ -118,7 +118,7 @@ Index =
     Index.pageNum = Index.getCurrentPage() unless Index.pageNum? # Avoid having to pushState to keep track of the current page
 
     pageNum = Index.pageNum++
-    return Index.endNotice() if pageNum >= Index.pagesNum
+    return Index.endNotice() if pageNum > Index.pagesNum
 
     nodes = Index.buildSinglePage pageNum
     Index.buildReplies   nodes if Conf['Show Replies']
@@ -162,9 +162,9 @@ Index =
     Header.scrollToIfNeeded Index.root
 
   getCurrentPage: ->
-    +window.location.pathname.split('/')[2]
+    +window.location.pathname.split('/')[2] or 1
   userPageNav: (pageNum) ->
-    Navigate.pushState if pageNum is 0 then './' else pageNum
+    Navigate.pushState if pageNum is 1 then './' else pageNum
     if Conf['Refreshed Navigation'] and Conf['Index Mode'] isnt 'all pages'
       Index.update pageNum
     else
@@ -183,18 +183,18 @@ Index =
     else
       Index.pagesNum
   getMaxPageNum: ->
-    Math.max 0, Index.getPagesNum() - 1
+    Math.max 1, Index.getPagesNum()
   togglePagelist: ->
     Index.pagelist.hidden = Conf['Index Mode'] isnt 'paged'
   buildPagelist: ->
     pagesRoot = $ '.pages', Index.pagelist
     maxPageNum = Index.getMaxPageNum()
-    if pagesRoot.childElementCount isnt maxPageNum + 1
+    if pagesRoot.childElementCount isnt maxPageNum
       nodes = []
-      for i in [0..maxPageNum] by 1
+      for i in [1..maxPageNum] by 1
         a = $.el 'a',
           textContent: i
-          href: if i then i else './'
+          href: if i is 1 then './' else i
         nodes.push $.tn('['), a, $.tn '] '
       $.rmAll pagesRoot
       $.add pagesRoot, nodes
@@ -206,11 +206,11 @@ Index =
     # Previous/Next buttons
     prev = pagesRoot.previousSibling.firstChild
     next = pagesRoot.nextSibling.firstChild
-    href = Math.max pageNum - 1, 0
-    prev.href = if href is 0 then './' else href
+    href = Math.max pageNum - 1, 1
+    prev.href = if href is 1 then './' else href
     prev.firstChild.disabled = href is pageNum
     href = Math.min pageNum + 1, maxPageNum
-    next.href = if href is 0 then './' else href
+    next.href = if href is 1 then './' else href
     next.firstChild.disabled = href is pageNum
     # <strong> current page
     if strong = $ 'strong', pagesRoot
@@ -218,7 +218,7 @@ Index =
       $.replace strong, strong.firstChild
     else
       strong = $.el 'strong'
-    a = pagesRoot.children[pageNum]
+    a = pagesRoot.children[pageNum - 1]
     $.before a, strong
     $.add strong, a
 
@@ -441,7 +441,7 @@ Index =
   buildSinglePage: (pageNum) ->
     nodes = []
     nodesPerPage = Index.threadsNumPerPage
-    offset = nodesPerPage * pageNum
+    offset = nodesPerPage * (pageNum - 1)
     end    = offset + nodesPerPage
     target = Index.sortedNodes.order()[offset]
     Index.sortedNodes
@@ -470,7 +470,7 @@ Index =
       unless Index.searchInput.dataset.searching
         Index.searchInput.dataset.searching = 1
         Index.pageBeforeSearch = Index.getCurrentPage()
-        pageNum = 0
+        pageNum = 1
       else
         pageNum = Index.getCurrentPage()
     else
@@ -491,7 +491,7 @@ Index =
       Index.buildIndex()
       Index.setPage()
     else
-      Navigate.pushState if pageNum is 0 then './' else pageNum
+      Navigate.pushState if pageNum is 1 then './' else pageNum
       Index.pageLoad pageNum
 
   querySearch: (query) ->

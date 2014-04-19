@@ -182,7 +182,7 @@ Build =
       ''
 
     if isOP and g.VIEW is 'index' and Conf['JSON Navigation']
-      pageNum   = Math.floor Index.liveThreadIDs.indexOf(postID) / Index.threadsNumPerPage
+      pageNum   = Math.floor Index.liveThreadIDs.indexOf(postID) / Index.threadsNumPerPage + 1
       pageIcon  = " <span class=page-num title='This thread is on page #{pageNum} in the original index.'>[#{pageNum}]</span>"
     else
       pageIcon = ''

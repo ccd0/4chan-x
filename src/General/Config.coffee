@@ -671,11 +671,11 @@ vp-replace
     ]
     # Board Navigation
     'Front page': [
-      '0'
+      '1'
       'Jump to front page.'
     ]
     'Open front page': [
-      'Shift+0'
+      'Shift+1'
       'Open front page in a new tab.'
     ]
     'Next page': [
