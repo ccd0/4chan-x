@@ -1,3 +1,6 @@
+### v2.9.16 
+*2014-04-19*
+
 **ccd0**
 - Some keybind bugfixes.
 - Begin work toward compatibility with new URLs.
@@ -17,7 +20,6 @@
 **MayhemYDG**
 - Update 4chan namespaces support.
 - Better handling of webm playback errors.
-
 
 **Nebukazar**
 - `Quote Threading` disabled by default
