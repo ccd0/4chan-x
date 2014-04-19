@@ -16,6 +16,7 @@ Main =
           'index'
     if g.VIEW is 'thread'
       g.THREADID = +pathname[3]
+      history.replaceState null, '', pathname.slice(0,4).join('/') if pathname.length > 4
 
     # flatten Config into Conf
     # and get saved or default values
