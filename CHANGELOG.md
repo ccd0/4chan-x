@@ -1,3 +1,6 @@
+**ccd0**
+- Fix conflict of previous version with Exlinks.
+
 ### v1.7.11 
 *2014-04-19*
 
