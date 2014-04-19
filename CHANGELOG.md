@@ -1,6 +1,7 @@
 **MayhemYDG**
 - Update 4chan namespaces support.
 - Better handling of webm playback errors.
+- Bugfixes
 
 ### v1.7.8 
 *2014-04-12*
