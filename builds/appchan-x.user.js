@@ -138,7 +138,7 @@
   Config = {
     main: {
       'Miscellaneous': {
-        'JSON Navigation': [false, 'Use JSON for loading the Board Index and Threads. Also allows searching and sorting the board index and infinite scolling.'],
+        'JSON Navigation': [true, 'Use JSON for loading the Board Index and Threads. Also allows searching and sorting the board index and infinite scolling.'],
         'Catalog Links': [true, 'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'],
         'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
         'Desktop Notifications': [false, 'Enables desktop notifications across various appchan x features.'],
@@ -3399,7 +3399,7 @@
       }
       this.file.sizeInBytes = size;
       this.file.thumbURL = that.isArchived ? thumb.src : "" + location.protocol + "//t.4cdn.org/" + this.board + "/" + (this.file.URL.match(/(\d+)\./)[1]) + "s.jpg";
-      this.file.name = (nameNode = $('span', fileText)) ? nameNode.title || nameNode.textContent : fileText.title;
+      this.file.name = !this.file.isSpoiler && (nameNode = $('a', fileText)) ? nameNode.title || nameNode.textContent : fileText.title;
       this.file.isImage = /(jpg|png|gif)$/i.test(this.file.name);
       this.file.isVideo = /webm$/i.test(this.file.name);
       if (this.file.isImage || this.file.isVideo) {
@@ -5875,7 +5875,7 @@
         a.textContent = filename;
         filename = a.innerHTML.replace(/'/g, '&apos;');
         fileDims = file.name.slice(-3) === 'pdf' ? 'PDF' : "" + file.width + "x" + file.height;
-        fileInfo = ("<div class=fileText" + (file.isSpoiler ? " title='" + filename + "'" : '') + ">File: <a href='" + file.url + "' target=_blank>" + file.timestamp + "</a>") + ("-(" + fileSize + ", " + fileDims + (file.isSpoiler ? '' : ", <span" + (filename !== shortFilename ? " title='" + filename + "'" : '') + ">" + shortFilename + "</span>")) + ")</div>";
+        fileInfo = ("<div class=fileText " + (file.isSpoiler ? "title='" + filename + "'" : '') + ">File: ") + ("<a href='" + file.url + "' " + (filename !== shortFilename && !file.isSpoiler ? " title='" + filename + "'" : '') + " target=_blank>" + (file.isSpoiler ? 'Spoiler Image' : shortFilename) + "</a>") + (" (" + fileSize + ", " + fileDims + ")</div>");
         fileHTML = "<div class=file>" + fileInfo + imgSrc + "</div>";
       } else {
         fileHTML = '';

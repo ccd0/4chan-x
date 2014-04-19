@@ -2,7 +2,7 @@ Config =
   main:
     'Miscellaneous':
       'JSON Navigation' : [
-        false
+        true
         'Use JSON for loading the Board Index and Threads. Also allows searching and sorting the board index and infinite scolling.'
       ]
       'Catalog Links': [
