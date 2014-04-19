@@ -1,7 +1,7 @@
 Banner =
   init: ->
     $.asap (-> d.body), ->
-      $.asap (-> $ '.abovePostForm'), Banner.ready
+      $.asap (-> $ 'hr'), Banner.ready
 
   ready: ->
     banner = $ ".boardBanner"
@@ -10,7 +10,6 @@ Banner =
     i = 0
     while child = children[i++]
       if i is 1
-        child.id = "Banner"
         child.title = "Click to change"
         $.on child, 'click', Banner.cb.toggle
 
@@ -35,7 +34,7 @@ Banner =
       ->
         type = Object.keys(types)[Math.floor 3 * Math.random()]
         num = Math.floor types[type] * Math.random()
-        @src = "//s.4cdn.org/image/title/#{num}.#{type}"
+        $('img', @parentNode).src = "//s.4cdn.org/image/title/#{num}.#{type}"
       
     click: (e) ->
       if e.ctrlKey

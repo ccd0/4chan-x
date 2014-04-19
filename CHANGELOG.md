@@ -1,3 +1,6 @@
+**ccd0**
+- Start transition to new HTML.
+
 ### v1.7.10 
 *2014-04-17*
 

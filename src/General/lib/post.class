@@ -130,10 +130,7 @@ class Post
       thumb.src
     else
       "#{location.protocol}//t.4cdn.org/#{@board}/thumb/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
-    @file.name = if nameNode = $ 'span', fileText
-      nameNode.title or nameNode.textContent
-    else
-      fileText.title
+    @file.name = fileText.title or fileText.lastElementChild.title or fileText.lastElementChild.textContent
     <% if (type === 'crx') { %>
     # replace %22 with quotes, see:
     # crbug.com/81193

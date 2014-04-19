@@ -112,8 +112,8 @@ Navigate =
 
   updateBoard: (boardID) ->
     fullBoardList   = $ '#full-board-list', Header.boardList
-    $.rmClass $('.current', fullBoardList), 'current'
-    $.addClass $("a[href*='/#{boardID}/']", fullBoardList), 'current'
+    $('.current', fullBoardList)?.classList.remove 'current'
+    $("a[href*='/#{boardID}/']", fullBoardList)?.classList.add 'current'
     Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
 
     QR.flagsInput()

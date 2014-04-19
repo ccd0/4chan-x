@@ -56,8 +56,11 @@ a[href="javascript:;"] {
 .warning {
   color: red;
 }
-#boardNavDesktop {
+#boardNavDesktop, #boardNavMobile {
   display: none !important;
+}
+body.hasDropDownNav{
+  margin-top: 5px;
 }
 a {
   outline: none !important;
@@ -66,8 +69,11 @@ a {
   border-radius: 3px;
   padding: 0px 2px;
 }
-body>hr, .ad-plea-bottom + hr {
+hr {
   display: none;
+}
+.board hr {
+  display: block;
 }
 .board > hr:last-of-type {
   border-top-color: transparent !important;

@@ -109,10 +109,9 @@ Keybinds =
           if form = $ '.prev form'
             window.location = form.action
       when Conf['Search form']
-        if Conf['JSON Navigation']
-          Index.searchInput.focus()
-        else
-          $.id('search-btn').click()
+        searchInput = if Conf['JSON Navigation'] then Index.searchInput else $.id('search-box')
+        Header.scrollToIfNeeded searchInput
+        searchInput.focus()
       when Conf['Open catalog']
         if Conf['External Catalog']
           window.location = CatalogLinks.external(g.BOARD.ID)

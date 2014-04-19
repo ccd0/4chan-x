@@ -103,6 +103,7 @@ Index =
         d.implementation.createDocument(null, null, null).appendChild board
 
       $.rm navLink for navLink in $$ '.navLinks'
+      $.id('search-box')?.parentNode.remove()
       $.after $.x('child::form/preceding-sibling::hr[1]'), Index.navLinks
       $.rmClass doc, 'index-loading'
 
