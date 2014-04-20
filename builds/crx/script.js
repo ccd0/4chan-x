@@ -18132,6 +18132,10 @@
       if (!Conf['JSON Navigation'] || g.VIEW === 'thread') {
         Main.initThread();
       }
+      $.add(d.head, $.el('link', {
+        href: "//s.4cdn.org/css/flags.556.css",
+        rel: "stylesheet"
+      }));
       $.event('4chanXInitFinished');
       try {
         return localStorage.getItem('4chan-settings');

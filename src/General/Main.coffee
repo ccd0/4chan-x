@@ -202,7 +202,11 @@ Main =
 
     # Parse HTML or skip it and start building from JSON.
     if !Conf['JSON Navigation'] or g.VIEW is 'thread'
-      Main.initThread() 
+      Main.initThread()
+      
+    $.add d.head, $.el 'link',
+      href: "//s.4cdn.org/css/flags.556.css"
+      rel:  "stylesheet"
 
     $.event '4chanXInitFinished'
 
