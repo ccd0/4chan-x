@@ -129,6 +129,7 @@ ImageExpand =
     if el = post.file.fullImage
       # Expand already-loaded/ing picture.
       el.className = 'full-image'
+      el.style.cssText = ''
       TrashQueue.remove el
     else
       el = post.file.fullImage = $.el (if isVideo then 'video' else 'img'),
