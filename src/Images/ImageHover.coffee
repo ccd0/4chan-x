@@ -22,6 +22,7 @@ ImageHover =
     {isVideo} = post.file
     if post.file.fullImage
       el = post.file.fullImage
+      el.className = ''
       TrashQueue.remove el
     else
       el = $.el (if isVideo then 'video' else 'img'),

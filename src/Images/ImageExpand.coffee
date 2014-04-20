@@ -128,6 +128,7 @@ ImageExpand =
     $.addClass thumb, 'expanding'
     if el = post.file.fullImage
       # Expand already-loaded/ing picture.
+      el.className = 'full-image'
       TrashQueue.remove el
     else
       el = post.file.fullImage = $.el (if isVideo then 'video' else 'img'),
