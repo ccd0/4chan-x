@@ -1,3 +1,7 @@
+**ccd0**
+- More bugfixes.
+- Restore `Comment Expansion`.
+
 ### v1.7.16 
 *2014-04-19*
 
