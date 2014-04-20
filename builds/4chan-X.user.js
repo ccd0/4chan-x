@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.7.8 - 2014-04-19
+* 4chan X - Version 1.7.8 - 2014-04-20
 *
 * Licensed under the MIT license.
 * https://github.com/ccd0/4chan-x/blob/master/LICENSE
@@ -3764,6 +3764,9 @@
         href = quote.getAttribute('href');
         if (href[0] === '/') {
           continue;
+        }
+        if (href[0] === '#') {
+          href = "" + threadID + href;
         }
         quote.href = "/" + boardID + "/thread/" + href;
       }
