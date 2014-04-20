@@ -1,5 +1,11 @@
+**MayhemYDG**
+- Bugfixes.
+
 ### v2.9.19 
 *2014-04-19*
+
+**Zixaphir**
+- Bugfixes.
 
 ### v2.9.18 
 *2014-04-19*

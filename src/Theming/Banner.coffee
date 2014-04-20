@@ -10,23 +10,27 @@ Banner =
     {children} = banner
     nodes = []
 
-    i = 0
-    while child = children[i++]
-      if i is 1
-        child.id    = "Banner"
-        child.title = "Click to change"
+    for child, i in children
+      if i is 0
+        $.rm child
+        img = $.el 'img',
+          alt:   '4chan'
+          title: 'Click to change'
 
-        $.on child, 'click', Banner.cb.toggle
+        $.on img, 'click', Banner.cb.toggle
+        Banner.cb.toggle.call img
+
+        $.prepend banner, img
 
         continue
 
-      nodes.push child
-
       if Conf['Custom Board Titles']
-        Banner.custom(child).title = "Ctrl+click to edit board #{if i is 3
+        Banner.custom(child).title = "Ctrl+click to edit board #{if i is 2
           'sub'
         else
           ''}title"
+
+      nodes.push child
 
     $.add title, nodes
     $.after banner, title
@@ -36,13 +40,13 @@ Banner =
     toggle: do ->
       types =
         jpg: 227
-        png: 270
+        png: 262
         gif: 253
 
       ->
         type = Object.keys(types)[Math.floor 3 * Math.random()]
         num  = Math.floor types[type] * Math.random()
-        @src = "//static.4chan.org/image/title/#{num}.#{type}"
+        @src = "//s.4cdn.org/image/title/#{num}.#{type}"
 
     click: (e) ->
       if e.ctrlKey
