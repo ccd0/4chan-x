@@ -223,6 +223,7 @@ Build =
     for quote in $$ '.quotelink', container
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote, or board link
+      href = "#{threadID}#{href}" if href[0] is '#'
       quote.href = "/#{boardID}/thread/#{href}" # Fix pathnames
 
     container
