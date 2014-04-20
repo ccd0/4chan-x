@@ -36,7 +36,7 @@ ExpandComment =
       a.textContent = "Error #{req.statusText} (#{status})"
       return
 
-    posts = req.response
+    posts = req.response.posts
     if spoilerRange = posts[0].custom_spoiler
       Build.spoilerRange[g.BOARD] = spoilerRange
 
