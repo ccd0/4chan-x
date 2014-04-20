@@ -23,7 +23,7 @@ ExpandComment =
       return
     return unless a = $ '.abbr > a', post.nodes.comment
     a.textContent = "Post No.#{post} Loading..."
-    $.cache "//a.4cdn.org#{a.pathname}.json", -> ExpandComment.parse @, a, post
+    $.cache "//a.4cdn.org#{a.pathname.split('/').splice(0,4).join('/')}.json", -> ExpandComment.parse @, a, post
   contract: (post) ->
     return unless post.nodes.shortComment
     a = $ '.abbr > a', post.nodes.shortComment
@@ -36,7 +36,7 @@ ExpandComment =
       a.textContent = "Error #{req.statusText} (#{status})"
       return
 
-    posts = JSON.parse(req.response).posts
+    posts = req.response.posts
     if spoilerRange = posts[0].custom_spoiler
       Build.spoilerRange[g.BOARD] = spoilerRange
 
@@ -49,10 +49,14 @@ ExpandComment =
     {comment} = post.nodes
     clone = comment.cloneNode false
     clone.innerHTML = postObj.com
+    # Fix pathnames
     for quote in $$ '.quotelink', clone
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote, or board link
-      quote.href = "/#{post.board}/thread/#{href}" # Fix pathnames
+      if href[0] is '#'
+        quote.href = "#{a.pathname.split('/').splice(0,4).join('/')}#{href}"
+      else
+        quote.href = "#{a.pathname.split('/').splice(0,3).join('/')}/#{href}"
     post.nodes.shortComment = comment
     $.replace comment, clone
     post.nodes.comment = post.nodes.longComment = clone
