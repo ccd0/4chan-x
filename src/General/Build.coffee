@@ -197,10 +197,14 @@ Build =
       className: "postContainer #{if isOP then 'op' else 'reply'}Container"
       innerHTML: <%= grunt.file.read('src/General/html/Build/post.html').replace(/>\s+/g, '>').replace(/\s+</g, '<').replace(/\s+/g, ' ').trim() %>
 
+    # Fix pathnames
     for quote in $$ '.quotelink', container
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote, or board link
-      quote.href = "/#{boardID}/thread/#{href}" # Fix pathnames
+      if href[0] is '#'
+        quote.href = "/#{boardID}/thread/#{threadID}#{href}"
+      else
+        quote.href = "/#{boardID}/thread/#{href}"
 
     container
 
