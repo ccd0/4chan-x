@@ -69,13 +69,15 @@ a {
   border-radius: 3px;
   padding: 0px 2px;
 }
-hr {
+body > hr,
+#blotter hr,
+.desktop > hr,
+#delform > hr,
+#content > hr,
+:root.thread .board > hr {
   display: none;
 }
-:root.index .board hr {
-  display: block;
-}
-.board > hr:last-of-type {
+:root.index .board > hr:last-of-type {
   border-top-color: transparent !important;
 }
 /*div.navLinks {

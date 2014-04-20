@@ -1,3 +1,6 @@
+**ccd0**
+- Fix Unread Line (broken in 1.7.11)
+
 ### v1.7.14 
 *2014-04-19*
 
