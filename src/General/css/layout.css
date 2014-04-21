@@ -2006,16 +2006,19 @@ a:only-of-type > .remove {
 }
 /* Ads */
 .fade-ads .topad img,
+.fade-ads .middlead img,
 .fade-ads .bottomad img {
   opacity: 0.3;
   transition: opacity .3s linear;
 }
 .fade-ads .topad img:hover,
+.fade-ads .middlead img:hover,
 .fade-ads .bottomad img:hover {
   opacity: 1;
 }
 .hide-ads .bottomad + hr,
 .hide-ads .topad,
+.hide-ads .middlead,
 .hide-ads .bottomad,
 .hide-ads .ad-plea {
   display: none;
@@ -2024,10 +2027,6 @@ a:only-of-type > .remove {
 .shrink-ads .bottomad a img {
   width: 500px;
   height: auto;
-}
-.ad-plea-middle,
-.middlead {
-  display: none;
 }
 /* Mascot Positions */
 #mascot {
