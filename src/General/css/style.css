@@ -73,12 +73,13 @@ body > hr,
 #blotter hr,
 .desktop > hr,
 #delform > hr,
-#content > hr,
-:root.thread .board > hr {
+#content > hr {
   display: none;
 }
-:root.index .board > hr:last-of-type {
-  border-top-color: transparent !important;
+:root.index .board > hr:last-of-type,
+:root.thread .board > hr {
+  border: 0px;
+  margin: 0px;
 }
 .ad-plea {
   display: none;
