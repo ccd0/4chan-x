@@ -152,9 +152,8 @@ class Post
   cleanup: (root, post) ->
     for node in $$ '.mobile', root
       $.rm node
-    for node in $$ '[id]', post
-      if node.className isnt 'exif'
-        node.removeAttribute 'id'
+    for node in $$ '[id]:not(.exif)', post
+      node.removeAttribute 'id'
     for node in $$ '.desktop', root
       $.rmClass node, 'desktop'
     return
