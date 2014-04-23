@@ -153,7 +153,8 @@ class Post
     for node in $$ '.mobile', root
       $.rm node
     for node in $$ '[id]', post
-      node.removeAttribute 'id'
+      if node.className isnt 'exif'
+        node.removeAttribute 'id'
     for node in $$ '.desktop', root
       $.rmClass node, 'desktop'
     return
