@@ -182,7 +182,7 @@ QR =
           $.prepend frag, $.tn '[code]'
           $.add     frag, $.tn '[/code]'
       for node in $$ 'br', frag
-        $.replace node, $.tn '\n>' unless node is frag.lastElementChild
+        $.replace node, $.tn '\n>' unless node is frag.lastChild
       for node in $$ 's', frag
         $.replace node, [$.tn('[spoiler]'), node.childNodes..., $.tn '[/spoiler]']
       for node in $$ '.prettyprint', frag
