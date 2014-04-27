@@ -1,3 +1,6 @@
+**ccd0**
+- Fix features broken/disabled in catalog: settings link, thread watcher, start thread button, and keybinds.
+
 ### v1.7.19 
 *2014-04-25*
 
