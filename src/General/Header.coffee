@@ -108,9 +108,10 @@ Header =
         a.className = 'current'
 
       cs = $.el 'a',
-        id: 'settingsWindowLink'
         href: 'javascript:;'
         textContent: 'Catalog Settings'
+      $.on cs, 'click', () ->
+        $.id('settingsWindowLink').click()
 
       @addShortcut cs if g.VIEW is 'catalog'
 
