@@ -184,6 +184,9 @@ Main =
       Main.callbackNodesDB Post, posts, ->
         $.event '4chanXInitFinished'
 
+    else
+      $.event '4chanXInitFinished'
+
     $.get 'previousversion', null, ({previousversion}) ->
       return if previousversion is g.VERSION
       if previousversion
