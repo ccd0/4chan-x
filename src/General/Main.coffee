@@ -113,9 +113,6 @@ Main =
       attributeFilter: ['href']
 
   initReady: ->
-    # fix moot breaking captcha
-    $.globalEval 'window.recaptchaKey = "6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc"'
-
     if d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
       if Conf['404 Redirect'] and g.VIEW is 'thread'
         href = Redirect.to 'thread',
