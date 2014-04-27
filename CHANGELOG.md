@@ -1,3 +1,6 @@
+### v1.7.21 
+*2014-04-27*
+
 **ccd0**
 - Quick fix for moot breaking captcha.
 
