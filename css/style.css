@@ -105,7 +105,7 @@ a[href="javascript:;"] {
 :root.bottom-header body {
   margin-bottom: 2em;
 }
-body > .desktop:not(#boardNavDesktop):not(#boardNavDesktopFoot),
+body > .desktop:not(.navLinks):not(#boardNavDesktop):not(#boardNavDesktopFoot),
 :root.fourchan-x #navtopright,
 :root.fourchan-x #navbotright,
 :root.fourchan-x:not(.show-original-top-board-list) #boardNavDesktop,
