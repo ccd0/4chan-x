@@ -1,3 +1,6 @@
+**ccd0**
+- Revert captcha fixes of 1.4.2 as Google appears to have reverted the changes on its end. This restores captcha caching.
+
 ### v1.7.21 
 *2014-04-27*
 
