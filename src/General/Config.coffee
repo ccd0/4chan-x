@@ -347,7 +347,7 @@ Config =
       ]
       'Auto-load captcha': [
         false
-        'Automatically load the captcha when you open a thread'
+        'Automatically load the captcha when you open a thread, and reload it after you post.'
       ]
 
     'Quote Links':
