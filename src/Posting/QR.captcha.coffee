@@ -84,7 +84,8 @@ QR.captcha =
       $.set 'captchas', @captchas
     else
       challenge   = @nodes.img.alt
-      if response = @nodes.input.value then @destroy()
+      if response = @nodes.input.value
+        if Conf['Auto-load captcha'] then @reload() else @destroy()
     if response
       response = response.trim()
       # one-word-captcha:

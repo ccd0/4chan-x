@@ -123,6 +123,8 @@ QR =
       post.delete()
     QR.cooldown.auto = false
     QR.status()
+    if QR.captcha.isEnabled and not Conf['Auto-load captcha']
+      QR.captcha.destroy()
   focusin: ->
     $.addClass QR.nodes.el, 'focus'
   focusout: ->
@@ -148,9 +150,10 @@ QR =
       el = err
       el.removeAttribute 'style'
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
-      # Focus the captcha input on captcha error.
-      QR.captcha.nodes.input.focus()
-      QR.captcha.setup()
+      if QR.captcha.captchas.length is 0
+        # Focus the captcha input on captcha error.
+        QR.captcha.nodes.input.focus()
+        QR.captcha.setup()
       if Conf['Captcha Warning Notifications'] and !d.hidden
         QR.notify el
       else
@@ -807,7 +810,7 @@ QR =
     unless Conf['Persistent QR'] or QR.cooldown.auto
       QR.close()
     else
-      if QR.posts.length > 1
+      if QR.posts.length > 1 and QR.captcha.isEnabled and QR.captcha.captchas.length is 0
         QR.captcha.setup()
       post.rm()
 
