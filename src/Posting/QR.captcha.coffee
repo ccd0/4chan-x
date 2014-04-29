@@ -110,11 +110,12 @@ QR.captcha =
 
   load: ->
     return unless @nodes.challenge.firstChild
+    return unless challenge_image = $.id 'recaptcha_challenge_image'
     # -1 minute to give upload some time.
     @timeout  = Date.now() + @lifetime * $.SECOND - $.MINUTE
     challenge = @nodes.challenge.firstChild.value
     @nodes.img.alt = challenge
-    @nodes.img.src = $.id('recaptcha_challenge_image').src
+    @nodes.img.src = challenge_image.src
     @nodes.input.value = null
     @clear()
 
