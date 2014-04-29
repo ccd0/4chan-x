@@ -1,8 +1,7 @@
 QR.captcha =
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
-    container = $.id 'captchaContainer'
-    return unless @isEnabled = !!container
+    return unless @isEnabled = !!$.id 'captchaContainer'
 
     $.globalEval 'loadRecaptcha()' if Conf['Auto-load captcha']
 
@@ -10,11 +9,9 @@ QR.captcha =
       className: 'captcha-img'
       title: 'Reload reCAPTCHA'
       innerHTML: '<img>'
-      hidden: true
     input = $.el 'input',
       className: 'captcha-input field'
       title: 'Verification'
-      placeholder: 'Focus to load reCAPTCHA'
       autocomplete: 'off'
       spellcheck: false
       tabIndex: 45
@@ -22,17 +19,22 @@ QR.captcha =
       img:       imgContainer.firstChild
       input:     input
 
-    $.on input, 'focus', @setup
-
     $.on input, 'blur',  QR.focusout
     $.on input, 'focus', QR.focusin
 
     $.addClass QR.nodes.el, 'has-captcha'
     $.after QR.nodes.com.parentNode, [imgContainer, input]
-    
-    @setupObserver = new MutationObserver @afterSetup
-    @setupObserver.observe container, childList: true
+
+    @beforeSetup()
     @afterSetup() # reCAPTCHA might have loaded before the QR.
+  beforeSetup: ->
+    {img, input} = @nodes
+    img.parentNode.hidden = true
+    input.value = ''
+    input.placeholder = 'Focus to load reCAPTCHA'
+    $.on input, 'focus', @setup
+    @setupObserver = new MutationObserver @afterSetup
+    @setupObserver.observe $.id('captchaContainer'), childList: true
   setup: ->
     $.globalEval 'loadRecaptcha()'
   afterSetup: ->
@@ -47,6 +49,7 @@ QR.captcha =
 
     {img, input} = QR.captcha.nodes
     img.parentNode.hidden = false
+    input.placeholder = 'Verification'
     $.off input, 'focus', QR.captcha.setup
     $.on input, 'keydown', QR.captcha.keydown.bind QR.captcha
     $.on img.parentNode, 'click', QR.captcha.reload.bind QR.captcha
@@ -61,6 +64,9 @@ QR.captcha =
       subtree: true
       attributes: true
     QR.captcha.load()
+  destroy: ->
+    $.globalEval 'Recaptcha.destroy()'
+    @beforeSetup()
 
   sync: (captchas) ->
     QR.captcha.captchas = captchas
@@ -74,7 +80,7 @@ QR.captcha =
       $.set 'captchas', @captchas
     else
       challenge   = @nodes.img.alt
-      if response = @nodes.input.value then @reload()
+      if response = @nodes.input.value then @destroy()
     if response
       response = response.trim()
       # one-word-captcha:
