@@ -130,8 +130,8 @@ QR.captcha =
     @nodes.input.alt = count # For XTRM RICE.
 
   reload: (focus) ->
-    # the 't' argument prevents the input from being focused
-    $.globalEval 'Recaptcha.reload("t")'
+    # Hack to prevent the input from being focused
+    $.globalEval 'Recaptcha.reload(); Recaptcha.should_focus = false;'
     # Focus if we meant to.
     @nodes.input.focus() if focus
 
