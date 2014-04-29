@@ -27,6 +27,12 @@ QR.captcha =
     $.addClass QR.nodes.el, 'has-captcha'
     $.after QR.nodes.com.parentNode, [imgContainer, input]
 
+    @captchas = []
+    $.get 'captchas', [], ({captchas}) ->
+      QR.captcha.sync captchas
+      QR.captcha.clear()
+    $.sync 'captchas', @sync
+
     @beforeSetup()
     @afterSetup() # reCAPTCHA might have loaded before the QR.
   beforeSetup: ->
@@ -34,6 +40,7 @@ QR.captcha =
     img.parentNode.hidden = true
     input.value = ''
     input.placeholder = 'Focus to load reCAPTCHA'
+    @count()
     $.on input, 'focus', @setup
     @setupObserver = new MutationObserver @afterSetup
     @setupObserver.observe $.id('captchaContainer'), childList: true
@@ -52,11 +59,8 @@ QR.captcha =
     {img, input} = QR.captcha.nodes
     img.parentNode.hidden = false
     input.placeholder = 'Verification'
+    QR.captcha.count()
     $.off input, 'focus', QR.captcha.setup
-
-    $.get 'captchas', [], ({captchas}) ->
-      QR.captcha.sync captchas
-    $.sync 'captchas', QR.captcha.sync
 
     QR.captcha.nodes.challenge = challenge
     new MutationObserver(QR.captcha.load.bind QR.captcha).observe challenge,
@@ -122,13 +126,15 @@ QR.captcha =
 
   count: ->
     count = if @captchas then @captchas.length else 0
-    @nodes.input.placeholder = switch count
+    placeholder = @nodes.input.placeholder.replace /\ \(.*\)$/, ''
+    placeholder += switch count
       when 0
-        'Verification (Shift + Enter to cache)'
+        if placeholder is 'Verification' then ' (Shift + Enter to cache)' else ''
       when 1
-        'Verification (1 cached captcha)'
+        ' (1 cached captcha)'
       else
-        "Verification (#{count} cached captchas)"
+        " (#{count} cached captchas)"
+    @nodes.input.placeholder = placeholder
     @nodes.input.alt = count # For XTRM RICE.
 
   reload: (focus) ->
