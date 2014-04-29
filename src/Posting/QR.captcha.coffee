@@ -114,7 +114,7 @@ QR.captcha =
     @timeout  = Date.now() + @lifetime * $.SECOND - $.MINUTE
     challenge = @nodes.challenge.firstChild.value
     @nodes.img.alt = challenge
-    @nodes.img.src = "//www.google.com/recaptcha/api/image?c=#{challenge}"
+    @nodes.img.src = $.id('recaptcha_challenge_image').src
     @nodes.input.value = null
     @clear()
 
