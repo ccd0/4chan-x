@@ -227,8 +227,8 @@ Index =
       else
         'Show'
       Index.sort()
-      if Conf['Index Mode'] is 'paged' and Index.getCurrentPage() > 0
-        Index.pageNav 0
+      if Conf['Index Mode'] is 'paged' and Index.getCurrentPage() > 1
+        Index.pageNav 1
       else
         Index.buildIndex()
     mode: (e) ->
@@ -287,7 +287,7 @@ Index =
           return
       e.preventDefault()
       return if Index.cb.indexNav a, true
-      Index.userPageNav +a.pathname.split('/')[2]
+      Index.userPageNav +a.pathname.split('/')[2] or 1
     headerNav: (e) ->
       a = e.target
       return if e.button isnt 0 or a.nodeName isnt 'A' or a.hostname isnt 'boards.4chan.org'
@@ -323,7 +323,7 @@ Index =
     Header.scrollToIfNeeded Index.navLinks
 
   getCurrentPage: ->
-    +window.location.pathname.split('/')[2]
+    +window.location.pathname.split('/')[2] or 1
   userPageNav: (pageNum) ->
     if Conf['Refreshed Navigation'] and Conf['Index Mode'] is 'paged'
       Index.update pageNum
@@ -331,7 +331,7 @@ Index =
       Index.pageNav pageNum
   pageNav: (pageNum) ->
     return if Index.currentPage is pageNum
-    history.pushState null, '', if pageNum is 0 then './' else pageNum
+    history.pushState null, '', if pageNum is 1 then './' else pageNum
     Index.pageLoad pageNum
   pageLoad: (pageNum) ->
     Index.currentPage = pageNum
@@ -347,18 +347,18 @@ Index =
   getPagesNum: ->
     Math.ceil Index.sortedThreads.length / Index.getThreadsNumPerPage()
   getMaxPageNum: ->
-    Math.max 0, Index.getPagesNum() - 1
+    Math.max 1, Index.getPagesNum()
   togglePagelist: ->
     Index.pagelist.hidden = Conf['Index Mode'] isnt 'paged'
   buildPagelist: ->
     pagesRoot = $ '.pages', Index.pagelist
     maxPageNum = Index.getMaxPageNum()
-    if pagesRoot.childElementCount isnt maxPageNum + 1
+    if pagesRoot.childElementCount isnt maxPageNum
       nodes = []
-      for i in [0..maxPageNum] by 1
+      for i in [1..maxPageNum] by 1
         a = $.el 'a',
           textContent: i
-          href: if i then i else './'
+          href: if i is 1 then './' else i
         nodes.push $.tn('['), a, $.tn '] '
       $.rmAll pagesRoot
       $.add pagesRoot, nodes
@@ -370,11 +370,11 @@ Index =
     # Previous/Next buttons
     prev = pagesRoot.previousSibling.firstChild
     next = pagesRoot.nextSibling.firstChild
-    href = Math.max pageNum - 1, 0
-    prev.href = if href is 0 then './' else href
+    href = Math.max pageNum - 1, 1
+    prev.href = if href is 1 then './' else href
     prev.firstChild.disabled = href is pageNum
     href = Math.min pageNum + 1, maxPageNum
-    next.href = if href is 0 then './' else href
+    next.href = if href is 1 then './' else href
     next.firstChild.disabled = href is pageNum
     # <strong> current page
     if strong = $ 'strong', pagesRoot
@@ -382,7 +382,7 @@ Index =
       $.replace strong, strong.firstChild
     else
       strong = $.el 'strong'
-    a = pagesRoot.children[pageNum]
+    a = pagesRoot.children[pageNum - 1]
     $.before a, strong
     $.add strong, a
 
@@ -493,7 +493,7 @@ Index =
     for threadData, i in Index.liveThreadData
       threadRoot = Build.thread g.BOARD, threadData
       if thread = g.BOARD.threads[threadData.no]
-        thread.setPage i // Index.threadsNumPerPage
+        thread.setPage i // Index.threadsNumPerPage + 1
         thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
         thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
         thread.setStatus 'Sticky', !!threadData.sticky
@@ -600,7 +600,7 @@ Index =
           Index.pageNav Index.getMaxPageNum()
           return
         threadsPerPage = Index.getThreadsNumPerPage()
-        threads = Index.sortedThreads[threadsPerPage * pageNum ... threadsPerPage * (pageNum + 1)]
+        threads = Index.sortedThreads[threadsPerPage * (pageNum - 1) ... threadsPerPage * pageNum]
         nodes   = threads.map (thread) -> thread.OP.nodes.root.parentNode
         Index.buildReplies threads
         Index.buildHRs nodes
@@ -627,7 +627,7 @@ Index =
       unless Index.searchInput.dataset.searching
         Index.searchInput.dataset.searching = 1
         Index.pageBeforeSearch = Index.getCurrentPage()
-        pageNum = 0
+        pageNum = 1
       else
         pageNum = Index.getCurrentPage()
     else

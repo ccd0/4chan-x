@@ -173,7 +173,7 @@ Build =
       ''
 
     if isOP and g.VIEW is 'index'
-      pageNum   = Index.liveThreadIDs.indexOf(postID) // Index.threadsNumPerPage
+      pageNum   = Index.liveThreadIDs.indexOf(postID) // Index.threadsNumPerPage + 1
       pageIcon  = " <span class=page-num title='This thread is on page #{pageNum} in the original index.'>Page #{pageNum}</span>"
       replyLink = " &nbsp; <span>[<a href='/#{boardID}/thread/#{threadID}' class=replylink>Reply</a>]</span>"
     else
@@ -263,7 +263,7 @@ Build =
 
     postCount = data.replies + 1
     fileCount = data.images  + !!data.ext
-    pageCount = Index.liveThreadIDs.indexOf(thread.ID) // Index.threadsNumPerPage
+    pageCount = Index.liveThreadIDs.indexOf(thread.ID) // Index.threadsNumPerPage + 1
 
     subject = if thread.OP.info.subject
       "<div class='subject'>#{thread.OP.info.subject}</div>"
