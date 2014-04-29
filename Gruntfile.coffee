@@ -83,10 +83,6 @@ module.exports = (grunt) ->
         createTag: false
         push:      false
     shell:
-      options:
-        stdout: true
-        stderr: true
-        failOnError: true
       checkout:
         command: 'git checkout <%= pkg.meta.mainBranch %>'
       commit:
