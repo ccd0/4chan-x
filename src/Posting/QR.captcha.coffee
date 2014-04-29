@@ -21,6 +21,8 @@ QR.captcha =
 
     $.on input, 'blur',  QR.focusout
     $.on input, 'focus', QR.focusin
+    $.on input, 'keydown', QR.captcha.keydown.bind QR.captcha
+    $.on @nodes.img.parentNode, 'click', QR.captcha.reload.bind QR.captcha
 
     $.addClass QR.nodes.el, 'has-captcha'
     $.after QR.nodes.com.parentNode, [imgContainer, input]
@@ -51,8 +53,6 @@ QR.captcha =
     img.parentNode.hidden = false
     input.placeholder = 'Verification'
     $.off input, 'focus', QR.captcha.setup
-    $.on input, 'keydown', QR.captcha.keydown.bind QR.captcha
-    $.on img.parentNode, 'click', QR.captcha.reload.bind QR.captcha
 
     $.get 'captchas', [], ({captchas}) ->
       QR.captcha.sync captchas
@@ -90,6 +90,7 @@ QR.captcha =
 
   save: ->
     return unless response = @nodes.input.value.trim()
+    @nodes.input.value = ''
     @captchas.push
       challenge: @nodes.img.alt
       response:  response
