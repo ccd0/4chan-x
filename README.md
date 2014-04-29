@@ -1,4 +1,7 @@
-Personal fork of Spittie's 4chan X.
+Fork of [Spittie's 4chan X](https://github.com/Spittie/4chan-x) (itself a fork of [Seaweed's](https://github.com/seaweedchan/4chan-x)).
+
+Note: If you're looking for a maintained fork of OneeChan, try
+https://github.com/Nebukazar/OneeChan
 
 #### [Why 4chan X needs to access data on every site?](https://github.com/ccd0/4chan-x/wiki/Why-4chan-X-needs-to-access-data-from-every-website%3F)
 
