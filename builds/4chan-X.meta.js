@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.7.22
+// @version      1.7.23
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X

@@ -1,3 +1,6 @@
+### v1.7.23 
+*2014-04-29*
+
 **ccd0**
 - Partly restore Mayhem's captcha changes reverted in last version. Captchas are now destroyed after posting instead of reloaded, unless `Auto-load captcha` is checked. Captcha caching is still enabled.
 - Update for changes in Recaptcha, in particular `Recaptcha.reload("t")` no longer working.
