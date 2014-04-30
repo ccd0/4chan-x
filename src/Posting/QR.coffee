@@ -414,8 +414,10 @@ QR =
           cb false
         else unless isFinite video.duration
           QR.error "#{file.name}: Video lacks duration metadata (try remuxing)"
+          cb false
         else if duration > QR.max_duration_video
           QR.error "#{file.name}: Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
+          cb false
         else
           cb true
       video.src = URL.createObjectURL file
