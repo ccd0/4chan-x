@@ -1,3 +1,5 @@
+- Minor bug fixes.
+
 ### 3.20.10 - *2014-04-30*
 
 - Always more bug fixes.
