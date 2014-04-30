@@ -390,11 +390,11 @@ QR =
       img = new Image()
       img.onload = =>
         {height, width} = img
-        if height > QR.max_heigth or width > QR.max_heigth
-          QR.error "#{file.name}: Image too large (image: #{img.height}x#{img.width}px, max: #{QR.max_heigth}x#{QR.max_width}px)"
+        if height > QR.max_height or width > QR.max_width
+          QR.error "#{file.name}: Image too large (image: #{img.height}x#{img.width}px, max: #{QR.max_height}x#{QR.max_width}px)"
           cb false
-        else if height < QR.min_heigth or width < QR.min_heigth
-          QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: #{QR.min_heigth}x#{QR.min_width}px)"
+        else if height < QR.min_height or width < QR.min_width
+          QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: #{QR.min_height}x#{QR.min_width}px)"
           cb false
         else
           cb true
@@ -465,11 +465,13 @@ QR =
     }
     
     rules = $('ul.rules').textContent.trim()
-    QR.min_width = QR.min_heigth = 1
-    QR.max_width = QR.max_heigth = 5000
+    QR.min_width = QR.min_height = 1
+    QR.max_width = QR.max_height = 5000
     try
-      [_, QR.min_width, QR.min_heigth] = rules.match(/.+smaller than (\d+)x(\d+).+/)
-      [_, QR.max_width, QR.max_heigth] = rules.match(/.+greater than (\d+)x(\d+).+/)
+      [_, QR.min_width, QR.min_height] = rules.match(/.+smaller than (\d+)x(\d+).+/)
+      [_, QR.max_width, QR.max_height] = rules.match(/.+greater than (\d+)x(\d+).+/)
+      for prop in ['min_width', 'min_height', 'max_width', 'max_height']
+        QR[prop] = parseInt QR[prop], 10
     catch
       null
 
