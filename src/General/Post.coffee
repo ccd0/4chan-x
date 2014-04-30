@@ -148,7 +148,7 @@ class Post
     @file.isImage = /(jpg|png|gif)$/i.test @file.name
     @file.isVideo = /webm$/i.test @file.name
     if @file.isImage or @file.isVideo
-      @file.dimensions = fileText.lastChild.data.match(/\d+x\d+/)[0]
+      @file.dimensions = fileText.childNodes[2].data.match(/\d+x\d+/)[0]
 
   cleanup: (root, post) ->
     for node in $$ '.mobile', root
