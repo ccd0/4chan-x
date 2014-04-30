@@ -363,6 +363,7 @@ QR =
   handleFile: (file, index, nfiles) ->
     if file.type in QR.mimeTypes
       max = QR.nodes.fileInput.max
+      max = Math.min(max, QR.max_size_video) if /^video\//.test file.type
       if file.size > max
         return QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
       isNewPost = false
@@ -391,14 +392,33 @@ QR =
       img.onload = =>
         {height, width} = img
         if height > QR.max_height or width > QR.max_width
-          QR.error "#{file.name}: Image too large (image: #{img.height}x#{img.width}px, max: #{QR.max_height}x#{QR.max_width}px)"
+          QR.error "#{file.name}: Image too large (image: #{height}x#{width}px, max: #{QR.max_height}x#{QR.max_width}px)"
           cb false
         else if height < QR.min_height or width < QR.min_width
-          QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: #{QR.min_height}x#{QR.min_width}px)"
+          QR.error "#{file.name}: Image too small (image: #{height}x#{width}px, min: #{QR.min_height}x#{QR.min_width}px)"
           cb false
         else
           cb true
       img.src = URL.createObjectURL file
+    else if /^video\//.test file.type
+      video = $.el 'video'
+      $.on video, 'loadedmetadata', =>
+        {videoHeight, videoWidth, duration} = video
+        max_height = Math.min(QR.max_height, QR.max_height_video)
+        max_width = Math.min(QR.max_width, QR.max_width_video)
+        if videoHeight > max_height or videoWidth > max_width
+          QR.error "#{file.name}: Video too large (video: #{videoHeight}x#{videoWidth}px, max: #{max_height}x#{max_width}px)"
+          cb false
+        else if videoHeight < QR.min_height or videoWidth < QR.min_width
+          QR.error "#{file.name}: Video too small (video: #{videoHeight}x#{videoWidth}px, min: #{QR.min_height}x#{QR.min_width}px)"
+          cb false
+        else unless isFinite video.duration
+          QR.error "#{file.name}: Video lacks duration metadata (try remuxing)"
+        else if duration > QR.max_duration_video
+          QR.error "#{file.name}: Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
+        else
+          cb true
+      video.src = URL.createObjectURL file
     else
       cb true
 
@@ -476,6 +496,10 @@ QR =
       null
 
     nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
+
+    QR.max_size_video = 3145728
+    QR.max_width_video = QR.max_height_video = 2048
+    QR.max_duration_video = 120
 
     QR.spoiler = !!$ 'input[name=spoiler]'
     if QR.spoiler
