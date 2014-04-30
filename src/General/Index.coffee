@@ -107,7 +107,7 @@ Index =
 
       for navLink in $$ '.navLinks'
         $.rm navLink
-      $.before $.id('delform'), [Index.navLinks, $.x 'child::form/preceding-sibling::hr[1]']
+      $.before $.x('child::form[@name="delform"]/preceding-sibling::hr[1]'), Index.navLinks
       $.asap (-> $('.pagelist') or d.readyState isnt 'loading'), ->
         $.replace pagelist, Index.pagelist if pagelist = $ '.pagelist'
         $.rmClass doc, 'index-loading'
