@@ -14,6 +14,7 @@ Main =
       return
     if g.VIEW is 'thread'
       g.THREADID = +pathname[3]
+      g.SLUG = pathname[4] if pathname[4]?
 
     # flatten Config into Conf
     # and get saved or default values

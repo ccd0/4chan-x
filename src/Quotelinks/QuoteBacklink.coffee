@@ -49,7 +49,7 @@ QuoteBacklink =
   buildBacklink: (quoted, quoter) ->
     frag = QuoteBacklink.frag.cloneNode true
     a = frag.lastElementChild
-    a.href = "/#{quoter.board}/thread/#{quoter.thread}#p#{quoter}"
+    a.href = Build.path quoter.board.ID, quoter.thread.ID, quoter.ID
     a.textContent = text = QuoteBacklink.funk quoter.ID
     if quoter.isDead
       $.addClass a, 'deadlink'
