@@ -403,6 +403,7 @@ QR =
     else if /^video\//.test file.type
       video = $.el 'video'
       $.on video, 'loadedmetadata', =>
+        return unless cb?
         {videoHeight, videoWidth, duration} = video
         max_height = Math.min(QR.max_height, QR.max_height_video)
         max_width = Math.min(QR.max_width, QR.max_width_video)
@@ -420,6 +421,12 @@ QR =
           cb false
         else
           cb true
+        cb = null
+      $.on video, 'error', =>
+        return unless cb?
+        QR.error "#{file.name}: Video appears corrupt"
+        cb false
+        cb = null
       video.src = URL.createObjectURL file
     else
       cb true
