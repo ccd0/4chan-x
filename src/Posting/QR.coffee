@@ -355,44 +355,52 @@ QR =
       files  = [@files...]
       @value = null
     return unless files.length
-    max = QR.nodes.fileInput.max
-    isSingle = files.length is 1
     QR.cleanNotifications()
-    for file in files
-      QR.checkDimensions file, isSingle, max
-    $.addClass QR.nodes.el, 'dump' unless isSingle
+    for file, i in files
+      QR.handleFile file, i, files.length
+    $.addClass QR.nodes.el, 'dump' unless files.length is 1
 
-  checkDimensions: (file, isSingle, max) ->
+  handleFile: (file, index, nfiles) ->
+    if file.type in QR.mimeTypes
+      max = QR.nodes.fileInput.max
+      if file.size > max
+        return QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
+      isNewPost = false
+      if nfiles is 1
+        post = QR.selected
+      else if index isnt 0 or (post = QR.posts[QR.posts.length - 1]).file
+        isNewPost = true
+        post = new QR.post()
+      QR.checkDimensions file, (pass) ->
+        if pass
+          post.setFile file
+        else if isNewPost
+          post.rm()
+    else if /^text/.test file.type
+      if nfiles is 1
+        post = QR.selected
+      else if index isnt 0 or (post = QR.posts[QR.posts.length - 1]).com
+        post = new QR.post()
+      post.pasteText file
+    else
+      QR.error "#{file.name}: Unsupported file type."
+
+  checkDimensions: (file, cb) ->
     if /^image\//.test file.type
       img = new Image()
       img.onload = =>
         {height, width} = img
-        return QR.error "#{file.name}: Image too large (image: #{img.height}x#{img.width}px, max: #{QR.max_heigth}x#{QR.max_width}px)" if height > QR.max_heigth or width > QR.max_heigth
-        return QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: #{QR.min_heigth}x#{QR.min_width}px)" if height < QR.min_heigth or width < QR.min_heigth
-        QR.handleFile file, isSingle, max
+        if height > QR.max_heigth or width > QR.max_heigth
+          QR.error "#{file.name}: Image too large (image: #{img.height}x#{img.width}px, max: #{QR.max_heigth}x#{QR.max_width}px)"
+          cb false
+        else if height < QR.min_heigth or width < QR.min_heigth
+          QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: #{QR.min_heigth}x#{QR.min_width}px)"
+          cb false
+        else
+          cb true
       img.src = URL.createObjectURL file
     else
-      QR.handleFile file, isSingle, max
-
-  handleFile: (file, isSingle, max) ->
-    if file.size > max
-      QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
-      return
-    else unless file.type in QR.mimeTypes
-      unless /^text/.test file.type
-        QR.error "#{file.name}: Unsupported file type."
-        return
-      if isSingle
-        post = QR.selected
-      else if (post = QR.posts[QR.posts.length - 1]).com
-        post = new QR.post()
-      post.pasteText file
-      return
-    if isSingle
-      post = QR.selected
-    else if (post = QR.posts[QR.posts.length - 1]).file
-      post = new QR.post()
-    post.setFile file
+      cb true
 
   openFileInput: (e) ->
     e.stopPropagation()
