@@ -1,3 +1,6 @@
+### v1.7.24 
+*2014-04-30*
+
 **ccd0**
 - Fix bug where multiple images selected for posting were out of order.
 - Check dimensions and duration of .webm files before posting.
