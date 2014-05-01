@@ -488,7 +488,7 @@ QR =
     
     rules = $('ul.rules').textContent.trim()
     QR.min_width = QR.min_height = 1
-    QR.max_width = QR.max_height = 5000
+    QR.max_width = QR.max_height = 10000
     try
       [_, QR.min_width, QR.min_height] = rules.match(/.+smaller than (\d+)x(\d+).+/)
       [_, QR.max_width, QR.max_height] = rules.match(/.+greater than (\d+)x(\d+).+/)
