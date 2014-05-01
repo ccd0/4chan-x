@@ -1,3 +1,9 @@
+**ccd0**
+- For single files, file errors are reported but no longer stop you from attempting to post. Files with errors are still removed when posting multiple files.
+- Fix small bugs in file checking, uploading from URLs.
+- WebM files are checked for audio before posting (Firefox only).
+- Max resolution updated, now 10000x10000.
+
 ### v1.7.24 
 *2014-04-30*
 
