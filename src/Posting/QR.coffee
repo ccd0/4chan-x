@@ -405,6 +405,11 @@ QR =
         if duration > QR.max_duration_video
           QR.error "#{file.name}: Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
           pass = false
+        <% if (type === 'userscript') { %>
+        if video.mozHasAudio
+          QR.error "#{file.name}: Audio not allowed"
+          pass = false
+        <% } %>
         cb pass
         cb = null
       $.on video, 'error', =>
