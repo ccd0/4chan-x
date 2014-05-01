@@ -1,3 +1,6 @@
+### v1.7.25 
+*2014-05-01*
+
 **ccd0**
 - For single files, file errors are reported but no longer stop you from attempting to post. Files with errors are still removed when posting multiple files.
 - Fix small bugs in file checking, uploading from URLs.
