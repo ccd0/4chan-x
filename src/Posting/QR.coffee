@@ -376,14 +376,14 @@ QR =
       img = new Image()
       img.onload = =>
         {height, width} = img
+        pass = true
         if height > QR.max_height or width > QR.max_width
           QR.error "#{file.name}: Image too large (image: #{height}x#{width}px, max: #{QR.max_height}x#{QR.max_width}px)"
-          cb false
-        else if height < QR.min_height or width < QR.min_width
+          pass = false
+        if height < QR.min_height or width < QR.min_width
           QR.error "#{file.name}: Image too small (image: #{height}x#{width}px, min: #{QR.min_height}x#{QR.min_width}px)"
-          cb false
-        else
-          cb true
+          pass = false
+        cb pass
       img.src = URL.createObjectURL file
     else if /^video\//.test file.type
       video = $.el 'video'
@@ -392,20 +392,20 @@ QR =
         {videoHeight, videoWidth, duration} = video
         max_height = Math.min(QR.max_height, QR.max_height_video)
         max_width = Math.min(QR.max_width, QR.max_width_video)
+        pass = true
         if videoHeight > max_height or videoWidth > max_width
           QR.error "#{file.name}: Video too large (video: #{videoHeight}x#{videoWidth}px, max: #{max_height}x#{max_width}px)"
-          cb false
-        else if videoHeight < QR.min_height or videoWidth < QR.min_width
+          pass = false
+        if videoHeight < QR.min_height or videoWidth < QR.min_width
           QR.error "#{file.name}: Video too small (video: #{videoHeight}x#{videoWidth}px, min: #{QR.min_height}x#{QR.min_width}px)"
-          cb false
-        else unless isFinite video.duration
+          pass = false
+        unless isFinite video.duration
           QR.error "#{file.name}: Video lacks duration metadata (try remuxing)"
-          cb false
-        else if duration > QR.max_duration_video
+          pass = false
+        if duration > QR.max_duration_video
           QR.error "#{file.name}: Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
-          cb false
-        else
-          cb true
+          pass = false
+        cb pass
         cb = null
       $.on video, 'error', =>
         return unless cb?
