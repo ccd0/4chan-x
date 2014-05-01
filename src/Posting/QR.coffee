@@ -344,30 +344,32 @@ QR =
     $.addClass QR.nodes.el, 'dump' unless files.length is 1
 
   handleFile: (file, index, nfiles) ->
-    if file.type in QR.mimeTypes
-      max = QR.nodes.fileInput.max
-      max = Math.min(max, QR.max_size_video) if /^video\//.test file.type
-      if file.size > max
-        return QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
-      isNewPost = false
-      if nfiles is 1
-        post = QR.selected
-      else if index isnt 0 or (post = QR.posts[QR.posts.length - 1]).file
-        isNewPost = true
-        post = new QR.post()
-      QR.checkDimensions file, (pass) ->
-        if pass
-          post.setFile file
-        else if isNewPost
-          post.rm()
-    else if /^text/.test file.type
+    if /^text\//.test file.type
       if nfiles is 1
         post = QR.selected
       else if index isnt 0 or (post = QR.posts[QR.posts.length - 1]).com
         post = new QR.post()
       post.pasteText file
-    else
+      return
+    unless file.type in QR.mimeTypes
       QR.error "#{file.name}: Unsupported file type."
+      return unless nfiles is 1
+    max = QR.nodes.fileInput.max
+    max = Math.min(max, QR.max_size_video) if /^video\//.test file.type
+    if file.size > max
+      QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
+      return unless nfiles is 1
+    isNewPost = false
+    if nfiles is 1
+      post = QR.selected
+    else if index isnt 0 or (post = QR.posts[QR.posts.length - 1]).file
+      isNewPost = true
+      post = new QR.post()
+    QR.checkDimensions file, (pass) ->
+      if pass or nfiles is 1
+        post.setFile file
+      else if isNewPost
+        post.rm()
 
   checkDimensions: (file, cb) ->
     if /^image\//.test file.type
@@ -407,7 +409,10 @@ QR =
         cb = null
       $.on video, 'error', =>
         return unless cb?
-        QR.error "#{file.name}: Video appears corrupt"
+        if file.type in QR.mimeTypes
+          # only report error here if we should have been able to play the video
+          # otherwise "unsupported type" should already have been shown
+          QR.error "#{file.name}: Video appears corrupt"
         cb false
         cb = null
       video.src = URL.createObjectURL file
