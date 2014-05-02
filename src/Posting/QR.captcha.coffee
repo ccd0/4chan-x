@@ -33,6 +33,8 @@ QR.captcha =
       QR.captcha.clear()
     $.sync 'captchas', @sync
 
+    new MutationObserver(@afterSetup).observe $.id('captchaContainer'), childList: true
+
     @beforeSetup()
     @afterSetup() # reCAPTCHA might have loaded before the QR.
   beforeSetup: ->
@@ -42,14 +44,11 @@ QR.captcha =
     input.placeholder = 'Focus to load reCAPTCHA'
     @count()
     $.on input, 'focus', @setup
-    @setupObserver = new MutationObserver @afterSetup
-    @setupObserver.observe $.id('captchaContainer'), childList: true
   setup: ->
     $.globalEval 'loadRecaptcha()'
   afterSetup: ->
     return unless challenge = $.id 'recaptcha_challenge_field_holder'
-    QR.captcha.setupObserver.disconnect()
-    delete QR.captcha.setupObserver
+    return if challenge is QR.captcha.nodes.challenge
 
     setLifetime = (e) -> QR.captcha.lifetime = e.detail
     $.on window, 'captcha:timeout', setLifetime

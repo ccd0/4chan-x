@@ -1,3 +1,6 @@
+**ccd0**
+- Update due to more Recaptcha changes.
+
 ### v1.7.26 
 *2014-05-02*
 
