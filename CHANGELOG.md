@@ -1,3 +1,6 @@
+### v1.7.26 
+*2014-05-02*
+
 **woxxy**
 Remove /v/ from stable Foolz archive.
 
