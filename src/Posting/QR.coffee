@@ -87,7 +87,7 @@ QR =
       QR.status()
 
   node: ->
-    $.on $('a[title="Quote this post"]', @nodes.info), 'click', QR.quote
+    $.on $('a[title="Reply to this post"]', @nodes.info), 'click', QR.quote
 
   persist: ->
     return unless QR.postingIsEnabled

@@ -25,7 +25,7 @@ Navigate =
   post: ->
     # We don't need to reload the thread inside the thread
     return if g.VIEW is 'thread' and @thread.ID is g.THREADID
-    postlink = $ 'a[title="Highlight this post"]', @nodes.info
+    postlink = $ 'a[title="Link to this post"]', @nodes.info
     $.on postlink, 'click', Navigate.navigate
 
     return unless Conf['Quote Hash Navigation']

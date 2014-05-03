@@ -13,7 +13,7 @@ Get =
   threadFromNode: (node) ->
     Get.threadFromRoot $.x 'ancestor::div[@class="thread"]', node
   postFromRoot: (root) ->
-    link    = $ 'a[title="Highlight this post"]', root
+    link    = $ 'a[title="Link to this post"]', root
     boardID = link.pathname.split('/')[1]
     postID  = link.hash[2..]
     index   = root.dataset.clone
