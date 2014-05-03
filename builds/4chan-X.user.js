@@ -1175,7 +1175,7 @@
 
     Post.prototype.parseQuote = function(quotelink) {
       var fullID, match;
-      if (!(match = quotelink.href.match(/boards\.4chan\.org\/([^\/]+)\/(res|thread)\/\d+.*\#p(\d+)$/))) {
+      if (!(match = quotelink.href.match(/boards\.4chan\.org\/([^\/]+)\/thread\/\d+.*\#p(\d+)$/))) {
         return;
       }
       this.nodes.quotelinks.push(quotelink);
@@ -12682,18 +12682,18 @@
       if (this.isClone) {
         return;
       }
-      return this.nodes.date.textContent = Time.funk(this.info.date);
+      return this.nodes.date.textContent = Time.funk(Time, this.info.date);
     },
     createFunc: function(format) {
       var code;
       code = format.replace(/%([A-Za-z])/g, function(s, c) {
         if (c in Time.formatters) {
-          return "' + this.formatters." + c + ".call(date) + '";
+          return "' + Time.formatters." + c + ".call(date) + '";
         } else {
           return s;
         }
       });
-      return Function('date', "return '" + code + "'");
+      return Function('Time', 'date', "return '" + code + "'");
     },
     day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
