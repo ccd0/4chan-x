@@ -13970,7 +13970,7 @@
       if (!Main.isThisPageLegit() || $.hasClass(doc, 'fourchan-x')) {
         return;
       }
-      if ((_ref = $('link[href*=mobile]', d.head)) != null) {
+      if ((_ref = $('link[href*="mobile"]', d.head)) != null) {
         _ref.disabled = true;
       }
       $.addClass(doc, 'fourchan-x', 'seaweedchan', g.VIEW, 'blink');
