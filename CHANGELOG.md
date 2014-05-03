@@ -1,3 +1,6 @@
+### v1.7.29 
+*2014-05-03*
+
 **ccd0**:
 - If the original post form not hidden, it is expanded (except on the catalog page).
 - 4chan's horizontal rules are no longer hidden. If you want to hide them as before, add the old code to your custom CSS:
