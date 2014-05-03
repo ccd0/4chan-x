@@ -17910,7 +17910,7 @@
         },
         value: function() {
           $.cb.value.call(this);
-          return Style.sheets.dynamicCSS.textContent = Style.dynamic();
+          return Style.sheets.dynamic.textContent = Style.dynamic();
         },
         select: function() {
           var hyphenated, option, _i, _len, _ref;

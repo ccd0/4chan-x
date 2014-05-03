@@ -741,7 +741,7 @@ Settings =
 
       value: ->
         $.cb.value.call @
-        Style.sheets.dynamicCSS.textContent = Style.dynamic()
+        Style.sheets.dynamic.textContent = Style.dynamic()
 
       select: ->
         $.cb.value.call @
