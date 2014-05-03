@@ -948,7 +948,7 @@
         title: type,
         className: "" + typeLC + "Icon"
       });
-      root = type === 'Closed' && this.isSticky ? $('.stickyIcon', this.OP.nodes.info) : g.VIEW === 'index' ? $('.page-num', this.OP.nodes.info) : $('[title="Quote this post"]', this.OP.nodes.info);
+      root = type === 'Closed' && this.isSticky ? $('.stickyIcon', this.OP.nodes.info) : g.VIEW === 'index' ? $('.page-num', this.OP.nodes.info) : $('[title="Reply to this post"]', this.OP.nodes.info);
       return $.after(root, [$.tn(' '), icon]);
     };
 
@@ -3198,7 +3198,7 @@
       container = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: "" + (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + "<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcodeIcon === 'admin_highlight' ? ' highlightPost' : '') + "'>" + (isOP ? fileHTML : '') + "<div class='postInfo' id=pi" + postID + "><input type=checkbox name=" + postID + " value=delete>" + ' ' + "<span class=subject>" + (subject || '') + "</span>" + ' ' + "<span class='nameBlock" + capcodeClass + "'>" + emailStart + "<span class=name>" + (name || '') + "</span>" + (tripcode + capcodeStart + emailEnd + capcodeIcon + userID + flag) + "</span>" + " " + "<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span>" + ' ' + "<span class='postNum'><a href=" + ("/" + boardID + "/thread/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a><a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/thread/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>" + (pageIcon + sticky + closed + replyLink) + "</span></div>" + (isOP ? '' : fileHTML) + "<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote>" + ' ' + "</div>"
+        innerHTML: "" + (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + "<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcodeIcon === 'admin_highlight' ? ' highlightPost' : '') + "'>" + (isOP ? fileHTML : '') + "<div class='postInfo' id=pi" + postID + "><input type=checkbox name=" + postID + " value=delete>" + ' ' + "<span class=subject>" + (subject || '') + "</span>" + ' ' + "<span class='nameBlock" + capcodeClass + "'>" + emailStart + "<span class=name>" + (name || '') + "</span>" + (tripcode + capcodeStart + emailEnd + capcodeIcon + userID + flag) + "</span>" + " " + "<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span>" + ' ' + "<span class='postNum'><a href=" + ("/" + boardID + "/thread/" + threadID + "#p" + postID) + " title='Link to this post'>No.</a><a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/thread/" + threadID + "#q" + postID) + "' title='Reply to this post'>" + postID + "</a>" + (pageIcon + sticky + closed + replyLink) + "</span></div>" + (isOP ? '' : fileHTML) + "<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote>" + ' ' + "</div>"
       });
       _ref = $$('.quotelink', container);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3279,7 +3279,7 @@
     },
     postFromRoot: function(root) {
       var boardID, index, link, post, postID;
-      link = $('a[title="Highlight this post"]', root);
+      link = $('a[title="Link to this post"]', root);
       boardID = link.pathname.split('/')[1];
       postID = link.hash.slice(2);
       index = root.dataset.clone;
@@ -5753,7 +5753,7 @@
       }
     },
     node: function() {
-      return $.on($('a[title="Quote this post"]', this.nodes.info), 'click', QR.quote);
+      return $.on($('a[title="Reply to this post"]', this.nodes.info), 'click', QR.quote);
     },
     persist: function() {
       if (!QR.postingIsEnabled) {
@@ -7603,7 +7603,7 @@
         title: title
       });
       thumb.dataset.id = Gallery.images.length;
-      thumb.dataset.post = $('a[title="Highlight this post"]', post.nodes.info).href;
+      thumb.dataset.post = $('a[title="Link to this post"]', post.nodes.info).href;
       thumbImg = post.file.thumb.cloneNode(false);
       thumbImg.style.cssText = '';
       $.add(thumb, thumbImg);
@@ -12458,7 +12458,7 @@
       if (g.VIEW === 'thread' && this.thread.ID === g.THREADID) {
         return;
       }
-      postlink = $('a[title="Highlight this post"]', this.nodes.info);
+      postlink = $('a[title="Link to this post"]', this.nodes.info);
       $.on(postlink, 'click', Navigate.navigate);
       if (!Conf['Quote Hash Navigation']) {
         return;
