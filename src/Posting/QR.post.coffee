@@ -173,9 +173,16 @@ QR.post = class
   setThumbnail: ->
     # Create a redimensioned thumbnail.
     isVideo = /^video\//.test @file.type
-    img = $.el (if isVideo then 'video' else 'img')
+    el = $.el (if isVideo then 'video' else 'img')
 
-    $.on img, (if isVideo then 'loadeddata' else 'load'), =>
+    $.on el, (if isVideo then 'loadeddata' else 'load'), =>
+      # Verify element dimensions.
+      errors = @checkDimensions el, isVideo
+      if errors.length
+        QR.error error for error in errors
+        @URL = fileURL # this.removeFile will revoke this proper.
+        return @rmFile()
+
       # Generate thumbnails only if they're really big.
       # Resized pictures through canvases look like ass,
       # so we generate thumbnails `s` times bigger then expected
@@ -183,10 +190,10 @@ QR.post = class
       s = 90 * 2 * window.devicePixelRatio
       s *= 3 if @file.type is 'image/gif' # let them animate
       if isVideo
-        height = img.videoHeight
-        width = img.videoWidth
+        height = el.videoHeight
+        width  = el.videoWidth
       else
-        {height, width} = img
+        {height, width} = el
         if height < s or width < s
           @URL = fileURL
           @nodes.el.style.backgroundImage = "url(#{@URL})"
@@ -198,16 +205,42 @@ QR.post = class
         height = s / width  * height
         width  = s
       cv = $.el 'canvas'
-      cv.height = img.height = height
-      cv.width  = img.width  = width
-      cv.getContext('2d').drawImage img, 0, 0, width, height
+      cv.height = el.height = height
+      cv.width  = el.width  = width
+      cv.getContext('2d').drawImage el, 0, 0, width, height
       URL.revokeObjectURL fileURL
       cv.toBlob (blob) =>
         @URL = URL.createObjectURL blob
         @nodes.el.style.backgroundImage = "url(#{@URL})"
 
     fileURL = URL.createObjectURL @file
-    img.src = fileURL
+    el.src = fileURL
+
+  checkDimensions: (el, video) ->
+    err = []
+    if video
+      {videoHeight, videoWidth, duration} = el
+      max_height = if QR.max_height < QR.max_height_video then QR.max_height else QR.max_height_video
+      max_width  = if QR.max_width  < QR.max_width_video  then QR.max_width  else QR.max_width_video
+      if videoHeight > max_height or videoWidth > max_width
+        err.push "#{@file.name}: Video too large (video: #{videoHeight}x#{videoWidth}px, max: #{max_height}x#{max_width}px)"
+      if videoHeight < QR.min_height or videoWidth < QR.min_width
+        err.push "#{@file.name}: Video too small (video: #{videoHeight}x#{videoWidth}px, min: #{QR.min_height}x#{QR.min_width}px)"
+      unless isFinite el.duration
+        err.push "#{file.name}: Video lacks duration metadata (try remuxing)"
+      if duration > QR.max_duration_video
+        err.push "#{@file.name}: Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
+      <% if (type === 'userscript') { %>
+      if el.mozHasAudio
+        err.push "#{file.name}: Audio not allowed"
+      <% } %>
+    else
+      {height, width} = el
+      if height > QR.max_height or width > QR.max_width
+        err.push "#{@file.name}: Image too large (image: #{height}x#{width}px, max: #{QR.max_height}x#{QR.max_width}px)"
+      if height < QR.min_height or width < QR.min_width
+        err.push "#{@file.name}: Image too small (image: #{height}x#{width}px, min: #{QR.min_height}x#{QR.min_width}px)"
+    err
 
   rmFile: ->
     return if @isLocked

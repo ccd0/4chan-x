@@ -195,7 +195,7 @@ Main =
           'left=0,top=0,width=500,height=255,toolbar=0,resizable=0'
       $.before styleSelector.previousSibling, [$.tn '['; passLink, $.tn ']\u00A0\u00A0']
       # Completely disable the mobile layout
-      $('link[href*="yotsubluemobile.559.css"', d.head).disabled = true
+      $('link[href*="mobile"', d.head).disabled = true
 
     # Parse HTML or skip it and start building from JSON.
     if !Conf['JSON Navigation'] or g.VIEW is 'thread'

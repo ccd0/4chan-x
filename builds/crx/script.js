@@ -6436,7 +6436,7 @@
       }
     },
     handleFile: function(file, index, nfiles) {
-      var isNewPost, isSingle, max, post, _ref;
+      var isSingle, max, post, _ref;
       isSingle = nfiles === 1;
       if (/^text\//.test(file.type)) {
         if (isSingle) {
@@ -6463,89 +6463,15 @@
           return;
         }
       }
-      isNewPost = false;
       if (isSingle) {
         post = QR.selected;
       } else if (index !== 0 || (post = QR.posts[QR.posts.length - 1]).file) {
-        isNewPost = true;
         post = new QR.post();
       }
       if (/^text/.test(file.type)) {
         return post.pasteText(file);
       } else {
-        post.setFile(file);
-      }
-      return QR.checkDimensions(file, function(pass) {
-        if (pass || isSingle) {
-          return post.setFile(file);
-        } else if (isNewPost) {
-          return post.rm();
-        }
-      });
-    },
-    checkDimensions: function(file, cb) {
-      var img, video;
-      if (/^image\//.test(file.type)) {
-        img = new Image();
-        img.onload = function() {
-          var height, pass, width;
-          height = img.height, width = img.width;
-          pass = true;
-          if (height > QR.max_height || width > QR.max_width) {
-            QR.error("" + file.name + ": Image too large (image: " + height + "x" + width + "px, max: " + QR.max_height + "x" + QR.max_width + "px)");
-            pass = false;
-          }
-          if (height < QR.min_height || width < QR.min_width) {
-            QR.error("" + file.name + ": Image too small (image: " + height + "x" + width + "px, min: " + QR.min_height + "x" + QR.min_width + "px)");
-            pass = false;
-          }
-          return cb(pass);
-        };
-        return img.src = URL.createObjectURL(file);
-      } else if (/^video\//.test(file.type)) {
-        video = $.el('video');
-        $.on(video, 'loadedmetadata', function() {
-          var duration, max_height, max_width, pass, videoHeight, videoWidth;
-          if (!cb) {
-            return;
-          }
-          videoHeight = video.videoHeight, videoWidth = video.videoWidth, duration = video.duration;
-          max_height = Math.min(QR.max_height, QR.max_height_video);
-          max_width = Math.min(QR.max_width, QR.max_width_video);
-          pass = true;
-          if (videoHeight > max_height || videoWidth > max_width) {
-            QR.error("" + file.name + ": Video too large (video: " + videoHeight + "x" + videoWidth + "px, max: " + max_height + "x" + max_width + "px)");
-            pass = false;
-          }
-          if (videoHeight < QR.min_height || videoWidth < QR.min_width) {
-            QR.error("" + file.name + ": Video too small (video: " + videoHeight + "x" + videoWidth + "px, min: " + QR.min_height + "x" + QR.min_width + "px)");
-            pass = false;
-          }
-          if (!isFinite(video.duration)) {
-            QR.error("" + file.name + ": Video lacks duration metadata (try remuxing)");
-            pass = false;
-          }
-          if (duration > QR.max_duration_video) {
-            QR.error("" + file.name + ": Video too long (video: " + duration + "s, max: " + QR.max_duration_video + "s)");
-            pass = false;
-          }
-          cb(pass);
-          return cb = null;
-        });
-        $.on(video, 'error', function() {
-          var _ref;
-          if (!cb) {
-            return;
-          }
-          if (_ref = file.type, __indexOf.call(QR.mimeTypes, _ref) >= 0) {
-            QR.error("" + file.name + ": Video appears corrupt");
-          }
-          cb(false);
-          return cb = null;
-        });
-        return video.src = URL.createObjectURL(file);
-      } else {
-        return cb(true);
+        return post.setFile(file);
       }
     },
     openFileInput: function(e) {
@@ -7620,21 +7546,30 @@
     };
 
     _Class.prototype.setThumbnail = function() {
-      var fileURL, img, isVideo;
+      var el, fileURL, isVideo;
       isVideo = /^video\//.test(this.file.type);
-      img = $.el((isVideo ? 'video' : 'img'));
-      $.on(img, (isVideo ? 'loadeddata' : 'load'), (function(_this) {
+      el = $.el((isVideo ? 'video' : 'img'));
+      $.on(el, (isVideo ? 'loadeddata' : 'load'), (function(_this) {
         return function() {
-          var cv, height, s, width;
+          var cv, error, errors, height, s, width, _i, _len;
+          errors = _this.checkDimensions(el, isVideo);
+          if (errors.length) {
+            for (_i = 0, _len = errors.length; _i < _len; _i++) {
+              error = errors[_i];
+              QR.error(error);
+            }
+            _this.URL = fileURL;
+            return _this.rmFile();
+          }
           s = 90 * 2 * window.devicePixelRatio;
           if (_this.file.type === 'image/gif') {
             s *= 3;
           }
           if (isVideo) {
-            height = img.videoHeight;
-            width = img.videoWidth;
+            height = el.videoHeight;
+            width = el.videoWidth;
           } else {
-            height = img.height, width = img.width;
+            height = el.height, width = el.width;
             if (height < s || width < s) {
               _this.URL = fileURL;
               _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
@@ -7649,9 +7584,9 @@
             width = s;
           }
           cv = $.el('canvas');
-          cv.height = img.height = height;
-          cv.width = img.width = width;
-          cv.getContext('2d').drawImage(img, 0, 0, width, height);
+          cv.height = el.height = height;
+          cv.width = el.width = width;
+          cv.getContext('2d').drawImage(el, 0, 0, width, height);
           URL.revokeObjectURL(fileURL);
           return cv.toBlob(function(blob) {
             _this.URL = URL.createObjectURL(blob);
@@ -7660,7 +7595,38 @@
         };
       })(this));
       fileURL = URL.createObjectURL(this.file);
-      return img.src = fileURL;
+      return el.src = fileURL;
+    };
+
+    _Class.prototype.checkDimensions = function(el, video) {
+      var duration, err, height, max_height, max_width, videoHeight, videoWidth, width;
+      err = [];
+      if (video) {
+        videoHeight = el.videoHeight, videoWidth = el.videoWidth, duration = el.duration;
+        max_height = QR.max_height < QR.max_height_video ? QR.max_height : QR.max_height_video;
+        max_width = QR.max_width < QR.max_width_video ? QR.max_width : QR.max_width_video;
+        if (videoHeight > max_height || videoWidth > max_width) {
+          err.push("" + this.file.name + ": Video too large (video: " + videoHeight + "x" + videoWidth + "px, max: " + max_height + "x" + max_width + "px)");
+        }
+        if (videoHeight < QR.min_height || videoWidth < QR.min_width) {
+          err.push("" + this.file.name + ": Video too small (video: " + videoHeight + "x" + videoWidth + "px, min: " + QR.min_height + "x" + QR.min_width + "px)");
+        }
+        if (!isFinite(el.duration)) {
+          err.push("" + file.name + ": Video lacks duration metadata (try remuxing)");
+        }
+        if (duration > QR.max_duration_video) {
+          err.push("" + this.file.name + ": Video too long (video: " + duration + "s, max: " + QR.max_duration_video + "s)");
+        }
+      } else {
+        height = el.height, width = el.width;
+        if (height > QR.max_height || width > QR.max_width) {
+          err.push("" + this.file.name + ": Image too large (image: " + height + "x" + width + "px, max: " + QR.max_height + "x" + QR.max_width + "px)");
+        }
+        if (height < QR.min_height || width < QR.min_width) {
+          err.push("" + this.file.name + ": Image too small (image: " + height + "x" + width + "px, min: " + QR.min_height + "x" + QR.min_width + "px)");
+        }
+      }
+      return err;
     };
 
     _Class.prototype.rmFile = function() {
@@ -14060,7 +14026,7 @@
           return window.open('//sys.4chan.org/auth', 'This will steal your data.', 'left=0,top=0,width=500,height=255,toolbar=0,resizable=0');
         });
         $.before(styleSelector.previousSibling, [$.tn('['), passLink, $.tn(']\u00A0\u00A0')]);
-        $('link[href*="yotsubluemobile.559.css"', d.head).disabled = true;
+        $('link[href*="mobile"', d.head).disabled = true;
       }
       if (!Conf['JSON Navigation'] || g.VIEW === 'thread') {
         Main.initThread();

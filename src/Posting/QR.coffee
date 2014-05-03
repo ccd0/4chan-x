@@ -372,74 +372,14 @@ QR =
     if file.size > max
       QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
       return unless isSingle
-    isNewPost = false
     if isSingle
       post = QR.selected
     else if index isnt 0 or (post = QR.posts[QR.posts.length - 1]).file
-      isNewPost = true
       post = new QR.post()
     if /^text/.test file.type
       return post.pasteText file
     else
       post.setFile file
-    QR.checkDimensions file, (pass) ->
-      if pass or isSingle
-        post.setFile file
-      else if isNewPost
-        post.rm()
-
-  checkDimensions: (file, cb) ->
-    if /^image\//.test file.type
-      img = new Image()
-      img.onload = ->
-        {height, width} = img
-        pass = true
-        if height > QR.max_height or width > QR.max_width
-          QR.error "#{file.name}: Image too large (image: #{height}x#{width}px, max: #{QR.max_height}x#{QR.max_width}px)"
-          pass = false
-        if height < QR.min_height or width < QR.min_width
-          QR.error "#{file.name}: Image too small (image: #{height}x#{width}px, min: #{QR.min_height}x#{QR.min_width}px)"
-          pass = false
-        cb pass
-      img.src = URL.createObjectURL file
-    else if /^video\//.test file.type
-      video = $.el 'video'
-      $.on video, 'loadedmetadata', ->
-        return unless cb
-        {videoHeight, videoWidth, duration} = video
-        max_height = Math.min(QR.max_height, QR.max_height_video)
-        max_width = Math.min(QR.max_width, QR.max_width_video)
-        pass = true
-        if videoHeight > max_height or videoWidth > max_width
-          QR.error "#{file.name}: Video too large (video: #{videoHeight}x#{videoWidth}px, max: #{max_height}x#{max_width}px)"
-          pass = false
-        if videoHeight < QR.min_height or videoWidth < QR.min_width
-          QR.error "#{file.name}: Video too small (video: #{videoHeight}x#{videoWidth}px, min: #{QR.min_height}x#{QR.min_width}px)"
-          pass = false
-        unless isFinite video.duration
-          QR.error "#{file.name}: Video lacks duration metadata (try remuxing)"
-          pass = false
-        if duration > QR.max_duration_video
-          QR.error "#{file.name}: Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
-          pass = false
-        <% if (type === 'userscript') { %>
-        if video.mozHasAudio
-          QR.error "#{file.name}: Audio not allowed"
-          pass = false
-        <% } %>
-        cb pass
-        cb = null
-      $.on video, 'error', ->
-        return unless cb
-        if file.type in QR.mimeTypes
-          # only report error here if we should have been able to play the video
-          # otherwise "unsupported type" should already have been shown
-          QR.error "#{file.name}: Video appears corrupt"
-        cb false
-        cb = null
-      video.src = URL.createObjectURL file
-    else
-      cb true
 
   openFileInput: (e) ->
     e.stopPropagation()
