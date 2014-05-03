@@ -39,7 +39,7 @@ Navigate =
   post: -> # Allows us to navigate via JSON from thread to thread by hashes and quote highlights.
     # We don't need to reload the thread inside the thread
     unless g.VIEW is 'thread' and @thread.ID is g.THREADID
-      $.on $('a[title="Highlight this post"]', @nodes.info), 'click', Navigate.navigate
+      $.on $('a[title="Link to this post"]', @nodes.info), 'click', Navigate.navigate
 
     return unless (linktype = if Conf['Quote Inlining'] and Conf['Quote Hash Navigation']
       '.hashlink'
