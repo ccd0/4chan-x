@@ -1,3 +1,9 @@
+### v2.9.23 
+*2014-05-03*
+
+**zixaphir**
+- Bugfixes
+
 ### v2.9.22 
 *2014-05-03*
 
@@ -15,7 +21,7 @@
 - Check dimensions and duration of .webm files before posting.
 - Partly restore Mayhem's captcha changes reverted in last version. Captchas are now destroyed after posting instead of reloaded, unless `Auto-load captcha` is checked. Captcha caching is still enabled.
 - Thumbnails for .webm files in Quick Reply.
-- Revert captcha fixes of 1.4.2 as Google appears to have reverted the changes on its end. This restores captcha caching.
+- Revert captcha fixes as Google appears to have reverted the changes on its end. This restores captcha caching.
 - Quick fix for moot breaking captcha.
 - Restore `Comment Expansion`.
 - Another update to handle HTML changes.
