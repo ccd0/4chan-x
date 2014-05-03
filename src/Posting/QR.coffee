@@ -1,4 +1,6 @@
 QR =
+  mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/vnd.adobe.flash.movie', 'application/x-shockwave-flash', 'video/webm']
+ 
   init: ->
     return if !Conf['Quick Reply']
 
@@ -49,7 +51,7 @@ QR =
       if Conf['QR Shortcut']
         $.rmClass $('.qr-shortcut'), 'disabled'
 
-    $.before $.id('postForm'), link
+    $.before $.id('togglePostForm') or $.id('postForm'), link
 
     $.on d, 'QRGetSelectedPost', ({detail: cb}) ->
       cb QR.selected
@@ -117,6 +119,8 @@ QR =
       post.delete()
     QR.cooldown.auto = false
     QR.status()
+    if QR.captcha.isEnabled and not Conf['Auto-load captcha']
+      QR.captcha.destroy()
   focusin: ->
     $.addClass QR.nodes.el, 'focus'
   focusout: ->
@@ -142,9 +146,10 @@ QR =
       el = err
       el.removeAttribute 'style'
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
-      # Focus the captcha input on captcha error.
-      QR.captcha.nodes.input.focus()
-      QR.captcha.setup()
+      if QR.captcha.captchas.length is 0
+        # Focus the captcha input on captcha error.
+        QR.captcha.nodes.input.focus()
+        QR.captcha.setup()
       if Conf['Captcha Warning Notifications'] and !d.hidden
         QR.notify el
       else
@@ -289,55 +294,43 @@ QR =
     QR.handleFiles files
     $.addClass QR.nodes.el, 'dump'
     
-  handleBlob: (urlBlob, header, url) ->
-    name = url.substr(url.lastIndexOf('/')+1, url.length)
-    #QUALITY coding at work
-    start = header.indexOf("Content-Type: ") + 14
-    endsc = header.substr(start, header.length).indexOf(";")
-    endnl = header.substr(start, header.length).indexOf("\n") - 1
-    end = endnl
-    if (endsc != -1 and endsc < endnl)
-      end = endsc
-    mime = header.substr(start, end)
+  handleBlob: (urlBlob, contentType, contentDisposition, url) ->
+    name = url.match(/([^\/]+)\/*$/)?[1]
+    mime = contentType?.match(/[^;]*/)[0] or 'application/octet-stream'
+    match =
+      contentDisposition?.match(/\bfilename\s*=\s*"((\\"|[^"])+)"/i)?[1] or
+      contentType?.match(/\bname\s*=\s*"((\\"|[^"])+)"/i)?[1]
+    if match
+      name = match.replace /\\"/g, '"'
     blob = new Blob([urlBlob], {type: mime})
-    blob.name = url.substr(url.lastIndexOf('/')+1, url.length)
-    name_start = header.indexOf('name="') + 6
-    if (name_start - 6 != -1)
-      name_end  = header.substr(name_start, header.length).indexOf('"')
-      blob.name = header.substr(name_start, name_end)
-
-    return if blob.type is null
-      QR.error "Unsupported file type."
+    blob.name = name
     QR.handleFiles([blob])
 
   handleUrl:  ->
     url = prompt("Insert an url:")
     return if url is null
+
     <% if (type === 'crx') { %>
     xhr = new XMLHttpRequest();
     xhr.open('GET', url, true)
     xhr.responseType = 'blob'
     xhr.onload = (e) ->
       if @readyState is @DONE && xhr.status is 200
-        QR.handleBlob(@response, @getResponseHeader('Content-Type'), url)
-        return
+        contentType = @getResponseHeader('Content-Type')
+        contentDisposition = @getResponseHeader('Content-Disposition')
+        QR.handleBlob @response, contentType, contentDisposition, url
       else
         QR.error "Can't load image."
-        return
-
     xhr.onerror = (e) ->
       QR.error "Can't load image."
-      return
-
     xhr.send()
-    return
     <% } %>
 
     <% if (type === 'userscript') { %>
-    GM_xmlhttpRequest {
-      method: "GET",
-      url: url,
-      overrideMimeType: "text/plain; charset=x-user-defined",
+    GM_xmlhttpRequest
+      method: "GET"
+      url: url
+      overrideMimeType: "text/plain; charset=x-user-defined"
       onload: (xhr) ->
         r = xhr.responseText
         data = new Uint8Array(r.length)
@@ -345,14 +338,11 @@ QR =
         while i < r.length
           data[i] = r.charCodeAt(i)
           i++
-
-        QR.handleBlob(data, xhr.responseHeaders, url)
-        return
-
-        onerror: (xhr) ->
-          QR.error "Can't load image."
-    }
-    return
+        contentType = xhr.responseHeaders.match(/Content-Type:\s*(.*)/i)?[1]
+        contentDisposition = xhr.responseHeaders.match(/Content-Disposition:\s*(.*)/i)?[1]
+        QR.handleBlob data, contentType, contentDisposition, url
+      onerror: (xhr) ->
+        QR.error "Can't load image."
     <% } %>
 
   handleFiles: (files) ->
@@ -360,40 +350,96 @@ QR =
       files  = [@files...]
       @value = null
     return unless files.length
-    max = QR.nodes.fileInput.max
-    isSingle = files.length is 1
     QR.cleanNotifications()
-    for file in files
-      if file.type is 'application/x-shockwave-flash'
-        QR.handleFile(file, isSingle, max)
-      else
-        QR.checkDimensions file, isSingle, max
-    $.addClass QR.nodes.el, 'dump' unless isSingle
+    for file, i in files
+      QR.handleFile file, i, files.length
+    $.addClass QR.nodes.el, 'dump' unless files.length is 1
 
-  checkDimensions: (file, isSingle, max) ->
+  handleFile: (file, index, nfiles) ->
+    if /^text\//.test file.type
+      if nfiles is 1
+        post = QR.selected
+      else if index isnt 0 or (post = QR.posts[QR.posts.length - 1]).com
+        post = new QR.post()
+      post.pasteText file
+      return
+    unless file.type in QR.mimeTypes
+      QR.error "#{file.name}: Unsupported file type."
+      return unless nfiles is 1
+    max = QR.nodes.fileInput.max
+    max = Math.min(max, QR.max_size_video) if /^video\//.test file.type
+    if file.size > max
+      QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
+      return unless nfiles is 1
+    isNewPost = false
+    if nfiles is 1
+      post = QR.selected
+    else if index isnt 0 or (post = QR.posts[QR.posts.length - 1]).file
+      isNewPost = true
+      post = new QR.post()
+    if /^text/.test file.type
+      return post.pasteText file
+    else
+      post.setFile file
+    QR.checkDimensions file, (pass) ->
+      if pass or nfiles is 1
+        post.setFile file
+      else if isNewPost
+        post.rm()
+
+  checkDimensions: (file, cb) ->
     if /^image\//.test file.type
       img = new Image()
       img.onload = =>
         {height, width} = img
-        return QR.error "#{file.name}: Image too large (image: #{img.height}x#{img.width}px, max: #{QR.max_heigth}x#{QR.max_width}px)" if height > QR.max_heigth or width > QR.max_heigth
-        return QR.error "#{file.name}: Image too small (image: #{img.height}x#{img.width}px, min: #{QR.min_heigth}x#{QR.min_width}px)" if height < QR.min_heigth or width < QR.min_heigth
-        QR.handleFile file, isSingle, max
+        pass = true
+        if height > QR.max_height or width > QR.max_width
+          QR.error "#{file.name}: Image too large (image: #{height}x#{width}px, max: #{QR.max_height}x#{QR.max_width}px)"
+          pass = false
+        if height < QR.min_height or width < QR.min_width
+          QR.error "#{file.name}: Image too small (image: #{height}x#{width}px, min: #{QR.min_height}x#{QR.min_width}px)"
+          pass = false
+        cb pass
       img.src = URL.createObjectURL file
+    else if /^video\//.test file.type
+      video = $.el 'video'
+      $.on video, 'loadedmetadata', =>
+        return unless cb?
+        {videoHeight, videoWidth, duration} = video
+        max_height = Math.min(QR.max_height, QR.max_height_video)
+        max_width = Math.min(QR.max_width, QR.max_width_video)
+        pass = true
+        if videoHeight > max_height or videoWidth > max_width
+          QR.error "#{file.name}: Video too large (video: #{videoHeight}x#{videoWidth}px, max: #{max_height}x#{max_width}px)"
+          pass = false
+        if videoHeight < QR.min_height or videoWidth < QR.min_width
+          QR.error "#{file.name}: Video too small (video: #{videoHeight}x#{videoWidth}px, min: #{QR.min_height}x#{QR.min_width}px)"
+          pass = false
+        unless isFinite video.duration
+          QR.error "#{file.name}: Video lacks duration metadata (try remuxing)"
+          pass = false
+        if duration > QR.max_duration_video
+          QR.error "#{file.name}: Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
+          pass = false
+        <% if (type === 'userscript') { %>
+        if video.mozHasAudio
+          QR.error "#{file.name}: Audio not allowed"
+          pass = false
+        <% } %>
+        cb pass
+        cb = null
+      $.on video, 'error', =>
+        return unless cb?
+        if file.type in QR.mimeTypes
+          # only report error here if we should have been able to play the video
+          # otherwise "unsupported type" should already have been shown
+          QR.error "#{file.name}: Video appears corrupt"
+        cb false
+        cb = null
+      video.src = URL.createObjectURL file
     else
-      QR.handleFile file, isSingle, max
+      cb true
 
-  handleFile: (file, isSingle, max) ->
-    if file.size > max
-      QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
-      return
-    if isSingle
-      post = QR.selected
-    else if (post = QR.posts[QR.posts.length - 1]).file
-      post = new QR.post()
-    if /^text/.test file.type
-      post.pasteText file
-    else
-      post.setFile file
   openFileInput: (e) ->
     e.stopPropagation()
     if e.shiftKey and e.type is 'click'
@@ -458,15 +504,21 @@ QR =
     setNode 'fileInput',     '[type=file]'
     
     rules = $('ul.rules').textContent.trim()
-    QR.min_width = QR.min_heigth = 1
-    QR.max_width = QR.max_heigth = 5000
+    QR.min_width = QR.min_height = 1
+    QR.max_width = QR.max_height = 10000
     try
-      [_, QR.min_width, QR.min_heigth] = rules.match(/.+smaller than (\d+)x(\d+).+/)
-      [_, QR.max_width, QR.max_heigth] = rules.match(/.+greater than (\d+)x(\d+).+/)
+      [_, QR.min_width, QR.min_height] = rules.match(/.+smaller than (\d+)x(\d+).+/)
+      [_, QR.max_width, QR.max_height] = rules.match(/.+greater than (\d+)x(\d+).+/)
+      for prop in ['min_width', 'min_height', 'max_width', 'max_height']
+        QR[prop] = parseInt QR[prop], 10
     catch
       null
 
     nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
+
+    QR.max_size_video = 3145728
+    QR.max_width_video = QR.max_height_video = 2048
+    QR.max_duration_video = 120
 
     QR.spoiler = !!$ 'input[name=spoiler]'
     if QR.spoiler
@@ -674,9 +726,6 @@ QR =
       onerror: ->
         # Connection error, or www.4chan.org/banned
         delete QR.req
-        if QR.captcha.isEnabled
-          QR.captcha.destroy()
-          QR.captcha.setup()
         post.unlock()
         QR.cooldown.auto = false
         QR.status()
@@ -710,7 +759,6 @@ QR =
     {req} = QR
     delete QR.req
 
-    QR.captcha.destroy() if QR.captcha.isEnabled
     post = QR.posts[0]
     post.unlock()
 
@@ -742,12 +790,23 @@ QR =
           err = 'You seem to have mistyped the CAPTCHA.'
         else if /expired/i.test err.textContent
           err = 'This CAPTCHA is no longer valid because it has expired.'
-        QR.cooldown.auto = false
+        # Enable auto-post if we have some cached captchas.
+        QR.cooldown.auto = if QR.captcha.isEnabled
+          !!QR.captcha.captchas.length
+        else if err is 'Connection error with sys.4chan.org.'
+          true
+        else
+          # Something must've gone terribly wrong if you get captcha errors without captchas.
+          # Don't auto-post indefinitely in that case.
+          false
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
         QR.cooldown.set delay: 2
       else if err.textContent and m = err.textContent.match /wait\s+(\d+)\s+second/i
-        QR.cooldown.auto = !QR.captcha.isEnabled
+        QR.cooldown.auto = if QR.captcha.isEnabled
+          !!QR.captcha.captchas.length
+        else
+          true
         QR.cooldown.set delay: m[1]
       else # stop auto-posting
         QR.cooldown.auto = false
@@ -788,12 +847,23 @@ QR =
     # Enable auto-posting if we have stuff left to post, disable it otherwise.
     postsCount = QR.posts.length - 1
     QR.cooldown.auto = postsCount and isReply
-    QR.captcha.setup() if QR.captcha.isEnabled and QR.cooldown.auto
+    if QR.cooldown.auto and QR.captcha.isEnabled and (captchasCount = QR.captcha.captchas.length) < 3 and captchasCount < postsCount
+      notif = new Notification 'Quick reply warning',
+        body: "You are running low on cached captchas. Cache count: #{captchasCount}."
+        icon: Favicon.logo
+      notif.onclick = ->
+        QR.open()
+        QR.captcha.nodes.input.focus()
+        window.focus()
+      notif.onshow = ->
+        setTimeout ->
+          notif.close()
+        , 7 * $.SECOND
 
     unless Conf['Persistent QR'] or QR.cooldown.auto
       QR.close()
     else
-      if QR.posts.length > 1
+      if QR.posts.length > 1 and QR.captcha.isEnabled and QR.captcha.captchas.length is 0
         QR.captcha.setup()
       post.rm()
 

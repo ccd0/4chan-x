@@ -3,6 +3,130 @@
 - Better handling of webm playback errors.
 - Bugfixes
 
+### v1.7.27 
+*2014-05-02*
+
+**ccd0**
+- Update due to more Recaptcha changes.
+
+### v1.7.26 
+*2014-05-02*
+
+**woxxy**
+Remove /v/ from stable Foolz archive.
+
+### v1.7.25 
+*2014-05-01*
+
+**ccd0**
+- For single files, file errors are reported but no longer stop you from attempting to post. Files with errors are still removed when posting multiple files.
+- Fix small bugs in file checking, uploading from URLs.
+- WebM files are checked for audio before posting (Firefox only).
+- Max resolution updated, now 10000x10000.
+
+### v1.7.24 
+*2014-04-30*
+
+**ccd0**
+- Fix bug where multiple images selected for posting were out of order.
+- Check dimensions and duration of .webm files before posting.
+
+### v1.7.23 
+*2014-04-29*
+
+**ccd0**
+- Partly restore Mayhem's captcha changes reverted in last version. Captchas are now destroyed after posting instead of reloaded, unless `Auto-load captcha` is checked. Captcha caching is still enabled.
+- Update for changes in Recaptcha, in particular `Recaptcha.reload("t")` no longer working.
+- Various captcha-related bugfixes.
+- Thumbnails for .webm files in Quick Reply.
+
+### v1.7.22 
+*2014-04-27*
+
+**ccd0**
+- Revert captcha fixes of 1.4.2 as Google appears to have reverted the changes on its end. This restores captcha caching.
+
+### v1.7.21 
+*2014-04-27*
+
+**ccd0**
+- Quick fix for moot breaking captcha.
+
+### v1.7.20 
+*2014-04-27*
+
+**ccd0**
+- Fix features broken/disabled in catalog: settings link, thread watcher, start thread button, and keybinds.
+
+### v1.7.19 
+*2014-04-25*
+
+**fgts**
+- Update archive list.
+
+### v1.7.18 
+*2014-04-20*
+
+**ccd0**
+- CSS bugfix.
+
+### v1.7.17 
+*2014-04-20*
+
+**ccd0**
+- More bugfixes.
+- Restore `Comment Expansion`.
+
+### v1.7.16 
+*2014-04-19*
+
+**ccd0**
+- Another update to handle HTML changes.
+
+### v1.7.15 
+*2014-04-19*
+
+**ccd0**
+- Fix Unread Line (broken in 1.7.11)
+
+### v1.7.14 
+*2014-04-19*
+
+**ccd0**
+- Use new URLs.
+
+### v1.7.13 
+*2014-04-19*
+
+**ccd0**
+- More fixes for new HTML.
+
+### v1.7.12 
+*2014-04-19*
+
+**ccd0**
+- Fix conflict of previous version with Exlinks.
+
+### v1.7.11 
+*2014-04-19*
+
+**ccd0**
+- Start transition to new HTML.
+
+### v1.7.10 
+*2014-04-17*
+
+**ccd0**
+- Change Shift+arrow default keybinds Ctrl+arrow to avoid conflict with text selection
+- Fix (You) in backlinks.
+
+### v1.7.9 
+*2014-04-13*
+
+**ccd0**
+- Bugfixes in JSON navigation and embedding.
+- More work toward compatibility with new URLs.
+
 ### v1.7.8 
 *2014-04-12*
 

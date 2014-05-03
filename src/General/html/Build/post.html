@@ -1,0 +1,36 @@
+"""#{if isOP then '' else "<div class=sideArrows id=sa#{postID}>&gt;&gt;</div>"}
+<div id=p#{postID} class='post #{if isOP then 'op' else 'reply'}#{
+  if capcodeIcon is 'admin_highlight' then
+    ' highlightPost'
+  else
+    ''
+}'>
+
+  #{if isOP then fileHTML else ''}
+
+  <div class='postInfo' id=pi#{postID}>
+    <input type=checkbox name=#{postID} value=delete>
+    #{' '}<span class=subject>#{subject or ''}</span>#{' '}
+    <span class='nameBlock#{capcodeClass}'>
+      #{emailStart}
+      <span class=name>#{name or ''}</span>
+      #{tripcode + capcodeStart + emailEnd + capcodeIcon + userID + flag}
+    </span>#{" "}
+    <span class=dateTime data-utc=#{dateUTC}>#{date}</span>#{' '}
+    <span class='postNum'>
+    <a href=#{"/#{boardID}/thread/#{threadID}#p#{postID}"} title='Highlight this post'>No.</a>
+    <a href='#{
+      if g.VIEW is 'thread' and g.THREADID is +threadID then
+        "javascript:quote(#{postID})"
+      else
+        "/#{boardID}/thread/#{threadID}#q#{postID}"
+      }' title='Quote this post'>#{postID}</a>
+      #{pageIcon + sticky + closed + replyLink}
+    </span>
+  </div>
+
+  #{if isOP then '' else fileHTML}
+
+  <blockquote class=postMessage id=m#{postID}>#{comment or ''}</blockquote>#{' '}
+
+</div>"""

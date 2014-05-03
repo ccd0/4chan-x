@@ -181,8 +181,6 @@ Build =
       pageNum   = Index.liveThreadData.keys.indexOf("#{postID}") // Index.threadsNumPerPage
       pageIcon  = " <span class=page-num title='This thread is on page #{pageNum} in the original index.'>Page #{pageNum}</span>"
       replyLink = " &nbsp; <span>[<a href='/#{boardID}/thread/#{threadID}' class=replylink>Reply</a>]</span>"
-    else
-      pageIcon = replyLink = ''
 
     container = $.el 'div',
       id: "pc#{postID}"
@@ -225,6 +223,7 @@ Build =
 
       '</div>'
 
+    # Fix pathnames
     for quote in $$ '.quotelink', container
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote, or board link

@@ -91,8 +91,6 @@ QR.post = class
     return unless @ is QR.selected
     for name in ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler', 'flag'] when node = QR.nodes[name]
       node.disabled = lock
-    if QR.captcha.isEnabled
-      QR.captcha.nodes.input.disabled = lock
     @nodes.rm.style.visibility = if lock then 'hidden' else ''
     (if lock then $.off else $.on) QR.nodes.filename.previousElementSibling, 'click', QR.openFileInput
     @nodes.spoiler.disabled = lock
@@ -167,27 +165,32 @@ QR.post = class
       @showFileData()
     else
       @updateFilename()
-    unless /^image/.test file.type
+    unless /^(image|video)\//.test file.type
       @nodes.el.style.backgroundImage = null
       return
     @setThumbnail()
 
   setThumbnail: ->
     # Create a redimensioned thumbnail.
-    img = $.el 'img'
+    isVideo = /^video\//.test @file.type
+    img = $.el (if isVideo then 'video' else 'img')
 
-    img.onload = =>
+    $.on img, (if isVideo then 'loadeddata' else 'load'), =>
       # Generate thumbnails only if they're really big.
       # Resized pictures through canvases look like ass,
       # so we generate thumbnails `s` times bigger then expected
       # to avoid crappy resized quality.
       s = 90 * 2 * window.devicePixelRatio
       s *= 3 if @file.type is 'image/gif' # let them animate
-      {height, width} = img
-      if height < s or width < s
-        @URL = fileURL
-        @nodes.el.style.backgroundImage = "url(#{@URL})"
-        return
+      if isVideo
+        height = img.videoHeight
+        width = img.videoWidth
+      else
+        {height, width} = img
+        if height < s or width < s
+          @URL = fileURL
+          @nodes.el.style.backgroundImage = "url(#{@URL})"
+          return
       if height <= width
         width  = s / height * width
         height = s

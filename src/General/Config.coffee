@@ -37,6 +37,10 @@ Config =
         true
         'Display dates like "3 minutes ago". Tooltip shows the timestamp.'
       ]
+      'Comment Expansion': [
+        true
+        'Add buttons to expand too long comments.'
+      ]
       'File Info Formatting': [
         true
         'Reformat the file information.'
@@ -339,7 +343,7 @@ Config =
       ]
       'Auto-load captcha': [
         false
-        'Automatically load the captcha when you open a thread'
+        'Automatically load the captcha when you open a thread, and reload it after you post.'
       ]
 
     'Quote Links':
@@ -671,19 +675,19 @@ vp-replace
     ]
     # Board Navigation
     'Front page': [
-      '0'
+      '1'
       'Jump to front page.'
     ]
     'Open front page': [
-      'Shift+0'
+      'Shift+1'
       'Open front page in a new tab.'
     ]
     'Next page': [
-      'Shift+Right'
+      'Ctrl+Right'
       'Jump to the next page.'
     ]
     'Previous page': [
-      'Shift+Left'
+      'Ctrl+Left'
       'Jump to the previous page.'
     ]
     'Search form': [
@@ -708,11 +712,11 @@ vp-replace
     ]
     # Thread Navigation
     'Next thread': [
-      'Shift+Down'
+      'Ctrl+Down'
       'See next thread.'
     ]
     'Previous thread': [
-      'Shift+Up'
+      'Ctrl+Up'
       'See previous thread.'
     ]
     'Expand thread': [

@@ -130,8 +130,8 @@ Navigate =
 
   updateBoard: (boardID) ->
     fullBoardList   = $ '#full-board-list', Header.boardList
-    $.rmClass $('.current', fullBoardList), 'current'
-    $.addClass $("a[href*='/#{boardID}/']", fullBoardList), 'current'
+    $.rmClass  current, 'current' if current = $ '.current',                fullBoardList
+    $.addClass current, 'current' if current = $ "a[href*='/#{boardID}/']", fullBoardList
     Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
 
     QR.flagsInput()
@@ -232,7 +232,7 @@ Navigate =
     if threadID
       view = 'thread'
     else
-      pageNum = +view
+      pageNum = +view or 1 # string to number, '' to 1
       view = 'index' # path is "/boardID/". See the problem?
 
     path = @pathname
@@ -263,7 +263,7 @@ Navigate =
 
     # Moving from index to thread or thread to thread
     {load} = Navigate
-    Navigate.req = $.ajax "//a.4cdn.org/#{boardID}/res/#{threadID}.json",
+    Navigate.req = $.ajax "//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
       onabort:   load
       onloadend: load
 

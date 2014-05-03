@@ -191,7 +191,7 @@ Gallery =
       if src[2] is 'i.4cdn.org'
         URL = Redirect.to 'file',
           boardID:  src[3]
-          filename: src[5]
+          filename: src[src.length - 1]
         if URL
           thumb.href = URL
           return unless Gallery.nodes.current is img
@@ -200,8 +200,8 @@ Gallery =
         if g.DEAD or post.isDead or post.file.isDead
           return
 
-      # XXX CORS for images.4chan.org WHEN?
-      $.ajax "//a.4cdn.org/#{post.board}/res/#{post.thread}.json", onload: ->
+      # XXX CORS for i.4cdn.org WHEN?
+      $.ajax "//a.4cdn.org/#{post.board}/thread/#{post.thread}.json", onload: ->
         return if @status isnt 200
         i = 0
         {posts} = @response

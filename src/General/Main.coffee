@@ -18,6 +18,9 @@ Main =
       return Index.catalogSwitch()
     if g.VIEW is 'thread'
       g.THREADID = +pathname[3]
+      if pathname[2] isnt 'thread' or pathname.length > 4
+        pathname[2] = 'thread'
+        history.replaceState null, '', pathname.slice(0,4).join('/') + location.hash
 
     # flatten Config into Conf
     # and get saved or default values

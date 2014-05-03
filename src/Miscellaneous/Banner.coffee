@@ -1,7 +1,7 @@
 Banner =
   init: ->
     $.asap (-> d.body), ->
-      $.asap (-> $ '.abovePostForm'), Banner.ready
+      $.asap (-> $ 'hr'), Banner.ready
 
   ready: ->
     banner = $ ".boardBanner"
@@ -9,7 +9,7 @@ Banner =
 
     for child, i in children
       if i is 0
-        child.id = "Banner"
+        child.id    = "Banner"
         child.title = "Click to change"
         $.on child, 'click error', Banner.cb.toggle
 

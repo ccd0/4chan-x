@@ -127,6 +127,7 @@ Index =
 
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
       $.rm navLink for navLink in $$ '.navLinks'
+      $.id('search-box')?.parentNode.remove()
       $.after $.x('child::form/preceding-sibling::hr[1]'), Index.navLinks
 
       return if g.VIEW isnt 'index'
@@ -152,9 +153,7 @@ Index =
   scroll: ->
     return if Index.req or Conf['Index Mode'] isnt 'infinite' or (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
     Index.currentPage = (Index.currentPage or Index.getCurrentPage()) + 1 # Avoid having to pushState to keep track of the current page
-
     return Index.endNotice() if Index.currentPage >= Index.pagesNum
-
     Index.buildIndex true
 
   endNotice: do ->
@@ -401,10 +400,10 @@ Index =
   getCurrentPage: ->
     if Conf['Index Mode'] is 'infinite' and Index.currentPage
       return Index.currentPage
-    +window.location.pathname.split('/')[2]
+    +window.location.pathname.split('/')[2] or 1
 
   userPageNav: (pageNum) ->
-    Navigate.pushState if pageNum is 0 then './' else pageNum
+    Navigate.pushState if pageNum is 1 then './' else pageNum
     if Conf['Refreshed Navigation'] and Conf['Index Mode'] isnt 'all pages'
       Index.update pageNum
     else
@@ -431,20 +430,22 @@ Index =
     Math.ceil Index.sortedThreads.length / Index.getThreadsNumPerPage()
 
   getMaxPageNum: ->
-    Math.max 0, Index.getPagesNum() - 1
-
+    min = 1
+    max = +Index.getPagesNum()
+    if min < max then max else
+      min
   togglePagelist: ->
     Index.pagelist.hidden = Conf['Index Mode'] isnt 'paged'
 
   buildPagelist: ->
     pagesRoot = $ '.pages', Index.pagelist
     maxPageNum = Index.getMaxPageNum()
-    if pagesRoot.childElementCount isnt maxPageNum + 1
+    if pagesRoot.childElementCount isnt maxPageNum
       nodes = []
-      for i in [0..maxPageNum] by 1
+      for i in [1..maxPageNum] by 1
         a = $.el 'a',
           textContent: i
-          href: if i then i else './'
+          href: if i is 1 then './' else i
         nodes.push $.tn('['), a, $.tn '] '
       $.rmAll pagesRoot
       $.add pagesRoot, nodes
@@ -457,11 +458,11 @@ Index =
     # Previous/Next buttons
     prev = pagesRoot.previousSibling.firstChild
     next = pagesRoot.nextSibling.firstChild
-    href = Math.max pageNum - 1, 0
-    prev.href = if href is 0 then './' else href
+    href = Math.max pageNum - 1, 1
+    prev.href = if href is 1 then './' else href
     prev.firstChild.disabled = href is pageNum
     href = Math.min pageNum + 1, maxPageNum
-    next.href = if href is 0 then './' else href
+    next.href = if href is 1 then './' else href
     next.firstChild.disabled = href is pageNum
     # <strong> current page
     if strong = $ 'strong', pagesRoot
@@ -469,7 +470,7 @@ Index =
       $.replace strong, strong.firstChild
     else
       strong = $.el 'strong'
-    return unless a = pagesRoot.children[pageNum] # If coming in from a Navigate.navigate, this could break.
+    return unless a = pagesRoot.children[pageNum - 1] # If coming in from a Navigate.navigate, this could break.
     $.before a, strong
     $.add strong, a
 
@@ -494,7 +495,7 @@ Index =
       return
     unless d.readyState is 'loading' or Index.root.parentElement
       $.replace $('.board'), Index.root
-    Index.currentPage = 0
+    Index.currentPage = 1
     Index.req?.abort()
     Index.notice?.close()
     
@@ -545,7 +546,7 @@ Index =
     Navigate.title()
 
     try
-      pageNum or= 0
+      pageNum or= 1
       if req.status is 200
         Index.parse req.response, pageNum
       else if req.status is 304
@@ -779,7 +780,7 @@ Index =
       unless Index.searchInput.dataset.searching
         Index.searchInput.dataset.searching = 1
         Index.pageBeforeSearch = Index.getCurrentPage()
-        Index.setPage pageNum = 0
+        Index.setPage pageNum = 1
       else
         unless Conf['Index Mode'] is 'infinite'
           pageNum = Index.getCurrentPage()

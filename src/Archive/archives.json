@@ -5,7 +5,7 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["a", "biz", "co", "diy", "gd", "jp", "m", "sci", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
+  "boards": ["a", "biz", "co", "diy", "gd", "jp", "m", "sci", "sp", "tg", "tv", "vg", "vp", "vr", "wsg"],
   "files": ["a", "biz", "gd", "diy", "jp", "m", "sci", "tg", "vg", "vp", "vr", "wsg"]
 }, {
   "uid": 1,
@@ -95,8 +95,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["cm", "h", "hc", "hm", "r", "s", "soc", "y"],
-  "files": ["cm", "h", "hc", "hm", "r", "s", "soc", "y"]
+  "boards": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"],
+  "files": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"]
 }, {
   "uid": 16,
   "name": "maware",
