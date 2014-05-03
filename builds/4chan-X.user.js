@@ -140,7 +140,6 @@
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
         'Time Formatting': [true, 'Localize and format timestamps.'],
         'Relative Post Dates': [true, 'Display dates like "3 minutes ago". Tooltip shows the timestamp.'],
-        'Comment Expansion': [true, 'Add buttons to expand too long comments.'],
         'File Info Formatting': [true, 'Reformat the file information.'],
         'Thread Expansion': [true, 'Add buttons to expand threads.'],
         'Comment Expansion': [false, 'Expand Comments that are too long to display on the index. Does not work with JSON Navigation.'],

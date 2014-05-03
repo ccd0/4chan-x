@@ -37,10 +37,6 @@ Config =
         true
         'Display dates like "3 minutes ago". Tooltip shows the timestamp.'
       ]
-      'Comment Expansion': [
-        true
-        'Add buttons to expand too long comments.'
-      ]
       'File Info Formatting': [
         true
         'Reformat the file information.'
