@@ -8658,7 +8658,9 @@
       var enabled;
       enabled = Conf['prefetch'] = this.checked;
       if (enabled) {
-        g.BOARD.posts.forEach(ImageLoader.node.call);
+        g.BOARD.posts.forEach(function(post) {
+          return ImageLoader.node.call(post);
+        });
       }
     }
   };
