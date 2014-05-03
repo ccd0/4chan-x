@@ -806,8 +806,7 @@ span.hide-announcement {
 
 /* QR */
 :root.hide-original-post-form #postForm,
-:root.hide-original-post-form .postingMode,
-:root.hide-original-post-form #togglePostForm,
+:root.hide-original-post-form #togglePostFormLink,
 #qr.autohide:not(.focus):not(:hover):not(:active) > form,
 .thread #qr select[data-name=thread],
 #file-n-submit:not(.has-file) #qr-filerm {
