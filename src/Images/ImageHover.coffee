@@ -20,15 +20,9 @@ ImageHover =
     else
       Get.postFromNode @
     {isVideo} = post.file
-    if post.file.fullImage
-      el = post.file.fullImage
-      el.className = ''
-      TrashQueue.remove el
-    else
-      el = $.el (if isVideo then 'video' else 'img'),
-        src: post.file.URL
-      post.file.fullImage = el
-      {thumb} = post.file
+    el = $.el (if isVideo then 'video' else 'img'),
+      src: post.file.URL
+    {thumb} = post.file
       
     if d.body.contains thumb
       $.after thumb, el unless el is thumb.nextSibling

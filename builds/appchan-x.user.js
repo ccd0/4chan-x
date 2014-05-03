@@ -11191,17 +11191,10 @@
       var el, isVideo, post, thumb;
       post = $.hasClass(this, 'thumb') ? g.posts[this.parentNode.dataset.fullID] : Get.postFromNode(this);
       isVideo = post.file.isVideo;
-      if (post.file.fullImage) {
-        el = post.file.fullImage;
-        el.className = '';
-        TrashQueue.remove(el);
-      } else {
-        el = $.el((isVideo ? 'video' : 'img'), {
-          src: post.file.URL
-        });
-        post.file.fullImage = el;
-        thumb = post.file.thumb;
-      }
+      el = $.el((isVideo ? 'video' : 'img'), {
+        src: post.file.URL
+      });
+      thumb = post.file.thumb;
       if (d.body.contains(thumb)) {
         if (el !== thumb.nextSibling) {
           $.after(thumb, el);
