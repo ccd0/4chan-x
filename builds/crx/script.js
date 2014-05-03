@@ -18359,7 +18359,7 @@
           return window.open('//sys.4chan.org/auth', 'This will steal your data.', 'left=0,top=0,width=500,height=255,toolbar=0,resizable=0');
         });
         $.before(styleSelector.previousSibling, [$.tn('['), passLink, $.tn(']\u00A0\u00A0')]);
-        $('link[href*="mobile"', d.head).disabled = true;
+        $('link[href*="mobile"]', d.head).disabled = true;
       }
       if (!Conf['JSON Navigation'] || g.VIEW === 'thread') {
         Main.initThread();
