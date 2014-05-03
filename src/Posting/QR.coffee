@@ -82,7 +82,7 @@ QR =
   node: ->
     if QR.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
       $.addClass @nodes.root, 'your-post'
-    $.on $('a[title="Quote this post"]', @nodes.info), 'click', QR.quote
+    $.on $('a[title="Reply to this post"]', @nodes.info), 'click', QR.quote
 
   persist: ->
     return unless QR.postingIsEnabled

@@ -976,7 +976,7 @@
         title: type,
         className: "" + typeLC + "Icon"
       });
-      root = type === 'Closed' && this.isSticky ? $('.stickyIcon', this.OP.nodes.info) : g.VIEW === 'index' ? $('.page-num', this.OP.nodes.info) : $('[title="Quote this post"]', this.OP.nodes.info);
+      root = type === 'Closed' && this.isSticky ? $('.stickyIcon', this.OP.nodes.info) : g.VIEW === 'index' ? $('.page-num', this.OP.nodes.info) : $('[title="Reply to this post"]', this.OP.nodes.info);
       $.after(root, [$.tn(' '), icon]);
       if (!this.catalogView) {
         return;
@@ -3780,7 +3780,7 @@
       container = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: (isOP ? '' : "<div class=sideArrows>&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + (isOP ? fileHTML : '') + "<div class=postInfo>" + ("<input type=checkbox name=" + postID + " value=delete> ") + ("<span class=subject>" + (subject || '') + "</span> ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcodeIcon + userID + flag + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum'>" + ("<a href=" + (Build.path(boardID, threadID, postID)) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === threadID ? "javascript:quote(" + postID + ")" : Build.path(boardID, threadID, postID, 'q')) + "' title='Quote this post'>" + postID + "</a>") + pageIcon + sticky + closed + replyLink + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage>" + (comment || '') + "</blockquote> ") + '</div>'
+        innerHTML: (isOP ? '' : "<div class=sideArrows>&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + (isOP ? fileHTML : '') + "<div class=postInfo>" + ("<input type=checkbox name=" + postID + " value=delete> ") + ("<span class=subject>" + (subject || '') + "</span> ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcodeIcon + userID + flag + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum'>" + ("<a href=" + (Build.path(boardID, threadID, postID)) + " title='Link to this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === threadID ? "javascript:quote(" + postID + ")" : Build.path(boardID, threadID, postID, 'q')) + "' title='Reply to this post'>" + postID + "</a>") + pageIcon + sticky + closed + replyLink + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage>" + (comment || '') + "</blockquote> ") + '</div>'
       });
       _ref = $$('.quotelink', container);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -6051,7 +6051,7 @@
       })) {
         $.addClass(this.nodes.root, 'your-post');
       }
-      return $.on($('a[title="Quote this post"]', this.nodes.info), 'click', QR.quote);
+      return $.on($('a[title="Reply to this post"]', this.nodes.info), 'click', QR.quote);
     },
     persist: function() {
       if (!QR.postingIsEnabled) {

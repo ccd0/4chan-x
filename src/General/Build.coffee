@@ -214,13 +214,13 @@ Build =
           ' </span> ' +
           "<span class=dateTime data-utc=#{dateUTC}>#{date}</span> " +
           "<span class='postNum'>" +
-            "<a href=#{Build.path boardID, threadID, postID} title='Highlight this post'>No.</a>" +
+            "<a href=#{Build.path boardID, threadID, postID} title='Link to this post'>No.</a>" +
             "<a href='#{
               if g.VIEW is 'thread' and g.THREADID is threadID
                 "javascript:quote(#{postID})"
               else
                 Build.path boardID, threadID, postID, 'q'
-              }' title='Quote this post'>#{postID}</a>" +
+              }' title='Reply to this post'>#{postID}</a>" +
             pageIcon + sticky + closed + replyLink +
           '</span>' +
         '</div>' +
