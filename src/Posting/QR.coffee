@@ -356,8 +356,9 @@ QR =
     $.addClass QR.nodes.el, 'dump' unless files.length is 1
 
   handleFile: (file, index, nfiles) ->
+    isSingle = nfiles is 1
     if /^text\//.test file.type
-      if nfiles is 1
+      if isSingle
         post = QR.selected
       else if index isnt 0 or (post = QR.posts[QR.posts.length - 1]).com
         post = new QR.post()
@@ -365,14 +366,14 @@ QR =
       return
     unless file.type in QR.mimeTypes
       QR.error "#{file.name}: Unsupported file type."
-      return unless nfiles is 1
+      return unless isSingle
     max = QR.nodes.fileInput.max
     max = Math.min(max, QR.max_size_video) if /^video\//.test file.type
     if file.size > max
       QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
-      return unless nfiles is 1
+      return unless isSingle
     isNewPost = false
-    if nfiles is 1
+    if isSingle
       post = QR.selected
     else if index isnt 0 or (post = QR.posts[QR.posts.length - 1]).file
       isNewPost = true
@@ -382,7 +383,7 @@ QR =
     else
       post.setFile file
     QR.checkDimensions file, (pass) ->
-      if pass or nfiles is 1
+      if pass or isSingle
         post.setFile file
       else if isNewPost
         post.rm()
@@ -390,7 +391,7 @@ QR =
   checkDimensions: (file, cb) ->
     if /^image\//.test file.type
       img = new Image()
-      img.onload = =>
+      img.onload = ->
         {height, width} = img
         pass = true
         if height > QR.max_height or width > QR.max_width
@@ -403,8 +404,8 @@ QR =
       img.src = URL.createObjectURL file
     else if /^video\//.test file.type
       video = $.el 'video'
-      $.on video, 'loadedmetadata', =>
-        return unless cb?
+      $.on video, 'loadedmetadata', ->
+        return unless cb
         {videoHeight, videoWidth, duration} = video
         max_height = Math.min(QR.max_height, QR.max_height_video)
         max_width = Math.min(QR.max_width, QR.max_width_video)
@@ -428,8 +429,8 @@ QR =
         <% } %>
         cb pass
         cb = null
-      $.on video, 'error', =>
-        return unless cb?
+      $.on video, 'error', ->
+        return unless cb
         if file.type in QR.mimeTypes
           # only report error here if we should have been able to play the video
           # otherwise "unsupported type" should already have been shown

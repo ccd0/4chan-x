@@ -6370,9 +6370,10 @@
       }
     },
     handleFile: function(file, index, nfiles) {
-      var isNewPost, max, post, _ref;
+      var isNewPost, isSingle, max, post, _ref;
+      isSingle = nfiles === 1;
       if (/^text\//.test(file.type)) {
-        if (nfiles === 1) {
+        if (isSingle) {
           post = QR.selected;
         } else if (index !== 0 || (post = QR.posts[QR.posts.length - 1]).com) {
           post = new QR.post();
@@ -6382,7 +6383,7 @@
       }
       if (_ref = file.type, __indexOf.call(QR.mimeTypes, _ref) < 0) {
         QR.error("" + file.name + ": Unsupported file type.");
-        if (nfiles !== 1) {
+        if (!isSingle) {
           return;
         }
       }
@@ -6392,12 +6393,12 @@
       }
       if (file.size > max) {
         QR.error("" + file.name + ": File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(max)) + ").");
-        if (nfiles !== 1) {
+        if (!isSingle) {
           return;
         }
       }
       isNewPost = false;
-      if (nfiles === 1) {
+      if (isSingle) {
         post = QR.selected;
       } else if (index !== 0 || (post = QR.posts[QR.posts.length - 1]).file) {
         isNewPost = true;
@@ -6409,7 +6410,7 @@
         post.setFile(file);
       }
       return QR.checkDimensions(file, function(pass) {
-        if (pass || nfiles === 1) {
+        if (pass || isSingle) {
           return post.setFile(file);
         } else if (isNewPost) {
           return post.rm();
@@ -6420,72 +6421,66 @@
       var img, video;
       if (/^image\//.test(file.type)) {
         img = new Image();
-        img.onload = (function(_this) {
-          return function() {
-            var height, pass, width;
-            height = img.height, width = img.width;
-            pass = true;
-            if (height > QR.max_height || width > QR.max_width) {
-              QR.error("" + file.name + ": Image too large (image: " + height + "x" + width + "px, max: " + QR.max_height + "x" + QR.max_width + "px)");
-              pass = false;
-            }
-            if (height < QR.min_height || width < QR.min_width) {
-              QR.error("" + file.name + ": Image too small (image: " + height + "x" + width + "px, min: " + QR.min_height + "x" + QR.min_width + "px)");
-              pass = false;
-            }
-            return cb(pass);
-          };
-        })(this);
+        img.onload = function() {
+          var height, pass, width;
+          height = img.height, width = img.width;
+          pass = true;
+          if (height > QR.max_height || width > QR.max_width) {
+            QR.error("" + file.name + ": Image too large (image: " + height + "x" + width + "px, max: " + QR.max_height + "x" + QR.max_width + "px)");
+            pass = false;
+          }
+          if (height < QR.min_height || width < QR.min_width) {
+            QR.error("" + file.name + ": Image too small (image: " + height + "x" + width + "px, min: " + QR.min_height + "x" + QR.min_width + "px)");
+            pass = false;
+          }
+          return cb(pass);
+        };
         return img.src = URL.createObjectURL(file);
       } else if (/^video\//.test(file.type)) {
         video = $.el('video');
-        $.on(video, 'loadedmetadata', (function(_this) {
-          return function() {
-            var duration, max_height, max_width, pass, videoHeight, videoWidth;
-            if (cb == null) {
-              return;
-            }
-            videoHeight = video.videoHeight, videoWidth = video.videoWidth, duration = video.duration;
-            max_height = Math.min(QR.max_height, QR.max_height_video);
-            max_width = Math.min(QR.max_width, QR.max_width_video);
-            pass = true;
-            if (videoHeight > max_height || videoWidth > max_width) {
-              QR.error("" + file.name + ": Video too large (video: " + videoHeight + "x" + videoWidth + "px, max: " + max_height + "x" + max_width + "px)");
-              pass = false;
-            }
-            if (videoHeight < QR.min_height || videoWidth < QR.min_width) {
-              QR.error("" + file.name + ": Video too small (video: " + videoHeight + "x" + videoWidth + "px, min: " + QR.min_height + "x" + QR.min_width + "px)");
-              pass = false;
-            }
-            if (!isFinite(video.duration)) {
-              QR.error("" + file.name + ": Video lacks duration metadata (try remuxing)");
-              pass = false;
-            }
-            if (duration > QR.max_duration_video) {
-              QR.error("" + file.name + ": Video too long (video: " + duration + "s, max: " + QR.max_duration_video + "s)");
-              pass = false;
-            }
-            if (video.mozHasAudio) {
-              QR.error("" + file.name + ": Audio not allowed");
-              pass = false;
-            }
-            cb(pass);
-            return cb = null;
-          };
-        })(this));
-        $.on(video, 'error', (function(_this) {
-          return function() {
-            var _ref;
-            if (cb == null) {
-              return;
-            }
-            if (_ref = file.type, __indexOf.call(QR.mimeTypes, _ref) >= 0) {
-              QR.error("" + file.name + ": Video appears corrupt");
-            }
-            cb(false);
-            return cb = null;
-          };
-        })(this));
+        $.on(video, 'loadedmetadata', function() {
+          var duration, max_height, max_width, pass, videoHeight, videoWidth;
+          if (!cb) {
+            return;
+          }
+          videoHeight = video.videoHeight, videoWidth = video.videoWidth, duration = video.duration;
+          max_height = Math.min(QR.max_height, QR.max_height_video);
+          max_width = Math.min(QR.max_width, QR.max_width_video);
+          pass = true;
+          if (videoHeight > max_height || videoWidth > max_width) {
+            QR.error("" + file.name + ": Video too large (video: " + videoHeight + "x" + videoWidth + "px, max: " + max_height + "x" + max_width + "px)");
+            pass = false;
+          }
+          if (videoHeight < QR.min_height || videoWidth < QR.min_width) {
+            QR.error("" + file.name + ": Video too small (video: " + videoHeight + "x" + videoWidth + "px, min: " + QR.min_height + "x" + QR.min_width + "px)");
+            pass = false;
+          }
+          if (!isFinite(video.duration)) {
+            QR.error("" + file.name + ": Video lacks duration metadata (try remuxing)");
+            pass = false;
+          }
+          if (duration > QR.max_duration_video) {
+            QR.error("" + file.name + ": Video too long (video: " + duration + "s, max: " + QR.max_duration_video + "s)");
+            pass = false;
+          }
+          if (video.mozHasAudio) {
+            QR.error("" + file.name + ": Audio not allowed");
+            pass = false;
+          }
+          cb(pass);
+          return cb = null;
+        });
+        $.on(video, 'error', function() {
+          var _ref;
+          if (!cb) {
+            return;
+          }
+          if (_ref = file.type, __indexOf.call(QR.mimeTypes, _ref) >= 0) {
+            QR.error("" + file.name + ": Video appears corrupt");
+          }
+          cb(false);
+          return cb = null;
+        });
         return video.src = URL.createObjectURL(file);
       } else {
         return cb(true);
