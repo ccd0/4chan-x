@@ -1175,7 +1175,7 @@
 
     Post.prototype.parseQuote = function(quotelink) {
       var fullID, match;
-      if (!(match = quotelink.href.match(/boards\.4chan\.org\/([^\/]+)\/(?:res|thread)\/\d+#p(\d+)$/))) {
+      if (!(match = quotelink.href.match(/boards\.4chan\.org\/([^\/]+)\/(res|thread)\/\d+(.*)?\#p(\d+)$/))) {
         return;
       }
       this.nodes.quotelinks.push(quotelink);
@@ -1189,7 +1189,7 @@
     };
 
     Post.prototype.parseFile = function(that) {
-      var anchor, fileEl, fileText, nameNode, size, thumb, unit, _ref;
+      var anchor, fileEl, fileText, nameNode, size, thumb, unit;
       if (!((fileEl = $('.file', this.nodes.post)) && (thumb = $('img[data-md5]', fileEl)))) {
         return;
       }
@@ -1213,7 +1213,7 @@
       this.file.isImage = /(jpg|png|gif)$/i.test(this.file.URL);
       this.file.isVideo = /webm$/i.test(this.file.URL);
       if (this.file.isImage || this.file.isVideo) {
-        this.file.dimensions = (_ref = fileText.childNodes[2].textContent.match(/\d+x\d+/)) != null ? _ref[0] : void 0;
+        this.file.dimensions = fileText.childNodes[2].data.match(/\d+x\d+/)[0];
       }
       return this.file.name = !this.file.isSpoiler && (nameNode = $('a', fileText)) ? nameNode.title || nameNode.textContent : fileText.title;
     };
@@ -1225,7 +1225,7 @@
         node = _ref[_i];
         $.rm(node);
       }
-      _ref1 = $$('[id]', post);
+      _ref1 = $$('[id]:not(.exif)', post);
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         node = _ref1[_j];
         node.removeAttribute('id');
@@ -2926,8 +2926,8 @@
       toggleHiddenThreads: function() {
         $('#hidden-toggle a', Index.navLinks).textContent = (Index.showHiddenThreads = !Index.showHiddenThreads) ? 'Hide' : 'Show';
         Index.sort();
-        if (Conf['Index Mode'] === 'paged' && Index.getCurrentPage() > 0) {
-          return Index.pageNav(0);
+        if (Conf['Index Mode'] === 'paged' && Index.getCurrentPage() > 1) {
+          return Index.pageNav(1);
         } else {
           return Index.buildIndex();
         }
@@ -3010,7 +3010,7 @@
         if (Index.cb.indexNav(a, true)) {
           return;
         }
-        return Index.userPageNav(+a.pathname.split('/')[2]);
+        return Index.userPageNav(+a.pathname.split('/')[2] || 1);
       },
       headerNav: function(e) {
         var a, needChange, onSameIndex;
@@ -3077,7 +3077,7 @@
       if (Index.currentPage === pageNum && !Index.root.parentElement) {
         return;
       }
-      Navigate.pushState(pageNum === 0 ? './' : pageNum);
+      Navigate.pushState(pageNum === 1 ? './' : pageNum);
       return Index.pageLoad(pageNum);
     },
     pageLoad: function(pageNum) {
@@ -3322,7 +3322,7 @@
         var err, thread, threadRoot;
         threadRoot = Build.thread(g.BOARD, threadData);
         if (thread = g.BOARD.threads[threadData.no]) {
-          thread.setPage(Math.floor(i / Index.threadsNumPerPage));
+          thread.setPage(Math.floor(i / Index.threadsNumPerPage) + 1);
           thread.setCount('post', threadData.replies + 1, threadData.bumplimit);
           thread.setCount('file', threadData.images + !!threadData.ext, threadData.imagelimit);
           thread.setStatus('Sticky', !!threadData.sticky);
@@ -3517,7 +3517,7 @@
       switch (Conf['Index Mode']) {
         case 'paged':
         case 'infinite':
-          pageNum = Index.getCurrentPage();
+          pageNum = Index.getCurrentPage() - 1;
           threadsPerPage = Index.getThreadsNumPerPage();
           threads = [];
           i = threadsPerPage * pageNum;
@@ -3645,6 +3645,17 @@
         return n = (n + 1) % 3;
       };
     })(),
+    path: function(boardID, threadID, postID, fragment) {
+      var path;
+      path = "/" + boardID + "/thread/" + threadID;
+      if ((g.SLUG != null) && threadID === g.THREADID) {
+        path += "/" + g.SLUG;
+      }
+      if (postID) {
+        path += "#" + (fragment || 'p') + postID;
+      }
+      return path;
+    },
     postFromObject: function(data, boardID) {
       var o;
       o = {
@@ -3759,9 +3770,9 @@
       sticky = isSticky ? " <img src=" + staticPath + "sticky" + gifIcon + " title=Sticky class=stickyIcon>" : '';
       closed = isClosed ? " <img src=" + staticPath + "closed" + gifIcon + " title=Closed class=closedIcon>" : '';
       if (isOP && g.VIEW === 'index') {
-        pageNum = Math.floor(Index.liveThreadData.keys.indexOf("" + postID) / Index.threadsNumPerPage);
+        pageNum = Math.floor(Index.liveThreadData.keys.indexOf("" + postID) / Index.threadsNumPerPage) + 1;
         pageIcon = " <span class=page-num title='This thread is on page " + pageNum + " in the original index.'>Page " + pageNum + "</span>";
-        replyLink = " &nbsp; <span>[<a href='/" + boardID + "/thread/" + threadID + "' class=replylink>Reply</a>]</span>";
+        replyLink = " &nbsp; <span>[<a href='" + (Build.path(boardID, threadID)) + "' class=replylink>Reply</a>]</span>";
       } else {
         pageIcon = '';
         replyLink = '';
@@ -3769,19 +3780,16 @@
       container = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: (isOP ? '' : "<div class=sideArrows>&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + (isOP ? fileHTML : '') + "<div class=postInfo>" + ("<input type=checkbox name=" + postID + " value=delete> ") + ("<span class=subject>" + (subject || '') + "</span> ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcodeIcon + userID + flag + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum'>" + ("<a href=" + ("/" + boardID + "/thread/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/thread/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + pageIcon + sticky + closed + replyLink + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage>" + (comment || '') + "</blockquote> ") + '</div>'
+        innerHTML: (isOP ? '' : "<div class=sideArrows>&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + (isOP ? fileHTML : '') + "<div class=postInfo>" + ("<input type=checkbox name=" + postID + " value=delete> ") + ("<span class=subject>" + (subject || '') + "</span> ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcodeIcon + userID + flag + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum'>" + ("<a href=" + (Build.path(boardID, threadID, postID)) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === threadID ? "javascript:quote(" + postID + ")" : Build.path(boardID, threadID, postID, 'q')) + "' title='Quote this post'>" + postID + "</a>") + pageIcon + sticky + closed + replyLink + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage>" + (comment || '') + "</blockquote> ") + '</div>'
       });
       _ref = $$('.quotelink', container);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         href = quote.getAttribute('href');
-        if (href[0] === '/') {
+        if (href[0] !== '#') {
           continue;
         }
-        if (href[0] === '#') {
-          href = "" + threadID + href;
-        }
-        quote.href = "/" + boardID + "/thread/" + href;
+        quote.href = Build.path(boardID, threadID, href.slice(2));
       }
       return container;
     },
@@ -3796,7 +3804,7 @@
       return $.el('a', {
         className: 'summary',
         textContent: text.join(' '),
-        href: "/" + boardID + "/thread/" + threadID
+        href: Build.path(boardID, threadID)
       });
     },
     thread: function(board, data, full) {
@@ -3832,12 +3840,12 @@
       data = Index.liveThreadData[thread.ID];
       postCount = data.replies + 1;
       fileCount = data.images + !!data.ext;
-      pageCount = Math.floor(Index.liveThreadData.keys.indexOf("" + thread.ID) / Index.threadsNumPerPage);
+      pageCount = Math.floor(Index.liveThreadData.keys.indexOf("" + thread.ID) / Index.threadsNumPerPage) + 1;
       subject = thread.OP.info.subject ? "<div class='subject'>" + thread.OP.info.subject + "</div>" : '';
       comment = thread.OP.nodes.comment.innerHTML.replace(/(<br>\s*){2,}/g, '<br>');
       root = $.el('div', {
         className: 'catalog-thread',
-        innerHTML: "<a href=\"/" + thread.board + "/thread/" + thread.ID + "\" class=\"thumb\"></a><div class=\"thread-stats\" title=\"Post count / File count / Page count\"><span class=\"post-count\">" + postCount + "</span> / <span class=\"file-count\">" + fileCount + "</span> / <span class=\"page-count\">" + pageCount + "</span><span class=\"thread-icons\"></span></div>" + subject + "<div class=\"comment\">" + comment + "</div>"
+        innerHTML: "<a href=\"" + (Build.path(thread.board.ID, thread.ID)) + "\" class=\"thumb\"></a><div class=\"thread-stats\" title=\"Post count / File count / Page count\"><span class=\"post-count\">" + postCount + "</span> / <span class=\"file-count\">" + fileCount + "</span> / <span class=\"page-count\">" + pageCount + "</span><span class=\"thread-icons\"></span></div>" + subject + "<div class=\"comment\">" + comment + "</div>"
       });
       root.dataset.fullID = thread.fullID;
       if (thread.isPinned) {
@@ -5316,7 +5324,7 @@
       var a, frag, hash, text;
       frag = QuoteBacklink.frag.cloneNode(true);
       a = frag.lastElementChild;
-      a.href = "/" + quoter.board + "/thread/" + quoter.thread + "#p" + quoter;
+      a.href = Build.path(quoter.board.ID, quoter.thread.ID, quoter.ID);
       a.textContent = text = QuoteBacklink.funk(quoter.ID);
       if (quoter.isDead) {
         $.addClass(a, 'deadlink');
@@ -5888,7 +5896,7 @@
       quoteID = "" + boardID + "." + postID;
       if (post = g.posts[quoteID]) {
         a = $.el('a', {
-          href: "/" + boardID + "/thread/" + post.thread + "#p" + postID,
+          href: Build.path(boardID, post.thread.ID, postID),
           className: post.isDead ? 'quotelink deadlink' : 'quotelink',
           textContent: quote
         });
@@ -6222,7 +6230,7 @@
         _ref = $$('br', frag);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           node = _ref[_i];
-          if (node !== frag.lastElementChild) {
+          if (node !== frag.lastChild) {
             $.replace(node, $.tn('\n>'));
           }
         }
@@ -6910,7 +6918,7 @@
         isReply: isReply,
         threadID: threadID
       });
-      URL = threadID === postID ? "/" + g.BOARD + "/thread/" + threadID : g.VIEW === 'index' && !QR.cooldown.auto && Conf['Open Post in New Tab'] ? "/" + g.BOARD + "/thread/" + threadID + "#p" + postID : void 0;
+      URL = threadID === postID ? Build.path(g.BOARD.ID, threadID) : g.VIEW === 'index' && !QR.cooldown.auto && Conf['Open Post in New Tab'] ? Build.path(g.BOARD.ID, threadID, postID) : void 0;
       if (URL) {
         if (Conf['Open Post in New Tab']) {
           $.open(URL);
@@ -11120,7 +11128,7 @@
       }
       return Redirect.data = o;
     },
-    archives: [{"uid":0,"name":"Foolz","domain":"archive.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["a","biz","co","diy","gd","jp","m","sci","sp","tg","tv","vg","vp","vr","wsg"],"files":["a","biz","gd","diy","jp","m","sci","tg","vg","vp","vr","wsg"]},{"uid":1,"name":"NSFW Foolz","domain":"nsfw.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["u"],"files":["u"]},{"uid":2,"name":"The Dark Cave","domain":"archive.thedarkcave.org","http":true,"https":true,"software":"foolfuuka","boards":["c","int","out","po"],"files":["c","po"]},{"uid":3,"name":"4plebs Archive","domain":"archive.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["adv","hr","o","pol","s4s","tg","trv","tv","x"],"files":["adv","hr","o","pol","s4s","tg","trv","tv","x"]},{"uid":18,"name":"4plebs Flash Archive","domain":"flash.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["f"],"files":["f"]},{"uid":4,"name":"Nyafuu","domain":"archive.nyafuu.org","http":true,"https":true,"software":"foolfuuka","boards":["c","e","w","wg"],"files":["c","e","w","wg"]},{"uid":5,"name":"Love is Over","domain":"loveisover.me","http":true,"https":true,"software":"foolfuuka","boards":["d","i"],"files":["d","i"]},{"uid":8,"name":"Rebecca Black Tech","domain":"rbt.asia","http":true,"https":true,"software":"fuuka","boards":["cgl","g","mu","w"],"files":["cgl","g","mu","w"]},{"uid":9,"name":"Heinessen","domain":"archive.heinessen.com","http":true,"https":false,"software":"fuuka","boards":["an","fit","k","mlp","r9k","toy"],"files":["an","fit","k","r9k","toy"]},{"uid":10,"name":"warosu","domain":"fuuka.warosu.org","http":false,"https":true,"software":"fuuka","boards":["3","biz","cgl","ck","diy","fa","g","ic","jp","lit","sci","tg","vr"],"files":["3","biz","cgl","ck","diy","fa","ic","jp","lit","sci","tg","vr"]},{"uid":15,"name":"fgts","domain":"fgts.eu","http":true,"https":true,"software":"foolfuuka","boards":["asp","cm","h","hc","hm","n","p","r","s","soc","y"],"files":["asp","cm","h","hc","hm","n","p","r","s","soc","y"]},{"uid":16,"name":"maware","domain":"archive.mawa.re","http":true,"https":false,"software":"foolfuuka","boards":["t"],"files":["t"]},{"uid":17,"name":"installgentoo.com","domain":"chan.installgentoo.com","http":true,"https":false,"software":"foolfuuka","boards":["g","t"],"files":["g","t"]},{"uid":13,"name":"Foolz Beta","domain":"beta.foolz.us","http":true,"https":true,"withCredentials":true,"software":"foolfuuka","boards":["a","biz","co","d","diy","gd","jp","m","s4s","sci","sp","tg","tv","u","v","vg","vp","vr","wsg"],"files":["a","biz","d","diy","gd","jp","m","s4s","sci","tg","u","vg","vp","vr","wsg"]}],
+    archives: [{"uid":0,"name":"Foolz","domain":"archive.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["a","biz","co","diy","gd","jp","m","sci","sp","tg","tv","vg","vp","vr","wsg"],"files":["a","biz","gd","diy","jp","m","sci","tg","vg","vp","vr","wsg"]},{"uid":1,"name":"NSFW Foolz","domain":"nsfw.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["u"],"files":["u"]},{"uid":2,"name":"The Dark Cave","domain":"archive.thedarkcave.org","http":true,"https":true,"software":"foolfuuka","boards":["c","int","out","po"],"files":["c","po"]},{"uid":3,"name":"4plebs Archive","domain":"archive.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["adv","hr","o","pol","s4s","tg","trv","tv","x"],"files":["adv","hr","o","pol","s4s","tg","trv","tv","x"]},{"uid":18,"name":"4plebs Flash Archive","domain":"flash.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["f"],"files":["f"]},{"uid":4,"name":"Nyafuu","domain":"archive.nyafuu.org","http":true,"https":true,"software":"foolfuuka","boards":["c","e","w","wg"],"files":["c","e","w","wg"]},{"uid":5,"name":"Love is Over","domain":"loveisover.me","http":true,"https":true,"software":"foolfuuka","boards":["d","i"],"files":["d","i"]},{"uid":8,"name":"Rebecca Black Tech","domain":"rbt.asia","http":true,"https":true,"software":"fuuka","boards":["cgl","g","mu","w"],"files":["cgl","g","mu","w"]},{"uid":9,"name":"Heinessen","domain":"archive.heinessen.com","http":true,"https":false,"software":"fuuka","boards":["an","fit","k","mlp","r9k","toy"],"files":["an","fit","k","r9k","toy"]},{"uid":10,"name":"warosu","domain":"fuuka.warosu.org","http":false,"https":true,"software":"fuuka","boards":["3","biz","cgl","ck","diy","fa","g","ic","jp","lit","sci","tg","vr"],"files":["3","biz","cgl","ck","diy","fa","ic","jp","lit","sci","tg","vr"]},{"uid":15,"name":"fgts","domain":"fgts.eu","http":true,"https":true,"software":"foolfuuka","boards":["asp","cm","h","hc","hm","n","p","r","s","soc","y"],"files":["asp","cm","h","hc","hm","n","p","r","s","soc","y"]},{"uid":16,"name":"maware","domain":"archive.mawa.re","http":true,"https":false,"software":"foolfuuka","boards":["t"],"files":["t"]},{"uid":17,"name":"installgentoo.com","domain":"chan.installgentoo.com","http":true,"https":false,"software":"foolfuuka","boards":["g","t"],"files":["g","t"]},{"uid":13,"name":"Foolz Beta","domain":"beta.foolz.us","http":true,"https":true,"withCredentials":true,"software":"foolfuuka","boards":["a","biz","co","d","diy","gd","jp","m","s4s","sci","sp","tg","tv","u","vg","vp","vr","wsg"],"files":["a","biz","d","diy","gd","jp","m","s4s","sci","tg","u","vg","vp","vr","wsg"]}],
     to: function(dest, data) {
       var archive;
       archive = (dest === 'search' || dest === 'board' ? Redirect.data.thread : Redirect.data[dest])[data.boardID];
@@ -12419,7 +12427,7 @@
       if (g.VIEW !== 'index') {
         return;
       }
-      url = "/" + thread.board + "/thread/" + thread;
+      url = Build.path(thread.board.ID, thread.ID);
       if (tab) {
         return $.open(url);
       } else {
@@ -13825,7 +13833,10 @@
       }
       if (g.VIEW === 'thread') {
         g.THREADID = +pathname[3];
-        if (pathname[2] !== 'thread' || pathname.length > 4) {
+        if (pathname[4] != null) {
+          g.SLUG = pathname[4];
+        }
+        if (pathname[2] !== 'thread') {
           pathname[2] = 'thread';
           history.replaceState(null, '', pathname.slice(0, 4).join('/') + location.hash);
         }

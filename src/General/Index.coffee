@@ -301,8 +301,8 @@ Index =
       else
         'Show'
       Index.sort()
-      if Conf['Index Mode'] is 'paged' and Index.getCurrentPage() > 0
-        Index.pageNav 0
+      if Conf['Index Mode'] is 'paged' and Index.getCurrentPage() > 1
+        Index.pageNav 1
       else
         Index.buildIndex()
 
@@ -360,7 +360,7 @@ Index =
           return
       e.preventDefault()
       return if Index.cb.indexNav a, true
-      Index.userPageNav +a.pathname.split('/')[2]
+      Index.userPageNav +a.pathname.split('/')[2] or 1
 
     headerNav: (e) ->
       a = e.target
@@ -411,7 +411,7 @@ Index =
 
   pageNav: (pageNum) ->
     return if Index.currentPage is pageNum and not Index.root.parentElement
-    Navigate.pushState if pageNum is 0 then './' else pageNum
+    Navigate.pushState if pageNum is 1 then './' else pageNum
     Index.pageLoad pageNum
 
   pageLoad: (pageNum) ->
@@ -603,7 +603,7 @@ Index =
     Index.liveThreadData.forEach (threadData) ->
       threadRoot = Build.thread g.BOARD, threadData
       if thread = g.BOARD.threads[threadData.no]
-        thread.setPage i // Index.threadsNumPerPage
+        thread.setPage i // Index.threadsNumPerPage + 1
         thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
         thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
         thread.setStatus 'Sticky', !!threadData.sticky
@@ -741,7 +741,7 @@ Index =
     nodes = []
     switch Conf['Index Mode']
       when 'paged', 'infinite'
-        pageNum = Index.getCurrentPage()
+        pageNum = Index.getCurrentPage() - 1
         threadsPerPage = Index.getThreadsNumPerPage()
 
         threads = []
