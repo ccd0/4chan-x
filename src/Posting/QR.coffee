@@ -284,7 +284,7 @@ QR =
     QR.open()
     QR.handleFiles files
     $.addClass QR.nodes.el, 'dump'
-    
+
   handleBlob: (urlBlob, header, url) ->
     name = url.substr(url.lastIndexOf('/')+1, url.length)
     #QUALITY coding at work
@@ -421,7 +421,7 @@ QR =
     else
       'new'
     list.nextElementSibling.firstChild.textContent = list.options[list.selectedIndex].textContent if $.hasClass list, 'riced'
-    
+
 
   dialog: ->
     QR.nodes = nodes =
@@ -455,7 +455,7 @@ QR =
     setNode 'spoilerPar',    '#qr-spoiler-label'
     setNode 'status',        '[type=submit]'
     setNode 'fileInput',     '[type=file]'
-    
+
     rules = $('ul.rules').textContent.trim()
     QR.min_width = QR.min_heigth = 1
     QR.max_width = QR.max_heigth = 5000
@@ -568,8 +568,8 @@ QR =
       name:      'flag'
       className: 'flagSelector'
 
-    fn = (val) -> 
-      $.add select, $.el 'option', 
+    fn = (val) ->
+      $.add select, $.el 'option',
         value: val[0]
         textContent: val[1]
 
@@ -706,7 +706,7 @@ QR =
         QR.error $.el 'span',
           innerHTML: """
           Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.
-          [<a href="https://github.com/seaweedchan/4chan-x/wiki/Frequently-Asked-Questions#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean" target=_blank>?</a>]
+          [<a href="https://github.com/MayhemYDG/4chan-x/wiki/FAQ#what-does-connection-error-you-may-have-been-banned-mean" target=_blank>?</a>]
           """
     extra =
       form: $.formData formData
