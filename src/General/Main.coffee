@@ -210,10 +210,10 @@ Main =
     if !Conf['JSON Navigation'] or g.VIEW is 'thread'
       Main.initThread()
         
-      # JSON Navigation may not load on a page that has flags, so force their CSS to always be available.
-      $.add d.head, $.el 'link',
-        href: "//s.4cdn.org/css/flags.556.css"
-        rel:  "stylesheet"
+    # JSON Navigation may not load on a page that has flags, so force their CSS to always be available.
+    $.add d.head, $.el 'link',
+      href: "//s.4cdn.org/css/flags.556.css"
+      rel:  "stylesheet"
 
     $.event '4chanXInitFinished'
 

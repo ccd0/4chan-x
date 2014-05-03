@@ -18339,11 +18339,11 @@
       }
       if (!Conf['JSON Navigation'] || g.VIEW === 'thread') {
         Main.initThread();
-        $.add(d.head, $.el('link', {
-          href: "//s.4cdn.org/css/flags.556.css",
-          rel: "stylesheet"
-        }));
       }
+      $.add(d.head, $.el('link', {
+        href: "//s.4cdn.org/css/flags.556.css",
+        rel: "stylesheet"
+      }));
       $.event('4chanXInitFinished');
       test = $.el('span');
       test.classList.add('a', 'b');
