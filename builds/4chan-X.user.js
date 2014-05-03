@@ -7849,7 +7849,7 @@
         title: title
       });
       thumb.dataset.id = Gallery.images.length;
-      thumb.dataset.post = $('a[title="Highlight this post"]', post.nodes.info).href;
+      thumb.dataset.post = $('a[title="Link to this post"]', post.nodes.info).href;
       if (post.file.isVideo) {
         thumb.dataset.isVideo = true;
       }
@@ -12802,7 +12802,7 @@
     post: function() {
       var linktype;
       if (!(g.VIEW === 'thread' && this.thread.ID === g.THREADID)) {
-        $.on($('a[title="Highlight this post"]', this.nodes.info), 'click', Navigate.navigate);
+        $.on($('a[title="Link to this post"]', this.nodes.info), 'click', Navigate.navigate);
       }
       if (!(linktype = Conf['Quote Inlining'] && Conf['Quote Hash Navigation'] ? '.hashlink' : !Conf['Quote Inlining'] ? '.quotelink' : null)) {
         return;

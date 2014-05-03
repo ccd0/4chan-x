@@ -109,7 +109,7 @@ Gallery =
       title:     title
 
     thumb.dataset.id      = Gallery.images.length
-    thumb.dataset.post    = $('a[title="Highlight this post"]', post.nodes.info).href
+    thumb.dataset.post    = $('a[title="Link to this post"]', post.nodes.info).href
     thumb.dataset.isVideo = true if post.file.isVideo
 
     thumbImg = post.file.thumb.cloneNode false
