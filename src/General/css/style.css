@@ -795,10 +795,14 @@ span.hide-announcement {
 /* QR */
 :root.hide-original-post-form #postForm,
 :root.hide-original-post-form #togglePostFormLink,
+:root:not(.catalog) #togglePostFormLink,
 #qr.autohide:not(.focus):not(:hover):not(:active) > form,
 .thread #qr select[data-name=thread],
 #file-n-submit:not(.has-file) #qr-filerm {
   display: none;
+}
+:root:not(.hide-original-post-form):not(.catalog) #postForm {
+  display: table;
 }
 #qr select,
 #dump-button,
