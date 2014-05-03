@@ -11033,7 +11033,7 @@
           threadID: data.thread.ID,
           postID: ID
         })) {
-          QuoteYou.lastRead = data.nodes.root;
+          QuoteMarkers.lastRead = data.nodes.root;
         }
       }
       if (!ID) {
