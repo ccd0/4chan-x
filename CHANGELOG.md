@@ -1,3 +1,6 @@
+### v2.9.21 
+*2014-05-03*
+
 **ccd0**
 - Update due to more Recaptcha changes.
 - For single files, file errors are reported but no longer stop you from attempting to post. Files with errors are still removed when posting multiple files.
