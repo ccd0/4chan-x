@@ -1231,7 +1231,7 @@
 
     Post.prototype.parseQuote = function(quotelink) {
       var fullID, match;
-      if (!(match = quotelink.href.match(/boards\.4chan\.org\/([^\/]+)\/(res|thread)\/\d+(.*)?\#p(\d+)$/))) {
+      if (!(match = quotelink.href.match(/boards\.4chan\.org\/([^\/]+)\/(res|thread)\/\d+.*\#p(\d+)$/))) {
         return;
       }
       this.nodes.quotelinks.push(quotelink);
