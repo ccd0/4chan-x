@@ -583,7 +583,7 @@ vp-replace
 
   backlink: '>>%id'
 
-  fileInfo: '%L (%p%s, %r)'
+  fileInfo: '%l (%p%s, %r)'
 
   favicon: 'ferongr'
 
