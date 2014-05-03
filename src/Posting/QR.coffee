@@ -57,7 +57,7 @@ QR =
       if Conf['QR Shortcut']
         $.rmClass $('.qr-shortcut'), 'disabled'
 
-    $.before $.id('togglePostForm') or $.id('postForm'), link
+    $.before $.id('togglePostFormLink'), link
 
     $.on d, 'QRGetSelectedPost', ({detail: cb}) ->
       cb QR.selected
