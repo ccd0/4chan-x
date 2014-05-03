@@ -21,9 +21,10 @@ Keybinds =
     {target} = e
     if target.nodeName in ['INPUT', 'TEXTAREA']
       return unless /(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test key
-    threadRoot = Nav.getThread()
-    if op = $ '.op', threadRoot
-      thread = Get.postFromNode(op).thread
+    unless g.VIEW is 'catalog'
+      threadRoot = Nav.getThread()
+      if op = $ '.op', threadRoot
+        thread = Get.postFromNode(op).thread
     switch key
       # QR & Options
       when Conf['Toggle board list']
@@ -32,9 +33,10 @@ Keybinds =
       when Conf['Toggle header']
         Header.toggleBarVisibility()
       when Conf['Open empty QR']
-        Keybinds.qr threadRoot
+        Keybinds.qr()
       when Conf['Open QR']
-        Keybinds.qr threadRoot, true
+        return if g.VIEW is 'catalog'
+        Keybinds.qr threadRoot
       when Conf['Open settings']
         Settings.open()
       when Conf['Close']
@@ -76,22 +78,28 @@ Keybinds =
           when 'index'
             if Conf['JSON Navigation'] then Index.update()
       when Conf['Watch']
+        return if g.VIEW is 'catalog'
         ThreadWatcher.toggle thread
       # Images
       when Conf['Expand image']
+        return if g.VIEW is 'catalog'
         Keybinds.img threadRoot
       when Conf['Expand images']
+        return if g.VIEW is 'catalog'
         Keybinds.img threadRoot, true
       when Conf['Open Gallery']
+        return if g.VIEW is 'catalog'
         Gallery.cb.toggle()
       when Conf['fappeTyme']
+        return if g.VIEW is 'catalog'
         FappeTyme.cb.toggle.call {name: 'fappe'}
       when Conf['werkTyme']
+        return if g.VIEW is 'catalog'
         FappeTyme.cb.toggle.call {name: 'werk'}
       # Board Navigation
       when Conf['Front page']
         if Conf['JSON Navigation'] and g.VIEW is 'index'
-          Index.userPageNav 0
+          Index.userPageNav 1
         else
           window.location = "/#{g.BOARD}/"
       when Conf['Open front page']
@@ -113,10 +121,11 @@ Keybinds =
           if form = $ '.prev form'
             window.location = form.action
       when Conf['Search form']
-        if Conf['JSON Navigation']
-          Index.searchInput.focus()
-        else
-          $.id('search-btn').click()
+        return unless g.VIEW is 'index'
+        searchInput = if Conf['JSON Navigation'] then Index.searchInput else $.id('search-box')
+        Header.scrollToIfNeeded searchInput
+        searchInput.click()
+        searchInput.focus()
       when Conf['Paged mode']
         return unless g.VIEW is 'index' and Conf['Index Mode'] isnt 'paged'
         Index.setIndexMode 'paged'
@@ -144,17 +153,23 @@ Keybinds =
         return if g.VIEW isnt 'index'
         Nav.scroll -1
       when Conf['Expand thread']
+        return if g.VIEW isnt 'index'
         ExpandThread.toggle thread
       when Conf['Open thread']
+        return if g.VIEW isnt 'index'
         Keybinds.open thread
       when Conf['Open thread tab']
+        return if g.VIEW isnt 'index'
         Keybinds.open thread, true
       # Reply Navigation
       when Conf['Next reply']
+        return if g.VIEW is 'catalog'
         Keybinds.hl +1, threadRoot
       when Conf['Previous reply']
+        return if g.VIEW is 'catalog'
         Keybinds.hl -1, threadRoot
       when Conf['Deselect reply']
+        return if g.VIEW is 'catalog'
         Keybinds.hl  0, threadRoot
       when Conf['Hide']
         PostHiding.toggle thread.OP
@@ -195,10 +210,10 @@ Keybinds =
       if e.shiftKey then key = 'Shift+' + key
     key
 
-  qr: (thread, quote) ->
-    return unless QR.postingIsEnabled
-    do QR.open
-    if quote
+  qr: (thread) ->
+    return unless Conf['Quick Reply'] and QR.postingIsEnabled
+    QR.open()
+    if thread?
       QR.quote.call $ 'input', $('.post.highlight', thread) or thread
 
     do QR.nodes.com.focus
@@ -239,7 +254,7 @@ Keybinds =
       
   open: (thread, tab) ->
     return if g.VIEW isnt 'index'
-    url = "/#{thread.board}/thread/#{thread}"
+    url = Build.path thread.board.ID, thread.ID
     if tab
       $.open url
     else

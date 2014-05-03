@@ -49,7 +49,7 @@ class Thread
     else if g.VIEW is 'index'
       $ '.page-num', @OP.nodes.info
     else
-      $ '[title="Quote this post"]', @OP.nodes.info
+      $ '[title="Reply to this post"]', @OP.nodes.info
     $.after root, [$.tn(' '), icon]
 
     return unless @catalogView

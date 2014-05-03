@@ -317,7 +317,7 @@ Config =
       ]
       'Auto-load captcha': [
         false
-        'Automatically load the captcha when you open a thread'
+        'Automatically load the captcha when you open a thread, and reload it after you post.'
       ]
 
     'Quote Links':
@@ -913,7 +913,7 @@ Config =
 
   backlink: '>>%id'
 
-  fileInfo: '%L (%p%s, %r)'
+  fileInfo: '%l (%p%s, %r)'
 
   favicon: 'ferongr'
 
@@ -1028,19 +1028,19 @@ box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
     ]
     # Board Navigation
     'Front page': [
-      '0'
+      '1'
       'Jump to front page.'
     ]
     'Open front page': [
-      'Shift+0'
+      'Shift+1'
       'Open front page in a new tab.'
     ]
     'Next page': [
-      'Shift+Right'
+      'Ctrl+Right'
       'Jump to the next page.'
     ]
     'Previous page': [
-      'Shift+Left'
+      'Ctrl+Left'
       'Jump to the previous page.'
     ]
     'Search form': [
@@ -1065,11 +1065,11 @@ box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
     ]
     # Thread Navigation
     'Next thread': [
-      'Shift+Down'
+      'Ctrl+Down'
       'See next thread.'
     ]
     'Previous thread': [
-      'Shift+Up'
+      'Ctrl+Up'
       'See previous thread.'
     ]
     'Expand thread': [

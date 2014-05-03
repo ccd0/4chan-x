@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.20 - 2014-05-02
+* appchan x - Version 2.9.20 - 2014-05-03
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -224,7 +224,7 @@
         'Posting Success Notifications': [true, 'Show notifications on successful post creation or file uploading.'],
         'Captcha Warning Notifications': [true, 'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.'],
         'Dump List Before Comment': [false, 'Position of the QR\'s Dump List.'],
-        'Auto-load captcha': [false, 'Automatically load the captcha when you open a thread']
+        'Auto-load captcha': [false, 'Automatically load the captcha when you open a thread, and reload it after you post.']
       },
       'Quote Links': {
         'Quote Backlinks': [true, 'Add quote backlinks.'],
@@ -404,7 +404,7 @@
     },
     time: '%m/%d/%y(%a)%H:%M:%S',
     backlink: '>>%id',
-    fileInfo: '%L (%p%s, %r)',
+    fileInfo: '%l (%p%s, %r)',
     favicon: 'ferongr',
     usercss: "/* Tripcode Italics: */\n/*\nspan.postertrip {\nfont-style: italic;\n}\n*/\n\n/* Add a rounded border to thumbnails (but not expanded images): */\n/*\n.fileThumb > img:first-child {\nborder: solid 2px rgba(0,0,100,0.5);\nborder-radius: 10px;\n}\n*/\n\n/* Make highlighted posts look inset on the page: */\n/*\ndiv.post:target,\ndiv.post.highlight {\nbox-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);\n}\n*/",
     hotkeys: {
@@ -428,17 +428,17 @@
       'Open Gallery': ['g', 'Opens the gallery.'],
       'fappeTyme': ['f', 'Fappe Tyme.'],
       'werkTyme': ['Shift+w', 'Werk Tyme'],
-      'Front page': ['0', 'Jump to front page.'],
-      'Open front page': ['Shift+0', 'Open front page in a new tab.'],
-      'Next page': ['Shift+Right', 'Jump to the next page.'],
-      'Previous page': ['Shift+Left', 'Jump to the previous page.'],
+      'Front page': ['1', 'Jump to front page.'],
+      'Open front page': ['Shift+1', 'Open front page in a new tab.'],
+      'Next page': ['Ctrl+Right', 'Jump to the next page.'],
+      'Previous page': ['Ctrl+Left', 'Jump to the previous page.'],
       'Search form': ['Ctrl+Alt+s', 'Focus the search field on the board index.'],
       'Paged mode': ['Alt+1', 'Sets the index mode to paged.'],
       'All pages mode': ['Alt+2', 'Sets the index mode to all threads.'],
       'Catalog mode': ['Alt+3', 'Sets the index mode to catalog.'],
       'Cycle sort type': ['Alt+x', 'Cycle through index sort types.'],
-      'Next thread': ['Shift+Down', 'See next thread.'],
-      'Previous thread': ['Shift+Up', 'See previous thread.'],
+      'Next thread': ['Ctrl+Down', 'See next thread.'],
+      'Previous thread': ['Ctrl+Up', 'See previous thread.'],
       'Expand thread': ['Ctrl+e', 'Expand thread.'],
       'Open thread': ['o', 'Open thread in current tab.'],
       'Open thread tab': ['Shift+o', 'Open thread in new tab.'],
@@ -3165,7 +3165,7 @@
         title: type,
         className: "" + typeLC + "Icon"
       });
-      root = type === 'Closed' && this.isSticky ? $('.stickyIcon', this.OP.nodes.info) : g.VIEW === 'index' ? $('.page-num', this.OP.nodes.info) : $('[title="Quote this post"]', this.OP.nodes.info);
+      root = type === 'Closed' && this.isSticky ? $('.stickyIcon', this.OP.nodes.info) : g.VIEW === 'index' ? $('.page-num', this.OP.nodes.info) : $('[title="Reply to this post"]', this.OP.nodes.info);
       $.after(root, [$.tn(' '), icon]);
       if (!this.catalogView) {
         return;
@@ -3364,7 +3364,7 @@
 
     Post.prototype.parseQuote = function(quotelink) {
       var fullID, match;
-      if (!(match = quotelink.href.match(/boards\.4chan\.org\/([^\/]+)\/thread\/\d+#p(\d+)$/))) {
+      if (!(match = quotelink.href.match(/boards\.4chan\.org\/([^\/]+)\/(res|thread)\/\d+(.*)?\#p(\d+)$/))) {
         return;
       }
       this.nodes.quotelinks.push(quotelink);
@@ -3399,12 +3399,12 @@
       }
       this.file.sizeInBytes = size;
       this.file.thumbURL = that.isArchived ? thumb.src : "" + location.protocol + "//t.4cdn.org/" + this.board + "/" + (this.file.URL.match(/(\d+)\./)[1]) + "s.jpg";
-      this.file.name = !this.file.isSpoiler && (nameNode = $('a', fileText)) ? nameNode.title || nameNode.textContent : fileText.title;
-      this.file.isImage = /(jpg|png|gif)$/i.test(this.file.name);
-      this.file.isVideo = /webm$/i.test(this.file.name);
+      this.file.isImage = /(jpg|png|gif)$/i.test(this.file.URL);
+      this.file.isVideo = /webm$/i.test(this.file.URL);
       if (this.file.isImage || this.file.isVideo) {
-        return this.file.dimensions = fileText.textContent.match(/\d+x\d+/)[0];
+        this.file.dimensions = fileText.childNodes[2].data.match(/\d+x\d+/)[0];
       }
+      return this.file.name = !this.file.isSpoiler && (nameNode = $('a', fileText)) ? nameNode.title || nameNode.textContent : fileText.title;
     };
 
     Post.prototype.cleanup = function(root, post) {
@@ -3414,7 +3414,7 @@
         node = _ref[_i];
         $.rm(node);
       }
-      _ref1 = $$('[id]', post);
+      _ref1 = $$('[id]:not(.exif)', post);
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         node = _ref1[_j];
         node.removeAttribute('id');
@@ -4821,11 +4821,14 @@
       $.asap((function() {
         return $('.board', doc) || d.readyState !== 'loading';
       }), function() {
-        var board, navLink, _l, _len3, _ref3;
+        var board, navLink, _l, _len3, _ref3, _ref4;
         _ref3 = $$('.navLinks');
         for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
           navLink = _ref3[_l];
           $.rm(navLink);
+        }
+        if ((_ref4 = $.id('search-box')) != null) {
+          _ref4.parentNode.remove();
         }
         $.after($.x('child::form/preceding-sibling::hr[1]'), Index.navLinks);
         if (g.VIEW !== 'index') {
@@ -5057,8 +5060,8 @@
       toggleHiddenThreads: function() {
         $('#hidden-toggle a', Index.navLinks).textContent = (Index.showHiddenThreads = !Index.showHiddenThreads) ? 'Hide' : 'Show';
         Index.sort();
-        if (Conf['Index Mode'] === 'paged' && Index.getCurrentPage() > 0) {
-          return Index.pageNav(0);
+        if (Conf['Index Mode'] === 'paged' && Index.getCurrentPage() > 1) {
+          return Index.pageNav(1);
         } else {
           return Index.buildIndex();
         }
@@ -5141,7 +5144,7 @@
         if (Index.cb.indexNav(a, true)) {
           return;
         }
-        return Index.userPageNav(+a.pathname.split('/')[2]);
+        return Index.userPageNav(+a.pathname.split('/')[2] || 1);
       },
       headerNav: function(e) {
         var a, needChange, onSameIndex;
@@ -5194,10 +5197,10 @@
       if (Conf['Index Mode'] === 'infinite' && Index.currentPage) {
         return Index.currentPage;
       }
-      return +window.location.pathname.split('/')[2];
+      return +window.location.pathname.split('/')[2] || 1;
     },
     userPageNav: function(pageNum) {
-      Navigate.pushState(pageNum === 0 ? './' : pageNum);
+      Navigate.pushState(pageNum === 1 ? './' : pageNum);
       if (Conf['Refreshed Navigation'] && Conf['Index Mode'] !== 'all pages') {
         return Index.update(pageNum);
       } else {
@@ -5208,7 +5211,7 @@
       if (Index.currentPage === pageNum && !Index.root.parentElement) {
         return;
       }
-      Navigate.pushState(pageNum === 0 ? './' : pageNum);
+      Navigate.pushState(pageNum === 1 ? './' : pageNum);
       return Index.pageLoad(pageNum);
     },
     pageLoad: function(pageNum) {
@@ -5230,7 +5233,14 @@
       return Math.ceil(Index.sortedThreads.length / Index.getThreadsNumPerPage());
     },
     getMaxPageNum: function() {
-      return Math.max(0, Index.getPagesNum() - 1);
+      var max, min;
+      min = 1;
+      max = +Index.getPagesNum();
+      if (min < max) {
+        return max;
+      } else {
+        return min;
+      }
     },
     togglePagelist: function() {
       return Index.pagelist.hidden = Conf['Index Mode'] !== 'paged';
@@ -5239,12 +5249,12 @@
       var a, i, maxPageNum, nodes, pagesRoot, _i;
       pagesRoot = $('.pages', Index.pagelist);
       maxPageNum = Index.getMaxPageNum();
-      if (pagesRoot.childElementCount !== maxPageNum + 1) {
+      if (pagesRoot.childElementCount !== maxPageNum) {
         nodes = [];
-        for (i = _i = 0; _i <= maxPageNum; i = _i += 1) {
+        for (i = _i = 1; _i <= maxPageNum; i = _i += 1) {
           a = $.el('a', {
             textContent: i,
-            href: i ? i : './'
+            href: i === 1 ? './' : i
           });
           nodes.push($.tn('['), a, $.tn('] '));
         }
@@ -5263,11 +5273,11 @@
       pagesRoot = $('.pages', Index.pagelist);
       prev = pagesRoot.previousSibling.firstChild;
       next = pagesRoot.nextSibling.firstChild;
-      href = Math.max(pageNum - 1, 0);
-      prev.href = href === 0 ? './' : href;
+      href = Math.max(pageNum - 1, 1);
+      prev.href = href === 1 ? './' : href;
       prev.firstChild.disabled = href === pageNum;
       href = Math.min(pageNum + 1, maxPageNum);
-      next.href = href === 0 ? './' : href;
+      next.href = href === 1 ? './' : href;
       next.firstChild.disabled = href === pageNum;
       if (strong = $('strong', pagesRoot)) {
         if (+strong.textContent === pageNum) {
@@ -5277,7 +5287,7 @@
       } else {
         strong = $.el('strong');
       }
-      if (!(a = pagesRoot.children[pageNum])) {
+      if (!(a = pagesRoot.children[pageNum - 1])) {
         return;
       }
       $.before(a, strong);
@@ -5319,7 +5329,7 @@
       if (!(d.readyState === 'loading' || Index.root.parentElement)) {
         $.replace($('.board'), Index.root);
       }
-      Index.currentPage = 0;
+      Index.currentPage = 1;
       if ((_ref = Index.req) != null) {
         _ref.abort();
       }
@@ -5380,7 +5390,7 @@
       }
       Navigate.title();
       try {
-        pageNum || (pageNum = 0);
+        pageNum || (pageNum = 1);
         if (req.status === 200) {
           Index.parse(req.response, pageNum);
         } else if (req.status === 304) {
@@ -5446,7 +5456,7 @@
         var err, thread, threadRoot;
         threadRoot = Build.thread(g.BOARD, threadData);
         if (thread = g.BOARD.threads[threadData.no]) {
-          thread.setPage(Math.floor(i / Index.threadsNumPerPage));
+          thread.setPage(Math.floor(i / Index.threadsNumPerPage) + 1);
           thread.setCount('post', threadData.replies + 1, threadData.bumplimit);
           thread.setCount('file', threadData.images + !!threadData.ext, threadData.imagelimit);
           thread.setStatus('Sticky', !!threadData.sticky);
@@ -5641,7 +5651,7 @@
       switch (Conf['Index Mode']) {
         case 'paged':
         case 'infinite':
-          pageNum = Index.getCurrentPage();
+          pageNum = Index.getCurrentPage() - 1;
           threadsPerPage = Index.getThreadsNumPerPage();
           threads = [];
           i = threadsPerPage * pageNum;
@@ -5682,7 +5692,7 @@
         if (!Index.searchInput.dataset.searching) {
           Index.searchInput.dataset.searching = 1;
           Index.pageBeforeSearch = Index.getCurrentPage();
-          Index.setPage(pageNum = 0);
+          Index.setPage(pageNum = 1);
         } else {
           if (Conf['Index Mode'] !== 'infinite') {
             pageNum = Index.getCurrentPage();
@@ -5769,6 +5779,17 @@
         return n = (n + 1) % 3;
       };
     })(),
+    path: function(boardID, threadID, postID, fragment) {
+      var path;
+      path = "/" + boardID + "/thread/" + threadID;
+      if ((g.SLUG != null) && threadID === g.THREADID) {
+        path += "/" + g.SLUG;
+      }
+      if (postID) {
+        path += "#" + (fragment || 'p') + postID;
+      }
+      return path;
+    },
     postFromObject: function(data, boardID) {
       var o;
       o = {
@@ -5883,28 +5904,26 @@
       sticky = isSticky ? " <img src=" + staticPath + "sticky" + gifIcon + " title=Sticky class=stickyIcon>" : '';
       closed = isClosed ? " <img src=" + staticPath + "closed" + gifIcon + " title=Closed class=closedIcon>" : '';
       if (isOP && g.VIEW === 'index') {
-        pageNum = Math.floor(Index.liveThreadData.keys.indexOf("" + postID) / Index.threadsNumPerPage);
+        pageNum = Math.floor(Index.liveThreadData.keys.indexOf("" + postID) / Index.threadsNumPerPage) + 1;
         pageIcon = " <span class=page-num title='This thread is on page " + pageNum + " in the original index.'>Page " + pageNum + "</span>";
-        replyLink = " &nbsp; <span>[<a href='/" + boardID + "/thread/" + threadID + "' class=replylink>Reply</a>]</span>";
+        replyLink = " &nbsp; <span>[<a href='" + (Build.path(boardID, threadID)) + "' class=replylink>Reply</a>]</span>";
       } else {
-        pageIcon = replyLink = '';
+        pageIcon = '';
+        replyLink = '';
       }
       container = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: (isOP ? '' : "<div class=sideArrows>&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + (isOP ? fileHTML : '') + "<div class=postInfo>" + ("<input type=checkbox name=" + postID + " value=delete> ") + ("<span class=subject>" + (subject || '') + "</span> ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcodeIcon + userID + flag + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum'>" + ("<a href=" + ("/" + boardID + "/thread/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/thread/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + pageIcon + sticky + closed + replyLink + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage>" + (comment || '') + "</blockquote> ") + '</div>'
+        innerHTML: (isOP ? '' : "<div class=sideArrows>&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + (isOP ? fileHTML : '') + "<div class=postInfo>" + ("<input type=checkbox name=" + postID + " value=delete> ") + ("<span class=subject>" + (subject || '') + "</span> ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcodeIcon + userID + flag + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum'>" + ("<a href=" + (Build.path(boardID, threadID, postID)) + " title='Link to this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === threadID ? "javascript:quote(" + postID + ")" : Build.path(boardID, threadID, postID, 'q')) + "' title='Reply to this post'>" + postID + "</a>") + pageIcon + sticky + closed + replyLink + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage>" + (comment || '') + "</blockquote> ") + '</div>'
       });
       _ref = $$('.quotelink', container);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         href = quote.getAttribute('href');
-        if (href[0] === '/') {
+        if (href[0] !== '#') {
           continue;
         }
-        if (href[0] === '#') {
-          href = "" + threadID + href;
-        }
-        quote.href = "/" + boardID + "/thread/" + href;
+        quote.href = Build.path(boardID, threadID, href.slice(2));
       }
       return container;
     },
@@ -5919,7 +5938,7 @@
       return $.el('a', {
         className: 'summary',
         textContent: text.join(' '),
-        href: "/" + boardID + "/thread/" + threadID
+        href: Build.path(boardID, threadID)
       });
     },
     thread: function(board, data, full) {
@@ -5955,12 +5974,12 @@
       data = Index.liveThreadData[thread.ID];
       postCount = data.replies + 1;
       fileCount = data.images + !!data.ext;
-      pageCount = Math.floor(Index.liveThreadData.keys.indexOf("" + thread.ID) / Index.threadsNumPerPage);
+      pageCount = Math.floor(Index.liveThreadData.keys.indexOf("" + thread.ID) / Index.threadsNumPerPage) + 1;
       subject = thread.OP.info.subject ? "<div class='subject'>" + thread.OP.info.subject + "</div>" : '';
       comment = thread.OP.nodes.comment.innerHTML.replace(/(<br>\s*){2,}/g, '<br>');
       root = $.el('div', {
         className: 'catalog-thread',
-        innerHTML: "<a href=\"/" + thread.board + "/thread/" + thread.ID + "\" class=\"thumb\"></a><div class=\"thread-stats\" title=\"Post count / File count / Page count\"><span class=\"post-count\">" + postCount + "</span> / <span class=\"file-count\">" + fileCount + "</span> / <span class=\"page-count\">" + pageCount + "</span><span class=\"thread-icons\"></span></div>" + subject + "<div class=\"comment\">" + comment + "</div>"
+        innerHTML: "<a href=\"" + (Build.path(thread.board.ID, thread.ID)) + "\" class=\"thumb\"></a><div class=\"thread-stats\" title=\"Post count / File count / Page count\"><span class=\"post-count\">" + postCount + "</span> / <span class=\"file-count\">" + fileCount + "</span> / <span class=\"page-count\">" + pageCount + "</span><span class=\"thread-icons\"></span></div>" + subject + "<div class=\"comment\">" + comment + "</div>"
       });
       root.dataset.fullID = thread.fullID;
       if (thread.isPinned) {
@@ -7431,7 +7450,7 @@
       var a, frag, hash, text;
       frag = QuoteBacklink.frag.cloneNode(true);
       a = frag.lastElementChild;
-      a.href = "/" + quoter.board + "/thread/" + quoter.thread + "#p" + quoter;
+      a.href = Build.path(quoter.board.ID, quoter.thread.ID, quoter.ID);
       a.textContent = text = QuoteBacklink.funk(quoter.ID);
       if (quoter.isDead) {
         $.addClass(a, 'deadlink');
@@ -7912,7 +7931,7 @@
       }
       if (post = posts[post.ID]) {
         posts.after(post, posts[this.ID]);
-      } else {
+      } else if (posts[this.ID]) {
         posts.prepend(posts[this.ID]);
       }
       return true;
@@ -8003,7 +8022,7 @@
       quoteID = "" + boardID + "." + postID;
       if (post = g.posts[quoteID]) {
         a = $.el('a', {
-          href: "/" + boardID + "/thread/" + post.thread + "#p" + postID,
+          href: Build.path(boardID, post.thread.ID, postID),
           className: post.isDead ? 'quotelink deadlink' : 'quotelink',
           textContent: quote
         });
@@ -8280,9 +8299,9 @@
         return $.toggleClass(this, 'embedded');
       },
       embed: function(a) {
-        var el, style, type;
+        var el, type;
         el = (type = Linkify.types[a.dataset.key]).el(a);
-        el.style.cssText = (style = type.style) ? style : "border: 0; width: 640px; height: 390px";
+        el.style.cssText = type.style != null ? type.style : "border: 0; width: 640px; height: 390px";
         return el;
       },
       unembed: function(a) {
@@ -8327,9 +8346,10 @@
       {
         key: 'audio',
         regExp: /(.*\.(mp3|ogg|wav))$/,
+        style: '',
         el: function(a) {
           return $.el('audio', {
-            controls: 'controls',
+            controls: true,
             preload: 'auto',
             src: a.dataset.uid
           });
@@ -8523,10 +8543,12 @@
       }, {
         key: 'Vocaroo',
         regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
-        style: 'border: 0; width: 150px; height: 45px;',
+        style: '',
         el: function(a) {
-          return $.el('object', {
-            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (a.dataset.uid.replace(/^i\//, '')) + "&autoplay=0' wmode='opaque' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+          return $.el('audio', {
+            controls: true,
+            preload: 'auto',
+            src: "http://vocaroo.com/media_command.php?media=" + (a.dataset.uid.replace(/^i\//, '')) + "&command=download_ogg"
           });
         }
       }, {
@@ -8584,6 +8606,7 @@
       }, {
         key: 'video',
         regExp: /(.*\.(ogv|webm|mp4))$/,
+        style: 'border: 0; width: auto; height: auto;',
         el: function(a) {
           return $.el('video', {
             controls: 'controls',
@@ -8596,6 +8619,7 @@
   };
 
   QR = {
+    mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/vnd.adobe.flash.movie', 'application/x-shockwave-flash', 'video/webm'],
     init: function() {
       var con, sc;
       this.db = new DataBoard('yourPosts');
@@ -8688,7 +8712,7 @@
       })) {
         $.addClass(this.nodes.root, 'your-post');
       }
-      return $.on($('a[title="Quote this post"]', this.nodes.info), 'click', QR.quote);
+      return $.on($('a[title="Reply to this post"]', this.nodes.info), 'click', QR.quote);
     },
     persist: function() {
       if (!QR.postingIsEnabled) {
@@ -8742,7 +8766,10 @@
         post["delete"]();
       }
       QR.cooldown.auto = false;
-      return QR.status();
+      QR.status();
+      if (QR.captcha.isEnabled && !Conf['Auto-load captcha']) {
+        return QR.captcha.destroy();
+      }
     },
     focusin: function() {
       return $.addClass(QR.nodes.el, 'focus');
@@ -8776,8 +8803,10 @@
         el.removeAttribute('style');
       }
       if (QR.captcha.isEnabled && /captcha|verification/i.test(el.textContent)) {
-        QR.captcha.nodes.input.focus();
-        QR.captcha.setup();
+        if (QR.captcha.captchas.length === 0) {
+          QR.captcha.nodes.input.focus();
+          QR.captcha.setup();
+        }
         if (Conf['Captcha Warning Notifications'] && !d.hidden) {
           QR.notify(el);
         } else {
@@ -8862,7 +8891,7 @@
         _ref = $$('br', frag);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           node = _ref[_i];
-          if (node !== frag.lastElementChild) {
+          if (node !== frag.lastChild) {
             $.replace(node, $.tn('\n>'));
           }
         }
@@ -8948,29 +8977,18 @@
       QR.handleFiles(files);
       return $.addClass(QR.nodes.el, 'dump');
     },
-    handleBlob: function(urlBlob, header, url) {
-      var blob, end, endnl, endsc, mime, name, name_end, name_start, start;
-      name = url.substr(url.lastIndexOf('/') + 1, url.length);
-      start = header.indexOf("Content-Type: ") + 14;
-      endsc = header.substr(start, header.length).indexOf(";");
-      endnl = header.substr(start, header.length).indexOf("\n") - 1;
-      end = endnl;
-      if (endsc !== -1 && endsc < endnl) {
-        end = endsc;
+    handleBlob: function(urlBlob, contentType, contentDisposition, url) {
+      var blob, match, mime, name, _ref, _ref1, _ref2;
+      name = (_ref = url.match(/([^\/]+)\/*$/)) != null ? _ref[1] : void 0;
+      mime = (contentType != null ? contentType.match(/[^;]*/)[0] : void 0) || 'application/octet-stream';
+      match = (contentDisposition != null ? (_ref1 = contentDisposition.match(/\bfilename\s*=\s*"((\\"|[^"])+)"/i)) != null ? _ref1[1] : void 0 : void 0) || (contentType != null ? (_ref2 = contentType.match(/\bname\s*=\s*"((\\"|[^"])+)"/i)) != null ? _ref2[1] : void 0 : void 0);
+      if (match) {
+        name = match.replace(/\\"/g, '"');
       }
-      mime = header.substr(start, end);
       blob = new Blob([urlBlob], {
         type: mime
       });
-      blob.name = url.substr(url.lastIndexOf('/') + 1, url.length);
-      name_start = header.indexOf('name="') + 6;
-      if (name_start - 6 !== -1) {
-        name_end = header.substr(name_start, header.length).indexOf('"');
-        blob.name = header.substr(name_start, name_end);
-      }
-      if (blob.type === null) {
-        return QR.error("Unsupported file type.");
-      }
+      blob.name = name;
       return QR.handleFiles([blob]);
     },
     handleUrl: function() {
@@ -8979,12 +8997,12 @@
       if (url === null) {
         return;
       }
-      GM_xmlhttpRequest({
+      return GM_xmlhttpRequest({
         method: "GET",
         url: url,
         overrideMimeType: "text/plain; charset=x-user-defined",
         onload: function(xhr) {
-          var data, i, r;
+          var contentDisposition, contentType, data, i, r, _ref, _ref1;
           r = xhr.responseText;
           data = new Uint8Array(r.length);
           i = 0;
@@ -8992,18 +9010,17 @@
             data[i] = r.charCodeAt(i);
             i++;
           }
-          QR.handleBlob(data, xhr.responseHeaders, url);
-          return;
-          return {
-            onerror: function(xhr) {
-              return QR.error("Can't load image.");
-            }
-          };
+          contentType = (_ref = xhr.responseHeaders.match(/Content-Type:\s*(.*)/i)) != null ? _ref[1] : void 0;
+          contentDisposition = (_ref1 = xhr.responseHeaders.match(/Content-Disposition:\s*(.*)/i)) != null ? _ref1[1] : void 0;
+          return QR.handleBlob(data, contentType, contentDisposition, url);
+        },
+        onerror: function(xhr) {
+          return QR.error("Can't load image.");
         }
       });
     },
     handleFiles: function(files) {
-      var file, isSingle, max, _i, _len;
+      var file, i, _i, _len;
       if (this !== QR) {
         files = __slice.call(this.files);
         this.value = null;
@@ -9011,52 +9028,46 @@
       if (!files.length) {
         return;
       }
-      max = QR.nodes.fileInput.max;
-      isSingle = files.length === 1;
       QR.cleanNotifications();
-      for (_i = 0, _len = files.length; _i < _len; _i++) {
-        file = files[_i];
-        if (file.type === 'application/x-shockwave-flash') {
-          QR.handleFile(file, isSingle, max);
-        } else {
-          QR.checkDimensions(file, isSingle, max);
-        }
+      for (i = _i = 0, _len = files.length; _i < _len; i = ++_i) {
+        file = files[i];
+        QR.handleFile(file, i, files.length);
       }
-      if (!isSingle) {
+      if (files.length !== 1) {
         return $.addClass(QR.nodes.el, 'dump');
       }
     },
-    checkDimensions: function(file, isSingle, max) {
-      var img;
-      if (/^image\//.test(file.type)) {
-        img = new Image();
-        img.onload = (function(_this) {
-          return function() {
-            var height, width;
-            height = img.height, width = img.width;
-            if (height > QR.max_heigth || width > QR.max_heigth) {
-              return QR.error("" + file.name + ": Image too large (image: " + img.height + "x" + img.width + "px, max: " + QR.max_heigth + "x" + QR.max_width + "px)");
-            }
-            if (height < QR.min_heigth || width < QR.min_heigth) {
-              return QR.error("" + file.name + ": Image too small (image: " + img.height + "x" + img.width + "px, min: " + QR.min_heigth + "x" + QR.min_width + "px)");
-            }
-            return QR.handleFile(file, isSingle, max);
-          };
-        })(this);
-        return img.src = URL.createObjectURL(file);
-      } else {
-        return QR.handleFile(file, isSingle, max);
+    handleFile: function(file, index, nfiles) {
+      var isSingle, max, post, _ref;
+      isSingle = nfiles === 1;
+      if (/^text\//.test(file.type)) {
+        if (isSingle) {
+          post = QR.selected;
+        } else if (index !== 0 || (post = QR.posts[QR.posts.length - 1]).com) {
+          post = new QR.post();
+        }
+        post.pasteText(file);
+        return;
       }
-    },
-    handleFile: function(file, isSingle, max) {
-      var post;
+      if (_ref = file.type, __indexOf.call(QR.mimeTypes, _ref) < 0) {
+        QR.error("" + file.name + ": Unsupported file type.");
+        if (!isSingle) {
+          return;
+        }
+      }
+      max = QR.nodes.fileInput.max;
+      if (/^video\//.test(file.type)) {
+        max = Math.min(max, QR.max_size_video);
+      }
       if (file.size > max) {
         QR.error("" + file.name + ": File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(max)) + ").");
-        return;
+        if (!isSingle) {
+          return;
+        }
       }
       if (isSingle) {
         post = QR.selected;
-      } else if ((post = QR.posts[QR.posts.length - 1]).file) {
+      } else if (index !== 0 || (post = QR.posts[QR.posts.length - 1]).file) {
         post = new QR.post();
       }
       if (/^text/.test(file.type)) {
@@ -9110,7 +9121,7 @@
       }
     },
     dialog: function() {
-      var dialog, elm, event, i, items, name, node, nodes, rules, save, setNode, _, _ref, _ref1;
+      var dialog, elm, event, i, items, name, node, nodes, prop, rules, save, setNode, _, _i, _len, _ref, _ref1, _ref2;
       QR.nodes = nodes = {
         el: dialog = UI.dialog('qr', 'top:0;right:0;', "<div id=qrtab class=move><input type=checkbox id=autohide title=Auto-hide><div id=qr-thread-select><select data-name=thread title='Create a new thread / Reply'><option value=new>New thread</option></select></div><a href=javascript:; class='close fa' title=Close>\uf00d</a></div><form><div class=persona><input name=name  data-name=name  list=\"list-name\" placeholder=Name    class=field size=1 tabindex=10><input name=email data-name=email list=\"list-email\" placeholder=E-mail  class=field size=1 tabindex=20><input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1 tabindex=30> </div><div class=textarea><textarea data-name=com placeholder=Comment class=field tabindex=40></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=60><span id=qr-no-file>No selected file</span><input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\"><span id=qr-extras-container><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=70></label><span class=description>Spoiler</span><a id=url-button><i class=\"fa\">\uf0c1</i></a><span class=description>Post from URL</span><a id=dump-button title='Dump list'>+</a><span class=description>Dump</span><a id=qr-filerm href=javascript:; title='Remove file' class=fa>\uf00d</a><span class=description>Remove File</span></span></span><input type=submit tabindex=80></div><input type=file multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist>")
       };
@@ -9143,15 +9154,23 @@
       setNode('status', '[type=submit]');
       setNode('fileInput', '[type=file]');
       rules = $('ul.rules').textContent.trim();
-      QR.min_width = QR.min_heigth = 1;
-      QR.max_width = QR.max_heigth = 5000;
+      QR.min_width = QR.min_height = 1;
+      QR.max_width = QR.max_height = 10000;
       try {
-        _ref = rules.match(/.+smaller than (\d+)x(\d+).+/), _ = _ref[0], QR.min_width = _ref[1], QR.min_heigth = _ref[2];
-        _ref1 = rules.match(/.+greater than (\d+)x(\d+).+/), _ = _ref1[0], QR.max_width = _ref1[1], QR.max_heigth = _ref1[2];
+        _ref = rules.match(/.+smaller than (\d+)x(\d+).+/), _ = _ref[0], QR.min_width = _ref[1], QR.min_height = _ref[2];
+        _ref1 = rules.match(/.+greater than (\d+)x(\d+).+/), _ = _ref1[0], QR.max_width = _ref1[1], QR.max_height = _ref1[2];
+        _ref2 = ['min_width', 'min_height', 'max_width', 'max_height'];
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          prop = _ref2[_i];
+          QR[prop] = parseInt(QR[prop], 10);
+        }
       } catch (_error) {
         null;
       }
       nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
+      QR.max_size_video = 3145728;
+      QR.max_width_video = QR.max_height_video = 2048;
+      QR.max_duration_video = 120;
       QR.spoiler = !!$('input[name=spoiler]');
       if (QR.spoiler) {
         $.addClass(QR.nodes.el, 'has-spoiler');
@@ -9379,10 +9398,6 @@
         onload: QR.response,
         onerror: function() {
           delete QR.req;
-          if (QR.captcha.isEnabled) {
-            QR.captcha.destroy();
-            QR.captcha.setup();
-          }
           post.unlock();
           QR.cooldown.auto = false;
           QR.status();
@@ -9412,12 +9427,9 @@
       return QR.status();
     },
     response: function() {
-      var URL, ban, board, err, h1, isReply, m, post, postID, postsCount, req, resDoc, threadID, _, _ref, _ref1;
+      var URL, ban, board, captchasCount, err, h1, isReply, m, notif, post, postID, postsCount, req, resDoc, threadID, _, _ref, _ref1;
       req = QR.req;
       delete QR.req;
-      if (QR.captcha.isEnabled) {
-        QR.captcha.destroy();
-      }
       post = QR.posts[0];
       post.unlock();
       resDoc = req.response;
@@ -9442,12 +9454,12 @@
           } else if (/expired/i.test(err.textContent)) {
             err = 'This CAPTCHA is no longer valid because it has expired.';
           }
-          QR.cooldown.auto = false;
+          QR.cooldown.auto = QR.captcha.isEnabled ? !!QR.captcha.captchas.length : err === 'Connection error with sys.4chan.org.' ? true : false;
           QR.cooldown.set({
             delay: 2
           });
         } else if (err.textContent && (m = err.textContent.match(/wait\s+(\d+)\s+second/i))) {
-          QR.cooldown.auto = !QR.captcha.isEnabled;
+          QR.cooldown.auto = QR.captcha.isEnabled ? !!QR.captcha.captchas.length : true;
           QR.cooldown.set({
             delay: m[1]
           });
@@ -9489,13 +9501,26 @@
       });
       postsCount = QR.posts.length - 1;
       QR.cooldown.auto = postsCount && isReply;
-      if (QR.captcha.isEnabled && QR.cooldown.auto) {
-        QR.captcha.setup();
+      if (QR.cooldown.auto && QR.captcha.isEnabled && (captchasCount = QR.captcha.captchas.length) < 3 && captchasCount < postsCount) {
+        notif = new Notification('Quick reply warning', {
+          body: "You are running low on cached captchas. Cache count: " + captchasCount + ".",
+          icon: Favicon.logo
+        });
+        notif.onclick = function() {
+          QR.open();
+          QR.captcha.nodes.input.focus();
+          return window.focus();
+        };
+        notif.onshow = function() {
+          return setTimeout(function() {
+            return notif.close();
+          }, 7 * $.SECOND);
+        };
       }
       if (!(Conf['Persistent QR'] || QR.cooldown.auto)) {
         QR.close();
       } else {
-        if (QR.posts.length > 1) {
+        if (QR.posts.length > 1 && QR.captcha.isEnabled && QR.captcha.captchas.length === 0) {
           QR.captcha.setup();
         }
         post.rm();
@@ -9506,7 +9531,7 @@
         isReply: isReply,
         threadID: threadID
       });
-      URL = !isReply ? "/" + g.BOARD + "/res/" + threadID : g.VIEW === 'index' && !QR.cooldown.auto && Conf['Open Post in New Tab'] ? "/" + g.BOARD + "/res/" + threadID + "#p" + postID : void 0;
+      URL = threadID === postID ? Build.path(g.BOARD.ID, threadID) : g.VIEW === 'index' && !QR.cooldown.auto && Conf['Open Post in New Tab'] ? Build.path(g.BOARD.ID, threadID, postID) : void 0;
       if (URL) {
         if (Conf['Open Post in New Tab']) {
           $.open(URL);
@@ -9575,8 +9600,21 @@
       };
       $.on(input, 'blur', QR.focusout);
       $.on(input, 'focus', QR.focusin);
+      $.on(input, 'keydown', QR.captcha.keydown.bind(QR.captcha));
+      $.on(this.nodes.img.parentNode, 'click', QR.captcha.reload.bind(QR.captcha));
       $.addClass(QR.nodes.el, 'has-captcha');
       $.after(QR.nodes.com.parentNode, [imgContainer, input]);
+      this.captchas = [];
+      $.get('captchas', [], function(_arg) {
+        var captchas;
+        captchas = _arg.captchas;
+        QR.captcha.sync(captchas);
+        return QR.captcha.clear();
+      });
+      $.sync('captchas', this.sync);
+      new MutationObserver(this.afterSetup).observe($.id('captchaContainer'), {
+        childList: true
+      });
       this.beforeSetup();
       return this.afterSetup();
     },
@@ -9586,28 +9624,31 @@
       img.parentNode.parentNode.hidden = true;
       input.value = '';
       input.placeholder = 'Focus to load reCAPTCHA';
-      $.on(input, 'focus', this.setup);
-      this.setupObserver = new MutationObserver(this.afterSetup);
-      return this.setupObserver.observe($.id('captchaContainer'), {
-        childList: true
-      });
+      this.count();
+      return $.on(input, 'focus', this.setup);
     },
     setup: function() {
       return $.globalEval('loadRecaptcha()');
     },
     afterSetup: function() {
-      var challenge, img, input, _ref;
+      var challenge, img, input, setLifetime, _ref;
       if (!(challenge = $.id('recaptcha_challenge_field_holder'))) {
         return;
       }
-      QR.captcha.setupObserver.disconnect();
-      delete QR.captcha.setupObserver;
+      if (challenge === QR.captcha.nodes.challenge) {
+        return;
+      }
+      setLifetime = function(e) {
+        return QR.captcha.lifetime = e.detail;
+      };
+      $.on(window, 'captcha:timeout', setLifetime);
+      $.globalEval('window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))');
+      $.off(window, 'captcha:timeout', setLifetime);
       _ref = QR.captcha.nodes, img = _ref.img, input = _ref.input;
       img.parentNode.parentNode.hidden = false;
       input.placeholder = 'Verification';
+      QR.captcha.count();
       $.off(input, 'focus', QR.captcha.setup);
-      $.on(input, 'keydown', QR.captcha.keydown.bind(QR.captcha));
-      $.on(img.parentNode, 'click', QR.captcha.reload.bind(QR.captcha));
       QR.captcha.nodes.challenge = challenge;
       new MutationObserver(QR.captcha.load.bind(QR.captcha)).observe(challenge, {
         childList: true,
@@ -9620,30 +9661,112 @@
       $.globalEval('Recaptcha.destroy()');
       return this.beforeSetup();
     },
+    sync: function(captchas) {
+      QR.captcha.captchas = captchas;
+      return QR.captcha.count();
+    },
     getOne: function() {
-      var challenge, response;
-      challenge = this.nodes.img.alt;
-      response = this.nodes.input.value.trim();
-      if (response && !/\s/.test(response)) {
-        response = "" + response + " " + response;
+      var captcha, challenge, response;
+      this.clear();
+      if (captcha = this.captchas.shift()) {
+        challenge = captcha.challenge, response = captcha.response;
+        this.count();
+        $.set('captchas', this.captchas);
+      } else {
+        challenge = this.nodes.img.alt;
+        if (response = this.nodes.input.value) {
+          if (Conf['Auto-load captcha']) {
+            this.reload();
+          } else {
+            this.destroy();
+          }
+        }
+      }
+      if (response) {
+        response = response.trim();
+        if (!/\s/.test(response)) {
+          response = "" + response + " " + response;
+        }
       }
       return {
         challenge: challenge,
         response: response
       };
     },
+    save: function() {
+      var response;
+      if (!(response = this.nodes.input.value.trim())) {
+        return;
+      }
+      this.nodes.input.value = '';
+      this.captchas.push({
+        challenge: this.nodes.img.alt,
+        response: response,
+        timeout: this.timeout
+      });
+      this.count();
+      this.reload();
+      return $.set('captchas', this.captchas);
+    },
+    clear: function() {
+      var captcha, i, now, _i, _len, _ref;
+      if (!this.captchas.length) {
+        return;
+      }
+      now = Date.now();
+      _ref = this.captchas;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        captcha = _ref[i];
+        if (captcha.timeout > now) {
+          break;
+        }
+      }
+      if (!i) {
+        return;
+      }
+      this.captchas = this.captchas.slice(i);
+      this.count();
+      return $.set('captchas', this.captchas);
+    },
     load: function() {
-      var challenge;
+      var challenge, challenge_image;
       if (!this.nodes.challenge.firstChild) {
         return;
       }
+      if (!(challenge_image = $.id('recaptcha_challenge_image'))) {
+        return;
+      }
+      this.timeout = Date.now() + this.lifetime * $.SECOND - $.MINUTE;
       challenge = this.nodes.challenge.firstChild.value;
       this.nodes.img.alt = challenge;
-      this.nodes.img.src = "//www.google.com/recaptcha/api/image?c=" + challenge;
-      return this.nodes.input.value = null;
+      this.nodes.img.src = challenge_image.src;
+      this.nodes.input.value = null;
+      return this.clear();
+    },
+    count: function() {
+      var count, placeholder;
+      count = this.captchas ? this.captchas.length : 0;
+      placeholder = this.nodes.input.placeholder.replace(/\ \(.*\)$/, '');
+      placeholder += (function() {
+        switch (count) {
+          case 0:
+            if (placeholder === 'Verification') {
+              return ' (Shift + Enter to cache)';
+            } else {
+              return '';
+            }
+            break;
+          case 1:
+            return ' (1 cached captcha)';
+          default:
+            return " (" + count + " cached captchas)";
+        }
+      })();
+      this.nodes.input.placeholder = placeholder;
+      return this.nodes.input.alt = count;
     },
     reload: function(focus) {
-      $.globalEval('Recaptcha.reload("t")');
+      $.globalEval('Recaptcha.reload(); Recaptcha.should_focus = false;');
       if (focus) {
         return this.nodes.input.focus();
       }
@@ -9651,6 +9774,8 @@
     keydown: function(e) {
       if (e.keyCode === 8 && !this.nodes.input.value) {
         this.reload();
+      } else if (e.keyCode === 13 && e.shiftKey) {
+        this.save();
       } else {
         return;
       }
@@ -9982,9 +10107,6 @@
           node.disabled = lock;
         }
       }
-      if (QR.captcha.isEnabled) {
-        QR.captcha.nodes.input.disabled = lock;
-      }
       this.nodes.rm.style.visibility = lock ? 'hidden' : '';
       (lock ? $.off : $.on)(QR.nodes.filename.previousElementSibling, 'click', QR.openFileInput);
       this.nodes.spoiler.disabled = lock;
@@ -10084,7 +10206,7 @@
       } else {
         this.updateFilename();
       }
-      if (!/^image/.test(file.type)) {
+      if (!/^(image|video)\//.test(file.type)) {
         this.nodes.el.style.backgroundImage = null;
         return;
       }
@@ -10092,20 +10214,35 @@
     };
 
     _Class.prototype.setThumbnail = function() {
-      var fileURL, img;
-      img = $.el('img');
-      img.onload = (function(_this) {
+      var el, fileURL, isVideo;
+      isVideo = /^video\//.test(this.file.type);
+      el = $.el((isVideo ? 'video' : 'img'));
+      $.on(el, (isVideo ? 'loadeddata' : 'load'), (function(_this) {
         return function() {
-          var cv, height, s, width;
+          var cv, error, errors, height, s, width, _i, _len;
+          errors = _this.checkDimensions(el, isVideo);
+          if (errors.length) {
+            for (_i = 0, _len = errors.length; _i < _len; _i++) {
+              error = errors[_i];
+              QR.error(error);
+            }
+            _this.URL = fileURL;
+            return _this.rmFile();
+          }
           s = 90 * 2 * window.devicePixelRatio;
           if (_this.file.type === 'image/gif') {
             s *= 3;
           }
-          height = img.height, width = img.width;
-          if (height < s || width < s) {
-            _this.URL = fileURL;
-            _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
-            return;
+          if (isVideo) {
+            height = el.videoHeight;
+            width = el.videoWidth;
+          } else {
+            height = el.height, width = el.width;
+            if (height < s || width < s) {
+              _this.URL = fileURL;
+              _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
+              return;
+            }
           }
           if (height <= width) {
             width = s / height * width;
@@ -10115,18 +10252,52 @@
             width = s;
           }
           cv = $.el('canvas');
-          cv.height = img.height = height;
-          cv.width = img.width = width;
-          cv.getContext('2d').drawImage(img, 0, 0, width, height);
+          cv.height = el.height = height;
+          cv.width = el.width = width;
+          cv.getContext('2d').drawImage(el, 0, 0, width, height);
           URL.revokeObjectURL(fileURL);
           return cv.toBlob(function(blob) {
             _this.URL = URL.createObjectURL(blob);
             return _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
           });
         };
-      })(this);
+      })(this));
       fileURL = URL.createObjectURL(this.file);
-      return img.src = fileURL;
+      return el.src = fileURL;
+    };
+
+    _Class.prototype.checkDimensions = function(el, video) {
+      var duration, err, height, max_height, max_width, videoHeight, videoWidth, width;
+      err = [];
+      if (video) {
+        videoHeight = el.videoHeight, videoWidth = el.videoWidth, duration = el.duration;
+        max_height = QR.max_height < QR.max_height_video ? QR.max_height : QR.max_height_video;
+        max_width = QR.max_width < QR.max_width_video ? QR.max_width : QR.max_width_video;
+        if (videoHeight > max_height || videoWidth > max_width) {
+          err.push("" + this.file.name + ": Video too large (video: " + videoHeight + "x" + videoWidth + "px, max: " + max_height + "x" + max_width + "px)");
+        }
+        if (videoHeight < QR.min_height || videoWidth < QR.min_width) {
+          err.push("" + this.file.name + ": Video too small (video: " + videoHeight + "x" + videoWidth + "px, min: " + QR.min_height + "x" + QR.min_width + "px)");
+        }
+        if (!isFinite(el.duration)) {
+          err.push("" + file.name + ": Video lacks duration metadata (try remuxing)");
+        }
+        if (duration > QR.max_duration_video) {
+          err.push("" + this.file.name + ": Video too long (video: " + duration + "s, max: " + QR.max_duration_video + "s)");
+        }
+        if (el.mozHasAudio) {
+          err.push("" + file.name + ": Audio not allowed");
+        }
+      } else {
+        height = el.height, width = el.width;
+        if (height > QR.max_height || width > QR.max_width) {
+          err.push("" + this.file.name + ": Image too large (image: " + height + "x" + width + "px, max: " + QR.max_height + "x" + QR.max_width + "px)");
+        }
+        if (height < QR.min_height || width < QR.min_width) {
+          err.push("" + this.file.name + ": Image too small (image: " + height + "x" + width + "px, min: " + QR.min_height + "x" + QR.min_width + "px)");
+        }
+      }
+      return err;
     };
 
     _Class.prototype.rmFile = function() {
@@ -10488,7 +10659,7 @@
         if (src[2] === 'i.4cdn.org') {
           URL = Redirect.to('file', {
             boardID: src[3],
-            filename: src[5]
+            filename: src[src.length - 1]
           });
           if (URL) {
             thumb.href = URL;
@@ -10502,7 +10673,7 @@
             return;
           }
         }
-        return $.ajax("//a.4cdn.org/" + post.board + "/res/" + post.thread + ".json", {
+        return $.ajax("//a.4cdn.org/" + post.board + "/thread/" + post.thread + ".json", {
           onload: function() {
             var i, postObj, posts;
             if (this.status !== 200) {
@@ -11802,6 +11973,7 @@
       delete this.postCountEl;
       delete this.fileCountEl;
       delete this.pageCountEl;
+      delete this.dialog;
       Thread.callbacks.disconnect('Thread Stats');
       return $.off(d, 'ThreadUpdate', ThreadStats.onUpdate);
     },
@@ -11852,7 +12024,7 @@
             continue;
           }
           ThreadStats.pageCountEl.textContent = page.page;
-          (page.page === this.response.length - 1 ? $.addClass : $.rmClass)(ThreadStats.pageCountEl, 'warning');
+          (page.page === this.response.length ? $.addClass : $.rmClass)(ThreadStats.pageCountEl, 'warning');
           return;
         }
       }
@@ -12978,7 +13150,7 @@
           threadID: data.thread.ID,
           postID: ID
         })) {
-          QuoteYou.lastRead = data.nodes.root;
+          QuoteMarkers.lastRead = data.nodes.root;
         }
       }
       if (!ID) {
@@ -13073,7 +13245,7 @@
       }
       return Redirect.data = o;
     },
-    archives: [{"uid":0,"name":"Foolz","domain":"archive.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["a","biz","co","diy","gd","jp","m","sci","sp","tg","tv","v","vg","vp","vr","wsg"],"files":["a","biz","gd","diy","jp","m","sci","tg","vg","vp","vr","wsg"]},{"uid":1,"name":"NSFW Foolz","domain":"nsfw.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["u"],"files":["u"]},{"uid":2,"name":"The Dark Cave","domain":"archive.thedarkcave.org","http":true,"https":true,"software":"foolfuuka","boards":["c","int","out","po"],"files":["c","po"]},{"uid":3,"name":"4plebs Archive","domain":"archive.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["adv","hr","o","pol","s4s","tg","trv","tv","x"],"files":["adv","hr","o","pol","s4s","tg","trv","tv","x"]},{"uid":18,"name":"4plebs Flash Archive","domain":"flash.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["f"],"files":["f"]},{"uid":4,"name":"Nyafuu","domain":"archive.nyafuu.org","http":true,"https":true,"software":"foolfuuka","boards":["c","e","w","wg"],"files":["c","e","w","wg"]},{"uid":5,"name":"Love is Over","domain":"loveisover.me","http":true,"https":true,"software":"foolfuuka","boards":["d","i"],"files":["d","i"]},{"uid":8,"name":"Rebecca Black Tech","domain":"rbt.asia","http":true,"https":true,"software":"fuuka","boards":["cgl","g","mu","w"],"files":["cgl","g","mu","w"]},{"uid":9,"name":"Heinessen","domain":"archive.heinessen.com","http":true,"https":false,"software":"fuuka","boards":["an","fit","k","mlp","r9k","toy"],"files":["an","fit","k","r9k","toy"]},{"uid":10,"name":"warosu","domain":"fuuka.warosu.org","http":false,"https":true,"software":"fuuka","boards":["3","biz","cgl","ck","diy","fa","g","ic","jp","lit","sci","tg","vr"],"files":["3","biz","cgl","ck","diy","fa","ic","jp","lit","sci","tg","vr"]},{"uid":15,"name":"fgts","domain":"fgts.eu","http":true,"https":true,"software":"foolfuuka","boards":["cm","h","hc","hm","r","s","soc","y"],"files":["cm","h","hc","hm","r","s","soc","y"]},{"uid":16,"name":"maware","domain":"archive.mawa.re","http":true,"https":false,"software":"foolfuuka","boards":["t"],"files":["t"]},{"uid":17,"name":"installgentoo.com","domain":"chan.installgentoo.com","http":true,"https":false,"software":"foolfuuka","boards":["g","t"],"files":["g","t"]},{"uid":13,"name":"Foolz Beta","domain":"beta.foolz.us","http":true,"https":true,"withCredentials":true,"software":"foolfuuka","boards":["a","biz","co","d","diy","gd","jp","m","s4s","sci","sp","tg","tv","u","v","vg","vp","vr","wsg"],"files":["a","biz","d","diy","gd","jp","m","s4s","sci","tg","u","vg","vp","vr","wsg"]}],
+    archives: [{"uid":0,"name":"Foolz","domain":"archive.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["a","biz","co","diy","gd","jp","m","sci","sp","tg","tv","vg","vp","vr","wsg"],"files":["a","biz","gd","diy","jp","m","sci","tg","vg","vp","vr","wsg"]},{"uid":1,"name":"NSFW Foolz","domain":"nsfw.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["u"],"files":["u"]},{"uid":2,"name":"The Dark Cave","domain":"archive.thedarkcave.org","http":true,"https":true,"software":"foolfuuka","boards":["c","int","out","po"],"files":["c","po"]},{"uid":3,"name":"4plebs Archive","domain":"archive.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["adv","hr","o","pol","s4s","tg","trv","tv","x"],"files":["adv","hr","o","pol","s4s","tg","trv","tv","x"]},{"uid":18,"name":"4plebs Flash Archive","domain":"flash.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["f"],"files":["f"]},{"uid":4,"name":"Nyafuu","domain":"archive.nyafuu.org","http":true,"https":true,"software":"foolfuuka","boards":["c","e","w","wg"],"files":["c","e","w","wg"]},{"uid":5,"name":"Love is Over","domain":"loveisover.me","http":true,"https":true,"software":"foolfuuka","boards":["d","i"],"files":["d","i"]},{"uid":8,"name":"Rebecca Black Tech","domain":"rbt.asia","http":true,"https":true,"software":"fuuka","boards":["cgl","g","mu","w"],"files":["cgl","g","mu","w"]},{"uid":9,"name":"Heinessen","domain":"archive.heinessen.com","http":true,"https":false,"software":"fuuka","boards":["an","fit","k","mlp","r9k","toy"],"files":["an","fit","k","r9k","toy"]},{"uid":10,"name":"warosu","domain":"fuuka.warosu.org","http":false,"https":true,"software":"fuuka","boards":["3","biz","cgl","ck","diy","fa","g","ic","jp","lit","sci","tg","vr"],"files":["3","biz","cgl","ck","diy","fa","ic","jp","lit","sci","tg","vr"]},{"uid":15,"name":"fgts","domain":"fgts.eu","http":true,"https":true,"software":"foolfuuka","boards":["asp","cm","h","hc","hm","n","p","r","s","soc","y"],"files":["asp","cm","h","hc","hm","n","p","r","s","soc","y"]},{"uid":16,"name":"maware","domain":"archive.mawa.re","http":true,"https":false,"software":"foolfuuka","boards":["t"],"files":["t"]},{"uid":17,"name":"installgentoo.com","domain":"chan.installgentoo.com","http":true,"https":false,"software":"foolfuuka","boards":["g","t"],"files":["g","t"]},{"uid":13,"name":"Foolz Beta","domain":"beta.foolz.us","http":true,"https":true,"withCredentials":true,"software":"foolfuuka","boards":["a","biz","co","d","diy","gd","jp","m","s4s","sci","sp","tg","tv","u","vg","vp","vr","wsg"],"files":["a","biz","d","diy","gd","jp","m","s4s","sci","tg","u","vg","vp","vr","wsg"]}],
     to: function(dest, data) {
       var archive;
       archive = (dest === 'search' || dest === 'board' ? Redirect.data.thread : Redirect.data[dest])[data.boardID];
@@ -13137,7 +13309,7 @@
       "http": true,
       "https": true,
       "software": "foolfuuka",
-      "boards": ["a", "biz", "co", "diy", "gd", "jp", "m", "sci", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
+      "boards": ["a", "biz", "co", "diy", "gd", "jp", "m", "sci", "sp", "tg", "tv", "vg", "vp", "vr", "wsg"],
       "files": ["a", "biz", "gd", "diy", "jp", "m", "sci", "tg", "vg", "vp", "vr", "wsg"]
     }, {
       "uid": 1,
@@ -13227,8 +13399,8 @@
       "http": true,
       "https": true,
       "software": "foolfuuka",
-      "boards": ["cm", "h", "hc", "hm", "r", "s", "soc", "y"],
-      "files": ["cm", "h", "hc", "hm", "r", "s", "soc", "y"]
+      "boards": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"],
+      "files": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"]
     }, {
       "uid": 16,
       "name": "maware",
@@ -13255,7 +13427,7 @@
       "https": true,
       "withCredentials": true,
       "software": "foolfuuka",
-      "boards": ["a", "biz", "co", "d", "diy", "gd", "jp", "m", "s4s", "sci", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
+      "boards": ["a", "biz", "co", "d", "diy", "gd", "jp", "m", "s4s", "sci", "sp", "tg", "tv", "u", "vg", "vp", "vr", "wsg"],
       "files": ["a", "biz", "d", "diy", "gd", "jp", "m", "s4s", "sci", "tg", "u", "vg", "vp", "vr", "wsg"]
     }
   ];
@@ -13266,7 +13438,7 @@
         return d.body;
       }), function() {
         return $.asap((function() {
-          return $('.abovePostForm');
+          return $('hr');
         }), Banner.ready);
       });
     },
@@ -13286,7 +13458,7 @@
             alt: '4chan',
             title: 'Click to change'
           });
-          $.on(img, 'click', Banner.cb.toggle);
+          $.on(img, 'click error', Banner.cb.toggle);
           Banner.cb.toggle.call(img);
           $.prepend(banner, img);
           continue;
@@ -15090,7 +15262,7 @@
         return;
       }
       a.textContent = "Post No." + post + " Loading...";
-      return $.cache("//api.4chan.org" + a.pathname + ".json", function() {
+      return $.cache("//a.4cdn.org" + (a.pathname.split('/').splice(0, 4).join('/')) + ".json", function() {
         return ExpandComment.parse(this, a, post);
       });
     },
@@ -15111,7 +15283,7 @@
         a.textContent = "Error " + req.statusText + " (" + status + ")";
         return;
       }
-      posts = JSON.parse(req.response).posts;
+      posts = req.response.posts;
       if (spoilerRange = posts[0].custom_spoiler) {
         Build.spoilerRange[g.BOARD] = spoilerRange;
       }
@@ -15135,7 +15307,11 @@
         if (href[0] === '/') {
           continue;
         }
-        quote.href = "/" + post.board + "/res/" + href;
+        if (href[0] === '#') {
+          quote.href = "" + (a.pathname.split('/').splice(0, 4).join('/')) + href;
+        } else {
+          quote.href = "" + (a.pathname.split('/').splice(0, 3).join('/')) + "/" + href;
+        }
       }
       post.nodes.shortComment = comment;
       $.replace(comment, clone);
@@ -15721,7 +15897,7 @@
       return Conf[hotkey] = key;
     },
     keydown: function(e) {
-      var form, key, notification, notifications, op, target, thread, threadRoot, _i, _len, _ref;
+      var form, key, notification, notifications, op, searchInput, target, thread, threadRoot, _i, _len, _ref;
       if (!(key = Keybinds.keyCode(e))) {
         return;
       }
@@ -15731,9 +15907,11 @@
           return;
         }
       }
-      threadRoot = Nav.getThread();
-      if (op = $('.op', threadRoot)) {
-        thread = Get.postFromNode(op).thread;
+      if (g.VIEW !== 'catalog') {
+        threadRoot = Nav.getThread();
+        if (op = $('.op', threadRoot)) {
+          thread = Get.postFromNode(op).thread;
+        }
       }
       switch (key) {
         case Conf['Toggle board list']:
@@ -15745,10 +15923,13 @@
           Header.toggleBarVisibility();
           break;
         case Conf['Open empty QR']:
-          Keybinds.qr(threadRoot);
+          Keybinds.qr();
           break;
         case Conf['Open QR']:
-          Keybinds.qr(threadRoot, true);
+          if (g.VIEW === 'catalog') {
+            return;
+          }
+          Keybinds.qr(threadRoot);
           break;
         case Conf['Open settings']:
           Settings.open();
@@ -15821,30 +16002,48 @@
           }
           break;
         case Conf['Watch']:
+          if (g.VIEW === 'catalog') {
+            return;
+          }
           ThreadWatcher.toggle(thread);
           break;
         case Conf['Expand image']:
+          if (g.VIEW === 'catalog') {
+            return;
+          }
           Keybinds.img(threadRoot);
           break;
         case Conf['Expand images']:
+          if (g.VIEW === 'catalog') {
+            return;
+          }
           Keybinds.img(threadRoot, true);
           break;
         case Conf['Open Gallery']:
+          if (g.VIEW === 'catalog') {
+            return;
+          }
           Gallery.cb.toggle();
           break;
         case Conf['fappeTyme']:
+          if (g.VIEW === 'catalog') {
+            return;
+          }
           FappeTyme.cb.toggle.call({
             name: 'fappe'
           });
           break;
         case Conf['werkTyme']:
+          if (g.VIEW === 'catalog') {
+            return;
+          }
           FappeTyme.cb.toggle.call({
             name: 'werk'
           });
           break;
         case Conf['Front page']:
           if (Conf['JSON Navigation'] && g.VIEW === 'index') {
-            Index.userPageNav(0);
+            Index.userPageNav(1);
           } else {
             window.location = "/" + g.BOARD + "/";
           }
@@ -15881,11 +16080,13 @@
           }
           break;
         case Conf['Search form']:
-          if (Conf['JSON Navigation']) {
-            Index.searchInput.focus();
-          } else {
-            $.id('search-btn').click();
+          if (g.VIEW !== 'index') {
+            return;
           }
+          searchInput = Conf['JSON Navigation'] ? Index.searchInput : $.id('search-box');
+          Header.scrollToIfNeeded(searchInput);
+          searchInput.click();
+          searchInput.focus();
           break;
         case Conf['Paged mode']:
           if (!(g.VIEW === 'index' && Conf['Index Mode'] !== 'paged')) {
@@ -15937,21 +16138,39 @@
           Nav.scroll(-1);
           break;
         case Conf['Expand thread']:
+          if (g.VIEW !== 'index') {
+            return;
+          }
           ExpandThread.toggle(thread);
           break;
         case Conf['Open thread']:
+          if (g.VIEW !== 'index') {
+            return;
+          }
           Keybinds.open(thread);
           break;
         case Conf['Open thread tab']:
+          if (g.VIEW !== 'index') {
+            return;
+          }
           Keybinds.open(thread, true);
           break;
         case Conf['Next reply']:
+          if (g.VIEW === 'catalog') {
+            return;
+          }
           Keybinds.hl(+1, threadRoot);
           break;
         case Conf['Previous reply']:
+          if (g.VIEW === 'catalog') {
+            return;
+          }
           Keybinds.hl(-1, threadRoot);
           break;
         case Conf['Deselect reply']:
+          if (g.VIEW === 'catalog') {
+            return;
+          }
           Keybinds.hl(0, threadRoot);
           break;
         case Conf['Hide']:
@@ -16011,12 +16230,12 @@
       }
       return key;
     },
-    qr: function(thread, quote) {
-      if (!QR.postingIsEnabled) {
+    qr: function(thread) {
+      if (!(Conf['Quick Reply'] && QR.postingIsEnabled)) {
         return;
       }
       QR.open();
-      if (quote) {
+      if (thread != null) {
         QR.quote.call($('input', $('.post.highlight', thread) || thread));
       }
       QR.nodes.com.focus();
@@ -16056,7 +16275,7 @@
       if (g.VIEW !== 'index') {
         return;
       }
-      url = "/" + thread.board + "/thread/" + thread;
+      url = Build.path(thread.board.ID, thread.ID);
       if (tab) {
         return $.open(url);
       } else {
@@ -16545,10 +16764,14 @@
       return g.VIEW = view;
     },
     updateBoard: function(boardID) {
-      var fullBoardList;
+      var current, fullBoardList;
       fullBoardList = $('#full-board-list', Header.boardList);
-      $.rmClass($('.current', fullBoardList), 'current');
-      $.addClass($("a[href*='/" + boardID + "/']", fullBoardList), 'current');
+      if (current = $('.current', fullBoardList)) {
+        $.rmClass(current, 'current');
+      }
+      if (current = $("a[href*='/" + boardID + "/']", fullBoardList)) {
+        $.addClass(current, 'current');
+      }
       Header.generateBoardList(Conf['boardnav'].replace(/(\r\n|\n|\r)/g, ' '));
       Index.catalogLink.href = "//boards.4chan.org/" + boardID + "/";
       QR.flagsInput();
@@ -16674,7 +16897,7 @@
       if (threadID) {
         view = 'thread';
       } else {
-        pageNum = +view;
+        pageNum = +view || 1;
         view = 'index';
       }
       path = this.pathname;
@@ -16709,7 +16932,7 @@
         return Index.update(pageNum);
       }
       load = Navigate.load;
-      Navigate.req = $.ajax("//a.4cdn.org/" + boardID + "/res/" + threadID + ".json", {
+      Navigate.req = $.ajax("//a.4cdn.org/" + boardID + "/thread/" + threadID + ".json", {
         onabort: load,
         onloadend: load
       });
@@ -17913,6 +18136,13 @@
       }
       if (g.VIEW === 'thread') {
         g.THREADID = +pathname[3];
+        if (pathname[4] != null) {
+          g.SLUG = pathname[4];
+        }
+        if (pathname[2] !== 'thread') {
+          pathname[2] = 'thread';
+          history.replaceState(null, '', pathname.slice(0, 4).join('/') + location.hash);
+        }
       }
       flatten = function(parent, obj) {
         var key, val;
@@ -18112,14 +18342,15 @@
           return window.open('//sys.4chan.org/auth', 'This will steal your data.', 'left=0,top=0,width=500,height=255,toolbar=0,resizable=0');
         });
         $.before(styleSelector.previousSibling, [$.tn('['), passLink, $.tn(']\u00A0\u00A0')]);
+        $('link[href*="mobile"', d.head).disabled = true;
       }
       if (!Conf['JSON Navigation'] || g.VIEW === 'thread') {
         Main.initThread();
+        $.add(d.head, $.el('link', {
+          href: "//s.4cdn.org/css/flags.556.css",
+          rel: "stylesheet"
+        }));
       }
-      $.add(d.head, $.el('link', {
-        href: "//s.4cdn.org/css/flags.556.css",
-        rel: "stylesheet"
-      }));
       $.event('4chanXInitFinished');
       test = $.el('span');
       test.classList.add('a', 'b');

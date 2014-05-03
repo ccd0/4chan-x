@@ -1,7 +1,7 @@
 Banner =
   init: ->
     $.asap (-> d.body), ->
-      $.asap (-> $ '.abovePostForm'), Banner.ready
+      $.asap (-> $ 'hr'), Banner.ready
 
   ready: ->
     banner = $ ".boardBanner"
@@ -17,7 +17,7 @@ Banner =
           alt:   '4chan'
           title: 'Click to change'
 
-        $.on img, 'click', Banner.cb.toggle
+        $.on img, 'click error', Banner.cb.toggle
         Banner.cb.toggle.call img
 
         $.prepend banner, img
@@ -45,7 +45,7 @@ Banner =
 
       ->
         type = Object.keys(types)[Math.floor 3 * Math.random()]
-        num  = Math.floor types[type] * Math.random()
+        num = Math.floor types[type] * Math.random()
         @src = "//s.4cdn.org/image/title/#{num}.#{type}"
 
     click: (e) ->

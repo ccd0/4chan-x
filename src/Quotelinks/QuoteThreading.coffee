@@ -97,7 +97,7 @@ QuoteThreading =
     if post = posts[post.ID]
       posts.after post, posts[@ID]
 
-    else
+    else if posts[@ID]
       posts.prepend posts[@ID]
 
     return true

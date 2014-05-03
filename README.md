@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 # Get Appchan X [HERE](http://zixaphir.github.io/appchan-x/).
+=======
+Fork of [Spittie's 4chan X](https://github.com/Spittie/4chan-x) (itself a fork of [Seaweed's](https://github.com/seaweedchan/4chan-x)).
+
+Note: If you're looking for a maintained fork of OneeChan, try
+https://github.com/Nebukazar/OneeChan
+>>>>>>> v3
 
 1. Make sure both your **browser** and **Appchan X** are up to date.
 2. Disable your other extensions & scripts to identify conflicts.

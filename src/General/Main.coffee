@@ -18,6 +18,10 @@ Main =
       return Index.catalogSwitch()
     if g.VIEW is 'thread'
       g.THREADID = +pathname[3]
+      g.SLUG = pathname[4] if pathname[4]?
+      if pathname[2] isnt 'thread'
+        pathname[2] = 'thread'
+        history.replaceState null, '', pathname.slice(0,4).join('/') + location.hash
 
     # flatten Config into Conf
     # and get saved or default values
@@ -199,14 +203,17 @@ Main =
           'This will steal your data.'
           'left=0,top=0,width=500,height=255,toolbar=0,resizable=0'
       $.before styleSelector.previousSibling, [$.tn '['; passLink, $.tn ']\u00A0\u00A0']
+      # Completely disable the mobile layout
+      $('link[href*="mobile"', d.head).disabled = true
 
     # Parse HTML or skip it and start building from JSON.
     if !Conf['JSON Navigation'] or g.VIEW is 'thread'
       Main.initThread()
-      
-    $.add d.head, $.el 'link',
-      href: "//s.4cdn.org/css/flags.556.css"
-      rel:  "stylesheet"
+        
+      # JSON Navigation may not load on a page that has flags, so force their CSS to always be available.
+      $.add d.head, $.el 'link',
+        href: "//s.4cdn.org/css/flags.556.css"
+        rel:  "stylesheet"
 
     $.event '4chanXInitFinished'
 

@@ -1,3 +1,29 @@
+**ccd0**
+- Update due to more Recaptcha changes.
+- For single files, file errors are reported but no longer stop you from attempting to post. Files with errors are still removed when posting multiple files.
+- WebM files are checked for audio before posting (Firefox only).
+- Max resolution updated, now 10000x10000.
+- Check dimensions and duration of .webm files before posting.
+- Partly restore Mayhem's captcha changes reverted in last version. Captchas are now destroyed after posting instead of reloaded, unless `Auto-load captcha` is checked. Captcha caching is still enabled.
+- Thumbnails for .webm files in Quick Reply.
+- Revert captcha fixes of 1.4.2 as Google appears to have reverted the changes on its end. This restores captcha caching.
+- Quick fix for moot breaking captcha.
+- Restore `Comment Expansion`.
+- Another update to handle HTML changes.
+- Use new URLs.
+- Bugfixes.
+
+**fgts**
+- Update archive list.
+
+**MayhemYDG**
+- Update 4chan namespaces support.
+- Better handling of webm playback errors.
+- Bugfixes
+
+**woxxy**
+- Remove /v/ from stable Foolz archive.
+
 ### v2.9.20 
 *2014-04-20*
 

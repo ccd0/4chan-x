@@ -15,6 +15,11 @@ Build =
   thumbRotate: do ->
     n = 0
     -> n = (n + 1) % 3
+  path: (boardID, threadID, postID, fragment) ->
+    path  = "/#{boardID}/thread/#{threadID}"
+    path += "/#{g.SLUG}" if g.SLUG? and threadID is g.THREADID
+    path += "##{fragment or 'p'}#{postID}" if postID
+    path
   postFromObject: (data, boardID) ->
     o =
       # id
@@ -178,11 +183,12 @@ Build =
       ''
 
     if isOP and g.VIEW is 'index'
-      pageNum   = Index.liveThreadData.keys.indexOf("#{postID}") // Index.threadsNumPerPage
+      pageNum   = Index.liveThreadData.keys.indexOf("#{postID}") // Index.threadsNumPerPage + 1
       pageIcon  = " <span class=page-num title='This thread is on page #{pageNum} in the original index.'>Page #{pageNum}</span>"
-      replyLink = " &nbsp; <span>[<a href='/#{boardID}/thread/#{threadID}' class=replylink>Reply</a>]</span>"
+      replyLink = " &nbsp; <span>[<a href='#{Build.path boardID, threadID}' class=replylink>Reply</a>]</span>"
     else
-      pageIcon = replyLink = ''
+      pageIcon  = ''
+      replyLink = ''
 
     container = $.el 'div',
       id: "pc#{postID}"
@@ -208,13 +214,13 @@ Build =
           ' </span> ' +
           "<span class=dateTime data-utc=#{dateUTC}>#{date}</span> " +
           "<span class='postNum'>" +
-            "<a href=#{"/#{boardID}/thread/#{threadID}#p#{postID}"} title='Highlight this post'>No.</a>" +
+            "<a href=#{Build.path boardID, threadID, postID} title='Link to this post'>No.</a>" +
             "<a href='#{
               if g.VIEW is 'thread' and g.THREADID is threadID
                 "javascript:quote(#{postID})"
               else
-                "/#{boardID}/thread/#{threadID}#q#{postID}"
-              }' title='Quote this post'>#{postID}</a>" +
+                Build.path boardID, threadID, postID, 'q'
+              }' title='Reply to this post'>#{postID}</a>" +
             pageIcon + sticky + closed + replyLink +
           '</span>' +
         '</div>' +
@@ -225,11 +231,11 @@ Build =
 
       '</div>'
 
+    # Fix quote pathnames in index or cross-{board,thread} posts
     for quote in $$ '.quotelink', container
       href = quote.getAttribute 'href'
-      continue if href[0] is '/' # Cross-board quote, or board link
-      href = "#{threadID}#{href}" if href[0] is '#'
-      quote.href = "/#{boardID}/thread/#{href}" # Fix pathnames
+      continue unless href[0] is '#'
+      quote.href = Build.path boardID, threadID, href[2..]
 
     container
 
@@ -241,7 +247,7 @@ Build =
     $.el 'a',
       className: 'summary'
       textContent: text.join ' '
-      href: "/#{boardID}/thread/#{threadID}"
+      href: Build.path boardID, threadID
 
   thread: (board, data, full) ->
     Build.spoilerRange[board] = data.custom_spoiler
@@ -275,7 +281,7 @@ Build =
 
     postCount = data.replies + 1
     fileCount = data.images  + !!data.ext
-    pageCount = Index.liveThreadData.keys.indexOf("#{thread.ID}") // Index.threadsNumPerPage
+    pageCount = Index.liveThreadData.keys.indexOf("#{thread.ID}") // Index.threadsNumPerPage + 1
 
     subject = if thread.OP.info.subject
       "<div class='subject'>#{thread.OP.info.subject}</div>"
