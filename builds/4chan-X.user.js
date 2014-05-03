@@ -12332,10 +12332,10 @@
           PostHiding.toggle(thread.OP);
           break;
         case Conf['Previous Post Quoting You']:
-          QuoteYou.cb.seek('preceding');
+          QuoteMarkers.cb.seek('preceding');
           break;
         case Conf['Next Post Quoting You']:
-          QuoteYou.cb.seek('following');
+          QuoteMarkers.cb.seek('following');
           break;
         default:
           return;
