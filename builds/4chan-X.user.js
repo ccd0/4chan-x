@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.7.8 - 2014-04-20
+* 4chan X - Version 1.7.8 - 2014-05-03
 *
 * Licensed under the MIT license.
 * https://github.com/ccd0/4chan-x/blob/master/LICENSE
@@ -11049,20 +11049,19 @@
       });
     },
     ready: function() {
-      var banner, child, children, i;
+      var banner, child, children, i, _i, _len;
       banner = $(".boardBanner");
       children = banner.children;
-      i = 0;
-      while (child = children[i++]) {
-        if (i === 1) {
+      for (i = _i = 0, _len = children.length; _i < _len; i = ++_i) {
+        child = children[i];
+        if (i === 0) {
           child.id = "Banner";
           child.title = "Click to change";
-          $.on(child, 'click', Banner.cb.toggle);
+          $.on(child, 'click error', Banner.cb.toggle);
           continue;
         }
         if (Conf['Custom Board Titles']) {
-          Banner.custom(child).title = "Ctrl+click to edit board " + (i === 3 ? 'sub' : '') + "title";
-          child.spellcheck = false;
+          Banner.custom(child).title = "Ctrl+click to edit board " + (i === 2 ? 'sub' : '') + "title";
         }
       }
     },
@@ -11071,14 +11070,14 @@
         var types;
         types = {
           jpg: 227,
-          png: 270,
+          png: 262,
           gif: 253
         };
         return function() {
           var num, type;
           type = Object.keys(types)[Math.floor(3 * Math.random())];
           num = Math.floor(types[type] * Math.random());
-          return this.src = "//static.4chan.org/image/title/" + num + "." + type;
+          return this.src = "//s.4cdn.org/image/title/" + num + "." + type;
         };
       })(),
       click: function(e) {
@@ -13777,9 +13776,14 @@
           return window.open('//sys.4chan.org/auth', 'This will steal your data.', 'left=0,top=0,width=500,height=255,toolbar=0,resizable=0');
         });
         $.before(styleSelector.previousSibling, [$.tn('['), passLink, $.tn(']\u00A0\u00A0')]);
+        $('link[href*="yotsubluemobile.559.css"', d.head).disabled = true;
       }
       if (!Conf['JSON Navigation'] || g.VIEW === 'thread') {
         Main.initThread();
+        $.add(d.head, $.el('link', {
+          href: "//s.4cdn.org/css/flags.556.css",
+          rel: "stylesheet"
+        }));
       }
       $.event('4chanXInitFinished');
       test = $.el('span');

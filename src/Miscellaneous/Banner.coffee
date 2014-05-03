@@ -7,21 +7,19 @@ Banner =
     banner = $ ".boardBanner"
     {children} = banner
 
-    i = 0
-    while child = children[i++]
-      if i is 1
+    for child, i in children
+      if i is 0
         child.id = "Banner"
         child.title = "Click to change"
-        $.on child, 'click', Banner.cb.toggle
+        $.on child, 'click error', Banner.cb.toggle
 
         continue
 
       if Conf['Custom Board Titles']
-        Banner.custom(child).title = "Ctrl+click to edit board #{if i is 3
+        Banner.custom(child).title = "Ctrl+click to edit board #{if i is 2
           'sub'
         else
           ''}title"
-        child.spellcheck = false
 
     return
 
@@ -29,13 +27,13 @@ Banner =
     toggle: do ->
       types =
         jpg: 227
-        png: 270
+        png: 262
         gif: 253
 
       ->
         type = Object.keys(types)[Math.floor 3 * Math.random()]
         num = Math.floor types[type] * Math.random()
-        @src = "//static.4chan.org/image/title/#{num}.#{type}"
+        @src = "//s.4cdn.org/image/title/#{num}.#{type}"
       
     click: (e) ->
       if e.ctrlKey
