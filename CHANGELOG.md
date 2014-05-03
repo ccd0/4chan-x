@@ -1,3 +1,6 @@
+**ccd0**:
+- Copy Mayhem's fix for 4chan post form changes.
+
 ### v1.7.27 
 *2014-05-02*
 
