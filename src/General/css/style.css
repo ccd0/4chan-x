@@ -69,18 +69,6 @@ a {
   border-radius: 3px;
   padding: 0px 2px;
 }
-body > hr,
-#blotter hr,
-.desktop > hr,
-#delform > hr,
-#content > hr {
-  display: none;
-}
-:root.index .board > hr:last-of-type,
-:root.thread .board > hr {
-  border: 0px;
-  margin: 0px;
-}
 .ad-plea {
   display: none;
 }
