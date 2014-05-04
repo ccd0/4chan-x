@@ -28,6 +28,6 @@
 
 ### Contribute
 
-- See (https://github.com/zixaphir/appchan-x/CONTRIBUTING.md).
+- See (https://github.com/zixaphir/appchan-x/blob/master/CONTRIBUTING.md).
 
 Note: this is only used to release new versions, ignore as you see fit.
