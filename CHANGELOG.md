@@ -1,3 +1,10 @@
+### v2.9.24 
+*2014-05-04*
+
+**zixaphir**
+- Update archives (we don't sync them like Mayhem does)
+- Fix prefetching
+
 ### v2.9.23 
 *2014-05-03*
 
