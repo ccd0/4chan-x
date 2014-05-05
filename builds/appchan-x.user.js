@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.23 - 2014-05-04
+* appchan x - Version 2.9.23 - 2014-05-05
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -10406,7 +10406,7 @@
   FappeTyme = {
     init: function() {
       var el, lc, type, _i, _len, _ref;
-      if (!(Conf['Fappe Tyme'] || Conf['Werk Tyme']) || g.BOARD === 'f') {
+      if (!(Conf['Fappe Tyme'] || Conf['Werk Tyme']) || g.BOARD.ID === 'f') {
         return;
       }
       _ref = ["Fappe", "Werk"];
