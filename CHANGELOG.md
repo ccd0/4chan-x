@@ -1,3 +1,10 @@
+### v2.9.25 
+*2014-05-05*
+
+**zixaphir**
+- Due to a git commit fail, the last version didn't actually get the correct updates that it was supposed to get.
+- Thanks git.
+
 ### v2.9.24 
 *2014-05-04*
 
