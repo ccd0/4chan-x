@@ -366,11 +366,12 @@ QR =
     else if index isnt 0 or (post = QR.posts[QR.posts.length - 1]).file
       isNewPost = true
       post = new QR.post()
-    QR.checkDimensions file, (pass) ->
+    QR.checkDimensions file, (pass, el) ->
       if pass or isSingle
-        post.setFile file
+        post.setFile file, el
       else if isNewPost
         post.rm()
+        URL.revokeObjectURL el.src if el
 
   checkDimensions: (file, cb) ->
     if /^image\//.test file.type
@@ -384,7 +385,7 @@ QR =
         if height < QR.min_height or width < QR.min_width
           QR.error "#{file.name}: Image too small (image: #{height}x#{width}px, min: #{QR.min_height}x#{QR.min_width}px)"
           pass = false
-        cb pass
+        cb pass, img
       img.src = URL.createObjectURL file
     else if /^video\//.test file.type
       video = $.el 'video'
@@ -400,10 +401,10 @@ QR =
         if videoHeight < QR.min_height or videoWidth < QR.min_width
           QR.error "#{file.name}: Video too small (video: #{videoHeight}x#{videoWidth}px, min: #{QR.min_height}x#{QR.min_width}px)"
           pass = false
-        unless isFinite video.duration
+        unless isFinite duration
           QR.error "#{file.name}: Video lacks duration metadata (try remuxing)"
           pass = false
-        if duration > QR.max_duration_video
+        else if duration > QR.max_duration_video
           QR.error "#{file.name}: Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
           pass = false
         <% if (type === 'userscript') { %>
@@ -411,7 +412,7 @@ QR =
           QR.error "#{file.name}: Audio not allowed"
           pass = false
         <% } %>
-        cb pass
+        cb pass, video
         cb = null
       $.on video, 'error', ->
         return unless cb
@@ -419,11 +420,12 @@ QR =
           # only report error here if we should have been able to play the video
           # otherwise "unsupported type" should already have been shown
           QR.error "#{file.name}: Video appears corrupt"
-        cb false
+        URL.revokeObjectURL file
+        cb false, null
         cb = null
       video.src = URL.createObjectURL file
     else
-      cb true
+      cb true, null
 
   openFileInput: (e) ->
     e.stopPropagation()

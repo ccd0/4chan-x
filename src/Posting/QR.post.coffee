@@ -156,55 +156,50 @@ QR.post = class
       @save node
     return
 
-  setFile: (@file) ->
+  setFile: (@file, el) ->
     @filename = file.name
     @filesize = $.bytesToString file.size
     @nodes.label.hidden = false if QR.spoiler
     URL.revokeObjectURL @URL
     @showFileData() if @ is QR.selected
-    unless /^(image|video)\//.test file.type
+    if el
+      @setThumbnail el
+    else
       @nodes.el.style.backgroundImage = null
-      return
-    @setThumbnail()
 
-  setThumbnail: ->
+  setThumbnail: (el) ->
     # Create a redimensioned thumbnail.
-    isVideo = /^video\//.test @file.type
-    img = $.el (if isVideo then 'video' else 'img')
+    isVideo = el.tagName is 'VIDEO'
 
-    $.on img, (if isVideo then 'loadeddata' else 'load'), =>
-      # Generate thumbnails only if they're really big.
-      # Resized pictures through canvases look like ass,
-      # so we generate thumbnails `s` times bigger then expected
-      # to avoid crappy resized quality.
-      s = 90 * 2 * window.devicePixelRatio
-      s *= 3 if @file.type is 'image/gif' # let them animate
-      if isVideo
-        height = img.videoHeight
-        width = img.videoWidth
-      else
-        {height, width} = img
-        if height < s or width < s
-          @URL = fileURL
-          @nodes.el.style.backgroundImage = "url(#{@URL})"
-          return
-      if height <= width
-        width  = s / height * width
-        height = s
-      else
-        height = s / width  * height
-        width  = s
-      cv = $.el 'canvas'
-      cv.height = img.height = height
-      cv.width  = img.width  = width
-      cv.getContext('2d').drawImage img, 0, 0, width, height
-      URL.revokeObjectURL fileURL
-      cv.toBlob (blob) =>
-        @URL = URL.createObjectURL blob
+    # Generate thumbnails only if they're really big.
+    # Resized pictures through canvases look like ass,
+    # so we generate thumbnails `s` times bigger then expected
+    # to avoid crappy resized quality.
+    s = 90 * 2 * window.devicePixelRatio
+    s *= 3 if @file.type is 'image/gif' # let them animate
+    if isVideo
+      height = el.videoHeight
+      width = el.videoWidth
+    else
+      {height, width} = el
+      if height < s or width < s
+        @URL = el.src
         @nodes.el.style.backgroundImage = "url(#{@URL})"
-
-    fileURL = URL.createObjectURL @file
-    img.src = fileURL
+        return
+    if height <= width
+      width  = s / height * width
+      height = s
+    else
+      height = s / width  * height
+      width  = s
+    cv = $.el 'canvas'
+    cv.height = height
+    cv.width  = width
+    cv.getContext('2d').drawImage el, 0, 0, width, height
+    URL.revokeObjectURL el.src
+    cv.toBlob (blob) =>
+      @URL = URL.createObjectURL blob
+      @nodes.el.style.backgroundImage = "url(#{@URL})"
 
   rmFile: ->
     return if @isLocked
