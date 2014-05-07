@@ -8,7 +8,6 @@
 .field {
   background-color: #FFF;
   border: 1px solid #CCC;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   color: #333;
   font-family: inherit;
@@ -235,7 +234,6 @@ body > .desktop:not(hr):not(.navLinks):not(#boardNavDesktop):not(#boardNavDeskto
   position: absolute;
 }
 .message {
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   padding: 6px 20px;
   max-height: 200px;
@@ -245,7 +243,6 @@ body > .desktop:not(hr):not(.navLinks):not(#boardNavDesktop):not(#boardNavDeskto
 
 /* Settings */
 :root.fourchan-x body {
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
 #overlay {
@@ -258,7 +255,6 @@ body > .desktop:not(hr):not(.navLinks):not(#boardNavDesktop):not(#boardNavDeskto
   width: 100%;
 }
 #fourchanx-settings {
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   box-shadow: 0 0 15px rgba(0, 0, 0, .15);
   height: 600px;
@@ -682,7 +678,6 @@ a.hide-announcement {
   clear: both;
 }
 #ihover {
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   max-height: 100%;
   max-width: 75%;
@@ -824,7 +819,6 @@ a.hide-announcement {
   border: 1px solid #808080;
   color: #FFF !important;
   font-size: 12px;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   cursor: move;
   display: inline-block;
