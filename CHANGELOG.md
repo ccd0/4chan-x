@@ -1,3 +1,10 @@
+**Zixaphir**
+- Refactoring, bug fixes.
+
+**ccd0**
+- Fix some potential Javascript injection issues.
+- Bug fixes.
+
 ### v1.7.30 
 *2014-05-05*
 
