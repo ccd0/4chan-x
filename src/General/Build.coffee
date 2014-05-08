@@ -42,6 +42,12 @@ Build =
       isSticky: !!data.sticky
       isClosed: !!data.closed
       # file
+
+    safetyBuffer = $.el 'div'
+    for key in ['name', 'subject'] when o[key]
+      safetyBuffer.textContent = o[key]
+      o[key] = safetyBuffer.innerHTML
+
     if data.ext or data.filedeleted
       o.file =
         name:      data.filename + data.ext
