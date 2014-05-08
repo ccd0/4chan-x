@@ -331,10 +331,8 @@ Linkify =
   <source src="https://mediacru.sh/#{a.dataset.uid}.mp4" type="video/mp4;">
   <source src="https://mediacru.sh/#{a.dataset.uid}.ogv" type="video/ogg; codecs='theora, vorbis'">
 </video>"""
-            when 'image/png', 'image/gif', 'image/jpeg'
+            when 'image/png', 'image/gif', 'image/jpeg', 'image/svg', 'image/svg+xml'
               "<a target=_blank href='#{a.dataset.href}'><img src='https://mediacru.sh/#{file.file}'></a>"
-            when 'image/svg', 'image/svg+xml'
-              "<embed src='https://mediacru.sh/#{file.file}' type='image/svg+xml' />"
             when 'audio/mpeg'
               "<audio controls><source src='https://mediacru.sh/#{file.file}'></audio>"
             else
