@@ -236,7 +236,10 @@ Linkify =
         target:      'blank'
         className:   'linkify'
         href:        a.dataset.href
-        innerHTML:   a.dataset.title or a.dataset.nodedata
+      if a.dataset.title
+        el.textContent = a.dataset.title
+      else
+        el.innerHTML = a.dataset.nodedata
 
       $.addClass el, a.dataset.key
 
