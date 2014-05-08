@@ -286,8 +286,12 @@ Linkify =
       regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/
       style: 'border: 0; width: auto; height: auto;'
       el: (a) ->
-        $.el 'div',
-          innerHTML: "<a target=_blank href='#{a.dataset.href}'><img src='#{a.dataset.href}'></a>"
+        img = $.el 'img', src: a.dataset.href
+        link = $.el 'a', {target: '_blank', href: a.dataset.href}
+        div = $.el 'div'
+        $.add link, img
+        $.add div, link
+        div
     ,
       key: 'InstallGentoo'
       regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/
@@ -319,7 +323,7 @@ Linkify =
         el = $.el 'div'
         $.cache "https://mediacru.sh/#{a.dataset.uid}.json", ->
           {status} = @
-          return div.innerHTML = "ERROR #{status}" unless status in [200, 304]
+          return div.textContent = "ERROR #{status}" unless status in [200, 304]
           {files} = @response
           for type in ['video/mp4', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'image/svg', 'audio/mpeg']
             for file in files
@@ -327,19 +331,23 @@ Linkify =
                 embed = file
                 break
             break if embed
-          return div.innerHTML = "ERROR: Not a valid filetype" unless embed
-          el.innerHTML = switch embed.type
-            when 'video/mp4', 'video/ogv' then """
+          return div.textContent = "ERROR: Not a valid filetype" unless embed
+          switch embed.type
+            when 'video/mp4', 'video/ogv'
+              el.innerHTML = """
 <video autoplay loop>
   <source src="https://mediacru.sh/#{a.dataset.uid}.mp4" type="video/mp4;">
   <source src="https://mediacru.sh/#{a.dataset.uid}.ogv" type="video/ogg; codecs='theora, vorbis'">
 </video>"""
             when 'image/png', 'image/gif', 'image/jpeg', 'image/svg', 'image/svg+xml'
-              "<a target=_blank href='#{a.dataset.href}'><img src='https://mediacru.sh/#{file.file}'></a>"
+              $.add el, $.el 'a',
+                target: '_blank'
+                href: a.dataset.href
+                innerHTML: "<img src='https://mediacru.sh/#{file.file}'>"
             when 'audio/mpeg'
-              "<audio controls><source src='https://mediacru.sh/#{file.file}'></audio>"
+              el.innerHTML = "<audio controls><source src='https://mediacru.sh/#{file.file}'></audio>"
             else
-              "ERROR: No valid filetype."
+              el.textContent = "ERROR: No valid filetype."
         el
     ,
       key: 'pastebin'
