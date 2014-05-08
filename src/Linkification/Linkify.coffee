@@ -317,13 +317,13 @@ Linkify =
         el
     ,
       key: 'MediaCrush'
-      regExp: /.*(?:mediacru.sh\/)([0-9a-z_]+)/i
+      regExp: /.*(?:mediacru.sh\/)([0-9a-z_-]+)/i
       style: 'border: 0;'
       el: (a) ->
         el = $.el 'div'
         $.cache "https://mediacru.sh/#{a.dataset.uid}.json", ->
           {status} = @
-          return div.textContent = "ERROR #{status}" unless status in [200, 304]
+          return el.textContent = "ERROR #{status}" unless status in [200, 304]
           {files} = @response
           for type in ['video/mp4', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'image/svg', 'audio/mpeg']
             for file in files
