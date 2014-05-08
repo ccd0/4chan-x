@@ -1,3 +1,9 @@
+### v2.9.26 
+*2014-05-07*
+
+**zixaphir**
+- Fixed (maybe?) a vulnerability in the post parser that allowed playful users to inject scripts or elements into posts, which could be used maliciously.
+
 ### v2.9.25 
 *2014-05-05*
 
