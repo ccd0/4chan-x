@@ -182,7 +182,8 @@ Linkify =
         $.cache service.api(uid), (-> Linkify.cb.title @, data), responseType: 'json'
       catch err
         if link
-          link.innerHTML = "[#{key}] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>"
+          link.innerHTML = '<span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>'
+          $.prepend link, $.tn "[#{key}] "
         return
 
   cb:
