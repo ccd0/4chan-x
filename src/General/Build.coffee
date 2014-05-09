@@ -47,7 +47,7 @@ Build =
         name:      data.filename + data.ext
         timestamp: "#{data.tim}#{data.ext}"
         url: if boardID is 'f'
-          "//i.4cdn.org/#{boardID}/#{data.filename}#{data.ext}"
+          "//i.4cdn.org/#{boardID}/#{escape data.filename}#{data.ext}"
         else
           "//i.4cdn.org/#{boardID}/#{data.tim}#{data.ext}"
         height:    data.h
@@ -271,7 +271,7 @@ Build =
     pageCount = Index.liveThreadIDs.indexOf(thread.ID) // Index.threadsNumPerPage + 1
 
     subject = if thread.OP.info.subject
-      "<div class='subject'>#{thread.OP.info.subject}</div>"
+      "<div class='subject'>#{thread.OP.nodes.subject.innerHTML}</div>"
     else
       ''
     comment = thread.OP.nodes.comment.innerHTML.replace /(<br>\s*){2,}/g, '<br>'

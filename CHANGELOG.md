@@ -1,3 +1,5 @@
+- [Security fix](https://github.com/MayhemYDG/4chan-x/issues/1634).
+
 ### 3.20.12 - *2014-05-03*
 
 - Fix quoting.
