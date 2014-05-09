@@ -156,7 +156,6 @@ Linkify =
       textContent: '(embed)'
 
     embed.dataset[name]    = value for name, value of {key, href, uid, options}
-    embed.dataset.nodedata = link.innerHTML
 
     $.addClass link, "#{embed.dataset.key}"
 
@@ -172,27 +171,25 @@ Linkify =
     return unless service = Linkify.types[key].title
     titles = Conf['CachedTitles']
     if title = titles[uid]
-      # Auto-embed may destroy our links.
-      if link
-        link.textContent = title[0]
-      if Conf['Embedding']
-        embed.dataset.title = title[0]
+      link.textContent = title[0]
     else
       try
         $.cache service.api(uid), (-> Linkify.cb.title @, data), responseType: 'json'
       catch err
-        if link
-          link.innerHTML = '<span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>'
-          $.prepend link, $.tn "[#{key}] "
+        link.innerHTML = '<span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>'
+        $.prepend link, $.tn "[#{key}] "
         return
 
   cb:
     toggle: ->
-      [string, @textContent] = if $.hasClass @, "embedded"
-        ['unembed', '(embed)']
+      if $.hasClass @, "embedded"
+        $.rm @previousElementSibling
+        @previousElementSibling.hidden = false
+        @textContent = '(embed)'
       else
-        ['embed', '(unembed)']
-      $.replace @previousElementSibling, Linkify.cb[string] @
+        @previousElementSibling.hidden = true
+        $.before @, Linkify.cb.embed @
+        @textContent = '(unembed)'
       $.toggleClass @, 'embedded'
 
     embed: (a) ->
@@ -207,28 +204,12 @@ Linkify =
 
       return el
 
-    unembed: (a) ->
-      # Recreate the original link.
-      el = $.el 'a',
-        rel:         'nofollow noreferrer'
-        target:      'blank'
-        className:   'linkify'
-        href:        a.dataset.href
-      if a.dataset.title
-        el.textContent = a.dataset.title
-      else
-        el.innerHTML = a.dataset.nodedata
-
-      $.addClass el, a.dataset.key
-
-      return el
-
     title: (req, data) ->
       [key, uid, options, link, embed] = data
       {status} = req
       service = Linkify.types[key].title
 
-      text = "[#{key}] #{switch status
+      link.textContent = "[#{key}] #{switch status
         when 200, 304
           service.text req.response
         when 404
@@ -238,9 +219,6 @@ Linkify =
         else
           "#{status}'d"
       }"
-
-      embed.dataset.title = text if Conf['Embedding'] and status in [200, 304]
-      link.textContent    = text if link
 
   ordered_types: [
       key: 'audio'
