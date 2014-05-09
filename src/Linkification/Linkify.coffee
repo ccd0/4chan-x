@@ -267,7 +267,7 @@ Linkify =
       style: 'border: 0; width: auto; height: auto;'
       el: (a) ->
         el = $.el 'div',
-          innerHTML: "<a target=_blank><img'></a>"
+          innerHTML: '<a target="_blank"><img></a>'
         el.firstChild.href = el.firstChild.firstChild.src = a.dataset.href
         el
     ,
