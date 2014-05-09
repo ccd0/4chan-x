@@ -8,9 +8,6 @@ Linkify =
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
-    if Conf['Title Link']
-      $.sync 'CachedTitles', Linkify.titleSync
-
     Post.callbacks.push
       name: 'Linkify'
       cb:   @node
