@@ -349,7 +349,8 @@ Linkify =
         $.ajax(
           "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{a.dataset.uid}"
           onloadend: ->
-            div.innerHTML = JSON.parse(@responseText).html
+            div.innerHTML = '<iframe width="500" height="400" scrolling="no" frameborder="no"></iframe>'
+            div.firstChild.src = JSON.parse(@responseText).html.match(/\bsrc="([^"]+)"/)[1]
           false)
         div
       title:
