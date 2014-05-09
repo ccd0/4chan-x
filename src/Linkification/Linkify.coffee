@@ -19,7 +19,7 @@ Linkify =
     if @isClone
       if Conf['Embedding']
         i = 0
-        items = $$ '.embed', @nodes.comment
+        items = $$ '.embedder', @nodes.comment
         while el = items[i++]
           $.on el, 'click', Linkify.cb.toggle
           Linkify.cb.toggle.call el if $.hasClass el, 'embedded'
