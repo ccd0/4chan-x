@@ -18,9 +18,9 @@
   outline: none;
   transition: color .25s, border-color .25s, flex .25s;
 }
-.field::-moz-placeholder,
-.field:hover::-moz-placeholder {
-  color: #AAA !important;
+.field::-moz-placeholder {
+  color: #AAA;
+  opacity: 1;
 }
 .field:hover {
   border-color: #999;
