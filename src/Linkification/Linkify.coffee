@@ -303,7 +303,7 @@ Linkify =
           {status} = @
           return el.textContent = "ERROR #{status}" unless status in [200, 304]
           {files} = @response
-          for type in ['video/mp4', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'image/svg', 'audio/mpeg']
+          for type in ['video/mp4', 'video/webm', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'audio/mpeg', 'audio/ogg']
             for file in files
               if file.type is type
                 embed = file
@@ -311,17 +311,18 @@ Linkify =
             break if embed
           return div.textContent = "ERROR: Not a valid filetype" unless embed
           switch embed.type
-            when 'video/mp4', 'video/ogv'
-              el.innerHTML = '<video autoplay loop><source type="video/mp4"><source type="video/ogg; codecs=\'theora, vorbis\'"></video>'
-              el.firstChild.children[0].src = "https://mediacru.sh/#{a.dataset.uid}.mp4"
-              el.firstChild.children[1].src = "https://mediacru.sh/#{a.dataset.uid}.ogv"
-            when 'image/png', 'image/gif', 'image/jpeg', 'image/svg', 'image/svg+xml'
+            when 'video/mp4', 'video/webm', 'video/ogv'
+              el.innerHTML = '<video autoplay loop><source type="video/mp4"><source type="video/webm"><source type="video/ogg"></video>'
+              for ext, i in ['mp4', 'webm', 'ogv']
+                el.firstChild.children[i].src = "https://mediacru.sh/#{a.dataset.uid}.#{ext}"
+            when 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg'
               el.innerHTML = '<a target="_blank"><img></a>'
               el.firstChild.href = a.dataset.href
               el.firstChild.firstChild.src = "https://mediacru.sh/#{file.file}"
-            when 'audio/mpeg'
-              el.innerHTML = '<audio controls><source></audio>'
-              el.firstChild.firstChild.src = "https://mediacru.sh/#{file.file}"
+            when 'audio/mpeg', 'audio/ogg'
+              el.innerHTML = '<audio controls><source type="audio/mpeg"><source type="audio/ogg"></audio>'
+              for ext, i in ['mp3', 'ogg']
+                el.firstChild.children[i].src = "https://mediacru.sh/#{a.dataset.uid}.#{ext}"
             else
               el.textContent = "ERROR: No valid filetype."
         el
