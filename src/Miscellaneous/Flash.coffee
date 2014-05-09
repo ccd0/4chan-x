@@ -10,9 +10,10 @@ Flash =
 
     swfName = $ '.fileText > a'
     nav     = $ '.navLinks'
+    swfName = swfName.href.replace /^(.*?)\/f\//g, ""
     sauceLink = $.el 'a',
       textContent: 'Check Sauce on SWFCHAN'
-      href:        "http://eye.swfchan.com/search/?q=#{swfName.textContent}"
+      href:        "http://eye.swfchan.com/search/?q=#{swfName}"
     $.addClass nav, 'swfSauce'
     $.rmClass nav, 'navLinks'
     $.rmAll nav
