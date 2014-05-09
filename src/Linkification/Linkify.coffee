@@ -245,8 +245,8 @@ Linkify =
       regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/
       style: 'border: 0; width: auto; height: auto;'
       el: (a) ->
-        el = $.el 'div',
-          innerHTML: '<a target="_blank"><img></a>'
+        el = $.el 'div'
+        el.innerHTML = '<a target="_blank"><img></a>'
         el.firstChild.href = el.firstChild.firstChild.src = a.dataset.href
         el
     ,
