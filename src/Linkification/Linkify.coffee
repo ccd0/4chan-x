@@ -266,12 +266,10 @@ Linkify =
       regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/
       style: 'border: 0; width: auto; height: auto;'
       el: (a) ->
-        img = $.el 'img', src: a.dataset.href
-        link = $.el 'a', {target: '_blank', href: a.dataset.href}
-        div = $.el 'div'
-        $.add link, img
-        $.add div, link
-        div
+        el = $.el 'div',
+          innerHTML: "<a target=_blank><img'></a>"
+        el.firstChild.href = el.firstChild.firstChild.src = a.dataset.href
+        el
     ,
       key: 'InstallGentoo'
       regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/
@@ -314,18 +312,16 @@ Linkify =
           return div.textContent = "ERROR: Not a valid filetype" unless embed
           switch embed.type
             when 'video/mp4', 'video/ogv'
-              el.innerHTML = """
-<video autoplay loop>
-  <source src="https://mediacru.sh/#{a.dataset.uid}.mp4" type="video/mp4;">
-  <source src="https://mediacru.sh/#{a.dataset.uid}.ogv" type="video/ogg; codecs='theora, vorbis'">
-</video>"""
+              el.innerHTML = '<video autoplay loop><source type="video/mp4"><source type="video/ogg; codecs=\'theora, vorbis\'"></video>'
+              el.firstChild.children[0].src = "https://mediacru.sh/#{a.dataset.uid}.mp4"
+              el.firstChild.children[1].src = "https://mediacru.sh/#{a.dataset.uid}.ogv"
             when 'image/png', 'image/gif', 'image/jpeg', 'image/svg', 'image/svg+xml'
-              $.add el, $.el 'a',
-                target: '_blank'
-                href: a.dataset.href
-                innerHTML: "<img src='https://mediacru.sh/#{file.file}'>"
+              el.innerHTML = '<a target="_blank"><img></a>'
+              el.firstChild.href = a.dataset.href
+              el.firstChild.firstChild.src = "https://mediacru.sh/#{file.file}"
             when 'audio/mpeg'
-              el.innerHTML = "<audio controls><source src='https://mediacru.sh/#{file.file}'></audio>"
+              el.innerHTML = '<audio controls><source></audio>'
+              el.firstChild.firstChild.src = "https://mediacru.sh/#{file.file}"
             else
               el.textContent = "ERROR: No valid filetype."
         el
