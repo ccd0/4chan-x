@@ -47,7 +47,7 @@ Build =
         name:      data.filename + data.ext
         timestamp: "#{data.tim}#{data.ext}"
         url: if boardID is 'f'
-          "//i.4cdn.org/#{boardID}/#{escape data.filename}#{data.ext}"
+          "//i.4cdn.org/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
         else
           "//i.4cdn.org/#{boardID}/#{data.tim}#{data.ext}"
         height:    data.h
@@ -145,7 +145,7 @@ Build =
       imgSrc = if boardID is 'f'
         ''
       else
-        "<a class='fileThumb#{if file.isSpoiler then ' imgspoiler' else ''}' href='#{file.url}' target=_blank>" +
+        "<a class='fileThumb#{if file.isSpoiler then ' imgspoiler' else ''}' href=\"#{file.url}\" target=_blank>" +
           "<img src='#{fileThumb}' alt='#{fileSize}' data-md5=#{file.MD5} style='height: #{file.theight}px; width: #{file.twidth}px;'>" +
         "</a>"
 
@@ -161,7 +161,7 @@ Build =
 
       fileDims = if file.name[-3..] is 'pdf' then 'PDF' else "#{file.width}x#{file.height}"
       fileInfo = "<div class=fileText #{if file.isSpoiler then "title='#{filename}'" else ''}>File: " +
-        "<a href='#{file.url}' #{if filename isnt shortFilename and !file.isSpoiler then " title='#{filename}'" else ''} target=_blank>#{if file.isSpoiler then 'Spoiler Image' else shortFilename}</a>" +
+        "<a href=\"#{file.url}\" #{if filename isnt shortFilename and !file.isSpoiler then " title='#{filename}'" else ''} target=_blank>#{if file.isSpoiler then 'Spoiler Image' else shortFilename}</a>" +
         " (#{fileSize}, #{fileDims})</div>"
 
       fileHTML = "<div class=file>#{fileInfo}#{imgSrc}</div>"
