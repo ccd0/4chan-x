@@ -343,6 +343,31 @@ Linkify =
         $.el 'iframe',
           src: "http://strawpoll.me/embed_1/#{a.dataset.uid}"
     ,
+      key: 'TwitchTV'
+      regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/
+      style: "border: none; width: 640px; height: 360px;"
+      el: (a) ->
+        if result = /(\w+)\/(?:[a-z]\/)?(\d+)/i.exec a.dataset.uid
+          [_, channel, chapter] = result
+
+          $.el 'object',
+            data: 'http://www.twitch.tv/widgets/archive_embed_player.swf'
+            innerHTML: """
+<param name='allowFullScreen' value='true' />
+<param name='flashvars' value='channel=#{channel}&start_volume=25&auto_play=false#{if chapter then "&chapter_id=" + chapter else ""}' />
+"""
+
+        else
+          channel = (/(\w+)/.exec a.dataset.uid)[0]
+
+          $.el 'object',
+            data: "http://www.twitch.tv/widgets/live_embed_player.swf?channel=#{channel}"
+            innerHTML: """
+<param  name="allowFullScreen" value="true" />
+<param  name="movie" value="http://www.twitch.tv/widgets/live_embed_player.swf" />
+<param  name="flashvars" value="hostname=www.twitch.tv&channel=#{channel}&auto_play=true&start_volume=25" />
+"""
+    ,
       key: 'Vocaroo'
       regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/
       style: ''
