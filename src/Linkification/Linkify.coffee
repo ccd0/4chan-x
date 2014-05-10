@@ -304,8 +304,8 @@ Linkify =
               el.firstChild.href = a.dataset.href
               el.firstChild.firstChild.src = "https://mediacru.sh/#{file.file}"
             when 'audio/mpeg', 'audio/ogg'
-              el.innerHTML = '<audio controls><source type="audio/mpeg"><source type="audio/ogg"></audio>'
-              for ext, i in ['mp3', 'ogg']
+              el.innerHTML = '<audio controls><source type="audio/ogg"><source type="audio/mpeg"></audio>'
+              for ext, i in ['ogg', 'mp3']
                 el.firstChild.children[i].src = "https://mediacru.sh/#{a.dataset.uid}.#{ext}"
             else
               el.textContent = "ERROR: No valid filetype."
