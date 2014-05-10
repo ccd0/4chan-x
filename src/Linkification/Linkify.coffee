@@ -349,24 +349,18 @@ Linkify =
       el: (a) ->
         if result = /(\w+)\/(?:[a-z]\/)?(\d+)/i.exec a.dataset.uid
           [_, channel, chapter] = result
-
-          $.el 'object',
+          obj = $.el 'object',
             data: 'http://www.twitch.tv/widgets/archive_embed_player.swf'
-            innerHTML: """
-<param name='allowFullScreen' value='true' />
-<param name='flashvars' value='channel=#{channel}&start_volume=25&auto_play=false#{if chapter then "&chapter_id=" + chapter else ""}' />
-"""
-
+          obj.innerHTML = '<param name="allowFullScreen" value="true" /><param name="flashvars" />'
+          obj.children[1].value = "channel=#{channel}&start_volume=25&auto_play=false#{if chapter then "&chapter_id=" + chapter else ""}"
+          obj
         else
           channel = (/(\w+)/.exec a.dataset.uid)[0]
-
-          $.el 'object',
+          obj = $.el 'object',
             data: "http://www.twitch.tv/widgets/live_embed_player.swf?channel=#{channel}"
-            innerHTML: """
-<param  name="allowFullScreen" value="true" />
-<param  name="movie" value="http://www.twitch.tv/widgets/live_embed_player.swf" />
-<param  name="flashvars" value="hostname=www.twitch.tv&channel=#{channel}&auto_play=true&start_volume=25" />
-"""
+          obj.innerHTML = '<param name="allowFullScreen" value="true" /><param name="movie" value="http://www.twitch.tv/widgets/live_embed_player.swf" /><param name="flashvars" />'
+          obj.children[2].value = "hostname=www.twitch.tv&channel=#{channel}&auto_play=true&start_volume=25"
+          obj
     ,
       key: 'Vocaroo'
       regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/
