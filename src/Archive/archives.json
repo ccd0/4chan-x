@@ -125,4 +125,13 @@
   "software": "foolfuuka",
   "boards": ["a", "biz", "co", "d", "diy", "gd", "jp", "m", "s4s", "sci", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
   "files": ["a", "biz", "d", "diy", "gd", "jp", "m", "s4s", "sci", "tg", "u", "vg", "vp", "vr", "wsg"]
+}, {
+  "uid": 18,
+  "name": "Innovandalism Archive",
+  "domain": "boards.innovandalism.eu",
+  "http": true,
+  "https": false,
+  "software": "foolfuuka",
+  "boards": ["v"],
+  "files": []
 }]
