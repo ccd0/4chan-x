@@ -63,11 +63,12 @@ Linkify =
     i = links.length
     while i--
       link = links[i]
-      Linkify.embedProcess Linkify.makeLink link, @
+      Linkify.embedProcess (Linkify.makeLink link, @), @
     return
 
-  embedProcess: (link) ->
+  embedProcess: (link, post) ->
     if data = Linkify.services link
+      data.push post
       Linkify.embed data if Conf['Embedding']
       Linkify.title data if Conf['Link Title']
 
@@ -148,7 +149,7 @@ Linkify =
     return
 
   embed: (data) ->
-    [key, uid, options, link] = data
+    [key, uid, options, link, post] = data
     href = link.href
     embed = $.el 'a',
       className:   'embedder'
@@ -164,10 +165,8 @@ Linkify =
 
     Linkify.cb.toggle.call embed if Conf['Auto-embed']
 
-    data.push embed
-
   title: (data) ->
-    [key, uid, options, link, embed] = data
+    [key, uid, options, link, post] = data
     return unless service = Linkify.types[key].title
     titles = Conf['CachedTitles']
     if title = titles[uid]
@@ -205,11 +204,11 @@ Linkify =
       return el
 
     title: (req, data) ->
-      [key, uid, options, link, embed] = data
+      [key, uid, options, link, post] = data
       {status} = req
       service = Linkify.types[key].title
 
-      link.textContent = "[#{key}] #{switch status
+      text = "[#{key}] #{switch status
         when 200, 304
           service.text req.response
         when 404
@@ -219,6 +218,12 @@ Linkify =
         else
           "#{status}'d"
       }"
+
+      link.textContent = text
+      for post2 in post.clones
+        for link2 in $$ 'a', post2.nodes.comment when link2.href is link.href
+          link2.textContent = text
+      return
 
   ordered_types: [
       key: 'audio'
