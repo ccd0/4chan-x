@@ -1,3 +1,9 @@
+**Zixaphir, ccd0**
+- Bug fixes in linkification/embedding.
+
+**ccd0**
+- Begin refactoring code to reduce potential for introducing Javascript injection bugs.
+
 ### v1.7.31 
 *2014-05-08*
 
