@@ -320,20 +320,12 @@ Linkify =
     ,
       key: 'SoundCloud'
       regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
-      style: 'height: auto; width: 500px; display: inline-block;'
+      style: 'border: 0; width: 500px; height: 400px;'
       el: (a) ->
-        div = $.el 'div',
-          className: "soundcloud"
-          name: "soundcloud"
-        $.ajax(
-          "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{a.dataset.uid}"
-          onloadend: ->
-            div.innerHTML = '<iframe width="500" height="400" scrolling="no" frameborder="no"></iframe>'
-            div.firstChild.src = JSON.parse(@responseText).html.match(/\bsrc="([^"]+)"/)[1]
-          false)
-        div
+        $.el 'iframe',
+          src: "//w.soundcloud.com/player/?visual=true&show_comments=false&url=https%3A%2F%2Fsoundcloud.com%2F#{encodeURIComponent a.dataset.uid}"
       title:
-        api: (uid) -> "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{uid}"
+        api: (uid) -> "//soundcloud.com/oembed?format=json&url=https%3A%2F%2Fsoundcloud.com%2F#{encodeURIComponent uid}"
         text: (_) -> _.title
     ,
       key: 'StrawPoll'
