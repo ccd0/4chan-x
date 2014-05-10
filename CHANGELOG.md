@@ -1,3 +1,6 @@
+### v1.7.32 
+*2014-05-10*
+
 **Zixaphir, ccd0**
 - Bug fixes in linkification/embedding.
 
