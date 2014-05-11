@@ -69,23 +69,8 @@ a {
   border-radius: 3px;
   padding: 0px 2px;
 }
-body > hr,
-#blotter hr,
-.desktop > hr,
-#delform > hr,
-#content > hr {
-  display: none;
-}
-:root.index .board > hr:last-of-type,
-:root.thread .board > hr {
-  border: 0px;
-  margin: 0px;
-}
 .ad-plea {
   display: none;
-}
-.ad-cnt {
-  margin: 10px !important;
 }
 
 /* 4chan style fixes */
@@ -904,12 +889,15 @@ span.hide-announcement {
 
 /* QR */
 :root.hide-original-post-form #postForm,
-:root.hide-original-post-form .postingMode,
-:root.hide-original-post-form #togglePostForm,
+:root.hide-original-post-form #togglePostFormLink,
+:root:not(.catalog) #togglePostFormLink,
 #qr.autohide:not(.focus):not(:hover):not(:active) > form,
 .thread #qr select[data-name=thread],
 #file-n-submit:not(.has-file) #qr-filerm {
   display: none;
+}
+:root:not(.hide-original-post-form):not(.catalog) #postForm {
+  display: table;
 }
 #qr select,
 #dump-button,

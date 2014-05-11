@@ -1,7 +1,65 @@
-**MayhemYDG**
-- Update 4chan namespaces support.
-- Better handling of webm playback errors.
-- Bugfixes
+
+### v1.7.33 
+*2014-05-10*
+
+**DamonGant**
+- Add Innovandalism Archive.
+
+**ccd0**
+- Update archive list.
+- Add "disabled" option when Foolz Beta is the only choice.
+
+### v1.7.32 
+*2014-05-10*
+
+**Zixaphir, ccd0**
+- Bug fixes in linkification/embedding.
+
+**ccd0**
+- Begin refactoring code to reduce potential for introducing Javascript injection bugs.
+
+### v1.7.31 
+*2014-05-08*
+
+**Zixaphir**
+- Refactoring, bug fixes.
+
+**ccd0**
+- Fix some potential Javascript injection issues.
+- Bug fixes.
+
+### v1.7.30 
+*2014-05-05*
+
+**thebladeee**
+- Update archives.
+
+### v1.7.29 
+*2014-05-03*
+
+**ccd0**:
+- If the original post form not hidden, it is expanded (except on the catalog page).
+- 4chan's horizontal rules are no longer hidden. If you want to hide them as before, add the old code to your custom CSS:
+```
+body > hr,
+#blotter hr,
+.desktop > hr,
+#delform > hr,
+#content > hr {
+  display: none;
+}
+:root.index .board > hr:last-of-type,
+:root.thread .board > hr {
+  border: 0px;
+  margin: 0px;
+}
+```
+
+### v1.7.28 
+*2014-05-03*
+
+**ccd0**:
+- Copy Mayhem's fix for 4chan post form changes.
 
 ### v1.7.27 
 *2014-05-02*

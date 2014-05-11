@@ -47,7 +47,7 @@ Build =
         name:      data.filename + data.ext
         timestamp: "#{data.tim}#{data.ext}"
         url: if boardID is 'f'
-          "//i.4cdn.org/#{boardID}/#{data.filename}#{data.ext}"
+          "//i.4cdn.org/#{boardID}/#{data.filename}#{data.ext}".replace /'/g, '&apos;'
         else
           "//i.4cdn.org/#{boardID}/#{data.tim}#{data.ext}"
         height:    data.h

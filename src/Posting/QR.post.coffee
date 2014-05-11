@@ -156,7 +156,7 @@ QR.post = class
       @save node
     return
 
-  setFile: (@file) ->
+  setFile: (@file, el) ->
     @filename = file.name
     @filesize = $.bytesToString file.size
     @nodes.label.hidden = false if QR.spoiler
@@ -167,10 +167,8 @@ QR.post = class
       @updateFilename()
     unless /^(image|video)\//.test file.type
       @nodes.el.style.backgroundImage = null
-      return
-    @setThumbnail()
 
-  setThumbnail: ->
+  setThumbnail: (el) ->
     # Create a redimensioned thumbnail.
     isVideo = /^video\//.test @file.type
     el = $.el (if isVideo then 'video' else 'img')

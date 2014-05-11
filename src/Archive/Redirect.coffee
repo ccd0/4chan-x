@@ -7,9 +7,9 @@ Redirect =
 
     archives = {}
     for data in Redirect.archives
-      {name, boards, files, software} = data
+      {name, boards, files, software, withCredentials} = data
       archives[name] = data
-      for boardID in boards
+      for boardID in boards when !withCredentials
         o.thread[boardID] = data unless boardID of o.thread
         o.post[boardID]   = data unless boardID of o.post   or software isnt 'foolfuuka'
         o.file[boardID]   = data unless boardID of o.file   or boardID  not in files

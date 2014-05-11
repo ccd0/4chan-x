@@ -51,7 +51,7 @@ QR =
       if Conf['QR Shortcut']
         $.rmClass $('.qr-shortcut'), 'disabled'
 
-    $.before $.id('togglePostForm') or $.id('postForm'), link
+    $.before $.id('togglePostFormLink'), link
 
     $.on d, 'QRGetSelectedPost', ({detail: cb}) ->
       cb QR.selected
@@ -435,7 +435,6 @@ QR =
     setNode 'addPost',       '#add-post'
     setNode 'charCount',     '#char-count'
     setNode 'fileSubmit',    '#file-n-submit'
-    setNode 'filesize',      '#qr-filesize'
     setNode 'filename',      '#qr-filename'
     setNode 'fileContainer', '#qr-filename-container'
     setNode 'fileRM',        '#qr-filerm'
