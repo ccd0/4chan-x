@@ -156,7 +156,7 @@ Index =
           return
       return if a.textContent is 'Catalog'
       e.preventDefault()
-      Index.userPageNav +a.pathname.split('/')[2]
+      Index.userPageNav +a.pathname.split('/')[2] or 1
 
   scrollToIndex: ->
     Header.scrollToIfNeeded Index.root
