@@ -124,6 +124,8 @@ Navigate =
     $.addClass current, 'current' if current = $ "a[href*='/#{boardID}/']", fullBoardList
     Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
 
+    $('#returnlink a').href = "/#{g.BOARD}/"
+
     QR.flagsInput()
 
     $.cache '//a.4cdn.org/boards.json', ->
