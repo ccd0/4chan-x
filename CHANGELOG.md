@@ -1,3 +1,13 @@
+### v1.7.33 
+*2014-05-10*
+
+**DamonGant**
+- Add Innovandalism Archive.
+
+**ccd0**
+- Update archive list.
+- Add "disabled" option when Foolz Beta is the only choice.
+
 ### v1.7.32 
 *2014-05-10*
 
