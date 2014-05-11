@@ -132,6 +132,6 @@
   "https": true,
   "withCredentials": true,
   "software": "foolfuuka",
-  "boards": ["a", "biz", "co", "d", "diy", "gd", "jp", "m", "s4s", "sci", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "biz", "d", "diy", "gd", "jp", "m", "s4s", "sci", "tg", "u", "vg", "vp", "vr", "wsg"]
+  "boards": ["a", "biz", "co", "d", "diy", "gd", "h", "i", "jp", "m", "mlp", "s4s", "sci", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
+  "files": []
 }]
