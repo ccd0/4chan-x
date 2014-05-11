@@ -2960,7 +2960,7 @@
       _ref = $$('.navLinks.desktop > a');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         el = _ref[_i];
-        if (el.getAttribute('href') === '.././catalog') {
+        if (/\/catalog$/.test(el.pathname)) {
           el.href = '.././';
         }
         $.on(el, 'click', function() {
@@ -3739,7 +3739,7 @@
         o.file = {
           name: data.filename + data.ext,
           timestamp: "" + data.tim + data.ext,
-          url: boardID === 'f' ? ("//i.4cdn.org/" + boardID + "/" + data.filename + data.ext).replace(/'/g, '&apos;') : "//i.4cdn.org/" + boardID + "/" + data.tim + data.ext,
+          url: boardID === 'f' ? "//i.4cdn.org/" + boardID + "/" + (encodeURIComponent(data.filename)) + data.ext : "//i.4cdn.org/" + boardID + "/" + data.tim + data.ext,
           height: data.h,
           width: data.w,
           MD5: data.md5,
@@ -3811,7 +3811,7 @@
             file.twidth = file.theight = 100;
           }
         }
-        imgSrc = boardID === 'f' ? '' : ("<a class='fileThumb" + (file.isSpoiler ? ' imgspoiler' : '') + "' href='" + file.url + "' target=_blank>") + ("<img src='" + fileThumb + "' alt='" + fileSize + "' data-md5=" + file.MD5 + " style='height: " + file.theight + "px; width: " + file.twidth + "px;'>") + "</a>";
+        imgSrc = boardID === 'f' ? '' : ("<a class='fileThumb" + (file.isSpoiler ? ' imgspoiler' : '') + "' href=\"" + file.url + "\" target=_blank>") + ("<img src='" + fileThumb + "' alt='" + fileSize + "' data-md5=" + file.MD5 + " style='height: " + file.theight + "px; width: " + file.twidth + "px;'>") + "</a>";
         a = $.el('a', {
           innerHTML: file.name
         });
@@ -3821,7 +3821,7 @@
         a.textContent = filename;
         filename = a.innerHTML.replace(/'/g, '&apos;');
         fileDims = file.name.slice(-3) === 'pdf' ? 'PDF' : "" + file.width + "x" + file.height;
-        fileInfo = ("<div class=fileText " + (file.isSpoiler ? "title='" + filename + "'" : '') + ">File: ") + ("<a href='" + file.url + "' " + (filename !== shortFilename && !file.isSpoiler ? " title='" + filename + "'" : '') + " target=_blank>" + (file.isSpoiler ? 'Spoiler Image' : shortFilename) + "</a>") + (" (" + fileSize + ", " + fileDims + ")</div>");
+        fileInfo = ("<div class=fileText " + (file.isSpoiler ? "title='" + filename + "'" : '') + ">File: ") + ("<a href=\"" + file.url + "\" " + (filename !== shortFilename && !file.isSpoiler ? " title='" + filename + "'" : '') + " target=_blank>" + (file.isSpoiler ? 'Spoiler Image' : shortFilename) + "</a>") + (" (" + fileSize + ", " + fileDims + ")</div>");
         fileHTML = "<div class=file>" + fileInfo + imgSrc + "</div>";
       } else {
         fileHTML = '';
@@ -3900,7 +3900,7 @@
       postCount = data.replies + 1;
       fileCount = data.images + !!data.ext;
       pageCount = Math.floor(Index.liveThreadData.keys.indexOf("" + thread.ID) / Index.threadsNumPerPage) + 1;
-      subject = thread.OP.info.subject ? "<div class='subject'>" + thread.OP.info.subject + "</div>" : '';
+      subject = thread.OP.info.subject ? "<div class='subject'>" + thread.OP.nodes.subject.innerHTML + "</div>" : '';
       comment = thread.OP.nodes.comment.innerHTML.replace(/(<br>\s*){2,}/g, '<br>');
       root = $.el('div', {
         className: 'catalog-thread',
@@ -11120,7 +11120,7 @@
       }
       return Redirect.data = o;
     },
-    archives: [{"uid":0,"name":"Foolz","domain":"archive.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["a","biz","co","diy","gd","jp","m","sci","sp","tg","tv","vg","vp","vr","wsg"],"files":["a","biz","diy","gd","jp","m","sci","tg","vg","vp","vr","wsg"]},{"uid":1,"name":"NSFW Foolz","domain":"nsfw.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["u"],"files":["u"]},{"uid":2,"name":"The Dark Cave","domain":"archive.thedarkcave.org","http":true,"https":true,"software":"foolfuuka","boards":["c","int","out","po"],"files":["c","po"]},{"uid":3,"name":"4plebs Archive","domain":"archive.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["adv","hr","o","pol","s4s","tg","trv","tv","x"],"files":["adv","hr","o","pol","s4s","tg","trv","tv","x"]},{"uid":18,"name":"4plebs Flash Archive","domain":"flash.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["f"],"files":["f"]},{"uid":4,"name":"Nyafuu","domain":"archive.nyafuu.org","http":true,"https":true,"software":"foolfuuka","boards":["c","e","w","wg"],"files":["c","e","w","wg"]},{"uid":5,"name":"Love is Over","domain":"archive.loveisover.me","http":true,"https":true,"software":"foolfuuka","boards":["d","i","lgbt"],"files":["d","i","lgbt"]},{"uid":8,"name":"Rebecca Black Tech","domain":"rbt.asia","http":false,"https":true,"software":"fuuka","boards":["cgl","g","mu","w"],"files":["cgl","g","mu","w"]},{"uid":9,"name":"Heinessen","domain":"archive.heinessen.com","http":true,"https":false,"software":"fuuka","boards":["an","fit","k","mlp","r9k","toy"],"files":["an","fit","k","mlp","r9k","toy"]},{"uid":10,"name":"warosu","domain":"fuuka.warosu.org","http":false,"https":true,"software":"fuuka","boards":["3","biz","cgl","ck","diy","fa","g","ic","jp","lit","sci","tg","vr"],"files":["3","biz","cgl","ck","diy","fa","ic","jp","lit","sci","tg","vr"]},{"uid":15,"name":"fgts","domain":"fgts.eu","http":true,"https":true,"software":"foolfuuka","boards":["asp","cm","h","hc","hm","n","p","r","s","soc","y"],"files":["asp","cm","h","hc","hm","n","p","r","s","soc","y"]},{"uid":16,"name":"maware","domain":"archive.mawa.re","http":true,"https":false,"software":"foolfuuka","boards":["t"],"files":["t"]},{"uid":17,"name":"installgentoo.com","domain":"chan.installgentoo.com","http":true,"https":false,"software":"foolfuuka","boards":["g","t"],"files":["g","t"]},{"uid":19,"name":"Innovandalism Archive","domain":"boards.innovandalism.eu","http":true,"https":false,"software":"foolfuuka","boards":["v"],"files":[]},{"uid":13,"name":"Foolz Beta","domain":"beta.foolz.us","http":true,"https":true,"withCredentials":true,"software":"foolfuuka","boards":["a","biz","co","d","diy","gd","jp","m","s4s","sci","sp","tg","tv","u","vg","vp","vr","wsg"],"files":["a","biz","d","diy","gd","jp","m","s4s","sci","tg","u","vg","vp","vr","wsg"]}],
+    archives: [{"uid":0,"name":"Foolz","domain":"archive.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["a","biz","co","diy","gd","jp","m","sci","sp","tg","tv","vg","vp","vr","wsg"],"files":["a","biz","diy","gd","jp","m","sci","tg","vg","vp","vr","wsg"]},{"uid":1,"name":"NSFW Foolz","domain":"nsfw.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["u"],"files":["u"]},{"uid":2,"name":"The Dark Cave","domain":"archive.thedarkcave.org","http":true,"https":true,"software":"foolfuuka","boards":["c","int","out","po"],"files":["c","po"]},{"uid":3,"name":"4plebs Archive","domain":"archive.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["adv","hr","o","pol","s4s","tg","trv","tv","x"],"files":["adv","hr","o","pol","s4s","tg","trv","tv","x"]},{"uid":18,"name":"4plebs Flash Archive","domain":"flash.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["f"],"files":["f"]},{"uid":4,"name":"Nyafuu","domain":"archive.nyafuu.org","http":true,"https":true,"software":"foolfuuka","boards":["c","e","w","wg"],"files":["c","e","w","wg"]},{"uid":5,"name":"Love is Over","domain":"archive.loveisover.me","http":true,"https":true,"software":"foolfuuka","boards":["d","i","lgbt"],"files":["d","i","lgbt"]},{"uid":8,"name":"Rebecca Black Tech","domain":"rbt.asia","http":false,"https":true,"software":"fuuka","boards":["cgl","g","mu","w"],"files":["cgl","g","mu","w"]},{"uid":9,"name":"Heinessen","domain":"archive.heinessen.com","http":true,"https":false,"software":"fuuka","boards":["an","fit","k","mlp","r9k","toy"],"files":["an","fit","k","mlp","r9k","toy"]},{"uid":10,"name":"warosu","domain":"fuuka.warosu.org","http":false,"https":true,"software":"fuuka","boards":["3","biz","cgl","ck","diy","fa","g","ic","jp","lit","sci","tg","vr"],"files":["3","biz","cgl","ck","diy","fa","ic","jp","lit","sci","tg","vr"]},{"uid":15,"name":"fgts","domain":"fgts.eu","http":true,"https":true,"software":"foolfuuka","boards":["asp","cm","h","hc","hm","n","p","r","s","soc","y"],"files":["asp","cm","h","hc","hm","n","p","r","s","soc","y"]},{"uid":16,"name":"maware","domain":"archive.mawa.re","http":true,"https":false,"software":"foolfuuka","boards":["t"],"files":["t"]},{"uid":17,"name":"installgentoo.com","domain":"chan.installgentoo.com","http":true,"https":false,"software":"foolfuuka","boards":["g","t"],"files":["g","t"]},{"uid":19,"name":"Innovandalism Archive","domain":"boards.innovandalism.eu","http":true,"https":false,"software":"foolfuuka","boards":["v"],"files":[]},{"uid":13,"name":"Foolz Beta","domain":"beta.foolz.us","http":true,"https":true,"withCredentials":true,"software":"foolfuuka","boards":["a","biz","co","d","diy","gd","jp","m","s4s","sci","sp","tg","tv","u","vg","vp","vr","wsg"],"files":["a","biz","d","diy","gd","jp","m","s4s","sci","tg","u","vg","vp","vr","wsg"]},{"uid":19,"name":"Innovandalism Archive","domain":"boards.innovandalism.eu","http":true,"https":false,"software":"foolfuuka","boards":["v"],"files":[]}],
     to: function(dest, data) {
       var archive;
       archive = (dest === 'search' || dest === 'board' ? Redirect.data.thread : Redirect.data[dest])[data.boardID];

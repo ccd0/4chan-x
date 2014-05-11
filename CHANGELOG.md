@@ -1,3 +1,5 @@
+**MayhemYDG**:
+- [Security fix](https://github.com/MayhemYDG/4chan-x/issues/1634).
 
 ### v1.7.33 
 *2014-05-10*

@@ -277,7 +277,7 @@ Index =
 
   setupNavLinks: ->
     for el in $$ '.navLinks.desktop > a'
-      if el.getAttribute('href') is '.././catalog'
+      if /\/catalog$/.test el.pathname
         el.href = '.././'
       $.on el, 'click', ->
         switch @textContent
