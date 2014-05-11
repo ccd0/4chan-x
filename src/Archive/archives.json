@@ -116,6 +116,15 @@
   "boards": ["g", "t"],
   "files": ["g", "t"]
 }, {
+  "uid": 19,
+  "name": "Innovandalism Archive",
+  "domain": "boards.innovandalism.eu",
+  "http": true,
+  "https": false,
+  "software": "foolfuuka",
+  "boards": ["v"],
+  "files": []
+}, {
   "uid": 13,
   "name": "Foolz Beta",
   "domain": "beta.foolz.us",
@@ -125,13 +134,4 @@
   "software": "foolfuuka",
   "boards": ["a", "biz", "co", "d", "diy", "gd", "jp", "m", "s4s", "sci", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
   "files": ["a", "biz", "d", "diy", "gd", "jp", "m", "s4s", "sci", "tg", "u", "vg", "vp", "vr", "wsg"]
-}, {
-  "uid": 19,
-  "name": "Innovandalism Archive",
-  "domain": "boards.innovandalism.eu",
-  "http": true,
-  "https": false,
-  "software": "foolfuuka",
-  "boards": ["v"],
-  "files": []
 }]
