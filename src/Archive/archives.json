@@ -6,7 +6,7 @@
   "https": true,
   "software": "foolfuuka",
   "boards": ["a", "biz", "co", "diy", "gd", "jp", "m", "sci", "sp", "tg", "tv", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "biz", "gd", "diy", "jp", "m", "sci", "tg", "vg", "vp", "vr", "wsg"]
+  "files": ["a", "biz", "diy", "gd", "jp", "m", "sci", "tg", "vg", "vp", "vr", "wsg"]
 }, {
   "uid": 1,
   "name": "NSFW Foolz",
@@ -65,7 +65,7 @@
   "uid": 8,
   "name": "Rebecca Black Tech",
   "domain": "rbt.asia",
-  "http": true,
+  "http": false,
   "https": true,
   "software": "fuuka",
   "boards": ["cgl", "g", "mu", "w"],
@@ -78,7 +78,7 @@
   "https": false,
   "software": "fuuka",
   "boards": ["an", "fit", "k", "mlp", "r9k", "toy"],
-  "files": ["an", "fit", "k", "r9k", "toy"]
+  "files": ["an", "fit", "k", "mlp", "r9k", "toy"]
 }, {
   "uid": 10,
   "name": "warosu",
