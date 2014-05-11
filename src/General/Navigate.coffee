@@ -120,8 +120,8 @@ Navigate =
 
   updateBoard: (boardID) ->
     fullBoardList   = $ '#full-board-list', Header.boardList
-    $('.current', fullBoardList)?.classList.remove 'current'
-    $("a[href*='/#{boardID}/']", fullBoardList)?.classList.add 'current'
+    $.rmClass  current, 'current' if current = $ '.current',                fullBoardList
+    $.addClass current, 'current' if current = $ "a[href*='/#{boardID}/']", fullBoardList
     Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
 
     QR.flagsInput()
@@ -207,8 +207,7 @@ Navigate =
     path = @pathname
     path += @hash if @hash
 
-    history.pushState null, '', path unless @id is 'popState'
-    Navigate.path = @pathname
+    Navigate.pushState path unless @id is 'popState'
 
     unless view is 'index' and 'index' is g.VIEW and boardID is g.BOARD.ID
       Navigate.disconnect()
