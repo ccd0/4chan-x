@@ -179,6 +179,7 @@ Navigate =
       return if e.shiftKey or e.ctrlKey or (e.type is 'click' and e.button isnt 0) # Not simply a left click
 
     if @pathname is Navigate.path
+      return if @id is 'popState'
       if g.VIEW is 'thread'
         ThreadUpdater.update()
       else
@@ -207,7 +208,8 @@ Navigate =
     path = @pathname
     path += @hash if @hash
 
-    Navigate.pushState path unless @id is 'popState'
+    history.pushState null, '', path unless @id is 'popState'
+    Navigate.path = @pathname
 
     unless view is 'index' and 'index' is g.VIEW and boardID is g.BOARD.ID
       Navigate.disconnect()
