@@ -1,6 +1,6 @@
 {
   "name": "4chan X",
-  "version": "1.7.33",
+  "version": "1.7.34",
   "manifest_version": 2,
   "description": "Cross-browser userscript for maximum lurking on 4chan.",
   "icons": {
