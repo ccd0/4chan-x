@@ -70,7 +70,7 @@ Keybinds =
       when Conf['Update']
         switch g.VIEW
           when 'thread'
-            ThreadUpdater.update()
+            ThreadUpdater.update() if Conf['Thread Updater']
           when 'index'
             if Conf['JSON Navigation'] then Index.update()
       when Conf['Watch']

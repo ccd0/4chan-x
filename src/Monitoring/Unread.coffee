@@ -87,7 +87,7 @@ Unread =
   addPosts: (posts) ->
     for post in posts
       {ID} = post
-      continue if ID <= Unread.lastReadPost or post.isHidden or QR.db.get {
+      continue if ID <= Unread.lastReadPost or post.isHidden or QR.db?.get {
         boardID:  post.board.ID
         threadID: post.thread.ID
         postID:   ID
@@ -101,7 +101,7 @@ Unread =
     Unread.update()
 
   addPostQuotingYou: (post) ->
-    for quotelink in post.nodes.quotelinks when QR.db.get Get.postDataFromLink quotelink
+    for quotelink in post.nodes.quotelinks when QR.db?.get Get.postDataFromLink quotelink
       Unread.postsQuotingYou.push post
       Unread.openNotification post
       return
@@ -159,7 +159,7 @@ Unread =
       {ID, data} = post
       posts.rm ID
 
-      if Conf['Mark Quotes of You'] and QR.db.get {
+      if Conf['Mark Quotes of You'] and QR.db?.get {
         boardID:  data.board.ID
         threadID: data.thread.ID
         postID:   ID

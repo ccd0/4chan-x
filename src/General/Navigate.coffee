@@ -105,16 +105,11 @@ Navigate =
     $.rmClass  doc, g.VIEW
     $.addClass doc, view
 
-    {
-      index: ->
-        delete g.THREADID
-        QR.link.textContent = 'Start a Thread'
+    delete g.THREADID if view is 'index'
 
-      thread: ->
-        QR.link.textContent = 'Reply to Thread'
-    }[view]()
-
-    QR.status() # Re-enable the QR in the case of a 404'd thread or something.
+    if Conf['Quick Reply']
+      QR.link.textContent = if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'
+      QR.status() # Re-enable the QR in the case of a 404'd thread or something.
 
     g.VIEW = view
 
@@ -126,7 +121,7 @@ Navigate =
 
     $('#returnlink a').href = "/#{g.BOARD}/"
 
-    QR.flagsInput()
+    QR.flagsInput() if Conf['Quick Reply']
 
     $.cache '//a.4cdn.org/boards.json', ->
       try
@@ -183,7 +178,7 @@ Navigate =
     if @pathname is Navigate.path
       return if @id is 'popState'
       if g.VIEW is 'thread'
-        ThreadUpdater.update()
+        ThreadUpdater.update() if Conf['Thread Updater']
       else
         Index.update()
       e?.preventDefault()
@@ -305,7 +300,7 @@ Navigate =
 
     Unread.ready() if Conf['Unread Count']
 
-    QR.generatePostableThreadsList()
+    QR.generatePostableThreadsList() if Conf['Quick Reply']
     Header.hashScroll.call window
 
     Main.handleErrors errors if errors
