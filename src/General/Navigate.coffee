@@ -100,12 +100,22 @@ Navigate =
     g.DEAD     = false
     g.THREADID = +window.location.pathname.split('/')[3] if view is 'thread'
 
-    return if view is g.VIEW
-
-    $.rmClass  doc, g.VIEW
-    $.addClass doc, view
+    unless view is g.VIEW
+      $.rmClass  doc, g.VIEW
+      $.addClass doc, view
 
     delete g.THREADID if view is 'index'
+
+    origFormThread = $ 'form[name="post"] input[name="resto"]'
+    if view is 'thread'
+      unless origFormThread
+        origFormThread = $.el 'input',
+          type:  'hidden'
+          name:  'resto'
+        $.after ($.id 'postPassword'), origFormThread
+      origFormThread.value = g.THREADID
+    else
+      $.rm origFormThread
 
     if Conf['Quick Reply']
       QR.link.textContent = if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'
@@ -122,7 +132,7 @@ Navigate =
     Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
 
     $('#returnlink a').href = "/#{g.BOARD}/"
-
+    $('form[name="post"]').action = "//sys.4chan.org/#{g.BOARD}/post"
     QR.flagsInput() if Conf['Quick Reply']
 
     $.cache '//a.4cdn.org/boards.json', ->
