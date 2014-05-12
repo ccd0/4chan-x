@@ -1,3 +1,10 @@
+**Zixaphir**
+- JSON Navigation now works for backlinks (when Quote Inlining is disabled) and backlink hashlinks.
+- Many spiffy performance, state awareness, and sanity improvements to JSON Navigation.
+
+**ccd0**
+- Additional JSON Navigation bugfixes.
+
 ### v1.7.33 
 *2014-05-10*
 
