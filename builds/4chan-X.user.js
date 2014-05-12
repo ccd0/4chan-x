@@ -11372,65 +11372,10 @@
       return CatalogLinks.el.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
     },
     external: function(board) {
-      switch (board) {
-        case 'a':
-        case 'c':
-        case 'g':
-        case 'co':
-        case 'k':
-        case 'm':
-        case 'o':
-        case 'p':
-        case 'v':
-        case 'vg':
-        case 'w':
-        case 'cm':
-        case '3':
-        case 'adv':
-        case 'an':
-        case 'cgl':
-        case 'ck':
-        case 'diy':
-        case 'fa':
-        case 'fit':
-        case 'int':
-        case 'jp':
-        case 'mlp':
-        case 'lit':
-        case 'mu':
-        case 'n':
-        case 'po':
-        case 'sci':
-        case 'toy':
-        case 'trv':
-        case 'tv':
-        case 'vp':
-        case 'x':
-        case 'q':
-          return "http://catalog.neet.tv/" + board;
-        case 'd':
-        case 'e':
-        case 'gif':
-        case 'h':
-        case 'hr':
-        case 'hc':
-        case 'r9k':
-        case 's':
-        case 'pol':
-        case 'soc':
-        case 'u':
-        case 'i':
-        case 'ic':
-        case 'hm':
-        case 'r':
-        case 'w':
-        case 'wg':
-        case 'wsg':
-        case 't':
-        case 'y':
-          return "http://4index.gropes.us/" + board;
-        default:
-          return "/" + board + "/catalog";
+      if (board === 'a' || board === 'c' || board === 'g' || board === 'co' || board === 'k' || board === 'm' || board === 'o' || board === 'p' || board === 'v' || board === 'vg' || board === 'w' || board === 'cm' || board === '3' || board === 'adv' || board === 'an' || board === 'cgl' || board === 'ck' || board === 'diy' || board === 'fa' || board === 'fit' || board === 'int' || board === 'jp' || board === 'mlp' || board === 'lit' || board === 'mu' || board === 'n' || board === 'po' || board === 'sci' || board === 'toy' || board === 'trv' || board === 'tv' || board === 'vp' || board === 'x' || board === 'q') {
+        return "http://catalog.neet.tv/" + board;
+      } else {
+        return "/" + board + "/catalog";
       }
     }
   };
