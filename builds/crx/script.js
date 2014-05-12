@@ -7536,8 +7536,8 @@
       return this.setThumbnail();
     };
 
-    _Class.prototype.setThumbnail = function(el) {
-      var fileURL, isVideo;
+    _Class.prototype.setThumbnail = function() {
+      var el, fileURL, isVideo;
       isVideo = /^video\//.test(this.file.type);
       el = $.el((isVideo ? 'video' : 'img'));
       $.on(el, (isVideo ? 'loadeddata' : 'load'), (function(_this) {

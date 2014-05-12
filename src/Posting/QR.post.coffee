@@ -171,7 +171,7 @@ QR.post = class
       return
     @setThumbnail()
 
-  setThumbnail: (el) ->
+  setThumbnail: ->
     # Create a redimensioned thumbnail.
     isVideo = /^video\//.test @file.type
     el = $.el (if isVideo then 'video' else 'img')
