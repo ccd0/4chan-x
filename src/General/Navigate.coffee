@@ -115,7 +115,7 @@ Navigate =
         $.after ($.id 'postPassword'), origFormThread
       origFormThread.value = g.THREADID
     else
-      $.rm origFormThread
+      $.rm origFormThread if origFormThread
 
     if Conf['Quick Reply']
       QR.link.textContent = if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'
