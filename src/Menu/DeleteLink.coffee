@@ -50,7 +50,7 @@ DeleteLink =
     form =
       mode: 'usrdel'
       onlyimgdel: fileOnly
-    form.pwd = QR.persona.getPassword() if Conf['Quick Reply']
+      pwd: QR.persona.getPassword()
     form[post.ID] = 'delete'
 
     link = @
