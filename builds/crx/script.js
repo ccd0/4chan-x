@@ -6441,7 +6441,7 @@
       if (/^text\//.test(file.type)) {
         if (isSingle) {
           post = QR.selected;
-        } else if (index !== 0 || (post = QR.posts[QR.posts.length - 1]).com) {
+        } else if ((post = QR.posts[QR.posts.length - 1]).com) {
           post = new QR.post();
         }
         post.pasteText(file);
@@ -6449,9 +6449,7 @@
       }
       if (_ref = file.type, __indexOf.call(QR.mimeTypes, _ref) < 0) {
         QR.error("" + file.name + ": Unsupported file type.");
-        if (!isSingle) {
-          return;
-        }
+        return;
       }
       max = QR.nodes.fileInput.max;
       if (/^video\//.test(file.type)) {
@@ -6459,20 +6457,14 @@
       }
       if (file.size > max) {
         QR.error("" + file.name + ": File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(max)) + ").");
-        if (!isSingle) {
-          return;
-        }
+        return;
       }
       if (isSingle) {
         post = QR.selected;
-      } else if (index !== 0 || (post = QR.posts[QR.posts.length - 1]).file) {
+      } else if ((post = QR.posts[QR.posts.length - 1]).file) {
         post = new QR.post();
       }
-      if (/^text/.test(file.type)) {
-        return post.pasteText(file);
-      } else {
-        return post.setFile(file);
-      }
+      return post.setFile(file);
     },
     openFileInput: function(e) {
       var _ref;
@@ -7524,7 +7516,7 @@
       }
     };
 
-    _Class.prototype.setFile = function(file, el) {
+    _Class.prototype.setFile = function(file) {
       this.file = file;
       this.filename = file.name;
       this.filesize = $.bytesToString(file.size);
@@ -7538,8 +7530,10 @@
         this.updateFilename();
       }
       if (!/^(image|video)\//.test(file.type)) {
-        return this.nodes.el.style.backgroundImage = null;
+        this.nodes.el.style.backgroundImage = null;
+        return;
       }
+      return this.setThumbnail();
     };
 
     _Class.prototype.setThumbnail = function(el) {
@@ -7556,7 +7550,11 @@
               QR.error(error);
             }
             _this.URL = fileURL;
-            return _this.rmFile();
+            if ((QR.posts.length === 1) || (_this.com && _this.com.length)) {
+              return _this.rmFile();
+            } else {
+              return _this.rm();
+            }
           }
           s = 90 * 2 * window.devicePixelRatio;
           if (_this.file.type === 'image/gif') {

@@ -82,6 +82,7 @@ QR.post = class
       (QR.posts[index-1] or QR.posts[index+1]).select()
     QR.posts.splice index, 1
     QR.status()
+
   delete: ->
     $.rm @nodes.el
     URL.revokeObjectURL @URL
@@ -156,7 +157,7 @@ QR.post = class
       @save node
     return
 
-  setFile: (@file, el) ->
+  setFile: (@file) ->
     @filename = file.name
     @filesize = $.bytesToString file.size
     @nodes.label.hidden = false if QR.spoiler
@@ -167,6 +168,8 @@ QR.post = class
       @updateFilename()
     unless /^(image|video)\//.test file.type
       @nodes.el.style.backgroundImage = null
+      return
+    @setThumbnail()
 
   setThumbnail: (el) ->
     # Create a redimensioned thumbnail.
@@ -179,7 +182,7 @@ QR.post = class
       if errors.length
         QR.error error for error in errors
         @URL = fileURL # this.removeFile will revoke this proper.
-        return @rmFile()
+        return if (QR.posts.length is 1) or (@com and @com.length) then @rmFile() else @rm() # I wrote this while listening to MCR
 
       # Generate thumbnails only if they're really big.
       # Resized pictures through canvases look like ass,

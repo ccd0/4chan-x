@@ -360,26 +360,23 @@ QR =
     if /^text\//.test file.type
       if isSingle
         post = QR.selected
-      else if index isnt 0 or (post = QR.posts[QR.posts.length - 1]).com
+      else if (post = QR.posts[QR.posts.length - 1]).com
         post = new QR.post()
       post.pasteText file
       return
     unless file.type in QR.mimeTypes
       QR.error "#{file.name}: Unsupported file type."
-      return unless isSingle
+      return
     max = QR.nodes.fileInput.max
     max = Math.min(max, QR.max_size_video) if /^video\//.test file.type
     if file.size > max
       QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
-      return unless isSingle
+      return
     if isSingle
       post = QR.selected
-    else if index isnt 0 or (post = QR.posts[QR.posts.length - 1]).file
+    else if (post = QR.posts[QR.posts.length - 1]).file
       post = new QR.post()
-    if /^text/.test file.type
-      return post.pasteText file
-    else
-      post.setFile file
+    post.setFile file
 
   openFileInput: (e) ->
     e.stopPropagation()
