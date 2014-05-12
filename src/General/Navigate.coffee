@@ -110,6 +110,8 @@ Navigate =
     if Conf['Quick Reply']
       QR.link.textContent = if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'
       QR.status() # Re-enable the QR in the case of a 404'd thread or something.
+      for post in QR.posts
+        post.thread = g.THREADID or 'new'
 
     g.VIEW = view
 
