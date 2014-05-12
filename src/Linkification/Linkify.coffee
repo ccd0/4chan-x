@@ -63,7 +63,7 @@ Linkify =
     i = links.length
     while i--
       link = links[i]
-      Linkify.embedProcess (Linkify.makeLink link, @), @
+      Linkify.embedProcess (Linkify.makeLink link), @
     return
 
   embedProcess: (link, post) ->
