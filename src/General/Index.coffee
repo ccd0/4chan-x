@@ -222,7 +222,7 @@ Index =
     $.before a, strong
     $.add strong, a
 
-  update: (pageNum) ->
+  update: (pageNum, forceReparse) ->
     return unless navigator.onLine
     if g.VIEW is 'thread'
       return ThreadUpdater.update() if Conf['Thread Updater']
@@ -247,7 +247,7 @@ Index =
       onabort:   onload
       onloadend: onload
     ,
-      whenModified: Index.board is "#{g.BOARD}"
+      whenModified: !forceReparse
     $.addClass Index.button, 'fa-spin'
 
   load: (e, pageNum) ->
@@ -274,8 +274,6 @@ Index =
       return
 
     Navigate.title()
-
-    Index.board = "#{g.BOARD}"
 
     try
       if req.status is 200

@@ -223,7 +223,7 @@ Navigate =
     Navigate.updateSFW Favicon.SFW
 
     if view is 'index'
-      return Index.update pageNum
+      return Index.update pageNum, true
 
     # Moving from index to thread or thread to thread
     {load} = Navigate
