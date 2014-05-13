@@ -26,7 +26,7 @@ FileInfo =
     "#{size} #{unit}"
   escape: (name) ->
     name.replace /[&"'<>]/g, (c) ->
-      {'&': '&amp;', "'": '&apos;', '"': '&quot;', '<': '&lt;', '>': '&gt;'}[c]
+      {'&': '&amp;', "'": '&#39;', '"': '&quot;', '<': '&lt;', '>': '&gt;'}[c]
   formatters:
     t: -> FileInfo.escape @file.URL.match(/\d+\..+$/)[0]
     T: -> "<a href=#{FileInfo.escape @file.URL} target=_blank>#{FileInfo.formatters.t.call @}</a>"

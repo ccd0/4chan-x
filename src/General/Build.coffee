@@ -42,7 +42,7 @@ Build =
         name:      data.filename + data.ext
         timestamp: "#{data.tim}#{data.ext}"
         url: if boardID is 'f'
-          "//i.4cdn.org/#{boardID}/#{data.filename}#{data.ext}".replace /'/g, '&apos;'
+          "//i.4cdn.org/#{boardID}/#{data.filename}#{data.ext}".replace /'/g, '&#39;'
         else
           "//i.4cdn.org/#{boardID}/#{data.tim}#{data.ext}"
         height:    data.h
@@ -157,7 +157,7 @@ Build =
       shortFilename = a.innerHTML
       # get html
       a.textContent = filename
-      filename      = a.innerHTML.replace /'/g, '&apos;'
+      filename      = a.innerHTML.replace /'/g, '&#39;'
 
       fileDims = if file.name[-3..] is 'pdf' then 'PDF' else "#{file.width}x#{file.height}"
       fileInfo = "<div class=fileText id=fT#{postID}#{if file.isSpoiler then " title='#{filename}'" else ''}>File: <a href='#{file.url}' target=_blank>#{file.timestamp}</a>" +
