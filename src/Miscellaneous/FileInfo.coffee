@@ -25,13 +25,13 @@ FileInfo =
       size.toFixed()
     "#{size} #{unit}"
   escape: (name) ->
-    name.replace /<|>/g, (c) ->
-      c is '<' and '&lt;' or '&gt;'
+    name.replace /[&"'<>]/g, (c) ->
+      {'&': '&amp;', "'": '&apos;', '"': '&quot;', '<': '&lt;', '>': '&gt;'}[c]
   formatters:
-    t: -> @file.URL.match(/\d+\..+$/)[0]
-    T: -> "<a href=#{@file.URL} target=_blank>#{FileInfo.formatters.t.call @}</a>"
-    l: -> "<a href=#{@file.URL} target=_blank>#{FileInfo.formatters.n.call @}</a>"
-    L: -> "<a href=#{@file.URL} target=_blank>#{FileInfo.formatters.N.call @}</a>"
+    t: -> FileInfo.escape @file.URL.match(/\d+\..+$/)[0]
+    T: -> "<a href=#{FileInfo.escape @file.URL} target=_blank>#{FileInfo.formatters.t.call @}</a>"
+    l: -> "<a href=#{FileInfo.escape @file.URL} target=_blank>#{FileInfo.formatters.n.call @}</a>"
+    L: -> "<a href=#{FileInfo.escape @file.URL} target=_blank>#{FileInfo.formatters.N.call @}</a>"
     n: ->
       fullname  = @file.name
       shortname = Build.shortFilename @file.name, @isReply
@@ -41,8 +41,8 @@ FileInfo =
         "<span class=fntrunc>#{FileInfo.escape shortname}</span><span class=fnfull>#{FileInfo.escape fullname}</span>"
     N: -> FileInfo.escape @file.name
     p: -> if @file.isSpoiler then 'Spoiler, ' else ''
-    s: -> @file.size
+    s: -> FileInfo.escape @file.size
     B: -> FileInfo.convertUnit @file.sizeInBytes, 'B'
     K: -> FileInfo.convertUnit @file.sizeInBytes, 'KB'
     M: -> FileInfo.convertUnit @file.sizeInBytes, 'MB'
-    r: -> if @file.isImage or @file.isVideo then @file.dimensions else 'PDF'
+    r: -> FileInfo.escape (@file.dimensions or 'PDF')
