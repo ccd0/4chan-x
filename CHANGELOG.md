@@ -1,3 +1,6 @@
+### v1.7.36 
+*2014-05-13*
+
 **ccd0**
 - Fix an issue that allowed Javascript running on the page access to the Greasemonkey / Chrome extension APIs.
 - Minor fixes.
