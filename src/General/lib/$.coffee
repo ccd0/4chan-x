@@ -115,11 +115,13 @@ $.X = (path, root) ->
   # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE === 7
   d.evaluate path, root, null, 7, null
 
-$.addClass = (el, className...) ->
-  el.classList.add className...
+$.addClass = (el, classNames...) ->
+  el.classList.add className for className in classNames
+  return
 
-$.rmClass = (el, className...) ->
-  el.classList.remove className...
+$.rmClass = (el, classNames...) ->
+  el.classList.remove className for className in classNames
+  return
 
 $.toggleClass = (el, className) ->
   el.classList.toggle className
