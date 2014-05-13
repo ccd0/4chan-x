@@ -9,7 +9,7 @@ Build =
     threshold = if isReply then 30 else 40
     ext = filename.match(/\.?[^\.]*$/)[0]
     if filename.length - ext.length > threshold
-      "#{filename[...threshold - 5]}(...).#{ext}"
+      "#{filename[...threshold - 5]}(...)#{ext}"
     else
       filename
   thumbRotate: do ->
