@@ -15,21 +15,23 @@ Sauce =
       name: 'Sauce'
       cb:   @node
   createSauceLink: (link, post, a) ->
-    link = link.replace /%(T?URL|MD5|board|name)/g, (parameter) ->
-      if type = {
-        '%TURL':  post.file.thumbURL
-        '%URL':   post.file.URL
-        '%MD5':   post.file.MD5
-        '%board': post.board
-        '%name':  post.file.name
-      }[parameter]
-        encodeURIComponent(type)
-      else
-        parameter
-    text = if m = link.match(/;text:(.+)$/) then m[1] else link.match(/(\w+)\.\w+\//)[1]
+    text = if m = link.match(/;text:(.+)$/) then m[1] else link.match(/(\w+)\.\w+\//)?[1] or '?'
     link = link.replace /;text:.+$/, ''
-    a.href = link
-    a.textContent = text
+    parts = [link, text]
+    for i in [0..1]
+      parts[i] = parts[i].replace /%(T?URL|MD5|board|name)/g, (parameter) ->
+        if type = {
+          '%TURL':  post.file.thumbURL
+          '%URL':   post.file.URL
+          '%MD5':   post.file.MD5
+          '%board': post.board
+          '%name':  post.file.name
+        }[parameter]
+          if i is 0 then encodeURIComponent(type) else type
+        else
+          parameter
+    a.href = parts[0]
+    a.textContent = parts[1]
     a
   node: ->
     return if @isClone or !@file
