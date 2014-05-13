@@ -46,12 +46,10 @@ Banner =
       return @blur() if !e.shiftKey and e.keyCode is 13
 
     focus: ->
-      @textContent = @innerHTML
-
       string = "#{g.BOARD}.#{@className}"
       string2 = "#{string}.orig"
 
-      items = {title: @innerHTML}
+      items = {title: @textContent}
       items[string] = ''
       items[string2] = false
 
@@ -62,25 +60,24 @@ Banner =
       return
 
     blur: ->
-      @innerHTML = @textContent
       @contentEditable = false
       $.set "#{g.BOARD}.#{@className}", @textContent
 
   custom: (child) ->
-    cachedTest = child.innerHTML
+    cachedTest = child.textContent
     string = "#{g.BOARD}.#{child.className}"
 
     $.on child, 'click keydown focus blur', (e) -> Banner.cb[e.type].apply @, [e]
 
     $.get string, cachedTest, (item) ->
       return unless title = item[string]
-      return child.innerHTML = title if Conf['Persistent Custom Board Titles']
+      return child.textContent = title if Conf['Persistent Custom Board Titles']
 
       string2 = "#{string}.orig"
 
       $.get string2, cachedTest, (itemb) ->
        if cachedTest is itemb[string2]
-          child.innerHTML = title
+          child.textContent = title
         else
           $.set string, cachedTest
           $.set string2, cachedTest
