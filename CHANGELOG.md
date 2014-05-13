@@ -1,3 +1,16 @@
+**ccd0**
+- Fix an issue that allowed Javascript running on the page access to the Greasemonkey / Chrome extension APIs.
+- Minor fixes.
+
+**Zixaphir**
+- Drop links to dead 4index.gropes.us catalog.
+
+**fgts**
+- Archive list update; now archiving /b/.
+
+**MayhemYDG**
+- Fix #58.
+
 ### v1.7.35 
 *2014-05-12*
 
