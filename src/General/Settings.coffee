@@ -348,8 +348,7 @@ Settings =
     Header.generateBoardList @value
 
   time: ->
-    funk = Time.createFunc @value
-    @nextElementSibling.textContent = funk Time, new Date()
+    @nextElementSibling.textContent = Time.format @value, new Date()
 
   backlink: ->
     @nextElementSibling.textContent = @value.replace /%id/, '123456789'
@@ -366,8 +365,7 @@ Settings =
         isImage: true
         isVideo: false
         isSpoiler: true
-    funk = FileInfo.createFunc @value
-    @nextElementSibling.innerHTML = funk FileInfo, data
+    @nextElementSibling.innerHTML = FileInfo.format @value, data
 
   favicon: ->
     Favicon.init()

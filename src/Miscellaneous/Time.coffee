@@ -2,20 +2,18 @@ Time =
   init: ->
     return if !Conf['Time Formatting']
 
-    @funk = @createFunc Conf['time']
     Post.callbacks.push
       name: 'Time Formatting'
       cb:   @node
   node: ->
     return if @isClone
-    @nodes.date.textContent = Time.funk Time, @info.date
-  createFunc: (format) ->
-    code = format.replace /%([A-Za-z])/g, (s, c) ->
+    @nodes.date.textContent = Time.format Conf['time'], @info.date
+  format: (formatString, date) ->
+    formatString.replace /%([A-Za-z])/g, (s, c) ->
       if c of Time.formatters
-        "' + Time.formatters.#{c}.call(date) + '"
+        Time.formatters[c].call(date)
       else
         s
-    Function 'Time', 'date', "return '#{code}'"
   day: [
     'Sunday'
     'Monday'

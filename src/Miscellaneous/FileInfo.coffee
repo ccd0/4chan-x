@@ -2,20 +2,18 @@ FileInfo =
   init: ->
     return if !Conf['File Info Formatting']
 
-    @funk = @createFunc Conf['fileInfo']
     Post.callbacks.push
       name: 'File Info Formatting'
       cb:   @node
   node: ->
     return if !@file or @isClone
-    @file.text.innerHTML = "<span class=file-info>#{FileInfo.funk FileInfo, @}</span>"
-  createFunc: (format) ->
-    code = format.replace /%(.)/g, (s, c) ->
+    @file.text.innerHTML = "<span class=file-info>#{FileInfo.format Conf['fileInfo'], @}</span>"
+  format: (formatString, post) ->
+    formatString.replace /%([A-Za-z])/g, (s, c) ->
       if c of FileInfo.formatters
-        "' + FileInfo.formatters.#{c}.call(post) + '"
+        FileInfo.formatters[c].call(post)
       else
         s
-    Function 'FileInfo', 'post', "return '#{code}'"
   convertUnit: (size, unit) ->
     if unit is 'B'
       return "#{size.toFixed()} Bytes"
