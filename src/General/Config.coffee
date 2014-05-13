@@ -95,7 +95,7 @@ Config =
       ]
       'Show Support Message': [
         true
-        'Warn if your browser is unsupported. 4chan X may not operate correctly on unsupported browser versions.'
+        'Warn if your browser or configuration is unsupported and may cause 4chan X to not operate correctly.'
       ]
 
     'Linkification':

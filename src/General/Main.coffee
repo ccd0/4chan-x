@@ -142,10 +142,11 @@ Main =
     else
       $.event '4chanXInitFinished'
 
+    return unless Conf['Show Support Message']
     <% if (type === 'userscript') { %>
     test = $.el 'span'
     test.classList.add 'a', 'b'
-    if test.className isnt 'a b' and Conf['Show Support Message']
+    if test.className isnt 'a b'
       new Notice 'warning', "Your version of Firefox is outdated (v<%= meta.min.firefox %> minimum) and <%= meta.name %> may not operate correctly.", 30
 
     GMver = GM_info.version.split '.'
