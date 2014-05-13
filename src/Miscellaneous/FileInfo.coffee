@@ -9,11 +9,11 @@ FileInfo =
     return if !@file or @isClone
     @file.text.innerHTML = "<span class=file-info>#{FileInfo.format Conf['fileInfo'], @}</span>"
   format: (formatString, post) ->
-    formatString.replace /%([A-Za-z])/g, (s, c) ->
+    formatString.replace /%([A-Za-z])|[^%]+/g, (s, c) ->
       if c of FileInfo.formatters
         FileInfo.formatters[c].call(post)
       else
-        s
+        FileInfo.escape s
   convertUnit: (size, unit) ->
     if unit is 'B'
       return "#{size.toFixed()} Bytes"
