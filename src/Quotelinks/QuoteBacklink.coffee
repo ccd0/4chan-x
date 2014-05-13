@@ -14,8 +14,6 @@ QuoteBacklink =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Quote Backlinks']
 
-    format = Conf['backlink'].replace /%id/g, "' + id + '"
-    @funk  = Function 'id', "return '#{format}'"
     Post.callbacks.push
       name: 'Quote Backlinking Part 1'
       cb:   @firstNode
@@ -28,7 +26,7 @@ QuoteBacklink =
     a = $.el 'a',
       href: "/#{@board}/thread/#{@thread}#p#{@}"
       className: if @isHidden then 'filtered backlink' else 'backlink'
-      textContent: (QuoteBacklink.funk @ID) + (if markYours then '\u00A0(You)' else '')
+      textContent: (Conf['backlink'].replace /%id/, @ID) + (if markYours then '\u00A0(You)' else '')
     for quote in @quotes
       containers = [QuoteBacklink.getContainer quote]
       if (post = g.posts[quote]) and post.nodes.backlinkContainer

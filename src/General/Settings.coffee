@@ -392,8 +392,7 @@ Settings =
   boardnav: ->
     Header.generateBoardList @value
   time: ->
-    funk = Time.createFunc @value
-    @nextElementSibling.textContent = funk Time, new Date()
+    @nextElementSibling.textContent = Time.format @value, new Date()
   backlink: ->
     @nextElementSibling.textContent = @value.replace /%id/, '123456789'
   fileInfo: ->
@@ -407,8 +406,7 @@ Settings =
         dimensions: '1280x720'
         isImage: true
         isSpoiler: true
-    funk = FileInfo.createFunc @value
-    @nextElementSibling.innerHTML = funk FileInfo, data
+    @nextElementSibling.innerHTML = FileInfo.format @value, data
   favicon: ->
     Favicon.switch()
     Unread.update() if g.VIEW is 'thread' and Conf['Unread Favicon']
