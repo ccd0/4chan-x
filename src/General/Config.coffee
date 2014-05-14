@@ -575,7 +575,7 @@ mu-replace
 sp-replace
 tv-replace
 vp-replace
-[external-text:"FAQ","https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions"]
+[external-text:"FAQ","<%= meta.faq %>"]
   """
 
   QR:
