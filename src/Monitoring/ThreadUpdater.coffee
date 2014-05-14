@@ -10,7 +10,7 @@ ThreadUpdater =
         Header.addShortcut sc
     else 
       @dialog = sc = UI.dialog 'updater', 'bottom: 0px; left: 0px;',
-        "<div class=move></div><span id=update-status></span><span id=update-timer title='Update now'></span>"
+        innerHTML: '<div class=move></div><span id=update-status></span><span id=update-timer title="Update now"></span>'
       $.addClass doc, 'float'
       $.ready => 
         $.addClass doc, 'float'

@@ -10,7 +10,7 @@ ThreadWatcher =
       className: 'disabled fa fa-eye'
 
     @db     = new DataBoard 'watchedThreads', @refresh, true
-    @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', <%= importHTML('Monitoring/ThreadWatcher') %>
+    @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', innerHTML: <%= importHTML('Monitoring/ThreadWatcher') %>
     @status = $ '#watcher-status', @dialog
     @list   = @dialog.lastElementChild
 

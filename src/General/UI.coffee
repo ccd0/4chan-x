@@ -1,9 +1,9 @@
 UI = do ->
-  dialog = (id, position, html) ->
+  dialog = (id, position, properties) ->
     el = $.el 'div',
       className: 'dialog'
-      innerHTML: html
       id: id
+    $.extend el, properties
     el.style.cssText = position
     $.get "#{id}.position", position, (item) ->
       el.style.cssText = item["#{id}.position"]
