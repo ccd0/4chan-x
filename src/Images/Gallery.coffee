@@ -32,7 +32,7 @@ Gallery =
 
     nodes.el = dialog = $.el 'div',
       id: 'a-gallery'
-      innerHTML: """
+      innerHTML: '''
 <div class=gal-viewport>
   <span class=gal-buttons>
     <a class="menu-button" href="javascript:;"><i></i></a>
@@ -47,7 +47,7 @@ Gallery =
   <div class=gal-next></div>
 </div>
 <div class=gal-thumbnails></div>
-"""
+'''
 
     nodes[key] = $ value, dialog for key, value of {
       frame:   '.gal-image'

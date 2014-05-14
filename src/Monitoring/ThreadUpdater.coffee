@@ -4,7 +4,7 @@ ThreadUpdater =
 
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
-        innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>"
+        innerHTML: '<span id=update-status></span><span id=update-timer title="Update now"></span>'
         id:        'updater'
       $.ready ->
         Header.addShortcut sc

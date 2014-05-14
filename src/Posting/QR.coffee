@@ -514,7 +514,7 @@ QR =
     if g.BOARD.ID is 'f'
       nodes.flashTag = $.el 'select',
         name: 'filetag'
-        innerHTML: """
+        innerHTML: '''
           <option value=0>Hentai</option>
           <option value=6>Porn</option>
           <option value=1>Japanese</option>
@@ -522,7 +522,7 @@ QR =
           <option value=3>Game</option>
           <option value=5>Loop</option>
           <option value=4 selected>Other</option>
-        """
+        '''
       nodes.flashTag.dataset.default = '4'
       $.add nodes.form, nodes.flashTag
 
