@@ -6,22 +6,14 @@ Header =
       className: 'menu-button'
       innerHTML: '<i></i>'
 
-    barFixedToggler  = $.el 'label',
-      innerHTML: '<input type=checkbox name="Fixed Header"> Fixed Header'
-    headerToggler = $.el 'label',
-      innerHTML: '<input type=checkbox name="Header auto-hide"> Auto-hide header'
-    scrollHeaderToggler = $.el 'label',
-      innerHTML: '<input type=checkbox name="Header auto-hide on scroll"> Auto-hide header on scroll'
-    barPositionToggler = $.el 'label',
-      innerHTML: '<input type=checkbox name="Bottom Header"> Bottom header'
-    linkJustifyToggler = $.el 'label',
-      innerHTML: "<input type=checkbox #{if Conf['Centered links'] then 'checked' else ''}> Centered links"
-    customNavToggler = $.el 'label',
-      innerHTML: '<input type=checkbox name="Custom Board Navigation"> Custom board navigation'
-    footerToggler = $.el 'label',
-      innerHTML: "<input type=checkbox #{unless Conf['Bottom Board List'] then 'checked' else ''}> Hide bottom board list"
-    shortcutToggler = $.el 'label',
-      innerHTML: "<input type=checkbox #{unless Conf['Shortcut Icons'] then 'checked' else ''}> Shortcut Icons"
+    barFixedToggler     = UI.checkbox 'Fixed Header',               ' Fixed Header'
+    headerToggler       = UI.checkbox 'Header auto-hide',           ' Auto-hide header'
+    scrollHeaderToggler = UI.checkbox 'Header auto-hide on scroll', ' Auto-hide header on scroll'
+    barPositionToggler  = UI.checkbox 'Bottom Header',              ' Bottom header'
+    linkJustifyToggler  = UI.checkbox 'Centered links',             ' Centered links'
+    customNavToggler    = UI.checkbox 'Custom Board Navigation',    ' Custom board navigation'
+    footerToggler       = UI.checkbox 'Bottom Board List',          ' Hide bottom board list'
+    shortcutToggler     = UI.checkbox 'Shortcut Icons',             ' Shortcut Icons'
     editCustomNav = $.el 'a',
       textContent: 'Edit custom board navigation'
       href: 'javascript:;'

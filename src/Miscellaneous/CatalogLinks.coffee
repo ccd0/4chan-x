@@ -1,10 +1,8 @@
 CatalogLinks =
   init: ->
     return unless Conf['Catalog Links']
-    CatalogLinks.el = el = $.el 'label',
-      id:           'toggleCatalog'
-      href:         'javascript:;'
-      innerHTML:    "<input type=checkbox #{if Conf['Header catalog links'] then 'checked' else ''}> Catalog Links"
+    CatalogLinks.el = el = UI.checkbox 'Header catalog links', ' Catalog Links'
+    el.id = 'toggleCatalog'
 
     input = $ 'input', el
     $.on input, 'change', @toggle

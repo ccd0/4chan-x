@@ -35,12 +35,9 @@ PostHiding =
         href: 'javascript:;'
       $.on apply, 'click', PostHiding.menu.hide
 
-      thisPost = $.el 'label',
-        innerHTML: '<input type=checkbox name=thisPost checked> This post'
-      replies  = $.el 'label',
-        innerHTML: "<input type=checkbox name=replies  #{if Conf['Recursive Hiding'] then 'checked' else ''}> Hide replies"
-      makeStub = $.el 'label',
-        innerHTML: "<input type=checkbox name=makeStub #{if Conf['Stubs'] then 'checked' else ''}> Make stub"
+      thisPost = UI.checkbox 'thisPost', ' This post',    true
+      replies  = UI.checkbox 'replies',  ' Hide replies', Conf['Recursive Hiding']
+      makeStub = UI.checkbox 'makeStub', ' Make stub',    Conf['Stubs']
 
       $.event 'AddMenuEntry',
         type: 'post'
@@ -71,10 +68,8 @@ PostHiding =
         href: 'javascript:;'
       $.on apply, 'click', PostHiding.menu.show
 
-      thisPost = $.el 'label',
-        innerHTML: '<input type=checkbox name=thisPost> This post'
-      replies  = $.el 'label',
-        innerHTML: "<input type=checkbox name=replies> Show replies"
+      thisPost = UI.checkbox 'thisPost', ' This post',    false
+      replies  = UI.checkbox 'replies',  ' Show replies', false
       hideStubLink = $.el 'a',
         textContent: 'Hide stub'
         href: 'javascript:;'
