@@ -1,3 +1,13 @@
+### v1.7.37 
+*2014-05-14*
+
+**DamonGant**
+- Innovandalism Archive is now Deniable Plausibility.
+
+**ccd0**
+- Disable HTML both in custom board titles and file info formatting. This shuts down a means for a malicious script injected into the page to permanently install itself, to be run each time you browse 4chan. I expect few or no people were actually using their own HTML in these fields; if you want it back, make a request on the [issues](https://github.com/ccd0/4chan-x/issues) page, and I will consider working on a secure implementation.
+- Bug fixes.
+
 ### v1.7.36 
 *2014-05-13*
 
