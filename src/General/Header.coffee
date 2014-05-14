@@ -459,11 +459,11 @@ Header =
         return
 
     el = $.el 'span',
-      innerHTML: """
-      Desktop notification permissions are not granted.
-      [<a href='https://github.com/MayhemYDG/4chan-x/wiki/FAQ#desktop-notifications' target=_blank>FAQ</a>]<br>
+      innerHTML: '''
+      <%= meta.name %> needs your permission to show desktop notifications.
+      [<a href='https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions#why-is-4chan-x-asking-for-permission-to-show-desktop-notifications' target=_blank>FAQ</a>]<br>
       <button>Authorize</button> or <button>Disable</button>
-      """
+      '''
     [authorize, disable] = $$ 'button', el
     $.on authorize, 'click', ->
       Notification.requestPermission (status) ->
