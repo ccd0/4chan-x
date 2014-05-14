@@ -133,5 +133,5 @@
   "https": false,
   "software": "foolfuuka",
   "boards": ["v"],
-  "files": []
+  "files": ["v"]
 }]
