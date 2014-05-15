@@ -80,8 +80,7 @@ ThreadHiding =
         href: 'javascript:;'
       $.on apply, 'click', ThreadHiding.menu.hide
 
-      makeStub = $.el 'label',
-        innerHTML: "<input type=checkbox #{if Conf['Stubs'] then 'checked' else ''}> Make stub"
+      makeStub = UI.checkbox 'Stubs', ' Make stub'
 
       $.event 'AddMenuEntry',
         type: 'post'

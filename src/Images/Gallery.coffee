@@ -258,12 +258,10 @@ Gallery =
         subEntries: subEntries
 
     createSubEntry: (name) ->
-      label = $.el 'label',
-        innerHTML: "<input type=checkbox name='#{name}'> #{name}"
+      label = UI.checkbox name, " #{name}"
       input = label.firstElementChild
       if name in ['Fit Width', 'Fit Height', 'Hide Thumbnails']
         $.on input, 'change', Gallery.cb.setFitness
-      input.checked = Conf[name]
       $.event 'change', null, input
       $.on input, 'change', $.cb.checked
       el: label

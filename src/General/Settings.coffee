@@ -95,8 +95,11 @@ Settings =
         innerHTML: "<legend>#{key}</legend>"
       for key, arr of obj
         description = arr[1]
-        div = $.el 'div',
-          innerHTML: "<label><input type=checkbox name=\"#{key}\">#{key}</label><span class=description>: #{description}</span>"
+        div = $.el 'div'
+        $.add div, [
+          UI.checkbox key, key, false
+          $.el 'span', class: 'description', textContent: ": #{description}"
+        ]
         input = $ 'input', div
         $.on input, 'change', $.cb.checked
         items[key]  = Conf[key]

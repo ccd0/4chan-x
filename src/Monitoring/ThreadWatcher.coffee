@@ -302,11 +302,9 @@ ThreadWatcher =
     createSubEntry: (name, desc) ->
       entry =
         type: 'thread watcher'
-        el: $.el 'label',
-          innerHTML: "<input type=checkbox name='#{name}'> #{name}"
-          title: desc
+        el: UI.checkbox name, " #{name}"
+      entry.el.title = desc
       input = entry.el.firstElementChild
-      input.checked = Conf[name]
       $.on input, 'change', $.cb.checked
       $.on input, 'change', ThreadWatcher.refresh if name is 'Current Board'
       entry

@@ -40,21 +40,14 @@ Index =
       $.on input, 'change', $.cb.value
       $.on input, 'change', @cb.sort
 
-    repliesEntry =
-      el: $.el 'label',
-        innerHTML: '<input type=checkbox name="Show Replies"> Show replies'
-    anchorEntry =
-      el: $.el 'label',
-        innerHTML: '<input type=checkbox name="Anchor Hidden Threads"> Anchor hidden threads'
-        title: 'Move hidden threads at the end of the index.'
-    refNavEntry =
-      el: $.el 'label',
-        innerHTML: '<input type=checkbox name="Refreshed Navigation"> Refreshed navigation'
-        title: 'Refresh index when navigating through pages.'
+    repliesEntry = el: UI.checkbox 'Show Replies',          ' Show replies'
+    anchorEntry  = el: UI.checkbox 'Anchor Hidden Threads', ' Anchor hidden threads'
+    refNavEntry  = el: UI.checkbox 'Refreshed Navigation',  ' Refreshed navigation'
+    anchorEntry.el.title = 'Move hidden threads at the end of the index.'
+    refNavEntry.el.title = 'Refresh index when navigating through pages.'
     for label in [repliesEntry, anchorEntry, refNavEntry]
       input = label.el.firstChild
       {name} = input
-      input.checked = Conf[name]
       $.on input, 'change', $.cb.checked
       switch name
         when 'Show Replies'

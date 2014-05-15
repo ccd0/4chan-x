@@ -373,9 +373,17 @@ UI = do ->
     <% } %>
     @cb.call @ if @cb
 
+  checkbox = (name, text, checked) ->
+    checked = Conf[name] unless checked?
+    label = $.el 'label'
+    input = $.el 'input', {type: 'checkbox', name, checked}
+    $.add label, [input, $.tn text]
+    label
+
 
   return {
-    dialog: dialog
-    Menu:   Menu
-    hover:  hoverstart
+    dialog:   dialog
+    Menu:     Menu
+    hover:    hoverstart
+    checkbox: checkbox
   }

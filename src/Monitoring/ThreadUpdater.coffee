@@ -27,10 +27,8 @@ ThreadUpdater =
 
     subEntries = []
     for name, conf of Config.updater.checkbox
-      checked = if Conf[name] then 'checked' else ''
-      el = $.el 'label',
-        title:    "#{conf[1]}"
-        innerHTML: "<input name='#{name}' type=checkbox #{checked}> #{name}"
+      el = UI.checkbox name, " #{name}"
+      el.title = conf[1]
       input = el.firstElementChild
       $.on input, 'change', $.cb.checked
       if input.name is 'Scroll BG'

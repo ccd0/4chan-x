@@ -4,9 +4,8 @@ FappeTyme =
 
     for type in ["Fappe", "Werk"] when Conf["#{type} Tyme"]
       lc = type.toLowerCase()
-      el = $.el 'label',
-        innerHTML: "<input type=checkbox name=#{lc}> #{type} Tyme"
-        title: "#{type} Tyme"
+      el = UI.checkbox lc, " #{type} Tyme", false
+      el.title = "#{type} Tyme"
 
       FappeTyme[lc] = input = el.firstElementChild
       $.on input, 'change', FappeTyme.cb.toggle.bind input
