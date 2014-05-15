@@ -4,19 +4,19 @@ Fourchan =
 
     board = g.BOARD.ID
     if board is 'g'
-      $.globalEval """
+      $.globalEval '''
         window.addEventListener('prettyprint', function(e) {
           window.dispatchEvent(new CustomEvent('prettyprint:cb', {
             detail: prettyPrintOne(e.detail)
           }));
         }, false);
-      """
+      '''
       Post.callbacks.push
         name: 'Parse /g/ code'
         cb:   @code
     if board is 'sci'
       # https://github.com/MayhemYDG/4chan-x/issues/645#issuecomment-13704562
-      $.globalEval """
+      $.globalEval '''
         window.addEventListener('jsmath', function(e) {
           if (jsMath.loaded) {
             // process one post
@@ -27,7 +27,7 @@ Fourchan =
             jsMath.Autoload.LoadJsMath();
           }
         }, false);
-      """
+      '''
       Post.callbacks.push
         name: 'Parse /sci/ math'
         cb:   @math
