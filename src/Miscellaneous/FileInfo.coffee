@@ -13,7 +13,7 @@ FileInfo =
       if c of FileInfo.formatters
         FileInfo.formatters[c].call(post)
       else
-        FileInfo.escape s
+        Build.escape s
   convertUnit: (size, unit) ->
     if unit is 'B'
       return "#{size.toFixed()} Bytes"
@@ -24,25 +24,22 @@ FileInfo =
     else
       size.toFixed()
     "#{size} #{unit}"
-  escape: (name) ->
-    name.replace /[&"'<>]/g, (c) ->
-      {'&': '&amp;', "'": '&#39;', '"': '&quot;', '<': '&lt;', '>': '&gt;'}[c]
   formatters:
-    t: -> FileInfo.escape @file.URL.match(/\d+\..+$/)[0]
-    T: -> "<a href=#{FileInfo.escape @file.URL} target=_blank>#{FileInfo.formatters.t.call @}</a>"
-    l: -> "<a href=#{FileInfo.escape @file.URL} target=_blank>#{FileInfo.formatters.n.call @}</a>"
-    L: -> "<a href=#{FileInfo.escape @file.URL} target=_blank>#{FileInfo.formatters.N.call @}</a>"
+    t: -> Build.escape @file.URL.match(/\d+\..+$/)[0]
+    T: -> "<a href=#{Build.escape @file.URL} target=_blank>#{FileInfo.formatters.t.call @}</a>"
+    l: -> "<a href=#{Build.escape @file.URL} target=_blank>#{FileInfo.formatters.n.call @}</a>"
+    L: -> "<a href=#{Build.escape @file.URL} target=_blank>#{FileInfo.formatters.N.call @}</a>"
     n: ->
       fullname  = @file.name
       shortname = Build.shortFilename @file.name, @isReply
       if fullname is shortname
-        FileInfo.escape fullname
+        Build.escape fullname
       else
-        "<span class=fntrunc>#{FileInfo.escape shortname}</span><span class=fnfull>#{FileInfo.escape fullname}</span>"
-    N: -> FileInfo.escape @file.name
+        "<span class=fntrunc>#{Build.escape shortname}</span><span class=fnfull>#{Build.escape fullname}</span>"
+    N: -> Build.escape @file.name
     p: -> if @file.isSpoiler then 'Spoiler, ' else ''
-    s: -> FileInfo.escape @file.size
+    s: -> Build.escape @file.size
     B: -> FileInfo.convertUnit @file.sizeInBytes, 'B'
     K: -> FileInfo.convertUnit @file.sizeInBytes, 'KB'
     M: -> FileInfo.convertUnit @file.sizeInBytes, 'MB'
-    r: -> FileInfo.escape (@file.dimensions or 'PDF')
+    r: -> Build.escape (@file.dimensions or 'PDF')

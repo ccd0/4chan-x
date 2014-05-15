@@ -2,6 +2,9 @@ Build =
   staticPath: '//s.4cdn.org/image/'
   gifIcon: if window.devicePixelRatio >= 2 then '@2x.gif' else '.gif'
   spoilerRange: {}
+  escape: (name) ->
+    name.replace /[&"'<>]/g, (c) ->
+      {'&': '&amp;', "'": '&#39;', '"': '&quot;', '<': '&lt;', '>': '&gt;'}[c]
   shortFilename: (filename, isReply) ->
     # FILENAME SHORTENING SCIENCE:
     # OPs have a +10 characters threshold.
