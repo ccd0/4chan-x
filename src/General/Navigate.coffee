@@ -164,7 +164,7 @@ Navigate =
     Favicon.update()
 
     findStyle = (type, base) ->
-      style = d.cookie.match new RegExp "\b#{type}\_style\=([^;]+);\b"
+      style = d.cookie.match new RegExp "\\b#{type}_style=([^;]+)"
       return ["#{type}_style", (if style then style[1] else base)]
 
     style = if sfw
@@ -172,7 +172,7 @@ Navigate =
     else
       findStyle 'nws', 'Yotsuba New'
 
-    $.globalEval "var style_group = '#{style[0]}'"
+    $.globalEval "var style_group = #{JSON.stringify style[0]}"
 
     $('link[title=switch]', d.head).href = $("link[title='#{style[1]}']", d.head).href
 
