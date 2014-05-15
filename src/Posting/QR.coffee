@@ -749,18 +749,11 @@ QR =
 
     resDoc  = req.response
     if ban  = $ '.banType', resDoc # banned/warning
-      board = $('.board', resDoc).innerHTML
-      err   = $.el 'span', innerHTML:
+      err   = $.el 'span',
         if ban.textContent.toLowerCase() is 'banned'
-          """
-          You are banned on #{board}! ;_;<br>
-          Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason.
-          """
+          innerHTML: "You are banned on #{$('.board', resDoc).innerHTML}! ;_;<br>Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason."
         else
-          """
-          You were issued a warning on #{board} as #{$('.nameBlock', resDoc).innerHTML}.<br>
-          Reason: #{$('.reason', resDoc).innerHTML}
-          """
+          innerHTML: "You were issued a warning on #{$('.board', resDoc).innerHTML} as #{$('.nameBlock', resDoc).innerHTML}.<br>Reason: #{$('.reason', resDoc).innerHTML}"
     else if err = resDoc.getElementById 'errmsg' # error!
       $('a', err)?.target = '_blank' # duplicate image link
     else if resDoc.title isnt 'Post successful!'

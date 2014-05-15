@@ -28,15 +28,13 @@ Settings =
     return if Settings.dialog
     $.event 'CloseMenu'
 
-    html = <%= importHTML('Settings/Settings') %>
-
     Settings.overlay = overlay = $.el 'div',
       id: 'overlay'
 
     Settings.dialog = dialog = $.el 'div',
       id:        'fourchanx-settings'
       className: 'dialog'
-      innerHTML: html
+      innerHTML: <%= importHTML('Settings/Settings') %>
 
     $.on $('.export', Settings.dialog), 'click',  Settings.export
     $.on $('.import', Settings.dialog), 'click',  Settings.import
@@ -92,7 +90,8 @@ Settings =
     inputs = {}
     for key, obj of Config.main
       fs = $.el 'fieldset',
-        innerHTML: "<legend>#{key}</legend>"
+        innerHTML: '<legend></legend>'
+      fs.firstElementChild.textContent = key
       for key, arr of obj
         description = arr[1]
         div = $.el 'div'
@@ -113,7 +112,7 @@ Settings =
       return
 
     div = $.el 'div',
-      innerHTML: "<button></button><span class=description>: Clear manually-hidden threads and posts on all boards. Reload the page to apply."
+      innerHTML: '<button></button><span class=description>: Clear manually-hidden threads and posts on all boards. Reload the page to apply.'
     button = $ 'button', div
     $.get {hiddenThreads: {}, hiddenPosts: {}}, ({hiddenThreads, hiddenPosts}) ->
       hiddenNum = 0
@@ -422,16 +421,13 @@ Settings =
   favicon: ->
     Favicon.switch()
     Unread.update() if g.VIEW is 'thread' and Conf['Unread Favicon']
-    @nextElementSibling.innerHTML = """
-      <img src=#{Favicon.default}>
-      <img src=#{Favicon.unreadSFW}>
-      <img src=#{Favicon.unreadNSFW}>
-      <img src=#{Favicon.unreadDead}>
-      """
+    img = @nextElementSibling.children
+    img[0].src = Favicon.default
+    img[1].src = Favicon.unreadSFW
+    img[2].src = Favicon.unreadNSFW
+    img[3].src = Favicon.unreadDead
   sageEmoji: ->
-    @nextElementSibling.innerHTML = """
-      <img src=data:image/png;base64,#{Emoji.sage[@value]}>
-      """
+    @nextElementSibling.firstElementChild.src = "data:image/png;base64,#{Emoji.sage[@value]}"
   togglecss: ->
     if $('textarea[name=usercss]', $.x 'ancestor::fieldset[1]', @).disabled = !@checked
       CustomCSS.rmStyle()
@@ -450,7 +446,8 @@ Settings =
     inputs = {}
     for key, arr of Config.hotkeys
       tr = $.el 'tr',
-        innerHTML: "<td>#{arr[1]}</td><td><input class=field></td>"
+        innerHTML: '<td></td><td><input class=field></td>'
+      tr.firstElementChild.textContent = arr[1]
       input = $ 'input', tr
       input.name = key
       input.spellcheck = false

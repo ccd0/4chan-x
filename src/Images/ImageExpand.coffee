@@ -256,13 +256,11 @@ ImageExpand =
         subEntries: subEntries
 
     createSubEntry: (name, desc) ->
-      label = $.el 'label',
-        innerHTML: "<input type=checkbox name='#{name}'> #{name}"
-        title: desc
+      label = UI.checkbox name, " #{name}"
+      label.title = desc
       input = label.firstElementChild
       if name in ['Fit width', 'Fit height']
         $.on input, 'change', ImageExpand.cb.setFitness
-      input.checked = Conf[name]
       $.event 'change', null, input
       $.on input, 'change', $.cb.checked
       el: label

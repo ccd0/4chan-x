@@ -186,9 +186,8 @@ Main =
     $.get 'previousversion', null, ({previousversion}) ->
       return if previousversion is g.VERSION
       if previousversion
-        changelog = '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
         el = $.el 'span',
-          innerHTML: "<%= meta.name %> has been updated to <a href='#{changelog}' target=_blank>version #{g.VERSION}</a>."
+          innerHTML: '<%= meta.name %> has been updated to <a href="<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md" target=_blank>version <%= version %></a>.'
         new Notice 'info', el, 15
       else
         Settings.open()
@@ -243,7 +242,7 @@ Main =
       return
 
     div = $.el 'div',
-      innerHTML: "#{errors.length} errors occurred. [<a href=javascript:;>show</a>]"
+      innerHTML: "#{+errors.length} errors occurred. [<a href=javascript:;>show</a>]"
     $.on div.lastElementChild, 'click', ->
       [@textContent, logs.hidden] = if @textContent is 'show'
         ['hide', false]
