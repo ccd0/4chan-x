@@ -32,22 +32,7 @@ Gallery =
 
     nodes.el = dialog = $.el 'div',
       id: 'a-gallery'
-      innerHTML: '''
-<div class=gal-viewport>
-  <span class=gal-buttons>
-    <a class="menu-button" href="javascript:;"><i></i></a>
-    <a href=javascript:; class=gal-close>×</a>
-  </span>
-  <a class=gal-name target="_blank"></a>
-  <span class=gal-count><span class='count'></span> / <span class='total'></span></a></span>
-  <div class=gal-prev></div>
-  <div class=gal-image>
-    <a href=javascript:;><img></a>
-  </div>
-  <div class=gal-next></div>
-</div>
-<div class=gal-thumbnails></div>
-'''
+      innerHTML: <%= importHTML('Features/Gallery') %>
 
     nodes[key] = $ value, dialog for key, value of {
       frame:   '.gal-image'
