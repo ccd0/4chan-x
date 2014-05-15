@@ -1,6 +1,6 @@
 <fieldset>
   <legend>Archiver</legend>
-  <div class="warning" #{if Conf['404 Redirect'] then 'hidden' else ''}><code>404 Redirect</code> is disabled.</div>
+  <div class="warning" data-feature='404 Redirect'><code>404 Redirect</code> is disabled.</div>
   <select id='archive-board-select'></select>
   <table id='archive-table'>
     <thead>
@@ -38,7 +38,7 @@
 </fieldset>
 
 <fieldset>
-  <legend>Time Formatting <span class=warning #{if Conf['Time Formatting'] then 'hidden' else ''}>is disabled.</span></legend>
+  <legend>Time Formatting <span class=warning data-feature='Time Formatting'>is disabled.</span></legend>
   <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>
   <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>
   <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>
@@ -50,12 +50,12 @@
 </fieldset>
 
 <fieldset>
-  <legend>Quote Backlinks formatting <span class=warning #{if Conf['Quote Backlinks'] then 'hidden' else ''}>is disabled.</span></legend>
+  <legend>Quote Backlinks formatting <span class=warning data-feature='Quote Backlinks'>is disabled.</span></legend>
   <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>
 </fieldset>
 
 <fieldset>
-  <legend>File Info Formatting <span class=warning #{if Conf['File Info Formatting'] then 'hidden' else ''}>is disabled.</span></legend>
+  <legend>File Info Formatting <span class=warning data-feature='File Info Formatting'>is disabled.</span></legend>
   <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>
   <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>
   <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>
@@ -82,7 +82,7 @@
 </fieldset>
 
 <fieldset>
-  <legend>Unread Favicon <span class=warning #{if Conf['Unread Favicon'] then 'hidden' else ''}>is disabled.</span></legend>
+  <legend>Unread Favicon <span class=warning data-feature='Unread Favicon'>is disabled.</span></legend>
   <select name=favicon>
     <option value=ferongr>ferongr</option>
     <option value=xat->xat-</option>
@@ -95,7 +95,7 @@
 </fieldset>
 
 <fieldset>
-  <legend>Emoji <span class=warning #{if Conf['Emoji'] then 'hidden' else ''}>is disabled.</span></legend>
+  <legend>Emoji <span class=warning data-feature='Emoji'>is disabled.</span></legend>
   <div>
     Sage Icon: <select name=sageEmoji>
       <option value="4chan SS">4chan SS</option>
@@ -112,16 +112,16 @@
 </fieldset>
 
 <fieldset>
-  <legend>Thread Updater <span class=warning #{if Conf['Thread Updater'] then 'hidden' else ''}>is disabled.</span></legend>
+  <legend>Thread Updater <span class=warning data-feature='Thread Updater'>is disabled.</span></legend>
   <div>
-    Interval: <input type=number name=Interval class=field min=1 value=#{Conf['Interval']}>
+    Interval: <input type=number name=Interval class=field min=1>
   </div>
 </fieldset>
 
 <fieldset>
   <legend>
-    <label><input type=checkbox name='Custom CSS' #{if Conf['Custom CSS'] then 'checked' else ''}> Custom CSS</label>
+    <label><input type=checkbox name='Custom CSS'> Custom CSS</label>
   </legend>
   <button id=apply-css>Apply CSS</button>
-  <textarea name=usercss class=field spellcheck=false #{if Conf['Custom CSS'] then '' else 'disabled'}></textarea>
+  <textarea name=usercss class=field spellcheck=false></textarea>
 </fieldset>

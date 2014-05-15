@@ -1,7 +1,7 @@
 module.exports = (grunt) ->
 
   importHTML = (filename) ->
-    "\"\"\"#{grunt.file.read("src/General/html/#{filename}.html").replace(/^\s+|\s+$</gm, '').replace(/\n/g, '')}\"\"\""
+    "'''#{grunt.file.read("src/General/html/#{filename}.html").replace(/^\s+|\s+$</gm, '').replace(/\n/g, '')}'''"
 
   # Project configuration.
   grunt.initConfig

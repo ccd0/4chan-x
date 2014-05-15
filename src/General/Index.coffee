@@ -74,11 +74,14 @@ Index =
     @searchInput = $ '#index-search', @navLinks
     @currentPage = @getCurrentPage()
 
+    returnlink = $ '#returnlink a',  @navLinks
+    returnlink.href = "/#{g.BOARD}/"
+
     $.on d, 'scroll', Index.scroll
     $.on @pagelist, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
-    $.on $('#returnlink a',  @navLinks), 'click', Navigate.navigate
+    $.on returnlink, 'click', Navigate.navigate
     $.on $('#cataloglink a', @navLinks), 'click', -> window.location = "//boards.4chan.org/#{g.BOARD}/catalog"
 
     @update() if g.VIEW is 'index'

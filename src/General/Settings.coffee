@@ -267,9 +267,11 @@ Settings =
       $.add div, ta
       return
     div.innerHTML = <%= importHTML('Settings/Filter-guide') %>
+    $('.warning', div).hidden = Conf['Filter']
 
   sauce: (section) ->
     section.innerHTML = <%= importHTML('Settings/Sauce') %>
+    $('.warning', section).hidden = Conf['Sauce']
     ta = $ 'textarea', section
     $.get 'sauces', Conf['sauces'], (item) ->
       ta.value = item['sauces']
@@ -277,6 +279,8 @@ Settings =
 
   advanced: (section) ->
     section.innerHTML = <%= importHTML('Settings/Advanced') %>
+    warning.hidden = Conf[warning.dataset.feature] for warning in $$ '.warning', section
+
     items = {}
     inputs = {}
     for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'sageEmoji', 'emojiPos', 'usercss']
@@ -305,9 +309,14 @@ Settings =
         Settings[key].call input
       return
 
-    $.on $('input[name=Interval]', section), 'change', ThreadUpdater.cb.interval
-    $.on $('input[name="Custom CSS"]', section), 'change', Settings.togglecss
-    $.on $.id('apply-css'), 'click', Settings.usercss
+    interval  = $ 'input[name="Interval"]',   section
+    customCSS = $ 'input[name="Custom CSS"]', section
+    interval.value             =  Conf['Interval']
+    customCSS.checked          =  Conf['Custom CSS']
+    inputs['usercss'].disabled = !Conf['Custom CSS']
+    $.on interval,          'change', ThreadUpdater.cb.interval
+    $.on customCSS,         'change', Settings.togglecss
+    $.on $.id('apply-css'), 'click',  Settings.usercss
 
     archBoards = {}
     for {name, boards, files, software, withCredentials} in Redirect.archives
@@ -434,6 +443,7 @@ Settings =
 
   keybinds: (section) ->
     section.innerHTML = <%= importHTML('Settings/Keybinds') %>
+    $('.warning', section).hidden = Conf['Keybinds']
 
     tbody  = $ 'tbody', section
     items  = {}
