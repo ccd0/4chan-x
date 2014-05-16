@@ -19,6 +19,7 @@ Keybinds =
   keydown: (e) ->
     return unless key = Keybinds.keyCode e
     {target} = e
+    return if target.nodeName is 'embed' # Prevent keybinds from firing on /f/ embeds.
     if target.nodeName in ['INPUT', 'TEXTAREA']
       return unless /(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test key
     unless g.VIEW is 'catalog'

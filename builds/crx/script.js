@@ -12009,6 +12009,9 @@
         return;
       }
       target = e.target;
+      if (target.nodeName === 'embed') {
+        return;
+      }
       if ((_ref = target.nodeName) === 'INPUT' || _ref === 'TEXTAREA') {
         if (!/(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test(key)) {
           return;
