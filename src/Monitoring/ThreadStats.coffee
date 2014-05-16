@@ -4,14 +4,14 @@ ThreadStats =
 
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
-        innerHTML: "<span id=post-count>0</span> / <span id=file-count>0</span>#{if Conf['Page Count in Stats'] then ' / <span id=page-count>0</span>' else ''}"
+        innerHTML: "<span id='post-count'>0</span> / <span id='file-count'>0</span>#{if Conf['Page Count in Stats'] then ' / <span id="page-count">0</span>' else ''}"
         id:        'thread-stats'
         title: 'Post Count / File Count' + (if Conf["Page Count in Stats"] then " / Page Count" else "")
       $.ready ->
         Header.addShortcut sc
     else
       @dialog = sc = UI.dialog 'thread-stats', 'bottom: 0px; right: 0px;',
-        innerHTML: "<div class=move title='Post Count / File Count#{if Conf['Page Count in Stats'] then ' / Page Count' else ''}'><span id=post-count>0</span> / <span id=file-count>0</span>#{if Conf['Page Count in Stats'] then ' / <span id=page-count>0</span>' else ''}</div>"
+        innerHTML: "<div class='move' title='Post Count / File Count#{if Conf['Page Count in Stats'] then ' / Page Count' else ''}'><span id='post-count'>0</span> / <span id='file-count'>0</span>#{if Conf['Page Count in Stats'] then ' / <span id="page-count">0</span>' else ''}</div>"
       $.ready =>
         $.add d.body, sc
 

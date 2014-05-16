@@ -4,13 +4,13 @@ ThreadUpdater =
 
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
-        innerHTML: '<span id=update-status></span><span id=update-timer title="Update now"></span>'
+        innerHTML: '<span id="update-status"></span><span id="update-timer" title="Update now"></span>'
         id:        'updater'
       $.ready ->
         Header.addShortcut sc
     else 
       @dialog = sc = UI.dialog 'updater', 'bottom: 0px; left: 0px;',
-        innerHTML: '<div class=move></div><span id=update-status></span><span id=update-timer title="Update now"></span>'
+        innerHTML: '<div class="move"></div><span id="update-status"></span><span id="update-timer" title="Update now"></span>'
       $.addClass doc, 'float'
       $.ready => 
         $.addClass doc, 'float'
@@ -39,7 +39,7 @@ ThreadUpdater =
       subEntries.push el: el
 
     @settings = $.el 'span',
-      innerHTML: '<a href=javascript:;>Interval</a>'
+      innerHTML: '<a href="javascript:;">Interval</a>'
 
     $.on @settings, 'click', @intervalShortcut
 

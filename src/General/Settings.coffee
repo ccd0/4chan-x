@@ -112,7 +112,7 @@ Settings =
       return
 
     div = $.el 'div',
-      innerHTML: '<button></button><span class=description>: Clear manually-hidden threads and posts on all boards. Reload the page to apply.'
+      innerHTML: '<button></button><span class="description">: Clear manually-hidden threads and posts on all boards. Reload the page to apply.'
     button = $ 'button', div
     $.get {hiddenThreads: {}, hiddenPosts: {}}, ({hiddenThreads, hiddenPosts}) ->
       hiddenNum = 0
@@ -446,7 +446,7 @@ Settings =
     inputs = {}
     for key, arr of Config.hotkeys
       tr = $.el 'tr',
-        innerHTML: '<td></td><td><input class=field></td>'
+        innerHTML: '<td></td><td><input class="field"></td>'
       tr.firstElementChild.textContent = arr[1]
       input = $ 'input', tr
       input.name = key

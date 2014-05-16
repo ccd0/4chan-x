@@ -23,7 +23,7 @@ PSAHiding =
     $.on entry.el, 'click', PSAHiding.toggle
 
     PSAHiding.btn = btn = $.el 'span',
-      innerHTML: '[<a href=javascript:;>Dismiss</a>]'
+      innerHTML: '[<a href="javascript:;">Dismiss</a>]'
       title:     'Mark announcement as read and hide.'
       className: 'hide-announcement' 
       href: 'javascript:;'

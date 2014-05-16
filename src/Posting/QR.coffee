@@ -45,7 +45,7 @@ QR =
     return unless QR.postingIsEnabled
 
     link = $.el 'h1',
-      innerHTML: "<a href=javascript:; class='qr-link'>#{if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'}</a>"
+      innerHTML: "<a href='javascript:;' class='qr-link'>#{if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'}</a>"
       className: "qr-link-container"
     
     QR.link = link.firstElementChild
@@ -717,7 +717,7 @@ QR =
         QR.error $.el 'span',
           innerHTML: '''
           4chan X encountered an error while posting. 
-          [<a href="//4chan.org/banned" target=_blank>Banned?</a>] [<a href="<%= meta.faq %>#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean" target=_blank>More info</a>]
+          [<a href="//4chan.org/banned" target="_blank">Banned?</a>] [<a href="<%= meta.faq %>#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean" target="_blank">More info</a>]
           '''
     extra =
       form: $.formData formData
@@ -751,7 +751,7 @@ QR =
     if ban  = $ '.banType', resDoc # banned/warning
       err   = $.el 'span',
         if ban.textContent.toLowerCase() is 'banned'
-          innerHTML: "You are banned on #{$('.board', resDoc).innerHTML}! ;_;<br>Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason."
+          innerHTML: "You are banned on #{$('.board', resDoc).innerHTML}! ;_;<br>Click <a href='//www.4chan.org/banned' target='_blank'>here</a> to see the reason."
         else
           innerHTML: "You were issued a warning on #{$('.board', resDoc).innerHTML} as #{$('.nameBlock', resDoc).innerHTML}.<br>Reason: #{$('.reason', resDoc).innerHTML}"
     else if err = resDoc.getElementById 'errmsg' # error!

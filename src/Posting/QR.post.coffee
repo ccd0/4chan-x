@@ -4,7 +4,7 @@ QR.post = class
       className: 'qr-preview'
       draggable: true
       href: 'javascript:;'
-      innerHTML: '<a class="remove fa fa-times-circle" title=Remove></a><label hidden><input type=checkbox> Spoiler</label><span></span>'
+      innerHTML: '<a class="remove fa fa-times-circle" title="Remove"></a><label hidden><input type="checkbox"> Spoiler</label><span></span>'
 
     @nodes =
       el:      el

@@ -8,7 +8,7 @@ QuoteThreading =
 
     @enabled = true
     @controls = $.el 'span',
-      innerHTML: '<label><input id=threadingControl type=checkbox checked> Threading</label>'
+      innerHTML: '<label><input id="threadingControl" type="checkbox" checked> Threading</label>'
 
     input = $ 'input', @controls
     $.on input, 'change', @toggle

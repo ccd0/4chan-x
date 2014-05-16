@@ -15,9 +15,9 @@ Index =
     modeEntry =
       el: $.el 'span', textContent: 'Index mode'
       subEntries: [
-        { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="paged"> Paged' }
-        { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="infinite"> Infinite scrolling' }
-        { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="all pages"> All threads' }
+        { el: $.el 'label', innerHTML: '<input type="radio" name="Index Mode" value="paged"> Paged' }
+        { el: $.el 'label', innerHTML: '<input type="radio" name="Index Mode" value="infinite"> Infinite scrolling' }
+        { el: $.el 'label', innerHTML: '<input type="radio" name="Index Mode" value="all pages"> All threads' }
       ]
     for label in modeEntry.subEntries
       input = label.el.firstChild
@@ -28,11 +28,11 @@ Index =
     sortEntry =
       el: $.el 'span', textContent: 'Sort by'
       subEntries: [
-        { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="bump"> Bump order' }
-        { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="lastreply"> Last reply' }
-        { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="birth"> Creation date' }
-        { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="replycount"> Reply count' }
-        { el: $.el 'label', innerHTML: '<input type=radio name="Index Sort" value="filecount"> File count' }
+        { el: $.el 'label', innerHTML: '<input type="radio" name="Index Sort" value="bump"> Bump order' }
+        { el: $.el 'label', innerHTML: '<input type="radio" name="Index Sort" value="lastreply"> Last reply' }
+        { el: $.el 'label', innerHTML: '<input type="radio" name="Index Sort" value="birth"> Creation date' }
+        { el: $.el 'label', innerHTML: '<input type="radio" name="Index Sort" value="replycount"> Reply count' }
+        { el: $.el 'label', innerHTML: '<input type="radio" name="Index Sort" value="filecount"> File count' }
       ]
     for label in sortEntry.subEntries
       input = label.el.firstChild
