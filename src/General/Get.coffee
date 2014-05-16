@@ -158,7 +158,7 @@ Get =
       return
 
     # convert comment to html
-    h_comment = Build.h_escape data.comment
+    h_comment = Build.h_escape (data.comment or '')
     # https://github.com/eksopl/fuuka/blob/master/Board/Yotsuba.pm#L413-452
     # https://github.com/eksopl/asagi/blob/master/src/main/java/net/easymodo/asagi/Yotsuba.java#L109-138
     h_comment = h_comment.replace ///
