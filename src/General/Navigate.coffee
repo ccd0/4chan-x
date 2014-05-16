@@ -202,8 +202,8 @@ Navigate =
     return if @hostname isnt 'boards.4chan.org' or window.location.hostname is 'rs.4chan.org'
     if e
       if e.shiftKey or e.ctrlKey or (e.type is 'click' and e.button isnt 0) # Not simply a left click
-        Navigate.setMode @ unless e?.button is 2 # Right Click
-        return 
+        Navigate.setMode @ unless e.button is 2 # Right Click
+        return
 
     if @pathname is Navigate.path
       if g.VIEW is 'thread'

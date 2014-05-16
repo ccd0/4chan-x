@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.7.33 - 2014-05-11
+* 4chan X - Version 1.7.33 - 2014-05-16
 *
 * Licensed under the MIT license.
 * https://github.com/ccd0/4chan-x/blob/master/LICENSE
@@ -2651,6 +2651,7 @@
         className: 'navLinks',
         innerHTML: "<span id=\"index-menu\"><input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" class=\"fa fa-times-circle\" href=\"javascript:;\"></a>&nbsp;<time id=\"index-last-refresh\" title=\"Last index refresh\">...</time><span id=\"hidden-label\" hidden>&nbsp;&mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span><span style='flex: 1'></span><select id=\"index-mode\" name=\"Index Mode\"><option disabled>Index Mode</option><option value=\"paged\">Paged</option><option value=\"infinite\">Infinite Scrolling</option><option value=\"all pages\">All threads</option><option value=\"catalog\">Catalog</option></select><select id=\"index-sort\" name=\"Index Sort\"><option disabled>Index Sort</option><option value=\"bump\">Bump order</option><option value=\"lastreply\">Last reply</option><option value=\"birth\">Creation date</option><option value=\"replycount\">Reply count</option><option value=\"filecount\">File count</option></select><select id=\"index-size\" name=\"Index Size\"><option disabled>Image Size</option><option value=\"small\">Small</option><option value=\"large\">Large</option></select></span><span class=brackets-wrap id=returnlink><a href=.././>Return</a></span> <span class=brackets-wrap id=bottomlink><a href=\"#bottom\">Bottom</a></span> "
       });
+      this.timeEl = $('time#index-last-refresh', this.navLinks);
       this.searchInput = $('#index-search', this.navLinks);
       this.searchTest(true);
       this.hideLabel = $('#hidden-label', this.navLinks);
@@ -2670,7 +2671,8 @@
       $.on(this.selectSort, 'change', this.cb.sort);
       $.on(this.selectSize, 'change', this.cb.size);
       this.currentPage = this.getCurrentPage();
-      $.on(d, 'scroll', Index.scroll);
+      $.on(d, 'scroll', this.scroll);
+      $.on(window, 'focus', this.updateIfNeeded);
       $.on(this.pagelist, 'click', this.cb.pageNav);
       $.on($('#returnlink a', this.navLinks), 'click', function(e) {
         if (g.VIEW === 'index') {
@@ -3181,6 +3183,14 @@
       Index.hideLabel.hidden = false;
       return $('#hidden-count', Index.hideLabel).textContent = hiddenCount === 1 ? '1 hidden thread' : "" + hiddenCount + " hidden threads";
     },
+    updateIfNeeded: function() {
+      var needed, timeEl;
+      timeEl = Index.timeEl;
+      needed = g.VIEW === 'index' && !Index.req && timeEl.dataset.utc && timeEl.dataset.utc < Date.now() - (10 * $.MINUTE);
+      if (needed) {
+        return Index.update();
+      }
+    },
     update: function(pageNum) {
       var board, now, onload, sortedThreads, _ref, _ref1;
       if (!navigator.onLine) {
@@ -3278,7 +3288,7 @@
         }
         return;
       }
-      timeEl = $('time#index-last-refresh', Index.navLinks);
+      timeEl = Index.timeEl;
       timeEl.dataset.utc = Date.parse(req.getResponseHeader('Last-Modified'));
       RelativeDates.update(timeEl);
       return Index.scrollToIndex();
@@ -12956,7 +12966,7 @@
       }
       if (e) {
         if (e.shiftKey || e.ctrlKey || (e.type === 'click' && e.button !== 0)) {
-          if ((e != null ? e.button : void 0) !== 2) {
+          if (e.button !== 2) {
             Navigate.setMode(this);
           }
           return;
