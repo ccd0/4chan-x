@@ -17,7 +17,7 @@ ThreadUpdater =
         $.add d.body, sc
 
     updateLink = $.el 'span',
-      innerHTML: "[<a href='javascript:;' class='update-link'>Update</a>]"
+      innerHTML: '[<a href="javascript:;" class="update-link">Update</a>]'
 
     $.ready ->
       $.add $('.navLinksBot'), updateLink

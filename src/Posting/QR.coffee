@@ -58,7 +58,7 @@ QR =
 
     if Conf['Bottom QR Link'] and g.VIEW is 'thread'
       linkBot = $.el 'div',
-        innerHTML: "[<a href='javascript:;' class='qr-link-bottom'>Reply to Thread</a>]"
+        innerHTML: '[<a href="javascript:;" class="qr-link-bottom">Reply to Thread</a>]'
         className: "qr-link-container-bottom"
 
       $.on linkBot.firstElementChild, 'click', ->
