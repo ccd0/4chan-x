@@ -54,11 +54,6 @@ Main =
         return
       when 'i.4cdn.org'
         $.ready ->
-          if Conf['Loop in New Tab'] and video = $ 'video'
-            Video.configure video
-            if !video.controls
-              $.on video, 'click', ->
-                if video.paused then video.play() else video.pause()
           if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
             Redirect.init()
             pathname = location.pathname.split '/'
@@ -66,6 +61,11 @@ Main =
               boardID:  g.BOARD.ID
               filename: pathname[pathname.length - 1]
             location.replace URL if URL
+          else if Conf['Loop in New Tab'] and video = $ 'video'
+            Video.configure video
+            if !video.controls
+              $.on video, 'click', ->
+                if video.paused then video.play() else video.pause()
         return
 
     # c.time 'All initializations'
