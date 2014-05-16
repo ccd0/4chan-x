@@ -131,7 +131,7 @@ Navigate =
     $.addClass current, 'current' if current = $ "a[href*='/#{boardID}/']", fullBoardList
     Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
 
-    $('#returnlink a').href = "/#{g.BOARD}/"
+    Index.setNavLinks()
     $('form[name="post"]').action = "//sys.4chan.org/#{g.BOARD}/post"
     QR.flagsInput() if Conf['Quick Reply']
 

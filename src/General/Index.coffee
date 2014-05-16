@@ -71,18 +71,20 @@ Index =
     @navLinks = $.el 'div',
       className: 'navLinks'
       innerHTML: <%= importHTML('Features/Index-navlinks') %>
+    @navLinksBot = $.el 'div',
+      className: 'navLinks navLinksBot'
+      innerHTML: <%= importHTML('Features/Index-navlinksbot') %>
     @searchInput = $ '#index-search', @navLinks
     @currentPage = @getCurrentPage()
 
-    returnlink = $ '#returnlink a',  @navLinks
-    returnlink.href = "/#{g.BOARD}/"
+    Index.setNavLinks()
 
     $.on d, 'scroll', Index.scroll
     $.on @pagelist, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
-    $.on returnlink, 'click', Navigate.navigate
-    $.on $('#cataloglink a', @navLinks), 'click', -> window.location = "//boards.4chan.org/#{g.BOARD}/catalog"
+    $.on $('.returnlink a',  @navLinks), 'click', Navigate.navigate
+    $.on $('.returnlink a',  @navLinksBot), 'click', Navigate.navigate
 
     @update() if g.VIEW is 'index'
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
@@ -101,8 +103,11 @@ Index =
       $.rm el for el in $$ '.navLinks, .navLinksBot + hr'
       $.id('search-box')?.parentNode.remove()
       topNavPos = $.id('delform').previousElementSibling
-      $.before topNavPos, ($.el 'hr', className: 'desktop') if g.VIEW is 'index'
+      botNavPos = $ '.board'
+      $.before topNavPos, $.el 'hr' if g.VIEW is 'index'
       $.before topNavPos, Index.navLinks
+      $.after  botNavPos, $.el 'hr'
+      $.after  botNavPos, Index.navLinksBot
       $.rmClass doc, 'index-loading'
 
     $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
@@ -110,6 +115,10 @@ Index =
         $.replace pagelist, Index.pagelist
       else
         $.after $.id('delform'), Index.pagelist
+
+  setNavLinks: () ->
+    $('.returnlink a',  Index.navLinks).href = $('.returnlink a',  Index.navLinksBot).href = "//boards.4chan.org/#{g.BOARD}/"
+    $('.cataloglink a', Index.navLinks).href = $('.cataloglink a', Index.navLinksBot).href = "//boards.4chan.org/#{g.BOARD}/catalog"
 
   scroll: $.debounce 100, ->
     return if Index.req or Conf['Index Mode'] isnt 'infinite' or (doc.scrollTop <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
