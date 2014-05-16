@@ -1,3 +1,7 @@
+**ccd0**
+- Security enhancement: Remove a means by which an archive administrator could inject malicious Javascript into the page when 4chan X fetches a post from the archive.
+- Rewrite lots of HTML-generating code to make it easier to check for script injection vulnerabilities.
+
 ### v1.7.37 
 *2014-05-14*
 
