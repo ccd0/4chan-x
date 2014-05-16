@@ -203,11 +203,12 @@ Index =
     thread = g.threads[@parentNode.dataset.fullID]
     if e.shiftKey
       PostHiding.toggle thread.OP
+      e.preventDefault()
     else if e.altKey
       Index.togglePin thread
+      e.preventDefault()
     else
-      Navigate.navigate.call @
-    e.preventDefault()
+      Navigate.navigate.call @, e
 
   onOver: (e) ->
     # 4chan's less than stellar CSS forces us to include a .post and .postInfo

@@ -2860,12 +2860,13 @@
       thread = g.threads[this.parentNode.dataset.fullID];
       if (e.shiftKey) {
         PostHiding.toggle(thread.OP);
+        return e.preventDefault();
       } else if (e.altKey) {
         Index.togglePin(thread);
+        return e.preventDefault();
       } else {
-        Navigate.navigate.call(this);
+        return Navigate.navigate.call(this, e);
       }
-      return e.preventDefault();
     },
     onOver: function(e) {
       var el, nodes;
