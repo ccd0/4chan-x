@@ -703,8 +703,8 @@ span.hide-announcement {
 }
 
 /* File */
-.fileText:hover .fntrunc,
-.fileText:not(:hover) .fnfull,
+.fileText > span > a:hover .fntrunc,
+.fileText > span > a:not(:hover) .fnfull,
 .expanded-image > .post > .file > .fileThumb > img[data-md5] {
   display: none;
 }
