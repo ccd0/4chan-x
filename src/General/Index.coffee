@@ -98,7 +98,7 @@ Index =
         #   Does not work on Firefox unfortunately. bugzil.la/939713
         d.implementation.createDocument(null, null, null).appendChild board
 
-      $.rm navLink for navLink in $$ '.navLinks'
+      $.rm el for el in $$ '.navLinks, .navLinksBot + hr'
       $.id('search-box')?.parentNode.remove()
       topNavPos = $.id('delform').previousElementSibling
       $.before topNavPos, ($.el 'hr', className: 'desktop') if g.VIEW is 'index'
