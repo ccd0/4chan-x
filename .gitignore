@@ -1,6 +1,7 @@
 node_modules/
 *~
 *.db
+*.DS_Store
 tmp-crx/
 tmp-userscript/
 testbuilds/

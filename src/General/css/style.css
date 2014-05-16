@@ -836,6 +836,13 @@ span.hide-announcement {
 .qr-link-container {
   text-align: center;
 }
+.qr-link-container-bottom {
+  width: 200px;
+  position: absolute;
+  left: -100px;
+  margin-left: 50%;
+  text-align: center;
+}
 .qr-link {
   border-radius: 3px;
   padding: 6px 10px 5px;
