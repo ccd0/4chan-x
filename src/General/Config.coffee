@@ -349,6 +349,10 @@ Config =
         false
         'Automatically load the captcha when you open a thread, and reload it after you post.'
       ]
+      'Bottom QR Link': [
+        true
+        'Places a link on the bottom of threads to open the QR.'
+      ]
 
     'Quote Links':
       'Quote Backlinks': [

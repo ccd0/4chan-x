@@ -16,6 +16,12 @@ ThreadUpdater =
         $.addClass doc, 'float'
         $.add d.body, sc
 
+    updateLink = $.el 'span',
+      innerHTML: "[<a href='javascript:;' class='update-link'>Update</a>]"
+
+    $.ready ->
+      $.add $('.navLinksBot'), updateLink
+
     @checkPostCount = 0
 
     @timer  = $ '#update-timer', sc
@@ -24,6 +30,7 @@ ThreadUpdater =
 
     $.on @timer,  'click', @update
     $.on @status, 'click', @update
+    $.on $('.update-link', updateLink), 'click', @update
 
     subEntries = []
     for name, conf of Config.updater.checkbox

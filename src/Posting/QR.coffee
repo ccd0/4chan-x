@@ -56,7 +56,22 @@ QR =
       if Conf['QR Shortcut']
         $.rmClass $('.qr-shortcut'), 'disabled'
 
+    if Conf['Bottom QR Link'] and g.VIEW is 'thread'
+      linkBot = $.el 'div',
+        innerHTML: "[<a href='javascript:;' class='qr-link-bottom'>Reply to Thread</a>]"
+        className: "qr-link-container-bottom"
+
+      $.on linkBot.firstElementChild, 'click', ->
+        $.event 'CloseMenu'
+        QR.open()
+        QR.nodes.com.focus()
+        if Conf['QR Shortcut']
+          $.rmClass $('.qr-shortcut'), 'disabled'
+
+      $.prepend $('.navLinksBot'), linkBot
+
     $.before $.id('togglePostFormLink'), link
+
 
     $.on d, 'QRGetSelectedPost', ({detail: cb}) ->
       cb QR.selected
