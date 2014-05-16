@@ -100,7 +100,9 @@ Index =
 
       $.rm navLink for navLink in $$ '.navLinks'
       $.id('search-box')?.parentNode.remove()
-      $.after $.x('child::form/preceding-sibling::hr[1]'), Index.navLinks
+      topNavPos = $.id('delform').previousElementSibling
+      $.before topNavPos, ($.el 'hr', className: 'desktop') if g.VIEW is 'index'
+      $.before topNavPos, Index.navLinks
       $.rmClass doc, 'index-loading'
 
     $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
