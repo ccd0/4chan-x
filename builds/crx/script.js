@@ -12009,7 +12009,7 @@
         return;
       }
       target = e.target;
-      if (target.nodeName === 'embed') {
+      if (target.nodeName === 'EMBED') {
         return;
       }
       if ((_ref = target.nodeName) === 'INPUT' || _ref === 'TEXTAREA') {
