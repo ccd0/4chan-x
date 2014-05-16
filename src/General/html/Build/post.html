@@ -1,36 +1,26 @@
-"""#{if isOP then '' else "<div class=sideArrows id=sa#{postID}>&gt;&gt;</div>"}
-<div id=p#{postID} class='post #{if isOP then 'op' else 'reply'}#{
-  if capcodeIcon is 'admin_highlight' then
-    ' highlightPost'
-  else
-    ''
-}'>
+"""#{h_sideArrows}
+<div id='p#{+postID}' class='#{h_postClass}'>
 
-  #{if isOP then fileHTML else ''}
+  #{if isOP then h_file else ''}
 
-  <div class='postInfo' id=pi#{postID}>
-    <input type=checkbox name=#{postID} value=delete>
-    #{' '}<span class=subject>#{subject or ''}</span>#{' '}
-    <span class='nameBlock#{capcodeClass}'>
-      #{emailStart}
-      <span class=name>#{name or ''}</span>
-      #{tripcode + capcodeStart + emailEnd + capcodeIcon + userID + flag}
-    </span>#{" "}
-    <span class=dateTime data-utc=#{dateUTC}>#{date}</span>#{' '}
+  <div class='postInfo' id='pi#{+postID}'>
+    <input type='checkbox' name='#{+postID}' value='delete'>
+    #{' '}<span class='subject'>#{E subject}</span>#{' '}
+    <span class='nameBlock#{h_capcodeClass}'>
+      #{h_emailStart}
+      <span class='name'>#{E name}</span>
+      #{h_tripcode}#{h_capcodeStart}#{h_emailEnd}#{h_capcodeIcon}#{h_userID}#{h_flag}
+    </span>#{' '}
+    <span class='dateTime' data-utc='#{+dateUTC}'>#{E date}</span>#{' '}
     <span class='postNum'>
-    <a href=#{"/#{boardID}/thread/#{threadID}#p#{postID}"} title='Link to this post'>No.</a>
-    <a href='#{
-      if g.VIEW is 'thread' and g.THREADID is +threadID then
-        "javascript:quote(#{postID})"
-      else
-        "/#{boardID}/thread/#{threadID}#q#{postID}"
-      }' title='Reply to this post'>#{postID}</a>
-      #{pageIcon + sticky + closed + replyLink}
+      <a href='/#{E boardID}/thread/#{+threadID}\#p#{+postID}' title='Link to this post'>No.</a>
+      <a href='#{h_quoteLink}' title='Reply to this post'>#{+postID}</a>
+      #{h_pageIcon}#{h_sticky}#{h_closed}#{h_replyLink}
     </span>
   </div>
 
-  #{if isOP then '' else fileHTML}
+  #{if isOP then '' else h_file}
 
-  <blockquote class=postMessage id=m#{postID}>#{comment or ''}</blockquote>#{' '}
+  <blockquote class='postMessage' id='m#{+postID}'>#{h_comment}</blockquote>#{' '}
 
 </div>"""

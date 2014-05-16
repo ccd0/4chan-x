@@ -7,39 +7,29 @@ FileInfo =
       cb:   @node
   node: ->
     return if !@file or @isClone
-    @file.text.innerHTML = "<span class=file-info>#{FileInfo.format Conf['fileInfo'], @}</span>"
-  format: (formatString, post) ->
+    @file.text.innerHTML = "<span class='file-info'>#{FileInfo.h_format Conf['fileInfo'], @}</span>"
+  h_format: (formatString, post) ->
     formatString.replace /%([A-Za-z])|[^%]+/g, (s, c) ->
-      if c of FileInfo.formatters
-        FileInfo.formatters[c].call(post)
+      if c of FileInfo.h_formatters
+        FileInfo.h_formatters[c].call(post)
       else
-        Build.escape s
-  convertUnit: (size, unit) ->
-    if unit is 'B'
-      return "#{size.toFixed()} Bytes"
-    i = 1 + ['KB', 'MB'].indexOf unit
-    size /= 1024 while i--
-    size = if unit is 'MB'
-      Math.round(size * 100) / 100
-    else
-      size.toFixed()
-    "#{size} #{unit}"
-  formatters:
-    t: -> Build.escape @file.URL.match(/\d+\..+$/)[0]
-    T: -> "<a href=#{Build.escape @file.URL} target=_blank>#{FileInfo.formatters.t.call @}</a>"
-    l: -> "<a href=#{Build.escape @file.URL} target=_blank>#{FileInfo.formatters.n.call @}</a>"
-    L: -> "<a href=#{Build.escape @file.URL} target=_blank>#{FileInfo.formatters.N.call @}</a>"
+        Build.h_escape s
+  h_formatters:
+    t: -> Build.h_escape @file.URL.match(/\d+\..+$/)[0]
+    T: -> "<a href='#{Build.h_escape @file.URL}' target='_blank'>#{FileInfo.h_formatters.t.call @}</a>"
+    l: -> "<a href='#{Build.h_escape @file.URL}' target='_blank'>#{FileInfo.h_formatters.n.call @}</a>"
+    L: -> "<a href='#{Build.h_escape @file.URL}' target='_blank'>#{FileInfo.h_formatters.N.call @}</a>"
     n: ->
       fullname  = @file.name
       shortname = Build.shortFilename @file.name, @isReply
       if fullname is shortname
-        Build.escape fullname
+        Build.h_escape fullname
       else
-        "<span class=fntrunc>#{Build.escape shortname}</span><span class=fnfull>#{Build.escape fullname}</span>"
-    N: -> Build.escape @file.name
+        "<span class='fntrunc'>#{Build.h_escape shortname}</span><span class='fnfull'>#{Build.h_escape fullname}</span>"
+    N: -> Build.h_escape @file.name
     p: -> if @file.isSpoiler then 'Spoiler, ' else ''
-    s: -> Build.escape @file.size
-    B: -> FileInfo.convertUnit @file.sizeInBytes, 'B'
-    K: -> FileInfo.convertUnit @file.sizeInBytes, 'KB'
-    M: -> FileInfo.convertUnit @file.sizeInBytes, 'MB'
-    r: -> Build.escape (@file.dimensions or 'PDF')
+    s: -> Build.h_escape @file.size
+    B: -> return "#{+@file.sizeInBytes} Bytes"
+    K: -> "#{+Math.round(@file.sizeInBytes/1024)} KB"
+    M: -> "#{+Math.round(@file.sizeInBytes/1048576*100)/100} MB"
+    r: -> Build.h_escape (@file.dimensions or 'PDF')

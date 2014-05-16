@@ -158,20 +158,20 @@ Get =
       return
 
     # convert comment to html
-    bq = $.el 'blockquote', textContent: data.comment # set this first to convert text to HTML entities
+    h_comment = Build.h_escape data.comment
     # https://github.com/eksopl/fuuka/blob/master/Board/Yotsuba.pm#L413-452
     # https://github.com/eksopl/asagi/blob/master/src/main/java/net/easymodo/asagi/Yotsuba.java#L109-138
-    bq.innerHTML = bq.innerHTML.replace ///
+    h_comment = h_comment.replace ///
       \n
       |
       \[/?[a-z]+(:lit)?\]
     ///g, Get.parseMarkup
 
-    comment = bq.innerHTML
+    h_comment = h_comment
       # greentext
-      .replace(/(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class=quote>$2</span>$3')
+      .replace(/(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class="quote">$2</span>$3')
       # quotes
-      .replace /((&gt;){2}(&gt;\/[a-z\d]+\/)?\d+)/g, '<span class=deadlink>$1</span>'
+      .replace /((&gt;){2}(&gt;\/[a-z\d]+\/)?\d+)/g, '<span class="deadlink">$1</span>'
 
     threadID = +data.thread_num
     o =
@@ -180,24 +180,24 @@ Get =
       threadID: threadID
       boardID:  boardID
       # info
-      name:     data.name_processed
+      name:     data.name
       capcode:  switch data.capcode
         when 'M' then 'mod'
         when 'A' then 'admin'
         when 'D' then 'developer'
       tripcode: data.trip
       uniqueID: data.poster_hash
-      email:    if data.email then encodeURI data.email else ''
-      subject:  data.title_processed
+      email:    data.email or ''
+      subject:  data.title
       flagCode: data.poster_country
-      flagName: data.poster_country_name_processed
+      flagName: data.poster_country_name
       date:     data.fourchan_date
       dateUTC:  data.timestamp
-      comment:  comment
+      h_comment: h_comment
       # file
     if data.media?.media_filename
       o.file =
-        name:      data.media.media_filename_processed
+        name:      data.media.media_filename
         timestamp: data.media.media_orig
         url:       data.media.media_link or data.media.remote_media_link
         height:    data.media.media_h
@@ -223,7 +223,7 @@ Get =
       '[/b]':       '</b>'
       '[spoiler]':  '<s>'
       '[/spoiler]': '</s>'
-      '[code]':     '<pre class=prettyprint>'
+      '[code]':     '<pre class="prettyprint">'
       '[/code]':    '</pre>'
       '[moot]':     '<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">'
       '[/moot]':    '</div>'
