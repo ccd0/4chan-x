@@ -13832,7 +13832,7 @@
       return $.on(d, '4chanMainInit', Main.initStyle);
     },
     initFeatures: function() {
-      var init, video;
+      var init;
       switch (location.hostname) {
         case 'a.4cdn.org':
           return;
@@ -13840,20 +13840,20 @@
           Report.init();
           return;
         case 'i.4cdn.org':
-          if (Conf['Loop in New Tab'] && (video = $('video'))) {
-            Video.configure(video);
-            $.on(video, 'click', function() {
-              if (!video.controls) {
-                if (video.paused) {
-                  return video.play();
-                } else {
-                  return video.pause();
-                }
-              }
-            });
-          }
           $.ready(function() {
-            var URL, pathname, _ref;
+            var URL, pathname, video, _ref;
+            if (Conf['Loop in New Tab'] && (video = $('video'))) {
+              Video.configure(video);
+              if (!video.controls) {
+                $.on(video, 'click', function() {
+                  if (video.paused) {
+                    return video.play();
+                  } else {
+                    return video.pause();
+                  }
+                });
+              }
+            }
             if (Conf['404 Redirect'] && ((_ref = d.title) === '4chan - Temporarily Offline' || _ref === '4chan - 404 Not Found')) {
               Redirect.init();
               pathname = location.pathname.split('/');
