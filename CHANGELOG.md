@@ -1,3 +1,13 @@
+**seaweedchan**
+- Add update and Quick Reply links to the bottom of the page.  The latter is enabled by new option `Bottom QR Link` (enabled by default).
+
+**thetickleroftummies**
+- Fix issue with truncated filenames and sauce links.
+
+**ccd0**
+- Put navigation links at bottom of the thread when JSON Navigation is enabled.
+- Remove currently unneeded `Allow Sound` option.
+
 ### v1.7.38 
 *2014-05-15*
 
