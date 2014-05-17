@@ -1,3 +1,6 @@
+### v1.7.39 
+*2014-05-16*
+
 **seaweedchan**
 - Add update and Quick Reply links to the bottom of the page.  The latter is enabled by new option `Bottom QR Link` (enabled by default).
 
