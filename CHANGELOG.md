@@ -1,3 +1,6 @@
+**DamonGant**
+- Add /g/ to Deniable Plausibility archive.
+
 ### v1.7.39 
 *2014-05-16*
 
