@@ -56,10 +56,10 @@ QR =
       if Conf['QR Shortcut']
         $.rmClass $('.qr-shortcut'), 'disabled'
 
-    if Conf['Bottom QR Link'] and g.VIEW is 'thread'
+    if Conf['Bottom QR Link'] and (g.VIEW is 'thread' or Conf['JSON Navigation'])
       linkBot = $.el 'div',
-        innerHTML: '[<a href="javascript:;" class="qr-link-bottom">Reply to Thread</a>]'
-        className: "qr-link-container-bottom"
+        innerHTML: '<a href="javascript:;" class="qr-link-bottom">Reply to Thread</a>'
+        className: "brackets-wrap qr-link-container-bottom"
 
       $.on linkBot.firstElementChild, 'click', ->
         $.event 'CloseMenu'
@@ -68,7 +68,7 @@ QR =
         if Conf['QR Shortcut']
           $.rmClass $('.qr-shortcut'), 'disabled'
 
-      $.prepend $('.navLinksBot'), linkBot
+      $.prepend (Index.navLinksBot or $('.navLinksBot')), linkBot
 
     $.before $.id('togglePostFormLink'), link
 
