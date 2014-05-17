@@ -100,6 +100,7 @@ Index =
         #   Does not work on Firefox unfortunately. bugzil.la/939713
         d.implementation.createDocument(null, null, null).appendChild board
 
+    $.asap (-> $('.navLinksBot.mobile', doc) or d.readyState isnt 'loading'), ->
       $.rm el for el in $$ '.navLinks, .navLinksBot + hr'
       $.id('search-box')?.parentNode.remove()
       topNavPos = $.id('delform').previousElementSibling
@@ -108,13 +109,13 @@ Index =
       $.before topNavPos, Index.navLinks
       $.after  botNavPos, $.el 'hr'
       $.after  botNavPos, Index.navLinksBot
-      $.rmClass doc, 'index-loading'
 
     $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
       if pagelist = $('.pagelist')
         $.replace pagelist, Index.pagelist
       else
         $.after $.id('delform'), Index.pagelist
+      $.rmClass doc, 'index-loading'
 
   setNavLinks: () ->
     $('.returnlink a',  Index.navLinks).href = $('.returnlink a',  Index.navLinksBot).href = "//boards.4chan.org/#{g.BOARD}/"
