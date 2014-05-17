@@ -1,7 +1,6 @@
 Video =
   configure: (video, disableAutoplay) ->
     video.loop = true
-    video.muted = !Conf['Allow Sound']
     video.controls = Conf['Show Controls']
     video.autoplay = false
     if Conf['Autoplay'] and not disableAutoplay

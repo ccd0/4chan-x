@@ -29,7 +29,6 @@ ImageHover =
     if isVideo
       el.loop = true
       el.controls = false
-      el.muted = not Conf['Allow Sound']
       el.play() if Conf['Autoplay']
     UI.hover
       root: @

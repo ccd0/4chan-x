@@ -147,7 +147,6 @@ Gallery =
       if elType is 'video'
         img.loop = true
         img.autoplay = Conf['Autoplay']
-        img.muted = !Conf['Allow Sound']
 
       $.extend  img.dataset,   @dataset
       nodes.current.pause?()

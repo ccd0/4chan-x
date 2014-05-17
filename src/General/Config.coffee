@@ -203,10 +203,6 @@ Config =
         true
         'Show controls on videos expanded inline. Turn this off if you want to contract videos by clicking on them.'
       ]
-      'Allow Sound': [
-        true
-        'Allow sound in videos.'
-      ]
       'Loop in New Tab': [
         true
         'Loop videos opened in their own tabs, and apply settings for inline expanded videos to them.'
