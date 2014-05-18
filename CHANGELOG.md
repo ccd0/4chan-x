@@ -1,3 +1,6 @@
+**ccd0**
+- Support Chrome users on Windows.
+
 ### v1.7.42 
 *2014-05-18*
 

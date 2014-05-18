@@ -55,6 +55,13 @@ module.exports = (grunt) ->
             'src/General/meta/usestrict.js'
             'tmp-<%= pkg.type %>/script.js'
           ]
+          'testbuilds/wcrx/manifest.json': 'src/General/meta/manifest-w.json'
+          'testbuilds/wcrx/script.js': [
+            'src/General/meta/botproc.js'
+            'src/General/meta/banner.js'
+            'src/General/meta/usestrict.js'
+            'tmp-<%= pkg.type %>/script.js'
+          ]
       userscript:
         files:
           'testbuilds/<%= pkg.name %>.meta.js': 'src/General/meta/metadata.js'
@@ -70,6 +77,11 @@ module.exports = (grunt) ->
       crx:
         src:  'src/General/img/*.png'
         dest: 'testbuilds/crx/'
+        expand:  true
+        flatten: true
+      wcrx:
+        src:  'src/General/img/*.png'
+        dest: 'testbuilds/wcrx/'
         expand:  true
         flatten: true
       builds:
@@ -138,7 +150,7 @@ module.exports = (grunt) ->
           pretty: true
         expand:  true
         flatten: true
-        src: 'testbuilds/crx/*'
+        src: 'testbuilds/wcrx/*'
         dest: '/'
 
     clean:
@@ -183,6 +195,7 @@ module.exports = (grunt) ->
     'coffee:script'
     'concat:crx'
     'copy:crx'
+    'copy:wcrx'
     'clean:tmpcrx'
   ]
 
@@ -197,6 +210,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'release', [
     'build'
     'shell:pack'
+    'compress:crx'
     'concat:meta'
     'copy:builds'
     'shell:commit'

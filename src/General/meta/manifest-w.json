@@ -1,0 +1,24 @@
+{
+  "name": "<%= meta.name %>",
+  "version": "<%= version %>",
+  "manifest_version": 2,
+  "description": "<%= description %>",
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "content_scripts": [{
+    "js": ["script.js"],
+    "matches": <%= JSON.stringify(meta.matches) %>,
+    "all_frames": true,
+    "run_at": "document_start"
+  }],
+  "homepage_url": "<%= meta.page %>",
+  "minimum_chrome_version": "<%= meta.min.chrome %>",
+  "permissions": [
+    "storage",
+    "http://*/",
+    "https://*/"
+  ]
+}
