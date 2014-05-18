@@ -1,10 +1,8 @@
 Polyfill =
   init: ->
-    <% if (type === 'crx') { %>
     @notificationPermission()
     @toBlob()
     @visibility()
-    <% } %>
   notificationPermission: ->
     return if !window.Notification or 'permission' of Notification or !window.webkitNotifications
     Object.defineProperty Notification, 'permission',
