@@ -50,7 +50,7 @@ Main =
         Report.init()
         return
       when 'i.4cdn.org'
-        if Conf['Loop in New Tab'] and video = $ 'video'
+        if Conf['Loop in New Tab'] and document.body and video = $ 'video'
           Video.configure video
           $.on video, 'click', ->
             if !video.controls
