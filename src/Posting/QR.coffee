@@ -402,7 +402,7 @@ QR =
       img.src = URL.createObjectURL file
     else if /^video\//.test file.type
       video = $.el 'video'
-      $.on video, 'loadedmetadata', ->
+      $.on video, 'loadeddata', ->
         return unless cb
         {videoHeight, videoWidth, duration} = video
         max_height = Math.min(QR.max_height, QR.max_height_video)
@@ -420,11 +420,9 @@ QR =
         else if duration > QR.max_duration_video
           QR.error "#{file.name}: Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
           pass = false
-        <% if (type === 'userscript') { %>
-        if video.mozHasAudio
+        if video.mozHasAudio or video.webkitAudioDecodedByteCount
           QR.error "#{file.name}: Audio not allowed"
           pass = false
-        <% } %>
         cb pass, video
         cb = null
       $.on video, 'error', ->
