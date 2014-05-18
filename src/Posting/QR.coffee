@@ -78,9 +78,7 @@ QR =
     $.on d, 'QRAddPreSubmitHook', ({detail: cb}) ->
       QR.preSubmitHooks.push cb
 
-    <% if (type === 'crx') { %>
     $.on d, 'paste',              QR.paste
-    <% } %>
     $.on d, 'dragover',           QR.dragOver
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
