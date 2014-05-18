@@ -1,3 +1,6 @@
+### v1.7.41 
+*2014-05-17*
+
 **ccd0, Zixaphir**
 - Bug fixes.
 
