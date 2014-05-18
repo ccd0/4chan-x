@@ -6,7 +6,9 @@ https://github.com/Nebukazar/OneeChan
 #### [Why 4chan X needs to access data on every site?](https://github.com/ccd0/4chan-x/wiki/Why-4chan-X-needs-to-access-data-from-every-website%3F)
 
 ##[Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) (Firefox)
-##[Install](https://ccd0.github.io/4chan-x/builds/crx.crx) (Chrom*)
+Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then click the link to install.
+##[Install](https://ccd0.github.io/4chan-x/builds/crx.crx) (Chromium)
+Download the file and add drag it to your chrome://extensions page.
 <!---
 ##[Install](http://a.pomf.se/tkhuwm.xpi) (Firefox Mobile)
 -->
