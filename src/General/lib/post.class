@@ -137,14 +137,6 @@ class Post
     @file.name = fileText.title or do ->
       nameNode = $('span', fileText) or $('a', fileText)
       nameNode?.title or nameNode?.textContent
-    <% if (type === 'crx') { %>
-    # replace %22 with quotes, see:
-    # crbug.com/81193
-    # webk.it/62107
-    # https://www.w3.org/Bugs/Public/show_bug.cgi?id=16909
-    # http://www.whatwg.org/specs/web-apps/current-work/#multipart-form-data
-    @file.name = @file.name?.replace /%22/g, '"'
-    <% } %>
 
   cleanup: (root) ->
     for node in $$ '.mobile', root
