@@ -1,3 +1,6 @@
+### v1.7.42 
+*2014-05-18*
+
 **ccd0**
 - Greasemonkey version may now work in dwb, but nothing is guaranteed, nor will I be regularly testing in this browser.
 
