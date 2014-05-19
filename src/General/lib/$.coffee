@@ -16,9 +16,9 @@ $.DAY = 24 *
 $.id = (id) ->
   d.getElementById id
 
-$.ready = (fc, immediate) ->
+$.ready = (fc) ->
   unless d.readyState is 'loading'
-    if immediate then fc() else $.queueTask fc
+    $.queueTask fc
     return
   cb = ->
     $.off d, 'DOMContentLoaded', cb

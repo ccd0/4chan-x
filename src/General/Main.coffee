@@ -50,7 +50,7 @@ Main =
         Report.init()
         return
       when 'i.4cdn.org'
-        onReady = ->
+        $.asap (-> d.readyState isnt 'loading'), ->
           if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
             Redirect.init()
             pathname = location.pathname.split '/'
@@ -63,7 +63,6 @@ Main =
             $.on video, 'click', ->
               if !video.controls
                 if video.paused then video.play() else video.pause()
-        $.ready onReady, true
         return
 
     # c.time 'All initializations'
