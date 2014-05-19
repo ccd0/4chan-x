@@ -95,7 +95,7 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["asp", "b", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"],
+  "boards": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"],
   "files": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"]
 }, {
   "uid": 16,
