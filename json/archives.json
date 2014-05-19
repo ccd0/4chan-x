@@ -132,6 +132,6 @@
   "http": true,
   "https": false,
   "software": "foolfuuka",
-  "boards": ["v", "g"],
-  "files": ["v", "g"]
+  "boards": ["v", "vg", "g"],
+  "files": ["v", "vg", "g"]
 }]
