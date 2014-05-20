@@ -1,6 +1,9 @@
 **fgts, DamonGant**
 - Archive list update.
 
+**ccd0**
+- Fix bug in archive settings.
+
 ### v1.7.43 
 *2014-05-18*
 
