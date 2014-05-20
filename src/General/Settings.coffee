@@ -350,6 +350,9 @@ Settings =
       $.add row, Settings.addArchiveCell boardID, o, item for item in ['thread', 'post', 'file']
       rows.push row
 
+    unless g.BOARD.ID of archBoards
+      rows[0].hidden = false
+
     $.add $('tbody', section), rows
 
     boardSelect = $('#archive-board-select', section)
