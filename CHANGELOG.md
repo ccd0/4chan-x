@@ -1,3 +1,6 @@
+**fgts, DamonGant**
+- Archive list update.
+
 ### v1.7.43 
 *2014-05-18*
 
