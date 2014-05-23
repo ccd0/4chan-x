@@ -8,7 +8,7 @@ https://github.com/Nebukazar/OneeChan
 ##[Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) (Firefox)
 Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then click the link above to install.
 ##[Install](https://ccd0.github.io/4chan-x/builds/crx.crx) (Chromium)
-Download the file and add drag it to your chrome://extensions page. Chrome 35+ users on Windows may need to install it from [here](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam).
+Download the file and add drag it to your chrome://extensions page.
 
 ## If you have any problems, try resetting your 4chan X settings
 
