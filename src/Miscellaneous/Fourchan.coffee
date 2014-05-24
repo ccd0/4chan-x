@@ -18,10 +18,11 @@ Fourchan =
       # https://github.com/MayhemYDG/4chan-x/issues/645#issuecomment-13704562
       $.globalEval '''
         window.addEventListener('jsmath', function(e) {
+          if (!jsMath) return;
           if (jsMath.loaded) {
             // process one post
             jsMath.ProcessBeforeShowing(e.detail);
-          } else if (jsMath.Autoload.checked) {
+          } else if (jsMath.Autoload && jsMath.Autoload.checked) {
             // load jsMath and process whole document
             jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);
             jsMath.Autoload.LoadJsMath();
