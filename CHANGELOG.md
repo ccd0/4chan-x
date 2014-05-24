@@ -1,3 +1,6 @@
+**ccd0**
+- Remove doubling of captcha response if only one word is entered.  Google has begun serving captchas consisting of one house number and nothing else, and the doubling caused responses to these captchas to be rejected.  As of now, the doubling is not needed anyway; submitting only the word known to Google is sufficient to pass a two-word captcha.
+
 ### v1.7.44 
 *2014-05-20*
 
