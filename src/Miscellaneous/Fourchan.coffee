@@ -42,7 +42,8 @@ Fourchan =
     return
   math: ->
     return if (@isClone and doc.contains @origin.nodes.root) or !$ '.math', @nodes.comment
-    $.event 'jsmath', @nodes.post, window
+    $.asap (=> doc.contains @nodes.post), =>
+      $.event 'jsmath', @nodes.post, window
   parseThread: (threadID, offset, limit) ->
     # Fix /sci/
     # Fix /g/
