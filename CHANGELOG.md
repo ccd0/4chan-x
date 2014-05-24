@@ -1,3 +1,6 @@
+### v1.7.46 
+*2014-05-24*
+
 **ccd0**
 - Fix some jsMath-related bugs.
 
