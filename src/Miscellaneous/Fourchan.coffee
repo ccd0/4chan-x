@@ -21,7 +21,7 @@ Fourchan =
           if (jsMath.loaded) {
             // process one post
             jsMath.ProcessBeforeShowing(e.detail);
-          } else {
+          } else if (jsMath.Autoload.checked) {
             // load jsMath and process whole document
             jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);
             jsMath.Autoload.LoadJsMath();
