@@ -18,10 +18,11 @@ Fourchan =
       # https://github.com/MayhemYDG/4chan-x/issues/645#issuecomment-13704562
       $.globalEval '''
         window.addEventListener('jsmath', function(e) {
+          if (!jsMath) return;
           if (jsMath.loaded) {
             // process one post
             jsMath.ProcessBeforeShowing(e.detail);
-          } else {
+          } else if (jsMath.Autoload && jsMath.Autoload.checked) {
             // load jsMath and process whole document
             jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);
             jsMath.Autoload.LoadJsMath();
@@ -40,7 +41,7 @@ Fourchan =
     $.off window, 'prettyprint:cb', apply
     return
   math: ->
-    return if @isClone or !$ '.math', @nodes.comment
+    return if (@isClone and doc.contains @origin.nodes.root) or !$ '.math', @nodes.comment
     $.event 'jsmath', @nodes.post, window
   parseThread: (threadID, offset, limit) ->
     # Fix /sci/
