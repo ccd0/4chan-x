@@ -40,7 +40,7 @@ Fourchan =
     $.off window, 'prettyprint:cb', apply
     return
   math: ->
-    return if @isClone or !$ '.math', @nodes.comment
+    return if (@isClone and doc.contains @origin.nodes.root) or !$ '.math', @nodes.comment
     $.event 'jsmath', @nodes.post, window
   parseThread: (threadID, offset, limit) ->
     # Fix /sci/
