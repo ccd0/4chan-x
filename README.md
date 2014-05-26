@@ -16,6 +16,7 @@ Download the file and add drag it to your chrome://extensions page.
 4. Change directory to your newly created userscripts folder with `cd .config/dwb/greasemonkey`
 5. Download 4chanX with `wget https://github.com/ccd0/4chan-x/raw/master/builds/4chan-X.user.js`
 6. Start dwb
+
 ## If you have any problems, try resetting your 4chan X settings
 
 ## Forking
