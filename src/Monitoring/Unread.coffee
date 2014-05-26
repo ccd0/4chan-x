@@ -186,22 +186,11 @@ Unread =
     if $.x 'preceding-sibling::div[contains(@class,"replyContainer")]', post.data.nodes.root # not the first reply
       $.before post.data.nodes.root, Unread.hr
 
-  update: <% if (type === 'crx') { %>(dontrepeat) <% } %>->
+  update: ->
     count = Unread.posts.length
 
     if Conf['Unread Count']
       d.title = "#{if Conf['Quoted Title'] and Unread.postsQuotingYou.length then '(!) ' else ''}#{if count or !Conf['Hide Unread Count at (0)'] then "(#{count}) " else ''}#{if g.DEAD then "/#{g.BOARD}/ - 404" else "#{Unread.title}"}"
-      <% if (type === 'crx') { %>
-      # XXX Chrome bug where it doesn't always update the tab title.
-      # crbug.com/124381
-      # Call it one second later,
-      # but don't display outdated unread count.
-      return if dontrepeat
-      setTimeout ->
-        d.title = ''
-        Unread.update true
-      , $.SECOND
-      <% } %>
 
     return unless Conf['Unread Favicon']
 
