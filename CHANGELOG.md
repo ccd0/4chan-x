@@ -1,3 +1,6 @@
+**fgts**
+- Move from fgts.eu to fgts.jp.
+
 ### v1.7.46 
 *2014-05-24*
 
