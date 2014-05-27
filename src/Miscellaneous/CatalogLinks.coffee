@@ -44,10 +44,7 @@ CatalogLinks =
     CatalogLinks.el.title = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
 
   external: (board) ->
-    switch board
-      when 'a', 'c', 'g', 'co', 'k', 'm', 'o', 'p', 'v', 'vg', 'w', 'cm', '3', 'adv', 'an', 'cgl', 'ck', 'diy', 'fa', 'fit', 'int', 'jp', 'mlp', 'lit', 'mu', 'n', 'po', 'sci', 'toy', 'trv', 'tv', 'vp', 'x', 'q'
-        "http://catalog.neet.tv/#{board}"
-      when 'd', 'e', 'gif', 'h', 'hr', 'hc', 'r9k', 's', 'pol', 'soc', 'u', 'i', 'ic', 'hm', 'r', 'w', 'wg', 'wsg', 't', 'y'
-        "http://4index.gropes.us/#{board}"
-      else
-        "/#{board}/catalog"
+    if board in ['a', 'c', 'g', 'co', 'k', 'm', 'o', 'p', 'v', 'vg', 'w', 'cm', '3', 'adv', 'an', 'cgl', 'ck', 'diy', 'fa', 'fit', 'int', 'jp', 'mlp', 'lit', 'mu', 'n', 'po', 'sci', 'toy', 'trv', 'tv', 'vp', 'x', 'q']
+      "http://catalog.neet.tv/#{board}"
+    else
+      "/#{board}/catalog"

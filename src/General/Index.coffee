@@ -91,6 +91,7 @@ Index =
     @navLinks = $.el 'div',
       className: 'navLinks'
       innerHTML: <%= importHTML('Features/Index-navlinks') %>
+    @timeEl = $ 'time#index-last-refresh', @navLinks
 
     @searchInput = $ '#index-search', @navLinks
 
@@ -114,7 +115,8 @@ Index =
 
     @currentPage = @getCurrentPage()
 
-    $.on d, 'scroll', Index.scroll
+    $.on d, 'scroll', @scroll
+    $.on window, 'focus', @updateIfNeeded
     $.on @pagelist, 'click', @cb.pageNav
 
     returnLink = $.el 'a',
@@ -221,11 +223,12 @@ Index =
     thread = g.threads[@parentNode.dataset.fullID]
     if e.shiftKey
       PostHiding.toggle thread.OP
+      e.preventDefault()
     else if e.altKey
       Index.togglePin thread
+      e.preventDefault()
     else
-      Navigate.navigate.call @
-    e.preventDefault()
+      Navigate.navigate.call @, e
 
   onOver: (e) ->
     # 4chan's less than stellar CSS forces us to include a .post and .postInfo
@@ -297,7 +300,7 @@ Index =
 
   setupNavLinks: ->
     for el in $$ '.navLinks.desktop > a'
-      if el.getAttribute('href') is '.././catalog'
+      if /\/catalog$/.test el.pathname
         el.href = '.././'
       $.on el, 'click', ->
         switch @textContent
@@ -508,6 +511,18 @@ Index =
     else
       "#{hiddenCount} hidden threads"
 
+  updateIfNeeded: ->
+    {timeEl} = Index
+    needed =
+      # we're on the index,
+      g.VIEW is 'index' and 
+      # not currently refreshing
+      !Index.req and 
+      timeEl.dataset.utc and
+      # more than 10 minutes have elapsed since the last refresh.
+      timeEl.dataset.utc < Date.now() - (10 * $.MINUTE)
+    Index.update() if needed
+
   update: (pageNum) ->
     return unless navigator.onLine
     if g.VIEW is 'thread'
@@ -585,7 +600,7 @@ Index =
         new Notice 'error', 'Index refresh failed.', 1
       return
 
-    timeEl = $ 'time#index-last-refresh', Index.navLinks
+    {timeEl} = Index
     timeEl.dataset.utc = Date.parse req.getResponseHeader 'Last-Modified'
     RelativeDates.update timeEl
     Index.scrollToIndex()

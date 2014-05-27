@@ -10,14 +10,13 @@ Linkify =
 
     if Conf['Embedding'] or Conf['Link Title']
       @embedProcess = Function 'link', 
-        "var data = this.services(link);
-        if (data) {
-        #{
-          (if Conf['Embedding'] then 'this.embed(data);\n' else '') +
-          if Conf['Link Title'] then 'this.title(data);'   else ''
-        }
-        }
-        "
+        """
+        var data = this.services(link);
+        if (data) {#{
+          (if Conf['Embedding'] then 'this.embed(data); ' else '') +
+          if Conf['Link Title'] then 'data.push(post); this.title(data);'   else ''
+        }}
+        """
 
     Post.callbacks.push
       name: 'Linkify'
@@ -156,7 +155,7 @@ Linkify =
     return
 
   embed: (data) ->
-    [key, uid, options, link] = data
+    [key, uid, options, link, post] = data
     href = link.href
     embed = $.el 'a',
       className:   'embedder'
@@ -164,7 +163,6 @@ Linkify =
       textContent: '(embed)'
 
     embed.dataset[name]    = value for name, value of {key, href, uid, options}
-    embed.dataset.nodedata = link.innerHTML
 
     $.addClass link, "#{embed.dataset.key}"
 
@@ -173,33 +171,30 @@ Linkify =
 
     Linkify.cb.toggle.call embed if Conf['Auto-embed']
 
-    data.push embed
-
   title: (data) ->
-    [key, uid, options, link, embed] = data
+    [key, uid, options, link, post] = data
     return unless service = Linkify.types[key].title
     titles = Conf['CachedTitles']
     if title = titles[uid]
-      # Auto-embed may destroy our links.
-      if link
-        link.textContent = title[0]
-      if Conf['Embedding']
-        embed.dataset.title = title[0]
+      link.textContent = title[0]
     else
       try
         $.cache service.api(uid), (-> Linkify.cb.title @, data), responseType: 'json'
       catch err
-        if link
-          link.innerHTML = "[#{key}] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>"
+        link.innerHTML = '<span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>'
+        $.prepend link, $.tn "[#{key}] "
         return
 
   cb:
     toggle: ->
-      [string, @textContent] = if $.hasClass @, "embedded"
-        ['unembed', '(embed)']
+      if $.hasClass @, "embedded"
+        $.rm @previousElementSibling
+        @previousElementSibling.hidden = false
+        @textContent = '(embed)'
       else
-        ['embed', '(unembed)']
-      $.replace @previousElementSibling, Linkify.cb[string] @
+        @previousElementSibling.hidden = true
+        $.before @, Linkify.cb.embed @
+        @textContent = '(unembed)'
       $.toggleClass @, 'embedded'
 
     embed: (a) ->
@@ -214,21 +209,8 @@ Linkify =
 
       return el
 
-    unembed: (a) ->
-      # Recreate the original link.
-      el = $.el 'a',
-        rel:         'nofollow noreferrer'
-        target:      'blank'
-        className:   'linkify'
-        href:        a.dataset.href
-        innerHTML:   a.dataset.title or a.dataset.nodedata
-
-      $.addClass el, a.dataset.key
-
-      return el
-
     title: (req, data) ->
-      [key, uid, options, link, embed] = data
+      [key, uid, options, link, post] = data
       {status} = req
       service = Linkify.types[key].title
 
@@ -243,8 +225,11 @@ Linkify =
           "#{status}'d"
       }"
 
-      embed.dataset.title = text if Conf['Embedding'] and status in [200, 304]
-      link.textContent    = text if link
+      link.textContent = text
+      for post2 in post.clones
+        for link2 in $$ 'a', post2.nodes.comment when link2.href is link.href
+          link2.textContent = text
+      return
 
   ordered_types: [
       key: 'audio'
@@ -271,8 +256,10 @@ Linkify =
       regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/
       style: 'border: 0; width: auto; height: auto;'
       el: (a) ->
-        $.el 'div',
-          innerHTML: "<a target=_blank href='#{a.dataset.href}'><img src='#{a.dataset.href}'></a>"
+        el = $.el 'div'
+        el.innerHTML = '<a target="_blank"><img></a>'
+        el.firstChild.href = el.firstChild.firstChild.src = a.dataset.href
+        el
     ,
       key: 'InstallGentoo'
       regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/
@@ -298,35 +285,36 @@ Linkify =
         el
     ,
       key: 'MediaCrush'
-      regExp: /.*(?:mediacru.sh\/)([0-9a-z_]+)/i
+      regExp: /.*(?:mediacru.sh\/)([0-9a-z_-]+)/i
       style: 'border: 0;'
       el: (a) ->
         el = $.el 'div'
         $.cache "https://mediacru.sh/#{a.dataset.uid}.json", ->
           {status} = @
-          return div.innerHTML = "ERROR #{status}" unless status in [200, 304]
+          return el.textContent = "ERROR #{status}" unless status in [200, 304]
           {files} = @response
-          for type in ['video/mp4', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'image/svg', 'audio/mpeg']
+          for type in ['video/mp4', 'video/webm', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'audio/mpeg', 'audio/ogg']
             for file in files
               if file.type is type
                 embed = file
                 break
             break if embed
-          return div.innerHTML = "ERROR: Not a valid filetype" unless embed
-          el.innerHTML = switch embed.type
-            when 'video/mp4', 'video/ogv' then """
-<video autoplay loop>
-  <source src="https://mediacru.sh/#{a.dataset.uid}.mp4" type="video/mp4;">
-  <source src="https://mediacru.sh/#{a.dataset.uid}.ogv" type="video/ogg; codecs='theora, vorbis'">
-</video>"""
-            when 'image/png', 'image/gif', 'image/jpeg'
-              "<a target=_blank href='#{a.dataset.href}'><img src='https://mediacru.sh/#{file.file}'></a>"
-            when 'image/svg', 'image/svg+xml'
-              "<embed src='https://mediacru.sh/#{file.file}' type='image/svg+xml' />"
-            when 'audio/mpeg'
-              "<audio controls><source src='https://mediacru.sh/#{file.file}'></audio>"
+          return div.textContent = "ERROR: Not a valid filetype" unless embed
+          switch embed.type
+            when 'video/mp4', 'video/webm', 'video/ogv'
+              el.innerHTML = '<video autoplay loop><source type="video/mp4"><source type="video/webm"><source type="video/ogg"></video>'
+              for ext, i in ['mp4', 'webm', 'ogv']
+                el.firstChild.children[i].src = "https://mediacru.sh/#{a.dataset.uid}.#{ext}"
+            when 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg'
+              el.innerHTML = '<a target="_blank"><img></a>'
+              el.firstChild.href = a.dataset.href
+              el.firstChild.firstChild.src = "https://mediacru.sh/#{file.file}"
+            when 'audio/mpeg', 'audio/ogg'
+              el.innerHTML = '<audio controls><source type="audio/ogg"><source type="audio/mpeg"></audio>'
+              for ext, i in ['ogg', 'mp3']
+                el.firstChild.children[i].src = "https://mediacru.sh/#{a.dataset.uid}.#{ext}"
             else
-              "ERROR: No valid filetype."
+              el.textContent = "ERROR: No valid filetype."
         el
     ,
       key: 'pastebin'
@@ -343,19 +331,12 @@ Linkify =
     ,
       key: 'SoundCloud'
       regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
-      style: 'height: auto; width: 500px; display: inline-block;'
+      style: 'border: 0; width: 500px; height: 400px;'
       el: (a) ->
-        div = $.el 'div',
-          className: "soundcloud"
-          name: "soundcloud"
-        $.ajax(
-          "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{a.dataset.uid}"
-          onloadend: ->
-            div.innerHTML = JSON.parse(@responseText).html
-          false)
-        div
+        $.el 'iframe',
+          src: "//w.soundcloud.com/player/?visual=true&show_comments=false&url=https%3A%2F%2Fsoundcloud.com%2F#{encodeURIComponent a.dataset.uid}"
       title:
-        api: (uid) -> "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/#{uid}"
+        api: (uid) -> "//soundcloud.com/oembed?format=json&url=https%3A%2F%2Fsoundcloud.com%2F#{encodeURIComponent uid}"
         text: (_) -> _.title
     ,
       key: 'StrawPoll'
@@ -369,26 +350,21 @@ Linkify =
       regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/
       style: "border: none; width: 640px; height: 360px;"
       el: (a) ->
-        if result = /(\w+)\/(?:[a-z]\/)?(\d+)/i.exec a.dataset.uid
-          [_, channel, chapter] = result
-
-          $.el 'object',
+        if result = /(\w+)\/([bc])\/(\d+)/i.exec a.dataset.uid
+          [_, channel, type, id] = result
+          idparam = {'b': 'archive_id', 'c': 'chapter_id'}
+          obj = $.el 'object',
             data: 'http://www.twitch.tv/widgets/archive_embed_player.swf'
-            innerHTML: """
-<param name='allowFullScreen' value='true' />
-<param name='flashvars' value='channel=#{channel}&start_volume=25&auto_play=false#{if chapter then "&chapter_id=" + chapter else ""}' />
-"""
-
+          obj.innerHTML = '<param name="allowFullScreen" value="true"><param name="flashvars">'
+          obj.children[1].value = "channel=#{channel}&start_volume=25&auto_play=false&#{idparam[type]}=#{id}"
+          obj
         else
           channel = (/(\w+)/.exec a.dataset.uid)[0]
-
-          $.el 'object',
+          obj = $.el 'object',
             data: "http://www.twitch.tv/widgets/live_embed_player.swf?channel=#{channel}"
-            innerHTML: """
-<param  name="allowFullScreen" value="true" />
-<param  name="movie" value="http://www.twitch.tv/widgets/live_embed_player.swf" />
-<param  name="flashvars" value="hostname=www.twitch.tv&channel=#{channel}&auto_play=true&start_volume=25" />
-"""
+          obj.innerHTML = '<param name="allowFullScreen" value="true"><param name="flashvars">'
+          obj.children[1].value = "hostname=www.twitch.tv&channel=#{channel}&auto_play=true&start_volume=25"
+          obj
     ,
       key: 'Vocaroo'
       regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/

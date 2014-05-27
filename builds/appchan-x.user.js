@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.26 - 2014-05-11
+* appchan x - Version 2.9.26 - 2014-05-27
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -4770,6 +4770,7 @@
         className: 'navLinks',
         innerHTML: "<span id=\"index-menu\"><input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" class=\"fa fa-times-circle\" href=\"javascript:;\"></a>&nbsp;<time id=\"index-last-refresh\" title=\"Last index refresh\">...</time><span id=\"hidden-label\" hidden>&nbsp;&mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span><span style='flex: 1'></span><select id=\"index-mode\" name=\"Index Mode\"><option disabled>Index Mode</option><option value=\"paged\">Paged</option><option value=\"infinite\">Infinite Scrolling</option><option value=\"all pages\">All threads</option><option value=\"catalog\">Catalog</option></select><select id=\"index-sort\" name=\"Index Sort\"><option disabled>Index Sort</option><option value=\"bump\">Bump order</option><option value=\"lastreply\">Last reply</option><option value=\"birth\">Creation date</option><option value=\"replycount\">Reply count</option><option value=\"filecount\">File count</option></select><select id=\"index-size\" name=\"Index Size\"><option disabled>Image Size</option><option value=\"small\">Small</option><option value=\"large\">Large</option></select></span>"
       });
+      this.timeEl = $('time#index-last-refresh', this.navLinks);
       this.searchInput = $('#index-search', this.navLinks);
       this.searchTest(true);
       this.hideLabel = $('#hidden-label', this.navLinks);
@@ -4790,7 +4791,8 @@
       $.on(this.selectSize, 'change', this.cb.size);
       Rice.nodes(this.navLinks);
       this.currentPage = this.getCurrentPage();
-      $.on(d, 'scroll', Index.scroll);
+      $.on(d, 'scroll', this.scroll);
+      $.on(window, 'focus', this.updateIfNeeded);
       $.on(this.pagelist, 'click', this.cb.pageNav);
       returnLink = $.el('a', {
         id: 'returnIcon',
@@ -4933,12 +4935,13 @@
       thread = g.threads[this.parentNode.dataset.fullID];
       if (e.shiftKey) {
         PostHiding.toggle(thread.OP);
+        return e.preventDefault();
       } else if (e.altKey) {
         Index.togglePin(thread);
+        return e.preventDefault();
       } else {
-        Navigate.navigate.call(this);
+        return Navigate.navigate.call(this, e);
       }
-      return e.preventDefault();
     },
     onOver: function(e) {
       var el, nodes;
@@ -5035,7 +5038,7 @@
       _ref = $$('.navLinks.desktop > a');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         el = _ref[_i];
-        if (el.getAttribute('href') === '.././catalog') {
+        if (/\/catalog$/.test(el.pathname)) {
           el.href = '.././';
         }
         $.on(el, 'click', function() {
@@ -5315,6 +5318,14 @@
       Index.hideLabel.hidden = false;
       return $('#hidden-count', Index.hideLabel).textContent = hiddenCount === 1 ? '1 hidden thread' : "" + hiddenCount + " hidden threads";
     },
+    updateIfNeeded: function() {
+      var needed, timeEl;
+      timeEl = Index.timeEl;
+      needed = g.VIEW === 'index' && !Index.req && timeEl.dataset.utc && timeEl.dataset.utc < Date.now() - (10 * $.MINUTE);
+      if (needed) {
+        return Index.update();
+      }
+    },
     update: function(pageNum) {
       var board, now, onload, sortedThreads, _ref, _ref1;
       if (!navigator.onLine) {
@@ -5412,7 +5423,7 @@
         }
         return;
       }
-      timeEl = $('time#index-last-refresh', Index.navLinks);
+      timeEl = Index.timeEl;
       timeEl.dataset.utc = Date.parse(req.getResponseHeader('Last-Modified'));
       RelativeDates.update(timeEl);
       return Index.scrollToIndex();
@@ -5814,7 +5825,7 @@
         o.file = {
           name: data.filename + data.ext,
           timestamp: "" + data.tim + data.ext,
-          url: boardID === 'f' ? "//i.4cdn.org/" + boardID + "/" + data.filename + data.ext : "//i.4cdn.org/" + boardID + "/" + data.tim + data.ext,
+          url: boardID === 'f' ? "//i.4cdn.org/" + boardID + "/" + (encodeURIComponent(data.filename)) + data.ext : "//i.4cdn.org/" + boardID + "/" + data.tim + data.ext,
           height: data.h,
           width: data.w,
           MD5: data.md5,
@@ -5886,7 +5897,7 @@
             file.twidth = file.theight = 100;
           }
         }
-        imgSrc = boardID === 'f' ? '' : ("<a class='fileThumb" + (file.isSpoiler ? ' imgspoiler' : '') + "' href='" + file.url + "' target=_blank>") + ("<img src='" + fileThumb + "' alt='" + fileSize + "' data-md5=" + file.MD5 + " style='height: " + file.theight + "px; width: " + file.twidth + "px;'>") + "</a>";
+        imgSrc = boardID === 'f' ? '' : ("<a class='fileThumb" + (file.isSpoiler ? ' imgspoiler' : '') + "' href=\"" + file.url + "\" target=_blank>") + ("<img src='" + fileThumb + "' alt='" + fileSize + "' data-md5=" + file.MD5 + " style='height: " + file.theight + "px; width: " + file.twidth + "px;'>") + "</a>";
         a = $.el('a', {
           innerHTML: file.name
         });
@@ -5896,7 +5907,7 @@
         a.textContent = filename;
         filename = a.innerHTML.replace(/'/g, '&apos;');
         fileDims = file.name.slice(-3) === 'pdf' ? 'PDF' : "" + file.width + "x" + file.height;
-        fileInfo = ("<div class=fileText " + (file.isSpoiler ? "title='" + filename + "'" : '') + ">File: ") + ("<a href='" + file.url + "' " + (filename !== shortFilename && !file.isSpoiler ? " title='" + filename + "'" : '') + " target=_blank>" + (file.isSpoiler ? 'Spoiler Image' : shortFilename) + "</a>") + (" (" + fileSize + ", " + fileDims + ")</div>");
+        fileInfo = ("<div class=fileText " + (file.isSpoiler ? "title='" + filename + "'" : '') + ">File: ") + ("<a href=\"" + file.url + "\" " + (filename !== shortFilename && !file.isSpoiler ? " title='" + filename + "'" : '') + " target=_blank>" + (file.isSpoiler ? 'Spoiler Image' : shortFilename) + "</a>") + (" (" + fileSize + ", " + fileDims + ")</div>");
         fileHTML = "<div class=file>" + fileInfo + imgSrc + "</div>";
       } else {
         fileHTML = '';
@@ -5975,7 +5986,7 @@
       postCount = data.replies + 1;
       fileCount = data.images + !!data.ext;
       pageCount = Math.floor(Index.liveThreadData.keys.indexOf("" + thread.ID) / Index.threadsNumPerPage) + 1;
-      subject = thread.OP.info.subject ? "<div class='subject'>" + thread.OP.info.subject + "</div>" : '';
+      subject = thread.OP.info.subject ? "<div class='subject'>" + thread.OP.nodes.subject.innerHTML + "</div>" : '';
       comment = thread.OP.nodes.comment.innerHTML.replace(/(<br>\s*){2,}/g, '<br>');
       root = $.el('div', {
         className: 'catalog-thread',
@@ -8093,7 +8104,7 @@
         ExpandComment.callbacks.push(this.node);
       }
       if (Conf['Embedding'] || Conf['Link Title']) {
-        this.embedProcess = Function('link', "var data = this.services(link); if (data) { " + ((Conf['Embedding'] ? 'this.embed(data);\n' : '') + (Conf['Link Title'] ? 'this.title(data);' : '')) + " }");
+        this.embedProcess = Function('link', "var data = this.services(link);\nif (data) {" + ((Conf['Embedding'] ? 'this.embed(data); ' : '') + (Conf['Link Title'] ? 'data.push(post); this.title(data);' : '')) + "}");
       }
       return Post.callbacks.push({
         name: 'Linkify',
@@ -8235,8 +8246,8 @@
       }
     },
     embed: function(data) {
-      var embed, href, key, link, name, options, uid, value, _ref;
-      key = data[0], uid = data[1], options = data[2], link = data[3];
+      var embed, href, key, link, name, options, post, uid, value, _ref;
+      key = data[0], uid = data[1], options = data[2], link = data[3], post = data[4];
       href = link.href;
       embed = $.el('a', {
         className: 'embedder',
@@ -8253,29 +8264,22 @@
         value = _ref[name];
         embed.dataset[name] = value;
       }
-      embed.dataset.nodedata = link.innerHTML;
       $.addClass(link, "" + embed.dataset.key);
       $.on(embed, 'click', Linkify.cb.toggle);
       $.after(link, [$.tn(' '), embed]);
       if (Conf['Auto-embed']) {
-        Linkify.cb.toggle.call(embed);
+        return Linkify.cb.toggle.call(embed);
       }
-      return data.push(embed);
     },
     title: function(data) {
-      var embed, err, key, link, options, service, title, titles, uid;
-      key = data[0], uid = data[1], options = data[2], link = data[3], embed = data[4];
+      var err, key, link, options, post, service, title, titles, uid;
+      key = data[0], uid = data[1], options = data[2], link = data[3], post = data[4];
       if (!(service = Linkify.types[key].title)) {
         return;
       }
       titles = Conf['CachedTitles'];
       if (title = titles[uid]) {
-        if (link) {
-          link.textContent = title[0];
-        }
-        if (Conf['Embedding']) {
-          return embed.dataset.title = title[0];
-        }
+        return link.textContent = title[0];
       } else {
         try {
           return $.cache(service.api(uid), (function() {
@@ -8285,17 +8289,22 @@
           });
         } catch (_error) {
           err = _error;
-          if (link) {
-            link.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
-          }
+          link.innerHTML = '<span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>';
+          $.prepend(link, $.tn("[" + key + "] "));
         }
       }
     },
     cb: {
       toggle: function() {
-        var string, _ref;
-        _ref = $.hasClass(this, "embedded") ? ['unembed', '(embed)'] : ['embed', '(unembed)'], string = _ref[0], this.textContent = _ref[1];
-        $.replace(this.previousElementSibling, Linkify.cb[string](this));
+        if ($.hasClass(this, "embedded")) {
+          $.rm(this.previousElementSibling);
+          this.previousElementSibling.hidden = false;
+          this.textContent = '(embed)';
+        } else {
+          this.previousElementSibling.hidden = true;
+          $.before(this, Linkify.cb.embed(this));
+          this.textContent = '(unembed)';
+        }
         return $.toggleClass(this, 'embedded');
       },
       embed: function(a) {
@@ -8304,21 +8313,9 @@
         el.style.cssText = type.style != null ? type.style : "border: 0; width: 640px; height: 390px";
         return el;
       },
-      unembed: function(a) {
-        var el;
-        el = $.el('a', {
-          rel: 'nofollow noreferrer',
-          target: 'blank',
-          className: 'linkify',
-          href: a.dataset.href,
-          innerHTML: a.dataset.title || a.dataset.nodedata
-        });
-        $.addClass(el, a.dataset.key);
-        return el;
-      },
       title: function(req, data) {
-        var embed, key, link, options, service, status, text, uid;
-        key = data[0], uid = data[1], options = data[2], link = data[3], embed = data[4];
+        var key, link, link2, options, post, post2, service, status, text, uid, _i, _j, _len, _len1, _ref, _ref1;
+        key = data[0], uid = data[1], options = data[2], link = data[3], post = data[4];
         status = req.status;
         service = Linkify.types[key].title;
         text = "[" + key + "] " + ((function() {
@@ -8334,11 +8331,17 @@
               return "" + status + "'d";
           }
         })());
-        if (Conf['Embedding'] && (status === 200 || status === 304)) {
-          embed.dataset.title = text;
-        }
-        if (link) {
-          return link.textContent = text;
+        link.textContent = text;
+        _ref = post.clones;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          post2 = _ref[_i];
+          _ref1 = $$('a', post2.nodes.comment);
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            link2 = _ref1[_j];
+            if (link2.href === link.href) {
+              link2.textContent = text;
+            }
+          }
         }
       }
     },
@@ -8382,9 +8385,11 @@
         regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/,
         style: 'border: 0; width: auto; height: auto;',
         el: function(a) {
-          return $.el('div', {
-            innerHTML: "<a target=_blank href='" + a.dataset.href + "'><img src='" + a.dataset.href + "'></a>"
-          });
+          var el;
+          el = $.el('div');
+          el.innerHTML = '<a target="_blank"><img></a>';
+          el.firstChild.href = el.firstChild.firstChild.src = a.dataset.href;
+          return el;
         }
       }, {
         key: 'InstallGentoo',
@@ -8418,19 +8423,19 @@
         }
       }, {
         key: 'MediaCrush',
-        regExp: /.*(?:mediacru.sh\/)([0-9a-z_]+)/i,
+        regExp: /.*(?:mediacru.sh\/)([0-9a-z_-]+)/i,
         style: 'border: 0;',
         el: function(a) {
           var el;
           el = $.el('div');
           $.cache("https://mediacru.sh/" + a.dataset.uid + ".json", function() {
-            var embed, file, files, status, type, _i, _j, _len, _len1, _ref;
+            var embed, ext, file, files, i, status, type, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _results, _results1;
             status = this.status;
             if (status !== 200 && status !== 304) {
-              return div.innerHTML = "ERROR " + status;
+              return el.textContent = "ERROR " + status;
             }
             files = this.response.files;
-            _ref = ['video/mp4', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'image/svg', 'audio/mpeg'];
+            _ref = ['video/mp4', 'video/webm', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'audio/mpeg', 'audio/ogg'];
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               type = _ref[_i];
               for (_j = 0, _len1 = files.length; _j < _len1; _j++) {
@@ -8445,26 +8450,42 @@
               }
             }
             if (!embed) {
-              return div.innerHTML = "ERROR: Not a valid filetype";
+              return div.textContent = "ERROR: Not a valid filetype";
             }
-            return el.innerHTML = (function() {
-              switch (embed.type) {
-                case 'video/mp4':
-                case 'video/ogv':
-                  return "<video autoplay loop>\n  <source src=\"https://mediacru.sh/" + a.dataset.uid + ".mp4\" type=\"video/mp4;\">\n  <source src=\"https://mediacru.sh/" + a.dataset.uid + ".ogv\" type=\"video/ogg; codecs='theora, vorbis'\">\n</video>";
-                case 'image/png':
-                case 'image/gif':
-                case 'image/jpeg':
-                  return "<a target=_blank href='" + a.dataset.href + "'><img src='https://mediacru.sh/" + file.file + "'></a>";
-                case 'image/svg':
-                case 'image/svg+xml':
-                  return "<embed src='https://mediacru.sh/" + file.file + "' type='image/svg+xml' />";
-                case 'audio/mpeg':
-                  return "<audio controls><source src='https://mediacru.sh/" + file.file + "'></audio>";
-                default:
-                  return "ERROR: No valid filetype.";
-              }
-            })();
+            switch (embed.type) {
+              case 'video/mp4':
+              case 'video/webm':
+              case 'video/ogv':
+                el.innerHTML = '<video autoplay loop><source type="video/mp4"><source type="video/webm"><source type="video/ogg"></video>';
+                _ref1 = ['mp4', 'webm', 'ogv'];
+                _results = [];
+                for (i = _k = 0, _len2 = _ref1.length; _k < _len2; i = ++_k) {
+                  ext = _ref1[i];
+                  _results.push(el.firstChild.children[i].src = "https://mediacru.sh/" + a.dataset.uid + "." + ext);
+                }
+                return _results;
+                break;
+              case 'image/svg+xml':
+              case 'image/png':
+              case 'image/gif':
+              case 'image/jpeg':
+                el.innerHTML = '<a target="_blank"><img></a>';
+                el.firstChild.href = a.dataset.href;
+                return el.firstChild.firstChild.src = "https://mediacru.sh/" + file.file;
+              case 'audio/mpeg':
+              case 'audio/ogg':
+                el.innerHTML = '<audio controls><source type="audio/ogg"><source type="audio/mpeg"></audio>';
+                _ref2 = ['ogg', 'mp3'];
+                _results1 = [];
+                for (i = _l = 0, _len3 = _ref2.length; _l < _len3; i = ++_l) {
+                  ext = _ref2[i];
+                  _results1.push(el.firstChild.children[i].src = "https://mediacru.sh/" + a.dataset.uid + "." + ext);
+                }
+                return _results1;
+                break;
+              default:
+                return el.textContent = "ERROR: No valid filetype.";
+            }
           });
           return el;
         }
@@ -8489,23 +8510,15 @@
       }, {
         key: 'SoundCloud',
         regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
-        style: 'height: auto; width: 500px; display: inline-block;',
+        style: 'border: 0; width: 500px; height: 400px;',
         el: function(a) {
-          var div;
-          div = $.el('div', {
-            className: "soundcloud",
-            name: "soundcloud"
+          return $.el('iframe', {
+            src: "//w.soundcloud.com/player/?visual=true&show_comments=false&url=https%3A%2F%2Fsoundcloud.com%2F" + (encodeURIComponent(a.dataset.uid))
           });
-          $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + a.dataset.uid, {
-            onloadend: function() {
-              return div.innerHTML = JSON.parse(this.responseText).html;
-            }
-          }, false);
-          return div;
         },
         title: {
           api: function(uid) {
-            return "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=https://www.soundcloud.com/" + uid;
+            return "//soundcloud.com/oembed?format=json&url=https%3A%2F%2Fsoundcloud.com%2F" + (encodeURIComponent(uid));
           },
           text: function(_) {
             return _.title;
@@ -8525,19 +8538,27 @@
         regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/,
         style: "border: none; width: 640px; height: 360px;",
         el: function(a) {
-          var channel, chapter, result, _;
-          if (result = /(\w+)\/(?:[a-z]\/)?(\d+)/i.exec(a.dataset.uid)) {
-            _ = result[0], channel = result[1], chapter = result[2];
-            return $.el('object', {
-              data: 'http://www.twitch.tv/widgets/archive_embed_player.swf',
-              innerHTML: "<param name='allowFullScreen' value='true' />\n<param name='flashvars' value='channel=" + channel + "&start_volume=25&auto_play=false" + (chapter ? "&chapter_id=" + chapter : "") + "' />"
+          var channel, id, idparam, obj, result, type, _;
+          if (result = /(\w+)\/([bc])\/(\d+)/i.exec(a.dataset.uid)) {
+            _ = result[0], channel = result[1], type = result[2], id = result[3];
+            idparam = {
+              'b': 'archive_id',
+              'c': 'chapter_id'
+            };
+            obj = $.el('object', {
+              data: 'http://www.twitch.tv/widgets/archive_embed_player.swf'
             });
+            obj.innerHTML = '<param name="allowFullScreen" value="true"><param name="flashvars">';
+            obj.children[1].value = "channel=" + channel + "&start_volume=25&auto_play=false&" + idparam[type] + "=" + id;
+            return obj;
           } else {
             channel = (/(\w+)/.exec(a.dataset.uid))[0];
-            return $.el('object', {
-              data: "http://www.twitch.tv/widgets/live_embed_player.swf?channel=" + channel,
-              innerHTML: "<param  name=\"allowFullScreen\" value=\"true\" />\n<param  name=\"movie\" value=\"http://www.twitch.tv/widgets/live_embed_player.swf\" />\n<param  name=\"flashvars\" value=\"hostname=www.twitch.tv&channel=" + channel + "&auto_play=true&start_volume=25\" />"
+            obj = $.el('object', {
+              data: "http://www.twitch.tv/widgets/live_embed_player.swf?channel=" + channel
             });
+            obj.innerHTML = '<param name="allowFullScreen" value="true"><param name="flashvars">';
+            obj.children[1].value = "hostname=www.twitch.tv&channel=" + channel + "&auto_play=true&start_volume=25";
+            return obj;
           }
         }
       }, {
@@ -9043,7 +9064,7 @@
       if (/^text\//.test(file.type)) {
         if (isSingle) {
           post = QR.selected;
-        } else if (index !== 0 || (post = QR.posts[QR.posts.length - 1]).com) {
+        } else if ((post = QR.posts[QR.posts.length - 1]).com) {
           post = new QR.post();
         }
         post.pasteText(file);
@@ -9051,9 +9072,7 @@
       }
       if (_ref = file.type, __indexOf.call(QR.mimeTypes, _ref) < 0) {
         QR.error("" + file.name + ": Unsupported file type.");
-        if (!isSingle) {
-          return;
-        }
+        return;
       }
       max = QR.nodes.fileInput.max;
       if (/^video\//.test(file.type)) {
@@ -9061,20 +9080,14 @@
       }
       if (file.size > max) {
         QR.error("" + file.name + ": File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(max)) + ").");
-        if (!isSingle) {
-          return;
-        }
+        return;
       }
       if (isSingle) {
         post = QR.selected;
-      } else if (index !== 0 || (post = QR.posts[QR.posts.length - 1]).file) {
+      } else if ((post = QR.posts[QR.posts.length - 1]).file) {
         post = new QR.post();
       }
-      if (/^text/.test(file.type)) {
-        return post.pasteText(file);
-      } else {
-        return post.setFile(file);
-      }
+      return post.setFile(file);
     },
     openFileInput: function(e) {
       var _ref;
@@ -9144,7 +9157,6 @@
       setNode('addPost', '#add-post');
       setNode('charCount', '#char-count');
       setNode('fileSubmit', '#file-n-submit');
-      setNode('filesize', '#qr-filesize');
       setNode('filename', '#qr-filename');
       setNode('fileContainer', '#qr-filename-container');
       setNode('fileRM', '#qr-filerm');
@@ -10227,7 +10239,11 @@
               QR.error(error);
             }
             _this.URL = fileURL;
-            return _this.rmFile();
+            if ((QR.posts.length === 1) || (_this.com && _this.com.length)) {
+              return _this.rmFile();
+            } else {
+              return _this.rm();
+            }
           }
           s = 90 * 2 * window.devicePixelRatio;
           if (_this.file.type === 'image/gif') {
@@ -13198,7 +13214,7 @@
 
   Redirect = {
     init: function() {
-      var archive, archives, boardID, boards, data, files, id, name, o, record, software, type, _i, _j, _len, _len1, _ref, _ref1;
+      var archive, archives, boardID, boards, data, files, id, name, o, record, software, type, withCredentials, _i, _j, _len, _len1, _ref, _ref1;
       o = {
         thread: {},
         post: {},
@@ -13208,10 +13224,13 @@
       _ref = Redirect.archives;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         data = _ref[_i];
-        name = data.name, boards = data.boards, files = data.files, software = data.software;
+        name = data.name, boards = data.boards, files = data.files, software = data.software, withCredentials = data.withCredentials;
         archives[name] = data;
         for (_j = 0, _len1 = boards.length; _j < _len1; _j++) {
           boardID = boards[_j];
+          if (!(!withCredentials)) {
+            continue;
+          }
           if (!(boardID in o.thread)) {
             o.thread[boardID] = data;
           }
@@ -13240,7 +13259,7 @@
       }
       return Redirect.data = o;
     },
-    archives: [{"uid":0,"name":"Foolz","domain":"archive.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["a","biz","co","diy","gd","jp","m","sci","sp","tg","tv","vg","vp","vr","wsg"],"files":["a","biz","gd","diy","jp","m","sci","tg","vg","vp","vr","wsg"]},{"uid":1,"name":"NSFW Foolz","domain":"nsfw.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["u"],"files":["u"]},{"uid":2,"name":"The Dark Cave","domain":"archive.thedarkcave.org","http":true,"https":true,"software":"foolfuuka","boards":["c","int","out","po"],"files":["c","po"]},{"uid":3,"name":"4plebs Archive","domain":"archive.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["adv","hr","o","pol","s4s","tg","trv","tv","x"],"files":["adv","hr","o","pol","s4s","tg","trv","tv","x"]},{"uid":18,"name":"4plebs Flash Archive","domain":"flash.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["f"],"files":["f"]},{"uid":4,"name":"Nyafuu","domain":"archive.nyafuu.org","http":true,"https":true,"software":"foolfuuka","boards":["c","e","w","wg"],"files":["c","e","w","wg"]},{"uid":5,"name":"Love is Over","domain":"archive.loveisover.me","http":true,"https":true,"software":"foolfuuka","boards":["d","i","lgbt"],"files":["d","i","lgbt"]},{"uid":8,"name":"Rebecca Black Tech","domain":"rbt.asia","http":true,"https":true,"software":"fuuka","boards":["cgl","g","mu","w"],"files":["cgl","g","mu","w"]},{"uid":9,"name":"Heinessen","domain":"archive.heinessen.com","http":true,"https":false,"software":"fuuka","boards":["an","fit","k","mlp","r9k","toy"],"files":["an","fit","k","r9k","toy"]},{"uid":10,"name":"warosu","domain":"fuuka.warosu.org","http":false,"https":true,"software":"fuuka","boards":["3","biz","cgl","ck","diy","fa","g","ic","jp","lit","sci","tg","vr"],"files":["3","biz","cgl","ck","diy","fa","ic","jp","lit","sci","tg","vr"]},{"uid":15,"name":"fgts","domain":"fgts.eu","http":true,"https":true,"software":"foolfuuka","boards":["asp","cm","h","hc","hm","n","p","r","s","soc","y"],"files":["asp","cm","h","hc","hm","n","p","r","s","soc","y"]},{"uid":16,"name":"maware","domain":"archive.mawa.re","http":true,"https":false,"software":"foolfuuka","boards":["t"],"files":["t"]},{"uid":17,"name":"installgentoo.com","domain":"chan.installgentoo.com","http":true,"https":false,"software":"foolfuuka","boards":["g","t"],"files":["g","t"]},{"uid":13,"name":"Foolz Beta","domain":"beta.foolz.us","http":true,"https":true,"withCredentials":true,"software":"foolfuuka","boards":["a","biz","co","d","diy","gd","jp","m","s4s","sci","sp","tg","tv","u","vg","vp","vr","wsg"],"files":["a","biz","d","diy","gd","jp","m","s4s","sci","tg","u","vg","vp","vr","wsg"]}],
+    archives: [{"uid":0,"name":"Foolz","domain":"archive.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["a","biz","co","diy","gd","jp","m","sci","sp","tg","tv","vg","vp","vr","wsg"],"files":["a","biz","diy","gd","jp","m","sci","tg","vg","vp","vr","wsg"]},{"uid":1,"name":"NSFW Foolz","domain":"nsfw.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["u"],"files":["u"]},{"uid":2,"name":"The Dark Cave","domain":"archive.thedarkcave.org","http":true,"https":true,"software":"foolfuuka","boards":["c","int","out","po"],"files":["c","po"]},{"uid":3,"name":"4plebs Archive","domain":"archive.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["adv","hr","o","pol","s4s","tg","trv","tv","x"],"files":["adv","hr","o","pol","s4s","tg","trv","tv","x"]},{"uid":18,"name":"4plebs Flash Archive","domain":"flash.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["f"],"files":["f"]},{"uid":4,"name":"Nyafuu","domain":"archive.nyafuu.org","http":true,"https":true,"software":"foolfuuka","boards":["c","e","w","wg"],"files":["c","e","w","wg"]},{"uid":5,"name":"Love is Over","domain":"archive.loveisover.me","http":true,"https":true,"software":"foolfuuka","boards":["d","i","lgbt"],"files":["d","i","lgbt"]},{"uid":8,"name":"Rebecca Black Tech","domain":"rbt.asia","http":false,"https":true,"software":"fuuka","boards":["cgl","g","mu","w"],"files":["cgl","g","mu","w"]},{"uid":9,"name":"Heinessen","domain":"archive.heinessen.com","http":true,"https":false,"software":"fuuka","boards":["an","fit","k","mlp","r9k","toy"],"files":["an","fit","k","mlp","r9k","toy"]},{"uid":10,"name":"warosu","domain":"fuuka.warosu.org","http":false,"https":true,"software":"fuuka","boards":["3","biz","cgl","ck","diy","fa","g","ic","jp","lit","sci","tg","vr"],"files":["3","biz","cgl","ck","diy","fa","ic","jp","lit","sci","tg","vr"]},{"uid":15,"name":"fgts","domain":"fgts.eu","http":true,"https":true,"software":"foolfuuka","boards":["asp","cm","h","hc","hm","n","p","r","s","soc","y"],"files":["asp","cm","h","hc","hm","n","p","r","s","soc","y"]},{"uid":16,"name":"maware","domain":"archive.mawa.re","http":true,"https":false,"software":"foolfuuka","boards":["t"],"files":["t"]},{"uid":17,"name":"installgentoo.com","domain":"chan.installgentoo.com","http":true,"https":false,"software":"foolfuuka","boards":["g","t"],"files":["g","t"]},{"uid":19,"name":"Innovandalism Archive","domain":"boards.innovandalism.eu","http":true,"https":false,"software":"foolfuuka","boards":["v"],"files":[]},{"uid":13,"name":"Foolz Beta","domain":"beta.foolz.us","http":true,"https":true,"withCredentials":true,"software":"foolfuuka","boards":["a","biz","co","d","diy","gd","jp","m","s4s","sci","sp","tg","tv","u","vg","vp","vr","wsg"],"files":["a","biz","d","diy","gd","jp","m","s4s","sci","tg","u","vg","vp","vr","wsg"]},{"uid":19,"name":"Innovandalism Archive","domain":"boards.innovandalism.eu","http":true,"https":false,"software":"foolfuuka","boards":["v"],"files":[]}],
     to: function(dest, data) {
       var archive;
       archive = (dest === 'search' || dest === 'board' ? Redirect.data.thread : Redirect.data[dest])[data.boardID];
@@ -13305,7 +13324,7 @@
       "https": true,
       "software": "foolfuuka",
       "boards": ["a", "biz", "co", "diy", "gd", "jp", "m", "sci", "sp", "tg", "tv", "vg", "vp", "vr", "wsg"],
-      "files": ["a", "biz", "gd", "diy", "jp", "m", "sci", "tg", "vg", "vp", "vr", "wsg"]
+      "files": ["a", "biz", "diy", "gd", "jp", "m", "sci", "tg", "vg", "vp", "vr", "wsg"]
     }, {
       "uid": 1,
       "name": "NSFW Foolz",
@@ -13364,7 +13383,7 @@
       "uid": 8,
       "name": "Rebecca Black Tech",
       "domain": "rbt.asia",
-      "http": true,
+      "http": false,
       "https": true,
       "software": "fuuka",
       "boards": ["cgl", "g", "mu", "w"],
@@ -13377,7 +13396,7 @@
       "https": false,
       "software": "fuuka",
       "boards": ["an", "fit", "k", "mlp", "r9k", "toy"],
-      "files": ["an", "fit", "k", "r9k", "toy"]
+      "files": ["an", "fit", "k", "mlp", "r9k", "toy"]
     }, {
       "uid": 10,
       "name": "warosu",
@@ -13415,6 +13434,15 @@
       "boards": ["g", "t"],
       "files": ["g", "t"]
     }, {
+      "uid": 19,
+      "name": "Innovandalism Archive",
+      "domain": "boards.innovandalism.eu",
+      "http": true,
+      "https": false,
+      "software": "foolfuuka",
+      "boards": ["v"],
+      "files": []
+    }, {
       "uid": 13,
       "name": "Foolz Beta",
       "domain": "beta.foolz.us",
@@ -13424,6 +13452,15 @@
       "software": "foolfuuka",
       "boards": ["a", "biz", "co", "d", "diy", "gd", "jp", "m", "s4s", "sci", "sp", "tg", "tv", "u", "vg", "vp", "vr", "wsg"],
       "files": ["a", "biz", "d", "diy", "gd", "jp", "m", "s4s", "sci", "tg", "u", "vg", "vp", "vr", "wsg"]
+    }, {
+      "uid": 19,
+      "name": "Innovandalism Archive",
+      "domain": "boards.innovandalism.eu",
+      "http": true,
+      "https": false,
+      "software": "foolfuuka",
+      "boards": ["v"],
+      "files": []
     }
   ];
 
@@ -15112,65 +15149,10 @@
       return CatalogLinks.el.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
     },
     external: function(board) {
-      switch (board) {
-        case 'a':
-        case 'c':
-        case 'g':
-        case 'co':
-        case 'k':
-        case 'm':
-        case 'o':
-        case 'p':
-        case 'v':
-        case 'vg':
-        case 'w':
-        case 'cm':
-        case '3':
-        case 'adv':
-        case 'an':
-        case 'cgl':
-        case 'ck':
-        case 'diy':
-        case 'fa':
-        case 'fit':
-        case 'int':
-        case 'jp':
-        case 'mlp':
-        case 'lit':
-        case 'mu':
-        case 'n':
-        case 'po':
-        case 'sci':
-        case 'toy':
-        case 'trv':
-        case 'tv':
-        case 'vp':
-        case 'x':
-        case 'q':
-          return "http://catalog.neet.tv/" + board;
-        case 'd':
-        case 'e':
-        case 'gif':
-        case 'h':
-        case 'hr':
-        case 'hc':
-        case 'r9k':
-        case 's':
-        case 'pol':
-        case 'soc':
-        case 'u':
-        case 'i':
-        case 'ic':
-        case 'hm':
-        case 'r':
-        case 'w':
-        case 'wg':
-        case 'wsg':
-        case 't':
-        case 'y':
-          return "http://4index.gropes.us/" + board;
-        default:
-          return "/" + board + "/catalog";
+      if (board === 'a' || board === 'c' || board === 'g' || board === 'co' || board === 'k' || board === 'm' || board === 'o' || board === 'p' || board === 'v' || board === 'vg' || board === 'w' || board === 'cm' || board === '3' || board === 'adv' || board === 'an' || board === 'cgl' || board === 'ck' || board === 'diy' || board === 'fa' || board === 'fit' || board === 'int' || board === 'jp' || board === 'mlp' || board === 'lit' || board === 'mu' || board === 'n' || board === 'po' || board === 'sci' || board === 'toy' || board === 'trv' || board === 'tv' || board === 'vp' || board === 'x' || board === 'q') {
+        return "http://catalog.neet.tv/" + board;
+      } else {
+        return "/" + board + "/catalog";
       }
     }
   };
@@ -15897,6 +15879,9 @@
         return;
       }
       target = e.target;
+      if (target.nodeName === 'EMBED') {
+        return;
+      }
       if ((_ref = target.nodeName) === 'INPUT' || _ref === 'TEXTAREA') {
         if (!/(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test(key)) {
           return;
@@ -16852,7 +16837,7 @@
       }
       if (e) {
         if (e.shiftKey || e.ctrlKey || (e.type === 'click' && e.button !== 0)) {
-          if ((e != null ? e.button : void 0) !== 2) {
+          if (e.button !== 2) {
             Navigate.setMode(this);
           }
           return;
@@ -17341,7 +17326,7 @@
       return $.on(ta, 'change', $.cb.value);
     },
     advanced: function(section) {
-      var archBoards, boardID, boardOptions, boardSelect, boards, event, files, input, inputs, item, items, name, o, row, rows, software, ta, table, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2, _ref3, _ref4;
+      var archBoards, boardID, boardOptions, boardSelect, boards, event, files, i, input, inputs, item, items, name, o, row, rows, software, ta, table, withCredentials, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
       section.innerHTML = "<fieldset><legend>Archiver</legend><div class=\"warning\" " + (Conf['404 Redirect'] ? 'hidden' : '') + "><code>404 Redirect</code> is disabled.</div><div><select id='archive-board-select'></select></div><table id='archive-table'><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><span class=note>Disabled selections indicate that only one archive is available for that board and redirection type.</span></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea name=boardnav class=field spellcheck=false></textarea></div><span class=note>New lines will be converted into spaces.</span><br><br><div class=note>In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:\"Install Gentoo\"</code></div><div>External link: <code>external-text:\"Google\",\"http://www.google.com\"</code></div><div>Index mode: <code>g-mode:\"type\"</code> where type is <code>paged</code>, <code>all threads</code> or <code>catalog</code></div><div>Index sort: <code>g-sort:\"type\"</code> where type is <code>bump order</code>, <code>last reply</code>, <code>creation date</code>, <code>reply count</code> or <code>file count</code></div<div>Combinations are possible: <code>g-text:\"VIP Catalog\"-mode:\"catalog\"-sort:\"creation date\"</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=note><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h-mode:\"catalog\"-sort:\"file count\"] [t-text:\"Piracy\"]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div><div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div></fieldset><fieldset><legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend><div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div><div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea class=personafield name=\"QR.personas\" class=\"field\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input's auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>email</code>, <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>email:\"sage\"</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>email:\"sage\";always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>email:\"sage\";boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=warning " + (Conf['Unread Favicon'] ? 'hidden' : '') + ">is disabled.</span></legend><select name=favicon><option value=ferongr>ferongr</option><option value=xat->xat-</option><option value=Mayhem>Mayhem</option><option value=4chanJS>4chanJS</option><option value=Original>Original</option><option value=Metro>Metro</option></select><span id=favicon-preview></span></fieldset><fieldset><legend>Emoji <span class=warning " + (Conf['Emoji'] ? 'hidden' : '') + ">is disabled.</span></legend><div>Sage Icon: <select name=sageEmoji><option value=\"4chan SS\">4chan SS</option><option value=\"appchan\">appchan</option></select><span class=sage-icon-preview></span></div><fieldset><legend>Thread Updater <span class=warning " + (Conf['Thread Updater'] ? 'hidden' : '') + ">is disabled.</span></legend><div>Interval: <input type=number name=Interval class=field min=1 value=" + Conf['Interval'] + "></div></fieldset><fieldset><legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend><div><button id=apply-css>Apply CSS</button><textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea></div></fieldset>";
       items = {};
       inputs = {};
@@ -17379,28 +17364,40 @@
       archBoards = {};
       _ref1 = Redirect.archives;
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        _ref2 = _ref1[_j], name = _ref2.name, boards = _ref2.boards, files = _ref2.files, software = _ref2.software;
+        _ref2 = _ref1[_j], name = _ref2.name, boards = _ref2.boards, files = _ref2.files, software = _ref2.software, withCredentials = _ref2.withCredentials;
         for (_k = 0, _len2 = boards.length; _k < _len2; _k++) {
           boardID = boards[_k];
           o = archBoards[boardID] || (archBoards[boardID] = {
-            thread: [],
-            post: [],
-            file: []
+            thread: [[], []],
+            post: [[], []],
+            file: [[], []]
           });
-          o.thread.push(name);
+          i = +(!!withCredentials);
+          o.thread[i].push(name);
           if (software === 'foolfuuka') {
-            o.post.push(name);
+            o.post[i].push(name);
           }
           if (__indexOf.call(files, boardID) >= 0) {
-            o.file.push(name);
+            o.file[i].push(name);
           }
+        }
+      }
+      for (boardID in archBoards) {
+        o = archBoards[boardID];
+        _ref3 = ['thread', 'post', 'file'];
+        for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
+          item = _ref3[_l];
+          if (o[item][0].length === 0 && o[item][1].length !== 0) {
+            o[item][0].push('disabled');
+          }
+          o[item] = o[item][0].concat(o[item][1]);
         }
       }
       rows = [];
       boardOptions = [];
-      _ref3 = Object.keys(archBoards).sort();
-      for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
-        boardID = _ref3[_l];
+      _ref4 = Object.keys(archBoards).sort();
+      for (_m = 0, _len4 = _ref4.length; _m < _len4; _m++) {
+        boardID = _ref4[_m];
         row = $.el('tr', {
           className: "board-" + boardID
         });
@@ -17411,9 +17408,9 @@
           selected: boardID === g.BOARD.ID
         }));
         o = archBoards[boardID];
-        _ref4 = ['thread', 'post', 'file'];
-        for (_m = 0, _len4 = _ref4.length; _m < _len4; _m++) {
-          item = _ref4[_m];
+        _ref5 = ['thread', 'post', 'file'];
+        for (_n = 0, _len5 = _ref5.length; _n < _len5; _n++) {
+          item = _ref5[_n];
           $.add(row, Settings.addArchiveCell(boardID, o, item));
         }
         rows.push(row);
@@ -18179,7 +18176,7 @@
       });
     },
     initFeatures: function() {
-      var href, init, video, _ref;
+      var href, init, _ref;
       Favicon.el.type = 'image/x-icon';
       href = Favicon.el.href;
       Favicon.SFW = /ws\.ico$/.test(href);
@@ -18208,20 +18205,8 @@
           Report.init();
           return;
         case 'i.4cdn.org':
-          if (Conf['Loop in New Tab'] && (video = $('video'))) {
-            Video.configure(video);
-            $.on(video, 'click', function() {
-              if (!video.controls) {
-                if (video.paused) {
-                  return video.play();
-                } else {
-                  return video.pause();
-                }
-              }
-            });
-          }
           $.ready(function() {
-            var URL, pathname, _ref1;
+            var URL, pathname, video, _ref1;
             if (Conf['404 Redirect'] && ((_ref1 = d.title) === '4chan - Temporarily Offline' || _ref1 === '4chan - 404 Not Found')) {
               Redirect.init();
               pathname = location.pathname.split('/');
@@ -18231,6 +18216,17 @@
               });
               if (URL) {
                 return location.replace(URL);
+              }
+            } else if (Conf['Loop in New Tab'] && (video = $('video'))) {
+              Video.configure(video);
+              if (!video.controls) {
+                return $.on(video, 'click', function() {
+                  if (video.paused) {
+                    return video.play();
+                  } else {
+                    return video.pause();
+                  }
+                });
               }
             }
           });
