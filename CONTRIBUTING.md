@@ -1,6 +1,5 @@
 ## Reporting bugs and suggestions
 
-<<<<<<< HEAD
 Reporting bugs: (note that some of these links refer to Mayhem's 4chan X repo to avoid duplication of information resources. Bugs MUST be filed on [our issue tracker](https://github.com/zixaphir/appchan-x/issues), not Mayhem's)
 
 1. Make sure both your **browser** and **Appchan X** are up to date.<br>
@@ -13,19 +12,6 @@ Reporting bugs: (note that some of these links refer to Mayhem's 4chan X repo to
   1. Precise steps to reproduce the problem, with the expected and actual results.
   2. [Console errors](https://github.com/MayhemYDG/4chan-x/wiki/FAQ#console-errors), if any.
   3. Appchan X version, browser variant, browser version, and Greasemonkey version if you are using it.
-=======
-Reporting bugs:
-
-1. Make sure both your **browser** and **4chan X** are up to date.<br>
-   Only **Chrome**, **Firefox** and **Opera** are supported.<br>
-   **SRWare Iron**, **Firefox ESR**, **Pale Moon**, **Waterfox**, and other derivatives are not supported, use them at your own risk.
-2. Look at the list of [known problems and solutions](https://github.com/MayhemYDG/4chan-x/wiki/FAQ#known-problems).
-3. Disable your other extensions & scripts to identify conflicts.
-4. If your issue persists, open a [new issue](https://github.com/ccd0/4chan-x/issues) with the following information:
-  1. Precise steps to reproduce the problem, with the expected and actual results.
-  2. [Console errors](https://github.com/MayhemYDG/4chan-x/wiki/FAQ#console-errors), if any.
-  3. 4chan X version, browser variant, browser version, and Greasemonkey version if you are using it.
->>>>>>> v3
   4. Your exported settings. If your settings contains sensible information (e.g. personas), edit the text file manually.
 
 Respect these guidelines:
