@@ -38,6 +38,7 @@ ImageHover =
       asapTest: -> (if isVideo then el.videoHeight else el.naturalHeight)
       noRemove: true
       cb: ->
+        $.off el, 'error', ImageHover.error
         if isVideo
           el.pause()
           TrashQueue.add el, post

@@ -1,3 +1,9 @@
+### v1.7.48 
+*2014-05-27*
+
+**ccd0**
+- Fix bug causing broken WebM files to be perpetually redownloaded.
+
 ### v1.7.47 
 *2014-05-26*
 
