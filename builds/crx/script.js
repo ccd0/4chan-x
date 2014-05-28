@@ -8223,7 +8223,7 @@
       i = links.length;
       while (i--) {
         link = links[i];
-        Linkify.embedProcess(Linkify.makeLink(link, this));
+        Linkify.embedProcess(Linkify.makeLink(link), this);
       }
     },
     embedProcess: function() {},
