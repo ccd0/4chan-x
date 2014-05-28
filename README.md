@@ -16,7 +16,7 @@ This fork of 4chan X is not guaranteed to work correctly in other browsers, but 
 1. Install dwb with your package manager
 2. Install the dwb userscripts extension with `dwbem -N -i userscripts` in your terminal.
 3. Make a directory for dwb userscripts with `mkdir .config/dwb/greasemonkey`
-4. Change directory to your newly created userscripts folder with `cd .config /dwb/greasemonkey`
+4. Change directory to your newly created userscripts folder with `cd .config/dwb/greasemonkey`
 5. Download 4chanX with `wget https://ccd0.github.io/4chan-x/builds/4chan-X.user.js`
 6. Start dwb
 
