@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.7.33 - 2014-05-16
+* 4chan X - Version 1.7.33 - 2014-05-27
 *
 * Licensed under the MIT license.
 * https://github.com/ccd0/4chan-x/blob/master/LICENSE
@@ -8886,7 +8886,7 @@
       i = links.length;
       while (i--) {
         link = links[i];
-        Linkify.embedProcess(Linkify.makeLink(link, this));
+        Linkify.embedProcess(Linkify.makeLink(link), this);
       }
     },
     embedProcess: function() {},
