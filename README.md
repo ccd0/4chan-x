@@ -5,12 +5,14 @@ https://github.com/Nebukazar/OneeChan
 
 #### [Why 4chan X needs to access data on every site?](https://github.com/ccd0/4chan-x/wiki/Why-4chan-X-needs-to-access-data-from-every-website%3F)
 
-##[Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) (Firefox)
+## [Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) (Firefox)
 Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then click the link above to install.
-##[Install](https://ccd0.github.io/4chan-x/builds/crx.crx) (Chromium)
-Download the file and add drag it to your chrome://extensions page.
-##Install guide for dwb
-**Note**: 4chan X is not guaranteed to work correctly in dwb. Expect bugs. Patches are welcome.
+## [Install](https://ccd0.github.io/4chan-x/builds/crx.crx) (Chromium)
+Download the file from the link above and add drag it to your `chrome://extensions` page.
+This should also work for Chrome and Chromium-based versions of Opera.
+## Other browsers
+This fork of 4chan X is not guaranteed to work correctly in other browsers, but you are welcome to try your luck. Pull requests to fix the bugs you will likely find are always welcome.
+### dwb
 1. Install dwb with your package manager
 2. Install the dwb userscripts extension with `dwbem -N -i userscripts` in your terminal.
 3. Make a directory for dwb userscripts with `mkdir .config/dwb/greasemonkey`
