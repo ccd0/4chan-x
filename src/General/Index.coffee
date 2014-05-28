@@ -461,9 +461,9 @@ Index =
     result = $.frag()
     i = 0
     $.add result, [node, $.el 'hr'] while node = nodes[i++]
+    $.event 'IndexBuild', result.children
     $.add Index.root, result
     $.rm hr for hr in $$ 'hr + hr', Index.root # Temp fix until I figure out where I fucked up
-    $.event 'IndexBuild', result
 
   isSearching: false
 
