@@ -1,3 +1,6 @@
+**ccd0**
+- Fix bug where hidden threads reappeared on index refresh.
+
 ### v1.7.48 
 *2014-05-27*
 
