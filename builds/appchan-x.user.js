@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.28 - 2014-05-27
+* appchan x - Version 2.9.28 - 2014-05-29
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -8104,7 +8104,7 @@
         ExpandComment.callbacks.push(this.node);
       }
       if (Conf['Embedding'] || Conf['Link Title']) {
-        this.embedProcess = Function('link', "var data = this.services(link);\nif (data) {" + ((Conf['Embedding'] ? 'this.embed(data); ' : '') + (Conf['Link Title'] ? 'data.push(post); this.title(data);' : '')) + "}");
+        this.embedProcess = Function('link', 'post', "var data = this.services(link);\nif (data) {" + ((Conf['Embedding'] ? 'this.embed(data); ' : '') + (Conf['Link Title'] ? 'data.push(post); this.title(data);' : '')) + "}");
       }
       return Post.callbacks.push({
         name: 'Linkify',

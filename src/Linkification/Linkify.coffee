@@ -9,7 +9,7 @@ Linkify =
       ExpandComment.callbacks.push @node
 
     if Conf['Embedding'] or Conf['Link Title']
-      @embedProcess = Function 'link', 
+      @embedProcess = Function 'link', 'post',
         """
         var data = this.services(link);
         if (data) {#{
