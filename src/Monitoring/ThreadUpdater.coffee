@@ -25,10 +25,7 @@ ThreadUpdater =
     $.on @timer,  'click', @update
     $.on @status, 'click', @update
 
-    unless Conf['JSON Navigation'] and $ '.updatelink', Index.navLinksBot
-      #updateLink = $.el 'span',
-      #  innerHTML: '[<a href="javascript:;">Update</a>]'
-      #  className: 'updatelink'
+    unless Index.navLinksBot and $ '.updatelink', Index.navLinksBot
       updateLink = $.el 'span',
         innerHTML: '<a href="javascript:;">Update</a>'
         className: 'brackets-wrap updatelink'
