@@ -23,7 +23,7 @@ Unread =
     $.off d, '4chanXInitFinished',      @ready
     $.off d, 'ThreadUpdate',            @onUpdate
     $.off d, 'scroll visibilitychange', @read
-    $.off d, 'visibilitychange',        @setLine if Conf['Unread Line']
+    $.off d, 'visibilitychange',        @setLine if Conf['Unread Line'] and not Conf['Quote Threading']
 
     Thread.callbacks.disconnect 'Unread'
 
@@ -37,7 +37,7 @@ Unread =
     $.on d, '4chanXInitFinished',      Unread.ready
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
-    $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
+    $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line'] and not Conf['Quote Threading']
 
   ready: ->
     $.off d, '4chanXInitFinished', Unread.ready
@@ -46,7 +46,7 @@ Unread =
       Unread.thread.posts.forEach (post) -> posts.push post if post.isReply
       Unread.addPosts posts
     QuoteThreading.force() if Conf['Quote Threading']
-    Unread.scroll() if Conf['Scroll to Last Read Post']
+    Unread.scroll() if Conf['Scroll to Last Read Post'] and not Conf['Quote Threading']
 
   scroll: ->
     # Let the header's onload callback handle it.
@@ -81,7 +81,7 @@ Unread =
       Unread.posts.rm ID
       delete Unread.postsQuotingYou[ID]
 
-    Unread.setLine() if Conf['Unread Line']
+    Unread.setLine() if Conf['Unread Line'] and not Conf['Quote Threading']
     Unread.update()
 
   addPost: (post) ->
@@ -96,7 +96,7 @@ Unread =
   addPosts: (posts) ->
     for post in posts
       Unread.addPost post
-    if Conf['Unread Line']
+    if Conf['Unread Line'] and not Conf['Quote Threading']
       # Force line on visible threads if there were no unread posts previously.
       Unread.setLine Unread.posts.first?.data in posts
     Unread.read()
@@ -138,7 +138,7 @@ Unread =
     {ID} = post
     {posts} = Unread
     return unless posts[ID]
-    if post is posts.first and !(QuoteThreading.enabled and Unread.posts.length)
+    if post is posts.first and !(Conf['Quote Threading'] and Unread.posts.length)
       Unread.lastReadPost = ID
       Unread.saveLastReadPost()
     posts.rm ID
@@ -167,7 +167,7 @@ Unread =
 
     return unless maxID
 
-    unless QuoteThreading.enabled and posts.length
+    unless Conf['Quote Threading'] and posts.length
       Unread.lastReadPost = maxID if Unread.lastReadPost < maxID or !Unread.lastReadPost
       Unread.saveLastReadPost()
     Unread.update() if e
