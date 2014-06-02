@@ -1,3 +1,9 @@
+### v1.7.52 
+*2014-06-02*
+
+**ccd0**
+- Add workaround for downloading with the original filename in Firefox.
+
 ### v1.7.51 
 *2014-06-02*
 

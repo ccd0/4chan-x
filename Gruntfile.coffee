@@ -27,6 +27,7 @@ module.exports = (grunt) ->
           'src/General/Get.coffee'
           'src/General/UI.coffee'
           'src/General/Notice.coffee'
+          'src/General/CrossOrigin.coffee'
           'src/Filtering/**/*.coffee'
           'src/Quotelinks/**/*.coffee'
           'src/Posting/QR.coffee'

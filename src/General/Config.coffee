@@ -229,12 +229,10 @@ Config =
         true
         'Add post and image deletion links to the menu.'
       ]
-      <% if (type === 'crx') { %>
       'Download Link': [
         true
-        'Add a download with original filename link to the menu. Chrome-only currently.'
+        'Add a download with original filename link to the menu.'
       ]
-      <% } %>
       'Archive Link': [
         true
         'Add an archive link to the menu.'

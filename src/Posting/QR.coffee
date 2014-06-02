@@ -293,56 +293,14 @@ QR =
     QR.handleFiles files
     $.addClass QR.nodes.el, 'dump'
     
-  handleBlob: (urlBlob, contentType, contentDisposition, url) ->
-    name = url.match(/([^\/]+)\/*$/)?[1]
-    mime = contentType?.match(/[^;]*/)[0] or 'application/octet-stream'
-    match =
-      contentDisposition?.match(/\bfilename\s*=\s*"((\\"|[^"])+)"/i)?[1] or
-      contentType?.match(/\bname\s*=\s*"((\\"|[^"])+)"/i)?[1]
-    if match
-      name = match.replace /\\"/g, '"'
-    blob = new Blob([urlBlob], {type: mime})
-    blob.name = name
-    QR.handleFiles([blob])
-
   handleUrl:  ->
     url = prompt("Insert an url:")
     return if url is null
-
-    <% if (type === 'crx') { %>
-    xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true)
-    xhr.responseType = 'blob'
-    xhr.onload = (e) ->
-      if @readyState is @DONE && xhr.status is 200
-        contentType = @getResponseHeader('Content-Type')
-        contentDisposition = @getResponseHeader('Content-Disposition')
-        QR.handleBlob @response, contentType, contentDisposition, url
+    CrossOrigin.request url, (blob) ->
+      if blob
+        QR.handleFiles([blob])
       else
         QR.error "Can't load image."
-    xhr.onerror = (e) ->
-      QR.error "Can't load image."
-    xhr.send()
-    <% } %>
-
-    <% if (type === 'userscript') { %>
-    GM_xmlhttpRequest
-      method: "GET"
-      url: url
-      overrideMimeType: "text/plain; charset=x-user-defined"
-      onload: (xhr) ->
-        r = xhr.responseText
-        data = new Uint8Array(r.length)
-        i = 0
-        while i < r.length
-          data[i] = r.charCodeAt(i)
-          i++
-        contentType = xhr.responseHeaders.match(/Content-Type:\s*(.*)/i)?[1]
-        contentDisposition = xhr.responseHeaders.match(/Content-Disposition:\s*(.*)/i)?[1]
-        QR.handleBlob data, contentType, contentDisposition, url
-      onerror: (xhr) ->
-        QR.error "Can't load image."
-    <% } %>
 
   handleFiles: (files) ->
     if @ isnt QR # file input
