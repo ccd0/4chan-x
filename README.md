@@ -10,6 +10,7 @@ Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonk
 ## [Install](https://ccd0.github.io/4chan-x/builds/crx.crx) (Chromium)
 Download the file from the link above and add drag it to your `chrome://extensions` page.
 This should also work for Chrome and Chromium-based versions of Opera.
+If you are using Chrome on Windows and Chrome is disabling the extension, try installing from [here](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam).
 ## Other browsers
 This fork of 4chan X is not guaranteed to work correctly in other browsers, but you are welcome to try your luck. Pull requests to fix the bugs you will likely find are always welcome.
 ### dwb
