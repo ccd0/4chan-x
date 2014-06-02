@@ -1,3 +1,6 @@
+### v1.7.51 
+*2014-06-02*
+
 **ccd0**
 - Drop support for using JSON to navigate between boards and threads.  This should have no noticeable effect for users except for fixing various posting bugs.
 - Get reply notifications (icon/title changes and desktop alerts) working when quote threading is enabled.
