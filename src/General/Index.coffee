@@ -222,8 +222,6 @@ Index =
 
   update: (pageNum, forceReparse) ->
     return unless navigator.onLine
-    unless d.readyState is 'loading' or Index.root.parentElement
-      $.replace $('.board'), Index.root
     delete Index.pageNum
     Index.req?.abort()
     Index.notice?.close()
