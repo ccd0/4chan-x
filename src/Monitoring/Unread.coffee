@@ -138,7 +138,7 @@ Unread =
     {ID} = post
     {posts} = Unread
     return unless posts[ID]
-    if post is posts.first and !QuoteThreading.enabled
+    if post is posts.first and !(QuoteThreading.enabled and Unread.posts.length)
       Unread.lastReadPost = ID
       Unread.saveLastReadPost()
     posts.rm ID
@@ -150,9 +150,11 @@ Unread =
     height  = doc.clientHeight
 
     {posts} = Unread
+    maxID = 0
     while post = posts.first
       break unless Header.getBottomOf(post.data.nodes.root) > -1 # post is not completely read
       {ID, data} = post
+      maxID = Math.max maxID, ID
       posts.rm ID
       delete Unread.postsQuotingYou[ID]
 
@@ -163,10 +165,10 @@ Unread =
       }
         QuoteYou.lastRead = data.nodes.root
 
-    return unless ID
+    return unless maxID
 
-    unless QuoteThreading.enabled
-      Unread.lastReadPost = ID if Unread.lastReadPost < ID or !Unread.lastReadPost
+    unless QuoteThreading.enabled and posts.length
+      Unread.lastReadPost = maxID if Unread.lastReadPost < maxID or !Unread.lastReadPost
       Unread.saveLastReadPost()
     Unread.update() if e
 
