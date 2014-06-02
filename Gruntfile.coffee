@@ -37,7 +37,6 @@ module.exports = (grunt) ->
           'src/Monitoring/**/*.coffee'
           'src/Archive/**/*.coffee'
           'src/Miscellaneous/**/*.coffee'
-          'src/General/Navigate.coffee'
           'src/General/Settings.coffee'
           'src/General/Main.coffee'
         ]

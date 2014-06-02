@@ -1,6 +1,6 @@
 Index =
   init: ->
-    return if g.BOARD.ID is 'f' or g.VIEW is 'catalog' or !Conf['JSON Navigation']
+    return if g.BOARD.ID is 'f' or g.VIEW isnt 'index' or !Conf['JSON Navigation']
 
     @board = "#{g.BOARD}"
 
@@ -71,20 +71,16 @@ Index =
     @navLinks = $.el 'div',
       className: 'navLinks'
       innerHTML: <%= importHTML('Features/Index-navlinks') %>
-    @navLinksBot = $.el 'div',
-      className: 'navLinks navLinksBot'
-      innerHTML: <%= importHTML('Features/Index-navlinksbot') %>
+    $('.returnlink a',  @navLinks).href = "//boards.4chan.org/#{g.BOARD}/"
+    $('.cataloglink a', @navLinks).href = "//boards.4chan.org/#{g.BOARD}/catalog"
     @searchInput = $ '#index-search', @navLinks
     @currentPage = @getCurrentPage()
-
-    Index.setNavLinks()
+    $.on window, 'popstate', @cb.popstate
 
     $.on d, 'scroll', Index.scroll
     $.on @pagelist, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
-    $.on $('.returnlink a',  @navLinks), 'click', Navigate.navigate
-    $.on $('.returnlink a',  @navLinksBot), 'click', Navigate.navigate
 
     @update() if g.VIEW is 'index'
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
@@ -100,15 +96,11 @@ Index =
         #   Does not work on Firefox unfortunately. bugzil.la/939713
         d.implementation.createDocument(null, null, null).appendChild board
 
-    $.asap (-> $('.navLinksBot.mobile', doc) or d.readyState isnt 'loading'), ->
-      $.rm el for el in $$ '.navLinks, .navLinksBot + hr'
+      $.rm el for el in $$ '.navLinks'
       $.id('search-box')?.parentNode.remove()
       topNavPos = $.id('delform').previousElementSibling
-      botNavPos = $ '.board'
-      $.before topNavPos, $.el 'hr' if g.VIEW is 'index'
+      $.before topNavPos, $.el 'hr'
       $.before topNavPos, Index.navLinks
-      $.after  botNavPos, $.el 'hr'
-      $.after  botNavPos, Index.navLinksBot
 
     $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
       if pagelist = $('.pagelist')
@@ -116,10 +108,6 @@ Index =
       else
         $.after $.id('delform'), Index.pagelist
       $.rmClass doc, 'index-loading'
-
-  setNavLinks: () ->
-    $('.returnlink a',  Index.navLinks).href = $('.returnlink a',  Index.navLinksBot).href = "//boards.4chan.org/#{g.BOARD}/"
-    $('.cataloglink a', Index.navLinks).href = $('.cataloglink a', Index.navLinksBot).href = "//boards.4chan.org/#{g.BOARD}/catalog"
 
   scroll: ->
     return if Index.req or Conf['Index Mode'] isnt 'infinite' or (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
@@ -153,6 +141,9 @@ Index =
       Index.buildThreads()
       Index.sort()
       Index.buildIndex()
+    popstate: (e) ->
+      pageNum = Index.getCurrentPage()
+      Index.pageLoad pageNum if Index.currentPage isnt pageNum
     pageNav: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       switch e.target.nodeName
@@ -172,7 +163,7 @@ Index =
   getCurrentPage: ->
     +window.location.pathname.split('/')[2] or 1
   userPageNav: (pageNum) ->
-    Navigate.pushState if pageNum is 1 then './' else pageNum
+    history.pushState null, '', if pageNum is 1 then './' else pageNum
     if Conf['Refreshed Navigation'] and Conf['Index Mode'] isnt 'all pages'
       Index.update pageNum
     else
@@ -232,9 +223,6 @@ Index =
 
   update: (pageNum, forceReparse) ->
     return unless navigator.onLine
-    if g.VIEW is 'thread'
-      return ThreadUpdater.update() if Conf['Thread Updater']
-      return
     unless d.readyState is 'loading' or Index.root.parentElement
       $.replace $('.board'), Index.root
     delete Index.pageNum
@@ -280,8 +268,6 @@ Index =
       else
         new Notice 'warning', err, 1
       return
-
-    Navigate.title()
 
     try
       if req.status is 200
@@ -498,7 +484,7 @@ Index =
       Index.buildIndex()
       Index.setPage()
     else
-      Navigate.pushState if pageNum is 1 then './' else pageNum
+      history.pushState null, '', if pageNum is 1 then './' else pageNum
       Index.pageLoad pageNum
 
   querySearch: (query) ->

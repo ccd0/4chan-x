@@ -3,7 +3,7 @@ Config =
     'Miscellaneous':
       'JSON Navigation' : [
         false
-        'Use JSON for loading the Board Index and Threads. Also allows searching and sorting the board index and infinite scolling.'
+        'Use JSON for loading the Board Index. Also allows searching and sorting the board index and infinite scolling.'
       ]
       'Catalog Links': [
         true

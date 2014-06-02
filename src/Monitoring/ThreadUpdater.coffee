@@ -25,13 +25,12 @@ ThreadUpdater =
     $.on @timer,  'click', @update
     $.on @status, 'click', @update
 
-    unless Index.navLinksBot and $ '.updatelink', Index.navLinksBot
-      updateLink = $.el 'span',
-        innerHTML: '<a href="javascript:;">Update</a>'
-        className: 'brackets-wrap updatelink'
-      $.ready ->
-        $.add (Index.navLinksBot or $('.navLinksBot')), [$.tn(' '), updateLink]
-      $.on updateLink.firstElementChild, 'click', @update
+    updateLink = $.el 'span',
+      innerHTML: '<a href="javascript:;">Update</a>'
+      className: 'brackets-wrap updatelink'
+    $.ready ->
+      $.add $('.navLinksBot'), [$.tn(' '), updateLink]
+    $.on updateLink.firstElementChild, 'click', @update
 
     subEntries = []
     for name, conf of Config.updater.checkbox

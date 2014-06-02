@@ -345,7 +345,6 @@ Main =
     ['Keybinds',                  Keybinds]
     ['Show Dice Roll',            Dice]
     ['Banner',                    Banner]
-    ['Navigate',                  Navigate]
   ]
 
 Main.init()
