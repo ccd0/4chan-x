@@ -6,7 +6,7 @@ Unread =
     @hr = $.el 'hr',
       id: 'unread-line'
     @posts = new RandomAccessList
-    @postsQuotingYou = []
+    @postsQuotingYou = {}
 
     Thread.callbacks.push
       name: 'Unread'
@@ -79,21 +79,23 @@ Unread =
       break if ({ID} = post) > Unread.lastReadPost
       post = post.next
       Unread.posts.rm ID
+      delete Unread.postsQuotingYou[ID]
 
-    Unread.readArray Unread.postsQuotingYou
     Unread.setLine() if Conf['Unread Line']
     Unread.update()
 
+  addPost: (post) ->
+    return if post.ID <= Unread.lastReadPost or post.isHidden or QR.db?.get {
+      boardID:  post.board.ID
+      threadID: post.thread.ID
+      postID:   post.ID
+    }
+    Unread.posts.push post
+    Unread.addPostQuotingYou post
+
   addPosts: (posts) ->
     for post in posts
-      {ID} = post
-      continue if ID <= Unread.lastReadPost or post.isHidden or QR.db?.get {
-        boardID:  post.board.ID
-        threadID: post.thread.ID
-        postID:   ID
-      }
-      Unread.posts.push post
-      Unread.addPostQuotingYou post
+      Unread.addPost post
     if Conf['Unread Line']
       # Force line on visible threads if there were no unread posts previously.
       Unread.setLine Unread.posts.first?.data in posts
@@ -102,7 +104,7 @@ Unread =
 
   addPostQuotingYou: (post) ->
     for quotelink in post.nodes.quotelinks when QR.db?.get Get.postDataFromLink quotelink
-      Unread.postsQuotingYou.push post
+      Unread.postsQuotingYou[post.ID] = post
       Unread.openNotification post
       return
 
@@ -126,7 +128,7 @@ Unread =
   onUpdate: (e) ->
     if e.detail[404]
       Unread.update()
-    else if !Conf['Quote Threading']
+    else if !QuoteThreading.enabled
       Unread.addPosts e.detail.newPosts
     else
       Unread.read()
@@ -136,18 +138,12 @@ Unread =
     {ID} = post
     {posts} = Unread
     return unless posts[ID]
-    if post is posts.first
+    if post is posts.first and !QuoteThreading.enabled
       Unread.lastReadPost = ID
       Unread.saveLastReadPost()
     posts.rm ID
-    if (i = Unread.postsQuotingYou.indexOf post) isnt -1
-      Unread.postsQuotingYou.splice i, 1
+    delete Unread.postsQuotingYou[ID]
     Unread.update()
-
-  readArray: (arr) ->
-    for post, i in arr
-      break if post.ID > Unread.lastReadPost
-    arr.splice 0, i
 
   read: $.debounce 100, (e) ->
     return if d.hidden or !Unread.posts.length
@@ -158,6 +154,7 @@ Unread =
       break unless Header.getBottomOf(post.data.nodes.root) > -1 # post is not completely read
       {ID, data} = post
       posts.rm ID
+      delete Unread.postsQuotingYou[ID]
 
       if Conf['Mark Quotes of You'] and QR.db?.get {
         boardID:  data.board.ID
@@ -168,9 +165,9 @@ Unread =
 
     return unless ID
 
-    Unread.lastReadPost = ID if Unread.lastReadPost < ID or !Unread.lastReadPost
-    Unread.saveLastReadPost()
-    Unread.readArray Unread.postsQuotingYou
+    unless QuoteThreading.enabled
+      Unread.lastReadPost = ID if Unread.lastReadPost < ID or !Unread.lastReadPost
+      Unread.saveLastReadPost()
     Unread.update() if e
 
   saveLastReadPost: $.debounce 2 * $.SECOND, ->
@@ -188,15 +185,16 @@ Unread =
 
   update: ->
     count = Unread.posts.length
+    countQuotingYou = Object.keys(Unread.postsQuotingYou).length
 
     if Conf['Unread Count']
-      d.title = "#{if Conf['Quoted Title'] and Unread.postsQuotingYou.length then '(!) ' else ''}#{if count or !Conf['Hide Unread Count at (0)'] then "(#{count}) " else ''}#{if g.DEAD then "/#{g.BOARD}/ - 404" else "#{Unread.title}"}"
+      d.title = "#{if Conf['Quoted Title'] and countQuotingYou then '(!) ' else ''}#{if count or !Conf['Hide Unread Count at (0)'] then "(#{count}) " else ''}#{if g.DEAD then "/#{g.BOARD}/ - 404" else "#{Unread.title}"}"
 
     return unless Conf['Unread Favicon']
 
     Favicon.el.href =
       if g.DEAD
-        if Unread.postsQuotingYou[0]
+        if countQuotingYou
           Favicon.unreadDeadY
         else if count
           Favicon.unreadDead
@@ -204,7 +202,7 @@ Unread =
           Favicon.dead
       else
         if count
-          if Unread.postsQuotingYou[0]
+          if countQuotingYou
             Favicon.unreadY
           else
             Favicon.unread

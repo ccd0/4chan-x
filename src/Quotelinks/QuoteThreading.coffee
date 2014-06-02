@@ -53,7 +53,7 @@ QuoteThreading =
     {posts} = g
     return if @isClone or not QuoteThreading.enabled
 
-    Unread.posts.push @ if Conf['Unread Count']
+    Unread.addPost @ if Conf['Unread Count']
     return if @thread.OP is @ or @isHidden # Filtered
 
     keys = []
