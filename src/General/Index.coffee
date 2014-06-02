@@ -82,19 +82,18 @@ Index =
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
 
-    @update() if g.VIEW is 'index'
+    @update()
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
-      if g.VIEW is 'index'
-        board = $ '.board'
-        $.replace board, Index.root
-        # Hacks:
-        # - When removing an element from the document during page load,
-        #   its ancestors will still be correctly created inside of it.
-        # - Creating loadable elements inside of an origin-less document
-        #   will not download them.
-        # - Combine the two and you get a download canceller!
-        #   Does not work on Firefox unfortunately. bugzil.la/939713
-        d.implementation.createDocument(null, null, null).appendChild board
+      board = $ '.board'
+      $.replace board, Index.root
+      # Hacks:
+      # - When removing an element from the document during page load,
+      #   its ancestors will still be correctly created inside of it.
+      # - Creating loadable elements inside of an origin-less document
+      #   will not download them.
+      # - Combine the two and you get a download canceller!
+      #   Does not work on Firefox unfortunately. bugzil.la/939713
+      d.implementation.createDocument(null, null, null).appendChild board
 
       $.rm el for el in $$ '.navLinks'
       $.id('search-box')?.parentNode.remove()
@@ -110,7 +109,7 @@ Index =
       $.rmClass doc, 'index-loading'
 
   scroll: ->
-    return if Index.req or Conf['Index Mode'] isnt 'infinite' or (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
+    return if Index.req or Conf['Index Mode'] isnt 'infinite' or (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight))
     Index.pageNum = Index.getCurrentPage() unless Index.pageNum? # Avoid having to pushState to keep track of the current page
 
     pageNum = Index.pageNum++
