@@ -1,3 +1,8 @@
+**ccd0**
+- Drop support for using JSON to navigate between boards and threads.  This should have no noticeable effect for users except for fixing various posting bugs.
+- Get reply notifications (icon/title changes and desktop alerts) working when quote threading is enabled.
+- Tag field no longer appears in QR when replying to an /f/ thread.
+
 ### v1.7.50 
 *2014-05-30*
 
