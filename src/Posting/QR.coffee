@@ -522,7 +522,7 @@ QR =
     else
       nodes.spoiler.parentElement.hidden = true
 
-    if g.BOARD.ID is 'f'
+    if g.BOARD.ID is 'f' and g.VIEW isnt 'thread'
       nodes.flashTag = $.el 'select',
         name: 'filetag'
         innerHTML: '''
@@ -655,7 +655,7 @@ QR =
 
     post = QR.posts[0]
     post.forceSave()
-    if g.BOARD.ID is 'f'
+    if g.BOARD.ID is 'f' and g.VIEW isnt 'thread'
       filetag = QR.nodes.flashTag.value
     threadID = post.thread
     thread = g.BOARD.threads[threadID]
