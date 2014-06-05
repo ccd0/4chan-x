@@ -25,7 +25,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.29 - 2014-05-29
+* appchan x - Version 2.9.29 - 2014-06-05
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -15573,7 +15573,7 @@
         return;
       }
       swfName = $('.fileText > a');
-      nav = $('.navLinks');
+      nav = $('.navLinks.desktop');
       swfName = swfName.href.replace(/^(.*?)\/f\//g, "");
       sauceLink = $.el('a', {
         textContent: 'Check Sauce on SWFCHAN',

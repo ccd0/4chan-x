@@ -9,7 +9,7 @@ Flash =
     return unless g.VIEW is 'thread'
 
     swfName = $ '.fileText > a'
-    nav     = $ '.navLinks'
+    nav     = $ '.navLinks.desktop'
     swfName = swfName.href.replace /^(.*?)\/f\//g, ""
     sauceLink = $.el 'a',
       textContent: 'Check Sauce on SWFCHAN'
