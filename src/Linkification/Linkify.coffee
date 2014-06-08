@@ -386,10 +386,11 @@ Linkify =
           src: "https://vine.co/#{a.dataset.uid}/card"
     ,
       key: 'YouTube'
-      regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/
+      regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([\w-]{11})[^#\&\?]?(.*)/
       el: (a) ->
+        start = a.dataset.options.match /\b(?:star)?t\=(\w+)/
         el = $.el 'iframe',
-          src: "//www.youtube.com/embed/#{a.dataset.uid}#{if a.dataset.option then '#' + a.dataset.option else ''}?wmode=opaque"
+          src: "//www.youtube.com/embed/#{a.dataset.uid}?wmode=opaque#{if start then '&start=' + start[1] else ''}"
         el.setAttribute "allowfullscreen", "true"
         el
       title:
