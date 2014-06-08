@@ -389,8 +389,12 @@ Linkify =
       regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([\w-]{11})[^#\&\?]?(.*)/
       el: (a) ->
         start = a.dataset.options.match /\b(?:star)?t\=(\w+)/
+        start = start[1] if start
+        if start and !/^\d+$/.test start
+          start += ' 0h0m0s'
+          start = 3600 * start.match(/(\d+)h/)[1] + 60 * start.match(/(\d+)m/)[1] + 1 * start.match(/(\d+)s/)[1]
         el = $.el 'iframe',
-          src: "//www.youtube.com/embed/#{a.dataset.uid}?wmode=opaque#{if start then '&start=' + start[1] else ''}"
+          src: "//www.youtube.com/embed/#{a.dataset.uid}?wmode=opaque#{if start then '&start=' + start else ''}"
         el.setAttribute "allowfullscreen", "true"
         el
       title:
