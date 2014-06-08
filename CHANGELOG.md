@@ -1,3 +1,6 @@
+### v1.7.53 
+*2014-06-08*
+
 **ccd0**
 - Remove name/subject fields from Quick Reply where applicable.
 - Small Youtube/pastebin embedding improvements.
