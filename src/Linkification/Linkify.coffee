@@ -312,7 +312,7 @@ Linkify =
         el
     ,
       key: 'pastebin'
-      regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/
+      regExp: /.*pastebin\.com\/(?!u\/)(?:[\w\.]+\?i\=)?(\w+).*/
       el: (a) ->
         div = $.el 'iframe',
           src: "http://pastebin.com/embed_iframe.php?i=#{a.dataset.uid}"
