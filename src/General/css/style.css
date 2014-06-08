@@ -1271,21 +1271,21 @@ div.boardTitle {
   left: 0;
   right: 0;
   z-index: 30;
-  display: <%= flex %>;
-  <%= flex %>-direction: row;
+  display: flex;
+  flex-direction: row;
   background: rgba(0,0,0,0.7);
 }
 .gal-viewport {
-  display: <%= flex %>;
+  display: flex;
   <%= align %>-items: stretch;
-  <%= flex %>-direction: row;
-  <%= flex %>: 1 1 auto;
+  flex-direction: row;
+  flex: 1 1 auto;
 }
 .gal-thumbnails {
-  <%= flex %>: 0 0 150px;
+  flex: 0 0 150px;
   overflow-y: auto;
-  display: <%= flex %>;
-  <%= flex %>-direction: column;
+  display: flex;
+  flex-direction: column;
   <%= align %>-items: stretch;
   text-align: center;
   background: rgba(0,0,0,.5);
@@ -1301,7 +1301,7 @@ div.boardTitle {
   width: auto;
 }
 .gal-thumb {
-  <%= flex %>: 0 0 auto;
+  flex: 0 0 auto;
   padding: 3px;
   line-height: 0;
   transition: background .2s linear;
@@ -1319,7 +1319,7 @@ div.boardTitle {
 }
 .gal-prev,
 .gal-next {
-  <%= flex %>: 0 0 20px;
+  flex: 0 0 20px;
   position: relative;
   cursor: pointer;
   opacity: 0.7;
@@ -1349,8 +1349,8 @@ div.boardTitle {
 }
 .gal-image {
   order: 1;
-  <%= flex %>: 1 0 auto;
-  display: <%= flex %>;
+  flex: 1 0 auto;
+  display: flex;
   <%= align %>-items: flex-start;
   <%= justify %>: space-around;
   overflow: hidden;
