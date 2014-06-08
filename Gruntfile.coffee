@@ -171,12 +171,10 @@ module.exports = (grunt) ->
     grunt.config 'pkg', pkg
 
     if type is 'crx'
-      pkg.order     = '-webkit-order'
       pkg.align     = '-webkit-align'
       pkg.justify   = '-webkit-justify-content'
       pkg.transform = '-webkit-transform'
     else
-      pkg.order     = 'order'
       pkg.align     = 'align'
       pkg.justify   = 'justify-content'
       pkg.transform = 'transform'
