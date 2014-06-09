@@ -1,3 +1,7 @@
+**ccd0**
+- Remove captcha doubling from report form.
+- Remove any whitespace trimming from captchas.
+
 ### v1.7.53 
 *2014-06-08*
 
