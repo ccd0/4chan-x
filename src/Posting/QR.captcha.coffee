@@ -85,12 +85,10 @@ QR.captcha =
       challenge   = @nodes.img.alt
       if response = @nodes.input.value
         if Conf['Auto-load captcha'] then @reload() else @destroy()
-    if response
-      response = response.trim()
     {challenge, response}
 
   save: ->
-    return unless response = @nodes.input.value.trim()
+    return unless /\S/.test(response = @nodes.input.value)
     @nodes.input.value = ''
     @captchas.push
       challenge: @nodes.img.alt
