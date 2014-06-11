@@ -475,7 +475,6 @@ QR =
     QR.max_duration_video = 120
 
     QR.nodes.name.hidden  = !$ '.postForm input[name=name]:not([type=hidden])'
-    QR.nodes.email.hidden = !$ '.postForm input[name=email]:not([type=hidden])'
     QR.nodes.sub.hidden   = !$ '.postForm input[name=sub]:not([type=hidden])'
 
     QR.spoiler = !!$ '.postForm input[name=spoiler]'
