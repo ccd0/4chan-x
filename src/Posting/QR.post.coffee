@@ -118,6 +118,7 @@ QR.post = class
     for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag']
       continue unless node = QR.nodes[name]
       node.value = @[name] or node.dataset.default or null
+    (if @thread isnt 'new' then $.addClass else $.rmClass) QR.nodes.el, 'reply-to-thread'
     @showFileData()
     QR.characterCount()
 
@@ -129,6 +130,7 @@ QR.post = class
     @[name] = input.value or input.dataset.default or null
     switch name
       when 'thread'
+        (if @thread isnt 'new' then $.addClass else $.rmClass) QR.nodes.el, 'reply-to-thread'
         QR.status()
       when 'com'
         @nodes.span.textContent = @com

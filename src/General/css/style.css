@@ -869,6 +869,9 @@ span.hide-announcement {
   flex: 1;
   width: 0;
 }
+#qr.reply-to-thread input[data-name=sub] {
+  display: none;
+}
 #qr textarea.field {
   height: 14.8em;
   min-height: 9em;

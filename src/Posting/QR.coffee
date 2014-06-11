@@ -424,6 +424,7 @@ QR =
       g.THREADID
     else
       'new'
+    (if g.VIEW is 'thread' then $.addClass else $.rmClass) QR.nodes.el, 'reply-to-thread'
 
   dialog: ->
     QR.nodes = nodes =
@@ -520,7 +521,7 @@ QR =
     $.on nodes.fileInput,  'change', QR.handleFiles
 
     # save selected post's data
-    items = ['name', 'email', 'sub', 'com', 'filename', 'flag']
+    items = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag']
     i = 0
     save = -> QR.selected.save @
     while name = items[i++]
