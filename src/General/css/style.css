@@ -869,6 +869,8 @@ span.hide-announcement {
   flex: 1;
   width: 0;
 }
+#qr.forced-anon input[data-name=name],
+#qr.forced-anon input[data-name=sub],
 #qr.reply-to-thread input[data-name=sub] {
   display: none;
 }

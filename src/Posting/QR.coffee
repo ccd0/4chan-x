@@ -475,8 +475,9 @@ QR =
     QR.max_width_video = QR.max_height_video = 2048
     QR.max_duration_video = 120
 
-    QR.nodes.name.hidden  = !$ '.postForm input[name=name]:not([type=hidden])'
-    QR.nodes.sub.hidden   = !$ '.postForm input[name=sub]:not([type=hidden])'
+    QR.forcedAnon = !!$ '.postForm input[name=name][type=hidden]'
+    if QR.forcedAnon
+      $.addClass QR.nodes.el, 'forced-anon'
 
     QR.spoiler = !!$ '.postForm input[name=spoiler]'
     if QR.spoiler
