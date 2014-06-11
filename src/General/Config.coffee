@@ -319,6 +319,10 @@ Config =
         false
         'Remember the spoiler state, instead of resetting after posting.'
       ]
+      'Show Name and Subject': [
+        false
+        'Always show name and subject fields in the QR even when 4chan doesn\'t use them.'
+      ]
       'Hide Original Post Form': [
         true
         'Hide the normal post form.'

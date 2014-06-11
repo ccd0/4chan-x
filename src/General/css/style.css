@@ -869,9 +869,9 @@ span.hide-announcement {
   flex: 1;
   width: 0;
 }
-#qr.forced-anon input[data-name=name],
-#qr.forced-anon input[data-name=sub],
-#qr.reply-to-thread input[data-name=sub] {
+#qr.forced-anon input[data-name=name]:not(.force-show),
+#qr.forced-anon input[data-name=sub]:not(.force-show),
+#qr.reply-to-thread input[data-name=sub]:not(.force-show) {
   display: none;
 }
 #qr textarea.field {
