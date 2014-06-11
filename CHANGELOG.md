@@ -1,3 +1,6 @@
+### v1.7.55 
+*2014-06-11*
+
 **ccd0**
 - Hide subject field when replying to a thread from the index.
 - Add option `Show Name and Subject` (off by default) to show the name and subject field even if they are not used by 4chan (forced-anon boards and replies to threads).  Material entered in the name or subject field in such cases is not submitted to 4chan.  Enabling this option should allow Name Sync to work.
