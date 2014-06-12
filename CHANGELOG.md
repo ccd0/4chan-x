@@ -1,3 +1,5 @@
+- The QR won't duplicate single-word captchas anymore if you've input numbers only (like a street address).
+
 ### 3.20.13 - *2014-05-09*
 
 - [Security fix](https://github.com/MayhemYDG/4chan-x/issues/1634).
