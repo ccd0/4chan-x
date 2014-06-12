@@ -295,7 +295,7 @@ Index =
       onSameIndex = g.VIEW is 'index' and a.pathname.split('/')[1] is g.BOARD.ID
       needChange = Index.cb.indexNav a, onSameIndex
       # Do nav if this isn't a simple click, or different board.
-      return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or !onSameIndex
+      return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or !onSameIndex or g.BOARD.ID is 'f'
       e.preventDefault()
       Index.update() unless needChange
     indexNav: (a, onSameIndex) ->
