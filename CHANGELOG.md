@@ -1,3 +1,6 @@
+### v1.7.56 
+*2014-06-12*
+
 **ccd0**
 - Chromium now follows Firefox's policy on the download attribute and requires the same workaround for downloading with the original filename.
 https://crbug.com/373182#c24
