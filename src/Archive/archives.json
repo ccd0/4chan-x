@@ -73,7 +73,7 @@
 }, {
   "uid": 10,
   "name": "warosu",
-  "domain": "fuuka.warosu.org",
+  "domain": "warosu.org",
   "http": false,
   "https": true,
   "software": "fuuka",
@@ -98,14 +98,14 @@
   "boards": ["t"],
   "files": ["t"]
 }, {
-  "uid": 17,
-  "name": "installgentoo.com",
-  "domain": "chan.installgentoo.com",
+  "uid": 19,
+  "name": "Deniable Plausibility",
+  "domain": "boards.deniableplausibility.net",
   "http": true,
   "https": false,
   "software": "foolfuuka",
-  "boards": ["g", "t"],
-  "files": ["g", "t"]
+  "boards": ["v", "vg"],
+  "files": ["v", "vg"]
 }, {
   "uid": 13,
   "name": "Foolz Beta",
@@ -116,13 +116,4 @@
   "software": "foolfuuka",
   "boards": ["a", "biz", "co", "d", "diy", "gd", "h", "i", "jp", "m", "mlp", "s4s", "sci", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
   "files": []
-}, {
-  "uid": 19,
-  "name": "Deniable Plausibility",
-  "domain": "boards.deniableplausibility.net",
-  "http": true,
-  "https": false,
-  "software": "foolfuuka",
-  "boards": ["v", "vg"],
-  "files": ["v", "vg"]
 }]
