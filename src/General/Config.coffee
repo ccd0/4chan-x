@@ -30,7 +30,7 @@ Config =
       'Report Link':                  [true,  'Add a report link to the menu.']
       'Post Hiding Link':             [true,  'Add a link to hide threads and replies.']
       'Delete Link':                  [true,  'Add post and image deletion links to the menu.']
-      <% if (type === 'crx') { %>
+      <% if (false) { %>
       'Download Link':                [true,  'Add a download with original filename link to the menu.']
       <% } %>
       'Archive Link':                 [true,  'Add an archive link to the menu.']

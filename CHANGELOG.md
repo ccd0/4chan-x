@@ -1,4 +1,5 @@
 - The QR won't duplicate single-word captchas anymore if you've input numbers only (like a street address).
+- Removed the `Download Link` feature on Chrome/Opera as it is not working as intended anymore.
 
 ### 3.20.13 - *2014-05-09*
 
