@@ -7,12 +7,16 @@ https://github.com/Nebukazar/OneeChan
 
 ## [Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) (Firefox)
 Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then click the link above to install.
+
 ## [Install](https://ccd0.github.io/4chan-x/builds/crx.crx) (Chromium)
 Download the file from the link above and add drag it to your `chrome://extensions` page.
 This should also work for non-Windows/dev/canary Chrome and Chromium-based versions of Opera.
-**Note**: The stable and beta releases of Chrome on Windows will disable extensions not installed from the store, so you will need to install from [here](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam).
+
+**Note**: The stable and beta releases of Chrome on Windows will disable extensions not installed from the Chrome store, so users will need to install 4chan X from [here](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam).
+
 ## Other browsers
 This fork of 4chan X is not guaranteed to work correctly in other browsers, but you are welcome to try your luck. Pull requests to fix the bugs you will likely find are always welcome.
+
 ### dwb
 1. Install dwb with your package manager
 2. Install the dwb userscripts extension with `dwbem -N -i userscripts` in your terminal.
