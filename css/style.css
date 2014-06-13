@@ -396,16 +396,16 @@ body > .desktop:not(hr):not(.navLinks):not(#boardNavDesktop):not(#boardNavDeskto
   text-decoration: none;
 }
 .catalog-mode .board {
-  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 .catalog-thread {
   display: inline-flex;
-  text-align: left;
   flex-direction: column;
   align-items: center;
   margin: 0 2px 5px;
   word-break: break-word;
-  vertical-align: top;
 }
 .catalog-small .catalog-thread {
   width: 165px;
