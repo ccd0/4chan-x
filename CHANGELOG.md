@@ -1,3 +1,6 @@
+**hotdogman, MayhemYDG**:
+- Update archive list.
+
 ### v1.7.56 
 *2014-06-12*
 
