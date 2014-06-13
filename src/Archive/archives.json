@@ -123,6 +123,6 @@
   "http": true,
   "https": false,
   "software": "foolfuuka",
-  "boards": ["v", "vg", "g"],
-  "files": ["v", "vg", "g"]
+  "boards": ["v", "vg"],
+  "files": ["v", "vg"]
 }]
