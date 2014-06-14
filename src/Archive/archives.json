@@ -5,8 +5,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["a", "biz", "co", "diy", "gd", "jp", "m", "sci", "sp", "tg", "tv", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "biz", "diy", "gd", "jp", "m", "sci", "tg", "vg", "vp", "vr", "wsg"]
+  "boards": ["a", "biz", "c", "co", "diy", "gd", "int", "jp", "m", "out", "po", "sci", "sp", "tg", "tv", "vg", "vp", "vr", "wsg"],
+  "files": ["a", "biz", "c", "co", "diy", "gd", "jp", "m", "po", "sci", "tg", "vg", "vp", "vr", "wsg"]
 }, {
   "uid": 1,
   "name": "NSFW Foolz",
@@ -16,15 +16,6 @@
   "software": "foolfuuka",
   "boards": ["u"],
   "files": ["u"]
-}, {
-  "uid": 2,
-  "name": "The Dark Cave",
-  "domain": "archive.thedarkcave.org",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["c", "int", "out", "po"],
-  "files": ["c", "po"]
 }, {
   "uid": 3,
   "name": "4plebs Archive",
@@ -114,6 +105,6 @@
   "https": true,
   "withCredentials": true,
   "software": "foolfuuka",
-  "boards": ["a", "biz", "co", "d", "diy", "gd", "h", "i", "jp", "m", "mlp", "s4s", "sci", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
-  "files": []
+  "boards": ["a", "biz", "c", "co", "d", "diy", "gd", "h", "i", "int", "jp", "m", "mlp", "out", "po", "s4s", "sci", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
+  "files": ["a", "biz", "c", "co", "d", "diy", "gd","jp", "m", "po", "s4s", "sci", "tg", "u", "vg", "vp", "vr", "wsg"]
 }]
