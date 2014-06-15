@@ -5,8 +5,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["a", "biz", "co", "diy", "gd", "jp", "m", "sci", "sp", "tg", "tv", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "biz", "diy", "gd", "jp", "m", "sci", "tg", "vg", "vp", "vr", "wsg"]
+  "boards": ["a", "biz", "c", "co", "diy", "gd", "int", "jp", "m", "out", "po", "sci", "sp", "tg", "tv", "vg", "vp", "vr", "wsg"],
+  "files": ["a", "biz", "c", "co", "diy", "gd", "jp", "m", "po", "sci", "tg", "vg", "vp", "vr", "wsg"]
 }, {
   "uid": 1,
   "name": "NSFW Foolz",
@@ -17,32 +17,14 @@
   "boards": ["u"],
   "files": ["u"]
 }, {
-  "uid": 2,
-  "name": "The Dark Cave",
-  "domain": "archive.thedarkcave.org",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["c", "int", "out", "po"],
-  "files": ["c", "po"]
-}, {
   "uid": 3,
   "name": "4plebs Archive",
   "domain": "archive.4plebs.org",
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["adv", "hr", "o", "pol", "s4s", "tg", "trv", "tv", "x"],
-  "files": ["adv", "hr", "o", "pol", "s4s", "tg", "trv", "tv", "x"]
-}, {
-  "uid": 18,
-  "name": "4plebs Flash Archive",
-  "domain": "flash.4plebs.org",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["f"],
-  "files": ["f"]
+  "boards": ["adv", "f", "hr", "o", "pol", "s4s", "tg", "trv", "tv", "x"],
+  "files": ["adv", "f", "hr", "o", "pol", "s4s", "tg", "trv", "tv", "x"]
 }, {
   "uid": 4,
   "name": "Nyafuu",
@@ -82,7 +64,7 @@
 }, {
   "uid": 10,
   "name": "warosu",
-  "domain": "fuuka.warosu.org",
+  "domain": "warosu.org",
   "http": false,
   "https": true,
   "software": "fuuka",
@@ -91,7 +73,7 @@
 }, {
   "uid": 15,
   "name": "fgts",
-  "domain": "fgts.eu",
+  "domain": "fgts.jp",
   "http": true,
   "https": true,
   "software": "foolfuuka",
@@ -107,24 +89,6 @@
   "boards": ["t"],
   "files": ["t"]
 }, {
-  "uid": 17,
-  "name": "installgentoo.com",
-  "domain": "chan.installgentoo.com",
-  "http": true,
-  "https": false,
-  "software": "foolfuuka",
-  "boards": ["g", "t"],
-  "files": ["g", "t"]
-}, {
-  "uid": 19,
-  "name": "Innovandalism Archive",
-  "domain": "boards.innovandalism.eu",
-  "http": true,
-  "https": false,
-  "software": "foolfuuka",
-  "boards": ["v"],
-  "files": []
-}, {
   "uid": 13,
   "name": "Foolz Beta",
   "domain": "beta.foolz.us",
@@ -132,15 +96,15 @@
   "https": true,
   "withCredentials": true,
   "software": "foolfuuka",
-  "boards": ["a", "biz", "co", "d", "diy", "gd", "jp", "m", "s4s", "sci", "sp", "tg", "tv", "u", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "biz", "d", "diy", "gd", "jp", "m", "s4s", "sci", "tg", "u", "vg", "vp", "vr", "wsg"]
+  "boards": ["a", "biz", "c", "co", "d", "diy", "gd", "int", "jp", "m", "out", "po", "s4s", "sci", "sp", "tg", "tv", "u", "vg", "vp", "vr", "wsg"],
+  "files": ["a", "biz", "c", "co", "d", "diy", "gd", "jp", "m", "po", "s4s", "sci", "tg", "u", "vg", "vp", "vr", "wsg"]
 }, {
   "uid": 19,
-  "name": "Innovandalism Archive",
-  "domain": "boards.innovandalism.eu",
+  "name": "Deniable Plausibility",
+  "domain": "boards.deniableplausibility.net",
   "http": true,
   "https": false,
   "software": "foolfuuka",
-  "boards": ["v"],
-  "files": []
+  "boards": ["v", "vg"],
+  "files": ["v", "vg"]
 }]
