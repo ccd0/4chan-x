@@ -47,10 +47,10 @@ $.ajax = do ->
   # This saves a lot of bandwidth and CPU time for both the users and the servers.
   lastModified = {}
   (url, options, extra={}) ->
-    {type, whenModified, upCallbacks, form, sync} = extra
+    {type, whenModified, upCallbacks, form} = extra
     r = new XMLHttpRequest()
     type or= form and 'post' or 'get'
-    r.open type, url, !sync
+    r.open type, url, true
     if whenModified
       r.setRequestHeader 'If-Modified-Since', lastModified[url] if url of lastModified
       $.on r, 'load', -> lastModified[url] = r.getResponseHeader 'Last-Modified'
