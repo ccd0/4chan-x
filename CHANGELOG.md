@@ -1,3 +1,6 @@
+### v1.7.58 
+*2014-06-14*
+
 **woxxy**
 - Archive list update: merge Dark Cave into Foolz, enable images in /co/.
 
