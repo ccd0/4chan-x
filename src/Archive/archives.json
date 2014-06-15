@@ -106,5 +106,5 @@
   "withCredentials": true,
   "software": "foolfuuka",
   "boards": ["a", "biz", "c", "co", "d", "diy", "gd", "h", "i", "int", "jp", "m", "mlp", "out", "po", "s4s", "sci", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "biz", "c", "co", "d", "diy", "gd","jp", "m", "po", "s4s", "sci", "tg", "u", "vg", "vp", "vr", "wsg"]
+  "files": ["a", "biz", "c", "co", "diy", "gd", "h", "i", "jp", "m", "po", "sci", "tg", "u", "vg", "vp", "vr", "wsg"]
 }]
