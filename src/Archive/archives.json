@@ -97,7 +97,7 @@
   "withCredentials": true,
   "software": "foolfuuka",
   "boards": ["a", "biz", "c", "co", "d", "diy", "gd", "int", "jp", "m", "out", "po", "s4s", "sci", "sp", "tg", "tv", "u", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "biz", "c", "co", "d", "diy", "gd","jp", "m", "po", "s4s", "sci", "tg", "u", "vg", "vp", "vr", "wsg"]
+  "files": ["a", "biz", "c", "co", "d", "diy", "gd", "jp", "m", "po", "s4s", "sci", "tg", "u", "vg", "vp", "vr", "wsg"]
 }, {
   "uid": 19,
   "name": "Deniable Plausibility",
