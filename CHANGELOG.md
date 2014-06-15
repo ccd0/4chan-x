@@ -1,3 +1,7 @@
+**ccd0**
+- Update archive list for Foolz Beta.
+- Fix some hiding/filtering bugs.
+
 ### v1.7.59 
 *2014-06-14*
 
