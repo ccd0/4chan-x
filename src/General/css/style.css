@@ -780,6 +780,9 @@ span.hide-announcement {
 .stub input {
   display: inline-block;
 }
+.thread[hidden] + hr {
+  display: none;
+}
 
 /* QR */
 :root.hide-original-post-form #postForm,

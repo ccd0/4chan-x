@@ -197,7 +197,7 @@ ThreadHiding =
     threadRoot = thread.OP.nodes.root.parentNode
     thread.isHidden = true
 
-    return threadRoot.hidden = threadRoot.nextElementSibling.hidden = true unless makeStub # <hr>
+    return threadRoot.hidden = true unless makeStub
 
     ThreadHiding.makeStub thread, threadRoot
 

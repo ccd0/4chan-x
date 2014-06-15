@@ -332,7 +332,7 @@ Index =
           error: err
     Main.handleErrors errors if errors
 
-    # Add the threads and <hr>s in a container to make sure all features work.
+    # Add the threads in a container to make sure all features work.
     $.nodes Index.nodes
     Main.callbackNodes Thread, threads
     Main.callbackNodes Post,   posts
@@ -443,7 +443,6 @@ Index =
     $.add result, [node, $.el 'hr'] while node = nodes[i++]
     $.event 'IndexBuild', result.children
     $.add Index.root, result
-    $.rm hr for hr in $$ 'hr + hr', Index.root # Temp fix until I figure out where I fucked up
 
   isSearching: false
 
