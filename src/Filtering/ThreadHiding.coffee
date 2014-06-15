@@ -19,9 +19,7 @@ ThreadHiding =
     for root, i in nodes by 2
       thread = Get.threadFromRoot root
       continue unless thread.isHidden
-      unless thread.stub
-        nodes[i + 1].hidden = true
-      else unless root.contains thread.stub
+      if thread.stub and root.contains thread.stub
         # When we come back to a page, the stub is already there.
         ThreadHiding.makeStub thread, root
     return
@@ -206,5 +204,4 @@ ThreadHiding =
       $.rm thread.stub
       delete thread.stub
     threadRoot = thread.OP.nodes.root.parentNode
-    threadRoot.nextElementSibling.hidden =
-      threadRoot.hidden = thread.isHidden = false
+    threadRoot.hidden = thread.isHidden = false
