@@ -29,7 +29,10 @@ class RandomAccessList
     root.prev = item
     item.next = root
     item.prev = prev
-    prev.next = item if prev
+    if prev
+      prev.next = item
+    else
+      @first = item
 
   after: (root, item) ->
     return if item.prev is root
@@ -40,14 +43,20 @@ class RandomAccessList
     root.next = item
     item.prev = root
     item.next = next
-    next.prev = item if next
+    if next
+      next.prev = item
+    else
+      @last = item
 
   prepend: (item) ->
     {first} = @
     return if item is first or not @[item.ID]
     @rmi item
     item.next  = first
-    first.prev = item
+    if first
+      first.prev = item
+    else
+      @last = item
     @first = item
     delete item.prev
 

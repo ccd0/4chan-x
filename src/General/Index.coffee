@@ -401,19 +401,16 @@ Index =
     return
 
   sortOnTop: (match) ->
-    offset = 0
     {sortedNodes} = Index
-    threadRoot = sortedNodes.first
+    threadRoot = target = sortedNodes.first
     while threadRoot
+      {next} = threadRoot
       if match Get.threadFromRoot threadRoot.data
-        target = sortedNodes.first
-        j = 0
-        while j++ < offset
+        if threadRoot is target
           target = target.next
-        unless threadRoot is target
-          offset++
+        else
           sortedNodes.before target, threadRoot
-      threadRoot = threadRoot.next
+      threadRoot = next
     return
 
   buildIndex: ->
