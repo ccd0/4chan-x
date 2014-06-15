@@ -1,3 +1,6 @@
+### v1.7.59 
+*2014-06-14*
+
 **ccd0**
 - Fix some bugs that were causing threads to disappear.
 
