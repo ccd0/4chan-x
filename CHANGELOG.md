@@ -1,3 +1,6 @@
+**ccd0**
+- Fix errors due to <font> tag in file info on /s4s/.
+
 ### v1.7.61 
 *2014-06-15*
 

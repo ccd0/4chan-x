@@ -132,11 +132,10 @@ class Post
       "#{location.protocol}//t.4cdn.org/#{@board}/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
     @file.isImage = /(jpg|png|gif)$/i.test @file.URL
     @file.isVideo = /webm$/i.test @file.URL
+    nameNode = $ 'a', fileText
     if @file.isImage or @file.isVideo
-      @file.dimensions = fileText.childNodes[2].textContent.match(/\d+x\d+/)?[0]
-    @file.name = fileText.title or do ->
-      nameNode = $('span', fileText) or $('a', fileText)
-      nameNode?.title or nameNode?.textContent
+      @file.dimensions = nameNode.nextSibling.textContent.match(/\d+x\d+/)[0]
+    @file.name = fileText.title or nameNode.title or nameNode.textContent
 
   cleanup: (root) ->
     for node in $$ '.mobile', root
