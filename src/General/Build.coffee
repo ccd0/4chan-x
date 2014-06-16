@@ -145,7 +145,6 @@ Build =
       fileSize  = $.bytesToString file.size
       fileThumb = file.turl
       if file.isSpoiler
-        fileSize = "Spoiler Image, #{fileSize}"
         unless isArchived
           fileThumb = "#{h_staticPath}spoiler"
           if spoilerRange = Build.spoilerRange[boardID]
@@ -153,7 +152,9 @@ Build =
             fileThumb += "-#{boardID}" + Math.floor 1 + spoilerRange * Math.random()
           fileThumb += '.png'
           file.twidth = file.theight = 100
-      shortFilename = Build.shortFilename file.name
+        shortFilename = 'Spoiler Image'
+      else
+        shortFilename = Build.shortFilename file.name
 
       if boardID is 'f'
         h_imgSrc = ''
@@ -166,14 +167,17 @@ Build =
         h_fileDims = 'PDF'
       else
         h_fileDims = "#{+file.width}x#{+file.height}"
-      h_fileInfo    = "<div class='fileText' id='fT#{+postID}'"
+
+      h_fileTitle1 = ''
+      h_fileTitle2 = ''
       if file.isSpoiler
-        h_fileInfo +=     " title='#{E file.name}'"
-      h_fileInfo   +=   ">File: <a href='#{E file.url}' target='_blank'>#{E file.timestamp}</a>"
-      h_fileInfo   +=   "-(#{E fileSize}, #{h_fileDims}"
-      unless file.isSpoiler
-        h_fileInfo +=   ", <span#{if file.name isnt shortFilename then " title='#{E file.name}'" else ''}>#{E shortFilename}</span>"
-      h_fileInfo   +=   ')</div>'
+        h_fileTitle1 = " title='#{E file.name}'"
+      else if file.name isnt shortFilename
+        h_fileTitle2 = " title='#{E file.name}'"
+
+      h_fileInfo  = "<div class='fileText' id='fT#{+postID}' #{h_fileTitle1}>"
+      h_fileInfo +=   "File: <a #{h_fileTitle2} href='#{E file.url}' target='_blank'>#{E shortFilename}</a> (#{E fileSize}, #{h_fileDims})"
+      h_fileInfo += '</div>'
 
       h_file = "<div class='file' id='f#{+postID}'>#{h_fileInfo}#{h_imgSrc}</div>"
     else
