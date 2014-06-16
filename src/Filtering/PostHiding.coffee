@@ -11,7 +11,7 @@ PostHiding =
       cb:   @node
 
   node: ->
-    return if !@isReply or @isClone or !@nodes.root.parentNode
+    return if !@isReply or @isClone or @isFetchedQuote
     if data = PostHiding.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
       if data.thisPost
         PostHiding.hide @, data.makeStub, data.hideRecursively

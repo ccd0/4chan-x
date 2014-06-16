@@ -8,7 +8,7 @@ Recursive =
       cb:   @node
 
   node: ->
-    return if @isClone or !@nodes.root.parentNode
+    return if @isClone or @isFetchedQuote
     for quote in @quotes
       if obj = Recursive.recursives[quote]
         for recursive, i in obj.recursives

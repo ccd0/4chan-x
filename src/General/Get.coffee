@@ -143,6 +143,7 @@ Get =
     thread = g.threads["#{boardID}.#{threadID}"] or
       new Thread threadID, board
     post = new Post Build.postFromObject(post, boardID), thread, board
+    post.isFetchedQuote = true
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
   archivedPost: (req, boardID, postID, root, context) ->
@@ -215,6 +216,7 @@ Get =
     thread = g.threads["#{boardID}.#{threadID}"] or
       new Thread threadID, board
     post = new Post Build.post(o, true), thread, board, {isArchived: true}
+    post.isFetchedQuote = true
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
   parseMarkup: (text) ->

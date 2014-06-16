@@ -91,7 +91,7 @@ Filter =
       settings
 
   node: ->
-    return if @isClone or !@nodes.root.parentNode
+    return if @isClone or @isFetchedQuote
     for key of Filter.filters
       value = Filter[key] @
       # Continue if there's nothing to filter (no tripcode for example).
