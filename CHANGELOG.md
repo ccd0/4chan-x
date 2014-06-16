@@ -1,3 +1,6 @@
+### v1.7.61 
+*2014-06-15*
+
 **ccd0**
 - Fix new hiding/filtering bug from previous release.
 
