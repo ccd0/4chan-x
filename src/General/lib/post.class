@@ -3,6 +3,10 @@ class Post
   toString: -> @ID
 
   constructor: (root, @thread, @board, that={}) ->
+    root2 = root.cloneNode true
+    $.rm el for el in $$ '.mobile', root2
+    @originalHTML = root2.outerHTML
+
     @ID     = +root.id[2..]
     @fullID = "#{@board}.#{@ID}"
 

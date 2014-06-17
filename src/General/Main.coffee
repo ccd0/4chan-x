@@ -345,6 +345,7 @@ Main =
     ['Keybinds',                  Keybinds]
     ['Show Dice Roll',            Dice]
     ['Banner',                    Banner]
+    ['Build Test',                BuildTest]
   ]
 
 Main.init()

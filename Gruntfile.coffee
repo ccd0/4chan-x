@@ -28,6 +28,7 @@ module.exports = (grunt) ->
           'src/General/UI.coffee'
           'src/General/Notice.coffee'
           'src/General/CrossOrigin.coffee'
+          'src/General/BuildTest.coffee'
           'src/Filtering/**/*.coffee'
           'src/Quotelinks/**/*.coffee'
           'src/Posting/QR.coffee'
