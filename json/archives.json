@@ -47,7 +47,7 @@
   "uid": 8,
   "name": "Rebecca Black Tech",
   "domain": "archive.rebeccablacktech.com",
-  "http": true,
+  "http": false,
   "https": true,
   "software": "fuuka",
   "boards": ["cgl", "g", "mu", "w"],
