@@ -25,18 +25,24 @@ BuildTest =
         if postData.no is post.ID
           root = Build.postFromObject postData, post.board.ID
           post2 = new Post root, post.thread, post.board
-          if post.normalizedHTML is post2.normalizedHTML
+          if post.normalizedOriginal.isEqualNode post2.normalizedOriginal
             c.log "#{post.fullID} correct"
           else
             c.log "#{post.fullID} differs"
-            i = 0
-            while i < post.normalizedHTML.length and i < post2.normalizedHTML.length
-              break unless post.normalizedHTML[i] is post2.normalizedHTML[i]
-              i++
-            c.log post.normalizedHTML[i..i+80]
-            c.log post2.normalizedHTML[i..i+80]
-            c.log post.normalizedHTML
-            c.log post2.normalizedHTML
+            html = post.normalizedOriginal.innerHTML
+            html2 = post2.normalizedOriginal.innerHTML
+            if html is html2
+              c.log post.normalizedOriginal.outerHTML
+              c.log post2.normalizedOriginal.outerHTML
+            else
+              i = 0
+              while i < html.length and i < html2.length
+                break unless html[i] is html2[i]
+                i++
+              c.log html[i..i+80]
+              c.log html2[i..i+80]
+              c.log html
+              c.log html2
           post2.isFetchedQuote = true
           Main.callbackNodes Post, [post2]
 
@@ -45,5 +51,5 @@ BuildTest =
 
   testAll: ->
     g.posts.forEach (post) ->
-      unless post.isClone or post.isFetchedQuote
+      unless post.isClone or post.isFetchedQuote or $ '.abbr', post.nodes.comment
         BuildTest.runTest post

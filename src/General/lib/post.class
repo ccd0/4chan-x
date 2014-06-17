@@ -10,9 +10,11 @@ class Post
       href = el.href
       href = href.replace /(^\w+:\/\/boards.4chan.org\/[^\/]+\/thread\/\d+)\/.*/, '$1'
       el.setAttribute 'href', href
+    for el in $$ 'a[rel=canonical]', root2
+      el.removeAttribute 'rel'
     for el in $$ 'img[src]', root2
       el.src = el.src.replace /^(\w+:\/\/)[0-2](\.t\.4cdn\.org\/)/, '$10$2'
-    @normalizedHTML = root2.outerHTML
+    @normalizedOriginal = root2
 
     @ID     = +root.id[2..]
     @fullID = "#{@board}.#{@ID}"
