@@ -11,9 +11,8 @@ Build =
       {'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>'}[c]
   shortFilename: (filename, isReply) ->
     # FILENAME SHORTENING SCIENCE:
-    # OPs have a +10 characters threshold.
     # The file extension is not taken into account.
-    threshold = if isReply then 30 else 40
+    threshold = 30
     ext = filename.match(/\.?[^\.]*$/)[0]
     if filename.length - ext.length > threshold
       "#{filename[...threshold - 5]}(...)#{ext}"
@@ -100,7 +99,8 @@ Build =
       h_tripcode = ''
 
     if email
-      h_emailStart = "<a href='mailto:#{E encodeURIComponent(email)}' class='useremail'>"
+      emailProcessed = encodeURIComponent(email).replace(/%40/g, '@')
+      h_emailStart = "<a href='mailto:#{E emailProcessed}' class='useremail'>"
       h_emailEnd   = '</a>'
     else
       h_emailStart = ''
@@ -110,19 +110,24 @@ Build =
       when 'admin', 'admin_highlight'
         h_capcodeClass = ' capcodeAdmin'
         h_capcodeStart = ' <strong class="capcode hand id_admin" title="Highlight posts by the Administrator">## Admin</strong>'
-        h_capcodeIcon  = " <img src='#{h_staticPath}adminicon#{h_gifIcon}' title='This user is the 4chan Administrator.' class='identityIcon'>"
+        h_capcodeIcon  = "<img src='#{h_staticPath}adminicon#{h_gifIcon}' alt='Admin Icon' title='This user is the 4chan Administrator.' class='identityIcon retina'>"
       when 'mod'
         h_capcodeClass = ' capcodeMod'
         h_capcodeStart = ' <strong class="capcode hand id_mod" title="Highlight posts by Moderators">## Mod</strong>'
-        h_capcodeIcon  = " <img src='#{h_staticPath}modicon#{h_gifIcon}' title='This user is a 4chan Moderator.' class='identityIcon'>"
+        h_capcodeIcon  = "<img src='#{h_staticPath}modicon#{h_gifIcon}' alt='Mod Icon' title='This user is a 4chan Moderator.' class='identityIcon retina'>"
       when 'developer'
         h_capcodeClass = ' capcodeDeveloper'
         h_capcodeStart = ' <strong class="capcode hand id_developer" title="Highlight posts by Developers">## Developer</strong>'
-        h_capcodeIcon  = " <img src='#{h_staticPath}developericon#{h_gifIcon}' title='This user is a 4chan Developer.' class='identityIcon'>"
+        h_capcodeIcon  = "<img src='#{h_staticPath}developericon#{h_gifIcon}' alt='Developer Icon' title='This user is a 4chan Developer.' class='identityIcon retina'>"
       else
         h_capcodeClass = ''
         h_capcodeStart = ''
         h_capcodeIcon  = ''
+
+    if capcode
+      h_nameClass = ' capcode'
+    else
+      h_nameClass = ''
 
     if !capcode and uniqueID
       h_userID = " <span class='posteruid id_#{E uniqueID}'>(ID: <span class='hand' title='Highlight posts by this ID'>#{E uniqueID}</span>)</span> "
@@ -132,9 +137,9 @@ Build =
     unless flagCode
       h_flag = ''
     else if boardID is 'pol'
-      h_flag = " <img src='#{h_staticPath}country/troll/#{E flagCode.toLowerCase()}.gif' alt='#{E flagCode}' title='#{E flagName}' class='countryFlag'>"
+      h_flag = "<img src='#{h_staticPath}country/troll/#{E flagCode.toLowerCase()}.gif' alt='#{E flagCode}' title='#{E flagName}' class='countryFlag'>"
     else
-      h_flag = " <span title='#{E flagName}' class='flag flag-#{E flagCode.toLowerCase()}'></span>"
+      h_flag = "<span title='#{E flagName}' class='flag flag-#{E flagCode.toLowerCase()}'></span>"
 
     if file?.isDeleted
       if isOP
@@ -158,7 +163,7 @@ Build =
           file.twidth = file.theight = 100
         shortFilename = 'Spoiler Image'
       else
-        shortFilename = Build.shortFilename file.name
+        shortFilename = Build.shortFilename file.name, !isOP
 
       if boardID is 'f'
         h_imgSrc = ''
@@ -195,12 +200,12 @@ Build =
       quoteLink = "/#{boardID}/thread/#{threadID}\#q#{postID}"
 
     if isSticky
-      h_sticky = " <img src='#{h_staticPath}sticky#{h_gifIcon}' alt='Sticky' title='Sticky' class='stickyIcon'>"
+      h_sticky = " <img src='#{h_staticPath}sticky#{h_gifIcon}' alt='Sticky' title='Sticky' class='stickyIcon retina'>"
     else
       h_sticky = ''
 
     if isClosed
-      h_closed = " <img src='#{h_staticPath}closed#{h_gifIcon}' alt='Closed' title='Closed' class='closedIcon'>"
+      h_closed = " <img src='#{h_staticPath}closed#{h_gifIcon}' alt='Closed' title='Closed' class='closedIcon retina'>"
     else
       h_closed = ''
 
