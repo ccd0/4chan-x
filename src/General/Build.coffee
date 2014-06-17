@@ -23,6 +23,11 @@ Build =
     -> n = (n + 1) % 3
   sameThread: (boardID, threadID) ->
     g.VIEW is 'thread' and g.BOARD.ID is boardID and g.THREADID is +threadID
+  postURL: (boardID, threadID, postID) ->
+    if Build.sameThread boardID, threadID
+      "\#p#{postID}"
+    else
+      "/#{boardID}/thread/#{threadID}\#p#{postID}"
   postFromObject: (data, boardID) ->
     o =
       # id
@@ -192,12 +197,11 @@ Build =
     else
       h_file = ''
 
-    if Build.sameThread boardID, threadID
-      postLink  = "\#p#{postID}"
-      quoteLink = "javascript:quote('#{postID}');"
+    postLink = Build.postURL boardID, threadID, postID
+    quoteLink = if Build.sameThread boardID, threadID
+      "javascript:quote('#{postID}');"
     else
-      postLink  = "/#{boardID}/thread/#{threadID}\#p#{postID}"
-      quoteLink = "/#{boardID}/thread/#{threadID}\#q#{postID}"
+      "/#{boardID}/thread/#{threadID}\#q#{postID}"
 
     if isSticky
       h_sticky = " <img src='#{h_staticPath}sticky#{h_gifIcon}' alt='Sticky' title='Sticky' class='stickyIcon retina'>"
