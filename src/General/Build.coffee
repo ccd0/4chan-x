@@ -22,6 +22,8 @@ Build =
   thumbRotate: do ->
     n = 0
     -> n = (n + 1) % 3
+  sameThread: (boardID, threadID) ->
+    g.VIEW is 'thread' and g.BOARD.ID is boardID and g.THREADID is +threadID
   postFromObject: (data, boardID) ->
     o =
       # id
@@ -85,8 +87,10 @@ Build =
 
     if isOP
       h_sideArrows = ''
+      h_subject = "<span class='subject'>#{E subject}</span> "
     else
       h_sideArrows = "<div class='sideArrows' id='sa#{+postID}'>&gt;&gt;</div>"
+      h_subject = ''
 
     h_postClass = "post #{if isOP then 'op' else 'reply'}#{if capcode is 'admin_highlight' then ' highlightPost' else ''}"
 
@@ -183,15 +187,18 @@ Build =
     else
       h_file = ''
 
-    if g.VIEW is 'thread' and g.THREADID is +threadID
-      h_quoteLink = "javascript:quote(#{+postID})"
+    if Build.sameThread boardID, threadID
+      postLink  = "\#p#{postID}"
+      quoteLink = "javascript:quote('#{postID}');"
     else
-      h_quoteLink = "/#{E boardID}/thread/#{+threadID}\#q#{+postID}"
+      postLink  = "/#{boardID}/thread/#{threadID}\#p#{postID}"
+      quoteLink = "/#{boardID}/thread/#{threadID}\#q#{postID}"
 
     if isSticky
       h_sticky = " <img src='#{h_staticPath}sticky#{h_gifIcon}' alt='Sticky' title='Sticky' class='stickyIcon'>"
     else
       h_sticky = ''
+
     if isClosed
       h_closed = " <img src='#{h_staticPath}closed#{h_gifIcon}' alt='Closed' title='Closed' class='closedIcon'>"
     else
@@ -209,18 +216,17 @@ Build =
       h_replyLink = ''
 
     container = $.el 'div',
-      id: "pc#{postID}"
       className: "postContainer #{if isOP then 'op' else 'reply'}Container"
-      innerHTML: <%= grunt.file.read('src/General/html/Build/post.html').replace(/>\s+/g, '>').replace(/\s+</g, '<').replace(/\s+/g, ' ').trim() %>
+      id: "pc#{postID}"
+      innerHTML: <%= grunt.file.read('src/General/html/Build/post.html').replace(/\r?\n\s*/g, '') %>
 
     # Fix pathnames
     for quote in $$ '.quotelink', container
       href = quote.getAttribute 'href'
-      continue if href[0] is '/' # Cross-board quote, or board link
-      if href[0] is '#'
-        quote.href = "/#{boardID}/thread/#{threadID}#{href}"
-      else
-        quote.href = "/#{boardID}/thread/#{href}"
+      if (href[0] is '#') and !(Build.sameThread boardID, threadID)
+        quote.href = "/#{boardID}/thread/#{threadID}" + href
+      else if (match = href.match /^\/([^\/]+)\/thread\/(\d+)/) and (Build.sameThread match[1], match[2])
+        quote.href = href.match(/(#[^#]*)?$/)[0] or '#'
 
     container
 
