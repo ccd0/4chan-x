@@ -4,8 +4,15 @@ class Post
 
   constructor: (root, @thread, @board, that={}) ->
     root2 = root.cloneNode true
-    $.rm el for el in $$ '.mobile', root2
-    @originalHTML = root2.outerHTML
+    for el in $$ '.mobile', root2
+      $.rm el
+    for el in $$ 'a[href]', root2
+      href = el.href
+      href = href.replace /(^\w+:\/\/boards.4chan.org\/[^\/]+\/thread\/\d+)\/.*/, '$1'
+      el.setAttribute 'href', href
+    for el in $$ 'img[src]', root2
+      el.src = el.src.replace /^(\w+:\/\/)[0-2](\.t\.4cdn\.org\/)/, '$10$2'
+    @normalizedHTML = root2.outerHTML
 
     @ID     = +root.id[2..]
     @fullID = "#{@board}.#{@ID}"
