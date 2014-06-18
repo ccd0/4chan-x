@@ -793,7 +793,7 @@ QR =
 
     # Post/upload confirmed as successful.
     $.event 'QRPostSuccessful', {
-      board: g.BOARD
+      board: {ID: g.BOARD.ID}
       threadID
       postID
     }

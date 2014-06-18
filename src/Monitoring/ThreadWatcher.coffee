@@ -92,7 +92,7 @@ ThreadWatcher =
         if Conf['Auto Watch']
           $.set 'AutoWatch', threadID
       else if Conf['Auto Watch Reply']
-        ThreadWatcher.add board.threads[threadID]
+        ThreadWatcher.add g.boards[board.ID].threads[threadID]
     onIndexRefresh: ->
       {db}    = ThreadWatcher
       boardID = g.BOARD.ID
