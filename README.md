@@ -3,8 +3,6 @@ Fork of [Spittie's 4chan X](https://github.com/Spittie/4chan-x) (itself a fork o
 Note: If you're looking for a maintained fork of OneeChan, try
 https://github.com/Nebukazar/OneeChan
 
-#### [Why 4chan X needs to access data on every site?](https://github.com/ccd0/4chan-x/wiki/Why-4chan-X-needs-to-access-data-from-every-website%3F)
-
 ## 4chan X v1.8.0
 4chan X v1.8.0 is available but has not yet been pushed via automatic updates.
 This version should be compabile with the recently released Greasemonkey 2.0.
@@ -32,6 +30,8 @@ This fork of 4chan X is not guaranteed to work correctly in other browsers, but 
 4. Change directory to your newly created userscripts folder with `cd .config/dwb/greasemonkey`
 5. Download 4chanX with `wget https://ccd0.github.io/4chan-x/builds/4chan-X.user.js`
 6. Start dwb
+
+## [Frequently Asked Questions](https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions)
 
 ## If you have any problems, try resetting your 4chan X settings
 
