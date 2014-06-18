@@ -72,12 +72,6 @@ QR =
 
     $.before $.id('togglePostFormLink'), link
 
-
-    $.on d, 'QRGetSelectedPost', ({detail: cb}) ->
-      cb QR.selected
-    $.on d, 'QRAddPreSubmitHook', ({detail: cb}) ->
-      QR.preSubmitHooks.push cb
-
     $.on d, 'paste',              QR.paste
     $.on d, 'dragover',           QR.dragOver
     $.on d, 'drop',               QR.dropFile
@@ -606,8 +600,6 @@ QR =
       nodes.flag = flag
       $.add nodes.form, flag
 
-  preSubmitHooks: []
-
   submit: (e) ->
     e?.preventDefault()
 
@@ -640,9 +632,6 @@ QR =
       err = 'No file selected.'
     else if post.file and thread.fileLimit
       err = 'Max limit of image replies has been reached.'
-    else for hook in QR.preSubmitHooks
-      if err = hook post, thread
-        break
 
     if QR.captcha.isEnabled and !err
       {challenge, response} = QR.captcha.getOne()

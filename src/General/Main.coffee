@@ -78,7 +78,6 @@ Main =
       #   c.timeEnd "#{name} initialization"
     # c.timeEnd 'All initializations'
 
-    $.on d, 'AddCallback', Main.addCallback
     $.ready Main.initReady
 
   initStyle: ->
