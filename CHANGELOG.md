@@ -1,3 +1,6 @@
+## v1.8.0 
+*2014-06-18*
+
 **ccd0**
 - Add compatibility with Greasemonkey 2.0.
 - Much of Mayhem's [API](https://github.com/MayhemYDG/4chan-x/wiki) has been removed due to issues with Greasemonkey 2.0.
