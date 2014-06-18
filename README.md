@@ -7,7 +7,8 @@
   2. Console errors, if any.
   3. Browser version.
   4. Your exported settings. If your settings contains sensitive information (e.g. personas), edit the text file manually.
-## If you have any problems, try resetting your 4chan X settings before calling me a faggot (but feel free to do so)
+
+### If you have any problems, try resetting your 4chan X settings before calling me a faggot (but feel free to do so)
 
 ## Forking
 
