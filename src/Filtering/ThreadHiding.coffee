@@ -19,7 +19,7 @@ ThreadHiding =
     for root, i in nodes by 2
       thread = Get.threadFromRoot root
       continue unless thread.isHidden
-      if thread.stub and root.contains thread.stub
+      if thread.stub and !root.contains thread.stub
         # When we come back to a page, the stub is already there.
         ThreadHiding.makeStub thread, root
     return
