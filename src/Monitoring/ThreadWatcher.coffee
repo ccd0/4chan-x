@@ -15,7 +15,6 @@ ThreadWatcher =
     @list   = @dialog.lastElementChild
 
     $.on d, 'QRPostSuccessful',   @cb.post
-    $.on d, 'ThreadUpdate',       @cb.threadUpdate if g.VIEW is 'thread'
     $.on sc, 'click', @toggleWatcher
     $.on $('.move>.close', ThreadWatcher.dialog), 'click', @toggleWatcher
 
@@ -105,7 +104,7 @@ ThreadWatcher =
           ThreadWatcher.db.set {boardID, threadID, val: data}
       ThreadWatcher.refresh()
     onThreadRefresh: (e) ->
-      {thread} = e.detail
+      thread = g.threads[e.detail.thread.fullID]
       return unless e.detail[404] and ThreadWatcher.db.get {boardID: thread.board.ID, threadID: thread.ID}
       # Update 404 status.
       ThreadWatcher.add thread

@@ -139,7 +139,7 @@ ThreadUpdater =
           ThreadUpdater.thread.kill()
           $.event 'ThreadUpdate',
             404: true
-            thread: ThreadUpdater.thread
+            thread: {fullID: ThreadUpdater.thread.fullID}
         else
           ThreadUpdater.outdateCount++
           ThreadUpdater.setInterval()
@@ -269,12 +269,12 @@ ThreadUpdater =
 
       unless ID in index
         post.kill()
-        deletedPosts.push post
+        deletedPosts.push {fullID: post.fullID}
       else if post.isDead
         post.resurrect()
       else if post.file and not (post.file.isDead or ID in files)
         post.kill true
-        deletedFiles.push post
+        deletedFiles.push {fullID: post.fullID}
 
       # Fetching your own posts after posting
       if ThreadUpdater.postID and ThreadUpdater.postID is ID
@@ -319,8 +319,8 @@ ThreadUpdater =
 
     $.event 'ThreadUpdate',
       404: false
-      thread: ThreadUpdater.thread
-      newPosts: posts
+      thread: {fullID: ThreadUpdater.thread}
+      newPosts: {fullID: post.fullID} for post in posts
       deletedPosts: deletedPosts
       deletedFiles: deletedFiles
       postCount: OP.replies + 1
