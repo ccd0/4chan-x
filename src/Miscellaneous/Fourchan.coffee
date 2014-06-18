@@ -21,7 +21,7 @@ Fourchan =
           if (!jsMath) return;
           if (jsMath.loaded) {
             // process one post
-            jsMath.ProcessBeforeShowing(e.detail);
+            jsMath.ProcessBeforeShowing(document.getElementById('p' + e.detail));
           } else if (jsMath.Autoload && jsMath.Autoload.checked) {
             // load jsMath and process whole document
             jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);
@@ -43,7 +43,7 @@ Fourchan =
   math: ->
     return if (@isClone and doc.contains @origin.nodes.root) or !$ '.math', @nodes.comment
     $.asap (=> doc.contains @nodes.post), =>
-      $.event 'jsmath', @nodes.post, window
+      $.event 'jsmath', @ID, window
   parseThread: (threadID, offset, limit) ->
     # Fix /sci/
     # Fix /g/
