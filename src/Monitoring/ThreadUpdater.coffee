@@ -63,40 +63,6 @@ ThreadUpdater =
       name: 'Thread Updater'
       cb:   @node
   
-  disconnect: ->
-    return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
-    $.off @timer,  'click', @update
-    $.off @status, 'click', @update
-    
-    clearTimeout @timeoutID if @timeoutID
-
-    for entry in @entry.subEntries
-      {el} = entry
-      input = el.firstElementChild
-      $.off input, 'change', $.cb.checked
-      $.off input, 'change', @cb.scrollBG
-      $.off input, 'change', @cb.update
-
-    $.off @settings, 'click',         @intervalShortcut
-    $.off window, 'online offline',   @cb.online
-    $.off d,      'QRPostSuccessful', @cb.checkpost
-    $.off d,      'visibilitychange', @cb.visibility
-
-    @set 'timer', null
-    @set 'status', 'Offline'
-
-    UI.rmMenuEntry @entry
-
-    if Conf['Updater and Stats in Header']
-      Header.rmShortcut @dialog
-    else
-      $.rmClass doc, 'float'
-      $.rm @dialog
-
-    delete @[name] for name in ['checkPostCount', 'timer', 'status', 'isUpdating', 'entry', 'dialog', 'thread', 'root', 'lastPost', 'outdateCount', 'online', 'seconds', 'timeoutID']
-
-    Thread.callbacks.disconnect 'Thread Updater'
-
   node: ->
     ThreadUpdater.thread       = @
     ThreadUpdater.root         = @OP.nodes.root.parentNode

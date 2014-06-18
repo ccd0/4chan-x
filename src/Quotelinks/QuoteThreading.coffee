@@ -24,19 +24,6 @@ QuoteThreading =
       name: 'Quote Threading'
       cb:   @node
 
-  disconnect: ->
-    return unless Conf['Quote Threading'] and g.VIEW is 'thread'
-    input = $ 'input', @controls
-    $.off input, 'change', @toggle
-
-    UI.rmMenuEntry @entry
-
-    delete @enabled
-    delete @controls
-    delete @entry
-
-    Post.callbacks.disconnect 'Quote Threading'
-
   ready: ->
     $.off d, '4chanXInitFinished', QuoteThreading.ready
     QuoteThreading.force()
