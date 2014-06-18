@@ -52,7 +52,7 @@ ThreadUpdater =
 
     subEntries.push el: @settings
 
-    $.event 'AddMenuEntry', @entry =
+    UI.addMenuEntry @entry =
       type: 'header'
       el: $.el 'span',
         textContent: 'Updater'
@@ -85,7 +85,7 @@ ThreadUpdater =
     @set 'timer', null
     @set 'status', 'Offline'
 
-    $.event 'rmMenuEntry', @entry
+    UI.rmMenuEntry @entry
 
     if Conf['Updater and Stats in Header']
       Header.rmShortcut @dialog

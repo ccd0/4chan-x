@@ -17,7 +17,7 @@ DownloadLink =
         else
           new Notice 'error', "Could not download #{file.URL}", 30
 
-    $.event 'AddMenuEntry',
+    UI.addMenuEntry
       type: 'post'
       el: a
       order: 100

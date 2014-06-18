@@ -39,7 +39,7 @@ PostHiding =
       replies  = UI.checkbox 'replies',  ' Hide replies', Conf['Recursive Hiding']
       makeStub = UI.checkbox 'makeStub', ' Make stub',    Conf['Stubs']
 
-      $.event 'AddMenuEntry',
+      UI.addMenuEntry
         type: 'post'
         el: div
         order: 20
@@ -75,7 +75,7 @@ PostHiding =
         href: 'javascript:;'
       $.on hideStubLink, 'click', PostHiding.menu.hideStub
 
-      $.event 'AddMenuEntry',
+      UI.addMenuEntry
         type: 'post'
         el: div
         order: 20
@@ -96,7 +96,7 @@ PostHiding =
             el: replies
         ]
 
-      $.event 'AddMenuEntry',
+      UI.addMenuEntry
         type: 'post'
         el: hideStubLink
         order: 15

@@ -54,7 +54,7 @@ Header =
 
     @addShortcut menuButton
 
-    $.event 'AddMenuEntry',
+    UI.addMenuEntry
       type: 'header'
       el: $.el 'span',
         textContent: 'Header'

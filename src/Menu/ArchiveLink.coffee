@@ -25,7 +25,7 @@ ArchiveLink =
       # Add a sub entry for each type.
       entry.subEntries.push @createSubEntry type[0], type[1]
 
-    $.event 'AddMenuEntry', entry
+    UI.addMenuEntry entry
 
   createSubEntry: (text, type) ->
     el = $.el 'a',

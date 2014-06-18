@@ -198,7 +198,7 @@ Filter =
         # Add a sub entry for each filter type.
         entry.subEntries.push Filter.menu.createSubEntry type[0], type[1]
 
-      $.event 'AddMenuEntry', entry
+      UI.addMenuEntry entry
 
     createSubEntry: (text, type) ->
       el = $.el 'a',

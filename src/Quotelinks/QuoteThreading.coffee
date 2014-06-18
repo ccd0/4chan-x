@@ -13,7 +13,7 @@ QuoteThreading =
     input = $ 'input', @controls
     $.on input, 'change', @toggle
 
-    $.event 'AddMenuEntry', @entry =
+    UI.addMenuEntry @entry =
       type:  'header'
       el:    @controls
       order: 98
@@ -29,7 +29,7 @@ QuoteThreading =
     input = $ 'input', @controls
     $.off input, 'change', @toggle
 
-    $.event 'rmMenuEntry', @entry
+    UI.rmMenuEntry @entry
 
     delete @enabled
     delete @controls

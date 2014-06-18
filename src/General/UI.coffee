@@ -17,6 +17,12 @@ UI = do ->
 
     el
 
+  menus = {}
+  addMenuEntry = (entry) ->
+    menus[entry.type].addEntry {detail: entry}
+  rmMenuEntry = (entry) ->
+    menus[entry.type].addEntry {detail: entry}
+
   class Menu
     currentMenu       = null
     lastToggledButton = null
@@ -26,6 +32,7 @@ UI = do ->
       $.on d, 'AddMenuEntry', @addEntry
       $.on d, 'rmMenuEntry', @rmEntry
       @entries = []
+      menus[@type] = @
 
     makeMenu: ->
       menu = $.el 'div',
@@ -386,4 +393,6 @@ UI = do ->
     Menu:     Menu
     hover:    hoverstart
     checkbox: checkbox
+    addMenuEntry: addMenuEntry
+    rmMenuEntry:  rmMenuEntry
   }

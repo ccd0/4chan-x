@@ -7,7 +7,7 @@ ReportLink =
       href: 'javascript:;'
       textContent: 'Report this post'
     $.on a, 'click', ReportLink.report
-    $.event 'AddMenuEntry',
+    UI.addMenuEntry
       type: 'post'
       el: a
       order: 10

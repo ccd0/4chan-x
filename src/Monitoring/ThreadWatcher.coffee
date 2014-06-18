@@ -238,7 +238,7 @@ ThreadWatcher =
       return if g.VIEW isnt 'thread'
       entryEl = $.el 'a',
         href: 'javascript:;'
-      $.event 'AddMenuEntry',
+      UI.addMenuEntry
         type: 'header'
         el: entryEl
         order: 60
@@ -297,7 +297,7 @@ ThreadWatcher =
         entry.el.href = 'javascript:;' if entry.el.nodeName is 'A'
         $.on entry.el, 'click', cb if cb
         @refreshers.push refresh.bind entry if refresh
-        $.event 'AddMenuEntry', entry
+        UI.addMenuEntry entry
       return
     createSubEntry: (name, desc) ->
       entry =

@@ -19,7 +19,7 @@ PSAHiding =
         href: 'javascript:;'
       order: 50
       open: -> psa.hidden
-    $.event 'AddMenuEntry', entry
+    UI.addMenuEntry entry
     $.on entry.el, 'click', PSAHiding.toggle
 
     PSAHiding.btn = btn = $.el 'span',
