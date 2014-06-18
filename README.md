@@ -5,6 +5,14 @@ https://github.com/Nebukazar/OneeChan
 
 #### [Why 4chan X needs to access data on every site?](https://github.com/ccd0/4chan-x/wiki/Why-4chan-X-needs-to-access-data-from-every-website%3F)
 
+## 4chan X v1.8.0
+4chan X v1.8.0 is available but has not yet been pushed via automatic updates.
+This version should be compabile with the recently released Greasemonkey 2.0.
+Please help test it and report any problems on the [issues](https://github.com/ccd0/4chan-x/issues) page.
+
+- [Firefox version](https://github.com/ccd0/4chan-x/raw/1.8.0/builds/4chan-X.user.js)
+- [Chromium version](https://github.com/ccd0/4chan-x/raw/1.8.0/builds/crx.crx)
+
 ## [Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) (Firefox)
 Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then click the link above to install.
 
