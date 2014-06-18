@@ -29,7 +29,10 @@ UI = do ->
 
     constructor: (@type) ->
       # Doc here: https://github.com/MayhemYDG/4chan-x/wiki/Menu-API
-      $.on d, 'AddMenuEntry', ({detail}) => @addEntry detail
+      $.on d, 'AddMenuEntry', ({detail}) =>
+        return if detail.type isnt @type
+        delete detail.open
+        @addEntry detail
       @entries = []
       menus[@type] = @
 
@@ -194,12 +197,10 @@ UI = do ->
       style.right  = right
 
     addEntry: (entry) =>
-      return if entry.type isnt @type
       @parseEntry entry
       @entries.push entry
 
     rmEntry: (entry) =>
-      return if entry.type isnt @type
       index = @entries.indexOf entry
       @entries.splice index, 1
 
