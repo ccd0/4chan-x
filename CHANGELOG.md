@@ -1,3 +1,15 @@
+**ccd0**
+- Add compatibility with Greasemonkey 2.0.
+- Much of Mayhem's [API](https://github.com/MayhemYDG/4chan-x/wiki) has been removed due to issues with Greasemonkey 2.0.
+  - The `AddCallback`, `QRPostSelection`, `QRGetSelectedPost`, and `QRAddPreSubmitHook` events are removed.
+  - Callback functions can no longer be passed via the `AddMenuEntry` and `CreateNotification` events.
+  - The information sent with `QRPostSuccessful` and `ThreadUpdate` events has been reduced:
+    - Board objects have been reduced to the form `{ID: "g"}`.
+    - Thread and post objects have been reduced to the form `{ID: 39894014, fullID: "g.39894014"}`.
+    - More fields may be added if requested.
+  - The current interfaces for the `AddMenuEntry` and `AddSettingsSection` events continue to not work in Chromium should be considered deprecated.  They are provided for backwards compatibility with existing scripts.  Suggestions for replacements are welcome.
+  - The `4chanXInitFinished`, `CloseMenu`, `QRDialogCreation`, and `OpenSettings` events are unchanged.
+
 ### v1.7.63 
 *2014-06-16*
 
