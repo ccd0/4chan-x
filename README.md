@@ -33,29 +33,5 @@ This fork of 4chan X is not guaranteed to work correctly in other browsers, but 
 
 ## [Frequently Asked Questions](https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions)
 
-## If you have any problems, try resetting your 4chan X settings
-
-## Forking
-
-### Get started
-
-- Get started by reading through the [Help link](https://help.github.com/) on how to fork a Github project.
-- Click the "Fork" button on this page.
-- Install [node.js](http://nodejs.org/).
-- Install [Grunt's CLI](http://gruntjs.com/) with `npm install -g grunt-cli`.
-- Clone your fork of 4chan X.
-- `cd` into it.
-- Install/Update 4chan X dependencies with `npm install`.
-
-### Build
-
-- Build with `grunt`.
-- Continuously build with `grunt watch`.
-
-### Release
-
-- Update the version with `grunt patch`, `grunt minor` or `grunt major`.
-- Release with `grunt release`.
-
-Note: this is only used to release new 4chan X versions, ignore as you see fit.
+## [Reporting Bugs and Contributing](https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md)
 
