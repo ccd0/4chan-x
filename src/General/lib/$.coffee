@@ -4,10 +4,6 @@
 $ = (selector, root=d.body) ->
   root.querySelector selector
 
-$.extend = (obj, prop) ->
-  obj[key] = val for key, val of prop when prop.hasOwnProperty key
-  return
-
 $.DAY = 24 * 
   $.HOUR = 60 * 
     $.MINUTE = 60 * 
