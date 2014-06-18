@@ -177,6 +177,10 @@ $.off = (el, events, handler) ->
   return
 
 $.event = (event, detail, root=d) ->
+  <% if (type === 'userscript') { %>
+  if typeof cloneInto is 'function'
+    detail = cloneInto detail, document.defaultView
+  <% } %>
   root.dispatchEvent new CustomEvent event, {bubbles: true, detail}
 
 $.open = 
