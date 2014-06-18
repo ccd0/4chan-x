@@ -7,8 +7,8 @@
     - Board objects have been reduced to the form `{ID: "g"}`.
     - Thread and post objects have been reduced to the form `{ID: 39894014, fullID: "g.39894014"}`.
     - More fields may be added if requested.
-  - The current interfaces for the `AddMenuEntry` and `AddSettingsSection` events continue to not work in Chromium should be considered deprecated.  They are provided for backwards compatibility with existing scripts.  Suggestions for replacements are welcome.
-  - The `4chanXInitFinished`, `CloseMenu`, `QRDialogCreation`, and `OpenSettings` events are unchanged.
+  - The current interfaces for the `AddMenuEntry` and `AddSettingsSection` events continue to not work in Chromium should be considered deprecated.  They are provided only for backwards compatibility with existing scripts.  Suggestions for replacements are welcome.
+  - The `4chanXInitFinished`, `CloseMenu`, `QRDialogCreation`, and `OpenSettings` events are unchanged, as is the undocumented `QRPostSuccessful_` (`QRPostSuccessful` without the board object, used by Name Sync on Chromium).
 
 ### v1.7.63 
 *2014-06-16*
