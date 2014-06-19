@@ -8,7 +8,7 @@ Header =
     @hitzone = $ '#header-bar-hitzone', @bar
     @noticesRoot = $ '#notifications', headerEl
 
-    @menu = new UI.Menu 'header'
+    @menu = new UI.Menu()
     menuButton = $.el 'a',
       className: 'menu-button'
       innerHTML: '<i class="fa fa-bars"></i>'
@@ -61,8 +61,7 @@ Header =
     $.sync 'Top Board List',             @setTopBoardList
     $.sync 'Bottom Board List',          @setBotBoardList
 
-    $.event 'AddMenuEntry',
-      type: 'header'
+    @menu.addEntry
       el: $.el 'span', textContent: 'Header'
       order: 105
       subEntries: [
@@ -313,9 +312,8 @@ Header =
     Header.menu.toggle e, @, g
 
   createNotification: (e) ->
-    {type, content, lifetime, cb} = e.detail
+    {type, content, lifetime} = e.detail
     notice = new Notice type, content, lifetime
-    cb notice if cb
 
   areNotificationsEnabled: false
   enableDesktopNotifications: ->

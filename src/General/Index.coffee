@@ -53,8 +53,7 @@ Index =
         when 'Show Replies'
           $.on input, 'change', @cb.replies
 
-    $.event 'AddMenuEntry',
-      type: 'header'
+    Header.menu.addEntry
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 90
@@ -115,8 +114,7 @@ Index =
     init: ->
       return if g.VIEW isnt 'index' or !Conf['Menu'] or g.BOARD.ID is 'f'
 
-      $.event 'AddMenuEntry',
-        type: 'post'
+      Menu.menu.addEntry
         el: $.el 'a', href: 'javascript:;'
         order: 19
         open: ({thread}) ->
@@ -615,7 +613,6 @@ Index =
         Index.buildHRs nodes
     $.rmAll Index.root
     $.add Index.root, nodes
-    $.event 'IndexBuild', nodes
 
   isSearching: false
   clearSearch: ->

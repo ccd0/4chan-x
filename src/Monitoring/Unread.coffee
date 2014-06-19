@@ -107,7 +107,7 @@ Unread =
     if e.detail[404]
       Unread.update()
     else
-      Unread.addPosts e.detail.newPosts
+      Unread.addPosts e.detail.newPosts.map (fullID) -> g.posts[fullID]
 
   readSinglePost: (post) ->
     return if (i = Unread.posts.indexOf post) is -1

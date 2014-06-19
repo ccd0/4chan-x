@@ -15,9 +15,7 @@ UI = do ->
     currentMenu       = null
     lastToggledButton = null
 
-    constructor: (@type) ->
-      # Doc here: https://github.com/MayhemYDG/4chan-x/wiki/Menu-API
-      $.on d, 'AddMenuEntry', @addEntry
+    constructor: ->
       @entries = []
 
     makeMenu: ->
@@ -172,9 +170,7 @@ UI = do ->
         $.addClass submenu, 'right'
         $.rmClass  submenu, 'left'
 
-    addEntry: (e) =>
-      entry = e.detail
-      return if entry.type isnt @type
+    addEntry: (entry) ->
       @parseEntry entry
       @entries.push entry
 

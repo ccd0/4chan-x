@@ -5,8 +5,7 @@ DownloadLink =
     a = $.el 'a',
       className: 'download-link'
       textContent: 'Download file'
-    $.event 'AddMenuEntry',
-      type: 'post'
+    Menu.menu.addEntry
       el: a
       order: 70
       open: ({file}) ->

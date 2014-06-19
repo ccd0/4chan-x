@@ -87,8 +87,7 @@ PostHiding =
       makeStub =
         el: $.el 'label', innerHTML: "<input type=checkbox name=makeStub checked=#{Conf['Stubs']}> Make stub"
 
-      $.event 'AddMenuEntry',
-        type: 'post'
+      Menu.menu.addEntry
         el: $.el 'div',
           textContent: 'Hide post'
           className: 'hide-post-link'
@@ -116,8 +115,7 @@ PostHiding =
           @el.firstChild.checked = if 'hideRecursively' of data then data.hideRecursively else Conf['Recursive Hiding']
           true
 
-      $.event 'AddMenuEntry',
-        type: 'post'
+      Menu.menu.addEntry
         el: $.el 'div',
           textContent: 'Unhide post'
           className: 'show-post-link'
@@ -131,8 +129,7 @@ PostHiding =
         subEntries: [apply, thisPost, replies]
 
       return if g.VIEW isnt 'index'
-      $.event 'AddMenuEntry',
-        type: 'post'
+      Menu.menu.addEntry
         el: $.el 'a', href: 'javascript:;'
         order: 20
         open: (post) ->

@@ -107,7 +107,6 @@ ThreadUpdater =
           ThreadUpdater.thread.kill()
           $.event 'ThreadUpdate',
             404: true
-            thread: ThreadUpdater.thread
         else
           ThreadUpdater.outdateCount++
           ThreadUpdater.setInterval()
@@ -203,8 +202,6 @@ ThreadUpdater =
       nodes.push node
       posts.push new Post node, ThreadUpdater.thread, ThreadUpdater.thread.board
 
-    deletedPosts = []
-    deletedFiles = []
     # Check for deleted posts/files.
     for ID, post of ThreadUpdater.thread.posts
       # XXX tmp fix for 4chan's racing condition
@@ -215,18 +212,14 @@ ThreadUpdater =
         post.resurrect()
       else unless ID in index
         post.kill()
-        deletedPosts.push post
       else if post.file and !post.file.isDead and ID not in files
         post.kill true
-        deletedFiles.push post
 
     sendEvent = ->
       $.event 'ThreadUpdate',
         404: false
-        thread: ThreadUpdater.thread
-        newPosts: posts
-        deletedPosts: deletedPosts
-        deletedFiles: deletedFiles
+        threadID: ThreadUpdater.thread.fullID
+        newPosts: posts.map (post) -> post.fullID
         postCount: OP.replies + 1
         fileCount: OP.images + (!!ThreadUpdater.thread.OP.file and !ThreadUpdater.thread.OP.file.isDead)
 

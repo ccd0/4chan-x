@@ -1,3 +1,5 @@
+- Compatibility fixes for Greasemonkey v2.
+
 ### 3.20.14 - *2014-06-13*
 
 - The QR won't duplicate single-word captchas anymore if you've input numbers only (like a street address).

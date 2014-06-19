@@ -8,7 +8,7 @@ Menu =
       href:      'javascript:;'
     @frag = $.nodes [$.tn(' '), a]
 
-    @menu = new UI.Menu 'post'
+    @menu = new UI.Menu()
     Post.callbacks.push
       name: 'Menu'
       cb:   @node

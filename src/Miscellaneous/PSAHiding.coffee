@@ -11,14 +11,13 @@ PSAHiding =
       return
 
     entry =
-      type: 'header'
       el: $.el 'a',
         textContent: 'Show announcement'
         className: 'show-announcement'
         href: 'javascript:;'
       order: 50
       open: -> psa.hidden
-    $.event 'AddMenuEntry', entry
+    Header.menu.addEntry entry
     $.on entry.el, 'click', PSAHiding.toggle
 
     PSAHiding.btn = btn = $.el 'a',

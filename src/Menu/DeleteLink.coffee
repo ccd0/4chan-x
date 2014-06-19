@@ -26,8 +26,7 @@ DeleteLink =
         $.on fileEl, 'click', DeleteLink.delete
         true
 
-    $.event 'AddMenuEntry',
-      type: 'post'
+    Menu.menu.addEntry
       el: div
       order: 40
       open: (post) ->

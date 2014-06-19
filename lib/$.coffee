@@ -136,6 +136,10 @@ $.off = (el, events, handler) ->
     el.removeEventListener event, handler, false
   return
 $.event = (event, detail, root=d) ->
+  <% if (type === 'userscript') { %>
+  if detail? and typeof cloneInto is 'function'
+    detail = cloneInto detail, d.defaultView
+  <% } %>
   root.dispatchEvent new CustomEvent event, {bubbles: true, detail}
 <% if (type === 'userscript') { %>
 $.open = GM_openInTab
