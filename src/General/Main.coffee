@@ -217,20 +217,6 @@ Main =
 
     softTask()
 
-  addCallback: (e) ->
-    obj = e.detail
-    unless typeof obj.callback.name is 'string'
-      throw new Error "Invalid callback name: #{obj.callback.name}"
-    switch obj.type
-      when 'Post'
-        Klass = Post
-      when 'Thread'
-        Klass = Thread
-      else
-        return
-    obj.callback.isAddon = true
-    Klass.callbacks.push obj.callback
-
   handleErrors: (errors) ->
     unless errors instanceof Array
       error = errors
