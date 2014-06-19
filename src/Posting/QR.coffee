@@ -782,11 +782,11 @@ QR =
 
     # Post/upload confirmed as successful.
     $.event 'QRPostSuccessful', {
-      board: {ID: g.BOARD.ID}
+      boardID: g.BOARD.ID
       threadID
       postID
     }
-    $.event 'QRPostSuccessful_', {threadID, postID}
+    $.event 'QRPostSuccessful_', {boardID: g.BOARD.ID, threadID, postID}
 
     # Enable auto-posting if we have stuff left to post, disable it otherwise.
     postsCount = QR.posts.length - 1

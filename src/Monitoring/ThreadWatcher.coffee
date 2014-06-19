@@ -87,12 +87,12 @@ ThreadWatcher =
       [boardID, threadID] = @parentNode.dataset.fullID.split '.'
       ThreadWatcher.rm boardID, +threadID
     post: (e) ->
-      {board, postID, threadID} = e.detail
+      {boardID, threadID, postID} = e.detail
       if postID is threadID
         if Conf['Auto Watch']
           $.set 'AutoWatch', threadID
       else if Conf['Auto Watch Reply']
-        ThreadWatcher.add g.boards[board.ID].threads[threadID]
+        ThreadWatcher.add g.threads[boardID + '.' + threadID]
     onIndexRefresh: ->
       {db}    = ThreadWatcher
       boardID = g.BOARD.ID
