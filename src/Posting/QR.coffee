@@ -379,7 +379,7 @@ QR =
 
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.
-    $.event 'QRDialogCreation'
+    $.event 'QRDialogCreation', null, dialog
 
   submit: (e) ->
     e?.preventDefault()

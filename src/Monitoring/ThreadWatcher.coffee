@@ -81,9 +81,10 @@ ThreadWatcher =
           ThreadWatcher.db.set {boardID, threadID, val: data}
       ThreadWatcher.refresh()
     onThreadRefresh: (e) ->
+      thread = g.threads[e.detail.threadID]
       return unless e.detail[404] and ThreadWatcher.db.get {boardID: thread.board.ID, threadID: thread.ID}
       # Update 404 status.
-      ThreadWatcher.add g.threads[e.detail.threadID]
+      ThreadWatcher.add thread
 
   fetchCount:
     fetched:  0
