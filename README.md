@@ -3,13 +3,13 @@ Fork of [Spittie's 4chan X](https://github.com/Spittie/4chan-x) (itself a fork o
 Note: If you're looking for a maintained fork of OneeChan, try
 https://github.com/Nebukazar/OneeChan
 
-## 4chan X v1.8.0
-4chan X v1.8.0 is available but has not yet been pushed via automatic updates.
+## 4chan X v1.8.1
+4chan X v1.8.1 is available but has not yet been pushed via automatic updates.
 This version should be compabile with the recently released Greasemonkey 2.0.
 Please help test it and report any problems on the [issues](https://github.com/ccd0/4chan-x/issues) page.
 
-- [Firefox version](https://github.com/ccd0/4chan-x/raw/1.8.0/builds/4chan-X.user.js)
-- [Chromium version](https://github.com/ccd0/4chan-x/raw/1.8.0/builds/crx.crx)
+- [Firefox version](https://github.com/ccd0/4chan-x/raw/1.8.1/builds/4chan-X.user.js)
+- [Chromium version](https://github.com/ccd0/4chan-x/raw/1.8.1/builds/crx.crx)
 
 ## [Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) (Firefox)
 Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then click the link above to install.
