@@ -123,6 +123,9 @@ module.exports = (grunt) ->
         command: """
           git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."
           git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."
+        """
+      stable:
+        command: """
           git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.version %>."
           git checkout gh-pages
           git merge --ff-only stable
@@ -203,6 +206,16 @@ module.exports = (grunt) ->
     'clean:tmpuserscript'
   ]
 
+  grunt.registerTask 'testing', [
+    'build'
+    'shell:pack'
+    'compress:crx'
+    'concat:meta'
+    'copy:builds'
+    'shell:commit'
+    'shell:push'
+  ]
+
   grunt.registerTask 'release', [
     'build'
     'shell:pack'
@@ -210,6 +223,7 @@ module.exports = (grunt) ->
     'concat:meta'
     'copy:builds'
     'shell:commit'
+    'shell:stable'
     'shell:push'
   ]
 
