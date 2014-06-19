@@ -1,3 +1,6 @@
+### v1.8.1 
+*2014-06-19*
+
 **MayhemYDG**
 - More API changes:
   - `ThreadUpdate`:
