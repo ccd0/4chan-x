@@ -1,3 +1,14 @@
+**MayhemYDG**
+- More API changes:
+  - `ThreadUpdate`:
+    - `thread` field replaced with `threadID` containing `fullID` of thread (e.g. `"g.39894014"`)
+    - `newPosts` field changed from list of `Post` objects to list of post `fullID`s.
+    - `deletedPosts` and `deletedFiles` removed
+  - `QRPostSuccessful`:
+    - `board` field replaced with `boardID` containing name of board (e.g. `"g"`)
+  - `QRPostSuccessful_`:
+    - `boardID` added; is now identical to `QRPostSuccessful`
+
 ## v1.8.0 
 *2014-06-18*
 
