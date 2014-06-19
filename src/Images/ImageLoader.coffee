@@ -19,8 +19,7 @@ ImageLoader =
     @el = prefetch.firstElementChild
     $.on @el, 'change', @toggle
 
-    UI.addMenuEntry
-      type: 'header'
+    Header.menu.addEntry
       el: prefetch
       order: 104
   

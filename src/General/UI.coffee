@@ -18,10 +18,6 @@ UI = do ->
     el
 
   menus = {}
-  addMenuEntry = (entry) ->
-    menus[entry.type].addEntry entry
-  rmMenuEntry = (entry) ->
-    menus[entry.type].addEntry entry
 
   class Menu
     currentMenu       = null
@@ -391,6 +387,4 @@ UI = do ->
     Menu:     Menu
     hover:    hoverstart
     checkbox: checkbox
-    addMenuEntry: addMenuEntry
-    rmMenuEntry:  rmMenuEntry
   }

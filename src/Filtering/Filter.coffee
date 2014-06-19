@@ -173,7 +173,6 @@ Filter =
         textContent: 'Filter'
 
       entry =
-        type: 'post'
         el: div
         order: 50
         open: (post) ->
@@ -198,7 +197,7 @@ Filter =
         # Add a sub entry for each filter type.
         entry.subEntries.push Filter.menu.createSubEntry type[0], type[1]
 
-      UI.addMenuEntry entry
+      Menu.menu.addEntry entry
 
     createSubEntry: (text, type) ->
       el = $.el 'a',

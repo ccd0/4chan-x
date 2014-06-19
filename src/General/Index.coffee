@@ -55,8 +55,7 @@ Index =
         when 'Anchor Hidden Threads'
           $.on input, 'change', @cb.sort
 
-    UI.addMenuEntry
-      type: 'header'
+    Header.menu.addEntry
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 98

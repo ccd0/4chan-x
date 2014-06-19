@@ -77,8 +77,7 @@ ThreadHiding =
 
       makeStub = UI.checkbox 'Stubs', ' Make stub'
 
-      UI.addMenuEntry
-        type: 'post'
+      Menu.menu.addEntry
         el: div
         order: 20
         open: ({thread, isReply}) ->
@@ -94,8 +93,7 @@ ThreadHiding =
         href: 'javascript:;'
       $.on div, 'click', ThreadHiding.menu.show 
 
-      UI.addMenuEntry
-        type: 'post'
+      Menu.menu.addEntry
         el: div
         order: 20
         open: ({thread, isReply}) ->
@@ -109,8 +107,7 @@ ThreadHiding =
         href: 'javascript:;'
       $.on hideStubLink, 'click', ThreadHiding.menu.hideStub
 
-      UI.addMenuEntry
-        type: 'post'
+      Menu.menu.addEntry
         el: hideStubLink
         order: 15
         open: ({thread, isReply}) ->

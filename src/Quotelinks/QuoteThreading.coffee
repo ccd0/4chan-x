@@ -13,8 +13,7 @@ QuoteThreading =
     input = $ 'input', @controls
     $.on input, 'change', @toggle
 
-    UI.addMenuEntry @entry =
-      type:  'header'
+    Header.menu.addEntry @entry =
       el:    @controls
       order: 98
 

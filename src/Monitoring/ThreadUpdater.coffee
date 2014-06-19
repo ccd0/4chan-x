@@ -52,8 +52,7 @@ ThreadUpdater =
 
     subEntries.push el: @settings
 
-    UI.addMenuEntry @entry =
-      type: 'header'
+    Header.menu.addEntry @entry =
       el: $.el 'span',
         textContent: 'Updater'
       order: 110

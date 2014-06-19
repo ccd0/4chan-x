@@ -8,8 +8,7 @@ CatalogLinks =
     $.on input, 'change', @toggle
     $.sync 'Header catalog links', CatalogLinks.set
 
-    UI.addMenuEntry
-      type:  'header'
+    Header.menu.addEntry
       el:    el
       order: 95
 

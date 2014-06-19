@@ -61,8 +61,7 @@ Gallery =
     for name of Config.gallery
       {el} = createSubEntry name
 
-      UI.addMenuEntry
-        type: 'gallery'
+      nodes.menu.addEntry
         el: el
         order: 0
 
@@ -235,8 +234,7 @@ Gallery =
       for name of Config.gallery
         subEntries.push createSubEntry name
 
-      UI.addMenuEntry
-        type: 'header'
+      Header.menu.addEntry
         el: el
         order: 105
         subEntries: subEntries
