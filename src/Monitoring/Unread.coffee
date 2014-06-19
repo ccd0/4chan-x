@@ -114,7 +114,7 @@ Unread =
     if e.detail[404]
       Unread.update()
     else if !QuoteThreading.enabled
-      Unread.addPosts(g.posts[post.fullID] for post in e.detail.newPosts)
+      Unread.addPosts e.detail.newPosts.map (fullID) -> g.posts[fullID]
     else
       Unread.read()
       Unread.update()
