@@ -138,6 +138,7 @@ ThreadUpdater =
           ThreadUpdater.thread.kill()
           $.event 'ThreadUpdate',
             404: true
+            threadID: ThreadUpdater.thread.fullID
         else
           ThreadUpdater.outdateCount++
           ThreadUpdater.setInterval()
