@@ -17,8 +17,6 @@ UI = do ->
 
     el
 
-  menus = {}
-
   class Menu
     currentMenu       = null
     lastToggledButton = null
@@ -30,7 +28,6 @@ UI = do ->
         delete detail.open
         @addEntry detail
       @entries = []
-      menus[@type] = @
 
     makeMenu: ->
       menu = $.el 'div',
