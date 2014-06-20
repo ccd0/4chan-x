@@ -1,3 +1,5 @@
+### 3.20.15 - *2014-06-20*
+
 - Compatibility fixes for Greasemonkey v2.
 
 ### 3.20.14 - *2014-06-13*
