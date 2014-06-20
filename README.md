@@ -5,7 +5,7 @@ https://github.com/Nebukazar/OneeChan
 
 ## 4chan X v1.8.1
 4chan X v1.8.1 is available but has not yet been pushed via automatic updates.
-This version should be compabile with the recently released Greasemonkey 2.0.
+This version should be compabile with the recently released Greasemonkey 2.0 (it still works with 1.15).
 Please help test it and report any problems on the [issues](https://github.com/ccd0/4chan-x/issues) page.
 
 - [Firefox version](https://github.com/ccd0/4chan-x/raw/1.8.1/builds/4chan-X.user.js)
