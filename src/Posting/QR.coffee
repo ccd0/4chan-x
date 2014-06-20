@@ -553,8 +553,8 @@ QR =
 
     QR.db.set
       boardID: g.BOARD.ID
-      threadID
-      postID
+      threadID: threadID
+      postID: postID
       val: true
 
     # Post/upload confirmed as successful.
