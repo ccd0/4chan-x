@@ -143,7 +143,6 @@ module.exports = (grunt) ->
     grunt.config 'pkg', pkg
 
     [
-      pkg.sizing
       pkg.filter
       pkg.flex
       pkg.order
@@ -151,17 +150,13 @@ module.exports = (grunt) ->
       pkg.justify
       pkg.transform
     ] = if type is 'crx' then [
-      'box-sizing'
       '-webkit-filter'
-      '-webkit-flex'
       '-webkit-order'
       '-webkit-align'
       '-webkit-justify-content'
       '-webkit-transform'
     ] else [
-      '-moz-box-sizing'
       'filter'
-      'flex'
       'order'
       'align'
       'justify-content'
