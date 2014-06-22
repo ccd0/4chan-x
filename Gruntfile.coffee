@@ -151,12 +151,14 @@ module.exports = (grunt) ->
       pkg.transform
     ] = if type is 'crx' then [
       '-webkit-filter'
+      '-webkit-flex'
       '-webkit-order'
       '-webkit-align'
       '-webkit-justify-content'
       '-webkit-transform'
     ] else [
       'filter'
+      'flex'
       'order'
       'align'
       'justify-content'

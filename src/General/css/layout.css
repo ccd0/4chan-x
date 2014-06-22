@@ -511,11 +511,11 @@ nav a,
 /* Shortcuts */
 #shortcuts {
   position: fixed;
-  display: flex:;
+  display: <%= flex %>;
   top: 0;
   padding: 1px;
   z-index: 16;
-  flex:-direction: row;
+  <%= flex %>-direction: row;
   max-height: 1.1em;
   overflow: visible;
 }
@@ -528,7 +528,7 @@ nav a,
 #a-icons,
 #a-stats {
   <%= order %>: 0;
-  display: flex:;
+  display: <%= flex %>;
 }
 #a-icons {
   <%= order %>: 10;
@@ -546,7 +546,7 @@ nav a,
   <%= align %>-self: flex-end;
 }
 .icon-orientation-vertical #a-icons {
-  flex:-direction: column;
+  <%= flex %>-direction: column;
   height: 200px;
 }
 .icon-orientation-horizontal #a-stats {
@@ -555,11 +555,11 @@ nav a,
 .icon-orientation-horizontal #a-stats,
 .icon-orientation-horizontal #a-icons,
 .sidebar-location-left #shortcuts {
-  flex:-direction: row-reverse;
+  <%= flex %>-direction: row-reverse;
 }
 .icon-orientation-horizontal.sidebar-location-left #a-stats,
 .icon-orientation-horizontal.sidebar-location-left #a-icons {
-  flex:-direction: row;
+  <%= flex %>-direction: row;
 }
 #thread-stats {
   <%= order %>: 0;
@@ -1262,10 +1262,10 @@ div.post div.postInfo {
   display: inline-block;
 }
 .replyContainer {
-  display: flex:;
+  display: <%= flex %>;
 }
 .fit-width-replies .reply.post {
-  flex:: 1 0;
+  <%= flex %>: 1 0;
 }
 .fit-width-replies .expanded-image .reply.post,
 .fit-width-replies .hasInline .reply.post {
@@ -1756,12 +1756,12 @@ input:checked + .rice {
   border-style: solid;
 }
 .persona {
-  display: flex:;
-  flex:-direction: column;
+  display: <%= flex %>;
+  <%= flex %>-direction: column;
   <%= align %>-items: stretch;
 }
 .compact-post-form-inputs .persona {
-  flex:-direction: row;
+  <%= flex %>-direction: row;
 }
 #qr textarea.field {
   height: 11.6em;
@@ -1771,11 +1771,11 @@ input:checked + .rice {
   height: 6em;
 }
 .compact-post-form-inputs .persona input.field {
-  flex:: 1 1;
+  <%= flex %>: 1 1;
   margin: 0 0 0 1px;
 }
 .compact-post-form-inputs .persona input:focus {
-  flex:: 3 1;
+  <%= flex %>: 3 1;
 }
 .compact-post-form-inputs .persona input.field:first-child {
   margin: 0;
@@ -1829,7 +1829,7 @@ input:not([type=radio]) {
   vertical-align: bottom;
   padding: 0 1px;
   outline: none;
-  transition: color .25s, border-color .25s, flex: .25s;
+  transition: color .25s, border-color .25s, <%= flex %> .25s;
 }
 .selectrice {
   padding-right: 1.6em;
@@ -1838,7 +1838,7 @@ input:not([type=radio]) {
   min-width: 100%;
 }
 #file-n-submit {
-  display: flex:
+  display: <%= flex %>
 }
 #qr [type='submit'] {
   width: 60px;
@@ -1891,7 +1891,7 @@ input:not([type=radio]) {
   display: inline-block;
   position: relative;
   margin-right: 1px;
-  flex:: 1 1;
+  <%= flex %>: 1 1;
   overflow: hidden;
   padding: 2px 1px 0;
 }
@@ -2451,21 +2451,21 @@ article li {
   left: 0;
   right: 0;
   z-index: 26;
-  display: flex:;
-  flex:-direction: row;
+  display: <%= flex %>;
+  <%= flex %>-direction: row;
   background: rgba(0,0,0,0.7);
 }
 .gal-viewport {
-  display: flex:;
+  display: <%= flex %>;
   <%= align %>-items: stretch;
-  flex:-direction: row;
-  flex:: 1 1 auto;
+  <%= flex %>-direction: row;
+  <%= flex %>: 1 1 auto;
 }
 .gal-thumbnails {
-  flex:: 0 0 150px;
+  <%= flex %>: 0 0 150px;
   overflow-y: auto;
-  display: flex:;
-  flex:-direction: column;
+  display: <%= flex %>;
+  <%= flex %>-direction: column;
   <%= align %>-items: stretch;
   text-align: center;
   background: rgba(0,0,0,.5);
@@ -2481,7 +2481,7 @@ article li {
   width: auto;
 }
 .gal-thumb {
-  flex:: 0 0 auto;
+  <%= flex %>: 0 0 auto;
   padding: 3px;
   line-height: 0;
   transition: background .2s linear;
@@ -2499,7 +2499,7 @@ article li {
 }
 .gal-prev,
 .gal-next {
-  flex:: 0 0 20px;
+  <%= flex %>: 0 0 20px;
   position: relative;
   cursor: pointer;
   opacity: 0.7;
@@ -2529,8 +2529,8 @@ article li {
 }
 .gal-image {
   order: 1;
-  flex:: 1 0 auto;
-  display: flex:;
+  <%= flex %>: 1 0 auto;
+  display: <%= flex %>;
   <%= align %>-items: flex-start;
   <%= justify %>: space-around;
   overflow: auto;
