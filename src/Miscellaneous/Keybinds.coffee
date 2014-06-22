@@ -148,19 +148,19 @@ Keybinds =
           Index.setIndexMode 'catalog'
       # Thread Navigation
       when Conf['Next thread']
-        return if g.VIEW isnt 'index'
+        return if g.VIEW isnt 'index' or Conf['Index Mode'] is 'catalog'
         Nav.scroll +1
       when Conf['Previous thread']
-        return if g.VIEW isnt 'index'
+        return if g.VIEW isnt 'index' or Conf['Index Mode'] is 'catalog'
         Nav.scroll -1
       when Conf['Expand thread']
-        return if g.VIEW isnt 'index'
+        return if g.VIEW isnt 'index' or Conf['Index Mode'] is 'catalog'
         ExpandThread.toggle thread
       when Conf['Open thread']
-        return if g.VIEW isnt 'index'
+        return if g.VIEW isnt 'index' or Conf['Index Mode'] is 'catalog'
         Keybinds.open thread
       when Conf['Open thread tab']
-        return if g.VIEW isnt 'index'
+        return if g.VIEW isnt 'index' or Conf['Index Mode'] is 'catalog'
         Keybinds.open thread, true
       # Reply Navigation
       when Conf['Next reply']

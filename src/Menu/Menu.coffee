@@ -7,7 +7,7 @@ Menu =
       innerHTML: '<i class="fa fa-bars"></i>'
       href:      'javascript:;'
 
-    @menu = new UI.Menu 'post'
+    @menu = new UI.Menu()
     Post.callbacks.push
       name: 'Menu'
       cb:   @node

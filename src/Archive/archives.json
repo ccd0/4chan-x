@@ -46,7 +46,7 @@
 }, {
   "uid": 8,
   "name": "Rebecca Black Tech",
-  "domain": "rbt.asia",
+  "domain": "archive.rebeccablacktech.com",
   "http": false,
   "https": true,
   "software": "fuuka",
@@ -89,16 +89,6 @@
   "boards": ["t"],
   "files": ["t"]
 }, {
-  "uid": 13,
-  "name": "Foolz Beta",
-  "domain": "beta.foolz.us",
-  "http": true,
-  "https": true,
-  "withCredentials": true,
-  "software": "foolfuuka",
-  "boards": ["a", "biz", "c", "co", "d", "diy", "gd", "int", "jp", "m", "out", "po", "s4s", "sci", "sp", "tg", "tv", "u", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "biz", "c", "co", "d", "diy", "gd", "jp", "m", "po", "s4s", "sci", "tg", "u", "vg", "vp", "vr", "wsg"]
-}, {
   "uid": 19,
   "name": "Deniable Plausibility",
   "domain": "boards.deniableplausibility.net",
@@ -107,4 +97,14 @@
   "software": "foolfuuka",
   "boards": ["v", "vg"],
   "files": ["v", "vg"]
+}, {
+  "uid": 13,
+  "name": "Foolz Beta",
+  "domain": "beta.foolz.us",
+  "http": true,
+  "https": true,
+  "withCredentials": true,
+  "software": "foolfuuka",
+  "boards": ["a", "biz", "c", "co", "d", "diy", "gd", "int", "jp", "m", "out", "po", "s4s", "sci", "sp", "tg", "tv", "u", "vg", "vp", "vr", "wsg"],
+  "files": ["a", "biz", "c", "co", "d", "diy", "gd","jp", "m", "po", "s4s", "sci", "tg", "u", "vg", "vp", "vr", "wsg"]
 }]

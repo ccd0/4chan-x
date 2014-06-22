@@ -45,11 +45,6 @@ QR =
     QR.postingIsEnabled = !!$.id 'postForm'
     return unless QR.postingIsEnabled
 
-    $.on d, 'QRGetSelectedPost', ({detail: cb}) ->
-      cb QR.selected
-    $.on d, 'QRAddPreSubmitHook', ({detail: cb}) ->
-      QR.preSubmitHooks.push cb
-
     <% if (type === 'crx') { %>
     $.on d, 'paste',              QR.paste
     <% } %>
@@ -605,8 +600,6 @@ QR =
       nodes.flag = flag
       $.add nodes.form, flag
 
-  preSubmitHooks: []
-
   submit: (e) ->
     e?.preventDefault()
 
@@ -639,9 +632,6 @@ QR =
       err = 'No file selected.'
     else if post.file and thread.fileLimit
       err = 'Max limit of image replies has been reached.'
-    else for hook in QR.preSubmitHooks
-      if err = hook post, thread
-        break
 
     if QR.captcha.isEnabled and !err
       {challenge, response} = QR.captcha.getOne()
@@ -800,11 +790,11 @@ QR =
 
     # Post/upload confirmed as successful.
     $.event 'QRPostSuccessful', {
-      board: g.BOARD
+      boardID: g.BOARD.ID
       threadID
       postID
     }
-    $.event 'QRPostSuccessful_', {threadID, postID}
+    $.event 'QRPostSuccessful_', {boardID: g.BOARD.ID, threadID, postID}
 
     # Enable auto-posting if we have stuff left to post, disable it otherwise.
     postsCount = QR.posts.length - 1

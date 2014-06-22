@@ -1,8 +1,8 @@
 Header =
   init: ->
-    @menu = new UI.Menu 'header'
+    @menu = new UI.Menu()
 
-    menuButton = $.el 'span',
+    menuButton = $.el 'a',
       className: 'menu-button a-icon'
       id:        'main-menu'
 
@@ -46,10 +46,8 @@ Header =
 
     @addShortcut menuButton
 
-    $.event 'AddMenuEntry',
-      type: 'header'
-      el: $.el 'span',
-        textContent: 'Header'
+    @menu.addEntry
+      el: $.el 'span', textContent: 'Header'
       order: 107
       subEntries: [
           el: barFixedToggler
@@ -375,7 +373,6 @@ Header =
 
   addShortcut: (el, icon) ->
     $.addClass el, 'shortcut'
-
     $.add Header[if icon then 'icons' else 'stats'], el
 
   rmShortcut: (el, icon) ->
@@ -385,9 +382,8 @@ Header =
     Header.menu.toggle e, @, g
 
   createNotification: (e) ->
-    {type, content, lifetime, cb} = e.detail
+    {type, content, lifetime} = e.detail
     notice = new Notice type, content, lifetime
-    cb notice if cb
 
   areNotificationsEnabled: false
   enableDesktopNotifications: ->

@@ -209,12 +209,6 @@ Config =
         true
         'Add post and image deletion links to the menu.'
       ]
-      <% if (type === 'crx') { %>
-      'Download Link': [
-        true
-        'Add a download with original filename link to the menu. Chrome-only currently.'
-      ]
-      <% } %>
       'Archive Link': [
         true
         'Add an archive link to the menu.'
@@ -286,10 +280,6 @@ Config =
       'Open Post in New Tab': [
         true
         'Open new threads or replies to a thread from the index in a new tab.'
-      ]
-      'Remember Subject': [
-        false
-        'Remember the subject field, instead of resetting after posting.'
       ]
       'Remember Spoiler': [
         false

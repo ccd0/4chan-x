@@ -2,8 +2,7 @@ Labels =
   init: ->
     return if !Conf['Menu']
 
-    $.event 'AddMenuEntry',
-      type: 'post'
+    Menu.menu.addEntry
       el: $.el 'div', textContent: 'Labels'
       order: 60
       open: (post, addSubEntry) ->
