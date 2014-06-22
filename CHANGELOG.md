@@ -1,4 +1,7 @@
 **MayhemYDG**:
+- Compatibility fixes for Greasemonkey v2.
+- The QR won't duplicate single-word captchas anymore if you've input numbers only (like a street address).
+- Removed the `Download Link` feature on Chrome/Opera as it is not working as intended anymore.
 - [Security fix](https://github.com/MayhemYDG/4chan-x/issues/1634).
 
 ### v1.7.33 

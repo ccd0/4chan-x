@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
-* 4chan X - Version 1.7.33 - 2014-05-29
+* 4chan X - Version 1.7.33 - 2014-06-22
 *
 * Licensed under the MIT license.
 * https://github.com/ccd0/4chan-x/blob/master/LICENSE
@@ -215,7 +215,6 @@
         'Persistent QR': [true, 'The Quick reply won\'t disappear after posting.'],
         'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.'],
         'Open Post in New Tab': [true, 'Open new threads or replies to a thread from the index in a new tab.'],
-        'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember QR Size': [false, 'Remember the size of the Quick reply.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
         'Hide Original Post Form': [true, 'Hide the normal post form.'],
@@ -654,6 +653,9 @@
   $.event = function(event, detail, root) {
     if (root == null) {
       root = d;
+    }
+    if ((detail != null) && typeof cloneInto === 'function') {
+      detail = cloneInto(detail, d.defaultView);
     }
     return root.dispatchEvent(new CustomEvent(event, {
       bubbles: true,
@@ -1961,8 +1963,8 @@
   Header = {
     init: function() {
       var barFixedToggler, barPositionToggler, customNavToggler, editCustomNav, footerToggler, headerToggler, linkJustifyToggler, menuButton, scrollHeaderToggler, shortcutToggler;
-      this.menu = new UI.Menu('header');
-      menuButton = $.el('span', {
+      this.menu = new UI.Menu();
+      menuButton = $.el('a', {
         className: 'menu-button',
         innerHTML: '<i></i>'
       });
@@ -2025,8 +2027,7 @@
       $.sync('Header auto-hide', this.setBarVisibility);
       $.sync('Centered links', this.setLinkJustify);
       this.addShortcut(menuButton);
-      $.event('AddMenuEntry', {
-        type: 'header',
+      this.menu.addEntry({
         el: $.el('span', {
           textContent: 'Header'
         }),
@@ -2473,7 +2474,7 @@
         className: 'shortcut brackets-wrap'
       });
       $.add(shortcut, el);
-      return $.prepend(Header.shortcuts, shortcut);
+      return $.add(Header.shortcuts, shortcut);
     },
     rmShortcut: function(el) {
       return $.rm(el.parentElement);
@@ -2482,12 +2483,9 @@
       return Header.menu.toggle(e, this, g);
     },
     createNotification: function(e) {
-      var cb, content, lifetime, notice, type, _ref;
-      _ref = e.detail, type = _ref.type, content = _ref.content, lifetime = _ref.lifetime, cb = _ref.cb;
-      notice = new Notice(type, content, lifetime);
-      if (cb) {
-        return cb(notice);
-      }
+      var content, lifetime, notice, type, _ref;
+      _ref = e.detail, type = _ref.type, content = _ref.content, lifetime = _ref.lifetime;
+      return notice = new Notice(type, content, lifetime);
     },
     areNotificationsEnabled: false,
     enableDesktopNotifications: function() {
@@ -2630,8 +2628,7 @@
             $.on(input, 'change', this.cb.replies);
         }
       }
-      $.event('AddMenuEntry', {
-        type: 'header',
+      Header.menu.addEntry({
         el: $.el('span', {
           textContent: 'Index Navigation'
         }),
@@ -2748,8 +2745,7 @@
         if (g.VIEW !== 'index' || !Conf['Menu'] || g.BOARD.ID === 'f') {
           return;
         }
-        return $.event('AddMenuEntry', {
-          type: 'post',
+        return Menu.menu.addEntry({
           el: $.el('a', {
             href: 'javascript:;'
           }),
@@ -3023,7 +3019,7 @@
         }
         onSameIndex = g.VIEW === 'index' && a.pathname.split('/')[1] === g.BOARD.ID;
         needChange = Index.cb.indexNav(a, onSameIndex);
-        if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || !onSameIndex) {
+        if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || !onSameIndex || g.BOARD.ID === 'f') {
           return;
         }
         e.preventDefault();
@@ -3554,8 +3550,7 @@
       if (!infinite) {
         $.rmAll(Index.root);
       }
-      $.add(Index.root, nodes);
-      return $.event('IndexBuild', nodes);
+      return $.add(Index.root, nodes);
     },
     isSearching: false,
     clearSearch: function() {
@@ -4216,15 +4211,11 @@
 
       lastToggledButton = null;
 
-      function Menu(type) {
-        this.type = type;
+      function Menu() {
         this.rmEntry = __bind(this.rmEntry, this);
-        this.addEntry = __bind(this.addEntry, this);
         this.onFocus = __bind(this.onFocus, this);
         this.keybinds = __bind(this.keybinds, this);
         this.close = __bind(this.close, this);
-        $.on(d, 'AddMenuEntry', this.addEntry);
-        $.on(d, 'rmMenuEntry', this.rmEntry);
         this.entries = [];
       }
 
@@ -4422,12 +4413,7 @@
         return style.right = right;
       };
 
-      Menu.prototype.addEntry = function(e) {
-        var entry;
-        entry = e.detail;
-        if (entry.type !== this.type) {
-          return;
-        }
+      Menu.prototype.addEntry = function(entry) {
         this.parseEntry(entry);
         return this.entries.push(entry);
       };
@@ -4854,7 +4840,6 @@
           textContent: 'Filter'
         });
         entry = {
-          type: 'post',
           el: div,
           order: 50,
           open: function(post) {
@@ -4868,7 +4853,7 @@
           type = _ref[_i];
           entry.subEntries.push(Filter.menu.createSubEntry(type[0], type[1]));
         }
-        return $.event('AddMenuEntry', entry);
+        return Menu.menu.addEntry(entry);
       },
       createSubEntry: function(text, type) {
         var el;
@@ -5047,8 +5032,7 @@
             innerHTML: "<input type=checkbox name=makeStub checked=" + Conf['Stubs'] + "> Make stub"
           })
         };
-        $.event('AddMenuEntry', {
-          type: 'post',
+        Menu.menu.addEntry({
           el: $.el('div', {
             textContent: 'Hide post',
             className: 'hide-post-link'
@@ -5099,8 +5083,7 @@
             return true;
           }
         };
-        $.event('AddMenuEntry', {
-          type: 'post',
+        Menu.menu.addEntry({
           el: $.el('div', {
             textContent: 'Unhide post',
             className: 'show-post-link'
@@ -5124,8 +5107,7 @@
         if (g.VIEW !== 'index') {
           return;
         }
-        return $.event('AddMenuEntry', {
-          type: 'post',
+        return Menu.menu.addEntry({
           el: $.el('a', {
             href: 'javascript:;'
           }),
@@ -5716,8 +5698,7 @@
       });
       input = $('input', this.controls);
       $.on(input, 'change', this.toggle);
-      $.event('AddMenuEntry', this.entry = {
-        type: 'header',
+      Header.menu.addEntry(this.entry = {
         el: this.controls,
         order: 98
       });
@@ -6024,16 +6005,6 @@
         }
       });
       $.before($.id('togglePostFormLink'), link);
-      $.on(d, 'QRGetSelectedPost', function(_arg) {
-        var cb;
-        cb = _arg.detail;
-        return cb(QR.selected);
-      });
-      $.on(d, 'QRAddPreSubmitHook', function(_arg) {
-        var cb;
-        cb = _arg.detail;
-        return QR.preSubmitHooks.push(cb);
-      });
       $.on(d, 'dragover', QR.dragOver);
       $.on(d, 'drop', QR.dropFile);
       $.on(d, 'dragstart dragend', QR.drag);
@@ -6622,9 +6593,8 @@
         return $.add(nodes.form, flag);
       }
     },
-    preSubmitHooks: [],
     submit: function(e) {
-      var challenge, err, extra, filetag, formData, hook, options, post, response, textOnly, thread, threadID, _i, _len, _ref, _ref1;
+      var challenge, err, extra, filetag, formData, options, post, response, textOnly, thread, threadID, _ref;
       if (e != null) {
         e.preventDefault();
       }
@@ -6657,17 +6627,9 @@
         err = 'No file selected.';
       } else if (post.file && thread.fileLimit) {
         err = 'Max limit of image replies has been reached.';
-      } else {
-        _ref = QR.preSubmitHooks;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          hook = _ref[_i];
-          if (err = hook(post, thread)) {
-            break;
-          }
-        }
       }
       if (QR.captcha.isEnabled && !err) {
-        _ref1 = QR.captcha.getOne(), challenge = _ref1.challenge, response = _ref1.response;
+        _ref = QR.captcha.getOne(), challenge = _ref.challenge, response = _ref.response;
         if (!response) {
           err = 'No valid captcha.';
         }
@@ -6802,11 +6764,12 @@
       });
       ThreadUpdater.postID = postID;
       $.event('QRPostSuccessful', {
-        board: g.BOARD,
+        boardID: g.BOARD.ID,
         threadID: threadID,
         postID: postID
       });
       $.event('QRPostSuccessful_', {
+        boardID: g.BOARD.ID,
         threadID: threadID,
         postID: postID
       });
@@ -6978,7 +6941,7 @@
       }
       if (response) {
         response = response.trim();
-        if (!/\s/.test(response)) {
+        if (!/\s|^\d+$/.test(response)) {
           response = "" + response + " " + response;
         }
       }
@@ -7423,8 +7386,7 @@
       rectEl = this.nodes.el.getBoundingClientRect();
       rectList = this.nodes.el.parentNode.getBoundingClientRect();
       this.nodes.el.parentNode.scrollLeft += rectEl.left + rectEl.width / 2 - rectList.left - rectList.width / 2;
-      this.load();
-      return $.event('QRPostSelection', this);
+      return this.load();
     };
 
     _Class.prototype.load = function() {
@@ -7719,8 +7681,7 @@
         });
         FappeTyme[lc] = input = el.firstElementChild;
         $.on(input, 'change', FappeTyme.cb.toggle.bind(input));
-        $.event('AddMenuEntry', {
-          type: 'header',
+        Header.menu.addEntry({
           el: el,
           order: 97
         });
@@ -7806,7 +7767,7 @@
         nodes[key] = $(value, dialog);
       }
       menuButton = $('.menu-button', dialog);
-      nodes.menu = new UI.Menu('gallery');
+      nodes.menu = new UI.Menu();
       cb = Gallery.cb;
       $.on(nodes.frame, 'click', cb.blank);
       $.on(nodes.next, 'click', cb.advance);
@@ -7819,8 +7780,7 @@
       createSubEntry = Gallery.menu.createSubEntry;
       for (name in Config.gallery) {
         el = createSubEntry(name).el;
-        $.event('AddMenuEntry', {
-          type: 'gallery',
+        nodes.menu.addEntry({
           el: el,
           order: 0
         });
@@ -8049,8 +8009,7 @@
         for (name in Config.gallery) {
           subEntries.push(createSubEntry(name));
         }
-        return $.event('AddMenuEntry', {
-          type: 'header',
+        return Header.menu.addEntry({
           el: el,
           order: 105,
           subEntries: subEntries
@@ -8423,8 +8382,7 @@
           conf = _ref[name];
           subEntries.push(createSubEntry(name, conf[1]));
         }
-        return $.event('AddMenuEntry', {
-          type: 'header',
+        return Header.menu.addEntry({
           el: el,
           order: 105,
           subEntries: subEntries
@@ -8602,8 +8560,7 @@
       });
       this.el = prefetch.firstElementChild;
       $.on(this.el, 'change', this.toggle);
-      return $.event('AddMenuEntry', {
-        type: 'header',
+      return Header.menu.addEntry({
         el: prefetch,
         order: 104
       });
@@ -9363,7 +9320,6 @@
         textContent: 'Archive'
       });
       entry = {
-        type: 'post',
         el: div,
         order: 90,
         open: function(_arg) {
@@ -9382,7 +9338,7 @@
         type = _ref[_i];
         entry.subEntries.push(this.createSubEntry(type[0], type[1]));
       }
-      return $.event('AddMenuEntry', entry);
+      return Menu.menu.addEntry(entry);
     },
     createSubEntry: function(text, type) {
       var el, open;
@@ -9459,8 +9415,7 @@
           return true;
         }
       };
-      return $.event('AddMenuEntry', {
-        type: 'post',
+      return Menu.menu.addEntry({
         el: div,
         order: 40,
         open: function(post) {
@@ -9568,8 +9523,7 @@
         className: 'download-link',
         textContent: 'Download file'
       });
-      return $.event('AddMenuEntry', {
-        type: 'post',
+      return Menu.menu.addEntry({
         el: a,
         order: 100,
         open: function(_arg) {
@@ -9591,8 +9545,7 @@
       if (!Conf['Menu']) {
         return;
       }
-      return $.event('AddMenuEntry', {
-        type: 'post',
+      return Menu.menu.addEntry({
         el: $.el('div', {
           textContent: 'Labels'
         }),
@@ -9630,7 +9583,7 @@
         innerHTML: '<i class="fa fa-bars"></i>',
         href: 'javascript:;'
       });
-      this.menu = new UI.Menu('post');
+      this.menu = new UI.Menu();
       Post.callbacks.push({
         name: 'Menu',
         cb: this.node
@@ -9683,8 +9636,7 @@
         textContent: 'Report this post'
       });
       $.on(a, 'click', ReportLink.report);
-      return $.event('AddMenuEntry', {
-        type: 'post',
+      return Menu.menu.addEntry({
         el: a,
         order: 10,
         open: function(post) {
@@ -9945,8 +9897,7 @@
       subEntries.push({
         el: this.settings
       });
-      $.event('AddMenuEntry', this.entry = {
-        type: 'header',
+      Header.menu.addEntry(this.entry = {
         el: $.el('span', {
           textContent: 'Updater'
         }),
@@ -10097,7 +10048,7 @@
             ThreadUpdater.thread.kill();
             $.event('ThreadUpdate', {
               404: true,
-              thread: ThreadUpdater.thread
+              threadID: ThreadUpdater.thread.fullID
             });
             break;
           default:
@@ -10196,7 +10147,7 @@
       return new Notice('info', "The thread is " + change + ".", 30);
     },
     parse: function(postObjects) {
-      var OP, count, deletedFiles, deletedPosts, files, index, node, num, post, postObject, posts, root, scroll, sendEvent, _i, _j, _len, _len1;
+      var OP, count, files, index, node, num, post, postObject, posts, root, scroll, sendEvent, _i, _j, _len, _len1;
       OP = postObjects[0];
       Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler;
       ThreadUpdater.updateThreadStatus('Sticky', !!OP.sticky);
@@ -10221,19 +10172,15 @@
         node = Build.postFromObject(postObject, ThreadUpdater.thread.board.ID);
         posts.push(new Post(node, ThreadUpdater.thread, ThreadUpdater.thread.board));
       }
-      deletedPosts = [];
-      deletedFiles = [];
       ThreadUpdater.thread.posts.forEach(function(post) {
         var ID;
         ID = +post.ID;
         if (__indexOf.call(index, ID) < 0) {
           post.kill();
-          deletedPosts.push(post);
         } else if (post.isDead) {
           post.resurrect();
-        } else if (post.file && !(post.file.isDead || __indexOf.call(files, ID) >= 0)) {
+        } else if (post.file && !post.file.isDead && __indexOf.call(files, ID) < 0) {
           post.kill(true);
-          deletedFiles.push(post);
         }
         if (ThreadUpdater.postID && ThreadUpdater.postID === ID) {
           return ThreadUpdater.foundPost = true;
@@ -10242,10 +10189,10 @@
       sendEvent = function() {
         return $.event('ThreadUpdate', {
           404: false,
-          thread: ThreadUpdater.thread,
-          newPosts: posts,
-          deletedPosts: deletedPosts,
-          deletedFiles: deletedFiles,
+          threadID: ThreadUpdater.thread.fullID,
+          newPosts: posts.map(function(post) {
+            return post.fullID;
+          }),
           postCount: OP.replies + 1,
           fileCount: OP.images + (!!ThreadUpdater.thread.OP.file && !ThreadUpdater.thread.OP.file.isDead)
         });
@@ -10420,14 +10367,14 @@
         return ThreadWatcher.rm(boardID, +threadID);
       },
       post: function(e) {
-        var board, postID, threadID, _ref;
-        _ref = e.detail, board = _ref.board, postID = _ref.postID, threadID = _ref.threadID;
+        var boardID, postID, threadID, _ref;
+        _ref = e.detail, boardID = _ref.boardID, threadID = _ref.threadID, postID = _ref.postID;
         if (postID === threadID) {
           if (Conf['Auto Watch']) {
             return $.set('AutoWatch', threadID);
           }
         } else if (Conf['Auto Watch Reply']) {
-          return ThreadWatcher.add(board.threads[threadID]);
+          return ThreadWatcher.add(g.threads[boardID + '.' + threadID]);
         }
       },
       onIndexRefresh: function() {
@@ -10456,7 +10403,7 @@
       },
       onThreadRefresh: function(e) {
         var thread;
-        thread = e.detail.thread;
+        thread = g.threads[e.detail.threadID];
         if (!(e.detail[404] && ThreadWatcher.db.get({
           boardID: thread.board.ID,
           threadID: thread.ID
@@ -10668,12 +10615,12 @@
         if (!Conf['Thread Watcher']) {
           return;
         }
-        menu = new UI.Menu('thread watcher');
+        menu = new UI.Menu();
         $.on($('.menu-button', ThreadWatcher.dialog), 'click', function(e) {
           return menu.toggle(e, this, ThreadWatcher);
         });
         this.addHeaderMenuEntry();
-        return this.addMenuEntries();
+        return this.addMenuEntries(menu);
       },
       addHeaderMenuEntry: function() {
         var entryEl;
@@ -10683,8 +10630,7 @@
         entryEl = $.el('a', {
           href: 'javascript:;'
         });
-        $.event('AddMenuEntry', {
-          type: 'header',
+        Header.menu.addEntry({
           el: entryEl,
           order: 60
         });
@@ -10699,13 +10645,12 @@
           return entryEl.textContent = text;
         });
       },
-      addMenuEntries: function() {
+      addMenuEntries: function(menu) {
         var cb, conf, entries, entry, name, refresh, subEntries, _i, _len, _ref, _ref1;
         entries = [];
         entries.push({
           cb: ThreadWatcher.cb.openAll,
           entry: {
-            type: 'thread watcher',
             el: $.el('a', {
               textContent: 'Open all threads'
             })
@@ -10717,7 +10662,6 @@
         entries.push({
           cb: ThreadWatcher.cb.checkThreads,
           entry: {
-            type: 'thread watcher',
             el: $.el('a', {
               textContent: 'Check 404\'d threads'
             })
@@ -10729,7 +10673,6 @@
         entries.push({
           cb: ThreadWatcher.cb.pruneDeads,
           entry: {
-            type: 'thread watcher',
             el: $.el('a', {
               textContent: 'Prune 404\'d threads'
             })
@@ -10746,7 +10689,6 @@
         }
         entries.push({
           entry: {
-            type: 'thread watcher',
             el: $.el('span', {
               textContent: 'Settings'
             }),
@@ -10764,7 +10706,7 @@
           if (refresh) {
             this.refreshers.push(refresh.bind(entry));
           }
-          $.event('AddMenuEntry', entry);
+          menu.addEntry(entry);
         }
       },
       createSubEntry: function(name, desc) {
@@ -10964,11 +10906,13 @@
     onUpdate: function(e) {
       if (e.detail[404]) {
         return Unread.update();
-      } else if (!Conf['Quote Threading']) {
-        return Unread.addPosts(e.detail.newPosts);
-      } else {
+      } else if (Conf['Quote Threading']) {
         Unread.read();
         return Unread.update();
+      } else {
+        return Unread.addPosts(e.detail.newPosts.map(function(fullID) {
+          return g.posts[fullID];
+        }));
       }
     },
     readSinglePost: function(post) {
@@ -11114,7 +11058,7 @@
       }
       return Redirect.data = o;
     },
-    archives: [{"uid":0,"name":"Foolz","domain":"archive.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["a","biz","co","diy","gd","jp","m","sci","sp","tg","tv","vg","vp","vr","wsg"],"files":["a","biz","diy","gd","jp","m","sci","tg","vg","vp","vr","wsg"]},{"uid":1,"name":"NSFW Foolz","domain":"nsfw.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["u"],"files":["u"]},{"uid":2,"name":"The Dark Cave","domain":"archive.thedarkcave.org","http":true,"https":true,"software":"foolfuuka","boards":["c","int","out","po"],"files":["c","po"]},{"uid":3,"name":"4plebs Archive","domain":"archive.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["adv","hr","o","pol","s4s","tg","trv","tv","x"],"files":["adv","hr","o","pol","s4s","tg","trv","tv","x"]},{"uid":18,"name":"4plebs Flash Archive","domain":"flash.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["f"],"files":["f"]},{"uid":4,"name":"Nyafuu","domain":"archive.nyafuu.org","http":true,"https":true,"software":"foolfuuka","boards":["c","e","w","wg"],"files":["c","e","w","wg"]},{"uid":5,"name":"Love is Over","domain":"archive.loveisover.me","http":true,"https":true,"software":"foolfuuka","boards":["d","i","lgbt"],"files":["d","i","lgbt"]},{"uid":8,"name":"Rebecca Black Tech","domain":"rbt.asia","http":false,"https":true,"software":"fuuka","boards":["cgl","g","mu","w"],"files":["cgl","g","mu","w"]},{"uid":9,"name":"Heinessen","domain":"archive.heinessen.com","http":true,"https":false,"software":"fuuka","boards":["an","fit","k","mlp","r9k","toy"],"files":["an","fit","k","mlp","r9k","toy"]},{"uid":10,"name":"warosu","domain":"fuuka.warosu.org","http":false,"https":true,"software":"fuuka","boards":["3","biz","cgl","ck","diy","fa","g","ic","jp","lit","sci","tg","vr"],"files":["3","biz","cgl","ck","diy","fa","ic","jp","lit","sci","tg","vr"]},{"uid":15,"name":"fgts","domain":"fgts.eu","http":true,"https":true,"software":"foolfuuka","boards":["asp","cm","h","hc","hm","n","p","r","s","soc","y"],"files":["asp","cm","h","hc","hm","n","p","r","s","soc","y"]},{"uid":16,"name":"maware","domain":"archive.mawa.re","http":true,"https":false,"software":"foolfuuka","boards":["t"],"files":["t"]},{"uid":17,"name":"installgentoo.com","domain":"chan.installgentoo.com","http":true,"https":false,"software":"foolfuuka","boards":["g","t"],"files":["g","t"]},{"uid":19,"name":"Innovandalism Archive","domain":"boards.innovandalism.eu","http":true,"https":false,"software":"foolfuuka","boards":["v"],"files":[]},{"uid":13,"name":"Foolz Beta","domain":"beta.foolz.us","http":true,"https":true,"withCredentials":true,"software":"foolfuuka","boards":["a","biz","co","d","diy","gd","jp","m","s4s","sci","sp","tg","tv","u","vg","vp","vr","wsg"],"files":["a","biz","d","diy","gd","jp","m","s4s","sci","tg","u","vg","vp","vr","wsg"]},{"uid":19,"name":"Innovandalism Archive","domain":"boards.innovandalism.eu","http":true,"https":false,"software":"foolfuuka","boards":["v"],"files":[]}],
+    archives: [{"uid":0,"name":"Foolz","domain":"archive.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["a","biz","c","co","diy","gd","int","jp","m","out","po","sci","sp","tg","tv","vg","vp","vr","wsg"],"files":["a","biz","c","co","diy","gd","jp","m","po","sci","tg","vg","vp","vr","wsg"]},{"uid":1,"name":"NSFW Foolz","domain":"nsfw.foolz.us","http":true,"https":true,"software":"foolfuuka","boards":["u"],"files":["u"]},{"uid":3,"name":"4plebs Archive","domain":"archive.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["adv","f","hr","o","pol","s4s","tg","trv","tv","x"],"files":["adv","f","hr","o","pol","s4s","tg","trv","tv","x"]},{"uid":4,"name":"Nyafuu","domain":"archive.nyafuu.org","http":true,"https":true,"software":"foolfuuka","boards":["c","e","w","wg"],"files":["c","e","w","wg"]},{"uid":5,"name":"Love is Over","domain":"archive.loveisover.me","http":true,"https":true,"software":"foolfuuka","boards":["d","i","lgbt"],"files":["d","i","lgbt"]},{"uid":8,"name":"Rebecca Black Tech","domain":"archive.rebeccablacktech.com","http":false,"https":true,"software":"fuuka","boards":["cgl","g","mu","w"],"files":["cgl","g","mu","w"]},{"uid":9,"name":"Heinessen","domain":"archive.heinessen.com","http":true,"https":false,"software":"fuuka","boards":["an","fit","k","mlp","r9k","toy"],"files":["an","fit","k","mlp","r9k","toy"]},{"uid":10,"name":"warosu","domain":"warosu.org","http":false,"https":true,"software":"fuuka","boards":["3","biz","cgl","ck","diy","fa","g","ic","jp","lit","sci","tg","vr"],"files":["3","biz","cgl","ck","diy","fa","ic","jp","lit","sci","tg","vr"]},{"uid":15,"name":"fgts","domain":"fgts.jp","http":true,"https":true,"software":"foolfuuka","boards":["asp","cm","h","hc","hm","n","p","r","s","soc","y"],"files":["asp","cm","h","hc","hm","n","p","r","s","soc","y"]},{"uid":16,"name":"maware","domain":"archive.mawa.re","http":true,"https":false,"software":"foolfuuka","boards":["t"],"files":["t"]},{"uid":19,"name":"Deniable Plausibility","domain":"boards.deniableplausibility.net","http":true,"https":false,"software":"foolfuuka","boards":["v","vg"],"files":["v","vg"]},{"uid":19,"name":"Innovandalism Archive","domain":"boards.innovandalism.eu","http":true,"https":false,"software":"foolfuuka","boards":["v"],"files":[]},{"uid":13,"name":"Foolz Beta","domain":"beta.foolz.us","http":true,"https":true,"withCredentials":true,"software":"foolfuuka","boards":["a","biz","c","co","d","diy","gd","int","jp","m","out","po","s4s","sci","sp","tg","tv","u","vg","vp","vr","wsg"],"files":["a","biz","c","co","d","diy","gd","jp","m","po","s4s","sci","tg","u","vg","vp","vr","wsg"]}],
     to: function(dest, data) {
       var archive;
       archive = (dest === 'search' || dest === 'board' ? Redirect.data.thread : Redirect.data[dest])[data.boardID];
@@ -11183,7 +11127,6 @@
         return;
       }
       entry = {
-        type: 'header',
         el: $.el('a', {
           textContent: 'Show announcement',
           className: 'show-announcement',
@@ -11194,7 +11137,7 @@
           return psa.hidden;
         }
       };
-      $.event('AddMenuEntry', entry);
+      Header.menu.addEntry(entry);
       $.on(entry.el, 'click', PSAHiding.toggle);
       PSAHiding.btn = btn = $.el('span', {
         innerHTML: '[<a href=javascript:;>Dismiss</a>]',
@@ -11352,8 +11295,7 @@
       input = $('input', el);
       $.on(input, 'change', this.toggle);
       $.sync('Header catalog links', CatalogLinks.set);
-      $.event('AddMenuEntry', {
-        type: 'header',
+      Header.menu.addEntry({
         el: el,
         order: 95
       });
@@ -11885,7 +11827,7 @@
         });
       }
       if (board === 'sci') {
-        $.globalEval("window.addEventListener('jsmath', function(e) {\n  if (jsMath.loaded) {\n    // process one post\n    jsMath.ProcessBeforeShowing(e.detail);\n  } else {\n    // load jsMath and process whole document\n    jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);\n    jsMath.Autoload.LoadJsMath();\n  }\n}, false);");
+        $.globalEval("window.addEventListener('jsmath', function(e) {\n  if (jsMath.loaded) {\n    // process one post\n    jsMath.ProcessBeforeShowing(document.getElementById(e.detail));\n  } else {\n    // load jsMath and process whole document\n    jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);\n    jsMath.Autoload.LoadJsMath();\n  }\n}, false);");
         return Post.callbacks.push({
           name: 'Parse /sci/ math',
           cb: this.math
@@ -11912,7 +11854,7 @@
       if (this.isClone || !$('.math', this.nodes.comment)) {
         return;
       }
-      return $.event('jsmath', this.nodes.post, window);
+      return $.event('jsmath', this.nodes.post.id, window);
     }
   };
 
@@ -12215,31 +12157,31 @@
           }
           break;
         case Conf['Next thread']:
-          if (g.VIEW !== 'index') {
+          if (g.VIEW !== 'index' || Conf['Index Mode'] === 'catalog') {
             return;
           }
           Nav.scroll(+1);
           break;
         case Conf['Previous thread']:
-          if (g.VIEW !== 'index') {
+          if (g.VIEW !== 'index' || Conf['Index Mode'] === 'catalog') {
             return;
           }
           Nav.scroll(-1);
           break;
         case Conf['Expand thread']:
-          if (g.VIEW !== 'index') {
+          if (g.VIEW !== 'index' || Conf['Index Mode'] === 'catalog') {
             return;
           }
           ExpandThread.toggle(thread);
           break;
         case Conf['Open thread']:
-          if (g.VIEW !== 'index') {
+          if (g.VIEW !== 'index' || Conf['Index Mode'] === 'catalog') {
             return;
           }
           Keybinds.open(thread);
           break;
         case Conf['Open thread tab']:
-          if (g.VIEW !== 'index') {
+          if (g.VIEW !== 'index' || Conf['Index Mode'] === 'catalog') {
             return;
           }
           Keybinds.open(thread, true);
@@ -12628,7 +12570,7 @@
         var response;
         e.preventDefault();
         response = field.value.trim();
-        if (!/\s/.test(response)) {
+        if (!/\s|^\d+$/.test(response)) {
           field.value = "" + response + " " + response;
         }
         return this.submit();
@@ -13174,7 +13116,6 @@
       Settings.addSection('Sauce', Settings.sauce);
       Settings.addSection('Advanced', Settings.advanced);
       Settings.addSection('Keybinds', Settings.keybinds);
-      $.on(d, 'AddSettingsSection', Settings.addSection);
       $.on(d, 'OpenSettings', function(e) {
         return Settings.open(e.detail);
       });
@@ -13238,10 +13179,7 @@
     },
     sections: [],
     addSection: function(title, open) {
-      var hyphenatedTitle, _ref;
-      if (typeof title !== 'string') {
-        _ref = title.detail, title = _ref.title, open = _ref.open;
-      }
+      var hyphenatedTitle;
       hyphenatedTitle = title.toLowerCase().replace(/\s+/g, '-');
       return Settings.sections.push({
         title: title,
@@ -13923,7 +13861,6 @@
       init('Banner', Banner);
       init('Navigate', Navigate);
       init('Flash Features', Flash);
-      $.on(d, 'AddCallback', Main.addCallback);
       return $.ready(Main.initReady);
     },
     initStyle: function() {
@@ -14070,25 +14007,6 @@
         }
         return $.set('previousversion', g.VERSION);
       });
-    },
-    addCallback: function(e) {
-      var Klass, obj;
-      obj = e.detail;
-      if (typeof obj.callback.name !== 'string') {
-        throw new Error("Invalid callback name: " + obj.callback.name);
-      }
-      switch (obj.type) {
-        case 'Post':
-          Klass = Post;
-          break;
-        case 'Thread':
-          Klass = Thread;
-          break;
-        default:
-          return;
-      }
-      obj.callback.isAddon = true;
-      return Klass.callbacks.push(obj.callback);
     },
     handleErrors: function(errors) {
       var div, error, logs, _i, _len;

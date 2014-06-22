@@ -18,7 +18,7 @@ Fourchan =
         window.addEventListener('jsmath', function(e) {
           if (jsMath.loaded) {
             // process one post
-            jsMath.ProcessBeforeShowing(e.detail);
+            jsMath.ProcessBeforeShowing(document.getElementById(e.detail));
           } else {
             // load jsMath and process whole document
             jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);
@@ -39,4 +39,4 @@ Fourchan =
     return
   math: ->
     return if @isClone or !$ '.math', @nodes.comment
-    $.event 'jsmath', @nodes.post, window
+    $.event 'jsmath', @nodes.post.id, window

@@ -122,11 +122,11 @@ Unread =
   onUpdate: (e) ->
     if e.detail[404]
       Unread.update()
-    else if !Conf['Quote Threading']
-      Unread.addPosts e.detail.newPosts
-    else
+    else if Conf['Quote Threading']
       Unread.read()
       Unread.update()
+    else
+      Unread.addPosts e.detail.newPosts.map (fullID) -> g.posts[fullID]
 
   readSinglePost: (post) ->
     {ID} = post

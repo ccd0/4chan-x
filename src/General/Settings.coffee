@@ -16,8 +16,7 @@ Settings =
     Settings.addSection 'Advanced', Settings.advanced
     Settings.addSection 'Keybinds', Settings.keybinds
 
-    $.on d, 'AddSettingsSection',   Settings.addSection
-    $.on d, 'OpenSettings',         (e) -> Settings.open e.detail
+    $.on d, 'OpenSettings', (e) -> Settings.open e.detail
 
     settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
     return if settings.disableAll
@@ -72,8 +71,6 @@ Settings =
 
   sections: []
   addSection: (title, open) ->
-    if typeof title isnt 'string'
-      {title, open} = title.detail
     hyphenatedTitle = title.toLowerCase().replace /\s+/g, '-'
     Settings.sections.push {title, hyphenatedTitle, open}
   openSection: ->

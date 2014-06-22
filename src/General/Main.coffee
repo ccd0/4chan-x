@@ -142,7 +142,6 @@ Main =
     init 'Navigate',                  Navigate
     init 'Flash Features',            Flash
 
-    $.on d, 'AddCallback', Main.addCallback
     $.ready Main.initReady
 
   initStyle: ->
@@ -259,20 +258,6 @@ Main =
       else
         Settings.open()
       $.set 'previousversion', g.VERSION
-
-  addCallback: (e) ->
-    obj = e.detail
-    unless typeof obj.callback.name is 'string'
-      throw new Error "Invalid callback name: #{obj.callback.name}"
-    switch obj.type
-      when 'Post'
-        Klass = Post
-      when 'Thread'
-        Klass = Thread
-      else
-        return
-    obj.callback.isAddon = true
-    Klass.callbacks.push obj.callback
 
   handleErrors: (errors) ->
     unless errors instanceof Array
