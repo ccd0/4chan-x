@@ -16943,8 +16943,7 @@
         textContent: 'Settings'
       });
       $.on(el, 'click', this.open);
-      $.event('AddMenuEntry', {
-        type: 'header',
+      Header.menu.addEntry({
         el: el,
         order: 1
       });

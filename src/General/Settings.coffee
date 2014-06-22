@@ -8,8 +8,7 @@ Settings =
       textContent: 'Settings'
     $.on el, 'click', @open
 
-    $.event 'AddMenuEntry',
-      type: 'header'
+    Header.menu.addEntry
       el: el
       order: 1
 
