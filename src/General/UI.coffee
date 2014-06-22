@@ -188,12 +188,6 @@ UI = do ->
       @parseEntry entry
       @entries.push entry
 
-    rmEntry: (e) =>
-      entry = e.detail
-      return if entry.type isnt @type
-      index = @entries.indexOf entry
-      @entries.splice index, 1
-
     parseEntry: (entry) ->
       {el, subEntries} = entry
       $.addClass el, 'entry'

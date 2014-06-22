@@ -360,9 +360,9 @@ MascotTools =
     else
       return new Notice 'warning', "Failed to import mascot. Is file a properly formatted JSON file?", 5
 
-    [message, type] = if name and ilen = imported.length
+    [message, type] = if name
       ["#{name} successfully imported!", 'info']
-    else if ilen
+    else if ilen = imported.length
       ["#{ilen} mascots successfully imported!", 'info']
     else
       ["Failed to import any mascots. ;__;", 'info']
@@ -377,7 +377,7 @@ MascotTools =
       hyphenatedTitle: 'mascots'
 
   parse: (mascot, userMascots, imported) ->
-    unless name = mascot["Mascot"] and image = mascot.image
+    unless (name = mascot["Mascot"]) and image = mascot.image
       message = "Failed to import a mascot. File file has no #{if name
         'image'
       else if image
@@ -386,12 +386,13 @@ MascotTools =
         'name nor image'}."
 
       return new Notice 'warning', message, 5
-      
 
     delete mascot["Mascot"]
 
     if Mascots[name] and not $.remove Conf["Deleted Mascots"], name
       return unless confirm "The mascot #{name} already exists? Would you like to overwrite it?"
+
+    mascot.name = name
 
     imported.push userMascots[name] = Mascots[name] = mascot
 

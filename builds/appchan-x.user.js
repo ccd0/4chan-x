@@ -6336,7 +6336,6 @@
       lastToggledButton = null;
 
       function Menu() {
-        this.rmEntry = __bind(this.rmEntry, this);
         this.onFocus = __bind(this.onFocus, this);
         this.keybinds = __bind(this.keybinds, this);
         this.close = __bind(this.close, this);
@@ -6541,16 +6540,6 @@
       Menu.prototype.addEntry = function(entry) {
         this.parseEntry(entry);
         return this.entries.push(entry);
-      };
-
-      Menu.prototype.rmEntry = function(e) {
-        var entry, index;
-        entry = e.detail;
-        if (entry.type !== this.type) {
-          return;
-        }
-        index = this.entries.indexOf(entry);
-        return this.entries.splice(index, 1);
       };
 
       Menu.prototype.parseEntry = function(entry) {
@@ -14240,7 +14229,7 @@
       } else {
         return new Notice('warning', "Failed to import mascot. Is file a properly formatted JSON file?", 5);
       }
-      _ref = name && (ilen = imported.length) ? ["" + name + " successfully imported!", 'info'] : ilen ? ["" + ilen + " mascots successfully imported!", 'info'] : ["Failed to import any mascots. ;__;", 'info'], message = _ref[0], type = _ref[1];
+      _ref = name ? ["" + name + " successfully imported!", 'info'] : (ilen = imported.length) ? ["" + ilen + " mascots successfully imported!", 'info'] : ["Failed to import any mascots. ;__;", 'info'], message = _ref[0], type = _ref[1];
       $.set('userMascots', userMascots);
       if (len !== Conf["Deleted Mascots"].length) {
         $.set('Deleted Mascots', Conf['Deleted Mascots']);
@@ -14253,7 +14242,7 @@
     },
     parse: function(mascot, userMascots, imported) {
       var image, message, name;
-      if (!(name = mascot["Mascot"] && (image = mascot.image))) {
+      if (!((name = mascot["Mascot"]) && (image = mascot.image))) {
         message = "Failed to import a mascot. File file has no " + (name ? 'image' : image ? 'name' : 'name nor image') + ".";
         return new Notice('warning', message, 5);
       }
@@ -14263,6 +14252,7 @@
           return;
         }
       }
+      mascot.name = name;
       return imported.push(userMascots[name] = Mascots[name] = mascot);
     },
     position: function(mascot) {
