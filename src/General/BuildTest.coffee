@@ -5,8 +5,7 @@ BuildTest =
     a = $.el 'a',
       textContent: 'Test HTML building'
     $.on a, 'click', @testOne
-    $.event 'AddMenuEntry',
-      type: 'post'
+    Menu.menu.addEntry
       el: a
       open: (post) ->
         a.dataset.fullID = post.fullID
@@ -15,8 +14,7 @@ BuildTest =
     a2 = $.el 'a',
       textContent: 'Test HTML building'
     $.on a2, 'click', @testAll
-    $.event 'AddMenuEntry',
-      type: 'header'
+    Header.menu.addEntry
       el: a2
 
   runTest: (post) ->
