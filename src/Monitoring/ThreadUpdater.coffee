@@ -52,8 +52,7 @@ ThreadUpdater =
 
     subEntries.push el: @settings
 
-    $.event 'AddMenuEntry', @entry =
-      type: 'header'
+    Header.menu.addEntry @entry =
       el: $.el 'span',
         textContent: 'Updater'
       order: 110
@@ -63,40 +62,6 @@ ThreadUpdater =
       name: 'Thread Updater'
       cb:   @node
   
-  disconnect: ->
-    return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
-    $.off @timer,  'click', @update
-    $.off @status, 'click', @update
-    
-    clearTimeout @timeoutID if @timeoutID
-
-    for entry in @entry.subEntries
-      {el} = entry
-      input = el.firstElementChild
-      $.off input, 'change', $.cb.checked
-      $.off input, 'change', @cb.scrollBG
-      $.off input, 'change', @cb.update
-
-    $.off @settings, 'click',         @intervalShortcut
-    $.off window, 'online offline',   @cb.online
-    $.off d,      'QRPostSuccessful', @cb.checkpost
-    $.off d,      'visibilitychange', @cb.visibility
-
-    @set 'timer', null
-    @set 'status', 'Offline'
-
-    $.event 'rmMenuEntry', @entry
-
-    if Conf['Updater and Stats in Header']
-      Header.rmShortcut @dialog
-    else
-      $.rmClass doc, 'float'
-      $.rm @dialog
-
-    delete @[name] for name in ['checkPostCount', 'timer', 'status', 'isUpdating', 'entry', 'dialog', 'thread', 'root', 'lastPost', 'outdateCount', 'online', 'seconds', 'timeoutID']
-
-    Thread.callbacks.disconnect 'Thread Updater'
-
   node: ->
     ThreadUpdater.thread       = @
     ThreadUpdater.root         = @OP.nodes.root.parentNode
@@ -173,7 +138,7 @@ ThreadUpdater =
           ThreadUpdater.thread.kill()
           $.event 'ThreadUpdate',
             404: true
-            thread: ThreadUpdater.thread
+            threadID: ThreadUpdater.thread.fullID
         else
           ThreadUpdater.outdateCount++
           ThreadUpdater.setInterval()
@@ -291,9 +256,6 @@ ThreadUpdater =
       node = Build.postFromObject postObject, ThreadUpdater.thread.board.ID
       posts.push new Post node, ThreadUpdater.thread, ThreadUpdater.thread.board
 
-    deletedPosts = []
-    deletedFiles = []
-
     # Check for deleted posts/files.
     ThreadUpdater.thread.posts.forEach (post) ->
       # XXX tmp fix for 4chan's racing condition
@@ -303,12 +265,10 @@ ThreadUpdater =
 
       unless ID in index
         post.kill()
-        deletedPosts.push post
       else if post.isDead
         post.resurrect()
       else if post.file and not (post.file.isDead or ID in files)
         post.kill true
-        deletedFiles.push post
 
       # Fetching your own posts after posting
       if ThreadUpdater.postID and ThreadUpdater.postID is ID
@@ -353,9 +313,7 @@ ThreadUpdater =
 
     $.event 'ThreadUpdate',
       404: false
-      thread: ThreadUpdater.thread
-      newPosts: posts
-      deletedPosts: deletedPosts
-      deletedFiles: deletedFiles
+      threadID: ThreadUpdater.thread.fullID
+      newPosts: posts.map (post) -> post.fullID
       postCount: OP.replies + 1
       fileCount: OP.images + (!!ThreadUpdater.thread.OP.file and !ThreadUpdater.thread.OP.file.isDead)

@@ -1,3 +1,32 @@
+### v1.8.1 
+*2014-06-19*
+
+**MayhemYDG**
+- More API changes:
+  - `ThreadUpdate`:
+    - `thread` field replaced with `threadID` containing `fullID` of thread (e.g. `"g.39894014"`)
+    - `newPosts` field changed from list of `Post` objects to list of post `fullID`s.
+    - `deletedPosts` and `deletedFiles` removed
+  - `QRPostSuccessful`:
+    - `board` field replaced with `boardID` containing name of board (e.g. `"g"`)
+  - `QRPostSuccessful_`:
+    - `boardID` added; is now identical to `QRPostSuccessful`
+
+## v1.8.0 
+*2014-06-18*
+
+**ccd0**
+- Add compatibility with Greasemonkey 2.0.
+- Much of Mayhem's [API](https://github.com/MayhemYDG/4chan-x/wiki) has been removed due to issues with Greasemonkey 2.0.
+  - The `AddCallback`, `QRPostSelection`, `QRGetSelectedPost`, and `QRAddPreSubmitHook` events are removed.
+  - Callback functions can no longer be passed via the `AddMenuEntry` and `CreateNotification` events.
+  - The information sent with `QRPostSuccessful` and `ThreadUpdate` events has been reduced:
+    - Board objects have been reduced to the form `{ID: "g"}`.
+    - Thread and post objects have been reduced to the form `{ID: 39894014, fullID: "g.39894014"}`.
+    - More fields may be added if requested.
+  - The `AddMenuEntry` and `AddSettingsSection` events continue to not work in Chromium should be considered deprecated.  They are provided for backwards compatibility with existing scripts.  Suggestions for replacements are welcome.
+  - The `4chanXInitFinished`, `CloseMenu`, `QRDialogCreation`, and `OpenSettings` events are unchanged, as is the undocumented `QRPostSuccessful_` (`QRPostSuccessful` without the board object, used by Name Sync on Chromium).
+
 ### v1.7.63 
 *2014-06-16*
 

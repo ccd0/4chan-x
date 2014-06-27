@@ -4,10 +4,6 @@
 $ = (selector, root=d.body) ->
   root.querySelector selector
 
-$.extend = (obj, prop) ->
-  obj[key] = val for key, val of prop when prop.hasOwnProperty key
-  return
-
 $.DAY = 24 * 
   $.HOUR = 60 * 
     $.MINUTE = 60 * 
@@ -181,6 +177,10 @@ $.off = (el, events, handler) ->
   return
 
 $.event = (event, detail, root=d) ->
+  <% if (type === 'userscript') { %>
+  if detail? and typeof cloneInto is 'function'
+    detail = cloneInto detail, document.defaultView
+  <% } %>
   root.dispatchEvent new CustomEvent event, {bubbles: true, detail}
 
 $.open = 

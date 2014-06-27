@@ -54,8 +54,7 @@ Header =
 
     @addShortcut menuButton
 
-    $.event 'AddMenuEntry',
-      type: 'header'
+    @menu.addEntry
       el: $.el 'span',
         textContent: 'Header'
       order: 107
@@ -427,9 +426,8 @@ Header =
     Header.menu.toggle e, @, g
 
   createNotification: (e) ->
-    {type, content, lifetime, cb} = e.detail
+    {type, content, lifetime} = e.detail
     notice = new Notice type, content, lifetime
-    cb notice if cb
 
   areNotificationsEnabled: false
   enableDesktopNotifications: ->

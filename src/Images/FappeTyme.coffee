@@ -10,8 +10,7 @@ FappeTyme =
       FappeTyme[lc] = input = el.firstElementChild
       $.on input, 'change', FappeTyme.cb.toggle.bind input
 
-      $.event 'AddMenuEntry',
-        type:  'header'
+      Header.menu.addEntry
         el:    el
         order: 97
 

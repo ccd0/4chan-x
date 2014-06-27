@@ -4,7 +4,6 @@ ThreadHiding =
 
     @db = new DataBoard 'hiddenThreads'
     @syncCatalog()
-    $.on d, 'IndexBuild', @onIndexBuild
     Thread.callbacks.push
       name: 'Thread Hiding'
       cb:   @node
@@ -15,12 +14,10 @@ ThreadHiding =
     return unless Conf['Thread Hiding Buttons']
     $.prepend @OP.nodes.root, ThreadHiding.makeButton @, 'hide'
 
-  onIndexBuild: ({detail: nodes}) ->
-    for root, i in nodes by 2
+  onIndexBuild: (nodes) ->
+    for root in nodes
       thread = Get.threadFromRoot root
-      continue unless thread.isHidden
-      if thread.stub and root.contains thread.stub
-        # When we come back to a page, the stub is already there.
+      if thread.isHidden and thread.stub and !root.contains thread.stub
         ThreadHiding.makeStub thread, root
     return
 
@@ -80,8 +77,7 @@ ThreadHiding =
 
       makeStub = UI.checkbox 'Stubs', ' Make stub'
 
-      $.event 'AddMenuEntry',
-        type: 'post'
+      Menu.menu.addEntry
         el: div
         order: 20
         open: ({thread, isReply}) ->
@@ -97,8 +93,7 @@ ThreadHiding =
         href: 'javascript:;'
       $.on div, 'click', ThreadHiding.menu.show 
 
-      $.event 'AddMenuEntry',
-        type: 'post'
+      Menu.menu.addEntry
         el: div
         order: 20
         open: ({thread, isReply}) ->
@@ -112,8 +107,7 @@ ThreadHiding =
         href: 'javascript:;'
       $.on hideStubLink, 'click', ThreadHiding.menu.hideStub
 
-      $.event 'AddMenuEntry',
-        type: 'post'
+      Menu.menu.addEntry
         el: hideStubLink
         order: 15
         open: ({thread, isReply}) ->

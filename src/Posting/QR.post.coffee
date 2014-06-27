@@ -111,7 +111,6 @@ QR.post = class
     rectList = @nodes.el.parentNode.getBoundingClientRect()
     @nodes.el.parentNode.scrollLeft += rectEl.left + rectEl.width/2 - rectList.left - rectList.width/2
     @load()
-    $.event 'QRPostSelection', @
 
   load: ->
     # Load this post's values.

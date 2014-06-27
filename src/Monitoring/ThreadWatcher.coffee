@@ -15,7 +15,6 @@ ThreadWatcher =
     @list   = @dialog.lastElementChild
 
     $.on d, 'QRPostSuccessful',   @cb.post
-    $.on d, 'ThreadUpdate',       @cb.threadUpdate if g.VIEW is 'thread'
     $.on sc, 'click', @toggleWatcher
     $.on $('.move>.close', ThreadWatcher.dialog), 'click', @toggleWatcher
 
@@ -88,12 +87,12 @@ ThreadWatcher =
       [boardID, threadID] = @parentNode.dataset.fullID.split '.'
       ThreadWatcher.rm boardID, +threadID
     post: (e) ->
-      {board, postID, threadID} = e.detail
+      {boardID, threadID, postID} = e.detail
       if postID is threadID
         if Conf['Auto Watch']
           $.set 'AutoWatch', threadID
       else if Conf['Auto Watch Reply']
-        ThreadWatcher.add board.threads[threadID]
+        ThreadWatcher.add g.threads[boardID + '.' + threadID]
     onIndexRefresh: ->
       {db}    = ThreadWatcher
       boardID = g.BOARD.ID
@@ -105,7 +104,7 @@ ThreadWatcher =
           ThreadWatcher.db.set {boardID, threadID, val: data}
       ThreadWatcher.refresh()
     onThreadRefresh: (e) ->
-      {thread} = e.detail
+      thread = g.threads[e.detail.threadID]
       return unless e.detail[404] and ThreadWatcher.db.get {boardID: thread.board.ID, threadID: thread.ID}
       # Update 404 status.
       ThreadWatcher.add thread
@@ -228,7 +227,7 @@ ThreadWatcher =
     refreshers: []
     init: ->
       return if !Conf['Thread Watcher']
-      menu = new UI.Menu 'thread watcher'
+      menu = @menu = new UI.Menu 'thread watcher'
       $.on $('.menu-button', ThreadWatcher.dialog), 'click', (e) ->
         menu.toggle e, @, ThreadWatcher
       @addHeaderMenuEntry()
@@ -238,8 +237,7 @@ ThreadWatcher =
       return if g.VIEW isnt 'thread'
       entryEl = $.el 'a',
         href: 'javascript:;'
-      $.event 'AddMenuEntry',
-        type: 'header'
+      Header.menu.addEntry
         el: entryEl
         order: 60
       $.on entryEl, 'click', -> ThreadWatcher.toggle g.threads["#{g.BOARD}.#{g.THREADID}"]
@@ -259,7 +257,6 @@ ThreadWatcher =
       entries.push
         cb: ThreadWatcher.cb.openAll
         entry:
-          type: 'thread watcher'
           el: $.el 'a',
             textContent: 'Open all threads'
         refresh: -> (if ThreadWatcher.list.firstElementChild then $.rmClass else $.addClass) @el, 'disabled'
@@ -268,7 +265,6 @@ ThreadWatcher =
       entries.push
         cb: ThreadWatcher.cb.checkThreads
         entry:
-          type: 'thread watcher'
           el: $.el 'a',
             textContent: 'Check 404\'d threads'
         refresh: -> (if $('div:not(.dead-thread)', ThreadWatcher.list) then $.rmClass else $.addClass) @el, 'disabled'
@@ -277,7 +273,6 @@ ThreadWatcher =
       entries.push
         cb: ThreadWatcher.cb.pruneDeads
         entry:
-          type: 'thread watcher'
           el: $.el 'a',
             textContent: 'Prune 404\'d threads'
         refresh: -> (if $('.dead-thread', ThreadWatcher.list) then $.rmClass else $.addClass) @el, 'disabled'
@@ -288,7 +283,6 @@ ThreadWatcher =
         subEntries.push @createSubEntry name, conf[1]
       entries.push
         entry:
-          type: 'thread watcher'
           el: $.el 'span',
             textContent: 'Settings'
           subEntries: subEntries
@@ -297,7 +291,7 @@ ThreadWatcher =
         entry.el.href = 'javascript:;' if entry.el.nodeName is 'A'
         $.on entry.el, 'click', cb if cb
         @refreshers.push refresh.bind entry if refresh
-        $.event 'AddMenuEntry', entry
+        @menu.addEntry entry
       return
     createSubEntry: (name, desc) ->
       entry =

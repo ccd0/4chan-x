@@ -34,26 +34,6 @@ ThreadStats =
     ThreadStats.update postCount, fileCount
     $.on d, 'ThreadUpdate', ThreadStats.onUpdate
 
-  disconnect: ->
-    return if g.VIEW isnt 'thread' or !Conf['Thread Stats']
-
-    if Conf['Updater and Stats in Header']
-      Header.rmShortcut @dialog
-    else
-      $.rm @dialog
-
-    clearTimeout @timeout # a possible race condition might be that this won't clear in time, but the resulting error will prevent issues anyways.
-
-    delete @timeout
-    delete @thread
-    delete @postCountEl
-    delete @fileCountEl
-    delete @pageCountEl
-    delete @dialog
-
-    Thread.callbacks.disconnect 'Thread Stats'
-    $.off d, 'ThreadUpdate', ThreadStats.onUpdate
-
   onUpdate: (e) ->
     return if e.detail[404]
     {postCount, fileCount} = e.detail

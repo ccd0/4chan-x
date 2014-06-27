@@ -55,8 +55,7 @@ Index =
         when 'Anchor Hidden Threads'
           $.on input, 'change', @cb.sort
 
-    $.event 'AddMenuEntry',
-      type: 'header'
+    Header.menu.addEntry
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 98
@@ -438,11 +437,9 @@ Index =
     nodes
 
   buildStructure: (nodes) ->
-    result = $.frag()
-    i = 0
-    $.add result, [node, $.el 'hr'] while node = nodes[i++]
-    $.event 'IndexBuild', result.children
-    $.add Index.root, result
+    for node in nodes
+      $.add Index.root, [node, $.el 'hr']
+    ThreadHiding.onIndexBuild nodes
 
   isSearching: false
 

@@ -249,8 +249,7 @@ ImageExpand =
       for name, conf of Config.imageExpansion
         subEntries.push createSubEntry name, conf[1]
 
-      $.event 'AddMenuEntry',
-        type: 'header'
+      Header.menu.addEntry
         el: el
         order: 105
         subEntries: subEntries

@@ -12,21 +12,6 @@ Unread =
       name: 'Unread'
       cb:   @node
 
-  disconnect: ->
-    return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Favicon'] and !Conf['Desktop Notifications']
-
-    Unread.db.disconnect()
-    $.rm hr if {hr} = Unread
-
-    delete @[name] for name in ['db', 'hr', 'posts', 'postsQuotingYou', 'thread', 'title', 'lastReadPost']
-
-    $.off d, '4chanXInitFinished',      @ready
-    $.off d, 'ThreadUpdate',            @onUpdate
-    $.off d, 'scroll visibilitychange', @read
-    $.off d, 'visibilitychange',        @setLine if Conf['Unread Line'] and not Conf['Quote Threading']
-
-    Thread.callbacks.disconnect 'Unread'
-
   node: ->
     Unread.thread = @
     Unread.title  = d.title
@@ -129,7 +114,7 @@ Unread =
     if e.detail[404]
       Unread.update()
     else if !QuoteThreading.enabled
-      Unread.addPosts e.detail.newPosts
+      Unread.addPosts e.detail.newPosts.map (fullID) -> g.posts[fullID]
     else
       Unread.read()
       Unread.update()

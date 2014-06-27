@@ -13,8 +13,7 @@ QuoteThreading =
     input = $ 'input', @controls
     $.on input, 'change', @toggle
 
-    $.event 'AddMenuEntry', @entry =
-      type:  'header'
+    Header.menu.addEntry @entry =
       el:    @controls
       order: 98
 
@@ -23,19 +22,6 @@ QuoteThreading =
     Post.callbacks.push
       name: 'Quote Threading'
       cb:   @node
-
-  disconnect: ->
-    return unless Conf['Quote Threading'] and g.VIEW is 'thread'
-    input = $ 'input', @controls
-    $.off input, 'change', @toggle
-
-    $.event 'rmMenuEntry', @entry
-
-    delete @enabled
-    delete @controls
-    delete @entry
-
-    Post.callbacks.disconnect 'Quote Threading'
 
   ready: ->
     $.off d, '4chanXInitFinished', QuoteThreading.ready

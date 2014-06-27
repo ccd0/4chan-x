@@ -6,7 +6,6 @@ ArchiveLink =
       textContent: 'Archive'
 
     entry =
-      type: 'post'
       el: div
       order: 90
       open: ({ID, thread, board}) ->
@@ -25,7 +24,7 @@ ArchiveLink =
       # Add a sub entry for each type.
       entry.subEntries.push @createSubEntry type[0], type[1]
 
-    $.event 'AddMenuEntry', entry
+    Menu.menu.addEntry entry
 
   createSubEntry: (text, type) ->
     el = $.el 'a',

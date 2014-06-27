@@ -61,8 +61,7 @@ Gallery =
     for name of Config.gallery
       {el} = createSubEntry name
 
-      $.event 'AddMenuEntry',
-        type: 'gallery'
+      nodes.menu.addEntry
         el: el
         order: 0
 
@@ -235,8 +234,7 @@ Gallery =
       for name of Config.gallery
         subEntries.push createSubEntry name
 
-      $.event 'AddMenuEntry',
-        type: 'header'
+      Header.menu.addEntry
         el: el
         order: 105
         subEntries: subEntries
