@@ -12,6 +12,7 @@ module.exports = (grunt) ->
         get: ->
           pkg = grunt.config 'pkg'
           pkg.importHTML = importHTML
+          pkg.tests_enabled or= false
           pkg
         enumerable: true
       )
@@ -185,6 +186,11 @@ module.exports = (grunt) ->
 
     grunt.log.ok 'pkg.type = %s', type
 
+  grunt.registerTask 'enable-tests', 'Include testing code', () ->
+    pkg = grunt.config 'pkg'
+    pkg.tests_enabled = true
+    grunt.config 'pkg', pkg
+
   grunt.registerTask 'build', [
     'concurrent:build'
   ]
@@ -205,6 +211,12 @@ module.exports = (grunt) ->
     'coffee:script'
     'concat:userscript'
     'clean:tmpuserscript'
+  ]
+
+  grunt.registerTask 'build-tests', [
+    'enable-tests'
+    'build-userscript'
+    'build-crx'
   ]
 
   grunt.registerTask 'testing', [

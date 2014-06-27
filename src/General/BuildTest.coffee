@@ -1,3 +1,4 @@
+<% if (tests_enabled) { %>
 BuildTest =
   init: ->
     return if !Conf['Menu']
@@ -51,3 +52,4 @@ BuildTest =
     g.posts.forEach (post) ->
       unless post.isClone or post.isFetchedQuote or $ '.abbr', post.nodes.comment
         BuildTest.runTest post
+<% } %>

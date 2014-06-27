@@ -330,7 +330,9 @@ Main =
     ['Keybinds',                  Keybinds]
     ['Show Dice Roll',            Dice]
     ['Banner',                    Banner]
+    <% if (tests_enabled) { %>
     ['Build Test',                BuildTest]
+    <% } %>
   ]
 
 Main.init()

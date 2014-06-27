@@ -3,6 +3,7 @@ class Post
   toString: -> @ID
 
   constructor: (root, @thread, @board, that={}) ->
+    <% if (tests_enabled) { %>
     root2 = root.cloneNode true
     for el in $$ '.mobile', root2
       $.rm el
@@ -15,6 +16,7 @@ class Post
     for el in $$ 'img[src]', root2
       el.src = el.src.replace /^(\w+:\/\/)[0-2](\.t\.4cdn\.org\/)/, '$10$2'
     @normalizedOriginal = root2
+    <% } %>
 
     @ID     = +root.id[2..]
     @fullID = "#{@board}.#{@ID}"
