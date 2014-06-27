@@ -95,9 +95,8 @@ Build =
     else
       h_tripcode = ''
 
-    email_processed = encodeURIComponent(email).replace /%40/g, '@'
     if email
-      h_emailStart = "<a href='mailto:#{E email_processed}' class='useremail'>"
+      h_emailStart = "<a href='mailto:#{E encodeURIComponent(email)}' class='useremail'>"
       h_emailEnd   = '</a>'
     else
       h_emailStart = ''
