@@ -24,7 +24,7 @@ BuildTest =
     if !x2.isEqualNode y2
       return [x2, y2]
     i = 0
-    while (x2 = x.childNodes[i]) and (y2 = y.childNodes[i++])
+    while !!(x2 = x.childNodes[i]) & !!(y2 = y.childNodes[i++])
       if !x2.isEqualNode y2
         return BuildTest.firstDiff x2, y2
     return [x2, y2]
