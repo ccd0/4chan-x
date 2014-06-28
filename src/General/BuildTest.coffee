@@ -36,7 +36,10 @@ BuildTest =
       Build.spoilerRange[post.board.ID] = posts[0].custom_spoiler
       for postData in posts
         if postData.no is post.ID
+          t1 = new Date().getTime()
           root = Build.postFromObject postData, post.board.ID
+          t2 = new Date().getTime()
+          BuildTest.time += t2 - t1
           post2 = new Post root, post.thread, post.board
           x = post.normalizedOriginal
           y = post2.normalizedOriginal
@@ -63,13 +66,14 @@ BuildTest =
 
   postsRemaining: 0
   postsFailed: 0
+  time: 0
 
   report: ->
     if BuildTest.postsFailed
-      new Notice 'warning', "#{BuildTest.postsFailed} post(s) differ", 30
+      new Notice 'warning', "#{BuildTest.postsFailed} post(s) differ (#{BuildTest.time} ms)", 30
     else
-      new Notice 'success', 'All correct', 5
-    BuildTest.postsFailed = 0
+      new Notice 'success', "All correct (#{BuildTest.time} ms)", 5
+    BuildTest.postsFailed = BuildTest.time = 0
 
   cb:
     testOne: ->
