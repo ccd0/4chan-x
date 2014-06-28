@@ -31,7 +31,9 @@ BuildTest =
 
   runTest: (post) ->
     $.cache "//a.4cdn.org/#{post.board.ID}/thread/#{post.thread.ID}.json", ->
-      for postData in @response.posts
+      {posts} = @response
+      Build.spoilerRange[post.board.ID] = posts[0].custom_spoiler
+      for postData in posts
         if postData.no is post.ID
           root = Build.postFromObject postData, post.board.ID
           post2 = new Post root, post.thread, post.board
