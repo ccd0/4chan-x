@@ -10,8 +10,6 @@ Build =
     text.replace /&(amp|#039|quot|lt|gt);/g, (c) ->
       {'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>'}[c]
   shortFilename: (filename, isReply) ->
-    # FILENAME SHORTENING SCIENCE:
-    # The file extension is not taken into account.
     threshold = 30
     ext = filename.match(/\.?[^\.]*$/)[0]
     if filename.length - ext.length > threshold
@@ -70,6 +68,7 @@ Build =
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
         isDeleted: false
+        tag:       data.tag
     Build.post o
   post: (o, isArchived) ->
     ###
@@ -91,9 +90,12 @@ Build =
 
     if isOP
       h_sideArrows = ''
-      h_subject = "<span class='subject'>#{E subject}</span> "
     else
       h_sideArrows = "<div class='sideArrows' id='sa#{+postID}'>&gt;&gt;</div>"
+
+    if isOP or boardID is 'f'
+      h_subject = "<span class='subject'>#{E subject}</span> "
+    else
       h_subject = ''
 
     h_postClass = "post #{if isOP then 'op' else 'reply'}#{if capcode is 'admin_highlight' then ' highlightPost' else ''}"
@@ -110,6 +112,9 @@ Build =
     else
       h_emailStart = ''
       h_emailEnd   = ''
+
+    unless isOP and boardID is 'f'
+      h_emailEnd  += ' '
 
     switch capcode
       when 'admin', 'admin_highlight'
@@ -135,7 +140,7 @@ Build =
       h_nameClass = ''
 
     if !capcode and uniqueID
-      h_userID = " <span class='posteruid id_#{E uniqueID}'>(ID: <span class='hand' title='Highlight posts by this ID'>#{E uniqueID}</span>)</span> "
+      h_userID = " <span class='posteruid id_#{E uniqueID}'>(ID: <span class='hand' title='Highlight posts by this ID'>#{E uniqueID}</span>)</span>"
     else
       h_userID = ''
 
@@ -147,14 +152,9 @@ Build =
       h_flag = "<span title='#{E flagName}' class='flag flag-#{E flagCode.toLowerCase()}'></span>"
 
     if file?.isDeleted
-      if isOP
-        h_file  = "<div class='file' id='f#{+postID}'><span class='fileThumb'>"
-        h_file +=   "<img src='#{h_staticPath}filedeleted#{h_gifIcon}' alt='File deleted.' class='fileDeleted'>"
-        h_file += '</span></div>'
-      else
-        h_file  = "<div class='file' id='f#{+postID}'><span class='fileThumb'>"
-        h_file +=   "<img src='#{h_staticPath}filedeleted-res#{h_gifIcon}' alt='File deleted.' class='fileDeletedRes'>"
-        h_file += '</span></div>'
+      h_file  = "<div class='file' id='f#{+postID}'><span class='fileThumb'>"
+      h_file +=   "<img src='#{h_staticPath}filedeleted-res#{h_gifIcon}' alt='File deleted.' class='fileDeletedRes retina'>"
+      h_file += '</span></div>'
     else if file
       fileSize  = $.bytesToString file.size
       fileThumb = file.turl
@@ -170,28 +170,31 @@ Build =
       else
         shortFilename = Build.shortFilename file.name, !isOP
 
-      if boardID is 'f'
-        h_imgSrc = ''
-      else
-        h_imgSrc  = "<a class='fileThumb#{if file.isSpoiler then ' imgspoiler' else ''}' href='#{E file.url}' target='_blank'>"
-        h_imgSrc +=   "<img src='#{E fileThumb}' alt='#{E fileSize}' data-md5='#{E file.MD5}' style='height: #{+file.theight}px; width: #{+file.twidth}px;'>"
-        h_imgSrc += '</a>'
-
       if file.url[-4..] is '.pdf'
         h_fileDims = 'PDF'
       else
         h_fileDims = "#{+file.width}x#{+file.height}"
 
-      h_fileTitle1 = ''
-      h_fileTitle2 = ''
-      if file.isSpoiler
-        h_fileTitle1 = " title='#{E file.name}'"
-      else if file.name isnt shortFilename
-        h_fileTitle2 = " title='#{E file.name}'"
+      if boardID is 'f'
+        h_imgSrc = ''
+        h_fileInfo  = "<div class='fileInfo'><span class='fileText' id='fT#{+postID}'>"
+        h_fileInfo +=   "File: <a data-width='#{+file.width}' data-height='#{+file.height}' href='#{E file.url}' target='_blank'>#{E file.name}</a>-(#{E fileSize}, #{h_fileDims}, #{E file.tag})"
+        h_fileInfo += '</span></div>'
+      else
+        h_imgSrc  = "<a class='fileThumb#{if file.isSpoiler then ' imgspoiler' else ''}' href='#{E file.url}' target='_blank'>"
+        h_imgSrc +=   "<img src='#{E fileThumb}' alt='#{E fileSize}' data-md5='#{E file.MD5}' style='height: #{+file.theight}px; width: #{+file.twidth}px;'>"
+        h_imgSrc += '</a>'
 
-      h_fileInfo  = "<div class='fileText' id='fT#{+postID}' #{h_fileTitle1}>"
-      h_fileInfo +=   "File: <a #{h_fileTitle2} href='#{E file.url}' target='_blank'>#{E shortFilename}</a> (#{E fileSize}, #{h_fileDims})"
-      h_fileInfo += '</div>'
+        h_fileTitle1 = ''
+        h_fileTitle2 = ''
+        if file.isSpoiler
+          h_fileTitle1 = " title='#{E file.name}'"
+        else if file.name isnt shortFilename
+          h_fileTitle2 = " title='#{E file.name}'"
+
+        h_fileInfo  = "<div class='fileText' id='fT#{+postID}' #{h_fileTitle1}>"
+        h_fileInfo +=   "File: <a #{h_fileTitle2} href='#{E file.url}' target='_blank'>#{E shortFilename}</a> (#{E fileSize}, #{h_fileDims})"
+        h_fileInfo += '</div>'
 
       h_file = "<div class='file' id='f#{+postID}'>#{h_fileInfo}#{h_imgSrc}</div>"
     else
@@ -228,6 +231,9 @@ Build =
       className: "postContainer #{if isOP then 'op' else 'reply'}Container"
       id: "pc#{postID}"
       innerHTML: <%= grunt.file.read('src/General/html/Build/post.html').replace(/\r?\n\s*/g, '') %>
+
+    if isOP and boardID is 'f'
+      $.rmClass $('.postNum', container), 'desktop'
 
     # Fix pathnames
     for quote in $$ '.quotelink', container

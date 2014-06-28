@@ -210,6 +210,7 @@ Get =
         theight:   data.media.preview_h
         twidth:    data.media.preview_w
         isSpoiler: data.media.spoiler is '1'
+      o.file.tag = JSON.parse(data.media.exif).Tag if boardID is 'f'
 
     board = g.boards[boardID] or
       new Board boardID

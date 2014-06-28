@@ -29,7 +29,7 @@ BuildTest =
         return BuildTest.firstDiff x2, y2
     return [x2, y2]
 
-  runTest: (post) ->
+  testOne: (post) ->
     BuildTest.postsRemaining++
     $.cache "//a.4cdn.org/#{post.board.ID}/thread/#{post.thread.ID}.json", ->
       {posts} = @response
@@ -55,6 +55,12 @@ BuildTest =
           post2.isFetchedQuote = true
           Main.callbackNodes Post, [post2]
 
+  testAll: ->
+    g.posts.forEach (post) ->
+      unless post.isClone or post.isFetchedQuote or $ '.abbr', post.nodes.comment
+        BuildTest.testOne post
+    return
+
   postsRemaining: 0
   postsFailed: 0
 
@@ -65,13 +71,12 @@ BuildTest =
       new Notice 'success', 'All correct', 5
     BuildTest.postsFailed = 0
 
-  testOne: ->
-    BuildTest.runTest g.posts[@dataset.fullID]
-    Menu.menu.close()
+  cb:
+    testOne: ->
+      BuildTest.testOne g.posts[@dataset.fullID]
+      Menu.menu.close()
 
-  testAll: ->
-    g.posts.forEach (post) ->
-      unless post.isClone or post.isFetchedQuote or $ '.abbr', post.nodes.comment
-        BuildTest.runTest post
-    Header.menu.close()
+    testAll: ->
+      BuildTest.testAll()
+      Header.menu.close()
 <% } %>
