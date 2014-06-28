@@ -47,3 +47,7 @@ Note: this is only used to release new versions, and is **not** needed or wanted
 - Edit the sources.
 - If the edits affect regular users, edit the changelog.
 - Open a pull request.
+
+## Archive Maintenance
+
+Archivers should direct their archive pull requests (updated boards, changed protocols, etc) to [4chan X](https://github.com/MayhemYDG/4chan-x/). Appchan does not provide a JSON Interfact to synchronize dynamically as 4chan X does. There is no benefit to updating the archives in this repo and it only creates additional merge overhead.
