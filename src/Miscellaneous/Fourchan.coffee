@@ -34,7 +34,9 @@ Fourchan =
         cb:   @math
   code: ->
     return if @isClone
-    apply = (e) -> pre.innerHTML = e.detail
+    apply = (e) ->
+      pre.innerHTML = e.detail
+      $.addClass pre, 'prettyprinted'
     $.on window, 'prettyprint:cb', apply
     for pre in $$ '.prettyprint:not(.prettyprinted)', @nodes.comment
       $.event 'prettyprint', pre.innerHTML, window

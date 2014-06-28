@@ -15,10 +15,14 @@ class Post
       el.removeAttribute 'rel'
     for el in $$ 'img[src]', root2
       el.src = el.src.replace /^(\w+:\/\/)[0-2](\.t\.4cdn\.org\/)/, '$10$2'
+    Fourchan.code.call nodes: comment: $ '.postMessage', root2
+    for el in $$ 'pre[style=""]', root2
+      el.removeAttribute 'style'
     textNodes = $.X './/text()', root2
     i = 0
     while node = textNodes.snapshotItem i++
       node.data = node.data.replace /\s+/g, ' '
+      $.rm node if node.data is ''
     @normalizedOriginal = root2
     <% } %>
 
