@@ -30,6 +30,7 @@ BuildTest =
     return [x2, y2]
 
   runTest: (post) ->
+    BuildTest.postsRemaining++
     $.cache "//a.4cdn.org/#{post.board.ID}/thread/#{post.thread.ID}.json", ->
       {posts} = @response
       Build.spoilerRange[post.board.ID] = posts[0].custom_spoiler
@@ -43,13 +44,26 @@ BuildTest =
             c.log "#{post.fullID} correct"
           else
             c.log "#{post.fullID} differs"
+            BuildTest.postsFailed++
             [x2, y2] = BuildTest.firstDiff x, y
             c.log x2
             c.log y2
             c.log x.outerHTML
             c.log y.outerHTML
+          BuildTest.postsRemaining--
+          BuildTest.report() if BuildTest.postsRemaining is 0
           post2.isFetchedQuote = true
           Main.callbackNodes Post, [post2]
+
+  postsRemaining: 0
+  postsFailed: 0
+
+  report: ->
+    if BuildTest.postsFailed
+      new Notice 'warning', "#{BuildTest.postsFailed} post(s) differ", 30
+    else
+      new Notice 'success', 'All correct', 5
+    BuildTest.postsFailed = 0
 
   testOne: ->
     BuildTest.runTest g.posts[@dataset.fullID]
