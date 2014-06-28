@@ -161,6 +161,11 @@ Keybinds =
       when Conf['Next Post Quoting You']
         return if g.VIEW is 'catalog'
         QuoteYou.cb.seek 'following'
+      <% if (tests_enabled) { %>
+      when 't'
+        return if g.VIEW is 'catalog'
+        BuildTest.testAll()
+      <% } %>
       else
         return
     e.preventDefault()
