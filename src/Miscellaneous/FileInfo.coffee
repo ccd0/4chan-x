@@ -49,7 +49,8 @@ FileInfo =
     s: (x) ->
       x.innerHTML += E @file.size
     B: (x) ->
-      x.innerHTML += "#{+@file.sizeInBytes} Bytes"
+      sizeB = Math.round(@file.sizeInBytes)
+      x.innerHTML += "#{+sizeB} Bytes"
     K: (x) ->
       sizeKB = Math.round(@file.sizeInBytes/1024)
       x.innerHTML += "#{+sizeKB} KB"
