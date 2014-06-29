@@ -420,7 +420,7 @@ Settings =
         dimensions: '1280x720'
         isImage: true
         isSpoiler: true
-    @nextElementSibling.innerHTML = FileInfo.h_format @value, data
+    FileInfo.format @value, data, @nextElementSibling
   favicon: ->
     Favicon.switch()
     Unread.update() if g.VIEW is 'thread' and Conf['Unread Favicon']
