@@ -66,7 +66,7 @@ Build =
         isDeleted: false
         tag:       data.tag
     Build.post o
-  post: (o, isArchived) ->
+  post: (o) ->
     ###
     This function contains code from 4chan-JS (https://github.com/4chan/4chan-JS).
     @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
@@ -212,10 +212,17 @@ Build =
         h_fileTitle1 = "title='#{E file.name}'"
         shortFilename = 'Spoiler Image'
         h_spoilerClass = ' imgspoiler'
+        if spoilerRange = Build.spoilerRange[boardID]
+          # Randomize the spoiler image.
+          fileThumb = "//s.4cdn.org/image/spoiler-#{boardID}#{Math.floor 1 + spoilerRange * Math.random()}.png"
+        else
+          fileThumb = '//s.4cdn.org/image/spoiler.png'
+        file.twidth = file.theight = 100
       else
         h_fileTitle1 = ''
         shortFilename = Build.shortFilename file.name, !isOP
         h_spoilerClass = ''
+        fileThumb = file.turl
 
       if file.isSpoiler or file.name is shortFilename
         h_fileTitle2 = ''
@@ -228,16 +235,6 @@ Build =
         h_fileDims = 'PDF'
       else
         h_fileDims = "#{+file.width}x#{+file.height}"
-
-      if file.isSpoiler and !isArchived
-        if spoilerRange = Build.spoilerRange[boardID]
-          # Randomize the spoiler image.
-          fileThumb = "//s.4cdn.org/image/spoiler-#{boardID}#{Math.floor 1 + spoilerRange * Math.random()}.png"
-        else
-          fileThumb = '//s.4cdn.org/image/spoiler.png'
-        file.twidth = file.theight = 100
-      else
-        fileThumb = file.turl
 
       h_fileCont  = "<div class='fileText' id='fT#{+postID}' #{h_fileTitle1}>"
       h_fileCont +=   "File: <a #{h_fileTitle2} href='#{E file.url}' target='_blank'>#{E shortFilename}</a> (#{E fileSize}, #{h_fileDims})"
