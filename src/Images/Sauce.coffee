@@ -14,12 +14,15 @@ Sauce =
     Post.callbacks.push
       name: 'Sauce'
       cb:   @node
-  createSauceLink: (link, post, a) ->
-    text = if m = link.match(/;text:(.+)$/) then m[1] else link.match(/(\w+)\.\w+\//)?[1] or '?'
-    link = link.replace /;text:.+$/, ''
-    parts = [link, text]
-    for i in [0..1]
-      parts[i] = parts[i].replace /%(T?URL|MD5|board|name|%)/g, (parameter) ->
+  createSauceLink: (link, post) ->
+    parts = {}
+    for part in link.split ';'
+      m = part.match /^(?:(url|text|boards|types):)?(.*)$/
+      parts[m[1] or 'url'] = m[2]
+    parts['url'] or= 'javascript:;'
+    parts['text'] or= parts['url'].match(/(\w+)\.\w+\//)?[1] or '?'
+    for key of parts
+      parts[key] = parts[key].replace /%(T?URL|MD5|board|name|%|semi)/g, (parameter) ->
         type = {
           '%TURL':  post.file.thumbURL
           '%URL':   post.file.URL
@@ -27,18 +30,25 @@ Sauce =
           '%board': post.board
           '%name':  post.file.name
           '%%':     '%'
+          '%semi':  ';'
         }[parameter]
-        if i is 0 and parameter isnt '%%'
+        if key is 'url' and parameter isnt '%%' and parameter isnt '%semi'
           encodeURIComponent type
         else
           type
-    a.href = parts[0]
-    a.textContent = parts[1]
-    a
+    ext = post.file.URL.match(/\.([^\.]*)$/)?[1] or ''
+    if (!parts['boards'] or post.board.ID in parts['boards'].split ',') and (!parts['types'] or ext in parts['types'].split ',')
+      a = Sauce.link.cloneNode true
+      a.href = parts['url']
+      a.textContent = parts['text']
+      a
+    else
+      null
   node: ->
     return if @isClone or !@file
     nodes = []
     for link in Sauce.links
-      # \u00A0 is nbsp
-      nodes.push $.tn('\u00A0'), (Sauce.createSauceLink link, @, Sauce.link.cloneNode true)
+      if node = Sauce.createSauceLink link, @
+        # \u00A0 is nbsp
+        nodes.push $.tn('\u00A0'), node
     $.add @file.text, nodes
