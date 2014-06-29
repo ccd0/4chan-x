@@ -16,10 +16,12 @@ Sauce =
       cb:   @node
   createSauceLink: (link, post) ->
     parts = {}
-    for part in link.split ';'
-      m = part.match /^(?:(url|text|boards|types):)?(.*)$/
-      parts[m[1] or 'url'] = m[2]
-    parts['url'] or= 'javascript:;'
+    for part, i in link.split /;(?=(?:text|boards|types):)/
+      if i is 0
+        parts['url'] = part
+      else
+        m = part.match /^(\w*):(.*)$/
+        parts[m[1]] = m[2]
     parts['text'] or= parts['url'].match(/(\w+)\.\w+\//)?[1] or '?'
     for key of parts
       parts[key] = parts[key].replace /%(T?URL|MD5|board|name|%|semi)/g, (parameter) ->
