@@ -13,23 +13,23 @@ FileInfo =
       if c of FileInfo.h_formatters
         FileInfo.h_formatters[c].call(post)
       else
-        Build.h_escape s
+        E s
   h_formatters:
-    t: -> Build.h_escape @file.URL.match(/\d+\..+$/)[0]
-    T: -> "<a href='#{Build.h_escape @file.URL}' target='_blank'>#{FileInfo.h_formatters.t.call @}</a>"
-    l: -> "<a href='#{Build.h_escape @file.URL}' target='_blank'>#{FileInfo.h_formatters.n.call @}</a>"
-    L: -> "<a href='#{Build.h_escape @file.URL}' target='_blank'>#{FileInfo.h_formatters.N.call @}</a>"
+    t: -> E @file.URL.match(/\d+\..+$/)[0]
+    T: -> "<a href='#{E @file.URL}' target='_blank'>#{FileInfo.h_formatters.t.call @}</a>"
+    l: -> "<a href='#{E @file.URL}' target='_blank'>#{FileInfo.h_formatters.n.call @}</a>"
+    L: -> "<a href='#{E @file.URL}' target='_blank'>#{FileInfo.h_formatters.N.call @}</a>"
     n: ->
       fullname  = @file.name
       shortname = Build.shortFilename @file.name, @isReply
       if fullname is shortname
-        Build.h_escape fullname
+        E fullname
       else
-        "<span class='fntrunc'>#{Build.h_escape shortname}</span><span class='fnfull'>#{Build.h_escape fullname}</span>"
-    N: -> Build.h_escape @file.name
+        "<span class='fntrunc'>#{E shortname}</span><span class='fnfull'>#{E fullname}</span>"
+    N: -> E @file.name
     p: -> if @file.isSpoiler then 'Spoiler, ' else ''
-    s: -> Build.h_escape @file.size
+    s: -> E @file.size
     B: -> return "#{+@file.sizeInBytes} Bytes"
     K: -> "#{+Math.round(@file.sizeInBytes/1024)} KB"
     M: -> "#{+Math.round(@file.sizeInBytes/1048576*100)/100} MB"
-    r: -> Build.h_escape (@file.dimensions or 'PDF')
+    r: -> E (@file.dimensions or 'PDF')

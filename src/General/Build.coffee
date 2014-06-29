@@ -1,9 +1,6 @@
 Build =
   initPixelRatio: window.devicePixelRatio
   spoilerRange: {}
-  h_escape: (text) ->
-    (text+'').replace /[&"'<>]/g, (c) ->
-      {'&': '&amp;', "'": '&#039;', '"': '&quot;', '<': '&lt;', '>': '&gt;'}[c]
   unescape: (text) ->
     return text unless text?
     text.replace /&(amp|#039|quot|lt|gt);/g, (c) ->
@@ -74,7 +71,6 @@ Build =
     This function contains code from 4chan-JS (https://github.com/4chan/4chan-JS).
     @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
     ###
-    E = Build.h_escape
     {
       postID, threadID, boardID
       name, capcode, tripcode, uniqueID, email, subject, flagCode, flagName, date, dateUTC
