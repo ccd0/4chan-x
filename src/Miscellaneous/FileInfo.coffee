@@ -25,7 +25,7 @@ FileInfo =
       if fullname is shortname
         E fullname
       else
-        "<span class='fntrunc'>#{E shortname}</span><span class='fnfull'>#{E fullname}</span>"
+        "<span class='fnswitch'><span class='fntrunc'>#{E shortname}</span><span class='fnfull'>#{E fullname}</span></span>"
     N: -> E @file.name
     p: -> if @file.isSpoiler then 'Spoiler, ' else ''
     s: -> E @file.size
