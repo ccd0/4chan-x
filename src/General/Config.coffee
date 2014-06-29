@@ -97,6 +97,10 @@ Config =
         true
         'Warn if your browser or configuration is unsupported and may cause 4chan X to not operate correctly.'
       ]
+      'Normalize URL': [
+        true
+        'Rewrite the URL of the current page, removing stubs and changing /res/ to /thread/.'
+      ]
 
     'Linkification':
       'Linkify': [

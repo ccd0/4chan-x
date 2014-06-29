@@ -16,9 +16,6 @@ Main =
           'index'
     if g.VIEW is 'thread'
       g.THREADID = +pathname[3]
-      if pathname[2] isnt 'thread' or pathname.length > 4
-        pathname[2] = 'thread'
-        history.replaceState null, '', pathname.slice(0,4).join('/') + location.hash
 
     # flatten Config into Conf
     # and get saved or default values
@@ -64,6 +61,12 @@ Main =
               if !video.controls
                 if video.paused then video.play() else video.pause()
         return
+
+    if Conf['Normalize URL'] and g.VIEW is 'thread'
+      pathname = location.pathname.split '/'
+      if pathname[2] isnt 'thread' or pathname.length > 4
+        pathname[2] = 'thread'
+        history.replaceState null, '', pathname.slice(0,4).join('/') + location.hash
 
     # c.time 'All initializations'
     for [name, feature] in Main.features
