@@ -408,7 +408,7 @@ Settings =
   time: ->
     @nextElementSibling.textContent = Time.format @value, new Date()
   backlink: ->
-    @nextElementSibling.textContent = @value.replace /%id/, '123456789'
+    @nextElementSibling.textContent = @value.replace /%(?:id|%)/g, (x) -> {'%id': '123456789', '%%': '%'}[x]
   fileInfo: ->
     data =
       isReply: true

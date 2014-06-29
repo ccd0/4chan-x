@@ -9,7 +9,7 @@ Time =
     return if @isClone
     @nodes.date.textContent = Time.format Conf['time'], @info.date
   format: (formatString, date) ->
-    formatString.replace /%([A-Za-z])/g, (s, c) ->
+    formatString.replace /%(.)/g, (s, c) ->
       if c of Time.formatters
         Time.formatters[c].call(date)
       else
@@ -56,3 +56,4 @@ Time =
     S: -> Time.zeroPad @getSeconds()
     y: -> @getFullYear().toString()[2..]
     Y: -> @getFullYear()
+    '%': -> '%'

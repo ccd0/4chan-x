@@ -19,17 +19,19 @@ Sauce =
     link = link.replace /;text:.+$/, ''
     parts = [link, text]
     for i in [0..1]
-      parts[i] = parts[i].replace /%(T?URL|MD5|board|name)/g, (parameter) ->
-        if type = {
+      parts[i] = parts[i].replace /%(T?URL|MD5|board|name|%)/g, (parameter) ->
+        type = {
           '%TURL':  post.file.thumbURL
           '%URL':   post.file.URL
           '%MD5':   post.file.MD5
           '%board': post.board
           '%name':  post.file.name
+          '%%':     '%'
         }[parameter]
-          if i is 0 then encodeURIComponent(type) else type
+        if i is 0 and parameter isnt '%%'
+          encodeURIComponent type
         else
-          parameter
+          type
     a.href = parts[0]
     a.textContent = parts[1]
     a

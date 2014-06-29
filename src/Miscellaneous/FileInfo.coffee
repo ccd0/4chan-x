@@ -11,7 +11,7 @@ FileInfo =
     FileInfo.format Conf['fileInfo'], @, @file.text.firstElementChild
   format: (formatString, post, outputNode) ->
     output = innerHTML: ''
-    formatString.replace /%([A-Za-z])|[^%]+/g, (s, c) ->
+    formatString.replace /%(.)|[^%]+/g, (s, c) ->
       if c of FileInfo.formatters
         FileInfo.formatters[c].call post, output
       else
@@ -60,3 +60,5 @@ FileInfo =
     r: (x) ->
       dim = @file.dimensions or 'PDF'
       x.innerHTML += E dim
+    '%': (x) ->
+      x.innerHTML += '%'
