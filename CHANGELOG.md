@@ -1,3 +1,6 @@
+### v1.8.2 
+*2014-06-30*
+
 **ccd0**
 - Introduce beta channel. New features and non-urgent bugfixes will be released to beta users for further testing before being moved to stable.
 - Begin making available a version of the script with the updater disabled.
