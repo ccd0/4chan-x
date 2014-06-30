@@ -113,12 +113,25 @@ module.exports = (grunt) ->
           git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."
           git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."
         """
+      beta:
+        command: """
+          git tag -af beta -m "<%= pkg.meta.name %> v<%= pkg.version %>."
+          git checkout gh-pages
+          git checkout beta 'builds/*<%= pkg.meta.suffix.beta %>.*'
+          git commit -am "Move <%= pkg.meta.name %> v<%= pkg.version %> to beta channel."
+          git checkout -
+        """
       stable:
         command: """
           git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.version %>."
+          git checkout -b tmp
+          git merge --no-commit -s ours gh-pages
+          git checkout gh-pages 'builds/*<%= pkg.meta.suffix.beta %>.*'
+          git commit -am "Move <%= pkg.meta.name %> v<%= pkg.version %> to stable channel."
           git checkout gh-pages
-          git merge --ff-only stable
-          git checkout -
+          git merge --ff-only tmp
+          git branch -d tmp
+          git checkout @{-2}
         """
       push:
         command: 'git push origin --tags -f && git push origin --all'
@@ -239,8 +252,20 @@ module.exports = (grunt) ->
     'shell:commit'
   ]
 
+  grunt.registerTask 'beta', [
+    'tag'
+    'shell:beta'
+    'shell:push'
+  ]
+
+  grunt.registerTask 'stable', [
+    'shell:stable'
+    'shell:push'
+  ]
+
   grunt.registerTask 'release', [
     'tag'
+    'shell:beta'
     'shell:stable'
     'shell:push'
   ]
