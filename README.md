@@ -23,6 +23,11 @@ This fork of 4chan X is not guaranteed to work correctly in other browsers, but 
 5. Download 4chanX with `wget https://ccd0.github.io/4chan-x/builds/4chan-X.user.js`
 6. Start dwb
 
+## Beta channel
+New features and non-urgent bugfixes are released on the beta channel for further testing before they are moved the stable version. Please [report](https://github.com/ccd0/4chan-x/issues) any issues you find, and be sure to mention which version you're using.
+- [Firefox version](https://ccd0.github.io/4chan-x/builds/4chan-X-beta.user.js)
+- [Chromium version](https://ccd0.github.io/4chan-x/builds/4chan-X-beta.crx)
+
 ## [Frequently Asked Questions](https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions)
 
 ## [Reporting Bugs and Contributing](https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md)
