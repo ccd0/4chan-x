@@ -1,3 +1,11 @@
+**ccd0**
+- Introduce beta channel. New features and non-urgent bugfixes will be released to beta users for further testing before being moved to stable.
+- Begin making available a version of the script with the updater disabled.
+- The removal of slugs from the URL when you open a thread is now optional, and can be disabled by unchecking `Normalize URL`.
+- The boards and file extensions for which a Sauce link is displayed can now be controlled by adding `;boards:[list]` and `types:[list]` respectively.
+- Although usually not needed, `%%` can be used in format specifiers to write a literal `%`.
+- Various bugfixes.
+
 ### v1.8.1 
 *2014-06-19*
 
