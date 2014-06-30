@@ -18,7 +18,7 @@
 // @grant        GM_openInTab
 // @grant        GM_xmlhttpRequest
 // @run-at       document-start
-// @updateURL 	 <%= meta.downloads %><%= meta.files.metajs %>
-// @downloadURL  <%= meta.downloads %><%= meta.files.userjs %>
+<% if (channel !== 'noupdate') { %>// @updateURL 	 <%= meta.downloads %><%= name %><%= meta.suffix[channel] %>.meta.js
+<% } %>// @downloadURL  <%= meta.downloads %><%= name %><%= meta.suffix[channel] %>.user.js
 // @icon         data:image/png;base64,<%= grunt.file.read('src/General/img/icon48.png', {encoding: 'base64'}) %>
 // ==/UserScript==

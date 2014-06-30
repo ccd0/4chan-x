@@ -49,16 +49,9 @@ module.exports = (grunt) ->
           'LICENSE':   'src/General/meta/banner.js'
       crx:
         files:
-          'testbuilds/crx/manifest.json': 'src/General/meta/manifest.json'
-          'testbuilds/updates.xml': 'src/General/meta/updates.xml'
-          'testbuilds/crx/script.js': [
-            'src/General/meta/botproc.js'
-            'src/General/meta/banner.js'
-            'src/General/meta/usestrict.js'
-            'tmp-<%= pkg.type %>/script.js'
-          ]
-          'testbuilds/wcrx/manifest.json': 'src/General/meta/manifest-w.json'
-          'testbuilds/wcrx/script.js': [
+          'testbuilds/updates<%= pkg.meta.suffix[pkg.channel] %>.xml': 'src/General/meta/updates.xml'
+          'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/manifest.json': 'src/General/meta/manifest.json'
+          'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/script.js': [
             'src/General/meta/botproc.js'
             'src/General/meta/banner.js'
             'src/General/meta/usestrict.js'
@@ -66,8 +59,8 @@ module.exports = (grunt) ->
           ]
       userscript:
         files:
-          'testbuilds/<%= pkg.name %>.meta.js': 'src/General/meta/metadata.js'
-          'testbuilds/<%= pkg.name %>.user.js': [
+          'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.meta.js': 'src/General/meta/metadata.js'
+          'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.user.js': [
             'src/General/meta/botproc.js'
             'src/General/meta/metadata.js'
             'src/General/meta/banner.js'
@@ -78,19 +71,15 @@ module.exports = (grunt) ->
     copy:
       crx:
         src:  'src/General/img/*.png'
-        dest: 'testbuilds/crx/'
-        expand:  true
-        flatten: true
-      wcrx:
-        src:  'src/General/img/*.png'
-        dest: 'testbuilds/wcrx/'
+        dest: 'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/'
         expand:  true
         flatten: true
       builds:
         cwd: 'testbuilds/'
-        src: '**'
+        src: '*'
         dest: 'builds/'
         expand: true
+        filter: 'isFile'
 
     coffee:
       script:
@@ -119,8 +108,6 @@ module.exports = (grunt) ->
         failOnError: true
       checkout:
         command: 'git checkout <%= pkg.meta.mainBranch %>'
-      pack:
-        command: 'chromium --pack-extension=testbuilds/crx --pack-extension-key=$HOME/.ssh/<%= pkg.name %>.pem'
       commit:
         command: """
           git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."
@@ -147,6 +134,12 @@ module.exports = (grunt) ->
         ]
         tasks: 'build'
 
+    crx:
+      prod:
+        src: 'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/'
+        dest: 'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.crx'
+        privateKey: '~/.ssh/<%= pkg.name %>.pem'
+
     compress:
       crx:
         options:
@@ -155,14 +148,14 @@ module.exports = (grunt) ->
           pretty: true
         expand:  true
         flatten: true
-        src: 'testbuilds/wcrx/*'
+        src: 'testbuilds/crx<%= pkg.meta.suffix.noupdate %>/*'
         dest: '/'
 
     clean:
       builds: 'builds'
       testbuilds: 'testbuilds'
-      tmpcrx: 'tmp-crx'
-      tmpuserscript: 'tmp-userscript'
+      tmpcrx: ['tmp-crx', 'testbuilds/updates<%= pkg.meta.suffix.noupdate %>.xml']
+      tmpuserscript: ['tmp-userscript', 'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.noupdate %>.meta.js']
 
   require('load-grunt-tasks') grunt
 
@@ -186,6 +179,11 @@ module.exports = (grunt) ->
 
     grunt.log.ok 'pkg.type = %s', type
 
+  grunt.registerTask 'set-channel', 'Set the update channel', (channel) ->
+    pkg = grunt.config 'pkg'
+    pkg.channel = channel
+    grunt.config 'pkg', pkg
+
   grunt.registerTask 'enable-tests', 'Include testing code', () ->
     pkg = grunt.config 'pkg'
     pkg.tests_enabled = true
@@ -195,13 +193,23 @@ module.exports = (grunt) ->
     'concurrent:build'
   ]
 
+  grunt.registerTask 'build-crx-channel', [
+    'concat:crx'
+    'copy:crx'
+    'crx:prod'
+  ]
+
   grunt.registerTask 'build-crx', [
     'set-build:crx'
     'concat:coffee'
     'coffee:script'
-    'concat:crx'
-    'copy:crx'
-    'copy:wcrx'
+    'set-channel:stable'
+    'build-crx-channel'
+    'set-channel:beta'
+    'build-crx-channel'
+    'set-channel:noupdate'
+    'build-crx-channel'
+    'compress:crx'
     'clean:tmpcrx'
   ]
 
@@ -209,6 +217,11 @@ module.exports = (grunt) ->
     'set-build:userscript'
     'concat:coffee'
     'coffee:script'
+    'set-channel:stable'
+    'concat:userscript'
+    'set-channel:beta'
+    'concat:userscript'
+    'set-channel:noupdate'
     'concat:userscript'
     'clean:tmpuserscript'
   ]
@@ -219,23 +232,15 @@ module.exports = (grunt) ->
     'build-crx'
   ]
 
-  grunt.registerTask 'testing', [
+  grunt.registerTask 'tag', [
     'build'
-    'shell:pack'
-    'compress:crx'
     'concat:meta'
     'copy:builds'
     'shell:commit'
-    'shell:push'
   ]
 
   grunt.registerTask 'release', [
-    'build'
-    'shell:pack'
-    'compress:crx'
-    'concat:meta'
-    'copy:builds'
-    'shell:commit'
+    'tag'
     'shell:stable'
     'shell:push'
   ]

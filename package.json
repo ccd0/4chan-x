@@ -17,9 +17,10 @@
       "*://a.4cdn.org/*",
       "*://i.4cdn.org/*"
     ],
-    "files": {
-      "metajs": "4chan-X.meta.js",
-      "userjs": "4chan-X.user.js"
+    "suffix": {
+      "stable": "",
+      "beta": "-beta",
+      "noupdate": "-noupdate"
     },
     "min": {
       "chrome": "31",
@@ -38,6 +39,7 @@
     "grunt-contrib-concat": "~0.4.0",
     "grunt-contrib-copy": "~0.5.0",
     "grunt-contrib-watch": "~0.6.1",
+    "grunt-crx": "~0.3.3",
     "grunt-shell": "~0.7.0",
     "load-grunt-tasks": "~0.4.0"
   },
