@@ -39,13 +39,13 @@ Sauce =
         else
           type
     ext = post.file.URL.match(/\.([^\.]*)$/)?[1] or ''
-    if (!parts['boards'] or post.board.ID in parts['boards'].split ',') and (!parts['types'] or ext in parts['types'].split ',')
-      a = Sauce.link.cloneNode true
-      a.href = parts['url']
-      a.textContent = parts['text']
-      a
-    else
-      null
+    return null unless !parts['boards'] or post.board.ID in parts['boards'].split ','
+    return null unless !parts['types']  or ext           in parts['types'].split ','
+    a = Sauce.link.cloneNode true
+    a.href = parts['url']
+    a.textContent = parts['text']
+    return null unless /^https?:$/.test a.protocol
+    a
   node: ->
     return if @isClone or !@file
     nodes = []
