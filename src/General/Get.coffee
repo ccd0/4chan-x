@@ -217,6 +217,7 @@ Get =
     thread = g.threads["#{boardID}.#{threadID}"] or
       new Thread threadID, board
     post = new Post Build.post(o), thread, board, {isArchived: true}
+    post.file.thumbURL = o.file.turl
     post.isFetchedQuote = true
     Main.callbackNodes Post, [post]
     Get.insert post, root, context

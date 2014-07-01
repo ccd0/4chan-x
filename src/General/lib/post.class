@@ -149,10 +149,7 @@ class Post
     unit  = ['B', 'KB', 'MB', 'GB'].indexOf @file.size.match(/\w+$/)[0]
     size *= 1024 while unit-- > 0
     @file.sizeInBytes = size
-    @file.thumbURL = if that.isArchived
-      thumb.src
-    else
-      "#{location.protocol}//t.4cdn.org/#{@board}/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
+    @file.thumbURL = "#{location.protocol}//t.4cdn.org/#{@board}/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
     @file.isImage = /(jpg|png|gif)$/i.test @file.URL
     @file.isVideo = /webm$/i.test @file.URL
     nameNode = $ 'a', fileText
