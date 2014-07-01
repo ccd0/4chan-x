@@ -10,55 +10,55 @@ FileInfo =
     @file.text.innerHTML = '<span class="file-info"></span>'
     FileInfo.format Conf['fileInfo'], @, @file.text.firstElementChild
   format: (formatString, post, outputNode) ->
-    output = innerHTML: ''
+    FileInfo.innerHTML = ''
     formatString.replace /%(.)|[^%]+/g, (s, c) ->
       if c of FileInfo.formatters
-        FileInfo.formatters[c].call post, output
+        FileInfo.formatters[c].call post
       else
-        output.innerHTML += E s
+        FileInfo.innerHTML += E s
       ''
-    outputNode.innerHTML = output.innerHTML
+    outputNode.innerHTML = FileInfo.innerHTML
   formatters:
-    t: (x) ->
+    t: ->
       timestamp = @file.URL.match(/\d+\..+$/)[0]
-      x.innerHTML += E timestamp
-    T: (x) ->
-      x.innerHTML += "<a href='#{E @file.URL}' target='_blank'>"
-      FileInfo.formatters.t.call @, x
-      x.innerHTML += '</a>'
-    l: (x) ->
-      x.innerHTML += "<a href='#{E @file.URL}' target='_blank'>"
-      FileInfo.formatters.n.call @, x
-      x.innerHTML += '</a>'
-    L: (x) ->
-      x.innerHTML += "<a href='#{E @file.URL}' target='_blank'>"
-      FileInfo.formatters.N.call @, x
-      x.innerHTML += '</a>'
-    n: (x) ->
+      FileInfo.innerHTML += E timestamp
+    T: ->
+      FileInfo.innerHTML += "<a href='#{E @file.URL}' target='_blank'>"
+      FileInfo.formatters.t.call @
+      FileInfo.innerHTML += '</a>'
+    l: ->
+      FileInfo.innerHTML += "<a href='#{E @file.URL}' target='_blank'>"
+      FileInfo.formatters.n.call @
+      FileInfo.innerHTML += '</a>'
+    L: ->
+      FileInfo.innerHTML += "<a href='#{E @file.URL}' target='_blank'>"
+      FileInfo.formatters.N.call @
+      FileInfo.innerHTML += '</a>'
+    n: ->
       fullname  = @file.name
       shortname = Build.shortFilename @file.name, @isReply
       if fullname is shortname
-        x.innerHTML += E fullname
+        FileInfo.innerHTML += E fullname
       else
-        x.innerHTML += "<span class='fnswitch'><span class='fntrunc'>#{E shortname}</span><span class='fnfull'>#{E fullname}</span></span>"
-    N: (x) ->
-      x.innerHTML += E @file.name
-    p: (x) ->
+        FileInfo.innerHTML += "<span class='fnswitch'><span class='fntrunc'>#{E shortname}</span><span class='fnfull'>#{E fullname}</span></span>"
+    N: ->
+      FileInfo.innerHTML += E @file.name
+    p: ->
       if @file.isSpoiler
-        x.innerHTML += 'Spoiler, '
-    s: (x) ->
-      x.innerHTML += E @file.size
-    B: (x) ->
+        FileInfo.innerHTML += 'Spoiler, '
+    s: ->
+      FileInfo.innerHTML += E @file.size
+    B: ->
       sizeB = Math.round(@file.sizeInBytes)
-      x.innerHTML += "#{+sizeB} Bytes"
-    K: (x) ->
+      FileInfo.innerHTML += "#{+sizeB} Bytes"
+    K: ->
       sizeKB = Math.round(@file.sizeInBytes/1024)
-      x.innerHTML += "#{+sizeKB} KB"
-    M: (x) ->
+      FileInfo.innerHTML += "#{+sizeKB} KB"
+    M: ->
       sizeMB = Math.round(@file.sizeInBytes/1048576*100)/100
-      x.innerHTML += "#{+sizeMB} MB"
-    r: (x) ->
+      FileInfo.innerHTML += "#{+sizeMB} MB"
+    r: ->
       dim = @file.dimensions or 'PDF'
-      x.innerHTML += E dim
-    '%': (x) ->
-      x.innerHTML += '%'
+      FileInfo.innerHTML += E dim
+    '%': ->
+      FileInfo.innerHTML += '%'
