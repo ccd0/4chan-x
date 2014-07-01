@@ -209,7 +209,6 @@ module.exports = (grunt) ->
   grunt.registerTask 'build-crx-channel', [
     'concat:crx'
     'copy:crx'
-    'crx:prod'
   ]
 
   grunt.registerTask 'build-crx', [
@@ -224,6 +223,15 @@ module.exports = (grunt) ->
     'build-crx-channel'
     'compress:crx'
     'clean:tmpcrx'
+  ]
+
+  grunt.registerTask 'pack', [
+    'set-channel:stable'
+    'crx:prod'
+    'set-channel:beta'
+    'crx:prod'
+    'set-channel:noupdate'
+    'crx:prod'
   ]
 
   grunt.registerTask 'build-userscript', [
@@ -247,6 +255,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'tag', [
     'build'
+    'pack'
     'concat:meta'
     'copy:builds'
     'shell:commit'
