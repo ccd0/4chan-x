@@ -1,3 +1,6 @@
+**ccd0**
+- Fix `Reveal Spoiler Thumbnails` on archived posts.
+
 ### v1.8.2 
 *2014-06-30*
 
