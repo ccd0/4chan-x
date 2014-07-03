@@ -1,3 +1,6 @@
+**ccd0**
+- Fix an archived-post bug introduced in v1.8.3.
+
 ### v1.8.3 
 *2014-07-01*
 
