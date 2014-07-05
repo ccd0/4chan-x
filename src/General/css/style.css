@@ -1489,6 +1489,9 @@ div.boardTitle {
 :root.gal-hide-thumbnails:.gal-fit-height:not(.gal-pdf) .gal-count {
   right: 28px !important;
 }
+.field[name="Slide Delay"] {
+  width: 4em;
+}
 @media screen and (resolution: 1dppx) {
  .fa-bars {
     font-size: 14px;

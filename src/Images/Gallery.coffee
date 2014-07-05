@@ -2,6 +2,8 @@ Gallery =
   init: ->
     return if g.VIEW is 'catalog' or g.BOARD is 'f' or !Conf['Gallery']
 
+    @delay = Conf['Slide Delay']
+
     el = $.el 'a',
       href: 'javascript:;'
       id:   'appchan-gal'
@@ -16,8 +18,6 @@ Gallery =
     Post.callbacks.push
       name: 'Gallery'
       cb:   @node
-
-  interval: 5 * $.SECOND
 
   node: ->
     return unless @file
@@ -64,13 +64,9 @@ Gallery =
     $.on menuButton, 'click', (e) ->
       nodes.menu.toggle e, @, g
 
-    {createSubEntry} = Gallery.menu
-    for name of Config.gallery
-      {el} = createSubEntry name
-
-      nodes.menu.addEntry
-        el: el
-        order: 0
+    for entry in Gallery.menu.createSubEntries()
+      entry.order = 0
+      nodes.menu.addEntry entry
 
     $.on  d, 'keydown', cb.keybinds
     $.off d, 'keydown', Keybinds.keydown
@@ -229,7 +225,7 @@ Gallery =
         $.on current, (if isVideo then 'canplaythrough' else 'load'), Gallery.cb.startTimer
 
     startTimer: ->
-      Gallery.timeoutID = setTimeout Gallery.cb.checkTimer, Gallery.interval
+      Gallery.timeoutID = setTimeout Gallery.cb.checkTimer, Gallery.delay * $.SECOND
 
     checkTimer: ->
       {current} = Gallery.nodes
@@ -267,6 +263,8 @@ Gallery =
     setFitness: ->
       (if @checked then $.addClass else $.rmClass) doc, "gal-#{@name.toLowerCase().replace /\s+/g, '-'}"
 
+    setDelay: -> Gallery.delay = +@value
+
   menu:
     init: ->
       return if g.VIEW is 'catalog' or !Conf['Gallery']
@@ -275,21 +273,27 @@ Gallery =
         textContent: 'Gallery'
         className: 'gallery-link'
 
-      {createSubEntry} = Gallery.menu
-      subEntries = []
-      for name of Config.gallery
-        subEntries.push createSubEntry name
-
       Header.menu.addEntry
         el: el
         order: 105
-        subEntries: subEntries
+        subEntries: Gallery.menu.createSubEntries()
 
     createSubEntry: (name) ->
       label = UI.checkbox name, " #{name}"
       input = label.firstElementChild
-      if name in ['Fit Width', 'Fit Height', 'Hide Thumbnails']
-        $.on input, 'change', Gallery.cb.setFitness
+      $.on input, 'change', Gallery.cb.setFitness
       $.event 'change', null, input
       $.on input, 'change', $.cb.checked
       el: label
+
+    createSubEntries: ->
+      subEntries = ['Hide Thumbnails', 'Fit Width', 'Fit Height'].map Gallery.menu.createSubEntry
+
+      delayLabel = $.el 'label', innerHTML: 'Slide Delay: <input type="number" name="Slide Delay" min="0" step="any" class="field">'
+      delayInput = delayLabel.firstElementChild
+      delayInput.value = Gallery.delay
+      $.on delayInput, 'change', Gallery.cb.setDelay
+      $.on delayInput, 'change', $.cb.value
+      subEntries.push el: delayLabel
+
+      subEntries

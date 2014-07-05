@@ -444,7 +444,7 @@ Config =
       'Advance to next post when contracting an expanded image.'
     ]
   
-  gallery:
+  gallery :
     'Hide Thumbnails': [
       false
     ]
@@ -454,6 +454,9 @@ Config =
     ]
     'Fit Height': [
       true
+    ]
+    'Slide Delay': [
+      5.0
     ]
 
   threadWatcher:
