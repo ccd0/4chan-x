@@ -125,6 +125,10 @@ Gallery =
           Gallery.cb.advanceKey
         when 'Left', ''
           Gallery.cb.prev
+        when 'p'
+          Gallery.cb.pause
+        when 's'
+          Gallery.cb.toggleSlideshow
 
       return unless cb
       e.stopPropagation()
@@ -203,6 +207,7 @@ Gallery =
     toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
     blank: (e) -> Gallery.cb.close() if e.target is @
     advance:   -> Gallery.cb.advanceKey() unless Gallery.nodes.current.controls
+    toggleSlideshow: ->  Gallery.cb[if Gallery.slideshow then 'stop' else 'start']()
 
     advanceKey: ->
       if Gallery.nodes.current.paused   then return Gallery.nodes.current.play()
