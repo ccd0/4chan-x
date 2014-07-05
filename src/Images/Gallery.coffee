@@ -134,7 +134,7 @@ Gallery =
       elType = 'img'
       elType = 'video' if /\.webm$/.test(@href)
       elType = 'iframe' if /\.pdf$/.test(@href)
-      $[if elType is 'iframe' then 'addClass' else 'rmClass'] nodes.el, 'gal-pdf'
+      $[if elType is 'iframe' then 'addClass' else 'rmClass'] doc, 'gal-pdf'
       file = $.el elType,
         src:   name.href     = @href
         title: name.download = name.textContent = @title
