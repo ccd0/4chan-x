@@ -67,7 +67,7 @@ Gallery =
 
     $.on  d, 'keydown', cb.keybinds
     $.off d, 'keydown', Keybinds.keydown
-    Gallery.generateThumb file for file, i in $$ '.post .file' when !$ '.fileDeletedRes, .fileDeleted', file
+    Gallery.generateThumb file for file in $$ '.post .file' when !$ '.fileDeletedRes, .fileDeleted', file
     $.add d.body, dialog
 
     nodes.thumbs.scrollTop = 0
@@ -79,7 +79,7 @@ Gallery =
       Gallery.images[0]
 
     d.body.style.overflow = 'hidden'
-    nodes.total.textContent = --i
+    nodes.total.textContent = Gallery.images.length
 
   generateThumb: (file) ->
     post  = Get.postFromNode file
