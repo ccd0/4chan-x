@@ -1410,20 +1410,35 @@ div.boardTitle {
   background: rgba(0,0,0,0.6) !important;
   border-radius: 3px;
 }
+.gal-buttons a {
+  color: #ffffff;
+  text-shadow: 0px 0px 1px #000000;
+}
 .gal-buttons i {
-  vertical-align: baseline;
-  border-top-width: .4em;
-  border-right-width: .25em;
-  border-left-width: .25em;
+  display: inline-block;
+  margin: 2px;
+  position: relative;
 }
-.gal-buttons .menu-button {
+.gal-start i {
+  border-left:   10px solid;
+  border-top:    6px solid transparent;
+  border-bottom: 6px solid transparent;
+  bottom: 1px;
+}
+.gal-stop i {
+  border: 5px solid;
   bottom: 2px;
-  color: #ffffff;
-  text-shadow: 0px 0px 1px #000000;
 }
-.gal-close {
-  color: #ffffff;
-  text-shadow: 0px 0px 1px #000000;
+.gal-buttons.gal-playing > .gal-start,
+.gal-buttons:not(.gal-playing) > .gal-stop {
+  display: none;
+}
+.gal-buttons .menu-button i {
+  border-top-width:   10px;
+  border-right-width: 6px;
+  border-left-width:  6px;
+  bottom: 2px;
+  vertical-align: baseline;
 }
 .gal-buttons,
 .gal-name,
@@ -1445,12 +1460,10 @@ div.boardTitle {
   color: white !important;
 }
 .gal-name:hover,
-.gal-close:hover,
-.gal-buttons .menu-button:hover {
+.gal-buttons a:hover {
   color: rgb(95, 95, 101) !important;
 }
-:root.gal-pdf .gal-close:hover,
-:root.gal-pdf .gal-buttons .menu-button:hover {
+:root.gal-pdf .gal-buttons a:hover {
   color: rgb(204, 204, 204) !important;
 }
 .gal-count {

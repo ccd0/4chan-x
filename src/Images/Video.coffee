@@ -9,6 +9,7 @@ Video =
       video.pause()
 
   start: (video) ->
+    return unless video.paused
     {controls} = video
     video.controls = false
     video.play()

@@ -17,6 +17,8 @@ Gallery =
       name: 'Gallery'
       cb:   @node
 
+  interval: 5 * $.SECOND
+
   node: ->
     return unless @file
     if Gallery.nodes
@@ -29,19 +31,21 @@ Gallery =
   build: (image) ->
     Gallery.images  = []
     nodes = Gallery.nodes = {}
+    Gallery.slideshow = false
 
     nodes.el = dialog = $.el 'div',
       id: 'a-gallery'
       innerHTML: <%= importHTML('Features/Gallery') %>
 
     nodes[key] = $ value, dialog for key, value of {
-      frame:   '.gal-image'
+      buttons: '.gal-buttons'
       name:    '.gal-name'
       count:   '.count'
       total:   '.total'
-      thumbs:  '.gal-thumbnails'
+      frame:   '.gal-image'
       next:    '.gal-image a'
       current: '.gal-image img'
+      thumbs:  '.gal-thumbnails'
     }
 
     menuButton = $ '.menu-button', dialog
@@ -52,6 +56,8 @@ Gallery =
     $.on nodes.next,              'click', cb.advance
     $.on $('.gal-prev',  dialog), 'click', cb.prev
     $.on $('.gal-next',  dialog), 'click', cb.next
+    $.on $('.gal-start', dialog), 'click', cb.start
+    $.on $('.gal-stop',  dialog), 'click', cb.stop
     $.on $('.gal-close', dialog), 'click', cb.close
 
     $.on menuButton, 'click', (e) ->
@@ -147,6 +153,7 @@ Gallery =
       nodes.current           = file
       nodes.frame.scrollTop   = 0
       nodes.next.focus()
+      Gallery.cb.setupTimer() if Gallery.slideshow
 
       # Scroll
       rect  = @getBoundingClientRect()
@@ -206,7 +213,43 @@ Gallery =
     
     pause: ->
       {current} = Gallery.nodes
-      current[if current.paused then 'play' else 'pause']() if current.nodeType is 'VIDEO'
+      current[if current.paused then 'play' else 'pause']() if current.nodeName is 'VIDEO'
+
+    setupTimer: ->
+      clearTimeout Gallery.timeoutID
+      {current} = Gallery.nodes
+      isVideo = current.nodeName is 'VIDEO'
+      Video.start current if isVideo
+      return Gallery.cb.stop() if !Gallery.images[+Gallery.nodes.current.dataset.id + 1]
+      if (if isVideo then current.readyState > 4 else current.complete) or current.nodeName is 'IFRAME'
+        Gallery.cb.startTimer()
+      else
+        $.on current, (if isVideo then 'canplaythrough' else 'load'), Gallery.cb.startTimer
+
+    startTimer: ->
+      Gallery.timeoutID = setTimeout Gallery.cb.checkTimer, Gallery.interval
+
+    checkTimer: ->
+      {current} = Gallery.nodes
+      if current.nodeName is 'VIDEO' and !current.paused
+        $.on current, 'pause', Gallery.cb.next
+        current.loop = false
+      else
+        Gallery.cb.next()
+
+    start: ->
+      $.addClass Gallery.nodes.buttons, 'gal-playing'
+      Gallery.slideshow = true
+      Gallery.cb.setupTimer()
+
+    stop: ->
+      clearTimeout Gallery.timeoutID
+      {current} = Gallery.nodes
+      $.off current, 'canplaythrough load', Gallery.cb.startTimer
+      $.off current, 'pause', Gallery.cb.next
+      current.loop = true if current.nodeName is 'VIDEO'
+      $.rmClass Gallery.nodes.buttons, 'gal-playing'
+      Gallery.slideshow = false
 
     close: ->
       Gallery.nodes.current.pause?()
@@ -216,6 +259,7 @@ Gallery =
 
       $.off d, 'keydown', Gallery.cb.keybinds
       $.on  d, 'keydown', Keybinds.keydown
+      clearTimeout Gallery.timeoutID
 
     setFitness: ->
       (if @checked then $.addClass else $.rmClass) doc, "gal-#{@name.toLowerCase().replace /\s+/g, '-'}"
