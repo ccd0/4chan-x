@@ -128,7 +128,7 @@ Gallery =
       {nodes} = Gallery
       {name}  = nodes
 
-      $.rmClass  el, 'gal-highlight' if el = $ '.gal-highlight', Gallery.thumbs
+      $.rmClass  el, 'gal-highlight' if el = $ '.gal-highlight', nodes.thumbs
       $.addClass @,  'gal-highlight'
 
       elType = 'img'
