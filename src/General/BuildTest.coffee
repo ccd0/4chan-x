@@ -21,13 +21,14 @@ BuildTest =
   firstDiff: (x, y) ->
     x2 = x.cloneNode false
     y2 = y.cloneNode false
-    if !x2.isEqualNode y2
-      return [x2, y2]
+    return [x2, y2] unless x2.isEqualNode y2
     i = 0
-    while !!(x2 = x.childNodes[i]) & !!(y2 = y.childNodes[i++])
-      if !x2.isEqualNode y2
-        return BuildTest.firstDiff x2, y2
-    return [x2, y2]
+    while true
+      x2 = x.childNodes[i]
+      y2 = y.childNodes[i]
+      return [x2, y2] unless x2 and y2
+      return BuildTest.firstDiff(x2, y2) unless x2.isEqualNode y2
+      i++
 
   testOne: (post) ->
     BuildTest.postsRemaining++
