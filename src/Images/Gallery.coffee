@@ -112,7 +112,7 @@ Gallery =
         when 'Right'
           Gallery.cb.next
         when 'Enter'
-          Gallery.cb.advance
+          Gallery.cb.advanceKey
         when 'Left', ''
           Gallery.cb.prev
 
@@ -198,9 +198,9 @@ Gallery =
     next:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id + 1]
     toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
     blank: (e) -> Gallery.cb.close() if e.target is @
+    advance:   -> Gallery.cb.advanceKey() unless Gallery.nodes.current.controls
 
-    advance: ->
-      if Gallery.nodes.current.controls then return
+    advanceKey: ->
       if Gallery.nodes.current.paused   then return Gallery.nodes.current.play()
       Gallery.cb.next()
     
