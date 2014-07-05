@@ -62,8 +62,9 @@ Linkify =
 
     i = links.length
     while i--
-      link = links[i]
-      Linkify.embedProcess (Linkify.makeLink link), @
+      link = Linkify.makeLink links[i]
+      unless $.x 'ancestor::pre', link
+        Linkify.embedProcess link, @
     return
 
   embedProcess: (link, post) ->
