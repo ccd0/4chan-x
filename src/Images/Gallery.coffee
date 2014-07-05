@@ -142,8 +142,10 @@ Gallery =
       elType = 'iframe' if /\.pdf$/.test(@href)
       $[if elType is 'iframe' then 'addClass' else 'rmClass'] doc, 'gal-pdf'
       file = $.el elType,
-        src:   name.href     = @href
         title: name.download = name.textContent = @title
+      $.on file, 'error', ->
+        Gallery.cb.error file, thumb
+      file.src = name.href = @href
 
       $.extend  file.dataset,   @dataset
       nodes.current.pause?()
@@ -163,9 +165,6 @@ Gallery =
         return if top < 0
 
       nodes.thumbs.scrollTop += top
-      
-      $.on file, 'error', ->
-        Gallery.cb.error file, thumb
 
     image: (e) ->
       e.preventDefault()
