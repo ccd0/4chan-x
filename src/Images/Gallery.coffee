@@ -157,14 +157,8 @@ Gallery =
       nodes.next.focus()
       Gallery.cb.setupTimer() if Gallery.slideshow
 
-      # Scroll
-      rect  = @getBoundingClientRect()
-      {top} = rect
-      if top > 0
-        top += rect.height - doc.clientHeight
-        return if top < 0
-
-      nodes.thumbs.scrollTop += top
+      # Center selected thumbnail
+      nodes.thumbs.scrollTop = @offsetTop + @offsetHeight/2 - nodes.thumbs.clientHeight/2
 
     image: (e) ->
       e.preventDefault()
