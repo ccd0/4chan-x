@@ -92,9 +92,9 @@ Gallery =
     title = ($ '.fileText a', file).textContent
     thumb = $.el 'a',
       className: 'gal-thumb'
-      href: post.file.URL
-      target: '_blank'
-      title: title
+      href:      post.file.URL
+      target:    '_blank'
+      title:     title
     thumb.dataset.id = Gallery.images.length
     thumb.dataset.post = $('a[title="Link to this post"]', post.nodes.info).href
 
@@ -140,18 +140,18 @@ Gallery =
       elType = 'video' if /\.webm$/.test(@href)
       elType = 'iframe' if /\.pdf$/.test(@href)
       (if elType is 'iframe' then $.addClass else $.rmClass) doc, 'gal-pdf'
-      img = $.el elType,
+      file = $.el elType,
         src:   name.href     = @href
         title: name.download = name.textContent = @title
       if elType is 'video'
-        img.loop = true
-        img.autoplay = Conf['Autoplay']
+        file.loop = true
+        file.autoplay = Conf['Autoplay']
 
-      $.extend  img.dataset,   @dataset
+      $.extend  file.dataset,   @dataset
       nodes.current.pause?()
-      $.replace nodes.current, img
+      $.replace nodes.current,  file
       nodes.count.textContent = +@dataset.id + 1
-      nodes.current = img
+      nodes.current = file
       nodes.frame.scrollTop = 0
       nodes.next.focus()
 
@@ -164,16 +164,16 @@ Gallery =
 
       nodes.thumbs.scrollTop += top
       
-      $.on img, 'error', ->
-        Gallery.cb.error img, thumb
+      $.on file, 'error', ->
+        Gallery.cb.error file, thumb
 
     image: (e) ->
       e.preventDefault()
       e.stopPropagation()
       Gallery.build @
 
-    error: (img, thumb) ->
-      post = Get.postFromLink $.el 'a', href: img.dataset.post
+    error: (file, thumb) ->
+      post = Get.postFromLink $.el 'a', href: file.dataset.post
       delete post.file.fullImage
 
       src = @src.split '/'
@@ -183,8 +183,8 @@ Gallery =
           filename: src[src.length - 1]
         if URL
           thumb.href = URL
-          return unless Gallery.nodes.current is img
-          img.src = URL
+          return unless Gallery.nodes.current is file
+          file.src = URL
           return
         if g.DEAD or post.isDead or post.file.isDead
           return
