@@ -31,6 +31,7 @@ Gallery =
   build: (image) ->
     Gallery.images  = []
     nodes = Gallery.nodes = {}
+    Gallery.fullIDs = {}
     Gallery.slideshow = false
 
     nodes.el = dialog = $.el 'div',
@@ -90,6 +91,9 @@ Gallery =
   generateThumb: (file) ->
     post  = Get.postFromNode file
     return unless post.file and (post.file.isImage or post.file.isVideo or Conf['PDF in Gallery'])
+    return if Gallery.fullIDs[post.fullID]
+    Gallery.fullIDs[post.fullID] = true
+
     title = ($ '.fileText a', file).textContent
     thumb = $.el 'a',
       className: 'gal-thumb'
@@ -248,6 +252,7 @@ Gallery =
       Gallery.nodes.current.pause?()
       $.rm Gallery.nodes.el
       delete Gallery.nodes
+      delete Gallery.fullIDs
       d.body.style.overflow = ''
 
       $.off d, 'keydown', Gallery.cb.keybinds
