@@ -54,7 +54,7 @@ Gallery =
 
     {cb} = Gallery
     $.on nodes.frame,             'click', cb.blank
-    $.on nodes.next,              'click', cb.advance
+    $.on nodes.next,              'click', cb.click
     $.on $('.gal-prev',  dialog), 'click', cb.prev
     $.on $('.gal-next',  dialog), 'click', cb.next
     $.on $('.gal-start', dialog), 'click', cb.start
@@ -118,7 +118,7 @@ Gallery =
         when 'Right'
           Gallery.cb.next
         when 'Enter'
-          Gallery.cb.advanceKey
+          Gallery.cb.advance
         when 'Left', ''
           Gallery.cb.prev
         when 'p'
@@ -200,15 +200,17 @@ Gallery =
 
     prev:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id - 1]
     next:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id + 1]
+    advance:   -> if Gallery.nodes.current.paused then return Gallery.nodes.current.play() else Gallery.cb.next()
     toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
     blank: (e) -> Gallery.cb.close() if e.target is @
-    advance:   -> Gallery.cb.advanceKey() unless Gallery.nodes.current.controls
     toggleSlideshow: ->  Gallery.cb[if Gallery.slideshow then 'stop' else 'start']()
 
-    advanceKey: ->
-      if Gallery.nodes.current.paused   then return Gallery.nodes.current.play()
-      Gallery.cb.next()
-    
+    click: ->
+      if Gallery.slideshow
+        Gallery.cb.stop()
+      else unless Gallery.nodes.current.controls
+        Gallery.cb.advance()
+
     pause: ->
       {current} = Gallery.nodes
       current[if current.paused then 'play' else 'pause']() if current.nodeName is 'VIDEO'

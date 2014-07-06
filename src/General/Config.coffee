@@ -444,7 +444,7 @@ Config =
       'Advance to next post when contracting an expanded image.'
     ]
   
-  gallery :
+  gallery:
     'Hide Thumbnails': [
       false
     ]
