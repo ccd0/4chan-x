@@ -44,5 +44,5 @@ ImageLoader =
   toggle: ->
     enabled = Conf['prefetch'] = @checked
     if enabled
-      ImageLoader.thread.posts.forEach ImageLoader.node.call
+      ImageLoader.thread.posts.forEach (post) -> ImageLoader.node.call post
     return
