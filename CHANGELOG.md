@@ -1,3 +1,6 @@
+### v1.8.5 
+*2014-07-06*
+
 **Zixaphir**
 - Enable video controls in gallery.
 
