@@ -118,7 +118,7 @@ Gallery =
         when 'Right'
           Gallery.cb.next
         when 'Enter'
-          Gallery.cb.advance
+          Gallery.cb.enterKey
         when 'Left', ''
           Gallery.cb.prev
         when 'p'
@@ -137,6 +137,7 @@ Gallery =
 
       {nodes} = Gallery
       {name}  = nodes
+      slideshow = Gallery.slideshow and +@dataset.id > +nodes.current.dataset.id
 
       $.rmClass  el, 'gal-highlight' if el = $ '.gal-highlight', nodes.thumbs
       $.addClass @,  'gal-highlight'
@@ -159,7 +160,7 @@ Gallery =
       nodes.current           = file
       nodes.frame.scrollTop   = 0
       nodes.next.focus()
-      Gallery.cb.setupTimer() if Gallery.slideshow
+      Gallery.cb[if slideshow then 'setupTimer' else 'stop']()
 
       # Center selected thumbnail
       nodes.thumbs.scrollTop = @offsetTop + @offsetHeight/2 - nodes.thumbs.clientHeight/2
@@ -200,23 +201,24 @@ Gallery =
 
     prev:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id - 1]
     next:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id + 1]
-    advance:   -> if Gallery.nodes.current.paused then return Gallery.nodes.current.play() else Gallery.cb.next()
+    enterKey:  -> if Gallery.nodes.current.paused then Gallery.nodes.current.play() else Gallery.cb.next()
+    click:     -> Gallery.cb[if Gallery.nodes.current.controls then 'stop' else 'enterKey']()
     toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
     blank: (e) -> Gallery.cb.close() if e.target is @
     toggleSlideshow: ->  Gallery.cb[if Gallery.slideshow then 'stop' else 'start']()
-
-    click: ->
-      if Gallery.slideshow
-        Gallery.cb.stop()
-      else unless Gallery.nodes.current.controls
-        Gallery.cb.advance()
 
     pause: ->
       {current} = Gallery.nodes
       current[if current.paused then 'play' else 'pause']() if current.nodeName is 'VIDEO'
 
-    setupTimer: ->
+    cleanupTimer: ->
       clearTimeout Gallery.timeoutID
+      {current} = Gallery.nodes
+      $.off current, 'canplaythrough load', Gallery.cb.startTimer
+      $.off current, 'pause', Gallery.cb.next
+
+    setupTimer: ->
+      Gallery.cb.cleanupTimer()
       {current} = Gallery.nodes
       isVideo = current.nodeName is 'VIDEO'
       Video.start current if isVideo
@@ -243,10 +245,9 @@ Gallery =
       Gallery.cb.setupTimer()
 
     stop: ->
-      clearTimeout Gallery.timeoutID
+      return unless Gallery.slideshow
+      Gallery.cb.cleanupTimer()
       {current} = Gallery.nodes
-      $.off current, 'canplaythrough load', Gallery.cb.startTimer
-      $.off current, 'pause', Gallery.cb.next
       current.loop = true if current.nodeName is 'VIDEO'
       $.rmClass Gallery.nodes.buttons, 'gal-playing'
       Gallery.slideshow = false
