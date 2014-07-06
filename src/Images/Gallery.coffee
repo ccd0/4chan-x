@@ -208,6 +208,7 @@ Gallery =
     toggleSlideshow: ->  Gallery.cb[if Gallery.slideshow then 'stop' else 'start']()
 
     pause: ->
+      Gallery.cb.stop()
       {current} = Gallery.nodes
       current[if current.paused then 'play' else 'pause']() if current.nodeName is 'VIDEO'
 
@@ -215,7 +216,7 @@ Gallery =
       clearTimeout Gallery.timeoutID
       {current} = Gallery.nodes
       $.off current, 'canplaythrough load', Gallery.cb.startTimer
-      $.off current, 'pause', Gallery.cb.next
+      $.off current, 'ended', Gallery.cb.next
 
     setupTimer: ->
       Gallery.cb.cleanupTimer()
@@ -234,7 +235,7 @@ Gallery =
     checkTimer: ->
       {current} = Gallery.nodes
       if current.nodeName is 'VIDEO' and !current.paused
-        $.on current, 'pause', Gallery.cb.next
+        $.on current, 'ended', Gallery.cb.next
         current.loop = false
       else
         Gallery.cb.next()
