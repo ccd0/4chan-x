@@ -39,14 +39,13 @@ Gallery =
       innerHTML: <%= importHTML('Features/Gallery') %>
 
     nodes[key] = $ value, dialog for key, value of {
-      buttons: '.gal-buttons'
+      frame:   '.gal-image'
       name:    '.gal-name'
       count:   '.count'
+      thumbs:  '.gal-thumbnails'
       total:   '.total'
-      frame:   '.gal-image'
       next:    '.gal-image a'
       current: '.gal-image img'
-      thumbs:  '.gal-thumbnails'
     }
 
     menuButton = $ '.menu-button', dialog
@@ -54,11 +53,9 @@ Gallery =
 
     {cb} = Gallery
     $.on nodes.frame,             'click', cb.blank
-    $.on nodes.next,              'click', cb.advance
+    $.on nodes.next,              'click', cb.click
     $.on $('.gal-prev',  dialog), 'click', cb.prev
     $.on $('.gal-next',  dialog), 'click', cb.next
-    $.on $('.gal-start', dialog), 'click', cb.start
-    $.on $('.gal-stop',  dialog), 'click', cb.stop
     $.on $('.gal-close', dialog), 'click', cb.close
 
     $.on menuButton, 'click', (e) ->
@@ -118,7 +115,7 @@ Gallery =
         when 'Right'
           Gallery.cb.next
         when 'Enter'
-          Gallery.cb.advanceKey
+          Gallery.cb.advance
         when 'Left', ''
           Gallery.cb.prev
         when 'p'
@@ -159,7 +156,7 @@ Gallery =
       nodes.current           = file
       nodes.frame.scrollTop   = 0
       nodes.next.focus()
-      Gallery.cb.setupTimer() if Gallery.slideshow
+      Gallery.cb.setupTimer() if Conf['Slideshow Mode']
 
       # Center selected thumbnail
       nodes.thumbs.scrollTop = @offsetTop + @offsetHeight/2 - nodes.thumbs.clientHeight/2
@@ -200,25 +197,27 @@ Gallery =
 
     prev:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id - 1]
     next:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id + 1]
+    advance:   -> if Gallery.nodes.current.paused then Gallery.nodes.current.play() else Gallery.cb.next()
     toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
     blank: (e) -> Gallery.cb.close() if e.target is @
-    advance:   -> Gallery.cb.advanceKey() unless Gallery.nodes.current.controls
-    toggleSlideshow: ->  Gallery.cb[if Gallery.slideshow then 'stop' else 'start']()
 
-    advanceKey: ->
-      if Gallery.nodes.current.paused   then return Gallery.nodes.current.play()
-      Gallery.cb.next()
-    
+    click: ->
+      if Gallery.slideshow
+        Gallery.cb.stopTimer()
+      else unless Gallery.nodes.current.controls
+        Gallery.cb.advance()
+
     pause: ->
       {current} = Gallery.nodes
       current[if current.paused then 'play' else 'pause']() if current.nodeName is 'VIDEO'
 
     setupTimer: ->
+      Gallery.slideshow = true
       clearTimeout Gallery.timeoutID
       {current} = Gallery.nodes
       isVideo = current.nodeName is 'VIDEO'
       Video.start current if isVideo
-      return Gallery.cb.stop() if !Gallery.images[+Gallery.nodes.current.dataset.id + 1]
+      return Gallery.cb.stopTimer() if !Gallery.images[+Gallery.nodes.current.dataset.id + 1]
       if (if isVideo then current.readyState > 4 else current.complete) or current.nodeName is 'IFRAME'
         Gallery.cb.startTimer()
       else
@@ -235,18 +234,12 @@ Gallery =
       else
         Gallery.cb.next()
 
-    start: ->
-      $.addClass Gallery.nodes.buttons, 'gal-playing'
-      Gallery.slideshow = true
-      Gallery.cb.setupTimer()
-
-    stop: ->
+    stopTimer: ->
       clearTimeout Gallery.timeoutID
       {current} = Gallery.nodes
       $.off current, 'canplaythrough load', Gallery.cb.startTimer
       $.off current, 'pause', Gallery.cb.next
       current.loop = true if current.nodeName is 'VIDEO'
-      $.rmClass Gallery.nodes.buttons, 'gal-playing'
       Gallery.slideshow = false
 
     close: ->
@@ -262,6 +255,14 @@ Gallery =
 
     setFitness: ->
       (if @checked then $.addClass else $.rmClass) doc, "gal-#{@name.toLowerCase().replace /\s+/g, '-'}"
+
+    setSlideshow: (val) ->
+      $.set 'Slideshow Mode', val
+      Conf['Slideshow Mode'] = val
+      Gallery.cb[if val then 'setupTimer' else 'stopTimer']()
+
+    setSlideshowCheck: -> Gallery.cb.setSlideshow @checked
+    toggleSlideshow:   -> Gallery.cb.setSlideshow !Conf['Slideshow Mode']
 
     setDelay: -> Gallery.delay = +@value
 
@@ -281,13 +282,16 @@ Gallery =
     createSubEntry: (name) ->
       label = UI.checkbox name, " #{name}"
       input = label.firstElementChild
-      $.on input, 'change', Gallery.cb.setFitness
-      $.event 'change', null, input
-      $.on input, 'change', $.cb.checked
+      if name is 'Slideshow Mode'
+        $.on input, 'change', Gallery.cb.setSlideshowCheck
+      else
+        $.on input, 'change', Gallery.cb.setFitness
+        $.event 'change', null, input
+        $.on input, 'change', $.cb.checked
       el: label
 
     createSubEntries: ->
-      subEntries = ['Hide Thumbnails', 'Fit Width', 'Fit Height'].map Gallery.menu.createSubEntry
+      subEntries = ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Slideshow Mode'].map Gallery.menu.createSubEntry
 
       delayLabel = $.el 'label', innerHTML: 'Slide Delay: <input type="number" name="Slide Delay" min="0" step="any" class="field">'
       delayInput = delayLabel.firstElementChild
