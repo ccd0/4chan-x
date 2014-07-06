@@ -1,3 +1,12 @@
+**Zixaphir**
+- Enable video controls in gallery.
+
+**ccd0**
+- Add a slideshow mode to the gallery.
+- New gallery keybinds: `S` starts/stops the slideshow, and `P` pauses/unpauses .webm videos.
+- Spoilered text is now replaced with `[spoiler]` in desktop notifications unless `Remove Spoilers` or `Reveal Spoilers` is set.
+- Bug fixes.
+
 ### v1.8.4 
 *2014-07-02*
 
