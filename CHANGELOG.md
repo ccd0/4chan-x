@@ -1,3 +1,6 @@
+**ccd0**
+- Fix bugs in infinite scrolling causing extra horizontal rules.
+
 ### v1.8.5 
 *2014-07-06*
 
