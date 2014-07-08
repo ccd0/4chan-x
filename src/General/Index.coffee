@@ -111,10 +111,11 @@ Index =
     return if Index.req or Conf['Index Mode'] isnt 'infinite' or (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight))
     Index.pageNum = Index.getCurrentPage() unless Index.pageNum? # Avoid having to pushState to keep track of the current page
 
-    pageNum = Index.pageNum++
+    pageNum = ++Index.pageNum
     return Index.endNotice() if pageNum > Index.pagesNum
 
     nodes = Index.buildSinglePage pageNum
+    nodes.shift() # Remove thread common with previous page
     Index.buildReplies   nodes if Conf['Show Replies']
     Index.buildStructure nodes
     Index.setPage pageNum
