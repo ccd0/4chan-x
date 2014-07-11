@@ -1,3 +1,6 @@
+**ccd0**
+- Fix bugs in gallery's handling of 404ed images.
+
 ### v1.8.5.1 
 *2014-07-08*
 
