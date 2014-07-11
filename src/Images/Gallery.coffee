@@ -97,7 +97,7 @@ Gallery =
       target:    '_blank'
       title:     title
     thumb.dataset.id = Gallery.images.length
-    thumb.dataset.post = $('a[title="Link to this post"]', post.nodes.info).href
+    thumb.dataset.post = post.fullID
 
     thumbImg = post.file.thumb.cloneNode false
     thumbImg.style.cssText = ''
@@ -148,8 +148,8 @@ Gallery =
       $[if elType is 'iframe' then 'addClass' else 'rmClass'] doc, 'gal-pdf'
       file = $.el elType,
         title: name.download = name.textContent = @title
-      $.on file, 'error', ->
-        Gallery.cb.error file, thumb
+      $.on file, 'error', =>
+        Gallery.cb.error file, @
       file.src = name.href = @href
 
       $.extend  file.dataset,   @dataset
@@ -171,10 +171,9 @@ Gallery =
       Gallery.build @
 
     error: (file, thumb) ->
-      post = Get.postFromLink $.el 'a', href: file.dataset.post
-      delete post.file.fullImage
+      post = g.posts[file.dataset.post]
 
-      src = @src.split '/'
+      src = file.src.split '/'
       if src[2] is 'i.4cdn.org'
         URL = Redirect.to 'file',
           boardID:  src[3]
