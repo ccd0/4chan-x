@@ -1,10 +1,13 @@
 Fork of [Spittie's 4chan X](https://github.com/Spittie/4chan-x) (itself a fork of [Seaweed's](https://github.com/seaweedchan/4chan-x)).
 
-Note: If you're looking for a maintained fork of OneeChan, try
+If you're looking for a maintained fork of OneeChan, try
 https://github.com/Nebukazar/OneeChan
 
 ## [Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) (Firefox)
 Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then click the link above to install.
+
+**Note**: The combination of Firefox 29 and Greasemonkey 2.0 may cause 4chan X not to work.
+Try upgrading to [Firefox 30](http://www.mozilla.org/en-US/firefox/new/) or downgrading to [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15).
 
 ## [Install](https://ccd0.github.io/4chan-x/builds/crx.crx) (Chromium)
 Download the file from the link above and add drag it to your `chrome://extensions` page.
