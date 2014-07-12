@@ -8,7 +8,7 @@ Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonk
 
 **Note**: The combination of Firefox 29 and Greasemonkey 2.0 may cause 4chan X not to work.
 Try [upgrading Firefox](http://www.mozilla.org/en-US/firefox/new/) to version 30 or higher.
-Alternatively, you can downgrade to [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15) and turn off automatic updates for Greasemonkey ([see pic](img/2014-07-12_16-19-32.png)).
+Alternatively, you can downgrade to [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15) and turn off automatic updates for Greasemonkey ([see pic](https://raw.githubusercontent.com/ccd0/4chan-x/master/img/2014-07-12_16-19-32.png)).
 
 ## [Install](https://ccd0.github.io/4chan-x/builds/4chan-X.crx) (Chromium)
 Download the file from the link above and add drag it to your `chrome://extensions` page.
