@@ -53,7 +53,7 @@ ImageHover =
       URL = Redirect.to 'file',
         boardID:  src[3]
         filename: src[src.length - 1].replace /\?.+$/, ''
-      if URL
+      if URL and (/^https:\/\//.test(URL) or location.protocol is 'http:')
         @src = URL
         return
       if g.DEAD or post.isDead or post.file.isDead
