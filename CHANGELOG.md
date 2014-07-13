@@ -1,3 +1,6 @@
+**woxxy**
+- Archive list update for Foolz Beta.
+
 ### v1.8.5.2 
 *2014-07-10*
 
@@ -42,6 +45,7 @@
 - Begin making available a version of the script with the updater disabled.
 - The removal of slugs from the URL when you open a thread is now optional, and can be disabled by unchecking `Normalize URL`.
 - The boards and file extensions for which a Sauce link is displayed can now be controlled by adding `;boards:[list]` and `types:[list]` respectively.
+- Restrict Sauce links to `http` and `https` to prevent malicious script installation.
 - Although usually not needed, `%%` can be used in format specifiers to write a literal `%`.
 - Various bugfixes.
 
@@ -496,6 +500,7 @@ Remove /v/ from stable Foolz archive.
 
 ### v1.7.5 
 *2014-04-09*
+
 **ccd0**
 - Add WebM support to gallery (currently no controls).
 - Add PDF support to gallery, disabled by default. Enable with `PDF in Gallery`.
@@ -1038,6 +1043,7 @@ Remove /v/ from stable Foolz archive.
 
 ### v1.2.17
 *2013-06-17*
+
 **seaweedchan**:
 - Fix full images being forced onto their own line
 
