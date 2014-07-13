@@ -56,10 +56,7 @@ Main =
               filename: pathname[pathname.length - 1]
             Redirect.navigate URL
           else if Conf['Loop in New Tab'] and video = $ 'video'
-            Video.configure video
-            $.on video, 'click', ->
-              if !video.controls
-                if video.paused then video.play() else video.pause()
+            video.loop = true
         return
 
     if Conf['Normalize URL'] and g.VIEW is 'thread'

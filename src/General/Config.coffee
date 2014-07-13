@@ -209,7 +209,7 @@ Config =
       ]
       'Loop in New Tab': [
         true
-        'Loop videos opened in their own tabs, and apply settings for inline expanded videos to them.'
+        'Loop videos opened in their own tabs.'
       ]
 
     'Menu':
