@@ -1,3 +1,7 @@
+**ccd0**
+- Warn when redirecting from an HTTPS 404 page to an HTTP archive, and don't load unencrypted posts/images from archives when using HTTPS.
+- `Loop in New Tab` now only makes the video loop, and doesn't apply any of your other settings.
+
 ### v1.8.5.3 
 *2014-07-13*
 
