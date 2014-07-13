@@ -180,6 +180,7 @@ Gallery =
           filename: src[src.length - 1]
         if URL
           thumb.href = URL
+        if URL and (/^https:\/\//.test(URL) or location.protocol is 'http:')
           return unless Gallery.nodes.current is file
           file.src = URL
           return

@@ -207,7 +207,7 @@ ImageExpand =
       URL = Redirect.to 'file',
         boardID:  src[3]
         filename: src[src.length - 1]
-      if URL
+      if URL and (/^https:\/\//.test(URL) or location.protocol is 'http:')
         setTimeout ImageExpand.expand, 10000, post, URL
         return
       if g.DEAD or post.isDead or post.file.isDead

@@ -54,7 +54,7 @@ Main =
             URL = Redirect.to 'file',
               boardID:  g.BOARD.ID
               filename: pathname[pathname.length - 1]
-            location.replace URL if URL
+            Redirect.navigate URL
           else if Conf['Loop in New Tab'] and video = $ 'video'
             Video.configure video
             $.on video, 'click', ->
@@ -121,7 +121,7 @@ Main =
           boardID:  g.BOARD.ID
           threadID: g.THREADID
           postID:   +location.hash.match /\d+/ # post number or 0
-        location.replace href or "/#{g.BOARD}/"
+        Redirect.navigate href, "/#{g.BOARD}/"
       return
 
     # Something might have gone wrong!
