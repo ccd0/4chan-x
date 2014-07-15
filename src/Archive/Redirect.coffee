@@ -77,7 +77,7 @@ Redirect =
     "#{Redirect.protocol archive}#{archive.domain}/#{path}"
 
   navigate: (URL, alternative) ->
-    if (
+    if URL and (
       /^https:\/\//.test(URL) or
       location.protocol is 'http:' or
       confirm "Redirect to #{URL}?\n\nYour connection will not be encrypted."
