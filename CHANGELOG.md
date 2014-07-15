@@ -1,3 +1,6 @@
+### v1.8.6.1 
+*2014-07-14*
+
 **ccd0**
 - Fix bug in v1.8.6 when no archive to redirect to.
 
