@@ -52,8 +52,8 @@ QuoteBacklink =
         $.add container, QuoteBacklink.buildBacklink @, post
     $.add @nodes.info, container
 
-
   buildBacklink: (quoted, quoter) ->
+    $.addClass quoted.nodes.post, 'quoted'
     frag = QuoteBacklink.frag.cloneNode true
     a = frag.lastElementChild
     a.href = Build.path quoter.board.ID, quoter.thread.ID, quoter.ID

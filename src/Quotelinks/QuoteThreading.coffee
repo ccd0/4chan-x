@@ -28,7 +28,7 @@ QuoteThreading =
     input = $ 'input', @controls
     $.off input, 'change', @toggle
 
-    $.event 'rmMenuEntry', @entry
+    Header.menu.rmEntry @entry
 
     delete @enabled
     delete @controls

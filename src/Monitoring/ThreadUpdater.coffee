@@ -79,7 +79,7 @@ ThreadUpdater =
     @set 'timer', null
     @set 'status', 'Offline'
 
-    $.event 'rmMenuEntry', @entry
+    Header.menu.rmEntry @entry
 
     if Conf['Updater and Stats in Header']
       Header.rmShortcut @dialog

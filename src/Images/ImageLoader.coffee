@@ -38,17 +38,17 @@ ImageLoader =
     file = $.el if isImage then 'img' else 'video'
     if Conf[replace]
       if isVideo
-      
-        file.alt          = thumb.alt
-        file.dataset.md5  = thumb.dataset.md5
-        file.style.height = style.height
-        file.style.width  = style.width
+        file.alt             = thumb.alt
+        file.dataset.md5     = thumb.dataset.md5
+        file.style.height    = style.height
+        file.style.width     = style.width
         file.style.maxHeight = style.maxHeight
         file.style.maxWidth  = style.maxWidth
-        file.loop     = true
-        file.autoplay = Conf['Autoplay']
-        if Conf['Image Hover']
-          $.on file, 'mouseover', ImageHover.mouseover
+        file.loop            = true
+        file.autoplay        = Conf['Autoplay']
+        
+        $.on file, 'mouseover', ImageHover.mouseover if Conf['Image Hover']
+
       cb = =>
         $.off file, 'load loadedmetadata', cb
         # Replace the thumbnail once the file has finished loading.
