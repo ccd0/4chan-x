@@ -5,10 +5,7 @@ class Clone extends Post
       @[key] = origin[key]
 
     {nodes} = origin
-    root = if contractThumb
-      @cloneWithoutVideo nodes.root
-    else
-      nodes.root.cloneNode true
+    root = nodes.root.cloneNode true
     post = $ '.post',     root
     info = $ '.postInfo', post
     @nodes =
@@ -56,7 +53,7 @@ class Clone extends Post
         @file[key] = val
       file = $ '.file', post
       @file.text  = file.firstElementChild
-      @file.thumb = $ 'img[data-md5]', file
+      @file.thumb = $ 'img[data-md5], video[data-md5]', file
       @file.fullImage = $ '.full-image', file
 
       # Contract thumbnails in quote preview
@@ -74,14 +71,3 @@ class Clone extends Post
     @isDead  = true if origin.isDead
     @isClone = true
     root.dataset.clone = origin.clones.push(@) - 1
-
-  cloneWithoutVideo: (node) ->
-    if node.tagName is 'VIDEO'
-      []
-    else if node.nodeType is Node.ELEMENT_NODE and $ 'video', node
-      clone = node.cloneNode false
-      $.add clone, @cloneWithoutVideo child for child in node.childNodes
-      clone
-    else
-      node.cloneNode true
-

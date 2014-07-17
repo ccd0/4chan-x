@@ -46,6 +46,7 @@ ImageLoader =
         file.style.maxWidth  = style.maxWidth
         file.loop            = true
         file.autoplay        = Conf['Autoplay']
+        @file.thumb          = file
         
         $.on file, 'mouseover', ImageHover.mouseover if Conf['Image Hover']
 

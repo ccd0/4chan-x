@@ -1193,6 +1193,7 @@ nav a,
   opacity: .5;
 }
 .expanded-image > .post > .file > .fileThumb > img[data-md5],
+.expanded-image > .post > .file > .fileThumb > video[data-md5],
 .post > .file > .fileThumb > .full-image,
 .post > .file > .full-image  {
   display: none;
