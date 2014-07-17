@@ -1,9 +1,13 @@
 Config =
   main:
     'Miscellaneous':
-      'JSON Navigation' : [
+      'JSON Navigation': [
         true
         'Use JSON for loading the Board Index and Threads. Also allows searching and sorting the board index and infinite scolling.'
+      ]
+      'Update Stale Index': [
+        true
+        'Updates the board index if it hasn\'t been updated in five or more minutes when 4chan gains browser focus (like switching tabs or windows).'
       ]
       'Catalog Links': [
         true

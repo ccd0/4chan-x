@@ -115,7 +115,7 @@ Index =
     @currentPage = @getCurrentPage()
 
     $.on d, 'scroll', @scroll
-    $.on window, 'focus', @updateIfNeeded
+    $.on window, 'focus', @updateIfNeeded if Conf['Update Stale Index']
     $.on @pagelist, 'click', @cb.pageNav
 
     returnLink = $.el 'a',
