@@ -11309,7 +11309,6 @@
           file.style.maxWidth = style.maxWidth;
           file.loop = true;
           file.autoplay = Conf['Autoplay'];
-          this.file.thumb = file;
           if (Conf['Image Hover']) {
             $.on(file, 'mouseover', ImageHover.mouseover);
           }
