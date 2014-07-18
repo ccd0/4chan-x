@@ -9028,7 +9028,7 @@
     },
     handleUrl: function() {
       var url, xhr;
-      url = prompt("Insert an url:");
+      url = prompt("Enter a URL:");
       if (url === null) {
         return;
       }
@@ -10540,7 +10540,7 @@
       nodes.current.parentElement.scrollTop = 0;
       Gallery.cb.open.call(image ? $("[href='" + (image.href.replace(/https?:/, '')) + "']", nodes.thumbs) : Gallery.images[0]);
       d.body.style.overflow = 'hidden';
-      return nodes.total.textContent = --i;
+      return nodes.total.textContent = i;
     },
     generateThumb: function(file) {
       var post, thumb, thumbImg, title;
@@ -10595,7 +10595,7 @@
         return cb();
       },
       open: function(e) {
-        var el, elType, err, file, name, nodes, post, rect, top, _base, _ref;
+        var el, elType, file, name, nodes, post, rect, top, _base, _ref;
         if (e) {
           e.preventDefault();
         }
@@ -10626,25 +10626,21 @@
         nodes.current = file;
         nodes.frame.scrollTop = 0;
         nodes.next.focus();
+        if (Conf['Scroll to Post'] && (post = (_ref = (post = g.posts[file.dataset.post])) != null ? _ref.nodes.root : void 0)) {
+          Header.scrollTo(post);
+        }
+        $.on(file, 'error', function() {
+          return Gallery.cb.error(file, thumb);
+        });
         rect = this.getBoundingClientRect();
         top = rect.top;
         if (top > 0) {
           top += rect.height - doc.clientHeight;
-        }
-        if (top > 0) {
-          nodes.thumbs.scrollTop += top;
-        }
-        try {
-          if (Conf['Scroll to Post'] && (post = (_ref = (post = g.posts[file.dataset.post])) != null ? _ref.nodes.root : void 0)) {
-            Header.scrollTo(post);
+          if (top < 0) {
+            return;
           }
-        } catch (_error) {
-          err = _error;
-          console.log(err);
         }
-        return $.on(file, 'error', function() {
-          return Gallery.cb.error(file, thumb);
-        });
+        return nodes.thumbs.scrollTop += top;
       },
       image: function(e) {
         e.preventDefault();
@@ -10698,10 +10694,10 @@
         });
       },
       prev: function() {
-        return Gallery.cb.open.call(Gallery.images[+Gallery.nodes.current.dataset.id - 1]);
+        return Gallery.cb.open.call(Gallery.images[+Gallery.nodes.current.dataset.id - 1] || Gallery.images[Gallery.images.length - 1]);
       },
       next: function() {
-        return Gallery.cb.open.call(Gallery.images[+Gallery.nodes.current.dataset.id + 1]);
+        return Gallery.cb.open.call(Gallery.images[+Gallery.nodes.current.dataset.id + 1] || Gallery.images[0]);
       },
       toggle: function() {
         return (Gallery.nodes ? Gallery.cb.close : Gallery.build)();

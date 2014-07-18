@@ -96,7 +96,7 @@ Gallery =
       Gallery.images[0]
 
     d.body.style.overflow = 'hidden'
-    nodes.total.textContent = --i
+    nodes.total.textContent = i
 
   generateThumb: (file) ->
     post  = Get.postFromNode file
@@ -166,24 +166,22 @@ Gallery =
       nodes.current           = file
       nodes.frame.scrollTop   = 0
       nodes.next.focus()
+      
+      # Scroll to post
+      if Conf['Scroll to Post'] and post = (post = g.posts[file.dataset.post])?.nodes.root
+        Header.scrollTo post
+
+      $.on file, 'error', ->
+        Gallery.cb.error file, thumb
 
       # Scroll
       rect  = @getBoundingClientRect()
       {top} = rect
       if top > 0
         top += rect.height - doc.clientHeight
+        return if top < 0
 
-      nodes.thumbs.scrollTop += top if top > 0
-      
-      # Scroll to post
-      try
-        if Conf['Scroll to Post'] and post = (post = g.posts[file.dataset.post])?.nodes.root
-          Header.scrollTo post
-      catch err
-        console.log err
-
-      $.on file, 'error', ->
-        Gallery.cb.error file, thumb
+      nodes.thumbs.scrollTop += top
 
     image: (e) ->
       e.preventDefault()
@@ -219,8 +217,14 @@ Gallery =
         if postObj.filedeleted
           post.kill true
 
-    prev:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id - 1]
-    next:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id + 1]
+    prev:      ->
+      Gallery.cb.open.call(
+        Gallery.images[+Gallery.nodes.current.dataset.id - 1] or Gallery.images[Gallery.images.length - 1]
+      )
+    next:      ->
+      Gallery.cb.open.call(
+        Gallery.images[+Gallery.nodes.current.dataset.id + 1] or Gallery.images[0]
+      )
     toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
     blank: (e) -> Gallery.cb.close() if e.target is @
 
