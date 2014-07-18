@@ -162,15 +162,12 @@ Gallery =
       nodes.next.focus()
       Gallery.cb[if slideshow then 'setupTimer' else 'stop']()
 
+      # Scroll to post
+      if Conf['Scroll to Post'] and post = (post = g.posts[file.dataset.post])?.nodes.root
+        Header.scrollTo post
+
       # Center selected thumbnail
       nodes.thumbs.scrollTop = @offsetTop + @offsetHeight/2 - nodes.thumbs.clientHeight/2
-
-      # Scroll to post
-      try
-        if Conf['Scroll to Post'] and post = (post = g.posts[file.dataset.post])?.nodes.root
-          Header.scrollTo post
-      catch err
-        console.log err
 
     image: (e) ->
       e.preventDefault()
@@ -206,8 +203,14 @@ Gallery =
         if postObj.filedeleted
           post.kill true
 
-    prev:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id - 1]
-    next:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id + 1]
+    prev:      ->
+      Gallery.cb.open.call(
+        Gallery.images[+Gallery.nodes.current.dataset.id - 1] or Gallery.images[Gallery.images.length - 1]
+      )
+    next:      ->
+      Gallery.cb.open.call(
+        Gallery.images[+Gallery.nodes.current.dataset.id + 1] or Gallery.images[0]
+      )
     enterKey:  -> if Gallery.nodes.current.paused then Gallery.nodes.current.play() else Gallery.cb.next()
     click:     -> Gallery.cb[if Gallery.nodes.current.controls then 'stop' else 'enterKey']()
     toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
