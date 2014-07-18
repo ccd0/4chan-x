@@ -9037,13 +9037,12 @@
       xhr.responseType = 'blob';
       xhr.onload = function(e) {
         var contentDisposition, contentType;
-        if (this.readyState === this.DONE && xhr.status === 200) {
-          contentType = this.getResponseHeader('Content-Type');
-          contentDisposition = this.getResponseHeader('Content-Disposition');
-          return QR.handleBlob(this.response, contentType, contentDisposition, url);
-        } else {
+        if (!(this.readyState === this.DONE && xhr.status === 200)) {
           return QR.error("Can't load image.");
         }
+        contentType = this.getResponseHeader('Content-Type');
+        contentDisposition = this.getResponseHeader('Content-Disposition');
+        return QR.handleBlob(this.response, contentType, contentDisposition, url);
       };
       xhr.onerror = function(e) {
         return QR.error("Can't load image.");

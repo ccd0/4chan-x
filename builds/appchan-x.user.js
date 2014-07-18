@@ -8971,7 +8971,7 @@
     },
     handleUrl: function() {
       var url;
-      url = prompt("Insert an url:");
+      url = prompt("Enter a URL:");
       if (url === null) {
         return;
       }
@@ -8980,16 +8980,17 @@
         url: url,
         overrideMimeType: "text/plain; charset=x-user-defined",
         onload: function(xhr) {
-          var contentDisposition, contentType, data, i, r, _ref, _ref1;
+          var contentDisposition, contentType, data, h, i, r;
           r = xhr.responseText;
+          h = xhr.responseHeaders;
           data = new Uint8Array(r.length);
           i = 0;
           while (i < r.length) {
             data[i] = r.charCodeAt(i);
             i++;
           }
-          contentType = (_ref = xhr.responseHeaders.match(/Content-Type:\s*(.*)/i)) != null ? _ref[1] : void 0;
-          contentDisposition = (_ref1 = xhr.responseHeaders.match(/Content-Disposition:\s*(.*)/i)) != null ? _ref1[1] : void 0;
+          contentType = (h.match(/Content-Type:\s*(.*)/i) || [])[1];
+          contentDisposition = (h.match(/Content-Disposition:\s*(.*)/i) || [])[1];
           return QR.handleBlob(data, contentType, contentDisposition, url);
         },
         onerror: function(xhr) {

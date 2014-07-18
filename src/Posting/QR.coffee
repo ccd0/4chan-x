@@ -300,7 +300,7 @@ QR =
     QR.handleFiles([blob])
 
   handleUrl:  ->
-    url = prompt("Insert an url:")
+    url = prompt("Enter a URL:")
     return if url is null
 
     <% if (type === 'crx') { %>
@@ -308,34 +308,42 @@ QR =
     xhr.open('GET', url, true)
     xhr.responseType = 'blob'
     xhr.onload = (e) ->
-      if @readyState is @DONE && xhr.status is 200
-        contentType = @getResponseHeader('Content-Type')
-        contentDisposition = @getResponseHeader('Content-Disposition')
-        QR.handleBlob @response, contentType, contentDisposition, url
-      else
-        QR.error "Can't load image."
+      return QR.error "Can't load image." unless @readyState is @DONE and xhr.status is 200
+
+      contentType = @getResponseHeader('Content-Type')
+      contentDisposition = @getResponseHeader('Content-Disposition')
+      QR.handleBlob @response, contentType, contentDisposition, url
+
     xhr.onerror = (e) ->
       QR.error "Can't load image."
     xhr.send()
-    <% } %>
 
-    <% if (type === 'userscript') { %>
+    <% } else { %>
+
     GM_xmlhttpRequest
       method: "GET"
       url: url
+
+      # FIXME: responseType: 'blob'
+      # Could do it now, but don't wanna kill off legacy GM versions yet
       overrideMimeType: "text/plain; charset=x-user-defined"
       onload: (xhr) ->
-        r = xhr.responseText
-        data = new Uint8Array(r.length)
-        i = 0
+        r    = xhr.responseText
+        h    = xhr.responseHeaders
+        data = new Uint8Array r.length
+        i    = 0
+
         while i < r.length
-          data[i] = r.charCodeAt(i)
+          data[i] = r.charCodeAt i
           i++
-        contentType = xhr.responseHeaders.match(/Content-Type:\s*(.*)/i)?[1]
-        contentDisposition = xhr.responseHeaders.match(/Content-Disposition:\s*(.*)/i)?[1]
+
+        contentType        = (h.match(/Content-Type:\s*(.*)/i)        or [])[1]
+        contentDisposition = (h.match(/Content-Disposition:\s*(.*)/i) or [])[1]
         QR.handleBlob data, contentType, contentDisposition, url
+
       onerror: (xhr) ->
         QR.error "Can't load image."
+
     <% } %>
 
   handleFiles: (files) ->
