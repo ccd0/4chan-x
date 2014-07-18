@@ -165,6 +165,13 @@ Gallery =
       # Center selected thumbnail
       nodes.thumbs.scrollTop = @offsetTop + @offsetHeight/2 - nodes.thumbs.clientHeight/2
 
+      # Scroll to post
+      try
+        if Conf['Scroll to Post'] and post = (post = g.posts[file.dataset.post])?.nodes.root
+          Header.scrollTo post
+      catch err
+        console.log err
+
     image: (e) ->
       e.preventDefault()
       e.stopPropagation()
