@@ -1,3 +1,15 @@
+### v2.9.31 
+*2014-07-18*
+
+- Update archives
+- New Options:
+  * Refresh Stale Index: Refreshes the index if more than ten minutes have passed since the last update on window focus.
+  * Scroll to Post: For gallery. Scrolls to the post containing the currently active image.
+- Bugfixes
+
+### v2.9.30 
+*2014-06-22*
+
 **MayhemYDG**:
 - Compatibility fixes for Greasemonkey v2.
 - The QR won't duplicate single-word captchas anymore if you've input numbers only (like a street address).
