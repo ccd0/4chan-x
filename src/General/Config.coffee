@@ -407,11 +407,13 @@ Config =
     'Hide Thumbnails': [
       false
     ]
-    # Fit Width =/= Fit width
-    'Fit Width': [
+    'Fit Width': [ # 'Fit width' (lowercase W) belongs to Image Expansion. Engine limitations, heh.
       true
     ]
     'Fit Height': [
+      true
+    ]
+    'Scroll to Post': [
       true
     ]
 

@@ -110,7 +110,7 @@ Gallery =
       title:     title
 
     thumb.dataset.id      = Gallery.images.length
-    thumb.dataset.post    = $('a[title="Link to this post"]', post.nodes.info).href
+    thumb.dataset.post    = post.fullID
     thumb.dataset.isVideo = true if post.file.isVideo
 
     thumbImg = post.file.thumb.cloneNode false
@@ -172,9 +172,15 @@ Gallery =
       {top} = rect
       if top > 0
         top += rect.height - doc.clientHeight
-        return if top < 0
 
-      nodes.thumbs.scrollTop += top
+      nodes.thumbs.scrollTop += top if top > 0
+      
+      # Scroll to post
+      try
+        if Conf['Scroll to Post'] and post = (post = g.posts[file.dataset.post])?.nodes.root
+          Header.scrollTo post
+      catch err
+        console.log err
 
       $.on file, 'error', ->
         Gallery.cb.error file, thumb

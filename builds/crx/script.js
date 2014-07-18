@@ -230,7 +230,8 @@
     gallery: {
       'Hide Thumbnails': [false],
       'Fit Width': [true],
-      'Fit Height': [true]
+      'Fit Height': [true],
+      'Scroll to Post': [true]
     },
     style: {
       Interface: {
@@ -10556,7 +10557,7 @@
         title: title
       });
       thumb.dataset.id = Gallery.images.length;
-      thumb.dataset.post = $('a[title="Link to this post"]', post.nodes.info).href;
+      thumb.dataset.post = post.fullID;
       if (post.file.isVideo) {
         thumb.dataset.isVideo = true;
       }
@@ -10595,7 +10596,7 @@
         return cb();
       },
       open: function(e) {
-        var el, elType, file, name, nodes, rect, top, _base;
+        var el, elType, err, file, name, nodes, post, rect, top, _base, _ref;
         if (e) {
           e.preventDefault();
         }
@@ -10630,11 +10631,18 @@
         top = rect.top;
         if (top > 0) {
           top += rect.height - doc.clientHeight;
-          if (top < 0) {
-            return;
-          }
         }
-        nodes.thumbs.scrollTop += top;
+        if (top > 0) {
+          nodes.thumbs.scrollTop += top;
+        }
+        try {
+          if (Conf['Scroll to Post'] && (post = (_ref = (post = g.posts[file.dataset.post])) != null ? _ref.nodes.root : void 0)) {
+            Header.scrollTo(post);
+          }
+        } catch (_error) {
+          err = _error;
+          console.log(err);
+        }
         return $.on(file, 'error', function() {
           return Gallery.cb.error(file, thumb);
         });
