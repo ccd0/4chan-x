@@ -260,7 +260,7 @@ Linkify =
       regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/
       el: (a) ->
         $.el 'iframe',
-          src: "http://paste.installgentoo.com/view/embed/#{a.dataset.uid}"
+          src: "https://paste.installgentoo.com/view/embed/#{a.dataset.uid}"
     ,
       key: 'Twitter'
       regExp: /.*twitter.com\/(.+\/status\/\d+)/
@@ -322,14 +322,14 @@ Linkify =
       regExp: /.*gfycat.com\/(?:iframe\/)?(\S*)/
       el: (a) ->
         div = $.el 'iframe',
-          src: "http://gfycat.com/iframe/#{a.dataset.uid}"
+          src: "//gfycat.com/iframe/#{a.dataset.uid}"
     ,
       key: 'SoundCloud'
       regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
       style: 'border: 0; width: 500px; height: 400px;'
       el: (a) ->
         $.el 'iframe',
-          src: "//w.soundcloud.com/player/?visual=true&show_comments=false&url=https%3A%2F%2Fsoundcloud.com%2F#{encodeURIComponent a.dataset.uid}"
+          src: "https://w.soundcloud.com/player/?visual=true&show_comments=false&url=https%3A%2F%2Fsoundcloud.com%2F#{encodeURIComponent a.dataset.uid}"
       title:
         api: (uid) -> "//soundcloud.com/oembed?format=json&url=https%3A%2F%2Fsoundcloud.com%2F#{encodeURIComponent uid}"
         text: (_) -> _.title
