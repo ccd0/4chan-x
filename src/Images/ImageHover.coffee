@@ -10,20 +10,16 @@ ImageHover =
     $.on @file.thumb, 'mouseover', ImageHover.mouseover
   mouseover: (e) ->
     post = Get.postFromNode @
-    {isVideo} = post.file
-    if post.file.fullImage
-      el = post.file.fullImage
+    {file} = post
+    {isVideo} = file
+    if el = file.fullImage
       TrashQueue.remove el
     else
       el = $.el (if isVideo then 'video' else 'img'),
         className: 'full-image'
-        src: post.file.URL
-      post.file.fullImage = el
-      {thumb} = post.file
-    if d.body.contains thumb
-      $.after thumb, el unless el is thumb.nextSibling
-    else
-      $.add Header.hover, el if el.parentNode isnt Header.hover
+        src: file.URL
+      file.fullImage = el
+    $.after file.thumb, el unless el is file.thumb.nextSibling
     el.id = 'ihover'
     el.dataset.fullID = post.fullID
     if isVideo
