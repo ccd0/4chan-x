@@ -275,7 +275,6 @@ $.sync = do ->
         cb changes[key].newValue, key
     return
   (key, cb) -> $.syncing[key] = cb
-
 $.localKeys = [
   # filters
   'name',
@@ -293,18 +292,16 @@ $.localKeys = [
   # custom css
   'usercss'
 ]
-
 # https://developer.chrome.com/extensions/storage.html
-
 $.delete = (keys) ->
   chrome.storage.sync.remove keys
-
 $.get = (key, val, cb) ->
   if typeof cb is 'function'
     items = $.item key, val
   else
     items = key
     cb = val
+
   localItems = null
   syncItems  = null
   for key, val of items
@@ -326,7 +323,6 @@ $.get = (key, val, cb) ->
   if syncItems
     count++
     chrome.storage.sync.get  syncItems,  done
-
 $.set = do ->
   items =
     sync: {}
