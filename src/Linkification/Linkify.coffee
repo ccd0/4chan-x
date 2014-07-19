@@ -335,7 +335,7 @@ Linkify =
         text: (_) -> _.title
     ,
       key: 'StrawPoll'
-      regExp: /strawpoll\.me\/(?:embed_\d+\/)?(\d+)/
+      regExp: /strawpoll\.me\/(?:embed_\d+\/)?(\d+(?:\/r)?)/
       style: 'border: 0; width: 600px; height: 406px;'
       el: (a) ->
         $.el 'iframe',
