@@ -38,7 +38,7 @@ New features and non-urgent bugfixes are released on the beta channel for furthe
 - [Firefox version](https://ccd0.github.io/4chan-x/builds/4chan-X-beta.user.js)
 - [Chromium version](https://ccd0.github.io/4chan-x/builds/4chan-X-beta.crx)
 
-## [Frequently Asked Questions](https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions)
-
-## [Reporting Bugs and Contributing](https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md)
+## More information
+### [Frequently Asked Questions](https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions)
+### [Reporting Bugs and Contributing](https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md)
 
