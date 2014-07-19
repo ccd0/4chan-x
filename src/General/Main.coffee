@@ -35,7 +35,7 @@ Main =
     Conf['CachedTitles']     = []
     $.get Conf, (items) ->
       $.extend Conf, items
-      $.asap (-> doc = d.documentElement), Main.initFeatures
+      Main.initFeatures()
 
     $.on d, '4chanMainInit', Main.initStyle
 
@@ -335,4 +335,4 @@ Main =
     <% } %>
   ]
 
-Main.init()
+$.asap (-> (doc = d.documentElement) and d.head), Main.init
