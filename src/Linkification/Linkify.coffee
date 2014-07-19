@@ -151,13 +151,12 @@ Linkify =
 
   embed: (data) ->
     [key, uid, options, link, post] = data
-    href = link.href
     embed = $.el 'a',
       className:   'embedder'
-      href:        'javascript:;'
+      href:        link.href
       textContent: '(embed)'
 
-    embed.dataset[name]    = value for name, value of {key, href, uid, options}
+    embed.dataset[name] = value for name, value of {key, uid, options}
 
     $.addClass link, "#{embed.dataset.key}"
 
@@ -181,7 +180,8 @@ Linkify =
         return
 
   cb:
-    toggle: ->
+    toggle: (e) ->
+      e?.preventDefault()
       if $.hasClass @, "embedded"
         $.rm @previousElementSibling
         @previousElementSibling.hidden = false
@@ -253,7 +253,7 @@ Linkify =
       el: (a) ->
         el = $.el 'div'
         el.innerHTML = '<a target="_blank"><img></a>'
-        el.firstChild.href = el.firstChild.firstChild.src = a.dataset.href
+        el.firstChild.href = el.firstChild.firstChild.src = a.href
         el
     ,
       key: 'InstallGentoo'
@@ -302,7 +302,7 @@ Linkify =
                 el.firstChild.children[i].src = "https://mediacru.sh/#{a.dataset.uid}.#{ext}"
             when 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg'
               el.innerHTML = '<a target="_blank"><img></a>'
-              el.firstChild.href = a.dataset.href
+              el.firstChild.href = a.href
               el.firstChild.firstChild.src = "https://mediacru.sh/#{file.file}"
             when 'audio/mpeg', 'audio/ogg'
               el.innerHTML = '<audio controls><source type="audio/ogg"><source type="audio/mpeg"></audio>'
