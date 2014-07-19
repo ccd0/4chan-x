@@ -42,11 +42,24 @@ $.ajax = do ->
   # With the `If-Modified-Since` header we only receive the HTTP headers and no body for 304 responses.
   # This saves a lot of bandwidth and CPU time for both the users and the servers.
   lastModified = {}
+  blockedURLs = {}
+  blockedError = (url) ->
+    return if blockedURLs[url]
+    blockedURLs[url] = true
+    h_message = '<%= meta.name %> was blocked from loading the following URL:<br><span></span><br>'
+    h_message += '[<a href="<%= meta.faq %>#why-was-4chan-x-blocked-from-loading-a-url" target="_blank">More info</a>]'
+    message = $.el 'div', innerHTML: h_message
+    $('span', message).textContent = (if /^\/\//.test url then location.protocol else '') + url
+    new Notice 'error', message, 30, -> delete blockedURLs[url]
   (url, options, extra={}) ->
     {type, whenModified, upCallbacks, form} = extra
     r = new XMLHttpRequest()
     type or= form and 'post' or 'get'
-    r.open type, url, true
+    try
+      r.open type, url, true
+    catch err
+      blockedError url
+      return options.onerror?()
     if whenModified
       r.setRequestHeader 'If-Modified-Since', lastModified[url] if url of lastModified
       $.on r, 'load', -> lastModified[url] = r.getResponseHeader 'Last-Modified'
