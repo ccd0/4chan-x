@@ -13,15 +13,17 @@ ImageHover =
     {file} = post
     {isVideo} = file
     if el = file.fullImage
+      return if el.id is 'ihover'
+      el.id = 'ihover'
       TrashQueue.remove el
     else
-      el = $.el (if isVideo then 'video' else 'img'),
+      file.fullImage = el = $.el (if isVideo then 'video' else 'img'),
         className: 'full-image'
-        src: file.URL
-      file.fullImage = el
-    $.after file.thumb, el unless el is file.thumb.nextSibling
-    el.id = 'ihover'
-    el.dataset.fullID = post.fullID
+        id: 'ihover'
+      el.dataset.fullID = post.fullID
+      $.on el, 'error', ImageHover.error
+      el.src = file.URL
+      $.after file.thumb, el
     if isVideo
       el.loop = true
       el.controls = false
@@ -31,7 +33,7 @@ ImageHover =
       el: el
       latestEvent: e
       endEvents: 'mouseout click'
-      asapTest: -> (if isVideo then el.videoHeight else el.naturalHeight)
+      asapTest: -> (if isVideo then el.readyState >= el.HAVE_CURRENT_DATA else el.naturalHeight)
       noRemove: true
       cb: ->
         $.off el, 'error', ImageHover.error
@@ -39,7 +41,6 @@ ImageHover =
           el.pause()
           TrashQueue.add el, post
         el.removeAttribute 'id'
-    $.on el, 'error', ImageHover.error
   error: ->
     return unless doc.contains @
     post = g.posts[@dataset.fullID]
