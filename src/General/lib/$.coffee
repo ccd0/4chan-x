@@ -276,8 +276,6 @@ $.sync = do ->
     return
   (key, cb) -> $.syncing[key] = cb
 
-$.desync = (key) -> delete $.syncing[key]
-
 $.localKeys = [
   # filters
   'name',
@@ -363,13 +361,13 @@ $.set = do ->
     setAll()
 $.clear = (cb) ->
   count = 2
-  done = ->
+  done  = ->
     if chrome.runtime.lastError
       c.error chrome.runtime.lastError.message
       return
     cb?() unless --count
   chrome.storage.local.clear done
-  chrome.storage.sync.clear done
+  chrome.storage.sync.clear  done
 <% } else { %>
 
 # http://wiki.greasespot.net/Main_Page
@@ -378,8 +376,6 @@ $.sync = do ->
     if cb = $.syncing[key]
       cb JSON.parse(newValue), key
   (key, cb) -> $.syncing[g.NAMESPACE + key] = cb
-
-$.desync = (key) -> delete $.syncing[g.NAMESPACE + key]
 
 $.delete = (keys) ->
   unless keys instanceof Array
