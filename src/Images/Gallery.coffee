@@ -77,7 +77,7 @@ Gallery =
     nodes.current.parentElement.scrollTop = 0
 
     Gallery.cb.open.call if image
-      $ "[href='#{image.href}']", nodes.thumbs
+      $("[href='#{image.href}']", nodes.thumbs) or Gallery.images[0]
     else
       Gallery.images[0]
 
@@ -86,6 +86,7 @@ Gallery =
 
   generateThumb: (file) ->
     post  = Get.postFromNode file
+    return if post.isClone or post.isHidden
     return unless post.file and (post.file.isImage or post.file.isVideo or Conf['PDF in Gallery'])
     return if Gallery.fullIDs[post.fullID]
     Gallery.fullIDs[post.fullID] = true
