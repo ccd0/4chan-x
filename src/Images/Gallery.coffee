@@ -137,7 +137,9 @@ Gallery =
 
       {nodes} = Gallery
       {name}  = nodes
-      slideshow = Gallery.slideshow and +@dataset.id > +nodes.current.dataset.id
+      oldID = +nodes.current.dataset.id
+      newID = +@dataset.id
+      slideshow = Gallery.slideshow and (newID > oldID or (oldID is Gallery.images.length-1 and newID is 0))
 
       $.rmClass  el, 'gal-highlight' if el = $ '.gal-highlight', nodes.thumbs
       $.addClass @,  'gal-highlight'
@@ -233,7 +235,6 @@ Gallery =
       {current} = Gallery.nodes
       isVideo = current.nodeName is 'VIDEO'
       Video.start current if isVideo
-      return Gallery.cb.stop() if !Gallery.images[+Gallery.nodes.current.dataset.id + 1]
       if (if isVideo then current.readyState > 4 else current.complete) or current.nodeName is 'IFRAME'
         Gallery.cb.startTimer()
       else
@@ -301,7 +302,7 @@ Gallery =
       el: label
 
     createSubEntries: ->
-      subEntries = ['Hide Thumbnails', 'Fit Width', 'Fit Height'].map Gallery.menu.createSubEntry
+      subEntries = ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Scroll to Post'].map Gallery.menu.createSubEntry
 
       delayLabel = $.el 'label', innerHTML: 'Slide Delay: <input type="number" name="Slide Delay" min="0" step="any" class="field">'
       delayInput = delayLabel.firstElementChild
