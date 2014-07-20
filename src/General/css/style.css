@@ -1285,7 +1285,8 @@ div.boardTitle {
 }
 .gal-viewport {
   display: flex;
-  <%= align %>-items: stretch;
+  -webkit-align-items: stretch;
+  align-items: stretch;
   flex-direction: row;
   flex: 1 1 auto;
 }
@@ -1294,7 +1295,8 @@ div.boardTitle {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  <%= align %>-items: stretch;
+  -webkit-align-items: stretch;
+  align-items: stretch;
   text-align: center;
   background: rgba(0,0,0,.5);
   border-left: 1px solid #222;
@@ -1341,7 +1343,8 @@ div.boardTitle {
 .gal-next::after {
   position: absolute;
   top: 48.6%;
-  <%= transform %>: translateY(-50%)
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
   display: inline-block;
   border-top: 11px solid transparent;
   border-bottom: 11px solid transparent;
@@ -1359,8 +1362,10 @@ div.boardTitle {
   order: 1;
   flex: 1 0 auto;
   display: flex;
-  <%= align %>-items: flex-start;
-  <%= justify %>: space-around;
+  -webkit-align-items: flex-start;
+  align-items: flex-start;
+  -webkit-justify-content: space-around;
+  justify-content: space-around;
   overflow: hidden;
   /* Flex > Non-Flex child max-width and overflow fix (Firefox only?) */
   width: 1%;

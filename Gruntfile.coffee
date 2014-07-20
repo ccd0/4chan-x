@@ -180,16 +180,6 @@ module.exports = (grunt) ->
     pkg = grunt.config 'pkg'
     pkg.type = type
     grunt.config 'pkg', pkg
-
-    if type is 'crx'
-      pkg.align     = '-webkit-align'
-      pkg.justify   = '-webkit-justify-content'
-      pkg.transform = '-webkit-transform'
-    else
-      pkg.align     = 'align'
-      pkg.justify   = 'justify-content'
-      pkg.transform = 'transform'
-
     grunt.log.ok 'pkg.type = %s', type
 
   grunt.registerTask 'set-channel', 'Set the update channel', (channel) ->
