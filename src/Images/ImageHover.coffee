@@ -13,7 +13,6 @@ ImageHover =
     {file} = post
     {isVideo} = file
     if el = file.fullImage
-      return if el.id is 'ihover'
       el.id = 'ihover'
       TrashQueue.remove el
     else
