@@ -20,7 +20,7 @@ This should also work for non-Windows/dev/canary Chrome and Chromium-based versi
 **Note**: The stable and beta releases of Chrome on Windows will disable extensions not installed from the Chrome store, so users will need to install 4chan X from [here](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam).
 
 ### Known issues
-Some recent versions of Chromium (starting at 38.0.2085.0) suffer from a [bug](https://crbug.com/393686) that prevents extensions from making HTTP requests in the usual way. This breaks, among other things, thread updating, quick reply, and, when `JSON Navigation` is enabled, the thread index. Until this is fixed, try another version or a different browser.
+Some recent versions of Chromium/Chrome (starting at 38.0.2085.0) suffer from a [bug](https://crbug.com/393686) that prevents extensions from making HTTP requests in the usual way. This breaks, among other things, thread updating, quick reply, and, when `JSON Navigation` is enabled, the thread index. Until this is fixed, try another version or a different browser.
 
 ## Other browsers
 This fork of 4chan X is not guaranteed to work correctly in other browsers, but you are welcome to try your luck. Pull requests to fix the bugs you will likely find are always welcome.
