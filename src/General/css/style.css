@@ -849,7 +849,9 @@ span.hide-announcement {
 }
 .persona {
   width: 100%;
+  display: -webkit-flex;
   display: flex;
+  -webkit-flex-direction: row;
   flex-direction: row;
 }
 #dump-button {
@@ -869,6 +871,7 @@ span.hide-announcement {
   opacity: 0.6;
 }
 .persona .field {
+  -webkit-flex: 1;
   flex: 1;
   width: 0;
 }
@@ -1279,21 +1282,29 @@ div.boardTitle {
   left: 0;
   right: 0;
   z-index: 30;
+  display: -webkit-flex;
   display: flex;
+  -webkit-flex-direction: row;
   flex-direction: row;
   background: rgba(0,0,0,0.7);
 }
 .gal-viewport {
+  display: -webkit-flex;
   display: flex;
   -webkit-align-items: stretch;
   align-items: stretch;
+  -webkit-flex-direction: row;
   flex-direction: row;
+  -webkit-flex: 1 1 auto;
   flex: 1 1 auto;
 }
 .gal-thumbnails {
+  -webkit-flex: 0 0 150px;
   flex: 0 0 150px;
   overflow-y: auto;
+  display: -webkit-flex;
   display: flex;
+  -webkit-flex-direction: column;
   flex-direction: column;
   -webkit-align-items: stretch;
   align-items: stretch;
@@ -1311,6 +1322,7 @@ div.boardTitle {
   width: auto;
 }
 .gal-thumb {
+  -webkit-flex: 0 0 auto;
   flex: 0 0 auto;
   padding: 3px;
   line-height: 0;
@@ -1329,6 +1341,7 @@ div.boardTitle {
 }
 .gal-prev,
 .gal-next {
+  -webkit-flex: 0 0 20px;
   flex: 0 0 20px;
   position: relative;
   cursor: pointer;
@@ -1360,7 +1373,9 @@ div.boardTitle {
 }
 .gal-image {
   order: 1;
+  -webkit-flex: 1 0 auto;
   flex: 1 0 auto;
+  display: -webkit-flex;
   display: flex;
   -webkit-align-items: flex-start;
   align-items: flex-start;
