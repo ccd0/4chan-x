@@ -61,7 +61,6 @@
 - Begin making available a version of the script with the updater disabled.
 - The removal of slugs from the URL when you open a thread is now optional, and can be disabled by unchecking `Normalize URL`.
 - The boards and file extensions for which a Sauce link is displayed can now be controlled by adding `;boards:[list]` and `types:[list]` respectively.
-- Restrict Sauce links to `http` and `https` to prevent malicious script installation.
 - Although usually not needed, `%%` can be used in format specifiers to write a literal `%`.
 - Various bugfixes.
 
