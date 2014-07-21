@@ -1,3 +1,6 @@
+### v1.8.7 
+*2014-07-20*
+
 **ccd0**
 - Various bugfixes.
 
