@@ -360,7 +360,7 @@ Header =
   editCustomNav: ->
     Settings.open 'Advanced'
     settings = $.id 'fourchanx-settings'
-    $('input[name=boardnav]', settings).focus()
+    $('textarea[name=boardnav]', settings).focus()
 
   hashScroll: ->
     hash = @location.hash[1..]
