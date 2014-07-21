@@ -1,3 +1,13 @@
+**ccd0**
+- Various bugfixes.
+
+**MayhemYDG**
+- Improvements to Chrom* storage API.
+
+**Zixaphir**
+- Add gallery option `Scroll to Post`: Scrolls to the post containing the currently active image.
+- Gallery now loops.
+
 ### v1.8.6.1 
 *2014-07-14*
 
