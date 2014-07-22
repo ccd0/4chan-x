@@ -163,11 +163,10 @@ ImageExpand =
     click:     (e) ->
       if @paused and not @controls
         @play()
-        e.preventDefault()
+        e.stopPropagation()
 
   setupVideoControls: (post) ->
     {file}  = post
-    {thumb} = file
     video   = file.fullImage
 
     # disable link to file so native controls can work
