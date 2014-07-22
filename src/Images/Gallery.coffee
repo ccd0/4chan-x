@@ -178,33 +178,9 @@ Gallery =
       Gallery.build @
 
     error: (file, thumb) ->
-      post = g.posts[file.dataset.post]
-
-      src = file.src.split '/'
-      if src[2] is 'i.4cdn.org'
-        URL = Redirect.to 'file',
-          boardID:  src[3]
-          filename: src[src.length - 1]
-        if URL
-          thumb.href = URL
-        if URL and (/^https:\/\//.test(URL) or location.protocol is 'http:')
-          return unless Gallery.nodes.current is file
-          file.src = URL
-          return
-        if g.DEAD or post.isDead or post.file.isDead
-          return
-
-      # XXX CORS for i.4cdn.org WHEN?
-      $.ajax "//a.4cdn.org/#{post.board}/thread/#{post.thread}.json", onload: ->
-        return if @status isnt 200
-        i = 0
-        {posts} = @response
-        while postObj = posts[i++]
-          break if postObj.no is post.ID
-        unless postObj.no
-          return post.kill()
-        if postObj.filedeleted
-          post.kill true
+      ImageCommon.error file, g.posts[file.dataset.post], ->
+        thumb.href = URL
+        file.src = URL if Gallery.nodes.current is file
 
     prev:      ->
       Gallery.cb.open.call(

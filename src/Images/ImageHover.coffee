@@ -43,37 +43,6 @@ ImageHover =
   error: ->
     return unless doc.contains @
     post = g.posts[@dataset.fullID]
-
-    src = @src.split '/'
-    if src[2] is 'i.4cdn.org'
-      URL = Redirect.to 'file',
-        boardID:  src[3]
-        filename: src[src.length - 1].replace /\?.+$/, ''
-      if URL and (/^https:\/\//.test(URL) or location.protocol is 'http:')
-        @src = URL
-        return
-      if g.DEAD or post.isDead or post.file.isDead
-        return
-
-    timeoutID = setTimeout (=> @src = post.file.URL + '?' + Date.now()), 3000
-    <% if (type === 'crx') { %>
-    $.ajax @src,
-      onloadend: ->
-        return if @status isnt 404
-        clearTimeout timeoutID
-        post.kill true
-    ,
-      type: 'head'
-    <% } else { %>
-    # XXX CORS for i.4cdn.org WHEN?
-    $.ajax "//a.4cdn.org/#{post.board}/thread/#{post.thread}.json", onload: ->
-      return if @status isnt 200
-      for postObj in @response.posts
-        break if postObj.no is post.ID
-      if postObj.no isnt post.ID
-        clearTimeout timeoutID
-        post.kill()
-      else if postObj.filedeleted
-        clearTimeout timeoutID
-        post.kill true
-    <% } %>
+    ImageCommon.error @, post,
+      ((URL) => @src = URL),
+      (=> setTimeout (=> @src = post.file.URL + '?' + Date.now()), 3 * $.SECOND)
