@@ -1,5 +1,13 @@
+### v1.8.7.1 
+*2014-07-23*
+
+**ccd0**
+- Fix unread count updating bug in Firefox as in v1.8.6.2.
+
 ### v1.8.7 
 *2014-07-20*
+
+Based on v1.8.6.1.
 
 **ccd0**
 - Various bugfixes.
@@ -10,6 +18,12 @@
 **Zixaphir**
 - Add gallery option `Scroll to Post`: Scrolls to the post containing the currently active image.
 - Gallery now loops.
+
+### v1.8.6.2 
+*2014-07-23*
+
+**ccd0**
+- Fix unread count updating bug in Firefox.
 
 ### v1.8.6.1 
 *2014-07-14*
