@@ -77,7 +77,7 @@ Gallery =
     nodes.current.parentElement.scrollTop = 0
 
     Gallery.cb.open.call if image
-      $ "[href='#{image.href.replace /https?:/, ''}']", nodes.thumbs
+      $("[href='#{image.href}']", nodes.thumbs) or Gallery.images[0]
     else
       Gallery.images[0]
 
@@ -86,6 +86,7 @@ Gallery =
 
   generateThumb: (file) ->
     post  = Get.postFromNode file
+    return if post.isClone or post.isHidden
     return unless post.file and (post.file.isImage or post.file.isVideo or Conf['PDF in Gallery'])
     return if Gallery.fullIDs[post.fullID]
     Gallery.fullIDs[post.fullID] = true
@@ -137,7 +138,9 @@ Gallery =
 
       {nodes} = Gallery
       {name}  = nodes
-      slideshow = Gallery.slideshow and +@dataset.id > +nodes.current.dataset.id
+      oldID = +nodes.current.dataset.id
+      newID = +@dataset.id
+      slideshow = Gallery.slideshow and (newID > oldID or (oldID is Gallery.images.length-1 and newID is 0))
 
       $.rmClass  el, 'gal-highlight' if el = $ '.gal-highlight', nodes.thumbs
       $.addClass @,  'gal-highlight'
@@ -161,6 +164,10 @@ Gallery =
       nodes.frame.scrollTop   = 0
       nodes.next.focus()
       Gallery.cb[if slideshow then 'setupTimer' else 'stop']()
+
+      # Scroll to post
+      if Conf['Scroll to Post'] and post = (post = g.posts[file.dataset.post])?.nodes.root
+        Header.scrollTo post
 
       # Center selected thumbnail
       nodes.thumbs.scrollTop = @offsetTop + @offsetHeight/2 - nodes.thumbs.clientHeight/2
@@ -199,8 +206,14 @@ Gallery =
         if postObj.filedeleted
           post.kill true
 
-    prev:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id - 1]
-    next:      -> Gallery.cb.open.call Gallery.images[+Gallery.nodes.current.dataset.id + 1]
+    prev:      ->
+      Gallery.cb.open.call(
+        Gallery.images[+Gallery.nodes.current.dataset.id - 1] or Gallery.images[Gallery.images.length - 1]
+      )
+    next:      ->
+      Gallery.cb.open.call(
+        Gallery.images[+Gallery.nodes.current.dataset.id + 1] or Gallery.images[0]
+      )
     enterKey:  -> if Gallery.nodes.current.paused then Gallery.nodes.current.play() else Gallery.cb.next()
     click:     -> Gallery.cb[if Gallery.nodes.current.controls then 'stop' else 'enterKey']()
     toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
@@ -223,7 +236,6 @@ Gallery =
       {current} = Gallery.nodes
       isVideo = current.nodeName is 'VIDEO'
       Video.start current if isVideo
-      return Gallery.cb.stop() if !Gallery.images[+Gallery.nodes.current.dataset.id + 1]
       if (if isVideo then current.readyState > 4 else current.complete) or current.nodeName is 'IFRAME'
         Gallery.cb.startTimer()
       else
@@ -291,7 +303,7 @@ Gallery =
       el: label
 
     createSubEntries: ->
-      subEntries = ['Hide Thumbnails', 'Fit Width', 'Fit Height'].map Gallery.menu.createSubEntry
+      subEntries = ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Scroll to Post'].map Gallery.menu.createSubEntry
 
       delayLabel = $.el 'label', innerHTML: 'Slide Delay: <input type="number" name="Slide Delay" min="0" step="any" class="field">'
       delayInput = delayLabel.firstElementChild

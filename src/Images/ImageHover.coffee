@@ -10,22 +10,19 @@ ImageHover =
     $.on @file.thumb, 'mouseover', ImageHover.mouseover
   mouseover: (e) ->
     post = Get.postFromNode @
-    {isVideo} = post.file
-    if post.file.fullImage
-      el = post.file.fullImage
+    {file} = post
+    {isVideo} = file
+    if el = file.fullImage
+      el.id = 'ihover'
       TrashQueue.remove el
     else
-      el = $.el (if isVideo then 'video' else 'img'),
+      file.fullImage = el = $.el (if isVideo then 'video' else 'img'),
         className: 'full-image'
-        src: post.file.URL
-      post.file.fullImage = el
-      {thumb} = post.file
-    if d.body.contains thumb
-      $.after thumb, el unless el is thumb.nextSibling
-    else
-      $.add Header.hover, el if el.parentNode isnt Header.hover
-    el.id = 'ihover'
-    el.dataset.fullID = post.fullID
+        id: 'ihover'
+      el.dataset.fullID = post.fullID
+      $.on el, 'error', ImageHover.error
+      el.src = file.URL
+      $.after file.thumb, el
     if isVideo
       el.loop = true
       el.controls = false
@@ -35,7 +32,7 @@ ImageHover =
       el: el
       latestEvent: e
       endEvents: 'mouseout click'
-      asapTest: -> (if isVideo then el.videoHeight else el.naturalHeight)
+      asapTest: -> (if isVideo then el.readyState >= el.HAVE_CURRENT_DATA else el.naturalHeight)
       noRemove: true
       cb: ->
         $.off el, 'error', ImageHover.error
@@ -43,7 +40,6 @@ ImageHover =
           el.pause()
           TrashQueue.add el, post
         el.removeAttribute 'id'
-    $.on el, 'error', ImageHover.error
   error: ->
     return unless doc.contains @
     post = g.posts[@dataset.fullID]

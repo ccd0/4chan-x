@@ -313,9 +313,9 @@ Settings =
     interval.value             =  Conf['Interval']
     customCSS.checked          =  Conf['Custom CSS']
     inputs['usercss'].disabled = !Conf['Custom CSS']
-    $.on interval,          'change', ThreadUpdater.cb.interval
-    $.on customCSS,         'change', Settings.togglecss
-    $.on $.id('apply-css'), 'click',  Settings.usercss
+    $.on interval,                 'change', ThreadUpdater.cb.interval
+    $.on customCSS,                'change', Settings.togglecss
+    $.on $('#apply-css', section), 'click',  Settings.usercss
 
     archBoards = {}
     for {name, boards, files, software, withCredentials} in Redirect.archives
@@ -357,7 +357,7 @@ Settings =
 
     boardSelect = $('#archive-board-select', section)
     $.add boardSelect, boardOptions
-    table = $.id 'archive-table'
+    table = $('#archive-table', section)
     $.on boardSelect, 'change', ->
       $('tbody > :not([hidden])', table).hidden = true
       $("tbody > .#{@value}", table).hidden = false

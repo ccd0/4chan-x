@@ -151,13 +151,12 @@ Linkify =
 
   embed: (data) ->
     [key, uid, options, link, post] = data
-    href = link.href
     embed = $.el 'a',
       className:   'embedder'
-      href:        'javascript:;'
+      href:        link.href
       textContent: '(embed)'
 
-    embed.dataset[name]    = value for name, value of {key, href, uid, options}
+    embed.dataset[name] = value for name, value of {key, uid, options}
 
     $.addClass link, "#{embed.dataset.key}"
 
@@ -181,7 +180,8 @@ Linkify =
         return
 
   cb:
-    toggle: ->
+    toggle: (e) ->
+      e?.preventDefault()
       if $.hasClass @, "embedded"
         $.rm @previousElementSibling
         @previousElementSibling.hidden = false
@@ -253,14 +253,14 @@ Linkify =
       el: (a) ->
         el = $.el 'div'
         el.innerHTML = '<a target="_blank"><img></a>'
-        el.firstChild.href = el.firstChild.firstChild.src = a.dataset.href
+        el.firstChild.href = el.firstChild.firstChild.src = a.href
         el
     ,
       key: 'InstallGentoo'
       regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/
       el: (a) ->
         $.el 'iframe',
-          src: "http://paste.installgentoo.com/view/embed/#{a.dataset.uid}"
+          src: "https://paste.installgentoo.com/view/embed/#{a.dataset.uid}"
     ,
       key: 'Twitter'
       regExp: /.*twitter.com\/(.+\/status\/\d+)/
@@ -302,7 +302,7 @@ Linkify =
                 el.firstChild.children[i].src = "https://mediacru.sh/#{a.dataset.uid}.#{ext}"
             when 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg'
               el.innerHTML = '<a target="_blank"><img></a>'
-              el.firstChild.href = a.dataset.href
+              el.firstChild.href = a.href
               el.firstChild.firstChild.src = "https://mediacru.sh/#{file.file}"
             when 'audio/mpeg', 'audio/ogg'
               el.innerHTML = '<audio controls><source type="audio/ogg"><source type="audio/mpeg"></audio>'
@@ -322,20 +322,20 @@ Linkify =
       regExp: /.*gfycat.com\/(?:iframe\/)?(\S*)/
       el: (a) ->
         div = $.el 'iframe',
-          src: "http://gfycat.com/iframe/#{a.dataset.uid}"
+          src: "//gfycat.com/iframe/#{a.dataset.uid}"
     ,
       key: 'SoundCloud'
       regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
       style: 'border: 0; width: 500px; height: 400px;'
       el: (a) ->
         $.el 'iframe',
-          src: "//w.soundcloud.com/player/?visual=true&show_comments=false&url=https%3A%2F%2Fsoundcloud.com%2F#{encodeURIComponent a.dataset.uid}"
+          src: "https://w.soundcloud.com/player/?visual=true&show_comments=false&url=https%3A%2F%2Fsoundcloud.com%2F#{encodeURIComponent a.dataset.uid}"
       title:
         api: (uid) -> "//soundcloud.com/oembed?format=json&url=https%3A%2F%2Fsoundcloud.com%2F#{encodeURIComponent uid}"
         text: (_) -> _.title
     ,
       key: 'StrawPoll'
-      regExp: /strawpoll\.me\/(?:embed_\d+\/)?(\d+)/
+      regExp: /strawpoll\.me\/(?:embed_\d+\/)?(\d+(?:\/r)?)/
       style: 'border: 0; width: 600px; height: 406px;'
       el: (a) ->
         $.el 'iframe',

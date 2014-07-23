@@ -1,3 +1,21 @@
+**ccd0**
+- Fix unread count updating bug in Firefox as in v1.8.6.2.
+
+### v1.8.7 
+*2014-07-20*
+
+Based on v1.8.6.1.
+
+**ccd0**
+- Various bugfixes.
+
+**MayhemYDG**
+- Improvements to Chrom* storage API.
+
+**Zixaphir**
+- Add gallery option `Scroll to Post`: Scrolls to the post containing the currently active image.
+- Gallery now loops.
+
 ### v1.8.6.2 
 *2014-07-23*
 
@@ -67,7 +85,6 @@
 - Begin making available a version of the script with the updater disabled.
 - The removal of slugs from the URL when you open a thread is now optional, and can be disabled by unchecking `Normalize URL`.
 - The boards and file extensions for which a Sauce link is displayed can now be controlled by adding `;boards:[list]` and `types:[list]` respectively.
-- Restrict Sauce links to `http` and `https` to prevent malicious script installation.
 - Although usually not needed, `%%` can be used in format specifiers to write a literal `%`.
 - Various bugfixes.
 
@@ -647,7 +664,7 @@ Remove /v/ from stable Foolz archive.
 **Spittie**
 - Check image dimension before uploading
 
-![Check image dimension](src/General/img/changelog/1.4.1.png)
+![Check image dimension](img/1.4.1.png)
 - Bug fixes
 - Update archives
 
@@ -695,7 +712,7 @@ Remove /v/ from stable Foolz archive.
 **Spittie**
 - Upload images directly from urls
  
-![Upload from url](src/General/img/changelog/1.3.6.gif)
+![Upload from url](img/1.3.6.gif)
 - Add gfycat.com embedding
 - Replace some icons with fontawesome
 - Add Metro favicons (lel)
@@ -771,7 +788,7 @@ Remove /v/ from stable Foolz archive.
  - The last index refresh timer will now indicate the last time the index changed from 4chan's side, instead of the last time you refreshed the index.
  - You can now refresh the index page you are on with the refresh shortcut in the header bar or the same keybind for refreshing threads.
  - You can now switch between paged and all-threads index modes via the "Index Navigation" header sub-menu (note that this replaces infinite scrolling):<br>
-  ![index navigation](src/General/img/changelog/1.2.46.png)
+  ![index navigation](img/1.2.46.png)
  - Threads in the index can now be sorted by:
  <ul>
   <li> Bump order
@@ -881,7 +898,7 @@ Remove /v/ from stable Foolz archive.
 
 **Zixaphir**:
  - Fix an issue with the file dialog randomly opening multiple times (with seaweedchan)
-![Gallery](src/General/img/changelog/2.3.6.png)
+![Gallery](img/2.3.6.png)
 - Add new feature: `Gallery`.
   * Opens images in a lightweight Gallery script.
   * If enabled while Image Expansion is disabled, will takeover as the default action when images are clicked.
@@ -932,7 +949,7 @@ Remove /v/ from stable Foolz archive.
 
 **seaweedchan**:
 
-![Board title editing in action](src/General/img/changelog/1.2.31.png)
+![Board title editing in action](img/1.2.31.png)
 
 - Ported `Custom Board Titles` feature from Appchan X (with Zixaphir)
   - This allows you to edit the board title and subtitle in real-time by ctrl+clicking them
@@ -963,7 +980,7 @@ Remove /v/ from stable Foolz archive.
 
 **MayhemYDG**:
 
-![New thread watcher](src/General/img/changelog/1.2.28.png)
+![New thread watcher](img/1.2.28.png)
 
 - Greatly improved thread watcher
   - Added submenu with ability to prune 404'd threads, filter by current board, etc
@@ -978,7 +995,7 @@ Remove /v/ from stable Foolz archive.
 
 **Zixaphir**:
 
-![Linkifier in action](src/General/img/changelog/1.2.28-2.png)
+![Linkifier in action](img/1.2.28-2.png)
 
 - Drastically improved the accuracy and quality of the linkifier (with seaweedchan)
 - Removed `Allow False Positives` option due to the accuracy of the new linkifier regex
@@ -1220,7 +1237,7 @@ Remove /v/ from stable Foolz archive.
 **seaweedchan**:
 - Small bug fixes
 
-## v1.2.0 - "Youmu" ![Youmu](src/General/img/changelog/1.2.0.png)
+## v1.2.0 - "Youmu" ![Youmu](img/1.2.0.png)
 *2013-05-10*
 
 **MayhemYDG**:
@@ -1252,7 +1269,7 @@ Remove /v/ from stable Foolz archive.
 - QR with 4chan Pass made a little wider
 - Styling changes for spoiler label, also added `.has-spoiler` class for QR
 
-![QR styling changes](src/General/img/changelog/1.1.18.png)
+![QR styling changes](img/1.1.18.png)
 
 ### v1.1.17
 *2013-05-08*

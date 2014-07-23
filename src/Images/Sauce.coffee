@@ -44,7 +44,6 @@ Sauce =
     a = Sauce.link.cloneNode true
     a.href = parts['url']
     a.textContent = parts['text']
-    return null unless /^https?:$/.test a.protocol
     a
   node: ->
     return if @isClone or !@file

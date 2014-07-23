@@ -35,7 +35,7 @@ Main =
     Conf['CachedTitles']     = []
     $.get Conf, (items) ->
       $.extend Conf, items
-      $.asap (-> doc = d.documentElement), Main.initFeatures
+      Main.initFeatures()
 
     $.on d, '4chanMainInit', Main.initStyle
 
@@ -85,7 +85,7 @@ Main =
     return if !Main.isThisPageLegit() or $.hasClass doc, 'fourchan-x'
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
-    $.addClass doc, 'fourchan-x', 'seaweedchan', g.VIEW, '<% if (type === 'crx') { %>blink<% } else { %>gecko<% } %>'
+    $.addClass doc, 'fourchan-x', 'seaweedchan', g.VIEW, if chrome? then 'blink' else 'gecko'
     $.addStyle Main.css
 
     Main.setClass()
@@ -335,4 +335,4 @@ Main =
     <% } %>
   ]
 
-Main.init()
+$.asap (-> (doc = d.documentElement) and d.head), Main.init

@@ -147,6 +147,7 @@ Index =
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       switch e.target.nodeName
         when 'BUTTON'
+          e.target.blur()
           a = e.target.parentNode
         when 'A'
           a = e.target
