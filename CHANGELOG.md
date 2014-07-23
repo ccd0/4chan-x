@@ -1,3 +1,6 @@
+**ccd0**
+- Fix unread count updating bug in Firefox.
+
 ### v1.8.6.1 
 *2014-07-14*
 
