@@ -4,13 +4,13 @@ If you're looking for a maintained fork of OneeChan, try
 https://github.com/Nebukazar/OneeChan
 
 ## [Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) (Firefox)
-Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then click the link above to install.
+Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/2.1), then click the link above to install.
 
-You may want to try the [Greasemonkey 2.1 beta](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/2.1beta1), which fixes bugs in 2.0 that can prevent 4chan X from updating[[1]](https://github.com/greasemonkey/greasemonkey/issues/1938) or, in some versions of Firefox, break posting images from URLs and downloading with the original filename[[2]](https://github.com/greasemonkey/greasemonkey/issues/1937).
+Anyone using Greasemonkey 2.0 should update to [Greasemonkey 2.1](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/2.1), which fixes bugs that can prevent 4chan X from updating[[1]](https://github.com/greasemonkey/greasemonkey/issues/1938) or, in some versions of Firefox, break posting images from URLs and downloading with the original filename[[2]](https://github.com/greasemonkey/greasemonkey/issues/1937).
 
 ### Known issues
-The combination of Firefox 29 and Greasemonkey 2.0 may cause 4chan X not to work.
-Try [upgrading Firefox](http://www.mozilla.org/en-US/firefox/new/) to version 30 or higher.
+The combination of Firefox 29 and Greasemonkey 2.0+ causes 4chan X not to work.
+If you have this problem, you should [upgrade Firefox](http://www.mozilla.org/en-US/firefox/new/) to version 30 or higher.
 Alternatively, you can downgrade to [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15) and turn off automatic updates for Greasemonkey ([see pic](https://raw.githubusercontent.com/ccd0/4chan-x/master/img/2014-07-12_16-19-32.png)).
 
 ## [Install](https://ccd0.github.io/4chan-x/builds/4chan-X.crx) (Chromium)
