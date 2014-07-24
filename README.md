@@ -6,7 +6,9 @@ https://github.com/Nebukazar/OneeChan
 ## [Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) (Firefox)
 Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/2.1), then click the link above to install.
 
-Anyone using Greasemonkey 2.0 should update to [Greasemonkey 2.1](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/2.1), which fixes bugs that can prevent 4chan X from updating[[1]](https://github.com/greasemonkey/greasemonkey/issues/1938) or, in some versions of Firefox, break posting images from URLs and downloading with the original filename[[2]](https://github.com/greasemonkey/greasemonkey/issues/1937).
+**Important**: If you are using Greasemonkey 2.0, you may be subject to a [bug](https://github.com/greasemonkey/greasemonkey/issues/1938) which prevents Greasemonkey from updating 4chan X and other userscripts to the latest version. You should update to [Greasemonkey 2.1](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/2.1), in which the bug is fixed. After doing so, you may want to update 4chan X manually since it is likely to be out of date.
+
+Greasemonkey 2.1 also fixes [another bug](https://github.com/greasemonkey/greasemonkey/issues/1937) that can break posting of images from URLs and downloading images with the original filename.
 
 ### Known issues
 The combination of Firefox 29 and Greasemonkey 2.0+ causes 4chan X not to work.
