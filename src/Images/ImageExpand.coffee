@@ -102,13 +102,15 @@ ImageExpand =
 
   contract: (post) ->
     {thumb} = post.file
-    if post.file.isVideo and video = post.file.fullImage
-      video.pause()
-      TrashQueue.add video, post
-      thumb.parentNode.href   = video.src
+    if el = post.file.fullImage
+      $.off el, 'error', ImageExpand.error
+    if el and post.file.isVideo
+      el.pause()
+      TrashQueue.add el, post
+      thumb.parentNode.href   = el.src
       thumb.parentNode.target = '_blank'
       for eventName, cb of ImageExpand.videoCB
-        $.off video, eventName, cb
+        $.off el, eventName, cb
       $.rm   post.file.videoControls
       delete post.file.videoControls
     $.rmClass post.nodes.root, 'expanded-image'
