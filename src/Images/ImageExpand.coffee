@@ -35,7 +35,7 @@ ImageExpand =
     else if ImageExpand.on and !@isHidden and
       (Conf['Expand spoilers'] or !@file.isSpoiler) and
       (Conf['Expand videos'] or !@file.isVideo)
-        ImageExpand.expand @, null, true
+        ImageExpand.expand @
   cb:
     toggle: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
@@ -59,7 +59,7 @@ ImageExpand =
       if ImageExpand.on = $.hasClass ImageExpand.EAI, 'expand-all-shortcut'
         ImageExpand.EAI.className = 'contract-all-shortcut fa fa-compress'
         ImageExpand.EAI.title     = 'Contract All Images'
-        func = (post) -> ImageExpand.expand post, null, true
+        func = (post) -> ImageExpand.expand post
       else
         ImageExpand.EAI.className = 'expand-all-shortcut fa fa-expand'
         ImageExpand.EAI.title     = 'Expand All Images'
@@ -70,11 +70,17 @@ ImageExpand =
         return
 
     playVideos: (e) ->
-      for fullID, post of g.posts
-        continue unless post.file and post.file.isVideo and post.file.isExpanded
-        play = !d.hidden and !post.isHidden and doc.contains(post.nodes.root) and Header.isNodeVisible post.nodes.root
-        if play then post.file.fullImage.play() else post.file.fullImage.pause()
-      return
+      g.posts.forEach (post) ->
+        return unless post.file and post.file.isVideo and post.file.isExpanded
+        video = post.file.fullImage
+        visible = !d.hidden and Header.isNodeVisible video
+        if visible and post.file.wasPlaying
+          delete post.file.wasPlaying
+          video.play()
+        else if !visible and !video.paused
+          post.file.wasPlaying = true
+          video.pause()
+        return
 
     setFitness: ->
       (if @checked then $.addClass else $.rmClass) doc, @name.toLowerCase().replace /\s+/g, '-'
@@ -124,8 +130,9 @@ ImageExpand =
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass thumb, 'expanding'
     delete post.file.isExpanded
+    delete post.file.wasPlaying
 
-  expand: (post, src, disableAutoplay) ->
+  expand: (post, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
     {thumb, isVideo} = post.file
     return if post.isHidden or post.file.isExpanded or $.hasClass thumb, 'expanding'
@@ -140,9 +147,9 @@ ImageExpand =
       $.after thumb, el
       post.file.fullImage = el
     $.asap (-> if isVideo then el.readyState >= el.HAVE_CURRENT_DATA else el.naturalHeight), ->
-      ImageExpand.completeExpand post, disableAutoplay
+      ImageExpand.completeExpand post
 
-  completeExpand: (post, disableAutoplay) ->
+  completeExpand: (post) ->
     return unless $.hasClass post.file.thumb, 'expanding' # contracted before the image loaded
     unless post.nodes.root.parentNode
       # Image might start/finish loading before the post is inserted.
@@ -151,11 +158,11 @@ ImageExpand =
       return
     {bottom} = post.nodes.root.getBoundingClientRect()
     $.queueTask ->
-      ImageExpand.completeExpand2 post, disableAutoplay
+      ImageExpand.completeExpand2 post
       return unless bottom <= 0
       window.scrollBy 0, post.nodes.root.getBoundingClientRect().bottom - bottom
 
-  completeExpand2: (post, disableAutoplay) ->
+  completeExpand2: (post) ->
     $.addClass post.nodes.root, 'expanded-image'
     $.rmClass  post.file.thumb, 'expanding'
     post.file.isExpanded = true
@@ -164,7 +171,11 @@ ImageExpand =
       video = post.file.fullImage
       video.loop = true
       video.controls = Conf['Show Controls']
-      Video.start video if Conf['Autoplay'] and not disableAutoplay and !d.hidden and Header.isNodeVisible post.nodes.root
+      if Conf['Autoplay']
+        if !d.hidden and Header.isNodeVisible video
+          Video.start video
+        else
+          post.file.wasPlaying = true
 
   videoCB: do ->
     # dragging to the left contracts the video
