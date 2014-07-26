@@ -1,6 +1,6 @@
 ImageCommon =
   error: (file, post, redirect, reload) ->
-    if file.error and file.error.code isnt @error.MEDIA_ERR_NETWORK # video
+    if file.error and file.error.code isnt file.error.MEDIA_ERR_NETWORK # video
       error = switch file.error.code
         when 1 then 'MEDIA_ERR_ABORTED'
         when 3 then 'MEDIA_ERR_DECODE'
