@@ -1,13 +1,4 @@
 Video =
-  configure: (video, disableAutoplay) ->
-    video.loop = true
-    video.controls = Conf['Show Controls']
-    video.autoplay = false
-    if Conf['Autoplay'] and not disableAutoplay
-      Video.start video
-    else
-      video.pause()
-
   start: (video) ->
     return unless video.paused
     {controls} = video

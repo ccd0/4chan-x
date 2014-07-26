@@ -158,7 +158,10 @@ Gallery =
       $.extend  file.dataset,   @dataset
       nodes.current.pause?()
       $.replace nodes.current,  file
-      Video.configure file if elType is 'video'
+      if elType is 'video'
+        file.loop = true
+        file.controls = Conf['Show Controls']
+        Video.start file if Conf['Autoplay']
       nodes.count.textContent = +@dataset.id + 1
       nodes.current           = file
       nodes.frame.scrollTop   = 0

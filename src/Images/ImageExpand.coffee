@@ -153,7 +153,10 @@ ImageExpand =
     post.file.isExpanded = true
     if post.file.isVideo
       ImageExpand.setupVideoControls post
-      Video.configure post.file.fullImage, disableAutoplay
+      video = post.file.fullImage
+      video.loop = true
+      video.controls = Conf['Show Controls']
+      Video.start video if Conf['Autoplay'] and not disableAutoplay
 
   videoCB: do ->
     # dragging to the left contracts the video
