@@ -26,10 +26,9 @@ ImageExpand =
         ImageExpand.expand @
 
       else if @file.isExpanded and @file.isVideo
-        clone = @
-        ImageExpand.setupVideoControls clone
-        unless clone.origin.file.fullImage.paused
-          $.queueTask -> Video.start clone.file.fullImage
+        ImageExpand.setupVideoControls @
+        if !@origin.file.fullImage.paused or @origin.file.wasPlaying
+          $.queueTask => ImageExpand.play @
 
       return
     else if ImageExpand.on and !@isHidden and
@@ -172,11 +171,13 @@ ImageExpand =
       video = post.file.fullImage
       video.loop = true
       video.controls = Conf['Show Controls']
-      if Conf['Autoplay']
-        if !d.hidden and Header.isNodeVisible video
-          Video.start video
-        else
-          post.file.wasPlaying = true
+      ImageExpand.play post if Conf['Autoplay']
+
+  play: (post) ->
+    if !d.hidden and Header.isNodeVisible post.file.fullImage
+      Video.start post.file.fullImage
+    else
+      post.file.wasPlaying = true
 
   videoCB: do ->
     # dragging to the left contracts the video
