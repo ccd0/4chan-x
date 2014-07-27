@@ -18076,6 +18076,8 @@
       Main.setThemeString();
       Main.setMascotString();
       switch (location.hostname) {
+        case 'blog.4chan.org':
+          return;
         case '4chan.org':
         case 'www.4chan.org':
           g.TYPE = 'sfw';
