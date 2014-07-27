@@ -126,7 +126,7 @@ Unread =
       Unread.read()
       Unread.update()
     else
-      Unread.addPosts e.detail.newPosts.map (fullID) -> g.posts[fullID]
+      Unread.addPosts [].map.call e.detail.newPosts, (fullID) -> g.posts[fullID]
 
   readSinglePost: (post) ->
     {ID} = post
