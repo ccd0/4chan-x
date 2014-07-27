@@ -26,7 +26,8 @@ ImageExpand =
         ImageExpand.expand @
       else if @file.isExpanded and @file.isVideo
         ImageExpand.setupVideoCB @
-        ImageExpand.play @ if !@origin.file.fullImage?.paused or @origin.file.wasPlaying
+        if !@origin.file.fullImage?.paused or @origin.file.wasPlaying
+          $.asap (=> doc.contains @nodes.root), => ImageExpand.play @
     else if ImageExpand.on and !@isHidden and
       (Conf['Expand spoilers'] or !@file.isSpoiler) and
       (Conf['Expand videos'] or !@file.isVideo)
@@ -206,6 +207,7 @@ ImageExpand =
       ImageCommon.addControls file.fullImage if Conf['Show Controls']
 
   play: (post) ->
+    c.log 'play', !d.hidden and Header.isNodeVisible post.file.fullImage
     if !d.hidden and Header.isNodeVisible post.file.fullImage
       post.file.fullImage.play()
     else

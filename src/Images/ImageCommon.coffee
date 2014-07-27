@@ -44,6 +44,7 @@ ImageCommon =
       return cb URL
     cb null # report nothing to retry
 
+  # Add controls, but not until the mouse is moved over the video.
   addControls: (video) ->
     handler = ->
       $.off video, 'mouseover', handler
