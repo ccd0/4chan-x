@@ -211,8 +211,8 @@ ImageExpand =
   setupVideoCB: (post) ->
     for eventName, cb of ImageExpand.videoCB
       $.on post.file.fullImage, eventName, cb
-    if {videoControls} = post.file
-      $.on videoControls.firstElementChild, 'click', -> ImageExpand.contract post
+    if post.file.videoControls
+      $.on post.file.videoControls.firstElementChild, 'click', -> ImageExpand.contract post
 
   error: ->
     post = Get.postFromNode @
