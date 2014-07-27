@@ -26,7 +26,7 @@ ImageExpand =
         ImageExpand.expand @
       else if @file.isExpanded and @file.isVideo
         ImageExpand.setupVideoCB @
-        ImageExpand.play @ if !@origin.file.fullImage?.paused or @origin.file.wasPlaying
+        ImageExpand.setupVideo @, !@origin.file.fullImage?.paused or @origin.file.wasPlaying, @origin.file.controls
     else if ImageExpand.on and !@isHidden and
       (Conf['Expand spoilers'] or !@file.isSpoiler) and
       (Conf['Expand videos'] or !@file.isVideo)
@@ -202,16 +202,19 @@ ImageExpand =
         window.scrollBy 0, Math.min(-imageBottom, Header.getTopOf file.fullImage)
 
     if file.isVideo
-      ImageExpand.play post if Conf['Autoplay']
-      ImageCommon.addControls file.fullImage if Conf['Show Controls']
+      ImageExpand.setupVideo post, Conf['Autoplay'], Conf['Show Controls']
 
-  play: (post) ->
+  setupVideo: (post, playing, controls) ->
     {fullImage} = post.file
-    $.asap (=> doc.contains fullImage), =>
-      if !d.hidden and Header.isNodeVisible fullImage
-        fullImage.play()
-      else
-        post.file.wasPlaying = true
+    fullImage.controls = false
+    if playing
+      $.asap (=> doc.contains fullImage), =>
+        if !d.hidden and Header.isNodeVisible fullImage
+          fullImage.play()
+        else
+          post.file.wasPlaying = true
+    if controls
+      ImageCommon.addControls fullImage
 
   videoControls: $.el 'span',
     className: 'video-controls'
