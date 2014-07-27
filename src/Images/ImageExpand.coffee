@@ -199,8 +199,7 @@ ImageExpand =
     if file.scrollIntoView
       delete file.scrollIntoView
       imageBottom = Header.getBottomOf file.fullImage
-      imageHeight = file.fullImage.getBoundingClientRect().height
-      if imageBottom + imageHeight >= 0 and imageBottom < 0
+      if imageBottom < 0
         window.scrollBy 0, Math.min(-imageBottom, Header.getTopOf file.fullImage)
 
     if file.isVideo
