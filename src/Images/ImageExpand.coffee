@@ -84,6 +84,7 @@ ImageExpand =
 
   toggle: (post) ->
     unless post.file.isExpanding or post.file.isExpanded
+      post.file.scrollIntoView = true
       ImageExpand.expand post
       return
 
@@ -116,7 +117,7 @@ ImageExpand =
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass file.thumb,      'expanding'
     $.rm file.videoControls if file.videoControls
-    for x in ['isExpanding', 'isExpanded', 'videoControls', 'wasPlaying']
+    for x in ['isExpanding', 'isExpanded', 'videoControls', 'wasPlaying', 'scrollIntoView']
       delete file[x]
     if el = file.fullImage
       $.off el, 'error', ImageExpand.error
@@ -183,9 +184,11 @@ ImageExpand =
       window.scrollBy 0, bottom - oldBottom
 
     # Scroll to display full image.
-    imageBottom = Header.getBottomOf file.fullImage
-    if imageBottom + height >= 0 and imageBottom < 0
-      window.scrollBy 0, Math.min(-imageBottom, Header.getTopOf file.fullImage)
+    if file.scrollIntoView
+      delete file.scrollIntoView
+      imageBottom = Header.getBottomOf file.fullImage
+      if imageBottom + height >= 0 and imageBottom < 0
+        window.scrollBy 0, Math.min(-imageBottom, Header.getTopOf file.fullImage)
 
     if file.isVideo
       ImageExpand.play post if Conf['Autoplay']
