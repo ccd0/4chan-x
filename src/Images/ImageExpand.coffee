@@ -182,7 +182,8 @@ ImageExpand =
 
     # Scroll to display full image.
     imageBottom = Header.getBottomOf file.fullImage
-    if imageBottom < 0
+    {height} = file.fullImage.getBoundingClientRect()
+    if imageBottom + height >= 0 and imageBottom < 0
       window.scrollBy 0, Math.min(-imageBottom, Header.getTopOf file.fullImage)
 
   play: (post) ->
