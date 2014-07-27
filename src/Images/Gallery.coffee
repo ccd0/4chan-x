@@ -184,6 +184,7 @@ Gallery =
       if file.error?.code is MediaError.MEDIA_ERR_DECODE
         return new Notice 'error', 'Corrupt or unplayable video', 30
       ImageCommon.error g.posts[file.dataset.post], null, ->
+        return unless URL
         thumb.href = URL
         file.src = URL if Gallery.nodes.current is file
 

@@ -42,6 +42,7 @@ ImageCommon =
       filename: post.file.URL
     if URL and (/^https:\/\//.test(URL) or location.protocol is 'http:')
       return cb URL
+    cb null # report nothing to retry
 
   addControls: (video) ->
     handler = ->

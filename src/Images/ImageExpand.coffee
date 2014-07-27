@@ -218,15 +218,18 @@ ImageExpand =
     post = Get.postFromNode @
     $.rm @
     delete post.file.fullImage
+    if ImageCommon.decodeError @, post
+      ImageExpand.contract post
+      return
     # Images can error:
     #  - before the image started loading.
     #  - after the image started loading.
-    unless post.file.isExpanding or post.file.isExpanded
-      # Don't try to re-expand if it was already contracted.
-      return
-    ImageExpand.contract post
-    return if ImageCommon.decodeError @, post
-    ImageCommon.error post, 10 * $.SECOND, (URL) -> ImageExpand.expand post, URL
+    # Don't try to re-expand if it was already contracted.
+    if post.file.isExpanding or post.file.isExpanded
+      ImageCommon.error post, 10 * $.SECOND, (URL) ->
+        if post.file.isExpanding or post.file.isExpanded
+          ImageExpand.contract post
+          ImageExpand.expand post, URL if URL
 
   menu:
     init: ->
