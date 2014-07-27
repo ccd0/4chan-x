@@ -43,6 +43,5 @@ ImageHover =
   error: ->
     return unless doc.contains @
     post = g.posts[@dataset.fullID]
-    ImageCommon.error @, post,
-      ((URL) => @src = URL),
-      (=> setTimeout (=> @src = post.file.URL + '?' + Date.now()), 3 * $.SECOND)
+    return if ImageCommon.decodeError @, post
+    ImageCommon.error post, 3 * $.SECOND, @src = URL

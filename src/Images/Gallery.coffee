@@ -181,7 +181,9 @@ Gallery =
       Gallery.build @
 
     error: (file, thumb) ->
-      ImageCommon.error file, g.posts[file.dataset.post], ->
+      if file.error?.code is MediaError.MEDIA_ERR_DECODE
+        return new Notice 'error', 'Corrupt or unplayable video', 30
+      ImageCommon.error g.posts[file.dataset.post], null, ->
         thumb.href = URL
         file.src = URL if Gallery.nodes.current is file
 

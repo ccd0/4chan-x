@@ -125,8 +125,9 @@ ImageExpand =
       thumb.parentNode.target = '_blank'
       for eventName, cb of ImageExpand.videoCB
         $.off el, eventName, cb
-      $.rm   post.file.videoControls
-      delete post.file.videoControls
+      if post.file.videoControls
+        $.rm   post.file.videoControls
+        delete post.file.videoControls
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass thumb, 'expanding'
     delete post.file.isExpanded
@@ -223,9 +224,8 @@ ImageExpand =
       # Don't try to re-expand if it was already contracted.
       return
     ImageExpand.contract post
-    ImageCommon.error @, post,
-      ((URL) -> setTimeout ImageExpand.expand, 10 * $.SECOND, post, URL),
-      (-> setTimeout ImageExpand.expand, 10 * $.SECOND, post)
+    return if ImageCommon.decodeError @, post
+    ImageCommon.error post, 10 * $.SECOND, (URL) -> ImageExpand.expand post, URL
 
   menu:
     init: ->

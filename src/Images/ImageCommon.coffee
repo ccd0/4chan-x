@@ -1,34 +1,25 @@
 ImageCommon =
-  error: (file, post, redirect, reload) ->
-    if file.error and file.error.code isnt file.error.MEDIA_ERR_NETWORK # video
-      error = switch file.error.code
-        when 1 then 'MEDIA_ERR_ABORTED'
-        when 3 then 'MEDIA_ERR_DECODE'
-        when 4 then 'MEDIA_ERR_SRC_NOT_SUPPORTED'
-        when 5 then 'MEDIA_ERR_ENCRYPTED'
-      unless message = $ '.warning', post.file.thumb.parentNode
-        message = $.el 'div', className: 'warning'
-        $.after post.file.thumb, message
-      message.textContent = "Playback error: #{error}"
-      return
+  decodeError: (file, post) ->
+    return false unless file.error?.code is MediaError.MEDIA_ERR_DECODE
+    unless message = $ '.warning', post.file.thumb.parentNode
+      message = $.el 'div', className:   'warning'
+      $.after post.file.thumb, message
+    message.textContent = 'Error: Corrupt or unplayable video'
+    return true
 
-    src = file.src.split '/'
-    if src[2] is 'i.4cdn.org'
-      URL = Redirect.to 'file',
-        boardID:  src[3]
-        filename: src[src.length - 1].replace /\?.+$/, ''
-      if URL and (/^https:\/\//.test(URL) or location.protocol is 'http:')
-        return redirect URL
-      if g.DEAD or post.isDead or post.file.isDead
-        return
+  error: (post, delay, cb) ->
+    timeoutID = setTimeout ImageCommon.retry, delay, post, cb if delay?
+    return if post.isDead or post.file.isDead
+    kill = (fileOnly) ->
+      clearTimeout timeoutID
+      post.kill fileOnly
+      ImageCommon.retry post, cb
 
-    timeoutID = reload?()
     <% if (type === 'crx') { %>
     $.ajax post.file.URL,
       onloadend: ->
         return if @status isnt 404
-        clearTimeout timeoutID
-        post.kill true
+        kill true
     ,
       type: 'head'
     <% } else { %>
@@ -38,9 +29,16 @@ ImageCommon =
       for postObj in @response.posts
         break if postObj.no is post.ID
       if postObj.no isnt post.ID
-        clearTimeout timeoutID
-        post.kill()
+        kill()
       else if postObj.filedeleted
-        clearTimeout timeoutID
-        post.kill true
+        kill true
     <% } %>
+
+  retry: (post, cb) ->
+    unless post.isDead or post.file.isDead
+      return cb post.file.URL + '?' + Date.now()
+    URL = Redirect.to 'file',
+      boardID:  post.board.ID
+      filename: post.file.URL
+    if URL and (/^https:\/\//.test(URL) or location.protocol is 'http:')
+      return cb URL
