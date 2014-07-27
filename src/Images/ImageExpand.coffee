@@ -206,13 +206,15 @@ ImageExpand =
 
   setupVideo: (post, playing, controls) ->
     {fullImage} = post.file
+    unless playing
+      fullImage.controls = controls
+      return
     fullImage.controls = false
-    if playing
-      $.asap (=> doc.contains fullImage), =>
-        if !d.hidden and Header.isNodeVisible fullImage
-          fullImage.play()
-        else
-          post.file.wasPlaying = true
+    $.asap (=> doc.contains fullImage), =>
+      if !d.hidden and Header.isNodeVisible fullImage
+        fullImage.play()
+      else
+        post.file.wasPlaying = true
     if controls
       ImageCommon.addControls fullImage
 
