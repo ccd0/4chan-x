@@ -26,7 +26,7 @@ ImageExpand =
         ImageExpand.expand @
       else if @file.isExpanded and @file.isVideo
         ImageExpand.setupVideoCB @
-        ImageExpand.setupVideo @, !@origin.file.fullImage?.paused or @origin.file.wasPlaying, @origin.file.controls
+        ImageExpand.setupVideo @, !@origin.file.fullImage?.paused or @origin.file.wasPlaying, @file.fullImage.controls
     else if ImageExpand.on and !@isHidden and
       (Conf['Expand spoilers'] or !@file.isSpoiler) and
       (Conf['Expand videos'] or !@file.isVideo)
