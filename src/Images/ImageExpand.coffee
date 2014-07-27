@@ -129,19 +129,36 @@ ImageExpand =
 
   expand: (post, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
-    {thumb, isVideo} = post.file
-    return if post.isHidden or post.file.isExpanding or post.file.isExpanded
-    post.file.isExpanding = true
+    {file} = post
+    {thumb, isVideo} = file
+    return if post.isHidden or file.isExpanding or file.isExpanded
+
     $.addClass thumb, 'expanding'
-    el = post.file.fullImage or $.el (if isVideo then 'video' else 'img'), className: 'full-image'
+    file.isExpanding = true
+
+    el = file.fullImage or $.el (if isVideo then 'video' else 'img'), className: 'full-image'
     $.on el, 'error', ImageExpand.error
-    if post.file.fullImage
+    if file.fullImage
       # Expand already-loaded/ing picture.
       TrashQueue.remove el
     else
-      el.src = src or post.file.URL
+      el.src = src or file.URL
       $.after thumb, el
-      post.file.fullImage = el
+      file.fullImage = el
+
+    if isVideo
+      # add contract link to file info
+      if Conf['Show Controls'] and !file.videoControls
+        file.videoControls = ImageExpand.videoControls.cloneNode true
+        $.add file.text, file.videoControls
+
+      # disable link to file so native controls can work
+      thumb.parentNode.removeAttribute 'href'
+      thumb.parentNode.removeAttribute 'target'
+
+      el.loop = true
+      ImageExpand.setupVideoCB post
+
     $.asap (-> if isVideo then el.readyState >= el.HAVE_CURRENT_DATA else el.naturalHeight), ->
       if post.nodes.root.parentNode
         {bottom} = post.nodes.root.getBoundingClientRect()
@@ -154,37 +171,25 @@ ImageExpand =
     {file} = post
     return unless file.isExpanding # contracted before the image loaded
 
-    $.rmClass  file.thumb,      'expanding'
     $.addClass post.nodes.root, 'expanded-image'
-    delete file.isExpanding
+    $.rmClass  file.thumb,      'expanding'
     file.isExpanded = true
+    delete file.isExpanding
 
-    if file.isVideo
-      # add contract link to file info
-      if Conf['Show Controls']
-        file.videoControls = ImageExpand.videoControls.cloneNode true
-        $.add file.text, file.videoControls
-
-      # disable link to file so native controls can work
-      file.thumb.parentNode.removeAttribute 'href'
-      file.thumb.parentNode.removeAttribute 'target'
-
-      video = file.fullImage
-      video.loop = true
-      ImageExpand.setupVideoCB post
-      ImageExpand.play post if Conf['Autoplay']
-      ImageCommon.addControls video if Conf['Show Controls']
+    {bottom, height} = file.fullImage.getBoundingClientRect()
 
     # Scroll to keep our place in the thread when images are expanded above us.
     if oldBottom? and oldBottom <= 0
-      window.scrollBy 0, post.nodes.root.getBoundingClientRect().bottom - oldBottom
-      return
+      window.scrollBy 0, bottom - oldBottom
 
     # Scroll to display full image.
     imageBottom = Header.getBottomOf file.fullImage
-    {height} = file.fullImage.getBoundingClientRect()
     if imageBottom + height >= 0 and imageBottom < 0
       window.scrollBy 0, Math.min(-imageBottom, Header.getTopOf file.fullImage)
+
+    if file.isVideo
+      ImageExpand.play post if Conf['Autoplay']
+      ImageCommon.addControls file.fullImage if Conf['Show Controls']
 
   play: (post) ->
     if !d.hidden and Header.isNodeVisible post.file.fullImage
