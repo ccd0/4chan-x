@@ -1,5 +1,6 @@
 PSAHiding =
   init: ->
+    return unless Conf['Announcement Hiding']
     $.addClass doc, 'hide-announcement'
     $.on d, '4chanXInitFinished', @setup
 
@@ -34,6 +35,7 @@ PSAHiding =
       $.rmClass doc, 'hide-announcement'
 
     $.sync 'hiddenPSA', PSAHiding.sync
+
   toggle: (e) ->
     if $.hasClass @, 'hide-announcement'
       UTC = +$.id('globalMessage').dataset.utc
@@ -42,6 +44,7 @@ PSAHiding =
       $.event 'CloseMenu'
       $.delete 'hiddenPSA'
     PSAHiding.sync UTC
+
   sync: (UTC) ->
     psa = $.id 'globalMessage'
     psa.hidden = PSAHiding.btn.hidden = if UTC and UTC >= +psa.dataset.utc

@@ -156,7 +156,8 @@
         'Color User IDs': [false, 'Assign unique colors to user IDs on boards that use them'],
         'Remove Spoilers': [false, 'Remove all spoilers in text.'],
         'Reveal Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.'],
-        'Show Support Message': [true, 'Warn if your browser is unsupported. 4chan X may not operate correctly on unsupported browser versions.']
+        'Show Support Message': [true, 'Warn if your browser is unsupported. 4chan X may not operate correctly on unsupported browser versions.'],
+        'Announcement Hiding': [true, 'Enable announcements to be hidden.']
       },
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
@@ -14946,6 +14947,9 @@
 
   PSAHiding = {
     init: function() {
+      if (!Conf['Announcement Hiding']) {
+        return;
+      }
       $.addClass(doc, 'hide-announcement');
       return $.on(d, '4chanXInitFinished', this.setup);
     },

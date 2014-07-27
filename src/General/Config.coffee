@@ -77,6 +77,10 @@ Config =
         true
         'Warn if your browser is unsupported. 4chan X may not operate correctly on unsupported browser versions.'
       ]
+      'Announcement Hiding': [
+        true
+        'Enable announcements to be hidden.'
+      ]
 
     'Linkification':
       'Linkify': [
