@@ -177,16 +177,15 @@ ImageExpand =
     file.isExpanded = true
     delete file.isExpanding
 
-    {bottom, height} = file.fullImage.getBoundingClientRect()
-
     # Scroll to keep our place in the thread when images are expanded above us.
     if oldBottom? and oldBottom <= 0
-      window.scrollBy 0, bottom - oldBottom
+      window.scrollBy 0, post.nodes.root.getBoundingClientRect().bottom - oldBottom
 
     # Scroll to display full image.
     if file.scrollIntoView
       delete file.scrollIntoView
       imageBottom = Header.getBottomOf file.fullImage
+      {height} = file.fullImage.getBoundingClientRect()
       if imageBottom + height >= 0 and imageBottom < 0
         window.scrollBy 0, Math.min(-imageBottom, Header.getTopOf file.fullImage)
 
