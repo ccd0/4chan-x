@@ -160,14 +160,14 @@ ImageExpand =
     file.isExpanded = true
 
     if file.isVideo
+      # add contract link to file info
       if Conf['Show Controls']
-        # disable link to file so native controls can work
-        file.thumb.parentNode.removeAttribute 'href'
-        file.thumb.parentNode.removeAttribute 'target'
-
-        # setup controls in file info
         file.videoControls = ImageExpand.videoControls.cloneNode true
         $.add file.text, file.videoControls
+
+      # disable link to file so native controls can work
+      file.thumb.parentNode.removeAttribute 'href'
+      file.thumb.parentNode.removeAttribute 'target'
 
       video = file.fullImage
       video.loop = true
