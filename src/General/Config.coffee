@@ -427,6 +427,10 @@ Config =
       false
       ''
     ]
+    'Scroll into view': [
+      true
+      'Scroll down when expanding images to bring the full image into view.'
+    ]
     'Expand spoilers': [
       true
       'Expand all images along with spoilers.'

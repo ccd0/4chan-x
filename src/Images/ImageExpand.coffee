@@ -84,7 +84,7 @@ ImageExpand =
 
   toggle: (post) ->
     unless post.file.isExpanding or post.file.isExpanded
-      post.file.scrollIntoView = true
+      post.file.scrollIntoView = Conf['Scroll into view']
       ImageExpand.expand post
       return
 
