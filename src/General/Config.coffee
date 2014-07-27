@@ -276,7 +276,7 @@ Config =
         'Display reply and image count.'
       ]
       'Page Count in Stats': [
-        false
+        true
         'Display the page count in the thread stats as well.'
       ]
       'Updater and Stats in Header': [
