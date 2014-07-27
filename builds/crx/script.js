@@ -16792,10 +16792,11 @@
         path += this.hash;
       }
       Navigate.makeBreadCrumb(this.href, view, boardID, threadID);
-      if (this.id !== 'popState') {
-        history.pushState(null, '', path);
+      if (this.id === 'popState') {
+        Navigate.path = window.location;
+      } else {
+        Navigate.pushState(path);
       }
-      Navigate.path = window.location;
       Navigate.setMode(this);
       if (!(view === 'index' && 'index' === g.VIEW && boardID === g.BOARD.ID)) {
         Navigate.disconnect();
@@ -16918,6 +16919,10 @@
       if (errors) {
         return Main.handleErrors(errors);
       }
+    },
+    pushState: function(path) {
+      history.pushState(null, '', path);
+      return Navigate.path = window.location.pathname;
     },
     popstate: function() {
       var a;
