@@ -530,6 +530,7 @@ nav a,
 #a-stats {
   <%= order %>: 0;
   display: <%= flex %>;
+  text-align: center;
 }
 #a-icons {
   <%= order %>: 10;
