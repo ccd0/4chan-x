@@ -162,6 +162,8 @@ Header =
           href: (t.match(/\,"(.+)"/) || [null, '+'])[1]
           textContent: (t.match(/-text:"(.+)"\,/) || [null, '+'])[1]
           className: 'external'
+        if a.hostname is 'boards.4chan.org' and a.pathname.split('/')[1] is g.BOARD.ID
+          a.className += ' current'
         return a
 
       board = if /^current/.test t

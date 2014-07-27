@@ -288,7 +288,7 @@ Index =
 
   searchTest: (init) ->
     return false unless hash = window.location.hash
-    return false unless match = hash.match /s=([\w]+)/
+    return false unless match = hash.match /s=([\w\s\n]+)/
     @searchInput.value = match[1]
     if init
       $.on d, '4chanXInitFinished', Index.onSearchInput

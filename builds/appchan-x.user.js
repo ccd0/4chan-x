@@ -4324,6 +4324,9 @@
             textContent: (t.match(/-text:"(.+)"\,/) || [null, '+'])[1],
             className: 'external'
           });
+          if (a.hostname === 'boards.4chan.org' && a.pathname.split('/')[1] === g.BOARD.ID) {
+            a.className += ' current';
+          }
           return a;
         }
         board = /^current/.test(t) ? g.BOARD.ID : t.match(/^[^-]+/)[0];
@@ -5005,7 +5008,7 @@
       if (!(hash = window.location.hash)) {
         return false;
       }
-      if (!(match = hash.match(/s=([\w]+)/))) {
+      if (!(match = hash.match(/s=([\w\s\n]+)/))) {
         return false;
       }
       this.searchInput.value = match[1];
