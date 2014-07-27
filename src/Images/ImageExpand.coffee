@@ -178,6 +178,12 @@ ImageExpand =
     # Scroll to keep our place in the thread when images are expanded above us.
     if oldBottom? and oldBottom <= 0
       window.scrollBy 0, post.nodes.root.getBoundingClientRect().bottom - oldBottom
+      return
+
+    # Scroll to display full image.
+    imageBottom = Header.getBottomOf file.fullImage
+    if imageBottom < 0
+      window.scrollBy 0, Math.min(-imageBottom, Header.getTopOf file.fullImage)
 
   play: (post) ->
     if !d.hidden and Header.isNodeVisible post.file.fullImage
