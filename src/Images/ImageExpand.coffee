@@ -121,6 +121,8 @@ ImageExpand =
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass file.thumb,      'expanding'
     $.rm file.videoControls if file.videoControls
+    file.thumb.parentNode.href   = file.URL
+    file.thumb.parentNode.target = '_blank'
     for x in ['isExpanding', 'isExpanded', 'videoControls', 'wasPlaying', 'scrollIntoView']
       delete file[x]
 
