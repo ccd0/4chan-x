@@ -42,3 +42,11 @@ ImageCommon =
       filename: post.file.URL
     if URL and (/^https:\/\//.test(URL) or location.protocol is 'http:')
       return cb URL
+
+  addControls: (video) ->
+    handler = ->
+      $.off video, 'mouseover', handler
+      # Hacky workaround for Firefox forever-loading bug for very short videos
+      $.asap (-> (video.readyState >= 3 and video.currentTime <= Math.max 0.1, (video.duration - 0.5)) or !d.contains video), ->
+        video.controls = true
+    $.on video, 'mouseover', handler

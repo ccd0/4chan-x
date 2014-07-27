@@ -160,8 +160,8 @@ Gallery =
       $.replace nodes.current,  file
       if elType is 'video'
         file.loop = true
-        file.controls = Conf['Show Controls']
-        Video.start file if Conf['Autoplay']
+        file.play() if Conf['Autoplay']
+        ImageCommon.addControls file if Conf['Show Controls']
       nodes.count.textContent = +@dataset.id + 1
       nodes.current           = file
       nodes.frame.scrollTop   = 0
@@ -216,7 +216,7 @@ Gallery =
       Gallery.cb.cleanupTimer()
       {current} = Gallery.nodes
       isVideo = current.nodeName is 'VIDEO'
-      Video.start current if isVideo
+      current.play() if isVideo
       if (if isVideo then current.readyState > 4 else current.complete) or current.nodeName is 'IFRAME'
         Gallery.cb.startTimer()
       else

@@ -171,9 +171,9 @@ ImageExpand =
 
       video = file.fullImage
       video.loop = true
-      video.controls = Conf['Show Controls']
       ImageExpand.setupVideoCB post
       ImageExpand.play post if Conf['Autoplay']
+      ImageCommon.addControls video if Conf['Show Controls']
 
     # Scroll to keep our place in the thread when images are expanded above us.
     if oldBottom? and oldBottom <= 0
@@ -181,7 +181,7 @@ ImageExpand =
 
   play: (post) ->
     if !d.hidden and Header.isNodeVisible post.file.fullImage
-      Video.start post.file.fullImage
+      post.file.fullImage.play()
     else
       post.file.wasPlaying = true
 

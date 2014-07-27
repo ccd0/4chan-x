@@ -57,7 +57,9 @@ Main =
             Redirect.navigate URL
           else if Conf['Loop in New Tab'] and video = $ 'video'
             video.loop = true
-            Video.start video
+            video.controls = false
+            video.play()
+            ImageCommon.addControls video
         return
 
     if Conf['Normalize URL'] and g.VIEW is 'thread'
