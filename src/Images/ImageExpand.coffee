@@ -153,7 +153,6 @@ ImageExpand =
       TrashQueue.remove el
     else
       el.src = src or file.URL
-      el.load() if isVideo
       $.after thumb, el
       file.fullImage = el
 
