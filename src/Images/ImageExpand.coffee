@@ -114,11 +114,20 @@ ImageExpand =
 
   contract: (post) ->
     {file} = post
+
+    {bottom} = post.nodes.root.getBoundingClientRect()
+    oldHeight = d.body.clientHeight
+
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass file.thumb,      'expanding'
     $.rm file.videoControls if file.videoControls
     for x in ['isExpanding', 'isExpanded', 'videoControls', 'wasPlaying', 'scrollIntoView']
       delete file[x]
+
+    # Scroll to keep our place in the thread when images are contracted above us.
+    if doc.contains(post.nodes.root) and bottom <= 0
+      window.scrollBy 0, d.body.clientHeight - oldHeight
+
     if el = file.fullImage
       $.off el, 'error', ImageExpand.error
       if file.isVideo
@@ -161,16 +170,14 @@ ImageExpand =
       ImageExpand.setupVideoCB post
 
     $.asap (-> if isVideo then el.readyState >= el.HAVE_CURRENT_DATA else el.naturalHeight), ->
-      if post.nodes.root.parentNode
-        {bottom} = post.nodes.root.getBoundingClientRect()
-        $.queueTask -> ImageExpand.completeExpand post, bottom
-      else
-        # Image might start/finish loading before the post is inserted; don't scroll.
-        ImageExpand.completeExpand post
+      ImageExpand.completeExpand post
 
-  completeExpand: (post, oldBottom) ->
+  completeExpand: (post) ->
     {file} = post
     return unless file.isExpanding # contracted before the image loaded
+
+    {bottom} = post.nodes.root.getBoundingClientRect()
+    oldHeight = d.body.clientHeight
 
     $.addClass post.nodes.root, 'expanded-image'
     $.rmClass  file.thumb,      'expanding'
@@ -178,15 +185,15 @@ ImageExpand =
     delete file.isExpanding
 
     # Scroll to keep our place in the thread when images are expanded above us.
-    if oldBottom? and oldBottom <= 0
-      window.scrollBy 0, post.nodes.root.getBoundingClientRect().bottom - oldBottom
+    if doc.contains(post.nodes.root) and bottom <= 0
+      window.scrollBy 0, d.body.clientHeight - oldHeight
 
     # Scroll to display full image.
     if file.scrollIntoView
       delete file.scrollIntoView
       imageBottom = Header.getBottomOf file.fullImage
-      {height} = file.fullImage.getBoundingClientRect()
-      if imageBottom + height >= 0 and imageBottom < 0
+      imageHeight = file.fullImage.getBoundingClientRect().height
+      if imageBottom + imageHeight >= 0 and imageBottom < 0
         window.scrollBy 0, Math.min(-imageBottom, Header.getTopOf file.fullImage)
 
     if file.isVideo
