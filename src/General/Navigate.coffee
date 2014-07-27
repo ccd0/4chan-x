@@ -5,7 +5,7 @@ Navigate =
 
     <% if (type === 'crx') { %>
     # blink/webkit throw a popstate on page load. Not what we want.
-    popstateHack = -> 
+    popstateHack = ->
       $.off window, 'popstate', popstateHack
       $.on  window, 'popstate', Navigate.popstate
 
@@ -189,7 +189,7 @@ Navigate =
       $.set 'Index Sort', Conf['Index Sort'] = Index.selectSort.value = indexSort
       Index.cb.sort()
       result = true
-    
+
     return result
 
   navigate: (e) ->
@@ -234,7 +234,9 @@ Navigate =
 
     Navigate.makeBreadCrumb @href, view, boardID, threadID
 
-    Navigate.pushState path unless @id is 'popState'
+    history.pushState null, '', path unless @id is 'popState'
+
+    Navigate.path = window.location
 
     Navigate.setMode @
 
@@ -309,8 +311,8 @@ Navigate =
     posts      = []
     errors     = null
     board      = g.BOARD
-    threadRoot = Build.thread board, OP = data[0], true
-    thread     = new Thread OP.no, board
+    threadRoot = Build.thread board, data[0], true
+    thread     = new Thread data[0].no, board
 
     makePost = (postNode) ->
       try
@@ -345,10 +347,6 @@ Navigate =
     Header.hashScroll.call window
 
     Main.handleErrors errors if errors
-
-  pushState: (path) ->
-    history.pushState null, '', path
-    Navigate.path = window.location.pathname
 
   popstate: ->
     a = $.el 'a',
