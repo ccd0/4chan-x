@@ -14,32 +14,30 @@ ImageExpand =
     Post.callbacks.push
       name: 'Image Expansion'
       cb: @node
+
   node: ->
-    return unless @file?.isImage or @file?.isVideo
-    {thumb} = @file
-    $.on thumb.parentNode, 'click', ImageExpand.cb.toggle
+    return unless @file and (@file.isImage or @file.isVideo)
+    $.on @file.thumb.parentNode, 'click', ImageExpand.cb.toggle
     if @isClone 
-      if $.hasClass thumb, 'expanding'
+      if @file.isExpanding
         # If we clone a post where the image is still loading,
         # make it loading in the clone too.
         ImageExpand.contract @
         ImageExpand.expand @
-
       else if @file.isExpanded and @file.isVideo
-        ImageExpand.setupVideoControls @
-        if !@origin.file.fullImage.paused or @origin.file.wasPlaying
-          $.queueTask => ImageExpand.play @
-
-      return
+        ImageExpand.setupVideoCB @
+        ImageExpand.play @ if !@origin.file.fullImage?.paused or @origin.file.wasPlaying
     else if ImageExpand.on and !@isHidden and
       (Conf['Expand spoilers'] or !@file.isSpoiler) and
       (Conf['Expand videos'] or !@file.isVideo)
         ImageExpand.expand @
+
   cb:
     toggle: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       post = Get.postFromNode @
-      return if post.file.isExpanded and post.file.fullImage?.controls
+      {file} = post
+      return if file.isExpanded and file.isVideo and file.fullImage.controls
       e.preventDefault()
       ImageExpand.toggle post
 
@@ -85,7 +83,7 @@ ImageExpand =
       (if @checked then $.addClass else $.rmClass) doc, @name.toLowerCase().replace /\s+/g, '-'
 
   toggle: (post) ->
-    unless post.file.isExpanded or $.hasClass post.file.thumb, 'expanding'
+    unless post.file.isExpanding or post.file.isExpanded
       ImageExpand.expand post
       return
 
@@ -114,28 +112,26 @@ ImageExpand =
     ImageExpand.contract post
 
   contract: (post) ->
-    {thumb} = post.file
-    if el = post.file.fullImage
-      $.off el, 'error', ImageExpand.error
-    if el and post.file.isVideo
-      el.pause()
-      TrashQueue.add el, post
-      thumb.parentNode.href   = el.src
-      thumb.parentNode.target = '_blank'
-      for eventName, cb of ImageExpand.videoCB
-        $.off el, eventName, cb
-      if post.file.videoControls
-        $.rm   post.file.videoControls
-        delete post.file.videoControls
+    {file} = post
     $.rmClass post.nodes.root, 'expanded-image'
-    $.rmClass thumb, 'expanding'
-    delete post.file.isExpanded
-    delete post.file.wasPlaying
+    $.rmClass file.thumb,      'expanding'
+    $.rm file.videoControls if file.videoControls
+    for x in ['isExpanding', 'isExpanded', 'videoControls', 'wasPlaying']
+      delete file[x]
+    if el = file.fullImage
+      $.off el, 'error', ImageExpand.error
+      if file.isVideo
+        el.pause()
+        TrashQueue.add el, post
+        for eventName, cb of ImageExpand.videoCB
+          $.off el, eventName, cb
+        return
 
   expand: (post, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
     {thumb, isVideo} = post.file
-    return if post.isHidden or post.file.isExpanded or $.hasClass thumb, 'expanding'
+    return if post.isHidden or post.file.isExpanding or post.file.isExpanded
+    post.file.isExpanding = true
     $.addClass thumb, 'expanding'
     el = post.file.fullImage or $.el (if isVideo then 'video' else 'img'), className: 'full-image'
     $.on el, 'error', ImageExpand.error
@@ -147,37 +143,51 @@ ImageExpand =
       $.after thumb, el
       post.file.fullImage = el
     $.asap (-> if isVideo then el.readyState >= el.HAVE_CURRENT_DATA else el.naturalHeight), ->
-      ImageExpand.completeExpand post
+      if post.nodes.root.parentNode
+        {bottom} = post.nodes.root.getBoundingClientRect()
+        $.queueTask -> ImageExpand.completeExpand post, bottom
+      else
+        # Image might start/finish loading before the post is inserted; don't scroll.
+        ImageExpand.completeExpand post
 
-  completeExpand: (post) ->
-    return unless $.hasClass post.file.thumb, 'expanding' # contracted before the image loaded
-    unless post.nodes.root.parentNode
-      # Image might start/finish loading before the post is inserted.
-      # Don't scroll when it's expanded in a QP for example.
-      ImageExpand.completeExpand2 post
-      return
-    {bottom} = post.nodes.root.getBoundingClientRect()
-    $.queueTask ->
-      ImageExpand.completeExpand2 post
-      return unless bottom <= 0
-      window.scrollBy 0, post.nodes.root.getBoundingClientRect().bottom - bottom
+  completeExpand: (post, oldBottom) ->
+    {file} = post
+    return unless file.isExpanding # contracted before the image loaded
 
-  completeExpand2: (post) ->
+    $.rmClass  file.thumb,      'expanding'
     $.addClass post.nodes.root, 'expanded-image'
-    $.rmClass  post.file.thumb, 'expanding'
-    post.file.isExpanded = true
-    if post.file.isVideo
-      ImageExpand.setupVideoControls post
-      video = post.file.fullImage
+    delete file.isExpanding
+    file.isExpanded = true
+
+    if file.isVideo
+      if Conf['Show Controls']
+        # disable link to file so native controls can work
+        file.thumb.parentNode.removeAttribute 'href'
+        file.thumb.parentNode.removeAttribute 'target'
+
+        # setup controls in file info
+        file.videoControls = ImageExpand.videoControls.cloneNode true
+        $.add file.text, file.videoControls
+
+      video = file.fullImage
       video.loop = true
       video.controls = Conf['Show Controls']
+      ImageExpand.setupVideoCB post
       ImageExpand.play post if Conf['Autoplay']
+
+    # Scroll to keep our place in the thread when images are expanded above us.
+    if oldBottom? and oldBottom <= 0
+      window.scrollBy 0, post.nodes.root.getBoundingClientRect().bottom - oldBottom
 
   play: (post) ->
     if !d.hidden and Header.isNodeVisible post.file.fullImage
       Video.start post.file.fullImage
     else
       post.file.wasPlaying = true
+
+  videoControls: $.el 'span',
+    className: 'video-controls'
+    innerHTML: '\u00A0<a href="javascript:;" title="You can also contract the video by dragging it to the left.">contract</a>'
 
   videoCB: do ->
     # dragging to the left contracts the video
@@ -191,28 +201,11 @@ ImageExpand =
         @play()
         e.stopPropagation()
 
-  setupVideoControls: (post) ->
-    {file}  = post
-    video   = file.fullImage
-
-    # disable link to file so native controls can work
-    file.thumb.parentNode.removeAttribute 'href'
-    file.thumb.parentNode.removeAttribute 'target'
-
-    # setup callbacks on video element
-    $.on video, eventName, cb for eventName, cb of ImageExpand.videoCB
-
-    # setup controls in file info
-    file.videoControls = $.el 'span',
-      className: 'video-controls'
-    if Conf['Show Controls']
-      contract = $.el 'a',
-        textContent: 'contract'
-        href: 'javascript:;'
-        title: 'You can also contract the video by dragging it to the left.'
-      $.on contract, 'click', (e) -> ImageExpand.contract post
-      $.add file.videoControls, [$.tn('\u00A0'), contract]
-    $.add file.text, file.videoControls
+  setupVideoCB: (post) ->
+    for eventName, cb of ImageExpand.videoCB
+      $.on post.file.fullImage, eventName, cb
+    if {videoControls} = post.file
+      $.on videoControls.firstElementChild, 'click', -> ImageExpand.contract post
 
   error: ->
     post = Get.postFromNode @
@@ -221,7 +214,7 @@ ImageExpand =
     # Images can error:
     #  - before the image started loading.
     #  - after the image started loading.
-    unless $.hasClass(post.file.thumb, 'expanding') or $.hasClass post.nodes.root, 'expanded-image'
+    unless post.file.isExpanding or post.file.isExpanded
       # Don't try to re-expand if it was already contracted.
       return
     ImageExpand.contract post

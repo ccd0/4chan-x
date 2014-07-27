@@ -58,18 +58,13 @@ class Clone extends Post
       @file.text  = file.firstElementChild
       @file.thumb = $ 'img[data-md5]', file
       @file.fullImage = $ '.full-image', file
+      @file.videoControls = $ '.video-controls', @file.text
 
       # Contract thumbnails in quote preview
-      if contractThumb
-        $.rmClass root, 'expanded-image'
-        $.rmClass @file.thumb, 'expanding'
-      @file.isExpanded = $.hasClass root, 'expanded-image'
+      ImageExpand.contract @ if contractThumb
 
       # Remove any #ihover ID
       @file.fullImage?.removeAttribute 'id'
-
-      # Remove video controls.
-      ($ '.video-controls', @file.text)?.remove()
 
     @isDead  = true if origin.isDead
     @isClone = true
