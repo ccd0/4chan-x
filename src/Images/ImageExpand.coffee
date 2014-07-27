@@ -26,8 +26,7 @@ ImageExpand =
         ImageExpand.expand @
       else if @file.isExpanded and @file.isVideo
         ImageExpand.setupVideoCB @
-        if !@origin.file.fullImage?.paused or @origin.file.wasPlaying
-          $.asap (=> doc.contains @nodes.root), => ImageExpand.play @
+        ImageExpand.play @ if !@origin.file.fullImage?.paused or @origin.file.wasPlaying
     else if ImageExpand.on and !@isHidden and
       (Conf['Expand spoilers'] or !@file.isSpoiler) and
       (Conf['Expand videos'] or !@file.isVideo)
@@ -207,11 +206,12 @@ ImageExpand =
       ImageCommon.addControls file.fullImage if Conf['Show Controls']
 
   play: (post) ->
-    c.log 'play', !d.hidden and Header.isNodeVisible post.file.fullImage
-    if !d.hidden and Header.isNodeVisible post.file.fullImage
-      post.file.fullImage.play()
-    else
-      post.file.wasPlaying = true
+    {fullImage} = post.file
+    $.asap (=> doc.contains fullImage), =>
+      if !d.hidden and Header.isNodeVisible fullImage
+        fullImage.play()
+      else
+        post.file.wasPlaying = true
 
   videoControls: $.el 'span',
     className: 'video-controls'
