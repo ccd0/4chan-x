@@ -153,6 +153,7 @@ ImageExpand =
       TrashQueue.remove el
     else
       el.src = src or file.URL
+      el.load() if isVideo
       $.after thumb, el
       file.fullImage = el
 
@@ -169,8 +170,12 @@ ImageExpand =
       el.loop = true
       ImageExpand.setupVideoCB post
 
-    $.asap (-> if isVideo then el.readyState >= el.HAVE_CURRENT_DATA else el.naturalHeight), ->
+    if !isVideo
+      $.asap (-> el.naturalHeight), -> ImageExpand.completeExpand post
+    else if el.readyState >= el.HAVE_CURRENT_DATA
       ImageExpand.completeExpand post
+    else
+      $.on el, 'loadeddata', -> ImageExpand.completeExpand post
 
   completeExpand: (post) ->
     {file} = post
