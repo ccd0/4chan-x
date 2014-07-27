@@ -497,8 +497,9 @@ Index =
 
   updateHideLabel: ->
     hiddenCount = 0
-    for threadID, thread of g.BOARD.threads when thread.isHidden
-      hiddenCount++ if thread.ID in Index.liveThreadData.keys
+    for threadID in g.BOARD.threads.keys
+      thread = g.BOARD.threads[threadID]
+      hiddenCount++ if thread.isHidden and threadID in Index.liveThreadData.keys
     unless hiddenCount
       Index.hideLabel.hidden = true
       Index.cb.toggleHiddenThreads() if Index.showHiddenThreads

@@ -79,6 +79,7 @@ body > hr {
 /* Index Features */
 #index-menu {
   display: flex;
+  <%= align %>-items: center
 }
 :root.thread #index-menu,
 :root.index-loading .navLinks,
@@ -123,7 +124,7 @@ body > hr {
   display: inline-flex;
   text-align: left;
   flex-direction: column;
-  align-items: center;
+  <%= align %>-items: center;
   margin: 0 2px 5px;
   word-break: break-word;
   vertical-align: top;
