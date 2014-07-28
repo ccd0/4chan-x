@@ -13,6 +13,7 @@
 // @match        *://i.4cdn.org/*
 // @exclude      *://blog.4chan.org/*
 // @exclude      *://dis.4chan.org/*
+// @exclude      *://a.4cdn.org/*
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue

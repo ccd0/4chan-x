@@ -79,8 +79,6 @@ Main =
         Main.setThemeString()
         Style.init()
         return
-      when 'a.4cdn.org'
-        return
       when 'sys.4chan.org'
         g.VIEW = 'report'
         Style.init()

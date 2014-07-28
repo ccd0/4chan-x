@@ -18097,8 +18097,6 @@
           Main.setThemeString();
           Style.init();
           return;
-        case 'a.4cdn.org':
-          return;
         case 'sys.4chan.org':
           g.VIEW = 'report';
           Style.init();

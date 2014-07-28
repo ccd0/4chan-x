@@ -18,7 +18,8 @@
     ],
     "excludes": [
       "*://blog.4chan.org/*",
-      "*://dis.4chan.org/*"
+      "*://dis.4chan.org/*",
+      "*://a.4cdn.org/*"
     ],
     "files": {
       "metajs": "appchan-x.meta.js",
