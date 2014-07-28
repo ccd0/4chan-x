@@ -11,6 +11,11 @@
     return '// @match        ' + match;
   }).join('\n')
 %>
+<%=
+  meta.excludes.map(function(exclude) {
+    return '// @exclude      ' + exclude;
+  }).join('\n')
+%>
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue

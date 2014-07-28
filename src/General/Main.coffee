@@ -73,8 +73,6 @@ Main =
     Main.setMascotString()
 
     switch location.hostname
-      when 'blog.4chan.org'
-        return
       when '4chan.org', 'www.4chan.org'
         g.TYPE = 'sfw'
         g.VIEW = 'home'

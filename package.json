@@ -16,6 +16,10 @@
       "*://a.4cdn.org/*",
       "*://i.4cdn.org/*"
     ],
+    "excludes": [
+      "*://blog.4chan.org/*",
+      "*://dis.4chan.org/*"
+    ],
     "files": {
       "metajs": "appchan-x.meta.js",
       "userjs": "appchan-x.user.js"

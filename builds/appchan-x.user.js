@@ -12,6 +12,8 @@
 // @match        *://sys.4chan.org/*
 // @match        *://a.4cdn.org/*
 // @match        *://i.4cdn.org/*
+// @exclude      *://blog.4chan.org/*
+// @exclude      *://dis.4chan.org/*
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue
@@ -18079,8 +18081,6 @@
       Main.setThemeString();
       Main.setMascotString();
       switch (location.hostname) {
-        case 'blog.4chan.org':
-          return;
         case '4chan.org':
         case 'www.4chan.org':
           g.TYPE = 'sfw';
