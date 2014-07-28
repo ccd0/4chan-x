@@ -44,5 +44,4 @@ ImageHover =
     return unless doc.contains @
     post = g.posts[@dataset.fullID]
     return if ImageCommon.decodeError @, post
-    ImageCommon.error post, 3 * $.SECOND, ->
-      @src = URL if URL
+    ImageCommon.error @, post, 3 * $.SECOND, (URL) => @src = URL if URL

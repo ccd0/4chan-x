@@ -7,7 +7,10 @@ ImageCommon =
     message.textContent = 'Error: Corrupt or unplayable video'
     return true
 
-  error: (post, delay, cb) ->
+  error: (file, post, delay, cb) ->
+    if (post.isDead or post.file.isDead) and file.src.split('/')[2] is 'i.4cdn.org'
+      ImageCommon.retry post, cb
+
     timeoutID = setTimeout ImageCommon.retry, delay, post, cb if delay?
     return if post.isDead or post.file.isDead
     kill = (fileOnly) ->
@@ -25,6 +28,7 @@ ImageCommon =
     <% } else { %>
     # XXX CORS for i.4cdn.org WHEN?
     $.ajax "//a.4cdn.org/#{post.board}/thread/#{post.thread}.json", onload: ->
+      return kill() if @status is 404
       return if @status isnt 200
       for postObj in @response.posts
         break if postObj.no is post.ID
@@ -37,9 +41,10 @@ ImageCommon =
   retry: (post, cb) ->
     unless post.isDead or post.file.isDead
       return cb post.file.URL + '?' + Date.now()
+    src = post.file.URL.split '/'
     URL = Redirect.to 'file',
       boardID:  post.board.ID
-      filename: post.file.URL
+      filename: src[src.length - 1]
     if URL and (/^https:\/\//.test(URL) or location.protocol is 'http:')
       return cb URL
     cb null # report nothing to retry

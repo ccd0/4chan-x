@@ -253,7 +253,7 @@ ImageExpand =
     #  - after the image started loading.
     # Don't try to re-expand if it was already contracted.
     if post.file.isExpanding or post.file.isExpanded
-      ImageCommon.error post, 10 * $.SECOND, (URL) ->
+      ImageCommon.error @, post, 10 * $.SECOND, (URL) ->
         if post.file.isExpanding or post.file.isExpanded
           ImageExpand.contract post
           ImageExpand.expand post, URL if URL
