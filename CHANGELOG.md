@@ -7,7 +7,7 @@
 
 **ccd0**
 - Improve error handling and implement WebM decoding error messages for hover and gallery features.
-- Re-enable autoplay for WebM videos expanded by `Expand All Images` (disabled in [v1.7.3](#v1.7.3) due to performance issues). Videos will still only be expanded by EAI if the `Expand Videos` option is checked.
+- Re-enable autoplay for WebM videos expanded by `Expand All Images` (disabled in [v1.7.3](#v173) due to performance issues). Videos will still only be expanded by EAI if the `Expand Videos` option is checked.
 - When an image or video is expanded, scroll so that as much of the image/video is on screen as possible. This can be disabled by unchecking `Scroll into view` in the `Image Expansion` menu.
 - Various image expansion related bugfixes.
 - `Page Count in Stats` is now enabled by default.
