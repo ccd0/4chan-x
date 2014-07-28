@@ -1,3 +1,6 @@
+### v1.8.8 
+*2014-07-27*
+
 **MayhemYDG**
 - Add messages for WebM playback errors.
 - Pause WebM videos off screen for better performance.
