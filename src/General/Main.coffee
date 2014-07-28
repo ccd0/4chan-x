@@ -57,7 +57,7 @@ Main =
 
   initFeatures: ->
     # Check if the current board we're on is SFW or not, so we can handle options that need to know that.
-    
+
     Favicon.el.type = 'image/x-icon'
     {href}          = Favicon.el
     Favicon.SFW     = /ws\.ico$/.test href
@@ -68,7 +68,7 @@ Main =
     $.extend Mascots, Conf["userMascots"]
 
     return if g.BOARD.ID in ['z', 'fk'] then Style.init()
-    
+
     Main.setThemeString()
     Main.setMascotString()
 
@@ -206,7 +206,7 @@ Main =
     # Parse HTML or skip it and start building from JSON.
     if !Conf['JSON Navigation'] or g.VIEW is 'thread'
       Main.initThread()
-        
+
     # JSON Navigation may not load on a page that has flags, so force their CSS to always be available.
     $.add d.head, $.el 'link',
       href: "//s.4cdn.org/css/flags.556.css"

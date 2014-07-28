@@ -1,3 +1,14 @@
+### v2.9.32 
+*2014-07-28*
+
+- Announcement hiding can now be completely disabled.
+- Searching from URL can now include spaces and numbers (IE: http://boards.4chan.org/g/#s=desktop thread).
+  * This feature only works with JSON Navigation. If you are not using JSON Navigation, you can do the same with the vanilla catalog. 
+    (http://boards.4chan.org/g/catalog#s=desktop thread)
+- Appchan will now not run on dis.4chan.org or blog.4chan.org.
+- Bugfixes.
+- Aesthetic fixes.
+
 ### v2.9.31 
 *2014-07-18*
 
