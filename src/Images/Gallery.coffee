@@ -156,7 +156,7 @@ Gallery =
       file.src = name.href = @href
 
       $.extend  file.dataset,   @dataset
-      nodes.current.pause?()
+      nodes.current.pause?() unless nodes.current.error
       $.replace nodes.current,  file
       if elType is 'video'
         file.loop = true
