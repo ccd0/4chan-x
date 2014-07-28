@@ -1,3 +1,6 @@
+### v1.8.8.1 
+*2014-07-28*
+
 **ccd0**
 - Fix for image 404 redirection which was broken in v1.8.8.
 
