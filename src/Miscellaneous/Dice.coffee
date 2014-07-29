@@ -6,6 +6,6 @@ Dice =
       cb:   @node
   node: ->
     return if @isClone or not dicestats = @info.email?.match /dice[+\s](\d+)d(\d+)/
-    # Use the text node directly, as the <b> has two <br>.
+    # Use the text node directly, as the <b> has two <br>. Count dice since 4chan imposes a maximum.
     roll = $('b', @nodes.comment).firstChild
-    roll.data = "Rolled #{dicestats[1]}d#{dicestats[2]}: #{roll.data.slice 7}"
+    roll.data = "Rolled #{roll.data.split(',').length}d#{dicestats[2]}: #{roll.data.slice 7}"
