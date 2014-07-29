@@ -28,7 +28,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.32 - 2014-07-28
+* appchan x - Version 2.9.32 - 2014-07-29
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -16615,14 +16615,12 @@
       if (view === 'thread') {
         g.THREADID = +window.location.pathname.split('/')[3];
       }
-      if (view === g.VIEW) {
-        return;
-      }
-      $.rmClass(doc, g.VIEW);
-      $.addClass(doc, view);
       ({
         index: function() {
           var _ref;
+          if (g.VIEW === view) {
+            return;
+          }
           delete g.THREADID;
           if (Conf['Index Mode'] === 'catalog') {
             Index.cb.toggleCatalogMode();
@@ -16630,15 +16628,24 @@
           return (_ref = QR.posts[0]) != null ? _ref.thread = 'new' : void 0;
         },
         thread: function() {
-          var _ref;
+          var _ref, _ref1;
+          if (((_ref = QR.posts[0]) != null ? _ref.thread : void 0) === g.THREADID) {
+            return;
+          }
           if (Conf['Index Mode'] === 'catalog') {
             $.rmClass(doc, 'catalog-mode');
           }
-          return (_ref = QR.posts[0]) != null ? _ref.thread = g.THREADID : void 0;
+          return (_ref1 = QR.posts[0]) != null ? _ref1.thread = g.THREADID : void 0;
         }
       })[view]();
-      QR.status();
-      return g.VIEW = view;
+      if (view !== g.VIEW) {
+        $.rmClass(doc, g.VIEW);
+        $.addClass(doc, view);
+        g.VIEW = view;
+      }
+      return $.asap((function() {
+        return g.threads.keys.length;
+      }), QR.status);
     },
     updateBoard: function(boardID) {
       var current, fullBoardList;

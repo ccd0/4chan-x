@@ -103,28 +103,36 @@ Navigate =
     return
 
   updateContext: (view) ->
+    # State tracking
     g.DEAD     = false
     g.THREADID = +window.location.pathname.split('/')[3] if view is 'thread'
 
-    return if view is g.VIEW
-
-    $.rmClass  doc, g.VIEW
-    $.addClass doc, view
-
     {
       index: ->
+        # Unlike threads, boards don't need to do much when switching between them that the QR doesn't already handle.
+        return if g.VIEW is view
         delete g.THREADID
         Index.cb.toggleCatalogMode() if Conf['Index Mode'] is 'catalog'
         QR.posts[0]?.thread = 'new'
 
       thread: ->
+        return if QR.posts[0]?.thread is g.THREADID
         $.rmClass doc, 'catalog-mode' if Conf['Index Mode'] is 'catalog'
+        # When switching between threads, we need to update the QR state to avoid posting in the wrong thread.
+        # Maybe address this in a loop to update all posts to the current thread?
         QR.posts[0]?.thread = g.THREADID
     }[view]()
 
-    QR.status() # Re-enable the QR in the case of a 404'd thread or something.
+    if view isnt g.VIEW # index and thread are really all we care about here.
+      # Update some CSS selectors that depend on thread and index views.
+      $.rmClass  doc, g.VIEW
+      $.addClass doc, view
+      # Tell the rest of the script we're no longer in the view we were.
+      g.VIEW = view
 
-    g.VIEW = view
+    # Re-enable the QR in the case of a 404'd thread or something.
+    # Race Condition: g.threads may not have been fully rebuilt by the time we attempt to access it.
+    $.asap (-> g.threads.keys.length), QR.status
 
   updateBoard: (boardID) ->
     fullBoardList   = $ '#full-board-list', Header.boardList
