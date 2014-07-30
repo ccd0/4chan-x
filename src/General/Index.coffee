@@ -514,9 +514,9 @@ Index =
     {timeEl} = Index
     needed =
       # we're on the index,
-      g.VIEW is 'index' and 
+      g.VIEW is 'index' and
       # not currently refreshing
-      !Index.req and 
+      !Index.req and
       timeEl.dataset.utc and
       # more than 10 minutes have elapsed since the last refresh.
       timeEl.dataset.utc < Date.now() - (10 * $.MINUTE)
@@ -525,7 +525,7 @@ Index =
   update: (pageNum) ->
     return unless navigator.onLine
     if g.VIEW is 'thread'
-      return ThreadUpdater.update() if Conf['Thread Updater']
+      ThreadUpdater.update() if Conf['Thread Updater']
       return
     unless d.readyState is 'loading' or Index.root.parentElement
       $.replace $('.board'), Index.root
@@ -817,7 +817,7 @@ Index =
       else
         unless Conf['Index Mode'] is 'infinite'
           pageNum = Index.getCurrentPage()
-        
+
     else
       return unless Index.searchInput.dataset.searching
       pageNum = Index.pageBeforeSearch

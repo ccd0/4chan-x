@@ -255,6 +255,10 @@ Navigate =
       Navigate.clean()
       Navigate.reconnect()
 
+      # Thrown on index before index is generated. At this point, the page is blank.
+      # An IndexRefresh event will also be thrown after the index has been generated.
+      $.event '4chanXInitFinished' if view is 'index'
+
     if boardID is g.BOARD.ID
       Navigate.title = -> d.title = $('.boardTitle').textContent if view is 'index'
     else
@@ -356,6 +360,9 @@ Navigate =
     Header.hashScroll.call window
 
     Main.handleErrors errors if errors
+
+    # Thrown after thread has been generated and features have been parsed, like 4chan X
+    $.event '4chanXInitFinished'
 
   pushState: (path) ->
     history.pushState null, '', path

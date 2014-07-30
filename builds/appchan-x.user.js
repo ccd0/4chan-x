@@ -28,7 +28,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.32 - 2014-07-29
+* appchan x - Version 2.9.32 - 2014-07-30
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -5322,7 +5322,7 @@
       }
       if (g.VIEW === 'thread') {
         if (Conf['Thread Updater']) {
-          return ThreadUpdater.update();
+          ThreadUpdater.update();
         }
         return;
       }
@@ -16800,6 +16800,9 @@
         Navigate.updateContext(view);
         Navigate.clean();
         Navigate.reconnect();
+        if (view === 'index') {
+          $.event('4chanXInitFinished');
+        }
       }
       if (boardID === g.BOARD.ID) {
         Navigate.title = function() {
@@ -16914,8 +16917,9 @@
       QR.generatePostableThreadsList();
       Header.hashScroll.call(window);
       if (errors) {
-        return Main.handleErrors(errors);
+        Main.handleErrors(errors);
       }
+      return $.event('4chanXInitFinished');
     },
     pushState: function(path) {
       history.pushState(null, '', path);
@@ -17013,7 +17017,9 @@
         }
       }
       $.add($('.sections-list', dialog), links);
-      (sectionToOpen ? sectionToOpen : links[0]).click();
+      if (openSection !== 'none') {
+        (sectionToOpen ? sectionToOpen : links[0]).click();
+      }
       $.on($('.close', dialog), 'click', Settings.close);
       $.on(overlay, 'click', Settings.close);
       $.add(d.body, [overlay, dialog]);

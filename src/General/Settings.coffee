@@ -74,7 +74,7 @@ Settings =
       links.push link
       sectionToOpen = link if section.title is openSection
     $.add $('.sections-list', dialog), links
-    (if sectionToOpen then sectionToOpen else links[0]).click()
+    (if sectionToOpen then sectionToOpen else links[0]).click() unless openSection is 'none'
 
     $.on $('.close', dialog), 'click', Settings.close
     $.on overlay,             'click', Settings.close
