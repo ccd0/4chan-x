@@ -47,7 +47,9 @@ Settings =
         MascotTools.close()
       return
 
-    return if Settings.overlay
+    if Settings.overlay
+      setTimeout (-> Rice.nodes Settings.dialog), 100
+      return
     $.event 'CloseMenu'
 
     Settings.dialog = dialog = $.el 'div',
@@ -62,7 +64,6 @@ Settings =
     $.on $('.import', dialog), 'click',  Settings.import
     $.on $('.reset',  dialog), 'click',  Settings.reset
     $.on $('input',   dialog), 'change', Settings.onImport
-
 
     links = []
     for section in Settings.sections

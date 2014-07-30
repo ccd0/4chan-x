@@ -2108,6 +2108,9 @@ a:only-of-type > .remove {
 .description {
   display: none;
 }
+.section-name-sync .description {
+  display: inline;
+}
 #appchanx-settings h3,
 .section-keybinds,
 .section-mascots,
