@@ -8,8 +8,8 @@ ImageCommon =
     return true
 
   error: (file, post, delay, cb) ->
-    if (post.isDead or post.file.isDead) and file.src.split('/')[2] is 'i.4cdn.org'
-      ImageCommon.retry post, cb
+    return cb null unless file.src.split('/')[2] is 'i.4cdn.org'
+    return ImageCommon.retry post, cb if post.isDead or post.file.isDead
 
     timeoutID = setTimeout ImageCommon.retry, delay, post, cb if delay?
     return if post.isDead or post.file.isDead
