@@ -65,6 +65,7 @@ class Thread
   hide: ->
     return if @isHidden
     @isHidden = true
+    @OP.nodes.root.parentElement.hidden = true
     if button = $ '.hide-post-button', @OP.nodes.root
       $.replace button, PostHiding.makeButton false
   show: ->

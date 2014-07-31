@@ -3249,6 +3249,7 @@
         return;
       }
       this.isHidden = true;
+      this.OP.nodes.root.parentElement.hidden = true;
       if (button = $('.hide-post-button', this.OP.nodes.root)) {
         return $.replace(button, PostHiding.makeButton(false));
       }
