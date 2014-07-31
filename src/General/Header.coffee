@@ -151,20 +151,21 @@ Header =
 
       if /^toggle-all/.test t
         a = $.el 'a',
-          className: 'show-board-list-button'
-          textContent: (t.match(/-text:"(.+)"/) || [null, '+'])[1]
-          href: 'javascript:;'
+          className:   'show-board-list-button'
+          textContent: if match = t.match /-text:"(.+)"/ then match[1] else '+'
+          href:        'javascript:;'
         $.on a, 'click', Header.toggleBoardList
         return a
 
       if /^external/.test t
-        a = $.el 'a',
-          href: (t.match(/\,"(.+)"/) || [null, '+'])[1]
-          textContent: (t.match(/-text:"(.+)"\,/) || [null, '+'])[1]
-          className: 'external'
-        if a.hostname is 'boards.4chan.org' and a.pathname.split('/')[1] is g.BOARD.ID
-          a.className += ' current'
-        return a
+        if url = t.match /\,"(.+)"/
+          a = $.el 'a',
+            textContent: if match = t.match /-text:"(.+)"\,/ then match[1] else '+'
+            className:   'external'
+            href:        url[1]
+          if a.hostname is 'boards.4chan.org' and a.pathname.split('/')[1] is g.BOARD.ID
+            a.className += ' current'
+          return a
 
       board = if /^current/.test t
         g.BOARD.ID
