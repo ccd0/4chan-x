@@ -12,6 +12,7 @@ ImageHover =
     post = Get.postFromNode @
     {file} = post
     {isVideo} = file
+    return if post.file.isExpanding or post.file.isExpanded
     if el = file.fullImage
       el.id = 'ihover'
       TrashQueue.remove el
@@ -19,7 +20,6 @@ ImageHover =
       file.fullImage = el = $.el (if isVideo then 'video' else 'img'),
         className: 'full-image'
         id: 'ihover'
-      el.dataset.fullID = post.fullID
       $.on el, 'error', ImageHover.error
       el.src = file.URL
       $.after file.thumb, el
@@ -35,13 +35,19 @@ ImageHover =
       asapTest: -> (if isVideo then el.readyState >= el.HAVE_CURRENT_DATA else el.naturalHeight)
       noRemove: true
       cb: ->
-        $.off el, 'error', ImageHover.error
         if isVideo
           el.pause()
           TrashQueue.add el, post
         el.removeAttribute 'id'
   error: ->
-    return unless doc.contains @
-    post = g.posts[@dataset.fullID]
-    return if ImageCommon.decodeError @, post
-    ImageCommon.error @, post, 3 * $.SECOND, (URL) => @src = URL if URL
+    post = Get.postFromNode @
+    return if post.file.isExpanding or post.file.isExpanded
+    if @id is 'ihover' # still hovering
+      return if ImageCommon.decodeError @, post
+      ImageCommon.error @, post, 3 * $.SECOND, (URL) =>
+        if URL
+          @src = URL + if @src is URL then '?' + Date.now() else ''
+    else
+      $.off @, 'error', ImageHover.error
+      $.rm @
+      delete post.file.fullImage

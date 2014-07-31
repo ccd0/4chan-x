@@ -245,18 +245,20 @@ ImageExpand =
     post = Get.postFromNode @
     $.rm @
     delete post.file.fullImage
-    if ImageCommon.decodeError @, post
-      ImageExpand.contract post
-      return
     # Images can error:
     #  - before the image started loading.
     #  - after the image started loading.
     # Don't try to re-expand if it was already contracted.
-    if post.file.isExpanding or post.file.isExpanded
-      ImageCommon.error @, post, 10 * $.SECOND, (URL) ->
-        if post.file.isExpanding or post.file.isExpanded
-          ImageExpand.contract post
-          ImageExpand.expand post, URL if URL
+    return unless post.file.isExpanding or post.file.isExpanded
+    if ImageCommon.decodeError @, post
+      return ImageExpand.contract post
+    # Don't autoretry images from the archive.
+    unless @src.split('/')[2] is 'i.4cdn.org'
+      return ImageExpand.contract post
+    ImageCommon.error @, post, 10 * $.SECOND, (URL) ->
+      if post.file.isExpanding or post.file.isExpanded
+        ImageExpand.contract post
+        ImageExpand.expand post, URL if URL
 
   menu:
     init: ->
