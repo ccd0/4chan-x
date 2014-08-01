@@ -8,14 +8,21 @@ ImageCommon =
     return true
 
   error: (file, post, delay, cb) ->
-    return ImageCommon.retry post, cb if (post.isDead or post.file.isDead) and file.src.split('/')[2] is 'i.4cdn.org'
+    src = post.file.URL.split '/'
+    URL = Redirect.to 'file',
+      boardID:  post.board.ID
+      filename: src[src.length - 1]
+    unless URL and (/^https:\/\//.test(URL) or location.protocol is 'http:')
+      URL = null
 
-    timeoutID = setTimeout ImageCommon.retry, delay, post, cb if delay?
+    return cb URL if (post.isDead or post.file.isDead) and file.src.split('/')[2] is 'i.4cdn.org'
+
+    timeoutID = setTimeout cb, delay, post.file.URL if delay?
     return if post.isDead or post.file.isDead
     kill = (fileOnly) ->
-      clearTimeout timeoutID
+      clearTimeout timeoutID if delay?
       post.kill fileOnly
-      ImageCommon.retry post, cb
+      cb URL
 
     <% if (type === 'crx') { %>
     $.ajax post.file.URL,
@@ -36,17 +43,6 @@ ImageCommon =
       else if postObj.filedeleted
         kill true
     <% } %>
-
-  retry: (post, cb) ->
-    unless post.isDead or post.file.isDead
-      return cb post.file.URL
-    src = post.file.URL.split '/'
-    URL = Redirect.to 'file',
-      boardID:  post.board.ID
-      filename: src[src.length - 1]
-    if URL and (/^https:\/\//.test(URL) or location.protocol is 'http:')
-      return cb URL
-    cb null # report nothing to retry
 
   # Add controls, but not until the mouse is moved over the video.
   addControls: (video) ->
