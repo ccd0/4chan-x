@@ -1,3 +1,9 @@
+### v2.9.33 
+*2014-07-31*
+
+- Changes to JSON Navigation to add hooks for addons like 4chan X Name-Sync.
+- Bugfixes
+
 ### v2.9.32 
 *2014-07-28*
 
