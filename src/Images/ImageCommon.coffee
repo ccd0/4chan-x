@@ -7,16 +7,28 @@ ImageCommon =
     message.textContent = 'Error: Corrupt or unplayable video'
     return true
 
-  error: (file, post, delay, cb) ->
-    if (post.isDead or post.file.isDead) and file.src.split('/')[2] is 'i.4cdn.org'
-      ImageCommon.retry post, cb
+  error: (file, post, retryDelay, cb) ->
+    return cb null unless file.src.split('/')[2] is 'i.4cdn.org'
 
-    timeoutID = setTimeout ImageCommon.retry, delay, post, cb if delay?
-    return if post.isDead or post.file.isDead
+    parts = post.file.URL.split '/'
+    archiveURL = Redirect.to 'file',
+      boardID:  post.board.ID
+      filename: parts[parts.length - 1]
+    unless archiveURL and (/^https:\/\//.test(archiveURL) or location.protocol is 'http:')
+      archiveURL = null
+
+    return cb archiveURL if post.isDead or post.file.isDead
+
+    if retryDelay
+      timeoutID = setTimeout (-> cb post.file.URL + '?' + Date.now()), retryDelay
+
     kill = (fileOnly) ->
-      clearTimeout timeoutID
-      post.kill fileOnly
-      ImageCommon.retry post, cb
+      clearTimeout timeoutID if retryDelay
+      if archiveURL
+        cb archiveURL
+      else
+        post.kill fileOnly
+        cb null
 
     <% if (type === 'crx') { %>
     $.ajax post.file.URL,
@@ -37,17 +49,6 @@ ImageCommon =
       else if postObj.filedeleted
         kill true
     <% } %>
-
-  retry: (post, cb) ->
-    unless post.isDead or post.file.isDead
-      return cb post.file.URL + '?' + Date.now()
-    src = post.file.URL.split '/'
-    URL = Redirect.to 'file',
-      boardID:  post.board.ID
-      filename: src[src.length - 1]
-    if URL and (/^https:\/\//.test(URL) or location.protocol is 'http:')
-      return cb URL
-    cb null # report nothing to retry
 
   # Add controls, but not until the mouse is moved over the video.
   addControls: (video) ->
