@@ -183,6 +183,7 @@ Gallery =
     error: (file, thumb) ->
       if file.error?.code is MediaError.MEDIA_ERR_DECODE
         return new Notice 'error', 'Corrupt or unplayable video', 30
+      return unless file.src.split('/')[2] is 'i.4cdn.org'
       ImageCommon.error file, g.posts[file.dataset.post], null, (URL) ->
         return unless URL
         thumb.href = URL

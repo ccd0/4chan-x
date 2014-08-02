@@ -17,31 +17,38 @@ ImageCommon =
 
     return cb URL if (post.isDead or post.file.isDead) and file.src.split('/')[2] is 'i.4cdn.org'
 
-    timeoutID = setTimeout cb, delay, post.file.URL if delay?
+    timeoutID = setTimeout (-> cb URL), delay if delay?
     return if post.isDead or post.file.isDead
-    kill = (fileOnly) ->
-      clearTimeout timeoutID if delay?
-      post.kill fileOnly
-      cb URL
+    redirect = ->
+      if file.src.split('/')[2] is 'i.4cdn.org'
+        clearTimeout timeoutID if delay?
+        cb URL
 
     <% if (type === 'crx') { %>
     $.ajax post.file.URL,
       onloadend: ->
-        return if @status isnt 404
-        kill true
+        if @status is 200
+          URL = post.file.URL
+        else
+          post.kill true if @status is 404
+          redirect()
     ,
       type: 'head'
     <% } else { %>
     # XXX CORS for i.4cdn.org WHEN?
     $.ajax "//a.4cdn.org/#{post.board}/thread/#{post.thread}.json", onload: ->
-      return kill() if @status is 404
-      return if @status isnt 200
+      post.kill() if @status is 404
+      return redirect() if @status isnt 200
       for postObj in @response.posts
         break if postObj.no is post.ID
       if postObj.no isnt post.ID
-        kill()
+        post.kill()
+        redirect()
       else if postObj.filedeleted
-        kill true
+        post.kill true
+        redirect()
+      else
+        URL = post.file.URL
     <% } %>
 
   # Add controls, but not until the mouse is moved over the video.
