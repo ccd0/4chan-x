@@ -197,8 +197,8 @@ Build =
     else if file and boardID is 'f'
       <%= html(
         '<div class="fileInfo"><span class="fileText" id="fT${postID}">' +
-          'File: <a data-width="${file.width}" data-height="${+file.height}" href="${file.url}" target="_blank">${file.name}</a>' +
-          '-(${$.bytesToString file.size}, ${file.width}x${file.height}, ${file.tag})' +
+          'File: <a data-width="${file.width}" data-height="${file.height}" href="${file.url}" target="_blank">${file.name}</a>' +
+          '-(${$.bytesToString(file.size)}, ${file.width}x${file.height}, ${file.tag})' +
         '</span></div>'
       ) %>
     else if file
@@ -215,7 +215,7 @@ Build =
         fileThumb = file.turl
 
       fileSize = $.bytesToString file.size
-      fileDims = if file.url[-4..] is '.pdf' then 'PDF' else "#{+file.width}x#{+file.height}"
+      fileDims = if file.url[-4..] is '.pdf' then 'PDF' else "#{file.width}x#{file.height}"
 
       fileLink = if file.isSpoiler or file.name is shortFilename
         <%= html('<a href="${file.url}" target="_blank">${shortFilename}</a>') %>
@@ -229,8 +229,8 @@ Build =
 
       <%= html(
         '&{fileText}' +
-        '<a class="fileThumb${if file.isSpoiler then " imgspoiler" else ""}" href="${file.url}" target="_blank">' +
-          '<img src="${fileThumb}" alt="${fileSize}" data-md5="${file.MD5}" style="height: ${file.theight}px; width: ${+file.twidth}px;">' +
+        '<a class="fileThumb${file.isSpoiler ? " imgspoiler" : ""}" href="${file.url}" target="_blank">' +
+          '<img src="${fileThumb}" alt="${fileSize}" data-md5="${file.MD5}" style="height: ${file.theight}px; width: ${file.twidth}px;">' +
         '</a>'
       ) %>
 

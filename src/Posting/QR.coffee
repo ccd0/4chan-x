@@ -46,7 +46,7 @@ QR =
 
     link = $.el 'h1',
       className: "qr-link-container"
-    $.extend link, <%= html('<a href="javascript:;" class="qr-link">${if g.VIEW is "thread" then "Reply to Thread" else "Start a Thread"}</a>') %>
+    $.extend link, <%= html('<a href="javascript:;" class="qr-link">${(g.VIEW === "thread") ? "Reply to Thread" : "Start a Thread"}</a>') %>
 
     QR.link = link.firstElementChild
     $.on link.firstChild, 'click', ->

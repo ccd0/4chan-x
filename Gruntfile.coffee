@@ -4,7 +4,7 @@ module.exports = (grunt) ->
     "(innerHTML: #{JSON.stringify grunt.file.read("src/General/html/#{filename}.html").replace(/^\s+|\s+$</gm, '').replace(/\n/g, '')})"
 
   html = (template) ->
-    parts = template.split /([\$&@]){([^}]*)}/
+    parts = template.split /([\$&@]){([^}`]*)}/
     parts2 = []
     checkText = ''
     for part, i in parts
@@ -15,12 +15,10 @@ module.exports = (grunt) ->
         when 1
           if /<[^>]*$/.test(checkText) and not (part is '$' and /\=['"][^"'<>]*$/.test checkText)
             throw new Error "Illegal insertion into HTML template: #{template}"
-          expr = parts[i+1]
-          expr = "(#{expr})" for x in parts[i+1].split ')'
           parts2.push switch part
-            when '$' then "E#{expr}"
-            when '&' then "#{expr}.innerHTML"
-            when '@' then "#{expr}.map((x) -> x.innerHTML).join('')"
+            when '$' then "E(`#{parts[i+1]}`)"
+            when '&' then "`#{parts[i+1]}`.innerHTML"
+            when '@' then "`#{parts[i+1]}`.map((x) -> x.innerHTML).join('')"
     unless /^(<\w+( [\w-]+(='[^"'<>]*'|="[^"'<>]*")?)*>|<\/\w+>|[^"'<>]*)*$/.test checkText
       throw new Error "HTML template is ill-formed: #{template}"
     output = if parts2.length is 0 then '""' else parts2.join ' + '

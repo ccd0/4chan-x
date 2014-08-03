@@ -14,7 +14,7 @@ ThreadStats =
         Header.addShortcut sc
     else
       @dialog = sc = UI.dialog 'thread-stats', 'bottom: 0px; right: 0px;',
-        <%= html('<div class="move" title="Post Count / File Count${if Conf["Page Count in Stats"] then " / Page Count" else ""}">&{countHTML}</div>') %>
+        <%= html('<div class="move" title="Post Count / File Count${Conf["Page Count in Stats"] ? " / Page Count" : ""}">&{countHTML}</div>') %>
       $.ready =>
         $.add d.body, sc
 

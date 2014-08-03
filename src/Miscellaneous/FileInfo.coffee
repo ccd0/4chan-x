@@ -19,10 +19,10 @@ FileInfo =
       ''
     $.extend outputNode, <%= html('@{output}') %>
   formatters:
-    t: -> <%= html('${@file.URL.match(/\\d+\\..+$/)[0]}') %>
-    T: -> <%= html('<a href="${@file.URL}" target="_blank">&{FileInfo.formatters.t.call @}</a>') %>
-    l: -> <%= html('<a href="${@file.URL}" target="_blank">&{FileInfo.formatters.n.call @}</a>') %>
-    L: -> <%= html('<a href="${@file.URL}" target="_blank">&{FileInfo.formatters.N.call @}</a>') %>
+    t: -> <%= html('${this.file.URL.match(/\\d+\\..+$/)[0]}') %>
+    T: -> <%= html('<a href="${this.file.URL}" target="_blank">&{FileInfo.formatters.t.call(this)}</a>') %>
+    l: -> <%= html('<a href="${this.file.URL}" target="_blank">&{FileInfo.formatters.n.call(this)}</a>') %>
+    L: -> <%= html('<a href="${this.file.URL}" target="_blank">&{FileInfo.formatters.N.call(this)}</a>') %>
     n: ->
       fullname  = @file.name
       shortname = Build.shortFilename @file.name, @isReply
@@ -30,11 +30,11 @@ FileInfo =
         <%= html('${fullname}') %>
       else
         <%= html('<span class="fnswitch"><span class="fntrunc">${shortname}</span><span class="fnfull">${fullname}</span></span>') %>
-    N: -> <%= html('${@file.name}') %>
+    N: -> <%= html('${this.file.name}') %>
     p: -> if @file.isSpoiler then <%= html('Spoiler, ') %> else <%= html('') %>
-    s: -> <%= html('${@file.size}') %>
-    B: -> <%= html('${Math.round @file.sizeInBytes} Bytes') %>
-    K: -> <%= html('${Math.round(@file.sizeInBytes/1024)} KB') %>
-    M: -> <%= html('${Math.round(@file.sizeInBytes/1048576*100)/100} MB') %>
-    r: -> <%= html('${@file.dimensions or "PDF"}') %>
+    s: -> <%= html('${this.file.size}') %>
+    B: -> <%= html('${Math.round(this.file.sizeInBytes)} Bytes') %>
+    K: -> <%= html('${Math.round(this.file.sizeInBytes/1024)} KB') %>
+    M: -> <%= html('${Math.round(this.file.sizeInBytes/1048576*100)/100} MB') %>
+    r: -> <%= html('${this.file.dimensions || "PDF"}') %>
     '%': -> <%= html('%') %>
