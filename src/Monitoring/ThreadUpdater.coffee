@@ -4,13 +4,13 @@ ThreadUpdater =
 
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
-        innerHTML: '<span id="update-status"></span><span id="update-timer" title="Update now"></span>'
         id:        'updater'
+      $.extend sc, <%= html('<span id="update-status"></span><span id="update-timer" title="Update now"></span>') %>
       $.ready ->
         Header.addShortcut sc
     else 
       @dialog = sc = UI.dialog 'updater', 'bottom: 0px; left: 0px;',
-        innerHTML: '<div class="move"></div><span id="update-status"></span><span id="update-timer" title="Update now"></span>'
+        <%= html('<div class="move"></div><span id="update-status"></span><span id="update-timer" title="Update now"></span>') %>
       $.addClass doc, 'float'
       $.ready => 
         $.addClass doc, 'float'
@@ -26,8 +26,8 @@ ThreadUpdater =
     $.on @status, 'click', @update
 
     updateLink = $.el 'span',
-      innerHTML: '<a href="javascript:;">Update</a>'
       className: 'brackets-wrap updatelink'
+    $.extend updateLink, <%= html('<a href="javascript:;">Update</a>') %>
     $.ready ->
       $.add $('.navLinksBot'), [$.tn(' '), updateLink]
     $.on updateLink.firstElementChild, 'click', @update
@@ -46,7 +46,7 @@ ThreadUpdater =
       subEntries.push el: el
 
     @settings = $.el 'span',
-      innerHTML: '<a href="javascript:;">Interval</a>'
+      <%= html('<a href="javascript:;">Interval</a>') %>
 
     $.on @settings, 'click', @intervalShortcut
 

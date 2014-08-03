@@ -10,6 +10,8 @@ ImageExpand =
     $.on @EAI, 'click', @cb.toggleAll
     Header.addShortcut @EAI, 3
     $.on d, 'scroll visibilitychange', @cb.playVideos
+    @videoControls = $.el 'span', className: 'video-controls'
+    $.extend @videoControls, <%= html('\u00A0<a href="javascript:;" title="You can also contract the video by dragging it to the left.">contract</a>') %>
 
     Post.callbacks.push
       name: 'Image Expansion'
@@ -218,10 +220,6 @@ ImageExpand =
         post.file.wasPlaying = true
     if controls
       ImageCommon.addControls fullImage
-
-  videoControls: $.el 'span',
-    className: 'video-controls'
-    innerHTML: '\u00A0<a href="javascript:;" title="You can also contract the video by dragging it to the left.">contract</a>'
 
   videoCB: do ->
     # dragging to the left contracts the video

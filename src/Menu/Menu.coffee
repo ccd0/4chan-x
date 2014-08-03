@@ -16,8 +16,8 @@ Menu =
   makeButton: do ->
     a = $.el 'a',
       className: 'menu-button'
-      innerHTML: '<i class="fa fa-angle-down"></i>'
       href:      'javascript:;'
+    $.extend a, <%= html('<i class="fa fa-angle-down"></i>') %>
     ->
       button = a.cloneNode true
       $.on button, 'click', Menu.toggle

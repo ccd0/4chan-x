@@ -14,7 +14,7 @@ ImageLoader =
     return unless Conf['Image Prefetching'] and g.VIEW is 'thread'
     
     prefetch = $.el 'label',
-      innerHTML: '<input type="checkbox" name="prefetch"> Prefetch Images'
+      <%= html('<input type="checkbox" name="prefetch"> Prefetch Images') %>
 
     @el = prefetch.firstElementChild
     $.on @el, 'change', @toggle

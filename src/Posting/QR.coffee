@@ -45,9 +45,9 @@ QR =
     return unless QR.postingIsEnabled
 
     link = $.el 'h1',
-      innerHTML: "<a href='javascript:;' class='qr-link'>#{if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'}</a>"
       className: "qr-link-container"
-    
+    $.extend link, <%= html('<a href="javascript:;" class="qr-link">${if g.VIEW is "thread" then "Reply to Thread" else "Start a Thread"}</a>') %>
+
     QR.link = link.firstElementChild
     $.on link.firstChild, 'click', ->
       $.event 'CloseMenu'
@@ -58,8 +58,8 @@ QR =
 
     if Conf['Bottom QR Link'] and g.VIEW is 'thread'
       linkBot = $.el 'div',
-        innerHTML: '<a href="javascript:;" class="qr-link-bottom">Reply to Thread</a>'
         className: "brackets-wrap qr-link-container-bottom"
+      $.extend linkBot, <%= html('<a href="javascript:;" class="qr-link-bottom">Reply to Thread</a>') %>
 
       $.on linkBot.firstElementChild, 'click', ->
         $.event 'CloseMenu'
@@ -422,7 +422,7 @@ QR =
 
   dialog: ->
     QR.nodes = nodes =
-      el: dialog = UI.dialog 'qr', 'top:0;right:0;', innerHTML: <%= importHTML('Features/QuickReply') %>
+      el: dialog = UI.dialog 'qr', 'top:0;right:0;', <%= importHTML('Features/QuickReply') %>
 
     setNode = (name, query) ->
       nodes[name] = $ query, dialog
@@ -484,17 +484,16 @@ QR =
       nodes.spoiler.parentElement.hidden = true
 
     if g.BOARD.ID is 'f' and g.VIEW isnt 'thread'
-      nodes.flashTag = $.el 'select',
-        name: 'filetag'
-        innerHTML: '''
-          <option value=0>Hentai</option>
-          <option value=6>Porn</option>
-          <option value=1>Japanese</option>
-          <option value=2>Anime</option>
-          <option value=3>Game</option>
-          <option value=5>Loop</option>
-          <option value=4 selected>Other</option>
-        '''
+      nodes.flashTag = $.el 'select', name: 'filetag'
+      $.extend nodes.flashTag, <%= html(
+        '<option value="0">Hentai</option>' +
+        '<option value="6">Porn</option>' +
+        '<option value="1">Japanese</option>' +
+        '<option value="2">Anime</option>' +
+        '<option value="3">Game</option>' +
+        '<option value="5">Loop</option>' +
+        '<option value="4" selected>Other</option>'
+      ) %>
       nodes.flashTag.dataset.default = '4'
       $.add nodes.form, nodes.flashTag
 
@@ -682,10 +681,11 @@ QR =
         QR.cooldown.auto = false
         QR.status()
         QR.error $.el 'span',
-          innerHTML: '''
-          4chan X encountered an error while posting. 
-          [<a href="//4chan.org/banned" target="_blank">Banned?</a>] [<a href="<%= meta.faq %>#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean" target="_blank">More info</a>]
-          '''
+          <%= html(
+            '4chan X encountered an error while posting. ' +
+            '[<a href="//4chan.org/banned" target="_blank">Banned?</a>] ' +
+            '[<a href="${g.FAQ}#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean" target="_blank">More info</a>]'
+          ) %>
     extra =
       form: $.formData formData
       upCallbacks:
@@ -718,9 +718,9 @@ QR =
     if ban  = $ '.banType', resDoc # banned/warning
       err   = $.el 'span',
         if ban.textContent.toLowerCase() is 'banned'
-          innerHTML: "You are banned on #{$('.board', resDoc).innerHTML}! ;_;<br>Click <a href='//www.4chan.org/banned' target='_blank'>here</a> to see the reason."
+          <%= html('You are banned on &{$(".board", resDoc)}! ;_;<br>Click <a href="//www.4chan.org/banned" target="_blank">here</a> to see the reason.') %>
         else
-          innerHTML: "You were issued a warning on #{$('.board', resDoc).innerHTML} as #{$('.nameBlock', resDoc).innerHTML}.<br>Reason: #{$('.reason', resDoc).innerHTML}"
+          <%= html('You were issued a warning on &{$(".board", resDoc)} as &{$(".nameBlock", resDoc)}.<br>Reason: &{$(".reason", resDoc)}') %>
     else if err = resDoc.getElementById 'errmsg' # error!
       $('a', err)?.target = '_blank' # duplicate image link
     else if resDoc.title isnt 'Post successful!'

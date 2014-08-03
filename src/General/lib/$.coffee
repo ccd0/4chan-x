@@ -46,9 +46,11 @@ $.ajax = do ->
   blockedError = (url) ->
     return if blockedURLs[url]
     blockedURLs[url] = true
-    h_message = '<%= meta.name %> was blocked from loading the following URL:<br><span></span><br>'
-    h_message += '[<a href="<%= meta.faq %>#why-was-4chan-x-blocked-from-loading-a-url" target="_blank">More info</a>]'
-    message = $.el 'div', innerHTML: h_message
+    message = $.el 'div',
+      <%= html(
+        '${g.NAME} was blocked from loading the following URL:<br><span></span><br>' +
+        '[<a href="${g.FAQ}#why-was-4chan-x-blocked-from-loading-a-url" target="_blank">More info</a>]'
+      ) %>
     $('span', message).textContent = (if /^\/\//.test url then location.protocol else '') + url
     new Notice 'error', message, 30, -> delete blockedURLs[url]
   (url, options, extra={}) ->

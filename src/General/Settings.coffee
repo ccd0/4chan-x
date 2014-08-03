@@ -34,7 +34,7 @@ Settings =
     Settings.dialog = dialog = $.el 'div',
       id:        'fourchanx-settings'
       className: 'dialog'
-      innerHTML: <%= importHTML('Settings/Settings') %>
+    $.extend dialog, <%= importHTML('Settings/Settings') %>
 
     $.on $('.export', Settings.dialog), 'click',  Settings.export
     $.on $('.import', Settings.dialog), 'click',  Settings.import
@@ -90,8 +90,7 @@ Settings =
     inputs = {}
     for key, obj of Config.main
       fs = $.el 'fieldset',
-        innerHTML: '<legend></legend>'
-      fs.firstElementChild.textContent = key
+        <%= html('<legend>${key}</legend>') %>
       for key, arr of obj
         description = arr[1]
         div = $.el 'div'
@@ -112,7 +111,7 @@ Settings =
       return
 
     div = $.el 'div',
-      innerHTML: '<button></button><span class="description">: Clear manually-hidden threads and posts on all boards. Reload the page to apply.'
+      <%= html('<button></button><span class="description">: Clear manually-hidden threads and posts on all boards. Reload the page to apply.') %>
     button = $ 'button', div
     $.get {hiddenThreads: {}, hiddenPosts: {}}, ({hiddenThreads, hiddenPosts}) ->
       hiddenNum = 0
@@ -247,7 +246,7 @@ Settings =
       $.clear -> window.location.reload() if confirm 'Reset successful. Reload now?'
 
   filter: (section) ->
-    section.innerHTML = <%= importHTML('Settings/Filter-select') %>
+    $.extend section, <%= importHTML('Settings/Filter-select') %>
     select = $ 'select', section
     $.on select, 'change', Settings.selectFilter
     Settings.selectFilter.call select
@@ -265,11 +264,11 @@ Settings =
       $.on ta, 'change', $.cb.value
       $.add div, ta
       return
-    div.innerHTML = <%= importHTML('Settings/Filter-guide') %>
+    $.extend div, <%= importHTML('Settings/Filter-guide') %>
     $('.warning', div).hidden = Conf['Filter']
 
   sauce: (section) ->
-    section.innerHTML = <%= importHTML('Settings/Sauce') %>
+    $.extend section, <%= importHTML('Settings/Sauce') %>
     $('.warning', section).hidden = Conf['Sauce']
     ta = $ 'textarea', section
     $.get 'sauces', Conf['sauces'], (item) ->
@@ -277,7 +276,7 @@ Settings =
     $.on ta, 'change', $.cb.value
 
   advanced: (section) ->
-    section.innerHTML = <%= importHTML('Settings/Advanced') %>
+    $.extend section, <%= importHTML('Settings/Advanced') %>
     warning.hidden = Conf[warning.dataset.feature] for warning in $$ '.warning', section
 
     items = {}
@@ -387,7 +386,7 @@ Settings =
         textContent: archive
         value: archive
 
-    td.innerHTML = '<select></select>'
+    $.extend td, <%= html('<select></select>') %>
     select = td.firstElementChild
     unless select.disabled = length is 1
       # XXX GM can't into datasets
@@ -441,7 +440,7 @@ Settings =
     CustomCSS.update()
 
   keybinds: (section) ->
-    section.innerHTML = <%= importHTML('Settings/Keybinds') %>
+    $.extend section, <%= importHTML('Settings/Keybinds') %>
     $('.warning', section).hidden = Conf['Keybinds']
 
     tbody  = $ 'tbody', section
@@ -449,8 +448,7 @@ Settings =
     inputs = {}
     for key, arr of Config.hotkeys
       tr = $.el 'tr',
-        innerHTML: '<td></td><td><input class="field"></td>'
-      tr.firstElementChild.textContent = arr[1]
+        <%= html('<td>${arr[1]}</td><td><input class="field"></td>') %>
       input = $ 'input', tr
       input.name = key
       input.spellcheck = false

@@ -159,21 +159,24 @@ Get =
       root.textContent = data.error
       return
 
-    # convert comment to html
-    h_comment = E (data.comment or '')
     # https://github.com/eksopl/fuuka/blob/master/Board/Yotsuba.pm#L413-452
     # https://github.com/eksopl/asagi/blob/master/src/main/java/net/easymodo/asagi/Yotsuba.java#L109-138
-    h_comment = h_comment.replace ///
-      \n
-      |
-      \[/?[a-z]+(:lit)?\]
-    ///g, Get.parseMarkup
-
-    h_comment = h_comment
-      # greentext
-      .replace(/(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class="quote">$2</span>$3')
-      # quotes
-      .replace /((&gt;){2}(&gt;\/[a-z\d]+\/)?\d+)/g, '<span class="deadlink">$1</span>'
+    comment = (data.comment or '').split /(\n|\[\/?(?:b|spoiler|code|moot|banned)\])/
+    comment = for text, i in comment
+      if i % 2 is 1
+        Get.archiveTags[text]
+      else
+        greentext = text[0] is '>'
+        text = text.replace /(\[\/?[a-z]+):lit(\])/, '$1$2'
+        text = for text2, j in text.split /(>>(?:>\/[a-z\d]+\/)?\d+)/g
+          if j % 2 is 1
+            <%= html('<span class="deadlink">${text2}</span>') %>
+          else
+            <%= html('${text2}') %>
+        text = <%= html('@{text}') %>
+        text = <%= html('<span class="quote">&{text}</span>') %> if greentext
+        text
+    comment = <%= html('@{comment}') %>
 
     threadID = +data.thread_num
     o =
@@ -195,7 +198,7 @@ Get =
       flagName: data.poster_country_name
       date:     data.fourchan_date
       dateUTC:  data.timestamp
-      h_comment: h_comment
+      comment:  comment
       # file
     if data.media?.media_filename
       o.file =
@@ -221,17 +224,15 @@ Get =
     post.isFetchedQuote = true
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
-  parseMarkup: (text) ->
-    {
-      '\n':         '<br>'
-      '[b]':        '<b>'
-      '[/b]':       '</b>'
-      '[spoiler]':  '<s>'
-      '[/spoiler]': '</s>'
-      '[code]':     '<pre class="prettyprint">'
-      '[/code]':    '</pre>'
-      '[moot]':     '<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">'
-      '[/moot]':    '</div>'
-      '[banned]':   '<strong style="color: red;">'
-      '[/banned]':  '</strong>'
-    }[text] or text.replace ':lit', ''
+  archiveTags:
+    '\n':         <%= html('<br>') %>
+    '[b]':        <%= html('<b>') %>
+    '[/b]':       <%= html('</b>') %>
+    '[spoiler]':  <%= html('<s>') %>
+    '[/spoiler]': <%= html('</s>') %>
+    '[code]':     <%= html('<pre class="prettyprint">') %>
+    '[/code]':    <%= html('</pre>') %>
+    '[moot]':     <%= html('<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">') %>
+    '[/moot]':    <%= html('</div>') %>
+    '[banned]':   <%= html('<strong style="color: red;">') %>
+    '[/banned]':  <%= html('</strong>') %>

@@ -5,6 +5,9 @@ doc  = d.documentElement
 g    =
   VERSION:   '<%= version %>'
   NAMESPACE: '<%= meta.name %>.'
+  NAME:      '<%= meta.name %>'
+  FAQ:       '<%= meta.faq %>'
+  CHANGELOG: '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
   boards:    {}
 E    = (text) ->
   (text+'').replace /[&"'<>]/g, (x) ->

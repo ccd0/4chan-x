@@ -36,7 +36,7 @@ Gallery =
 
     nodes.el = dialog = $.el 'div',
       id: 'a-gallery'
-      innerHTML: <%= importHTML('Features/Gallery') %>
+    $.extend dialog, <%= importHTML('Features/Gallery') %>
 
     nodes[key] = $ value, dialog for key, value of {
       buttons: '.gal-buttons'
@@ -288,7 +288,7 @@ Gallery =
     createSubEntries: ->
       subEntries = ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Scroll to Post'].map Gallery.menu.createSubEntry
 
-      delayLabel = $.el 'label', innerHTML: 'Slide Delay: <input type="number" name="Slide Delay" min="0" step="any" class="field">'
+      delayLabel = $.el 'label', <%= html('Slide Delay: <input type="number" name="Slide Delay" min="0" step="any" class="field">') %>
       delayInput = delayLabel.firstElementChild
       delayInput.value = Gallery.delay
       $.on delayInput, 'change', Gallery.cb.setDelay

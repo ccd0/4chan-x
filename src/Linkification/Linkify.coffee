@@ -175,8 +175,7 @@ Linkify =
       try
         $.cache service.api(uid), (-> Linkify.cb.title @, data), responseType: 'json'
       catch err
-        link.innerHTML = '<span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>'
-        $.prepend link, $.tn "[#{key}] "
+        $.extend link, <%= html('[${key}] <span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>') %>
         return
 
   cb:
@@ -239,7 +238,7 @@ Linkify =
       key: 'gist'
       regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/
       el: (a) ->
-        div = $.el 'iframe',
+        $.el 'iframe',
           # Github doesn't allow embedding straight from the site, so we use an external site to bypass that.
           src: "http://www.purplegene.com/script?url=https://gist.github.com/#{a.dataset.uid}.js"
       title:
@@ -251,10 +250,7 @@ Linkify =
       regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/
       style: 'border: 0; width: auto; height: auto;'
       el: (a) ->
-        el = $.el 'div'
-        el.innerHTML = '<a target="_blank"><img></a>'
-        el.firstChild.href = el.firstChild.firstChild.src = a.href
-        el
+        $.el 'div', <%= html('<a target="_blank" href="${a.href}"><img src="${a.href}"></a>') %>
     ,
       key: 'InstallGentoo'
       regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/
@@ -297,17 +293,13 @@ Linkify =
           return div.textContent = "ERROR: Not a valid filetype" unless embed
           switch embed.type
             when 'video/mp4', 'video/webm', 'video/ogv'
-              el.innerHTML = '<video autoplay loop><source type="video/mp4"><source type="video/webm"><source type="video/ogg"></video>'
-              for ext, i in ['mp4', 'webm', 'ogv']
+              $.extend el, <%= html('<video autoplay loop><source type="video/mp4"><source type="video/webm"></video>') %>
+              for ext, i in ['mp4', 'webm']
                 el.firstChild.children[i].src = "https://mediacru.sh/#{a.dataset.uid}.#{ext}"
             when 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg'
-              el.innerHTML = '<a target="_blank"><img></a>'
-              el.firstChild.href = a.href
-              el.firstChild.firstChild.src = "https://mediacru.sh/#{file.file}"
+              $.extend el, <%= html('<a target="_blank" href="${a.href}"><img src="https://mediacru.sh/${file.file}"></a>') %>
             when 'audio/mpeg', 'audio/ogg'
-              el.innerHTML = '<audio controls><source type="audio/ogg"><source type="audio/mpeg"></audio>'
-              for ext, i in ['ogg', 'mp3']
-                el.firstChild.children[i].src = "https://mediacru.sh/#{a.dataset.uid}.#{ext}"
+              $.extend el, <%= html('<audio controls><source type="audio/ogg" src="https://mediacru.sh/${a.dataset.uid}.ogg"></audio>') %>
             else
               el.textContent = "ERROR: No valid filetype."
         el
@@ -350,14 +342,14 @@ Linkify =
           idparam = {'b': 'archive_id', 'c': 'chapter_id'}
           obj = $.el 'object',
             data: 'http://www.twitch.tv/widgets/archive_embed_player.swf'
-          obj.innerHTML = '<param name="allowFullScreen" value="true"><param name="flashvars">'
+          $.extend obj, <%= html('<param name="allowFullScreen" value="true"><param name="flashvars">') %>
           obj.children[1].value = "channel=#{channel}&start_volume=25&auto_play=false&#{idparam[type]}=#{id}"
           obj
         else
           channel = (/(\w+)/.exec a.dataset.uid)[0]
           obj = $.el 'object',
             data: "http://www.twitch.tv/widgets/live_embed_player.swf?channel=#{channel}"
-          obj.innerHTML = '<param name="allowFullScreen" value="true"><param name="flashvars">'
+          $.extend obj, <%= html('<param name="allowFullScreen" value="true"><param name="flashvars">') %>
           obj.children[1].value = "hostname=www.twitch.tv&channel=#{channel}&auto_play=true&start_volume=25"
           obj
     ,

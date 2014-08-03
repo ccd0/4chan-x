@@ -4,7 +4,7 @@ Header =
 
     menuButton = $.el 'span',
       className: 'menu-button'
-      innerHTML: '<i></i>'
+    $.extend menuButton, <%= html('<i></i>') %>
 
     barFixedToggler     = UI.checkbox 'Fixed Header',               ' Fixed Header'
     headerToggler       = UI.checkbox 'Header auto-hide',           ' Auto-hide header'
@@ -132,7 +132,13 @@ Header =
     fourchannav = $.id 'boardNavDesktop'
     Header.boardList = boardList = $.el 'span',
       id: 'board-list'
-      innerHTML: "<span id='custom-board-list'></span><span id='full-board-list' hidden><span class='hide-board-list-container brackets-wrap'><a href='javascript:;' class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> #{fourchannav.innerHTML}</span>"
+    $.extend boardList, <%= html(
+      '<span id="custom-board-list"></span>' +
+      '<span id="full-board-list" hidden>' +
+        '<span class="hide-board-list-container brackets-wrap"><a href="javascript:;" class="hide-board-list-button">&nbsp;-&nbsp;</a></span> ' +
+        '&{fourchannav}' +
+      '</span>'
+    ) %>
     for a in $$ 'a', boardList
       if a.pathname.split('/')[1] is g.BOARD.ID
         a.className = 'current'
@@ -442,11 +448,11 @@ Header =
         return
 
     el = $.el 'span',
-      innerHTML: '''
-      <%= meta.name %> needs your permission to show desktop notifications.
-      [<a href='<%= meta.faq %>#why-is-4chan-x-asking-for-permission-to-show-desktop-notifications' target=_blank>FAQ</a>]<br>
-      <button>Authorize</button> or <button>Disable</button>
-      '''
+      <%= html(
+        '${g.NAME} needs your permission to show desktop notifications. ' +
+        '[<a href="${g.FAQ}#why-is-4chan-x-asking-for-permission-to-show-desktop-notifications" target="_blank">FAQ</a>]<br>' +
+        '<button>Authorize</button> or <button>Disable</button>'
+      ) %>
     [authorize, disable] = $$ 'button', el
     $.on authorize, 'click', ->
       Notification.requestPermission (status) ->
