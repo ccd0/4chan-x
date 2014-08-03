@@ -76,12 +76,8 @@ Get =
     if threadID
       $.cache "//a.4cdn.org/#{boardID}/thread/#{threadID}.json", ->
         Get.fetchedPost @, boardID, threadID, postID, root, context
-    else if url = Redirect.to 'post', {boardID, postID}
-      $.cache url,
-        -> Get.archivedPost @, boardID, postID, root, context
-      ,
-        responseType: 'json'
-        withCredentials: url.archive.withCredentials
+    else
+      Get.archivedPost boardID, postID, root, context
   insert: (post, root, context) ->
     # Stop here if the container has been removed while loading.
     return unless root.parentNode
@@ -105,13 +101,7 @@ Get =
     {status} = req
     unless status in [200, 304]
       # The thread can die by the time we check a quote.
-      if url = Redirect.to 'post', {boardID, postID}
-        $.cache url,
-          -> Get.archivedPost @, boardID, postID, root, context
-        ,
-          responseType: 'json'
-          withCredentials: url.archive.withCredentials
-      else
+      unless Get.archivedPost boardID, postID, root, context
         $.addClass root, 'warning'
         root.textContent =
           if status is 404
@@ -127,13 +117,7 @@ Get =
 
     if post.no isnt postID
       # The post can be deleted by the time we check a quote.
-      if url = Redirect.to 'post', {boardID, postID}
-        $.cache url,
-          -> Get.archivedPost @, boardID, postID, root, context
-        ,
-          responseType: 'json'
-          withCredentials: url.archive.withCredentials
-      else
+      unless Get.archivedPost boardID, postID, root, context
         $.addClass root, 'warning'
         root.textContent = "Post No.#{postID} was not found."
       return
@@ -146,7 +130,15 @@ Get =
     post.isFetchedQuote = true
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
-  archivedPost: (req, boardID, postID, root, context) ->
+  archivedPost: (boardID, postID, root, context) ->
+    return false unless url = Redirect.to 'post', {boardID, postID}
+    $.cache url,
+      -> Get.parseArchivedPost @, boardID, postID, root, context
+    ,
+      responseType: 'json'
+      withCredentials: url.archive.withCredentials
+    return true
+  parseArchivedPost: (req, boardID, postID, root, context) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
     if post = g.posts["#{boardID}.#{postID}"]
