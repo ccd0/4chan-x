@@ -156,9 +156,12 @@ Gallery =
       file.src = name.href = @href
 
       $.extend  file.dataset,   @dataset
-      nodes.current.pause?()
+      nodes.current.pause?() unless nodes.current.error
       $.replace nodes.current,  file
-      Video.configure file if elType is 'video'
+      if elType is 'video'
+        file.loop = true
+        file.play() if Conf['Autoplay']
+        ImageCommon.addControls file if Conf['Show Controls']
       nodes.count.textContent = +@dataset.id + 1
       nodes.current           = file
       nodes.frame.scrollTop   = 0
@@ -178,33 +181,13 @@ Gallery =
       Gallery.build @
 
     error: (file, thumb) ->
-      post = g.posts[file.dataset.post]
-
-      src = file.src.split '/'
-      if src[2] is 'i.4cdn.org'
-        URL = Redirect.to 'file',
-          boardID:  src[3]
-          filename: src[src.length - 1]
-        if URL
-          thumb.href = URL
-        if URL and (/^https:\/\//.test(URL) or location.protocol is 'http:')
-          return unless Gallery.nodes.current is file
-          file.src = URL
-          return
-        if g.DEAD or post.isDead or post.file.isDead
-          return
-
-      # XXX CORS for i.4cdn.org WHEN?
-      $.ajax "//a.4cdn.org/#{post.board}/thread/#{post.thread}.json", onload: ->
-        return if @status isnt 200
-        i = 0
-        {posts} = @response
-        while postObj = posts[i++]
-          break if postObj.no is post.ID
-        unless postObj.no
-          return post.kill()
-        if postObj.filedeleted
-          post.kill true
+      if file.error?.code is MediaError.MEDIA_ERR_DECODE
+        return new Notice 'error', 'Corrupt or unplayable video', 30
+      return unless file.src.split('/')[2] is 'i.4cdn.org'
+      ImageCommon.error file, g.posts[file.dataset.post], null, (URL) ->
+        return unless URL
+        thumb.href = URL
+        file.src = URL if Gallery.nodes.current is file
 
     prev:      ->
       Gallery.cb.open.call(
@@ -235,7 +218,7 @@ Gallery =
       Gallery.cb.cleanupTimer()
       {current} = Gallery.nodes
       isVideo = current.nodeName is 'VIDEO'
-      Video.start current if isVideo
+      current.play() if isVideo
       if (if isVideo then current.readyState > 4 else current.complete) or current.nodeName is 'IFRAME'
         Gallery.cb.startTimer()
       else

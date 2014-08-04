@@ -32,7 +32,8 @@ CatalogLinks =
     for a in $$ """#board-list a:not(.catalog), #boardNavDesktopFoot a""" 
       continue if a.hostname not in ['boards.4chan.org', 'catalog.neet.tv', '4index.gropes.us'] or
       !(board = a.pathname.split('/')[1]) or
-      board in ['f', 'status', '4chan']
+      board in ['f', 'status', '4chan'] or
+      $.hasClass a, 'external'
 
       # Href is easier than pathname because then we don't have
       # conditions where External Catalog has been disabled between switches.

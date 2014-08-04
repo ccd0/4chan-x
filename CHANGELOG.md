@@ -1,3 +1,40 @@
+### v1.8.8.3 
+*2014-08-02*
+
+**ccd0**, **Zixaphir**
+- Bug fixes.
+
+### v1.8.8.2 
+*2014-07-29*
+
+**ccd0**
+- Bug fixes.
+
+### v1.8.8.1 
+*2014-07-28*
+
+**ccd0**
+- Fix for image 404 redirection which was broken in v1.8.8.
+
+### v1.8.8 
+*2014-07-27*
+
+Based on v1.8.7.1.
+
+**MayhemYDG**
+- Add messages for WebM playback errors.
+- Pause WebM videos off screen for better performance.
+
+**Zixaphir**
+- Code cleanup.
+
+**ccd0**
+- Improve error handling and implement WebM decoding error messages for hover and gallery features.
+- Re-enable autoplay for WebM videos expanded by `Expand All Images` (disabled in [v1.7.3](#v173) due to performance issues). Videos will still only be expanded by EAI if the `Expand Videos` option is checked.
+- When an image or video is expanded, scroll so that as much of the image/video is on screen as possible. This can be disabled by unchecking `Scroll into view` in the `Image Expansion` menu.
+- Various image expansion related bugfixes.
+- `Page Count in Stats` is now enabled by default.
+
 ### v1.8.7.2 
 *2014-08-04*
 

@@ -276,7 +276,7 @@ Config =
         'Display reply and image count.'
       ]
       'Page Count in Stats': [
-        false
+        true
         'Display the page count in the thread stats as well.'
       ]
       'Updater and Stats in Header': [
@@ -426,6 +426,10 @@ Config =
     'Fit height': [
       false
       ''
+    ]
+    'Scroll into view': [
+      true
+      'Scroll down when expanding images to bring the full image into view.'
     ]
     'Expand spoilers': [
       true
