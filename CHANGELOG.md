@@ -1,3 +1,6 @@
+**thebladeee**
+- Update archive list (as in v1.8.7.2).
+
 ### v1.8.8.3 
 *2014-08-02*
 
