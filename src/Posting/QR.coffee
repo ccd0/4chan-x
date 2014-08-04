@@ -290,7 +290,7 @@ QR =
   handleUrl:  ->
     url = prompt("Insert an url:")
     return if url is null
-    CrossOrigin.request url, (blob) ->
+    CrossOrigin.file url, (blob) ->
       if blob
         QR.handleFiles([blob])
       else

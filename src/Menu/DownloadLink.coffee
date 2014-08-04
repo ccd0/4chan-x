@@ -10,7 +10,7 @@ DownloadLink =
     $.on a, 'click', (e) ->
       return true if @protocol is 'blob:'
       e.preventDefault()
-      CrossOrigin.request @href, (blob) =>
+      CrossOrigin.file @href, (blob) =>
         if blob
           @href = URL.createObjectURL blob
           @click()
