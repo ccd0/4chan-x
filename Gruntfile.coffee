@@ -173,7 +173,7 @@ module.exports = (grunt) ->
       prod:
         src: 'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/'
         dest: 'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.crx'
-        privateKey: '~/.ssh/<%= pkg.name %>.pem'
+        privateKey: '../<%= pkg.name %>.pem'
 
     compress:
       crx:

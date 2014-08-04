@@ -1,3 +1,9 @@
+### v1.8.8.4 
+*2014-08-04*
+
+**thebladeee**
+- Update archive list (as in v1.8.7.2).
+
 ### v1.8.8.3 
 *2014-08-02*
 
@@ -19,6 +25,8 @@
 ### v1.8.8 
 *2014-07-27*
 
+Based on v1.8.7.1.
+
 **MayhemYDG**
 - Add messages for WebM playback errors.
 - Pause WebM videos off screen for better performance.
@@ -32,6 +40,12 @@
 - When an image or video is expanded, scroll so that as much of the image/video is on screen as possible. This can be disabled by unchecking `Scroll into view` in the `Image Expansion` menu.
 - Various image expansion related bugfixes.
 - `Page Count in Stats` is now enabled by default.
+
+### v1.8.7.2 
+*2014-08-04*
+
+**thebladeee**
+- Update archive list.
 
 ### v1.8.7.1 
 *2014-07-23*
