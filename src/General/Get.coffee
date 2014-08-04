@@ -132,20 +132,25 @@ Get =
     Get.insert post, root, context
   archivedPost: (boardID, postID, root, context) ->
     return false unless url = Redirect.to 'post', {boardID, postID}
-    $.cache url,
-      -> Get.parseArchivedPost @, boardID, postID, root, context
-    ,
-      responseType: 'json'
-      withCredentials: url.archive.withCredentials
-    return true
-  parseArchivedPost: (req, boardID, postID, root, context) ->
+    if /^https:\/\//.test(URL) or location.protocol is 'http:'
+      $.cache url,
+        -> Get.parseArchivedPost @response, boardID, postID, root, context
+      ,
+        responseType: 'json'
+        withCredentials: url.archive.withCredentials
+      return true
+    else if Conf['Allow Mixed Content from Archives']
+      CrossOrigin.json url, (response) ->
+        Get.parseArchivedPost response, boardID, postID, root, context
+      return true
+    return false
+  parseArchivedPost: (data, boardID, postID, root, context) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
     if post = g.posts["#{boardID}.#{postID}"]
       Get.insert post, root, context
       return
 
-    data = req.response
     if data.error
       $.addClass root, 'warning'
       root.textContent = data.error

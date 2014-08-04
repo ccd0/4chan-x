@@ -54,8 +54,8 @@ Redirect =
     # For fuuka-based archives:
     # https://github.com/eksopl/fuuka/issues/27
     protocol = Redirect.protocol archive
-    return '' unless protocol is 'https://' or location.protocol is 'http:'
     URL = new String "#{protocol}#{archive.domain}/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+    return '' unless Redirect.securityCheck URL
     URL.archive = archive
     URL
 
@@ -76,10 +76,14 @@ Redirect =
       "#{boardID}/?task=search2&search_#{if type is 'image' then 'media_hash' else type}=#{value}"
     "#{Redirect.protocol archive}#{archive.domain}/#{path}"
 
+  securityCheck: (URL) ->
+    /^https:\/\//.test(URL) or
+    location.protocol is 'http:' or
+    Conf['Allow Mixed Content from Archives']
+
   navigate: (URL, alternative) ->
     if URL and (
-      /^https:\/\//.test(URL) or
-      location.protocol is 'http:' or
+      Redirect.securityCheck(URL) or
       confirm "Redirect to #{URL}?\n\nYour connection will not be encrypted."
     )
       location.replace URL

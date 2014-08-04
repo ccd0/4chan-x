@@ -29,6 +29,10 @@ Config =
         true
         'Redirect dead threads and images.'
       ]
+      'Allow Mixed Content from Archives': [
+        false
+        'Permit warningless access to HTTP-only archives from HTTPS pages.'
+      ]
       'Keybinds': [
         true
         'Bind actions to keyboard shortcuts.'
