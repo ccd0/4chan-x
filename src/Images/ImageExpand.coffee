@@ -174,10 +174,10 @@ ImageExpand =
 
     if !isVideo
       $.asap (-> el.naturalHeight), -> ImageExpand.completeExpand post
-    else if el.readyState >= el.HAVE_CURRENT_DATA
+    else if el.readyState >= el.HAVE_METADATA
       ImageExpand.completeExpand post
     else
-      $.on el, 'loadeddata', -> ImageExpand.completeExpand post
+      $.on el, 'loadedmetadata', -> ImageExpand.completeExpand post
 
   completeExpand: (post) ->
     {file} = post
