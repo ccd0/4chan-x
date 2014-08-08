@@ -89,6 +89,15 @@
   "boards": ["v", "vg"],
   "files": ["v", "vg"]
 }, {
+  "uid": 20,
+  "name": "/v/idya archive",
+  "domain": "archive.vidya.moe",
+  "http": true,
+  "https": false,
+  "software": "foolfuuka",
+  "boards": ["v"],
+  "files": ["v"]
+}, {
   "uid": 13,
   "name": "Foolz Beta",
   "domain": "beta.foolz.us",
