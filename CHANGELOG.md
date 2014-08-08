@@ -1,3 +1,6 @@
+**hotdogman**, **vidyamoe**
+- Update archive list.
+
 ### v1.8.8.5 
 *2014-08-06*
 
