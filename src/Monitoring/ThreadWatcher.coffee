@@ -157,7 +157,7 @@ ThreadWatcher =
       href: 'javascript:;'
     $.on x, 'click', ThreadWatcher.cb.rm
 
-    if data.isDead
+    if Conf['404 Redirect'] and data.isDead
       href = Redirect.to 'thread', {boardID, threadID}
     link = $.el 'a',
       href: href or "/#{boardID}/thread/#{threadID}"

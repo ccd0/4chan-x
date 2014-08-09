@@ -131,6 +131,7 @@ Get =
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
   archivedPost: (boardID, postID, root, context) ->
+    return false unless Conf['Resurrect Quotes']
     return false unless url = Redirect.to 'post', {boardID, postID}
     if /^https:\/\//.test(URL) or location.protocol is 'http:'
       $.cache url,

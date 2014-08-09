@@ -12,7 +12,7 @@ ImageCommon =
     URL = Redirect.to 'file',
       boardID:  post.board.ID
       filename: src[src.length - 1]
-    unless URL and Redirect.securityCheck URL
+    unless Conf['404 Redirect'] and URL and Redirect.securityCheck URL
       URL = null
 
     return cb URL if (post.isDead or post.file.isDead) and file.src.split('/')[2] is 'i.4cdn.org'
