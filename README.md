@@ -6,9 +6,9 @@ https://github.com/Nebukazar/OneeChan
 ## [Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) (Firefox)
 Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/2.1), then click the link above to install.
 
-**Important**: If you are using Greasemonkey 2.0, you may be subject to a [bug](https://github.com/greasemonkey/greasemonkey/issues/1938) which prevents Greasemonkey from updating 4chan X and other userscripts to the latest version. You should update to [Greasemonkey 2.1](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/2.1), in which the bug is fixed. After doing so, you may want to update 4chan X manually since it is likely to be out of date.
+**Important**: If you are using Greasemonkey 2.0, you should update to the [latest version](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/). Otherwise you may be subject to a [bug](https://github.com/greasemonkey/greasemonkey/issues/1938), fixed in version 2.1, which prevents Greasemonkey from updating 4chan X and other userscripts to the latest version. After doing so, you may want to update 4chan X manually since it is likely to be out of date.
 
-Greasemonkey 2.1 also fixes [another bug](https://github.com/greasemonkey/greasemonkey/issues/1937) that can break posting of images from URLs and downloading images with the original filename.
+Greasemonkey 2.1 also fixed [another bug](https://github.com/greasemonkey/greasemonkey/issues/1937) that can break posting of images from URLs and downloading images with the original filename.
 
 ### Known issues
 The combination of Firefox 29 and Greasemonkey 2.0+ causes 4chan X not to work.
@@ -22,7 +22,7 @@ This should also work for non-Windows/dev/canary Chrome and Chromium-based versi
 **Note**: The stable and beta releases of Chrome on Windows will disable extensions not installed from the Chrome store, so users will need to install 4chan X from [here](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam).
 
 ### Known issues
-Some recent versions of Chromium/Chrome (38.0.2085 - 38.0.2103) suffer from a (now fixed) [bug](https://crbug.com/393686) that prevents extensions from making HTTP requests if more than one extension is enabled. This breaks, among other things, thread updating, quick reply, and, when `JSON Navigation` is enabled, the thread index. If you are experiencing this, try upgrading/downgrading to an unaffected version of Chromium/Chrome, disabling your other extensions, or using a different browser.
+Some recent versions of Chromium/Chrome (38.0.2085 - 38.0.2103) (and versions of Opera based on them) suffer from a (now fixed) [bug](https://crbug.com/393686) that prevents extensions from making HTTP requests if more than one extension is enabled. This breaks, among other things, thread updating, quick reply, and, when `JSON Navigation` is enabled, the thread index. If you are experiencing this, try using another version of Chromium/Chrome/Opera, disabling your other extensions, or using a different browser.
 
 ## Other browsers
 This fork of 4chan X is not guaranteed to work correctly in other browsers, but you are welcome to try your luck. Pull requests to fix the bugs you will likely find are always welcome.
