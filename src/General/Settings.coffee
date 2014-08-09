@@ -329,8 +329,7 @@ Settings =
         o.file[i].push   name if boardID in files
     for boardID, o of archBoards
       for item in ['thread', 'post', 'file']
-        if o[item][0].length is 0 and o[item][1].length isnt 0
-          o[item][0].push 'disabled'
+        o[item][0].push 'disabled'
         o[item] = o[item][0].concat(o[item][1])
 
     rows = []
