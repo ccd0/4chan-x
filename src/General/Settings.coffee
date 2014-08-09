@@ -317,21 +317,21 @@ Settings =
     $.on $('#apply-css', section), 'click',  Settings.usercss
 
     archBoards = {}
-    for {name, boards, files, software, https, withCredentials} in Redirect.archives
-      rank = if withCredentials then 2 else if https then 0 else 1
+    for {name, boards, files, software, withCredentials} in Redirect.archives
       for boardID in boards
-        unless o = archBoards[boardID]
-          o = archBoards[boardID] = {}
-          for item in ['thread', 'post', 'file']
-            o[item] = [[], [], []]
-        o.thread[rank].push name
-        o.post[rank].push   name if software is 'foolfuuka'
-        o.file[rank].push   name if boardID in files
+        o = archBoards[boardID] or=
+          thread: [[], []]
+          post:   [[], []]
+          file:   [[], []]
+        i = +!!withCredentials
+        o.thread[i].push name
+        o.post[i].push   name if software is 'foolfuuka'
+        o.file[i].push   name if boardID in files
     for boardID, o of archBoards
       for item in ['thread', 'post', 'file']
-        rank = if o[item][0].length + o[item][1].length is 0 then 1 else 2
-        o[item][rank].push 'disabled'
-        o[item] = [].concat.apply [], o[item]
+        if o[item][0].length is 0 and o[item][1].length isnt 0
+          o[item][0].push 'disabled'
+        o[item] = o[item][0].concat(o[item][1])
 
     rows = []
     boardOptions = []
