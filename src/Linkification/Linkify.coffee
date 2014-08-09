@@ -238,9 +238,11 @@ Linkify =
       key: 'gist'
       regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/
       el: (a) ->
-        $.el 'iframe',
-          # Github doesn't allow embedding straight from the site, so we use an external site to bypass that.
-          src: "http://www.purplegene.com/script?url=https://gist.github.com/#{a.dataset.uid}.js"
+        el = $.el 'iframe'
+        el.setAttribute 'sandbox', 'allow-scripts'
+        content = <%= html('<html><head><title>${a.dataset.uid}</title></head><body><script src="https://gist.github.com/${a.dataset.uid}.js"></script></body></html>') %>
+        el.src = "data:text/html;charset=utf-8,<!doctype html>#{encodeURIComponent content.innerHTML}"
+        el
       title:
         api: (uid) -> "https://api.github.com/gists/#{uid}"
         text: ({files}) ->
