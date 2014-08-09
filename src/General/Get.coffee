@@ -140,7 +140,7 @@ Get =
         responseType: 'json'
         withCredentials: url.archive.withCredentials
       return true
-    else if Conf['Allow Mixed Content from Archives']
+    else if Conf['Except Archives from Encryption']
       CrossOrigin.json url, (response) ->
         Get.parseArchivedPost response, boardID, postID, root, context
       return true

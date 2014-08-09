@@ -27,11 +27,11 @@ Config =
       ]
       '404 Redirect': [
         true
-        'Redirect dead threads and images.'
+        'Redirect dead threads and images to the archives.'
       ]
-      'Allow Mixed Content from Archives': [
+      'Except Archives from Encryption': [
         false
-        'Permit warningless access to HTTP-only archives from HTTPS pages.'
+        'Permit loading content from, and warningless redirects to, HTTP-only archives from HTTPS pages.'
       ]
       'Keybinds': [
         true

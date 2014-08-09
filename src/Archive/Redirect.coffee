@@ -79,7 +79,7 @@ Redirect =
   securityCheck: (URL) ->
     /^https:\/\//.test(URL) or
     location.protocol is 'http:' or
-    Conf['Allow Mixed Content from Archives']
+    Conf['Except Archives from Encryption']
 
   navigate: (URL, alternative) ->
     if URL and (
