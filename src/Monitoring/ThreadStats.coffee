@@ -3,7 +3,7 @@ ThreadStats =
     return if g.VIEW isnt 'thread' or !Conf['Thread Stats']
 
     countHTML = <%= html('<span id="post-count">0</span> / <span id="file-count">0</span>') %>
-    countHTML = <%= html('&{countHTML} / <span id="file-count">0</span>') %> if Conf['Page Count in Stats']
+    countHTML = <%= html('&{countHTML} / <span id="page-count">0</span>') %> if Conf['Page Count in Stats']
 
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
