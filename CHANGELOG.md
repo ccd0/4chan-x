@@ -1,3 +1,11 @@
+Based on v1.8.8.6.
+
+**ccd0**
+- Rewrite HTML-generating code using precompiled templates so that checking that everything is HTML-escaped is automatic.
+- New option `Except Archives from Encryption` (unchecked by default) permits HTTPS 4chan pages to load content from HTTP-only archives, and disables the warning when redirecting HTTPS 404 pages to these archives.
+- Fix some archive features not being possible to disable; unchecking `404 Redirect`, `Archive Link`, and `Resurrect Quotes` is now sufficient to turn all archive features off.
+- Allow `disabled` as an archive choice for every board.
+
 ### v1.8.8.6 
 *2014-08-07*
 
