@@ -47,7 +47,9 @@ ImageHover =
       ImageCommon.error @, post, 3 * $.SECOND, (URL) =>
         if URL
           @src = URL + if @src is URL then '?' + Date.now() else ''
+        else
+          $.rm @
+          delete post.file.fullImage
     else
-      $.off @, 'error', ImageHover.error
       $.rm @
       delete post.file.fullImage
