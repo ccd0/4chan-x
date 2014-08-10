@@ -133,7 +133,7 @@ Get =
   archivedPost: (boardID, postID, root, context) ->
     return false unless Conf['Resurrect Quotes']
     return false unless url = Redirect.to 'post', {boardID, postID}
-    if /^https:\/\//.test(URL) or location.protocol is 'http:'
+    if /^https:\/\//.test(url) or location.protocol is 'http:'
       $.cache url,
         -> Get.parseArchivedPost @response, boardID, postID, root, context
       ,
