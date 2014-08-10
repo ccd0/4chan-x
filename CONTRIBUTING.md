@@ -25,13 +25,6 @@ Reporting bugs:
 - Build with `grunt`.
 - Continuously build with `grunt watch`.
 
-### Release
-
-- Update the version with `grunt patch`, `grunt minor` or `grunt major`.
-- Release with `grunt release`.
-
-Note: this is only used to release new 4chan X versions, and is **not** needed or wanted in pull requests.
-
 ### Contribute
 
 - Edit the sources.

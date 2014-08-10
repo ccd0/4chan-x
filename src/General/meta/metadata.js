@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         <%= meta.name %>
-// @version      <%= version %>
+// @version      <%= meta.version %>
 // @minGMVer     <%= meta.min.greasemonkey %>
 // @minFFVer     <%= meta.min.firefox %>
 // @namespace    <%= name %>

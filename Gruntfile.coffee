@@ -114,15 +114,6 @@ module.exports = (grunt) ->
         'build-userscript'
       ]
 
-    bump:
-      options:
-        updateConfigs: [
-          'pkg'
-        ]
-        commit:    false
-        createTag: false
-        push:      false
-
     shell:
       options:
         stdout: true
@@ -132,24 +123,24 @@ module.exports = (grunt) ->
         command: 'git checkout <%= pkg.meta.mainBranch %>'
       commit:
         command: """
-          git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."
-          git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."
+          git commit -am "Release <%= pkg.meta.name %> v<%= pkg.meta.version %>."
+          git tag -a <%= pkg.meta.version %> -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
         """
       beta:
         command: """
-          git tag -af beta -m "<%= pkg.meta.name %> v<%= pkg.version %>."
+          git tag -af beta -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
           git checkout gh-pages
           git checkout beta 'builds/*<%= pkg.meta.suffix.beta %>.*'
-          git commit -am "Move <%= pkg.meta.name %> v<%= pkg.version %> to beta channel."
+          git commit -am "Move <%= pkg.meta.name %> v<%= pkg.meta.version %> to beta channel."
           git checkout -
         """
       stable:
         command: """
-          git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.version %>."
+          git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
           git checkout -b tmp
           git merge --no-commit -s ours gh-pages
           git checkout gh-pages 'builds/*<%= pkg.meta.suffix.beta %>.*'
-          git commit -am "Move <%= pkg.meta.name %> v<%= pkg.version %> to stable channel."
+          git commit -am "Move <%= pkg.meta.name %> v<%= pkg.meta.version %> to stable channel."
           git checkout gh-pages
           git merge --ff-only tmp
           git branch -d tmp
@@ -291,24 +282,9 @@ module.exports = (grunt) ->
     'shell:push'
   ]
 
-  grunt.registerTask 'patch', [
-    'bump'
-    'updcl:3'
-  ]
-
-  grunt.registerTask 'minor', [
-    'bump:minor'
-    'updcl:2'
-  ]
-
-  grunt.registerTask 'major', [
-    'bump:major'
-    'updcl:1'
-  ]
-
   grunt.registerTask 'updcl', 'Update the changelog', (headerLevel) ->
     headerPrefix = new Array(+headerLevel + 1).join '#'
-    {version} = grunt.config 'pkg'
+    {version} = grunt.config('pkg').meta
     today     = grunt.template.today 'yyyy-mm-dd'
     changelog = grunt.file.read 'CHANGELOG.md'
 
