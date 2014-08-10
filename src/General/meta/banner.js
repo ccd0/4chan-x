@@ -1,18 +1,18 @@
 /*
-* <%= meta.name %> - Version <%= meta.version %> - <%= grunt.template.today('yyyy-mm-dd') %>
+* <%= meta.name %> - Version <%= meta.version %>
 *
 * Licensed under the MIT license.
 * <%= meta.repo %>blob/master/LICENSE
 *
-* Appchan X Copyright © 2013-2013 Zixaphir <zixaphirmoxphar@gmail.com>
+* Appchan X Copyright © 2013-2014 Zixaphir <zixaphirmoxphar@gmail.com>
 * http://zixaphir.github.io/appchan-x/ 
 * 4chan x Copyright © 2009-2011 James Campos <james.r.campos@gmail.com>
 * https://github.com/aeosynth/4chan-x
-* 4chan x Copyright © 2012-<%= grunt.template.today('yyyy') %> Nicolas Stepien <stepien.nicolas@gmail.com>
+* 4chan x Copyright © 2012-2014 Nicolas Stepien <stepien.nicolas@gmail.com>
 * https://4chan-x.just-believe.in/
-* 4chan x Copyright © 2013-<%= grunt.template.today('yyyy') %> Jordan Bates <saudrapsmann@gmail.com>
+* 4chan x Copyright © 2013-2014 Jordan Bates <saudrapsmann@gmail.com>
 * http://seaweedchan.github.io/4chan-x/
-* 4chan x Copyright © 2012-<%= grunt.template.today('yyyy') %> ihavenoface
+* 4chan x Copyright © 2012-2013 ihavenoface
 * http://ihavenoface.github.io/4chan-x/
 * 4chan SS Copyright © 2011-2013 Ahodesuka
 * https://github.com/ahodesuka/4chan-Style-Script/ 
