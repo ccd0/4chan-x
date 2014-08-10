@@ -58,17 +58,20 @@ Quotify =
 
         $.extend a.dataset, {boardID, threadID: post.thread.ID, postID}
 
-    else if (redirect = Redirect.to 'thread', {boardID, threadID: 0, postID}) or (fetchable = Redirect.to 'post', {boardID, postID})
-      # Replace the .deadlink span if we can redirect or fetch the post.
-      a = $.el 'a',
-        href:        redirect or 'javascript:;'
-        className:   'deadlink'
-        target:      '_blank'
-        textContent: "#{quote}\u00A0(Dead)"
-      if fetchable
-        # Make it function as a normal quote if we can fetch the post.
-        $.addClass a, 'quotelink'
-        $.extend a.dataset, {boardID, postID}
+    else
+      redirect = Redirect.to 'thread', {boardID, threadID: 0, postID}
+      fetchable = Redirect.to 'post', {boardID, postID}
+      if redirect or fetchable
+        # Replace the .deadlink span if we can redirect or fetch the post.
+        a = $.el 'a',
+          href:        redirect or 'javascript:;'
+          className:   'deadlink'
+          target:      '_blank'
+          textContent: "#{quote}\u00A0(Dead)"
+        if fetchable
+          # Make it function as a normal quote if we can fetch the post.
+          $.addClass a, 'quotelink'
+          $.extend a.dataset, {boardID, postID}
 
     @quotes.push quoteID unless quoteID in @quotes
 
