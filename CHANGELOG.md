@@ -21,6 +21,12 @@ Based on v1.8.8.6.
 - Fix some archive features not being possible to disable; unchecking `404 Redirect`, `Archive Link`, and `Resurrect Quotes` is now sufficient to turn all archive features off.
 - Allow `disabled` as an archive choice for every board.
 
+### v1.8.8.8 
+*2014-08-11*
+
+**vidyamoe**
+- Update archive list.
+
 ### v1.8.8.7 
 *2014-08-10*
 
