@@ -1,4 +1,5 @@
 module.exports = (grunt) ->
+  grunt.util.linefeed = '\n'
 
   importHTML = (filename) ->
     "'''#{grunt.file.read("src/General/html/#{filename}.html").replace(/^\s+|\s+$</gm, '').replace(/\n/g, '')}'''"
