@@ -158,7 +158,7 @@ Build =
 
     postLink = Build.postURL boardID, threadID, postID
     quoteLink = if Build.sameThread boardID, threadID
-      "javascript:quote('#{postID}');"
+      "javascript:quote('#{+postID}');"
     else
       "/#{boardID}/thread/#{threadID}\#q#{postID}"
 
