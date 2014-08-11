@@ -1,4 +1,5 @@
 module.exports = (grunt) ->
+  grunt.util.linefeed = '\n'
 
   importHTML = (filename) ->
     "(innerHTML: #{JSON.stringify grunt.file.read("src/General/html/#{filename}.html").replace(/^\s+|\s+$</gm, '').replace(/\n/g, '')})"
@@ -125,27 +126,27 @@ module.exports = (grunt) ->
         command: """
           git commit -am "Release <%= pkg.meta.name %> v<%= pkg.meta.version %>."
           git tag -a <%= pkg.meta.version %> -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
-        """
+        """.split('\n').join('&&')
       beta:
         command: """
           git tag -af beta -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
           git checkout gh-pages
-          git checkout beta 'builds/*<%= pkg.meta.suffix.beta %>.*'
+          git checkout beta "builds/*<%= pkg.meta.suffix.beta %>.*"
           git commit -am "Move <%= pkg.meta.name %> v<%= pkg.meta.version %> to beta channel."
           git checkout -
-        """
+        """.split('\n').join('&&')
       stable:
         command: """
           git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
           git checkout -b tmp
           git merge --no-commit -s ours gh-pages
-          git checkout gh-pages 'builds/*<%= pkg.meta.suffix.beta %>.*'
+          git checkout gh-pages "builds/*<%= pkg.meta.suffix.beta %>.*"
           git commit -am "Move <%= pkg.meta.name %> v<%= pkg.meta.version %> to stable channel."
           git checkout gh-pages
           git merge --ff-only tmp
           git branch -d tmp
           git checkout @{-2}
-        """
+        """.split('\n').join('&&')
       push:
         command: 'git push origin --tags -f && git push origin --all'
 
