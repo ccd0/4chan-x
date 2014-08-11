@@ -1,3 +1,6 @@
+**ccd0**
+- HTML escaping fix from v1.8.8.7.
+
 ### v1.8.9.1 
 *2014-08-10*
 
