@@ -93,7 +93,7 @@
   "name": "/v/idya archive",
   "domain": "archive.vidya.moe",
   "http": true,
-  "https": false,
+  "https": true,
   "software": "foolfuuka",
   "boards": ["v"],
   "files": ["v"]
