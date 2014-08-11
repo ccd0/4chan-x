@@ -1,3 +1,6 @@
+**vidyamoe**
+- Update archive list (as in v1.8.8.8).
+
 ### v1.8.9.2 
 *2014-08-10*
 
