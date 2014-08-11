@@ -1,3 +1,6 @@
+### v1.8.8.7 
+*2014-08-10*
+
 **ccd0**
 - Fix oversight in escaping stuff when building HTML (believed harmless but better to be safe).
 
