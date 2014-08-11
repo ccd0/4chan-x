@@ -112,27 +112,27 @@ module.exports = (grunt) ->
         command: """
           git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."
           git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."
-        """
+        """.split('\n').join('&&')
       beta:
         command: """
           git tag -af beta -m "<%= pkg.meta.name %> v<%= pkg.version %>."
           git checkout gh-pages
-          git checkout beta 'builds/*<%= pkg.meta.suffix.beta %>.*'
+          git checkout beta "builds/*<%= pkg.meta.suffix.beta %>.*"
           git commit -am "Move <%= pkg.meta.name %> v<%= pkg.version %> to beta channel."
           git checkout -
-        """
+        """.split('\n').join('&&')
       stable:
         command: """
           git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.version %>."
           git checkout -b tmp
           git merge --no-commit -s ours gh-pages
-          git checkout gh-pages 'builds/*<%= pkg.meta.suffix.beta %>.*'
+          git checkout gh-pages "builds/*<%= pkg.meta.suffix.beta %>.*"
           git commit -am "Move <%= pkg.meta.name %> v<%= pkg.version %> to stable channel."
           git checkout gh-pages
           git merge --ff-only tmp
           git branch -d tmp
           git checkout @{-2}
-        """
+        """.split('\n').join('&&')
       push:
         command: 'git push origin --tags -f && git push origin --all'
 
