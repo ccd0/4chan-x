@@ -26,6 +26,15 @@
   "boards": ["adv", "f", "hr", "o", "pol", "s4s", "tg", "trv", "tv", "x"],
   "files": ["adv", "f", "hr", "o", "pol", "s4s", "tg", "trv", "tv", "x"]
 }, {
+  "uid": 4,
+  "name": "Nyafuu",
+  "domain": "archive.nyafuu.org",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["c", "e", "w", "wg"],
+  "files": ["c", "e", "w", "wg"]
+}, {
   "uid": 5,
   "name": "Love is Over",
   "domain": "archive.loveisover.me",
