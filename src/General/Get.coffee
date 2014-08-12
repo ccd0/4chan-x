@@ -142,6 +142,11 @@ Get =
       return true
     else if Conf['Except Archives from Encryption']
       CrossOrigin.json url, (response) ->
+        {media} = response
+        if media then for key of media when /_link$/.test key
+          # Image/thumbnail URLs loaded over HTTP can be modified in transit.
+          # Require them to be HTTP so that no referrer is sent to them from an HTTPS page.
+          delete media[key] unless /^http:\/\//.test media[key]
         Get.parseArchivedPost response, boardID, postID, root, context
       return true
     return false
@@ -202,7 +207,8 @@ Get =
       o.file =
         name:      data.media.media_filename
         timestamp: data.media.media_orig
-        url:       data.media.media_link or data.media.remote_media_link
+        url:       data.media.media_link or data.media.remote_media_link or
+                     "//i.4cdn.org/#{boardID}/#{encodeURIComponent data.media[if boardID is 'f' then 'media_filename' else 'media_orig']}"
         height:    data.media.media_h
         width:     data.media.media_w
         MD5:       data.media.media_hash
