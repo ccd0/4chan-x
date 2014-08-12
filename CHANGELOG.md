@@ -1,3 +1,6 @@
+### v1.8.9.4 
+*2014-08-11*
+
 **ccd0**
 - Fix issue where `Except Archives from Encryption` option could reveal the page you are on to a MITM attacker.
 
