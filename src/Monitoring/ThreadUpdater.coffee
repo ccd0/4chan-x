@@ -74,7 +74,10 @@ ThreadUpdater =
     $.on d,      'QRPostSuccessful', ThreadUpdater.cb.checkpost
     $.on d,      'visibilitychange', ThreadUpdater.cb.visibility
 
-    ThreadUpdater.cb.online()
+    if g.DEAD
+      ThreadUpdater.set 'status', 'Archived', 'warning'
+    else
+      ThreadUpdater.cb.online()
 
   ###
   http://freesound.org/people/pierrecartoons1979/sounds/90112/
@@ -84,6 +87,7 @@ ThreadUpdater =
 
   cb:
     online: ->
+      return if g.DEAD
       if ThreadUpdater.online = navigator.onLine
         ThreadUpdater.outdateCount = 0
         ThreadUpdater.setInterval()
@@ -127,18 +131,17 @@ ThreadUpdater =
       {req} = ThreadUpdater
       switch req.status
         when 200
-          g.DEAD = false
+          g.DEAD = !!+req.response.posts[0].archived
           ThreadUpdater.parse req.response.posts
-          ThreadUpdater.setInterval()
+          if g.DEAD
+            ThreadUpdater.set 'status', 'Archived', 'warning'
+            ThreadUpdater.kill()
+          else
+            ThreadUpdater.setInterval()
         when 404
           g.DEAD = true
-          ThreadUpdater.set 'timer', null
           ThreadUpdater.set 'status', '404', 'warning'
-          clearTimeout ThreadUpdater.timeoutID
-          ThreadUpdater.thread.kill()
-          $.event 'ThreadUpdate',
-            404: true
-            threadID: ThreadUpdater.thread.fullID
+          ThreadUpdater.kill()
         else
           ThreadUpdater.outdateCount++
           ThreadUpdater.setInterval()
@@ -150,6 +153,14 @@ ThreadUpdater =
 
       if ThreadUpdater.postID
         ThreadUpdater.cb.checkpost()
+
+  kill: ->
+    ThreadUpdater.set 'timer', null
+    clearTimeout ThreadUpdater.timeoutID
+    ThreadUpdater.thread.kill()
+    $.event 'ThreadUpdate',
+      404: true
+      threadID: ThreadUpdater.thread.fullID
 
   setInterval: ->
     i   = ThreadUpdater.interval + 1
