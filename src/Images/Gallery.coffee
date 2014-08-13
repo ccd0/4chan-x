@@ -22,7 +22,7 @@ Gallery =
   node: ->
     return unless @file
     if Gallery.nodes
-      Gallery.generateThumb $ '.file', @nodes.root
+      Gallery.generateThumb @
       Gallery.nodes.total.textContent = Gallery.images.length
 
     unless Conf['Image Expansion']
@@ -70,7 +70,14 @@ Gallery =
 
     $.on  d, 'keydown', cb.keybinds
     $.off d, 'keydown', Keybinds.keydown
-    Gallery.generateThumb file for file in $$ '.post .file' when !$ '.fileDeletedRes, .fileDeleted', file
+    for file in $$ '.post .file' when !$ '.fileDeletedRes, .fileDeleted', file
+      post = Get.postFromNode file
+      Gallery.generateThumb post
+      # If no image to open is given, pick image we have scrolled to.
+      if !image and Gallery.fullIDs[post.fullID]
+        {thumb} = post.file
+        if Header.getTopOf(thumb) + thumb.getBoundingClientRect().height >= 0
+          image = thumb.parentNode
     $.add d.body, dialog
 
     nodes.thumbs.scrollTop = 0
@@ -84,19 +91,17 @@ Gallery =
     d.body.style.overflow = 'hidden'
     nodes.total.textContent = Gallery.images.length
 
-  generateThumb: (file) ->
-    post  = Get.postFromNode file
+  generateThumb: (post) ->
     return if post.isClone or post.isHidden
     return unless post.file and (post.file.isImage or post.file.isVideo or Conf['PDF in Gallery'])
     return if Gallery.fullIDs[post.fullID]
     Gallery.fullIDs[post.fullID] = true
 
-    title = ($ '.fileText a', file).textContent
     thumb = $.el 'a',
       className: 'gal-thumb'
       href:      post.file.URL
       target:    '_blank'
-      title:     title
+      title:     post.file.name
     thumb.dataset.id = Gallery.images.length
     thumb.dataset.post = post.fullID
 
