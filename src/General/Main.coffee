@@ -159,6 +159,8 @@ Main =
       new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to operate properly.', 30
 
   initThread: ->
+    g.DEAD = !!$('.closed')?.textContent.match(/Thread archived/)
+
     if board = $ '.board'
       threads = []
       posts   = []
