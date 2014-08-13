@@ -1,3 +1,6 @@
+**ccd0**
+- 4chan update: Indicate death of threads with delayed pruning on /a/ and /v/.
+
 ### v1.8.9.5 
 *2014-08-12*
 
