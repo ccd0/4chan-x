@@ -329,7 +329,7 @@ Config =
       ]
       'Show Name and Subject': [
         false
-        'Always show name and subject fields in the QR even when 4chan doesn\'t use them.'
+        'Show the classic name, email, and subject fields in the QR, even when 4chan doesn\'t use them all.'
       ]
       'Hide Original Post Form': [
         true
@@ -601,7 +601,7 @@ vp-replace
 
   QR:
     'QR.personas': """
-      #email:"sage";boards:jp;always
+      #options:"sage";boards:jp;always
       """
 
   time: '%m/%d/%y(%a)%H:%M:%S'

@@ -16,7 +16,7 @@ QR.persona =
 
   parseItem: (item, types) ->
     return if item[0] is '#'
-    return unless match = item.match /(name|email|subject|password):"(.*)"/i
+    return unless match = item.match /(name|options|email|subject|password):"(.*)"/i
     [match, type, val]  = match
 
     # Don't mix up item settings with val.
@@ -30,7 +30,8 @@ QR.persona =
       QR.persona.pwd = val
       return
 
-    type = 'sub' if type is 'subject'
+    type = 'email' if type is 'options'
+    type = 'sub'   if type is 'subject'
 
     if /always/i.test item
       QR.persona.always[type] = val
