@@ -14,6 +14,8 @@ ThreadWatcher =
     @status = $ '#watcher-status', @dialog
     @list   = @dialog.lastElementChild
 
+    @unreaddb = new DataBoard 'lastReadPosts'
+
     $.on d, 'QRPostSuccessful',   @cb.post
     $.on sc, 'click', @toggleWatcher
     $.on $('.move>.close', ThreadWatcher.dialog), 'click', @toggleWatcher
@@ -132,15 +134,34 @@ ThreadWatcher =
         else
           status = "#{Math.round fetchCount.fetched / fetchCount.fetching * 100}%"
         ThreadWatcher.status.textContent = status
-        return if @status isnt 404
-        if Conf['Auto Prune']
-          ThreadWatcher.db.delete {boardID, threadID}
-        else
-          data.isDead = true
-          ThreadWatcher.db.set {boardID, threadID, val: data}
+        return if @status isnt 404 and @status isnt 200
+
+        if @status is 200
+          lastReadPost = ThreadWatcher.unreaddb.get
+            boardID: boardID
+            threadID: threadID
+            defaultValue: 0
+
+          unread = 0
+
+          for postObj in @response.posts
+            if postObj.no > lastReadPost
+              unread++
+
+          return if unread is data.unread
+
+          data.unread = unread
+
+        if @status is 404
+          if Conf['Auto Prune']
+            ThreadWatcher.db.delete {boardID, threadID}
+          else
+            data.isDead = true
+            ThreadWatcher.db.set {boardID, threadID, val: data}
+
         ThreadWatcher.refresh()
     ,
-      type: 'head'
+      type: 'get'
 
   getAll: ->
     all = []
@@ -161,7 +182,7 @@ ThreadWatcher =
       href = Redirect.to 'thread', {boardID, threadID}
     link = $.el 'a',
       href: href or "/#{boardID}/thread/#{threadID}"
-      textContent: data.excerpt
+      textContent: data.excerpt + " (#{data.unread})"
       title: data.excerpt
 
     div = $.el 'div'
@@ -201,7 +222,7 @@ ThreadWatcher =
     else
       ThreadWatcher.add thread
   add: (thread) ->
-    data     = {}
+    data     = {unread: 0}
     boardID  = thread.board.ID
     threadID = thread.ID
     if thread.isDead
