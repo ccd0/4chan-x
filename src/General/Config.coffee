@@ -906,7 +906,7 @@ Config =
 
   QR:
     'QR.personas': """
-      #email:"sage";boards:jp;always
+      #options:"sage";boards:jp;always
     """
 
   time: '%m/%d/%y(%a)%H:%M:%S'
