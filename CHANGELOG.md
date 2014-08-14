@@ -1,3 +1,15 @@
+### v1.8.9.7 
+*2014-08-13*
+
+**ccd0**
+- Relabel the former email field as `Options` (unless `Show Name and Subject` is checked).
+
+### v1.8.9.6 
+*2014-08-12*
+
+**ccd0**
+- 4chan update: Indicate death of threads with delayed pruning on /a/ and /v/.
+
 ### v1.8.9.5 
 *2014-08-12*
 

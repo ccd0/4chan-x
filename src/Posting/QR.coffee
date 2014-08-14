@@ -472,6 +472,7 @@ QR =
     if Conf['Show Name and Subject']
       $.addClass QR.nodes.name, 'force-show'
       $.addClass QR.nodes.sub, 'force-show'
+      QR.nodes.email.placeholder = 'E-mail'
 
     QR.forcedAnon = !!$ '.postForm input[name=name][type=hidden]'
     if QR.forcedAnon
