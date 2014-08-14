@@ -1,3 +1,6 @@
+### v1.8.9.7 
+*2014-08-13*
+
 **ccd0**
 - Relabel the former email field as `Options` (unless `Show Name and Subject` is checked).
 
