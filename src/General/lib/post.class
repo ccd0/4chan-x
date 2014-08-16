@@ -114,7 +114,9 @@ class Post
 
   parseQuotes: ->
     @quotes = []
-    for quotelink in $$ '.quotelink', @nodes.comment
+    # XXX https://github.com/4chan/4chan-JS/issues/77
+    # 4chan currently creates quote links inside [code] tags; ignore them
+    for quotelink in $$ ':not(pre) > .quotelink', @nodes.comment
       @parseQuote quotelink
     return
 
