@@ -83,7 +83,7 @@ Gallery =
     nodes.thumbs.scrollTop = 0
     nodes.current.parentElement.scrollTop = 0
 
-    Gallery.cb.open.call if image
+    Gallery.open if image
       $("[href='#{image.href}']", nodes.thumbs) or Gallery.images[0]
     else
       Gallery.images[0]
@@ -114,6 +114,85 @@ Gallery =
     Gallery.images.push thumb
     $.add Gallery.nodes.thumbs, thumb
 
+  open: (thumb) ->
+    {nodes} = Gallery
+    {name}  = nodes
+    oldID = +nodes.current.dataset.id
+    newID = +thumb.dataset.id
+    slideshow = Gallery.slideshow and (newID > oldID or (oldID is Gallery.images.length-1 and newID is 0))
+
+    $.rmClass  el,    'gal-highlight' if el = $ '.gal-highlight', nodes.thumbs
+    $.addClass thumb, 'gal-highlight'
+
+    elType = 'img'
+    elType = 'video' if /\.webm$/.test(thumb.href)
+    elType = 'iframe' if /\.pdf$/.test(thumb.href)
+    $[if elType is 'iframe' then 'addClass' else 'rmClass'] doc, 'gal-pdf'
+    file = $.el elType,
+      title: name.download = name.textContent = thumb.title
+    $.on file, 'error', =>
+      Gallery.error file, thumb
+    file.src = name.href = thumb.href
+
+    $.extend  file.dataset, thumb.dataset
+    nodes.current.pause?() unless nodes.current.error
+    $.replace nodes.current, file
+    if elType is 'video'
+      file.loop = true
+      file.play() if Conf['Autoplay']
+      ImageCommon.addControls file if Conf['Show Controls']
+    nodes.count.textContent = +thumb.dataset.id + 1
+    nodes.current           = file
+    nodes.frame.scrollTop   = 0
+    nodes.next.focus()
+    if slideshow
+      Gallery.setupTimer()
+    else
+      Gallery.cb.stop()
+
+    # Scroll to post
+    if Conf['Scroll to Post'] and post = (post = g.posts[file.dataset.post])?.nodes.root
+      Header.scrollTo post
+
+    # Center selected thumbnail
+    nodes.thumbs.scrollTop = thumb.offsetTop + thumb.offsetHeight/2 - nodes.thumbs.clientHeight/2
+
+  error: (file, thumb) ->
+    if file.error?.code is MediaError.MEDIA_ERR_DECODE
+      return new Notice 'error', 'Corrupt or unplayable video', 30
+    return unless file.src.split('/')[2] is 'i.4cdn.org'
+    ImageCommon.error file, g.posts[file.dataset.post], null, (URL) ->
+      return unless URL
+      thumb.href = URL
+      file.src = URL if Gallery.nodes.current is file
+
+  cleanupTimer: ->
+    clearTimeout Gallery.timeoutID
+    {current} = Gallery.nodes
+    $.off current, 'canplaythrough load', Gallery.startTimer
+    $.off current, 'ended', Gallery.cb.next
+
+  startTimer: ->
+    Gallery.timeoutID = setTimeout Gallery.checkTimer, Gallery.delay * $.SECOND
+
+  setupTimer: ->
+    Gallery.cleanupTimer()
+    {current} = Gallery.nodes
+    isVideo = current.nodeName is 'VIDEO'
+    current.play() if isVideo
+    if (if isVideo then current.readyState > 4 else current.complete) or current.nodeName is 'IFRAME'
+      Gallery.startTimer()
+    else
+      $.on current, (if isVideo then 'canplaythrough' else 'load'), Gallery.startTimer
+
+  checkTimer: ->
+    {current} = Gallery.nodes
+    if current.nodeName is 'VIDEO' and !current.paused
+      $.on current, 'ended', Gallery.cb.next
+      current.loop = false
+    else
+      Gallery.cb.next()
+
   cb:
     keybinds: (e) ->
       return unless key = Keybinds.keyCode e
@@ -139,60 +218,12 @@ Gallery =
 
     open: (e) ->
       e.preventDefault() if e
-      return unless @
-
-      {nodes} = Gallery
-      {name}  = nodes
-      oldID = +nodes.current.dataset.id
-      newID = +@dataset.id
-      slideshow = Gallery.slideshow and (newID > oldID or (oldID is Gallery.images.length-1 and newID is 0))
-
-      $.rmClass  el, 'gal-highlight' if el = $ '.gal-highlight', nodes.thumbs
-      $.addClass @,  'gal-highlight'
-
-      elType = 'img'
-      elType = 'video' if /\.webm$/.test(@href)
-      elType = 'iframe' if /\.pdf$/.test(@href)
-      $[if elType is 'iframe' then 'addClass' else 'rmClass'] doc, 'gal-pdf'
-      file = $.el elType,
-        title: name.download = name.textContent = @title
-      $.on file, 'error', =>
-        Gallery.cb.error file, @
-      file.src = name.href = @href
-
-      $.extend  file.dataset,   @dataset
-      nodes.current.pause?() unless nodes.current.error
-      $.replace nodes.current,  file
-      if elType is 'video'
-        file.loop = true
-        file.play() if Conf['Autoplay']
-        ImageCommon.addControls file if Conf['Show Controls']
-      nodes.count.textContent = +@dataset.id + 1
-      nodes.current           = file
-      nodes.frame.scrollTop   = 0
-      nodes.next.focus()
-      Gallery.cb[if slideshow then 'setupTimer' else 'stop']()
-
-      # Scroll to post
-      if Conf['Scroll to Post'] and post = (post = g.posts[file.dataset.post])?.nodes.root
-        Header.scrollTo post
-
-      # Center selected thumbnail
-      nodes.thumbs.scrollTop = @offsetTop + @offsetHeight/2 - nodes.thumbs.clientHeight/2
+      if @ then Gallery.open @
 
     image: (e) ->
       e.preventDefault()
       e.stopPropagation()
       Gallery.build @
-
-    error: (file, thumb) ->
-      if file.error?.code is MediaError.MEDIA_ERR_DECODE
-        return new Notice 'error', 'Corrupt or unplayable video', 30
-      return unless file.src.split('/')[2] is 'i.4cdn.org'
-      ImageCommon.error file, g.posts[file.dataset.post], null, (URL) ->
-        return unless URL
-        thumb.href = URL
-        file.src = URL if Gallery.nodes.current is file
 
     prev:      ->
       Gallery.cb.open.call(
@@ -213,41 +244,14 @@ Gallery =
       {current} = Gallery.nodes
       current[if current.paused then 'play' else 'pause']() if current.nodeName is 'VIDEO'
 
-    cleanupTimer: ->
-      clearTimeout Gallery.timeoutID
-      {current} = Gallery.nodes
-      $.off current, 'canplaythrough load', Gallery.cb.startTimer
-      $.off current, 'ended', Gallery.cb.next
-
-    setupTimer: ->
-      Gallery.cb.cleanupTimer()
-      {current} = Gallery.nodes
-      isVideo = current.nodeName is 'VIDEO'
-      current.play() if isVideo
-      if (if isVideo then current.readyState > 4 else current.complete) or current.nodeName is 'IFRAME'
-        Gallery.cb.startTimer()
-      else
-        $.on current, (if isVideo then 'canplaythrough' else 'load'), Gallery.cb.startTimer
-
-    startTimer: ->
-      Gallery.timeoutID = setTimeout Gallery.cb.checkTimer, Gallery.delay * $.SECOND
-
-    checkTimer: ->
-      {current} = Gallery.nodes
-      if current.nodeName is 'VIDEO' and !current.paused
-        $.on current, 'ended', Gallery.cb.next
-        current.loop = false
-      else
-        Gallery.cb.next()
-
     start: ->
       $.addClass Gallery.nodes.buttons, 'gal-playing'
       Gallery.slideshow = true
-      Gallery.cb.setupTimer()
+      Gallery.setupTimer()
 
     stop: ->
       return unless Gallery.slideshow
-      Gallery.cb.cleanupTimer()
+      Gallery.cleanupTimer()
       {current} = Gallery.nodes
       current.loop = true if current.nodeName is 'VIDEO'
       $.rmClass Gallery.nodes.buttons, 'gal-playing'
