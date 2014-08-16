@@ -88,7 +88,7 @@ Gallery =
     else
       Gallery.images[0]
 
-    d.body.style.overflow = 'hidden'
+    doc.style.overflow = 'hidden'
     nodes.total.textContent = Gallery.images.length
 
   generateThumb: (post) ->
@@ -262,7 +262,7 @@ Gallery =
       $.rm Gallery.nodes.el
       delete Gallery.nodes
       delete Gallery.fullIDs
-      d.body.style.overflow = ''
+      doc.style.overflow = ''
 
       $.off d, 'keydown', Gallery.cb.keybinds
       $.on  d, 'keydown', Keybinds.keydown
