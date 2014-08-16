@@ -114,7 +114,7 @@ Gallery =
     Gallery.images.push thumb
     $.add Gallery.nodes.thumbs, thumb
 
-  open: (thumb, scroll) ->
+  open: (thumb) ->
     {nodes} = Gallery
     {name}  = nodes
     oldID = +nodes.current.dataset.id
@@ -151,7 +151,7 @@ Gallery =
       Gallery.cb.stop()
 
     # Scroll to post
-    if scroll and post = (post = g.posts[file.dataset.post])?.nodes.root
+    if Conf['Scroll to Post'] and post = (post = g.posts[file.dataset.post])?.nodes.root
       Header.scrollTo post
 
     # Center selected thumbnail
@@ -218,7 +218,7 @@ Gallery =
 
     open: (e) ->
       e.preventDefault() if e
-      if @ then Gallery.open @, Conf['Scroll to Post']
+      if @ then Gallery.open @
 
     image: (e) ->
       e.preventDefault()
