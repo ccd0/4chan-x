@@ -124,10 +124,6 @@ Header =
   toggle: $.el 'div',
     id: 'scroll-marker'
 
-  initReady: ->
-    Header.setBoardList()
-    Header.addNav()
-
   setBoardList: ->
     fourchannav = $.id 'boardNavDesktop'
     Header.boardList = boardList = $.el 'span',
