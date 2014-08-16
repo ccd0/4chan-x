@@ -75,9 +75,9 @@ Gallery =
       Gallery.generateThumb post
       # If no image to open is given, pick image we have scrolled to.
       if !image and Gallery.fullIDs[post.fullID]
-        {thumb} = post.file
-        if Header.getTopOf(thumb) + thumb.getBoundingClientRect().height >= 0
-          image = thumb.parentNode
+        candidate = post.file.thumb.parentNode
+        if Header.getTopOf(candidate) + candidate.getBoundingClientRect().height >= 0
+          image = candidate
     $.add d.body, dialog
 
     nodes.thumbs.scrollTop = 0
