@@ -145,7 +145,7 @@ Linkify =
   services: (link) ->
     {href} = link
     for type in Linkify.ordered_types when match = type.regExp.exec href
-      return if type.dummy
+      return if type.dummy or type.httpOnly and location.protocol isnt 'http:'
       return [type.key, match[1], match[2], link]
     return
 
@@ -268,6 +268,7 @@ Linkify =
     ,
       key: 'LiveLeak'
       regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
+      httpOnly: true
       el: (a) ->
         el = $.el 'iframe',
           width: "640",
@@ -308,6 +309,7 @@ Linkify =
     ,
       key: 'pastebin'
       regExp: /.*pastebin\.com\/(?!u\/)(?:[\w\.]+\?i\=)?(\w+).*/
+      httpOnly: true
       el: (a) ->
         div = $.el 'iframe',
           src: "http://pastebin.com/embed_iframe.php?i=#{a.dataset.uid}"
@@ -330,6 +332,7 @@ Linkify =
     ,
       key: 'StrawPoll'
       regExp: /strawpoll\.me\/(?:embed_\d+\/)?(\d+(?:\/r)?)/
+      httpOnly: true
       style: 'border: 0; width: 600px; height: 406px;'
       el: (a) ->
         $.el 'iframe',
@@ -337,6 +340,7 @@ Linkify =
     ,
       key: 'TwitchTV'
       regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/
+      httpOnly: true
       style: "border: none; width: 640px; height: 360px;"
       el: (a) ->
         if result = /(\w+)\/([bc])\/(\d+)/i.exec a.dataset.uid
