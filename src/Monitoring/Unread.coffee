@@ -1,6 +1,11 @@
 Unread =
   init: ->
-    return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Favicon'] and !Conf['Desktop Notifications'] and !Conf['Show Unread Count']
+    return if g.VIEW isnt 'thread' or
+      !Conf['Unread Count'] and
+      !Conf['Unread Favicon'] and
+      !Conf['Unread Line'] and
+      !Conf['Desktop Notifications'] and
+      !(Conf['Thread Watcher'] and Conf['Show Unread Count'])
 
     @db = new DataBoard 'lastReadPosts', @sync
     @hr = $.el 'hr',
