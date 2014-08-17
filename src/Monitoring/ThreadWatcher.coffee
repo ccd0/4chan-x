@@ -18,7 +18,8 @@ ThreadWatcher =
 
     $.on d, 'QRPostSuccessful',   @cb.post
     $.on sc, 'click', @toggleWatcher
-    $.on $('.move>.close', ThreadWatcher.dialog), 'click', @toggleWatcher
+    $.on $('.move > .refresh', ThreadWatcher.dialog), 'click', @fetchAllStatus
+    $.on $('.move > .close',   ThreadWatcher.dialog), 'click', @toggleWatcher
 
     $.on d, '4chanXInitFinished', @ready
     switch g.VIEW
@@ -117,13 +118,13 @@ ThreadWatcher =
     fetching: 0
   fetchAllStatus: ->
     return unless (threads = ThreadWatcher.getAll()).length
-    ThreadWatcher.status.textContent = '...'
     for thread in threads
       ThreadWatcher.fetchStatus thread
     return
   fetchStatus: ({boardID, threadID, data}) ->
     return if data.isDead
     {fetchCount} = ThreadWatcher
+    ThreadWatcher.status.textContent = '...' if fetchCount.fetching is 0
     fetchCount.fetching++
     $.ajax "//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
       onloadend: ->
@@ -298,6 +299,7 @@ ThreadWatcher =
         cb: ThreadWatcher.cb.checkThreads
         entry:
           el: $.el 'a',
+            id: 'watcher-check-threads'
             textContent: 'Check threads'
         refresh: -> (if $('div:not(.dead-thread)', ThreadWatcher.list) then $.rmClass else $.addClass) @el, 'disabled'
 

@@ -557,9 +557,15 @@ span.hide-announcement {
   padding-left: 3px;
   overflow: hidden;
   white-space: nowrap;
-  min-width: 136px;
+  min-width: 146px;
   max-height: 92%;
   overflow-y: auto;
+}
+#thread-watcher .refresh {
+  padding: 0px 3px;
+}
+#watcher-check-threads {
+  display: none;
 }
 #thread-watcher .menu-button {
   bottom: 1px;
@@ -598,7 +604,7 @@ span.hide-announcement {
 #thread-watcher a {
   text-decoration: none;
 }
-#thread-watcher .move>.close {
+#thread-watcher .move > .close {
   position: absolute;
   right: 0px;
   top: 0px;
