@@ -15,7 +15,7 @@ ThreadWatcher =
     @list   = @dialog.lastElementChild
     @refreshButton = $ '.move > .refresh', @dialog
 
-    @unreaddb = new DataBoard 'lastReadPosts'
+    @unreaddb = Unread.db or new DataBoard 'lastReadPosts'
 
     $.on d, 'QRPostSuccessful',   @cb.post
     $.on sc, 'click', @toggleWatcher
