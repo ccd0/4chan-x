@@ -151,6 +151,7 @@ ThreadWatcher =
           return if unread is data.unread
 
           data.unread = unread
+          ThreadWatcher.db.set {boardID, threadID, val: data}
 
         if @status is 404
           if Conf['Auto Prune']
@@ -176,21 +177,26 @@ ThreadWatcher =
     x = $.el 'a',
       className: 'fa fa-times'
       href: 'javascript:;'
+      textContent: '\u00A0'
     $.on x, 'click', ThreadWatcher.cb.rm
 
     if Conf['404 Redirect'] and data.isDead
       href = Redirect.to 'thread', {boardID, threadID}
     link = $.el 'a',
       href: href or "/#{boardID}/thread/#{threadID}"
-      textContent: data.excerpt + " (#{data.unread})"
+      textContent: data.excerpt
       title: data.excerpt
+      className: 'watched-thread-link'
+
+    count = $.el 'span',
+      textContent: if data.unread? then "\u00A0(#{data.unread})" else ''
 
     div = $.el 'div'
     fullID = "#{boardID}.#{threadID}"
     div.dataset.fullID = fullID
     $.addClass div, 'current'     if g.VIEW is 'thread' and fullID is "#{g.BOARD}.#{g.THREADID}"
     $.addClass div, 'dead-thread' if data.isDead
-    $.add div, [x, $.tn(' '), link]
+    $.add div, [x, link, count]
     div
   refresh: ->
     nodes = []
@@ -222,7 +228,7 @@ ThreadWatcher =
     else
       ThreadWatcher.add thread
   add: (thread) ->
-    data     = {unread: 0}
+    data     = {}
     boardID  = thread.board.ID
     threadID = thread.ID
     if thread.isDead
@@ -282,12 +288,11 @@ ThreadWatcher =
             textContent: 'Open all threads'
         refresh: -> (if ThreadWatcher.list.firstElementChild then $.rmClass else $.addClass) @el, 'disabled'
 
-      # `Check 404'd threads` entry
       entries.push
         cb: ThreadWatcher.cb.checkThreads
         entry:
           el: $.el 'a',
-            textContent: 'Check 404\'d threads'
+            textContent: 'Check threads'
         refresh: -> (if $('div:not(.dead-thread)', ThreadWatcher.list) then $.rmClass else $.addClass) @el, 'disabled'
 
       # `Prune 404'd threads` entry

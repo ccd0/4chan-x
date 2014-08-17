@@ -576,10 +576,22 @@ span.hide-announcement {
 }
 #watched-threads > div {
   max-width: 250px;
-  overflow: hidden;
   padding-left: 3px;
   padding-right: 3px;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+}
+#watched-threads > div > .watched-thread-link {
+  overflow: hidden;
   text-overflow: ellipsis;
+  -webkit-flex: 0 1 auto;
+  flex: 0 1 auto;
+}
+#watched-threads > div > :not(.watched-thread-link) {
+  -webkit-flex: 0 0 auto;
+  flex: 0 0 auto;
 }
 #thread-watcher a {
   text-decoration: none;
