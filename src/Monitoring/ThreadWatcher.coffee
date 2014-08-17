@@ -177,26 +177,30 @@ ThreadWatcher =
     x = $.el 'a',
       className: 'fa fa-times'
       href: 'javascript:;'
-      textContent: '\u00A0'
     $.on x, 'click', ThreadWatcher.cb.rm
+
+    title = $.el 'span',
+      textContent: data.excerpt
+      className: 'watcher-title'
+
+    count = $.el 'span',
+      textContent: if data.unread? then "\u00A0(#{data.unread})" else ''
+      className: 'watcher-unread'
 
     if Conf['404 Redirect'] and data.isDead
       href = Redirect.to 'thread', {boardID, threadID}
     link = $.el 'a',
       href: href or "/#{boardID}/thread/#{threadID}"
-      textContent: data.excerpt
       title: data.excerpt
-      className: 'watched-thread-link'
-
-    count = $.el 'span',
-      textContent: if data.unread? then "\u00A0(#{data.unread})" else ''
+      className: 'watcher-link'
+    $.add link, [title, count]
 
     div = $.el 'div'
     fullID = "#{boardID}.#{threadID}"
     div.dataset.fullID = fullID
     $.addClass div, 'current'     if g.VIEW is 'thread' and fullID is "#{g.BOARD}.#{g.THREADID}"
     $.addClass div, 'dead-thread' if data.isDead
-    $.add div, [x, link, count]
+    $.add div, [x, $.tn(' '), link]
     div
   refresh: ->
     nodes = []

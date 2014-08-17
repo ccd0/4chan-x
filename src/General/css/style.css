@@ -575,21 +575,23 @@ span.hide-announcement {
   padding-top: 3px;
 }
 #watched-threads > div {
-  max-width: 250px;
   padding-left: 3px;
   padding-right: 3px;
-  display: -webkit-flex;
-  display: flex;
+}
+#watched-threads .watcher-link {
+  max-width: 250px;
+  display: -webkit-inline-flex;
+  display: inline-flex;
   -webkit-flex-direction: row;
   flex-direction: row;
 }
-#watched-threads > div > .watched-thread-link {
+#watched-threads .watcher-title {
   overflow: hidden;
   text-overflow: ellipsis;
   -webkit-flex: 0 1 auto;
   flex: 0 1 auto;
 }
-#watched-threads > div > :not(.watched-thread-link) {
+#watched-threads .watcher-unread {
   -webkit-flex: 0 0 auto;
   flex: 0 0 auto;
 }
