@@ -74,9 +74,6 @@ ThreadWatcher =
       for a in $$ 'a[title]', ThreadWatcher.list
         $.open a.href
       $.event 'CloseMenu'
-    checkThreads: ->
-      return if $.hasClass @, 'disabled'
-      ThreadWatcher.fetchAllStatus()
     pruneDeads: ->
       return if $.hasClass @, 'disabled'
       for {boardID, threadID, data} in ThreadWatcher.getAll() when data.isDead
@@ -298,14 +295,6 @@ ThreadWatcher =
           el: $.el 'a',
             textContent: 'Open all threads'
         refresh: -> (if ThreadWatcher.list.firstElementChild then $.rmClass else $.addClass) @el, 'disabled'
-
-      entries.push
-        cb: ThreadWatcher.cb.checkThreads
-        entry:
-          el: $.el 'a',
-            id: 'watcher-check-threads'
-            textContent: 'Check threads'
-        refresh: -> (if $('div:not(.dead-thread)', ThreadWatcher.list) then $.rmClass else $.addClass) @el, 'disabled'
 
       # `Prune 404'd threads` entry
       entries.push

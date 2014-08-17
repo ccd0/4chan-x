@@ -564,9 +564,6 @@ span.hide-announcement {
 #thread-watcher .refresh {
   padding: 0px 3px;
 }
-#watcher-check-threads {
-  display: none;
-}
 #thread-watcher .menu-button {
   bottom: 1px;
 }
