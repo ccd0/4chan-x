@@ -726,6 +726,9 @@ span.hide-announcement {
 .expanded-image > .post > .file > .fileThumb > .full-image:not(#ihover) {
   display: inline;
 }
+.expanded-image {
+  clear: left;
+}
 .expanding {
   opacity: .5;
 }
