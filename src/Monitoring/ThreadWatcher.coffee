@@ -243,6 +243,7 @@ ThreadWatcher =
     data.excerpt  = Get.threadExcerpt thread
     ThreadWatcher.db.set {boardID, threadID, val: data}
     ThreadWatcher.refresh()
+    ThreadWatcher.fetchStatus {boardID, threadID, data} unless data.isDead
   rm: (boardID, threadID) ->
     ThreadWatcher.db.delete {boardID, threadID}
     ThreadWatcher.refresh()
