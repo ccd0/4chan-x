@@ -134,9 +134,8 @@ ThreadWatcher =
         else
           status = "#{Math.round fetchCount.fetched / fetchCount.fetching * 100}%"
         ThreadWatcher.status.textContent = status
-        return if @status isnt 404 and @status isnt 200
 
-        if @status is 200
+        if @status is 200 and @response
           lastReadPost = ThreadWatcher.unreaddb.get
             boardID: boardID
             threadID: threadID
@@ -148,21 +147,20 @@ ThreadWatcher =
             if postObj.no > lastReadPost
               unread++
 
-          return if unread is data.unread
+          if unread isnt data.unread
+            data.unread = unread
+            ThreadWatcher.db.set {boardID, threadID, val: data}
+            ThreadWatcher.refresh()
 
-          data.unread = unread
-          ThreadWatcher.db.set {boardID, threadID, val: data}
-
-        if @status is 404
+        else if @status is 404
           if Conf['Auto Prune']
             ThreadWatcher.db.delete {boardID, threadID}
           else
             data.isDead = true
             ThreadWatcher.db.set {boardID, threadID, val: data}
-
-        ThreadWatcher.refresh()
+          ThreadWatcher.refresh()
     ,
-      type: 'get'
+      type: if Conf['Show Unread Count'] then 'get' else 'head'
 
   getAll: ->
     all = []
@@ -184,7 +182,7 @@ ThreadWatcher =
       className: 'watcher-title'
 
     count = $.el 'span',
-      textContent: if data.unread? then "\u00A0(#{data.unread})" else ''
+      textContent: if Conf['Show Unread Count'] and data.unread? then "\u00A0(#{data.unread})" else ''
       className: 'watcher-unread'
 
     if Conf['404 Redirect'] and data.isDead
@@ -243,7 +241,8 @@ ThreadWatcher =
     data.excerpt  = Get.threadExcerpt thread
     ThreadWatcher.db.set {boardID, threadID, val: data}
     ThreadWatcher.refresh()
-    ThreadWatcher.fetchStatus {boardID, threadID, data} unless data.isDead
+    if Conf['Show Unread Count'] and !data.isDead
+      ThreadWatcher.fetchStatus {boardID, threadID, data}
   rm: (boardID, threadID) ->
     ThreadWatcher.db.delete {boardID, threadID}
     ThreadWatcher.refresh()
@@ -331,5 +330,5 @@ ThreadWatcher =
       entry.el.title = desc
       input = entry.el.firstElementChild
       $.on input, 'change', $.cb.checked
-      $.on input, 'change', ThreadWatcher.refresh if name is 'Current Board'
+      $.on input, 'change', ThreadWatcher.refresh if name is 'Current Board' or name is 'Show Unread Count'
       entry

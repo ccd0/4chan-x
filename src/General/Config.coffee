@@ -486,6 +486,10 @@ Config =
       false
       'Automatically prune 404\'d threads.'
     ]
+    'Show Unread Count': [
+      true
+      'Show number of unread posts in watched threads.'
+    ]
 
   filter:
     name: """
