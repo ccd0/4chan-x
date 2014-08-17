@@ -13,13 +13,14 @@ ThreadWatcher =
     @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', <%= importHTML('Monitoring/ThreadWatcher') %>
     @status = $ '#watcher-status', @dialog
     @list   = @dialog.lastElementChild
+    @refreshButton = $ '.move > .refresh', @dialog
 
     @unreaddb = new DataBoard 'lastReadPosts'
 
     $.on d, 'QRPostSuccessful',   @cb.post
     $.on sc, 'click', @toggleWatcher
-    $.on $('.move > .refresh', ThreadWatcher.dialog), 'click', @fetchAllStatus
-    $.on $('.move > .close',   ThreadWatcher.dialog), 'click', @toggleWatcher
+    $.on @refreshButton, 'click', @fetchAllStatus
+    $.on $('.move > .close', @dialog), 'click', @toggleWatcher
 
     $.on d, '4chanXInitFinished', @ready
     switch g.VIEW
@@ -124,7 +125,9 @@ ThreadWatcher =
   fetchStatus: ({boardID, threadID, data}) ->
     return if data.isDead
     {fetchCount} = ThreadWatcher
-    ThreadWatcher.status.textContent = '...' if fetchCount.fetching is 0
+    if fetchCount.fetching is 0
+      ThreadWatcher.status.textContent = '...'
+      $.addClass ThreadWatcher.refreshButton, 'fa-spin'
     fetchCount.fetching++
     $.ajax "//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
       onloadend: ->
@@ -133,6 +136,7 @@ ThreadWatcher =
           fetchCount.fetched = 0
           fetchCount.fetching = 0
           status = ''
+          $.rmClass ThreadWatcher.refreshButton, 'fa-spin'
         else
           status = "#{Math.round fetchCount.fetched / fetchCount.fetching * 100}%"
         ThreadWatcher.status.textContent = status
