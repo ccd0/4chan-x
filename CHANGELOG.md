@@ -12,6 +12,12 @@ Based on v1.8.9.8.
 - Add refresh button to thread watcher. Remove now redundant `Check 404'd threads` menu item.
 - Bug fixes.
 
+### v1.8.9.9 
+*2014-08-18*
+
+**ccd0**
+- Update archive list.
+
 ### v1.8.9.8 
 *2014-08-18*
 
