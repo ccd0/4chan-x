@@ -563,7 +563,7 @@ Index =
     delete Index.req
     delete Index.notice
 
-    if e.type in 'abort'
+    if e.type is 'abort'
       req.onloadend = null
       notice.close()
       return
