@@ -41,8 +41,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["d", "i", "lgbt", "e", "wg"],
-  "files": ["d", "i", "lgbt", "e", "wg"]
+  "boards": ["d", "e", "i", "lgbt", "wg"],
+  "files": ["d", "e", "i", "lgbt", "wg"]
 }, {
   "uid": 8,
   "name": "Rebecca Black Tech",
@@ -69,7 +69,7 @@
   "https": true,
   "software": "fuuka",
   "boards": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"],
-  "files": ["3", "biz", "cgl", "ck", "diy", "fa", "ic", "jp", "lit", "sci", "tg", "vr"]
+  "files": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"]
 }, {
   "uid": 15,
   "name": "fgts",
@@ -88,15 +88,6 @@
   "software": "foolfuuka",
   "boards": ["t"],
   "files": ["t"]
-}, {
-  "uid": 19,
-  "name": "Deniable Plausibility",
-  "domain": "boards.deniableplausibility.net",
-  "http": true,
-  "https": false,
-  "software": "foolfuuka",
-  "boards": ["v", "vg"],
-  "files": ["v", "vg"]
 }, {
   "uid": 13,
   "name": "Foolz Beta",
