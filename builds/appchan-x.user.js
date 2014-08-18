@@ -14340,7 +14340,7 @@
       var i, item, items, theme;
       Style.svgs = {};
       theme = Themes[Conf[g.THEMESTRING]] || Themes['Yotsuba B'];
-      items = [['layout', Style.layout], ['theme', Style.theme(theme)], ['emoji', Emoji.css()], ['dynamic', Style.dynamic()], ['padding', ""], ['mascots', ""]];
+      items = [['layout', Style.layout], ['theme', Style.theme(theme)], ['dynamic', Style.dynamic()], ['padding', ""], ['mascots', ""]];
       i = 0;
       while (item = items[i++]) {
         Style.sheets[item[0]] = $.addStyle(item[1], item[0]);

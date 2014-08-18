@@ -12,7 +12,6 @@ Style =
     items = [
       ['layout',   Style.layout]
       ['theme',    Style.theme theme]
-      ['emoji',    Emoji.css()]
       ['dynamic',  Style.dynamic()]
       ['padding',  ""]
       ['mascots',  ""]
