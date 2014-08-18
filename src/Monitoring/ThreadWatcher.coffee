@@ -147,7 +147,7 @@ ThreadWatcher =
           unread = 0
 
           for postObj in @response.posts
-            if postObj.no > lastReadPost
+            if postObj.no > lastReadPost and !QR.db?.get {boardID, threadID, postID: postObj.no}
               unread++
 
           if unread isnt data.unread
