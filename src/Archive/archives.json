@@ -62,6 +62,15 @@
   "boards": ["a", "biz", "c", "co", "diy", "gd", "i", "int", "jp", "m", "mlp", "out", "po", "s4s", "sci", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
   "files": ["a", "biz", "c", "co", "diy", "gd", "i", "jp", "m", "po", "s4s", "sci", "tg", "v", "vg", "vp", "vr", "wsg"]
 }, {
+  "uid": 1,
+  "name": "NSFW Moe",
+  "domain": "nsfw.archive.moe",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["h", "u"],
+  "files": ["h", "u"]
+}, {
   "uid": 9,
   "name": "Heinessen",
   "domain": "archive.heinessen.com",
@@ -79,13 +88,4 @@
   "software": "foolfuuka",
   "boards": ["t"],
   "files": ["t"]
-}, {
-  "uid": 1,
-  "name": "NSFW Foolz",
-  "domain": "nsfw.foolz.us",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["u"],
-  "files": ["u"]
 }]
