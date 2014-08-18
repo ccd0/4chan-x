@@ -1286,10 +1286,6 @@ div.post div.postInfo {
 s {
   text-decoration: none;
 }
-/* Emoji */
-a.useremail:last-of-type {
-  vertical-align: top;
-}
 /* OP */
 .watch-thread-link {
   vertical-align: bottom;

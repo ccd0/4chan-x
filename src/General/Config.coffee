@@ -775,23 +775,6 @@ Config =
         'Apply an SVG filter to the captcha to make it match your theme. WARNING: May cause invisible captchas.'
       ]
 
-    Indicators:
-      'Emoji': [
-        'enabled'
-        'Add icons besides usernames with triggered e-mails, like sega and neko.'
-        ['enabled', 'disable ponies', 'only ponies', 'disable']
-      ]
-      'Emoji Position': [
-        'before'
-        'Position of emoji icons.'
-        ['before', 'after']
-      ]
-      'Emoji Spacing': [
-        '5'
-        'Add some spacing between emoji and text.'
-        'text'
-      ]
-
   threadWatcher:
     'Current Board': [
       false

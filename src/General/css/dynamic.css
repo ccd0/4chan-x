@@ -51,13 +51,6 @@ body {
   margin-left: #{parseInt(Conf["Left Thread Padding"], 10) + editSpace["right"]}px;
   margin-right: #{parseInt(Conf["Right Thread Padding"], 10) + editSpace["left"]}px;
 }
-/* Emoji */
-a.useremail:last-of-type::before {
-  margin-right: #{parseInt Conf['Emoji Spacing']}px;
-}
-a.useremail:last-of-type::after {
-  margin-left: #{parseInt Conf['Emoji Spacing']}px;
-}
 #mascot {
   opacity: #{Conf['Mascot Opacity']};
 }

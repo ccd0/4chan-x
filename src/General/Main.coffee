@@ -114,7 +114,6 @@ Main =
 
     # c.timeEnd 'All initializations'
 
-    init 'Emoji',                     Emoji
     init 'Style',                     Style
     init 'Mascots',                   MascotTools
     init 'Rice',                      Rice
@@ -127,7 +126,6 @@ Main =
     init 'Index Generator',           Index
     init 'Announcement Hiding',       PSAHiding
     init 'Fourchan thingies',         Fourchan
-    init 'Emoji',                     Emoji
     init 'Color User IDs',            IDColor
     init 'Custom CSS',                CustomCSS
     init 'Linkify',                   Linkify
