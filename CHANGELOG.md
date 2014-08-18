@@ -1,3 +1,6 @@
+**woxxy**, **ccd0**
+- Update archive list.
+
 ### v1.8.9.7 
 *2014-08-13*
 
