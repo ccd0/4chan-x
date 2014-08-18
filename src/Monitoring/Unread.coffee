@@ -18,7 +18,8 @@ Unread =
     Unread.db.disconnect()
     $.rm hr if {hr} = Unread
 
-    delete @[name] for name in ['db', 'hr', 'posts', 'postsQuotingYou', 'thread', 'title', 'lastReadPost']
+    delete @[name] for name in ['db', 'hr', 'posts', 'postsQuotingYou', 'thread', 'title']
+    @lastReadPost = 0
 
     $.off d, '4chanXInitFinished',      @ready
     $.off d, 'ThreadUpdate',            @onUpdate
@@ -31,8 +32,8 @@ Unread =
     Unread.thread = @
     Unread.title  = d.title
     Unread.lastReadPost = Unread.db.get
-      boardID: @board.ID
-      threadID: @ID
+      boardID:      @board.ID
+      threadID:     @ID
       defaultValue: 0
     $.on d, '4chanXInitFinished',      Unread.ready
     $.on d, 'ThreadUpdate',            Unread.onUpdate
@@ -41,12 +42,17 @@ Unread =
 
   ready: ->
     $.off d, '4chanXInitFinished', Unread.ready
-    unless Conf['Quote Threading']
-      posts = []
-      Unread.thread.posts.forEach (post) -> posts.push post if post.isReply
-      Unread.addPosts posts
-    QuoteThreading.force() if Conf['Quote Threading']
-    Unread.scroll() if Conf['Scroll to Last Read Post']
+    {posts} = Unread.thread
+    post = posts.first().nodes.root
+    # XXX I'm guessing the browser isn't reflowing fast enough?
+    $.asap (-> post.getBoundingClientRect().bottom), ->
+      if Conf['Quote Threading']
+        QuoteThreading.force()
+      else
+        arr = []
+        posts.forEach (post) -> arr.push post if post.isReply
+        Unread.addPosts arr
+      setTimeout Unread.scroll, 200 if Conf['Scroll to Last Read Post']
 
   scroll: ->
     # Let the header's onload callback handle it.
@@ -68,15 +74,17 @@ Unread =
 
   sync: ->
     lastReadPost = Unread.db.get
-      boardID: Unread.thread.board.ID
-      threadID: Unread.thread.ID
+      boardID:      Unread.thread.board.ID
+      threadID:     Unread.thread.ID
       defaultValue: 0
-    return unless Unread.lastReadPost < lastReadPost
-    Unread.lastReadPost = lastReadPost
 
+    return if Unread.lastReadPost > lastReadPost
+
+    Unread.lastReadPost = lastReadPost
     post = Unread.posts.first
     while post
-      break if ({ID} = post) > Unread.lastReadPost
+      {ID} = post
+      break if ID > lastReadPost
       post = post.next
       Unread.posts.rm ID
 
@@ -147,9 +155,8 @@ Unread =
 
   read: $.debounce 100, (e) ->
     return if d.hidden or !Unread.posts.length
-    height  = doc.clientHeight
-
     {posts} = Unread
+
     while post = posts.first
       break unless Header.getBottomOf(post.data.nodes.root) > -1 # post is not completely read
       {ID, data} = post
@@ -164,7 +171,7 @@ Unread =
 
     return unless ID
 
-    Unread.lastReadPost = ID if Unread.lastReadPost < ID or !Unread.lastReadPost
+    Unread.lastReadPost = ID if Unread.lastReadPost < ID
     Unread.saveLastReadPost()
     Unread.readArray Unread.postsQuotingYou
     Unread.update() if e

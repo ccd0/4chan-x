@@ -12,6 +12,8 @@ class SimpleDict
     if (i = @keys.indexOf key) isnt -1
       @keys.splice i, 1
       delete @[key]
+  
+  first: -> @[@keys[0]]
 
   forEach: (fn) -> 
     fn @[key] for key in [@keys...]

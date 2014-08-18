@@ -293,7 +293,7 @@ Linkify =
           {status} = @
           return el.textContent = "ERROR #{status}" unless status in [200, 304]
           {files} = @response
-          for type in ['video/mp4', 'video/webm', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'audio/mpeg', 'audio/ogg']
+          for type in ['video/webm', 'video/mp4', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'audio/mpeg', 'audio/ogg']
             for file in files
               if file.type is type
                 embed = file
