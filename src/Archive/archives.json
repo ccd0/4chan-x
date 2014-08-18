@@ -98,6 +98,15 @@
   "boards": ["v"],
   "files": ["v"]
 }, {
+  "uid": 19,
+  "name": "Deniable Plausibility",
+  "domain": "boards.deniableplausibility.net",
+  "http": true,
+  "https": false,
+  "software": "foolfuuka",
+  "boards": ["vg"],
+  "files": ["vg"]
+}, {
   "uid": 13,
   "name": "Foolz Beta",
   "domain": "beta.foolz.us",
