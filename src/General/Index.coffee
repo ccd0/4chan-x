@@ -550,6 +550,7 @@ Index =
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD.ID}/catalog.json",
       onabort:   onload
       onloadend: onload
+      onerror:   onload
     ,
       whenModified: board is g.BOARD.ID
     $.addClass Index.button, 'fa-spin'
@@ -562,7 +563,7 @@ Index =
     delete Index.req
     delete Index.notice
 
-    if e.type is 'abort'
+    if e.type in 'abort'
       req.onloadend = null
       notice.close()
       return
