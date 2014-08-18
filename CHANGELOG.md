@@ -1,3 +1,14 @@
+Based on v1.8.9.8.
+
+**Tyilo**
+- Add unread counter to thread watcher.
+
+**ccd0**
+- Gallery now opens at the image you've scrolled to.
+- Add setting `Show Unread Count` in thread watcher to enable/disable unread counter.
+- Add refresh button to thread watcher. Remove now redundant `Check 404'd threads` menu item.
+- Bug fixes.
+
 ### v1.8.9.8 
 *2014-08-18*
 
