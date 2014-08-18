@@ -1,22 +1,4 @@
 [{
-  "uid": 0,
-  "name": "Moe",
-  "domain": "archive.moe",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["a", "biz", "c", "co", "diy", "gd", "int", "jp", "m", "out", "po", "sci", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "biz", "c", "co", "diy", "gd", "jp", "m", "po", "sci", "tg", "v", "vg", "vp", "vr", "wsg"]
-}, {
-  "uid": 1,
-  "name": "NSFW Foolz",
-  "domain": "nsfw.foolz.us",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["u"],
-  "files": ["u"]
-}, {
   "uid": 3,
   "name": "4plebs Archive",
   "domain": "archive.4plebs.org",
@@ -53,15 +35,6 @@
   "boards": ["cgl", "g", "mu", "w"],
   "files": ["cgl", "g", "mu", "w"]
 }, {
-  "uid": 9,
-  "name": "Heinessen",
-  "domain": "archive.heinessen.com",
-  "http": true,
-  "https": false,
-  "software": "fuuka",
-  "boards": ["an", "fit", "k", "mlp", "r9k", "toy"],
-  "files": ["an", "fit", "k", "mlp", "r9k", "toy"]
-}, {
   "uid": 10,
   "name": "warosu",
   "domain": "warosu.org",
@@ -80,6 +53,24 @@
   "boards": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"],
   "files": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"]
 }, {
+  "uid": 0,
+  "name": "Moe",
+  "domain": "archive.moe",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["a", "biz", "c", "co", "diy", "gd", "i", "int", "jp", "m", "mlp", "out", "po", "s4s", "sci", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
+  "files": ["a", "biz", "c", "co", "diy", "gd", "i", "jp", "m", "po", "s4s", "sci", "tg", "v", "vg", "vp", "vr", "wsg"]
+}, {
+  "uid": 9,
+  "name": "Heinessen",
+  "domain": "archive.heinessen.com",
+  "http": true,
+  "https": false,
+  "software": "fuuka",
+  "boards": ["an", "fit", "k", "mlp", "r9k", "toy"],
+  "files": ["an", "fit", "k", "mlp", "r9k", "toy"]
+}, {
   "uid": 16,
   "name": "maware",
   "domain": "archive.mawa.re",
@@ -89,13 +80,12 @@
   "boards": ["t"],
   "files": ["t"]
 }, {
-  "uid": 13,
-  "name": "Foolz Beta",
-  "domain": "beta.foolz.us",
+  "uid": 1,
+  "name": "NSFW Foolz",
+  "domain": "nsfw.foolz.us",
   "http": true,
   "https": true,
-  "withCredentials": true,
   "software": "foolfuuka",
-  "boards": ["a", "biz", "c", "co", "d", "diy", "gd", "h", "i", "int", "jp", "m", "mlp", "out", "po", "s4s", "sci", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "biz", "c", "co", "d", "diy", "gd", "h", "i", "jp", "m", "po", "s4s", "sci", "tg", "u", "v", "vg", "vp", "vr", "wsg"]
+  "boards": ["u"],
+  "files": ["u"]
 }]
