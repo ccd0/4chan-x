@@ -1,3 +1,10 @@
+### v2.9.34 
+*2014-08-18*
+
+- Fixes to Unread Count
+- Relabel email to options.
+- [Emoji removed. ;__;](https://github.com/zixaphir/appchan-x/issues/779)
+
 ### v2.9.33 
 *2014-07-31*
 
