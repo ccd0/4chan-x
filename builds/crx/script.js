@@ -12905,7 +12905,8 @@
         return;
       }
       Unread.db.disconnect();
-      if (hr = Unread.hr, Unread) {
+      hr = Unread.hr;
+      if (hr) {
         $.rm(hr);
       }
       _ref = ['db', 'hr', 'posts', 'postsQuotingYou', 'thread', 'title'];
