@@ -1,3 +1,6 @@
+### v1.8.10.2 
+*2014-08-20*
+
 **ccd0**
 - Thread watcher bug fix.
 
