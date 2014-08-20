@@ -9,13 +9,13 @@
   "files": ["a", "biz", "c", "co", "diy", "gd", "i", "jp", "m", "po", "s4s", "sci", "tg", "v", "vg", "vp", "vr", "wsg"]
 }, {
   "uid": 1,
-  "name": "NSFW Foolz",
-  "domain": "nsfw.foolz.us",
+  "name": "NSFW Moe",
+  "domain": "nsfw.archive.moe",
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["u"],
-  "files": ["u"]
+  "boards": ["h", "u"],
+  "files": ["h", "u"]
 }, {
   "uid": 3,
   "name": "4plebs Archive",
@@ -88,14 +88,4 @@
   "software": "foolfuuka",
   "boards": ["t"],
   "files": ["t"]
-}, {
-  "uid": 13,
-  "name": "Foolz Beta",
-  "domain": "beta.foolz.us",
-  "http": true,
-  "https": true,
-  "withCredentials": true,
-  "software": "foolfuuka",
-  "boards": ["a", "biz", "c", "co", "d", "diy", "gd", "h", "i", "int", "jp", "m", "out", "po", "s4s", "sci", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "biz", "c", "co", "d", "diy", "gd", "h", "i", "jp", "m", "po", "s4s", "sci", "tg", "u", "v", "vg", "vp", "vr", "wsg"]
 }]
