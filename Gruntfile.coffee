@@ -257,35 +257,41 @@ module.exports = (grunt) ->
     'build-crx'
   ]
 
-  grunt.registerTask 'tag', [
-    'build'
-    'pack'
-    'concat:meta'
-    'copy:builds'
-    'shell:commit'
-  ]
+  grunt.registerTask 'tag', 'Tag a new version', (version) ->
+    grunt.task.run [
+      "setversion:#{version}"
+      'updcl'
+      'build'
+      'pack'
+      'concat:meta'
+      'copy:builds'
+      'shell:commit'
+    ]
 
   grunt.registerTask 'beta', [
-    'tag'
     'shell:beta'
-    'shell:push'
   ]
 
   grunt.registerTask 'stable', [
     'shell:stable'
+  ]
+
+  grunt.registerTask 'push', [
     'shell:push'
   ]
 
-  grunt.registerTask 'release', [
-    'tag'
-    'shell:beta'
-    'shell:stable'
-    'shell:push'
-  ]
+  grunt.registerTask 'setversion', 'Set the version number', (version) ->
+    pkg = grunt.file.readJSON 'package.json'
+    oldversion = pkg.meta.version
+    pkg.meta.version = version
+    grunt.config 'pkg', pkg
+    grunt.file.write 'package.json', JSON.stringify(pkg, null, 2)
+    grunt.log.ok "Version updated from v#{oldversion} to v#{version}."
 
-  grunt.registerTask 'updcl', 'Update the changelog', (headerLevel) ->
-    headerPrefix = new Array(+headerLevel + 1).join '#'
+  grunt.registerTask 'updcl', 'Update the changelog', ->
     {version} = grunt.config('pkg').meta
+    headerLevel = Math.min version.replace(/(\.0)*$/, '').split('.').length, 3
+    headerPrefix = new Array(+headerLevel + 1).join '#'
     today     = grunt.template.today 'yyyy-mm-dd'
     changelog = grunt.file.read 'CHANGELOG.md'
 
