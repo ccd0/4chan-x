@@ -16,7 +16,6 @@ ArchiveLink =
       ['Post',      'post']
       ['Name',      'name']
       ['Tripcode',  'tripcode']
-      ['E-mail',    'email']
       ['Subject',   'subject']
       ['Filename',  'filename']
       ['Image MD5', 'MD5']

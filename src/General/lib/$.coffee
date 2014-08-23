@@ -296,7 +296,6 @@ $.localKeys = [
   'uniqueID',
   'tripcode',
   'capcode',
-  'email',
   'subject',
   'comment',
   'flag',

@@ -132,10 +132,6 @@ Filter =
     if 'capcode' of post.info
       return post.info.capcode
     false
-  email: (post) ->
-    if 'email' of post.info
-      return post.info.email
-    false
   subject: (post) ->
     if 'subject' of post.info
       return post.info.subject or false
@@ -185,7 +181,6 @@ Filter =
         ['Unique ID',        'uniqueID']
         ['Tripcode',         'tripcode']
         ['Capcode',          'capcode']
-        ['E-mail',           'email']
         ['Subject',          'subject']
         ['Comment',          'comment']
         ['Flag',             'flag']

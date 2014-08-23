@@ -506,8 +506,6 @@ Config =
 #/Admin$/;highlight:moot;op:yes
 """
 
-    email: ""
-
     subject: """
 # Filter Generals on /v/:
 #/general/i;boards:v;op:only
