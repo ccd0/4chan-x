@@ -1457,6 +1457,9 @@ div.boardTitle {
   color: #ffffff;
   text-shadow: 0px 0px 1px #000000;
 }
+.gal-buttons a > div {
+  text-shadow: none;
+}
 .gal-buttons i {
   display: inline-block;
   margin: 2px;

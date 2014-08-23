@@ -67,7 +67,7 @@ UI = do ->
 
       $.on d, 'click',     @close
       $.on d, 'CloseMenu', @close
-      $.add Header.hover, menu
+      $.add button, menu
 
       # Position
       mRect   = menu.getBoundingClientRect()
