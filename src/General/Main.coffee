@@ -88,7 +88,9 @@ Main =
     return if !Main.isThisPageLegit() or $.hasClass doc, 'fourchan-x'
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
-    $.addClass doc, 'fourchan-x', 'seaweedchan', g.VIEW, if chrome? then 'blink' else 'gecko'
+    $.addClass doc, 'fourchan-x', 'seaweedchan'
+    $.addClass doc, if g.VIEW is 'thread' then 'thread-view' else g.VIEW
+    $.addClass doc, if chrome? then 'blink' else 'gecko'
     $.addStyle Main.css
 
     Main.setClass()
