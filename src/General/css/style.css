@@ -118,7 +118,7 @@ div.center:not(.ad-cnt) {
 #qp, #ihover {
   z-index: 60;
 }
-#menu {
+#menu, .gal-buttons {
   z-index: 50;
 }
 #navlinks, #updater, #thread-stats {
@@ -234,10 +234,6 @@ div.center:not(.ad-cnt) {
 }
 #header-bar a:not(.entry):not(.close):not(.current) {
   padding: 1px;
-}
-#header-bar input {
-  margin: 0;
-  vertical-align: bottom;
 }
 #shortcuts:empty {
   display: none;
@@ -563,9 +559,6 @@ span.hide-announcement {
 }
 #thread-watcher .refresh {
   padding: 0px 3px;
-}
-#thread-watcher .menu-button {
-  bottom: 1px;
 }
 :root.fixed-watcher #thread-watcher {
   position: fixed;
@@ -1149,7 +1142,7 @@ a:only-of-type > .remove {
   position: relative;
   cursor: pointer;
 }
-.menu-button i {
+#header-bar .menu-button i {
   border-top:   6px solid;
   border-right: 4px solid transparent;
   border-left:  4px solid transparent;
@@ -1161,19 +1154,9 @@ a:only-of-type > .remove {
 .op .menu-button,
 #thread-watcher .menu-button {
   margin-left: -1px !important;
-  position: relative;
-}
-.op .menu-button,
-#thread-watcher .menu-button {
-  top: 1px;
-}
-:root.blink .reply .menu-button {
-  position: relative;
-  top: 2px;
-}
-:root.blink .op .menu-button,
-:root.blink #thread-watcher .menu-button {
-  top: 3px;
+  width: 20px;
+  height: 15px;
+  text-align: center;
 }
 .menu-button + .container:not(:empty) {
   margin-left: -5px !important;
@@ -1196,6 +1179,8 @@ a:only-of-type > .remove {
   text-decoration: none;
   white-space: nowrap;
   min-width: 70px;
+  text-align: left;
+  text-shadow: none;
 }
 .left>.entry.has-submenu {
   padding-right: 17px !important;
@@ -1457,9 +1442,6 @@ div.boardTitle {
   color: #ffffff;
   text-shadow: 0px 0px 1px #000000;
 }
-.gal-buttons a > div {
-  text-shadow: none;
-}
 .gal-buttons i {
   display: inline-block;
   margin: 2px;
@@ -1480,9 +1462,9 @@ div.boardTitle {
   display: none;
 }
 .gal-buttons .menu-button i {
-  border-top-width:   10px;
-  border-right-width: 6px;
-  border-left-width:  6px;
+  border-top:   10px solid;
+  border-right:  6px solid transparent;
+  border-left:   6px solid transparent;
   bottom: 2px;
   vertical-align: baseline;
 }
