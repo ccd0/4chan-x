@@ -334,7 +334,6 @@ Main =
     ['Thread Watcher (Menu)',     ThreadWatcher.menu]
     ['Index Navigation',          Nav]
     ['Keybinds',                  Keybinds]
-    ['Show Dice Roll',            Dice]
     ['Banner',                    Banner]
     <% if (tests_enabled) { %>
     ['Build Test',                BuildTest]

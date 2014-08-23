@@ -65,10 +65,6 @@ Config =
         false
         'Add buttons to navigate to top / bottom of thread.'
       ]
-      'Show Dice Roll': [
-        true
-        'Show dice that were entered into the email field.'
-      ]
       'Custom Board Titles': [
         true
         'Allow editing of the board title and subtitle by ctrl+clicking them'
