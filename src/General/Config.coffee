@@ -81,10 +81,6 @@ Config =
         true
         'Show notifications when 4chan X is successfully updated.'
       ]
-      'Emoji': [
-        false
-        'Adds icons next to names for different emails'
-      ]
       'Color User IDs': [
         false
         'Assign unique colors to user IDs on boards that use them'
@@ -559,10 +555,6 @@ http://iqdb.org/?url=%TURL
     fappe: false
     werk:  false
 
-  'sageEmoji': '4chan SS'
-  
-  'emojiPos': 'before'
-  
   'Custom CSS': false
 
   Index:

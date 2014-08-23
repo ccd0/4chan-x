@@ -284,7 +284,6 @@ Main =
     ['Index Generator',           Index]
     ['Announcement Hiding',       PSAHiding]
     ['Fourchan thingies',         Fourchan]
-    ['Emoji',                     Emoji]
     ['Color User IDs',            IDColor]
     ['Custom CSS',                CustomCSS]
     ['Linkify',                   Linkify]

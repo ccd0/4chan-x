@@ -281,11 +281,11 @@ Settings =
 
     items = {}
     inputs = {}
-    for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'sageEmoji', 'emojiPos', 'usercss']
+    for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss']
       input = $ "[name=#{name}]", section
       items[name]  = Conf[name]
       inputs[name] = input
-      event = if name in ['favicon', 'usercss', 'sageEmoji', 'emojiPos']
+      event = if name in ['favicon', 'usercss']
         'change'
       else
         'input'
@@ -299,7 +299,6 @@ Settings =
 
     $.get items, (items) ->
       for key, val of items
-        continue if key is 'emojiPos'
         input = inputs[key]
         input.value = val
         continue if key is 'usercss'
@@ -428,8 +427,6 @@ Settings =
     img[1].src = Favicon.unreadSFW
     img[2].src = Favicon.unreadNSFW
     img[3].src = Favicon.unreadDead
-  sageEmoji: ->
-    @nextElementSibling.firstElementChild.src = "data:image/png;base64,#{Emoji.sage[@value]}"
   togglecss: ->
     if $('textarea[name=usercss]', $.x 'ancestor::fieldset[1]', @).disabled = !@checked
       CustomCSS.rmStyle()
