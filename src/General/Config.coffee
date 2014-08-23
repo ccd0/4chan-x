@@ -305,10 +305,6 @@ Config =
         true
         'Open new threads or replies to a thread from the index in a new tab.'
       ]
-      'Remember Subject': [
-        false
-        'Remember the subject field, instead of resetting after posting.'
-      ]
       <% if (type === 'userscript') { %>
       'Remember QR Size': [
         false

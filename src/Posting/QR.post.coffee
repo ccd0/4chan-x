@@ -58,8 +58,6 @@ QR.post = class
 
       @sub = if 'sub' of QR.persona.always
         QR.persona.always.sub
-      else if Conf['Remember Subject']
-        if prev then prev.sub else persona.sub
       else
         ''
 
