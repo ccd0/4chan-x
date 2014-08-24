@@ -423,6 +423,15 @@ Linkify =
             $.add el, $.el 'source', src: url
         el
     ,
+      key: 'Clyp'
+      regExp: /^\w+:\/\/(?:www\.)?clyp\.it\/(\w+)/
+      style: ''
+      el: (a) ->
+        $.el 'audio',
+          controls: true
+          preload: 'auto'
+          src: "http://clyp.it/#{a.dataset.uid}.ogg"
+    ,
       # dummy entries: not implemented but included to prevent them being wrongly embedded as a subsequent type
       key: 'Loopvid dummy'
       regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\//
