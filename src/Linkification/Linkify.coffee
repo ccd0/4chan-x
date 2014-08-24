@@ -223,16 +223,16 @@ Linkify =
 
   ordered_types: [
       key: 'audio'
-      regExp: /(.*\.(mp3|ogg|wav))$/
+      regExp: /\.(?:mp3|ogg|wav)$/
       style: ''
       el: (a) ->
         $.el 'audio',
           controls:    true
           preload:     'auto'
-          src:         a.dataset.uid
+          src:         a.href
     ,
       key: 'gist'
-      regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/
+      regExp: /^\w+:\/\/gist\.github\.com\/(?:[\w-]+\/)?(\w+)/
       el: (a) ->
         el = $.el 'iframe'
         el.setAttribute 'sandbox', 'allow-scripts'
@@ -245,25 +245,25 @@ Linkify =
           return file for file of files when files.hasOwnProperty file
     ,
       key: 'image'
-      regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/
+      regExp: /\.(?:gif|png|jpg|jpeg|bmp)$/
       style: 'border: 0; width: auto; height: auto;'
       el: (a) ->
         $.el 'div', <%= html('<a target="_blank" href="${a.href}"><img src="${a.href}"></a>') %>
     ,
       key: 'InstallGentoo'
-      regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/
+      regExp: /^\w+:\/\/paste\.installgentoo\.com\/view\/(\w+)/
       el: (a) ->
         $.el 'iframe',
           src: "https://paste.installgentoo.com/view/embed/#{a.dataset.uid}"
     ,
       key: 'Twitter'
-      regExp: /.*twitter.com\/(.+\/status\/\d+)/
+      regExp: /^\w+:\/\/(?:www\.)?twitter\.com\/(\w+\/status\/\d+)/
       el: (a) -> 
         $.el 'iframe',
           src: "https://twitframe.com/show?url=https://twitter.com/#{a.dataset.uid}"
     ,
       key: 'LiveLeak'
-      regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
+      regExp: /^\w+:\/\/(?:\w+\.)?liveleak\.com\/.*\?.*i=(\w+)/
       httpOnly: true
       el: (a) ->
         el = $.el 'iframe',
@@ -275,7 +275,7 @@ Linkify =
         el
     ,
       key: 'MediaCrush'
-      regExp: /.*(?:mediacru.sh\/)([0-9a-z_-]+)/i
+      regExp: /^\w+:\/\/(?:www\.)?mediacru\.sh\/([\w-]+)/i
       style: 'border: 0;'
       el: (a) ->
         el = $.el 'div'
@@ -304,20 +304,20 @@ Linkify =
         el
     ,
       key: 'pastebin'
-      regExp: /.*pastebin\.com\/(?!u\/)(?:[\w\.]+\?i\=)?(\w+).*/
+      regExp: /^\w+:\/\/(?:\w+\.)?pastebin\.com\/(?!u\/)(?:[\w\.]+\?i\=)?(\w+)/
       httpOnly: true
       el: (a) ->
         div = $.el 'iframe',
           src: "http://pastebin.com/embed_iframe.php?i=#{a.dataset.uid}"
     ,
       key: 'gfycat'
-      regExp: /.*gfycat.com\/(?:iframe\/)?(\S*)/
+      regExp: /^\w+:\/\/(?:www\.)?gfycat\.com\/(?:iframe\/)?(\w+)/
       el: (a) ->
         div = $.el 'iframe',
           src: "//gfycat.com/iframe/#{a.dataset.uid}"
     ,
       key: 'SoundCloud'
-      regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
+      regExp: /^\w+:\/\/(?:www\.)?(?:soundcloud\.com\/|snd\.sc\/)([\w\-\/]+)/
       style: 'border: 0; width: 500px; height: 400px;'
       el: (a) ->
         $.el 'iframe',
@@ -327,7 +327,7 @@ Linkify =
         text: (_) -> _.title
     ,
       key: 'StrawPoll'
-      regExp: /strawpoll\.me\/(?:embed_\d+\/)?(\d+(?:\/r)?)/
+      regExp: /^\w+:\/\/(?:www\.)?strawpoll\.me\/(?:embed_\d+\/)?(\d+(?:\/r)?)/
       httpOnly: true
       style: 'border: 0; width: 600px; height: 406px;'
       el: (a) ->
@@ -335,7 +335,7 @@ Linkify =
           src: "http://strawpoll.me/embed_1/#{a.dataset.uid}"
     ,
       key: 'TwitchTV'
-      regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/
+      regExp: /^\w+:\/\/(?:www\.)?twitch\.tv\/([^#\&\?]*)/
       httpOnly: true
       style: "border: none; width: 640px; height: 360px;"
       el: (a) ->
@@ -356,7 +356,7 @@ Linkify =
           obj
     ,
       key: 'Vocaroo'
-      regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/
+      regExp: /^\w+:\/\/(?:www\.)?vocaroo\.com\/i\/(\w+)/
       style: ''
       el: (a) ->
         $.el 'audio',
@@ -365,7 +365,7 @@ Linkify =
           src: "http://vocaroo.com/media_command.php?media=#{a.dataset.uid.replace /^i\//, ''}&command=download_ogg"
     ,
       key: 'Vimeo'
-      regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
+      regExp:  /^\w+:\/\/(?:www\.)?vimeo\.com\/(\d+)/
       el: (a) ->
         $.el 'iframe',
           src: "//player.vimeo.com/video/#{a.dataset.uid}?wmode=opaque"
@@ -374,14 +374,14 @@ Linkify =
         text: (_) -> _.title
     ,
       key: 'Vine'
-      regExp: /.*(?:vine.co\/)([^#\&\?]*).*/
+      regExp: /^\w+:\/\/(?:www\.)?vine\.co\/v\/(\w+)/
       style: 'border: none; width: 500px; height: 500px;'
       el: (a) ->
         $.el 'iframe',
-          src: "https://vine.co/#{a.dataset.uid}/card"
+          src: "https://vine.co/v/#{a.dataset.uid}/card"
     ,
       key: 'YouTube'
-      regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([\w-]{11})[^#\&\?]?(.*)/
+      regExp: /^\w+:\/\/(?:youtu.be\/|[\w\.]*youtube[\w\.]*\/.*(?:v=|\/embed\/|\/v\/|\/videos\/))([\w-]{11})[^#\&\?]?(.*)/
       el: (a) ->
         start = a.dataset.options.match /\b(?:star)?t\=(\w+)/
         start = start[1] if start
@@ -397,21 +397,21 @@ Linkify =
         text: (data) -> data.entry.title.$t
     ,
       # dummy entries: not implemented yet but included to prevent them being wrongly embedded as a subsequent type
-      key: 'Loopvid'
-      regExp: /.*loopvid.appspot.com\/.*/
+      key: 'Loopvid dummy'
+      regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\//
       dummy: true
     ,
-      key: 'MediaFire'
-      regExp: /.*mediafire.com\/.*/
+      key: 'MediaFire dummy'
+      regExp: /^\w+:\/\/(?:www\.)?mediafire.com\//
       dummy: true
     ,
       key: 'video'
-      regExp: /(.*\.(ogv|webm|mp4))$/
+      regExp: /\.(?:ogv|webm|mp4)$/
       style: 'border: 0; width: auto; height: auto;'
       el: (a) ->
         $.el 'video',
           controls:    'controls'
           preload:     'auto'
-          src:         a.dataset.uid
+          src:         a.href
   ]
 
