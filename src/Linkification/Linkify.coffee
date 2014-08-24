@@ -232,7 +232,7 @@ Linkify =
           src:         a.href
     ,
       key: 'gist'
-      regExp: /^\w+:\/\/gist\.github\.com\/(?:[\w-]+\/)?(\w+)/
+      regExp: /^\w+:\/\/gist\.github\.com\/(?:[\w\-]+\/)?(\w+)/
       el: (a) ->
         el = $.el 'iframe'
         el.setAttribute 'sandbox', 'allow-scripts'
@@ -275,7 +275,7 @@ Linkify =
         el
     ,
       key: 'MediaCrush'
-      regExp: /^\w+:\/\/(?:www\.)?mediacru\.sh\/([\w-]+)/i
+      regExp: /^\w+:\/\/(?:www\.)?mediacru\.sh\/([\w\-]+)/i
       style: 'border: 0;'
       el: (a) ->
         el = $.el 'div'
@@ -381,7 +381,7 @@ Linkify =
           src: "https://vine.co/v/#{a.dataset.uid}/card"
     ,
       key: 'YouTube'
-      regExp: /^\w+:\/\/(?:youtu.be\/|[\w\.]*youtube[\w\.]*\/.*(?:v=|\/embed\/|\/v\/|\/videos\/))([\w-]{11})[^#\&\?]?(.*)/
+      regExp: /^\w+:\/\/(?:youtu.be\/|[\w\.]*youtube[\w\.]*\/.*(?:v=|\/embed\/|\/v\/|\/videos\/))([\w\-]{11})[^#\&\?]?(.*)/
       el: (a) ->
         start = a.dataset.options.match /\b(?:star)?t\=(\w+)/
         start = start[1] if start
@@ -410,8 +410,8 @@ Linkify =
       style: 'border: 0; width: auto; height: auto;'
       el: (a) ->
         $.el 'video',
-          controls:    'controls'
-          preload:     'auto'
-          src:         a.href
+          controls: true
+          preload:  'auto'
+          src:      a.href
   ]
 
