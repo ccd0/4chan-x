@@ -251,7 +251,7 @@ Linkify =
         $.el 'div', <%= html('<a target="_blank" href="${a.href}"><img src="${a.href}"></a>') %>
     ,
       key: 'InstallGentoo'
-      regExp: /^\w+:\/\/paste\.installgentoo\.com\/view\/(\w+)/
+      regExp: /^\w+:\/\/paste\.installgentoo\.com\/view\/(?:raw\/|download\/|embed\/)?(\w+)/
       el: (a) ->
         $.el 'iframe',
           src: "https://paste.installgentoo.com/view/embed/#{a.dataset.uid}"
