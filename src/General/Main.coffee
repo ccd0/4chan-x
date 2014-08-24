@@ -34,7 +34,6 @@ Main =
     for db in DataBoard.keys
       Conf[db] = boards: {}
     Conf['selectedArchives'] = {}
-    Conf['CachedTitles']     = []
     $.get Conf, (items) ->
       $.extend Conf, items
       Main.initFeatures()
