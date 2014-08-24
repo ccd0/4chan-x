@@ -87,5 +87,6 @@
   "https": false,
   "software": "foolfuuka",
   "boards": ["t"],
-  "files": ["t"]
+  "files": ["t"],
+  "imagehosts": ["http://archive.mawa.re/"]
 }]

@@ -145,8 +145,8 @@ Get =
         {media} = response
         if media then for key of media when /_link$/.test key
           # Image/thumbnail URLs loaded over HTTP can be modified in transit.
-          # Require them to be HTTP so that no referrer is sent to them from an HTTPS page.
-          delete media[key] unless /^http:\/\//.test media[key]
+          # Require them to be from a known HTTP host so that no referrer is sent to them from an HTTPS page.
+          delete media[key] unless media[key].match(/^(http:\/\/[^\/]+\/)?/)[0] in url.archive.imagehosts
         Get.parseArchivedPost response, boardID, postID, root, context
       return true
     return false
