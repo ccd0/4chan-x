@@ -1,3 +1,18 @@
+## v1.9.0.0 
+*2014-08-24*
+
+**ccd0**
+- Remove various obsolete email-related features, including `Show Dice Roll` (now 4chan's default behavior), `Emoji`, and filtering on emails.
+- The CSS class added to the document root of a thread has been changed from `thread` to `thread-view` to fix a name clash. This may break some people's CSS.
+- Menus are now placed inside the buttons that create them, as in Mayhem's fork. This allows scripts such as [Exlinks](http://hupotronic.github.io/ExLinks/) to place their settings link in the appropriate menu.
+- Add [Loopvid](https://loopvid.appspot.com/) and [Clyp](http://clyp.it/) embedding.
+- Remove `Remember Subject` setting.
+- Bug fixes.
+
+**MayhemYDG**
+- Fix QR cooldown storage overflow bug.
+- Remove buggy `Cooldown Prediction` feature.
+
 ### v1.8.10.4 
 *2014-08-22*
 
