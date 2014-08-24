@@ -611,11 +611,11 @@ vp-replace
       'Toggle the auto-hide option of the header.'
     ]
     'Open empty QR': [
-      'i'
+      'q'
       'Open QR without post number inserted.'
     ]
     'Open QR': [
-      'Shift+i'
+      'Shift+q'
       'Open QR with post number inserted.'
     ]
     'Open settings': [
