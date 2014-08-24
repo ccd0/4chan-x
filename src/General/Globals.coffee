@@ -443,6 +443,12 @@ Mascots =
     category:   'Ponies'
     image:      '//i.minus.com/ibnMYVTZEykrKU.png'
     center:     true
+  'Vivian_James_1':
+    category:   'Anime'
+    image:      '//i.minus.com/iYZ05HyI7aPUA.png'
+  'Vivian_James_2':
+    category:   'Anime'
+    image:      '//i.minus.com/ibtKEioz8jN37k.png'
   'White_Curious':
     category:   'Anime'
     image:      '//i.minus.com/ibfkj5osu99axe.png'
