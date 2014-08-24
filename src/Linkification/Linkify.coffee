@@ -396,7 +396,34 @@ Linkify =
         api: (uid) -> "https://gdata.youtube.com/feeds/api/videos/#{uid}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
         text: (data) -> data.entry.title.$t
     ,
-      # dummy entries: not implemented yet but included to prevent them being wrongly embedded as a subsequent type
+      key: 'Loopvid'
+      regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/((?:pf|kd|lv|mc|gd|gh|db|nn)\/[\w\-]+(,[\w\-]+)*|fc\/\w+\/\d+)/
+      style: 'border: 0; width: auto; height: auto;'
+      el: (a) ->
+        el = $.el 'video',
+          controls: true
+          preload:  'auto'
+          loop:     true
+        [_, host, names] = a.dataset.uid.match /(\w+)\/(.*)/
+        types = if host in ['gd', 'fc'] then [''] else ['.webm', '.mp4']
+        for name in names.split ','
+          for type in types
+            base = "#{name}#{type}"
+            url = switch host
+              # list from src/loopvid.py at http://loopvid.appspot.com/source.html
+              when 'pf' then "http://a.pomf.se/#{base}"
+              when 'kd' then "http://kastden.org/loopvid/#{base}"
+              when 'lv' then "http://loopvid.mooo.com/videos/#{base}"
+              when 'mc' then "https://cdn.mediacru.sh/#{base}"
+              when 'gd' then "https://docs.google.com/uc?export=download&id=#{base}"
+              when 'gh' then "https://googledrive.com/host/#{base}"
+              when 'db' then "https://googledrive.com/host/#{base}"
+              when 'fc' then "//i.4cdn.org/#{base}.webm"
+              when 'nn' then "http://naenara.eu/loopvids/#{base}"
+            $.add el, $.el 'source', src: url
+        el
+    ,
+      # dummy entries: not implemented but included to prevent them being wrongly embedded as a subsequent type
       key: 'Loopvid dummy'
       regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\//
       dummy: true
