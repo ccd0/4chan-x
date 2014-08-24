@@ -1,6 +1,9 @@
 ### v2.9.35 
 *2014-08-24*
 
+- Archives update
+- Two new mascots for Vivian James
+
 ### v2.9.34 
 *2014-08-18*
 
