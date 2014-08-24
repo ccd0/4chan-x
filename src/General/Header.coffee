@@ -204,6 +204,7 @@ Header =
           return a
       $.tn t
     $.add list, nodes
+    $.ready CatalogLinks.initBoardList
 
   toggleBoardList: ->
     {bar}  = Header

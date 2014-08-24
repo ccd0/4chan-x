@@ -12,9 +12,11 @@ CatalogLinks =
       el:    el
       order: 95
 
-    $.on d, '4chanXInitFinished', ->
-      # Set links on load.
-      CatalogLinks.set Conf['Header catalog links']
+  # Set links on load or custom board list change.
+  # Called by Header when both board lists (header and footer) are ready.
+  initBoardList: ->
+    return unless Conf['Catalog Links']
+    CatalogLinks.set Conf['Header catalog links']
 
   toggle: ->
     $.event 'CloseMenu'
