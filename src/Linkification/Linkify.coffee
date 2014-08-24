@@ -362,7 +362,7 @@ Linkify =
         $.el 'audio',
           controls: true
           preload: 'auto'
-          src: "http://vocaroo.com/media_command.php?media=#{a.dataset.uid.replace /^i\//, ''}&command=download_ogg"
+          src: "http://vocaroo.com/media_command.php?media=#{a.dataset.uid}&command=download_ogg"
     ,
       key: 'Vimeo'
       regExp:  /^\w+:\/\/(?:www\.)?vimeo\.com\/(\d+)/
