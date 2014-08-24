@@ -17,6 +17,8 @@ Main =
     if g.VIEW is 'thread'
       g.THREADID = +pathname[3]
 
+    Main.initStyle()
+
     # flatten Config into Conf
     # and get saved or default values
     flatten = (parent, obj) ->
@@ -36,8 +38,6 @@ Main =
     $.get Conf, (items) ->
       $.extend Conf, items
       Main.initFeatures()
-
-    $.on d, '4chanMainInit', Main.initStyle
 
   initFeatures: ->
     switch location.hostname
@@ -84,8 +84,7 @@ Main =
     $.ready Main.initReady
 
   initStyle: ->
-    $.off d, '4chanMainInit', Main.initStyle
-    return if !Main.isThisPageLegit() or $.hasClass doc, 'fourchan-x'
+    return if !Main.isThisPageLegit()
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
     $.addClass doc, 'fourchan-x', 'seaweedchan'
@@ -93,9 +92,13 @@ Main =
     $.addClass doc, if chrome? then 'blink' else 'gecko'
     $.addStyle Main.css
 
-    Main.setClass()
+    $.on d, '4chanMainInit', Main.setClass
 
   setClass: ->
+    $.off d, '4chanMainInit', Main.setClass
+    return if Main.setClassRun or !Main.isThisPageLegit()
+    Main.setClassRun = true
+
     if g.VIEW is 'catalog'
       $.addClass doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace /_+/g, '-'
       return
@@ -127,7 +130,7 @@ Main =
       return
 
     # Something might have gone wrong!
-    Main.initStyle()
+    Main.setClass()
 
     # 4chan Pass Link
     if styleSelector = $.id 'styleSelector'
