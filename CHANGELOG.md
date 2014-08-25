@@ -1,3 +1,9 @@
+### v1.9.0.2 
+*2014-08-25*
+
+**ccd0**
+- Fix code that could insert path to Greasemonkey script into the page (as in v1.8.10.6).
+
 ### v1.9.0.1 
 *2014-08-24*
 
