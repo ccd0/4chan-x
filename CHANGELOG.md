@@ -1,3 +1,9 @@
+### v1.9.0.2 
+*2014-08-25*
+
+**ccd0**
+- Fix code that could insert path to Greasemonkey script into the page (as in v1.8.10.6).
+
 ### v1.9.0.1 
 *2014-08-24*
 
@@ -20,6 +26,18 @@ Based on v1.8.10.4.
 **MayhemYDG**
 - Fix QR cooldown storage overflow bug.
 - Remove buggy `Cooldown Prediction` feature.
+
+### v1.8.10.6 
+*2014-08-25*
+
+**ccd0**
+- Fix code that could insert path to Greasemonkey script into the page.
+
+### v1.8.10.5 
+*2014-08-24*
+
+**ccd0**
+- Fix header hiding bug (backported from v1.9.0.1).
 
 ### v1.8.10.4 
 *2014-08-22*
