@@ -1,5 +1,13 @@
+### v1.9.0.1 
+*2014-08-24*
+
+**ccd0**
+- Fix header hiding bug.
+
 ## v1.9.0.0 
 *2014-08-24*
+
+Based on v1.8.10.4.
 
 **ccd0**
 - Remove various obsolete email-related features, including `Show Dice Roll` (now 4chan's default behavior), `Emoji`, and filtering on emails.
