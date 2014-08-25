@@ -252,7 +252,7 @@ Main =
     message = $.el 'div',
       textContent: data.message
     error = $.el 'div',
-      textContent: data.error
+      textContent: "#{data.error.name or 'Error'}: #{data.error.message or 'see console for details'}"
     [message, error]
 
   isThisPageLegit: ->
