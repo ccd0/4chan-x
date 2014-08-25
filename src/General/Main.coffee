@@ -34,7 +34,7 @@ Main =
     Conf['selectedArchives'] = {}
     $.get Conf, (items) ->
       $.extend Conf, items
-      Main.initFeatures()
+      $.asap (-> doc = d.documentElement), Main.initFeatures
 
     $.on d, '4chanMainInit', Main.initStyle
 
@@ -339,4 +339,4 @@ Main =
     <% } %>
   ]
 
-$.asap (-> (doc = d.documentElement) and d.head), Main.init
+Main.init()
