@@ -1,6 +1,6 @@
 Fork of [Spittie's 4chan X](https://github.com/Spittie/4chan-x) (itself a fork of [Seaweed's](https://github.com/seaweedchan/4chan-x)).
 
-If you're looking for a maintained fork of OneeChan, try
+If you're looking for OneeChan, try
 https://github.com/Nebukazar/OneeChan
 
 ## [Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) (Firefox)
