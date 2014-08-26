@@ -27,6 +27,12 @@ Based on v1.8.10.4.
 - Fix QR cooldown storage overflow bug.
 - Remove buggy `Cooldown Prediction` feature.
 
+### v1.8.10.7 
+*2014-08-25*
+
+**ccd0**
+- Fix CSS bug hiding catalog settings save button.
+
 ### v1.8.10.6 
 *2014-08-25*
 
