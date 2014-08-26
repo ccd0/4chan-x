@@ -1,3 +1,9 @@
+### v1.9.0.3 
+*2014-08-25*
+
+**ccd0**
+- Fix CSS bug hiding catalog settings save button (as in v1.8.10.7).
+
 ### v1.9.0.2 
 *2014-08-25*
 
