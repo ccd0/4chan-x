@@ -1,3 +1,9 @@
+### v1.9.0.4 
+*2014-08-26*
+
+**MayhemYDG**, **thebladeee**
+- Archive list update (as in v1.8.10.8).
+
 ### v1.9.0.3 
 *2014-08-25*
 
