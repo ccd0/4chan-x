@@ -1,4 +1,22 @@
 [{
+  "uid": 0,
+  "name": "Moe",
+  "domain": "archive.moe",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["a", "biz", "c", "co", "diy", "gd", "i", "int", "jp", "m", "mlp", "out", "po", "s4s", "sci", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
+  "files": ["a", "biz", "c", "co", "diy", "gd", "i", "jp", "m", "po", "s4s", "sci", "tg", "v", "vg", "vp", "vr", "wsg"]
+}, {
+  "uid": 1,
+  "name": "NSFW Moe",
+  "domain": "nsfw.archive.moe",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["h", "u"],
+  "files": ["h", "u"]
+}, {
   "uid": 3,
   "name": "4plebs Archive",
   "domain": "archive.4plebs.org",
@@ -26,6 +44,15 @@
   "boards": ["cgl", "g", "mu", "w"],
   "files": ["cgl", "g", "mu", "w"]
 }, {
+  "uid": 9,
+  "name": "Heinessen",
+  "domain": "archive.heinessen.com",
+  "http": true,
+  "https": false,
+  "software": "fuuka",
+  "boards": ["an", "fit", "k", "mlp", "r9k", "toy"],
+  "files": ["an", "fit", "k", "mlp", "r9k", "toy"]
+}, {
   "uid": 10,
   "name": "warosu",
   "domain": "warosu.org",
@@ -43,33 +70,6 @@
   "software": "foolfuuka",
   "boards": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"],
   "files": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"]
-}, {
-  "uid": 0,
-  "name": "Moe",
-  "domain": "archive.moe",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["a", "biz", "c", "co", "diy", "gd", "i", "int", "jp", "m", "mlp", "out", "po", "s4s", "sci", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "biz", "c", "co", "diy", "gd", "i", "jp", "m", "po", "s4s", "sci", "tg", "v", "vg", "vp", "vr", "wsg"]
-}, {
-  "uid": 1,
-  "name": "NSFW Moe",
-  "domain": "nsfw.archive.moe",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["h", "u"],
-  "files": ["h", "u"]
-}, {
-  "uid": 9,
-  "name": "Heinessen",
-  "domain": "archive.heinessen.com",
-  "http": true,
-  "https": false,
-  "software": "fuuka",
-  "boards": ["an", "fit", "k", "mlp", "r9k", "toy"],
-  "files": ["an", "fit", "k", "mlp", "r9k", "toy"]
 }, {
   "uid": 16,
   "name": "maware",
