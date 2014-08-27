@@ -33,6 +33,12 @@ Based on v1.8.10.4.
 - Fix QR cooldown storage overflow bug.
 - Remove buggy `Cooldown Prediction` feature.
 
+### v1.8.10.8 
+*2014-08-26*
+
+**MayhemYDG**, **thebladeee**
+- Archive list update.
+
 ### v1.8.10.7 
 *2014-08-25*
 
