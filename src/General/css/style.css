@@ -805,7 +805,6 @@ span.hide-announcement {
 :root.hide-original-post-form #togglePostFormLink,
 :root:not(.catalog) #togglePostFormLink,
 #qr.autohide:not(.focus):not(:hover):not(:active) > form,
-.thread #qr select[data-name=thread],
 #file-n-submit:not(.has-file) #qr-filerm {
   display: none;
 }
