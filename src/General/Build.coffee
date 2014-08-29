@@ -3,7 +3,7 @@ Build =
   spoilerRange: {}
   unescape: (text) ->
     return text unless text?
-    text.replace /&(amp|#039|quot|lt|gt);/g, (c) ->
+    text.replace(/<[^>]*>/g, '').replace /&(amp|#039|quot|lt|gt);/g, (c) ->
       {'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>'}[c]
   shortFilename: (filename, isReply) ->
     threshold = 30
