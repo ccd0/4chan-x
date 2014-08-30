@@ -35,7 +35,23 @@ Based on v1.8.10.4.
 
 **ccd0**
 - Remove various obsolete email-related features, including `Show Dice Roll` (now 4chan's default behavior), `Emoji`, and filtering on emails.
-- The CSS class added to the document root of a thread has been changed from `thread` to `thread-view` to fix a name clash. This may break some people's CSS.
+- The CSS class added to the document root of a thread has been changed from `thread` to `thread-view` to fix a name clash. This may break some people's CSS. If you're using [Oneechan](https://github.com/Nebukazar/OneeChan), until it finds a new maintainer, you can fix it by adding the following to your custom CSS:
+
+        .fixed.bottom-header.thread-view body {
+          padding-bottom: 0em;
+          padding-top: 0.1em;
+        }
+        .fixed.top-header.thread-view body {
+          padding-bottom: 0em;
+          padding-top: 2.2em;
+        }
+        .fixed.bottom-header.thread-view .bottomCtrl.desktop{
+          margin-bottom: 35px;
+        }
+        .fixed.top-header.thread-view .bottomCtrl.desktop {
+          margin-bottom: 8px;
+        }
+
 - Menus are now placed inside the buttons that create them, as in Mayhem's fork. This allows scripts such as [Exlinks](http://hupotronic.github.io/ExLinks/) to place their settings link in the appropriate menu.
 - Add [Loopvid](https://loopvid.appspot.com/) and [Clyp](http://clyp.it/) embedding.
 - Remove `Remember Subject` setting.
