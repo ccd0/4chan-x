@@ -72,9 +72,9 @@ $.ajax = do ->
     r.send form
     r
 
-$.cache = do ->
+do ->
   reqs = {}
-  (url, cb, options) ->
+  $.cache = (url, cb, options) ->
     if req = reqs[url]
       if req.readyState is 4
         cb.call req, req.evt
@@ -93,6 +93,10 @@ $.cache = do ->
     $.on req, 'abort error', rm
     req.callbacks = [cb]
     reqs[url] = req
+  $.cleanCache = (testf) ->
+    for url of reqs when testf url
+      delete reqs[url]
+    return
 
 $.cb =
   checked: ->

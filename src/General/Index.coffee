@@ -289,6 +289,7 @@ Index =
     Index.scrollToIndex()
 
   parse: (pages, pageNum) ->
+    $.cleanCache (url) -> /^\/\/a\.4cdn\.org\//.test url
     Index.parseThreadList pages
     Index.buildThreads()
     Index.sort()
