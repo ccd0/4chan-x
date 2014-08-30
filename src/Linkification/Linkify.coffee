@@ -163,7 +163,7 @@ Linkify =
     $.on embed, 'click', Linkify.cb.toggle
     $.after link, [$.tn(' '), embed]
 
-    Linkify.cb.toggle.call embed if Conf['Auto-embed']
+    Linkify.cb.toggle.call embed if Conf['Auto-embed'] and !post.isFetchedQuote
 
   title: (data) ->
     [key, uid, options, link, post] = data
@@ -178,7 +178,7 @@ Linkify =
     toggle: (e) ->
       e?.preventDefault()
       if $.hasClass @, "embedded"
-        $.rm @previousElementSibling
+        $.rm @previousElementSibling unless $.hasClass @previousElementSibling, 'linkify'
         @previousElementSibling.hidden = false
         @textContent = '(embed)'
       else
@@ -217,7 +217,7 @@ Linkify =
 
       link.textContent = text
       for post2 in post.clones
-        for link2 in $$ 'a', post2.nodes.comment when link2.href is link.href
+        for link2 in $$ 'a.linkify', post2.nodes.comment when link2.href is link.href
           link2.textContent = text
       return
 
@@ -433,11 +433,11 @@ Linkify =
           src: "http://clyp.it/#{a.dataset.uid}.ogg"
     ,
       # dummy entries: not implemented but included to prevent them being wrongly embedded as a subsequent type
-      key: 'Loopvid dummy'
+      key: 'Loopvid-dummy'
       regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\//
       dummy: true
     ,
-      key: 'MediaFire dummy'
+      key: 'MediaFire-dummy'
       regExp: /^\w+:\/\/(?:www\.)?mediafire.com\//
       dummy: true
     ,
