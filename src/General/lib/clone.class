@@ -65,6 +65,7 @@ class Clone extends Post
 
       # Remove any #ihover ID
       @file.fullImage?.removeAttribute 'id'
+      delete file.isHovered
 
     @isDead  = true if origin.isDead
     @isClone = true
