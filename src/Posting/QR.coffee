@@ -288,7 +288,7 @@ QR =
     $.addClass QR.nodes.el, 'dump'
     
   handleUrl:  ->
-    url = prompt("Insert an url:")
+    url = prompt 'Enter a URL:'
     return if url is null
     CrossOrigin.file url, (blob) ->
       if blob
