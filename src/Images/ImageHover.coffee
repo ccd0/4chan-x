@@ -18,6 +18,7 @@ ImageHover =
       el.id = 'ihover'
       TrashQueue.remove el
       el.src = el.src if /\.gif$/.test el.src
+      el.currentTime = 0 if isVideo
     else
       file.fullImage = el = $.el (if isVideo then 'video' else 'img'),
         className: 'full-image'

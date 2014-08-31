@@ -156,7 +156,9 @@ ImageExpand =
     if file.fullImage
       # Expand already-loaded/ing picture.
       TrashQueue.remove el
-      el.src = el.src if /\.gif$/.test el.src and !file.isHovered
+      unless file.isHovered
+        el.src = el.src if /\.gif$/.test el.src
+        el.currentTime = 0 if isVideo
     else
       el.src = src or file.URL
       $.after thumb, el
