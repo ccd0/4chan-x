@@ -1,4 +1,15 @@
-CrossOrigin =
+CrossOrigin = do ->
+  <% if (type === 'crx') { %>
+  eventPageRequest = do ->
+    callbacks = []
+    chrome.runtime.onMessage.addListener (data) ->
+      callbacks[data.id] data
+      delete callbacks[data.id]
+    (url, responseType, cb) ->
+      chrome.runtime.sendMessage {url, responseType}, (id) ->
+        callbacks[id] = cb
+  <% } %>
+
   file: do ->
     makeBlob = (urlBlob, contentType, contentDisposition, url) ->
       name = url.match(/([^\/]+)\/*$/)?[1]
@@ -14,15 +25,20 @@ CrossOrigin =
 
     (url, cb) ->
       <% if (type === 'crx') { %>
-      $.ajax url,
-        responseType: 'blob'
-        onload: ->
-          return cb null unless @readyState is @DONE and @status is 200
-          contentType        = @getResponseHeader 'Content-Type'
-          contentDisposition = @getResponseHeader 'Content-Disposition'
-          cb (makeBlob @response, contentType, contentDisposition, url)
-        onerror: ->
-          cb null
+      if /^https:\/\//.test(url) or location.protocol is 'http:'
+        $.ajax url,
+          responseType: 'blob'
+          onload: ->
+            return cb null unless @readyState is @DONE and @status is 200
+            contentType        = @getResponseHeader 'Content-Type'
+            contentDisposition = @getResponseHeader 'Content-Disposition'
+            cb (makeBlob @response, contentType, contentDisposition, url)
+          onerror: ->
+            cb null
+      else
+        eventPageRequest url, 'arraybuffer', ({response, contentType, contentDisposition, error}) ->
+          return cb null if error
+          cb (makeBlob new Uint8Array(response), contentType, contentDisposition, url)
       <% } %>
       <% if (type === 'userscript') { %>
       GM_xmlhttpRequest
@@ -48,9 +64,9 @@ CrossOrigin =
     responses = {}
     (url, cb) ->
       <% if (type === 'crx') { %>
-      $.cache url, (-> cb @response), responseType: 'json'
+      if /^https:\/\//.test(url) or location.protocol is 'http:'
+        return $.cache url, (-> cb @response), responseType: 'json'
       <% } %>
-      <% if (type === 'userscript') { %>
       if responses[url]
         cb responses[url]
         return
@@ -58,6 +74,7 @@ CrossOrigin =
         callbacks[url].push cb
         return
       callbacks[url] = [cb]
+      <% if (type === 'userscript') { %>
       GM_xmlhttpRequest
         method: "GET"
         url: url
@@ -70,4 +87,13 @@ CrossOrigin =
           delete callbacks[url]
         onabort: ->
           delete callbacks[url]
+      <% } %>
+      <% if (type === 'crx') { %>
+      eventPageRequest url, 'json', ({response, error}) ->
+        if error
+          delete callbacks[url]
+        else
+          cb response for cb in callbacks[url]
+          delete callbacks[url]
+          responses[url] = response
       <% } %>

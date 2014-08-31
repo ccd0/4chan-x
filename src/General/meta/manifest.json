@@ -14,6 +14,10 @@
     "all_frames": true,
     "run_at": "document_start"
   }],
+  "background": {
+    "scripts": ["eventPage.js"],
+    "persistent": false
+  },
   "homepage_url": "<%= meta.page %>",
 <% if (channel !== 'noupdate') { %>  "update_url": "<%= meta.downloads %>updates<%= meta.suffix[channel] %>.xml",
 <% } %>  "minimum_chrome_version": "<%= meta.min.chrome %>",

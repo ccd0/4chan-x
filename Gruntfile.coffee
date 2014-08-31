@@ -80,6 +80,7 @@ module.exports = (grunt) ->
             'src/General/meta/usestrict.js'
             'tmp-<%= pkg.type %>/script.js'
           ]
+          'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/eventPage.js': 'tmp-<%= pkg.type %>/eventPage.js'
       userscript:
         files:
           'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.meta.js': 'src/General/meta/metadata.js'
@@ -108,6 +109,9 @@ module.exports = (grunt) ->
       script:
         src:  'tmp-<%= pkg.type %>/script.coffee'
         dest: 'tmp-<%= pkg.type %>/script.js'
+      eventPage:
+        src:  'src/General/eventPage/eventPage.coffee'
+        dest: 'tmp-<%= pkg.type %>/eventPage.js'
 
     concurrent:
       build: [
@@ -219,6 +223,7 @@ module.exports = (grunt) ->
     'set-build:crx'
     'concat:coffee'
     'coffee:script'
+    'coffee:eventPage'
     'set-channel:stable'
     'build-crx-channel'
     'set-channel:beta'
