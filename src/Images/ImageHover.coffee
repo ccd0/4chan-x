@@ -12,10 +12,12 @@ ImageHover =
     post = Get.postFromNode @
     {file} = post
     {isVideo} = file
-    return if post.file.isExpanding or post.file.isExpanded
+    return if file.isExpanding or file.isExpanded
+    file.isHovered = true
     if el = file.fullImage
       el.id = 'ihover'
       TrashQueue.remove el
+      el.src = el.src if /\.gif$/.test el.src
     else
       file.fullImage = el = $.el (if isVideo then 'video' else 'img'),
         className: 'full-image'
@@ -39,6 +41,7 @@ ImageHover =
           el.pause()
           TrashQueue.add el, post
         el.removeAttribute 'id'
+        $.queueTask -> delete file.isHovered
   error: ->
     post = Get.postFromNode @
     return if post.file.isExpanding or post.file.isExpanded
