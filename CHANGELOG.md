@@ -1,6 +1,8 @@
 ### v1.9.1.1 
 *2014-09-01*
 
+Based on v1.9.0.6.
+
 **ccd0**
 - Better fix for the bug pushing the QR's captcha response line offscreen. Previous fix caused problems with comment field resizing.
 
@@ -13,6 +15,12 @@ This applies to files posted via the `Post from URL` mechanism and posts loaded 
 Although not done using this workaround, 4chan X also requests HTTP content from HTTPS pages when you embed content from HTTP-only sites such as Vocaroo.
 - Start GIF/WebM files from the beginning when re-opened via inlining or hover view. Inlining a GIF/WebM that you are already watching via hover view does not restart it.
 - Fix a bug that sometimes caused the QR's captcha response line to be pushed offscreen when a captcha was loaded.
+
+### v1.9.0.7 
+*2014-09-01*
+
+**ccd0**
+- Work around false 404s from 4chan's JSON API by checking the catalog to confirm thread death.
 
 ### v1.9.0.6 
 *2014-08-31*

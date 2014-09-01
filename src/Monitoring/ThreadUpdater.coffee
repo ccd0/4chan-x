@@ -139,17 +139,25 @@ ThreadUpdater =
           else
             ThreadUpdater.setInterval()
         when 404
-          g.DEAD = true
-          ThreadUpdater.set 'status', '404', 'warning'
-          ThreadUpdater.kill()
+          # XXX workaround for 4chan sending false 404s
+          $.ajax "//a.4cdn.org/#{ThreadUpdater.thread.board}/catalog.json", onloadend: ->
+            if @status is 200
+              confirmed = true
+              for page in @response
+                for thread in page.threads
+                  if thread.no is ThreadUpdater.thread.ID
+                    confirmed = false
+                    break
+            else
+              confirmed = false
+            if confirmed
+              g.DEAD = true
+              ThreadUpdater.set 'status', '404', 'warning'
+              ThreadUpdater.kill()
+            else
+              ThreadUpdater.error req
         else
-          ThreadUpdater.outdateCount++
-          ThreadUpdater.setInterval()
-          [text, klass] = if req.status is 304
-            [null, null]
-          else
-            ["#{req.statusText} (#{req.status})", 'warning']
-          ThreadUpdater.set 'status', text, klass
+          ThreadUpdater.error req
 
       if ThreadUpdater.postID
         ThreadUpdater.cb.checkpost()
@@ -161,6 +169,15 @@ ThreadUpdater =
     $.event 'ThreadUpdate',
       404: true
       threadID: ThreadUpdater.thread.fullID
+
+  error: (req) ->
+    ThreadUpdater.outdateCount++
+    ThreadUpdater.setInterval()
+    [text, klass] = if req.status is 304
+      [null, null]
+    else
+      ["#{req.statusText} (#{req.status})", 'warning']
+    ThreadUpdater.set 'status', text, klass
 
   setInterval: ->
     i   = ThreadUpdater.interval + 1
