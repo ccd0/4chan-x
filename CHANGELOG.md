@@ -1,3 +1,13 @@
+### v1.9.1.0 
+*2014-08-31*
+
+**ccd0**
+- Work around restriction on loading HTTP content from HTTPS pages in Chromium.
+This applies to files posted via the `Post from URL` mechanism and posts loaded from HTTP-only archives if `Except Archives from Encryption` is selected.
+Although not done using this workaround, 4chan X also requests HTTP content from HTTPS pages when you embed content from HTTP-only sites such as Vocaroo.
+- Start GIF/WebM files from the beginning when re-opened via inlining or hover view. Inlining a GIF/WebM that you are already watching via hover view does not restart it.
+- Fix a bug that sometimes caused the QR's captcha response line to be pushed offscreen when a captcha was loaded.
+
 ### v1.9.0.6 
 *2014-08-31*
 
