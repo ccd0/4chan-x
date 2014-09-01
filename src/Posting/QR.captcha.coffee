@@ -67,6 +67,10 @@ QR.captcha =
       subtree: true
       attributes: true
     QR.captcha.load()
+
+    if QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight
+      QR.nodes.el.style.top    = null
+      QR.nodes.el.style.bottom = '0px'
   destroy: ->
     $.globalEval 'Recaptcha.destroy()'
     @beforeSetup()
