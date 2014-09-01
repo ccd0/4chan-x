@@ -1,3 +1,9 @@
+### v1.9.0.7 
+*2014-09-01*
+
+**ccd0**
+- Work around false 404s from 4chan's JSON API by checking the catalog to confirm thread death.
+
 ### v1.9.0.6 
 *2014-08-31*
 
