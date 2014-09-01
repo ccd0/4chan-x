@@ -255,31 +255,20 @@ UI = do ->
   drag = (e) ->
     {clientX, clientY} = e
 
-    left = clientX - @dx
-    left = if left < 10
-      0
-    else if @width - left < 10
-      null
-    else
-      left / @screenWidth * 100 + '%'
+    x = clientX - @dx
+    y = clientY - @dy
 
-    top = clientY - @dy
-    top = if top < (10 + @topBorder)
-      @topBorder + 'px'
-    else if @height - top < (10 + @bottomBorder)
-      null
-    else
-      top / @screenHeight * 100 + '%'
+    left = right = top = bottom = null
 
-    right = if left is null
-      0
+    if x <= @width / 2
+      left  = if          x < 10 then '0px' else           x  / @screenWidth * 100 + '%'
     else
-      null
+      right = if @width - x < 10 then '0px' else (@width - x) / @screenWidth * 100 + '%'
 
-    bottom = if top is null
-      @bottomBorder + 'px'
+    if y <= @height / 2
+      top    = if           y < 10 + @topBorder    then @topBorder    + 'px' else            y  / @screenHeight * 100 + '%'
     else
-      null
+      bottom = if @height - y < 10 + @bottomBorder then @bottomBorder + 'px' else (@height - y) / @screenHeight * 100 + '%'
 
     {style} = @
     style.left   = left
