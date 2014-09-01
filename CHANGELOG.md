@@ -1,3 +1,9 @@
+### v1.9.0.6 
+*2014-08-31*
+
+**ccd0**
+- Fix an embedding bug that lead to sounds playing with no way to stop them.
+
 ### v1.9.0.5 
 *2014-08-30*
 
