@@ -1,3 +1,9 @@
+### v1.9.1.2 
+*2014-09-01*
+
+**ccd0**
+- Confirm thread death in catalog, as in v1.9.0.7.
+
 ### v1.9.1.1 
 *2014-09-01*
 
