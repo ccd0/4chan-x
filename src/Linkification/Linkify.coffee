@@ -163,7 +163,9 @@ Linkify =
     $.on embed, 'click', Linkify.cb.toggle
     $.after link, [$.tn(' '), embed]
 
-    Linkify.cb.toggle.call embed if Conf['Auto-embed'] and !post.isFetchedQuote
+    if Conf['Auto-embed'] and !post.isFetchedQuote
+      $.asap (-> doc.contains embed), ->
+        Linkify.cb.toggle.call embed
 
   title: (data) ->
     [key, uid, options, link, post] = data
@@ -279,7 +281,8 @@ Linkify =
       style: 'border: 0;'
       el: (a) ->
         el = $.el 'div'
-        $.cache "https://mediacru.sh/#{a.dataset.uid}.json", ->
+        $.queueTask -> $.cache "https://mediacru.sh/#{a.dataset.uid}.json", ->
+          return unless doc.contains el
           {status} = @
           return el.textContent = "ERROR #{status}" unless status in [200, 304]
           {files} = @response
