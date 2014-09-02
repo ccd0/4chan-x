@@ -95,6 +95,10 @@ hr ~ div.center:not(.ad-cnt) {
 .page-num {
   margin-right: -8px;
 }
+.fileText a {
+  unicode-bidi: -moz-isolate;
+  unicode-bidi: -webkit-isolate;
+}
 
 /* fixed, z-index */
 #overlay,
