@@ -1,3 +1,9 @@
+### v1.9.1.3 
+*2014-09-01*
+
+**ccd0**
+- Prevent unicode RTL characters in filenames from messing up file info line.
+
 ### v1.9.1.2 
 *2014-09-01*
 
