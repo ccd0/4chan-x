@@ -1,3 +1,10 @@
+### v1.9.1.4 
+*2014-09-03*
+
+**ccd0**
+- Update thumbnail hosts, as in v1.9.0.8.
+- Minor settings page edit: add units to updater interval.
+
 ### v1.9.1.3 
 *2014-09-01*
 
