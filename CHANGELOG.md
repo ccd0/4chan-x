@@ -1,3 +1,9 @@
+### v1.9.1.6 
+*2014-09-04*
+
+**ccd0**
+- The script was released with `Show New Thread Option in Threads` was not working; this fixes it.
+
 ### v1.9.1.5 
 *2014-09-04*
 
