@@ -1,3 +1,9 @@
+### v1.9.0.8 
+*2014-09-03*
+
+**ccd0**
+- Update thumbnail hosts (2.t.4cdn.org may be gone).
+
 ### v1.9.0.7 
 *2014-09-01*
 
