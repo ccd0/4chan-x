@@ -315,6 +315,10 @@ Config =
         false
         'Remember the spoiler state, instead of resetting after posting.'
       ]
+      'Show New Thread Option in Threads': [
+        false
+        'Show the option to post a new thread from inside a thread.'
+      ]
       'Show Name and Subject': [
         false
         'Show the classic name, email, and subject fields in the QR, even when 4chan doesn\'t use them all.'

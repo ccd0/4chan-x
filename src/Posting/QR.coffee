@@ -469,6 +469,9 @@ QR =
     QR.max_width_video = QR.max_height_video = 2048
     QR.max_duration_video = 120
 
+    if Conf['Show New Thread Option in Threads']
+      $.addClass QR.nodes.el, 'show-new-thread-option'
+
     if Conf['Show Name and Subject']
       $.addClass QR.nodes.name, 'force-show'
       $.addClass QR.nodes.sub, 'force-show'
