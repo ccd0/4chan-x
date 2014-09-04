@@ -1,3 +1,9 @@
+### v1.9.1.5 
+*2014-09-04*
+
+**ccd0**
+- New option `Show New Thread Option in Threads` (default: off) determines whether to show the drop down menu allowing starting a new thread from within a thread.
+
 ### v1.9.1.4 
 *2014-09-03*
 
