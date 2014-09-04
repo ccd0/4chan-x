@@ -14,7 +14,7 @@ Build =
       filename
   thumbRotate: do ->
     n = 0
-    -> n = (n + 1) % 3
+    -> n = (n + 1) % 2
   sameThread: (boardID, threadID) ->
     g.VIEW is 'thread' and g.BOARD.ID is boardID and g.THREADID is +threadID
   postURL: (boardID, threadID, postID) ->

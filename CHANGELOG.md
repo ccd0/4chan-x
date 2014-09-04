@@ -28,6 +28,12 @@ Although not done using this workaround, 4chan X also requests HTTP content from
 - Start GIF/WebM files from the beginning when re-opened via inlining or hover view. Inlining a GIF/WebM that you are already watching via hover view does not restart it.
 - Fix a bug that sometimes caused the QR's captcha response line to be pushed offscreen when a captcha was loaded.
 
+### v1.9.0.8 
+*2014-09-03*
+
+**ccd0**
+- Update thumbnail hosts (2.t.4cdn.org may be gone).
+
 ### v1.9.0.7 
 *2014-09-01*
 
