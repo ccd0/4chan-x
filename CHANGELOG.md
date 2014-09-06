@@ -38,13 +38,13 @@
 ### v1.9.1.1 
 *2014-09-01*
 
-Based on v1.9.0.6.
-
 **ccd0**
 - Better fix for the bug pushing the QR's captcha response line offscreen. Previous fix caused problems with comment field resizing.
 
 ### v1.9.1.0 
 *2014-08-31*
+
+Based on v1.9.0.6.
 
 **ccd0**
 - Work around restriction on loading HTTP content from HTTPS pages in Chromium.
