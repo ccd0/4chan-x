@@ -379,12 +379,12 @@ Index =
       replycount: [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
       filecount:  [liveThreadData...].sort((a, b) -> b.images  - a.images ).map (post) -> post.no
     }[Conf['Index Sort']]
-    Index.sortedNodes = sortedNodes = new RandomAccessList
+    Index.sortedNodes = sortedNodes = []
     {nodes} = Index
     for threadID in sortedThreadIDs
       sortedNodes.push nodes[Index.liveThreadIDs.indexOf(threadID)]
     if Index.isSearching and nodes = Index.querySearch(Index.searchInput.value)
-      Index.sortedNodes = new RandomAccessList nodes
+      Index.sortedNodes = nodes
     items = [
       # Sticky threads
       fn:  (thread) -> thread.isSticky
@@ -403,41 +403,26 @@ Index =
     return
 
   sortOnTop: (match) ->
-    {sortedNodes} = Index
-    threadRoot = target = sortedNodes.first
-    while threadRoot
-      {next} = threadRoot
-      if match Get.threadFromRoot threadRoot.data
-        if threadRoot is target
-          target = target.next
-        else
-          sortedNodes.before target, threadRoot
-      threadRoot = next
-    return
+    topNodes    = []
+    bottomNodes = []
+    for threadRoot in Index.sortedNodes
+      (if match Get.threadFromRoot threadRoot then topNodes else bottomNodes).push threadRoot
+    Index.sortedNodes = topNodes.concat(bottomNodes)
 
   buildIndex: ->
     if Conf['Index Mode'] isnt 'all pages'
       nodes = Index.buildSinglePage Index.getCurrentPage()
     else
-      nodes = [(target = Index.sortedNodes.first).data]
-      while target = target.next
-        nodes.push target.data
+      nodes = Index.sortedNodes
     $.rmAll Index.root
     $.rmAll Header.hover
     Index.buildReplies nodes if Conf['Show Replies']
     Index.buildStructure nodes
 
   buildSinglePage: (pageNum) ->
-    nodes = []
     nodesPerPage = Index.threadsNumPerPage
     offset = nodesPerPage * (pageNum - 1)
-    end    = offset + nodesPerPage
-    target = Index.sortedNodes.order()[offset]
-    Index.sortedNodes
-    while (offset++ <= end) and target
-      nodes.push target.data
-      target = target.next
-    nodes
+    Index.sortedNodes.slice offset, offset + nodesPerPage
 
   buildStructure: (nodes) ->
     for node in nodes
@@ -485,14 +470,8 @@ Index =
     Index.search keywords
 
   search: (keywords) -> 
-    found  = []
-    target = Index.sortedNodes.first
-    while target
-      {data} = target
-      if Index.searchMatch Get.threadFromRoot(data), keywords
-        found.push data
-      target = target.next
-    found
+    Index.sortedNodes.filter (threadRoot) ->
+      Index.searchMatch Get.threadFromRoot(threadRoot), keywords
 
   searchMatch: (thread, keywords) ->
     {info, file} = thread.OP
