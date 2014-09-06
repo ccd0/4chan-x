@@ -157,7 +157,7 @@ ImageExpand =
       # Expand already-loaded/ing picture.
       TrashQueue.remove el
       unless file.isHovered
-        el.src = el.src if /\.gif$/.test el.src
+        $.queueTask(-> el.src = el.src) if /\.gif$/.test el.src
         el.currentTime = 0 if isVideo
     else
       el.src = src or file.URL
