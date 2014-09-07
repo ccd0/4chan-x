@@ -81,7 +81,7 @@ ImageLoader =
     {isVideo, thumb} = file
     if !post.isClone
       # Replace the thumbnail in clones added before the file was loaded.
-      for clone in post.clones when !isVideo or !$.hasClass clone.nodes.root.parentNode, 'dialog'
+      for clone in post.clones
         ImageLoader.replace clone, el.cloneNode true
     if isVideo
       $.on el, 'mouseover', ImageHover.mouseover if Conf['Image Hover']
