@@ -7,11 +7,19 @@
 ### v1.9.2.0 
 *2014-09-06*
 
+Based on v1.9.1.8.
+
 **Zixaphir**
 - Implement WebM thumbnail replacement / preloading.
 
 **ccd0**
 - Pause offscreen WebM thumbnails, fix some bugs.
+
+### v1.9.1.9 
+*2014-09-07*
+
+**ccd0**
+- Fix bug causing missing pages from index search.
 
 ### v1.9.1.8 
 *2014-09-06*
