@@ -43,15 +43,6 @@ ImageLoader =
       if @file.isSpoiler
         # Revealed spoilers do not have height/width set, this fixes the image's dimensions.
         style.maxHeight = style.maxWidth = if @isReply then '125px' else '250px'
-      if isVideo
-        el.textContent     = thumb.alt
-        el.dataset.md5     = thumb.dataset.md5
-        el.style.height    = style.height
-        el.style.width     = style.width
-        el.style.maxHeight = style.maxHeight
-        el.style.maxWidth  = style.maxWidth
-        el.loop            = true
-        el.className       = thumb.className
       cb = =>
         $.off el, 'load loadeddata', cb
         ImageLoader.replace @, el
@@ -79,11 +70,20 @@ ImageLoader =
   replace: (post, el) ->
     {file} = post
     {isVideo, thumb} = file
+    {style} = thumb
     if !post.isClone
       # Replace the thumbnail in clones added before the file was loaded.
       for clone in post.clones
         ImageLoader.replace clone, el.cloneNode true
     if isVideo
+      el.textContent     = thumb.alt
+      el.dataset.md5     = thumb.dataset.md5
+      el.style.height    = style.height
+      el.style.width     = style.width
+      el.style.maxHeight = style.maxHeight
+      el.style.maxWidth  = style.maxWidth
+      el.loop            = true
+      el.className       = thumb.className
       $.on el, 'mouseover', ImageHover.mouseover if Conf['Image Hover']
       $.replace thumb, el
       file.videoThumb = true
