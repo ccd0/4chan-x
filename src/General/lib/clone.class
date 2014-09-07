@@ -78,7 +78,7 @@ class Clone extends Post
     root.dataset.clone = origin.clones.push(@) - 1
 
   cloneWithoutVideo: (node) ->
-    if node.tagName is 'VIDEO'
+    if node.tagName is 'VIDEO' and !node.dataset.md5 # (exception for WebM thumbnails)
       []
     else if node.nodeType is Node.ELEMENT_NODE and $ 'video', node
       clone = node.cloneNode false
