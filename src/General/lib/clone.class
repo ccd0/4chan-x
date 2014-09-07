@@ -60,12 +60,6 @@ class Clone extends Post
       @file.fullImage = $ '.full-image', file
       @file.videoControls = $ '.video-controls', @file.text
 
-      # Restore old image thumbnail in quote preview for replaced WebMs
-      if !@file.thumb
-        @file.thumb = @file.oldThumb.cloneNode true
-        $.prepend $('.fileThumb', file), @file.thumb
-        delete @file.oldThumb
-
       # Contract thumbnails in quote preview
       ImageExpand.contract @ if contractThumb
 

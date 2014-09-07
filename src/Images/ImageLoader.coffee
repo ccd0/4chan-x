@@ -10,7 +10,7 @@ ImageLoader =
     if Conf['Replace WEBM'] and Conf['Autoplay']
       $.on d, 'scroll visibilitychange', ->
         g.posts.forEach (post) ->
-          if post.file?.oldThumb
+          if post.file?.videoThumb
             {thumb} = post.file
             visible = !d.hidden and Header.isNodeVisible thumb
             if visible then thumb.play() else thumb.pause()
@@ -30,7 +30,7 @@ ImageLoader =
   node: (force) ->
     return unless @file
     {isImage, isVideo, thumb, URL} = @file
-    if @isClone and @file.oldThumb
+    if @isClone and @file.videoThumb
       ImageLoader.play thumb
     return if @isClone or @isHidden or @thread.isHidden or !(isImage or isVideo)
     {style} = thumb
@@ -69,7 +69,7 @@ ImageLoader =
     if isVideo
       $.on el, 'mouseover', ImageHover.mouseover if Conf['Image Hover']
       $.replace thumb, el
-      file.oldThumb or= thumb
+      file.videoThumb = true
       file.thumb = el
       ImageLoader.play el unless post.isFetchedQuote
     else
