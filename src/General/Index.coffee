@@ -178,7 +178,7 @@ Index =
 
   getPagesNum: ->
     if Index.isSearching
-      Math.ceil (Index.sortedNodes.length / 2) / Index.threadsNumPerPage
+      Math.ceil Index.sortedNodes.length / Index.threadsNumPerPage
     else
       Index.pagesNum
   getMaxPageNum: ->
