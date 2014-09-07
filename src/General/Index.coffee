@@ -115,7 +115,6 @@ Index =
     return Index.endNotice() if pageNum > Index.pagesNum
 
     nodes = Index.buildSinglePage pageNum
-    nodes.shift() # Remove thread common with previous page
     Index.buildReplies   nodes if Conf['Show Replies']
     Index.buildStructure nodes
     Index.setPage pageNum
