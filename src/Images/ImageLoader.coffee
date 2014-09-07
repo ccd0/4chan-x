@@ -7,9 +7,15 @@ ImageLoader =
       name: 'Image Replace'
       cb:   @node
 
-    Thread.callbacks.push
-      name: 'Image Replace'
-      cb:   @thread
+    if Conf['Replace WEBM'] and Conf['Autoplay']
+      $.on d, 'scroll visibilitychange', ->
+        g.posts.forEach (post) ->
+          if post.file?.oldThumb
+            {thumb} = post.file
+            visible = !d.hidden and Header.isNodeVisible thumb
+            if visible then thumb.play() else thumb.pause()
+
+    return unless Conf['Image Prefetching']
 
     prefetch = $.el 'label',
       <%= html('<input type="checkbox" name="prefetch"> Prefetch Images') %>
@@ -21,48 +27,62 @@ ImageLoader =
       el: prefetch
       order: 104
 
-  thread: ->
-    ImageLoader.thread = @
-
-  node: ->
+  node: (force) ->
     return unless @file
-    {isImage, isVideo} = @file
+    {isImage, isVideo, thumb, URL} = @file
+    if @isClone and @file.oldThumb
+      ImageLoader.play thumb
     return if @isClone or @isHidden or @thread.isHidden or !(isImage or isVideo)
-    {thumb, URL} = @file
     {style} = thumb
     type = if (match = URL.match(/\.([^.]+)$/)[1].toUpperCase()) is 'JPEG' then 'JPG' else match
-    replace = "Replace #{type}"
-    return unless (Conf[replace] and !/spoiler/.test thumb.src) or (Conf['prefetch'] and g.VIEW is 'thread')
-    if @file.isSpoiler
-      # Revealed spoilers do not have height/width set, this fixes the image's dimensions.
-      style.maxHeight = style.maxWidth = if @isReply then '125px' else '250px'
-    file = $.el if isImage then 'img' else 'video'
-    if Conf[replace]
+    replace  = Conf["Replace #{type}"] and !/spoiler/.test thumb.src
+    prefetch = (Conf['prefetch'] and g.VIEW is 'thread') or force
+    return unless replace or prefetch
+    el = $.el if isImage then 'img' else 'video'
+    if replace
+      if @file.isSpoiler
+        # Revealed spoilers do not have height/width set, this fixes the image's dimensions.
+        style.maxHeight = style.maxWidth = if @isReply then '125px' else '250px'
       if isVideo
-      
-        file.alt          = thumb.alt
-        file.dataset.md5  = thumb.dataset.md5
-        file.style.height = style.height
-        file.style.width  = style.width
-        file.style.maxHeight = style.maxHeight
-        file.style.maxWidth  = style.maxWidth
-        file.loop     = true
-        file.autoplay = Conf['Autoplay']
-        if Conf['Image Hover']
-          $.on file, 'mouseover', ImageHover.mouseover
+        el.textContent     = thumb.alt
+        el.dataset.md5     = thumb.dataset.md5
+        el.style.height    = style.height
+        el.style.width     = style.width
+        el.style.maxHeight = style.maxHeight
+        el.style.maxWidth  = style.maxWidth
+        el.loop            = true
+        el.className       = thumb.className
+      event = if isVideo then 'loadeddata' else 'load'
       cb = =>
-        $.off file, 'load loadedmetadata', cb
-        # Replace the thumbnail once the file has finished loading.
-        if isVideo
-          $.replace thumb, file
-          @file.thumb = file # XXX expanding requires the post.file.thumb node.
-          return
-        thumb.src = URL
-      $.on file, 'load loadedmetadata', cb
-    file.src = URL
+        $.off el, event, cb
+        ImageLoader.replace @, el
+      $.on el, event, cb
+    el.src = URL
+
+  replace: (post, el) ->
+    {file} = post
+    {isVideo, thumb} = file
+    if !post.isClone
+      # Replace the thumbnail in clones added before the file was loaded.
+      for clone in post.clones when !isVideo or !$.hasClass clone.nodes.root.parentNode, 'dialog'
+        ImageLoader.replace clone, el.cloneNode true
+    if isVideo
+      $.on el, 'mouseover', ImageHover.mouseover if Conf['Image Hover']
+      $.replace thumb, el
+      file.oldThumb or= thumb
+      file.thumb = el
+      ImageLoader.play el unless post.isFetchedQuote
+    else
+      thumb.src = file.URL
+
+  play: (video) ->
+    if Conf['Autoplay']
+      $.asap (-> doc.contains video), ->
+        if !d.hidden and Header.isNodeVisible video
+          video.play()
 
   toggle: ->
     enabled = Conf['prefetch'] = @checked
     if enabled
-      g.BOARD.posts.forEach (post) -> ImageLoader.node.call post
+      g.BOARD.posts.forEach (post) -> ImageLoader.node.call post, true
     return
