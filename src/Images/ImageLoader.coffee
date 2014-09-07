@@ -52,12 +52,27 @@ ImageLoader =
         el.style.maxWidth  = style.maxWidth
         el.loop            = true
         el.className       = thumb.className
-      event = if isVideo then 'loadeddata' else 'load'
       cb = =>
-        $.off el, event, cb
+        $.off el, 'load loadeddata', cb
         ImageLoader.replace @, el
-      $.on el, event, cb
-    el.src = URL
+      $.on el, 'load loadeddata', cb
+    ImageLoader.queue.push [el, URL]
+    ImageLoader.next() unless ImageLoader.busy
+
+  busy: false
+  queue: []
+
+  loadend: ->
+    $.off @, 'load loadeddata error', ImageLoader.loadend
+    ImageLoader.busy = false
+    ImageLoader.next()
+
+  next: ->
+    return if ImageLoader.busy
+    if [el, URL] = ImageLoader.queue.shift()
+      $.on el, 'load loadeddata error', ImageLoader.loadend
+      el.src = URL
+      ImageLoader.busy = true
 
   replace: (post, el) ->
     {file} = post
