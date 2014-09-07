@@ -158,7 +158,7 @@ ImageExpand =
       TrashQueue.remove el
       unless file.isHovered
         $.queueTask(-> el.src = el.src) if /\.gif$/.test el.src
-        el.currentTime = 0 if isVideo
+        el.currentTime = 0 if isVideo and el.readyState >= el.HAVE_METADATA
     else
       el.src = src or file.URL
       $.after thumb, el
