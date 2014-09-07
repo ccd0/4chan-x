@@ -69,9 +69,10 @@ ImageLoader =
 
   next: ->
     return if ImageLoader.busy
-    if [el, URL] = ImageLoader.queue.shift()
+    if item = ImageLoader.queue.shift()
+      [el, url] = item
       $.on el, 'load loadeddata error', ImageLoader.loadend
-      el.src = URL
+      el.src = url
       ImageLoader.busy = true
 
   replace: (post, el) ->
