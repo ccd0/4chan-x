@@ -70,15 +70,15 @@ ImageExpand =
 
     playVideos: (e) ->
       g.posts.forEach (post) ->
-        return unless post.file and post.file.isVideo and post.file.isExpanded
-        video = post.file.fullImage
-        visible = !d.hidden and Header.isNodeVisible video
-        if visible and post.file.wasPlaying
-          delete post.file.wasPlaying
-          video.play()
-        else if !visible and !video.paused
-          post.file.wasPlaying = true
-          video.pause()
+        for post in [post, post.clones...] when post.file and post.file.isVideo and post.file.isExpanded
+          video = post.file.fullImage
+          visible = Header.isNodeVisible video
+          if visible and post.file.wasPlaying
+            delete post.file.wasPlaying
+            video.play()
+          else if !visible and !video.paused
+            post.file.wasPlaying = true
+            video.pause()
         return
 
     setFitness: ->
@@ -216,11 +216,14 @@ ImageExpand =
       fullImage.controls = controls
       return
     fullImage.controls = false
-    $.asap (=> doc.contains fullImage), =>
-      if !d.hidden and Header.isNodeVisible fullImage
-        fullImage.play()
-      else
-        post.file.wasPlaying = true
+    if post.isFetchedQuote
+      post.file.wasPlaying = true
+    else
+      $.asap (=> doc.contains fullImage), =>
+        if !d.hidden and Header.isNodeVisible fullImage
+          fullImage.play()
+        else
+          post.file.wasPlaying = true
     if controls
       ImageCommon.addControls fullImage
 

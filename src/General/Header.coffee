@@ -407,6 +407,7 @@ Header =
       bottom  -= clientHeight - headRect.bottom + headRect.height
     bottom
   isNodeVisible: (node) ->
+    return false if d.hidden or !doc.contains node
     {height} = node.getBoundingClientRect()
     Header.getTopOf(node) + height >= 0 and Header.getBottomOf(node) + height >= 0
   isHidden: ->

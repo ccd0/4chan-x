@@ -10,10 +10,10 @@ ImageLoader =
     if Conf['Replace WEBM'] and Conf['Autoplay']
       $.on d, 'scroll visibilitychange', ->
         g.posts.forEach (post) ->
-          if post.file?.videoThumb
+          for post in [post, post.clones...] when post.file?.videoThumb
             {thumb} = post.file
-            visible = !d.hidden and Header.isNodeVisible thumb
-            if visible then thumb.play() else thumb.pause()
+            if Header.isNodeVisible thumb then thumb.play() else thumb.pause()
+          return
 
     return unless Conf['Image Prefetching']
 
