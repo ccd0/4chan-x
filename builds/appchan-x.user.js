@@ -28,7 +28,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.35 - 2014-08-24
+* appchan x - Version 2.9.35 - 2014-09-07
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -5786,7 +5786,7 @@
       var n;
       n = 0;
       return function() {
-        return n = (n + 1) % 3;
+        return n = (n + 1) % 2;
       };
     })(),
     path: function(boardID, threadID, postID, fragment) {

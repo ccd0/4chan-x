@@ -14,7 +14,7 @@ Build =
       filename
   thumbRotate: do ->
     n = 0
-    -> n = (n + 1) % 3
+    -> n = (n + 1) % 2
   path: (boardID, threadID, postID, fragment) ->
     path  = "/#{boardID}/thread/#{threadID}"
     path += "/#{g.SLUG}" if g.SLUG? and threadID is g.THREADID
