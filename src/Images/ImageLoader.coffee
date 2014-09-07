@@ -72,6 +72,7 @@ ImageLoader =
     if item = ImageLoader.queue.shift()
       [el, url] = item
       $.on el, 'load loadeddata error', ImageLoader.loadend
+      setTimeout (-> ImageLoader.loadend.call el), $.SECOND
       el.src = url
       ImageLoader.busy = true
 
