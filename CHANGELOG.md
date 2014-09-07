@@ -1,3 +1,9 @@
+### v1.9.1.9 
+*2014-09-07*
+
+**ccd0**
+- Fix bug causing missing pages from index search.
+
 ### v1.9.1.8 
 *2014-09-06*
 
