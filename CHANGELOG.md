@@ -1,3 +1,9 @@
+### v1.9.2.1 
+*2014-09-07*
+
+**ccd0**
+- Improve reliability of thumbnail replacement / preloading by queueing downloads.
+
 ### v1.9.2.0 
 *2014-09-06*
 
