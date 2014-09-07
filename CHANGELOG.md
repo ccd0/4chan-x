@@ -1,3 +1,10 @@
+### v1.9.2.2 
+*2014-09-07*
+
+**ccd0**
+- Fix bug causing missing pages from index search (as in v1.9.1.9).
+- Also fix bug from v1.9.2.0 causing threads to be missing from infinite scroll.
+
 ### v1.9.2.1 
 *2014-09-07*
 
