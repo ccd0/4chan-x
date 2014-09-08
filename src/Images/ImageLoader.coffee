@@ -84,13 +84,16 @@ ImageLoader =
       video2 = $.el 'video'
       $.one video2, 'loadeddata', => ImageLoader.replaceVideo clone, video2
       video2.src = video.src
+    if chrome?
+      # This supresses black screen flashes in Chromium, but causes loading image icon flash in Firefox.
+      video.poster = thumb.src
+    video.loop            = true
     video.textContent     = thumb.alt
     video.dataset.md5     = thumb.dataset.md5
     video.style.height    = style.height
     video.style.width     = style.width
     video.style.maxHeight = style.maxHeight
     video.style.maxWidth  = style.maxWidth
-    video.loop            = true
     video.className       = thumb.className
     $.on video, 'mouseover', ImageHover.mouseover if Conf['Image Hover']
     $.replace thumb, video
