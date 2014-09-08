@@ -1,3 +1,9 @@
+### v1.9.2.4 
+*2014-09-08*
+
+**ccd0**
+- Fix thumbnail replacement / preloading loading images which are not actually on the page.
+
 ### v1.9.2.3 
 *2014-09-07*
 
