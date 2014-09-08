@@ -305,7 +305,9 @@ Index =
     Index.liveThreadData    = pages.reduce ((arr, next) -> arr.concat next.threads), []
     Index.liveThreadIDs     = Index.liveThreadData.map (data) -> data.no
     g.BOARD.threads.forEach (thread) ->
-      thread.collect() unless thread.ID in Index.liveThreadIDs
+      unless thread.ID in Index.liveThreadIDs
+        thread.posts.forEach (post) -> post.kill()
+        thread.collect()
     return
 
   buildThreads: ->

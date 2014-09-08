@@ -230,7 +230,6 @@ class Post
     return
 
   collect: ->
-    @kill()
     g.posts.rm @fullID
     @thread.posts.rm @
     @board.posts.rm @
@@ -242,4 +241,5 @@ class Post
     @clones.splice index, 1
     for clone in @clones[index..]
       clone.nodes.root.dataset.clone = index++
+    @collect() if @isFetchedQuote and @clones.length is 0
     return
