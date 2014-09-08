@@ -33,8 +33,7 @@ ImageLoader =
     if @isClone and @file.videoThumb
       ImageLoader.play thumb
     return if @isClone or @isHidden or @thread.isHidden or !(isImage or isVideo)
-    {style} = thumb
-    type = if (match = URL.match(/\.([^.]+)$/)[1].toUpperCase()) is 'JPEG' then 'JPG' else match
+    type     = if (match = URL.match(/\.([^.]+)$/)[1].toUpperCase()) is 'JPEG' then 'JPG' else match
     replace  = Conf["Replace #{type}"] and !/spoiler/.test thumb.src
     prefetch = (Conf['prefetch'] and g.VIEW is 'thread') or force
     return unless replace or prefetch
@@ -42,60 +41,67 @@ ImageLoader =
     if replace
       if @file.isSpoiler
         # Revealed spoilers do not have height/width set, this fixes the image's dimensions.
-        style.maxHeight = style.maxWidth = if @isReply then '125px' else '250px'
-      cb = =>
-        $.off el, 'load loadeddata', cb
-        ImageLoader.replace @, el
-      $.on el, 'load loadeddata', cb
-    ImageLoader.queue.push [el, URL]
-    ImageLoader.next() unless ImageLoader.busy
+        thumb.style.maxHeight = thumb.style.maxWidth = if @isReply then '125px' else '250px'
+      if isImage
+        $.on el, 'load', => ImageLoader.replaceImage @
+      else
+        $.one el, 'loadeddata', => ImageLoader.replaceVideo @, el
+    ImageLoader.queueDownload el, URL
 
-  busy: false
-  queue: []
-
-  loadend: ->
-    $.off @, 'load loadeddata error', ImageLoader.loadend
-    ImageLoader.busy = false
-    ImageLoader.next()
-
-  next: ->
-    return if ImageLoader.busy
-    if item = ImageLoader.queue.shift()
-      [el, url] = item
-      $.on el, 'load loadeddata error', ImageLoader.loadend
-      setTimeout (-> ImageLoader.loadend.call el), $.SECOND
+  queueDownload: do ->
+    busy  = false
+    items = []
+    load  = (el, url) ->
+      next = ->
+        $.off el, 'load loadeddata error', next
+        clearTimeout timeoutID
+        busy = false
+        if item = items.shift()
+          [el, url] = item
+          load el, url
+      $.on el, 'load loadeddata error', next
+      timeoutID = setTimeout next, $.SECOND
       el.src = url
-      ImageLoader.busy = true
+      busy = true
+    (el, url) ->
+      if busy
+        items.push [el, url]
+      else
+        load el, url
 
-  replace: (post, el) ->
+  replaceImage: (post) ->
+    # Replace thumbnail in this post and any clones added before the file was loaded.
+    for post in [post, post.clones...]
+      post.file.thumb.src = post.file.URL
+    return
+
+  replaceVideo: (post, video) ->
     {file} = post
-    {isVideo, thumb} = file
+    {thumb} = file
     {style} = thumb
-    if !post.isClone
+    if !post.isClone then for clone in post.clones
       # Replace the thumbnail in clones added before the file was loaded.
-      for clone in post.clones
-        ImageLoader.replace clone, el.cloneNode true
-    if isVideo
-      el.textContent     = thumb.alt
-      el.dataset.md5     = thumb.dataset.md5
-      el.style.height    = style.height
-      el.style.width     = style.width
-      el.style.maxHeight = style.maxHeight
-      el.style.maxWidth  = style.maxWidth
-      el.loop            = true
-      el.className       = thumb.className
-      $.on el, 'mouseover', ImageHover.mouseover if Conf['Image Hover']
-      $.replace thumb, el
-      file.videoThumb = true
-      file.thumb = el
-      ImageLoader.play el unless post.isFetchedQuote
-    else
-      thumb.src = file.URL
+      video2 = $.el 'video'
+      $.one video2, 'loadeddata', => ImageLoader.replaceVideo clone, video2
+      video2.src = video.src
+    video.textContent     = thumb.alt
+    video.dataset.md5     = thumb.dataset.md5
+    video.style.height    = style.height
+    video.style.width     = style.width
+    video.style.maxHeight = style.maxHeight
+    video.style.maxWidth  = style.maxWidth
+    video.loop            = true
+    video.className       = thumb.className
+    $.on video, 'mouseover', ImageHover.mouseover if Conf['Image Hover']
+    $.replace thumb, video
+    file.thumb      = video
+    file.videoThumb = true
+    ImageLoader.play video unless post.isFetchedQuote
 
   play: (video) ->
     if Conf['Autoplay']
       $.asap (-> doc.contains video), ->
-        if !d.hidden and Header.isNodeVisible video
+        if Header.isNodeVisible video
           video.play()
 
   toggle: ->
