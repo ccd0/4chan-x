@@ -85,6 +85,7 @@ Index =
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
       board = $ '.board'
       $.replace board, Index.root
+      $.event 'PostsInserted'
       # Hacks:
       # - When removing an element from the document during page load,
       #   its ancestors will still be correctly created inside of it.
@@ -426,6 +427,7 @@ Index =
   buildStructure: (nodes) ->
     for node in nodes
       $.add Index.root, [node, $.el 'hr']
+    $.event 'PostsInserted' if doc.contains Index.root
     ThreadHiding.onIndexBuild nodes
 
   isSearching: false

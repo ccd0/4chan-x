@@ -101,6 +101,7 @@ ExpandThread =
       postsRoot.push root
     Main.callbackNodes Post, posts
     $.after a, postsRoot
+    $.event 'PostsInserted'
 
     postsCount    = postsRoot.length
     a.textContent = ExpandThread.text '-', postsCount, filesCount

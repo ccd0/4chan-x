@@ -15,37 +15,48 @@ ImageLoader =
             if Header.isNodeVisible thumb then thumb.play() else thumb.pause()
           return
 
+    $.on d, 'PostsInserted', ->
+      {thumbsToPlay} = ImageLoader
+      ImageLoader.thumbsToPlay = []
+      ImageLoader.play thumb for thumb in thumbsToPlay
+      g.posts.forEach ImageLoader.prefetch
+
     return unless Conf['Image Prefetching']
 
     prefetch = $.el 'label',
       <%= html('<input type="checkbox" name="prefetch"> Prefetch Images') %>
 
     @el = prefetch.firstElementChild
-    $.on @el, 'change', @toggle
+    $.on @el, 'change', ->
+      if Conf['prefetch'] = @checked
+        g.posts.forEach ImageLoader.prefetch
 
     Header.menu.addEntry
       el: prefetch
       order: 104
 
-  node: (force) ->
-    return unless @file
-    {isImage, isVideo, thumb, URL} = @file
-    if @isClone and @file.videoThumb
-      ImageLoader.play thumb
-    return if @isClone or @isHidden or @thread.isHidden or !(isImage or isVideo)
-    type     = if (match = URL.match(/\.([^.]+)$/)[1].toUpperCase()) is 'JPEG' then 'JPG' else match
-    replace  = Conf["Replace #{type}"] and !/spoiler/.test thumb.src
-    prefetch = (Conf['prefetch'] and g.VIEW is 'thread') or force
-    return unless replace or prefetch
+  node: ->
+    if @isClone
+      ImageLoader.play @file.thumb if @file?.videoThumb
+    else
+      ImageLoader.prefetch @
+
+  prefetch: (post) ->
+    {file} = post
+    return unless file
+    {isImage, isVideo, thumb, URL} = file
+    return if !(isImage or isVideo) or post.isHidden or post.thread.isHidden or file.isPrefetched
+    type    = if (match = URL.match(/\.([^.]+)$/)[1].toUpperCase()) is 'JPEG' then 'JPG' else match
+    replace = Conf["Replace #{type}"] and !/spoiler/.test thumb.src
+    return unless replace or Conf['prefetch']
+    return unless [post, post.clones...].some (clone) -> doc.contains clone.nodes.root
+    file.isPrefetched = true
     el = $.el if isImage then 'img' else 'video'
     if replace
-      if @file.isSpoiler
-        # Revealed spoilers do not have height/width set, this fixes the image's dimensions.
-        thumb.style.maxHeight = thumb.style.maxWidth = if @isReply then '125px' else '250px'
       if isImage
-        $.on el, 'load', => ImageLoader.replaceImage @
+        $.on el, 'load', => ImageLoader.replaceImage post
       else
-        $.one el, 'loadeddata', => ImageLoader.replaceVideo @, el
+        $.one el, 'loadeddata', => ImageLoader.replaceVideo post, el
     ImageLoader.queueDownload el, URL
 
   queueDownload: do ->
@@ -95,16 +106,14 @@ ImageLoader =
     $.replace thumb, video
     file.thumb      = video
     file.videoThumb = true
-    ImageLoader.play video unless post.isFetchedQuote
+    ImageLoader.play video if doc.contains(video) or post.isClone
 
-  play: (video) ->
-    if Conf['Autoplay']
-      $.asap (-> doc.contains video), ->
-        if Header.isNodeVisible video
-          video.play()
+  thumbsToPlay: []
 
-  toggle: ->
-    enabled = Conf['prefetch'] = @checked
-    if enabled
-      g.BOARD.posts.forEach (post) -> ImageLoader.node.call post, true
-    return
+  play: (thumb) ->
+    return unless Conf['Autoplay']
+    if doc.contains thumb
+      # Quote previews are off screen when inserted into document, but quickly moved on screen.
+      thumb.play() if Header.isNodeVisible(thumb) or $.id('qp')?.contains thumb
+    else
+      ImageLoader.thumbsToPlay.push thumb
