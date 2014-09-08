@@ -1,3 +1,10 @@
+### v1.9.2.3 
+*2014-09-07*
+
+**ccd0**
+- Thumbnail replacement / preloading / WebM bugfixes.
+- Embedded videos from mediacru.sh are no longer autoplayed and have controls.
+
 ### v1.9.2.2 
 *2014-09-07*
 
