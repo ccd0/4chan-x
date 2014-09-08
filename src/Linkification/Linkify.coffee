@@ -295,7 +295,7 @@ Linkify =
           return div.textContent = "ERROR: Not a valid filetype" unless embed
           switch embed.type
             when 'video/mp4', 'video/webm', 'video/ogv'
-              $.extend el, <%= html('<video autoplay loop><source type="video/mp4"><source type="video/webm"></video>') %>
+              $.extend el, <%= html('<video controls loop><source type="video/mp4"><source type="video/webm"></video>') %>
               for ext, i in ['mp4', 'webm']
                 el.firstChild.children[i].src = "https://mediacru.sh/#{a.dataset.uid}.#{ext}"
             when 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg'
