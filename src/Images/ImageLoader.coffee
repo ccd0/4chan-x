@@ -52,15 +52,11 @@ ImageLoader =
     busy  = false
     items = []
     load  = (el, url) ->
-      next = ->
-        $.off el, 'load loadeddata error', next
-        clearTimeout timeoutID
+      $.one el, 'load loadedmetadata error', ->
         busy = false
         if item = items.shift()
           [el2, url2] = item
           load el2, url2
-      $.on el, 'load loadeddata error', next
-      timeoutID = setTimeout next, $.SECOND
       el.src = url
       busy = true
     (el, url) ->
