@@ -29,7 +29,7 @@ ImageExpand =
       else if @file.isExpanded and @file.isVideo
         ImageExpand.setupVideoCB @
         ImageExpand.setupVideo @, !@origin.file.fullImage?.paused or @origin.file.wasPlaying, @file.fullImage.controls
-    else if ImageExpand.on and !@isHidden and
+    else if ImageExpand.on and !@isHidden and !@isFetchedQuote and
       (Conf['Expand spoilers'] or !@file.isSpoiler) and
       (Conf['Expand videos'] or !@file.isVideo)
         ImageExpand.expand @
@@ -216,14 +216,11 @@ ImageExpand =
       fullImage.controls = controls
       return
     fullImage.controls = false
-    if post.isFetchedQuote
-      post.file.wasPlaying = true
-    else
-      $.asap (=> doc.contains fullImage), =>
-        if !d.hidden and Header.isNodeVisible fullImage
-          fullImage.play()
-        else
-          post.file.wasPlaying = true
+    $.asap (=> doc.contains fullImage), =>
+      if !d.hidden and Header.isNodeVisible fullImage
+        fullImage.play()
+      else
+        post.file.wasPlaying = true
     if controls
       ImageCommon.addControls fullImage
 
