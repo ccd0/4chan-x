@@ -38,7 +38,12 @@ ImageLoader =
       # Revealed spoilers do not have height/width set, this fixes the image's dimensions.
       thumb.style.maxHeight = thumb.style.maxWidth = if @isReply then '125px' else '250px'
     cb = =>
-      thumb.play() if @file.videoThumb and Conf['Autoplay'] and Header.isNodeVisible thumb
+      if @file.videoThumb and Conf['Autoplay']
+        cbPlay = -> thumb.play() if Header.isNodeVisible thumb
+        if thumb.readyState >= thumb.HAVE_METADATA
+          cbPlay()
+        else
+          $.on thumb, 'loadedmetadata', cbPlay
       origin = if @isClone then @origin else @
       ImageLoader.prefetch origin, replace unless origin.file.isPrefetched
     cb() if doc.contains @nodes.root
