@@ -57,8 +57,8 @@ ImageLoader =
         clearTimeout timeoutID
         busy = false
         if item = items.shift()
-          [el, url] = item
-          load el, url
+          [el2, url2] = item
+          load el2, url2
       $.on el, 'load loadeddata error', next
       timeoutID = setTimeout next, $.SECOND
       el.src = url
