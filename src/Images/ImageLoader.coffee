@@ -27,26 +27,33 @@ ImageLoader =
       el: prefetch
       order: 104
 
-  node: (force) ->
+  node: ->
     return unless @file
-    {isImage, isVideo, thumb, URL} = @file
-    if @isClone and @file.videoThumb
-      ImageLoader.play thumb
-    return if @isClone or @isHidden or @thread.isHidden or !(isImage or isVideo)
-    type     = if (match = URL.match(/\.([^.]+)$/)[1].toUpperCase()) is 'JPEG' then 'JPG' else match
-    replace  = Conf["Replace #{type}"] and !/spoiler/.test thumb.src
-    prefetch = (Conf['prefetch'] and g.VIEW is 'thread') or force
-    return unless replace or prefetch
-    el = $.el if isImage then 'img' else 'video'
+    {thumb} = @file
+    return unless @file.isImage or @file.isVideo
+    type    = if (match = @file.URL.match(/\.([^.]+)$/)[1].toUpperCase()) is 'JPEG' then 'JPG' else match
+    replace = Conf["Replace #{type}"] and !/spoiler/.test thumb.src
+    return unless replace or Conf['prefetch']
+    if replace and @file.isSpoiler
+      # Revealed spoilers do not have height/width set, this fixes the image's dimensions.
+      thumb.style.maxHeight = thumb.style.maxWidth = if @isReply then '125px' else '250px'
+    cb = =>
+      thumb.play() if @file.videoThumb and Conf['Autoplay'] and Header.isNodeVisible thumb
+      origin = if @isClone then @origin else @
+      ImageLoader.prefetch origin, replace unless origin.file.isPrefetched
+    cb() if doc.contains @nodes.root
+    $.on @nodes.root, 'PostInserted', cb
+
+  prefetch: (post, replace) ->
+    {file} = post
+    file.isPrefetched = true
+    el = $.el if file.isImage then 'img' else 'video'
     if replace
-      if @file.isSpoiler
-        # Revealed spoilers do not have height/width set, this fixes the image's dimensions.
-        thumb.style.maxHeight = thumb.style.maxWidth = if @isReply then '125px' else '250px'
-      if isImage
-        $.on el, 'load', => ImageLoader.replaceImage @
+      if file.isImage
+        $.on el, 'load', => ImageLoader.replaceImage post
       else
-        $.one el, 'loadeddata', => ImageLoader.replaceVideo @, el
-    ImageLoader.queueDownload el, URL
+        $.one el, 'loadeddata', => ImageLoader.replaceVideo post, el
+    ImageLoader.queueDownload el, file.URL
 
   queueDownload: do ->
     busy  = false
@@ -95,16 +102,10 @@ ImageLoader =
     $.replace thumb, video
     file.thumb      = video
     file.videoThumb = true
-    ImageLoader.play video unless post.isFetchedQuote
-
-  play: (video) ->
-    if Conf['Autoplay']
-      $.asap (-> doc.contains video), ->
-        if Header.isNodeVisible video
-          video.play()
+    video.play() if Conf['Autoplay'] and Header.isNodeVisible video
 
   toggle: ->
     enabled = Conf['prefetch'] = @checked
     if enabled
-      g.BOARD.posts.forEach (post) -> ImageLoader.node.call post, true
+      g.BOARD.posts.forEach (post) -> ImageLoader.prefetch post
     return

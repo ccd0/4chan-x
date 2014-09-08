@@ -426,6 +426,8 @@ Index =
   buildStructure: (nodes) ->
     for node in nodes
       $.add Index.root, [node, $.el 'hr']
+      for postRoot in $$ '.thread > .postContainer', node
+        $.event 'PostInserted', null, postRoot
     ThreadHiding.onIndexBuild nodes
 
   isSearching: false

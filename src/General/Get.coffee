@@ -91,6 +91,7 @@ Get =
 
     $.rmAll root
     $.add root, nodes.root
+    $.event 'PostInserted', null, nodes.root
   fetchedPost: (req, boardID, threadID, postID, root, context) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
