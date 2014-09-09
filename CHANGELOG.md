@@ -1,3 +1,9 @@
+### v1.9.2.5 
+*2014-09-09*
+
+**Worer**
+- Remove mawa.re from archive list (as in v1.9.1.10).
+
 ### v1.9.2.4 
 *2014-09-08*
 
