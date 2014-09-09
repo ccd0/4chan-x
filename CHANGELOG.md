@@ -35,6 +35,12 @@ Based on v1.9.1.8.
 **ccd0**
 - Pause offscreen WebM thumbnails, fix some bugs.
 
+### v1.9.1.10 
+*2014-09-09*
+
+**Worer**
+- Remove mawa.re from archive list.
+
 ### v1.9.1.9 
 *2014-09-07*
 

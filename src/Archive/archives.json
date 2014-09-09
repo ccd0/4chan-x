@@ -70,14 +70,4 @@
   "software": "foolfuuka",
   "boards": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"],
   "files": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"]
-}, {
-  "uid": 16,
-  "name": "maware",
-  "domain": "archive.mawa.re",
-  "http": true,
-  "https": false,
-  "software": "foolfuuka",
-  "boards": ["t"],
-  "files": ["t"],
-  "imagehosts": ["http://archive.mawa.re/"]
 }]
