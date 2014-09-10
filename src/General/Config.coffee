@@ -648,7 +648,7 @@ vp-replace
     ]
     'Toggle sage': [
       'Alt+s'
-      'Toggle sage in email field'
+      'Toggle sage in options field.'
     ]
     'Submit QR': [
       'Ctrl+Enter'
