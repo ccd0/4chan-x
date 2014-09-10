@@ -89,6 +89,7 @@ do ->
     $.on req, 'load', (e) ->
       cb.call @, e for cb in @callbacks
       @evt = e
+      @cached = true
       delete @callbacks
     $.on req, 'abort error', rm
     req.callbacks = [cb]

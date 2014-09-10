@@ -117,6 +117,13 @@ Get =
       break if post.no is postID # we found it!
 
     if post.no isnt postID
+      # Cached requests can be stale and must be rechecked.
+      if req.cached
+        api = "//a.4cdn.org/#{boardID}/thread/#{threadID}.json"
+        $.cleanCache (url) -> url is api
+        $.cache api, ->
+          Get.fetchedPost @, boardID, threadID, postID, root, context
+        return
       # The post can be deleted by the time we check a quote.
       unless Get.archivedPost boardID, postID, root, context
         $.addClass root, 'warning'
