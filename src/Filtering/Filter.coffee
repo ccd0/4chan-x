@@ -149,8 +149,9 @@ Filter =
       return post.file.name
     false
   dimensions: (post) ->
-    if post.file and post.file.isImage
-      return post.file.dimensions
+    {file} = post
+    if file and (file.isImage or file.isVideo)
+      return file.dimensions
     false
   filesize: (post) ->
     if post.file
