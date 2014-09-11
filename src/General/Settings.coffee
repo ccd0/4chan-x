@@ -170,28 +170,31 @@ Settings =
           data.Conf[newKey] = data.Conf[prevKey] if newKey
           delete data.Conf[prevKey]
         data
-      data = Settings.convertSettings data,
+      data = convertSettings data,
         # General confs
         'Disable 4chan\'s extension': ''
-        'Catalog Links': ''
-        'Reply Navigation': ''
+        'Remove Slug': ''
+        'Check for Updates': ''
+        'Recursive Filtering': 'Recursive Hiding'
+        'Reply Hiding': 'Reply Hiding Buttons'
+        'Thread Hiding': 'Thread Hiding Buttons'
         'Show Stubs': 'Stubs'
-        'Image Auto-Gif': 'Auto-GIF'
-        'Expand From Current': ''
-        'Unread Tab Icon': 'Unread Favicon'
+        'Image Auto-Gif': 'Replace GIF'
+        'Reveal Spoilers': 'Reveal Spoiler Thumbnails'
+        'Expand From Current': 'Expand from here'
         'Post in Title': 'Thread Excerpt'
-        'Auto Hide QR': ''
-        'Open Reply in New Tab': ''
-        'Remember QR size': ''
+        'Open Reply in New Tab': 'Open Post in New Tab'
+        'Remember QR size': 'Remember QR Size'
+        'Remember Subject': ''
         'Quote Inline': 'Quote Inlining'
         'Quote Preview': 'Quote Previewing'
         'Indicate OP quote': 'Mark OP Quotes'
+        'Indicate You quote': 'Mark Quotes of You'
         'Indicate Cross-thread Quotes': 'Mark Cross-thread Quotes'
-        'Reply Hiding': 'Reply Hiding Buttons'
-        'Thread Hiding': 'Thread Hiding Buttons'
         # filter
         'uniqueid': 'uniqueID'
         'mod': 'capcode'
+        'email': ''
         'country': 'flag'
         'md5': 'MD5'
         # keybinds
@@ -200,6 +203,7 @@ Settings =
         'openOptions': 'Open settings'
         'close': 'Close'
         'spoiler': 'Spoiler tags'
+        'sageru': 'Toggle sage'
         'code': 'Code tags'
         'submit': 'Submit QR'
         'watch': 'Watch'
