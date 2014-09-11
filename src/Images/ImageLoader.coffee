@@ -69,6 +69,9 @@ ImageLoader =
     if file.videoThumb
       clone.file.thumb.preload = 'auto' for clone in post.clones
       thumb.preload = 'auto'
+      # XXX Cloned video elements with poster in Firefox cause momentary display of image loading icon.
+      if !chrome?
+        $.on thumb, 'loadeddata', -> @removeAttribute 'poster'
       return
     el = $.el if isImage then 'img' else 'video'
     if replace and isImage
