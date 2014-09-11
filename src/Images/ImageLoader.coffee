@@ -67,9 +67,8 @@ ImageLoader =
     return unless [post, post.clones...].some (clone) -> doc.contains clone.nodes.root
     file.isPrefetched = true
     if file.videoThumb
-      for clone in [post, post.clones...]
-        clone.file.thumb.preload = 'auto' for clone in post.clones
-        thumb.preload = 'auto'
+      clone.file.thumb.preload = 'auto' for clone in post.clones
+      thumb.preload = 'auto'
       return
     el = $.el if isImage then 'img' else 'video'
     if replace and isImage
