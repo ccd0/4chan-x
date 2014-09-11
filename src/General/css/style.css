@@ -89,7 +89,7 @@ a {
 [hidden] {
   display: none !important;
 }
-hr ~ div.center:not(.ad-cnt) {
+hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   display: none !important;
 }
 .page-num {
