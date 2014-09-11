@@ -1,3 +1,9 @@
+### v1.9.2.8 
+*2014-09-11*
+
+**ccd0**
+- Simplify and improve thumbnail replacement / preloading. Remove the download queue (didn't work well). Drop support for non-autoplaying replaced WebM thumbnails.
+
 ### v1.9.2.7 
 *2014-09-10*
 
