@@ -334,6 +334,7 @@ Main =
     ['Index Navigation',          Nav]
     ['Keybinds',                  Keybinds]
     ['Banner',                    Banner]
+    ['Catalog Hiding',            CatalogHiding]
     <% if (tests_enabled) { %>
     ['Build Test',                BuildTest]
     <% } %>

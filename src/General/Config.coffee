@@ -145,6 +145,10 @@ Config =
         true
         'Show stubs of hidden threads / replies.'
       ]
+      'Hide Threads in 4chan\'s Catalog': [
+        true
+        'Sync hidden threads with and support limited filtering in 4chan\'s catalog.'
+      ]
 
     'Images and Videos':
       'Image Expansion': [

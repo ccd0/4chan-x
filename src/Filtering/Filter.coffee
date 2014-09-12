@@ -1,10 +1,7 @@
 Filter =
   filters: {}
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Filter']
-
-    unless Conf['Filtered Backlinks']
-      $.addClass doc, 'hide-backlinks'
+    return if !Conf['Filter'] or (g.VIEW is 'catalog' and !Conf['Hide Threads in 4chan\'s Catalog'])
 
     for key of Config.filter
       @filters[key] = []
@@ -65,6 +62,11 @@ Filter =
       # Only execute filter types that contain valid filters.
       unless @filters[key].length
         delete @filters[key]
+
+    return if g.VIEW is 'catalog'
+
+    unless Conf['Filtered Backlinks']
+      $.addClass doc, 'hide-backlinks'
 
     return unless Object.keys(@filters).length
     Post.callbacks.push
@@ -161,6 +163,13 @@ Filter =
     if post.file
       return post.file.MD5
     false
+
+  testObject: (obj) ->
+    for key of Filter.filters when key of obj
+      for filter in Filter.filters[key]
+        if result = filter obj[key], obj.isReply
+          return true if result.hide
+    return false
 
   menu:
     init: ->

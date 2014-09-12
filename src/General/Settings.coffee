@@ -127,7 +127,7 @@ Settings =
         for boardID of hiddenThreads.boards
           localStorage.removeItem "4chan-hide-t-#{boardID}"
         $.delete ['hiddenThreads', 'hiddenPosts']
-    $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
+    $.add $('input[name="Filter"]', section).parentNode.parentNode.parentNode, div
   export: ->
     # Make sure to export the most recent data.
     $.get Conf, (Conf) ->

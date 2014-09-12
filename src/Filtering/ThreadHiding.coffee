@@ -3,7 +3,6 @@ ThreadHiding =
     return if g.VIEW isnt 'index' or !Conf['Thread Hiding Buttons'] and !Conf['Thread Hiding Link']
 
     @db = new DataBoard 'hiddenThreads'
-    @syncCatalog()
     Thread.callbacks.push
       name: 'Thread Hiding'
       cb:   @node
@@ -20,47 +19,6 @@ ThreadHiding =
       if thread.isHidden and thread.stub and !root.contains thread.stub
         ThreadHiding.makeStub thread, root
     return
-
-  syncCatalog: ->
-    # Sync hidden threads from the catalog into the index.
-    hiddenThreads = ThreadHiding.db.get
-      boardID: g.BOARD.ID
-      defaultValue: {}
-    hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
-
-    # Add threads that were hidden in the catalog.
-    for threadID of hiddenThreadsOnCatalog
-      unless threadID of hiddenThreads
-        hiddenThreads[threadID] = {}
-
-    # Remove threads that were un-hidden in the catalog.
-    for threadID of hiddenThreads
-      unless threadID of hiddenThreadsOnCatalog
-        delete hiddenThreads[threadID]
-
-    if (ThreadHiding.db.data.lastChecked or 0) > Date.now() - $.MINUTE
-      # Was cleaned just now.
-      ThreadHiding.cleanCatalog hiddenThreadsOnCatalog
-
-    ThreadHiding.db.set
-      boardID: g.BOARD.ID
-      val: hiddenThreads
-
-  cleanCatalog: (hiddenThreadsOnCatalog) ->
-    # We need to clean hidden threads on the catalog ourselves,
-    # otherwise if we don't visit the catalog regularly
-    # it will pollute the localStorage and our data.
-    $.cache "//a.4cdn.org/#{g.BOARD}/threads.json", ->
-      return unless @status is 200
-      threads = {}
-      for page in @response
-        for thread in page.threads
-          if thread.no of hiddenThreadsOnCatalog
-            threads[thread.no] = hiddenThreadsOnCatalog[thread.no]
-      if Object.keys(threads).length
-        localStorage.setItem "4chan-hide-t-#{g.BOARD}", JSON.stringify threads
-      else
-        localStorage.removeItem "4chan-hide-t-#{g.BOARD}"
 
   menu:
     init: ->
@@ -161,19 +119,15 @@ ThreadHiding =
     $.prepend root, thread.stub
 
   saveHiddenState: (thread, makeStub) ->
-    hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
     if thread.isHidden
       ThreadHiding.db.set
         boardID:  thread.board.ID
         threadID: thread.ID
         val: {makeStub}
-      hiddenThreadsOnCatalog[thread] = true
     else
       ThreadHiding.db.delete
         boardID:  thread.board.ID
         threadID: thread.ID
-      delete hiddenThreadsOnCatalog[thread]
-    localStorage.setItem "4chan-hide-t-#{g.BOARD}", JSON.stringify hiddenThreadsOnCatalog
 
   toggle: (thread) ->
     unless thread instanceof Thread
