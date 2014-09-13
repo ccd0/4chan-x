@@ -551,10 +551,9 @@ hr ~ div.center:not(.ad-cnt) {
   cursor: help;
   font-size: 10px;
   font-weight: 700;
-  line-height: .8;
-  margin-top: 1px;
+  margin-top: 2px;
 }
-.catalog-thread .subject {
+.catalog-thread > .subject {
   flex-shrink: 0;
   font-weight: 700;
   line-height: 1;
@@ -562,7 +561,7 @@ hr ~ div.center:not(.ad-cnt) {
 }
 .catalog-thread > .comment {
   flex-shrink: 1;
-  max-width: 100%;
+  align-self: stretch;
   overflow: hidden;
   text-align: center;
 }
