@@ -1,3 +1,82 @@
+### v1.9.2.8 
+*2014-09-11*
+
+**ccd0**
+- Simplify and improve thumbnail replacement / preloading. Remove the download queue (didn't work well). Drop support for non-autoplaying replaced WebM thumbnails.
+
+### v1.9.2.7 
+*2014-09-10*
+
+**ccd0**
+- Quote fetching bugfix.
+
+### v1.9.2.6 
+*2014-09-09*
+
+**ccd0**
+- Small bugfixes.
+
+### v1.9.2.5 
+*2014-09-09*
+
+**Worer**
+- Remove mawa.re from archive list (as in v1.9.1.10).
+
+### v1.9.2.4 
+*2014-09-08*
+
+**ccd0**
+- Fix thumbnail replacement / preloading loading images which are not actually on the page.
+
+### v1.9.2.3 
+*2014-09-07*
+
+**ccd0**
+- Thumbnail replacement / preloading / WebM bugfixes.
+- Embedded videos from mediacru.sh are no longer autoplayed and have controls.
+
+### v1.9.2.2 
+*2014-09-07*
+
+**ccd0**
+- Fix bug causing missing pages from index search (as in v1.9.1.9).
+- Also fix bug from v1.9.2.0 causing threads to be missing from infinite scroll.
+
+### v1.9.2.1 
+*2014-09-07*
+
+**ccd0**
+- Improve reliability of thumbnail replacement / preloading by queueing downloads.
+
+### v1.9.2.0 
+*2014-09-06*
+
+Based on v1.9.1.8.
+
+**Zixaphir**
+- Implement WebM thumbnail replacement / preloading.
+
+**ccd0**
+- Pause offscreen WebM thumbnails, fix some bugs.
+
+### v1.9.1.10 
+*2014-09-09*
+
+**Worer**
+- Remove mawa.re from archive list.
+
+### v1.9.1.9 
+*2014-09-07*
+
+**ccd0**
+- Fix bug causing missing pages from index search.
+
+### v1.9.1.8 
+*2014-09-06*
+
+**ccd0**
+- Fix bug in WebM hover/expand.
+
 ### v1.9.1.7 
 *2014-09-05*
 

@@ -56,7 +56,7 @@ class Clone extends Post
         @file[key] = val
       file = $ '.file', post
       @file.text  = file.firstElementChild
-      @file.thumb = $ 'img[data-md5]', file
+      @file.thumb = $ '.fileThumb > [data-md5]', file
       @file.fullImage = $ '.full-image', file
       @file.videoControls = $ '.video-controls', @file.text
 
@@ -72,7 +72,7 @@ class Clone extends Post
     root.dataset.clone = origin.clones.push(@) - 1
 
   cloneWithoutVideo: (node) ->
-    if node.tagName is 'VIDEO'
+    if node.tagName is 'VIDEO' and !node.dataset.md5 # (exception for WebM thumbnails)
       []
     else if node.nodeType is Node.ELEMENT_NODE and $ 'video', node
       clone = node.cloneNode false

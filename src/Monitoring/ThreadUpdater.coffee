@@ -326,6 +326,7 @@ ThreadUpdater =
             $.add ThreadUpdater.root, root
         else
           $.add ThreadUpdater.root, root
+      $.event 'PostsInserted'
 
       if scroll
         if Conf['Bottom Scroll']

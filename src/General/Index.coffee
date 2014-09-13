@@ -98,6 +98,7 @@ Index =
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
       board = $ '.board'
       $.replace board, Index.root
+      $.event 'PostsInserted'
       # Hacks:
       # - When removing an element from the document during page load,
       #   its ancestors will still be correctly created inside of it.
@@ -128,7 +129,6 @@ Index =
     return Index.endNotice() if pageNum > Index.pagesNum
 
     nodes = Index.buildSinglePage pageNum
-    nodes.shift() # Remove thread common with previous page
     Index.buildReplies   nodes if Conf['Show Replies']
     Index.buildStructure nodes
     Index.setPage pageNum
@@ -281,7 +281,7 @@ Index =
 
   getPagesNum: ->
     if Index.isSearching
-      Math.ceil (Index.sortedNodes.length / 2) / Index.threadsNumPerPage
+      Math.ceil Index.sortedNodes.length / Index.threadsNumPerPage
     else
       Index.pagesNum
   getMaxPageNum: ->
@@ -553,6 +553,7 @@ Index =
   buildStructure: (nodes) ->
     for node in nodes
       $.add Index.root, [node, $.el 'hr']
+    $.event 'PostsInserted' if doc.contains Index.root
     ThreadHiding.onIndexBuild nodes
 
   isSearching: false

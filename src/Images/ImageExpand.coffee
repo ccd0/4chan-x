@@ -29,7 +29,7 @@ ImageExpand =
       else if @file.isExpanded and @file.isVideo
         ImageExpand.setupVideoCB @
         ImageExpand.setupVideo @, !@origin.file.fullImage?.paused or @origin.file.wasPlaying, @file.fullImage.controls
-    else if ImageExpand.on and !@isHidden and
+    else if ImageExpand.on and !@isHidden and !@isFetchedQuote and
       (Conf['Expand spoilers'] or !@file.isSpoiler) and
       (Conf['Expand videos'] or !@file.isVideo)
         ImageExpand.expand @
@@ -70,15 +70,15 @@ ImageExpand =
 
     playVideos: (e) ->
       g.posts.forEach (post) ->
-        return unless post.file and post.file.isVideo and post.file.isExpanded
-        video = post.file.fullImage
-        visible = !d.hidden and Header.isNodeVisible video
-        if visible and post.file.wasPlaying
-          delete post.file.wasPlaying
-          video.play()
-        else if !visible and !video.paused
-          post.file.wasPlaying = true
-          video.pause()
+        for post in [post, post.clones...] when post.file and post.file.isVideo and post.file.isExpanded
+          video = post.file.fullImage
+          visible = Header.isNodeVisible video
+          if visible and post.file.wasPlaying
+            delete post.file.wasPlaying
+            video.play()
+          else if !visible and !video.paused
+            post.file.wasPlaying = true
+            video.pause()
         return
 
     setFitness: ->
@@ -158,7 +158,7 @@ ImageExpand =
       TrashQueue.remove el
       unless file.isHovered
         $.queueTask(-> el.src = el.src) if /\.gif$/.test el.src
-        el.currentTime = 0 if isVideo
+        el.currentTime = 0 if isVideo and el.readyState >= el.HAVE_METADATA
     else
       el.src = src or file.URL
       $.after thumb, el

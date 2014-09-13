@@ -173,15 +173,19 @@ Config =
       ]
       'Replace GIF': [
         false
-        'Replace thumbnail of gifs with its actual image.'
-      ]
-      'Replace PNG': [
-        false
-        'Replace pngs.'
+        'Replace gif thumbnails with the actual image.'
       ]
       'Replace JPG': [
         false
-        'Replace jpgs.'
+        'Replace jpg thumbnails with the actual image.'
+      ]
+      'Replace PNG': [
+        false
+        'Replace png thumbnails with the actual image.'
+      ]
+      'Replace WEBM': [
+        false
+        'Replace webm thumbnails with the actual webm video. Probably will degrade browser performance ;)'
       ]
       'Image Prefetching': [
         false
@@ -644,7 +648,7 @@ vp-replace
     ]
     'Toggle sage': [
       'Alt+s'
-      'Toggle sage in email field'
+      'Toggle sage in options field.'
     ]
     'Submit QR': [
       'Ctrl+Enter'
