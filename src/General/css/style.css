@@ -616,7 +616,7 @@ span.hide-announcement {
 #updater > div:last-child {
   text-align: center;
 }
-#updater input[type=number] {
+#updater input[type="number"] {
   width: 4em;
 }
 :root.float #updater {
@@ -898,7 +898,7 @@ span.hide-announcement {
 :root.hide-original-post-form #togglePostFormLink,
 :root:not(.catalog) #togglePostFormLink,
 #qr.autohide:not(.focus):not(:hover):not(:active) > form,
-:root.thread-view #qr:not(.show-new-thread-option) select[data-name=thread],
+:root.thread-view #qr:not(.show-new-thread-option) select[data-name="thread"],
 #file-n-submit:not(.has-file) #qr-filerm {
   display: none;
 }
@@ -984,9 +984,9 @@ span.hide-announcement {
   flex: 1;
   width: 0;
 }
-#qr.forced-anon input[data-name=name]:not(.force-show),
-#qr.forced-anon input[data-name=sub]:not(.force-show),
-#qr.reply-to-thread input[data-name=sub]:not(.force-show) {
+#qr.forced-anon input[data-name="name"]:not(.force-show),
+#qr.forced-anon input[data-name="sub"]:not(.force-show),
+#qr.reply-to-thread input[data-name="sub"]:not(.force-show) {
   display: none;
 }
 #qr textarea.field {
@@ -1026,11 +1026,11 @@ input.field.tripped:not(:hover):not(:focus) {
 #qr textarea {
   min-width: 100%;
 }
-#qr [type='submit'] {
+#qr [type="submit"] {
   width: 25%;
   vertical-align: top;
 }
-:root.webkit #qr [type='submit'] {
+:root.webkit #qr [type="submit"] {
   height: 24px;
 }
 #qr label input[type="checkbox"] {
@@ -1094,12 +1094,12 @@ input#qr-filename:not(.edit) {
 #file-n-submit {
   height: 23px;
 }
-#qr input[type=file] {
+#qr input[type="file"] {
   visibility: hidden;
   position: absolute;
 }
 /* Thread Select / Spoiler Label */
-#qr select[data-name=thread] {
+#qr select[data-name="thread"] {
   float: right;
 }
 #qr.has-spoiler .has-file #qr-spoiler-label {
