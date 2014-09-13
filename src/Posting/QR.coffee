@@ -442,15 +442,12 @@ QR =
     setNode 'fileInput',     '[type=file]'
     
     rules = $('ul.rules').textContent.trim()
-    QR.min_width = QR.min_height = 1
-    QR.max_width = QR.max_height = 10000
-    try
-      [_, QR.min_width, QR.min_height] = rules.match(/.+smaller than (\d+)x(\d+).+/)
-      [_, QR.max_width, QR.max_height] = rules.match(/.+greater than (\d+)x(\d+).+/)
-      for prop in ['min_width', 'min_height', 'max_width', 'max_height']
-        QR[prop] = parseInt QR[prop], 10
-    catch
-      null
+    match_min = rules.match(/.+smaller than (\d+)x(\d+).+/)
+    match_max = rules.match(/.+greater than (\d+)x(\d+).+/)
+    QR.min_width  = +match_min?[1] or 1
+    QR.min_height = +match_min?[2] or 1
+    QR.max_width  = +match_max?[1] or 10000
+    QR.max_height = +match_max?[2] or 10000
 
     nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
 
