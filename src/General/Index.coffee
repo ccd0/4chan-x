@@ -443,22 +443,12 @@ Index =
       sortedNodes.push nodes[Index.liveThreadIDs.indexOf(threadID)]
     if Index.isSearching and nodes = Index.querySearch(Index.searchInput.value)
       Index.sortedNodes = nodes
-    items = [
-      # Sticky threads
-      fn:  (thread) -> thread.isSticky
-      cnd: true
-    , # Highlighted threads
-      fn:  (thread) -> thread.isOnTop
-      cnd: Conf['Filter']
-    , # Non-hidden threads
-      fn:  (thread) -> !thread.isHidden
-      cnd: Conf['Anchor Hidden Threads']
-    ]
-    i = 0
-    while item = items[i++]
-      {fn, cnd} = item
-      Index.sortOnTop fn if cnd
-    return
+    # Sticky threads
+    Index.sortOnTop (thread) -> thread.isSticky
+    # Highlighted threads
+    Index.sortOnTop((thread) -> thread.isOnTop) if Conf['Filter']
+    # Non-hidden threads
+    Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
 
   sortOnTop: (match) ->
     topNodes    = []
