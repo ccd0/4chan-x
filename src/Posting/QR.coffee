@@ -29,12 +29,6 @@ QR =
 
     $.on d, '4chanXInitFinished', @initReady
 
-    if Conf['Persistent QR']
-      unless g.BOARD.ID is 'f' and g.VIEW is 'index'
-        $.on d, '4chanXInitFinished', @persist
-      else
-        $.ready @persist
-
     Post.callbacks.push
       name: 'Quick Reply'
       cb:   @node
@@ -93,11 +87,6 @@ QR =
 
   node: ->
     $.on $('a[title="Reply to this post"]', @nodes.info), 'click', QR.quote
-
-  persist: ->
-    return unless QR.postingIsEnabled
-    QR.open()
-    QR.hide() if Conf['Auto Hide QR'] or g.VIEW is 'catalog'
 
   open: ->
     if QR.nodes
