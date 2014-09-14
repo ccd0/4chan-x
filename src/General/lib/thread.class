@@ -16,9 +16,12 @@ class Thread
     g.threads.push @fullID, board.threads.push @, @
 
   setPage: (pageNum) ->
-    icon = $ '.page-num', @OP.nodes.post
-    for key in ['title', 'textContent']
-      icon[key] = icon[key].replace /\d+/, pageNum
+    {info} = @OP.nodes
+    unless icon = $ '.page-num', info
+      icon = $.el 'span', className: 'page-num'
+      $.after $('a[title="Reply to this post"]', info), [$.tn(' '), icon]
+    icon.title       = "This thread is on page #{pageNum} in the original index."
+    icon.textContent = "[#{pageNum}]"
     @catalogView.nodes.pageCount.textContent = pageNum if @catalogView
   setCount: (type, count, reachedLimit) ->
     return unless @catalogView
@@ -41,13 +44,11 @@ class Thread
       src: "#{Build.staticPath}#{typeLC}#{Build.gifIcon}"
       alt:   type
       title: type
-      className: "#{typeLC}Icon"
+      className: "#{typeLC}Icon retina"
     root = if type is 'Closed' and @isSticky
       $ '.stickyIcon', @OP.nodes.info
-    else if g.VIEW is 'index'
-      $ '.page-num', @OP.nodes.info
     else
-      $ '[title="Reply to this post"]', @OP.nodes.info
+      $('.page-num', @OP.nodes.info) or $('[title="Reply to this post"]', @OP.nodes.info)
     $.after root, [$.tn(' '), icon]
 
     return unless @catalogView

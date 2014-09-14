@@ -153,12 +153,6 @@ Build =
     else
       "/#{boardID}/thread/#{threadID}\#q#{postID}"
 
-    pageIcon = if isOP and g.VIEW is 'index' and Conf['JSON Navigation']
-      pageNum   = Math.floor(Index.liveThreadIDs.indexOf(postID) / Index.threadsNumPerPage) + 1
-      <%= html(' <span class="page-num" title="This thread is on page ${pageNum} in the original index.">[${pageNum}]</span>') %>
-    else
-      <%= html('') %>
-
     sticky = if isSticky
       <%= html(' <img src="//s.4cdn.org/image/sticky${retina}.gif" alt="Sticky" title="Sticky" class="stickyIcon retina">') %>
     else
@@ -183,7 +177,7 @@ Build =
         '<span class="postNum${desktop2}">' +
           '<a href="${postLink}" title="Link to this post">No.</a>' +
           '<a href="${quoteLink}" title="Reply to this post">${postID}</a>' +
-          '&{pageIcon}&{sticky}&{closed}&{replyLink}' +
+          '&{sticky}&{closed}&{replyLink}' +
         '</span>' +
       '</div>'
     ) %>

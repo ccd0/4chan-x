@@ -1,3 +1,25 @@
+### v1.9.3.0 
+*2014-09-14*
+
+Based on v1.9.2.9.
+
+**MayhemYDG**, **ccd0**
+- Various small bugfixes.
+
+**MayhemYDG**
+- Keep title in 404'd tabs.
+
+**ccd0**
+- Change name of Greasemonkey beta version to `4chan X beta` so the beta and stable versions can be installed side by side.
+- Index sorting/searching/etc. features (`JSON Navigation` option) and including WebM when expanding all images (`Expand videos` option) are now on by default.
+
+### v1.9.2.9 
+*2014-09-13*
+
+**ccd0**
+- Fix minimum Chrome version (32).
+- Fix Linkify bug.
+
 ### v1.9.2.8 
 *2014-09-11*
 

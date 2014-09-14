@@ -153,6 +153,7 @@ Linkify =
     [key, uid, options, link, post] = data
     embed = $.el 'a',
       className:   'embedder'
+      rel:         'nofollow noreferrer'
       href:        link.href
       textContent: '(embed)'
 
@@ -225,7 +226,7 @@ Linkify =
 
   ordered_types: [
       key: 'audio'
-      regExp: /\.(?:mp3|ogg|wav)$/
+      regExp: /\.(?:mp3|ogg|wav)$/i
       style: ''
       el: (a) ->
         $.el 'audio',
@@ -247,7 +248,7 @@ Linkify =
           return file for file of files when files.hasOwnProperty file
     ,
       key: 'image'
-      regExp: /\.(?:gif|png|jpg|jpeg|bmp)$/
+      regExp: /\.(?:gif|png|jpg|jpeg|bmp)$/i
       style: 'border: 0; width: auto; height: auto;'
       el: (a) ->
         $.el 'div', <%= html('<a target="_blank" href="${a.href}"><img src="${a.href}"></a>') %>
@@ -277,7 +278,7 @@ Linkify =
         el
     ,
       key: 'MediaCrush'
-      regExp: /^\w+:\/\/(?:www\.)?mediacru\.sh\/([\w\-]+)/i
+      regExp: /^\w+:\/\/(?:www\.)?mediacru\.sh\/([\w\-]+)/
       style: 'border: 0;'
       el: (a) ->
         el = $.el 'div'
@@ -445,7 +446,7 @@ Linkify =
       dummy: true
     ,
       key: 'video'
-      regExp: /\.(?:ogv|webm|mp4)$/
+      regExp: /\.(?:ogv|webm|mp4)$/i
       style: 'border: 0; width: auto; height: auto;'
       el: (a) ->
         $.el 'video',

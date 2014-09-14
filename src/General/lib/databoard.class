@@ -17,9 +17,11 @@ class DataBoard
 
   delete: ({boardID, threadID, postID}) ->
     if postID
+      return unless @data.boards[boardID]?[threadID]
       delete @data.boards[boardID][threadID][postID]
       @deleteIfEmpty {boardID, threadID}
     else if threadID
+      return unless @data.boards[boardID]
       delete @data.boards[boardID][threadID]
       @deleteIfEmpty {boardID}
     else

@@ -2,8 +2,8 @@ Config =
   main:
     'Miscellaneous':
       'JSON Navigation' : [
-        false
-        'Use JSON for loading the Board Index. Also allows searching and sorting the board index and infinite scolling.'
+        true
+        'Replace the board index with a dynamically generated one supporting searching, sorting, and infinite scrolling.'
       ]
       'Catalog Links': [
         true
@@ -432,8 +432,8 @@ Config =
       'Expand all images along with spoilers.'
     ]
     'Expand videos': [
-      false
-      'Expand all images also expands videos (no autoplay).'
+      true
+      'Expand all images also expands videos.'
     ]
     'Expand from here': [
       false

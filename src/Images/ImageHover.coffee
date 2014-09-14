@@ -9,6 +9,7 @@ ImageHover =
     return unless @file?.isImage or @file?.isVideo
     $.on @file.thumb, 'mouseover', ImageHover.mouseover
   mouseover: (e) ->
+    return unless doc.contains @
     post = Get.postFromNode @
     {file} = post
     {isVideo} = file
