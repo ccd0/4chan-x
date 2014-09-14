@@ -1,3 +1,10 @@
+### v1.9.2.9 
+*2014-09-13*
+
+**ccd0**
+- Fix minimum Chrome version (32).
+- Fix Linkify bug.
+
 ### v1.9.2.8 
 *2014-09-11*
 

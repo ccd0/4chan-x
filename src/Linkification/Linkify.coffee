@@ -153,6 +153,7 @@ Linkify =
     [key, uid, options, link, post] = data
     embed = $.el 'a',
       className:   'embedder'
+      rel:         'nofollow noreferrer'
       href:        link.href
       textContent: '(embed)'
 
