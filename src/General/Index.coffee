@@ -323,8 +323,8 @@ Index =
           thread = new Thread threadData.no, g.BOARD
           threads.push thread
         Index.nodes.push threadRoot
-        continue if thread.ID of thread.posts
-        posts.push new Post $('.opContainer', threadRoot), thread, g.BOARD
+        unless thread.ID of thread.posts
+          posts.push new Post $('.opContainer', threadRoot), thread, g.BOARD
         thread.setPage i // Index.threadsNumPerPage + 1
       catch err
         # Skip posts that we failed to parse.
