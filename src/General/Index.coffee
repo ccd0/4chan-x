@@ -317,7 +317,6 @@ Index =
       try
         threadRoot = Build.thread g.BOARD, threadData
         if thread = g.BOARD.threads[threadData.no]
-          thread.setPage Math.floor i / Index.threadsNumPerPage
           thread.setStatus 'Sticky', !!threadData.sticky
           thread.setStatus 'Closed', !!threadData.closed
         else
@@ -326,6 +325,7 @@ Index =
         Index.nodes.push threadRoot
         continue if thread.ID of thread.posts
         posts.push new Post $('.opContainer', threadRoot), thread, g.BOARD
+        thread.setPage i // Index.threadsNumPerPage + 1
       catch err
         # Skip posts that we failed to parse.
         errors = [] unless errors

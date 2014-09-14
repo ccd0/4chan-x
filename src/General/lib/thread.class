@@ -13,10 +13,12 @@ class Thread
     g.threads.push @fullID, board.threads.push @, @
 
   setPage: (pageNum) ->
-    icon = $ '.page-num', @OP.nodes.post
-    for key in ['title', 'textContent']
-      icon[key] = icon[key].replace /\d+/, pageNum
-    return
+    {info} = @OP.nodes
+    unless icon = $ '.page-num', info
+      icon = $.el 'span', className: 'page-num'
+      $.after $('a[title="Reply to this post"]', info), [$.tn(' '), icon]
+    icon.title       = "This thread is on page #{pageNum} in the original index."
+    icon.textContent = "[#{pageNum}]"
   setStatus: (type, status) ->
     name = "is#{type}"
     return if @[name] is status
