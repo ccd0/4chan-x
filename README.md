@@ -1,5 +1,5 @@
 Adds various features to 4chan.
-A continuation of the fork maintained by [Seaweed](https://github.com/seaweedchan/4chan-x) and subsequently [Spittie](https://github.com/Spittie/4chan-x).
+A continuation of the fork formerly maintained by [Seaweed](https://github.com/seaweedchan/4chan-x) and subsequently [Spittie](https://github.com/Spittie/4chan-x).
 
 If you're looking for a maintained fork of OneeChan, try
 https://github.com/Nebukazar/OneeChan
