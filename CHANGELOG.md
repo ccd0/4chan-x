@@ -2,7 +2,7 @@ The attributions below are for work that has been incorporated into the script a
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
-<!-- end notes -->
+<!-- v1.9.2.x -->
 ### v1.9.2.9 <sup>[F](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.2.9/builds/4chan-X-noupdate.user.js "Firefox version") [C](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.2.9/builds/4chan-X-noupdate.crx "Chromium version")</sup>
 *2014-09-13*
 

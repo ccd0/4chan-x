@@ -309,7 +309,10 @@ module.exports = (grunt) ->
     filename  = "/builds/#{name}#{suffix.noupdate}"
     today     = grunt.template.today 'yyyy-mm-dd'
     changelog = grunt.file.read 'CHANGELOG.md'
-    [_, note, body] = changelog.match /([^]*<\!-- end notes -->\n)([^]*)/
+    separator = "<!-- v#{version.replace /\.\d+$/, '.x'} -->\n"
+    breakPos  = changelog.indexOf(separator)
+    throw new Error 'Separator not found.' if breakPos is -1
+    breakPos += separator.length
 
-    grunt.file.write 'CHANGELOG.md', "#{note}#{headerPrefix} v#{version} <sup>[F](#{oldVersions}#{version}#{filename}.user.js \"Firefox version\") [C](#{oldVersions}#{version}#{filename}.crx \"Chromium version\")</sup>\n*#{today}*\n\n#{body}"
+    grunt.file.write 'CHANGELOG.md', "#{changelog[..breakPos-1]}#{headerPrefix} v#{version} <sup>[F](#{oldVersions}#{version}#{filename}.user.js \"Firefox version\") [C](#{oldVersions}#{version}#{filename}.crx \"Chromium version\")</sup>\n*#{today}*\n\n#{changelog[breakPos..]}"
     grunt.log.ok "Changelog updated for v#{version}."
