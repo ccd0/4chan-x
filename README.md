@@ -28,7 +28,7 @@ Only the latest stable version of 4chan X is available.
 Some recent versions of Chromium/Chrome (38.0.2085 - 38.0.2103) (and versions of Opera based on them) suffer from a (now fixed) [bug](https://crbug.com/393686) that prevents extensions from making HTTP requests if more than one extension is enabled. This breaks, among other things, thread updating, quick reply, and, when `JSON Navigation` is enabled, the thread index. If you are experiencing this, try using another version of Chromium/Chrome/Opera, disabling your other extensions, or using a different browser.
 
 ## Other browsers
-This fork of 4chan X is not guaranteed to work correctly in other browsers, but you are welcome to try your luck. Pull requests to fix the bugs you will likely find are always welcome. You may have better luck with [loadletter's v2 fork](https://github.com/loadletter/4chan-x), which has fewer features but less dependence on browser-specific APIs.
+This fork of 4chan X is not guaranteed to work correctly in other browsers, but you are welcome to try your luck. Pull requests to fix the bugs you will likely find are always welcome. You fare better with [loadletter's v2 fork](https://github.com/loadletter/4chan-x), which has fewer features but less dependence on browser-specific APIs.
 
 ### dwb
 1. Install dwb with your package manager
