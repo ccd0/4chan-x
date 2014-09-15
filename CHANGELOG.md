@@ -1,3 +1,5 @@
+The attributions below are for work that has been incorporated into the script and do not indicate direct involvement in this fork. All changes to the script are the fault of the maintainer (ccd0).
+
 ### v1.9.3.0 
 *2014-09-14*
 
