@@ -307,6 +307,7 @@ module.exports = (grunt) ->
     headerPrefix = new Array(+headerLevel + 1).join '#'
     today     = grunt.template.today 'yyyy-mm-dd'
     changelog = grunt.file.read 'CHANGELOG.md'
+    [_, note, body] = changelog.match /([^]*?\n\n)([^]*)/
 
-    grunt.file.write 'CHANGELOG.md', "#{headerPrefix} v#{version} \n*#{today}*\n\n#{changelog}"
+    grunt.file.write 'CHANGELOG.md', "#{note}#{headerPrefix} v#{version} \n*#{today}*\n\n#{body}"
     grunt.log.ok "Changelog updated for v#{version}."
