@@ -314,5 +314,5 @@ module.exports = (grunt) ->
     throw new Error 'Separator not found.' if breakPos is -1
     breakPos += separator.length
 
-    grunt.file.write 'CHANGELOG.md', "#{changelog[..breakPos-1]}#{headerPrefix} v#{version} <sup>[F](#{oldVersions}#{version}#{filename}.user.js \"Firefox version\") [C](#{oldVersions}#{version}#{filename}.crx \"Chromium version\")</sup>\n*#{today}*\n\n#{changelog[breakPos..]}"
+    grunt.file.write 'CHANGELOG.md', "#{changelog[..breakPos-1]}#{headerPrefix} v#{version} \n*#{today}* - [[Firefox](#{oldVersions}#{version}#{filename}.user.js \"Firefox version\")] [[Chromium](#{oldVersions}#{version}#{filename}.crx \"Chromium version\")]\n\n#{changelog[breakPos..]}"
     grunt.log.ok "Changelog updated for v#{version}."
