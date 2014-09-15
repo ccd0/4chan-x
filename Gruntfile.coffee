@@ -302,12 +302,14 @@ module.exports = (grunt) ->
     grunt.log.ok "Version updated from v#{oldversion} to v#{version}."
 
   grunt.registerTask 'updcl', 'Update the changelog', ->
-    {version} = grunt.config('pkg').meta
+    {meta, name} = grunt.config('pkg')
+    {version, oldVersions, suffix} = meta
     headerLevel = Math.min version.replace(/(\.0)*$/, '').split('.').length, 3
     headerPrefix = new Array(+headerLevel + 1).join '#'
+    filename  = "/builds/#{name}#{suffix.noupdate}"
     today     = grunt.template.today 'yyyy-mm-dd'
     changelog = grunt.file.read 'CHANGELOG.md'
-    [_, note, body] = changelog.match /([^]*?\n\n)([^]*)/
+    [_, note, body] = changelog.match /([^]*<\!-- end notes -->\n)([^]*)/
 
-    grunt.file.write 'CHANGELOG.md', "#{note}#{headerPrefix} v#{version} \n*#{today}*\n\n#{body}"
+    grunt.file.write 'CHANGELOG.md', "#{note}#{headerPrefix} v#{version} <sup>[F](#{oldVersions}#{version}#{filename}.user.js \"Firefox version\") [C](#{oldVersions}#{version}#{filename}.crx \"Chromium version\")</sup>\n*#{today}*\n\n#{body}"
     grunt.log.ok "Changelog updated for v#{version}."
