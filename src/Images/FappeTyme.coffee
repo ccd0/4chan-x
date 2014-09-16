@@ -31,10 +31,10 @@ FappeTyme =
   catalogNode: ->
     {file} = @thread.OP
     return if !file
-    span = $.el 'span',
+    filename = $.el 'div',
       textContent: file.name
       className:   'werkTyme-filename'
-    $.add @nodes.thumb.parentNode, span
+    $.add @nodes.thumb.parentNode, filename
 
   cb:
     set: (type) ->
