@@ -747,12 +747,12 @@ span.hide-announcement {
   padding-bottom: 16px;
 }
 /* Fappe Tyme */
-.fappeTyme  .thread > .noFile,
-.fappeTyme .threadContainer > .noFile {
+:root.fappeTyme .thread > .noFile,
+:root.fappeTyme .threadContainer > .noFile {
   display: none;
 }
 /* Werk Tyme */
-.werkTyme .postContainer:not(.noFile) .fileThumb {
+:root.werkTyme .postContainer:not(.noFile) .fileThumb {
   display: none;
 }
 
