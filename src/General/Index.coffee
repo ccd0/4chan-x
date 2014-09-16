@@ -182,10 +182,10 @@ Index =
     return unless Index.db.get {boardID: @board.ID, threadID: @ID}
     @pin()
   catalogNode: ->
-    $.on @nodes.thumb, 'click', Index.onClick
+    $.on @nodes.thumb.parentNode, 'click', Index.onClick
   onClick: (e) ->
     return if e.button isnt 0
-    thread = g.threads[@parentNode.parentNode.dataset.fullID]
+    thread = g.threads[@parentNode.dataset.fullID]
     if e.shiftKey
       Index.toggleHide thread
     else if e.altKey

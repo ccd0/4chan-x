@@ -834,16 +834,18 @@ span.hide-announcement {
 }
 /* Werk Tyme */
 :root.werkTyme .postContainer:not(.noFile) .fileThumb,
-.werkTyme .thumb > img,
-:root:not(.werkTyme) .thumb > span {
+:root.werkTyme .thumb:not(.deleted-file):not(.no-file),
+:root:not(.werkTyme) .werkTyme-filename {
   display: none;
 }
-.werkTyme .thumb {
+.werkTyme-filename {
   font-weight: bold;
+}
+:root.werkTyme .catalog-thread > a {
   text-align: center;
 }
-.werkTyme .pinned .thumb,
-.werkTyme .filter-highlight .thumb {
+.pinned .werkTyme-filename,
+.filter-highlight .werkTyme-filename {
   border: 2px solid rgba(255, 0, 0, .5);
 }
 
