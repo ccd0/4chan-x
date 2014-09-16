@@ -329,9 +329,9 @@ Build =
       imgClass = 'no-file'
 
     thumb = if imgClass
-      <%= html('<img src="${src}" class="${imgClass}">') %>
+      <%= html('<img src="${src}" class="thumb ${imgClass}">') %>
     else
-      <%= html('<img src="${src}" width="${imgWidth}" height="${imgHeight}">') %>
+      <%= html('<img src="${src}" class="thumb" width="${imgWidth}" height="${imgHeight}">') %>
 
     postCount = data.replies + 1
     fileCount = data.images  + !!data.ext
@@ -345,7 +345,7 @@ Build =
     root = $.el 'div',
       className: 'catalog-thread'
     $.extend root, <%= html(
-      '<a href="/${thread.board}/thread/${thread.ID}" class="thumb">' +
+      '<a href="/${thread.board}/thread/${thread.ID}">' +
         '&{thumb}' +
       '</a>' +
       '<div class="thread-stats" title="Post count / File count / Page count">' +

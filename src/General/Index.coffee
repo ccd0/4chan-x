@@ -185,7 +185,7 @@ Index =
     $.on @nodes.thumb, 'click', Index.onClick
   onClick: (e) ->
     return if e.button isnt 0
-    thread = g.threads[@parentNode.dataset.fullID]
+    thread = g.threads[@parentNode.parentNode.dataset.fullID]
     if e.shiftKey
       Index.toggleHide thread
     else if e.altKey

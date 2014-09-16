@@ -516,30 +516,30 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   word-break: break-word;
   vertical-align: top;
 }
-.thumb {
+.catalog-thread > a {
   flex-shrink: 0;
   position: relative;
 }
-.thumb > img {
+.thumb {
   max-width: 150px;
   max-height: 150px;
   border-radius: 2px;
   box-shadow: 0 0 5px rgba(0, 0, 0, .25);
 }
-.thumb:not(.deleted-file):not(.no-file) > img {
+.thumb:not(.deleted-file):not(.no-file) {
   min-width: 30px;
   min-height: 30px;
 }
-.thumb.spoiler-file > img {
+.thumb.spoiler-file {
   width: 100px;
   height: 100px;
 }
-.thumb.deleted-file > img {
+.thumb.deleted-file {
   width: 127px;
   height: 13px;
   padding: 20px 11px;
 }
-.thumb.no-file > img {
+.thumb.no-file {
   width: 77px;
   height: 13px;
   padding: 20px 36px;
@@ -861,8 +861,8 @@ span.hide-announcement {
 .filter-highlight > .reply {
   box-shadow: -5px 0 rgba(255, 0, 0, .5);
 }
-.pinned .thumb > img,
-.filter-highlight .thumb > img {
+.pinned .thumb,
+.filter-highlight .thumb {
   border: 2px solid rgba(255, 0, 0, .5);
 }
 
