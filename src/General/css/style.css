@@ -752,7 +752,7 @@ span.hide-announcement {
   display: none;
 }
 /* Werk Tyme */
-.werkTyme .post .file {
+.werkTyme .postContainer:not(.noFile) .fileThumb {
   display: none;
 }
 
