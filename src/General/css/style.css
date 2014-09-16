@@ -544,22 +544,17 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   height: 13px;
   padding: 20px 36px;
 }
-.thread-icons > img {
+.thread-icons > img,
+.catalog-thread > .thread-stats > .menu-button {
   width: 1em;
   height: 1em;
   margin: 0;
   vertical-align: text-top;
 }
-.catalog-thread > a:not(:hover) > .menu-button > i {
-  display: none;
-}
-.catalog-thread > a > .menu-button {
-  position: absolute;
-  top: 1px;
-  right: 1px;
-}
-.catalog-thread > a > .menu-button > i {
-  font-size: 14px;
+.catalog-thread > .thread-stats > .menu-button {
+  text-align: center;
+  bottom: 1px;
+  font-weight: normal;
 }
 .thread-stats {
   flex-shrink: 0;
