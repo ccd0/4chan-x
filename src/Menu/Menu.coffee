@@ -17,22 +17,16 @@ Menu =
 
   node: ->
     if @isClone
-      $.on $('.menu-button', @nodes.info), 'click', Menu.toggle
+      Menu.makeButton @, $('.menu-button', @nodes.info)
       return
-    $.add @nodes.info, Menu.makeButton()
+    $.add @nodes.info, Menu.makeButton @
 
   catalogNode: ->
-    $.add @nodes.thumb.parentNode, Menu.makeButton()
+    post = g.threads[@thread.fullID].OP
+    $.add @nodes.thumb.parentNode, Menu.makeButton post
 
-  makeButton: ->
-    clone = Menu.button.cloneNode true
-    $.on clone, 'click', Menu.toggle
-    clone
-
-  toggle: (e) ->
-    try
-      post = Get.postFromNode @
-    catch
-      fullID = @parentNode.parentNode.dataset.fullID
-      post = g.threads[fullID].OP
-    Menu.menu.toggle e, @, post
+  makeButton: (post, button) ->
+    button or= Menu.button.cloneNode true
+    $.on button, 'click', (e) ->
+      Menu.menu.toggle e, @, post
+    button
