@@ -83,10 +83,9 @@ Gallery =
     nodes.thumbs.scrollTop = 0
     nodes.current.parentElement.scrollTop = 0
 
-    Gallery.open if image
-      $("[href='#{image.href}']", nodes.thumbs) or Gallery.images[0]
-    else
-      Gallery.images[0]
+    thumb = $ "[href='#{image.href}']", nodes.thumbs if image
+    thumb or= Gallery.images[Gallery.images.length-1]
+    Gallery.open thumb if thumb
 
     doc.style.overflow = 'hidden'
     nodes.total.textContent = Gallery.images.length
