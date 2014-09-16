@@ -302,11 +302,17 @@ module.exports = (grunt) ->
     grunt.log.ok "Version updated from v#{oldversion} to v#{version}."
 
   grunt.registerTask 'updcl', 'Update the changelog', ->
-    {version} = grunt.config('pkg').meta
+    {meta, name} = grunt.config('pkg')
+    {version, oldVersions, suffix} = meta
     headerLevel = Math.min version.replace(/(\.0)*$/, '').split('.').length, 3
     headerPrefix = new Array(+headerLevel + 1).join '#'
+    filename  = "/builds/#{name}#{suffix.noupdate}"
     today     = grunt.template.today 'yyyy-mm-dd'
     changelog = grunt.file.read 'CHANGELOG.md'
+    separator = "<!-- v#{version.replace /\.\d+$/, '.x'} -->\n"
+    breakPos  = changelog.indexOf(separator)
+    throw new Error 'Separator not found.' if breakPos is -1
+    breakPos += separator.length
 
-    grunt.file.write 'CHANGELOG.md', "#{headerPrefix} v#{version} \n*#{today}*\n\n#{changelog}"
+    grunt.file.write 'CHANGELOG.md', "#{changelog[..breakPos-1]}#{headerPrefix} v#{version} \n*#{today}* - [[Firefox](#{oldVersions}#{version}#{filename}.user.js \"Firefox version\")] [[Chromium](#{oldVersions}#{version}#{filename}.crx \"Chromium version\")]\n\n#{changelog[breakPos..]}"
     grunt.log.ok "Changelog updated for v#{version}."
