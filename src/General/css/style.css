@@ -833,8 +833,18 @@ span.hide-announcement {
   display: none;
 }
 /* Werk Tyme */
-.werkTyme .post .file {
+.werkTyme .post .file,
+.werkTyme .thumb > img,
+:root:not(.werkTyme) .thumb > span {
   display: none;
+}
+.werkTyme .thumb {
+  font-weight: bold;
+  text-align: center;
+}
+.werkTyme .pinned .thumb,
+.werkTyme .filter-highlight .thumb {
+  border: 2px solid rgba(255, 0, 0, .5);
 }
 
 /* Index/Reply Navigation */
