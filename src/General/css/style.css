@@ -575,9 +575,6 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   overflow: hidden;
   text-align: center;
 }
-.catalog-thread .comment br + br {
-  display: none;
-}
 
 /* Announcement Hiding */
 :root.hide-announcement #globalMessage {
