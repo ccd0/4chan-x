@@ -137,10 +137,9 @@ ImageExpand =
       $.off el, 'error', ImageExpand.error
       if file.isVideo
         el.pause()
-        TrashQueue.add el, post
         for eventName, cb of ImageExpand.videoCB
           $.off el, eventName, cb
-        return
+      TrashQueue.add el, post
 
   expand: (post, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
