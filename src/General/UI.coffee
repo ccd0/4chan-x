@@ -341,13 +341,10 @@ UI = do ->
     height = @el.offsetHeight
     {clientX, clientY} = e
 
-    top = clientY - 120
-    top = if @clientHeight <= height or top <= 0
-      0
-    else if top + height >= @clientHeight
-      @clientHeight - height
+    top = if @isImage
+      Math.max 0, clientY * (@clientHeight - height) / @clientHeight
     else
-      top
+      Math.max 0, Math.min(@clientHeight - height, clientY - 120)
 
     threshold = @clientWidth / 2
     threshold = Math.max threshold, @clientWidth - 400 unless @isImage
