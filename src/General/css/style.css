@@ -855,6 +855,9 @@ span.hide-announcement {
   top: 25px;
   right: 10px;
 }
+:root.catalog-mode #navlinks {
+  display: none;
+}
 
 /* Filter */
 .opContainer.filter-highlight {
