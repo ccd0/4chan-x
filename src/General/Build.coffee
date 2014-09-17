@@ -353,7 +353,7 @@ Build =
         '<span class="thread-icons"></span>' +
       '</div>' +
       '&{subject}' +
-      '<div class="comment">&{thread.OP.nodes.comment}</div>'
+      '<div class="comment">&{thread.OP.info.commentHTML}</div>'
     ) %>
 
     root.dataset.fullID = thread.fullID

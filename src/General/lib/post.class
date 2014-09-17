@@ -86,6 +86,7 @@ class Post
   parseComment: ->
     # Merge text nodes and remove empty ones.
     @nodes.comment.normalize()
+
     # Get the comment's text.
     # <br> -> \n
     # Remove:
@@ -98,7 +99,11 @@ class Post
     for node in $$ '.abbr, .exif, b', bq
       $.rm node
     @info.comment = @nodesToText bq
-    # Hide spoilers.
+
+    # Save cleaned comment HTML.
+    @info.commentHTML = <%= html('&{bq}') %>
+
+    # Get the comment's text with spoilers hidden.
     spoilers = $$ 's', bq
     @info.commentSpoilered = if spoilers.length
       for node in spoilers
