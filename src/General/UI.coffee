@@ -307,6 +307,7 @@ UI = do ->
       root
       el
       style: el.style
+      isImage: el.nodeName in ['IMG', 'VIDEO']
       cb
       endEvents
       latestEvent
@@ -345,7 +346,9 @@ UI = do ->
     else
       top
 
-    [left, right] = if clientX <= @clientWidth / 2
+    threshold = @clientWidth / 2
+    threshold = Math.max threshold, @clientWidth - 400 unless @isImage
+    [left, right] = if clientX <= threshold
       [clientX + 45 + 'px', null]
     else
       [null, @clientWidth - clientX + 45 + 'px']
