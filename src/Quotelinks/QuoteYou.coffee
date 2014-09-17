@@ -59,6 +59,6 @@ QuoteYou =
       else
         QuoteYou.lastRead = post
         window.location = "##{post.id}"
-        Header.scrollToPost post
+        Header.scrollTo post
         $.addClass $('.post', post), 'highlight'
         return true
