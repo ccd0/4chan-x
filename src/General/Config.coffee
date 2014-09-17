@@ -189,15 +189,15 @@ Config =
       ]
       'Image Prefetching': [
         false
-        'Preload images'
+        'Add link in header menu to turn on image preloading.'
       ]
       'Fappe Tyme': [
         false
-        'Hide posts without images. *hint* *hint*'
+        'Hide posts without images when header menu item is checked. *hint* *hint*'
       ]
       'Werk Tyme': [
         false
-        'Hide all post images.'
+        'Hide all post images when header menu item is checked.'
       ]
       'Autoplay': [
         true
@@ -661,7 +661,7 @@ vp-replace
     ]
     'Update': [
       'r'
-      'Update the thread now.'
+      'Update the thread / refresh the index.'
     ]
     # Images
     'Expand image': [
@@ -678,11 +678,11 @@ vp-replace
     ]
     'fappeTyme': [
       'f'
-      'Fappe Tyme.'
+      'Toggle Fappe Tyme.'
     ]
     'werkTyme': [
       'Shift+w'
-      'Werk Tyme'
+      'Toggle Werk Tyme.'
     ]
     # Board Navigation
     'Front page': [
@@ -703,7 +703,7 @@ vp-replace
     ]
     'Open catalog': [
       'Shift+c'
-      'Open the catalog of the current board'
+      'Open the catalog of the current board.'
     ]
     'Search form': [
       'Ctrl+Alt+s'
