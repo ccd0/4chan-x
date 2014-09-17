@@ -310,6 +310,7 @@ UI = do ->
       isImage: el.nodeName in ['IMG', 'VIDEO']
       cb
       endEvents
+      ready: false
       latestEvent
       clientHeight: doc.clientHeight
       clientWidth:  doc.clientWidth
@@ -321,6 +322,7 @@ UI = do ->
     $.asap ->
       !el.parentNode or asapTest()
     , ->
+      o.ready = true
       o.hover o.latestEvent if el.parentNode
 
     $.on root, endEvents,   o.hoverend
@@ -335,6 +337,7 @@ UI = do ->
 
   hover = (e) ->
     @latestEvent = e
+    return unless @ready
     height = @el.offsetHeight
     {clientX, clientY} = e
 
