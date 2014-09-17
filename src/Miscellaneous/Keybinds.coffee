@@ -21,21 +21,21 @@ Keybinds =
     {target} = e
     if target.nodeName in ['INPUT', 'TEXTAREA']
       return unless /(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test key
-    unless g.VIEW is 'catalog'
+    unless g.VIEW is 'catalog' or g.VIEW is 'index' and Conf['JSON Navigation'] and Conf['Index Mode'] is 'catalog'
       threadRoot = Nav.getThread()
       if op = $ '.op', threadRoot
         thread = Get.postFromNode(op).thread
     switch key
       # QR & Options
       when Conf['Toggle board list']
-        if Conf['Custom Board Navigation']
-          Header.toggleBoardList()
+        return unless Conf['Custom Board Navigation']
+        Header.toggleBoardList()
       when Conf['Toggle header']
         Header.toggleBarVisibility()
       when Conf['Open empty QR']
         Keybinds.qr()
       when Conf['Open QR']
-        return if g.VIEW is 'catalog'
+        return unless threadRoot
         Keybinds.qr threadRoot
       when Conf['Open settings']
         Settings.open()
@@ -45,11 +45,13 @@ Keybinds =
         else if (notifications = $$ '.notification').length
           for notification in notifications
             $('.close', notification).click()
-        else if QR.nodes
+        else if QR.nodes and !QR.nodes.el.hidden
           if Conf['Persistent QR']
             QR.hide()
           else
             QR.close()
+        else
+          return
       when Conf['Spoiler tags']
         return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'spoiler', target
@@ -63,25 +65,31 @@ Keybinds =
         return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'math', target
       when Conf['Toggle sage']
-        Keybinds.sage() if QR.nodes
+        return unless QR.nodes and !QR.nodes.el.hidden
+        Keybinds.sage()
       when Conf['Submit QR']
-        QR.submit() if QR.nodes and !QR.status()
+        return unless QR.nodes and !QR.nodes.el.hidden
+        QR.submit() if !QR.status()
       # Index/Thread related
       when Conf['Update']
         switch g.VIEW
           when 'thread'
-            ThreadUpdater.update() if Conf['Thread Updater']
+            return unless Conf['Thread Updater']
+            ThreadUpdater.update()
           when 'index'
-            if Conf['JSON Navigation'] then Index.update()
+            return unless Conf['JSON Navigation']
+            Index.update()
+          else
+            return
       when Conf['Watch']
-        return if g.VIEW is 'catalog'
+        return unless thread
         ThreadWatcher.toggle thread
       # Images
       when Conf['Expand image']
-        return if g.VIEW is 'catalog'
+        return unless threadRoot
         Keybinds.img threadRoot
       when Conf['Expand images']
-        return if g.VIEW is 'catalog'
+        return unless threadRoot
         Keybinds.img threadRoot, true
       when Conf['Open Gallery']
         return if g.VIEW is 'catalog'
@@ -95,6 +103,7 @@ Keybinds =
       # Board Navigation
       when Conf['Front page']
         if Conf['JSON Navigation'] and g.VIEW is 'index'
+          return unless Conf['Index Mode'] is 'paged'
           Index.userPageNav 1
         else
           window.location = "/#{g.BOARD}/"
@@ -103,16 +112,16 @@ Keybinds =
       when Conf['Next page']
         return unless g.VIEW is 'index'
         if Conf['JSON Navigation']
-          if Conf['Index Mode'] isnt 'all pages'
-            $('.next button', Index.pagelist).click()
+          return unless Conf['Index Mode'] is 'paged'
+          $('.next button', Index.pagelist).click()
         else
           if form = $ '.next form'
             window.location = form.action
       when Conf['Previous page']
         return unless g.VIEW is 'index'
         if Conf['JSON Navigation']
-          if Conf['Index Mode'] isnt 'all pages'
-            $('.prev button', Index.pagelist).click()
+          return unless Conf['Index Mode'] is 'paged'
+          $('.prev button', Index.pagelist).click()
         else
           if form = $ '.prev form'
             window.location = form.action
@@ -128,42 +137,42 @@ Keybinds =
           window.location = "/#{g.BOARD}/catalog"
       # Thread Navigation
       when Conf['Next thread']
-        return if g.VIEW isnt 'index'
+        return if g.VIEW isnt 'index' or !threadRoot
         Nav.scroll +1
       when Conf['Previous thread']
-        return if g.VIEW isnt 'index'
+        return if g.VIEW isnt 'index' or !threadRoot
         Nav.scroll -1
       when Conf['Expand thread']
-        return if g.VIEW isnt 'index'
+        return if g.VIEW isnt 'index' or !threadRoot
         ExpandThread.toggle thread
       when Conf['Open thread']
-        return if g.VIEW isnt 'index'
+        return if g.VIEW isnt 'index' or !threadRoot
         Keybinds.open thread
       when Conf['Open thread tab']
-        return if g.VIEW isnt 'index'
+        return if g.VIEW isnt 'index' or !threadRoot
         Keybinds.open thread, true
       # Reply Navigation
       when Conf['Next reply']
-        return if g.VIEW is 'catalog'
+        return unless threadRoot
         Keybinds.hl +1, threadRoot
       when Conf['Previous reply']
-        return if g.VIEW is 'catalog'
+        return unless threadRoot
         Keybinds.hl -1, threadRoot
       when Conf['Deselect reply']
-        return if g.VIEW is 'catalog'
+        return unless threadRoot
         Keybinds.hl  0, threadRoot
       when Conf['Hide']
-        return if g.VIEW is 'catalog'
+        return unless thread
         ThreadHiding.toggle thread if ThreadHiding.db
       when Conf['Previous Post Quoting You']
-        return if g.VIEW is 'catalog'
+        return unless threadRoot
         QuoteYou.cb.seek 'preceding'
       when Conf['Next Post Quoting You']
-        return if g.VIEW is 'catalog'
+        return unless threadRoot
         QuoteYou.cb.seek 'following'
       <% if (tests_enabled) { %>
       when 't'
-        return if g.VIEW is 'catalog'
+        return unless threadRoot
         BuildTest.testAll()
       <% } %>
       else
