@@ -360,7 +360,7 @@ Build =
     $.addClass root, 'pinned' if thread.isPinned
     $.addClass root, thread.OP.highlights... if thread.OP.highlights
 
-    for quotelink in $$ '.quotelink', root.lastElementChild
+    for quotelink in $$ '.quotelink, .deadlink', root.lastElementChild
       $.replace quotelink, [quotelink.childNodes...]
     for pp in $$ '.prettyprint', root.lastElementChild
       $.replace pp, $.tn pp.textContent
