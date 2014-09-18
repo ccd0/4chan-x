@@ -163,7 +163,7 @@ Unread =
     Unread.update() if e
 
   saveLastReadPost: $.debounce 2 * $.SECOND, ->
-    return if Unread.thread.isDead
+    return if Unread.thread.isDead and !Unread.thread.isArchived
     Unread.db.set
       boardID:  Unread.thread.board.ID
       threadID: Unread.thread.ID
