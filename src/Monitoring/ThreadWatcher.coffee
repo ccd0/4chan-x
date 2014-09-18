@@ -102,13 +102,12 @@ ThreadWatcher =
           ThreadWatcher.db.delete {boardID, threadID}
         else
           data.isDead = true
-          delete data.unread
           ThreadWatcher.db.set {boardID, threadID, val: data}
       ThreadWatcher.refresh()
     onThreadRefresh: (e) ->
       thread = g.threads[e.detail.threadID]
       return unless e.detail[404] and ThreadWatcher.db.get {boardID: thread.board.ID, threadID: thread.ID}
-      # Update 404 status.
+      # Update dead status.
       ThreadWatcher.add thread
 
   fetchCount:
@@ -120,7 +119,7 @@ ThreadWatcher =
       ThreadWatcher.fetchStatus thread
     return
   fetchStatus: ({boardID, threadID, data}) ->
-    return if data.isDead
+    return if data.isDead and !Conf['Show Unread Count']
     {fetchCount} = ThreadWatcher
     if fetchCount.fetching is 0
       ThreadWatcher.status.textContent = '...'
@@ -139,6 +138,12 @@ ThreadWatcher =
         ThreadWatcher.status.textContent = status
 
         if @status is 200 and @response
+          isDead = !!@response.posts[0].archived
+          if isDead and Conf['Auto Prune']
+            ThreadWatcher.db.delete {boardID, threadID}
+            ThreadWatcher.refresh()
+            return
+
           lastReadPost = ThreadWatcher.unreaddb.get
             boardID: boardID
             threadID: threadID
@@ -150,7 +155,8 @@ ThreadWatcher =
             if postObj.no > lastReadPost and !QR.db?.get {boardID, threadID, postID: postObj.no}
               unread++
 
-          if unread isnt data.unread
+          if isDead isnt data.isDead or unread isnt data.unread
+            data.isDead = isDead
             data.unread = unread
             ThreadWatcher.db.set {boardID, threadID, val: data}
             ThreadWatcher.refresh()
@@ -163,8 +169,6 @@ ThreadWatcher =
             delete data.unread
             ThreadWatcher.db.set {boardID, threadID, val: data}
           ThreadWatcher.refresh()
-    ,
-      type: if Conf['Show Unread Count'] then 'get' else 'head'
 
   getAll: ->
     all = []
@@ -189,10 +193,8 @@ ThreadWatcher =
       textContent: if Conf['Show Unread Count'] and data.unread? then "\u00A0(#{data.unread})" else ''
       className: 'watcher-unread'
 
-    if Conf['404 Redirect'] and data.isDead
-      href = Redirect.to 'thread', {boardID, threadID}
     link = $.el 'a',
-      href: href or "/#{boardID}/thread/#{threadID}"
+      href: "/#{boardID}/thread/#{threadID}"
       title: data.excerpt
       className: 'watcher-link'
     $.add link, [title, count]
@@ -245,7 +247,7 @@ ThreadWatcher =
     data.excerpt  = Get.threadExcerpt thread
     ThreadWatcher.db.set {boardID, threadID, val: data}
     ThreadWatcher.refresh()
-    if Conf['Show Unread Count'] and !data.isDead
+    if Conf['Show Unread Count']
       ThreadWatcher.fetchStatus {boardID, threadID, data}
   rm: (boardID, threadID) ->
     ThreadWatcher.db.delete {boardID, threadID}
@@ -296,12 +298,12 @@ ThreadWatcher =
             textContent: 'Open all threads'
         refresh: -> (if ThreadWatcher.list.firstElementChild then $.rmClass else $.addClass) @el, 'disabled'
 
-      # `Prune 404'd threads` entry
+      # `Prune dead threads` entry
       entries.push
         cb: ThreadWatcher.cb.pruneDeads
         entry:
           el: $.el 'a',
-            textContent: 'Prune 404\'d threads'
+            textContent: 'Prune dead threads'
         refresh: -> (if $('.dead-thread', ThreadWatcher.list) then $.rmClass else $.addClass) @el, 'disabled'
 
       # `Settings` entries:

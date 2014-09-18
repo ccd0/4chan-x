@@ -74,7 +74,7 @@ ThreadUpdater =
     $.on d,      'QRPostSuccessful', ThreadUpdater.cb.checkpost
     $.on d,      'visibilitychange', ThreadUpdater.cb.visibility
 
-    if g.DEAD
+    if ThreadUpdater.thread.isArchived
       ThreadUpdater.set 'status', 'Archived', 'warning'
     else
       ThreadUpdater.cb.online()
@@ -87,7 +87,7 @@ ThreadUpdater =
 
   cb:
     online: ->
-      return if g.DEAD
+      return if ThreadUpdater.thread.isDead
       if ThreadUpdater.online = navigator.onLine
         ThreadUpdater.outdateCount = 0
         ThreadUpdater.setInterval()
@@ -105,7 +105,7 @@ ThreadUpdater =
         ThreadUpdater.seconds = 0
         ThreadUpdater.outdateCount = 0
         ThreadUpdater.set 'timer', '...'
-      unless g.DEAD or ThreadUpdater.foundPost or ThreadUpdater.checkPostCount >= 5
+      unless ThreadUpdater.thread.isDead or ThreadUpdater.foundPost or ThreadUpdater.checkPostCount >= 5
         return setTimeout ThreadUpdater.update, ++ThreadUpdater.checkPostCount * $.SECOND
       ThreadUpdater.setInterval()
       ThreadUpdater.checkPostCount = 0
@@ -131,9 +131,9 @@ ThreadUpdater =
       {req} = ThreadUpdater
       switch req.status
         when 200
-          g.DEAD = !!+req.response.posts[0].archived
           ThreadUpdater.parse req.response.posts
-          if g.DEAD
+          if !!req.response.posts[0].archived
+            ThreadUpdater.thread.isArchived = true
             ThreadUpdater.set 'status', 'Archived', 'warning'
             ThreadUpdater.kill()
           else
@@ -151,7 +151,6 @@ ThreadUpdater =
             else
               confirmed = false
             if confirmed
-              g.DEAD = true
               ThreadUpdater.set 'status', '404', 'warning'
               ThreadUpdater.kill()
             else

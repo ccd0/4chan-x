@@ -180,12 +180,18 @@ Unread =
     countQuotingYou = Object.keys(Unread.postsQuotingYou).length
 
     if Conf['Unread Count']
-      d.title = "#{if Conf['Quoted Title'] and countQuotingYou then '(!) ' else ''}#{if count or !Conf['Hide Unread Count at (0)'] then "(#{count}) " else ''}#{if g.DEAD then Unread.title.replace '-', '- 404 -' else Unread.title}"
+      titleQuotingYou = if Conf['Quoted Title'] and countQuotingYou then '(!) ' else ''
+      titleCount = if count or !Conf['Hide Unread Count at (0)'] then "(#{count}) " else ''
+      titleDead = if Unread.thread.isDead
+        Unread.title.replace '-', (if Unread.thread.isArchived then '- Archived -' else '- 404 -')
+      else
+        Unread.title
+      d.title = "#{titleQuotingYou}#{titleCount}#{titleDead}"
 
     return unless Conf['Unread Favicon']
 
     Favicon.el.href =
-      if g.DEAD
+      if Unread.thread.isDead
         if countQuotingYou
           Favicon.unreadDeadY
         else if count
