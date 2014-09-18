@@ -472,7 +472,7 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 :root.index-loading .navLinks,
 :root.index-loading .board,
 :root.index-loading .pagelist,
-:root:not(.catalog-mode) #hidden-toggle,
+:root:not(.catalog-mode) #hidden-label,
 :root:not(.catalog-mode) #index-size {
   display: none;
 }
