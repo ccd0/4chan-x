@@ -41,7 +41,7 @@ ImageHover =
       cb: ->
         if isVideo
           el.pause()
-          TrashQueue.add el, post
+        TrashQueue.add el, post
         el.removeAttribute 'id'
         $.queueTask -> delete file.isHovered
   error: ->
