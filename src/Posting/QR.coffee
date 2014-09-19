@@ -80,7 +80,9 @@ QR =
     QR.hide() if Conf['Auto-Hide QR']
 
   statusCheck: ->
-    if g.DEAD
+    return unless QR.nodes
+    {thread} = QR.posts[0]
+    if thread isnt 'new' and g.threads["#{g.BOARD}.#{thread}"].isDead
       QR.abort()
     else
       QR.status()

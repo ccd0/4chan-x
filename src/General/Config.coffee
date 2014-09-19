@@ -476,7 +476,7 @@ Config =
     ]
     'Auto Prune': [
       false
-      'Automatically prune 404\'d threads.'
+      'Automatically prune dead threads.'
     ]
     'Show Unread Count': [
       true
