@@ -555,8 +555,10 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 }
 .catalog-stats > .menu-button {
   text-align: center;
-  bottom: 1px;
   font-weight: normal;
+}
+.catalog-stats > .menu-button > i::before {
+  line-height: 11px;
 }
 .catalog-stats {
   flex-shrink: 0;
