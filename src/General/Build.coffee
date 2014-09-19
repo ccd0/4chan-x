@@ -364,7 +364,7 @@ Build =
       $.replace quotelink, [quotelink.childNodes...]
     for pp in $$ '.prettyprint', root.lastElementChild
       $.replace pp, $.tn pp.textContent
-    for br in $$ 'br', root.lastElementChild when br.previousSibling.nodeName is 'BR'
+    for br in $$ 'br', root.lastElementChild when !br.previousSibling or br.previousSibling.nodeName is 'BR'
       $.rm br
 
     if thread.isSticky
