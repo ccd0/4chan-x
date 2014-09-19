@@ -329,9 +329,9 @@ Build =
       imgClass = 'no-file'
 
     thumb = if imgClass
-      <%= html('<img src="${src}" class="thumb ${imgClass}">') %>
+      <%= html('<img src="${src}" class="catalog-thumb ${imgClass}">') %>
     else
-      <%= html('<img src="${src}" class="thumb" width="${imgWidth}" height="${imgHeight}">') %>
+      <%= html('<img src="${src}" class="catalog-thumb" width="${imgWidth}" height="${imgHeight}">') %>
 
     postCount = data.replies + 1
     fileCount = data.images  + !!data.ext
@@ -348,9 +348,9 @@ Build =
       '<a href="/${thread.board}/thread/${thread.ID}">' +
         '&{thumb}' +
       '</a>' +
-      '<div class="thread-stats" title="Post count / File count / Page count">' +
+      '<div class="catalog-stats" title="Post count / File count / Page count">' +
         '<span class="post-count">${postCount}</span> / <span class="file-count">${fileCount}</span> / <span class="page-count">${pageCount}</span>' +
-        '<span class="thread-icons"></span>' +
+        '<span class="catalog-icons"></span>' +
       '</div>' +
       '&{subject}' +
       '<div class="comment">&{thread.OP.info.commentHTML}</div>'
@@ -368,12 +368,12 @@ Build =
       $.rm br
 
     if thread.isSticky
-      $.add $('.thread-icons', root), $.el 'img',
+      $.add $('.catalog-icons', root), $.el 'img',
         src: "#{staticPath}sticky#{gifIcon}"
         className: 'stickyIcon'
         title: 'Sticky'
     if thread.isClosed
-      $.add $('.thread-icons', root), $.el 'img',
+      $.add $('.catalog-icons', root), $.el 'img',
         src: "#{staticPath}closed#{gifIcon}"
         className: 'closedIcon'
         title: 'Closed'
