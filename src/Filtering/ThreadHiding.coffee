@@ -1,6 +1,6 @@
 ThreadHiding =
   init: ->
-    return if g.VIEW isnt 'index'
+    return if g.VIEW isnt 'index' or !Conf['Thread Hiding Buttons'] and !Conf['Thread Hiding Link'] and !Conf['JSON Navigation']
 
     @db = new DataBoard 'hiddenThreads'
     @syncCatalog()
@@ -81,7 +81,7 @@ ThreadHiding =
         el: div
         order: 20
         open: ({thread, isReply}) ->
-          if isReply or thread.isHidden or Conf['Index Mode'] is 'catalog'
+          if isReply or thread.isHidden or Conf['JSON Navigation'] and Conf['Index Mode'] is 'catalog'
             return false
           ThreadHiding.menu.thread = thread
           true
@@ -188,7 +188,7 @@ ThreadHiding =
     return if thread.isHidden
     threadRoot = thread.OP.nodes.root.parentNode
     thread.isHidden = true
-    Index.updateHideLabel()
+    Index.updateHideLabel() if Conf['JSON Navigation']
 
     return threadRoot.hidden = true unless makeStub
 
@@ -200,4 +200,4 @@ ThreadHiding =
       delete thread.stub
     threadRoot = thread.OP.nodes.root.parentNode
     threadRoot.hidden = thread.isHidden = false
-    Index.updateHideLabel()
+    Index.updateHideLabel() if Conf['JSON Navigation']

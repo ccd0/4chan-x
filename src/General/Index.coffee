@@ -144,7 +144,7 @@ Index =
 
   menu:
     init: ->
-      return if g.VIEW isnt 'index' or !Conf['Menu'] or g.BOARD.ID is 'f'
+      return if g.VIEW isnt 'index' or !Conf['JSON Navigation'] or !Conf['Menu'] or g.BOARD.ID is 'f'
 
       Menu.menu.addEntry
         el: $.el 'a', href: 'javascript:;'
