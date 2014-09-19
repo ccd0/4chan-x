@@ -21,7 +21,7 @@ Fourchan =
           if (!jsMath) return;
           if (jsMath.loaded) {
             // process one post
-            jsMath.ProcessBeforeShowing(document.getElementById(e.detail));
+            jsMath.ProcessBeforeShowing(e.target);
           } else if (jsMath.Autoload && jsMath.Autoload.checked) {
             // load jsMath and process whole document
             jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);
@@ -30,6 +30,9 @@ Fourchan =
         }, false);
       '''
       Post.callbacks.push
+        name: 'Parse /sci/ math'
+        cb:   @math
+      CatalogThread.callbacks.push
         name: 'Parse /sci/ math'
         cb:   @math
   code: ->
@@ -44,8 +47,8 @@ Fourchan =
     return
   math: ->
     return if (@isClone and doc.contains @origin.nodes.root) or !$ '.math', @nodes.comment
-    $.asap (=> doc.contains @nodes.post), =>
-      $.event 'jsmath', @nodes.post.id, window
+    $.asap (=> doc.contains @nodes.comment), =>
+      $.event 'jsmath', null, @nodes.comment
   parseThread: (threadID, offset, limit) ->
     # Fix /sci/
     # Fix /g/
