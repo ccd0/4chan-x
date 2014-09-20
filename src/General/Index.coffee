@@ -2,6 +2,7 @@ Index =
   showHiddenThreads: false
   init: ->
     return if g.BOARD.ID is 'f' or g.VIEW isnt 'index' or !Conf['JSON Navigation']
+    @cb.popstate()
 
     @board = "#{g.BOARD}"
 
@@ -230,13 +231,10 @@ Index =
       Index.sort()
       Index.buildIndex()
     mode: ->
-      Index.cb.toggleCatalogMode()
-      Index.togglePagelist()
-      Index.buildIndex()
       mode = Conf['Index Mode']
-      if mode not in ['catalog', Conf['Previous Index Mode']]
-        Conf['Previous Index Mode'] = mode
-        $.set 'Previous Index Mode', mode
+      Index.currentPage = 1 if mode in ['all pages', 'catalog']
+      history.pushState {mode}, '', if Index.currentPage is 1 then './' else Index.currentPage
+      Index.setMode()
     sort: ->
       Index.sort()
       Index.buildIndex()
@@ -245,8 +243,16 @@ Index =
       Index.sort()
       Index.buildIndex()
     popstate: (e) ->
+      unless e?.state
+        # page load or hash change
+        history.replaceState {mode: Conf['Index Mode']}, ''
+        return
+      {mode} = e.state
       pageNum = Index.getCurrentPage()
-      Index.pageLoad pageNum if Index.currentPage isnt pageNum
+      return if Conf['Index Mode'] is mode and Index.currentPage is pageNum
+      Conf['Index Mode'] = mode
+      Index.currentPage = pageNum
+      Index.setMode()
     pageNav: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       switch e.target.nodeName
@@ -267,7 +273,7 @@ Index =
   getCurrentPage: ->
     +window.location.pathname.split('/')[2] or 1
   userPageNav: (pageNum) ->
-    history.pushState null, '', if pageNum is 1 then './' else pageNum
+    history.pushState {mode: Conf['Index Mode']}, '', if pageNum is 1 then './' else pageNum
     if Conf['Refreshed Navigation'] and Conf['Index Mode'] isnt 'all pages'
       Index.update pageNum
     else
@@ -279,6 +285,15 @@ Index =
     Index.buildIndex()
     Index.setPage()
     Index.scrollToIndex()
+  setMode: ->
+    Index.cb.toggleCatalogMode()
+    Index.togglePagelist()
+    Index.buildIndex()
+    Index.setPage()
+    mode = Conf['Index Mode']
+    if mode not in ['catalog', Conf['Previous Index Mode']]
+      Conf['Previous Index Mode'] = mode
+      $.set 'Previous Index Mode', mode
 
   getPagesNum: ->
     if Index.isSearching
@@ -590,7 +605,7 @@ Index =
       Index.buildIndex()
       Index.setPage()
     else
-      history.pushState null, '', if pageNum is 1 then './' else pageNum
+      history.pushState {mode: Conf['Index Mode']}, '', if pageNum is 1 then './' else pageNum
       Index.pageLoad pageNum
 
   querySearch: (query) ->
