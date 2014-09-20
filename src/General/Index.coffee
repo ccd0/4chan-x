@@ -37,7 +37,6 @@ Index =
         true
     for label in modeEntry.subEntries
       input = label.el.firstChild
-      $.on input, 'change', $.cb.value
       $.on input, 'change', @cb.mode
 
     sortEntry =
@@ -235,10 +234,9 @@ Index =
       Index.sort()
       Index.buildIndex()
     mode: ->
-      mode = Conf['Index Mode']
-      Index.currentPage = 1 if mode in ['all pages', 'catalog']
-      history.pushState {mode}, '', if Index.currentPage is 1 then './' else Index.currentPage
-      Index.setMode()
+      pageNum = if @value in ['all pages', 'catalog'] then 1 else Index.currentPage
+      Index.pushState @value, pageNum
+      Index.setMode @value, pageNum
     sort: ->
       Index.sort()
       Index.buildIndex()
@@ -253,10 +251,8 @@ Index =
         return
       {mode} = e.state
       pageNum = Index.getCurrentPage()
-      return if Conf['Index Mode'] is mode and Index.currentPage is pageNum
-      Conf['Index Mode'] = mode
-      Index.currentPage = pageNum
-      Index.setMode()
+      unless Conf['Index Mode'] is mode and Index.currentPage is pageNum
+        Index.setMode mode, pageNum
     pageNav: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       switch e.target.nodeName
@@ -277,24 +273,28 @@ Index =
   getCurrentPage: ->
     +window.location.pathname.split('/')[2] or 1
   userPageNav: (pageNum) ->
-    history.pushState {mode: Conf['Index Mode']}, '', if pageNum is 1 then './' else pageNum
+    Index.pushState Conf['Index Mode'], pageNum
     if Conf['Refreshed Navigation'] and Conf['Index Mode'] isnt 'all pages'
       Index.update pageNum
     else
       return if Index.currentPage is pageNum
       Index.pageLoad pageNum
+  pushState: (mode, pageNum) ->
+    history.pushState {mode}, '', if pageNum is 1 then './' else pageNum
   pageLoad: (pageNum) ->
     Index.currentPage = pageNum
     return if Conf['Index Mode'] is 'all pages'
     Index.buildIndex()
     Index.setPage()
     Index.scrollToIndex()
-  setMode: ->
+  setMode: (mode, pageNum) ->
+    Conf['Index Mode'] = mode
+    $.set 'Index Mode', mode
+    Index.currentPage = pageNum
     Index.cb.toggleCatalogMode()
     Index.togglePagelist()
     Index.buildIndex()
     Index.setPage()
-    mode = Conf['Index Mode']
     if mode not in ['catalog', Conf['Previous Index Mode']]
       Conf['Previous Index Mode'] = mode
       $.set 'Previous Index Mode', mode
@@ -609,7 +609,7 @@ Index =
       Index.buildIndex()
       Index.setPage()
     else
-      history.pushState {mode: Conf['Index Mode']}, '', if pageNum is 1 then './' else pageNum
+      Index.pushState Conf['Index Mode'], pageNum
       Index.pageLoad pageNum
 
   querySearch: (query) ->
