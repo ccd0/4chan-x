@@ -443,6 +443,10 @@ Config =
       false
       'Advance to next post when contracting an expanded image.'
     ]
+    'Save contracted images': [
+      false
+      'Hide contracted images/videos instead of removing them so they\'re included when you save the page.'
+    ]
   
   gallery:
     'Hide Thumbnails': [

@@ -134,6 +134,7 @@ ImageExpand =
       window.scrollBy 0, d.body.clientHeight - oldHeight
 
     if el = file.fullImage
+      file.isSaved = Conf['Save contracted images']
       $.off el, 'error', ImageExpand.error
       if file.isVideo
         el.pause()
