@@ -507,9 +507,12 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   text-align: center;
 }
 .catalog-thread {
+  display: -webkit-inline-flex;
   display: inline-flex;
   text-align: left;
+  -webkit-flex-direction: column;
   flex-direction: column;
+  -webkit-align-items: center;
   align-items: center;
   width: 165px;
   margin: 0 2px 5px;
@@ -519,6 +522,7 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 }
 .catalog-thread > a {
   flex-shrink: 0;
+  -webkit-flex-shrink: 0;
   position: relative;
 }
 .catalog-thumb {
@@ -560,6 +564,7 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   line-height: 11px;
 }
 .catalog-stats {
+  -webkit-flex-shrink: 0;
   flex-shrink: 0;
   cursor: help;
   font-size: 10px;
@@ -567,13 +572,16 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   margin-top: 2px;
 }
 .catalog-thread > .subject {
+  -webkit-flex-shrink: 0;
   flex-shrink: 0;
   font-weight: 700;
   line-height: 1;
   text-align: center;
 }
 .catalog-thread > .comment {
+  -webkit-flex-shrink: 1;
   flex-shrink: 1;
+  -webkit-align-self: stretch;
   align-self: stretch;
   overflow: hidden;
   text-align: center;
