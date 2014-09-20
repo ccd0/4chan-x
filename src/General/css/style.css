@@ -514,7 +514,7 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   width: 165px;
   margin: 0 2px 5px;
   max-height: 320px;
-  word-break: break-word;
+  word-wrap: break-word;
   vertical-align: top;
 }
 .catalog-thread > a {
