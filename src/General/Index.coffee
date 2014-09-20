@@ -358,7 +358,7 @@ Index =
     else
       "#{hiddenCount} hidden threads"
 
-  update: (pageNum, forceReparse) ->
+  update: (pageNum) ->
     return unless navigator.onLine
     delete Index.pageNum
     Index.req?.abort()
@@ -378,7 +378,7 @@ Index =
       onabort:   onload
       onloadend: onload
     ,
-      whenModified: !forceReparse
+      whenModified: true
     $.addClass Index.button, 'fa-spin'
 
   load: (e, pageNum) ->
