@@ -291,7 +291,8 @@ Build =
     nodes = [if OP then OP.nodes.root else Build.postFromObject data, board.ID]
     if data.omitted_posts or !Conf['Show Replies'] and data.replies
       [posts, files] = if Conf['Show Replies']
-        [data.omitted_posts, data.omitted_images]
+        # XXX data.omitted_images is not accurate.
+        [data.omitted_posts, data.images - data.last_replies.filter((data) -> !!data.ext).length]
       else
         [data.replies, data.images]
       nodes.push Build.summary board.ID, data.no, posts, files
