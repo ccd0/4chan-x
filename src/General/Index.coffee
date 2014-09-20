@@ -225,9 +225,10 @@ Index =
       Index.sort()
       Index.buildIndex()
     mode: ->
-      pageNum = if @value in ['all pages', 'catalog'] then 1 else Index.currentPage
-      Index.pushState @value, pageNum
-      Index.setMode @value, pageNum
+      Index.setMode @value
+      Index.pushState Conf['Index Mode'], Index.currentPage
+      Index.buildIndex()
+      Index.setPage()
     sort: ->
       Index.sort()
       Index.buildIndex()
@@ -235,15 +236,31 @@ Index =
       Index.buildThreads()
       Index.sort()
       Index.buildIndex()
+    hashchange: (e) ->
+      switch command = location.hash[1..]
+        when 'paged', 'infinite', 'all pages', 'catalog'
+          mode = command
+        when 'index'
+          mode = Conf['Previous Index Mode']
+      if mode
+        Index.setMode mode
+        history.replaceState {mode}, '', if Index.currentPage is 1 then './' else Index.currentPage
+        if e
+          # hash change, not call from init
+          Index.buildIndex()
+          Index.setPage()
+        return
+      history.replaceState {mode: Conf['Index Mode']}, ''
     popstate: (e) ->
       unless e?.state
         # page load or hash change
-        history.replaceState {mode: Conf['Index Mode']}, ''
-        return
+        return Index.cb.hashchange.call @, e
       {mode} = e.state
       pageNum = Index.getCurrentPage()
       unless Conf['Index Mode'] is mode and Index.currentPage is pageNum
-        Index.setMode mode, pageNum
+        Index.setMode mode
+        Index.buildIndex()
+        Index.setPage()
     pageNav: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       switch e.target.nodeName
@@ -262,7 +279,10 @@ Index =
     Header.scrollToIfNeeded Index.navLinks
 
   getCurrentPage: ->
-    +window.location.pathname.split('/')[2] or 1
+    if Conf['Index Mode'] in ['all pages', 'catalog']
+      1
+    else
+      +window.location.pathname.split('/')[2] or 1
   userPageNav: (pageNum) ->
     Index.pushState Conf['Index Mode'], pageNum
     if Conf['Refreshed Navigation']
@@ -277,14 +297,12 @@ Index =
     Index.buildIndex()
     Index.setPage()
     Index.scrollToIndex()
-  setMode: (mode, pageNum) ->
+  setMode: (mode) ->
     $.rmClass doc, "#{Conf['Index Mode'].replace /\ /g, '-'}-mode"
     $.addClass doc, "#{mode.replace /\ /g, '-'}-mode"
     Conf['Index Mode'] = mode
     $.set 'Index Mode', mode
-    Index.currentPage = pageNum
-    Index.buildIndex()
-    Index.setPage()
+    Index.currentPage = Index.getCurrentPage()
     if mode not in ['catalog', Conf['Previous Index Mode']]
       Conf['Previous Index Mode'] = mode
       $.set 'Previous Index Mode', mode
