@@ -274,7 +274,7 @@ Index =
     +window.location.pathname.split('/')[2] or 1
   userPageNav: (pageNum) ->
     Index.pushState Conf['Index Mode'], pageNum
-    if Conf['Refreshed Navigation'] and Conf['Index Mode'] isnt 'all pages'
+    if Conf['Refreshed Navigation']
       Index.update pageNum
     else
       return if Index.currentPage is pageNum
@@ -283,7 +283,6 @@ Index =
     history.pushState {mode}, '', if pageNum is 1 then './' else pageNum
   pageLoad: (pageNum) ->
     Index.currentPage = pageNum
-    return if Conf['Index Mode'] is 'all pages'
     Index.buildIndex()
     Index.setPage()
     Index.scrollToIndex()
