@@ -555,6 +555,7 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   height: 1em;
   margin: 0;
   vertical-align: text-top;
+  padding-left: 2px;
 }
 .catalog-stats > .menu-button {
   text-align: center;
@@ -574,6 +575,8 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 .catalog-thread > .subject {
   -webkit-flex-shrink: 0;
   flex-shrink: 0;
+  -webkit-align-self: stretch;
+  align-self: stretch;
   font-weight: 700;
   line-height: 1;
   text-align: center;
