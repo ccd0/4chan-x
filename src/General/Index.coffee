@@ -258,7 +258,7 @@ Index =
       Index.userPageNav +a.pathname.split('/')[2] or 1
 
   scrollToIndex: ->
-    Header.scrollToIfNeeded Index.root
+    Header.scrollToIfNeeded Index.navLinks
 
   getCurrentPage: ->
     +window.location.pathname.split('/')[2] or 1
