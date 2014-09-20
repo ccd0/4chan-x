@@ -75,14 +75,11 @@ Index =
       order: 98
       subEntries: [repliesEntry, anchorEntry, refNavEntry, modeEntry, sortEntry]
 
-    $.addClass doc, 'index-loading'
-    @root = $.el 'div', className: 'board'
-    @pagelist = $.el 'div',
-      className: 'pagelist'
-      hidden: true
+    $.addClass doc, 'index-loading', "#{Conf['Index Mode'].replace /\ /g, '-'}-mode"
+    @root     = $.el 'div', className: 'board'
+    @pagelist = $.el 'div', className: 'pagelist'
     $.extend @pagelist, <%= importHTML('Features/Index-pagelist') %>
-    @navLinks = $.el 'div',
-      className: 'navLinks'
+    @navLinks = $.el 'div', className: 'navLinks'
     $.extend @navLinks, <%= importHTML('Features/Index-navlinks') %>
     $('.returnlink a',  @navLinks).href = "//boards.4chan.org/#{g.BOARD}/"
     $('.cataloglink a', @navLinks).href = "//boards.4chan.org/#{g.BOARD}/catalog"
@@ -96,7 +93,6 @@ Index =
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
     $.on $('#hidden-toggle a',    @navLinks), 'click', @cb.toggleHiddenThreads
-    @cb.toggleCatalogMode()
 
     @update()
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
@@ -221,11 +217,6 @@ Index =
     Index.buildIndex()
 
   cb:
-    toggleCatalogMode: ->
-      if Conf['Index Mode'] is 'catalog'
-        $.addClass doc, 'catalog-mode'
-      else
-        $.rmClass doc, 'catalog-mode'
     toggleHiddenThreads: ->
       $('#hidden-toggle a', Index.navLinks).textContent = if Index.showHiddenThreads = !Index.showHiddenThreads
         'Hide'
@@ -287,11 +278,11 @@ Index =
     Index.setPage()
     Index.scrollToIndex()
   setMode: (mode, pageNum) ->
+    $.rmClass doc, "#{Conf['Index Mode'].replace /\ /g, '-'}-mode"
+    $.addClass doc, "#{mode.replace /\ /g, '-'}-mode"
     Conf['Index Mode'] = mode
     $.set 'Index Mode', mode
     Index.currentPage = pageNum
-    Index.cb.toggleCatalogMode()
-    Index.togglePagelist()
     Index.buildIndex()
     Index.setPage()
     if mode not in ['catalog', Conf['Previous Index Mode']]
@@ -305,8 +296,6 @@ Index =
       Index.pagesNum
   getMaxPageNum: ->
     Math.max 1, Index.getPagesNum()
-  togglePagelist: ->
-    Index.pagelist.hidden = Conf['Index Mode'] isnt 'paged'
   buildPagelist: ->
     pagesRoot = $ '.pages', Index.pagelist
     maxPageNum = Index.getMaxPageNum()
@@ -319,7 +308,6 @@ Index =
         nodes.push $.tn('['), a, $.tn '] '
       $.rmAll pagesRoot
       $.add pagesRoot, nodes
-    Index.togglePagelist()
   setPage: (pageNum) ->
     pageNum  or= Index.getCurrentPage()
     maxPageNum = Index.getMaxPageNum()
