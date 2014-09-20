@@ -43,8 +43,10 @@ class Post
 
     unless @isReply = $.hasClass post, 'reply'
       @thread.OP = @
-      @thread.isSticky = !!$ '.stickyIcon', info
-      @thread.isClosed = !!$ '.closedIcon', info
+      @thread.isArchived = !!$ '.archivedIcon', info
+      @thread.isSticky   = !!$ '.stickyIcon', info
+      @thread.isClosed   = @thread.isArchived or !!$ '.closedIcon', info
+      @thread.kill() if @thread.isArchived
 
     @info = {}
     if subject        = $ '.subject',            info
