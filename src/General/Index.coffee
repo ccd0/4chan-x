@@ -594,12 +594,8 @@ Index =
       return unless Index.searchInput.dataset.searching
       pageNum = Index.pageBeforeSearch
       delete Index.pageBeforeSearch
-      <% if (type === 'userscript') { %>
       # XXX https://github.com/greasemonkey/greasemonkey/issues/1571
       Index.searchInput.removeAttribute 'data-searching'
-      <% } else { %>
-      delete Index.searchInput.dataset.searching
-      <% } %>
     Index.sort()
     # Go to the last available page if we were past the limit.
     pageNum = Math.min pageNum, Index.getMaxPageNum() if Conf['Index Mode'] isnt 'all pages'
