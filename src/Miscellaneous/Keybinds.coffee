@@ -103,7 +103,6 @@ Keybinds =
       # Board Navigation
       when Conf['Front page']
         if Conf['JSON Navigation'] and g.VIEW is 'index'
-          return unless Conf['Index Mode'] is 'paged'
           Index.userPageNav 1
         else
           window.location = "/#{g.BOARD}/"
@@ -112,7 +111,7 @@ Keybinds =
       when Conf['Next page']
         return unless g.VIEW is 'index'
         if Conf['JSON Navigation']
-          return unless Conf['Index Mode'] is 'paged'
+          return unless Conf['Index Mode'] in ['paged', 'infinite']
           $('.next button', Index.pagelist).click()
         else
           if form = $ '.next form'
@@ -120,7 +119,7 @@ Keybinds =
       when Conf['Previous page']
         return unless g.VIEW is 'index'
         if Conf['JSON Navigation']
-          return unless Conf['Index Mode'] is 'paged'
+          return unless Conf['Index Mode'] in ['paged', 'infinite']
           $('.prev button', Index.pagelist).click()
         else
           if form = $ '.prev form'
