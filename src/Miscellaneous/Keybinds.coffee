@@ -103,6 +103,7 @@ Keybinds =
       # Board Navigation
       when Conf['Front page']
         if Conf['JSON Navigation'] and g.VIEW is 'index'
+          return unless Conf['Index Mode'] in ['paged', 'infinite']
           Index.userPageNav 1
         else
           window.location = "/#{g.BOARD}/"
