@@ -30,9 +30,13 @@ Index =
         { el: $.el 'label', <%= html('<input type="radio" name="Index Mode" value="all pages"> All threads') %> }
         { el: $.el 'label', <%= html('<input type="radio" name="Index Mode" value="catalog"> Catalog') %> }
       ]
+      open: ->
+        for label in @subEntries
+          input = label.el.firstChild
+          input.checked = Conf['Index Mode'] is input.value
+        true
     for label in modeEntry.subEntries
       input = label.el.firstChild
-      input.checked = Conf['Index Mode'] is input.value
       $.on input, 'change', $.cb.value
       $.on input, 'change', @cb.mode
 
