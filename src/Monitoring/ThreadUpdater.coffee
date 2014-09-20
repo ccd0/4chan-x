@@ -132,8 +132,7 @@ ThreadUpdater =
       switch req.status
         when 200
           ThreadUpdater.parse req.response.posts
-          if !!req.response.posts[0].archived
-            ThreadUpdater.thread.isArchived = true
+          if ThreadUpdater.thread.isArchived
             ThreadUpdater.set 'status', 'Archived', 'warning'
             ThreadUpdater.kill()
           else
@@ -263,6 +262,7 @@ ThreadUpdater =
     OP = postObjects[0]
     Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler
 
+    ThreadUpdater.thread.setStatus 'Archived', !!OP.archived
     ThreadUpdater.updateThreadStatus 'Sticky', !!OP.sticky
     ThreadUpdater.updateThreadStatus 'Closed', !!OP.closed
     ThreadUpdater.thread.postLimit = !!OP.bumplimit

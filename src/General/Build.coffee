@@ -45,6 +45,7 @@ Build =
       # thread status
       isSticky: !!data.sticky
       isClosed: !!data.closed
+      isArchived: !!data.archived
       # file
     if data.filedeleted
       o.file =
@@ -76,7 +77,6 @@ Build =
     {
       postID, threadID, boardID
       name, capcode, tripcode, uniqueID, email, subject, flagCode, flagName, date, dateUTC
-      isSticky, isClosed
       comment
       file
     } = o
@@ -153,15 +153,9 @@ Build =
     else
       "/#{boardID}/thread/#{threadID}\#q#{postID}"
 
-    sticky = if isSticky
-      <%= html(' <img src="//s.4cdn.org/image/sticky${retina}.gif" alt="Sticky" title="Sticky" class="stickyIcon retina">') %>
-    else
-      <%= html('') %>
-
-    closed = if isClosed
-      <%= html(' <img src="//s.4cdn.org/image/closed${retina}.gif" alt="Closed" title="Closed" class="closedIcon retina">') %>
-    else
-      <%= html('') %>
+    icons = for type in ['Sticky', 'Closed', 'Archived'] when o["is#{type}"] and !(type is 'Closed' and o.isArchived)
+      typeLC = type.toLowerCase()
+      <%= html(' <img src="//s.4cdn.org/image/${typeLC}${retina}.gif" alt="${type}" title="${type}" class="${typeLC}Icon retina">') %>
 
     replyLink = if isOP and g.VIEW is 'index'
       <%= html(' &nbsp; <span>[<a href="/${boardID}/thread/${threadID}" class="replylink">Reply</a>]</span>') %>
@@ -177,7 +171,7 @@ Build =
         '<span class="postNum${desktop2}">' +
           '<a href="${postLink}" title="Link to this post">No.</a>' +
           '<a href="${quoteLink}" title="Reply to this post">${postID}</a>' +
-          '&{sticky}&{closed}&{replyLink}' +
+          '@{icons}&{replyLink}' +
         '</span>' +
       '</div>'
     ) %>

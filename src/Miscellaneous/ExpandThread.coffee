@@ -60,7 +60,7 @@ ExpandThread =
       return
 
     replies = $$ '.thread > .replyContainer', threadRoot
-    if Conf['Show Replies']
+    if !Conf['JSON Navigation'] or Conf['Show Replies']
       num = if thread.isSticky
         1
       else switch g.BOARD.ID
