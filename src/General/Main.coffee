@@ -166,7 +166,6 @@ Main =
 
       for threadRoot in $$ '.board > .thread', board
         thread = new Thread +threadRoot.id[1..], g.BOARD
-        thread.isDead = thread.isArchived = !!$('.closed')?.textContent.match(/Thread archived/) if g.VIEW is 'thread'
         threads.push thread
         for postRoot in $$ '.thread > .postContainer', threadRoot
           try

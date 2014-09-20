@@ -3,12 +3,13 @@ class Thread
   toString: -> @ID
 
   constructor: (@ID, @board) ->
-    @fullID    = "#{@board}.#{@ID}"
-    @posts     = new SimpleDict
-    @isSticky  = false
-    @isClosed  = false
-    @postLimit = false
-    @fileLimit = false
+    @fullID     = "#{@board}.#{@ID}"
+    @posts      = new SimpleDict
+    @isSticky   = false
+    @isClosed   = false
+    @isArchived = false
+    @postLimit  = false
+    @fileLimit  = false
 
     g.threads.push @fullID, board.threads.push @, @
 
@@ -19,21 +20,30 @@ class Thread
       $.after $('a[title="Reply to this post"]', info), [$.tn(' '), icon]
     icon.title       = "This thread is on page #{pageNum} in the original index."
     icon.textContent = "[#{pageNum}]"
+
   setStatus: (type, status) ->
     name = "is#{type}"
     return if @[name] is status
     @[name] = status
     return unless @OP
+    @setIcon 'Sticky',   @isSticky
+    @setIcon 'Closed',   @isClosed and !@isArchived
+    @setIcon 'Archived', @isArchived
+
+  setIcon: (type, status) ->
     typeLC = type.toLowerCase()
+    icon = $ ".#{typeLC}Icon", @OP.nodes.info
+    return if !!icon is status
     unless status
-      $.rm $ ".#{typeLC}Icon", @OP.nodes.info
+      $.rm icon.previousSibling
+      $.rm icon
       return
     icon = $.el 'img',
       src: "//s.4cdn.org/image/#{typeLC}#{if window.devicePixelRatio >= 2 then '@2x' else ''}.gif"
       alt:   type
       title: type
       className: "#{typeLC}Icon retina"
-    root = if type is 'Closed' and @isSticky
+    root = if type isnt 'Sticky' and @isSticky
       $ '.stickyIcon', @OP.nodes.info
     else
       $('.page-num',  @OP.nodes.info) or $('[title="Reply to this post"]', @OP.nodes.info)
