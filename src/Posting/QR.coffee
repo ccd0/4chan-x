@@ -77,7 +77,7 @@ QR =
 
     return if !Conf['Persistent QR']
     QR.open()
-    QR.hide() if Conf['Auto-Hide QR']
+    QR.hide() if Conf['Auto Hide QR']
 
   statusCheck: ->
     return unless QR.nodes
