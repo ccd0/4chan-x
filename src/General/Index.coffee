@@ -1,8 +1,26 @@
 Index =
+  showHiddenThreads: false
   init: ->
-    return if g.BOARD.ID is 'f' or g.VIEW isnt 'index' or !Conf['JSON Navigation']
+    return if g.BOARD.ID is 'f' or !Conf['JSON Navigation']
+    if g.VIEW is 'thread' and Conf['Use 4chan X Catalog']
+      $.ready ->
+        for link in $$ '.navLinks.desktop a' when link.pathname is "/#{g.BOARD}/catalog"
+          link.href = "/#{g.BOARD}/#catalog"
+    return if g.VIEW isnt 'index'
 
     @board = "#{g.BOARD}"
+
+    @db = new DataBoard 'pinnedThreads'
+    Thread.callbacks.push
+      name: 'Thread Pinning'
+      cb:   @threadNode
+    CatalogThread.callbacks.push
+      name: 'Catalog Features'
+      cb:   @catalogNode
+
+    if Conf['Use 4chan X Catalog'] and Conf['Index Mode'] is 'catalog'
+      Index.setMode Conf['Previous Index Mode']
+    @cb.popstate()
 
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'
@@ -18,27 +36,16 @@ Index =
         { el: $.el 'label', <%= html('<input type="radio" name="Index Mode" value="paged"> Paged') %> }
         { el: $.el 'label', <%= html('<input type="radio" name="Index Mode" value="infinite"> Infinite scrolling') %> }
         { el: $.el 'label', <%= html('<input type="radio" name="Index Mode" value="all pages"> All threads') %> }
+        { el: $.el 'label', <%= html('<input type="radio" name="Index Mode" value="catalog"> Catalog') %> }
       ]
+      open: ->
+        for label in @subEntries
+          input = label.el.firstChild
+          input.checked = Conf['Index Mode'] is input.value
+        true
     for label in modeEntry.subEntries
       input = label.el.firstChild
-      input.checked = Conf['Index Mode'] is input.value
-      $.on input, 'change', $.cb.value
       $.on input, 'change', @cb.mode
-
-    sortEntry =
-      el: $.el 'span', textContent: 'Sort by'
-      subEntries: [
-        { el: $.el 'label', <%= html('<input type="radio" name="Index Sort" value="bump"> Bump order') %> }
-        { el: $.el 'label', <%= html('<input type="radio" name="Index Sort" value="lastreply"> Last reply') %> }
-        { el: $.el 'label', <%= html('<input type="radio" name="Index Sort" value="birth"> Creation date') %> }
-        { el: $.el 'label', <%= html('<input type="radio" name="Index Sort" value="replycount"> Reply count') %> }
-        { el: $.el 'label', <%= html('<input type="radio" name="Index Sort" value="filecount"> File count') %> }
-      ]
-    for label in sortEntry.subEntries
-      input = label.el.firstChild
-      input.checked = Conf['Index Sort'] is input.value
-      $.on input, 'change', $.cb.value
-      $.on input, 'change', @cb.sort
 
     repliesEntry = el: UI.checkbox 'Show Replies',          ' Show replies'
     anchorEntry  = el: UI.checkbox 'Anchor Hidden Threads', ' Anchor hidden threads'
@@ -59,20 +66,20 @@ Index =
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 98
-      subEntries: [repliesEntry, anchorEntry, refNavEntry, modeEntry, sortEntry]
+      subEntries: [repliesEntry, anchorEntry, refNavEntry, modeEntry]
 
-    $.addClass doc, 'index-loading'
-    @root = $.el 'div', className: 'board'
-    @pagelist = $.el 'div',
-      className: 'pagelist'
-      hidden: true
+    $.addClass doc, 'index-loading', "#{Conf['Index Mode'].replace /\ /g, '-'}-mode"
+    @root     = $.el 'div', className: 'board'
+    @pagelist = $.el 'div', className: 'pagelist'
     $.extend @pagelist, <%= importHTML('Features/Index-pagelist') %>
-    @navLinks = $.el 'div',
-      className: 'navLinks'
+    $('.cataloglink a', @pagelist).href = if Conf['Use 4chan X Catalog'] then '#catalog' else "/#{g.BOARD}/catalog"
+    @navLinks = $.el 'div', className: 'navLinks'
     $.extend @navLinks, <%= importHTML('Features/Index-navlinks') %>
-    $('.returnlink a',  @navLinks).href = "//boards.4chan.org/#{g.BOARD}/"
-    $('.cataloglink a', @navLinks).href = "//boards.4chan.org/#{g.BOARD}/catalog"
+    $('.returnlink a',  @navLinks).href = if Conf['Use 4chan X Catalog'] then '#index' else "/#{g.BOARD}/"
+    $('.cataloglink a', @navLinks).href = if Conf['Use 4chan X Catalog'] then '#catalog' else "/#{g.BOARD}/catalog"
     @searchInput = $ '#index-search', @navLinks
+    @hideLabel   = $ '#hidden-label', @navLinks
+    @selectSort  = $ '#index-sort',   @navLinks
     @currentPage = @getCurrentPage()
     $.on window, 'popstate', @cb.popstate
 
@@ -80,6 +87,10 @@ Index =
     $.on @pagelist, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
+    $.on $('#hidden-toggle a',    @navLinks), 'click', @cb.toggleHiddenThreads
+    @selectSort.value = Conf[@selectSort.name]
+    $.on @selectSort, 'change', $.cb.value
+    $.on @selectSort, 'change', @cb.sort
 
     @update()
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
@@ -129,10 +140,93 @@ Index =
       new Notice 'info', "Last page reached.", 2
       setTimeout reset, 3 * $.SECOND
 
+  menu:
+    init: ->
+      return if g.VIEW isnt 'index' or !Conf['JSON Navigation'] or !Conf['Menu'] or g.BOARD.ID is 'f'
+
+      Menu.menu.addEntry
+        el: $.el 'a', href: 'javascript:;'
+        order: 5
+        open: ({thread}) ->
+          return false if Conf['Index Mode'] isnt 'catalog'
+          @el.textContent = if thread.isHidden
+            'Unhide thread'
+          else
+            'Hide thread'
+          $.off @el, 'click', @cb if @cb
+          @cb = ->
+            $.event 'CloseMenu'
+            Index.toggleHide thread
+          $.on @el, 'click', @cb
+          true
+
+      Menu.menu.addEntry
+        el: $.el 'a', href: 'javascript:;'
+        order: 6
+        open: ({thread}) ->
+          return false if Conf['Index Mode'] isnt 'catalog'
+          @el.textContent = if thread.isPinned
+            'Unpin thread'
+          else
+            'Pin thread'
+          $.off @el, 'click', @cb if @cb
+          @cb = ->
+            $.event 'CloseMenu'
+            Index.togglePin thread
+          $.on @el, 'click', @cb
+          true
+
+  threadNode: ->
+    return unless Index.db.get {boardID: @board.ID, threadID: @ID}
+    @pin()
+  catalogNode: ->
+    $.on @nodes.thumb.parentNode, 'click', Index.onClick
+  onClick: (e) ->
+    return if e.button isnt 0
+    thread = g.threads[@parentNode.dataset.fullID]
+    if e.shiftKey
+      Index.toggleHide thread
+    else if e.altKey
+      Index.togglePin thread
+    else
+      return
+    e.preventDefault()
+  toggleHide: (thread) ->
+    $.rm thread.catalogView.nodes.root
+    if Index.showHiddenThreads
+      ThreadHiding.show thread
+      return unless ThreadHiding.db.get {boardID: thread.board.ID, threadID: thread.ID}
+      # Don't save when un-hiding filtered threads.
+    else
+      ThreadHiding.hide thread
+    ThreadHiding.saveHiddenState thread
+  togglePin: (thread) ->
+    data =
+      boardID:  thread.board.ID
+      threadID: thread.ID
+    if thread.isPinned
+      thread.unpin()
+      Index.db.delete data
+    else
+      thread.pin()
+      data.val = true
+      Index.db.set data
+    Index.sort()
+    Index.buildIndex()
+
   cb:
-    mode: ->
-      Index.togglePagelist()
+    toggleHiddenThreads: ->
+      $('#hidden-toggle a', Index.navLinks).textContent = if Index.showHiddenThreads = !Index.showHiddenThreads
+        'Hide'
+      else
+        'Show'
+      Index.sort()
       Index.buildIndex()
+    mode: ->
+      Index.setMode @value
+      Index.pushState Conf['Index Mode'], Index.currentPage
+      Index.buildIndex()
+      Index.setPage()
     sort: ->
       Index.sort()
       Index.buildIndex()
@@ -140,9 +234,31 @@ Index =
       Index.buildThreads()
       Index.sort()
       Index.buildIndex()
+    hashchange: (e) ->
+      switch command = location.hash[1..]
+        when 'paged', 'infinite', 'all-pages', 'catalog'
+          mode = command.replace /-/g, ' '
+        when 'index'
+          mode = Conf['Previous Index Mode']
+      if mode
+        Index.setMode mode
+        history.replaceState {mode}, '', if Index.currentPage is 1 then './' else Index.currentPage
+        if e
+          # hash change, not call from init
+          Index.buildIndex()
+          Index.setPage()
+        return
+      history.replaceState {mode: Conf['Index Mode']}, ''
     popstate: (e) ->
+      unless e?.state
+        # page load or hash change
+        return Index.cb.hashchange.call @, e
+      {mode} = e.state
       pageNum = Index.getCurrentPage()
-      Index.pageLoad pageNum if Index.currentPage isnt pageNum
+      unless Conf['Index Mode'] is mode and Index.currentPage is pageNum
+        Index.setMode mode
+        Index.buildIndex()
+        Index.setPage()
     pageNav: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       switch e.target.nodeName
@@ -158,23 +274,36 @@ Index =
       Index.userPageNav +a.pathname.split('/')[2] or 1
 
   scrollToIndex: ->
-    Header.scrollToIfNeeded Index.root
+    Header.scrollToIfNeeded Index.navLinks
 
   getCurrentPage: ->
-    +window.location.pathname.split('/')[2] or 1
+    if Conf['Index Mode'] in ['all pages', 'catalog']
+      1
+    else
+      +window.location.pathname.split('/')[2] or 1
   userPageNav: (pageNum) ->
-    history.pushState null, '', if pageNum is 1 then './' else pageNum
-    if Conf['Refreshed Navigation'] and Conf['Index Mode'] isnt 'all pages'
+    Index.pushState Conf['Index Mode'], pageNum
+    if Conf['Refreshed Navigation']
       Index.update pageNum
     else
       return if Index.currentPage is pageNum
       Index.pageLoad pageNum
+  pushState: (mode, pageNum) ->
+    history.pushState {mode}, '', if pageNum is 1 then './' else pageNum
   pageLoad: (pageNum) ->
     Index.currentPage = pageNum
-    return if Conf['Index Mode'] is 'all pages'
     Index.buildIndex()
     Index.setPage()
     Index.scrollToIndex()
+  setMode: (mode) ->
+    $.rmClass doc, "#{Conf['Index Mode'].replace /\ /g, '-'}-mode"
+    $.addClass doc, "#{mode.replace /\ /g, '-'}-mode"
+    Conf['Index Mode'] = mode
+    $.set 'Index Mode', mode
+    Index.currentPage = Index.getCurrentPage()
+    if mode not in ['catalog', Conf['Previous Index Mode']]
+      Conf['Previous Index Mode'] = mode
+      $.set 'Previous Index Mode', mode
 
   getPagesNum: ->
     if Index.isSearching
@@ -183,8 +312,6 @@ Index =
       Index.pagesNum
   getMaxPageNum: ->
     Math.max 1, Index.getPagesNum()
-  togglePagelist: ->
-    Index.pagelist.hidden = Conf['Index Mode'] isnt 'paged'
   buildPagelist: ->
     pagesRoot = $ '.pages', Index.pagelist
     maxPageNum = Index.getMaxPageNum()
@@ -197,7 +324,6 @@ Index =
         nodes.push $.tn('['), a, $.tn '] '
       $.rmAll pagesRoot
       $.add pagesRoot, nodes
-    Index.togglePagelist()
   setPage: (pageNum) ->
     pageNum  or= Index.getCurrentPage()
     maxPageNum = Index.getMaxPageNum()
@@ -221,7 +347,21 @@ Index =
     $.before a, strong
     $.add strong, a
 
-  update: (pageNum, forceReparse) ->
+  updateHideLabel: ->
+    hiddenCount = 0
+    for threadID, thread of g.BOARD.threads when thread.isHidden
+      hiddenCount++ if thread.ID in Index.liveThreadIDs
+    unless hiddenCount
+      Index.hideLabel.hidden = true
+      Index.cb.toggleHiddenThreads() if Index.showHiddenThreads
+      return
+    Index.hideLabel.hidden = false
+    $('#hidden-count', Index.navLinks).textContent = if hiddenCount is 1
+      '1 hidden thread'
+    else
+      "#{hiddenCount} hidden threads"
+
+  update: (pageNum) ->
     return unless navigator.onLine
     delete Index.pageNum
     Index.req?.abort()
@@ -241,7 +381,7 @@ Index =
       onabort:   onload
       onloadend: onload
     ,
-      whenModified: !forceReparse
+      whenModified: true
     $.addClass Index.button, 'fa-spin'
 
   load: (e, pageNum) ->
@@ -317,6 +457,8 @@ Index =
       try
         threadRoot = Build.thread g.BOARD, threadData
         if thread = g.BOARD.threads[threadData.no]
+          thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
+          thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
           thread.setStatus 'Sticky', !!threadData.sticky
           thread.setStatus 'Closed', !!threadData.closed
         else
@@ -338,6 +480,7 @@ Index =
     $.nodes Index.nodes
     Main.callbackNodes Thread, threads
     Main.callbackNodes Post,   posts
+    Index.updateHideLabel()
     $.event 'IndexRefresh'
 
   buildReplies: (threadRoots) ->
@@ -365,6 +508,16 @@ Index =
     Main.handleErrors errors if errors
     Main.callbackNodes Post, posts
 
+  buildCatalogViews: ->
+    threads = Index.sortedNodes
+      .map((threadRoot) -> Get.threadFromRoot threadRoot)
+      .filter (thread) -> !thread.isHidden isnt Index.showHiddenThreads
+    catalogThreads = []
+    for thread in threads when !thread.catalogView
+      catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
+    Main.callbackNodes CatalogThread, catalogThreads
+    threads.map (thread) -> thread.catalogView.nodes.root
+
   sort: ->
     {liveThreadIDs, liveThreadData} = Index
     sortedThreadIDs = {
@@ -388,7 +541,7 @@ Index =
     # Sticky threads
     Index.sortOnTop (thread) -> thread.isSticky
     # Highlighted threads
-    Index.sortOnTop((thread) -> thread.isOnTop) if Conf['Filter']
+    Index.sortOnTop (thread) -> thread.isOnTop or thread.isPinned
     # Non-hidden threads
     Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
 
@@ -400,14 +553,20 @@ Index =
     Index.sortedNodes = topNodes.concat(bottomNodes)
 
   buildIndex: ->
-    if Conf['Index Mode'] isnt 'all pages'
-      nodes = Index.buildSinglePage Index.getCurrentPage()
-    else
-      nodes = Index.sortedNodes
+    switch Conf['Index Mode']
+      when 'all pages'
+        nodes = Index.sortedNodes
+      when 'catalog'
+        nodes = Index.buildCatalogViews()
+      else
+        nodes = Index.buildSinglePage Index.getCurrentPage()
     $.rmAll Index.root
     $.rmAll Header.hover
-    Index.buildReplies nodes if Conf['Show Replies']
-    Index.buildStructure nodes
+    if Conf['Index Mode'] is 'catalog'
+      $.add Index.root, nodes
+    else
+      Index.buildReplies nodes if Conf['Show Replies']
+      Index.buildStructure nodes
 
   buildSinglePage: (pageNum) ->
     nodesPerPage = Index.threadsNumPerPage
@@ -439,12 +598,8 @@ Index =
       return unless Index.searchInput.dataset.searching
       pageNum = Index.pageBeforeSearch
       delete Index.pageBeforeSearch
-      <% if (type === 'userscript') { %>
       # XXX https://github.com/greasemonkey/greasemonkey/issues/1571
       Index.searchInput.removeAttribute 'data-searching'
-      <% } else { %>
-      delete Index.searchInput.dataset.searching
-      <% } %>
     Index.sort()
     # Go to the last available page if we were past the limit.
     pageNum = Math.min pageNum, Index.getMaxPageNum() if Conf['Index Mode'] isnt 'all pages'
@@ -453,7 +608,7 @@ Index =
       Index.buildIndex()
       Index.setPage()
     else
-      history.pushState null, '', if pageNum is 1 then './' else pageNum
+      Index.pushState Conf['Index Mode'], pageNum
       Index.pageLoad pageNum
 
   querySearch: (query) ->

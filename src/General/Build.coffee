@@ -1,4 +1,6 @@
 Build =
+  staticPath: '//s.4cdn.org/image/'
+  gifIcon: if window.devicePixelRatio >= 2 then '@2x.gif' else '.gif'
   initPixelRatio: window.devicePixelRatio
   spoilerRange: {}
   unescape: (text) ->
@@ -289,11 +291,91 @@ Build =
     nodes = [if OP then OP.nodes.root else Build.postFromObject data, board.ID]
     if data.omitted_posts or !Conf['Show Replies'] and data.replies
       [posts, files] = if Conf['Show Replies']
-        [data.omitted_posts, data.omitted_images]
+        # XXX data.omitted_images is not accurate.
+        [data.omitted_posts, data.images - data.last_replies.filter((data) -> !!data.ext).length]
       else
-        # XXX data.images is not accurate.
-        [data.replies, data.omitted_images + data.last_replies.filter((data) -> !!data.ext).length]
+        [data.replies, data.images]
       nodes.push Build.summary board.ID, data.no, posts, files
     nodes
 
   fullThread: (board, data) -> Build.postFromObject data, board.ID
+
+  catalogThread: (thread) ->
+    {staticPath, gifIcon} = Build
+    data = Index.liveThreadData[Index.liveThreadIDs.indexOf thread.ID]
+
+    if data.spoiler and !Conf['Reveal Spoiler Thumbnails']
+      src = "#{staticPath}spoiler"
+      if spoilerRange = Build.spoilerRange[thread.board]
+        # Randomize the spoiler image.
+        src += "-#{thread.board}" + Math.floor 1 + spoilerRange * Math.random()
+      src += '.png'
+      imgClass = 'spoiler-file'
+    else if data.filedeleted
+      src = "#{staticPath}filedeleted-res#{gifIcon}"
+      imgClass = 'deleted-file'
+    else if thread.OP.file
+      src = thread.OP.file.thumbURL
+      max = Math.max data.tn_w, data.tn_h
+      imgWidth  = data.tn_w * 150 / max
+      imgHeight = data.tn_h * 150 / max
+    else
+      src = "#{staticPath}nofile.png"
+      imgClass = 'no-file'
+
+    thumb = if imgClass
+      <%= html('<img src="${src}" class="catalog-thumb ${imgClass}">') %>
+    else
+      <%= html('<img src="${src}" class="catalog-thumb" width="${imgWidth}" height="${imgHeight}">') %>
+
+    postCount = data.replies + 1
+    fileCount = data.images  + !!data.ext
+    pageCount = Index.liveThreadIDs.indexOf(thread.ID) // Index.threadsNumPerPage + 1
+
+    subject = if thread.OP.info.subject
+      <%= html('<div class="subject">${thread.OP.info.subject}</div>') %>
+    else
+      <%= html('') %>
+
+    root = $.el 'div',
+      className: 'catalog-thread'
+    $.extend root, <%= html(
+      '<a href="/${thread.board}/thread/${thread.ID}">' +
+        '&{thumb}' +
+      '</a>' +
+      '<div class="catalog-stats" title="Post count / File count / Page count">' +
+        '<span class="post-count">${postCount}</span> / <span class="file-count">${fileCount}</span> / <span class="page-count">${pageCount}</span>' +
+        '<span class="catalog-icons"></span>' +
+      '</div>' +
+      '&{subject}' +
+      '<div class="comment">&{thread.OP.info.commentHTML}</div>'
+    ) %>
+
+    root.dataset.fullID = thread.fullID
+    $.addClass root, 'pinned' if thread.isPinned
+    $.addClass root, thread.OP.highlights... if thread.OP.highlights
+
+    for quotelink in $$ '.quotelink, .deadlink', root.lastElementChild
+      $.replace quotelink, [quotelink.childNodes...]
+    for pp in $$ '.prettyprint', root.lastElementChild
+      $.replace pp, $.tn pp.textContent
+    for br in $$ 'br', root.lastElementChild when !br.previousSibling or br.previousSibling.nodeName is 'BR'
+      $.rm br
+
+    if thread.isSticky
+      $.add $('.catalog-icons', root), $.el 'img',
+        src: "#{staticPath}sticky#{gifIcon}"
+        className: 'stickyIcon'
+        title: 'Sticky'
+    if thread.isClosed
+      $.add $('.catalog-icons', root), $.el 'img',
+        src: "#{staticPath}closed#{gifIcon}"
+        className: 'closedIcon'
+        title: 'Closed'
+
+    if data.bumplimit
+      $.addClass $('.post-count', root), 'warning'
+    if data.imagelimit
+      $.addClass $('.file-count', root), 'warning'
+
+    root

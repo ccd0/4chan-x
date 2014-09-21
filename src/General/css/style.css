@@ -471,7 +471,11 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 /* Index */
 :root.index-loading .navLinks,
 :root.index-loading .board,
-:root.index-loading .pagelist {
+:root.index-loading .pagelist,
+:root.infinite-mode .pagelist,
+:root.all-pages-mode .pagelist,
+:root.catalog-mode .pagelist,
+:root:not(.catalog-mode) #hidden-label {
   display: none;
 }
 #index-search {
@@ -485,7 +489,10 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 }
 #index-search-clear {
   color: gray;
-  margin-left: -1em;
+  display: inline-block;
+  position: relative;
+  left: -1em;
+  width: 0;
 }
 <% if (type === 'crx') { %>
 /* ``::-webkit-*'' selectors break selector lists on Firefox. */
@@ -494,8 +501,99 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 #index-search:not([data-searching]) + #index-search-clear {
   display: none;
 }
+#index-sort {
+  float: right;
+}
 .summary {
   text-decoration: none;
+}
+
+/* Catalog */
+:root.catalog-mode .board {
+  text-align: center;
+}
+.catalog-thread {
+  display: -webkit-inline-flex;
+  display: inline-flex;
+  text-align: left;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-align-items: center;
+  align-items: center;
+  width: 165px;
+  margin: 0 2px 5px;
+  max-height: 320px;
+  word-wrap: break-word;
+  vertical-align: top;
+}
+.catalog-thread > a {
+  flex-shrink: 0;
+  -webkit-flex-shrink: 0;
+  position: relative;
+}
+.catalog-thumb {
+  max-width: 150px;
+  max-height: 150px;
+  border-radius: 2px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, .25);
+}
+.catalog-thumb:not(.deleted-file):not(.no-file) {
+  min-width: 30px;
+  min-height: 30px;
+}
+.catalog-thumb.spoiler-file {
+  width: 100px;
+  height: 100px;
+}
+.catalog-thumb.deleted-file {
+  width: 127px;
+  height: 13px;
+  padding: 20px 11px;
+}
+.catalog-thumb.no-file {
+  width: 77px;
+  height: 13px;
+  padding: 20px 36px;
+}
+.catalog-icons > img,
+.catalog-stats > .menu-button {
+  width: 1em;
+  height: 1em;
+  margin: 0;
+  vertical-align: text-top;
+  padding-left: 2px;
+}
+.catalog-stats > .menu-button {
+  text-align: center;
+  font-weight: normal;
+}
+.catalog-stats > .menu-button > i::before {
+  line-height: 11px;
+}
+.catalog-stats {
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+  cursor: help;
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+.catalog-thread > .subject {
+  -webkit-flex-shrink: 0;
+  flex-shrink: 0;
+  -webkit-align-self: stretch;
+  align-self: stretch;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+.catalog-thread > .comment {
+  -webkit-flex-shrink: 1;
+  flex-shrink: 1;
+  -webkit-align-self: stretch;
+  align-self: stretch;
+  overflow: hidden;
+  text-align: center;
 }
 
 /* Announcement Hiding */
@@ -752,8 +850,20 @@ span.hide-announcement {
   display: none;
 }
 /* Werk Tyme */
-:root.werkTyme .postContainer:not(.noFile) .fileThumb {
+:root.werkTyme .postContainer:not(.noFile) .fileThumb,
+:root.werkTyme .catalog-thumb:not(.deleted-file):not(.no-file),
+:root:not(.werkTyme) .werkTyme-filename {
   display: none;
+}
+.werkTyme-filename {
+  font-weight: bold;
+}
+:root.werkTyme .catalog-thread > a {
+  text-align: center;
+}
+.pinned .werkTyme-filename,
+.filter-highlight .werkTyme-filename {
+  border: 2px solid rgba(255, 0, 0, .5);
 }
 
 /* Index/Reply Navigation */
@@ -762,6 +872,9 @@ span.hide-announcement {
   top: 25px;
   right: 10px;
 }
+:root.catalog-mode #navlinks {
+  display: none;
+}
 
 /* Filter */
 .opContainer.filter-highlight {
@@ -769,6 +882,10 @@ span.hide-announcement {
 }
 .filter-highlight > .reply {
   box-shadow: -5px 0 rgba(255, 0, 0, .5);
+}
+.pinned .catalog-thumb,
+.filter-highlight .catalog-thumb {
+  border: 2px solid rgba(255, 0, 0, .5);
 }
 
 /* Spoiler text */

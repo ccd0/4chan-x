@@ -293,6 +293,7 @@ Main =
     ['Strike-through Quotes',     QuoteStrikeThrough]
     ['Quick Reply',               QR]
     ['Menu',                      Menu]
+    ['Index Generator (Menu)',    Index.menu]
     ['Report Link',               ReportLink]
     ['Thread Hiding (Menu)',      ThreadHiding.menu]
     ['Reply Hiding (Menu)',       PostHiding.menu]

@@ -197,7 +197,7 @@ Header =
               if Conf['External Catalog']
                 a.href = CatalogLinks.external board
               else
-                a.href += 'catalog'
+                a.href += if Conf['JSON Navigation'] and Conf['Use 4chan X Catalog'] then '#catalog' else 'catalog'
               $.addClass a, 'catalog'
 
           $.addClass a, 'navSmall' if board is '@'

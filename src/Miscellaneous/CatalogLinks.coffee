@@ -24,14 +24,17 @@ CatalogLinks =
     CatalogLinks.set @checked
 
   set: (useCatalog) ->
-    path = if useCatalog then 'catalog' else ''
+    path = if useCatalog
+      if Conf['JSON Navigation'] and Conf['Use 4chan X Catalog'] then '#catalog' else 'catalog'
+    else
+      ''
 
     generateURL = if useCatalog and Conf['External Catalog']
       CatalogLinks.external
     else
       (board) -> a.href = "/#{board}/#{path}"
 
-    for a in $$ """#board-list a:not(.catalog), #boardNavDesktopFoot a""" 
+    for a in $$ """#board-list a:not([data-only]), #boardNavDesktopFoot a"""
       continue if a.hostname not in ['boards.4chan.org', 'catalog.neet.tv', '4index.gropes.us'] or
       !(board = a.pathname.split('/')[1]) or
       board in ['f', 'status', '4chan'] or

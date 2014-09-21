@@ -11,18 +11,22 @@ Menu =
     Post.callbacks.push
       name: 'Menu'
       cb:   @node
+    CatalogThread.callbacks.push
+      name: 'Menu'
+      cb:   @catalogNode
 
   node: ->
     if @isClone
-      $.on $('.menu-button', @nodes.info), 'click', Menu.toggle
+      Menu.makeButton @, $('.menu-button', @nodes.info)
       return
-    $.add @nodes.info, Menu.makeButton()
+    $.add @nodes.info, Menu.makeButton @
 
-  makeButton: ->
-    clone = Menu.button.cloneNode true
-    $.on clone, 'click', Menu.toggle
-    clone
+  catalogNode: ->
+    post = g.threads[@thread.fullID].OP
+    $.after @nodes.icons, Menu.makeButton post
 
-  toggle: (e) ->
-    post = Get.postFromNode @
-    Menu.menu.toggle e, @, post
+  makeButton: (post, button) ->
+    button or= Menu.button.cloneNode true
+    $.on button, 'click', (e) ->
+      Menu.menu.toggle e, @, post
+    button

@@ -5,11 +5,18 @@ class Thread
   constructor: (@ID, @board) ->
     @fullID     = "#{@board}.#{@ID}"
     @posts      = new SimpleDict
+    @isDead     = false
+    @isHidden   = false
+    @isOnTop    = false
+    @isPinned   = false
     @isSticky   = false
     @isClosed   = false
     @isArchived = false
     @postLimit  = false
     @fileLimit  = false
+
+    @OP = null
+    @catalogView = null
 
     g.threads.push @fullID, board.threads.push @, @
 
@@ -20,6 +27,12 @@ class Thread
       $.after $('a[title="Reply to this post"]', info), [$.tn(' '), icon]
     icon.title       = "This thread is on page #{pageNum} in the original index."
     icon.textContent = "[#{pageNum}]"
+    @catalogView.nodes.pageCount.textContent = pageNum if @catalogView
+  setCount: (type, count, reachedLimit) ->
+    return unless @catalogView
+    el = @catalogView.nodes["#{type}Count"]
+    el.textContent = count
+    (if reachedLimit then $.addClass else $.rmClass) el, 'warning'
 
   setStatus: (type, status) ->
     name = "is#{type}"
@@ -37,21 +50,31 @@ class Thread
     unless status
       $.rm icon.previousSibling
       $.rm icon
+      $.rm $ ".#{typeLC}Icon", @catalogView.nodes.icons if @catalogView
       return
     icon = $.el 'img',
-      src: "//s.4cdn.org/image/#{typeLC}#{if window.devicePixelRatio >= 2 then '@2x' else ''}.gif"
+      src: "#{Build.staticPath}#{typeLC}#{Build.gifIcon}"
       alt:   type
       title: type
       className: "#{typeLC}Icon retina"
     root = if type isnt 'Sticky' and @isSticky
       $ '.stickyIcon', @OP.nodes.info
     else
-      $('.page-num',  @OP.nodes.info) or $('[title="Reply to this post"]', @OP.nodes.info)
+      $('.page-num', @OP.nodes.info) or $('[title="Reply to this post"]', @OP.nodes.info)
     $.after root, [$.tn(' '), icon]
+
+    return unless @catalogView
+    (if type is 'Sticky' and @isClosed then $.prepend else $.add) @catalogView.nodes.icons, icon.cloneNode()
+
+  pin: ->
+    @isPinned = true
+    $.addClass @catalogView.nodes.root, 'pinned' if @catalogView
+  unpin: ->
+    @isPinned = false
+    $.rmClass  @catalogView.nodes.root, 'pinned' if @catalogView
 
   kill: ->
     @isDead = true
-    @timeOfDeath = Date.now()
 
   collect: ->
     @posts.forEach (post) -> post.collect()

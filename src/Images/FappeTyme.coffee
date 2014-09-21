@@ -20,9 +20,21 @@ FappeTyme =
       name: 'Fappe Tyme'
       cb:   @node
 
+    CatalogThread.callbacks.push
+      name: 'Werk Tyme'
+      cb:   @catalogNode
+
   node: ->
     return if @file
     $.addClass @nodes.root, "noFile"
+
+  catalogNode: ->
+    {file} = @thread.OP
+    return if !file
+    filename = $.el 'div',
+      textContent: file.name
+      className:   'werkTyme-filename'
+    $.add @nodes.thumb.parentNode, filename
 
   cb:
     set: (type) ->
