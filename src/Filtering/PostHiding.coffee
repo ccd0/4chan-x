@@ -137,7 +137,10 @@ PostHiding =
       $.event 'CloseMenu'
     hideStub: ->
       {post} = PostHiding.menu
-      post.nodes.root.hidden = true
+      if data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
+        PostHiding.show post, data.hideRecursively
+        PostHiding.hide post, false, data.hideRecursively
+        PostHiding.saveHiddenState post, true, true, false, data.hideRecursively
       $.event 'CloseMenu'
       return
 

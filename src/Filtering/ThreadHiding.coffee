@@ -130,7 +130,9 @@ ThreadHiding =
 
     hideStub: ->
       {thread} = ThreadHiding.menu
+      ThreadHiding.show thread
       ThreadHiding.hide thread, false
+      ThreadHiding.saveHiddenState thread, false
       $.event 'CloseMenu'
       return
 
