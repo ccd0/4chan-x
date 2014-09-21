@@ -132,7 +132,8 @@ ThreadUpdater =
       switch req.status
         when 200
           ThreadUpdater.parse req.response.posts
-          if !!req.response.posts[0].archived
+          # XXX Some threads such as /g/'s sticky https://a.4cdn.org/g/thread/39894014.json still use a string as the archived property.
+          if !!+req.response.posts[0].archived
             ThreadUpdater.thread.isArchived = true
             ThreadUpdater.set 'status', 'Archived', 'warning'
             ThreadUpdater.kill()
