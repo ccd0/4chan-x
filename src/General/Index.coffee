@@ -47,21 +47,6 @@ Index =
       input = label.el.firstChild
       $.on input, 'change', @cb.mode
 
-    sortEntry =
-      el: $.el 'span', textContent: 'Sort by'
-      subEntries: [
-        { el: $.el 'label', <%= html('<input type="radio" name="Index Sort" value="bump"> Bump order') %> }
-        { el: $.el 'label', <%= html('<input type="radio" name="Index Sort" value="lastreply"> Last reply') %> }
-        { el: $.el 'label', <%= html('<input type="radio" name="Index Sort" value="birth"> Creation date') %> }
-        { el: $.el 'label', <%= html('<input type="radio" name="Index Sort" value="replycount"> Reply count') %> }
-        { el: $.el 'label', <%= html('<input type="radio" name="Index Sort" value="filecount"> File count') %> }
-      ]
-    for label in sortEntry.subEntries
-      input = label.el.firstChild
-      input.checked = Conf['Index Sort'] is input.value
-      $.on input, 'change', $.cb.value
-      $.on input, 'change', @cb.sort
-
     repliesEntry = el: UI.checkbox 'Show Replies',          ' Show replies'
     anchorEntry  = el: UI.checkbox 'Anchor Hidden Threads', ' Anchor hidden threads'
     refNavEntry  = el: UI.checkbox 'Refreshed Navigation',  ' Refreshed navigation'
@@ -81,7 +66,7 @@ Index =
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 98
-      subEntries: [repliesEntry, anchorEntry, refNavEntry, modeEntry, sortEntry]
+      subEntries: [repliesEntry, anchorEntry, refNavEntry, modeEntry]
 
     $.addClass doc, 'index-loading', "#{Conf['Index Mode'].replace /\ /g, '-'}-mode"
     @root     = $.el 'div', className: 'board'
@@ -94,6 +79,7 @@ Index =
     $('.cataloglink a', @navLinks).href = if Conf['Use 4chan X Catalog'] then '#catalog' else "/#{g.BOARD}/catalog"
     @searchInput = $ '#index-search', @navLinks
     @hideLabel   = $ '#hidden-label', @navLinks
+    @selectSort  = $ '#index-sort',   @navLinks
     @currentPage = @getCurrentPage()
     $.on window, 'popstate', @cb.popstate
 
@@ -102,6 +88,9 @@ Index =
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
     $.on $('#hidden-toggle a',    @navLinks), 'click', @cb.toggleHiddenThreads
+    @selectSort.value = Conf[@selectSort.name]
+    $.on @selectSort, 'change', $.cb.value
+    $.on @selectSort, 'change', @cb.sort
 
     @update()
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->

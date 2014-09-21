@@ -501,6 +501,9 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 #index-search:not([data-searching]) + #index-search-clear {
   display: none;
 }
+#index-sort {
+  float: right;
+}
 .summary {
   text-decoration: none;
 }
