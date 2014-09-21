@@ -1,8 +1,12 @@
 Index =
   showHiddenThreads: false
   init: ->
-    return if g.BOARD.ID is 'f' or g.VIEW isnt 'index' or !Conf['JSON Navigation']
-    @cb.popstate()
+    return if g.BOARD.ID is 'f' or !Conf['JSON Navigation']
+    if g.VIEW is 'thread' and Conf['Use 4chan X Catalog']
+      $.ready ->
+        for link in $$ '.navLinks.desktop a' when link.pathname is "/#{g.BOARD}/catalog"
+          link.href = "/#{g.BOARD}/#catalog"
+    return if g.VIEW isnt 'index'
 
     @board = "#{g.BOARD}"
 
@@ -13,6 +17,10 @@ Index =
     CatalogThread.callbacks.push
       name: 'Catalog Features'
       cb:   @catalogNode
+
+    if Conf['Use 4chan X Catalog'] and Conf['Index Mode'] is 'catalog'
+      Index.setMode Conf['Previous Index Mode']
+    @cb.popstate()
 
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'
@@ -79,10 +87,11 @@ Index =
     @root     = $.el 'div', className: 'board'
     @pagelist = $.el 'div', className: 'pagelist'
     $.extend @pagelist, <%= importHTML('Features/Index-pagelist') %>
+    $('.cataloglink a', @pagelist).href = if Conf['Use 4chan X Catalog'] then '#catalog' else "/#{g.BOARD}/catalog"
     @navLinks = $.el 'div', className: 'navLinks'
     $.extend @navLinks, <%= importHTML('Features/Index-navlinks') %>
-    $('.returnlink a',  @navLinks).href = "//boards.4chan.org/#{g.BOARD}/"
-    $('.cataloglink a', @navLinks).href = "//boards.4chan.org/#{g.BOARD}/catalog"
+    $('.returnlink a',  @navLinks).href = if Conf['Use 4chan X Catalog'] then '#index' else "/#{g.BOARD}/"
+    $('.cataloglink a', @navLinks).href = if Conf['Use 4chan X Catalog'] then '#catalog' else "/#{g.BOARD}/catalog"
     @searchInput = $ '#index-search', @navLinks
     @hideLabel   = $ '#hidden-label', @navLinks
     @currentPage = @getCurrentPage()
@@ -238,8 +247,8 @@ Index =
       Index.buildIndex()
     hashchange: (e) ->
       switch command = location.hash[1..]
-        when 'paged', 'infinite', 'all pages', 'catalog'
-          mode = command
+        when 'paged', 'infinite', 'all-pages', 'catalog'
+          mode = command.replace /-/g, ' '
         when 'index'
           mode = Conf['Previous Index Mode']
       if mode

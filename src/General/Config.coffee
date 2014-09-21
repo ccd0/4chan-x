@@ -5,6 +5,10 @@ Config =
         true
         'Replace the board index with a dynamically generated one supporting searching, sorting, and infinite scrolling.'
       ]
+      'Use 4chan X Catalog': [
+        false
+        'Link to 4chan X\'s catalog instead of the native 4chan one.'
+      ]
       'Catalog Links': [
         true
         'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'

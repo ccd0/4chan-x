@@ -24,7 +24,10 @@ CatalogLinks =
     CatalogLinks.set @checked
 
   set: (useCatalog) ->
-    path = if useCatalog then 'catalog' else ''
+    path = if useCatalog
+      if Conf['JSON Navigation'] and Conf['Use 4chan X Catalog'] then '#catalog' else 'catalog'
+    else
+      ''
 
     generateURL = if useCatalog and Conf['External Catalog']
       CatalogLinks.external
