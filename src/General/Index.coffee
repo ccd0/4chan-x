@@ -18,10 +18,6 @@ Index =
       name: 'Catalog Features'
       cb:   @catalogNode
 
-    if Conf['Use 4chan X Catalog'] and Conf['Index Mode'] is 'catalog'
-      Index.setMode Conf['Previous Index Mode']
-    @cb.popstate()
-
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'
       title: 'Refresh'
@@ -91,6 +87,10 @@ Index =
     @selectSort.value = Conf[@selectSort.name]
     $.on @selectSort, 'change', $.cb.value
     $.on @selectSort, 'change', @cb.sort
+
+    if Conf['Use 4chan X Catalog'] and Conf['Index Mode'] is 'catalog'
+      Index.setMode Conf['Previous Index Mode']
+    @cb.popstate()
 
     @update()
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
@@ -252,6 +252,7 @@ Index =
         # hash change, not call from init
         Index.buildIndex()
         Index.setPage()
+        Index.scrollToIndex()
     popstate: (e) ->
       unless e?.state
         # page load or hash change
@@ -307,6 +308,8 @@ Index =
     if mode not in ['catalog', Conf['Previous Index Mode']]
       Conf['Previous Index Mode'] = mode
       $.set 'Previous Index Mode', mode
+    Index.showHiddenThreads = false
+    $('#hidden-toggle a', Index.navLinks).textContent = 'Show'
 
   getPagesNum: ->
     if Index.isSearching
