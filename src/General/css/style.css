@@ -860,6 +860,8 @@ span.hide-announcement {
 }
 :root.werkTyme .catalog-thread > a {
   text-align: center;
+  -webkit-align-self: stretch;
+  align-self: stretch;
 }
 .filter-highlight .werkTyme-filename {
   border: 2px solid rgba(255, 0, 0, .5);
