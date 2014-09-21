@@ -197,7 +197,7 @@ PostHiding =
       className: 'stub'
     $.add post.nodes.stub, a
     if Conf['Menu']
-      $.add post.nodes.stub, Menu.makeButton()
+      $.add post.nodes.stub, Menu.makeButton post
     $.prepend post.nodes.root, post.nodes.stub
 
   show: (post, showRecursively=Conf['Recursive Hiding']) ->

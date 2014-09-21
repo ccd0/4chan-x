@@ -97,7 +97,7 @@ ThreadHiding =
         el: div
         order: 20
         open: ({thread, isReply}) ->
-          if isReply or !thread.isHidden
+          if isReply or !thread.isHidden or Conf['JSON Navigation'] and Conf['Index Mode'] is 'catalog'
             return false
           ThreadHiding.menu.thread = thread
           true
@@ -111,7 +111,7 @@ ThreadHiding =
         el: hideStubLink
         order: 15
         open: ({thread, isReply}) ->
-          if isReply or !thread.isHidden
+          if isReply or !thread.isHidden or Conf['JSON Navigation'] and Conf['Index Mode'] is 'catalog'
             return false
           ThreadHiding.menu.thread = thread
 
@@ -155,7 +155,7 @@ ThreadHiding =
     thread.stub = $.el 'div',
       className: 'stub'
     if Conf['Menu']
-      $.add thread.stub, [a, Menu.makeButton()]
+      $.add thread.stub, [a, Menu.makeButton thread.OP]
     else
       $.add thread.stub, a
     $.prepend root, thread.stub

@@ -138,11 +138,11 @@ Index =
 
   menu:
     init: ->
-      return if g.VIEW isnt 'index' or !Conf['JSON Navigation'] or !Conf['Menu'] or g.BOARD.ID is 'f'
+      return if g.VIEW isnt 'index' or !Conf['JSON Navigation'] or !Conf['Menu'] or !Conf['Thread Hiding Link'] or g.BOARD.ID is 'f'
 
       Menu.menu.addEntry
         el: $.el 'a', href: 'javascript:;'
-        order: 5
+        order: 20
         open: ({thread}) ->
           return false if Conf['Index Mode'] isnt 'catalog'
           @el.textContent = if thread.isHidden
