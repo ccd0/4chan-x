@@ -235,20 +235,23 @@ Index =
       Index.sort()
       Index.buildIndex()
     hashchange: (e) ->
-      switch command = location.hash[1..]
+      {pathname, hash} = location
+      switch command = hash[1..]
         when 'paged', 'infinite', 'all-pages', 'catalog'
           mode = command.replace /-/g, ' '
         when 'index'
           mode = Conf['Previous Index Mode']
       if mode
         Index.setMode mode
-        history.replaceState {mode}, '', if Index.currentPage is 1 then './' else Index.currentPage
-        if e
-          # hash change, not call from init
-          Index.buildIndex()
-          Index.setPage()
-        return
-      history.replaceState {mode: Conf['Index Mode']}, ''
+        pathname = if Index.currentPage is 1 then './' else Index.currentPage
+        hash = ''
+      if Conf['Use 4chan X Catalog'] and Conf['Index Mode'] is 'catalog'
+        hash = '#catalog'
+      history.replaceState {mode: Conf['Index Mode']}, '', pathname + hash
+      if mode and e
+        # hash change, not call from init
+        Index.buildIndex()
+        Index.setPage()
     popstate: (e) ->
       unless e?.state
         # page load or hash change
