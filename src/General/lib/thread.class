@@ -8,7 +8,6 @@ class Thread
     @isDead     = false
     @isHidden   = false
     @isOnTop    = false
-    @isPinned   = false
     @isSticky   = false
     @isClosed   = false
     @isArchived = false
@@ -65,13 +64,6 @@ class Thread
 
     return unless @catalogView
     (if type is 'Sticky' and @isClosed then $.prepend else $.add) @catalogView.nodes.icons, icon.cloneNode()
-
-  pin: ->
-    @isPinned = true
-    $.addClass @catalogView.nodes.root, 'pinned' if @catalogView
-  unpin: ->
-    @isPinned = false
-    $.rmClass  @catalogView.nodes.root, 'pinned' if @catalogView
 
   kill: ->
     @isDead = true

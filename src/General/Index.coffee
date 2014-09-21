@@ -10,10 +10,6 @@ Index =
 
     @board = "#{g.BOARD}"
 
-    @db = new DataBoard 'pinnedThreads'
-    Thread.callbacks.push
-      name: 'Thread Pinning'
-      cb:   @threadNode
     CatalogThread.callbacks.push
       name: 'Catalog Features'
       cb:   @catalogNode
@@ -160,25 +156,6 @@ Index =
           $.on @el, 'click', @cb
           true
 
-      Menu.menu.addEntry
-        el: $.el 'a', href: 'javascript:;'
-        order: 6
-        open: ({thread}) ->
-          return false if Conf['Index Mode'] isnt 'catalog'
-          @el.textContent = if thread.isPinned
-            'Unpin thread'
-          else
-            'Pin thread'
-          $.off @el, 'click', @cb if @cb
-          @cb = ->
-            $.event 'CloseMenu'
-            Index.togglePin thread
-          $.on @el, 'click', @cb
-          true
-
-  threadNode: ->
-    return unless Index.db.get {boardID: @board.ID, threadID: @ID}
-    @pin()
   catalogNode: ->
     $.on @nodes.thumb.parentNode, 'click', Index.onClick
   onClick: (e) ->
@@ -186,8 +163,6 @@ Index =
     thread = g.threads[@parentNode.dataset.fullID]
     if e.shiftKey
       Index.toggleHide thread
-    else if e.altKey
-      Index.togglePin thread
     else
       return
     e.preventDefault()
@@ -200,19 +175,6 @@ Index =
     else
       ThreadHiding.hide thread
     ThreadHiding.saveHiddenState thread
-  togglePin: (thread) ->
-    data =
-      boardID:  thread.board.ID
-      threadID: thread.ID
-    if thread.isPinned
-      thread.unpin()
-      Index.db.delete data
-    else
-      thread.pin()
-      data.val = true
-      Index.db.set data
-    Index.sort()
-    Index.buildIndex()
 
   cb:
     toggleHiddenThreads: ->
@@ -547,7 +509,7 @@ Index =
     # Sticky threads
     Index.sortOnTop (thread) -> thread.isSticky
     # Highlighted threads
-    Index.sortOnTop (thread) -> thread.isOnTop or thread.isPinned
+    Index.sortOnTop (thread) -> thread.isOnTop
     # Non-hidden threads
     Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
 

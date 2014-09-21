@@ -352,7 +352,6 @@ Build =
     ) %>
 
     root.dataset.fullID = thread.fullID
-    $.addClass root, 'pinned' if thread.isPinned
     $.addClass root, thread.OP.highlights... if thread.OP.highlights
 
     for quotelink in $$ '.quotelink, .deadlink', root.lastElementChild

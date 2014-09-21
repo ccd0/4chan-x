@@ -861,7 +861,6 @@ span.hide-announcement {
 :root.werkTyme .catalog-thread > a {
   text-align: center;
 }
-.pinned .werkTyme-filename,
 .filter-highlight .werkTyme-filename {
   border: 2px solid rgba(255, 0, 0, .5);
 }
@@ -883,7 +882,6 @@ span.hide-announcement {
 .filter-highlight > .reply {
   box-shadow: -5px 0 rgba(255, 0, 0, .5);
 }
-.pinned .catalog-thumb,
 .filter-highlight .catalog-thumb {
   border: 2px solid rgba(255, 0, 0, .5);
 }
