@@ -2,6 +2,26 @@ The attributions below are for work that has been incorporated into the script a
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+<!-- v1.9.4.x -->
+### v1.9.4.0 
+*2014-09-22* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.4.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.4.0/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**MayhemYDG**
+- Add `catalog` index mode.
+  - Supports 4chan X filters (hiding, highlighting) and 4chan X thread menu.
+  - You can use `Shift+Click` on the thumbnail to hide threads.
+  - Displays number of threads hidden and allows toggling between hidden/non-hidden threads.
+- Move `Index Sort` out of the header menu and into the index page.
+
+**ccd0**
+- Various tweaks to catalog.
+  - Move menu to the thread statistics line.
+  - `Werk Tyme` in catalog mode substitutes a filename for the thumbnail.
+  - Can use URL fragments (`#paged`, `#infinite`, `#all-pages`, `#catalog`, and `#index` for the previous non-catalog mode) to switch between index modes. This allows links to different modes to work when opened in a new tab.
+  - New option `Use 4chan X Catalog` makes non-external catalog links point to 4chan X's catalog mode. With this setting enabled, links to the index without `#catalog` will open it in a non-catalog mode.
+  - Not all 4chan X features work in the catalog yet, but future releases will add them.
+- Begin using 4chan's new status icon for archived threads.
+
 <!-- v1.9.3.x -->
 ### v1.9.3.8 
 *2014-09-21* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.3.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.3.8/builds/4chan-X-noupdate.crx "Chromium version")]
