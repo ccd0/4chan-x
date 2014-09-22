@@ -15,7 +15,9 @@ Index =
       cb:   @catalogNode
 
     if Conf['Use 4chan X Catalog'] and Conf['Index Mode'] is 'catalog'
-      @setMode Conf['Previous Index Mode']
+      Conf['Index Mode'] = Conf['Previous Index Mode']
+    if history.state?.mode
+      Conf['Index Mode'] = history.state?.mode
     @pushState
       command: location.hash[1..]
       replace: true
@@ -187,7 +189,13 @@ Index =
       Index.sort()
       Index.buildIndex()
     mode: ->
-      state = Index.pushState {mode: @value}
+      mode = @value
+      unless mode is 'catalog' and Conf['Use 4chan X Catalog']
+        $.set 'Index Mode', mode
+      unless mode is 'catalog'
+        Conf['Previous Index Mode'] = mode
+        $.set 'Previous Index Mode', mode
+      state = Index.pushState {mode}
       if state.mode
         Index.applyMode()
         Index.buildIndex()
@@ -205,14 +213,14 @@ Index =
         state = Index.pushState
           command: location.hash[1..]
           replace: true
-        if state.mode
+        if state.command
           Index[if Conf['Refreshed Navigation'] then 'update' else 'pageLoad'] state
         return
       {mode} = e.state
       pageNum = Index.getCurrentPage()
       unless Conf['Index Mode'] is mode and Index.currentPage is pageNum
         unless Conf['Index Mode'] is mode
-          Index.setMode mode
+          Conf['Index Mode'] = mode
           Index.applyMode()
         Index.currentPage = pageNum
         Index.buildIndex()
@@ -260,10 +268,12 @@ Index =
         state.mode = command.replace /-/g, ' '
       when 'index'
         state.mode = Conf['Previous Index Mode']
+      else
+        delete state.command
     {mode} = state
     if mode
       delete state.mode if mode is Conf['Index Mode']
-      Index.setMode mode
+      Conf['Index Mode'] = mode
       state.page = 1 if mode in ['all pages', 'catalog']
       hash = ''
     {page} = state
@@ -272,7 +282,6 @@ Index =
       Index.currentPage = page
       pathname = if page is 1 then "/#{g.BOARD}/" else "/#{g.BOARD}/#{page}"
       hash = ''
-    hash = '#catalog' if Conf['Use 4chan X Catalog'] and Conf['Index Mode'] is 'catalog'
     history[if state.replace then 'replaceState' else 'pushState'] {mode: Conf['Index Mode']}, '', pathname + hash
     state
   pageLoad: ({mode}) ->
@@ -280,12 +289,6 @@ Index =
     Index.buildIndex()
     Index.setPage()
     Index.scrollToIndex()
-  setMode: (mode) ->
-    Conf['Index Mode'] = mode
-    $.set 'Index Mode', mode
-    if mode not in ['catalog', Conf['Previous Index Mode']]
-      Conf['Previous Index Mode'] = mode
-      $.set 'Previous Index Mode', mode
   applyMode: ->
     for mode in ['paged', 'infinite', 'all pages', 'catalog']
       $[if mode is Conf['Index Mode'] then 'addClass' else 'rmClass'] doc, "#{mode.replace /\ /g, '-'}-mode"
