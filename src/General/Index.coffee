@@ -14,12 +14,18 @@ Index =
       name: 'Catalog Features'
       cb:   @catalogNode
 
+    if Conf['Use 4chan X Catalog'] and Conf['Index Mode'] is 'catalog'
+      @setMode Conf['Previous Index Mode']
+    @pushState
+      command: location.hash[1..]
+      replace: true
+
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'
       title: 'Refresh'
       href: 'javascript:;'
       textContent: 'Refresh Index'
-    $.on @button, 'click', @update
+    $.on @button, 'click', -> Index.update()
     Header.addShortcut @button, 1
 
     modeEntry =
@@ -67,7 +73,7 @@ Index =
     $('.cataloglink a', @pagelist).href = if Conf['Use 4chan X Catalog'] then '#catalog' else "/#{g.BOARD}/catalog"
     @navLinks = $.el 'div', className: 'navLinks'
     $.extend @navLinks, <%= importHTML('Features/Index-navlinks') %>
-    $('.returnlink a',  @navLinks).href = if Conf['Use 4chan X Catalog'] then '#index' else "/#{g.BOARD}/"
+    $('.returnlink a',  @navLinks).href = "/#{g.BOARD}/"
     $('.cataloglink a', @navLinks).href = if Conf['Use 4chan X Catalog'] then '#catalog' else "/#{g.BOARD}/catalog"
     @searchInput = $ '#index-search', @navLinks
     @hideLabel   = $ '#hidden-label', @navLinks
@@ -80,13 +86,10 @@ Index =
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
     $.on $('#hidden-toggle a',    @navLinks), 'click', @cb.toggleHiddenThreads
+    $.on $('.returnlink a',       @navLinks), 'click', @cb.frontPage
     @selectSort.value = Conf[@selectSort.name]
     $.on @selectSort, 'change', $.cb.value
     $.on @selectSort, 'change', @cb.sort
-
-    if Conf['Use 4chan X Catalog'] and Conf['Index Mode'] is 'catalog'
-      Index.setMode Conf['Previous Index Mode']
-    @cb.popstate()
 
     @update()
     $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
@@ -125,7 +128,6 @@ Index =
     nodes = Index.buildSinglePage pageNum
     Index.buildReplies   nodes if Conf['Show Replies']
     Index.buildStructure nodes
-    Index.setPage pageNum
     
   endNotice: do ->
     notify = false
@@ -185,10 +187,11 @@ Index =
       Index.sort()
       Index.buildIndex()
     mode: ->
-      Index.setMode @value
-      Index.pushState Conf['Index Mode'], Index.currentPage
-      Index.buildIndex()
-      Index.setPage()
+      state = Index.pushState {mode: @value}
+      if state.mode
+        Index.applyMode()
+        Index.buildIndex()
+        Index.setPage()
     sort: ->
       Index.sort()
       Index.buildIndex()
@@ -196,33 +199,22 @@ Index =
       Index.buildThreads()
       Index.sort()
       Index.buildIndex()
-    hashchange: (e) ->
-      {pathname, hash} = location
-      switch command = hash[1..]
-        when 'paged', 'infinite', 'all-pages', 'catalog'
-          mode = command.replace /-/g, ' '
-        when 'index'
-          mode = Conf['Previous Index Mode']
-      if mode
-        Index.setMode mode
-        pathname = if Index.currentPage is 1 then './' else Index.currentPage
-        hash = ''
-      if Conf['Use 4chan X Catalog'] and Conf['Index Mode'] is 'catalog'
-        hash = '#catalog'
-      history.replaceState {mode: Conf['Index Mode']}, '', pathname + hash
-      if mode and e
-        # hash change, not call from init
-        Index.buildIndex()
-        Index.setPage()
-        Index.scrollToIndex()
     popstate: (e) ->
       unless e?.state
         # page load or hash change
-        return Index.cb.hashchange.call @, e
+        state = Index.pushState
+          command: location.hash[1..]
+          replace: true
+        if state.mode
+          Index[if Conf['Refreshed Navigation'] then 'update' else 'pageLoad'] state
+        return
       {mode} = e.state
       pageNum = Index.getCurrentPage()
       unless Conf['Index Mode'] is mode and Index.currentPage is pageNum
-        Index.setMode mode
+        unless Conf['Index Mode'] is mode
+          Index.setMode mode
+          Index.applyMode()
+        Index.currentPage = pageNum
         Index.buildIndex()
         Index.setPage()
     pageNav: (e) ->
@@ -238,6 +230,13 @@ Index =
       return if a.textContent is 'Catalog'
       e.preventDefault()
       Index.userPageNav +a.pathname.split('/')[2] or 1
+    frontPage: (e) ->
+      return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+      e.preventDefault()
+      if Conf['Use 4chan X Catalog'] and Conf['Index Mode'] is 'catalog'
+        window.location = '#index'
+      else
+        Index.userPageNav 1
 
   scrollToIndex: ->
     Header.scrollToIfNeeded Index.navLinks
@@ -247,29 +246,49 @@ Index =
       1
     else
       +window.location.pathname.split('/')[2] or 1
-  userPageNav: (pageNum) ->
-    Index.pushState Conf['Index Mode'], pageNum
+  userPageNav: (page) ->
+    state = Index.pushState {page}
     if Conf['Refreshed Navigation']
-      Index.update pageNum
+      Index.update state
     else
-      return if Index.currentPage is pageNum
-      Index.pageLoad pageNum
-  pushState: (mode, pageNum) ->
-    history.pushState {mode}, '', if pageNum is 1 then './' else pageNum
-  pageLoad: (pageNum) ->
-    Index.currentPage = pageNum
+      Index.pageLoad state if state.page
+  pushState: (state) ->
+    {pathname, hash} = location
+    {command} = state
+    switch command
+      when 'paged', 'infinite', 'all-pages', 'catalog'
+        state.mode = command.replace /-/g, ' '
+      when 'index'
+        state.mode = Conf['Previous Index Mode']
+    {mode} = state
+    if mode
+      delete state.mode if mode is Conf['Index Mode']
+      Index.setMode mode
+      state.page = 1 if mode in ['all pages', 'catalog']
+      hash = ''
+    {page} = state
+    if page
+      delete state.page if page is Index.currentPage
+      Index.currentPage = page
+      pathname = if page is 1 then "/#{g.BOARD}/" else "/#{g.BOARD}/#{page}"
+      hash = ''
+    hash = '#catalog' if Conf['Use 4chan X Catalog'] and Conf['Index Mode'] is 'catalog'
+    history[if state.replace then 'replaceState' else 'pushState'] {mode: Conf['Index Mode']}, '', pathname + hash
+    state
+  pageLoad: ({mode}) ->
+    Index.applyMode() if mode
     Index.buildIndex()
     Index.setPage()
     Index.scrollToIndex()
   setMode: (mode) ->
-    $.rmClass doc, "#{Conf['Index Mode'].replace /\ /g, '-'}-mode"
-    $.addClass doc, "#{mode.replace /\ /g, '-'}-mode"
     Conf['Index Mode'] = mode
     $.set 'Index Mode', mode
-    Index.currentPage = Index.getCurrentPage()
     if mode not in ['catalog', Conf['Previous Index Mode']]
       Conf['Previous Index Mode'] = mode
       $.set 'Previous Index Mode', mode
+  applyMode: ->
+    for mode in ['paged', 'infinite', 'all pages', 'catalog']
+      $[if mode is Conf['Index Mode'] then 'addClass' else 'rmClass'] doc, "#{mode.replace /\ /g, '-'}-mode"
     Index.showHiddenThreads = false
     $('#hidden-toggle a', Index.navLinks).textContent = 'Show'
 
@@ -292,8 +311,8 @@ Index =
         nodes.push $.tn('['), a, $.tn '] '
       $.rmAll pagesRoot
       $.add pagesRoot, nodes
-  setPage: (pageNum) ->
-    pageNum  or= Index.getCurrentPage()
+  setPage: ->
+    pageNum    = Index.getCurrentPage()
     maxPageNum = Index.getMaxPageNum()
     pagesRoot  = $ '.pages', Index.pagelist
     # Previous/Next buttons
@@ -329,7 +348,7 @@ Index =
     else
       "#{hiddenCount} hidden threads"
 
-  update: (pageNum) ->
+  update: (state) ->
     return unless navigator.onLine
     delete Index.pageNum
     Index.req?.abort()
@@ -343,16 +362,13 @@ Index =
           Index.notice = new Notice 'info', 'Refreshing index...', 2
       ), 3 * $.SECOND - (Date.now() - now)
 
-    pageNum = null if typeof pageNum isnt 'number' # event
-    onload = (e) -> Index.load e, pageNum
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
-      onabort:   onload
-      onloadend: onload
+      onloadend: (e) -> Index.load e, state
     ,
       whenModified: true
     $.addClass Index.button, 'fa-spin'
 
-  load: (e, pageNum) ->
+  load: (e, state) ->
     $.rmClass Index.button, 'fa-spin'
     {req, notice, nTimeout} = Index
     clearTimeout nTimeout if nTimeout
@@ -377,9 +393,9 @@ Index =
 
     try
       if req.status is 200
-        Index.parse req.response, pageNum
-      else if req.status is 304 and pageNum?
-        Index.pageLoad pageNum
+        Index.parse req.response, state
+      else if req.status is 304 and state?
+        Index.pageLoad state
     catch err
       c.error "Index failure: #{err.message}", err.stack
       # network error or non-JSON content for example.
@@ -396,14 +412,14 @@ Index =
     RelativeDates.update timeEl
     Index.scrollToIndex()
 
-  parse: (pages, pageNum) ->
+  parse: (pages, state) ->
     $.cleanCache (url) -> /^\/\/a\.4cdn\.org\//.test url
     Index.parseThreadList pages
     Index.buildThreads()
     Index.sort()
     Index.buildPagelist()
-    if pageNum?
-      Index.pageLoad pageNum
+    if state?
+      Index.pageLoad state
       return
     Index.buildIndex()
     Index.setPage()
@@ -576,8 +592,7 @@ Index =
       Index.buildIndex()
       Index.setPage()
     else
-      Index.pushState Conf['Index Mode'], pageNum
-      Index.pageLoad pageNum
+      Index.pageLoad Index.pushState {page: pageNum}
 
   querySearch: (query) ->
     return unless keywords = query.toLowerCase().match /\S+/g
