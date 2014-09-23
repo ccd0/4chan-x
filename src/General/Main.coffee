@@ -145,6 +145,16 @@ Main =
     else
       $.event '4chanXInitFinished'
 
+    $.get 'previousversion', null, ({previousversion}) ->
+      return if previousversion is g.VERSION
+      if previousversion
+        el = $.el 'span',
+          <%= html('${g.NAME} has been updated to <a href="${g.CHANGELOG}" target="_blank">version ${g.VERSION}</a>.') %>
+        new Notice 'info', el, 15
+      else
+        Settings.open()
+      $.set 'previousversion', g.VERSION
+
     return unless Conf['Show Support Message']
     <% if (type === 'userscript') { %>
     GMver = GM_info.version.split '.'
@@ -185,16 +195,6 @@ Main =
 
     else
       $.event '4chanXInitFinished'
-
-    $.get 'previousversion', null, ({previousversion}) ->
-      return if previousversion is g.VERSION
-      if previousversion
-        el = $.el 'span',
-          <%= html('${g.NAME} has been updated to <a href="${g.CHANGELOG}" target="_blank">version ${g.VERSION}</a>.') %>
-        new Notice 'info', el, 15
-      else
-        Settings.open()
-      $.set 'previousversion', g.VERSION
 
   callbackNodes: (klass, nodes) ->
     i = 0
