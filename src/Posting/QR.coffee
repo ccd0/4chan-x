@@ -14,6 +14,7 @@ QR =
         title: 'Quick Reply'
         href: 'javascript:;'
       $.on sc, 'click', ->
+        return unless QR.postingIsEnabled
         if Conf['Persistent QR'] or !QR.nodes or QR.nodes.el.hidden
           QR.open()
           QR.nodes.com.focus()
@@ -190,7 +191,7 @@ QR =
     return unless QR.nodes
     {thread} = QR.posts[0]
     if thread isnt 'new' and g.threads["#{g.BOARD}.#{thread}"].isDead
-      value    = 404
+      value    = 'Dead'
       disabled = true
       QR.cooldown.auto = false
 
