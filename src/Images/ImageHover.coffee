@@ -31,18 +31,28 @@ ImageHover =
       el.loop     = true
       el.controls = false
       el.play() if Conf['Autoplay']
+    [width, height] = file.dimensions.split('x').map (x) -> +x
+    {left, right} = file.thumb.getBoundingClientRect()
+    padding = 16
+    maxWidth = Math.max left, doc.clientWidth - right
+    maxHeight = doc.clientHeight - padding
+    scale = Math.min 1, maxWidth / width, maxHeight / height
+    el.style.maxWidth = "#{scale * width}px"
+    el.style.maxHeight = "#{scale * height}px"
     UI.hover
       root: @
       el: el
       latestEvent: e
       endEvents: 'mouseout click'
-      asapTest: -> (if isVideo then el.readyState >= el.HAVE_CURRENT_DATA else el.naturalHeight)
+      asapTest: -> true
+      height: scale * height + padding
       noRemove: true
       cb: ->
         if isVideo
           el.pause()
         TrashQueue.add el, post
         el.removeAttribute 'id'
+        el.removeAttribute 'style'
         $.queueTask -> delete file.isHovered
   error: ->
     post = Get.postFromNode @

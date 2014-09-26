@@ -302,7 +302,7 @@ UI = do ->
       $.off d, 'mouseup',   @up
     $.set "#{@id}.position", @style.cssText
 
-  hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb, noRemove}) ->
+  hoverstart = ({root, el, latestEvent, endEvents, asapTest, height, cb, noRemove}) ->
     o = {
       root
       el
@@ -313,6 +313,7 @@ UI = do ->
       latestEvent
       clientHeight: doc.clientHeight
       clientWidth:  doc.clientWidth
+      height
       noRemove
     }
     o.hover    = hover.bind    o
@@ -335,7 +336,7 @@ UI = do ->
 
   hover = (e) ->
     @latestEvent = e
-    height = @el.offsetHeight
+    height = @height or @el.offsetHeight
     {clientX, clientY} = e
 
     top = if @isImage
