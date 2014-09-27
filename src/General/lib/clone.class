@@ -63,9 +63,6 @@ class Clone extends Post
       # Contract thumbnails in quote preview
       ImageExpand.contract @ if contractThumb
 
-      # Remove any #ihover ID
-      @file.fullImage?.removeAttribute 'id'
-
     @isDead  = true if origin.isDead
     @isClone = true
     root.dataset.clone = origin.clones.push(@) - 1
