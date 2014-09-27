@@ -159,6 +159,10 @@ Config =
         true
         'Show full image / video on mouseover.'
       ]
+      'Image Hover in Catalog': [
+        false
+        'Show full image / video on mouseover in 4chan X catalog.'
+      ]
       'Gallery': [
         true
         'Adds a simple and cute image gallery.' 

@@ -1,13 +1,21 @@
 ImageHover =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Image Hover']
-
-    Post.callbacks.push
-      name: 'Image Hover'
-      cb:   @node
+    return if g.VIEW is 'catalog'
+    if Conf['Image Hover']
+      Post.callbacks.push
+        name: 'Image Hover'
+        cb:   @node
+    if Conf['Image Hover in Catalog']
+      CatalogThread.callbacks.push
+        name: 'Catalog Image Hover'
+        cb:   @catalogNode
   node: ->
-    return unless @file?.isImage or @file?.isVideo
+    return unless @file and (@file.isImage or @file.isVideo)
     $.on @file.thumb, 'mouseover', ImageHover.mouseover @
+  catalogNode: ->
+    {file} = @thread.OP
+    return unless file and (file.isImage or file.isVideo)
+    $.on @nodes.thumb, 'mouseover', ImageHover.mouseover @thread.OP
   mouseover: (post) -> (e) ->
     return unless doc.contains @
     {file} = post
