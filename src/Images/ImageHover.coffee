@@ -7,23 +7,23 @@ ImageHover =
       cb:   @node
   node: ->
     return unless @file?.isImage or @file?.isVideo
-    $.on @file.thumb, 'mouseover', ImageHover.mouseover
-  mouseover: (e) ->
+    $.on @file.thumb, 'mouseover', ImageHover.mouseover @
+  mouseover: (post) -> (e) ->
     return unless doc.contains @
-    post = Get.postFromNode @
     {file} = post
     {isVideo} = file
     return if file.isExpanding or file.isExpanded
     file.isHovered = true
+    error = ImageHover.error post
     if ImageCommon.cache?.dataset.fullID is post.fullID
-      el = ImageCommon.cache
-      delete ImageCommon.cache
+      el = ImageCommon.popCache()
+      $.on el, 'error', error
       $.queueTask(-> el.src = el.src) if /\.gif$/.test el.src
       el.currentTime = 0 if isVideo and el.readyState >= el.HAVE_METADATA
     else
       el = $.el (if isVideo then 'video' else 'img')
       el.dataset.fullID = post.fullID
-      $.on el, 'error', ImageHover.error
+      $.on el, 'error', error
       el.src = file.URL
     el.id = 'ihover'
     $.after Header.hover, el
@@ -51,19 +51,15 @@ ImageHover =
         if isVideo
           el.pause()
         $.rm el
+        $.off el, 'error', error
         el.removeAttribute 'id'
         el.removeAttribute 'style'
-        ImageCommon.cache = el
+        ImageCommon.pushCache el
         $.queueTask -> delete file.isHovered
-  error: ->
-    post = Get.postFromNode @
-    return if post.file.isExpanding or post.file.isExpanded
-    if @id is 'ihover' # still hovering
-      return if ImageCommon.decodeError @, post
-      ImageCommon.error @, post, 3 * $.SECOND, (URL) =>
-        if URL
-          @src = URL + if @src is URL then '?' + Date.now() else ''
-        else
-          $.rm @
-    else
-      $.rm @
+  error: (post) -> ->
+    return if ImageCommon.decodeError @, post
+    ImageCommon.error @, post, 3 * $.SECOND, (URL) =>
+      if URL
+        @src = URL + if @src is URL then '?' + Date.now() else ''
+      else
+        $.rm @

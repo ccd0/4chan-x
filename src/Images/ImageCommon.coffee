@@ -1,4 +1,17 @@
 ImageCommon =
+  pushCache: (el) ->
+    ImageCommon.cache = el
+    $.on el, 'error', ImageCommon.cacheError
+
+  popCache: ->
+    el = ImageCommon.cache
+    $.off el, 'error', ImageCommon.cacheError
+    delete ImageCommon.cache
+    el
+
+  cacheError: ->
+    delete ImageCommon.cache if ImageCommon.cache is @
+
   decodeError: (file, post) ->
     return false unless file.error?.code is MediaError.MEDIA_ERR_DECODE
     unless message = $ '.warning', post.file.thumb.parentNode

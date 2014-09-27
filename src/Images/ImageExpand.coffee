@@ -142,7 +142,7 @@ ImageExpand =
           $.off el, eventName, cb
       $.rm el
       $.rmClass el, 'full-image'
-      ImageCommon.cache = el
+      ImageCommon.pushCache el
 
   expand: (post, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
@@ -156,8 +156,7 @@ ImageExpand =
     if file.fullImage
       el = file.fullImage
     else if ImageCommon.cache?.dataset.fullID is post.fullID
-      el = file.fullImage = ImageCommon.cache
-      delete ImageCommon.cache
+      el = file.fullImage = ImageCommon.popCache()
       unless file.isHovered
         $.queueTask(-> el.src = el.src) if /\.gif$/.test el.src
         el.currentTime = 0 if isVideo and el.readyState >= el.HAVE_METADATA
