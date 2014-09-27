@@ -1,4 +1,15 @@
 ImageCommon =
+  rewind: (post, el) ->
+    {file} = post
+    {thumb} = file
+    if file.isVideo
+      el.currentTime = 0 if el.readyState >= el.HAVE_METADATA
+      thumb.currentTime = 0 if file.videoThumb and thumb.readyState >= thumb.HAVE_METADATA
+    else if /\.gif$/.test el.src
+      $.queueTask ->
+        el.src = el.src
+        thumb.src = thumb.src
+
   pushCache: (el) ->
     ImageCommon.cache = el
     $.on el, 'error', ImageCommon.cacheError

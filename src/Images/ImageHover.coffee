@@ -21,18 +21,16 @@ ImageHover =
     {file} = post
     {isVideo} = file
     return if file.isExpanding or file.isExpanded
-    file.isHovered = true
     error = ImageHover.error post
     if ImageCommon.cache?.dataset.fullID is post.fullID
       el = ImageCommon.popCache()
       $.on el, 'error', error
-      $.queueTask(-> el.src = el.src) if /\.gif$/.test el.src
-      el.currentTime = 0 if isVideo and el.readyState >= el.HAVE_METADATA
     else
       el = $.el (if isVideo then 'video' else 'img')
       el.dataset.fullID = post.fullID
       $.on el, 'error', error
       el.src = file.URL
+    ImageCommon.rewind post, el
     el.id = 'ihover'
     $.after Header.hover, el
     if isVideo
@@ -63,7 +61,6 @@ ImageHover =
         el.removeAttribute 'id'
         el.removeAttribute 'style'
         ImageCommon.pushCache el
-        $.queueTask -> delete file.isHovered
   error: (post) -> ->
     return if ImageCommon.decodeError @, post
     ImageCommon.error @, post, 3 * $.SECOND, (URL) =>
