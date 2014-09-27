@@ -813,10 +813,10 @@ span.hide-announcement {
 .expanded-image > .post > .file > .fileThumb > img[data-md5] {
   display: none;
 }
-.full-image:not(#ihover) {
+.full-image {
   display: none;
 }
-.expanded-image > .post > .file > .fileThumb > .full-image:not(#ihover) {
+.expanded-image > .post > .file > .fileThumb > .full-image {
   display: inline;
 }
 .expanded-image {
@@ -825,13 +825,13 @@ span.hide-announcement {
 .expanding {
   opacity: .5;
 }
-:root.fit-height .full-image:not(#ihover) {
+:root.fit-height .full-image {
   max-height: 100vh;
 }
-:root.fit-width .full-image:not(#ihover) {
+:root.fit-width .full-image {
   max-width: 100%;
 }
-:root.gecko.fit-width .full-image:not(#ihover) {
+:root.gecko.fit-width .full-image {
   width: 100%;
 }
 .fileThumb > .warning {

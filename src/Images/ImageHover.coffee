@@ -15,24 +15,24 @@ ImageHover =
     {isVideo} = file
     return if file.isExpanding or file.isExpanded
     file.isHovered = true
-    if el = file.fullImage
-      el.id = 'ihover'
-      TrashQueue.remove el
+    if ImageCommon.cache?.dataset.fullID is post.fullID
+      el = ImageCommon.cache
+      delete ImageCommon.cache
       $.queueTask(-> el.src = el.src) if /\.gif$/.test el.src
       el.currentTime = 0 if isVideo and el.readyState >= el.HAVE_METADATA
     else
-      file.fullImage = el = $.el (if isVideo then 'video' else 'img'),
-        className: 'full-image'
-        id: 'ihover'
+      el = $.el (if isVideo then 'video' else 'img')
+      el.dataset.fullID = post.fullID
       $.on el, 'error', ImageHover.error
       el.src = file.URL
-      $.after file.thumb, el
+    el.id = 'ihover'
+    $.after Header.hover, el
     if isVideo
       el.loop     = true
       el.controls = false
       el.play() if Conf['Autoplay']
     [width, height] = file.dimensions.split('x').map (x) -> +x
-    {left, right} = file.thumb.getBoundingClientRect()
+    {left, right} = @getBoundingClientRect()
     padding = 16
     maxWidth = Math.max left, doc.clientWidth - right
     maxHeight = doc.clientHeight - padding
@@ -50,9 +50,10 @@ ImageHover =
       cb: ->
         if isVideo
           el.pause()
-        TrashQueue.add el, post
+        $.rm el
         el.removeAttribute 'id'
         el.removeAttribute 'style'
+        ImageCommon.cache = el
         $.queueTask -> delete file.isHovered
   error: ->
     post = Get.postFromNode @
@@ -64,7 +65,5 @@ ImageHover =
           @src = URL + if @src is URL then '?' + Date.now() else ''
         else
           $.rm @
-          delete post.file.fullImage
     else
       $.rm @
-      delete post.file.fullImage

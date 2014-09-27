@@ -134,12 +134,15 @@ ImageExpand =
       window.scrollBy 0, d.body.clientHeight - oldHeight
 
     if el = file.fullImage
+      delete file.fullImage
       $.off el, 'error', ImageExpand.error
       if file.isVideo
         el.pause()
         for eventName, cb of ImageExpand.videoCB
           $.off el, eventName, cb
-      TrashQueue.add el, post
+      $.rm el
+      $.rmClass el, 'full-image'
+      ImageCommon.cache = el
 
   expand: (post, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
@@ -150,18 +153,23 @@ ImageExpand =
     $.addClass thumb, 'expanding'
     file.isExpanding = true
 
-    el = file.fullImage or $.el (if isVideo then 'video' else 'img'), className: 'full-image'
-    $.on el, 'error', ImageExpand.error
     if file.fullImage
-      # Expand already-loaded/ing picture.
-      TrashQueue.remove el
+      el = file.fullImage
+    else if ImageCommon.cache?.dataset.fullID is post.fullID
+      el = file.fullImage = ImageCommon.cache
+      delete ImageCommon.cache
       unless file.isHovered
         $.queueTask(-> el.src = el.src) if /\.gif$/.test el.src
         el.currentTime = 0 if isVideo and el.readyState >= el.HAVE_METADATA
+      $.on el, 'error', ImageExpand.error
     else
+      el = file.fullImage = $.el (if isVideo then 'video' else 'img')
+      el.dataset.fullID = post.fullID
+      $.on el, 'error', ImageExpand.error
       el.src = src or file.URL
-      $.after thumb, el
-      file.fullImage = el
+
+    el.className = 'full-image'
+    $.after thumb, el
 
     if isVideo
       # add contract link to file info
