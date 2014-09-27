@@ -140,7 +140,7 @@ ImageExpand =
         el.pause()
         for eventName, cb of ImageExpand.videoCB
           $.off el, eventName, cb
-      ImageCommon.rewind post, el
+      ImageCommon.rewind file.thumb
       delete file.fullImage
       $.queueTask ->
         # XXX Work around Chrome/Chromium not firing mouseover on the thumbnail.
@@ -163,6 +163,8 @@ ImageExpand =
     else if ImageCommon.cache?.dataset.fullID is post.fullID
       el = file.fullImage = ImageCommon.popCache()
       $.on el, 'error', ImageExpand.error
+      ImageCommon.rewind el unless el.id is 'ihover'
+      el.removeAttribute 'id'
     else
       el = file.fullImage = $.el (if isVideo then 'video' else 'img')
       el.dataset.fullID = post.fullID

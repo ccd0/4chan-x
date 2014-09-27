@@ -30,7 +30,8 @@ ImageHover =
       el.dataset.fullID = post.fullID
       $.on el, 'error', error
       el.src = file.URL
-    ImageCommon.rewind post, el
+    ImageCommon.rewind el
+    ImageCommon.rewind @
     el.id = 'ihover'
     $.after Header.hover, el
     if isVideo
@@ -58,7 +59,6 @@ ImageHover =
         ImageCommon.pushCache el
         el.pause() if isVideo
         $.rm el
-        el.removeAttribute 'id'
         el.removeAttribute 'style'
   error: (post) -> ->
     return if ImageCommon.decodeError @, post
