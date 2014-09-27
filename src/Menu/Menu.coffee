@@ -22,8 +22,7 @@ Menu =
     $.add @nodes.info, Menu.makeButton @
 
   catalogNode: ->
-    post = g.threads[@thread.fullID].OP
-    $.after @nodes.icons, Menu.makeButton post
+    $.after @nodes.icons, Menu.makeButton @thread.OP
 
   makeButton: (post, button) ->
     button or= Menu.button.cloneNode true
