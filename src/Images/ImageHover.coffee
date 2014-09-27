@@ -54,13 +54,12 @@ ImageHover =
       height: scale * height + padding
       noRemove: true
       cb: ->
-        if isVideo
-          el.pause()
-        $.rm el
         $.off el, 'error', error
+        ImageCommon.pushCache el
+        el.pause() if isVideo
+        $.rm el
         el.removeAttribute 'id'
         el.removeAttribute 'style'
-        ImageCommon.pushCache el
   error: (post) -> ->
     return if ImageCommon.decodeError @, post
     ImageCommon.error @, post, 3 * $.SECOND, (URL) =>

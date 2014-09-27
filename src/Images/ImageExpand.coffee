@@ -134,16 +134,16 @@ ImageExpand =
       window.scrollBy 0, d.body.clientHeight - oldHeight
 
     if el = file.fullImage
-      delete file.fullImage
       $.off el, 'error', ImageExpand.error
+      ImageCommon.pushCache el
       if file.isVideo
         el.pause()
         for eventName, cb of ImageExpand.videoCB
           $.off el, eventName, cb
+      ImageCommon.rewind post, el
+      delete file.fullImage
       $.rm el
       $.rmClass el, 'full-image'
-      ImageCommon.rewind post, el
-      ImageCommon.pushCache el
 
   expand: (post, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
