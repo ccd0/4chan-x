@@ -142,8 +142,12 @@ ImageExpand =
           $.off el, eventName, cb
       ImageCommon.rewind post, el
       delete file.fullImage
-      $.rm el
-      $.rmClass el, 'full-image'
+      $.queueTask ->
+        # XXX Work around Chrome/Chromium not firing mouseover on the thumbnail.
+        return if file.isExpanding or file.isExpanded
+        $.rmClass el, 'full-image'
+        return if el.id
+        $.rm el
 
   expand: (post, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
