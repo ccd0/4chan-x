@@ -885,7 +885,8 @@ span.hide-announcement {
 }
 
 /* Spoiler text */
-:root.reveal-spoilers s {
+:root.reveal-spoilers s,
+:root.reveal-spoilers s > a {
   color: white !important;
 }
 
