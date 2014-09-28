@@ -16,6 +16,7 @@ class DataBoard
   save: -> $.set @key, @data
 
   delete: ({boardID, threadID, postID}) ->
+    $.forceSync @key
     if postID
       return unless @data.boards[boardID]?[threadID]
       delete @data.boards[boardID][threadID][postID]
@@ -29,6 +30,7 @@ class DataBoard
     @save()
 
   deleteIfEmpty: ({boardID, threadID}) ->
+    $.forceSync @key
     if threadID
       unless Object.keys(@data.boards[boardID][threadID]).length
         delete @data.boards[boardID][threadID]
@@ -37,6 +39,7 @@ class DataBoard
       delete @data.boards[boardID]
 
   set: ({boardID, threadID, postID, val}) ->
+    $.forceSync @key
     if postID isnt undefined
       ((@data.boards[boardID] or= {})[threadID] or= {})[postID] = val
     else if threadID isnt undefined
@@ -46,6 +49,7 @@ class DataBoard
     @save()
 
   get: ({boardID, threadID, postID, defaultValue}) ->
+    $.forceSync @key
     if board = @data.boards[boardID]
       unless threadID
         if postID
@@ -63,6 +67,7 @@ class DataBoard
     val or defaultValue
 
   clean: ->
+    $.forceSync @key
     for boardID, val of @data.boards
       @deleteIfEmpty {boardID}
 

@@ -295,6 +295,7 @@ $.sync = do ->
         cb changes[key].newValue, key
     return
   (key, cb) -> $.syncing[key] = cb
+$.forceSync = (key) -> return
 $.localKeys = [
   # filters
   'name',
@@ -407,11 +408,25 @@ do ->
 <% } else { %>
 
 # http://wiki.greasespot.net/Main_Page
-$.sync = do ->
-  $.on window, 'storage', ({key, newValue}) ->
+do ->
+  oldValue = {}
+  onChange = ({key, newValue}) ->
     if cb = $.syncing[key]
+      oldValue[key] = newValue
       cb JSON.parse(newValue), key
-  (key, cb) -> $.syncing[g.NAMESPACE + key] = cb
+  $.on window, 'storage', onChange
+  $.sync = (key, cb) ->
+    key = g.NAMESPACE + key
+    $.syncing[key] = cb
+    oldValue[key] = GM_getValue key
+  $.forceSync = (key) ->
+    # Storage events don't work across origins
+    # e.g. http://boards.4chan.org and https://boards.4chan.org
+    # so force a check for changes to avoid lost data.
+    key = g.NAMESPACE + key
+    newValue = GM_getValue key
+    if newValue isnt oldValue[key]
+      onChange {key, newValue}
 
 $.delete = (keys) ->
   unless keys instanceof Array
