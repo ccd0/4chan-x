@@ -15,7 +15,7 @@ ImageLoader =
         # Special case: Quote previews are off screen when inserted into document, but quickly moved on screen.
         qpClone = $.id('qp')?.firstElementChild
         g.posts.forEach (post) ->
-          for post in [post, post.clones...] when post.file?.videoThumb
+          for post in [post, post.clones...] when post.file and post.file.isVideo and post.file.isReplaced
             {thumb} = post.file
             if Header.isNodeVisible(thumb) or post.nodes.root is qpClone then thumb.play() else thumb.pause()
           return
@@ -54,7 +54,7 @@ ImageLoader =
     $.on video, 'mouseover', ImageHover.mouseover post if Conf['Image Hover']
     $.replace thumb, video
     file.thumb      = video
-    file.videoThumb = true
+    file.isReplaced = true
 
   prefetch: (post) ->
     {file} = post
@@ -66,7 +66,7 @@ ImageLoader =
     return unless replace or Conf['prefetch']
     return unless [post, post.clones...].some (clone) -> doc.contains clone.nodes.root
     file.isPrefetched = true
-    if file.videoThumb
+    if isVideo and file.isReplaced
       clone.file.thumb.preload = 'auto' for clone in post.clones
       thumb.preload = 'auto'
       # XXX Cloned video elements with poster in Firefox cause momentary display of image loading icon.
@@ -76,6 +76,9 @@ ImageLoader =
     el = $.el if isImage then 'img' else 'video'
     if replace and isImage
       $.on el, 'load', ->
-        clone.file.thumb.src = URL for clone in post.clones
+        for clone in post.clones
+          clone.file.thumb.src = URL
+          clone.file.isReplaced = true
         thumb.src = URL
+        file.isReplaced = true
     el.src = URL

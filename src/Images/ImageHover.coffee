@@ -30,8 +30,13 @@ ImageHover =
       el.dataset.fullID = post.fullID
       $.on el, 'error', error
       el.src = file.URL
-    ImageCommon.rewind el
-    ImageCommon.rewind @
+    if !file.isReplaced
+      ImageCommon.rewind el
+    else if isVideo
+      if el.readyState >= el.HAVE_METADATA
+        el.currentTime = @currentTime
+      else
+        $.on el, 'loadedmetadata', => el.currentTime = @currentTime
     el.id = 'ihover'
     $.after Header.hover, el
     if isVideo

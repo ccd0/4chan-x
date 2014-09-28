@@ -163,7 +163,7 @@ ImageExpand =
     else if ImageCommon.cache?.dataset.fullID is post.fullID
       el = file.fullImage = ImageCommon.popCache()
       $.on el, 'error', ImageExpand.error
-      ImageCommon.rewind el unless el.id is 'ihover'
+      ImageCommon.rewind el if el.id isnt 'ihover' or file.isReplaced
       el.removeAttribute 'id'
     else
       el = file.fullImage = $.el (if isVideo then 'video' else 'img')
