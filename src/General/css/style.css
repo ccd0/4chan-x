@@ -598,6 +598,10 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 .catalog-thread > .comment > span.quote {
   color: #789922;
 }
+/* /tg/ dice rolls */
+.catalog-thread > .comment > b {
+  font-weight: normal;
+}
 
 /* Announcement Hiding */
 :root.hide-announcement #globalMessage {
