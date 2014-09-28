@@ -337,6 +337,8 @@ Build =
     else
       <%= html('') %>
 
+    comment = innerHTML: data.com or ''
+
     root = $.el 'div',
       className: 'catalog-thread'
     $.extend root, <%= html(
@@ -348,17 +350,20 @@ Build =
         '<span class="catalog-icons"></span>' +
       '</div>' +
       '&{subject}' +
-      '<div class="comment">&{thread.OP.info.commentHTML}</div>'
+      '<div class="comment">&{comment}</div>'
     ) %>
 
     root.dataset.fullID = thread.fullID
     $.addClass root, thread.OP.highlights... if thread.OP.highlights
 
-    for quotelink in $$ '.quotelink, .deadlink', root.lastElementChild
-      $.replace quotelink, [quotelink.childNodes...]
+    for quote in $$ '.quotelink', root.lastElementChild
+      href = quote.getAttribute 'href'
+      quote.href = "/#{thread.board}/thread/#{thread.ID}" + href if href[0] is '#'
+    for exif in $$ '.abbr, .exif', root.lastElementChild
+      $.rm exif
     for pp in $$ '.prettyprint', root.lastElementChild
       $.replace pp, $.tn pp.textContent
-    for br in $$ 'br', root.lastElementChild when !br.previousSibling or br.previousSibling.nodeName is 'BR'
+    for br in $$ 'br', root.lastElementChild when br.previousSibling?.nodeName is 'BR'
       $.rm br
 
     if thread.isSticky

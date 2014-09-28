@@ -102,9 +102,6 @@ class Post
       $.rm node
     @info.comment = @nodesToText bq
 
-    # Save cleaned comment HTML.
-    @info.commentHTML = <%= html('&{bq}') %>
-
     # Get the comment's text with spoilers hidden.
     spoilers = $$ 's', bq
     @info.commentSpoilered = if spoilers.length
