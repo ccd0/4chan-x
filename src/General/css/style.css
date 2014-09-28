@@ -595,6 +595,9 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   overflow: hidden;
   text-align: center;
 }
+.catalog-thread > .comment > span.quote {
+  color: #789922;
+}
 
 /* Announcement Hiding */
 :root.hide-announcement #globalMessage {
@@ -731,7 +734,7 @@ span.hide-announcement {
 }
 
 /* Quote */
-.deadlink {
+:root:not(.catalog-mode) .deadlink {
   text-decoration: none !important;
 }
 .backlink.deadlink:not(.forwardlink),
