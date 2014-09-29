@@ -47,6 +47,7 @@
     "grunt-contrib-copy": "0.6.0",
     "grunt-contrib-watch": "0.6.1",
     "grunt-crx": "0.3.3",
+    "grunt-markdown": "0.6.1",
     "grunt-shell": "1.1.1",
     "load-grunt-tasks": "0.6.0"
   },

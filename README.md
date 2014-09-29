@@ -1,3 +1,4 @@
+# 4chan X
 Adds various features to 4chan.
 A continuation of the fork formerly maintained by [Seaweed](https://github.com/seaweedchan/4chan-x) and subsequently [Spittie](https://github.com/Spittie/4chan-x).
 
@@ -11,7 +12,7 @@ Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonk
 
 Greasemonkey 2.1 also fixed [another bug](https://github.com/greasemonkey/greasemonkey/issues/1937) that can break posting of images from URLs and downloading images with the original filename.
 
-### Known issues
+### Known issues<!-- Firefox -->
 The combination of Firefox 29 and Greasemonkey 2.0+ causes 4chan X not to work.
 If you have this problem, you should [upgrade Firefox](http://www.mozilla.org/en-US/firefox/new/) to version 30 or higher.
 Alternatively, you can downgrade to [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15) and turn off automatic updates for Greasemonkey ([see pic](https://raw.githubusercontent.com/ccd0/4chan-x/master/img/2014-07-12_16-19-32.png)).
@@ -24,7 +25,7 @@ This should also work for non-Windows/dev/canary Chrome and Chromium-based versi
 The stable and beta releases of Chrome on Windows will disable extensions not installed from the Chrome store, so users will need to install 4chan X from the link above.
 Only the latest stable version of 4chan X is available.
 
-### Known issues
+### Known issues<!-- Chromium -->
 Some recent versions of Chromium/Chrome (38.0.2085 - 38.0.2103) (and versions of Opera based on them) suffer from a (now fixed) [bug](https://crbug.com/393686) that prevents extensions from making HTTP requests if more than one extension is enabled. This breaks, among other things, thread updating, quick reply, and, when `JSON Navigation` is enabled, the thread index. If you are experiencing this, try using another version of Chromium/Chrome/Opera, disabling your other extensions, or using a different browser.
 
 ## Other browsers
@@ -46,6 +47,7 @@ New features and non-urgent bugfixes are released on the beta channel for furthe
 If you want to install the current beta version but get updates from the stable channel after that, install it from [here](https://github.com/ccd0/4chan-x/raw/beta/builds/4chan-X.user.js) for Firefox or [here](https://github.com/ccd0/4chan-x/raw/beta/builds/4chan-X.crx) for Chromium.
 
 ## More information
+### [Source Code](https://github.com/ccd0/4chan-x)
 ### [Frequently Asked Questions](https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions)
 ### [Reporting Bugs and Contributing](https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md)
 

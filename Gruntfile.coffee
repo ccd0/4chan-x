@@ -146,12 +146,20 @@ module.exports = (grunt) ->
           git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
           git checkout -b tmp
           git merge --no-commit -s ours gh-pages
-          git checkout gh-pages "builds/*<%= pkg.meta.suffix.beta %>.*"
+          git checkout gh-pages "builds/*<%= pkg.meta.suffix.beta %>.*" README.md index.html
           git commit -am "Move <%= pkg.meta.name %> v<%= pkg.meta.version %> to stable channel."
           git checkout gh-pages
           git merge --ff-only tmp
           git branch -d tmp
           git checkout @{-2}
+        """.split('\n').join('&&')
+      web:
+        command: """
+          git commit -am "Build web page."
+          git checkout gh-pages
+          git checkout - README.md index.html
+          git commit -am "Update web page."
+          git checkout -
         """.split('\n').join('&&')
       push:
         command: 'git push origin --tags -f && git push origin --all'
@@ -193,6 +201,13 @@ module.exports = (grunt) ->
         'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.noupdate %>.meta.js',
         'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.dev %>.meta.js'
       ]
+
+    markdown:
+      web:
+        src: 'README.md'
+        dest: 'index.html'
+      options:
+        template: 'template.jst'
 
   require('load-grunt-tasks') grunt
 
@@ -287,6 +302,11 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'stable', [
     'shell:stable'
+  ]
+
+  grunt.registerTask 'web', [
+    'markdown:web'
+    'shell:web'
   ]
 
   grunt.registerTask 'push', [
