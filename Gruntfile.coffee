@@ -146,7 +146,7 @@ module.exports = (grunt) ->
           git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
           git checkout -b tmp
           git merge --no-commit -s ours gh-pages
-          git checkout gh-pages "builds/*<%= pkg.meta.suffix.beta %>.*" README.md index.html
+          git checkout gh-pages "builds/*<%= pkg.meta.suffix.beta %>.*" README.md template.jst index.html
           git commit -am "Move <%= pkg.meta.name %> v<%= pkg.meta.version %> to stable channel."
           git checkout gh-pages
           git merge --ff-only tmp
@@ -157,7 +157,7 @@ module.exports = (grunt) ->
         command: """
           git commit -am "Build web page."
           git checkout gh-pages
-          git checkout - README.md index.html
+          git checkout - README.md template.jst index.html
           git commit -am "Update web page."
           git checkout -
         """.split('\n').join('&&')
