@@ -2,6 +2,18 @@ The attributions below are for work that has been incorporated into the script a
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+<!-- v1.9.5.x -->
+### v1.9.5.0 
+*2014-09-28* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.5.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.5.0/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Support image hover in 4chan X catalog, enabled by `Image Hover in Catalog` option (off by default).
+- Support `Remove Spoilers` in 4chan X catalog.
+- Quotelinks, dice rolls, and fortunes are no longer stripped from 4chan X catalog comments, and quoted text is green.
+- Fix hovered images changing position as they load.
+- Tweak conditions in which GIFs/WebMs are restarted from the beginning, and try to synchronize replaced thumbnails with hover previews.
+- Fix bug in Firefox version causing lost data (e.g. watched threads, posts which are yours) when HTTP and HTTPS versions of 4chan are open at the same time.
+
 <!-- v1.9.4.x -->
 ### v1.9.4.1 
 *2014-09-23* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.4.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.4.1/builds/4chan-X-noupdate.crx "Chromium version")]
