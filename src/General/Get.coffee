@@ -17,7 +17,7 @@ Get =
   postFromNode: (node) ->
     Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', node
   contextFromNode: (node) ->
-    Get.postFromRoot $.x('ancestor::div[@class="thread"]', node).firstElementChild
+    Get.postFromRoot $.x('ancestor::div[@class="thread"]/div', node)
   postDataFromLink: (link) ->
     if link.hostname is 'boards.4chan.org'
       path     = link.pathname.split '/'
