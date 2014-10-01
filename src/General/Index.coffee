@@ -94,7 +94,12 @@ Index =
     $.on @selectSort, 'change', @cb.sort
 
     @update()
-    $.asap (-> $('.board', doc) or d.readyState isnt 'loading'), ->
+    $.asap (-> $('.board > .thread > .postContainer', doc) or d.readyState isnt 'loading'), ->
+      Index.hat = $ '.board > .thread > img:first-child'
+      if Index.hat and Index.nodes
+        for threadRoot in Index.nodes
+          $.prepend threadRoot, Index.hat.cloneNode false
+
       board = $ '.board'
       $.replace board, Index.root
       $.event 'PostsInserted'
@@ -443,6 +448,7 @@ Index =
     for threadData, i in Index.liveThreadData
       try
         threadRoot = Build.thread g.BOARD, threadData
+        $.prepend threadRoot, Index.hat.cloneNode false if Index.hat
         if thread = g.BOARD.threads[threadData.no]
           thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
           thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
