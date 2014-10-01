@@ -99,6 +99,10 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   unicode-bidi: -moz-isolate;
   unicode-bidi: -webkit-isolate;
 }
+/* party hats */
+.thread > img:first-child {
+  pointer-events: none;
+}
 
 /* fixed, z-index */
 #overlay,

@@ -15,6 +15,13 @@ The links to individual versions below are to copies of the script with the upda
 - Fix bug in Firefox version causing lost data (e.g. watched threads, posts which are yours) when HTTP and HTTPS versions of 4chan are open at the same time.
 
 <!-- v1.9.4.x -->
+### v1.9.4.2 
+*2014-09-30* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.4.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.4.2/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Support party hats in the JSON-built index.
+- Fix party hats blocking the links behind them.
+
 ### v1.9.4.1 
 *2014-09-23* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.4.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.4.1/builds/4chan-X-noupdate.crx "Chromium version")]
 
