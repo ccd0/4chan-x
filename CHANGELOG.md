@@ -3,8 +3,19 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.5.x -->
+### v1.9.5.1 
+*2014-09-30* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.5.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.5.1/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Support party hats in the JSON-built index.
+- Fix party hats blocking the links behind them.
+
+(as in v1.9.4.2)
+
 ### v1.9.5.0 
 *2014-09-28* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.5.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.5.0/builds/4chan-X-noupdate.crx "Chromium version")]
+
+Based on v1.9.4.1.
 
 **ccd0**
 - Support image hover in 4chan X catalog, enabled by `Image Hover in Catalog` option (off by default).
