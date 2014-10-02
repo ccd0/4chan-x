@@ -466,7 +466,7 @@ QR =
       $.addClass QR.nodes.sub, 'force-show'
       QR.nodes.email.placeholder = 'E-mail'
 
-    QR.forcedAnon = !!$ '.postForm input[name=name][type=hidden]'
+    QR.forcedAnon = !!$ 'form[name="post"] input[name="name"][type="hidden"]'
     if QR.forcedAnon
       $.addClass QR.nodes.el, 'forced-anon'
 
