@@ -277,7 +277,11 @@ Config =
       ]
       'Thread Excerpt': [
         true
-        'Show an excerpt of the thread in the tab title.'
+        'Show an excerpt of the thread in the tab title for threads in /f/.'
+      ]
+      'Remove Thread Excerpt': [
+        false
+        'Replace the excerpt of the thread in the tab title with the board title.'
       ]
       'Thread Stats': [
         true

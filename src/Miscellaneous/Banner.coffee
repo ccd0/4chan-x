@@ -7,6 +7,9 @@ Banner =
     banner = $ ".boardBanner"
     {children} = banner
 
+    if g.BOARD.ID isnt 'f' and g.VIEW is 'thread' and Conf['Remove Thread Excerpt']
+      Banner.setTitle children[1].textContent
+
     i = 0
     while child = children[i++]
       if i is 1
@@ -23,6 +26,13 @@ Banner =
         child.spellcheck = false
 
     return
+
+  setTitle: (title) ->
+    if Unread.title?
+      Unread.title = title
+      Unread.update()
+    else
+      d.title = title
 
   cb:
     toggle: do ->
