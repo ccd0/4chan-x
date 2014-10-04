@@ -8,6 +8,6 @@ body {
 }
 </style>
 </head><body>
-<%=content%>
+<%= content.replace('id="known-issues"', 'id="known-issues-firefox"').replace('id="known-issues"', 'id="known-issues-chromium"') %>
 </body></html>
 
