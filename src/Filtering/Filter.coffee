@@ -8,14 +8,14 @@ Filter =
 
     for key of Config.filter
       @filters[key] = []
-      for filter in Conf[key].split '\n'
-        continue if filter[0] is '#'
+      for line in Conf[key].split '\n'
+        continue if line[0] is '#'
 
-        unless regexp = filter.match /\/(.+)\/(\w*)/
+        unless regexp = line.match /\/(.+)\/(\w*)/
           continue
 
         # Don't mix up filter flags with the regular expression.
-        filter = filter.replace regexp[0], ''
+        filter = line.replace regexp[0], ''
 
         # Do not add this filter to the list if it's not a global one
         # and it's not specifically applicable to the current board.
@@ -33,7 +33,13 @@ Filter =
             regexp = RegExp regexp[1], regexp[2]
           catch err
             # I warned you, bro.
-            new Notice 'warning', err.message, 60
+            new Notice 'warning', [
+              $.tn "Invalid #{key} filter:"
+              $.el 'br'
+              $.tn line
+              $.el 'br'
+              $.tn err.message
+            ], 60
             continue
 
         # Filter OPs along with their threads, replies only, or both.
