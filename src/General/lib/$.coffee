@@ -412,8 +412,12 @@ do ->
   oldValue = {}
   onChange = ({key, newValue}) ->
     if cb = $.syncing[key]
-      oldValue[key] = newValue
-      cb JSON.parse(newValue), key
+      if newValue?
+        oldValue[key] = newValue
+        cb JSON.parse(newValue), key
+      else
+        delete oldValue[key]
+        cb undefined, key
   $.on window, 'storage', onChange
   $.sync = (key, cb) ->
     key = g.NAMESPACE + key
