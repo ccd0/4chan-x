@@ -739,13 +739,15 @@ QR =
           false
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
-        QR.cooldown.set delay: 2
+        post.delay = Date.now() + 2 * $.SECOND
+        QR.cooldown.start()
       else if err.textContent and m = err.textContent.match /wait\s+(\d+)\s+second/i
         QR.cooldown.auto = if QR.captcha.isEnabled
           !!QR.captcha.captchas.length
         else
           true
-        QR.cooldown.set delay: m[1]
+        post.delay = Date.now() + m[1] * $.SECOND
+        QR.cooldown.start()
       else # stop auto-posting
         QR.cooldown.auto = false
       QR.status()
@@ -804,7 +806,7 @@ QR =
         QR.captcha.setup()
       post.rm()
 
-    QR.cooldown.set {req, post, isReply, threadID}
+    QR.cooldown.add {threadID, postID, start: req.uploadEndTime}
 
     URL = if threadID is postID # new thread
       "#{window.location.origin}/#{g.BOARD}/thread/#{threadID}"

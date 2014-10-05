@@ -120,6 +120,8 @@ QR.post = class
     QR.characterCount()
 
   save: (input) ->
+    delete @delay
+    QR.cooldown.update()
     if input.type is 'checkbox'
       @spoiler = input.checked
       return
