@@ -123,7 +123,10 @@ Settings =
       button.textContent = "Hidden: #{hiddenNum}"
     $.on button, 'click', ->
       @textContent = 'Hidden: 0'
-      $.delete ['hiddenThreads', 'hiddenPosts']
+      $.get 'hiddenThreads', {}, ({hiddenThreads}) ->
+        for boardID of hiddenThreads.boards
+          localStorage.removeItem "4chan-hide-t-#{boardID}"
+        $.delete ['hiddenThreads', 'hiddenPosts']
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
   export: ->
     # Make sure to export the most recent data.
