@@ -98,6 +98,8 @@ Header =
 
       cs = $.el 'a',
         href: 'javascript:;'
+        title: 'Catalog Settings'
+        className: 'fa fa-book'
         textContent: 'Catalog Settings'
       $.on cs, 'click', () ->
         $.id('settingsWindowLink').click()
