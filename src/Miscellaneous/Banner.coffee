@@ -10,11 +10,17 @@ Banner =
     if g.BOARD.ID isnt 'f' and g.VIEW is 'thread' and Conf['Remove Thread Excerpt']
       Banner.setTitle children[1].textContent
 
-    i = 0
-    while child = children[i++]
-      if i is 1
-        child.title = "Click to change"
-        $.on child, 'click', Banner.cb.toggle
+    for child, i in children
+      if i is 0
+        $.rm child
+        img = $.el 'img',
+          alt:   '4chan'
+          title: 'Click to change'
+
+        $.on img, 'click error', Banner.cb.toggle
+        Banner.cb.toggle.call img
+
+        $.prepend banner, img
 
         continue
 
@@ -44,7 +50,7 @@ Banner =
       ->
         type = Object.keys(types)[Math.floor 3 * Math.random()]
         num = Math.floor types[type] * Math.random()
-        $('img', @parentNode).src = "//s.4cdn.org/image/title/#{num}.#{type}"
+        @src = "//s.4cdn.org/image/title/#{num}.#{type}"
       
     click: (e) ->
       if e.ctrlKey
