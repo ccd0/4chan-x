@@ -1286,7 +1286,7 @@ a:only-of-type > .remove {
   text-align: center;
 }
 .menu-button + .container:not(:empty) {
-  margin-left: -5px !important;
+  margin-left: -5px;
 }
 #menu {
   position: fixed;
