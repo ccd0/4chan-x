@@ -1,4 +1,6 @@
 Banner =
+  banners: `<%= JSON.stringify(grunt.file.readJSON('src/Miscellaneous/banners.json')) %>`
+
   init: ->
     $.asap (-> d.body), ->
       $.asap (-> $ 'hr'), Banner.ready
@@ -35,16 +37,9 @@ Banner =
       d.title = title
 
   cb:
-    toggle: do ->
-      types =
-        jpg: 227
-        png: 270
-        gif: 253
-
-      ->
-        type = Object.keys(types)[Math.floor 3 * Math.random()]
-        num = Math.floor types[type] * Math.random()
-        $('img', @parentNode).src = "//s.4cdn.org/image/title/#{num}.#{type}"
+    toggle: ->
+      banner = Banner.banners[Math.floor(Banner.banners.length * Math.random())]
+      $('img', @parentNode).src = "//s.4cdn.org/image/title/#{banner}"
       
     click: (e) ->
       if e.ctrlKey
