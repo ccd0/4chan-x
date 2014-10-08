@@ -38,7 +38,10 @@ Banner =
 
   cb:
     toggle: ->
-      banner = Banner.banners[Math.floor(Banner.banners.length * Math.random())]
+      unless Banner.choices?.length
+        Banner.choices = Banner.banners.slice()
+      i = Math.floor(Banner.choices.length * Math.random())
+      banner = Banner.choices.splice i, 1
       $('img', @parentNode).src = "//s.4cdn.org/image/title/#{banner}"
       
     click: (e) ->
