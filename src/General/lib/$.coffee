@@ -288,14 +288,7 @@ $.item = (key, val) ->
 $.syncing = {}
 
 <% if (type === 'crx') { %>
-$.sync = do ->
-  chrome.storage.onChanged.addListener (changes) ->
-    for key of changes
-      if cb = $.syncing[key]
-        cb changes[key].newValue, key
-    return
-  (key, cb) -> $.syncing[key] = cb
-$.forceSync = (key) -> return
+# https://developer.chrome.com/extensions/storage.html
 $.localKeys = [
   # filters
   'name',
@@ -310,57 +303,64 @@ $.localKeys = [
   'filesize',
   'MD5',
   # custom css
-  'usercss'
+  'usercss',
+  # your posts
+  'yourPosts'
 ]
-# https://developer.chrome.com/extensions/storage.html
+
+chrome.storage.onChanged.addListener (changes, area) ->
+  for key of changes
+    cb = $.syncing[key]
+    if cb and (key in $.localKeys) is (area is 'local')
+      cb changes[key].newValue, key
+  return
+$.sync = (key, cb) ->
+  $.syncing[key] = cb
+$.forceSync = (key) -> return
+
+$.get = (key, val, cb) ->
+  if typeof cb is 'function'
+    data = $.item key, val
+  else
+    data = key
+    cb = val
+
+  results = {}
+  get = (area) ->
+    chrome.storage[area].get Object.keys(data), (result) ->
+      if chrome.runtime.lastError
+        c.error chrome.runtime.lastError.message
+      results[area] = result
+      if results.local and results.sync
+        $.extend data, results.sync
+        $.extend data, results.local
+        misplaced = null
+        for key, val of results.local when !(key in $.localKeys)
+          (misplaced or= {})[key] = val
+        if misplaced
+          chrome.storage.sync.set misplaced, ->
+            chrome.storage.local.remove Object.keys(misplaced)
+        cb data
+  get 'local'
+  get 'sync'
+
 do ->
   items =
     local: {}
     sync:  {}
 
+  exceedsQuota = (key, value) ->
+    # bytes in UTF-8
+    unescape(encodeURIComponent(JSON.stringify(key))).length + unescape(encodeURIComponent(JSON.stringify(value))).length > chrome.storage.sync.QUOTA_BYTES_PER_ITEM
+
   $.delete = (keys) ->
     if typeof keys is 'string'
       keys = [keys]
-    local = []
-    sync  = []
     for key in keys
-      if key in $.localKeys
-        local.push key
-        delete items.local[key]
-      else
-        sync.push key
-        delete items.sync[key]
-    chrome.storage.local.remove local
-    chrome.storage.sync.remove sync
-
-  $.get = (key, val, cb) ->
-    if typeof cb is 'function'
-      data = $.item key, val
-    else
-      data = key
-      cb = val
-
-    localItems = null
-    syncItems  = null
-    for key, val of data
-      if key in $.localKeys
-        (localItems or= {})[key] = val
-      else
-        (syncItems  or= {})[key] = val
-
-    count = 0
-    done  = (result) ->
-      if chrome.runtime.lastError
-        c.error chrome.runtime.lastError.message
-      $.extend data, result
-      cb data unless --count
-
-    if localItems
-      count++
-      chrome.storage.local.get localItems, done
-    if syncItems
-      count++
-      chrome.storage.sync.get  syncItems,  done
+      delete items.local[key]
+      delete items.sync[key]
+    chrome.storage.local.remove keys
+    chrome.storage.sync.remove keys
 
   timeout = {}
   setArea = (area) ->
@@ -370,7 +370,7 @@ do ->
       if chrome.runtime.lastError
         c.error chrome.runtime.lastError.message
         for key, val of data when key not of items[area]
-          if area is 'sync' and chrome.storage.sync.QUOTA_BYTES_PER_ITEM < JSON.stringify(val).length + key.length
+          if area is 'sync' and exceedsQuota key, val
             c.error chrome.runtime.lastError.message, key, val
             continue
           items[area][key] = val
