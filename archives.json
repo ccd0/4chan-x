@@ -71,7 +71,7 @@
   "boards": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"],
   "files": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"]
 }, {
-  "uid": 16,
+  "uid": 21,
   "name": "imcute",
   "domain": "imcute.yt",
   "http": true,
