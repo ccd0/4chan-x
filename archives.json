@@ -70,4 +70,13 @@
   "software": "foolfuuka",
   "boards": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"],
   "files": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"]
+}, {
+  "uid": 16,
+  "name": "imcute",
+  "domain": "imcute.yt",
+  "http": true,
+  "https": false,
+  "software": "foolfuuka",
+  "boards": ["gif", "jp", "vg"],
+  "files": ["gif", "jp", "vg"]
 }]
