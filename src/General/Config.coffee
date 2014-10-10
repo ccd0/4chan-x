@@ -211,6 +211,10 @@ Config =
         true
         'Videos begin playing immediately when opened.'
       ]
+      'Restart when Opened': [
+        true
+        'Restart GIFs and WebMs when you hover over or expand them.'
+      ]
       'Show Controls': [
         true
         'Show controls on videos expanded inline. Turn this off if you want to contract videos by clicking on them.'

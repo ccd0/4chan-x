@@ -30,8 +30,9 @@ ImageHover =
       el.dataset.fullID = post.fullID
       $.on el, 'error', error
       el.src = file.URL
-    ImageCommon.rewind el
-    ImageCommon.rewind @
+    if Conf['Restart when Opened']
+      ImageCommon.rewind el
+      ImageCommon.rewind @
     el.id = 'ihover'
     $.after Header.hover, el
     if isVideo
