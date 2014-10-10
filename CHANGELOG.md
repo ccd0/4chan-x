@@ -40,6 +40,12 @@ The links to individual versions below are to copies of the script with the upda
 - Fix bug causing hidden threads list to be reverted to a prior state due to syncing with native catalog.
 
 <!-- v1.9.5.x -->
+### v1.9.5.4 
+*2014-10-09* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.5.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.5.4/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**talichan**
+- Add imcute archive.
+
 ### v1.9.5.3 
 *2014-10-03* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.5.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.5.3/builds/4chan-X-noupdate.crx "Chromium version")]
 
