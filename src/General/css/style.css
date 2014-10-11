@@ -132,7 +132,7 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 #navlinks, #updater, #thread-stats {
   z-index: 40;
 }
-:root.fixed #header-bar {
+.fixed #header-bar.autohide {
   z-index: 35;
 }
 #qr {
@@ -143,6 +143,9 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 }
 :root.fixed-watcher #thread-watcher {
   z-index: 20;
+}
+.fixed #header-bar {
+  z-index: 10;
 }
 /* Header */
 .fixed.top-header body {
@@ -285,10 +288,8 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   right: 0;
   left: 0;
   transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
-  visibility: visible;
 }
-:root.fixed.top-header:not(.gallery-open) #header-bar #notifications,
-:root.fixed.top-header #header-bar.autohide #notifications {
+.fixed.top-header #header-bar #notifications {
   position: absolute;
   top: 100%;
 }
@@ -1646,11 +1647,6 @@ div.boardTitle {
 .field[name="Slide Delay"] {
   width: 4em;
 }
-:root.gallery-open.fixed #header-bar:not(.autohide),
-:root.gallery-open.fixed #header-bar:not(.autohide) .fa::before {
-  visibility: hidden;
-}
-
 @media screen and (resolution: 1dppx) {
  .fa-bars {
     font-size: 14px;
