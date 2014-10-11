@@ -51,7 +51,6 @@ ImageLoader =
     video.dataset.md5 = thumb.dataset.md5
     video.style[attr] = thumb.style[attr] for attr in ['height', 'width', 'maxHeight', 'maxWidth']
     video.src         = file.URL
-    $.on video, 'mouseover', ImageHover.mouseover post if Conf['Image Hover']
     $.replace thumb, video
     file.thumb      = video
     file.videoThumb = true
