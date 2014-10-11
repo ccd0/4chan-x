@@ -86,7 +86,7 @@ Header =
       # Wait for #boardNavMobile instead of #boardNavDesktop,
       # it might be incomplete otherwise.
       $.asap (-> $.id('boardNavMobile') or d.readyState isnt 'loading'), Header.setBoardList
-      $.prepend d.body, @bar
+      $.prepend d.body, [@bar, @noticesRoot]
       $.add d.body, Header.hover
       @setBarPosition Conf['Bottom Header']
       @
@@ -146,7 +146,7 @@ Header =
 
     $.rm $ '#navtopright', fullBoardList
     $.add boardList, fullBoardList
-    $.add Header.bar, [Header.boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]
+    $.add Header.bar, [Header.boardList, Header.shortcuts, Header.toggle]
 
     Header.setCustomNav Conf['Custom Board Navigation']
     Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
@@ -313,18 +313,15 @@ Header =
       'bottom-header'
       'top-header'
       'bottom'
-      'after'
     ] else [
       'top-header'
       'bottom-header'
       'top'
-      'add'
     ]
 
     $.addClass doc, args[0]
     $.rmClass  doc, args[1]
     Header.bar.parentNode.className = args[2]
-    $[args[3]] Header.bar, Header.noticesRoot
 
   toggleBarPosition: ->
     $.cb.checked.call @
