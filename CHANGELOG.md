@@ -3,6 +3,12 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.6.x -->
+### v1.9.6.9 
+*2014-10-11* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.6.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.6.9/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Revert the changes of v1.9.6.4 (Fix issue #158 (error notifications on top of header)) which caused the QR to be obscured by the header under the default settings.
+
 ### v1.9.6.8 
 *2014-10-10* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.6.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.6.8/builds/4chan-X-noupdate.crx "Chromium version")]
 
