@@ -12,6 +12,11 @@ Linkify =
       name: 'Linkify'
       cb:   @node
 
+    $.on d, '4chanXInitFinished PostsInserted', ->
+      for key, service of Linkify.types when service.title?.batchSize
+        Linkify.flushTitles service.title
+      return
+
   events: (post) ->
     i = 0
     items = $$ '.embedder', post.nodes.comment
@@ -69,7 +74,7 @@ Linkify =
 
   embedProcess: (link, post) ->
     if data = Linkify.services link
-      data.push post
+      data.post = post
       Linkify.embed data if Conf['Embedding']
       Linkify.title data if Conf['Link Title']
 
@@ -146,11 +151,11 @@ Linkify =
     {href} = link
     for type in Linkify.ordered_types when match = type.regExp.exec href
       return if type.dummy or type.httpOnly and location.protocol isnt 'http:'
-      return [type.key, match[1], match[2], link]
+      return {key: type.key, uid: match[1], options: match[2], link}
     return
 
   embed: (data) ->
-    [key, uid, options, link, post] = data
+    {key, uid, options, link, post} = data
     embed = $.el 'a',
       className:   'embedder'
       rel:         'nofollow noreferrer'
@@ -169,10 +174,27 @@ Linkify =
         Linkify.cb.toggle.call embed
 
   title: (data) ->
-    [key, uid, options, link, post] = data
+    {key, uid, options, link, post} = data
     return unless service = Linkify.types[key].title
-    unless $.cache service.api(uid), (-> Linkify.cb.title @, data), {responseType: 'json'}
-      $.extend link, <%= html('[${key}] <span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>') %>
+    if service.batchSize
+      (service.queue or= []).push data
+      if service.queue.length >= service.batchSize
+        Linkify.flushTitles service
+    else
+      unless $.cache service.api(uid), (-> Linkify.cb.title @, data), {responseType: 'json'}
+        $.extend link, <%= html('[${key}] <span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>') %>
+
+  flushTitles: (service) ->
+    {queue} = service
+    return unless queue?.length
+    service.queue = []
+    cb = ->
+      Linkify.cb.title @, data for data in queue
+      return
+    unless $.cache service.api(data.uid for data in queue), cb, {responseType: 'json'}
+      for data in queue
+        $.extend data.link, <%= html('[${data.key}] <span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>') %>
+    return
 
   cb:
     toggle: (e) ->
@@ -200,13 +222,13 @@ Linkify =
       return el
 
     title: (req, data) ->
-      [key, uid, options, link, post] = data
+      {key, uid, options, link, post} = data
       {status} = req
       service = Linkify.types[key].title
 
       text = "[#{key}] #{switch status
         when 200, 304
-          service.text req.response
+          service.text req.response, uid
         when 404
           "Not Found"
         when 403
@@ -394,8 +416,15 @@ Linkify =
         el.setAttribute "allowfullscreen", "true"
         el
       title:
-        api: (uid) -> "https://gdata.youtube.com/feeds/api/videos/#{uid}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
-        text: (data) -> data.entry.title.$t
+        batchSize: 50
+        api: (uids) ->
+          ids = encodeURIComponent uids.join(',')
+          key = '<%= meta.youtubeAPIKey %>'
+          "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=#{ids}&fields=items%28id%2Csnippet%28title%29%29&key=#{key}"
+        text: (data, uid) ->
+          for item in data.items when item.id is uid
+            return item.snippet.title
+          'Not Found'
     ,
       key: 'Loopvid'
       regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/((?:pf|kd|lv|mc|gd|gh|db|nn)\/[\w\-]+(,[\w\-]+)*|fc\/\w+\/\d+)/

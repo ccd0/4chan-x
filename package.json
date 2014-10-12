@@ -10,6 +10,7 @@
     "oldVersions": "https://raw.githubusercontent.com/ccd0/4chan-x/",
     "faq": "https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions",
     "appid": "lacclbnghgdicfifcamcmcnilckjamag",
+    "youtubeAPIKey": "AIzaSyB5_zaen_-46Uhz1xGR-lz1YoUMHqCD6CE",
     "buildsPath": "builds/",
     "mainBranch": "master",
     "matches": [
