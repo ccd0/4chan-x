@@ -4,10 +4,10 @@ ThreadWatcher =
 
     @shortcut = sc = $.el 'a',
       id:   'watcher-link'
-      textContent: 'Watcher'
       title: 'Thread Watcher'
       href: 'javascript:;'
       className: 'disabled fa fa-eye'
+    $.extend sc, <%= html('<span>Watcher</span>') %>
 
     @db     = new DataBoard 'watchedThreads', @refresh, true
     @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', <%= importHTML('Monitoring/ThreadWatcher') %>

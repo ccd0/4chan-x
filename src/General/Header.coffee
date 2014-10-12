@@ -100,7 +100,7 @@ Header =
         href: 'javascript:;'
         title: 'Catalog Settings'
         className: 'fa fa-book'
-        textContent: 'Catalog Settings'
+      $.extend cs, <%= html('<span>Catalog Settings</span>') %>
       $.on cs, 'click', () ->
         $.id('settingsWindowLink').click()
 

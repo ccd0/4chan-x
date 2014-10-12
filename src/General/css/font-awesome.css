@@ -29,8 +29,7 @@
  .fa::before {display:inline-block;font-size:13px;visibility:visible}
  :root:not(.shortcut-icons) #shortcuts .fa::before {display:none}
  :root.shortcut-icons #shortcuts .fa::before{font-size:15px!important;margin-top:-3px!important;position:relative;top:1px}
- :root.shortcut-icons #shortcuts .fa, .menu-button .fa{font-size:0;visibility:hidden}
- :root.shortcut-icons .shortcut.brackets-wrap::after,:root.shortcut-icons .shortcut.brackets-wrap::before{display:none}
+ :root.shortcut-icons #shortcuts .fa > span,:root.shortcut-icons .shortcut.brackets-wrap::after,:root.shortcut-icons .shortcut.brackets-wrap::before{display:none}
  :root.shortcut-icons #shortcuts a .fa,
  .menu-button .fa,
  .hide-reply-button .fa,

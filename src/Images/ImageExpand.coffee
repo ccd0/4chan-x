@@ -4,9 +4,9 @@ ImageExpand =
 
     @EAI = $.el 'a',
       className: 'expand-all-shortcut fa fa-expand'
-      textContent: 'EAI' 
       title: 'Expand All Images'
       href: 'javascript:;'
+    $.extend @EAI, <%= html('<span>EAI</span>') %>
     $.on @EAI, 'click', @cb.toggleAll
     Header.addShortcut @EAI, 3
     $.on d, 'scroll visibilitychange', @cb.playVideos

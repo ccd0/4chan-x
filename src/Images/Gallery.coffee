@@ -9,7 +9,7 @@ Gallery =
       id:   'appchan-gal'
       title: 'Gallery'
       className: 'fa fa-picture-o'
-      textContent: 'Gallery'
+    $.extend el, <%= html('<span>Gallery</span>') %>
 
     $.on el, 'click', @cb.toggle
 

@@ -2,10 +2,10 @@ Settings =
   init: ->
     # 4chan X settings link
     link = $.el 'a',
-      className:   'settings-link fa fa-wrench'
-      textContent: 'Settings'
-      title: '4chan X Settings'
-      href:        'javascript:;'
+      className: 'settings-link fa fa-wrench'
+      title:     '4chan X Settings'
+      href:      'javascript:;'
+    $.extend link, <%= html('<span>Settings</span>') %>
     $.on link, 'click', Settings.open
 
     Header.addShortcut link

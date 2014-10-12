@@ -26,7 +26,7 @@ Index =
       className: 'index-refresh-shortcut fa fa-refresh'
       title: 'Refresh'
       href: 'javascript:;'
-      textContent: 'Refresh Index'
+    $.extend @button, <%= html('<span>Refresh Index</span>') %>
     $.on @button, 'click', -> Index.update()
     Header.addShortcut @button, 1
 
