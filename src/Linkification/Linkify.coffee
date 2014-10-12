@@ -177,16 +177,19 @@ Linkify =
     (data) ->
       [key, uid, options, link, post] = data
       return unless service = Linkify.types[key].title
+      url = service.api uid
+      if (req = $.cachedReqs[url]) and req.readyState is 4
+        Linkify.cb.title req, data
+        return
       if timeout?
         queue.push data
         return
-      unless req = $.cache service.api(uid), (-> Linkify.cb.title @, data), {responseType: 'json'}
+      if $.cache url, (-> Linkify.cb.title @, data), {responseType: 'json'}
+        timeout = setTimeout next, 100
+      else
         $.extend link, <%= html('[${key}] <span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>') %>
         next()
-      else if req.readyState is 4
-        next()
-      else
-        timeout = setTimeout next, 100
+      return
 
   cb:
     toggle: (e) ->

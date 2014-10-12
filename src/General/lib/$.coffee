@@ -73,32 +73,27 @@ $.ajax = do ->
     r.send form
     r
 
-do ->
-  reqs = {}
-  $.cache = (url, cb, options) ->
-    if req = reqs[url]
-      if req.readyState is 4
-        $.queueTask -> cb.call req, req.evt
-      else
-        req.callbacks.push cb
-      return req
-    rm = -> delete reqs[url]
-    try
-      return unless req = $.ajax url, options
-    catch err
-      return
-    $.on req, 'load', (e) ->
-      cb.call @, e for cb in @callbacks
-      @evt = e
-      @cached = true
-      delete @callbacks
-    $.on req, 'abort error', rm
-    req.callbacks = [cb]
-    reqs[url] = req
-  $.cleanCache = (testf) ->
-    for url of reqs when testf url
-      delete reqs[url]
+$.cachedReqs = {}
+$.cache = (url, cb, options) ->
+  if req = $.cachedReqs[url]
+    if req.readyState is 4
+      $.queueTask -> cb.call req, req.evt
+    else
+      req.callbacks.push cb
+    return req
+  rm = -> delete $.cachedReqs[url]
+  try
+    return unless req = $.ajax url, options
+  catch err
     return
+  $.on req, 'load', (e) ->
+    cb.call @, e for cb in @callbacks
+    @evt = e
+    @cached = true
+    delete @callbacks
+  $.on req, 'abort error', rm
+  req.callbacks = [cb]
+  $.cachedReqs[url] = req
 
 $.cb =
   checked: ->

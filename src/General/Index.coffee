@@ -421,7 +421,7 @@ Index =
     Index.scrollToIndex()
 
   parse: (pages, state) ->
-    $.cleanCache (url) -> /^\/\/a\.4cdn\.org\//.test url
+    delete $.cachedReqs[url] for url of $.cachedReqs when /^\/\/a\.4cdn\.org\//.test url
     Index.parseThreadList pages
     Index.buildThreads()
     Index.sort()

@@ -120,7 +120,7 @@ Get =
       # Cached requests can be stale and must be rechecked.
       if req.cached
         api = "//a.4cdn.org/#{boardID}/thread/#{threadID}.json"
-        $.cleanCache (url) -> url is api
+        delete $.cachedReqs[api]
         $.cache api, ->
           Get.fetchedPost @, boardID, threadID, postID, root, context
         return
