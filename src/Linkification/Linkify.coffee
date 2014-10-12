@@ -171,11 +171,8 @@ Linkify =
   title: (data) ->
     [key, uid, options, link, post] = data
     return unless service = Linkify.types[key].title
-    try
-      $.cache service.api(uid), (-> Linkify.cb.title @, data), responseType: 'json'
-    catch err
+    unless $.cache service.api(uid), (-> Linkify.cb.title @, data), {responseType: 'json'}
       $.extend link, <%= html('[${key}] <span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>') %>
-      return
 
   cb:
     toggle: (e) ->

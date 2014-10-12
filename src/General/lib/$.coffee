@@ -61,7 +61,8 @@ $.ajax = do ->
       r.open type, url, true
     catch err
       blockedError url
-      return options.onerror?()
+      options.onerror?()
+      return
     if whenModified
       r.setRequestHeader 'If-Modified-Since', lastModified[url] if url of lastModified
       $.on r, 'load', -> lastModified[url] = r.getResponseHeader 'Last-Modified'
@@ -77,13 +78,13 @@ do ->
   $.cache = (url, cb, options) ->
     if req = reqs[url]
       if req.readyState is 4
-        cb.call req, req.evt
+        $.queueTask -> cb.call req, req.evt
       else
         req.callbacks.push cb
-      return
+      return req
     rm = -> delete reqs[url]
     try
-      req = $.ajax url, options
+      return unless req = $.ajax url, options
     catch err
       return
     $.on req, 'load', (e) ->
