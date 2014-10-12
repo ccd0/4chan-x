@@ -284,7 +284,6 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   text-align: center;
   right: 0;
   left: 0;
-  transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
   visibility: visible;
 }
 :root.fixed.top-header:not(.gallery-open) #header-bar #notifications,
