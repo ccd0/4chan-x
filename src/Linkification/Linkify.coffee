@@ -168,11 +168,25 @@ Linkify =
       $.asap (-> doc.contains embed), ->
         Linkify.cb.toggle.call embed
 
-  title: (data) ->
-    [key, uid, options, link, post] = data
-    return unless service = Linkify.types[key].title
-    unless $.cache service.api(uid), (-> Linkify.cb.title @, data), {responseType: 'json'}
-      $.extend link, <%= html('[${key}] <span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>') %>
+  title: do ->
+    timeout = null
+    queue   = []
+    next = ->
+      timeout = null
+      Linkify.title data if data = queue.shift()
+    (data) ->
+      [key, uid, options, link, post] = data
+      return unless service = Linkify.types[key].title
+      if timeout?
+        queue.push data
+        return
+      unless req = $.cache service.api(uid), (-> Linkify.cb.title @, data), {responseType: 'json'}
+        $.extend link, <%= html('[${key}] <span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>') %>
+        next()
+      else if req.readyState is 4
+        next()
+      else
+        timeout = setTimeout next, 100
 
   cb:
     toggle: (e) ->
