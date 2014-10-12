@@ -414,7 +414,7 @@ QR =
 
   dialog: ->
     QR.nodes = nodes =
-      el: dialog = UI.dialog 'qr', 'top:0;right:0;', <%= importHTML('Features/QuickReply') %>
+      el: dialog = UI.dialog 'qr', 'top: 50px; right: 0px;', <%= importHTML('Features/QuickReply') %>
 
     setNode = (name, query) ->
       nodes[name] = $ query, dialog
