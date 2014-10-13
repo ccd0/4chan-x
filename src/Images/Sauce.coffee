@@ -29,21 +29,22 @@ Sauce =
           '%TURL':  post.file.thumbURL
           '%URL':   post.file.URL
           '%MD5':   post.file.MD5
-          '%board': post.board
+          '%board': post.board.ID
           '%name':  post.file.name
           '%%':     '%'
           '%semi':  ';'
         }[parameter]
         if key is 'url' and parameter isnt '%%' and parameter isnt '%semi'
-          encodeURIComponent type
-        else
-          type
+          type = JSON.stringify type if /^javascript:/i.test parts['url']
+          type = encodeURIComponent type
+        type
     ext = post.file.URL.match(/\.([^\.]*)$/)?[1] or ''
     return null unless !parts['boards'] or post.board.ID in parts['boards'].split ','
     return null unless !parts['types']  or ext           in parts['types'].split ','
     a = Sauce.link.cloneNode true
     a.href = parts['url']
     a.textContent = parts['text']
+    a.removeAttribute 'target' if /^javascript:/i.test parts['url']
     a
   node: ->
     return if @isClone or !@file
