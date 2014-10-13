@@ -169,7 +169,7 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 :root.fixed #header-bar {
   box-shadow: -5px 1px 10px rgba(0, 0, 0, 0.20);
 }
-#custom-board-list .current {
+#header-bar #custom-board-list .current {
   padding: 1px 1px 4px 1px;
 }
 :root.centered-links #shortcuts {
@@ -179,8 +179,12 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 :root.centered-links #header-bar {
   text-align: center;
 }
-#board-list {
+#custom-board-list {
   font-size: 13px;
+  vertical-align: middle;
+}
+#full-board-list {
+  vertical-align: middle;
 }
 :root.centered-links #custom-board-list {
   position: relative;
@@ -236,8 +240,6 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 }
 #header-bar a:not(.entry):not(.close) {
   text-decoration: none;
-}
-#header-bar a:not(.entry):not(.close):not(.current) {
   padding: 1px;
 }
 #shortcuts:empty {
@@ -258,6 +260,8 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 }
 .shortcut {
   margin-left: 3px;
+  vertical-align: middle;
+  line-height: 0;
 }
 #navbotright,
 #navtopright {
@@ -1306,6 +1310,7 @@ a:only-of-type > .remove {
   min-width: 70px;
   text-align: left;
   text-shadow: none;
+  line-height: normal;
 }
 .left>.entry.has-submenu {
   padding-right: 17px !important;
