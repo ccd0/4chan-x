@@ -120,9 +120,6 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 #overlay {
   z-index: 900;
 }
-#notifications {
-  z-index: 70;
-}
 #qp, #ihover {
   z-index: 60;
 }
@@ -132,17 +129,17 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 #navlinks, #updater, #thread-stats {
   z-index: 40;
 }
-:root.fixed #header-bar {
+:root.fixed #header-bar, #notifications {
   z-index: 35;
 }
-#qr {
+#a-gallery {
   z-index: 30;
 }
-#thread-watcher {
-  z-index: 8;
-}
-:root.fixed-watcher #thread-watcher {
+#qr {
   z-index: 20;
+}
+#thread-watcher {
+  z-index: 10;
 }
 /* Header */
 .fixed.top-header body {
@@ -949,7 +946,6 @@ span.hide-announcement {
   cursor: pointer;
 }
 #qr {
-  z-index: 20;
   position: fixed;
   padding: 1px;
   border: 1px solid transparent;
@@ -1419,7 +1415,6 @@ div.boardTitle {
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 30;
   display: -webkit-flex;
   display: flex;
   -webkit-flex-direction: row;
