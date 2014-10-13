@@ -352,11 +352,11 @@ Header =
     Header.customNavToggler.checked = show
     cust = $ '#custom-board-list', Header.bar
     full = $ '#full-board-list',   Header.bar
-    btn = $ '.hide-board-list-button', full
-    [cust.hidden, full.hidden] = if show
-      [false, true]
+    btn = $ '.hide-board-list-container', full
+    [cust.hidden, full.hidden, btn.hidden] = if show
+      [false, true, false]
     else
-      [true, false]
+      [true, false, true]
 
   toggleCustomNav: ->
     $.cb.checked.call @
