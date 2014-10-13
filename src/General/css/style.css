@@ -261,7 +261,6 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 .shortcut {
   margin-left: 3px;
   vertical-align: middle;
-  line-height: 0;
 }
 #navbotright,
 #navtopright {
@@ -1309,7 +1308,6 @@ a:only-of-type > .remove {
   min-width: 70px;
   text-align: left;
   text-shadow: none;
-  line-height: normal;
 }
 .left>.entry.has-submenu {
   padding-right: 17px !important;
