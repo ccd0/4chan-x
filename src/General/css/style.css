@@ -126,7 +126,7 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 #menu, .gal-buttons {
   z-index: 50;
 }
-#navlinks, #updater, #thread-stats {
+#updater, #thread-stats {
   z-index: 40;
 }
 :root.fixed #header-bar, #notifications {
@@ -134,6 +134,9 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 }
 #a-gallery {
   z-index: 30;
+}
+#navlinks {
+  z-index: 25;
 }
 #qr {
   z-index: 20;
