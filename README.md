@@ -6,7 +6,7 @@ If you're looking for a maintained fork of OneeChan, try
 https://github.com/Nebukazar/OneeChan
 
 ## [Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) (Firefox)
-Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/2.1), then click the link above to install.
+Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then click the link above to install 4chan X. If you are using Firefox 29 or earlier, you should use [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15).
 
 **Important**: If you are using Greasemonkey 2.0, you should update to the [latest version](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/). Otherwise you may be subject to a [bug](https://github.com/greasemonkey/greasemonkey/issues/1938), fixed in version 2.1, which prevents Greasemonkey from updating 4chan X and other userscripts to the latest version. After doing so, you may want to update 4chan X manually since it is likely to be out of date.
 
@@ -45,6 +45,9 @@ New features and non-urgent bugfixes are released on the beta channel for furthe
 - [Chromium version](https://ccd0.github.io/4chan-x/builds/4chan-X-beta.crx)
 
 If you want to install the current beta version but get updates from the stable channel after that, install it from [here](https://github.com/ccd0/4chan-x/raw/beta/builds/4chan-X.user.js) for Firefox or [here](https://github.com/ccd0/4chan-x/raw/beta/builds/4chan-X.crx) for Chromium.
+
+## Security note
+4chan X currently shares your settings and post history between the HTTP and HTTPS versions of 4chan. If you are concerned about protecting your privacy against a man-in-the-middle attack, you should disable 4chan X on the HTTP version of 4chan and/or install [HTTPS Everywhere](https://www.eff.org/https-everywhere).
 
 ## More information
 ### [Source Code](https://github.com/ccd0/4chan-x)
