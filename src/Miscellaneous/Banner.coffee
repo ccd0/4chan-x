@@ -21,7 +21,7 @@ Banner =
         continue
 
       if Conf['Custom Board Titles']
-        Banner.custom(child).title = "Ctrl+click to edit board #{if i is 3
+        Banner.custom(child).title = "Ctrl/\u2318+click to edit board #{if i is 3
           'sub'
         else
           ''}title"
@@ -45,7 +45,7 @@ Banner =
       $('img', @parentNode).src = "//s.4cdn.org/image/title/#{banner}"
       
     click: (e) ->
-      if e.ctrlKey
+      if e.ctrlKey or e.metaKey
         @contentEditable = true
         @focus()
 

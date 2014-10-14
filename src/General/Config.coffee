@@ -71,7 +71,7 @@ Config =
       ]
       'Custom Board Titles': [
         true
-        'Allow editing of the board title and subtitle by ctrl+clicking them'
+        'Allow editing of the board title and subtitle by ctrl/\u2318+clicking them.'
       ]
       'Persistent Custom Board Titles': [
         false

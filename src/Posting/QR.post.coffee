@@ -216,7 +216,7 @@ QR.post = class
     URL.revokeObjectURL @URL
 
   updateFilename: ->
-    long = "#{@filename} (#{@filesize})\nCtrl+click to edit filename. Shift+click to clear."
+    long = "#{@filename} (#{@filesize})\nCtrl/\u2318+click to edit filename. Shift+click to clear."
     @nodes.el.title = long
     return unless @ is QR.selected
     QR.nodes.fileContainer.title = long

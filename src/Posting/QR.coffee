@@ -384,7 +384,7 @@ QR =
     e.stopPropagation()
     if e.shiftKey and e.type is 'click'
       return QR.selected.rmFile()
-    if e.ctrlKey and e.type is 'click'
+    if (e.ctrlKey or e.metaKey) and e.type is 'click'
       $.addClass QR.nodes.filename, 'edit'
       QR.nodes.filename.focus()
       return $.on QR.nodes.filename, 'blur', -> $.rmClass QR.nodes.filename, 'edit'
