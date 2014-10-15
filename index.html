@@ -7,6 +7,7 @@ body {
   font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
 }
 </style>
+<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/ohnjgmpcibpbafdlkimncjhflgedgpam">
 </head><body>
 <h1 id="4chan-x">4chan X</h1>
 <p>Adds various features to 4chan.
@@ -50,5 +51,11 @@ Only the latest stable version of 4chan X is available.</p>
 <h3 id="-frequently-asked-questions-https-github-com-ccd0-4chan-x-wiki-frequently-asked-questions-"><a href="https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions">Frequently Asked Questions</a></h3>
 <h3 id="-reporting-bugs-and-contributing-https-github-com-ccd0-4chan-x-blob-master-contributing-md-"><a href="https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md">Reporting Bugs and Contributing</a></h3>
 
+<script>
+var link = document.querySelector('a[href="https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam"]');
+link.addEventListener('click', function() {
+  chrome.webstore.install();
+}, false);
+</script>
 </body></html>
 
