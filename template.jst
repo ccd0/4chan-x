@@ -12,8 +12,13 @@ body {
 <%= content %>
 <script>
 var link = document.querySelector('a[href="https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam"]');
-link.addEventListener('click', function() {
-  chrome.webstore.install();
+link.addEventListener('click', function(e) {
+  if (window.chrome && !e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey && e.button === 0) {
+    chrome.webstore.install(undefined, undefined, function(){
+      location.href = link.href;
+    });
+    e.preventDefault();
+  }
 }, false);
 </script>
 </body></html>
