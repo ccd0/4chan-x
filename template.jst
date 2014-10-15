@@ -7,7 +7,14 @@ body {
   font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
 }
 </style>
+<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/ohnjgmpcibpbafdlkimncjhflgedgpam">
 </head><body>
 <%= content %>
+<script>
+var link = document.querySelector('a[href="https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam"]');
+link.addEventListener('click', function() {
+  chrome.webstore.install();
+}, false);
+</script>
 </body></html>
 
