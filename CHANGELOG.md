@@ -63,6 +63,8 @@ The links to individual versions below are to copies of the script with the upda
 ### v1.9.6.0 
 *2014-10-05* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.6.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.6.0/builds/4chan-X-noupdate.crx "Chromium version")]
 
+Based on v1.9.5.3.
+
 **ccd0**
 - Update cooldown timers to include 4chan's new 5-minute global thread cooldown.
 - Fix various cooldown bugs.
