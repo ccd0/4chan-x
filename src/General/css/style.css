@@ -1449,7 +1449,8 @@ div.boardTitle {
 .gal-hide-thumbnails .gal-thumbnails {
   display: none;
 }
-.gal-thumb img {
+.gal-thumb img,
+.gal-thumb video {
   max-width: 125px;
   max-height: 125px;
   height: auto;
