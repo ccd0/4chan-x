@@ -24,6 +24,8 @@ The links to individual versions below are to copies of the script with the upda
 ### v1.9.7.0 
 *2014-10-12* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.7.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.7.0/builds/4chan-X-noupdate.crx "Chromium version")]
 
+Based on v1.9.6.9.
+
 **ccd0**
 - Re-fix error notifications on top of header (#158).
 - Use 4chan's font size for the full board list; for most styles, this is smaller and less likely to wrap.
