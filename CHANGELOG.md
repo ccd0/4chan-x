@@ -3,6 +3,12 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.6.x -->
+### v1.9.6.10 
+*2014-10-16* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.6.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.6.10/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix replaced WebM thumbnails showing at full height in gallery.
+
 ### v1.9.6.9 
 *2014-10-11* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.6.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.6.9/builds/4chan-X-noupdate.crx "Chromium version")]
 
