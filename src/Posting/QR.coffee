@@ -797,7 +797,7 @@ QR =
           notif.close()
         , 7 * $.SECOND
 
-    unless Conf['Persistent QR'] or QR.cooldown.auto
+    unless Conf['Persistent QR'] or postsCount
       QR.close()
     else
       if QR.posts.length > 1 and QR.captcha.isEnabled and QR.captcha.captchas.length is 0
@@ -811,7 +811,7 @@ QR =
     else if g.VIEW is 'index' and !QR.cooldown.auto and Conf['Open Post in New Tab'] # replying from the index
       "#{window.location.origin}/#{g.BOARD}/thread/#{threadID}#p#{postID}"
     if URL
-      if Conf['Open Post in New Tab']
+      if Conf['Open Post in New Tab'] or postsCount
         $.open URL
       else
         window.location = URL
