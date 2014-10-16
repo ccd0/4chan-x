@@ -6,8 +6,23 @@
 body {
   font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
 }
+h1 {
+  text-align: center;
+  background-color: #eee;
+}
 </style>
+<link rel="icon" href="src/General/img/icon.gif">
+<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/ohnjgmpcibpbafdlkimncjhflgedgpam">
 </head><body>
-<%= content.replace('id="known-issues"', 'id="known-issues-firefox"').replace('id="known-issues"', 'id="known-issues-chromium"') %>
+<%= content %>
+<script>
+var link = document.querySelector('a[href="https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam"]');
+link.addEventListener('click', function(e) {
+  if (window.chrome && !e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey && e.button === 0) {
+    chrome.webstore.install();
+    e.preventDefault();
+  }
+}, false);
+</script>
 </body></html>
 
