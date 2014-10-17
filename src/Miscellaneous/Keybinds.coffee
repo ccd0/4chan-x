@@ -222,6 +222,12 @@ Keybinds =
       $.rmClass $('.qr-shortcut'), 'disabled'
 
   tags: (tag, ta) ->
+    supported = switch tag
+      when 'spoiler'     then !!$ '.postForm input[name=spoiler]'
+      when 'code'        then g.BOARD.ID is 'g'
+      when 'math', 'eqn' then g.BOARD.ID is 'sci'
+    new Notice 'warning', "[#{tag}] tags are not supported on /#{g.BOARD}/.", 20 unless supported
+
     value    = ta.value
     selStart = ta.selectionStart
     selEnd   = ta.selectionEnd
