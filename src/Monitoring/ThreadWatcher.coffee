@@ -149,15 +149,27 @@ ThreadWatcher =
             threadID: threadID
             defaultValue: 0
 
-          unread = 0
+          unread = unreadQY = 0
 
           for postObj in @response.posts[1..]
-            if postObj.no > lastReadPost and !QR.db?.get {boardID, threadID, postID: postObj.no}
-              unread++
+            continue unless postObj.no > lastReadPost
+            continue if QR.db?.get {boardID, threadID, postID: postObj.no}
+            unread++
+            continue unless QR.db and postObj.com
+            regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/(\d+))?(?:#p(\d+))?"/g
+            while match = regexp.exec postObj.com
+              if QR.db.get {
+                boardID:  match[1] or boardID
+                threadID: match[2] or threadID
+                postID:   match[3] or match[2] or threadID
+              }
+                unreadQY++
+                continue
 
-          if isDead isnt data.isDead or unread isnt data.unread
-            data.isDead = isDead
-            data.unread = unread
+          if isDead isnt data.isDead or unread isnt data.unread or unreadQY isnt data.unreadQY
+            data.isDead   = isDead
+            data.unread   = unread
+            data.unreadQY = unreadQY
             ThreadWatcher.db.set {boardID, threadID, val: data}
             ThreadWatcher.refresh()
 
@@ -167,6 +179,7 @@ ThreadWatcher =
           else
             data.isDead = true
             delete data.unread
+            delete data.unreadQY
             ThreadWatcher.db.set {boardID, threadID, val: data}
           ThreadWatcher.refresh()
 
@@ -202,8 +215,9 @@ ThreadWatcher =
     div = $.el 'div'
     fullID = "#{boardID}.#{threadID}"
     div.dataset.fullID = fullID
-    $.addClass div, 'current'     if g.VIEW is 'thread' and fullID is "#{g.BOARD}.#{g.THREADID}"
-    $.addClass div, 'dead-thread' if data.isDead
+    $.addClass div, 'current'            if g.VIEW is 'thread' and fullID is "#{g.BOARD}.#{g.THREADID}"
+    $.addClass div, 'unread-quoting-you' if data.unreadQY
+    $.addClass div, 'dead-thread'        if data.isDead
     $.add div, [x, $.tn(' '), link]
     div
   refresh: ->

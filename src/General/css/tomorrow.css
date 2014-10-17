@@ -72,6 +72,11 @@
   background: rgba(0, 0, 0, .33);
 }
 
+/* Thread Watcher */
+:root.tomorrow .unread-quoting-you > a {
+  color: #F00 !important;
+}
+
 /* Watcher Favicon */
 :root.tomorrow .watch-thread-link
 {

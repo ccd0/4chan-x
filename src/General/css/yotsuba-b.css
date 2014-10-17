@@ -67,6 +67,11 @@
   background: rgba(255, 255, 255, .33);
 }
 
+/* Thread Watcher */
+:root.yotsuba-b .unread-quoting-you > a {
+  color: #F00;
+}
+
 /* Watcher Favicon */
 :root.yotsuba-b .watch-thread-link
 {
