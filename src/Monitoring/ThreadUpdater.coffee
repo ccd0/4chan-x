@@ -91,9 +91,9 @@ ThreadUpdater =
       if ThreadUpdater.online = navigator.onLine
         ThreadUpdater.outdateCount = 0
         ThreadUpdater.setInterval()
-        ThreadUpdater.set 'status', null, null
+        ThreadUpdater.set 'status', '', ''
         return
-      ThreadUpdater.set 'timer', null
+      ThreadUpdater.set 'timer', ''
       ThreadUpdater.set 'status', 'Offline', 'warning'
     post: (e) ->
       return unless ThreadUpdater.isUpdating and e.detail.threadID is ThreadUpdater.thread.ID
@@ -161,7 +161,7 @@ ThreadUpdater =
         ThreadUpdater.cb.checkpost()
 
   kill: ->
-    ThreadUpdater.set 'timer', null
+    ThreadUpdater.set 'timer', ''
     clearTimeout ThreadUpdater.timeoutID
     ThreadUpdater.thread.kill()
     $.event 'ThreadUpdate',
@@ -172,7 +172,7 @@ ThreadUpdater =
     ThreadUpdater.outdateCount++
     ThreadUpdater.setInterval()
     [text, klass] = if req.status is 304
-      [null, null]
+      ['', '']
     else
       ["#{req.statusText} (#{req.status})", 'warning']
     ThreadUpdater.set 'status', text, klass
@@ -226,7 +226,7 @@ ThreadUpdater =
     unless n = --ThreadUpdater.seconds
       ThreadUpdater.update()
     else if n <= -60
-      ThreadUpdater.set 'status', 'Retrying', null
+      ThreadUpdater.set 'status', 'Retrying', ''
       ThreadUpdater.update()
     else if n > 0
       ThreadUpdater.set 'timer', n
@@ -303,7 +303,7 @@ ThreadUpdater =
         ThreadUpdater.foundPost = true
 
     unless count
-      ThreadUpdater.set 'status', null, null
+      ThreadUpdater.set 'status', '', ''
       ThreadUpdater.outdateCount++
     else
       ThreadUpdater.set 'status', "+#{count}", 'new'
