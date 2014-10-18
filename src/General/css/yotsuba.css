@@ -67,7 +67,7 @@
 }
 
 /* Thread Watcher */
-:root.yotsuba .unread-quoting-you > a {
+:root.yotsuba .replies-quoting-you > a {
   color: #F00;
 }
 

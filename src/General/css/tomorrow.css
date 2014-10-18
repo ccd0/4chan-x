@@ -73,7 +73,7 @@
 }
 
 /* Thread Watcher */
-:root.tomorrow .unread-quoting-you > a {
+:root.tomorrow .replies-quoting-you > a {
   color: #F00 !important;
 }
 

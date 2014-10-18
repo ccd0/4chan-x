@@ -67,7 +67,7 @@
 }
 
 /* Thread Watcher */
-:root.futaba .unread-quoting-you > a {
+:root.futaba .replies-quoting-you > a {
   color: #F00;
 }
 
