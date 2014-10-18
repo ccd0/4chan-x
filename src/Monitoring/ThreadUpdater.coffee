@@ -92,9 +92,10 @@ ThreadUpdater =
         ThreadUpdater.outdateCount = 0
         ThreadUpdater.setInterval()
         ThreadUpdater.set 'status', '', ''
-        return
-      ThreadUpdater.set 'timer', ''
-      ThreadUpdater.set 'status', 'Offline', 'warning'
+      else
+        ThreadUpdater.set 'timer', ''
+        ThreadUpdater.set 'status', 'Offline', 'warning'
+        clearTimeout ThreadUpdater.timeoutID
     post: (e) ->
       return unless ThreadUpdater.isUpdating and e.detail.threadID is ThreadUpdater.thread.ID
       ThreadUpdater.outdateCount = 0
