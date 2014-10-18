@@ -3,7 +3,7 @@ Config =
     'Miscellaneous':
       'JSON Navigation' : [
         true
-        'Replace the board index with a dynamically generated one supporting searching, sorting, and infinite scrolling.'
+        'Replace the original board index with one supporting searching, sorting, infinite scrolling, and a catalog mode.'
       ]
       'External Catalog': [
         false
