@@ -166,7 +166,6 @@ ThreadUpdater =
       threadID: ThreadUpdater.thread.fullID
 
   error: (req) ->
-    ThreadUpdater.outdateCount++
     ThreadUpdater.setInterval()
     [text, klass] = if req.status is 304
       ['', '']
@@ -221,6 +220,7 @@ ThreadUpdater =
   timeout: ->
     ThreadUpdater.timeoutID = setTimeout ThreadUpdater.timeout, 1000
     unless n = --ThreadUpdater.seconds
+      ThreadUpdater.outdateCount++
       ThreadUpdater.update()
     else if n <= -60
       ThreadUpdater.set 'status', 'Retrying', ''
@@ -301,7 +301,6 @@ ThreadUpdater =
 
     unless count
       ThreadUpdater.set 'status', '', ''
-      ThreadUpdater.outdateCount++
     else
       ThreadUpdater.set 'status', "+#{count}", 'new'
       ThreadUpdater.outdateCount = 0
