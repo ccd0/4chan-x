@@ -636,8 +636,11 @@ span.hide-announcement {
   box-shadow: none;
 }
 #updater > .move {
-  padding: 5px 3px 0px;
-  margin-bottom: -3px;
+  position: absolute;
+  left: 0;
+  top: -5px;
+  width: 100%;
+  height: 5px;
 }
 #updater > div:last-child {
   text-align: center;
