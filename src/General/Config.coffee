@@ -487,7 +487,7 @@ Config =
       'Automatically watch threads you start.'
     ]
     'Auto Watch Reply': [
-      false
+      true
       'Automatically watch threads you reply to.'
     ]
     'Auto Prune': [
