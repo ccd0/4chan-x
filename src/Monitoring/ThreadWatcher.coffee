@@ -216,8 +216,9 @@ ThreadWatcher =
     fullID = "#{boardID}.#{threadID}"
     div.dataset.fullID = fullID
     $.addClass div, 'current'            if g.VIEW is 'thread' and fullID is "#{g.BOARD}.#{g.THREADID}"
-    $.addClass div, 'unread-quoting-you' if data.unreadQY
     $.addClass div, 'dead-thread'        if data.isDead
+    if Conf['Show Unread Count']
+      $.addClass div, 'unread-quoting-you' if data.unreadQY
     $.add div, [x, $.tn(' '), link]
     div
   refresh: ->
