@@ -96,10 +96,6 @@ ThreadUpdater =
         ThreadUpdater.set 'timer', ''
         ThreadUpdater.set 'status', 'Offline', 'warning'
         clearTimeout ThreadUpdater.timeoutID
-    post: (e) ->
-      return unless ThreadUpdater.isUpdating and e.detail.threadID is ThreadUpdater.thread.ID
-      ThreadUpdater.outdateCount = 0
-      setTimeout ThreadUpdater.update, 1000 if ThreadUpdater.seconds > 2
     checkpost: (e) ->
       unless ThreadUpdater.checkPostCount
         return unless e.detail.threadID is ThreadUpdater.thread.ID
