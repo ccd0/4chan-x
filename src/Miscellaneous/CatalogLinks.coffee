@@ -1,6 +1,6 @@
 CatalogLinks =
   init: ->
-    if Conf['External Catalog'] or Conf['JSON Navigation']
+    if (Conf['External Catalog'] or Conf['JSON Navigation']) and !(Conf['JSON Navigation'] and g.VIEW is 'index')
       selector = switch g.VIEW
         when 'thread'  then '.navLinks.desktop > a'
         when 'catalog' then '.navLinks > :first-child > a'
