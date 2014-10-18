@@ -102,15 +102,9 @@ Keybinds =
         FappeTyme.cb.toggle.call {name: 'werk'}
       # Board Navigation
       when Conf['Front page']
-        if Conf['JSON Navigation'] and g.VIEW is 'index'
-          if Conf['Use 4chan X Catalog'] and Conf['Index Mode'] is 'catalog'
-            window.location = '#index'
-          else
-            Index.userPageNav 1
-        else
-          window.location = "/#{g.BOARD}/"
+        window.location = CatalogLinks.index()
       when Conf['Open front page']
-        $.open "/#{g.BOARD}/"
+        $.open CatalogLinks.index()
       when Conf['Next page']
         return unless g.VIEW is 'index'
         if Conf['JSON Navigation']
@@ -133,12 +127,7 @@ Keybinds =
         Header.scrollToIfNeeded searchInput
         searchInput.focus()
       when Conf['Open catalog']
-        if Conf['External Catalog']
-          window.location = CatalogLinks.external(g.BOARD.ID)
-        else if Conf['JSON Navigation'] and Conf['Use 4chan X Catalog']
-          window.location = if g.VIEW is 'index' then '#catalog' else "/#{g.BOARD}/#catalog"
-        else
-          window.location = "/#{g.BOARD}/catalog"
+        window.location = CatalogLinks.catalog()
       # Thread Navigation
       when Conf['Next thread']
         return if g.VIEW isnt 'index' or !threadRoot

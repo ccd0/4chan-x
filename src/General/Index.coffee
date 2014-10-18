@@ -1,12 +1,7 @@
 Index =
   showHiddenThreads: false
   init: ->
-    return if g.BOARD.ID is 'f' or !Conf['JSON Navigation']
-    if g.VIEW is 'thread' and Conf['Use 4chan X Catalog']
-      $.ready ->
-        for link in $$ '.navLinks.desktop a' when link.pathname is "/#{g.BOARD}/catalog"
-          link.href = "/#{g.BOARD}/#catalog"
-    return if g.VIEW isnt 'index'
+    return if g.BOARD.ID is 'f' or !Conf['JSON Navigation'] or g.VIEW isnt 'index'
 
     @board = "#{g.BOARD}"
 
@@ -14,8 +9,6 @@ Index =
       name: 'Catalog Features'
       cb:   @catalogNode
 
-    if Conf['Use 4chan X Catalog'] and Conf['Index Mode'] is 'catalog'
-      Conf['Index Mode'] = Conf['Previous Index Mode']
     if history.state?.mode
       Conf['Index Mode'] = history.state?.mode
     @pushState
@@ -72,11 +65,11 @@ Index =
     @root     = $.el 'div', className: 'board'
     @pagelist = $.el 'div', className: 'pagelist'
     $.extend @pagelist, <%= importHTML('Features/Index-pagelist') %>
-    $('.cataloglink a', @pagelist).href = if Conf['Use 4chan X Catalog'] then '#catalog' else "/#{g.BOARD}/catalog"
+    $('.cataloglink a', @pagelist).href = CatalogLinks.catalog()
     @navLinks = $.el 'div', className: 'navLinks'
     $.extend @navLinks, <%= importHTML('Features/Index-navlinks') %>
-    $('.returnlink a',  @navLinks).href = "/#{g.BOARD}/"
-    $('.cataloglink a', @navLinks).href = if Conf['Use 4chan X Catalog'] then '#catalog' else "/#{g.BOARD}/catalog"
+    $('.returnlink a',  @navLinks).href = CatalogLinks.index()
+    $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
     @searchInput = $ '#index-search', @navLinks
     @hideLabel   = $ '#hidden-label', @navLinks
     @selectSort  = $ '#index-sort',   @navLinks
@@ -88,7 +81,6 @@ Index =
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
     $.on $('#hidden-toggle a',    @navLinks), 'click', @cb.toggleHiddenThreads
-    $.on $('.returnlink a',       @navLinks), 'click', @cb.frontPage
     @selectSort.value = Conf[@selectSort.name]
     $.on @selectSort, 'change', $.cb.value
     $.on @selectSort, 'change', @cb.sort
@@ -195,8 +187,7 @@ Index =
       Index.buildIndex()
     mode: ->
       mode = @value
-      unless mode is 'catalog' and Conf['Use 4chan X Catalog']
-        $.set 'Index Mode', mode
+      $.set 'Index Mode', mode
       unless mode is 'catalog'
         Conf['Previous Index Mode'] = mode
         $.set 'Previous Index Mode', mode
@@ -243,13 +234,6 @@ Index =
       return if a.textContent is 'Catalog'
       e.preventDefault()
       Index.userPageNav +a.pathname.split('/')[2] or 1
-    frontPage: (e) ->
-      return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
-      e.preventDefault()
-      if Conf['Use 4chan X Catalog'] and Conf['Index Mode'] is 'catalog'
-        window.location = '#index'
-      else
-        Index.userPageNav 1
 
   scrollToIndex: ->
     Header.scrollToIfNeeded Index.navLinks
@@ -273,6 +257,7 @@ Index =
         state.mode = command.replace /-/g, ' '
       when 'index'
         state.mode = Conf['Previous Index Mode']
+        state.page = 1
       else
         delete state.command
     {mode} = state

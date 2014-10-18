@@ -5,6 +5,10 @@ Config =
         true
         'Replace the board index with a dynamically generated one supporting searching, sorting, and infinite scrolling.'
       ]
+      'External Catalog': [
+        false
+        'Link to external catalog instead of the internal one.'
+      ]
       'Use 4chan X Catalog': [
         false
         'Link to 4chan X\'s catalog instead of the native 4chan one.'
@@ -12,10 +16,6 @@ Config =
       'Catalog Links': [
         true
         'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'
-      ]
-      'External Catalog': [
-        false
-        'Link to external catalog instead of the internal one.'
       ]
       'QR Shortcut': [
         false,

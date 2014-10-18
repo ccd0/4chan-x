@@ -194,13 +194,8 @@ Header =
 
           if m = t.match /-(index|catalog)/
             a.dataset.only = m[1]
-            a.href = "//boards.4chan.org/#{board}/"
-            if m[1] is 'catalog'
-              if Conf['External Catalog']
-                a.href = CatalogLinks.external board
-              else
-                a.href += if Conf['JSON Navigation'] and Conf['Use 4chan X Catalog'] then '#catalog' else 'catalog'
-              $.addClass a, 'catalog'
+            a.href = CatalogLinks[m[1]] board
+            $.addClass a, 'catalog' if m[1] is 'catalog'
 
           $.addClass a, 'navSmall' if board is '@'
           return a
