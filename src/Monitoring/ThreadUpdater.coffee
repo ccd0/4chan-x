@@ -243,6 +243,7 @@ ThreadUpdater =
   updateThreadStatus: (type, status) ->
     return unless hasChanged = ThreadUpdater.thread["is#{type}"] isnt status
     ThreadUpdater.thread.setStatus type, status
+    return if type is 'Closed' and ThreadUpdater.thread.isArchived
     change = if type is 'Sticky'
       if status
         'now a sticky'
