@@ -698,15 +698,18 @@ span.hide-announcement {
   -webkit-flex-direction: row;
   flex-direction: row;
 }
+#watched-threads .watcher-unread {
+  -webkit-flex: 0 0 auto;
+  flex: 0 0 auto;
+}
+#watched-threads .watcher-unread::after {
+  content: "\\00a0";
+}
 #watched-threads .watcher-title {
   overflow: hidden;
   text-overflow: ellipsis;
   -webkit-flex: 0 1 auto;
   flex: 0 1 auto;
-}
-#watched-threads .watcher-unread {
-  -webkit-flex: 0 0 auto;
-  flex: 0 0 auto;
 }
 #thread-watcher a {
   text-decoration: none;

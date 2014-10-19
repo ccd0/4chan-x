@@ -198,19 +198,21 @@ ThreadWatcher =
       href: 'javascript:;'
     $.on x, 'click', ThreadWatcher.cb.rm
 
-    title = $.el 'span',
-      textContent: data.excerpt
-      className: 'watcher-title'
-
-    count = $.el 'span',
-      textContent: if Conf['Show Unread Count'] and data.unread? then "\u00A0(#{data.unread})" else ''
-      className: 'watcher-unread'
-
     link = $.el 'a',
       href: "/#{boardID}/thread/#{threadID}"
       title: data.excerpt
       className: 'watcher-link'
-    $.add link, [title, count]
+
+    if Conf['Show Unread Count'] and data.unread?
+      count = $.el 'span',
+        textContent: "(#{data.unread})"
+        className: 'watcher-unread'
+      $.add link, count
+
+    title = $.el 'span',
+      textContent: data.excerpt
+      className: 'watcher-title'
+    $.add link, title
 
     div = $.el 'div'
     fullID = "#{boardID}.#{threadID}"
