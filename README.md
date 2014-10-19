@@ -44,6 +44,7 @@ If you want to install the current beta version but get updates from the stable 
 
 ## More information
 ### [Source Code](https://github.com/ccd0/4chan-x)
+### [Changelog](https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md)
 ### [Frequently Asked Questions](https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions)
 ### [Reporting Bugs and Contributing](https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md)
 
