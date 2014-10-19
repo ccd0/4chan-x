@@ -149,7 +149,7 @@ ThreadWatcher =
             threadID: threadID
             defaultValue: 0
 
-          unread = unreadQY = 0
+          unread = quotingYou = 0
 
           for postObj in @response.posts[1..]
             continue unless postObj.no > lastReadPost
@@ -163,13 +163,13 @@ ThreadWatcher =
                 threadID: match[2] or threadID
                 postID:   match[3] or match[2] or threadID
               }
-                unreadQY++
+                quotingYou++
                 continue
 
-          if isDead isnt data.isDead or unread isnt data.unread or unreadQY isnt data.unreadQY
-            data.isDead   = isDead
-            data.unread   = unread
-            data.unreadQY = unreadQY
+          if isDead isnt data.isDead or unread isnt data.unread or quotingYou isnt data.quotingYou
+            data.isDead = isDead
+            data.unread = unread
+            data.quotingYou = quotingYou
             ThreadWatcher.db.set {boardID, threadID, val: data}
             ThreadWatcher.refresh()
 
@@ -179,7 +179,7 @@ ThreadWatcher =
           else
             data.isDead = true
             delete data.unread
-            delete data.unreadQY
+            delete data.quotingYou
             ThreadWatcher.db.set {boardID, threadID, val: data}
           ThreadWatcher.refresh()
 
@@ -219,7 +219,7 @@ ThreadWatcher =
     $.addClass div, 'dead-thread'        if data.isDead
     if Conf['Show Unread Count']
       $.addClass div, 'replies-unread'      if data.unread
-      $.addClass div, 'replies-quoting-you' if data.unreadQY
+      $.addClass div, 'replies-quoting-you' if data.quotingYou
     $.add div, [x, $.tn(' '), link]
     div
   refresh: ->
