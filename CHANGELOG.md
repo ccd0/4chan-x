@@ -2,6 +2,19 @@ The attributions below are for work that has been incorporated into the script a
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+<!-- v1.9.8.x -->
+### v1.9.8.0 
+*2014-10-19* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.8.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.8.0/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- The thread watcher will now highlight threads containing unread replies to you if `Show Unread Count` is enabled.
+- The thread watcher's `Auto Watch Reply` option is enabled by default.
+- The `Use 4chan X Catalog` setting now only changes what catalog links do, and will no longer prevent you from choosing the catalog as the default index mode.
+- The `External Catalog` setting applies to catalog links in the page, not just the header.
+- The `#index` hash (on an index page with `JSON Navigation` enabled), in addition to switching to the last used non-catalog mode, now switches to the first page.
+- The keybinds for inserting `[spoiler]`, `[code]`, `[math]`, and `[eqn]` tags will warn you if you use them on a board where they don't work.
+- The draggable region of the floating thread updater has been expanded.
+- The optional increasing updater interval is no longer increased by manual updates.
+
 <!-- v1.9.7.x -->
 ### v1.9.7.5 
 *2014-10-19* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.7.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.7.5/builds/4chan-X-noupdate.crx "Chromium version")]
