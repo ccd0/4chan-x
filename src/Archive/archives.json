@@ -77,7 +77,7 @@
   "http": true,
   "https": false,
   "software": "foolfuuka",
-  "boards": ["gif", "jp", "vg"],
-  "files": ["gif", "jp", "vg"],
+  "boards": ["gif", "int", "jp", "out", "sp"],
+  "files": ["gif", "int", "jp", "out", "sp"],
   "imagehosts": ["http://imcute.yt/"]
 }]
