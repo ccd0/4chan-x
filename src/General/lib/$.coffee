@@ -409,37 +409,41 @@ do ->
 <% } else { %>
 
 # http://wiki.greasespot.net/Main_Page
+$.oldValue = {}
+
+$.sync = (key, cb) ->
+  key = g.NAMESPACE + key
+  $.syncing[key] = cb
+  $.oldValue[key] = GM_getValue key
+
 do ->
-  oldValue = {}
-  onChange = ({key, newValue}) ->
-    if cb = $.syncing[key]
-      if newValue?
-        oldValue[key] = newValue
-        cb JSON.parse(newValue), key
-      else
-        delete oldValue[key]
-        cb undefined, key
-  $.on window, 'storage', onChange
-  $.sync = (key, cb) ->
-    key = g.NAMESPACE + key
-    $.syncing[key] = cb
-    oldValue[key] = GM_getValue key
+  onChange = (key) ->
+    return unless cb = $.syncing[key]
+    newValue = GM_getValue key
+    return if newValue is $.oldValue[key]
+    if newValue?
+      $.oldValue[key] = newValue
+      cb JSON.parse(newValue), key
+    else
+      delete $.oldValue[key]
+      cb undefined, key
+  $.on window, 'storage', ({key}) -> onChange key
   $.forceSync = (key) ->
     # Storage events don't work across origins
     # e.g. http://boards.4chan.org and https://boards.4chan.org
     # so force a check for changes to avoid lost data.
-    key = g.NAMESPACE + key
-    newValue = GM_getValue key
-    if newValue isnt oldValue[key]
-      onChange {key, newValue}
+    onChange g.NAMESPACE + key
 
 $.delete = (keys) ->
   unless keys instanceof Array
     keys = [keys]
   for key in keys
     key = g.NAMESPACE + key
-    localStorage.removeItem key
     GM_deleteValue key
+    if key of $.syncing
+      delete $.oldValue[key]
+      # for `storage` events
+      localStorage.removeItem key
   return
 
 $.get = (key, val, cb) ->
@@ -458,10 +462,11 @@ $.set = do ->
   set = (key, val) ->
     key = g.NAMESPACE + key
     val = JSON.stringify val
+    GM_setValue key, val
     if key of $.syncing
+      $.oldValue[key] = val
       # for `storage` events
       localStorage.setItem key, val
-    GM_setValue key, val
   (keys, val) ->
     if typeof keys is 'string'
       set keys, val
