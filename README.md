@@ -24,13 +24,7 @@ Only the latest stable version of 4chan X is available.
 ## Other browsers
 This fork of 4chan X is not guaranteed to work correctly in other browsers, but you are welcome to try your luck. Pull requests to fix the bugs you will likely find are always welcome. You may fare better with [loadletter's v2 fork](https://github.com/loadletter/4chan-x), which has fewer features but less dependence on browser-specific APIs.
 
-### dwb
-1. Install dwb with your package manager
-2. Install the dwb userscripts extension with `dwbem -N -i userscripts` in your terminal.
-3. Make a directory for dwb userscripts with `mkdir .config/dwb/greasemonkey`
-4. Change directory to your newly created userscripts folder with `cd .config/dwb/greasemonkey`
-5. Download 4chanX with `wget https://ccd0.github.io/4chan-x/builds/4chan-X.user.js`
-6. Start dwb
+- [Installing 4chan X in dwb](https://github.com/ccd0/4chan-x/wiki/Installing-4chan-X-in-dwb)
 
 ## Beta channel
 New features and non-urgent bugfixes are released on the beta channel for further testing before they are moved the stable version. Please [report](https://github.com/ccd0/4chan-x/issues) any issues you find, and be sure to mention which version you're using.
@@ -43,7 +37,8 @@ If you want to install the current beta version but get updates from the stable 
 4chan X currently shares your settings and post history between the HTTP and HTTPS versions of 4chan. If you are concerned about protecting your privacy against a man-in-the-middle attack, you should disable 4chan X on the HTTP version of 4chan and/or install [HTTPS Everywhere](https://www.eff.org/https-everywhere).
 
 ## More information
-### [Source Code](https://github.com/ccd0/4chan-x)
-### [Frequently Asked Questions](https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions)
-### [Reporting Bugs and Contributing](https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md)
+- [Source Code](https://github.com/ccd0/4chan-x)
+- [Changelog](https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md)
+- [Frequently Asked Questions](https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions)
+- [Reporting Bugs and Contributing](https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md)
 
