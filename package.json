@@ -50,7 +50,7 @@
     "grunt-crx": "0.3.3",
     "grunt-markdown": "0.6.1",
     "grunt-shell": "1.1.1",
-    "load-grunt-tasks": "0.6.0"
+    "load-grunt-tasks": "1.0.0"
   },
   "repository": {
     "type": "git",
