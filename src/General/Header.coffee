@@ -127,25 +127,36 @@ Header =
     id: 'scroll-marker'
 
   setBoardList: ->
-    fourchannav = $.id 'boardNavDesktop'
     Header.boardList = boardList = $.el 'span',
       id: 'board-list'
     $.extend boardList, <%= html(
       '<span id="custom-board-list"></span>' +
       '<span id="full-board-list" hidden>' +
         '<span class="hide-board-list-container brackets-wrap"><a href="javascript:;" class="hide-board-list-button">&nbsp;-&nbsp;</a></span> ' +
-        '&{fourchannav}' +
+        '<span class="boardList"></span>' +
       '</span>'
     ) %>
-    for a in $$ 'a', boardList
-      if a.pathname.split('/')[1] is g.BOARD.ID
-        a.className = 'current'
-    fullBoardList = $ '#full-board-list', boardList
-    btn = $ '.hide-board-list-button', fullBoardList
+
+    btn = $('.hide-board-list-button', boardList)
     $.on btn, 'click', Header.toggleBoardList
 
-    $.rm $ '#navtopright', fullBoardList
-    $.add boardList, fullBoardList
+    nodes = []
+    spacer = -> $.el 'span', className: 'spacer'
+    for node in $('#boardNavDesktop > .boardList').childNodes
+      switch node.nodeName
+        when '#text'
+          for c in node.nodeValue
+            span = $.el 'span', textContent: c
+            span.className = 'space' if c is ' '
+            nodes.push spacer() if c is ']'
+            nodes.push span
+            nodes.push spacer() if c is '['
+        when 'A'
+          a = node.cloneNode true
+          a.className = 'current' if a.pathname.split('/')[1] is g.BOARD.ID
+          nodes.push a
+    $.add $('.boardList', boardList), nodes
+
     $.add Header.bar, [Header.boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]
 
     Header.setCustomNav Conf['Custom Board Navigation']
