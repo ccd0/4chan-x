@@ -432,7 +432,7 @@ Config =
 
   imageExpansion:
     'Fit width': [
-      false
+      true
       ''
     ]
     'Fit height': [
