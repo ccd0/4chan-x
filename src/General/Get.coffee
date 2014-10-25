@@ -41,7 +41,7 @@ Get =
     # Get quotelinks & backlinks linking to the given post.
     quotelinks = []
     {posts} = g
-    fullID = {post}
+    {fullID} = post
     handleQuotes = (qPost, type) ->
       quotelinks.push qPost.nodes[type]...
       quotelinks.push clone.nodes[type]... for clone in qPost.clones
