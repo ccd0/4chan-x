@@ -2,6 +2,18 @@ The attributions below are for work that has been incorporated into the script a
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+<!-- v1.9.9.x -->
+### v1.9.9.0 
+*2014-10-26* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.9.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.9.0/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**milkytiptoe, MayhemYDG**
+- Add `Archive link` to custom board navigation.
+
+**ccd0**
+- Add .moe to list of TLDs linkified without http(s):// prefix.
+- `Fit width` option for expanded images is now on by default.
+- Various bugfixes.
+
 <!-- v1.9.8.x -->
 ### v1.9.8.1 
 *2014-10-19* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.8.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.8.1/builds/4chan-X-noupdate.crx "Chromium version")]
