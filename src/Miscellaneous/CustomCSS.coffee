@@ -3,7 +3,8 @@ CustomCSS =
     return unless Conf['Custom CSS']
     @addStyle()
   addStyle: ->
-    @style = $.addStyle Conf['usercss']
+    $.asap (-> $.id 'fourchanx-css'), =>
+      @style = $.addStyle Conf['usercss'], 'custom-css'
   rmStyle: ->
     if @style
       $.rm @style

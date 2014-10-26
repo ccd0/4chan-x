@@ -90,7 +90,7 @@ Main =
     $.addClass doc, 'fourchan-x', 'seaweedchan'
     $.addClass doc, if g.VIEW is 'thread' then 'thread-view' else g.VIEW
     $.addClass doc, if chrome? then 'blink' else 'gecko'
-    $.addStyle Main.css
+    $.addStyle Main.css, 'fourchanx-css'
 
     Main.setClass()
 
