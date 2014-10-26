@@ -145,12 +145,12 @@ Header =
     for node in $('#boardNavDesktop > .boardList').childNodes
       switch node.nodeName
         when '#text'
-          for c in node.nodeValue
-            span = $.el 'span', textContent: c
-            span.className = 'space' if c is ' '
-            nodes.push spacer() if c is ']'
+          for chr in node.nodeValue
+            span = $.el 'span', textContent: chr
+            span.className = 'space' if chr is ' '
+            nodes.push spacer() if chr is ']'
             nodes.push span
-            nodes.push spacer() if c is '['
+            nodes.push spacer() if chr is '['
         when 'A'
           a = node.cloneNode true
           a.className = 'current' if a.pathname.split('/')[1] is g.BOARD.ID
