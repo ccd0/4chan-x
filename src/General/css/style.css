@@ -201,9 +201,6 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   border-top: none;
   border-bottom: 6px solid;
 }
-#board-list {
-  text-align: center;
-}
 .fixed #header-bar.autohide:not(:hover) {
   box-shadow: none;
   transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
