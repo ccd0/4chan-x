@@ -1654,12 +1654,3 @@ div.boardTitle {
 :root.gallery-open.fixed #header-bar:not(.autohide) .fa::before {
   visibility: hidden;
 }
-
-@media screen and (resolution: 1dppx) {
- .fa-bars {
-    font-size: 14px;
-  }
-  #shortcuts .fa-bars {
-    vertical-align: -1px;
-  }
-}
