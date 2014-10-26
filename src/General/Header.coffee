@@ -170,7 +170,7 @@ Header =
     $.rmAll list
     return unless text
     as = $$ '#full-board-list a[title]', Header.boardList
-    nodes = text.match(/[\w@]+((-(all|title|replace|full|index|catalog|archive|url:"[^"]+[^"]"|text:"[^"]+")|\,"[^"]+[^"]"))*|[^\w@]+/g).map (t) ->
+    nodes = text.match(/[\w@]+(-(all|title|replace|full|index|catalog|archive|text:"[^"]+"(\,"[^"]+")?))*|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
       if /^toggle-all/.test t
