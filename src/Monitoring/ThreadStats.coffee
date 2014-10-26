@@ -32,6 +32,7 @@ ThreadStats =
     @posts.forEach (post) ->
       postCount++
       fileCount++ if post.file
+      ThreadStats.lastPost = post.info.date if Conf["Page Count in Stats"]
     ThreadStats.thread = @
     ThreadStats.fetchPage()
     ThreadStats.update postCount, fileCount
@@ -39,8 +40,13 @@ ThreadStats =
 
   onUpdate: (e) ->
     return if e.detail[404]
-    {postCount, fileCount} = e.detail
+    {postCount, fileCount, newPosts} = e.detail
     ThreadStats.update postCount, fileCount
+    return unless Conf["Page Count in Stats"]
+    if newPosts.length
+      ThreadStats.lastPost = g.posts[newPosts[newPosts.length - 1]].info.date
+    if ThreadStats.lastPost > ThreadStats.lastPageUpdate and ThreadStats.pageCountEl?.textContent isnt '1'
+      ThreadStats.fetchPage()
 
   update: (postCount, fileCount) ->
     {thread, postCountEl, fileCountEl} = ThreadStats
@@ -51,6 +57,7 @@ ThreadStats =
 
   fetchPage: ->
     return if !Conf["Page Count in Stats"]
+    clearTimeout ThreadStats.timeout
     if ThreadStats.thread.isDead
       ThreadStats.pageCountEl.textContent = 'Dead'
       $.addClass ThreadStats.pageCountEl, 'warning'
@@ -65,4 +72,6 @@ ThreadStats =
       for thread in page.threads when thread.no is ThreadStats.thread.ID
         ThreadStats.pageCountEl.textContent = page.page
         (if page.page is @response.length then $.addClass else $.rmClass) ThreadStats.pageCountEl, 'warning'
+        # Thread data may be stale (modification date given < time of last post). If so, try again on next thread update.
+        ThreadStats.lastPageUpdate = new Date thread.last_modified * 1000
         return
