@@ -160,30 +160,36 @@ Header =
     $.add Header.bar, [Header.boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]
 
     Header.setCustomNav Conf['Custom Board Navigation']
-    Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
+    Header.generateBoardList Conf['boardnav']
 
     $.sync 'Custom Board Navigation', Header.setCustomNav
     $.sync 'boardnav', Header.generateBoardList
 
-  generateBoardList: (text) ->
+  generateBoardList: (boardnav) ->
     list = $ '#custom-board-list', Header.boardList
     $.rmAll list
-    return unless text
+    return unless boardnav
+    boardnav = boardnav.replace /(\r\n|\n|\r)/g, ' '
     as = $$ '#full-board-list a[title]', Header.boardList
-    nodes = text.match(/[\w@]+(-(all|title|replace|full|index|catalog|archive|text:"[^"]+"(\,"[^"]+")?))*|[^\w@]+/g).map (t) ->
+    nodes = boardnav.match(/[\w@]+(-(all|title|replace|full|index|catalog|archive|text:"[^"]+"(,"[^"]+")?))*|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
+      text = url = null
+      t = t.replace /-text:"([^"]+)"(?:,"([^"]+)")?/g, (m0, m1, m2) ->
+        text = m1
+        url = m2
+        ''
       if /^toggle-all/.test t
         a = $.el 'a',
           className: 'show-board-list-button'
-          textContent: (t.match(/-text:"(.+)"/) || [null, '+'])[1]
+          textContent: text or '+'
           href: 'javascript:;'
         $.on a, 'click', Header.toggleBoardList
         return a
       if /^external/.test t
         a = $.el 'a',
-          href: (t.match(/\,"(.+)"/) || [null, '+'])[1]
-          textContent: (t.match(/-text:"(.+)"\,/) || [null, '+'])[1]
+          href: url or 'javascript:;'
+          textContent: text or '+'
           className: 'external'
         return a
       boardID = if /^current/.test t
@@ -198,8 +204,8 @@ Header =
             a.title
           else if /-full/.test t
             "/#{boardID}/ - #{a.title}"
-          else if m = t.match /-text:"(.+)"/
-            m[1]
+          else if text
+            text
           else
             a.textContent
 
