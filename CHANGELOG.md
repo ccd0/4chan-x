@@ -3,6 +3,12 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.9.x -->
+### v1.9.9.1 
+*2014-10-27* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.9.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.9.1/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix filename color in Tomorrow style.
+
 ### v1.9.9.0 
 *2014-10-26* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.9.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.9.0/builds/4chan-X-noupdate.crx "Chromium version")]
 
