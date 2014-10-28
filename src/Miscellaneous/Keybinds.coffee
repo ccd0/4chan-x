@@ -102,7 +102,10 @@ Keybinds =
         FappeTyme.cb.toggle.call {name: 'werk'}
       # Board Navigation
       when Conf['Front page']
-        window.location = CatalogLinks.index()
+        if Conf['JSON Navigation'] and !Conf['Use 4chan X Catalog'] and g.VIEW is 'index'
+          Index.userPageNav 1
+        else
+          window.location = CatalogLinks.index()
       when Conf['Open front page']
         $.open CatalogLinks.index()
       when Conf['Next page']

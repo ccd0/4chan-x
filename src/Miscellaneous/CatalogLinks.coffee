@@ -57,7 +57,7 @@ CatalogLinks =
       "/#{board}/catalog"
 
   index: (board=g.BOARD.ID) ->
-    if Conf['JSON Navigation']
+    if Conf['JSON Navigation'] and Conf['Use 4chan X Catalog']
       if g.BOARD.ID is board and g.VIEW is 'index' then '#index' else "/#{board}/\#index"
     else
       "/#{board}/"
