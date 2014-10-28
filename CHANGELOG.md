@@ -3,6 +3,13 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.9.x -->
+### v1.9.9.2 
+*2014-10-27* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.9.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.9.2/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- `[Return]` links, the front page keybind, and index links in the header will only switch the index to a non-catalog mode when `Use 4chan X Catalog` is enabled.
+- Fix various CSS problems with the settings panel, mainly when opened in the native catalog.
+
 ### v1.9.9.1 
 *2014-10-27* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.9.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.9.1/builds/4chan-X-noupdate.crx "Chromium version")]
 
