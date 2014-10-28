@@ -374,6 +374,7 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 #fourchanx-settings > nav a.close {
   text-decoration: none;
   padding: 0 2px;
+  margin: 0;
 }
 .section-container {
   overflow: auto;
@@ -417,6 +418,7 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 }
 .section-filter li {
   margin: 10px 40px;
+  list-style: disc;
 }
 .section-filter textarea {
   height: 500px;
@@ -452,9 +454,12 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 #fourchanx-settings fieldset {
   border: 1px solid;
   border-radius: 3px;
+  padding: 0.35em 0.625em 0.75em;
+  margin: 0px 2px;
 }
 #fourchanx-settings legend {
   font-weight: 700;
+  color: inherit;
 }
 #fourchanx-settings textarea {
   font-family: monospace;
@@ -465,6 +470,13 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   color: #000;
   background-color: #FFF;
   padding: 0 2px;
+}
+#fourchanx-settings th {
+  text-align: center;
+  font-weight: bold;
+}
+#fourchanx-settings p {
+  margin: 1em 0px;
 }
 .unscroll {
   overflow: hidden;
