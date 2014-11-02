@@ -341,6 +341,8 @@ QR =
           QR.error "#{file.name}: Image too small (image: #{height}x#{width}px, min: #{QR.min_height}x#{QR.min_width}px)"
           pass = false
         cb pass, img
+      img.onerror = ->
+        cb false, null
       img.src = URL.createObjectURL file
     else if /^video\//.test file.type
       video = $.el 'video'
