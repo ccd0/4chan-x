@@ -289,12 +289,14 @@ ThreadUpdater =
       # continue if post.isDead
       ID = +post.ID
 
-      unless ID in index
-        post.kill()
-      else if post.isDead
-        post.resurrect()
-      else if post.file and not (post.file.isDead or ID in files)
-        post.kill true
+      # Assume deleted posts less than 60 seconds old are false positives.
+      unless post.info.date > Date.now() - 60 * $.SECOND
+        unless ID in index
+          post.kill()
+        else if post.isDead
+          post.resurrect()
+        else if post.file and not (post.file.isDead or ID in files)
+          post.kill true
 
       # Fetching your own posts after posting
       if ThreadUpdater.postID and ThreadUpdater.postID is ID
