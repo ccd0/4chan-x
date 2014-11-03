@@ -105,5 +105,3 @@ ExpandThread =
 
     postsCount    = postsRoot.length
     a.textContent = ExpandThread.text '-', postsCount, filesCount
-
-    Fourchan.parseThread thread.ID, 1, postsCount

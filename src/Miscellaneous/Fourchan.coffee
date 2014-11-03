@@ -2,8 +2,7 @@ Fourchan =
   init: ->
     return if g.VIEW is 'catalog'
 
-    board = g.BOARD.ID
-    if board is 'g'
+    if g.BOARD.ID is 'g'
       $.globalEval '''
         window.addEventListener('prettyprint', function(e) {
           window.dispatchEvent(new CustomEvent('prettyprint:cb', {
@@ -14,7 +13,8 @@ Fourchan =
       Post.callbacks.push
         name: 'Parse /g/ code'
         cb:   @code
-    if board is 'sci'
+
+    if g.BOARD.ID is 'sci'
       # https://github.com/MayhemYDG/4chan-x/issues/645#issuecomment-13704562
       $.globalEval '''
         window.addEventListener('jsmath', function(e) {
@@ -35,6 +35,19 @@ Fourchan =
       CatalogThread.callbacks.push
         name: 'Parse /sci/ math'
         cb:   @math
+
+    # Disable 4chan's ID highlighting (replaced by IDHighlight).
+    $.ready ->
+      $.globalEval '''
+        (function() {
+          clickable_ids = false;
+          var nodes = document.querySelectorAll('.posteruid, .capcode');
+          for (var i = 0; i < nodes.length; i++) {
+            nodes[i].removeEventListener("click", idClick, false);
+          }
+        })();
+      '''
+
   code: ->
     return if @isClone
     apply = (e) ->
@@ -45,14 +58,8 @@ Fourchan =
       $.event 'prettyprint', pre.innerHTML, window
     $.off window, 'prettyprint:cb', apply
     return
+
   math: ->
     return if (@isClone and doc.contains @origin.nodes.root) or !$ '.math', @nodes.comment
     $.asap (=> doc.contains @nodes.comment), =>
       $.event 'jsmath', null, @nodes.comment
-  parseThread: (threadID, offset, limit) ->
-    # Fix /sci/
-    # Fix /g/
-    $.event '4chanParsingDone',
-      threadId: threadID
-      offset: offset
-      limit: limit

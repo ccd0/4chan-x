@@ -282,6 +282,7 @@ Main =
     ['Announcement Hiding',       PSAHiding]
     ['Fourchan thingies',         Fourchan]
     ['Color User IDs',            IDColor]
+    ['Highlight by User ID',      IDHighlight]
     ['Custom CSS',                CustomCSS]
     ['Linkify',                   Linkify]
     ['Reveal Spoilers',           RemoveSpoilers]

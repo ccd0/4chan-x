@@ -40,9 +40,9 @@ class Clone extends Post
     if nodes.uniqueID
       @nodes.uniqueID = $ '.posteruid',   info
     if nodes.capcode
-      @nodes.capcode  = $ '.capcode',     info
+      @nodes.capcode  = $ '.capcode.hand', info
     if nodes.flag
-      @nodes.flag     = $ '.countryFlag', info
+      @nodes.flag     = $ '.flag, .countryFlag', info
     if nodes.date
       @nodes.date     = $ '.dateTime',    info
 
