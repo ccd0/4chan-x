@@ -65,10 +65,6 @@ body.hasDropDownNav{
 a {
   outline: none !important;
 }
-.painted {
-  border-radius: 3px;
-  padding: 0px 2px;
-}
 .ad-plea {
   display: none;
 }

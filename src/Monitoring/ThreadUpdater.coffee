@@ -333,12 +333,6 @@ ThreadUpdater =
         else
           Header.scrollTo root if root
 
-      $.queueTask ->
-        # Enable 4chan features.
-        threadID = ThreadUpdater.thread.ID
-        {length} = $$ '.thread > .postContainer', ThreadUpdater.root
-        Fourchan.parseThread threadID, length - count, length
-
     $.event 'ThreadUpdate',
       404: false
       threadID: ThreadUpdater.thread.fullID
