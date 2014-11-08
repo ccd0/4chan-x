@@ -489,7 +489,8 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 :root.infinite-mode .pagelist,
 :root.all-pages-mode .pagelist,
 :root.catalog-mode .pagelist,
-:root:not(.catalog-mode) #hidden-label {
+:root:not(.catalog-mode) #hidden-label,
+:root:not(.catalog-mode) #index-size {
   display: none;
 }
 #index-search {
