@@ -2,6 +2,18 @@ The attributions below are for work that has been incorporated into the script a
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+<!-- v1.9.11.x -->
+### v1.9.11.0 
+*2014-11-09* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.11.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.11.0/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**MayhemYDG**
+- Added `Image Size` setting for the catalog.
+- Added a keybind to cycle through index sort types.
+
+**ccd0**
+- Change default index sort keybind to `Alt+x`.
+- Add unique IP count to thread stats.
+
 <!-- v1.9.10.x -->
 ### v1.9.10.0 
 *2014-11-02* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.10.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.10.0/builds/4chan-X-noupdate.crx "Chromium version")]
