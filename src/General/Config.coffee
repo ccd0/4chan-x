@@ -291,9 +291,13 @@ Config =
         true
         'Display reply and image count.'
       ]
+      'IP Count in Stats': [
+        true
+        'Display the unique IP count in the thread stats.'
+      ]
       'Page Count in Stats': [
         true
-        'Display the page count in the thread stats as well.'
+        'Display the page count in the thread stats.'
       ]
       'Updater and Stats in Header': [
         true,
