@@ -268,6 +268,7 @@ QR =
     QR.handleFiles e.dataTransfer.files
 
   paste: (e) ->
+    return unless e.clipboardData.items
     files = []
     for item in e.clipboardData.items when item.kind is 'file'
       blob = item.getAsFile()
