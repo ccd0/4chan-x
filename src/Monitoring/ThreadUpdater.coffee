@@ -339,3 +339,4 @@ ThreadUpdater =
       newPosts: posts.map (post) -> post.fullID
       postCount: OP.replies + 1
       fileCount: OP.images + (!!ThreadUpdater.thread.OP.file and !ThreadUpdater.thread.OP.file.isDead)
+      ipCount: OP.unique_ips
