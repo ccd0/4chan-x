@@ -2,19 +2,25 @@ ThreadStats =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Stats']
 
-    countHTML = <%= html('<span id="post-count">?</span> / <span id="file-count">?</span> / <span id="ip-count">?</span>') %>
-    countHTML = <%= html('&{countHTML} / <span id="page-count">?</span>') %> if Conf['Page Count in Stats']
+    statsHTML = <%= html('<span id="post-count">?</span> / <span id="file-count">?</span>') %>
+    statsTitle = 'Post Count / File Count'
+    if Conf['IP Count in Stats']
+      statsHTML = <%= html('&{statsHTML} / <span id="ip-count">?</span>') %>
+      statsTitle += ' / IP Count'
+    if Conf['Page Count in Stats']
+      statsHTML = <%= html('&{statsHTML} / <span id="page-count">?</span>') %>
+      statsTitle += ' / Page Count'
 
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
-        id:        'thread-stats'
-        title: 'Post Count / File Count / IP Count' + (if Conf["Page Count in Stats"] then " / Page Count" else "")
-      $.extend sc, countHTML
+        id:    'thread-stats'
+        title: statsTitle
+      $.extend sc, statsHTML
       $.ready ->
         Header.addShortcut sc
     else
       @dialog = sc = UI.dialog 'thread-stats', 'bottom: 0px; right: 0px;',
-        <%= html('<div class="move" title="Post Count / File Count / IP Count${Conf["Page Count in Stats"] ? " / Page Count" : ""}">&{countHTML}</div>') %>
+        <%= html('<div class="move" title="${statsTitle}">&{statsHTML}</div>') %>
       $.ready =>
         $.add d.body, sc
 
@@ -57,7 +63,8 @@ ThreadStats =
     {thread, postCountEl, fileCountEl, ipCountEl} = ThreadStats
     postCountEl.textContent = postCount
     fileCountEl.textContent = fileCount
-    ipCountEl.textContent   = if ipCount? then ipCount else '?'
+    if Conf["IP Count in Stats"]
+      ipCountEl.textContent = if ipCount? then ipCount else '?'
     (if thread.postLimit and !thread.isSticky then $.addClass else $.rmClass) postCountEl, 'warning'
     (if thread.fileLimit and !thread.isSticky then $.addClass else $.rmClass) fileCountEl, 'warning'
 
