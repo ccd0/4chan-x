@@ -3,6 +3,15 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.10.x -->
+### v1.9.10.1 
+*2014-11-10* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.10.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.10.1/builds/4chan-X-noupdate.crx "Chromium version")]
+
+Backported from v1.9.11.1.
+
+**ccd0**
+- Add unique IP count to thread stats.
+- The IP count in the thread stats is now optional, controlled by the IP Count in Stats setting (default: on).
+
 ### v1.9.10.0 
 *2014-11-02* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.10.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.10.0/builds/4chan-X-noupdate.crx "Chromium version")]
 
