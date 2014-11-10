@@ -105,7 +105,7 @@ module.exports = (grunt) ->
         expand: true
         filter: (src) ->
           pkg = grunt.config 'pkg'
-          grunt.file.isFile(src) and !grunt.file.isMatch(src, "testbuilds/#{pkg.name}#{pkg.meta.suffix.dev}.user.js")
+          grunt.file.isFile(src) and src isnt "testbuilds/#{pkg.name}#{pkg.meta.suffix.dev}.user.js"
 
     coffee:
       script:
