@@ -22,14 +22,7 @@
     "suffix": {
       "stable": "",
       "beta": "-beta",
-      "noupdate": "-noupdate",
-      "dev": "-dev"
-    },
-    "namesuffix": {
-      "stable": "",
-      "beta": " beta",
-      "noupdate": "",
-      "dev": " dev"
+      "noupdate": "-noupdate"
     },
     "min": {
       "chrome": "32",
