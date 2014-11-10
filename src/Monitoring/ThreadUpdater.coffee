@@ -333,6 +333,11 @@ ThreadUpdater =
         else
           Header.scrollTo root if root
 
+    # Update IP count in original post form.
+    if ipCountEl = $.id('unique-ips')
+      ipCountEl.textContent = OP.unique_ips
+      ipCountEl.nextSibling.nodeValue = ipCountEl.nextSibling.nodeValue.replace(/^( unique poster)s?/, if OP.unique_ips > 1 then '$1s' else '$1')
+
     $.event 'ThreadUpdate',
       404: false
       threadID: ThreadUpdater.thread.fullID
