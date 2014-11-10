@@ -5,7 +5,7 @@ A continuation of the fork formerly maintained by [Seaweed](https://github.com/s
 If you're looking for a maintained fork of OneeChan, try
 https://github.com/Nebukazar/OneeChan
 
-## [Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) (Firefox)
+## Firefox version: [Click to Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js)
 Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then click the link above to install 4chan X. If you are using Firefox 29 or earlier, you should use [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15).
 
 ### Known issues
@@ -13,11 +13,11 @@ The combination of Firefox 29 and Greasemonkey 2.0+ causes 4chan X not to work.
 If you have this problem, you should [upgrade Firefox](http://www.mozilla.org/en-US/firefox/new/) to version 30 or higher.
 Alternatively, you can downgrade to [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15) and turn off automatic updates for Greasemonkey ([see pic](https://ccd0.github.io/4chan-x/img/2014-07-12_16-19-32.png)).
 
-## [Install](https://ccd0.github.io/4chan-x/builds/4chan-X.crx) (Chromium)
+## Chromium version: [Click to Install](https://ccd0.github.io/4chan-x/builds/4chan-X.crx)
 Download the file from the link above and add drag it to your `chrome://extensions` page.
 This should also work for non-Windows/dev/canary Chrome and Chromium-based versions of Opera.
 
-## [Install](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam) (Chrome store)
+## Chromium version (Chrome store): [Click to Install](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam)
 The stable and beta releases of Chrome on Windows will disable extensions not installed from the Chrome store, so users will need to install 4chan X from the link above.
 Only the latest stable version of 4chan X is available.
 
@@ -26,7 +26,7 @@ This fork of 4chan X is not guaranteed to work correctly in other browsers, but 
 
 - [Installing 4chan X in dwb](https://github.com/ccd0/4chan-x/wiki/Installing-4chan-X-in-dwb)
 
-## Beta channel
+## Beta version
 New features and non-urgent bugfixes are released on the beta channel for further testing before they are moved the stable version. Please [report](https://github.com/ccd0/4chan-x/issues) any issues you find, and be sure to mention which version you're using.
 - [Firefox version](https://ccd0.github.io/4chan-x/builds/4chan-X-beta.user.js)
 - [Chromium version](https://ccd0.github.io/4chan-x/builds/4chan-X-beta.crx)
