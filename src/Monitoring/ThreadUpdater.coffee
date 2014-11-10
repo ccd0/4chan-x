@@ -336,7 +336,8 @@ ThreadUpdater =
     # Update IP count in original post form.
     if ipCountEl = $.id('unique-ips')
       ipCountEl.textContent = OP.unique_ips
-      ipCountEl.nextSibling.nodeValue = ipCountEl.nextSibling.nodeValue.replace(/^( unique poster)s?/, if OP.unique_ips > 1 then '$1s' else '$1')
+      ipCountEl.previousSibling.textContent = ipCountEl.previousSibling.textContent.replace(/\b(?:is|are)\b/, if OP.unique_ips > 1 then 'are' else 'is')
+      ipCountEl.nextSibling.textContent = ipCountEl.nextSibling.textContent.replace(/\bposters?\b/, if OP.unique_ips > 1 then 'posters' else 'poster')
 
     $.event 'ThreadUpdate',
       404: false
