@@ -103,7 +103,9 @@ module.exports = (grunt) ->
         src: '*'
         dest: 'builds/'
         expand: true
-        filter: 'isFile'
+        filter: (src) ->
+          pkg = grunt.config 'pkg'
+          grunt.file.isFile(src) and src isnt "testbuilds/#{pkg.name}#{pkg.meta.suffix.dev}.user.js"
 
     coffee:
       script:
@@ -194,7 +196,11 @@ module.exports = (grunt) ->
       builds: 'builds'
       testbuilds: 'testbuilds'
       tmpcrx: ['tmp-crx', 'testbuilds/updates<%= pkg.meta.suffix.noupdate %>.xml']
-      tmpuserscript: ['tmp-userscript', 'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.noupdate %>.meta.js']
+      tmpuserscript: [
+        'tmp-userscript',
+        'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.noupdate %>.meta.js',
+        'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.dev %>.meta.js'
+      ]
 
     markdown:
       web:
@@ -267,6 +273,8 @@ module.exports = (grunt) ->
     'set-channel:beta'
     'concat:userscript'
     'set-channel:noupdate'
+    'concat:userscript'
+    'set-channel:dev'
     'concat:userscript'
     'clean:tmpuserscript'
   ]
