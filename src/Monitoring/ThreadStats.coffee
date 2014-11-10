@@ -63,8 +63,8 @@ ThreadStats =
     {thread, postCountEl, fileCountEl, ipCountEl} = ThreadStats
     postCountEl.textContent = postCount
     fileCountEl.textContent = fileCount
-    if Conf["IP Count in Stats"]
-      ipCountEl.textContent = if ipCount? then ipCount else '?'
+    if ipCount? and Conf["IP Count in Stats"]
+      ipCountEl.textContent = ipCount
     (if thread.postLimit and !thread.isSticky then $.addClass else $.rmClass) postCountEl, 'warning'
     (if thread.fileLimit and !thread.isSticky then $.addClass else $.rmClass) fileCountEl, 'warning'
 

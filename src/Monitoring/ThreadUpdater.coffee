@@ -334,10 +334,10 @@ ThreadUpdater =
           Header.scrollTo root if root
 
     # Update IP count in original post form.
-    if ipCountEl = $.id('unique-ips')
+    if OP.unique_ips? and ipCountEl = $.id('unique-ips')
       ipCountEl.textContent = OP.unique_ips
-      ipCountEl.previousSibling.textContent = ipCountEl.previousSibling.textContent.replace(/\b(?:is|are)\b/, if OP.unique_ips > 1 then 'are' else 'is')
-      ipCountEl.nextSibling.textContent = ipCountEl.nextSibling.textContent.replace(/\bposters?\b/, if OP.unique_ips > 1 then 'posters' else 'poster')
+      ipCountEl.previousSibling.textContent = ipCountEl.previousSibling.textContent.replace(/\b(?:is|are)\b/, if OP.unique_ips is 1 then 'is' else 'are')
+      ipCountEl.nextSibling.textContent = ipCountEl.nextSibling.textContent.replace(/\bposters?\b/, if OP.unique_ips is 1 then 'poster' else 'posters')
 
     $.event 'ThreadUpdate',
       404: false
