@@ -944,13 +944,15 @@ span.hide-announcement {
 }
 
 /* QR */
-:root.hide-original-post-form #postForm,
 :root.hide-original-post-form #togglePostFormLink,
 :root:not(.catalog) #togglePostFormLink,
 #qr.autohide:not(.focus):not(:hover):not(:active) > form,
 :root.thread-view #qr:not(.show-new-thread-option) select[data-name="thread"],
 #file-n-submit:not(.has-file) #qr-filerm {
   display: none;
+}
+:root.hide-original-post-form #postForm {
+  display: none !important;
 }
 :root:not(.hide-original-post-form):not(.catalog) #postForm {
   display: table;
