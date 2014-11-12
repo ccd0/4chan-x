@@ -337,6 +337,7 @@ Main =
     ['Thread Updater',            ThreadUpdater]
     ['Thread Watcher',            ThreadWatcher]
     ['Thread Watcher (Menu)',     ThreadWatcher.menu]
+    ['Mark New IPs',              MarkNewIPs]
     ['Index Navigation',          Nav]
     ['Keybinds',                  Keybinds]
     ['Banner',                    Banner]

@@ -340,6 +340,8 @@ ThreadUpdater =
       ipCountEl.previousSibling.textContent = ipCountEl.previousSibling.textContent.replace(/\b(?:is|are)\b/, if OP.unique_ips is 1 then 'is' else 'are')
       ipCountEl.nextSibling.textContent = ipCountEl.nextSibling.textContent.replace(/\bposters?\b/, if OP.unique_ips is 1 then 'poster' else 'posters')
 
+    ThreadUpdater.postIDs = index
+
     $.event 'ThreadUpdate',
       404: false
       threadID: ThreadUpdater.thread.fullID

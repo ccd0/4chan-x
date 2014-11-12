@@ -311,6 +311,10 @@ Config =
         true
         'Adds a shortcut for the thread watcher, hides the watcher by default, and makes it scroll with the page.'
       ]
+      'Mark New IPs': [
+        false
+        'Label each post from a new IP with the thread\'s current IP count.'
+      ]
 
     'Posting':
       'Quick Reply': [
