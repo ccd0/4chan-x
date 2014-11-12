@@ -189,6 +189,12 @@ Main =
               error: err
       Main.handleErrors errors if errors
 
+      if g.VIEW is 'thread'
+        scriptData = $('script:not([src])', d.head)?.textContent or ''
+        threads[0].postLimit = /\bbumplimit *= *1\b/.test scriptData
+        threads[0].fileLimit = /\bimagelimit *= *1\b/.test scriptData
+        threads[0].ipCount   = if m = scriptData.match /\bunique_ips *= *(\d+)\b/ then +m[1]
+
       Main.callbackNodes Thread, threads
       Main.callbackNodesDB Post, posts, ->
         $.event '4chanXInitFinished'

@@ -266,6 +266,7 @@ ThreadUpdater =
     ThreadUpdater.updateThreadStatus 'Closed', !!OP.closed
     ThreadUpdater.thread.postLimit = !!OP.bumplimit
     ThreadUpdater.thread.fileLimit = !!OP.imagelimit
+    ThreadUpdater.thread.ipCount   = OP.unique_ips if OP.unique_ips?
 
     posts = [] # post objects
     index = [] # existing posts

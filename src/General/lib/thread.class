@@ -13,6 +13,7 @@ class Thread
     @isArchived = false
     @postLimit  = false
     @fileLimit  = false
+    @ipCount    = undefined
 
     @OP = null
     @catalogView = null

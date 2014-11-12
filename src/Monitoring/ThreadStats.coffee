@@ -40,13 +40,9 @@ ThreadStats =
       postCount++
       fileCount++ if post.file
       ThreadStats.lastPost = post.info.date if Conf["Page Count in Stats"]
-    for script in $$ 'script[type="text/javascript"]:not([src])', d.head
-      if m = script.textContent.match /\bvar unique_ips = (\d+);/
-        ipCount = +m[1]
-        break
     ThreadStats.thread = @
     ThreadStats.fetchPage()
-    ThreadStats.update postCount, fileCount, ipCount
+    ThreadStats.update postCount, fileCount, @ipCount
     $.on d, 'ThreadUpdate', ThreadStats.onUpdate
 
   onUpdate: (e) ->
