@@ -5,10 +5,11 @@ QR.cooldown =
     return unless Conf['Cooldown']
 
     # Read cooldown times
-    setTimers = (e) => QR.cooldown.delays = e.detail
-    $.on window, 'cooldown:timers', setTimers
-    $.globalEval 'window.dispatchEvent(new CustomEvent("cooldown:timers", {detail: cooldowns}))'
-    $.off window, 'cooldown:timers', setTimers
+    scriptData = $('script:not([src])', d.head)?.textContent or ''
+    QR.cooldown.delays = if m = scriptData.match /\bcooldowns *= *({[^}]+})/
+      JSON.parse m[1]
+    else
+      {thread: 0, reply: 0, image: 0, reply_intra: 0, image_intra: 0}
 
     # The longest reply cooldown, for use in pruning old reply data
     QR.cooldown.maxDelay = 0
