@@ -67,6 +67,12 @@ Based on v1.9.10.0.
 - Add unique IP count to thread stats.
 
 <!-- v1.9.10.x -->
+### v1.9.10.4 
+*2014-11-12* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.10.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.10.4/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**MayhemYDG, talichan**
+- Archive list updates.
+
 ### v1.9.10.3 
 *2014-11-11* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.10.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.10.3/builds/4chan-X-noupdate.crx "Chromium version")]
 

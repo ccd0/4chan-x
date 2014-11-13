@@ -44,15 +44,6 @@
   "boards": ["cgl", "g", "mu", "w"],
   "files": ["cgl", "g", "mu", "w"]
 }, {
-  "uid": 9,
-  "name": "Heinessen",
-  "domain": "archive.heinessen.com",
-  "http": true,
-  "https": false,
-  "software": "fuuka",
-  "boards": ["an", "fit", "k", "mlp", "r9k", "toy"],
-  "files": ["an", "fit", "k", "mlp", "r9k", "toy"]
-}, {
   "uid": 10,
   "name": "warosu",
   "domain": "warosu.org",
@@ -77,7 +68,7 @@
   "http": true,
   "https": false,
   "software": "foolfuuka",
-  "boards": ["b", "gif", "int", "jp", "out", "sp"],
-  "files": ["b", "gif", "int", "jp", "out", "sp"],
+  "boards": ["an", "fit", "gif", "int", "jp", "mlp", "out", "r9k", "sp", "toy"],
+  "files": ["an", "gif", "int", "jp", "mlp", "out", "r9k", "sp", "toy"],
   "imagehosts": ["http://imcute.yt/"]
 }]
