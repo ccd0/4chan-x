@@ -491,11 +491,11 @@ Config =
       'Only show watched threads from the current board.'
     ]
     'Auto Watch': [
-      true
+      false
       'Automatically watch threads you start.'
     ]
     'Auto Watch Reply': [
-      true
+      false
       'Automatically watch threads you reply to.'
     ]
     'Auto Prune': [
