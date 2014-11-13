@@ -68,7 +68,7 @@
   "http": true,
   "https": false,
   "software": "foolfuuka",
-  "boards": ["an", "gif", "int", "jp", "mlp", "out", "r9k", "sp", "toy"],
-  "files": ["an", "gif", "int", "jp", "out", "r9k", "sp", "toy"],
+  "boards": ["an", "fit", "gif", "int", "jp", "mlp", "out", "r9k", "sp", "toy"],
+  "files": ["an", "gif", "int", "jp", "mlp", "out", "r9k", "sp", "toy"],
   "imagehosts": ["http://imcute.yt/"]
 }]
