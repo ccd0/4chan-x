@@ -23,23 +23,6 @@ Index =
     $.on @button, 'click', -> Index.update()
     Header.addShortcut @button, 1
 
-    modeEntry =
-      el: $.el 'span', textContent: 'Index mode'
-      subEntries: [
-        { el: $.el 'label', <%= html('<input type="radio" name="Index Mode" value="paged"> Paged') %> }
-        { el: $.el 'label', <%= html('<input type="radio" name="Index Mode" value="infinite"> Infinite scrolling') %> }
-        { el: $.el 'label', <%= html('<input type="radio" name="Index Mode" value="all pages"> All threads') %> }
-        { el: $.el 'label', <%= html('<input type="radio" name="Index Mode" value="catalog"> Catalog') %> }
-      ]
-      open: ->
-        for label in @subEntries
-          input = label.el.firstChild
-          input.checked = Conf['Index Mode'] is input.value
-        true
-    for label in modeEntry.subEntries
-      input = label.el.firstChild
-      $.on input, 'change', @cb.mode
-
     repliesEntry = el: UI.checkbox 'Show Replies',          ' Show replies'
     anchorEntry  = el: UI.checkbox 'Anchor Hidden Threads', ' Anchor hidden threads'
     refNavEntry  = el: UI.checkbox 'Refreshed Navigation',  ' Refreshed navigation'
@@ -59,7 +42,7 @@ Index =
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 98
-      subEntries: [repliesEntry, anchorEntry, refNavEntry, modeEntry]
+      subEntries: [repliesEntry, anchorEntry, refNavEntry]
 
     $.addClass doc, 'index-loading', "#{Conf['Index Mode'].replace /\ /g, '-'}-mode"
     @root     = $.el 'div', className: 'board'
@@ -73,6 +56,7 @@ Index =
     $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
     @searchInput = $ '#index-search', @navLinks
     @hideLabel   = $ '#hidden-label', @navLinks
+    @selectMode  = $ '#index-mode',   @navLinks
     @selectSort  = $ '#index-sort',   @navLinks
     @selectSize  = $ '#index-size',   @navLinks
     @currentPage = @getCurrentPage()
@@ -84,7 +68,8 @@ Index =
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
     $.on $('#hidden-toggle a',    @navLinks), 'click', @cb.toggleHiddenThreads
     $.on $('.returnlink a',       @navLinks), 'click', @cb.frontPage unless Conf['Use 4chan X Catalog']
-    for select in [@selectSort, @selectSize]
+    $.on @selectMode, 'change', @cb.mode
+    for select in [@selectMode, @selectSort, @selectSize]
       select.value = Conf[select.name]
       $.on select, 'change', $.cb.value
     $.on @selectSort, 'change', @cb.sort
@@ -198,15 +183,13 @@ Index =
       Index.buildIndex()
     mode: ->
       mode = @value
-      $.set 'Index Mode', mode
       unless mode is 'catalog'
         Conf['Previous Index Mode'] = mode
         $.set 'Previous Index Mode', mode
-      state = Index.pushState {mode}
-      if state.mode
-        Index.applyMode()
-        Index.buildIndex()
-        Index.setPage()
+      Index.pushState {mode}
+      Index.applyMode()
+      Index.buildIndex()
+      Index.setPage()
     sort: ->
       Index.sort()
       Index.buildIndex()
@@ -308,6 +291,7 @@ Index =
   applyMode: ->
     for mode in ['paged', 'infinite', 'all pages', 'catalog']
       $[if mode is Conf['Index Mode'] then 'addClass' else 'rmClass'] doc, "#{mode.replace /\ /g, '-'}-mode"
+    Index.selectMode.value = Conf['Index Mode']
     Index.cb.size()
     Index.showHiddenThreads = false
     $('#hidden-toggle a', Index.navLinks).textContent = 'Show'

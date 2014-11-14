@@ -516,7 +516,7 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 #index-search:not([data-searching]) + #index-search-clear {
   display: none;
 }
-#index-sort, #index-size {
+#index-mode, #index-sort, #index-size {
   float: right;
 }
 .summary {
