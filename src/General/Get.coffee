@@ -4,8 +4,7 @@ Get =
     excerpt = "/#{thread.board}/ - " + (
       OP.info.subject?.trim() or
       OP.info.comment.replace(/\n+/g, ' // ') or
-      Conf['Anonymize'] and 'Anonymous' or
-      $('.nameBlock', OP.nodes.info).textContent.trim())
+      OP.info.nameBlock)
     return "#{excerpt[...70]}..." if excerpt.length > 73
     excerpt
   threadFromRoot: (root) ->

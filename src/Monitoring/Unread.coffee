@@ -100,11 +100,7 @@ Unread =
 
   openNotification: (post) ->
     return unless Header.areNotificationsEnabled
-    name = if Conf['Anonymize']
-      'Anonymous'
-    else
-      $('.nameBlock', post.nodes.info).textContent.trim()
-    notif = new Notification "#{name} replied to you",
+    notif = new Notification "#{post.info.nameBlock} replied to you",
       body: post.info[if Conf['Remove Spoilers'] or Conf['Reveal Spoilers'] then 'comment' else 'commentSpoilered']
       icon: Favicon.logo
     notif.onclick = ->

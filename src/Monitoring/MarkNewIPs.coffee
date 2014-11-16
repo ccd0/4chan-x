@@ -43,12 +43,10 @@ MarkNewIPs =
     counter = $.el 'span',
       className: 'ip-counter'
       textContent: "(#{ipCount})"
-    nameBlock = $ '.nameBlock', post.nodes.info
-    nameBlock.title = "This is the #{ipCount}#{suffix} IP in the thread."
-    $.add nameBlock, [$.tn(' '), counter]
+    post.nodes.nameBlock.title = "This is the #{ipCount}#{suffix} IP in the thread."
+    $.add post.nodes.nameBlock, [$.tn(' '), counter]
     $.addClass post.nodes.root, 'new-ip'
 
   markOld: (post) ->
-    nameBlock = $ '.nameBlock', post.nodes.info
-    nameBlock.title = 'Not the first post from this IP.'
+    post.nodes.nameBlock.title = 'Not the first post from this IP.'
     $.addClass post.nodes.root, 'old-ip'

@@ -190,12 +190,7 @@ PostHiding =
       return
 
     a = PostHiding.makeButton post, 'show'
-    postInfo =
-      if Conf['Anonymize']
-        'Anonymous'
-      else
-        $('.nameBlock', post.nodes.info).textContent
-    $.add a, $.tn " #{postInfo}"
+    $.add a, $.tn " #{post.info.nameBlock}"
     post.nodes.stub = $.el 'div',
       className: 'stub'
     $.add post.nodes.stub, a

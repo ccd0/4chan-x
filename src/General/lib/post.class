@@ -36,6 +36,7 @@ class Post
       root: root
       post: post
       info: info
+      nameBlock: $ '.nameBlock', info
       comment: $ '.postMessage', post
       links: []
       quotelinks: []
@@ -49,6 +50,10 @@ class Post
       @thread.kill() if @thread.isArchived
 
     @info = {}
+    @info.nameBlock = if Conf['Anonymize']
+      'Anonymous'
+    else
+      @nodes.nameBlock.textContent.trim()
     if subject        = $ '.subject',            info
       @nodes.subject  = subject
       @info.subject   = subject.textContent

@@ -135,13 +135,9 @@ ThreadHiding =
   makeStub: (thread, root) ->
     numReplies  = $$('.thread > .replyContainer', root).length
     numReplies += +summary.textContent.match /\d+/ if summary = $ '.summary', root
-    opInfo = if Conf['Anonymize']
-      'Anonymous'
-    else
-      $('.nameBlock', thread.OP.nodes.info).textContent
 
     a = ThreadHiding.makeButton thread, 'show'
-    $.add a, $.tn " #{opInfo} (#{if numReplies is 1 then '1 reply' else "#{numReplies} replies"})"
+    $.add a, $.tn " #{thread.OP.info.nameBlock} (#{if numReplies is 1 then '1 reply' else "#{numReplies} replies"})"
     thread.stub = $.el 'div',
       className: 'stub'
     if Conf['Menu']
