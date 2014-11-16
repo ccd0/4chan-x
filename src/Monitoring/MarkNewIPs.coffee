@@ -24,14 +24,14 @@ MarkNewIPs =
         when added
           i = MarkNewIPs.ipCount
           for fullID in newPosts
-            MarkNewIPs.mark g.posts[fullID], ++i
+            MarkNewIPs.markNew g.posts[fullID], ++i
         when -removed
           for fullID in newPosts
-            $.addClass g.posts[fullID].nodes.root, 'old-ip'
+            MarkNewIPs.markOld g.posts[fullID]
     MarkNewIPs.ipCount = ipCount
     MarkNewIPs.postIDs = postIDs
 
-  mark: (post, ipCount) ->
+  markNew: (post, ipCount) ->
     suffix = switch ipCount
       when 1 then 'st'
       when 2 then 'nd'
@@ -40,7 +40,12 @@ MarkNewIPs =
     counter = $.el 'span',
       className: 'ip-counter'
       textContent: "(#{ipCount})"
-      title: "This is the #{ipCount}#{suffix} IP in the thread."
     nameBlock = $ '.nameBlock', post.nodes.info
+    nameBlock.title = "This is the #{ipCount}#{suffix} IP in the thread."
     $.add nameBlock, [$.tn(' '), counter]
     $.addClass post.nodes.root, 'new-ip'
+
+  markOld: (post) ->
+    nameBlock = $ '.nameBlock', post.nodes.info
+    nameBlock.title = 'Not the first post from this IP.'
+    $.addClass post.nodes.root, 'old-ip'
