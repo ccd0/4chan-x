@@ -27,6 +27,11 @@
   border-color: #111;
 }
 
+/* Catalog */
+:root.tomorrow .catalog-thread > .comment > span.quote {
+  color: #B5BD68;
+}
+
 /* Quote */
 :root.tomorrow .backlink.deadlink {
   color: #81A2BE !important;
