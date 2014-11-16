@@ -32,11 +32,14 @@ MarkNewIPs =
     MarkNewIPs.postIDs = postIDs
 
   markNew: (post, ipCount) ->
-    suffix = switch ipCount
-      when 1 then 'st'
-      when 2 then 'nd'
-      when 3 then 'rd'
-      else 'th'
+    suffix = if (ipCount // 10) % 10 is 1
+      'th'
+    else
+      switch ipCount % 10
+        when 1 then 'st'
+        when 2 then 'nd'
+        when 3 then 'rd'
+        else 'th'
     counter = $.el 'span',
       className: 'ip-counter'
       textContent: "(#{ipCount})"
