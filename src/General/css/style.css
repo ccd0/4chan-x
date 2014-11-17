@@ -751,7 +751,7 @@ span.hide-announcement {
   border: none;
   box-shadow: none;
 }
-:root.float #post-count, :root.float #file-count {
+:root.float #thread-stats > .move > span {
   pointer-events: none;
 }
 :root.float #thread-stats {
