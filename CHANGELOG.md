@@ -2,6 +2,16 @@ The attributions below are for work that has been incorporated into the script a
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+<!-- v1.9.12.x -->
+### v1.9.12.0 
+*2014-11-16* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.12.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.12.0/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Move the index mode selector from the header submenu to a drop-down menu on the page, as in Mayhem's fork.
+- `Mark New IPs` also shows a tooltip when hovering over the poster names of IPs that have posted before.
+- Shorten descriptions in thread stats tooltip.
+- Minor bugfixes / performance improvements.
+
 <!-- v1.9.11.x -->
 ### v1.9.11.13 
 *2014-11-16* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.11.13/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.11.13/builds/4chan-X-noupdate.crx "Chromium version")]
