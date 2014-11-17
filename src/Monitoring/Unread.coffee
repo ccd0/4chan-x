@@ -68,7 +68,8 @@ Unread =
 
     post = Unread.posts.first
     while post
-      break if ({ID} = post) > Unread.lastReadPost
+      break if post.ID > Unread.lastReadPost
+      {ID} = post
       post = post.next
       Unread.posts.rm ID
       delete Unread.postsQuotingYou[ID]
