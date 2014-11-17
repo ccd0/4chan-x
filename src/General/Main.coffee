@@ -221,6 +221,12 @@ Main =
       while fn()
         continue
       unless nodes[i]
+        {runTime} = klass.callbacks
+        totalTime = 0
+        for name in klass.callbacks.keys
+          c.log name, runTime[name]
+          totalTime += runTime[name]
+        c.log 'total', totalTime
         cb() if cb
         return
       setTimeout softTask, 0 

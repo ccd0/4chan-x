@@ -1,6 +1,7 @@
 class Callbacks
   constructor: (@type) ->
     @keys = []
+    @runTime = {}
 
   push: ({name, cb}) ->
     @keys.push name unless @[name]
@@ -9,7 +10,10 @@ class Callbacks
   execute: (node) ->
     for name in @keys
       try
+        @runTime[name] or= 0
+        t1 = Date.now()
         @[name].call node
+        @runTime[name] += Date.now() - t1
       catch err
         errors = [] unless errors
         errors.push
