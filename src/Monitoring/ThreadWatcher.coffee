@@ -97,6 +97,7 @@ ThreadWatcher =
     onIndexRefresh: ->
       {db}    = ThreadWatcher
       boardID = g.BOARD.ID
+      db.forceSync()
       for threadID, data of db.data.boards[boardID] when not data.isDead and threadID not of g.BOARD.threads
         if Conf['Auto Prune']
           ThreadWatcher.db.delete {boardID, threadID}
@@ -114,6 +115,7 @@ ThreadWatcher =
     fetched:  0
     fetching: 0
   fetchAllStatus: ->
+    ThreadWatcher.db.forceSync()
     return unless (threads = ThreadWatcher.getAll()).length
     for thread in threads
       ThreadWatcher.fetchStatus thread

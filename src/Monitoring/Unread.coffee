@@ -20,6 +20,7 @@ Unread =
   node: ->
     Unread.thread = @
     Unread.title  = d.title
+    Unread.db.forceSync()
     Unread.lastReadPost = Unread.db.get
       boardID: @board.ID
       threadID: @ID
@@ -57,6 +58,7 @@ Unread =
     Header.scrollTo root, down if Header.getBottomOf(root) < 0
 
   sync: ->
+    return unless Unread.lastReadPost?
     lastReadPost = Unread.db.get
       boardID: Unread.thread.board.ID
       threadID: Unread.thread.ID
