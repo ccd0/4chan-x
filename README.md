@@ -9,7 +9,7 @@ https://github.com/Nebukazar/OneeChan
 Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then click the link above to install 4chan X. If you are using Firefox 29 or earlier, you should use [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15).
 
 **WARNING**:
-If you're switching to this fork from someone else's fork of 4chan X, back up your old script before installing this one as the it will be overwritten.
+If you're switching to this fork from someone else's fork of 4chan X, back up your old script before installing this one as the old one will be overwritten.
 
 **Known issues**:
 The combination of Firefox 29 and Greasemonkey 2.0+ causes 4chan X not to work.
