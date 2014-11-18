@@ -6,6 +6,8 @@ The links to individual versions below are to copies of the script with the upda
 ### v1.9.12.0 
 *2014-11-16* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.12.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.12.0/builds/4chan-X-noupdate.crx "Chromium version")]
 
+Based on v1.9.11.13.
+
 **ccd0**
 - Move the index mode selector from the header submenu to a drop-down menu on the page, as in Mayhem's fork.
 - `Mark New IPs` also shows a tooltip when hovering over the poster names of IPs that have posted before.
