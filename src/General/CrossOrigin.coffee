@@ -77,7 +77,7 @@ CrossOrigin = do ->
       <% if (type === 'userscript') { %>
       GM_xmlhttpRequest
         method: "GET"
-        url: url
+        url: url+''
         onload: (xhr) ->
           response = JSON.parse xhr.responseText
           cb response for cb in callbacks[url]

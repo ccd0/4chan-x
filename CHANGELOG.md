@@ -13,6 +13,12 @@ The links to individual versions below are to copies of the script with the upda
 - Minor bugfixes / performance improvements.
 
 <!-- v1.9.11.x -->
+### v1.9.11.14 
+*2014-11-17* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.11.14/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.11.14/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix bugs in loading from HTTP-only archives on HTTPS pages.
+
 ### v1.9.11.13 
 *2014-11-16* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.11.13/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.11.13/builds/4chan-X-noupdate.crx "Chromium version")]
 
