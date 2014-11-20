@@ -60,5 +60,5 @@
   "https": false,
   "software": "foolfuuka",
   "boards": ["an", "fit", "gif", "int", "jp", "mlp", "out", "r9k", "sp", "toy"],
-  "files": ["an", "gif", "int", "jp", "mlp", "out", "r9k", "sp", "toy"]
+  "files": ["an", "gif", "fit", "int", "jp", "mlp", "out", "r9k", "sp", "toy"]
 }]
