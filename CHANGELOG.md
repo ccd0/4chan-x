@@ -27,6 +27,12 @@ Based on v1.9.11.13.
 - Minor bugfixes / performance improvements.
 
 <!-- v1.9.11.x -->
+### v1.9.11.16 
+*2014-11-19* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.11.16/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.11.16/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**talichan**
+- Update archive list: full images on imcute.yt/fit/
+
 ### v1.9.11.15 
 *2014-11-18* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.11.15/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.11.15/builds/4chan-X-noupdate.crx "Chromium version")]
 
