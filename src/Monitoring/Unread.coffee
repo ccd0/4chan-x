@@ -4,8 +4,10 @@ Unread =
       !Conf['Unread Count'] and
       !Conf['Unread Favicon'] and
       !Conf['Unread Line'] and
+      !Conf['Scroll to Last Read Post'] and
+      !Conf['Thread Watcher'] and
       !Conf['Desktop Notifications'] and
-      !(Conf['Thread Watcher'] and Conf['Show Unread Count'])
+      !Conf['Quote Threading']
 
     @db = new DataBoard 'lastReadPosts', @sync
     @hr = $.el 'hr',

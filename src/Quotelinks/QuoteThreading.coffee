@@ -17,7 +17,7 @@ QuoteThreading =
       el:    @controls
       order: 98
 
-    $.on d, '4chanXInitFinished', @ready unless Conf['Unread Count']
+    $.on d, '4chanXInitFinished', @ready
 
     Post.callbacks.push
       name: 'Quote Threading'
@@ -30,16 +30,14 @@ QuoteThreading =
   force: ->
     g.posts.forEach (post) ->
       post.cb true if post.cb
-
-    if Conf['Unread Count'] and Unread.thread.OP.nodes.root.parentElement.parentElement
-      Unread.read()
-      Unread.update()
+    Unread.read()
+    Unread.update()
 
   node: ->
     {posts} = g
     return if @isClone or not QuoteThreading.enabled
 
-    Unread.addPost @ if Conf['Unread Count']
+    Unread.addPost @
     return if @thread.OP is @ or @isHidden # Filtered
 
     keys = []
@@ -64,7 +62,7 @@ QuoteThreading =
       {bottom, top} = root.getBoundingClientRect()
 
       # Post is unread or is fully visible.
-      return false unless (Conf['Unread Count'] and posts[post.ID]) or ((bottom < height) and (top > 0))
+      return false unless posts[post.ID] or ((bottom < height) and (top > 0))
 
     if $.hasClass root, 'threadOP'
       threadContainer = root.nextElementSibling
@@ -77,8 +75,6 @@ QuoteThreading =
       $.add threadContainer, @nodes.root
       $.after root, threadContainer
       $.addClass root, 'threadOP'
-
-    return true unless Conf['Unread Count']
 
     if post = posts[post.ID]
       posts.after post, posts[@ID]
