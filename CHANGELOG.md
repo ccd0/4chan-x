@@ -3,6 +3,12 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.12.x -->
+### v1.9.12.4 
+*2014-11-21* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.12.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.12.4/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix bug in thread watcher refresh from v1.9.12.0.
+
 ### v1.9.12.3 
 *2014-11-19* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.12.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.12.3/builds/4chan-X-noupdate.crx "Chromium version")]
 
