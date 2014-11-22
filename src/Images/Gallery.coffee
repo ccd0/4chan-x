@@ -180,7 +180,7 @@ Gallery =
     {current} = Gallery.nodes
     isVideo = current.nodeName is 'VIDEO'
     current.play() if isVideo
-    if (if isVideo then current.readyState > 4 else current.complete) or current.nodeName is 'IFRAME'
+    if (if isVideo then current.readyState >= 4 else current.complete) or current.nodeName is 'IFRAME'
       Gallery.startTimer()
     else
       $.on current, (if isVideo then 'canplaythrough' else 'load'), Gallery.startTimer
