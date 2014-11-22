@@ -116,6 +116,7 @@ ThreadWatcher =
     fetching: 0
   fetchAllStatus: ->
     ThreadWatcher.db.forceSync()
+    ThreadWatcher.unreaddb.forceSync()
     return unless (threads = ThreadWatcher.getAll()).length
     for thread in threads
       ThreadWatcher.fetchStatus thread
