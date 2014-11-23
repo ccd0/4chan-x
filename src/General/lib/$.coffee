@@ -197,6 +197,12 @@ $.off = (el, events, handler) ->
     el.removeEventListener event, handler, false
   return
 
+$.one = (el, events, handler) ->
+  cb = (e) ->
+    $.off el, events, cb
+    handler.call @, e
+  $.on el, events, cb
+
 $.event = (event, detail, root=d) ->
   <% if (type === 'userscript') { %>
   if detail? and typeof cloneInto is 'function'

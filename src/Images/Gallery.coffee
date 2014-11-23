@@ -79,6 +79,8 @@ Gallery =
         if Header.getTopOf(candidate) + candidate.getBoundingClientRect().height >= 0
           image = candidate
     if Conf['Fullscreen Gallery']
+      $.one d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', ->
+        $.on d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', cb.close
       doc.mozRequestFullScreen?()
       doc.webkitRequestFullScreen?(Element.ALLOW_KEYBOARD_INPUT)
     $.addClass doc, 'gallery-open'
@@ -265,6 +267,7 @@ Gallery =
       $.rm Gallery.nodes.el
       $.rmClass doc, 'gallery-open'
       if Conf['Fullscreen Gallery']
+        $.off d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', Gallery.cb.close
         d.mozCancelFullScreen?()
         d.webkitExitFullscreen?()
       delete Gallery.nodes
