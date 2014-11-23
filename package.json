@@ -47,7 +47,7 @@
     "grunt-contrib-concat": "0.5.0",
     "grunt-contrib-copy": "0.7.0",
     "grunt-contrib-watch": "0.6.1",
-    "grunt-crx": "0.3.3",
+    "grunt-crx": "0.3.4",
     "grunt-markdown": "0.6.1",
     "grunt-shell": "1.1.1",
     "load-grunt-tasks": "1.0.0"
