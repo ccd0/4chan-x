@@ -201,7 +201,7 @@ Gallery =
       return unless key = Keybinds.keyCode e
 
       cb = switch key
-        when 'Esc', Conf['Open Gallery']
+        when Conf['Close'], Conf['Open Gallery']
           Gallery.cb.close
         when 'Right'
           Gallery.cb.next
@@ -209,9 +209,9 @@ Gallery =
           Gallery.cb.enterKey
         when 'Left', ''
           Gallery.cb.prev
-        when 'p'
+        when Conf['Pause']
           Gallery.cb.pause
-        when 's'
+        when Conf['Slideshow']
           Gallery.cb.toggleSlideshow
 
       return unless cb

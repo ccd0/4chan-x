@@ -658,7 +658,7 @@ vp-replace
     ]
     'Close': [
       'Esc'
-      'Close Settings, Notifications or QR.'
+      'Close Settings/Notifications/QR/Gallery.'
     ]
     'Spoiler tags': [
       'Ctrl+s'
@@ -705,6 +705,14 @@ vp-replace
     'Open Gallery': [
       'g'
       'Opens the gallery.'
+    ]
+    'Pause': [
+      'p'
+      'Pause/play videos in the gallery.'
+    ]
+    'Slideshow': [
+      's'
+      'Toggle the gallery slideshow mode.'
     ]
     'fappeTyme': [
       'f'
