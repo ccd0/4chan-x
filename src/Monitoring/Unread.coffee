@@ -120,11 +120,9 @@ Unread =
     {ID} = post
     {posts} = Unread
     return unless posts[ID]
-    if post is posts.first and !(Conf['Quote Threading'] and Unread.posts.length)
-      Unread.lastReadPost = ID
-      Unread.saveLastReadPost()
     posts.rm ID
     delete Unread.postsQuotingYou[ID]
+    Unread.saveLastReadPost()
     Unread.update()
 
   read: $.debounce 100, (e) ->
@@ -132,11 +130,11 @@ Unread =
     height  = doc.clientHeight
 
     {posts} = Unread
-    maxID = 0
+    count = 0
     while post = posts.first
       break unless Header.getBottomOf(post.data.nodes.root) > -1 # post is not completely read
       {ID, data} = post
-      maxID = Math.max maxID, ID
+      count++
       posts.rm ID
       delete Unread.postsQuotingYou[ID]
 
@@ -147,15 +145,16 @@ Unread =
       }
         QuoteYou.lastRead = data.nodes.root
 
-    return unless maxID
-
-    unless Conf['Quote Threading'] and posts.length
-      Unread.lastReadPost = maxID if Unread.lastReadPost < maxID or !Unread.lastReadPost
-      Unread.saveLastReadPost()
+    return unless count
+    Unread.saveLastReadPost()
     Unread.update() if e
 
   saveLastReadPost: $.debounce 2 * $.SECOND, ->
+    for ID in Unread.thread.posts.keys
+      break if Unread.posts[ID]
+      Unread.lastReadPost = +ID if +ID > Unread.lastReadPost
     return if Unread.thread.isDead and !Unread.thread.isArchived
+    Unread.db.forceSync()
     Unread.db.set
       boardID:  Unread.thread.board.ID
       threadID: Unread.thread.ID
