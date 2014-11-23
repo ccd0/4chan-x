@@ -95,10 +95,10 @@ Keybinds =
         return if g.VIEW is 'catalog'
         Gallery.cb.toggle()
       when Conf['fappeTyme']
-        return if g.VIEW is 'catalog'
+        return if !Conf['Fappe Tyme'] or g.VIEW is 'catalog' or g.BOARD is 'f'
         FappeTyme.cb.toggle.call {name: 'fappe'}
       when Conf['werkTyme']
-        return if g.VIEW is 'catalog'
+        return if !Conf['Werk Tyme'] or g.VIEW is 'catalog' or g.BOARD is 'f'
         FappeTyme.cb.toggle.call {name: 'werk'}
       # Board Navigation
       when Conf['Front page']
