@@ -62,11 +62,8 @@ Unread =
     return unless Unread.lastReadPost < lastReadPost
     Unread.lastReadPost = lastReadPost
 
-    post = Unread.posts.first
-    while post
-      break if post.ID > Unread.lastReadPost
-      {ID} = post
-      post = post.next
+    for ID in Unread.thread.posts.keys
+      break if +ID > Unread.lastReadPost
       Unread.posts.rm ID
       delete Unread.postsQuotingYou[ID]
 
