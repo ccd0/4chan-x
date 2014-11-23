@@ -78,6 +78,9 @@ Gallery =
         candidate = post.file.thumb.parentNode
         if Header.getTopOf(candidate) + candidate.getBoundingClientRect().height >= 0
           image = candidate
+    if Conf['Fullscreen Gallery']
+      doc.mozRequestFullScreen?()
+      doc.webkitRequestFullScreen?(Element.ALLOW_KEYBOARD_INPUT)
     $.addClass doc, 'gallery-open'
     $.add d.body, dialog
 
@@ -261,6 +264,9 @@ Gallery =
       Gallery.nodes.current.pause?()
       $.rm Gallery.nodes.el
       $.rmClass doc, 'gallery-open'
+      if Conf['Fullscreen Gallery']
+        d.mozCancelFullScreen?()
+        d.webkitExitFullscreen?()
       delete Gallery.nodes
       delete Gallery.fullIDs
       doc.style.overflow = ''
