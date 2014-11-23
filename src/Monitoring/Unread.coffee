@@ -44,20 +44,15 @@ Unread =
   scroll: ->
     # Let the header's onload callback handle it.
     return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
-    if post = Unread.posts.first
-      # Scroll to a non-hidden, non-OP post that's before the first unread post.
-      while root = $.x 'preceding-sibling::div[contains(@class,"replyContainer")][1]', post.data.nodes.root
-        break unless (post = Get.postFromRoot root).isHidden
-      return unless root
-      down = true
-    else
-      # Scroll to the last read post.
-      {posts} = Unread.thread
-      {keys}  = posts
-      {root}  = posts[keys[keys.length - 1]].nodes
 
-    # Scroll to the target unless we scrolled past it.
-    Header.scrollTo root, down if Header.getBottomOf(root) < 0
+    # Scroll to the last non-hidden non-deleted read post.
+    post = null
+    {posts} = Unread.thread
+    for ID in posts.keys
+      break if +ID > Unread.lastReadPost
+      post = posts[ID] unless posts[ID].isHidden
+    if post
+      Header.scrollToIfNeeded post.nodes.root, true
 
   sync: ->
     return unless Unread.lastReadPost?
