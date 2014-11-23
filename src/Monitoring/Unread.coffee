@@ -80,11 +80,12 @@ Unread =
     Unread.addPostQuotingYou post
 
   addPosts: (posts) ->
+    oldCount = Unread.posts.length
     for post in posts
       Unread.addPost post
     if Conf['Unread Line'] and not Conf['Quote Threading']
       # Force line on visible threads if there were no unread posts previously.
-      Unread.setLine Unread.posts.first?.data in posts
+      Unread.setLine (oldCount is 0 and Unread.posts.length isnt 0)
     Unread.read()
     Unread.update()
 
