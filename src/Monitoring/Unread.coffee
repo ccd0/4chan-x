@@ -44,10 +44,9 @@ Unread =
     # Let the header's onload callback handle it.
     return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
 
-    # Scroll to the last non-hidden non-deleted read post.
+    # Scroll to the last displayed non-deleted read post.
     {posts} = Unread.thread
-    for ID in posts.keys by -1
-      continue if +ID > Unread.lastReadPost
+    for ID in posts.keys by -1 when +ID <= Unread.lastReadPost
       {root} = posts[ID].nodes
       if root.getBoundingClientRect().height
         Header.scrollToIfNeeded root, true
@@ -167,9 +166,11 @@ Unread =
 
   setLine: (force) ->
     return unless d.hidden or force is true
-    return $.rm Unread.hr unless post = Unread.posts.first
-    if $.x 'preceding-sibling::div[contains(@class,"replyContainer")]', post.data.nodes.root # not the first reply
-      $.before post.data.nodes.root, Unread.hr
+    return $.rm Unread.hr unless Unread.posts.length
+    {posts} = Unread.thread
+    for ID in posts.keys by -1 when +ID <= Unread.lastReadPost
+      return $.after posts[ID].nodes.root, Unread.hr
+    return
 
   update: ->
     count = Unread.posts.length
