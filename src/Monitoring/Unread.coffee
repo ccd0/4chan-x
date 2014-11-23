@@ -45,13 +45,14 @@ Unread =
     return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
 
     # Scroll to the last non-hidden non-deleted read post.
-    post = null
     {posts} = Unread.thread
-    for ID in posts.keys
-      break if +ID > Unread.lastReadPost
-      post = posts[ID] unless posts[ID].isHidden
-    if post
-      Header.scrollToIfNeeded post.nodes.root, true
+    for ID in posts.keys by -1
+      continue if +ID > Unread.lastReadPost
+      {root} = posts[ID].nodes
+      if root.getBoundingClientRect().height
+        Header.scrollToIfNeeded root, true
+        break
+    return
 
   sync: ->
     return unless Unread.lastReadPost?
