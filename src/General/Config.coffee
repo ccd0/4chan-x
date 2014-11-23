@@ -168,7 +168,7 @@ Config =
         'Adds a simple and cute image gallery.'
       ]
       'Fullscreen Gallery': [
-        true
+        false
         'Open gallery in fullscreen mode.'
       ]
       'PDF in Gallery': [
