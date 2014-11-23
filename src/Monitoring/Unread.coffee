@@ -27,13 +27,12 @@ Unread =
       boardID: @board.ID
       threadID: @ID
       defaultValue: 0
-    $.on d, '4chanXInitFinished',      Unread.ready
-    $.on d, 'ThreadUpdate',            Unread.onUpdate
-    $.on d, 'scroll visibilitychange', Unread.read
-    $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line'] and not Conf['Quote Threading']
+    $.one d, '4chanXInitFinished',      Unread.ready
+    $.on  d, 'ThreadUpdate',            Unread.onUpdate
+    $.on  d, 'scroll visibilitychange', Unread.read
+    $.on  d, 'visibilitychange',        Unread.setLine if Conf['Unread Line'] and not Conf['Quote Threading']
 
   ready: ->
-    $.off d, '4chanXInitFinished', Unread.ready
     unless Conf['Quote Threading']
       posts = []
       Unread.thread.posts.forEach (post) -> posts.push post if post.isReply
