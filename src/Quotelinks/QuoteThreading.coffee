@@ -17,15 +17,9 @@ QuoteThreading =
       el:    @controls
       order: 98
 
-    $.on d, '4chanXInitFinished', @ready
-
     Post.callbacks.push
       name: 'Quote Threading'
       cb:   @node
-
-  ready: ->
-    $.off d, '4chanXInitFinished', QuoteThreading.ready
-    QuoteThreading.force()
 
   force: ->
     g.posts.forEach (post) ->
