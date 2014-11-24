@@ -21,7 +21,7 @@ class RandomAccessList
     @length++
 
   before: (root, item) ->
-    return if item.next is root
+    return if item.next is root or item is root
 
     @rmi item
 
@@ -35,7 +35,7 @@ class RandomAccessList
       @first = item
 
   after: (root, item) ->
-    return if item.prev is root
+    return if item.prev is root or item is root
 
     @rmi item
 
