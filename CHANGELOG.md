@@ -7,7 +7,7 @@ The links to individual versions below are to copies of the script with the upda
 *2014-11-23* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.13.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.13.1/builds/4chan-X-noupdate.crx "Chromium version")]
 
 **ccd0**
-- Fix bug introduced in 1.9.13.0 causing quote threading to hang.
+- Fix quote threading bug introduced in v1.9.13.0 causing 4chan X to hang.
 
 ### v1.9.13.0 
 *2014-11-23* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.13.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.13.0/builds/4chan-X-noupdate.crx "Chromium version")]
