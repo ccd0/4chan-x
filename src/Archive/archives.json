@@ -6,7 +6,7 @@
   "https": true,
   "software": "foolfuuka",
   "boards": ["a", "biz", "c", "co", "diy", "gd", "h", "i", "int", "jp", "k", "m", "mlp", "out", "po", "r9k", "s4s", "sci", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "biz", "c", "co", "diy", "gd", "h", "i", "jp", "m", "po", "s4s", "sci", "tg", "u", "v", "vg", "vp", "vr", "wsg"]
+  "files": ["a", "biz", "c", "co", "diy", "gd", "h", "i", "jp", "m", "mlp", "po", "s4s", "sci", "tg", "u", "v", "vg", "vp", "vr", "wsg"]
 }, {
   "uid": 3,
   "name": "4plebs Archive",

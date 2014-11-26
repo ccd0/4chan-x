@@ -30,6 +30,12 @@ The links to individual versions below are to copies of the script with the upda
 - Make close, pause, and slideshow keybinds of gallery configurable.
 
 <!-- v1.9.12.x -->
+### v1.9.12.6 
+*2014-11-26* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.12.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.12.6/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**bakugo**
+- Update archive list: /mlp/ full images on archive.moe
+
 ### v1.9.12.5 
 *2014-11-22* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.12.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.12.5/builds/4chan-X-noupdate.crx "Chromium version")]
 
