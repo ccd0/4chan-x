@@ -29,6 +29,12 @@ Gallery =
       $.on @file.thumb.parentNode, 'click', Gallery.cb.image
 
   build: (image) ->
+    if Conf['Fullscreen Gallery']
+      $.one d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', ->
+        $.on d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', cb.close
+      doc.mozRequestFullScreen?()
+      doc.webkitRequestFullScreen?(Element.ALLOW_KEYBOARD_INPUT)
+
     Gallery.images  = []
     nodes = Gallery.nodes = {}
     Gallery.fullIDs = {}
@@ -78,11 +84,6 @@ Gallery =
         candidate = post.file.thumb.parentNode
         if Header.getTopOf(candidate) + candidate.getBoundingClientRect().height >= 0
           image = candidate
-    if Conf['Fullscreen Gallery']
-      $.one d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', ->
-        $.on d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', cb.close
-      doc.mozRequestFullScreen?()
-      doc.webkitRequestFullScreen?(Element.ALLOW_KEYBOARD_INPUT)
     $.addClass doc, 'gallery-open'
     $.add d.body, dialog
 
