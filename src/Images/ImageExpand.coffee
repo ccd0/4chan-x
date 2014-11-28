@@ -92,34 +92,21 @@ ImageExpand =
 
     ImageExpand.contract post
 
-    # Scroll back to the thumbnail when contracting the image
-    # to avoid being left miles away from the relevant post.
-    {root} = post.nodes
-    {top, left} = (if Conf['Advance on contract'] then do ->
-      next = root
+    if Conf['Advance on contract']
+      next = post.nodes.root
       while next = $.x "following::div[contains(@class,'postContainer')][1]", next
-        continue if $('.stub', next) or next.offsetHeight is 0
-        return next
-      root
-    else 
-      root
-    ).getBoundingClientRect()
-
-    if top < 0
-      y = top
-      if Conf['Fixed Header'] and not Conf['Bottom Header']
-        headRect = Header.bar.getBoundingClientRect()
-        y -= headRect.top + headRect.height
-
-    if left < 0
-      x = -window.scrollX
-    window.scrollBy x, y if x or y
+        break unless $('.stub', next) or next.offsetHeight is 0
+      if next
+        Header.scrollTo next
 
   contract: (post) ->
     {file} = post
 
-    {bottom} = post.nodes.root.getBoundingClientRect()
-    oldHeight = d.body.clientHeight
+    if el = file.fullImage
+      top = Header.getTopOf el
+      bottom = top + el.getBoundingClientRect().height
+      oldHeight = d.body.clientHeight
+      {scrollY} = window
 
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass file.thumb,      'expanding'
@@ -129,25 +116,33 @@ ImageExpand =
     for x in ['isExpanding', 'isExpanded', 'videoControls', 'wasPlaying', 'scrollIntoView']
       delete file[x]
 
-    # Scroll to keep our place in the thread when images are contracted above us.
-    if doc.contains(post.nodes.root) and bottom <= 0
-      window.scrollBy 0, d.body.clientHeight - oldHeight
+    return unless el
 
-    if el = file.fullImage
-      $.off el, 'error', ImageExpand.error
-      ImageCommon.pushCache el
-      if file.isVideo
-        el.pause()
-        for eventName, cb of ImageExpand.videoCB
-          $.off el, eventName, cb
-      ImageCommon.rewind file.thumb if Conf['Restart when Opened']
-      delete file.fullImage
-      $.queueTask ->
-        # XXX Work around Chrome/Chromium not firing mouseover on the thumbnail.
-        return if file.isExpanding or file.isExpanded
-        $.rmClass el, 'full-image'
-        return if el.id
-        $.rm el
+    if doc.contains el
+      if bottom <= 0
+        # For images entirely above us, scroll to remain in place.
+        window.scroll 0, scrollY + d.body.clientHeight - oldHeight
+      else
+        # For images not above us that would be moved above us, scroll to the thumbnail.
+        Header.scrollToIfNeeded post.nodes.root
+      if window.scrollX > 0
+        # If we have scrolled right viewing an expanded image, return to the left.
+        window.scroll 0, window.scrollY
+
+    $.off el, 'error', ImageExpand.error
+    ImageCommon.pushCache el
+    if file.isVideo
+      el.pause()
+      for eventName, cb of ImageExpand.videoCB
+        $.off el, eventName, cb
+    ImageCommon.rewind file.thumb if Conf['Restart when Opened']
+    delete file.fullImage
+    $.queueTask ->
+      # XXX Work around Chrome/Chromium not firing mouseover on the thumbnail.
+      return if file.isExpanding or file.isExpanded
+      $.rmClass el, 'full-image'
+      return if el.id
+      $.rm el
 
   expand: (post, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
@@ -198,8 +193,9 @@ ImageExpand =
     {file} = post
     return unless file.isExpanding # contracted before the image loaded
 
-    {bottom} = post.nodes.root.getBoundingClientRect()
+    bottom = Header.getTopOf(file.thumb) + file.thumb.getBoundingClientRect().height
     oldHeight = d.body.clientHeight
+    {scrollY} = window
 
     $.addClass post.nodes.root, 'expanded-image'
     $.rmClass  file.thumb,      'expanding'
@@ -208,7 +204,7 @@ ImageExpand =
 
     # Scroll to keep our place in the thread when images are expanded above us.
     if doc.contains(post.nodes.root) and bottom <= 0
-      window.scrollBy 0, d.body.clientHeight - oldHeight
+      window.scroll window.scrollX, scrollY + d.body.clientHeight - oldHeight
 
     # Scroll to display full image.
     if file.scrollIntoView
