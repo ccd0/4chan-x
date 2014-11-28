@@ -34,7 +34,7 @@ ImageHover =
       ImageCommon.rewind el
       ImageCommon.rewind @
     el.id = 'ihover'
-    $.after Header.hover, el
+    $.add Header.hover, el
     if isVideo
       el.loop     = true
       el.controls = false
