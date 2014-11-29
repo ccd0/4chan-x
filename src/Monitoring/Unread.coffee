@@ -19,6 +19,8 @@ Unread =
       name: 'Unread'
       cb:   @node
 
+  readCount: 0
+
   node: ->
     Unread.thread = @
     Unread.title  = d.title
@@ -26,6 +28,8 @@ Unread =
       boardID: @board.ID
       threadID: @ID
       defaultValue: 0
+    for ID in @posts.keys when +ID <= Unread.lastReadPost
+      Unread.readCount++
     $.one d, '4chanXInitFinished',      Unread.ready
     $.on  d, 'ThreadUpdate',            Unread.onUpdate
     $.on  d, 'scroll visibilitychange', Unread.read
@@ -45,8 +49,8 @@ Unread =
 
     # Scroll to the last displayed non-deleted read post.
     {posts} = Unread.thread
-    for ID in posts.keys by -1 when +ID <= Unread.lastReadPost
-      {root} = posts[ID].nodes
+    for i in [Unread.readCount-1..0] by -1
+      {root} = posts[posts.keys[i]].nodes
       if root.getBoundingClientRect().height
         Header.scrollToIfNeeded root, true
         break
@@ -61,10 +65,13 @@ Unread =
     return unless Unread.lastReadPost < lastReadPost
     Unread.lastReadPost = lastReadPost
 
-    for ID in Unread.thread.posts.keys
+    postIDs = Unread.thread.posts.keys
+    for i in [Unread.readCount...postIDs.length] by 1
+      ID = postIDs[i]
       break if +ID > Unread.lastReadPost
       Unread.posts.rm ID
       delete Unread.postsQuotingYou[ID]
+      Unread.readCount++
 
     Unread.setLine() if Conf['Unread Line'] and not Conf['Quote Threading']
     Unread.update()
@@ -150,9 +157,12 @@ Unread =
     Unread.update() if e
 
   saveLastReadPost: $.debounce 2 * $.SECOND, ->
-    for ID in Unread.thread.posts.keys
+    postIDs = Unread.thread.posts.keys
+    for i in [Unread.readCount...postIDs.length] by 1
+      ID = postIDs[i]
       break if Unread.posts[ID]
-      Unread.lastReadPost = +ID if +ID > Unread.lastReadPost
+      Unread.lastReadPost = +ID
+      Unread.readCount++
     return if Unread.thread.isDead and !Unread.thread.isArchived
     Unread.db.forceSync()
     Unread.db.set
@@ -164,8 +174,8 @@ Unread =
     return unless d.hidden or force is true
     return $.rm Unread.hr unless Unread.posts.length
     {posts} = Unread.thread
-    for ID in posts.keys by -1 when +ID <= Unread.lastReadPost
-      return $.after posts[ID].nodes.root, Unread.hr
+    for i in [Unread.readCount-1..0] by -1
+      return $.after posts[posts.keys[i]].nodes.root, Unread.hr
     return
 
   update: ->
