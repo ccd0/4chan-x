@@ -22,7 +22,6 @@ Unread =
   node: ->
     Unread.thread = @
     Unread.title  = d.title
-    Unread.db.forceSync()
     Unread.lastReadPost = Unread.db.get
       boardID: @board.ID
       threadID: @ID
