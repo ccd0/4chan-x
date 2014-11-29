@@ -18,6 +18,9 @@ Unread =
     Thread.callbacks.push
       name: 'Unread'
       cb:   @node
+    Post.callbacks.push
+      name: 'Unread'
+      cb:   @addPost
 
   readCount: 0
 
@@ -36,11 +39,12 @@ Unread =
     $.on  d, 'visibilitychange',        Unread.setLine if Conf['Unread Line'] and not Conf['Quote Threading']
 
   ready: ->
-    unless Conf['Quote Threading']
-      posts = []
-      Unread.thread.posts.forEach (post) -> posts.push post if post.isReply
-      Unread.addPosts posts
-    QuoteThreading.force() if Conf['Quote Threading']
+    if Conf['Quote Threading']
+      QuoteThreading.force()
+    else
+      Unread.setLine true if Conf['Unread Line']
+      Unread.read()
+      Unread.update()
     Unread.scroll() if Conf['Scroll to Last Read Post'] and not Conf['Quote Threading']
 
   scroll: ->
@@ -76,24 +80,14 @@ Unread =
     Unread.setLine() if Conf['Unread Line'] and not Conf['Quote Threading']
     Unread.update()
 
-  addPost: (post) ->
-    return if post.ID <= Unread.lastReadPost or post.isHidden or QR.db?.get {
-      boardID:  post.board.ID
-      threadID: post.thread.ID
-      postID:   post.ID
+  addPost: ->
+    return if @isClone or @ID <= Unread.lastReadPost or !@isReply or @isHidden or QR.db?.get {
+      boardID:  @board.ID
+      threadID: @thread.ID
+      postID:   @ID
     }
-    Unread.posts.push post
-    Unread.addPostQuotingYou post
-
-  addPosts: (posts) ->
-    oldCount = Unread.posts.length
-    for post in posts
-      Unread.addPost post
-    if Conf['Unread Line'] and not Conf['Quote Threading']
-      # Force line on visible threads if there were no unread posts previously.
-      Unread.setLine (oldCount is 0 and Unread.posts.length isnt 0)
-    Unread.read()
-    Unread.update()
+    Unread.posts.push @
+    Unread.addPostQuotingYou @
 
   addPostQuotingYou: (post) ->
     for quotelink in post.nodes.quotelinks when QR.db?.get Get.postDataFromLink quotelink
@@ -115,13 +109,11 @@ Unread =
       , 7 * $.SECOND
 
   onUpdate: (e) ->
-    if e.detail[404]
-      Unread.update()
-    else if !QuoteThreading.enabled
-      Unread.addPosts(g.posts[fullID] for fullID in e.detail.newPosts)
-    else
+    if !e.detail[404]
+      # Force line on visible threads if there were no unread posts previously.
+      Unread.setLine(!Unread.hr.parentNode) if Conf['Unread Line'] and not Conf['Quote Threading']
       Unread.read()
-      Unread.update()
+    Unread.update()
 
   readSinglePost: (post) ->
     {ID} = post

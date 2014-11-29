@@ -29,10 +29,7 @@ QuoteThreading =
 
   node: ->
     {posts} = g
-    return if @isClone or not QuoteThreading.enabled
-
-    Unread.addPost @
-    return if @thread.OP is @ or @isHidden # Filtered
+    return if @isClone or not QuoteThreading.enabled or !@isReply or @isHidden
 
     keys = []
     len = g.BOARD.ID.length + 1
