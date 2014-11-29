@@ -13,7 +13,7 @@ Unread =
     @hr = $.el 'hr',
       id: 'unread-line'
     @posts = new RandomAccessList
-    @postsQuotingYou = {}
+    @postsQuotingYou = new Set
 
     Thread.callbacks.push
       name: 'Unread'
@@ -74,7 +74,7 @@ Unread =
       ID = postIDs[i]
       break if +ID > Unread.lastReadPost
       Unread.posts.rm ID
-      delete Unread.postsQuotingYou[ID]
+      Unread.postsQuotingYou.delete ID
       Unread.readCount++
 
     Unread.setLine() if Conf['Unread Line'] and not Conf['Quote Threading']
@@ -91,7 +91,7 @@ Unread =
 
   addPostQuotingYou: (post) ->
     for quotelink in post.nodes.quotelinks when QR.db?.get Get.postDataFromLink quotelink
-      Unread.postsQuotingYou[post.ID] = post
+      Unread.postsQuotingYou.add post.ID
       Unread.openNotification post
       return
 
@@ -120,7 +120,7 @@ Unread =
     {posts} = Unread
     return unless posts[ID]
     posts.rm ID
-    delete Unread.postsQuotingYou[ID]
+    Unread.postsQuotingYou.delete ID
     Unread.saveLastReadPost()
     Unread.update()
 
@@ -135,7 +135,7 @@ Unread =
       {ID, data} = post
       count++
       posts.rm ID
-      delete Unread.postsQuotingYou[ID]
+      Unread.postsQuotingYou.delete ID
 
       if Conf['Mark Quotes of You'] and QR.db?.get {
         boardID:  data.board.ID
@@ -172,7 +172,7 @@ Unread =
 
   update: ->
     count = Unread.posts.length
-    countQuotingYou = Object.keys(Unread.postsQuotingYou).length
+    countQuotingYou = Unread.postsQuotingYou.size
 
     if Conf['Unread Count']
       titleQuotingYou = if Conf['Quoted Title'] and countQuotingYou then '(!) ' else ''
