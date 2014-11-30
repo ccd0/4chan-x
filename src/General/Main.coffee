@@ -197,6 +197,7 @@ Main =
 
       Main.callbackNodes Thread, threads
       Main.callbackNodesDB Post, posts, ->
+        QuoteThreading.insert post for post in posts
         $.event '4chanXInitFinished'
 
     else

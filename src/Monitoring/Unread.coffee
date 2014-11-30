@@ -12,8 +12,10 @@ Unread =
     @db = new DataBoard 'lastReadPosts', @sync
     @hr = $.el 'hr',
       id: 'unread-line'
-    @posts = new RandomAccessList
+    @posts = new Set
     @postsQuotingYou = new Set
+    @order = new RandomAccessList
+    @position = null
 
     Thread.callbacks.push
       name: 'Unread'
@@ -22,7 +24,26 @@ Unread =
       name: 'Unread'
       cb:   @addPost
 
-  readCount: 0
+    <% if (tests_enabled) { %>
+    testLink = $.el 'a',
+      textContent: 'Test Post Order'
+    $.on testLink, 'click', ->
+      list1 = (x.ID for x in Unread.order.order())
+      list2 = (+x.id[2..] for x in $$ '.postContainer')
+      pass = do ->
+        return false unless list1.length is list2.length
+        for i in [0...list1.length] by 1
+          return false if list1[i] isnt list2[i]
+        true
+      if pass
+        new Notice 'success', "Orders same (#{list1.length} posts)", 5
+      else
+        new Notice 'warning', 'Orders differ.', 30
+        c.log list1
+        c.log list2
+    Header.menu.addEntry
+      el: testLink
+    <% } %>
 
   node: ->
     Unread.thread = @
@@ -31,31 +52,33 @@ Unread =
       boardID: @board.ID
       threadID: @ID
       defaultValue: 0
-    for ID in @posts.keys when +ID <= Unread.lastReadPost
-      Unread.readCount++
+    Unread.readCount = 0
+    Unread.readCount++ for ID in @posts.keys when +ID <= Unread.lastReadPost
     $.one d, '4chanXInitFinished',      Unread.ready
     $.on  d, 'ThreadUpdate',            Unread.onUpdate
     $.on  d, 'scroll visibilitychange', Unread.read
-    $.on  d, 'visibilitychange',        Unread.setLine if Conf['Unread Line'] and not Conf['Quote Threading']
+    $.on  d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
 
   ready: ->
-    if Conf['Quote Threading']
-      QuoteThreading.force()
-    else
-      Unread.setLine true if Conf['Unread Line']
-      Unread.read()
-      Unread.update()
-    Unread.scroll() if Conf['Scroll to Last Read Post'] and not Conf['Quote Threading']
+    Unread.setLine true
+    Unread.read()
+    Unread.update()
+    Unread.scroll() if Conf['Scroll to Last Read Post']
+
+  positionPrev: ->
+    if Unread.position then Unread.position.prev else Unread.order.last
 
   scroll: ->
     # Let the header's onload callback handle it.
     return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
 
-    # Scroll to the last displayed non-deleted read post.
-    {posts} = Unread.thread
-    for i in [Unread.readCount-1..0] by -1
-      {root} = posts[posts.keys[i]].nodes
-      if root.getBoundingClientRect().height
+    position = Unread.positionPrev()
+    while position
+      {root} = position.data.nodes
+      if !root.getBoundingClientRect().height
+        # Don't try to scroll to posts with display: none
+        position = position.prev
+      else
         Header.scrollToIfNeeded root, true
         break
     return
@@ -71,23 +94,27 @@ Unread =
 
     postIDs = Unread.thread.posts.keys
     for i in [Unread.readCount...postIDs.length] by 1
-      ID = postIDs[i]
-      break if +ID > Unread.lastReadPost
-      Unread.posts.rm ID
+      ID = +postIDs[i]
+      break if ID > Unread.lastReadPost
+      Unread.posts.delete ID
       Unread.postsQuotingYou.delete ID
       Unread.readCount++
 
-    Unread.setLine() if Conf['Unread Line'] and not Conf['Quote Threading']
+    Unread.updatePosition()
+    Unread.setLine()
     Unread.update()
 
   addPost: ->
-    return if @isClone or @ID <= Unread.lastReadPost or !@isReply or @isHidden or QR.db?.get {
+    return if @isFetchedQuote or @isClone
+    Unread.order.push @
+    return if @ID <= Unread.lastReadPost or @isHidden or QR.db?.get {
       boardID:  @board.ID
       threadID: @thread.ID
       postID:   @ID
     }
-    Unread.posts.push @
+    Unread.posts.add @ID
     Unread.addPostQuotingYou @
+    Unread.position ?= Unread.order[@ID]
 
   addPostQuotingYou: (post) ->
     for quotelink in post.nodes.quotelinks when QR.db?.get Get.postDataFromLink quotelink
@@ -110,31 +137,31 @@ Unread =
 
   onUpdate: (e) ->
     if !e.detail[404]
-      # Force line on visible threads if there were no unread posts previously.
-      Unread.setLine(!Unread.hr.parentNode) if Conf['Unread Line'] and not Conf['Quote Threading']
+      Unread.setLine()
       Unread.read()
     Unread.update()
 
   readSinglePost: (post) ->
     {ID} = post
-    {posts} = Unread
-    return unless posts[ID]
-    posts.rm ID
+    return unless Unread.posts.has ID
+    Unread.posts.delete ID
     Unread.postsQuotingYou.delete ID
+    Unread.updatePosition()
     Unread.saveLastReadPost()
     Unread.update()
 
   read: $.debounce 100, (e) ->
-    return if d.hidden or !Unread.posts.length
+    return if d.hidden or !Unread.posts.size
     height  = doc.clientHeight
 
-    {posts} = Unread
     count = 0
-    while post = posts.first
-      break unless Header.getBottomOf(post.data.nodes.root) > -1 # post is not completely read
-      {ID, data} = post
+    while Unread.position
+      {ID, data} = Unread.position
+      {root} = data.nodes
+      break unless !root.getBoundingClientRect().height or # post has been hidden
+        Header.getBottomOf(root) > -1                      # post is completely read
       count++
-      posts.rm ID
+      Unread.posts.delete ID
       Unread.postsQuotingYou.delete ID
 
       if Conf['Mark Quotes of You'] and QR.db?.get {
@@ -142,18 +169,24 @@ Unread =
         threadID: data.thread.ID
         postID:   ID
       }
-        QuoteYou.lastRead = data.nodes.root
+        QuoteYou.lastRead = root
+      Unread.position = Unread.position.next
 
     return unless count
+    Unread.updatePosition()
     Unread.saveLastReadPost()
     Unread.update() if e
+
+  updatePosition: ->
+    while Unread.position and !Unread.posts.has Unread.position.ID
+      Unread.position = Unread.position.next
 
   saveLastReadPost: $.debounce 2 * $.SECOND, ->
     postIDs = Unread.thread.posts.keys
     for i in [Unread.readCount...postIDs.length] by 1
-      ID = postIDs[i]
-      break if Unread.posts[ID]
-      Unread.lastReadPost = +ID
+      ID = +postIDs[i]
+      break if Unread.posts.has ID
+      Unread.lastReadPost = ID
       Unread.readCount++
     return if Unread.thread.isDead and !Unread.thread.isArchived
     Unread.db.forceSync()
@@ -163,15 +196,16 @@ Unread =
       val:      Unread.lastReadPost
 
   setLine: (force) ->
-    return unless d.hidden or force is true
-    return $.rm Unread.hr unless Unread.posts.length
-    {posts} = Unread.thread
-    for i in [Unread.readCount-1..0] by -1
-      return $.after posts[posts.keys[i]].nodes.root, Unread.hr
-    return
+    return unless Conf['Unread Line']
+    if d.hidden or (force is true)
+      if Unread.linePosition = Unread.positionPrev()
+        $.after Unread.linePosition.data.nodes.root, Unread.hr
+      else
+        $.rm Unread.hr
+    Unread.hr.hidden = Unread.linePosition is Unread.order.last
 
   update: ->
-    count = Unread.posts.length
+    count = Unread.posts.size
     countQuotingYou = Unread.postsQuotingYou.size
 
     if Conf['Unread Count']

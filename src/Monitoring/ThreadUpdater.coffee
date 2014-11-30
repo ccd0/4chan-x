@@ -320,12 +320,8 @@ ThreadUpdater =
         ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
 
       for post in posts
-        root = post.nodes.root
-        if post.cb
-          unless post.cb()
-            $.add ThreadUpdater.root, root
-        else
-          $.add ThreadUpdater.root, root
+        unless QuoteThreading.insert post
+          $.add ThreadUpdater.root, post.nodes.root
       $.event 'PostsInserted'
 
       if scroll

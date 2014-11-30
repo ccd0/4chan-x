@@ -9,96 +9,116 @@ QuoteThreading =
     @enabled = true
     @controls = $.el 'span',
       <%= html('<label><input id="threadingControl" type="checkbox" checked> Threading</label>') %>
+    @threadNewLink = $.el 'span',
+      className: 'brackets-wrap threadnewlink'
+      hidden: true
+    $.extend @threadNewLink, <%= html('<a href="javascript:;">Thread New Posts</a>') %>
 
-    input = $ 'input', @controls
-    $.on input, 'change', @toggle
+    $.on $('input', @controls), 'change', ->
+      QuoteThreading.rethread @checked
+    $.on @threadNewLink.firstElementChild, 'click', ->
+      QuoteThreading.threadNewLink.hidden = true
+      QuoteThreading.rethread true
 
     Header.menu.addEntry @entry =
       el:    @controls
       order: 98
 
+    Thread.callbacks.push
+      name: 'Quote Threading'
+      cb:   @setThread
     Post.callbacks.push
       name: 'Quote Threading'
       cb:   @node
 
-  force: ->
-    g.posts.forEach (post) ->
-      post.cb true if post.cb
-    Unread.read()
-    Unread.update()
+  parent:   {}
+  children: {}
+  inserted: {}
+
+  setThread: ->
+    QuoteThreading.thread = @
+    $.asap (-> !Conf['Thread Updater'] or $ '.navLinksBot > .updatelink'), ->
+      $.add $('.navLinksBot'), [$.tn(' '), QuoteThreading.threadNewLink]
 
   node: ->
-    {posts} = g
-    return if @isClone or not QuoteThreading.enabled or !@isReply or @isHidden
+    return if @isFetchedQuote or @isClone or !@isReply
+    {thread} = QuoteThreading
+    parents = for quote in @quotes
+      parent = g.posts[quote]
+      continue if !parent or parent.isFetchedQuote or !parent.isReply or parent.ID >= @ID
+      parent
+    if parents.length is 1
+      QuoteThreading.parent[@fullID] = parents[0]
 
-    keys = []
-    len = g.BOARD.ID.length + 1
-    keys.push quote for quote in @quotes when (quote[len..] < @ID) and quote of posts
+  descendants: (post) ->
+    posts = [post]
+    if children = QuoteThreading.children[post.fullID]
+      for child in children
+        posts = posts.concat QuoteThreading.descendants child
+    posts
 
-    return unless keys.length is 1
+  insert: (post) ->
+    return false unless QuoteThreading.enabled and
+      (parent = QuoteThreading.parent[post.fullID]) and
+      !QuoteThreading.inserted[post.fullID]
 
-    @threaded = keys[0]
-    @cb       = QuoteThreading.nodeinsert
+    descendants = QuoteThreading.descendants post
+    if !Unread.posts.has(parent.ID) and descendants.some((x) -> Unread.posts.has(x.ID))
+      QuoteThreading.threadNewLink.hidden = false
+      return false
 
-  nodeinsert: (force) ->
-    post = g.posts[@threaded]
+    {order} = Unread
+    children = (QuoteThreading.children[parent.fullID] or= [])
+    threadContainer = parent.nodes.threadContainer or $.el 'div', className: 'threadContainer'
+    nodes = [post.nodes.root]
+    nodes.push post.nodes.threadContainer if post.nodes.threadContainer
 
-    return false if @thread.OP is post
-
-    {posts} = Unread
-    {root}  = post.nodes
-
-    unless force
-      height  = doc.clientHeight
-      {bottom, top} = root.getBoundingClientRect()
-
-      # Post is unread or is fully visible.
-      return false unless posts[post.ID] or ((bottom < height) and (top > 0))
-
-    if $.hasClass root, 'threadOP'
-      threadContainer = root.nextElementSibling
-      post = Get.postFromRoot $.x 'descendant::div[contains(@class,"postContainer")][last()]', threadContainer
-      $.add threadContainer, @nodes.root
-
+    i = children.length
+    i-- for child in children by -1 when child.ID >= post.ID
+    if i isnt children.length
+      next = children[i]
+      order.before order[next.ID], order[x.ID] for x in descendants
+      children.splice i, 0, post
+      $.before next.nodes.root, nodes
     else
-      threadContainer = $.el 'div',
-        className: 'threadContainer'
-      $.add threadContainer, @nodes.root
-      $.after root, threadContainer
-      $.addClass root, 'threadOP'
+      prev = parent
+      while (prev2 = QuoteThreading.children[prev.fullID]) and prev2.length
+        prev = prev2[prev2.length-1]
+      order.after order[prev.ID], order[x.ID] for x in descendants by -1
+      children.push post
+      $.add threadContainer, nodes
 
-    if post = posts[post.ID]
-      posts.after post, posts[@ID]
+    QuoteThreading.inserted[post.fullID] = true
 
-    else if posts[@ID]
-      posts.prepend posts[@ID]
+    unless parent.nodes.threadContainer
+      parent.nodes.threadContainer = threadContainer
+      $.addClass parent.nodes.root, 'threadOP'
+      $.after parent.nodes.root, threadContainer
 
     return true
 
-  toggle: ->
-    if QuoteThreading.enabled = @checked
-      QuoteThreading.force()
+  rethread: (enabled) ->
+    {thread} = QuoteThreading
+    {posts} = thread
 
+    if QuoteThreading.enabled = enabled
+      posts.forEach QuoteThreading.insert
     else
-      thread = $('.thread')
-      posts = []
       nodes = []
-      
-      g.posts.forEach (post) ->
-        posts.push post unless post is post.thread.OP or post.isClone
+      Unread.order = new RandomAccessList
+      QuoteThreading.inserted = {}
+      posts.forEach (post) ->
+        Unread.order.push post
+        nodes.push post.nodes.root if post.isReply
+        if QuoteThreading.children[post.fullID]
+          delete QuoteThreading.children[post.fullID]
+          $.rmClass post.nodes.root, 'threadOP'
+          $.rm post.nodes.threadContainer
+          delete post.nodes.threadContainer
+      $.add thread.OP.nodes.root.parentNode, nodes
 
-      posts.sort (a, b) -> a.ID - b.ID
-
-      nodes.push post.nodes.root for post in posts
-      $.add thread, nodes
-
-      containers = $$ '.threadContainer', thread
-      $.rm container for container in containers
-      $.rmClass post, 'threadOP' for post in $$ '.threadOP'
-
-    return
-
-  kb: ->
-    control = $.id 'threadingControl'
-    control.checked = not control.checked
-    QuoteThreading.toggle.call control
+    Unread.position = Unread.order.first
+    Unread.updatePosition()
+    Unread.setLine true
+    Unread.read()
+    Unread.update()

@@ -154,7 +154,7 @@ ThreadWatcher =
 
           unread = quotingYou = 0
 
-          for postObj in @response.posts[1..]
+          for postObj in @response.posts
             continue unless postObj.no > lastReadPost
             continue if QR.db?.get {boardID, threadID, postID: postObj.no}
             unread++
