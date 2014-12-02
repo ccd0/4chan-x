@@ -95,9 +95,10 @@ Unread =
     postIDs = Unread.thread.posts.keys
     for i in [Unread.readCount...postIDs.length] by 1
       ID = +postIDs[i]
-      break if ID > Unread.lastReadPost
-      Unread.posts.delete ID
-      Unread.postsQuotingYou.delete ID
+      unless Unread.thread.posts[ID].isFetchedQuote
+        break if ID > Unread.lastReadPost
+        Unread.posts.delete ID
+        Unread.postsQuotingYou.delete ID
       Unread.readCount++
 
     Unread.updatePosition()
@@ -185,8 +186,9 @@ Unread =
     postIDs = Unread.thread.posts.keys
     for i in [Unread.readCount...postIDs.length] by 1
       ID = +postIDs[i]
-      break if Unread.posts.has ID
-      Unread.lastReadPost = ID
+      unless Unread.thread.posts[ID].isFetchedQuote
+        break if Unread.posts.has ID
+        Unread.lastReadPost = ID
       Unread.readCount++
     return if Unread.thread.isDead and !Unread.thread.isArchived
     Unread.db.forceSync()

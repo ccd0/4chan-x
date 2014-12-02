@@ -108,6 +108,7 @@ QuoteThreading =
       Unread.order = new RandomAccessList
       QuoteThreading.inserted = {}
       posts.forEach (post) ->
+        return if post.isFetchedQuote
         Unread.order.push post
         nodes.push post.nodes.root if post.isReply
         if QuoteThreading.children[post.fullID]
