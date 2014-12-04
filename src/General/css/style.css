@@ -99,9 +99,13 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   unicode-bidi: -moz-isolate;
   unicode-bidi: -webkit-isolate;
 }
-/* party hats */
 .thread > img:first-child {
+  /* party hats */
   pointer-events: none;
+}
+.center > audio {
+  display: block;
+  margin: auto;
 }
 
 /* fixed, z-index */

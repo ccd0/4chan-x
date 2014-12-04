@@ -18,6 +18,12 @@ The links to individual versions below are to copies of the script with the upda
 - Fix some scrolling bugs when images are contracted.
 
 <!-- v1.9.13.x -->
+### v1.9.13.5 
+*2014-12-04* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.13.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.13.5/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Add `Disable Autoplaying Sounds` option (off by default).
+
 ### v1.9.13.4 
 *2014-11-26* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.13.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.13.4/builds/4chan-X-noupdate.crx "Chromium version")]
 
