@@ -918,6 +918,12 @@ span.hide-announcement {
 :root.reveal-spoilers s > a {
   color: white !important;
 }
+:root.reveal-spoilers .removed-spoiler::before {
+  content: "[spoiler]";
+}
+:root.reveal-spoilers .removed-spoiler::after {
+  content: "[/spoiler]";
+}
 
 /* Thread & Reply Hiding */
 .hide-thread-button,
