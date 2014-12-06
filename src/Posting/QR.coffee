@@ -221,7 +221,7 @@ QR =
       frag  = range.cloneContents()
       ancestor = range.commonAncestorContainer
       # Quoting the insides of a spoiler/code tag.
-      if $.x 'ancestor-or-self::s', ancestor
+      if $.x 'ancestor-or-self::*[self::s or contains(@class,"removed-spoiler")]', ancestor
         $.prepend frag, $.tn '[spoiler]'
         $.add     frag, $.tn '[/spoiler]'
       if $.x 'ancestor-or-self::pre[contains(@class,"prettyprint")]', ancestor
@@ -229,7 +229,7 @@ QR =
         $.add     frag, $.tn '[/code]'
       for node in $$ 'br', frag
         $.replace node, $.tn '\n>' unless node is frag.lastChild
-      for node in $$ 's', frag
+      for node in $$ 's, .removed-spoiler', frag
         $.replace node, [$.tn('[spoiler]'), node.childNodes..., $.tn '[/spoiler]']
       for node in $$ '.prettyprint', frag
         $.replace node, [$.tn('[code]'), node.childNodes..., $.tn '[/code]']
