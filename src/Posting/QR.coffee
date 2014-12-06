@@ -220,14 +220,13 @@ QR =
       range = sel.getRangeAt 0
       frag  = range.cloneContents()
       ancestor = range.commonAncestorContainer
-      if ancestor.nodeName is '#text'
-        # Quoting the insides of a spoiler/code tag.
-        if $.x 'ancestor::s', ancestor
-          $.prepend frag, $.tn '[spoiler]'
-          $.add     frag, $.tn '[/spoiler]'
-        if $.x 'ancestor::pre[contains(@class,"prettyprint")]', ancestor
-          $.prepend frag, $.tn '[code]'
-          $.add     frag, $.tn '[/code]'
+      # Quoting the insides of a spoiler/code tag.
+      if $.x 'ancestor-or-self::s', ancestor
+        $.prepend frag, $.tn '[spoiler]'
+        $.add     frag, $.tn '[/spoiler]'
+      if $.x 'ancestor-or-self::pre[contains(@class,"prettyprint")]', ancestor
+        $.prepend frag, $.tn '[code]'
+        $.add     frag, $.tn '[/code]'
       for node in $$ 'br', frag
         $.replace node, $.tn '\n>' unless node is frag.lastChild
       for node in $$ 's', frag
