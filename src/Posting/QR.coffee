@@ -95,6 +95,7 @@ QR =
     if QR.nodes
       QR.nodes.el.hidden = false
       QR.unhide()
+      QR.captcha.setup()
       return
     try
       QR.dialog()
@@ -111,8 +112,6 @@ QR =
     QR.cleanNotifications()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
-    unless Conf['Captcha Warning Notifications']
-      $.rmClass QR.captcha.nodes.input, 'error' if QR.captcha.isEnabled
     if Conf['QR Shortcut']
       $.toggleClass $('.qr-shortcut'), 'disabled'
     new QR.post true
@@ -120,8 +119,7 @@ QR =
       post.delete()
     QR.cooldown.auto = false
     QR.status()
-    if QR.captcha.isEnabled and not Conf['Auto-load captcha']
-      QR.captcha.destroy()
+    QR.captcha.destroy()
   focusin: ->
     $.addClass QR.nodes.el, 'focus'
   focusout: ->
@@ -147,18 +145,8 @@ QR =
       el = err
       el.removeAttribute 'style'
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
-      if QR.captcha.captchas.length is 0
-        # Focus the captcha input on captcha error.
-        QR.captcha.nodes.input.focus()
-        QR.captcha.setup()
-      if Conf['Captcha Warning Notifications'] and !d.hidden
-        QR.notify el
-      else
-        $.addClass QR.captcha.nodes.input, 'error'
-        $.on QR.captcha.nodes.input, 'keydown', ->
-          $.rmClass QR.captcha.nodes.input, 'error'
-    else
-      QR.notify el
+      QR.captcha.setup()
+    QR.notify el
     alert el.textContent if d.hidden
 
   notify: (el) ->
@@ -539,6 +527,7 @@ QR =
     QR.cooldown.init()
     QR.captcha.init()
     $.add d.body, dialog
+    QR.captcha.setup()
 
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.
@@ -629,7 +618,7 @@ QR =
       err = 'Max limit of image replies has been reached.'
 
     if QR.captcha.isEnabled and !err
-      {challenge, response} = QR.captcha.getOne()
+      response = QR.captcha.getOne()
       err = 'No valid captcha.' unless response
 
     QR.cleanNotifications()
@@ -663,8 +652,7 @@ QR =
       textonly: textOnly
       mode:     'regist'
       pwd:      QR.persona.pwd
-      recaptcha_challenge_field: challenge
-      recaptcha_response_field:  response
+      'g-recaptcha-response': response
 
     options =
       responseType: 'document'
@@ -793,7 +781,6 @@ QR =
         icon: Favicon.logo
       notif.onclick = ->
         QR.open()
-        QR.captcha.nodes.input.focus()
         window.focus()
       notif.onshow = ->
         setTimeout ->
@@ -803,9 +790,8 @@ QR =
     unless Conf['Persistent QR'] or postsCount
       QR.close()
     else
-      if QR.posts.length > 1 and QR.captcha.isEnabled and QR.captcha.captchas.length is 0
-        QR.captcha.setup()
       post.rm()
+      QR.captcha.setup()
 
     QR.cooldown.add req.uploadEndTime, threadID, postID
 
