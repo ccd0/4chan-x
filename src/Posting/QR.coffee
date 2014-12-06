@@ -224,9 +224,11 @@ QR =
       if $.x 'ancestor-or-self::*[self::s or contains(@class,"removed-spoiler")]', ancestor
         $.prepend frag, $.tn '[spoiler]'
         $.add     frag, $.tn '[/spoiler]'
-      if $.x 'ancestor-or-self::pre[contains(@class,"prettyprint")]', ancestor
+      if insideCode = $.x 'ancestor-or-self::pre[contains(@class,"prettyprint")]', ancestor
         $.prepend frag, $.tn '[code]'
         $.add     frag, $.tn '[/code]'
+      for node in $$ (if insideCode then 'br' else '.prettyprint br'), frag
+        $.replace node, $.tn '\n'
       for node in $$ 'br', frag
         $.replace node, $.tn '\n>' unless node is frag.lastChild
       for node in $$ 's, .removed-spoiler', frag
