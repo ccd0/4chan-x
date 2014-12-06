@@ -235,6 +235,8 @@ QR =
         $.replace node, [$.tn('[spoiler]'), node.childNodes..., $.tn '[/spoiler]']
       for node in $$ '.prettyprint', frag
         $.replace node, [$.tn('[code]'), node.childNodes..., $.tn '[/code]']
+      for node in $$ '.linkify[data-original]', frag
+        $.replace node, $.tn node.dataset.original
       for node in $$ '.embedder', frag
         $.rm node.previousSibling if node.previousSibling?.nodeValue is ' '
         $.rm node

@@ -237,9 +237,11 @@ Linkify =
           "#{status}'d"
       }"
 
+      link.dataset.original = link.textContent
       link.textContent = text
       for post2 in post.clones
         for link2 in $$ 'a.linkify', post2.nodes.comment when link2.href is link.href
+          link2.dataset.original = link2.textContent
           link2.textContent = text
       return
 
