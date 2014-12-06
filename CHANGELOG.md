@@ -3,6 +3,12 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.14.x -->
+### v1.9.14.2 
+*2014-12-04* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.2/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Add `Disable Autoplaying Sounds` option, off by default (as in v1.9.13.5).
+
 ### v1.9.14.1 
 *2014-12-01* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.1/builds/4chan-X-noupdate.crx "Chromium version")]
 
@@ -12,12 +18,20 @@ The links to individual versions below are to copies of the script with the upda
 ### v1.9.14.0 
 *2014-11-30* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.0/builds/4chan-X-noupdate.crx "Chromium version")]
 
+Based on v1.9.13.4.
+
 **ccd0**
 - `Quote Threading` is now compatible with the `Unread Line` and `Scroll to Last Read Post` features.
 - When there are unread replies to a read post, which are not threaded so you don't miss them, a `[Thread New Posts]` link appears at the bottom of the page, which will thread them when clicked.
 - Fix some scrolling bugs when images are contracted.
 
 <!-- v1.9.13.x -->
+### v1.9.13.5 
+*2014-12-04* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.13.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.13.5/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Add `Disable Autoplaying Sounds` option (off by default).
+
 ### v1.9.13.4 
 *2014-11-26* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.13.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.13.4/builds/4chan-X-noupdate.crx "Chromium version")]
 

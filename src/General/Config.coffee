@@ -101,6 +101,10 @@ Config =
         true
         'Rewrite the URL of the current page, removing stubs and changing /res/ to /thread/.'
       ]
+      'Disable Autoplaying Sounds': [
+        false
+        'Prevent sounds on the page from autoplaying.'
+      ]
 
     'Linkification':
       'Linkify': [

@@ -286,6 +286,7 @@ Main =
     ['Catalog Links',             CatalogLinks]
     ['Settings',                  Settings]
     ['Index Generator',           Index]
+    ['Disable Autoplay',          AntiAutoplay]
     ['Announcement Hiding',       PSAHiding]
     ['Fourchan thingies',         Fourchan]
     ['Color User IDs',            IDColor]
