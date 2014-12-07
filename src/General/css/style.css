@@ -1056,12 +1056,28 @@ input.field.tripped:not(:hover):not(:focus) {
 #qr textarea {
   resize: both;
 }
-#qr .captcha-counter {
-  display: block;
-  text-align: center;
+#qr .captcha-section {
+  position: relative;
 }
 #qr .captcha-container > div > div {
   margin: auto;
+}
+#qr .captcha-counter {
+  display: block;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+}
+#qr.captcha-open .captcha-counter {
+  position: absolute;
+  bottom: 3px;
+}
+#qr .captcha-counter > a {
+  pointer-events: auto;
+}
+#qr:not(.captcha-open) .captcha-counter > a {
+  display: block;
+  width: 100%;
 }
 .field {
   -moz-box-sizing: border-box;

@@ -8,19 +8,26 @@ QR.captcha =
       QR.captcha.sync captchas
     $.sync 'captchas', @sync.bind @
 
-    counter   = $.el 'a',
-      className: 'captcha-counter'
-      href: 'javascript:;'
-    container = $.el 'div',
-      className: 'captcha-container'
-    @nodes = {counter, container}
+    section = $.el 'div', className: 'captcha-section'
+    $.extend section, <%= html(
+      '<div class="captcha-container"></div>' +
+      '<div class="captcha-counter"><a href="javascript:;"></a></div>'
+    ) %>
+    container = $ '.captcha-container',   section
+    counter   = $ '.captcha-counter > a', section
+    @nodes = {container, counter}
     @count()
     $.addClass QR.nodes.el, 'has-captcha'
-    $.after QR.nodes.com.parentNode, [counter, container]
+    $.after QR.nodes.com.parentNode, section
+
+    new MutationObserver(@afterSetup.bind @).observe container,
+      childList: true
+      subtree: true
 
     $.on counter, 'click', @toggle.bind @
     $.on window, 'captcha:success', @save.bind @
 
+  shouldFocus: false
   timeouts: {}
 
   needed: ->
@@ -34,21 +41,17 @@ QR.captcha =
     if @nodes.container.dataset.widgetID and !@timeouts.destroy
       @destroy()
     else
+      @shouldFocus = true
       @setup true
 
   setup: (force) ->
     return unless @isEnabled and (@needed() or force)
-    $.addClass QR.nodes.el, 'captcha-open' # suppress autohide so that captcha pop-up works
+    $.addClass QR.nodes.el, 'captcha-open'
     if @timeouts.destroy
       clearTimeout @timeouts.destroy
       delete @timeouts.destroy
       return @reload()
     return if @nodes.container.dataset.widgetID
-    @observer?.disconnect()
-    @observer = new MutationObserver @afterSetup.bind @
-    @observer.observe @nodes.container,
-      childList: true
-      subtree: true
     $.globalEval '''
       (function() {
         var container = document.querySelector("#qr .captcha-container");
@@ -62,12 +65,16 @@ QR.captcha =
       })();
     '''
 
-  afterSetup: ->
-    return unless @nodes.container.firstElementChild?.firstElementChild
-    @observer.disconnect()
+  afterSetup: (mutations) ->
+    for mutation in mutations
+      for node in mutation.addedNodes
+        iframe = node if node.nodeName is 'IFRAME'
+    return unless iframe
     if QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight
       QR.nodes.el.style.top    = null
       QR.nodes.el.style.bottom = '0px'
+    iframe.focus() if @shouldFocus
+    @shouldFocus = false
 
   destroy: ->
     return unless @isEnabled
@@ -93,8 +100,10 @@ QR.captcha =
 
   save: (e) ->
     if @needed()
+      @shouldFocus = true
       @reload()
     else
+      @nodes.counter.focus()
       @timeouts.destroy ?= setTimeout @destroy.bind(@), 3 * $.SECOND
     $.forceSync 'captchas'
     @captchas.push
@@ -102,7 +111,6 @@ QR.captcha =
       timeout:  Date.now() + 2 * $.MINUTE
     @count()
     $.set 'captchas', @captchas
-    @nodes.counter.focus()
 
   clear: ->
     return unless @captchas.length
