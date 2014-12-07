@@ -25,6 +25,10 @@ module.exports = (grunt) ->
     output = if parts2.length is 0 then '""' else parts2.join ' + '
     "(innerHTML: #{output})"
 
+  assert = (statement, objs...) ->
+    return '' unless grunt.config('pkg').tests_enabled
+    "throw new Error 'Assertion failed: ' + `#{JSON.stringify statement}` unless #{statement}"
+
   # Project configuration.
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
@@ -35,6 +39,7 @@ module.exports = (grunt) ->
           pkg = grunt.config 'pkg'
           pkg.importHTML = importHTML
           pkg.html = html
+          pkg.assert = assert
           pkg.tests_enabled or= false
           pkg
         enumerable: true

@@ -52,16 +52,20 @@ Linkify =
 
             endNode  = saved
             {data}   = saved
-            word    += data
-            {length} = data
 
             if end = space.exec data
               # Set our snapshot and regex to start on this node at this position when the loop resumes
+              word += data[...end.index]
               test.lastIndex = length = end.index
               i--
               break
+            else
+              {length} = data
+              word    += data
 
-        links.push Linkify.makeRange node, endNode, index, length if Linkify.regString.exec word
+        if Linkify.regString.exec word
+          links.push Linkify.makeRange node, endNode, index, length
+          <%= assert('word is links[links.length-1].toString()') %>
 
         break unless test.lastIndex and node is endNode
 
@@ -105,7 +109,7 @@ Linkify =
     # Clean start of range
     i = text.search Linkify.regString
 
-    if i
+    if i > 0
       text = text.slice i
       i-- while range.startOffset + i >= range.startContainer.data.length
 
