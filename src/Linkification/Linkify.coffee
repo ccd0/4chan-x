@@ -103,8 +103,7 @@ Linkify =
     text = range.toString()
 
     # Clean start of range
-    i = 0
-    i++ while /[(\[{<>]/.test text.charAt i
+    i = text.search Linkify.regString
 
     if i
       text = text.slice i
