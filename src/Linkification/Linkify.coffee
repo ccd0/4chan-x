@@ -88,7 +88,7 @@ Linkify =
       [a-z\d%/]
     )
     | # This should account for virtually all links posted without http:
-    [-a-z\d]+[.](
+    ([-a-z\d]+[.])+(
       aero|asia|biz|cat|com|coop|info|int|jobs|mobi|moe|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2}
     )([:/]|(?!.))
     | # IPv4 Addresses
