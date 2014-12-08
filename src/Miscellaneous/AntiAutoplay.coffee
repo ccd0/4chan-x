@@ -7,4 +7,6 @@ AntiAutoplay =
     for audio in $$ 'audio[autoplay]'
       audio.pause()
       audio.autoplay = false
-      audio.controls = true
+      unless audio.controls
+        audio.controls = true
+        $.addClass audio, 'controls-added'

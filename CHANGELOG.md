@@ -16,6 +16,12 @@ Based on v1.9.14.2.
 - Bug fixes.
 
 <!-- v1.9.14.x -->
+### v1.9.14.3 
+*2014-12-07* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.3/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Center the controls added to formerly autoplaying audio by `Disable Autoplaying Sounds`.
+
 ### v1.9.14.2 
 *2014-12-04* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.2/builds/4chan-X-noupdate.crx "Chromium version")]
 
