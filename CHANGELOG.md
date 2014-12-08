@@ -3,6 +3,12 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.15.x -->
+### v1.9.15.3 
+*2014-12-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.3/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix sounds sometimes playing for a short time before `Disable Autoplaying Sounds` halts them (as in 1.9.14.4).
+
 ### v1.9.15.2 
 *2014-12-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.2/builds/4chan-X-noupdate.crx "Chromium version")]
 
