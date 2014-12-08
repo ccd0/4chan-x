@@ -1,7 +1,7 @@
 QR.captcha =
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
-    return unless @isEnabled = !!$.id 'captchaContainer'
+    return unless @isEnabled = !!$.id 'g-recaptcha'
 
     @captchas = []
     $.get 'captchas', [], ({captchas}) ->
