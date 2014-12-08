@@ -6,6 +6,8 @@ The links to individual versions below are to copies of the script with the upda
 ### v1.9.15.0 
 *2014-12-07* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.0/builds/4chan-X-noupdate.crx "Chromium version")]
 
+Based on v1.9.14.2.
+
 **MayhemYDG, Matěj Grabovský**
 - Quoting now also includes the spoiler and code tags.
 
