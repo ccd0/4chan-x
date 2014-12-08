@@ -103,7 +103,9 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   /* party hats */
   pointer-events: none;
 }
-.center > audio {
+
+/* Anti-autoplay */
+audio.controls-added {
   display: block;
   margin: auto;
 }
