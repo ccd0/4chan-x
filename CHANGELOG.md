@@ -30,6 +30,12 @@ Based on v1.9.14.2.
 - Bug fixes.
 
 <!-- v1.9.14.x -->
+### v1.9.14.4 
+*2014-12-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.4/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix sounds sometimes playing for a short time before `Disable Autoplaying Sounds` halts them.
+
 ### v1.9.14.3 
 *2014-12-07* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.3/builds/4chan-X-noupdate.crx "Chromium version")]
 
