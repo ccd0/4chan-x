@@ -10,7 +10,6 @@
 #thread-watcher {
   box-shadow: -1px 2px 2px rgba(0, 0, 0, 0.25);
 }
-.captcha-img,
 .field {
   background-color: #FFF;
   border: 1px solid #CCC;
@@ -28,7 +27,6 @@
   font-size: 13px !important;
   opacity: 1.0 !important;
 }
-.captch-img:hover,
 .field:hover {
   border-color: #999;
 }
@@ -961,7 +959,7 @@ span.hide-announcement {
 /* QR */
 :root.hide-original-post-form #togglePostFormLink,
 :root:not(.catalog) #togglePostFormLink,
-#qr.autohide:not(.focus):not(:hover):not(:active) > form,
+#qr.autohide:not(.focus):not(:hover):not(:active):not(.captcha-open) > form,
 :root.thread-view #qr:not(.show-new-thread-option) select[data-name="thread"],
 #file-n-submit:not(.has-file) #qr-filerm {
   display: none;
@@ -975,8 +973,7 @@ span.hide-announcement {
 #qr select,
 #dump-button,
 #url-button,
-.remove,
-.captcha-img {
+.remove {
   cursor: pointer;
 }
 #qr {
@@ -1069,20 +1066,28 @@ input.field.tripped:not(:hover):not(:focus) {
 #qr textarea {
   resize: both;
 }
-.captcha-img {
-  margin: 0px;
-  text-align: center;
-  background-image: #fff;
-  font-size: 0px;
-  min-height: 59px;
-  min-width: 302px;
+#qr .captcha-section {
+  position: relative;
 }
-.captcha-input{
+#qr .captcha-container > div > div {
+  margin: auto;
+}
+#qr .captcha-counter {
+  display: block;
   width: 100%;
-  margin: 1px 0 0;
+  text-align: center;
+  pointer-events: none;
 }
-.captcha-input.error:focus {
-  border-color: rgb(255,0,0) !important;
+#qr.captcha-open .captcha-counter {
+  position: absolute;
+  bottom: 3px;
+}
+#qr .captcha-counter > a {
+  pointer-events: auto;
+}
+#qr:not(.captcha-open) .captcha-counter > a {
+  display: block;
+  width: 100%;
 }
 .field {
   -moz-box-sizing: border-box;
