@@ -890,6 +890,7 @@ span.hide-announcement {
   -webkit-align-self: stretch;
   align-self: stretch;
 }
+.catalog-thread.watched .werkTyme-filename,
 .filter-highlight .werkTyme-filename {
   border: 2px solid rgba(255, 0, 0, .5);
 }
@@ -911,6 +912,7 @@ span.hide-announcement {
 .filter-highlight > .reply {
   box-shadow: -5px 0 rgba(255, 0, 0, .5);
 }
+.catalog-thread.watched .catalog-thumb,
 .filter-highlight .catalog-thumb {
   border: 2px solid rgba(255, 0, 0, .5);
 }
