@@ -79,4 +79,13 @@
   "software": "foolfuuka",
   "boards": ["t"],
   "files": ["t"]
+}, {
+  "uid": 17,
+  "name": "imcute",
+  "domain": "imcute.yt",
+  "http": true,
+  "https": false,
+  "software": "foolfuuka",
+  "boards": ["gif", "jp", "vg"],
+  "files": ["gif", "jp", "vg"]
 }]
