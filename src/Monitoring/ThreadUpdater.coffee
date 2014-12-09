@@ -320,6 +320,7 @@ ThreadUpdater =
         ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
 
       for post in posts
+        root = post.nodes.root
         unless QuoteThreading.insert post
           $.add ThreadUpdater.root, post.nodes.root
       $.event 'PostsInserted'
