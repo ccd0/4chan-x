@@ -30,15 +30,19 @@ QR.captcha =
   shouldFocus: false
   timeouts: {}
 
+  occupied: ->
+    {container} = @nodes
+    (container.firstChild or container.dataset.widgetID) and !@timeouts.destroy
+
   needed: ->
     captchaCount = @captchas.length
-    captchaCount++ if @nodes.container.dataset.widgetID and !@timeouts.destroy
+    captchaCount++ if @occupied()
     postsCount = QR.posts.length
     postsCount = 0 if postsCount is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
     captchaCount < postsCount
 
   toggle: ->
-    if @nodes.container.dataset.widgetID and !@timeouts.destroy
+    if @occupied()
       @destroy()
     else
       @shouldFocus = true
@@ -51,7 +55,7 @@ QR.captcha =
       clearTimeout @timeouts.destroy
       delete @timeouts.destroy
       return @reload()
-    return if @nodes.container.dataset.widgetID
+    return if @occupied()
     $.globalEval '''
       (function() {
         var container = document.querySelector("#qr .captcha-container");
