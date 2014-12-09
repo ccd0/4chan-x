@@ -379,6 +379,10 @@ Config =
         false
         'Automatically load the captcha in the QR even if your post is empty.'
       ]
+      'Post on Captcha Completion': [
+        false
+        'Submit the post immediately when the captcha is completed.'
+      ]
       'Bottom QR Link': [
         true
         'Places a link on the bottom of threads to open the QR.'

@@ -122,21 +122,24 @@ QR.captcha =
       null
 
   save: (pasted) ->
-    response = $('textarea', @nodes.container).value
-    timeout  = (if pasted then @setupTime else Date.now()) + 2 * $.MINUTE
-    if QR.cooldown.auto and @needed()
-      @shouldFocus = true
-      @reload()
-    else
-      QR.nodes.status.focus()
-      if pasted
-        @destroy()
-      else
-        @timeouts.destroy ?= setTimeout @destroy.bind(@), 3 * $.SECOND
+    reload = QR.cooldown.auto and @needed()
     $.forceSync 'captchas'
-    @captchas.push {response, timeout}
+    @captchas.push
+      response: $('textarea', @nodes.container).value
+      timeout:  (if pasted then @setupTime else Date.now()) + 2 * $.MINUTE
     @count()
     $.set 'captchas', @captchas
+
+    if reload
+      @shouldFocus = true
+      return @reload()
+
+    if pasted
+      @destroy()
+    else
+      @timeouts.destroy ?= setTimeout @destroy.bind(@), 3 * $.SECOND
+    QR.nodes.status.focus()
+    QR.submit() if Conf['Post on Captcha Completion']
 
   clear: ->
     return unless @captchas.length
