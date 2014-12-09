@@ -1,3 +1,6 @@
+### v2.9.39 
+*2014-12-09*
+
 - IP count stuff.
 - fix recaptcha.
 
