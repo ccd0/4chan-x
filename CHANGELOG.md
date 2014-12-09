@@ -1,3 +1,6 @@
+### v2.9.40 
+*2014-12-09*
+
 - Fix QR post-type automatic selection
 
 ### v2.9.39 
