@@ -12,9 +12,8 @@ QR.captcha =
     $.extend root, <%= html(
       '<div class="captcha-counter"><a href="javascript:;"></a></div>'
     ) %>
-    container = $ '.captcha-container',   root
     counter   = $ '.captcha-counter > a', root
-    @nodes = {root, container, counter}
+    @nodes = {root, counter}
     @count()
     $.addClass QR.nodes.el, 'has-captcha'
     $.after QR.nodes.com.parentNode, root
