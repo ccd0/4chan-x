@@ -8,17 +8,17 @@ QR.captcha =
       QR.captcha.sync captchas
     $.sync 'captchas', @sync.bind @
 
-    section = $.el 'div', className: 'captcha-section'
-    $.extend section, <%= html(
+    root = $.el 'div', className: 'captcha-root'
+    $.extend root, <%= html(
       '<div class="captcha-container"></div>' +
       '<div class="captcha-counter"><a href="javascript:;"></a></div>'
     ) %>
-    container = $ '.captcha-container',   section
-    counter   = $ '.captcha-counter > a', section
+    container = $ '.captcha-container',   root
+    counter   = $ '.captcha-counter > a', root
     @nodes = {container, counter}
     @count()
     $.addClass QR.nodes.el, 'has-captcha'
-    $.after QR.nodes.com.parentNode, section
+    $.after QR.nodes.com.parentNode, root
 
     new MutationObserver(@afterSetup.bind @).observe container,
       childList: true
@@ -29,29 +29,37 @@ QR.captcha =
 
   shouldFocus: false
   timeouts: {}
+  postsCount: 0
+
+  occupied: ->
+    {container} = @nodes
+    (container.firstChild or container.dataset.widgetID) and !@timeouts.destroy
 
   needed: ->
     captchaCount = @captchas.length
-    captchaCount++ if @nodes.container.dataset.widgetID and !@timeouts.destroy
-    postsCount = QR.posts.length
-    postsCount = 0 if postsCount is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
-    captchaCount < postsCount
+    captchaCount++ if @occupied()
+    @postsCount = QR.posts.length
+    @postsCount = 0 if @postsCount is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
+    captchaCount < @postsCount
+
+  onPostChange: ->
+    @setup() if @postsCount is 0
 
   toggle: ->
-    if @nodes.container.dataset.widgetID and !@timeouts.destroy
+    if @occupied()
       @destroy()
     else
-      @shouldFocus = true
-      @setup true
+      @setup true, true
 
-  setup: (force) ->
+  setup: (focus, force) ->
     return unless @isEnabled and (@needed() or force)
     $.addClass QR.nodes.el, 'captcha-open'
+    @shouldFocus = true if focus
     if @timeouts.destroy
       clearTimeout @timeouts.destroy
       delete @timeouts.destroy
       return @reload()
-    return if @nodes.container.dataset.widgetID
+    return if @occupied()
     $.globalEval '''
       (function() {
         var container = document.querySelector("#qr .captcha-container");
@@ -99,11 +107,11 @@ QR.captcha =
       null
 
   save: (e) ->
-    if @needed()
+    if QR.cooldown.auto and @needed()
       @shouldFocus = true
       @reload()
     else
-      @nodes.counter.focus()
+      QR.nodes.status.focus()
       @timeouts.destroy ?= setTimeout @destroy.bind(@), 3 * $.SECOND
     $.forceSync 'captchas'
     @captchas.push
@@ -121,7 +129,7 @@ QR.captcha =
     @captchas = @captchas[i..]
     @count()
     $.set 'captchas', @captchas
-    @setup()
+    @setup true
 
   count: ->
     @nodes.counter.textContent = "Captchas: #{@captchas.length}"
