@@ -8,17 +8,17 @@ QR.captcha =
       QR.captcha.sync captchas
     $.sync 'captchas', @sync.bind @
 
-    section = $.el 'div', className: 'captcha-section'
-    $.extend section, <%= html(
+    root = $.el 'div', className: 'captcha-root'
+    $.extend root, <%= html(
       '<div class="captcha-container"></div>' +
       '<div class="captcha-counter"><a href="javascript:;"></a></div>'
     ) %>
-    container = $ '.captcha-container',   section
-    counter   = $ '.captcha-counter > a', section
+    container = $ '.captcha-container',   root
+    counter   = $ '.captcha-counter > a', root
     @nodes = {container, counter}
     @count()
     $.addClass QR.nodes.el, 'has-captcha'
-    $.after QR.nodes.com.parentNode, section
+    $.after QR.nodes.com.parentNode, root
 
     new MutationObserver(@afterSetup.bind @).observe container,
       childList: true

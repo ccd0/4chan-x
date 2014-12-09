@@ -1058,7 +1058,7 @@ input.field.tripped:not(:hover):not(:focus) {
 #qr textarea {
   resize: both;
 }
-#qr .captcha-section {
+#qr .captcha-root {
   position: relative;
 }
 #qr .captcha-container > div > div {
