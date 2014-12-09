@@ -29,6 +29,7 @@ QR.captcha =
 
   shouldFocus: false
   timeouts: {}
+  postsCount: 0
 
   occupied: ->
     {container} = @nodes
@@ -37,9 +38,12 @@ QR.captcha =
   needed: ->
     captchaCount = @captchas.length
     captchaCount++ if @occupied()
-    postsCount = QR.posts.length
-    postsCount = 0 if postsCount is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
-    captchaCount < postsCount
+    @postsCount = QR.posts.length
+    @postsCount = 0 if @postsCount is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
+    captchaCount < @postsCount
+
+  onPostChange: ->
+    @setup() if @postsCount is 0
 
   toggle: ->
     if @occupied()

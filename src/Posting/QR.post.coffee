@@ -37,7 +37,6 @@ QR.post = class
 
     prev = QR.posts[QR.posts.length - 1]
     QR.posts.push @
-    QR.captcha.setup()
     @nodes.spoiler.checked = @spoiler = if prev and Conf['Remember Spoiler']
       prev.spoiler
     else
@@ -70,6 +69,8 @@ QR.post = class
       @load() if QR.selected is @ # load persona
     @select() if select
     @unlock()
+    # Post count temporarily off by 1 when called from QR.post.rm
+    $.queueTask -> QR.captcha.setup()
 
   rm: ->
     @delete()
@@ -132,7 +133,7 @@ QR.post = class
         QR.status()
       when 'com'
         @nodes.span.textContent = @com
-        QR.captcha.setup()
+        QR.captcha.onPostChange()
         QR.characterCount()
         # Disable auto-posting if you're typing in the first post
         # during the last 5 seconds of the cooldown.
@@ -161,7 +162,7 @@ QR.post = class
     @filename = file.name
     @filesize = $.bytesToString file.size
     @nodes.label.hidden = false if QR.spoiler
-    QR.captcha.setup()
+    QR.captcha.onPostChange()
     URL.revokeObjectURL @URL
     if @ is QR.selected
       @showFileData()
