@@ -145,7 +145,7 @@ QR =
       el = err
       el.removeAttribute 'style'
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
-      QR.captcha.setup()
+      QR.captcha.setup true
     QR.notify el
     alert el.textContent if d.hidden
 
@@ -791,7 +791,7 @@ QR =
       QR.close()
     else
       post.rm()
-      QR.captcha.setup()
+      QR.captcha.setup true
 
     QR.cooldown.add req.uploadEndTime, threadID, postID
 

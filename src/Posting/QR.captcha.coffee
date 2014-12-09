@@ -49,12 +49,12 @@ QR.captcha =
     if @occupied()
       @destroy()
     else
-      @shouldFocus = true
-      @setup true
+      @setup true, true
 
-  setup: (force) ->
+  setup: (focus, force) ->
     return unless @isEnabled and (@needed() or force)
     $.addClass QR.nodes.el, 'captcha-open'
+    @shouldFocus = true if focus
     if @timeouts.destroy
       clearTimeout @timeouts.destroy
       delete @timeouts.destroy
@@ -129,7 +129,7 @@ QR.captcha =
     @captchas = @captchas[i..]
     @count()
     $.set 'captchas', @captchas
-    @setup()
+    @setup true
 
   count: ->
     @nodes.counter.textContent = "Captchas: #{@captchas.length}"
