@@ -107,11 +107,11 @@ QR.captcha =
       null
 
   save: (e) ->
-    if @needed()
+    if QR.cooldown.auto and @needed()
       @shouldFocus = true
       @reload()
     else
-      @nodes.counter.focus()
+      QR.nodes.status.focus()
       @timeouts.destroy ?= setTimeout @destroy.bind(@), 3 * $.SECOND
     $.forceSync 'captchas'
     @captchas.push
