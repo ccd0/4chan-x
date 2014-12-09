@@ -9150,7 +9150,7 @@
       $.rmAll(list);
       $.add(list, options);
       list.value = val;
-      if (list.value) {
+      if (!list.value) {
         return;
       }
       list.value = g.VIEW === 'thread' ? g.THREADID : 'new';
