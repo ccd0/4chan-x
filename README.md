@@ -39,6 +39,9 @@ If you want to install the current beta version but get updates from the stable 
 ## Security note
 4chan X currently shares your settings and post history between the HTTP and HTTPS versions of 4chan. If you are concerned about protecting your privacy against a man-in-the-middle attack, you should disable 4chan X on the HTTP version of 4chan and/or install [HTTPS Everywhere](https://www.eff.org/https-everywhere).
 
+## Uninstalling
+4chan X disables the native extension, so if you uninstall 4chan X, you'll need to re-enable it. To do this, click the `[Settings]` link in the top right corner and uncheck "`Disable the native extension`" in the panel that appears.
+
 ## More information
 - [Source Code](https://github.com/ccd0/4chan-x)
 - [Changelog](https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md)
