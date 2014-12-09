@@ -1,6 +1,6 @@
 QR =
   mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/vnd.adobe.flash.movie', 'application/x-shockwave-flash', 'video/webm']
- 
+
   init: ->
     @db = new DataBoard 'yourPosts'
     @posts = []
@@ -80,6 +80,7 @@ QR =
     if QR.nodes
       QR.nodes.el.hidden = false
       QR.unhide()
+      QR.captcha.setup()
       return
     try
       QR.dialog()
@@ -97,8 +98,6 @@ QR =
     QR.cleanNotifications()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
-    unless Conf['Captcha Warning Notifications']
-      $.rmClass QR.captcha.nodes.input, 'error' if QR.captcha.isEnabled
     if Conf['QR Shortcut']
       $.toggleClass $('.qr-shortcut'), 'disabled'
     new QR.post true
@@ -106,9 +105,8 @@ QR =
       post.delete()
     QR.cooldown.auto = false
     QR.status()
+    QR.captcha.destroy()
 
-    if QR.captcha.isEnabled and not Conf['Auto-load captcha']
-      QR.captcha.destroy()
   focusin: ->
     $.addClass QR.nodes.el, 'focus'
 
@@ -138,18 +136,8 @@ QR =
       el = err
       el.removeAttribute 'style'
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
-      if QR.captcha.captchas.length is 0
-        # Focus the captcha input on captcha error.
-        QR.captcha.nodes.input.focus()
-        QR.captcha.setup()
-      if Conf['Captcha Warning Notifications'] and !d.hidden
-        QR.notify el
-      else
-        $.addClass QR.captcha.nodes.input, 'error'
-        $.on QR.captcha.nodes.input, 'keydown', ->
-          $.rmClass QR.captcha.nodes.input, 'error'
-    else
-      QR.notify el
+      QR.captcha.setup()
+    QR.notify el
     alert el.textContent if d.hidden
 
   notify: (el) ->
@@ -183,7 +171,7 @@ QR =
     return unless QR.nodes
     {thread} = QR.posts[0]
     if thread isnt 'new' and g.threads["#{g.BOARD}.#{thread}"].isDead
-      value    = 404
+      value    = 'Dead'
       disabled = true
       QR.cooldown.auto = false
 
@@ -212,20 +200,26 @@ QR =
       range = sel.getRangeAt 0
       frag  = range.cloneContents()
       ancestor = range.commonAncestorContainer
-      if ancestor.nodeName is '#text'
-        # Quoting the insides of a spoiler/code tag.
-        if $.x 'ancestor::s', ancestor
-          $.prepend frag, $.tn '[spoiler]'
-          $.add     frag, $.tn '[/spoiler]'
-        if $.x 'ancestor::pre[contains(@class,"prettyprint")]', ancestor
-          $.prepend frag, $.tn '[code]'
-          $.add     frag, $.tn '[/code]'
+      # Quoting the insides of a spoiler/code tag.
+      if $.x 'ancestor-or-self::*[self::s or contains(@class,"removed-spoiler")]', ancestor
+        $.prepend frag, $.tn '[spoiler]'
+        $.add     frag, $.tn '[/spoiler]'
+      if insideCode = $.x 'ancestor-or-self::pre[contains(@class,"prettyprint")]', ancestor
+        $.prepend frag, $.tn '[code]'
+        $.add     frag, $.tn '[/code]'
+      for node in $$ (if insideCode then 'br' else '.prettyprint br'), frag
+        $.replace node, $.tn '\n'
       for node in $$ 'br', frag
         $.replace node, $.tn '\n>' unless node is frag.lastChild
-      for node in $$ 's', frag
+      for node in $$ 's, .removed-spoiler', frag
         $.replace node, [$.tn('[spoiler]'), node.childNodes..., $.tn '[/spoiler]']
       for node in $$ '.prettyprint', frag
         $.replace node, [$.tn('[code]'), node.childNodes..., $.tn '[/code]']
+      for node in $$ '.linkify[data-original]', frag
+        $.replace node, $.tn node.dataset.original
+      for node in $$ '.embedder', frag
+        $.rm node.previousSibling if node.previousSibling?.nodeValue is ' '
+        $.rm node
       text += ">#{frag.textContent.trim()}\n"
 
     QR.open()
@@ -403,7 +397,7 @@ QR =
     $.rmAll list
     $.add list, options
     list.value = val
-    return unless list.value
+    return if list.value
     # Fix the value if the option disappeared.
     list.value = if g.VIEW is 'thread'
       g.THREADID
@@ -544,6 +538,7 @@ QR =
     Rice.nodes dialog
 
     $.add d.body, dialog
+    QR.captcha.setup()
 
     if Conf['Auto Hide QR']
       nodes.autohide.click()
@@ -622,7 +617,7 @@ QR =
 
     post = QR.posts[0]
     post.forceSave()
-    if g.BOARD.ID is 'f'
+    if g.BOARD.ID is 'f' and g.VIEW isnt 'thread'
       filetag = QR.nodes.flashTag.value
     threadID = post.thread
     thread = g.BOARD.threads[threadID]
@@ -642,7 +637,7 @@ QR =
       err = 'Max limit of image replies has been reached.'
 
     if QR.captcha.isEnabled and !err
-      {challenge, response} = QR.captcha.getOne()
+      response = QR.captcha.getOne()
       err = 'No valid captcha.' unless response
 
     QR.cleanNotifications()
@@ -676,8 +671,7 @@ QR =
       textonly: textOnly
       mode:     'regist'
       pwd:      QR.persona.pwd
-      recaptcha_challenge_field: challenge
-      recaptcha_response_field:  response
+      'g-recaptcha-response': response
 
     options =
       responseType: 'document'
@@ -813,7 +807,6 @@ QR =
         icon: Favicon.logo
       notif.onclick = ->
         QR.open()
-        QR.captcha.nodes.input.focus()
         window.focus()
       notif.onshow = ->
         setTimeout ->
@@ -823,9 +816,8 @@ QR =
     unless Conf['Persistent QR'] or QR.cooldown.auto
       QR.close()
     else
-      if QR.posts.length > 1 and QR.captcha.isEnabled and QR.captcha.captchas.length is 0
-        QR.captcha.setup()
       post.rm()
+      QR.captcha.setup()
 
     QR.cooldown.set {req, post, isReply, threadID}
 

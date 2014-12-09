@@ -61,18 +61,19 @@ $.ajax = do ->
     r.send form
     r
 
-$.cache = do ->
+do ->
   reqs = {}
-  (url, cb, options) ->
+  $.cache = (url, cb, options) ->
     if req = reqs[url]
       if req.readyState is 4
-        cb.call req, req.evt
+        $.queueTask -> cb.call req, req.evt
       else
         req.callbacks.push cb
+      return req
       return
     rm = -> delete reqs[url]
     try
-      req = $.ajax url, options
+      return unless req = $.ajax url, options
     catch err
       return
     $.on req, 'load', (e) ->
@@ -178,6 +179,11 @@ $.off = (el, events, handler) ->
     el.removeEventListener event, handler, false
   return
 
+$.one = (el, events, handler) ->
+  cb = (e) ->
+    $.off el, events, cb
+    handler.call @, e
+  $.on el, events, cb
 $.event = (event, detail, root=d) ->
   <% if (type === 'userscript') { %>
   if detail? and typeof cloneInto is 'function'
@@ -270,17 +276,7 @@ $.item = (key, val) ->
 $.syncing = {}
 
 <% if (type === 'crx') { %>
-$.sync = do ->
-  chrome.storage.onChanged.addListener (changes) ->
-    for key of changes
-      if cb = $.syncing[key]
-        cb changes[key].newValue, key
-    return
-  (key, cb) -> $.syncing[key] = cb
-
-$.desync = (key) -> delete $.syncing[key]
-
-# Chrome imposes a strict 4KB limit on synchronized extension data.
+# https://developer.chrome.com/extensions/storage.html
 $.localKeys = [
   # filters
   'name',
@@ -302,6 +298,15 @@ $.localKeys = [
   'userThemes'
 ]
 
+chrome.storage.onChanged.addListener (changes) ->
+  cb changes[key].newValue, key for key of changes when cb = $.syncing[key]
+  return
+
+$.sync = (key, cb) -> $.syncing[key] = cb
+
+$.forceSync = (key) -> return
+
+$.desync = (key) -> delete $.syncing[key]
 # https://developer.chrome.com/extensions/storage.html
 do ->
   items =
@@ -400,11 +405,31 @@ do ->
 <% } else { %>
 
 # http://wiki.greasespot.net/Main_Page
-$.sync = do ->
-  $.on window, 'storage', ({key, newValue}) ->
-    if cb = $.syncing[key]
+$.oldValue = {}
+
+$.sync = (key, cb) ->
+  key = g.NAMESPACE + key
+  $.syncing[key] = cb
+  $.oldValue[key] = GM_getValue key
+
+do ->
+  onChange = (key) ->
+    return unless cb = $.syncing[key]
+    newValue = GM_getValue key
+    return if newValue is $.oldValue[key]
+    if newValue?
+      $.oldValue[key] = newValue
       cb JSON.parse(newValue), key
-  (key, cb) -> $.syncing[g.NAMESPACE + key] = cb
+    else
+      delete $.oldValue[key]
+      cb undefined, key
+  $.on window, 'storage', ({key}) -> onChange key
+
+  $.forceSync = (key) ->
+    # Storage events don't work across origins
+    # e.g. http://boards.4chan.org and https://boards.4chan.org
+    # so force a check for changes to avoid lost data.
+    onChange g.NAMESPACE + key
 
 $.desync = (key) -> delete $.syncing[g.NAMESPACE + key]
 
@@ -437,6 +462,7 @@ $.set = do ->
       # for `storage` events
       localStorage.setItem key, val
     GM_setValue key, val
+
   (keys, val) ->
     if typeof keys is 'string'
       set keys, val

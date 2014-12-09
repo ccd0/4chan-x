@@ -3,6 +3,32 @@ module.exports = (grunt) ->
   importHTML = (filename) ->
     "\"\"\"#{grunt.file.read("src/General/html/#{filename}.html").replace(/^\s+|\s+$</gm, '').replace(/\n/g, '')}\"\"\""
 
+  html = (template) ->
+    parts = template.split /([\$&@]){([^}`]*)}/
+    parts2 = []
+    checkText = ''
+    for part, i in parts
+      switch i % 3
+        when 0
+          parts2.push JSON.stringify part unless part is ''
+          checkText += part
+        when 1
+          if /<[^>]*$/.test(checkText) and not (part is '$' and /\=['"][^"'<>]*$/.test checkText)
+            throw new Error "Illegal insertion into HTML template: #{template}"
+          parts2.push switch part
+            when '$' then "E(`#{parts[i+1]}`)"
+            when '&' then "`#{parts[i+1]}`.innerHTML"
+            when '@' then "`#{parts[i+1]}`.map((x) -> x.innerHTML).join('')"
+    unless /^(<\w+( [\w-]+(='[^"'<>]*'|="[^"'<>]*")?)*>|<\/\w+>|[^"'<>]*)*$/.test checkText
+      throw new Error "HTML template is ill-formed: #{template}"
+    output = if parts2.length is 0 then '""' else parts2.join ' + '
+    "(innerHTML: #{output})"
+
+  assert = (statement, objs...) ->
+    return '' unless grunt.config('pkg').tests_enabled
+    "throw new Error 'Assertion failed: ' + `#{JSON.stringify statement}` unless #{statement}"
+
+
   # Project configuration.
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
@@ -11,6 +37,7 @@ module.exports = (grunt) ->
         get: ->
           pkg = grunt.config 'pkg'
           pkg.importHTML = importHTML
+          pkg.html = html
           pkg
         enumerable: true
       )

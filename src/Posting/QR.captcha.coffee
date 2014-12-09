@@ -1,112 +1,119 @@
 QR.captcha =
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
-    return unless @isEnabled = !!$.id 'captchaContainer'
-
-    imgContainer = $.el 'div',
-      className: 'captcha-img'
-      title: 'Reload reCAPTCHA'
-      innerHTML: '<div><img></div>'
-
-    input = $.el 'input',
-      className: 'captcha-input field'
-      title: 'Verification'
-      autocomplete: 'off'
-      spellcheck: false
-      tabIndex: 45
-
-    @nodes =
-      img:   imgContainer.firstChild.firstChild
-      input: input
-
-    $.on input, 'blur',  QR.focusout
-    $.on input, 'focus', QR.focusin
-    $.on input, 'keydown', QR.captcha.keydown.bind QR.captcha
-    $.on @nodes.img.parentNode, 'click', QR.captcha.reload.bind QR.captcha
-
-    $.addClass QR.nodes.el, 'has-captcha'
-    $.after QR.nodes.com.parentNode, [imgContainer, input]
+    return unless @isEnabled = !!$.id 'g-recaptcha'
 
     @captchas = []
     $.get 'captchas', [], ({captchas}) ->
       QR.captcha.sync captchas
-      QR.captcha.clear()
-    $.sync 'captchas', @sync
+    $.sync 'captchas', @sync.bind @
 
-    new MutationObserver(@afterSetup).observe $.id('captchaContainer'), childList: true
-
-    @beforeSetup()
-
-    @afterSetup() # reCAPTCHA might have loaded before the QR.
-
-  beforeSetup: ->
-    {img, input} = @nodes
-    img.parentNode.parentNode.hidden = true
-    input.value = ''
-    input.placeholder = 'Focus to load reCAPTCHA'
+    section = $.el 'div', className: 'captcha-section'
+    $.extend section, <%= html(
+      '<div class="captcha-container"></div>' +
+      '<div class="captcha-counter"><a href="javascript:;"></a></div>'
+    ) %>
+    container = $ '.captcha-container',   section
+    counter   = $ '.captcha-counter > a', section
+    @nodes = {container, counter}
     @count()
-    $.on input, 'focus', @setup
+    $.addClass QR.nodes.el, 'has-captcha'
+    $.after QR.nodes.com.parentNode, section
 
-  setup: ->
-    $.globalEval 'loadRecaptcha()'
-
-  afterSetup: ->
-    return unless challenge = $.id 'recaptcha_challenge_field_holder'
-    return if challenge is QR.captcha.nodes.challenge
-
-    setLifetime = (e) -> QR.captcha.lifetime = e.detail
-    $.on window, 'captcha:timeout', setLifetime
-    $.globalEval 'window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))'
-    $.off window, 'captcha:timeout', setLifetime
-
-    {img, input} = QR.captcha.nodes
-    img.parentNode.parentNode.hidden = false
-    input.placeholder = 'Verification'
-    QR.captcha.count()
-    $.off input, 'focus', QR.captcha.setup
-
-    QR.captcha.nodes.challenge = challenge
-    new MutationObserver(QR.captcha.load.bind QR.captcha).observe challenge,
+    new MutationObserver(@afterSetup.bind @).observe container,
       childList: true
       subtree: true
-      attributes: true
-    QR.captcha.load()
+
+    $.on counter, 'click', @toggle.bind @
+    $.on window, 'captcha:success', @save.bind @
+
+  shouldFocus: false
+  timeouts: {}
+
+  needed: ->
+    captchaCount = @captchas.length
+    captchaCount++ if @nodes.container.dataset.widgetID and !@timeouts.destroy
+    postsCount = QR.posts.length
+    postsCount = 0 if postsCount is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
+    captchaCount < postsCount
+
+  toggle: ->
+    if @nodes.container.dataset.widgetID and !@timeouts.destroy
+      @destroy()
+    else
+      @shouldFocus = true
+      @setup true
+
+  setup: (force) ->
+    return unless @isEnabled and (@needed() or force)
+    $.addClass QR.nodes.el, 'captcha-open'
+    if @timeouts.destroy
+      clearTimeout @timeouts.destroy
+      delete @timeouts.destroy
+      return @reload()
+    return if @nodes.container.dataset.widgetID
+    $.globalEval '''
+      (function() {
+        var container = document.querySelector("#qr .captcha-container");
+        container.dataset.widgetID = window.grecaptcha.render(container, {
+          sitekey: '<%= meta.recaptchaKey %>',
+          theme: document.documentElement.classList.contains('tomorrow') ? 'dark' : 'light',
+          callback: function(response) {
+            window.dispatchEvent(new CustomEvent("captcha:success", {detail: response}));
+          }
+        });
+      })();
+    '''
+
+  afterSetup: (mutations) ->
+    for mutation in mutations
+      for node in mutation.addedNodes
+        iframe = node if node.nodeName is 'IFRAME'
+    return unless iframe
+    if QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight
+      QR.nodes.el.style.top    = null
+      QR.nodes.el.style.bottom = '0px'
+    iframe.focus() if @shouldFocus
+    @shouldFocus = false
 
   destroy: ->
-    $.globalEval 'Recaptcha.destroy()'
-    @beforeSetup()
+    return unless @isEnabled
+    delete @timeouts.destroy
+    $.rmClass QR.nodes.el, 'captcha-open'
+    $.rmAll @nodes.container
+    # XXX https://github.com/greasemonkey/greasemonkey/issues/1571
+    @nodes.container.removeAttribute 'data-widget-i-d'
 
   sync: (captchas) ->
-    QR.captcha.captchas = captchas
-    QR.captcha.count()
+    @captchas = captchas
+    @clear()
+    @count()
 
   getOne: ->
     @clear()
     if captcha = @captchas.shift()
-      {challenge, response} = captcha
       @count()
       $.set 'captchas', @captchas
+      captcha.response
     else
-      challenge   = @nodes.img.alt
-      if response = @nodes.input.value
-        if Conf['Auto-load captcha'] then @reload() else @destroy()
-    if response
-      response = response.trim()
-      # one-word-captcha:
-      # If there's only one word, duplicate it.
-      response = "#{response} #{response}" unless /\s|^\d+$/.test response
-    {challenge, response}
+      null
 
-  save: ->
-    return unless response = @nodes.input.value.trim()
-    @nodes.input.value = ''
+  save: (e) -> try
+    if @needed()
+      @shouldFocus = true
+      @reload()
+    else
+      @nodes.counter.focus()
+      @timeouts.destroy ?= setTimeout @destroy.bind(@), 3 * $.SECOND
+    console.log e.detail
+    $.forceSync 'captchas'
     @captchas.push
-      challenge: @nodes.img.alt
-      response:  response
-      timeout:   @timeout
+      response: e.detail
+      timeout:  Date.now() + 2 * $.MINUTE
     @count()
-    @reload()
     $.set 'captchas', @captchas
+  catch err
+    console.log err
 
   clear: ->
     return unless @captchas.length
@@ -117,43 +124,18 @@ QR.captcha =
     @captchas = @captchas[i..]
     @count()
     $.set 'captchas', @captchas
-
-  load: ->
-    return unless @nodes.challenge.firstChild
-    return unless challenge_image = $.id 'recaptcha_challenge_image'
-    # -1 minute to give upload some time.
-    @timeout  = Date.now() + @lifetime * $.SECOND - $.MINUTE
-    challenge = @nodes.challenge.firstChild.value
-    @nodes.img.alt = challenge
-    @nodes.img.src = challenge_image.src
-    @nodes.input.value = null
-    @clear()
+    @setup()
 
   count: ->
-    count = if @captchas then @captchas.length else 0
-    placeholder = @nodes.input.placeholder.replace /\ \(.*\)$/, ''
-    placeholder += switch count
-      when 0
-        if placeholder is 'Verification' then ' (Shift + Enter to cache)' else ''
-      when 1
-        ' (1 cached captcha)'
-      else
-        " (#{count} cached captchas)"
-    @nodes.input.placeholder = placeholder
-    @nodes.input.alt = count # For XTRM RICE.
-
+    @nodes.counter.textContent = "Captchas: #{@captchas.length}"
+    clearTimeout @timeouts.clear
+    if @captchas.length
+      @timeouts.clear = setTimeout @clear.bind(@), @captchas[0].timeout - Date.now()
 
   reload: (focus) ->
-    # Hack to prevent the input from being focused
-    $.globalEval 'Recaptcha.reload(); Recaptcha.should_focus = false;'
-    # Focus if we meant to.
-    @nodes.input.focus() if focus
-
-  keydown: (e) ->
-    if e.keyCode is 8 and not @nodes.input.value
-      @reload()
-    else if e.keyCode is 13 and e.shiftKey
-      @save()
-    else
-      return
-    e.preventDefault()
+    $.globalEval '''
+      (function() {
+        var container = document.querySelector("#qr .captcha-container");
+        window.grecaptcha.reset(container.dataset.widgetID);
+      })();
+    '''
