@@ -25,7 +25,7 @@ QR.captcha =
       subtree: true
 
     $.on counter, 'click', @toggle.bind @
-    $.on window, 'captcha:success', @save.bind @
+    $.on window, 'captcha:success', => @save false
 
   shouldFocus: false
   timeouts: {}
@@ -76,13 +76,20 @@ QR.captcha =
   afterSetup: (mutations) ->
     for mutation in mutations
       for node in mutation.addedNodes
-        iframe = node if node.nodeName is 'IFRAME'
-    return unless iframe
+        @setupIFrame   node if node.nodeName is 'IFRAME'
+        @setupTextArea node if node.nodeName is 'TEXTAREA'
+    return
+
+  setupIFrame: (iframe) ->
+    @setupTime = Date.now()
     if QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight
       QR.nodes.el.style.top    = null
       QR.nodes.el.style.bottom = '0px'
     iframe.focus() if @shouldFocus
     @shouldFocus = false
+
+  setupTextArea: (textarea) ->
+    $.one textarea, 'input', => @save true
 
   destroy: ->
     return unless @isEnabled
@@ -106,17 +113,20 @@ QR.captcha =
     else
       null
 
-  save: (e) ->
+  save: (pasted) ->
+    response = $('textarea', @nodes.container).value
+    timeout  = (if pasted then @setupTime else Date.now()) + 2 * $.MINUTE
     if QR.cooldown.auto and @needed()
       @shouldFocus = true
       @reload()
     else
       QR.nodes.status.focus()
-      @timeouts.destroy ?= setTimeout @destroy.bind(@), 3 * $.SECOND
+      if pasted
+        @destroy()
+      else
+        @timeouts.destroy ?= setTimeout @destroy.bind(@), 3 * $.SECOND
     $.forceSync 'captchas'
-    @captchas.push
-      response: e.detail
-      timeout:  Date.now() + 2 * $.MINUTE
+    @captchas.push {response, timeout}
     @count()
     $.set 'captchas', @captchas
 
