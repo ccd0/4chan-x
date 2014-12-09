@@ -10,19 +10,14 @@ QR.captcha =
 
     root = $.el 'div', className: 'captcha-root'
     $.extend root, <%= html(
-      '<div class="captcha-container"></div>' +
       '<div class="captcha-counter"><a href="javascript:;"></a></div>'
     ) %>
     container = $ '.captcha-container',   root
     counter   = $ '.captcha-counter > a', root
-    @nodes = {container, counter}
+    @nodes = {root, container, counter}
     @count()
     $.addClass QR.nodes.el, 'has-captcha'
     $.after QR.nodes.com.parentNode, root
-
-    new MutationObserver(@afterSetup.bind @).observe container,
-      childList: true
-      subtree: true
 
     $.on counter, 'click', @toggle.bind @
     $.on window, 'captcha:success', => @save false
@@ -31,13 +26,9 @@ QR.captcha =
   timeouts: {}
   postsCount: 0
 
-  occupied: ->
-    {container} = @nodes
-    (container.firstChild or container.dataset.widgetID) and !@timeouts.destroy
-
   needed: ->
     captchaCount = @captchas.length
-    captchaCount++ if @occupied()
+    captchaCount++ if @nodes.container and !@timeouts.destroy
     @postsCount = QR.posts.length
     @postsCount = 0 if @postsCount is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
     captchaCount < @postsCount
@@ -46,7 +37,7 @@ QR.captcha =
     @setup() if @postsCount is 0
 
   toggle: ->
-    if @occupied()
+    if @nodes.container and !@timeouts.destroy
       @destroy()
     else
       @setup true, true
@@ -59,7 +50,15 @@ QR.captcha =
       clearTimeout @timeouts.destroy
       delete @timeouts.destroy
       return @reload()
-    return if @occupied()
+
+    return if @nodes.container
+
+    @nodes.container = $.el 'div', className: 'captcha-container'
+    $.prepend @nodes.root, @nodes.container
+    new MutationObserver(@afterSetup.bind @).observe @nodes.container,
+      childList: true
+      subtree: true
+
     $.globalEval '''
       (function() {
         var container = document.querySelector("#qr .captcha-container");
@@ -95,9 +94,8 @@ QR.captcha =
     return unless @isEnabled
     delete @timeouts.destroy
     $.rmClass QR.nodes.el, 'captcha-open'
-    $.rmAll @nodes.container
-    # XXX https://github.com/greasemonkey/greasemonkey/issues/1571
-    @nodes.container.removeAttribute 'data-widget-i-d'
+    $.rm @nodes.container
+    delete @nodes.container
 
   sync: (captchas) ->
     @captchas = captchas
