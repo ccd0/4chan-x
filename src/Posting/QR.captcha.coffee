@@ -96,7 +96,7 @@ QR.captcha =
     $.rm @nodes.container if @nodes.container
     delete @nodes.container
 
-  sync: (captchas) ->
+  sync: (captchas=[]) ->
     @captchas = captchas
     @clear()
     @count()
