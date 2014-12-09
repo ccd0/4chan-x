@@ -3,6 +3,14 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.14.x -->
+### v1.9.14.6 
+*2014-12-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.6/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix some captcha bugs.
+- The QR now focuses on the submit button after captcha completion, unless you are dumping and more captchas are needed.
+- Fix updater bugs introduced in v1.9.14.0.
+
 ### v1.9.14.5 
 *2014-12-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.5/builds/4chan-X-noupdate.crx "Chromium version")]
 
