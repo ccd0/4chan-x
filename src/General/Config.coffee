@@ -255,9 +255,13 @@ Config =
         true
         'Display reply and image count.'
       ]
+      'IP Count in Stats': [
+        true
+        'Display the unique IP count in the thread stats.'
+      ]
       'Page Count in Stats': [
-        false
-        'Display the page count in the thread stats as well.'
+        true
+        'Display the page count in the thread stats.'
       ]
       'Updater and Stats in Header': [
         true,
@@ -266,6 +270,10 @@ Config =
       'Thread Watcher': [
         true
         'Bookmark threads.'
+      ]
+      'Mark New IPs': [
+        false
+        'Label each post from a new IP with the thread\'s current IP count.'
       ]
 
     'Posting':
@@ -315,7 +323,7 @@ Config =
       ]
       'Auto-load captcha': [
         false
-        'Automatically load the captcha when you open a thread, and reload it after you post.'
+        'Automatically load the captcha in the QR even if your post is empty.'
       ]
 
     'Quote Links':

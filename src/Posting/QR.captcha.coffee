@@ -98,22 +98,19 @@ QR.captcha =
     else
       null
 
-  save: (e) -> try
+  save: (e) ->
     if @needed()
       @shouldFocus = true
       @reload()
     else
       @nodes.counter.focus()
       @timeouts.destroy ?= setTimeout @destroy.bind(@), 3 * $.SECOND
-    console.log e.detail
     $.forceSync 'captchas'
     @captchas.push
       response: e.detail
       timeout:  Date.now() + 2 * $.MINUTE
     @count()
     $.set 'captchas', @captchas
-  catch err
-    console.log err
 
   clear: ->
     return unless @captchas.length

@@ -4,9 +4,17 @@ ThreadStats =
 
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
-        innerHTML: "[<span id=post-count>0</span> / <span id=file-count>0</span>#{if Conf["Page Count in Stats"] then " / <span id=page-count>0</span>" else ""}]"
+        innerHTML: """
+          [<span id=post-count>0</span> / 
+          <span id=file-count>0</span>
+          #{if Conf['IP Count in Stats']   then ' / <span id=ip-count>?</span>' else ""}
+          #{if Conf['Page Count in Stats'] then ' / <span id=page-count>0</span>' else ""}]
+        """
         id:        'thread-stats'
-        title: 'Post Count / File Count' + (if Conf["Page Count in Stats"] then " / Page Count" else "")
+        title: 
+          'Post Count / File Count' +
+          (if Conf['IP Count in Stats']   then " / IPs" else "") + 
+          (if Conf['Page Count in Stats'] then " / Page Count" else "")
       $.ready ->
         Header.addShortcut sc
     else
@@ -15,8 +23,9 @@ ThreadStats =
       $.ready =>
         $.add d.body, sc
 
-    @postCountEl = $ '#post-count', sc
-    @fileCountEl = $ '#file-count', sc
+    @postCountEl  = $ '#post-count', sc
+    @ipCountEl    = $ '#ip-count',   sc
+    @fileCountEl  = $ '#file-count', sc
     @pageCountEl  = $ '#page-count', sc
 
     Thread.callbacks.push
@@ -31,7 +40,7 @@ ThreadStats =
       fileCount++ if post.file
     ThreadStats.thread = @
     ThreadStats.fetchPage()
-    ThreadStats.update postCount, fileCount
+    ThreadStats.update postCount, fileCount, @ipCount
     $.on d, 'ThreadUpdate', ThreadStats.onUpdate
 
   disconnect: ->
@@ -56,13 +65,20 @@ ThreadStats =
 
   onUpdate: (e) ->
     return if e.detail[404]
-    {postCount, fileCount} = e.detail
-    ThreadStats.update postCount, fileCount
+    {postCount, fileCount, ipCount, newPosts} = e.detail
+    ThreadStats.update postCount, fileCount, ipCount
+    return unless Conf["Page Count in Stats"]
+    if newPosts.length
+      ThreadStats.lastPost = g.posts[newPosts[newPosts.length - 1]].info.date
+    if ThreadStats.lastPost > ThreadStats.lastPageUpdate and ThreadStats.pageCountEl?.textContent isnt '1'
+      ThreadStats.fetchPage()
 
-  update: (postCount, fileCount) ->
-    {thread, postCountEl, fileCountEl} = ThreadStats
+  update: (postCount, fileCount, ipCount) ->
+    {thread, postCountEl, fileCountEl, ipCountEl} = ThreadStats
     postCountEl.textContent = postCount
     fileCountEl.textContent = fileCount
+    if ipCount? and Conf["IP Count in Stats"]
+      ipCountEl.textContent = ipCount
     (if thread.postLimit and !thread.isSticky then $.addClass else $.rmClass) postCountEl, 'warning'
     (if thread.fileLimit and !thread.isSticky then $.addClass else $.rmClass) fileCountEl, 'warning'
 

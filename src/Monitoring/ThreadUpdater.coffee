@@ -104,8 +104,14 @@ ThreadUpdater =
     $.on d,      'QRPostSuccessful', ThreadUpdater.cb.checkpost
     $.on d,      'visibilitychange', ThreadUpdater.cb.visibility
 
-    ThreadUpdater.cb.online()
+    if ThreadUpdater.thread.isArchived
+      ThreadUpdater.set 'status', 'Archived', 'warning'
+    else
+      ThreadUpdater.cb.online()
+
     Rice.nodes ThreadUpdater.dialog
+    
+    return
 
   ###
   http://freesound.org/people/pierrecartoons1979/sounds/90112/
@@ -160,27 +166,49 @@ ThreadUpdater =
         when 200
           g.DEAD = false
           ThreadUpdater.parse req.response.posts
-          ThreadUpdater.setInterval()
-        when 404
-          g.DEAD = true
-          ThreadUpdater.set 'timer', null
-          ThreadUpdater.set 'status', '404', 'warning'
-          clearTimeout ThreadUpdater.timeoutID
-          ThreadUpdater.thread.kill()
-          $.event 'ThreadUpdate',
-            404: true
-            threadID: ThreadUpdater.thread.fullID
-        else
-          ThreadUpdater.outdateCount++
-          ThreadUpdater.setInterval()
-          [text, klass] = if req.status is 304
-            [null, null]
+          if ThreadUpdater.thread.isArchived
+            ThreadUpdater.set 'status', 'Archived', 'warning'
+            ThreadUpdater.kill()
           else
-            ["#{req.statusText} (#{req.status})", 'warning']
-          ThreadUpdater.set 'status', text, klass
+            ThreadUpdater.setInterval()
+        when 404
+          # XXX workaround for 4chan sending false 404s
+          $.ajax "//a.4cdn.org/#{ThreadUpdater.thread.board}/catalog.json", onloadend: ->
+            if @status is 200
+              confirmed = true
+              for page in @response
+                for thread in page.threads
+                  if thread.no is ThreadUpdater.thread.ID
+                    confirmed = false
+                    break
+            else
+              confirmed = false
+            if confirmed
+              ThreadUpdater.set 'status', '404', 'warning'
+              ThreadUpdater.kill()
+            else
+              ThreadUpdater.error req
+        else
+          ThreadUpdater.error req
 
       if ThreadUpdater.postID
         ThreadUpdater.cb.checkpost()
+
+  kill: ->
+    ThreadUpdater.set 'timer', ''
+    clearTimeout ThreadUpdater.timeoutID
+    ThreadUpdater.thread.kill()
+    $.event 'ThreadUpdate',
+      404: true
+      threadID: ThreadUpdater.thread.fullID
+
+  error: (req) ->
+    ThreadUpdater.setInterval()
+    [text, klass] = if req.status is 304
+      ['', '']
+    else
+      ["#{req.statusText} (#{req.status})", 'warning']
+    ThreadUpdater.set 'status', text, klass
 
   setInterval: ->
     i   = ThreadUpdater.interval + 1
@@ -256,6 +284,7 @@ ThreadUpdater =
   updateThreadStatus: (type, status) ->
     return unless hasChanged = ThreadUpdater.thread["is#{type}"] isnt status
     ThreadUpdater.thread.setStatus type, status
+    return if type is 'Closed' and ThreadUpdater.thread.isArchived
     change = if type is 'Sticky'
       if status
         'now a sticky'
@@ -272,10 +301,13 @@ ThreadUpdater =
     OP = postObjects[0]
     Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler
 
+    # XXX Some threads such as /g/'s sticky https://a.4cdn.org/g/thread/39894014.json still use a string as the archived property.
+    ThreadUpdater.thread.setStatus 'Archived', !!+OP.archived
     ThreadUpdater.updateThreadStatus 'Sticky', !!OP.sticky
     ThreadUpdater.updateThreadStatus 'Closed', !!OP.closed
     ThreadUpdater.thread.postLimit = !!OP.bumplimit
     ThreadUpdater.thread.fileLimit = !!OP.imagelimit
+    ThreadUpdater.thread.ipCount = OP.unique_ips if OP.unique_ips?
 
     posts = [] # post objects
     index = [] # existing posts
@@ -317,6 +349,7 @@ ThreadUpdater =
         newPosts: posts.map (post) -> post.fullID
         postCount: OP.replies + 1
         fileCount: OP.images + (!!ThreadUpdater.thread.OP.file and !ThreadUpdater.thread.OP.file.isDead)
+        ipCount: OP.unique_ips
 
     unless count
       ThreadUpdater.set 'status', null, null

@@ -170,6 +170,7 @@ Main =
     init 'Thread Updater',            ThreadUpdater
     init 'Thread Watcher',            ThreadWatcher
     init 'Thread Watcher (Menu)',     ThreadWatcher.menu
+    init 'Mark New IPs',              MarkNewIPs
     init 'Index Navigation',          Nav
     init 'Keybinds',                  Keybinds
     init 'Show Dice Roll',            Dice
