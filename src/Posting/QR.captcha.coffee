@@ -93,7 +93,7 @@ QR.captcha =
     return unless @isEnabled
     delete @timeouts.destroy
     $.rmClass QR.nodes.el, 'captcha-open'
-    $.rm @nodes.container
+    $.rm @nodes.container if @nodes.container
     delete @nodes.container
 
   sync: (captchas) ->
