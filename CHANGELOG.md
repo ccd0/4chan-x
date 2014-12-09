@@ -73,6 +73,12 @@ Based on v1.9.14.2.
 - Bug fixes.
 
 <!-- v1.9.14.x -->
+### v1.9.14.9 
+*2014-12-09* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.9/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix bug causing `Auto-load captcha` to not work when using `Persistent QR`.
+
 ### v1.9.14.8 
 *2014-12-09* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.8/builds/4chan-X-noupdate.crx "Chromium version")]
 
