@@ -53,7 +53,7 @@ QuoteBacklink =
   buildBacklink: (quoted, quoter) ->
     $.addClass quoted.nodes.post, 'quoted'
     frag = QuoteBacklink.frag.cloneNode true
-    a = frag.lastElementChild
+    a = frag.querySelector "a:last-of-type"
     a.href = Build.path quoter.board.ID, quoter.thread.ID, quoter.ID
     a.textContent = text = Conf['backlink'].replace /%id/g, quoter.ID
     if quoter.isDead

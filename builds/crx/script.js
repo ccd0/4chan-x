@@ -2721,15 +2721,21 @@
   };
 
   $.addClass = function() {
-    var className, el, _ref;
-    el = arguments[0], className = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-    return (_ref = el.classList).add.apply(_ref, className);
+    var className, classNames, el, _i, _len;
+    el = arguments[0], classNames = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+    for (_i = 0, _len = classNames.length; _i < _len; _i++) {
+      className = classNames[_i];
+      el.classList.add(className);
+    }
   };
 
   $.rmClass = function() {
-    var className, el, _ref;
-    el = arguments[0], className = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-    return (_ref = el.classList).remove.apply(_ref, className);
+    var className, classNames, el, _i, _len;
+    el = arguments[0], classNames = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+    for (_i = 0, _len = classNames.length; _i < _len; _i++) {
+      className = classNames[_i];
+      el.classList.remove(className);
+    }
   };
 
   $.toggleClass = function(el, className) {
@@ -7518,7 +7524,7 @@
       var a, frag, hash, text;
       $.addClass(quoted.nodes.post, 'quoted');
       frag = QuoteBacklink.frag.cloneNode(true);
-      a = frag.lastElementChild;
+      a = frag.querySelector("a:last-of-type");
       a.href = Build.path(quoter.board.ID, quoter.thread.ID, quoter.ID);
       a.textContent = text = Conf['backlink'].replace(/%id/g, quoter.ID);
       if (quoter.isDead) {
