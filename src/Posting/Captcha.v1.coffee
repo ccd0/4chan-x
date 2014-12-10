@@ -106,9 +106,15 @@ Captcha.v1 =
       @count()
       $.set 'captchas', @captchas
     else
-      challenge = @nodes.img.alt
-      response = @nodes.input.value or 'al pacino'
-      if Conf['Auto-load captcha'] then @reload() else @destroy()
+      challenge   = @nodes.img.alt
+      if response = @nodes.input.value
+        if Conf['Auto-load captcha'] then @reload() else @destroy()
+    # Duplicate one-word captchas.
+    # Don't duplicate street numbers for now (needs testing).
+    if !response
+      response = 'al pacino'
+    else if !/\s|^\d$/.test response
+      response = "#{response} #{response}"
     {challenge, response}
 
   save: ->
