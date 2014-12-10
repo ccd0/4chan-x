@@ -686,7 +686,7 @@ QR =
       mode:     'regist'
       pwd:      QR.persona.pwd
       recaptcha_challenge_field: challenge
-      recaptcha_response_field:  response
+      'g-recaptcha-response': response
 
     options =
       responseType: 'document'

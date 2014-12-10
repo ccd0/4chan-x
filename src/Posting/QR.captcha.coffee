@@ -1,9 +1,17 @@
 QR.captcha =
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
-    return unless @isEnabled = !!$.id 'captchaContainer'
+    return unless @isEnabled = !!$.id 'g-recaptcha'
 
-    $.globalEval 'loadRecaptcha()' if Conf['Auto-load captcha']
+    script = $.el 'script',
+      src: '//www.google.com/recaptcha/api/js/recaptcha_ajax.js'
+    $.add d.head, script
+    captchaContainer = $.el 'div',
+      id: 'captchaContainer'
+      hidden: true
+    $.add d.body, captchaContainer
+
+    @setup() if Conf['Auto-load captcha']
 
     imgContainer = $.el 'div',
       className: 'captcha-img'
@@ -44,7 +52,20 @@ QR.captcha =
     @count()
     $.on input, 'focus', @setup
   setup: ->
-    $.globalEval 'loadRecaptcha()'
+    $.globalEval '''
+      (function() {
+        var captchaContainer = document.getElementById("captchaContainer");
+        if (captchaContainer.firstChild) return;
+        function setup() {
+          if (window.Recaptcha) {
+            Recaptcha.create(recaptchaKey, captchaContainer, {theme: "clean"});
+          } else {
+            setTimeout(setup, 25);
+          }
+        }
+        setup();
+      })()
+    '''
   afterSetup: ->
     return unless challenge = $.id 'recaptcha_challenge_field_holder'
     return if challenge is QR.captcha.nodes.challenge
@@ -88,6 +109,10 @@ QR.captcha =
       challenge   = @nodes.img.alt
       if response = @nodes.input.value
         if Conf['Auto-load captcha'] then @reload() else @destroy()
+    # Duplicate one-word captchas.
+    # Don't duplicate street numbers for now (needs testing).
+    if response and !/\s|^\d$/.test response
+      response = "#{response} #{response}"
     {challenge, response}
 
   save: ->
