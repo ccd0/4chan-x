@@ -7,8 +7,6 @@ QR =
     @db = new DataBoard 'yourPosts'
     @posts = []
 
-    @captcha = Captcha[if Conf['Use Recaptcha v1'] then 'v1' else 'v2']
-
     if Conf['QR Shortcut']
       sc = $.el 'a',
         className: "qr-shortcut fa fa-comment-o #{unless Conf['Persistent QR'] then 'disabled' else ''}"
@@ -97,7 +95,7 @@ QR =
     if QR.nodes
       QR.nodes.el.hidden = false
       QR.unhide()
-      QR.captcha.setup() unless Conf['Use Recaptcha v1']
+      QR.captcha.setup()
       return
     try
       QR.dialog()
@@ -114,8 +112,6 @@ QR =
     QR.cleanNotifications()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
-    if Conf['Use Recaptcha v1'] and !Conf['Captcha Warning Notifications']
-      $.rmClass QR.captcha.nodes.input, 'error' if QR.captcha.isEnabled
     if Conf['QR Shortcut']
       $.toggleClass $('.qr-shortcut'), 'disabled'
     new QR.post true
@@ -123,8 +119,7 @@ QR =
       post.delete()
     QR.cooldown.auto = false
     QR.status()
-    if !Conf['Use Recaptcha v1'] or (QR.captcha.isEnabled and not Conf['Auto-load captcha'])
-      QR.captcha.destroy()
+    QR.captcha.destroy()
   focusin: ->
     $.addClass QR.nodes.el, 'focus'
   focusout: ->
@@ -149,21 +144,9 @@ QR =
     else
       el = err
       el.removeAttribute 'style'
-    captchaErr = QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
-    if captchaErr and Conf['Use Recaptcha v1']
-      if QR.captcha.captchas.length is 0
-        # Focus the captcha input on captcha error.
-        QR.captcha.nodes.input.focus()
-        QR.captcha.setup()
-      if Conf['Captcha Warning Notifications'] and !d.hidden
-        QR.notify el
-      else
-        $.addClass QR.captcha.nodes.input, 'error'
-        $.on QR.captcha.nodes.input, 'keydown', ->
-          $.rmClass QR.captcha.nodes.input, 'error'
-    else
-      QR.captcha.setup true if captchaErr and !Conf['Use Recaptcha v1']
-      QR.notify el
+    if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
+      QR.captcha.setup true
+    QR.notify el
     alert el.textContent if d.hidden
 
   notify: (el) ->
@@ -566,7 +549,7 @@ QR =
     QR.cooldown.init()
     QR.captcha.init()
     $.add d.body, dialog
-    QR.captcha.setup() unless Conf['Use Recaptcha v1']
+    QR.captcha.setup()
 
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.
@@ -657,7 +640,7 @@ QR =
       err = 'Max limit of image replies has been reached.'
 
     if QR.captcha.isEnabled and !err
-      {challenge, response} = QR.captcha.getOne()
+      response = QR.captcha.getOne()
       err = 'No valid captcha.' unless response
 
     QR.cleanNotifications()
@@ -691,7 +674,6 @@ QR =
       textonly: textOnly
       mode:     'regist'
       pwd:      QR.persona.pwd
-      recaptcha_challenge_field: challenge
       'g-recaptcha-response': response
 
     options =
@@ -821,7 +803,6 @@ QR =
         icon: Favicon.logo
       notif.onclick = ->
         QR.open()
-        QR.captcha.nodes.input.focus() if Conf['Use Recaptcha v1']
         window.focus()
       notif.onshow = ->
         setTimeout ->
@@ -831,10 +812,8 @@ QR =
     unless Conf['Persistent QR'] or postsCount
       QR.close()
     else
-      if Conf['Use Recaptcha v1'] and QR.posts.length > 1 and QR.captcha.isEnabled and QR.captcha.captchas.length is 0
-        QR.captcha.setup()
       post.rm()
-      QR.captcha.setup true unless Conf['Use Recaptcha v1']
+      QR.captcha.setup true
 
     QR.cooldown.add req.uploadEndTime, threadID, postID
 
