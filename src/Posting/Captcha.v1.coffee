@@ -111,9 +111,7 @@ Captcha.v1 =
         if Conf['Auto-load captcha'] then @reload() else @destroy()
     # Duplicate one-word captchas.
     # Don't duplicate street numbers for now (needs testing).
-    if !response
-      response = 'al pacino'
-    else if !/\s|^\d$/.test response
+    if response and !/\s|^\d$/.test response
       response = "#{response} #{response}"
     {challenge, response}
 
