@@ -371,6 +371,10 @@ Config =
         true
         'Show notifications on successful post creation or file uploading.'
       ]
+      'Use Recaptcha v1': [
+        false
+        'Use the old version of Recaptcha before the introduction of the checkbox.'
+      ]
       'Captcha Warning Notifications': [
         true
         'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.'

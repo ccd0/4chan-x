@@ -1,4 +1,4 @@
-QR.captcha =
+Captcha.v2 =
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
     return unless @isEnabled = !!$.id 'g-recaptcha'
@@ -117,9 +117,9 @@ QR.captcha =
     if captcha = @captchas.shift()
       @count()
       $.set 'captchas', @captchas
-      captcha.response
+      {response: captcha.response}
     else
-      null
+      {}
 
   save: (pasted) ->
     reload = QR.cooldown.auto and @needed()
