@@ -34,6 +34,7 @@ QR.captcha =
 
   onPostChange: ->
     @setup() if @postsCount is 0
+    @postsCount = 0 if QR.posts.length is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
 
   toggle: ->
     if @nodes.container and !@timeouts.destroy
