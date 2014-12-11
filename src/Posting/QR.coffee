@@ -121,6 +121,7 @@ QR =
     QR.status()
     QR.captcha.destroy()
   focusin: ->
+    QR.captcha.setup() if $.hasClass(QR.nodes.el, 'autohide') and !$.hasClass(QR.nodes.el, 'focus')
     $.addClass QR.nodes.el, 'focus'
   focusout: ->
     $.rmClass QR.nodes.el, 'focus'
