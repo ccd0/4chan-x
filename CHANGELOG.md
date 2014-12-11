@@ -115,6 +115,12 @@ Based on v1.9.14.2.
 - Bug fixes.
 
 <!-- v1.9.14.x -->
+### v1.9.14.11 
+*2014-12-11* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.11/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.11/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix `Close` keybind (default: `Esc`) in persistent QR with captcha.
+
 ### v1.9.14.10 
 *2014-12-10* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.10/builds/4chan-X-noupdate.crx "Chromium version")]
 
