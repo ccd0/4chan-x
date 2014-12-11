@@ -36,7 +36,7 @@ Fourchan =
         name: 'Parse /sci/ math'
         cb:   @math
 
-    # Disable 4chan's ID highlighting (replaced by IDHighlight).
+    # Disable 4chan's ID highlighting (replaced by IDHighlight) and reported post hiding.
     $.ready ->
       $.globalEval '''
         (function() {
@@ -45,6 +45,7 @@ Fourchan =
           for (var i = 0; i < nodes.length; i++) {
             nodes[i].removeEventListener("click", idClick, false);
           }
+          window.removeEventListener("message", Report.onMessage, false);
         })();
       '''
 
