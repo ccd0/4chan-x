@@ -85,8 +85,8 @@ QR.captcha =
   afterSetup: (mutations) ->
     for mutation in mutations
       for node in mutation.addedNodes
-        @setupIFrame   node if node.nodeName is 'IFRAME'
-        @setupTextArea node if node.nodeName is 'TEXTAREA'
+        @setupIFrame   iframe   if iframe   = $.x './descendant-or-self::iframe',   node
+        @setupTextArea textarea if textarea = $.x './descendant-or-self::textarea', node
     return
 
   setupIFrame: (iframe) ->
