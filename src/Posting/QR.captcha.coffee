@@ -139,7 +139,7 @@ QR.captcha =
     else
       @timeouts.destroy ?= setTimeout @destroy.bind(@), 3 * $.SECOND
     QR.nodes.status.focus()
-    QR.submit() if Conf['Post on Captcha Completion']
+    QR.submit() if Conf['Post on Captcha Completion'] and !QR.cooldown.auto
 
   clear: ->
     return unless @captchas.length
