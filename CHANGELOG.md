@@ -3,6 +3,18 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.15.x -->
+### v1.9.15.14 
+*2014-12-10* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.14/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.14/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Remove `Use Recaptcha v1` option. It was just a glitch that has been fixed.
+- Fix some bugs from the `Post on Captcha Completion` option.
+
+Merged from v1.9.14.10:
+**ccd0**
+- Possible fix for copy+paste version of captcha not working.
+- Disable 4chan's reported post hiding code. (#219)
+
 ### v1.9.15.13 
 *2014-12-10* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.13/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.13/builds/4chan-X-noupdate.crx "Chromium version")]
 
