@@ -20,6 +20,8 @@ Alternatively, you can downgrade to [Greasemonkey 1.15](https://addons.mozilla.o
 Download the file from the link above and add drag it to your `chrome://extensions` page.
 This should also work for non-Windows/dev/canary Chrome and Chromium-based versions of Opera.
 
+**The above will not work in Chrome (stable or beta) users on Windows; you must install from the [Chrome store](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam).**
+
 ## Chromium version (Chrome store): [Click to Install](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam)
 The stable and beta releases of Chrome on Windows will disable extensions not installed from the Chrome store, so users will need to install 4chan X from the link above.
 Only the latest stable version of 4chan X is available.
