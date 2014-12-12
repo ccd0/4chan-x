@@ -1,3 +1,9 @@
+### v2.9.41 
+*2014-12-12*
+
+- "Until it breaks" PaleMoon support. Probably requires GM 1.15
+- More captcha fixes from ccd0.
+
 ### v2.9.40 
 *2014-12-09*
 
