@@ -20,6 +20,8 @@ Alternatively, you can downgrade to [Greasemonkey 1.15](https://addons.mozilla.o
 Download the file from the link above and add drag it to your `chrome://extensions` page.
 This should also work for non-Windows/dev/canary Chrome and Chromium-based versions of Opera.
 
+**The above will not work in Chrome (stable or beta) users on Windows; you must install from the [Chrome store](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam).**
+
 ## Chromium version (Chrome store): [Click to Install](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam)
 The stable and beta releases of Chrome on Windows will disable extensions not installed from the Chrome store, so users will need to install 4chan X from the link above.
 Only the latest stable version of 4chan X is available.
@@ -38,6 +40,9 @@ If you want to install the current beta version but get updates from the stable 
 
 ## Security note
 4chan X currently shares your settings and post history between the HTTP and HTTPS versions of 4chan. If you are concerned about protecting your privacy against a man-in-the-middle attack, you should disable 4chan X on the HTTP version of 4chan and/or install [HTTPS Everywhere](https://www.eff.org/https-everywhere).
+
+## Uninstalling
+4chan X disables the native extension, so if you uninstall 4chan X, you'll need to re-enable it. To do this, click the `[Settings]` link in the top right corner and uncheck "`Disable the native extension`" in the panel that appears.
 
 ## More information
 - [Source Code](https://github.com/ccd0/4chan-x)
