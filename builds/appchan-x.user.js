@@ -9067,7 +9067,7 @@
       }
     },
     handleFile: function(file, index, nfiles) {
-      var err, isSingle, max, post, _ref;
+      var isSingle, max, post, _ref;
       isSingle = nfiles === 1;
       if (/^text\//.test(file.type)) {
         if (isSingle) {
@@ -9095,12 +9095,7 @@
       } else if ((post = QR.posts[QR.posts.length - 1]).file) {
         post = new QR.post();
       }
-      try {
-        return post.setFile(file);
-      } catch (_error) {
-        err = _error;
-        return console.log(err);
-      }
+      return post.setFile(file);
     },
     openFileInput: function(e) {
       var _ref;

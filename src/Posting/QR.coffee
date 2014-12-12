@@ -322,10 +322,7 @@ QR =
       post = QR.selected
     else if (post = QR.posts[QR.posts.length - 1]).file
       post = new QR.post()
-    try
-      post.setFile file
-    catch err
-      console.log err
+    post.setFile file
 
   openFileInput: (e) ->
     e.stopPropagation()
