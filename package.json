@@ -10,6 +10,7 @@
     "oldVersions": "https://raw.githubusercontent.com/ccd0/4chan-x/",
     "faq": "https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions",
     "appid": "lacclbnghgdicfifcamcmcnilckjamag",
+    "recaptchaKey": "6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc",
     "youtubeAPIKey": "AIzaSyB5_zaen_-46Uhz1xGR-lz1YoUMHqCD6CE",
     "buildsPath": "builds/",
     "mainBranch": "master",
@@ -17,7 +18,8 @@
       "*://boards.4chan.org/*",
       "*://sys.4chan.org/*",
       "*://a.4cdn.org/*",
-      "*://i.4cdn.org/*"
+      "*://i.4cdn.org/*",
+      "*://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc"
     ],
     "suffix": {
       "stable": "",

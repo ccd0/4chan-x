@@ -629,8 +629,8 @@ QR =
       err = 'Max limit of image replies has been reached.'
 
     if QR.captcha.isEnabled and !err
-      {challenge, response} = QR.captcha.getOne()
-      err = 'No valid captcha.' unless response
+      captcha = QR.captcha.getOne()
+      err = 'No valid captcha.' unless captcha
 
     QR.cleanNotifications()
     if err
@@ -663,8 +663,6 @@ QR =
       textonly: textOnly
       mode:     'regist'
       pwd:      QR.persona.pwd
-      recaptcha_challenge_field: challenge
-      recaptcha_response_field:  response
 
     options =
       responseType: 'document'
@@ -696,11 +694,29 @@ QR =
           QR.req.progress = "#{Math.round e.loaded / e.total * 100}%"
           QR.status()
 
-    QR.req = $.ajax "https://sys.4chan.org/#{g.BOARD}/post", options, extra
+    cb = (response) ->
+      extra.form.append 'g-recaptcha-response', response if response?
+      QR.req = $.ajax "https://sys.4chan.org/#{g.BOARD}/post", options, extra
+      QR.req.progress = '...'
+
+    if typeof captcha is 'function'
+      # Wait for captcha to be verified before submitting post.
+      QR.req =
+        progress: '...'
+        abort: -> cb = null
+      captcha (response) ->
+        if response
+          cb? response
+        else
+          delete QR.req
+          post.unlock()
+          QR.cooldown.auto = !!QR.captcha.captchas.length
+          QR.status()
+    else
+      cb captcha
+
     # Starting to upload might take some time.
     # Provide some feedback that we're starting to submit.
-    QR.req.uploadStartTime = Date.now()
-    QR.req.progress = '...'
     QR.status()
 
   response: ->

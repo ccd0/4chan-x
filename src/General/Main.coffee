@@ -1,5 +1,8 @@
 Main =
   init: ->
+    if location.hostname is 'www.google.com'
+      return $.ready -> QR.captcha.initFrame()
+
     g.threads = new SimpleDict
     g.posts   = new SimpleDict
 

@@ -1,31 +1,34 @@
 QR.captcha =
+  lifetime: 120 * $.SECOND
+  iframeURL: '//www.google.com/recaptcha/api/fallback?k=<%= meta.recaptchaKey %>'
+
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
-    return unless @isEnabled = !!$.id 'captchaContainer'
+    return unless @isEnabled = !!$.id 'g-recaptcha'
 
-    $.globalEval 'loadRecaptcha()' if Conf['Auto-load captcha']
-
-    imgContainer = $.el 'div',
+    container = $.el 'div',
       className: 'captcha-img'
       title: 'Reload reCAPTCHA'
-    $.extend imgContainer, <%= html('<img>') %>
     input = $.el 'input',
       className: 'captcha-input field'
       title: 'Verification'
       autocomplete: 'off'
       spellcheck: false
       tabIndex: 45
-    @nodes =
-      img:       imgContainer.firstChild
-      input:     input
+    @nodes = {container, input}
 
     $.on input, 'blur',  QR.focusout
     $.on input, 'focus', QR.focusin
-    $.on input, 'keydown', QR.captcha.keydown.bind QR.captcha
-    $.on @nodes.img.parentNode, 'click', QR.captcha.reload.bind QR.captcha
+    $.on input, 'keydown', @keydown.bind @
+    $.on @nodes.container, 'click', @reload.bind(@, true)
+
+    @conn = new Connection null, "#{location.protocol}//www.google.com",
+      challenge: @load.bind @
+      token:     @save.bind @
+      error:     @error.bind @
 
     $.addClass QR.nodes.el, 'has-captcha'
-    $.after QR.nodes.com.parentNode, [imgContainer, input]
+    $.after QR.nodes.com.parentNode, [container, input]
 
     @captchas = []
     $.get 'captchas', [], ({captchas}) ->
@@ -33,77 +36,112 @@ QR.captcha =
       QR.captcha.clear()
     $.sync 'captchas', @sync
 
-    new MutationObserver(@afterSetup).observe $.id('captchaContainer'), childList: true
-
     @beforeSetup()
-    @afterSetup() # reCAPTCHA might have loaded before the QR.
+    @setup() if Conf['Auto-load captcha']
+
+  initFrame: ->
+    conn = new Connection window.top, "#{location.protocol}//boards.4chan.org",
+      queryChallenge: ->
+        conn.send {challenge}
+      response: (response) ->
+        $.id('response').value = response
+        $('.fbc-challenge > form').submit()
+    challenge = $('.fbc-payload > img')?.src
+    token     = $('.fbc-verification-token > textarea')?.value
+    error     = $('.fbc-error')?.textContent
+    conn.send {challenge, token, error}
+
+  cb:
+    focus: -> QR.captcha.setup()
+
   beforeSetup: ->
-    {img, input} = @nodes
-    img.parentNode.hidden = true
+    {container, input} = @nodes
+    container.hidden = true
     input.value = ''
     input.placeholder = 'Focus to load reCAPTCHA'
     @count()
-    $.on input, 'focus', @setup
+    $.on input, 'focus', @cb.focus
+
   setup: ->
-    $.globalEval 'loadRecaptcha()'
+    if !@nodes.iframe
+      @nodes.iframe = $.el 'iframe',
+        id: 'qr-captcha-iframe'
+        src: @iframeURL
+      delete @iframeUsed
+      $.add d.body, @nodes.iframe
+      @conn.target = @nodes.iframe.contentWindow
+    else if @iframeUsed or !@nodes.img
+      @nodes.iframe.src = @iframeURL
+      delete @iframeUsed
+    else if !@nodes.img.complete
+      @conn.send queryChallenge: null
+
   afterSetup: ->
-    return unless challenge = $.id 'recaptcha_challenge_field_holder'
-    return if challenge is QR.captcha.nodes.challenge
-
-    setLifetime = (e) -> QR.captcha.lifetime = e.detail
-    $.on window, 'captcha:timeout', setLifetime
-    $.globalEval 'window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))'
-    $.off window, 'captcha:timeout', setLifetime
-
-    {img, input} = QR.captcha.nodes
-    img.parentNode.hidden = false
+    {container, input} = @nodes
+    container.hidden = false
     input.placeholder = 'Verification'
-    QR.captcha.count()
-    $.off input, 'focus', QR.captcha.setup
-
-    QR.captcha.nodes.challenge = challenge
-    new MutationObserver(QR.captcha.load.bind QR.captcha).observe challenge,
-      childList: true
-      subtree: true
-      attributes: true
-    QR.captcha.load()
+    @count()
+    $.off input, 'focus', @cb.focus
 
     if QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight
       QR.nodes.el.style.top    = null
       QR.nodes.el.style.bottom = '0px'
+
   destroy: ->
-    $.globalEval 'Recaptcha.destroy()'
+    $.rm @nodes.img
+    delete @nodes.img
+    $.rm @nodes.iframe
+    delete @nodes.iframe
     @beforeSetup()
 
-  sync: (captchas) ->
+  sync: (captchas=[]) ->
     QR.captcha.captchas = captchas
     QR.captcha.count()
 
   getOne: ->
     @clear()
     if captcha = @captchas.shift()
-      {challenge, response} = captcha
       @count()
       $.set 'captchas', @captchas
+      captcha.response
+    else if /\S/.test @nodes.input.value
+      (cb) =>
+        @submitCB = cb
+        @sendResponse()
     else
-      challenge   = @nodes.img.alt
-      if response = @nodes.input.value
-        if Conf['Auto-load captcha'] then @reload() else @destroy()
-    {challenge, response}
+      null
 
-  save: ->
-    return unless /\S/.test(response = @nodes.input.value)
+  sendResponse: ->
+    response = @nodes.input.value
+    if /\S/.test response
+      @conn.send {response}
+      @iframeUsed = true
+
+  save: (token) ->
     @nodes.input.value = ''
-    @captchas.push
-      challenge: @nodes.img.alt
-      response:  response
-      timeout:   @timeout
-    @count()
-    @reload()
-    $.set 'captchas', @captchas
+    if @submitCB
+      @submitCB token
+      delete @submitCB
+      if Conf['Auto-load captcha'] then @reload() else @destroy()
+    else
+      $.forceSync 'captchas'
+      @captchas.push
+        response: token
+        timeout:  @timeout
+      @count()
+      $.set 'captchas', @captchas
+      @reload()
+
+  error: (message) ->
+    @nodes.input.value = ''
+    QR.error "CAPTCHA Error: #{message}"
+    if @submitCB
+      @submitCB()
+      delete @submitCB
 
   clear: ->
     return unless @captchas.length
+    $.forceSync 'captchas'
     now = Date.now()
     for captcha, i in @captchas
       break if captcha.timeout > now
@@ -112,16 +150,17 @@ QR.captcha =
     @count()
     $.set 'captchas', @captchas
 
-  load: ->
-    return unless @nodes.challenge.firstChild
-    return unless challenge_image = $.id 'recaptcha_challenge_image'
-    # -1 minute to give upload some time.
-    @timeout  = Date.now() + @lifetime * $.SECOND - $.MINUTE
-    challenge = @nodes.challenge.firstChild.value
-    @nodes.img.alt = challenge
-    @nodes.img.src = challenge_image.src
-    @nodes.input.value = null
+  load: (src) ->
+    {container, input, img} = @nodes
+    @timeout = Date.now() + @lifetime
+    unless img
+      img = @nodes.img = new Image
+      $.one img, 'load', @afterSetup.bind @
+      $.add container, img
+    img.src = src
+    input.value = ''
     @clear()
+    setTimeout @reload.bind(@), @lifetime
 
   count: ->
     count = if @captchas then @captchas.length else 0
@@ -135,18 +174,20 @@ QR.captcha =
         " (#{count} cached captchas)"
     @nodes.input.placeholder = placeholder
     @nodes.input.alt = count # For XTRM RICE.
+    clearTimeout @timeout
+    if @captchas.length
+      @timeout = setTimeout @clear.bind(@), @captchas[0].timeout - Date.now()
 
   reload: (focus) ->
-    # Hack to prevent the input from being focused
-    $.globalEval 'Recaptcha.reload(); Recaptcha.should_focus = false;'
-    # Focus if we meant to.
+    @nodes.iframe.src = @iframeURL
+    delete @iframeUsed
     @nodes.input.focus() if focus
 
   keydown: (e) ->
     if e.keyCode is 8 and not @nodes.input.value
       @reload()
     else if e.keyCode is 13 and e.shiftKey
-      @save()
+      @sendResponse()
     else
       return
     e.preventDefault()

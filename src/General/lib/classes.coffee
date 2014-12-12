@@ -9,3 +9,4 @@
 <%= grunt.file.read('src/General/lib/randomaccesslist.class') %>
 <%= grunt.file.read('src/General/lib/simpledict.class') %>
 <%= grunt.file.read('src/General/lib/set.class') %>
+<%= grunt.file.read('src/General/lib/connection.class') %>
