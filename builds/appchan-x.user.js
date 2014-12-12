@@ -2987,6 +2987,9 @@
       return onChange(key);
     });
     return $.forceSync = function(key) {
+      if ($.frag().childElementCount == null) {
+        return;
+      }
       return onChange(g.NAMESPACE + key);
     };
   })();
