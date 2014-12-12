@@ -35,9 +35,8 @@ QR.post = class
     else
       'new'
 
-    [..., prev] = QR.posts
+    prev = QR.posts[QR.posts.length - 1]
     QR.posts.push @
-    QR.captcha.setup()
     @nodes.spoiler.checked = @spoiler = if prev and Conf['Remember Spoiler']
       prev.spoiler
     else
@@ -72,6 +71,8 @@ QR.post = class
       @load() if QR.selected is @ # load persona
     @select() if select
     @unlock()
+    # Post count temporarily off by 1 when called from QR.post.rm
+    $.queueTask -> QR.captcha.setup()
 
   rm: ->
     @delete()
@@ -136,7 +137,7 @@ QR.post = class
         QR.status()
       when 'com'
         @nodes.span.textContent = @com
-        QR.captcha.setup()
+        QR.captcha.onPostChange()
         QR.characterCount()
         # Disable auto-posting if you're typing in the first post
         # during the last 5 seconds of the cooldown.
@@ -165,7 +166,7 @@ QR.post = class
     @filename = file.name
     @filesize = $.bytesToString file.size
     @nodes.label.hidden = false if QR.spoiler
-    QR.captcha.setup()
+    QR.captcha.onPostChange()
     URL.revokeObjectURL @URL
     if @ is QR.selected
       @showFileData()
@@ -181,7 +182,7 @@ QR.post = class
     isVideo = /^video\//.test @file.type
     el = $.el (if isVideo then 'video' else 'img')
 
-    $.on el, (if isVideo then 'loadeddata' else 'load'), =>
+    $.on el, (if isVideo then 'loadeddata' else 'load'), ->
       # Verify element dimensions.
       errors = @checkDimensions el, isVideo
       if errors.length
@@ -195,6 +196,7 @@ QR.post = class
       # to avoid crappy resized quality.
       s = 90 * 2 * window.devicePixelRatio
       s *= 3 if @file.type is 'image/gif' # let them animate
+
       if isVideo
         height = el.videoHeight
         width  = el.videoWidth
@@ -204,12 +206,14 @@ QR.post = class
           @URL = fileURL
           @nodes.el.style.backgroundImage = "url(#{@URL})"
           return
+
       if height <= width
         width  = s / height * width
         height = s
       else
         height = s / width  * height
         width  = s
+
       cv = $.el 'canvas'
       cv.height = el.height = height
       cv.width  = el.width  = width
@@ -226,8 +230,14 @@ QR.post = class
     err = []
     if video
       {videoHeight, videoWidth, duration} = el
-      max_height = if QR.max_height < QR.max_height_video then QR.max_height else QR.max_height_video
-      max_width  = if QR.max_width  < QR.max_width_video  then QR.max_width  else QR.max_width_video
+      max_height = if QR.max_height < QR.max_height_video
+        QR.max_height
+      else
+        QR.max_height_video
+      max_width = if QR.max_width  < QR.max_width_video
+        QR.max_width
+      else
+        QR.max_width_video
       if videoHeight > max_height or videoWidth > max_width
         err.push "#{@file.name}: Video too large (video: #{videoHeight}x#{videoWidth}px, max: #{max_height}x#{max_width}px)"
       if videoHeight < QR.min_height or videoWidth < QR.min_width
@@ -261,7 +271,7 @@ QR.post = class
     URL.revokeObjectURL @URL
 
   updateFilename: ->
-    title = "#{@filename} (#{@filesize})\nCtrl+click to edit filename. Shift+click to clear."
+    title = "#{@filename} (#{@filesize})\nCtrl/\u2318+click to edit filename. Shift+click to clear."
     @nodes.el.title = title
     return unless @ is QR.selected
     QR.nodes.fileContainer.title = title

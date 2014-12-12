@@ -28,7 +28,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.40 - 2014-12-09
+* appchan x - Version 2.9.40 - 2014-12-12
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -8819,6 +8819,9 @@
       return QR.captcha.destroy();
     },
     focusin: function() {
+      if ($.hasClass(QR.nodes.el, 'autohide') && !$.hasClass(QR.nodes.el, 'focus')) {
+        QR.captcha.setup();
+      }
       return $.addClass(QR.nodes.el, 'focus');
     },
     focusout: function() {
@@ -8850,7 +8853,7 @@
         el.removeAttribute('style');
       }
       if (QR.captcha.isEnabled && /captcha|verification/i.test(el.textContent)) {
-        QR.captcha.setup();
+        QR.captcha.setup(true);
       }
       QR.notify(el);
       if (d.hidden) {
@@ -9007,6 +9010,9 @@
     },
     paste: function(e) {
       var blob, files, item, _i, _len, _ref;
+      if (!e.clipboardData.items) {
+        return;
+      }
       files = [];
       _ref = e.clipboardData.items;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -9028,45 +9034,16 @@
       QR.handleFiles(files);
       return $.addClass(QR.nodes.el, 'dump');
     },
-    handleBlob: function(urlBlob, contentType, contentDisposition, url) {
-      var blob, match, mime, name, _ref, _ref1, _ref2;
-      name = (_ref = url.match(/([^\/]+)\/*$/)) != null ? _ref[1] : void 0;
-      mime = (contentType != null ? contentType.match(/[^;]*/)[0] : void 0) || 'application/octet-stream';
-      match = (contentDisposition != null ? (_ref1 = contentDisposition.match(/\bfilename\s*=\s*"((\\"|[^"])+)"/i)) != null ? _ref1[1] : void 0 : void 0) || (contentType != null ? (_ref2 = contentType.match(/\bname\s*=\s*"((\\"|[^"])+)"/i)) != null ? _ref2[1] : void 0 : void 0);
-      if (match) {
-        name = match.replace(/\\"/g, '"');
-      }
-      blob = new Blob([urlBlob], {
-        type: mime
-      });
-      blob.name = name;
-      return QR.handleFiles([blob]);
-    },
     handleUrl: function() {
       var url;
-      url = prompt("Enter a URL:");
+      url = prompt('Enter a URL:');
       if (url === null) {
         return;
       }
-      return GM_xmlhttpRequest({
-        method: "GET",
-        url: url,
-        overrideMimeType: "text/plain; charset=x-user-defined",
-        onload: function(xhr) {
-          var contentDisposition, contentType, data, h, i, r;
-          r = xhr.responseText;
-          h = xhr.responseHeaders;
-          data = new Uint8Array(r.length);
-          i = 0;
-          while (i < r.length) {
-            data[i] = r.charCodeAt(i);
-            i++;
-          }
-          contentType = (h.match(/Content-Type:\s*(.*)/i) || [])[1];
-          contentDisposition = (h.match(/Content-Disposition:\s*(.*)/i) || [])[1];
-          return QR.handleBlob(data, contentType, contentDisposition, url);
-        },
-        onerror: function(xhr) {
+      return CrossOrigin.file(url, function(blob) {
+        if (blob) {
+          return QR.handleFiles([blob]);
+        } else {
           return QR.error("Can't load image.");
         }
       });
@@ -9090,12 +9067,12 @@
       }
     },
     handleFile: function(file, index, nfiles) {
-      var isSingle, max, post, _ref;
+      var err, isSingle, max, post, _ref;
       isSingle = nfiles === 1;
       if (/^text\//.test(file.type)) {
         if (isSingle) {
           post = QR.selected;
-        } else if ((post = QR.posts[QR.posts.length - 1]).com) {
+        } else if (index !== 0 || (post = QR.posts[QR.posts.length - 1]).com) {
           post = new QR.post();
         }
         post.pasteText(file);
@@ -9118,7 +9095,12 @@
       } else if ((post = QR.posts[QR.posts.length - 1]).file) {
         post = new QR.post();
       }
-      return post.setFile(file);
+      try {
+        return post.setFile(file);
+      } catch (_error) {
+        err = _error;
+        return console.log(err);
+      }
     },
     openFileInput: function(e) {
       var _ref;
@@ -9126,10 +9108,12 @@
       if (e.shiftKey && e.type === 'click') {
         return QR.selected.rmFile();
       }
-      if (e.ctrlKey && e.type === 'click') {
+      if ((e.ctrlKey || e.metaKey) && e.type === 'click') {
         $.addClass(QR.nodes.filename, 'edit');
         QR.nodes.filename.focus();
-        return;
+        return $.on(QR.nodes.filename, 'blur', function() {
+          return $.rmClass(QR.nodes.filename, 'edit');
+        });
       }
       if (e.target.nodeName === 'INPUT' || (e.keyCode && ((_ref = e.keyCode) !== 32 && _ref !== 13)) || e.ctrlKey) {
         return;
@@ -9165,7 +9149,7 @@
       }
     },
     dialog: function() {
-      var dialog, elm, event, i, items, name, node, nodes, prop, rules, save, setNode, _, _i, _len, _ref, _ref1, _ref2;
+      var dialog, elm, event, i, items, match_max, match_min, name, node, nodes, rules, save, setNode;
       QR.nodes = nodes = {
         el: dialog = UI.dialog('qr', 'top:0;right:0;', "<div id=qrtab class=move><input type=checkbox id=autohide title=Auto-hide><div id=qr-thread-select><select data-name=thread title='Create a new thread / Reply'><option value=new>New thread</option></select></div><a href=javascript:; class='close fa' title=Close>\uf00d</a></div><form><div class=persona><input name=name  data-name=name  list=\"list-name\" placeholder=Name    class=field size=1><input name=email data-name=email list=\"list-email\" placeholder=Options class=field size=1><input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1> </div><div class=textarea><textarea data-name=com placeholder=Comment class=field></textarea><span id=char-count></span></div><div id=dump-list-container><div id=dump-list></div><a id=add-post href=javascript:; title=\"Add a post\">+</a></div><div id=file-n-submit><span id=qr-filename-container class=field tabindex=0><span id=qr-no-file>No selected file</span><input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\"><span id=qr-extras-container><label id=qr-spoiler-label><input type=checkbox id=qr-file-spoiler title='Spoiler image'></label><span class=description>Spoiler</span><a id=url-button><i class=\"fa\">\uf0c1</i></a><span class=description>Post from URL</span><a id=dump-button title='Dump list'>+</a><span class=description>Dump</span><a id=qr-filerm href=javascript:; title='Remove file' class=fa>\uf00d</a><span class=description>Remove File</span></span></span><input type=submit></div><input type=file multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist>")
       };
@@ -9197,23 +9181,20 @@
       setNode('status', '[type=submit]');
       setNode('fileInput', '[type=file]');
       rules = $('ul.rules').textContent.trim();
-      QR.min_width = QR.min_height = 1;
-      QR.max_width = QR.max_height = 10000;
-      try {
-        _ref = rules.match(/.+smaller than (\d+)x(\d+).+/), _ = _ref[0], QR.min_width = _ref[1], QR.min_height = _ref[2];
-        _ref1 = rules.match(/.+greater than (\d+)x(\d+).+/), _ = _ref1[0], QR.max_width = _ref1[1], QR.max_height = _ref1[2];
-        _ref2 = ['min_width', 'min_height', 'max_width', 'max_height'];
-        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-          prop = _ref2[_i];
-          QR[prop] = parseInt(QR[prop], 10);
-        }
-      } catch (_error) {
-        null;
-      }
+      match_min = rules.match(/.+smaller than (\d+)x(\d+).+/);
+      match_max = rules.match(/.+greater than (\d+)x(\d+).+/);
+      QR.min_width = +(match_min != null ? match_min[1] : void 0) || 1;
+      QR.min_height = +(match_min != null ? match_min[2] : void 0) || 1;
+      QR.max_width = +(match_max != null ? match_max[1] : void 0) || 10000;
+      QR.max_height = +(match_max != null ? match_max[2] : void 0) || 10000;
       nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
       QR.max_size_video = 3145728;
       QR.max_width_video = QR.max_height_video = 2048;
       QR.max_duration_video = 120;
+      QR.forcedAnon = !!$('form[name="post"] input[name="name"][type="hidden"]');
+      if (QR.forcedAnon) {
+        $.addClass(QR.nodes.el, 'forced-anon');
+      }
       QR.spoiler = !!$('.postForm input[name=spoiler]');
       if (QR.spoiler) {
         $.addClass(QR.nodes.el, 'has-spoiler');
@@ -9224,9 +9205,10 @@
         $.after(nodes.name.parentElement, nodes.dumpList.parentElement);
         nodes.addPost.tabIndex = 35;
       }
-      if (g.BOARD.ID === 'f') {
+      if (g.BOARD.ID === 'f' && g.VIEW !== 'thread') {
         nodes.flashTag = $.el('select', {
-          name: 'filetag',
+          name: 'filetag'
+        }, {
           innerHTML: "<option value=0>Hentai</option>\n<option value=6>Porn</option>\n<option value=1>Japanese</option>\n<option value=2>Anime</option>\n<option value=3>Game</option>\n<option value=5>Loop</option>\n<option value=4 selected>Other</option>"
         });
         nodes.flashTag.dataset["default"] = '4';
@@ -9413,9 +9395,9 @@
       post.lock();
       formData = {
         resto: threadID,
-        name: post.name,
+        name: !QR.forcedAnon ? post.name : void 0,
         email: post.email,
-        sub: post.sub,
+        sub: !(QR.forcedAnon || threadID) ? post.sub : void 0,
         com: post.com,
         upfile: post.file,
         filetag: filetag,
@@ -9502,9 +9484,6 @@
         }
         QR.status();
         QR.error(err);
-        if (QR.captcha.isEnabled) {
-          QR.captcha.setup();
-        }
         return;
       }
       h1 = $('h1', resDoc);
@@ -9555,7 +9534,7 @@
         QR.close();
       } else {
         post.rm();
-        QR.captcha.setup();
+        QR.captcha.setup(true);
       }
       QR.cooldown.set({
         req: req,
@@ -9607,7 +9586,7 @@
 
   QR.captcha = {
     init: function() {
-      var container, counter, section;
+      var counter, root;
       if (d.cookie.indexOf('pass_enabled=1') >= 0) {
         return;
       }
@@ -9621,80 +9600,101 @@
         return QR.captcha.sync(captchas);
       });
       $.sync('captchas', this.sync.bind(this));
-      section = $.el('div', {
-        className: 'captcha-section'
+      root = $.el('div', {
+        className: 'captcha-root'
       });
-      $.extend(section, {
-        innerHTML: "<div class=\"captcha-container\"></div><div class=\"captcha-counter\"><a href=\"javascript:;\"></a></div>"
+      $.extend(root, {
+        innerHTML: "<div class=\"captcha-counter\"><a href=\"javascript:;\"></a></div>"
       });
-      container = $('.captcha-container', section);
-      counter = $('.captcha-counter > a', section);
+      counter = $('.captcha-counter > a', root);
       this.nodes = {
-        container: container,
+        root: root,
         counter: counter
       };
       this.count();
       $.addClass(QR.nodes.el, 'has-captcha');
-      $.after(QR.nodes.com.parentNode, section);
-      new MutationObserver(this.afterSetup.bind(this)).observe(container, {
-        childList: true,
-        subtree: true
-      });
+      $.after(QR.nodes.com.parentNode, root);
       $.on(counter, 'click', this.toggle.bind(this));
-      return $.on(window, 'captcha:success', this.save.bind(this));
+      return $.on(window, 'captcha:success', (function(_this) {
+        return function() {
+          return _this.save(false);
+        };
+      })(this));
     },
     shouldFocus: false,
     timeouts: {},
+    postsCount: 0,
     needed: function() {
-      var captchaCount, postsCount;
+      var captchaCount;
       captchaCount = this.captchas.length;
-      if (this.nodes.container.dataset.widgetID && !this.timeouts.destroy) {
+      if (this.nodes.container && !this.timeouts.destroy) {
         captchaCount++;
       }
-      postsCount = QR.posts.length;
-      if (postsCount === 1 && !Conf['Auto-load captcha'] && !QR.posts[0].com && !QR.posts[0].file) {
-        postsCount = 0;
+      this.postsCount = QR.posts.length;
+      if (this.postsCount === 1 && !Conf['Auto-load captcha'] && !QR.posts[0].com && !QR.posts[0].file) {
+        this.postsCount = 0;
       }
-      return captchaCount < postsCount;
+      return captchaCount < this.postsCount;
+    },
+    onPostChange: function() {
+      if (this.postsCount === 0) {
+        this.setup();
+      }
+      if (QR.posts.length === 1 && !Conf['Auto-load captcha'] && !QR.posts[0].com && !QR.posts[0].file) {
+        return this.postsCount = 0;
+      }
     },
     toggle: function() {
-      if (this.nodes.container.dataset.widgetID && !this.timeouts.destroy) {
+      if (this.nodes.container && !this.timeouts.destroy) {
         return this.destroy();
       } else {
-        this.shouldFocus = true;
-        return this.setup(true);
+        return this.setup(true, true);
       }
     },
-    setup: function(force) {
+    setup: function(focus, force) {
       if (!(this.isEnabled && (this.needed() || force))) {
         return;
       }
       $.addClass(QR.nodes.el, 'captcha-open');
+      if (focus) {
+        this.shouldFocus = true;
+      }
       if (this.timeouts.destroy) {
         clearTimeout(this.timeouts.destroy);
         delete this.timeouts.destroy;
         return this.reload();
       }
-      if (this.nodes.container.dataset.widgetID) {
+      if (this.nodes.container) {
         return;
       }
-      return $.globalEval('(function() {\n  var container = document.querySelector("#qr .captcha-container");\n  container.dataset.widgetID = window.grecaptcha.render(container, {\n    sitekey: \'6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc\',\n    theme: document.documentElement.classList.contains(\'tomorrow\') ? \'dark\' : \'light\',\n    callback: function(response) {\n      window.dispatchEvent(new CustomEvent("captcha:success", {detail: response}));\n    }\n  });\n})();');
+      this.nodes.container = $.el('div', {
+        className: 'captcha-container'
+      });
+      $.prepend(this.nodes.root, this.nodes.container);
+      new MutationObserver(this.afterSetup.bind(this)).observe(this.nodes.container, {
+        childList: true,
+        subtree: true
+      });
+      return $.globalEval('(function() {\n  function render() {\n    var container = document.querySelector("#qr .captcha-container");\n    container.dataset.widgetID = window.grecaptcha.render(container, {\n      sitekey: \'6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc\',\n      theme: document.documentElement.classList.contains(\'tomorrow\') ? \'dark\' : \'light\',\n      callback: function(response) {\n        window.dispatchEvent(new CustomEvent("captcha:success", {detail: response}));\n      }\n    });\n  }\n  if (window.grecaptcha) {\n    render();\n  } else {\n    var cbNative = window.onRecaptchaLoaded;\n    window.onRecaptchaLoaded = function() {\n      render();\n      cbNative();\n    }\n  }\n})();');
     },
     afterSetup: function(mutations) {
-      var iframe, mutation, node, _i, _j, _len, _len1, _ref;
+      var iframe, mutation, node, textarea, _i, _j, _len, _len1, _ref;
       for (_i = 0, _len = mutations.length; _i < _len; _i++) {
         mutation = mutations[_i];
         _ref = mutation.addedNodes;
         for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
           node = _ref[_j];
-          if (node.nodeName === 'IFRAME') {
-            iframe = node;
+          if (iframe = $.x('./descendant-or-self::iframe', node)) {
+            this.setupIFrame(iframe);
+          }
+          if (textarea = $.x('./descendant-or-self::textarea', node)) {
+            this.setupTextArea(textarea);
           }
         }
       }
-      if (!iframe) {
-        return;
-      }
+    },
+    setupIFrame: function(iframe) {
+      this.setupTime = Date.now();
       if (QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight) {
         QR.nodes.el.style.top = null;
         QR.nodes.el.style.bottom = '0px';
@@ -9704,16 +9704,28 @@
       }
       return this.shouldFocus = false;
     },
+    setupTextArea: function(textarea) {
+      return $.one(textarea, 'input', (function(_this) {
+        return function() {
+          return _this.save(true);
+        };
+      })(this));
+    },
     destroy: function() {
       if (!this.isEnabled) {
         return;
       }
       delete this.timeouts.destroy;
       $.rmClass(QR.nodes.el, 'captcha-open');
-      $.rmAll(this.nodes.container);
-      return this.nodes.container.removeAttribute('data-widget-i-d');
+      if (this.nodes.container) {
+        $.rm(this.nodes.container);
+      }
+      return delete this.nodes.container;
     },
     sync: function(captchas) {
+      if (captchas == null) {
+        captchas = [];
+      }
       this.captchas = captchas;
       this.clear();
       return this.count();
@@ -9729,30 +9741,39 @@
         return null;
       }
     },
-    save: function(e) {
-      var _base;
-      if (this.needed()) {
+    save: function(pasted) {
+      var reload, _base;
+      $.forceSync('captchas');
+      reload = (QR.cooldown.auto || Conf['Post on Captcha Completion']) && this.needed();
+      this.captchas.push({
+        response: $('textarea', this.nodes.container).value,
+        timeout: (pasted ? this.setupTime : Date.now()) + 2 * $.MINUTE
+      });
+      this.count();
+      $.set('captchas', this.captchas);
+      if (reload) {
         this.shouldFocus = true;
         this.reload();
       } else {
-        this.nodes.counter.focus();
-        if ((_base = this.timeouts).destroy == null) {
-          _base.destroy = setTimeout(this.destroy.bind(this), 3 * $.SECOND);
+        if (pasted) {
+          this.destroy();
+        } else {
+          if ((_base = this.timeouts).destroy == null) {
+            _base.destroy = setTimeout(this.destroy.bind(this), 3 * $.SECOND);
+          }
         }
+        QR.nodes.status.focus();
       }
-      $.forceSync('captchas');
-      this.captchas.push({
-        response: e.detail,
-        timeout: Date.now() + 2 * $.MINUTE
-      });
-      this.count();
-      return $.set('captchas', this.captchas);
+      if (Conf['Post on Captcha Completion'] && !QR.cooldown.auto) {
+        return QR.submit();
+      }
     },
     clear: function() {
       var captcha, i, now, _i, _len, _ref;
       if (!this.captchas.length) {
         return;
       }
+      $.forceSync('captchas');
       now = Date.now();
       _ref = this.captchas;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
@@ -9767,7 +9788,7 @@
       this.captchas = this.captchas.slice(i);
       this.count();
       $.set('captchas', this.captchas);
-      return this.setup();
+      return this.setup(true);
     },
     count: function() {
       this.nodes.counter.textContent = "Captchas: " + this.captchas.length;
@@ -10004,7 +10025,7 @@
   QR.post = (function() {
     function _Class(select) {
       this.select = __bind(this.select, this);
-      var el, elm, event, prev, _i, _j, _len, _len1, _ref, _ref1, _ref2;
+      var el, elm, event, prev, _i, _j, _len, _len1, _ref, _ref1;
       el = $.el('a', {
         className: 'qr-preview',
         draggable: true,
@@ -10051,9 +10072,8 @@
         $.on(el, event.toLowerCase(), this[event]);
       }
       this.thread = g.VIEW === 'thread' ? g.THREADID : 'new';
-      _ref2 = QR.posts, prev = _ref2[_ref2.length - 1];
+      prev = QR.posts[QR.posts.length - 1];
       QR.posts.push(this);
-      QR.captcha.setup();
       this.nodes.spoiler.checked = this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
       QR.persona.get((function(_this) {
         return function(persona) {
@@ -10072,6 +10092,9 @@
         this.select();
       }
       this.unlock();
+      $.queueTask(function() {
+        return QR.captcha.setup();
+      });
     }
 
     _Class.prototype.rm = function() {
@@ -10162,7 +10185,7 @@
           return QR.status();
         case 'com':
           this.nodes.span.textContent = this.com;
-          QR.captcha.setup();
+          QR.captcha.onPostChange();
           QR.characterCount();
           if (QR.cooldown.auto && this === QR.posts[0] && (0 < (_ref = QR.cooldown.seconds) && _ref <= 5)) {
             return QR.cooldown.auto = false;
@@ -10202,7 +10225,7 @@
       if (QR.spoiler) {
         this.nodes.label.hidden = false;
       }
-      QR.captcha.setup();
+      QR.captcha.onPostChange();
       URL.revokeObjectURL(this.URL);
       if (this === QR.selected) {
         this.showFileData();
@@ -10220,55 +10243,55 @@
       var el, fileURL, isVideo;
       isVideo = /^video\//.test(this.file.type);
       el = $.el((isVideo ? 'video' : 'img'));
-      $.on(el, (isVideo ? 'loadeddata' : 'load'), (function(_this) {
-        return function() {
-          var cv, error, errors, height, s, width, _i, _len;
-          errors = _this.checkDimensions(el, isVideo);
-          if (errors.length) {
-            for (_i = 0, _len = errors.length; _i < _len; _i++) {
-              error = errors[_i];
-              QR.error(error);
-            }
-            _this.URL = fileURL;
-            if ((QR.posts.length === 1) || (_this.com && _this.com.length)) {
-              return _this.rmFile();
-            } else {
-              return _this.rm();
-            }
+      $.on(el, (isVideo ? 'loadeddata' : 'load'), function() {
+        var cv, error, errors, height, s, width, _i, _len;
+        errors = this.checkDimensions(el, isVideo);
+        if (errors.length) {
+          for (_i = 0, _len = errors.length; _i < _len; _i++) {
+            error = errors[_i];
+            QR.error(error);
           }
-          s = 90 * 2 * window.devicePixelRatio;
-          if (_this.file.type === 'image/gif') {
-            s *= 3;
-          }
-          if (isVideo) {
-            height = el.videoHeight;
-            width = el.videoWidth;
+          this.URL = fileURL;
+          if ((QR.posts.length === 1) || (this.com && this.com.length)) {
+            return this.rmFile();
           } else {
-            height = el.height, width = el.width;
-            if (height < s || width < s) {
-              _this.URL = fileURL;
-              _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
-              return;
-            }
+            return this.rm();
           }
-          if (height <= width) {
-            width = s / height * width;
-            height = s;
-          } else {
-            height = s / width * height;
-            width = s;
+        }
+        s = 90 * 2 * window.devicePixelRatio;
+        if (this.file.type === 'image/gif') {
+          s *= 3;
+        }
+        if (isVideo) {
+          height = el.videoHeight;
+          width = el.videoWidth;
+        } else {
+          height = el.height, width = el.width;
+          if (height < s || width < s) {
+            this.URL = fileURL;
+            this.nodes.el.style.backgroundImage = "url(" + this.URL + ")";
+            return;
           }
-          cv = $.el('canvas');
-          cv.height = el.height = height;
-          cv.width = el.width = width;
-          cv.getContext('2d').drawImage(el, 0, 0, width, height);
-          URL.revokeObjectURL(fileURL);
-          return cv.toBlob(function(blob) {
+        }
+        if (height <= width) {
+          width = s / height * width;
+          height = s;
+        } else {
+          height = s / width * height;
+          width = s;
+        }
+        cv = $.el('canvas');
+        cv.height = el.height = height;
+        cv.width = el.width = width;
+        cv.getContext('2d').drawImage(el, 0, 0, width, height);
+        URL.revokeObjectURL(fileURL);
+        return cv.toBlob((function(_this) {
+          return function(blob) {
             _this.URL = URL.createObjectURL(blob);
             return _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
-          });
-        };
-      })(this));
+          };
+        })(this));
+      });
       fileURL = URL.createObjectURL(this.file);
       return el.src = fileURL;
     };
@@ -10326,7 +10349,7 @@
 
     _Class.prototype.updateFilename = function() {
       var title;
-      title = "" + this.filename + " (" + this.filesize + ")\nCtrl+click to edit filename. Shift+click to clear.";
+      title = "" + this.filename + " (" + this.filesize + ")\nCtrl/\u2318+click to edit filename. Shift+click to clear.";
       this.nodes.el.title = title;
       if (this !== QR.selected) {
         return;

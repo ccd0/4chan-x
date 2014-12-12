@@ -108,6 +108,7 @@ QR =
     QR.captcha.destroy()
 
   focusin: ->
+    QR.captcha.setup() if $.hasClass(QR.nodes.el, 'autohide') and !$.hasClass(QR.nodes.el, 'focus')
     $.addClass QR.nodes.el, 'focus'
 
   focusout: ->
@@ -136,7 +137,7 @@ QR =
       el = err
       el.removeAttribute 'style'
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
-      QR.captcha.setup()
+      QR.captcha.setup true
     QR.notify el
     alert el.textContent if d.hidden
 
@@ -270,6 +271,7 @@ QR =
     QR.handleFiles e.dataTransfer.files
 
   paste: (e) ->
+    return unless e.clipboardData.items
     files = []
     for item in e.clipboardData.items when item.kind is 'file'
       blob = item.getAsFile()
@@ -280,65 +282,14 @@ QR =
     QR.open()
     QR.handleFiles files
     $.addClass QR.nodes.el, 'dump'
-
-  handleBlob: (urlBlob, contentType, contentDisposition, url) ->
-    name = url.match(/([^\/]+)\/*$/)?[1]
-    mime = contentType?.match(/[^;]*/)[0] or 'application/octet-stream'
-    match =
-      contentDisposition?.match(/\bfilename\s*=\s*"((\\"|[^"])+)"/i)?[1] or
-      contentType?.match(/\bname\s*=\s*"((\\"|[^"])+)"/i)?[1]
-    if match
-      name = match.replace /\\"/g, '"'
-    blob = new Blob([urlBlob], {type: mime})
-    blob.name = name
-    QR.handleFiles([blob])
-
   handleUrl:  ->
-    url = prompt("Enter a URL:")
+    url = prompt 'Enter a URL:'
     return if url is null
-
-    <% if (type === 'crx') { %>
-    xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true)
-    xhr.responseType = 'blob'
-    xhr.onload = (e) ->
-      return QR.error "Can't load image." unless @readyState is @DONE and xhr.status is 200
-
-      contentType = @getResponseHeader('Content-Type')
-      contentDisposition = @getResponseHeader('Content-Disposition')
-      QR.handleBlob @response, contentType, contentDisposition, url
-
-    xhr.onerror = (e) ->
-      QR.error "Can't load image."
-    xhr.send()
-
-    <% } else { %>
-
-    GM_xmlhttpRequest
-      method: "GET"
-      url: url
-
-      # FIXME: responseType: 'blob'
-      # Could do it now, but don't wanna kill off legacy GM versions yet
-      overrideMimeType: "text/plain; charset=x-user-defined"
-      onload: (xhr) ->
-        r    = xhr.responseText
-        h    = xhr.responseHeaders
-        data = new Uint8Array r.length
-        i    = 0
-
-        while i < r.length
-          data[i] = r.charCodeAt i
-          i++
-
-        contentType        = (h.match(/Content-Type:\s*(.*)/i)        or [])[1]
-        contentDisposition = (h.match(/Content-Disposition:\s*(.*)/i) or [])[1]
-        QR.handleBlob data, contentType, contentDisposition, url
-
-      onerror: (xhr) ->
+    CrossOrigin.file url, (blob) ->
+      if blob
+        QR.handleFiles([blob])
+      else
         QR.error "Can't load image."
-
-    <% } %>
 
   handleFiles: (files) ->
     if @ isnt QR # file input
@@ -355,7 +306,7 @@ QR =
     if /^text\//.test file.type
       if isSingle
         post = QR.selected
-      else if (post = QR.posts[QR.posts.length - 1]).com
+      else if index isnt 0 or (post = QR.posts[QR.posts.length - 1]).com
         post = new QR.post()
       post.pasteText file
       return
@@ -371,16 +322,19 @@ QR =
       post = QR.selected
     else if (post = QR.posts[QR.posts.length - 1]).file
       post = new QR.post()
-    post.setFile file
+    try
+      post.setFile file
+    catch err
+      console.log err
 
   openFileInput: (e) ->
     e.stopPropagation()
     if e.shiftKey and e.type is 'click'
       return QR.selected.rmFile()
-    if e.ctrlKey and e.type is 'click'
+    if (e.ctrlKey or e.metaKey) and e.type is 'click'
       $.addClass QR.nodes.filename, 'edit'
       QR.nodes.filename.focus()
-      return
+      return $.on QR.nodes.filename, 'blur', -> $.rmClass QR.nodes.filename, 'edit'
     return if e.target.nodeName is 'INPUT' or (e.keyCode and e.keyCode not in [32, 13]) or e.ctrlKey
     e.preventDefault()
     QR.nodes.fileInput.click()
@@ -439,21 +393,23 @@ QR =
     setNode 'fileInput',     '[type=file]'
 
     rules = $('ul.rules').textContent.trim()
-    QR.min_width = QR.min_height = 1
-    QR.max_width = QR.max_height = 10000
-    try
-      [_, QR.min_width, QR.min_height] = rules.match(/.+smaller than (\d+)x(\d+).+/)
-      [_, QR.max_width, QR.max_height] = rules.match(/.+greater than (\d+)x(\d+).+/)
-      for prop in ['min_width', 'min_height', 'max_width', 'max_height']
-        QR[prop] = parseInt QR[prop], 10
-    catch
-      null
+
+    match_min = rules.match(/.+smaller than (\d+)x(\d+).+/)
+    match_max = rules.match(/.+greater than (\d+)x(\d+).+/)
+    QR.min_width  = +match_min?[1] or 1
+    QR.min_height = +match_min?[2] or 1
+    QR.max_width  = +match_max?[1] or 10000
+    QR.max_height = +match_max?[2] or 10000
 
     nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
 
     QR.max_size_video = 3145728
     QR.max_width_video = QR.max_height_video = 2048
     QR.max_duration_video = 120
+
+    QR.forcedAnon = !!$ 'form[name="post"] input[name="name"][type="hidden"]'
+    if QR.forcedAnon
+      $.addClass QR.nodes.el, 'forced-anon'
 
     QR.spoiler = !!$ '.postForm input[name=spoiler]'
     if QR.spoiler
@@ -465,9 +421,8 @@ QR =
       $.after nodes.name.parentElement, nodes.dumpList.parentElement
       nodes.addPost.tabIndex = 35
 
-    if g.BOARD.ID is 'f'
-      nodes.flashTag = $.el 'select',
-        name: 'filetag'
+    if g.BOARD.ID is 'f' and g.VIEW isnt 'thread'
+      nodes.flashTag = $.el 'select', name: 'filetag',
         innerHTML: """
           <option value=0>Hentai</option>
           <option value=6>Porn</option>
@@ -660,9 +615,11 @@ QR =
 
     formData =
       resto:    threadID
-      name:     post.name
+
+      name:     post.name unless QR.forcedAnon
       email:    post.email
-      sub:      post.sub
+
+      sub:      post.sub unless QR.forcedAnon or threadID
       com:      post.com
       upfile:   post.file
       filetag:  filetag
@@ -766,7 +723,6 @@ QR =
         QR.cooldown.auto = false
       QR.status()
       QR.error err
-      QR.captcha.setup() if QR.captcha.isEnabled
       return
 
     h1 = $ 'h1', resDoc
@@ -817,7 +773,7 @@ QR =
       QR.close()
     else
       post.rm()
-      QR.captcha.setup()
+      QR.captcha.setup true
 
     QR.cooldown.set {req, post, isReply, threadID}
 
