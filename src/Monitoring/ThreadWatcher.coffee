@@ -272,11 +272,12 @@ ThreadWatcher =
     {threads} = g.BOARD
     for threadID in threads.keys
       thread = threads[threadID]
-      toggler = $ '.watch-thread-link', thread.OP.nodes.post
       helper = if ThreadWatcher.isWatched thread then ['addClass', 'Unwatch'] else ['rmClass', 'Watch']
-      $[helper[0]] toggler, 'watched'
+      if thread.OP
+        toggler = $ '.watch-thread-link', thread.OP.nodes.post
+        $[helper[0]] toggler, 'watched'
+        toggler.title = "#{helper[1]} Thread"
       $[helper[0]] thread.catalogView.nodes.root, 'watched' if thread.catalogView
-      toggler.title = "#{helper[1]} Thread"
 
     for refresher in ThreadWatcher.menu.refreshers
       refresher()
