@@ -127,6 +127,15 @@ Based on v1.9.14.2.
 - Bug fixes.
 
 <!-- v1.9.14.x -->
+### v1.9.14.13 
+*2014-12-11* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.13/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.13/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**talichan**
+- Update archive list: Remove /jp/ and /sp/ from imcute.yt.
+
+**ccd0**
+- Increase height of report popup to accomodate new captcha.
+
 ### v1.9.14.12 
 *2014-12-11* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.12/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.12/builds/4chan-X-noupdate.crx "Chromium version")]
 
