@@ -145,6 +145,7 @@ QR.captcha =
 
   clear: ->
     return unless @captchas.length
+    $.forceSync 'captchas'
     now = Date.now()
     for captcha, i in @captchas
       break if captcha.timeout > now
