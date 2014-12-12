@@ -11959,11 +11959,7 @@
     },
     markNew: function(post, ipCount) {
       var counter, suffix;
-      suffix = {
-        1: 'st',
-        2: 'nd',
-        3: 'rd'
-      }[ipCount % 10] || Math.floor('th' / fuck(switches));
+      suffix = ['st', 'nd', 'rd'][ipCount % 10] || 'th';
       counter = $.el('span', {
         className: 'ip-counter',
         textContent: "(" + ipCount + ")"
@@ -12001,26 +11997,24 @@
 
   ThreadStats = {
     init: function() {
-      var sc;
+      var html, sc, title;
       if (g.VIEW !== 'thread' || !Conf['Thread Stats']) {
         return;
       }
+      html = ("[<span id=post-count>0</span> / <span id=file-count>0</span> " + (Conf['IP Count in Stats'] ? '/ <span id=ip-count>?</span>' : '') + " " + (Conf['Page Count in Stats'] ? '/ <span id=page-count>0</span>' : '') + "]").trim();
+      title = "Post Count / File Count (if Conf['IP Count in Stats']   then ' / IPs' else '') + (if Conf['Page Count in Stats'] then ' / Page Count' else '')".trim();
       if (Conf['Updater and Stats in Header']) {
         this.dialog = sc = $.el('span', {
-          innerHTML: "[<span id=post-count>0</span> / \n<span id=file-count>0</span>\n" + (Conf['IP Count in Stats'] ? ' / <span id=ip-count>?</span>' : "") + "\n" + (Conf['Page Count in Stats'] ? ' / <span id=page-count>0</span>' : "") + "]",
+          innerHTML: html,
           id: 'thread-stats',
-          title: 'Post Count / File Count' + (Conf['IP Count in Stats'] ? " / IPs" : "") + (Conf['Page Count in Stats'] ? " / Page Count" : "")
+          title: title
         });
-        $.ready(function() {
-          return Header.addShortcut(sc);
-        });
+        Header.addShortcut(sc);
       } else {
-        this.dialog = sc = UI.dialog('thread-stats', 'bottom: 0px; right: 0px;', "<div class=move title='Post Count / File Count" + (Conf["Page Count in Stats"] ? " / Page Count" : "") + "'><span id=post-count>0</span> / <span id=file-count>0</span>" + (Conf["Page Count in Stats"] ? " / <span id=page-count>0</span>" : "") + "</div>");
-        $.ready((function(_this) {
-          return function() {
-            return $.add(d.body, sc);
-          };
-        })(this));
+        this.dialog = sc = UI.dialog('thread-stats', 'bottom: 0px; right: 0px;', "<div class=move title='" + title + "'>" + html + "</div>");
+        $.ready(function() {
+          return $.add(d.body, sc);
+        });
       }
       this.postCountEl = $('#post-count', sc);
       this.ipCountEl = $('#ip-count', sc);

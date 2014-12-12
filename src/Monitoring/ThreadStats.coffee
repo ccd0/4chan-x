@@ -2,25 +2,29 @@ ThreadStats =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Stats']
 
+    html = "
+      [<span id=post-count>0</span> / 
+      <span id=file-count>0</span>
+      #{if Conf['IP Count in Stats']   then '/ <span id=ip-count>?</span>' else ''}
+      #{if Conf['Page Count in Stats'] then '/ <span id=page-count>0</span>' else ''}]
+    ".trim()
+
+    title = "
+      Post Count / File Count
+      (if Conf['IP Count in Stats']   then ' / IPs' else '') + 
+      (if Conf['Page Count in Stats'] then ' / Page Count' else '')
+    ".trim()
+    
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
-        innerHTML: """
-          [<span id=post-count>0</span> / 
-          <span id=file-count>0</span>
-          #{if Conf['IP Count in Stats']   then ' / <span id=ip-count>?</span>' else ""}
-          #{if Conf['Page Count in Stats'] then ' / <span id=page-count>0</span>' else ""}]
-        """
+        innerHTML: html
         id:        'thread-stats'
-        title: 
-          'Post Count / File Count' +
-          (if Conf['IP Count in Stats']   then " / IPs" else "") + 
-          (if Conf['Page Count in Stats'] then " / Page Count" else "")
-      $.ready ->
-        Header.addShortcut sc
+        title:     title
+      Header.addShortcut sc
     else
       @dialog = sc = UI.dialog 'thread-stats', 'bottom: 0px; right: 0px;',
-        "<div class=move title='Post Count / File Count#{if Conf["Page Count in Stats"] then " / Page Count" else ""}'><span id=post-count>0</span> / <span id=file-count>0</span>#{if Conf["Page Count in Stats"] then " / <span id=page-count>0</span>" else ""}</div>"
-      $.ready =>
+        "<div class=move title='#{title}'>#{html}</div>"
+      $.ready ->
         $.add d.body, sc
 
     @postCountEl  = $ '#post-count', sc
