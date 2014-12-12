@@ -182,7 +182,7 @@ QR.post = class
     isVideo = /^video\//.test @file.type
     el = $.el (if isVideo then 'video' else 'img')
 
-    $.on el, (if isVideo then 'loadeddata' else 'load'), ->
+    $.on el, (if isVideo then 'loadeddata' else 'load'), =>
       # Verify element dimensions.
       errors = @checkDimensions el, isVideo
       if errors.length

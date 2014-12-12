@@ -10238,55 +10238,55 @@
       var el, fileURL, isVideo;
       isVideo = /^video\//.test(this.file.type);
       el = $.el((isVideo ? 'video' : 'img'));
-      $.on(el, (isVideo ? 'loadeddata' : 'load'), function() {
-        var cv, error, errors, height, s, width, _i, _len;
-        errors = this.checkDimensions(el, isVideo);
-        if (errors.length) {
-          for (_i = 0, _len = errors.length; _i < _len; _i++) {
-            error = errors[_i];
-            QR.error(error);
+      $.on(el, (isVideo ? 'loadeddata' : 'load'), (function(_this) {
+        return function() {
+          var cv, error, errors, height, s, width, _i, _len;
+          errors = _this.checkDimensions(el, isVideo);
+          if (errors.length) {
+            for (_i = 0, _len = errors.length; _i < _len; _i++) {
+              error = errors[_i];
+              QR.error(error);
+            }
+            _this.URL = fileURL;
+            if ((QR.posts.length === 1) || (_this.com && _this.com.length)) {
+              return _this.rmFile();
+            } else {
+              return _this.rm();
+            }
           }
-          this.URL = fileURL;
-          if ((QR.posts.length === 1) || (this.com && this.com.length)) {
-            return this.rmFile();
+          s = 90 * 2 * window.devicePixelRatio;
+          if (_this.file.type === 'image/gif') {
+            s *= 3;
+          }
+          if (isVideo) {
+            height = el.videoHeight;
+            width = el.videoWidth;
           } else {
-            return this.rm();
+            height = el.height, width = el.width;
+            if (height < s || width < s) {
+              _this.URL = fileURL;
+              _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
+              return;
+            }
           }
-        }
-        s = 90 * 2 * window.devicePixelRatio;
-        if (this.file.type === 'image/gif') {
-          s *= 3;
-        }
-        if (isVideo) {
-          height = el.videoHeight;
-          width = el.videoWidth;
-        } else {
-          height = el.height, width = el.width;
-          if (height < s || width < s) {
-            this.URL = fileURL;
-            this.nodes.el.style.backgroundImage = "url(" + this.URL + ")";
-            return;
+          if (height <= width) {
+            width = s / height * width;
+            height = s;
+          } else {
+            height = s / width * height;
+            width = s;
           }
-        }
-        if (height <= width) {
-          width = s / height * width;
-          height = s;
-        } else {
-          height = s / width * height;
-          width = s;
-        }
-        cv = $.el('canvas');
-        cv.height = el.height = height;
-        cv.width = el.width = width;
-        cv.getContext('2d').drawImage(el, 0, 0, width, height);
-        URL.revokeObjectURL(fileURL);
-        return cv.toBlob((function(_this) {
-          return function(blob) {
+          cv = $.el('canvas');
+          cv.height = el.height = height;
+          cv.width = el.width = width;
+          cv.getContext('2d').drawImage(el, 0, 0, width, height);
+          URL.revokeObjectURL(fileURL);
+          return cv.toBlob(function(blob) {
             _this.URL = URL.createObjectURL(blob);
             return _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
-          };
-        })(this));
-      });
+          });
+        };
+      })(this));
       fileURL = URL.createObjectURL(this.file);
       return el.src = fileURL;
     };
