@@ -126,6 +126,7 @@ QR =
     if QR.captcha isnt Captcha.noscript or (QR.captcha.isEnabled and not Conf['Auto-load captcha'])
       QR.captcha.destroy()
   focusin: ->
+    QR.captcha.setup() if $.hasClass(QR.nodes.el, 'autohide') and !$.hasClass(QR.nodes.el, 'focus')
     $.addClass QR.nodes.el, 'focus'
   focusout: ->
     $.rmClass QR.nodes.el, 'focus'

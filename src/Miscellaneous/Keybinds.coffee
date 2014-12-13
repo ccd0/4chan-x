@@ -47,6 +47,7 @@ Keybinds =
             $('.close', notification).click()
         else if QR.nodes and !QR.nodes.el.hidden
           if Conf['Persistent QR']
+            QR.captcha.destroy()
             QR.hide()
           else
             QR.close()

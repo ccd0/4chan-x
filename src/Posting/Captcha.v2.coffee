@@ -34,6 +34,7 @@ Captcha.v2 =
 
   onPostChange: ->
     @setup() if @postsCount is 0
+    @postsCount = 0 if QR.posts.length is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
 
   toggle: ->
     if @nodes.container and !@timeouts.destroy
@@ -85,8 +86,8 @@ Captcha.v2 =
   afterSetup: (mutations) ->
     for mutation in mutations
       for node in mutation.addedNodes
-        @setupIFrame   node if node.nodeName is 'IFRAME'
-        @setupTextArea node if node.nodeName is 'TEXTAREA'
+        @setupIFrame   iframe   if iframe   = $.x './descendant-or-self::iframe',   node
+        @setupTextArea textarea if textarea = $.x './descendant-or-self::textarea', node
     return
 
   setupIFrame: (iframe) ->
@@ -122,8 +123,8 @@ Captcha.v2 =
       null
 
   save: (pasted) ->
-    reload = QR.cooldown.auto and @needed()
     $.forceSync 'captchas'
+    reload = (QR.cooldown.auto or Conf['Post on Captcha Completion']) and @needed()
     @captchas.push
       response: $('textarea', @nodes.container).value
       timeout:  (if pasted then @setupTime else Date.now()) + 2 * $.MINUTE
@@ -132,17 +133,19 @@ Captcha.v2 =
 
     if reload
       @shouldFocus = true
-      return @reload()
-
-    if pasted
-      @destroy()
+      @reload()
     else
-      @timeouts.destroy ?= setTimeout @destroy.bind(@), 3 * $.SECOND
-    QR.nodes.status.focus()
-    QR.submit() if Conf['Post on Captcha Completion']
+      if pasted
+        @destroy()
+      else
+        @timeouts.destroy ?= setTimeout @destroy.bind(@), 3 * $.SECOND
+      QR.nodes.status.focus()
+
+    QR.submit() if Conf['Post on Captcha Completion'] and !QR.cooldown.auto
 
   clear: ->
     return unless @captchas.length
+    $.forceSync 'captchas'
     now = Date.now()
     for captcha, i in @captchas
       break if captcha.timeout > now

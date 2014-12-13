@@ -3,6 +3,59 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.15.x -->
+### v1.9.15.17 
+*2014-12-11* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.17/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.17/builds/4chan-X-noupdate.crx "Chromium version")]
+
+Merged from v1.9.14.13:
+
+**talichan**
+- Update archive list: Remove /jp/ and /sp/ from imcute.yt.
+
+**ccd0**
+- Increase height of report popup to accomodate new captcha.
+
+### v1.9.15.16 
+*2014-12-11* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.16/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.16/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Merged from v1.9.14.12: Fix more captcha setup bugs.
+
+### v1.9.15.15 
+*2014-12-11* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.15/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.15/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Merged from v1.9.14.11: Fix `Close` keybind (default: `Esc`) in persistent QR with captcha.
+
+### v1.9.15.14 
+*2014-12-10* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.14/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.14/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Remove `Use Recaptcha v1` option. It was just a glitch that has been fixed.
+- Fix some bugs from the `Post on Captcha Completion` option.
+
+Merged from v1.9.14.10:
+**ccd0**
+- Possible fix for copy+paste version of captcha not working.
+- Disable 4chan's reported post hiding code. (#219)
+
+### v1.9.15.13 
+*2014-12-10* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.13/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.13/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+Remove captcha doubling from `Use Recaptcha v1` captcha. Only change now made is from an empty captcha to "al pacino".
+
+### v1.9.15.12 
+*2014-12-10* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.12/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.12/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- On closer examination, the `Use Recaptcha v1` captcha is accepting more or less arbitrary input. In this version, you can leave the response field blank (for now). Enjoy your free pass while it lasts.
+
+### v1.9.15.11 
+*2014-12-10* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.11/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.11/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Add `Use Recaptcha v1` option (default: off) to use the method found by Floens to post with the old version of Recaptcha.
+
 ### v1.9.15.10 
 *2014-12-09* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.10/builds/4chan-X-noupdate.crx "Chromium version")]
 
@@ -85,6 +138,35 @@ Based on v1.9.14.2.
 - Bug fixes.
 
 <!-- v1.9.14.x -->
+### v1.9.14.13 
+*2014-12-11* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.13/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.13/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**talichan**
+- Update archive list: Remove /jp/ and /sp/ from imcute.yt.
+
+**ccd0**
+- Increase height of report popup to accomodate new captcha.
+
+### v1.9.14.12 
+*2014-12-11* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.12/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.12/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix more captcha setup bugs.
+
+### v1.9.14.11 
+*2014-12-11* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.11/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.11/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix `Close` keybind (default: `Esc`) in persistent QR with captcha.
+
+### v1.9.14.10 
+*2014-12-10* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.10/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Possible fix for copy+paste version of captcha not working.
+- Disable 4chan's reported post hiding code. (#219)
+- Turn `Catalog Links` off by default in stable version also.
+
 ### v1.9.14.9 
 *2014-12-09* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.9/builds/4chan-X-noupdate.crx "Chromium version")]
 
