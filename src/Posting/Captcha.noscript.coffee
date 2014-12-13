@@ -1,4 +1,4 @@
-QR.captcha =
+Captcha.noscript =
   lifetime: 120 * $.SECOND
   iframeURL: '//www.google.com/recaptcha/api/fallback?k=<%= meta.recaptchaKey %>'
 

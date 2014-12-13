@@ -132,7 +132,7 @@ Keybinds =
       when Conf['Open catalog']
         window.location = CatalogLinks.catalog()
       when Conf['Cycle sort type']
-        return unless Conf['JSON Navigation']
+        return unless Conf['JSON Navigation'] and g.VIEW is 'index' and g.BOARD isnt 'f'
         Index.cycleSortType()
       # Thread Navigation
       when Conf['Next thread']

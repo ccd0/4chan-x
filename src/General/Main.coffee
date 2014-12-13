@@ -1,7 +1,7 @@
 Main =
   init: ->
     if location.hostname is 'www.google.com'
-      return $.ready -> QR.captcha.initFrame()
+      return $.ready -> Captcha.noscript.initFrame()
 
     g.threads = new SimpleDict
     g.posts   = new SimpleDict

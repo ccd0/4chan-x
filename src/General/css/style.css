@@ -960,17 +960,13 @@ span.hide-announcement {
 
 /* QR */
 :root.hide-original-post-form #togglePostFormLink,
-:root:not(.catalog) #togglePostFormLink,
-#qr.autohide:not(.focus):not(:hover):not(:active) > form,
+#qr.autohide:not(.focus):not(:hover):not(:active):not(.captcha-open) > form,
 :root.thread-view #qr:not(.show-new-thread-option) select[data-name="thread"],
 #file-n-submit:not(.has-file) #qr-filerm {
   display: none;
 }
 :root.hide-original-post-form #postForm {
   display: none !important;
-}
-:root:not(.hide-original-post-form):not(.catalog) #postForm {
-  display: table;
 }
 #qr select,
 #dump-button,
@@ -1069,6 +1065,7 @@ input.field.tripped:not(:hover):not(:focus) {
 #qr textarea {
   resize: both;
 }
+/* Noscript Recaptcha */
 .captcha-img {
   margin: 0px;
   text-align: center;
@@ -1086,6 +1083,30 @@ input.field.tripped:not(:hover):not(:focus) {
 }
 #qr-captcha-iframe {
   display: none;
+}
+/* Recaptcha v2 */
+#qr .captcha-root {
+  position: relative;
+}
+#qr .captcha-container > div > div {
+  margin: auto;
+}
+#qr .captcha-counter {
+  display: block;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+}
+#qr.captcha-open .captcha-counter {
+  position: absolute;
+  bottom: 3px;
+}
+#qr .captcha-counter > a {
+  pointer-events: auto;
+}
+#qr:not(.captcha-open) .captcha-counter > a {
+  display: block;
+  width: 100%;
 }
 .field {
   -moz-box-sizing: border-box;

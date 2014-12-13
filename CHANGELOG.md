@@ -3,6 +3,49 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.15.x -->
+### v1.9.15.10 
+*2014-12-09* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.10/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Add `Post on Captcha Completion` option (default: off) to post when the captcha is completed rather than just focusing on the submit button.
+
+### v1.9.15.9 
+*2014-12-09* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.9/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Merge v1.9.14.9: Fix bug causing `Auto-load captcha` to not work when using `Persistent QR`.
+
+### v1.9.15.8 
+*2014-12-09* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.8/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Merge v1.9.14.8: Fix bug that may be causing captchas entered to be ignored sometimes.
+
+### v1.9.15.7 
+*2014-12-09* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.7/builds/4chan-X-noupdate.crx "Chromium version")]
+
+Merge v1.9.14.7:
+
+**ccd0**
+- Fix more captcha bugs.
+- No longer open the original post form automatically when `Hide Original Post Form` is unchecked, as it interferes with the original form's captcha loading.
+
+### v1.9.15.6 
+*2014-12-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.6/builds/4chan-X-noupdate.crx "Chromium version")]
+
+Merge v1.9.14.6:
+
+**ccd0**
+- Fix some captcha bugs.
+- The QR now focuses on the submit button after captcha completion, unless you are dumping and more captchas are needed.
+- Fix updater bugs introduced in v1.9.14.0.
+
+### v1.9.15.5 
+*2014-12-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.5/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Update 4chan X for Recaptcha v2 (as in v1.9.14.5).
+
 ### v1.9.15.4 
 *2014-12-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.4/builds/4chan-X-noupdate.crx "Chromium version")]
 
@@ -42,6 +85,39 @@ Based on v1.9.14.2.
 - Bug fixes.
 
 <!-- v1.9.14.x -->
+### v1.9.14.9 
+*2014-12-09* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.9/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix bug causing `Auto-load captcha` to not work when using `Persistent QR`.
+
+### v1.9.14.8 
+*2014-12-09* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.8/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix bug that may be causing captchas entered to be ignored sometimes.
+
+### v1.9.14.7 
+*2014-12-09* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.7/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix more captcha bugs.
+- No longer open the original post form automatically when `Hide Original Post Form` is unchecked, as it interferes with the original form's captcha loading.
+
+### v1.9.14.6 
+*2014-12-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.6/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix some captcha bugs.
+- The QR now focuses on the submit button after captcha completion, unless you are dumping and more captchas are needed.
+- Fix updater bugs introduced in v1.9.14.0.
+
+### v1.9.14.5 
+*2014-12-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.5/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Update 4chan X for Recaptcha v2.
+
 ### v1.9.14.4 
 *2014-12-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.4/builds/4chan-X-noupdate.crx "Chromium version")]
 

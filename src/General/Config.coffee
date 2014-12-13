@@ -371,13 +371,21 @@ Config =
         true
         'Show notifications on successful post creation or file uploading.'
       ]
+      'Force Noscript Captcha': [
+        false
+        'Use the non-Javascript fallback captcha in the QR even if Javascript is enabled.'
+      ]
       'Captcha Warning Notifications': [
         true
         'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.'
       ]
       'Auto-load captcha': [
         false
-        'Automatically load the captcha when you open a thread, and reload it after you post.'
+        'Automatically load the captcha in the QR even if your post is empty.'
+      ]
+      'Post on Captcha Completion': [
+        false
+        'Submit the post immediately when the captcha is completed.'
       ]
       'Bottom QR Link': [
         true
