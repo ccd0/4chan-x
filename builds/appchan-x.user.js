@@ -28,7 +28,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.41 - 2014-12-12
+* appchan x - Version 2.9.41 - 2014-12-13
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -9612,7 +9612,9 @@
       $.on(counter, 'click', this.toggle.bind(this));
       return $.on(window, 'captcha:success', (function(_this) {
         return function() {
-          return _this.save(false);
+          return $.queueTask(function() {
+            return _this.save(false);
+          });
         };
       })(this));
     },
