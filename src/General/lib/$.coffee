@@ -428,9 +428,6 @@ do ->
   $.on window, 'storage', ({key}) -> onChange key
 
   $.forceSync = (key) ->
-    # XXX Palemoon
-    return unless $.frag().childElementCount?
-  
     # Storage events don't work across origins
     # e.g. http://boards.4chan.org and https://boards.4chan.org
     # so force a check for changes to avoid lost data.
