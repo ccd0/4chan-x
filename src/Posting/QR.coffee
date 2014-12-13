@@ -7,7 +7,9 @@ QR =
     @db = new DataBoard 'yourPosts'
     @posts = []
 
-    @captcha = Captcha[if Conf['Force Noscript Captcha'] then 'noscript' else 'v2']
+    $.globalEval 'document.documentElement.dataset.jsEnabled = true;'
+    noscript = Conf['Force Noscript Captcha'] or !doc.dataset.jsEnabled
+    @captcha = Captcha[if noscript then 'noscript' else 'v2']
 
     if Conf['QR Shortcut']
       sc = $.el 'a',
