@@ -1,3 +1,8 @@
+### v2.9.42 
+*2014-12-13*
+
+- Fix an issue with GM1.15 and captchas
+
 ### v2.9.41 
 *2014-12-12*
 
