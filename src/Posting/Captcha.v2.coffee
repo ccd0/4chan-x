@@ -1,4 +1,6 @@
 Captcha.v2 =
+  lifetime: 2 * $.MINUTE
+
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
     return unless @isEnabled = !!$.id 'g-recaptcha'
@@ -27,10 +29,13 @@ Captcha.v2 =
 
   needed: ->
     captchaCount = @captchas.length
-    captchaCount++ if @nodes.container and !@timeouts.destroy
+    captchaCount++ if QR.req
     @postsCount = QR.posts.length
     @postsCount = 0 if @postsCount is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
     captchaCount < @postsCount
+
+  onNewPost: ->
+    @setup()
 
   onPostChange: ->
     @setup() if @postsCount is 0
@@ -51,7 +56,11 @@ Captcha.v2 =
       delete @timeouts.destroy
       return @reload()
 
-    return if @nodes.container
+    if @nodes.container
+      if @shouldFocus and iframe = $ 'textarea', @nodes.container
+        iframe.focus()
+        delete @shouldFocus
+      return
 
     @nodes.container = $.el 'div', className: 'captcha-container'
     $.prepend @nodes.root, @nodes.container
@@ -116,22 +125,21 @@ Captcha.v2 =
   getOne: ->
     @clear()
     if captcha = @captchas.shift()
-      @count()
       $.set 'captchas', @captchas
+      @count()
       captcha.response
     else
       null
 
   save: (pasted) ->
     $.forceSync 'captchas'
-    reload = (QR.cooldown.auto or Conf['Post on Captcha Completion']) and @needed()
     @captchas.push
       response: $('textarea', @nodes.container).value
-      timeout:  (if pasted then @setupTime else Date.now()) + 2 * $.MINUTE
-    @count()
+      timeout:  (if pasted then @setupTime else Date.now()) + @lifetime
     $.set 'captchas', @captchas
+    @count()
 
-    if reload
+    if (QR.cooldown.auto or Conf['Post on Captcha Completion']) and @needed()
       @shouldFocus = true
       @reload()
     else
@@ -142,6 +150,9 @@ Captcha.v2 =
       QR.nodes.status.focus()
 
     QR.submit() if Conf['Post on Captcha Completion'] and !QR.cooldown.auto
+
+  notify: (el) ->
+    QR.notify el
 
   clear: ->
     return unless @captchas.length
@@ -161,7 +172,7 @@ Captcha.v2 =
     if @captchas.length
       @timeouts.clear = setTimeout @clear.bind(@), @captchas[0].timeout - Date.now()
 
-  reload: (focus) ->
+  reload: ->
     $.globalEval '''
       (function() {
         var container = document.querySelector("#qr .captcha-container");

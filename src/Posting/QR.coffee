@@ -95,9 +95,9 @@ QR =
 
   open: ->
     if QR.nodes
+      QR.captcha.setup() if QR.nodes.el.hidden
       QR.nodes.el.hidden = false
       QR.unhide()
-      QR.captcha.setup() unless QR.captcha is Captcha.noscript
       return
     try
       QR.dialog()
@@ -114,8 +114,6 @@ QR =
     QR.cleanNotifications()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
-    if QR.captcha is Captcha.noscript and !Conf['Captcha Warning Notifications']
-      $.rmClass QR.captcha.nodes.input, 'error' if QR.captcha.isEnabled
     if Conf['QR Shortcut']
       $.toggleClass $('.qr-shortcut'), 'disabled'
     new QR.post true
@@ -123,8 +121,7 @@ QR =
       post.delete()
     QR.cooldown.auto = false
     QR.status()
-    if QR.captcha isnt Captcha.noscript or (QR.captcha.isEnabled and not Conf['Auto-load captcha'])
-      QR.captcha.destroy()
+    QR.captcha.destroy()
   focusin: ->
     QR.captcha.setup() if $.hasClass(QR.nodes.el, 'autohide') and !$.hasClass(QR.nodes.el, 'focus')
     $.addClass QR.nodes.el, 'focus'
@@ -135,6 +132,7 @@ QR =
     $.addClass QR.nodes.el, 'autohide'
     QR.nodes.autohide.checked = true
   unhide: ->
+    QR.captcha.setup() if $.hasClass(QR.nodes.el, 'autohide') and !$.hasClass(QR.nodes.el, 'focus')
     $.rmClass QR.nodes.el, 'autohide'
     QR.nodes.autohide.checked = false
   toggleHide: ->
@@ -150,20 +148,10 @@ QR =
     else
       el = err
       el.removeAttribute 'style'
-    captchaErr = QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
-    if captchaErr and QR.captcha is Captcha.noscript
-      if QR.captcha.captchas.length is 0
-        # Focus the captcha input on captcha error.
-        QR.captcha.nodes.input.focus()
-        QR.captcha.setup()
-      if Conf['Captcha Warning Notifications'] and !d.hidden
-        QR.notify el
-      else
-        $.addClass QR.captcha.nodes.input, 'error'
-        $.on QR.captcha.nodes.input, 'keydown', ->
-          $.rmClass QR.captcha.nodes.input, 'error'
+    if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
+      QR.captcha.setup true
+      QR.captcha.notify el
     else
-      QR.captcha.setup true if captchaErr and QR.captcha isnt Captcha.noscript
       QR.notify el
     alert el.textContent if d.hidden
 
@@ -567,7 +555,7 @@ QR =
     QR.cooldown.init()
     QR.captcha.init()
     $.add d.body, dialog
-    QR.captcha.setup() unless QR.captcha is Captcha.noscript
+    QR.captcha.setup()
 
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.
@@ -794,6 +782,7 @@ QR =
         else
           true
         QR.cooldown.addDelay post, +m[1]
+        QR.captcha.setup (d.activeElement is QR.nodes.status)
       else # stop auto-posting
         QR.cooldown.auto = false
       QR.status()
@@ -838,8 +827,8 @@ QR =
         icon: Favicon.logo
       notif.onclick = ->
         QR.open()
-        QR.captcha.nodes.input.focus() if QR.captcha is Captcha.noscript
         window.focus()
+        QR.captcha.setup true
       notif.onshow = ->
         setTimeout ->
           notif.close()
@@ -848,10 +837,8 @@ QR =
     unless Conf['Persistent QR'] or postsCount
       QR.close()
     else
-      if QR.captcha is Captcha.noscript and QR.posts.length > 1 and QR.captcha.isEnabled and QR.captcha.captchas.length is 0
-        QR.captcha.setup()
       post.rm()
-      QR.captcha.setup true unless QR.captcha is Captcha.noscript
+      QR.captcha.setup (d.activeElement is QR.nodes.status)
 
     QR.cooldown.add req.uploadEndTime, threadID, postID
 

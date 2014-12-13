@@ -1,7 +1,6 @@
 Captcha.noscript =
-  lifetime: 120 * $.SECOND
+  lifetime: 2 * $.MINUTE
   iframeURL: '//www.google.com/recaptcha/api/fallback?k=<%= meta.recaptchaKey %>'
-  timers: {}
 
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
@@ -20,7 +19,9 @@ Captcha.noscript =
     $.on input, 'blur',  QR.focusout
     $.on input, 'focus', QR.focusin
     $.on input, 'keydown', @keydown.bind @
-    $.on @nodes.container, 'click', @reload.bind(@, true)
+    $.on @nodes.container, 'click', =>
+      @reload()
+      @nodes.input.focus()
 
     @conn = new Connection null, "#{location.protocol}//www.google.com",
       challenge: @load.bind @
@@ -37,7 +38,7 @@ Captcha.noscript =
     $.sync 'captchas', @sync
 
     @beforeSetup()
-    @setup() if Conf['Auto-load captcha']
+    @setup()
 
   initFrame: ->
     conn = new Connection window.top, "#{location.protocol}//boards.4chan.org",
@@ -51,8 +52,10 @@ Captcha.noscript =
     error     = $('.fbc-error')?.textContent
     conn.send {challenge, token, error}
 
+  timers: {}
+
   cb:
-    focus: -> QR.captcha.setup()
+    focus: -> QR.captcha.setup false, true
 
   beforeSetup: ->
     {container, input} = @nodes
@@ -60,38 +63,51 @@ Captcha.noscript =
     input.value = ''
     input.placeholder = 'Focus to load reCAPTCHA'
     @count()
-    $.on input, 'focus', @cb.focus
+    $.on input, 'focus click', @cb.focus
 
-  setup: ->
+  needed: ->
+    captchaCount = @captchas.length
+    captchaCount++ if QR.req
+    postsCount = QR.posts.length
+    postsCount = 0 if postsCount is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
+    captchaCount < postsCount
+
+  onNewPost: ->
+
+  onPostChange: ->
+
+  setup: (focus, force) ->
+    return unless @isEnabled and (@needed() or force)
     if !@nodes.iframe
       @nodes.iframe = $.el 'iframe',
         id: 'qr-captcha-iframe'
         src: @iframeURL
-      delete @iframeUsed
       $.add d.body, @nodes.iframe
       @conn.target = @nodes.iframe.contentWindow
-    else if @iframeUsed or !@nodes.img
+    else if !@occupied
       @nodes.iframe.src = @iframeURL
-      delete @iframeUsed
-    else if !@nodes.img.complete
-      @conn.send queryChallenge: null
+    @occupied = true
+    @nodes.input.focus() if focus
 
   afterSetup: ->
     {container, input} = @nodes
     container.hidden = false
     input.placeholder = 'Verification'
     @count()
-    $.off input, 'focus', @cb.focus
+    $.off input, 'focus click', @cb.focus
 
     if QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight
       QR.nodes.el.style.top    = null
       QR.nodes.el.style.bottom = '0px'
 
   destroy: ->
-    $.rm @nodes.img
+    return unless @isEnabled
+    $.rm @nodes.img if @nodes.img
     delete @nodes.img
-    $.rm @nodes.iframe
+    $.rm @nodes.iframe if @nodes.iframe
     delete @nodes.iframe
+    delete @occupied
+    @unflag()
     @beforeSetup()
 
   sync: (captchas=[]) ->
@@ -115,14 +131,14 @@ Captcha.noscript =
     response = @nodes.input.value
     if /\S/.test response
       @conn.send {response}
-      @iframeUsed = true
 
   save: (token) ->
+    delete @occupied
     @nodes.input.value = ''
     if @submitCB
       @submitCB token
       delete @submitCB
-      if Conf['Auto-load captcha'] then @reload() else @destroy()
+      if @needed() then @reload() else @destroy()
     else
       $.forceSync 'captchas'
       @captchas.push
@@ -133,11 +149,22 @@ Captcha.noscript =
       @reload()
 
   error: (message) ->
+    @occupied = true
     @nodes.input.value = ''
-    QR.error "CAPTCHA Error: #{message}"
     if @submitCB
       @submitCB()
       delete @submitCB
+    QR.error "Captcha Error: #{message}"
+
+  notify: (el) ->
+    if Conf['Captcha Warning Notifications'] and !d.hidden
+      QR.notify el
+    else
+      $.addClass @nodes.input, 'error'
+      $.one @nodes.input, 'keydown', @unflag.bind @
+
+  unflag: ->
+    $.rmClass @nodes.input, 'error'
 
   clear: ->
     return unless @captchas.length
@@ -152,6 +179,7 @@ Captcha.noscript =
 
   load: (src) ->
     {container, input, img} = @nodes
+    @occupied = true
     @timeout = Date.now() + @lifetime
     unless img
       img = @nodes.img = new Image
@@ -160,8 +188,8 @@ Captcha.noscript =
     img.src = src
     input.value = ''
     @clear()
-    clearTimeout @timers.reload
-    @timers.reload = setTimeout @reload.bind(@), @lifetime
+    clearTimeout @timers.expire
+    @timers.expire = setTimeout @expire.bind(@), @lifetime
 
   count: ->
     count = if @captchas then @captchas.length else 0
@@ -179,15 +207,20 @@ Captcha.noscript =
     if @captchas.length
       @timers.clear = setTimeout @clear.bind(@), @captchas[0].timeout - Date.now()
 
-  reload: (focus) ->
+  expire: ->
     return unless @nodes.iframe
+    if @needed() or d.activeElement is @nodes.input
+      @reload()
+    else
+      @destroy()
+
+  reload: ->
     @nodes.iframe.src = @iframeURL
-    delete @iframeUsed
-    @nodes.input.focus() if focus
+    @occupied = true
 
   keydown: (e) ->
     if e.keyCode is 8 and not @nodes.input.value
-      @reload()
+      if @nodes.iframe then @reload() else @setup()
     else if e.keyCode is 13 and e.shiftKey
       @sendResponse()
     else
