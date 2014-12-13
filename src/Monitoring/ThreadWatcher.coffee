@@ -42,12 +42,42 @@ ThreadWatcher =
     Thread.callbacks.push
       name: 'Thread Watcher'
       cb:   @node
+    CatalogThread.callbacks.push
+      name: 'Thread Watcher'
+      cb:   @catalogNode
+
+    if g.VIEW is 'index' and Conf['JSON Navigation'] and Conf['Menu'] and g.BOARD.ID isnt 'f'
+      Menu.menu.addEntry
+        el: $.el 'a', href: 'javascript:;'
+        order: 6
+        open: ({thread}) ->
+          return false if Conf['Index Mode'] isnt 'catalog'
+          @el.textContent = if ThreadWatcher.isWatched thread
+            'Unwatch thread'
+          else
+            'Watch thread'
+          $.off @el, 'click', @cb if @cb
+          @cb = ->
+            $.event 'CloseMenu'
+            ThreadWatcher.toggle thread
+          $.on @el, 'click', @cb
+          true
+
+  isWatched: (thread) ->
+    ThreadWatcher.db?.get {boardID: thread.board.ID, threadID: thread.ID}
 
   node: ->
     toggler = $.el 'img',
       className: 'watch-thread-link'
     $.on toggler, 'click', ThreadWatcher.cb.toggle
     $.before $('input', @OP.nodes.post), toggler
+
+  catalogNode: ->
+    $.addClass @nodes.root, 'watched' if ThreadWatcher.isWatched @thread
+    $.on @nodes.thumb.parentNode, 'click', (e) =>
+      return unless e.button is 0 and e.altKey
+      ThreadWatcher.toggle @thread
+      e.preventDefault()
 
   ready: ->
     $.off d, '4chanXInitFinished', ThreadWatcher.ready
@@ -83,7 +113,10 @@ ThreadWatcher =
       ThreadWatcher.refresh()
       $.event 'CloseMenu'
     toggle: ->
-      ThreadWatcher.toggle Get.postFromNode(@).thread
+      {thread} = Get.postFromNode @
+      Index.followedThreadID = thread.ID
+      ThreadWatcher.toggle thread
+      delete Index.followedThreadID
     rm: ->
       [boardID, threadID] = @parentNode.dataset.fullID.split '.'
       ThreadWatcher.rm boardID, +threadID
@@ -240,14 +273,17 @@ ThreadWatcher =
     for threadID in threads.keys
       thread = threads[threadID]
       toggler = $ '.watch-thread-link', thread.OP.nodes.post
-      watched = ThreadWatcher.db.get {boardID: thread.board.ID, threadID}
-      helper = if watched then ['addClass', 'Unwatch'] else ['rmClass', 'Watch']
+      helper = if ThreadWatcher.isWatched thread then ['addClass', 'Unwatch'] else ['rmClass', 'Watch']
       $[helper[0]] toggler, 'watched'
+      $[helper[0]] thread.catalogView.nodes.root, 'watched' if thread.catalogView
       toggler.title = "#{helper[1]} Thread"
 
     for refresher in ThreadWatcher.menu.refreshers
       refresher()
-    return
+
+    if Index.nodes and Conf['Pin Watched Threads']
+      Index.sort()
+      Index.buildIndex()
 
   toggle: (thread) ->
     boardID  = thread.board.ID

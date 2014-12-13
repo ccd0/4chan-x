@@ -2,7 +2,58 @@ The attributions below are for work that has been incorporated into the script a
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+<!-- v1.9.15.x -->
+### v1.9.15.4 
+*2014-12-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.4/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Make `Catalog Links`, `Relative Post Dates`, and `Pin Watched Threads` off by default.
+
+### v1.9.15.3 
+*2014-12-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.3/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix sounds sometimes playing for a short time before `Disable Autoplaying Sounds` halts them (as in 1.9.14.4).
+
+### v1.9.15.2 
+*2014-12-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.2/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Add `Pin Watched Threads` setting to `Index Navigation` header submenu (default: checked), moving watched threads to the beginning of 4chan X's index/catalog.
+- `Alt+Click` in the 4chan X catalog watches/unwatches a thread.
+- Add a `Watch Thread`/`Unwatch Thread` item to the menu in the 4chan X catalog.
+
+### v1.9.15.1 
+*2014-12-07* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.1/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Center the controls added to formerly autoplaying audio by `Disable Autoplaying Sounds` (as in v1.9.14.3).
+
+### v1.9.15.0 
+*2014-12-07* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.0/builds/4chan-X-noupdate.crx "Chromium version")]
+
+Based on v1.9.14.2.
+
+**MayhemYDG, Matěj Grabovský**
+- Quoting now also includes the spoiler and code tags.
+
+**ccd0**
+- Quote the original URL of links rather than the title, and don't quote `(embed)`.
+- Bug fixes.
+
 <!-- v1.9.14.x -->
+### v1.9.14.4 
+*2014-12-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.4/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix sounds sometimes playing for a short time before `Disable Autoplaying Sounds` halts them.
+
+### v1.9.14.3 
+*2014-12-07* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.3/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Center the controls added to formerly autoplaying audio by `Disable Autoplaying Sounds`.
+
 ### v1.9.14.2 
 *2014-12-04* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.14.2/builds/4chan-X-noupdate.crx "Chromium version")]
 

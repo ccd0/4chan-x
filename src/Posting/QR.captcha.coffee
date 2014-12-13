@@ -14,7 +14,6 @@ QR.captcha =
       title: 'Verification'
       autocomplete: 'off'
       spellcheck: false
-      tabIndex: 45
     @nodes = {container, input}
 
     $.on input, 'blur',  QR.focusout

@@ -24,25 +24,27 @@ Index =
     Header.addShortcut @button, 1
 
     repliesEntry = el: UI.checkbox 'Show Replies',          ' Show replies'
+    pinEntry     = el: UI.checkbox 'Pin Watched Threads',   ' Pin watched threads'
     anchorEntry  = el: UI.checkbox 'Anchor Hidden Threads', ' Anchor hidden threads'
     refNavEntry  = el: UI.checkbox 'Refreshed Navigation',  ' Refreshed navigation'
-    anchorEntry.el.title = 'Move hidden threads at the end of the index.'
+    pinEntry.el.title    = 'Move watched threads to the start of the index.'
+    anchorEntry.el.title = 'Move hidden threads to the end of the index.'
     refNavEntry.el.title = 'Refresh index when navigating through pages.'
-    for label in [repliesEntry, anchorEntry, refNavEntry]
+    for label in [repliesEntry, pinEntry, anchorEntry, refNavEntry]
       input = label.el.firstChild
       {name} = input
       $.on input, 'change', $.cb.checked
       switch name
         when 'Show Replies'
           $.on input, 'change', @cb.replies
-        when 'Anchor Hidden Threads'
+        when 'Pin Watched Threads', 'Anchor Hidden Threads'
           $.on input, 'change', @cb.sort
 
     Header.menu.addEntry
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 98
-      subEntries: [repliesEntry, anchorEntry, refNavEntry]
+      subEntries: [repliesEntry, pinEntry, anchorEntry, refNavEntry]
 
     $.addClass doc, 'index-loading', "#{Conf['Index Mode'].replace /\ /g, '-'}-mode"
     @root     = $.el 'div', className: 'board'
@@ -252,9 +254,9 @@ Index =
       1
     else
       +window.location.pathname.split('/')[2] or 1
-  userPageNav: (page) ->
+  userPageNav: (page, noRefresh) ->
     state = Index.pushState {page}
-    if Conf['Refreshed Navigation']
+    if Conf['Refreshed Navigation'] and !noRefresh
       Index.update state
     else
       Index.pageLoad state if state.page
@@ -542,7 +544,7 @@ Index =
     # Sticky threads
     Index.sortOnTop (thread) -> thread.isSticky
     # Highlighted threads
-    Index.sortOnTop (thread) -> thread.isOnTop
+    Index.sortOnTop (thread) -> thread.isOnTop or Conf['Pin Watched Threads'] and ThreadWatcher.isWatched thread
     # Non-hidden threads
     Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
 
@@ -561,6 +563,11 @@ Index =
         nodes = Index.buildCatalogViews()
         Index.sizeCatalogViews nodes
       else
+        if Index.followedThreadID?
+          i = 0
+          i++ while Index.followedThreadID isnt Get.threadFromRoot(Index.sortedNodes[i]).ID
+          page = i // Index.threadsNumPerPage + 1
+          Index.pushState {page} if page isnt Index.getCurrentPage()
         nodes = Index.buildSinglePage Index.getCurrentPage()
     $.rmAll Index.root
     $.rmAll Header.hover
@@ -569,6 +576,8 @@ Index =
     else
       Index.buildReplies nodes if Conf['Show Replies']
       Index.buildStructure nodes
+      if Index.followedThreadID? and (post = g.posts["#{g.BOARD}.#{Index.followedThreadID}"])
+        Header.scrollTo post.nodes.root
 
   buildSinglePage: (pageNum) ->
     nodesPerPage = Index.threadsNumPerPage

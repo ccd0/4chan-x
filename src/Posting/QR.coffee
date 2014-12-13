@@ -213,12 +213,34 @@ QR =
     e?.preventDefault()
     return unless QR.postingIsEnabled
 
-    sel   = d.getSelection()
-    post  = Get.postFromNode @
-    text  = ">>#{post}\n"
-    if (s = sel.toString().trim()) and post is Get.postFromNode sel.anchorNode
-      s = s.replace /\n/g, '\n>'
-      text += ">#{s}\n"
+    sel  = d.getSelection()
+    post = Get.postFromNode @
+    text = ">>#{post}\n"
+    if sel.toString().trim() and post is Get.postFromNode sel.anchorNode
+      range = sel.getRangeAt 0
+      frag  = range.cloneContents()
+      ancestor = range.commonAncestorContainer
+      # Quoting the insides of a spoiler/code tag.
+      if $.x 'ancestor-or-self::*[self::s or contains(@class,"removed-spoiler")]', ancestor
+        $.prepend frag, $.tn '[spoiler]'
+        $.add     frag, $.tn '[/spoiler]'
+      if insideCode = $.x 'ancestor-or-self::pre[contains(@class,"prettyprint")]', ancestor
+        $.prepend frag, $.tn '[code]'
+        $.add     frag, $.tn '[/code]'
+      for node in $$ (if insideCode then 'br' else '.prettyprint br'), frag
+        $.replace node, $.tn '\n'
+      for node in $$ 'br', frag
+        $.replace node, $.tn '\n>' unless node is frag.lastChild
+      for node in $$ 's, .removed-spoiler', frag
+        $.replace node, [$.tn('[spoiler]'), node.childNodes..., $.tn '[/spoiler]']
+      for node in $$ '.prettyprint', frag
+        $.replace node, [$.tn('[code]'), node.childNodes..., $.tn '[/code]']
+      for node in $$ '.linkify[data-original]', frag
+        $.replace node, $.tn node.dataset.original
+      for node in $$ '.embedder', frag
+        $.rm node.previousSibling if node.previousSibling?.nodeValue is ' '
+        $.rm node
+      text += ">#{frag.textContent.trim()}\n"
 
     QR.open()
     if QR.selected.isLocked

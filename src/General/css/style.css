@@ -103,7 +103,9 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   /* party hats */
   pointer-events: none;
 }
-.center > audio {
+
+/* Anti-autoplay */
+audio.controls-added {
   display: block;
   margin: auto;
 }
@@ -888,6 +890,7 @@ span.hide-announcement {
   -webkit-align-self: stretch;
   align-self: stretch;
 }
+.catalog-thread.watched .werkTyme-filename,
 .filter-highlight .werkTyme-filename {
   border: 2px solid rgba(255, 0, 0, .5);
 }
@@ -909,6 +912,7 @@ span.hide-announcement {
 .filter-highlight > .reply {
   box-shadow: -5px 0 rgba(255, 0, 0, .5);
 }
+.catalog-thread.watched .catalog-thumb,
 .filter-highlight .catalog-thumb {
   border: 2px solid rgba(255, 0, 0, .5);
 }
@@ -917,6 +921,12 @@ span.hide-announcement {
 :root.reveal-spoilers s,
 :root.reveal-spoilers s > a {
   color: white !important;
+}
+:root.reveal-spoilers .removed-spoiler::before {
+  content: "[spoiler]";
+}
+:root.reveal-spoilers .removed-spoiler::after {
+  content: "[/spoiler]";
 }
 
 /* Thread & Reply Hiding */

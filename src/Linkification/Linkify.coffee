@@ -52,16 +52,20 @@ Linkify =
 
             endNode  = saved
             {data}   = saved
-            word    += data
-            {length} = data
 
             if end = space.exec data
               # Set our snapshot and regex to start on this node at this position when the loop resumes
+              word += data[...end.index]
               test.lastIndex = length = end.index
               i--
               break
+            else
+              {length} = data
+              word    += data
 
-        links.push Linkify.makeRange node, endNode, index, length if Linkify.regString.exec word
+        if Linkify.regString.test word
+          links.push Linkify.makeRange node, endNode, index, length
+          <%= assert('word is links[links.length-1].toString()') %>
 
         break unless test.lastIndex and node is endNode
 
@@ -84,9 +88,9 @@ Linkify =
       [a-z\d%/]
     )
     | # This should account for virtually all links posted without http:
-    [-a-z\d]+[.](
+    ([-a-z\d]+[.])+(
       aero|asia|biz|cat|com|coop|info|int|jobs|mobi|moe|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2}
-    )([:/]|(?!.))
+    )([:/]|(?![^\s'"]))
     | # IPv4 Addresses
     [\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}
     | # E-mails
@@ -103,10 +107,9 @@ Linkify =
     text = range.toString()
 
     # Clean start of range
-    i = 0
-    i++ while /[(\[{<>]/.test text.charAt i
+    i = text.search Linkify.regString
 
-    if i
+    if i > 0
       text = text.slice i
       i-- while range.startOffset + i >= range.startContainer.data.length
 
@@ -237,9 +240,11 @@ Linkify =
           "#{status}'d"
       }"
 
+      link.dataset.original = link.textContent
       link.textContent = text
       for post2 in post.clones
         for link2 in $$ 'a.linkify', post2.nodes.comment when link2.href is link.href
+          link2.dataset.original = link2.textContent
           link2.textContent = text
       return
 

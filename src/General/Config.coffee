@@ -14,7 +14,7 @@ Config =
         'Link to 4chan X\'s catalog instead of the native 4chan one.'
       ]
       'Catalog Links': [
-        true
+        false
         'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'
       ]
       'QR Shortcut': [
@@ -46,7 +46,7 @@ Config =
         'Localize and format timestamps.'
       ]
       'Relative Post Dates': [
-        true
+        false
         'Display dates like "3 minutes ago". Tooltip shows the timestamp.'
       ]
       'Comment Expansion': [
@@ -589,6 +589,7 @@ http://iqdb.org/?url=%TURL
     'Index Sort': 'bump'
     'Index Size': 'small'
     'Show Replies': true
+    'Pin Watched Threads': false
     'Anchor Hidden Threads': true
     'Refreshed Navigation': false
 
