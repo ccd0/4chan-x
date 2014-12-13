@@ -1,6 +1,7 @@
 Captcha.noscript =
   lifetime: 120 * $.SECOND
   iframeURL: '//www.google.com/recaptcha/api/fallback?k=<%= meta.recaptchaKey %>'
+  timers: {}
 
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
@@ -159,7 +160,8 @@ Captcha.noscript =
     img.src = src
     input.value = ''
     @clear()
-    setTimeout @reload.bind(@), @lifetime
+    clearTimeout @timers.reload
+    @timers.reload = setTimeout @reload.bind(@), @lifetime
 
   count: ->
     count = if @captchas then @captchas.length else 0
@@ -173,11 +175,12 @@ Captcha.noscript =
         " (#{count} cached captchas)"
     @nodes.input.placeholder = placeholder
     @nodes.input.alt = count # For XTRM RICE.
-    clearTimeout @timeout
+    clearTimeout @timers.clear
     if @captchas.length
-      @timeout = setTimeout @clear.bind(@), @captchas[0].timeout - Date.now()
+      @timers.clear = setTimeout @clear.bind(@), @captchas[0].timeout - Date.now()
 
   reload: (focus) ->
+    return unless @nodes.iframe
     @nodes.iframe.src = @iframeURL
     delete @iframeUsed
     @nodes.input.focus() if focus
