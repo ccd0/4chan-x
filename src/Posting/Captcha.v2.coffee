@@ -21,7 +21,9 @@ Captcha.v2 =
     $.after QR.nodes.com.parentNode, root
 
     $.on counter, 'click', @toggle.bind @
-    $.on window, 'captcha:success', => @save false
+    $.on window, 'captcha:success', =>
+      # XXX Greasemonkey 1.x workaround to gain access to GM_* functions.
+      $.queueTask => @save false
 
   shouldFocus: false
   timeouts: {}
