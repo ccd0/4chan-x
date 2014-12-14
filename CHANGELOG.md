@@ -6,6 +6,8 @@ The links to individual versions below are to copies of the script with the upda
 ### v1.9.16.0 
 *2014-12-13* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.16.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.16.0/builds/4chan-X-noupdate.crx "Chromium version")]
 
+Based on v1.9.15.19.
+
 **ccd0**
 - Add option `Force Noscript Captcha` to use the non-Javascript version of Recaptcha and an interface similar to the old Recaptcha. Also use this version of the captcha if Javascript is disabled on the page (4chan X can be used this way in Greasemonkey 2.x).
 
