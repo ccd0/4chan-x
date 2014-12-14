@@ -317,7 +317,7 @@ Linkify =
                 embed = file
                 break
             break if embed
-          return div.textContent = "ERROR: Not a valid filetype" unless embed
+          return el.textContent = "ERROR: Not a valid filetype" unless embed
           switch embed.type
             when 'video/mp4', 'video/webm', 'video/ogv'
               $.extend el, <%= html('<video controls loop><source type="video/mp4"><source type="video/webm"></video>') %>
