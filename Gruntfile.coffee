@@ -214,6 +214,41 @@ module.exports = (grunt) ->
       options:
         template: 'template.jst'
 
+    jshint:
+      options:
+        undef:   true
+        eqnull:  true
+        expr:    true
+        shadow:  true
+        sub:     true
+        scripturl: true
+        browser: true
+        devel:   true
+        nonstandard: true
+        # XXX Temporarily suppress lots of existing warnings until we fix them.
+        '-W018': true
+        '-W027': true
+        '-W044': true
+        '-W053': true
+        '-W084': true
+        '-W058': true
+        '-W083': true
+        '-W093': true
+        globals:
+          Notification: true
+          webkitNotifications: true
+          HTMLDocument: true
+          MediaError:   true
+          GM_getValue:  true
+          GM_setValue:  true
+          GM_deleteValue: true
+          GM_openInTab: true
+          GM_info:      true
+          GM_xmlhttpRequest: true
+          cloneInto:    true
+          chrome:       true
+      script: 'tmp-<%= pkg.type %>/*.js'
+
   require('load-grunt-tasks') grunt
 
   grunt.registerTask 'default', [
@@ -250,6 +285,7 @@ module.exports = (grunt) ->
     'concat:coffee'
     'coffee:script'
     'coffee:eventPage'
+    'jshint:script'
     'set-channel:stable'
     'build-crx-channel'
     'set-channel:beta'
@@ -273,6 +309,7 @@ module.exports = (grunt) ->
     'set-build:userscript'
     'concat:coffee'
     'coffee:script'
+    'jshint:script'
     'set-channel:stable'
     'concat:userscript'
     'set-channel:beta'
