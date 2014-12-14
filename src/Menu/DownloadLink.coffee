@@ -15,7 +15,7 @@ DownloadLink =
           @href = URL.createObjectURL blob
           @click()
         else
-          new Notice 'error', "Could not download #{file.URL}", 30
+          new Notice 'error', "Could not download #{@href}", 30
 
     Menu.menu.addEntry
       el: a
