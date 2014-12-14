@@ -28,7 +28,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.42 - 2014-12-13
+* appchan x - Version 2.9.42 - 2014-12-14
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -13403,7 +13403,7 @@
       }
       return Redirect.data = o;
     },
-    archives: [{"uid":0,"name":"Moe","domain":"archive.moe","http":true,"https":true,"software":"foolfuuka","boards":["a","biz","c","co","diy","gd","int","jp","m","out","po","sci","sp","tg","tv","v","vg","vp","vr","wsg"],"files":["a","biz","c","co","diy","gd","jp","m","po","sci","tg","v","vg","vp","vr","wsg"]},{"uid":1,"name":"NSFW Moe","domain":"nsfw.archive.moe","http":true,"https":true,"software":"foolfuuka","boards":["h","u"],"files":["h","u"]},{"uid":3,"name":"4plebs Archive","domain":"archive.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["adv","f","hr","o","pol","s4s","tg","trv","tv","x"],"files":["adv","f","hr","o","pol","s4s","tg","trv","tv","x"]},{"uid":5,"name":"Love is Over","domain":"archive.loveisover.me","http":true,"https":true,"software":"foolfuuka","boards":["c","d","e","i","lgbt","t","u","w","wg"],"files":["c","d","e","i","lgbt","t","u","w","wg"]},{"uid":8,"name":"Rebecca Black Tech","domain":"archive.rebeccablacktech.com","http":false,"https":true,"software":"fuuka","boards":["cgl","g","mu","w"],"files":["cgl","g","mu","w"]},{"uid":9,"name":"Heinessen","domain":"archive.heinessen.com","http":true,"https":false,"software":"fuuka","boards":["an","fit","k","mlp","r9k","toy"],"files":["an","fit","k","mlp","r9k","toy"]},{"uid":10,"name":"warosu","domain":"warosu.org","http":false,"https":true,"software":"fuuka","boards":["3","biz","cgl","ck","diy","fa","g","ic","jp","lit","sci","tg","vr"],"files":["3","biz","cgl","ck","diy","fa","ic","jp","lit","sci","tg","vr"]},{"uid":15,"name":"fgts","domain":"fgts.jp","http":true,"https":true,"software":"foolfuuka","boards":["asp","cm","h","hc","hm","n","p","r","s","soc","y"],"files":["asp","cm","h","hc","hm","n","p","r","s","soc","y"]},{"uid":16,"name":"maware","domain":"archive.mawa.re","http":true,"https":false,"software":"foolfuuka","boards":["t"],"files":["t"]},{"uid":17,"name":"imcute","domain":"imcute.yt","http":true,"https":false,"software":"foolfuuka","boards":["gif","jp","vg"],"files":["gif","jp","vg"]}],
+    archives: [{"uid":0,"name":"Moe","domain":"archive.moe","http":false,"https":true,"software":"foolfuuka","boards":["a","biz","c","co","diy","gd","h","i","int","jp","k","m","mlp","out","po","r9k","s4s","sci","sp","tg","tv","u","v","vg","vp","vr","wsg"],"files":["a","biz","c","co","diy","gd","h","i","jp","k","m","mlp","po","s4s","sci","tg","u","v","vg","vp","vr","wsg"]},{"uid":3,"name":"4plebs Archive","domain":"archive.4plebs.org","http":true,"https":true,"software":"foolfuuka","boards":["adv","f","hr","o","pol","s4s","tg","trv","tv","x"],"files":["adv","f","hr","o","pol","s4s","tg","trv","tv","x"]},{"uid":5,"name":"Love is Over","domain":"archive.loveisover.me","http":true,"https":true,"software":"foolfuuka","boards":["c","d","e","i","lgbt","t","u","w","wg"],"files":["c","d","e","i","lgbt","t","u","w","wg"]},{"uid":8,"name":"Rebecca Black Tech","domain":"archive.rebeccablacktech.com","http":false,"https":true,"software":"fuuka","boards":["cgl","g","mu","w"],"files":["cgl","g","mu","w"]},{"uid":10,"name":"warosu","domain":"warosu.org","http":false,"https":true,"software":"fuuka","boards":["3","biz","cgl","ck","diy","fa","g","ic","jp","lit","sci","tg","vr"],"files":["3","biz","cgl","ck","diy","fa","g","ic","jp","lit","sci","tg","vr"]},{"uid":15,"name":"fgts","domain":"fgts.jp","http":true,"https":true,"software":"foolfuuka","boards":["asp","cm","h","hc","hm","n","p","r","s","soc","y"],"files":["asp","cm","h","hc","hm","n","p","r","s","soc","y"]},{"uid":17,"name":"imcute","domain":"imcute.yt","http":true,"https":false,"software":"foolfuuka","boards":["an","fit","gif","int","mlp","out","r9k","toy"],"files":["an","fit","gif","int","mlp","out","r9k","toy"]}],
     to: function(dest, data) {
       var archive;
       archive = (dest === 'search' || dest === 'board' ? Redirect.data.thread : Redirect.data[dest])[data.boardID];
@@ -13464,20 +13464,11 @@
       "uid": 0,
       "name": "Moe",
       "domain": "archive.moe",
-      "http": true,
+      "http": false,
       "https": true,
       "software": "foolfuuka",
-      "boards": ["a", "biz", "c", "co", "diy", "gd", "int", "jp", "m", "out", "po", "sci", "sp", "tg", "tv", "v", "vg", "vp", "vr", "wsg"],
-      "files": ["a", "biz", "c", "co", "diy", "gd", "jp", "m", "po", "sci", "tg", "v", "vg", "vp", "vr", "wsg"]
-    }, {
-      "uid": 1,
-      "name": "NSFW Moe",
-      "domain": "nsfw.archive.moe",
-      "http": true,
-      "https": true,
-      "software": "foolfuuka",
-      "boards": ["h", "u"],
-      "files": ["h", "u"]
+      "boards": ["a", "biz", "c", "co", "diy", "gd", "h", "i", "int", "jp", "k", "m", "mlp", "out", "po", "r9k", "s4s", "sci", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
+      "files": ["a", "biz", "c", "co", "diy", "gd", "h", "i", "jp", "k", "m", "mlp", "po", "s4s", "sci", "tg", "u", "v", "vg", "vp", "vr", "wsg"]
     }, {
       "uid": 3,
       "name": "4plebs Archive",
@@ -13506,15 +13497,6 @@
       "boards": ["cgl", "g", "mu", "w"],
       "files": ["cgl", "g", "mu", "w"]
     }, {
-      "uid": 9,
-      "name": "Heinessen",
-      "domain": "archive.heinessen.com",
-      "http": true,
-      "https": false,
-      "software": "fuuka",
-      "boards": ["an", "fit", "k", "mlp", "r9k", "toy"],
-      "files": ["an", "fit", "k", "mlp", "r9k", "toy"]
-    }, {
       "uid": 10,
       "name": "warosu",
       "domain": "warosu.org",
@@ -13522,7 +13504,7 @@
       "https": true,
       "software": "fuuka",
       "boards": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"],
-      "files": ["3", "biz", "cgl", "ck", "diy", "fa", "ic", "jp", "lit", "sci", "tg", "vr"]
+      "files": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"]
     }, {
       "uid": 15,
       "name": "fgts",
@@ -13533,23 +13515,14 @@
       "boards": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"],
       "files": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"]
     }, {
-      "uid": 16,
-      "name": "maware",
-      "domain": "archive.mawa.re",
-      "http": true,
-      "https": false,
-      "software": "foolfuuka",
-      "boards": ["t"],
-      "files": ["t"]
-    }, {
       "uid": 17,
       "name": "imcute",
       "domain": "imcute.yt",
       "http": true,
       "https": false,
       "software": "foolfuuka",
-      "boards": ["gif", "jp", "vg"],
-      "files": ["gif", "jp", "vg"]
+      "boards": ["an", "fit", "gif", "int", "mlp", "out", "r9k", "toy"],
+      "files": ["an", "fit", "gif", "int", "mlp", "out", "r9k", "toy"]
     }
   ];
 
