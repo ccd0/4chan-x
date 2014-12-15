@@ -18,7 +18,7 @@ Config =
         'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'
       ]
       'QR Shortcut': [
-        false,
+        true,
         'Adds a small [QR] link in the header.'
       ]
       'Announcement Hiding': [
