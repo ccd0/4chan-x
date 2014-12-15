@@ -39,7 +39,7 @@ ThreadWatcher =
       ThreadWatcher.fetchAllStatus()
       @db.save()
 
-    Thread.callbacks.push
+    Post.callbacks.push
       name: 'Thread Watcher'
       cb:   @node
     CatalogThread.callbacks.push
@@ -67,10 +67,14 @@ ThreadWatcher =
     ThreadWatcher.db?.get {boardID: thread.board.ID, threadID: thread.ID}
 
   node: ->
-    toggler = $.el 'img',
-      className: 'watch-thread-link'
+    return if @isReply
+    if @isClone
+      toggler = $ '.watch-thread-link', @nodes.post
+    else
+      toggler = $.el 'img',
+        className: 'watch-thread-link'
+      $.before $('input', @nodes.post), toggler
     $.on toggler, 'click', ThreadWatcher.cb.toggle
-    $.before $('input', @OP.nodes.post), toggler
 
   catalogNode: ->
     $.addClass @nodes.root, 'watched' if ThreadWatcher.isWatched @thread
@@ -269,14 +273,13 @@ ThreadWatcher =
     $.rmAll list
     $.add list, nodes
 
-    {threads} = g.BOARD
-    for threadID in threads.keys
-      thread = threads[threadID]
+    g.threads.forEach (thread) ->
       helper = if ThreadWatcher.isWatched thread then ['addClass', 'Unwatch'] else ['rmClass', 'Watch']
       if thread.OP
-        toggler = $ '.watch-thread-link', thread.OP.nodes.post
-        $[helper[0]] toggler, 'watched'
-        toggler.title = "#{helper[1]} Thread"
+        for post in [thread.OP, thread.OP.clones...]
+          toggler = $ '.watch-thread-link', post.nodes.post
+          $[helper[0]] toggler, 'watched'
+          toggler.title = "#{helper[1]} Thread"
       $[helper[0]] thread.catalogView.nodes.root, 'watched' if thread.catalogView
 
     for refresher in ThreadWatcher.menu.refreshers
