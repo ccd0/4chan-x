@@ -316,7 +316,7 @@ Config =
         'Bookmark threads.'
       ]
       'Toggleable Thread Watcher': [
-        true
+        false
         'Adds a shortcut for the thread watcher, hides the watcher by default, and makes it scroll with the page.'
       ]
       'Mark New IPs': [
