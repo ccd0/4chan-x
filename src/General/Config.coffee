@@ -17,10 +17,6 @@ Config =
         false
         'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'
       ]
-      'QR Shortcut': [
-        false,
-        'Adds a small [QR] link in the header.'
-      ]
       'Announcement Hiding': [
         true
         'Add button to hide 4chan announcements.'
@@ -138,11 +134,11 @@ Config =
         'Hide replies of hidden posts, recursively.'
       ]
       'Thread Hiding Buttons': [
-        false
+        true
         'Add buttons to hide entire threads.'
       ]
       'Reply Hiding Buttons': [
-        false
+        true
         'Add buttons to hide single replies.'
       ]
       'Filtered Backlinks': [
@@ -332,6 +328,10 @@ Config =
       'Persistent QR': [
         true
         'The Quick reply won\'t disappear after posting.'
+      ]
+      'QR Shortcut': [
+        true,
+        'Adds a small [QR] link in the header.'
       ]
       'Auto Hide QR': [
         true
