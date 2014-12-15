@@ -745,7 +745,7 @@ http://iqdb.org/?url=%TURL
       'Focus the search field on the board index.'
     ]
     'Cycle sort type': [
-      'Alt+x'
+      'Ctrl+x'
       'Cycle through index sort types.'
     ]
     # Thread Navigation
