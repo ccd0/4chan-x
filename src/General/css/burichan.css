@@ -18,9 +18,6 @@
 :root.burichan #header-bar a, :root.burichan #header-bar #notifications a {
   color: #34345C;
 }
-:root.burichan.fixed #custom-board-list .current {
-  border-bottom: 1px solid rgba(30, 30, 255, 0.2);
-}
 :root.burichan.fixed #custom-board-list .current:hover {
   border-bottom-color: rgba(255,0,0,0.2);
 }
