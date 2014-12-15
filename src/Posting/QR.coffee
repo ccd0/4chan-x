@@ -94,6 +94,7 @@ QR =
 
   node: ->
     $.on @nodes.quote, 'click', QR.quote
+    QR.generatePostableThreadsList() if @isFetchedQuote
 
   open: ->
     if QR.nodes

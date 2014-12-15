@@ -353,7 +353,7 @@ Config =
       ]
       'Show New Thread Option in Threads': [
         false
-        'Show the option to post a new thread from inside a thread.'
+        'Show the option to post a new / different thread from inside a thread.'
       ]
       'Show Name and Subject': [
         false
