@@ -211,7 +211,7 @@ QR =
 
     sel  = d.getSelection()
     post = Get.postFromNode @
-    text = ">>#{post}\n"
+    text = if post.board.ID is g.BOARD.ID then ">>#{post}\n" else ">>>/#{post.board}/#{post}\n"
     if sel.toString().trim() and post is Get.postFromNode sel.anchorNode
       range = sel.getRangeAt 0
       frag  = range.cloneContents()
