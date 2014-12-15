@@ -93,7 +93,7 @@ QR =
       QR.status()
 
   node: ->
-    $.on $('a[title="Reply to this post"]', @nodes.info), 'click', QR.quote
+    $.on @nodes.quote, 'click', QR.quote
 
   open: ->
     if QR.nodes

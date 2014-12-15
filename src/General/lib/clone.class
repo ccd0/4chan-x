@@ -15,6 +15,7 @@ class Clone extends Post
       root: root
       post: post
       info: info
+      quote: $ 'a[title="Reply to this post"]', info
       comment: $ '.postMessage', post
       quotelinks: []
       backlinks: info.getElementsByClassName 'backlink'
