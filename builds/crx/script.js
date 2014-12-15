@@ -11913,10 +11913,18 @@
       });
     },
     node: function() {
+      var x;
       MarkNewIPs.ipCount = this.ipCount;
-      MarkNewIPs.postIDs = this.posts.keys.map(function(x) {
-        return +x;
-      });
+      MarkNewIPs.postIDs = (function() {
+        var _i, _len, _ref, _results;
+        _ref = this.post.keys;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          x = _ref[_i];
+          _results.push(+x);
+        }
+        return _results;
+      }).call(this);
       return $.on(d, 'ThreadUpdate', MarkNewIPs.onUpdate);
     },
     onUpdate: function(e) {
