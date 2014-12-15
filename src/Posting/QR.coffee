@@ -425,7 +425,7 @@ QR =
     $.rmAll list
     $.add list, options
     list.value = val
-    return if list.value
+    return if list.value is val
     # Fix the value if the option disappeared.
     list.value = if g.VIEW is 'thread'
       g.THREADID
