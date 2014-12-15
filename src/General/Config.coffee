@@ -729,11 +729,11 @@ http://iqdb.org/?url=%TURL
       'Open front page in a new tab.'
     ]
     'Next page': [
-      'Ctrl+Right'
+      'Right'
       'Jump to the next page.'
     ]
     'Previous page': [
-      'Ctrl+Left'
+      'Left'
       'Jump to the previous page.'
     ]
     'Open catalog': [
@@ -750,11 +750,11 @@ http://iqdb.org/?url=%TURL
     ]
     # Thread Navigation
     'Next thread': [
-      'Ctrl+Down'
+      'Down'
       'See next thread.'
     ]
     'Previous thread': [
-      'Ctrl+Up'
+      'Up'
       'See previous thread.'
     ]
     'Expand thread': [
