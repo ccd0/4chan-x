@@ -606,7 +606,7 @@ http://iqdb.org/?url=%TURL
     'Header auto-hide':           false
     'Header auto-hide on scroll': false
     'Bottom Header':              false
-    'Centered links':             false
+    'Centered links':             true
     'Header catalog links':       false
     'Bottom Board List':          true
     'Shortcut Icons':             true
