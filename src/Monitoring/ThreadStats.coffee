@@ -11,8 +11,8 @@ ThreadStats =
 
     title = "
       Post Count / File Count
-      (if Conf['IP Count in Stats']   then ' / IPs' else '') + 
-      (if Conf['Page Count in Stats'] then ' / Page Count' else '')
+      #{if Conf['IP Count in Stats']   then ' / IPs' else ''}
+      #{if Conf['Page Count in Stats'] then ' / Page Count' else ''}
     ".trim()
     
     if Conf['Updater and Stats in Header']
