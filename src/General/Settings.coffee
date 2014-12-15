@@ -2,7 +2,7 @@ Settings =
   init: ->
     # 4chan X settings link
     link = $.el 'a',
-      className:   'settings-link fa fa-wrench'
+      className:   'settings-link fa fa-bars'
       textContent: 'Settings'
       title: '4chan X Settings'
       href:        'javascript:;'

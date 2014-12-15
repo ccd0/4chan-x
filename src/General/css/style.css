@@ -272,9 +272,6 @@ audio.controls-added {
 #toggleMsgBtn {
   display: none !important;
 }
-.current {
-  font-weight: bold;
-}
 /* 4chan X link brackets */
 .brackets-wrap::before {
   content: "[";
@@ -1415,9 +1412,6 @@ a:only-of-type > .remove {
 .boardTitle[contenteditable="true"],
 .boardSubtitle[contenteditable="true"] {
   cursor: text !important;
-}
-div.boardTitle {
-  font-weight: 400 !important;
 }
 /* Link Title Favicons */
 .linkify.YouTube {

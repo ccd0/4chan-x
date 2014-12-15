@@ -18,7 +18,7 @@ Config =
         'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'
       ]
       'QR Shortcut': [
-        false,
+        true,
         'Adds a small [QR] link in the header.'
       ]
       'Announcement Hiding': [
@@ -138,11 +138,11 @@ Config =
         'Hide replies of hidden posts, recursively.'
       ]
       'Thread Hiding Buttons': [
-        false
+        true
         'Add buttons to hide entire threads.'
       ]
       'Reply Hiding Buttons': [
-        false
+        true
         'Add buttons to hide single replies.'
       ]
       'Filtered Backlinks': [
@@ -316,7 +316,7 @@ Config =
         'Bookmark threads.'
       ]
       'Toggleable Thread Watcher': [
-        true
+        false
         'Adds a shortcut for the thread watcher, hides the watcher by default, and makes it scroll with the page.'
       ]
       'Mark New IPs': [
@@ -606,30 +606,14 @@ http://iqdb.org/?url=%TURL
     'Header auto-hide':           false
     'Header auto-hide on scroll': false
     'Bottom Header':              false
-    'Centered links':             false
+    'Centered links':             true
     'Header catalog links':       false
     'Bottom Board List':          true
     'Shortcut Icons':             true
     'Custom Board Navigation':    true
 
   boardnav: """
-[ toggle-all ]
-a-replace
-c-replace
-g-replace
-k-replace
-v-replace
-vg-replace
-vr-replace
-ck-replace
-co-replace
-fit-replace
-jp-replace
-mu-replace
-sp-replace
-tv-replace
-vp-replace
-[external-text:"FAQ","<%= meta.faq %>"]
+[current-title / toggle-all]
   """
 
   QR:
@@ -745,11 +729,11 @@ vp-replace
       'Open front page in a new tab.'
     ]
     'Next page': [
-      'Ctrl+Right'
+      'Right'
       'Jump to the next page.'
     ]
     'Previous page': [
-      'Ctrl+Left'
+      'Left'
       'Jump to the previous page.'
     ]
     'Open catalog': [
@@ -761,16 +745,16 @@ vp-replace
       'Focus the search field on the board index.'
     ]
     'Cycle sort type': [
-      'Alt+x'
+      'Ctrl+x'
       'Cycle through index sort types.'
     ]
     # Thread Navigation
     'Next thread': [
-      'Ctrl+Down'
+      'Down'
       'See next thread.'
     ]
     'Previous thread': [
-      'Ctrl+Up'
+      'Up'
       'See previous thread.'
     ]
     'Expand thread': [
