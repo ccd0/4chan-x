@@ -76,7 +76,6 @@ QR =
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
 
-    # We can thread update and index refresh without loading a new page, so...
     $.on d, 'IndexRefresh', QR.generatePostableThreadsList
     $.on d, 'ThreadUpdate', QR.statusCheck
 
