@@ -138,11 +138,11 @@ Config =
         'Hide replies of hidden posts, recursively.'
       ]
       'Thread Hiding Buttons': [
-        false
+        true
         'Add buttons to hide entire threads.'
       ]
       'Reply Hiding Buttons': [
-        false
+        true
         'Add buttons to hide single replies.'
       ]
       'Filtered Backlinks': [
