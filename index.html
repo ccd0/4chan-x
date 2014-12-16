@@ -59,13 +59,15 @@ Only the latest stable version of 4chan X is available.</p>
 </ul>
 
 <script>
-var link = document.querySelector('a[href="https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam"]');
-link.addEventListener('click', function(e) {
-  if (window.chrome && !e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey && e.button === 0) {
-    chrome.webstore.install();
-    e.preventDefault();
-  }
-}, false);
+var links = document.querySelectorAll('a[href="https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam"]');
+for (var i = 0; i < links.length; i++) {
+  links[i].addEventListener('click', function(e) {
+    if (window.chrome && !e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey && e.button === 0) {
+      chrome.webstore.install();
+      e.preventDefault();
+    }
+  }, false);
+}
 </script>
 </body></html>
 
