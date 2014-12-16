@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.9.15.21
+// @version      1.9.16.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -10,6 +10,7 @@
 // @match        *://sys.4chan.org/*
 // @match        *://a.4cdn.org/*
 // @match        *://i.4cdn.org/*
+// @match        *://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue
