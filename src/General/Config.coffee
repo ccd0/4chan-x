@@ -103,7 +103,7 @@ Config =
       ]
       'Disable Autoplaying Sounds': [
         false
-        'Prevent sounds on the page from autoplaying.'
+        'Stop autoplaying sounds and other annoyances.'
       ]
 
     'Linkification':

@@ -109,6 +109,15 @@ audio.controls-added {
   display: block;
   margin: auto;
 }
+:root.anti-autoplay div.embed {
+  position: static;
+  width: auto;
+  height: auto;
+  text-align: center;
+}
+:root.anti-autoplay marquee {
+  visibility: hidden;
+}
 
 /* fixed, z-index */
 #overlay,

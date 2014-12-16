@@ -30,6 +30,13 @@ Based on v1.9.15.19.
 - Add option `Force Noscript Captcha` to use the non-Javascript version of Recaptcha and an interface similar to the old Recaptcha. Also use this version of the captcha if Javascript is disabled on the page (4chan X can be used this way in Greasemonkey 2.x).
 
 <!-- v1.9.15.x -->
+### v1.9.15.21 
+*2014-12-15* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.21/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.21/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Flags on /pol/ are now country flags.
+- Update `Disable Autoplaying Sounds` to stop Youtube videos and `<marquee>`.
+
 ### v1.9.15.20 
 *2014-12-14* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.20/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.15.20/builds/4chan-X-noupdate.crx "Chromium version")]
 
