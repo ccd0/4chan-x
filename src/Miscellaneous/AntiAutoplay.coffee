@@ -7,6 +7,9 @@ AntiAutoplay =
     Post.callbacks.push
       name: 'Disable Autoplaying Sounds'
       cb:   @node
+    CatalogThread.callbacks.push
+      name: 'Disable Autoplaying Sounds'
+      cb:   @node
     $.ready => @process d.body
 
   stop: (audio) ->
