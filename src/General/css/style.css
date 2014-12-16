@@ -113,6 +113,9 @@ audio.controls-added {
   height: auto;
   text-align: center;
 }
+:root.anti-autoplay marquee {
+  visibility: hidden;
+}
 
 /* fixed, z-index */
 #overlay,

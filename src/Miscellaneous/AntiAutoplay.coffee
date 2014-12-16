@@ -7,7 +7,7 @@ AntiAutoplay =
     Post.callbacks.push
       name: 'Disable Autoplaying Sounds'
       cb:   @node
-    $.ready => @stopYoutube d.body
+    $.ready => @process d.body
 
   stop: (audio) ->
     return unless audio.autoplay
@@ -18,8 +18,12 @@ AntiAutoplay =
     $.addClass audio, 'controls-added'
 
   node: ->
-    AntiAutoplay.stopYoutube @nodes.root
+    AntiAutoplay.process @nodes.root
 
-  stopYoutube: (root) ->
+  process: (root) ->
     for iframe in $$ 'iframe[src*="youtube"][src*="autoplay=1"]', root
       iframe.src = iframe.src.replace(/\?autoplay=1&?/, '?').replace('&autoplay=1', '')
+    for marquee in $$ 'marquee', root
+      span = $.el 'span', className: 'removed-marquee'
+      $.replace marquee, span
+      $.add span, [marquee.childNodes...]
