@@ -42,8 +42,12 @@ Config =
         'Localize and format timestamps.'
       ]
       'Relative Post Dates': [
-        false
+        true
         'Display dates like "3 minutes ago". Tooltip shows the timestamp.'
+      ]
+      'Relative Date Title': [
+        true
+        'Show relative post date as the tooltip.'
       ]
       'Comment Expansion': [
         true

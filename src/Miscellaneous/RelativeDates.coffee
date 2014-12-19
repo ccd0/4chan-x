@@ -16,13 +16,19 @@ RelativeDates =
     Post.callbacks.push
       name: 'Relative Post Dates'
       cb:   @node
+
   node: ->
+    dateEl = @nodes.date
+    if Conf['Relative Date Title']
+      $.on dateEl, 'mouseover', =>
+        RelativeDates.hover @
+      return
+
     return if @isClone
 
     # Show original absolute time as tooltip so users can still know exact times
     # Since "Time Formatting" runs its `node` before us, the title tooltip will
     # pick up the user-formatted time instead of 4chan time when enabled.
-    dateEl = @nodes.date
     dateEl.title = dateEl.textContent
 
     RelativeDates.update @
@@ -81,6 +87,13 @@ RelativeDates =
     # Reset automatic flush.
     clearTimeout RelativeDates.timeout
     RelativeDates.timeout = setTimeout RelativeDates.flush, RelativeDates.INTERVAL
+
+  # Relative Date Title
+  hover: (post) ->
+    {date} = post.info
+    now = new Date()
+    diff = now - date
+    post.nodes.date.title = RelativeDates.relative diff, now, date
 
   # `update()`, when called from `flush()`, updates the elements,
   # and re-calls `setOwnTimeout()` to re-add `data` to the stale list later.
