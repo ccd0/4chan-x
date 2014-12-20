@@ -42,7 +42,7 @@ ThreadUpdater =
         $.on input, 'change', @cb.scrollBG
         @cb.scrollBG()
       else if input.name is 'Auto Update'
-        $.on input, 'change', @cb.update
+        $.on input, 'change', @cb.autoUpdate
       subEntries.push el: el
 
     @settings = $.el 'span',
@@ -119,6 +119,8 @@ ThreadUpdater =
         -> true
       else
         -> not d.hidden
+    autoUpdate: (e) ->
+      ThreadUpdater.count ThreadUpdater.isUpdating = @checked
     interval: ->
       val = parseInt @value, 10
       if val < 1 then val = 1
