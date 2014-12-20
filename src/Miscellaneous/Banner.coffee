@@ -5,6 +5,9 @@ Banner =
     $.asap (-> d.body), ->
       $.asap (-> $ 'hr'), Banner.ready
 
+    # Let 4chan's JS load the banner if enabled; otherwise, load it ourselves.
+    $.ready -> $.queueTask Banner.load
+
   ready: ->
     banner = $ ".boardBanner"
     {children} = banner
@@ -28,6 +31,14 @@ Banner =
         child.spellcheck = false
 
     return
+
+  load: ->
+    bannerCnt = $.id 'bannerCnt'
+    unless bannerCnt.firstChild
+      img = $.el 'img',
+        alt: '4chan'
+        src: '//s.4cdn.org/image/title/' + bannerCnt.dataset.src
+      $.add bannerCnt, img
 
   setTitle: (title) ->
     if Unread.title?
