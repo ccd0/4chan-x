@@ -590,7 +590,6 @@ http://iqdb.org/?url=%TURL
 """
 
   FappeT:
-    fappe: false
     werk:  false
 
   'Custom CSS': false

@@ -2,6 +2,10 @@ FappeTyme =
   init: ->
     return if !(Conf['Fappe Tyme'] or Conf['Werk Tyme']) or g.VIEW is 'catalog' or g.BOARD is 'f'
 
+    @enabled =
+      fappe: false
+      werk:  Conf['werk']
+
     for type in ["Fappe", "Werk"] when Conf["#{type} Tyme"]
       lc = type.toLowerCase()
       el = UI.checkbox lc, " #{type} Tyme", false
@@ -38,10 +42,10 @@ FappeTyme =
 
   cb:
     set: (type) ->
-      FappeTyme[type].checked = Conf[type]
-      $["#{if Conf[type] then 'add' else 'rm'}Class"] doc, "#{type}Tyme"
+      FappeTyme[type].checked = FappeTyme.enabled[type]
+      $["#{if FappeTyme.enabled[type] then 'add' else 'rm'}Class"] doc, "#{type}Tyme"
 
     toggle: ->
-      Conf[@name] = !Conf[@name]
+      FappeTyme.enabled[@name] = !FappeTyme.enabled[@name]
       FappeTyme.cb.set @name
-      $.cb.checked.call FappeTyme[@name]
+      $.cb.checked.call FappeTyme[@name] if @name is 'werk'
