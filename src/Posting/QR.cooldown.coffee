@@ -5,8 +5,7 @@ QR.cooldown =
     return unless Conf['Cooldown']
 
     # Read cooldown times
-    scriptData = $('script:not([src])', d.head)?.textContent or ''
-    QR.cooldown.delays = if m = scriptData.match /\bcooldowns *= *({[^}]+})/
+    QR.cooldown.delays = if m = Get.scriptData().match /\bcooldowns *= *({[^}]+})/
       JSON.parse m[1]
     else
       {thread: 0, reply: 0, image: 0, reply_intra: 0, image_intra: 0}
