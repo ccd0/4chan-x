@@ -1,29 +1,27 @@
 RelativeDates =
   INTERVAL: $.MINUTE / 2
   init: ->
-    switch g.VIEW
-      when 'index'
-        @flush()
-        $.on d, 'visibilitychange', @flush
-        return unless Conf['Relative Post Dates']
-      when 'thread'
-        return unless Conf['Relative Post Dates']
-        @flush()
-        $.on d, 'visibilitychange ThreadUpdate', @flush if g.VIEW is 'thread'
-      else
-        return
+    unless Conf['Relative Date Title']
+      switch g.VIEW
+        when 'index'
+          @flush()
+          $.on d, 'visibilitychange', @flush
+          return unless Conf['Relative Post Dates']
+        when 'thread'
+          return unless Conf['Relative Post Dates']
+          @flush()
+          $.on d, 'visibilitychange ThreadUpdate', @flush if g.VIEW is 'thread'
+        else
+          return
 
     Post.callbacks.push
       name: 'Relative Post Dates'
       cb:   @node
-
   node: ->
     dateEl = @nodes.date
     if Conf['Relative Date Title']
-      $.on dateEl, 'mouseover', =>
-        RelativeDates.hover @
+      $.on dateEl, 'mouseover', => RelativeDates.hover @
       return
-
     return if @isClone
 
     # Show original absolute time as tooltip so users can still know exact times
@@ -88,10 +86,9 @@ RelativeDates =
     clearTimeout RelativeDates.timeout
     RelativeDates.timeout = setTimeout RelativeDates.flush, RelativeDates.INTERVAL
 
-  # Relative Date Title
   hover: (post) ->
-    {date} = post.info
-    now = new Date()
+    date = post.info.date
+    now  = new Date()
     diff = now - date
     post.nodes.date.title = RelativeDates.relative diff, now, date
 

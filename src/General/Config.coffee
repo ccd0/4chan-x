@@ -47,7 +47,7 @@ Config =
       ]
       'Relative Date Title': [
         true
-        'Show relative post date as the tooltip.'
+        'Show Relative Post Date only when hovering over dates.'
       ]
       'Comment Expansion': [
         true
