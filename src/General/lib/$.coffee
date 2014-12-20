@@ -114,11 +114,11 @@ $.asap = (test, cb) ->
   else
     setTimeout $.asap, 25, test, cb
 
-$.addStyle = (css, id) ->
+$.addStyle = (css, id, test) ->
   style = $.el 'style',
     id: id
     textContent: css
-  $.asap (-> d.head), ->
+  $.asap (-> d.head and (!test? or test())), ->
     $.add d.head, style
   style
 
