@@ -39,7 +39,13 @@ Main =
       $.extend Conf, items
       $.asap (-> doc = d.documentElement), Main.initFeatures
 
-    $.on d, '4chanMainInit', Main.initStyle
+    # set up CSS when <head> is completely loaded
+    $.asap (-> d.documentElement), ->
+      observer = new MutationObserver ->
+        if d.body
+          observer.disconnect()
+          Main.initStyle()
+      observer.observe d.documentElement, childList: true
 
   initFeatures: ->
     switch location.hostname
@@ -86,7 +92,6 @@ Main =
     $.ready Main.initReady
 
   initStyle: ->
-    $.off d, '4chanMainInit', Main.initStyle
     return if !Main.isThisPageLegit() or $.hasClass doc, 'fourchan-x'
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
@@ -127,9 +132,6 @@ Main =
           postID:   +location.hash.match /\d+/ # post number or 0
         Redirect.navigate href, "/#{g.BOARD}/"
       return
-
-    # Something might have gone wrong!
-    Main.initStyle()
 
     # 4chan Pass Link
     if styleSelector = $.id 'styleSelector'
