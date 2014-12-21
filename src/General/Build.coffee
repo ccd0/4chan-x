@@ -21,9 +21,9 @@ Build =
     g.VIEW is 'thread' and g.BOARD.ID is boardID and g.THREADID is +threadID
   postURL: (boardID, threadID, postID) ->
     if Build.sameThread boardID, threadID
-      "\#p#{postID}"
+      "#p#{postID}"
     else
-      "/#{boardID}/thread/#{threadID}\#p#{postID}"
+      "/#{boardID}/thread/#{threadID}#p#{postID}"
   postFromObject: (data, boardID) ->
     o =
       # id
@@ -151,7 +151,7 @@ Build =
     quoteLink = if Build.sameThread boardID, threadID
       "javascript:quote('#{+postID}');"
     else
-      "/#{boardID}/thread/#{threadID}\#q#{postID}"
+      "/#{boardID}/thread/#{threadID}#q#{postID}"
 
     icons = for type in ['Sticky', 'Closed', 'Archived'] when o["is#{type}"] and !(type is 'Closed' and o.isArchived)
       typeLC = type.toLowerCase()

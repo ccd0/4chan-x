@@ -52,12 +52,12 @@ CatalogLinks =
     if Conf['External Catalog'] and board in ['a', 'c', 'g', 'biz', 'k', 'm', 'o', 'p', 'v', 'vg', 'vr', 'w', 'wg', 'cm', '3', 'adv', 'an', 'asp', 'cgl', 'ck', 'co', 'diy', 'fa', 'fit', 'gd', 'int', 'jp', 'lit', 'mlp', 'mu', 'n', 'out', 'po', 'sci', 'sp', 'tg', 'toy', 'trv', 'tv', 'vp', 'wsg', 'x', 'f', 'pol', 's4s', 'lgbt']
       "http://catalog.neet.tv/#{board}"
     else if Conf['JSON Navigation'] and Conf['Use 4chan X Catalog']
-      if g.BOARD.ID is board and g.VIEW is 'index' then '#catalog' else "/#{board}/\#catalog"
+      if g.BOARD.ID is board and g.VIEW is 'index' then '#catalog' else "/#{board}/#catalog"
     else
       "/#{board}/catalog"
 
   index: (board=g.BOARD.ID) ->
     if Conf['JSON Navigation'] and Conf['Use 4chan X Catalog']
-      if g.BOARD.ID is board and g.VIEW is 'index' then '#index' else "/#{board}/\#index"
+      if g.BOARD.ID is board and g.VIEW is 'index' then '#index' else "/#{board}/#index"
     else
       "/#{board}/"
