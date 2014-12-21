@@ -98,7 +98,7 @@ ThreadUpdater =
         clearTimeout ThreadUpdater.timeoutID
     checkpost: (e) ->
       unless ThreadUpdater.checkPostCount
-        return unless e.detail.threadID is ThreadUpdater.thread.ID
+        return if e and e.detail.threadID isnt ThreadUpdater.thread.ID
         ThreadUpdater.seconds = 0
         ThreadUpdater.outdateCount = 0
         ThreadUpdater.set 'timer', '...'
