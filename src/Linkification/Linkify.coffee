@@ -329,6 +329,7 @@ Linkify =
               $.extend el, <%= html('<audio controls><source type="audio/ogg" src="https://mediacru.sh/${a.dataset.uid}.ogg"></audio>') %>
             else
               el.textContent = "ERROR: No valid filetype."
+          return
         el
     ,
       key: 'pastebin'
