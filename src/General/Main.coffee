@@ -41,7 +41,7 @@ Main =
 
     # set up CSS when <head> is completely loaded
     $.asap (-> doc = d.documentElement), ->
-      $.onExists doc, 'body', Main.initStyle
+      $.onExists doc, 'body', false, Main.initStyle
 
   initFeatures: ->
     switch location.hostname

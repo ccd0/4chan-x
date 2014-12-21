@@ -30,7 +30,10 @@ QR =
       Header.addShortcut sc
 
     if Conf['Hide Original Post Form']
-      $.asap (-> doc), -> $.addClass doc, 'hide-original-post-form'
+      $.addClass doc, 'hide-original-post-form'
+      if !doc.dataset.jsEnabled
+        # Prevent unnecessary loading of fallback iframe.
+        $.onExists doc, '#postForm noscript', true, $.rm
 
     $.on d, '4chanXInitFinished', @initReady
 
