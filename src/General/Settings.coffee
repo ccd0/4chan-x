@@ -244,7 +244,7 @@ Settings =
     if data.Conf['WatchedThreads']
       data.Conf['watchedThreads'] = boards: ThreadWatcher.convert data.Conf['WatchedThreads']
       delete data.Conf['WatchedThreads']
-    $.set data.Conf
+    $.clear -> $.set data.Conf
   reset: ->
     if confirm 'Your current settings will be entirely wiped, are you sure?'
       $.clear -> window.location.reload() if confirm 'Reset successful. Reload now?'
