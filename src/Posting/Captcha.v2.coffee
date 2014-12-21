@@ -59,7 +59,7 @@ Captcha.v2 =
       return @reload()
 
     if @nodes.container
-      if @shouldFocus and iframe = $ 'textarea', @nodes.container
+      if @shouldFocus and iframe = $ 'iframe', @nodes.container
         iframe.focus()
         delete @shouldFocus
       return
