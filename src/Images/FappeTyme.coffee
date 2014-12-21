@@ -20,6 +20,9 @@ FappeTyme =
         el:    el
         order: 97
 
+    if Conf['Werk Tyme']
+      $.sync 'werk', @set.bind(@, 'werk')
+
     Post.callbacks.push
       name: 'Fappe Tyme'
       cb:   @node
