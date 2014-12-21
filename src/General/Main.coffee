@@ -48,7 +48,6 @@ Main =
       when 'a.4cdn.org'
         return
       when 'sys.4chan.org'
-        Report.init()
         return
       when 'i.4cdn.org'
         $.asap (-> d.readyState isnt 'loading'), ->
