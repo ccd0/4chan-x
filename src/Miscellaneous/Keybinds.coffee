@@ -97,10 +97,10 @@ Keybinds =
         Gallery.cb.toggle()
       when Conf['fappeTyme']
         return if !Conf['Fappe Tyme'] or g.VIEW is 'catalog' or g.BOARD is 'f'
-        FappeTyme.cb.toggle.call {name: 'fappe'}
+        FappeTyme.toggle 'fappe'
       when Conf['werkTyme']
         return if !Conf['Werk Tyme'] or g.VIEW is 'catalog' or g.BOARD is 'f'
-        FappeTyme.cb.toggle.call {name: 'werk'}
+        FappeTyme.toggle 'werk'
       # Board Navigation
       when Conf['Front page']
         if Conf['JSON Navigation'] and !Conf['Use 4chan X Catalog'] and g.VIEW is 'index'

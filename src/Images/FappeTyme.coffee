@@ -2,6 +2,7 @@ FappeTyme =
   init: ->
     return if !(Conf['Fappe Tyme'] or Conf['Werk Tyme']) or g.VIEW is 'catalog' or g.BOARD is 'f'
 
+    @nodes = {}
     @enabled =
       fappe: false
       werk:  Conf['werk']
@@ -11,14 +12,13 @@ FappeTyme =
       el = UI.checkbox lc, " #{type} Tyme", false
       el.title = "#{type} Tyme"
 
-      FappeTyme[lc] = input = el.firstElementChild
-      $.on input, 'change', FappeTyme.cb.toggle.bind input
+      @nodes[lc] = el.firstElementChild
+      @set lc, true if Conf[lc]
+      $.on @nodes[lc], 'change', @toggle.bind(@, lc)
 
       Header.menu.addEntry
         el:    el
         order: 97
-
-      FappeTyme.cb.set lc if Conf[lc]
 
     Post.callbacks.push
       name: 'Fappe Tyme'
@@ -40,12 +40,10 @@ FappeTyme =
       className:   'werkTyme-filename'
     $.add @nodes.thumb.parentNode, filename
 
-  cb:
-    set: (type) ->
-      FappeTyme[type].checked = FappeTyme.enabled[type]
-      $["#{if FappeTyme.enabled[type] then 'add' else 'rm'}Class"] doc, "#{type}Tyme"
+  set: (type, enabled) ->
+    @enabled[type] = @nodes[type].checked = enabled
+    $["#{if enabled then 'add' else 'rm'}Class"] doc, "#{type}Tyme"
 
-    toggle: ->
-      FappeTyme.enabled[@name] = !FappeTyme.enabled[@name]
-      FappeTyme.cb.set @name
-      $.cb.checked.call FappeTyme[@name] if @name is 'werk'
+  toggle: (type) ->
+    @set type, !@enabled[type]
+    $.cb.checked.call @nodes[type] if type is 'werk'
