@@ -114,6 +114,16 @@ $.asap = (test, cb) ->
   else
     setTimeout $.asap, 25, test, cb
 
+$.onExists = (root, selector, cb) ->
+  if el = $ selector, root
+    return cb el
+  observer = new MutationObserver ->
+    if el = $ selector, root
+      observer.disconnect()
+      cb el
+  observer.observe root,
+    childList: true
+
 $.addStyle = (css, id, test) ->
   style = $.el 'style',
     id: id

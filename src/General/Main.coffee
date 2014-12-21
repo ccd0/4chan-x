@@ -40,12 +40,8 @@ Main =
       $.asap (-> doc = d.documentElement), Main.initFeatures
 
     # set up CSS when <head> is completely loaded
-    $.asap (-> d.documentElement), ->
-      observer = new MutationObserver ->
-        if d.body
-          observer.disconnect()
-          Main.initStyle()
-      observer.observe d.documentElement, childList: true
+    $.asap (-> doc = d.documentElement), ->
+      $.onExists doc, 'body', Main.initStyle
 
   initFeatures: ->
     switch location.hostname
