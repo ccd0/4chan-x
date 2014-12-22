@@ -133,7 +133,10 @@ QR =
   focus: ->
     $.queueTask ->
       return unless QR.nodes
-      focus = d.activeElement and QR.nodes.el.contains d.activeElement
+      focus = d.activeElement and (
+        QR.nodes.el.contains(d.activeElement) or
+        d.activeElement.nodeName is 'IFRAME' and /^https:\/\/www\.google\.com\/recaptcha\//.test(d.activeElement.src)
+      )
       if $.hasClass(QR.nodes.el, 'autohide') and focus isnt $.hasClass(QR.nodes.el, 'focus')
         QR.captcha[if focus then 'setup' else 'destroy']()
       $[if focus then 'addClass' else 'rmClass'] QR.nodes.el, 'focus'
