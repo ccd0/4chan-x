@@ -133,12 +133,12 @@ QR =
   focus: ->
     $.queueTask ->
       return unless QR.nodes
-      if d.activeElement and QR.nodes.el.contains d.activeElement
-        QR.captcha.setup() if $.hasClass(QR.nodes.el, 'autohide') and !$.hasClass(QR.nodes.el, 'focus')
-        $.addClass QR.nodes.el, 'focus'
-      else
-        $.rmClass QR.nodes.el, 'focus'
+      focus = d.activeElement and QR.nodes.el.contains d.activeElement
+      if $.hasClass(QR.nodes.el, 'autohide') and focus isnt $.hasClass(QR.nodes.el, 'focus')
+        QR.captcha[if focus then 'setup' else 'destroy']()
+      $[if focus then 'addClass' else 'rmClass'] QR.nodes.el, 'focus'
   hide: ->
+    QR.captcha.destroy()
     d.activeElement.blur()
     $.addClass QR.nodes.el, 'autohide'
     QR.nodes.autohide.checked = true
@@ -560,7 +560,7 @@ QR =
     QR.cooldown.init()
     QR.captcha.init()
     $.add d.body, dialog
-    QR.captcha.setup()
+    QR.captcha.setup() unless Conf['Persistent QR'] and Conf['Auto Hide QR']
 
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.

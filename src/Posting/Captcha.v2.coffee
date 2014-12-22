@@ -37,7 +37,7 @@ Captcha.v2 =
     captchaCount < @postsCount
 
   onNewPost: ->
-    @setup()
+    @setup() unless $.hasClass(QR.nodes.el, 'autohide') and !$.hasClass(QR.nodes.el, 'focus')
 
   onPostChange: ->
     @setup() if @postsCount is 0
