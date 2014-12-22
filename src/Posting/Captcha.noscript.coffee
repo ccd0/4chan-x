@@ -187,6 +187,7 @@ Captcha.noscript =
     unless img
       img = @nodes.img = new Image
       $.one img, 'load', @afterSetup.bind @
+      $.on img, 'load', -> @hidden = false
       $.add container, img
     img.src = src
     input.value = ''
@@ -220,6 +221,7 @@ Captcha.noscript =
   reload: ->
     @nodes.iframe.src = @iframeURL
     @occupied = true
+    @nodes.img?.hidden = true
 
   keydown: (e) ->
     if e.keyCode is 8 and not @nodes.input.value
