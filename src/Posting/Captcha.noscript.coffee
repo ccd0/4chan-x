@@ -39,16 +39,21 @@ Captcha.noscript =
     @setup()
 
   initFrame: ->
+    img = $ '.fbc-payload > img'
+    sendChallenge = ->
+      if img.complete
+        conn.send {challenge: img.src}
+      else
+        $.on img, 'load', -> conn.send {challenge: img.src}
     conn = new Connection window.top, "#{location.protocol}//boards.4chan.org",
-      queryChallenge: ->
-        conn.send {challenge}
+      queryChallenge: sendChallenge
       response: (response) ->
         $.id('response').value = response
         $('.fbc-challenge > form').submit()
-    challenge = $('.fbc-payload > img')?.src
-    token     = $('.fbc-verification-token > textarea')?.value
-    error     = $('.fbc-error')?.textContent
-    conn.send {challenge, token, error}
+    conn.send
+      token: $('.fbc-verification-token > textarea')?.value
+      error: $('.fbc-error')?.textContent
+    sendChallenge() if img
 
   timers: {}
 
