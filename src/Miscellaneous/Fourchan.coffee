@@ -15,7 +15,6 @@ Fourchan =
         cb:   @code
 
     if g.BOARD.ID is 'sci'
-      # https://github.com/MayhemYDG/4chan-x/issues/645#issuecomment-13704562
       $.globalEval '''
         window.addEventListener('jsmath', function(e) {
           if (!jsMath) return;

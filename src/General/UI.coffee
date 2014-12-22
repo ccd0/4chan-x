@@ -22,7 +22,7 @@ UI = do ->
     lastToggledButton = null
 
     constructor: (@type) ->
-      # Doc here: https://github.com/MayhemYDG/4chan-x/wiki/Menu-API
+      # XXX Deprecated
       $.on d, 'AddMenuEntry', ({detail}) =>
         return if detail.type isnt @type
         delete detail.open
@@ -329,7 +329,7 @@ UI = do ->
       $.on d,    'keydown',   o.hoverend
     $.on root, 'mousemove', o.hover
     <% if (type === 'userscript') { %>
-    # Workaround for https://github.com/MayhemYDG/4chan-x/issues/377
+    # Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=674955
     o.workaround = (e) -> o.hoverend(e) unless root.contains e.target
     $.on doc,  'mousemove', o.workaround
     <% } %>
@@ -363,7 +363,7 @@ UI = do ->
     $.off d,     'keydown',   @hoverend
     $.off @root, 'mousemove', @hover
     <% if (type === 'userscript') { %>
-    # Workaround for https://github.com/MayhemYDG/4chan-x/issues/377
+    # Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=674955
     $.off doc,   'mousemove', @workaround
     <% } %>
     @cb.call @ if @cb
