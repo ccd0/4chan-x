@@ -137,11 +137,7 @@ QR =
         QR.nodes.el.contains(d.activeElement) or
         d.activeElement.nodeName is 'IFRAME' and /^https:\/\/www\.google\.com\/recaptcha\//.test(d.activeElement.src)
       )
-      if focus
-        QR.captcha.setup() if $.hasClass(QR.nodes.el, 'autohide') and !$.hasClass(QR.nodes.el, 'focus')
-        $.addClass QR.nodes.el, 'focus'
-      else
-        $.rmClass QR.nodes.el, 'focus'
+      $[if focus then 'addClass' else 'rmClass'] QR.nodes.el, 'focus'
       if chrome?
         # XXX Stop anomalous scrolling on space/tab in captcha iframe.
         if d.activeElement and QR.nodes.el.contains(d.activeElement) and d.activeElement.nodeName is 'IFRAME'
@@ -160,7 +156,6 @@ QR =
     $.addClass QR.nodes.el, 'autohide'
     QR.nodes.autohide.checked = true
   unhide: ->
-    QR.captcha.setup() if $.hasClass(QR.nodes.el, 'autohide') and !$.hasClass(QR.nodes.el, 'focus')
     $.rmClass QR.nodes.el, 'autohide'
     QR.nodes.autohide.checked = false
   toggleHide: ->
