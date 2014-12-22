@@ -137,9 +137,11 @@ QR =
         QR.nodes.el.contains(d.activeElement) or
         d.activeElement.nodeName is 'IFRAME' and /^https:\/\/www\.google\.com\/recaptcha\//.test(d.activeElement.src)
       )
-      if $.hasClass(QR.nodes.el, 'autohide') and focus isnt $.hasClass(QR.nodes.el, 'focus')
-        QR.captcha[if focus then 'setup' else 'destroy']()
-      $[if focus then 'addClass' else 'rmClass'] QR.nodes.el, 'focus'
+      if focus
+        QR.captcha.setup() if $.hasClass(QR.nodes.el, 'autohide') and !$.hasClass(QR.nodes.el, 'focus')
+        $.addClass QR.nodes.el, 'focus'
+      else
+        $.rmClass QR.nodes.el, 'focus'
       if chrome?
         # XXX Stop anomalous scrolling on space/tab in captcha iframe.
         if d.activeElement and QR.nodes.el.contains(d.activeElement) and d.activeElement.nodeName is 'IFRAME'
@@ -154,7 +156,6 @@ QR =
     else
       $.off d, 'scroll', QR.scrollLock
   hide: ->
-    QR.captcha.destroy()
     d.activeElement.blur()
     $.addClass QR.nodes.el, 'autohide'
     QR.nodes.autohide.checked = true
@@ -576,7 +577,7 @@ QR =
     QR.cooldown.init()
     QR.captcha.init()
     $.add d.body, dialog
-    QR.captcha.setup() unless Conf['Persistent QR'] and Conf['Auto Hide QR']
+    QR.captcha.setup()
 
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.
