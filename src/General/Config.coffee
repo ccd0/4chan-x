@@ -329,13 +329,13 @@ Config =
         true
         'All-in-one form to reply, create threads, automate dumping and more.'
       ]
-      'Persistent QR': [
-        true
-        'The Quick reply won\'t disappear after posting.'
-      ]
       'QR Shortcut': [
         true,
         'Adds a small [QR] link in the header.'
+      ]
+      'Persistent QR': [
+        true
+        'The Quick reply won\'t disappear after posting.'
       ]
       'Auto Hide QR': [
         true
