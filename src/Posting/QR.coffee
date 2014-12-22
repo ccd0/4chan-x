@@ -140,6 +140,19 @@ QR =
       if $.hasClass(QR.nodes.el, 'autohide') and focus isnt $.hasClass(QR.nodes.el, 'focus')
         QR.captcha[if focus then 'setup' else 'destroy']()
       $[if focus then 'addClass' else 'rmClass'] QR.nodes.el, 'focus'
+      if chrome?
+        # XXX Stop anomalous scrolling on space/tab in captcha iframe.
+        if d.activeElement and QR.nodes.el.contains(d.activeElement) and d.activeElement.nodeName is 'IFRAME'
+          QR.scrollY = window.scrollY
+          $.on d, 'scroll', QR.scrollLock
+          $.one d, 'mousemove wheel', -> $.off d, 'scroll', QR.scrollLock
+        else
+          $.off d, 'scroll', QR.scrollLock
+  scrollLock: (e) ->
+    if d.activeElement and QR.nodes.el.contains(d.activeElement) and d.activeElement.nodeName is 'IFRAME'
+      window.scroll window.scrollX, QR.scrollY
+    else
+      $.off d, 'scroll', QR.scrollLock
   hide: ->
     QR.captcha.destroy()
     d.activeElement.blur()
