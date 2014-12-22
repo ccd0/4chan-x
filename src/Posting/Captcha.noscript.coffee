@@ -16,8 +16,6 @@ Captcha.noscript =
       spellcheck: false
     @nodes = {container, input}
 
-    $.on input, 'blur',  QR.focusout
-    $.on input, 'focus', QR.focusin
     $.on input, 'keydown', @keydown.bind @
     $.on @nodes.container, 'click', =>
       @reload()

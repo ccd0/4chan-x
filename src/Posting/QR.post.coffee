@@ -13,12 +13,6 @@ QR.post = class
       spoiler: $ 'input', el
       span:    el.lastChild
 
-    <% if (type === 'userscript') { %>
-    # XXX Firefox lacks focusin/focusout support.
-    for elm in $$ '*', el
-      $.on elm, 'blur',  QR.focusout
-      $.on elm, 'focus', QR.focusin
-    <% } %>
     $.on el,             'click',  @select
     $.on @nodes.rm,      'click',  (e) => e.stopPropagation(); @rm()
     $.on @nodes.label,   'click',  (e) => e.stopPropagation()

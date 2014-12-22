@@ -37,6 +37,9 @@ QR =
 
     $.on d, '4chanXInitFinished', @initReady
 
+    window.addEventListener 'focus', @focus, true
+    window.addEventListener 'blur',  @focus, true
+
     Post.callbacks.push
       name: 'Quick Reply'
       cb:   @node
@@ -127,11 +130,14 @@ QR =
     QR.cooldown.auto = false
     QR.status()
     QR.captcha.destroy()
-  focusin: ->
-    QR.captcha.setup() if $.hasClass(QR.nodes.el, 'autohide') and !$.hasClass(QR.nodes.el, 'focus')
-    $.addClass QR.nodes.el, 'focus'
-  focusout: ->
-    $.rmClass QR.nodes.el, 'focus'
+  focus: ->
+    $.queueTask ->
+      return unless QR.nodes
+      if d.activeElement and QR.nodes.el.contains d.activeElement
+        QR.captcha.setup() if $.hasClass(QR.nodes.el, 'autohide') and !$.hasClass(QR.nodes.el, 'focus')
+        $.addClass QR.nodes.el, 'focus'
+      else
+        $.rmClass QR.nodes.el, 'focus'
   hide: ->
     d.activeElement.blur()
     $.addClass QR.nodes.el, 'autohide'
@@ -517,12 +523,6 @@ QR =
     QR.flagsInput()
 
     $.on nodes.filename.parentNode, 'click keydown', QR.openFileInput
-
-    items = $$ '*', QR.nodes.el
-    i = 0
-    while elm = items[i++]
-      $.on elm, 'blur',  QR.focusout
-      $.on elm, 'focus', QR.focusin
 
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
