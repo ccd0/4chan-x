@@ -11,7 +11,7 @@ Config =
       ]
       'Use 4chan X Catalog': [
         false
-        'Link to 4chan X\'s catalog instead of the native 4chan one.'
+        'Link to 4chan X\'s catalog instead of the native 4chan one. Requires "JSON Navigation".'
       ]
       'Catalog Links': [
         false
