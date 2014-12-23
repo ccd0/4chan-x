@@ -19,6 +19,9 @@ class Post
     Fourchan.code.call nodes: comment: $ '.postMessage', root2
     for el in $$ 'pre[style=""]', root2
       el.removeAttribute 'style'
+    # XXX /pol/ fakedoubles
+    if board.ID is 'pol'
+      $('a[title="Reply to this post"]', root2).textContent = +root2.id[2..]
     textNodes = $.X './/text()', root2
     i = 0
     while node = textNodes.snapshotItem i++
