@@ -40,11 +40,17 @@ Captcha.noscript =
 
   initFrame: ->
     img = $ '.fbc-payload > img'
+    cb = ->
+      canvas = $.el 'canvas'
+      canvas.width  = img.width
+      canvas.height = img.height
+      canvas.getContext('2d').drawImage(img, 0, 0)
+      conn.send {challenge: canvas.toDataURL()}
     sendChallenge = ->
       if img.complete
-        conn.send {challenge: img.src}
+        cb()
       else
-        $.on img, 'load', -> conn.send {challenge: img.src}
+        $.on img, 'load', cb
     conn = new Connection window.top, "#{location.protocol}//boards.4chan.org",
       queryChallenge: sendChallenge
       response: (response) ->
