@@ -92,19 +92,19 @@ Build =
       when 'admin', 'admin_highlight'
         capcodeClass = ' capcodeAdmin'
         capcodeStart = <%= html(' <strong class="capcode hand id_admin" title="Highlight posts by the Administrator">## Admin</strong>') %>
-        capcodeIcon  = <%= html('<img src="//s.4cdn.org/image/adminicon${retina}.gif" alt="Admin Icon" title="This user is the 4chan Administrator." class="identityIcon retina">') %>
+        capcodeIcon  = <%= html(' <img src="//s.4cdn.org/image/adminicon${retina}.gif" alt="Admin Icon" title="This user is the 4chan Administrator." class="identityIcon retina">') %>
       when 'mod'
         capcodeClass = ' capcodeMod'
         capcodeStart = <%= html(' <strong class="capcode hand id_mod" title="Highlight posts by Moderators">## Mod</strong>') %>
-        capcodeIcon  = <%= html('<img src="//s.4cdn.org/image/modicon${retina}.gif" alt="Mod Icon" title="This user is a 4chan Moderator." class="identityIcon retina">') %>
+        capcodeIcon  = <%= html(' <img src="//s.4cdn.org/image/modicon${retina}.gif" alt="Mod Icon" title="This user is a 4chan Moderator." class="identityIcon retina">') %>
       when 'developer'
         capcodeClass = ' capcodeDeveloper'
         capcodeStart = <%= html(' <strong class="capcode hand id_developer" title="Highlight posts by Developers">## Developer</strong>') %>
-        capcodeIcon  = <%= html('<img src="//s.4cdn.org/image/developericon${retina}.gif" alt="Developer Icon" title="This user is a 4chan Developer." class="identityIcon retina">') %>
+        capcodeIcon  = <%= html(' <img src="//s.4cdn.org/image/developericon${retina}.gif" alt="Developer Icon" title="This user is a 4chan Developer." class="identityIcon retina">') %>
       else
         capcodeClass = ''
         capcodeStart = <%= html('') %>
-        capcodeIcon  = <%= html('') %>
+        capcodeIcon  = if isOP and boardID is 'f' then <%= html('') %> else <%= html(' ') %>
 
     nameClass = if capcode then ' capcode' else ''
 
@@ -117,8 +117,6 @@ Build =
     if email
       emailProcessed = encodeURIComponent(email).replace /%40/g, '@'
       emailField = <%= html('<a href="mailto:${emailProcessed}" class="useremail">&{emailField}</a>') %>
-    unless isOP and boardID is 'f'
-      emailField = <%= html('&{emailField} ') %>
 
     userID = if !capcode and uniqueID
       <%= html(' <span class="posteruid id_${uniqueID}">(ID: <span class="hand" title="Highlight posts by this ID">${uniqueID}</span>)</span>') %>
@@ -128,9 +126,9 @@ Build =
     flag = unless flagCode
       <%= html('') %>
     else if false
-      <%= html('<img src="//s.4cdn.org/image/country/troll/${flagCode.toLowerCase()}.gif" alt="${flagCode}" title="${flagName}" class="countryFlag">') %>
+      <%= html(' <img src="//s.4cdn.org/image/country/troll/${flagCode.toLowerCase()}.gif" alt="${flagCode}" title="${flagName}" class="countryFlag">') %>
     else
-      <%= html('<span title="${flagName}" class="flag flag-${flagCode.toLowerCase()}"></span>') %>
+      <%= html(' <span title="${flagName}" class="flag flag-${flagCode.toLowerCase()}"></span>') %>
 
     nameBlock = <%= html(
       '<span class="nameBlock${capcodeClass}">' +
