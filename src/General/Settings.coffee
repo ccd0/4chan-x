@@ -91,6 +91,7 @@ Settings =
     for key, obj of Config.main
       fs = $.el 'fieldset',
         <%= html('<legend>${key}</legend>') %>
+      containers = [fs]
       for key, arr of obj
         description = arr[1]
         div = $.el 'div'
@@ -100,14 +101,23 @@ Settings =
         ]
         input = $ 'input', div
         $.on input, 'change', $.cb.checked
+        $.on input, 'change', -> @parentNode.parentNode.dataset.checked = @checked
         items[key]  = Conf[key]
         inputs[key] = input
-        $.add fs, div
+        level = arr[2] or 0
+        if containers.length <= level
+          container = $.el 'div', className: 'suboption-list'
+          $.add containers[containers.length-1].lastElementChild, container
+          containers[level] = container
+        else if containers.length > level+1
+          containers.splice level+1, containers.length - (level+1)
+        $.add containers[level], div
       $.add section, fs
 
     $.get items, (items) ->
       for key, val of items
         inputs[key].checked = val
+        inputs[key].parentNode.parentNode.dataset.checked = val
       return
 
     div = $.el 'div',

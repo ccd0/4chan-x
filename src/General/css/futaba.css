@@ -1,5 +1,5 @@
 /* General */
-:root.futaba .dialog {
+:root.futaba .dialog, :root.futaba .suboption-list > div:last-of-type {
   background-color: #F0E0D6;
   border-color: #D9BFB7;
 }
@@ -26,7 +26,7 @@
 }
 
 /* Settings */
-:root.futaba #fourchanx-settings fieldset {
+:root.futaba #fourchanx-settings fieldset, :root.futaba .section-main div::before {
   border-color: #D9BFB7;
 }
 

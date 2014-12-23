@@ -1,5 +1,5 @@
 /* General */
-:root.yotsuba .dialog {
+:root.yotsuba .dialog, :root.yotsuba .suboption-list > div:last-of-type {
   background-color: #F0E0D6;
   border-color: #D9BFB7;
 }
@@ -26,7 +26,7 @@
 }
 
 /* Settings */
-:root.yotsuba #fourchanx-settings fieldset {
+:root.yotsuba #fourchanx-settings fieldset, :root.yotsuba .section-main div::before {
   border-color: #D9BFB7;
 }
 

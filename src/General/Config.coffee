@@ -5,13 +5,14 @@ Config =
         true
         'Replace the original board index with one supporting searching, sorting, infinite scrolling, and a catalog mode.'
       ]
+      'Use 4chan X Catalog': [
+        false
+        'Link to 4chan X\'s catalog instead of the native 4chan one.'
+        1
+      ]
       'External Catalog': [
         false
         'Link to external catalog instead of the internal one.'
-      ]
-      'Use 4chan X Catalog': [
-        false
-        'Link to 4chan X\'s catalog instead of the native 4chan one. Requires "JSON Navigation".'
       ]
       'Catalog Links': [
         false
@@ -48,6 +49,7 @@ Config =
       'Relative Date Title': [
         true
         'Show Relative Post Date only when hovering over dates.'
+        1
       ]
       'Comment Expansion': [
         true
@@ -76,6 +78,7 @@ Config =
       'Persistent Custom Board Titles': [
         false
         'Force custom board titles to be persistent, even if moot updates the board titles.'
+        1
       ]
       'Show Updated Notifications': [
         true
@@ -114,14 +117,17 @@ Config =
       'Embedding': [
         true
         'Embed supported services.'
+        1
       ]
       'Auto-embed': [
         false
         'Auto-embed Linkify Embeds.'
+        2
       ]
       'Link Title': [
         true
         'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud, and Github gists'
+        1
       ]
 
     'Filtering':
@@ -132,6 +138,11 @@ Config =
       'Filter': [
         true
         'Self-moderation placebo.'
+      ]
+      'Filtered Backlinks': [
+        true
+        'When enabled, shows backlinks to filtered posts with a line-through decoration. Otherwise, hides the backlinks.'
+        1
       ]
       'Recursive Hiding': [
         true
@@ -144,10 +155,6 @@ Config =
       'Reply Hiding Buttons': [
         true
         'Add buttons to hide single replies.'
-      ]
-      'Filtered Backlinks': [
-        true
-        'When enabled, shows backlinks to filtered posts with a line-through decoration. Otherwise, hides the backlinks.'
       ]
       'Stubs': [
         true
@@ -174,10 +181,12 @@ Config =
       'Fullscreen Gallery': [
         false
         'Open gallery in fullscreen mode.'
+        1
       ]
       'PDF in Gallery': [
         false
         'Show PDF files in gallery.'
+        1
       ]
       'Sauce': [
         true
@@ -240,26 +249,32 @@ Config =
       'Report Link': [
         true
         'Add a report link to the menu.'
+        1
       ]
       'Thread Hiding Link': [
         true
         'Add a link to hide entire threads.'
+        1
       ]
       'Reply Hiding Link': [
         true
         'Add a link to hide single replies.'
+        1
       ]
       'Delete Link': [
         true
         'Add post and image deletion links to the menu.'
+        1
       ]
       'Download Link': [
         true
         'Add a download with original filename link to the menu.'
+        1
       ]
       'Archive Link': [
         true
         'Add an archive link to the menu.'
+        1
       ]
 
     'Monitoring':
@@ -271,9 +286,15 @@ Config =
         true
         'Show the unread posts count in the tab title.'
       ]
+      'Quoted Title': [
+        false
+        'Change the page title to reflect you\'ve been quoted.'
+        1
+      ]
       'Hide Unread Count at (0)': [
         false
         'Hide the unread posts count in the tab title when it reaches 0.'
+        1
       ]
       'Unread Favicon': [
         true
@@ -302,14 +323,17 @@ Config =
       'IP Count in Stats': [
         true
         'Display the unique IP count in the thread stats.'
+        1
       ]
       'Page Count in Stats': [
         true
         'Display the page count in the thread stats.'
+        1
       ]
       'Updater and Stats in Header': [
         true,
         'Places the thread updater and thread stats in the header instead of floating them.'
+        1
       ]
       'Thread Watcher': [
         true
@@ -318,6 +342,7 @@ Config =
       'Toggleable Thread Watcher': [
         true
         'Adds a shortcut for the thread watcher, hides the watcher by default, and makes it scroll with the page.'
+        1
       ]
       'Mark New IPs': [
         false
@@ -332,68 +357,84 @@ Config =
       'QR Shortcut': [
         true,
         'Adds a small [QR] link in the header.'
+        1
       ]
       'Persistent QR': [
         true
         'The Quick reply won\'t disappear after posting.'
+        1
       ]
       'Auto Hide QR': [
         true
         'Automatically hide the quick reply when posting.'
+        1
       ]
       'Open Post in New Tab': [
         true
         'Open new threads or replies to a thread from the index in a new tab.'
+        1
       ]
       <% if (type === 'userscript') { %>
       'Remember QR Size': [
         false
         'Remember the size of the Quick reply.'
+        1
       ]
       <% } %>
       'Remember Spoiler': [
         false
         'Remember the spoiler state, instead of resetting after posting.'
+        1
       ]
       'Show New Thread Option in Threads': [
         false
         'Show the option to post a new / different thread from inside a thread.'
+        1
       ]
       'Show Name and Subject': [
         false
         'Show the classic name, email, and subject fields in the QR, even when 4chan doesn\'t use them all.'
+        1
       ]
       'Hide Original Post Form': [
         true
         'Hide the normal post form.'
+        1
       ]
       'Cooldown': [
         true
         'Indicate the remaining time before posting again.'
+        1
       ]
       'Posting Success Notifications': [
         true
         'Show notifications on successful post creation or file uploading.'
+        1
       ]
       'Force Noscript Captcha': [
         false
         'Use the non-Javascript fallback captcha in the QR even if Javascript is enabled.'
+        1
       ]
       'Captcha Warning Notifications': [
         true
         'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.'
+        1
       ]
       'Auto-load captcha': [
         false
         'Automatically load the captcha in the QR even if your post is empty.'
+        1
       ]
       'Post on Captcha Completion': [
         false
         'Submit the post immediately when the captcha is completed.'
+        1
       ]
       'Bottom QR Link': [
         true
         'Places a link on the bottom of threads to open the QR.'
+        1
       ]
 
     'Quote Links':
@@ -404,6 +445,7 @@ Config =
       'OP Backlinks': [
         true
         'Add backlinks to the OP.'
+        1
       ]
       'Quote Inlining': [
         true
@@ -412,10 +454,12 @@ Config =
       'Quote Hash Navigation': [
         false
         'Include an extra link after quotes for autoscrolling to quoted posts.'
+        1
       ]
       'Forward Hiding': [
         true
         'Hide original posts of inlined backlinks.'
+        1
       ]
       'Quote Previewing': [
         true
@@ -424,6 +468,7 @@ Config =
       'Quote Highlighting': [
         true
         'Highlight the previewed post.'
+        1
       ]
       'Resurrect Quotes': [
         true
@@ -433,17 +478,15 @@ Config =
         true
         'Add \'(You)\' to quotes linking to your posts.'
       ]
-      'Quoted Title': [
-        false
-        'Change the page title to reflect you\'ve been quoted.'
-      ]
       'Highlight Posts Quoting You': [
         false
         'Highlights any posts that contain a quote to your post.'
+        1
       ]
       'Highlight Own Posts': [
         false
         'Highlights own posts if Mark Quotes of You is enabled.'
+        1
       ]
       'Mark OP Quotes': [
         true

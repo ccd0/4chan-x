@@ -1,5 +1,5 @@
 /* General */
-:root.burichan .dialog {
+:root.burichan .dialog, :root.burichan .suboption-list > div:last-of-type {
   background-color: #D6DAF0;
   border-color: #B7C5D9;
 }
@@ -26,7 +26,7 @@
 }
 
 /* Settings */
-:root.burichan #fourchanx-settings fieldset {
+:root.burichan #fourchanx-settings fieldset, :root.burichan .section-main div::before {
   border-color: #B7C5D9;
 }
 
