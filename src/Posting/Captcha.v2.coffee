@@ -141,8 +141,11 @@ Captcha.v2 =
     $.set 'captchas', @captchas
     @count()
 
-    if (QR.cooldown.auto or Conf['Post on Captcha Completion']) and @needed()
-      @shouldFocus = true
+    if @needed()
+      if QR.cooldown.auto or Conf['Post on Captcha Completion']
+        @shouldFocus = true
+      else
+        QR.nodes.status.focus()
       @reload()
     else
       if pasted
