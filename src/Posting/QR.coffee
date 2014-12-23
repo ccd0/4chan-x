@@ -143,7 +143,6 @@ QR =
         if d.activeElement and QR.nodes.el.contains(d.activeElement) and d.activeElement.nodeName is 'IFRAME'
           QR.scrollY = window.scrollY
           $.on d, 'scroll', QR.scrollLock
-          $.one d, 'mousemove wheel', -> $.off d, 'scroll', QR.scrollLock
         else
           $.off d, 'scroll', QR.scrollLock
   scrollLock: (e) ->
