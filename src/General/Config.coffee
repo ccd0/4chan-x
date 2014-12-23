@@ -42,7 +42,7 @@ Config =
         'Localize and format timestamps.'
       ]
       'Relative Post Dates': [
-        true
+        false
         'Display dates like "3 minutes ago". Tooltip shows the timestamp.'
       ]
       'Relative Date Title': [
