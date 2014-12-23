@@ -2,6 +2,19 @@ The attributions below are for work that has been incorporated into the script a
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+<!-- v1.9.17.x -->
+### v1.9.17.0 
+*2014-12-22* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.17.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.17.0/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ihavenoface**
+- `Relative Date Title` option displays relative dates in a tooltip instead of replacing the timestamp.
+
+**ccd0**
+- `Relative Date Title`, `Thread Hiding Buttons`, `Reply Hiding Buttons`, and `QR Shortcut` are now on by default.
+- The `Fappe Tyme` mode no longer persists when you navigate to a new page. Setting the `Werk Tyme` mode sets it in all tabs.
+- 4chan X now redirect from the native catalog to the 4chan X catalog if `Use 4chan X Catalog` is on.
+- Various bugfixes and documentation improvements.
+
 <!-- v1.9.16.x -->
 ### v1.9.16.5 
 *2014-12-17* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.16.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.16.5/builds/4chan-X-noupdate.crx "Chromium version")]
