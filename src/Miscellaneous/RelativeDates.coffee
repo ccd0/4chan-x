@@ -1,14 +1,13 @@
 RelativeDates =
   INTERVAL: $.MINUTE / 2
   init: ->
+    return unless Conf['Relative Post Dates']
     unless Conf['Relative Date Title']
       switch g.VIEW
         when 'index'
           @flush()
           $.on d, 'visibilitychange', @flush
-          return unless Conf['Relative Post Dates']
         when 'thread'
-          return unless Conf['Relative Post Dates']
           @flush()
           $.on d, 'visibilitychange ThreadUpdate', @flush if g.VIEW is 'thread'
         else
