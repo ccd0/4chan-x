@@ -1,5 +1,5 @@
 /* General */
-:root.tomorrow .dialog, :root.tomorrow .suboption-list > div:last-of-type {
+:root.tomorrow .dialog {
   background-color: #282A2E;
   border-color: #111;
 }
@@ -25,6 +25,9 @@
 /* Settings */
 :root.tomorrow #fourchanx-settings fieldset, :root.tomorrow .section-main div::before {
   border-color: #111;
+}
+:root.tomorrow .suboption-list > div:last-of-type {
+  background-color: #282A2E;
 }
 
 /* Catalog */

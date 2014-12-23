@@ -1,5 +1,5 @@
 /* General */
-:root.photon .dialog, :root.photon .suboption-list > div:last-of-type {
+:root.photon .dialog {
   background-color: #DDD;
   border-color: #CCC;
 }
@@ -28,6 +28,9 @@
 /* Settings */
 :root.photon #fourchanx-settings fieldset, :root.photon .section-main div::before {
   border-color: #CCC;
+}
+:root.photon .suboption-list > div:last-of-type {
+  background-color: #DDD;
 }
 
 /* Quote */
