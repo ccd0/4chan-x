@@ -1,6 +1,6 @@
 PostHiding =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Reply Hiding Buttons'] and !Conf['Reply Hiding Link']
+    return if g.VIEW is 'catalog' or !Conf['Reply Hiding Buttons'] and !(Conf['Menu'] and Conf['Reply Hiding Link'])
 
     if Conf['Reply Hiding Buttons']
       $.addClass doc, "reply-hide"

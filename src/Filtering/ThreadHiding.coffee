@@ -1,6 +1,6 @@
 ThreadHiding =
   init: ->
-    return if g.VIEW is 'thread' or !Conf['Thread Hiding Buttons'] and !Conf['Thread Hiding Link'] and !Conf['JSON Navigation']
+    return if g.VIEW is 'thread' or !Conf['Thread Hiding Buttons'] and !(Conf['Menu'] and Conf['Thread Hiding Link']) and !Conf['JSON Navigation']
     @db = new DataBoard 'hiddenThreads'
     return @catalogWatch() if g.VIEW is 'catalog'
     @catalogSet g.BOARD
