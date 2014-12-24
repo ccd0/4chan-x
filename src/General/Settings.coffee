@@ -35,6 +35,7 @@ Settings =
       id:        'fourchanx-settings'
       className: 'dialog'
     $.extend dialog, <%= importHTML('Settings/Settings') %>
+    $('a[href$="/CHANGELOG.md"]', dialog).textContent = g.VERSION
 
     $.on $('.export', Settings.dialog), 'click',  Settings.export
     $.on $('.import', Settings.dialog), 'click',  Settings.import
