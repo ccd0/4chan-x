@@ -6,7 +6,8 @@ Banner =
       $.asap (-> $ 'hr'), Banner.ready
 
     # Let 4chan's JS load the banner if enabled; otherwise, load it ourselves.
-    $.ready -> $.queueTask Banner.load
+    if g.BOARD.ID isnt 'f'
+      $.ready -> $.queueTask Banner.load
 
   ready: ->
     banner = $ ".boardBanner"
