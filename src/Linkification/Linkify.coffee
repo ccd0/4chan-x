@@ -250,7 +250,7 @@ Linkify =
 
   ordered_types: [
       key: 'audio'
-      regExp: /\.(?:mp3|ogg|wav)$/i
+      regExp: /\.(?:mp3|ogg|wav)(?:\?|$)/i
       style: ''
       el: (a) ->
         $.el 'audio',
@@ -272,7 +272,7 @@ Linkify =
           return file for file of files when files.hasOwnProperty file
     ,
       key: 'image'
-      regExp: /\.(?:gif|png|jpg|jpeg|bmp)$/i
+      regExp: /\.(?:gif|png|jpg|jpeg|bmp)(?:\?|$)/i
       style: 'border: 0; width: auto; height: auto;'
       el: (a) ->
         $.el 'div', <%= html('<a target="_blank" href="${a.href}"><img src="${a.href}"></a>') %>
@@ -478,7 +478,7 @@ Linkify =
       dummy: true
     ,
       key: 'video'
-      regExp: /\.(?:ogv|webm|mp4)$/i
+      regExp: /\.(?:ogv|webm|mp4)(?:\?|$)/i
       style: 'border: 0; width: auto; height: auto;'
       el: (a) ->
         $.el 'video',
