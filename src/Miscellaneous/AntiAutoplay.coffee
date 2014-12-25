@@ -26,7 +26,3 @@ AntiAutoplay =
   process: (root) ->
     for iframe in $$ 'iframe[src*="youtube"][src*="autoplay=1"]', root
       iframe.src = iframe.src.replace(/\?autoplay=1&?/, '?').replace('&autoplay=1', '')
-    for marquee in $$ 'marquee', root
-      span = $.el 'span', className: 'removed-marquee'
-      $.replace marquee, span
-      $.add span, [marquee.childNodes...]

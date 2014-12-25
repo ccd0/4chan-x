@@ -103,6 +103,11 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   /* party hats */
   pointer-events: none;
 }
+.postContainer marquee,
+.postContainer marquee + br,
+.postContainer marquee + br + br {
+  display: none;
+}
 
 /* Anti-autoplay */
 audio.controls-added {
@@ -114,9 +119,6 @@ audio.controls-added {
   width: auto;
   height: auto;
   text-align: center;
-}
-:root.anti-autoplay marquee {
-  visibility: hidden;
 }
 
 /* fixed, z-index */
