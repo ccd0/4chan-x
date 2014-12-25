@@ -85,7 +85,7 @@ Linkify =
   regString: ///(
     # http, magnet, ftp, etc
     (https?|mailto|git|magnet|ftp|irc):(
-      [a-z\d%/]
+      [a-z\d%/?]
     )
     | # This should account for virtually all links posted without http:
     ([-a-z\d]+[.])+(
@@ -129,7 +129,7 @@ Linkify =
         range.setEnd range.endContainer, range.endOffset - i
 
     # Make our link 'valid' if it is formatted incorrectly.
-    unless /(mailto:|.+:\/\/)/.test text
+    unless /((mailto|magnet):|.+:\/\/)/.test text
       text = (
         if /@/.test text
           'mailto:'
