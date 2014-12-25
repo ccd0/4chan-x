@@ -105,10 +105,11 @@ class Post
     #   'Comment too long'...
     #   EXIF data. (/p/)
     #   Rolls. (/tg/)
+    #   Marquees. (/pol/)
     #   Preceding and following new lines.
     #   Trailing spaces.
     bq = @nodes.comment.cloneNode true
-    for node in $$ '.abbr, .exif, b', bq
+    for node in $$ '.abbr, .exif, b, marquee', bq
       $.rm node
     @info.comment = @nodesToText bq
 
