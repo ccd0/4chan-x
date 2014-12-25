@@ -310,7 +310,7 @@ Config =
       ]
       'Thread Excerpt': [
         true
-        'Show an excerpt of the thread in the tab title for threads in /f/.'
+        'Show an excerpt of the thread in the tab title if not already present.'
       ]
       'Remove Thread Excerpt': [
         false
