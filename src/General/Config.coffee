@@ -722,7 +722,7 @@ vp-replace
     ]
     'Close': [
       'Esc'
-      'Close topmost dialog or notification.'
+      'Close dialogs or notifications.'
     ]
     'Spoiler tags': [
       'Ctrl+s'
