@@ -65,10 +65,6 @@ Main =
             ImageCommon.addControls video
         return
 
-    if Conf['JSON Navigation'] and Conf['Use 4chan X Catalog'] and g.VIEW is 'catalog'
-      location.replace "//boards.4chan.org/#{g.BOARD}#catalog"
-      return
-
     if Conf['Normalize URL'] and g.VIEW is 'thread'
       pathname = location.pathname.split '/'
       if pathname[2] isnt 'thread' or pathname.length > 4
