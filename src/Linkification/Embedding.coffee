@@ -187,7 +187,7 @@ Embedding =
     ,
       key: 'image'
       regExp: /\.(?:gif|png|jpg|jpeg|bmp)(?:\?|$)/i
-      style: 'border: 0; width: auto; height: auto;'
+      style: ''
       el: (a) ->
         $.el 'div', <%= html('<a target="_blank" href="${a.href}"><img src="${a.href}" style="max-width: 80vw; max-height: 80vh;"></a>') %>
     ,
@@ -217,7 +217,7 @@ Embedding =
     ,
       key: 'MediaCrush'
       regExp: /^\w+:\/\/(?:www\.)?mediacru\.sh\/([\w\-]+)/
-      style: 'border: 0;'
+      style: ''
       el: (a) ->
         el = $.el 'div'
         $.queueTask -> $.cache "https://mediacru.sh/#{a.dataset.uid}.json", ->
@@ -348,7 +348,7 @@ Embedding =
     ,
       key: 'Loopvid'
       regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/((?:pf|kd|lv|mc|gd|gh|db|nn)\/[\w\-]+(,[\w\-]+)*|fc\/\w+\/\d+)/
-      style: 'border: 0; width: auto; height: auto; max-width: 80vw; max-height: 80vh;'
+      style: 'max-width: 80vw; max-height: 80vh;'
       el: (a) ->
         el = $.el 'video',
           controls: true
@@ -393,7 +393,7 @@ Embedding =
     ,
       key: 'video'
       regExp: /\.(?:ogv|webm|mp4)(?:\?|$)/i
-      style: 'border: 0; width: auto; height: auto; max-width: 80vw; max-height: 80vh;'
+      style: 'max-width: 80vw; max-height: 80vh;'
       el: (a) ->
         $.el 'video',
           controls: true
