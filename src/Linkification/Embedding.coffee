@@ -189,7 +189,7 @@ Embedding =
       regExp: /\.(?:gif|png|jpg|jpeg|bmp)(?:\?|$)/i
       style: 'border: 0; width: auto; height: auto;'
       el: (a) ->
-        $.el 'div', <%= html('<a target="_blank" href="${a.href}"><img src="${a.href}"></a>') %>
+        $.el 'div', <%= html('<a target="_blank" href="${a.href}"><img src="${a.href}" style="max-width: 80vw; max-height: 80vh;"></a>') %>
     ,
       key: 'InstallGentoo'
       regExp: /^\w+:\/\/paste\.installgentoo\.com\/view\/(?:raw\/|download\/|embed\/)?(\w+)/
@@ -234,11 +234,11 @@ Embedding =
           return el.textContent = "ERROR: Not a valid filetype" unless embed
           switch embed.type
             when 'video/mp4', 'video/webm', 'video/ogv'
-              $.extend el, <%= html('<video controls loop><source type="video/mp4"><source type="video/webm"></video>') %>
+              $.extend el, <%= html('<video controls loop style="max-width: 80vw; max-height: 80vh;"><source type="video/mp4"><source type="video/webm"></video>') %>
               for ext, i in ['mp4', 'webm']
                 el.firstChild.children[i].src = "https://mediacru.sh/#{a.dataset.uid}.#{ext}"
             when 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg'
-              $.extend el, <%= html('<a target="_blank" href="${a.href}"><img src="https://mediacru.sh/${file.file}"></a>') %>
+              $.extend el, <%= html('<a target="_blank" href="${a.href}"><img src="https://mediacru.sh/${file.file}" style="max-width: 80vw; max-height: 80vh;"></a>') %>
             when 'audio/mpeg', 'audio/ogg'
               $.extend el, <%= html('<audio controls><source type="audio/ogg" src="https://mediacru.sh/${a.dataset.uid}.ogg"></audio>') %>
             else
@@ -348,7 +348,7 @@ Embedding =
     ,
       key: 'Loopvid'
       regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/((?:pf|kd|lv|mc|gd|gh|db|nn)\/[\w\-]+(,[\w\-]+)*|fc\/\w+\/\d+)/
-      style: 'border: 0; width: auto; height: auto;'
+      style: 'border: 0; width: auto; height: auto; max-width: 80vw; max-height: 80vh;'
       el: (a) ->
         el = $.el 'video',
           controls: true
@@ -393,7 +393,7 @@ Embedding =
     ,
       key: 'video'
       regExp: /\.(?:ogv|webm|mp4)(?:\?|$)/i
-      style: 'border: 0; width: auto; height: auto;'
+      style: 'border: 0; width: auto; height: auto; max-width: 80vw; max-height: 80vh;'
       el: (a) ->
         $.el 'video',
           controls: true
