@@ -3,6 +3,12 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.17.x -->
+### v1.9.17.8 
+*2014-12-25* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.17.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.17.8/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Revert redirect from the native catalog to the 4chan X catalog for now.
+
 ### v1.9.17.7 
 *2014-12-25* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.17.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.17.7/builds/4chan-X-noupdate.crx "Chromium version")]
 
