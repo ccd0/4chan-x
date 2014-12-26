@@ -75,7 +75,7 @@ Gallery =
       nodes.menu.addEntry entry
 
     $.on  d, 'keydown', cb.keybinds
-    $.off d, 'keydown', Keybinds.keydown
+    $.off d, 'keydown', Keybinds.keydown if Conf['Keybinds']
     for file in $$ '.post .file' when !$ '.fileDeletedRes, .fileDeleted', file
       post = Get.postFromNode file
       Gallery.generateThumb post
@@ -276,7 +276,7 @@ Gallery =
       doc.style.overflow = ''
 
       $.off d, 'keydown', Gallery.cb.keybinds
-      $.on  d, 'keydown', Keybinds.keydown
+      $.on  d, 'keydown', Keybinds.keydown if Conf['Keybinds']
       clearTimeout Gallery.timeoutID
 
     setFitness: ->
