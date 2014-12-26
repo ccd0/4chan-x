@@ -124,6 +124,11 @@ Config =
         'Auto-embed Linkify Embeds.'
         2
       ]
+      'Floating Embeds': [
+        false
+        'Embedded content will scroll with page.'
+        2
+      ]
       'Link Title': [
         true
         'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud, and Github gists'
@@ -717,7 +722,7 @@ vp-replace
     ]
     'Close': [
       'Esc'
-      'Close Settings/Notifications/QR/Gallery.'
+      'Close topmost dialog or notification.'
     ]
     'Spoiler tags': [
       'Ctrl+s'

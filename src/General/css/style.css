@@ -158,6 +158,9 @@ audio.controls-added {
 #qr {
   z-index: 20;
 }
+#embedding {
+  z-index: 11;
+}
 #thread-watcher {
   z-index: 10;
 }
@@ -1503,6 +1506,25 @@ div.boardTitle {
 .linkify.video {
   background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/video.png",    {encoding: "base64"}) %>') center left no-repeat!important;
   padding-left: 18px;
+}
+
+/* Embedding */
+#embedding {
+  padding: 1px 4px 1px 4px;
+  position: fixed;
+}
+#embedding.empty {
+  display: none;
+}
+#embedding > div:first-child {
+  display: flex;
+}
+#embedding .move {
+  flex: 1;
+}
+#embedding .jump {
+  margin: -1px 4px;
+  text-decoration: none;
 }
 
 /* Gallery */

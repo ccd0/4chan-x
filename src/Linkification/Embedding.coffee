@@ -4,6 +4,12 @@ Embedding =
     @types = {}
     @types[type.key] = type for type in @ordered_types
 
+    if Conf['Floating Embeds']
+      @dialog = UI.dialog 'embedding', 'top: 50px; right: 0px;',
+        <%= importHTML('Features/Embed') %>
+      @media = $ '#media-embed', @dialog
+      $.one d, '4chanXInitFinished', @ready
+
     if Conf['Link Title']
       $.on d, '4chanXInitFinished PostsInserted', ->
         for key, service of Embedding.types when service.title?.batchSize
@@ -49,9 +55,34 @@ Embedding =
     $.on embed, 'click', Embedding.cb.toggle
     $.after link, [$.tn(' '), embed]
 
-    if Conf['Auto-embed'] and !post.isFetchedQuote
+    if Conf['Auto-embed'] and !Conf['Floating Embeds'] and !post.isFetchedQuote
       $.asap (-> doc.contains embed), ->
         Embedding.cb.toggle.call embed
+
+  ready: ->
+    $.addClass Embedding.dialog, 'empty'
+    $.on $('.close', Embedding.dialog), 'click',     Embedding.closeFloat
+    $.on $('.move',  Embedding.dialog), 'mousedown', Embedding.dragEmbed
+    $.on $('.jump',  Embedding.dialog), 'click', ->
+      Header.scrollTo Embedding.lastEmbed if doc.contains Embedding.lastEmbed
+    $.add d.body, Embedding.dialog
+
+  closeFloat: ->
+    delete Embedding.lastEmbed
+    $.addClass Embedding.dialog, 'empty'
+    $.replace Embedding.media.firstChild, $.el 'div'
+
+  dragEmbed: ->
+    # only webkit can handle a blocking div
+    {style} = Embedding.media
+    if Embedding.dragEmbed.mouseup
+      $.off d, 'mouseup', Embedding.dragEmbed
+      Embedding.dragEmbed.mouseup = false
+      style.visibility = ''
+      return
+    $.on d, 'mouseup', Embedding.dragEmbed
+    Embedding.dragEmbed.mouseup = true
+    style.visibility = 'hidden'
 
   title: (data) ->
     {key, uid, options, link, post} = data
@@ -79,6 +110,12 @@ Embedding =
   cb:
     toggle: (e) ->
       e?.preventDefault()
+      if Conf['Floating Embeds']
+        return unless div = Embedding.media.firstChild
+        $.replace div, Embedding.cb.embed @
+        Embedding.lastEmbed = Get.postFromNode(@).nodes.root
+        $.rmClass Embedding.dialog, 'empty'
+        return
       if $.hasClass @, "embedded"
         $.rm @previousElementSibling unless $.hasClass @previousElementSibling, 'linkify'
         @previousElementSibling.hidden = false

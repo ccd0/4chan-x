@@ -45,11 +45,13 @@ Keybinds =
         else if (notifications = $$ '.notification').length
           for notification in notifications
             $('.close', notification).click()
-        else if QR.nodes and !QR.nodes.el.hidden
+        else if QR.nodes and !QR.nodes.el.hidden and window.getComputedStyle(QR.nodes.form).display isnt 'none'
           if Conf['Persistent QR']
             QR.hide()
           else
             QR.close()
+        else if Embedding.lastEmbed
+          Embedding.closeFloat()
         else
           return
       when Conf['Spoiler tags']
