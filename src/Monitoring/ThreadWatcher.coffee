@@ -290,6 +290,25 @@ ThreadWatcher =
       Index.sort()
       Index.buildIndex()
 
+  update: (boardID, threadID, newData) ->
+    return unless data = ThreadWatcher.db?.get {boardID, threadID}
+    if newData.isDead and Conf['Auto Prune']
+      ThreadWatcher.db.delete {boardID, threadID}
+      ThreadWatcher.refresh()
+      return
+    n = 0
+    n++ for key, val of newData when data[key] isnt val
+    return unless n
+    ThreadWatcher.db.forceSync()
+    return unless data = ThreadWatcher.db.get {boardID, threadID}
+    $.extend data, newData
+    ThreadWatcher.db.set {boardID, threadID, val: data}
+    if line = $ "#watched-threads > [data-full-i-d='#{boardID}.#{threadID}']", ThreadWatcher.dialog
+      newLine = ThreadWatcher.makeLine boardID, threadID, data
+      $.replace line, newLine
+    else
+      ThreadWatcher.refresh()
+
   toggle: (thread) ->
     boardID  = thread.board.ID
     threadID = thread.ID
