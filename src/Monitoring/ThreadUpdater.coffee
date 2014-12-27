@@ -13,7 +13,6 @@ ThreadUpdater =
         <%= html('<div class="move"></div><span id="update-status"></span><span id="update-timer" title="Update now"></span>') %>
       $.addClass doc, 'float'
       $.ready => 
-        $.addClass doc, 'float'
         $.add d.body, sc
 
     @checkPostCount = 0
