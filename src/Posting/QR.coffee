@@ -39,6 +39,8 @@ QR =
 
     window.addEventListener 'focus', @focus, true
     window.addEventListener 'blur',  @focus, true
+    # We don't receive blur events from captcha iframe.
+    $.on d, 'click', @focus
 
     Post.callbacks.push
       name: 'Quick Reply'
@@ -133,11 +135,9 @@ QR =
   focus: ->
     $.queueTask ->
       return unless QR.nodes
-      focus = d.activeElement and (
-        QR.nodes.el.contains(d.activeElement) or
-        d.activeElement.nodeName is 'IFRAME' and /^https:\/\/www\.google\.com\/recaptcha\//.test(d.activeElement.src)
-      )
-      $[if focus then 'addClass' else 'rmClass'] QR.nodes.el, 'focus'
+      unless $$('.goog-bubble-content > iframe').some((el) -> el.getBoundingClientRect().top >= 0)
+        focus = d.activeElement and QR.nodes.el.contains(d.activeElement)
+        $[if focus then 'addClass' else 'rmClass'] QR.nodes.el, 'focus'
       if chrome?
         # XXX Stop anomalous scrolling on space/tab in captcha iframe.
         if d.activeElement and QR.nodes.el.contains(d.activeElement) and d.activeElement.nodeName is 'IFRAME'
