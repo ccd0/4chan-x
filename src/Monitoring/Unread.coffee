@@ -54,16 +54,16 @@ Unread =
       defaultValue: 0
     Unread.readCount = 0
     Unread.readCount++ for ID in @posts.keys when +ID <= Unread.lastReadPost
-    $.one d, '4chanXInitFinished',      Unread.ready
-    $.on  d, 'ThreadUpdate',            Unread.onUpdate
-    $.on  d, 'scroll visibilitychange', Unread.read
-    $.on  d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
+    $.one d, '4chanXInitFinished', Unread.ready
+    $.on  d, 'ThreadUpdate',       Unread.onUpdate
 
   ready: ->
     Unread.setLine true
     Unread.read()
     Unread.update()
     Unread.scroll() if Conf['Scroll to Last Read Post']
+    $.on  d, 'scroll visibilitychange', Unread.read
+    $.on  d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
 
   positionPrev: ->
     if Unread.position then Unread.position.prev else Unread.order.last
