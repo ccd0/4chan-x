@@ -9,15 +9,27 @@ Linkify =
       name: 'Linkify'
       cb:   @node
 
+    CatalogThread.callbacks.push
+      name: 'Linkify'
+      cb:   @catalogNode
+
     Embedding.init()
 
   node: ->
     return Embedding.events @ if @isClone
     return unless Linkify.regString.test @info.comment
+    links = Linkify.process @nodes.comment
+    Embedding.process link, @ for link in links
+    return
 
+  catalogNode: ->
+    return unless Linkify.regString.test @thread.OP.info.comment
+    Linkify.process @nodes.comment
+
+  process: (node) ->
     test     = /[^\s'"]+/g
     space    = /[\s'"]/
-    snapshot = $.X './/br|.//text()', @nodes.comment
+    snapshot = $.X './/br|.//text()', node
     i = 0
     links = []
     while node = snapshot.snapshotItem i++
@@ -57,9 +69,8 @@ Linkify =
 
     i = links.length
     while i--
-      link = Linkify.makeLink links[i]
-      Embedding.process link, @
-    return
+      links[i] = Linkify.makeLink links[i]
+    links
 
   regString: ///(
     # http, magnet, ftp, etc
