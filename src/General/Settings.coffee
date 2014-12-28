@@ -19,10 +19,11 @@ Settings =
     $.on d, 'AddSettingsSection',   Settings.addSection
     $.on d, 'OpenSettings',         (e) -> Settings.open e.detail
 
-    settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
-    return if settings.disableAll
-    settings.disableAll = true
-    localStorage.setItem '4chan-settings', JSON.stringify settings
+    if Conf['Disable Native Extension']
+      settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
+      return if settings.disableAll
+      settings.disableAll = true
+      localStorage.setItem '4chan-settings', JSON.stringify settings
 
   open: (openSection) ->
     return if Settings.dialog

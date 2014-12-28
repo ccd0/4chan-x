@@ -108,7 +108,10 @@ Config =
         false
         'Prevent sounds on the page from autoplaying.'
       ]
-
+      'Disable Native Extension': [
+        true
+        '<%= meta.name %> is NOT designed to work with the native extension.'
+      ]
     'Linkification':
       'Linkify': [
         true

@@ -96,15 +96,17 @@ Header =
       if a = $ "a[href*='/#{g.BOARD}/']", footer
         a.className = 'current'
 
-      cs = $.el 'a',
-        href: 'javascript:;'
-        title: 'Catalog Settings'
-        className: 'fa fa-book'
-        textContent: 'Catalog Settings'
-      $.on cs, 'click', () ->
-        $.id('settingsWindowLink').click()
-
-      @addShortcut cs if g.VIEW is 'catalog'
+      if g.VIEW is 'catalog' or !Conf['Disable Native Extension']
+        cs = $.el 'a', href: 'javascript:;'
+        if g.VIEW is 'catalog'
+          cs.title = cs.textContent = 'Catalog Settings'
+          cs.className = 'fa fa-book'
+        else
+          cs.title = cs.textContent = '4chan Settings'
+          cs.className = 'fa fa-leaf'
+        $.on cs, 'click', () ->
+          $.id('settingsWindowLink').click()
+        @addShortcut cs
 
       Header.setFooterVisibility Conf['Bottom Board List']
       $.sync 'Bottom Board List', Header.setFooterVisibility
