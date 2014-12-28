@@ -6,7 +6,7 @@ Config =
         'Replace the original board index with one supporting searching, sorting, infinite scrolling, and a catalog mode.'
       ]
       'Use 4chan X Catalog': [
-        false
+        true
         'Link to 4chan X\'s catalog instead of the native 4chan one.'
         1
       ]
