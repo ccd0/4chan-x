@@ -2,6 +2,22 @@ The attributions below are for work that has been incorporated into the script a
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+<!-- v1.9.18.x -->
+### v1.9.18.0 
+*2014-12-28* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.18.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.18.0/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ihavenoface**
+- `Floating Embeds` option: Embedded content can now be placed in a dialog that scrolls with the page.
+
+**ccd0**
+- `Linkify` now works in the 4chan X catalog.
+- Embedded images and videos are limited to 80% of the viewport width/height.
+- `Use 4chan X Catalog` is now enabled by default.
+- A link to the 4chan X catalog is added in the native catalog if `Use 4chan X Catalog` is enabled.
+- The `Disable Native Extension` option (default: on) makes the disabling of the native extension optional again. Note: 4chan X may not work correctly if the native extension is enabled.
+- Changes to the number of unread posts in an open thread will immediately update the count in the thread watcher.
+- Minor bugfixes.
+
 <!-- v1.9.17.x -->
 ### v1.9.17.10 
 *2014-12-26* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.17.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.17.10/builds/4chan-X-noupdate.crx "Chromium version")]
