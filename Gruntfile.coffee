@@ -163,7 +163,7 @@ module.exports = (grunt) ->
         command: """
           git commit -am "Build web page."
           git checkout gh-pages
-          git checkout - README.md template.jst index.html
+          git checkout - README.md template.jst index.html img
           git commit -am "Update web page."
           git checkout -
         """.split('\n').join('&&')
