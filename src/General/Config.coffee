@@ -129,7 +129,7 @@ Config =
       ]
       'Floating Embeds': [
         false
-        'Embedded content will scroll with page.'
+        'Embed content in a frame that remains in place when the page is scrolled.'
         2
       ]
       'Link Title': [
