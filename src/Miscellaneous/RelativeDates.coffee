@@ -1,21 +1,18 @@
 RelativeDates =
   INTERVAL: $.MINUTE / 2
   init: ->
-    return unless Conf['Relative Post Dates']
-    unless Conf['Relative Date Title']
-      switch g.VIEW
-        when 'index'
-          @flush()
-          $.on d, 'visibilitychange', @flush
-        when 'thread'
-          @flush()
-          $.on d, 'visibilitychange ThreadUpdate', @flush if g.VIEW is 'thread'
-        else
-          return
+    if (
+      g.VIEW isnt 'catalog' and Conf['Relative Post Dates'] and !Conf['Relative Date Title'] or
+      g.VIEW is 'index' and Conf['JSON Navigation'] and g.BOARD.ID isnt 'f'
+    )
+      @flush()
+      $.on d, 'visibilitychange ThreadUpdate', @flush
 
-    Post.callbacks.push
-      name: 'Relative Post Dates'
-      cb:   @node
+    if Conf['Relative Post Dates']
+      Post.callbacks.push
+        name: 'Relative Post Dates'
+        cb:   @node
+
   node: ->
     dateEl = @nodes.date
     if Conf['Relative Date Title']
