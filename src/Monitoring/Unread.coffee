@@ -219,10 +219,11 @@ Unread =
         Unread.title
       d.title = "#{titleQuotingYou}#{titleCount}#{titleDead}"
 
-    ThreadWatcher.update Unread.thread.board.ID, Unread.thread.ID,
-      isDead: Unread.thread.isDead
-      unread: count
-      quotingYou: countQuotingYou
+    unless Unread.thread.isDead and !Unread.thread.isArchived
+      ThreadWatcher.update Unread.thread.board.ID, Unread.thread.ID,
+        isDead: Unread.thread.isDead
+        unread: count
+        quotingYou: countQuotingYou
 
     return unless Conf['Unread Favicon']
 
