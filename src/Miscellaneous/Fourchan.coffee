@@ -39,10 +39,10 @@ Fourchan =
     $.ready ->
       $.globalEval '''
         (function() {
-          clickable_ids = false;
+          window.clickable_ids = false;
           var nodes = document.querySelectorAll('.posteruid, .capcode');
           for (var i = 0; i < nodes.length; i++) {
-            nodes[i].removeEventListener("click", idClick, false);
+            nodes[i].removeEventListener("click", window.idClick, false);
           }
           window.removeEventListener("message", Report.onMessage, false);
         })();
