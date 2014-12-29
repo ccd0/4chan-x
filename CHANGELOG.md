@@ -18,6 +18,8 @@ The links to individual versions below are to copies of the script with the upda
 ### v1.9.18.0 
 *2014-12-28* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.18.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.18.0/builds/4chan-X-noupdate.crx "Chromium version")]
 
+Based on v1.9.17.10.
+
 **ihavenoface**
 - `Floating Embeds` option: Embedded content can now be placed in a dialog that remains in place when the page is scrolled.
 
