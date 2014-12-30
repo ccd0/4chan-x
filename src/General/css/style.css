@@ -838,7 +838,8 @@ span.hide-announcement {
 .filtered {
   text-decoration: underline line-through;
 }
-:root.hide-backlinks .backlink.filtered {
+:root.hide-backlinks .backlink.filtered,
+:root.hide-backlinks .backlink.filtered + .hashlink.filtered {
   display: none;
 }
 .inline {
