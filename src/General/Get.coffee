@@ -67,7 +67,9 @@ Get =
       {boardID, postID} = Get.postDataFromLink quotelink
       boardID is post.board.ID and postID is post.ID
   scriptData: ->
-    $('script:not([src])', d.head)?.textContent or ''
+    for script in $$ 'script:not([src])', d.head
+      return script.textContent if /\bcooldowns *=/.test script.textContent
+    ''
   postClone: (boardID, threadID, postID, root, context) ->
     if post = g.posts["#{boardID}.#{postID}"]
       Get.insert post, root, context
