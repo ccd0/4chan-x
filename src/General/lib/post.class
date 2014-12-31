@@ -21,7 +21,7 @@ class Post
       el.removeAttribute 'style'
     # XXX /pol/ fakedoubles
     if board.ID is 'pol'
-      $('a[title="Reply to this post"]', root2).textContent = +root2.id[2..]
+      $('.postNum > a:nth-of-type(2)', root2).textContent = +root2.id[2..]
     textNodes = $.X './/text()', root2
     i = 0
     while node = textNodes.snapshotItem i++
@@ -41,7 +41,7 @@ class Post
       post: post
       info: info
       nameBlock: $ '.nameBlock', info
-      quote: $ 'a[title*="Reply to this post"]', info
+      quote: $ '.postNum > a:nth-of-type(2)', info
       comment: $ '.postMessage', post
       links: []
       quotelinks: []
