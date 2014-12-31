@@ -45,6 +45,12 @@ Based on v1.9.17.10.
 - Minor bugfixes.
 
 <!-- v1.9.17.x -->
+### v1.9.17.12 
+*2014-12-30* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.17.12/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.17.12/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix some settings not being saved when exited with Esc key.
+
 ### v1.9.17.11 
 *2014-12-29* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.17.11/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.17.11/builds/4chan-X-noupdate.crx "Chromium version")]
 
