@@ -64,6 +64,8 @@ Settings =
 
   close: ->
     return unless Settings.dialog
+    # Unfocus current field to trigger change event.
+    d.activeElement?.blur()
     $.rm Settings.overlay
     $.rm Settings.dialog
     delete Settings.overlay
