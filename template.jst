@@ -10,11 +10,21 @@ h1 {
   text-align: center;
   background-color: #eee;
 }
+img {
+  display: block;
+  margin: auto;
+  max-width: 100%
+}
+@media (min-width: 1120px) {
+  img {
+    float: right;
+  }
+}
 </style>
 <link rel="icon" href="src/General/img/icon.gif">
 <link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/ohnjgmpcibpbafdlkimncjhflgedgpam">
 </head><body>
-<%= content %>
+<%= content.replace('</h1>', '</h1><img src="img/screenshot.png">') %>
 <script>
 var links = document.querySelectorAll('a[href="https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam"]');
 for (var i = 0; i < links.length; i++) {
