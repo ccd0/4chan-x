@@ -357,7 +357,9 @@ Build =
     for exif in $$ '.abbr, .exif', root.lastElementChild
       $.rm exif
     for pp in $$ '.prettyprint', root.lastElementChild
-      $.replace pp, $.tn pp.textContent
+      cc = $.el 'span', className: 'catalog-code'
+      $.add cc, [pp.childNodes...]
+      $.replace pp, cc
     for br in $$ 'br', root.lastElementChild when br.previousSibling?.nodeName is 'BR'
       $.rm br
 

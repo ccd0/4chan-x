@@ -33,6 +33,11 @@
   background-color: #DDD;
 }
 
+/* Catalog */
+:root.photon .catalog-code {
+  background-color: rgba(150, 150, 150, 0.2);
+}
+
 /* Quote */
 :root.photon .backlink.deadlink {
   color: #F60 !important;

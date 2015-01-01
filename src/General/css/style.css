@@ -666,6 +666,11 @@ div[data-checked="false"] > .suboption-list {
 .catalog-thread > .comment > b {
   font-weight: normal;
 }
+.catalog-code {
+  background-color: #FFF;
+  display: inline-block;
+  max-width: 100%;
+}
 
 /* Announcement Hiding */
 :root.hide-announcement #globalMessage {
