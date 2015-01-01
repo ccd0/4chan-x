@@ -148,7 +148,7 @@ Config =
         'Self-moderation placebo.'
       ]
       'Filtered Backlinks': [
-        true
+        false
         'When enabled, shows backlinks to filtered posts with a line-through decoration. Otherwise, hides the backlinks.'
         1
       ]
@@ -694,7 +694,7 @@ vp-replace
 
   backlink: '>>%id'
 
-  fileInfo: '%L (%p%s, %r)'
+  fileInfo: '%l (%p%s, %r)'
 
   favicon: 'ferongr'
 
