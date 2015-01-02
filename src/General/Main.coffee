@@ -66,7 +66,8 @@ Main =
         return
 
     if Conf['JSON Navigation'] and Conf['Use 4chan X Catalog'] and g.VIEW is 'catalog'
-      location.replace "//boards.4chan.org/#{g.BOARD}/#catalog"
+      search = location.href.match /#s=.*/
+      location.replace "//boards.4chan.org/#{g.BOARD}/#{if search then search[0] else '#catalog'}"
       return
 
     if Conf['Normalize URL'] and g.VIEW is 'thread'
