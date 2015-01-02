@@ -9,10 +9,13 @@ Index =
       name: 'Catalog Features'
       cb:   @catalogNode
 
+    @search = history.state?.search or ''
     if history.state?.mode
       Conf['Index Mode'] = history.state?.mode
+    @currentPage = @getCurrentPage()
     @pushState
-      command: location.hash[1..]
+      # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=483304
+      command: location.href.match(/#(.*)/)?[1]
       replace: true
 
     @button = $.el 'a',
@@ -57,11 +60,11 @@ Index =
     $('.returnlink a',  @navLinks).href = CatalogLinks.index()
     $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
     @searchInput = $ '#index-search', @navLinks
+    @setupSearch()
     @hideLabel   = $ '#hidden-label', @navLinks
     @selectMode  = $ '#index-mode',   @navLinks
     @selectSort  = $ '#index-sort',   @navLinks
     @selectSize  = $ '#index-size',   @navLinks
-    @currentPage = @getCurrentPage()
     $.on window, 'popstate', @cb.popstate
 
     $.on d, 'scroll', Index.scroll
@@ -188,10 +191,7 @@ Index =
       unless mode is 'catalog'
         Conf['Previous Index Mode'] = mode
         $.set 'Previous Index Mode', mode
-      Index.pushState {mode}
-      Index.applyMode()
-      Index.buildIndex()
-      Index.setPage()
+      Index.pageLoad Index.pushState {mode}
     sort: ->
       Index.sort()
       Index.buildIndex()
@@ -211,23 +211,24 @@ Index =
       Index.sort()
       Index.buildIndex()
     popstate: (e) ->
-      unless e?.state
+      if e?.state
+        {search, mode} = e.state
+        page = Index.getCurrentPage()
+        state = {}
+        state.search = Index.search       = search if Index.search       isnt search
+        state.mode   = Conf['Index Mode'] = mode   if Conf['Index Mode'] isnt mode
+        state.page   = Index.currentPage  = page   if Index.currentPage  isnt page
+        if state.search? or state.mode? or state.page?
+          Index.pageLoad state
+      else
         # page load or hash change
         state = Index.pushState
-          command: location.hash[1..]
+          # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=483304
+          command: location.href.match(/#(.*)/)?[1]
           replace: true
+          scroll:  true
         if state.command
           Index[if Conf['Refreshed Navigation'] then 'update' else 'pageLoad'] state
-        return
-      {mode} = e.state
-      pageNum = Index.getCurrentPage()
-      unless Conf['Index Mode'] is mode and Index.currentPage is pageNum
-        unless Conf['Index Mode'] is mode
-          Conf['Index Mode'] = mode
-          Index.applyMode()
-        Index.currentPage = pageNum
-        Index.buildIndex()
-        Index.setPage()
     pageNav: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       switch e.target.nodeName
@@ -255,41 +256,61 @@ Index =
     else
       +window.location.pathname.split('/')[2] or 1
   userPageNav: (page, noRefresh) ->
-    state = Index.pushState {page}
+    state = Index.pushState {page, scroll: true}
     if Conf['Refreshed Navigation'] and !noRefresh
       Index.update state
     else
       Index.pageLoad state if state.page
   pushState: (state) ->
     {pathname, hash} = location
-    {command} = state
-    switch command
-      when 'paged', 'infinite', 'all-pages', 'catalog'
+    pageBeforeSearch = history.state?.oldpage
+    if state.command?
+      {command} = state
+      if command in ['paged', 'infinite', 'all-pages', 'catalog']
         state.mode = command.replace /-/g, ' '
-      when 'index'
+      else if command is 'index'
         state.mode = Conf['Previous Index Mode']
         state.page = 1
+      else if /^s=/.test command
+        state.search = decodeURIComponent(command[2..]).replace(/\+/g, ' ').trim()
+        hash = ''
       else
         delete state.command
-    {mode} = state
-    if mode
+    if state.search?
+      {search} = state
+      state.page = if search then 1 else (pageBeforeSearch or 1)
+      if !search
+        pageBeforeSearch = undefined
+      else if !Index.search
+        pageBeforeSearch = Index.currentPage
+      Index.search = search
+    if state.mode?
+      {mode} = state
       delete state.mode if mode is Conf['Index Mode']
       Conf['Index Mode'] = mode
       state.page = 1 if mode in ['all pages', 'catalog']
       hash = ''
-    {page} = state
-    if page
+    if state.page?
+      {page} = state
       delete state.page if page is Index.currentPage
       Index.currentPage = page
       pathname = if page is 1 then "/#{g.BOARD}/" else "/#{g.BOARD}/#{page}"
       hash = ''
-    history[if state.replace then 'replaceState' else 'pushState'] {mode: Conf['Index Mode']}, '', pathname + hash
+    history[if state.replace then 'replaceState' else 'pushState']
+      mode:    Conf['Index Mode']
+      search:  Index.search
+      oldpage: pageBeforeSearch
+    , '', pathname + hash
     state
-  pageLoad: ({mode}) ->
-    Index.applyMode() if mode
+  pageLoad: ({sort, search, mode, scroll}) ->
+    if sort or search?
+      Index.sort()
+      Index.buildPagelist()
+    Index.setupSearch() if search?
+    Index.applyMode() if mode?
     Index.buildIndex()
     Index.setPage()
-    Index.scrollToIndex()
+    Index.scrollToIndex() if scroll
   applyMode: ->
     for mode in ['paged', 'infinite', 'all pages', 'catalog']
       $[if mode is Conf['Index Mode'] then 'addClass' else 'rmClass'] doc, "#{mode.replace /\ /g, '-'}-mode"
@@ -299,7 +320,7 @@ Index =
     $('#hidden-toggle a', Index.navLinks).textContent = 'Show'
 
   getPagesNum: ->
-    if Index.isSearching
+    if Index.search
       Math.ceil Index.sortedNodes.length / Index.threadsNumPerPage
     else
       Index.pagesNum
@@ -422,13 +443,9 @@ Index =
     $.cleanCache (url) -> /^\/\/a\.4cdn\.org\//.test url
     Index.parseThreadList pages
     Index.buildThreads()
-    Index.sort()
-    Index.buildPagelist()
-    if state?
-      Index.pageLoad state
-      return
-    Index.buildIndex()
-    Index.setPage()
+    state or= {}
+    state.sort = true
+    Index.pageLoad state
 
   parseThreadList: (pages) ->
     Index.pagesNum          = pages.length
@@ -539,7 +556,7 @@ Index =
     {nodes} = Index
     for threadID in sortedThreadIDs
       sortedNodes.push nodes[Index.liveThreadIDs.indexOf(threadID)]
-    if Index.isSearching and nodes = Index.querySearch(Index.searchInput.value)
+    if Index.search and nodes = Index.querySearch(Index.search)
       Index.sortedNodes = nodes
     # Sticky threads
     Index.sortOnTop (thread) -> thread.isSticky
@@ -590,42 +607,28 @@ Index =
     $.event 'PostsInserted' if doc.contains Index.root
     ThreadHiding.onIndexBuild nodes
 
-  isSearching: false
-
   clearSearch: ->
-    Index.searchInput.value = null
+    Index.searchInput.value = ''
     Index.onSearchInput()
     Index.searchInput.focus()
 
-  onSearchInput: ->
-    if Index.isSearching = !!Index.searchInput.value.trim()
-      unless Index.searchInput.dataset.searching
-        Index.searchInput.dataset.searching = 1
-        Index.pageBeforeSearch = Index.getCurrentPage()
-        pageNum = 1
-      else
-        pageNum = Index.getCurrentPage()
+  setupSearch: (noUpdate) ->
+    Index.searchInput.value = Index.search unless noUpdate
+    if Index.search
+      Index.searchInput.dataset.searching = 1
     else
-      return unless Index.searchInput.dataset.searching
-      pageNum = Index.pageBeforeSearch
-      delete Index.pageBeforeSearch
       # XXX https://github.com/greasemonkey/greasemonkey/issues/1571
       Index.searchInput.removeAttribute 'data-searching'
-    Index.sort()
-    # Go to the last available page if we were past the limit.
-    pageNum = Math.min pageNum, Index.getMaxPageNum() if Conf['Index Mode'] isnt 'all pages'
-    Index.buildPagelist()
-    if Index.currentPage is pageNum
-      Index.buildIndex()
-      Index.setPage()
-    else
-      Index.pageLoad Index.pushState {page: pageNum}
+
+  onSearchInput: ->
+    search = Index.searchInput.value.trim()
+    return if search is Index.search
+    Index.pageLoad Index.pushState
+      search:  search
+      replace: !!search is !!Index.search
 
   querySearch: (query) ->
     return unless keywords = query.toLowerCase().match /\S+/g
-    Index.search keywords
-
-  search: (keywords) -> 
     Index.sortedNodes.filter (threadRoot) ->
       Index.searchMatch Get.threadFromRoot(threadRoot), keywords
 
