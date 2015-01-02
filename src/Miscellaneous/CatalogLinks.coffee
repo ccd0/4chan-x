@@ -10,11 +10,6 @@ CatalogLinks =
           switch link.pathname
             when "/#{g.BOARD}/"        then link.href = CatalogLinks.index()
             when "/#{g.BOARD}/catalog" then link.href = CatalogLinks.catalog()
-          if g.VIEW is 'catalog' and Conf['JSON Navigation'] and Conf['Use 4chan X Catalog']
-            catalogLink = link.parentNode.cloneNode true
-            catalogLink.firstElementChild.textContent = '4chan X Catalog'
-            catalogLink.firstElementChild.href = CatalogLinks.catalog()
-            $.after link.parentNode, [$.tn(' '), catalogLink]
         return
 
     return unless Conf['Catalog Links']
