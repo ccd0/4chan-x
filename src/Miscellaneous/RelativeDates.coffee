@@ -39,7 +39,7 @@ RelativeDates =
       else if years is 1 and (months > 0 or months is 0 and days >= 0)
         number = years
         'year'
-      else if (months = (months+12)%12 ) > 1
+      else if (months = months + 12*years) > 1
         number = months - (days < 0)
         'month'
       else if months is 1 and days >= 0
