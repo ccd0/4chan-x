@@ -12,17 +12,29 @@ CatalogLinks =
             when "/#{g.BOARD}/catalog" then link.href = CatalogLinks.catalog()
         return
 
-    return unless Conf['Catalog Links']
-    CatalogLinks.el = el = UI.checkbox 'Header catalog links', ' Catalog Links'
-    el.id = 'toggleCatalog'
+    if Conf['JSON Navigation'] and Conf['Use 4chan X Catalog']
+      Post.callbacks.push
+        name: 'Catalog Link Rewrite'
+        cb:   @node
+      CatalogThread.callbacks.push
+        name: 'Catalog Link Rewrite'
+        cb:   @node
 
-    input = $ 'input', el
-    $.on input, 'change', @toggle
-    $.sync 'Header catalog links', CatalogLinks.set
+    if Conf['Catalog Links']
+      CatalogLinks.el = el = UI.checkbox 'Header catalog links', ' Catalog Links'
+      el.id = 'toggleCatalog'
+      input = $ 'input', el
+      $.on input, 'change', @toggle
+      $.sync 'Header catalog links', CatalogLinks.set
+      Header.menu.addEntry
+        el:    el
+        order: 95
 
-    Header.menu.addEntry
-      el:    el
-      order: 95
+  node: ->
+    for a in $$ 'a', @nodes.comment
+      if m = a.href.match /^https?:\/\/boards\.4chan\.org\/([^\/]+)\/catalog(#s=.*)?/
+        a.href = "//boards.4chan.org/#{m[1]}/#{m[2] or '#catalog'}"
+    return
 
   # Set links on load or custom board list change.
   # Called by Header when both board lists (header and footer) are ready.
