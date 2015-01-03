@@ -60,7 +60,7 @@ QuoteInline =
     qroot = $.x 'ancestor::*[contains(@class,"postContainer")][1]', root
 
     $.addClass qroot, 'hasInline'
-    Get.postClone boardID, threadID, postID, inline, context
+    new Fetcher boardID, threadID, postID, inline, context
 
     return unless (post = g.posts["#{boardID}.#{postID}"]) and
       context.thread is post.thread
