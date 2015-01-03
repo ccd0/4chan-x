@@ -119,7 +119,7 @@ Config =
       ]
       'Embedding': [
         true
-        'Embed supported services.'
+        'Embed supported services. Note: Some services don\'t work on HTTPS.'
         1
       ]
       'Auto-embed': [
