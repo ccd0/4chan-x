@@ -91,7 +91,7 @@ Header =
       @setBarPosition Conf['Bottom Header']
       @
 
-    $.ready =>
+    Main.ready =>
       @footer = footer = $.id 'boardNavDesktopFoot'
       if a = $ "a[href*='/#{g.BOARD}/']", footer
         a.className = 'current'

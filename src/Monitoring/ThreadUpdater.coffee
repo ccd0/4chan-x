@@ -27,7 +27,7 @@ ThreadUpdater =
     updateLink = $.el 'span',
       className: 'brackets-wrap updatelink'
     $.extend updateLink, <%= html('<a href="javascript:;">Update</a>') %>
-    $.ready ->
+    Main.ready ->
       $.add $('.navLinksBot'), [$.tn(' '), updateLink]
     $.on updateLink.firstElementChild, 'click', @update
 

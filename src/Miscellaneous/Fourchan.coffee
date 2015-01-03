@@ -36,7 +36,7 @@ Fourchan =
         cb:   @math
 
     # Disable 4chan's ID highlighting (replaced by IDHighlight) and reported post hiding.
-    $.ready ->
+    Main.ready ->
       $.globalEval '''
         (function() {
           window.clickable_ids = false;

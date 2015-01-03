@@ -7,7 +7,7 @@ Banner =
 
     # Let 4chan's JS load the banner if enabled; otherwise, load it ourselves.
     if g.BOARD.ID isnt 'f'
-      $.ready -> $.queueTask Banner.load
+      Main.ready -> $.queueTask Banner.load
 
   ready: ->
     banner = $ ".boardBanner"

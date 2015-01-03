@@ -82,6 +82,7 @@ Index =
 
     @update()
     $.asap (-> $('.board > .thread > .postContainer', doc) or d.readyState isnt 'loading'), ->
+      return unless Main.isThisPageLegit()
       Index.hat = $ '.board > .thread > img:first-child'
       if Index.hat and Index.nodes
         for threadRoot in Index.nodes
@@ -106,6 +107,7 @@ Index =
       $.before topNavPos, Index.navLinks
 
     $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
+      return unless Main.isThisPageLegit()
       if pagelist = $('.pagelist')
         $.replace pagelist, Index.pagelist
       else

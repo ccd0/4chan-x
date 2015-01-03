@@ -273,6 +273,10 @@ Main =
         d.title not in ['4chan - Temporarily Offline', '4chan - Error', '504 Gateway Time-out']
     Main.thisPageIsLegit
 
+  ready: (cb) ->
+    $.ready ->
+      cb() if Main.isThisPageLegit()
+
   css: """
   <%= grunt.file.read('src/General/css/font-awesome.css').replace(/\s+/g, ' ').replace(/\\/g, '\\\\').trim() %>
   <%= grunt.file.read('src/General/css/style.css').replace(/\s+/g, ' ').trim() %>
