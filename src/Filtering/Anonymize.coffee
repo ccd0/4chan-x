@@ -1,6 +1,6 @@
 Anonymize =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Anonymize']
+    return if g.VIEW not in ['index', 'thread'] or !Conf['Anonymize']
 
     Post.callbacks.push
       name: 'Anonymize'

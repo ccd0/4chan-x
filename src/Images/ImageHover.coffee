@@ -1,6 +1,6 @@
 ImageHover =
   init: ->
-    return if g.VIEW is 'catalog'
+    return if g.VIEW not in ['index', 'thread']
     if Conf['Image Hover']
       Post.callbacks.push
         name: 'Image Hover'

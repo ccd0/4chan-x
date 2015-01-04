@@ -2,7 +2,7 @@ RelativeDates =
   INTERVAL: $.MINUTE / 2
   init: ->
     if (
-      g.VIEW isnt 'catalog' and Conf['Relative Post Dates'] and !Conf['Relative Date Title'] or
+      g.VIEW in ['index', 'thread'] and Conf['Relative Post Dates'] and !Conf['Relative Date Title'] or
       g.VIEW is 'index' and Conf['JSON Navigation'] and g.BOARD.ID isnt 'f'
     )
       @flush()

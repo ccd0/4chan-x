@@ -1,6 +1,6 @@
 QuoteOP =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Mark OP Quotes']
+    return if g.VIEW not in ['index', 'thread'] or !Conf['Mark OP Quotes']
 
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node

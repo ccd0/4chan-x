@@ -21,7 +21,7 @@ Keybinds =
     {target} = e
     if target.nodeName in ['INPUT', 'TEXTAREA']
       return unless /(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test key
-    unless g.VIEW is 'catalog' or g.VIEW is 'index' and Conf['JSON Navigation'] and Conf['Index Mode'] is 'catalog'
+    unless g.VIEW not in ['index', 'thread'] or g.VIEW is 'index' and Conf['JSON Navigation'] and Conf['Index Mode'] is 'catalog'
       threadRoot = Nav.getThread()
       if op = $ '.op', threadRoot
         thread = Get.postFromNode(op).thread
@@ -94,13 +94,13 @@ Keybinds =
         return unless threadRoot
         Keybinds.img threadRoot, true
       when Conf['Open Gallery']
-        return if g.VIEW is 'catalog'
+        return if g.VIEW not in ['index', 'thread']
         Gallery.cb.toggle()
       when Conf['fappeTyme']
-        return if !Conf['Fappe Tyme'] or g.VIEW is 'catalog' or g.BOARD is 'f'
+        return if !Conf['Fappe Tyme'] or g.VIEW not in ['index', 'thread'] or g.BOARD is 'f'
         FappeTyme.toggle 'fappe'
       when Conf['werkTyme']
-        return if !Conf['Werk Tyme'] or g.VIEW is 'catalog' or g.BOARD is 'f'
+        return if !Conf['Werk Tyme'] or g.VIEW not in ['index', 'thread'] or g.BOARD is 'f'
         FappeTyme.toggle 'werk'
       # Board Navigation
       when Conf['Front page']

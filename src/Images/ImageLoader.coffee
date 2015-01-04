@@ -1,6 +1,6 @@
 ImageLoader =
   init: ->
-    return if g.VIEW is 'catalog'
+    return if g.VIEW not in ['index', 'thread']
     return unless Conf['Image Prefetching'] or Conf['Replace JPG'] or Conf['Replace PNG'] or Conf['Replace GIF'] or Conf['Replace WEBM']
 
     Post.callbacks.push

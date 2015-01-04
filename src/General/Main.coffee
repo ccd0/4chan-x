@@ -15,6 +15,8 @@ Main =
           'thread'
         when 'catalog'
           'catalog'
+        when 'archive'
+          'archive'
         else
           'index'
     if g.VIEW is 'thread'

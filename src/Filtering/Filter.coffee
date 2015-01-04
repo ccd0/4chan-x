@@ -1,7 +1,7 @@
 Filter =
   filters: {}
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Filter']
+    return if g.VIEW not in ['index', 'thread'] or !Conf['Filter']
 
     unless Conf['Filtered Backlinks']
       $.addClass doc, 'hide-backlinks'
@@ -172,7 +172,7 @@ Filter =
 
   menu:
     init: ->
-      return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Filter']
+      return if g.VIEW not in ['index', 'thread'] or !Conf['Menu'] or !Conf['Filter']
 
       div = $.el 'div',
         textContent: 'Filter'

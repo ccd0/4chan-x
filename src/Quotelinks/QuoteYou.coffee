@@ -1,6 +1,6 @@
 QuoteYou =
   init: ->
-    return unless g.VIEW isnt 'catalog' and Conf['Mark Quotes of You'] and Conf['Quick Reply']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Mark Quotes of You'] and Conf['Quick Reply']
 
     if Conf['Highlight Own Posts']
       $.addClass doc, 'highlight-own'

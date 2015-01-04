@@ -1,6 +1,6 @@
 Fourchan =
   init: ->
-    return if g.VIEW is 'catalog'
+    return if g.VIEW not in ['index', 'thread']
 
     if g.BOARD.ID is 'g'
       $.globalEval '''
