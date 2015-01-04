@@ -103,9 +103,9 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   /* party hats */
   pointer-events: none;
 }
-.postContainer marquee,
-.postContainer marquee + br,
-.postContainer marquee + br + br {
+marquee,
+.postMessage marquee + br,
+.postMessage marquee + br + br {
   display: none;
 }
 
