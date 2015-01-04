@@ -56,6 +56,7 @@ Index =
     $.extend @navLinks, <%= importHTML('Features/Index-navlinks') %>
     $('.returnlink a',  @navLinks).href = CatalogLinks.index()
     $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
+    $('.archlistlink', @navLinks).hidden = true if g.BOARD.ID is 'b'
     @searchInput = $ '#index-search', @navLinks
     @hideLabel   = $ '#hidden-label', @navLinks
     @selectMode  = $ '#index-mode',   @navLinks
