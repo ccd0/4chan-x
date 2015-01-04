@@ -2,12 +2,26 @@ The attributions below are for work that has been incorporated into the script a
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+<!-- v1.9.19.x -->
+### v1.9.19.0 
+*2015-01-03* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.19.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.19.0/builds/4chan-X-noupdate.crx "Chromium version")]
+
+Based on v1.9.18.6.
+
+**ccd0**
+- Support searching the index via URLs of the form `http://boards.4chan.org/board/#s=search+terms`.
+- If `Use 4chan X Catalog` is enabled, redirect the native catalog to the 4chan X one.
+- Text in `[code]` tags in the 4chan X catalog is now shown with the usual background.
+- Fix broken quote links due to fake doubles on /pol/.
+- By default, `Filtered Backlinks` is now off, and filenames are now shown truncated until hovered.
+- Minor bugfixes.
+
 <!-- v1.9.18.x -->
 ### v1.9.18.6 
 *2014-12-31* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.18.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.18.6/builds/4chan-X-noupdate.crx "Chromium version")]
 
 **ccd0**
-Fix short threads at the bottom of the page not being selectable by keybinds.
+- Fix short threads at the bottom of the page not being selectable by keybinds.
 
 ### v1.9.18.5 
 *2014-12-30* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.18.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.18.5/builds/4chan-X-noupdate.crx "Chromium version")]
