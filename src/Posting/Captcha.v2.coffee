@@ -3,7 +3,7 @@ Captcha.v2 =
 
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
-    return unless @isEnabled = !!$.id('g-recaptcha') or g.BOARD.ID is 'b'
+    return unless @isEnabled = !!$.id 'g-recaptcha'
 
     @captchas = []
     $.get 'captchas', [], ({captchas}) ->
