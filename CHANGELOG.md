@@ -3,6 +3,12 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.18.x -->
+### v1.9.18.8 
+*2015-01-04* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.18.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.18.8/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Revert temporarily hard-enabling captcha on /b/; not necessary.
+
 ### v1.9.18.7 
 *2015-01-03* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.18.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.18.7/builds/4chan-X-noupdate.crx "Chromium version")]
 
