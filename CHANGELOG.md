@@ -23,6 +23,12 @@ Based on v1.9.18.6.
 - Minor bugfixes.
 
 <!-- v1.9.18.x -->
+### v1.9.18.8 
+*2015-01-04* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.18.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.18.8/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Revert temporarily hard-enabling captcha on /b/; not necessary.
+
 ### v1.9.18.7 
 *2015-01-03* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.18.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.18.7/builds/4chan-X-noupdate.crx "Chromium version")]
 
