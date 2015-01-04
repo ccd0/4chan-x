@@ -12,7 +12,7 @@ QuoteBacklink =
   # and that as much backlinks are appended in the background as possible.
   containers: {}
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Quote Backlinks']
+    return if g.VIEW not in ['index', 'thread'] or !Conf['Quote Backlinks']
 
     Post.callbacks.push
       name: 'Quote Backlinking Part 1'

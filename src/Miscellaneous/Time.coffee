@@ -1,6 +1,6 @@
 Time =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Time Formatting']
+    return if g.VIEW not in ['index', 'thread'] or !Conf['Time Formatting']
 
     Post.callbacks.push
       name: 'Time Formatting'

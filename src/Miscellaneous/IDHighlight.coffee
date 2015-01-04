@@ -1,6 +1,6 @@
 IDHighlight =
   init: ->
-    return if g.VIEW is 'catalog'
+    return if g.VIEW not in ['index', 'thread']
 
     Post.callbacks.push
       name: 'Highlight by User ID'

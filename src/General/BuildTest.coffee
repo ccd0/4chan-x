@@ -1,7 +1,7 @@
 <% if (tests_enabled) { %>
 BuildTest =
   init: ->
-    return if !Conf['Menu'] or g.VIEW is 'catalog'
+    return if !Conf['Menu'] or g.VIEW not in ['index', 'thread']
 
     a = $.el 'a',
       textContent: 'Test HTML building'

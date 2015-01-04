@@ -1,6 +1,6 @@
 Quotify =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Resurrect Quotes'] and g.BOARD.ID isnt 'pol'
+    return if g.VIEW not in ['index', 'thread'] or !Conf['Resurrect Quotes'] and g.BOARD.ID isnt 'pol'
 
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node

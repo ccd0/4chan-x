@@ -1,6 +1,6 @@
 QuoteInline =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Quote Inlining']
+    return if g.VIEW not in ['index', 'thread'] or !Conf['Quote Inlining']
 
     @process = if Conf['Quote Hash Navigation']
       (link, clone) ->

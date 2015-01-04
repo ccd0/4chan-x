@@ -1,6 +1,6 @@
 ImageExpand =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Image Expansion']
+    return if g.VIEW not in ['index', 'thread'] or !Conf['Image Expansion']
 
     @EAI = $.el 'a',
       className: 'expand-all-shortcut fa fa-expand'
@@ -269,7 +269,7 @@ ImageExpand =
 
   menu:
     init: ->
-      return if g.VIEW is 'catalog' or !Conf['Image Expansion']
+      return if g.VIEW not in ['index', 'thread'] or !Conf['Image Expansion']
 
       el = $.el 'span',
         textContent: 'Image Expansion'

@@ -11,9 +11,14 @@ RemoveSpoilers =
     CatalogThread.callbacks.push
       name: 'Reveal Spoilers'
       cb:   @node
-  
+    if g.VIEW is 'archive'
+      $.ready -> RemoveSpoilers.unspoiler $.id 'arc-list'
+
   node: (post) ->
-    spoilers = $$ 's', @nodes.comment
+    RemoveSpoilers.unspoiler @nodes.comment
+
+  unspoiler: (el) ->
+    spoilers = $$ 's', el
     for spoiler in spoilers
       span = $.el 'span', className: 'removed-spoiler'
       $.replace spoiler, span
