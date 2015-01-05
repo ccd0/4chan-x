@@ -2,7 +2,7 @@ QR =
   mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/vnd.adobe.flash.movie', 'application/x-shockwave-flash', 'video/webm']
 
   init: ->
-    return if !Conf['Quick Reply']
+    return if !Conf['Quick Reply'] or g.VIEW is 'archive'
 
     @db = new DataBoard 'yourPosts'
     @posts = []
