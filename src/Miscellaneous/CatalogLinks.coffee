@@ -52,6 +52,7 @@ CatalogLinks =
       continue if a.hostname not in ['boards.4chan.org', 'catalog.neet.tv', '4index.gropes.us'] or
       !(board = a.pathname.split('/')[1]) or
       board in ['f', 'status', '4chan'] or
+      a.pathname.split('/')[2] is 'archive' or
       $.hasClass a, 'external'
 
       # Href is easier than pathname because then we don't have

@@ -173,7 +173,7 @@ Header =
     return unless boardnav
     boardnav = boardnav.replace /(\r\n|\n|\r)/g, ' '
     as = $$ '#full-board-list a[title]', Header.boardList
-    nodes = boardnav.match(/[\w@]+(-(all|title|replace|full|index|catalog|archive|text:"[^"]+"(,"[^"]+")?))*|[^\w@]+/g).map (t) ->
+    nodes = boardnav.match(/[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|text:"[^"]+"(,"[^"]+")?))*|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
       text = url = null
@@ -219,6 +219,12 @@ Header =
           if /-archive/.test t
             if href = Redirect.to 'board', {boardID}
               a.href = href
+            else
+              return $.tn a.textContent
+
+          if /-expired/.test t
+            if boardID not in ['b', 'f']
+              a.href = "/#{boardID}/archive"
             else
               return $.tn a.textContent
 
