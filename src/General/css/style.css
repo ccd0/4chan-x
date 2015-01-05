@@ -659,9 +659,6 @@ div[data-checked="false"] > .suboption-list {
   overflow: hidden;
   text-align: center;
 }
-.catalog-thread > .comment > span.quote {
-  color: #789922;
-}
 /* /tg/ dice rolls */
 .catalog-thread > .comment > b {
   font-weight: normal;
@@ -813,6 +810,9 @@ span.hide-announcement {
 }
 
 /* Quote */
+.catalog-thread > .comment > span.quote, #arc-list span.quote {
+  color: #789922;
+}
 :root:not(.catalog-mode) .deadlink {
   text-decoration: none !important;
 }

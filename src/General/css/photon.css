@@ -39,6 +39,9 @@
 }
 
 /* Quote */
+:root.photon #arc-list tr:nth-of-type(odd) span.quote {
+  color: #C0E17A;
+}
 :root.photon .backlink.deadlink {
   color: #F60 !important;
 }
