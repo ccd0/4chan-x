@@ -631,9 +631,13 @@ http://iqdb.org/?url=%TURL
 # uploaders:
 #//imgur.com/upload?url=%URL;text:Upload to imgur
 # "View Same" in archives:
-#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz
-#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/;boards:a,biz,c,co,diy,gd,int,jp,m,out,po,sci,sp,tg,tv,vg,vp,vr,wsg
-#https://rbt.asia/%board/image/%MD5;text:View same on RBT /%board/;boards:cgl,con,g,mu,w
+#https://archive.moe/_/search/image/%MD5/;text:View same on archive.moe
+#https://archive.moe/%board/search/image/%MD5/;text:View same on archive.moe/%board/;boards:<%=
+  grunt.file.readJSON('src/Archive/archives.json').filter(function(x) {return x.uid === 0})[0].files.join(',')
+%>
+#https://rbt.asia/%board/image/%MD5;text:View same on RBT /%board/;boards:<%=
+  grunt.file.readJSON('src/Archive/archives.json').filter(function(x) {return x.uid === 8})[0].files.join(',')
+%>
 # Search with full image only for image file types:
 #https://www.google.com/searchbyimage?image_url=%URL;types:gif,jpg,png
 #https://www.google.com/searchbyimage?image_url=%TURL;types:webm,pdf
