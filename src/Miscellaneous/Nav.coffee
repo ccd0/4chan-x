@@ -47,6 +47,7 @@ Nav =
     return $ '.board'
 
   scroll: (delta) ->
+    d.activeElement?.blur()
     thread = Nav.getThread()
     axis = if delta is +1
       'following'
