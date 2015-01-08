@@ -9202,8 +9202,7 @@
       }
       if (g.BOARD.ID === 'f' && g.VIEW !== 'thread') {
         nodes.flashTag = $.el('select', {
-          name: 'filetag'
-        }, {
+          name: 'filetag',
           innerHTML: "<option value=0>Hentai</option>\n<option value=6>Porn</option>\n<option value=1>Japanese</option>\n<option value=2>Anime</option>\n<option value=3>Game</option>\n<option value=5>Loop</option>\n<option value=4 selected>Other</option>"
         });
         nodes.flashTag.dataset["default"] = '4';
