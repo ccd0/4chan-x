@@ -19,15 +19,14 @@
     ],
     "excludes": [
       "*://blog.4chan.org/*",
-      "*://dis.4chan.org/*",
-      "*://a.4cdn.org/*"
+      "*://dis.4chan.org/*"
     ],
     "files": {
       "metajs": "appchan-x.meta.js",
       "userjs": "appchan-x.user.js"
     },
     "min": {
-      "chrome": "33",
+      "chrome": "32",
       "firefox": "26",
       "greasemonkey": "1.14"
     }
@@ -53,7 +52,9 @@
   "author": "Zixaphir <zixaphirmoxphar@gmail.com>",
   "contributors": [
     "Nicolas Stepien <stepien.nicolas@gmail.com>",
-    "James Campos <james.r.campos@gmail.com>"
+    "James Campos <james.r.campos@gmail.com>",
+    "seaweedchan <jtbates@asu.edu>",
+    "ccd0"
   ],
   "license": "MIT",
   "readmeFilename": "README.md",

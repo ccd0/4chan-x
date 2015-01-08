@@ -1,21 +1,21 @@
 Filter =
   filters: {}
   init: ->
-    return if !Conf['Filter']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Filter']
 
     unless Conf['Filtered Backlinks']
       $.addClass doc, 'hide-backlinks'
 
     for key of Config.filter
       @filters[key] = []
-      for filter in Conf[key].split '\n'
-        continue if filter[0] is '#'
+      for line in Conf[key].split '\n'
+        continue if line[0] is '#'
 
-        unless regexp = filter.match /\/(.+)\/(\w*)/
+        unless regexp = line.match /\/(.+)\/(\w*)/
           continue
 
         # Don't mix up filter flags with the regular expression.
-        filter = filter.replace regexp[0], ''
+        filter = line.replace regexp[0], ''
 
         # Do not add this filter to the list if it's not a global one
         # and it's not specifically applicable to the current board.
@@ -33,7 +33,11 @@ Filter =
             regexp = RegExp regexp[1], regexp[2]
           catch err
             # I warned you, bro.
-            new Notice 'warning', err.message, 60
+            new Notice 'warning', [
+              $.tn "Invalid #{key} filter: " + line,
+              $.el 'br'
+              $.tn err.message
+            ], 60
             continue
 
         # Filter OPs along with their threads, replies only, or both.
@@ -60,18 +64,7 @@ Filter =
           top = filter.match(/top:(yes|no)/)?[1] or 'yes'
           top = top is 'yes' # Turn it into a boolean
 
-        @filters[key].push {
-          hide:  !hl
-          op:    op
-          stub:  stub
-          class: hl
-          top:   top
-          match: regexp
-          test: if typeof regexp is 'string'
-            Filter.stringTest # MD5 checking
-          else
-            Filter.regexpTest
-        }
+        @filters[key].push @createFilter regexp, op, stub, hl, top
 
       # Only execute filter types that contain valid filters.
       unless @filters[key].length
@@ -82,25 +75,41 @@ Filter =
       name: 'Filter'
       cb:   @node
 
+  createFilter: (regexp, op, stub, hl, top) ->
+    test =
+      if typeof regexp is 'string'
+        # MD5 checking
+        Filter.stringTest
+      else
+        Filter.regexpTest
+
+    settings =
+      hide:  !hl
+      stub:  stub
+      class: hl
+      top:   top
+
+    (value, isReply) -> return settings if Filter.test(test, value, isReply)
+
   node: ->
-    return if @isClone
+    return if @isClone or @isFetchedQuote
     for key of Filter.filters
       value = Filter[key] @
       # Continue if there's nothing to filter (no tripcode for example).
       continue if value is false
 
-      for obj in Filter.filters[key]
-        unless Filter.test obj, value, @isReply
+      for filter in Filter.filters[key]
+        unless result = filter value, @isReply
           continue
 
         # Hide
-        if obj.hide
+        if result.hide
           continue unless @isReply or g.VIEW is 'index'
-          @hide "Hidden by filtering the #{key}: #{obj.match}", obj.stub
+          @hide "Hidden by filtering the #{key}: #{result.match}", result.stub
           return
 
         # Highlight
-        @highlight "Highlighted by filtering the #{key}: #{obj.match}", obj.class, obj.top
+        @highlight "Highlighted by filtering the #{key}: #{result.match}", result.class, result.top
 
   stringTest: (string, value) ->
     string is value
@@ -112,6 +121,7 @@ Filter =
     unless test match, value
       return false
     true
+    
   name: (post) ->
     if 'name' of post.info
       return post.info.name
@@ -127,10 +137,6 @@ Filter =
   capcode: (post) ->
     if 'capcode' of post.info
       return post.info.capcode
-    false
-  email: (post) ->
-    if 'email' of post.info
-      return post.info.email
     false
   subject: (post) ->
     if 'subject' of post.info
@@ -151,7 +157,7 @@ Filter =
   dimensions: (post) ->
     {file} = post
     if file and (file.isImage or file.isVideo)
-      return post.file.dimensions
+      return file.dimensions
     false
   filesize: (post) ->
     if post.file
@@ -164,7 +170,7 @@ Filter =
 
   menu:
     init: ->
-      return if !Conf['Menu'] or !Conf['Filter']
+      return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Filter']
 
       div = $.el 'div',
         textContent: 'Filter'
@@ -182,7 +188,6 @@ Filter =
         ['Unique ID',        'uniqueID']
         ['Tripcode',         'tripcode']
         ['Capcode',          'capcode']
-        ['E-mail',           'email']
         ['Subject',          'subject']
         ['Comment',          'comment']
         ['Flag',             'flag']

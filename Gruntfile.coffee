@@ -1,7 +1,8 @@
 module.exports = (grunt) ->
+  grunt.util.linefeed = '\n'
 
   importHTML = (filename) ->
-    "\"\"\"#{grunt.file.read("src/General/html/#{filename}.html").replace(/^\s+|\s+$</gm, '').replace(/\n/g, '')}\"\"\""
+    "(innerHTML: #{JSON.stringify grunt.file.read("src/General/html/#{filename}.html").replace(/^\s+|\s+$</gm, '').replace(/\n/g, '')})"
 
   html = (template) ->
     parts = template.split /([\$&@]){([^}`]*)}/
@@ -38,6 +39,8 @@ module.exports = (grunt) ->
           pkg = grunt.config 'pkg'
           pkg.importHTML = importHTML
           pkg.html = html
+          pkg.assert = assert
+          pkg.tests_enabled or= false
           pkg
         enumerable: true
       )
@@ -52,17 +55,18 @@ module.exports = (grunt) ->
           'src/General/Build.coffee'
           'src/General/Get.coffee'
           'src/General/UI.coffee'
-          'src/Filtering/*'
-          'src/Quotelinks/*'
-          'src/Linkification/*'
-          'src/Posting/QR.coffee'
-          'src/Posting/*'
-          'src/Images/*'
-          'src/Menu/*'
-          'src/Monitoring/*'
-          'src/Archive/*'
-          'src/Theming/*'
-          'src/Miscellaneous/*'
+          'src/General/CrossOrigin.coffee'
+          'src/Filtering/**/*.coffee'
+          'src/Quotelinks/**/*.coffee'
+          'src/Posting/Captcha.coffee'
+          'src/Posting/**/*.coffee'
+          'src/Images/**/*.coffee'
+          'src/Linkification/**/*.coffee'
+          'src/Menu/**/*.coffee'
+          'src/Monitoring/**/*.coffee'
+          'src/Archive/**/*.coffee'
+          'src/Miscellaneous/**/*.coffee'
+          'src/Theming/**/*.coffee'
           'src/General/Navigate.coffee'
           'src/General/Settings.coffee'
           'src/General/Main.coffee'

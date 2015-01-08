@@ -5,7 +5,7 @@
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["a", "biz", "c", "co", "diy", "gd", "h", "i", "int", "jp", "k", "m", "mlp", "out", "po", "r9k", "s4s", "sci", "sp", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
+  "boards": ["a", "biz", "c", "co", "diy", "gd", "h", "i", "int", "jp", "k", "m", "mlp", "out", "po", "r9k", "s4s", "sci", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
   "files": ["a", "biz", "c", "co", "diy", "gd", "h", "i", "jp", "k", "m", "mlp", "po", "s4s", "sci", "tg", "u", "v", "vg", "vp", "vr", "wsg"]
 }, {
   "uid": 3,
@@ -53,12 +53,13 @@
   "boards": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"],
   "files": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"]
 }, {
-  "uid": 17,
+  "uid": 21,
   "name": "imcute",
   "domain": "imcute.yt",
   "http": true,
   "https": false,
   "software": "foolfuuka",
   "boards": ["an", "fit", "gif", "int", "mlp", "out", "r9k", "toy"],
-  "files": ["an", "fit", "gif", "int", "mlp", "out", "r9k", "toy"]
+  "files": ["an", "fit", "gif", "int", "mlp", "out", "r9k", "toy"],
+  "imagehosts": ["http://imcute.yt/"]
 }]
