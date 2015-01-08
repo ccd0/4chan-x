@@ -4825,12 +4825,14 @@
       this.pagelist = $.el('div', {
         className: 'pagelist',
         hidden: true
-      }, {
+      });
+      $.extend(this.pagelist, {
         innerHTML: "<div class=\"prev\">\r<a>\r&lt;\r</a>\r</div>\r<div class=\"pages\"></div>\r<div class=\"next\">\r<a>\r&gt;\r</a>\r</div>"
       });
       this.navLinks = $.el('div', {
         className: 'navLinks'
-      }, {
+      });
+      $.extend(this.navLinks, {
         innerHTML: "<span id=\"index-menu\">\r<input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\">\r<a id=\"index-search-clear\" class=\"fa\" href=\"javascript:;\">\\uf05c</a>\r&nbsp;\r<time id=\"index-last-refresh\" title=\"Last index refresh\">...</time>\r<span id=\"hidden-label\" hidden>&nbsp;&mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span>\r<span style='flex: 1'></span>\r<select id=\"index-mode\" name=\"Index Mode\">\r<option disabled>Index Mode</option>\r<option value=\"paged\">Paged</option>\r<option value=\"infinite\">Infinite Scrolling</option>\r<option value=\"all pages\">All threads</option>\r<option value=\"catalog\">Catalog</option>\r</select>\r<select id=\"index-sort\" name=\"Index Sort\">\r<option disabled>Index Sort</option>\r<option value=\"bump\">Bump order</option>\r<option value=\"lastreply\">Last reply</option>\r<option value=\"birth\">Creation date</option>\r<option value=\"replycount\">Reply count</option>\r<option value=\"filecount\">File count</option>\r</select>\r<select id=\"index-size\" name=\"Index Size\">\r<option disabled>Image Size</option>\r<option value=\"small\">Small</option>\r<option value=\"large\">Large</option>\r</select>\r</span>\r"
       });
       this.timeEl = $('time#index-last-refresh', this.navLinks);
@@ -6157,7 +6159,8 @@
       comment = thread.OP.nodes.comment.innerHTML.replace(/(<br>\s*){2,}/g, '<br>');
       root = $.el('div', {
         className: 'catalog-thread'
-      }, {
+      });
+      $.extend(root, {
         innerHTML: "<a href=\"" + (Build.path(thread.board.ID, thread.ID)) + "\" class=\"thumb\"></a>\r<div class=\"thread-stats\" title=\"Post count / File count / Page count\">\r<span class=\"post-count\">" + postCount + "</span> / <span class=\"file-count\">" + fileCount + "</span> / <span class=\"page-count\">" + pageCount + "</span>\r<span class=\"thread-icons\"></span>\r</div>\r" + subject + "\r<div class=\"comment\">" + comment + "</div>\r"
       });
       root.dataset.fullID = thread.fullID;
@@ -9021,10 +9024,11 @@
     dialog: function() {
       var dialog, elm, event, i, items, match_max, match_min, name, node, nodes, rules, save, setNode;
       QR.nodes = nodes = {
-        el: dialog = UI.dialog('qr', 'top:0;right:0;', {
-          innerHTML: "<div id=qrtab class=move>\r<input type=checkbox id=autohide title=Auto-hide>\r<div id=qr-thread-select>\r<select data-name=thread title='Create a new thread / Reply'>\r<option value=new>New thread</option>\r</select>\r</div>\r<a href=javascript:; class='close fa' title=Close>\\uf00d</a>\r</div>\r<form>\r<div class=persona>\r<input name=name  data-name=name  list=\"list-name\" placeholder=Name    class=field size=1>\r<input name=email data-name=email list=\"list-email\" placeholder=Options class=field size=1>\r<input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1> \r</div>\r<div class=textarea>\r<textarea data-name=com placeholder=Comment class=field></textarea>\r<span id=char-count></span>\r</div>\r<div id=dump-list-container>\r<div id=dump-list></div>\r<a id=add-post href=javascript:; title=\"Add a post\">+</a>\r</div>\r<div id=file-n-submit>\r<span id=qr-filename-container class=field tabindex=0>\r<span id=qr-no-file>No selected file</span>\r<input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\">\r<span id=qr-extras-container>\r<label id=qr-spoiler-label>\r<input type=checkbox id=qr-file-spoiler title='Spoiler image'>\r</label>\r<span class=description>Spoiler</span>\r<a id=url-button><i class=\"fa\">\\uf0c1</i></a>\r<span class=description>Post from URL</span>\r<a id=dump-button title='Dump list'>+</a>\r<span class=description>Dump</span>\r<a id=qr-filerm href=javascript:; title='Remove file' class=fa>\\uf00d</a>\r<span class=description>Remove File</span>\r</span>\r</span>\r<input type=submit>\r</div>\r<input type=file multiple>\r</form>\r<datalist id=\"list-name\"></datalist>\r<datalist id=\"list-email\"></datalist>\r<datalist id=\"list-sub\"></datalist>\r"
-        })
+        el: dialog = UI.dialog('qr', 'top:0;right:0;')
       };
+      $.extend(dialog, {
+        innerHTML: "<div id=qrtab class=move>\r<input type=checkbox id=autohide title=Auto-hide>\r<div id=qr-thread-select>\r<select data-name=thread title='Create a new thread / Reply'>\r<option value=new>New thread</option>\r</select>\r</div>\r<a href=javascript:; class='close fa' title=Close>\\uf00d</a>\r</div>\r<form>\r<div class=persona>\r<input name=name  data-name=name  list=\"list-name\" placeholder=Name    class=field size=1>\r<input name=email data-name=email list=\"list-email\" placeholder=Options class=field size=1>\r<input name=sub   data-name=sub   list=\"list-sub\" placeholder=Subject class=field size=1> \r</div>\r<div class=textarea>\r<textarea data-name=com placeholder=Comment class=field></textarea>\r<span id=char-count></span>\r</div>\r<div id=dump-list-container>\r<div id=dump-list></div>\r<a id=add-post href=javascript:; title=\"Add a post\">+</a>\r</div>\r<div id=file-n-submit>\r<span id=qr-filename-container class=field tabindex=0>\r<span id=qr-no-file>No selected file</span>\r<input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\">\r<span id=qr-extras-container>\r<label id=qr-spoiler-label>\r<input type=checkbox id=qr-file-spoiler title='Spoiler image'>\r</label>\r<span class=description>Spoiler</span>\r<a id=url-button><i class=\"fa\">\\uf0c1</i></a>\r<span class=description>Post from URL</span>\r<a id=dump-button title='Dump list'>+</a>\r<span class=description>Dump</span>\r<a id=qr-filerm href=javascript:; title='Remove file' class=fa>\\uf00d</a>\r<span class=description>Remove File</span>\r</span>\r</span>\r<input type=submit>\r</div>\r<input type=file multiple>\r</form>\r<datalist id=\"list-name\"></datalist>\r<datalist id=\"list-email\"></datalist>\r<datalist id=\"list-sub\"></datalist>\r"
+      });
       setNode = function(name, query) {
         return nodes[name] = $(query, dialog);
       };
@@ -17065,7 +17069,8 @@
       Settings.dialog = dialog = $.el('div', {
         id: 'appchanx-settings',
         "class": 'dialog'
-      }, {
+      });
+      $.extend(dialog, {
         innerHTML: "<nav>\r<div class=sections-list></div>\r<span class='imp-exp-result warning'></span>\r<div class=credits>\r<a class=export>Export</a>&nbsp|&nbsp\r<a class=import>Import</a>&nbsp|&nbsp\r<a class=reset>Reset Settings</a>&nbsp|&nbsp\r<input type=file hidden>\r<a href='http://zixaphir.github.com/appchan-x/' target=_blank>appchan x</a>&nbsp|&nbsp\r<a href='https://github.com/zixaphir/appchan-x/blob/master/CHANGELOG.md' target=_blank>" + g.VERSION + "</a>&nbsp|&nbsp\r<a href='https://github.com/zixaphir/appchan-x/blob/master/README.md#reporting-bugs-and-suggestions' target=_blank>Issues</a>&nbsp|&nbsp\r<a href=javascript:; class='close fa' title=Close>\\uf00d</a>\r</div>\r</nav>\r<hr>\r<div class=section-container><section></section></div>\r"
       });
       Settings.overlay = overlay = $.el('div', {

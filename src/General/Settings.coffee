@@ -53,7 +53,7 @@ Settings =
     Settings.dialog = dialog = $.el 'div',
       id:    'appchanx-settings'
       class: 'dialog'
-      <%= importHTML('Settings/Settings') %>
+    $.extend dialog, <%= importHTML('Settings/Settings') %>
 
     Settings.overlay = overlay = $.el 'div',
       id: 'overlay'
@@ -62,7 +62,6 @@ Settings =
     $.on $('.import', dialog), 'click',  Settings.import
     $.on $('.reset',  dialog), 'click',  Settings.reset
     $.on $('input',   dialog), 'change', Settings.onImport
-
 
     links = []
     for section in Settings.sections

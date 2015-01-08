@@ -318,8 +318,9 @@ Build =
     comment = thread.OP.nodes.comment.innerHTML.replace /(<br>\s*){2,}/g, '<br>'
 
     root = $.el 'div',
-      className: 'catalog-thread'
-      <%= importHTML('Features/Thread-catalog-view') %>
+      className: 'catalog-thread',
+      
+    $.extend root, <%= importHTML('Features/Thread-catalog-view') %>
 
     root.dataset.fullID = thread.fullID
     $.addClass root, 'pinned' if thread.isPinned

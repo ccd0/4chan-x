@@ -84,12 +84,13 @@ Index =
     @root = $.el 'div', className: 'board'
     @pagelist = $.el 'div',
       className: 'pagelist'
-      hidden: true
-      <%= importHTML('Features/Index-pagelist') %>
+      hidden: true,
+    $.extend @pagelist, <%= importHTML('Features/Index-pagelist') %>
 
     @navLinks = $.el 'div',
-      className: 'navLinks'
-      <%= importHTML('Features/Index-navlinks') %>
+      className: 'navLinks',  
+    $.extend @navLinks, <%= importHTML('Features/Index-navlinks') %>
+
     @timeEl = $ 'time#index-last-refresh', @navLinks
 
     @searchInput = $ '#index-search', @navLinks
