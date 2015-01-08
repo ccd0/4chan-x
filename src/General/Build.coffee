@@ -2,48 +2,63 @@ Build =
   staticPath: '//s.4cdn.org/image/'
   gifIcon: if window.devicePixelRatio >= 2 then '@2x.gif' else '.gif'
   spoilerRange: {}
-  shortFilename: (filename, isReply) ->
-    # FILENAME SHORTENING SCIENCE:
-    # OPs have a +10 characters threshold.
-    # The file extension is not taken into account.
-    threshold = if isReply then 30 else 40
+  unescape: (text) ->
+    return text unless text?
+    text.replace(/<[^>]*>/g, '').replace /&(amp|#039|quot|lt|gt);/g, (c) ->
+      {'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>'}[c]
+  shortFilename: (filename) ->
+    threshold = 30
     ext = filename.match(/\.[^.]+$/)[0]
     if filename.length - ext.length > threshold
       "#{filename[...threshold - 5]}(...)#{ext}"
     else
       filename
   thumbRotate: do ->
-    n = 0
-    -> n = (n + 1) % 2
+    t = 0
+    -> t = (if t then 0 else 1)
+  sameThread: (boardID, threadID) ->
+    g.VIEW is 'thread' and g.BOARD.ID is boardID and g.THREADID is +threadID
+  postURL: (boardID, threadID, postID) ->
+    if Build.sameThread boardID, threadID
+      "#p#{postID}"
+    else
+      Build.path boardID, threadID, postID
   path: (boardID, threadID, postID, fragment) ->
     path  = "/#{boardID}/thread/#{threadID}"
-    path += "/#{g.SLUG}" if g.SLUG? and threadID is g.THREADID
-    path += "##{fragment or 'p'}#{postID}" if postID
+    if g.SLUG? and threadID is g.THREADID
+      path += "/#{g.SLUG}"
+    if postID
+      path += "##{fragment or 'p'}#{postID}"
     path
   postFromObject: (data, boardID) ->
     o =
       # id
-      postID:   data.no
-      threadID: data.resto or data.no
-      boardID:  boardID
+      postID:     data.no
+      threadID:   data.resto or data.no
+      boardID:    boardID
       # info
-      name:     data.name
-      capcode:  data.capcode
-      tripcode: data.trip
-      uniqueID: data.id
-      email:    if data.email then encodeURI data.email.replace /&quot;/g, '"' else ''
-      subject:  data.sub
-      flagCode: data.country
-      flagName: data.country_name
-      date:     data.now
-      dateUTC:  data.time
-      comment:  data.com
+      name:       Build.unescape data.name
+      capcode:    data.capcode
+      tripcode:   data.trip
+      uniqueID:   data.id
+      email:      Build.unescape data.email
+      subject:    Build.unescape data.sub
+      flagCode:   data.country
+      flagName:   Build.unescape data.country_name
+      date:       data.now
+      dateUTC:    data.time
+      comment:    {innerHTML: data.com or ''}
       # thread status
-      isSticky: !!data.sticky
-      isClosed: !!data.closed
+      isSticky:   !!data.sticky
+      isClosed:   !!data.closed
+      isArchived: !!data.archived
       # file
-    if data.ext or data.filedeleted
+    if data.filedeleted
       o.file =
+        isDeleted: true
+    else if data.ext
+      o.file =
+        name:      (Build.unescape data.filename) + data.ext
         name:      data.filename + data.ext
         timestamp: "#{data.tim}#{data.ext}"
         url: if boardID is 'f'
@@ -58,9 +73,10 @@ Build =
         theight:   data.tn_h
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
-        isDeleted: !!data.filedeleted
+        isDeleted: false
+        tag:       data.tag
     Build.post o
-  post: (o, isArchived) ->
+  post: (o) ->
     ###
     This function contains code from 4chan-JS (https://github.com/4chan/4chan-JS).
     @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
@@ -68,174 +84,186 @@ Build =
     {
       postID, threadID, boardID
       name, capcode, tripcode, uniqueID, email, subject, flagCode, flagName, date, dateUTC
-      isSticky, isClosed
       comment
       file
     } = o
+    name    or= ''
+    subject or= ''
     isOP = postID is threadID
     {staticPath, gifIcon} = Build
 
-    tripcode = if tripcode
-      " <span class=postertrip>#{tripcode}</span>"
-    else
-      ''
-
-    if email
-      emailStart = '<a href="mailto:' + email + '" class="useremail">'
-      emailEnd   = '</a>'
-    else
-      emailStart = ''
-      emailEnd   = ''
+    ### Name Block ###
 
     switch capcode
       when 'admin', 'admin_highlight'
-        capcodeClass = " capcodeAdmin"
-        capcodeStart = " <strong class='capcode hand id_admin'" +
-          "title='Highlight posts by the Administrator'>## Admin</strong>"
-        capcodeIcon  = " <img src='#{staticPath}adminicon#{gifIcon}' " +
-          "title='This user is the 4chan Administrator.' class=identityIcon>"
+        capcodeClass = ' capcodeAdmin'
+        capcodeStart = <%= html(' <strong class="capcode hand id_admin" title="Highlight posts by the Administrator">## Admin</strong>') %>
+        capcodeIcon  = <%= html(' <img src="${staticPath}adminicon${gifIcon}" alt="Admin Icon" title="This user is the 4chan Administrator." class="identityIcon retina">') %>
       when 'mod'
-        capcodeClass = " capcodeMod"
-        capcodeStart = " <strong class='capcode hand id_mod' " +
-          "title='Highlight posts by Moderators'>## Mod</strong>"
-        capcodeIcon  = " <img src='#{staticPath}modicon#{gifIcon}' " +
-          "title='This user is a 4chan Moderator.' class=identityIcon>"
-      when 'developer'
-        capcodeClass = " capcodeDeveloper"
-        capcodeStart = " <strong class='capcode hand id_developer' " +
-          "title='Highlight posts by Developers'>## Developer</strong>"
-        capcodeIcon  = " <img src='#{staticPath}developericon#{gifIcon}' " +
-          "title='This user is a 4chan Developer.' class=identityIcon>"
+        capcodeClass = ' capcodeMod'
+        capcodeStart = <%= html(' <strong class="capcode hand id_mod" title="Highlight posts by Moderators">## Mod</strong>') %>
+        capcodeIcon  = <%= html(' <img src="${staticPath}modicon${gifIcon}" alt="Mod Icon" title="This user is a 4chan Moderator." class="identityIcon retina">') %>
+        capcodeClass = ' capcodeDeveloper'
+        capcodeStart = <%= html(' <strong class="capcode hand id_developer" title="Highlight posts by Developers">## Developer</strong>') %>
+        capcodeIcon  = <%= html(' <img src="${staticPath}developericon${gifIcon}" alt="Developer Icon" title="This user is a 4chan Developer." class="identityIcon retina">') %>
       else
         capcodeClass = ''
-        capcodeStart = ''
-        capcodeIcon  = ''
+        capcodeStart = <%= html('') %>
+        capcodeIcon  = if isOP and boardID is 'f' then <%= html('') %> else <%= html(' ') %>
 
-    userID =
-      if !capcode and uniqueID
-        " <span class='posteruid id_#{uniqueID}'>(ID: " +
-          "<span class=hand title='Highlight posts by this ID'>#{uniqueID}</span>)</span> "
-      else
-        ''
+    nameClass = if capcode then ' capcode' else ''
+
+    tripcodeField = if tripcode
+      <%= html(' <span class="postertrip">${tripcode}</span>') %>
+    else
+      <%= html('') %>
+
+    emailField = <%= html('<span class="name${nameClass}">${name}</span>&{tripcodeField}&{capcodeStart}') %>
+    if email
+      emailProcessed = encodeURIComponent(email).replace /%40/g, '@'
+      emailField = <%= html('<a href="mailto:${emailProcessed}" class="useremail">&{emailField}</a>') %>
+
+    userID = if !capcode and uniqueID
+      <%= html(' <span class="posteruid id_${uniqueID}">(ID: <span class="hand" title="Highlight posts by this ID">${uniqueID}</span>)</span>') %>
+    else
+      <%= html('') %>
 
     flag = unless flagCode
-      ''
-    else if boardID is 'pol'
-      " <img src='#{staticPath}country/troll/#{flagCode.toLowerCase()}.gif' title='#{flagName}' class=countryFlag>"
+      <%= html('') %>
+    else if false
+      <%= html(' <img src="${staticPath}country/troll/${flagCode.toLowerCase()}.gif" alt="${flagCode}" title="${flagName}" class="countryFlag">') %>
     else
-      " <span title='#{flagName}' class='flag flag-#{flagCode.toLowerCase()}'></span>"
+      <%= html(' <span title="${flagName}" class="flag flag-${flagCode.toLowerCase()}"></span>') %>
 
-    if file?.isDeleted
-      fileHTML = if isOP
-        "<div class=file><span class=fileThumb>" +
-          "<img src='#{staticPath}filedeleted#{gifIcon}' class=fileDeleted>" +
-        "</span></div>"
-      else
-        "<div class=file><span class=fileThumb>" +
-          "<img src='#{staticPath}filedeleted-res#{gifIcon}' class=fileDeletedRes>" +
-        "</span></div>"
+    nameBlock = <%= html(
+      '<span class="nameBlock${capcodeClass}">' +
+        '&{emailField}&{capcodeIcon}&{userID}&{flag}' +
+      '</span> '
+    ) %>
+
+    ### Post Info ###
+
+    subjectField = if isOP or boardID is 'f'
+      <%= html('<span class="subject">${subject}</span> ') %>
+    else
+      <%= html('') %>
+
+    desktop2 = if isOP and boardID is 'f' then '' else ' desktop'
+
+    postLink = Build.postURL boardID, threadID, postID
+    quoteLink = if Build.sameThread boardID, threadID
+      "javascript:quote('#{+postID}');"
+    else
+      "/#{boardID}/thread/#{threadID}#q#{postID}"
+
+    icons = for type in ['Sticky', 'Closed', 'Archived'] when o["is#{type}"] and !(type is 'Closed' and o.isArchived)
+      typeLC = type.toLowerCase()
+      <%= html(' <img src="${staticPath}${typeLC}${gifIcon}" alt="${type}" title="${type}" class="${typeLC}Icon retina">') %>
+
+    replyLink = if isOP and g.VIEW is 'index'
+      <%= html(' &nbsp; <span>[<a href="/${boardID}/thread/${threadID}" class="replylink">Reply</a>]</span>') %>
+    else
+      <%= html('') %>
+
+    postInfo = <%= html(
+      '<div class="postInfo desktop" id="pi${postID}">' +
+        '<input type="checkbox" name="${postID}" value="delete"> ' +
+        '&{subjectField}' +
+        '&{nameBlock}' +
+        '<span class="dateTime" data-utc="${dateUTC}">${date}</span> ' +
+        '<span class="postNum${desktop2}">' +
+          '<a href="${postLink}" title="Link to this post">No.</a>' +
+          '<a href="${quoteLink}" title="Reply to this post">${postID}</a>' +
+          '@{icons}&{replyLink}' +
+        '</span>' +
+      '</div>'
+    ) %>
+
+    ### File Info ###
+
+    fileCont = if file?.isDeleted
+      <%= html(
+        '<span class="fileThumb">' +
+          '<img src="${staticPath}filedeleted-res${gifIcon}" alt="File deleted." class="fileDeletedRes retina">' +
+        '</span>'
+      ) %>
+    else if file and boardID is 'f'
+      <%= html(
+        '<div class="fileInfo"><span class="fileText" id="fT${postID}">' +
+          'File: <a data-width="${file.width}" data-height="${file.height}" href="${file.url}" target="_blank">${file.name}</a>' +
+          '-(${$.bytesToString(file.size)}, ${file.width}x${file.height}, ${file.tag})' +
+        '</span></div>'
+      ) %>
     else if file
-      fileSize  = $.bytesToString file.size
-      fileThumb = file.turl
       if file.isSpoiler
-        fileSize = "Spoiler Image, #{fileSize}"
-        unless isArchived
-          fileThumb = "#{staticPath}spoiler"
-          if spoilerRange = Build.spoilerRange[boardID]
-            # Randomize the spoiler image.
-            fileThumb += "-#{boardID}" + Math.floor 1 + spoilerRange * Math.random()
-          fileThumb += '.png'
-          file.twidth = file.theight = 100
-
-      imgSrc = if boardID is 'f'
-        ''
+        shortFilename = 'Spoiler Image'
+        if spoilerRange = Build.spoilerRange[boardID]
+          # Randomize the spoiler image.
+          fileThumb = "//s.4cdn.org/image/spoiler-#{boardID}#{Math.floor 1 + spoilerRange * Math.random()}.png"
+        else
+          fileThumb = '//s.4cdn.org/image/spoiler.png'
+        file.twidth = file.theight = 100
       else
-        "<a class='fileThumb#{if file.isSpoiler then ' imgspoiler' else ''}' href=\"#{file.url}\" target=_blank>" +
-          "<img src='#{fileThumb}' alt='#{fileSize}' data-md5=#{file.MD5} style='height: #{file.theight}px; width: #{file.twidth}px;'>" +
-        "</a>"
+        shortFilename = Build.shortFilename file.name, !isOP
+        fileThumb = file.turl
 
-      # html -> text, translate WebKit's %22s into "s
-      a = $.el 'a', innerHTML: file.name
-      filename = a.textContent.replace /%22/g, '"'
-      # shorten filename, get html
-      a.textContent = Build.shortFilename filename
-      shortFilename = a.innerHTML
-      # get html
-      a.textContent = filename
-      filename      = a.innerHTML.replace /'/g, '&apos;'
+      fileSize = $.bytesToString file.size
+      fileDims = if file.url[-4..] is '.pdf' then 'PDF' else "#{file.width}x#{file.height}"
 
-      fileDims = if file.name[-3..] is 'pdf' then 'PDF' else "#{file.width}x#{file.height}"
-      fileInfo = "<div class=fileText #{if file.isSpoiler then "title='#{filename}'" else ''}>File: " +
-        "<a href=\"#{file.url}\" #{if filename isnt shortFilename and !file.isSpoiler then " title='#{filename}'" else ''} target=_blank>#{if file.isSpoiler then 'Spoiler Image' else shortFilename}</a>" +
-        " (#{fileSize}, #{fileDims})</div>"
+      fileLink = if file.isSpoiler or file.name is shortFilename
+        <%= html('<a href="${file.url}" target="_blank">${shortFilename}</a>') %>
+      else
+        <%= html('<a title="${file.name}" href="${file.url}" target="_blank">${shortFilename}</a>') %>
 
-      fileHTML = "<div class=file>#{fileInfo}#{imgSrc}</div>"
+      fileText = if file.isSpoiler
+        <%= html('<div class="fileText" id="fT${postID}" title="${file.name}">File: &{fileLink} (${fileSize}, ${fileDims})</div>') %>
+      else
+        <%= html('<div class="fileText" id="fT${postID}">File: &{fileLink} (${fileSize}, ${fileDims})</div>') %>
+
+      <%= html(
+        '&{fileText}' +
+        '<a class="fileThumb${file.isSpoiler ? " imgspoiler" : ""}" href="${file.url}" target="_blank">' +
+          '<img src="${fileThumb}" alt="${fileSize}" data-md5="${file.MD5}" style="height: ${file.theight}px; width: ${file.twidth}px;">' +
+        '</a>'
+      ) %>
+
+    fileBlock = if file
+      <%= html('<div class="file" id="f${postID}">&{fileCont}</div>') %>
     else
-      fileHTML = ''
+      <%= html('') %>
 
-    sticky = if isSticky
-      " <img src=#{staticPath}sticky#{gifIcon} title=Sticky class=stickyIcon>"
-    else
-      ''
-    closed = if isClosed
-      " <img src=#{staticPath}closed#{gifIcon} title=Closed class=closedIcon>"
-    else
-      ''
+    ### Whole Post ###
 
-    if isOP and g.VIEW is 'index'
-      pageNum   = Index.liveThreadData.keys.indexOf("#{postID}") // Index.threadsNumPerPage + 1
-      pageIcon  = " <span class=page-num title='This thread is on page #{pageNum} in the original index.'>Page #{pageNum}</span>"
-      replyLink = " &nbsp; <span>[<a href='#{Build.path boardID, threadID}' class=replylink>Reply</a>]</span>"
+    highlightPost = if capcode is 'admin_highlight' then ' highlightPost' else ''
+
+    message = <%= html('<blockquote class="postMessage" id="m${postID}">&{comment}</blockquote>') %>
+
+    wholePost = if isOP
+      <%= html(
+        '<div id="p${postID}" class="post op${highlightPost}">' +
+          '&{fileBlock}&{postInfo}&{message}' +
+        '</div>'
+      ) %>
     else
-      pageIcon  = ''
-      replyLink = ''
+      <%= html(
+        '<div class="sideArrows" id="sa${postID}">&gt;&gt;</div>' +
+        '<div id="p${postID}" class="post reply${highlightPost}">' +
+          '&{postInfo}&{fileBlock}&{message}' +
+        '</div>'
+      ) %>
 
     container = $.el 'div',
-      id: "pc#{postID}"
       className: "postContainer #{if isOP then 'op' else 'reply'}Container"
-      innerHTML: \
-      (if isOP then '' else "<div class=sideArrows>&gt;&gt;</div>") +
-      "<div id=p#{postID} class='post #{if isOP then 'op' else 'reply'}#{
-        if capcode is 'admin_highlight'
-          ' highlightPost'
-        else
-          ''
-        }'>" +
+      id:        "pc#{postID}"
+    $.extend container, wholePost
 
-        (if isOP then fileHTML else '') +
-
-        "<div class=postInfo>" +
-          "<input type=checkbox name=#{postID} value=delete> " +
-          "<span class=subject>#{subject or ''}</span> " +
-          "<span class='nameBlock#{capcodeClass}'>" +
-            emailStart +
-              "<span class=name>#{name or ''}</span>" + tripcode +
-            capcodeStart + emailEnd + capcodeIcon + userID + flag +
-          ' </span> ' +
-          "<span class=dateTime data-utc=#{dateUTC}>#{date}</span> " +
-          "<span class='postNum'>" +
-            "<a href=#{Build.path boardID, threadID, postID} title='Link to this post'>No.</a>" +
-            "<a href='#{
-              if g.VIEW is 'thread' and g.THREADID is threadID
-                "javascript:quote(#{postID})"
-              else
-                Build.path boardID, threadID, postID, 'q'
-              }' title='Reply to this post'>#{postID}</a>" +
-            pageIcon + sticky + closed + replyLink +
-          '</span>' +
-        '</div>' +
-
-        (if isOP then '' else fileHTML) +
-
-        "<blockquote class=postMessage>#{comment or ''}</blockquote> " +
-
-      '</div>'
-
-    # Fix quote pathnames in index or cross-{board,thread} posts
+    # Fix pathnames
     for quote in $$ '.quotelink', container
       href = quote.getAttribute 'href'
-      continue unless href[0] is '#'
-      quote.href = Build.path boardID, threadID, href[2..]
+      if (href[0] is '#') and !(Build.sameThread boardID, threadID)
+        quote.href = (Build.path boardID, threadID) + href
+      else if (match = href.match /^\/([^\/]+)\/thread\/(\d+)/) and (Build.sameThread match[1], match[2])
+        quote.href = href.match(/(#[^#]*)?$/)[0] or '#'
 
     container
 
@@ -284,14 +312,14 @@ Build =
     pageCount = Index.liveThreadData.keys.indexOf("#{thread.ID}") // Index.threadsNumPerPage + 1
 
     subject = if thread.OP.info.subject
-      "<div class='subject'>#{thread.OP.nodes.subject.innerHTML}</div>"
+      <%= html("<div class='subject'>${thread.OP.nodes.subject.innerHTML}</div>") %>
     else
       ''
     comment = thread.OP.nodes.comment.innerHTML.replace /(<br>\s*){2,}/g, '<br>'
 
     root = $.el 'div',
       className: 'catalog-thread'
-      innerHTML: <%= importHTML('Features/Thread-catalog-view') %>
+      <%= importHTML('Features/Thread-catalog-view') %>
 
     root.dataset.fullID = thread.fullID
     $.addClass root, 'pinned' if thread.isPinned

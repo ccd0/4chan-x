@@ -53,7 +53,7 @@ Settings =
     Settings.dialog = dialog = $.el 'div',
       id:    'appchanx-settings'
       class: 'dialog'
-      innerHTML: <%= importHTML('Settings/Settings') %>
+      <%= importHTML('Settings/Settings') %>
 
     Settings.overlay = overlay = $.el 'div',
       id: 'overlay'
@@ -189,7 +189,7 @@ Settings =
       $.clear -> window.location.reload() if confirm 'Reset successful. Reload now?'
 
   filter: (section) ->
-    section.innerHTML = <%= importHTML('Settings/Filter-select') %>
+    $.extend section, <%= importHTML('Settings/Filter-select') %>
     select = $ 'select', section
     $.on select, 'change', Settings.selectFilter
     Settings.selectFilter.call select
@@ -207,10 +207,10 @@ Settings =
       $.on ta, 'change', $.cb.value
       $.add div, ta
       return
-    div.innerHTML = <%= importHTML('Settings/Filter-guide') %>
+    $.extend div, <%= importHTML('Settings/Filter-guide') %>
 
   sauce: (section) ->
-    section.innerHTML = <%= importHTML('Settings/Sauce') %>
+    $.extend section, <%= importHTML('Settings/Sauce') %>
     ta = $ 'textarea', section
     $.get 'sauces', Conf['sauces'], (item) ->
       # XXX remove .replace func after 31-7-2013 (v1 transitioning)
@@ -229,7 +229,7 @@ Settings =
     $.on ta, 'change', $.cb.value
 
   advanced: (section) ->
-    section.innerHTML = <%= importHTML('Settings/Advanced') %>
+    $.extend section, <%= importHTML('Settings/Advanced') %>
     items = {}
     inputs = {}
     for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss']
@@ -388,7 +388,7 @@ Settings =
     CustomCSS.update()
 
   keybinds: (section) ->
-    section.innerHTML = <%= importHTML('Settings/Keybinds') %>
+    $.extend section, <%= importHTML('Settings/Keybinds') %>
 
     tbody  = $ 'tbody', section
     items  = {}

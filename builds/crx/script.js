@@ -3375,6 +3375,7 @@
         root: root,
         post: post,
         info: info,
+        nameBlock: $('.nameBlock', info),
         comment: $('.postMessage', post),
         links: [],
         quotelinks: [],
@@ -3386,6 +3387,7 @@
         this.thread.isClosed = !!$('.closedIcon', info);
       }
       this.info = {};
+      this.info.nameBlock = Conf['Anonymize'] ? 'Anonymous' : this.nodes.nameBlock.textContent.trim();
       if (subject = $('.subject', info)) {
         this.nodes.subject = subject;
         this.info.subject = subject.textContent;
@@ -4851,16 +4853,14 @@
       });
       this.pagelist = $.el('div', {
         className: 'pagelist',
-        hidden: true,
-        innerHTML: {
-          innerHTML: "<div class=\"prev\">\r<a>\r&lt;\r</a>\r</div>\r<div class=\"pages\"></div>\r<div class=\"next\">\r<a>\r&gt;\r</a>\r</div>"
-        }
+        hidden: true
+      }, {
+        innerHTML: "<div class=\"prev\">\r<a>\r&lt;\r</a>\r</div>\r<div class=\"pages\"></div>\r<div class=\"next\">\r<a>\r&gt;\r</a>\r</div>"
       });
       this.navLinks = $.el('div', {
-        className: 'navLinks',
-        innerHTML: {
-          innerHTML: "<span id=\"index-menu\">\r<input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\">\r<a id=\"index-search-clear\" class=\"fa\" href=\"javascript:;\">\\uf05c</a>\r&nbsp;\r<time id=\"index-last-refresh\" title=\"Last index refresh\">...</time>\r<span id=\"hidden-label\" hidden>&nbsp;&mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span>\r<span style='flex: 1'></span>\r<select id=\"index-mode\" name=\"Index Mode\">\r<option disabled>Index Mode</option>\r<option value=\"paged\">Paged</option>\r<option value=\"infinite\">Infinite Scrolling</option>\r<option value=\"all pages\">All threads</option>\r<option value=\"catalog\">Catalog</option>\r</select>\r<select id=\"index-sort\" name=\"Index Sort\">\r<option disabled>Index Sort</option>\r<option value=\"bump\">Bump order</option>\r<option value=\"lastreply\">Last reply</option>\r<option value=\"birth\">Creation date</option>\r<option value=\"replycount\">Reply count</option>\r<option value=\"filecount\">File count</option>\r</select>\r<select id=\"index-size\" name=\"Index Size\">\r<option disabled>Image Size</option>\r<option value=\"small\">Small</option>\r<option value=\"large\">Large</option>\r</select>\r</span>\r"
-        }
+        className: 'navLinks'
+      }, {
+        innerHTML: "<span id=\"index-menu\">\r<input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\">\r<a id=\"index-search-clear\" class=\"fa\" href=\"javascript:;\">\\uf05c</a>\r&nbsp;\r<time id=\"index-last-refresh\" title=\"Last index refresh\">...</time>\r<span id=\"hidden-label\" hidden>&nbsp;&mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span>\r<span style='flex: 1'></span>\r<select id=\"index-mode\" name=\"Index Mode\">\r<option disabled>Index Mode</option>\r<option value=\"paged\">Paged</option>\r<option value=\"infinite\">Infinite Scrolling</option>\r<option value=\"all pages\">All threads</option>\r<option value=\"catalog\">Catalog</option>\r</select>\r<select id=\"index-sort\" name=\"Index Sort\">\r<option disabled>Index Sort</option>\r<option value=\"bump\">Bump order</option>\r<option value=\"lastreply\">Last reply</option>\r<option value=\"birth\">Creation date</option>\r<option value=\"replycount\">Reply count</option>\r<option value=\"filecount\">File count</option>\r</select>\r<select id=\"index-size\" name=\"Index Size\">\r<option disabled>Image Size</option>\r<option value=\"small\">Small</option>\r<option value=\"large\">Large</option>\r</select>\r</span>\r"
       });
       this.timeEl = $('time#index-last-refresh', this.navLinks);
       this.searchInput = $('#index-search', this.navLinks);
@@ -5865,9 +5865,23 @@
     staticPath: '//s.4cdn.org/image/',
     gifIcon: window.devicePixelRatio >= 2 ? '@2x.gif' : '.gif',
     spoilerRange: {},
-    shortFilename: function(filename, isReply) {
+    unescape: function(text) {
+      if (text == null) {
+        return text;
+      }
+      return text.replace(/<[^>]*>/g, '').replace(/&(amp|#039|quot|lt|gt);/g, function(c) {
+        return {
+          '&amp;': '&',
+          '&#039;': "'",
+          '&quot;': '"',
+          '&lt;': '<',
+          '&gt;': '>'
+        }[c];
+      });
+    },
+    shortFilename: function(filename) {
       var ext, threshold;
-      threshold = isReply ? 30 : 40;
+      threshold = 30;
       ext = filename.match(/\.[^.]+$/)[0];
       if (filename.length - ext.length > threshold) {
         return "" + filename.slice(0, threshold - 5) + "(...)" + ext;
@@ -5876,12 +5890,22 @@
       }
     },
     thumbRotate: (function() {
-      var n;
-      n = 0;
+      var t;
+      t = 0;
       return function() {
-        return n = (n + 1) % 2;
+        return t = (t ? 0 : 1);
       };
     })(),
+    sameThread: function(boardID, threadID) {
+      return g.VIEW === 'thread' && g.BOARD.ID === boardID && g.THREADID === +threadID;
+    },
+    postURL: function(boardID, threadID, postID) {
+      if (Build.sameThread(boardID, threadID)) {
+        return "#p" + postID;
+      } else {
+        return Build.path(boardID, threadID, postID);
+      }
+    },
     path: function(boardID, threadID, postID, fragment) {
       var path;
       path = "/" + boardID + "/thread/" + threadID;
@@ -5899,22 +5923,30 @@
         postID: data.no,
         threadID: data.resto || data.no,
         boardID: boardID,
-        name: data.name,
+        name: Build.unescape(data.name),
         capcode: data.capcode,
         tripcode: data.trip,
         uniqueID: data.id,
-        email: data.email ? encodeURI(data.email.replace(/&quot;/g, '"')) : '',
-        subject: data.sub,
+        email: Build.unescape(data.email),
+        subject: Build.unescape(data.sub),
         flagCode: data.country,
-        flagName: data.country_name,
+        flagName: Build.unescape(data.country_name),
         date: data.now,
         dateUTC: data.time,
-        comment: data.com,
+        comment: {
+          innerHTML: data.com || ''
+        },
         isSticky: !!data.sticky,
-        isClosed: !!data.closed
+        isClosed: !!data.closed,
+        isArchived: !!data.archived
       };
-      if (data.ext || data.filedeleted) {
+      if (data.filedeleted) {
         o.file = {
+          isDeleted: true
+        };
+      } else if (data.ext) {
+        o.file = {
+          name: (Build.unescape(data.filename)) + data.ext,
           name: data.filename + data.ext,
           timestamp: "" + data.tim + data.ext,
           url: boardID === 'f' ? "//i.4cdn.org/" + boardID + "/" + (encodeURIComponent(data.filename)) + data.ext : "//i.4cdn.org/" + boardID + "/" + data.tim + data.ext,
@@ -5926,107 +5958,177 @@
           theight: data.tn_h,
           twidth: data.tn_w,
           isSpoiler: !!data.spoiler,
-          isDeleted: !!data.filedeleted
+          isDeleted: false,
+          tag: data.tag
         };
       }
       return Build.post(o);
     },
-    post: function(o, isArchived) {
+    post: function(o) {
 
       /*
       This function contains code from 4chan-JS (https://github.com/4chan/4chan-JS).
       @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
        */
-      var a, boardID, capcode, capcodeClass, capcodeIcon, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, gifIcon, href, imgSrc, isClosed, isOP, isSticky, name, pageIcon, pageNum, postID, quote, replyLink, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
-      postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
+      var boardID, capcode, capcodeClass, capcodeIcon, capcodeStart, comment, container, date, dateUTC, desktop2, email, emailField, emailProcessed, file, fileBlock, fileCont, fileDims, fileLink, fileSize, fileText, fileThumb, flag, flagCode, flagName, gifIcon, highlightPost, href, icons, isOP, match, message, name, nameBlock, nameClass, postID, postInfo, postLink, quote, quoteLink, replyLink, shortFilename, spoilerRange, staticPath, subject, subjectField, threadID, tripcode, tripcodeField, type, typeLC, uniqueID, userID, wholePost, _i, _len, _ref;
+      postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, comment = o.comment, file = o.file;
+      name || (name = '');
+      subject || (subject = '');
       isOP = postID === threadID;
       staticPath = Build.staticPath, gifIcon = Build.gifIcon;
-      tripcode = tripcode ? " <span class=postertrip>" + tripcode + "</span>" : '';
-      if (email) {
-        emailStart = '<a href="mailto:' + email + '" class="useremail">';
-        emailEnd = '</a>';
-      } else {
-        emailStart = '';
-        emailEnd = '';
-      }
+
+      /* Name Block */
       switch (capcode) {
         case 'admin':
         case 'admin_highlight':
-          capcodeClass = " capcodeAdmin";
-          capcodeStart = " <strong class='capcode hand id_admin'" + "title='Highlight posts by the Administrator'>## Admin</strong>";
-          capcodeIcon = (" <img src='" + staticPath + "adminicon" + gifIcon + "' ") + "title='This user is the 4chan Administrator.' class=identityIcon>";
+          capcodeClass = ' capcodeAdmin';
+          capcodeStart = {
+            innerHTML: " <strong class=\"capcode hand id_admin\" title=\"Highlight posts by the Administrator\">## Admin</strong>"
+          };
+          capcodeIcon = {
+            innerHTML: " <img src=\"" + E(staticPath) + "adminicon" + E(gifIcon) + "\" alt=\"Admin Icon\" title=\"This user is the 4chan Administrator.\" class=\"identityIcon retina\">"
+          };
           break;
         case 'mod':
-          capcodeClass = " capcodeMod";
-          capcodeStart = " <strong class='capcode hand id_mod' " + "title='Highlight posts by Moderators'>## Mod</strong>";
-          capcodeIcon = (" <img src='" + staticPath + "modicon" + gifIcon + "' ") + "title='This user is a 4chan Moderator.' class=identityIcon>";
-          break;
-        case 'developer':
-          capcodeClass = " capcodeDeveloper";
-          capcodeStart = " <strong class='capcode hand id_developer' " + "title='Highlight posts by Developers'>## Developer</strong>";
-          capcodeIcon = (" <img src='" + staticPath + "developericon" + gifIcon + "' ") + "title='This user is a 4chan Developer.' class=identityIcon>";
+          capcodeClass = ' capcodeMod';
+          capcodeStart = {
+            innerHTML: " <strong class=\"capcode hand id_mod\" title=\"Highlight posts by Moderators\">## Mod</strong>"
+          };
+          capcodeIcon = {
+            innerHTML: " <img src=\"" + E(staticPath) + "modicon" + E(gifIcon) + "\" alt=\"Mod Icon\" title=\"This user is a 4chan Moderator.\" class=\"identityIcon retina\">"
+          };
+          capcodeClass = ' capcodeDeveloper';
+          capcodeStart = {
+            innerHTML: " <strong class=\"capcode hand id_developer\" title=\"Highlight posts by Developers\">## Developer</strong>"
+          };
+          capcodeIcon = {
+            innerHTML: " <img src=\"" + E(staticPath) + "developericon" + E(gifIcon) + "\" alt=\"Developer Icon\" title=\"This user is a 4chan Developer.\" class=\"identityIcon retina\">"
+          };
           break;
         default:
           capcodeClass = '';
-          capcodeStart = '';
-          capcodeIcon = '';
+          capcodeStart = {
+            innerHTML: ""
+          };
+          capcodeIcon = isOP && boardID === 'f' ? {
+            innerHTML: ""
+          } : {
+            innerHTML: " "
+          };
       }
-      userID = !capcode && uniqueID ? (" <span class='posteruid id_" + uniqueID + "'>(ID: ") + ("<span class=hand title='Highlight posts by this ID'>" + uniqueID + "</span>)</span> ") : '';
-      flag = !flagCode ? '' : boardID === 'pol' ? " <img src='" + staticPath + "country/troll/" + (flagCode.toLowerCase()) + ".gif' title='" + flagName + "' class=countryFlag>" : " <span title='" + flagName + "' class='flag flag-" + (flagCode.toLowerCase()) + "'></span>";
-      if (file != null ? file.isDeleted : void 0) {
-        fileHTML = isOP ? "<div class=file><span class=fileThumb>" + ("<img src='" + staticPath + "filedeleted" + gifIcon + "' class=fileDeleted>") + "</span></div>" : "<div class=file><span class=fileThumb>" + ("<img src='" + staticPath + "filedeleted-res" + gifIcon + "' class=fileDeletedRes>") + "</span></div>";
-      } else if (file) {
-        fileSize = $.bytesToString(file.size);
-        fileThumb = file.turl;
-        if (file.isSpoiler) {
-          fileSize = "Spoiler Image, " + fileSize;
-          if (!isArchived) {
-            fileThumb = "" + staticPath + "spoiler";
-            if (spoilerRange = Build.spoilerRange[boardID]) {
-              fileThumb += ("-" + boardID) + Math.floor(1 + spoilerRange * Math.random());
-            }
-            fileThumb += '.png';
-            file.twidth = file.theight = 100;
+      nameClass = capcode ? ' capcode' : '';
+      tripcodeField = tripcode ? {
+        innerHTML: " <span class=\"postertrip\">" + E(tripcode) + "</span>"
+      } : {
+        innerHTML: ""
+      };
+      emailField = {
+        innerHTML: "<span class=\"name" + E(nameClass) + "\">" + E(name) + "</span>" + tripcodeField.innerHTML + capcodeStart.innerHTML
+      };
+      if (email) {
+        emailProcessed = encodeURIComponent(email).replace(/%40/g, '@');
+        emailField = {
+          innerHTML: "<a href=\"mailto:" + E(emailProcessed) + "\" class=\"useremail\">" + emailField.innerHTML + "</a>"
+        };
+      }
+      userID = !capcode && uniqueID ? {
+        innerHTML: " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>"
+      } : {
+        innerHTML: ""
+      };
+      flag = !flagCode ? {
+        innerHTML: ""
+      } : false ? {
+        innerHTML: " <img src=\"" + E(staticPath) + "country/troll/" + E(flagCode.toLowerCase()) + ".gif\" alt=\"" + E(flagCode) + "\" title=\"" + E(flagName) + "\" class=\"countryFlag\">"
+      } : {
+        innerHTML: " <span title=\"" + E(flagName) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>"
+      };
+      nameBlock = {
+        innerHTML: "<span class=\"nameBlock" + E(capcodeClass) + "\">" + emailField.innerHTML + capcodeIcon.innerHTML + userID.innerHTML + flag.innerHTML + "</span> "
+      };
+
+      /* Post Info */
+      subjectField = isOP || boardID === 'f' ? {
+        innerHTML: "<span class=\"subject\">" + E(subject) + "</span> "
+      } : {
+        innerHTML: ""
+      };
+      desktop2 = isOP && boardID === 'f' ? '' : ' desktop';
+      postLink = Build.postURL(boardID, threadID, postID);
+      quoteLink = Build.sameThread(boardID, threadID) ? "javascript:quote('" + (+postID) + "');" : "/" + boardID + "/thread/" + threadID + "#q" + postID;
+      icons = (function() {
+        var _i, _len, _ref, _results;
+        _ref = ['Sticky', 'Closed', 'Archived'];
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          type = _ref[_i];
+          if (!(o["is" + type] && !(type === 'Closed' && o.isArchived))) {
+            continue;
           }
+          typeLC = type.toLowerCase();
+          _results.push({
+            innerHTML: " <img src=\"" + E(staticPath) + E(typeLC) + E(gifIcon) + "\" alt=\"" + E(type) + "\" title=\"" + E(type) + "\" class=\"" + E(typeLC) + "Icon retina\">"
+          });
         }
-        imgSrc = boardID === 'f' ? '' : ("<a class='fileThumb" + (file.isSpoiler ? ' imgspoiler' : '') + "' href=\"" + file.url + "\" target=_blank>") + ("<img src='" + fileThumb + "' alt='" + fileSize + "' data-md5=" + file.MD5 + " style='height: " + file.theight + "px; width: " + file.twidth + "px;'>") + "</a>";
-        a = $.el('a', {
-          innerHTML: file.name
-        });
-        filename = a.textContent.replace(/%22/g, '"');
-        a.textContent = Build.shortFilename(filename);
-        shortFilename = a.innerHTML;
-        a.textContent = filename;
-        filename = a.innerHTML.replace(/'/g, '&apos;');
-        fileDims = file.name.slice(-3) === 'pdf' ? 'PDF' : "" + file.width + "x" + file.height;
-        fileInfo = ("<div class=fileText " + (file.isSpoiler ? "title='" + filename + "'" : '') + ">File: ") + ("<a href=\"" + file.url + "\" " + (filename !== shortFilename && !file.isSpoiler ? " title='" + filename + "'" : '') + " target=_blank>" + (file.isSpoiler ? 'Spoiler Image' : shortFilename) + "</a>") + (" (" + fileSize + ", " + fileDims + ")</div>");
-        fileHTML = "<div class=file>" + fileInfo + imgSrc + "</div>";
-      } else {
-        fileHTML = '';
-      }
-      sticky = isSticky ? " <img src=" + staticPath + "sticky" + gifIcon + " title=Sticky class=stickyIcon>" : '';
-      closed = isClosed ? " <img src=" + staticPath + "closed" + gifIcon + " title=Closed class=closedIcon>" : '';
-      if (isOP && g.VIEW === 'index') {
-        pageNum = Math.floor(Index.liveThreadData.keys.indexOf("" + postID) / Index.threadsNumPerPage) + 1;
-        pageIcon = " <span class=page-num title='This thread is on page " + pageNum + " in the original index.'>Page " + pageNum + "</span>";
-        replyLink = " &nbsp; <span>[<a href='" + (Build.path(boardID, threadID)) + "' class=replylink>Reply</a>]</span>";
-      } else {
-        pageIcon = '';
-        replyLink = '';
-      }
+        return _results;
+      })();
+      replyLink = isOP && g.VIEW === 'index' ? {
+        innerHTML: " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>"
+      } : {
+        innerHTML: ""
+      };
+      postInfo = {
+        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(postID) + "\"><input type=\"checkbox\" name=\"" + E(postID) + "\" value=\"delete\"> " + subjectField.innerHTML + nameBlock.innerHTML + "<span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(date) + "</span> <span class=\"postNum" + E(desktop2) + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(postID) + "</a>" + icons.map(function(x) {
+          return x.innerHTML;
+        }).join('') + replyLink.innerHTML + "</span></div>"
+      };
+
+      /* File Info */
+      fileCont = (file != null ? file.isDeleted : void 0) ? {
+        innerHTML: "<span class=\"fileThumb\"><img src=\"" + E(staticPath) + "filedeleted-res" + E(gifIcon) + "\" alt=\"File deleted.\" class=\"fileDeletedRes retina\"></span>"
+      } : file && boardID === 'f' ? {
+        innerHTML: "<div class=\"fileInfo\"><span class=\"fileText\" id=\"fT" + E(postID) + "\">File: <a data-width=\"" + E(file.width) + "\" data-height=\"" + E(file.height) + "\" href=\"" + E(file.url) + "\" target=\"_blank\">" + E(file.name) + "</a>-(" + E($.bytesToString(file.size)) + ", " + E(file.width) + "x" + E(file.height) + ", " + E(file.tag) + ")</span></div>"
+      } : file ? (file.isSpoiler ? (shortFilename = 'Spoiler Image', (spoilerRange = Build.spoilerRange[boardID]) ? fileThumb = "//s.4cdn.org/image/spoiler-" + boardID + (Math.floor(1 + spoilerRange * Math.random())) + ".png" : fileThumb = '//s.4cdn.org/image/spoiler.png', file.twidth = file.theight = 100) : (shortFilename = Build.shortFilename(file.name, !isOP), fileThumb = file.turl), fileSize = $.bytesToString(file.size), fileDims = file.url.slice(-4) === '.pdf' ? 'PDF' : "" + file.width + "x" + file.height, fileLink = file.isSpoiler || file.name === shortFilename ? {
+        innerHTML: "<a href=\"" + E(file.url) + "\" target=\"_blank\">" + E(shortFilename) + "</a>"
+      } : {
+        innerHTML: "<a title=\"" + E(file.name) + "\" href=\"" + E(file.url) + "\" target=\"_blank\">" + E(shortFilename) + "</a>"
+      }, fileText = file.isSpoiler ? {
+        innerHTML: "<div class=\"fileText\" id=\"fT" + E(postID) + "\" title=\"" + E(file.name) + "\">File: " + fileLink.innerHTML + " (" + E(fileSize) + ", " + E(fileDims) + ")</div>"
+      } : {
+        innerHTML: "<div class=\"fileText\" id=\"fT" + E(postID) + "\">File: " + fileLink.innerHTML + " (" + E(fileSize) + ", " + E(fileDims) + ")</div>"
+      }, {
+        innerHTML: fileText.innerHTML + "<a class=\"fileThumb" + E(file.isSpoiler ? " imgspoiler" : "") + "\" href=\"" + E(file.url) + "\" target=\"_blank\"><img src=\"" + E(fileThumb) + "\" alt=\"" + E(fileSize) + "\" data-md5=\"" + E(file.MD5) + "\" style=\"height: " + E(file.theight) + "px; width: " + E(file.twidth) + "px;\"></a>"
+      }) : void 0;
+      fileBlock = file ? {
+        innerHTML: "<div class=\"file\" id=\"f" + E(postID) + "\">" + fileCont.innerHTML + "</div>"
+      } : {
+        innerHTML: ""
+      };
+
+      /* Whole Post */
+      highlightPost = capcode === 'admin_highlight' ? ' highlightPost' : '';
+      message = {
+        innerHTML: "<blockquote class=\"postMessage\" id=\"m" + E(postID) + "\">" + comment.innerHTML + "</blockquote>"
+      };
+      wholePost = isOP ? {
+        innerHTML: "<div id=\"p" + E(postID) + "\" class=\"post op" + E(highlightPost) + "\">" + fileBlock.innerHTML + postInfo.innerHTML + message.innerHTML + "</div>"
+      } : {
+        innerHTML: "<div class=\"sideArrows\" id=\"sa" + E(postID) + "\">&gt;&gt;</div><div id=\"p" + E(postID) + "\" class=\"post reply" + E(highlightPost) + "\">" + postInfo.innerHTML + fileBlock.innerHTML + message.innerHTML + "</div>"
+      };
       container = $.el('div', {
-        id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: (isOP ? '' : "<div class=sideArrows>&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + (isOP ? fileHTML : '') + "<div class=postInfo>" + ("<input type=checkbox name=" + postID + " value=delete> ") + ("<span class=subject>" + (subject || '') + "</span> ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcodeIcon + userID + flag + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum'>" + ("<a href=" + (Build.path(boardID, threadID, postID)) + " title='Link to this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === threadID ? "javascript:quote(" + postID + ")" : Build.path(boardID, threadID, postID, 'q')) + "' title='Reply to this post'>" + postID + "</a>") + pageIcon + sticky + closed + replyLink + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage>" + (comment || '') + "</blockquote> ") + '</div>'
+        id: "pc" + postID
       });
+      $.extend(container, wholePost);
       _ref = $$('.quotelink', container);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         href = quote.getAttribute('href');
-        if (href[0] !== '#') {
-          continue;
+        if ((href[0] === '#') && !(Build.sameThread(boardID, threadID))) {
+          quote.href = (Build.path(boardID, threadID)) + href;
+        } else if ((match = href.match(/^\/([^\/]+)\/thread\/(\d+)/)) && (Build.sameThread(match[1], match[2]))) {
+          quote.href = href.match(/(#[^#]*)?$/)[0] || '#';
         }
-        quote.href = Build.path(boardID, threadID, href.slice(2));
       }
       return container;
     },
@@ -6078,13 +6180,14 @@
       postCount = data.replies + 1;
       fileCount = data.images + !!data.ext;
       pageCount = Math.floor(Index.liveThreadData.keys.indexOf("" + thread.ID) / Index.threadsNumPerPage) + 1;
-      subject = thread.OP.info.subject ? "<div class='subject'>" + thread.OP.nodes.subject.innerHTML + "</div>" : '';
+      subject = thread.OP.info.subject ? {
+        innerHTML: "<div class='subject'>" + E(thread.OP.nodes.subject.innerHTML) + "</div>"
+      } : '';
       comment = thread.OP.nodes.comment.innerHTML.replace(/(<br>\s*){2,}/g, '<br>');
       root = $.el('div', {
-        className: 'catalog-thread',
-        innerHTML: {
-          innerHTML: "<a href=\"" + (Build.path(thread.board.ID, thread.ID)) + "\" class=\"thumb\"></a>\r<div class=\"thread-stats\" title=\"Post count / File count / Page count\">\r<span class=\"post-count\">" + postCount + "</span> / <span class=\"file-count\">" + fileCount + "</span> / <span class=\"page-count\">" + pageCount + "</span>\r<span class=\"thread-icons\"></span>\r</div>\r" + subject + "\r<div class=\"comment\">" + comment + "</div>\r"
-        }
+        className: 'catalog-thread'
+      }, {
+        innerHTML: "<a href=\"" + (Build.path(thread.board.ID, thread.ID)) + "\" class=\"thumb\"></a>\r<div class=\"thread-stats\" title=\"Post count / File count / Page count\">\r<span class=\"post-count\">" + postCount + "</span> / <span class=\"file-count\">" + fileCount + "</span> / <span class=\"page-count\">" + pageCount + "</span>\r<span class=\"thread-icons\"></span>\r</div>\r" + subject + "\r<div class=\"comment\">" + comment + "</div>\r"
       });
       root.dataset.fullID = thread.fullID;
       if (thread.isPinned) {
@@ -6154,7 +6257,7 @@
     threadExcerpt: function(thread) {
       var OP, excerpt, _ref;
       OP = thread.OP;
-      excerpt = ((_ref = OP.info.subject) != null ? _ref.trim() : void 0) || OP.info.comment.replace(/\n+/g, ' // ') || OP.getNameBlock();
+      excerpt = ((_ref = OP.info.subject) != null ? _ref.trim() : void 0) || OP.info.comment.replace(/\n+/g, ' // ') || OP.info.nameBlock;
       if (excerpt.length > 70) {
         excerpt = "" + excerpt.slice(0, 67) + "...";
       }
@@ -7266,7 +7369,7 @@
     },
     node: function() {
       var a, data, label;
-      if (!this.isReply && g.VIEW !== 'index' || this.isClone) {
+      if (!this.isReply || this.isClone || this.isFetchedQuote) {
         return;
       }
       if (data = PostHiding.db.get({
@@ -7274,12 +7377,12 @@
         threadID: this.thread.ID,
         postID: this.ID
       })) {
-        if (data.thisPost === false) {
+        if (data.thisPost) {
+          this.hide('Manually hidden', data.makeStub, data.hideRecursively);
+        } else {
           label = "Recursively hidden for quoting No." + this;
           Recursive.apply('hide', this, label, data.makeStub, true);
           Recursive.add('hide', this, label, data.makeStub, true);
-        } else {
-          this.hide('Manually hidden', data.makeStub, data.hideRecursively);
         }
       }
       if (!Conf['Post Hiding']) {
@@ -7361,19 +7464,13 @@
           }
         };
         thisPost = {
-          el: $.el('label', {
-            innerHTML: '<input type=checkbox name=thisPost checked> This post'
-          })
+          el: UI.checkbox('thisPost', ' This post', true)
         };
         replies = {
-          el: $.el('label', {
-            innerHTML: "<input type=checkbox name=replies  checked=" + Conf['Recursive Hiding'] + "> Hide replies"
-          })
+          el: UI.checkbox('replies', ' Hide replies', Conf['Recursive Hiding'])
         };
         makeStub = {
-          el: $.el('label', {
-            innerHTML: "<input type=checkbox name=makeStub checked=" + Conf['Stubs'] + "> Make stub"
-          })
+          el: UI.checkbox('makeStub', ' Make stub', Conf['Stubs'])
         };
         Menu.menu.addEntry({
           el: $.el('div', {
@@ -7403,18 +7500,14 @@
           }
         };
         thisPost = {
-          el: $.el('label', {
-            innerHTML: '<input type=checkbox name=thisPost> This post'
-          }),
+          el: UI.checkbox('thisPost', ' This post', false),
           open: function(post) {
             this.el.firstChild.checked = post.isHidden;
             return true;
           }
         };
         replies = {
-          el: $.el('label', {
-            innerHTML: '<input type=checkbox name=replies> Unhide replies'
-          }),
+          el: UI.checkbox('replies', ' Show replies', false),
           open: function(post) {
             var data;
             data = PostHiding.db.get({
@@ -7524,6 +7617,10 @@
   Recursive = {
     recursives: {},
     init: function() {
+      var _ref;
+      if ((_ref = g.VIEW) !== 'index' && _ref !== 'thread') {
+        return;
+      }
       return Post.callbacks.push({
         name: 'Recursive',
         cb: this.node
@@ -7531,7 +7628,7 @@
     },
     node: function() {
       var i, obj, quote, recursive, _i, _j, _len, _len1, _ref, _ref1;
-      if (this.isClone) {
+      if (this.isClone || this.isFetchedQuote) {
         return;
       }
       _ref = this.quotes;
@@ -16990,10 +17087,9 @@
       $.event('CloseMenu');
       Settings.dialog = dialog = $.el('div', {
         id: 'appchanx-settings',
-        "class": 'dialog',
-        innerHTML: {
-          innerHTML: "<nav>\r<div class=sections-list></div>\r<span class='imp-exp-result warning'></span>\r<div class=credits>\r<a class=export>Export</a>&nbsp|&nbsp\r<a class=import>Import</a>&nbsp|&nbsp\r<a class=reset>Reset Settings</a>&nbsp|&nbsp\r<input type=file hidden>\r<a href='http://zixaphir.github.com/appchan-x/' target=_blank>appchan x</a>&nbsp|&nbsp\r<a href='https://github.com/zixaphir/appchan-x/blob/master/CHANGELOG.md' target=_blank>" + g.VERSION + "</a>&nbsp|&nbsp\r<a href='https://github.com/zixaphir/appchan-x/blob/master/README.md#reporting-bugs-and-suggestions' target=_blank>Issues</a>&nbsp|&nbsp\r<a href=javascript:; class='close fa' title=Close>\\uf00d</a>\r</div>\r</nav>\r<hr>\r<div class=section-container><section></section></div>\r"
-        }
+        "class": 'dialog'
+      }, {
+        innerHTML: "<nav>\r<div class=sections-list></div>\r<span class='imp-exp-result warning'></span>\r<div class=credits>\r<a class=export>Export</a>&nbsp|&nbsp\r<a class=import>Import</a>&nbsp|&nbsp\r<a class=reset>Reset Settings</a>&nbsp|&nbsp\r<input type=file hidden>\r<a href='http://zixaphir.github.com/appchan-x/' target=_blank>appchan x</a>&nbsp|&nbsp\r<a href='https://github.com/zixaphir/appchan-x/blob/master/CHANGELOG.md' target=_blank>" + g.VERSION + "</a>&nbsp|&nbsp\r<a href='https://github.com/zixaphir/appchan-x/blob/master/README.md#reporting-bugs-and-suggestions' target=_blank>Issues</a>&nbsp|&nbsp\r<a href=javascript:; class='close fa' title=Close>\\uf00d</a>\r</div>\r</nav>\r<hr>\r<div class=section-container><section></section></div>\r"
       });
       Settings.overlay = overlay = $.el('div', {
         id: 'overlay'
@@ -17183,9 +17279,9 @@
     },
     filter: function(section) {
       var select;
-      section.innerHTML = {
+      $.extend(section, {
         innerHTML: "<select name=filter>\r<option value=guide>Guide</option>\r<option value=name>Name</option>\r<option value=uniqueID>Unique ID</option>\r<option value=tripcode>Tripcode</option>\r<option value=capcode>Capcode</option>\r<option value=email>E-mail</option>\r<option value=subject>Subject</option>\r<option value=comment>Comment</option>\r<option value=flag>Flag</option>\r<option value=filename>Filename</option>\r<option value=dimensions>Image dimensions</option>\r<option value=filesize>Filesize</option>\r<option value=MD5>Image MD5</option>\r</select>\r<div></div>"
-      };
+      });
       select = $('select', section);
       $.on(select, 'change', Settings.selectFilter);
       return Settings.selectFilter.call(select);
@@ -17207,15 +17303,15 @@
         $.add(div, ta);
         return;
       }
-      return div.innerHTML = {
+      return $.extend(div, {
         innerHTML: "<div class=warning " + (Conf['Filter'] ? 'hidden' : '') + "><code>Filter</code> is disabled.</div>\r<p>\rUse <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions\">regular expressions</a>, one per line.<br>\rLines starting with a <code>#</code> will be ignored.<br>\rFor example, <code>/weeaboo/i</code> will filter posts containing the string `<code>weeaboo</code>`, case-insensitive.<br>\rMD5 filtering uses exact string matching, not regular expressions.\r</p>\r<ul>You can use these settings with each regular expression, separate them with semicolons:\r<li>\rPer boards, separate them with commas. It is global if not specified.<br>\rFor example: <code>boards:a,jp;</code>.\r</li>\r<li>\rFilter OPs only along with their threads (`only`), replies only (`no`), or both (`yes`, this is default).<br>\rFor example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.\r</li>\r<li>\rOverrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>\rFor example: <code>stub:yes;</code> or <code>stub:no;</code>.\r</li>\r<li>\rHighlight instead of hiding. You can specify a class name to use with a userstyle.<br>\rFor example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.\r</li>\r<li>\rHighlighted OPs will have their threads put on top of the board index by default.<br>\rFor example: <code>top:yes;</code> or <code>top:no;</code>.\r</li>\r</ul>\r"
-      };
+      });
     },
     sauce: function(section) {
       var ta;
-      section.innerHTML = {
+      $.extend(section, {
         innerHTML: "<div class=warning " + (Conf['Sauce'] ? 'hidden' : '') + "><code>Sauce</code> is disabled.</div>\r<div>Lines starting with a <code>#</code> will be ignored.</div>\r<div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div>\r<ul>These parameters will be replaced by their corresponding values:\r<li><code>%TURL</code>: Thumbnail URL.</li>\r<li><code>%URL</code>: Full image URL.</li>\r<li><code>%MD5</code>: MD5 hash.</li>\r<li><code>%name</code>: Original file name.</li>\r<li><code>%board</code>: Current board.</li>\r</ul>\r<textarea name=sauces class=field spellcheck=false></textarea>\r"
-      };
+      });
       ta = $('textarea', section);
       $.get('sauces', Conf['sauces'], function(item) {
         return ta.value = item['sauces'].replace(/\$\d/g, function(c) {
@@ -17237,9 +17333,9 @@
     },
     advanced: function(section) {
       var archBoards, boardID, boardOptions, boardSelect, boards, event, files, i, input, inputs, item, items, name, o, row, rows, software, ta, table, withCredentials, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
-      section.innerHTML = {
+      $.extend(section, {
         innerHTML: "<fieldset>\r<legend>Archiver</legend>\r<div class=\"warning\" " + (Conf['404 Redirect'] ? 'hidden' : '') + "><code>404 Redirect</code> is disabled.</div>\r<div><select id='archive-board-select'></select></div>\r<table id='archive-table'>\r<thead>\r<th>Thread redirection</th>\r<th>Post fetching</th>\r<th>File redirection</th>\r</thead>\r<tbody></tbody>\r</table>\r<span class=note>Disabled selections indicate that only one archive is available for that board and redirection type.</span>\r</fieldset>\r<fieldset>\r<legend>Custom Board Navigation</legend>\r<div><textarea name=boardnav class=field spellcheck=false></textarea></div>\r<span class=note>New lines will be converted into spaces.</span><br><br>\r<div class=note>In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div>\r<div>Board link: <code>g</code></div>\r<div>Title link: <code>g-title</code></div>\r<div>Board link (Replace with title when on that board): <code>g-replace</code></div>\r<div>Full text link: <code>g-full</code></div>\r<div>Custom text link: <code>g-text:\"Install Gentoo\"</code></div>\r<div>External link: <code>external-text:\"Google\",\"http://www.google.com\"</code></div>\r<div>Index mode: <code>g-mode:\"type\"</code> where type is <code>paged</code>, <code>all threads</code> or <code>catalog</code></div>\r<div>Index sort: <code>g-sort:\"type\"</code> where type is <code>bump order</code>, <code>last reply</code>, <code>creation date</code>, <code>reply count</code> or <code>file count</code></div\r<div>Combinations are possible: <code>g-text:\"VIP Catalog\"-mode:\"catalog\"-sort:\"creation date\"</code></div>\r<div>Full board list toggle: <code>toggle-all</code></div>\r<br>\r<div class=note>\r<code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h-mode:\"catalog\"-sort:\"file count\"] [t-text:\"Piracy\"]</code><br>\rwill give you<br>\r<code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\rif you are on /g/.\r</div>\r</fieldset>\r<fieldset>\r<legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\r<div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>\r<div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>\r<div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>\r<div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>\r<div>Year: <code>%y</code>, <code>%Y</code></div>\r<div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>\r<div>Minute: <code>%M</code></div>\r<div>Second: <code>%S</code></div>\r</fieldset>\r<fieldset>\r<legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend>\r<div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>\r</fieldset>\r<fieldset>\r<legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\r<div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>\r<div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>\r<div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>\r<div>Spoiler indicator: <code>%p</code></div>\r<div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>\r<div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>\r</fieldset>\r<fieldset>\r<legend>Quick Reply Personas</legend>\r<textarea class=personafield name=\"QR.personas\" class=\"field\" spellcheck=\"false\"></textarea>\r<p>\rOne item per line.<br>\rItems will be added in the relevant input's auto-completion list.<br>\rPassword items will always be used, since there is no password input.<br>\rLines starting with a <code>#</code> will be ignored.\r</p>\r<ul>You can use these settings with each item, separate them with semicolons:\r<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li>\r<li>Wrap values of items with quotes, like this: <code>options:\"sage\"</code>.</li>\r<li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:\"sage\";always</code>.</li>\r<li>Select specific boards for an item, separated with commas, for example: <code>options:\"sage\";boards:jp;always</code>.</li>\r</ul>\r</fieldset>\r<fieldset>\r<legend>Unread Favicon <span class=warning " + (Conf['Unread Favicon'] ? 'hidden' : '') + ">is disabled.</span></legend>\r<select name=favicon>\r<option value=ferongr>ferongr</option>\r<option value=xat->xat-</option>\r<option value=Mayhem>Mayhem</option>\r<option value=4chanJS>4chanJS</option>\r<option value=Original>Original</option>\r<option value=Metro>Metro</option>\r</select>\r<span id=favicon-preview></span>\r</fieldset>\r<fieldset>\r<legend>Thread Updater <span class=warning " + (Conf['Thread Updater'] ? 'hidden' : '') + ">is disabled.</span></legend>\r<div>\rInterval: <input type=number name=Interval class=field min=1 value=" + Conf['Interval'] + ">\r</div>\r</fieldset>\r<fieldset>\r<legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend>\r<div>\r<button id=apply-css>Apply CSS</button>\r<textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea>\r</div>\r</fieldset>\r"
-      };
+      });
       items = {};
       inputs = {};
       _ref = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss'];
@@ -17434,9 +17530,9 @@
     },
     keybinds: function(section) {
       var arr, input, inputs, items, key, tbody, tr, _ref;
-      section.innerHTML = {
+      $.extend(section, {
         innerHTML: "<div class=warning " + (Conf['Keybinds'] ? 'hidden' : '') + "><code>Keybinds</code> are disabled.</div>\r<div>Allowed keys: <kbd>a-z</kbd>, <kbd>0-9</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>, <kbd>Meta</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>, <kbd>Up</kbd>, <kbd>Down</kbd>, <kbd>Right</kbd>, <kbd>Left</kbd>.</div>\r<div>Press <kbd>Backspace</kbd> to disable a keybind.</div>\r<table><tbody>\r<tr><th>Actions</th><th>Keybinds</th></tr>\r</tbody></table>"
-      };
+      });
       tbody = $('tbody', section);
       items = {};
       inputs = {};

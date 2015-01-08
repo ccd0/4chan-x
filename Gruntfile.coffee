@@ -29,7 +29,6 @@ module.exports = (grunt) ->
     return '' unless grunt.config('pkg').tests_enabled
     "throw new Error 'Assertion failed: ' + `#{JSON.stringify statement}` unless #{statement}"
 
-
   # Project configuration.
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'

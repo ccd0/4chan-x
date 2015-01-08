@@ -15,15 +15,15 @@ PostHiding =
       cb:   @node
 
   node: ->
-    return if !@isReply and g.VIEW isnt 'index' or @isClone
+    return if !@isReply or @isClone or @isFetchedQuote
 
     if data = PostHiding.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
-      if data.thisPost is false
+      if data.thisPost
+        @hide 'Manually hidden', data.makeStub, data.hideRecursively
+      else
         label = "Recursively hidden for quoting No.#{@}"
         Recursive.apply 'hide', @, label, data.makeStub, true
         Recursive.add   'hide', @, label, data.makeStub, true
-      else
-        @hide 'Manually hidden', data.makeStub, data.hideRecursively
 
     return unless Conf['Post Hiding']
     if @isReply
@@ -83,12 +83,9 @@ PostHiding =
           @cb = -> PostHiding.menu.hide post
           $.on  @el, 'click', @cb
           true
-      thisPost =
-        el: $.el 'label', innerHTML: '<input type=checkbox name=thisPost checked> This post'
-      replies  =
-        el: $.el 'label', innerHTML: "<input type=checkbox name=replies  checked=#{Conf['Recursive Hiding']}> Hide replies"
-      makeStub =
-        el: $.el 'label', innerHTML: "<input type=checkbox name=makeStub checked=#{Conf['Stubs']}> Make stub"
+      thisPost = el: UI.checkbox 'thisPost', ' This post', true
+      replies  = el: UI.checkbox 'replies', ' Hide replies', Conf['Recursive Hiding']
+      makeStub = el: UI.checkbox 'makeStub', ' Make stub', Conf['Stubs']
 
       Menu.menu.addEntry
         el: $.el 'div',
@@ -107,12 +104,12 @@ PostHiding =
           $.on  @el, 'click', @cb
           true
       thisPost =
-        el: $.el 'label', innerHTML: '<input type=checkbox name=thisPost> This post'
+        el: UI.checkbox 'thisPost', ' This post', false
         open: (post) ->
           @el.firstChild.checked = post.isHidden
           true
       replies  =
-        el: $.el 'label', innerHTML: '<input type=checkbox name=replies> Unhide replies'
+        el: UI.checkbox 'replies', ' Show replies', false
         open: (post) ->
           data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
           @el.firstChild.checked = if 'hideRecursively' of data then data.hideRecursively else Conf['Recursive Hiding']

@@ -85,11 +85,11 @@ Index =
     @pagelist = $.el 'div',
       className: 'pagelist'
       hidden: true
-      innerHTML: <%= importHTML('Features/Index-pagelist') %>
+      <%= importHTML('Features/Index-pagelist') %>
 
     @navLinks = $.el 'div',
       className: 'navLinks'
-      innerHTML: <%= importHTML('Features/Index-navlinks') %>
+      <%= importHTML('Features/Index-navlinks') %>
     @timeEl = $ 'time#index-last-refresh', @navLinks
 
     @searchInput = $ '#index-search', @navLinks

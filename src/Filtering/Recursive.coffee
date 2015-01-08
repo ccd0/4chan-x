@@ -1,12 +1,13 @@
 Recursive =
   recursives: {}
   init: ->
+    return unless g.VIEW in ['index', 'thread']
     Post.callbacks.push
       name: 'Recursive'
       cb:   @node
 
   node: ->
-    return if @isClone
+    return if @isClone or @isFetchedQuote
     for quote in @quotes when obj = Recursive.recursives[quote]
       for recursive, i in obj.recursives
         @[recursive] obj.args[i]...
