@@ -1,5 +1,8 @@
 Main =
   init: ->
+    if location.hostname is 'www.google.com'
+      return $.ready -> Captcha.noscript.initFrame()
+
     g.threads = new SimpleDict
     g.posts   = new SimpleDict
 
@@ -12,6 +15,8 @@ Main =
           'thread'
         when 'catalog'
           'catalog'
+        when 'archive'
+          'archive'
         else
           'index'
     if g.VIEW is 'catalog'
@@ -73,6 +78,8 @@ Main =
     Main.setMascotString()
 
     switch location.hostname
+      when 'a.4cdn.org'
+        return
       when '4chan.org', 'www.4chan.org'
         g.TYPE = 'sfw'
         g.VIEW = 'home'
@@ -94,14 +101,20 @@ Main =
               filename: pathname[pathname.length - 1]
             location.replace URL if URL
           else if Conf['Loop in New Tab'] and video = $ 'video'
-            Video.configure video
-            if !video.controls
-              $.on video, 'click', ->
-                if video.paused then video.play() else video.pause()
+            video.loop = true
+            video.controls = false
+            video.play()
+            ImageCommon.addControls video
         return
 
+    if Conf['Normalize URL'] and g.VIEW is 'thread'
+      pathname = location.pathname.split '/'
+      if pathname[2] isnt 'thread' or pathname.length > 4
+        pathname[2] = 'thread'
+        history.replaceState null, '', pathname[0...4].join('/') + location.hash
+
     # c.time 'All initializations'
-    init = (name, feature) ->
+    for [name, feature] in Main.features
       # c.time "#{name} initialization"
       try
         feature.init()
@@ -113,70 +126,6 @@ Main =
       #   c.timeEnd "#{name} initialization"
 
     # c.timeEnd 'All initializations'
-
-    init 'Style',                     Style
-    init 'Mascots',                   MascotTools
-    init 'Rice',                      Rice
-    init 'Announcements',             GlobalMessage
-    init 'Polyfill',                  Polyfill
-    init 'Redirect',                  Redirect
-    init 'Header',                    Header
-    init 'Catalog Links',             CatalogLinks
-    init 'Settings',                  Settings
-    init 'Index Generator',           Index
-    init 'Announcement Hiding',       PSAHiding
-    init 'Fourchan thingies',         Fourchan
-    init 'Color User IDs',            IDColor
-    init 'Custom CSS',                CustomCSS
-    init 'Linkify',                   Linkify
-    init 'Reveal Spoilers',           RemoveSpoilers
-    init 'Resurrect Quotes',          Quotify
-    init 'Filter',                    Filter
-    init 'Reply Hiding Buttons',      PostHiding
-    init 'Recursive',                 Recursive
-    init 'Strike-through Quotes',     QuoteStrikeThrough
-    init 'Quick Reply',               QR
-    init 'Menu',                      Menu
-    init 'Report Link',               ReportLink
-    init 'Reply Hiding (Menu)',       PostHiding.menu
-    init 'Delete Link',               DeleteLink
-    init 'Filter (Menu)',             Filter.menu
-    init 'Download Link',             DownloadLink
-    init 'Archive Link',              ArchiveLink
-    init 'Quote Inlining',            QuoteInline
-    init 'Quote Previewing',          QuotePreview
-    init 'Quote Backlinks',           QuoteBacklink
-    init 'Quote Markers',             QuoteMarkers
-    init 'Anonymize',                 Anonymize
-    init 'Time Formatting',           Time
-    init 'Relative Post Dates',       RelativeDates
-    init 'File Info Formatting',      FileInfo
-    init 'Fappe Tyme',                FappeTyme
-    init 'Gallery',                   Gallery
-    init 'Gallery (menu)',            Gallery.menu
-    init 'Sauce',                     Sauce
-    init 'Image Expansion',           ImageExpand
-    init 'Image Expansion (Menu)',    ImageExpand.menu
-    init 'Reveal Spoiler Thumbnails', RevealSpoilers
-    init 'Image Loading',             ImageLoader
-    init 'Image Hover',               ImageHover
-    init 'Thread Expansion',          ExpandThread
-    init 'Comment Expansion',         ExpandComment
-    init 'Thread Excerpt',            ThreadExcerpt
-    init 'Favicon',                   Favicon
-    init 'Unread',                    Unread
-    init 'Quote Threading',           QuoteThreading
-    init 'Thread Stats',              ThreadStats
-    init 'Thread Updater',            ThreadUpdater
-    init 'Thread Watcher',            ThreadWatcher
-    init 'Thread Watcher (Menu)',     ThreadWatcher.menu
-    init 'Mark New IPs',              MarkNewIPs
-    init 'Index Navigation',          Nav
-    init 'Keybinds',                  Keybinds
-    init 'Show Dice Roll',            Dice
-    init 'Banner',                    Banner
-    init 'Navigate',                  Navigate
-    init 'Flash Features',            Flash
 
     $.ready Main.initReady
 
@@ -214,16 +163,12 @@ Main =
     $.event '4chanXInitFinished'
 
     <% if (type === 'userscript') { %>
-    test = $.el 'span'
-    $.addClass test, 'a', 'b'
-    if test.className isnt 'a b' and Conf['Show Support Message']
-      new Notice 'warning', "Your version of Firefox is outdated (v<%= meta.min.firefox %> minimum) and <%= meta.name %> may not operate correctly.", 30
-
-    GMver = GM_info.version.split '.'
-    for v, i in "<%= meta.min.greasemonkey %>".split '.'
-      continue if v is GMver[i]
-      (v < GMver[i]) or new Notice 'warning', "Your version of Greasemonkey is outdated (v#{GM_info.version} instead of v<%= meta.min.greasemonkey %> minimum) and <%= meta.name %> may not operate correctly.", 30
-      break
+    if Conf['Show Support Message']
+      GMver = GM_info.version.split '.'
+      for v, i in "<%= meta.min.greasemonkey %>".split '.'
+        continue if v is GMver[i]
+        (v < GMver[i]) or new Notice 'warning', "Your version of Greasemonkey is outdated (v#{GM_info.version} instead of v<%= meta.min.greasemonkey %> minimum) and <%= meta.name %> may not operate correctly.", 30
+        break
     <% } %>
 
     try
@@ -251,6 +196,12 @@ Main =
               error: err
       Main.handleErrors errors if errors
 
+      if g.VIEW is 'thread'
+        scriptData = Get.scriptData()
+        threads[0].postLimit = /\bbumplimit *= *1\b/.test scriptData
+        threads[0].fileLimit = /\bimagelimit *= *1\b/.test scriptData
+        threads[0].ipCount   = if m = scriptData.match /\bunique_ips *= *(\d+)\b/ then +m[1]
+
       Thread.callbacks.execute threads
       Post.callbacks.execute   posts
 
@@ -275,7 +226,7 @@ Main =
       return
 
     div = $.el 'div',
-      innerHTML: "#{errors.length} errors occurred. [<a href=javascript:;>show</a>]"
+      <%= html('${errors.length} errors occurred. [<a href="javascript:;">show</a>]') %>
     $.on div.lastElementChild, 'click', ->
       [@textContent, logs.hidden] = if @textContent is 'show'
         ['hide', false]
@@ -294,7 +245,7 @@ Main =
     message = $.el 'div',
       textContent: data.message
     error = $.el 'div',
-      textContent: data.error
+      textContent: "#{data.error.name or 'Error'}: #{data.error.message or 'see console for details'}"
     [message, error]
 
   isThisPageLegit: ->
@@ -304,6 +255,10 @@ Main =
         !$('link[href*="favicon-status.ico"]', d.head) and
         d.title not in ['4chan - Temporarily Offline', '4chan - Error', '504 Gateway Time-out']
     Main.thisPageIsLegit
+
+  ready: (cb) ->
+    $.ready ->
+      cb() if Main.isThisPageLegit()
 
   setMascotString: ->
     type = "Enabled Mascots"
@@ -316,5 +271,74 @@ Main =
     if Conf["NSFW/SFW Themes"]
       type += "_#{g.TYPE}"
     g.THEMESTRING = type
+
+  features: [
+    ['Style',                     Style]
+    ['Mascots',                   MascotTools]
+    ['Rice',                      Rice]
+    ['Announcements',             GlobalMessage]
+    ['Polyfill',                  Polyfill]
+    ['Redirect',                  Redirect]
+    ['Header',                    Header]
+    ['Catalog Links',             CatalogLinks]
+    ['Settings',                  Settings]
+    ['Index Generator',           Index]
+    ['Disable Autoplay',          AntiAutoplay]
+    ['Announcement Hiding',       PSAHiding]
+    ['Fourchan thingies',         Fourchan]
+    ['Color User IDs',            IDColor]
+    ['Custom CSS',                CustomCSS]
+    ['Linkify',                   Linkify]
+    ['Reveal Spoilers',           RemoveSpoilers]
+    ['Resurrect Quotes',          Quotify]
+    ['Filter',                    Filter]
+    ['Reply Hiding Buttons',      PostHiding]
+    ['Recursive',                 Recursive]
+    ['Strike-through Quotes',     QuoteStrikeThrough]
+    ['Quick Reply',               QR]
+    ['Menu',                      Menu]
+    ['Index Generator (Menu)',    Index.menu]
+    ['Report Link',               ReportLink]
+    ['Reply Hiding (Menu)',       PostHiding.menu]
+    ['Delete Link',               DeleteLink]
+    ['Filter (Menu)',             Filter.menu]
+    ['Download Link',             DownloadLink]
+    ['Archive Link',              ArchiveLink]
+    ['Quote Inlining',            QuoteInline]
+    ['Quote Previewing',          QuotePreview]
+    ['Quote Backlinks',           QuoteBacklink]
+    ['Quote Markers',             QuoteMarkers]
+    ['Anonymize',                 Anonymize]
+    ['Time Formatting',           Time]
+    ['Relative Post Dates',       RelativeDates]
+    ['File Info Formatting',      FileInfo]
+    ['Fappe Tyme',                FappeTyme]
+    ['Gallery',                   Gallery]
+    ['Gallery (menu)',            Gallery.menu]
+    ['Sauce',                     Sauce]
+    ['Image Expansion',           ImageExpand]
+    ['Image Expansion (Menu)',    ImageExpand.menu]
+    ['Reveal Spoiler Thumbnails', RevealSpoilers]
+    ['Image Loading',             ImageLoader]
+    ['Image Hover',               ImageHover]
+    ['Comment Expansion',         ExpandComment]
+    ['Thread Expansion',          ExpandThread]
+    ['Thread Excerpt',            ThreadExcerpt]
+    ['Favicon',                   Favicon]
+    ['Unread',                    Unread]
+    ['Quote Threading',           QuoteThreading]
+    ['Thread Stats',              ThreadStats]
+    ['Thread Updater',            ThreadUpdater]
+    ['Thread Watcher',            ThreadWatcher]
+    ['Thread Watcher (Menu)',     ThreadWatcher.menu]
+    ['Mark New IPs',              MarkNewIPs]
+    ['Index Navigation',          Nav]
+    ['Keybinds',                  Keybinds]
+    ['Show Dice Roll',            Dice]
+    ['Banner',                    Banner]
+    ['Navigate',                  Navigate]
+    ['Flash Features',            Flash]
+  ]
+
 
 Main.init()

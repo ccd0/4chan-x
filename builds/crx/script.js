@@ -18301,6 +18301,11 @@
   Main = {
     init: function() {
       var db, flatten, pathname, _i, _len, _ref, _ref1;
+      if (location.hostname === 'www.google.com') {
+        return $.ready(function() {
+          return Captcha.noscript.initFrame();
+        });
+      }
       g.threads = new SimpleDict;
       g.posts = new SimpleDict;
       pathname = location.pathname.split('/');
@@ -18315,6 +18320,8 @@
             return 'thread';
           case 'catalog':
             return 'catalog';
+          case 'archive':
+            return 'archive';
           default:
             return 'index';
         }
@@ -18372,7 +18379,7 @@
       });
     },
     initFeatures: function() {
-      var href, init, _ref;
+      var err, feature, href, name, pathname, _i, _len, _ref, _ref1, _ref2;
       Favicon.el.type = 'image/x-icon';
       href = Favicon.el.href;
       Favicon.SFW = /ws\.ico$/.test(href);
@@ -18386,6 +18393,8 @@
       Main.setThemeString();
       Main.setMascotString();
       switch (location.hostname) {
+        case 'a.4cdn.org':
+          return;
         case '4chan.org':
         case 'www.4chan.org':
           g.TYPE = 'sfw';
@@ -18412,95 +18421,34 @@
                 return location.replace(URL);
               }
             } else if (Conf['Loop in New Tab'] && (video = $('video'))) {
-              Video.configure(video);
-              if (!video.controls) {
-                return $.on(video, 'click', function() {
-                  if (video.paused) {
-                    return video.play();
-                  } else {
-                    return video.pause();
-                  }
-                });
-              }
+              video.loop = true;
+              video.controls = false;
+              video.play();
+              return ImageCommon.addControls(video);
             }
           });
           return;
       }
-      init = function(name, feature) {
-        var err;
+      if (Conf['Normalize URL'] && g.VIEW === 'thread') {
+        pathname = location.pathname.split('/');
+        if (pathname[2] !== 'thread' || pathname.length > 4) {
+          pathname[2] = 'thread';
+          history.replaceState(null, '', pathname.slice(0, 4).join('/') + location.hash);
+        }
+      }
+      _ref1 = Main.features;
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        _ref2 = _ref1[_i], name = _ref2[0], feature = _ref2[1];
         try {
-          return feature.init();
+          feature.init();
         } catch (_error) {
           err = _error;
-          return Main.handleErrors({
+          Main.handleErrors({
             message: "\"" + name + "\" initialization crashed.",
             error: err
           });
         }
-      };
-      init('Style', Style);
-      init('Mascots', MascotTools);
-      init('Rice', Rice);
-      init('Announcements', GlobalMessage);
-      init('Polyfill', Polyfill);
-      init('Redirect', Redirect);
-      init('Header', Header);
-      init('Catalog Links', CatalogLinks);
-      init('Settings', Settings);
-      init('Index Generator', Index);
-      init('Announcement Hiding', PSAHiding);
-      init('Fourchan thingies', Fourchan);
-      init('Color User IDs', IDColor);
-      init('Custom CSS', CustomCSS);
-      init('Linkify', Linkify);
-      init('Reveal Spoilers', RemoveSpoilers);
-      init('Resurrect Quotes', Quotify);
-      init('Filter', Filter);
-      init('Reply Hiding Buttons', PostHiding);
-      init('Recursive', Recursive);
-      init('Strike-through Quotes', QuoteStrikeThrough);
-      init('Quick Reply', QR);
-      init('Menu', Menu);
-      init('Report Link', ReportLink);
-      init('Reply Hiding (Menu)', PostHiding.menu);
-      init('Delete Link', DeleteLink);
-      init('Filter (Menu)', Filter.menu);
-      init('Download Link', DownloadLink);
-      init('Archive Link', ArchiveLink);
-      init('Quote Inlining', QuoteInline);
-      init('Quote Previewing', QuotePreview);
-      init('Quote Backlinks', QuoteBacklink);
-      init('Quote Markers', QuoteMarkers);
-      init('Anonymize', Anonymize);
-      init('Time Formatting', Time);
-      init('Relative Post Dates', RelativeDates);
-      init('File Info Formatting', FileInfo);
-      init('Fappe Tyme', FappeTyme);
-      init('Gallery', Gallery);
-      init('Gallery (menu)', Gallery.menu);
-      init('Sauce', Sauce);
-      init('Image Expansion', ImageExpand);
-      init('Image Expansion (Menu)', ImageExpand.menu);
-      init('Reveal Spoiler Thumbnails', RevealSpoilers);
-      init('Image Loading', ImageLoader);
-      init('Image Hover', ImageHover);
-      init('Thread Expansion', ExpandThread);
-      init('Comment Expansion', ExpandComment);
-      init('Thread Excerpt', ThreadExcerpt);
-      init('Favicon', Favicon);
-      init('Unread', Unread);
-      init('Quote Threading', QuoteThreading);
-      init('Thread Stats', ThreadStats);
-      init('Thread Updater', ThreadUpdater);
-      init('Thread Watcher', ThreadWatcher);
-      init('Thread Watcher (Menu)', ThreadWatcher.menu);
-      init('Mark New IPs', MarkNewIPs);
-      init('Index Navigation', Nav);
-      init('Keybinds', Keybinds);
-      init('Show Dice Roll', Dice);
-      init('Banner', Banner);
-      init('Navigate', Navigate);
-      init('Flash Features', Flash);
+      }
       return $.ready(Main.initReady);
     },
     initReady: function() {
@@ -18543,7 +18491,7 @@
       }
     },
     initThread: function() {
-      var board, err, errors, postRoot, posts, thread, threadRoot, threads, _i, _j, _len, _len1, _ref, _ref1;
+      var board, err, errors, m, postRoot, posts, scriptData, thread, threadRoot, threads, _i, _j, _len, _len1, _ref, _ref1;
       if (board = $('.board')) {
         threads = [];
         posts = [];
@@ -18571,6 +18519,12 @@
         }
         if (errors) {
           Main.handleErrors(errors);
+        }
+        if (g.VIEW === 'thread') {
+          scriptData = Get.scriptData();
+          threads[0].postLimit = /\bbumplimit *= *1\b/.test(scriptData);
+          threads[0].fileLimit = /\bimagelimit *= *1\b/.test(scriptData);
+          threads[0].ipCount = (m = scriptData.match(/\bunique_ips *= *(\d+)\b/)) ? +m[1] : void 0;
         }
         Thread.callbacks.execute(threads);
         Post.callbacks.execute(posts);
@@ -18605,7 +18559,7 @@
         return;
       }
       div = $.el('div', {
-        innerHTML: "" + errors.length + " errors occurred. [<a href=javascript:;>show</a>]"
+        innerHTML: E(errors.length) + " errors occurred. [<a href=\"javascript:;\">show</a>]"
       });
       $.on(div.lastElementChild, 'click', function() {
         var _ref;
@@ -18627,7 +18581,7 @@
         textContent: data.message
       });
       error = $.el('div', {
-        textContent: data.error
+        textContent: "" + (data.error.name || 'Error') + ": " + (data.error.message || 'see console for details')
       });
       return [message, error];
     },
@@ -18637,6 +18591,13 @@
         Main.thisPageIsLegit = location.hostname === 'boards.4chan.org' && !$('link[href*="favicon-status.ico"]', d.head) && ((_ref = d.title) !== '4chan - Temporarily Offline' && _ref !== '4chan - Error' && _ref !== '504 Gateway Time-out');
       }
       return Main.thisPageIsLegit;
+    },
+    ready: function(cb) {
+      return $.ready(function() {
+        if (Main.isThisPageLegit()) {
+          return cb();
+        }
+      });
     },
     setMascotString: function() {
       var type;
@@ -18653,7 +18614,8 @@
         type += "_" + g.TYPE;
       }
       return g.THEMESTRING = type;
-    }
+    },
+    features: [['Style', Style], ['Mascots', MascotTools], ['Rice', Rice], ['Announcements', GlobalMessage], ['Polyfill', Polyfill], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Color User IDs', IDColor], ['Custom CSS', CustomCSS], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply', QR], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Quote Markers', QuoteMarkers], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Thread Excerpt', ThreadExcerpt], ['Favicon', Favicon], ['Unread', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Show Dice Roll', Dice], ['Banner', Banner], ['Navigate', Navigate], ['Flash Features', Flash]]
   };
 
   Main.init();
