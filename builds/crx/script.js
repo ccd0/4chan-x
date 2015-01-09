@@ -88,7 +88,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Labels, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, TrashQueue, UI, Unread, Video, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Labels, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, TrashQueue, UI, Unread, Video, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -119,26 +119,30 @@
         'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
         'Desktop Notifications': [false, 'Enables desktop notifications across various appchan x features.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],
+        'Exempt Archives from Encryption': [false, 'Permit loading content from, and warningless redirects to, HTTP-only archives from HTTPS pages.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
         'Time Formatting': [true, 'Localize and format timestamps.'],
         'Relative Post Dates': [true, 'Display dates like "3 minutes ago". Tooltip shows the timestamp.'],
+        'Relative Date Title': [true, 'Show Relative Post Date only when hovering over dates.', 1],
         'File Info Formatting': [true, 'Reformat the file information.'],
         'Thread Expansion': [true, 'Add buttons to expand threads.'],
         'Comment Expansion': [false, 'Expand Comments that are too long to display on the index. Does not work with JSON Navigation.'],
         'Index Navigation': [false, 'Add buttons to navigate between threads.'],
         'Reply Navigation': [false, 'Add buttons to navigate to top / bottom of thread.'],
         'Show Dice Roll': [true, 'Show dice that were entered into the email field.'],
-        'Color User IDs': [false, 'Assign unique colors to user IDs on boards that use them'],
+        'Color User IDs': [true, 'Assign unique colors to user IDs on boards that use them'],
         'Remove Spoilers': [false, 'Remove all spoilers in text.'],
         'Reveal Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.'],
         'Show Support Message': [true, 'Warn if your browser is unsupported. 4chan X may not operate correctly on unsupported browser versions.'],
+        'Normalize URL': [true, 'Rewrite the URL of the current page, removing stubs and changing /res/ to /thread/.'],
         'Announcement Hiding': [true, 'Enable announcements to be hidden.']
       },
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
-        'Embedding': [true, 'Embed supported services.'],
-        'Auto-embed': [false, 'Auto-embed Linkify Embeds.'],
-        'Link Title': [true, 'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud, and Github gists']
+        'Embedding': [true, 'Embed supported services. Note: Some services don\'t work on HTTPS.', 1],
+        'Auto-embed': [false, 'Auto-embed Linkify Embeds.', 2],
+        'Floating Embeds': [false, 'Embed content in a frame that remains in place when the page is scrolled.', 2],
+        'Link Title': [true, 'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud, and Github gists', 1]
       },
       'Filtering': {
         'Anonymize': [false, 'Make everyone Anonymous.'],
@@ -151,41 +155,45 @@
       'Images and Videos': {
         'Image Expansion': [true, 'Expand images / videos.'],
         'Image Hover': [true, 'Show full image / video on mouseover.'],
-        'Image Hover in Catalog': [false, 'Show a floating expanded image on hover in the catalog.'],
+        'Image Hover in Catalog': [false, 'Show full image / video on mouseover on hover in the catalog.'],
         'Gallery': [true, 'Adds a simple and cute image gallery.'],
-        'PDF in Gallery': [false, 'Show PDF files in gallery.'],
+        'Fullscreen Gallery': [false, 'Open gallery in fullscreen mode.', 1],
+        'PDF in Gallery': [false, 'Show PDF files in gallery.', 1],
         'Sauce': [true, 'Add sauce links to images.'],
         'Reveal Spoiler Thumbnails': [false, 'Replace spoiler thumbnails with the original image.'],
         'Replace GIF': [false, 'Replace gif thumbnails with the actual image.'],
         'Replace JPG': [false, 'Replace jpg thumbnails with the actual image.'],
         'Replace PNG': [false, 'Replace png thumbnails with the actual image.'],
         'Replace WEBM': [false, 'Replace webm thumbnails with the actual webm video. Probably will degrade browser performance ;)'],
-        'Image Prefetching': [false, 'Preload images'],
-        'Fappe Tyme': [false, 'Hide posts without images when toggled. *hint* *hint*'],
-        'Werk Tyme': [false, 'Hide all post images when toggled.'],
+        'Image Prefetching': [false, 'Add link in header menu to turn on image preloading.'],
+        'Fappe Tyme': [false, 'Hide posts without images when header menu item is checked. *hint* *hint*'],
+        'Werk Tyme': [false, 'Hide all post images when header menu item is checked.'],
         'Autoplay': [true, 'Videos begin playing immediately when opened.'],
+        'Restart when Opened': [true, 'Restart GIFs and WebMs when you hover over or expand them.'],
         'Show Controls': [true, 'Show controls on videos expanded inline. Turn this off if you want to contract videos by clicking on them.'],
-        'Allow Sound': [true, 'Allow sound in videos.'],
-        'Loop in New Tab': [true, 'Loop videos opened in their own tabs, and apply settings for inline expanded videos to them.']
+        'Loop in New Tab': [true, 'Loop videos opened in their own tabs.']
       },
       'Menu': {
         'Menu': [true, 'Add a drop-down menu to posts.'],
-        'Report Link': [true, 'Add a report link to the menu.'],
+        'Report Link': [true, 'Add a report link to the menu.', 1],
         'Post Hiding Link': [true, 'Add a link to hide posts.'],
-        'Delete Link': [true, 'Add post and image deletion links to the menu.'],
-        'Archive Link': [true, 'Add an archive link to the menu.']
+        'Delete Link': [true, 'Add post and image deletion links to the menu.', 1],
+        'Download Link': [true, 'Add a download with original filename link to the menu.', 1],
+        'Archive Link': [true, 'Add an archive link to the menu.', 1]
       },
       'Monitoring': {
         'Thread Updater': [true, 'Fetch and insert new replies. Has more options in its own dialog.'],
         'Unread Count': [true, 'Show the unread posts count in the tab title.'],
-        'Hide Unread Count at (0)': [false, 'Hide the unread posts count in the tab title when it reaches 0.'],
+        'Quoted Title': [false, 'Change the page title to reflect you\'ve been quoted.', 1],
+        'Hide Unread Count at (0)': [false, 'Hide the unread posts count in the tab title when it reaches 0.', 1],
         'Unread Favicon': [true, 'Show a different favicon when there are unread posts.'],
         'Unread Line': [true, 'Show a line to distinguish read posts from unread ones.'],
         'Scroll to Last Read Post': [true, 'Scroll back to the last read post when reopening a thread.'],
-        'Thread Excerpt': [true, 'Show an excerpt of the thread in the tab title.'],
+        'Thread Excerpt': [true, 'Show an excerpt of the thread in the tab title if not already present.'],
+        'Remove Thread Excerpt': [false, 'Replace the excerpt of the thread in the tab title with the board title.'],
         'Thread Stats': [true, 'Display reply and image count.'],
-        'IP Count in Stats': [true, 'Display the unique IP count in the thread stats.'],
-        'Page Count in Stats': [true, 'Display the page count in the thread stats.'],
+        'IP Count in Stats': [true, 'Display the unique IP count in the thread stats.', 1],
+        'Page Count in Stats': [true, 'Display the page count in the thread stats.', 1],
         'Updater and Stats in Header': [true, 'Places the thread updater and thread stats in the header instead of floating them.'],
         'Thread Watcher': [true, 'Bookmark threads.'],
         'Mark New IPs': [false, 'Label each post from a new IP with the thread\'s current IP count.']
@@ -193,40 +201,43 @@
       'Posting': {
         'Header Shortcut': [true, 'Add a shortcut to the header to toggle the QR.'],
         'Page Shortcut': [false, 'Add a shortcut to the top of the page to toggle the QR.'],
-        'Persistent QR': [true, 'The Quick reply won\'t disappear after posting.'],
-        'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.'],
-        'Open Post in New Tab': [true, 'Open new threads or replies to a thread from the index in a new tab.'],
+        'Persistent QR': [true, 'The Quick reply won\'t disappear after posting.', 1],
+        'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.', 1],
+        'Open Post in New Tab': [true, 'Open new threads or replies to a thread from the index in a new tab.', 1],
+        'Remember QR Size': [false, 'Remember the size of the quick reply\'s comment field.', 1],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
-        'Remember QR Size': [false, 'Remember the size of the quick reply\'s comment field.'],
-        'Cooldown': [true, 'Indicate the remaining time before posting again.'],
-        'Posting Success Notifications': [true, 'Show notifications on successful post creation or file uploading.'],
+        'Show Name and Subject': [false, 'Show the classic name, email, and subject fields in the QR, even when 4chan doesn\'t use them all.', 1],
+        'Cooldown': [true, 'Indicate the remaining time before posting again.', 1],
+        'Posting Success Notifications': [true, 'Show notifications on successful post creation or file uploading.', 1],
+        'Force Noscript Captcha': [false, 'Use the non-Javascript fallback captcha in the QR even if Javascript is enabled.', 1],
         'Captcha Warning Notifications': [true, 'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.'],
-        'Dump List Before Comment': [false, 'Position of the QR\'s Dump List.'],
-        'Auto-load captcha': [false, 'Automatically load the captcha in the QR even if your post is empty.']
+        'Dump List Before Comment': [false, 'Position of the QR\'s Dump List.', 1],
+        'Auto-load captcha': [false, 'Automatically load the captcha in the QR even if your post is empty.', 1],
+        'Post on Captcha Completion': [false, 'Submit the post immediately when the captcha is completed.', 1]
       },
       'Quote Links': {
-        'Quote Backlinks': [true, 'Add quote backlinks.'],
+        'Quote Backlinks': [true, 'Add quote backlinks.', 1],
         'OP Backlinks': [true, 'Add backlinks to the OP.'],
         'Quote Inlining': [true, 'Inline quoted post on click.'],
-        'Quote Hash Navigation': [false, 'Include an extra link after quotes for autoscrolling to quoted posts.'],
-        'Forward Hiding': [true, 'Hide original posts of inlined backlinks.'],
+        'Quote Hash Navigation': [false, 'Include an extra link after quotes for autoscrolling to quoted posts.', 1],
+        'Forward Hiding': [true, 'Hide original posts of inlined backlinks.', 1],
         'Quote Previewing': [true, 'Show quoted post on hover.'],
-        'Quote Highlighting': [true, 'Highlight the previewed post.'],
+        'Quote Highlighting': [true, 'Highlight the previewed post.', 1],
         'Resurrect Quotes': [true, 'Link dead quotes to the archives.'],
-        'Quoted Title': [false, 'Change the page title to reflect you\'ve been quoted.'],
+        'Mark Quotes of You': [true, 'Add \'(You)\' to quotes linking to your posts.'],
         'Highlight Posts Quoting You': [false, 'Highlights any posts that contain a quote to your post.'],
         'Highlight Own Posts': [false, 'Highlights own posts if Quote Markers are enabled.'],
-        'Quote Threading': [false, 'Thread conversations'],
-        'Mark Quotes of You': [true, 'Add \'(You)\' to quotes linking to your posts.'],
         'Mark OP Quotes': [true, 'Add \'(OP)\' to OP quotes.'],
-        'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.', 'Highlights own posts if Quote Markers are enabled.']
+        'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.', 'Highlights own posts if Quote Markers are enabled.'],
+        'Quote Threading': [false, 'Thread conversations']
       }
     },
     imageExpansion: {
-      'Fit width': [false, ''],
+      'Fit width': [true, ''],
       'Fit height': [false, ''],
-      'Expand spoilers': [true, 'Expand all images along with spoilers.'],
-      'Expand videos': [false, 'Expand all images also expands videos (no autoplay).'],
+      'Scroll into view': [true, 'Scroll down when expanding images to bring the full image into view.'],
+      'Expand spoilers': [false, 'Expand all images along with spoilers.'],
+      'Expand videos': [false, 'Expand all images also expands videos.'],
       'Expand from here': [false, 'Expand all images only from current position to thread end.'],
       'Advance on contract': [false, 'Advance to next post when contracting an expanded image.']
     },
@@ -234,7 +245,8 @@
       'Hide Thumbnails': [false],
       'Fit Width': [true],
       'Fit Height': [true],
-      'Scroll to Post': [true]
+      'Scroll to Post': [true],
+      'Slide Delay': [6.0]
     },
     style: {
       Interface: {
@@ -328,16 +340,15 @@
     },
     threadWatcher: {
       'Current Board': [false, 'Only show watched threads from the current board.'],
-      'Auto Watch': [true, 'Automatically watch threads you start.'],
+      'Auto Watch': [false, 'Automatically watch threads you start.'],
       'Auto Watch Reply': [false, 'Automatically watch threads you reply to.'],
-      'Auto Prune': [false, 'Automatically prune 404\'d threads.']
+      'Auto Prune': [false, 'Automatically remove dead threads.']
     },
     filter: {
       name: "# Filter any namefags:\n#/^(?!Anonymous$)/",
       uniqueID: "# Filter a specific ID:\n#/Txhvk1Tl/",
       tripcode: "# Filter any tripfag\n#/^!/",
       capcode: "# Set a custom class for mods:\n#/Mod$/;highlight:mod;op:yes\n# Set a custom class for moot:\n#/Admin$/;highlight:moot;op:yes",
-      email: "",
       subject: "# Filter Generals on /v/:\n#/general/i;boards:v;op:only",
       comment: "# Filter Stallman copypasta on /g/:\n#/what you\'re refer+ing to as linux/i;boards:g",
       flag: '',
@@ -360,6 +371,8 @@
       'Threads per Page': 0,
       'Open threads in a new tab': false,
       'Show Replies': true,
+      'Pin Watched Threads': false,
+      'Anchor Hidden Threads': true,
       'Refreshed Navigation': false
     },
     Header: {
@@ -371,7 +384,7 @@
       'Bottom Board List': true,
       'Custom Board Navigation': true
     },
-    boardnav: "[ toggle-all ]\n[current-title]\n[external-text:\"FAQ\",\"https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions\"]",
+    boardnav: "[ toggle-all ]\na-replace\nc-replace\ng-replace\nk-replace\nv-replace\nvg-replace\nvr-replace\nck-replace\nco-replace\nfit-replace\njp-replace\nmu-replace\nsp-replace\ntv-replace\nvp-replace\n[external-text:\"FAQ\",\"\"]",
     QR: {
       'QR.personas': "#options:\"sage\";boards:jp;always"
     },
@@ -379,7 +392,7 @@
     backlink: '>>%id',
     fileInfo: '%l (%p%s, %r)',
     favicon: 'ferongr',
-    usercss: "/* Tripcode Italics: */\n/*\nspan.postertrip {\nfont-style: italic;\n}\n*/\n\n/* Add a rounded border to thumbnails (but not expanded images): */\n/*\n.fileThumb > img:first-child {\nborder: solid 2px rgba(0,0,100,0.5);\nborder-radius: 10px;\n}\n*/\n\n/* Make highlighted posts look inset on the page: */\n/*\ndiv.post:target,\ndiv.post.highlight {\nbox-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);\n}\n*/",
+    usercss: "/* Tripcode Italics: */\n/*\nspan.postertrip {\n  font-style: italic;\n}\n*/\n\n/* Add a rounded border to thumbnails (but not expanded images): */\n/*\n.fileThumb > img:first-child {\n  border: solid 2px rgba(0,0,100,0.5);\n  border-radius: 10px;\n}\n*/\n\n/* Make highlighted posts look inset on the page: */\n/*\ndiv.post:target,\ndiv.post.highlight {\n  box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);\n}\n*/",
     hotkeys: {
       'Toggle board list': ['Ctrl+b', 'Toggle the full board list.'],
       'Toggle header': ['Shift+h', 'Toggle the auto-hide option of the header.'],
@@ -391,20 +404,23 @@
       'Code tags': ['Alt+c', 'Insert code tags.'],
       'Eqn tags': ['Alt+e', 'Insert eqn tags.'],
       'Math tags': ['Alt+m', 'Insert math tags.'],
-      'Toggle sage': ['Alt+s', 'Toggle sage in email field.'],
+      'Toggle sage': ['Alt+s', 'Toggle sage in options field.'],
       'Submit QR': ['Ctrl+Enter', 'Submit post.'],
       'Post Without Name': ['Alt+n', 'Clear name field and then submits post.'],
       'Watch': ['w', 'Watch thread.'],
-      'Update': ['r', 'Update the thread now.'],
+      'Update': ['r', 'Update the thread / refresh the index.'],
       'Expand image': ['Shift+e', 'Expand selected image.'],
       'Expand images': ['e', 'Expand all images.'],
       'Open Gallery': ['g', 'Opens the gallery.'],
-      'fappeTyme': ['f', 'Fappe Tyme.'],
-      'werkTyme': ['Shift+w', 'Werk Tyme'],
+      'Pause': ['p', 'Pause/play videos in the gallery.'],
+      'Slideshow': ['s', 'Toggle the gallery slideshow mode.'],
+      'fappeTyme': ['f', 'Toggle Fappe Tyme.'],
+      'werkTyme': ['Shift+w', 'Toggle Werk Tyme'],
       'Front page': ['1', 'Jump to front page.'],
       'Open front page': ['Shift+1', 'Open front page in a new tab.'],
       'Next page': ['Ctrl+Right', 'Jump to the next page.'],
       'Previous page': ['Ctrl+Left', 'Jump to the previous page.'],
+      'Open catalog': ['Shift+c', 'Open the catalog of the current board.'],
       'Search form': ['Ctrl+Alt+s', 'Focus the search field on the board index.'],
       'Paged mode': ['Alt+1', 'Sets the index mode to paged.'],
       'All pages mode': ['Alt+2', 'Sets the index mode to all threads.'],
@@ -456,9 +472,24 @@
   doc = d.documentElement;
 
   g = {
-    VERSION: '2.9.43',
+    VERSION: '',
     NAMESPACE: 'appchan_x.',
+    NAME: 'appchan x',
+    FAQ: '',
+    CHANGELOG: 'https://github.com/zixaphir/appchan-x/blob/master/CHANGELOG.md',
     boards: {}
+  };
+
+  E = function(text) {
+    return (text + '').replace(/[&"'<>]/g, function(x) {
+      return {
+        '&': '&amp;',
+        "'": '&#039;',
+        '"': '&quot;',
+        '<': '&lt;',
+        '>': '&gt;'
+      }[x];
+    });
   };
 
   Mascots = {
@@ -6260,7 +6291,7 @@
     threadExcerpt: function(thread) {
       var OP, excerpt, _ref;
       OP = thread.OP;
-      excerpt = ((_ref = OP.info.subject) != null ? _ref.trim() : void 0) || OP.info.comment.replace(/\n+/g, ' // ') || OP.info.nameBlock;
+      excerpt = ("/" + thread.board + "/ - ") + (((_ref = OP.info.subject) != null ? _ref.trim() : void 0) || OP.info.comment.replace(/\n+/g, ' // ') || OP.info.nameBlock);
       if (excerpt.length > 70) {
         excerpt = "" + excerpt.slice(0, 67) + "...";
       }
@@ -6308,9 +6339,7 @@
       var fullID, handleQuotes, posts, qPost, quote, quotelinks, _i, _len, _ref;
       quotelinks = [];
       posts = g.posts;
-      fullID = {
-        post: post
-      };
+      fullID = post.fullID;
       handleQuotes = function(qPost, type) {
         var clone, _i, _len, _ref;
         quotelinks.push.apply(quotelinks, qPost.nodes[type]);
@@ -6340,8 +6369,19 @@
         return boardID === post.board.ID && postID === post.ID;
       });
     },
+    scriptData: function() {
+      var script, _i, _len, _ref;
+      _ref = $$('script:not([src])', d.head);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        script = _ref[_i];
+        if (/\bcooldowns *=/.test(script.textContent)) {
+          return script.textContent;
+        }
+      }
+      return '';
+    },
     postClone: function(boardID, threadID, postID, root, context) {
-      var post, url;
+      var post;
       if (post = g.posts["" + boardID + "." + postID]) {
         Get.insert(post, root, context);
         return;
@@ -6351,16 +6391,8 @@
         return $.cache("//a.4cdn.org/" + boardID + "/thread/" + threadID + ".json", function() {
           return Get.fetchedPost(this, boardID, threadID, postID, root, context);
         });
-      } else if (url = Redirect.to('post', {
-        boardID: boardID,
-        postID: postID
-      })) {
-        return $.cache(url, function() {
-          return Get.archivedPost(this, boardID, postID, root, context);
-        }, {
-          responseType: 'json',
-          withCredentials: url.archive.withCredentials
-        });
+      } else {
+        return Get.archivedPost(boardID, postID, root, context);
       }
     },
     insert: function(post, root, context) {
@@ -6374,30 +6406,22 @@
       $.rmAll(nodes.root);
       $.add(nodes.root, nodes.post);
       $.rmAll(root);
-      return $.add(root, nodes.root);
+      $.add(root, nodes.root);
+      return $.event('PostsInserted');
     },
     fetchedPost: function(req, boardID, threadID, postID, root, context) {
-      var board, post, posts, status, thread, url, _i, _len;
+      var api, board, post, posts, status, thread, _i, _len;
       if (post = g.posts["" + boardID + "." + postID]) {
         Get.insert(post, root, context);
         return;
       }
       status = req.status;
       if (status !== 200 && status !== 304) {
-        if (url = Redirect.to('post', {
-          boardID: boardID,
-          postID: postID
-        })) {
-          $.cache(url, function() {
-            return Get.archivedPost(this, boardID, postID, root, context);
-          }, {
-            responseType: 'json',
-            withCredentials: url.archive.withCredentials
-          });
-        } else {
-          $.addClass(root, 'warning');
-          root.textContent = status === 404 ? "Thread No." + threadID + " 404'd." : "Error " + req.statusText + " (" + req.status + ").";
+        if (Get.archivedPost(boardID, postID, root, context)) {
+          return;
         }
+        $.addClass(root, 'warning');
+        root.textContent = status === 404 ? "Thread No." + threadID + " 404'd." : "Error " + req.statusText + " (" + req.status + ").";
         return;
       }
       posts = req.response.posts;
@@ -6409,50 +6433,134 @@
         }
       }
       if (post.no !== postID) {
-        if (url = Redirect.to('post', {
-          boardID: boardID,
-          postID: postID
-        })) {
-          $.cache(url, function() {
-            return Get.archivedPost(this, boardID, postID, root, context);
-          }, {
-            withCredentials: url.archive.withCredentials
+        if (req.cached) {
+          api = "//a.4cdn.org/" + boardID + "/thread/" + threadID + ".json";
+          $.cleanCache(function(url) {
+            return url === api;
           });
-        } else {
-          $.addClass(root, 'warning');
-          root.textContent = "Post No." + postID + " was not found.";
+          $.cache(api, function() {
+            return Get.fetchedPost(this, boardID, threadID, postID, root, context);
+          });
+          return;
         }
+        if (Get.archivedPost(boardID, postID, root, context)) {
+          return;
+        }
+        $.addClass(root, 'warning');
+        root.textContent = "Post No." + postID + " was not found.";
         return;
       }
       board = g.boards[boardID] || new Board(boardID);
       thread = g.threads["" + boardID + "." + threadID] || new Thread(threadID, board);
       post = new Post(Build.postFromObject(post, boardID), thread, board);
+      post.isFetchedQuote = true;
       Post.callbacks.execute([post]);
       return Get.insert(post, root, context);
     },
-    archivedPost: function(req, boardID, postID, root, context) {
-      var board, bq, comment, data, o, post, thread, threadID, _ref, _ref1;
+    archivedPost: function(boardID, postID, root, context) {
+      var url;
+      if (!Conf['Resurrect Quotes']) {
+        return false;
+      }
+      if (!(url = Redirect.to('post', {
+        boardID: boardID,
+        postID: postID
+      }))) {
+        return false;
+      }
+      if (/^https:\/\//.test(url) || location.protocol === 'http:') {
+        $.cache(url, function() {
+          return Get.parseArchivedPost(this.response, boardID, postID, root, context);
+        }, {
+          responseType: 'json',
+          withCredentials: url.archive.withCredentials
+        });
+        return true;
+      } else if (Conf['Exempt Archives from Encryption']) {
+        CrossOrigin.json(url, function(response) {
+          var key, media, _ref;
+          media = response.media;
+          if (media) {
+            for (key in media) {
+              if (/_link$/.test(key)) {
+                if (!((media[key] != null) && (_ref = media[key].match(/^(http:\/\/[^\/]+\/)?/)[0], __indexOf.call(url.archive.imagehosts, _ref) >= 0))) {
+                  delete media[key];
+                }
+              }
+            }
+          }
+          return Get.parseArchivedPost(response, boardID, postID, root, context);
+        });
+        return true;
+      }
+      return false;
+    },
+    parseArchivedPost: function(data, boardID, postID, root, context) {
+      var board, comment, greentext, i, j, o, post, text, text2, thread, threadID, _ref;
       if (post = g.posts["" + boardID + "." + postID]) {
         Get.insert(post, root, context);
         return;
       }
-      data = req.response;
       if (data.error) {
         $.addClass(root, 'warning');
         root.textContent = data.error;
         return;
       }
-      bq = $.el('blockquote', {
-        textContent: data.comment
-      });
-      bq.innerHTML = bq.innerHTML.replace(/\n|\[\/?[a-z]+(:lit)?\]/g, Get.parseMarkup);
-      comment = bq.innerHTML.replace(/(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class=quote>$2</span>$3').replace(/((&gt;){2}(&gt;\/[a-z\d]+\/)?\d+)/g, '<span class=deadlink>$1</span>');
+      comment = (data.comment || '').split(/(\n|\[\/?(?:b|spoiler|code|moot|banned)\])/);
+      comment = (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (i = _i = 0, _len = comment.length; _i < _len; i = ++_i) {
+          text = comment[i];
+          if (i % 2 === 1) {
+            _results.push(Get.archiveTags[text]);
+          } else {
+            greentext = text[0] === '>';
+            text = text.replace(/(\[\/?[a-z]+):lit(\])/, '$1$2');
+            text = (function() {
+              var _j, _len1, _ref, _results1;
+              _ref = text.split(/(>>(?:>\/[a-z\d]+\/)?\d+)/g);
+              _results1 = [];
+              for (j = _j = 0, _len1 = _ref.length; _j < _len1; j = ++_j) {
+                text2 = _ref[j];
+                if (j % 2 === 1) {
+                  _results1.push({
+                    innerHTML: "<span class=\"deadlink\">" + E(text2) + "</span>"
+                  });
+                } else {
+                  _results1.push({
+                    innerHTML: E(text2)
+                  });
+                }
+              }
+              return _results1;
+            })();
+            text = {
+              innerHTML: text.map(function(x) {
+                return x.innerHTML;
+              }).join('')
+            };
+            if (greentext) {
+              text = {
+                innerHTML: "<span class=\"quote\">" + text.innerHTML + "</span>"
+              };
+            }
+            _results.push(text);
+          }
+        }
+        return _results;
+      })();
+      comment = {
+        innerHTML: comment.map(function(x) {
+          return x.innerHTML;
+        }).join('')
+      };
       threadID = +data.thread_num;
       o = {
         postID: postID,
         threadID: threadID,
         boardID: boardID,
-        name: data.name_processed,
+        name: data.name,
         capcode: (function() {
           switch (data.capcode) {
             case 'M':
@@ -6465,19 +6573,19 @@
         })(),
         tripcode: data.trip,
         uniqueID: data.poster_hash,
-        email: data.email ? encodeURI(data.email) : '',
-        subject: data.title_processed,
+        email: data.email || '',
+        subject: data.title,
         flagCode: data.poster_country,
-        flagName: data.poster_country_name_processed,
+        flagName: data.poster_country_name,
         date: data.fourchan_date,
         dateUTC: data.timestamp,
         comment: comment
       };
       if ((_ref = data.media) != null ? _ref.media_filename : void 0) {
         o.file = {
-          name: data.media.media_filename_processed,
+          name: data.media.media_filename,
           timestamp: data.media.media_orig,
-          url: data.media.media_link || data.media.remote_media_link,
+          url: data.media.media_link || data.media.remote_media_link || ("//i.4cdn.org/" + boardID + "/" + (encodeURIComponent(data.media[boardID === 'f' ? 'media_filename' : 'media_orig']))),
           height: data.media.media_h,
           width: data.media.media_w,
           MD5: data.media.media_hash,
@@ -6487,32 +6595,56 @@
           twidth: data.media.preview_w,
           isSpoiler: data.media.spoiler === '1'
         };
+        if (boardID === 'f') {
+          o.file.tag = JSON.parse(data.media.exif).Tag;
+        }
       }
       board = g.boards[boardID] || new Board(boardID);
       thread = g.threads["" + boardID + "." + threadID] || new Thread(threadID, board);
-      post = new Post(Build.post(o, true), thread, board, {
+      post = new Post(Build.post(o), thread, board, {
         isArchived: true
       });
-      if ((_ref1 = $('.page-num', post.nodes.info)) != null) {
-        _ref1.hidden = true;
+      if (post.file) {
+        post.file.thumbURL = o.file.turl;
       }
+      post.isFetchedQuote = true;
       Post.callbacks.execute([post]);
       return Get.insert(post, root, context);
     },
-    parseMarkup: function(text) {
-      return {
-        '\n': '<br>',
-        '[b]': '<b>',
-        '[/b]': '</b>',
-        '[spoiler]': '<s>',
-        '[/spoiler]': '</s>',
-        '[code]': '<pre class=prettyprint>',
-        '[/code]': '</pre>',
-        '[moot]': '<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">',
-        '[/moot]': '</div>',
-        '[banned]': '<strong style="color: red;">',
-        '[/banned]': '</strong>'
-      }[text] || text.replace(':lit', '');
+    archiveTags: {
+      '\n': {
+        innerHTML: "<br>"
+      },
+      '[b]': {
+        innerHTML: "<b>"
+      },
+      '[/b]': {
+        innerHTML: "</b>"
+      },
+      '[spoiler]': {
+        innerHTML: "<s>"
+      },
+      '[/spoiler]': {
+        innerHTML: "</s>"
+      },
+      '[code]': {
+        innerHTML: "<pre class=\"prettyprint\">"
+      },
+      '[/code]': {
+        innerHTML: "</pre>"
+      },
+      '[moot]': {
+        innerHTML: "<div style=\"padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px\">"
+      },
+      '[/moot]': {
+        innerHTML: "</div>"
+      },
+      '[banned]': {
+        innerHTML: "<strong style=\"color: red;\">"
+      },
+      '[/banned]': {
+        innerHTML: "</strong>"
+      }
     }
   };
 
@@ -8384,226 +8516,6 @@
     }
   };
 
-  QR.captcha = {
-    init: function() {
-      var counter, root;
-      if (d.cookie.indexOf('pass_enabled=1') >= 0) {
-        return;
-      }
-      if (!(this.isEnabled = !!$.id('g-recaptcha'))) {
-        return;
-      }
-      this.captchas = [];
-      $.get('captchas', [], function(_arg) {
-        var captchas;
-        captchas = _arg.captchas;
-        return QR.captcha.sync(captchas);
-      });
-      $.sync('captchas', this.sync.bind(this));
-      root = $.el('div', {
-        className: 'captcha-root'
-      });
-      $.extend(root, {
-        innerHTML: "<div class=\"captcha-counter\"><a href=\"javascript:;\"></a></div>"
-      });
-      counter = $('.captcha-counter > a', root);
-      this.nodes = {
-        root: root,
-        counter: counter
-      };
-      this.count();
-      $.addClass(QR.nodes.el, 'has-captcha');
-      $.after(QR.nodes.com.parentNode, root);
-      $.on(counter, 'click', this.toggle.bind(this));
-      return $.on(window, 'captcha:success', (function(_this) {
-        return function() {
-          return $.queueTask(function() {
-            return _this.save(false);
-          });
-        };
-      })(this));
-    },
-    shouldFocus: false,
-    timeouts: {},
-    postsCount: 0,
-    needed: function() {
-      var captchaCount;
-      captchaCount = this.captchas.length;
-      if (this.nodes.container && !this.timeouts.destroy) {
-        captchaCount++;
-      }
-      this.postsCount = QR.posts.length;
-      if (this.postsCount === 1 && !Conf['Auto-load captcha'] && !QR.posts[0].com && !QR.posts[0].file) {
-        this.postsCount = 0;
-      }
-      return captchaCount < this.postsCount;
-    },
-    onPostChange: function() {
-      if (this.postsCount === 0) {
-        this.setup();
-      }
-      if (QR.posts.length === 1 && !Conf['Auto-load captcha'] && !QR.posts[0].com && !QR.posts[0].file) {
-        return this.postsCount = 0;
-      }
-    },
-    toggle: function() {
-      if (this.nodes.container && !this.timeouts.destroy) {
-        return this.destroy();
-      } else {
-        return this.setup(true, true);
-      }
-    },
-    setup: function(focus, force) {
-      if (!(this.isEnabled && (this.needed() || force))) {
-        return;
-      }
-      $.addClass(QR.nodes.el, 'captcha-open');
-      if (focus) {
-        this.shouldFocus = true;
-      }
-      if (this.timeouts.destroy) {
-        clearTimeout(this.timeouts.destroy);
-        delete this.timeouts.destroy;
-        return this.reload();
-      }
-      if (this.nodes.container) {
-        return;
-      }
-      this.nodes.container = $.el('div', {
-        className: 'captcha-container'
-      });
-      $.prepend(this.nodes.root, this.nodes.container);
-      new MutationObserver(this.afterSetup.bind(this)).observe(this.nodes.container, {
-        childList: true,
-        subtree: true
-      });
-      return $.globalEval('(function() {\n  function render() {\n    var container = document.querySelector("#qr .captcha-container");\n    container.dataset.widgetID = window.grecaptcha.render(container, {\n      sitekey: \'6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc\',\n      theme: document.documentElement.classList.contains(\'tomorrow\') ? \'dark\' : \'light\',\n      callback: function(response) {\n        window.dispatchEvent(new CustomEvent("captcha:success", {detail: response}));\n      }\n    });\n  }\n  if (window.grecaptcha) {\n    render();\n  } else {\n    var cbNative = window.onRecaptchaLoaded;\n    window.onRecaptchaLoaded = function() {\n      render();\n      cbNative();\n    }\n  }\n})();');
-    },
-    afterSetup: function(mutations) {
-      var iframe, mutation, node, textarea, _i, _j, _len, _len1, _ref;
-      for (_i = 0, _len = mutations.length; _i < _len; _i++) {
-        mutation = mutations[_i];
-        _ref = mutation.addedNodes;
-        for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-          node = _ref[_j];
-          if (iframe = $.x('./descendant-or-self::iframe', node)) {
-            this.setupIFrame(iframe);
-          }
-          if (textarea = $.x('./descendant-or-self::textarea', node)) {
-            this.setupTextArea(textarea);
-          }
-        }
-      }
-    },
-    setupIFrame: function(iframe) {
-      this.setupTime = Date.now();
-      if (QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight) {
-        QR.nodes.el.style.top = null;
-        QR.nodes.el.style.bottom = '0px';
-      }
-      if (this.shouldFocus) {
-        iframe.focus();
-      }
-      return this.shouldFocus = false;
-    },
-    setupTextArea: function(textarea) {
-      return $.one(textarea, 'input', (function(_this) {
-        return function() {
-          return _this.save(true);
-        };
-      })(this));
-    },
-    destroy: function() {
-      if (!this.isEnabled) {
-        return;
-      }
-      delete this.timeouts.destroy;
-      $.rmClass(QR.nodes.el, 'captcha-open');
-      if (this.nodes.container) {
-        $.rm(this.nodes.container);
-      }
-      return delete this.nodes.container;
-    },
-    sync: function(captchas) {
-      if (captchas == null) {
-        captchas = [];
-      }
-      this.captchas = captchas;
-      this.clear();
-      return this.count();
-    },
-    getOne: function() {
-      var captcha;
-      this.clear();
-      if (captcha = this.captchas.shift()) {
-        this.count();
-        $.set('captchas', this.captchas);
-        return captcha.response;
-      } else {
-        return null;
-      }
-    },
-    save: function(pasted) {
-      var reload, _base;
-      $.forceSync('captchas');
-      reload = (QR.cooldown.auto || Conf['Post on Captcha Completion']) && this.needed();
-      this.captchas.push({
-        response: $('textarea', this.nodes.container).value,
-        timeout: (pasted ? this.setupTime : Date.now()) + 2 * $.MINUTE
-      });
-      this.count();
-      $.set('captchas', this.captchas);
-      if (reload) {
-        this.shouldFocus = true;
-        this.reload();
-      } else {
-        if (pasted) {
-          this.destroy();
-        } else {
-          if ((_base = this.timeouts).destroy == null) {
-            _base.destroy = setTimeout(this.destroy.bind(this), 3 * $.SECOND);
-          }
-        }
-        QR.nodes.status.focus();
-      }
-      if (Conf['Post on Captcha Completion'] && !QR.cooldown.auto) {
-        return QR.submit();
-      }
-    },
-    clear: function() {
-      var captcha, i, now, _i, _len, _ref;
-      if (!this.captchas.length) {
-        return;
-      }
-      $.forceSync('captchas');
-      now = Date.now();
-      _ref = this.captchas;
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        captcha = _ref[i];
-        if (captcha.timeout > now) {
-          break;
-        }
-      }
-      if (!i) {
-        return;
-      }
-      this.captchas = this.captchas.slice(i);
-      this.count();
-      $.set('captchas', this.captchas);
-      return this.setup(true);
-    },
-    count: function() {
-      this.nodes.counter.textContent = "Captchas: " + this.captchas.length;
-      clearTimeout(this.timeouts.clear);
-      if (this.captchas.length) {
-        return this.timeouts.clear = setTimeout(this.clear.bind(this), this.captchas[0].timeout - Date.now());
-      }
-    },
-    reload: function(focus) {
-      return $.globalEval('(function() {\n  var container = document.querySelector("#qr .captcha-container");\n  window.grecaptcha.reset(container.dataset.widgetID);\n})();');
-    }
-  };
-
   QR = {
     mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/vnd.adobe.flash.movie', 'application/x-shockwave-flash', 'video/webm'],
     init: function() {
@@ -9500,6 +9412,226 @@
         offsetX: 15,
         offsetY: -5
       });
+    }
+  };
+
+  QR.captcha = {
+    init: function() {
+      var counter, root;
+      if (d.cookie.indexOf('pass_enabled=1') >= 0) {
+        return;
+      }
+      if (!(this.isEnabled = !!$.id('g-recaptcha'))) {
+        return;
+      }
+      this.captchas = [];
+      $.get('captchas', [], function(_arg) {
+        var captchas;
+        captchas = _arg.captchas;
+        return QR.captcha.sync(captchas);
+      });
+      $.sync('captchas', this.sync.bind(this));
+      root = $.el('div', {
+        className: 'captcha-root'
+      });
+      $.extend(root, {
+        innerHTML: "<div class=\"captcha-counter\"><a href=\"javascript:;\"></a></div>"
+      });
+      counter = $('.captcha-counter > a', root);
+      this.nodes = {
+        root: root,
+        counter: counter
+      };
+      this.count();
+      $.addClass(QR.nodes.el, 'has-captcha');
+      $.after(QR.nodes.com.parentNode, root);
+      $.on(counter, 'click', this.toggle.bind(this));
+      return $.on(window, 'captcha:success', (function(_this) {
+        return function() {
+          return $.queueTask(function() {
+            return _this.save(false);
+          });
+        };
+      })(this));
+    },
+    shouldFocus: false,
+    timeouts: {},
+    postsCount: 0,
+    needed: function() {
+      var captchaCount;
+      captchaCount = this.captchas.length;
+      if (this.nodes.container && !this.timeouts.destroy) {
+        captchaCount++;
+      }
+      this.postsCount = QR.posts.length;
+      if (this.postsCount === 1 && !Conf['Auto-load captcha'] && !QR.posts[0].com && !QR.posts[0].file) {
+        this.postsCount = 0;
+      }
+      return captchaCount < this.postsCount;
+    },
+    onPostChange: function() {
+      if (this.postsCount === 0) {
+        this.setup();
+      }
+      if (QR.posts.length === 1 && !Conf['Auto-load captcha'] && !QR.posts[0].com && !QR.posts[0].file) {
+        return this.postsCount = 0;
+      }
+    },
+    toggle: function() {
+      if (this.nodes.container && !this.timeouts.destroy) {
+        return this.destroy();
+      } else {
+        return this.setup(true, true);
+      }
+    },
+    setup: function(focus, force) {
+      if (!(this.isEnabled && (this.needed() || force))) {
+        return;
+      }
+      $.addClass(QR.nodes.el, 'captcha-open');
+      if (focus) {
+        this.shouldFocus = true;
+      }
+      if (this.timeouts.destroy) {
+        clearTimeout(this.timeouts.destroy);
+        delete this.timeouts.destroy;
+        return this.reload();
+      }
+      if (this.nodes.container) {
+        return;
+      }
+      this.nodes.container = $.el('div', {
+        className: 'captcha-container'
+      });
+      $.prepend(this.nodes.root, this.nodes.container);
+      new MutationObserver(this.afterSetup.bind(this)).observe(this.nodes.container, {
+        childList: true,
+        subtree: true
+      });
+      return $.globalEval('(function() {\n  function render() {\n    var container = document.querySelector("#qr .captcha-container");\n    container.dataset.widgetID = window.grecaptcha.render(container, {\n      sitekey: \'6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc\',\n      theme: document.documentElement.classList.contains(\'tomorrow\') ? \'dark\' : \'light\',\n      callback: function(response) {\n        window.dispatchEvent(new CustomEvent("captcha:success", {detail: response}));\n      }\n    });\n  }\n  if (window.grecaptcha) {\n    render();\n  } else {\n    var cbNative = window.onRecaptchaLoaded;\n    window.onRecaptchaLoaded = function() {\n      render();\n      cbNative();\n    }\n  }\n})();');
+    },
+    afterSetup: function(mutations) {
+      var iframe, mutation, node, textarea, _i, _j, _len, _len1, _ref;
+      for (_i = 0, _len = mutations.length; _i < _len; _i++) {
+        mutation = mutations[_i];
+        _ref = mutation.addedNodes;
+        for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+          node = _ref[_j];
+          if (iframe = $.x('./descendant-or-self::iframe', node)) {
+            this.setupIFrame(iframe);
+          }
+          if (textarea = $.x('./descendant-or-self::textarea', node)) {
+            this.setupTextArea(textarea);
+          }
+        }
+      }
+    },
+    setupIFrame: function(iframe) {
+      this.setupTime = Date.now();
+      if (QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight) {
+        QR.nodes.el.style.top = null;
+        QR.nodes.el.style.bottom = '0px';
+      }
+      if (this.shouldFocus) {
+        iframe.focus();
+      }
+      return this.shouldFocus = false;
+    },
+    setupTextArea: function(textarea) {
+      return $.one(textarea, 'input', (function(_this) {
+        return function() {
+          return _this.save(true);
+        };
+      })(this));
+    },
+    destroy: function() {
+      if (!this.isEnabled) {
+        return;
+      }
+      delete this.timeouts.destroy;
+      $.rmClass(QR.nodes.el, 'captcha-open');
+      if (this.nodes.container) {
+        $.rm(this.nodes.container);
+      }
+      return delete this.nodes.container;
+    },
+    sync: function(captchas) {
+      if (captchas == null) {
+        captchas = [];
+      }
+      this.captchas = captchas;
+      this.clear();
+      return this.count();
+    },
+    getOne: function() {
+      var captcha;
+      this.clear();
+      if (captcha = this.captchas.shift()) {
+        this.count();
+        $.set('captchas', this.captchas);
+        return captcha.response;
+      } else {
+        return null;
+      }
+    },
+    save: function(pasted) {
+      var reload, _base;
+      $.forceSync('captchas');
+      reload = (QR.cooldown.auto || Conf['Post on Captcha Completion']) && this.needed();
+      this.captchas.push({
+        response: $('textarea', this.nodes.container).value,
+        timeout: (pasted ? this.setupTime : Date.now()) + 2 * $.MINUTE
+      });
+      this.count();
+      $.set('captchas', this.captchas);
+      if (reload) {
+        this.shouldFocus = true;
+        this.reload();
+      } else {
+        if (pasted) {
+          this.destroy();
+        } else {
+          if ((_base = this.timeouts).destroy == null) {
+            _base.destroy = setTimeout(this.destroy.bind(this), 3 * $.SECOND);
+          }
+        }
+        QR.nodes.status.focus();
+      }
+      if (Conf['Post on Captcha Completion'] && !QR.cooldown.auto) {
+        return QR.submit();
+      }
+    },
+    clear: function() {
+      var captcha, i, now, _i, _len, _ref;
+      if (!this.captchas.length) {
+        return;
+      }
+      $.forceSync('captchas');
+      now = Date.now();
+      _ref = this.captchas;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        captcha = _ref[i];
+        if (captcha.timeout > now) {
+          break;
+        }
+      }
+      if (!i) {
+        return;
+      }
+      this.captchas = this.captchas.slice(i);
+      this.count();
+      $.set('captchas', this.captchas);
+      return this.setup(true);
+    },
+    count: function() {
+      this.nodes.counter.textContent = "Captchas: " + this.captchas.length;
+      clearTimeout(this.timeouts.clear);
+      if (this.captchas.length) {
+        return this.timeouts.clear = setTimeout(this.clear.bind(this), this.captchas[0].timeout - Date.now());
+      }
+    },
+    reload: function(focus) {
+      return $.globalEval('(function() {\n  var container = document.querySelector("#qr .captcha-container");\n  window.grecaptcha.reset(container.dataset.widgetID);\n})();');
     }
   };
 
@@ -13693,7 +13825,7 @@
       return "" + (Redirect.protocol(archive)) + archive.domain + "/" + path;
     },
     securityCheck: function(URL) {
-      return /^https:\/\//.test(URL) || location.protocol === 'http:' || Conf['Except Archives from Encryption'];
+      return /^https:\/\//.test(URL) || location.protocol === 'http:' || Conf['Exempt Archives from Encryption'];
     },
     navigate: function(URL, alternative) {
       if (URL && (Redirect.securityCheck(URL) || confirm("Redirect to " + URL + "?\n\nYour connection will not be encrypted."))) {

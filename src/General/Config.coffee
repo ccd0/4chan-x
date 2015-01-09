@@ -25,6 +25,10 @@ Config =
         true
         'Redirect dead threads and images.'
       ]
+      'Exempt Archives from Encryption': [
+        false
+        'Permit loading content from, and warningless redirects to, HTTP-only archives from HTTPS pages.'
+       ]
       'Keybinds': [
         true
         'Bind actions to keyboard shortcuts.'
@@ -36,6 +40,11 @@ Config =
       'Relative Post Dates': [
         true
         'Display dates like "3 minutes ago". Tooltip shows the timestamp.'
+      ]
+      'Relative Date Title': [
+        true
+        'Show Relative Post Date only when hovering over dates.'
+        1
       ]
       'File Info Formatting': [
         true
@@ -62,7 +71,7 @@ Config =
         'Show dice that were entered into the email field.'
       ]
       'Color User IDs': [
-        false
+        true
         'Assign unique colors to user IDs on boards that use them'
       ]
       'Remove Spoilers': [
@@ -77,6 +86,10 @@ Config =
         true
         'Warn if your browser is unsupported. 4chan X may not operate correctly on unsupported browser versions.'
       ]
+      'Normalize URL': [
+         true
+        'Rewrite the URL of the current page, removing stubs and changing /res/ to /thread/.'
+      ]
       'Announcement Hiding': [
         true
         'Enable announcements to be hidden.'
@@ -89,15 +102,23 @@ Config =
       ]
       'Embedding': [
         true
-        'Embed supported services.'
+        'Embed supported services. Note: Some services don\'t work on HTTPS.'
+        1
       ]
       'Auto-embed': [
         false
         'Auto-embed Linkify Embeds.'
+        2
+      ]
+      'Floating Embeds': [
+        false
+        'Embed content in a frame that remains in place when the page is scrolled.'
+        2
       ]
       'Link Title': [
         true
         'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud, and Github gists'
+        1
       ]
 
     'Filtering':
@@ -137,15 +158,21 @@ Config =
       ]
       'Image Hover in Catalog': [
         false
-        'Show a floating expanded image on hover in the catalog.'
+        'Show full image / video on mouseover on hover in the catalog.'
       ]
       'Gallery': [
         true
         'Adds a simple and cute image gallery.' 
       ]
+      'Fullscreen Gallery': [
+        false
+        'Open gallery in fullscreen mode.'
+        1
+      ]
       'PDF in Gallery': [
         false
         'Show PDF files in gallery.'
+        1
       ]
       'Sauce': [
         true
@@ -173,31 +200,31 @@ Config =
       ]
       'Image Prefetching': [
         false
-        'Preload images'
+        'Add link in header menu to turn on image preloading.'
       ]
       'Fappe Tyme': [
         false
-        'Hide posts without images when toggled. *hint* *hint*'
+        'Hide posts without images when header menu item is checked. *hint* *hint*'
       ]
       'Werk Tyme': [
         false
-        'Hide all post images when toggled.'
+        'Hide all post images when header menu item is checked.'
       ]
       'Autoplay': [
         true
         'Videos begin playing immediately when opened.'
       ]
+      'Restart when Opened': [
+        true
+        'Restart GIFs and WebMs when you hover over or expand them.'
+      ]
       'Show Controls': [
         true
         'Show controls on videos expanded inline. Turn this off if you want to contract videos by clicking on them.'
       ]
-      'Allow Sound': [
-        true
-        'Allow sound in videos.'
-      ]
       'Loop in New Tab': [
         true
-        'Loop videos opened in their own tabs, and apply settings for inline expanded videos to them.'
+        'Loop videos opened in their own tabs.'
       ]
 
     'Menu':
@@ -208,6 +235,7 @@ Config =
       'Report Link': [
         true
         'Add a report link to the menu.'
+        1
       ]
       'Post Hiding Link': [
         true
@@ -216,10 +244,17 @@ Config =
       'Delete Link': [
         true
         'Add post and image deletion links to the menu.'
+        1
+      ]
+      'Download Link': [
+        true
+        'Add a download with original filename link to the menu.'
+        1
       ]
       'Archive Link': [
         true
         'Add an archive link to the menu.'
+        1
       ]
 
     'Monitoring':
@@ -231,9 +266,15 @@ Config =
         true
         'Show the unread posts count in the tab title.'
       ]
+      'Quoted Title': [
+        false
+        'Change the page title to reflect you\'ve been quoted.'
+        1
+      ]
       'Hide Unread Count at (0)': [
         false
         'Hide the unread posts count in the tab title when it reaches 0.'
+        1
       ]
       'Unread Favicon': [
         true
@@ -249,7 +290,11 @@ Config =
       ]
       'Thread Excerpt': [
         true
-        'Show an excerpt of the thread in the tab title.'
+        'Show an excerpt of the thread in the tab title if not already present.'
+      ]
+      'Remove Thread Excerpt': [
+        false
+        'Replace the excerpt of the thread in the tab title with the board title.'
       ]
       'Thread Stats': [
         true
@@ -258,10 +303,12 @@ Config =
       'IP Count in Stats': [
         true
         'Display the unique IP count in the thread stats.'
+        1
       ]
       'Page Count in Stats': [
         true
         'Display the page count in the thread stats.'
+        1
       ]
       'Updater and Stats in Header': [
         true,
@@ -288,30 +335,46 @@ Config =
       'Persistent QR': [
         true
         'The Quick reply won\'t disappear after posting.'
+        1
       ]
       'Auto Hide QR': [
         true
         'Automatically hide the quick reply when posting.'
+        1
       ]
       'Open Post in New Tab': [
         true
         'Open new threads or replies to a thread from the index in a new tab.'
+        1
+      ]
+      'Remember QR Size': [
+        false
+        'Remember the size of the quick reply\'s comment field.'
+        1
       ]
       'Remember Spoiler': [
         false
         'Remember the spoiler state, instead of resetting after posting.'
       ]
-      'Remember QR Size': [
+      'Show Name and Subject': [
         false
-        'Remember the size of the quick reply\'s comment field.'
+        'Show the classic name, email, and subject fields in the QR, even when 4chan doesn\'t use them all.'
+        1
       ]
       'Cooldown': [
         true
         'Indicate the remaining time before posting again.'
+        1
       ]
       'Posting Success Notifications': [
         true
         'Show notifications on successful post creation or file uploading.'
+        1
+      ]
+      'Force Noscript Captcha': [
+        false
+        'Use the non-Javascript fallback captcha in the QR even if Javascript is enabled.'
+        1
       ]
       'Captcha Warning Notifications': [
         true
@@ -320,16 +383,24 @@ Config =
       'Dump List Before Comment': [
         false
         'Position of the QR\'s Dump List.'
+        1
       ]
       'Auto-load captcha': [
         false
         'Automatically load the captcha in the QR even if your post is empty.'
+        1
+      ]
+      'Post on Captcha Completion': [
+        false
+        'Submit the post immediately when the captcha is completed.'
+        1
       ]
 
     'Quote Links':
       'Quote Backlinks': [
         true
         'Add quote backlinks.'
+        1
       ]
       'OP Backlinks': [
         true
@@ -342,10 +413,12 @@ Config =
       'Quote Hash Navigation': [
         false
         'Include an extra link after quotes for autoscrolling to quoted posts.'
+        1
       ]
       'Forward Hiding': [
         true
         'Hide original posts of inlined backlinks.'
+        1
       ]
       'Quote Previewing': [
         true
@@ -354,14 +427,15 @@ Config =
       'Quote Highlighting': [
         true
         'Highlight the previewed post.'
+        1
       ]
       'Resurrect Quotes': [
         true
         'Link dead quotes to the archives.'
       ]
-      'Quoted Title': [
-        false
-        'Change the page title to reflect you\'ve been quoted.'
+      'Mark Quotes of You': [
+        true
+        'Add \'(You)\' to quotes linking to your posts.'
       ]
       'Highlight Posts Quoting You': [
         false
@@ -370,14 +444,6 @@ Config =
       'Highlight Own Posts': [
         false
         'Highlights own posts if Quote Markers are enabled.'
-      ]
-      'Quote Threading': [
-        false
-        'Thread conversations'
-      ]
-      'Mark Quotes of You': [
-        true
-        'Add \'(You)\' to quotes linking to your posts.'
       ]
       'Mark OP Quotes': [
         true
@@ -388,23 +454,31 @@ Config =
         'Add \'(Cross-thread)\' to cross-threads quotes.'
         'Highlights own posts if Quote Markers are enabled.'
       ]
+      'Quote Threading': [
+        false
+        'Thread conversations'
+      ]
 
   imageExpansion:
     'Fit width': [
-      false
+      true
       ''
     ]
     'Fit height': [
       false
       ''
     ]
-    'Expand spoilers': [
+    'Scroll into view': [
       true
+      'Scroll down when expanding images to bring the full image into view.'
+    ]
+    'Expand spoilers': [
+      false
       'Expand all images along with spoilers.'
     ]
     'Expand videos': [
       false
-      'Expand all images also expands videos (no autoplay).'
+      'Expand all images also expands videos.'
     ]
     'Expand from here': [
       false
@@ -427,6 +501,9 @@ Config =
     ]
     'Scroll to Post': [
       true
+    ]
+    'Slide Delay': [
+      6.0
     ]
 
   style:
@@ -789,7 +866,7 @@ Config =
       'Only show watched threads from the current board.'
     ]
     'Auto Watch': [
-      true
+      false
       'Automatically watch threads you start.'
     ]
     'Auto Watch Reply': [
@@ -798,7 +875,7 @@ Config =
     ]
     'Auto Prune': [
       false
-      'Automatically prune 404\'d threads.'
+      'Automatically remove dead threads.'
     ]
 
   filter:
@@ -823,8 +900,6 @@ Config =
       # Set a custom class for moot:
       #/Admin$/;highlight:moot;op:yes
     """
-
-    email: ""
 
     subject: """
       # Filter Generals on /v/:
@@ -877,6 +952,8 @@ Config =
     'Threads per Page': 0
     'Open threads in a new tab': false
     'Show Replies': true
+    'Pin Watched Threads': false
+    'Anchor Hidden Threads': true
     'Refreshed Navigation': false
 
   Header:
@@ -890,8 +967,22 @@ Config =
 
   boardnav: """
     [ toggle-all ]
-    [current-title]
-    [external-text:"FAQ","https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions"]
+    a-replace
+    c-replace
+    g-replace
+    k-replace
+    v-replace
+    vg-replace
+    vr-replace
+    ck-replace
+    co-replace
+    fit-replace
+    jp-replace
+    mu-replace
+    sp-replace
+    tv-replace
+    vp-replace
+    [external-text:"FAQ","<%= meta.faq %>"]
   """
 
 
@@ -909,29 +1000,29 @@ Config =
   favicon: 'ferongr'
 
   usercss: """
-/* Tripcode Italics: */
-/*
-span.postertrip {
-font-style: italic;
-}
-*/
+    /* Tripcode Italics: */
+    /*
+    span.postertrip {
+      font-style: italic;
+    }
+    */
 
-/* Add a rounded border to thumbnails (but not expanded images): */
-/*
-.fileThumb > img:first-child {
-border: solid 2px rgba(0,0,100,0.5);
-border-radius: 10px;
-}
-*/
+    /* Add a rounded border to thumbnails (but not expanded images): */
+    /*
+    .fileThumb > img:first-child {
+      border: solid 2px rgba(0,0,100,0.5);
+      border-radius: 10px;
+    }
+    */
 
-/* Make highlighted posts look inset on the page: */
-/*
-div.post:target,
-div.post.highlight {
-box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
-}
-*/
-"""
+    /* Make highlighted posts look inset on the page: */
+    /*
+    div.post:target,
+    div.post.highlight {
+      box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
+    }
+    */
+  """
 
   hotkeys:
     # QR & Options
@@ -977,7 +1068,7 @@ box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
     ]
     'Toggle sage': [
       'Alt+s'
-      'Toggle sage in email field.'
+      'Toggle sage in options field.'
     ]
     'Submit QR': [
       'Ctrl+Enter'
@@ -994,7 +1085,7 @@ box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
     ]
     'Update': [
       'r'
-      'Update the thread now.'
+      'Update the thread / refresh the index.'
     ]
     # Images
     'Expand image': [
@@ -1009,13 +1100,21 @@ box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
       'g'
       'Opens the gallery.'
     ]
+    'Pause': [
+      'p'
+      'Pause/play videos in the gallery.'
+    ]
+    'Slideshow': [
+      's'
+      'Toggle the gallery slideshow mode.'
+    ]
     'fappeTyme': [
       'f'
-      'Fappe Tyme.'
+      'Toggle Fappe Tyme.'
     ]
     'werkTyme': [
       'Shift+w'
-      'Werk Tyme'
+      'Toggle Werk Tyme'
     ]
     # Board Navigation
     'Front page': [
@@ -1033,6 +1132,10 @@ box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
     'Previous page': [
       'Ctrl+Left'
       'Jump to the previous page.'
+    ]
+    'Open catalog': [
+      'Shift+c'
+      'Open the catalog of the current board.'
     ]
     'Search form': [
       'Ctrl+Alt+s'

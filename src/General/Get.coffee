@@ -1,9 +1,10 @@
 Get =
   threadExcerpt: (thread) ->
     {OP} = thread
-    excerpt = OP.info.subject?.trim() or
+    excerpt = "/#{thread.board}/ - " + (
+      OP.info.subject?.trim() or
       OP.info.comment.replace(/\n+/g, ' // ') or
-      OP.info.nameBlock
+      OP.info.nameBlock)
     if excerpt.length > 70
       excerpt = "#{excerpt[...67]}..."
     "/#{thread.board}/ - #{excerpt}"
@@ -36,7 +37,7 @@ Get =
     # Get quotelinks & backlinks linking to the given post.
     quotelinks = []
     {posts} = g
-    fullID = {post}
+    {fullID} = post
     handleQuotes = (qPost, type) ->
       quotelinks.push qPost.nodes[type]...
       quotelinks.push clone.nodes[type]... for clone in qPost.clones
@@ -63,6 +64,11 @@ Get =
       {boardID, postID} = Get.postDataFromLink quotelink
       boardID is post.board.ID and postID is post.ID
 
+  scriptData: ->
+    for script in $$ 'script:not([src])', d.head
+      return script.textContent if /\bcooldowns *=/.test script.textContent
+    ''
+
   postClone: (boardID, threadID, postID, root, context) ->
     if post = g.posts["#{boardID}.#{postID}"]
       Get.insert post, root, context
@@ -72,12 +78,9 @@ Get =
     if threadID
       $.cache "//a.4cdn.org/#{boardID}/thread/#{threadID}.json", ->
         Get.fetchedPost @, boardID, threadID, postID, root, context
-    else if url = Redirect.to 'post', {boardID, postID}
-      $.cache url,
-        -> Get.archivedPost @, boardID, postID, root, context
-      ,
-        responseType: 'json'
-        withCredentials: url.archive.withCredentials
+    else
+      Get.archivedPost boardID, postID, root, context
+
   insert: (post, root, context) ->
     # Stop here if the container has been removed while loading.
     return unless root.parentNode
@@ -91,6 +94,8 @@ Get =
 
     $.rmAll root
     $.add root, nodes.root
+    $.event 'PostsInserted'
+
   fetchedPost: (req, boardID, threadID, postID, root, context) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
@@ -101,19 +106,14 @@ Get =
     {status} = req
     unless status in [200, 304]
       # The thread can die by the time we check a quote.
-      if url = Redirect.to 'post', {boardID, postID}
-        $.cache url,
-          -> Get.archivedPost @, boardID, postID, root, context
-        ,
-          responseType: 'json'
-          withCredentials: url.archive.withCredentials
-      else
-        $.addClass root, 'warning'
-        root.textContent =
-          if status is 404
-            "Thread No.#{threadID} 404'd."
-          else
-            "Error #{req.statusText} (#{req.status})."
+      return if Get.archivedPost boardID, postID, root, context
+      
+      $.addClass root, 'warning'
+      root.textContent =
+        if status is 404
+          "Thread No.#{threadID} 404'd."
+        else
+          "Error #{req.statusText} (#{req.status})."
       return
 
     {posts} = req.response
@@ -122,15 +122,19 @@ Get =
       break if post.no is postID # we found it!
 
     if post.no isnt postID
+      # Cached requests can be stale and must be rechecked.
+      if req.cached
+        api = "//a.4cdn.org/#{boardID}/thread/#{threadID}.json"
+        $.cleanCache (url) -> url is api
+        $.cache api, ->
+          Get.fetchedPost @, boardID, threadID, postID, root, context
+        return
+      
       # The post can be deleted by the time we check a quote.
-      if url = Redirect.to 'post', {boardID, postID}
-        $.cache url,
-          -> Get.archivedPost @, boardID, postID, root, context
-        ,
-          withCredentials: url.archive.withCredentials
-      else
-        $.addClass root, 'warning'
-        root.textContent = "Post No.#{postID} was not found."
+      return if Get.archivedPost boardID, postID, root, context
+      
+      $.addClass root, 'warning'
+      root.textContent = "Post No.#{postID} was not found."
       return
 
     board = g.boards[boardID] or
@@ -138,36 +142,60 @@ Get =
     thread = g.threads["#{boardID}.#{threadID}"] or
       new Thread threadID, board
     post = new Post Build.postFromObject(post, boardID), thread, board
+    post.isFetchedQuote = true
     Post.callbacks.execute [post]
     Get.insert post, root, context
-  archivedPost: (req, boardID, postID, root, context) ->
+
+  archivedPost: (boardID, postID, root, context) ->
+    return false unless Conf['Resurrect Quotes']
+    return false unless url = Redirect.to 'post', {boardID, postID}
+    if /^https:\/\//.test(url) or location.protocol is 'http:'
+      $.cache url,
+        -> Get.parseArchivedPost @response, boardID, postID, root, context
+      ,
+        responseType: 'json'
+        withCredentials: url.archive.withCredentials
+      return true
+    else if Conf['Exempt Archives from Encryption']
+      CrossOrigin.json url, (response) ->
+        {media} = response
+        if media then for key of media when /_link$/.test key
+          # Image/thumbnail URLs loaded over HTTP can be modified in transit.
+          # Require them to be from a known HTTP host so that no referrer is sent to them from an HTTPS page.
+          delete media[key] unless media[key]? and media[key].match(/^(http:\/\/[^\/]+\/)?/)[0] in url.archive.imagehosts
+        Get.parseArchivedPost response, boardID, postID, root, context
+      return true
+    return false
+  parseArchivedPost: (data, boardID, postID, root, context) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
     if post = g.posts["#{boardID}.#{postID}"]
       Get.insert post, root, context
       return
 
-    data = req.response
     if data.error
       $.addClass root, 'warning'
       root.textContent = data.error
       return
 
-    # convert comment to html
-    bq = $.el 'blockquote', textContent: data.comment # set this first to convert text to HTML entities
     # https://github.com/eksopl/fuuka/blob/master/Board/Yotsuba.pm#L413-452
     # https://github.com/eksopl/asagi/blob/master/src/main/java/net/easymodo/asagi/Yotsuba.java#L109-138
-    bq.innerHTML = bq.innerHTML.replace ///
-      \n
-      |
-      \[/?[a-z]+(:lit)?\]
-    ///g, Get.parseMarkup
-
-    comment = bq.innerHTML
-      # greentext
-      .replace /(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class=quote>$2</span>$3'
-      # quotes
-      .replace /((&gt;){2}(&gt;\/[a-z\d]+\/)?\d+)/g, '<span class=deadlink>$1</span>'
+    comment = (data.comment or '').split /(\n|\[\/?(?:b|spoiler|code|moot|banned)\])/
+    comment = for text, i in comment
+      if i % 2 is 1
+        Get.archiveTags[text]
+      else
+        greentext = text[0] is '>'
+        text = text.replace /(\[\/?[a-z]+):lit(\])/, '$1$2'
+        text = for text2, j in text.split /(>>(?:>\/[a-z\d]+\/)?\d+)/g
+          if j % 2 is 1
+            <%= html('<span class="deadlink">${text2}</span>') %>
+          else
+            <%= html('${text2}') %>
+        text = <%= html('@{text}') %>
+        text = <%= html('<span class="quote">&{text}</span>') %> if greentext
+        text
+    comment = <%= html('@{comment}') %>
 
     threadID = +data.thread_num
     o =
@@ -176,26 +204,27 @@ Get =
       threadID: threadID
       boardID:  boardID
       # info
-      name:     data.name_processed
+      name:     data.name
       capcode:  switch data.capcode
         when 'M' then 'mod'
         when 'A' then 'admin'
         when 'D' then 'developer'
       tripcode: data.trip
       uniqueID: data.poster_hash
-      email:    if data.email then encodeURI data.email else ''
-      subject:  data.title_processed
+      email:    data.email or ''
+      subject:  data.title
       flagCode: data.poster_country
-      flagName: data.poster_country_name_processed
+      flagName: data.poster_country_name
       date:     data.fourchan_date
       dateUTC:  data.timestamp
       comment:  comment
       # file
     if data.media?.media_filename
       o.file =
-        name:      data.media.media_filename_processed
+        name:      data.media.media_filename
         timestamp: data.media.media_orig
-        url:       data.media.media_link or data.media.remote_media_link
+        url:       data.media.media_link or data.media.remote_media_link or
+                     "//i.4cdn.org/#{boardID}/#{encodeURIComponent data.media[if boardID is 'f' then 'media_filename' else 'media_orig']}"
         height:    data.media.media_h
         width:     data.media.media_w
         MD5:       data.media.media_hash
@@ -204,26 +233,26 @@ Get =
         theight:   data.media.preview_h
         twidth:    data.media.preview_w
         isSpoiler: data.media.spoiler is '1'
+      o.file.tag = JSON.parse(data.media.exif).Tag if boardID is 'f'
 
     board = g.boards[boardID] or
       new Board boardID
     thread = g.threads["#{boardID}.#{threadID}"] or
       new Thread threadID, board
-    post = new Post Build.post(o, true), thread, board, {isArchived: true}
-    $('.page-num', post.nodes.info)?.hidden = true
+    post = new Post Build.post(o), thread, board, {isArchived: true}
+    post.file.thumbURL = o.file.turl if post.file
+    post.isFetchedQuote = true
     Post.callbacks.execute [post]
     Get.insert post, root, context
-  parseMarkup: (text) ->
-    {
-      '\n':         '<br>'
-      '[b]':        '<b>'
-      '[/b]':       '</b>'
-      '[spoiler]':  '<s>'
-      '[/spoiler]': '</s>'
-      '[code]':     '<pre class=prettyprint>'
-      '[/code]':    '</pre>'
-      '[moot]':     '<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">'
-      '[/moot]':    '</div>'
-      '[banned]':   '<strong style="color: red;">'
-      '[/banned]':  '</strong>'
-    }[text] or text.replace ':lit', ''
+  archiveTags:
+    '\n':         <%= html('<br>') %>
+    '[b]':        <%= html('<b>') %>
+    '[/b]':       <%= html('</b>') %>
+    '[spoiler]':  <%= html('<s>') %>
+    '[/spoiler]': <%= html('</s>') %>
+    '[code]':     <%= html('<pre class="prettyprint">') %>
+    '[/code]':    <%= html('</pre>') %>
+    '[moot]':     <%= html('<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">') %>
+    '[/moot]':    <%= html('</div>') %>
+    '[banned]':   <%= html('<strong style="color: red;">') %>
+    '[/banned]':  <%= html('</strong>') %>
