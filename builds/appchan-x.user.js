@@ -4241,27 +4241,18 @@
 
   Header = {
     init: function() {
-      var barFixedToggler, barPositionToggler, customNavToggler, editCustomNav, headerToggler, menuButton, scrollHeaderToggler;
-      this.menu = new UI.Menu();
+      var barFixedToggler, barPositionToggler, box, customNavToggler, editCustomNav, headerToggler, menuButton, scrollHeaderToggler;
+      this.menu = new UI.Menu('header');
       menuButton = $.el('a', {
         className: 'menu-button a-icon',
         id: 'main-menu'
       });
-      barFixedToggler = $.el('label', {
-        innerHTML: '<input type=checkbox name="Fixed Header"> Fixed Header'
-      });
-      headerToggler = $.el('label', {
-        innerHTML: '<input type=checkbox name="Header auto-hide"> Auto-hide header'
-      });
-      scrollHeaderToggler = $.el('label', {
-        innerHTML: '<input type=checkbox name="Header auto-hide on scroll"> Auto-hide header on scroll'
-      });
-      barPositionToggler = $.el('label', {
-        innerHTML: '<input type=checkbox name="Bottom Header"> Bottom header'
-      });
-      customNavToggler = $.el('label', {
-        innerHTML: '<input type=checkbox name="Custom Board Navigation"> Custom board navigation'
-      });
+      box = UI.checkbox.bind(UI);
+      barFixedToggler = box('Fixed Header', 'Fixed Header');
+      headerToggler = box('Header auto-hide', ' Auto-hide header');
+      scrollHeaderToggler = box('Header auto-hide on scroll', ' Auto-hide header on scroll');
+      barPositionToggler = box('Bottom Header', ' Bottom header');
+      customNavToggler = box('Custom Board Navigation', ' Custom board navigation');
       editCustomNav = $.el('a', {
         textContent: 'Edit custom board navigation',
         href: 'javascript:;'
@@ -4274,9 +4265,8 @@
       $.on(menuButton, 'click', this.menuToggle);
       $.on(this.headerToggler, 'change', this.toggleBarVisibility);
       $.on(this.barFixedToggler, 'change', this.toggleBarFixed);
-      $.on(this.scrollHeaderToggler, 'change', this.setHideBarOnScroll);
       $.on(this.barPositionToggler, 'change', this.toggleBarPosition);
-      $.on(this.headerToggler, 'change', this.toggleBarVisibility);
+      $.on(this.scrollHeaderToggler, 'change', this.setHideBarOnScroll);
       $.on(this.customNavToggler, 'change', this.toggleCustomNav);
       $.on(editCustomNav, 'click', this.editCustomNav);
       this.setBarFixed(Conf['Fixed Header']);
@@ -4368,23 +4358,42 @@
       return Header.addNav();
     },
     setBoardList: function() {
-      var a, boardList, btn, fourchannav, fullBoardList, shortcuts, _i, _len, _ref;
+      var a, boardList, btn, chr, fourchannav, fullBoardList, node, nodes, shortcuts, _i, _j, _len, _len1, _ref, _ref1;
       fourchannav = $.id('boardNavDesktop');
       Header.boardList = boardList = $.el('span', {
-        id: 'board-list',
-        innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> " + fourchannav.innerHTML + "</span>"
+        id: 'board-list'
       });
-      _ref = $$('a', boardList);
+      $.extend(boardList, {
+        innerHTML: "<span id=\"custom-board-list\"></span><span id=\"full-board-list\" hidden><span class=\"hide-board-list-container brackets-wrap\"><a href=\"javascript:;\" class=\"hide-board-list-button\">&nbsp;-&nbsp;</a></span></span>"
+      });
+      fullBoardList = $('#full-board-list', boardList);
+      nodes = [];
+      _ref = $('#boardNavDesktop > .boardList').childNodes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        a = _ref[_i];
-        if (Conf['JSON Navigation']) {
-          $.on(a, 'click', Navigate.navigate);
-        }
-        if (a.pathname.split('/')[1] === g.BOARD.ID) {
-          a.className = 'current';
+        node = _ref[_i];
+        switch (node.nodeName) {
+          case '#text':
+            _ref1 = node.nodeValue;
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              chr = _ref1[_j];
+              if (chr !== ' ') {
+                nodes.push($.tn(chr));
+              }
+            }
+            break;
+          case 'A':
+            a = node.cloneNode(true);
+            if (Conf['JSON Navigation']) {
+              $.on(a, 'click', Navigate.navigate);
+            }
+            if (a.pathname.split('/')[1] === g.BOARD.ID) {
+              a.className = 'current';
+            }
+            nodes.push(a);
         }
       }
-      fullBoardList = $('#full-board-list', boardList);
+      $.add(fullBoardList, nodes);
+      fullBoardList.normalize();
       btn = $('.hide-board-list-button', fullBoardList);
       $.on(btn, 'click', Header.toggleBoardList);
       $.rm($('#navtopright', fullBoardList));
@@ -4396,47 +4405,51 @@
       $.add(boardList, fullBoardList);
       $.add(Header.bar, [Header.boardList, Header.toggle]);
       Header.setCustomNav(Conf['Custom Board Navigation']);
-      Header.generateBoardList(Conf['boardnav'].replace(/(\r\n|\n|\r)/g, ' '));
+      Header.generateBoardList(Conf['boardnav']);
       $.sync('Custom Board Navigation', Header.setCustomNav);
       return $.sync('boardnav', Header.generateBoardList);
     },
-    generateBoardList: function(text) {
+    generateBoardList: function(boardnav) {
       var as, list, nodes, re;
       list = $('#custom-board-list', Header.boardList);
       $.rmAll(list);
-      if (!text) {
+      if (!boardnav) {
         return;
       }
+      boardnav = boardnav.replace(/(\r\n|\n|\r)/g, ' ');
       as = $$('#full-board-list a[title]', Header.boardList);
       re = /[\w@]+(-(all|title|replace|full|archive|(mode|sort|text|url):"[^"]+"(\,"[^"]+[^"]")?))*|[^\w@]+/g;
-      nodes = text.match(re).map(function(t) {
-        var a, board, boardID, href, m, match, type, url, _i, _len;
+      nodes = boardnav.match(re).map(function(t) {
+        var a, boardID, href, m, text, type, url, _i, _len;
         if (/^[^\w@]/.test(t)) {
           return $.tn(t);
         }
+        text = url = null;
+        t = t.replace(/-text:"([^"]+)"(?:,"([^"]+)")?/g, function(m0, m1, m2) {
+          text = m1;
+          url = m2;
+          return '';
+        });
         if (/^toggle-all/.test(t)) {
           a = $.el('a', {
             className: 'show-board-list-button',
-            textContent: (match = t.match(/-text:"(.+)"/)) ? match[1] : '+',
+            textContent: text || '+',
             href: 'javascript:;'
           });
           $.on(a, 'click', Header.toggleBoardList);
           return a;
         }
         if (/^external/.test(t)) {
-          if (url = t.match(/\,"(.+)"/)) {
-            a = $.el('a', {
-              textContent: (match = t.match(/-text:"(.+)"\,/)) ? match[1] : '+',
-              className: 'external',
-              href: url[1]
-            });
-            if (a.hostname === 'boards.4chan.org' && a.pathname.split('/')[1] === g.BOARD.ID) {
-              a.className += ' current';
-            }
-            return a;
+          a = $.el('a', {
+            href: url || 'javascript:;',
+            textContent: text || '+',
+            className: 'external'
+          });
+          if (a.hostname === 'boards.4chan.org' && a.pathname.split('/')[1] === g.BOARD.ID) {
+            a.className += ' current';
           }
+          return a;
         }
-        board = /^current/.test(t) ? g.BOARD.ID : t.match(/^[^-]+/)[0];
         boardID = t.split('-')[0];
         if (boardID === 'current') {
           boardID = g.BOARD.ID;
@@ -4448,9 +4461,6 @@
           }
           a = a.cloneNode();
           break;
-        }
-        if (a.parentNode) {
-          return $.tn(boardID);
         }
         if (Conf['JSON Navigation']) {
           $.on(a, 'click', Navigate.navigate);
@@ -4503,7 +4513,8 @@
         }
         return a;
       });
-      return $.add(list, nodes);
+      $.add(list, nodes);
+      return $.ready(CatalogLinks.initBoardList);
     },
     toggleBoardList: function() {
       var bar, custom, full, showBoardList;
@@ -4532,14 +4543,24 @@
     },
     setBarVisibility: function(hide) {
       Header.headerToggler.checked = hide;
-      return (hide ? $.addClass : $.rmClass)(Header.bar, 'autohide');
+      $.event('CloseMenu');
+      if (hide) {
+        $.addClass(Header.bar, 'autohide');
+        return $.addClass(doc, 'autohide');
+      } else {
+        $.rmClass(Header.bar, 'autohide');
+        return $.rmClass(doc, 'autohide');
+      }
     },
-    toggleBarVisibility: function(e) {
-      var hide;
-      hide = this.checked;
+    toggleBarVisibility: function() {
+      var hide, message;
+      hide = this.nodeName === 'INPUT' ? this.checked : !$.hasClass(Header.bar, 'autohide');
       Conf['Header auto-hide'] = hide;
       $.set('Header auto-hide', hide);
-      return Header.setBarVisibility(hide);
+      Header.setBarVisibility(hide);
+      Header.headerToggler = hide;
+      message = "The header bar will " + (hide ? 'automatically hide itself.' : 'remain visible.');
+      return new Notice('info', message, 2);
     },
     setHideBarOnScroll: function(hide) {
       Header.scrollHeaderToggler.checked = hide;
@@ -4588,8 +4609,8 @@
       Header.customNavToggler.checked = show;
       cust = $('#custom-board-list', Header.bar);
       full = $('#full-board-list', Header.bar);
-      btn = $('.hide-board-list-button', full);
-      return _ref = show ? [false, true] : [true, false], cust.hidden = _ref[0], full.hidden = _ref[1], _ref;
+      btn = $('.hide-board-list-container', full);
+      return _ref = show ? [false, true, false] : [true, false, true], cust.hidden = _ref[0], full.hidden = _ref[1], btn.hidden = _ref[2], _ref;
     },
     toggleCustomNav: function() {
       $.cb.checked.call(this);
@@ -4599,7 +4620,7 @@
       var settings;
       Settings.open('Advanced');
       settings = $.id('fourchanx-settings');
-      return $('input[name=boardnav]', settings).focus();
+      return $('[name=boardnav]', settings).focus();
     },
     hashScroll: function() {
       var hash, post;
@@ -4607,7 +4628,7 @@
       if (!(/^p\d+$/.test(hash) && (post = $.id(hash)))) {
         return;
       }
-      if ((Get.postFromNode(post)).isHidden) {
+      if ((Get.postFromRoot(post)).isHidden) {
         return;
       }
       return Header.scrollTo(post);
@@ -4674,6 +4695,9 @@
     },
     isNodeVisible: function(node) {
       var height;
+      if (d.hidden || !doc.contains(node)) {
+        return false;
+      }
       height = node.getBoundingClientRect().height;
       return Header.getTopOf(node) + height >= 0 && Header.getBottomOf(node) + height >= 0;
     },
@@ -4715,7 +4739,7 @@
           return;
       }
       el = $.el('span', {
-        innerHTML: "Desktop notification permissions are not granted.\n[<a href='https://github.com/MayhemYDG/4chan-x/wiki/FAQ#desktop-notifications' target=_blank>FAQ</a>]<br>\n<button>Authorize</button> or <button>Disable</button>"
+        innerHTML: E(g.NAME) + " needs your permission to show desktop notifications. [<a href=\"" + E(g.FAQ) + "#why-is-4chan-x-asking-for-permission-to-show-desktop-notifications\" target=\"_blank\">FAQ</a>]<br><button>Authorize</button> or <button>Disable</button>"
       });
       _ref = $$('button', el), authorize = _ref[0], disable = _ref[1];
       $.on(authorize, 'click', function() {

@@ -1,21 +1,19 @@
 Header =
   init: ->
-    @menu = new UI.Menu()
+    @menu = new UI.Menu 'header'
 
     menuButton = $.el 'a',
       className: 'menu-button a-icon'
       id:        'main-menu'
 
-    barFixedToggler  = $.el 'label',
-      innerHTML: '<input type=checkbox name="Fixed Header"> Fixed Header'
-    headerToggler = $.el 'label',
-      innerHTML: '<input type=checkbox name="Header auto-hide"> Auto-hide header'
-    scrollHeaderToggler = $.el 'label',
-      innerHTML: '<input type=checkbox name="Header auto-hide on scroll"> Auto-hide header on scroll'
-    barPositionToggler = $.el 'label',
-      innerHTML: '<input type=checkbox name="Bottom Header"> Bottom header'
-    customNavToggler = $.el 'label',
-      innerHTML: '<input type=checkbox name="Custom Board Navigation"> Custom board navigation'
+    box = UI.checkbox.bind UI
+
+    barFixedToggler     = box 'Fixed Header',               'Fixed Header'
+    headerToggler       = box 'Header auto-hide',           ' Auto-hide header'
+    scrollHeaderToggler = box 'Header auto-hide on scroll', ' Auto-hide header on scroll'
+    barPositionToggler  = box 'Bottom Header',              ' Bottom header'
+    customNavToggler    = box 'Custom Board Navigation',    ' Custom board navigation'
+
     editCustomNav = $.el 'a',
       textContent: 'Edit custom board navigation'
       href: 'javascript:;'
@@ -29,9 +27,8 @@ Header =
     $.on menuButton,           'click',  @menuToggle
     $.on @headerToggler,       'change', @toggleBarVisibility
     $.on @barFixedToggler,     'change', @toggleBarFixed
-    $.on @scrollHeaderToggler, 'change', @setHideBarOnScroll
     $.on @barPositionToggler,  'change', @toggleBarPosition
-    $.on @headerToggler,       'change', @toggleBarVisibility
+    $.on @scrollHeaderToggler, 'change', @setHideBarOnScroll
     $.on @customNavToggler,    'change', @toggleCustomNav
     $.on editCustomNav,        'click',  @editCustomNav
 
@@ -47,7 +44,8 @@ Header =
     @addShortcut menuButton
 
     @menu.addEntry
-      el: $.el 'span', textContent: 'Header'
+      el: $.el 'span',
+        textContent: 'Header'
       order: 107
       subEntries: [
           el: barFixedToggler
@@ -110,14 +108,32 @@ Header =
     fourchannav = $.id 'boardNavDesktop'
     Header.boardList = boardList = $.el 'span',
       id: 'board-list'
-      innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-container brackets-wrap'><a href=javascript:; class='hide-board-list-button'>&nbsp;-&nbsp;</a></span> #{fourchannav.innerHTML}</span>"
+    $.extend boardList, <%= html(
+      '<span id="custom-board-list"></span>' +
+      '<span id="full-board-list" hidden>' +
+        '<span class="hide-board-list-container brackets-wrap">' +
+          '<a href="javascript:;" class="hide-board-list-button">&nbsp;-&nbsp;</a>' +
+        '</span>' +
+      '</span>'
+    ) %>
+      
 
-    for a in $$ 'a', boardList
-      if Conf['JSON Navigation']
-        $.on a, 'click', Navigate.navigate
-      if a.pathname.split('/')[1] is g.BOARD.ID
-        a.className = 'current'
     fullBoardList = $ '#full-board-list', boardList
+    nodes = []
+    for node in $('#boardNavDesktop > .boardList').childNodes
+      switch node.nodeName
+        when '#text'
+          for chr in node.nodeValue when chr isnt ' '
+            nodes.push $.tn chr
+        when 'A'
+          a = node.cloneNode true
+          if Conf['JSON Navigation']
+            $.on a, 'click', Navigate.navigate
+          a.className = 'current' if a.pathname.split('/')[1] is g.BOARD.ID
+          nodes.push a
+    $.add fullBoardList, nodes
+    fullBoardList.normalize()
+
     btn = $ '.hide-board-list-button', fullBoardList
     $.on btn, 'click', Header.toggleBoardList
 
@@ -134,50 +150,50 @@ Header =
     $.add Header.bar, [Header.boardList, Header.toggle]
 
     Header.setCustomNav Conf['Custom Board Navigation']
-    Header.generateBoardList Conf['boardnav'].replace /(\r\n|\n|\r)/g, ' '
+    Header.generateBoardList Conf['boardnav']
 
     $.sync 'Custom Board Navigation', Header.setCustomNav
     $.sync 'boardnav', Header.generateBoardList
 
-  generateBoardList: (text) ->
+  generateBoardList: (boardnav) ->
     list = $ '#custom-board-list', Header.boardList
     $.rmAll list
-    return unless text
+    return unless boardnav
+    boardnav = boardnav.replace /(\r\n|\n|\r)/g, ' '
     as = $$ '#full-board-list a[title]', Header.boardList
     re = /[\w@]+(-(all|title|replace|full|archive|(mode|sort|text|url):"[^"]+"(\,"[^"]+[^"]")?))*|[^\w@]+/g
-    nodes = text.match(re).map (t) ->
+    nodes = boardnav.match(re).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
 
+      text = url = null
+      t = t.replace /-text:"([^"]+)"(?:,"([^"]+)")?/g, (m0, m1, m2) ->
+        text = m1
+        url = m2
+        ''
+
       if /^toggle-all/.test t
         a = $.el 'a',
-          className:   'show-board-list-button'
-          textContent: if match = t.match /-text:"(.+)"/ then match[1] else '+'
-          href:        'javascript:;'
+          className: 'show-board-list-button'
+          textContent: text or '+'
+          href: 'javascript:;'
         $.on a, 'click', Header.toggleBoardList
         return a
 
       if /^external/.test t
-        if url = t.match /\,"(.+)"/
-          a = $.el 'a',
-            textContent: if match = t.match /-text:"(.+)"\,/ then match[1] else '+'
-            className:   'external'
-            href:        url[1]
-          if a.hostname is 'boards.4chan.org' and a.pathname.split('/')[1] is g.BOARD.ID
-            a.className += ' current'
-          return a
-
-      board = if /^current/.test t
-        g.BOARD.ID
-      else
-        t.match(/^[^-]+/)[0]
+        a = $.el 'a',
+          href: url or 'javascript:;'
+          textContent: text or '+'
+          className: 'external'
+        if a.hostname is 'boards.4chan.org' and a.pathname.split('/')[1] is g.BOARD.ID
+          a.className += ' current'
+        return a
 
       boardID = t.split('-')[0]
       boardID = g.BOARD.ID if boardID is 'current'
       for a in as when a.textContent is boardID
         a = a.cloneNode()
         break
-      return $.tn boardID if a.parentNode # Not a clone.
 
       if Conf['JSON Navigation']
         $.on a, 'click', Navigate.navigate
@@ -218,6 +234,7 @@ Header =
       a
 
     $.add list, nodes
+    $.ready CatalogLinks.initBoardList
 
   toggleBoardList: ->
     {bar}  = Header
@@ -246,13 +263,29 @@ Header =
 
   setBarVisibility: (hide) ->
     Header.headerToggler.checked = hide
-    (if hide then $.addClass else $.rmClass) Header.bar, 'autohide'
+    $.event 'CloseMenu'
+    if hide
+      $.addClass Header.bar, 'autohide'
+      $.addClass doc, 'autohide'
+    else
+      $.rmClass Header.bar, 'autohide'
+      $.rmClass doc, 'autohide'
 
-  toggleBarVisibility: (e) ->
-    hide = @checked
+  toggleBarVisibility: ->
+    hide = if @nodeName is 'INPUT'
+      @checked
+    else
+      !$.hasClass Header.bar, 'autohide'
     Conf['Header auto-hide'] = hide
     $.set 'Header auto-hide', hide
     Header.setBarVisibility hide
+    # set checked status if called from keybind
+    Header.headerToggler = hide
+    message = "The header bar will #{if hide
+      'automatically hide itself.'
+    else
+      'remain visible.'}"
+    new Notice 'info', message, 2
 
   setHideBarOnScroll: (hide) ->
     Header.scrollHeaderToggler.checked = hide
@@ -304,11 +337,11 @@ Header =
     Header.customNavToggler.checked = show
     cust = $ '#custom-board-list', Header.bar
     full = $ '#full-board-list',   Header.bar
-    btn = $ '.hide-board-list-button', full
-    [cust.hidden, full.hidden] = if show
-      [false, true]
+    btn = $ '.hide-board-list-container', full
+    [cust.hidden, full.hidden, btn.hidden] = if show
+      [false, true, false]
     else
-      [true, false]
+      [true, false, true]
 
   toggleCustomNav: ->
     $.cb.checked.call @
@@ -317,12 +350,12 @@ Header =
   editCustomNav: ->
     Settings.open 'Advanced'
     settings = $.id 'fourchanx-settings'
-    $('input[name=boardnav]', settings).focus()
+    $('[name=boardnav]', settings).focus()
 
   hashScroll: ->
     hash = @location.hash[1..]
     return unless /^p\d+$/.test(hash) and post = $.id hash
-    return if (Get.postFromNode post).isHidden
+    return if (Get.postFromRoot post).isHidden
     Header.scrollTo post
 
   scrollTo: (root, down, needed) ->
@@ -364,6 +397,7 @@ Header =
     bottom
 
   isNodeVisible: (node) ->
+    return false if d.hidden or !doc.contains node
     {height} = node.getBoundingClientRect()
     Header.getTopOf(node) + height >= 0 and Header.getBottomOf(node) + height >= 0
 
@@ -401,11 +435,11 @@ Header =
         return
 
     el = $.el 'span',
-      innerHTML: """
-      Desktop notification permissions are not granted.
-      [<a href='https://github.com/MayhemYDG/4chan-x/wiki/FAQ#desktop-notifications' target=_blank>FAQ</a>]<br>
-      <button>Authorize</button> or <button>Disable</button>
-      """
+      <%= html(
+        '${g.NAME} needs your permission to show desktop notifications. ' +
+        '[<a href="${g.FAQ}#why-is-4chan-x-asking-for-permission-to-show-desktop-notifications" target="_blank">FAQ</a>]<br>' +
+        '<button>Authorize</button> or <button>Disable</button>'
+      ) %>
     [authorize, disable] = $$ 'button', el
     $.on authorize, 'click', ->
       Notification.requestPermission (status) ->
