@@ -83,9 +83,9 @@ PostHiding =
           @cb = -> PostHiding.menu.hide post
           $.on  @el, 'click', @cb
           true
-      thisPost = el: UI.checkbox 'thisPost', ' This post', true
-      replies  = el: UI.checkbox 'replies', ' Hide replies', Conf['Recursive Hiding']
-      makeStub = el: UI.checkbox 'makeStub', ' Make stub', Conf['Stubs']
+      thisPost = el: UI.checkbox 'thisPost', 'This post', true
+      replies  = el: UI.checkbox 'replies',  'Hide replies', Conf['Recursive Hiding']
+      makeStub = el: UI.checkbox 'makeStub', 'Make stub', Conf['Stubs']
 
       Menu.menu.addEntry
         el: $.el 'div',
@@ -104,12 +104,12 @@ PostHiding =
           $.on  @el, 'click', @cb
           true
       thisPost =
-        el: UI.checkbox 'thisPost', ' This post', false
+        el: UI.checkbox 'thisPost', 'This post', false
         open: (post) ->
           @el.firstChild.checked = post.isHidden
           true
       replies  =
-        el: UI.checkbox 'replies', ' Show replies', false
+        el: UI.checkbox 'replies', 'Show replies', false
         open: (post) ->
           data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
           @el.firstChild.checked = if 'hideRecursively' of data then data.hideRecursively else Conf['Recursive Hiding']

@@ -27,7 +27,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.43 - 2015-01-08
+* appchan x - Version 2.9.43 - 2015-01-09
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -7612,13 +7612,13 @@
           }
         };
         thisPost = {
-          el: UI.checkbox('thisPost', ' This post', true)
+          el: UI.checkbox('thisPost', 'This post', true)
         };
         replies = {
-          el: UI.checkbox('replies', ' Hide replies', Conf['Recursive Hiding'])
+          el: UI.checkbox('replies', 'Hide replies', Conf['Recursive Hiding'])
         };
         makeStub = {
-          el: UI.checkbox('makeStub', ' Make stub', Conf['Stubs'])
+          el: UI.checkbox('makeStub', 'Make stub', Conf['Stubs'])
         };
         Menu.menu.addEntry({
           el: $.el('div', {
@@ -7648,14 +7648,14 @@
           }
         };
         thisPost = {
-          el: UI.checkbox('thisPost', ' This post', false),
+          el: UI.checkbox('thisPost', 'This post', false),
           open: function(post) {
             this.el.firstChild.checked = post.isHidden;
             return true;
           }
         };
         replies = {
-          el: UI.checkbox('replies', ' Show replies', false),
+          el: UI.checkbox('replies', 'Show replies', false),
           open: function(post) {
             var data;
             data = PostHiding.db.get({
@@ -17204,7 +17204,7 @@
 
   Settings = {
     init: function() {
-      var addSection, arr, check, el, settings, _i, _len, _ref;
+      var add, check, el, settings;
       el = $.el('a', {
         className: 'settings-link',
         title: 'Appchan X Settings',
@@ -17216,12 +17216,16 @@
         el: el,
         order: 1
       });
-      addSection = this.addSection;
-      _ref = [['style', 'Style'], ['themes', 'Themes'], ['mascots', 'Mascots'], ['main', 'Script'], ['filter', 'Filter'], ['sauce', 'Sauce'], ['advanced', 'Advanced'], ['keybinds', 'Keybinds']];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        arr = _ref[_i];
-        addSection(arr[1], Settings[arr[0]]);
-      }
+      add = this.addSection;
+      add('Style', this.style);
+      add('Themes', this.themes);
+      add('Mascots', this.mascots);
+      add('Main', this.main);
+      add('Filter', this.filter);
+      add('Sauce', this.sauce);
+      add('Advanced', this.advanced);
+      add('Keybinds', this.keybinds);
+      $.on(d, 'AddSettingsSection', Settings.addSection);
       $.on(d, 'OpenSettings', function(e) {
         return Settings.open(e.detail);
       });
@@ -17295,8 +17299,12 @@
       return $.event('OpenSettings', null, dialog);
     },
     close: function() {
+      var _ref;
       if (!Settings.dialog) {
         return;
+      }
+      if ((_ref = d.activeElement) != null) {
+        _ref.blur();
       }
       $.rm(Settings.overlay);
       $.rm(Settings.dialog);
@@ -17305,7 +17313,10 @@
     },
     sections: [],
     addSection: function(title, open) {
-      var hyphenatedTitle;
+      var hyphenatedTitle, _ref;
+      if (typeof title !== 'string') {
+        _ref = title.detail, title = _ref.title, open = _ref.open;
+      }
       hyphenatedTitle = title.toLowerCase().replace(/\s+/g, '-');
       return Settings.sections.push({
         title: title,
@@ -17327,27 +17338,45 @@
       return $.event('OpenSettings', null, section);
     },
     main: function(section) {
-      var arr, button, description, div, fs, input, inputs, items, key, obj, _ref;
+      var arr, button, container, containers, description, div, fs, input, inputs, items, key, level, obj, _ref;
       items = {};
       inputs = {};
       _ref = Config.main;
       for (key in _ref) {
         obj = _ref[key];
         fs = $.el('fieldset', {
-          innerHTML: "<legend>" + key + "</legend>"
+          innerHTML: "<legend>" + E(key) + "</legend>"
         });
+        containers = [fs];
         for (key in obj) {
           arr = obj[key];
           description = arr[1];
-          div = $.el('div', {
-            innerHTML: "<label><input type=checkbox name='" + key + "'>" + key + "</label><span class=description>" + description + "</span>"
-          });
+          div = $.el('div');
+          $.add(div, [
+            UI.checkbox(key, key, false), $.el('span', {
+              "class": 'description',
+              textContent: ": " + description
+            })
+          ]);
           input = $('input', div);
           $.on($('label', div), 'mouseover', Settings.mouseover);
-          $.on(input, 'change', $.cb.checked);
+          $.on(input, 'change', function() {
+            this.parentNode.parentNode.dataset.checked = this.checked;
+            return $.cb.checked.call(this);
+          });
           items[key] = Conf[key];
           inputs[key] = input;
-          $.add(fs, div);
+          level = arr[2] || 0;
+          if (containers.length <= level) {
+            container = $.el('div', {
+              className: 'suboption-list'
+            });
+            $.add(containers[containers.length - 1].lastElementChild, container);
+            containers[level] = container;
+          } else if (containers.length > level + 1) {
+            containers.splice(level + 1, containers.length - (level + 1));
+          }
+          $.add(containers[level], div);
         }
         Rice.nodes(fs);
         $.add(section, fs);
@@ -17357,10 +17386,11 @@
         for (key in items) {
           val = items[key];
           inputs[key].checked = val;
+          inputs[key].parentNode.parentNode.dataset.checked = val;
         }
       });
       div = $.el('div', {
-        innerHTML: "<button></button><span class=description>: Clear manually-hidden threads and posts on all boards. Reload the page to apply."
+        innerHTML: "<button></button><span class=\"description\">: Clear manually-hidden threads and posts on all boards. Reload the page to apply."
       });
       button = $('button', div);
       $.get('hiddenPosts', {}, function(_arg) {
@@ -17412,6 +17442,7 @@
         return;
       }
       if (!confirm('Your current settings will be entirely overwritten, are you sure?')) {
+        new Notice('info', "Import aborted.", 1);
         return;
       }
       reader = new FileReader();
@@ -17419,14 +17450,13 @@
         var err;
         try {
           Settings.loadSettings(JSON.parse(e.target.result));
+          if (confirm('Import successful. Reload now?')) {
+            return window.location.reload();
+          }
         } catch (_error) {
           err = _error;
           alert('Import failed due to an error.');
-          c.error(err.stack);
-          return;
-        }
-        if (confirm('Import successful. Reload now?')) {
-          return window.location.reload();
+          return c.error(err.stack);
         }
       };
       return reader.readAsText(file);
@@ -17477,9 +17507,10 @@
         $.add(div, ta);
         return;
       }
-      return $.extend(div, {
+      $.extend(div, {
         innerHTML: "<div class=warning " + (Conf['Filter'] ? 'hidden' : '') + "><code>Filter</code> is disabled.</div>\r<p>\rUse <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions\">regular expressions</a>, one per line.<br>\rLines starting with a <code>#</code> will be ignored.<br>\rFor example, <code>/weeaboo/i</code> will filter posts containing the string `<code>weeaboo</code>`, case-insensitive.<br>\rMD5 filtering uses exact string matching, not regular expressions.\r</p>\r<ul>You can use these settings with each regular expression, separate them with semicolons:\r<li>\rPer boards, separate them with commas. It is global if not specified.<br>\rFor example: <code>boards:a,jp;</code>.\r</li>\r<li>\rFilter OPs only along with their threads (`only`), replies only (`no`), or both (`yes`, this is default).<br>\rFor example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.\r</li>\r<li>\rOverrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>\rFor example: <code>stub:yes;</code> or <code>stub:no;</code>.\r</li>\r<li>\rHighlight instead of hiding. You can specify a class name to use with a userstyle.<br>\rFor example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.\r</li>\r<li>\rHighlighted OPs will have their threads put on top of the board index by default.<br>\rFor example: <code>top:yes;</code> or <code>top:no;</code>.\r</li>\r</ul>\r"
       });
+      return $('.warning', div).hidden = Conf['Filter'];
     },
     sauce: function(section) {
       var ta;
@@ -17488,33 +17519,25 @@
       });
       ta = $('textarea', section);
       $.get('sauces', Conf['sauces'], function(item) {
-        return ta.value = item['sauces'].replace(/\$\d/g, function(c) {
-          switch (c) {
-            case '$1':
-              return '%TURL';
-            case '$2':
-              return '%URL';
-            case '$3':
-              return '%MD5';
-            case '$4':
-              return '%board';
-            default:
-              return c;
-          }
-        });
+        return ta.value = item['sauces'];
       });
       return $.on(ta, 'change', $.cb.value);
     },
     advanced: function(section) {
-      var archBoards, boardID, boardOptions, boardSelect, boards, event, files, i, input, inputs, item, items, name, o, row, rows, software, ta, table, withCredentials, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+      var archBoards, boardID, boardOptions, boardSelect, boards, customCSS, event, files, i, input, inputs, interval, item, items, name, o, row, rows, software, ta, table, warning, withCredentials, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _len6, _m, _n, _o, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6;
       $.extend(section, {
         innerHTML: "<fieldset>\r<legend>Archiver</legend>\r<div class=\"warning\" " + (Conf['404 Redirect'] ? 'hidden' : '') + "><code>404 Redirect</code> is disabled.</div>\r<div><select id='archive-board-select'></select></div>\r<table id='archive-table'>\r<thead>\r<th>Thread redirection</th>\r<th>Post fetching</th>\r<th>File redirection</th>\r</thead>\r<tbody></tbody>\r</table>\r<span class=note>Disabled selections indicate that only one archive is available for that board and redirection type.</span>\r</fieldset>\r<fieldset>\r<legend>Custom Board Navigation</legend>\r<div><textarea name=boardnav class=field spellcheck=false></textarea></div>\r<span class=note>New lines will be converted into spaces.</span><br><br>\r<div class=note>In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div>\r<div>Board link: <code>g</code></div>\r<div>Title link: <code>g-title</code></div>\r<div>Board link (Replace with title when on that board): <code>g-replace</code></div>\r<div>Full text link: <code>g-full</code></div>\r<div>Custom text link: <code>g-text:\"Install Gentoo\"</code></div>\r<div>External link: <code>external-text:\"Google\",\"http://www.google.com\"</code></div>\r<div>Index mode: <code>g-mode:\"type\"</code> where type is <code>paged</code>, <code>all threads</code> or <code>catalog</code></div>\r<div>Index sort: <code>g-sort:\"type\"</code> where type is <code>bump order</code>, <code>last reply</code>, <code>creation date</code>, <code>reply count</code> or <code>file count</code></div\r<div>Combinations are possible: <code>g-text:\"VIP Catalog\"-mode:\"catalog\"-sort:\"creation date\"</code></div>\r<div>Full board list toggle: <code>toggle-all</code></div>\r<br>\r<div class=note>\r<code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h-mode:\"catalog\"-sort:\"file count\"] [t-text:\"Piracy\"]</code><br>\rwill give you<br>\r<code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\rif you are on /g/.\r</div>\r</fieldset>\r<fieldset>\r<legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\r<div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>\r<div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>\r<div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>\r<div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>\r<div>Year: <code>%y</code>, <code>%Y</code></div>\r<div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>\r<div>Minute: <code>%M</code></div>\r<div>Second: <code>%S</code></div>\r</fieldset>\r<fieldset>\r<legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend>\r<div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>\r</fieldset>\r<fieldset>\r<legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\r<div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>\r<div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>\r<div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>\r<div>Spoiler indicator: <code>%p</code></div>\r<div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>\r<div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>\r</fieldset>\r<fieldset>\r<legend>Quick Reply Personas</legend>\r<textarea class=personafield name=\"QR.personas\" class=\"field\" spellcheck=\"false\"></textarea>\r<p>\rOne item per line.<br>\rItems will be added in the relevant input's auto-completion list.<br>\rPassword items will always be used, since there is no password input.<br>\rLines starting with a <code>#</code> will be ignored.\r</p>\r<ul>You can use these settings with each item, separate them with semicolons:\r<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li>\r<li>Wrap values of items with quotes, like this: <code>options:\"sage\"</code>.</li>\r<li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:\"sage\";always</code>.</li>\r<li>Select specific boards for an item, separated with commas, for example: <code>options:\"sage\";boards:jp;always</code>.</li>\r</ul>\r</fieldset>\r<fieldset>\r<legend>Unread Favicon <span class=warning " + (Conf['Unread Favicon'] ? 'hidden' : '') + ">is disabled.</span></legend>\r<select name=favicon>\r<option value=ferongr>ferongr</option>\r<option value=xat->xat-</option>\r<option value=Mayhem>Mayhem</option>\r<option value=4chanJS>4chanJS</option>\r<option value=Original>Original</option>\r<option value=Metro>Metro</option>\r</select>\r<span id=favicon-preview></span>\r</fieldset>\r<fieldset>\r<legend>Thread Updater <span class=warning " + (Conf['Thread Updater'] ? 'hidden' : '') + ">is disabled.</span></legend>\r<div>\rInterval: <input type=number name=Interval class=field min=1 value=" + Conf['Interval'] + ">\r</div>\r</fieldset>\r<fieldset>\r<legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend>\r<div>\r<button id=apply-css>Apply CSS</button>\r<textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea>\r</div>\r</fieldset>\r"
       });
+      _ref = $$('.warning', section);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        warning = _ref[_i];
+        warning.hidden = Conf[warning.dataset.feature];
+      }
       items = {};
       inputs = {};
-      _ref = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss'];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        name = _ref[_i];
+      _ref1 = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss'];
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        name = _ref1[_j];
         input = $("[name='" + name + "']", section);
         items[name] = Conf[name];
         inputs[name] = input;
@@ -17540,15 +17563,20 @@
         }
         return Rice.nodes(section);
       });
-      $.on($('input[name=Interval]', section), 'change', ThreadUpdater.cb.interval);
-      $.on($('input[name="Custom CSS"]', section), 'change', Settings.togglecss);
-      $.on($.id('apply-css'), 'click', Settings.usercss);
+      interval = $('input[name="Interval"]', section);
+      customCSS = $('input[name="Custom CSS"]', section);
+      interval.value = Conf['Interval'];
+      customCSS.checked = Conf['Custom CSS'];
+      inputs['usercss'].disabled = !Conf['Custom CSS'];
+      $.on(interval, 'change', ThreadUpdater.cb.interval);
+      $.on(customCSS, 'change', Settings.togglecss);
+      $.on($('#apply-css', section), 'click', Settings.usercss);
       archBoards = {};
-      _ref1 = Redirect.archives;
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        _ref2 = _ref1[_j], name = _ref2.name, boards = _ref2.boards, files = _ref2.files, software = _ref2.software, withCredentials = _ref2.withCredentials;
-        for (_k = 0, _len2 = boards.length; _k < _len2; _k++) {
-          boardID = boards[_k];
+      _ref2 = Redirect.archives;
+      for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+        _ref3 = _ref2[_k], name = _ref3.name, boards = _ref3.boards, files = _ref3.files, software = _ref3.software, withCredentials = _ref3.withCredentials;
+        for (_l = 0, _len3 = boards.length; _l < _len3; _l++) {
+          boardID = boards[_l];
           o = archBoards[boardID] || (archBoards[boardID] = {
             thread: [[], []],
             post: [[], []],
@@ -17566,9 +17594,9 @@
       }
       for (boardID in archBoards) {
         o = archBoards[boardID];
-        _ref3 = ['thread', 'post', 'file'];
-        for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
-          item = _ref3[_l];
+        _ref4 = ['thread', 'post', 'file'];
+        for (_m = 0, _len4 = _ref4.length; _m < _len4; _m++) {
+          item = _ref4[_m];
           if (o[item][0].length === 0 && o[item][1].length !== 0) {
             o[item][0].push('disabled');
           }
@@ -17577,9 +17605,9 @@
       }
       rows = [];
       boardOptions = [];
-      _ref4 = Object.keys(archBoards).sort();
-      for (_m = 0, _len4 = _ref4.length; _m < _len4; _m++) {
-        boardID = _ref4[_m];
+      _ref5 = Object.keys(archBoards).sort();
+      for (_n = 0, _len5 = _ref5.length; _n < _len5; _n++) {
+        boardID = _ref5[_n];
         row = $.el('tr', {
           className: "board-" + boardID
         });
@@ -17590,13 +17618,14 @@
           selected: boardID === g.BOARD.ID
         }));
         o = archBoards[boardID];
-        _ref5 = ['thread', 'post', 'file'];
-        for (_n = 0, _len5 = _ref5.length; _n < _len5; _n++) {
-          item = _ref5[_n];
+        _ref6 = ['thread', 'post', 'file'];
+        for (_o = 0, _len6 = _ref6.length; _o < _len6; _o++) {
+          item = _ref6[_o];
           $.add(row, Settings.addArchiveCell(boardID, o, item));
         }
         rows.push(row);
       }
+      rows[0].hidden = !g.BOARD.ID in archBoards;
       $.add($('tbody', section), rows);
       boardSelect = $('#archive-board-select', section);
       $.add(boardSelect, boardOptions);
@@ -17638,7 +17667,9 @@
           value: archive
         }));
       }
-      td.innerHTML = '<select></select>';
+      $.extend(td, {
+        innerHTML: "<select></select>"
+      });
       select = td.firstElementChild;
       if (!(select.disabled = length === 1)) {
         select.setAttribute('data-boardid', boardID);
@@ -17665,7 +17696,12 @@
       return this.nextElementSibling.textContent = Time.format(this.value, new Date());
     },
     backlink: function() {
-      return this.nextElementSibling.textContent = this.value.replace(/%id/g, '123456789');
+      return this.nextElementSibling.textContent = this.value.replace(/%(?:id|%)/g, function(x) {
+        return {
+          '%id': '123456789',
+          '%%': '%'
+        }[x];
+      });
     },
     fileInfo: function() {
       var data;
@@ -17678,21 +17714,25 @@
           sizeInBytes: 276 * 1024,
           dimensions: '1280x720',
           isImage: true,
-          isVideo: false,
           isSpoiler: true
         }
       };
-      return this.nextElementSibling.innerHTML = FileInfo.format(this.value, data);
+      return FileInfo.format(this.value, data, this.nextElementSibling);
     },
     favicon: function() {
-      Favicon.init();
+      var img;
+      Favicon["switch"]();
       if (g.VIEW === 'thread' && Conf['Unread Favicon']) {
         Unread.update();
       }
-      return $.id('favicon-preview').innerHTML = "<img src=" + Favicon["default"] + ">\n<img src=" + Favicon.unreadSFW + ">\n<img src=" + Favicon.unreadNSFW + ">\n<img src=" + Favicon.unreadDead + ">";
+      img = this.nextElementSibling.children;
+      img[0].src = Favicon["default"];
+      img[1].src = Favicon.unreadSFW;
+      img[2].src = Favicon.unreadNSFW;
+      return img[3].src = Favicon.unreadDead;
     },
     togglecss: function() {
-      if ($('textarea', this.parentNode.parentNode).disabled = !this.checked) {
+      if ($('textarea[name=usercss]', $.x('ancestor::fieldset[1]', this)).disabled = !this.checked) {
         CustomCSS.rmStyle();
       } else {
         CustomCSS.addStyle();
@@ -17707,6 +17747,7 @@
       $.extend(section, {
         innerHTML: "<div class=warning " + (Conf['Keybinds'] ? 'hidden' : '') + "><code>Keybinds</code> are disabled.</div>\r<div>Allowed keys: <kbd>a-z</kbd>, <kbd>0-9</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>, <kbd>Meta</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>, <kbd>Up</kbd>, <kbd>Down</kbd>, <kbd>Right</kbd>, <kbd>Left</kbd>.</div>\r<div>Press <kbd>Backspace</kbd> to disable a keybind.</div>\r<table><tbody>\r<tr><th>Actions</th><th>Keybinds</th></tr>\r</tbody></table>"
       });
+      $('.warning', section).hidden = Conf['Keybinds'];
       tbody = $('tbody', section);
       items = {};
       inputs = {};
@@ -17714,7 +17755,7 @@
       for (key in _ref) {
         arr = _ref[key];
         tr = $.el('tr', {
-          innerHTML: "<td>" + arr[1] + "</td><td><input class=field></td>"
+          innerHTML: "<td>" + E(arr[1]) + "</td><td><input class=\"field\"></td>"
         });
         input = $('input', tr);
         input.name = key;
@@ -17747,7 +17788,7 @@
       return $.cb.value.call(this);
     },
     style: function(section) {
-      var arr, description, div, fs, html, input, inputs, items, key, name, nodes, obj, type, value, _i, _len, _ref;
+      var arr, description, div, fs, html, input, inputs, items, key, name, nodes, obj, span, type, value, _i, _len, _ref;
       nodes = $.frag();
       items = {};
       inputs = {};
@@ -17765,7 +17806,9 @@
           });
           if (type) {
             if (type === 'text') {
-              div.innerHTML = "<div class=option><span class=optionlabel>" + key + "</span></div><div class=description>" + description + "</div><div class=option><input name='" + key + "' style=width: 100%></div>";
+              $.extend(div, {
+                innerHTML: "<div class=\"option\"><span class=\"optionlabel\">" + E(key) + "</span></div><div class=\"description\">" + E(description) + "</div><div class=\"option\"><input name=\"" + E(key) + "\" style=\"width: 100%\"></div>"
+              });
               input = $("input", div);
             } else {
               html = "<div class=option><span class=optionlabel>" + key + "</span></div><div class=description>" + description + "</div><div class=option><select name='" + key + "'>";
@@ -17778,7 +17821,12 @@
               input = $("select", div);
             }
           } else {
-            div.innerHTML = "<div class=option><label><input type=checkbox name='" + key + "'>" + key + "</label></div><span style='display:none;'>" + description + "</span>";
+            span = $.el('span', {
+              "class": 'description',
+              textContent: description
+            });
+            span.style.display = 'none';
+            $.add(div, [UI.checkbox(key, key), span]);
             input = $('input', div);
           }
           items[key] = Conf[key];
@@ -17839,8 +17887,10 @@
           }
           div = $.el('div', {
             className: "theme " + (name === Conf[g.THEMESTRING] ? 'selectedtheme' : ''),
-            id: name,
-            innerHTML: "<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% ; box-shadow: none ; background:" + theme['Reply Background'] + ";border:1px solid " + theme['Reply Border'] + ";color:" + theme['Text'] + "'><div><div style='cursor: pointer; width: 9px; height: 9px; margin: 2px 3px; display: inline-block; vertical-align: bottom; background: " + theme['Checkbox Background'] + "; border: 1px solid " + theme['Checkbox Border'] + ";'></div><span style='color:" + theme['Subjects'] + "; font-weight: 600 '>\n    " + name + "\n  </span><span style='color:" + theme['Names'] + "; font-weight: 600 '>\n    " + theme['Author'] + "\n  </span><span style='color:" + theme['Sage'] + "'>\n    (SAGE)\n  </span><span style='color:" + theme['Tripcodes'] + "'>\n    " + theme['Author Tripcode'] + "\n  </span><time style='color:" + theme['Timestamps'] + "'>\n    20XX.01.01 12:00\n  </time><a data-color='" + theme['Post Numbers'] + "' data-hover='" + theme['Hovered Links'] + "'>\n    No.27583594\n  </a><a data-color='" + theme['Backlinks'] + "' data-hover='" + theme['Hovered Links'] + "' name='" + name + "' class=edit>\n    &gt;&gt;edit\n  </a><a data-color='" + theme['Backlinks'] + "' data-hover='" + theme['Hovered Links'] + "' name='" + name + "' class=export>\n    &gt;&gt;export\n  </a><a data-color='" + theme['Backlinks'] + "' data-hover='" + theme['Hovered Links'] + "' name='" + name + "' class=delete>\n    &gt;&gt;delete\n  </a></div><blockquote style='margin: 0; padding: 12px 40px 12px 38px'><a data-color='" + theme['Quotelinks'] + "' data-hover='" + theme['Hovered Links'] + "'  style='text-shadow: none;'>\n    &gt;&gt;27582902\n  </a><br>\n  Post content is right here.\n</blockquote><h1 style='color: " + theme['Text'] + "'>\n  Selected\n</h1></div>"
+            id: name
+          });
+          $.extend(div, {
+            innerHTML: "<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% ; box-shadow: none ; background:" + theme['Reply Background'] + ";border:1px solid " + theme['Reply Border'] + ";color:" + theme['Text'] + "'>\r<div>\r<div style='cursor: pointer; width: 9px; height: 9px; margin: 2px 3px; display: inline-block; vertical-align: bottom; background: " + theme['Checkbox Background'] + "; border: 1px solid " + theme['Checkbox Border'] + ";'></div>\r<span style='color:" + theme['Subjects'] + "; font-weight: 600 '>\r" + name + "\r</span>\r<span style='color:" + theme['Names'] + "; font-weight: 600 '>\r" + theme['Author'] + "\r</span>\r<span style='color:" + theme['Sage'] + "'>\r(SAGE)\r</span>\r<span style='color:" + theme['Tripcodes'] + "'>\r" + theme['Author Tripcode'] + "\r</span>\r<time style='color:" + theme['Timestamps'] + "'>\r20XX.01.01 12:00\r</time>\r<a data-color='" + theme['Post Numbers'] + "' data-hover='" + theme['Hovered Links'] + "'>\rNo.27583594\r</a>\r<a data-color='" + theme['Backlinks'] + "' data-hover='" + theme['Hovered Links'] + "' name='" + name + "' class=edit>\r&gt;&gt;edit\r</a>\r<a data-color='" + theme['Backlinks'] + "' data-hover='" + theme['Hovered Links'] + "' name='" + name + "' class=export>\r&gt;&gt;export\r</a>\r<a data-color='" + theme['Backlinks'] + "' data-hover='" + theme['Hovered Links'] + "' name='" + name + "' class=delete>\r&gt;&gt;delete\r</a>\r</div>\r<blockquote style='margin: 0; padding: 12px 40px 12px 38px'>\r<a data-color='" + theme['Quotelinks'] + "' data-hover='" + theme['Hovered Links'] + "'  style='text-shadow: none;'>\r&gt;&gt;27582902\r</a>\r<br>\rPost content is right here.\r</blockquote>\r<h1 style='color: " + theme['Text'] + "'>\rSelected\r</h1>\r</div>"
           });
           div.style.backgroundColor = theme['Background Color'];
           _ref = $$('a[data-color]', div);
@@ -17857,8 +17907,10 @@
           $.add(suboptions, div);
         }
         div = $.el('div', {
-          id: 'addthemes',
-          innerHTML: "<a id=newtheme href='javascript:;'>New Theme</a>\n/\n<a id=import href='javascript:;' title='From Appchan X, Oneechan, or 4chan SS'>Import Theme</a><input id=importbutton type=file hidden>\n/\n<a id=tUndelete href='javascript:;'>Undelete Theme</a>"
+          id: 'addthemes'
+        });
+        $.extend(div, {
+          innerHTML: "<a id=newtheme href='javascript:;'>New Theme</a>\r/\r<a id=import href='javascript:;' title='From Appchan X, Oneechan, or 4chan SS'>Import Theme</a>\r<input id=importbutton type=file hidden>\r/\r<a id=tUndelete href='javascript:;'>Undelete Theme</a>"
         });
         $.on($("#newtheme", div), 'click', function() {
           ThemeTools.init("untitled");
@@ -17886,8 +17938,10 @@
           }
           div = $.el('div', {
             id: name,
-            className: theme,
-            innerHTML: "<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% ; box-shadow: none ; background:" + theme['Reply Background'] + ";border:1px solid " + theme['Reply Border'] + ";color:" + theme['Text'] + "'><div style='padding: 3px 0px 0px 8px;'><span style='color:" + theme['Subjects'] + "; font-weight: 600 '>\n    " + name + "\n  </span><span style='color:" + theme['Names'] + "; font-weight: 600 '>\n    " + theme['Author'] + "\n  </span><span style='color:" + theme['Sage'] + "'>\n    (SAGE)\n  </span><span style='color:" + theme['Tripcodes'] + "'>\n    " + theme['Author Tripcode'] + "\n  </span><time style='color:" + theme['Timestamps'] + "'>\n    20XX.01.01 12:00\n  </time><a data-color='" + theme['Post Numbers'] + "' data-hover='" + theme['Hovered Links'] + "'>\n    No.27583594\n  </a></div><blockquote style='margin: 0; padding: 12px 40px 12px 38px'><a data-color='" + theme['Quotelinks'] + "' data-hover='" + theme['Hovered Links'] + "'  style='text-shadow: none;'>\n    &gt;&gt;27582902\n  </a><br>\n  I forgive you for using VLC to open me. ;__;\n</blockquote></div>"
+            className: theme
+          });
+          $.extend(div, {
+            innerHTML: "<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% ; box-shadow: none ; background:" + theme['Reply Background'] + ";border:1px solid " + theme['Reply Border'] + ";color:" + theme['Text'] + "'>\r<div style='padding: 3px 0px 0px 8px;'>\r<span style='color:" + theme['Subjects'] + "; font-weight: 600 '>\r" + name + "\r</span>\r<span style='color:" + theme['Names'] + "; font-weight: 600 '>\r" + theme['Author'] + "\r</span>\r<span style='color:" + theme['Sage'] + "'>\r(SAGE)\r</span>\r<span style='color:" + theme['Tripcodes'] + "'>\r" + theme['Author Tripcode'] + "\r</span>\r<time style='color:" + theme['Timestamps'] + "'>\r20XX.01.01 12:00\r</time>\r<a data-color='" + theme['Post Numbers'] + "' data-hover='" + theme['Hovered Links'] + "'>\rNo.27583594\r</a>\r</div>\r<blockquote style='margin: 0; padding: 12px 40px 12px 38px'>\r<a data-color='" + theme['Quotelinks'] + "' data-hover='" + theme['Hovered Links'] + "'  style='text-shadow: none;'>\r&gt;&gt;27582902\r</a>\r<br>\rI forgive you for using VLC to open me. ;__;\r</blockquote>\r</div>"
           });
           $.on(div, 'click', cb.restore);
           $.add(suboptions, div);
@@ -17942,15 +17996,17 @@
       });
       mascotHide = $.el("div", {
         id: "mascot_hide",
-        className: "reply",
-        innerHTML: "Hide Categories <span class=drop-marker></span><div></div>"
+        className: "reply"
+      }, {
+        innerHTML: "Hide Categories <span class=\"drop-marker\"></span><div></div>"
       });
       keys = Object.keys(Mascots);
       keys.sort();
       if (mode === 'default') {
         mascotoptions = $.el('div', {
-          id: 'mascot-options',
-          innerHTML: "<a class=edit href='javascript:;'>Edit</a><a class=delete href='javascript:;'>Delete</a><a class=export href='javascript:;'>Export</a>"
+          id: 'mascot-options'
+        }, {
+          innerHTML: "<a class=\"edit\" href=\"javascript:;\">Edit</a><a class=\"delete\" href=\"javascript:;\">Delete</a><a class=\"export\" href=\"javascript:;\">Export</a>"
         });
         $.on($('.edit', mascotoptions), 'click', cb.edit);
         $.on($('.delete', mascotoptions), 'click', cb["delete"]);
@@ -17967,14 +18023,13 @@
           menu = $('div', mascotHide);
           categories[name] = div = $.el("div", {
             id: name,
-            className: "mascots-container",
-            innerHTML: "<h3 class=mascotHeader>" + name + "</h3>",
+            className: "mascots-container"
+          }, {
+            innerHTML: "<h3 class=\"mascotHeader\">" + E(name) + "</h3>"
+          }, {
             hidden: __indexOf.call(Conf["Hidden Categories"], name) >= 0
           });
-          option = $.el("label", {
-            name: name,
-            innerHTML: "<input name='" + name + "' type=checkbox " + (__indexOf.call(Conf["Hidden Categories"], name) >= 0 ? 'checked' : '') + ">" + name
-          });
+          option = UI.checkbox(name, name, __indexOf.call(Conf["Hidden Categories"], name) >= 0);
           $.on($('input', option), 'change', cb.category);
           $.add(suboptions, div);
           $.add(menu, option);
@@ -17987,16 +18042,20 @@
           mascot = Mascots[name];
           mascotEl = $.el('div', {
             id: name,
-            className: __indexOf.call(Conf[g.MASCOTSTRING], name) >= 0 ? 'mascot enabled' : 'mascot',
-            innerHTML: "<div class='mascotname'>" + (name.replace(/_/g, " ")) + "</div> <div class='mascotcontainer " + (mascot.silhouette ? 'silhouette' : '') + "'><div class='mAlign " + mascot.category + "'><img class=mascotimg src='" + mascot.image + "'></div></div>"
+            className: __indexOf.call(Conf[g.MASCOTSTRING], name) >= 0 ? 'mascot enabled' : 'mascot'
+          });
+          $.extend(div, {
+            innerHTML: "<div class='mascotname'>" + (name.replace(/_/g, ' ')) + "</div>\r<div class='mascotcontainer " + (mascot.silhouette ? 'silhouette' : '') + "'><div class='mAlign " + mascot.category + "'><img class='mascotimg' src='" + mascot.image + "'></div></div>"
           });
           $.on(mascotEl, 'click', cb.select);
           $.on(mascotEl, 'mouseover', addoptions);
           $.add(categories[mascot.category] || categories[MascotTools.categories[0]], mascotEl);
         }
         batchmascots = $.el('div', {
-          id: "mascots_batch",
-          innerHTML: " <a href=\"javascript:;\" id=clear>Clear All</a>\n/\n<a href=\"javascript:;\" id=selectAll>Select All</a>\n/\n<a href=\"javascript:;\" id=createNew>Add Mascot</a>\n/\n<a href=\"javascript:;\" id=importMascot>Import Mascot</a><input id=importMascotButton type=file hidden>\n/\n<a href=\"javascript:;\" id=undelete>Undelete Mascots</a>\n/\n<a href=\"http://appchan.booru.org/\" target=_blank>Get More Mascots!</a>"
+          id: "mascots_batch"
+        });
+        $.extend(batchmascots, {
+          innerHTML: "<a href=\\\"javascript:;\\\" id=clear>Clear All</a>\r/\r<a href=\\\"javascript:;\\\" id=selectAll>Select All</a>\r/\r<a href=\\\"javascript:;\\\" id=createNew>Add Mascot</a>\r/\r<a href=\\\"javascript:;\\\" id=importMascot>Import Mascot</a><input id=importMascotButton type=file hidden>\r/\r<a href=\\\"javascript:;\\\" id=undelete>Undelete Mascots</a>\r/\r<a href=\\\"http://appchan.booru.org/\\\" target=_blank>Get More Mascots!</a>"
         });
         $.on($('#clear', batchmascots), 'click', function() {
           var enabledMascots, _k, _len2;
@@ -18050,15 +18109,18 @@
           mascot = Mascots[name];
           mascotEl = $.el('div', {
             className: 'mascot',
-            id: name,
-            innerHTML: "<div class='mascotname'>" + (name.replace(/_/g, " ")) + "</span> <div class='mascotcontainer " + mascot.category + " " + (mascot.silhouette ? 'silhouette' : '') + "'><img class=mascotimg src='" + mascot.image + "'></div>"
+            id: name
+          });
+          $.extend(mascotEl, {
+            innerHTML: "<div class='mascotname'>" + (name.replace(/_/g, ' ')) + "</div>\r<div class='mascotcontainer " + (mascot.silhouette ? 'silhouette' : '') + "'><div class='mAlign " + mascot.category + "'><img class='mascotimg' src='" + mascot.image + "'></div></div>"
           });
           $.on(mascotEl, 'click', cb.restore);
           $.add(container, mascotEl);
         }
         $.add(suboptions, container);
         batchmascots = $.el('div', {
-          id: "mascots_batch",
+          id: "mascots_batch"
+        }, {
           innerHTML: "<a href=\"javascript:;\" id=\"return\">Return</a>"
         });
         $.on($('#return', batchmascots), 'click', function() {

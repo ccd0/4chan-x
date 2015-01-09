@@ -12,18 +12,18 @@ Settings =
       el: el
       order: 1
 
-    {addSection} = @
-    addSection arr[1], Settings[arr[0]] for arr in [
-      ['style',    'Style']
-      ['themes',   'Themes']
-      ['mascots',  'Mascots']
-      ['main',     'Script']
-      ['filter',   'Filter']
-      ['sauce',    'Sauce']
-      ['advanced', 'Advanced']
-      ['keybinds', 'Keybinds']
-    ]
+    add = @addSection
+    
+    add 'Style',    @style
+    add 'Themes',   @themes
+    add 'Mascots',  @mascots
+    add 'Main',     @main
+    add 'Filter',   @filter
+    add 'Sauce',    @sauce
+    add 'Advanced', @advanced
+    add 'Keybinds', @keybinds
 
+    $.on d, 'AddSettingsSection',   Settings.addSection
     $.on d, 'OpenSettings', (e) -> Settings.open e.detail
 
     settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
@@ -84,6 +84,8 @@ Settings =
 
   close: ->
     return unless Settings.dialog
+    # Unfocus current field to trigger change event.
+    d.activeElement?.blur()
     $.rm Settings.overlay
     $.rm Settings.dialog
     delete Settings.overlay
@@ -92,6 +94,8 @@ Settings =
   sections: []
 
   addSection: (title, open) ->
+    if typeof title isnt 'string'
+      {title, open} = title.detail
     hyphenatedTitle = title.toLowerCase().replace /\s+/g, '-'
     Settings.sections.push {title, hyphenatedTitle, open}
 
@@ -111,27 +115,41 @@ Settings =
     inputs = {}
     for key, obj of Config.main
       fs = $.el 'fieldset',
-        innerHTML: "<legend>#{key}</legend>"
+        <%= html('<legend>${key}</legend>') %>
+      containers = [fs]
       for key, arr of obj
         description = arr[1]
-        div = $.el 'div',
-          innerHTML: "<label><input type=checkbox name='#{key}'>#{key}</label><span class=description>#{description}</span>"
+        div = $.el 'div'
+        $.add div, [
+          UI.checkbox key, key, false
+          $.el 'span', class: 'description', textContent: ": #{description}"
+        ]
         input = $ 'input', div
         $.on $('label', div), 'mouseover', Settings.mouseover
-        $.on input, 'change', $.cb.checked
+        $.on input, 'change', ->
+          @parentNode.parentNode.dataset.checked = @checked
+          $.cb.checked.call @
         items[key]  = Conf[key]
         inputs[key] = input
-        $.add fs, div
+        level = arr[2] or 0
+        if containers.length <= level
+          container = $.el 'div', className: 'suboption-list'
+          $.add containers[containers.length-1].lastElementChild, container
+          containers[level] = container
+        else if containers.length > level+1
+          containers.splice level+1, containers.length - (level+1)
+        $.add containers[level], div
       Rice.nodes fs
       $.add section, fs
 
     $.get items, (items) ->
       for key, val of items
         inputs[key].checked = val
+        inputs[key].parentNode.parentNode.dataset.checked = val
       return
 
     div = $.el 'div',
-      innerHTML: "<button></button><span class=description>: Clear manually-hidden threads and posts on all boards. Reload the page to apply."
+      <%= html('<button></button><span class="description">: Clear manually-hidden threads and posts on all boards. Reload the page to apply.') %>
     button = $ 'button', div
     $.get 'hiddenPosts', {}, ({hiddenPosts}) ->
       hiddenNum = 0
@@ -163,18 +181,19 @@ Settings =
 
   onImport: ->
     return unless file = @files[0]
-    return unless confirm 'Your current settings will be entirely overwritten, are you sure?'
+    unless confirm 'Your current settings will be entirely overwritten, are you sure?'
+      new Notice 'info', "Import aborted.", 1
+      return 
 
     reader = new FileReader()
     reader.onload = (e) ->
       try
         Settings.loadSettings JSON.parse e.target.result
+        if confirm 'Import successful. Reload now?'
+          window.location.reload()
       catch err
         alert 'Import failed due to an error.'
         c.error err.stack
-        return
-      if confirm 'Import successful. Reload now?'
-        window.location.reload()
     reader.readAsText file
 
   loadSettings: (data) ->
@@ -207,28 +226,19 @@ Settings =
       $.add div, ta
       return
     $.extend div, <%= importHTML('Settings/Filter-guide') %>
+    $('.warning', div).hidden = Conf['Filter']
 
   sauce: (section) ->
     $.extend section, <%= importHTML('Settings/Sauce') %>
     ta = $ 'textarea', section
     $.get 'sauces', Conf['sauces'], (item) ->
-      # XXX remove .replace func after 31-7-2013 (v1 transitioning)
-      ta.value = item['sauces'].replace /\$\d/g, (c) ->
-        switch c
-          when '$1'
-            '%TURL'
-          when '$2'
-            '%URL'
-          when '$3'
-            '%MD5'
-          when '$4'
-            '%board'
-          else
-            c
+      ta.value = item['sauces']
     $.on ta, 'change', $.cb.value
 
   advanced: (section) ->
     $.extend section, <%= importHTML('Settings/Advanced') %>
+    warning.hidden = Conf[warning.dataset.feature] for warning in $$ '.warning', section
+
     items = {}
     inputs = {}
     for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss']
@@ -256,9 +266,16 @@ Settings =
         Settings[key].call input
       Rice.nodes section
 
-    $.on $('input[name=Interval]', section), 'change', ThreadUpdater.cb.interval
-    $.on $('input[name="Custom CSS"]', section), 'change', Settings.togglecss
-    $.on $.id('apply-css'), 'click', Settings.usercss
+    interval  = $ 'input[name="Interval"]',   section
+    customCSS = $ 'input[name="Custom CSS"]', section
+
+    interval.value             =  Conf['Interval']
+    customCSS.checked          =  Conf['Custom CSS']
+    inputs['usercss'].disabled = !Conf['Custom CSS']
+
+    $.on interval,                 'change', ThreadUpdater.cb.interval
+    $.on customCSS,                'change', Settings.togglecss
+    $.on $('#apply-css', section), 'click',  Settings.usercss
 
     archBoards = {}
     for {name, boards, files, software, withCredentials} in Redirect.archives
@@ -292,6 +309,8 @@ Settings =
       o = archBoards[boardID]
       $.add row, Settings.addArchiveCell boardID, o, item for item in ['thread', 'post', 'file']
       rows.push row
+
+    rows[0].hidden = not g.BOARD.ID of archBoards
 
     $.add $('tbody', section), rows
 
@@ -327,7 +346,7 @@ Settings =
         textContent: archive
         value: archive
 
-    td.innerHTML = '<select></select>'
+    $.extend td, <%= html('<select></select>') %>
     select = td.firstElementChild
     unless select.disabled = length is 1
       # XXX GM can't into datasets
@@ -350,7 +369,7 @@ Settings =
     @nextElementSibling.textContent = Time.format @value, new Date()
 
   backlink: ->
-    @nextElementSibling.textContent = @value.replace /%id/g, '123456789'
+    @nextElementSibling.textContent = @value.replace /%(?:id|%)/g, (x) -> {'%id': '123456789', '%%': '%'}[x]
 
   fileInfo: ->
     data =
@@ -362,22 +381,20 @@ Settings =
         sizeInBytes: 276 * 1024
         dimensions: '1280x720'
         isImage: true
-        isVideo: false
         isSpoiler: true
-    @nextElementSibling.innerHTML = FileInfo.format @value, data
+    FileInfo.format @value, data, @nextElementSibling
 
   favicon: ->
-    Favicon.init()
+    Favicon.switch()
     Unread.update() if g.VIEW is 'thread' and Conf['Unread Favicon']
-    $.id('favicon-preview').innerHTML = """
-      <img src=#{Favicon.default}>
-      <img src=#{Favicon.unreadSFW}>
-      <img src=#{Favicon.unreadNSFW}>
-      <img src=#{Favicon.unreadDead}>
-      """
+    img = @nextElementSibling.children
+    img[0].src = Favicon.default
+    img[1].src = Favicon.unreadSFW
+    img[2].src = Favicon.unreadNSFW
+    img[3].src = Favicon.unreadDead
 
   togglecss: ->
-    if $('textarea', @parentNode.parentNode).disabled = !@checked
+    if $('textarea[name=usercss]', $.x 'ancestor::fieldset[1]', @).disabled = !@checked
       CustomCSS.rmStyle()
     else
       CustomCSS.addStyle()
@@ -388,13 +405,14 @@ Settings =
 
   keybinds: (section) ->
     $.extend section, <%= importHTML('Settings/Keybinds') %>
+    $('.warning', section).hidden = Conf['Keybinds']
 
     tbody  = $ 'tbody', section
     items  = {}
     inputs = {}
     for key, arr of Config.hotkeys
       tr = $.el 'tr',
-        innerHTML: "<td>#{arr[1]}</td><td><input class=field></td>"
+        <%= html('<td>${arr[1]}</td><td><input class="field"></td>') %>
       input = $ 'input', tr
       input.name = key
       input.spellcheck = false
@@ -437,7 +455,7 @@ Settings =
 
           if type is 'text'
 
-            div.innerHTML = "<div class=option><span class=optionlabel>#{key}</span></div><div class=description>#{description}</div><div class=option><input name='#{key}' style=width: 100%></div>"
+            $.extend div, <%= html('<div class="option"><span class="optionlabel">${key}</span></div><div class="description">${description}</div><div class="option"><input name="${key}" style="width: 100%"></div>') %>
             input = $ "input", div
 
           else
@@ -450,8 +468,17 @@ Settings =
             input = $ "select", div
 
         else
+          span = $.el 'span',
+            class: 'description'
+            textContent: description
+          
+          span.style.display = 'none'
 
-          div.innerHTML = "<div class=option><label><input type=checkbox name='#{key}'>#{key}</label></div><span style='display:none;'>#{description}</span>"
+          $.add div, [
+            UI.checkbox key, key
+            span
+          ]
+          
           input = $ 'input', div
 
         items[key]  = Conf[key]
@@ -507,7 +534,8 @@ Settings =
         div = $.el 'div',
           className: "theme #{if name is Conf[g.THEMESTRING] then 'selectedtheme' else ''}"
           id:        name
-          innerHTML: """<%= grunt.file.read('src/General/html/Settings/Theme.html').replace(/>\s+</g, '><').trim() %>"""
+          
+        $.extend div, <%= importHTML('Settings/Theme') %>
 
         div.style.backgroundColor = theme['Background Color']
 
@@ -526,7 +554,8 @@ Settings =
 
       div = $.el 'div',
         id:        'addthemes'
-        innerHTML: """<%= grunt.file.read('src/General/html/Settings/Batch-Theme.html').replace(/>\s+</g, '><').trim() %>"""
+        
+      $.extend div, <%= importHTML('Settings/Batch-Theme') %>
 
       $.on $("#newtheme", div), 'click', ->
         ThemeTools.init "untitled"
@@ -556,7 +585,8 @@ Settings =
         div = $.el 'div',
           id:        name
           className: theme
-          innerHTML: """<%= grunt.file.read('src/General/html/Settings/Deleted-Theme.html').replace(/>\s+</g, '><').trim() %>"""
+          
+        $.extend div, <%= importHTML('Settings/Deleted-Theme') %>
 
         $.on div, 'click', cb.restore
 
@@ -611,7 +641,7 @@ Settings =
     mascotHide = $.el "div",
       id: "mascot_hide"
       className: "reply"
-      innerHTML: "Hide Categories <span class=drop-marker></span><div></div>"
+      <%= html('Hide Categories <span class="drop-marker"></span><div></div>') %>
 
     keys = Object.keys Mascots
     keys.sort()
@@ -619,7 +649,7 @@ Settings =
     if mode is 'default'
       mascotoptions = $.el 'div',
         id: 'mascot-options'
-        innerHTML: """<a class=edit href='javascript:;'>Edit</a><a class=delete href='javascript:;'>Delete</a><a class=export href='javascript:;'>Export</a>"""
+        <%= html('<a class="edit" href="javascript:;">Edit</a><a class="delete" href="javascript:;">Delete</a><a class="export" href="javascript:;">Export</a>') %>
 
       $.on $('.edit',   mascotoptions), 'click', cb.edit
       $.on $('.delete', mascotoptions), 'click', cb.delete
@@ -635,12 +665,10 @@ Settings =
         categories[name] = div = $.el "div",
           id:        name
           className: "mascots-container"
-          innerHTML: "<h3 class=mascotHeader>#{name}</h3>"
+          <%= html('<h3 class="mascotHeader">${name}</h3>') %>
           hidden:    name in Conf["Hidden Categories"]
 
-        option = $.el "label",
-          name: name
-          innerHTML: "<input name='#{name}' type=checkbox #{if name in Conf["Hidden Categories"] then 'checked' else ''}>#{name}"
+        option = UI.checkbox name, name, name in Conf["Hidden Categories"]
 
         $.on $('input', option), 'change', cb.category
 
@@ -653,7 +681,8 @@ Settings =
         mascotEl = $.el 'div',
           id:        name
           className: if name in Conf[g.MASCOTSTRING] then 'mascot enabled' else 'mascot'
-          innerHTML: "<%= grunt.file.read('src/General/html/Settings/Mascot.html') %>"
+        
+        $.extend div, <%= importHTML('Settings/Mascot') %>
 
         $.on mascotEl, 'click', cb.select
         $.on mascotEl, 'mouseover', addoptions
@@ -662,7 +691,8 @@ Settings =
 
       batchmascots = $.el 'div',
         id: "mascots_batch"
-        innerHTML: """<%= grunt.file.read('src/General/html/Settings/Batch-Mascot.html') %>"""
+      
+      $.extend batchmascots, <%= importHTML('Settings/Batch-Mascot') %>
 
       $.on $('#clear', batchmascots), 'click', ->
         enabledMascots = JSON.parse(JSON.stringify(Conf[g.MASCOTSTRING]))
@@ -704,10 +734,8 @@ Settings =
         mascotEl = $.el 'div',
           className: 'mascot' 
           id: name
-          innerHTML: "
-<div class='mascotname'>#{name.replace /_/g, " "}</span>
-<div class='mascotcontainer #{mascot.category} #{if mascot.silhouette then 'silhouette' else ''}'><img class=mascotimg src='#{mascot.image}'></div>
-"
+          
+        $.extend mascotEl, <%= importHTML('Settings/Mascot') %>
 
         $.on mascotEl, 'click', cb.restore
 
@@ -717,7 +745,7 @@ Settings =
 
       batchmascots = $.el 'div',
         id: "mascots_batch"
-        innerHTML: """<a href="javascript:;" id="return">Return</a>"""
+        <%= html('<a href="javascript:;" id="return">Return</a>') %>
 
       $.on $('#return', batchmascots), 'click', ->
         mascots =
