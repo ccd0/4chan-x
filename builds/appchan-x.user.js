@@ -2696,7 +2696,7 @@
   (function() {
     var reqs;
     reqs = {};
-    return $.cache = function(url, cb, options) {
+    $.cache = function(url, cb, options) {
       var err, req, rm;
       if (req = reqs[url]) {
         if (req.readyState === 4) {
@@ -2733,6 +2733,14 @@
       $.on(req, 'abort error', rm);
       req.callbacks = [cb];
       return reqs[url] = req;
+    };
+    return $.cleanCache = function(testf) {
+      var url;
+      for (url in reqs) {
+        if (testf(url)) {
+          delete reqs[url];
+        }
+      }
     };
   })();
 
@@ -4762,7 +4770,7 @@
   Index = {
     showHiddenThreads: false,
     init: function() {
-      var input, label, modeEntry, name, refNavEntry, repliesEntry, returnLink, select, sortEntry, targetEntry, threadNumEntry, threadsNumInput, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+      var anchorEntry, input, label, modeEntry, name, pinEntry, refNavEntry, repliesEntry, returnLink, select, sortEntry, targetEntry, threadNumEntry, threadsNumInput, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
       if (g.BOARD.ID === 'f' || !Conf['JSON Navigation']) {
         return;
       }
@@ -4835,23 +4843,25 @@
       $.on(threadsNumInput, 'change', $.cb.value);
       $.on(threadsNumInput, 'change', this.cb.threadsNum);
       targetEntry = {
-        el: $.el('label', {
-          innerHTML: '<input type=checkbox name="Open threads in a new tab"> Open threads in a new tab',
-          title: 'Catalog-only setting.'
-        })
+        el: UI.checkbox('Open threads in a new tab', 'Open threads in a new tab')
       };
       repliesEntry = {
-        el: $.el('label', {
-          innerHTML: '<input type=checkbox name="Show Replies"> Show replies'
-        })
+        el: UI.checkbox('Show Replies', 'Show replies')
+      };
+      pinEntry = {
+        el: UI.checkbox('Pin Watched Threads', 'Pin watched threads')
+      };
+      anchorEntry = {
+        el: UI.checkbox('Anchor Hidden Threads', 'Anchor hidden threads')
       };
       refNavEntry = {
-        el: $.el('label', {
-          innerHTML: '<input type=checkbox name="Refreshed Navigation"> Refreshed navigation',
-          title: 'Refresh index when navigating through pages.'
-        })
+        el: UI.checkbox('Refreshed Navigation', 'Refreshed navigation')
       };
-      _ref1 = [targetEntry, repliesEntry, refNavEntry];
+      targetEntry.el.title = 'Catalog-only setting.';
+      pinEntry.el.title = 'Move watched threads to the start of the index.';
+      anchorEntry.el.title = 'Move hidden threads to the end of the index.';
+      refNavEntry.el.title = 'Refresh index when navigating through pages.';
+      _ref1 = [targetEntry, repliesEntry, pinEntry, anchorEntry, refNavEntry];
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         label = _ref1[_j];
         input = label.el.firstChild;
@@ -4864,6 +4874,10 @@
             break;
           case 'Show Replies':
             $.on(input, 'change', this.cb.replies);
+            break;
+          case 'Pin Watched Threads':
+          case 'Anchor Hidden Threads':
+            $.on(input, 'change', this.cb.sort);
         }
       }
       Header.menu.addEntry({
@@ -4871,7 +4885,7 @@
           textContent: 'Index Navigation'
         }),
         order: 98,
-        subEntries: [threadNumEntry, targetEntry, repliesEntry, refNavEntry]
+        subEntries: [threadNumEntry, targetEntry, repliesEntry, pinEntry, anchorEntry, refNavEntry]
       });
       $.addClass(doc, 'index-loading');
       this.root = $.el('div', {
@@ -4960,6 +4974,7 @@
         }
         board = $('.board');
         $.replace(board, Index.root);
+        $.event('PostsInserted');
         return d.implementation.createDocument(null, null, null).appendChild(board);
       });
       return $.asap((function() {
@@ -4978,7 +4993,7 @@
       if (Index.req || Conf['Index Mode'] !== 'infinite' || (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight)) || g.VIEW === 'thread') {
         return;
       }
-      Index.currentPage = (Index.currentPage || Index.getCurrentPage()) + 1;
+      Index.currentPage = Index.getCurrentPage() + 1;
       if (Index.currentPage >= Index.pagesNum) {
         return Index.endNotice();
       }
@@ -5023,8 +5038,7 @@
               $.event('CloseMenu');
               return Index.togglePin(thread);
             };
-            $.on(this.el, 'click', this.cb);
-            return true;
+            return $.on(this.el, 'click', this.cb);
           }
         });
       }
@@ -5056,13 +5070,12 @@
       thread = g.threads[this.parentNode.dataset.fullID];
       if (e.shiftKey) {
         PostHiding.toggle(thread.OP);
-        return e.preventDefault();
       } else if (e.altKey) {
         Index.togglePin(thread);
-        return e.preventDefault();
       } else {
         return Navigate.navigate.call(this, e);
       }
+      return e.preventDefault();
     },
     onOver: function(e) {
       var el, nodes;
@@ -5111,13 +5124,18 @@
     },
     cycleSortType: function() {
       var i, option, type, types, _i, _len;
-      types = [];
-      i = 0;
-      while (option = Index.selectSort.options[i++]) {
-        if (!option.disabled) {
-          types.push(option);
+      types = (function() {
+        var _i, _len, _ref, _results;
+        _ref = Index.selectSort.options;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          option = _ref[_i];
+          if (!option.disabled) {
+            _results.push(option);
+          }
         }
-      }
+        return _results;
+      })();
       for (i = _i = 0, _len = types.length; _i < _len; i = ++_i) {
         type = types[i];
         if (type.selected) {
@@ -5256,6 +5274,7 @@
         }
         switch (e.target.nodeName) {
           case 'BUTTON':
+            e.target.blur();
             a = e.target.parentNode;
             break;
           case 'A':
@@ -5318,6 +5337,10 @@
       return Header.scrollToIfNeeded(Index.navLinks);
     },
     getCurrentPage: function() {
+      var _ref;
+      if ((_ref = Conf['Index Mode']) === 'all pages' || _ref === 'catalog') {
+        return 1;
+      }
       if (Conf['Index Mode'] === 'infinite' && Index.currentPage) {
         return Index.currentPage;
       }
@@ -5550,6 +5573,9 @@
       return Index.scrollToIndex();
     },
     parse: function(pages, pageNum) {
+      $.cleanCache(function(url) {
+        return /^\/\/a\.4cdn\.org\//.test(url);
+      });
       Index.parseThreadList(pages);
       Index.buildThreads();
       Index.sort();
@@ -5761,20 +5787,28 @@
       Index.sortOnTop(function(thread) {
         return thread.isSticky;
       });
-      return Index.sortOnTop(function(thread) {
-        return thread.isOnTop || thread.isPinned;
+      Index.sortOnTop(function(thread) {
+        return thread.isOnTop || Conf['Pin Watched Threads'] && ThreadWatcher.isWatched(thread);
       });
+      if (Conf['Anchor Hidden Threads']) {
+        return Index.sortOnTop(function(thread) {
+          return !thread.isHidden;
+        });
+      }
     },
     sortOnTop: function(match) {
-      var i, offset, thread, _i, _len, _ref;
+      var bottomThreads, i, offset, thread, topThreads, _i, _len, _ref;
       offset = 0;
+      topThreads = [];
+      bottomThreads = [];
       _ref = Index.sortedThreads;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         thread = _ref[i];
         if (match(thread)) {
-          Index.sortedThreads.splice(offset++, 0, Index.sortedThreads.splice(i, 1)[0]);
+          (match(thread) ? topThreads : bottomThreads).push(thread);
         }
       }
+      return Index.sortedThreads = topThreads.push.apply(topThreads, bottomThreads);
     },
     buildIndex: function(infinite) {
       var i, max, nodes, pageNum, sortedThreads, thread, threads, threadsPerPage;

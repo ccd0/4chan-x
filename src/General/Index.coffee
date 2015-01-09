@@ -48,21 +48,18 @@ Index =
     $.on threadsNumInput, 'change', $.cb.value
     $.on threadsNumInput, 'change', @cb.threadsNum
 
-    targetEntry =
-      el: $.el 'label',
-        innerHTML: '<input type=checkbox name="Open threads in a new tab"> Open threads in a new tab'
-        title: 'Catalog-only setting.'
+    targetEntry  = el: UI.checkbox 'Open threads in a new tab', 'Open threads in a new tab'
+    repliesEntry = el: UI.checkbox 'Show Replies',              'Show replies'
+    pinEntry     = el: UI.checkbox 'Pin Watched Threads',       'Pin watched threads'
+    anchorEntry  = el: UI.checkbox 'Anchor Hidden Threads',     'Anchor hidden threads'
+    refNavEntry  = el: UI.checkbox 'Refreshed Navigation',      'Refreshed navigation'
 
-    repliesEntry =
-      el: $.el 'label',
-        innerHTML: '<input type=checkbox name="Show Replies"> Show replies'
+    targetEntry.el.title = 'Catalog-only setting.'
+    pinEntry.el.title    = 'Move watched threads to the start of the index.'
+    anchorEntry.el.title = 'Move hidden threads to the end of the index.'
+    refNavEntry.el.title = 'Refresh index when navigating through pages.'
 
-    refNavEntry =
-      el: $.el 'label',
-        innerHTML: '<input type=checkbox name="Refreshed Navigation"> Refreshed navigation'
-        title: 'Refresh index when navigating through pages.'
-
-    for label in [targetEntry, repliesEntry, refNavEntry]
+    for label in [targetEntry, repliesEntry, pinEntry, anchorEntry, refNavEntry]
       input = label.el.firstChild
       {name} = input
       input.checked = Conf[name]
@@ -72,12 +69,14 @@ Index =
           $.on input, 'change', @cb.target
         when 'Show Replies'
           $.on input, 'change', @cb.replies
+        when 'Pin Watched Threads', 'Anchor Hidden Threads'
+          $.on input, 'change', @cb.sort
 
     Header.menu.addEntry
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 98
-      subEntries: [threadNumEntry, targetEntry, repliesEntry, refNavEntry]
+      subEntries: [threadNumEntry, targetEntry, repliesEntry, pinEntry, anchorEntry, refNavEntry]
 
     $.addClass doc, 'index-loading'
 
@@ -156,6 +155,7 @@ Index =
 
       board = $ '.board'
       $.replace board, Index.root
+      $.event 'PostsInserted'
       # Hacks:
       # - When removing an element from the document during page load,
       #   its ancestors will still be correctly created inside of it.
@@ -174,7 +174,7 @@ Index =
 
   scroll: ->
     return if Index.req or Conf['Index Mode'] isnt 'infinite' or (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight)) or g.VIEW is 'thread'
-    Index.currentPage = (Index.currentPage or Index.getCurrentPage()) + 1 # Avoid having to pushState to keep track of the current page
+    Index.currentPage = Index.getCurrentPage() + 1 # Avoid having to pushState to keep track of the current page
     return Index.endNotice() if Index.currentPage >= Index.pagesNum
     Index.buildIndex true
 
@@ -205,7 +205,6 @@ Index =
             $.event 'CloseMenu'
             Index.togglePin thread
           $.on @el, 'click', @cb
-          true
 
   threadNode: ->
     return if g.VIEW isnt 'index'
@@ -222,12 +221,11 @@ Index =
     thread = g.threads[@parentNode.dataset.fullID]
     if e.shiftKey
       PostHiding.toggle thread.OP
-      e.preventDefault()
     else if e.altKey
       Index.togglePin thread
-      e.preventDefault()
     else
-      Navigate.navigate.call @, e
+      return Navigate.navigate.call @, e
+    e.preventDefault()
 
   onOver: (e) ->
     # 4chan's less than stellar CSS forces us to include a .post and .postInfo
@@ -271,10 +269,7 @@ Index =
     $.event 'change', null, Index.selectMode
 
   cycleSortType: ->
-    types = []
-    i = 0
-    while option = Index.selectSort.options[i++]
-      types.push option if !option.disabled
+    types = (option for option in Index.selectSort.options when not option.disabled)
     for type, i in types
       break if type.selected
     types[(i + 1) % types.length].selected = true
@@ -375,6 +370,7 @@ Index =
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       switch e.target.nodeName
         when 'BUTTON'
+          e.target.blur()
           a = e.target.parentNode
         when 'A'
           a = e.target
@@ -420,6 +416,8 @@ Index =
     Header.scrollToIfNeeded Index.navLinks
 
   getCurrentPage: ->
+    if Conf['Index Mode'] in ['all pages', 'catalog']
+      return 1
     if Conf['Index Mode'] is 'infinite' and Index.currentPage
       return Index.currentPage
     +window.location.pathname.split('/')[2] or 1
@@ -607,6 +605,7 @@ Index =
     Index.scrollToIndex()
 
   parse: (pages, pageNum) ->
+    $.cleanCache (url) -> /^\/\/a\.4cdn\.org\//.test url
     Index.parseThreadList pages
     Index.buildThreads()
     Index.sort()
@@ -644,7 +643,6 @@ Index =
         thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
         thread.setStatus 'Sticky', !!threadData.sticky
         thread.setStatus 'Closed', !!threadData.closed
-
       else
         thread = new Thread threadData.no, g.BOARD
         threads.push thread
@@ -764,13 +762,17 @@ Index =
     # Sticky threads
     Index.sortOnTop (thread) -> thread.isSticky
     # Highlighted threads
-    Index.sortOnTop (thread) -> thread.isOnTop or thread.isPinned
+    Index.sortOnTop (thread) -> thread.isOnTop or Conf['Pin Watched Threads'] and ThreadWatcher.isWatched thread
+    # Non-hidden threads
+    Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
 
   sortOnTop: (match) ->
     offset = 0
+    topThreads    = []
+    bottomThreads = []
     for thread, i in Index.sortedThreads when match thread
-      Index.sortedThreads.splice offset++, 0, Index.sortedThreads.splice(i, 1)[0]
-    return
+      (if match thread then topThreads else bottomThreads).push thread
+    Index.sortedThreads = topThreads.push bottomThreads...
 
   buildIndex: (infinite) ->
     {sortedThreads} = Index

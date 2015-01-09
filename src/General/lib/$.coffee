@@ -83,6 +83,10 @@ do ->
     $.on req, 'abort error', rm
     req.callbacks = [cb]
     reqs[url] = req
+  $.cleanCache = (testf) ->
+    for url of reqs when testf url
+      delete reqs[url]
+    return
 
 $.cb =
   checked: ->
