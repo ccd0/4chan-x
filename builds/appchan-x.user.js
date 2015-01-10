@@ -115,7 +115,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, IDHighlight, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -15179,6 +15179,44 @@
         msg = (msg << 5) - msg + uid.charCodeAt(i++);
       }
       return msg;
+    }
+  };
+
+  IDHighlight = {
+    init: function() {
+      var _ref;
+      if ((_ref = g.VIEW) !== 'index' && _ref !== 'thread') {
+        return;
+      }
+      return Post.callbacks.push({
+        name: 'Highlight by User ID',
+        cb: this.node
+      });
+    },
+    uniqueID: null,
+    node: function() {
+      if (this.nodes.uniqueID) {
+        $.on(this.nodes.uniqueID, 'click', IDHighlight.click(this));
+      }
+      if (this.nodes.capcode) {
+        $.on(this.nodes.capcode, 'click', IDHighlight.click(this));
+      }
+      if (!this.isClone) {
+        return IDHighlight.set(this);
+      }
+    },
+    set: function(post) {
+      var match;
+      match = (post.info.uniqueID || post.info.capcode) === IDHighlight.uniqueID;
+      return $[match ? 'addClass' : 'rmClass'](post.nodes.post, 'highlight');
+    },
+    click: function(post) {
+      return function() {
+        var uniqueID;
+        uniqueID = post.info.uniqueID || post.info.capcode;
+        IDHighlight.uniqueID = IDHighlight.uniqueID === uniqueID ? null : uniqueID;
+        return g.posts.forEach(IDHighlight.set);
+      };
     }
   };
 
