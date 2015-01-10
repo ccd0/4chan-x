@@ -59,6 +59,8 @@ module.exports = (grunt) ->
           'src/General/CrossOrigin.coffee'
           'src/Filtering/**/*.coffee'
           'src/Quotelinks/**/*.coffee'
+          'src/Posting/**/Captcha.coffee'
+          'src/Posting/**/Captcha.*.coffee'
           'src/Posting/**/QR.coffee'
           'src/Posting/**/QR.*.coffee'
           'src/Images/**/*.coffee'

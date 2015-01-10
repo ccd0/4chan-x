@@ -88,7 +88,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, IDHighlight, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, Build, Callbacks, Captcha, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, IDHighlight, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -8572,6 +8572,574 @@
         $.add(green, deadlink);
       }
       return $.replace(deadlink, __slice.call(deadlink.childNodes));
+    }
+  };
+
+  Captcha = {};
+
+  Captcha.noscript = {
+    lifetime: 2 * $.MINUTE,
+    iframeURL: '//www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc',
+    init: function() {
+      var container, input;
+      if (d.cookie.indexOf('pass_enabled=1') >= 0) {
+        return;
+      }
+      if (!(this.isEnabled = !!$.id('g-recaptcha'))) {
+        return;
+      }
+      container = $.el('div', {
+        className: 'captcha-img',
+        title: 'Reload reCAPTCHA'
+      });
+      input = $.el('input', {
+        className: 'captcha-input field',
+        title: 'Verification',
+        autocomplete: 'off',
+        spellcheck: false
+      });
+      this.nodes = {
+        container: container,
+        input: input
+      };
+      $.on(input, 'keydown', this.keydown.bind(this));
+      $.on(this.nodes.container, 'click', (function(_this) {
+        return function() {
+          _this.reload();
+          return _this.nodes.input.focus();
+        };
+      })(this));
+      this.conn = new Connection(null, "" + location.protocol + "//www.google.com", {
+        challenge: this.load.bind(this),
+        token: this.save.bind(this),
+        error: this.error.bind(this)
+      });
+      $.addClass(QR.nodes.el, 'has-captcha');
+      $.after(QR.nodes.com.parentNode, [container, input]);
+      this.captchas = [];
+      $.get('captchas', [], function(_arg) {
+        var captchas;
+        captchas = _arg.captchas;
+        QR.captcha.sync(captchas);
+        return QR.captcha.clear();
+      });
+      $.sync('captchas', this.sync);
+      this.beforeSetup();
+      return this.setup();
+    },
+    initFrame: function() {
+      var cb, conn, img, _ref, _ref1;
+      conn = new Connection(window.top, "" + location.protocol + "//boards.4chan.org", {
+        response: function(response) {
+          $.id('response').value = response;
+          return $('.fbc-challenge > form').submit();
+        }
+      });
+      conn.send({
+        token: (_ref = $('.fbc-verification-token > textarea')) != null ? _ref.value : void 0,
+        error: (_ref1 = $('.fbc-error')) != null ? _ref1.textContent : void 0
+      });
+      if (!(img = $('.fbc-payload > img'))) {
+        return;
+      }
+      cb = function() {
+        var canvas;
+        canvas = $.el('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        return conn.send({
+          challenge: canvas.toDataURL()
+        });
+      };
+      if (img.complete) {
+        return cb();
+      } else {
+        return $.on(img, 'load', cb);
+      }
+    },
+    timers: {},
+    cb: {
+      focus: function() {
+        return QR.captcha.setup(false, true);
+      }
+    },
+    beforeSetup: function() {
+      var container, input, _ref;
+      _ref = this.nodes, container = _ref.container, input = _ref.input;
+      container.hidden = true;
+      input.value = '';
+      input.placeholder = 'Focus to load reCAPTCHA';
+      this.count();
+      return $.on(input, 'focus click', this.cb.focus);
+    },
+    needed: function() {
+      var captchaCount, postsCount;
+      captchaCount = this.captchas.length;
+      if (QR.req) {
+        captchaCount++;
+      }
+      postsCount = QR.posts.length;
+      if (postsCount === 1 && !Conf['Auto-load captcha'] && !QR.posts[0].com && !QR.posts[0].file) {
+        postsCount = 0;
+      }
+      return captchaCount < postsCount;
+    },
+    onNewPost: function() {},
+    onPostChange: function() {},
+    setup: function(focus, force) {
+      if (!(this.isEnabled && (this.needed() || force))) {
+        return;
+      }
+      if (!this.nodes.iframe) {
+        this.nodes.iframe = $.el('iframe', {
+          id: 'qr-captcha-iframe',
+          src: this.iframeURL
+        });
+        $.add(d.body, this.nodes.iframe);
+        this.conn.target = this.nodes.iframe.contentWindow;
+      } else if (!this.occupied) {
+        this.nodes.iframe.src = this.iframeURL;
+      }
+      this.occupied = true;
+      if (focus) {
+        return this.nodes.input.focus();
+      }
+    },
+    afterSetup: function() {
+      var container, input, _ref;
+      _ref = this.nodes, container = _ref.container, input = _ref.input;
+      container.hidden = false;
+      input.placeholder = 'Verification';
+      this.count();
+      $.off(input, 'focus click', this.cb.focus);
+      if (QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight) {
+        QR.nodes.el.style.top = null;
+        return QR.nodes.el.style.bottom = '0px';
+      }
+    },
+    destroy: function() {
+      if (!this.isEnabled) {
+        return;
+      }
+      if (this.nodes.img) {
+        $.rm(this.nodes.img);
+      }
+      delete this.nodes.img;
+      if (this.nodes.iframe) {
+        $.rm(this.nodes.iframe);
+      }
+      delete this.nodes.iframe;
+      delete this.occupied;
+      this.unflag();
+      return this.beforeSetup();
+    },
+    sync: function(captchas) {
+      if (captchas == null) {
+        captchas = [];
+      }
+      QR.captcha.captchas = captchas;
+      return QR.captcha.count();
+    },
+    getOne: function() {
+      var captcha;
+      this.clear();
+      if (captcha = this.captchas.shift()) {
+        this.count();
+        $.set('captchas', this.captchas);
+        return captcha.response;
+      } else if (/\S/.test(this.nodes.input.value)) {
+        return (function(_this) {
+          return function(cb) {
+            _this.submitCB = cb;
+            return _this.sendResponse();
+          };
+        })(this);
+      } else {
+        return null;
+      }
+    },
+    sendResponse: function() {
+      var response;
+      response = this.nodes.input.value;
+      if (/\S/.test(response)) {
+        return this.conn.send({
+          response: response
+        });
+      }
+    },
+    save: function(token) {
+      delete this.occupied;
+      this.nodes.input.value = '';
+      if (this.submitCB) {
+        this.submitCB(token);
+        delete this.submitCB;
+        if (this.needed()) {
+          return this.reload();
+        } else {
+          return this.destroy();
+        }
+      } else {
+        $.forceSync('captchas');
+        this.captchas.push({
+          response: token,
+          timeout: this.timeout
+        });
+        this.count();
+        $.set('captchas', this.captchas);
+        return this.reload();
+      }
+    },
+    error: function(message) {
+      this.occupied = true;
+      this.nodes.input.value = '';
+      if (this.submitCB) {
+        this.submitCB();
+        delete this.submitCB;
+      }
+      return QR.error("Captcha Error: " + message);
+    },
+    notify: function(el) {
+      if (Conf['Captcha Warning Notifications'] && !d.hidden) {
+        return QR.notify(el);
+      } else {
+        $.addClass(this.nodes.input, 'error');
+        return $.one(this.nodes.input, 'keydown', this.unflag.bind(this));
+      }
+    },
+    unflag: function() {
+      return $.rmClass(this.nodes.input, 'error');
+    },
+    clear: function() {
+      var captcha, i, now, _i, _len, _ref;
+      if (!this.captchas.length) {
+        return;
+      }
+      $.forceSync('captchas');
+      now = Date.now();
+      _ref = this.captchas;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        captcha = _ref[i];
+        if (captcha.timeout > now) {
+          break;
+        }
+      }
+      if (!i) {
+        return;
+      }
+      this.captchas = this.captchas.slice(i);
+      this.count();
+      return $.set('captchas', this.captchas);
+    },
+    load: function(src) {
+      var container, img, input, _ref;
+      _ref = this.nodes, container = _ref.container, input = _ref.input, img = _ref.img;
+      this.occupied = true;
+      this.timeout = Date.now() + this.lifetime;
+      if (!img) {
+        img = this.nodes.img = new Image;
+        $.one(img, 'load', this.afterSetup.bind(this));
+        $.on(img, 'load', function() {
+          return this.hidden = false;
+        });
+        $.add(container, img);
+      }
+      img.src = src;
+      input.value = '';
+      this.clear();
+      clearTimeout(this.timers.expire);
+      return this.timers.expire = setTimeout(this.expire.bind(this), this.lifetime);
+    },
+    count: function() {
+      var count, placeholder;
+      count = this.captchas ? this.captchas.length : 0;
+      placeholder = this.nodes.input.placeholder.replace(/\ \(.*\)$/, '');
+      placeholder += (function() {
+        switch (count) {
+          case 0:
+            if (placeholder === 'Verification') {
+              return ' (Shift + Enter to cache)';
+            } else {
+              return '';
+            }
+            break;
+          case 1:
+            return ' (1 cached captcha)';
+          default:
+            return " (" + count + " cached captchas)";
+        }
+      })();
+      this.nodes.input.placeholder = placeholder;
+      this.nodes.input.alt = count;
+      clearTimeout(this.timers.clear);
+      if (this.captchas.length) {
+        return this.timers.clear = setTimeout(this.clear.bind(this), this.captchas[0].timeout - Date.now());
+      }
+    },
+    expire: function() {
+      if (!this.nodes.iframe) {
+        return;
+      }
+      if (this.needed() || d.activeElement === this.nodes.input) {
+        return this.reload();
+      } else {
+        return this.destroy();
+      }
+    },
+    reload: function() {
+      var _ref;
+      this.nodes.iframe.src = this.iframeURL;
+      this.occupied = true;
+      return (_ref = this.nodes.img) != null ? _ref.hidden = true : void 0;
+    },
+    keydown: function(e) {
+      if (e.keyCode === 8 && !this.nodes.input.value) {
+        if (this.nodes.iframe) {
+          this.reload();
+        } else {
+          this.setup();
+        }
+      } else if (e.keyCode === 13 && e.shiftKey) {
+        this.sendResponse();
+      } else {
+        return;
+      }
+      return e.preventDefault();
+    }
+  };
+
+  Captcha.v2 = {
+    lifetime: 2 * $.MINUTE,
+    init: function() {
+      var counter, root;
+      if (d.cookie.indexOf('pass_enabled=1') >= 0) {
+        return;
+      }
+      if (!(this.isEnabled = !!$.id('g-recaptcha'))) {
+        return;
+      }
+      this.captchas = [];
+      $.get('captchas', [], function(_arg) {
+        var captchas;
+        captchas = _arg.captchas;
+        return QR.captcha.sync(captchas);
+      });
+      $.sync('captchas', this.sync.bind(this));
+      root = $.el('div', {
+        className: 'captcha-root'
+      });
+      $.extend(root, {
+        innerHTML: "<div class=\"captcha-counter\"><a href=\"javascript:;\"></a></div>"
+      });
+      counter = $('.captcha-counter > a', root);
+      this.nodes = {
+        root: root,
+        counter: counter
+      };
+      this.count();
+      $.addClass(QR.nodes.el, 'has-captcha');
+      $.after(QR.nodes.com.parentNode, root);
+      $.on(counter, 'click', this.toggle.bind(this));
+      return $.on(window, 'captcha:success', (function(_this) {
+        return function() {
+          return $.queueTask(function() {
+            return _this.save(false);
+          });
+        };
+      })(this));
+    },
+    shouldFocus: false,
+    timeouts: {},
+    postsCount: 0,
+    needed: function() {
+      var captchaCount;
+      captchaCount = this.captchas.length;
+      if (QR.req) {
+        captchaCount++;
+      }
+      this.postsCount = QR.posts.length;
+      if (this.postsCount === 1 && !Conf['Auto-load captcha'] && !QR.posts[0].com && !QR.posts[0].file) {
+        this.postsCount = 0;
+      }
+      return captchaCount < this.postsCount;
+    },
+    onNewPost: function() {
+      return this.setup();
+    },
+    onPostChange: function() {
+      if (this.postsCount === 0) {
+        this.setup();
+      }
+      if (QR.posts.length === 1 && !Conf['Auto-load captcha'] && !QR.posts[0].com && !QR.posts[0].file) {
+        return this.postsCount = 0;
+      }
+    },
+    toggle: function() {
+      if (this.nodes.container && !this.timeouts.destroy) {
+        return this.destroy();
+      } else {
+        return this.setup(true, true);
+      }
+    },
+    setup: function(focus, force) {
+      var iframe;
+      if (!(this.isEnabled && (this.needed() || force))) {
+        return;
+      }
+      $.addClass(QR.nodes.el, 'captcha-open');
+      if (focus) {
+        this.shouldFocus = true;
+      }
+      if (this.timeouts.destroy) {
+        clearTimeout(this.timeouts.destroy);
+        delete this.timeouts.destroy;
+        return this.reload();
+      }
+      if (this.nodes.container) {
+        if (this.shouldFocus && (iframe = $('iframe', this.nodes.container))) {
+          iframe.focus();
+          delete this.shouldFocus;
+        }
+        return;
+      }
+      this.nodes.container = $.el('div', {
+        className: 'captcha-container'
+      });
+      $.prepend(this.nodes.root, this.nodes.container);
+      new MutationObserver(this.afterSetup.bind(this)).observe(this.nodes.container, {
+        childList: true,
+        subtree: true
+      });
+      return $.globalEval('(function() {\n  function render() {\n    var container = document.querySelector("#qr .captcha-container");\n    container.dataset.widgetID = window.grecaptcha.render(container, {\n      sitekey: \'6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc\',\n      theme: document.documentElement.classList.contains(\'tomorrow\') ? \'dark\' : \'light\',\n      callback: function(response) {\n        window.dispatchEvent(new CustomEvent("captcha:success", {detail: response}));\n      }\n    });\n  }\n  if (window.grecaptcha) {\n    render();\n  } else {\n    var cbNative = window.onRecaptchaLoaded;\n    window.onRecaptchaLoaded = function() {\n      render();\n      cbNative();\n    }\n  }\n})();');
+    },
+    afterSetup: function(mutations) {
+      var iframe, mutation, node, textarea, _i, _j, _len, _len1, _ref;
+      for (_i = 0, _len = mutations.length; _i < _len; _i++) {
+        mutation = mutations[_i];
+        _ref = mutation.addedNodes;
+        for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+          node = _ref[_j];
+          if (iframe = $.x('./descendant-or-self::iframe', node)) {
+            this.setupIFrame(iframe);
+          }
+          if (textarea = $.x('./descendant-or-self::textarea', node)) {
+            this.setupTextArea(textarea);
+          }
+        }
+      }
+    },
+    setupIFrame: function(iframe) {
+      this.setupTime = Date.now();
+      if (QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight) {
+        QR.nodes.el.style.top = null;
+        QR.nodes.el.style.bottom = '0px';
+      }
+      if (this.shouldFocus) {
+        iframe.focus();
+      }
+      return this.shouldFocus = false;
+    },
+    setupTextArea: function(textarea) {
+      return $.one(textarea, 'input', (function(_this) {
+        return function() {
+          return _this.save(true);
+        };
+      })(this));
+    },
+    destroy: function() {
+      if (!this.isEnabled) {
+        return;
+      }
+      delete this.timeouts.destroy;
+      $.rmClass(QR.nodes.el, 'captcha-open');
+      if (this.nodes.container) {
+        $.rm(this.nodes.container);
+      }
+      return delete this.nodes.container;
+    },
+    sync: function(captchas) {
+      if (captchas == null) {
+        captchas = [];
+      }
+      this.captchas = captchas;
+      this.clear();
+      return this.count();
+    },
+    getOne: function() {
+      var captcha;
+      this.clear();
+      if (captcha = this.captchas.shift()) {
+        $.set('captchas', this.captchas);
+        this.count();
+        return captcha.response;
+      } else {
+        return null;
+      }
+    },
+    save: function(pasted) {
+      var _base;
+      $.forceSync('captchas');
+      this.captchas.push({
+        response: $('textarea', this.nodes.container).value,
+        timeout: (pasted ? this.setupTime : Date.now()) + this.lifetime
+      });
+      $.set('captchas', this.captchas);
+      this.count();
+      if (this.needed()) {
+        if (QR.cooldown.auto || Conf['Post on Captcha Completion']) {
+          this.shouldFocus = true;
+        } else {
+          QR.nodes.status.focus();
+        }
+        this.reload();
+      } else {
+        if (pasted) {
+          this.destroy();
+        } else {
+          if ((_base = this.timeouts).destroy == null) {
+            _base.destroy = setTimeout(this.destroy.bind(this), 3 * $.SECOND);
+          }
+        }
+        QR.nodes.status.focus();
+      }
+      if (Conf['Post on Captcha Completion'] && !QR.cooldown.auto) {
+        return QR.submit();
+      }
+    },
+    notify: function(el) {
+      return QR.notify(el);
+    },
+    clear: function() {
+      var captcha, i, now, _i, _len, _ref;
+      if (!this.captchas.length) {
+        return;
+      }
+      $.forceSync('captchas');
+      now = Date.now();
+      _ref = this.captchas;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        captcha = _ref[i];
+        if (captcha.timeout > now) {
+          break;
+        }
+      }
+      if (!i) {
+        return;
+      }
+      this.captchas = this.captchas.slice(i);
+      this.count();
+      $.set('captchas', this.captchas);
+      return this.setup(true);
+    },
+    count: function() {
+      this.nodes.counter.textContent = "Captchas: " + this.captchas.length;
+      clearTimeout(this.timeouts.clear);
+      if (this.captchas.length) {
+        return this.timeouts.clear = setTimeout(this.clear.bind(this), this.captchas[0].timeout - Date.now());
+      }
+    },
+    reload: function() {
+      return $.globalEval('(function() {\n  var container = document.querySelector("#qr .captcha-container");\n  window.grecaptcha.reset(container.dataset.widgetID);\n})();');
     }
   };
 
