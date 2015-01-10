@@ -75,7 +75,8 @@ ImageLoader =
     if replace and isImage
        $.on el, 'load', ->
          clone.file.thumb.src = URL for clone in post.clones
-        thumb.src = URL
+         return
+       thumb.src = URL
     el.src = URL
 
   toggle: ->

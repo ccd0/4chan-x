@@ -11494,14 +11494,12 @@
       el = $.el(isImage ? 'img' : 'video');
       if (replace && isImage) {
         $.on(el, 'load', function() {
-          var _k, _len2, _ref2, _results;
+          var _k, _len2, _ref2;
           _ref2 = post.clones;
-          _results = [];
           for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
             clone = _ref2[_k];
-            _results.push(clone.file.thumb.src = URL);
+            clone.file.thumb.src = URL;
           }
-          return _results;
         });
         thumb.src = URL;
       }
