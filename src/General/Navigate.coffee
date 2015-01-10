@@ -104,7 +104,6 @@ Navigate =
 
   updateContext: (view) ->
     # State tracking
-    g.DEAD     = false
     g.THREADID = +window.location.pathname.split('/')[3] if view is 'thread'
 
     {

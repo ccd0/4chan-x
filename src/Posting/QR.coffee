@@ -5,7 +5,18 @@ QR =
     @db = new DataBoard 'yourPosts'
     @posts = []
 
+    return if g.VIEW is 'archive'
+
+    $.globalEval 'document.documentElement.dataset.jsEnabled = true;'
+    noscript = Conf['Force Noscript Captcha'] or !doc.dataset.jsEnabled
+    @captcha = Captcha[if noscript then 'noscript' else 'v2']
+
     $.on d, '4chanXInitFinished', @initReady
+
+    window.addEventListener 'focus', @focus, true
+    window.addEventListener 'blur',  @focus, true
+    # We don't receive blur events from captcha iframe.
+    $.on d, 'click', @focus
 
     Post.callbacks.push
       name: 'Quick Reply'
@@ -45,9 +56,7 @@ QR =
     QR.postingIsEnabled = !!$.id 'postForm'
     return unless QR.postingIsEnabled
 
-    <% if (type === 'crx') { %>
     $.on d, 'paste',              QR.paste
-    <% } %>
     $.on d, 'dragover',           QR.dragOver
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
@@ -58,10 +67,12 @@ QR =
 
     return if !Conf['Persistent QR']
     QR.open()
-    QR.hide() if Conf['Auto-Hide QR']
+    QR.hide() if Conf['Auto Hide QR']
 
   statusCheck: ->
-    if g.DEAD
+    return unless QR.nodes
+    {thread} = QR.posts[0]
+    if thread isnt 'new' and g.threads["#{g.BOARD}.#{thread}"].isDead
       QR.abort()
     else
       QR.status()
@@ -78,9 +89,9 @@ QR =
 
   open: ->
     if QR.nodes
+      QR.captcha.setup() if QR.nodes.el.hidden
       QR.nodes.el.hidden = false
       QR.unhide()
-      QR.captcha.setup()
       return
     try
       QR.dialog()
@@ -107,12 +118,25 @@ QR =
     QR.status()
     QR.captcha.destroy()
 
-  focusin: ->
-    QR.captcha.setup() if $.hasClass(QR.nodes.el, 'autohide') and !$.hasClass(QR.nodes.el, 'focus')
-    $.addClass QR.nodes.el, 'focus'
+  focus: ->
+    $.queueTask ->
+      return unless QR.nodes
+      unless $$('.goog-bubble-content > iframe').some((el) -> el.getBoundingClientRect().top >= 0)
+        focus = d.activeElement and QR.nodes.el.contains(d.activeElement)
+        $[if focus then 'addClass' else 'rmClass'] QR.nodes.el, 'focus'
+      if chrome?
+        # XXX Stop anomalous scrolling on space/tab in captcha iframe.
+        if d.activeElement and QR.nodes.el.contains(d.activeElement) and d.activeElement.nodeName is 'IFRAME'
+          QR.scrollY = window.scrollY
+          $.on d, 'scroll', QR.scrollLock
+        else
+          $.off d, 'scroll', QR.scrollLock
 
-  focusout: ->
-    $.rmClass QR.nodes.el, 'focus'
+  scrollLock: (e) ->
+    if d.activeElement and QR.nodes.el.contains(d.activeElement) and d.activeElement.nodeName is 'IFRAME'
+      window.scroll window.scrollX, QR.scrollY
+    else
+      $.off d, 'scroll', QR.scrollLock
 
   hide: ->
     d.activeElement.blur()
@@ -138,7 +162,9 @@ QR =
       el.removeAttribute 'style'
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
       QR.captcha.setup true
-    QR.notify el
+      QR.captcha.notify el
+    else
+      QR.notify el
     alert el.textContent if d.hidden
 
   notify: (el) ->
@@ -196,7 +222,7 @@ QR =
 
     sel  = d.getSelection()
     post = Get.postFromNode @
-    text = ">>#{post}\n"
+    text = if post.board.ID is g.BOARD.ID then ">>#{post}\n" else ">>>/#{post.board}/#{post}\n"
     if sel.toString().trim() and post is Get.postFromNode sel.anchorNode
       range = sel.getRangeAt 0
       frag  = range.cloneContents()
@@ -356,6 +382,7 @@ QR =
       'new'
     list.nextElementSibling.firstChild.textContent = list.options[list.selectedIndex].textContent if $.hasClass list, 'riced'
 
+    (if g.VIEW is 'thread' then $.addClass else $.rmClass) QR.nodes.el, 'reply-to-thread'
 
   dialog: ->
     QR.nodes = nodes =
@@ -405,6 +432,14 @@ QR =
     QR.max_width_video = QR.max_height_video = 2048
     QR.max_duration_video = 120
 
+    if Conf['Show New Thread Option in Threads']
+      $.addClass QR.nodes.el, 'show-new-thread-option'
+
+    if Conf['Show Name and Subject']
+      $.addClass QR.nodes.name, 'force-show'
+      $.addClass QR.nodes.sub, 'force-show'
+      QR.nodes.email.placeholder = 'E-mail'
+
     QR.forcedAnon = !!$ 'form[name="post"] input[name="name"][type="hidden"]'
     if QR.forcedAnon
       $.addClass QR.nodes.el, 'forced-anon'
@@ -420,28 +455,22 @@ QR =
       nodes.addPost.tabIndex = 35
 
     if g.BOARD.ID is 'f' and g.VIEW isnt 'thread'
-      nodes.flashTag = $.el 'select', name: 'filetag', 
-      innerHTML: """
-        <option value=0>Hentai</option>
-        <option value=6>Porn</option>
-        <option value=1>Japanese</option>
-        <option value=2>Anime</option>
-        <option value=3>Game</option>
-        <option value=5>Loop</option>
-        <option value=4 selected>Other</option>
-      """
+      nodes.flashTag = $.el 'select', name: 'filetag',
+      $.extend nodes.flashTag, <%= html(
+        '<option value="0">Hentai</option>' +
+        '<option value="6">Porn</option>' +
+        '<option value="1">Japanese</option>' +
+        '<option value="2">Anime</option>' +
+        '<option value="3">Game</option>' +
+        '<option value="5">Loop</option>' +
+        '<option value="4" selected>Other</option>'
+      ) %>
       nodes.flashTag.dataset.default = '4'
       $.add nodes.form, nodes.flashTag
 
     QR.flagsInput()
 
     $.on nodes.filename.parentNode, 'click keydown', QR.openFileInput
-
-    items = $$ '*', QR.nodes.el
-    i = 0
-    while elm = items[i++]
-      $.on elm, 'blur',  QR.focusout
-      $.on elm, 'focus', QR.focusin
 
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
@@ -462,7 +491,7 @@ QR =
       $.on nodes[name], 'mouseover', QR.mouseover
 
     # save selected post's data
-    items = ['name', 'email', 'sub', 'com', 'filename', 'flag']
+    items = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag']
     i = 0
     save = -> QR.selected.save @
     while name = items[i++]
@@ -549,12 +578,13 @@ QR =
       $.rm nodes.flag
       delete nodes.flag
 
-    if g.BOARD.ID is 'pol'
-      flag = QR.flags()
-      flag.dataset.name    = 'flag'
-      flag.dataset.default = '0'
-      nodes.flag = flag
-      $.add nodes.form, flag
+#    # if false?
+#    if g.BOARD.ID is 'pol'
+#      flag = QR.flags()
+#      flag.dataset.name    = 'flag'
+#      flag.dataset.default = '0'
+#      nodes.flag = flag
+#      $.add nodes.form, flag
 
   submit: (e) ->
     e?.preventDefault()
@@ -590,8 +620,8 @@ QR =
       err = 'Max limit of image replies has been reached.'
 
     if QR.captcha.isEnabled and !err
-      response = QR.captcha.getOne()
-      err = 'No valid captcha.' unless response
+      captcha = QR.captcha.getOne()
+      err = 'No valid captcha.' unless captcha
 
     QR.cleanNotifications()
     if err
@@ -613,10 +643,8 @@ QR =
 
     formData =
       resto:    threadID
-
       name:     post.name unless QR.forcedAnon
       email:    post.email
-
       sub:      post.sub unless QR.forcedAnon or threadID
       com:      post.com
       upfile:   post.file
@@ -626,7 +654,6 @@ QR =
       textonly: textOnly
       mode:     'regist'
       pwd:      QR.persona.pwd
-      'g-recaptcha-response': response
 
     options =
       responseType: 'document'
@@ -639,10 +666,11 @@ QR =
         QR.cooldown.auto = false
         QR.status()
         QR.error $.el 'span',
-          innerHTML: """
-          Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.
-          [<a href="https://github.com/MayhemYDG/4chan-x/wiki/FAQ#what-does-connection-error-you-may-have-been-banned-mean" target=_blank>?</a>]
-          """
+          <%= html(
+            '4chan X encountered an error while posting. ' +
+            '[<a href="//4chan.org/banned" target="_blank">Banned?</a>] ' +
+            '[<a href="${g.FAQ}#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean" target="_blank">More info</a>]'
+          ) %>
     extra =
       form: $.formData formData
       upCallbacks:
@@ -657,11 +685,29 @@ QR =
           QR.req.progress = "#{Math.round e.loaded / e.total * 100}%"
           QR.status()
 
-    QR.req = $.ajax "https://sys.4chan.org/#{g.BOARD}/post", options, extra
+    cb = (response) ->
+      extra.form.append 'g-recaptcha-response', response if response?
+      QR.req = $.ajax "https://sys.4chan.org/#{g.BOARD}/post", options, extra
+      QR.req.progress = '...'
+
+    if typeof captcha is 'function'
+      # Wait for captcha to be verified before submitting post.
+      QR.req =
+        progress: '...'
+        abort: -> cb = null
+      captcha (response) ->
+        if response
+          cb? response
+        else
+          delete QR.req
+          post.unlock()
+          QR.cooldown.auto = !!QR.captcha.captchas.length
+          QR.status()
+    else
+      cb captcha
+
     # Starting to upload might take some time.
     # Provide some feedback that we're starting to submit.
-    QR.req.uploadStartTime = Date.now()
-    QR.req.progress = '...'
     QR.status()
 
   response: ->
@@ -674,17 +720,11 @@ QR =
     resDoc  = req.response
     if ban  = $ '.banType', resDoc # banned/warning
       board = $('.board', resDoc).innerHTML
-      err   = $.el 'span', innerHTML:
+      err   = $.el 'span',
         if ban.textContent.toLowerCase() is 'banned'
-          """
-          You are banned on #{board}! ;_;<br>
-          Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason.
-          """
+          <%= html('You are banned on &{$(".board", resDoc)}! ;_;<br>Click <a href="//www.4chan.org/banned" target="_blank">here</a> to see the reason.') %>
         else
-          """
-          You were issued a warning on #{board} as #{$('.nameBlock', resDoc).innerHTML}.<br>
-          Reason: #{$('.reason', resDoc).innerHTML}
-          """
+          <%= html('You were issued a warning on &{$(".board", resDoc)} as &{$(".nameBlock", resDoc)}.<br>Reason: &{$(".reason", resDoc)}') %>
     else if err = resDoc.getElementById 'errmsg' # error!
       $('a', err)?.target = '_blank' # duplicate image link
     else if resDoc.title isnt 'Post successful!'
@@ -710,13 +750,14 @@ QR =
           false
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
-        QR.cooldown.set delay: 2
-      else if err.textContent and m = err.textContent.match /wait\s+(\d+)\s+second/i
+        QR.cooldown.addDelay post, 2
+      else if err.textContent and (m = err.textContent.match /wait\s+(\d+)\s+second/i) and !/duplicate/i.test err.textContent
         QR.cooldown.auto = if QR.captcha.isEnabled
           !!QR.captcha.captchas.length
         else
           true
-        QR.cooldown.set delay: m[1]
+        QR.cooldown.addDelay post, +m[1]
+        QR.captcha.setup (d.activeElement is QR.nodes.status)
       else # stop auto-posting
         QR.cooldown.auto = false
       QR.status()
@@ -762,26 +803,27 @@ QR =
       notif.onclick = ->
         QR.open()
         window.focus()
+        QR.captcha.setup true
       notif.onshow = ->
         setTimeout ->
           notif.close()
         , 7 * $.SECOND
 
-    unless Conf['Persistent QR'] or QR.cooldown.auto
+    unless Conf['Persistent QR'] or postsCount
       QR.close()
     else
       post.rm()
-      QR.captcha.setup true
+      QR.captcha.setup(d.activeElement is QR.nodes.status)
 
-    QR.cooldown.set {req, post, isReply, threadID}
+    QR.cooldown.add req.uploadEndTime, threadID, postID
 
     URL = if threadID is postID # new thread
-      Build.path g.BOARD.ID, threadID
+      window.location.origin + Build.path g.BOARD.ID, threadID
     else if g.VIEW is 'index' and !QR.cooldown.auto and Conf['Open Post in New Tab'] # replying from the index
-      Build.path g.BOARD.ID, threadID, postID
+      window.location.origin + Build.path g.BOARD.ID, threadID, postID
 
     if URL
-      if Conf['Open Post in New Tab']
+      if Conf['Open Post in New Tab'] or postsCount
         $.open URL
       else
         window.location = URL
