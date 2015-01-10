@@ -15245,7 +15245,7 @@
       return Conf[hotkey] = key;
     },
     keydown: function(e) {
-      var form, key, notification, notifications, op, searchInput, target, thread, threadRoot, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4;
+      var form, key, notification, notifications, op, searchInput, target, thread, threadRoot, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6;
       if (!(key = Keybinds.keyCode(e))) {
         return;
       }
@@ -15266,9 +15266,10 @@
       }
       switch (key) {
         case Conf['Toggle board list']:
-          if (Conf['Custom Board Navigation']) {
-            Header.toggleBoardList();
+          if (!Conf['Custom Board Navigation']) {
+            return;
           }
+          Header.toggleBoardList();
           break;
         case Conf['Toggle header']:
           Header.toggleBarVisibility();
@@ -15277,9 +15278,10 @@
           Keybinds.qr();
           break;
         case Conf['Open QR']:
-          if (threadRoot) {
-            Keybinds.qr(threadRoot);
+          if (!threadRoot) {
+            return;
           }
+          Keybinds.qr(threadRoot);
           break;
         case Conf['Open settings']:
           Settings.open();
@@ -15300,35 +15302,45 @@
             }
           } else if (Embedding.lastEmbed) {
             Embedding.closeFloat();
+          } else {
+            return;
           }
-          return;
+          break;
         case Conf['Spoiler tags']:
-          if (target.nodeName === 'TEXTAREA') {
-            Keybinds.tags('spoiler', target);
+          if (target.nodeName !== 'TEXTAREA') {
+            return;
           }
+          Keybinds.tags('spoiler', target);
           break;
         case Conf['Code tags']:
-          if (target.nodeName === 'TEXTAREA') {
-            Keybinds.tags('code', target);
+          if (target.nodeName !== 'TEXTAREA') {
+            return;
           }
+          Keybinds.tags('code', target);
           break;
         case Conf['Eqn tags']:
-          if (target.nodeName === 'TEXTAREA') {
-            Keybinds.tags('eqn', target);
+          if (target.nodeName !== 'TEXTAREA') {
+            return;
           }
+          Keybinds.tags('eqn', target);
           break;
         case Conf['Math tags']:
-          if (target.nodeName === 'TEXTAREA') {
-            Keybinds.tags('math', target);
+          if (target.nodeName !== 'TEXTAREA') {
+            return;
           }
+          Keybinds.tags('math', target);
           break;
         case Conf['Toggle sage']:
-          if (QR.nodes && !QR.nodes.el.hidden) {
-            Keybinds.sage();
+          if (!(QR.nodes && !QR.nodes.el.hidden)) {
+            return;
           }
+          Keybinds.sage();
           break;
         case Conf['Submit QR']:
-          if (QR.nodes && !QR.nodes.el.hidden && !QR.status()) {
+          if (!(QR.nodes && !QR.nodes.el.hidden)) {
+            return;
+          }
+          if (!QR.status()) {
             QR.submit();
           }
           break;
@@ -15342,52 +15354,60 @@
         case Conf['Update']:
           switch (g.VIEW) {
             case 'thread':
-              if (Conf['Thread Updater']) {
-                ThreadUpdater.update();
+              if (!Conf['Thread Updater']) {
+                return;
               }
+              ThreadUpdater.update();
               break;
             case 'index':
-              if (Conf['JSON Navigation']) {
-                Index.update();
+              if (!Conf['JSON Navigation']) {
+                return;
               }
+              Index.update();
+              break;
+            default:
+              return;
           }
-          return;
+          break;
         case Conf['Watch']:
           if (!thread) {
-            ThreadWatcher.toggle(thread);
-          }
-          break;
-        case Conf['Expand image']:
-          if (threadRoot) {
-            Keybinds.img(threadRoot);
-          }
-          break;
-        case Conf['Expand images']:
-          if (threadRoot) {
-            Keybinds.img(threadRoot, true);
-          }
-          break;
-        case Conf['Open Gallery']:
-          if ((_ref2 = g.VIEW) === 'index' || _ref2 === 'thread') {
-            Gallery.cb.toggle();
-          }
-          break;
-        case Conf['fappeTyme']:
-          if (Conf['Fappe Tyme'] && ((_ref3 = g.VIEW) === 'index' || _ref3 === 'thread') && g.BOARD !== 'f') {
-            FappeTyme.cb.toggle.call({
-              name: 'fappe'
-            });
-          }
-          break;
-        case Conf['werkTyme']:
-          if (g.VIEW === 'catalog') {
             return;
           }
-          if (Conf['Fappe Tyme'] && ((_ref4 = g.VIEW) === 'index' || _ref4 === 'thread') && g.BOARD !== 'f') {
-            FappeTyme.cb.toggle.call({
-              name: 'werk'
-            });
+          ThreadWatcher.toggle(thread);
+          break;
+        case Conf['Expand image']:
+          if (!threadRoot) {
+            return;
           }
+          Keybinds.img(threadRoot);
+          break;
+        case Conf['Expand images']:
+          if (!threadRoot) {
+            return;
+          }
+          Keybinds.img(threadRoot, true);
+          break;
+        case Conf['Open Gallery']:
+          if ((_ref2 = g.VIEW) !== 'index' && _ref2 !== 'thread') {
+            return;
+          }
+          Gallery.cb.toggle();
+          break;
+        case Conf['fappeTyme']:
+          if (!Conf['Fappe Tyme'] || ((_ref3 = g.VIEW) !== 'index' && _ref3 !== 'thread') || g.BOARD === 'f') {
+            return;
+          }
+          FappeTyme.cb.toggle.call({
+            name: 'fappe'
+          });
+          break;
+        case Conf['werkTyme']:
+          if (!Conf['Fappe Tyme'] || ((_ref4 = g.VIEW) !== 'index' && _ref4 !== 'thread') || g.BOARD === 'f') {
+            return;
+          }
+          FappeTyme.cb.toggle.call({
+            name: 'werk'
+          });
           break;
         case Conf['Front page']:
           if (Conf['JSON Navigation'] && g.VIEW === 'index') {
@@ -15404,9 +15424,10 @@
             return;
           }
           if (Conf['JSON Navigation']) {
-            if (Conf['Index Mode'] !== 'all pages') {
-              $('.next button', Index.pagelist).click();
+            if ((_ref5 = Conf['Index Mode']) !== 'paged' && _ref5 !== 'infinite') {
+              return;
             }
+            $('.next button', Index.pagelist).click();
           } else {
             if (form = $('.next form')) {
               window.location = form.action;
@@ -15418,9 +15439,10 @@
             return;
           }
           if (Conf['JSON Navigation']) {
-            if (Conf['Index Mode'] !== 'all pages') {
-              $('.prev button', Index.pagelist).click();
+            if ((_ref6 = Conf['Index Mode']) !== 'paged' && _ref6 !== 'infinite') {
+              return;
             }
+            $('.prev button', Index.pagelist).click();
           } else {
             if (form = $('.prev form')) {
               window.location = form.action;
@@ -15472,63 +15494,71 @@
             Index.setIndexMode('catalog');
           }
           break;
-        case Conf['Cycle sort type']:
-          if (Conf['JSON Navigation'] && g.VIEW === 'index' && g.BOARD !== 'f') {
-            Index.cycleSortType();
-          }
-          break;
         case Conf['Next thread']:
-          if (g.VIEW === 'index' && threadRoot) {
-            Nav.scroll(+1);
+          if (!(g.VIEW === 'index' && threadRoot)) {
+            return;
           }
+          Nav.scroll(+1);
           break;
         case Conf['Previous thread']:
-          if (g.VIEW === 'index' && threadRoot) {
-            Nav.scroll(-1);
+          if (!(g.VIEW === 'index' && threadRoot)) {
+            return;
           }
+          Nav.scroll(-1);
           break;
         case Conf['Expand thread']:
-          if (g.VIEW === 'index' && threadRoot) {
-            ExpandThread.toggle(thread);
+          if (!(g.VIEW === 'index' && threadRoot)) {
+            return;
           }
+          ExpandThread.toggle(thread);
           break;
         case Conf['Open thread']:
-          if (g.VIEW === 'index' && threadRoot) {
-            Keybinds.open(thread);
+          if (!(g.VIEW === 'index' && threadRoot)) {
+            return;
           }
+          Keybinds.open(thread);
           break;
         case Conf['Open thread tab']:
-          if (g.VIEW === 'index' && threadRoot) {
-            Keybinds.open(thread, true);
+          if (!(g.VIEW === 'index' && threadRoot)) {
+            return;
           }
+          Keybinds.open(thread, true);
           break;
         case Conf['Next reply']:
-          if (threadRoot) {
-            Keybinds.hl(+1, threadRoot);
+          if (!threadRoot) {
+            return;
           }
+          Keybinds.hl(+1, threadRoot);
           break;
         case Conf['Previous reply']:
-          if (threadRoot) {
-            Keybinds.hl(-1, threadRoot);
+          if (!threadRoot) {
+            return;
           }
+          Keybinds.hl(-1, threadRoot);
           break;
         case Conf['Deselect reply']:
-          if (threadRoot) {
-            Keybinds.hl(0, threadRoot);
+          if (!threadRoot) {
+            return;
           }
+          Keybinds.hl(0, threadRoot);
           break;
         case Conf['Hide']:
+          if (!threadRoot) {
+            return;
+          }
           PostHiding.toggle(thread.OP);
           break;
         case Conf['Previous Post Quoting You']:
-          if (threadRoot) {
-            QuoteMarkers.cb.seek('preceding');
+          if (!threadRoot) {
+            return;
           }
+          QuoteMarkers.cb.seek('preceding');
           break;
         case Conf['Next Post Quoting You']:
-          if (threadRoot) {
-            QuoteMarkers.cb.seek('following');
+          if (!threadRoot) {
+            return;
           }
+          QuoteMarkers.cb.seek('following');
           break;
         default:
           return;

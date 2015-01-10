@@ -29,13 +29,15 @@ Keybinds =
     switch key
       # QR & Options
       when Conf['Toggle board list']
-        Header.toggleBoardList() if Conf['Custom Board Navigation']
+        return unless Conf['Custom Board Navigation']
+        Header.toggleBoardList()
       when Conf['Toggle header']
         Header.toggleBarVisibility()
       when Conf['Open empty QR']
         Keybinds.qr()
       when Conf['Open QR']
-        Keybinds.qr threadRoot if threadRoot
+        return unless threadRoot
+        Keybinds.qr threadRoot
       when Conf['Open settings']
         Settings.open()
       when Conf['Close']
@@ -51,19 +53,26 @@ Keybinds =
             QR.close()
         else if Embedding.lastEmbed
           Embedding.closeFloat()
-        return
+        else
+          return
       when Conf['Spoiler tags']
-        Keybinds.tags 'spoiler', target if target.nodeName is 'TEXTAREA'
+        return unless target.nodeName is 'TEXTAREA'
+        Keybinds.tags 'spoiler', target
       when Conf['Code tags']
-        Keybinds.tags 'code', target if target.nodeName is 'TEXTAREA'
+        return unless target.nodeName is 'TEXTAREA'
+        Keybinds.tags 'code', target
       when Conf['Eqn tags']
-        Keybinds.tags 'eqn', target if target.nodeName is 'TEXTAREA'
+        return unless target.nodeName is 'TEXTAREA'
+        Keybinds.tags 'eqn', target
       when Conf['Math tags']
-        Keybinds.tags 'math', target if target.nodeName is 'TEXTAREA'
+        return unless target.nodeName is 'TEXTAREA'
+        Keybinds.tags 'math', target
       when Conf['Toggle sage']
-        Keybinds.sage() if QR.nodes and !QR.nodes.el.hidden
+        return unless QR.nodes and !QR.nodes.el.hidden
+        Keybinds.sage() 
       when Conf['Submit QR']
-        QR.submit() if QR.nodes and !QR.nodes.el.hidden and !QR.status()
+        return unless QR.nodes and !QR.nodes.el.hidden
+        QR.submit() if !QR.status()
       when Conf['Post Without Name']
         return unless QR.nodes and !QR.status()
         Keybinds.name()
@@ -72,24 +81,32 @@ Keybinds =
       when Conf['Update']
         switch g.VIEW
           when 'thread'
-            ThreadUpdater.update() if Conf['Thread Updater']
+            return unless Conf['Thread Updater']
+            ThreadUpdater.update()
           when 'index'
-            Index.update() if Conf['JSON Navigation']
-        return
+            return unless Conf['JSON Navigation']
+            Index.update()
+          else
+            return
       when Conf['Watch']
-        ThreadWatcher.toggle thread unless thread
+        return unless thread
+        ThreadWatcher.toggle thread
       # Images
       when Conf['Expand image']
-        Keybinds.img threadRoot if threadRoot
+        return unless threadRoot
+        Keybinds.img threadRoot
       when Conf['Expand images']
-        Keybinds.img threadRoot, true if threadRoot
+        return unless threadRoot
+        Keybinds.img threadRoot, true
       when Conf['Open Gallery']
-        Gallery.cb.toggle() if g.VIEW in ['index', 'thread']
+        return unless g.VIEW in ['index', 'thread']
+        Gallery.cb.toggle()
       when Conf['fappeTyme']
-        FappeTyme.cb.toggle.call {name: 'fappe'} if Conf['Fappe Tyme'] and g.VIEW in ['index', 'thread'] and g.BOARD isnt 'f'
+        return if !Conf['Fappe Tyme'] or g.VIEW not in ['index', 'thread'] or g.BOARD is 'f'
+        FappeTyme.cb.toggle.call {name: 'fappe'}
       when Conf['werkTyme']
-        return if g.VIEW is 'catalog'
-        FappeTyme.cb.toggle.call {name: 'werk'} if Conf['Fappe Tyme'] and g.VIEW in ['index', 'thread'] and g.BOARD isnt 'f'
+        return if !Conf['Fappe Tyme'] or g.VIEW not in ['index', 'thread'] or g.BOARD is 'f'
+        FappeTyme.cb.toggle.call {name: 'werk'}
       # Board Navigation
       when Conf['Front page']
         if Conf['JSON Navigation'] and g.VIEW is 'index'
@@ -101,16 +118,16 @@ Keybinds =
       when Conf['Next page']
         return unless g.VIEW is 'index'
         if Conf['JSON Navigation']
-          if Conf['Index Mode'] isnt 'all pages'
-            $('.next button', Index.pagelist).click()
+          return unless Conf['Index Mode'] in ['paged', 'infinite']
+          $('.next button', Index.pagelist).click()
         else
           if form = $ '.next form'
             window.location = form.action
       when Conf['Previous page']
         return unless g.VIEW is 'index'
         if Conf['JSON Navigation']
-          if Conf['Index Mode'] isnt 'all pages'
-            $('.prev button', Index.pagelist).click()
+          return unless Conf['Index Mode'] in ['paged', 'infinite']
+          $('.prev button', Index.pagelist).click()
         else
           if form = $ '.prev form'
             window.location = form.action
@@ -138,32 +155,41 @@ Keybinds =
           return window.location = "/#{g.BOARD}/catalog" unless Conf['JSON Navigation']
           return unless g.VIEW is 'index' and Conf['Index Mode'] isnt 'catalog'
           Index.setIndexMode 'catalog'
-      when Conf['Cycle sort type']
-        Index.cycleSortType() if Conf['JSON Navigation'] and g.VIEW is 'index' and g.BOARD isnt 'f'
       # Thread Navigation
       when Conf['Next thread']
-        Nav.scroll +1 if g.VIEW is 'index' and threadRoot
+        return unless g.VIEW is 'index' and threadRoot
+        Nav.scroll +1
       when Conf['Previous thread']
-        Nav.scroll -1 if g.VIEW is 'index' and threadRoot
+        return unless g.VIEW is 'index' and threadRoot
+        Nav.scroll -1
       when Conf['Expand thread']
-        ExpandThread.toggle thread if g.VIEW is 'index' and threadRoot
+        return unless g.VIEW is 'index' and threadRoot
+        ExpandThread.toggle thread
       when Conf['Open thread']
-        Keybinds.open thread if g.VIEW is 'index' and threadRoot
+        return unless g.VIEW is 'index' and threadRoot
+        Keybinds.open thread
       when Conf['Open thread tab']
-        Keybinds.open thread, true if g.VIEW is 'index' and threadRoot
+        return unless g.VIEW is 'index' and threadRoot
+        Keybinds.open thread, true
       # Reply Navigation
       when Conf['Next reply']
-        Keybinds.hl +1, threadRoot if threadRoot
+        return unless threadRoot
+        Keybinds.hl +1, threadRoot
       when Conf['Previous reply']
-        Keybinds.hl -1, threadRoot if threadRoot
+        return unless threadRoot
+        Keybinds.hl -1, threadRoot
       when Conf['Deselect reply']
-        Keybinds.hl  0, threadRoot if threadRoot
+        return unless threadRoot
+        Keybinds.hl  0, threadRoot
       when Conf['Hide']
+        return unless threadRoot
         PostHiding.toggle thread.OP
       when Conf['Previous Post Quoting You']
-        QuoteMarkers.cb.seek 'preceding' if threadRoot
+        return unless threadRoot
+        QuoteMarkers.cb.seek 'preceding'
       when Conf['Next Post Quoting You']
-        QuoteMarkers.cb.seek 'following' if threadRoot
+        return unless threadRoot
+        QuoteMarkers.cb.seek 'following'
       else
         return
     e.preventDefault()
