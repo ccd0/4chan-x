@@ -11536,7 +11536,8 @@
 
   RevealSpoilers = {
     init: function() {
-      if (!Conf['Reveal Spoiler Thumbnails']) {
+      var _ref;
+      if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Reveal Spoiler Thumbnails'])) {
         return;
       }
       return Post.callbacks.push({
@@ -11551,20 +11552,21 @@
       }
       thumb = this.file.thumb;
       thumb.removeAttribute('style');
+      thumb.style.maxHeight = thumb.style.maxWidth = this.isReply ? '125px' : '250px';
       return thumb.src = this.file.thumbURL;
     }
   };
 
   Sauce = {
     init: function() {
-      var err, link, links, _i, _len, _ref;
-      if (!Conf['Sauce']) {
+      var err, link, links, _i, _len, _ref, _ref1;
+      if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Sauce'])) {
         return;
       }
       links = [];
-      _ref = Conf['sauces'].split('\n');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        link = _ref[_i];
+      _ref1 = Conf['sauces'].split('\n');
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        link = _ref1[_i];
         try {
           if (link[0] !== '#') {
             links.push(link.trim());
@@ -11585,30 +11587,58 @@
         cb: this.node
       });
     },
-    createSauceLink: function(link, post, a) {
-      var m, text;
-      link = link.replace(/%(T?URL|MD5|board|name)/g, function(parameter) {
-        var type;
-        if (type = {
-          '%TURL': post.file.thumbURL,
-          '%URL': post.file.URL,
-          '%MD5': post.file.MD5,
-          '%board': post.board,
-          '%name': post.file.name
-        }[parameter]) {
-          return encodeURIComponent(type);
+    createSauceLink: function(link, post) {
+      var a, ext, i, key, m, part, parts, _i, _len, _ref, _ref1, _ref2, _ref3;
+      parts = {};
+      _ref = link.split(/;(?=(?:text|boards|types):)/);
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        part = _ref[i];
+        if (i === 0) {
+          parts['url'] = part;
         } else {
-          return parameter;
+          m = part.match(/^(\w*):(.*)$/);
+          parts[m[1]] = m[2];
         }
-      });
-      text = (m = link.match(/;text:(.+)$/)) ? m[1] : link.match(/(\w+)\.\w+\//)[1];
-      link = link.replace(/;text:.+$/, '');
-      a.href = link;
-      a.textContent = text;
+      }
+      parts['text'] || (parts['text'] = ((_ref1 = parts['url'].match(/(\w+)\.\w+\//)) != null ? _ref1[1] : void 0) || '?');
+      for (key in parts) {
+        parts[key] = parts[key].replace(/%(T?URL|MD5|board|name|%|semi)/g, function(parameter) {
+          var type;
+          type = {
+            '%TURL': post.file.thumbURL,
+            '%URL': post.file.URL,
+            '%MD5': post.file.MD5,
+            '%board': post.board.ID,
+            '%name': post.file.name,
+            '%%': '%',
+            '%semi': ';'
+          }[parameter];
+          if (key === 'url' && parameter !== '%%' && parameter !== '%semi') {
+            if (/^javascript:/i.test(parts['url'])) {
+              type = JSON.stringify(type);
+            }
+            type = encodeURIComponent(type);
+          }
+          return type;
+        });
+      }
+      ext = ((_ref2 = post.file.URL.match(/\.([^\.]*)$/)) != null ? _ref2[1] : void 0) || '';
+      if (!(!parts['boards'] || (_ref3 = post.board.ID, __indexOf.call(parts['boards'].split(','), _ref3) >= 0))) {
+        return null;
+      }
+      if (!(!parts['types'] || __indexOf.call(parts['types'].split(','), ext) >= 0)) {
+        return null;
+      }
+      a = Sauce.link.cloneNode(true);
+      a.href = parts['url'];
+      a.textContent = parts['text'];
+      if (/^javascript:/i.test(parts['url'])) {
+        a.removeAttribute('target');
+      }
       return a;
     },
     node: function() {
-      var link, nodes, _i, _len, _ref;
+      var link, node, nodes, _i, _len, _ref;
       if (this.isClone || !this.file) {
         return;
       }
@@ -11616,7 +11646,9 @@
       _ref = Sauce.links;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
-        nodes.push($.tn('\u00A0'), Sauce.createSauceLink(link, this, Sauce.link.cloneNode(true)));
+        if (node = Sauce.createSauceLink(link, this)) {
+          nodes.push($.tn('\u00A0'), node);
+        }
       }
       return $.add(this.file.text, nodes);
     }

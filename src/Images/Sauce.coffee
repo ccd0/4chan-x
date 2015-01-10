@@ -1,6 +1,6 @@
 Sauce =
   init: ->
-    return if !Conf['Sauce']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Sauce']
 
     links = []
     for link in Conf['sauces'].split '\n'
@@ -14,27 +14,42 @@ Sauce =
     Post.callbacks.push
       name: 'Sauce'
       cb:   @node
-  createSauceLink: (link, post, a) ->
-    link = link.replace /%(T?URL|MD5|board|name)/g, (parameter) ->
-      if type = {
-        '%TURL':  post.file.thumbURL
-        '%URL':   post.file.URL
-        '%MD5':   post.file.MD5
-        '%board': post.board
-        '%name':  post.file.name
-      }[parameter]
-        encodeURIComponent(type)
+  createSauceLink: (link, post) ->
+    parts = {}
+    for part, i in link.split /;(?=(?:text|boards|types):)/
+      if i is 0
+        parts['url'] = part
       else
-        parameter
-    text = if m = link.match(/;text:(.+)$/) then m[1] else link.match(/(\w+)\.\w+\//)[1]
-    link = link.replace /;text:.+$/, ''
-    a.href = link
-    a.textContent = text
+        m = part.match /^(\w*):(.*)$/
+        parts[m[1]] = m[2]
+    parts['text'] or= parts['url'].match(/(\w+)\.\w+\//)?[1] or '?'
+    for key of parts
+      parts[key] = parts[key].replace /%(T?URL|MD5|board|name|%|semi)/g, (parameter) ->
+        type = {
+          '%TURL':  post.file.thumbURL
+          '%URL':   post.file.URL
+          '%MD5':   post.file.MD5
+          '%board': post.board.ID
+          '%name':  post.file.name
+          '%%':     '%'
+          '%semi':  ';'
+        }[parameter]
+        if key is 'url' and parameter isnt '%%' and parameter isnt '%semi'
+          type = JSON.stringify type if /^javascript:/i.test parts['url']
+          type = encodeURIComponent type
+        type
+    ext = post.file.URL.match(/\.([^\.]*)$/)?[1] or ''
+    return null unless !parts['boards'] or post.board.ID in parts['boards'].split ','
+    return null unless !parts['types']  or ext           in parts['types'].split  ','
+    a = Sauce.link.cloneNode true
+    a.href = parts['url']
+    a.textContent = parts['text']
+    a.removeAttribute 'target' if /^javascript:/i.test parts['url']
     a
   node: ->
     return if @isClone or !@file
     nodes = []
-    for link in Sauce.links
+    for link in Sauce.links when node = Sauce.createSauceLink link, @
       # \u00A0 is nbsp
-      nodes.push $.tn('\u00A0'), (Sauce.createSauceLink link, @, Sauce.link.cloneNode true)
+      nodes.push $.tn('\u00A0'), node
     $.add @file.text, nodes

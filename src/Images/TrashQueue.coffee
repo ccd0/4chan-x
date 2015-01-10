@@ -11,4 +11,3 @@ TrashQueue =
   remove: (video) ->
     if video is @killNext
       delete @killNext
-
