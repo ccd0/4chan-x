@@ -115,7 +115,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Labels, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, TrashQueue, UI, Unread, Video, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Labels, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, TrashQueue, UI, Unread, Video, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -10337,8 +10337,8 @@
 
   Gallery = {
     init: function() {
-      var el;
-      if (g.BOARD === 'f' || !Conf['Gallery']) {
+      var el, _ref;
+      if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Gallery']) || g.BOARD === 'f') {
         return;
       }
       el = $.el('a', {
@@ -10360,7 +10360,7 @@
         return;
       }
       if (Gallery.nodes) {
-        Gallery.generateThumb($('.file', this.nodes.root));
+        Gallery.generateThumb(this);
         Gallery.nodes.total.textContent = Gallery.images.length;
       }
       if (!Conf['Image Expansion']) {
@@ -10368,14 +10368,30 @@
       }
     },
     build: function(image) {
-      var cb, createSubEntry, dialog, el, file, i, key, menuButton, name, nodes, value, _i, _len, _ref, _ref1;
+      var candidate, cb, dialog, entry, file, key, menuButton, nodes, post, thumb, value, _i, _j, _len, _len1, _ref, _ref1, _ref2;
+      if (Conf['Fullscreen Gallery']) {
+        $.one(d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', function() {
+          return $.on(d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', cb.close);
+        });
+        if (typeof doc.mozRequestFullScreen === "function") {
+          doc.mozRequestFullScreen();
+        }
+        if (typeof doc.webkitRequestFullScreen === "function") {
+          doc.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+        }
+      }
       Gallery.images = [];
       nodes = Gallery.nodes = {};
+      Gallery.fullIDs = {};
+      Gallery.slideshow = false;
       nodes.el = dialog = $.el('div', {
-        id: 'a-gallery',
-        innerHTML: "<div class=gal-viewport>\n  <span class=gal-buttons>\n    <a class=\"menu-button\" href=\"javascript:;\"><i></i></a>\n    <a href=javascript:; class=gal-close>×</a>\n  </span>\n  <a class=gal-name target=\"_blank\"></a>\n  <span class=gal-count>\n    <span class='count'></span> / <span class='total'></span>\n  </span>\n  <div class=gal-prev></div>\n  <div class=gal-image>\n    <a href=javascript:;><img></a>\n  </div>\n  <div class=gal-next></div>\n</div>\n<div class=gal-thumbnails></div>"
+        id: 'a-gallery'
+      });
+      $.extend(dialog, {
+        innerHTML: "<div class=\"gal-viewport\">\r<span class=\"gal-buttons\">\r<a href=\"javascript:;\" class=\"gal-start\" title=\"Start slideshow (S to toggle)\"><i></i></a>\r<a href=\"javascript:;\" class=\"gal-stop\" title=\"Stop slideshow (S to toggle)\"><i></i></a>\r<a href=\"javascript:;\" class=\"menu-button\"><i></i></a>\r<a href=\"javascript:;\" class=\"gal-close\">×</a>\r</span>\r<a class=\"gal-name\" target=\"_blank\"></a>\r<span class=\"gal-count\">\r<span class=\"count\"></span> / <span class=\"total\"></span>\r</span>\r<div class=\"gal-prev\"></div>\r<div class=\"gal-image\">\r<a href=\"javascript:;\"><img></a>\r</div>\r<div class=\"gal-next\"></div>\r</div>\r<div class=\"gal-thumbnails\"></div>"
       });
       _ref = {
+        buttons: '.gal-buttons',
         frame: '.gal-image',
         name: '.gal-name',
         count: '.count',
@@ -10389,64 +10405,181 @@
         nodes[key] = $(value, dialog);
       }
       menuButton = $('.menu-button', dialog);
-      nodes.menu = new UI.Menu();
+      nodes.menu = new UI.Menu('gallery');
       cb = Gallery.cb;
       $.on(nodes.frame, 'click', cb.blank);
-      $.on(nodes.next, 'click', cb.advance);
+      $.on(nodes.next, 'click', cb.click);
       $.on($('.gal-prev', dialog), 'click', cb.prev);
       $.on($('.gal-next', dialog), 'click', cb.next);
+      $.on($('.gal-start', dialog), 'click', cb.start);
+      $.on($('.gal-stop', dialog), 'click', cb.stop);
       $.on($('.gal-close', dialog), 'click', cb.close);
       $.on(menuButton, 'click', function(e) {
         return nodes.menu.toggle(e, this, g);
       });
-      createSubEntry = Gallery.menu.createSubEntry;
-      for (name in Config.gallery) {
-        el = createSubEntry(name).el;
-        nodes.menu.addEntry({
-          el: el,
-          order: 0
-        });
+      _ref1 = Gallery.menu.createSubEntries();
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        entry = _ref1[_i];
+        entry.order = 0;
+        nodes.menu.addEntry(entry);
       }
       $.on(d, 'keydown', cb.keybinds);
-      $.off(d, 'keydown', Keybinds.keydown);
-      _ref1 = $$('.post .file');
-      for (i = _i = 0, _len = _ref1.length; _i < _len; i = ++_i) {
-        file = _ref1[i];
-        if (!$('.fileDeletedRes, .fileDeleted', file)) {
-          Gallery.generateThumb(file);
+      if (Conf['Keybinds']) {
+        $.off(d, 'keydown', Keybinds.keydown);
+      }
+      _ref2 = $$('.post .file');
+      for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+        file = _ref2[_j];
+        post = Get.postFromNode(file);
+        if (post.file.isDead) {
+          continue;
+        }
+        Gallery.generateThumb(post);
+        if (!image && Gallery.fullIDs[post.fullID]) {
+          candidate = post.file.thumb.parentNode;
+          if (Header.getTopOf(candidate) + candidate.getBoundingClientRect().height >= 0) {
+            image = candidate;
+          }
         }
       }
+      $.addClass(doc, 'gallery-open');
       $.add(d.body, dialog);
       nodes.thumbs.scrollTop = 0;
       nodes.current.parentElement.scrollTop = 0;
-      Gallery.cb.open.call(image ? $("[href*='" + image.pathname + "']", nodes.thumbs) : Gallery.images[0]);
-      d.body.style.overflow = 'hidden';
-      return nodes.total.textContent = i;
+      if (image) {
+        thumb = $("[href='" + image.href + "']", nodes.thumbs);
+      }
+      thumb || (thumb = Gallery.images[Gallery.images.length - 1]);
+      if (thumb) {
+        Gallery.open(thumb);
+      }
+      doc.style.overflow = 'hidden';
+      return nodes.total.textContent = Gallery.images.length;
     },
-    generateThumb: function(file) {
-      var post, thumb, thumbImg, title;
-      post = Get.postFromNode(file);
-      if (!(post.file && (post.file.isImage || post.file.isVideo || Conf['PDF in Gallery']))) {
+    generateThumb: function(post) {
+      var thumb, thumbImg, _ref, _ref1;
+      if (post.isClone || post.isHidden && !(((_ref = post.file) != null ? _ref.isImage : void 0) || ((_ref1 = post.file) != null ? _ref1.isVideo : void 0) || Conf['PDF in Gallery'])) {
         return;
       }
-      title = ($('.fileText a', file)).textContent;
+      Gallery.fullIDs[post.fullID] = true;
       thumb = $.el('a', {
         className: 'gal-thumb',
         href: post.file.URL,
         target: '_blank',
-        title: title
+        title: post.file.name
       });
       thumb.dataset.id = Gallery.images.length;
       thumb.dataset.post = post.fullID;
-      if (post.file.isVideo) {
-        thumb.dataset.isVideo = true;
-      }
       thumbImg = post.file.thumb.cloneNode(false);
       thumbImg.style.cssText = '';
       $.add(thumb, thumbImg);
       $.on(thumb, 'click', Gallery.cb.open);
       Gallery.images.push(thumb);
       return $.add(Gallery.nodes.thumbs, thumb);
+    },
+    open: function(thumb) {
+      var el, elType, file, name, newID, nodes, oldID, post, slideshow, _base, _ref;
+      nodes = Gallery.nodes;
+      name = nodes.name;
+      oldID = +nodes.current.dataset.id;
+      newID = +thumb.dataset.id;
+      slideshow = Gallery.slideshow && (newID > oldID || (oldID === Gallery.images.length - 1 && newID === 0));
+      if (el = $('.gal-highlight', nodes.thumbs)) {
+        $.rmClass(el, 'gal-highlight');
+      }
+      $.addClass(thumb, 'gal-highlight');
+      elType = /\.webm$/.test(thumb.href) ? 'video' : /\.pdf$/.test(thumb.href) ? 'iframe' : 'image';
+      $[elType === 'iframe' ? 'addClass' : 'rmClass'](doc, 'gal-pdf');
+      file = $.el(elType, {
+        title: name.download = name.textContent = thumb.title
+      });
+      $.on(file, 'error', (function(_this) {
+        return function() {
+          return Gallery.error(file, thumb);
+        };
+      })(this));
+      file.src = name.href = thumb.href;
+      $.extend(file.dataset, thumb.dataset);
+      if (!nodes.current.error) {
+        if (typeof (_base = nodes.current).pause === "function") {
+          _base.pause();
+        }
+      }
+      $.replace(nodes.current, file);
+      if (elType === 'video') {
+        file.loop = true;
+        if (Conf['Autoplay']) {
+          file.play();
+        }
+        if (Conf['Show Controls']) {
+          ImageCommon.addControls(file);
+        }
+      }
+      nodes.count.textContent = +thumb.dataset.id + 1;
+      nodes.current = file;
+      nodes.frame.scrollTop = 0;
+      nodes.next.focus();
+      if (slideshow) {
+        Gallery.setupTimer();
+      } else {
+        Gallery.cb.stop();
+      }
+      if (Conf['Scroll to Post'] && (post = (_ref = (post = g.posts[file.dataset.post])) != null ? _ref.nodes.root : void 0)) {
+        Header.scrollTo(post);
+      }
+      return nodes.thumbs.scrollTop = thumb.offsetTop + thumb.offsetHeight / 2 - nodes.thumbs.clientHeight / 2;
+    },
+    error: function(file, thumb) {
+      var _ref;
+      if (((_ref = file.error) != null ? _ref.code : void 0) === MediaError.MEDIA_ERR_DECODE) {
+        return new Notice('error', 'Corrupt or unplayable video', 30);
+      }
+      if (file.src.split('/')[2] !== 'i.4cdn.org') {
+        return;
+      }
+      return ImageCommon.error(file, g.posts[file.dataset.post], null, function(URL) {
+        if (!URL) {
+          return;
+        }
+        thumb.href = URL;
+        if (Gallery.nodes.current === file) {
+          return file.src = URL;
+        }
+      });
+    },
+    cleanupTimer: function() {
+      var current;
+      clearTimeout(Gallery.timeoutID);
+      current = Gallery.nodes.current;
+      $.off(current, 'canplaythrough load', Gallery.startTimer);
+      return $.off(current, 'ended', Gallery.cb.next);
+    },
+    startTimer: function() {
+      return Gallery.timeoutID = setTimeout(Gallery.checkTimer, Gallery.delay * $.SECOND);
+    },
+    setupTimer: function() {
+      var current, isVideo;
+      Gallery.cleanupTimer();
+      current = Gallery.nodes.current;
+      isVideo = current.nodeName === 'VIDEO';
+      if (isVideo) {
+        current.play();
+      }
+      if ((isVideo ? current.readyState >= 4 : current.complete) || current.nodeName === 'IFRAME') {
+        return Gallery.startTimer();
+      } else {
+        return $.on(current, (isVideo ? 'canplaythrough' : 'load'), Gallery.startTimer);
+      }
+    },
+    checkTimer: function() {
+      var current;
+      current = Gallery.nodes.current;
+      if (current.nodeName === 'VIDEO' && !current.paused) {
+        $.on(current, 'ended', Gallery.cb.next);
+        return current.loop = false;
+      } else {
+        return Gallery.cb.next();
+      }
     },
     cb: {
       keybinds: function(e) {
@@ -10456,7 +10589,7 @@
         }
         cb = (function() {
           switch (key) {
-            case 'Esc':
+            case Conf['Close']:
             case Conf['Open Gallery']:
               return Gallery.cb.close;
             case 'Right':
@@ -10466,6 +10599,10 @@
             case 'Left':
             case '':
               return Gallery.cb.prev;
+            case Conf['Pause']:
+              return Gallery.cb.pause;
+            case Conf['Slideshow']:
+              return Gallery.cb.toggleSlideshow;
           }
         })();
         if (!cb) {
@@ -10476,109 +10613,33 @@
         return cb();
       },
       open: function(e) {
-        var el, elType, file, name, nodes, post, rect, top, _base, _ref;
         if (e) {
           e.preventDefault();
         }
-        if (!this) {
-          return;
+        if (this) {
+          return Gallery.open(this);
         }
-        nodes = Gallery.nodes;
-        name = nodes.name;
-        if (el = $('.gal-highlight', nodes.thumbs)) {
-          $.rmClass(el, 'gal-highlight');
-        }
-        $.addClass(this, 'gal-highlight');
-        elType = this.dataset.isVideo ? 'video' : /\.pdf$/.test(this.href) ? 'iframe' : 'img';
-        $[elType === 'iframe' ? 'addClass' : 'rmClass'](nodes.el, 'gal-pdf');
-        file = $.el(elType, {
-          src: name.href = this.href,
-          title: name.download = name.textContent = this.title
-        });
-        $.extend(file.dataset, this.dataset);
-        if (typeof (_base = nodes.current).pause === "function") {
-          _base.pause();
-        }
-        $.replace(nodes.current, file);
-        if (this.dataset.isVideo) {
-          Video.configure(file);
-        }
-        nodes.count.textContent = +this.dataset.id + 1;
-        nodes.current = file;
-        nodes.frame.scrollTop = 0;
-        nodes.next.focus();
-        if (Conf['Scroll to Post'] && (post = (_ref = (post = g.posts[file.dataset.post])) != null ? _ref.nodes.root : void 0)) {
-          Header.scrollTo(post);
-        }
-        $.on(file, 'error', function() {
-          return Gallery.cb.error(file, thumb);
-        });
-        rect = this.getBoundingClientRect();
-        top = rect.top;
-        if (top > 0) {
-          top += rect.height - doc.clientHeight;
-          if (top < 0) {
-            return;
-          }
-        }
-        return nodes.thumbs.scrollTop += top;
       },
       image: function(e) {
         e.preventDefault();
         e.stopPropagation();
         return Gallery.build(this);
       },
-      error: function(img, thumb) {
-        var URL, post, src;
-        post = Get.postFromLink($.el('a', {
-          href: img.dataset.post
-        }));
-        delete post.file.fullImage;
-        src = this.src.split('/');
-        if (src[2] === 'i.4cdn.org') {
-          URL = Redirect.to('file', {
-            boardID: src[3],
-            filename: src[src.length - 1]
-          });
-          if (URL) {
-            thumb.href = URL;
-            if (Gallery.nodes.current !== img) {
-              return;
-            }
-            img.src = URL;
-            return;
-          }
-          if (g.DEAD || post.isDead || post.file.isDead) {
-            return;
-          }
-        }
-        return $.ajax("//a.4cdn.org/" + post.board + "/thread/" + post.thread + ".json", {
-          onload: function() {
-            var i, postObj, posts;
-            if (this.status !== 200) {
-              return;
-            }
-            i = 0;
-            posts = this.response.posts;
-            while (postObj = posts[i++]) {
-              if (postObj.no === post.ID) {
-                break;
-              }
-            }
-            if (!postObj.no) {
-              return post.kill();
-            }
-            if (postObj.filedeleted) {
-              return post.kill(true);
-            }
-          }
-        });
-      },
       prev: function() {
         return Gallery.cb.open.call(Gallery.images[+Gallery.nodes.current.dataset.id - 1] || Gallery.images[Gallery.images.length - 1]);
       },
       next: function() {
         return Gallery.cb.open.call(Gallery.images[+Gallery.nodes.current.dataset.id + 1] || Gallery.images[0]);
+      },
+      enterKey: function() {
+        if (Gallery.nodes.current.paused) {
+          return Gallery.nodes.current.play();
+        } else {
+          return Gallery.cb.next();
+        }
+      },
+      click: function() {
+        return Gallery.cb[Gallery.nodes.current.controls ? 'stop' : 'enterKey']();
       },
       toggle: function() {
         return (Gallery.nodes ? Gallery.cb.close : Gallery.build)();
@@ -10588,21 +10649,29 @@
           return Gallery.cb.close();
         }
       },
-      advance: function() {
-        if (Gallery.nodes.current.controls) {
-          return;
-        }
-        if (Gallery.nodes.current.paused) {
-          return Gallery.nodes.current.play();
-        }
-        return Gallery.cb.next();
-      },
       pause: function() {
         var current;
+        Gallery.cb.stop();
         current = Gallery.nodes.current;
-        if (current.nodeType === 'VIDEO') {
+        if (current.nodeName === 'VIDEO') {
           return current[current.paused ? 'play' : 'pause']();
         }
+      },
+      start: function() {
+        $.addClass(Gallery.nodes.buttons, 'gal-playing');
+        Gallery.slideshow = true;
+        return Gallery.setupTimer();
+      },
+      stop: function() {
+        var current;
+        if (!Gallery.slideshow) {
+          return;
+        }
+        Gallery.cleanupTimer();
+        current = Gallery.nodes.current;
+        current.loop = current.nodeName === 'VIDEO';
+        $.rmClass(Gallery.nodes.buttons, 'gal-playing');
+        return Gallery.slideshow = false;
       },
       close: function() {
         var _base;
@@ -10610,19 +10679,36 @@
           _base.pause();
         }
         $.rm(Gallery.nodes.el);
+        $.rmClass(doc, 'gallery-open');
+        if (Conf['Fullscreen Gallery']) {
+          $.off(d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', Gallery.cb.close);
+          if (typeof d.mozCancelFullScreen === "function") {
+            d.mozCancelFullScreen();
+          }
+          if (typeof d.webkitExitFullscreen === "function") {
+            d.webkitExitFullscreen();
+          }
+        }
         delete Gallery.nodes;
-        d.body.style.overflow = '';
+        delete Gallery.fullIDs;
+        doc.style.overflow = '';
         $.off(d, 'keydown', Gallery.cb.keybinds);
-        return $.on(d, 'keydown', Keybinds.keydown);
+        if (Conf['Keybinds']) {
+          $.on(d, 'keydown', Keybinds.keydown);
+        }
+        return clearTimeout(Gallery.timeoutID);
       },
       setFitness: function() {
         return (this.checked ? $.addClass : $.rmClass)(doc, "gal-" + (this.name.toLowerCase().replace(/\s+/g, '-')));
+      },
+      setDelay: function() {
+        return Gallery.delay = +this.value;
       }
     },
     menu: {
       init: function() {
-        var createSubEntry, el, name, subEntries;
-        if (!Conf['Gallery']) {
+        var createSubEntry, el, name, subEntries, _ref;
+        if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Gallery'])) {
           return;
         }
         el = $.el('span', {
@@ -10655,7 +10741,146 @@
         return {
           el: label
         };
+      },
+      createSubEntries: function() {
+        var delayInput, delayLabel, item, subEntries;
+        subEntries = (function() {
+          var _i, _len, _ref, _results;
+          _ref = ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Scroll to Post'];
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            item = _ref[_i];
+            _results.push(Gallery.menu.createSubEntry(item));
+          }
+          return _results;
+        })();
+        delayLabel = $.el('label', {
+          innerHTML: "Slide Delay: <input type=\"number\" name=\"Slide Delay\" min=\"0\" step=\"any\" class=\"field\">"
+        });
+        delayInput = delayLabel.firstElementChild;
+        delayInput.value = Gallery.delay;
+        $.on(delayInput, 'change', Gallery.cb.setDelay);
+        $.on(delayInput, 'change', $.cb.value);
+        subEntries.push({
+          el: delayLabel
+        });
+        return subEntries;
       }
+    }
+  };
+
+  ImageCommon = {
+    rewind: function(el) {
+      if (el.nodeName === 'VIDEO') {
+        if (el.readyState >= el.HAVE_METADATA) {
+          return el.currentTime = 0;
+        }
+      } else if (/\.gif$/.test(el.src)) {
+        return $.queueTask(function() {
+          return el.src = el.src;
+        });
+      }
+    },
+    pushCache: function(el) {
+      ImageCommon.cache = el;
+      return $.on(el, 'error', ImageCommon.cacheError);
+    },
+    popCache: function() {
+      var el;
+      el = ImageCommon.cache;
+      $.off(el, 'error', ImageCommon.cacheError);
+      delete ImageCommon.cache;
+      return el;
+    },
+    cacheError: function() {
+      if (ImageCommon.cache === this) {
+        return delete ImageCommon.cache;
+      }
+    },
+    decodeError: function(file, post) {
+      var message, _ref;
+      if (((_ref = file.error) != null ? _ref.code : void 0) !== MediaError.MEDIA_ERR_DECODE) {
+        return false;
+      }
+      if (!(message = $('.warning', post.file.thumb.parentNode))) {
+        message = $.el('div', {
+          className: 'warning'
+        });
+        $.after(post.file.thumb, message);
+      }
+      message.textContent = 'Error: Corrupt or unplayable video';
+      return true;
+    },
+    error: function(file, post, delay, cb) {
+      var URL, redirect, src, timeoutID;
+      src = post.file.URL.split('/');
+      URL = Redirect.to('file', {
+        boardID: post.board.ID,
+        filename: src[src.length - 1]
+      });
+      if (!(Conf['404 Redirect'] && URL && Redirect.securityCheck(URL))) {
+        URL = null;
+      }
+      if ((post.isDead || post.file.isDead) && file.src.split('/')[2] === 'i.4cdn.org') {
+        return cb(URL);
+      }
+      if (delay != null) {
+        timeoutID = setTimeout((function() {
+          return cb(URL);
+        }), delay);
+      }
+      if (post.isDead || post.file.isDead) {
+        return;
+      }
+      redirect = function() {
+        if (file.src.split('/')[2] === 'i.4cdn.org') {
+          if (delay != null) {
+            clearTimeout(timeoutID);
+          }
+          return cb(URL);
+        }
+      };
+      return $.ajax("//a.4cdn.org/" + post.board + "/thread/" + post.thread + ".json", {
+        onload: function() {
+          var postObj, _i, _len, _ref;
+          if (this.status === 404) {
+            post.kill();
+          }
+          if (this.status !== 200) {
+            return redirect();
+          }
+          _ref = this.response.posts;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            postObj = _ref[_i];
+            if (postObj.no === post.ID) {
+              break;
+            }
+          }
+          if (postObj.no !== post.ID) {
+            post.kill();
+            return redirect();
+          } else if (postObj.filedeleted) {
+            post.kill(true);
+            return redirect();
+          } else {
+            return URL = post.file.URL;
+          }
+        }
+      });
+    },
+    addControls: function(video) {
+      var handler;
+      handler = function() {
+        var t;
+        $.off(video, 'mouseover', handler);
+        t = new Date().getTime();
+        return $.asap((function() {
+          return (typeof chrome !== "undefined" && chrome !== null) || (video.readyState >= 3 && video.currentTime <= Math.max(0.1, video.duration - 0.5)) || new Date().getTime() >= t + 1000;
+        }), function() {
+          return video.controls = true;
+        });
+      };
+      return $.on(video, 'mouseover', handler);
     }
   };
 

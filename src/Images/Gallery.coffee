@@ -1,6 +1,6 @@
 Gallery =
   init: ->
-    return if g.BOARD is 'f' or !Conf['Gallery']
+    return if not (g.VIEW in ['index', 'thread'] and Conf['Gallery']) or g.BOARD is 'f'
 
     el = $.el 'a',
       href: 'javascript:;'
@@ -20,38 +20,30 @@ Gallery =
   node: ->
     return unless @file
     if Gallery.nodes
-      Gallery.generateThumb $ '.file', @nodes.root
+      Gallery.generateThumb @
       Gallery.nodes.total.textContent = Gallery.images.length
 
     unless Conf['Image Expansion']
       $.on @file.thumb.parentNode, 'click', Gallery.cb.image
 
   build: (image) ->
+    if Conf['Fullscreen Gallery']
+      $.one d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', ->
+        $.on d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', cb.close
+      doc.mozRequestFullScreen?()
+      doc.webkitRequestFullScreen?(Element.ALLOW_KEYBOARD_INPUT)
+
     Gallery.images  = []
     nodes = Gallery.nodes = {}
+    Gallery.fullIDs = {}
+    Gallery.slideshow = false
 
     nodes.el = dialog = $.el 'div',
       id: 'a-gallery'
-      innerHTML: """
-        <div class=gal-viewport>
-          <span class=gal-buttons>
-            <a class="menu-button" href="javascript:;"><i></i></a>
-            <a href=javascript:; class=gal-close>×</a>
-          </span>
-          <a class=gal-name target="_blank"></a>
-          <span class=gal-count>
-            <span class='count'></span> / <span class='total'></span>
-          </span>
-          <div class=gal-prev></div>
-          <div class=gal-image>
-            <a href=javascript:;><img></a>
-          </div>
-          <div class=gal-next></div>
-        </div>
-        <div class=gal-thumbnails></div>
-      """
+    $.extend dialog, <%= importHTML('Features/Gallery') %>
 
     nodes[key] = $ value, dialog for key, value of {
+      buttons: '.gal-buttons'
       frame:   '.gal-image'
       name:    '.gal-name'
       count:   '.count'
@@ -62,56 +54,64 @@ Gallery =
     }
 
     menuButton = $ '.menu-button', dialog
-    nodes.menu = new UI.Menu()
+    nodes.menu = new UI.Menu 'gallery'
 
     {cb} = Gallery
     $.on nodes.frame,             'click', cb.blank
-    $.on nodes.next,              'click', cb.advance
+    $.on nodes.next,              'click', cb.click
     $.on $('.gal-prev',  dialog), 'click', cb.prev
     $.on $('.gal-next',  dialog), 'click', cb.next
+    $.on $('.gal-start', dialog), 'click', cb.start
+    $.on $('.gal-stop',  dialog), 'click', cb.stop
     $.on $('.gal-close', dialog), 'click', cb.close
 
     $.on menuButton, 'click', (e) ->
       nodes.menu.toggle e, @, g
 
-    {createSubEntry} = Gallery.menu
-    for name of Config.gallery
-      {el} = createSubEntry name
-
-      nodes.menu.addEntry
-        el: el
-        order: 0
+    for entry in Gallery.menu.createSubEntries()
+      entry.order = 0
+      nodes.menu.addEntry entry
 
     $.on  d, 'keydown', cb.keybinds
-    $.off d, 'keydown', Keybinds.keydown
-    Gallery.generateThumb file for file, i in $$ '.post .file' when !$ '.fileDeletedRes, .fileDeleted', file
+    $.off d, 'keydown', Keybinds.keydown if Conf['Keybinds']
+    
+    for file in $$ '.post .file'
+      post = Get.postFromNode file
+      continue if post.file.isDead
+      Gallery.generateThumb post
+      # If no image to open is given, pick image we have scrolled to.
+      if !image and Gallery.fullIDs[post.fullID]
+        candidate = post.file.thumb.parentNode
+        if Header.getTopOf(candidate) + candidate.getBoundingClientRect().height >= 0
+          image = candidate
+    $.addClass doc, 'gallery-open'
+
     $.add d.body, dialog
 
     nodes.thumbs.scrollTop = 0
     nodes.current.parentElement.scrollTop = 0
 
-    Gallery.cb.open.call if image
-      $ "[href*='#{image.pathname}']", nodes.thumbs
-    else
-      Gallery.images[0]
+    thumb = $ "[href='#{image.href}']", nodes.thumbs if image
+    thumb or= Gallery.images[Gallery.images.length-1]
+    Gallery.open thumb if thumb
 
-    d.body.style.overflow = 'hidden'
-    nodes.total.textContent = i
+    doc.style.overflow = 'hidden'
+    nodes.total.textContent = Gallery.images.length
 
-  generateThumb: (file) ->
-    post  = Get.postFromNode file
-    return unless post.file and (post.file.isImage or post.file.isVideo or Conf['PDF in Gallery'])
-    title = ($ '.fileText a', file).textContent
+  generateThumb: (post) ->
+    return if post.isClone or post.isHidden and
+      not (post.file?.isImage or post.file?.isVideo or Conf['PDF in Gallery'])
+
+    Gallery.fullIDs[post.fullID] = true
 
     thumb = $.el 'a',
       className: 'gal-thumb'
       href:      post.file.URL
       target:    '_blank'
-      title:     title
+      title:     post.file.name
 
-    thumb.dataset.id      = Gallery.images.length
-    thumb.dataset.post    = post.fullID
-    thumb.dataset.isVideo = true if post.file.isVideo
+    thumb.dataset.id   = Gallery.images.length
+    thumb.dataset.post = post.fullID
 
     thumbImg = post.file.thumb.cloneNode false
     thumbImg.style.cssText = ''
@@ -122,12 +122,95 @@ Gallery =
     Gallery.images.push thumb
     $.add Gallery.nodes.thumbs, thumb
 
+  open: (thumb) ->
+    {nodes} = Gallery
+    {name}  = nodes
+    oldID = +nodes.current.dataset.id
+    newID = +thumb.dataset.id
+    slideshow = Gallery.slideshow and (newID > oldID or (oldID is Gallery.images.length-1 and newID is 0))
+
+    $.rmClass  el,    'gal-highlight' if el = $ '.gal-highlight', nodes.thumbs
+    $.addClass thumb, 'gal-highlight'
+
+    elType = if /\.webm$/.test(thumb.href)
+      'video'
+    else if /\.pdf$/.test(thumb.href)
+      'iframe'
+    else
+      'image'
+
+    $[if elType is 'iframe' then 'addClass' else 'rmClass'] doc, 'gal-pdf'
+    file = $.el elType,
+      title: name.download = name.textContent = thumb.title
+    $.on file, 'error', =>
+      Gallery.error file, thumb
+    file.src = name.href = thumb.href
+
+    $.extend  file.dataset, thumb.dataset
+    nodes.current.pause?() unless nodes.current.error
+    $.replace nodes.current, file
+    if elType is 'video'
+      file.loop = true
+      file.play() if Conf['Autoplay']
+      ImageCommon.addControls file if Conf['Show Controls']
+    nodes.count.textContent = +thumb.dataset.id + 1
+    nodes.current           = file
+    nodes.frame.scrollTop   = 0
+    nodes.next.focus()
+    if slideshow
+      Gallery.setupTimer()
+    else
+      Gallery.cb.stop()
+
+    # Scroll to post
+    if Conf['Scroll to Post'] and post = (post = g.posts[file.dataset.post])?.nodes.root
+      Header.scrollTo post
+
+    # Center selected thumbnail
+    nodes.thumbs.scrollTop = thumb.offsetTop + thumb.offsetHeight/2 - nodes.thumbs.clientHeight/2
+
+  error: (file, thumb) ->
+    if file.error?.code is MediaError.MEDIA_ERR_DECODE
+      return new Notice 'error', 'Corrupt or unplayable video', 30
+    return unless file.src.split('/')[2] is 'i.4cdn.org'
+    ImageCommon.error file, g.posts[file.dataset.post], null, (URL) ->
+      return unless URL
+      thumb.href = URL
+      file.src = URL if Gallery.nodes.current is file
+
+  cleanupTimer: ->
+    clearTimeout Gallery.timeoutID
+    {current} = Gallery.nodes
+    $.off current, 'canplaythrough load', Gallery.startTimer
+    $.off current, 'ended', Gallery.cb.next
+
+  startTimer: ->
+    Gallery.timeoutID = setTimeout Gallery.checkTimer, Gallery.delay * $.SECOND
+
+  setupTimer: ->
+    Gallery.cleanupTimer()
+    {current} = Gallery.nodes
+    isVideo = current.nodeName is 'VIDEO'
+    current.play() if isVideo
+    if (if isVideo then current.readyState >= 4 else current.complete) or current.nodeName is 'IFRAME'
+      Gallery.startTimer()
+    else
+      $.on current, (if isVideo then 'canplaythrough' else 'load'), Gallery.startTimer
+
+  checkTimer: ->
+    {current} = Gallery.nodes
+    if current.nodeName is 'VIDEO' and !current.paused
+      $.on current, 'ended', Gallery.cb.next
+      current.loop = false
+    else
+      Gallery.cb.next()
+
   cb:
     keybinds: (e) ->
       return unless key = Keybinds.keyCode e
 
       cb = switch key
-        when 'Esc', Conf['Open Gallery']
+        when Conf['Close'], Conf['Open Gallery']
           Gallery.cb.close
         when 'Right'
           Gallery.cb.next
@@ -135,6 +218,10 @@ Gallery =
           Gallery.cb.advance
         when 'Left', ''
           Gallery.cb.prev
+        when Conf['Pause']
+          Gallery.cb.pause
+        when Conf['Slideshow']
+          Gallery.cb.toggleSlideshow
 
       return unless cb
       e.stopPropagation()
@@ -143,79 +230,12 @@ Gallery =
 
     open: (e) ->
       e.preventDefault() if e
-      return unless @
-
-      {nodes} = Gallery
-      {name}  = nodes
-
-      $.rmClass  el, 'gal-highlight' if el = $ '.gal-highlight', nodes.thumbs
-      $.addClass @,  'gal-highlight'
-
-      elType = if @dataset.isVideo then 'video' else if /\.pdf$/.test(@href) then 'iframe' else 'img'
-      $[if elType is 'iframe' then 'addClass' else 'rmClass'] nodes.el, 'gal-pdf'
-
-      file = $.el elType,
-        src:   name.href     = @href
-        title: name.download = name.textContent = @title
-
-      $.extend  file.dataset,   @dataset
-      nodes.current.pause?()
-      $.replace nodes.current,  file
-      Video.configure file if @dataset.isVideo
-      nodes.count.textContent = +@dataset.id + 1
-      nodes.current           = file
-      nodes.frame.scrollTop   = 0
-      nodes.next.focus()
-      
-      # Scroll to post
-      if Conf['Scroll to Post'] and post = (post = g.posts[file.dataset.post])?.nodes.root
-        Header.scrollTo post
-
-      $.on file, 'error', ->
-        Gallery.cb.error file, thumb
-
-      # Scroll
-      rect  = @getBoundingClientRect()
-      {top} = rect
-      if top > 0
-        top += rect.height - doc.clientHeight
-        return if top < 0
-
-      nodes.thumbs.scrollTop += top
+      if @ then Gallery.open @
 
     image: (e) ->
       e.preventDefault()
       e.stopPropagation()
       Gallery.build @
-
-    error: (img, thumb) ->
-      post = Get.postFromLink $.el 'a', href: img.dataset.post
-      delete post.file.fullImage
-
-      src = @src.split '/'
-      if src[2] is 'i.4cdn.org'
-        URL = Redirect.to 'file',
-          boardID:  src[3]
-          filename: src[src.length - 1]
-        if URL
-          thumb.href = URL
-          return unless Gallery.nodes.current is img
-          img.src = URL
-          return
-        if g.DEAD or post.isDead or post.file.isDead
-          return
-
-      # XXX CORS for i.4cdn.org WHEN?
-      $.ajax "//a.4cdn.org/#{post.board}/thread/#{post.thread}.json", onload: ->
-        return if @status isnt 200
-        i = 0
-        {posts} = @response
-        while postObj = posts[i++]
-          break if postObj.no is post.ID
-        unless postObj.no
-          return post.kill()
-        if postObj.filedeleted
-          post.kill true
 
     prev:      ->
       Gallery.cb.open.call(
@@ -225,33 +245,54 @@ Gallery =
       Gallery.cb.open.call(
         Gallery.images[+Gallery.nodes.current.dataset.id + 1] or Gallery.images[0]
       )
+
+    enterKey:  -> if Gallery.nodes.current.paused then Gallery.nodes.current.play() else Gallery.cb.next()
+    click:     -> Gallery.cb[if Gallery.nodes.current.controls then 'stop' else 'enterKey']()
     toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
     blank: (e) -> Gallery.cb.close() if e.target is @
-
-    advance: ->
-      if Gallery.nodes.current.controls then return
-      if Gallery.nodes.current.paused   then return Gallery.nodes.current.play()
-      Gallery.cb.next()
     
     pause: ->
+      Gallery.cb.stop()
       {current} = Gallery.nodes
-      current[if current.paused then 'play' else 'pause']() if current.nodeType is 'VIDEO'
+      current[if current.paused then 'play' else 'pause']() if current.nodeName is 'VIDEO'
+
+    start: ->
+      $.addClass Gallery.nodes.buttons, 'gal-playing'
+      Gallery.slideshow = true
+      Gallery.setupTimer()
+
+    stop: ->
+      return unless Gallery.slideshow
+      Gallery.cleanupTimer()
+      {current} = Gallery.nodes
+      current.loop = current.nodeName is 'VIDEO'
+      $.rmClass Gallery.nodes.buttons, 'gal-playing'
+      Gallery.slideshow = false
 
     close: ->
       Gallery.nodes.current.pause?()
       $.rm Gallery.nodes.el
+      $.rmClass doc, 'gallery-open'
+      if Conf['Fullscreen Gallery']
+        $.off d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', Gallery.cb.close
+        d.mozCancelFullScreen?()
+        d.webkitExitFullscreen?()
       delete Gallery.nodes
-      d.body.style.overflow = ''
+      delete Gallery.fullIDs
+      doc.style.overflow = ''
 
       $.off d, 'keydown', Gallery.cb.keybinds
-      $.on  d, 'keydown', Keybinds.keydown
+      $.on  d, 'keydown', Keybinds.keydown if Conf['Keybinds']
+      clearTimeout Gallery.timeoutID
 
     setFitness: ->
       (if @checked then $.addClass else $.rmClass) doc, "gal-#{@name.toLowerCase().replace /\s+/g, '-'}"
 
+    setDelay: -> Gallery.delay = +@value
+
   menu:
     init: ->
-      return if !Conf['Gallery']
+      return unless g.VIEW in ['index', 'thread'] and Conf['Gallery']
 
       el = $.el 'span',
         textContent: 'Gallery'
@@ -277,3 +318,15 @@ Gallery =
       $.event 'change', null, input
       $.on input, 'change', $.cb.checked
       el: label
+
+    createSubEntries: ->
+      subEntries = (Gallery.menu.createSubEntry item for item in ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Scroll to Post'])
+
+      delayLabel = $.el 'label', <%= html('Slide Delay: <input type="number" name="Slide Delay" min="0" step="any" class="field">') %>
+      delayInput = delayLabel.firstElementChild
+      delayInput.value = Gallery.delay
+      $.on delayInput, 'change', Gallery.cb.setDelay
+      $.on delayInput, 'change', $.cb.value
+      subEntries.push el: delayLabel
+
+      subEntries
