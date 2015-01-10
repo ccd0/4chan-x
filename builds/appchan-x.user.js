@@ -115,7 +115,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, Build, Callbacks, Captcha, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, IDHighlight, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, Build, Callbacks, Captcha, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, Connection, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, IDHighlight, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReportLink, RevealSpoilers, Rice, Sauce, Settings, ShimSet, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -4225,6 +4225,70 @@
     };
 
     return SimpleDict;
+
+  })();
+
+  ShimSet = (function() {
+    function ShimSet() {
+      this.elements = {};
+      this.size = 0;
+    }
+
+    ShimSet.prototype.has = function(value) {
+      return value in this.elements;
+    };
+
+    ShimSet.prototype.add = function(value) {
+      if (this.elements[value]) {
+        return;
+      }
+      this.elements[value] = true;
+      return this.size++;
+    };
+
+    ShimSet.prototype["delete"] = function(value) {
+      if (!this.elements[value]) {
+        return;
+      }
+      delete this.elements[value];
+      return this.size--;
+    };
+
+    return ShimSet;
+
+  })();
+
+  if (!('Set' in window)) {
+    window.Set = ShimSet;
+  }
+
+  Connection = (function() {
+    function Connection(target, origin, cb) {
+      this.target = target;
+      this.origin = origin;
+      this.cb = cb;
+      $.on(window, 'message', this.onMessage.bind(this));
+    }
+
+    Connection.prototype.send = function(data) {
+      return this.target.postMessage("" + g.NAMESPACE + (JSON.stringify(data)), this.origin);
+    };
+
+    Connection.prototype.onMessage = function(e) {
+      var data, type, value, _base;
+      if (!(e.source === this.target && e.origin === this.origin && typeof e.data === 'string' && e.data.slice(0, g.NAMESPACE.length) === g.NAMESPACE)) {
+        return;
+      }
+      data = JSON.parse(e.data.slice(g.NAMESPACE.length));
+      for (type in data) {
+        value = data[type];
+        if (typeof (_base = this.cb)[type] === "function") {
+          _base[type](value);
+        }
+      }
+    };
+
+    return Connection;
 
   })();
 
