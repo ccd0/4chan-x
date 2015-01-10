@@ -1,19 +1,21 @@
 Time =
   init: ->
-    return if !Conf['Time Formatting']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Time Formatting']
 
     Post.callbacks.push
       name: 'Time Formatting'
       cb:   @node
+
   node: ->
     return if @isClone
     @nodes.date.textContent = Time.format Conf['time'], @info.date
   format: (formatString, date) ->
-    formatString.replace /%([A-Za-z])/g, (s, c) ->
+    formatString.replace /%(.)/g, (s, c) ->
       if c of Time.formatters
         Time.formatters[c].call(date)
       else
         s
+
   day: [
     'Sunday'
     'Monday'
@@ -23,6 +25,7 @@ Time =
     'Friday'
     'Saturday'
   ]
+
   month: [
     'January'
     'February'
@@ -37,7 +40,9 @@ Time =
     'November'
     'December'
   ]
+
   zeroPad: (n) -> if n < 10 then "0#{n}" else n
+
   formatters:
     a: -> Time.day[@getDay()][...3]
     A: -> Time.day[@getDay()]
@@ -56,3 +61,4 @@ Time =
     S: -> Time.zeroPad @getSeconds()
     y: -> @getFullYear().toString()[2..]
     Y: -> @getFullYear()
+    '%': -> '%'

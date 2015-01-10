@@ -33,11 +33,14 @@ Nav =
 
   getThread: ->
     for threadRoot in $$ '.thread'
+      thread = Get.threadFromRoot threadRoot
+      continue if thread.isHidden and !thread.stub
       if Header.getTopOf(threadRoot) >= -threadRoot.getBoundingClientRect().height # not scrolled past
         return threadRoot
     return $ '.board'
 
   scroll: (delta) ->
+    d.activeElement?.blur()
     thread = Nav.getThread()
     axis = if delta is +1
       'following'
@@ -49,4 +52,21 @@ Nav =
       # or we're above the first thread and don't want to skip it.
       top = Header.getTopOf thread
       thread = next if delta is +1 and top < 5 or delta is -1 and top > -5
+    # Add extra space to the end of the page if necessary so that all threads can be selected by keybinds.
+    extra = Header.getTopOf(thread) + doc.clientHeight - d.body.getBoundingClientRect().bottom
+    d.body.style.marginBottom = "#{extra}px" if extra > 0
+
     Header.scrollTo thread
+
+    if extra > 0 and !Nav.haveExtra
+      Nav.haveExtra = true
+      $.on d, 'scroll', Nav.removeExtra
+
+  removeExtra: ->
+    extra = doc.clientHeight - d.body.getBoundingClientRect().bottom
+    if extra > 0
+      d.body.style.marginBottom = "#{extra}px"
+    else
+      d.body.style.marginBottom = null
+      delete Nav.haveExtra
+      $.off d, 'scroll', Nav.removeExtra

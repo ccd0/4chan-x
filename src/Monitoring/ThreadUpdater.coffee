@@ -4,14 +4,13 @@ ThreadUpdater =
 
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
-        innerHTML: "[<span id=update-status></span><span id=update-timer title='Update now'></span>]\u00A0"
         id:        'updater'
+      $.extend sc, <%= html('[<span id="update-status"></span><span id="update-timer" title="Update now"></span>]') %>
       $.ready ->
         Header.addShortcut sc
     else
       @dialog = sc = UI.dialog 'updater', 'bottom: 0px; left: 0px;',
-        "<div class=move><span id=update-status></span><span id=update-timer title='Update now'></span></div>"
-      $.addClass doc, 'float'
+        <%= html('<div class="move"></div><span id="update-status"></span><span id="update-timer" title="Update now"></span>') %>
       $.ready ->
         $.addClass doc, 'float'
         $.add d.body, sc
@@ -28,20 +27,18 @@ ThreadUpdater =
     subEntries = []
     for name, conf of Config.updater.checkbox
       checked = if Conf[name] then 'checked' else ''
-      el = $.el 'label',
-        title:    "#{conf[1]}"
-        innerHTML: "<input name='#{name}' type=checkbox #{checked}> #{name}"
+      el = UI.checkbox name, " #{name}"
       input = el.firstElementChild
       $.on input, 'change', $.cb.checked
       if input.name is 'Scroll BG'
         $.on input, 'change', @cb.scrollBG
         @cb.scrollBG()
       else if input.name is 'Auto Update'
-        $.on input, 'change', @cb.update
+        $.on input, 'change', @cb.autoUpdate
       subEntries.push el: el
 
     @settings = $.el 'span',
-      innerHTML: '<a href=javascript:;>Interval</a>'
+      <%= html('<a href="javascript:;">Interval</a>') %>
 
     $.on @settings, 'click', @intervalShortcut
 
@@ -92,9 +89,10 @@ ThreadUpdater =
     Thread.callbacks.disconnect 'Thread Updater'
 
   node: ->
-    ThreadUpdater.thread   = @
-    ThreadUpdater.root     = @OP.nodes.root.parentNode
-    ThreadUpdater.lastPost = +@posts.keys[@posts.keys.length - 1]
+    ThreadUpdater.thread       = @
+    ThreadUpdater.root         = @OP.nodes.root.parentNode
+    ThreadUpdater.lastPost     = +@posts.keys[@posts.keys.length - 1]
+    ThreadUpdater.outdateCount = 0
 
     ThreadUpdater.cb.interval.call $.el 'input',
       value: Conf['Interval']
@@ -110,8 +108,6 @@ ThreadUpdater =
       ThreadUpdater.cb.online()
 
     Rice.nodes ThreadUpdater.dialog
-    
-    return
 
   ###
   http://freesound.org/people/pierrecartoons1979/sounds/90112/
@@ -121,24 +117,26 @@ ThreadUpdater =
 
   cb:
     online: ->
+      return if ThreadUpdater.thread.isDead
       if ThreadUpdater.online = navigator.onLine
         ThreadUpdater.outdateCount = 0
         ThreadUpdater.setInterval()
-        ThreadUpdater.set 'status', null, null
+        ThreadUpdater.set 'status', '', ''
         return
-      ThreadUpdater.set 'timer', null
+      ThreadUpdater.set 'timer', ''
       ThreadUpdater.set 'status', 'Offline', 'warning'
+      clearTimeout ThreadUpdater.timeoutID
     post: (e) ->
       return unless ThreadUpdater.isUpdating and e.detail.threadID is ThreadUpdater.thread.ID
       ThreadUpdater.outdateCount = 0
       setTimeout ThreadUpdater.update, 1000 if ThreadUpdater.seconds > 2
     checkpost: (e) ->
       unless ThreadUpdater.checkPostCount
-        return unless e.detail.threadID is ThreadUpdater.thread.ID
+        return if e and e.detail.threadID isnt ThreadUpdater.thread.ID
         ThreadUpdater.seconds = 0
         ThreadUpdater.outdateCount = 0
         ThreadUpdater.set 'timer', '...'
-      unless g.DEAD or ThreadUpdater.foundPost or ThreadUpdater.checkPostCount >= 5
+      unless ThreadUpdater.thread.isDead or ThreadUpdater.foundPost or ThreadUpdater.checkPostCount >= 5
         return setTimeout ThreadUpdater.update, ++ThreadUpdater.checkPostCount * $.SECOND
       ThreadUpdater.setInterval()
       ThreadUpdater.checkPostCount = 0
@@ -155,6 +153,8 @@ ThreadUpdater =
         -> true
       else
         -> not d.hidden
+    autoUpdate: (e) ->
+      ThreadUpdater.count ThreadUpdater.isUpdating = @checked
     interval: (e) ->
       val = parseInt @value, 10
       if val < 1 then val = 1
@@ -164,7 +164,6 @@ ThreadUpdater =
       {req} = ThreadUpdater
       switch req.status
         when 200
-          g.DEAD = false
           ThreadUpdater.parse req.response.posts
           if ThreadUpdater.thread.isArchived
             ThreadUpdater.set 'status', 'Archived', 'warning'
@@ -257,9 +256,10 @@ ThreadUpdater =
   timeout: ->
     ThreadUpdater.timeoutID = setTimeout ThreadUpdater.timeout, 1000
     unless n = --ThreadUpdater.seconds
+      ThreadUpdater.outdateCount++
       ThreadUpdater.update()
     else if n <= -60
-      ThreadUpdater.set 'status', 'Retrying', null
+      ThreadUpdater.set 'status', 'Retrying', ''
       ThreadUpdater.update()
     else if n > 0
       ThreadUpdater.set 'timer', n
@@ -307,7 +307,7 @@ ThreadUpdater =
     ThreadUpdater.updateThreadStatus 'Closed', !!OP.closed
     ThreadUpdater.thread.postLimit = !!OP.bumplimit
     ThreadUpdater.thread.fileLimit = !!OP.imagelimit
-    ThreadUpdater.thread.ipCount = OP.unique_ips if OP.unique_ips?
+    ThreadUpdater.thread.ipCount   = OP.unique_ips if OP.unique_ips?
 
     posts = [] # post objects
     index = [] # existing posts
@@ -331,18 +331,28 @@ ThreadUpdater =
       # continue if post.isDead
       ID = +post.ID
 
-      unless ID in index
-        post.kill()
-      else if post.isDead
-        post.resurrect()
-      else if post.file and !post.file.isDead and ID not in files
-        post.kill true
+      # Assume deleted posts less than 60 seconds old are false positives.
+      unless post.info.date > Date.now() - 60 * $.SECOND
+        unless ID in index
+          post.kill()
+        else if post.isDead
+          post.resurrect()
+        else if post.file and not (post.file.isDead or ID in files)
+          post.kill true
 
       # Fetching your own posts after posting
       if ThreadUpdater.postID and ThreadUpdater.postID is ID
         ThreadUpdater.foundPost = true
 
     sendEvent = ->
+      # Update IP count in original post form.
+      if OP.unique_ips? and ipCountEl = $.id('unique-ips')
+        ipCountEl.textContent = OP.unique_ips
+        ipCountEl.previousSibling.textContent = ipCountEl.previousSibling.textContent.replace(/\b(?:is|are)\b/, if OP.unique_ips is 1 then 'is' else 'are')
+        ipCountEl.nextSibling.textContent = ipCountEl.nextSibling.textContent.replace(/\bposters?\b/, if OP.unique_ips is 1 then 'poster' else 'posters')
+
+      ThreadUpdater.postIDs = index
+
       $.event 'ThreadUpdate',
         404: false
         threadID: ThreadUpdater.thread.fullID
@@ -352,7 +362,7 @@ ThreadUpdater =
         ipCount: OP.unique_ips
 
     unless count
-      ThreadUpdater.set 'status', null, null
+      ThreadUpdater.set 'status', '', ''
       ThreadUpdater.outdateCount++
       sendEvent()
       return

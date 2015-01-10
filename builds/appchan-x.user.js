@@ -115,7 +115,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, IDHighlight, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, IDHighlight, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -3207,6 +3207,7 @@
       this.isPinned = false;
       this.isSticky = false;
       this.isClosed = false;
+      this.isArchived = false;
       this.postLimit = false;
       this.fileLimit = false;
       this.ipCount = void 0;
@@ -12747,6 +12748,19 @@
 
   Favicon = {
     init: function() {
+      return $.asap((function() {
+        return d.head && (Favicon.el = $('link[rel="shortcut icon"]', d.head));
+      }), Favicon.initAsap);
+    },
+    initAsap: function() {
+      var href;
+      Favicon.el.type = 'image/x-icon';
+      href = Favicon.el.href;
+      Favicon.SFW = /ws\.ico$/.test(href);
+      Favicon["default"] = href;
+      return Favicon["switch"]();
+    },
+    "switch": function() {
       var f, funreadDeadY, i, items, t;
       items = {
         ferongr: ['iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAFVBMVEX///9zBQC/AADpDAP/gID/q6voCwJJTwpOAAAAAXRSTlMAQObYZgAAAGJJREFUeF5Fi7ENg0AQBCfa/AFdDh2gdwPIogMK2E2+/xLslwOvdqRJhv+GQQPUCtJM7svankLrq/I+TY5e6Ueh1jyBMX7AFJi9vwfyVO4CbbO6jNYpp9GyVPbdkFhVgAQ2H0NOE5jk9DT8AAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAxUlEQVR42q1TOwrCQBB9s0FRtJI0WoqFtSLYegoP4gVSeJsUHsHSI3iFeIqRXXgwrhlXwYHHhLwPTB7B36abBCV+0pA4DUBQUNZYQptGtW3jtoKyxgoe0yrBCoyZfL/5ioQ3URZOXW9I341l3oo+NXEZiW4CEuIzvPECopED4OaZ3RNmeAm4u+a8Jr5f17VyVoL8fr8qcltzwlyyj2iqcgPOQ9ExkHAITgD75bYBe0A5S4H/P9htuWMF3QXoQpwaKeT+lnsC6JE5I6aq6fEAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAFVBMVEX///8AcH4AtswA2PJ55fKi6fIA1/FtpPADAAAAAXRSTlMAQObYZgAAAGJJREFUeF5Fi7ENg0AQBCfa/AFdDh2gdwPIogMK2E2+/xLslwOvdqRJhv+GQQPUCtJM7svankLrq/I+TY5e6Ueh1jyBMX7AFJi9vwfyVO4CbbO6jNYpp9GyVPbdkFhVgAQ2H0NOE5jk9DT8AAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAxElEQVQ4y2NgoBq4/vE/HJOsBiRQUIfA2AzBqQYqUfn00/9FLz+BaQxDCKqBmX7jExijKEDSDJPHrnnbGQhGV4RmOFwdVkNwhQMheYwQxhaIi7b9Z9A3gWAQm2BUoQOgRhgA8o7j1ozLC4LCyAZcx6kZI5qg4kLKqggDFFWxJySsUQVzlb4pwgAJaTRvokcVNgOqOv8zcHBCsL07DgNg8YsczzA5MxtUL+DMD8g0slxI/H8GQ/P/DJKyeKIRpglXZsIiBwBhP5O+VbI/JgAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAFVBMVEX///8oeQBJ3ABV/wHM/7Lu/+ZU/gAqUP3dAAAAAXRSTlMAQObYZgAAAGJJREFUeF5Fi7ENg0AQBCfa/AFdDh2gdwPIogMK2E2+/xLslwOvdqRJhv+GQQPUCtJM7svankLrq/I+TY5e6Ueh1jyBMX7AFJi9vwfyVO4CbbO6jNYpp9GyVPbdkFhVgAQ2H0NOE5jk9DT8AAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAx0lEQVQ4y2NgoBYI+cfwH4ZJVgMS0KhEYGyG4FQDkzjzf9P/d/+fgWl0QwiqgSkI/c8IxsgKkDXD5LFq9rwDweiK0A2HqcNqCK5wICSPEcLYAtH+AMN/IXMIBrEJRie6OEgjDAC5x3FqxuUFNiEUA67j1IweTTBxBQ1puAG86jgSEraogskJWSBcwCGF5k30qMJmgMFEhv/MXBAs5oLDAFj8IsczTE7UEeECbhU8+QGZRpaTi2b4L2zF8J9TGk80wjThykzY5AAW/2O1C2mIbgAAAABJRU5ErkJggg=='],
@@ -12862,7 +12876,7 @@
 
   ThreadExcerpt = {
     init: function() {
-      if (g.VIEW !== 'thread' || !Conf['Thread Excerpt']) {
+      if ((g.BOARD.ID !== 'f' && g.BOARD.ID !== 'pol') || g.VIEW !== 'thread' || !Conf['Thread Excerpt'] || Conf['Remove Thread Excerpt']) {
         return;
       }
       return Thread.callbacks.push({
@@ -12897,7 +12911,10 @@
         });
         Header.addShortcut(sc);
       } else {
-        this.dialog = sc = UI.dialog('thread-stats', 'bottom: 0px; right: 0px;', "<div class=move title='" + title + "'>" + html + "</div>");
+        this.dialog = sc = UI.dialog('thread-stats', 'bottom: 0px; right: 0px;', {
+          innerHTML: "<div class=\"move\" title=\"" + E(statsTitle) + "\">" + statsHTML.innerHTML + "</div>"
+        });
+        $.addClass(doc, 'float');
         $.ready(function() {
           return $.add(d.body, sc);
         });
@@ -12918,7 +12935,10 @@
       this.posts.forEach(function(post) {
         postCount++;
         if (post.file) {
-          return fileCount++;
+          fileCount++;
+        }
+        if (Conf["Page Count in Stats"]) {
+          return ThreadStats.lastPost = post.info.date;
         }
       });
       ThreadStats.thread = this;
@@ -12977,6 +12997,7 @@
       if (!Conf["Page Count in Stats"]) {
         return;
       }
+      clearTimeout(ThreadStats.timeout);
       if (ThreadStats.thread.isDead) {
         ThreadStats.pageCountEl.textContent = 'Dead';
         $.addClass(ThreadStats.pageCountEl, 'warning');
@@ -13005,6 +13026,7 @@
           }
           ThreadStats.pageCountEl.textContent = page.page;
           (page.page === this.response.length ? $.addClass : $.rmClass)(ThreadStats.pageCountEl, 'warning');
+          ThreadStats.lastPageUpdate = new Date(thread.last_modified * $.SECOND);
           return;
         }
       }
@@ -13019,15 +13041,18 @@
       }
       if (Conf['Updater and Stats in Header']) {
         this.dialog = sc = $.el('span', {
-          innerHTML: "[<span id=update-status></span><span id=update-timer title='Update now'></span>]\u00A0",
           id: 'updater'
+        });
+        $.extend(sc, {
+          innerHTML: "[<span id=\"update-status\"></span><span id=\"update-timer\" title=\"Update now\"></span>]"
         });
         $.ready(function() {
           return Header.addShortcut(sc);
         });
       } else {
-        this.dialog = sc = UI.dialog('updater', 'bottom: 0px; left: 0px;', "<div class=move><span id=update-status></span><span id=update-timer title='Update now'></span></div>");
-        $.addClass(doc, 'float');
+        this.dialog = sc = UI.dialog('updater', 'bottom: 0px; left: 0px;', {
+          innerHTML: "<div class=\"move\"></div><span id=\"update-status\"></span><span id=\"update-timer\" title=\"Update now\"></span>"
+        });
         $.ready(function() {
           $.addClass(doc, 'float');
           return $.add(d.body, sc);
@@ -13044,24 +13069,21 @@
       for (name in _ref) {
         conf = _ref[name];
         checked = Conf[name] ? 'checked' : '';
-        el = $.el('label', {
-          title: "" + conf[1],
-          innerHTML: "<input name='" + name + "' type=checkbox " + checked + "> " + name
-        });
+        el = UI.checkbox(name, " " + name);
         input = el.firstElementChild;
         $.on(input, 'change', $.cb.checked);
         if (input.name === 'Scroll BG') {
           $.on(input, 'change', this.cb.scrollBG);
           this.cb.scrollBG();
         } else if (input.name === 'Auto Update') {
-          $.on(input, 'change', this.cb.update);
+          $.on(input, 'change', this.cb.autoUpdate);
         }
         subEntries.push({
           el: el
         });
       }
       this.settings = $.el('span', {
-        innerHTML: '<a href=javascript:;>Interval</a>'
+        innerHTML: "<a href=\"javascript:;\">Interval</a>"
       });
       $.on(this.settings, 'click', this.intervalShortcut);
       subEntries.push({
@@ -13122,6 +13144,7 @@
       ThreadUpdater.thread = this;
       ThreadUpdater.root = this.OP.nodes.root.parentNode;
       ThreadUpdater.lastPost = +this.posts.keys[this.posts.keys.length - 1];
+      ThreadUpdater.outdateCount = 0;
       ThreadUpdater.cb.interval.call($.el('input', {
         value: Conf['Interval'],
         name: 'Interval'
@@ -13134,7 +13157,7 @@
       } else {
         ThreadUpdater.cb.online();
       }
-      Rice.nodes(ThreadUpdater.dialog);
+      return Rice.nodes(ThreadUpdater.dialog);
     },
 
     /*
@@ -13144,14 +13167,18 @@
     beep: 'data:audio/wav;base64,UklGRjQDAABXQVZFZm10IBAAAAABAAEAgD4AAIA+AAABAAgAc21wbDwAAABBAAADAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkYXRhzAIAAGMms8em0tleMV4zIpLVo8nhfSlcPR102Ki+5JspVEkdVtKzs+K1NEhUIT7DwKrcy0g6WygsrM2k1NpiLl0zIY/WpMrjgCdbPhxw2Kq+5Z4qUkkdU9K1s+K5NkVTITzBwqnczko3WikrqM+l1NxlLF0zIIvXpsnjgydZPhxs2ay95aIrUEkdUdC3suK8N0NUIjq+xKrcz002WioppdGm091pK1w0IIjYp8jkhydXPxxq2K295aUrTkoeTs65suK+OUFUIzi7xqrb0VA0WSoootKm0t5tKlo1H4TYqMfkiydWQBxm16+85actTEseS8y7seHAPD9TIza5yKra01QyWSson9On0d5wKVk2H4DYqcfkjidUQB1j1rG75KsvSkseScu8seDCPz1TJDW2yara1FYxWSwnm9Sn0N9zKVg2H33ZqsXkkihSQR1g1bK65K0wSEsfR8i+seDEQTxUJTOzy6rY1VowWC0mmNWoz993KVc3H3rYq8TklSlRQh1d1LS647AyR0wgRMbAsN/GRDpTJTKwzKrX1l4vVy4lldWpzt97KVY4IXbUr8LZljVPRCxhw7W3z6ZISkw1VK+4sMWvXEhSPk6buay9sm5JVkZNiLWqtrJ+TldNTnquqbCwilZXU1BwpKirrpNgWFhTaZmnpquZbFlbVmWOpaOonHZcXlljhaGhpZ1+YWBdYn2cn6GdhmdhYGN3lp2enIttY2Jjco+bnJuOdGZlZXCImJqakHpoZ2Zug5WYmZJ/bGlobX6RlpeSg3BqaW16jZSVkoZ0bGtteImSk5KIeG5tbnaFkJKRinxxbm91gY2QkIt/c3BwdH6Kj4+LgnZxcXR8iI2OjIR5c3J0e4WLjYuFe3VzdHmCioyLhn52dHR5gIiKioeAeHV1eH+GiYqHgXp2dnh9hIiJh4J8eHd4fIKHiIeDfXl4eHyBhoeHhH96eHmA',
     cb: {
       online: function() {
+        if (ThreadUpdater.thread.isDead) {
+          return;
+        }
         if (ThreadUpdater.online = navigator.onLine) {
           ThreadUpdater.outdateCount = 0;
           ThreadUpdater.setInterval();
-          ThreadUpdater.set('status', null, null);
+          ThreadUpdater.set('status', '', '');
           return;
         }
-        ThreadUpdater.set('timer', null);
-        return ThreadUpdater.set('status', 'Offline', 'warning');
+        ThreadUpdater.set('timer', '');
+        ThreadUpdater.set('status', 'Offline', 'warning');
+        return clearTimeout(ThreadUpdater.timeoutID);
       },
       post: function(e) {
         if (!(ThreadUpdater.isUpdating && e.detail.threadID === ThreadUpdater.thread.ID)) {
@@ -13164,14 +13191,14 @@
       },
       checkpost: function(e) {
         if (!ThreadUpdater.checkPostCount) {
-          if (e.detail.threadID !== ThreadUpdater.thread.ID) {
+          if (e && e.detail.threadID !== ThreadUpdater.thread.ID) {
             return;
           }
           ThreadUpdater.seconds = 0;
           ThreadUpdater.outdateCount = 0;
           ThreadUpdater.set('timer', '...');
         }
-        if (!(g.DEAD || ThreadUpdater.foundPost || ThreadUpdater.checkPostCount >= 5)) {
+        if (!(ThreadUpdater.thread.isDead || ThreadUpdater.foundPost || ThreadUpdater.checkPostCount >= 5)) {
           return setTimeout(ThreadUpdater.update, ++ThreadUpdater.checkPostCount * $.SECOND);
         }
         ThreadUpdater.setInterval();
@@ -13195,6 +13222,9 @@
           return !d.hidden;
         };
       },
+      autoUpdate: function(e) {
+        return ThreadUpdater.count(ThreadUpdater.isUpdating = this.checked);
+      },
       interval: function(e) {
         var val;
         val = parseInt(this.value, 10);
@@ -13211,7 +13241,6 @@
         req = ThreadUpdater.req;
         switch (req.status) {
           case 200:
-            g.DEAD = false;
             ThreadUpdater.parse(req.response.posts);
             if (ThreadUpdater.thread.isArchived) {
               ThreadUpdater.set('status', 'Archived', 'warning');
@@ -13316,9 +13345,10 @@
       var n;
       ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
       if (!(n = --ThreadUpdater.seconds)) {
+        ThreadUpdater.outdateCount++;
         return ThreadUpdater.update();
       } else if (n <= -60) {
-        ThreadUpdater.set('status', 'Retrying', null);
+        ThreadUpdater.set('status', 'Retrying', '');
         return ThreadUpdater.update();
       } else if (n > 0) {
         return ThreadUpdater.set('timer', n);
@@ -13393,18 +13423,27 @@
       ThreadUpdater.thread.posts.forEach(function(post) {
         var ID;
         ID = +post.ID;
-        if (__indexOf.call(index, ID) < 0) {
-          post.kill();
-        } else if (post.isDead) {
-          post.resurrect();
-        } else if (post.file && !post.file.isDead && __indexOf.call(files, ID) < 0) {
-          post.kill(true);
+        if (!(post.info.date > Date.now() - 60 * $.SECOND)) {
+          if (__indexOf.call(index, ID) < 0) {
+            post.kill();
+          } else if (post.isDead) {
+            post.resurrect();
+          } else if (post.file && !(post.file.isDead || __indexOf.call(files, ID) >= 0)) {
+            post.kill(true);
+          }
         }
         if (ThreadUpdater.postID && ThreadUpdater.postID === ID) {
           return ThreadUpdater.foundPost = true;
         }
       });
       sendEvent = function() {
+        var ipCountEl;
+        if ((OP.unique_ips != null) && (ipCountEl = $.id('unique-ips'))) {
+          ipCountEl.textContent = OP.unique_ips;
+          ipCountEl.previousSibling.textContent = ipCountEl.previousSibling.textContent.replace(/\b(?:is|are)\b/, OP.unique_ips === 1 ? 'is' : 'are');
+          ipCountEl.nextSibling.textContent = ipCountEl.nextSibling.textContent.replace(/\bposters?\b/, OP.unique_ips === 1 ? 'poster' : 'posters');
+        }
+        ThreadUpdater.postIDs = index;
         return $.event('ThreadUpdate', {
           404: false,
           threadID: ThreadUpdater.thread.fullID,
@@ -13417,7 +13456,7 @@
         });
       };
       if (!count) {
-        ThreadUpdater.set('status', null, null);
+        ThreadUpdater.set('status', '', '');
         ThreadUpdater.outdateCount++;
         sendEvent();
         return;
@@ -13464,13 +13503,17 @@
         return;
       }
       this.db = new DataBoard('watchedThreads', this.refresh, true);
-      this.dialog = UI.dialog('thread-watcher', 'top: 50px; left: 0px;', "<div><span class=\"move\">Thread Watcher <span id=\"watcher-status\"></span></span><a class=\"menu-button\" href=\"javascript:;\"><i class=\"fa\">\uf107</i></a></div><div id=\"watched-threads\"></div>");
+      this.dialog = UI.dialog('thread-watcher', 'top: 50px; left: 0px;', {
+        innerHTML: "<div>\r<span class=\"move\">\rThread Watcher \r<a class=\"refresh fa\" title=\"Check threads\" href=\"javascript:;\">\\uf021</a>\r<span id=\"watcher-status\"></span>\r</span>\r<a class=\"menu-button\" href=\"javascript:;\"><i class=\"fa\">\\uf107</i></a>\r</div>\r<div id=\"watched-threads\"></div>"
+      });
       this.status = $('#watcher-status', this.dialog);
       this.list = this.dialog.lastElementChild;
+      this.refreshButton = $('.refresh', this.dialog);
       $.on(d, 'QRPostSuccessful', this.cb.post);
       if (g.VIEW === 'thread') {
         $.on(d, 'ThreadUpdate', this.cb.threadUpdate);
       }
+      $.on(this.refreshButton, 'click', this.fetchAllStatus);
       $.on(d, '4chanXInitFinished', this.ready);
       switch (g.VIEW) {
         case 'index':
@@ -13485,18 +13528,75 @@
         ThreadWatcher.fetchAllStatus();
         this.db.save();
       }
-      return Thread.callbacks.push({
+      if (Conf['JSON Navigation'] && Conf['Menu'] && g.BOARD.ID !== 'f') {
+        Menu.menu.addEntry({
+          el: $.el('a', {
+            href: 'javascript:;'
+          }),
+          order: 6,
+          open: function(_arg) {
+            var thread;
+            thread = _arg.thread;
+            if (!(Conf['Index Mode'] === 'catalog' && g.VIEW === 'index')) {
+              return false;
+            }
+            this.el.textContent = ThreadWatcher.isWatched(thread) ? 'Unwatch thread' : 'Watch thread';
+            if (this.cb) {
+              $.off(this.el, 'click', this.cb);
+            }
+            this.cb = function() {
+              $.event('CloseMenu');
+              return ThreadWatcher.toggle(thread);
+            };
+            $.on(this.el, 'click', this.cb);
+            return true;
+          }
+        });
+      }
+      Post.callbacks.push({
         name: 'Thread Watcher',
         cb: this.node
       });
+      return CatalogThread.callbacks.push({
+        name: 'Thread Watcher',
+        cb: this.catalogNode
+      });
+    },
+    isWatched: function(thread) {
+      var _ref;
+      return (_ref = ThreadWatcher.db) != null ? _ref.get({
+        boardID: thread.board.ID,
+        threadID: thread.ID
+      }) : void 0;
     },
     node: function() {
       var toggler;
-      toggler = $.el('img', {
-        className: 'watch-thread-link'
-      });
-      $.on(toggler, 'click', ThreadWatcher.cb.toggle);
-      return $.before($('input', this.OP.nodes.post), toggler);
+      if (this.isReply) {
+        return;
+      }
+      if (this.isClone) {
+        toggler = $('.watch-thread-link', this.nodes.post);
+      } else {
+        toggler = $.el('img', {
+          className: 'watch-thread-link'
+        });
+        $.before($('input', this.nodes.post), toggler);
+      }
+      return $.on(toggler, 'click', ThreadWatcher.cb.toggle);
+    },
+    catalogNode: function() {
+      if (ThreadWatcher.isWatched(this.thread)) {
+        $.addClass(this.nodes.root, 'watched');
+      }
+      return $.on(this.nodes.thumb.parentNode, 'click', (function(_this) {
+        return function(e) {
+          if (!(e.button === 0 && e.altKey)) {
+            return;
+          }
+          ThreadWatcher.toggle(_this.thread);
+          return e.preventDefault();
+        };
+      })(this));
     },
     ready: function() {
       var el;
@@ -13541,12 +13641,6 @@
         }
         return $.event('CloseMenu');
       },
-      checkThreads: function() {
-        if ($.hasClass(this, 'disabled')) {
-          return;
-        }
-        return ThreadWatcher.fetchAllStatus();
-      },
       pruneDeads: function() {
         var boardID, data, threadID, _i, _len, _ref, _ref1;
         if ($.hasClass(this, 'disabled')) {
@@ -13568,7 +13662,10 @@
         return $.event('CloseMenu');
       },
       toggle: function() {
-        return ThreadWatcher.toggle(Get.threadFromNode(this));
+        ThreadWatcher.toggle(Get.threadFromNode(this));
+        Index.followedThreadID = thread.ID;
+        ThreadWatcher.toggle(thread);
+        return delete Index.followedThreadID;
       },
       rm: function() {
         var boardID, threadID, _ref;
@@ -13587,9 +13684,11 @@
         }
       },
       onIndexRefresh: function() {
-        var boardID, data, threadID, _ref;
+        var boardID, data, db, threadID, _ref;
+        db = ThreadWatcher.db;
         boardID = g.BOARD.ID;
-        _ref = ThreadWatcher.db.data.boards[boardID];
+        db.forceSync();
+        _ref = db.data.boards[boardID];
         for (threadID in _ref) {
           data = _ref[threadID];
           if (!data.isDead && !(threadID in g.BOARD.threads)) {
@@ -13628,10 +13727,12 @@
     },
     fetchAllStatus: function() {
       var thread, threads, _i, _len;
+      ThreadWatcher.db.forceSync();
+      ThreadWatcher.unreaddb.forceSync();
+      QR.db.forceSync();
       if (!(threads = ThreadWatcher.getAll()).length) {
         return;
       }
-      ThreadWatcher.status.textContent = '...';
       for (_i = 0, _len = threads.length; _i < _len; _i++) {
         thread = threads[_i];
         ThreadWatcher.fetchStatus(thread);
@@ -13640,43 +13741,103 @@
     fetchStatus: function(_arg) {
       var boardID, data, fetchCount, threadID;
       boardID = _arg.boardID, threadID = _arg.threadID, data = _arg.data;
-      if (data.isDead) {
+      if (data.isDead && !Conf['Show Unread Count']) {
         return;
       }
       fetchCount = ThreadWatcher.fetchCount;
+      if (fetchCount.fetching === 0) {
+        ThreadWatcher.status.textContent = '...';
+        $.addClass(ThreadWatcher.refreshButton, 'fa-spin');
+      }
       fetchCount.fetching++;
       return $.ajax("//a.4cdn.org/" + boardID + "/thread/" + threadID + ".json", {
         onloadend: function() {
-          var status;
+          var isDead, lastReadPost, match, postObj, quotingYou, regexp, status, unread, _i, _len, _ref, _ref1;
           fetchCount.fetched++;
           if (fetchCount.fetched === fetchCount.fetching) {
             fetchCount.fetched = 0;
             fetchCount.fetching = 0;
             status = '';
+            $.rmClass(ThreadWatcher.refreshButton, 'fa-spin');
           } else {
             status = "" + (Math.round(fetchCount.fetched / fetchCount.fetching * 100)) + "%";
           }
           ThreadWatcher.status.textContent = status;
-          if (this.status !== 404) {
-            return;
-          }
-          if (Conf['Auto Prune']) {
-            ThreadWatcher.db["delete"]({
-              boardID: boardID,
-              threadID: threadID
-            });
-          } else {
-            data.isDead = true;
-            ThreadWatcher.db.set({
+          if (this.status === 200 && this.response) {
+            isDead = !!this.response.posts[0].archived;
+            if (isDead && Conf['Auto Prune']) {
+              ThreadWatcher.db["delete"]({
+                boardID: boardID,
+                threadID: threadID
+              });
+              ThreadWatcher.refresh();
+              return;
+            }
+            lastReadPost = ThreadWatcher.unreaddb.get({
               boardID: boardID,
               threadID: threadID,
-              val: data
+              defaultValue: 0
             });
+            unread = quotingYou = 0;
+            _ref = this.response.posts;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              postObj = _ref[_i];
+              if (!(postObj.no > lastReadPost)) {
+                continue;
+              }
+              if ((_ref1 = QR.db) != null ? _ref1.get({
+                boardID: boardID,
+                threadID: threadID,
+                postID: postObj.no
+              }) : void 0) {
+                continue;
+              }
+              unread++;
+              if (!(QR.db && postObj.com)) {
+                continue;
+              }
+              regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/(\d+))?(?:#p(\d+))?"/g;
+              while (match = regexp.exec(postObj.com)) {
+                if (QR.db.get({
+                  boardID: match[1] || boardID,
+                  threadID: match[2] || threadID,
+                  postID: match[3] || match[2] || threadID
+                })) {
+                  quotingYou++;
+                  continue;
+                }
+              }
+            }
+            if (isDead !== data.isDead || unread !== data.unread || quotingYou !== data.quotingYou) {
+              data.isDead = isDead;
+              data.unread = unread;
+              data.quotingYou = quotingYou;
+              ThreadWatcher.db.set({
+                boardID: boardID,
+                threadID: threadID,
+                val: data
+              });
+              return ThreadWatcher.refresh();
+            }
+          } else if (this.status === 404) {
+            if (Conf['Auto Prune']) {
+              ThreadWatcher.db["delete"]({
+                boardID: boardID,
+                threadID: threadID
+              });
+            } else {
+              data.isDead = true;
+              delete data.unread;
+              delete data.quotingYou;
+              ThreadWatcher.db.set({
+                boardID: boardID,
+                threadID: threadID,
+                val: data
+              });
+            }
+            return ThreadWatcher.refresh();
           }
-          return ThreadWatcher.refresh();
         }
-      }, {
-        type: 'head'
       });
     },
     getAll: function() {
@@ -13700,24 +13861,31 @@
       return all;
     },
     makeLine: function(boardID, threadID, data) {
-      var div, fullID, href, link, x;
+      var count, div, fullID, link, title, x;
       x = $.el('a', {
         className: 'fa',
         href: 'javascript:;',
         textContent: '\uf00d'
       });
       $.on(x, 'click', ThreadWatcher.cb.rm);
-      if (data.isDead) {
-        href = Redirect.to('thread', {
-          boardID: boardID,
-          threadID: threadID
-        });
-      }
       link = $.el('a', {
-        href: href || ("/" + boardID + "/thread/" + threadID),
+        href: "/" + boardID + "/thread/" + threadID,
         textContent: data.excerpt,
-        title: data.excerpt
+        title: data.excerpt,
+        className: 'watcher-link'
       });
+      if (Conf['Show Unread Count'] && (data.unread != null)) {
+        count = $.el('span', {
+          textContent: "(" + data.unread + ")",
+          className: 'watcher-unread'
+        });
+        $.add(link, count);
+      }
+      title = $.el('span', {
+        textContent: data.excerpt,
+        className: 'watcher-title'
+      });
+      $.add(link, title);
       div = $.el('div');
       fullID = "" + boardID + "." + threadID;
       div.dataset.fullID = fullID;
@@ -13727,11 +13895,19 @@
       if (data.isDead) {
         $.addClass(div, 'dead-thread');
       }
+      if (Conf['Show Unread Count']) {
+        if (data.unread) {
+          $.addClass(div, 'replies-unread');
+        }
+        if (data.quotingYou) {
+          $.addClass(div, 'replies-quoting-you');
+        }
+      }
       $.add(div, [x, $.tn(' '), link]);
       return div;
     },
     refresh: function() {
-      var boardID, data, helper, list, nodes, refresher, thread, threadID, threads, toggler, watched, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
+      var boardID, data, list, nodes, refresher, threadID, _i, _j, _len, _len1, _ref, _ref1, _ref2;
       nodes = [];
       _ref = ThreadWatcher.getAll();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -13741,24 +13917,76 @@
       list = ThreadWatcher.list;
       $.rmAll(list);
       $.add(list, nodes);
-      threads = g.BOARD.threads;
-      _ref2 = threads.keys;
+      g.threads.forEach(function(thread) {
+        var helper, post, toggler, _j, _len1, _ref2;
+        helper = ThreadWatcher.isWatched(thread) ? ['addClass', 'Unwatch'] : ['rmClass', 'Watch'];
+        if (thread.OP) {
+          _ref2 = [thread.OP].concat(__slice.call(thread.OP.clones));
+          for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+            post = _ref2[_j];
+            toggler = $('.watch-thread-link', post.nodes.post);
+            $[helper[0]](toggler, 'watched');
+            toggler.title = "" + helper[1] + " Thread";
+          }
+        }
+        if (thread.catalogView) {
+          return $[helper[0]](thread.catalogView.nodes.root, 'watched');
+        }
+      });
+      _ref2 = ThreadWatcher.menu.refreshers;
       for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-        threadID = _ref2[_j];
-        thread = threads[threadID];
-        toggler = $('.watch-thread-link', thread.OP.nodes.post);
-        watched = ThreadWatcher.db.get({
-          boardID: thread.board.ID,
+        refresher = _ref2[_j];
+        refresher();
+      }
+      if (Index.nodes && Conf['Pin Watched Threads']) {
+        Index.sort();
+        return Index.buildIndex();
+      }
+    },
+    update: function(boardID, threadID, newData) {
+      var data, key, line, n, newLine, val, _ref;
+      if (!(data = (_ref = ThreadWatcher.db) != null ? _ref.get({
+        boardID: boardID,
+        threadID: threadID
+      }) : void 0)) {
+        return;
+      }
+      if (newData.isDead && Conf['Auto Prune']) {
+        ThreadWatcher.db["delete"]({
+          boardID: boardID,
           threadID: threadID
         });
-        helper = watched ? ['addClass', 'Unwatch'] : ['rmClass', 'Watch'];
-        $[helper[0]](toggler, 'watched');
-        toggler.title = "" + helper[1] + " Thread";
+        ThreadWatcher.refresh();
+        return;
       }
-      _ref3 = ThreadWatcher.menu.refreshers;
-      for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
-        refresher = _ref3[_k];
-        refresher();
+      n = 0;
+      for (key in newData) {
+        val = newData[key];
+        if (data[key] !== val) {
+          n++;
+        }
+      }
+      if (!n) {
+        return;
+      }
+      ThreadWatcher.db.forceSync();
+      if (!(data = ThreadWatcher.db.get({
+        boardID: boardID,
+        threadID: threadID
+      }))) {
+        return;
+      }
+      $.extend(data, newData);
+      ThreadWatcher.db.set({
+        boardID: boardID,
+        threadID: threadID,
+        val: data
+      });
+      if (line = $("#watched-threads > [data-full-i-d='" + boardID + "." + threadID + "']", ThreadWatcher.dialog)) {
+        newLine = ThreadWatcher.makeLine(boardID, threadID, data);
+        return $.replace(line, newLine);
+      } else {
+        return ThreadWatcher.refresh();
       }
     },
     toggle: function(thread) {
@@ -13795,7 +14023,14 @@
         threadID: threadID,
         val: data
       });
-      return ThreadWatcher.refresh();
+      ThreadWatcher.refresh();
+      if (Conf['Show Unread Count']) {
+        return ThreadWatcher.fetchStatus({
+          boardID: boardID,
+          threadID: threadID,
+          data: data
+        });
+      }
     },
     rm: function(boardID, threadID) {
       ThreadWatcher.db["delete"]({
@@ -13825,12 +14060,12 @@
         if (!Conf['Thread Watcher']) {
           return;
         }
-        menu = new UI.Menu();
+        menu = this.menu = new UI.Menu('thread watcher');
         $.on($('.menu-button', ThreadWatcher.dialog), 'click', function(e) {
           return menu.toggle(e, this, ThreadWatcher);
         });
         this.addHeaderMenuEntry();
-        return this.addMenuEntries(menu);
+        return this.addMenuEntries;
       },
       addHeaderMenuEntry: function() {
         var entryEl;
@@ -13855,7 +14090,7 @@
           return entryEl.textContent = text;
         });
       },
-      addMenuEntries: function(menu) {
+      addMenuEntries: function() {
         var cb, conf, entries, entry, name, refresh, subEntries, _i, _len, _ref, _ref1;
         entries = [];
         entries.push({
@@ -13870,21 +14105,10 @@
           }
         });
         entries.push({
-          cb: ThreadWatcher.cb.checkThreads,
-          entry: {
-            el: $.el('a', {
-              textContent: 'Check 404\'d threads'
-            })
-          },
-          refresh: function() {
-            return ($('div:not(.dead-thread)', ThreadWatcher.list) ? $.rmClass : $.addClass)(this.el, 'disabled');
-          }
-        });
-        entries.push({
           cb: ThreadWatcher.cb.pruneDeads,
           entry: {
             el: $.el('a', {
-              textContent: 'Prune 404\'d threads'
+              textContent: 'Prune dead threads'
             })
           },
           refresh: function() {
@@ -13916,22 +14140,18 @@
           if (refresh) {
             this.refreshers.push(refresh.bind(entry));
           }
-          menu.addEntry(entry);
+          this.menu.addEntry(entry);
         }
       },
       createSubEntry: function(name, desc) {
         var entry, input;
         entry = {
           type: 'thread watcher',
-          el: $.el('label', {
-            innerHTML: "<input type=checkbox name='" + name + "'> " + name,
-            title: desc
-          })
+          el: UI.checkbox(name, " " + name)
         };
         input = entry.el.firstElementChild;
-        input.checked = Conf[name];
         $.on(input, 'change', $.cb.checked);
-        if (name === 'Current Board') {
+        if (name === 'Current Board' || name === 'Show Unread Count') {
           $.on(input, 'change', ThreadWatcher.refresh);
         }
         return entry;
@@ -15757,10 +15977,14 @@
       }
     },
     getThread: function() {
-      var threadRoot, _i, _len, _ref;
+      var thread, threadRoot, _i, _len, _ref;
       _ref = $$('.thread');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         threadRoot = _ref[_i];
+        thread = Get.threadFromRoot(threadRoot);
+        if (thread.isHidden && !thread.stub) {
+          continue;
+        }
         if (Header.getTopOf(threadRoot) >= -threadRoot.getBoundingClientRect().height) {
           return threadRoot;
         }
@@ -15768,7 +15992,10 @@
       return $('.board');
     },
     scroll: function(delta) {
-      var axis, next, thread, top;
+      var axis, extra, next, thread, top, _ref;
+      if ((_ref = d.activeElement) != null) {
+        _ref.blur();
+      }
       thread = Nav.getThread();
       axis = delta === +1 ? 'following' : 'preceding';
       if (next = $.x("" + axis + "-sibling::div[contains(@class,'thread') and not(@hidden)][1]", thread)) {
@@ -15777,48 +16004,64 @@
           thread = next;
         }
       }
-      return Header.scrollTo(thread);
+      extra = Header.getTopOf(thread) + doc.clientHeight - d.body.getBoundingClientRect().bottom;
+      if (extra > 0) {
+        d.body.style.marginBottom = "" + extra + "px";
+      }
+      Header.scrollTo(thread);
+      if (extra > 0 && !Nav.haveExtra) {
+        Nav.haveExtra = true;
+        return $.on(d, 'scroll', Nav.removeExtra);
+      }
+    },
+    removeExtra: function() {
+      var extra;
+      extra = doc.clientHeight - d.body.getBoundingClientRect().bottom;
+      if (extra > 0) {
+        return d.body.style.marginBottom = "" + extra + "px";
+      } else {
+        d.body.style.marginBottom = null;
+        delete Nav.haveExtra;
+        return $.off(d, 'scroll', Nav.removeExtra);
+      }
     }
   };
 
   RelativeDates = {
     INTERVAL: $.MINUTE / 2,
     init: function() {
-      switch (g.VIEW) {
-        case 'index':
-          this.flush();
-          $.on(d, 'visibilitychange', this.flush);
-          if (!Conf['Relative Post Dates']) {
-            return;
-          }
-          break;
-        case 'thread':
-          if (!Conf['Relative Post Dates']) {
-            return;
-          }
-          this.flush();
-          $.on(d, 'visibilitychange ThreadUpdate', this.flush);
-          break;
-        default:
-          return;
+      var _ref;
+      if (((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Relative Post Dates'] && !Conf['Relative Date Title'] || g.VIEW === 'index' && Conf['JSON Navigation'] && g.BOARD.ID !== 'f') {
+        this.flush();
+        $.on(d, 'visibilitychange ThreadUpdate', this.flush);
       }
-      return Post.callbacks.push({
-        name: 'Relative Post Dates',
-        cb: this.node
-      });
+      if (Conf['Relative Post Dates']) {
+        return Post.callbacks.push({
+          name: 'Relative Post Dates',
+          cb: this.node
+        });
+      }
     },
     node: function() {
       var dateEl;
+      dateEl = this.nodes.date;
+      if (Conf['Relative Date Title']) {
+        $.on(dateEl, 'mouseover', (function(_this) {
+          return function() {
+            return RelativeDates.hover(_this);
+          };
+        })(this));
+        return;
+      }
       if (this.isClone) {
         return;
       }
-      dateEl = this.nodes.date;
       dateEl.title = dateEl.textContent;
       return RelativeDates.update(this);
     },
     relative: function(diff, now, date) {
       var days, months, number, rounded, unit, years;
-      unit = (number = diff / $.DAY) >= 1 ? (years = now.getYear() - date.getYear(), months = now.getMonth() - date.getMonth(), days = now.getDate() - date.getDate(), years > 1 ? (number = years - (months < 0 || months === 0 && days < 0), 'year') : years === 1 && (months > 0 || months === 0 && days >= 0) ? (number = years, 'year') : (months = (months + 12) % 12) > 1 ? (number = months - (days < 0), 'month') : months === 1 && days >= 0 ? (number = months, 'month') : 'day') : (number = diff / $.HOUR) >= 1 ? 'hour' : (number = diff / $.MINUTE) >= 1 ? 'minute' : (number = Math.max(0, diff) / $.SECOND, 'second');
+      unit = (number = diff / $.DAY) >= 1 ? (years = now.getYear() - date.getYear(), months = now.getMonth() - date.getMonth(), days = now.getDate() - date.getDate(), years > 1 ? (number = years - (months < 0 || months === 0 && days < 0), 'year') : years === 1 && (months > 0 || months === 0 && days >= 0) ? (number = years, 'year') : (months = months + 12 * years) > 1 ? (number = months - (days < 0), 'month') : months === 1 && days >= 0 ? (number = months, 'month') : 'day') : (number = diff / $.HOUR) >= 1 ? 'hour' : (number = diff / $.MINUTE) >= 1 ? 'minute' : (number = Math.max(0, diff) / $.SECOND, 'second');
       rounded = Math.round(number);
       if (rounded !== 1) {
         unit += 's';
@@ -15840,6 +16083,13 @@
       RelativeDates.stale = [];
       clearTimeout(RelativeDates.timeout);
       return RelativeDates.timeout = setTimeout(RelativeDates.flush, RelativeDates.INTERVAL);
+    },
+    hover: function(post) {
+      var date, diff, now;
+      date = post.info.date;
+      now = new Date();
+      diff = now - date;
+      return post.nodes.date.title = RelativeDates.relative(diff, now, date);
     },
     update: function(data, now) {
       var date, diff, isPost, relative, singlePost, _i, _len, _ref;
@@ -15880,44 +16130,45 @@
       if (Conf['Reveal Spoilers']) {
         $.addClass(doc, 'reveal-spoilers');
       }
-      if (Conf['Remove Spoilers']) {
-        return $.addClass(doc, 'remove-spoilers');
-      }
-    }
-  };
-
-  Report = {
-    init: function() {
-      if (!/report/.test(location.search)) {
+      if (!Conf['Remove Spoilers']) {
         return;
       }
-      return $.asap((function() {
-        return $.id('recaptcha_response_field');
-      }), Report.ready);
+      $.addClass(doc, 'remove-spoilers');
+      Post.callbacks.push({
+        name: 'Reveal Spoilers',
+        cb: this.node
+      });
+      CatalogThread.callbacks.push({
+        name: 'Reveal Spoilers',
+        cb: this.node
+      });
+      if (g.VIEW === 'archive') {
+        return $.ready(function() {
+          return RemoveSpoilers.unspoiler($.id('arc-list'));
+        });
+      }
     },
-    ready: function() {
-      var field;
-      field = $.id('recaptcha_response_field');
-      $.on(field, 'keydown', function(e) {
-        if (e.keyCode === 8 && !field.value) {
-          return $.globalEval('Recaptcha.reload("t")');
-        }
-      });
-      return $.on($('form'), 'submit', function(e) {
-        var response;
-        e.preventDefault();
-        response = field.value.trim();
-        if (!/\s|^\d+$/.test(response)) {
-          field.value = "" + response + " " + response;
-        }
-        return this.submit();
-      });
+    node: function(post) {
+      return RemoveSpoilers.unspoiler(this.nodes.comment);
+    },
+    unspoiler: function(el) {
+      var span, spoiler, spoilers, _i, _len;
+      spoilers = $$('s', el);
+      for (_i = 0, _len = spoilers.length; _i < _len; _i++) {
+        spoiler = spoilers[_i];
+        span = $.el('span', {
+          className: 'removed-spoiler'
+        });
+        $.replace(spoiler, span);
+        $.add(span, __slice.call(spoiler.childNodes));
+      }
     }
   };
 
   Time = {
     init: function() {
-      if (!Conf['Time Formatting']) {
+      var _ref;
+      if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Time Formatting'])) {
         return;
       }
       return Post.callbacks.push({
@@ -15932,7 +16183,7 @@
       return this.nodes.date.textContent = Time.format(Conf['time'], this.info.date);
     },
     format: function(formatString, date) {
-      return formatString.replace(/%([A-Za-z])/g, function(s, c) {
+      return formatString.replace(/%(.)/g, function(s, c) {
         if (c in Time.formatters) {
           return Time.formatters[c].call(date);
         } else {
@@ -16008,6 +16259,9 @@
       },
       Y: function() {
         return this.getFullYear();
+      },
+      '%': function() {
+        return '%';
       }
     }
   };

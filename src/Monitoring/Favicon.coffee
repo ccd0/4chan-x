@@ -1,5 +1,15 @@
 Favicon =
   init: ->
+    $.asap (-> d.head and Favicon.el = $ 'link[rel="shortcut icon"]', d.head), Favicon.initAsap
+  
+  initAsap: ->
+    Favicon.el.type = 'image/x-icon'
+    {href}          = Favicon.el
+    Favicon.SFW     = /ws\.ico$/.test href
+    Favicon.default = href
+    Favicon.switch()
+
+  switch: ->
     items = {
       ferongr: [
         '<%= grunt.file.read("src/General/img/favicons/ferongr/unreadDead.png",   {encoding: "base64"}) %>'

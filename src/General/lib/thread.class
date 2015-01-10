@@ -3,16 +3,17 @@ class Thread
   toString: -> @ID
 
   constructor: (@ID, @board) ->
-    @fullID    = "#{@board}.#{@ID}"
-    @posts     = new SimpleDict
-    @isDead    = false
-    @isHidden  = false
-    @isOnTop   = false
-    @isPinned  = false
-    @isSticky  = false
-    @isClosed  = false
-    @postLimit = false
-    @fileLimit = false
+    @fullID     = "#{@board}.#{@ID}"
+    @posts      = new SimpleDict
+    @isDead     = false
+    @isHidden   = false
+    @isOnTop    = false
+    @isPinned   = false
+    @isSticky   = false
+    @isClosed   = false
+    @isArchived = false
+    @postLimit  = false
+    @fileLimit  = false
     @ipCount = undefined
 
     @OP = null

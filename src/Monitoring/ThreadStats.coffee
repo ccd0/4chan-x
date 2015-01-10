@@ -21,16 +21,18 @@ ThreadStats =
         id:        'thread-stats'
         title:     title
       Header.addShortcut sc
+
     else
       @dialog = sc = UI.dialog 'thread-stats', 'bottom: 0px; right: 0px;',
-        "<div class=move title='#{title}'>#{html}</div>"
+        <%= html('<div class="move" title="${statsTitle}">&{statsHTML}</div>') %>
+      $.addClass doc, 'float'
       $.ready ->
         $.add d.body, sc
 
-    @postCountEl  = $ '#post-count', sc
-    @ipCountEl    = $ '#ip-count',   sc
-    @fileCountEl  = $ '#file-count', sc
-    @pageCountEl  = $ '#page-count', sc
+    @postCountEl = $ '#post-count', sc
+    @ipCountEl   = $ '#ip-count',   sc
+    @fileCountEl = $ '#file-count', sc
+    @pageCountEl = $ '#page-count', sc
 
     Thread.callbacks.push
       name: 'Thread Stats'
@@ -42,6 +44,7 @@ ThreadStats =
     @posts.forEach (post) ->
       postCount++
       fileCount++ if post.file
+      ThreadStats.lastPost = post.info.date if Conf["Page Count in Stats"]
     ThreadStats.thread = @
     ThreadStats.fetchPage()
     ThreadStats.update postCount, fileCount, @ipCount
@@ -88,6 +91,7 @@ ThreadStats =
 
   fetchPage: ->
     return if !Conf["Page Count in Stats"]
+    clearTimeout ThreadStats.timeout
     if ThreadStats.thread.isDead
       ThreadStats.pageCountEl.textContent = 'Dead'
       $.addClass ThreadStats.pageCountEl, 'warning'
@@ -102,4 +106,6 @@ ThreadStats =
       for thread in page.threads when thread.no is ThreadStats.thread.ID
         ThreadStats.pageCountEl.textContent = page.page
         (if page.page is @response.length then $.addClass else $.rmClass) ThreadStats.pageCountEl, 'warning'
+        # Thread data may be stale (modification date given < time of last post). If so, try again on next thread update.
+        ThreadStats.lastPageUpdate = new Date thread.last_modified * $.SECOND
         return

@@ -1,28 +1,28 @@
 RelativeDates =
   INTERVAL: $.MINUTE / 2
   init: ->
-    switch g.VIEW
-      when 'index'
-        @flush()
-        $.on d, 'visibilitychange', @flush
-        return unless Conf['Relative Post Dates']
-      when 'thread'
-        return unless Conf['Relative Post Dates']
-        @flush()
-        $.on d, 'visibilitychange ThreadUpdate', @flush
-      else
-        return
+    if (
+      g.VIEW in ['index', 'thread'] and Conf['Relative Post Dates'] and !Conf['Relative Date Title'] or
+      g.VIEW is 'index' and Conf['JSON Navigation'] and g.BOARD.ID isnt 'f'
+    )
+      @flush()
+      $.on d, 'visibilitychange ThreadUpdate', @flush
 
-    Post.callbacks.push
-      name: 'Relative Post Dates'
-      cb:   @node
+    if Conf['Relative Post Dates']
+      Post.callbacks.push
+        name: 'Relative Post Dates'
+        cb:   @node
+
   node: ->
+    dateEl = @nodes.date
+    if Conf['Relative Date Title']
+      $.on dateEl, 'mouseover', => RelativeDates.hover @
+      return
     return if @isClone
 
     # Show original absolute time as tooltip so users can still know exact times
     # Since "Time Formatting" runs its `node` before us, the title tooltip will
     # pick up the user-formatted time instead of 4chan time when enabled.
-    dateEl = @nodes.date
     dateEl.title = dateEl.textContent
 
     RelativeDates.update @
@@ -39,7 +39,7 @@ RelativeDates =
       else if years is 1 and (months > 0 or months is 0 and days >= 0)
         number = years
         'year'
-      else if (months = (months+12)%12 ) > 1
+      else if (months = months + 12*years) > 1
         number = months - (days < 0)
         'month'
       else if months is 1 and days >= 0
@@ -81,6 +81,12 @@ RelativeDates =
     # Reset automatic flush.
     clearTimeout RelativeDates.timeout
     RelativeDates.timeout = setTimeout RelativeDates.flush, RelativeDates.INTERVAL
+
+  hover: (post) ->
+    date = post.info.date
+    now  = new Date()
+    diff = now - date
+    post.nodes.date.title = RelativeDates.relative diff, now, date
 
   # `update()`, when called from `flush()`, updates the elements,
   # and re-calls `setOwnTimeout()` to re-add `data` to the stale list later.
