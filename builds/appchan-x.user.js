@@ -14675,7 +14675,8 @@
 
   Dice = {
     init: function() {
-      if (g.BOARD.ID !== 'tg' || !Conf['Show Dice Roll']) {
+      var _ref;
+      if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && g.BOARD.ID === 'tg' && Conf['Show Dice Roll'])) {
         return;
       }
       return Post.callbacks.push({
@@ -15077,22 +15078,32 @@
 
   Fourchan = {
     init: function() {
-      var board;
-      board = g.BOARD.ID;
-      if (board === 'g') {
-        $.globalEval("window.addEventListener('prettyprint', function(e) {\n  window.dispatchEvent(new CustomEvent('prettyprint:cb', {\n    detail: prettyPrintOne(e.detail)\n  }));\n}, false);");
+      var id, _ref;
+      if ((_ref = g.VIEW) !== 'index' && _ref !== 'thread') {
+        return;
+      }
+      id = g.BOARD.ID;
+      if (id === 'g') {
+        $.globalEval('window.addEventListener(\'prettyprint\', function(e) {\n  window.dispatchEvent(new CustomEvent(\'prettyprint:cb\', {\n    detail: prettyPrintOne(e.detail)\n  }));\n}, false);');
         Post.callbacks.push({
           name: 'Parse /g/ code',
           cb: this.code
         });
       }
-      if (board === 'sci') {
-        $.globalEval("window.addEventListener('jsmath', function(e) {\n  if (jsMath.loaded) {\n    // process one post\n    jsMath.ProcessBeforeShowing(document.getElementById(e.detail));\n  } else {\n    // load jsMath and process whole document\n    jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);\n    jsMath.Autoload.LoadJsMath();\n  }\n}, false);");
-        return Post.callbacks.push({
+      if (id === 'sci') {
+        $.globalEval('window.addEventListener(\'jsmath\', function(e) {\n  if (!jsMath) return;\n    // process one post\n    jsMath.ProcessBeforeShowing(e.target);\n  } else if (jsMath.Autoload && jsMath.Autoload.checked) {\n    // load jsMath and process whole document\n    jsMath.Autoload.Script.Push(\'ProcessBeforeShowing\', [null]);\n    jsMath.Autoload.LoadJsMath();\n  }\n}, false);');
+        Post.callbacks.push({
+          name: 'Parse /sci/ math',
+          cb: this.math
+        });
+        CatalogThread.callbacks.push({
           name: 'Parse /sci/ math',
           cb: this.math
         });
       }
+      return Main.ready(function() {
+        return $.globalEval('(function() {\n  window.clickable_ids = false;\n  var nodes = document.querySelectorAll(\'.posteruid, .capcode\');\n  for (var i = 0; i < nodes.length; i++) {\n    nodes[i].removeEventListener("click", window.idClick, false);\n  }\n  window.removeEventListener("message", Report.onMessage, false);\n})();');
+      });
     },
     code: function() {
       var apply, pre, _i, _len, _ref;
@@ -15100,7 +15111,8 @@
         return;
       }
       apply = function(e) {
-        return pre.innerHTML = e.detail;
+        pre.innerHTML = e.detail;
+        return $.addClass(pre, 'prettyprinted');
       };
       $.on(window, 'prettyprint:cb', apply);
       _ref = $$('.prettyprint:not(.prettyprinted)', this.nodes.comment);
@@ -15111,16 +15123,25 @@
       $.off(window, 'prettyprint:cb', apply);
     },
     math: function() {
-      if (this.isClone || !$('.math', this.nodes.comment)) {
+      if ((this.isClone && doc.contains(this.origin.nodes.root)) || !$('.math', this.nodes.comment)) {
         return;
       }
-      return $.event('jsmath', this.nodes.post.id, window);
+      return $.asap(((function(_this) {
+        return function() {
+          return doc.contains(_this.nodes.comment);
+        };
+      })(this)), (function(_this) {
+        return function() {
+          return $.event('jsmath', null, _this.nodes.comment);
+        };
+      })(this));
     }
   };
 
   IDColor = {
     init: function() {
-      if (!Conf['Color User IDs']) {
+      var _ref;
+      if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Color User IDs'])) {
         return;
       }
       this.ids = {
@@ -15132,26 +15153,32 @@
       });
     },
     node: function() {
-      var rgb, span, uid;
+      var rgb, span, style, uid;
       if (this.isClone || !((uid = this.info.uniqueID) && (span = $('span.hand', this.nodes.uniqueID)))) {
         return;
       }
       rgb = IDColor.ids[uid] || IDColor.compute(uid);
-      span.style.color = rgb[3];
-      span.style.backgroundColor = "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
+      style = span.style;
+      style.color = rgb[3];
+      style.backgroundColor = "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
       $.addClass(span, 'painted');
       return span.title = 'Highlight posts by this ID';
     },
     compute: function(uid) {
-      var hash, i, rgb;
-      i = 1;
-      hash = uid.charCodeAt(0);
-      while (i < 8) {
-        hash = (hash << 5) - hash + uid.charCodeAt(i++);
-      }
+      var hash, rgb;
+      hash = IDColor.hash(uid);
       rgb = [(hash >> 24) & 0xFF, (hash >> 16) & 0xFF, (hash >> 8) & 0xFF];
       rgb.push((rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125 ? '#000' : '#fff');
       return this.ids[uid] = rgb;
+    },
+    hash: function(uid) {
+      var i, msg;
+      msg = 0;
+      i = 0;
+      while (i < 8) {
+        msg = (msg << 5) - msg + uid.charCodeAt(i++);
+      }
+      return msg;
     }
   };
 

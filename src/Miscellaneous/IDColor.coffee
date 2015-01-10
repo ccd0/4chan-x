@@ -1,6 +1,6 @@
 IDColor =
   init: ->
-    return if !Conf['Color User IDs']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Color User IDs']
     @ids = {
       Heaven: [0, 0, 0, '#fff']
     }
@@ -15,17 +15,16 @@ IDColor =
     rgb = IDColor.ids[uid] or IDColor.compute uid
 
     # Style the damn node.
-    span.style.color = rgb[3]
-    span.style.backgroundColor = "rgb(#{rgb[0]},#{rgb[1]},#{rgb[2]})"
+    {style} = span
+    style.color = rgb[3]
+    style.backgroundColor = "rgb(#{rgb[0]},#{rgb[1]},#{rgb[2]})"
     $.addClass span, 'painted'
     span.title = 'Highlight posts by this ID'
 
   compute: (uid) ->
     # Convert chars to integers, bitshift and math to create a larger integer
     # Create a nice string of binary
-    i    = 1
-    hash = uid.charCodeAt 0
-    hash = (hash << 5) - hash + uid.charCodeAt i++ while i < 8
+    hash = IDColor.hash uid
 
     # Convert binary string to numerical values with bitshift and '&' truncation.
     rgb = [
@@ -42,3 +41,10 @@ IDColor =
 
     # Cache.
     @ids[uid] = rgb
+
+  hash: (uid) ->
+    msg = 0
+    i = 0
+    while i < 8
+      msg = (msg << 5) - msg + uid.charCodeAt i++ 
+    msg

@@ -1,42 +1,65 @@
 Fourchan =
   init: ->
-    board = g.BOARD.ID
-    if board is 'g'
-      $.globalEval """
+    return unless g.VIEW in ['index', 'thread']
+
+    id = g.BOARD.ID
+    if id is 'g'
+      $.globalEval '''
         window.addEventListener('prettyprint', function(e) {
           window.dispatchEvent(new CustomEvent('prettyprint:cb', {
             detail: prettyPrintOne(e.detail)
           }));
         }, false);
-      """
+      '''
       Post.callbacks.push
         name: 'Parse /g/ code'
         cb:   @code
-    if board is 'sci'
+    if id is 'sci'
       # https://github.com/MayhemYDG/4chan-x/issues/645#issuecomment-13704562
-      $.globalEval """
+      $.globalEval '''
         window.addEventListener('jsmath', function(e) {
-          if (jsMath.loaded) {
+          if (!jsMath) return;
             // process one post
-            jsMath.ProcessBeforeShowing(document.getElementById(e.detail));
-          } else {
+            jsMath.ProcessBeforeShowing(e.target);
+          } else if (jsMath.Autoload && jsMath.Autoload.checked) {
             // load jsMath and process whole document
             jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);
             jsMath.Autoload.LoadJsMath();
           }
         }, false);
-      """
+      '''
       Post.callbacks.push
         name: 'Parse /sci/ math'
         cb:   @math
+
+      CatalogThread.callbacks.push
+        name: 'Parse /sci/ math'
+        cb:   @math
+
+    # Disable 4chan's ID highlighting (replaced by IDHighlight) and reported post hiding.
+    Main.ready ->
+      $.globalEval '''
+        (function() {
+          window.clickable_ids = false;
+          var nodes = document.querySelectorAll('.posteruid, .capcode');
+          for (var i = 0; i < nodes.length; i++) {
+            nodes[i].removeEventListener("click", window.idClick, false);
+          }
+          window.removeEventListener("message", Report.onMessage, false);
+        })();
+      '''
+
   code: ->
     return if @isClone
-    apply = (e) -> pre.innerHTML = e.detail
+    apply = (e) ->
+      pre.innerHTML = e.detail
+      $.addClass pre, 'prettyprinted'
     $.on window, 'prettyprint:cb', apply
     for pre in $$ '.prettyprint:not(.prettyprinted)', @nodes.comment
       $.event 'prettyprint', pre.innerHTML, window
     $.off window, 'prettyprint:cb', apply
     return
   math: ->
-    return if @isClone or !$ '.math', @nodes.comment
-    $.event 'jsmath', @nodes.post.id, window
+    return if (@isClone and doc.contains @origin.nodes.root) or !$ '.math', @nodes.comment
+    $.asap (=> doc.contains @nodes.comment), =>
+      $.event 'jsmath', null, @nodes.comment
