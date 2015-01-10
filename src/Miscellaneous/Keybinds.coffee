@@ -22,81 +22,74 @@ Keybinds =
     return if target.nodeName is 'EMBED' # Prevent keybinds from firing on /f/ embeds.
     if target.nodeName in ['INPUT', 'TEXTAREA']
       return unless /(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test key
-    unless g.VIEW is 'catalog'
+    unless g.VIEW not in ['index', 'thread'] or g.VIEW is 'index' and Conf['JSON Navigation'] and Conf['Index Mode'] is 'catalog'
       threadRoot = Nav.getThread()
       if op = $ '.op', threadRoot
         thread = Get.postFromNode(op).thread
     switch key
       # QR & Options
       when Conf['Toggle board list']
-        if Conf['Custom Board Navigation']
-          Header.toggleBoardList()
+        Header.toggleBoardList() if Conf['Custom Board Navigation']
       when Conf['Toggle header']
         Header.toggleBarVisibility()
       when Conf['Open empty QR']
         Keybinds.qr()
       when Conf['Open QR']
-        return if g.VIEW is 'catalog'
-        Keybinds.qr threadRoot
+        Keybinds.qr threadRoot if threadRoot
       when Conf['Open settings']
         Settings.open()
       when Conf['Close']
-        if $.id 'fourchanx-settings'
+        if Settings.dialog
           Settings.close()
         else if (notifications = $$ '.notification').length
           for notification in notifications
             $('.close', notification).click()
-        else if QR.nodes
+        else if QR.nodes and not (QR.nodes.el.hidden or window.getComputedStyle(QR.nodes.form).display is 'none')
           if Conf['Persistent QR']
             QR.hide()
           else
             QR.close()
+        else if Embedding.lastEmbed
+          Embedding.closeFloat()
+        return
       when Conf['Spoiler tags']
-        return if target.nodeName isnt 'TEXTAREA'
-        Keybinds.tags 'spoiler', target
+        Keybinds.tags 'spoiler', target if target.nodeName is 'TEXTAREA'
       when Conf['Code tags']
-        return if target.nodeName isnt 'TEXTAREA'
-        Keybinds.tags 'code', target
+        Keybinds.tags 'code', target if target.nodeName is 'TEXTAREA'
       when Conf['Eqn tags']
-        return if target.nodeName isnt 'TEXTAREA'
-        Keybinds.tags 'eqn', target
+        Keybinds.tags 'eqn', target if target.nodeName is 'TEXTAREA'
       when Conf['Math tags']
-        return if target.nodeName isnt 'TEXTAREA'
-        Keybinds.tags 'math', target
+        Keybinds.tags 'math', target if target.nodeName is 'TEXTAREA'
       when Conf['Toggle sage']
-        Keybinds.sage() if QR.nodes
+        Keybinds.sage() if QR.nodes and !QR.nodes.el.hidden
       when Conf['Submit QR']
-        QR.submit() if QR.nodes and !QR.status()
+        QR.submit() if QR.nodes and !QR.nodes.el.hidden and !QR.status()
       when Conf['Post Without Name']
-        if QR.nodes and !QR.status()
-          Keybinds.name()
-          QR.submit()
+        return unless QR.nodes and !QR.status()
+        Keybinds.name()
+        QR.submit()
       # Index/Thread related
       when Conf['Update']
         switch g.VIEW
           when 'thread'
-            ThreadUpdater.update()
+            ThreadUpdater.update() if Conf['Thread Updater']
           when 'index'
-            if Conf['JSON Navigation'] then Index.update()
+            Index.update() if Conf['JSON Navigation']
+        return
       when Conf['Watch']
-        return if g.VIEW is 'catalog'
-        ThreadWatcher.toggle thread
+        ThreadWatcher.toggle thread unless thread
       # Images
       when Conf['Expand image']
-        return if g.VIEW is 'catalog'
-        Keybinds.img threadRoot
+        Keybinds.img threadRoot if threadRoot
       when Conf['Expand images']
-        return if g.VIEW is 'catalog'
-        Keybinds.img threadRoot, true
+        Keybinds.img threadRoot, true if threadRoot
       when Conf['Open Gallery']
-        return if g.VIEW is 'catalog'
-        Gallery.cb.toggle()
+        Gallery.cb.toggle() if g.VIEW in ['index', 'thread']
       when Conf['fappeTyme']
-        return if g.VIEW is 'catalog'
-        FappeTyme.cb.toggle.call {name: 'fappe'}
+        FappeTyme.cb.toggle.call {name: 'fappe'} if Conf['Fappe Tyme'] and g.VIEW in ['index', 'thread'] and g.BOARD isnt 'f'
       when Conf['werkTyme']
         return if g.VIEW is 'catalog'
-        FappeTyme.cb.toggle.call {name: 'werk'}
+        FappeTyme.cb.toggle.call {name: 'werk'} if Conf['Fappe Tyme'] and g.VIEW in ['index', 'thread'] and g.BOARD isnt 'f'
       # Board Navigation
       when Conf['Front page']
         if Conf['JSON Navigation'] and g.VIEW is 'index'
@@ -125,7 +118,6 @@ Keybinds =
         return unless g.VIEW is 'index'
         searchInput = if Conf['JSON Navigation'] then Index.searchInput else $.id('search-box')
         Header.scrollToIfNeeded searchInput
-        searchInput.click()
         searchInput.focus()
       when Conf['Paged mode']
         return unless g.VIEW is 'index' and Conf['Index Mode'] isnt 'paged'
@@ -146,38 +138,32 @@ Keybinds =
           return window.location = "/#{g.BOARD}/catalog" unless Conf['JSON Navigation']
           return unless g.VIEW is 'index' and Conf['Index Mode'] isnt 'catalog'
           Index.setIndexMode 'catalog'
+      when Conf['Cycle sort type']
+        Index.cycleSortType() if Conf['JSON Navigation'] and g.VIEW is 'index' and g.BOARD isnt 'f'
       # Thread Navigation
       when Conf['Next thread']
-        return if g.VIEW isnt 'index' or Conf['Index Mode'] is 'catalog'
-        Nav.scroll +1
+        Nav.scroll +1 if g.VIEW is 'index' and threadRoot
       when Conf['Previous thread']
-        return if g.VIEW isnt 'index' or Conf['Index Mode'] is 'catalog'
-        Nav.scroll -1
+        Nav.scroll -1 if g.VIEW is 'index' and threadRoot
       when Conf['Expand thread']
-        return if g.VIEW isnt 'index' or Conf['Index Mode'] is 'catalog'
-        ExpandThread.toggle thread
+        ExpandThread.toggle thread if g.VIEW is 'index' and threadRoot
       when Conf['Open thread']
-        return if g.VIEW isnt 'index' or Conf['Index Mode'] is 'catalog'
-        Keybinds.open thread
+        Keybinds.open thread if g.VIEW is 'index' and threadRoot
       when Conf['Open thread tab']
-        return if g.VIEW isnt 'index' or Conf['Index Mode'] is 'catalog'
-        Keybinds.open thread, true
+        Keybinds.open thread, true if g.VIEW is 'index' and threadRoot
       # Reply Navigation
       when Conf['Next reply']
-        return if g.VIEW is 'catalog'
-        Keybinds.hl +1, threadRoot
+        Keybinds.hl +1, threadRoot if threadRoot
       when Conf['Previous reply']
-        return if g.VIEW is 'catalog'
-        Keybinds.hl -1, threadRoot
+        Keybinds.hl -1, threadRoot if threadRoot
       when Conf['Deselect reply']
-        return if g.VIEW is 'catalog'
-        Keybinds.hl  0, threadRoot
+        Keybinds.hl  0, threadRoot if threadRoot
       when Conf['Hide']
         PostHiding.toggle thread.OP
       when Conf['Previous Post Quoting You']
-        QuoteMarkers.cb.seek 'preceding'
+        QuoteMarkers.cb.seek 'preceding' if threadRoot
       when Conf['Next Post Quoting You']
-        QuoteMarkers.cb.seek 'following'
+        QuoteMarkers.cb.seek 'following' if threadRoot
       else
         return
     e.preventDefault()
@@ -217,11 +203,17 @@ Keybinds =
     if thread?
       QR.quote.call $ 'input', $('.post.highlight', thread) or thread
 
-    do QR.nodes.com.focus
+    QR.nodes.com.focus()
     if Conf['QR Shortcut']
       $.rmClass $('.qr-shortcut'), 'disabled'
 
   tags: (tag, ta) ->
+    supported = switch tag
+      when 'spoiler'     then !!$ '.postForm input[name=spoiler]'
+      when 'code'        then g.BOARD.ID is 'g'
+      when 'math', 'eqn' then g.BOARD.ID is 'sci'
+    new Notice 'warning', "[#{tag}] tags are not supported on /#{g.BOARD}/.", 20 unless supported
+
     value    = ta.value
     selStart = ta.selectionStart
     selEnd   = ta.selectionEnd
@@ -248,11 +240,11 @@ Keybinds =
 
   img: (thread, all) ->
     if all
-      do ImageExpand.cb.toggleAll
+      ImageExpand.cb.toggleAll()
     else
       post = Get.postFromNode $('.post.highlight', thread) or $ '.op', thread
       ImageExpand.toggle post
-      
+
   open: (thread, tab) ->
     return if g.VIEW isnt 'index'
     url = Build.path thread.board.ID, thread.ID

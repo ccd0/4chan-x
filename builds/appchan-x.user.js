@@ -15245,7 +15245,7 @@
       return Conf[hotkey] = key;
     },
     keydown: function(e) {
-      var form, key, notification, notifications, op, searchInput, target, thread, threadRoot, _i, _len, _ref;
+      var form, key, notification, notifications, op, searchInput, target, thread, threadRoot, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4;
       if (!(key = Keybinds.keyCode(e))) {
         return;
       }
@@ -15258,7 +15258,7 @@
           return;
         }
       }
-      if (g.VIEW !== 'catalog') {
+      if (!(((_ref1 = g.VIEW) !== 'index' && _ref1 !== 'thread') || g.VIEW === 'index' && Conf['JSON Navigation'] && Conf['Index Mode'] === 'catalog')) {
         threadRoot = Nav.getThread();
         if (op = $('.op', threadRoot)) {
           thread = Get.postFromNode(op).thread;
@@ -15277,120 +15277,117 @@
           Keybinds.qr();
           break;
         case Conf['Open QR']:
-          if (g.VIEW === 'catalog') {
-            return;
+          if (threadRoot) {
+            Keybinds.qr(threadRoot);
           }
-          Keybinds.qr(threadRoot);
           break;
         case Conf['Open settings']:
           Settings.open();
           break;
         case Conf['Close']:
-          if ($.id('fourchanx-settings')) {
+          if (Settings.dialog) {
             Settings.close();
           } else if ((notifications = $$('.notification')).length) {
             for (_i = 0, _len = notifications.length; _i < _len; _i++) {
               notification = notifications[_i];
               $('.close', notification).click();
             }
-          } else if (QR.nodes) {
+          } else if (QR.nodes && !(QR.nodes.el.hidden || window.getComputedStyle(QR.nodes.form).display === 'none')) {
             if (Conf['Persistent QR']) {
               QR.hide();
             } else {
               QR.close();
             }
+          } else if (Embedding.lastEmbed) {
+            Embedding.closeFloat();
           }
-          break;
+          return;
         case Conf['Spoiler tags']:
-          if (target.nodeName !== 'TEXTAREA') {
-            return;
+          if (target.nodeName === 'TEXTAREA') {
+            Keybinds.tags('spoiler', target);
           }
-          Keybinds.tags('spoiler', target);
           break;
         case Conf['Code tags']:
-          if (target.nodeName !== 'TEXTAREA') {
-            return;
+          if (target.nodeName === 'TEXTAREA') {
+            Keybinds.tags('code', target);
           }
-          Keybinds.tags('code', target);
           break;
         case Conf['Eqn tags']:
-          if (target.nodeName !== 'TEXTAREA') {
-            return;
+          if (target.nodeName === 'TEXTAREA') {
+            Keybinds.tags('eqn', target);
           }
-          Keybinds.tags('eqn', target);
           break;
         case Conf['Math tags']:
-          if (target.nodeName !== 'TEXTAREA') {
-            return;
+          if (target.nodeName === 'TEXTAREA') {
+            Keybinds.tags('math', target);
           }
-          Keybinds.tags('math', target);
           break;
         case Conf['Toggle sage']:
-          if (QR.nodes) {
+          if (QR.nodes && !QR.nodes.el.hidden) {
             Keybinds.sage();
           }
           break;
         case Conf['Submit QR']:
-          if (QR.nodes && !QR.status()) {
+          if (QR.nodes && !QR.nodes.el.hidden && !QR.status()) {
             QR.submit();
           }
           break;
         case Conf['Post Without Name']:
-          if (QR.nodes && !QR.status()) {
-            Keybinds.name();
-            QR.submit();
+          if (!(QR.nodes && !QR.status())) {
+            return;
           }
+          Keybinds.name();
+          QR.submit();
           break;
         case Conf['Update']:
           switch (g.VIEW) {
             case 'thread':
-              ThreadUpdater.update();
+              if (Conf['Thread Updater']) {
+                ThreadUpdater.update();
+              }
               break;
             case 'index':
               if (Conf['JSON Navigation']) {
                 Index.update();
               }
           }
-          break;
+          return;
         case Conf['Watch']:
-          if (g.VIEW === 'catalog') {
-            return;
+          if (!thread) {
+            ThreadWatcher.toggle(thread);
           }
-          ThreadWatcher.toggle(thread);
           break;
         case Conf['Expand image']:
-          if (g.VIEW === 'catalog') {
-            return;
+          if (threadRoot) {
+            Keybinds.img(threadRoot);
           }
-          Keybinds.img(threadRoot);
           break;
         case Conf['Expand images']:
-          if (g.VIEW === 'catalog') {
-            return;
+          if (threadRoot) {
+            Keybinds.img(threadRoot, true);
           }
-          Keybinds.img(threadRoot, true);
           break;
         case Conf['Open Gallery']:
-          if (g.VIEW === 'catalog') {
-            return;
+          if ((_ref2 = g.VIEW) === 'index' || _ref2 === 'thread') {
+            Gallery.cb.toggle();
           }
-          Gallery.cb.toggle();
           break;
         case Conf['fappeTyme']:
-          if (g.VIEW === 'catalog') {
-            return;
+          if (Conf['Fappe Tyme'] && ((_ref3 = g.VIEW) === 'index' || _ref3 === 'thread') && g.BOARD !== 'f') {
+            FappeTyme.cb.toggle.call({
+              name: 'fappe'
+            });
           }
-          FappeTyme.cb.toggle.call({
-            name: 'fappe'
-          });
           break;
         case Conf['werkTyme']:
           if (g.VIEW === 'catalog') {
             return;
           }
-          FappeTyme.cb.toggle.call({
-            name: 'werk'
-          });
+          if (Conf['Fappe Tyme'] && ((_ref4 = g.VIEW) === 'index' || _ref4 === 'thread') && g.BOARD !== 'f') {
+            FappeTyme.cb.toggle.call({
+              name: 'werk'
+            });
+          }
           break;
         case Conf['Front page']:
           if (Conf['JSON Navigation'] && g.VIEW === 'index') {
@@ -15436,7 +15433,6 @@
           }
           searchInput = Conf['JSON Navigation'] ? Index.searchInput : $.id('search-box');
           Header.scrollToIfNeeded(searchInput);
-          searchInput.click();
           searchInput.focus();
           break;
         case Conf['Paged mode']:
@@ -15476,62 +15472,63 @@
             Index.setIndexMode('catalog');
           }
           break;
-        case Conf['Next thread']:
-          if (g.VIEW !== 'index' || Conf['Index Mode'] === 'catalog') {
-            return;
+        case Conf['Cycle sort type']:
+          if (Conf['JSON Navigation'] && g.VIEW === 'index' && g.BOARD !== 'f') {
+            Index.cycleSortType();
           }
-          Nav.scroll(+1);
+          break;
+        case Conf['Next thread']:
+          if (g.VIEW === 'index' && threadRoot) {
+            Nav.scroll(+1);
+          }
           break;
         case Conf['Previous thread']:
-          if (g.VIEW !== 'index' || Conf['Index Mode'] === 'catalog') {
-            return;
+          if (g.VIEW === 'index' && threadRoot) {
+            Nav.scroll(-1);
           }
-          Nav.scroll(-1);
           break;
         case Conf['Expand thread']:
-          if (g.VIEW !== 'index' || Conf['Index Mode'] === 'catalog') {
-            return;
+          if (g.VIEW === 'index' && threadRoot) {
+            ExpandThread.toggle(thread);
           }
-          ExpandThread.toggle(thread);
           break;
         case Conf['Open thread']:
-          if (g.VIEW !== 'index' || Conf['Index Mode'] === 'catalog') {
-            return;
+          if (g.VIEW === 'index' && threadRoot) {
+            Keybinds.open(thread);
           }
-          Keybinds.open(thread);
           break;
         case Conf['Open thread tab']:
-          if (g.VIEW !== 'index' || Conf['Index Mode'] === 'catalog') {
-            return;
+          if (g.VIEW === 'index' && threadRoot) {
+            Keybinds.open(thread, true);
           }
-          Keybinds.open(thread, true);
           break;
         case Conf['Next reply']:
-          if (g.VIEW === 'catalog') {
-            return;
+          if (threadRoot) {
+            Keybinds.hl(+1, threadRoot);
           }
-          Keybinds.hl(+1, threadRoot);
           break;
         case Conf['Previous reply']:
-          if (g.VIEW === 'catalog') {
-            return;
+          if (threadRoot) {
+            Keybinds.hl(-1, threadRoot);
           }
-          Keybinds.hl(-1, threadRoot);
           break;
         case Conf['Deselect reply']:
-          if (g.VIEW === 'catalog') {
-            return;
+          if (threadRoot) {
+            Keybinds.hl(0, threadRoot);
           }
-          Keybinds.hl(0, threadRoot);
           break;
         case Conf['Hide']:
           PostHiding.toggle(thread.OP);
           break;
         case Conf['Previous Post Quoting You']:
-          QuoteMarkers.cb.seek('preceding');
+          if (threadRoot) {
+            QuoteMarkers.cb.seek('preceding');
+          }
           break;
         case Conf['Next Post Quoting You']:
-          QuoteMarkers.cb.seek('following');
+          if (threadRoot) {
+            QuoteMarkers.cb.seek('following');
+          }
           break;
         default:
           return;
@@ -15595,7 +15592,21 @@
       }
     },
     tags: function(tag, ta) {
-      var range, selEnd, selStart, value;
+      var range, selEnd, selStart, supported, value;
+      supported = (function() {
+        switch (tag) {
+          case 'spoiler':
+            return !!$('.postForm input[name=spoiler]');
+          case 'code':
+            return g.BOARD.ID === 'g';
+          case 'math':
+          case 'eqn':
+            return g.BOARD.ID === 'sci';
+        }
+      })();
+      if (!supported) {
+        new Notice('warning', "[" + tag + "] tags are not supported on /" + g.BOARD + "/.", 20);
+      }
       value = ta.value;
       selStart = ta.selectionStart;
       selEnd = ta.selectionEnd;
