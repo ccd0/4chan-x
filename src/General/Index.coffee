@@ -82,6 +82,10 @@ Index =
     $.on @selectSize, 'change', @cb.size
 
     @update()
+
+    $.asap (-> $('title + *', doc) or d.readyState isnt 'loading'), ->
+      d.title = d.title.replace /\ -\ Page\ \d+/, ''
+
     $.asap (-> $('.board > .thread > .postContainer', doc) or d.readyState isnt 'loading'), ->
       return unless Main.isThisPageLegit()
       Index.hat = $ '.board > .thread > img:first-child'
