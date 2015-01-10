@@ -1,5 +1,6 @@
 ImageHover =
   init: ->
+    return if g.VIEW not in ['index', 'thread']
     if Conf['Image Hover']
       Post.callbacks.push
         name: 'Image Hover'
@@ -8,82 +9,62 @@ ImageHover =
       CatalogThread.callbacks.push
         name: 'Image Hover'
         cb:   @catalogNode
+
   node: ->
-    return unless @file?.isImage or @file?.isVideo
+    return unless @file and (@file.isImage or @file.isVideo)
     $.on @file.thumb, 'mouseover', ImageHover.mouseover
+
   catalogNode: ->
-    return unless (file = @thread.OP.file) and (file.isImage or file.isVideo)
+    {file} = @thread.OP
+    return unless file and (file.isImage or file.isVideo)
     $.on @nodes.thumb, 'mouseover', ImageHover.mouseover
+
   mouseover: (e) ->
     post = if $.hasClass @, 'thumb'
       g.posts[@parentNode.dataset.fullID]
     else
       Get.postFromNode @
-    {isVideo} = post.file
-    el = $.el (if isVideo then 'video' else 'img'),
-      src: post.file.URL
-    {thumb} = post.file
-      
-    if d.body.contains thumb
-      $.after thumb, el unless el is thumb.nextSibling
+    {file}    = post
+    {isVideo} = file
+    return if file.isExpanding or file.isExpanded
+    error = ImageHover.error post
+    if ImageCommon.cache?.dataset.fullID is post.fullID
+      el = ImageCommon.popCache()
+      $.on el, 'error', error
     else
-      $.add Header.hover, el if el.parentNode isnt Header.hover
+      el = $.el (if isVideo then 'video' else 'img')
+      el.dataset.fullID = post.fullID
+
     el.id = 'ihover'
-    el.dataset.fullID = post.fullID
+    $.add Header.hover, el
     if isVideo
       el.loop     = true
       el.controls = false
-      el.muted    = not Conf['Allow Sound']
       el.play() if Conf['Autoplay']
+    maxWidth = Math.max left, doc.clientWidth - right
+    maxHeight = doc.clientHeight - 16
+    scale = Math.min 1, maxWidth / width, maxHeight / height
+    el.style.maxWidth = "#{scale * width}px"
+    el.style.maxHeight = "#{scale * height}px"
     UI.hover
       root: @
       el: el
       latestEvent: e
       endEvents: 'mouseout click'
-      asapTest: if post.file.isImage
-        -> el.naturalHeight
-      else
-        -> el.readyState >= el.HAVE_CURRENT_DATA
+      asapTest: -> true
+      height: scale * height + padding
+      noRemove: true
       cb: ->
-        if isVideo
-          el.pause()
-          TrashQueue.add el, post
-        el.removeAttribute 'id'
-    $.on el, 'error', ImageHover.error
-  error: ->
-    return unless doc.contains @
-    post = g.posts[@dataset.fullID]
+        $.off el, 'error', error
+        ImageCommon.pushCache el
+        el.pause() if isVideo
+        $.rm el
+        el.removeAttribute 'style'
 
-    src = @src.split '/'
-    if src[2] is 'i.4cdn.org'
-      URL = Redirect.to 'file',
-        boardID:  src[3]
-        filename: src[4].replace /\?.+$/, ''
+  error: (post) -> ->
+    return if ImageCommon.decodeError @, post
+    ImageCommon.error @, post, 3 * $.SECOND, (URL) =>
       if URL
-        @src = URL
-        return
-      if g.DEAD or post.isDead or post.file.isDead
-        return
-
-    timeoutID = setTimeout (=> @src = post.file.URL + '?' + Date.now()), 3000
-    <% if (type === 'crx') { %>
-    $.ajax post.file.URL,
-      onloadend: ->
-        return if @status isnt 404
-        clearTimeout timeoutID
-        post.kill true
-    ,
-      type: 'head'
-    <% } else { %>
-    # XXX CORS for i.4cdn.org WHEN?
-    $.ajax "//a.4cdn.org/#{post.board}/thread/#{post.thread}.json", onload: ->
-      return if @status isnt 200
-      for postObj in @response.posts
-        break if postObj.no is post.ID
-      if postObj.no isnt post.ID
-        clearTimeout timeoutID
-        post.kill()
-      else if postObj.filedeleted
-        clearTimeout timeoutID
-        post.kill true
-    <% } %>
+        @src = URL + if @src is URL then '?' + Date.now() else ''
+      else
+        $.rm @

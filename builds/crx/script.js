@@ -11308,6 +11308,10 @@
 
   ImageHover = {
     init: function() {
+      var _ref;
+      if ((_ref = g.VIEW) !== 'index' && _ref !== 'thread') {
+        return;
+      }
       if (Conf['Image Hover']) {
         Post.callbacks.push({
           name: 'Image Hover',
@@ -11322,102 +11326,85 @@
       }
     },
     node: function() {
-      var _ref, _ref1;
-      if (!(((_ref = this.file) != null ? _ref.isImage : void 0) || ((_ref1 = this.file) != null ? _ref1.isVideo : void 0))) {
+      if (!(this.file && (this.file.isImage || this.file.isVideo))) {
         return;
       }
       return $.on(this.file.thumb, 'mouseover', ImageHover.mouseover);
     },
     catalogNode: function() {
       var file;
-      if (!((file = this.thread.OP.file) && (file.isImage || file.isVideo))) {
+      file = this.thread.OP.file;
+      if (!(file && (file.isImage || file.isVideo))) {
         return;
       }
       return $.on(this.nodes.thumb, 'mouseover', ImageHover.mouseover);
     },
     mouseover: function(e) {
-      var el, isVideo, post, thumb;
+      var el, error, file, isVideo, maxHeight, maxWidth, post, scale, _ref;
       post = $.hasClass(this, 'thumb') ? g.posts[this.parentNode.dataset.fullID] : Get.postFromNode(this);
-      isVideo = post.file.isVideo;
-      el = $.el((isVideo ? 'video' : 'img'), {
-        src: post.file.URL
-      });
-      thumb = post.file.thumb;
-      if (d.body.contains(thumb)) {
-        if (el !== thumb.nextSibling) {
-          $.after(thumb, el);
-        }
+      file = post.file;
+      isVideo = file.isVideo;
+      if (file.isExpanding || file.isExpanded) {
+        return;
+      }
+      error = ImageHover.error(post);
+      if (((_ref = ImageCommon.cache) != null ? _ref.dataset.fullID : void 0) === post.fullID) {
+        el = ImageCommon.popCache();
+        $.on(el, 'error', error);
       } else {
-        if (el.parentNode !== Header.hover) {
-          $.add(Header.hover, el);
-        }
+        el = $.el((isVideo ? 'video' : 'img'));
+        el.dataset.fullID = post.fullID;
       }
       el.id = 'ihover';
-      el.dataset.fullID = post.fullID;
+      $.add(Header.hover, el);
       if (isVideo) {
         el.loop = true;
         el.controls = false;
-        el.muted = !Conf['Allow Sound'];
         if (Conf['Autoplay']) {
           el.play();
         }
       }
-      UI.hover({
+      maxWidth = Math.max(left, doc.clientWidth - right);
+      maxHeight = doc.clientHeight - 16;
+      scale = Math.min(1, maxWidth / width, maxHeight / height);
+      el.style.maxWidth = "" + (scale * width) + "px";
+      el.style.maxHeight = "" + (scale * height) + "px";
+      return UI.hover({
         root: this,
         el: el,
         latestEvent: e,
         endEvents: 'mouseout click',
-        asapTest: post.file.isImage ? function() {
-          return el.naturalHeight;
-        } : function() {
-          return el.readyState >= el.HAVE_CURRENT_DATA;
+        asapTest: function() {
+          return true;
         },
+        height: scale * height + padding,
+        noRemove: true,
         cb: function() {
+          $.off(el, 'error', error);
+          ImageCommon.pushCache(el);
           if (isVideo) {
             el.pause();
-            TrashQueue.add(el, post);
           }
-          return el.removeAttribute('id');
+          $.rm(el);
+          return el.removeAttribute('style');
         }
       });
-      return $.on(el, 'error', ImageHover.error);
     },
-    error: function() {
-      var URL, post, src, timeoutID;
-      if (!doc.contains(this)) {
-        return;
-      }
-      post = g.posts[this.dataset.fullID];
-      src = this.src.split('/');
-      if (src[2] === 'i.4cdn.org') {
-        URL = Redirect.to('file', {
-          boardID: src[3],
-          filename: src[4].replace(/\?.+$/, '')
-        });
-        if (URL) {
-          this.src = URL;
+    error: function(post) {
+      return function() {
+        if (ImageCommon.decodeError(this, post)) {
           return;
         }
-        if (g.DEAD || post.isDead || post.file.isDead) {
-          return;
-        }
-      }
-      timeoutID = setTimeout(((function(_this) {
-        return function() {
-          return _this.src = post.file.URL + '?' + Date.now();
-        };
-      })(this)), 3000);
-      return $.ajax(post.file.URL, {
-        onloadend: function() {
-          if (this.status !== 404) {
-            return;
-          }
-          clearTimeout(timeoutID);
-          return post.kill(true);
-        }
-      }, {
-        type: 'head'
-      });
+        return ImageCommon.error(this, post, 3 * $.SECOND, (function(_this) {
+          return function(URL) {
+            if (URL) {
+              return _this.src = URL + (_this.src === URL ? '?' + Date.now() : '');
+            } else {
+              return $.rm(_this);
+            }
+          };
+        })(this));
+      };
     }
   };
 
